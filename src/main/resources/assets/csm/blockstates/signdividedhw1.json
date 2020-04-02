@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:signdividedhw1"
+    },
+    "facing=north": {
+      "model": "csm:signdividedhw1"
+    },
+    "facing=east": {
+      "model": "csm:signdividedhw1",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:signdividedhw1",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:signdividedhw1",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:signdividedhw1",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:signdividedhw1",
+      "x": 90
+    }
+  }
+}

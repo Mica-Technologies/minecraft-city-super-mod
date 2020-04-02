@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:sign4way"
+    },
+    "facing=north": {
+      "model": "csm:sign4way"
+    },
+    "facing=east": {
+      "model": "csm:sign4way",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:sign4way",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:sign4way",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:sign4way",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:sign4way",
+      "x": 90
+    }
+  }
+}

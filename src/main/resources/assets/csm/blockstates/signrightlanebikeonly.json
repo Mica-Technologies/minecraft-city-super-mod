@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:signrightlanebikeonly"
+    },
+    "facing=north": {
+      "model": "csm:signrightlanebikeonly"
+    },
+    "facing=east": {
+      "model": "csm:signrightlanebikeonly",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:signrightlanebikeonly",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:signrightlanebikeonly",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:signrightlanebikeonly",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:signrightlanebikeonly",
+      "x": 90
+    }
+  }
+}

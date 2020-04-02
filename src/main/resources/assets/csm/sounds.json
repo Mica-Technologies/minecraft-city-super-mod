@@ -1,0 +1,668 @@
+{
+  "bell": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:bell",
+        "stream": false
+      }
+    ]
+  },
+  "codetector": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:codetector",
+        "stream": false
+      }
+    ]
+  },
+  "et70_chime": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:et70_chime",
+        "stream": false
+      }
+    ]
+  },
+  "handdryer": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:handdryer",
+        "stream": false
+      }
+    ]
+  },
+  "marchtime_as": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:marchtime_as",
+        "stream": false
+      }
+    ]
+  },
+  "mills_firealarm": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:mills_firealarm",
+        "stream": false
+      }
+    ]
+  },
+  "mt_code3": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:mt_code3_bldng_m_lbcc",
+        "stream": false
+      }
+    ]
+  },
+  "nest_test": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:nest_protect_test",
+        "stream": false
+      }
+    ]
+  },
+  "panasonicfan": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:panasonic_fan",
+        "stream": false
+      }
+    ]
+  },
+  "2910calcode": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:simplex2901_calcode",
+        "stream": false
+      }
+    ]
+  },
+  "4030code44": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:simplex4030_code44",
+        "stream": false
+      }
+    ]
+  },
+  "smokealarm": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:smokealarm",
+        "stream": false
+      }
+    ]
+  },
+  "spectralert": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:spectalert",
+        "stream": false
+      }
+    ]
+  },
+  "wheelockas": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:wheelockas",
+        "stream": false
+      }
+    ]
+  },
+  "adaptabell": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:adaptabell",
+        "stream": false
+      }
+    ]
+  },
+  "bell2": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:bell2",
+        "stream": false
+      }
+    ]
+  },
+  "firebell": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:firebell",
+        "stream": false
+      }
+    ]
+  },
+  "kac": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:kac_sounder_calcode",
+        "stream": false
+      }
+    ]
+  },
+  "svenew": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:simplex_voice_evac_new",
+        "stream": false
+      }
+    ]
+  },
+  "sveold": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:simplex_voice_evac_old",
+        "stream": false
+      }
+    ]
+  },
+  "sven": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:simplex_voice_evac_new",
+        "stream": false
+      }
+    ]
+  },
+  "sveo": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:simplex_voice_evac_old",
+        "stream": false
+      }
+    ]
+  },
+  "wheelock7002t": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:wheelock_7002t",
+        "stream": false
+      }
+    ]
+  },
+  "dingblock": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:dingblock",
+        "stream": false
+      }
+    ]
+  },
+  "est_genesis": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:est_genesis",
+        "stream": false
+      }
+    ]
+  },
+  "est_integrity": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:est_integrity",
+        "stream": false
+      }
+    ]
+  },
+  "lms_voice_evac": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:lms_voice_evac",
+        "stream": false
+      }
+    ]
+  },
+  "stahorn": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:simplex_truealart_horn",
+        "stream": false
+      }
+    ]
+  },
+  "7002t_medspeed": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:wheelock_7002t_medspeed",
+        "stream": false
+      }
+    ]
+  },
+  "7002t_slowspeed": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:wheelock_7002t_slowspeed",
+        "stream": false
+      }
+    ]
+  },
+  "edwards_adaptahorn_code44": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:edwards_adaptahorn_code44",
+        "stream": false
+      }
+    ]
+  },
+  "gentex_gos_code3": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:gentex_gos_code3",
+        "stream": false
+      }
+    ]
+  },
+  "sae_marchtime": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:sae_marchtime",
+        "stream": false
+      }
+    ]
+  },
+  "simplex_4051_marchtime": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:simplex_4051_marchtime",
+        "stream": false
+      }
+    ]
+  },
+  "broken_7002t": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:broken_7002t",
+        "stream": false
+      }
+    ]
+  },
+  "walksig_wait": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:walksig_wait",
+        "stream": false
+      }
+    ]
+  },
+  "mclalsve": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:mclalifesafetyve",
+        "stream": false
+      }
+    ]
+  },
+  "edwards_io_reset": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:edwards_io_reset",
+        "stream": false
+      }
+    ]
+  },
+  "simplex_panel_reset": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:simplex_panel_reset",
+        "stream": false
+      }
+    ]
+  },
+  "pullstation_pull": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:pullstation_pull",
+        "stream": false
+      }
+    ]
+  },
+  "notifier_voice_evac": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:notifier_voice_evac",
+        "stream": false
+      }
+    ]
+  },
+  "simplex_voice_evac_old_alt": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:simplex_voice_evac_old_alt",
+        "stream": false
+      }
+    ]
+  },
+  "PanelComponentAdded": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:smokealarm_connect",
+        "stream": false
+      }
+    ]
+  },
+  "notifier_voice_evac_alt": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:notifier_voice_evac_alt",
+        "stream": false
+      }
+    ]
+  },
+  "code3_bell": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:code3_bell",
+        "stream": false
+      }
+    ]
+  },
+  "code44_bell": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:code44_bell",
+        "stream": false
+      }
+    ]
+  },
+  "continuous_bell": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:continuous_bell",
+        "stream": false
+      }
+    ]
+  },
+  "marchtime_bell": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:marchtime_bell",
+        "stream": false
+      }
+    ]
+  },
+  "elevator_dooropen": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:elevator_dooropen",
+        "stream": false
+      }
+    ]
+  },
+  "elevator_fan": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:elevator_fan",
+        "stream": false
+      }
+    ]
+  },
+  "mcla_tornado_evac": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:mcla_tornado_evac",
+        "stream": false
+      }
+    ]
+  },
+  "new_simplex_beep": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:new_simplex_beep",
+        "stream": false
+      }
+    ]
+  },
+  "power_linked": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:power_linked",
+        "stream": false
+      }
+    ]
+  },
+  "power_unlinked": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:power_unlinked",
+        "stream": false
+      }
+    ]
+  },
+  "sp_switch_off": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:sp_switch_off",
+        "stream": false
+      }
+    ]
+  },
+  "sp_switch_on": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:sp_switch_on",
+        "stream": false
+      }
+    ]
+  },
+  "standard_switch_off": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:standard_switch_off",
+        "stream": false
+      }
+    ]
+  },
+  "standard_switch_on": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:standard_switch_on",
+        "stream": false
+      }
+    ]
+  },
+  "tl_switch_off": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:tl_switch_off",
+        "stream": false
+      }
+    ]
+  },
+  "tl_switch_on": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:tl_switch_on",
+        "stream": false
+      }
+    ]
+  },
+  "ups_lowbatt": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:ups_lowbatt",
+        "stream": false
+      }
+    ]
+  },
+  "ups_silence": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:ups_silence",
+        "stream": false
+      }
+    ]
+  },
+  "oldradio": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:oldradio",
+        "stream": false
+      }
+    ]
+  },
+  "asteroids_cabinet": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:asteroids_cabinet",
+        "stream": false
+      }
+    ]
+  },
+  "bz_cabinet": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:bz_cabinet",
+        "stream": false
+      }
+    ]
+  },
+  "cp_cabinet": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:cp_cabinet",
+        "stream": false
+      }
+    ]
+  },
+  "galaga_cabinet": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:galaga_cabinet",
+        "stream": false
+      }
+    ]
+  },
+  "miscmd_cabinet": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:miscmd_cabinet",
+        "stream": false
+      }
+    ]
+  },
+  "pacman_cabinet": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:pacman_cabinet",
+        "stream": false
+      }
+    ]
+  },
+  "tempest_cabinet": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:tempest_cabinet",
+        "stream": false
+      }
+    ]
+  },
+  "oldrecordplayer2": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:oldrecordplayer2",
+        "stream": false
+      }
+    ]
+  },
+  "locker_door_close": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:locker_door_close",
+        "stream": false
+      }
+    ]
+  },
+  "locker_door_open": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:locker_door_open",
+        "stream": false
+      }
+    ]
+  },
+  "oldrecordplayer": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:oldrecordplayer",
+        "stream": false
+      }
+    ]
+  }
+}

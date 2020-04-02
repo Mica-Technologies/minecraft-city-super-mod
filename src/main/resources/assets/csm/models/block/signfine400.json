@@ -1,0 +1,9 @@
+{
+  "parent": "csm:custom/metal_signpostback_tall_sign",
+  "textures": {
+    "all": "csm:blocks/caltrans_sr58.svg",
+    "particle": "csm:blocks/caltrans_sr58.svg",
+    "0": "csm:blocks/metal",
+    "1": "csm:blocks/caltrans_sr58.svg"
+  }
+}

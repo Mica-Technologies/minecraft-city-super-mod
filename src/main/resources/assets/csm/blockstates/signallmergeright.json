@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:signallmergeright"
+    },
+    "facing=north": {
+      "model": "csm:signallmergeright"
+    },
+    "facing=east": {
+      "model": "csm:signallmergeright",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:signallmergeright",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:signallmergeright",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:signallmergeright",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:signallmergeright",
+      "x": 90
+    }
+  }
+}

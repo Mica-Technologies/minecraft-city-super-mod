@@ -1,0 +1,9 @@
+{
+  "parent": "csm:custom/metal_signpostback_sign",
+  "textures": {
+    "all": "csm:blocks/delaware_d12-6-de.svg",
+    "particle": "csm:blocks/delaware_d12-6-de.svg",
+    "0": "csm:blocks/metal",
+    "1": "csm:blocks/delaware_d12-6-de.svg"
+  }
+}

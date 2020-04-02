@@ -1,0 +1,38 @@
+{
+	"credit": "Made with Blockbench",
+	"textures": {
+		"0": "forge:blocks/wheelock_mt_hornstrobe_red",
+		"particle": "forge:blocks/wheelock_mt_hornstrobe_red"
+	},
+	"elements": [
+		{
+			"from": [3, 6, 14],
+			"to": [13, 16, 16],
+			"faces": {
+				"north": {"uv": [2.125, 1.875, 13.82344, 14.19219], "texture": "#0"},
+				"east": {"uv": [1.625, 2.25, 2.20469, 13.3], "texture": "#0"},
+				"south": {"uv": [1.75, 2.25, 2.26094, 4.45547], "texture": "#0"},
+				"west": {"uv": [13.75, 2.5, 14.25703, 13.27656], "texture": "#0"},
+				"up": {"uv": [1.625, 2.5, 2.22656, 4.375], "rotation": 180, "texture": "#0"},
+				"down": {"uv": [1.875, 2.25, 2.375, 4.375], "rotation": 180, "texture": "#0"}
+			}
+		},
+		{
+			"from": [3.9, 11.5, 12],
+			"to": [12.1, 14, 14],
+			"faces": {
+				"north": {"uv": [3.5, 4.75, 13.27344, 7.03516], "texture": "#0"},
+				"east": {"uv": [3.5, 4.75, 13.27344, 7.03516], "texture": "#0"},
+				"south": {"uv": [3.5, 4.75, 13.27344, 7.03516], "texture": "#0"},
+				"west": {"uv": [3.5, 4.75, 13.27344, 7.03516], "texture": "#0"},
+				"up": {"uv": [3.5, 4.75, 13.27344, 7.03516], "rotation": 180, "texture": "#0"},
+				"down": {"uv": [3.5, 4.75, 13.27344, 7.03516], "rotation": 180, "texture": "#0"}
+			}
+		}
+	],
+	"display": {
+		"gui": {
+			"rotation": [0, 180, 0]
+		}
+	}
+}

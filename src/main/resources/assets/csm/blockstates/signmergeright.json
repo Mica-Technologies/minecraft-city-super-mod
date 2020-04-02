@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:signmergeright"
+    },
+    "facing=north": {
+      "model": "csm:signmergeright"
+    },
+    "facing=east": {
+      "model": "csm:signmergeright",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:signmergeright",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:signmergeright",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:signmergeright",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:signmergeright",
+      "x": 90
+    }
+  }
+}

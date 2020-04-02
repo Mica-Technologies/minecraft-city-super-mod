@@ -1,0 +1,13 @@
+{
+  "mappings": {
+    "default": {
+      "map": {
+        "0": "metal_silver",
+        "1": "metal_white",
+        "2": "solidoff",
+        "missing": "metal_silver"
+      },
+      "name": "default"
+    }
+  }
+}

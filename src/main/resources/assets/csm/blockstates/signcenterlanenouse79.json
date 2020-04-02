@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:signcenterlanenouse79"
+    },
+    "facing=north": {
+      "model": "csm:signcenterlanenouse79"
+    },
+    "facing=east": {
+      "model": "csm:signcenterlanenouse79",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:signcenterlanenouse79",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:signcenterlanenouse79",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:signcenterlanenouse79",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:signcenterlanenouse79",
+      "x": 90
+    }
+  }
+}

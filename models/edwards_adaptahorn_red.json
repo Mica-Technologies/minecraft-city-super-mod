@@ -1,0 +1,36 @@
+{
+	"credit": "Made with Blockbench",
+	"textures": {
+		"0": "user:alarms/edwards_adaptahorn_red",
+		"particle": "user:alarms/edwards_adaptahorn_red"
+	},
+	"elements": [
+		{
+			"from": [0, 0, 15.99],
+			"to": [16, 16, 16],
+			"faces": {
+				"north": {"uv": [0.3, 0, 15.579, 15.975], "texture": "#0"}
+			}
+		}
+	],
+	"display": {
+		"thirdperson_righthand": {
+			"rotation": [0, 180, 0],
+			"translation": [0, 0, 5.75]
+		},
+		"thirdperson_lefthand": {
+			"rotation": [0, 180, 0],
+			"translation": [0, 0, 5.75]
+		},
+		"ground": {
+			"rotation": [0, 2, 0],
+			"translation": [0, 4, 0]
+		},
+		"gui": {
+			"rotation": [0, 180, 0]
+		},
+		"fixed": {
+			"translation": [0, 0, -8]
+		}
+	}
+}

@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:signpostcurvyroad"
+    },
+    "facing=north": {
+      "model": "csm:signpostcurvyroad"
+    },
+    "facing=east": {
+      "model": "csm:signpostcurvyroad",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:signpostcurvyroad",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:signpostcurvyroad",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:signpostcurvyroad",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:signpostcurvyroad",
+      "x": 90
+    }
+  }
+}

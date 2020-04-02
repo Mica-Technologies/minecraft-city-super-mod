@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:signhardrightshift"
+    },
+    "facing=north": {
+      "model": "csm:signhardrightshift"
+    },
+    "facing=east": {
+      "model": "csm:signhardrightshift",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:signhardrightshift",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:signhardrightshift",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:signhardrightshift",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:signhardrightshift",
+      "x": 90
+    }
+  }
+}

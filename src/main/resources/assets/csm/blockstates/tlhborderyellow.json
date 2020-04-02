@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:tlhborderyellow"
+    },
+    "facing=north": {
+      "model": "csm:tlhborderyellow"
+    },
+    "facing=east": {
+      "model": "csm:tlhborderyellow",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:tlhborderyellow",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:tlhborderyellow",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:tlhborderyellow",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:tlhborderyellow",
+      "x": 90
+    }
+  }
+}

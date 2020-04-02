@@ -1,0 +1,10 @@
+{
+  "parent": "csm:custom/trafficlighthorizontal",
+  "textures": {
+    "all": "csm:blocks/greenuturn",
+    "particle": "csm:blocks/greenuturn",
+    "0": "csm:blocks/solidoff",
+    "1": "csm:blocks/solidoff",
+    "2": "csm:blocks/greenuturn"
+  }
+}

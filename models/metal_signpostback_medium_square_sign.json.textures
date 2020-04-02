@@ -1,0 +1,68 @@
+{
+  "mappings": {
+    "exitleft": {
+      "map": {
+        "0": "metal",
+        "1": "800px-virginia_e5-v1l.svg",
+        "missing": "metal"
+      },
+      "name": "exitleft"
+    },
+    "default": {
+      "map": {
+        "0": "metal",
+        "1": "metal",
+        "missing": "metal"
+      },
+      "name": "default"
+    },
+    "turnlaneleft": {
+      "map": {
+        "0": "metal",
+        "1": "800px-virginia_m4-v8l.svg",
+        "missing": "metal"
+      },
+      "name": "turnlaneleft"
+    },
+    "turnlaneright": {
+      "map": {
+        "0": "metal",
+        "1": "800px-virginia_m4-v8r.svg",
+        "missing": "metal"
+      },
+      "name": "turnlaneright"
+    },
+    "exitright": {
+      "map": {
+        "0": "metal",
+        "1": "800px-virginia_e5-v1r.svg",
+        "missing": "metal"
+      },
+      "name": "exitright"
+    },
+    "pulloffright": {
+      "map": {
+        "0": "metal",
+        "1": "800px-virginia_e5-v2r.svg",
+        "missing": "metal"
+      },
+      "name": "pulloffright"
+    },
+    "pulloffleft": {
+      "map": {
+        "0": "metal",
+        "1": "800px-virginia_e5-v2l.svg",
+        "missing": "metal"
+      },
+      "name": "pulloffleft"
+    },
+    "permitresidentparking": {
+      "map": {
+        "0": "metal",
+        "1": "residents-parking-permit-sign-k-1179",
+        "missing": "metal"
+      },
+      "name": "permitresidentparking"
+    }
+  }
+}

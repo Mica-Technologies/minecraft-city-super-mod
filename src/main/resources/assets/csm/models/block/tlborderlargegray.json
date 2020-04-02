@@ -1,0 +1,8 @@
+{
+  "parent": "csm:custom/borderlarge",
+  "textures": {
+    "all": "csm:blocks/capture",
+    "particle": "csm:blocks/capture",
+    "0": "csm:blocks/capture"
+  }
+}

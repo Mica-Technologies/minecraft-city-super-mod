@@ -1,0 +1,46 @@
+{
+  "mappings": {
+    "default": {
+      "map": {
+        "0": "metal",
+        "1": "mbta"
+      },
+      "name": "default"
+    },
+    "mbta": {
+      "map": {
+        "0": "metal",
+        "1": "mbta"
+      },
+      "name": "mbta"
+    },
+    "hurricane": {
+      "map": {
+        "0": "metal",
+        "1": "em-1.eps"
+      },
+      "name": "hurricane"
+    },
+    "hurricaneleft": {
+      "map": {
+        "0": "metal",
+        "1": "em-1a.eps"
+      },
+      "name": "hurricaneleft"
+    },
+    "hurricaneright": {
+      "map": {
+        "0": "metal",
+        "1": "em-1b.eps"
+      },
+      "name": "hurricaneright"
+    },
+    "lametro": {
+      "map": {
+        "0": "metal",
+        "1": "lacmta-logo"
+      },
+      "name": "lametro"
+    }
+  }
+}

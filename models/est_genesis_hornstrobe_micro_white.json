@@ -1,0 +1,26 @@
+{
+	"credit": "Made with Blockbench",
+	"textures": {
+		"0": "user:blocks/EST_Genesis_HornStrobe_Micro_White",
+		"particle": "user:blocks/EST_Genesis_HornStrobe_Micro_White"
+	},
+	"elements": [
+		{
+			"from": [5, 6, 15],
+			"to": [11, 16, 16],
+			"faces": {
+				"north": {"uv": [4.125, 1.875, 11.375, 14.375], "texture": "#0"},
+				"east": {"uv": [10.75, 2, 11.25, 3.75], "texture": "#0"},
+				"south": {"uv": [10.625, 1.875, 11.125, 3.125], "texture": "#0"},
+				"west": {"uv": [10.75, 2, 11.25, 3.875], "texture": "#0"},
+				"up": {"uv": [10.75, 2.125, 11.25, 4], "rotation": 180, "texture": "#0"},
+				"down": {"uv": [10.75, 2.125, 11.25, 4.25], "rotation": 180, "texture": "#0"}
+			}
+		}
+	],
+	"display": {
+		"gui": {
+			"rotation": [0, 180, 0]
+		}
+	}
+}

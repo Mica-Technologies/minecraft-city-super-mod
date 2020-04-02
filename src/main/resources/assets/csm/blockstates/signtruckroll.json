@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:signtruckroll"
+    },
+    "facing=north": {
+      "model": "csm:signtruckroll"
+    },
+    "facing=east": {
+      "model": "csm:signtruckroll",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:signtruckroll",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:signtruckroll",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:signtruckroll",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:signtruckroll",
+      "x": 90
+    }
+  }
+}

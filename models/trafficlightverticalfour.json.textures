@@ -1,0 +1,112 @@
+{
+  "mappings": {
+    "red": {
+      "map": {
+        "0": "solidred",
+        "1": "solidoff",
+        "2": "solidoff",
+        "3": "solidoff"
+      },
+      "name": "red"
+    },
+    "flashleftyellow": {
+      "map": {
+        "0": "solidoff",
+        "1": "solidoff",
+        "2": "flashyellowleft",
+        "3": "solidoff"
+      },
+      "name": "flashleftyellow"
+    },
+    "redleftgreen": {
+      "map": {
+        "0": "solidred",
+        "1": "solidoff",
+        "2": "solidoff",
+        "3": "greenarrowleft"
+      },
+      "name": "redleftgreen"
+    },
+    "greenleftgreen": {
+      "map": {
+        "0": "solidoff",
+        "1": "solidoff",
+        "2": "solidgreen",
+        "3": "greenarrowleft"
+      },
+      "name": "greenleftgreen"
+    },
+    "default": {
+      "map": {
+        "0": "solidoff",
+        "1": "solidoff",
+        "2": "solidoff",
+        "3": "solidoff"
+      },
+      "name": "default"
+    },
+    "green": {
+      "map": {
+        "0": "solidoff",
+        "1": "solidoff",
+        "2": "solidgreen",
+        "3": "solidoff"
+      },
+      "name": "green"
+    },
+    "yellowleftarrow": {
+      "map": {
+        "0": "solidoff",
+        "1": "yellowarrowleft",
+        "2": "solidoff",
+        "3": "solidoff"
+      },
+      "name": "yellowleftarrow"
+    },
+    "redrightgreen": {
+      "map": {
+        "0": "solidred",
+        "1": "solidoff",
+        "2": "solidoff",
+        "3": "greenarrowright"
+      },
+      "name": "redrightgreen"
+    },
+    "redleftarrow": {
+      "map": {
+        "0": "redarrowleft",
+        "1": "solidoff",
+        "2": "solidoff",
+        "3": "solidoff"
+      },
+      "name": "redleftarrow"
+    },
+    "yellow": {
+      "map": {
+        "0": "solidoff",
+        "1": "solidyellow",
+        "2": "solidoff",
+        "3": "solidoff"
+      },
+      "name": "yellow"
+    },
+    "greenrightgreen": {
+      "map": {
+        "0": "solidoff",
+        "1": "solidoff",
+        "2": "solidgreen",
+        "3": "greenarrowright"
+      },
+      "name": "greenrightgreen"
+    },
+    "greenleftarrow": {
+      "map": {
+        "0": "solidoff",
+        "1": "solidoff",
+        "2": "solidoff",
+        "3": "greenarrowleft"
+      },
+      "name": "greenleftarrow"
+    }
+  }
+}

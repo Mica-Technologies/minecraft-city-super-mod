@@ -1,0 +1,26 @@
+{
+	"credit": "Made with Blockbench",
+	"textures": {
+		"0": "forge:blocks/ps3",
+		"particle": "forge:blocks/ps3"
+	},
+	"elements": [
+		{
+			"from": [4, 5, 14],
+			"to": [12, 16, 16],
+			"faces": {
+				"north": {"uv": [3.19922, 1.4, 12.85547, 13.81094], "texture": "#0"},
+				"east": {"uv": [3.74, 2.24, 4.254, 3.79], "texture": "#0"},
+				"south": {"uv": [3.68, 3.88, 4.187, 5.08], "texture": "#0"},
+				"west": {"uv": [3.74, 2.04, 4.247, 4.066], "texture": "#0"},
+				"up": {"uv": [3.58, 2.04, 4.431, 3.915], "rotation": 180, "texture": "#0"},
+				"down": {"uv": [3.78, 2.04, 4.28, 4.165], "rotation": 180, "texture": "#0"}
+			}
+		}
+	],
+	"display": {
+		"gui": {
+			"rotation": [0, 180, 0]
+		}
+	}
+}

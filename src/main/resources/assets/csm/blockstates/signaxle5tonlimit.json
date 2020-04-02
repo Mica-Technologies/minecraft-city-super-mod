@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:signaxle5tonlimit"
+    },
+    "facing=north": {
+      "model": "csm:signaxle5tonlimit"
+    },
+    "facing=east": {
+      "model": "csm:signaxle5tonlimit",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:signaxle5tonlimit",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:signaxle5tonlimit",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:signaxle5tonlimit",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:signaxle5tonlimit",
+      "x": 90
+    }
+  }
+}

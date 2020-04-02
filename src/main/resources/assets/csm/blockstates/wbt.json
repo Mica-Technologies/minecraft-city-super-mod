@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:wbt"
+    },
+    "facing=north": {
+      "model": "csm:wbt"
+    },
+    "facing=east": {
+      "model": "csm:wbt",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:wbt",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:wbt",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:wbt",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:wbt",
+      "x": 90
+    }
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "_fv": 5,
+  "_type": "tab",
+  "definition": {
+    "name": "CSM: Alarms (Speaker)",
+    "icon": {
+      "value": "CUSTOM:WheelockWhiteET70SS"
+    },
+    "showSearch": false
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "parent": "csm:custom/metal_signpostback_medium_wide_sign",
+  "textures": {
+    "all": "csm:blocks/w1-7.eps",
+    "particle": "csm:blocks/w1-7.eps",
+    "0": "csm:blocks/metal",
+    "1": "csm:blocks/w1-7.eps",
+    "missing": "csm:blocks/metal"
+  }
+}

@@ -1,0 +1,26 @@
+{
+	"credit": "Made with Blockbench",
+	"textures": {
+		"0": "user:blocks/Wheelock_E70_Speaker_Red",
+		"particle": "user:blocks/Wheelock_E70_Speaker_Red"
+	},
+	"elements": [
+		{
+			"from": [2, 4, 15],
+			"to": [14, 16, 16],
+			"faces": {
+				"north": {"uv": [1.75, 1.5, 14.25, 14.625], "texture": "#0"},
+				"east": {"uv": [12.875, 2.875, 13.375, 4.625], "texture": "#0"},
+				"south": {"uv": [12.5, 2.875, 13, 4.125], "texture": "#0"},
+				"west": {"uv": [12.75, 3, 13.25, 4.875], "texture": "#0"},
+				"up": {"uv": [12.875, 3.5, 13.375, 5.375], "rotation": 180, "texture": "#0"},
+				"down": {"uv": [12.875, 3.375, 13.375, 5.5], "rotation": 180, "texture": "#0"}
+			}
+		}
+	],
+	"display": {
+		"gui": {
+			"rotation": [0, 180, 0]
+		}
+	}
+}

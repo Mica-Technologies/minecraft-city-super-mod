@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:rcpm"
+    },
+    "facing=north": {
+      "model": "csm:rcpm"
+    },
+    "facing=east": {
+      "model": "csm:rcpm",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:rcpm",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:rcpm",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:rcpm",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:rcpm",
+      "x": 90
+    }
+  }
+}

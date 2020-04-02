@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:signseverestorm"
+    },
+    "facing=north": {
+      "model": "csm:signseverestorm"
+    },
+    "facing=east": {
+      "model": "csm:signseverestorm",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:signseverestorm",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:signseverestorm",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:signseverestorm",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:signseverestorm",
+      "x": 90
+    }
+  }
+}

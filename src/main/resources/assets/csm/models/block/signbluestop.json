@@ -1,0 +1,10 @@
+{
+  "parent": "csm:custom/metal_signpost_octagon_sign",
+  "textures": {
+    "all": "csm:blocks/mutcd_r1-1_non-compliant.svg",
+    "particle": "csm:blocks/mutcd_r1-1_non-compliant.svg",
+    "0": "csm:blocks/metal",
+    "1": "csm:blocks/mutcd_r1-1_non-compliant.svg",
+    "missing": "csm:blocks/metal"
+  }
+}

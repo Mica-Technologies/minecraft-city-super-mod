@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:signupslightleft"
+    },
+    "facing=north": {
+      "model": "csm:signupslightleft"
+    },
+    "facing=east": {
+      "model": "csm:signupslightleft",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:signupslightleft",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:signupslightleft",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:signupslightleft",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:signupslightleft",
+      "x": 90
+    }
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "mappings": {
+    "default": {
+      "map": {
+        "0": ""
+      },
+      "name": "default"
+    },
+    "white": {
+      "map": {
+        "0": "borderyellowblack"
+      },
+      "name": "white"
+    },
+    "yellow": {
+      "map": {
+        "0": "borderwhiteblack"
+      },
+      "name": "yellow"
+    },
+    "black": {
+      "map": {
+        "0": "borderblackblack"
+      },
+      "name": "black"
+    },
+    "tan": {
+      "map": {
+        "0": "metal_mattetan"
+      },
+      "name": "tan"
+    }
+  }
+}

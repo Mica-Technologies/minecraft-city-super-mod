@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:signcenterlanebusonly69"
+    },
+    "facing=north": {
+      "model": "csm:signcenterlanebusonly69"
+    },
+    "facing=east": {
+      "model": "csm:signcenterlanebusonly69",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:signcenterlanebusonly69",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:signcenterlanebusonly69",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:signcenterlanebusonly69",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:signcenterlanebusonly69",
+      "x": 90
+    }
+  }
+}

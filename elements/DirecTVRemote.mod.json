@@ -1,0 +1,26 @@
+{
+  "_fv": 5,
+  "_type": "item",
+  "definition": {
+    "renderType": 0,
+    "texture": "directv_remote",
+    "customModelName": "Normal",
+    "name": "DIRECTV Remote",
+    "creativeTab": {
+      "value": "CUSTOM:MCLAOtherTab"
+    },
+    "stackSize": 64,
+    "enchantability": 0,
+    "useDuration": 0,
+    "toolType": 1.0,
+    "damageCount": 0,
+    "destroyAnyBlock": false,
+    "stayInGridWhenCrafting": false,
+    "enableMeleeDamage": false,
+    "damageVsEntity": 0.0,
+    "specialInfo": [
+      "This remote does nothing and is only for looks!"
+    ],
+    "hasGlow": false
+  }
+}

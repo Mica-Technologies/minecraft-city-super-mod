@@ -1,0 +1,53 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:tlyv_uly"
+    },
+    "facing=north,powered=true": {
+      "model": "csm:tlyv_uly"
+    },
+    "facing=east,powered=true": {
+      "model": "csm:tlyv_uly",
+      "y": 90
+    },
+    "facing=south,powered=true": {
+      "model": "csm:tlyv_uly",
+      "y": 180
+    },
+    "facing=west,powered=true": {
+      "model": "csm:tlyv_uly",
+      "y": 270
+    },
+    "facing=up,powered=true": {
+      "model": "csm:tlyv_uly",
+      "x": 270
+    },
+    "facing=down,powered=true": {
+      "model": "csm:tlyv_uly",
+      "x": 90
+    },
+    "facing=north,powered=false": {
+      "model": "csm:tlyv_so"
+    },
+    "facing=east,powered=false": {
+      "model": "csm:tlyv_so",
+      "y": 90
+    },
+    "facing=south,powered=false": {
+      "model": "csm:tlyv_so",
+      "y": 180
+    },
+    "facing=west,powered=false": {
+      "model": "csm:tlyv_so",
+      "y": 270
+    },
+    "facing=up,powered=false": {
+      "model": "csm:tlyv_so",
+      "x": 270
+    },
+    "facing=down,powered=false": {
+      "model": "csm:tlyv_so",
+      "x": 90
+    }
+  }
+}

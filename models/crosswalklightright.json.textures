@@ -1,0 +1,28 @@
+{
+  "mappings": {
+    "default": {
+      "map": {
+        "0": ""
+      },
+      "name": "default"
+    },
+    "off": {
+      "map": {
+        "0": "crosswalkoff"
+      },
+      "name": "off"
+    },
+    "on": {
+      "map": {
+        "0": "crosswalkon"
+      },
+      "name": "on"
+    },
+    "nopower": {
+      "map": {
+        "0": "crosswalknopower"
+      },
+      "name": "nopower"
+    }
+  }
+}

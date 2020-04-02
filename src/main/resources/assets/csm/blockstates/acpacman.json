@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:acpacman"
+    },
+    "facing=north": {
+      "model": "csm:acpacman"
+    },
+    "facing=east": {
+      "model": "csm:acpacman",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:acpacman",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:acpacman",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:acpacman",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:acpacman",
+      "x": 90
+    }
+  }
+}

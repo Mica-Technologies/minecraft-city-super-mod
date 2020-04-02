@@ -1,0 +1,22 @@
+{
+  "mappings": {
+    "default": {
+      "map": {
+        "missing": "borderblackblack"
+      },
+      "name": "default"
+    },
+    "white": {
+      "map": {
+        "missing": "borderwhiteblack"
+      },
+      "name": "white"
+    },
+    "yellow": {
+      "map": {
+        "missing": "borderyellowblack"
+      },
+      "name": "yellow"
+    }
+  }
+}

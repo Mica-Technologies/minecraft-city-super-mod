@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:acgalaga"
+    },
+    "facing=north": {
+      "model": "csm:acgalaga"
+    },
+    "facing=east": {
+      "model": "csm:acgalaga",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:acgalaga",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:acgalaga",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:acgalaga",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:acgalaga",
+      "x": 90
+    }
+  }
+}

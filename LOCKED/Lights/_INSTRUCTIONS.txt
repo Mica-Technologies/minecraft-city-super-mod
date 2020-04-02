@@ -1,0 +1,23 @@
+1:
+
+	Replace all code from below the getBoundingBox method to 
+	above the isOpaqueCube method with the code in `Code.txt` 
+	(See Below for More Information)
+
+
+2:
+
+	Modify the blockstate to follow the blockstate in `Blockstate.txt`
+
+
+
+
+
+
+
+1 -- CONTINUED: 
+
+	There should be four methods that are replaced with the code from `Code.txt`. 
+	They are createBlockState(), getStateFromMeta(int), 
+	getMetaFromState(IBlockState) and 
+	getStateForPlacement(Word,BlockPos,EnumFacing,float,float,float,int,EntityLivingBase)

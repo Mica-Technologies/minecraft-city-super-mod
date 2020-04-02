@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:signparkingl"
+    },
+    "facing=north": {
+      "model": "csm:signparkingl"
+    },
+    "facing=east": {
+      "model": "csm:signparkingl",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:signparkingl",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:signparkingl",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:signparkingl",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:signparkingl",
+      "x": 90
+    }
+  }
+}

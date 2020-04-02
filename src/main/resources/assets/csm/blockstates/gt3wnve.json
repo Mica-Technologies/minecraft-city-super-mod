@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:gt3wnve"
+    },
+    "facing=north": {
+      "model": "csm:gt3wnve"
+    },
+    "facing=east": {
+      "model": "csm:gt3wnve",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:gt3wnve",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:gt3wnve",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:gt3wnve",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:gt3wnve",
+      "x": 90
+    }
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:wheelock_e70r"
+    },
+    "facing=north": {
+      "model": "csm:wheelock_e70r"
+    },
+    "facing=east": {
+      "model": "csm:wheelock_e70r",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:wheelock_e70r",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:wheelock_e70r",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:wheelock_e70r",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:wheelock_e70r",
+      "x": 90
+    }
+  }
+}

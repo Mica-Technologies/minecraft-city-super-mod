@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:signcamping"
+    },
+    "facing=north": {
+      "model": "csm:signcamping"
+    },
+    "facing=east": {
+      "model": "csm:signcamping",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:signcamping",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:signcamping",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:signcamping",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:signcamping",
+      "x": 90
+    }
+  }
+}

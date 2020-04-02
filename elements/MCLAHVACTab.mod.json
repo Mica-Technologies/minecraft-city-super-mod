@@ -1,0 +1,11 @@
+{
+  "_fv": 5,
+  "_type": "tab",
+  "definition": {
+    "name": "CSM: HVAC",
+    "icon": {
+      "value": "CUSTOM:SV4"
+    },
+    "showSearch": false
+  }
+}

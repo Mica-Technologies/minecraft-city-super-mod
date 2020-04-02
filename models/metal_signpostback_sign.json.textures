@@ -1,0 +1,571 @@
+{
+  "mappings": {
+    "default": {
+      "map": {
+        "0": "metal",
+        "1": "metal"
+      },
+      "name": "default"
+    },
+    "noleftturn": {
+      "map": {
+        "0": "metal",
+        "1": "r3-2.eps"
+      },
+      "name": "noleftturn"
+    },
+    "nohitchhiking": {
+      "map": {
+        "0": "metal",
+        "1": "r9-4a.eps"
+      },
+      "name": "nohitchhiking"
+    },
+    "norighturn": {
+      "map": {
+        "0": "metal",
+        "1": "r3-1.eps"
+      },
+      "name": "norighturn"
+    },
+    "donotenter": {
+      "map": {
+        "0": "metal",
+        "1": "r5-1.eps"
+      },
+      "name": "donotenter"
+    },
+    "nopedest": {
+      "map": {
+        "0": "metal",
+        "1": "r9-3a.eps"
+      },
+      "name": "nopedest"
+    },
+    "nobikes": {
+      "map": {
+        "0": "metal",
+        "1": "r5-6.eps"
+      },
+      "name": "nobikes"
+    },
+    "nouturn": {
+      "map": {
+        "0": "metal",
+        "1": "r3-4.eps"
+      },
+      "name": "nouturn"
+    },
+    "hiking": {
+      "map": {
+        "0": "metal",
+        "1": "i-4.eps"
+      },
+      "name": "hiking"
+    },
+    "airport": {
+      "map": {
+        "0": "metal",
+        "1": "i-5.eps"
+      },
+      "name": "airport"
+    },
+    "busstation": {
+      "map": {
+        "0": "metal",
+        "1": "i-6.eps"
+      },
+      "name": "busstation"
+    },
+    "trainstation": {
+      "map": {
+        "0": "metal",
+        "1": "i-7.eps"
+      },
+      "name": "trainstation"
+    },
+    "library": {
+      "map": {
+        "0": "metal",
+        "1": "i-8.eps"
+      },
+      "name": "library"
+    },
+    "boats": {
+      "map": {
+        "0": "metal",
+        "1": "i-9.eps"
+      },
+      "name": "boats"
+    },
+    "snowflakes": {
+      "map": {
+        "0": "metal",
+        "1": "i-10.eps"
+      },
+      "name": "snowflakes"
+    },
+    "phone": {
+      "map": {
+        "0": "metal",
+        "1": "d9-1.eps"
+      },
+      "name": "phone"
+    },
+    "hospital": {
+      "map": {
+        "0": "metal",
+        "1": "d9-2.eps"
+      },
+      "name": "hospital"
+    },
+    "camping": {
+      "map": {
+        "0": "metal",
+        "1": "d9-3.eps"
+      },
+      "name": "camping"
+    },
+    "camper": {
+      "map": {
+        "0": "metal",
+        "1": "d9-4.eps"
+      },
+      "name": "camper"
+    },
+    "handicapped": {
+      "map": {
+        "0": "metal",
+        "1": "d9-5.eps"
+      },
+      "name": "handicapped"
+    },
+    "food": {
+      "map": {
+        "0": "metal",
+        "1": "d9-6.eps"
+      },
+      "name": "food"
+    },
+    "gas": {
+      "map": {
+        "0": "metal",
+        "1": "d9-7.eps"
+      },
+      "name": "gas"
+    },
+    "lodging": {
+      "map": {
+        "0": "metal",
+        "1": "d9-9.eps"
+      },
+      "name": "lodging"
+    },
+    "help": {
+      "map": {
+        "0": "metal",
+        "1": "d9-10.eps"
+      },
+      "name": "help"
+    },
+    "diesel": {
+      "map": {
+        "0": "metal",
+        "1": "d9-11.eps"
+      },
+      "name": "diesel"
+    },
+    "ambulance": {
+      "map": {
+        "0": "metal",
+        "1": "d9-13.eps"
+      },
+      "name": "ambulance"
+    },
+    "noturns": {
+      "map": {
+        "0": "metal",
+        "1": "r3-3.eps"
+      },
+      "name": "noturns"
+    },
+    "leftmustturn": {
+      "map": {
+        "0": "metal",
+        "1": "r3-7.eps"
+      },
+      "name": "leftmustturn"
+    },
+    "notrucks": {
+      "map": {
+        "0": "metal",
+        "1": "r5-2.eps"
+      },
+      "name": "notrucks"
+    },
+    "nomotorvehicles": {
+      "map": {
+        "0": "metal",
+        "1": "r5-3.eps"
+      },
+      "name": "nomotorvehicles"
+    },
+    "noparking": {
+      "map": {
+        "0": "metal",
+        "1": "r8-3a.eps"
+      },
+      "name": "noparking"
+    },
+    "noparkingtext": {
+      "map": {
+        "0": "metal",
+        "1": "r8-3.eps"
+      },
+      "name": "noparkingtext"
+    },
+    "onpavement": {
+      "map": {
+        "0": "metal",
+        "1": "r8-3c.eps"
+      },
+      "name": "onpavement"
+    },
+    "onbridge": {
+      "map": {
+        "0": "metal",
+        "1": "r8-3d.eps"
+      },
+      "name": "onbridge"
+    },
+    "leftturnsignal": {
+      "map": {
+        "0": "metal",
+        "1": "r10-10.eps"
+      },
+      "name": "leftturnsignal"
+    },
+    "noturnonred": {
+      "map": {
+        "0": "metal",
+        "1": "r10-11b.eps"
+      },
+      "name": "noturnonred"
+    },
+    "keepoffmedian": {
+      "map": {
+        "0": "metal",
+        "1": "r11-1.eps"
+      },
+      "name": "keepoffmedian"
+    },
+    "stopherepedestleft": {
+      "map": {
+        "0": "metal",
+        "1": "1920px-mutcd_r1-5bl.svg"
+      },
+      "name": "stopherepedestleft"
+    },
+    "stopherepedetright": {
+      "map": {
+        "0": "metal",
+        "1": "1920px-mutcd_r1-5br.svg"
+      },
+      "name": "stopherepedetright"
+    },
+    "rwrkdetourleft": {
+      "map": {
+        "0": "metal",
+        "1": "2560px-mutcd_m4-9l.svg"
+      },
+      "name": "rwrkdetourleft"
+    },
+    "rwrkdetourright": {
+      "map": {
+        "0": "metal",
+        "1": "2560px-mutcd_m4-9r.svg"
+      },
+      "name": "rwrkdetourright"
+    },
+    "workpeddetourleft": {
+      "map": {
+        "0": "metal",
+        "1": "mutcd_m4-9bl.svg"
+      },
+      "name": "workpeddetourleft"
+    },
+    "workpeddetourright": {
+      "map": {
+        "0": "metal",
+        "1": "mutcd_m4-9br.svg"
+      },
+      "name": "workpeddetourright"
+    },
+    "turningyeildleft": {
+      "map": {
+        "0": "metal",
+        "1": "mutcd_r10-15l_fluorescent.svg"
+      },
+      "name": "turningyeildleft"
+    },
+    "turningyieldright": {
+      "map": {
+        "0": "metal",
+        "1": "mutcd_r10-15r_fluorescent.svg"
+      },
+      "name": "turningyieldright"
+    },
+    "signalstudy": {
+      "map": {
+        "0": "metal",
+        "1": "delaware_d12-6-de.svg"
+      },
+      "name": "signalstudy"
+    },
+    "redlightphoto": {
+      "map": {
+        "0": "metal",
+        "1": "delaware_r10-19-de.svg"
+      },
+      "name": "redlightphoto"
+    },
+    "nohm": {
+      "map": {
+        "0": "metal",
+        "1": "800px-mutcd_r14-3.svg"
+      },
+      "name": "nohm"
+    },
+    "notrucksleft": {
+      "map": {
+        "0": "metal",
+        "1": "800px-delaware_r4-3-de1.svg"
+      },
+      "name": "notrucksleft"
+    },
+    "hm": {
+      "map": {
+        "0": "metal",
+        "1": "mutcd_r14-2.svg"
+      },
+      "name": "hm"
+    },
+    "eisenhower": {
+      "map": {
+        "0": "metal",
+        "1": "mutcd_m1-10.svg"
+      },
+      "name": "eisenhower"
+    },
+    "turnflashred": {
+      "map": {
+        "0": "metal",
+        "1": "delaware_r10-17-de.svg"
+      },
+      "name": "turnflashred"
+    },
+    "controlpoiint": {
+      "map": {
+        "0": "metal",
+        "1": "em-3.eps"
+      },
+      "name": "controlpoiint"
+    },
+    "nodumping": {
+      "map": {
+        "0": "metal",
+        "1": "virginia_r0-v1.svg"
+      },
+      "name": "nodumping"
+    },
+    "litterillegal": {
+      "map": {
+        "0": "metal",
+        "1": "virginia_r0-v2.svg"
+      },
+      "name": "litterillegal"
+    },
+    "noturnsofficial": {
+      "map": {
+        "0": "metal",
+        "1": "adelaware_r3-3-de.svg"
+      },
+      "name": "noturnsofficial"
+    },
+    "dividedhwcross": {
+      "map": {
+        "0": "metal",
+        "1": "ar6-3.eps"
+      },
+      "name": "dividedhwcross"
+    },
+    "devidedhighwayenter": {
+      "map": {
+        "0": "metal",
+        "1": "ar6-3a.eps"
+      },
+      "name": "devidedhighwayenter"
+    },
+    "archery": {
+      "map": {
+        "0": "metal",
+        "1": "aarchery.eps"
+      },
+      "name": "archery"
+    },
+    "dog": {
+      "map": {
+        "0": "metal",
+        "1": "adog.eps"
+      },
+      "name": "dog"
+    },
+    "family": {
+      "map": {
+        "0": "metal",
+        "1": "afamily.eps"
+      },
+      "name": "family"
+    },
+    "fishing": {
+      "map": {
+        "0": "metal",
+        "1": "afishing.eps"
+      },
+      "name": "fishing"
+    },
+    "hangglider": {
+      "map": {
+        "0": "metal",
+        "1": "ahang_glider.eps"
+      },
+      "name": "hangglider"
+    },
+    "helicopter": {
+      "map": {
+        "0": "metal",
+        "1": "ahelicopter.eps"
+      },
+      "name": "helicopter"
+    },
+    "kayak": {
+      "map": {
+        "0": "metal",
+        "1": "akayak.eps"
+      },
+      "name": "kayak"
+    },
+    "laundry": {
+      "map": {
+        "0": "metal",
+        "1": "alaundry.eps"
+      },
+      "name": "laundry"
+    },
+    "left": {
+      "map": {
+        "0": "metal",
+        "1": "aleft.eps"
+      },
+      "name": "left"
+    },
+    "motorbike": {
+      "map": {
+        "0": "metal",
+        "1": "amotorbike.eps"
+      },
+      "name": "motorbike"
+    },
+    "offroad": {
+      "map": {
+        "0": "metal",
+        "1": "aoffroad.eps"
+      },
+      "name": "offroad"
+    },
+    "picnic": {
+      "map": {
+        "0": "metal",
+        "1": "apicnic.eps"
+      },
+      "name": "picnic"
+    },
+    "right": {
+      "map": {
+        "0": "metal",
+        "1": "aright.eps"
+      },
+      "name": "right"
+    },
+    "arv": {
+      "map": {
+        "0": "metal",
+        "1": "arv.eps"
+      },
+      "name": "arv"
+    },
+    "hiking2": {
+      "map": {
+        "0": "metal",
+        "1": "ahiking.eps"
+      },
+      "name": "hiking2"
+    },
+    "ahead": {
+      "map": {
+        "0": "metal",
+        "1": "ahead.eps"
+      },
+      "name": "ahead"
+    },
+    "seaplane": {
+      "map": {
+        "0": "metal",
+        "1": "aseaplane.eps"
+      },
+      "name": "seaplane"
+    },
+    "shelter": {
+      "map": {
+        "0": "metal",
+        "1": "ashelter.eps"
+      },
+      "name": "shelter"
+    },
+    "skilift": {
+      "map": {
+        "0": "metal",
+        "1": "askilift.eps"
+      },
+      "name": "skilift"
+    },
+    "swimming": {
+      "map": {
+        "0": "metal",
+        "1": "aswimming.eps"
+      },
+      "name": "swimming"
+    },
+    "atv": {
+      "map": {
+        "0": "metal",
+        "1": "atv.eps"
+      },
+      "name": "atv"
+    },
+    "windsurf": {
+      "map": {
+        "0": "metal",
+        "1": "awindsurf.eps"
+      },
+      "name": "windsurf"
+    },
+    "residentparking": {
+      "map": {
+        "0": "metal",
+        "1": "residents-parking-permit-sign-k-1179"
+      },
+      "name": "residentparking"
+    }
+  }
+}

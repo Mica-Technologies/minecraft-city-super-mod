@@ -1,0 +1,8 @@
+{
+  "parent": "csm:custom/valcom_speaker_7",
+  "textures": {
+    "all": "csm:blocks/valcom_speaker_7",
+    "particle": "csm:blocks/valcom_speaker_7",
+    "0": "csm:blocks/valcom_speaker_7"
+  }
+}

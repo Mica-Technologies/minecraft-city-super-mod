@@ -1,0 +1,8 @@
+{
+  "parent": "csm:custom/lithonia_dubled_strip_light_half_reflectors",
+  "textures": {
+    "all": "csm:blocks/striplights",
+    "particle": "csm:blocks/striplights",
+    "0": "csm:blocks/striplights"
+  }
+}

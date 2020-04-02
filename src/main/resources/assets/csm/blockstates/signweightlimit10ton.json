@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:signweightlimit10ton"
+    },
+    "facing=north": {
+      "model": "csm:signweightlimit10ton"
+    },
+    "facing=east": {
+      "model": "csm:signweightlimit10ton",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:signweightlimit10ton",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:signweightlimit10ton",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:signweightlimit10ton",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:signweightlimit10ton",
+      "x": 90
+    }
+  }
+}

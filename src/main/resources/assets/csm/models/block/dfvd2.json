@@ -1,0 +1,12 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "csm:blocks/difuser_vent_2_black",
+    "up": "csm:blocks/difuser_vent_2_black",
+    "north": "csm:blocks/difuser_vent_2_black",
+    "east": "csm:blocks/difuser_vent_2_black",
+    "south": "csm:blocks/difuser_vent_2_black",
+    "west": "csm:blocks/difuser_vent_2_black",
+    "particle": "csm:blocks/difuser_vent_2_black"
+  }
+}

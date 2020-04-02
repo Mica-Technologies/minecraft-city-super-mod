@@ -1,0 +1,214 @@
+{
+  "mappings": {
+    "default": {
+      "map": {
+        "0": "solidoff"
+      },
+      "name": "default"
+    },
+    "solidred": {
+      "map": {
+        "0": "solidred"
+      },
+      "name": "solidred"
+    },
+    "solidyellow": {
+      "map": {
+        "0": "solidyellow"
+      },
+      "name": "solidyellow"
+    },
+    "solidgreen": {
+      "map": {
+        "0": "solidgreen"
+      },
+      "name": "solidgreen"
+    },
+    "leftred": {
+      "map": {
+        "0": "redarrowleft"
+      },
+      "name": "leftred"
+    },
+    "leftyellow": {
+      "map": {
+        "0": "yellowarrowleft"
+      },
+      "name": "leftyellow"
+    },
+    "leftgreen": {
+      "map": {
+        "0": "greenarrowleft"
+      },
+      "name": "leftgreen"
+    },
+    "rightred": {
+      "map": {
+        "0": "redarrowright"
+      },
+      "name": "rightred"
+    },
+    "rightyellow": {
+      "map": {
+        "0": "yellowarrowright"
+      },
+      "name": "rightyellow"
+    },
+    "rightgreen": {
+      "map": {
+        "0": "greenarrowright"
+      },
+      "name": "rightgreen"
+    },
+    "aheadred": {
+      "map": {
+        "0": "redarrowahead"
+      },
+      "name": "aheadred"
+    },
+    "aheadyellow": {
+      "map": {
+        "0": "yellowarrowahead"
+      },
+      "name": "aheadyellow"
+    },
+    "aheadgreen": {
+      "map": {
+        "0": "greenarrowahead"
+      },
+      "name": "aheadgreen"
+    },
+    "bikered": {
+      "map": {
+        "0": "redbike"
+      },
+      "name": "bikered"
+    },
+    "bikegreen": {
+      "map": {
+        "0": "greenbike"
+      },
+      "name": "bikegreen"
+    },
+    "uturnred": {
+      "map": {
+        "0": "reduturn"
+      },
+      "name": "uturnred"
+    },
+    "uturnyellow": {
+      "map": {
+        "0": "yellowuturn"
+      },
+      "name": "uturnyellow"
+    },
+    "uturngreen": {
+      "map": {
+        "0": "greenuturn"
+      },
+      "name": "uturngreen"
+    },
+    "flashsolidred": {
+      "map": {
+        "0": "flashredsolid"
+      },
+      "name": "flashsolidred"
+    },
+    "flashsolidyellow": {
+      "map": {
+        "0": "flashsolidyellow"
+      },
+      "name": "flashsolidyellow"
+    },
+    "flashsolidgreen": {
+      "map": {
+        "0": "flashgreensolid"
+      },
+      "name": "flashsolidgreen"
+    },
+    "flashaheadred": {
+      "map": {
+        "0": "flashaheadred"
+      },
+      "name": "flashaheadred"
+    },
+    "flashyellowahead": {
+      "map": {
+        "0": "flashyellowahead"
+      },
+      "name": "flashyellowahead"
+    },
+    "flashgreenahead": {
+      "map": {
+        "0": "flashgreenahead"
+      },
+      "name": "flashgreenahead"
+    },
+    "flashyellowleft": {
+      "map": {
+        "0": "flashyellowleft"
+      },
+      "name": "flashyellowleft"
+    },
+    "flashredright": {
+      "map": {
+        "0": "flashrightred"
+      },
+      "name": "flashredright"
+    },
+    "flashyellowright": {
+      "map": {
+        "0": "flashyellowright"
+      },
+      "name": "flashyellowright"
+    },
+    "flashredbike": {
+      "map": {
+        "0": "flashredbike"
+      },
+      "name": "flashredbike"
+    },
+    "flashyellowbike": {
+      "map": {
+        "0": "flashyellowbike"
+      },
+      "name": "flashyellowbike"
+    },
+    "flashreduturn": {
+      "map": {
+        "0": "flashredturn"
+      },
+      "name": "flashreduturn"
+    },
+    "flashyellowuturn": {
+      "map": {
+        "0": "flashyellowuturn"
+      },
+      "name": "flashyellowuturn"
+    },
+    "bikyellow": {
+      "map": {
+        "0": "yellowbike"
+      },
+      "name": "bikyellow"
+    },
+    "flashredleft": {
+      "map": {
+        "0": "flashredleft"
+      },
+      "name": "flashredleft"
+    },
+    "flashredahead": {
+      "map": {
+        "0": "flashaheadred"
+      },
+      "name": "flashredahead"
+    },
+    "flashyellowalt": {
+      "map": {
+        "0": "flashyellowalt"
+      },
+      "name": "flashyellowalt"
+    }
+  }
+}

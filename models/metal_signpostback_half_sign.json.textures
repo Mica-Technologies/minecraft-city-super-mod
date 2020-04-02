@@ -1,0 +1,256 @@
+{
+  "mappings": {
+    "default": {
+      "map": {
+        "0": "metal",
+        "1": "sidewalk-closed-use-other-side"
+      },
+      "name": "default"
+    },
+    "sidewalkclosed": {
+      "map": {
+        "0": "metal",
+        "1": "sidewalk-closed-use-other-side"
+      },
+      "name": "sidewalkclosed"
+    },
+    "fourway": {
+      "map": {
+        "0": "metal",
+        "1": "r1-3.eps"
+      },
+      "name": "fourway"
+    },
+    "allway": {
+      "map": {
+        "0": "metal",
+        "1": "r1-4.eps"
+      },
+      "name": "allway"
+    },
+    "alt": {
+      "map": {
+        "0": "metal",
+        "1": "m4-1a.eps"
+      },
+      "name": "alt"
+    },
+    "north": {
+      "map": {
+        "0": "metal",
+        "1": "m3-1.eps"
+      },
+      "name": "north"
+    },
+    "south": {
+      "map": {
+        "0": "metal",
+        "1": "m3-3.eps"
+      },
+      "name": "south"
+    },
+    "east": {
+      "map": {
+        "0": "metal",
+        "1": "m3-2.eps"
+      },
+      "name": "east"
+    },
+    "west": {
+      "map": {
+        "0": "metal",
+        "1": "m3-4.eps"
+      },
+      "name": "west"
+    },
+    "jct": {
+      "map": {
+        "0": "metal",
+        "1": "m2-1.eps"
+      },
+      "name": "jct"
+    },
+    "alternate": {
+      "map": {
+        "0": "metal",
+        "1": "m4-1.eps"
+      },
+      "name": "alternate"
+    },
+    "bypass": {
+      "map": {
+        "0": "metal",
+        "1": "m4-2.eps"
+      },
+      "name": "bypass"
+    },
+    "business": {
+      "map": {
+        "0": "metal",
+        "1": "m4-3.eps"
+      },
+      "name": "business"
+    },
+    "truck": {
+      "map": {
+        "0": "metal",
+        "1": "m4-4.eps"
+      },
+      "name": "truck"
+    },
+    "to": {
+      "map": {
+        "0": "metal",
+        "1": "m4-5.eps"
+      },
+      "name": "to"
+    },
+    "end": {
+      "map": {
+        "0": "metal",
+        "1": "m4-6.eps"
+      },
+      "name": "end"
+    },
+    "temporary": {
+      "map": {
+        "0": "metal",
+        "1": "m4-7.eps"
+      },
+      "name": "temporary"
+    },
+    "aheadsharpleft": {
+      "map": {
+        "0": "metal",
+        "1": "m5-1.eps"
+      },
+      "name": "aheadsharpleft"
+    },
+    "aheadsharpright": {
+      "map": {
+        "0": "metal",
+        "1": "m5-1a.eps"
+      },
+      "name": "aheadsharpright"
+    },
+    "aheadslightleft": {
+      "map": {
+        "0": "metal",
+        "1": "m5-2.eps"
+      },
+      "name": "aheadslightleft"
+    },
+    "aheadslightright": {
+      "map": {
+        "0": "metal",
+        "1": "m5-2a.eps"
+      },
+      "name": "aheadslightright"
+    },
+    "left": {
+      "map": {
+        "0": "metal",
+        "1": "m6-1a.eps"
+      },
+      "name": "left"
+    },
+    "right": {
+      "map": {
+        "0": "metal",
+        "1": "m6-1.eps"
+      },
+      "name": "right"
+    },
+    "slightleft": {
+      "map": {
+        "0": "metal",
+        "1": "m6-2a.eps"
+      },
+      "name": "slightleft"
+    },
+    "slightright": {
+      "map": {
+        "0": "metal",
+        "1": "m6-2.eps"
+      },
+      "name": "slightright"
+    },
+    "ahead": {
+      "map": {
+        "0": "metal",
+        "1": "m6-3.eps"
+      },
+      "name": "ahead"
+    },
+    "leftright": {
+      "map": {
+        "0": "metal",
+        "1": "m6-4.eps"
+      },
+      "name": "leftright"
+    },
+    "downleftupright": {
+      "map": {
+        "0": "metal",
+        "1": "m6-5.eps"
+      },
+      "name": "downleftupright"
+    },
+    "upleftdownright": {
+      "map": {
+        "0": "metal",
+        "1": "m6-5a.eps"
+      },
+      "name": "upleftdownright"
+    },
+    "upleft": {
+      "map": {
+        "0": "metal",
+        "1": "m6-6a.eps"
+      },
+      "name": "upleft"
+    },
+    "upright": {
+      "map": {
+        "0": "metal",
+        "1": "m6-6.eps"
+      },
+      "name": "upright"
+    },
+    "upslightright": {
+      "map": {
+        "0": "metal",
+        "1": "m6-7.eps"
+      },
+      "name": "upslightright"
+    },
+    "upslightleft": {
+      "map": {
+        "0": "metal",
+        "1": "m6-7a.eps"
+      },
+      "name": "upslightleft"
+    },
+    "aheadleft": {
+      "map": {
+        "0": "metal",
+        "1": "m6-8a.eps"
+      },
+      "name": "aheadleft"
+    },
+    "aheadright": {
+      "map": {
+        "0": "metal",
+        "1": "m6-8.eps"
+      },
+      "name": "aheadright"
+    },
+    "aheadleftright": {
+      "map": {
+        "0": "metal",
+        "1": "m6-9.eps"
+      },
+      "name": "aheadleftright"
+    }
+  }
+}

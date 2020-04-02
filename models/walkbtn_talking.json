@@ -1,0 +1,21 @@
+{
+	"credit": "Made with Blockbench",
+	"textures": {
+		"0": "mclamod:blocks/walkbtn_talking",
+		"particle": "mclamod:blocks/walkbtn_talking"
+	},
+	"elements": [
+		{
+			"from": [5, 4, 15.99],
+			"to": [11, 15, 16],
+			"faces": {
+				"north": {"uv": [4.688, 0, 11.125, 16], "texture": "#0"}
+			}
+		}
+	],
+	"display": {
+		"gui": {
+			"rotation": [0, 180, 0]
+		}
+	}
+}

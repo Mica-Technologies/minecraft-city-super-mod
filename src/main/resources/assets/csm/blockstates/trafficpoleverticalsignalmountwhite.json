@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:trafficpoleverticalsignalmountwhite"
+    },
+    "facing=north": {
+      "model": "csm:trafficpoleverticalsignalmountwhite"
+    },
+    "facing=east": {
+      "model": "csm:trafficpoleverticalsignalmountwhite",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:trafficpoleverticalsignalmountwhite",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:trafficpoleverticalsignalmountwhite",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:trafficpoleverticalsignalmountwhite",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:trafficpoleverticalsignalmountwhite",
+      "x": 90
+    }
+  }
+}

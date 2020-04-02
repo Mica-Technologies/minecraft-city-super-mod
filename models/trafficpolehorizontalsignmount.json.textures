@@ -1,0 +1,39 @@
+{
+  "mappings": {
+    "tan": {
+      "map": {
+        "0": "metal_mattetan",
+        "1": "metal"
+      },
+      "name": "tan"
+    },
+    "default": {
+      "map": {
+        "0": "metal_silver",
+        "1": "metal"
+      },
+      "name": "default"
+    },
+    "white": {
+      "map": {
+        "0": "metal_mattewhite",
+        "1": "metal"
+      },
+      "name": "white"
+    },
+    "black": {
+      "map": {
+        "0": "metal_black",
+        "1": "metal"
+      },
+      "name": "black"
+    },
+    "unpainted": {
+      "map": {
+        "0": "metal_white",
+        "1": "metal"
+      },
+      "name": "unpainted"
+    }
+  }
+}

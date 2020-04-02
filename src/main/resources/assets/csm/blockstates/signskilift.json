@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:signskilift"
+    },
+    "facing=north": {
+      "model": "csm:signskilift"
+    },
+    "facing=east": {
+      "model": "csm:signskilift",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:signskilift",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:signskilift",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:signskilift",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:signskilift",
+      "x": 90
+    }
+  }
+}

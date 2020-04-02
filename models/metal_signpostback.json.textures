@@ -1,0 +1,16 @@
+{
+  "mappings": {
+    "default": {
+      "map": {
+        "0": "metal"
+      },
+      "name": "default"
+    },
+    "signmetalpost": {
+      "map": {
+        "0": "metal"
+      },
+      "name": "signmetalpost"
+    }
+  }
+}

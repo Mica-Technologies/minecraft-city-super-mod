@@ -1,0 +1,109 @@
+Change setLightLevel(1F) to setLightLevel(0F) 
+
+AND
+
+Remove import net.minecraft.world.chunk.*;
+
+AND
+
+REPLACE createBlockState, getStateFromMeta, getMetaFromState and getStateForPlacement with the following:
+
+public static final PropertyBool POWERED = PropertyBool.create("powered");
+
+		@Override
+    public void neighborChanged(IBlockState state, World world, BlockPos pos, Block blockIn, BlockPos p_189540_5_) {
+        int powered = world.isBlockIndirectlyGettingPowered(pos);
+        world.setBlockState(pos, state.withProperty(POWERED, powered > 0), 3);
+    }
+
+    @Override
+    public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
+        world.setBlockState(pos, state.withProperty(FACING, getFacingFromEntity(pos, placer)), 2);
+    }
+
+    public static EnumFacing getFacingFromEntity(BlockPos clickedBlock, EntityLivingBase entity) {
+        return EnumFacing.getFacingFromVector(
+            (float) (entity.posX - clickedBlock.getX()),
+            (float) (entity.posY - clickedBlock.getY()),
+            (float) (entity.posZ - clickedBlock.getZ()));
+    }
+
+    @Override
+    public IBlockState getStateFromMeta(int meta) {
+        return getDefaultState()
+                .withProperty(FACING, EnumFacing.getFront(meta & 7))
+                .withProperty(POWERED, (meta & 8) != 0);
+    }
+
+    @Override
+    public int getMetaFromState(IBlockState state) {
+        return state.getValue(FACING).getIndex() + (state.getValue(POWERED) ? 8 : 0);
+    }
+
+    @Override
+    protected BlockStateContainer createBlockState() {
+        return new BlockStateContainer(this, FACING, POWERED);
+    }
+
+    @Override
+    public int getLightValue(IBlockState state, IBlockAccess world, BlockPos pos){
+    	return state.getValue(POWERED) == true ? 15 : 0;
+    }
+
+
+
+FOR BLOCKSTATE:
+
+{
+  "variants": {
+    "normal": {
+      "model": "csm:tlvsolidred"
+    },
+    "facing=north,powered=true": {
+      "model": "csm:tlvsolidred"
+    },
+    "facing=east,powered=true": {
+      "model": "csm:tlvsolidred",
+      "y": 90
+    },
+    "facing=south,powered=true": {
+      "model": "csm:tlvsolidred",
+      "y": 180
+    },
+    "facing=west,powered=true": {
+      "model": "csm:tlvsolidred",
+      "y": 270
+    },
+    "facing=up,powered=true": {
+      "model": "csm:tlvsolidred",
+      "x": 270
+    },
+    "facing=down,powered=true": {
+      "model": "csm:tlvsolidred",
+      "x": 90
+    },
+    "facing=north,powered=false": {
+      "model": "csm:tlvoff"
+    },
+    "facing=east,powered=false": {
+      "model": "csm:tlvoff",
+      "y": 90
+    },
+    "facing=south,powered=false": {
+      "model": "csm:tlvoff",
+      "y": 180
+    },
+    "facing=west,powered=false": {
+      "model": "csm:tlvoff",
+      "y": 270
+    },
+    "facing=up,powered=false": {
+      "model": "csm:tlvoff",
+      "x": 270
+    },
+    "facing=down,powered=false": {
+      "model": "csm:tlvoff",
+      "x": 90
+    }
+  }
+}

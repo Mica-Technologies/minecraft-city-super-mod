@@ -1,0 +1,22 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:tlg"
+    },
+    "facing=north": {
+      "model": "csm:tlg"
+    },
+    "facing=east": {
+      "model": "csm:tlg",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:tlg",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:tlg",
+      "y": 270
+    }
+  }
+}

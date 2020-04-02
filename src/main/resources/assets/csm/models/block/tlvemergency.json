@@ -1,0 +1,10 @@
+{
+  "parent": "csm:custom/emergencysignalvertical",
+  "textures": {
+    "all": "csm:blocks/flashsolidyellow",
+    "particle": "csm:blocks/flashsolidyellow",
+    "0": "csm:blocks/solidoff",
+    "1": "csm:blocks/solidoff",
+    "2": "csm:blocks/flashsolidyellow"
+  }
+}

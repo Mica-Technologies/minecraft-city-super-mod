@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:wheelcok_et70wp_r"
+    },
+    "facing=north": {
+      "model": "csm:wheelcok_et70wp_r"
+    },
+    "facing=east": {
+      "model": "csm:wheelcok_et70wp_r",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:wheelcok_et70wp_r",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:wheelcok_et70wp_r",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:wheelcok_et70wp_r",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:wheelcok_et70wp_r",
+      "x": 90
+    }
+  }
+}

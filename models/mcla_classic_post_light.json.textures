@@ -1,0 +1,10 @@
+{
+  "mappings": {
+    "default": {
+      "map": {
+        "0": "mcla_classic_post_light"
+      },
+      "name": "default"
+    }
+  }
+}

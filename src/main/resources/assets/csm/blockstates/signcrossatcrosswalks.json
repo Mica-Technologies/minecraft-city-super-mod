@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:signcrossatcrosswalks"
+    },
+    "facing=north": {
+      "model": "csm:signcrossatcrosswalks"
+    },
+    "facing=east": {
+      "model": "csm:signcrossatcrosswalks",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:signcrossatcrosswalks",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:signcrossatcrosswalks",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:signcrossatcrosswalks",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:signcrossatcrosswalks",
+      "x": 90
+    }
+  }
+}

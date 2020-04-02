@@ -1,0 +1,10 @@
+{
+  "mappings": {
+    "default": {
+      "map": {
+        "0": "ci_navion_alt"
+      },
+      "name": "default"
+    }
+  }
+}

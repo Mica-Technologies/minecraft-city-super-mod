@@ -1,0 +1,22 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:flashyrl"
+    },
+    "facing=north": {
+      "model": "csm:flashyrl"
+    },
+    "facing=east": {
+      "model": "csm:flashyrl",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:flashyrl",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:flashyrl",
+      "y": 270
+    }
+  }
+}

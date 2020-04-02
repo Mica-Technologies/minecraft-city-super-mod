@@ -1,0 +1,38 @@
+{
+	"credit": "Made with Blockbench",
+	"textures": {
+		"0": "forge:blocks/wheelock_e50_speakerstrobe_red",
+		"particle": "forge:blocks/wheelock_e50_speakerstrobe_red"
+	},
+	"elements": [
+		{
+			"from": [3, 4, 14],
+			"to": [13, 16, 16],
+			"faces": {
+				"north": {"uv": [3.25, 1.5, 12.699, 14.442], "texture": "#0"},
+				"east": {"uv": [3.375, 12, 4.20469, 12.55], "texture": "#0"},
+				"south": {"uv": [3.625, 11.25, 4.13594, 13.45547], "texture": "#0"},
+				"west": {"uv": [3.5, 12.125, 4.00703, 13.65156], "texture": "#0"},
+				"up": {"uv": [3.75, 11.875, 4.35156, 13.75], "rotation": 180, "texture": "#0"},
+				"down": {"uv": [3.75, 11.5, 4.25, 13.625], "rotation": 180, "texture": "#0"}
+			}
+		},
+		{
+			"from": [3.5, 13.3, 13],
+			"to": [12.5, 15.3, 14],
+			"faces": {
+				"north": {"uv": [4, 2.125, 11.77344, 4.66016], "texture": "#0"},
+				"east": {"uv": [4, 2.125, 11.77344, 4.66016], "texture": "#0"},
+				"south": {"uv": [4, 2.125, 11.77344, 4.66016], "texture": "#0"},
+				"west": {"uv": [4, 2.125, 11.77344, 4.66016], "texture": "#0"},
+				"up": {"uv": [4, 2.125, 11.77344, 4.66016], "rotation": 180, "texture": "#0"},
+				"down": {"uv": [4, 2.125, 11.77344, 4.66016], "rotation": 180, "texture": "#0"}
+			}
+		}
+	],
+	"display": {
+		"gui": {
+			"rotation": [0, 180, 0]
+		}
+	}
+}

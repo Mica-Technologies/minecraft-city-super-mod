@@ -1,0 +1,11 @@
+{
+  "_fv": 5,
+  "_type": "tab",
+  "definition": {
+    "name": "CSM: Office",
+    "icon": {
+      "value": "CUSTOM:Signpostroadwork"
+    },
+    "showSearch": false
+  }
+}

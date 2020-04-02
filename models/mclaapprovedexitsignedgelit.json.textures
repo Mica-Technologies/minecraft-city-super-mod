@@ -1,0 +1,68 @@
+{
+  "mappings": {
+    "exitleft": {
+      "map": {
+        "0": "metal_silver",
+        "1": "mclaapprovedexitsignleftarrow",
+        "2": "mclaapprovedexitsignrightarrow"
+      },
+      "name": "exitleft"
+    },
+    "stairsleft": {
+      "map": {
+        "0": "metal_silver",
+        "1": "mclaapprovedstairssignleftarrow",
+        "2": "mclaapprovedstairssignrightarrow"
+      },
+      "name": "stairsleft"
+    },
+    "default": {
+      "map": {
+        "0": "metal_silver",
+        "1": "mclaapprovedexitsignnoarrow",
+        "2": "mclaapprovedexitsignnoarrow"
+      },
+      "name": "default"
+    },
+    "stairs": {
+      "map": {
+        "0": "metal_silver",
+        "1": "mclaapprovedstairssignnoarrow",
+        "2": "mclaapprovedstairssignnoarrow"
+      },
+      "name": "stairs"
+    },
+    "stairsright": {
+      "map": {
+        "0": "metal_silver",
+        "1": "mclaapprovedstairssignrightarrow",
+        "2": "mclaapprovedstairssignleftarrow"
+      },
+      "name": "stairsright"
+    },
+    "stairsdual": {
+      "map": {
+        "0": "metal_silver",
+        "1": "mclaapprovedstairssigndualarrow",
+        "2": "mclaapprovedstairssigndualarrow"
+      },
+      "name": "stairsdual"
+    },
+    "exitright": {
+      "map": {
+        "0": "metal_silver",
+        "1": "mclaapprovedexitsignrightarrow",
+        "2": "mclaapprovedexitsignleftarrow"
+      },
+      "name": "exitright"
+    },
+    "exitdual": {
+      "map": {
+        "0": "metal_silver",
+        "1": "mclaapprovedexitsigndualarrow",
+        "2": "mclaapprovedexitsigndualarrow"
+      },
+      "name": "exitdual"
+    }
+  }
+}

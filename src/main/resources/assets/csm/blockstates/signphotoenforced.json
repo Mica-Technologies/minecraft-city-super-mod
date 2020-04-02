@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:signphotoenforced"
+    },
+    "facing=north": {
+      "model": "csm:signphotoenforced"
+    },
+    "facing=east": {
+      "model": "csm:signphotoenforced",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:signphotoenforced",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:signphotoenforced",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:signphotoenforced",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:signphotoenforced",
+      "x": 90
+    }
+  }
+}

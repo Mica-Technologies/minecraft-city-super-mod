@@ -1,0 +1,9 @@
+{
+  "parent": "csm:custom/metal_signpostback_diamond_sign",
+  "textures": {
+    "all": "csm:blocks/800px-texas_w17-10t.svg",
+    "particle": "csm:blocks/800px-texas_w17-10t.svg",
+    "0": "csm:blocks/metal",
+    "1": "csm:blocks/800px-texas_w17-10t.svg"
+  }
+}

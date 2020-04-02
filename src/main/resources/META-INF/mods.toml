@@ -1,0 +1,24 @@
+modLoader="javafml"
+loaderVersion="[28,)"
+
+[[mods]]
+modId="csm"
+version="4.1"
+displayName="The MCLA Mod"
+credits="Created using mod maker MCreator - https://mcreator.net/about"
+displayURL="https://www.cityofmcla.com"
+logoFile="logo.png"
+authors="Brandon Holt (rinrincodes) and Alex Hawk (hawka97), MCreator"
+description='''
+MCLA's official mod of everything!
+'''
+
+[[dependencies.csm]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.14.4]"
+    ordering="NONE"
+    side="BOTH"
+
+
+

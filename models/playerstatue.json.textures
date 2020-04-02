@@ -1,0 +1,25 @@
+{
+  "mappings": {
+    "papaginos": {
+      "map": {
+        "0": "skin_papaginos",
+        "1": "statue_base"
+      },
+      "name": "papaginos"
+    },
+    "default": {
+      "map": {
+        "0": "skin_thatcrazypandog",
+        "1": "statue_base"
+      },
+      "name": "default"
+    },
+    "hawka97": {
+      "map": {
+        "0": "skin_hawka97",
+        "1": "statue_base"
+      },
+      "name": "hawka97"
+    }
+  }
+}

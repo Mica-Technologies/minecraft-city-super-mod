@@ -1,0 +1,10 @@
+{
+  "parent": "csm:custom/yellowtrafficlightvertical",
+  "textures": {
+    "all": "csm:blocks/yellowarrowuplefty",
+    "particle": "csm:blocks/yellowarrowuplefty",
+    "0": "csm:blocks/solidoffy",
+    "1": "csm:blocks/yellowarrowuplefty",
+    "2": "csm:blocks/solidoffy"
+  }
+}

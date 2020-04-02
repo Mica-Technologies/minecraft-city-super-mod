@@ -1,0 +1,21 @@
+EST Integrity: 80
+Simplex 2901: 380
+Mills Voice Evac: 755
+Gentex GOS: 80
+Smoke Alarm: 80
+Nest Protect: 140
+Simplex 4030 Code 4/4: 120
+Old Simplex Voice Evac: 1070
+TrueAlert: 80
+New Simplex Voice Evac: 1100
+SpectrAlert Advance: 80
+Wheelock AS: 80
+KAC: 320
+LMS Voice Evac: 700
+SAE: 40
+Simplex 4051: 40
+Adaptahorn Code 4/4: 180
+7002t Med: 45
+7002t Norm/fast: 8
+7002t slow: 115
+7002t broken: 20

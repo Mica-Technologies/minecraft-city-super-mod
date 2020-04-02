@@ -1,0 +1,8 @@
+{
+  "parent": "csm:custom/rss",
+  "textures": {
+    "all": "csm:blocks/rss",
+    "particle": "csm:blocks/rss",
+    "0": "csm:blocks/rss"
+  }
+}

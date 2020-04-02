@@ -1,0 +1,746 @@
+{
+  "mappings": {
+    "default": {
+      "map": {
+        "0": "metal",
+        "1": "curvy-road-sign"
+      },
+      "name": "default"
+    },
+    "curvyroad": {
+      "map": {
+        "0": "metal",
+        "1": "curvy-road-sign"
+      },
+      "name": "curvyroad"
+    },
+    "rwrk1000": {
+      "map": {
+        "0": "metal",
+        "1": "road-work-sign-x-w20-1-c"
+      },
+      "name": "rwrk1000"
+    },
+    "rwrk500": {
+      "map": {
+        "0": "metal",
+        "1": "road-work-sign-x-w20-1-b"
+      },
+      "name": "rwrk500"
+    },
+    "rwrk": {
+      "map": {
+        "0": "metal",
+        "1": "road-work-ahead-sign-x-w20-1-a"
+      },
+      "name": "rwrk"
+    },
+    "stopahead": {
+      "map": {
+        "0": "metal",
+        "1": "stop-ahead-sign-x-w3-1"
+      },
+      "name": "stopahead"
+    },
+    "leftangle": {
+      "map": {
+        "0": "metal",
+        "1": "w1-1.eps"
+      },
+      "name": "leftangle"
+    },
+    "rightangle": {
+      "map": {
+        "0": "metal",
+        "1": "rightang"
+      },
+      "name": "rightangle"
+    },
+    "leftcurve": {
+      "map": {
+        "0": "metal",
+        "1": "w1-2.eps"
+      },
+      "name": "leftcurve"
+    },
+    "rightcurve": {
+      "map": {
+        "0": "metal",
+        "1": "rightcurve"
+      },
+      "name": "rightcurve"
+    },
+    "signalahead": {
+      "map": {
+        "0": "metal",
+        "1": "w3-3.eps"
+      },
+      "name": "signalahead"
+    },
+    "deadend": {
+      "map": {
+        "0": "metal",
+        "1": "mutcd_w14-1.svg"
+      },
+      "name": "deadend"
+    },
+    "nooutlet": {
+      "map": {
+        "0": "metal",
+        "1": "w14-2.eps"
+      },
+      "name": "nooutlet"
+    },
+    "roadsplit": {
+      "map": {
+        "0": "metal",
+        "1": "w12-1.eps"
+      },
+      "name": "roadsplit"
+    },
+    "speedhump": {
+      "map": {
+        "0": "metal",
+        "1": "w17-1.eps"
+      },
+      "name": "speedhump"
+    },
+    "truck": {
+      "map": {
+        "0": "metal",
+        "1": "w11-10.eps"
+      },
+      "name": "truck"
+    },
+    "firetruck": {
+      "map": {
+        "0": "metal",
+        "1": "w11-8.eps"
+      },
+      "name": "firetruck"
+    },
+    "pedestrian": {
+      "map": {
+        "0": "metal",
+        "1": "w11-2.eps"
+      },
+      "name": "pedestrian"
+    },
+    "bicycle": {
+      "map": {
+        "0": "metal",
+        "1": "w11-1.eps"
+      },
+      "name": "bicycle"
+    },
+    "dividedhighway": {
+      "map": {
+        "0": "metal",
+        "1": "w6-1a.eps"
+      },
+      "name": "dividedhighway"
+    },
+    "dividedhighwayends": {
+      "map": {
+        "0": "metal",
+        "1": "w6-2a.eps"
+      },
+      "name": "dividedhighwayends"
+    },
+    "truckcrossing": {
+      "map": {
+        "0": "metal",
+        "1": "w8-6.eps"
+      },
+      "name": "truckcrossing"
+    },
+    "unevenlanes": {
+      "map": {
+        "0": "metal",
+        "1": "w8-11.eps"
+      },
+      "name": "unevenlanes"
+    },
+    "truckhill": {
+      "map": {
+        "0": "metal",
+        "1": "w7-1.eps"
+      },
+      "name": "truckhill"
+    },
+    "mergeleft": {
+      "map": {
+        "0": "metal",
+        "1": "w4-1.eps"
+      },
+      "name": "mergeleft"
+    },
+    "mergeright": {
+      "map": {
+        "0": "metal",
+        "1": "w4-1.eps2"
+      },
+      "name": "mergeright"
+    },
+    "addleft": {
+      "map": {
+        "0": "metal",
+        "1": "w4-3.eps6"
+      },
+      "name": "addleft"
+    },
+    "addright": {
+      "map": {
+        "0": "metal",
+        "1": "w4-3.eps"
+      },
+      "name": "addright"
+    },
+    "shiftleftsingle": {
+      "map": {
+        "0": "metal",
+        "1": "mutcd_cw1-4l.svg"
+      },
+      "name": "shiftleftsingle"
+    },
+    "shiftrightsingle": {
+      "map": {
+        "0": "metal",
+        "1": "1920px-mutcd_cw1-4r.svg"
+      },
+      "name": "shiftrightsingle"
+    },
+    "lowshoulder": {
+      "map": {
+        "0": "metal",
+        "1": "1920px-mutcd_cw8-9.svg"
+      },
+      "name": "lowshoulder"
+    },
+    "noshoulder": {
+      "map": {
+        "0": "metal",
+        "1": "1920px-mutcd_cw8-23.svg"
+      },
+      "name": "noshoulder"
+    },
+    "steelplateahead": {
+      "map": {
+        "0": "metal",
+        "1": "1920px-mutcd_cw8-24.svg"
+      },
+      "name": "steelplateahead"
+    },
+    "rwrkshiftleft2": {
+      "map": {
+        "0": "metal",
+        "1": "mutcd_cw1-4bl.svg"
+      },
+      "name": "rwrkshiftleft2"
+    },
+    "rwrkshiftright2": {
+      "map": {
+        "0": "metal",
+        "1": "mutcd_cw1-4br.svg"
+      },
+      "name": "rwrkshiftright2"
+    },
+    "rwrkstopahead": {
+      "map": {
+        "0": "metal",
+        "1": "mutcd_cw3-1.svg"
+      },
+      "name": "rwrkstopahead"
+    },
+    "rwrksignalahead": {
+      "map": {
+        "0": "metal",
+        "1": "mutcd_cw3-3.svg"
+      },
+      "name": "rwrksignalahead"
+    },
+    "bepreparedtostop": {
+      "map": {
+        "0": "metal",
+        "1": "mutcd_cw3-4.svg"
+      },
+      "name": "bepreparedtostop"
+    },
+    "rwrkflagger": {
+      "map": {
+        "0": "metal",
+        "1": "mutcd_cw20-7.svg"
+      },
+      "name": "rwrkflagger"
+    },
+    "rwrknewtrafficpatternahead": {
+      "map": {
+        "0": "metal",
+        "1": "mutcd_cw23-2.svg"
+      },
+      "name": "rwrknewtrafficpatternahead"
+    },
+    "hardleftshift": {
+      "map": {
+        "0": "metal",
+        "1": "w1-3.eps"
+      },
+      "name": "hardleftshift"
+    },
+    "hardrightshift": {
+      "map": {
+        "0": "metal",
+        "1": "w1-3a.eps"
+      },
+      "name": "hardrightshift"
+    },
+    "leftshirt": {
+      "map": {
+        "0": "metal",
+        "1": "w1-4.eps"
+      },
+      "name": "leftshirt"
+    },
+    "rightshift": {
+      "map": {
+        "0": "metal",
+        "1": "w1-4a.eps"
+      },
+      "name": "rightshift"
+    },
+    "threewayt": {
+      "map": {
+        "0": "metal",
+        "1": "w2-4.eps"
+      },
+      "name": "threewayt"
+    },
+    "fourway": {
+      "map": {
+        "0": "metal",
+        "1": "w2-1.eps"
+      },
+      "name": "fourway"
+    },
+    "yintersect": {
+      "map": {
+        "0": "metal",
+        "1": "w2-5.eps"
+      },
+      "name": "yintersect"
+    },
+    "yieldahead": {
+      "map": {
+        "0": "metal",
+        "1": "w3-2a.eps"
+      },
+      "name": "yieldahead"
+    },
+    "narrowbridge": {
+      "map": {
+        "0": "metal",
+        "1": "w5-2.eps"
+      },
+      "name": "narrowbridge"
+    },
+    "onelanebridge": {
+      "map": {
+        "0": "metal",
+        "1": "w5-3.eps"
+      },
+      "name": "onelanebridge"
+    },
+    "narrowbridgeinimg": {
+      "map": {
+        "0": "metal",
+        "1": "w5-2a.eps"
+      },
+      "name": "narrowbridgeinimg"
+    },
+    "playground": {
+      "map": {
+        "0": "metal",
+        "1": "w15-1.eps"
+      },
+      "name": "playground"
+    },
+    "bump": {
+      "map": {
+        "0": "metal",
+        "1": "w8-1.eps"
+      },
+      "name": "bump"
+    },
+    "dip": {
+      "map": {
+        "0": "metal",
+        "1": "w8-2.eps"
+      },
+      "name": "dip"
+    },
+    "pavementends": {
+      "map": {
+        "0": "metal",
+        "1": "w8-3.eps"
+      },
+      "name": "pavementends"
+    },
+    "softshoulder": {
+      "map": {
+        "0": "metal",
+        "1": "w8-4.eps"
+      },
+      "name": "softshoulder"
+    },
+    "slippery": {
+      "map": {
+        "0": "metal",
+        "1": "w8-5.eps"
+      },
+      "name": "slippery"
+    },
+    "fourteen4": {
+      "map": {
+        "0": "metal",
+        "1": "w12-2.eps"
+      },
+      "name": "fourteen4"
+    },
+    "cow": {
+      "map": {
+        "0": "metal",
+        "1": "w11-4.eps"
+      },
+      "name": "cow"
+    },
+    "deer": {
+      "map": {
+        "0": "metal",
+        "1": "w11-3.eps"
+      },
+      "name": "deer"
+    },
+    "tractor": {
+      "map": {
+        "0": "metal",
+        "1": "w11-5.eps"
+      },
+      "name": "tractor"
+    },
+    "roundabout": {
+      "map": {
+        "0": "metal",
+        "1": "w2-6.eps"
+      },
+      "name": "roundabout"
+    },
+    "twowaytraffic": {
+      "map": {
+        "0": "metal",
+        "1": "w6-3.eps"
+      },
+      "name": "twowaytraffic"
+    },
+    "hill": {
+      "map": {
+        "0": "metal",
+        "1": "w7-1a.eps"
+      },
+      "name": "hill"
+    },
+    "dividedrdstart": {
+      "map": {
+        "0": "metal",
+        "1": "w6-1.eps"
+      },
+      "name": "dividedrdstart"
+    },
+    "dividedroadend": {
+      "map": {
+        "0": "metal",
+        "1": "w6-2.eps"
+      },
+      "name": "dividedroadend"
+    },
+    "dividedroad": {
+      "map": {
+        "0": "metal",
+        "1": "w6-1b.eps"
+      },
+      "name": "dividedroad"
+    },
+    "eightgrade": {
+      "map": {
+        "0": "metal",
+        "1": "w7-1b.eps"
+      },
+      "name": "eightgrade"
+    },
+    "yleft": {
+      "map": {
+        "0": "metal",
+        "1": "w2-3a.eps"
+      },
+      "name": "yleft"
+    },
+    "yright": {
+      "map": {
+        "0": "metal",
+        "1": "w2-3.eps"
+      },
+      "name": "yright"
+    },
+    "left3": {
+      "map": {
+        "0": "metal",
+        "1": "w2-2a.eps"
+      },
+      "name": "left3"
+    },
+    "right3": {
+      "map": {
+        "0": "metal",
+        "1": "w2-2.eps"
+      },
+      "name": "right3"
+    },
+    "leftlaneends": {
+      "map": {
+        "0": "metal",
+        "1": "800px-delaware_w9-2r-de.svg"
+      },
+      "name": "leftlaneends"
+    },
+    "rightlaneends": {
+      "map": {
+        "0": "metal",
+        "1": "delaware_w9-2l-de.svg"
+      },
+      "name": "rightlaneends"
+    },
+    "hightidefloods": {
+      "map": {
+        "0": "metal",
+        "1": "800px-hidot_road_floods_during_high_tide.svg"
+      },
+      "name": "hightidefloods"
+    },
+    "newsignal": {
+      "map": {
+        "0": "metal",
+        "1": "mdot_w3-3b.svg"
+      },
+      "name": "newsignal"
+    },
+    "signalworkahead": {
+      "map": {
+        "0": "metal",
+        "1": "800px-virginia_w21-v17.svg"
+      },
+      "name": "signalworkahead"
+    },
+    "hairpinleft": {
+      "map": {
+        "0": "metal",
+        "1": "800px-mutcd_w1-11l.svg"
+      },
+      "name": "hairpinleft"
+    },
+    "loopright": {
+      "map": {
+        "0": "metal",
+        "1": "800px-mutcd_w1-15r.svg"
+      },
+      "name": "loopright"
+    },
+    "laneendsleft": {
+      "map": {
+        "0": "metal",
+        "1": "800px-mutcd_w4-2l.svg"
+      },
+      "name": "laneendsleft"
+    },
+    "finesdouble": {
+      "map": {
+        "0": "metal",
+        "1": "800px-mutcd-ca_c40a.svg"
+      },
+      "name": "finesdouble"
+    },
+    "lookbothwaystrolley": {
+      "map": {
+        "0": "metal",
+        "1": "800px-mutcd-ca_w82-1.svg"
+      },
+      "name": "lookbothwaystrolley"
+    },
+    "trolley": {
+      "map": {
+        "0": "metal",
+        "1": "800px-mutcd-ca_w82.svg"
+      },
+      "name": "trolley"
+    },
+    "hwintersection": {
+      "map": {
+        "0": "metal",
+        "1": "800px-texas_w2-1at.svg"
+      },
+      "name": "hwintersection"
+    },
+    "islands": {
+      "map": {
+        "0": "metal",
+        "1": "800px-texas_w2-6at.svg"
+      },
+      "name": "islands"
+    },
+    "rampsignal": {
+      "map": {
+        "0": "metal",
+        "1": "800px-texas_w2-7at.svg"
+      },
+      "name": "rampsignal"
+    },
+    "icebridge": {
+      "map": {
+        "0": "metal",
+        "1": "800px-texas_w8-13t.svg"
+      },
+      "name": "icebridge"
+    },
+    "lowaircraft": {
+      "map": {
+        "0": "metal",
+        "1": "800px-texas_w17-10t.svg"
+      },
+      "name": "lowaircraft"
+    },
+    "duststorm": {
+      "map": {
+        "0": "metal",
+        "1": "itd_w8-21.svg"
+      },
+      "name": "duststorm"
+    },
+    "blastingzone": {
+      "map": {
+        "0": "metal",
+        "1": "mutcd_cw22-1.svg"
+      },
+      "name": "blastingzone"
+    },
+    "busstop": {
+      "map": {
+        "0": "metal",
+        "1": "mutcd_s3-1_new.svg"
+      },
+      "name": "busstop"
+    },
+    "severestorm": {
+      "map": {
+        "0": "metal",
+        "1": "itd_w8-2.svg"
+      },
+      "name": "severestorm"
+    },
+    "rampclosedahead": {
+      "map": {
+        "0": "metal",
+        "1": "800px-virginia_w20-v12.svg"
+      },
+      "name": "rampclosedahead"
+    },
+    "alltrafficmergeright": {
+      "map": {
+        "0": "metal",
+        "1": "800px-virginia_w21-v9r.svg"
+      },
+      "name": "alltrafficmergeright"
+    },
+    "rampclosed": {
+      "map": {
+        "0": "metal",
+        "1": "800px-virginia_w20-v12.svg"
+      },
+      "name": "rampclosed"
+    },
+    "hairpinright": {
+      "map": {
+        "0": "metal",
+        "1": "mutcd_w1-11r.svg"
+      },
+      "name": "hairpinright"
+    },
+    "truckroll": {
+      "map": {
+        "0": "metal",
+        "1": "mutcd_w1-13r.svg"
+      },
+      "name": "truckroll"
+    },
+    "mergeleftend": {
+      "map": {
+        "0": "metal",
+        "1": "mutcd_w4-2r.svg"
+      },
+      "name": "mergeleftend"
+    },
+    "trainleft": {
+      "map": {
+        "0": "metal",
+        "1": "mutcd_w10-3l.svg"
+      },
+      "name": "trainleft"
+    },
+    "trainright": {
+      "map": {
+        "0": "metal",
+        "1": "mutcd_w10-3r.svg"
+      },
+      "name": "trainright"
+    },
+    "nosigns": {
+      "map": {
+        "0": "metal",
+        "1": "mutcd_w18-1.svg"
+      },
+      "name": "nosigns"
+    },
+    "watchemergency": {
+      "map": {
+        "0": "metal",
+        "1": "texas_w11-12t.svg"
+      },
+      "name": "watchemergency"
+    },
+    "roadends": {
+      "map": {
+        "0": "metal",
+        "1": "texas_w14-1t.svg"
+      },
+      "name": "roadends"
+    },
+    "unmarkedpavenment": {
+      "map": {
+        "0": "metal",
+        "1": "virginia_w8-v4.svg"
+      },
+      "name": "unmarkedpavenment"
+    },
+    "alltrafficmergeleft": {
+      "map": {
+        "0": "metal",
+        "1": "virginia_w21-v9l.svg"
+      },
+      "name": "alltrafficmergeleft"
+    },
+    "streetworkahead": {
+      "map": {
+        "0": "metal",
+        "1": "streetworkahead"
+      },
+      "name": "streetworkahead"
+    }
+  }
+}

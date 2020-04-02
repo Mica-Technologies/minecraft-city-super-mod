@@ -1,0 +1,26 @@
+{
+	"credit": "Made with Blockbench",
+	"textures": {
+		"0": "forge:blocks/ps2",
+		"particle": "forge:blocks/ps2"
+	},
+	"elements": [
+		{
+			"from": [4, 4, 14],
+			"to": [12, 16, 16],
+			"faces": {
+				"north": {"uv": [3, 1.063, 12.828, 14.982], "texture": "#0"},
+				"east": {"uv": [11.438, 5.875, 11.938, 7.625], "texture": "#0"},
+				"south": {"uv": [11.25, 5.063, 11.757, 6.017], "texture": "#0"},
+				"west": {"uv": [11.563, 5.25, 12.063, 7.276], "texture": "#0"},
+				"up": {"uv": [11.5, 5.625, 12, 7.5], "rotation": 180, "texture": "#0"},
+				"down": {"uv": [11.5, 5.438, 12, 7.563], "rotation": 180, "texture": "#0"}
+			}
+		}
+	],
+	"display": {
+		"gui": {
+			"rotation": [0, 180, 0]
+		}
+	}
+}

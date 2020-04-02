@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:streetsweepwed"
+    },
+    "facing=north": {
+      "model": "csm:streetsweepwed"
+    },
+    "facing=east": {
+      "model": "csm:streetsweepwed",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:streetsweepwed",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:streetsweepwed",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:streetsweepwed",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:streetsweepwed",
+      "x": 90
+    }
+  }
+}

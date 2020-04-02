@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:signtruck8grade"
+    },
+    "facing=north": {
+      "model": "csm:signtruck8grade"
+    },
+    "facing=east": {
+      "model": "csm:signtruck8grade",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:signtruck8grade",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:signtruck8grade",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:signtruck8grade",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:signtruck8grade",
+      "x": 90
+    }
+  }
+}

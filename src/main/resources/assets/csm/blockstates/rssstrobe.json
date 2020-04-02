@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:rssstrobe"
+    },
+    "facing=north": {
+      "model": "csm:rssstrobe"
+    },
+    "facing=east": {
+      "model": "csm:rssstrobe",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:rssstrobe",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:rssstrobe",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:rssstrobe",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:rssstrobe",
+      "x": 90
+    }
+  }
+}

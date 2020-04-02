@@ -1,0 +1,53 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:mclaparklight"
+    },
+    "facing=north,powered=false": {
+      "model": "csm:mclaparklight"
+    },
+    "facing=east,powered=false": {
+      "model": "csm:mclaparklight",
+      "y": 90
+    },
+    "facing=south,powered=false": {
+      "model": "csm:mclaparklight",
+      "y": 180
+    },
+    "facing=west,powered=false": {
+      "model": "csm:mclaparklight",
+      "y": 270
+    },
+    "facing=up,powered=false": {
+      "model": "csm:mclaparklight",
+      "x": 270
+    },
+    "facing=down,powered=false": {
+      "model": "csm:mclaparklight",
+      "x": 90
+    },
+    "facing=north,powered=true": {
+      "model": "csm:mclaparklight"
+    },
+    "facing=east,powered=true": {
+      "model": "csm:mclaparklight",
+      "y": 90
+    },
+    "facing=south,powered=true": {
+      "model": "csm:mclaparklight",
+      "y": 180
+    },
+    "facing=west,powered=true": {
+      "model": "csm:mclaparklight",
+      "y": 270
+    },
+    "facing=up,powered=true": {
+      "model": "csm:mclaparklight",
+      "x": 270
+    },
+    "facing=down,powered=true": {
+      "model": "csm:mclaparklight",
+      "x": 90
+    }
+  }
+}

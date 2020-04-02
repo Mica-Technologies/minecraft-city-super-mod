@@ -1,0 +1,10 @@
+{
+  "mappings": {
+    "default": {
+      "map": {
+        "0": "ge_evolve_large"
+      },
+      "name": "default"
+    }
+  }
+}

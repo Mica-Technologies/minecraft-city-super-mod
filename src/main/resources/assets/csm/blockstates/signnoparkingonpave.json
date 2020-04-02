@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:signnoparkingonpave"
+    },
+    "facing=north": {
+      "model": "csm:signnoparkingonpave"
+    },
+    "facing=east": {
+      "model": "csm:signnoparkingonpave",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:signnoparkingonpave",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:signnoparkingonpave",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:signnoparkingonpave",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:signnoparkingonpave",
+      "x": 90
+    }
+  }
+}

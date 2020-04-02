@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:lightupair"
+    },
+    "facing=north": {
+      "model": "csm:lightupair"
+    },
+    "facing=east": {
+      "model": "csm:lightupair",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:lightupair",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:lightupair",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:lightupair",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:lightupair",
+      "x": 90
+    }
+  }
+}

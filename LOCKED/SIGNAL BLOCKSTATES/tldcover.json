@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:tldcover"
+    },
+    "facing=north": {
+      "model": "csm:tldcover"
+    },
+    "facing=east": {
+      "model": "csm:tldcover",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:tldcover",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:tldcover",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:tldcover",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:tldcover",
+      "x": 90
+    }
+  }
+}

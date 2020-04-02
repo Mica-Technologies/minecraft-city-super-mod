@@ -1,0 +1,10 @@
+{
+  "parent": "csm:custom/metal_signpost_octagon_sign",
+  "textures": {
+    "all": "csm:blocks/stop_sign",
+    "particle": "csm:blocks/stop_sign",
+    "0": "csm:blocks/metal",
+    "1": "csm:blocks/stop_sign",
+    "missing": "csm:blocks/metal"
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:signdeer"
+    },
+    "facing=north": {
+      "model": "csm:signdeer"
+    },
+    "facing=east": {
+      "model": "csm:signdeer",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:signdeer",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:signdeer",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:signdeer",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:signdeer",
+      "x": 90
+    }
+  }
+}

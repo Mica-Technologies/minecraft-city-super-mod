@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:trafficpolehorizontalsinglemount"
+    },
+    "facing=north": {
+      "model": "csm:trafficpolehorizontalsinglemount"
+    },
+    "facing=east": {
+      "model": "csm:trafficpolehorizontalsinglemount",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:trafficpolehorizontalsinglemount",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:trafficpolehorizontalsinglemount",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:trafficpolehorizontalsinglemount",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:trafficpolehorizontalsinglemount",
+      "x": 90
+    }
+  }
+}

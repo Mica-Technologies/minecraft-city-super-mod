@@ -1,0 +1,9 @@
+{
+  "parent": "csm:custom/arcade_cabinet",
+  "textures": {
+    "all": "csm:blocks/arcade_cabinet",
+    "particle": "csm:blocks/arcade_cabinet",
+    "0": "csm:blocks/arcade_cabinet",
+    "1": "csm:blocks/cp_cabscreen"
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:signpostkeepright"
+    },
+    "facing=north": {
+      "model": "csm:signpostkeepright"
+    },
+    "facing=east": {
+      "model": "csm:signpostkeepright",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:signpostkeepright",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:signpostkeepright",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:signpostkeepright",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:signpostkeepright",
+      "x": 90
+    }
+  }
+}

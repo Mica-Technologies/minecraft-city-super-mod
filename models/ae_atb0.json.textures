@@ -1,0 +1,10 @@
+{
+  "mappings": {
+    "default": {
+      "map": {
+        "0": "ae_autobahn_atb0"
+      },
+      "name": "default"
+    }
+  }
+}

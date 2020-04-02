@@ -1,0 +1,11 @@
+{
+  "_fv": 5,
+  "_type": "tab",
+  "definition": {
+    "name": "CSM: Speakers",
+    "icon": {
+      "value": "CUSTOM:JBLC1"
+    },
+    "showSearch": false
+  }
+}

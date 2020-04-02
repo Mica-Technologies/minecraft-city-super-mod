@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:signredlightphoto"
+    },
+    "facing=north": {
+      "model": "csm:signredlightphoto"
+    },
+    "facing=east": {
+      "model": "csm:signredlightphoto",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:signredlightphoto",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:signredlightphoto",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:signredlightphoto",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:signredlightphoto",
+      "x": 90
+    }
+  }
+}

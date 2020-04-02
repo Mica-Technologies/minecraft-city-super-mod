@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:signshelter"
+    },
+    "facing=north": {
+      "model": "csm:signshelter"
+    },
+    "facing=east": {
+      "model": "csm:signshelter",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:signshelter",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:signshelter",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:signshelter",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:signshelter",
+      "x": 90
+    }
+  }
+}

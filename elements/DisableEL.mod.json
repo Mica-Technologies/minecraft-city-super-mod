@@ -1,0 +1,7 @@
+{
+  "_fv": 5,
+  "_type": "procedure",
+  "definition": {
+    "procedurexml": "<xml xmlns=\"http://www.w3.org/1999/xhtml\"><variables></variables><block type=\"event_trigger\" id=\"?r/j!W[G`(=vL6s5?f5d\" deletable=\"false\" x=\"40\" y=\"40\"><field name=\"trigger\">No additional trigger</field><next><block type=\"block_set_lightvalue\" id=\"=B8;l=c-s-HpfE{#X3`k\"><value name=\"lvalue\"><block type=\"math_number\" id=\"!eWWHCVuN5Nn7Dy8cmzA\"><field name=\"NUM\">0</field></block></value><next><block type=\"block_notify\" id=\"4-)[s1iQ-qm@$i0S2p_w\"><value name=\"x\"><block type=\"coord_x\" id=\"bEHy{6nIdZ{3jsWprwco\"></block></value><value name=\"y\"><block type=\"coord_y\" id=\"|u#VxgdB!G(Qx$$lz@Eb\"></block></value><value name=\"z\"><block type=\"coord_z\" id=\"|R6oBx1k~vcjG=E}zci4\"></block></value></block></next></block></next></block></xml>"
+  }
+}

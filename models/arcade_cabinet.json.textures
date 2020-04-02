@@ -1,0 +1,53 @@
+{
+  "mappings": {
+    "default": {
+      "map": {
+        "0": "arcade_cabinet",
+        "1": "asteroids_cabcreen"
+      },
+      "name": "default"
+    },
+    "tempest": {
+      "map": {
+        "0": "arcade_cabinet",
+        "1": "tempest_cabscreen"
+      },
+      "name": "tempest"
+    },
+    "galaga": {
+      "map": {
+        "0": "arcade_cabinet",
+        "1": "galaga_cabscreen"
+      },
+      "name": "galaga"
+    },
+    "bz": {
+      "map": {
+        "0": "arcade_cabinet",
+        "1": "bz_cabscreen"
+      },
+      "name": "bz"
+    },
+    "pacman": {
+      "map": {
+        "0": "arcade_cabinet",
+        "1": "pacman_cabscreen"
+      },
+      "name": "pacman"
+    },
+    "cp": {
+      "map": {
+        "0": "arcade_cabinet",
+        "1": "cp_cabscreen"
+      },
+      "name": "cp"
+    },
+    "miscmd": {
+      "map": {
+        "0": "arcade_cabinet",
+        "1": "miscmd_cabscreen"
+      },
+      "name": "miscmd"
+    }
+  }
+}

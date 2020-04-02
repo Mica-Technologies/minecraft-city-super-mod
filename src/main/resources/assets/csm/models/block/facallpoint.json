@@ -1,0 +1,8 @@
+{
+  "parent": "csm:custom/facallpoint",
+  "textures": {
+    "all": "csm:blocks/intnl_pull_station",
+    "particle": "csm:blocks/intnl_pull_station",
+    "0": "csm:blocks/intnl_pull_station"
+  }
+}

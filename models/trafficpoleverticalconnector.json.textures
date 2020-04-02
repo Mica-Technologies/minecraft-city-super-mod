@@ -1,0 +1,40 @@
+{
+  "mappings": {
+    "default": {
+      "map": {
+        "0": "metal_silver"
+      },
+      "name": "default"
+    },
+    "black": {
+      "map": {
+        "0": "metal_black"
+      },
+      "name": "black"
+    },
+    "tan": {
+      "map": {
+        "0": "metal_mattetan"
+      },
+      "name": "tan"
+    },
+    "white": {
+      "map": {
+        "0": "metal_mattewhite"
+      },
+      "name": "white"
+    },
+    "unpainted": {
+      "map": {
+        "0": "metal_white"
+      },
+      "name": "unpainted"
+    },
+    "concrete": {
+      "map": {
+        "0": "concrete_light_pole"
+      },
+      "name": "concrete"
+    }
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:signtowawayzone"
+    },
+    "facing=north": {
+      "model": "csm:signtowawayzone"
+    },
+    "facing=east": {
+      "model": "csm:signtowawayzone",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:signtowawayzone",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:signtowawayzone",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:signtowawayzone",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:signtowawayzone",
+      "x": 90
+    }
+  }
+}

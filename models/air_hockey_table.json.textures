@@ -1,0 +1,11 @@
+{
+  "mappings": {
+    "default": {
+      "map": {
+        "0": "air_hockey_table",
+        "1": "air_hockey_table_paddles"
+      },
+      "name": "default"
+    }
+  }
+}

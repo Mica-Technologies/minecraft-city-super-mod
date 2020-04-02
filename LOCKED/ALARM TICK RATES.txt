@@ -1,0 +1,12 @@
+FireAlarmTrueAlert - 75
+FASAE - 40
+KAC - 320
+FireAlarmLMSVoiceEvac - 700
+Simplex4050 - 40
+FireAlarmAdvance - 75
+FireAlarmVoiceEvac - 755
+FireAlarmSimplexVoiceEvac - 1100
+FireAlarmOldSimplexVE - 1070
+FireAlarm2901 - 380
+SmokeDetector - 75
+NestProtect - 140

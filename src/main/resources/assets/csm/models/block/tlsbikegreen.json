@@ -1,0 +1,8 @@
+{
+  "parent": "csm:custom/trafficlightsingle",
+  "textures": {
+    "all": "csm:blocks/greenbike",
+    "particle": "csm:blocks/greenbike",
+    "0": "csm:blocks/greenbike"
+  }
+}
