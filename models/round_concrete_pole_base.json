@@ -8,7 +8,7 @@
 		{
 			"name": "hexadecagon",
 			"from": [6.60761, 1, 0],
-			"to": [9.39239, 15, 14],
+			"to": [9.39239, 15, 16],
 			"rotation": {"angle": -45, "axis": "z", "origin": [8, 8, 1]},
 			"faces": {
 				"north": {"uv": [0, 0, 16, 16], "texture": "#0"},
@@ -22,7 +22,7 @@
 		{
 			"name": "hexadecagon",
 			"from": [6.60761, 1, 0],
-			"to": [9.39239, 15, 14],
+			"to": [9.39239, 15, 16],
 			"rotation": {"angle": -22.5, "axis": "z", "origin": [8, 8, 1]},
 			"faces": {
 				"north": {"uv": [0, 0, 16, 16], "texture": "#0"},
@@ -36,7 +36,7 @@
 		{
 			"name": "hexadecagon",
 			"from": [6.60761, 1, 0],
-			"to": [9.39239, 15, 14],
+			"to": [9.39239, 15, 16],
 			"rotation": {"angle": 0, "axis": "z", "origin": [8, 8, 1]},
 			"faces": {
 				"north": {"uv": [0, 0, 16, 16], "texture": "#0"},
@@ -50,7 +50,7 @@
 		{
 			"name": "hexadecagon",
 			"from": [6.60761, 1, 0],
-			"to": [9.39239, 15, 14],
+			"to": [9.39239, 15, 16],
 			"rotation": {"angle": 22.5, "axis": "z", "origin": [8, 8, 1]},
 			"faces": {
 				"north": {"uv": [0, 0, 16, 16], "texture": "#0"},
@@ -64,7 +64,7 @@
 		{
 			"name": "hexadecagon",
 			"from": [6.60761, 1, 0],
-			"to": [9.39239, 15, 14],
+			"to": [9.39239, 15, 16],
 			"rotation": {"angle": 45, "axis": "z", "origin": [8, 8, 1]},
 			"faces": {
 				"north": {"uv": [0, 0, 16, 16], "texture": "#0"},
@@ -78,7 +78,7 @@
 		{
 			"name": "hexadecagon",
 			"from": [1, 6.60761, 0],
-			"to": [15, 9.39239, 14],
+			"to": [15, 9.39239, 16],
 			"rotation": {"angle": -22.5, "axis": "z", "origin": [8, 8, 1]},
 			"faces": {
 				"north": {"uv": [0, 0, 16, 16], "texture": "#0"},
@@ -92,7 +92,7 @@
 		{
 			"name": "hexadecagon",
 			"from": [1, 6.60761, 0],
-			"to": [15, 9.39239, 14],
+			"to": [15, 9.39239, 16],
 			"rotation": {"angle": 0, "axis": "z", "origin": [8, 8, 1]},
 			"faces": {
 				"north": {"uv": [0, 0, 16, 16], "texture": "#0"},
@@ -106,7 +106,7 @@
 		{
 			"name": "hexadecagon",
 			"from": [1, 6.60761, 0],
-			"to": [15, 9.39239, 14],
+			"to": [15, 9.39239, 16],
 			"rotation": {"angle": 22.5, "axis": "z", "origin": [8, 8, 1]},
 			"faces": {
 				"north": {"uv": [0, 0, 16, 16], "texture": "#0"},
@@ -118,7 +118,6 @@
 			}
 		}
 	],
-	"display": {},
 	"groups": [
 		{
 			"name": "hexadecagon",
