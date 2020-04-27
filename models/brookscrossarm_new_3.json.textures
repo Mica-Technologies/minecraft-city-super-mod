@@ -2,7 +2,7 @@
   "mappings": {
     "default": {
       "map": {
-        "0": "mountingbrackets"
+        "0": "crossarms"
       },
       "name": "default"
     }
