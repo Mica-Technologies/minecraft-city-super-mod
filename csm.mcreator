@@ -9858,6 +9858,14 @@
       "compiles": true,
       "locked_code": false,
       "ids": {}
+    },
+    {
+      "name": "AppleIphoneSE2020",
+      "type": "item",
+      "sortid": 1123,
+      "compiles": true,
+      "locked_code": false,
+      "ids": {}
     }
   ],
   "variable_elements": [
@@ -10645,6 +10653,7 @@
       "tile.gt3red.name": "Gentex Commander 3 Red",
       "tile.tb2.name": "Thin Ballast 2",
       "tile.tlvaflashrightred.name": "Vertical Angle Flash Right Red",
+      "item.appleiphonese2020.name": "Apple iPhone SE (2020)",
       "tile.signupleftdownright.name": "Up Left/Down Right Sign",
       "itemGroup.tabmclaalarmstab": "CSM: Alarms (Other)",
       "tile.signramp35.name": "Sign Pole Ramp Speed 25 Sign",
