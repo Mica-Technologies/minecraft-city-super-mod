@@ -216,6 +216,12 @@ public class Elementscsm implements IFuelHandler, IWorldGenerator {
 		event.getRegistry().register(new net.minecraft.util.SoundEvent(sound72).setRegistryName(sound72));
 		ResourceLocation sound73 = new ResourceLocation("csm", "oldrecordplayer");
 		event.getRegistry().register(new net.minecraft.util.SoundEvent(sound73).setRegistryName(sound73));
+		ResourceLocation sound74 = new ResourceLocation("csm", "awful_notifier_ve");
+		event.getRegistry().register(new net.minecraft.util.SoundEvent(sound74).setRegistryName(sound74));
+		ResourceLocation sound75 = new ResourceLocation("csm", "notifier_voice_evac_alt2");
+		event.getRegistry().register(new net.minecraft.util.SoundEvent(sound75).setRegistryName(sound75));
+		ResourceLocation sound76 = new ResourceLocation("csm", "notifier_tornado_voice_evac");
+		event.getRegistry().register(new net.minecraft.util.SoundEvent(sound76).setRegistryName(sound76));
 	}
 
 	@Override

@@ -664,5 +664,32 @@
         "stream": false
       }
     ]
+  },
+  "awful_notifier_ve": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:awful_notifier_ve",
+        "stream": false
+      }
+    ]
+  },
+  "notifier_voice_evac_alt2": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:notifier_voice_evac_alt2",
+        "stream": false
+      }
+    ]
+  },
+  "notifier_tornado_voice_evac": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:notifier_tornado_voice_evac",
+        "stream": false
+      }
+    ]
   }
 }
