@@ -1,0 +1,11 @@
+{
+  "mappings": {
+    "default": {
+      "map": {
+        "0": "metal_white",
+        "1": "metal_mattewhite"
+      },
+      "name": "default"
+    }
+  }
+}
