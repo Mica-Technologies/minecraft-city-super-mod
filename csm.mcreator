@@ -7,7 +7,7 @@
       "name": "MCLARoadsTab",
       "type": "tab",
       "sortid": 1012,
-      "compiles": true,
+      "compiles": false,
       "locked_code": false,
       "ids": {}
     },
@@ -15,7 +15,7 @@
       "name": "MCLAAlarmsTab",
       "type": "tab",
       "sortid": 1013,
-      "compiles": true,
+      "compiles": false,
       "locked_code": false,
       "ids": {}
     },
@@ -2451,7 +2451,7 @@
       "name": "FireAlarmSpeaker",
       "type": "tab",
       "sortid": 1049,
-      "compiles": true,
+      "compiles": false,
       "locked_code": false,
       "ids": {}
     },
@@ -2459,7 +2459,7 @@
       "name": "FireAlarmHorn",
       "type": "tab",
       "sortid": 1050,
-      "compiles": true,
+      "compiles": false,
       "locked_code": false,
       "ids": {}
     },
@@ -2535,7 +2535,7 @@
       "name": "TrafficSignalsVertical",
       "type": "tab",
       "sortid": 1052,
-      "compiles": true,
+      "compiles": false,
       "locked_code": false,
       "ids": {}
     },
@@ -2551,7 +2551,7 @@
       "name": "TrafficSignalsHorizontal",
       "type": "tab",
       "sortid": 1053,
-      "compiles": true,
+      "compiles": false,
       "locked_code": false,
       "ids": {}
     },
@@ -2567,7 +2567,7 @@
       "name": "TrafficSignalsSingle",
       "type": "tab",
       "sortid": 1054,
-      "compiles": true,
+      "compiles": false,
       "locked_code": false,
       "ids": {}
     },
@@ -3415,7 +3415,7 @@
       "name": "TrafficSignalsDoghouse",
       "type": "tab",
       "sortid": 1055,
-      "compiles": true,
+      "compiles": false,
       "locked_code": false,
       "ids": {}
     },
@@ -11407,8 +11407,7 @@
     "dependants": [],
     "mcreatorDependencies": [],
     "currentGenerator": "1.12.2",
-    "usesProFeatures": false,
     "lockBaseModFiles": false
   },
-  "mcreatorVersion": 202000105419
+  "mcreatorVersion": 202000214217
 }
