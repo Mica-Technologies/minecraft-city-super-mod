@@ -10,30 +10,33 @@ import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraft.world.World;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.Rotation;
-import net.minecraft.util.Mirror;
+import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.BlockRenderLayer;
-import net.minecraft.item.ItemBlock;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemSlab;
 import net.minecraft.item.Item;
-import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.client.renderer.block.model.Variant;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.block.properties.PropertyDirection;
+import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.SoundType;
-import net.minecraft.block.BlockDirectional;
+import net.minecraft.block.BlockSlab;
 import net.minecraft.block.Block;
 
 import net.mcreator.csm.creativetab.TabMCLABuildingMaterialsTab;
 import net.mcreator.csm.ElementsCitySuperMod;
 
+import java.util.Random;
+
 @ElementsCitySuperMod.ModElement.Tag
 public class BlockBlackMetalSlab extends ElementsCitySuperMod.ModElement {
 	@GameRegistry.ObjectHolder("csm:blackmetalslab")
 	public static final Block block = null;
+	@GameRegistry.ObjectHolder("csm:blackmetalslab_double")
+	public static final Block block_slab_double = null;
 	public BlockBlackMetalSlab(ElementsCitySuperMod instance) {
 		super(instance, 731);
 	}
@@ -41,7 +44,8 @@ public class BlockBlackMetalSlab extends ElementsCitySuperMod.ModElement {
 	@Override
 	public void initElements() {
 		elements.blocks.add(() -> new BlockCustom().setRegistryName("blackmetalslab"));
-		elements.items.add(() -> new ItemBlock(block).setRegistryName(block.getRegistryName()));
+		elements.blocks.add(() -> new BlockCustom.Double().setRegistryName("blackmetalslab_double"));
+		elements.items.add(() -> new ItemSlab(block, (BlockSlab) block, (BlockSlab) block_slab_double).setRegistryName(block.getRegistryName()));
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -49,8 +53,7 @@ public class BlockBlackMetalSlab extends ElementsCitySuperMod.ModElement {
 	public void registerModels(ModelRegistryEvent event) {
 		ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(block), 0, new ModelResourceLocation("csm:blackmetalslab", "inventory"));
 	}
-	public static class BlockCustom extends Block {
-		public static final PropertyDirection FACING = BlockDirectional.FACING;
+	public static class BlockCustom extends BlockSlab {
 		public BlockCustom() {
 			super(Material.ROCK);
 			setUnlocalizedName("blackmetalslab");
@@ -61,68 +64,92 @@ public class BlockBlackMetalSlab extends ElementsCitySuperMod.ModElement {
 			setLightLevel(0F);
 			setLightOpacity(0);
 			setCreativeTab(TabMCLABuildingMaterialsTab.tab);
-			this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH));
+			IBlockState state = this.blockState.getBaseState().withProperty(VARIANT, BlockCustom.Variant.DEFAULT);
+			if (!this.isDouble())
+				state = state.withProperty(BlockSlab.HALF, EnumBlockHalf.BOTTOM);
+			this.setDefaultState(state);
+			this.useNeighborBrightness = !this.isDouble();
+		}
+		public static final PropertyEnum<BlockCustom.Variant> VARIANT = PropertyEnum.<BlockCustom.Variant>create("variant",
+				BlockCustom.Variant.class);
+		@Override
+		public Item getItemDropped(IBlockState state, Random rand, int fortune) {
+			return Item.getItemFromBlock(block);
 		}
 
-		@SideOnly(Side.CLIENT)
 		@Override
-		public BlockRenderLayer getBlockLayer() {
-			return BlockRenderLayer.CUTOUT_MIPPED;
-		}
-
-		@Override
-		public boolean isFullCube(IBlockState state) {
-			return false;
-		}
-
-		@Override
-		public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-			switch ((EnumFacing) state.getValue(BlockDirectional.FACING)) {
-				case SOUTH :
-				default :
-					return new AxisAlignedBB(1D, 0D, 1D, 0D, 0.5D, 0D);
-				case NORTH :
-					return new AxisAlignedBB(0D, 0D, 0D, 1D, 0.5D, 1D);
-				case WEST :
-					return new AxisAlignedBB(0D, 0D, 1D, 1D, 0.5D, 0D);
-				case EAST :
-					return new AxisAlignedBB(1D, 0D, 0D, 0D, 0.5D, 1D);
-				case UP :
-					return new AxisAlignedBB(0D, 1D, 0D, 1D, 0D, 0.5D);
-				case DOWN :
-					return new AxisAlignedBB(0D, 0D, 1D, 1D, 1D, 0.5D);
-			}
+		public ItemStack getItem(World worldIn, BlockPos pos, IBlockState state) {
+			return new ItemStack(block);
 		}
 
 		@Override
 		protected net.minecraft.block.state.BlockStateContainer createBlockState() {
-			return new net.minecraft.block.state.BlockStateContainer(this, new IProperty[]{FACING});
-		}
-
-		@Override
-		public IBlockState withRotation(IBlockState state, Rotation rot) {
-			return state.withProperty(FACING, rot.rotate((EnumFacing) state.getValue(FACING)));
-		}
-
-		@Override
-		public IBlockState withMirror(IBlockState state, Mirror mirrorIn) {
-			return state.withRotation(mirrorIn.toRotation((EnumFacing) state.getValue(FACING)));
+			return this.isDouble()
+					? new net.minecraft.block.state.BlockStateContainer(this, new IProperty[]{VARIANT})
+					: new net.minecraft.block.state.BlockStateContainer(this, new IProperty[]{HALF, VARIANT});
 		}
 
 		@Override
 		public IBlockState getStateFromMeta(int meta) {
-			return this.getDefaultState().withProperty(FACING, EnumFacing.getFront(meta));
+			if (this.isDouble()) {
+				return this.getDefaultState();
+			} else {
+				return this.getDefaultState().withProperty(HALF, BlockSlab.EnumBlockHalf.values()[meta % 2]);
+			}
 		}
 
 		@Override
 		public int getMetaFromState(IBlockState state) {
-			return ((EnumFacing) state.getValue(FACING)).getIndex();
+			if (this.isDouble()) {
+				return 0;
+			} else {
+				return state.getValue(HALF).ordinal();
+			}
 		}
 
 		@Override
-		public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta,
-				EntityLivingBase placer) {
-			return this.getDefaultState().withProperty(FACING, EnumFacing.getDirectionFromEntityLiving(pos, placer));
+		public String getUnlocalizedName(int meta) {
+			return super.getUnlocalizedName();
+		}
+
+		@Override
+		public IProperty<?> getVariantProperty() {
+			return VARIANT;
+		}
+
+		@Override
+		public Comparable<?> getTypeForItem(ItemStack stack) {
+			return BlockCustom.Variant.DEFAULT;
+		}
+
+		@Override
+		public boolean isDouble() {
+			return false;
+		}
+
+		@Override
+		public boolean doesSideBlockRendering(IBlockState state, IBlockAccess world, BlockPos pos, EnumFacing face) {
+			if (isDouble())
+				return true;
+			return super.doesSideBlockRendering(state, world, pos, face);
+		}
+		public enum Variant implements IStringSerializable {
+			DEFAULT;
+			public String getName() {
+				return "default";
+			}
+		}
+
+		public static class Double extends BlockCustom {
+			@Override
+			public boolean isDouble() {
+				return true;
+			}
+		}
+		@SideOnly(Side.CLIENT)
+		@Override
+		public BlockRenderLayer getBlockLayer() {
+			return BlockRenderLayer.CUTOUT_MIPPED;
 		}
 
 		@Override
