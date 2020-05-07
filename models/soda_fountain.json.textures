@@ -2,15 +2,9 @@
   "mappings": {
     "default": {
       "map": {
-        "0": "coke_machine"
+        "0": "soda_fountain"
       },
       "name": "default"
-    },
-    "pepsi": {
-      "map": {
-        "0": "pepsi_machine"
-      },
-      "name": "pepsi"
     }
   }
 }

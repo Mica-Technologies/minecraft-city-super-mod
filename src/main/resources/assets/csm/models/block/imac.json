@@ -2,6 +2,7 @@
   "parent": "csm:custom/imac",
   "textures": {
     "all": "csm:blocks/imac",
-    "particle": "csm:blocks/imac"
+    "particle": "csm:blocks/imac",
+    "0": "csm:blocks/imac"
   }
 }

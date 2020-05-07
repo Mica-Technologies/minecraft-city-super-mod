@@ -7,6 +7,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraft.item.ItemStack;
 import net.minecraft.creativetab.CreativeTabs;
 
+import net.mcreator.csm.block.BlockTLDSolidRed;
 import net.mcreator.csm.ElementsCitySuperMod;
 
 @ElementsCitySuperMod.ModElement.Tag

@@ -20,3 +20,7 @@ src/main/resources/assets/*/textures/items
 src/main/resources/assets/*/textures/models/armor
 src/main/resources/assets/*/textures/*.png
 src/main/resources/assets/*/sounds
+
+# OS Junk
+.DS_Store
+Thumbs.db
