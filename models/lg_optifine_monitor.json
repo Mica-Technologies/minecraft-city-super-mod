@@ -2,9 +2,7 @@
 	"credit": "Model made by Brandon Holt (RinRin Blissgreen)",
 	"texture_size": [512, 512],
 	"textures": {
-		"0": "done/imac",
-		"1": "done/apple_magic_keyboard",
-		"particle": "done/apple_magic_keyboard"
+		"0": "new models/lg_ultrafine_monitor"
 	},
 	"elements": [
 		{
@@ -27,32 +25,32 @@
 			"to": [16, 1, -4.3],
 			"rotation": {"angle": 0, "axis": "y", "origin": [-1, 0.5, -9.8]},
 			"faces": {
-				"north": {"uv": [8, 8, 16, 16], "texture": "#0"},
-				"east": {"uv": [8, 8, 16, 16], "texture": "#0"},
-				"south": {"uv": [8, 8, 16, 16], "texture": "#0"},
-				"west": {"uv": [8, 8, 16, 16], "texture": "#0"},
+				"north": {"uv": [8, 0, 16, 8], "texture": "#0"},
+				"east": {"uv": [8, 0, 16, 8], "texture": "#0"},
+				"south": {"uv": [8, 0, 16, 8], "texture": "#0"},
+				"west": {"uv": [8, 0, 16, 8], "texture": "#0"},
+				"up": {"uv": [8, 0, 16, 8], "texture": "#0"},
+				"down": {"uv": [8, 0, 16, 8], "texture": "#0"}
+			}
+		},
+		{
+			"name": "Base2",
+			"from": [7, 0.94805, -9.52836],
+			"to": [9, 15.94805, -7.52836],
+			"rotation": {"angle": 0, "axis": "x", "origin": [-1, 2.3, -11.8]},
+			"faces": {
+				"north": {"uv": [0, 7.96875, 0.5625, 11.99972], "texture": "#0"},
+				"east": {"uv": [0, 7.96875, 0.5625, 11.99972], "texture": "#0"},
+				"south": {"uv": [0, 7.96875, 0.5625, 11.99972], "texture": "#0"},
+				"west": {"uv": [0, 7.96875, 0.5625, 11.99972], "texture": "#0"},
 				"up": {"uv": [8, 8, 16, 16], "texture": "#0"},
 				"down": {"uv": [8, 8, 16, 16], "texture": "#0"}
 			}
 		},
 		{
-			"name": "Base2",
-			"from": [5, 0.94805, -9.52836],
-			"to": [11, 15.94805, -7.52836],
-			"rotation": {"angle": 0, "axis": "x", "origin": [-1, 2.3, -11.8]},
-			"faces": {
-				"north": {"uv": [8, 8, 15.9375, 15.96875], "texture": "#0"},
-				"east": {"uv": [8, 8, 15.9375, 15.96875], "texture": "#0"},
-				"south": {"uv": [8, 8, 15.9375, 15.96875], "texture": "#0"},
-				"west": {"uv": [8, 8, 15.9375, 15.96875], "texture": "#0"},
-				"up": {"uv": [8, 8, 15.9375, 15.96875], "texture": "#0"},
-				"down": {"uv": [8, 8, 15.9375, 15.96875], "texture": "#0"}
-			}
-		},
-		{
 			"name": "Base3",
-			"from": [5, 12.94805, -7.52836],
-			"to": [11, 15.94805, -5.52836],
+			"from": [7, 12.94805, -7.52836],
+			"to": [9, 15.94805, -5.52836],
 			"rotation": {"angle": 0, "axis": "x", "origin": [-1, 3.3, -9.8]},
 			"faces": {
 				"north": {"uv": [8, 8, 16, 16], "texture": "#0"},
@@ -61,30 +59,6 @@
 				"west": {"uv": [8, 8, 16, 16], "texture": "#0"},
 				"up": {"uv": [8, 8, 16, 16], "texture": "#0"},
 				"down": {"uv": [8, 8, 16, 16], "texture": "#0"}
-			}
-		},
-		{
-			"name": "Mouse",
-			"from": [21.83036, 0, 5],
-			"to": [25.16964, 0.001, 10],
-			"rotation": {"angle": 0, "axis": "y", "origin": [14.5, 0.5, 4.5]},
-			"faces": {
-				"up": {"uv": [0.875, 8.32806, 4.05725, 14.65609], "texture": "#0"},
-				"down": {"uv": [4.53125, 8.34375, 7.71322, 14.65609], "texture": "#0"}
-			}
-		},
-		{
-			"name": "Keyboard",
-			"from": [-4.375, 0, 2.38],
-			"to": [20.375, 0.25, 11.62],
-			"rotation": {"angle": 0, "axis": "y", "origin": [-1, 0.5, 4]},
-			"faces": {
-				"north": {"uv": [0, 8, 16, 16], "texture": "#1"},
-				"east": {"uv": [0, 8, 16, 16], "texture": "#1"},
-				"south": {"uv": [0, 8, 16, 16], "texture": "#1"},
-				"west": {"uv": [0, 8, 16, 16], "texture": "#1"},
-				"up": {"uv": [0, 0, 16, 8], "texture": "#1"},
-				"down": {"uv": [0, 8, 16, 16], "texture": "#1"}
 			}
 		}
 	],

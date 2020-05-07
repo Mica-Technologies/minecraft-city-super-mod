@@ -2,8 +2,7 @@
   "mappings": {
     "default": {
       "map": {
-        "0": "imac",
-        "1": "apple_magic_keyboard"
+        "0": "lg_ultrafine_monitor"
       },
       "name": "default"
     }
