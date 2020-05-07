@@ -1,12 +1,12 @@
 {
 	"credit": "Made with Blockbench",
 	"textures": {
-		"0": "mclamod:TrafficLights/SolidRed",
-		"1": "mclamod:TrafficLights/RedArrowRight",
-		"2": "mclamod:TrafficLights/GreenArrowRight",
-		"3": "mclamod:TrafficLights/GreenArrowLeft",
-		"4": "mclamod:TrafficLights/YellowArrowLeft",
-		"particle": "mclamod:TrafficLights/SolidRed"
+		"0": "user:TrafficLights/SolidRed",
+		"1": "user:TrafficLights/RedArrowRight",
+		"2": "user:TrafficLights/GreenArrowRight",
+		"3": "user:TrafficLights/GreenArrowLeft",
+		"4": "user:TrafficLights/YellowArrowLeft",
+		"particle": "user:TrafficLights/SolidRed"
 	},
 	"elements": [
 		{

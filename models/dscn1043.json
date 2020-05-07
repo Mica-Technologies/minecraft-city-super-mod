@@ -1,8 +1,8 @@
 {
 	"credit": "Made with Blockbench",
 	"textures": {
-		"0": "forge:blocks/dscn1043",
-		"particle": "forge:blocks/dscn1043"
+		"0": "user:blocks/dscn1043",
+		"particle": "user:blocks/dscn1043"
 	},
 	"elements": [
 		{

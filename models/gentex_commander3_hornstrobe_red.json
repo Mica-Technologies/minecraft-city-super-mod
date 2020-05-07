@@ -1,8 +1,8 @@
 {
 	"credit": "Made with Blockbench",
 	"textures": {
-		"0": "forge:blocks/gentex_commander3_hornstrobe_red",
-		"particle": "forge:blocks/gentex_commander3_hornstrobe_red"
+		"0": "user:blocks/gentex_commander3_hornstrobe_red",
+		"particle": "user:blocks/gentex_commander3_hornstrobe_red"
 	},
 	"elements": [
 		{

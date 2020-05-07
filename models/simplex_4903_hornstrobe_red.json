@@ -1,8 +1,8 @@
 {
 	"credit": "Made with Blockbench",
 	"textures": {
-		"0": "forge:blocks/simplex_4903_hornstrobe_red",
-		"particle": "forge:blocks/simplex_4903_hornstrobe_red"
+		"0": "user:blocks/simplex_4903_hornstrobe_red",
+		"particle": "user:blocks/simplex_4903_hornstrobe_red"
 	},
 	"elements": [
 		{

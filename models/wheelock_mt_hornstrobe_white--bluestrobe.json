@@ -1,7 +1,7 @@
 {
 	"credit": "Made with Blockbench",
 	"textures": {
-		"0": "forge:blocks/wheelock_mt_hornstrobe_white--bluestrobe"
+		"0": "user:blocks/wheelock_mt_hornstrobe_white--bluestrobe"
 	},
 	"elements": [
 		{

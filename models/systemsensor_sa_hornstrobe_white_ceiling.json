@@ -1,8 +1,8 @@
 {
 	"credit": "Made with Blockbench",
 	"textures": {
-		"0": "forge:blocks/ssa-hornstrobewhite",
-		"particle": "forge:blocks/ssa-hornstrobewhite"
+		"0": "user:blocks/ssa-hornstrobewhite",
+		"particle": "user:blocks/ssa-hornstrobewhite"
 	},
 	"elements": [
 		{

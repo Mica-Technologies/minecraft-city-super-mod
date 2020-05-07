@@ -1,8 +1,8 @@
 {
 	"credit": "Made with Blockbench",
 	"textures": {
-		"0": "mclamod:TrafficLights/metal_silver",
-		"particle": "mclamod:TrafficLights/metal_silver"
+		"0": "user:TrafficLights/metal_silver",
+		"particle": "user:TrafficLights/metal_silver"
 	},
 	"elements": [
 		{

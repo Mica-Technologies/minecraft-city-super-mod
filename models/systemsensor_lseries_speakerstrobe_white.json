@@ -1,8 +1,8 @@
 {
 	"credit": "Made with Blockbench",
 	"textures": {
-		"0": "forge:blocks/systemsensor_lseries_speakerstrobe_white",
-		"particle": "forge:blocks/systemsensor_lseries_speakerstrobe_white"
+		"0": "user:blocks/systemsensor_lseries_speakerstrobe_white",
+		"particle": "user:blocks/systemsensor_lseries_speakerstrobe_white"
 	},
 	"elements": [
 		{

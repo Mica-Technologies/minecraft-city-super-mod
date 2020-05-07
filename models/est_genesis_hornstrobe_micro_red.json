@@ -1,8 +1,8 @@
 {
 	"credit": "Made with Blockbench",
 	"textures": {
-		"0": "forge:blocks/est_genesis_hornstrobe_micro_red",
-		"particle": "forge:blocks/est_genesis_hornstrobe_micro_red"
+		"0": "user:blocks/est_genesis_hornstrobe_micro_red",
+		"particle": "user:blocks/est_genesis_hornstrobe_micro_red"
 	},
 	"elements": [
 		{

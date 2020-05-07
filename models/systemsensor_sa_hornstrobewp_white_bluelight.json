@@ -1,8 +1,8 @@
 {
 	"credit": "Made with Blockbench",
 	"textures": {
-		"0": "forge:blocks/systemsensor_sa_hornstrobewp_white_bluelight",
-		"particle": "forge:blocks/systemsensor_sa_hornstrobewp_white_bluelight"
+		"0": "user:blocks/systemsensor_sa_hornstrobewp_white_bluelight",
+		"particle": "user:blocks/systemsensor_sa_hornstrobewp_white_bluelight"
 	},
 	"elements": [
 		{

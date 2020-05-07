@@ -1,8 +1,8 @@
 {
 	"credit": "Made with Blockbench",
 	"textures": {
-		"0": "mclamod:TrafficLights/CrosswalkOn",
-		"particle": "mclamod:TrafficLights/CrosswalkOn"
+		"0": "user:TrafficLights/CrosswalkOn",
+		"particle": "user:TrafficLights/CrosswalkOn"
 	},
 	"elements": [
 		{

@@ -1,8 +1,8 @@
 {
 	"credit": "Model made by Brandon Holt (RinRin Blissgreen)",
 	"textures": {
-		"0": "mclamod:blocks/mcla_classic_post_light",
-		"particle": "mclamod:blocks/mcla_classic_post_light"
+		"0": "user:blocks/mcla_classic_post_light",
+		"particle": "user:blocks/mcla_classic_post_light"
 	},
 	"elements": [
 		{

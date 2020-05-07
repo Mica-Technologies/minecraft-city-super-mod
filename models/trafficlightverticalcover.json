@@ -1,8 +1,8 @@
 {
 	"credit": "Made with Blockbench",
 	"textures": {
-		"0": "mclamod:blocks/greenbike",
-		"particle": "mclamod:blocks/greenbike"
+		"0": "user:blocks/greenbike",
+		"particle": "user:blocks/greenbike"
 	},
 	"elements": [
 		{

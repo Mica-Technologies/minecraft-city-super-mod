@@ -1,8 +1,8 @@
 {
 	"credit": "Made with Blockbench",
 	"textures": {
-		"0": "forge:blocks/mt4-115-s_13_red",
-		"particle": "forge:blocks/mt4-115-s_13_red"
+		"0": "user:blocks/mt4-115-s_13_red",
+		"particle": "user:blocks/mt4-115-s_13_red"
 	},
 	"elements": [
 		{

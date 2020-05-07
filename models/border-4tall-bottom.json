@@ -1,8 +1,8 @@
 {
 	"credit": "Made with Blockbench",
 	"textures": {
-		"0": "mclamod:Borders/BorderYellowBlack",
-		"particle": "mclamod:Borders/BorderYellowBlack"
+		"0": "user:Borders/BorderYellowBlack",
+		"particle": "user:Borders/BorderYellowBlack"
 	},
 	"elements": [
 		{

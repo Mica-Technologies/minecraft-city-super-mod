@@ -1,8 +1,8 @@
 {
 	"credit": "Made with Blockbench",
 	"textures": {
-		"0": "forge:blocks/kidde_smoke_alarm",
-		"particle": "forge:blocks/kidde_smoke_alarm"
+		"0": "user:blocks/kidde_smoke_alarm",
+		"particle": "user:blocks/kidde_smoke_alarm"
 	},
 	"elements": [
 		{

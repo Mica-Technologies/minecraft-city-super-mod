@@ -1,8 +1,8 @@
 {
 	"credit": "Model made by Brandon Holt (RinRin Blissgreen)",
 	"textures": {
-		"0": "mclamod:Documents/concrete_light_pole",
-		"particle": "mclamod:Documents/concrete_light_pole"
+		"0": "user:Documents/concrete_light_pole",
+		"particle": "user:Documents/concrete_light_pole"
 	},
 	"elements": [
 		{

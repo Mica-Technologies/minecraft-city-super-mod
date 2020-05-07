@@ -1,7 +1,7 @@
 {
 	"credit": "Made with Blockbench",
 	"textures": {
-		"0": "forge:blocks/simplex_truealert_horn_red"
+		"0": "user:blocks/simplex_truealert_horn_red"
 	},
 	"elements": [
 		{

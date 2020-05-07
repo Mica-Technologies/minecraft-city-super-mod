@@ -1,9 +1,9 @@
 {
 	"credit": "Made with Blockbench",
 	"textures": {
-		"0": "mclamod:blocks/metal",
-		"1": "mclamod:blocks/4_way_straight_vent_2_black",
-		"particle": "mclamod:blocks/metal"
+		"0": "user:blocks/metal",
+		"1": "user:blocks/4_way_straight_vent_2_black",
+		"particle": "user:blocks/metal"
 	},
 	"elements": [
 		{

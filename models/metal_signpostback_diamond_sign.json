@@ -2,7 +2,7 @@
 	"credit": "Made with Blockbench",
 	"textures": {
 		"0": "user:metal",
-		"1": "mclamod:Downloads/clipart-diamond-road-sign-5",
+		"1": "user:Downloads/clipart-diamond-road-sign-5",
 		"particle": "user:metal"
 	},
 	"elements": [

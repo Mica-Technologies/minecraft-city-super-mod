@@ -1,11 +1,11 @@
 {
 	"credit": "Made with Blockbench",
 	"textures": {
-		"0": "mclamod:blocks/solidred",
-		"1": "mclamod:blocks/solidyellow",
-		"2": "mclamod:blocks/solidgreen",
-		"3": "mclamod:blocks/greenarrowright",
-		"particle": "mclamod:blocks/solidred"
+		"0": "user:blocks/solidred",
+		"1": "user:blocks/solidyellow",
+		"2": "user:blocks/solidgreen",
+		"3": "user:blocks/greenarrowright",
+		"particle": "user:blocks/solidred"
 	},
 	"elements": [
 		{

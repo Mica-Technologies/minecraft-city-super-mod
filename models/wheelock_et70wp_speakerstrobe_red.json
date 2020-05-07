@@ -1,8 +1,8 @@
 {
 	"credit": "Made with Blockbench",
 	"textures": {
-		"0": "forge:blocks/wheelock_et70wp_speakerstrobe_red",
-		"particle": "forge:blocks/wheelock_et70wp_speakerstrobe_red"
+		"0": "user:blocks/wheelock_et70wp_speakerstrobe_red",
+		"particle": "user:blocks/wheelock_et70wp_speakerstrobe_red"
 	},
 	"elements": [
 		{

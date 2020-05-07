@@ -1,8 +1,8 @@
 {
 	"credit": "Made with Blockbench",
 	"textures": {
-		"0": "forge:blocks/sslseries-strobe",
-		"particle": "forge:blocks/sslseries-strobe"
+		"0": "user:blocks/sslseries-strobe",
+		"particle": "user:blocks/sslseries-strobe"
 	},
 	"elements": [
 		{

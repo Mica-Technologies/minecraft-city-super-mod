@@ -1,8 +1,8 @@
 {
 	"credit": "Made with Blockbench",
 	"textures": {
-		"0": "mclamod:blocks/adt_heat_detector",
-		"particle": "mclamod:blocks/adt_heat_detector"
+		"0": "user:blocks/adt_heat_detector",
+		"particle": "user:blocks/adt_heat_detector"
 	},
 	"elements": [
 		{

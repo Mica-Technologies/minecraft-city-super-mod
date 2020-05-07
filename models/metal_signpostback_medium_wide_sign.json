@@ -1,9 +1,9 @@
 {
 	"credit": "Made with Blockbench",
 	"textures": {
-		"0": "mclamod:Desktop/MCS1",
-		"1": "mclamod:Downloads/one-way-left-sign",
-		"particle": "mclamod:Desktop/MCS1"
+		"0": "user:Desktop/MCS1",
+		"1": "user:Downloads/one-way-left-sign",
+		"particle": "user:Desktop/MCS1"
 	},
 	"elements": [
 		{

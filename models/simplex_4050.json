@@ -1,8 +1,8 @@
 {
 	"credit": "Made with Blockbench",
 	"textures": {
-		"0": "forge:blocks/simplex_4050",
-		"particle": "forge:blocks/simplex_4050"
+		"0": "user:blocks/simplex_4050",
+		"particle": "user:blocks/simplex_4050"
 	},
 	"elements": [
 		{

@@ -1,8 +1,8 @@
 {
 	"credit": "Made with Blockbench",
 	"textures": {
-		"0": "forge:blocks/faic_combo",
-		"particle": "forge:blocks/faic_combo"
+		"0": "user:blocks/faic_combo",
+		"particle": "user:blocks/faic_combo"
 	},
 	"elements": [
 		{

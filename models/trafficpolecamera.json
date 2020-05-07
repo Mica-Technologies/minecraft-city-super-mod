@@ -1,10 +1,10 @@
 {
 	"credit": "Made with Blockbench",
 	"textures": {
-		"0": "mclamod:TrafficLights/metal_silver",
-		"1": "mclamod:blocks/metal_white",
-		"2": "mclamod:TrafficLights/SolidOff",
-		"particle": "mclamod:TrafficLights/metal_silver"
+		"0": "user:TrafficLights/metal_silver",
+		"1": "user:blocks/metal_white",
+		"2": "user:TrafficLights/SolidOff",
+		"particle": "user:TrafficLights/metal_silver"
 	},
 	"elements": [
 		{

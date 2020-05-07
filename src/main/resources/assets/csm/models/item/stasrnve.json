@@ -1,0 +1,8 @@
+{
+  "parent": "csm:custom/simplex_truealert_speaker_red",
+  "textures": {
+    "all": "csm:blocks/simplex_truealert_horn_red",
+    "particle": "csm:blocks/simplex_truealert_horn_red",
+    "0": "csm:blocks/simplex_truealert_horn_red"
+  }
+}

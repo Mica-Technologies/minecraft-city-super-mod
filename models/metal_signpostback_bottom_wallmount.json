@@ -1,8 +1,8 @@
 {
 	"credit": "Made with Blockbench",
 	"textures": {
-		"0": "mclamod:blocks/metal",
-		"particle": "mclamod:blocks/metal"
+		"0": "user:blocks/metal",
+		"particle": "user:blocks/metal"
 	},
 	"elements": [
 		{

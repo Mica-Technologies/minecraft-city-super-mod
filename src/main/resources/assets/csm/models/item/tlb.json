@@ -1,0 +1,8 @@
+{
+  "parent": "csm:custom/tlite-b",
+  "textures": {
+    "all": "csm:blocks/tlite-b",
+    "particle": "csm:blocks/tlite-b",
+    "0": "csm:blocks/tlite-b"
+  }
+}

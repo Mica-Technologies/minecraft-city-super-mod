@@ -1,8 +1,8 @@
 {
 	"credit": "Made with Blockbench",
 	"textures": {
-		"0": "forge:blocks/wheelock_et80_hornstrobe_red",
-		"particle": "forge:blocks/wheelock_et80_hornstrobe_red"
+		"0": "user:blocks/wheelock_et80_hornstrobe_red",
+		"particle": "user:blocks/wheelock_et80_hornstrobe_red"
 	},
 	"elements": [
 		{

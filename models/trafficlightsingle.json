@@ -1,8 +1,8 @@
 {
 	"credit": "Made with Blockbench",
 	"textures": {
-		"0": "mclamod:New Traffic Lights/SolidRed",
-		"particle": "mclamod:New Traffic Lights/SolidRed"
+		"0": "user:New Traffic Lights/SolidRed",
+		"particle": "user:New Traffic Lights/SolidRed"
 	},
 	"elements": [
 		{

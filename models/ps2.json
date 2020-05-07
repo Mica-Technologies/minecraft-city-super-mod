@@ -1,8 +1,8 @@
 {
 	"credit": "Made with Blockbench",
 	"textures": {
-		"0": "forge:blocks/ps2",
-		"particle": "forge:blocks/ps2"
+		"0": "user:blocks/ps2",
+		"particle": "user:blocks/ps2"
 	},
 	"elements": [
 		{

@@ -1,8 +1,8 @@
 {
 	"credit": "Made with Blockbench",
 	"textures": {
-		"0": "forge:blocks/SystemSensor_LSeries_Speaker_White_Ceiling",
-		"particle": "forge:blocks/SystemSensor_LSeries_Speaker_White_Ceiling"
+		"0": "user:blocks/SystemSensor_LSeries_Speaker_White_Ceiling",
+		"particle": "user:blocks/SystemSensor_LSeries_Speaker_White_Ceiling"
 	},
 	"elements": [
 		{

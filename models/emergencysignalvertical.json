@@ -1,10 +1,10 @@
 {
 	"credit": "Made with Blockbench",
 	"textures": {
-		"0": "mclamod:TrafficLights/SolidRed",
-		"1": "mclamod:New Traffic Lights/SolidYellow",
-		"2": "mclamod:TrafficLights/SolidGreen",
-		"particle": "mclamod:TrafficLights/SolidRed"
+		"0": "user:TrafficLights/SolidRed",
+		"1": "user:New Traffic Lights/SolidYellow",
+		"2": "user:TrafficLights/SolidGreen",
+		"particle": "user:TrafficLights/SolidRed"
 	},
 	"elements": [
 		{

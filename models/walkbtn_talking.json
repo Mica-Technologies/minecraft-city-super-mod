@@ -1,8 +1,8 @@
 {
 	"credit": "Made with Blockbench",
 	"textures": {
-		"0": "mclamod:blocks/walkbtn_talking",
-		"particle": "mclamod:blocks/walkbtn_talking"
+		"0": "user:blocks/walkbtn_talking",
+		"particle": "user:blocks/walkbtn_talking"
 	},
 	"elements": [
 		{

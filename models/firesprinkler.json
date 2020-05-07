@@ -1,9 +1,9 @@
 {
 	"credit": "Made with Blockbench",
 	"textures": {
-		"0": "mclamod:blocks/metal_white",
+		"0": "user:blocks/metal_white",
 		"1": "csm:blocks/metal_red",
-		"particle": "mclamod:blocks/metal_white"
+		"particle": "user:blocks/metal_white"
 	},
 	"elements": [
 		{

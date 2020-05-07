@@ -1,8 +1,8 @@
 {
 	"credit": "Made with Blockbench",
 	"textures": {
-		"0": "forge:blocks/est_integrity_hornstrobe_red",
-		"particle": "forge:blocks/est_integrity_hornstrobe_red"
+		"0": "user:blocks/est_integrity_hornstrobe_red",
+		"particle": "user:blocks/est_integrity_hornstrobe_red"
 	},
 	"elements": [
 		{

@@ -1,8 +1,8 @@
 {
 	"credit": "Made with Blockbench",
 	"textures": {
-		"0": "forge:blocks/wheelock_7002t",
-		"particle": "forge:blocks/wheelock_7002t"
+		"0": "user:blocks/wheelock_7002t",
+		"particle": "user:blocks/wheelock_7002t"
 	},
 	"elements": [
 		{

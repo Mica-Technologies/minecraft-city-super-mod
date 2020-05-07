@@ -1,0 +1,8 @@
+{
+  "parent": "csm:custom/lithonia_2esl4",
+  "textures": {
+    "all": "csm:blocks/troffers",
+    "particle": "csm:blocks/troffers",
+    "0": "csm:blocks/troffers"
+  }
+}
