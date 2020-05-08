@@ -95,7 +95,7 @@ public class BlockMCLAParkLight extends ElementsCitySuperMod.ModElement {
 			if (powered > 0) {
 				BlockPos doAddAt = null;
 				for (int findy = -1; findy >= -40; findy--) {
-					BlockPos test = new BlockPos(pos.getX()+1, pos.getY() + findy, pos.getZ());
+					BlockPos test = new BlockPos(pos.getX() + 1, pos.getY() + findy, pos.getZ());
 					IBlockState bs = world.getBlockState(test);
 					Block block = bs.getBlock();
 					// found block that is not air
@@ -114,7 +114,7 @@ public class BlockMCLAParkLight extends ElementsCitySuperMod.ModElement {
 			// Not powered, remove light
 			else {
 				for (int findy = -1; findy >= -40; findy--) {
-					BlockPos test = new BlockPos(pos.getX()+1, pos.getY() + findy, pos.getZ());
+					BlockPos test = new BlockPos(pos.getX() + 1, pos.getY() + findy, pos.getZ());
 					IBlockState bs = world.getBlockState(test);
 					// stop removing light once hit block
 					if (bs.getBlock() == Block.getBlockFromName("csm:lightupair"))
