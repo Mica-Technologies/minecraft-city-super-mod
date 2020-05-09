@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:exitsignsinglesided"
+    },
+    "facing=north": {
+      "model": "csm:exitsignsinglesided"
+    },
+    "facing=east": {
+      "model": "csm:exitsignsinglesided",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:exitsignsinglesided",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:exitsignsinglesided",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:exitsignsinglesided",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:exitsignsinglesided",
+      "x": 90
+    }
+  }
+}

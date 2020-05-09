@@ -63,6 +63,22 @@
         "2": "mclaapprovedexitsigndualarrow"
       },
       "name": "exitdual"
+    },
+    "exitone": {
+      "map": {
+        "0": "metal_silver",
+        "1": "mclaapprovedexitsignnoarrow",
+        "2": "mclaapprovedexitsignblank"
+      },
+      "name": "exitone"
+    },
+    "stairsone": {
+      "map": {
+        "0": "metal_silver",
+        "1": "mclaapprovedstairssignnoarrow",
+        "2": "mclaapprovedexitsignblank"
+      },
+      "name": "stairsone"
     }
   }
 }
