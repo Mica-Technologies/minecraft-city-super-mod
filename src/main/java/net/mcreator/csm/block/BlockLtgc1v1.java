@@ -115,7 +115,7 @@ public class BlockLtgc1v1 extends ElementsCitySuperMod.ModElement {
 				}
 				// add if marked for add
 				if (doAddAt != null) {
-					world.setBlockState(doAddAt, Block.getBlockFromName("csm:lightupairir").getDefaultState(), 3);
+					world.setBlockState(doAddAt, Block.getBlockFromName("csm:lightupair").getDefaultState(), 3);
 				}
 			}
 			// Not powered, remove light
