@@ -1,0 +1,8 @@
+{
+  "parent": "csm:custom/water_dispenser",
+  "textures": {
+    "all": "csm:blocks/water_dispenser",
+    "particle": "csm:blocks/water_dispenser",
+    "0": "csm:blocks/water_dispenser"
+  }
+}

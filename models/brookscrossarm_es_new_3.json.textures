@@ -2,7 +2,7 @@
   "mappings": {
     "default": {
       "map": {
-        "0": "newspaper_dispenser"
+        "0": "crossarms"
       },
       "name": "default"
     }

@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:newbrooksxarm3"
+    },
+    "facing=north": {
+      "model": "csm:newbrooksxarm3"
+    },
+    "facing=east": {
+      "model": "csm:newbrooksxarm3",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:newbrooksxarm3",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:newbrooksxarm3",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:newbrooksxarm3",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:newbrooksxarm3",
+      "x": 90
+    }
+  }
+}
