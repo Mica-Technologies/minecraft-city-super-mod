@@ -1,8 +1,0 @@
-{
-  "parent": "csm:custom/checkers",
-  "textures": {
-    "all": "csm:blocks/checkers",
-    "particle": "csm:blocks/checkers",
-    "0": "csm:blocks/checkers"
-  }
-}

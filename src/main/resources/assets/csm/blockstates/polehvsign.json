@@ -1,29 +1,29 @@
 {
   "variants": {
     "normal": {
-      "model": "csm:checkers"
+      "model": "csm:polehvsign"
     },
     "facing=north": {
-      "model": "csm:checkers"
+      "model": "csm:polehvsign"
     },
     "facing=east": {
-      "model": "csm:checkers",
+      "model": "csm:polehvsign",
       "y": 90
     },
     "facing=south": {
-      "model": "csm:checkers",
+      "model": "csm:polehvsign",
       "y": 180
     },
     "facing=west": {
-      "model": "csm:checkers",
+      "model": "csm:polehvsign",
       "y": 270
     },
     "facing=up": {
-      "model": "csm:checkers",
+      "model": "csm:polehvsign",
       "x": 270
     },
     "facing=down": {
-      "model": "csm:checkers",
+      "model": "csm:polehvsign",
       "x": 90
     }
   }

@@ -7,7 +7,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraft.item.ItemStack;
 import net.minecraft.creativetab.CreativeTabs;
 
-import net.mcreator.csm.block.BlockSignpostroadwork;
+import net.mcreator.csm.block.BlockWaterDispenser;
 import net.mcreator.csm.ElementsCitySuperMod;
 
 @ElementsCitySuperMod.ModElement.Tag
@@ -22,7 +22,7 @@ public class TabCSMOffice extends ElementsCitySuperMod.ModElement {
 			@SideOnly(Side.CLIENT)
 			@Override
 			public ItemStack getTabIconItem() {
-				return new ItemStack(BlockSignpostroadwork.block, (int) (1));
+				return new ItemStack(BlockWaterDispenser.block, (int) (1));
 			}
 
 			@SideOnly(Side.CLIENT)

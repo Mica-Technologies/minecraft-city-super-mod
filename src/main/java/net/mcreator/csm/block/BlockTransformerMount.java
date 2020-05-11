@@ -12,7 +12,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.Mirror;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.Item;
 import net.minecraft.entity.EntityLivingBase;
@@ -25,46 +24,40 @@ import net.minecraft.block.SoundType;
 import net.minecraft.block.BlockDirectional;
 import net.minecraft.block.Block;
 
-import net.mcreator.csm.creativetab.TabCSMOffice;
+import net.mcreator.csm.creativetab.TabMCLAElectricTab;
 import net.mcreator.csm.ElementsCitySuperMod;
 
 @ElementsCitySuperMod.ModElement.Tag
-public class BlockWaterDispenser extends ElementsCitySuperMod.ModElement {
-	@GameRegistry.ObjectHolder("csm:waterdispenser")
+public class BlockTransformerMount extends ElementsCitySuperMod.ModElement {
+	@GameRegistry.ObjectHolder("csm:transformermount")
 	public static final Block block = null;
-	public BlockWaterDispenser(ElementsCitySuperMod instance) {
-		super(instance, 1126);
+	public BlockTransformerMount(ElementsCitySuperMod instance) {
+		super(instance, 1151);
 	}
 
 	@Override
 	public void initElements() {
-		elements.blocks.add(() -> new BlockCustom().setRegistryName("waterdispenser"));
+		elements.blocks.add(() -> new BlockCustom().setRegistryName("transformermount"));
 		elements.items.add(() -> new ItemBlock(block).setRegistryName(block.getRegistryName()));
 	}
 
 	@SideOnly(Side.CLIENT)
 	@Override
 	public void registerModels(ModelRegistryEvent event) {
-		ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(block), 0, new ModelResourceLocation("csm:waterdispenser", "inventory"));
+		ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(block), 0, new ModelResourceLocation("csm:transformermount", "inventory"));
 	}
 	public static class BlockCustom extends Block {
 		public static final PropertyDirection FACING = BlockDirectional.FACING;
 		public BlockCustom() {
 			super(Material.ROCK);
-			setUnlocalizedName("waterdispenser");
+			setUnlocalizedName("transformermount");
 			setSoundType(SoundType.STONE);
 			setHardness(1F);
 			setResistance(10F);
 			setLightLevel(0F);
 			setLightOpacity(0);
-			setCreativeTab(TabCSMOffice.tab);
+			setCreativeTab(TabMCLAElectricTab.tab);
 			this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH));
-		}
-
-		@SideOnly(Side.CLIENT)
-		@Override
-		public BlockRenderLayer getBlockLayer() {
-			return BlockRenderLayer.TRANSLUCENT;
 		}
 
 		@Override

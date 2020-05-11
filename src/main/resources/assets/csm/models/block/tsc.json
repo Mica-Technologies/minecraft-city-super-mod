@@ -1,0 +1,8 @@
+{
+  "parent": "csm:custom/transformer_screw_caps",
+  "textures": {
+    "all": "csm:blocks/mountingbrackets",
+    "particle": "csm:blocks/mountingbrackets",
+    "0": "csm:blocks/mountingbrackets"
+  }
+}

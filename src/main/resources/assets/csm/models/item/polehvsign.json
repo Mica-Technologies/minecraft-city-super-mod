@@ -1,5 +1,5 @@
 {
-  "parent": "csm:block/checkers",
+  "parent": "csm:block/polehvsign",
   "display": {
     "thirdperson": {
       "rotation": [
