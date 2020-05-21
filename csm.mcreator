@@ -10503,6 +10503,36 @@
       "name": "notifier_tornado_voice_evac",
       "file": "notifier_tornado_voice_evac",
       "category": "block"
+    },
+    {
+      "name": "fastservice_target_1",
+      "file": "fastservice_target_1",
+      "category": "block"
+    },
+    {
+      "name": "fastservice_target_2",
+      "file": "fastservice_target_2",
+      "category": "block"
+    },
+    {
+      "name": "fastservice_target_3",
+      "file": "fastservice_target_3",
+      "category": "block"
+    },
+    {
+      "name": "fastservice_target_cleared",
+      "file": "fastservice_target_cleared",
+      "category": "block"
+    },
+    {
+      "name": "target_helpbutton_press",
+      "file": "target_helpbutton_press",
+      "category": "block"
+    },
+    {
+      "name": "target_self_checkout_thanks",
+      "file": "target_self_checkout_thanks",
+      "category": "block"
     }
   ],
   "language_map": {

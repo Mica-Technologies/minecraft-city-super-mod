@@ -691,5 +691,59 @@
         "stream": false
       }
     ]
+  },
+  "fastservice_target_1": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:fastservice_target_1",
+        "stream": false
+      }
+    ]
+  },
+  "fastservice_target_2": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:fastservice_target_2",
+        "stream": false
+      }
+    ]
+  },
+  "fastservice_target_3": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:fastservice_target_3",
+        "stream": false
+      }
+    ]
+  },
+  "fastservice_target_cleared": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:fastservice_target_cleared",
+        "stream": false
+      }
+    ]
+  },
+  "target_helpbutton_press": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:target_helpbutton_press",
+        "stream": false
+      }
+    ]
+  },
+  "target_self_checkout_thanks": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:target_self_checkout_thanks",
+        "stream": false
+      }
+    ]
   }
 }

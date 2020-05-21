@@ -153,6 +153,18 @@ public class ElementsCitySuperMod implements IFuelHandler, IWorldGenerator {
 				new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "notifier_voice_evac_alt2")));
 		sounds.put(new ResourceLocation("csm", "notifier_tornado_voice_evac"),
 				new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "notifier_tornado_voice_evac")));
+		sounds.put(new ResourceLocation("csm", "fastservice_target_1"),
+				new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "fastservice_target_1")));
+		sounds.put(new ResourceLocation("csm", "fastservice_target_2"),
+				new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "fastservice_target_2")));
+		sounds.put(new ResourceLocation("csm", "fastservice_target_3"),
+				new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "fastservice_target_3")));
+		sounds.put(new ResourceLocation("csm", "fastservice_target_cleared"),
+				new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "fastservice_target_cleared")));
+		sounds.put(new ResourceLocation("csm", "target_helpbutton_press"),
+				new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "target_helpbutton_press")));
+		sounds.put(new ResourceLocation("csm", "target_self_checkout_thanks"),
+				new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "target_self_checkout_thanks")));
 	}
 
 	public void preInit(FMLPreInitializationEvent event) {
