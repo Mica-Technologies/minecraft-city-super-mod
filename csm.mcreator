@@ -10533,6 +10533,16 @@
       "name": "target_self_checkout_thanks",
       "file": "target_self_checkout_thanks",
       "category": "block"
+    },
+    {
+      "name": "sony_dream_machine_1980s",
+      "file": "1980s_sony_dream_machine",
+      "category": "block"
+    },
+    {
+      "name": "oldradio2",
+      "file": "oldradio2",
+      "category": "block"
     }
   ],
   "language_map": {

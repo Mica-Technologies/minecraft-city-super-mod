@@ -745,5 +745,23 @@
         "stream": false
       }
     ]
+  },
+  "sony_dream_machine_1980s": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:1980s_sony_dream_machine",
+        "stream": false
+      }
+    ]
+  },
+  "oldradio2": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:oldradio2",
+        "stream": false
+      }
+    ]
   }
 }
