@@ -24,7 +24,7 @@ import net.minecraft.block.SoundType;
 import net.minecraft.block.BlockDirectional;
 import net.minecraft.block.Block;
 
-import net.mcreator.csm.creativetab.TabMCLARoadsTab;
+import net.mcreator.csm.creativetab.TabMCLAElectricTab;
 import net.mcreator.csm.ElementsCitySuperMod;
 
 @ElementsCitySuperMod.ModElement.Tag
@@ -56,7 +56,7 @@ public class BlockNewESBrooksXArm1 extends ElementsCitySuperMod.ModElement {
 			setResistance(10F);
 			setLightLevel(0F);
 			setLightOpacity(0);
-			setCreativeTab(TabMCLARoadsTab.tab);
+			setCreativeTab(TabMCLAElectricTab.tab);
 			this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH));
 		}
 

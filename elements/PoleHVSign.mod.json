@@ -12,7 +12,7 @@
     "customModelName": "pole_hv_sign:default",
     "rotationMode": 2,
     "hasTransparency": true,
-    "transparencyType": "SOLID",
+    "transparencyType": "TRANSLUCENT",
     "mx": 0.0,
     "my": 0.0,
     "mz": 0.0,

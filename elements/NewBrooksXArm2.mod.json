@@ -10,7 +10,7 @@
     "textureBack": "",
     "renderType": 2,
     "customModelName": "brookscrossarm_new_2:default",
-    "rotationMode": 0,
+    "rotationMode": 2,
     "hasTransparency": true,
     "transparencyType": "SOLID",
     "mx": 0.0,
