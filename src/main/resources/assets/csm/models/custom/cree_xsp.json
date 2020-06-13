@@ -1,12 +1,12 @@
 {
-  "credit": "Made with Blockbench",
+  "credit": "Model made by Brandon Holt (RinRin Blissgreen)",
   "elements": [
     {
       "name": "base1",
       "from": [
         4,
         0,
-        8
+        3
       ],
       "to": [
         12,
@@ -144,7 +144,7 @@
       "from": [
         5,
         1,
-        9
+        5
       ],
       "to": [
         11,
@@ -219,13 +219,22 @@
       "from": [
         5,
         0,
-        7
+        2
       ],
       "to": [
         11,
         1,
-        8
+        3
       ],
+      "rotation": {
+        "angle": 0,
+        "axis": "y",
+        "origin": [
+          8,
+          8,
+          3
+        ]
+      },
       "faces": {
         "north": {
           "uv": [
@@ -294,7 +303,7 @@
       "from": [
         6,
         2,
-        10
+        7
       ],
       "to": [
         10,

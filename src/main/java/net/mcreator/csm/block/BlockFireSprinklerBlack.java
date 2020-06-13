@@ -15,7 +15,6 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.Mirror;
-import net.minecraft.util.EnumHand;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.BlockRenderLayer;
@@ -44,7 +43,6 @@ import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.BlockDirectional;
 import net.minecraft.block.Block;
 
-import net.mcreator.csm.procedure.ProcedureFireAlarmPullStationPulled;
 import net.mcreator.csm.procedure.ProcedureFireAlarmPullAdded;
 import net.mcreator.csm.creativetab.TabMCLAAlarmsTab;
 import net.mcreator.csm.ElementsCitySuperMod;
@@ -214,24 +212,6 @@ public class BlockFireSprinklerBlack extends ElementsCitySuperMod.ModElement {
 				$_dependencies.put("world", world);
 				ProcedureFireAlarmPullAdded.executeProcedure($_dependencies);
 			}
-		}
-
-		@Override
-		public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer entity, EnumHand hand, EnumFacing direction,
-				float hitX, float hitY, float hitZ) {
-			super.onBlockActivated(world, pos, state, entity, hand, direction, hitX, hitY, hitZ);
-			int x = pos.getX();
-			int y = pos.getY();
-			int z = pos.getZ();
-			{
-				java.util.HashMap<String, Object> $_dependencies = new java.util.HashMap<>();
-				$_dependencies.put("x", x);
-				$_dependencies.put("y", y);
-				$_dependencies.put("z", z);
-				$_dependencies.put("world", world);
-				ProcedureFireAlarmPullStationPulled.executeProcedure($_dependencies);
-			}
-			return true;
 		}
 	}
 

@@ -64,7 +64,7 @@ public class BlockWaterDispenser extends ElementsCitySuperMod.ModElement {
 		@SideOnly(Side.CLIENT)
 		@Override
 		public BlockRenderLayer getBlockLayer() {
-			return BlockRenderLayer.TRANSLUCENT;
+			return BlockRenderLayer.CUTOUT_MIPPED;
 		}
 
 		@Override

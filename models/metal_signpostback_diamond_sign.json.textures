@@ -741,6 +741,34 @@
         "1": "streetworkahead"
       },
       "name": "streetworkahead"
+    },
+    "endroad": {
+      "map": {
+        "0": "metal",
+        "1": "endsign"
+      },
+      "name": "endroad"
+    },
+    "cautiondriveways": {
+      "map": {
+        "0": "metal",
+        "1": "cautiondrivewayssign"
+      },
+      "name": "cautiondriveways"
+    },
+    "landslidearea": {
+      "map": {
+        "0": "metal",
+        "1": "landslideareasign"
+      },
+      "name": "landslidearea"
+    },
+    "absolutelynothing": {
+      "map": {
+        "0": "metal",
+        "1": "absolutelynothingsign"
+      },
+      "name": "absolutelynothing"
     }
   }
 }
