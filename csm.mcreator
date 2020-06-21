@@ -10583,6 +10583,11 @@
       "name": "oldradio2",
       "file": "oldradio2",
       "category": "block"
+    },
+    {
+      "name": "threestooges_ve",
+      "file": "threestooges_ve",
+      "category": "block"
     }
   ],
   "language_map": {

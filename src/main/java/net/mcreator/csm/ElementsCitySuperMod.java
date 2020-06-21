@@ -168,6 +168,7 @@ public class ElementsCitySuperMod implements IFuelHandler, IWorldGenerator {
 		sounds.put(new ResourceLocation("csm", "sony_dream_machine_1980s"),
 				new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "sony_dream_machine_1980s")));
 		sounds.put(new ResourceLocation("csm", "oldradio2"), new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "oldradio2")));
+		sounds.put(new ResourceLocation("csm", "threestooges_ve"), new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "threestooges_ve")));
 	}
 
 	public void preInit(FMLPreInitializationEvent event) {

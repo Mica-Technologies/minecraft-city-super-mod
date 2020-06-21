@@ -763,5 +763,14 @@
         "stream": false
       }
     ]
+  },
+  "threestooges_ve": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:threestooges_ve",
+        "stream": false
+      }
+    ]
   }
 }
