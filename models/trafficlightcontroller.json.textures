@@ -27,6 +27,20 @@
         "1": "metal_silver"
       },
       "name": "white"
+    },
+    "mattewhite": {
+      "map": {
+        "0": "metal_mattewhite",
+        "1": "metal_silver"
+      },
+      "name": "mattewhite"
+    },
+    "silver": {
+      "map": {
+        "0": "metal_silver",
+        "1": "metal_white"
+      },
+      "name": "silver"
     }
   }
 }

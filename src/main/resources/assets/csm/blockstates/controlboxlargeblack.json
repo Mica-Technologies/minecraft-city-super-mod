@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:controlboxlargeblack"
+    },
+    "facing=north": {
+      "model": "csm:controlboxlargeblack"
+    },
+    "facing=east": {
+      "model": "csm:controlboxlargeblack",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:controlboxlargeblack",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:controlboxlargeblack",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:controlboxlargeblack",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:controlboxlargeblack",
+      "x": 90
+    }
+  }
+}

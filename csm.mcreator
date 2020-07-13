@@ -10130,6 +10130,118 @@
       "compiles": true,
       "locked_code": false,
       "ids": {}
+    },
+    {
+      "name": "TLControllerMatteWhite",
+      "type": "block",
+      "sortid": 1160,
+      "compiles": true,
+      "locked_code": false,
+      "ids": {}
+    },
+    {
+      "name": "TLControllerSilver",
+      "type": "block",
+      "sortid": 1161,
+      "compiles": true,
+      "locked_code": false,
+      "ids": {}
+    },
+    {
+      "name": "ControlBoxSmallMatteWhite",
+      "type": "block",
+      "sortid": 1162,
+      "compiles": true,
+      "locked_code": false,
+      "ids": {}
+    },
+    {
+      "name": "ControlBoxSmallMetal",
+      "type": "block",
+      "sortid": 1163,
+      "compiles": true,
+      "locked_code": false,
+      "ids": {}
+    },
+    {
+      "name": "ControlBoxSmallBlack",
+      "type": "block",
+      "sortid": 1164,
+      "compiles": true,
+      "locked_code": false,
+      "ids": {}
+    },
+    {
+      "name": "ControlBoxSmallTan",
+      "type": "block",
+      "sortid": 1165,
+      "compiles": true,
+      "locked_code": false,
+      "ids": {}
+    },
+    {
+      "name": "ControlBoxSmallWhite",
+      "type": "block",
+      "sortid": 1166,
+      "compiles": true,
+      "locked_code": false,
+      "ids": {}
+    },
+    {
+      "name": "ControlBoxSmallSilver",
+      "type": "block",
+      "sortid": 1167,
+      "compiles": true,
+      "locked_code": false,
+      "ids": {}
+    },
+    {
+      "name": "ControlBoxLargeMatteWhite",
+      "type": "block",
+      "sortid": 1168,
+      "compiles": true,
+      "locked_code": false,
+      "ids": {}
+    },
+    {
+      "name": "ControlBoxLarge",
+      "type": "block",
+      "sortid": 1169,
+      "compiles": true,
+      "locked_code": false,
+      "ids": {}
+    },
+    {
+      "name": "ControlBoxLargeBlack",
+      "type": "block",
+      "sortid": 1170,
+      "compiles": true,
+      "locked_code": false,
+      "ids": {}
+    },
+    {
+      "name": "ControlBoxLargeTan",
+      "type": "block",
+      "sortid": 1171,
+      "compiles": true,
+      "locked_code": false,
+      "ids": {}
+    },
+    {
+      "name": "ControlBoxLargeWhite",
+      "type": "block",
+      "sortid": 1172,
+      "compiles": true,
+      "locked_code": false,
+      "ids": {}
+    },
+    {
+      "name": "ControlBoxLargeSilver",
+      "type": "block",
+      "sortid": 1173,
+      "compiles": true,
+      "locked_code": false,
+      "ids": {}
     }
   ],
   "variable_elements": [
@@ -10635,6 +10747,7 @@
       "tile.tlhbikeyellowflash.name": "Horizontal Bike Yellow Flash",
       "tile.signonelanebridge.name": "One Lane Bridge Sign",
       "tile.tlsaheadgreenflash.name": "Single Ahead Green Flash",
+      "tile.controlboxsmalltan.name": "Pole-Mount Control Box Small (Tan)",
       "tile.signslowertraffickeepright.name": "Slower Traffic Keep Right Sign",
       "tile.signworkturnlaneright.name": "Turn Lane Right Sign",
       "tile.signnoovernightparking.name": "No Overnight Parking Sign",
@@ -10665,6 +10778,7 @@
       "tile.tlpmwhite.name": "White Signal Mount",
       "tile.signredlightphoto.name": "Red Light Photo Enforced Sign",
       "tile.signallmergeright.name": "All Traffic Merge Right Sign",
+      "tile.controlboxlargemattewhite.name": "Pole-Mount Control Box Large (Matte White)",
       "tile.oldbrooksxarm1.name": "Brooks Crossarm 1 (Old)",
       "tile.signleftrightarrow.name": "Left/Right Arrow Sign",
       "tile.signnohitchhiking.name": "No Hitchhiking Sign",
@@ -10814,6 +10928,7 @@
       "tile.signdog.name": "Dog Sign",
       "tile.pv.name": "Plaque Vent (White)",
       "tile.tldredsolidrightgreen.name": "Doghouse Red Solid Right Green",
+      "tile.controlboxlargewhite.name": "Pole-Mount Control Box Large (White)",
       "tile.dslhr.name": "Lithonia Double LED Strip Light (Half Reflectors)",
       "tile.signmergeleft.name": "Sign Pole Merge Left Sign",
       "tile.signnoleftred.name": "No Left on Red Sign",
@@ -11019,6 +11134,7 @@
       "tile.tlsrightredflash.name": "Single Right Red Flash",
       "tile.rwrkstopahead.name": "Road Work Stop Ahead Sign",
       "tile.sslssswnve.name": "SS L Series White Speaker Strobe (Notifier VE)",
+      "tile.tlcontrollermattewhite.name": "Traffic Light Controller (Matte White)",
       "tile.trafficpolehorzdblblack.name": "Black Double Horizontal Traffic Pole",
       "tile.trafficstreetnamesigndouble.name": "Street Name Sign (Double)",
       "tile.oldbrooksxarm6.name": "Brooks Crossarm 6 (Old)",
@@ -11086,8 +11202,10 @@
       "tile.transformermount.name": "Transformer Mount",
       "tile.tlsleftredflash.name": "Single Left Red Flash",
       "tile.tlvbikeyellow.name": "Vertical Bike Yellow",
+      "tile.controlboxsmallmattewhite.name": "Pole-Mount Control Box Small (Matte White)",
       "tile.tldgreensolidrightyellow.name": "Doghouse Green Solid Right Yellow",
       "tile.signloopright.name": "Right 270 Deg-Turn Sign",
+      "tile.controlboxlargesilver.name": "Pole-Mount Control Box Large (Silver)",
       "tile.tlsrightred.name": "Single Right Red",
       "tile.sv2.name": "4 Way Vent 2 (White)",
       "tile.roadend.name": "End Road Sign",
@@ -11167,6 +11285,7 @@
       "tile.signrightcurve.name": "Sign Pole Right Curve Sign",
       "tile.signnoparkinganytime.name": "No Parking Anytime Sign",
       "tile.signaheadleftright.name": "Ahead, Left and Right Sign",
+      "tile.tlcontrollersilver.name": "Traffic Light Controller (Silver)",
       "tile.tl4vadpgl.name": "Vertical 4 Head Adaptive Left Turn Green",
       "itemGroup.tabtrafficsignalshorizontal": "CSM: Horizontal Traffic Signals",
       "tile.lrtlf.name": "Lithonia RTL (Full)",
@@ -11219,6 +11338,7 @@
       "tile.s4903lsve.name": "Simplex 4903 Red (Alto Life Safety VE)",
       "tile.trafficpoleverticalsignalmountunpainted.name": "Vertical Traffic Pole with Signal Mount (Unpainted)",
       "tile.signsnowflake.name": "Snowflake Sign",
+      "tile.controlboxsmallwhite.name": "Pole-Mount Control Box Small (White)",
       "tile.vcs3.name": "Valcom Speaker 3",
       "tile.tlhuturnred.name": "Horizontal UTurn Red",
       "tile.tlvtransitflashred.name": "Vertical Flash Transit Stop/Red",
@@ -11253,6 +11373,7 @@
       "tile.sigahd.name": "Road Paint (Signal Ahead)",
       "tile.eep.name": "Edwards Emergency Phone",
       "tile.signspeed0.name": "Speed Limit 0 Sign",
+      "tile.controlboxlarge.name": "Pole-Mount Control Box Large",
       "tile.signusecrosswalkright.name": "Use Crosswalk Right Arrow Sign",
       "tile.mtw.name": "Wheelock MT White",
       "tile.we50rlsve.name": "Wheelock e50 Red (Alto Life Safety VE)",
@@ -11405,6 +11526,7 @@
       "tile.faestintred.name": "EST Integrity Red Horn Strobe",
       "tile.tlpmblack.name": "Black Metal Signal Mount",
       "tile.signtrucksuserightlanes.name": "Trucks Use Right Lane Sign",
+      "tile.controlboxlargetan.name": "Pole-Mount Control Box Large (Tan)",
       "tile.signgas.name": "Gas Sign",
       "item.fiosremote.name": "Frontier/Verizon Fios Remote",
       "tile.rwrkflagger.name": "Road Work Flagger Sign",
@@ -11419,6 +11541,7 @@
       "tile.sign3right.name": "Right 3-Way Intersection Sign",
       "tile.tlvtransitred.name": "Vertical Transit Stop/Red",
       "tile.tlvrightredflash.name": "Vertical Right Red Flash",
+      "tile.controlboxsmallsilver.name": "Pole-Mount Control Box Small (Silver)",
       "tile.tlvflashupleftred.name": "Vertical Flash Up Left Red",
       "tile.vcs1.name": "Valcom Speaker 1",
       "tile.signtrafficislands.name": "Traffic Islands Ahead Sign",
@@ -11463,6 +11586,7 @@
       "tile.sv1.name": "4 Way Vent 1 (White)",
       "tile.signmotorbike.name": "Motorbike Sign",
       "tile.tlvaborderblackyellow.name": "Vertical Angle Black/Yellow Border",
+      "tile.controlboxsmallmetal.name": "Pole-Mount Control Box Small",
       "tile.signcurve25.name": "Sign Pole Curve Speed 25 Sign",
       "tile.trafficpoleverticalquadmountunpainted.name": "Vertical Traffic Pole with Quad Mount (Unpainted)",
       "tile.cwnpleft.name": "Crosswalk - No Power/Left",
@@ -11526,6 +11650,7 @@
       "tile.vcs5.name": "Valcom Speaker 5",
       "tile.estintrlsve.name": "EST Integrity Red Horn Strobe (Alto Life Safety VE)",
       "tile.signstatepropertynotrasspassing.name": "State Property No Trespassing Sign",
+      "tile.controlboxlargeblack.name": "Pole-Mount Control Box Large (Black)",
       "tile.tl4vgrg.name": "Vertical 4 Head Solid Green Right Green Arrow",
       "tile.signpostcurvyroad.name": "Sign Pole Curvy Road Sign",
       "tile.cwoffright.name": "Crosswalk - Off/Right",
@@ -11630,6 +11755,7 @@
       "tile.signstopherered.name": "Sign Pole Stop Here on Red Sign",
       "tile.sslssswcnve.name": "SS L Series Ceiling White Speaker Strobe (Notifier VE)",
       "tile.gt3wlsve.name": "Gentex Commander 3 White (Alto Life Safety VE)",
+      "tile.controlboxsmallblack.name": "Pole-Mount Control Box Small (Black)",
       "tile.signturnleftyieldped.name": "Turning Left Yield to Pedestrians Sign",
       "tile.mvd1.name": "Modular Vent 1 (Black)",
       "tile.slh.name": "Lithonia Strip Light Half",
