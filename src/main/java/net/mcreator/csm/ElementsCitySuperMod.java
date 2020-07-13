@@ -58,7 +58,6 @@ public class ElementsCitySuperMod implements IFuelHandler, IWorldGenerator {
 		sounds.put(new ResourceLocation("csm", "codetector"), new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "codetector")));
 		sounds.put(new ResourceLocation("csm", "et70_chime"), new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "et70_chime")));
 		sounds.put(new ResourceLocation("csm", "handdryer"), new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "handdryer")));
-		sounds.put(new ResourceLocation("csm", "marchtime_as"), new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "marchtime_as")));
 		sounds.put(new ResourceLocation("csm", "mills_firealarm"), new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "mills_firealarm")));
 		sounds.put(new ResourceLocation("csm", "mt_code3"), new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "mt_code3")));
 		sounds.put(new ResourceLocation("csm", "nest_test"), new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "nest_test")));
@@ -169,6 +168,7 @@ public class ElementsCitySuperMod implements IFuelHandler, IWorldGenerator {
 				new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "sony_dream_machine_1980s")));
 		sounds.put(new ResourceLocation("csm", "oldradio2"), new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "oldradio2")));
 		sounds.put(new ResourceLocation("csm", "threestooges_ve"), new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "threestooges_ve")));
+		sounds.put(new ResourceLocation("csm", "marchtime_as"), new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "marchtime_as")));
 	}
 
 	public void preInit(FMLPreInitializationEvent event) {

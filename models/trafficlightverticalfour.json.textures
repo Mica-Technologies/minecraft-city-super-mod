@@ -107,6 +107,51 @@
         "3": "greenarrowleft"
       },
       "name": "greenleftarrow"
+    },
+    "flashred": {
+      "map": {
+        "0": "flashredsolid",
+        "1": "solidoff",
+        "2": "solidoff",
+        "3": "solidoff"
+      },
+      "name": "flashred"
+    },
+    "flashyellow": {
+      "map": {
+        "0": "solidoff",
+        "1": "flashsolidyellow",
+        "2": "solidoff",
+        "3": "solidoff"
+      },
+      "name": "flashyellow"
+    },
+    "flashredright": {
+      "map": {
+        "0": "flashrightred",
+        "1": "solidoff",
+        "2": "solidoff",
+        "3": "solidoff"
+      },
+      "name": "flashredright"
+    },
+    "flashredleft": {
+      "map": {
+        "0": "flashredleft",
+        "1": "solidoff",
+        "2": "solidoff",
+        "3": "solidoff"
+      },
+      "name": "flashredleft"
+    },
+    "flashyellowright": {
+      "map": {
+        "0": "solidoff",
+        "1": "solidoff",
+        "2": "flashyellowright",
+        "3": "solidoff"
+      },
+      "name": "flashyellowright"
     }
   }
 }

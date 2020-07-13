@@ -35,15 +35,6 @@
       }
     ]
   },
-  "marchtime_as": {
-    "category": "block",
-    "sounds": [
-      {
-        "name": "csm:marchtime_as",
-        "stream": false
-      }
-    ]
-  },
   "mills_firealarm": {
     "category": "block",
     "sounds": [
@@ -769,6 +760,15 @@
     "sounds": [
       {
         "name": "csm:threestooges_ve",
+        "stream": false
+      }
+    ]
+  },
+  "marchtime_as": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:marchtime_as",
         "stream": false
       }
     ]
