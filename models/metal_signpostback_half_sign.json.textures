@@ -251,6 +251,20 @@
         "1": "m6-9.eps"
       },
       "name": "aheadleftright"
+    },
+    "downleft": {
+      "map": {
+        "0": "metal",
+        "1": "m6-2r.eps"
+      },
+      "name": "downleft"
+    },
+    "downright": {
+      "map": {
+        "0": "metal",
+        "1": "m6-2ar.eps"
+      },
+      "name": "downright"
     }
   }
 }

@@ -804,6 +804,20 @@
         "1": "streetsweep_fri_school"
       },
       "name": "streetsweepfrischool"
+    },
+    "stophereflashright": {
+      "map": {
+        "0": "metal",
+        "1": "mutcd_r8-10r.svg"
+      },
+      "name": "stophereflashright"
+    },
+    "stophereright": {
+      "map": {
+        "0": "metal",
+        "1": "r10-6r.eps"
+      },
+      "name": "stophereright"
     }
   }
 }

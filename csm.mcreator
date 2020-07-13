@@ -10282,6 +10282,38 @@
       "compiles": true,
       "locked_code": true,
       "ids": {}
+    },
+    {
+      "name": "Signarrowdownleft",
+      "type": "block",
+      "sortid": 1179,
+      "compiles": true,
+      "locked_code": false,
+      "ids": {}
+    },
+    {
+      "name": "Signarrowdownright",
+      "type": "block",
+      "sortid": 1180,
+      "compiles": true,
+      "locked_code": false,
+      "ids": {}
+    },
+    {
+      "name": "Signstopherered2",
+      "type": "block",
+      "sortid": 1181,
+      "compiles": true,
+      "locked_code": false,
+      "ids": {}
+    },
+    {
+      "name": "Signstophereflashred2",
+      "type": "block",
+      "sortid": 1182,
+      "compiles": true,
+      "locked_code": false,
+      "ids": {}
     }
   ],
   "variable_elements": [
@@ -11242,6 +11274,7 @@
       "tile.et70wplsve.name": "Wheelock ET70-WP Red Outdoor Speaker Strobe (Alto Life Safety VE)",
       "tile.mclacodeapprovedexitsignleft.name": "Edge Lit Exit Sign (Left, Double-Sided)",
       "tile.transformermount.name": "Transformer Mount",
+      "tile.signstophereflashred2.name": "Sign Pole Stop Here on Flashing Red Right Sign",
       "tile.tlsleftredflash.name": "Single Left Red Flash",
       "tile.tlvbikeyellow.name": "Vertical Bike Yellow",
       "tile.controlboxsmallmattewhite.name": "Pole-Mount Control Box Small (Matte White)",
@@ -11332,6 +11365,7 @@
       "itemGroup.tabtrafficsignalshorizontal": "CSM: Horizontal Traffic Signals",
       "tile.lrtlf.name": "Lithonia RTL (Full)",
       "tile.hb1.name": "Alto Code Approved LED Highbay Light 1",
+      "tile.signarrowdownright.name": "Sign Pole Downward Right Arrow Sign",
       "tile.sslshsc.name": "System Sensor LS Red Horn Strobe",
       "tile.tlyv_rrflash.name": "Yellow Flash Right Red Signal Vertical",
       "tile.tlyv_ag.name": "Yellow Ahead Green Signal Vertical",
@@ -11493,6 +11527,7 @@
       "tile.signhovlaneahead.name": "HOV Lane Ahead Sign",
       "tile.cautiondriveways.name": "Caution Driveways Sign",
       "tile.signleftturn.name": "Sign Pole Left Turn Sign",
+      "tile.signarrowdownleft.name": "Sign Pole Downward Left Arrow Sign",
       "tile.simplex4051.name": "Simplex 4051",
       "tile.signpasswithcare.name": "Pass with Care Sign",
       "tile.fjs1.name": "FourJay Speaker 1",
@@ -11821,6 +11856,7 @@
       "tile.trafficpoleverticallightmounttan.name": "Tan Vertical Traffic Pole with Light Mount",
       "tile.signspeed35.name": "Speed Limit 35 Sign",
       "tile.signturnflashred.name": "Turn on Flashing Red Caution Sign",
+      "tile.signstopherered2.name": "Sign Pole Stop Here on Red Right Sign",
       "tile.cts1.name": "Ceiling Tile (Standard 1)",
       "tile.trafficpoleverticallightmount.name": "Vertical Traffic Pole with Light Mount",
       "tile.signhurricaneright.name": "Hurricane Evacuation Route Right Sign",
