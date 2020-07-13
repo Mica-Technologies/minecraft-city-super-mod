@@ -19,11 +19,11 @@ import net.minecraft.item.Item;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.SoundType;
-import net.minecraft.block.BlockStateContainer;
 import net.minecraft.block.BlockDirectional;
 import net.minecraft.block.Block;
 
@@ -92,17 +92,6 @@ public class BlockTL4VFlashR extends ElementsCitySuperMod.ModElement {
 				case DOWN :
 					return new AxisAlignedBB(0D, 0D, 2D, 1D, 1D, -1D);
 			}
-		}
-
-		@SideOnly(Side.CLIENT)
-		@Override
-		public BlockRenderLayer getBlockLayer() {
-			return BlockRenderLayer.CUTOUT_MIPPED;
-		}
-
-		@Override
-		public boolean isFullCube(IBlockState state) {
-			return false;
 		}
 		public static final PropertyBool POWERED = PropertyBool.create("powered");
 		@Override

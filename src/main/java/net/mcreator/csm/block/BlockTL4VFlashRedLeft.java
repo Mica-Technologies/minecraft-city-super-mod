@@ -19,11 +19,11 @@ import net.minecraft.item.Item;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.SoundType;
-import net.minecraft.block.BlockStateContainer;
 import net.minecraft.block.BlockDirectional;
 import net.minecraft.block.Block;
 
