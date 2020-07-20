@@ -10772,6 +10772,26 @@
       "name": "marchtime_as",
       "file": "marchtime_as",
       "category": "block"
+    },
+    {
+      "name": "alto_tornado_warning_newpaul",
+      "file": "alto_tornado_warning_newpaul",
+      "category": "block"
+    },
+    {
+      "name": "alto_tornado_warning_tom",
+      "file": "alto_tornado_warning_tom",
+      "category": "block"
+    },
+    {
+      "name": "alto_weather_forecast_newpaul",
+      "file": "alto_weather_forecast_newpaul",
+      "category": "block"
+    },
+    {
+      "name": "alto_weather_forecast_tom",
+      "file": "alto_weather_forecast_tom",
+      "category": "block"
     }
   ],
   "language_map": {
