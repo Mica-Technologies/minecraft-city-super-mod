@@ -11,19 +11,17 @@ Having an issue with the mod? Error in the documentation or it just isn't clear 
 Contributions and modifications are not limited to the development team, and it is encouraged to file issues and create merge requests.
 
 <img src="https://minotar.net/armor/bust/HawkA97/100.png" width="50"/>
-<br/>
+
 **Name:** Alex<br/>
-**Git:** ah<br/>
-**Minecraft:** HawkA97
-<br/>
-<br/>
+**Git Username:** ah<br/>
+**Minecraft Username:** HawkA97
+
+
 <img src="https://minotar.net/armor/bust/ThatCrazyPandog/100.png" width="50"/>
-<br/>
-**Name:** Brandon
-<br/>
-**Git:** bh
-<br/>
-**Minecraft:** ThatCrazyPandog
+
+**Name:** Brandon<br />
+**Git Username:** bh<br />
+**Minecraft Username:** ThatCrazyPandog
 
 ## Development
 ### IDE/Making Changes
