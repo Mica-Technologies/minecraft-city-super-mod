@@ -1,24 +1,48 @@
-# The MCLA Mod
-## Developers
-The developers currently are hawka97 (Alex) and rinrincodes (Brandon). For more information, and to contact us, please email mayor@cityofmcla.com
+# City Super Mod
+The City Super Mod is a mod for Minecraft 1.12.2 that brings a number of blocks and items to help build your Minecraft city. Initially, the mod was built for the City of MCLA (now City of Alto), but will soon become publicly available as source-code and a compiled mod.
 
-## Development Setup
-To edit, modify and view the MCLA Mod, you need to download and install MCreator 2020.1 or later. Open MCreator and click Clone remote. Enter the following Remote Git repository HTTPS URL: `https://github.com/hawka97/csm.git`, then populate your GitHub username and password and click Setup remote workspace. 
+## Information and Documentation
+Information and documentation for the City Super Mod is available on the [City Super Mod Wiki](https://git.micatechnologies.com/minecraft/city-super-mod/-/wikis/home). This documentation is currently under development, and at this time, may be incomplete or incorrect. 
 
-## Making Changes and Contributing
-In MCreator, before making changes, you need to sync your workspace. Click the blue down arrow in the upper right toolbar. Watch the status bar at the bottom of the screen. If the pull is complete, you will see a message such as "Synced to remote workspace. Local workspace was X changes ahead and X changes behind"
+## Issues
+Having an issue with the mod? Error in the documentation or it just isn't clear enough? Let us know by using the GitLab issue tracker, available in the menu or by [clicking here](https://git.micatechnologies.com/minecraft/city-super-mod/-/issues).
 
-![Status Bar](LOCKED/readme/status.PNG "Status Bar in MCreator")
+## Team
+Contributions and modifications are not limited to the development team, and it is encouraged to file issues and create merge requests.
 
-_Blue Down Arrow:_ PULL  
-_Green Up and Blue Down Arrow:_ SYNC (PUSH AND PULL)  
+<img src="https://minotar.net/armor/bust/HawkA97/100.png" width="50"/>
+<br/>
+**Name:** Alex<br/>
+**Git:** ah<br/>
+**Minecraft:** HawkA97
+<br/>
+<br/>
+<img src="https://minotar.net/armor/bust/ThatCrazyPandog/100.png" width="50"/>
+<br/>
+**Name:** Brandon
+<br/>
+**Git:** bh
+<br/>
+**Minecraft:** ThatCrazyPandog
 
-![Toolbar](LOCKED/readme/toolbar.PNG "Toolbar in MCreator")  
+## Development
+### IDE/Making Changes
+The preferred development environment/IDE for the City Super Mod is [IntelliJ IDEA](https://www.jetbrains.com/idea/download). 
+After opening IntelliJ, choose the option "Get from Version Control", which allows you to download and open an IntelliJ project from a Git server.
 
-<Br>  
+<img src="LOCKED/readme/getfromvctl.png" width="200" alt="Get from Version Control Button Image"/>
 
-__NOTE:__ It is common for MCreator to not pull the changes. Make sure to verify it pulls the latest changes. The SYNC option usually works better than the PULL option, so the SYNC option is recommended where possible. 
+### Contributing Code/Changes
+To contribute code, you will need to push your modifications to the Git server on a new branch. 
+To protect the working code, modification of the `master` branch is not permitted except through merge request. 
+After you submit a merge request, the development team will need to review and approve your modifications/contributions before they can be merged.
+
+To learn more about using Git integration with the IntelliJ IDEA IDE, please see [https://www.jetbrains.com/help/idea/using-git-integration.html](https://www.jetbrains.com/help/idea/using-git-integration.html).
+
+To learn more about the version control system Git, please see [https://git-scm.com/doc](https://git-scm.com/doc).
+
 ## Credits
-The MCLA Mod is developed using MCreator. You can learn more about MCreator by visiting their website, <https://mcreator.net>.
+Development and code for the City Super Mod began with [Pylo MCreator](https://mcreator.net). 
+Current development is performed with the JetBrains IntelliJ IDEA IDE.
 
 
