@@ -1,0 +1,71 @@
+{
+	"credit": "Made with Blockbench",
+	"textures": {
+		"particle": "csm:blocks/4_way_straight_vent_5_black"
+	},
+	"elements": [
+		{
+			"from": [7, 16, 7],
+			"to": [9, 18, 13],
+			"rotation": {"angle": 0, "axis": "y", "origin": [15, 24, 20]},
+			"faces": {
+				"north": {"uv": [0, 0, 16, 16], "texture": "#particle"},
+				"east": {"uv": [0, 0, 16, 16], "texture": "#particle"},
+				"south": {"uv": [0, 0, 16, 16], "texture": "#particle"},
+				"west": {"uv": [0, 0, 16, 16], "texture": "#particle"},
+				"up": {"uv": [0, 0, 16, 16], "texture": "#particle"},
+				"down": {"uv": [0, 0, 16, 16], "texture": "#particle"}
+			}
+		}
+	],
+	"display": {
+		"firstperson_righthand": {
+			"rotation": [0, 180, 0],
+			"scale": [0.4, 0.4, 0.4]
+		},
+		"gui": {
+			"rotation": [0, 180, 0],
+			"scale": [0.3, 0.3, 0.3]
+		},
+		"fixed": {
+			"translation": [0, -0.75, -3],
+			"scale": [0.3, 0.3, 0.3]
+		}
+	},
+	"groups": [
+		{
+			"name": "CenterSignalBody",
+			"origin": [8, 8, 8],
+			"children": []
+		},
+		{
+			"name": "LowerSignalBody",
+			"origin": [8, 8, 8],
+			"children": []
+		},
+		{
+			"name": "UpperSignalCover",
+			"origin": [8, 8, 8],
+			"children": []
+		},
+		{
+			"name": "CenterSignalCover",
+			"origin": [8, 8, 8],
+			"children": []
+		},
+		{
+			"name": "LowerSignalCover",
+			"origin": [8, 8, 8],
+			"children": []
+		},
+		{
+			"name": "TopSignalBody",
+			"origin": [8, 8, 8],
+			"children": []
+		},
+		{
+			"name": "TopSignalCover",
+			"origin": [8, 8, 8],
+			"children": []
+		}, 0]
+}
