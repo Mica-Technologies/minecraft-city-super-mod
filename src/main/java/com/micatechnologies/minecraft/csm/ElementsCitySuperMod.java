@@ -6,6 +6,7 @@
  */
 package com.micatechnologies.minecraft.csm;
 
+import com.micatechnologies.minecraft.csm.sounds.Sounds;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.common.registry.EntityEntry;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
@@ -54,129 +55,7 @@ public class ElementsCitySuperMod implements IFuelHandler, IWorldGenerator {
 	public final List<Supplier<Potion>> potions = new ArrayList<>();
 	public static Map<ResourceLocation, net.minecraft.util.SoundEvent> sounds = new HashMap<>();
 	public ElementsCitySuperMod() {
-		sounds.put(new ResourceLocation("csm", "bell"), new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "bell")));
-		sounds.put(new ResourceLocation("csm", "codetector"), new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "codetector")));
-		sounds.put(new ResourceLocation("csm", "et70_chime"), new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "et70_chime")));
-		sounds.put(new ResourceLocation("csm", "handdryer"), new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "handdryer")));
-		sounds.put(new ResourceLocation("csm", "mills_firealarm"), new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "mills_firealarm")));
-		sounds.put(new ResourceLocation("csm", "mt_code3"), new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "mt_code3")));
-		sounds.put(new ResourceLocation("csm", "nest_test"), new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "nest_test")));
-		sounds.put(new ResourceLocation("csm", "panasonicfan"), new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "panasonicfan")));
-		sounds.put(new ResourceLocation("csm", "2910calcode"), new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "2910calcode")));
-		sounds.put(new ResourceLocation("csm", "4030code44"), new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "4030code44")));
-		sounds.put(new ResourceLocation("csm", "smokealarm"), new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "smokealarm")));
-		sounds.put(new ResourceLocation("csm", "spectralert"), new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "spectralert")));
-		sounds.put(new ResourceLocation("csm", "wheelockas"), new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "wheelockas")));
-		sounds.put(new ResourceLocation("csm", "adaptabell"), new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "adaptabell")));
-		sounds.put(new ResourceLocation("csm", "bell2"), new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "bell2")));
-		sounds.put(new ResourceLocation("csm", "firebell"), new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "firebell")));
-		sounds.put(new ResourceLocation("csm", "kac"), new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "kac")));
-		sounds.put(new ResourceLocation("csm", "svenew"), new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "svenew")));
-		sounds.put(new ResourceLocation("csm", "sveold"), new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "sveold")));
-		sounds.put(new ResourceLocation("csm", "sven"), new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "sven")));
-		sounds.put(new ResourceLocation("csm", "sveo"), new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "sveo")));
-		sounds.put(new ResourceLocation("csm", "wheelock7002t"), new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "wheelock7002t")));
-		sounds.put(new ResourceLocation("csm", "dingblock"), new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "dingblock")));
-		sounds.put(new ResourceLocation("csm", "est_genesis"), new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "est_genesis")));
-		sounds.put(new ResourceLocation("csm", "est_integrity"), new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "est_integrity")));
-		sounds.put(new ResourceLocation("csm", "lms_voice_evac"), new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "lms_voice_evac")));
-		sounds.put(new ResourceLocation("csm", "stahorn"), new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "stahorn")));
-		sounds.put(new ResourceLocation("csm", "7002t_medspeed"), new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "7002t_medspeed")));
-		sounds.put(new ResourceLocation("csm", "7002t_slowspeed"), new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "7002t_slowspeed")));
-		sounds.put(new ResourceLocation("csm", "edwards_adaptahorn_code44"),
-				new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "edwards_adaptahorn_code44")));
-		sounds.put(new ResourceLocation("csm", "gentex_gos_code3"),
-				new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "gentex_gos_code3")));
-		sounds.put(new ResourceLocation("csm", "sae_marchtime"), new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "sae_marchtime")));
-		sounds.put(new ResourceLocation("csm", "simplex_4051_marchtime"),
-				new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "simplex_4051_marchtime")));
-		sounds.put(new ResourceLocation("csm", "broken_7002t"), new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "broken_7002t")));
-		sounds.put(new ResourceLocation("csm", "walksig_wait"), new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "walksig_wait")));
-		sounds.put(new ResourceLocation("csm", "mclalsve"), new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "mclalsve")));
-		sounds.put(new ResourceLocation("csm", "edwards_io_reset"),
-				new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "edwards_io_reset")));
-		sounds.put(new ResourceLocation("csm", "simplex_panel_reset"),
-				new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "simplex_panel_reset")));
-		sounds.put(new ResourceLocation("csm", "pullstation_pull"),
-				new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "pullstation_pull")));
-		sounds.put(new ResourceLocation("csm", "notifier_voice_evac"),
-				new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "notifier_voice_evac")));
-		sounds.put(new ResourceLocation("csm", "simplex_voice_evac_old_alt"),
-				new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "simplex_voice_evac_old_alt")));
-		sounds.put(new ResourceLocation("csm", "PanelComponentAdded"),
-				new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "PanelComponentAdded")));
-		sounds.put(new ResourceLocation("csm", "notifier_voice_evac_alt"),
-				new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "notifier_voice_evac_alt")));
-		sounds.put(new ResourceLocation("csm", "code3_bell"), new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "code3_bell")));
-		sounds.put(new ResourceLocation("csm", "code44_bell"), new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "code44_bell")));
-		sounds.put(new ResourceLocation("csm", "continuous_bell"), new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "continuous_bell")));
-		sounds.put(new ResourceLocation("csm", "marchtime_bell"), new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "marchtime_bell")));
-		sounds.put(new ResourceLocation("csm", "elevator_dooropen"),
-				new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "elevator_dooropen")));
-		sounds.put(new ResourceLocation("csm", "elevator_fan"), new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "elevator_fan")));
-		sounds.put(new ResourceLocation("csm", "mcla_tornado_evac"),
-				new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "mcla_tornado_evac")));
-		sounds.put(new ResourceLocation("csm", "new_simplex_beep"),
-				new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "new_simplex_beep")));
-		sounds.put(new ResourceLocation("csm", "power_linked"), new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "power_linked")));
-		sounds.put(new ResourceLocation("csm", "power_unlinked"), new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "power_unlinked")));
-		sounds.put(new ResourceLocation("csm", "sp_switch_off"), new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "sp_switch_off")));
-		sounds.put(new ResourceLocation("csm", "sp_switch_on"), new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "sp_switch_on")));
-		sounds.put(new ResourceLocation("csm", "standard_switch_off"),
-				new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "standard_switch_off")));
-		sounds.put(new ResourceLocation("csm", "standard_switch_on"),
-				new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "standard_switch_on")));
-		sounds.put(new ResourceLocation("csm", "tl_switch_off"), new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "tl_switch_off")));
-		sounds.put(new ResourceLocation("csm", "tl_switch_on"), new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "tl_switch_on")));
-		sounds.put(new ResourceLocation("csm", "ups_lowbatt"), new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "ups_lowbatt")));
-		sounds.put(new ResourceLocation("csm", "ups_silence"), new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "ups_silence")));
-		sounds.put(new ResourceLocation("csm", "oldradio"), new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "oldradio")));
-		sounds.put(new ResourceLocation("csm", "asteroids_cabinet"),
-				new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "asteroids_cabinet")));
-		sounds.put(new ResourceLocation("csm", "bz_cabinet"), new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "bz_cabinet")));
-		sounds.put(new ResourceLocation("csm", "cp_cabinet"), new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "cp_cabinet")));
-		sounds.put(new ResourceLocation("csm", "galaga_cabinet"), new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "galaga_cabinet")));
-		sounds.put(new ResourceLocation("csm", "miscmd_cabinet"), new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "miscmd_cabinet")));
-		sounds.put(new ResourceLocation("csm", "pacman_cabinet"), new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "pacman_cabinet")));
-		sounds.put(new ResourceLocation("csm", "tempest_cabinet"), new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "tempest_cabinet")));
-		sounds.put(new ResourceLocation("csm", "oldrecordplayer2"),
-				new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "oldrecordplayer2")));
-		sounds.put(new ResourceLocation("csm", "locker_door_close"),
-				new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "locker_door_close")));
-		sounds.put(new ResourceLocation("csm", "locker_door_open"),
-				new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "locker_door_open")));
-		sounds.put(new ResourceLocation("csm", "oldrecordplayer"), new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "oldrecordplayer")));
-		sounds.put(new ResourceLocation("csm", "awful_notifier_ve"),
-				new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "awful_notifier_ve")));
-		sounds.put(new ResourceLocation("csm", "notifier_voice_evac_alt2"),
-				new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "notifier_voice_evac_alt2")));
-		sounds.put(new ResourceLocation("csm", "notifier_tornado_voice_evac"),
-				new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "notifier_tornado_voice_evac")));
-		sounds.put(new ResourceLocation("csm", "fastservice_target_1"),
-				new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "fastservice_target_1")));
-		sounds.put(new ResourceLocation("csm", "fastservice_target_2"),
-				new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "fastservice_target_2")));
-		sounds.put(new ResourceLocation("csm", "fastservice_target_3"),
-				new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "fastservice_target_3")));
-		sounds.put(new ResourceLocation("csm", "fastservice_target_cleared"),
-				new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "fastservice_target_cleared")));
-		sounds.put(new ResourceLocation("csm", "target_helpbutton_press"),
-				new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "target_helpbutton_press")));
-		sounds.put(new ResourceLocation("csm", "target_self_checkout_thanks"),
-				new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "target_self_checkout_thanks")));
-		sounds.put(new ResourceLocation("csm", "sony_dream_machine_1980s"),
-				new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "sony_dream_machine_1980s")));
-		sounds.put(new ResourceLocation("csm", "oldradio2"), new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "oldradio2")));
-		sounds.put(new ResourceLocation("csm", "threestooges_ve"), new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "threestooges_ve")));
-		sounds.put(new ResourceLocation("csm", "marchtime_as"), new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "marchtime_as")));
-		sounds.put(new ResourceLocation("csm", "alto_tornado_warning_newpaul"),
-				new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "alto_tornado_warning_newpaul")));
-		sounds.put(new ResourceLocation("csm", "alto_tornado_warning_tom"),
-				new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "alto_tornado_warning_tom")));
-		sounds.put(new ResourceLocation("csm", "alto_weather_forecast_newpaul"),
-				new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "alto_weather_forecast_newpaul")));
-		sounds.put(new ResourceLocation("csm", "alto_weather_forecast_tom"),
-				new net.minecraft.util.SoundEvent(new ResourceLocation("csm", "alto_weather_forecast_tom")));
+		Sounds.init();
 	}
 
 	public void preInit(FMLPreInitializationEvent event) {
