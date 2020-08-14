@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:rftors"
+    },
+    "powered=false": {
+      "model": "csm:rftors"
+    },
+    "powered=true": {
+      "model": "csm:rftors"
+    }
+  }
+}
