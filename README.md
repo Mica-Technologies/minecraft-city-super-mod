@@ -30,6 +30,17 @@ After opening IntelliJ, choose the option "Get from Version Control", which allo
 
 <img src="LOCKED/readme/getfromvctl.png" width="200" alt="Get from Version Control Button Image"/>
 
+#### Adding a Block
+To add a block, you'll need to do the following:
+ 
+- Create a new block class in `src/main/java/com/micatechnologies/minecraft/csm/block`. 
+- Create a block model file in `src/main/resources/assets/csm/models/block`.
+- Create a block item model file in `src/main/resources/assets/csm/models/item`.
+- Create a block state file in `src/main/resources/assets/csm/blockstates`.
+- Add block name mapping to `src/main/resources/assets/csm/lang/en_us.lang`
+
+If your block model does not use a built-in Minecraft block model base, add the custom block model to `src/main/resources/assets/csm/models/custom`.
+
 ### Contributing Code/Changes
 To contribute code, you will need to push your modifications to the Git server on a new branch. 
 To protect the working code, modification of the `master` branch is not permitted except through merge request. 
