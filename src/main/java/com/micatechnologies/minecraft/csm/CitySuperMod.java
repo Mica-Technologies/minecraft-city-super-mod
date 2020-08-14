@@ -47,8 +47,8 @@ public class CitySuperMod {
 	public static final String MODID = "csm";
 	public static final String VERSION = "2020.5b7";
 	public static final SimpleNetworkWrapper PACKET_HANDLER = NetworkRegistry.INSTANCE.newSimpleChannel("csm:a");
-	@SidedProxy(clientSide = "ClientProxyCitySuperMod", serverSide = "ServerProxyCitySuperMod")
-	public static IProxyCitySuperMod proxy;
+    @SidedProxy( clientSide = "com.micatechnologies.minecraft.csm.ClientProxyCitySuperMod", serverSide = "com.micatechnologies.minecraft.csm.ServerProxyCitySuperMod" )
+    public static IProxyCitySuperMod proxy;
 	@Mod.Instance(MODID)
 	public static CitySuperMod instance;
 	public ElementsCitySuperMod elements = new ElementsCitySuperMod();
