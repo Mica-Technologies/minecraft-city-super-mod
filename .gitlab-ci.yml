@@ -21,15 +21,9 @@ build:
     key: "$CI_COMMIT_REF_NAME"
     policy: push
     paths:
-      - build
       - .gradle
-
-test:
-  stage: test
-  script: gradle check
-  cache:
-    key: "$CI_COMMIT_REF_NAME"
-    policy: pull
+  artifacts:
     paths:
-      - build
-      - .gradle
+      - build/libs/modid-1.0.jar
+      - build/libs/modid-1.0-sources.jar
+    expire_in: 6 mos
