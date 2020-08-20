@@ -1165,4 +1165,5 @@ tile.signroundabout.name=Roundabout Sign
 tile.atls3.name=Atlas Speaker 3
 tile.signnopedestrians.name=No Pedestrians Sign
 tile.trafficpolehorizsignmountwhite.name=White Horizontal Traffic Pole Sign Mount
+tile.tlvasolidred.name=Solid Red Traffic Signal (Angled Vertical)
 csm.highvoltage=High Voltage!
