@@ -1166,4 +1166,7 @@ tile.atls3.name=Atlas Speaker 3
 tile.signnopedestrians.name=No Pedestrians Sign
 tile.trafficpolehorizsignmountwhite.name=White Horizontal Traffic Pole Sign Mount
 tile.tlvasolidred.name=Solid Red Traffic Signal (Angled Vertical)
+tile.tlvasolidyellow.name=Solid Yellow Traffic Signal (Angled Vertical)
+tile.tlvasolidgreen.name=Solid Green Traffic Signal (Angled Vertical)
+tile.tlvaaheadgreen.name=Ahead Green Traffic Signal (Angled Vertical)
 csm.highvoltage=High Voltage!
