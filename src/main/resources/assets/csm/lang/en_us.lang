@@ -1169,4 +1169,5 @@ tile.tlvasolidred.name=Solid Red Traffic Signal (Angled Vertical)
 tile.tlvasolidyellow.name=Solid Yellow Traffic Signal (Angled Vertical)
 tile.tlvasolidgreen.name=Solid Green Traffic Signal (Angled Vertical)
 tile.tlvaaheadgreen.name=Ahead Green Traffic Signal (Angled Vertical)
+tile.polewiremount.name=Pole Wire Mount
 csm.highvoltage=High Voltage!
