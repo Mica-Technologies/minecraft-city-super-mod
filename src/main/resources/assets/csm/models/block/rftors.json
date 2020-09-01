@@ -1,7 +1,7 @@
 {
   "parent": "block/cube_all",
   "textures": {
-    "all": "csm:blocks/steel-converter-box",
-    "particle": "csm:blocks/steel-converter-box"
+    "all": "csm:blocks/electrical_box",
+    "particle": "csm:blocks/electrical_box"
   }
 }
