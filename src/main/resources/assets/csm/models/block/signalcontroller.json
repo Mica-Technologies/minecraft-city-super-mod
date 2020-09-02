@@ -1,0 +1,12 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "up": "csm:blocks/signal_controller_front",
+    "down": "csm:blocks/signal_controller_side",
+    "north": "csm:blocks/signal_controller_side",
+    "south": "csm:blocks/signal_controller_side",
+    "east": "csm:blocks/signal_controller_side",
+    "west": "csm:blocks/signal_controller_side",
+    "particle": "csm:blocks/signal_controller_side"
+  }
+}

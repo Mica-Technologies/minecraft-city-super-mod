@@ -1,0 +1,64 @@
+{
+  "variants": {
+    "color=0,facing=north": {
+      "model": "csm:tlvsolidred"
+    },
+    "color=0,facing=east": {
+      "model": "csm:tlvsolidred",
+      "y": 90
+    },
+    "color=0,facing=south": {
+      "model": "csm:tlvsolidred",
+      "y": 180
+    },
+    "color=0,facing=west": {
+      "model": "csm:tlvsolidred",
+      "y": 270
+    },
+    "color=1,facing=north": {
+      "model": "csm:tlvsolidyellow"
+    },
+    "color=1,facing=east": {
+      "model": "csm:tlvsolidyellow",
+      "y": 90
+    },
+    "color=1,facing=south": {
+      "model": "csm:tlvsolidyellow",
+      "y": 180
+    },
+    "color=1,facing=west": {
+      "model": "csm:tlvsolidyellow",
+      "y": 270
+    },
+    "color=2,facing=north": {
+      "model": "csm:tlvsolidgreen"
+    },
+    "color=2,facing=east": {
+      "model": "csm:tlvsolidgreen",
+      "y": 90
+    },
+    "color=2,facing=south": {
+      "model": "csm:tlvsolidgreen",
+      "y": 180
+    },
+    "color=2,facing=west": {
+      "model": "csm:tlvsolidgreen",
+      "y": 270
+    },
+    "color=3,facing=north": {
+      "model": "csm:tlvoff"
+    },
+    "color=3,facing=east": {
+      "model": "csm:tlvoff",
+      "y": 90
+    },
+    "color=3,facing=south": {
+      "model": "csm:tlvoff",
+      "y": 180
+    },
+    "color=3,facing=west": {
+      "model": "csm:tlvoff",
+      "y": 270
+    }
+  }
+}
