@@ -16,13 +16,13 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @ElementsCitySuperMod.ModElement.Tag
-public class BlockControllableVerticalLeftSignal extends ElementsCitySuperMod.ModElement
+public class BlockControllableVerticalRailSignal extends ElementsCitySuperMod.ModElement
 {
-    @GameRegistry.ObjectHolder( "csm:controllableverticalleftsignal" )
+    @GameRegistry.ObjectHolder( "csm:controllableverticalrailsignal" )
     public static final Block block = null;
 
-    public BlockControllableVerticalLeftSignal( ElementsCitySuperMod instance ) {
-        super( instance, 1580 );
+    public BlockControllableVerticalRailSignal( ElementsCitySuperMod instance ) {
+        super( instance, 1581 );
     }
 
     @Override
@@ -35,7 +35,7 @@ public class BlockControllableVerticalLeftSignal extends ElementsCitySuperMod.Mo
     @Override
     public void registerModels( ModelRegistryEvent event ) {
         ModelLoader.setCustomModelResourceLocation( Item.getItemFromBlock( block ), 0,
-                                                    new ModelResourceLocation( "csm:controllableverticalleftsignal",
+                                                    new ModelResourceLocation( "csm:controllableverticalrailsignal",
                                                                                "inventory" ) );
     }
 
@@ -43,8 +43,8 @@ public class BlockControllableVerticalLeftSignal extends ElementsCitySuperMod.Mo
     {
         public BlockCustom() {
             super( Material.ROCK );
-            setRegistryName( "controllableverticalleftsignal" );
-            setUnlocalizedName( "controllableverticalleftsignal" );
+            setRegistryName( "controllableverticalrailsignal" );
+            setUnlocalizedName( "controllableverticalrailsignal" );
             setSoundType( SoundType.GROUND );
             setHarvestLevel( "pickaxe", 1 );
             setHardness( 2F );
@@ -58,7 +58,7 @@ public class BlockControllableVerticalLeftSignal extends ElementsCitySuperMod.Mo
 
         @Override
         public SIGNAL_SIDE getSignalSide() {
-            return SIGNAL_SIDE.LEFT;
+            return SIGNAL_SIDE.PROTECTED_AHEAD;
         }
 
     }

@@ -5,10 +5,18 @@ import com.micatechnologies.minecraft.csm.creativetab.TabTrafficSignalsVertical;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.state.BlockStateContainer;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.World;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.common.registry.GameRegistry;
@@ -16,12 +24,12 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @ElementsCitySuperMod.ModElement.Tag
-public class BlockControllableVerticalLeftSignal extends ElementsCitySuperMod.ModElement
+public class BlockControllableVerticalUpLeftSignal extends ElementsCitySuperMod.ModElement
 {
-    @GameRegistry.ObjectHolder( "csm:controllableverticalleftsignal" )
+    @GameRegistry.ObjectHolder( "csm:controllableverticalupleftsignal" )
     public static final Block block = null;
 
-    public BlockControllableVerticalLeftSignal( ElementsCitySuperMod instance ) {
+    public BlockControllableVerticalUpLeftSignal( ElementsCitySuperMod instance ) {
         super( instance, 1580 );
     }
 
@@ -35,7 +43,7 @@ public class BlockControllableVerticalLeftSignal extends ElementsCitySuperMod.Mo
     @Override
     public void registerModels( ModelRegistryEvent event ) {
         ModelLoader.setCustomModelResourceLocation( Item.getItemFromBlock( block ), 0,
-                                                    new ModelResourceLocation( "csm:controllableverticalleftsignal",
+                                                    new ModelResourceLocation( "csm:controllableverticalupleftsignal",
                                                                                "inventory" ) );
     }
 
@@ -43,8 +51,8 @@ public class BlockControllableVerticalLeftSignal extends ElementsCitySuperMod.Mo
     {
         public BlockCustom() {
             super( Material.ROCK );
-            setRegistryName( "controllableverticalleftsignal" );
-            setUnlocalizedName( "controllableverticalleftsignal" );
+            setRegistryName( "controllableverticalupleftsignal" );
+            setUnlocalizedName( "controllableverticalupleftsignal" );
             setSoundType( SoundType.GROUND );
             setHarvestLevel( "pickaxe", 1 );
             setHardness( 2F );

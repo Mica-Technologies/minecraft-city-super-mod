@@ -13,27 +13,52 @@ import java.util.ArrayList;
 @ElementsCitySuperMod.ModElement.Tag
 public class TileEntityTrafficSignalController extends TileEntity
 {
-    private static final int     NS_LEFT_CYCLE_INDEX      = 0;
-    private static final int     NS_AHEAD_CYCLE_INDEX     = 1;
-    private static final int     NS_RIGHT_CYCLE_INDEX     = 2;
-    private static final int     NS_CROSSWALK_CYCLE_INDEX = 3;
-    private static final int     EW_LEFT_CYCLE_INDEX      = 4;
-    private static final int     EW_AHEAD_CYCLE_INDEX     = 5;
-    private static final int     EW_RIGHT_CYCLE_INDEX     = 6;
-    private static final int     EW_CROSSWALK_CYCLE_INDEX = 7;
-    private static final int     CYCLE_LENGTH_INDEX       = 8;
-    private static final int[][] SIGNAL_CYCLES_LIST       = { { 0, 0, 0, 0, 0, 0, 2, 0, 3 },
-                                                              { 2, 0, 0, 0, 0, 0, 2, 0, 16 },
-                                                              { 1, 0, 0, 0, 0, 0, 1, 0, 5 },
-                                                              { 0, 0, 0, 0, 0, 0, 0, 1, 3 },
-                                                              { 0, 2, 2, 0, 0, 0, 0, 1, 24 },
-                                                              { 0, 1, 2, 0, 0, 0, 0, 0, 5 },
-                                                              { 0, 0, 2, 0, 0, 0, 0, 0, 3 },
-                                                              { 0, 0, 2, 0, 2, 0, 0, 0, 16 },
-                                                              { 0, 0, 1, 0, 1, 0, 0, 0, 5 },
-                                                              { 0, 0, 0, 1, 0, 0, 0, 0, 3 },
-                                                              { 0, 0, 0, 1, 0, 2, 2, 0, 24 },
-                                                              { 0, 0, 0, 0, 0, 1, 2, 0, 5 } };
+    private static final int     NS_PROTECTED_AHEAD_CYCLE_INDEX = 0;
+    private static final int     NS_LEFT_CYCLE_INDEX            = 1;
+    private static final int     NS_AHEAD_CYCLE_INDEX           = 2;
+    private static final int     NS_RIGHT_CYCLE_INDEX           = 3;
+    private static final int     NS_CROSSWALK_CYCLE_INDEX       = 4;
+    private static final int     EW_PROTECTED_AHEAD_CYCLE_INDEX = 5;
+    private static final int     EW_LEFT_CYCLE_INDEX            = 6;
+    private static final int     EW_AHEAD_CYCLE_INDEX           = 7;
+    private static final int     EW_RIGHT_CYCLE_INDEX           = 8;
+    private static final int     EW_CROSSWALK_CYCLE_INDEX       = 9;
+    private static final int     CYCLE_LENGTH_INDEX             = 10;
+    private static final int[][] CYCLE_LIST_0                   = { { 3, 0, 3, 0, 3, 3, 0, 3, 3, 3, 1 },
+                                                                    { 1, 3, 1, 3, 3, 3, 3, 0, 0, 3, 1 } };
+
+    private static final int[][] CYCLE_LIST_1 = { { 3, 0, 0, 0, 0, 3, 0, 0, 2, 0, 20 },
+                                                  { 3, 2, 0, 0, 0, 3, 0, 0, 2, 0, 40 },
+                                                  { 3, 1, 0, 0, 0, 3, 0, 0, 1, 0, 20 },
+                                                  { 3, 0, 0, 0, 0, 3, 0, 0, 0, 1, 20 },
+                                                  { 3, 0, 2, 2, 0, 3, 0, 0, 0, 1, 55 },
+                                                  { 3, 0, 1, 2, 0, 3, 0, 0, 0, 0, 20 },
+                                                  { 3, 0, 0, 2, 0, 3, 0, 0, 0, 0, 20 },
+                                                  { 3, 0, 0, 2, 0, 3, 2, 0, 0, 0, 40 },
+                                                  { 3, 0, 0, 1, 0, 3, 1, 0, 0, 0, 20 },
+                                                  { 3, 0, 0, 0, 1, 3, 0, 0, 0, 0, 20 },
+                                                  { 3, 0, 0, 0, 1, 3, 0, 2, 2, 0, 55 },
+                                                  { 3, 0, 0, 0, 0, 3, 0, 1, 2, 0, 20 } };
+
+    private static final int[][] CYCLE_LIST_2 = { { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 20 },
+                                                  { 0, 2, 0, 0, 0, 0, 0, 0, 2, 0, 40 },
+                                                  { 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 20 },
+                                                  { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 20 },
+                                                  { 2, 0, 2, 0, 0, 0, 0, 0, 0, 1, 55 },
+                                                  { 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 20 },
+                                                  { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 20 },
+                                                  { 0, 0, 0, 2, 0, 0, 2, 0, 0, 0, 40 },
+                                                  { 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 20 },
+                                                  { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 20 },
+                                                  { 0, 0, 0, 0, 1, 2, 0, 2, 0, 0, 55 },
+                                                  { 0, 0, 0, 0, 1, 1, 0, 1, 0, 0, 20 } };
+
+    private static final int[][] CYCLE_LIST_3 = { { 3, 0, 0, 0, 0, 3, 0, 0, 0, 1, 20 },
+                                                  { 3, 0, 2, 2, 0, 3, 0, 0, 0, 1, 55 },
+                                                  { 3, 0, 1, 1, 0, 3, 0, 0, 0, 0, 20 },
+                                                  { 3, 0, 0, 0, 1, 3, 0, 0, 0, 0, 20 },
+                                                  { 3, 0, 0, 0, 1, 3, 0, 2, 2, 0, 55 },
+                                                  { 3, 0, 0, 0, 0, 3, 0, 1, 1, 0, 20 } };
 
     private static final String                KEY_CURRENT_CYCLE_TIME = "CurrCycleTime";
     private static final String                KEY_CURRENT_CYCLE      = "CurrCycle";
@@ -157,23 +182,9 @@ public class TileEntityTrafficSignalController extends TileEntity
         return false;
     }
 
-    public void cycleSignals( World world, boolean powered ) {
-        // Reset current cycle if out of bounds
-        if ( currentCycle >= SIGNAL_CYCLES_LIST.length ) {
-            currentCycle = 0;
-            currentCycleTime = 0;
-        }
+    private boolean lastPowered = false;
 
-        // Get cycle
-        if ( currentCycleTime++ > SIGNAL_CYCLES_LIST[ currentCycle ][ CYCLE_LENGTH_INDEX ] ) {
-            currentCycle++;
-            currentCycleTime = 0;
-        }
-        if ( currentCycle >= SIGNAL_CYCLES_LIST.length ) {
-            currentCycle = 0;
-            currentCycleTime = 0;
-        }
-
+    public void updateSignals( int[][] cycle, boolean powered ) {
         // Update N/S Signals
         for ( BlockPos nsBlockPos : northSouthSignals ) {
             IBlockState blockState = world.getBlockState( nsBlockPos );
@@ -184,22 +195,28 @@ public class TileEntityTrafficSignalController extends TileEntity
                 if ( powered &&
                         controllableSignal.getSignalSide() == AbstractBlockControllableSignal.SIGNAL_SIDE.LEFT ) {
                     AbstractBlockControllableSignal.changeSignalColor( world, nsBlockPos,
-                                                                       SIGNAL_CYCLES_LIST[ currentCycle ][ NS_LEFT_CYCLE_INDEX ] );
+                                                                       cycle[ currentCycle ][ NS_LEFT_CYCLE_INDEX ] );
                 }
                 else if ( powered &&
                         controllableSignal.getSignalSide() == AbstractBlockControllableSignal.SIGNAL_SIDE.AHEAD ) {
                     AbstractBlockControllableSignal.changeSignalColor( world, nsBlockPos,
-                                                                       SIGNAL_CYCLES_LIST[ currentCycle ][ NS_AHEAD_CYCLE_INDEX ] );
+                                                                       cycle[ currentCycle ][ NS_AHEAD_CYCLE_INDEX ] );
                 }
                 else if ( powered &&
                         controllableSignal.getSignalSide() == AbstractBlockControllableSignal.SIGNAL_SIDE.RIGHT ) {
                     AbstractBlockControllableSignal.changeSignalColor( world, nsBlockPos,
-                                                                       SIGNAL_CYCLES_LIST[ currentCycle ][ NS_RIGHT_CYCLE_INDEX ] );
+                                                                       cycle[ currentCycle ][ NS_RIGHT_CYCLE_INDEX ] );
                 }
                 else if ( powered &&
                         controllableSignal.getSignalSide() == AbstractBlockControllableSignal.SIGNAL_SIDE.CROSSWALK ) {
                     AbstractBlockControllableSignal.changeSignalColor( world, nsBlockPos,
-                                                                       SIGNAL_CYCLES_LIST[ currentCycle ][ NS_CROSSWALK_CYCLE_INDEX ] );
+                                                                       cycle[ currentCycle ][ NS_CROSSWALK_CYCLE_INDEX ] );
+                }
+                else if ( powered &&
+                        controllableSignal.getSignalSide() ==
+                                AbstractBlockControllableSignal.SIGNAL_SIDE.PROTECTED_AHEAD ) {
+                    AbstractBlockControllableSignal.changeSignalColor( world, nsBlockPos,
+                                                                       cycle[ currentCycle ][ NS_PROTECTED_AHEAD_CYCLE_INDEX ] );
                 }
                 else {
                     AbstractBlockControllableSignal.changeSignalColor( world, nsBlockPos, 3 );
@@ -218,28 +235,82 @@ public class TileEntityTrafficSignalController extends TileEntity
                 if ( powered &&
                         controllableSignal.getSignalSide() == AbstractBlockControllableSignal.SIGNAL_SIDE.LEFT ) {
                     AbstractBlockControllableSignal.changeSignalColor( world, ewBlockPos,
-                                                                       SIGNAL_CYCLES_LIST[ currentCycle ][ EW_LEFT_CYCLE_INDEX ] );
+                                                                       cycle[ currentCycle ][ EW_LEFT_CYCLE_INDEX ] );
                 }
                 else if ( powered &&
                         controllableSignal.getSignalSide() == AbstractBlockControllableSignal.SIGNAL_SIDE.AHEAD ) {
                     AbstractBlockControllableSignal.changeSignalColor( world, ewBlockPos,
-                                                                       SIGNAL_CYCLES_LIST[ currentCycle ][ EW_AHEAD_CYCLE_INDEX ] );
+                                                                       cycle[ currentCycle ][ EW_AHEAD_CYCLE_INDEX ] );
                 }
                 else if ( powered &&
                         controllableSignal.getSignalSide() == AbstractBlockControllableSignal.SIGNAL_SIDE.RIGHT ) {
                     AbstractBlockControllableSignal.changeSignalColor( world, ewBlockPos,
-                                                                       SIGNAL_CYCLES_LIST[ currentCycle ][ EW_RIGHT_CYCLE_INDEX ] );
+                                                                       cycle[ currentCycle ][ EW_RIGHT_CYCLE_INDEX ] );
                 }
                 else if ( powered &&
                         controllableSignal.getSignalSide() == AbstractBlockControllableSignal.SIGNAL_SIDE.CROSSWALK ) {
                     AbstractBlockControllableSignal.changeSignalColor( world, ewBlockPos,
-                                                                       SIGNAL_CYCLES_LIST[ currentCycle ][ EW_CROSSWALK_CYCLE_INDEX ] );
+                                                                       cycle[ currentCycle ][ EW_CROSSWALK_CYCLE_INDEX ] );
+                }
+                else if ( powered &&
+                        controllableSignal.getSignalSide() ==
+                                AbstractBlockControllableSignal.SIGNAL_SIDE.PROTECTED_AHEAD ) {
+                    AbstractBlockControllableSignal.changeSignalColor( world, ewBlockPos,
+                                                                       cycle[ currentCycle ][ EW_PROTECTED_AHEAD_CYCLE_INDEX ] );
                 }
                 else {
                     AbstractBlockControllableSignal.changeSignalColor( world, ewBlockPos, 3 );
                 }
             }
 
+        }
+    }
+
+    public void cycleSignals( World world, boolean powered, int cycleIndex ) {
+        // Get cycle
+        int[][] currCycleArr;
+        if ( cycleIndex == 1 ) {
+            currCycleArr = CYCLE_LIST_1;
+        }
+        else if ( cycleIndex == 2 ) {
+            currCycleArr = CYCLE_LIST_2;
+        }
+        else if ( cycleIndex == 3 ) {
+            currCycleArr = CYCLE_LIST_3;
+        }
+        else {
+            currCycleArr = CYCLE_LIST_0;
+        }
+
+        // Reset current cycle if out of bounds
+        boolean cycleChanged = false;
+        if ( currentCycle >= currCycleArr.length ) {
+            currentCycle = 0;
+            currentCycleTime = 0;
+            cycleChanged = true;
+        }
+
+        // Check for power change
+        if (lastPowered != powered) {
+            cycleChanged = true;
+            lastPowered = powered;
+        }
+
+        // Get cycle
+        if ( currentCycleTime++ > currCycleArr[ currentCycle ][ CYCLE_LENGTH_INDEX ] ) {
+            currentCycle++;
+            currentCycleTime = 0;
+            cycleChanged = true;
+        }
+        if ( currentCycle >= currCycleArr.length ) {
+            currentCycle = 0;
+            currentCycleTime = 0;
+            cycleChanged = true;
+        }
+
+        // Update signals if cycle changed
+        if ( cycleChanged ) {
+            updateSignals( currCycleArr, powered );
         }
     }
 }

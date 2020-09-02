@@ -2,10 +2,13 @@ package com.micatechnologies.minecraft.csm.item;
 
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
 import com.micatechnologies.minecraft.csm.block.AbstractBlockControllableSignal;
+import com.micatechnologies.minecraft.csm.block.BlockControllableCrosswalkLeftMount;
+import com.micatechnologies.minecraft.csm.block.BlockControllableCrosswalkRightMount;
 import com.micatechnologies.minecraft.csm.block.BlockTrafficSignalController;
 import com.micatechnologies.minecraft.csm.creativetab.TabMCLAOtherTab;
 import com.micatechnologies.minecraft.csm.creativetab.TabMCLARoadsTab;
 import com.micatechnologies.minecraft.csm.tiles.TileEntityTrafficSignalController;
+import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.util.ITooltipFlag;
@@ -95,12 +98,27 @@ public class ItemNSSignalLinker extends ElementsCitySuperMod.ModElement
                 return EnumActionResult.FAIL;
             }
             else if ( signalControllerPos != null && state.getBlock() instanceof AbstractBlockControllableSignal ) {
+                Block clickedBlock = state.getBlock();
                 TileEntity tileEntity = worldIn.getTileEntity( signalControllerPos );
                 if ( tileEntity instanceof TileEntityTrafficSignalController ) {
                     TileEntityTrafficSignalController tileEntityTrafficSignalController
                             = ( TileEntityTrafficSignalController ) tileEntity;
                     boolean linked = tileEntityTrafficSignalController.addNSSignal( pos );
-                    if ( !worldIn.isRemote && linked ) {
+                    if ( !worldIn.isRemote &&
+                            linked &&
+                            ( clickedBlock instanceof BlockControllableCrosswalkLeftMount.BlockCustom ||
+                                    clickedBlock instanceof BlockControllableCrosswalkRightMount.BlockCustom ) ) {
+                        player.sendMessage( new TextComponentString(
+                                "Crosswalk light connected to Primary circuit of signal controller at " +
+                                        "(" +
+                                        pos.getX() +
+                                        "," +
+                                        pos.getY() +
+                                        "," +
+                                        pos.getZ() +
+                                        ")" ) );
+                    }
+                    else if ( !worldIn.isRemote && linked ) {
                         player.sendMessage( new TextComponentString(
                                 "Signal connected to Primary circuit of signal controller at " +
                                         "(" +
@@ -115,7 +133,7 @@ public class ItemNSSignalLinker extends ElementsCitySuperMod.ModElement
                 else {
                     if ( !worldIn.isRemote ) {
                         player.sendMessage(
-                                new TextComponentString( "Lost connection to previously connected " + "controller!" ) );
+                                new TextComponentString( "Lost connection to previously connected controller!" ) );
                     }
                 }
 
@@ -142,7 +160,7 @@ public class ItemNSSignalLinker extends ElementsCitySuperMod.ModElement
         @Override
         public void addInformation( ItemStack itemstack, World world, List< String > list, ITooltipFlag flag ) {
             super.addInformation( itemstack, world, list, flag );
-            list.add( "Link traffic signals to the N/S circuit of a signal controller." );
+            list.add( "Link traffic signals to the Primary circuit of a signal controller." );
         }
     }
 }

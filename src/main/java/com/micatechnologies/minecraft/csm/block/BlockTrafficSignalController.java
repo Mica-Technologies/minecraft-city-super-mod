@@ -3,6 +3,8 @@ package com.micatechnologies.minecraft.csm.block;
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
 import com.micatechnologies.minecraft.csm.creativetab.TabMCLAElectricTab;
 import com.micatechnologies.minecraft.csm.creativetab.TabMCLARoadsTab;
+import com.micatechnologies.minecraft.csm.item.ItemEWSignalLinker;
+import com.micatechnologies.minecraft.csm.item.ItemNSSignalLinker;
 import com.micatechnologies.minecraft.csm.tiles.TileEntityForgeEnergyConsumer;
 import com.micatechnologies.minecraft.csm.tiles.TileEntityTrafficSignalController;
 import net.minecraft.block.Block;
@@ -12,6 +14,7 @@ import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.properties.PropertyDirection;
+import net.minecraft.block.properties.PropertyInteger;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
@@ -26,6 +29,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.ModelRegistryEvent;
@@ -70,8 +74,16 @@ public class BlockTrafficSignalController extends ElementsCitySuperMod.ModElemen
 
     public static class BlockCustom extends Block implements ITileEntityProvider
     {
-
-        public static final PropertyBool POWERED = PropertyBool.create( "powered" );
+        public static final int             MIN_CYCLE_INDEX = 0;
+        public static final int             MAX_CYCLE_INDEX = 3;
+        public static final String[]        CYCLE_NAMES     = { "Flash",
+                                                                "Standard w/ Protected Left",
+                                                                "Standard w/ Protected Left " +
+                                                                        "and Right (Train/Bike Lane Compatible)",
+                                                                "Standard with No Protected Turns" };
+        public static final PropertyBool    POWERED         = PropertyBool.create( "powered" );
+        public static final PropertyInteger CYCLEINDEX      = PropertyInteger.create( "cycleindex", MIN_CYCLE_INDEX,
+                                                                                      MAX_CYCLE_INDEX );
 
         public BlockCustom() {
             super( Material.ROCK );
@@ -100,17 +112,17 @@ public class BlockTrafficSignalController extends ElementsCitySuperMod.ModElemen
 
         @Override
         public IBlockState getStateFromMeta( int meta ) {
-            return getDefaultState().withProperty( POWERED, ( meta & 8 ) != 0 );
+            return getDefaultState().withProperty( POWERED, ( meta & 8 ) != 0 ).withProperty( CYCLEINDEX, meta % 8 );
         }
 
         @Override
         public int getMetaFromState( IBlockState state ) {
-            return state.getValue( POWERED ) ? 8 : 0;
+            return ( state.getValue( POWERED ) ? 8 : 0 ) + state.getValue( CYCLEINDEX );
         }
 
         @Override
         protected BlockStateContainer createBlockState() {
-            return new BlockStateContainer( this, POWERED );
+            return new BlockStateContainer( this, POWERED, CYCLEINDEX );
         }
 
         @Override
@@ -123,11 +135,18 @@ public class BlockTrafficSignalController extends ElementsCitySuperMod.ModElemen
             boolean powered = p_updateTick_3_.getValue( POWERED );
 
             TileEntity tileEntity = p_updateTick_1_.getTileEntity( p_updateTick_2_ );
+            int cycleIndex;
+            try {
+                cycleIndex = p_updateTick_3_.getValue( CYCLEINDEX );
+            }
+            catch ( Exception e ) {
+                cycleIndex = MIN_CYCLE_INDEX;
+            }
 
             if ( tileEntity instanceof TileEntityTrafficSignalController ) {
                 TileEntityTrafficSignalController tileEntityTrafficSignalController
                         = ( TileEntityTrafficSignalController ) tileEntity;
-                tileEntityTrafficSignalController.cycleSignals( p_updateTick_1_, powered );
+                tileEntityTrafficSignalController.cycleSignals( p_updateTick_1_, powered, cycleIndex );
 
             }
 
@@ -136,7 +155,7 @@ public class BlockTrafficSignalController extends ElementsCitySuperMod.ModElemen
 
         @Override
         public int tickRate( World p_tickRate_1_ ) {
-            return 20;
+            return 5;
         }
 
         @Override
@@ -156,10 +175,35 @@ public class BlockTrafficSignalController extends ElementsCitySuperMod.ModElemen
                                          float p_onBlockActivated_8_,
                                          float p_onBlockActivated_9_ )
         {
-            updateTick( p_onBlockActivated_1_, p_onBlockActivated_2_, p_onBlockActivated_3_, new Random() );
-            return super.onBlockActivated( p_onBlockActivated_1_, p_onBlockActivated_2_, p_onBlockActivated_3_,
-                                           p_onBlockActivated_4_, p_onBlockActivated_5_, p_onBlockActivated_6_,
-                                           p_onBlockActivated_7_, p_onBlockActivated_8_, p_onBlockActivated_9_ );
+            if ( p_onBlockActivated_4_.inventory.getCurrentItem() != null &&
+                    ( p_onBlockActivated_4_.inventory.getCurrentItem()
+                                                     .getItem() instanceof ItemEWSignalLinker.ItemCustom ||
+                            p_onBlockActivated_4_.inventory.getCurrentItem()
+                                                           .getItem() instanceof ItemNSSignalLinker.ItemCustom ) ) {
+                return super.onBlockActivated( p_onBlockActivated_1_, p_onBlockActivated_2_, p_onBlockActivated_3_,
+                                               p_onBlockActivated_4_, p_onBlockActivated_5_, p_onBlockActivated_6_,
+                                               p_onBlockActivated_7_, p_onBlockActivated_8_, p_onBlockActivated_9_ );
+            }
+
+            int cycleIndex;
+            try {
+                cycleIndex = p_onBlockActivated_3_.getValue( CYCLEINDEX );
+            }
+            catch ( Exception e ) {
+                cycleIndex = MIN_CYCLE_INDEX;
+            }
+            cycleIndex++;
+            if ( cycleIndex > MAX_CYCLE_INDEX ) {
+                cycleIndex = MIN_CYCLE_INDEX;
+            }
+            p_onBlockActivated_1_.setBlockState( p_onBlockActivated_2_,
+                                                 p_onBlockActivated_3_.withProperty( CYCLEINDEX, cycleIndex ), 3 );
+            if ( !p_onBlockActivated_1_.isRemote ) {
+                p_onBlockActivated_4_.sendMessage(
+                        new TextComponentString( "Switching controller to mode: " + CYCLE_NAMES[ cycleIndex ] ) );
+            }
+
+            return true;
         }
 
         @Override

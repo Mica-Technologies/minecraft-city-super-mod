@@ -1,0 +1,64 @@
+{
+  "variants": {
+    "color=0,facing=north": {
+      "model": "csm:tlvtransitred"
+    },
+    "color=0,facing=east": {
+      "model": "csm:tlvtransitred",
+      "y": 90
+    },
+    "color=0,facing=south": {
+      "model": "csm:tlvtransitred",
+      "y": 180
+    },
+    "color=0,facing=west": {
+      "model": "csm:tlvtransitred",
+      "y": 270
+    },
+    "color=1,facing=north": {
+      "model": "csm:tlvtransityellow"
+    },
+    "color=1,facing=east": {
+      "model": "csm:tlvtransityellow",
+      "y": 90
+    },
+    "color=1,facing=south": {
+      "model": "csm:tlvtransityellow",
+      "y": 180
+    },
+    "color=1,facing=west": {
+      "model": "csm:tlvtransityellow",
+      "y": 270
+    },
+    "color=2,facing=north": {
+      "model": "csm:tlvtransitgreen"
+    },
+    "color=2,facing=east": {
+      "model": "csm:tlvtransitgreen",
+      "y": 90
+    },
+    "color=2,facing=south": {
+      "model": "csm:tlvtransitgreen",
+      "y": 180
+    },
+    "color=2,facing=west": {
+      "model": "csm:tlvtransitgreen",
+      "y": 270
+    },
+    "color=3,facing=north": {
+      "model": "csm:tlvoff"
+    },
+    "color=3,facing=east": {
+      "model": "csm:tlvoff",
+      "y": 90
+    },
+    "color=3,facing=south": {
+      "model": "csm:tlvoff",
+      "y": 180
+    },
+    "color=3,facing=west": {
+      "model": "csm:tlvoff",
+      "y": 270
+    }
+  }
+}

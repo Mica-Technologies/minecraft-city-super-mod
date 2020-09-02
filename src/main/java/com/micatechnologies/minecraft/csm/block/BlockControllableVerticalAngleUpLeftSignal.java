@@ -16,13 +16,13 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @ElementsCitySuperMod.ModElement.Tag
-public class BlockControllableVerticalLeftSignal extends ElementsCitySuperMod.ModElement
+public class BlockControllableVerticalAngleUpLeftSignal extends ElementsCitySuperMod.ModElement
 {
-    @GameRegistry.ObjectHolder( "csm:controllableverticalleftsignal" )
+    @GameRegistry.ObjectHolder( "csm:controllableverticalangleupleftsignal" )
     public static final Block block = null;
 
-    public BlockControllableVerticalLeftSignal( ElementsCitySuperMod instance ) {
-        super( instance, 1580 );
+    public BlockControllableVerticalAngleUpLeftSignal( ElementsCitySuperMod instance ) {
+        super( instance, 1582 );
     }
 
     @Override
@@ -35,7 +35,7 @@ public class BlockControllableVerticalLeftSignal extends ElementsCitySuperMod.Mo
     @Override
     public void registerModels( ModelRegistryEvent event ) {
         ModelLoader.setCustomModelResourceLocation( Item.getItemFromBlock( block ), 0,
-                                                    new ModelResourceLocation( "csm:controllableverticalleftsignal",
+                                                    new ModelResourceLocation( "csm:controllableverticalangleupleftsignal",
                                                                                "inventory" ) );
     }
 
@@ -43,8 +43,8 @@ public class BlockControllableVerticalLeftSignal extends ElementsCitySuperMod.Mo
     {
         public BlockCustom() {
             super( Material.ROCK );
-            setRegistryName( "controllableverticalleftsignal" );
-            setUnlocalizedName( "controllableverticalleftsignal" );
+            setRegistryName( "controllableverticalangleupleftsignal" );
+            setUnlocalizedName( "controllableverticalangleupleftsignal" );
             setSoundType( SoundType.GROUND );
             setHarvestLevel( "pickaxe", 1 );
             setHardness( 2F );

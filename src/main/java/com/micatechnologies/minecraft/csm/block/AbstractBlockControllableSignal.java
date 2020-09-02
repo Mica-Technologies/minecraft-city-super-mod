@@ -38,7 +38,7 @@ public abstract class AbstractBlockControllableSignal extends Block
 
     public enum SIGNAL_SIDE
     {
-        LEFT, AHEAD, RIGHT, CROSSWALK
+        LEFT, AHEAD, RIGHT, CROSSWALK, PROTECTED_AHEAD
     }
 
     @SideOnly( Side.CLIENT )
@@ -80,7 +80,7 @@ public abstract class AbstractBlockControllableSignal extends Block
 
     @Override
     public int getLightValue( IBlockState state, IBlockAccess world, BlockPos pos ) {
-        return state.getValue( COLOR ) != SIGNAL_OFF ? 15 : 0;
+        return 15;
     }
 
     @Override
