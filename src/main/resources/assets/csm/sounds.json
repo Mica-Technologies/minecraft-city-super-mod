@@ -808,5 +808,86 @@
         "stream": false
       }
     ]
+  },
+  "male_wait": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:male_wait",
+        "stream": false
+      }
+    ]
+  },
+  "male_beep": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:male_beep",
+        "stream": false
+      }
+    ]
+  },
+  "female_wait": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:female_wait",
+        "stream": false
+      }
+    ]
+  },
+  "male_crosswalk_on": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:male_crosswalk_on",
+        "stream": false
+      }
+    ]
+  },
+  "female_unsafe_cross": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:female_unsafe_cross",
+        "stream": false
+      }
+    ]
+  },
+  "female_beep": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:female_beep",
+        "stream": false
+      }
+    ]
+  },
+  "female_automated": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:female_automated",
+        "stream": false
+      }
+    ]
+  },
+  "crosswalk_cookoo_1": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:crosswalk_cookoo_1",
+        "stream": false
+      }
+    ]
+  },
+  "crosswalk_cookoo_2": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:crosswalk_cookoo_2",
+        "stream": false
+      }
+    ]
   }
 }

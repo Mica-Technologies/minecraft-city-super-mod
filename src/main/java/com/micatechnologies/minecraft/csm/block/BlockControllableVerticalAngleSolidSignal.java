@@ -1,7 +1,8 @@
 package com.micatechnologies.minecraft.csm.block;
 
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
-import com.micatechnologies.minecraft.csm.creativetab.TabTrafficSignalsVertical;
+import com.micatechnologies.minecraft.csm.creativetab.TabTrafficSignals;
+import com.micatechnologies.minecraft.csm.creativetab.TabTrafficSignalsStatic;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
@@ -22,7 +23,7 @@ public class BlockControllableVerticalAngleSolidSignal extends ElementsCitySuper
     public static final Block block = null;
 
     public BlockControllableVerticalAngleSolidSignal( ElementsCitySuperMod instance ) {
-        super( instance, 1468 );
+        super( instance, 2003 );
     }
 
     @Override
@@ -51,7 +52,7 @@ public class BlockControllableVerticalAngleSolidSignal extends ElementsCitySuper
             setResistance( 10F );
             setLightLevel( 0F );
             setLightOpacity( 0 );
-            setCreativeTab( TabTrafficSignalsVertical.tab );
+            setCreativeTab( TabTrafficSignals.tab );
             this.setDefaultState(
                     this.blockState.getBaseState().withProperty( FACING, EnumFacing.NORTH ).withProperty( COLOR, 3 ) );
         }

@@ -1,7 +1,8 @@
 package com.micatechnologies.minecraft.csm.block;
 
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
-import com.micatechnologies.minecraft.csm.creativetab.TabTrafficSignalsVertical;
+import com.micatechnologies.minecraft.csm.creativetab.TabTrafficSignals;
+import com.micatechnologies.minecraft.csm.creativetab.TabTrafficSignalsStatic;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
@@ -22,7 +23,7 @@ public class BlockControllableCrosswalkLeftMount extends ElementsCitySuperMod.Mo
     public static final Block block = null;
 
     public BlockControllableCrosswalkLeftMount( ElementsCitySuperMod instance ) {
-        super( instance, 1238 );
+        super( instance, 2021 );
     }
 
     @Override
@@ -51,7 +52,7 @@ public class BlockControllableCrosswalkLeftMount extends ElementsCitySuperMod.Mo
             setResistance( 10F );
             setLightLevel( 0F );
             setLightOpacity( 0 );
-            setCreativeTab( TabTrafficSignalsVertical.tab );
+            setCreativeTab( TabTrafficSignals.tab );
             this.setDefaultState(
                     this.blockState.getBaseState().withProperty( FACING, EnumFacing.NORTH ).withProperty( COLOR, 3 ) );
         }

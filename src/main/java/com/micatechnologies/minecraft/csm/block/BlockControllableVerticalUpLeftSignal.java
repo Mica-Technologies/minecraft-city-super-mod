@@ -1,22 +1,15 @@
 package com.micatechnologies.minecraft.csm.block;
 
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
-import com.micatechnologies.minecraft.csm.creativetab.TabTrafficSignalsVertical;
+import com.micatechnologies.minecraft.csm.creativetab.TabTrafficSignals;
+import com.micatechnologies.minecraft.csm.creativetab.TabTrafficSignalsStatic;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.state.BlockStateContainer;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
-import net.minecraft.world.World;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.common.registry.GameRegistry;
@@ -30,7 +23,7 @@ public class BlockControllableVerticalUpLeftSignal extends ElementsCitySuperMod.
     public static final Block block = null;
 
     public BlockControllableVerticalUpLeftSignal( ElementsCitySuperMod instance ) {
-        super( instance, 1580 );
+        super( instance, 2008 );
     }
 
     @Override
@@ -59,7 +52,7 @@ public class BlockControllableVerticalUpLeftSignal extends ElementsCitySuperMod.
             setResistance( 10F );
             setLightLevel( 0F );
             setLightOpacity( 0 );
-            setCreativeTab( TabTrafficSignalsVertical.tab );
+            setCreativeTab( TabTrafficSignals.tab );
             this.setDefaultState(
                     this.blockState.getBaseState().withProperty( FACING, EnumFacing.NORTH ).withProperty( COLOR, 3 ) );
         }

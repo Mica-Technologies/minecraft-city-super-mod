@@ -26,7 +26,7 @@ import net.minecraft.block.SoundType;
 import net.minecraft.block.BlockDirectional;
 import net.minecraft.block.Block;
 
-import com.micatechnologies.minecraft.csm.creativetab.TabTrafficSignalsHorizontal;
+import com.micatechnologies.minecraft.csm.creativetab.TabTrafficSignalsStatic;
 
 @ElementsCitySuperMod.ModElement.Tag
 public class BlockTLHLeftYellow extends ElementsCitySuperMod.ModElement {
@@ -59,7 +59,7 @@ public class BlockTLHLeftYellow extends ElementsCitySuperMod.ModElement {
 			setResistance(10F);
 			setLightLevel(0F);
 			setLightOpacity(0);
-			setCreativeTab(TabTrafficSignalsHorizontal.tab);
+			setCreativeTab(TabTrafficSignalsStatic.tab);
 			this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH));
 		}
 

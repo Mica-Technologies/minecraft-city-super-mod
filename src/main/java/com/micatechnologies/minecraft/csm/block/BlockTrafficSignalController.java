@@ -3,6 +3,7 @@ package com.micatechnologies.minecraft.csm.block;
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
 import com.micatechnologies.minecraft.csm.creativetab.TabMCLAElectricTab;
 import com.micatechnologies.minecraft.csm.creativetab.TabMCLARoadsTab;
+import com.micatechnologies.minecraft.csm.creativetab.TabTrafficSignals;
 import com.micatechnologies.minecraft.csm.item.ItemEWSignalLinker;
 import com.micatechnologies.minecraft.csm.item.ItemNSSignalLinker;
 import com.micatechnologies.minecraft.csm.tiles.TileEntityForgeEnergyConsumer;
@@ -50,7 +51,7 @@ public class BlockTrafficSignalController extends ElementsCitySuperMod.ModElemen
     public static final Block block = null;
 
     public BlockTrafficSignalController( ElementsCitySuperMod instance ) {
-        super( instance, 1158 );
+        super( instance, 1997 );
     }
 
     @Override
@@ -94,7 +95,7 @@ public class BlockTrafficSignalController extends ElementsCitySuperMod.ModElemen
             setResistance( 10F );
             setLightLevel( 0F );
             setLightOpacity( 0 );
-            setCreativeTab( TabMCLARoadsTab.tab );
+            setCreativeTab( TabTrafficSignals.tab );
         }
 
         @Override
@@ -150,17 +151,28 @@ public class BlockTrafficSignalController extends ElementsCitySuperMod.ModElemen
 
             }
 
-            p_updateTick_1_.scheduleUpdate( p_updateTick_2_, this, this.tickRate( p_updateTick_1_ ) );
+            p_updateTick_1_.scheduleUpdate( p_updateTick_2_, this, this.tickRate( p_updateTick_3_ ) );
+        }
+
+        public int tickRate( IBlockState p_tickRate_1_ ) {
+            int cycleIndex;
+            try {
+                cycleIndex = p_tickRate_1_.getValue( CYCLEINDEX );
+            }
+            catch ( Exception e ) {
+                cycleIndex = MIN_CYCLE_INDEX;
+            }
+            return cycleIndex == 0 ? 4 : 20;
         }
 
         @Override
         public int tickRate( World p_tickRate_1_ ) {
-            return 5;
+            return 20;
         }
 
         @Override
         public void onBlockAdded( World p_onBlockAdded_1_, BlockPos p_onBlockAdded_2_, IBlockState p_onBlockAdded_3_ ) {
-            p_onBlockAdded_1_.scheduleUpdate( p_onBlockAdded_2_, this, this.tickRate( p_onBlockAdded_1_ ) );
+            p_onBlockAdded_1_.scheduleUpdate( p_onBlockAdded_2_, this, this.tickRate( p_onBlockAdded_3_ ) );
             super.onBlockAdded( p_onBlockAdded_1_, p_onBlockAdded_2_, p_onBlockAdded_3_ );
         }
 

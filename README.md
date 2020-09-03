@@ -41,6 +41,17 @@ To add a block, you'll need to do the following:
 
 If your block model does not use a built-in Minecraft block model base, add the custom block model to `src/main/resources/assets/csm/models/custom`.
 
+##### Adding a Model
+To maintain proper segregation of model components, there are three models folders, `blocks`, `custom` and `items
+`. To add a new model, simply place the complete model in to the `custom` folder. In the `blocks` and `items` folders
+, add a model with the proper name and populate it with the following content:
+
+```json
+{
+  "parent": "csm:custom/[name of model in custom]"
+}
+``` 
+
 ### Contributing Code/Changes
 To contribute code, you will need to push your modifications to the Git server on a new branch. 
 To protect the working code, modification of the `master` branch is not permitted except through merge request. 

@@ -112,7 +112,16 @@ public class Sounds
                                                         "alto_tornado_warning_newpaul",
                                                         "alto_tornado_warning_tom",
                                                         "alto_weather_forecast_newpaul",
-                                                        "alto_weather_forecast_tom" };
+                                                        "alto_weather_forecast_tom",
+                                                        "male_wait",
+                                                        "male_beep",
+                                                        "female_automated",
+                                                        "male_crosswalk_on",
+                                                        "female_beep",
+                                                        "female_wait",
+                                                        "female_unsafe_cross",
+                                                        "crosswalk_cookoo_1",
+                                                        "crosswalk_cookoo_2" };
 
     /**
      * Sound initialization method. This method is called from {@link ElementsCitySuperMod} to load sounds in the mod.

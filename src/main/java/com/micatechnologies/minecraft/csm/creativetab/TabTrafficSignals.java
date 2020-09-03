@@ -2,26 +2,26 @@
 package com.micatechnologies.minecraft.csm.creativetab;
 
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
+import com.micatechnologies.minecraft.csm.block.BlockControllableVerticalSolidSignal;
 import com.micatechnologies.minecraft.csm.block.BlockTLVSolidRed;
-import net.minecraftforge.fml.relauncher.SideOnly;
-import net.minecraftforge.fml.relauncher.Side;
-
-import net.minecraft.item.ItemStack;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.item.ItemStack;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 @ElementsCitySuperMod.ModElement.Tag
-public class TabTrafficSignalsVertical extends ElementsCitySuperMod.ModElement {
-	public TabTrafficSignalsVertical(ElementsCitySuperMod instance) {
-		super(instance, 1052);
+public class TabTrafficSignals extends ElementsCitySuperMod.ModElement {
+	public TabTrafficSignals( ElementsCitySuperMod instance) {
+		super(instance, 1563);
 	}
 
 	@Override
 	public void initElements() {
-		tab = new CreativeTabs("tabtrafficsignalsvertical") {
+		tab = new CreativeTabs("tabtrafficsignals") {
 			@SideOnly(Side.CLIENT)
 			@Override
 			public ItemStack getTabIconItem() {
-				return new ItemStack( BlockTLVSolidRed.block, (int) (1));
+				return new ItemStack( BlockControllableVerticalSolidSignal.block, 1 );
 			}
 
 			@SideOnly(Side.CLIENT)

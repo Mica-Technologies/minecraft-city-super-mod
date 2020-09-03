@@ -1,12 +1,10 @@
 package com.micatechnologies.minecraft.csm.item;
 
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
-import com.micatechnologies.minecraft.csm.block.AbstractBlockControllableSignal;
-import com.micatechnologies.minecraft.csm.block.BlockControllableCrosswalkLeftMount;
-import com.micatechnologies.minecraft.csm.block.BlockControllableCrosswalkRightMount;
-import com.micatechnologies.minecraft.csm.block.BlockTrafficSignalController;
+import com.micatechnologies.minecraft.csm.block.*;
 import com.micatechnologies.minecraft.csm.creativetab.TabMCLAOtherTab;
 import com.micatechnologies.minecraft.csm.creativetab.TabMCLARoadsTab;
+import com.micatechnologies.minecraft.csm.creativetab.TabTrafficSignals;
 import com.micatechnologies.minecraft.csm.tiles.TileEntityTrafficSignalController;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -38,7 +36,7 @@ public class ItemNSSignalLinker extends ElementsCitySuperMod.ModElement
     public static final Item block = null;
 
     public ItemNSSignalLinker( ElementsCitySuperMod instance ) {
-        super( instance, 1344 );
+        super( instance, 1998 );
     }
 
     @Override
@@ -63,7 +61,7 @@ public class ItemNSSignalLinker extends ElementsCitySuperMod.ModElement
             maxStackSize = 1;
             setUnlocalizedName( "nssignallinker" );
             setRegistryName( "nssignallinker" );
-            setCreativeTab( TabMCLARoadsTab.tab );
+            setCreativeTab( TabTrafficSignals.tab );
         }
 
         @Override
@@ -110,6 +108,18 @@ public class ItemNSSignalLinker extends ElementsCitySuperMod.ModElement
                                     clickedBlock instanceof BlockControllableCrosswalkRightMount.BlockCustom ) ) {
                         player.sendMessage( new TextComponentString(
                                 "Crosswalk light connected to Primary circuit of signal controller at " +
+                                        "(" +
+                                        pos.getX() +
+                                        "," +
+                                        pos.getY() +
+                                        "," +
+                                        pos.getZ() +
+                                        ")" ) );
+                    }
+                    else if ( !worldIn.isRemote &&
+                            linked &&clickedBlock instanceof AbstractBlockControllableCrosswalkAccessory ) {
+                        player.sendMessage( new TextComponentString(
+                                "Crosswalk accessory connected to Primary circuit of signal controller at " +
                                         "(" +
                                         pos.getX() +
                                         "," +
