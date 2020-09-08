@@ -88,7 +88,7 @@ public class BlockControllableCrosswalkButtonMale extends ElementsCitySuperMod.M
                                          float p_onBlockActivated_8_,
                                          float p_onBlockActivated_9_ )
         {
-            if ( p_onBlockActivated_3_.getValue( COLOR ) != 3 ) {
+            if ( p_onBlockActivated_3_.getValue( COLOR ) == 0 ) {
                 p_onBlockActivated_1_.playSound( null, p_onBlockActivated_2_.getX(), p_onBlockActivated_2_.getY(),
                                                  p_onBlockActivated_2_.getZ(),
                                                  net.minecraft.util.SoundEvent.REGISTRY.getObject(

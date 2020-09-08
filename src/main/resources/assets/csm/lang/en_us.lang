@@ -1196,3 +1196,7 @@ tile.controllablecrosswalkbuttonmale.name=Crosswalk Button with Male Voice
 tile.controllablecrosswalkbuttonautomated.name=Crosswalk Button (Automated)
 tile.controllablecrosswalktweeter1.name=Crosswalk Tweeter (Sound 1)
 tile.controllablecrosswalktweeter2.name=Crosswalk Tweeter (Sound 2)
+tile.controllabletrafficsignaltraincontroller.name=Traffic Signal Locking Rail Controller
+tile.controllablesinglesolidsignalred.name=Single Traffic Signal (Flashing Red)
+tile.controllablesinglesolidsignalyellow.name=Single Traffic Signal (Flashing Yellow)
+tile.controllablesinglesolidsignalgreen.name=Single Traffic Signal (Flashing Green)

@@ -54,7 +54,8 @@ public abstract class AbstractBlockControllableSignal extends Block
                                  EntityLivingBase placer,
                                  ItemStack stack )
     {
-        world.setBlockState( pos, state.withProperty( FACING, placer.getHorizontalFacing().getOpposite() ), 2 );
+        world.setBlockState( pos, state.withProperty( FACING, placer.getHorizontalFacing().getOpposite() )
+                                       .withProperty( COLOR, 3 ), 2 );
     }
 
     @Override

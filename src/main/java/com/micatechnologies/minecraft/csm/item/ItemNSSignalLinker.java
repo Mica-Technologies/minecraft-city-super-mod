@@ -117,6 +117,18 @@ public class ItemNSSignalLinker extends ElementsCitySuperMod.ModElement
                                         ")" ) );
                     }
                     else if ( !worldIn.isRemote &&
+                            linked &&clickedBlock instanceof BlockControllableTrafficSignalTrainController.BlockCustom ) {
+                        player.sendMessage( new TextComponentString(
+                                "Train locking rail controller connected to Primary circuit of signal controller at " +
+                                        "(" +
+                                        pos.getX() +
+                                        "," +
+                                        pos.getY() +
+                                        "," +
+                                        pos.getZ() +
+                                        ")" ) );
+                    }
+                    else if ( !worldIn.isRemote &&
                             linked &&clickedBlock instanceof AbstractBlockControllableCrosswalkAccessory ) {
                         player.sendMessage( new TextComponentString(
                                 "Crosswalk accessory connected to Primary circuit of signal controller at " +

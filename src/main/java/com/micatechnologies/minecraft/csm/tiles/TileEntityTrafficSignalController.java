@@ -24,8 +24,8 @@ public class TileEntityTrafficSignalController extends TileEntity
     private static final int     EW_RIGHT_CYCLE_INDEX           = 8;
     private static final int     EW_CROSSWALK_CYCLE_INDEX       = 9;
     private static final int     CYCLE_LENGTH_INDEX             = 10;
-    private static final int[][] CYCLE_LIST_0                   = { { 3, 0, 3, 0, 3, 3, 0, 3, 3, 3, 1 },
-                                                                    { 1, 3, 1, 3, 3, 3, 3, 0, 0, 3, 1 } };
+    private static final int[][] CYCLE_LIST_0                   = { { 3, 0, 3, 0, 3, 1, 3, 0, 3, 3, 1 },
+                                                                    { 1, 3, 1, 3, 3, 3, 0, 3, 0, 3, 1 } };
 
     private static final int[][] CYCLE_LIST_1 = { { 3, 0, 0, 0, 0, 3, 0, 0, 2, 0, 5 },
                                                   { 3, 2, 0, 0, 0, 3, 0, 0, 2, 0, 10 },
