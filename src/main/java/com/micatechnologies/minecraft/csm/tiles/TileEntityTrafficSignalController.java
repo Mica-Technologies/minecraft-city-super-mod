@@ -54,11 +54,11 @@ public class TileEntityTrafficSignalController extends TileEntity
                                                   { 0, 0, 0, 0, 1, 1, 0, 1, 0, 0, 5 } };
 
     private static final int[][] CYCLE_LIST_3 = { { 3, 0, 0, 0, 0, 3, 0, 0, 0, 1, 5 },
-                                                  { 3, 0, 2, 2, 0, 3, 0, 0, 0, 1, 14 },
-                                                  { 3, 0, 1, 1, 0, 3, 0, 0, 0, 0, 5 },
+                                                  { 3, 2, 2, 2, 0, 3, 0, 0, 0, 1, 14 },
+                                                  { 3, 1, 1, 1, 0, 3, 0, 0, 0, 0, 5 },
                                                   { 3, 0, 0, 0, 1, 3, 0, 0, 0, 0, 5 },
-                                                  { 3, 0, 0, 0, 1, 3, 0, 2, 2, 0, 14 },
-                                                  { 3, 0, 0, 0, 0, 3, 0, 1, 1, 0, 5 } };
+                                                  { 3, 0, 0, 0, 1, 3, 2, 2, 2, 0, 14 },
+                                                  { 3, 0, 0, 0, 0, 3, 1, 1, 1, 0, 5 } };
 
     private static final String                KEY_CURRENT_CYCLE_TIME = "CurrCycleTime";
     private static final String                KEY_CURRENT_CYCLE      = "CurrCycle";

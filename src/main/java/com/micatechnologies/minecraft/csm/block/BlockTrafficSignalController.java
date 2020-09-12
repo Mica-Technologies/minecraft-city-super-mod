@@ -210,7 +210,38 @@ public class BlockTrafficSignalController extends ElementsCitySuperMod.ModElemen
             }
             p_onBlockActivated_1_.setBlockState( p_onBlockActivated_2_,
                                                  p_onBlockActivated_3_.withProperty( CYCLEINDEX, cycleIndex ), 3 );
-            if ( !p_onBlockActivated_1_.isRemote ) {
+
+            // Check if controller tile entity still present/valid
+            boolean valid = true;
+            try {
+                TileEntity tileEntity = p_onBlockActivated_1_.getTileEntity( p_onBlockActivated_2_ );
+                if ( !( tileEntity instanceof TileEntityTrafficSignalController ) ) {
+                    valid = false;
+                    p_onBlockActivated_4_.sendMessage( new TextComponentString(
+                            "Controller tile entity is not an instance of traffic signal " +
+                                    "controller tile entity. Cannot operate. Will attempt to replace..." ) );
+                }
+            }
+            catch ( Exception e ) {
+                valid = false;
+                p_onBlockActivated_4_.sendMessage( new TextComponentString(
+                        "Controller tile entity has failed. Cannot operate. Will attempt to replace..." ) );
+            }
+
+            // If controller tile entity invalid, try to recover.
+            if (!valid) {
+                try {
+                    p_onBlockActivated_1_.setTileEntity( p_onBlockActivated_2_,new TileEntityTrafficSignalController() );
+                    valid = true;
+                    p_onBlockActivated_4_.sendMessage( new TextComponentString(
+                            "Broken controller tile entity has been replaced. Signals may need to be re-linked." ) );
+                } catch (Exception e) {
+                    p_onBlockActivated_4_.sendMessage( new TextComponentString(
+                            "Unable to replace broken controller tile entity. Replace this block." ) );
+                }
+            }
+
+            if ( !p_onBlockActivated_1_.isRemote && valid ) {
                 p_onBlockActivated_4_.sendMessage(
                         new TextComponentString( "Switching controller to mode: " + CYCLE_NAMES[ cycleIndex ] ) );
             }
