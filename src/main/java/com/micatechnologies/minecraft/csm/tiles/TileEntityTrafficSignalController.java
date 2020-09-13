@@ -164,6 +164,10 @@ public class TileEntityTrafficSignalController extends TileEntity
         return super.writeToNBT( p_writeToNBT_1_ );
     }
 
+    public String getTileEntityConnectionString() {
+        return "PRIM-" + northSouthSignals.size() + ":SNDY:" + eastWestSignals.size();
+    }
+
     public boolean addNSSignal( BlockPos blockPos ) {
         if ( !northSouthSignals.contains( blockPos ) && !eastWestSignals.contains( blockPos ) ) {
             northSouthSignals.add( blockPos );

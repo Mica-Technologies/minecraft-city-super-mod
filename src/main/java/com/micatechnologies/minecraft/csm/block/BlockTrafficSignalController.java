@@ -215,7 +215,14 @@ public class BlockTrafficSignalController extends ElementsCitySuperMod.ModElemen
             boolean valid = true;
             try {
                 TileEntity tileEntity = p_onBlockActivated_1_.getTileEntity( p_onBlockActivated_2_ );
-                if ( !( tileEntity instanceof TileEntityTrafficSignalController ) ) {
+                if ( tileEntity instanceof TileEntityTrafficSignalController ) {
+                    TileEntityTrafficSignalController tileEntityTrafficSignalController
+                            = ( TileEntityTrafficSignalController ) tileEntity;
+                    p_onBlockActivated_4_.sendMessage( new TextComponentString( "Controller Diagnostic ID: " +
+                                                                                        tileEntityTrafficSignalController
+                                                                                                .getTileEntityConnectionString() ) );
+                }
+                else {
                     valid = false;
                     p_onBlockActivated_4_.sendMessage( new TextComponentString(
                             "Controller tile entity is not an instance of traffic signal " +
@@ -229,13 +236,15 @@ public class BlockTrafficSignalController extends ElementsCitySuperMod.ModElemen
             }
 
             // If controller tile entity invalid, try to recover.
-            if (!valid) {
+            if ( !valid ) {
                 try {
-                    p_onBlockActivated_1_.setTileEntity( p_onBlockActivated_2_,new TileEntityTrafficSignalController() );
+                    p_onBlockActivated_1_.setTileEntity( p_onBlockActivated_2_,
+                                                         new TileEntityTrafficSignalController() );
                     valid = true;
                     p_onBlockActivated_4_.sendMessage( new TextComponentString(
                             "Broken controller tile entity has been replaced. Signals may need to be re-linked." ) );
-                } catch (Exception e) {
+                }
+                catch ( Exception e ) {
                     p_onBlockActivated_4_.sendMessage( new TextComponentString(
                             "Unable to replace broken controller tile entity. Replace this block." ) );
                 }
