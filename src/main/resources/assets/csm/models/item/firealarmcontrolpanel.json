@@ -1,0 +1,8 @@
+{
+  "parent": "csm:custom/firepanel",
+  "textures": {
+    "all": "csm:blocks/firepanel",
+    "particle": "csm:blocks/firepanel",
+    "0": "csm:blocks/firepanel"
+  }
+}

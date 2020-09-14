@@ -1,0 +1,22 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:firealarmwheelockasred"
+    },
+    "facing=north": {
+      "model": "csm:firealarmwheelockasred"
+    },
+    "facing=east": {
+      "model": "csm:firealarmwheelockasred",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:firealarmwheelockasred",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:firealarmwheelockasred",
+      "y": 270
+    }
+  }
+}
