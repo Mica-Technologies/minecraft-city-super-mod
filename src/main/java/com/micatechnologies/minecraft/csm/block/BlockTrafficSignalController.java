@@ -132,23 +132,28 @@ public class BlockTrafficSignalController extends ElementsCitySuperMod.ModElemen
                                 IBlockState p_updateTick_3_,
                                 Random p_updateTick_4_ )
         {
-            // Check if receiving power
-            boolean powered = p_updateTick_3_.getValue( POWERED );
-
-            TileEntity tileEntity = p_updateTick_1_.getTileEntity( p_updateTick_2_ );
-            int cycleIndex;
+            boolean success = true;
             try {
-                cycleIndex = p_updateTick_3_.getValue( CYCLEINDEX );
+                // Check if receiving power
+                boolean powered = p_updateTick_3_.getValue( POWERED );
+
+                TileEntity tileEntity = p_updateTick_1_.getTileEntity( p_updateTick_2_ );
+                int cycleIndex = p_updateTick_3_.getValue( CYCLEINDEX );
+
+                if ( tileEntity instanceof TileEntityTrafficSignalController ) {
+                    TileEntityTrafficSignalController tileEntityTrafficSignalController
+                            = ( TileEntityTrafficSignalController ) tileEntity;
+                    tileEntityTrafficSignalController.cycleSignals( p_updateTick_1_, powered, cycleIndex );
+
+                }
             }
             catch ( Exception e ) {
-                cycleIndex = MIN_CYCLE_INDEX;
+                success = false;
             }
 
-            if ( tileEntity instanceof TileEntityTrafficSignalController ) {
-                TileEntityTrafficSignalController tileEntityTrafficSignalController
-                        = ( TileEntityTrafficSignalController ) tileEntity;
-                tileEntityTrafficSignalController.cycleSignals( p_updateTick_1_, powered, cycleIndex );
-
+            if ( !success ) {
+                p_updateTick_1_.setBlockState( p_updateTick_2_,
+                                               p_updateTick_3_.withProperty( CYCLEINDEX, MIN_CYCLE_INDEX ), 3 );
             }
 
             p_updateTick_1_.scheduleUpdate( p_updateTick_2_, this, this.tickRate( p_updateTick_3_ ) );
@@ -215,24 +220,21 @@ public class BlockTrafficSignalController extends ElementsCitySuperMod.ModElemen
             boolean valid = true;
             try {
                 TileEntity tileEntity = p_onBlockActivated_1_.getTileEntity( p_onBlockActivated_2_ );
-                if ( tileEntity instanceof TileEntityTrafficSignalController ) {
-                    TileEntityTrafficSignalController tileEntityTrafficSignalController
-                            = ( TileEntityTrafficSignalController ) tileEntity;
-                    p_onBlockActivated_4_.sendMessage( new TextComponentString( "Controller Diagnostic ID: " +
-                                                                                        tileEntityTrafficSignalController
-                                                                                                .getTileEntityConnectionString() ) );
-                }
-                else {
+                if ( !( tileEntity instanceof TileEntityTrafficSignalController ) ) {
                     valid = false;
-                    p_onBlockActivated_4_.sendMessage( new TextComponentString(
-                            "Controller tile entity is not an instance of traffic signal " +
-                                    "controller tile entity. Cannot operate. Will attempt to replace..." ) );
+                    if ( !p_onBlockActivated_1_.isRemote ) {
+                        p_onBlockActivated_4_.sendMessage( new TextComponentString(
+                                "Controller tile entity is not an instance of traffic signal " +
+                                        "controller tile entity. Cannot operate. Will attempt to replace..." ) );
+                    }
                 }
             }
             catch ( Exception e ) {
                 valid = false;
-                p_onBlockActivated_4_.sendMessage( new TextComponentString(
-                        "Controller tile entity has failed. Cannot operate. Will attempt to replace..." ) );
+                if ( !p_onBlockActivated_1_.isRemote ) {
+                    p_onBlockActivated_4_.sendMessage( new TextComponentString(
+                            "Controller tile entity has failed. Cannot operate. Will attempt to replace..." ) );
+                }
             }
 
             // If controller tile entity invalid, try to recover.
@@ -241,12 +243,16 @@ public class BlockTrafficSignalController extends ElementsCitySuperMod.ModElemen
                     p_onBlockActivated_1_.setTileEntity( p_onBlockActivated_2_,
                                                          new TileEntityTrafficSignalController() );
                     valid = true;
-                    p_onBlockActivated_4_.sendMessage( new TextComponentString(
-                            "Broken controller tile entity has been replaced. Signals may need to be re-linked." ) );
+                    if ( !p_onBlockActivated_1_.isRemote ) {
+                        p_onBlockActivated_4_.sendMessage( new TextComponentString(
+                                "Broken controller tile entity has been replaced. Signals may need to be re-linked." ) );
+                    }
                 }
                 catch ( Exception e ) {
-                    p_onBlockActivated_4_.sendMessage( new TextComponentString(
-                            "Unable to replace broken controller tile entity. Replace this block." ) );
+                    if ( !p_onBlockActivated_1_.isRemote ) {
+                        p_onBlockActivated_4_.sendMessage( new TextComponentString(
+                                "Unable to replace broken controller tile entity. Replace this block." ) );
+                    }
                 }
             }
 
