@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:adaptahorngray"
+    },
+    "facing=north": {
+      "model": "csm:adaptahorngray"
+    },
+    "facing=east": {
+      "model": "csm:adaptahorngray",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:adaptahorngray",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:adaptahorngray",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:adaptahorngray",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:adaptahorngray",
+      "x": 90
+    }
+  }
+}

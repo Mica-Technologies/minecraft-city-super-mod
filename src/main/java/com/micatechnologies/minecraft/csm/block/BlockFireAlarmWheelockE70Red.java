@@ -19,7 +19,7 @@ public class BlockFireAlarmWheelockE70Red extends ElementsCitySuperMod.ModElemen
     public static final Block  block             = null;
 
     public BlockFireAlarmWheelockE70Red( ElementsCitySuperMod instance ) {
-        super( instance, 2033 );
+        super( instance, 2044 );
     }
 
     @Override

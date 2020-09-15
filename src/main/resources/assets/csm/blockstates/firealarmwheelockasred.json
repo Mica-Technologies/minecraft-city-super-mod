@@ -17,6 +17,14 @@
     "facing=west": {
       "model": "csm:firealarmwheelockasred",
       "y": 270
+    },
+    "facing=up": {
+      "model": "csm:firealarmwheelockasred",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:firealarmwheelockasred",
+      "x": 90
     }
   }
 }

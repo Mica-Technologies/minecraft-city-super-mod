@@ -24,7 +24,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public abstract class AbstractBlockFireAlarmSounder extends Block
 {
-    public static final PropertyDirection FACING = BlockHorizontal.FACING;
+    public static final PropertyDirection FACING = BlockDirectional.FACING;
 
     public AbstractBlockFireAlarmSounder() {
         super( Material.ROCK );
@@ -52,22 +52,25 @@ public abstract class AbstractBlockFireAlarmSounder extends Block
 
     @Override
     public IBlockState getStateFromMeta( int meta ) {
-        return this.getDefaultState().withProperty( FACING, EnumFacing.getHorizontal( meta ) );
+        return this.getDefaultState().withProperty( FACING, EnumFacing.getFront( meta ) );
     }
 
     @Override
     public int getMetaFromState( IBlockState state ) {
-        return state.getValue( FACING ).getHorizontalIndex();
+        return state.getValue( FACING ).getIndex();
     }
 
     @Override
-    public void onBlockPlacedBy( World world,
-                                 BlockPos pos,
-                                 IBlockState state,
-                                 EntityLivingBase placer,
-                                 ItemStack stack )
+    public IBlockState getStateForPlacement( World worldIn,
+                                             BlockPos pos,
+                                             EnumFacing facing,
+                                             float hitX,
+                                             float hitY,
+                                             float hitZ,
+                                             int meta,
+                                             EntityLivingBase placer )
     {
-        world.setBlockState( pos, state.withProperty( FACING, placer.getHorizontalFacing().getOpposite() ) );
+        return this.getDefaultState().withProperty( FACING, EnumFacing.getDirectionFromEntityLiving( pos, placer ) );
     }
 
     @Override
@@ -87,6 +90,10 @@ public abstract class AbstractBlockFireAlarmSounder extends Block
                 return new AxisAlignedBB( 0.8D, 0D, 1D, 1D, 1D, 0D );
             case EAST:
                 return new AxisAlignedBB( 0.2D, 0D, 0D, 0D, 1D, 1D );
+            case UP:
+                return new AxisAlignedBB( 0D, 0.2D, 0D, 1D, 0D, 1D );
+            case DOWN:
+                return new AxisAlignedBB( 0D, 0.8D, 1D, 1D, 1D, 0D );
         }
     }
 

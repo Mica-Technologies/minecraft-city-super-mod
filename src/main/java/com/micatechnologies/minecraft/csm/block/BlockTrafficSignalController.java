@@ -132,28 +132,35 @@ public class BlockTrafficSignalController extends ElementsCitySuperMod.ModElemen
                                 IBlockState p_updateTick_3_,
                                 Random p_updateTick_4_ )
         {
-            boolean success = true;
             try {
-                // Check if receiving power
-                boolean powered = p_updateTick_3_.getValue( POWERED );
+                lastTickAt = System.currentTimeMillis();
 
-                TileEntity tileEntity = p_updateTick_1_.getTileEntity( p_updateTick_2_ );
-                int cycleIndex = p_updateTick_3_.getValue( CYCLEINDEX );
+                boolean success = true;
+                try {
+                    // Check if receiving power
+                    boolean powered = p_updateTick_3_.getValue( POWERED );
 
-                if ( tileEntity instanceof TileEntityTrafficSignalController ) {
-                    TileEntityTrafficSignalController tileEntityTrafficSignalController
-                            = ( TileEntityTrafficSignalController ) tileEntity;
-                    tileEntityTrafficSignalController.cycleSignals( p_updateTick_1_, powered, cycleIndex );
+                    TileEntity tileEntity = p_updateTick_1_.getTileEntity( p_updateTick_2_ );
+                    int cycleIndex = p_updateTick_3_.getValue( CYCLEINDEX );
 
+                    if ( tileEntity instanceof TileEntityTrafficSignalController ) {
+                        TileEntityTrafficSignalController tileEntityTrafficSignalController
+                                = ( TileEntityTrafficSignalController ) tileEntity;
+                        tileEntityTrafficSignalController.cycleSignals( p_updateTick_1_, powered, cycleIndex );
+
+                    }
+                }
+                catch ( Exception e ) {
+                    success = false;
+                }
+
+                if ( !success ) {
+                    p_updateTick_1_.setBlockState( p_updateTick_2_,
+                                                   p_updateTick_3_.withProperty( CYCLEINDEX, MIN_CYCLE_INDEX ), 3 );
                 }
             }
-            catch ( Exception e ) {
-                success = false;
-            }
+            catch ( Exception ignored ) {
 
-            if ( !success ) {
-                p_updateTick_1_.setBlockState( p_updateTick_2_,
-                                               p_updateTick_3_.withProperty( CYCLEINDEX, MIN_CYCLE_INDEX ), 3 );
             }
 
             p_updateTick_1_.scheduleUpdate( p_updateTick_2_, this, this.tickRate( p_updateTick_3_ ) );
@@ -181,6 +188,8 @@ public class BlockTrafficSignalController extends ElementsCitySuperMod.ModElemen
             super.onBlockAdded( p_onBlockAdded_1_, p_onBlockAdded_2_, p_onBlockAdded_3_ );
         }
 
+        private long lastTickAt = 0;
+
         @Override
         public boolean onBlockActivated( World p_onBlockActivated_1_,
                                          BlockPos p_onBlockActivated_2_,
@@ -200,6 +209,21 @@ public class BlockTrafficSignalController extends ElementsCitySuperMod.ModElemen
                 return super.onBlockActivated( p_onBlockActivated_1_, p_onBlockActivated_2_, p_onBlockActivated_3_,
                                                p_onBlockActivated_4_, p_onBlockActivated_5_, p_onBlockActivated_6_,
                                                p_onBlockActivated_7_, p_onBlockActivated_8_, p_onBlockActivated_9_ );
+            }
+
+            // Check for ticking loss
+            final long timeSinceLastTick = System.currentTimeMillis() - lastTickAt;
+            if ( timeSinceLastTick > ( tickRate( p_onBlockActivated_3_ ) * 2 ) ) {
+                if ( !p_onBlockActivated_1_.isRemote ) {
+                    p_onBlockActivated_4_.sendMessage( new TextComponentString(
+                            "This block appears to be non-ticking. Attempting to restore..." ) );
+                }
+                p_onBlockActivated_1_.scheduleUpdate( p_onBlockActivated_2_, this,
+                                                      this.tickRate( p_onBlockActivated_3_ ) );
+                if ( !p_onBlockActivated_1_.isRemote ) {
+                    p_onBlockActivated_4_.sendMessage( new TextComponentString(
+                            "Block ticking has been scheduled. If this did not resolve the problem, replace this block." ) );
+                }
             }
 
             int cycleIndex;

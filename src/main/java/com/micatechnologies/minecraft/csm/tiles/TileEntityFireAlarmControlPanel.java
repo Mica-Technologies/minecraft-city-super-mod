@@ -210,10 +210,6 @@ public class TileEntityFireAlarmControlPanel extends TileEntity
 
                     // Play sound
                     if ( alarmSoundTracking.get( alarmSoundName ) == 0 ) {
-                        MinecraftServer mcserv = FMLCommonHandler.instance().getMinecraftServerInstance();
-                        if ( mcserv != null ) {
-                            mcserv.getPlayerList().sendMessage( new TextComponentString( "playing" ) );
-                        }
                         world.playSound( ( EntityPlayer ) null, bp.getX(), bp.getY(), bp.getZ(),
                                          ( net.minecraft.util.SoundEvent ) net.minecraft.util.SoundEvent.REGISTRY.getObject(
                                                  new ResourceLocation( alarmSoundName ) ), SoundCategory.AMBIENT,
