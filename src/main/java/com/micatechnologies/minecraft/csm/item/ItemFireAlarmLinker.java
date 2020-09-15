@@ -5,6 +5,7 @@ import com.micatechnologies.minecraft.csm.block.*;
 import com.micatechnologies.minecraft.csm.creativetab.TabFireAlarms;
 import com.micatechnologies.minecraft.csm.creativetab.TabTrafficSignals;
 import com.micatechnologies.minecraft.csm.tiles.TileEntityFireAlarmControlPanel;
+import com.micatechnologies.minecraft.csm.tiles.TileEntityFireAlarmSensor;
 import com.micatechnologies.minecraft.csm.tiles.TileEntityTrafficSignalController;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -97,7 +98,7 @@ public class ItemFireAlarmLinker extends ElementsCitySuperMod.ModElement
                     worldIn.getTileEntity( alarmPanelPos ) instanceof TileEntityFireAlarmControlPanel ) {
                 TileEntityFireAlarmControlPanel fireAlarmControlPanel
                         = ( TileEntityFireAlarmControlPanel ) worldIn.getTileEntity( alarmPanelPos );
-                ;
+
                 if ( state.getBlock() instanceof AbstractBlockFireAlarmSounderVoiceEvac ) {
                     boolean didAdd = fireAlarmControlPanel.addLinkedAlarm( pos );
                     if ( didAdd && !worldIn.isRemote ) {
@@ -127,6 +128,33 @@ public class ItemFireAlarmLinker extends ElementsCitySuperMod.ModElement
                                                                              pos.getZ() +
                                                                              ")" ) );
                     }
+                    return EnumActionResult.SUCCESS;
+                }
+                else if ( state.getBlock() instanceof AbstractBlockFireAlarmSensor ) {
+                    TileEntity tileEntityAtClickedPos = worldIn.getTileEntity( pos );
+                    if ( !worldIn.isRemote ) {
+                        player.sendMessage( new TextComponentString( "GOT BLOCK" ) );
+                    }
+                    if ( tileEntityAtClickedPos instanceof TileEntityFireAlarmSensor ) {
+                        TileEntityFireAlarmSensor fireAlarmSensor
+                                = ( TileEntityFireAlarmSensor ) tileEntityAtClickedPos;
+                        if ( !worldIn.isRemote ) {
+                            player.sendMessage( new TextComponentString( "IS? INSTANCE" ) );
+                        }
+                        boolean didLink = fireAlarmSensor.setLinkedPanelPos( pos );
+                        if ( didLink && !worldIn.isRemote ) {
+                            player.sendMessage( new TextComponentString( "Successfully linked activator to " +
+                                                                                 "alarm control panel at " +
+                                                                                 "(" +
+                                                                                 pos.getX() +
+                                                                                 "," +
+                                                                                 pos.getY() +
+                                                                                 "," +
+                                                                                 pos.getZ() +
+                                                                                 ")" ) );
+                        }
+                    }
+
                     return EnumActionResult.SUCCESS;
                 }
             }
