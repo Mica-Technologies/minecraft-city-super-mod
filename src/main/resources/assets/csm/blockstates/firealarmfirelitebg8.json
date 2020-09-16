@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:flbg8"
+    },
+    "facing=north": {
+      "model": "csm:flbg8"
+    },
+    "facing=east": {
+      "model": "csm:flbg8",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:flbg8",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:flbg8",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:flbg8",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:flbg8",
+      "x": 90
+    }
+  }
+}

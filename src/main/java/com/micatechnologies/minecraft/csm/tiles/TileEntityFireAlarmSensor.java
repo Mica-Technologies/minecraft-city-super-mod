@@ -28,19 +28,13 @@ public class TileEntityFireAlarmSensor extends TileEntity
 
     @Override
     public void readFromNBT( NBTTagCompound p_readFromNBT_1_ ) {
-        if ( p_readFromNBT_1_.hasKey( linkedPanelPosKey ) ) {
-            String[] split = p_readFromNBT_1_.getString( linkedPanelPosKey ).split( " " );
-            if ( split.length != 3 ) {
-                linkedPanelPos = null;
-            }
-            else {
-                linkedPanelPos = new BlockPos( Integer.parseInt( split[ 0 ] ), Integer.parseInt( split[ 1 ] ),
-                                               Integer.parseInt( split[ 2 ] ) );
-            }
+        try {
+            linkedPanelPos = BlockPos.fromLong( p_readFromNBT_1_.getLong( linkedPanelPosKey ) );
         }
-        else {
+        catch ( Exception e ) {
             linkedPanelPos = null;
         }
+
         super.readFromNBT( p_readFromNBT_1_ );
     }
 
@@ -56,11 +50,7 @@ public class TileEntityFireAlarmSensor extends TileEntity
     @Override
     public NBTTagCompound writeToNBT( NBTTagCompound p_writeToNBT_1_ ) {
         if ( linkedPanelPos != null ) {
-            p_writeToNBT_1_.setString( linkedPanelPosKey, linkedPanelPos.getX() +
-                    " " +
-                    linkedPanelPos.getY() +
-                    " " +
-                    linkedPanelPos.getZ() );
+            p_writeToNBT_1_.setLong( linkedPanelPosKey, linkedPanelPos.toLong() );
         }
         return super.writeToNBT( p_writeToNBT_1_ );
     }
@@ -74,7 +64,8 @@ public class TileEntityFireAlarmSensor extends TileEntity
             linkedPanelPos = blockPos;
             markDirty();
             return true;
-        } else {
+        }
+        else {
             return false;
         }
     }

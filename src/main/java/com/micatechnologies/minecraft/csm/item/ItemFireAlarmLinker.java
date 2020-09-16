@@ -132,16 +132,10 @@ public class ItemFireAlarmLinker extends ElementsCitySuperMod.ModElement
                 }
                 else if ( state.getBlock() instanceof AbstractBlockFireAlarmSensor ) {
                     TileEntity tileEntityAtClickedPos = worldIn.getTileEntity( pos );
-                    if ( !worldIn.isRemote ) {
-                        player.sendMessage( new TextComponentString( "GOT BLOCK" ) );
-                    }
                     if ( tileEntityAtClickedPos instanceof TileEntityFireAlarmSensor ) {
                         TileEntityFireAlarmSensor fireAlarmSensor
                                 = ( TileEntityFireAlarmSensor ) tileEntityAtClickedPos;
-                        if ( !worldIn.isRemote ) {
-                            player.sendMessage( new TextComponentString( "IS? INSTANCE" ) );
-                        }
-                        boolean didLink = fireAlarmSensor.setLinkedPanelPos( pos );
+                        boolean didLink = fireAlarmSensor.setLinkedPanelPos( alarmPanelPos );
                         if ( didLink && !worldIn.isRemote ) {
                             player.sendMessage( new TextComponentString( "Successfully linked activator to " +
                                                                                  "alarm control panel at " +

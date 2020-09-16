@@ -3,6 +3,7 @@ package com.micatechnologies.minecraft.csm.block;
 import com.micatechnologies.minecraft.csm.creativetab.TabFireAlarms;
 import com.micatechnologies.minecraft.csm.tiles.TileEntityFireAlarmControlPanel;
 import com.micatechnologies.minecraft.csm.tiles.TileEntityFireAlarmSensor;
+import ibxm.Player;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDirectional;
 import net.minecraft.block.ITileEntityProvider;
@@ -19,6 +20,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
@@ -143,7 +145,7 @@ public abstract class AbstractBlockFireAlarmSensor extends Block implements ITil
 
     abstract public void onTick( World world, BlockPos blockPos, IBlockState blockState );
 
-    public boolean activateLinkedPanel( World world, BlockPos blockPos ) {
+    public boolean activateLinkedPanel( World world, BlockPos blockPos, EntityPlayer p ) {
         boolean activated = false;
         TileEntity tileEntityAtPos = world.getTileEntity( blockPos );
         if ( tileEntityAtPos instanceof TileEntityFireAlarmSensor ) {

@@ -1,9 +1,7 @@
 package com.micatechnologies.minecraft.csm.block;
 
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
-import com.micatechnologies.minecraft.csm.item.ItemEWSignalLinker;
 import com.micatechnologies.minecraft.csm.item.ItemFireAlarmLinker;
-import com.micatechnologies.minecraft.csm.item.ItemNSSignalLinker;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
@@ -20,17 +18,16 @@ import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import scala.tools.nsc.transform.SpecializeTypes;
 
 @ElementsCitySuperMod.ModElement.Tag
-public class BlockFireAlarmGenericPullStation extends ElementsCitySuperMod.ModElement
+public class BlockFireAlarmSprinklerSilver extends ElementsCitySuperMod.ModElement
 {
-    public static final String blockRegistryName = "firealarmgenericpullstation";
+    public static final String blockRegistryName = "firealarmsprinklersilver";
     @GameRegistry.ObjectHolder( "csm:" + blockRegistryName )
     public static final Block  block             = null;
 
-    public BlockFireAlarmGenericPullStation( ElementsCitySuperMod instance ) {
-        super( instance, 2106 );
+    public BlockFireAlarmSprinklerSilver( ElementsCitySuperMod instance ) {
+        super( instance, 2117 );
     }
 
     @Override
@@ -49,33 +46,6 @@ public class BlockFireAlarmGenericPullStation extends ElementsCitySuperMod.ModEl
 
     public static class BlockCustom extends AbstractBlockFireAlarmSensor
     {
-
-        @Override
-        public boolean onBlockActivated( World world,
-                                         BlockPos blockPos,
-                                         IBlockState blockState,
-                                         EntityPlayer entityPlayer,
-                                         EnumHand enumHand,
-                                         EnumFacing enumFacing,
-                                         float p_onBlockActivated_7_,
-                                         float p_onBlockActivated_8_,
-                                         float p_onBlockActivated_9_ )
-        {
-            if ( entityPlayer.inventory.getCurrentItem() != null &&
-                    ( entityPlayer.inventory.getCurrentItem().getItem() instanceof ItemFireAlarmLinker.ItemCustom ) ) {
-                return super.onBlockActivated( world, blockPos, blockState, entityPlayer, enumHand, enumFacing,
-                                               p_onBlockActivated_7_, p_onBlockActivated_8_, p_onBlockActivated_9_ );
-            }
-
-            boolean activated = activateLinkedPanel( world, blockPos,entityPlayer );
-            if ( !activated && !world.isRemote ) {
-                entityPlayer.sendMessage( new TextComponentString( "WARNING: This pull station has lost connection, " +
-                                                                           "has failed or is otherwise not functional." ) );
-
-            }
-            return true;
-        }
-
         @Override
         public String getBlockRegistryName() {
             return blockRegistryName;

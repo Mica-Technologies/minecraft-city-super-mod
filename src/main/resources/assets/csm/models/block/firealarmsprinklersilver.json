@@ -1,0 +1,9 @@
+{
+  "parent": "csm:custom/firesprinkler",
+  "textures": {
+    "all": "csm:blocks/metal_white",
+    "particle": "csm:blocks/metal_white",
+    "0": "csm:blocks/metal",
+    "1": "csm:blocks/sprinkler_nib"
+  }
+}

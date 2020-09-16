@@ -1,0 +1,8 @@
+{
+  "parent": "csm:custom/simplex_chevron_pull_station",
+  "textures": {
+    "all": "csm:blocks/simplex_chevron_pull",
+    "particle": "csm:blocks/simplex_chevron_pull",
+    "0": "csm:blocks/simplex_chevron_pull"
+  }
+}

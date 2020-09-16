@@ -1,9 +1,7 @@
 package com.micatechnologies.minecraft.csm.block;
 
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
-import com.micatechnologies.minecraft.csm.item.ItemEWSignalLinker;
 import com.micatechnologies.minecraft.csm.item.ItemFireAlarmLinker;
-import com.micatechnologies.minecraft.csm.item.ItemNSSignalLinker;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
@@ -20,17 +18,16 @@ import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import scala.tools.nsc.transform.SpecializeTypes;
 
 @ElementsCitySuperMod.ModElement.Tag
-public class BlockFireAlarmGenericPullStation extends ElementsCitySuperMod.ModElement
+public class BlockFireAlarmFireLiteBG6 extends ElementsCitySuperMod.ModElement
 {
-    public static final String blockRegistryName = "firealarmgenericpullstation";
+    public static final String blockRegistryName = "firealarmfirelitebg6";
     @GameRegistry.ObjectHolder( "csm:" + blockRegistryName )
     public static final Block  block             = null;
 
-    public BlockFireAlarmGenericPullStation( ElementsCitySuperMod instance ) {
-        super( instance, 2106 );
+    public BlockFireAlarmFireLiteBG6( ElementsCitySuperMod instance ) {
+        super( instance, 2110 );
     }
 
     @Override
