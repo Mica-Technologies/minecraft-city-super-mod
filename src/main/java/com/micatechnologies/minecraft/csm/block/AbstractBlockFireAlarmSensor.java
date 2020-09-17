@@ -23,6 +23,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -150,7 +151,7 @@ public abstract class AbstractBlockFireAlarmSensor extends Block implements ITil
         TileEntity tileEntityAtPos = world.getTileEntity( blockPos );
         if ( tileEntityAtPos instanceof TileEntityFireAlarmSensor ) {
             TileEntityFireAlarmSensor tileEntityFireAlarmSensor = ( TileEntityFireAlarmSensor ) tileEntityAtPos;
-            BlockPos linkedPanelPos = tileEntityFireAlarmSensor.getLinkedPanelPos();
+            BlockPos linkedPanelPos = tileEntityFireAlarmSensor.getLinkedPanelPos(world);
             if ( linkedPanelPos != null ) {
                 TileEntity tileEntityAtLinkedPanelPos = world.getTileEntity( linkedPanelPos );
                 if ( tileEntityAtLinkedPanelPos instanceof TileEntityFireAlarmControlPanel ) {

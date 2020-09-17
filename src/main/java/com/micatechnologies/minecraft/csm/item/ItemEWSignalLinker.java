@@ -105,48 +105,48 @@ public class ItemEWSignalLinker extends ElementsCitySuperMod.ModElement
                             ( clickedBlock instanceof BlockControllableCrosswalkLeftMount.BlockCustom ||
                                     clickedBlock instanceof BlockControllableCrosswalkRightMount.BlockCustom ) ) {
                         player.sendMessage( new TextComponentString(
-                                "Crosswalk light connected to Primary circuit of signal controller at " +
+                                "Crosswalk light connected to Secondary circuit of signal controller at " +
                                         "(" +
-                                        pos.getX() +
+                                        signalControllerPos.getX() +
                                         "," +
-                                        pos.getY() +
+                                        signalControllerPos.getY() +
                                         "," +
-                                        pos.getZ() +
+                                        signalControllerPos.getZ() +
                                         ")" ) );
                     }
                     else if ( !worldIn.isRemote &&
                             linked &&clickedBlock instanceof BlockControllableTrafficSignalTrainController.BlockCustom ) {
                         player.sendMessage( new TextComponentString(
-                                "Train locking rail controller connected to Primary circuit of signal controller at " +
+                                "Train locking rail controller connected to Secondary circuit of signal controller at " +
                                         "(" +
-                                        pos.getX() +
+                                        signalControllerPos.getX() +
                                         "," +
-                                        pos.getY() +
+                                        signalControllerPos.getY() +
                                         "," +
-                                        pos.getZ() +
+                                        signalControllerPos.getZ() +
                                         ")" ) );
                     }
                     else if ( !worldIn.isRemote &&
                             linked &&clickedBlock instanceof AbstractBlockControllableCrosswalkAccessory ) {
                         player.sendMessage( new TextComponentString(
-                                "Crosswalk accessory connected to Primary circuit of signal controller at " +
+                                "Crosswalk accessory connected to Secondary circuit of signal controller at " +
                                         "(" +
-                                        pos.getX() +
+                                        signalControllerPos.getX() +
                                         "," +
-                                        pos.getY() +
+                                        signalControllerPos.getY() +
                                         "," +
-                                        pos.getZ() +
+                                        signalControllerPos.getZ() +
                                         ")" ) );
                     }
                     else if ( !worldIn.isRemote && linked ) {
                         player.sendMessage( new TextComponentString(
-                                "Signal connected to Primary circuit of signal controller at " +
+                                "Signal connected to Secondary circuit of signal controller at " +
                                         "(" +
-                                        pos.getX() +
+                                        signalControllerPos.getX() +
                                         "," +
-                                        pos.getY() +
+                                        signalControllerPos.getY() +
                                         "," +
-                                        pos.getZ() +
+                                        signalControllerPos.getZ() +
                                         ")" ) );
                     }
                 }

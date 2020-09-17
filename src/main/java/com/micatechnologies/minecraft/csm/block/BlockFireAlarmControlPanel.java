@@ -238,17 +238,39 @@ public class BlockFireAlarmControlPanel extends ElementsCitySuperMod.ModElement
                 if ( tileEntity instanceof TileEntityFireAlarmControlPanel ) {
                     TileEntityFireAlarmControlPanel tileEntityFireAlarmControlPanel
                             = ( TileEntityFireAlarmControlPanel ) tileEntity;
-                    tileEntityFireAlarmControlPanel.switchSound();
-                    tileEntityFireAlarmControlPanel.setAlarmState( !tileEntityFireAlarmControlPanel.getAlarmState() );
-                    if ( !p_onBlockActivated_1_.isRemote ) {
-                        p_onBlockActivated_4_.sendMessage( new TextComponentString( "Switching alarm panel sound to " +
-                                                                                            tileEntityFireAlarmControlPanel
-                                                                                                    .getCurrentSoundName() ) );
+
+                    boolean alarmState = tileEntityFireAlarmControlPanel.getAlarmState();
+                    if ( alarmState ) {
+                        tileEntityFireAlarmControlPanel.setAlarmState( false );
+                        if ( !p_onBlockActivated_1_.isRemote ) {
+                            p_onBlockActivated_4_.sendMessage(
+                                    new TextComponentString( "Panel alarm status has been reset!" ) );
+                        }
+                    }
+
+                    if ( p_onBlockActivated_4_.isSneaking() ) {
+                        tileEntityFireAlarmControlPanel.switchSound();
+                        if ( !p_onBlockActivated_1_.isRemote ) {
+                            p_onBlockActivated_4_.sendMessage( new TextComponentString(
+                                    "Switching alarm panel sound to " +
+                                            tileEntityFireAlarmControlPanel.getCurrentSoundName() ) );
+                        }
                     }
                 }
             }
 
             return true;
+        }
+
+        @Override
+        @ParametersAreNonnullByDefault
+        public void addInformation( ItemStack p_addInformation_1_,
+                                    World p_addInformation_2_,
+                                    List< String > p_addInformation_3_,
+                                    ITooltipFlag p_addInformation_4_ )
+        {
+            super.addInformation( p_addInformation_1_, p_addInformation_2_, p_addInformation_3_, p_addInformation_4_ );
+            p_addInformation_3_.add( I18n.format( "csm.firealarmcontrolpanel.note" ) );
         }
 
         @Override

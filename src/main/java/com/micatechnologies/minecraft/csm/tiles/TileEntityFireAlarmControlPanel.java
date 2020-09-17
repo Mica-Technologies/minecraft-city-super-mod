@@ -117,7 +117,6 @@ public class TileEntityFireAlarmControlPanel extends TileEntity
                                      .append( "\n" );
         }
         p_writeToNBT_1_.setString( connectedAppliancesKey, connectedAppliancesString.toString() );
-
         return super.writeToNBT( p_writeToNBT_1_ );
     }
 

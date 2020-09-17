@@ -133,8 +133,6 @@ public class BlockTrafficSignalController extends ElementsCitySuperMod.ModElemen
                                 Random p_updateTick_4_ )
         {
             try {
-                lastTickAt = System.currentTimeMillis();
-
                 boolean success = true;
                 try {
                     // Check if receiving power
@@ -188,8 +186,6 @@ public class BlockTrafficSignalController extends ElementsCitySuperMod.ModElemen
             super.onBlockAdded( p_onBlockAdded_1_, p_onBlockAdded_2_, p_onBlockAdded_3_ );
         }
 
-        private long lastTickAt = 0;
-
         @Override
         public boolean onBlockActivated( World p_onBlockActivated_1_,
                                          BlockPos p_onBlockActivated_2_,
@@ -209,21 +205,6 @@ public class BlockTrafficSignalController extends ElementsCitySuperMod.ModElemen
                 return super.onBlockActivated( p_onBlockActivated_1_, p_onBlockActivated_2_, p_onBlockActivated_3_,
                                                p_onBlockActivated_4_, p_onBlockActivated_5_, p_onBlockActivated_6_,
                                                p_onBlockActivated_7_, p_onBlockActivated_8_, p_onBlockActivated_9_ );
-            }
-
-            // Check for ticking loss
-            final long timeSinceLastTick = System.currentTimeMillis() - lastTickAt;
-            if ( timeSinceLastTick > ( tickRate( p_onBlockActivated_3_ ) * 2 ) ) {
-                if ( !p_onBlockActivated_1_.isRemote ) {
-                    p_onBlockActivated_4_.sendMessage( new TextComponentString(
-                            "This block appears to be non-ticking. Attempting to restore..." ) );
-                }
-                p_onBlockActivated_1_.scheduleUpdate( p_onBlockActivated_2_, this,
-                                                      this.tickRate( p_onBlockActivated_3_ ) );
-                if ( !p_onBlockActivated_1_.isRemote ) {
-                    p_onBlockActivated_4_.sendMessage( new TextComponentString(
-                            "Block ticking has been scheduled. If this did not resolve the problem, replace this block." ) );
-                }
             }
 
             int cycleIndex;
@@ -276,6 +257,29 @@ public class BlockTrafficSignalController extends ElementsCitySuperMod.ModElemen
                     if ( !p_onBlockActivated_1_.isRemote ) {
                         p_onBlockActivated_4_.sendMessage( new TextComponentString(
                                 "Unable to replace broken controller tile entity. Replace this block." ) );
+                    }
+                }
+            }
+
+            // Check for ticking loss
+            TileEntity tileEntity = p_onBlockActivated_1_.getTileEntity( p_onBlockActivated_2_ );
+            if ( tileEntity instanceof TileEntityTrafficSignalController ) {
+                TileEntityTrafficSignalController tileEntityTrafficSignalController
+                        = ( TileEntityTrafficSignalController ) tileEntity;
+                final long timeSinceLastTick = System.currentTimeMillis() -
+                        tileEntityTrafficSignalController.getLastCycleTime();
+                // Get max time since last tick (x50 for ticks -> millis) (x2 to account for drift)
+                final long maxTimeSinceLastTick = tickRate( p_onBlockActivated_3_ ) * 50 * 2;
+                if ( timeSinceLastTick > maxTimeSinceLastTick ) {
+                    if ( !p_onBlockActivated_1_.isRemote ) {
+                        p_onBlockActivated_4_.sendMessage( new TextComponentString(
+                                "This block appears to be non-ticking. Attempting to restore..." ) );
+                    }
+                    p_onBlockActivated_1_.scheduleUpdate( p_onBlockActivated_2_, this,
+                                                          this.tickRate( p_onBlockActivated_3_ ) );
+                    if ( !p_onBlockActivated_1_.isRemote ) {
+                        p_onBlockActivated_4_.sendMessage( new TextComponentString(
+                                "Block ticking has been scheduled. If this did not resolve the problem, replace this block." ) );
                     }
                 }
             }

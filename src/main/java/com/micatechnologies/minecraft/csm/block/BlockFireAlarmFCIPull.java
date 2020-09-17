@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.block;
 
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
 import com.micatechnologies.minecraft.csm.item.ItemFireAlarmLinker;
+import com.micatechnologies.minecraft.csm.tiles.TileEntityFireAlarmSensor;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
@@ -15,6 +16,7 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -34,6 +36,12 @@ public class BlockFireAlarmFCIPull extends ElementsCitySuperMod.ModElement
     public void initElements() {
         elements.blocks.add( () -> new BlockCustom().setRegistryName( blockRegistryName ) );
         elements.items.add( () -> new ItemBlock( block ).setRegistryName( block.getRegistryName() ) );
+    }
+
+    @Override
+    public void init( FMLInitializationEvent event ) {
+        GameRegistry.registerTileEntity( TileEntityFireAlarmSensor.class,
+                                         "csm" + ":tileentityfirealarmsensor" );
     }
 
     @SideOnly( Side.CLIENT )

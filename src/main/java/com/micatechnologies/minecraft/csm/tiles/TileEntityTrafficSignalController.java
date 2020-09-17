@@ -60,12 +60,14 @@ public class TileEntityTrafficSignalController extends TileEntity
                                                   { 3, 0, 0, 0, 1, 3, 2, 2, 2, 0, 14 },
                                                   { 3, 0, 0, 0, 0, 3, 1, 1, 1, 0, 5 } };
 
+    private static final String                KEY_LAST_CYCLE_TIME    = "LastCycleTime";
     private static final String                KEY_CURRENT_CYCLE_TIME = "CurrCycleTime";
     private static final String                KEY_CURRENT_CYCLE      = "CurrCycle";
     private static final String                KEY_NS_SIGNALS         = "NSSigs";
     private static final String                KEY_EW_SIGNALS         = "EWSigs";
     private              int                   currentCycle;
     private              int                   currentCycleTime;
+    private              long                  lastCycleTime;
     private              ArrayList< BlockPos > northSouthSignals      = new ArrayList<>();
     private              ArrayList< BlockPos > eastWestSignals        = new ArrayList<>();
 
@@ -87,6 +89,14 @@ public class TileEntityTrafficSignalController extends TileEntity
         }
         else {
             this.currentCycleTime = 0;
+        }
+
+        // Load last cycle time
+        if ( p_readFromNBT_1_.hasKey( KEY_LAST_CYCLE_TIME ) ) {
+            this.lastCycleTime = p_readFromNBT_1_.getLong( KEY_LAST_CYCLE_TIME );
+        }
+        else {
+            this.lastCycleTime = System.currentTimeMillis();
         }
 
         // Load north/south signals
@@ -137,6 +147,9 @@ public class TileEntityTrafficSignalController extends TileEntity
         // Write current cycle time
         p_writeToNBT_1_.setInteger( KEY_CURRENT_CYCLE_TIME, currentCycleTime );
 
+        // Write last cycle time
+        p_writeToNBT_1_.setLong( KEY_LAST_CYCLE_TIME, lastCycleTime );
+
         // Write north/south signals
         StringBuilder northSouthSignalsString = new StringBuilder();
         for ( BlockPos bp : northSouthSignals ) {
@@ -164,8 +177,8 @@ public class TileEntityTrafficSignalController extends TileEntity
         return super.writeToNBT( p_writeToNBT_1_ );
     }
 
-    public String getTileEntityConnectionString() {
-        return "PRIM-" + northSouthSignals.size() + ":SNDY:" + eastWestSignals.size();
+    public long getLastCycleTime() {
+        return lastCycleTime;
     }
 
     public boolean addNSSignal( BlockPos blockPos ) {
@@ -271,6 +284,8 @@ public class TileEntityTrafficSignalController extends TileEntity
     }
 
     public void cycleSignals( World world, boolean powered, int cycleIndex ) {
+        this.lastCycleTime = System.currentTimeMillis();
+
         // Get cycle
         int[][] currCycleArr;
         if ( cycleIndex == 1 ) {

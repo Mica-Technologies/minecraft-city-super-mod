@@ -121,11 +121,11 @@ public class ItemFireAlarmLinker extends ElementsCitySuperMod.ModElement
                         player.sendMessage( new TextComponentString( "Successfully linked to main circuit of fire " +
                                                                              "alarm control panel at " +
                                                                              "(" +
-                                                                             pos.getX() +
+                                                                             alarmPanelPos.getX() +
                                                                              "," +
-                                                                             pos.getY() +
+                                                                             alarmPanelPos.getY() +
                                                                              "," +
-                                                                             pos.getZ() +
+                                                                             alarmPanelPos.getZ() +
                                                                              ")" ) );
                     }
                     return EnumActionResult.SUCCESS;
@@ -135,16 +135,16 @@ public class ItemFireAlarmLinker extends ElementsCitySuperMod.ModElement
                     if ( tileEntityAtClickedPos instanceof TileEntityFireAlarmSensor ) {
                         TileEntityFireAlarmSensor fireAlarmSensor
                                 = ( TileEntityFireAlarmSensor ) tileEntityAtClickedPos;
-                        boolean didLink = fireAlarmSensor.setLinkedPanelPos( alarmPanelPos );
+                        boolean didLink = fireAlarmSensor.setLinkedPanelPos( alarmPanelPos,player );
                         if ( didLink && !worldIn.isRemote ) {
                             player.sendMessage( new TextComponentString( "Successfully linked activator to " +
                                                                                  "alarm control panel at " +
                                                                                  "(" +
-                                                                                 pos.getX() +
+                                                                                 alarmPanelPos.getX() +
                                                                                  "," +
-                                                                                 pos.getY() +
+                                                                                 alarmPanelPos.getY() +
                                                                                  "," +
-                                                                                 pos.getZ() +
+                                                                                 alarmPanelPos.getZ() +
                                                                                  ")" ) );
                         }
                     }

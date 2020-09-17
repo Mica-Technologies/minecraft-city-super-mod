@@ -1,40 +1,39 @@
 package com.micatechnologies.minecraft.csm.tiles;
 
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
-import com.micatechnologies.minecraft.csm.block.AbstractBlockFireAlarmSounder;
-import com.micatechnologies.minecraft.csm.block.AbstractBlockFireAlarmSounderVoiceEvac;
-import com.micatechnologies.minecraft.csm.block.BlockFireAlarmControlPanel;
-import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.management.PlayerList;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-
 @ElementsCitySuperMod.ModElement.Tag
 public class TileEntityFireAlarmSensor extends TileEntity
 {
-    private static final String   linkedPanelPosKey = "linkedPanelPos";
-    private              BlockPos linkedPanelPos;
+    private static final String linkedPanelPosXKey = "lpX";
+    private static final String linkedPanelPosYKey = "lpY";
+    private static final String linkedPanelPosZKey = "lpZ";
+    private              int    linkedPanelX;
+    private              int    linkedPanelY       = -500;
+    private              int    linkedPanelZ;
 
     @Override
     public void readFromNBT( NBTTagCompound p_readFromNBT_1_ ) {
-        try {
-            linkedPanelPos = BlockPos.fromLong( p_readFromNBT_1_.getLong( linkedPanelPosKey ) );
+        if ( p_readFromNBT_1_.hasKey( linkedPanelPosXKey ) &&
+                p_readFromNBT_1_.hasKey( linkedPanelPosYKey ) &&
+                p_readFromNBT_1_.hasKey( linkedPanelPosZKey ) ) {
+            linkedPanelX = p_readFromNBT_1_.getInteger( linkedPanelPosXKey );
+            linkedPanelY = p_readFromNBT_1_.getInteger( linkedPanelPosYKey );
+            linkedPanelZ = p_readFromNBT_1_.getInteger( linkedPanelPosZKey );
         }
-        catch ( Exception e ) {
-            linkedPanelPos = null;
+        else {
+            linkedPanelY = -500;
         }
-
         super.readFromNBT( p_readFromNBT_1_ );
     }
 
@@ -49,19 +48,22 @@ public class TileEntityFireAlarmSensor extends TileEntity
 
     @Override
     public NBTTagCompound writeToNBT( NBTTagCompound p_writeToNBT_1_ ) {
-        if ( linkedPanelPos != null ) {
-            p_writeToNBT_1_.setLong( linkedPanelPosKey, linkedPanelPos.toLong() );
-        }
+        p_writeToNBT_1_.setInteger( linkedPanelPosXKey, linkedPanelX );
+        p_writeToNBT_1_.setInteger( linkedPanelPosYKey, linkedPanelY );
+        p_writeToNBT_1_.setInteger( linkedPanelPosZKey, linkedPanelZ );
+
         return super.writeToNBT( p_writeToNBT_1_ );
     }
 
-    public BlockPos getLinkedPanelPos() {
-        return linkedPanelPos;
+    public BlockPos getLinkedPanelPos( World world ) {
+        return new BlockPos( linkedPanelX, linkedPanelY, linkedPanelZ );
     }
 
-    public boolean setLinkedPanelPos( BlockPos blockPos ) {
-        if ( linkedPanelPos == null ) {
-            linkedPanelPos = blockPos;
+    public boolean setLinkedPanelPos( BlockPos blockPos, EntityPlayer player ) {
+        if ( linkedPanelY == -500 ) {
+            linkedPanelX = blockPos.getX();
+            linkedPanelY = blockPos.getY();
+            linkedPanelZ = blockPos.getZ();
             markDirty();
             return true;
         }

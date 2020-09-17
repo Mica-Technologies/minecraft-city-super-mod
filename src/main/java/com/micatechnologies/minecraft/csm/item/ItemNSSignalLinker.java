@@ -109,11 +109,11 @@ public class ItemNSSignalLinker extends ElementsCitySuperMod.ModElement
                         player.sendMessage( new TextComponentString(
                                 "Crosswalk light connected to Primary circuit of signal controller at " +
                                         "(" +
-                                        pos.getX() +
+                                        signalControllerPos.getX() +
                                         "," +
-                                        pos.getY() +
+                                        signalControllerPos.getY() +
                                         "," +
-                                        pos.getZ() +
+                                        signalControllerPos.getZ() +
                                         ")" ) );
                     }
                     else if ( !worldIn.isRemote &&
@@ -121,11 +121,11 @@ public class ItemNSSignalLinker extends ElementsCitySuperMod.ModElement
                         player.sendMessage( new TextComponentString(
                                 "Train locking rail controller connected to Primary circuit of signal controller at " +
                                         "(" +
-                                        pos.getX() +
+                                        signalControllerPos.getX() +
                                         "," +
-                                        pos.getY() +
+                                        signalControllerPos.getY() +
                                         "," +
-                                        pos.getZ() +
+                                        signalControllerPos.getZ() +
                                         ")" ) );
                     }
                     else if ( !worldIn.isRemote &&
@@ -133,22 +133,22 @@ public class ItemNSSignalLinker extends ElementsCitySuperMod.ModElement
                         player.sendMessage( new TextComponentString(
                                 "Crosswalk accessory connected to Primary circuit of signal controller at " +
                                         "(" +
-                                        pos.getX() +
+                                        signalControllerPos.getX() +
                                         "," +
-                                        pos.getY() +
+                                        signalControllerPos.getY() +
                                         "," +
-                                        pos.getZ() +
+                                        signalControllerPos.getZ() +
                                         ")" ) );
                     }
                     else if ( !worldIn.isRemote && linked ) {
                         player.sendMessage( new TextComponentString(
                                 "Signal connected to Primary circuit of signal controller at " +
                                         "(" +
-                                        pos.getX() +
+                                        signalControllerPos.getX() +
                                         "," +
-                                        pos.getY() +
+                                        signalControllerPos.getY() +
                                         "," +
-                                        pos.getZ() +
+                                        signalControllerPos.getZ() +
                                         ")" ) );
                     }
                 }
