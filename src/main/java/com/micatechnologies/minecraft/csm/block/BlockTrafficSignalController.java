@@ -96,6 +96,7 @@ public class BlockTrafficSignalController extends ElementsCitySuperMod.ModElemen
             setLightLevel( 0F );
             setLightOpacity( 0 );
             setCreativeTab( TabTrafficSignals.tab );
+            setTickRandomly( true );
         }
 
         @Override
@@ -124,6 +125,30 @@ public class BlockTrafficSignalController extends ElementsCitySuperMod.ModElemen
         @Override
         protected BlockStateContainer createBlockState() {
             return new BlockStateContainer( this, POWERED, CYCLEINDEX );
+        }
+
+        @Override
+        public void randomTick( World p_randomTick_1_,
+                                BlockPos p_randomTick_2_,
+                                IBlockState p_randomTick_3_,
+                                Random p_randomTick_4_ )
+        {
+            TileEntity tileEntity = p_randomTick_1_.getTileEntity( p_randomTick_2_ );
+            if ( tileEntity instanceof TileEntityTrafficSignalController ) {
+                TileEntityTrafficSignalController tileEntityTrafficSignalController
+                        = ( TileEntityTrafficSignalController ) tileEntity;
+                final long timeSinceLastTick = System.currentTimeMillis() -
+                        tileEntityTrafficSignalController.getLastCycleTime();
+                if ( timeSinceLastTick > maxTimeSinceLastTick( p_randomTick_3_ ) ) {
+                    p_randomTick_1_.scheduleUpdate( p_randomTick_2_, this, this.tickRate( p_randomTick_3_ ) );
+                }
+            }
+            super.randomTick( p_randomTick_1_, p_randomTick_2_, p_randomTick_3_, p_randomTick_4_ );
+        }
+
+        private long maxTimeSinceLastTick( IBlockState blockState ) {
+            // Get max time since last tick (x50 for ticks -> millis) (x3 to account for drift)
+            return tickRate( blockState ) * 50 * 3;
         }
 
         @Override
@@ -268,9 +293,7 @@ public class BlockTrafficSignalController extends ElementsCitySuperMod.ModElemen
                         = ( TileEntityTrafficSignalController ) tileEntity;
                 final long timeSinceLastTick = System.currentTimeMillis() -
                         tileEntityTrafficSignalController.getLastCycleTime();
-                // Get max time since last tick (x50 for ticks -> millis) (x2 to account for drift)
-                final long maxTimeSinceLastTick = tickRate( p_onBlockActivated_3_ ) * 50 * 2;
-                if ( timeSinceLastTick > maxTimeSinceLastTick ) {
+                if ( timeSinceLastTick > maxTimeSinceLastTick( p_onBlockActivated_3_ ) ) {
                     if ( !p_onBlockActivated_1_.isRemote ) {
                         p_onBlockActivated_4_.sendMessage( new TextComponentString(
                                 "This block appears to be non-ticking. Attempting to restore..." ) );
