@@ -66,10 +66,8 @@ public class TileEntityTrafficSignalController extends TileEntity
                                                           { 3, 0, 0, 0, 1, 3, 2, 2, 2, 0, 14 },
                                                           { 3, 0, 0, 0, 0, 3, 1, 1, 1, 0, 5 } };
     private static final int[][] CYCLE_LIST_4         = { { 2, 2, 2, 2, 0, 0, 0, 0, 0, 1, 3 },
-                                                          { 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 2 },
                                                           { 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 3 },
                                                           { 0, 0, 0, 0, 1, 2, 2, 2, 2, 0, 3 },
-                                                          { 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 2 },
                                                           { 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 3 } };
     private static final int     CYCLE_LIST_INDEX_MIN = 0;
     private static final int     CYCLE_LIST_INDEX_MAX = 4;
