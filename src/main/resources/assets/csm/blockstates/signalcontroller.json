@@ -3,28 +3,10 @@
     "normal": {
       "model": "csm:signalcontroller"
     },
-    "cycleindex=0,powered=false": {
+    "powered=false": {
       "model": "csm:signalcontroller"
     },
-    "cycleindex=0,powered=true": {
-      "model": "csm:signalcontroller"
-    },
-    "cycleindex=1,powered=false": {
-      "model": "csm:signalcontroller"
-    },
-    "cycleindex=1,powered=true": {
-      "model": "csm:signalcontroller"
-    },
-    "cycleindex=2,powered=false": {
-      "model": "csm:signalcontroller"
-    },
-    "cycleindex=2,powered=true": {
-      "model": "csm:signalcontroller"
-    },
-    "cycleindex=3,powered=false": {
-      "model": "csm:signalcontroller"
-    },
-    "cycleindex=3,powered=true": {
+    "powered=true": {
       "model": "csm:signalcontroller"
     }
   }

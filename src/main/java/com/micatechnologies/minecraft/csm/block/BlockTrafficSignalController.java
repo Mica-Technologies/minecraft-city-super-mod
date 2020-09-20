@@ -1,20 +1,15 @@
 package com.micatechnologies.minecraft.csm.block;
 
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
-import com.micatechnologies.minecraft.csm.creativetab.TabMCLAElectricTab;
-import com.micatechnologies.minecraft.csm.creativetab.TabMCLARoadsTab;
 import com.micatechnologies.minecraft.csm.creativetab.TabTrafficSignals;
 import com.micatechnologies.minecraft.csm.item.ItemEWSignalLinker;
 import com.micatechnologies.minecraft.csm.item.ItemNSSignalLinker;
-import com.micatechnologies.minecraft.csm.tiles.TileEntityForgeEnergyConsumer;
 import com.micatechnologies.minecraft.csm.tiles.TileEntityTrafficSignalController;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockDirectional;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
-import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.properties.PropertyInteger;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
@@ -31,7 +26,6 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
-import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
@@ -75,16 +69,8 @@ public class BlockTrafficSignalController extends ElementsCitySuperMod.ModElemen
 
     public static class BlockCustom extends Block implements ITileEntityProvider
     {
-        public static final int             MIN_CYCLE_INDEX = 0;
-        public static final int             MAX_CYCLE_INDEX = 3;
-        public static final String[]        CYCLE_NAMES     = { "Flash",
-                                                                "Standard w/ Protected Left",
-                                                                "Standard w/ Protected Left " +
-                                                                        "and Right (Train/Bike Lane Compatible)",
-                                                                "Standard with No Protected Turns" };
-        public static final PropertyBool    POWERED         = PropertyBool.create( "powered" );
-        public static final PropertyInteger CYCLEINDEX      = PropertyInteger.create( "cycleindex", MIN_CYCLE_INDEX,
-                                                                                      MAX_CYCLE_INDEX );
+
+        public static final PropertyBool POWERED = PropertyBool.create( "powered" );
 
         public BlockCustom() {
             super( Material.ROCK );
@@ -114,17 +100,17 @@ public class BlockTrafficSignalController extends ElementsCitySuperMod.ModElemen
 
         @Override
         public IBlockState getStateFromMeta( int meta ) {
-            return getDefaultState().withProperty( POWERED, ( meta & 8 ) != 0 ).withProperty( CYCLEINDEX, meta % 8 );
+            return getDefaultState().withProperty( POWERED, meta == 1 );
         }
 
         @Override
         public int getMetaFromState( IBlockState state ) {
-            return ( state.getValue( POWERED ) ? 8 : 0 ) + state.getValue( CYCLEINDEX );
+            return state.getValue( POWERED ) ? 1 : 0;
         }
 
         @Override
         protected BlockStateContainer createBlockState() {
-            return new BlockStateContainer( this, POWERED, CYCLEINDEX );
+            return new BlockStateContainer( this, POWERED );
         }
 
         @Override
@@ -138,17 +124,18 @@ public class BlockTrafficSignalController extends ElementsCitySuperMod.ModElemen
                 TileEntityTrafficSignalController tileEntityTrafficSignalController
                         = ( TileEntityTrafficSignalController ) tileEntity;
                 final long timeSinceLastTick = System.currentTimeMillis() -
-                        tileEntityTrafficSignalController.getLastCycleTime();
-                if ( timeSinceLastTick > maxTimeSinceLastTick( p_randomTick_3_ ) ) {
-                    p_randomTick_1_.scheduleUpdate( p_randomTick_2_, this, this.tickRate( p_randomTick_3_ ) );
+                        tileEntityTrafficSignalController.getLastPhaseChangeTime();
+                if ( timeSinceLastTick > maxTimeSinceLastTick( p_randomTick_1_, p_randomTick_2_ ) ) {
+                    p_randomTick_1_.scheduleUpdate( p_randomTick_2_, this,
+                                                    getTickRate( p_randomTick_1_, p_randomTick_2_ ) );
                 }
             }
             super.randomTick( p_randomTick_1_, p_randomTick_2_, p_randomTick_3_, p_randomTick_4_ );
         }
 
-        private long maxTimeSinceLastTick( IBlockState blockState ) {
+        private long maxTimeSinceLastTick( World w, BlockPos p ) {
             // Get max time since last tick (x50 for ticks -> millis) (x3 to account for drift)
-            return tickRate( blockState ) * 50 * 3;
+            return getTickRate( w, p ) * 50 * 3;
         }
 
         @Override
@@ -158,46 +145,35 @@ public class BlockTrafficSignalController extends ElementsCitySuperMod.ModElemen
                                 Random p_updateTick_4_ )
         {
             try {
-                boolean success = true;
-                try {
-                    // Check if receiving power
-                    boolean powered = p_updateTick_3_.getValue( POWERED );
+                // Check if receiving power
+                boolean powered = p_updateTick_3_.getValue( POWERED );
 
-                    TileEntity tileEntity = p_updateTick_1_.getTileEntity( p_updateTick_2_ );
-                    int cycleIndex = p_updateTick_3_.getValue( CYCLEINDEX );
+                TileEntity tileEntity = p_updateTick_1_.getTileEntity( p_updateTick_2_ );
 
-                    if ( tileEntity instanceof TileEntityTrafficSignalController ) {
-                        TileEntityTrafficSignalController tileEntityTrafficSignalController
-                                = ( TileEntityTrafficSignalController ) tileEntity;
-                        tileEntityTrafficSignalController.cycleSignals( p_updateTick_1_, powered, cycleIndex );
+                if ( tileEntity instanceof TileEntityTrafficSignalController ) {
+                    TileEntityTrafficSignalController tileEntityTrafficSignalController
+                            = ( TileEntityTrafficSignalController ) tileEntity;
+                    tileEntityTrafficSignalController.cycleSignals( powered );
 
-                    }
-                }
-                catch ( Exception e ) {
-                    success = false;
-                }
-
-                if ( !success ) {
-                    p_updateTick_1_.setBlockState( p_updateTick_2_,
-                                                   p_updateTick_3_.withProperty( CYCLEINDEX, MIN_CYCLE_INDEX ), 3 );
                 }
             }
             catch ( Exception ignored ) {
 
             }
 
-            p_updateTick_1_.scheduleUpdate( p_updateTick_2_, this, this.tickRate( p_updateTick_3_ ) );
+            p_updateTick_1_.scheduleUpdate( p_updateTick_2_, this, getTickRate( p_updateTick_1_, p_updateTick_2_ ) );
         }
 
-        public int tickRate( IBlockState p_tickRate_1_ ) {
-            int cycleIndex;
-            try {
-                cycleIndex = p_tickRate_1_.getValue( CYCLEINDEX );
+        public int getTickRate( World w, BlockPos p ) {
+            int tickRate = 4;
+            TileEntity tileEntity = w.getTileEntity( p );
+
+            if ( tileEntity instanceof TileEntityTrafficSignalController ) {
+                TileEntityTrafficSignalController tileEntityTrafficSignalController
+                        = ( TileEntityTrafficSignalController ) tileEntity;
+                tickRate = tileEntityTrafficSignalController.getCycleTickRate();
             }
-            catch ( Exception e ) {
-                cycleIndex = MIN_CYCLE_INDEX;
-            }
-            return cycleIndex == 0 ? 4 : 20;
+            return tickRate;
         }
 
         @Override
@@ -207,7 +183,8 @@ public class BlockTrafficSignalController extends ElementsCitySuperMod.ModElemen
 
         @Override
         public void onBlockAdded( World p_onBlockAdded_1_, BlockPos p_onBlockAdded_2_, IBlockState p_onBlockAdded_3_ ) {
-            p_onBlockAdded_1_.scheduleUpdate( p_onBlockAdded_2_, this, this.tickRate( p_onBlockAdded_3_ ) );
+            p_onBlockAdded_1_.scheduleUpdate( p_onBlockAdded_2_, this,
+                                              getTickRate( p_onBlockAdded_1_, p_onBlockAdded_2_ ) );
             super.onBlockAdded( p_onBlockAdded_1_, p_onBlockAdded_2_, p_onBlockAdded_3_ );
         }
 
@@ -231,25 +208,12 @@ public class BlockTrafficSignalController extends ElementsCitySuperMod.ModElemen
                                                p_onBlockActivated_4_, p_onBlockActivated_5_, p_onBlockActivated_6_,
                                                p_onBlockActivated_7_, p_onBlockActivated_8_, p_onBlockActivated_9_ );
             }
-
-            int cycleIndex;
-            try {
-                cycleIndex = p_onBlockActivated_3_.getValue( CYCLEINDEX );
-            }
-            catch ( Exception e ) {
-                cycleIndex = MIN_CYCLE_INDEX;
-            }
-            cycleIndex++;
-            if ( cycleIndex > MAX_CYCLE_INDEX ) {
-                cycleIndex = MIN_CYCLE_INDEX;
-            }
-            p_onBlockActivated_1_.setBlockState( p_onBlockActivated_2_,
-                                                 p_onBlockActivated_3_.withProperty( CYCLEINDEX, cycleIndex ), 3 );
+            TileEntity tileEntity = p_onBlockActivated_1_.getTileEntity( p_onBlockActivated_2_ );
 
             // Check if controller tile entity still present/valid
             boolean valid = true;
             try {
-                TileEntity tileEntity = p_onBlockActivated_1_.getTileEntity( p_onBlockActivated_2_ );
+                tileEntity = p_onBlockActivated_1_.getTileEntity( p_onBlockActivated_2_ );
                 if ( !( tileEntity instanceof TileEntityTrafficSignalController ) ) {
                     valid = false;
                     if ( !p_onBlockActivated_1_.isRemote ) {
@@ -273,6 +237,7 @@ public class BlockTrafficSignalController extends ElementsCitySuperMod.ModElemen
                     p_onBlockActivated_1_.setTileEntity( p_onBlockActivated_2_,
                                                          new TileEntityTrafficSignalController() );
                     valid = true;
+                    tileEntity = p_onBlockActivated_1_.getTileEntity( p_onBlockActivated_2_ );
                     if ( !p_onBlockActivated_1_.isRemote ) {
                         p_onBlockActivated_4_.sendMessage( new TextComponentString(
                                 "Broken controller tile entity has been replaced. Signals may need to be re-linked." ) );
@@ -287,19 +252,18 @@ public class BlockTrafficSignalController extends ElementsCitySuperMod.ModElemen
             }
 
             // Check for ticking loss
-            TileEntity tileEntity = p_onBlockActivated_1_.getTileEntity( p_onBlockActivated_2_ );
             if ( tileEntity instanceof TileEntityTrafficSignalController ) {
                 TileEntityTrafficSignalController tileEntityTrafficSignalController
                         = ( TileEntityTrafficSignalController ) tileEntity;
                 final long timeSinceLastTick = System.currentTimeMillis() -
-                        tileEntityTrafficSignalController.getLastCycleTime();
-                if ( timeSinceLastTick > maxTimeSinceLastTick( p_onBlockActivated_3_ ) ) {
+                        tileEntityTrafficSignalController.getLastPhaseChangeTime();
+                if ( timeSinceLastTick > maxTimeSinceLastTick( p_onBlockActivated_1_, p_onBlockActivated_2_ ) ) {
                     if ( !p_onBlockActivated_1_.isRemote ) {
                         p_onBlockActivated_4_.sendMessage( new TextComponentString(
                                 "This block appears to be non-ticking. Attempting to restore..." ) );
                     }
                     p_onBlockActivated_1_.scheduleUpdate( p_onBlockActivated_2_, this,
-                                                          this.tickRate( p_onBlockActivated_3_ ) );
+                                                          getTickRate( p_onBlockActivated_1_, p_onBlockActivated_2_ ) );
                     if ( !p_onBlockActivated_1_.isRemote ) {
                         p_onBlockActivated_4_.sendMessage( new TextComponentString(
                                 "Block ticking has been scheduled. If this did not resolve the problem, replace this block." ) );
@@ -307,9 +271,15 @@ public class BlockTrafficSignalController extends ElementsCitySuperMod.ModElemen
                 }
             }
 
-            if ( !p_onBlockActivated_1_.isRemote && valid ) {
-                p_onBlockActivated_4_.sendMessage(
-                        new TextComponentString( "Switching controller to mode: " + CYCLE_NAMES[ cycleIndex ] ) );
+            // Increment cycle index
+            if ( tileEntity instanceof TileEntityTrafficSignalController ) {
+                TileEntityTrafficSignalController tileEntityTrafficSignalController
+                        = ( TileEntityTrafficSignalController ) tileEntity;
+                String cycleTitle = tileEntityTrafficSignalController.incrementCycleIndex();
+                if ( !p_onBlockActivated_1_.isRemote && valid ) {
+                    p_onBlockActivated_4_.sendMessage(
+                            new TextComponentString( "Switching controller to mode: " + cycleTitle ) );
+                }
             }
 
             return true;
