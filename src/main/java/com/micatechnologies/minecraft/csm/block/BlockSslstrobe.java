@@ -2,6 +2,7 @@
 package com.micatechnologies.minecraft.csm.block;
 
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
+import com.micatechnologies.minecraft.csm.creativetab.TabFireAlarms;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.common.registry.GameRegistry;
@@ -30,7 +31,6 @@ import net.minecraft.block.Block;
 
 import com.micatechnologies.minecraft.csm.procedure.ProcedureEnableFA;
 import com.micatechnologies.minecraft.csm.procedure.ProcedureDisableFA;
-import com.micatechnologies.minecraft.csm.creativetab.TabMCLAAlarmsTab;
 
 @ElementsCitySuperMod.ModElement.Tag
 public class BlockSslstrobe extends ElementsCitySuperMod.ModElement {
@@ -62,7 +62,7 @@ public class BlockSslstrobe extends ElementsCitySuperMod.ModElement {
 			setResistance(10F);
 			setLightLevel(0F);
 			setLightOpacity(0);
-			setCreativeTab(TabMCLAAlarmsTab.tab);
+			setCreativeTab( TabFireAlarms.tab);
 			this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH));
 		}
 

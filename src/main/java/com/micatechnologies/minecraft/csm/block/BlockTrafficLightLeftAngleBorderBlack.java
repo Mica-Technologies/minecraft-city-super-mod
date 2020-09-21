@@ -2,45 +2,44 @@ package com.micatechnologies.minecraft.csm.block;
 
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
 import com.micatechnologies.minecraft.csm.creativetab.TabTrafficSignalAccessories;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.world.IBlockAccess;
-import net.minecraftforge.fml.relauncher.SideOnly;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.common.registry.GameRegistry;
-import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.client.event.ModelRegistryEvent;
-
-import net.minecraft.world.World;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.Rotation;
-import net.minecraft.util.Mirror;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.BlockRenderLayer;
-import net.minecraft.item.ItemBlock;
-import net.minecraft.item.Item;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.block.properties.PropertyDirection;
-import net.minecraft.block.properties.IProperty;
-import net.minecraft.block.material.Material;
-import net.minecraft.block.SoundType;
-import net.minecraft.block.BlockDirectional;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockDirectional;
+import net.minecraft.block.SoundType;
+import net.minecraft.block.material.Material;
+import net.minecraft.block.properties.IProperty;
+import net.minecraft.block.properties.PropertyDirection;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
+import net.minecraft.util.BlockRenderLayer;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Mirror;
+import net.minecraft.util.Rotation;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.World;
+import net.minecraftforge.client.event.ModelRegistryEvent;
+import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 @ElementsCitySuperMod.ModElement.Tag
-public class BlockTLHBorderWhite extends ElementsCitySuperMod.ModElement
+public class BlockTrafficLightLeftAngleBorderBlack extends ElementsCitySuperMod.ModElement
 {
-    @GameRegistry.ObjectHolder( "csm:tlhborderwhite" )
+    @GameRegistry.ObjectHolder( "csm:trafficlightleftangleborderblack" )
     public static final Block block = null;
 
-    public BlockTLHBorderWhite( ElementsCitySuperMod instance ) {
-        super( instance, 951 );
+    public BlockTrafficLightLeftAngleBorderBlack( ElementsCitySuperMod instance ) {
+        super( instance, 2150 );
     }
 
     @Override
     public void initElements() {
-        elements.blocks.add( () -> new BlockCustom().setRegistryName( "tlhborderwhite" ) );
+        elements.blocks.add( () -> new BlockCustom().setRegistryName( "trafficlightleftangleborderblack" ) );
         elements.items.add( () -> new ItemBlock( block ).setRegistryName( block.getRegistryName() ) );
     }
 
@@ -48,7 +47,7 @@ public class BlockTLHBorderWhite extends ElementsCitySuperMod.ModElement
     @Override
     public void registerModels( ModelRegistryEvent event ) {
         ModelLoader.setCustomModelResourceLocation( Item.getItemFromBlock( block ), 0,
-                                                    new ModelResourceLocation( "csm:tlhborderwhite", "inventory" ) );
+                                                    new ModelResourceLocation( "csm:trafficlightleftangleborderblack", "inventory" ) );
     }
 
     public static class BlockCustom extends Block
@@ -57,7 +56,7 @@ public class BlockTLHBorderWhite extends ElementsCitySuperMod.ModElement
 
         public BlockCustom() {
             super( Material.ROCK );
-            setUnlocalizedName( "tlhborderwhite" );
+            setUnlocalizedName( "trafficlightleftangleborderblack" );
             setSoundType( SoundType.GROUND );
             setHarvestLevel( "pickaxe", 1 );
             setHardness( 2F );

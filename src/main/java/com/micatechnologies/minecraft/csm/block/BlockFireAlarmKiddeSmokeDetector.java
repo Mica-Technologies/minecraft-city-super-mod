@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.block;
 
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
+import com.micatechnologies.minecraft.csm.creativetab.TabFireAlarms;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.common.registry.GameRegistry;
@@ -40,19 +41,18 @@ import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.BlockDirectional;
 import net.minecraft.block.Block;
 
-import com.micatechnologies.minecraft.csm.procedure.ProcedureNestTest;
+import com.micatechnologies.minecraft.csm.procedure.ProcedureSmokeDetector;
 import com.micatechnologies.minecraft.csm.procedure.ProcedureEnableFA;
 import com.micatechnologies.minecraft.csm.procedure.ProcedureDisableFA;
-import com.micatechnologies.minecraft.csm.creativetab.TabMCLAAlarmsTab;
 
 import java.util.Random;
 
 @ElementsCitySuperMod.ModElement.Tag
-public class BlockNestprotect extends ElementsCitySuperMod.ModElement {
-	@GameRegistry.ObjectHolder("csm:nestprotect")
+public class BlockFireAlarmKiddeSmokeDetector extends ElementsCitySuperMod.ModElement {
+	@GameRegistry.ObjectHolder("csm:kiddesmoke")
 	public static final Block block = null;
-	public BlockNestprotect(ElementsCitySuperMod instance) {
-		super(instance, 50);
+	public BlockFireAlarmKiddeSmokeDetector( ElementsCitySuperMod instance) {
+		super(instance, 46);
 	}
 
 	@Override
@@ -63,28 +63,28 @@ public class BlockNestprotect extends ElementsCitySuperMod.ModElement {
 
 	@Override
 	public void init(FMLInitializationEvent event) {
-		GameRegistry.registerTileEntity(TileEntityCustom.class, "csm:tileentitynestprotect");
+		GameRegistry.registerTileEntity(TileEntityCustom.class, "csm:tileentitykiddesmoke");
 	}
 
 	@SideOnly(Side.CLIENT)
 	@Override
 	public void registerModels(ModelRegistryEvent event) {
-		ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(block), 0, new ModelResourceLocation("csm:nestprotect", "inventory"));
+		ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(block), 0, new ModelResourceLocation("csm:kiddesmoke", "inventory"));
 	}
 	public static class BlockCustom extends Block implements ITileEntityProvider {
 		private boolean red = false;
 		public static final PropertyDirection FACING = BlockDirectional.FACING;
 		public BlockCustom() {
 			super(Material.ROCK);
-			setRegistryName("nestprotect");
-			setUnlocalizedName("nestprotect");
+			setRegistryName("kiddesmoke");
+			setUnlocalizedName("kiddesmoke");
 			setSoundType(SoundType.STONE);
 			setHarvestLevel("pickaxe", 1);
 			setHardness(2F);
 			setResistance(10F);
-			setLightLevel(0.1F);
+			setLightLevel(0F);
 			setLightOpacity(0);
-			setCreativeTab(TabMCLAAlarmsTab.tab);
+			setCreativeTab( TabFireAlarms.tab);
 			this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH));
 		}
 
@@ -104,23 +104,23 @@ public class BlockNestprotect extends ElementsCitySuperMod.ModElement {
 			switch ((EnumFacing) state.getValue(BlockDirectional.FACING)) {
 				case SOUTH :
 				default :
-					return new AxisAlignedBB(1D, 0D, 0.1D, 0D, 1D, 0D);
+					return new AxisAlignedBB(0.8D, 0.8D, 0.8D, 0.2D, 1D, 0.2D);
 				case NORTH :
-					return new AxisAlignedBB(0D, 0D, 0.9D, 1D, 1D, 1D);
+					return new AxisAlignedBB(0.2D, 0.8D, 0.2D, 0.8D, 1D, 0.8D);
 				case WEST :
-					return new AxisAlignedBB(0.9D, 0D, 1D, 1D, 1D, 0D);
+					return new AxisAlignedBB(0.2D, 0.8D, 0.8D, 0.8D, 1D, 0.2D);
 				case EAST :
-					return new AxisAlignedBB(0.1D, 0D, 0D, 0D, 1D, 1D);
+					return new AxisAlignedBB(0.8D, 0.8D, 0.2D, 0.2D, 1D, 0.8D);
 				case UP :
-					return new AxisAlignedBB(0D, 0.1D, 0D, 1D, 0D, 1D);
+					return new AxisAlignedBB(0.2D, 0.8D, 0.8D, 0.8D, 0.2D, 1D);
 				case DOWN :
-					return new AxisAlignedBB(0D, 0.9D, 1D, 1D, 1D, 0D);
+					return new AxisAlignedBB(0.2D, 0.2D, 0.2D, 0.8D, 0.8D, 0D);
 			}
 		}
 
 		@Override
 		public int tickRate(World world) {
-			return 140;
+			return 80;
 		}
 
 		@Override
@@ -210,7 +210,6 @@ public class BlockNestprotect extends ElementsCitySuperMod.ModElement {
 			int y = pos.getY();
 			int z = pos.getZ();
 			Block block = this;
-			world.scheduleUpdate(new BlockPos(x, y, z), this, this.tickRate(world));
 		}
 
 		@Override
@@ -229,7 +228,8 @@ public class BlockNestprotect extends ElementsCitySuperMod.ModElement {
 					$_dependencies.put("z", z);
 					$_dependencies.put("world", world);
 					ProcedureEnableFA.executeProcedure($_dependencies);
-					ProcedureNestTest.executeProcedure($_dependencies);
+					ProcedureSmokeDetector.executeProcedure($_dependencies);
+					world.scheduleUpdate(new BlockPos(x, y, z), this, this.tickRate(world));
 				}
 			} else {
 				{
@@ -257,7 +257,7 @@ public class BlockNestprotect extends ElementsCitySuperMod.ModElement {
 			$_dependencies.put("z", z);
 			$_dependencies.put("world", world);
 			if (world.isBlockIndirectlyGettingPowered(new BlockPos(x, y, z)) > 0) {
-				ProcedureNestTest.executeProcedure($_dependencies);
+				ProcedureSmokeDetector.executeProcedure($_dependencies);
 				world.scheduleUpdate(new BlockPos(x, y, z), this, this.tickRate(world));
 			}
 		}
@@ -276,7 +276,7 @@ public class BlockNestprotect extends ElementsCitySuperMod.ModElement {
 				$_dependencies.put("y", y);
 				$_dependencies.put("z", z);
 				$_dependencies.put("world", world);
-				ProcedureNestTest.executeProcedure($_dependencies);
+				ProcedureSmokeDetector.executeProcedure($_dependencies);
 			}
 			return true;
 		}
@@ -309,7 +309,7 @@ public class BlockNestprotect extends ElementsCitySuperMod.ModElement {
 
 		@Override
 		public String getName() {
-			return this.hasCustomName() ? this.customName : "container.nestprotect";
+			return this.hasCustomName() ? this.customName : "container.kiddesmoke";
 		}
 
 		@Override
@@ -339,7 +339,7 @@ public class BlockNestprotect extends ElementsCitySuperMod.ModElement {
 
 		@Override
 		public String getGuiID() {
-			return "csm:nestprotect";
+			return "csm:kiddesmoke";
 		}
 
 		@Override

@@ -14,6 +14,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
@@ -76,6 +77,25 @@ public class BlockControllableCrosswalkButtonMale extends ElementsCitySuperMod.M
         }
 
         private int lastColor = 0;
+
+        @Override
+        public AxisAlignedBB getBoundingBox( IBlockState state, IBlockAccess source, BlockPos pos ) {
+            switch ( state.getValue( FACING ) ) {
+                case SOUTH:
+                default:
+                    return new AxisAlignedBB( 1D, 0D, 0.2D, 0D, 1D, 0D );
+                case NORTH:
+                    return new AxisAlignedBB( 0D, 0D, 0.8D, 1D, 1D, 1D );
+                case WEST:
+                    return new AxisAlignedBB( 0.8D, 0D, 1D, 1D, 1D, 0D );
+                case EAST:
+                    return new AxisAlignedBB( 0.2D, 0D, 0D, 0D, 1D, 1D );
+                case UP:
+                    return new AxisAlignedBB( 0D, 0.2D, 0D, 1D, 0D, 1D );
+                case DOWN:
+                    return new AxisAlignedBB( 0D, 0.8D, 1D, 1D, 1D, 0D );
+            }
+        }
 
         @Override
         public boolean onBlockActivated( World p_onBlockActivated_1_,

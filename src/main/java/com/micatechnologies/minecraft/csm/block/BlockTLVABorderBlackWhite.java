@@ -2,6 +2,9 @@
 package com.micatechnologies.minecraft.csm.block;
 
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
+import com.micatechnologies.minecraft.csm.creativetab.TabTrafficSignalAccessories;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.common.registry.GameRegistry;
@@ -9,9 +12,7 @@ import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 
 import net.minecraft.world.World;
-import net.minecraft.world.IBlockAccess;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.Mirror;
 import net.minecraft.util.EnumFacing;
@@ -28,41 +29,39 @@ import net.minecraft.block.SoundType;
 import net.minecraft.block.BlockDirectional;
 import net.minecraft.block.Block;
 
-import com.micatechnologies.minecraft.csm.procedure.ProcedureEnableFA;
-import com.micatechnologies.minecraft.csm.procedure.ProcedureDisableFA;
-import com.micatechnologies.minecraft.csm.creativetab.TabMCLAAlarmsTab;
 
 @ElementsCitySuperMod.ModElement.Tag
-public class BlockRssstrobe extends ElementsCitySuperMod.ModElement {
-	@GameRegistry.ObjectHolder("csm:rssstrobe")
+public class BlockTLVABorderBlackWhite extends ElementsCitySuperMod.ModElement {
+	@GameRegistry.ObjectHolder("csm:tlvaborderblackwhite")
 	public static final Block block = null;
-	public BlockRssstrobe(ElementsCitySuperMod instance) {
-		super(instance, 53);
+	public BlockTLVABorderBlackWhite(ElementsCitySuperMod instance) {
+		super(instance, 896);
 	}
 
 	@Override
 	public void initElements() {
-		elements.blocks.add(() -> new BlockCustom().setRegistryName("rssstrobe"));
+		elements.blocks.add(() -> new BlockCustom().setRegistryName("tlvaborderblackwhite"));
 		elements.items.add(() -> new ItemBlock(block).setRegistryName(block.getRegistryName()));
 	}
 
 	@SideOnly(Side.CLIENT)
 	@Override
 	public void registerModels(ModelRegistryEvent event) {
-		ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(block), 0, new ModelResourceLocation("csm:rssstrobe", "inventory"));
+		ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(block), 0,
+				new ModelResourceLocation("csm:tlvaborderblackwhite", "inventory"));
 	}
 	public static class BlockCustom extends Block {
 		public static final PropertyDirection FACING = BlockDirectional.FACING;
 		public BlockCustom() {
 			super(Material.ROCK);
-			setUnlocalizedName("rssstrobe");
+			setUnlocalizedName("tlvaborderblackwhite");
 			setSoundType(SoundType.GROUND);
 			setHarvestLevel("pickaxe", 1);
 			setHardness(2F);
 			setResistance(10F);
 			setLightLevel(0F);
 			setLightOpacity(0);
-			setCreativeTab(TabMCLAAlarmsTab.tab);
+			setCreativeTab( TabTrafficSignalAccessories.tab);
 			this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH));
 		}
 
@@ -70,30 +69,6 @@ public class BlockRssstrobe extends ElementsCitySuperMod.ModElement {
 		@Override
 		public BlockRenderLayer getBlockLayer() {
 			return BlockRenderLayer.CUTOUT_MIPPED;
-		}
-
-		@Override
-		public boolean isFullCube(IBlockState state) {
-			return false;
-		}
-
-		@Override
-		public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-			switch ((EnumFacing) state.getValue(BlockDirectional.FACING)) {
-				case SOUTH :
-				default :
-					return new AxisAlignedBB(1D, 0D, 0.2D, 0D, 1D, 0D);
-				case NORTH :
-					return new AxisAlignedBB(0D, 0D, 0.8D, 1D, 1D, 1D);
-				case WEST :
-					return new AxisAlignedBB(0.8D, 0D, 1D, 1D, 1D, 0D);
-				case EAST :
-					return new AxisAlignedBB(0.2D, 0D, 0D, 0D, 1D, 1D);
-				case UP :
-					return new AxisAlignedBB(0D, 0.2D, 0D, 1D, 0D, 1D);
-				case DOWN :
-					return new AxisAlignedBB(0D, 0.8D, 1D, 1D, 1D, 0D);
-			}
 		}
 
 		@Override
@@ -128,40 +103,27 @@ public class BlockRssstrobe extends ElementsCitySuperMod.ModElement {
 		}
 
 		@Override
+		public AxisAlignedBB getBoundingBox( IBlockState state, IBlockAccess source, BlockPos pos ) {
+			switch ( state.getValue( FACING ) ) {
+				case SOUTH:
+				default:
+					return new AxisAlignedBB( 1D, 0D, 0.2D, 0D, 1D, 0D );
+				case NORTH:
+					return new AxisAlignedBB( 0D, 0D, 0.8D, 1D, 1D, 1D );
+				case WEST:
+					return new AxisAlignedBB( 0.8D, 0D, 1D, 1D, 1D, 0D );
+				case EAST:
+					return new AxisAlignedBB( 0.2D, 0D, 0D, 0D, 1D, 1D );
+				case UP:
+					return new AxisAlignedBB( 0D, 0.2D, 0D, 1D, 0D, 1D );
+				case DOWN:
+					return new AxisAlignedBB( 0D, 0.8D, 1D, 1D, 1D, 0D );
+			}
+		}
+
+		@Override
 		public boolean isOpaqueCube(IBlockState state) {
 			return false;
-		}
-
-		@Override
-		public boolean canConnectRedstone(IBlockState state, IBlockAccess world, BlockPos pos, EnumFacing side) {
-			return true;
-		}
-
-		@Override
-		public void neighborChanged(IBlockState state, World world, BlockPos pos, Block neighborBlock, BlockPos fromPos) {
-			super.neighborChanged(state, world, pos, neighborBlock, fromPos);
-			int x = pos.getX();
-			int y = pos.getY();
-			int z = pos.getZ();
-			if (world.isBlockIndirectlyGettingPowered(new BlockPos(x, y, z)) > 0) {
-				{
-					java.util.HashMap<String, Object> $_dependencies = new java.util.HashMap<>();
-					$_dependencies.put("x", x);
-					$_dependencies.put("y", y);
-					$_dependencies.put("z", z);
-					$_dependencies.put("world", world);
-					ProcedureEnableFA.executeProcedure($_dependencies);
-				}
-			} else {
-				{
-					java.util.HashMap<String, Object> $_dependencies = new java.util.HashMap<>();
-					$_dependencies.put("x", x);
-					$_dependencies.put("y", y);
-					$_dependencies.put("z", z);
-					$_dependencies.put("world", world);
-					ProcedureDisableFA.executeProcedure($_dependencies);
-				}
-			}
 		}
 	}
 }

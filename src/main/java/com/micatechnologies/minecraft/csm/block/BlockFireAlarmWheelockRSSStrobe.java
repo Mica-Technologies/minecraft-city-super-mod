@@ -2,6 +2,7 @@
 package com.micatechnologies.minecraft.csm.block;
 
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
+import com.micatechnologies.minecraft.csm.creativetab.TabFireAlarms;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.common.registry.GameRegistry;
@@ -15,6 +16,7 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.Mirror;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.Item;
 import net.minecraft.entity.EntityLivingBase;
@@ -27,40 +29,47 @@ import net.minecraft.block.SoundType;
 import net.minecraft.block.BlockDirectional;
 import net.minecraft.block.Block;
 
-import com.micatechnologies.minecraft.csm.creativetab.TabMCLAAlarmsTab;
+import com.micatechnologies.minecraft.csm.procedure.ProcedureEnableFA;
+import com.micatechnologies.minecraft.csm.procedure.ProcedureDisableFA;
 
 @ElementsCitySuperMod.ModElement.Tag
-public class BlockEEP extends ElementsCitySuperMod.ModElement {
-	@GameRegistry.ObjectHolder("csm:eep")
+public class BlockFireAlarmWheelockRSSStrobe extends ElementsCitySuperMod.ModElement {
+	@GameRegistry.ObjectHolder("csm:rssstrobe")
 	public static final Block block = null;
-	public BlockEEP(ElementsCitySuperMod instance) {
-		super(instance, 60);
+	public BlockFireAlarmWheelockRSSStrobe( ElementsCitySuperMod instance) {
+		super(instance, 53);
 	}
 
 	@Override
 	public void initElements() {
-		elements.blocks.add(() -> new BlockCustom().setRegistryName("eep"));
+		elements.blocks.add(() -> new BlockCustom().setRegistryName("rssstrobe"));
 		elements.items.add(() -> new ItemBlock(block).setRegistryName(block.getRegistryName()));
 	}
 
 	@SideOnly(Side.CLIENT)
 	@Override
 	public void registerModels(ModelRegistryEvent event) {
-		ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(block), 0, new ModelResourceLocation("csm:eep", "inventory"));
+		ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(block), 0, new ModelResourceLocation("csm:rssstrobe", "inventory"));
 	}
 	public static class BlockCustom extends Block {
 		public static final PropertyDirection FACING = BlockDirectional.FACING;
 		public BlockCustom() {
 			super(Material.ROCK);
-			setUnlocalizedName("eep");
-			setSoundType(SoundType.STONE);
+			setUnlocalizedName("rssstrobe");
+			setSoundType(SoundType.GROUND);
 			setHarvestLevel("pickaxe", 1);
 			setHardness(2F);
 			setResistance(10F);
 			setLightLevel(0F);
 			setLightOpacity(0);
-			setCreativeTab(TabMCLAAlarmsTab.tab);
+			setCreativeTab( TabFireAlarms.tab);
 			this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH));
+		}
+
+		@SideOnly(Side.CLIENT)
+		@Override
+		public BlockRenderLayer getBlockLayer() {
+			return BlockRenderLayer.CUTOUT_MIPPED;
 		}
 
 		@Override
@@ -73,17 +82,17 @@ public class BlockEEP extends ElementsCitySuperMod.ModElement {
 			switch ((EnumFacing) state.getValue(BlockDirectional.FACING)) {
 				case SOUTH :
 				default :
-					return new AxisAlignedBB(0.9375D, 0D, 0.125D, 0.125D, 1D, 0D);
+					return new AxisAlignedBB(1D, 0D, 0.2D, 0D, 1D, 0D);
 				case NORTH :
-					return new AxisAlignedBB(0.0625D, 0D, 0.875D, 0.875D, 1D, 1D);
+					return new AxisAlignedBB(0D, 0D, 0.8D, 1D, 1D, 1D);
 				case WEST :
-					return new AxisAlignedBB(0.875D, 0D, 0.9375D, 1D, 1D, 0.125D);
+					return new AxisAlignedBB(0.8D, 0D, 1D, 1D, 1D, 0D);
 				case EAST :
-					return new AxisAlignedBB(0.125D, 0D, 0.0625D, 0D, 1D, 0.875D);
+					return new AxisAlignedBB(0.2D, 0D, 0D, 0D, 1D, 1D);
 				case UP :
-					return new AxisAlignedBB(0.0625D, 0.125D, 0D, 0.875D, 0D, 1D);
+					return new AxisAlignedBB(0D, 0.2D, 0D, 1D, 0D, 1D);
 				case DOWN :
-					return new AxisAlignedBB(0.0625D, 0.875D, 1D, 0.875D, 1D, 0D);
+					return new AxisAlignedBB(0D, 0.8D, 1D, 1D, 1D, 0D);
 			}
 		}
 
@@ -121,6 +130,38 @@ public class BlockEEP extends ElementsCitySuperMod.ModElement {
 		@Override
 		public boolean isOpaqueCube(IBlockState state) {
 			return false;
+		}
+
+		@Override
+		public boolean canConnectRedstone(IBlockState state, IBlockAccess world, BlockPos pos, EnumFacing side) {
+			return true;
+		}
+
+		@Override
+		public void neighborChanged(IBlockState state, World world, BlockPos pos, Block neighborBlock, BlockPos fromPos) {
+			super.neighborChanged(state, world, pos, neighborBlock, fromPos);
+			int x = pos.getX();
+			int y = pos.getY();
+			int z = pos.getZ();
+			if (world.isBlockIndirectlyGettingPowered(new BlockPos(x, y, z)) > 0) {
+				{
+					java.util.HashMap<String, Object> $_dependencies = new java.util.HashMap<>();
+					$_dependencies.put("x", x);
+					$_dependencies.put("y", y);
+					$_dependencies.put("z", z);
+					$_dependencies.put("world", world);
+					ProcedureEnableFA.executeProcedure($_dependencies);
+				}
+			} else {
+				{
+					java.util.HashMap<String, Object> $_dependencies = new java.util.HashMap<>();
+					$_dependencies.put("x", x);
+					$_dependencies.put("y", y);
+					$_dependencies.put("z", z);
+					$_dependencies.put("world", world);
+					ProcedureDisableFA.executeProcedure($_dependencies);
+				}
+			}
 		}
 	}
 }

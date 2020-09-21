@@ -3,6 +3,8 @@ package com.micatechnologies.minecraft.csm.block;
 
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
 import com.micatechnologies.minecraft.csm.creativetab.TabTrafficSignalAccessories;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.common.registry.GameRegistry;
@@ -81,6 +83,25 @@ public class BlockTLHBorderYellow extends ElementsCitySuperMod.ModElement {
 		@Override
 		public IBlockState withMirror(IBlockState state, Mirror mirrorIn) {
 			return state.withRotation(mirrorIn.toRotation((EnumFacing) state.getValue(FACING)));
+		}
+
+		@Override
+		public AxisAlignedBB getBoundingBox( IBlockState state, IBlockAccess source, BlockPos pos ) {
+			switch ( state.getValue( FACING ) ) {
+				case SOUTH:
+				default:
+					return new AxisAlignedBB( 1D, 0D, 0.2D, 0D, 1D, 0D );
+				case NORTH:
+					return new AxisAlignedBB( 0D, 0D, 0.8D, 1D, 1D, 1D );
+				case WEST:
+					return new AxisAlignedBB( 0.8D, 0D, 1D, 1D, 1D, 0D );
+				case EAST:
+					return new AxisAlignedBB( 0.2D, 0D, 0D, 0D, 1D, 1D );
+				case UP:
+					return new AxisAlignedBB( 0D, 0.2D, 0D, 1D, 0D, 1D );
+				case DOWN:
+					return new AxisAlignedBB( 0D, 0.8D, 1D, 1D, 1D, 0D );
+			}
 		}
 
 		@Override

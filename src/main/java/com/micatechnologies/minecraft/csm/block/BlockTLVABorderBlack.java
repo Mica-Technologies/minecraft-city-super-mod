@@ -31,29 +31,29 @@ import net.minecraft.block.Block;
 
 
 @ElementsCitySuperMod.ModElement.Tag
-public class BlockTLBorderBlackBlack extends ElementsCitySuperMod.ModElement {
-	@GameRegistry.ObjectHolder("csm:tlborderblackblack")
+public class BlockTLVABorderBlack extends ElementsCitySuperMod.ModElement {
+	@GameRegistry.ObjectHolder("csm:tlvaborderblack")
 	public static final Block block = null;
-	public BlockTLBorderBlackBlack(ElementsCitySuperMod instance) {
-		super(instance, 877);
+	public BlockTLVABorderBlack(ElementsCitySuperMod instance) {
+		super(instance, 894);
 	}
 
 	@Override
 	public void initElements() {
-		elements.blocks.add(() -> new BlockCustom().setRegistryName("tlborderblackblack"));
+		elements.blocks.add(() -> new BlockCustom().setRegistryName("tlvaborderblack"));
 		elements.items.add(() -> new ItemBlock(block).setRegistryName(block.getRegistryName()));
 	}
 
 	@SideOnly(Side.CLIENT)
 	@Override
 	public void registerModels(ModelRegistryEvent event) {
-		ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(block), 0, new ModelResourceLocation("csm:tlborderblackblack", "inventory"));
+		ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(block), 0, new ModelResourceLocation("csm:tlvaborderblack", "inventory"));
 	}
 	public static class BlockCustom extends Block {
 		public static final PropertyDirection FACING = BlockDirectional.FACING;
 		public BlockCustom() {
 			super(Material.ROCK);
-			setUnlocalizedName("tlborderblackblack");
+			setUnlocalizedName("tlvaborderblack");
 			setSoundType(SoundType.GROUND);
 			setHarvestLevel("pickaxe", 1);
 			setHardness(2F);
@@ -86,6 +86,22 @@ public class BlockTLBorderBlackBlack extends ElementsCitySuperMod.ModElement {
 		}
 
 		@Override
+		public IBlockState getStateFromMeta(int meta) {
+			return this.getDefaultState().withProperty(FACING, EnumFacing.getFront(meta));
+		}
+
+		@Override
+		public int getMetaFromState(IBlockState state) {
+			return ((EnumFacing) state.getValue(FACING)).getIndex();
+		}
+
+		@Override
+		public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta,
+				EntityLivingBase placer) {
+			return this.getDefaultState().withProperty(FACING, EnumFacing.getDirectionFromEntityLiving(pos, placer));
+		}
+
+		@Override
 		public AxisAlignedBB getBoundingBox( IBlockState state, IBlockAccess source, BlockPos pos ) {
 			switch ( state.getValue( FACING ) ) {
 				case SOUTH:
@@ -102,22 +118,6 @@ public class BlockTLBorderBlackBlack extends ElementsCitySuperMod.ModElement {
 				case DOWN:
 					return new AxisAlignedBB( 0D, 0.8D, 1D, 1D, 1D, 0D );
 			}
-		}
-
-		@Override
-		public IBlockState getStateFromMeta(int meta) {
-			return this.getDefaultState().withProperty(FACING, EnumFacing.getFront(meta));
-		}
-
-		@Override
-		public int getMetaFromState(IBlockState state) {
-			return ((EnumFacing) state.getValue(FACING)).getIndex();
-		}
-
-		@Override
-		public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta,
-				EntityLivingBase placer) {
-			return this.getDefaultState().withProperty(FACING, EnumFacing.getDirectionFromEntityLiving(pos, placer));
 		}
 
 		@Override
