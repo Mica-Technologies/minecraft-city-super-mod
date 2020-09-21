@@ -2,7 +2,7 @@
 package com.micatechnologies.minecraft.csm.creativetab;
 
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
-import com.micatechnologies.minecraft.csm.block.BlockCWOnRight;
+import com.micatechnologies.minecraft.csm.block.BlockTrafficPoleVerticalCurveConnector;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.relauncher.Side;
 
@@ -21,7 +21,7 @@ public class TabMCLARoadsTab extends ElementsCitySuperMod.ModElement {
 			@SideOnly(Side.CLIENT)
 			@Override
 			public ItemStack getTabIconItem() {
-				return new ItemStack( BlockCWOnRight.block, (int) (1));
+				return new ItemStack( BlockTrafficPoleVerticalCurveConnector.block, (int) (1));
 			}
 
 			@SideOnly(Side.CLIENT)

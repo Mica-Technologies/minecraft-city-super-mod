@@ -2,6 +2,7 @@
 package com.micatechnologies.minecraft.csm.block;
 
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
+import com.micatechnologies.minecraft.csm.creativetab.TabTrafficSignalAccessories;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.common.registry.GameRegistry;
@@ -26,7 +27,6 @@ import net.minecraft.block.SoundType;
 import net.minecraft.block.BlockDirectional;
 import net.minecraft.block.Block;
 
-import com.micatechnologies.minecraft.csm.creativetab.TabTrafficSignalsStatic;
 
 @ElementsCitySuperMod.ModElement.Tag
 public class BlockTLHBorderTan extends ElementsCitySuperMod.ModElement {
@@ -58,7 +58,7 @@ public class BlockTLHBorderTan extends ElementsCitySuperMod.ModElement {
 			setResistance(10F);
 			setLightLevel(0F);
 			setLightOpacity(0);
-			setCreativeTab(TabTrafficSignalsStatic.tab);
+			setCreativeTab( TabTrafficSignalAccessories.tab);
 			this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH));
 		}
 
