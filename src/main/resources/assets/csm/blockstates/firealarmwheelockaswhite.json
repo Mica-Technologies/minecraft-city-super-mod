@@ -3,26 +3,49 @@
     "normal": {
       "model": "csm:wasw"
     },
-    "facing=north": {
+    "facing=north,sound=0": {
       "model": "csm:wasw"
     },
-    "facing=east": {
+    "facing=east,sound=0": {
       "model": "csm:wasw",
       "y": 90
     },
-    "facing=south": {
+    "facing=south,sound=0": {
       "model": "csm:wasw",
       "y": 180
     },
-    "facing=west": {
+    "facing=west,sound=0": {
       "model": "csm:wasw",
       "y": 270
     },
-    "facing=up": {
+    "facing=up,sound=0": {
       "model": "csm:wasw",
       "x": 270
     },
-    "facing=down": {
+    "facing=down,sound=0": {
+      "model": "csm:wasw",
+      "x": 90
+    },
+    "facing=north,sound=1": {
+      "model": "csm:wasw"
+    },
+    "facing=east,sound=1": {
+      "model": "csm:wasw",
+      "y": 90
+    },
+    "facing=south,sound=1": {
+      "model": "csm:wasw",
+      "y": 180
+    },
+    "facing=west,sound=1": {
+      "model": "csm:wasw",
+      "y": 270
+    },
+    "facing=up,sound=1": {
+      "model": "csm:wasw",
+      "x": 270
+    },
+    "facing=down,sound=1": {
       "model": "csm:wasw",
       "x": 90
     }

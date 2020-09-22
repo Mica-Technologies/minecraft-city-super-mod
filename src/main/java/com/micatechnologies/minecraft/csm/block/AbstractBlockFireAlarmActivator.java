@@ -29,11 +29,11 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.Random;
 
-public abstract class AbstractBlockFireAlarmSensor extends Block implements ITileEntityProvider
+public abstract class AbstractBlockFireAlarmActivator extends Block implements ITileEntityProvider
 {
     public static final PropertyDirection FACING = BlockDirectional.FACING;
 
-    public AbstractBlockFireAlarmSensor() {
+    public AbstractBlockFireAlarmActivator() {
         super( Material.ROCK );
         setUnlocalizedName( getBlockRegistryName() );
         setSoundType( SoundType.GROUND );

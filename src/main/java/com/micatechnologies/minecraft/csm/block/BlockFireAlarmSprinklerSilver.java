@@ -1,17 +1,13 @@
 package com.micatechnologies.minecraft.csm.block;
 
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
-import com.micatechnologies.minecraft.csm.item.ItemFireAlarmLinker;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
@@ -44,7 +40,7 @@ public class BlockFireAlarmSprinklerSilver extends ElementsCitySuperMod.ModEleme
                                                                                "inventory" ) );
     }
 
-    public static class BlockCustom extends AbstractBlockFireAlarmSensor
+    public static class BlockCustom extends AbstractBlockFireAlarmDetector
     {
         @Override
         public String getBlockRegistryName() {
@@ -52,13 +48,17 @@ public class BlockFireAlarmSprinklerSilver extends ElementsCitySuperMod.ModEleme
         }
 
         @Override
-        public int getBlockTickRate() {
-            return 20;
+        public void onFire( World world, BlockPos blockPos, IBlockState blockState ) {
+            int waterX = blockPos.getX();
+            int waterY = blockPos.getY() - 1;
+            int waterZ = blockPos.getZ();
+            BlockPos waterBlockPos = new BlockPos( waterX, waterY, waterZ );
+            IBlockState previousBlockState = world.getBlockState( waterBlockPos );
+
+            world.setBlockState( waterBlockPos, Blocks.FLOWING_WATER.getDefaultState(), 3 );
+            world.notifyBlockUpdate( waterBlockPos, previousBlockState, Blocks.FLOWING_WATER.getDefaultState(), 3 );
+            world.notifyNeighborsOfStateChange( waterBlockPos, Blocks.FLOWING_WATER, true );
         }
 
-        @Override
-        public void onTick( World world, BlockPos blockPos, IBlockState blockState ) {
-            // Do nothing
-        }
     }
 }

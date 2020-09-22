@@ -3,11 +3,8 @@ package com.micatechnologies.minecraft.csm.item;
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
 import com.micatechnologies.minecraft.csm.block.*;
 import com.micatechnologies.minecraft.csm.creativetab.TabFireAlarms;
-import com.micatechnologies.minecraft.csm.creativetab.TabTrafficSignals;
 import com.micatechnologies.minecraft.csm.tiles.TileEntityFireAlarmControlPanel;
 import com.micatechnologies.minecraft.csm.tiles.TileEntityFireAlarmSensor;
-import com.micatechnologies.minecraft.csm.tiles.TileEntityTrafficSignalController;
-import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.util.ITooltipFlag;
@@ -130,7 +127,7 @@ public class ItemFireAlarmLinker extends ElementsCitySuperMod.ModElement
                     }
                     return EnumActionResult.SUCCESS;
                 }
-                else if ( state.getBlock() instanceof AbstractBlockFireAlarmSensor ) {
+                else if ( state.getBlock() instanceof AbstractBlockFireAlarmActivator ) {
                     TileEntity tileEntityAtClickedPos = worldIn.getTileEntity( pos );
                     if ( tileEntityAtClickedPos instanceof TileEntityFireAlarmSensor ) {
                         TileEntityFireAlarmSensor fireAlarmSensor

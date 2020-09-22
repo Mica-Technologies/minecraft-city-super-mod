@@ -1,10 +1,7 @@
 package com.micatechnologies.minecraft.csm.block;
 
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
-import com.micatechnologies.minecraft.csm.item.ItemEWSignalLinker;
 import com.micatechnologies.minecraft.csm.item.ItemFireAlarmLinker;
-import com.micatechnologies.minecraft.csm.item.ItemNSSignalLinker;
-import com.micatechnologies.minecraft.csm.tiles.TileEntityFireAlarmControlPanel;
 import com.micatechnologies.minecraft.csm.tiles.TileEntityFireAlarmSensor;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -23,7 +20,6 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import scala.tools.nsc.transform.SpecializeTypes;
 
 @ElementsCitySuperMod.ModElement.Tag
 public class BlockFireAlarmGenericPullStation extends ElementsCitySuperMod.ModElement
@@ -56,7 +52,7 @@ public class BlockFireAlarmGenericPullStation extends ElementsCitySuperMod.ModEl
                                                                                "inventory" ) );
     }
 
-    public static class BlockCustom extends AbstractBlockFireAlarmSensor
+    public static class BlockCustom extends AbstractBlockFireAlarmActivator
     {
 
         @Override

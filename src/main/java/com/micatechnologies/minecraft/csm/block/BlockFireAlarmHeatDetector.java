@@ -39,7 +39,7 @@ public class BlockFireAlarmHeatDetector extends ElementsCitySuperMod.ModElement
                                                                                "inventory" ) );
     }
 
-    public static class BlockCustom extends AbstractBlockFireAlarmSensor
+    public static class BlockCustom extends AbstractBlockFireAlarmDetector
     {
         @Override
         public String getBlockRegistryName() {
@@ -47,13 +47,8 @@ public class BlockFireAlarmHeatDetector extends ElementsCitySuperMod.ModElement
         }
 
         @Override
-        public int getBlockTickRate() {
-            return 20;
-        }
+        public void onFire( World world, BlockPos blockPos, IBlockState blockState ) {
 
-        @Override
-        public void onTick( World world, BlockPos blockPos, IBlockState blockState ) {
-            // Do nothing
         }
     }
 }

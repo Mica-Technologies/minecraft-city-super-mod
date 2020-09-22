@@ -52,7 +52,7 @@ public class BlockFireAlarmGamewellCenturyPull extends ElementsCitySuperMod.ModE
                                                                                "inventory" ) );
     }
 
-    public static class BlockCustom extends AbstractBlockFireAlarmSensor
+    public static class BlockCustom extends AbstractBlockFireAlarmActivator
     {
 
         @Override

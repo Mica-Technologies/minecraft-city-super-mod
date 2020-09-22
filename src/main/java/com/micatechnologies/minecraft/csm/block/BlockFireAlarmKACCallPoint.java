@@ -52,7 +52,7 @@ public class BlockFireAlarmKACCallPoint extends ElementsCitySuperMod.ModElement
                                                                                "inventory" ) );
     }
 
-    public static class BlockCustom extends AbstractBlockFireAlarmSensor
+    public static class BlockCustom extends AbstractBlockFireAlarmActivator
     {
 
         @Override

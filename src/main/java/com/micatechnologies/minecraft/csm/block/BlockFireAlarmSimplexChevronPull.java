@@ -52,7 +52,7 @@ public class BlockFireAlarmSimplexChevronPull extends ElementsCitySuperMod.ModEl
                                                                                "inventory" ) );
     }
 
-    public static class BlockCustom extends AbstractBlockFireAlarmSensor
+    public static class BlockCustom extends AbstractBlockFireAlarmActivator
     {
 
         @Override
