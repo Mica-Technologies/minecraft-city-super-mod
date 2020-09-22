@@ -3,56 +3,55 @@ package com.micatechnologies.minecraft.csm.block;
 
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
 import com.micatechnologies.minecraft.csm.creativetab.TabTrafficSignalAccessories;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.world.IBlockAccess;
-import net.minecraftforge.fml.relauncher.SideOnly;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.common.registry.GameRegistry;
-import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.client.event.ModelRegistryEvent;
-
-import net.minecraft.world.World;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.Rotation;
-import net.minecraft.util.Mirror;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.item.ItemBlock;
-import net.minecraft.item.Item;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.block.properties.PropertyDirection;
-import net.minecraft.block.properties.IProperty;
-import net.minecraft.block.material.Material;
-import net.minecraft.block.SoundType;
-import net.minecraft.block.BlockDirectional;
 import net.minecraft.block.Block;
-
+import net.minecraft.block.BlockDirectional;
+import net.minecraft.block.SoundType;
+import net.minecraft.block.material.Material;
+import net.minecraft.block.properties.IProperty;
+import net.minecraft.block.properties.PropertyDirection;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Mirror;
+import net.minecraft.util.Rotation;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.World;
+import net.minecraftforge.client.event.ModelRegistryEvent;
+import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 @ElementsCitySuperMod.ModElement.Tag
-public class BlockTLVCover extends ElementsCitySuperMod.ModElement {
-	@GameRegistry.ObjectHolder("csm:tlvcover")
+public class BlockTLHCover extends ElementsCitySuperMod.ModElement {
+	@GameRegistry.ObjectHolder("csm:tlhcover")
 	public static final Block block = null;
-	public BlockTLVCover(ElementsCitySuperMod instance) {
-		super(instance, 881);
+	public BlockTLHCover( ElementsCitySuperMod instance) {
+		super(instance, 618);
 	}
 
 	@Override
 	public void initElements() {
-		elements.blocks.add(() -> new BlockCustom().setRegistryName("tlvcover"));
+		elements.blocks.add(() -> new BlockCustom().setRegistryName("tlhcover"));
 		elements.items.add(() -> new ItemBlock(block).setRegistryName(block.getRegistryName()));
 	}
 
 	@SideOnly(Side.CLIENT)
 	@Override
 	public void registerModels(ModelRegistryEvent event) {
-		ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(block), 0, new ModelResourceLocation("csm:tlvcover", "inventory"));
+		ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(block), 0, new ModelResourceLocation("csm" +
+																													  ":tlhcover", "inventory"));
 	}
 	public static class BlockCustom extends Block {
 		public static final PropertyDirection FACING = BlockDirectional.FACING;
 		public BlockCustom() {
 			super(Material.ROCK);
-			setUnlocalizedName("tlvcover");
+			setUnlocalizedName("tlhcover");
 			setSoundType(SoundType.GROUND);
 			setHarvestLevel("pickaxe", 1);
 			setHardness(2F);

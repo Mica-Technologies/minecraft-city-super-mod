@@ -26,8 +26,8 @@ public class TileEntityFireAlarmControlPanel extends TileEntity
     private static final String   soundIndexKey          = "soundIndex";
     private static final String   alarmKey               = "alarm";
     private static final String   connectedAppliancesKey = "connectedAppliances";
-    private static final String[] SOUND_RESOURCE_NAMES   = { "csm:simplex_voice_evac_new",
-                                                             "csm:simplex_voice_evac_old",
+    private static final String[] SOUND_RESOURCE_NAMES   = { "csm:svenew",
+                                                             "csm:sveold",
                                                              "csm:simplex_voice_evac_old_alt",
                                                              "csm:mills_firealarm",
                                                              "csm:lms_voice_evac",
@@ -183,7 +183,8 @@ public class TileEntityFireAlarmControlPanel extends TileEntity
             // Perform sound handling
             for ( BlockPos bp : connectedAppliances ) {
                 // Get block at linked position
-                Block blockAtPos = world.getBlockState( bp ).getBlock();
+                IBlockState blockStateAtPos = world.getBlockState( bp );
+                Block blockAtPos = blockStateAtPos.getBlock();
 
                 // Check for alarm sound values at location
                 String alarmSoundName = null;
@@ -194,8 +195,8 @@ public class TileEntityFireAlarmControlPanel extends TileEntity
                 }
                 else if ( blockAtPos instanceof AbstractBlockFireAlarmSounder ) {
                     AbstractBlockFireAlarmSounder blockFireAlarmSounder = ( AbstractBlockFireAlarmSounder ) blockAtPos;
-                    alarmSoundName = blockFireAlarmSounder.getSoundResourceName();
-                    alarmSoundLength = blockFireAlarmSounder.getSoundTickLen();
+                    alarmSoundName = blockFireAlarmSounder.getSoundResourceName(blockStateAtPos);
+                    alarmSoundLength = blockFireAlarmSounder.getSoundTickLen(blockStateAtPos);
                 }
 
                 // Handle only if alarm at location

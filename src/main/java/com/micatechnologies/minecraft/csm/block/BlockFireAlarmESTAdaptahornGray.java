@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.block;
 
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
 import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
@@ -39,12 +40,12 @@ public class BlockFireAlarmESTAdaptahornGray extends ElementsCitySuperMod.ModEle
     public static class BlockCustom extends AbstractBlockFireAlarmSounder
     {
         @Override
-        public String getSoundResourceName() {
+        public String getSoundResourceName( IBlockState blockState) {
             return "csm:edwards_adaptahorn_code44";
         }
 
         @Override
-        public int getSoundTickLen() {
+        public int getSoundTickLen(IBlockState blockState) {
             return 170;
         }
 

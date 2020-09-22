@@ -1,29 +1,29 @@
 {
   "variants": {
     "normal": {
-      "model": "csm:ss_sa_speakerstrobe_red"
+      "model": "csm:firealarmsystemsensoradvancespeakerstrobered"
     },
     "facing=north": {
-      "model": "csm:ss_sa_speakerstrobe_red"
+      "model": "csm:firealarmsystemsensoradvancespeakerstrobered"
     },
     "facing=east": {
-      "model": "csm:ss_sa_speakerstrobe_red",
+      "model": "csm:firealarmsystemsensoradvancespeakerstrobered",
       "y": 90
     },
     "facing=south": {
-      "model": "csm:ss_sa_speakerstrobe_red",
+      "model": "csm:firealarmsystemsensoradvancespeakerstrobered",
       "y": 180
     },
     "facing=west": {
-      "model": "csm:ss_sa_speakerstrobe_red",
+      "model": "csm:firealarmsystemsensoradvancespeakerstrobered",
       "y": 270
     },
     "facing=up": {
-      "model": "csm:ss_sa_speakerstrobe_red",
+      "model": "csm:firealarmsystemsensoradvancespeakerstrobered",
       "x": 270
     },
     "facing=down": {
-      "model": "csm:ss_sa_speakerstrobe_red",
+      "model": "csm:firealarmsystemsensoradvancespeakerstrobered",
       "x": 90
     }
   }

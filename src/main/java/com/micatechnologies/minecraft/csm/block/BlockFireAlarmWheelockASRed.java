@@ -51,12 +51,12 @@ public class BlockFireAlarmWheelockASRed extends ElementsCitySuperMod.ModElement
     public static class BlockCustom extends AbstractBlockFireAlarmSounder
     {
         @Override
-        public String getSoundResourceName() {
+        public String getSoundResourceName(IBlockState blockState) {
             return "csm:wheelockas";
         }
 
         @Override
-        public int getSoundTickLen() {
+        public int getSoundTickLen(IBlockState blockState) {
             return 60;
         }
 

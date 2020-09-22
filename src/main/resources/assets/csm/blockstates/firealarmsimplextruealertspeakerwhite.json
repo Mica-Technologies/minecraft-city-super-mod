@@ -1,29 +1,29 @@
 {
   "variants": {
     "normal": {
-      "model": "csm:stasr"
+      "model": "csm:firealarmsimplextruealertspeakerwhite"
     },
     "facing=north": {
-      "model": "csm:stasr"
+      "model": "csm:firealarmsimplextruealertspeakerwhite"
     },
     "facing=east": {
-      "model": "csm:stasr",
+      "model": "csm:firealarmsimplextruealertspeakerwhite",
       "y": 90
     },
     "facing=south": {
-      "model": "csm:stasr",
+      "model": "csm:firealarmsimplextruealertspeakerwhite",
       "y": 180
     },
     "facing=west": {
-      "model": "csm:stasr",
+      "model": "csm:firealarmsimplextruealertspeakerwhite",
       "y": 270
     },
     "facing=up": {
-      "model": "csm:stasr",
+      "model": "csm:firealarmsimplextruealertspeakerwhite",
       "x": 270
     },
     "facing=down": {
-      "model": "csm:stasr",
+      "model": "csm:firealarmsimplextruealertspeakerwhite",
       "x": 90
     }
   }

@@ -121,7 +121,7 @@ public class BlockFireAlarmControlPanel extends ElementsCitySuperMod.ModElement
                                                  EntityLivingBase placer )
         {
             return this.getDefaultState()
-                       .withProperty( FACING, EnumFacing.getDirectionFromEntityLiving( pos, placer ) );
+                       .withProperty( FACING, placer.getHorizontalFacing().getOpposite() );
         }
 
         @Override

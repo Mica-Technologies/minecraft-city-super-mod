@@ -1,8 +1,3 @@
 {
-  "parent": "csm:custom/simplex_truealert_hornstrobe_red",
-  "textures": {
-    "all": "csm:blocks/simplex_truealert_hornstrobe_red",
-    "particle": "csm:blocks/simplex_truealert_hornstrobe_red",
-    "0": "csm:blocks/simplex_truealert_hornstrobe_red"
-  }
+  "parent": "csm:block/firealarmsimplextruealerthornstrobewhite"
 }

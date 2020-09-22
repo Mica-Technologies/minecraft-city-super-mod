@@ -1,9 +1,9 @@
 {
   "parent": "csm:custom/systemsensor_lseries_speakerstrobe_white_ceiling",
   "textures": {
-    "all": "csm:blocks/systemsensor_lseries_speakerstrobe_white_ceiling",
-    "particle": "csm:blocks/systemsensor_lseries_speakerstrobe_white_ceiling",
-    "0": "csm:blocks/systemsensor_lseries_speakerstrobe_white_ceiling",
-    "missing": "csm:blocks/systemsensor_lseries_speakerstrobe_white_ceiling"
+    "all": "csm:blocks/systemsensor_lseries_speakerstrobe_red_ceiling",
+    "particle": "csm:blocks/systemsensor_lseries_speakerstrobe_red_ceiling",
+    "0": "csm:blocks/systemsensor_lseries_speakerstrobe_red_ceiling",
+    "missing": "csm:blocks/systemsensor_lseries_speakerstrobe_red_ceiling"
   }
 }

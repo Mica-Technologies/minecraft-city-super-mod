@@ -107,9 +107,9 @@ public abstract class AbstractBlockFireAlarmSounder extends Block
         return false;
     }
 
-    abstract public String getSoundResourceName();
+    abstract public String getSoundResourceName(IBlockState blockState);
 
-    abstract public int getSoundTickLen();
+    abstract public int getSoundTickLen(IBlockState blockState);
 
     abstract public String getBlockRegistryName();
 }

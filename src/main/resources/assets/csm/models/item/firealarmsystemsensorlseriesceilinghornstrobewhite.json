@@ -1,9 +1,3 @@
 {
-  "parent": "csm:custom/systemsensor_lseries_hornstrobe_red_ceiling",
-  "textures": {
-    "all": "csm:blocks/sslseries-hornstrobe",
-    "particle": "csm:blocks/sslseries-hornstrobe",
-    "0": "csm:blocks/sslseries-hornstrobe",
-    "missing": "csm:blocks/sslseries-hornstrobe"
-  }
+  "parent": "csm:block/firealarmsystemsensorlseriesceilinghornstrobewhite"
 }

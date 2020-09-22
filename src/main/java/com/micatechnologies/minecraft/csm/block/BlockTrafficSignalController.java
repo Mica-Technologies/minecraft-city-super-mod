@@ -114,6 +114,17 @@ public class BlockTrafficSignalController extends ElementsCitySuperMod.ModElemen
         }
 
         @Override
+        public void onBlockPlacedBy( World world,
+                                     BlockPos pos,
+                                     IBlockState state,
+                                     EntityLivingBase placer,
+                                     ItemStack stack )
+        {
+            int powered = world.isBlockIndirectlyGettingPowered( pos );
+            world.setBlockState( pos, state.withProperty( POWERED, powered > 0 ), 2 );
+        }
+
+        @Override
         public void randomTick( World p_randomTick_1_,
                                 BlockPos p_randomTick_2_,
                                 IBlockState p_randomTick_3_,
