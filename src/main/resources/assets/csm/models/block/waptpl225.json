@@ -1,0 +1,8 @@
+{
+  "parent": "csm:custom/waptpl225",
+  "textures": {
+    "all": "csm:blocks/waptpl225",
+    "particle": "csm:blocks/waptpl225",
+    "0": "csm:blocks/waptpl225"
+  }
+}

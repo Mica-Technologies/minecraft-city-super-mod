@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:waptpl225"
+    },
+    "facing=north": {
+      "model": "csm:waptpl225"
+    },
+    "facing=east": {
+      "model": "csm:waptpl225",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:waptpl225",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:waptpl225",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:waptpl225",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:waptpl225",
+      "x": 90
+    }
+  }
+}

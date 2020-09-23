@@ -1316,3 +1316,6 @@ tile.trafficlightleftangleborderwhiteblack.name=Left Angle Traffic Signal Border
 tile.trafficlightleftanglebordertan.name=Left Angle Traffic Signal Border (Tan)
 itemGroup.trafficsignalaccessories=CSM: Traffic Signal Accessories
 tile.tlhcover.name=Horizontal Traffic Signal Cover
+tile.waptpl225.name=TP-Link Omada EAP225
+tile.signonecarpergreen.name=One Vehicle Per Green Sign
+tile.signonecarpergreeneachlane.name=One Vehicle Per Green Each Lane Sign
