@@ -155,24 +155,26 @@ public class BlockTrafficSignalController extends ElementsCitySuperMod.ModElemen
                                 IBlockState p_updateTick_3_,
                                 Random p_updateTick_4_ )
         {
-            try {
-                // Check if receiving power
-                boolean powered = p_updateTick_3_.getValue( POWERED );
-
-                TileEntity tileEntity = p_updateTick_1_.getTileEntity( p_updateTick_2_ );
-
-                if ( tileEntity instanceof TileEntityTrafficSignalController ) {
-                    TileEntityTrafficSignalController tileEntityTrafficSignalController
-                            = ( TileEntityTrafficSignalController ) tileEntity;
-                    tileEntityTrafficSignalController.cycleSignals( powered );
-
-                }
-            }
-            catch ( Exception ignored ) {
-
-            }
-
             p_updateTick_1_.scheduleUpdate( p_updateTick_2_, this, getTickRate( p_updateTick_1_, p_updateTick_2_ ) );
+            new Thread( () -> {
+                try {
+                    // Check if receiving power
+                    boolean powered = p_updateTick_3_.getValue( POWERED );
+
+                    TileEntity tileEntity = p_updateTick_1_.getTileEntity( p_updateTick_2_ );
+
+                    if ( tileEntity instanceof TileEntityTrafficSignalController ) {
+                        TileEntityTrafficSignalController tileEntityTrafficSignalController
+                                = ( TileEntityTrafficSignalController ) tileEntity;
+                        tileEntityTrafficSignalController.cycleSignals( powered );
+
+                    }
+                }
+                catch ( Exception e ) {
+                    System.err.println("An error occurred while ticking a traffic signal controller: ");
+                    e.printStackTrace();
+                }
+            } ).start();
         }
 
         public int getTickRate( World w, BlockPos p ) {
