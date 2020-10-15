@@ -683,60 +683,6 @@
       }
     ]
   },
-  "fastservice_target_1": {
-    "category": "block",
-    "sounds": [
-      {
-        "name": "csm:fastservice_target_1",
-        "stream": false
-      }
-    ]
-  },
-  "fastservice_target_2": {
-    "category": "block",
-    "sounds": [
-      {
-        "name": "csm:fastservice_target_2",
-        "stream": false
-      }
-    ]
-  },
-  "fastservice_target_3": {
-    "category": "block",
-    "sounds": [
-      {
-        "name": "csm:fastservice_target_3",
-        "stream": false
-      }
-    ]
-  },
-  "fastservice_target_cleared": {
-    "category": "block",
-    "sounds": [
-      {
-        "name": "csm:fastservice_target_cleared",
-        "stream": false
-      }
-    ]
-  },
-  "target_helpbutton_press": {
-    "category": "block",
-    "sounds": [
-      {
-        "name": "csm:target_helpbutton_press",
-        "stream": false
-      }
-    ]
-  },
-  "target_self_checkout_thanks": {
-    "category": "block",
-    "sounds": [
-      {
-        "name": "csm:target_self_checkout_thanks",
-        "stream": false
-      }
-    ]
-  },
   "sony_dream_machine_1980s": {
     "category": "block",
     "sounds": [
@@ -773,42 +719,6 @@
       }
     ]
   },
-  "alto_tornado_warning_newpaul": {
-    "category": "block",
-    "sounds": [
-      {
-        "name": "csm:alto_tornado_warning_newpaul",
-        "stream": false
-      }
-    ]
-  },
-  "alto_tornado_warning_tom": {
-    "category": "block",
-    "sounds": [
-      {
-        "name": "csm:alto_tornado_warning_tom",
-        "stream": false
-      }
-    ]
-  },
-  "alto_weather_forecast_newpaul": {
-    "category": "block",
-    "sounds": [
-      {
-        "name": "csm:alto_weather_forecast_newpaul",
-        "stream": false
-      }
-    ]
-  },
-  "alto_weather_forecast_tom": {
-    "category": "block",
-    "sounds": [
-      {
-        "name": "csm:alto_weather_forecast_tom",
-        "stream": false
-      }
-    ]
-  },
   "male_wait": {
     "category": "block",
     "sounds": [
@@ -841,15 +751,6 @@
     "sounds": [
       {
         "name": "csm:male_crosswalk_on",
-        "stream": false
-      }
-    ]
-  },
-  "female_unsafe_cross": {
-    "category": "block",
-    "sounds": [
-      {
-        "name": "csm:female_unsafe_cross",
         "stream": false
       }
     ]
