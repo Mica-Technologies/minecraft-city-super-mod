@@ -10,7 +10,6 @@ import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
-import net.minecraft.block.properties.PropertyInteger;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
@@ -144,9 +143,9 @@ public class BlockTrafficSignalController extends ElementsCitySuperMod.ModElemen
             super.randomTick( p_randomTick_1_, p_randomTick_2_, p_randomTick_3_, p_randomTick_4_ );
         }
 
-        private long maxTimeSinceLastTick( World w, BlockPos p ) {
-            // Get max time since last tick (x50 for ticks -> millis) (x3 to account for drift)
-            return getTickRate( w, p ) * 50 * 3;
+        private double maxTimeSinceLastTick( World w, BlockPos p ) {
+            // Get max time since last tick (x50 for ticks -> millis) (x1.5 to account for drift)
+            return ((double)getTickRate( w, p )) * 50.0 * 1.5;
         }
 
         @Override
