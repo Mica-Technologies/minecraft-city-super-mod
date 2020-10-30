@@ -30,7 +30,7 @@ public class TileEntityTrafficSignalController extends TileEntity
                                                                              "and Right (Train/Bike Lane Compatible)",
                                                                      "Standard with No Protected Turns",
                                                                      "One Car Per Green" };
-    private static final int[][]  CYCLE_LIST_0                   = { { 3, 0, 3, 0, 3, 1, 3, 0, 3, 3, 1 },
+    private static final int[][]  CYCLE_LIST_0                   = { { 3, 0, 3, 0, 3, 0, 3, 0, 3, 3, 1 },
                                                                      { 1, 3, 1, 3, 3, 3, 0, 3, 0, 3, 1 } };
 
     private static final int[][] CYCLE_LIST_1 = { { 3, 0, 0, 0, 0, 3, 0, 0, 2, 0, 5 },
