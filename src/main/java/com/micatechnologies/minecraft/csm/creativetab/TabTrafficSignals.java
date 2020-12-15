@@ -2,7 +2,7 @@
 package com.micatechnologies.minecraft.csm.creativetab;
 
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
-import com.micatechnologies.minecraft.csm.block.BlockControllableVerticalSolidSignal;
+import com.micatechnologies.minecraft.csm.trafficmgmt.signals.BlockControllableVerticalSolidSignal;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.relauncher.Side;

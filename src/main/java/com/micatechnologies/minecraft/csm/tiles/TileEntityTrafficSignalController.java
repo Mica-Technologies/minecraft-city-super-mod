@@ -1,7 +1,7 @@
 package com.micatechnologies.minecraft.csm.tiles;
 
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
-import com.micatechnologies.minecraft.csm.block.AbstractBlockControllableSignal;
+import com.micatechnologies.minecraft.csm.trafficmgmt.AbstractBlockControllableSignal;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;

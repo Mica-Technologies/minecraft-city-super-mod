@@ -2,7 +2,6 @@
 package com.micatechnologies.minecraft.csm.creativetab;
 
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
-import com.micatechnologies.minecraft.csm.block.BlockControllableVerticalSolidSignal;
 import com.micatechnologies.minecraft.csm.block.BlockTLBorderYellowBlack;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
