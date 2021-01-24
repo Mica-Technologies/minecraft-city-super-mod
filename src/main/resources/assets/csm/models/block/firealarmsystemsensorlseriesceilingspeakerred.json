@@ -1,0 +1,8 @@
+{
+  "parent": "csm:custom/systemsensor_lseries_speaker_white_ceiling",
+  "textures": {
+    "all": "csm:blocks/systemsensor_lseries_speaker_red_ceiling",
+    "particle": "csm:blocks/systemsensor_lseries_speaker_red_ceiling",
+    "0": "csm:blocks/systemsensor_lseries_speaker_red_ceiling"
+  }
+}

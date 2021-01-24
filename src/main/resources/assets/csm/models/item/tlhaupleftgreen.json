@@ -1,0 +1,10 @@
+{
+  "parent": "csm:custom/trafficlighthorizontalangle",
+  "textures": {
+    "all": "csm:blocks/greenarrowupleft",
+    "particle": "csm:blocks/greenarrowupleft",
+    "0": "csm:blocks/solidoff",
+    "1": "csm:blocks/solidoff",
+    "2": "csm:blocks/greenarrowupleft"
+  }
+}

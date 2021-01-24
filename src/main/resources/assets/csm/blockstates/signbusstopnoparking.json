@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:signbusstopnoparking"
+    },
+    "facing=north": {
+      "model": "csm:signbusstopnoparking"
+    },
+    "facing=east": {
+      "model": "csm:signbusstopnoparking",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:signbusstopnoparking",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:signbusstopnoparking",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:signbusstopnoparking",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:signbusstopnoparking",
+      "x": 90
+    }
+  }
+}

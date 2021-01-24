@@ -1,0 +1,8 @@
+{
+  "parent": "csm:custom/farevend",
+  "textures": {
+    "all": "csm:blocks/farevend",
+    "particle": "csm:blocks/farevend",
+    "0": "csm:blocks/farevend"
+  }
+}

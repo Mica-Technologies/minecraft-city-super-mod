@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:gamewellfirebox"
+    },
+    "facing=north": {
+      "model": "csm:gamewellfirebox"
+    },
+    "facing=east": {
+      "model": "csm:gamewellfirebox",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:gamewellfirebox",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:gamewellfirebox",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:gamewellfirebox",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:gamewellfirebox",
+      "x": 90
+    }
+  }
+}

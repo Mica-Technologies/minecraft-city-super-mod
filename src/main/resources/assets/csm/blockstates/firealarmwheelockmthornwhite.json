@@ -1,0 +1,53 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:mt13"
+    },
+    "facing=north,sound=0": {
+      "model": "csm:mt13"
+    },
+    "facing=east,sound=0": {
+      "model": "csm:mt13",
+      "y": 90
+    },
+    "facing=south,sound=0": {
+      "model": "csm:mt13",
+      "y": 180
+    },
+    "facing=west,sound=0": {
+      "model": "csm:mt13",
+      "y": 270
+    },
+    "facing=up,sound=0": {
+      "model": "csm:mt13",
+      "x": 270
+    },
+    "facing=down,sound=0": {
+      "model": "csm:mt13",
+      "x": 90
+    },
+    "facing=north,sound=1": {
+      "model": "csm:mt13"
+    },
+    "facing=east,sound=1": {
+      "model": "csm:mt13",
+      "y": 90
+    },
+    "facing=south,sound=1": {
+      "model": "csm:mt13",
+      "y": 180
+    },
+    "facing=west,sound=1": {
+      "model": "csm:mt13",
+      "y": 270
+    },
+    "facing=up,sound=1": {
+      "model": "csm:mt13",
+      "x": 270
+    },
+    "facing=down,sound=1": {
+      "model": "csm:mt13",
+      "x": 90
+    }
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:signhightideroadflood"
+    },
+    "facing=north": {
+      "model": "csm:signhightideroadflood"
+    },
+    "facing=east": {
+      "model": "csm:signhightideroadflood",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:signhightideroadflood",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:signhightideroadflood",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:signhightideroadflood",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:signhightideroadflood",
+      "x": 90
+    }
+  }
+}

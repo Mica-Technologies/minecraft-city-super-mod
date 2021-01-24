@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:signemergencyparkingonly"
+    },
+    "facing=north": {
+      "model": "csm:signemergencyparkingonly"
+    },
+    "facing=east": {
+      "model": "csm:signemergencyparkingonly",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:signemergencyparkingonly",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:signemergencyparkingonly",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:signemergencyparkingonly",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:signemergencyparkingonly",
+      "x": 90
+    }
+  }
+}

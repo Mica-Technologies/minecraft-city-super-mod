@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:signonehrparking97"
+    },
+    "facing=north": {
+      "model": "csm:signonehrparking97"
+    },
+    "facing=east": {
+      "model": "csm:signonehrparking97",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:signonehrparking97",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:signonehrparking97",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:signonehrparking97",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:signonehrparking97",
+      "x": 90
+    }
+  }
+}

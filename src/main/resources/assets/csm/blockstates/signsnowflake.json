@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:signsnowflake"
+    },
+    "facing=north": {
+      "model": "csm:signsnowflake"
+    },
+    "facing=east": {
+      "model": "csm:signsnowflake",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:signsnowflake",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:signsnowflake",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:signsnowflake",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:signsnowflake",
+      "x": 90
+    }
+  }
+}

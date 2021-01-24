@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:tl4tt"
+    },
+    "facing=north": {
+      "model": "csm:tl4tt"
+    },
+    "facing=east": {
+      "model": "csm:tl4tt",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:tl4tt",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:tl4tt",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:tl4tt",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:tl4tt",
+      "x": 90
+    }
+  }
+}

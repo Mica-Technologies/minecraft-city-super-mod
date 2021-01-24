@@ -1,0 +1,10 @@
+{
+  "parent": "csm:custom/trafficlightverticalangle2",
+  "textures": {
+    "all": "csm:blocks/solidoff",
+    "particle": "csm:blocks/solidoff",
+    "0": "csm:blocks/solidoff",
+    "1": "csm:blocks/yellowarrowleft",
+    "2": "csm:blocks/solidoff"
+  }
+}

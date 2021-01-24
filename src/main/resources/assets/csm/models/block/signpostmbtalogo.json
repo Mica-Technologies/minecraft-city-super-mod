@@ -1,0 +1,9 @@
+{
+  "parent": "csm:custom/metal_signpostback_circle_sign",
+  "textures": {
+    "all": "csm:blocks/mbta",
+    "particle": "csm:blocks/mbta",
+    "0": "csm:blocks/metal",
+    "1": "csm:blocks/mbta"
+  }
+}

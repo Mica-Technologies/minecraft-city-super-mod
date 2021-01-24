@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:signrampclosedahead"
+    },
+    "facing=north": {
+      "model": "csm:signrampclosedahead"
+    },
+    "facing=east": {
+      "model": "csm:signrampclosedahead",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:signrampclosedahead",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:signrampclosedahead",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:signrampclosedahead",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:signrampclosedahead",
+      "x": 90
+    }
+  }
+}

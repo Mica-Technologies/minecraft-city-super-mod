@@ -1,0 +1,8 @@
+{
+  "parent": "csm:custom/kacsounder",
+  "textures": {
+    "all": "csm:blocks/kac_sounder",
+    "particle": "csm:blocks/kac_sounder",
+    "0": "csm:blocks/kac_sounder"
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:signsoftshoulder"
+    },
+    "facing=north": {
+      "model": "csm:signsoftshoulder"
+    },
+    "facing=east": {
+      "model": "csm:signsoftshoulder",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:signsoftshoulder",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:signsoftshoulder",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:signsoftshoulder",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:signsoftshoulder",
+      "x": 90
+    }
+  }
+}

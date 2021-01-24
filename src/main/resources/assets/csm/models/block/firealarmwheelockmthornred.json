@@ -1,0 +1,8 @@
+{
+  "parent": "csm:custom/mt4-115-s_13_red",
+  "textures": {
+    "all": "csm:blocks/mt4-115-s_13_red",
+    "particle": "csm:blocks/mt4-115-s_13_red",
+    "0": "csm:blocks/mt4-115-s_13_red"
+  }
+}

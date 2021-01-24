@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:et70wpwsoa"
+    },
+    "facing=north": {
+      "model": "csm:et70wpwsoa"
+    },
+    "facing=east": {
+      "model": "csm:et70wpwsoa",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:et70wpwsoa",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:et70wpwsoa",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:et70wpwsoa",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:et70wpwsoa",
+      "x": 90
+    }
+  }
+}

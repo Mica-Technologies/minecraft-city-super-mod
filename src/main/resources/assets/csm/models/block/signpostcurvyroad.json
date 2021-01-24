@@ -1,0 +1,9 @@
+{
+  "parent": "csm:custom/metal_signpostback_diamond_sign",
+  "textures": {
+    "all": "csm:blocks/curvy-road-sign",
+    "particle": "csm:blocks/curvy-road-sign",
+    "0": "csm:blocks/metal",
+    "1": "csm:blocks/curvy-road-sign"
+  }
+}

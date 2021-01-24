@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:kiddesmoke"
+    },
+    "facing=north": {
+      "model": "csm:kiddesmoke"
+    },
+    "facing=east": {
+      "model": "csm:kiddesmoke",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:kiddesmoke",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:kiddesmoke",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:kiddesmoke",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:kiddesmoke",
+      "x": 90
+    }
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:signpost4way"
+    },
+    "facing=north": {
+      "model": "csm:signpost4way"
+    },
+    "facing=east": {
+      "model": "csm:signpost4way",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:signpost4way",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:signpost4way",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:signpost4way",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:signpost4way",
+      "x": 90
+    }
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:signslippery"
+    },
+    "facing=north": {
+      "model": "csm:signslippery"
+    },
+    "facing=east": {
+      "model": "csm:signslippery",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:signslippery",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:signslippery",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:signslippery",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:signslippery",
+      "x": 90
+    }
+  }
+}

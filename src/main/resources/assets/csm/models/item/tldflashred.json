@@ -1,0 +1,12 @@
+{
+  "parent": "csm:custom/trafficlightdoghouse",
+  "textures": {
+    "all": "csm:blocks/flashredsolid",
+    "particle": "csm:blocks/flashredsolid",
+    "0": "csm:blocks/flashredsolid",
+    "1": "csm:blocks/solidoff",
+    "2": "csm:blocks/solidoff",
+    "3": "csm:blocks/solidoff",
+    "4": "csm:blocks/solidoff"
+  }
+}

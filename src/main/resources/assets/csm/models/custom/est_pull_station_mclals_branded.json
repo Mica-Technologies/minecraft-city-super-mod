@@ -1,0 +1,127 @@
+{
+  "credit": "Model made by Brandon Holt (RinRin Blissgreen)",
+  "elements": [
+    {
+      "from": [
+        2,
+        1,
+        15
+      ],
+      "to": [
+        14,
+        15,
+        16
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            2.5,
+            0,
+            13.5,
+            15.976
+          ],
+          "texture": "#0"
+        },
+        "east": {
+          "uv": [
+            12.8,
+            14.25,
+            13.3,
+            16
+          ],
+          "texture": "#0"
+        },
+        "south": {
+          "uv": [
+            12.8,
+            14.75,
+            13.3,
+            16
+          ],
+          "texture": "#0"
+        },
+        "west": {
+          "uv": [
+            12.8,
+            14,
+            13.4,
+            16
+          ],
+          "texture": "#0"
+        },
+        "up": {
+          "uv": [
+            12.8,
+            14,
+            13.3,
+            15.875
+          ],
+          "rotation": 180,
+          "texture": "#0"
+        },
+        "down": {
+          "uv": [
+            12.8,
+            13.875,
+            13.3,
+            16
+          ],
+          "rotation": 180,
+          "texture": "#0"
+        }
+      }
+    }
+  ],
+  "display": {
+    "thirdperson_righthand": {
+      "rotation": [
+        0,
+        180,
+        0
+      ],
+      "translation": [
+        0,
+        0,
+        5.75
+      ]
+    },
+    "thirdperson_lefthand": {
+      "rotation": [
+        0,
+        180,
+        0
+      ],
+      "translation": [
+        0,
+        0,
+        5.75
+      ]
+    },
+    "ground": {
+      "rotation": [
+        0,
+        2,
+        0
+      ],
+      "translation": [
+        0,
+        4,
+        0
+      ]
+    },
+    "gui": {
+      "rotation": [
+        0,
+        180,
+        0
+      ]
+    },
+    "fixed": {
+      "translation": [
+        0,
+        0,
+        -8
+      ]
+    }
+  }
+}

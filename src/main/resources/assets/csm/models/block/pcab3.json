@@ -1,0 +1,8 @@
+{
+  "parent": "csm:custom/pupi_crossarm_brown_3",
+  "textures": {
+    "all": "csm:blocks/pupicrossarms",
+    "particle": "csm:blocks/pupicrossarms",
+    "0": "csm:blocks/pupicrossarms"
+  }
+}

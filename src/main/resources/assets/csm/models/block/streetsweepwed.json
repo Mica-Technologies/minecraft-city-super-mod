@@ -1,0 +1,9 @@
+{
+  "parent": "csm:custom/metal_signpostback_tall_sign",
+  "textures": {
+    "all": "csm:blocks/streetsweep_wed",
+    "particle": "csm:blocks/streetsweep_wed",
+    "0": "csm:blocks/metal",
+    "1": "csm:blocks/streetsweep_wed"
+  }
+}

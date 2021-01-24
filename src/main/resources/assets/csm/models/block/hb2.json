@@ -1,0 +1,8 @@
+{
+  "parent": "csm:custom/mcla_led_highbay_light_2",
+  "textures": {
+    "all": "csm:blocks/troffers",
+    "particle": "csm:blocks/troffers",
+    "0": "csm:blocks/troffers"
+  }
+}

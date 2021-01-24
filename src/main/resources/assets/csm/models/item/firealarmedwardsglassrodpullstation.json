@@ -1,0 +1,8 @@
+{
+  "parent": "csm:custom/ps2",
+  "textures": {
+    "all": "csm:blocks/ps2",
+    "particle": "csm:blocks/ps2",
+    "0": "csm:blocks/ps2"
+  }
+}

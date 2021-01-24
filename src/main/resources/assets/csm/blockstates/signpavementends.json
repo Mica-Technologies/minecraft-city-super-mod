@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:signpavementends"
+    },
+    "facing=north": {
+      "model": "csm:signpavementends"
+    },
+    "facing=east": {
+      "model": "csm:signpavementends",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:signpavementends",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:signpavementends",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:signpavementends",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:signpavementends",
+      "x": 90
+    }
+  }
+}

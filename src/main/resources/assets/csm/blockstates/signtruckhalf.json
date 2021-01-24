@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:signtruckhalf"
+    },
+    "facing=north": {
+      "model": "csm:signtruckhalf"
+    },
+    "facing=east": {
+      "model": "csm:signtruckhalf",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:signtruckhalf",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:signtruckhalf",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:signtruckhalf",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:signtruckhalf",
+      "x": 90
+    }
+  }
+}

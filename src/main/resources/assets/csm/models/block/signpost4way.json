@@ -1,0 +1,9 @@
+{
+  "parent": "csm:custom/metal_signpostback_half_sign",
+  "textures": {
+    "all": "csm:blocks/r1-3.eps",
+    "particle": "csm:blocks/r1-3.eps",
+    "0": "csm:blocks/metal",
+    "1": "csm:blocks/r1-3.eps"
+  }
+}

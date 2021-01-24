@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:transformermount"
+    },
+    "facing=north": {
+      "model": "csm:transformermount"
+    },
+    "facing=east": {
+      "model": "csm:transformermount",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:transformermount",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:transformermount",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:transformermount",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:transformermount",
+      "x": 90
+    }
+  }
+}

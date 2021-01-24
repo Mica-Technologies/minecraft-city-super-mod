@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:imac"
+    },
+    "facing=north": {
+      "model": "csm:imac"
+    },
+    "facing=east": {
+      "model": "csm:imac",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:imac",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:imac",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:imac",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:imac",
+      "x": 90
+    }
+  }
+}

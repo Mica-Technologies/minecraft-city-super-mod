@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:signmotorcycleprohibit"
+    },
+    "facing=north": {
+      "model": "csm:signmotorcycleprohibit"
+    },
+    "facing=east": {
+      "model": "csm:signmotorcycleprohibit",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:signmotorcycleprohibit",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:signmotorcycleprohibit",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:signmotorcycleprohibit",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:signmotorcycleprohibit",
+      "x": 90
+    }
+  }
+}

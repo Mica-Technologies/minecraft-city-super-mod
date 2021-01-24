@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:w7002tbroken"
+    },
+    "facing=north": {
+      "model": "csm:w7002tbroken"
+    },
+    "facing=east": {
+      "model": "csm:w7002tbroken",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:w7002tbroken",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:w7002tbroken",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:w7002tbroken",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:w7002tbroken",
+      "x": 90
+    }
+  }
+}

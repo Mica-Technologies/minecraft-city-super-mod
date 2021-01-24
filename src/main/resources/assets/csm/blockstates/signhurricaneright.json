@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:signhurricaneright"
+    },
+    "facing=north": {
+      "model": "csm:signhurricaneright"
+    },
+    "facing=east": {
+      "model": "csm:signhurricaneright",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:signhurricaneright",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:signhurricaneright",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:signhurricaneright",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:signhurricaneright",
+      "x": 90
+    }
+  }
+}

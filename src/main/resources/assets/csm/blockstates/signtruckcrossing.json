@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:signtruckcrossing"
+    },
+    "facing=north": {
+      "model": "csm:signtruckcrossing"
+    },
+    "facing=east": {
+      "model": "csm:signtruckcrossing",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:signtruckcrossing",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:signtruckcrossing",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:signtruckcrossing",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:signtruckcrossing",
+      "x": 90
+    }
+  }
+}

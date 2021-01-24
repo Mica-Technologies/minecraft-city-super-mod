@@ -1,0 +1,9 @@
+{
+  "parent": "csm:custom/ping_pong_table",
+  "textures": {
+    "all": "csm:blocks/ping_pong_table",
+    "particle": "csm:blocks/ping_pong_table",
+    "0": "csm:blocks/ping_pong_table",
+    "1": "csm:blocks/ping_pong_table_net"
+  }
+}

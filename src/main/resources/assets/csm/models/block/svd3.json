@@ -1,0 +1,7 @@
+{
+  "parent": "block/cube_all",
+  "textures": {
+    "all": "csm:blocks/4_way_straight_vent_3_black",
+    "particle": "csm:blocks/4_way_straight_vent_3_black"
+  }
+}

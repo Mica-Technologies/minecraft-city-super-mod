@@ -1,0 +1,8 @@
+{
+  "parent": "csm:custom/trafficlightsingle",
+  "textures": {
+    "all": "csm:blocks/greenarrowahead",
+    "particle": "csm:blocks/greenarrowahead",
+    "0": "csm:blocks/greenarrowahead"
+  }
+}

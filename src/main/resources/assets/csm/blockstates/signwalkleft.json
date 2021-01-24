@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:signwalkleft"
+    },
+    "facing=north": {
+      "model": "csm:signwalkleft"
+    },
+    "facing=east": {
+      "model": "csm:signwalkleft",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:signwalkleft",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:signwalkleft",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:signwalkleft",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:signwalkleft",
+      "x": 90
+    }
+  }
+}

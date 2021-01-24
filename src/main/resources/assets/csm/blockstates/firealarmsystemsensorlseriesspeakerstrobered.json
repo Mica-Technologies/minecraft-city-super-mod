@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:firealarmsystemsensorlseriesspeakerstrobered"
+    },
+    "facing=north": {
+      "model": "csm:firealarmsystemsensorlseriesspeakerstrobered"
+    },
+    "facing=east": {
+      "model": "csm:firealarmsystemsensorlseriesspeakerstrobered",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:firealarmsystemsensorlseriesspeakerstrobered",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:firealarmsystemsensorlseriesspeakerstrobered",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:firealarmsystemsensorlseriesspeakerstrobered",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:firealarmsystemsensorlseriesspeakerstrobered",
+      "x": 90
+    }
+  }
+}

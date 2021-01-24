@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "half=bottom,variant=default": {
+      "model": "csm:silverslab"
+    },
+    "half=top,variant=default": {
+      "model": "csm:silverslab_top"
+    }
+  }
+}

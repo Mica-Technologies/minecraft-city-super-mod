@@ -1,0 +1,8 @@
+{
+  "parent": "csm:custom/ge_evolve_small_smart_node",
+  "textures": {
+    "all": "csm:blocks/ge_evolve_small",
+    "particle": "csm:blocks/ge_evolve_small",
+    "0": "csm:blocks/ge_evolve_small"
+  }
+}

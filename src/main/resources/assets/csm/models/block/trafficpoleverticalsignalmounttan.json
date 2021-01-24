@@ -1,0 +1,9 @@
+{
+  "parent": "csm:custom/trafficpoleverticalsignalmount",
+  "textures": {
+    "all": "csm:blocks/metal_mattetan",
+    "particle": "csm:blocks/metal_mattetan",
+    "0": "csm:blocks/metal_mattetan",
+    "missing": "csm:blocks/metal_mattetan"
+  }
+}

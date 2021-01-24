@@ -1,0 +1,12 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "csm:blocks/modular_vent_2",
+    "up": "csm:blocks/modular_vent_2",
+    "north": "csm:blocks/modular_vent_2",
+    "east": "csm:blocks/modular_vent_2",
+    "south": "csm:blocks/modular_vent_2",
+    "west": "csm:blocks/modular_vent_2",
+    "particle": "csm:blocks/modular_vent_2"
+  }
+}

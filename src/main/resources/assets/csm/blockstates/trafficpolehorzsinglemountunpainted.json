@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:trafficpolehorzsinglemountunpainted"
+    },
+    "facing=north": {
+      "model": "csm:trafficpolehorzsinglemountunpainted"
+    },
+    "facing=east": {
+      "model": "csm:trafficpolehorzsinglemountunpainted",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:trafficpolehorzsinglemountunpainted",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:trafficpolehorzsinglemountunpainted",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:trafficpolehorzsinglemountunpainted",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:trafficpolehorzsinglemountunpainted",
+      "x": 90
+    }
+  }
+}

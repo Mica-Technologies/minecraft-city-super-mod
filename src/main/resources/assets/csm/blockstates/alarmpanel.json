@@ -1,0 +1,69 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:alarmpanel"
+    },
+    "facing=north,powered=false": {
+      "model": "csm:alarmpanel"
+    },
+    "facing=east,powered=false": {
+      "model": "csm:alarmpanel",
+      "y": 90
+    },
+    "facing=south,powered=false": {
+      "model": "csm:alarmpanel",
+      "y": 180
+    },
+    "facing=west,powered=false": {
+      "model": "csm:alarmpanel",
+      "y": 270
+    },
+    "facing=up_x,powered=false": {
+      "model": "csm:alarmpanel",
+      "x": 270
+    },
+    "facing=down_x,powered=false": {
+      "model": "csm:alarmpanel",
+      "x": 90
+    },
+    "facing=up_z,powered=false": {
+      "model": "csm:alarmpanel",
+      "x": 270
+    },
+    "facing=down_z,powered=false": {
+      "model": "csm:alarmpanel",
+      "x": 90
+    },
+    "facing=north,powered=true": {
+      "model": "csm:alarmpanel"
+    },
+    "facing=east,powered=true": {
+      "model": "csm:alarmpanel",
+      "y": 90
+    },
+    "facing=south,powered=true": {
+      "model": "csm:alarmpanel",
+      "y": 180
+    },
+    "facing=west,powered=true": {
+      "model": "csm:alarmpanel",
+      "y": 270
+    },
+    "facing=up_x,powered=true": {
+      "model": "csm:alarmpanel",
+      "x": 270
+    },
+    "facing=down_x,powered=true": {
+      "model": "csm:alarmpanel",
+      "x": 90
+    },
+    "facing=up_z,powered=true": {
+      "model": "csm:alarmpanel",
+      "x": 270
+    },
+    "facing=down_z,powered=true": {
+      "model": "csm:alarmpanel",
+      "x": 90
+    }
+  }
+}

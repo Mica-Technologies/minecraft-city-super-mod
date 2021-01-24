@@ -1,0 +1,8 @@
+{
+  "parent": "csm:custom/trafficpolevertical_double",
+  "textures": {
+    "all": "csm:blocks/concrete_light_pole",
+    "particle": "csm:blocks/concrete_light_pole",
+    "0": "csm:blocks/concrete_light_pole"
+  }
+}

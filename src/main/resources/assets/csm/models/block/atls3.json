@@ -1,0 +1,8 @@
+{
+  "parent": "csm:custom/atlas_speaker_3",
+  "textures": {
+    "all": "csm:blocks/atlas_speaker_3",
+    "particle": "csm:blocks/atlas_speaker_3",
+    "0": "csm:blocks/atlas_speaker_3"
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:wet80"
+    },
+    "facing=north": {
+      "model": "csm:wet80"
+    },
+    "facing=east": {
+      "model": "csm:wet80",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:wet80",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:wet80",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:wet80",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:wet80",
+      "x": 90
+    }
+  }
+}

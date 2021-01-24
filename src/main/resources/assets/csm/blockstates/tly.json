@@ -1,0 +1,22 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:tly"
+    },
+    "facing=north": {
+      "model": "csm:tly"
+    },
+    "facing=east": {
+      "model": "csm:tly",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:tly",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:tly",
+      "y": 270
+    }
+  }
+}

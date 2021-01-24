@@ -1,0 +1,12 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "csm:blocks/ceiling_tile_standard_1",
+    "up": "csm:blocks/ceiling_tile_standard_1",
+    "north": "csm:blocks/ceiling_tile_standard_1",
+    "east": "csm:blocks/ceiling_tile_standard_1",
+    "south": "csm:blocks/ceiling_tile_standard_1",
+    "west": "csm:blocks/ceiling_tile_standard_1",
+    "particle": "csm:blocks/ceiling_tile_standard_1"
+  }
+}

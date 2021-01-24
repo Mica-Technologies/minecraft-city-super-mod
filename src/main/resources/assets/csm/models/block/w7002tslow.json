@@ -1,0 +1,8 @@
+{
+  "parent": "csm:custom/wheelock_7002t",
+  "textures": {
+    "all": "csm:blocks/wheelock_7002t",
+    "particle": "csm:blocks/wheelock_7002t",
+    "0": "csm:blocks/wheelock_7002t"
+  }
+}

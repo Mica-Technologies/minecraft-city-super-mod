@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:signhandicap"
+    },
+    "facing=north": {
+      "model": "csm:signhandicap"
+    },
+    "facing=east": {
+      "model": "csm:signhandicap",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:signhandicap",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:signhandicap",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:signhandicap",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:signhandicap",
+      "x": 90
+    }
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:faic"
+    },
+    "facing=north": {
+      "model": "csm:faic"
+    },
+    "facing=east": {
+      "model": "csm:faic",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:faic",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:faic",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:faic",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:faic",
+      "x": 90
+    }
+  }
+}

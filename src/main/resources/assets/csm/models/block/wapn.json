@@ -1,0 +1,8 @@
+{
+  "parent": "csm:custom/wapn",
+  "textures": {
+    "all": "csm:blocks/wapn",
+    "particle": "csm:blocks/wapn",
+    "0": "csm:blocks/wapn"
+  }
+}

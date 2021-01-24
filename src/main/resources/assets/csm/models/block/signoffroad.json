@@ -1,0 +1,9 @@
+{
+  "parent": "csm:custom/metal_signpostback_sign",
+  "textures": {
+    "all": "csm:blocks/aoffroad.eps",
+    "particle": "csm:blocks/aoffroad.eps",
+    "0": "csm:blocks/metal",
+    "1": "csm:blocks/aoffroad.eps"
+  }
+}

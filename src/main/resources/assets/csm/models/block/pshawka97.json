@@ -1,0 +1,9 @@
+{
+  "parent": "csm:custom/playerstatue",
+  "textures": {
+    "all": "csm:blocks/skin_hawka97",
+    "particle": "csm:blocks/skin_hawka97",
+    "0": "csm:blocks/skin_hawka97",
+    "1": "csm:blocks/statue_base"
+  }
+}

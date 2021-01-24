@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:firealarmsystemsensorlseriesceilinghornstrobered"
+    },
+    "facing=north": {
+      "model": "csm:firealarmsystemsensorlseriesceilinghornstrobered"
+    },
+    "facing=east": {
+      "model": "csm:firealarmsystemsensorlseriesceilinghornstrobered",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:firealarmsystemsensorlseriesceilinghornstrobered",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:firealarmsystemsensorlseriesceilinghornstrobered",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:firealarmsystemsensorlseriesceilinghornstrobered",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:firealarmsystemsensorlseriesceilinghornstrobered",
+      "x": 90
+    }
+  }
+}

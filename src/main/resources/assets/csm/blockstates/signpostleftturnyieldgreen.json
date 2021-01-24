@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:signpostleftturnyieldgreen"
+    },
+    "facing=north": {
+      "model": "csm:signpostleftturnyieldgreen"
+    },
+    "facing=east": {
+      "model": "csm:signpostleftturnyieldgreen",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:signpostleftturnyieldgreen",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:signpostleftturnyieldgreen",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:signpostleftturnyieldgreen",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:signpostleftturnyieldgreen",
+      "x": 90
+    }
+  }
+}

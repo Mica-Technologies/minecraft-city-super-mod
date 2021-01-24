@@ -1,0 +1,65 @@
+{
+  "credit": "Model made by Brandon Holt (RinRin Blissgreen)",
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        15.99
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#0"
+        }
+      }
+    }
+  ],
+  "display": {
+    "thirdperson_righthand": {
+      "translation": [
+        0,
+        0,
+        -8.25
+      ]
+    },
+    "thirdperson_lefthand": {
+      "translation": [
+        0,
+        0,
+        -8.25
+      ]
+    },
+    "gui": {
+      "rotation": [
+        0,
+        180,
+        0
+      ]
+    },
+    "head": {
+      "translation": [
+        0,
+        0,
+        -15
+      ]
+    },
+    "fixed": {
+      "translation": [
+        0,
+        0,
+        -8.25
+      ]
+    }
+  }
+}

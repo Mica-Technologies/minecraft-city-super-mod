@@ -1,0 +1,8 @@
+{
+  "parent": "csm:custom/large_cricle_vent",
+  "textures": {
+    "all": "csm:blocks/large_circle_vent",
+    "particle": "csm:blocks/large_circle_vent",
+    "0": "csm:blocks/large_circle_vent"
+  }
+}

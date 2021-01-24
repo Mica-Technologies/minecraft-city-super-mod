@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:tlcontrollersilver"
+    },
+    "facing=north": {
+      "model": "csm:tlcontrollersilver"
+    },
+    "facing=east": {
+      "model": "csm:tlcontrollersilver",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:tlcontrollersilver",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:tlcontrollersilver",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:tlcontrollersilver",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:tlcontrollersilver",
+      "x": 90
+    }
+  }
+}

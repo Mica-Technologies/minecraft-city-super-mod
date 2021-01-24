@@ -1,0 +1,12 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "csm:blocks/air_return_1",
+    "up": "csm:blocks/air_return_1",
+    "north": "csm:blocks/air_return_1",
+    "east": "csm:blocks/air_return_1",
+    "south": "csm:blocks/air_return_1",
+    "west": "csm:blocks/air_return_1",
+    "particle": "csm:blocks/air_return_1"
+  }
+}

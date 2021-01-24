@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:wet70wpr"
+    },
+    "facing=north": {
+      "model": "csm:wet70wpr"
+    },
+    "facing=east": {
+      "model": "csm:wet70wpr",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:wet70wpr",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:wet70wpr",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:wet70wpr",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:wet70wpr",
+      "x": 90
+    }
+  }
+}

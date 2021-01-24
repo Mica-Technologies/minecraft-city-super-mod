@@ -1,0 +1,12 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "csm:blocks/4_way_straight_vent_5",
+    "up": "csm:blocks/4_way_straight_vent_5",
+    "north": "csm:blocks/4_way_straight_vent_5",
+    "east": "csm:blocks/4_way_straight_vent_5",
+    "south": "csm:blocks/4_way_straight_vent_5",
+    "west": "csm:blocks/4_way_straight_vent_5",
+    "particle": "csm:blocks/4_way_straight_vent_5"
+  }
+}

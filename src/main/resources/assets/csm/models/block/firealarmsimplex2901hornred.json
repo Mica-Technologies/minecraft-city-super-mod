@@ -1,0 +1,8 @@
+{
+  "parent": "csm:custom/dscn1043",
+  "textures": {
+    "all": "csm:blocks/dscn1043",
+    "particle": "csm:blocks/dscn1043",
+    "0": "csm:blocks/dscn1043"
+  }
+}

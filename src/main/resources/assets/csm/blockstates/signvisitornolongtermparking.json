@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:signvisitornolongtermparking"
+    },
+    "facing=north": {
+      "model": "csm:signvisitornolongtermparking"
+    },
+    "facing=east": {
+      "model": "csm:signvisitornolongtermparking",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:signvisitornolongtermparking",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:signvisitornolongtermparking",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:signvisitornolongtermparking",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:signvisitornolongtermparking",
+      "x": 90
+    }
+  }
+}

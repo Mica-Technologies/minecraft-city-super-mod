@@ -1,0 +1,42 @@
+{
+	"credit": "Made with Blockbench",
+	"textures": {
+		"0": "csm:blocks/adt_heat_detector"
+	},
+	"elements": [
+		{
+			"from": [2, 2, 15.99],
+			"to": [14, 14, 16],
+			"faces": {
+				"north": {"uv": [0, 0, 16, 16], "rotation": 180, "texture": "#0"},
+				"east": {"uv": [0, 0, 2, 0], "rotation": 270, "texture": "#0"},
+				"south": {"uv": [0, 0, 2.125, 1.375], "texture": "#0"},
+				"west": {"uv": [0, 0, 2, 0], "rotation": 90, "texture": "#0"},
+				"up": {"uv": [0, 0, 2, 0], "rotation": 180, "texture": "#0"},
+				"down": {"uv": [0, 0, 2, 0], "texture": "#0"}
+			}
+		}
+	],
+	"display": {
+		"thirdperson_righthand": {
+			"rotation": [-9, 0, 0],
+			"translation": [0, 0, -8.25]
+		},
+		"thirdperson_lefthand": {
+			"rotation": [-9, -180, 0],
+			"translation": [0, 0, 7.75]
+		},
+		"firstperson_righthand": {
+			"rotation": [0, -180, 0]
+		},
+		"firstperson_lefthand": {
+			"rotation": [0, -180, 0]
+		},
+		"gui": {
+			"rotation": [0, -180, 0]
+		},
+		"fixed": {
+			"translation": [0, 0, -8.25]
+		}
+	}
+}

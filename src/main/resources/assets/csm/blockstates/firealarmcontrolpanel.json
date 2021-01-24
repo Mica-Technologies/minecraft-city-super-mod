@@ -1,0 +1,22 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:firealarmcontrolpanel"
+    },
+    "facing=north": {
+      "model": "csm:firealarmcontrolpanel"
+    },
+    "facing=east": {
+      "model": "csm:firealarmcontrolpanel",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:firealarmcontrolpanel",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:firealarmcontrolpanel",
+      "y": 270
+    }
+  }
+}

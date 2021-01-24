@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:signdontthinkparking"
+    },
+    "facing=north": {
+      "model": "csm:signdontthinkparking"
+    },
+    "facing=east": {
+      "model": "csm:signdontthinkparking",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:signdontthinkparking",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:signdontthinkparking",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:signdontthinkparking",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:signdontthinkparking",
+      "x": 90
+    }
+  }
+}

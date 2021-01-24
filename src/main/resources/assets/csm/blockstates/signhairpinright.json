@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:signhairpinright"
+    },
+    "facing=north": {
+      "model": "csm:signhairpinright"
+    },
+    "facing=east": {
+      "model": "csm:signhairpinright",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:signhairpinright",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:signhairpinright",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:signhairpinright",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:signhairpinright",
+      "x": 90
+    }
+  }
+}

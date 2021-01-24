@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:firealarmsystemsensorlserieshornstrobewhite"
+    },
+    "facing=north": {
+      "model": "csm:firealarmsystemsensorlserieshornstrobewhite"
+    },
+    "facing=east": {
+      "model": "csm:firealarmsystemsensorlserieshornstrobewhite",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:firealarmsystemsensorlserieshornstrobewhite",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:firealarmsystemsensorlserieshornstrobewhite",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:firealarmsystemsensorlserieshornstrobewhite",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:firealarmsystemsensorlserieshornstrobewhite",
+      "x": 90
+    }
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:firealarmsystemsensorlseriesceilingspeakerstrobewhite"
+    },
+    "facing=north": {
+      "model": "csm:firealarmsystemsensorlseriesceilingspeakerstrobewhite"
+    },
+    "facing=east": {
+      "model": "csm:firealarmsystemsensorlseriesceilingspeakerstrobewhite",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:firealarmsystemsensorlseriesceilingspeakerstrobewhite",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:firealarmsystemsensorlseriesceilingspeakerstrobewhite",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:firealarmsystemsensorlseriesceilingspeakerstrobewhite",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:firealarmsystemsensorlseriesceilingspeakerstrobewhite",
+      "x": 90
+    }
+  }
+}

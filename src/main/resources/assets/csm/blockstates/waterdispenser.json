@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:waterdispenser"
+    },
+    "facing=north": {
+      "model": "csm:waterdispenser"
+    },
+    "facing=east": {
+      "model": "csm:waterdispenser",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:waterdispenser",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:waterdispenser",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:waterdispenser",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:waterdispenser",
+      "x": 90
+    }
+  }
+}

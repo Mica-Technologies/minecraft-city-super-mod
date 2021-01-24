@@ -1,0 +1,8 @@
+{
+  "parent": "csm:custom/trafficlightsingle",
+  "textures": {
+    "all": "csm:blocks/flashaheadred",
+    "particle": "csm:blocks/flashaheadred",
+    "0": "csm:blocks/flashaheadred"
+  }
+}

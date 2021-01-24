@@ -1,0 +1,9 @@
+{
+  "parent": "csm:custom/metal_signpostback_sign",
+  "textures": {
+    "all": "csm:blocks/residents-parking-permit-sign-k-1179",
+    "particle": "csm:blocks/residents-parking-permit-sign-k-1179",
+    "0": "csm:blocks/metal",
+    "1": "csm:blocks/residents-parking-permit-sign-k-1179"
+  }
+}

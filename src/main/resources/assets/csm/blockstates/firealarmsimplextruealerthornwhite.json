@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:firealarmsimplextruealerthornwhite"
+    },
+    "facing=north": {
+      "model": "csm:firealarmsimplextruealerthornwhite"
+    },
+    "facing=east": {
+      "model": "csm:firealarmsimplextruealerthornwhite",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:firealarmsimplextruealerthornwhite",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:firealarmsimplextruealerthornwhite",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:firealarmsimplextruealerthornwhite",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:firealarmsimplextruealerthornwhite",
+      "x": 90
+    }
+  }
+}

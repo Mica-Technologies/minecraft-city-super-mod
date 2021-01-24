@@ -1,0 +1,8 @@
+{
+  "parent": "csm:custom/edwards_io_red",
+  "textures": {
+    "all": "csm:blocks/edwards_io_red",
+    "particle": "csm:blocks/edwards_io_red",
+    "0": "csm:blocks/edwards_io_red"
+  }
+}

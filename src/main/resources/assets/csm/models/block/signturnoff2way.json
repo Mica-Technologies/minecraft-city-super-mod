@@ -1,0 +1,9 @@
+{
+  "parent": "csm:custom/metal_signpostback_largewidesign",
+  "textures": {
+    "all": "csm:blocks/2560px-mutcd_cw22-2.svg",
+    "particle": "csm:blocks/2560px-mutcd_cw22-2.svg",
+    "0": "csm:blocks/metal",
+    "1": "csm:blocks/2560px-mutcd_cw22-2.svg"
+  }
+}

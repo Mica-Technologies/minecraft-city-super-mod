@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:signalt"
+    },
+    "facing=north": {
+      "model": "csm:signalt"
+    },
+    "facing=east": {
+      "model": "csm:signalt",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:signalt",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:signalt",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:signalt",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:signalt",
+      "x": 90
+    }
+  }
+}

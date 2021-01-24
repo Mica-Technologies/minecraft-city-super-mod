@@ -1,0 +1,8 @@
+{
+  "parent": "csm:custom/setupbox",
+  "textures": {
+    "all": "csm:blocks/setup_box",
+    "particle": "csm:blocks/setup_box",
+    "0": "csm:blocks/setup_box"
+  }
+}

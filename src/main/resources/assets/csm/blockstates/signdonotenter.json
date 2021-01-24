@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:signdonotenter"
+    },
+    "facing=north": {
+      "model": "csm:signdonotenter"
+    },
+    "facing=east": {
+      "model": "csm:signdonotenter",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:signdonotenter",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:signdonotenter",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:signdonotenter",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:signdonotenter",
+      "x": 90
+    }
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "parent": "csm:custom/jbl_control_speaker_black",
+  "textures": {
+    "all": "csm:blocks/jbl_control_speaker_black",
+    "particle": "csm:blocks/jbl_control_speaker_black",
+    "0": "csm:blocks/jbl_control_speaker_black"
+  }
+}

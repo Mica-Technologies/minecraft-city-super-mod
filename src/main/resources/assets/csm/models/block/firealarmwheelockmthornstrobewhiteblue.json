@@ -1,0 +1,8 @@
+{
+  "parent": "csm:custom/wheelock_mt_hornstrobe_white--bluestrobe",
+  "textures": {
+    "all": "csm:blocks/wheelock_mt_hornstrobe_white--bluestrobe",
+    "particle": "csm:blocks/wheelock_mt_hornstrobe_white--bluestrobe",
+    "0": "csm:blocks/wheelock_mt_hornstrobe_white--bluestrobe"
+  }
+}
