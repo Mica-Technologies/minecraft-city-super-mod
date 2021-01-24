@@ -1,0 +1,8 @@
+{
+  "parent": "csm:custom/ocpb2",
+  "textures": {
+    "all": "csm:blocks/ocpb2",
+    "particle": "csm:blocks/ocpb2",
+    "0": "csm:blocks/ocpb2"
+  }
+}

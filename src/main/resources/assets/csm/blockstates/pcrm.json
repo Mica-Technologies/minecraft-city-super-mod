@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:pcrm"
+    },
+    "facing=north": {
+      "model": "csm:pcrm"
+    },
+    "facing=east": {
+      "model": "csm:pcrm",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:pcrm",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:pcrm",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:pcrm",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:pcrm",
+      "x": 90
+    }
+  }
+}

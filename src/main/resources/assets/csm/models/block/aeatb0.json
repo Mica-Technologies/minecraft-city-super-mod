@@ -1,8 +1,0 @@
-{
-  "parent": "csm:custom/ae_atb0",
-  "textures": {
-    "all": "csm:blocks/ae_autobahn_atb0",
-    "particle": "csm:blocks/ae_autobahn_atb0",
-    "0": "csm:blocks/ae_autobahn_atb0"
-  }
-}

@@ -1,0 +1,8 @@
+{
+  "parent": "csm:custom/ltgcmsn",
+  "textures": {
+    "all": "csm:blocks/ltgcmsn",
+    "particle": "csm:blocks/ltgcmsn",
+    "0": "csm:blocks/ltgcmsn"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "parent": "csm:custom/pcrm",
+  "textures": {
+    "all": "csm:blocks/pcrm",
+    "particle": "csm:blocks/pcrm",
+    "0": "csm:blocks/pcrm"
+  }
+}

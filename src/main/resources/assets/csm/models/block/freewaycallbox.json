@@ -1,8 +1,0 @@
-{
-  "parent": "csm:custom/freeway_call_box",
-  "textures": {
-    "all": "csm:blocks/freeway_call_box",
-    "particle": "csm:blocks/freeway_call_box",
-    "0": "csm:blocks/freeway_call_box"
-  }
-}

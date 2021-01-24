@@ -1,0 +1,8 @@
+{
+  "parent": "csm:custom/novtm2",
+  "textures": {
+    "all": "csm:blocks/novtm2",
+    "particle": "csm:blocks/novtm2",
+    "0": "csm:blocks/novtm2"
+  }
+}

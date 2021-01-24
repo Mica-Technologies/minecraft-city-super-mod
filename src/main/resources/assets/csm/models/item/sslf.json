@@ -1,8 +1,0 @@
-{
-  "parent": "csm:custom/lithonia_singled_strip_light_full",
-  "textures": {
-    "all": "csm:blocks/striplights",
-    "particle": "csm:blocks/striplights",
-    "0": "csm:blocks/striplights"
-  }
-}

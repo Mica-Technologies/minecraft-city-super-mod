@@ -1,9 +1,0 @@
-{
-  "parent": "csm:custom/metal_signpostback_sign",
-  "textures": {
-    "all": "csm:blocks/mutcd_r10-15l_fluorescent.svg",
-    "particle": "csm:blocks/mutcd_r10-15l_fluorescent.svg",
-    "0": "csm:blocks/metal",
-    "1": "csm:blocks/mutcd_r10-15l_fluorescent.svg"
-  }
-}

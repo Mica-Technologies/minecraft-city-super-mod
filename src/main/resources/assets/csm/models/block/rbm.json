@@ -1,0 +1,8 @@
+{
+  "parent": "csm:custom/rbm",
+  "textures": {
+    "all": "csm:blocks/rbm",
+    "particle": "csm:blocks/rbm",
+    "0": "csm:blocks/rbm"
+  }
+}

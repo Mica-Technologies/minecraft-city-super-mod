@@ -1,8 +1,0 @@
-{
-  "parent": "csm:custom/walkbtn_talking",
-  "textures": {
-    "all": "csm:blocks/walkbtn_talking",
-    "particle": "csm:blocks/walkbtn_talking",
-    "0": "csm:blocks/walkbtn_talking"
-  }
-}

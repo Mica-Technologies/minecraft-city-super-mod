@@ -1,0 +1,8 @@
+{
+  "parent": "csm:custom/whov20",
+  "textures": {
+    "all": "csm:blocks/whov20",
+    "particle": "csm:blocks/whov20",
+    "0": "csm:blocks/whov20"
+  }
+}

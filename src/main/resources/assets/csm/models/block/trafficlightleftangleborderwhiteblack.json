@@ -1,8 +1,0 @@
-{
-  "parent": "csm:custom/trafficlightverticalangle2border",
-  "textures": {
-    "all": "csm:blocks/borderwhiteblack",
-    "particle": "csm:blocks/borderwhiteblack",
-    "0": "csm:blocks/borderwhiteblack"
-  }
-}

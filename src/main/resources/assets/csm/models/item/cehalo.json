@@ -1,8 +1,0 @@
-{
-  "parent": "csm:custom/commercial_electric_led_halo_light",
-  "textures": {
-    "all": "csm:blocks/troffers",
-    "particle": "csm:blocks/troffers",
-    "0": "csm:blocks/troffers"
-  }
-}

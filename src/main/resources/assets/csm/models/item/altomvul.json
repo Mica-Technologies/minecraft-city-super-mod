@@ -1,0 +1,8 @@
+{
+  "parent": "csm:custom/altomvul",
+  "textures": {
+    "all": "csm:blocks/altomvul",
+    "particle": "csm:blocks/altomvul",
+    "0": "csm:blocks/altomvul"
+  }
+}

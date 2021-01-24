@@ -1,9 +1,0 @@
-{
-  "parent": "csm:custom/metal_signpostback_tall_sign",
-  "textures": {
-    "all": "csm:blocks/speed_limit_25_sign.svg",
-    "particle": "csm:blocks/speed_limit_25_sign.svg",
-    "0": "csm:blocks/metal",
-    "1": "csm:blocks/speed_limit_25_sign.svg"
-  }
-}

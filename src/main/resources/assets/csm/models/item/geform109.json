@@ -1,0 +1,8 @@
+{
+  "parent": "csm:custom/geform109",
+  "textures": {
+    "all": "csm:blocks/geform109",
+    "particle": "csm:blocks/geform109",
+    "0": "csm:blocks/geform109"
+  }
+}

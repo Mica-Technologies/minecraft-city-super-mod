@@ -1,7 +1,0 @@
-{
-  "parent": "block/cube_all",
-  "textures": {
-    "all": "csm:blocks/electrical_box",
-    "particle": "csm:blocks/electrical_box"
-  }
-}

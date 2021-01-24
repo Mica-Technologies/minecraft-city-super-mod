@@ -1,8 +1,0 @@
-{
-  "parent": "csm:custom/ltec",
-  "textures": {
-    "all": "csm:blocks/ltec",
-    "particle": "csm:blocks/ltec",
-    "0": "csm:blocks/ltec"
-  }
-}

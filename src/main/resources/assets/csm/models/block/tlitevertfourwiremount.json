@@ -1,7 +1,0 @@
-{
-  "parent": "csm:custom/tliteverticalfourwiremount",
-  "textures": {
-    "all": "csm:blocks/metal",
-    "particle": "csm:blocks/metal"
-  }
-}

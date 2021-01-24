@@ -1,8 +1,0 @@
-{
-  "parent": "csm:custom/small_circle_vent",
-  "textures": {
-    "all": "csm:blocks/small_circle_vent",
-    "particle": "csm:blocks/small_circle_vent",
-    "0": "csm:blocks/small_circle_vent"
-  }
-}

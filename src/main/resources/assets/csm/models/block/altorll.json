@@ -1,0 +1,8 @@
+{
+  "parent": "csm:custom/altorll",
+  "textures": {
+    "all": "csm:blocks/altorll",
+    "particle": "csm:blocks/altorll",
+    "0": "csm:blocks/altorll"
+  }
+}

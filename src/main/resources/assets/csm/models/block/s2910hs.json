@@ -1,8 +1,0 @@
-{
-  "parent": "csm:custom/simplex_2901_hornstrobe_red",
-  "textures": {
-    "all": "csm:blocks/simplex_2901_hornstrobe_red",
-    "particle": "csm:blocks/simplex_2901_hornstrobe_red",
-    "0": "csm:blocks/simplex_2901_hornstrobe_red"
-  }
-}

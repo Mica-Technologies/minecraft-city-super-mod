@@ -1,8 +1,0 @@
-{
-  "parent": "csm:custom/borderdoghouse",
-  "textures": {
-    "all": "csm:blocks/borderyellowblack",
-    "particle": "csm:blocks/borderyellowblack",
-    "0": "csm:blocks/borderyellowblack"
-  }
-}

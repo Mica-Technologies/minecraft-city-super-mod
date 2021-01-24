@@ -1,0 +1,8 @@
+{
+  "parent": "csm:custom/altomvwlslim",
+  "textures": {
+    "all": "csm:blocks/altomvwlslim",
+    "particle": "csm:blocks/altomvwlslim",
+    "0": "csm:blocks/altomvwlslim"
+  }
+}

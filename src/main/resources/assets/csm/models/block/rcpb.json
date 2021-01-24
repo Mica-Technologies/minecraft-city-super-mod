@@ -1,8 +1,0 @@
-{
-  "parent": "csm:custom/round_concrete_pole_base",
-  "textures": {
-    "all": "csm:blocks/concrete_light_pole",
-    "particle": "csm:blocks/concrete_light_pole",
-    "0": "csm:blocks/concrete_light_pole"
-  }
-}

@@ -1,9 +1,0 @@
-{
-  "parent": "csm:custom/faic_combo",
-  "textures": {
-    "all": "csm:blocks/faic_combo",
-    "particle": "csm:blocks/faic_combo",
-    "0": "csm:blocks/faic_combo",
-    "missing": "csm:blocks/faic_combo"
-  }
-}

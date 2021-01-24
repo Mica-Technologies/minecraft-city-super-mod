@@ -1,0 +1,8 @@
+{
+  "parent": "csm:custom/gepb",
+  "textures": {
+    "all": "csm:blocks/gepb",
+    "particle": "csm:blocks/gepb",
+    "0": "csm:blocks/gepb"
+  }
+}

@@ -1,9 +1,0 @@
-{
-  "parent": "csm:custom/metal_signpostback_sign",
-  "textures": {
-    "all": "csm:blocks/virginia_r0-v1.svg",
-    "particle": "csm:blocks/virginia_r0-v1.svg",
-    "0": "csm:blocks/metal",
-    "1": "csm:blocks/virginia_r0-v1.svg"
-  }
-}

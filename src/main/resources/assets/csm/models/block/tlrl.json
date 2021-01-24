@@ -1,8 +1,0 @@
-{
-  "parent": "csm:custom/tlite-r-left",
-  "textures": {
-    "all": "csm:blocks/tlite-r-left",
-    "particle": "csm:blocks/tlite-r-left",
-    "0": "csm:blocks/tlite-r-left"
-  }
-}
