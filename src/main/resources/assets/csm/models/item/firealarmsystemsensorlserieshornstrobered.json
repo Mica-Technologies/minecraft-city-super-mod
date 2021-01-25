@@ -1,3 +1,8 @@
 {
-  "parent": "csm:block/firealarmsystemsensorlserieshornstrobered"
+  "parent": "csm:custom/systemsensor_lseries_hornstrobe_red",
+  "textures": {
+    "all": "csm:blocks/systemsensor_lseries_hornstrobe_red",
+    "particle": "csm:blocks/systemsensor_lseries_hornstrobe_red",
+    "0": "csm:blocks/systemsensor_lseries_hornstrobe_red"
+  }
 }

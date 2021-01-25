@@ -1,22 +1,9 @@
 {
-  "parent": "csm:block/pspapaginos",
-  "display": {
-    "thirdperson": {
-      "rotation": [
-        10,
-        -45,
-        170
-      ],
-      "translation": [
-        0,
-        1.5,
-        -2.75
-      ],
-      "scale": [
-        0.375,
-        0.375,
-        0.375
-      ]
-    }
+  "parent": "csm:custom/playerstatue",
+  "textures": {
+    "all": "csm:blocks/skin_papaginos",
+    "particle": "csm:blocks/skin_papaginos",
+    "0": "csm:blocks/skin_papaginos",
+    "1": "csm:blocks/statue_base"
   }
 }

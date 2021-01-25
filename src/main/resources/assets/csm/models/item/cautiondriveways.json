@@ -1,22 +1,9 @@
 {
-  "parent": "csm:block/cautiondriveways",
-  "display": {
-    "thirdperson": {
-      "rotation": [
-        10,
-        -45,
-        170
-      ],
-      "translation": [
-        0,
-        1.5,
-        -2.75
-      ],
-      "scale": [
-        0.375,
-        0.375,
-        0.375
-      ]
-    }
+  "parent": "csm:custom/metal_signpostback_diamond_sign",
+  "textures": {
+    "all": "csm:blocks/cautiondrivewayssign",
+    "particle": "csm:blocks/cautiondrivewayssign",
+    "0": "csm:blocks/metal",
+    "1": "csm:blocks/cautiondrivewayssign"
   }
 }

@@ -1,8 +1,8 @@
 {
-  "parent": "csm:custom/altosqll",
+  "parent": "csm:custom/alto_square_lot_light",
   "textures": {
-    "all": "csm:blocks/altosqll",
-    "particle": "csm:blocks/altosqll",
-    "0": "csm:blocks/altosqll"
+    "all": "csm:blocks/merc_fixtures",
+    "particle": "csm:blocks/merc_fixtures",
+    "0": "csm:blocks/merc_fixtures"
   }
 }

@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.block;
 
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
+import net.minecraft.util.BlockRenderLayer;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.common.registry.GameRegistry;
@@ -63,29 +64,18 @@ public class BlockGEPB extends ElementsCitySuperMod.ModElement {
 			this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH));
 		}
 
+		//Doesn't work for now but is there just in case it does work
+		@SideOnly(Side.CLIENT)
+		@Override
+		public BlockRenderLayer getBlockLayer() {
+			return BlockRenderLayer.CUTOUT_MIPPED;
+		}
+
 		@Override
 		public boolean isFullCube(IBlockState state) {
 			return false;
 		}
-
-		@Override
-		public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-			switch ((EnumFacing) state.getValue(BlockDirectional.FACING)) {
-				case SOUTH :
-				default :
-					return new AxisAlignedBB(1D, 0D, 1D, 0D, 0.5D, 0D);
-				case NORTH :
-					return new AxisAlignedBB(0D, 0D, 0D, 1D, 0.5D, 1D);
-				case WEST :
-					return new AxisAlignedBB(0D, 0D, 1D, 1D, 0.5D, 0D);
-				case EAST :
-					return new AxisAlignedBB(1D, 0D, 0D, 0D, 0.5D, 1D);
-				case UP :
-					return new AxisAlignedBB(0D, 1D, 0D, 1D, 0D, 0.5D);
-				case DOWN :
-					return new AxisAlignedBB(0D, 0D, 1D, 1D, 1D, 0.5D);
-			}
-		}
+		
 		public static final PropertyBool POWERED = PropertyBool.create("powered");
 		@Override
 		public void neighborChanged(IBlockState state, World world, BlockPos pos, Block blockIn, BlockPos p_189540_5_) {

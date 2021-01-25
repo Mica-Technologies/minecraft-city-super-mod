@@ -9,9 +9,7 @@ import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 
 import net.minecraft.world.World;
-import net.minecraft.world.IBlockAccess;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.Mirror;
 import net.minecraft.util.EnumFacing;
@@ -31,30 +29,30 @@ import net.minecraft.block.Block;
 import com.micatechnologies.minecraft.csm.creativetab.TabMCLAElectricTab;
 
 @ElementsCitySuperMod.ModElement.Tag
-public class BlockOCPB2 extends ElementsCitySuperMod.ModElement {
-	@GameRegistry.ObjectHolder("csm:ocpb2")
+public class BlockAltoLLM extends ElementsCitySuperMod.ModElement {
+	@GameRegistry.ObjectHolder("csm:altollm")
 	public static final Block block = null;
-	public BlockOCPB2(ElementsCitySuperMod instance) {
+	public BlockAltoLLM(ElementsCitySuperMod instance) {
 		super(instance, 618);
 	}
 
 	@Override
 	public void initElements() {
-		elements.blocks.add(() -> new BlockCustom().setRegistryName("ocpb2"));
+		elements.blocks.add(() -> new BlockCustom().setRegistryName("altollm"));
 		elements.items.add(() -> new ItemBlock(block).setRegistryName(block.getRegistryName()));
 	}
 
 	@SideOnly(Side.CLIENT)
 	@Override
 	public void registerModels(ModelRegistryEvent event) {
-		ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(block), 0, new ModelResourceLocation("csm:ocpb2", "inventory"));
+		ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(block), 0, new ModelResourceLocation("csm:altollm", "inventory"));
 	}
 	public static class BlockCustom extends Block {
 		public static final PropertyDirection FACING = BlockDirectional.FACING;
 		public BlockCustom() {
 			super(Material.ROCK);
-			setUnlocalizedName("ocpb2");
-			setSoundType(SoundType.GROUND);
+			setUnlocalizedName("altollm");
+			setSoundType(SoundType.STONE);
 			setHarvestLevel("pickaxe", 1);
 			setHardness(2F);
 			setResistance(10F);
@@ -73,19 +71,6 @@ public class BlockOCPB2 extends ElementsCitySuperMod.ModElement {
 		@Override
 		public boolean isFullCube(IBlockState state) {
 			return false;
-		}
-
-		@Override
-		public AxisAlignedBB getBoundingBox( IBlockState state, IBlockAccess source, BlockPos pos ) {
-			switch ( state.getValue( FACING ) ) {
-				case SOUTH:
-				default:
-					return new AxisAlignedBB( 0D, 0.2D, 0D, 1D, 0D, 1D );
-				case DOWN:
-					return new AxisAlignedBB( 0D, 0D, 0.8D, 1D, 1D, 1D );
-				case UP:
-					return new AxisAlignedBB( 1D, 0D, 0.2D, 0D, 1D, 0D );
-			}
 		}
 
 		@Override

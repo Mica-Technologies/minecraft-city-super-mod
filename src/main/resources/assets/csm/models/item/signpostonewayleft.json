@@ -1,22 +1,10 @@
 {
-  "parent": "csm:block/signpostonewayleft",
-  "display": {
-    "thirdperson": {
-      "rotation": [
-        10,
-        -45,
-        170
-      ],
-      "translation": [
-        0,
-        1.5,
-        -2.75
-      ],
-      "scale": [
-        0.375,
-        0.375,
-        0.375
-      ]
-    }
+  "parent": "csm:custom/metal_signpostback_half_wide_sign",
+  "textures": {
+    "all": "csm:blocks/one-way-left-sign",
+    "particle": "csm:blocks/one-way-left-sign",
+    "0": "csm:blocks/metal",
+    "1": "csm:blocks/one-way-left-sign",
+    "missing": "csm:blocks/metal"
   }
 }

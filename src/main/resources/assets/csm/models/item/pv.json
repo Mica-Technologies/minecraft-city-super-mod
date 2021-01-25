@@ -1,22 +1,7 @@
 {
-  "parent": "csm:block/pv",
-  "display": {
-    "thirdperson": {
-      "rotation": [
-        10,
-        -45,
-        170
-      ],
-      "translation": [
-        0,
-        1.5,
-        -2.75
-      ],
-      "scale": [
-        0.375,
-        0.375,
-        0.375
-      ]
-    }
+  "parent": "block/cube_all",
+  "textures": {
+    "all": "csm:blocks/plaque_vent",
+    "particle": "csm:blocks/plaque_vent"
   }
 }

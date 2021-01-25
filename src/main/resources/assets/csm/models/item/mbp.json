@@ -1,22 +1,8 @@
 {
-  "parent": "csm:block/mbp",
-  "display": {
-    "thirdperson": {
-      "rotation": [
-        10,
-        -45,
-        170
-      ],
-      "translation": [
-        0,
-        1.5,
-        -2.75
-      ],
-      "scale": [
-        0.375,
-        0.375,
-        0.375
-      ]
-    }
+  "parent": "csm:custom/macbook_pro",
+  "textures": {
+    "all": "csm:blocks/macbook_pro",
+    "particle": "csm:blocks/macbook_pro",
+    "0": "csm:blocks/macbook_pro"
   }
 }

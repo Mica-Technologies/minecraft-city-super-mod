@@ -1,22 +1,9 @@
 {
-  "parent": "csm:block/acbattlezone",
-  "display": {
-    "thirdperson": {
-      "rotation": [
-        10,
-        -45,
-        170
-      ],
-      "translation": [
-        0,
-        1.5,
-        -2.75
-      ],
-      "scale": [
-        0.375,
-        0.375,
-        0.375
-      ]
-    }
+  "parent": "csm:custom/arcade_cabinet",
+  "textures": {
+    "all": "csm:blocks/arcade_cabinet",
+    "particle": "csm:blocks/arcade_cabinet",
+    "0": "csm:blocks/arcade_cabinet",
+    "1": "csm:blocks/bz_cabscreen"
   }
 }

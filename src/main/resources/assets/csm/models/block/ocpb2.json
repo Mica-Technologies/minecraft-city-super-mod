@@ -1,8 +1,7 @@
 {
-  "parent": "csm:custom/ocpb2",
+  "parent": "csm:custom/octagon_concrete_pole_base_2",
   "textures": {
-    "all": "csm:blocks/ocpb2",
-    "particle": "csm:blocks/ocpb2",
-    "0": "csm:blocks/ocpb2"
+    "all": "csm:blocks/concrete_light_pole",
+    "particle": "csm:blocks/concrete_light_pole"
   }
 }

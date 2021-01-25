@@ -1,22 +1,7 @@
 {
-  "parent": "csm:block/svd3",
-  "display": {
-    "thirdperson": {
-      "rotation": [
-        10,
-        -45,
-        170
-      ],
-      "translation": [
-        0,
-        1.5,
-        -2.75
-      ],
-      "scale": [
-        0.375,
-        0.375,
-        0.375
-      ]
-    }
+  "parent": "block/cube_all",
+  "textures": {
+    "all": "csm:blocks/4_way_straight_vent_3_black",
+    "particle": "csm:blocks/4_way_straight_vent_3_black"
   }
 }

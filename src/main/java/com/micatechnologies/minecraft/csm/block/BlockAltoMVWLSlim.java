@@ -68,24 +68,6 @@ public class BlockAltoMVWLSlim extends ElementsCitySuperMod.ModElement {
 			return false;
 		}
 
-		@Override
-		public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-			switch ((EnumFacing) state.getValue(BlockDirectional.FACING)) {
-				case SOUTH :
-				default :
-					return new AxisAlignedBB(1D, 0D, 1D, 0D, 0.5D, 0D);
-				case NORTH :
-					return new AxisAlignedBB(0D, 0D, 0D, 1D, 0.5D, 1D);
-				case WEST :
-					return new AxisAlignedBB(0D, 0D, 1D, 1D, 0.5D, 0D);
-				case EAST :
-					return new AxisAlignedBB(1D, 0D, 0D, 0D, 0.5D, 1D);
-				case UP :
-					return new AxisAlignedBB(0D, 1D, 0D, 1D, 0D, 0.5D);
-				case DOWN :
-					return new AxisAlignedBB(0D, 0D, 1D, 1D, 1D, 0.5D);
-			}
-		}
 		public static final PropertyBool POWERED = PropertyBool.create("powered");
 		@Override
 		public void neighborChanged(IBlockState state, World world, BlockPos pos, Block blockIn, BlockPos p_189540_5_) {

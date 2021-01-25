@@ -1,8 +1,8 @@
 {
-  "parent": "csm:custom/ltgcjsn",
+  "parent": "csm:custom/ltgcj_smartnode",
   "textures": {
-    "all": "csm:blocks/ltgcjsn",
-    "particle": "csm:blocks/ltgcjsn",
-    "0": "csm:blocks/ltgcjsn"
+    "all": "csm:blocks/ltgcj_smartnode",
+    "particle": "csm:blocks/ltgcj_smartnode",
+    "0": "csm:blocks/ltgcj_smartnode"
   }
 }

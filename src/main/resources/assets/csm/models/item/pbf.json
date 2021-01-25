@@ -1,22 +1,12 @@
 {
-  "parent": "csm:block/pbf",
-  "display": {
-    "thirdperson": {
-      "rotation": [
-        10,
-        -45,
-        170
-      ],
-      "translation": [
-        0,
-        1.5,
-        -2.75
-      ],
-      "scale": [
-        0.375,
-        0.375,
-        0.375
-      ]
-    }
+  "parent": "block/cube",
+  "textures": {
+    "down": "csm:blocks/panasonic_bath_fan",
+    "up": "csm:blocks/panasonic_bath_fan",
+    "north": "csm:blocks/panasonic_bath_fan",
+    "east": "csm:blocks/panasonic_bath_fan",
+    "south": "csm:blocks/panasonic_bath_fan",
+    "west": "csm:blocks/panasonic_bath_fan",
+    "particle": "csm:blocks/panasonic_bath_fan"
   }
 }

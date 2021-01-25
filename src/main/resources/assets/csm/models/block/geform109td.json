@@ -1,8 +1,8 @@
 {
-  "parent": "csm:custom/geform109td",
+  "parent": "csm:custom/ge_form_109_teardrop",
   "textures": {
-    "all": "csm:blocks/geform109td",
-    "particle": "csm:blocks/geform109td",
-    "0": "csm:blocks/geform109td"
+    "all": "csm:blocks/merc_fixtures",
+    "particle": "csm:blocks/merc_fixtures",
+    "0": "csm:blocks/merc_fixtures"
   }
 }

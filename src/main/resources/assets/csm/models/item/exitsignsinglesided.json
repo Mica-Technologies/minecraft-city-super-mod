@@ -1,22 +1,10 @@
 {
-  "parent": "csm:block/exitsignsinglesided",
-  "display": {
-    "thirdperson": {
-      "rotation": [
-        10,
-        -45,
-        170
-      ],
-      "translation": [
-        0,
-        1.5,
-        -2.75
-      ],
-      "scale": [
-        0.375,
-        0.375,
-        0.375
-      ]
-    }
+  "parent": "csm:custom/mclaapprovedexitsignedgelit",
+  "textures": {
+    "all": "csm:blocks/mclaapprovedexitsignnoarrow",
+    "particle": "csm:blocks/mclaapprovedexitsignnoarrow",
+    "0": "csm:blocks/metal_silver",
+    "1": "csm:blocks/mclaapprovedexitsignnoarrow",
+    "2": "csm:blocks/mclaapprovedexitsignblank"
   }
 }

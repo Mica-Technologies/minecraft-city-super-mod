@@ -1,22 +1,8 @@
 {
-  "parent": "csm:block/polehvsign",
-  "display": {
-    "thirdperson": {
-      "rotation": [
-        10,
-        -45,
-        170
-      ],
-      "translation": [
-        0,
-        1.5,
-        -2.75
-      ],
-      "scale": [
-        0.375,
-        0.375,
-        0.375
-      ]
-    }
+  "parent": "csm:custom/pole_hv_sign",
+  "textures": {
+    "all": "csm:blocks/pole_hv_sign",
+    "particle": "csm:blocks/pole_hv_sign",
+    "0": "csm:blocks/pole_hv_sign"
   }
 }

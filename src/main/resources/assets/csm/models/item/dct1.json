@@ -1,22 +1,12 @@
 {
-  "parent": "csm:block/dct1",
-  "display": {
-    "thirdperson": {
-      "rotation": [
-        10,
-        -45,
-        170
-      ],
-      "translation": [
-        0,
-        1.5,
-        -2.75
-      ],
-      "scale": [
-        0.375,
-        0.375,
-        0.375
-      ]
-    }
+  "parent": "block/cube",
+  "textures": {
+    "down": "csm:blocks/dark_ceiling_tile_1",
+    "up": "csm:blocks/dark_ceiling_tile_1",
+    "north": "csm:blocks/dark_ceiling_tile_1",
+    "east": "csm:blocks/dark_ceiling_tile_1",
+    "south": "csm:blocks/dark_ceiling_tile_1",
+    "west": "csm:blocks/dark_ceiling_tile_1",
+    "particle": "csm:blocks/dark_ceiling_tile_1"
   }
 }

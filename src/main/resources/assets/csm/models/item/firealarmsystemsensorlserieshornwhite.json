@@ -1,3 +1,8 @@
 {
-  "parent": "csm:block/firealarmsystemsensorlserieshornwhite"
+  "parent": "csm:custom/sprl_straight_lores",
+  "textures": {
+    "all": "csm:blocks/systemsensor_lseries_white_horn",
+    "particle": "csm:blocks/systemsensor_lseries_white_horn",
+    "0": "csm:blocks/systemsensor_lseries_white_horn"
+  }
 }

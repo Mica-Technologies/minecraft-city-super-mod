@@ -1,8 +1,8 @@
 {
-  "parent": "csm:custom/whov50np",
+  "parent": "csm:custom/westinghouse_ov50_nophotocell",
   "textures": {
-    "all": "csm:blocks/whov50np",
-    "particle": "csm:blocks/whov50np",
-    "0": "csm:blocks/whov50np"
+    "all": "csm:blocks/westinghouse_ov50",
+    "particle": "csm:blocks/westinghouse_ov50",
+    "0": "csm:blocks/westinghouse_ov50"
   }
 }

@@ -1,22 +1,9 @@
 {
-  "parent": "csm:block/signramp25",
-  "display": {
-    "thirdperson": {
-      "rotation": [
-        10,
-        -45,
-        170
-      ],
-      "translation": [
-        0,
-        1.5,
-        -2.75
-      ],
-      "scale": [
-        0.375,
-        0.375,
-        0.375
-      ]
-    }
+  "parent": "csm:custom/metal_signpostback_tall_sign",
+  "textures": {
+    "all": "csm:blocks/advisory_ramp_speed_english_25.svg",
+    "particle": "csm:blocks/advisory_ramp_speed_english_25.svg",
+    "0": "csm:blocks/metal",
+    "1": "csm:blocks/advisory_ramp_speed_english_25.svg"
   }
 }

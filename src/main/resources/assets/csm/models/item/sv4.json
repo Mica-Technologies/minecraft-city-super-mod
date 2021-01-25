@@ -1,22 +1,12 @@
 {
-  "parent": "csm:block/sv4",
-  "display": {
-    "thirdperson": {
-      "rotation": [
-        10,
-        -45,
-        170
-      ],
-      "translation": [
-        0,
-        1.5,
-        -2.75
-      ],
-      "scale": [
-        0.375,
-        0.375,
-        0.375
-      ]
-    }
+  "parent": "block/cube",
+  "textures": {
+    "down": "csm:blocks/4_way_straight_vent_4",
+    "up": "csm:blocks/4_way_straight_vent_4",
+    "north": "csm:blocks/4_way_straight_vent_4",
+    "east": "csm:blocks/4_way_straight_vent_4",
+    "south": "csm:blocks/4_way_straight_vent_4",
+    "west": "csm:blocks/4_way_straight_vent_4",
+    "particle": "csm:blocks/4_way_straight_vent_4"
   }
 }

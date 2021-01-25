@@ -1,22 +1,12 @@
 {
-  "parent": "csm:block/cts1",
-  "display": {
-    "thirdperson": {
-      "rotation": [
-        10,
-        -45,
-        170
-      ],
-      "translation": [
-        0,
-        1.5,
-        -2.75
-      ],
-      "scale": [
-        0.375,
-        0.375,
-        0.375
-      ]
-    }
+  "parent": "block/cube",
+  "textures": {
+    "down": "csm:blocks/ceiling_tile_standard_1",
+    "up": "csm:blocks/ceiling_tile_standard_1",
+    "north": "csm:blocks/ceiling_tile_standard_1",
+    "east": "csm:blocks/ceiling_tile_standard_1",
+    "south": "csm:blocks/ceiling_tile_standard_1",
+    "west": "csm:blocks/ceiling_tile_standard_1",
+    "particle": "csm:blocks/ceiling_tile_standard_1"
   }
 }

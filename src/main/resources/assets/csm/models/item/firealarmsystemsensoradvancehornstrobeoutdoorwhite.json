@@ -1,3 +1,8 @@
 {
-  "parent": "csm:block/firealarmsystemsensoradvancehornstrobeoutdoorwhite"
+  "parent": "csm:custom/systemsensor_sa_hornstrobewp_white",
+  "textures": {
+    "all": "csm:blocks/systemsensor_sa_hornstrobewp_white",
+    "particle": "csm:blocks/systemsensor_sa_hornstrobewp_white",
+    "0": "csm:blocks/systemsensor_sa_hornstrobewp_white"
+  }
 }

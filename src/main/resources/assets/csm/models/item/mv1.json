@@ -1,22 +1,12 @@
 {
-  "parent": "csm:block/mv1",
-  "display": {
-    "thirdperson": {
-      "rotation": [
-        10,
-        -45,
-        170
-      ],
-      "translation": [
-        0,
-        1.5,
-        -2.75
-      ],
-      "scale": [
-        0.375,
-        0.375,
-        0.375
-      ]
-    }
+  "parent": "block/cube",
+  "textures": {
+    "down": "csm:blocks/modular_vent_1",
+    "up": "csm:blocks/modular_vent_1",
+    "north": "csm:blocks/modular_vent_1",
+    "east": "csm:blocks/modular_vent_1",
+    "south": "csm:blocks/modular_vent_1",
+    "west": "csm:blocks/modular_vent_1",
+    "particle": "csm:blocks/modular_vent_1"
   }
 }

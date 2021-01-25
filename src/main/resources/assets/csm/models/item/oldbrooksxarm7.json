@@ -1,22 +1,8 @@
 {
-  "parent": "csm:block/oldbrooksxarm7",
-  "display": {
-    "thirdperson": {
-      "rotation": [
-        10,
-        -45,
-        170
-      ],
-      "translation": [
-        0,
-        1.5,
-        -2.75
-      ],
-      "scale": [
-        0.375,
-        0.375,
-        0.375
-      ]
-    }
+  "parent": "csm:custom/brookscrossarm_old_7",
+  "textures": {
+    "all": "csm:blocks/crossarms",
+    "particle": "csm:blocks/crossarms",
+    "0": "csm:blocks/crossarms"
   }
 }

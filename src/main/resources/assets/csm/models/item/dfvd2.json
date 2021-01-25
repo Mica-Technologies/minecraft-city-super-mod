@@ -1,22 +1,12 @@
 {
-  "parent": "csm:block/dfvd2",
-  "display": {
-    "thirdperson": {
-      "rotation": [
-        10,
-        -45,
-        170
-      ],
-      "translation": [
-        0,
-        1.5,
-        -2.75
-      ],
-      "scale": [
-        0.375,
-        0.375,
-        0.375
-      ]
-    }
+  "parent": "block/cube",
+  "textures": {
+    "down": "csm:blocks/difuser_vent_2_black",
+    "up": "csm:blocks/difuser_vent_2_black",
+    "north": "csm:blocks/difuser_vent_2_black",
+    "east": "csm:blocks/difuser_vent_2_black",
+    "south": "csm:blocks/difuser_vent_2_black",
+    "west": "csm:blocks/difuser_vent_2_black",
+    "particle": "csm:blocks/difuser_vent_2_black"
   }
 }

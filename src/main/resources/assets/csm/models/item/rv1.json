@@ -1,22 +1,8 @@
 {
-  "parent": "csm:block/rv1",
-  "display": {
-    "thirdperson": {
-      "rotation": [
-        10,
-        -45,
-        170
-      ],
-      "translation": [
-        0,
-        1.5,
-        -2.75
-      ],
-      "scale": [
-        0.375,
-        0.375,
-        0.375
-      ]
-    }
+  "parent": "csm:custom/vent_residential_1",
+  "textures": {
+    "all": "csm:blocks/vent_residential_1",
+    "particle": "csm:blocks/vent_residential_1",
+    "0": "csm:blocks/vent_residential_1"
   }
 }

@@ -1,22 +1,9 @@
 {
-  "parent": "csm:block/signsignalremovalstudy",
-  "display": {
-    "thirdperson": {
-      "rotation": [
-        10,
-        -45,
-        170
-      ],
-      "translation": [
-        0,
-        1.5,
-        -2.75
-      ],
-      "scale": [
-        0.375,
-        0.375,
-        0.375
-      ]
-    }
+  "parent": "csm:custom/metal_signpostback_sign",
+  "textures": {
+    "all": "csm:blocks/delaware_d12-6-de.svg",
+    "particle": "csm:blocks/delaware_d12-6-de.svg",
+    "0": "csm:blocks/metal",
+    "1": "csm:blocks/delaware_d12-6-de.svg"
   }
 }

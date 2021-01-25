@@ -1,22 +1,8 @@
 {
-  "parent": "csm:block/adtheatdetector",
-  "display": {
-    "thirdperson": {
-      "rotation": [
-        10,
-        -45,
-        170
-      ],
-      "translation": [
-        0,
-        1.5,
-        -2.75
-      ],
-      "scale": [
-        0.375,
-        0.375,
-        0.375
-      ]
-    }
+  "parent": "csm:custom/adt_heat_detector",
+  "textures": {
+    "all": "csm:blocks/adt_heat_detector",
+    "particle": "csm:blocks/adt_heat_detector",
+    "0": "csm:blocks/adt_heat_detector"
   }
 }

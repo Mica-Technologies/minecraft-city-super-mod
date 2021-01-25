@@ -76,19 +76,6 @@ public class BlockNOVTM extends ElementsCitySuperMod.ModElement {
 		}
 
 		@Override
-		public AxisAlignedBB getBoundingBox( IBlockState state, IBlockAccess source, BlockPos pos ) {
-			switch ( state.getValue( FACING ) ) {
-				case SOUTH:
-				default:
-					return new AxisAlignedBB( 0D, 0.2D, 0D, 1D, 0D, 1D );
-				case DOWN:
-					return new AxisAlignedBB( 0D, 0D, 0.8D, 1D, 1D, 1D );
-				case UP:
-					return new AxisAlignedBB( 1D, 0D, 0.2D, 0D, 1D, 0D );
-			}
-		}
-
-		@Override
 		protected net.minecraft.block.state.BlockStateContainer createBlockState() {
 			return new net.minecraft.block.state.BlockStateContainer(this, new IProperty[]{FACING});
 		}

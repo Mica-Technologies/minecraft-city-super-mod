@@ -1,3 +1,7 @@
 {
-  "parent": "csm:block/silvermetalfence_inventory"
+  "parent": "block/fence_side",
+  "textures": {
+    "texture": "csm:blocks/metal_silver",
+    "particle": "csm:blocks/metal_silver"
+  }
 }

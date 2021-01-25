@@ -1,12 +1,13 @@
 {
 	"credit": "Model made by Brandon Holt (RinRin Blissgreen)",
 	"textures": {
-		"0": "Documents/metal_silver"
+		"0": "csm:Documents/metal_silver"
 	},
 	"elements": [
 		{
-			"from": [5, 0, 17],
-			"to": [11, 8, 19],
+			"from": [5, 1, 17],
+			"to": [11, 9, 19],
+			"rotation": {"angle": 0, "axis": "y", "origin": [8, 9, 8]},
 			"faces": {
 				"north": {"uv": [0, 0, 16, 16], "texture": "#0"},
 				"east": {"uv": [0, 0, 16, 16], "texture": "#0"},
@@ -17,9 +18,9 @@
 			}
 		},
 		{
-			"from": [7.5, 11, -8],
-			"to": [8.5, 15, -6],
-			"rotation": {"angle": 0, "axis": "y", "origin": [8, 15, -18]},
+			"from": [7.5, 12, -8],
+			"to": [8.5, 16, -6],
+			"rotation": {"angle": 0, "axis": "y", "origin": [8, 16, -18]},
 			"faces": {
 				"north": {"uv": [0, 0, 16, 16], "texture": "#0"},
 				"east": {"uv": [0, 0, 16, 16], "texture": "#0"},
@@ -30,9 +31,9 @@
 			}
 		},
 		{
-			"from": [7.5, 6, 5],
-			"to": [8.5, 10, 6],
-			"rotation": {"angle": 0, "axis": "y", "origin": [8, 10, -5]},
+			"from": [7.5, 7, 5],
+			"to": [8.5, 11, 6],
+			"rotation": {"angle": 0, "axis": "y", "origin": [8, 11, -5]},
 			"faces": {
 				"north": {"uv": [0, 0, 16, 16], "texture": "#0"},
 				"east": {"uv": [0, 0, 16, 16], "texture": "#0"},
@@ -43,9 +44,9 @@
 			}
 		},
 		{
-			"from": [6.5, 8.75, -15],
-			"to": [9.5, 11.75, 15.5],
-			"rotation": {"angle": 22.5, "axis": "x", "origin": [8, 1, 4]},
+			"from": [6.5, 9.75, -15],
+			"to": [9.5, 12.75, 15.5],
+			"rotation": {"angle": 22.5, "axis": "x", "origin": [8, 2, 4]},
 			"faces": {
 				"north": {"uv": [0, 0, 16, 16], "texture": "#0"},
 				"east": {"uv": [0, 0, 16, 16], "texture": "#0"},
@@ -56,9 +57,9 @@
 			}
 		},
 		{
-			"from": [7.5, 3.75, -12],
-			"to": [8.5, 4.75, 14.3],
-			"rotation": {"angle": 22.5, "axis": "x", "origin": [9, -4, 8]},
+			"from": [7.5, 4.75, -12],
+			"to": [8.5, 5.75, 15.3],
+			"rotation": {"angle": 22.5, "axis": "x", "origin": [9, -3, 8]},
 			"faces": {
 				"north": {"uv": [0, 0, 16, 16], "texture": "#0"},
 				"east": {"uv": [0, 0, 16, 16], "texture": "#0"},
@@ -69,9 +70,8 @@
 			}
 		},
 		{
-			"from": [6.5, 15, -16],
-			"to": [9.5, 18, -9.5],
-			"rotation": {"angle": 0, "axis": "y", "origin": [8, 7, 8]},
+			"from": [6.5, 16, -16],
+			"to": [9.5, 19, -9.5],
 			"faces": {
 				"north": {"uv": [0, 0, 16, 16], "texture": "#0"},
 				"east": {"uv": [0, 0, 16, 16], "texture": "#0"},
