@@ -1,8 +1,9 @@
-
 package com.micatechnologies.minecraft.csm.creativetab;
 
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
+import com.micatechnologies.minecraft.csm.block.BlockAltoMVUL;
 import com.micatechnologies.minecraft.csm.block.BlockSilverMetal;
+import net.minecraft.block.Block;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.relauncher.Side;
 
@@ -10,25 +11,29 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.creativetab.CreativeTabs;
 
 @ElementsCitySuperMod.ModElement.Tag
-public class TabMCLABuildingMaterialsTab extends ElementsCitySuperMod.ModElement {
-	public TabMCLABuildingMaterialsTab(ElementsCitySuperMod instance) {
-		super(instance, 1063);
-	}
+public class TabMCLABuildingMaterialsTab extends ElementsCitySuperMod.ModElement
+{
+    private final static String       ID_NAME   = "tabmclabuildingmaterialstab";
+    public static        CreativeTabs tab;
 
-	@Override
-	public void initElements() {
-		tab = new CreativeTabs("tabmclabuildingmaterialstab") {
-			@SideOnly(Side.CLIENT)
-			@Override
-			public ItemStack getTabIconItem() {
-				return new ItemStack( BlockSilverMetal.block, (int) (1));
-			}
+    public TabMCLABuildingMaterialsTab( ElementsCitySuperMod instance ) {
+        super( instance, 1063 );
+    }
 
-			@SideOnly(Side.CLIENT)
-			public boolean hasSearchBar() {
-				return false;
-			}
-		};
-	}
-	public static CreativeTabs tab;
+    @Override
+    public void initElements() {
+        tab = new CreativeTabs( ID_NAME )
+        {
+            @SideOnly( Side.CLIENT )
+            @Override
+            public ItemStack getTabIconItem() {
+                return new ItemStack( BlockSilverMetal.block, 1 );
+            }
+
+            @SideOnly( Side.CLIENT )
+            public boolean hasSearchBar() {
+                return true;
+            }
+        };
+    }
 }
