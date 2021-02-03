@@ -17,7 +17,6 @@
  */
 package com.micatechnologies.minecraft.csm;
 
-import com.micatechnologies.minecraft.csm.sys.ModConstants;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.potion.Potion;

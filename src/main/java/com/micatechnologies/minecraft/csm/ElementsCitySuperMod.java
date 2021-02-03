@@ -6,7 +6,6 @@
  */
 package com.micatechnologies.minecraft.csm;
 
-import com.micatechnologies.minecraft.csm.sounds.Sounds;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.common.registry.EntityEntry;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;

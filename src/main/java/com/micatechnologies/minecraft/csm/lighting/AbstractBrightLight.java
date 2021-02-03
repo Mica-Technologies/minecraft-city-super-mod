@@ -1,6 +1,5 @@
 package com.micatechnologies.minecraft.csm.lighting;
 
-import com.micatechnologies.minecraft.csm.creativetab.TabLighting;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDirectional;
 import net.minecraft.block.SoundType;

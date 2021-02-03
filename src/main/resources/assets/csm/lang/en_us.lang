@@ -1336,3 +1336,4 @@ tile.whov50shaded.name=Westinghouse OV50 (Shaded)
 tile.whov50shadednp.name=Westinghouse OV50 (Shaded, No Photocell)
 tile.altollm.name=Alto Lot Light Mount
 itemGroup.tablighting=CSM: Lighting
+itemGroup.tabnovelties=CSM: Novelties/Other
