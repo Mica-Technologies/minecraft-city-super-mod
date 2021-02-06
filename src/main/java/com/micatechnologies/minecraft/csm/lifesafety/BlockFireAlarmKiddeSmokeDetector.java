@@ -40,9 +40,9 @@ import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.BlockDirectional;
 import net.minecraft.block.Block;
 
-import com.micatechnologies.minecraft.csm.NEEDSWORK.procedure.ProcedureSmokeDetector;
-import com.micatechnologies.minecraft.csm.NEEDSWORK.procedure.ProcedureEnableFA;
-import com.micatechnologies.minecraft.csm.NEEDSWORK.procedure.ProcedureDisableFA;
+import com.micatechnologies.minecraft.csm.MCREATOROLD.ProcedureSmokeDetector;
+import com.micatechnologies.minecraft.csm.MCREATOROLD.ProcedureEnableFA;
+import com.micatechnologies.minecraft.csm.MCREATOROLD.ProcedureDisableFA;
 
 import java.util.Random;
 

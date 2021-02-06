@@ -1,7 +1,7 @@
 package com.micatechnologies.minecraft.csm.technology;
 
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
-import com.micatechnologies.minecraft.csm.NEEDSWORK.block.BlockImacpro;
+import com.micatechnologies.minecraft.csm.technology.BlockImacpro;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.relauncher.Side;
 
@@ -30,7 +30,7 @@ public class TabMCLATechTab extends ElementsCitySuperMod.ModElement
 
             @SideOnly( Side.CLIENT )
             public boolean hasSearchBar() {
-                return true;
+                return false;
             }
         };
     }

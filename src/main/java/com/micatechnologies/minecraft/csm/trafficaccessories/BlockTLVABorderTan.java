@@ -2,7 +2,7 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories;
 
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
-import com.micatechnologies.minecraft.csm.trafficaccessories.TabTrafficSignalAccessories;
+import com.micatechnologies.minecraft.csm.trafficaccessories.TabTrafficSignalAccessories;;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDirectional;
 import net.minecraft.block.SoundType;

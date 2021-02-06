@@ -28,7 +28,7 @@ import net.minecraft.block.SoundType;
 import net.minecraft.block.BlockDirectional;
 import net.minecraft.block.Block;
 
-import com.micatechnologies.minecraft.csm.NEEDSWORK.procedure.ProcedureCentipedeSound;
+import com.micatechnologies.minecraft.csm.MCREATOROLD.ProcedureCentipedeSound;
 
 @ElementsCitySuperMod.ModElement.Tag
 public class BlockACCentipede extends ElementsCitySuperMod.ModElement {

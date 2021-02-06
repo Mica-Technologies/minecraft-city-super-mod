@@ -28,7 +28,7 @@ public class TabTrafficSignalAccessories extends ElementsCitySuperMod.ModElement
 
             @SideOnly( Side.CLIENT )
             public boolean hasSearchBar() {
-                return true;
+                return false;
             }
         };
     }

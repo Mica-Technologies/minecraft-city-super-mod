@@ -28,7 +28,7 @@ import net.minecraft.block.SoundType;
 import net.minecraft.block.BlockDirectional;
 import net.minecraft.block.Block;
 
-import com.micatechnologies.minecraft.csm.NEEDSWORK.procedure.ProcedureGalagaSound;
+import com.micatechnologies.minecraft.csm.MCREATOROLD.ProcedureGalagaSound;
 
 @ElementsCitySuperMod.ModElement.Tag
 public class BlockACGalaga extends ElementsCitySuperMod.ModElement {

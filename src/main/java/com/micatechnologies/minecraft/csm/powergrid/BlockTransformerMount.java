@@ -25,7 +25,7 @@ import net.minecraft.block.SoundType;
 import net.minecraft.block.BlockDirectional;
 import net.minecraft.block.Block;
 
-import com.micatechnologies.minecraft.csm.NEEDSWORK.TabMCLAElectricTab;
+import com.micatechnologies.minecraft.csm.powergrid.TabMCLAElectricTab;
 
 @ElementsCitySuperMod.ModElement.Tag
 public class BlockTransformerMount extends ElementsCitySuperMod.ModElement {

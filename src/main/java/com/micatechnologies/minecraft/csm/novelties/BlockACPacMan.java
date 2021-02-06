@@ -28,7 +28,7 @@ import net.minecraft.block.SoundType;
 import net.minecraft.block.BlockDirectional;
 import net.minecraft.block.Block;
 
-import com.micatechnologies.minecraft.csm.NEEDSWORK.procedure.ProcedurePacManSound;
+import com.micatechnologies.minecraft.csm.MCREATOROLD.ProcedurePacManSound;
 
 @ElementsCitySuperMod.ModElement.Tag
 public class BlockACPacMan extends ElementsCitySuperMod.ModElement {

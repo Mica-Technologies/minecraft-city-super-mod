@@ -28,8 +28,8 @@ import net.minecraft.block.SoundType;
 import net.minecraft.block.BlockDirectional;
 import net.minecraft.block.Block;
 
-import com.micatechnologies.minecraft.csm.NEEDSWORK.procedure.ProcedureEnableFA;
-import com.micatechnologies.minecraft.csm.NEEDSWORK.procedure.ProcedureDisableFA;
+import com.micatechnologies.minecraft.csm.MCREATOROLD.ProcedureEnableFA;
+import com.micatechnologies.minecraft.csm.MCREATOROLD.ProcedureDisableFA;
 
 @ElementsCitySuperMod.ModElement.Tag
 public class BlockFireAlarmWheelockRSSStrobe extends ElementsCitySuperMod.ModElement {

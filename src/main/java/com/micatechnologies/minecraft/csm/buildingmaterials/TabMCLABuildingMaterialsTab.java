@@ -1,7 +1,7 @@
 package com.micatechnologies.minecraft.csm.buildingmaterials;
 
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
-import com.micatechnologies.minecraft.csm.NEEDSWORK.block.BlockSilverMetal;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSilverMetal;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.relauncher.Side;
 
@@ -30,7 +30,7 @@ public class TabMCLABuildingMaterialsTab extends ElementsCitySuperMod.ModElement
 
             @SideOnly( Side.CLIENT )
             public boolean hasSearchBar() {
-                return true;
+                return false;
             }
         };
     }

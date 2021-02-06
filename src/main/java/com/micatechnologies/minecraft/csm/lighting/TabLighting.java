@@ -1,7 +1,7 @@
 package com.micatechnologies.minecraft.csm.lighting;
 
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
-import com.micatechnologies.minecraft.csm.NEEDSWORK.block.BlockAltoMVUL;
+import com.micatechnologies.minecraft.csm.lighting.BlockAltoMVUL;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.relauncher.Side;
@@ -29,7 +29,7 @@ public class TabLighting extends ElementsCitySuperMod.ModElement
 
             @SideOnly( Side.CLIENT )
             public boolean hasSearchBar() {
-                return true;
+                return false;
             }
         };
     }

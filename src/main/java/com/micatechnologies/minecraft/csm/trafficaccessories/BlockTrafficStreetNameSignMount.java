@@ -24,7 +24,7 @@ import net.minecraft.block.SoundType;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.Block;
 
-import com.micatechnologies.minecraft.csm.NEEDSWORK.TabMCLARoadsTab;
+import com.micatechnologies.minecraft.csm.trafficaccessories.TabTrafficSignalAccessories;
 
 @ElementsCitySuperMod.ModElement.Tag
 public class BlockTrafficStreetNameSignMount extends ElementsCitySuperMod.ModElement {
@@ -58,7 +58,7 @@ public class BlockTrafficStreetNameSignMount extends ElementsCitySuperMod.ModEle
 			setResistance(10F);
 			setLightLevel(0F);
 			setLightOpacity(0);
-			setCreativeTab(TabMCLARoadsTab.tab);
+			setCreativeTab(TabTrafficSignalAccessories.tab);
 			this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH));
 		}
 
