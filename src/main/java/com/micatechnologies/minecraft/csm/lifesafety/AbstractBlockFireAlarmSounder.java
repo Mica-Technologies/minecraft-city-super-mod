@@ -7,7 +7,8 @@ import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.util.*;
+import net.minecraft.util.BlockRenderLayer;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
@@ -32,16 +33,7 @@ public abstract class AbstractBlockFireAlarmSounder extends Block
         this.setDefaultState( this.blockState.getBaseState().withProperty( FACING, EnumFacing.NORTH ) );
     }
 
-    @SideOnly( Side.CLIENT )
-    @Override
-    public BlockRenderLayer getBlockLayer() {
-        return BlockRenderLayer.CUTOUT_MIPPED;
-    }
-
-    @Override
-    protected net.minecraft.block.state.BlockStateContainer createBlockState() {
-        return new net.minecraft.block.state.BlockStateContainer( this, FACING );
-    }
+    abstract public String getBlockRegistryName();
 
     @Override
     public IBlockState getStateFromMeta( int meta ) {
@@ -51,19 +43,6 @@ public abstract class AbstractBlockFireAlarmSounder extends Block
     @Override
     public int getMetaFromState( IBlockState state ) {
         return state.getValue( FACING ).getIndex();
-    }
-
-    @Override
-    public IBlockState getStateForPlacement( World worldIn,
-                                             BlockPos pos,
-                                             EnumFacing facing,
-                                             float hitX,
-                                             float hitY,
-                                             float hitZ,
-                                             int meta,
-                                             EntityLivingBase placer )
-    {
-        return this.getDefaultState().withProperty( FACING, EnumFacing.getDirectionFromEntityLiving( pos, placer ) );
     }
 
     @Override
@@ -91,18 +70,40 @@ public abstract class AbstractBlockFireAlarmSounder extends Block
     }
 
     @Override
-    public int getLightValue( IBlockState state, IBlockAccess world, BlockPos pos ) {
-        return 0;
-    }
-
-    @Override
     public boolean isOpaqueCube( IBlockState state ) {
         return false;
     }
 
-    abstract public String getSoundResourceName(IBlockState blockState);
+    @SideOnly( Side.CLIENT )
+    @Override
+    public BlockRenderLayer getBlockLayer() {
+        return BlockRenderLayer.CUTOUT_MIPPED;
+    }
 
-    abstract public int getSoundTickLen(IBlockState blockState);
+    @Override
+    public IBlockState getStateForPlacement( World worldIn,
+                                             BlockPos pos,
+                                             EnumFacing facing,
+                                             float hitX,
+                                             float hitY,
+                                             float hitZ,
+                                             int meta,
+                                             EntityLivingBase placer )
+    {
+        return this.getDefaultState().withProperty( FACING, EnumFacing.getDirectionFromEntityLiving( pos, placer ) );
+    }
 
-    abstract public String getBlockRegistryName();
+    @Override
+    protected net.minecraft.block.state.BlockStateContainer createBlockState() {
+        return new net.minecraft.block.state.BlockStateContainer( this, FACING );
+    }
+
+    @Override
+    public int getLightValue( IBlockState state, IBlockAccess world, BlockPos pos ) {
+        return 0;
+    }
+
+    abstract public String getSoundResourceName( IBlockState blockState );
+
+    abstract public int getSoundTickLen( IBlockState blockState );
 }

@@ -51,31 +51,8 @@ public class BlockFireAlarmWheelock7002TRed extends ElementsCitySuperMod.ModElem
         public static final String[]        SOUND_NAMES = { "Normal", "Slow" };
 
         @Override
-        public String getSoundResourceName( IBlockState blockState ) {
-            if ( blockState.getValue( SOUND ) == 0 ) {
-                return "csm:7002t_medspeed";
-            }else {
-                return "csm:7002t_slowspeed";
-            }
-        }
-
-        @Override
-        public int getSoundTickLen( IBlockState blockState ) {
-            if ( blockState.getValue( SOUND ) == 0 ) {
-                return 45;
-            } else {
-                return 115;
-            }
-        }
-
-        @Override
         public String getBlockRegistryName() {
             return blockRegistryName;
-        }
-
-        @Override
-        protected net.minecraft.block.state.BlockStateContainer createBlockState() {
-            return new net.minecraft.block.state.BlockStateContainer( this, FACING, SOUND );
         }
 
         @Override
@@ -92,6 +69,46 @@ public class BlockFireAlarmWheelock7002TRed extends ElementsCitySuperMod.ModElem
             int facingVal = state.getValue( FACING ).getIndex();
             int soundVal = state.getValue( SOUND ) * 6;
             return facingVal + soundVal;
+        }
+
+        @Override
+        public IBlockState getStateForPlacement( World worldIn,
+                                                 BlockPos pos,
+                                                 EnumFacing facing,
+                                                 float hitX,
+                                                 float hitY,
+                                                 float hitZ,
+                                                 int meta,
+                                                 EntityLivingBase placer )
+        {
+            return this.getDefaultState()
+                       .withProperty( FACING, EnumFacing.getDirectionFromEntityLiving( pos, placer ) )
+                       .withProperty( SOUND, 0 );
+        }
+
+        @Override
+        protected net.minecraft.block.state.BlockStateContainer createBlockState() {
+            return new net.minecraft.block.state.BlockStateContainer( this, FACING, SOUND );
+        }
+
+        @Override
+        public String getSoundResourceName( IBlockState blockState ) {
+            if ( blockState.getValue( SOUND ) == 0 ) {
+                return "csm:7002t_medspeed";
+            }
+            else {
+                return "csm:7002t_slowspeed";
+            }
+        }
+
+        @Override
+        public int getSoundTickLen( IBlockState blockState ) {
+            if ( blockState.getValue( SOUND ) == 0 ) {
+                return 45;
+            }
+            else {
+                return 115;
+            }
         }
 
         @Override
@@ -118,21 +135,6 @@ public class BlockFireAlarmWheelock7002TRed extends ElementsCitySuperMod.ModElem
             return super.onBlockActivated( p_onBlockActivated_1_, p_onBlockActivated_2_, p_onBlockActivated_3_,
                                            p_onBlockActivated_4_, p_onBlockActivated_5_, p_onBlockActivated_6_,
                                            p_onBlockActivated_7_, p_onBlockActivated_8_, p_onBlockActivated_9_ );
-        }
-
-        @Override
-        public IBlockState getStateForPlacement( World worldIn,
-                                                 BlockPos pos,
-                                                 EnumFacing facing,
-                                                 float hitX,
-                                                 float hitY,
-                                                 float hitZ,
-                                                 int meta,
-                                                 EntityLivingBase placer )
-        {
-            return this.getDefaultState()
-                       .withProperty( FACING, EnumFacing.getDirectionFromEntityLiving( pos, placer ) )
-                       .withProperty( SOUND, 0 );
         }
     }
 }

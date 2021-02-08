@@ -21,7 +21,7 @@ import net.minecraft.block.Block;
 
 @ElementsCitySuperMod.ModElement.Tag
 public class BlockLTGCJ extends ElementsCitySuperMod.ModElement {
-	private static final String elementId = "ltgcj";
+	public static final String elementId = "ltgcj";
 
 	@GameRegistry.ObjectHolder("csm:"+elementId)
 	public static final Block block = null;

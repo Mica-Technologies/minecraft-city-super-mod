@@ -38,8 +38,7 @@ public class BlockFireAlarmGamewellCenturyPull extends ElementsCitySuperMod.ModE
 
     @Override
     public void init( FMLInitializationEvent event ) {
-        GameRegistry.registerTileEntity( TileEntityFireAlarmSensor.class,
-                                         "csm" + ":tileentityfirealarmsensor" );
+        GameRegistry.registerTileEntity( TileEntityFireAlarmSensor.class, "csm" + ":tileentityfirealarmsensor" );
     }
 
     @SideOnly( Side.CLIENT )
@@ -70,7 +69,7 @@ public class BlockFireAlarmGamewellCenturyPull extends ElementsCitySuperMod.ModE
                                                p_onBlockActivated_7_, p_onBlockActivated_8_, p_onBlockActivated_9_ );
             }
 
-            boolean activated = activateLinkedPanel( world, blockPos,entityPlayer );
+            boolean activated = activateLinkedPanel( world, blockPos, entityPlayer );
             if ( !activated && !world.isRemote ) {
                 entityPlayer.sendMessage( new TextComponentString( "WARNING: This pull station has lost connection, " +
                                                                            "has failed or is otherwise not functional." ) );

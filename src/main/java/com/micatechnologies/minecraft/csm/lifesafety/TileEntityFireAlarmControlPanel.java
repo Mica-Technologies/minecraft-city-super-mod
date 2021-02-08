@@ -87,15 +87,6 @@ public class TileEntityFireAlarmControlPanel extends TileEntity
     }
 
     @Override
-    public boolean shouldRefresh( World p_shouldRefresh_1_,
-                                  BlockPos p_shouldRefresh_2_,
-                                  IBlockState p_shouldRefresh_3_,
-                                  IBlockState p_shouldRefresh_4_ )
-    {
-        return false;
-    }
-
-    @Override
     public NBTTagCompound writeToNBT( NBTTagCompound p_writeToNBT_1_ ) {
         // Write sound index
         p_writeToNBT_1_.setInteger( soundIndexKey, soundIndex );
@@ -117,16 +108,20 @@ public class TileEntityFireAlarmControlPanel extends TileEntity
         return super.writeToNBT( p_writeToNBT_1_ );
     }
 
+    @Override
+    public boolean shouldRefresh( World p_shouldRefresh_1_,
+                                  BlockPos p_shouldRefresh_2_,
+                                  IBlockState p_shouldRefresh_3_,
+                                  IBlockState p_shouldRefresh_4_ )
+    {
+        return false;
+    }
+
     public void switchSound() {
         soundIndex++;
         if ( soundIndex >= SOUND_RESOURCE_NAMES.length ) {
             soundIndex = 0;
         }
-        markDirty();
-    }
-
-    public void setAlarmState( boolean alarmState ) {
-        alarm = alarmState;
         markDirty();
     }
 
@@ -143,12 +138,9 @@ public class TileEntityFireAlarmControlPanel extends TileEntity
         return alarm;
     }
 
-    public int getCurrentSoundLength() {
-        return SOUND_LENGTHS[ soundIndex ];
-    }
-
-    public String getCurrentSoundResourceName() {
-        return SOUND_RESOURCE_NAMES[ soundIndex ];
+    public void setAlarmState( boolean alarmState ) {
+        alarm = alarmState;
+        markDirty();
     }
 
     public String getCurrentSoundName() {
@@ -192,8 +184,8 @@ public class TileEntityFireAlarmControlPanel extends TileEntity
                 }
                 else if ( blockAtPos instanceof AbstractBlockFireAlarmSounder ) {
                     AbstractBlockFireAlarmSounder blockFireAlarmSounder = ( AbstractBlockFireAlarmSounder ) blockAtPos;
-                    alarmSoundName = blockFireAlarmSounder.getSoundResourceName(blockStateAtPos);
-                    alarmSoundLength = blockFireAlarmSounder.getSoundTickLen(blockStateAtPos);
+                    alarmSoundName = blockFireAlarmSounder.getSoundResourceName( blockStateAtPos );
+                    alarmSoundLength = blockFireAlarmSounder.getSoundTickLen( blockStateAtPos );
                 }
 
                 // Handle only if alarm at location
@@ -241,5 +233,13 @@ public class TileEntityFireAlarmControlPanel extends TileEntity
                 }
             }
         }
+    }
+
+    public int getCurrentSoundLength() {
+        return SOUND_LENGTHS[ soundIndex ];
+    }
+
+    public String getCurrentSoundResourceName() {
+        return SOUND_RESOURCE_NAMES[ soundIndex ];
     }
 }

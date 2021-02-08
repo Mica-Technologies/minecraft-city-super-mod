@@ -40,18 +40,18 @@ public class BlockFireAlarmSimplex2901HornRed extends ElementsCitySuperMod.ModEl
     public static class BlockCustom extends AbstractBlockFireAlarmSounder
     {
         @Override
-        public String getSoundResourceName( IBlockState blockState) {
+        public String getBlockRegistryName() {
+            return blockRegistryName;
+        }
+
+        @Override
+        public String getSoundResourceName( IBlockState blockState ) {
             return "csm:2910calcode";
         }
 
         @Override
-        public int getSoundTickLen(IBlockState blockState) {
+        public int getSoundTickLen( IBlockState blockState ) {
             return 360;
-        }
-
-        @Override
-        public String getBlockRegistryName() {
-            return blockRegistryName;
         }
     }
 }

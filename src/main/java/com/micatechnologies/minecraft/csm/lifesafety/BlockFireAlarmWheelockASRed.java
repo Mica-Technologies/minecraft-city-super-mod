@@ -9,7 +9,8 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
-import net.minecraft.util.*;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
@@ -50,6 +51,42 @@ public class BlockFireAlarmWheelockASRed extends ElementsCitySuperMod.ModElement
         public static final String[]        SOUND_NAMES = { "Code 3", "Marchtime" };
 
         @Override
+        protected net.minecraft.block.state.BlockStateContainer createBlockState() {
+            return new net.minecraft.block.state.BlockStateContainer( this, FACING, SOUND );
+        }
+
+        @Override
+        public IBlockState getStateFromMeta( int meta ) {
+            int facingVal = meta % 6;
+            int soundVal = ( int ) Math.floor( ( double ) meta / 6.0 );
+            return this.getDefaultState()
+                       .withProperty( FACING, EnumFacing.getFront( facingVal ) )
+                       .withProperty( SOUND, soundVal );
+        }
+
+        @Override
+        public int getMetaFromState( IBlockState state ) {
+            int facingVal = state.getValue( FACING ).getIndex();
+            int soundVal = state.getValue( SOUND ) * 6;
+            return facingVal + soundVal;
+        }
+
+        @Override
+        public IBlockState getStateForPlacement( World worldIn,
+                                                 BlockPos pos,
+                                                 EnumFacing facing,
+                                                 float hitX,
+                                                 float hitY,
+                                                 float hitZ,
+                                                 int meta,
+                                                 EntityLivingBase placer )
+        {
+            return this.getDefaultState()
+                       .withProperty( FACING, EnumFacing.getDirectionFromEntityLiving( pos, placer ) )
+                       .withProperty( SOUND, 0 );
+        }
+
+        @Override
         public String getSoundResourceName( IBlockState blockState ) {
             if ( blockState.getValue( SOUND ) == 0 ) {
                 return "csm:wheelockas";
@@ -72,27 +109,6 @@ public class BlockFireAlarmWheelockASRed extends ElementsCitySuperMod.ModElement
         @Override
         public String getBlockRegistryName() {
             return blockRegistryName;
-        }
-
-        @Override
-        protected net.minecraft.block.state.BlockStateContainer createBlockState() {
-            return new net.minecraft.block.state.BlockStateContainer( this, FACING, SOUND );
-        }
-
-        @Override
-        public IBlockState getStateFromMeta( int meta ) {
-            int facingVal = meta % 6;
-            int soundVal = ( int ) Math.floor( ( double ) meta / 6.0 );
-            return this.getDefaultState()
-                       .withProperty( FACING, EnumFacing.getFront( facingVal ) )
-                       .withProperty( SOUND, soundVal );
-        }
-
-        @Override
-        public int getMetaFromState( IBlockState state ) {
-            int facingVal = state.getValue( FACING ).getIndex();
-            int soundVal = state.getValue( SOUND ) * 6;
-            return facingVal + soundVal;
         }
 
         @Override
@@ -119,21 +135,6 @@ public class BlockFireAlarmWheelockASRed extends ElementsCitySuperMod.ModElement
             return super.onBlockActivated( p_onBlockActivated_1_, p_onBlockActivated_2_, p_onBlockActivated_3_,
                                            p_onBlockActivated_4_, p_onBlockActivated_5_, p_onBlockActivated_6_,
                                            p_onBlockActivated_7_, p_onBlockActivated_8_, p_onBlockActivated_9_ );
-        }
-
-        @Override
-        public IBlockState getStateForPlacement( World worldIn,
-                                                 BlockPos pos,
-                                                 EnumFacing facing,
-                                                 float hitX,
-                                                 float hitY,
-                                                 float hitZ,
-                                                 int meta,
-                                                 EntityLivingBase placer )
-        {
-            return this.getDefaultState()
-                       .withProperty( FACING, EnumFacing.getDirectionFromEntityLiving( pos, placer ) )
-                       .withProperty( SOUND, 0 );
         }
     }
 }

@@ -1,7 +1,10 @@
 package com.micatechnologies.minecraft.csm.lifesafety;
 
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
-import net.minecraft.block.*;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockHorizontal;
+import net.minecraft.block.ITileEntityProvider;
+import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.state.BlockStateContainer;
@@ -97,22 +100,23 @@ public class BlockFireAlarmControlPanel extends ElementsCitySuperMod.ModElement
         }
 
         @Override
-        protected BlockStateContainer createBlockState() {
-            return new BlockStateContainer( this, FACING );
+        public boolean isFullCube( IBlockState state ) {
+            return false;
         }
 
         @Override
-        public IBlockState getStateForPlacement( World worldIn,
-                                                 BlockPos pos,
-                                                 EnumFacing facing,
-                                                 float hitX,
-                                                 float hitY,
-                                                 float hitZ,
-                                                 int meta,
-                                                 EntityLivingBase placer )
-        {
-            return this.getDefaultState()
-                       .withProperty( FACING, placer.getHorizontalFacing().getOpposite() );
+        public AxisAlignedBB getBoundingBox( IBlockState state, IBlockAccess source, BlockPos pos ) {
+            switch ( state.getValue( FACING ) ) {
+                case SOUTH:
+                default:
+                    return new AxisAlignedBB( 1D, 0D, 0.2D, 0D, 1D, 0D );
+                case NORTH:
+                    return new AxisAlignedBB( 0D, 0D, 0.8D, 1D, 1D, 1D );
+                case WEST:
+                    return new AxisAlignedBB( 0.8D, 0D, 1D, 1D, 1D, 0D );
+                case EAST:
+                    return new AxisAlignedBB( 0.2D, 0D, 0D, 0D, 1D, 1D );
+            }
         }
 
         @Override
@@ -133,26 +137,6 @@ public class BlockFireAlarmControlPanel extends ElementsCitySuperMod.ModElement
             }
 
             p_updateTick_1_.scheduleUpdate( p_updateTick_2_, this, this.tickRate( p_updateTick_1_ ) );
-        }
-
-        @Override
-        public boolean isFullCube( IBlockState state ) {
-            return false;
-        }
-
-        @Override
-        public AxisAlignedBB getBoundingBox( IBlockState state, IBlockAccess source, BlockPos pos ) {
-            switch ( state.getValue( FACING ) ) {
-                case SOUTH:
-                default:
-                    return new AxisAlignedBB( 1D, 0D, 0.2D, 0D, 1D, 0D );
-                case NORTH:
-                    return new AxisAlignedBB( 0D, 0D, 0.8D, 1D, 1D, 1D );
-                case WEST:
-                    return new AxisAlignedBB( 0.8D, 0D, 1D, 1D, 1D, 0D );
-                case EAST:
-                    return new AxisAlignedBB( 0.2D, 0D, 0D, 0D, 1D, 1D );
-            }
         }
 
         @Override
@@ -251,6 +235,24 @@ public class BlockFireAlarmControlPanel extends ElementsCitySuperMod.ModElement
             }
 
             return true;
+        }
+
+        @Override
+        public IBlockState getStateForPlacement( World worldIn,
+                                                 BlockPos pos,
+                                                 EnumFacing facing,
+                                                 float hitX,
+                                                 float hitY,
+                                                 float hitZ,
+                                                 int meta,
+                                                 EntityLivingBase placer )
+        {
+            return this.getDefaultState().withProperty( FACING, placer.getHorizontalFacing().getOpposite() );
+        }
+
+        @Override
+        protected BlockStateContainer createBlockState() {
+            return new BlockStateContainer( this, FACING );
         }
 
         @Override

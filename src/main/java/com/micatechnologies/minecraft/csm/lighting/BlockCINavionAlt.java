@@ -21,7 +21,7 @@ import net.minecraft.block.Block;
 
 @ElementsCitySuperMod.ModElement.Tag
 public class BlockCINavionAlt extends ElementsCitySuperMod.ModElement {
-	private static final String elementId = "cinavionalt";
+	public static final String elementId = "cinavionalt";
 
 	@GameRegistry.ObjectHolder("csm:"+elementId)
 	public static final Block block = null;

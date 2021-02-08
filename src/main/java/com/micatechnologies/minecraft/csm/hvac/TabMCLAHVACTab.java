@@ -1,17 +1,15 @@
 package com.micatechnologies.minecraft.csm.hvac;
 
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
-import com.micatechnologies.minecraft.csm.hvac.BlockSV4;
-import net.minecraftforge.fml.relauncher.SideOnly;
-import net.minecraftforge.fml.relauncher.Side;
-
-import net.minecraft.item.ItemStack;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.item.ItemStack;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 @ElementsCitySuperMod.ModElement.Tag
 public class TabMCLAHVACTab extends ElementsCitySuperMod.ModElement
 {
-    private final static String       ID_NAME   = "tabmclahvactab";
+    private final static String       ID_NAME = "tabmclahvactab";
     public static        CreativeTabs tab;
 
     public TabMCLAHVACTab( ElementsCitySuperMod instance ) {

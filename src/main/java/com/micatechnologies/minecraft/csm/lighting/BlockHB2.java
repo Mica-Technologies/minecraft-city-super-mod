@@ -1,7 +1,6 @@
 package com.micatechnologies.minecraft.csm.lighting;
 
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
-import com.micatechnologies.minecraft.csm.lighting.TabLighting;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDirectional;
 import net.minecraft.block.SoundType;
@@ -50,8 +49,8 @@ public class BlockHB2 extends ElementsCitySuperMod.ModElement
 
     public static class BlockCustom extends Block
     {
-        public static final PropertyDirection FACING = BlockDirectional.FACING;
-        public static final PropertyBool POWERED = PropertyBool.create( "powered" );
+        public static final PropertyDirection FACING  = BlockDirectional.FACING;
+        public static final PropertyBool      POWERED = PropertyBool.create( "powered" );
 
         public BlockCustom() {
             super( Material.ROCK );
@@ -83,11 +82,7 @@ public class BlockHB2 extends ElementsCitySuperMod.ModElement
         }
 
         @Override
-        public void neighborChanged( IBlockState state,
-                                     World world,
-                                     BlockPos pos,
-                                     Block blockIn,
-                                     BlockPos p_189540_5_ )
+        public void neighborChanged( IBlockState state, World world, BlockPos pos, Block blockIn, BlockPos p_189540_5_ )
         {
             int powered = world.isBlockIndirectlyGettingPowered( pos );
             world.setBlockState( pos, state.withProperty( POWERED, powered > 0 ), 3 );

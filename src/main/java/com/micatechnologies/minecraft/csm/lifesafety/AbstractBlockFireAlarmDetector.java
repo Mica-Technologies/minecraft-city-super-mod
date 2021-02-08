@@ -21,8 +21,6 @@ public abstract class AbstractBlockFireAlarmDetector extends AbstractBlockFireAl
         return 500;
     }
 
-    abstract public void onFire( World world, BlockPos blockPos, IBlockState blockState );
-
     @Override
     public void onTick( World world, BlockPos blockPos, IBlockState blockState ) {
         boolean foundFire = false;
@@ -60,4 +58,6 @@ public abstract class AbstractBlockFireAlarmDetector extends AbstractBlockFireAl
             activateLinkedPanel( world, blockPos, null );
         }
     }
+
+    abstract public void onFire( World world, BlockPos blockPos, IBlockState blockState );
 }

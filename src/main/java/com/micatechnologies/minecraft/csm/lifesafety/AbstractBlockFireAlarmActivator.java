@@ -39,16 +39,7 @@ public abstract class AbstractBlockFireAlarmActivator extends Block implements I
         this.setDefaultState( this.blockState.getBaseState().withProperty( FACING, EnumFacing.NORTH ) );
     }
 
-    @SideOnly( Side.CLIENT )
-    @Override
-    public BlockRenderLayer getBlockLayer() {
-        return BlockRenderLayer.CUTOUT_MIPPED;
-    }
-
-    @Override
-    protected BlockStateContainer createBlockState() {
-        return new BlockStateContainer( this, FACING );
-    }
+    abstract public String getBlockRegistryName();
 
     @Override
     public IBlockState getStateFromMeta( int meta ) {
@@ -58,19 +49,6 @@ public abstract class AbstractBlockFireAlarmActivator extends Block implements I
     @Override
     public int getMetaFromState( IBlockState state ) {
         return state.getValue( FACING ).getIndex();
-    }
-
-    @Override
-    public IBlockState getStateForPlacement( World worldIn,
-                                             BlockPos pos,
-                                             EnumFacing facing,
-                                             float hitX,
-                                             float hitY,
-                                             float hitZ,
-                                             int meta,
-                                             EntityLivingBase placer )
-    {
-        return this.getDefaultState().withProperty( FACING, EnumFacing.getDirectionFromEntityLiving( pos, placer ) );
     }
 
     @Override
@@ -98,24 +76,8 @@ public abstract class AbstractBlockFireAlarmActivator extends Block implements I
     }
 
     @Override
-    public int getLightValue( IBlockState state, IBlockAccess world, BlockPos pos ) {
-        return 0;
-    }
-
-    @Override
     public boolean isOpaqueCube( IBlockState state ) {
         return false;
-    }
-
-    @Override
-    public int tickRate( World p_tickRate_1_ ) {
-        return getBlockTickRate();
-    }
-
-    @Override
-    public void onBlockAdded( World p_onBlockAdded_1_, BlockPos p_onBlockAdded_2_, IBlockState p_onBlockAdded_3_ ) {
-        p_onBlockAdded_1_.scheduleUpdate( p_onBlockAdded_2_, this, this.tickRate( p_onBlockAdded_1_ ) );
-        super.onBlockAdded( p_onBlockAdded_1_, p_onBlockAdded_2_, p_onBlockAdded_3_ );
     }
 
     @Override
@@ -133,7 +95,45 @@ public abstract class AbstractBlockFireAlarmActivator extends Block implements I
         p_updateTick_1_.scheduleUpdate( p_updateTick_2_, this, this.tickRate( p_updateTick_1_ ) );
     }
 
-    abstract public String getBlockRegistryName();
+    @Override
+    public int tickRate( World p_tickRate_1_ ) {
+        return getBlockTickRate();
+    }
+
+    @Override
+    public void onBlockAdded( World p_onBlockAdded_1_, BlockPos p_onBlockAdded_2_, IBlockState p_onBlockAdded_3_ ) {
+        p_onBlockAdded_1_.scheduleUpdate( p_onBlockAdded_2_, this, this.tickRate( p_onBlockAdded_1_ ) );
+        super.onBlockAdded( p_onBlockAdded_1_, p_onBlockAdded_2_, p_onBlockAdded_3_ );
+    }
+
+    @SideOnly( Side.CLIENT )
+    @Override
+    public BlockRenderLayer getBlockLayer() {
+        return BlockRenderLayer.CUTOUT_MIPPED;
+    }
+
+    @Override
+    public IBlockState getStateForPlacement( World worldIn,
+                                             BlockPos pos,
+                                             EnumFacing facing,
+                                             float hitX,
+                                             float hitY,
+                                             float hitZ,
+                                             int meta,
+                                             EntityLivingBase placer )
+    {
+        return this.getDefaultState().withProperty( FACING, EnumFacing.getDirectionFromEntityLiving( pos, placer ) );
+    }
+
+    @Override
+    protected BlockStateContainer createBlockState() {
+        return new BlockStateContainer( this, FACING );
+    }
+
+    @Override
+    public int getLightValue( IBlockState state, IBlockAccess world, BlockPos pos ) {
+        return 0;
+    }
 
     abstract public int getBlockTickRate();
 
@@ -144,7 +144,7 @@ public abstract class AbstractBlockFireAlarmActivator extends Block implements I
         TileEntity tileEntityAtPos = world.getTileEntity( blockPos );
         if ( tileEntityAtPos instanceof TileEntityFireAlarmSensor ) {
             TileEntityFireAlarmSensor tileEntityFireAlarmSensor = ( TileEntityFireAlarmSensor ) tileEntityAtPos;
-            BlockPos linkedPanelPos = tileEntityFireAlarmSensor.getLinkedPanelPos(world);
+            BlockPos linkedPanelPos = tileEntityFireAlarmSensor.getLinkedPanelPos( world );
             if ( linkedPanelPos != null ) {
                 TileEntity tileEntityAtLinkedPanelPos = world.getTileEntity( linkedPanelPos );
                 if ( tileEntityAtLinkedPanelPos instanceof TileEntityFireAlarmControlPanel ) {

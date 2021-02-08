@@ -1,7 +1,6 @@
 package com.micatechnologies.minecraft.csm.novelties;
 
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
-import com.micatechnologies.minecraft.csm.novelties.TabNovelties;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDirectional;
 import net.minecraft.block.SoundType;
@@ -64,15 +63,14 @@ public class BlockAirHockeyTable extends ElementsCitySuperMod.ModElement
             this.setDefaultState( this.blockState.getBaseState().withProperty( FACING, EnumFacing.NORTH ) );
         }
 
-        @SideOnly( Side.CLIENT )
         @Override
-        public BlockRenderLayer getBlockLayer() {
-            return BlockRenderLayer.CUTOUT_MIPPED;
+        public IBlockState getStateFromMeta( int meta ) {
+            return this.getDefaultState().withProperty( FACING, EnumFacing.getFront( meta ) );
         }
 
         @Override
-        protected net.minecraft.block.state.BlockStateContainer createBlockState() {
-            return new net.minecraft.block.state.BlockStateContainer( this, new IProperty[]{ FACING } );
+        public int getMetaFromState( IBlockState state ) {
+            return ( ( EnumFacing ) state.getValue( FACING ) ).getIndex();
         }
 
         @Override
@@ -86,13 +84,14 @@ public class BlockAirHockeyTable extends ElementsCitySuperMod.ModElement
         }
 
         @Override
-        public IBlockState getStateFromMeta( int meta ) {
-            return this.getDefaultState().withProperty( FACING, EnumFacing.getFront( meta ) );
+        public boolean isOpaqueCube( IBlockState state ) {
+            return false;
         }
 
+        @SideOnly( Side.CLIENT )
         @Override
-        public int getMetaFromState( IBlockState state ) {
-            return ( ( EnumFacing ) state.getValue( FACING ) ).getIndex();
+        public BlockRenderLayer getBlockLayer() {
+            return BlockRenderLayer.CUTOUT_MIPPED;
         }
 
         @Override
@@ -110,8 +109,8 @@ public class BlockAirHockeyTable extends ElementsCitySuperMod.ModElement
         }
 
         @Override
-        public boolean isOpaqueCube( IBlockState state ) {
-            return false;
+        protected net.minecraft.block.state.BlockStateContainer createBlockState() {
+            return new net.minecraft.block.state.BlockStateContainer( this, new IProperty[]{ FACING } );
         }
     }
 }

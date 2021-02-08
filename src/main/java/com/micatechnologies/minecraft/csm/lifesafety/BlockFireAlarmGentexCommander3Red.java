@@ -40,18 +40,18 @@ public class BlockFireAlarmGentexCommander3Red extends ElementsCitySuperMod.ModE
     public static class BlockCustom extends AbstractBlockFireAlarmSounder
     {
         @Override
-        public String getSoundResourceName( IBlockState blockState) {
+        public String getBlockRegistryName() {
+            return blockRegistryName;
+        }
+
+        @Override
+        public String getSoundResourceName( IBlockState blockState ) {
             return "csm:gentex_gos_code3";
         }
 
         @Override
-        public int getSoundTickLen(IBlockState blockState) {
+        public int getSoundTickLen( IBlockState blockState ) {
             return 70;
-        }
-
-        @Override
-        public String getBlockRegistryName() {
-            return blockRegistryName;
         }
     }
 }

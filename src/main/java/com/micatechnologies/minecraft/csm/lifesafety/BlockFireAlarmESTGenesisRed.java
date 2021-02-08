@@ -40,12 +40,12 @@ public class BlockFireAlarmESTGenesisRed extends ElementsCitySuperMod.ModElement
     public static class BlockCustom extends AbstractBlockFireAlarmSounder
     {
         @Override
-        public String getSoundResourceName(IBlockState blockState) {
+        public String getSoundResourceName( IBlockState blockState ) {
             return "csm:est_genesis";
         }
 
         @Override
-        public int getSoundTickLen( IBlockState blockState) {
+        public int getSoundTickLen( IBlockState blockState ) {
             return 70;
         }
 

@@ -40,18 +40,18 @@ public class BlockFireAlarmWheelockET80Red extends ElementsCitySuperMod.ModEleme
     public static class BlockCustom extends AbstractBlockFireAlarmSounder
     {
         @Override
-        public String getSoundResourceName( IBlockState blockState) {
+        public String getBlockRegistryName() {
+            return blockRegistryName;
+        }
+
+        @Override
+        public String getSoundResourceName( IBlockState blockState ) {
             return "csm:simplex_4051_marchtime";
         }
 
         @Override
-        public int getSoundTickLen(IBlockState blockState) {
+        public int getSoundTickLen( IBlockState blockState ) {
             return 130;
-        }
-
-        @Override
-        public String getBlockRegistryName() {
-            return blockRegistryName;
         }
     }
 }

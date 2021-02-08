@@ -40,18 +40,18 @@ public class BlockFireAlarmESTAdaptahornRed extends ElementsCitySuperMod.ModElem
     public static class BlockCustom extends AbstractBlockFireAlarmSounder
     {
         @Override
-        public String getSoundResourceName(IBlockState blockState) {
+        public String getBlockRegistryName() {
+            return blockRegistryName;
+        }
+
+        @Override
+        public String getSoundResourceName( IBlockState blockState ) {
             return "csm:edwards_adaptahorn_code44";
         }
 
         @Override
-        public int getSoundTickLen( IBlockState blockState) {
+        public int getSoundTickLen( IBlockState blockState ) {
             return 170;
-        }
-
-        @Override
-        public String getBlockRegistryName() {
-            return blockRegistryName;
         }
     }
 }

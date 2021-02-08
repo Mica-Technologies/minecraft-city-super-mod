@@ -34,21 +34,21 @@ public class TileEntityFireAlarmSensor extends TileEntity
     }
 
     @Override
-    public boolean shouldRefresh( World p_shouldRefresh_1_,
-                                  BlockPos p_shouldRefresh_2_,
-                                  IBlockState p_shouldRefresh_3_,
-                                  IBlockState p_shouldRefresh_4_ )
-    {
-        return false;
-    }
-
-    @Override
     public NBTTagCompound writeToNBT( NBTTagCompound p_writeToNBT_1_ ) {
         p_writeToNBT_1_.setInteger( linkedPanelPosXKey, linkedPanelX );
         p_writeToNBT_1_.setInteger( linkedPanelPosYKey, linkedPanelY );
         p_writeToNBT_1_.setInteger( linkedPanelPosZKey, linkedPanelZ );
 
         return super.writeToNBT( p_writeToNBT_1_ );
+    }
+
+    @Override
+    public boolean shouldRefresh( World p_shouldRefresh_1_,
+                                  BlockPos p_shouldRefresh_2_,
+                                  IBlockState p_shouldRefresh_3_,
+                                  IBlockState p_shouldRefresh_4_ )
+    {
+        return false;
     }
 
     public BlockPos getLinkedPanelPos( World world ) {

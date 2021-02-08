@@ -9,7 +9,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @ElementsCitySuperMod.ModElement.Tag
 public class TabFireAlarms extends ElementsCitySuperMod.ModElement
 {
-    private final static String       ID_NAME   = "tabfirealarms";
+    private final static String       ID_NAME = "tabfirealarms";
     public static        CreativeTabs tab;
 
     public TabFireAlarms( ElementsCitySuperMod instance ) {

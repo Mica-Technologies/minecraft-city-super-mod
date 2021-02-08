@@ -35,10 +35,10 @@ public class BlockFireAlarmESTPull extends ElementsCitySuperMod.ModElement
         elements.blocks.add( () -> new BlockCustom().setRegistryName( blockRegistryName ) );
         elements.items.add( () -> new ItemBlock( block ).setRegistryName( block.getRegistryName() ) );
     }
+
     @Override
     public void init( FMLInitializationEvent event ) {
-        GameRegistry.registerTileEntity( TileEntityFireAlarmSensor.class,
-                                         "csm" + ":tileentityfirealarmsensor" );
+        GameRegistry.registerTileEntity( TileEntityFireAlarmSensor.class, "csm" + ":tileentityfirealarmsensor" );
     }
 
     @SideOnly( Side.CLIENT )
@@ -69,7 +69,7 @@ public class BlockFireAlarmESTPull extends ElementsCitySuperMod.ModElement
                                                p_onBlockActivated_7_, p_onBlockActivated_8_, p_onBlockActivated_9_ );
             }
 
-            boolean activated = activateLinkedPanel( world, blockPos,entityPlayer );
+            boolean activated = activateLinkedPanel( world, blockPos, entityPlayer );
             if ( !activated && !world.isRemote ) {
                 entityPlayer.sendMessage( new TextComponentString( "WARNING: This pull station has lost connection, " +
                                                                            "has failed or is otherwise not functional." ) );

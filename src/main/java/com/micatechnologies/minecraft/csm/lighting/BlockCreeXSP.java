@@ -21,7 +21,7 @@ import net.minecraft.block.Block;
 
 @ElementsCitySuperMod.ModElement.Tag
 public class BlockCreeXSP extends ElementsCitySuperMod.ModElement {
-	private static final String elementId = "creexsp";
+	public static final String elementId = "creexsp";
 
 	@GameRegistry.ObjectHolder("csm:"+elementId)
 	public static final Block block = null;

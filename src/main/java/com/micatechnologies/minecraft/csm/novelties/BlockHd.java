@@ -1,7 +1,6 @@
 package com.micatechnologies.minecraft.csm.novelties;
 
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
-import com.micatechnologies.minecraft.csm.novelties.TabNovelties;
 import com.micatechnologies.minecraft.csm.MCREATOROLD.ProcedureHandDryerSound;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDirectional;

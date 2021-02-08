@@ -21,7 +21,7 @@ import net.minecraft.block.Block;
 
 @ElementsCitySuperMod.ModElement.Tag
 public class BlockMCLAClassicPostLight extends ElementsCitySuperMod.ModElement {
-	private static final String elementId = "mclaclassicpostlight";
+	public static final String elementId = "mclaclassicpostlight";
 
 	@GameRegistry.ObjectHolder("csm:"+elementId)
 	public static final Block block = null;

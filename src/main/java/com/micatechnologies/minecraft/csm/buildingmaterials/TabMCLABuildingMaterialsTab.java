@@ -1,17 +1,15 @@
 package com.micatechnologies.minecraft.csm.buildingmaterials;
 
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
-import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSilverMetal;
-import net.minecraftforge.fml.relauncher.SideOnly;
-import net.minecraftforge.fml.relauncher.Side;
-
-import net.minecraft.item.ItemStack;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.item.ItemStack;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 @ElementsCitySuperMod.ModElement.Tag
 public class TabMCLABuildingMaterialsTab extends ElementsCitySuperMod.ModElement
 {
-    private final static String       ID_NAME   = "tabmclabuildingmaterialstab";
+    private final static String       ID_NAME = "tabmclabuildingmaterialstab";
     public static        CreativeTabs tab;
 
     public TabMCLABuildingMaterialsTab( ElementsCitySuperMod instance ) {

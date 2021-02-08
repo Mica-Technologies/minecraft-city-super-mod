@@ -1,7 +1,6 @@
 package com.micatechnologies.minecraft.csm.buildingmaterials;
 
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
-import com.micatechnologies.minecraft.csm.buildingmaterials.TabMCLABuildingMaterialsTab;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDirectional;
 import net.minecraft.block.SoundType;
@@ -71,17 +70,17 @@ public class BlockPCC extends ElementsCitySuperMod.ModElement
 
         @Override
         public int getMetaFromState( IBlockState state ) {
-            return ( ( EnumFacing ) state.getValue( FACING ) ).getIndex();
+            return state.getValue( FACING ).getIndex();
         }
 
         @Override
         public IBlockState withRotation( IBlockState state, Rotation rot ) {
-            return state.withProperty( FACING, rot.rotate( ( EnumFacing ) state.getValue( FACING ) ) );
+            return state.withProperty( FACING, rot.rotate( state.getValue( FACING ) ) );
         }
 
         @Override
         public IBlockState withMirror( IBlockState state, Mirror mirrorIn ) {
-            return state.withRotation( mirrorIn.toRotation( ( EnumFacing ) state.getValue( FACING ) ) );
+            return state.withRotation( mirrorIn.toRotation( state.getValue( FACING ) ) );
         }
 
         @Override
@@ -100,7 +99,7 @@ public class BlockPCC extends ElementsCitySuperMod.ModElement
 
         @Override
         protected net.minecraft.block.state.BlockStateContainer createBlockState() {
-            return new net.minecraft.block.state.BlockStateContainer( this, new IProperty[]{ FACING } );
+            return new net.minecraft.block.state.BlockStateContainer( this, FACING );
         }
     }
 }

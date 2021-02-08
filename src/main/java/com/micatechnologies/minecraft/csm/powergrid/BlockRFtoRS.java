@@ -1,8 +1,6 @@
 package com.micatechnologies.minecraft.csm.powergrid;
 
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
-import com.micatechnologies.minecraft.csm.powergrid.TabMCLAElectricTab;
-import com.micatechnologies.minecraft.csm.powergrid.TileEntityForgeEnergyConsumer;
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.SoundType;

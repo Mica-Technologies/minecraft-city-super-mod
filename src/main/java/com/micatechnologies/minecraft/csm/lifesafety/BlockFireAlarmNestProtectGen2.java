@@ -1,48 +1,42 @@
 package com.micatechnologies.minecraft.csm.lifesafety;
 
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
-import net.minecraftforge.fml.relauncher.SideOnly;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.common.registry.GameRegistry;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.client.event.ModelRegistryEvent;
-
-import net.minecraft.world.World;
-import net.minecraft.world.IBlockAccess;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumBlockRenderType;
-import net.minecraft.util.BlockRenderLayer;
-import net.minecraft.tileentity.TileEntityLockableLoot;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemBlock;
-import net.minecraft.item.Item;
-import net.minecraft.inventory.ItemStackHelper;
-import net.minecraft.inventory.InventoryHelper;
-import net.minecraft.inventory.ContainerDispenser;
-import net.minecraft.inventory.Container;
-import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.block.properties.PropertyDirection;
-import net.minecraft.block.properties.IProperty;
-import net.minecraft.block.material.Material;
-import net.minecraft.block.SoundType;
-import net.minecraft.block.ITileEntityProvider;
-import net.minecraft.block.BlockDirectional;
-import net.minecraft.block.Block;
-
-import com.micatechnologies.minecraft.csm.MCREATOROLD.ProcedureNestTest;
-import com.micatechnologies.minecraft.csm.MCREATOROLD.ProcedureEnableFA;
 import com.micatechnologies.minecraft.csm.MCREATOROLD.ProcedureDisableFA;
+import com.micatechnologies.minecraft.csm.MCREATOROLD.ProcedureEnableFA;
+import com.micatechnologies.minecraft.csm.MCREATOROLD.ProcedureNestTest;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockDirectional;
+import net.minecraft.block.ITileEntityProvider;
+import net.minecraft.block.SoundType;
+import net.minecraft.block.material.Material;
+import net.minecraft.block.properties.IProperty;
+import net.minecraft.block.properties.PropertyDirection;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.inventory.Container;
+import net.minecraft.inventory.ContainerDispenser;
+import net.minecraft.inventory.InventoryHelper;
+import net.minecraft.inventory.ItemStackHelper;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityLockableLoot;
+import net.minecraft.util.*;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.World;
+import net.minecraftforge.client.event.ModelRegistryEvent;
+import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.Random;
 
@@ -76,8 +70,8 @@ public class BlockFireAlarmNestProtectGen2 extends ElementsCitySuperMod.ModEleme
 
     public static class BlockCustom extends Block implements ITileEntityProvider
     {
-        private             boolean           red    = false;
         public static final PropertyDirection FACING = BlockDirectional.FACING;
+        private             boolean           red    = false;
 
         public BlockCustom() {
             super( Material.ROCK );
@@ -93,15 +87,24 @@ public class BlockFireAlarmNestProtectGen2 extends ElementsCitySuperMod.ModEleme
             this.setDefaultState( this.blockState.getBaseState().withProperty( FACING, EnumFacing.NORTH ) );
         }
 
-        @SideOnly( Side.CLIENT )
         @Override
-        public BlockRenderLayer getBlockLayer() {
-            return BlockRenderLayer.CUTOUT_MIPPED;
+        public IBlockState getStateFromMeta( int meta ) {
+            return this.getDefaultState().withProperty( FACING, EnumFacing.getFront( meta ) );
+        }
+
+        @Override
+        public int getMetaFromState( IBlockState state ) {
+            return ( ( EnumFacing ) state.getValue( FACING ) ).getIndex();
         }
 
         @Override
         public boolean isFullCube( IBlockState state ) {
             return false;
+        }
+
+        @Override
+        public EnumBlockRenderType getRenderType( IBlockState state ) {
+            return EnumBlockRenderType.MODEL;
         }
 
         @Override
@@ -124,108 +127,26 @@ public class BlockFireAlarmNestProtectGen2 extends ElementsCitySuperMod.ModEleme
         }
 
         @Override
-        public int tickRate( World world ) {
-            return 140;
-        }
-
-        @Override
-        public int getWeakPower( IBlockState state, IBlockAccess baccess, BlockPos pos, EnumFacing side ) {
-            return red ? 15 : 0;
-        }
-
-        @Override
-        public int getStrongPower( IBlockState state, IBlockAccess baccess, BlockPos pos, EnumFacing side ) {
-            return red ? 15 : 0;
-        }
-
-        @Override
-        protected net.minecraft.block.state.BlockStateContainer createBlockState() {
-            return new net.minecraft.block.state.BlockStateContainer( this, new IProperty[]{ FACING } );
-        }
-
-        @Override
-        public IBlockState getStateFromMeta( int meta ) {
-            return this.getDefaultState().withProperty( FACING, EnumFacing.getFront( meta ) );
-        }
-
-        @Override
-        public int getMetaFromState( IBlockState state ) {
-            return ( ( EnumFacing ) state.getValue( FACING ) ).getIndex();
-        }
-
-        @Override
-        public IBlockState getStateForPlacement( World worldIn,
-                                                 BlockPos pos,
-                                                 EnumFacing facing,
-                                                 float hitX,
-                                                 float hitY,
-                                                 float hitZ,
-                                                 int meta,
-                                                 EntityLivingBase placer )
-        {
-            return this.getDefaultState()
-                       .withProperty( FACING, EnumFacing.getDirectionFromEntityLiving( pos, placer ) );
-        }
-
-        @Override
         public boolean isOpaqueCube( IBlockState state ) {
             return false;
         }
 
         @Override
-        public boolean canConnectRedstone( IBlockState state, IBlockAccess world, BlockPos pos, EnumFacing side ) {
-            return true;
-        }
-
-        @Override
-        public TileEntity createNewTileEntity( World worldIn, int meta ) {
-            return new TileEntityCustom();
-        }
-
-        @Override
-        public boolean eventReceived( IBlockState state, World worldIn, BlockPos pos, int eventID, int eventParam ) {
-            super.eventReceived( state, worldIn, pos, eventID, eventParam );
-            TileEntity tileentity = worldIn.getTileEntity( pos );
-            return tileentity == null ? false : tileentity.receiveClientEvent( eventID, eventParam );
-        }
-
-        @Override
-        public EnumBlockRenderType getRenderType( IBlockState state ) {
-            return EnumBlockRenderType.MODEL;
-        }
-
-        @Override
-        public void breakBlock( World world, BlockPos pos, IBlockState state ) {
-            TileEntity tileentity = world.getTileEntity( pos );
-            InventoryHelper.dropInventoryItems( world, pos, ( TileEntityCustom ) tileentity );
-            world.removeTileEntity( pos );
-            super.breakBlock( world, pos, state );
-        }
-
-        @Override
-        public boolean hasComparatorInputOverride( IBlockState state ) {
-            return true;
-        }
-
-        @Override
-        public int getComparatorInputOverride( IBlockState blockState, World worldIn, BlockPos pos ) {
-            TileEntity tileentity = worldIn.getTileEntity( pos );
-			if ( tileentity instanceof TileEntityCustom ) {
-				return Container.calcRedstoneFromInventory( ( TileEntityCustom ) tileentity );
-			}
-			else {
-				return 0;
-			}
-        }
-
-        @Override
-        public void onBlockAdded( World world, BlockPos pos, IBlockState state ) {
-            super.onBlockAdded( world, pos, state );
+        public void updateTick( World world, BlockPos pos, IBlockState state, Random random ) {
+            super.updateTick( world, pos, state, random );
             int x = pos.getX();
             int y = pos.getY();
             int z = pos.getZ();
             Block block = this;
-            world.scheduleUpdate( new BlockPos( x, y, z ), this, this.tickRate( world ) );
+            java.util.HashMap< String, Object > $_dependencies = new java.util.HashMap<>();
+            $_dependencies.put( "x", x );
+            $_dependencies.put( "y", y );
+            $_dependencies.put( "z", z );
+            $_dependencies.put( "world", world );
+            if ( world.isBlockIndirectlyGettingPowered( new BlockPos( x, y, z ) ) > 0 ) {
+                ProcedureNestTest.executeProcedure( $_dependencies );
+                world.scheduleUpdate( new BlockPos( x, y, z ), this, this.tickRate( world ) );
+            }
         }
 
         @Override
@@ -266,21 +187,32 @@ public class BlockFireAlarmNestProtectGen2 extends ElementsCitySuperMod.ModEleme
         }
 
         @Override
-        public void updateTick( World world, BlockPos pos, IBlockState state, Random random ) {
-            super.updateTick( world, pos, state, random );
+        public int tickRate( World world ) {
+            return 140;
+        }
+
+        @Override
+        public void onBlockAdded( World world, BlockPos pos, IBlockState state ) {
+            super.onBlockAdded( world, pos, state );
             int x = pos.getX();
             int y = pos.getY();
             int z = pos.getZ();
             Block block = this;
-            java.util.HashMap< String, Object > $_dependencies = new java.util.HashMap<>();
-            $_dependencies.put( "x", x );
-            $_dependencies.put( "y", y );
-            $_dependencies.put( "z", z );
-            $_dependencies.put( "world", world );
-            if ( world.isBlockIndirectlyGettingPowered( new BlockPos( x, y, z ) ) > 0 ) {
-                ProcedureNestTest.executeProcedure( $_dependencies );
-                world.scheduleUpdate( new BlockPos( x, y, z ), this, this.tickRate( world ) );
-            }
+            world.scheduleUpdate( new BlockPos( x, y, z ), this, this.tickRate( world ) );
+        }
+
+        @Override
+        public void breakBlock( World world, BlockPos pos, IBlockState state ) {
+            TileEntity tileentity = world.getTileEntity( pos );
+            InventoryHelper.dropInventoryItems( world, pos, ( TileEntityCustom ) tileentity );
+            world.removeTileEntity( pos );
+            super.breakBlock( world, pos, state );
+        }
+
+        @SideOnly( Side.CLIENT )
+        @Override
+        public BlockRenderLayer getBlockLayer() {
+            return BlockRenderLayer.CUTOUT_MIPPED;
         }
 
         @Override
@@ -309,6 +241,68 @@ public class BlockFireAlarmNestProtectGen2 extends ElementsCitySuperMod.ModEleme
             }
             return true;
         }
+
+        @Override
+        public IBlockState getStateForPlacement( World worldIn,
+                                                 BlockPos pos,
+                                                 EnumFacing facing,
+                                                 float hitX,
+                                                 float hitY,
+                                                 float hitZ,
+                                                 int meta,
+                                                 EntityLivingBase placer )
+        {
+            return this.getDefaultState()
+                       .withProperty( FACING, EnumFacing.getDirectionFromEntityLiving( pos, placer ) );
+        }
+
+        @Override
+        public int getWeakPower( IBlockState state, IBlockAccess baccess, BlockPos pos, EnumFacing side ) {
+            return red ? 15 : 0;
+        }
+
+        @Override
+        public int getStrongPower( IBlockState state, IBlockAccess baccess, BlockPos pos, EnumFacing side ) {
+            return red ? 15 : 0;
+        }
+
+        @Override
+        public boolean eventReceived( IBlockState state, World worldIn, BlockPos pos, int eventID, int eventParam ) {
+            super.eventReceived( state, worldIn, pos, eventID, eventParam );
+            TileEntity tileentity = worldIn.getTileEntity( pos );
+            return tileentity == null ? false : tileentity.receiveClientEvent( eventID, eventParam );
+        }
+
+        @Override
+        public boolean hasComparatorInputOverride( IBlockState state ) {
+            return true;
+        }
+
+        @Override
+        public int getComparatorInputOverride( IBlockState blockState, World worldIn, BlockPos pos ) {
+            TileEntity tileentity = worldIn.getTileEntity( pos );
+            if ( tileentity instanceof TileEntityCustom ) {
+                return Container.calcRedstoneFromInventory( ( TileEntityCustom ) tileentity );
+            }
+            else {
+                return 0;
+            }
+        }
+
+        @Override
+        protected net.minecraft.block.state.BlockStateContainer createBlockState() {
+            return new net.minecraft.block.state.BlockStateContainer( this, new IProperty[]{ FACING } );
+        }
+
+        @Override
+        public boolean canConnectRedstone( IBlockState state, IBlockAccess world, BlockPos pos, EnumFacing side ) {
+            return true;
+        }
+
+        @Override
+        public TileEntity createNewTileEntity( World worldIn, int meta ) {
+            return new TileEntityCustom();
+        }
     }
 
     public static class TileEntityCustom extends TileEntityLockableLoot
@@ -316,18 +310,8 @@ public class BlockFireAlarmNestProtectGen2 extends ElementsCitySuperMod.ModEleme
         private NonNullList< ItemStack > stacks = NonNullList.< ItemStack >withSize( 0, ItemStack.EMPTY );
 
         @Override
-        public int getSizeInventory() {
-            return 0;
-        }
-
-        @Override
-        public boolean isEmpty() {
-			for ( ItemStack itemstack : this.stacks ) {
-				if ( !itemstack.isEmpty() ) {
-					return false;
-				}
-			}
-            return true;
+        public ItemStack getStackInSlot( int slot ) {
+            return stacks.get( slot );
         }
 
         @Override
@@ -336,8 +320,8 @@ public class BlockFireAlarmNestProtectGen2 extends ElementsCitySuperMod.ModEleme
         }
 
         @Override
-        public ItemStack getStackInSlot( int slot ) {
-            return stacks.get( slot );
+        protected NonNullList< ItemStack > getItems() {
+            return this.stacks;
         }
 
         @Override
@@ -349,24 +333,27 @@ public class BlockFireAlarmNestProtectGen2 extends ElementsCitySuperMod.ModEleme
         public void readFromNBT( NBTTagCompound compound ) {
             super.readFromNBT( compound );
             this.stacks = NonNullList.< ItemStack >withSize( this.getSizeInventory(), ItemStack.EMPTY );
-			if ( !this.checkLootAndRead( compound ) ) {
-				ItemStackHelper.loadAllItems( compound, this.stacks );
-			}
-			if ( compound.hasKey( "CustomName", 8 ) ) {
-				this.customName = compound.getString( "CustomName" );
-			}
+            if ( !this.checkLootAndRead( compound ) ) {
+                ItemStackHelper.loadAllItems( compound, this.stacks );
+            }
+            if ( compound.hasKey( "CustomName", 8 ) ) {
+                this.customName = compound.getString( "CustomName" );
+            }
         }
 
         @Override
-        public NBTTagCompound writeToNBT( NBTTagCompound compound ) {
-            super.writeToNBT( compound );
-			if ( !this.checkLootAndWrite( compound ) ) {
-				ItemStackHelper.saveAllItems( compound, this.stacks );
-			}
-			if ( this.hasCustomName() ) {
-				compound.setString( "CustomName", this.customName );
-			}
-            return compound;
+        public int getSizeInventory() {
+            return 0;
+        }
+
+        @Override
+        public boolean isEmpty() {
+            for ( ItemStack itemstack : this.stacks ) {
+                if ( !itemstack.isEmpty() ) {
+                    return false;
+                }
+            }
+            return true;
         }
 
         @Override
@@ -375,8 +362,15 @@ public class BlockFireAlarmNestProtectGen2 extends ElementsCitySuperMod.ModEleme
         }
 
         @Override
-        public String getGuiID() {
-            return "csm:nestprotect";
+        public NBTTagCompound writeToNBT( NBTTagCompound compound ) {
+            super.writeToNBT( compound );
+            if ( !this.checkLootAndWrite( compound ) ) {
+                ItemStackHelper.saveAllItems( compound, this.stacks );
+            }
+            if ( this.hasCustomName() ) {
+                compound.setString( "CustomName", this.customName );
+            }
+            return compound;
         }
 
         @Override
@@ -386,8 +380,8 @@ public class BlockFireAlarmNestProtectGen2 extends ElementsCitySuperMod.ModEleme
         }
 
         @Override
-        protected NonNullList< ItemStack > getItems() {
-            return this.stacks;
+        public String getGuiID() {
+            return "csm:nestprotect";
         }
     }
 }

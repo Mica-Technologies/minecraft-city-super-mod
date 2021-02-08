@@ -1,17 +1,15 @@
 package com.micatechnologies.minecraft.csm.powergrid;
 
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
-import com.micatechnologies.minecraft.csm.lifesafety.BlockMCLACodeApprovedExitSignDual;
-import net.minecraftforge.fml.relauncher.SideOnly;
-import net.minecraftforge.fml.relauncher.Side;
-
-import net.minecraft.item.ItemStack;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.item.ItemStack;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 @ElementsCitySuperMod.ModElement.Tag
 public class TabMCLAElectricTab extends ElementsCitySuperMod.ModElement
 {
-    private final static String       ID_NAME   = "tabmclaelectrictab";
+    private final static String       ID_NAME = "tabmclaelectrictab";
     public static        CreativeTabs tab;
 
     public TabMCLAElectricTab( ElementsCitySuperMod instance ) {

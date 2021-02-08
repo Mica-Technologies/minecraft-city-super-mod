@@ -9,7 +9,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @ElementsCitySuperMod.ModElement.Tag
 public class TabNovelties extends ElementsCitySuperMod.ModElement
 {
-    private final static String       ID_NAME   = "tabnovelties";
+    private final static String       ID_NAME = "tabnovelties";
     public static        CreativeTabs tab;
 
     public TabNovelties( ElementsCitySuperMod instance ) {
