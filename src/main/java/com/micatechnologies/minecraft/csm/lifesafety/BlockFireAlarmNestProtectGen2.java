@@ -3,7 +3,6 @@ package com.micatechnologies.minecraft.csm.lifesafety;
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
 import com.micatechnologies.minecraft.csm.MCREATOROLD.ProcedureDisableFA;
 import com.micatechnologies.minecraft.csm.MCREATOROLD.ProcedureEnableFA;
-import com.micatechnologies.minecraft.csm.MCREATOROLD.ProcedureNestTest;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDirectional;
 import net.minecraft.block.ITileEntityProvider;
@@ -137,14 +136,10 @@ public class BlockFireAlarmNestProtectGen2 extends ElementsCitySuperMod.ModEleme
             int x = pos.getX();
             int y = pos.getY();
             int z = pos.getZ();
-            Block block = this;
-            java.util.HashMap< String, Object > $_dependencies = new java.util.HashMap<>();
-            $_dependencies.put( "x", x );
-            $_dependencies.put( "y", y );
-            $_dependencies.put( "z", z );
-            $_dependencies.put( "world", world );
             if ( world.isBlockIndirectlyGettingPowered( new BlockPos( x, y, z ) ) > 0 ) {
-                ProcedureNestTest.executeProcedure( $_dependencies );
+                world.playSound((EntityPlayer) null, x, y, z,
+                                (net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("csm:nest_test")),
+                                SoundCategory.NEUTRAL, (float) 5, (float) 1);
                 world.scheduleUpdate( new BlockPos( x, y, z ), this, this.tickRate( world ) );
             }
         }
@@ -170,7 +165,9 @@ public class BlockFireAlarmNestProtectGen2 extends ElementsCitySuperMod.ModEleme
                     $_dependencies.put( "z", z );
                     $_dependencies.put( "world", world );
                     ProcedureEnableFA.executeProcedure( $_dependencies );
-                    ProcedureNestTest.executeProcedure( $_dependencies );
+                    world.playSound((EntityPlayer) null, x, y, z,
+                                    (net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("csm:nest_test")),
+                                    SoundCategory.NEUTRAL, (float) 5, (float) 1);
                 }
             }
             else {
@@ -230,15 +227,9 @@ public class BlockFireAlarmNestProtectGen2 extends ElementsCitySuperMod.ModEleme
             int x = pos.getX();
             int y = pos.getY();
             int z = pos.getZ();
-            Block block = this;
-            {
-                java.util.HashMap< String, Object > $_dependencies = new java.util.HashMap<>();
-                $_dependencies.put( "x", x );
-                $_dependencies.put( "y", y );
-                $_dependencies.put( "z", z );
-                $_dependencies.put( "world", world );
-                ProcedureNestTest.executeProcedure( $_dependencies );
-            }
+            world.playSound((EntityPlayer) null, x, y, z,
+                            (net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("csm:nest_test")),
+                            SoundCategory.NEUTRAL, (float) 5, (float) 1);
             return true;
         }
 

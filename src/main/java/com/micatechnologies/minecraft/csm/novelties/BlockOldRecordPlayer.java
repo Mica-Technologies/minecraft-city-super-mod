@@ -1,7 +1,6 @@
 package com.micatechnologies.minecraft.csm.novelties;
 
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
-import com.micatechnologies.minecraft.csm.MCREATOROLD.ProcedureOldRecordPlayerSounds;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDirectional;
 import net.minecraft.block.SoundType;
@@ -17,6 +16,7 @@ import net.minecraft.item.ItemBlock;
 import net.minecraft.util.*;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.ModelRegistryEvent;
@@ -134,14 +134,20 @@ public class BlockOldRecordPlayer extends ElementsCitySuperMod.ModElement
             int x = pos.getX();
             int y = pos.getY();
             int z = pos.getZ();
-            {
-                java.util.HashMap< String, Object > $_dependencies = new java.util.HashMap<>();
-                $_dependencies.put( "entity", entity );
-                $_dependencies.put( "x", x );
-                $_dependencies.put( "y", y );
-                $_dependencies.put( "z", z );
-                $_dependencies.put( "world", world );
-                ProcedureOldRecordPlayerSounds.executeProcedure( $_dependencies );
+            if ((Math.random() < 0.25)) {
+                if (entity instanceof EntityPlayer && !world.isRemote) {
+                    ((EntityPlayer) entity).sendStatusMessage( new TextComponentString( "OwO what's this record player doing!?"), (true));
+                }
+                world.playSound((EntityPlayer) null, x, y, z,
+                                (net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("csm:oldrecordplayer")),
+                                SoundCategory.NEUTRAL, (float) 1, (float) 1);
+            } else if ((Math.random() < 0.75)) {
+                if (entity instanceof EntityPlayer && !world.isRemote) {
+                    ((EntityPlayer) entity).sendStatusMessage(new TextComponentString("OwO what's this record player doing!?"), (true));
+                }
+                world.playSound((EntityPlayer) null, x, y, z,
+                                (net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("csm:oldrecordplayer2")),
+                                SoundCategory.NEUTRAL, (float) 1, (float) 1);
             }
             return true;
         }

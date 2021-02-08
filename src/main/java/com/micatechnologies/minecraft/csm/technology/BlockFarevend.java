@@ -2,6 +2,8 @@
 package com.micatechnologies.minecraft.csm.technology;
 
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
+import net.minecraft.util.*;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.common.registry.GameRegistry;
@@ -12,10 +14,6 @@ import net.minecraft.world.World;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.Rotation;
-import net.minecraft.util.Mirror;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.Item;
 import net.minecraft.entity.player.EntityPlayer;
@@ -28,9 +26,6 @@ import net.minecraft.block.material.Material;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.BlockDirectional;
 import net.minecraft.block.Block;
-
-import com.micatechnologies.minecraft.csm.MCREATOROLD.ProcedureMetroDingSound;
-import com.micatechnologies.minecraft.csm.technology.TabMCLATechTab;
 
 @ElementsCitySuperMod.ModElement.Tag
 public class BlockFarevend extends ElementsCitySuperMod.ModElement {
@@ -133,15 +128,12 @@ public class BlockFarevend extends ElementsCitySuperMod.ModElement {
 			int x = pos.getX();
 			int y = pos.getY();
 			int z = pos.getZ();
-			{
-				java.util.HashMap<String, Object> $_dependencies = new java.util.HashMap<>();
-				$_dependencies.put("entity", entity);
-				$_dependencies.put("x", x);
-				$_dependencies.put("y", y);
-				$_dependencies.put("z", z);
-				$_dependencies.put("world", world);
-				ProcedureMetroDingSound.executeProcedure($_dependencies);
+			if (entity instanceof EntityPlayer && !world.isRemote) {
+				((EntityPlayer) entity).sendStatusMessage( new TextComponentString( "Metro TAP Card accepted! You are good to go now!"), (true));
 			}
+			world.playSound((EntityPlayer) null, x, y, z,
+							(net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation( "csm:dingblock")),
+							SoundCategory.NEUTRAL, (float) 1, (float) 1);
 			return true;
 		}
 	}

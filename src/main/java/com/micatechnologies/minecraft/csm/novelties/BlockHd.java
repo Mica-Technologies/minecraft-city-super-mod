@@ -1,7 +1,6 @@
 package com.micatechnologies.minecraft.csm.novelties;
 
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
-import com.micatechnologies.minecraft.csm.MCREATOROLD.ProcedureHandDryerSound;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDirectional;
 import net.minecraft.block.SoundType;
@@ -135,14 +134,9 @@ public class BlockHd extends ElementsCitySuperMod.ModElement
             int x = pos.getX();
             int y = pos.getY();
             int z = pos.getZ();
-            {
-                java.util.HashMap< String, Object > $_dependencies = new java.util.HashMap<>();
-                $_dependencies.put( "x", x );
-                $_dependencies.put( "y", y );
-                $_dependencies.put( "z", z );
-                $_dependencies.put( "world", world );
-                ProcedureHandDryerSound.executeProcedure( $_dependencies );
-            }
+            world.playSound((EntityPlayer) null, x, y, z,
+                            (net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("csm:handdryer")),
+                            SoundCategory.NEUTRAL, (float) 3, (float) 1);
             return true;
         }
 

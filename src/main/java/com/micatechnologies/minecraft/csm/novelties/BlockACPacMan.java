@@ -1,7 +1,6 @@
 package com.micatechnologies.minecraft.csm.novelties;
 
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
-import com.micatechnologies.minecraft.csm.MCREATOROLD.ProcedurePacManSound;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDirectional;
 import net.minecraft.block.SoundType;
@@ -14,10 +13,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.Mirror;
-import net.minecraft.util.Rotation;
+import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.ModelRegistryEvent;
@@ -105,14 +101,9 @@ public class BlockACPacMan extends ElementsCitySuperMod.ModElement
             int x = pos.getX();
             int y = pos.getY();
             int z = pos.getZ();
-            {
-                java.util.HashMap< String, Object > $_dependencies = new java.util.HashMap<>();
-                $_dependencies.put( "x", x );
-                $_dependencies.put( "y", y );
-                $_dependencies.put( "z", z );
-                $_dependencies.put( "world", world );
-                ProcedurePacManSound.executeProcedure( $_dependencies );
-            }
+            world.playSound((EntityPlayer) null, x, y, z,
+                            (net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation( "csm:pacman_cabinet")),
+                            SoundCategory.NEUTRAL, (float) 1, (float) 1);
             return true;
         }
 
