@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.lighting;
 
+import com.micatechnologies.minecraft.csm.codeutils.TickTimeConverter;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDirectional;
 import net.minecraft.block.SoundType;
@@ -19,6 +20,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nullable;
+import java.util.Random;
 
 public abstract class AbstractBrightLight extends Block
 {
@@ -140,6 +142,27 @@ public abstract class AbstractBrightLight extends Block
     @Override
     public boolean isOpaqueCube( IBlockState state ) {
         return false;
+    }
+
+    @Override
+    public void updateTick( World p_updateTick_1_,
+                            BlockPos p_updateTick_2_,
+                            IBlockState p_updateTick_3_,
+                            Random p_updateTick_4_ )
+    {
+        // Handle automatic on/off logic
+        super.updateTick( p_updateTick_1_, p_updateTick_2_, p_updateTick_3_, p_updateTick_4_ );
+    }
+
+    @Override
+    public int tickRate( World p_tickRate_1_ ) {
+        return TickTimeConverter.getTicksFromSeconds( 4 );
+    }
+
+    @Override
+    public void breakBlock( World p_breakBlock_1_, BlockPos p_breakBlock_2_, IBlockState p_breakBlock_3_ ) {
+        // Cleanup existing light block (if present)
+        super.breakBlock( p_breakBlock_1_, p_breakBlock_2_, p_breakBlock_3_ );
     }
 
     abstract public String getBlockRegistryName();
