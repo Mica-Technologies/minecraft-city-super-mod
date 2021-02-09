@@ -1,8 +1,6 @@
 package com.micatechnologies.minecraft.csm.lifesafety;
 
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
-import com.micatechnologies.minecraft.csm.MCREATOROLD.ProcedureDisableFA;
-import com.micatechnologies.minecraft.csm.MCREATOROLD.ProcedureEnableFA;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDirectional;
 import net.minecraft.block.ITileEntityProvider;
@@ -55,11 +53,6 @@ public class BlockFireAlarmNestProtectGen2 extends ElementsCitySuperMod.ModEleme
         elements.items.add( () -> new ItemBlock( block ).setRegistryName( block.getRegistryName() ) );
     }
 
-    @Override
-    public void init( FMLInitializationEvent event ) {
-        GameRegistry.registerTileEntity( TileEntityCustom.class, "csm:tileentitynestprotect" );
-    }
-
     @SideOnly( Side.CLIENT )
     @Override
     public void registerModels( ModelRegistryEvent event ) {
@@ -67,7 +60,7 @@ public class BlockFireAlarmNestProtectGen2 extends ElementsCitySuperMod.ModEleme
                                                     new ModelResourceLocation( "csm:nestprotect", "inventory" ) );
     }
 
-    public static class BlockCustom extends Block implements ITileEntityProvider
+    public static class BlockCustom extends Block
     {
         public static final PropertyDirection FACING = BlockDirectional.FACING;
         private             boolean           red    = false;
@@ -158,27 +151,9 @@ public class BlockFireAlarmNestProtectGen2 extends ElementsCitySuperMod.ModEleme
             Block block = this;
             if ( world.isBlockIndirectlyGettingPowered( new BlockPos( x, y, z ) ) > 0 ) {
                 {
-                    java.util.HashMap< String, Object > $_dependencies = new java.util.HashMap<>();
-                    $_dependencies.put( "block", block );
-                    $_dependencies.put( "x", x );
-                    $_dependencies.put( "y", y );
-                    $_dependencies.put( "z", z );
-                    $_dependencies.put( "world", world );
-                    ProcedureEnableFA.executeProcedure( $_dependencies );
                     world.playSound((EntityPlayer) null, x, y, z,
                                     (net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("csm:nest_test")),
                                     SoundCategory.NEUTRAL, (float) 5, (float) 1);
-                }
-            }
-            else {
-                {
-                    java.util.HashMap< String, Object > $_dependencies = new java.util.HashMap<>();
-                    $_dependencies.put( "block", block );
-                    $_dependencies.put( "x", x );
-                    $_dependencies.put( "y", y );
-                    $_dependencies.put( "z", z );
-                    $_dependencies.put( "world", world );
-                    ProcedureDisableFA.executeProcedure( $_dependencies );
                 }
             }
         }
@@ -196,14 +171,6 @@ public class BlockFireAlarmNestProtectGen2 extends ElementsCitySuperMod.ModEleme
             int z = pos.getZ();
             Block block = this;
             world.scheduleUpdate( new BlockPos( x, y, z ), this, this.tickRate( world ) );
-        }
-
-        @Override
-        public void breakBlock( World world, BlockPos pos, IBlockState state ) {
-            TileEntity tileentity = world.getTileEntity( pos );
-            InventoryHelper.dropInventoryItems( world, pos, ( TileEntityCustom ) tileentity );
-            world.removeTileEntity( pos );
-            super.breakBlock( world, pos, state );
         }
 
         @SideOnly( Side.CLIENT )
@@ -258,29 +225,6 @@ public class BlockFireAlarmNestProtectGen2 extends ElementsCitySuperMod.ModEleme
         }
 
         @Override
-        public boolean eventReceived( IBlockState state, World worldIn, BlockPos pos, int eventID, int eventParam ) {
-            super.eventReceived( state, worldIn, pos, eventID, eventParam );
-            TileEntity tileentity = worldIn.getTileEntity( pos );
-            return tileentity == null ? false : tileentity.receiveClientEvent( eventID, eventParam );
-        }
-
-        @Override
-        public boolean hasComparatorInputOverride( IBlockState state ) {
-            return true;
-        }
-
-        @Override
-        public int getComparatorInputOverride( IBlockState blockState, World worldIn, BlockPos pos ) {
-            TileEntity tileentity = worldIn.getTileEntity( pos );
-            if ( tileentity instanceof TileEntityCustom ) {
-                return Container.calcRedstoneFromInventory( ( TileEntityCustom ) tileentity );
-            }
-            else {
-                return 0;
-            }
-        }
-
-        @Override
         protected net.minecraft.block.state.BlockStateContainer createBlockState() {
             return new net.minecraft.block.state.BlockStateContainer( this, new IProperty[]{ FACING } );
         }
@@ -288,91 +232,6 @@ public class BlockFireAlarmNestProtectGen2 extends ElementsCitySuperMod.ModEleme
         @Override
         public boolean canConnectRedstone( IBlockState state, IBlockAccess world, BlockPos pos, EnumFacing side ) {
             return true;
-        }
-
-        @Override
-        public TileEntity createNewTileEntity( World worldIn, int meta ) {
-            return new TileEntityCustom();
-        }
-    }
-
-    public static class TileEntityCustom extends TileEntityLockableLoot
-    {
-        private NonNullList< ItemStack > stacks = NonNullList.< ItemStack >withSize( 0, ItemStack.EMPTY );
-
-        @Override
-        public ItemStack getStackInSlot( int slot ) {
-            return stacks.get( slot );
-        }
-
-        @Override
-        public boolean isItemValidForSlot( int index, ItemStack stack ) {
-            return true;
-        }
-
-        @Override
-        protected NonNullList< ItemStack > getItems() {
-            return this.stacks;
-        }
-
-        @Override
-        public String getName() {
-            return this.hasCustomName() ? this.customName : "container.nestprotect";
-        }
-
-        @Override
-        public void readFromNBT( NBTTagCompound compound ) {
-            super.readFromNBT( compound );
-            this.stacks = NonNullList.< ItemStack >withSize( this.getSizeInventory(), ItemStack.EMPTY );
-            if ( !this.checkLootAndRead( compound ) ) {
-                ItemStackHelper.loadAllItems( compound, this.stacks );
-            }
-            if ( compound.hasKey( "CustomName", 8 ) ) {
-                this.customName = compound.getString( "CustomName" );
-            }
-        }
-
-        @Override
-        public int getSizeInventory() {
-            return 0;
-        }
-
-        @Override
-        public boolean isEmpty() {
-            for ( ItemStack itemstack : this.stacks ) {
-                if ( !itemstack.isEmpty() ) {
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        @Override
-        public int getInventoryStackLimit() {
-            return 64;
-        }
-
-        @Override
-        public NBTTagCompound writeToNBT( NBTTagCompound compound ) {
-            super.writeToNBT( compound );
-            if ( !this.checkLootAndWrite( compound ) ) {
-                ItemStackHelper.saveAllItems( compound, this.stacks );
-            }
-            if ( this.hasCustomName() ) {
-                compound.setString( "CustomName", this.customName );
-            }
-            return compound;
-        }
-
-        @Override
-        public Container createContainer( InventoryPlayer playerInventory, EntityPlayer playerIn ) {
-            this.fillWithLoot( playerIn );
-            return new ContainerDispenser( playerInventory, this );
-        }
-
-        @Override
-        public String getGuiID() {
-            return "csm:nestprotect";
         }
     }
 }
