@@ -66,5 +66,10 @@ public class BlockAEATB0 extends ElementsCitySuperMod.ModElement {
 		public String getBlockRegistryName() {
 			return elementId;
 		}
+
+		@Override
+		public boolean blockHasAutomaticFunctionality() {
+			return true;
+		}
 	}
 }

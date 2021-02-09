@@ -166,4 +166,6 @@ public abstract class AbstractBrightLight extends Block
     }
 
     abstract public String getBlockRegistryName();
+
+    abstract public boolean blockHasAutomaticFunctionality();
 }
