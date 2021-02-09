@@ -1,8 +1,6 @@
 package com.micatechnologies.minecraft.csm.lifesafety;
 
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
-import com.micatechnologies.minecraft.csm.MCREATOROLD.ProcedureDisableFA;
-import com.micatechnologies.minecraft.csm.MCREATOROLD.ProcedureEnableFA;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDirectional;
 import net.minecraft.block.SoundType;
@@ -115,39 +113,6 @@ public class BlockSslstrobe extends ElementsCitySuperMod.ModElement
         @Override
         public boolean isOpaqueCube( IBlockState state ) {
             return false;
-        }
-
-        @Override
-        public void neighborChanged( IBlockState state,
-                                     World world,
-                                     BlockPos pos,
-                                     Block neighborBlock,
-                                     BlockPos fromPos )
-        {
-            super.neighborChanged( state, world, pos, neighborBlock, fromPos );
-            int x = pos.getX();
-            int y = pos.getY();
-            int z = pos.getZ();
-            if ( world.isBlockIndirectlyGettingPowered( new BlockPos( x, y, z ) ) > 0 ) {
-                {
-                    java.util.HashMap< String, Object > $_dependencies = new java.util.HashMap<>();
-                    $_dependencies.put( "x", x );
-                    $_dependencies.put( "y", y );
-                    $_dependencies.put( "z", z );
-                    $_dependencies.put( "world", world );
-                    ProcedureEnableFA.executeProcedure( $_dependencies );
-                }
-            }
-            else {
-                {
-                    java.util.HashMap< String, Object > $_dependencies = new java.util.HashMap<>();
-                    $_dependencies.put( "x", x );
-                    $_dependencies.put( "y", y );
-                    $_dependencies.put( "z", z );
-                    $_dependencies.put( "world", world );
-                    ProcedureDisableFA.executeProcedure( $_dependencies );
-                }
-            }
         }
 
         @SideOnly( Side.CLIENT )
