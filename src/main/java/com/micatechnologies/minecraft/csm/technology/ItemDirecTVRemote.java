@@ -45,7 +45,7 @@ public class ItemDirecTVRemote extends ElementsCitySuperMod.ModElement
             maxStackSize = 64;
             setUnlocalizedName( "directvremote" );
             setRegistryName( "directvremote" );
-            setCreativeTab( TabNovelties.tab );
+            setCreativeTab( TabTechnology.tab );
         }
 
         @Override

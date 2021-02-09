@@ -45,7 +45,7 @@ public class ItemAppleTVRemote extends ElementsCitySuperMod.ModElement
             maxStackSize = 64;
             setUnlocalizedName( "appletvremote" );
             setRegistryName( "appletvremote" );
-            setCreativeTab( TabNovelties.tab );
+            setCreativeTab( TabTechnology.tab );
         }
 
         @Override

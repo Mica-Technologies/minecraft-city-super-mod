@@ -58,7 +58,7 @@ public class BlockPV extends ElementsCitySuperMod.ModElement
             setResistance( 10F );
             setLightLevel( 0F );
             setLightOpacity( 255 );
-            setCreativeTab( TabMCLAHVACTab.tab );
+            setCreativeTab( TabHVAC.tab );
             this.setDefaultState( this.blockState.getBaseState().withProperty( FACING, EnumFacing.NORTH ) );
         }
 

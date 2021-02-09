@@ -7,12 +7,12 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @ElementsCitySuperMod.ModElement.Tag
-public class TabMCLAHVACTab extends ElementsCitySuperMod.ModElement
+public class TabHVAC extends ElementsCitySuperMod.ModElement
 {
-    private final static String       ID_NAME = "tabmclahvactab";
+    private final static String       ID_NAME = "tabhvac";
     public static        CreativeTabs tab;
 
-    public TabMCLAHVACTab( ElementsCitySuperMod instance ) {
+    public TabHVAC( ElementsCitySuperMod instance ) {
         super( instance, 1028 );
     }
 

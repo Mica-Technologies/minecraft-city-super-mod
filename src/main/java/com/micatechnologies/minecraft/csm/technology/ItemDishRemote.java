@@ -45,7 +45,7 @@ public class ItemDishRemote extends ElementsCitySuperMod.ModElement
             maxStackSize = 64;
             setUnlocalizedName( "dishremote" );
             setRegistryName( "dishremote" );
-            setCreativeTab( TabNovelties.tab );
+            setCreativeTab( TabTechnology.tab );
         }
 
         @Override

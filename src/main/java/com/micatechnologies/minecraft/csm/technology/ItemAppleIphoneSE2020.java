@@ -44,7 +44,7 @@ public class ItemAppleIphoneSE2020 extends ElementsCitySuperMod.ModElement
             maxStackSize = 64;
             setUnlocalizedName( "appleiphonese2020" );
             setRegistryName( "appleiphonese2020" );
-            setCreativeTab( TabMCLATechTab.tab );
+            setCreativeTab( TabTechnology.tab );
         }
 
         @Override

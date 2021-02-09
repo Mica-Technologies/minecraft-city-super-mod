@@ -75,7 +75,7 @@ public class BlockRFtoRS extends ElementsCitySuperMod.ModElement
             setResistance( 10F );
             setLightLevel( 0F );
             setLightOpacity( 0 );
-            setCreativeTab( TabMCLAElectricTab.tab );
+            setCreativeTab( TabPowerGrid.tab );
         }
 
         @Override

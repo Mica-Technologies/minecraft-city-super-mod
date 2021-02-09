@@ -49,7 +49,7 @@ public class BlockBlackMetalFence extends ElementsCitySuperMod.ModElement
             setResistance( 10F );
             setLightLevel( 0F );
             setLightOpacity( 0 );
-            setCreativeTab( TabMCLABuildingMaterialsTab.tab );
+            setCreativeTab( TabBuildingMaterials.tab );
         }
 
         @Override

@@ -44,7 +44,7 @@ public class ItemAppleIphoneXS extends ElementsCitySuperMod.ModElement
             maxStackSize = 64;
             setUnlocalizedName( "appleiphonexs" );
             setRegistryName( "appleiphonexs" );
-            setCreativeTab( TabMCLATechTab.tab );
+            setCreativeTab( TabTechnology.tab );
         }
 
         @Override

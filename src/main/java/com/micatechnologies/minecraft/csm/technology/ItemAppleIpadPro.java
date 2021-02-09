@@ -44,7 +44,7 @@ public class ItemAppleIpadPro extends ElementsCitySuperMod.ModElement
             maxStackSize = 64;
             setUnlocalizedName( "appleipadpro" );
             setRegistryName( "appleipadpro" );
-            setCreativeTab( TabMCLATechTab.tab );
+            setCreativeTab( TabTechnology.tab );
         }
 
         @Override

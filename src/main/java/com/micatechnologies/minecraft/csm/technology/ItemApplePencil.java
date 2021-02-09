@@ -38,7 +38,7 @@ public class ItemApplePencil extends ElementsCitySuperMod.ModElement
                 ret.put( "spade", 1 );
                 return ret.keySet();
             }
-        }.setUnlocalizedName( "applepencil" ).setRegistryName( "applepencil" ).setCreativeTab( TabMCLATechTab.tab ) );
+        }.setUnlocalizedName( "applepencil" ).setRegistryName( "applepencil" ).setCreativeTab( TabTechnology.tab ) );
     }
 
     @SideOnly( Side.CLIENT )

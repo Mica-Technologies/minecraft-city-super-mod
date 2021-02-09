@@ -44,7 +44,7 @@ public class ItemAppleWatch extends ElementsCitySuperMod.ModElement
             maxStackSize = 64;
             setUnlocalizedName( "applewatch" );
             setRegistryName( "applewatch" );
-            setCreativeTab( TabMCLATechTab.tab );
+            setCreativeTab( TabTechnology.tab );
         }
 
         @Override

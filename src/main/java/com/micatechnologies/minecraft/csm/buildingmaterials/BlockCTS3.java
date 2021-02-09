@@ -47,7 +47,7 @@ public class BlockCTS3 extends ElementsCitySuperMod.ModElement
             setResistance( 10F );
             setLightLevel( 0F );
             setLightOpacity( 255 );
-            setCreativeTab( TabMCLABuildingMaterialsTab.tab );
+            setCreativeTab( TabBuildingMaterials.tab );
         }
     }
 }

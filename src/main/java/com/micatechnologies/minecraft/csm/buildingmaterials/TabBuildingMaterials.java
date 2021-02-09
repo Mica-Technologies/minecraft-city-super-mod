@@ -1,21 +1,19 @@
-package com.micatechnologies.minecraft.csm.technology;
+package com.micatechnologies.minecraft.csm.buildingmaterials;
 
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
-import com.micatechnologies.minecraft.csm.technology.BlockImacpro;
-import net.minecraftforge.fml.relauncher.SideOnly;
-import net.minecraftforge.fml.relauncher.Side;
-
-import net.minecraft.item.ItemStack;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.item.ItemStack;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 @ElementsCitySuperMod.ModElement.Tag
-public class TabMCLATechTab extends ElementsCitySuperMod.ModElement
+public class TabBuildingMaterials extends ElementsCitySuperMod.ModElement
 {
-    private final static String       ID_NAME   = "tabmclatechtab";
+    private final static String       ID_NAME = "tabbuildingmaterials";
     public static        CreativeTabs tab;
 
-    public TabMCLATechTab( ElementsCitySuperMod instance ) {
-        super( instance, 1016 );
+    public TabBuildingMaterials( ElementsCitySuperMod instance ) {
+        super( instance, 1063 );
     }
 
     @Override
@@ -25,7 +23,7 @@ public class TabMCLATechTab extends ElementsCitySuperMod.ModElement
             @SideOnly( Side.CLIENT )
             @Override
             public ItemStack getTabIconItem() {
-                return new ItemStack( BlockImacpro.block, 1 );
+                return new ItemStack( BlockSilverMetal.block, 1 );
             }
 
             @SideOnly( Side.CLIENT )

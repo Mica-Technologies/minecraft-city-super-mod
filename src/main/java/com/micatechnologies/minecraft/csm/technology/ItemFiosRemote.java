@@ -45,7 +45,7 @@ public class ItemFiosRemote extends ElementsCitySuperMod.ModElement
             maxStackSize = 64;
             setUnlocalizedName( "fiosremote" );
             setRegistryName( "fiosremote" );
-            setCreativeTab( TabNovelties.tab );
+            setCreativeTab( TabTechnology.tab );
         }
 
         @Override

@@ -68,7 +68,7 @@ public class BlockSilverslab extends ElementsCitySuperMod.ModElement
             setResistance( 10F );
             setLightLevel( 0F );
             setLightOpacity( 0 );
-            setCreativeTab( TabMCLABuildingMaterialsTab.tab );
+            setCreativeTab( TabBuildingMaterials.tab );
             IBlockState state = this.blockState.getBaseState().withProperty( VARIANT, BlockCustom.Variant.DEFAULT );
             if ( !this.isDouble() ) {
                 state = state.withProperty( BlockSlab.HALF, EnumBlockHalf.BOTTOM );

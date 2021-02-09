@@ -45,7 +45,7 @@ public class ItemSpectrumRemote extends ElementsCitySuperMod.ModElement
             maxStackSize = 64;
             setUnlocalizedName( "spectrumremote" );
             setRegistryName( "spectrumremote" );
-            setCreativeTab( TabNovelties.tab );
+            setCreativeTab( TabTechnology.tab );
         }
 
         @Override

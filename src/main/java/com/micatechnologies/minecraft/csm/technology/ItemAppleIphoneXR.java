@@ -44,7 +44,7 @@ public class ItemAppleIphoneXR extends ElementsCitySuperMod.ModElement
             maxStackSize = 64;
             setUnlocalizedName( "appleiphonexr" );
             setRegistryName( "appleiphonexr" );
-            setCreativeTab( TabMCLATechTab.tab );
+            setCreativeTab( TabTechnology.tab );
         }
 
         @Override
