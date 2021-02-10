@@ -66,6 +66,11 @@ public class BlockAltoLLM extends ElementsCitySuperMod.ModElement {
 		public String getBlockRegistryName() {
 			return elementId;
 		}
+
+		@Override
+		public boolean blockHasAutomaticFunctionality() {
+			return false;
+		}
 	}
 }
 

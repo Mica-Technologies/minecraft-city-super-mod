@@ -66,5 +66,10 @@ public class BlockGEForm109 extends ElementsCitySuperMod.ModElement {
 		public String getBlockRegistryName() {
 			return elementId;
 		}
+
+		@Override
+		public boolean blockHasAutomaticFunctionality() {
+			return false;
+		}
 	}
 }
