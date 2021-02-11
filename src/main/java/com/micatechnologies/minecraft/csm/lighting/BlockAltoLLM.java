@@ -69,7 +69,7 @@ public class BlockAltoLLM extends ElementsCitySuperMod.ModElement {
 
 		@Override
 		public boolean blockHasAutomaticFunctionality() {
-			return false;
+			return true;
 		}
 	}
 }

@@ -70,7 +70,7 @@ public class BlockGEPB extends ElementsCitySuperMod.ModElement
 
         @Override
         public boolean blockHasAutomaticFunctionality() {
-            return false;
+            return true;
         }
     }
 }

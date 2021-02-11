@@ -69,7 +69,7 @@ public class BlockCreeXSP extends ElementsCitySuperMod.ModElement {
 
 		@Override
 		public boolean blockHasAutomaticFunctionality() {
-			return false;
+			return true;
 		}
 	}
 }
