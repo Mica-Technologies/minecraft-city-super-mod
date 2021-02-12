@@ -29,7 +29,7 @@ public class TabRoadSignTab extends ElementsCitySuperMod.ModElement
 
             @SideOnly( Side.CLIENT )
             public boolean hasSearchBar() {
-                return false;
+                return true;
             }
         };
     }
