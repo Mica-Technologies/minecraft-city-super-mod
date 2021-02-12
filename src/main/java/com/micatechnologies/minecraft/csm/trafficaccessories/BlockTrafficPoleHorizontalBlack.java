@@ -26,8 +26,6 @@ import net.minecraft.block.SoundType;
 import net.minecraft.block.BlockDirectional;
 import net.minecraft.block.Block;
 
-import com.micatechnologies.minecraft.csm.trafficaccessories.TabTrafficSignalAccessories;
-
 @ElementsCitySuperMod.ModElement.Tag
 public class BlockTrafficPoleHorizontalBlack extends ElementsCitySuperMod.ModElement {
 	@GameRegistry.ObjectHolder("csm:trafficpolehorizontalblack")
@@ -59,7 +57,7 @@ public class BlockTrafficPoleHorizontalBlack extends ElementsCitySuperMod.ModEle
 			setResistance(10F);
 			setLightLevel(0F);
 			setLightOpacity(0);
-			setCreativeTab(TabTrafficSignalAccessories.tab);
+			setCreativeTab( TabTrafficAccessories.tab);
 			this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH));
 		}
 

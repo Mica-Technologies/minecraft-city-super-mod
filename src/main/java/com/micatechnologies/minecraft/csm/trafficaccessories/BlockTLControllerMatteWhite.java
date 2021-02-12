@@ -2,7 +2,7 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories;
 
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
-import com.micatechnologies.minecraft.csm.trafficaccessories.TabTrafficSignalAccessories;;
+;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.common.registry.GameRegistry;
@@ -60,7 +60,7 @@ public class BlockTLControllerMatteWhite extends ElementsCitySuperMod.ModElement
 			setResistance(10F);
 			setLightLevel(0F);
 			setLightOpacity(0);
-			setCreativeTab( TabTrafficSignalAccessories.tab);
+			setCreativeTab( TabTrafficAccessories.tab);
 			this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH));
 		}
 
