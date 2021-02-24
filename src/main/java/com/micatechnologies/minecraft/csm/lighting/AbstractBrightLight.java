@@ -3,19 +3,24 @@ package com.micatechnologies.minecraft.csm.lighting;
 import com.micatechnologies.minecraft.csm.codeutils.TickTimeConverter;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDirectional;
+import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.properties.PropertyDirection;
+import net.minecraft.block.properties.PropertyInteger;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.BlockRenderLayer;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -24,9 +29,15 @@ import java.util.Random;
 
 public abstract class AbstractBrightLight extends Block
 {
+    private static final int STATE_RS_OFF   = 0;
+    private static final int STATE_RS_ON    = 1;
+    private static final int STATE_AUTO_OFF = 2;
+    private static final int STATE_AUTO_ON  = 3;
 
-    public static final PropertyDirection FACING  = BlockDirectional.FACING;
-    public static final PropertyBool      POWERED = PropertyBool.create( "powered" );
+    private static final int LIGHT_LEVEL_TURN_ON = 10;
+
+    public static final PropertyDirection FACING = BlockHorizontal.FACING;
+    public static final PropertyInteger   STATE  = PropertyInteger.create( "state", 0, 3 );
 
     public AbstractBrightLight() {
         super( Material.ROCK );
@@ -64,10 +75,27 @@ public abstract class AbstractBrightLight extends Block
 
     @Override
     public void neighborChanged( IBlockState state, World world, BlockPos pos, Block blockIn, BlockPos p_189540_5_ ) {
-        boolean powered = world.isBlockPowered( pos );
-        world.setBlockState( pos, state.withProperty( POWERED, powered ), 3 );
-        // Powered, Add Light
-        if ( powered ) {
+        int currentState = state.getValue( STATE );
+        // Check if in redstone mode
+        if ( currentState == STATE_RS_OFF || currentState == STATE_RS_ON ) {
+            // Check for redstone power and set state appropriately
+            boolean isPowered = world.isBlockPowered( pos );
+            if ( currentState == STATE_RS_OFF && isPowered ) {
+                // Need to turn on light
+                world.setBlockState( pos, state.withProperty( STATE, STATE_RS_ON ), 3 );
+                handleAirLightBlock( true, world, pos );
+            }
+            else if ( currentState == STATE_RS_ON && !isPowered ) {
+                // Need to turn off light
+                world.setBlockState( pos, state.withProperty( STATE, STATE_RS_OFF ), 3 );
+                handleAirLightBlock( false, world, pos );
+            }
+        }
+    }
+
+    private void handleAirLightBlock( boolean on, World world, BlockPos pos ) {
+        // Add light
+        if ( on ) {
             BlockPos doAddAt = null;
             for ( int findy = -1; findy >= -40; findy-- ) {
                 BlockPos test = new BlockPos( pos.getX(), pos.getY() + findy, pos.getZ() );
@@ -89,7 +117,7 @@ public abstract class AbstractBrightLight extends Block
                 world.setBlockState( doAddAt, Block.getBlockFromName( "csm:lightupair" ).getDefaultState(), 3 );
             }
         }
-        // Not powered, remove light
+        // Remove light
         else {
             for ( int findy = -1; findy >= -40; findy-- ) {
                 BlockPos test = new BlockPos( pos.getX(), pos.getY() + findy, pos.getZ() );
@@ -100,6 +128,76 @@ public abstract class AbstractBrightLight extends Block
                 }
             }
         }
+
+    }
+
+    @Override
+    public boolean onBlockActivated( World world,
+                                     BlockPos pos,
+                                     IBlockState state,
+                                     EntityPlayer player,
+                                     EnumHand hand,
+                                     EnumFacing facing,
+                                     float p_onBlockActivated_7_,
+                                     float p_onBlockActivated_8_,
+                                     float p_onBlockActivated_9_ )
+    {
+        int currentState = state.getValue( STATE );
+        if ( blockHasAutomaticFunctionality() ) {
+            // Cycle to on if off
+            if ( currentState == STATE_RS_OFF ) {
+                world.setBlockState( pos, state.withProperty( STATE, STATE_RS_ON ), 3 );
+                handleAirLightBlock( true, world, pos );
+
+                if ( !world.isRemote ) {
+                    player.sendMessage( new TextComponentString( "Changed light to: ON (Manual/Redstone Control)" ) );
+                }
+            }
+            // Cycle to auto if on
+            else if ( currentState == STATE_RS_ON ) {
+                world.setBlockState( pos, state.withProperty( STATE, STATE_AUTO_OFF ), 3 );
+                handleAirLightBlock( false, world, pos );
+                if ( !world.isRemote ) {
+                    player.sendMessage(
+                            new TextComponentString( "Changed light to: AUTO (Light Sensor Control)" ) );
+                }
+            }
+            // Cycle to off if auto
+            else if ( currentState == STATE_AUTO_OFF || currentState == STATE_AUTO_ON ) {
+                world.setBlockState( pos, state.withProperty( STATE, STATE_RS_OFF ), 3 );
+                handleAirLightBlock( false, world, pos );
+                if ( !world.isRemote ) {
+                    player.sendMessage( new TextComponentString( "Changed light to: OFF (Manual/Redstone Control)" ) );
+                }
+            }
+        }
+        else {
+            // Show warning if light is powered by redstone
+            if ( !world.isRemote && world.isBlockPowered( pos ) ) {
+                player.sendMessage( new TextComponentString( "Warning: The clicked light is connected to redstone " +
+                                                                     "power and cannot be properly controlled manually!" ) );
+            }
+
+            // Cycle to on if off
+            if ( currentState == STATE_RS_OFF ) {
+                world.setBlockState( pos, state.withProperty( STATE, STATE_RS_ON ), 3 );
+                handleAirLightBlock( true, world, pos );
+
+                if ( !world.isRemote ) {
+                    player.sendMessage( new TextComponentString( "Changed light to: ON (Manual/Redstone Control)" ) );
+                }
+            }
+            // Cycle to off if on
+            else if ( currentState == STATE_RS_ON ) {
+                world.setBlockState( pos, state.withProperty( STATE, STATE_RS_OFF ), 3 );
+                handleAirLightBlock( false, world, pos );
+                if ( !world.isRemote ) {
+                    player.sendMessage( new TextComponentString( "Changed light to: OFF (Manual/Redstone Control)" ) );
+                }
+            }
+        }
+
+        return true;
     }
 
     @Override
@@ -109,34 +207,44 @@ public abstract class AbstractBrightLight extends Block
                                  EntityLivingBase placer,
                                  ItemStack stack )
     {
-        world.setBlockState( pos, state.withProperty( FACING, getFacingFromEntity( pos, placer ) ), 2 );
+        world.setBlockState( pos, state.withProperty( FACING, placer.getHorizontalFacing().getOpposite() ), 2 );
     }
 
-    public static EnumFacing getFacingFromEntity( BlockPos clickedBlock, EntityLivingBase entity ) {
-        return EnumFacing.getFacingFromVector( ( float ) ( entity.posX - clickedBlock.getX() ),
-                                               ( float ) ( entity.posY - clickedBlock.getY() ),
-                                               ( float ) ( entity.posZ - clickedBlock.getZ() ) );
+    @Override
+    public void onBlockAdded( World p_onBlockAdded_1_, BlockPos p_onBlockAdded_2_, IBlockState p_onBlockAdded_3_ ) {
+        p_onBlockAdded_1_.scheduleUpdate( p_onBlockAdded_2_, this, this.tickRate( p_onBlockAdded_1_ ) );
+        super.onBlockAdded( p_onBlockAdded_1_, p_onBlockAdded_2_, p_onBlockAdded_3_ );
     }
 
     @Override
     public IBlockState getStateFromMeta( int meta ) {
-        return getDefaultState().withProperty( FACING, EnumFacing.getFront( meta & 7 ) )
-                                .withProperty( POWERED, ( meta & 8 ) != 0 );
+        int stateVal = meta % 4;
+        int facingVal = ( meta - stateVal ) / 4;
+
+        return getDefaultState().withProperty( FACING, EnumFacing.getHorizontal( facingVal ) )
+                                .withProperty( STATE, stateVal );
     }
 
     @Override
     public int getMetaFromState( IBlockState state ) {
-        return state.getValue( FACING ).getIndex() + ( state.getValue( POWERED ) ? 8 : 0 );
+        int facingVal = state.getValue( FACING ).getHorizontalIndex() * 4;
+        int stateVal = state.getValue( STATE );
+        return facingVal + stateVal;
     }
 
     @Override
     protected BlockStateContainer createBlockState() {
-        return new BlockStateContainer( this, FACING, POWERED );
+        return new BlockStateContainer( this, FACING, STATE );
     }
 
     @Override
     public int getLightValue( IBlockState state, IBlockAccess world, BlockPos pos ) {
-        return state.getValue( POWERED ) ? 15 : 0;
+        int currentState = state.getValue( STATE );
+        int lightLevel = 0;
+        if ( currentState == STATE_RS_ON || currentState == STATE_AUTO_ON ) {
+            lightLevel = 15;
+        }
+        return lightLevel;
     }
 
     @Override
@@ -145,23 +253,52 @@ public abstract class AbstractBrightLight extends Block
     }
 
     @Override
-    public void updateTick( World p_updateTick_1_,
-                            BlockPos p_updateTick_2_,
-                            IBlockState p_updateTick_3_,
-                            Random p_updateTick_4_ )
+    public void updateTick( World world, BlockPos pos, IBlockState state, Random random )
     {
-        // Handle automatic on/off logic
-        super.updateTick( p_updateTick_1_, p_updateTick_2_, p_updateTick_3_, p_updateTick_4_ );
+        int currentState = state.getValue( STATE );
+        // Check if in automatic mode
+        if ( currentState == STATE_AUTO_OFF || currentState == STATE_AUTO_ON ) {
+            // Check ambient light level and set state appropriately
+            int ambientLightLevel = 15 - world.getSkylightSubtracted();
+            if ( currentState == STATE_AUTO_OFF && ambientLightLevel <= LIGHT_LEVEL_TURN_ON ) {
+                // Need to turn on light
+                world.setBlockState( pos, state.withProperty( STATE, STATE_AUTO_ON ), 3 );
+                handleAirLightBlock( true, world, pos );
+            }
+            else if ( currentState == STATE_AUTO_ON && ambientLightLevel > LIGHT_LEVEL_TURN_ON ) {
+                // Need to turn off light
+                world.setBlockState( pos, state.withProperty( STATE, STATE_AUTO_OFF ), 3 );
+                handleAirLightBlock( false, world, pos );
+            }
+        }
+        else if ( currentState == STATE_RS_OFF || currentState == STATE_RS_ON ) {
+            // Check for redstone power and set state appropriately
+            boolean isPowered = world.isBlockPowered( pos );
+            if ( currentState == STATE_RS_OFF && isPowered ) {
+                // Need to turn on light
+                world.setBlockState( pos, state.withProperty( STATE, STATE_RS_ON ), 3 );
+                handleAirLightBlock( true, world, pos );
+            }
+            else if ( currentState == STATE_RS_ON && !isPowered ) {
+                // Need to turn off light
+                world.setBlockState( pos, state.withProperty( STATE, STATE_RS_OFF ), 3 );
+                handleAirLightBlock( false, world, pos );
+            }
+        }
+        super.updateTick( world, pos, state, random );
+        world.scheduleUpdate( pos, this, this.tickRate( world ) );
     }
 
     @Override
     public int tickRate( World p_tickRate_1_ ) {
-        return TickTimeConverter.getTicksFromSeconds( 4 );
+        return TickTimeConverter.getTicksFromSeconds( 6 );
     }
 
     @Override
     public void breakBlock( World p_breakBlock_1_, BlockPos p_breakBlock_2_, IBlockState p_breakBlock_3_ ) {
         // Cleanup existing light block (if present)
+        handleAirLightBlock( false, p_breakBlock_1_, p_breakBlock_2_ );
+
         super.breakBlock( p_breakBlock_1_, p_breakBlock_2_, p_breakBlock_3_ );
     }
 
