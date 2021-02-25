@@ -22,7 +22,7 @@ import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.SoundType;
-import net.minecraft.block.BlockHorizontal;
+import net.minecraft.block.BlockDirectional;
 import net.minecraft.block.Block;
 
 import com.micatechnologies.minecraft.csm.lighting.TabLighting;
@@ -47,7 +47,7 @@ public class BlockHighbayMount extends ElementsCitySuperMod.ModElement {
 		ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(block), 0, new ModelResourceLocation("csm:highbaymount", "inventory"));
 	}
 	public static class BlockCustom extends Block {
-		public static final PropertyDirection FACING = BlockHorizontal.FACING;
+		public static final PropertyDirection FACING = BlockDirectional.FACING;
 		public BlockCustom() {
 			super(Material.ROCK);
 			setUnlocalizedName("highbaymount");

@@ -26,7 +26,7 @@ import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.SoundType;
-import net.minecraft.block.BlockHorizontal;
+import net.minecraft.block.BlockDirectional;
 import net.minecraft.block.Block;
 
 @ElementsCitySuperMod.ModElement.Tag
@@ -49,7 +49,7 @@ public class BlockLightupAir extends ElementsCitySuperMod.ModElement {
 		ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(block), 0, new ModelResourceLocation("csm:lightupair", "inventory"));
 	}
 	public static class BlockCustom extends Block {
-		public static final PropertyDirection FACING = BlockHorizontal.FACING;
+		public static final PropertyDirection FACING = BlockDirectional.FACING;
 		public BlockCustom() {
 			super(Material.ROCK);
 			setUnlocalizedName("lightupair");
@@ -87,7 +87,7 @@ public class BlockLightupAir extends ElementsCitySuperMod.ModElement {
 
 		@Override
 		public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-			switch ((EnumFacing) state.getValue(BlockHorizontal.FACING)) {
+			switch ((EnumFacing) state.getValue(BlockDirectional.FACING)) {
 				case SOUTH :
 				default :
 					return new AxisAlignedBB(1D, 0D, 1D, 1D, 0.05D, 1D);
@@ -97,10 +97,6 @@ public class BlockLightupAir extends ElementsCitySuperMod.ModElement {
 					return new AxisAlignedBB(0D, 0D, 1D, 0D, 0.05D, 1D);
 				case EAST :
 					return new AxisAlignedBB(1D, 0D, 0D, 1D, 0.05D, 0D);
-				case UP :
-					return new AxisAlignedBB(0D, 1D, 0D, 0D, 1D, 0.05D);
-				case DOWN :
-					return new AxisAlignedBB(0D, 0D, 1D, 0D, 0D, 0.95D);
 			}
 		}
 
