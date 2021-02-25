@@ -1,0 +1,8 @@
+{
+  "parent": "csm:custom/solarmax_smx",
+  "textures": {
+    "all": "csm:blocks/solarmax_smx",
+    "particle": "csm:blocks/solarmax_smx",
+    "0": "csm:blocks/solarmax_smx"
+  }
+}
