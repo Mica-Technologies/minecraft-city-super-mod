@@ -28,7 +28,7 @@ Contributions and modifications are not limited to the development team, and it 
 The preferred development environment/IDE for the City Super Mod is [IntelliJ IDEA](https://www.jetbrains.com/idea/download). 
 After opening IntelliJ, choose the option "Get from Version Control", which allows you to download and open an IntelliJ project from a Git server.
 
-<img src="LOCKED/readme/getfromvctl.png" width="200" alt="Get from Version Control Button Image"/>
+<img src="DOCS/readme/getfromvctl.png" width="200" alt="Get from Version Control Button Image"/>
 
 #### Adding a Block
 To add a block, you'll need to do the following:
