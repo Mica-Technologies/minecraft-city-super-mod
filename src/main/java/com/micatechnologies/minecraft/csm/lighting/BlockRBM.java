@@ -2,7 +2,7 @@ package com.micatechnologies.minecraft.csm.lighting;
 
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockDirectional;
+import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyDirection;
@@ -48,7 +48,7 @@ public class BlockRBM extends ElementsCitySuperMod.ModElement
 
     public static class BlockCustom extends Block
     {
-        public static final PropertyDirection FACING = BlockDirectional.FACING;
+        public static final PropertyDirection FACING = BlockHorizontal.FACING;
 
         public BlockCustom() {
             super( Material.ROCK );

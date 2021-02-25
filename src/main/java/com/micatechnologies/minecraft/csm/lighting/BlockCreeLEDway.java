@@ -16,7 +16,7 @@ import net.minecraft.item.ItemBlock;
 import net.minecraft.item.Item;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.block.BlockDirectional;
+import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.Block;
 
 @ElementsCitySuperMod.ModElement.Tag
@@ -45,7 +45,7 @@ public class BlockCreeLEDway extends ElementsCitySuperMod.ModElement {
 	{
 		@Override
 		public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-			switch ((EnumFacing) state.getValue(BlockDirectional.FACING)) {
+			switch ((EnumFacing) state.getValue(BlockHorizontal.FACING)) {
 				case SOUTH :
 				default :
 					return new AxisAlignedBB(1D, 0D, 1D, 0D, 0.5D, 0D);
@@ -55,10 +55,6 @@ public class BlockCreeLEDway extends ElementsCitySuperMod.ModElement {
 					return new AxisAlignedBB(0D, 0D, 1D, 1D, 0.5D, 0D);
 				case EAST :
 					return new AxisAlignedBB(1D, 0D, 0D, 0D, 0.5D, 1D);
-				case UP :
-					return new AxisAlignedBB(0D, 1D, 0D, 1D, 0D, 0.5D);
-				case DOWN :
-					return new AxisAlignedBB(0D, 0D, 1D, 1D, 1D, 0.5D);
 			}
 		}
 

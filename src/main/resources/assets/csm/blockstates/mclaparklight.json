@@ -3,51 +3,65 @@
     "normal": {
       "model": "csm:mclaparklight"
     },
-    "facing=north,powered=false": {
+    "facing=north,state=0": {
       "model": "csm:mclaparklight"
     },
-    "facing=east,powered=false": {
+    "facing=east,state=0": {
       "model": "csm:mclaparklight",
       "y": 90
     },
-    "facing=south,powered=false": {
+    "facing=south,state=0": {
       "model": "csm:mclaparklight",
       "y": 180
     },
-    "facing=west,powered=false": {
+    "facing=west,state=0": {
       "model": "csm:mclaparklight",
       "y": 270
     },
-    "facing=up,powered=false": {
-      "model": "csm:mclaparklight",
-      "x": 270
-    },
-    "facing=down,powered=false": {
-      "model": "csm:mclaparklight",
-      "x": 90
-    },
-    "facing=north,powered=true": {
+    "facing=north,state=1": {
       "model": "csm:mclaparklight"
     },
-    "facing=east,powered=true": {
+    "facing=east,state=1": {
       "model": "csm:mclaparklight",
       "y": 90
     },
-    "facing=south,powered=true": {
+    "facing=south,state=1": {
       "model": "csm:mclaparklight",
       "y": 180
     },
-    "facing=west,powered=true": {
+    "facing=west,state=1": {
       "model": "csm:mclaparklight",
       "y": 270
     },
-    "facing=up,powered=true": {
-      "model": "csm:mclaparklight",
-      "x": 270
+    "facing=north,state=2": {
+      "model": "csm:mclaparklight"
     },
-    "facing=down,powered=true": {
+    "facing=east,state=2": {
       "model": "csm:mclaparklight",
-      "x": 90
+      "y": 90
+    },
+    "facing=south,state=2": {
+      "model": "csm:mclaparklight",
+      "y": 180
+    },
+    "facing=west,state=2": {
+      "model": "csm:mclaparklight",
+      "y": 270
+    },
+    "facing=north,state=3": {
+      "model": "csm:mclaparklight"
+    },
+    "facing=east,state=3": {
+      "model": "csm:mclaparklight",
+      "y": 90
+    },
+    "facing=south,state=3": {
+      "model": "csm:mclaparklight",
+      "y": 180
+    },
+    "facing=west,state=3": {
+      "model": "csm:mclaparklight",
+      "y": 270
     }
   }
 }

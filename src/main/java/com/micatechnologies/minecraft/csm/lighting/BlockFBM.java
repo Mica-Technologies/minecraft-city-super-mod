@@ -2,7 +2,7 @@ package com.micatechnologies.minecraft.csm.lighting;
 
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockDirectional;
+import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyDirection;
@@ -49,7 +49,7 @@ public class BlockFBM extends ElementsCitySuperMod.ModElement
 
     public static class BlockCustom extends Block
     {
-        public static final PropertyDirection FACING = BlockDirectional.FACING;
+        public static final PropertyDirection FACING = BlockHorizontal.FACING;
 
         public BlockCustom() {
             super( Material.ROCK );
@@ -90,7 +90,7 @@ public class BlockFBM extends ElementsCitySuperMod.ModElement
 
         @Override
         public AxisAlignedBB getBoundingBox( IBlockState state, IBlockAccess source, BlockPos pos ) {
-            switch ( state.getValue( BlockDirectional.FACING ) ) {
+            switch ( state.getValue( BlockHorizontal.FACING ) ) {
                 case SOUTH:
                 default:
                     return new AxisAlignedBB( 1D, 0D, 0D, 0D, 1D, 2D );

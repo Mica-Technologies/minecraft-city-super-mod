@@ -2,7 +2,7 @@ package com.micatechnologies.minecraft.csm.lighting;
 
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockDirectional;
+import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
@@ -45,7 +45,7 @@ public class BlockDSLF extends ElementsCitySuperMod.ModElement
     {
         @Override
         public AxisAlignedBB getBoundingBox( IBlockState state, IBlockAccess source, BlockPos pos ) {
-            switch ( state.getValue( BlockDirectional.FACING ) ) {
+            switch ( state.getValue( BlockHorizontal.FACING ) ) {
                 case SOUTH:
                 default:
                     return new AxisAlignedBB( 1D, 0D, 1D, 0D, 0.5D, 0D );

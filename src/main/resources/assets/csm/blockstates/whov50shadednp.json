@@ -3,51 +3,65 @@
     "normal": {
       "model": "csm:whov50shadednp"
     },
-    "facing=north,powered=false": {
+    "facing=north,state=0": {
       "model": "csm:whov50shadednp"
     },
-    "facing=east,powered=false": {
+    "facing=east,state=0": {
       "model": "csm:whov50shadednp",
       "y": 90
     },
-    "facing=south,powered=false": {
+    "facing=south,state=0": {
       "model": "csm:whov50shadednp",
       "y": 180
     },
-    "facing=west,powered=false": {
+    "facing=west,state=0": {
       "model": "csm:whov50shadednp",
       "y": 270
     },
-    "facing=up,powered=false": {
-      "model": "csm:whov50shadednp",
-      "x": 270
-    },
-    "facing=down,powered=false": {
-      "model": "csm:whov50shadednp",
-      "x": 90
-    },
-    "facing=north,powered=true": {
+    "facing=north,state=1": {
       "model": "csm:whov50shadednp"
     },
-    "facing=east,powered=true": {
+    "facing=east,state=1": {
       "model": "csm:whov50shadednp",
       "y": 90
     },
-    "facing=south,powered=true": {
+    "facing=south,state=1": {
       "model": "csm:whov50shadednp",
       "y": 180
     },
-    "facing=west,powered=true": {
+    "facing=west,state=1": {
       "model": "csm:whov50shadednp",
       "y": 270
     },
-    "facing=up,powered=true": {
-      "model": "csm:whov50shadednp",
-      "x": 270
+    "facing=north,state=2": {
+      "model": "csm:whov50shadednp"
     },
-    "facing=down,powered=true": {
+    "facing=east,state=2": {
       "model": "csm:whov50shadednp",
-      "x": 90
+      "y": 90
+    },
+    "facing=south,state=2": {
+      "model": "csm:whov50shadednp",
+      "y": 180
+    },
+    "facing=west,state=2": {
+      "model": "csm:whov50shadednp",
+      "y": 270
+    },
+    "facing=north,state=3": {
+      "model": "csm:whov50shadednp"
+    },
+    "facing=east,state=3": {
+      "model": "csm:whov50shadednp",
+      "y": 90
+    },
+    "facing=south,state=3": {
+      "model": "csm:whov50shadednp",
+      "y": 180
+    },
+    "facing=west,state=3": {
+      "model": "csm:whov50shadednp",
+      "y": 270
     }
   }
 }

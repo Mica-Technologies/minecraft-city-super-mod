@@ -1,53 +1,67 @@
 {
   "variants": {
     "normal": {
-      "model": "csm:altorll"
+      "model": "csm:altorell"
     },
-    "facing=north,powered=false": {
-      "model": "csm:altorll"
+    "facing=north,state=0": {
+      "model": "csm:altorell"
     },
-    "facing=east,powered=false": {
-      "model": "csm:altorll",
+    "facing=east,state=0": {
+      "model": "csm:altorell",
       "y": 90
     },
-    "facing=south,powered=false": {
-      "model": "csm:altorll",
+    "facing=south,state=0": {
+      "model": "csm:altorell",
       "y": 180
     },
-    "facing=west,powered=false": {
-      "model": "csm:altorll",
+    "facing=west,state=0": {
+      "model": "csm:altorell",
       "y": 270
     },
-    "facing=up,powered=false": {
-      "model": "csm:altorll",
-      "x": 270
+    "facing=north,state=1": {
+      "model": "csm:altorell"
     },
-    "facing=down,powered=false": {
-      "model": "csm:altorll",
-      "x": 90
-    },
-    "facing=north,powered=true": {
-      "model": "csm:altorll"
-    },
-    "facing=east,powered=true": {
-      "model": "csm:altorll",
+    "facing=east,state=1": {
+      "model": "csm:altorell",
       "y": 90
     },
-    "facing=south,powered=true": {
-      "model": "csm:altorll",
+    "facing=south,state=1": {
+      "model": "csm:altorell",
       "y": 180
     },
-    "facing=west,powered=true": {
-      "model": "csm:altorll",
+    "facing=west,state=1": {
+      "model": "csm:altorell",
       "y": 270
     },
-    "facing=up,powered=true": {
-      "model": "csm:altorll",
-      "x": 270
+    "facing=north,state=2": {
+      "model": "csm:altorell"
     },
-    "facing=down,powered=true": {
-      "model": "csm:altorll",
-      "x": 90
+    "facing=east,state=2": {
+      "model": "csm:altorell",
+      "y": 90
+    },
+    "facing=south,state=2": {
+      "model": "csm:altorell",
+      "y": 180
+    },
+    "facing=west,state=2": {
+      "model": "csm:altorell",
+      "y": 270
+    },
+    "facing=north,state=3": {
+      "model": "csm:altorell"
+    },
+    "facing=east,state=3": {
+      "model": "csm:altorell",
+      "y": 90
+    },
+    "facing=south,state=3": {
+      "model": "csm:altorell",
+      "y": 180
+    },
+    "facing=west,state=3": {
+      "model": "csm:altorell",
+      "y": 270
     }
   }
 }
