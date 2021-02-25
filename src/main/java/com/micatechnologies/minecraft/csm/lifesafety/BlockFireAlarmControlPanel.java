@@ -90,6 +90,11 @@ public class BlockFireAlarmControlPanel extends ElementsCitySuperMod.ModElement
         }
 
         @Override
+        public boolean isOpaqueCube( IBlockState p_isOpaqueCube_1_ ) {
+            return false;
+        }
+
+        @Override
         public IBlockState getStateFromMeta( int meta ) {
             return getDefaultState().withProperty( FACING, EnumFacing.getHorizontal( meta ) );
         }
