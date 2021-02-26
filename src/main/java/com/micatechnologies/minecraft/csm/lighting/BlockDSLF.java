@@ -55,10 +55,6 @@ public class BlockDSLF extends ElementsCitySuperMod.ModElement
                     return new AxisAlignedBB( 0D, 0D, 1D, 1D, 0.5D, 0D );
                 case EAST:
                     return new AxisAlignedBB( 1D, 0D, 0D, 0D, 0.5D, 1D );
-                case UP:
-                    return new AxisAlignedBB( 0D, 1D, 0D, 1D, 0D, 0.5D );
-                case DOWN:
-                    return new AxisAlignedBB( 0D, 0D, 1D, 1D, 1D, 0.5D );
             }
         }
 
