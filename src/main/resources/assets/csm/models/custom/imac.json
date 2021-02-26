@@ -1,90 +1,90 @@
 {
-	"credit": "Model made by Brandon Holt (RinRin Blissgreen)",
+	"credit": "Made with Blockbench",
 	"texture_size": [512, 512],
 	"textures": {
-		"0": "done/imac",
-		"1": "done/apple_magic_keyboard",
-		"particle": "done/apple_magic_keyboard"
+		"0": "csm:done/imac",
+		"1": "csm:done/apple_magic_keyboard",
+		"particle": "csm:done/apple_magic_keyboard"
 	},
 	"elements": [
 		{
 			"name": "Monitor",
-			"from": [-7, 6.25, -6],
-			"to": [23, 22.75, -4.5],
-			"rotation": {"angle": 0, "axis": "y", "origin": [-1, 14.5, -8.75]},
+			"from": [-7, 6.25, 18],
+			"to": [23, 22.75, 19.5],
+			"rotation": {"angle": 0, "axis": "y", "origin": [9, 14.5, 13.25]},
 			"faces": {
-				"north": {"uv": [0, 4, 8, 7.99959], "texture": "#0"},
+				"north": {"uv": [0, 0, 7.99994, 4], "texture": "#0"},
 				"east": {"uv": [8, 0, 16, 8], "texture": "#0"},
-				"south": {"uv": [0, 0, 7.99994, 4], "texture": "#0"},
+				"south": {"uv": [0, 4, 8, 7.99959], "texture": "#0"},
 				"west": {"uv": [8, 0, 16, 8], "texture": "#0"},
-				"up": {"uv": [8, 0, 16, 8], "texture": "#0"},
-				"down": {"uv": [8, 0, 16, 8], "texture": "#0"}
+				"up": {"uv": [8, 0, 16, 8], "rotation": 180, "texture": "#0"},
+				"down": {"uv": [8, 0, 16, 8], "rotation": 180, "texture": "#0"}
 			}
 		},
 		{
 			"name": "Base",
-			"from": [0, 0, -9.3],
-			"to": [16, 1, -4.3],
-			"rotation": {"angle": 0, "axis": "y", "origin": [-1, 0.5, -9.8]},
+			"from": [0, 0, 17.8],
+			"to": [16, 1, 22.8],
+			"rotation": {"angle": 0, "axis": "y", "origin": [9, 14.5, 13.25]},
 			"faces": {
 				"north": {"uv": [8, 8, 16, 16], "texture": "#0"},
 				"east": {"uv": [8, 8, 16, 16], "texture": "#0"},
 				"south": {"uv": [8, 8, 16, 16], "texture": "#0"},
 				"west": {"uv": [8, 8, 16, 16], "texture": "#0"},
-				"up": {"uv": [8, 8, 16, 16], "texture": "#0"},
-				"down": {"uv": [8, 8, 16, 16], "texture": "#0"}
+				"up": {"uv": [8, 8, 16, 16], "rotation": 180, "texture": "#0"},
+				"down": {"uv": [8, 8, 16, 16], "rotation": 180, "texture": "#0"}
 			}
 		},
 		{
 			"name": "Base2",
-			"from": [5, 0.94805, -9.52836],
-			"to": [11, 15.94805, -7.52836],
-			"rotation": {"angle": 0, "axis": "x", "origin": [-1, 2.3, -11.8]},
+			"from": [5, 0.94805, 21.02836],
+			"to": [11, 15.94805, 23.02836],
+			"rotation": {"angle": 0, "axis": "x", "origin": [9, 14.5, 13.25]},
 			"faces": {
 				"north": {"uv": [8, 8, 15.9375, 15.96875], "texture": "#0"},
 				"east": {"uv": [8, 8, 15.9375, 15.96875], "texture": "#0"},
 				"south": {"uv": [8, 8, 15.9375, 15.96875], "texture": "#0"},
 				"west": {"uv": [8, 8, 15.9375, 15.96875], "texture": "#0"},
-				"up": {"uv": [8, 8, 15.9375, 15.96875], "texture": "#0"},
-				"down": {"uv": [8, 8, 15.9375, 15.96875], "texture": "#0"}
+				"up": {"uv": [8, 8, 15.9375, 15.96875], "rotation": 180, "texture": "#0"},
+				"down": {"uv": [8, 8, 15.9375, 15.96875], "rotation": 180, "texture": "#0"}
 			}
 		},
 		{
 			"name": "Base3",
-			"from": [5, 12.94805, -7.52836],
-			"to": [11, 15.94805, -5.52836],
-			"rotation": {"angle": 0, "axis": "x", "origin": [-1, 3.3, -9.8]},
+			"from": [5, 12.94805, 19.02836],
+			"to": [11, 15.94805, 21.02836],
+			"rotation": {"angle": 0, "axis": "x", "origin": [9, 14.5, 13.25]},
 			"faces": {
 				"north": {"uv": [8, 8, 16, 16], "texture": "#0"},
 				"east": {"uv": [8, 8, 16, 16], "texture": "#0"},
 				"south": {"uv": [8, 8, 16, 16], "texture": "#0"},
 				"west": {"uv": [8, 8, 16, 16], "texture": "#0"},
-				"up": {"uv": [8, 8, 16, 16], "texture": "#0"},
-				"down": {"uv": [8, 8, 16, 16], "texture": "#0"}
+				"up": {"uv": [8, 8, 16, 16], "rotation": 180, "texture": "#0"},
+				"down": {"uv": [8, 8, 16, 16], "rotation": 180, "texture": "#0"}
 			}
 		},
 		{
 			"name": "Mouse",
-			"from": [21.83036, 0, 5],
-			"to": [25.16964, 0.001, 10],
-			"rotation": {"angle": 0, "axis": "y", "origin": [14.5, 0.5, 4.5]},
+			"from": [-9.16964, 0, 3.5],
+			"to": [-5.83036, 0.001, 8.5],
+			"rotation": {"angle": 0, "axis": "y", "origin": [9, 14.5, 13.25]},
 			"faces": {
-				"up": {"uv": [0.875, 8.32806, 4.05725, 14.65609], "texture": "#0"},
-				"down": {"uv": [4.53125, 8.34375, 7.71322, 14.65609], "texture": "#0"}
+				"up": {"uv": [0.875, 8.32806, 4.05725, 14.65609], "rotation": 180, "texture": "#0"},
+				"down": {"uv": [4.53125, 8.34375, 7.71322, 14.65609], "rotation": 180, "texture": "#0"}
 			}
 		},
 		{
 			"name": "Keyboard",
-			"from": [-4.375, 0, 2.38],
-			"to": [20.375, 0.25, 11.62],
-			"rotation": {"angle": 0, "axis": "y", "origin": [-1, 0.5, 4]},
+			"from": [-4.375, 0, 1.88],
+			"to": [20.375, 0.25, 11.12],
+			"rotation": {"angle": 0, "axis": "y", "origin": [9, 14.5, 13.25]},
 			"faces": {
 				"north": {"uv": [0, 8, 16, 16], "texture": "#1"},
 				"east": {"uv": [0, 8, 16, 16], "texture": "#1"},
 				"south": {"uv": [0, 8, 16, 16], "texture": "#1"},
 				"west": {"uv": [0, 8, 16, 16], "texture": "#1"},
-				"up": {"uv": [0, 0, 16, 8], "texture": "#1"},
-				"down": {"uv": [0, 8, 16, 16], "texture": "#1"}
+				"up": {"uv": [0, 0, 16, 8], "rotation": 180, "texture": "#1"},
+				"down": {"uv": [0, 8, 16, 16], "rotation": 180, "texture": "#1"}
 			}
 		}
 	],
