@@ -7,16 +7,19 @@
       "model": "csm:lightupair"
     },
     "facing=east": {
-      "model": "csm:lightupair",
-      "y": 90
+      "model": "csm:lightupair"
     },
     "facing=south": {
-      "model": "csm:lightupair",
-      "y": 180
+      "model": "csm:lightupair"
     },
     "facing=west": {
-      "model": "csm:lightupair",
-      "y": 270
+      "model": "csm:lightupair"
+    },
+    "facing=up": {
+      "model": "csm:lightupair"
+    },
+    "facing=down": {
+      "model": "csm:lightupair"
     }
   }
 }
