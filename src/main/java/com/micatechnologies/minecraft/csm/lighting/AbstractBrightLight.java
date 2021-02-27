@@ -291,7 +291,7 @@ public abstract class AbstractBrightLight extends Block
 
     @Override
     public int tickRate( World p_tickRate_1_ ) {
-        return TickTimeConverter.getTicksFromSeconds( 6 );
+        return TickTimeConverter.getTicksFromSeconds( 2 );
     }
 
     @Override
