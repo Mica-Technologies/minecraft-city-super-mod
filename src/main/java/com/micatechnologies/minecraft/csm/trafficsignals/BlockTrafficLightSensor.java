@@ -1,5 +1,5 @@
 
-package com.micatechnologies.minecraft.csm.trafficaccessories;
+package com.micatechnologies.minecraft.csm.trafficsignals;
 
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
 import com.micatechnologies.minecraft.csm.trafficsignals.TabTrafficSignals;
