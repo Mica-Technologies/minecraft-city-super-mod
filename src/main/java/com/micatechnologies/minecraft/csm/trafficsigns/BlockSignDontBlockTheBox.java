@@ -1,5 +1,5 @@
 
-package com.micatechnologies.minecraft.csm.trafficsignals;
+package com.micatechnologies.minecraft.csm.trafficsigns;
 
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
 import net.minecraft.block.Block;
@@ -13,6 +13,7 @@ import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
+import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.Mirror;
 import net.minecraft.util.Rotation;
@@ -25,37 +26,43 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @ElementsCitySuperMod.ModElement.Tag
-public class BlockTrafficLightSensorBox extends ElementsCitySuperMod.ModElement {
-	@GameRegistry.ObjectHolder("csm:trafficlightsensorbox")
+public class BlockSignDontBlockTheBox extends ElementsCitySuperMod.ModElement {
+	@GameRegistry.ObjectHolder("csm:signdontblockthebox")
 	public static final Block block = null;
-	public BlockTrafficLightSensorBox( ElementsCitySuperMod instance) {
-		super(instance, 2242);
+	public BlockSignDontBlockTheBox( ElementsCitySuperMod instance) {
+		super(instance, 317);
 	}
 
 	@Override
 	public void initElements() {
-		elements.blocks.add(() -> new BlockCustom().setRegistryName("trafficlightsensorbox"));
+		elements.blocks.add(() -> new BlockCustom().setRegistryName("signdontblockthebox"));
 		elements.items.add(() -> new ItemBlock(block).setRegistryName(block.getRegistryName()));
 	}
 
 	@SideOnly(Side.CLIENT)
 	@Override
 	public void registerModels(ModelRegistryEvent event) {
-		ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(block), 0, new ModelResourceLocation("csm:trafficlightsensorbox", "inventory"));
+		ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(block), 0, new ModelResourceLocation("csm:signdontblockthebox", "inventory"));
 	}
 	public static class BlockCustom extends Block {
 		public static final PropertyDirection FACING = BlockDirectional.FACING;
 		public BlockCustom() {
 			super(Material.ROCK);
-			setUnlocalizedName("trafficlightsensorbox");
+			setUnlocalizedName("signdontblockthebox");
 			setSoundType(SoundType.GROUND);
 			setHarvestLevel("pickaxe", 1);
 			setHardness(2F);
 			setResistance(10F);
 			setLightLevel(0F);
 			setLightOpacity(0);
-			setCreativeTab( TabTrafficSignals.tab);
+			setCreativeTab(TabRoadSignTab.tab);
 			this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH));
+		}
+
+		@SideOnly(Side.CLIENT)
+		@Override
+		public BlockRenderLayer getBlockLayer() {
+			return BlockRenderLayer.CUTOUT_MIPPED;
 		}
 
 		@Override

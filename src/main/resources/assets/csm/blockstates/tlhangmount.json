@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:tlhangmount"
+    },
+    "facing=north": {
+      "model": "csm:tlhangmount"
+    },
+    "facing=east": {
+      "model": "csm:tlhangmount",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:tlhangmount",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:tlhangmount",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:tlhangmount",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:tlhangmount",
+      "x": 90
+    }
+  }
+}

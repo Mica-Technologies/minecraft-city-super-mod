@@ -30,7 +30,7 @@ public class BlockTrafficLightSensorShort extends ElementsCitySuperMod.ModElemen
     public static final Block block = null;
 
     public BlockTrafficLightSensorShort( ElementsCitySuperMod instance ) {
-        super( instance, 654 );
+        super( instance, 2243 );
     }
 
     @Override
