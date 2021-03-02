@@ -56,7 +56,7 @@ public class BlockTLHMountKit extends ElementsCitySuperMod.ModElement
         public BlockCustom() {
             super( Material.ROCK );
             setUnlocalizedName( "tlhmountkit" );
-            setSoundType( SoundType.GROUND );
+            setSoundType( SoundType.STONE );
             setHarvestLevel( "pickaxe", 1 );
             setHardness( 2F );
             setResistance( 10F );

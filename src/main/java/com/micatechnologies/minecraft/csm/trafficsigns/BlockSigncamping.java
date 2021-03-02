@@ -50,7 +50,7 @@ public class BlockSigncamping extends ElementsCitySuperMod.ModElement {
 		public BlockCustom() {
 			super(Material.ROCK);
 			setUnlocalizedName("signcamping");
-			setSoundType(SoundType.GROUND);
+			setSoundType(SoundType.STONE);
 			setHarvestLevel("pickaxe", 1);
 			setHardness(2F);
 			setResistance(10F);

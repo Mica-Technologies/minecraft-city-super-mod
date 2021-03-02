@@ -50,7 +50,7 @@ public class BlockSigntruckroll extends ElementsCitySuperMod.ModElement {
 		public BlockCustom() {
 			super(Material.ROCK);
 			setUnlocalizedName("signtruckroll");
-			setSoundType(SoundType.GROUND);
+			setSoundType(SoundType.STONE);
 			setHarvestLevel("pickaxe", 1);
 			setHardness(2F);
 			setResistance(10F);

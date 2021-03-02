@@ -52,7 +52,7 @@ public class BlockSignpostwallmountbottom1 extends ElementsCitySuperMod.ModEleme
 		public BlockCustom() {
 			super(Material.ROCK);
 			setUnlocalizedName("signpostwallmountbottom1");
-			setSoundType(SoundType.GROUND);
+			setSoundType(SoundType.STONE);
 			setHarvestLevel("pickaxe", 1);
 			setHardness(2F);
 			setResistance(10F);

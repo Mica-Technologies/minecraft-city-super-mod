@@ -44,7 +44,7 @@ public class BlockControllableHorizontalUpLeftSignal extends ElementsCitySuperMo
             super( Material.ROCK );
             setRegistryName( "controllablehorizontalupleftsignal" );
             setUnlocalizedName( "controllablehorizontalupleftsignal" );
-            setSoundType( SoundType.GROUND );
+            setSoundType( SoundType.STONE );
             setHarvestLevel( "pickaxe", 1 );
             setHardness( 2F );
             setResistance( 10F );

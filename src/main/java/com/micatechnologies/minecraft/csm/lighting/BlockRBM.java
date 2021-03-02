@@ -53,7 +53,7 @@ public class BlockRBM extends ElementsCitySuperMod.ModElement
         public BlockCustom() {
             super( Material.ROCK );
             setUnlocalizedName( "rbm" );
-            setSoundType( SoundType.GROUND );
+            setSoundType( SoundType.STONE );
             setHarvestLevel( "pickaxe", 1 );
             setHardness( 2F );
             setResistance( 10F );

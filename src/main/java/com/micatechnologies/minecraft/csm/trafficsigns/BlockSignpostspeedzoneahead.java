@@ -51,7 +51,7 @@ public class BlockSignpostspeedzoneahead extends ElementsCitySuperMod.ModElement
 		public BlockCustom() {
 			super(Material.ROCK);
 			setUnlocalizedName("signpostspeedzoneahead");
-			setSoundType(SoundType.GROUND);
+			setSoundType(SoundType.STONE);
 			setHarvestLevel("pickaxe", 1);
 			setHardness(2F);
 			setResistance(10F);

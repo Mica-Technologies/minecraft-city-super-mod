@@ -51,7 +51,7 @@ public class BlockTrafficpolehorzdblconcrete extends ElementsCitySuperMod.ModEle
 		public BlockCustom() {
 			super(Material.ROCK);
 			setUnlocalizedName("trafficpolehorzdblconcrete");
-			setSoundType(SoundType.GROUND);
+			setSoundType(SoundType.STONE);
 			setHarvestLevel("pickaxe", 1);
 			setHardness(2F);
 			setResistance(10F);

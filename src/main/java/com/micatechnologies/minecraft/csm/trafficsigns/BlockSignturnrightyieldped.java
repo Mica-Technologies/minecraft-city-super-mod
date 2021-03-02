@@ -52,7 +52,7 @@ public class BlockSignturnrightyieldped extends ElementsCitySuperMod.ModElement 
 		public BlockCustom() {
 			super(Material.ROCK);
 			setUnlocalizedName("signturnrightyieldped");
-			setSoundType(SoundType.GROUND);
+			setSoundType(SoundType.STONE);
 			setHarvestLevel("pickaxe", 1);
 			setHardness(2F);
 			setResistance(10F);

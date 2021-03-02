@@ -43,7 +43,7 @@ public class BlockBlackMetalFence extends ElementsCitySuperMod.ModElement
         public BlockCustom() {
             super( Material.ROCK, Material.ROCK.getMaterialMapColor() );
             setUnlocalizedName( "blackmetalfence" );
-            setSoundType( SoundType.GROUND );
+            setSoundType( SoundType.STONE);
             setHarvestLevel( "pickaxe", 1 );
             setHardness( 2F );
             setResistance( 10F );

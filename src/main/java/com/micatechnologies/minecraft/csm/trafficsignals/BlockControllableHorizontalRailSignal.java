@@ -44,7 +44,7 @@ public class BlockControllableHorizontalRailSignal extends ElementsCitySuperMod.
             super( Material.ROCK );
             setRegistryName( "controllablehorizontalrailsignal" );
             setUnlocalizedName( "controllablehorizontalrailsignal" );
-            setSoundType( SoundType.GROUND );
+            setSoundType( SoundType.STONE );
             setHarvestLevel( "pickaxe", 1 );
             setHardness( 2F );
             setResistance( 10F );

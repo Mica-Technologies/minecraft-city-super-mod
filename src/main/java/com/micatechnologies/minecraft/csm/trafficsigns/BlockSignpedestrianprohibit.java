@@ -51,7 +51,7 @@ public class BlockSignpedestrianprohibit extends ElementsCitySuperMod.ModElement
 		public BlockCustom() {
 			super(Material.ROCK);
 			setUnlocalizedName("signpedestrianprohibit");
-			setSoundType(SoundType.GROUND);
+			setSoundType(SoundType.STONE);
 			setHarvestLevel("pickaxe", 1);
 			setHardness(2F);
 			setResistance(10F);

@@ -51,7 +51,7 @@ public class BlockTrafficPoleVerticalCurveConnectorTan extends ElementsCitySuper
 		public BlockCustom() {
 			super(Material.ROCK);
 			setUnlocalizedName("trafficpoleverticalcurveconnectortan");
-			setSoundType(SoundType.GROUND);
+			setSoundType(SoundType.STONE);
 			setHarvestLevel("pickaxe", 1);
 			setHardness(2F);
 			setResistance(10F);

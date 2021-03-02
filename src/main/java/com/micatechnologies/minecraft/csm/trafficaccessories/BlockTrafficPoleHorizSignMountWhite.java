@@ -51,7 +51,7 @@ public class BlockTrafficPoleHorizSignMountWhite extends ElementsCitySuperMod.Mo
 		public BlockCustom() {
 			super(Material.ROCK);
 			setUnlocalizedName("trafficpolehorizsignmountwhite");
-			setSoundType(SoundType.GROUND);
+			setSoundType(SoundType.STONE);
 			setHarvestLevel("pickaxe", 1);
 			setHardness(2F);
 			setResistance(10F);

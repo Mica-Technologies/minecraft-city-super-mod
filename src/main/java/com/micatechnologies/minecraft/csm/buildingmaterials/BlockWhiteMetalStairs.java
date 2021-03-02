@@ -43,7 +43,7 @@ public class BlockWhiteMetalStairs extends ElementsCitySuperMod.ModElement
         public BlockCustom() {
             super( new Block( Material.ROCK ).getDefaultState() );
             setUnlocalizedName( "whitemetalstairs" );
-            setSoundType( SoundType.GROUND );
+            setSoundType( SoundType.STONE );
             setHarvestLevel( "pickaxe", 1 );
             setHardness( 2F );
             setResistance( 10F );

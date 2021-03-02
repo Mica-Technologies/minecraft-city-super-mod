@@ -51,7 +51,7 @@ public class BlockSignrdclosedthrutraffic extends ElementsCitySuperMod.ModElemen
 		public BlockCustom() {
 			super(Material.ROCK);
 			setUnlocalizedName("signrdclosedthrutraffic");
-			setSoundType(SoundType.GROUND);
+			setSoundType(SoundType.STONE);
 			setHarvestLevel("pickaxe", 1);
 			setHardness(2F);
 			setResistance(10F);

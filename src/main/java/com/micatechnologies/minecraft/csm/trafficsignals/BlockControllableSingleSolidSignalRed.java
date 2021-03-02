@@ -44,7 +44,7 @@ public class BlockControllableSingleSolidSignalRed extends ElementsCitySuperMod.
             super( Material.ROCK );
             setRegistryName( "controllablesinglesolidsignalred" );
             setUnlocalizedName( "controllablesinglesolidsignalred" );
-            setSoundType( SoundType.GROUND );
+            setSoundType( SoundType.STONE );
             setHarvestLevel( "pickaxe", 1 );
             setHardness( 2F );
             setResistance( 10F );

@@ -51,7 +51,7 @@ public class BlockTrafficPoleVerticalQuadMountWhite extends ElementsCitySuperMod
 		public BlockCustom() {
 			super(Material.ROCK);
 			setUnlocalizedName("trafficpoleverticalquadmountwhite");
-			setSoundType(SoundType.GROUND);
+			setSoundType(SoundType.STONE);
 			setHarvestLevel("pickaxe", 1);
 			setHardness(2F);
 			setResistance(10F);

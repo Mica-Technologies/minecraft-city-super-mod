@@ -54,7 +54,7 @@ public class BlockControllableCrosswalkTweeter1 extends ElementsCitySuperMod.Mod
             super( Material.ROCK );
             setRegistryName( "controllablecrosswalktweeter1" );
             setUnlocalizedName( "controllablecrosswalktweeter1" );
-            setSoundType( SoundType.GROUND );
+            setSoundType( SoundType.STONE );
             setHarvestLevel( "pickaxe", 1 );
             setHardness( 2F );
             setResistance( 10F );

@@ -59,7 +59,7 @@ public class BlockControllableCrosswalkButtonMale extends ElementsCitySuperMod.M
             super( Material.ROCK );
             setRegistryName( "controllablecrosswalkbuttonmale" );
             setUnlocalizedName( "controllablecrosswalkbuttonmale" );
-            setSoundType( SoundType.GROUND );
+            setSoundType( SoundType.STONE );
             setHarvestLevel( "pickaxe", 1 );
             setHardness( 2F );
             setResistance( 10F );

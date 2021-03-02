@@ -51,7 +51,7 @@ public class BlockSigntrucksuserightlanes extends ElementsCitySuperMod.ModElemen
 		public BlockCustom() {
 			super(Material.ROCK);
 			setUnlocalizedName("signtrucksuserightlanes");
-			setSoundType(SoundType.GROUND);
+			setSoundType(SoundType.STONE);
 			setHarvestLevel("pickaxe", 1);
 			setHardness(2F);
 			setResistance(10F);

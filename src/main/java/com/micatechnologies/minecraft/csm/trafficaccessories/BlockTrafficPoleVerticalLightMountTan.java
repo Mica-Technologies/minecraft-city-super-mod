@@ -51,7 +51,7 @@ public class BlockTrafficPoleVerticalLightMountTan extends ElementsCitySuperMod.
 		public BlockCustom() {
 			super(Material.ROCK);
 			setUnlocalizedName("trafficpoleverticallightmounttan");
-			setSoundType(SoundType.GROUND);
+			setSoundType(SoundType.STONE);
 			setHarvestLevel("pickaxe", 1);
 			setHardness(2F);
 			setResistance(10F);

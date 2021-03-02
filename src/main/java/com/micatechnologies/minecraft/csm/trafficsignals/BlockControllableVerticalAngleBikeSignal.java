@@ -44,7 +44,7 @@ public class BlockControllableVerticalAngleBikeSignal extends ElementsCitySuperM
             super( Material.ROCK );
             setRegistryName( "controllableverticalanglebikesignal" );
             setUnlocalizedName( "controllableverticalanglebikesignal" );
-            setSoundType( SoundType.GROUND );
+            setSoundType( SoundType.STONE );
             setHarvestLevel( "pickaxe", 1 );
             setHardness( 2F );
             setResistance( 10F );

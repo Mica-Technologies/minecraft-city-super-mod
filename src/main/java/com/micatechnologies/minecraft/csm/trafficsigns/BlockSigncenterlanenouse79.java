@@ -51,7 +51,7 @@ public class BlockSigncenterlanenouse79 extends ElementsCitySuperMod.ModElement 
 		public BlockCustom() {
 			super(Material.ROCK);
 			setUnlocalizedName("signcenterlanenouse79");
-			setSoundType(SoundType.GROUND);
+			setSoundType(SoundType.STONE);
 			setHarvestLevel("pickaxe", 1);
 			setHardness(2F);
 			setResistance(10F);

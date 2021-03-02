@@ -51,7 +51,7 @@ public class BlockTrafficPoleHorizontalSingleMountBlack extends ElementsCitySupe
 		public BlockCustom() {
 			super(Material.ROCK);
 			setUnlocalizedName("trafficpolehorizontalsinglemountblack");
-			setSoundType(SoundType.GROUND);
+			setSoundType(SoundType.STONE);
 			setHarvestLevel("pickaxe", 1);
 			setHardness(2F);
 			setResistance(10F);

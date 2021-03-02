@@ -51,7 +51,7 @@ public class BlockSignemergencyparkingonly extends ElementsCitySuperMod.ModEleme
 		public BlockCustom() {
 			super(Material.ROCK);
 			setUnlocalizedName("signemergencyparkingonly");
-			setSoundType(SoundType.GROUND);
+			setSoundType(SoundType.STONE);
 			setHarvestLevel("pickaxe", 1);
 			setHardness(2F);
 			setResistance(10F);

@@ -51,7 +51,7 @@ public class BlockSigncenterlanebusonly69 extends ElementsCitySuperMod.ModElemen
 		public BlockCustom() {
 			super(Material.ROCK);
 			setUnlocalizedName("signcenterlanebusonly69");
-			setSoundType(SoundType.GROUND);
+			setSoundType(SoundType.STONE);
 			setHarvestLevel("pickaxe", 1);
 			setHardness(2F);
 			setResistance(10F);

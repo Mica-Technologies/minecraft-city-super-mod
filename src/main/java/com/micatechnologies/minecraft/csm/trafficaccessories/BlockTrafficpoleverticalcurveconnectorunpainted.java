@@ -51,7 +51,7 @@ public class BlockTrafficpoleverticalcurveconnectorunpainted extends ElementsCit
 		public BlockCustom() {
 			super(Material.ROCK);
 			setUnlocalizedName("trafficpoleverticalcurveconnectorunpainted");
-			setSoundType(SoundType.GROUND);
+			setSoundType(SoundType.STONE);
 			setHarvestLevel("pickaxe", 1);
 			setHardness(2F);
 			setResistance(10F);

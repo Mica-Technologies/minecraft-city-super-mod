@@ -44,7 +44,7 @@ public class BlockControllableHorizontalAngleSolidSignal extends ElementsCitySup
             super( Material.ROCK );
             setRegistryName( "controllablehorizontalanglesolidsignal" );
             setUnlocalizedName( "controllablehorizontalanglesolidsignal" );
-            setSoundType( SoundType.GROUND );
+            setSoundType( SoundType.STONE );
             setHarvestLevel( "pickaxe", 1 );
             setHardness( 2F );
             setResistance( 10F );

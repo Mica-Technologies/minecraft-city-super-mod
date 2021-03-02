@@ -23,7 +23,7 @@ public abstract class AbstractBlockFireAlarmSounder extends Block
     public AbstractBlockFireAlarmSounder() {
         super( Material.ROCK );
         setUnlocalizedName( getBlockRegistryName() );
-        setSoundType( SoundType.GROUND );
+        setSoundType( SoundType.STONE );
         setHarvestLevel( "pickaxe", 1 );
         setHardness( 2F );
         setResistance( 10F );

@@ -50,7 +50,7 @@ public class BlockTrafficStreetNameSign extends ElementsCitySuperMod.ModElement 
 			super(Material.ROCK);
 			setRegistryName("trafficstreetnamesign");
 			setUnlocalizedName("trafficstreetnamesign");
-			setSoundType(SoundType.GROUND);
+			setSoundType(SoundType.STONE);
 			setHarvestLevel("pickaxe", 1);
 			setHardness(2F);
 			setResistance(10F);

@@ -51,7 +51,7 @@ public class BlockTrafficPoleVerticalSignalMount extends ElementsCitySuperMod.Mo
 		public BlockCustom() {
 			super(Material.ROCK);
 			setUnlocalizedName("trafficpoleverticalsignalmount");
-			setSoundType(SoundType.GROUND);
+			setSoundType(SoundType.STONE);
 			setHarvestLevel("pickaxe", 1);
 			setHardness(2F);
 			setResistance(10F);

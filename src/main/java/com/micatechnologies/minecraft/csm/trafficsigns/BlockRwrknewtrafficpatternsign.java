@@ -53,7 +53,7 @@ public class BlockRwrknewtrafficpatternsign extends ElementsCitySuperMod.ModElem
 		public BlockCustom() {
 			super(Material.ROCK);
 			setUnlocalizedName("rwrknewtrafficpatternsign");
-			setSoundType(SoundType.GROUND);
+			setSoundType(SoundType.STONE);
 			setHarvestLevel("pickaxe", 1);
 			setHardness(2F);
 			setResistance(10F);

@@ -53,7 +53,7 @@ public class BlockStreetsweeptuesschool extends ElementsCitySuperMod.ModElement 
 		public BlockCustom() {
 			super(Material.ROCK);
 			setUnlocalizedName("streetsweeptuesschool");
-			setSoundType(SoundType.GROUND);
+			setSoundType(SoundType.STONE);
 			setHarvestLevel("pickaxe", 1);
 			setHardness(2F);
 			setResistance(10F);

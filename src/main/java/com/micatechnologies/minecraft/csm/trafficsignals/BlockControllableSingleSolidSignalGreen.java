@@ -44,7 +44,7 @@ public class BlockControllableSingleSolidSignalGreen extends ElementsCitySuperMo
             super( Material.ROCK );
             setRegistryName( "controllablesinglesolidsignalgreen" );
             setUnlocalizedName( "controllablesinglesolidsignalgreen" );
-            setSoundType( SoundType.GROUND );
+            setSoundType( SoundType.STONE );
             setHarvestLevel( "pickaxe", 1 );
             setHardness( 2F );
             setResistance( 10F );

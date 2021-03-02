@@ -51,7 +51,7 @@ public class BlockSignstatepropertynotrasspassing extends ElementsCitySuperMod.M
 		public BlockCustom() {
 			super(Material.ROCK);
 			setUnlocalizedName("signstatepropertynotrasspassing");
-			setSoundType(SoundType.GROUND);
+			setSoundType(SoundType.STONE);
 			setHarvestLevel("pickaxe", 1);
 			setHardness(2F);
 			setResistance(10F);

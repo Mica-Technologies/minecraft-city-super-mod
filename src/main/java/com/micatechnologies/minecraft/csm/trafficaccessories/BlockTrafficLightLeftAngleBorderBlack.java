@@ -57,7 +57,7 @@ public class BlockTrafficLightLeftAngleBorderBlack extends ElementsCitySuperMod.
         public BlockCustom() {
             super( Material.ROCK );
             setUnlocalizedName( "trafficlightleftangleborderblack" );
-            setSoundType( SoundType.GROUND );
+            setSoundType( SoundType.STONE );
             setHarvestLevel( "pickaxe", 1 );
             setHardness( 2F );
             setResistance( 10F );

@@ -53,7 +53,7 @@ public class BlockDMPT extends ElementsCitySuperMod.ModElement
         public BlockCustom() {
             super( Material.ROCK );
             setUnlocalizedName( "dmpt" );
-            setSoundType( SoundType.GROUND );
+            setSoundType( SoundType.STONE );
             setHardness( 1F );
             setResistance( 10F );
             setLightLevel( 0F );

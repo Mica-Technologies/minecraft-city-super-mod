@@ -44,7 +44,7 @@ public class BlockControllableVerticalRightSignal extends ElementsCitySuperMod.M
             super( Material.ROCK );
             setRegistryName( "controllableverticalrightsignal" );
             setUnlocalizedName( "controllableverticalrightsignal" );
-            setSoundType( SoundType.GROUND );
+            setSoundType( SoundType.STONE );
             setHarvestLevel( "pickaxe", 1 );
             setHardness( 2F );
             setResistance( 10F );

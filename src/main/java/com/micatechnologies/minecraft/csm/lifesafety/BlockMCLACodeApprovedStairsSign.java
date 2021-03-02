@@ -57,7 +57,7 @@ public class BlockMCLACodeApprovedStairsSign extends ElementsCitySuperMod.ModEle
         public BlockCustom() {
             super( Material.ROCK );
             setUnlocalizedName( "mclacodeapprovedstairssign" );
-            setSoundType( SoundType.GROUND );
+            setSoundType( SoundType.STONE );
             setHardness( 1F );
             setResistance( 10F );
             setLightLevel( 0.85F );

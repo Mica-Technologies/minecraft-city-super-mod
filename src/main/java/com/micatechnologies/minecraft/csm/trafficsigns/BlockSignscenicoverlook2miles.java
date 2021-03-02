@@ -52,7 +52,7 @@ public class BlockSignscenicoverlook2miles extends ElementsCitySuperMod.ModEleme
 		public BlockCustom() {
 			super(Material.ROCK);
 			setUnlocalizedName("signscenicoverlook2miles");
-			setSoundType(SoundType.GROUND);
+			setSoundType(SoundType.STONE);
 			setHarvestLevel("pickaxe", 1);
 			setHardness(2F);
 			setResistance(10F);

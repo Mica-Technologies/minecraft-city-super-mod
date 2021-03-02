@@ -51,7 +51,7 @@ public class BlockTrafficpoleverticalquadmountunpainted extends ElementsCitySupe
 		public BlockCustom() {
 			super(Material.ROCK);
 			setUnlocalizedName("trafficpoleverticalquadmountunpainted");
-			setSoundType(SoundType.GROUND);
+			setSoundType(SoundType.STONE);
 			setHarvestLevel("pickaxe", 1);
 			setHardness(2F);
 			setResistance(10F);

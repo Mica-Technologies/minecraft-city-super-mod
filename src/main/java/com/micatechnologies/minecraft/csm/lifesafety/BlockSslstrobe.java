@@ -56,7 +56,7 @@ public class BlockSslstrobe extends ElementsCitySuperMod.ModElement
         public BlockCustom() {
             super( Material.ROCK );
             setUnlocalizedName( "sslstrobe" );
-            setSoundType( SoundType.GROUND );
+            setSoundType( SoundType.STONE );
             setHarvestLevel( "pickaxe", 1 );
             setHardness( 2F );
             setResistance( 10F );

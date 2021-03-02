@@ -44,7 +44,7 @@ public class BlockControllableHorizontalAngleRailSignal extends ElementsCitySupe
             super( Material.ROCK );
             setRegistryName( "controllablehorizontalanglerailsignal" );
             setUnlocalizedName( "controllablehorizontalanglerailsignal" );
-            setSoundType( SoundType.GROUND );
+            setSoundType( SoundType.STONE );
             setHarvestLevel( "pickaxe", 1 );
             setHardness( 2F );
             setResistance( 10F );

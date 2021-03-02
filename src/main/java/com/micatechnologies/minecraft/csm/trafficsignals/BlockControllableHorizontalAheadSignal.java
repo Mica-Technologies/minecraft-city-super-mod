@@ -44,7 +44,7 @@ public class BlockControllableHorizontalAheadSignal extends ElementsCitySuperMod
             super( Material.ROCK );
             setRegistryName( "controllablehorizontalaheadsignal" );
             setUnlocalizedName( "controllablehorizontalaheadsignal" );
-            setSoundType( SoundType.GROUND );
+            setSoundType( SoundType.STONE );
             setHarvestLevel( "pickaxe", 1 );
             setHardness( 2F );
             setResistance( 10F );

@@ -58,7 +58,7 @@ public class BlockElight extends ElementsCitySuperMod.ModElement
             super( Material.ROCK );
             setRegistryName( "elight" );
             setUnlocalizedName( "elight" );
-            setSoundType( SoundType.GROUND );
+            setSoundType( SoundType.STONE );
             setHarvestLevel( "pickaxe", 1 );
             setHardness( 2F );
             setResistance( 10F );

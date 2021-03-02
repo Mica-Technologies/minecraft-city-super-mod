@@ -52,7 +52,7 @@ public class BlockSignpostwallmounttop1 extends ElementsCitySuperMod.ModElement 
 		public BlockCustom() {
 			super(Material.ROCK);
 			setUnlocalizedName("signpostwallmounttop1");
-			setSoundType(SoundType.GROUND);
+			setSoundType(SoundType.STONE);
 			setHarvestLevel("pickaxe", 1);
 			setHardness(2F);
 			setResistance(10F);

@@ -52,7 +52,7 @@ public class BlockSignweighstation1mile extends ElementsCitySuperMod.ModElement 
 		public BlockCustom() {
 			super(Material.ROCK);
 			setUnlocalizedName("signweighstation1mile");
-			setSoundType(SoundType.GROUND);
+			setSoundType(SoundType.STONE);
 			setHarvestLevel("pickaxe", 1);
 			setHardness(2F);
 			setResistance(10F);

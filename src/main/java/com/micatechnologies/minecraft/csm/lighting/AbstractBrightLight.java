@@ -43,7 +43,7 @@ public abstract class AbstractBrightLight extends Block
         super( Material.ROCK );
         setRegistryName( getBlockRegistryName() );
         setUnlocalizedName( getBlockRegistryName() );
-        setSoundType( SoundType.GROUND );
+        setSoundType( SoundType.STONE );
         setHarvestLevel( "pickaxe", 1 );
         setHardness( 2F );
         setResistance( 10F );

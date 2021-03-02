@@ -57,7 +57,7 @@ public class BlockExitSignSingleSided extends ElementsCitySuperMod.ModElement
         public BlockCustom() {
             super( Material.ROCK );
             setUnlocalizedName( "exitsignsinglesided" );
-            setSoundType( SoundType.GROUND );
+            setSoundType( SoundType.STONE );
             setHardness( 1F );
             setResistance( 10F );
             setLightLevel( 0.85F );

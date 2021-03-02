@@ -44,7 +44,7 @@ public class BlockControllableVerticalAngle2UTurnSignal extends ElementsCitySupe
             super( Material.ROCK );
             setRegistryName( "controllableverticalangle2uturnsignal" );
             setUnlocalizedName( "controllableverticalangle2uturnsignal" );
-            setSoundType( SoundType.GROUND );
+            setSoundType( SoundType.STONE );
             setHarvestLevel( "pickaxe", 1 );
             setHardness( 2F );
             setResistance( 10F );

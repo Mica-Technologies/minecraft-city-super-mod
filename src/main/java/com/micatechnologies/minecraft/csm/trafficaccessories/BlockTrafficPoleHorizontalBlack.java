@@ -51,7 +51,7 @@ public class BlockTrafficPoleHorizontalBlack extends ElementsCitySuperMod.ModEle
 		public BlockCustom() {
 			super(Material.ROCK);
 			setUnlocalizedName("trafficpolehorizontalblack");
-			setSoundType(SoundType.GROUND);
+			setSoundType(SoundType.STONE);
 			setHarvestLevel("pickaxe", 1);
 			setHardness(2F);
 			setResistance(10F);

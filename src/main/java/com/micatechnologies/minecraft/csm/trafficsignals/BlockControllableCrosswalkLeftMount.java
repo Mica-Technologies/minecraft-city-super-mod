@@ -44,7 +44,7 @@ public class BlockControllableCrosswalkLeftMount extends ElementsCitySuperMod.Mo
             super( Material.ROCK );
             setRegistryName( "controllablecrosswalkleftmount" );
             setUnlocalizedName( "controllablecrosswalkleftmount" );
-            setSoundType( SoundType.GROUND );
+            setSoundType( SoundType.STONE );
             setHarvestLevel( "pickaxe", 1 );
             setHardness( 2F );
             setResistance( 10F );

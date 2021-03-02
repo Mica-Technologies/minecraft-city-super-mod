@@ -51,7 +51,7 @@ public class BlockSignweightlimit2peraxle extends ElementsCitySuperMod.ModElemen
 		public BlockCustom() {
 			super(Material.ROCK);
 			setUnlocalizedName("signweightlimit2peraxle");
-			setSoundType(SoundType.GROUND);
+			setSoundType(SoundType.STONE);
 			setHarvestLevel("pickaxe", 1);
 			setHardness(2F);
 			setResistance(10F);
