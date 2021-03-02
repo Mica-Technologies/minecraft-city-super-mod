@@ -1,0 +1,10 @@
+{
+  "parent": "csm:custom/signal_snow_beacon",
+  "textures": {
+    "all": "csm:blocks/metal_white",
+    "particle": "csm:blocks/metal_white",
+    "0": "csm:blocks/metal_white",
+    "1": "csm:blocks/white_beacon",
+    "2": "csm:blocks/snow_emergency"
+  }
+}

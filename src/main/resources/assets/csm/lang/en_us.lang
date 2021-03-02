@@ -1343,3 +1343,4 @@ itemGroup.tablighting=CSM: Lighting
 itemGroup.tabnovelties=CSM: Novelties/Other
 tile.smsmx.name=Solarmax SMX
 tile.tlpreemptbeacon.name=Traffic Signal Preemption Beacon (Red)
+tile.tlsnowbeacon.name=Snow Emergency Beacon
