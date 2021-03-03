@@ -1,0 +1,9 @@
+{
+  "parent": "csm:custom/signal_interconnect_module_2",
+  "textures": {
+    "all": "csm:blocks/metal",
+    "particle": "csm:blocks/metal",
+    "0": "csm:blocks/metal",
+    "1": "csm:blocks/antenna"
+  }
+}

@@ -103,8 +103,13 @@ public class BlockControllableTattleTaleBeacon extends ElementsCitySuperMod.ModE
                 TileEntity tileEntity = p_onBlockActivated_1_.getTileEntity( p_onBlockActivated_2_ );
                 if ( tileEntity instanceof TileEntityTattleTaleBeacon ) {
                     TileEntityTattleTaleBeacon tileEntityTattleTaleBeacon = ( TileEntityTattleTaleBeacon ) tileEntity;
-                    tileEntityTattleTaleBeacon.cycleMode(p_onBlockActivated_4_);
+                    tileEntityTattleTaleBeacon.cycleMode( p_onBlockActivated_4_ );
                 }
+            }
+            else {
+                return super.onBlockActivated( p_onBlockActivated_1_, p_onBlockActivated_2_, p_onBlockActivated_3_,
+                                               p_onBlockActivated_4_, p_onBlockActivated_5_, p_onBlockActivated_6_,
+                                               p_onBlockActivated_7_, p_onBlockActivated_8_, p_onBlockActivated_9_ );
             }
 
             return true;
