@@ -23,5 +23,5 @@ public class ModConstants
      * The version of the mod. This number should be incremented by 0.0.1 for bug fix releases, incremented by 0.1 for
      * feature and bug fix releases, or incremented by 1.0 for large or breaking changes.
      */
-    public static final String MOD_VERSION = "2020.6-dev";
+    public static final String MOD_VERSION = "2021.3b3";
 }

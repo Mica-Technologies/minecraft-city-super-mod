@@ -2,6 +2,8 @@ package com.micatechnologies.minecraft.csm.trafficsignals;
 
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
 public class AbstractBlockControllableCrosswalkAccessory extends AbstractBlockControllableSignal
 {
@@ -14,7 +16,7 @@ public class AbstractBlockControllableCrosswalkAccessory extends AbstractBlockCo
     }
 
     @Override
-    public SIGNAL_SIDE getSignalSide() {
+    public SIGNAL_SIDE getSignalSide( World world, BlockPos blockPos) {
         return SIGNAL_SIDE.CROSSWALK;
     }
 

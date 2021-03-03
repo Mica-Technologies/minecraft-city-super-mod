@@ -89,7 +89,7 @@ public abstract class AbstractBlockControllableSignal extends Block
         return false;
     }
 
-    public abstract SIGNAL_SIDE getSignalSide();
+    public abstract SIGNAL_SIDE getSignalSide(World world, BlockPos blockPos);
 
     public static void changeSignalColor( World world, BlockPos blockPos, int signalColor ) {
         IBlockState blockState = world.getBlockState( blockPos );

@@ -32,18 +32,18 @@ public class TileEntityTrafficSignalController extends TileEntity
     private static final int[][]  CYCLE_LIST_0                   = { { 3, 0, 3, 0, 3, 0, 3, 0, 3, 3, 1 },
                                                                      { 1, 3, 1, 3, 3, 3, 0, 3, 0, 3, 1 } };
 
-    private static final int[][] CYCLE_LIST_1 = { { 3, 0, 0, 0, 0, 3, 0, 0, 2, 0, 5 },
-                                                  { 3, 2, 0, 0, 0, 3, 0, 0, 2, 0, 10 },
-                                                  { 3, 1, 0, 0, 0, 3, 0, 0, 1, 0, 5 },
-                                                  { 3, 0, 0, 0, 0, 3, 0, 0, 0, 1, 5 },
-                                                  { 3, 0, 2, 2, 0, 3, 0, 0, 0, 1, 14 },
-                                                  { 3, 0, 1, 2, 0, 3, 0, 0, 0, 0, 5 },
-                                                  { 3, 0, 0, 2, 0, 3, 0, 0, 0, 0, 5 },
-                                                  { 3, 0, 0, 2, 0, 3, 2, 0, 0, 0, 10 },
-                                                  { 3, 0, 0, 1, 0, 3, 1, 0, 0, 0, 5 },
-                                                  { 3, 0, 0, 0, 1, 3, 0, 0, 0, 0, 5 },
-                                                  { 3, 0, 0, 0, 1, 3, 0, 2, 2, 0, 14 },
-                                                  { 3, 0, 0, 0, 0, 3, 0, 1, 2, 0, 5 } };
+    private static final int[][] CYCLE_LIST_1 = { { 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 5 },
+                                                  { 0, 2, 0, 0, 0, 0, 0, 0, 2, 0, 10 },
+                                                  { 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 5 },
+                                                  { 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 5 },
+                                                  { 2, 0, 2, 2, 0, 0, 0, 0, 0, 1, 14 },
+                                                  { 1, 0, 1, 2, 0, 0, 0, 0, 0, 0, 5 },
+                                                  { 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 5 },
+                                                  { 0, 0, 0, 2, 0, 0, 2, 0, 0, 0, 10 },
+                                                  { 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 5 },
+                                                  { 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 5 },
+                                                  { 0, 0, 0, 0, 1, 2, 0, 2, 2, 0, 14 },
+                                                  { 0, 0, 0, 0, 0, 1, 0, 1, 2, 0, 5 } };
 
     private static final int[][] CYCLE_LIST_2 = { { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5 },
                                                   { 0, 2, 0, 0, 0, 0, 0, 0, 2, 0, 10 },
@@ -58,12 +58,12 @@ public class TileEntityTrafficSignalController extends TileEntity
                                                   { 0, 0, 0, 0, 1, 2, 0, 2, 0, 0, 14 },
                                                   { 0, 0, 0, 0, 1, 1, 0, 1, 0, 0, 5 } };
 
-    private static final int[][] CYCLE_LIST_3         = { { 3, 0, 0, 0, 0, 3, 0, 0, 0, 1, 5 },
-                                                          { 3, 2, 2, 2, 0, 3, 0, 0, 0, 1, 14 },
-                                                          { 3, 1, 1, 1, 0, 3, 0, 0, 0, 0, 5 },
-                                                          { 3, 0, 0, 0, 1, 3, 0, 0, 0, 0, 5 },
-                                                          { 3, 0, 0, 0, 1, 3, 2, 2, 2, 0, 14 },
-                                                          { 3, 0, 0, 0, 0, 3, 1, 1, 1, 0, 5 } };
+    private static final int[][] CYCLE_LIST_3         = { { 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 5 },
+                                                          { 2, 2, 2, 2, 0, 0, 0, 0, 0, 1, 14 },
+                                                          { 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 5 },
+                                                          { 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 5 },
+                                                          { 0, 0, 0, 0, 1, 2, 2, 2, 2, 0, 14 },
+                                                          { 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 5 } };
     private static final int[][] CYCLE_LIST_4         = { { 2, 2, 2, 2, 2, 0, 0, 0, 0, 2, 3 },
                                                           { 0, 0, 0, 0, 2, 0, 0, 0, 0, 2, 3 },
                                                           { 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 3 },
@@ -247,27 +247,31 @@ public class TileEntityTrafficSignalController extends TileEntity
                         = ( AbstractBlockControllableSignal ) blockState.getBlock();
 
                 if ( powered &&
-                        controllableSignal.getSignalSide() == AbstractBlockControllableSignal.SIGNAL_SIDE.LEFT ) {
+                        controllableSignal.getSignalSide( world, nsBlockPos ) ==
+                                AbstractBlockControllableSignal.SIGNAL_SIDE.LEFT ) {
                     AbstractBlockControllableSignal.changeSignalColor( world, nsBlockPos,
                                                                        cycle[ currentPhase ][ NS_LEFT_CYCLE_INDEX ] );
                 }
                 else if ( powered &&
-                        controllableSignal.getSignalSide() == AbstractBlockControllableSignal.SIGNAL_SIDE.AHEAD ) {
+                        controllableSignal.getSignalSide( world, nsBlockPos ) ==
+                                AbstractBlockControllableSignal.SIGNAL_SIDE.AHEAD ) {
                     AbstractBlockControllableSignal.changeSignalColor( world, nsBlockPos,
                                                                        cycle[ currentPhase ][ NS_AHEAD_CYCLE_INDEX ] );
                 }
                 else if ( powered &&
-                        controllableSignal.getSignalSide() == AbstractBlockControllableSignal.SIGNAL_SIDE.RIGHT ) {
+                        controllableSignal.getSignalSide( world, nsBlockPos ) ==
+                                AbstractBlockControllableSignal.SIGNAL_SIDE.RIGHT ) {
                     AbstractBlockControllableSignal.changeSignalColor( world, nsBlockPos,
                                                                        cycle[ currentPhase ][ NS_RIGHT_CYCLE_INDEX ] );
                 }
                 else if ( powered &&
-                        controllableSignal.getSignalSide() == AbstractBlockControllableSignal.SIGNAL_SIDE.CROSSWALK ) {
+                        controllableSignal.getSignalSide( world, nsBlockPos ) ==
+                                AbstractBlockControllableSignal.SIGNAL_SIDE.CROSSWALK ) {
                     AbstractBlockControllableSignal.changeSignalColor( world, nsBlockPos,
                                                                        cycle[ currentPhase ][ NS_CROSSWALK_CYCLE_INDEX ] );
                 }
                 else if ( powered &&
-                        controllableSignal.getSignalSide() ==
+                        controllableSignal.getSignalSide( world, nsBlockPos ) ==
                                 AbstractBlockControllableSignal.SIGNAL_SIDE.PROTECTED_AHEAD ) {
                     AbstractBlockControllableSignal.changeSignalColor( world, nsBlockPos,
                                                                        cycle[ currentPhase ][ NS_PROTECTED_AHEAD_CYCLE_INDEX ] );
@@ -287,27 +291,31 @@ public class TileEntityTrafficSignalController extends TileEntity
                         = ( AbstractBlockControllableSignal ) blockState.getBlock();
 
                 if ( powered &&
-                        controllableSignal.getSignalSide() == AbstractBlockControllableSignal.SIGNAL_SIDE.LEFT ) {
+                        controllableSignal.getSignalSide( world, ewBlockPos ) ==
+                                AbstractBlockControllableSignal.SIGNAL_SIDE.LEFT ) {
                     AbstractBlockControllableSignal.changeSignalColor( world, ewBlockPos,
                                                                        cycle[ currentPhase ][ EW_LEFT_CYCLE_INDEX ] );
                 }
                 else if ( powered &&
-                        controllableSignal.getSignalSide() == AbstractBlockControllableSignal.SIGNAL_SIDE.AHEAD ) {
+                        controllableSignal.getSignalSide( world, ewBlockPos ) ==
+                                AbstractBlockControllableSignal.SIGNAL_SIDE.AHEAD ) {
                     AbstractBlockControllableSignal.changeSignalColor( world, ewBlockPos,
                                                                        cycle[ currentPhase ][ EW_AHEAD_CYCLE_INDEX ] );
                 }
                 else if ( powered &&
-                        controllableSignal.getSignalSide() == AbstractBlockControllableSignal.SIGNAL_SIDE.RIGHT ) {
+                        controllableSignal.getSignalSide( world, ewBlockPos ) ==
+                                AbstractBlockControllableSignal.SIGNAL_SIDE.RIGHT ) {
                     AbstractBlockControllableSignal.changeSignalColor( world, ewBlockPos,
                                                                        cycle[ currentPhase ][ EW_RIGHT_CYCLE_INDEX ] );
                 }
                 else if ( powered &&
-                        controllableSignal.getSignalSide() == AbstractBlockControllableSignal.SIGNAL_SIDE.CROSSWALK ) {
+                        controllableSignal.getSignalSide( world, ewBlockPos ) ==
+                                AbstractBlockControllableSignal.SIGNAL_SIDE.CROSSWALK ) {
                     AbstractBlockControllableSignal.changeSignalColor( world, ewBlockPos,
                                                                        cycle[ currentPhase ][ EW_CROSSWALK_CYCLE_INDEX ] );
                 }
                 else if ( powered &&
-                        controllableSignal.getSignalSide() ==
+                        controllableSignal.getSignalSide( world, ewBlockPos ) ==
                                 AbstractBlockControllableSignal.SIGNAL_SIDE.PROTECTED_AHEAD ) {
                     AbstractBlockControllableSignal.changeSignalColor( world, ewBlockPos,
                                                                        cycle[ currentPhase ][ EW_PROTECTED_AHEAD_CYCLE_INDEX ] );

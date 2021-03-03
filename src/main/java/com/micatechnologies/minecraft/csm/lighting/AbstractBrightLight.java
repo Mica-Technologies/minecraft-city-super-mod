@@ -173,7 +173,8 @@ public abstract class AbstractBrightLight extends Block
         else {
             // Show warning if light is powered by redstone
             if (player instanceof EntityPlayer && !world.isRemote && world.isBlockPowered( pos ) ) {
-				    ((EntityPlayer) player).sendStatusMessage( new TextComponentString( "§cThis light is connected to redstone!" + "§cMannal control is not possible!" ), (true));
+				    ((EntityPlayer) player).sendStatusMessage( new TextComponentString( "§cThis light is connected to" +
+                                                                                                " redstone!" + "§cManual control is not possible!" ), (true));
 			}
 
             // Cycle to on if off

@@ -16,6 +16,8 @@ import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
 @ElementsCitySuperMod.ModElement.Tag
 public class BlockControllableTrafficSignalTrainController extends ElementsCitySuperMod.ModElement
@@ -113,7 +115,7 @@ public class BlockControllableTrafficSignalTrainController extends ElementsCityS
         }
 
         @Override
-        public SIGNAL_SIDE getSignalSide() {
+        public SIGNAL_SIDE getSignalSide( World world, BlockPos blockPos ) {
             return SIGNAL_SIDE.PROTECTED_AHEAD;
         }
 
