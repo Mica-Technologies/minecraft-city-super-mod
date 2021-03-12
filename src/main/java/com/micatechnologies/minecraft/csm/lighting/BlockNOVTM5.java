@@ -75,33 +75,23 @@ public class BlockNOVTM5 extends ElementsCitySuperMod.ModElement {
 
 		@Override
 		protected net.minecraft.block.state.BlockStateContainer createBlockState() {
-			return new net.minecraft.block.state.BlockStateContainer(this, new IProperty[]{FACING});
-		}
-
-		@Override
-		public IBlockState withRotation(IBlockState state, Rotation rot) {
-			return state.withProperty(FACING, rot.rotate((EnumFacing) state.getValue(FACING)));
-		}
-
-		@Override
-		public IBlockState withMirror(IBlockState state, Mirror mirrorIn) {
-			return state.withRotation(mirrorIn.toRotation((EnumFacing) state.getValue(FACING)));
+			return new net.minecraft.block.state.BlockStateContainer(this, FACING);
 		}
 
 		@Override
 		public IBlockState getStateFromMeta(int meta) {
-			return this.getDefaultState().withProperty(FACING, EnumFacing.getFront(meta));
+			return this.getDefaultState().withProperty(FACING, EnumFacing.getHorizontal(meta));
 		}
 
 		@Override
 		public int getMetaFromState(IBlockState state) {
-			return ((EnumFacing) state.getValue(FACING)).getIndex();
+			return ((EnumFacing) state.getValue(FACING)).getHorizontalIndex();
 		}
 
 		@Override
 		public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta,
-				EntityLivingBase placer) {
-			return this.getDefaultState().withProperty(FACING, EnumFacing.getDirectionFromEntityLiving(pos, placer));
+												EntityLivingBase placer) {
+			return this.getDefaultState().withProperty(FACING, placer.getHorizontalFacing().getOpposite());
 		}
 
 		@Override

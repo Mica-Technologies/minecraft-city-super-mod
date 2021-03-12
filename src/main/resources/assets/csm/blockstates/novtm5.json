@@ -17,14 +17,6 @@
     "facing=west": {
       "model": "csm:novtm5",
       "y": 270
-    },
-    "facing=up": {
-      "model": "csm:novtm5",
-      "x": 270
-    },
-    "facing=down": {
-      "model": "csm:novtm5",
-      "x": 90
     }
   }
 }
