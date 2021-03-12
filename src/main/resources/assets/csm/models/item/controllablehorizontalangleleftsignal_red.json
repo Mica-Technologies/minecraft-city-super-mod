@@ -4,7 +4,7 @@
     "all": "csm:blocks/solidoff",
     "particle": "csm:blocks/solidoff",
     "0": "csm:blocks/redarrowleft",
-    "1": "csm:blocks/solidoff",
-    "2": "csm:blocks/solidoff"
+    "1": "csm:blocks/yellowarrowleftoff",
+    "2": "csm:blocks/greenarrowleftoff"
   }
 }
