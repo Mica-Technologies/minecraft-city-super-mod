@@ -1,8 +1,0 @@
-{
-  "parent": "csm:custom/borderdoghouse",
-  "textures": {
-    "all": "csm:blocks/metal_mattetan",
-    "particle": "csm:blocks/metal_mattetan",
-    "0": "csm:blocks/metal_mattetan"
-  }
-}
