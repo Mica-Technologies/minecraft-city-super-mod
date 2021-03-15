@@ -790,5 +790,32 @@
         "stream": false
       }
     ]
+  },
+  "est_preint_voice_evac": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:est_preint_voice_evac",
+        "stream": false
+      }
+    ]
+  },
+  "old_school_buzzer": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:old_school_buzzer",
+        "stream": false
+      }
+    ]
+  },
+  "cts_red_beacon": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:cts_red_beacon",
+        "stream": false
+      }
+    ]
   }
 }
