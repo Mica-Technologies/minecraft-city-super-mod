@@ -1349,3 +1349,4 @@ tile.tlsnowbeacon.name=Snow Emergency Beacon
 tile.controllabletattletalebeacon.name=Traffic Signal Tattle Tale Beacon
 tile.tlinterconnectmodule1.name=Traffic Signal Interconnect Antenna (Style 1)
 tile.tlinterconnectmodule2.name=Traffic Signal Interconnect Antenna (Style 2)
+tile.signalpolemount2.name=Traffic Signal Pole Mount (Style 2)
