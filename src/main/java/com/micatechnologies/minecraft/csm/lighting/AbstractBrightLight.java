@@ -149,50 +149,56 @@ public abstract class AbstractBrightLight extends Block
                 world.setBlockState( pos, state.withProperty( STATE, STATE_RS_ON ), 3 );
                 handleAirLightBlock( true, world, pos );
 
-                if (player instanceof EntityPlayer && !world.isRemote) {
-				    ((EntityPlayer) player).sendStatusMessage( new TextComponentString( "§6ON (Manual/Redstone Control)" ), (true));
-			    }
+                if ( player instanceof EntityPlayer && !world.isRemote ) {
+                    ( ( EntityPlayer ) player ).sendStatusMessage(
+                            new TextComponentString( "§6ON (Manual/Redstone Control)" ), ( true ) );
+                }
             }
             // Cycle to auto if on
             else if ( currentState == STATE_RS_ON ) {
                 world.setBlockState( pos, state.withProperty( STATE, STATE_AUTO_OFF ), 3 );
                 handleAirLightBlock( false, world, pos );
-                if (player instanceof EntityPlayer && !world.isRemote) {
-				    ((EntityPlayer) player).sendStatusMessage( new TextComponentString( "§6AUTO (Light Sensor Control)" ), (true));
-			    }
+                if ( player instanceof EntityPlayer && !world.isRemote ) {
+                    ( ( EntityPlayer ) player ).sendStatusMessage(
+                            new TextComponentString( "§6AUTO (Light Sensor Control)" ), ( true ) );
+                }
             }
             // Cycle to off if auto
             else if ( currentState == STATE_AUTO_OFF || currentState == STATE_AUTO_ON ) {
                 world.setBlockState( pos, state.withProperty( STATE, STATE_RS_OFF ), 3 );
                 handleAirLightBlock( false, world, pos );
-                if (player instanceof EntityPlayer && !world.isRemote) {
-				    ((EntityPlayer) player).sendStatusMessage( new TextComponentString( "§7OFF (Manual/Redstone Control)"), (true));
-			    }
+                if ( player instanceof EntityPlayer && !world.isRemote ) {
+                    ( ( EntityPlayer ) player ).sendStatusMessage(
+                            new TextComponentString( "§7OFF (Manual/Redstone Control)" ), ( true ) );
+                }
             }
         }
         else {
             // Show warning if light is powered by redstone
-            if (player instanceof EntityPlayer && !world.isRemote && world.isBlockPowered( pos ) ) {
-				    ((EntityPlayer) player).sendStatusMessage( new TextComponentString( "§cThis light is connected to" +
-                                                                                                " redstone!" + "§cManual control is not possible!" ), (true));
-			}
+            if ( player instanceof EntityPlayer && !world.isRemote && world.isBlockPowered( pos ) ) {
+                ( ( EntityPlayer ) player ).sendStatusMessage( new TextComponentString(
+                                                                       "§cThis light is connected to" + " redstone!" + "§cManual control is not possible!" ),
+                                                               ( true ) );
+            }
 
             // Cycle to on if off
             if ( currentState == STATE_RS_OFF ) {
                 world.setBlockState( pos, state.withProperty( STATE, STATE_RS_ON ), 3 );
                 handleAirLightBlock( true, world, pos );
 
-                if (player instanceof EntityPlayer && !world.isRemote) {
-				    ((EntityPlayer) player).sendStatusMessage( new TextComponentString( "§6ON (Manual/Redstone Control)" ), (true));
-			    }
+                if ( player instanceof EntityPlayer && !world.isRemote ) {
+                    ( ( EntityPlayer ) player ).sendStatusMessage(
+                            new TextComponentString( "§6ON (Manual/Redstone Control)" ), ( true ) );
+                }
             }
             // Cycle to off if on
             else if ( currentState == STATE_RS_ON ) {
                 world.setBlockState( pos, state.withProperty( STATE, STATE_RS_OFF ), 3 );
                 handleAirLightBlock( false, world, pos );
-                if (player instanceof EntityPlayer && !world.isRemote) {
-				    ((EntityPlayer) player).sendStatusMessage( new TextComponentString( "§7OFF (Manual/Redstone Control)" ), (true));
-			    }
+                if ( player instanceof EntityPlayer && !world.isRemote ) {
+                    ( ( EntityPlayer ) player ).sendStatusMessage(
+                            new TextComponentString( "§7OFF (Manual/Redstone Control)" ), ( true ) );
+                }
             }
         }
 
@@ -257,8 +263,15 @@ public abstract class AbstractBrightLight extends Block
         int currentState = state.getValue( STATE );
         // Check if in automatic mode
         if ( currentState == STATE_AUTO_OFF || currentState == STATE_AUTO_ON ) {
+            // Turn on if off
+            if ( currentState == STATE_AUTO_OFF ) {
+                // Need to turn on light
+                world.setBlockState( pos, state.withProperty( STATE, STATE_AUTO_ON ), 3 );
+                handleAirLightBlock( true, world, pos );
+            }
+
             // Check ambient light level and set state appropriately
-            int ambientLightLevel = 15 - world.getSkylightSubtracted();
+            /*int ambientLightLevel = 15 - world.getSkylightSubtracted();
             if ( currentState == STATE_AUTO_OFF && ambientLightLevel <= LIGHT_LEVEL_TURN_ON ) {
                 // Need to turn on light
                 world.setBlockState( pos, state.withProperty( STATE, STATE_AUTO_ON ), 3 );
@@ -268,7 +281,7 @@ public abstract class AbstractBrightLight extends Block
                 // Need to turn off light
                 world.setBlockState( pos, state.withProperty( STATE, STATE_AUTO_OFF ), 3 );
                 handleAirLightBlock( false, world, pos );
-            }
+            }*/
         }
         else if ( currentState == STATE_RS_OFF || currentState == STATE_RS_ON ) {
             // Check for redstone power and set state appropriately
