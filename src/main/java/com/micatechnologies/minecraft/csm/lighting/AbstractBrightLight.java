@@ -95,14 +95,12 @@ public abstract class AbstractBrightLight extends Block
 
     private void handleAirLightBlock( boolean on, World world, BlockPos pos ) {
         // Add light
-        if ( on ) {
+        /*if ( on ) {
             BlockPos doAddAt = null;
-            for ( int findy = -1; findy >= -40; findy-- ) {
+            for ( int findy = -1; findy >= -20; findy-- ) {
                 BlockPos test = new BlockPos( pos.getX(), pos.getY() + findy, pos.getZ() );
-                IBlockState bs = world.getBlockState( test );
-                Block block = bs.getBlock();
                 // found block that is not air
-                if ( block.isAir( bs, world, test ) || block.isReplaceable( world, test ) ) {
+                if ( world.isAirBlock( test ) ) {
                     // dont add light if block is right below street light
                     if ( findy < -1 ) {
                         doAddAt = test;
@@ -119,7 +117,7 @@ public abstract class AbstractBrightLight extends Block
         }
         // Remove light
         else {
-            for ( int findy = -1; findy >= -40; findy-- ) {
+            for ( int findy = -1; findy >= -20; findy-- ) {
                 BlockPos test = new BlockPos( pos.getX(), pos.getY() + findy, pos.getZ() );
                 IBlockState bs = world.getBlockState( test );
                 // stop removing light once hit block
@@ -128,7 +126,7 @@ public abstract class AbstractBrightLight extends Block
                 }
             }
         }
-
+*/
     }
 
     @Override
@@ -263,15 +261,8 @@ public abstract class AbstractBrightLight extends Block
         int currentState = state.getValue( STATE );
         // Check if in automatic mode
         if ( currentState == STATE_AUTO_OFF || currentState == STATE_AUTO_ON ) {
-            // Turn on if off
-            if ( currentState == STATE_AUTO_OFF ) {
-                // Need to turn on light
-                world.setBlockState( pos, state.withProperty( STATE, STATE_AUTO_ON ), 3 );
-                handleAirLightBlock( true, world, pos );
-            }
-
             // Check ambient light level and set state appropriately
-            /*int ambientLightLevel = 15 - world.getSkylightSubtracted();
+            int ambientLightLevel = 15 - world.getSkylightSubtracted();
             if ( currentState == STATE_AUTO_OFF && ambientLightLevel <= LIGHT_LEVEL_TURN_ON ) {
                 // Need to turn on light
                 world.setBlockState( pos, state.withProperty( STATE, STATE_AUTO_ON ), 3 );
@@ -281,7 +272,7 @@ public abstract class AbstractBrightLight extends Block
                 // Need to turn off light
                 world.setBlockState( pos, state.withProperty( STATE, STATE_AUTO_OFF ), 3 );
                 handleAirLightBlock( false, world, pos );
-            }*/
+            }
         }
         else if ( currentState == STATE_RS_OFF || currentState == STATE_RS_ON ) {
             // Check for redstone power and set state appropriately
