@@ -95,9 +95,9 @@ public abstract class AbstractBrightLight extends Block
 
     private void handleAirLightBlock( boolean on, World world, BlockPos pos ) {
         // Add light
-        /*if ( on ) {
+        if ( on ) {
             BlockPos doAddAt = null;
-            for ( int findy = -1; findy >= -20; findy-- ) {
+            for ( int findy = -1; findy >= -16; findy-- ) {
                 BlockPos test = new BlockPos( pos.getX(), pos.getY() + findy, pos.getZ() );
                 // found block that is not air
                 if ( world.isAirBlock( test ) ) {
@@ -117,7 +117,7 @@ public abstract class AbstractBrightLight extends Block
         }
         // Remove light
         else {
-            for ( int findy = -1; findy >= -20; findy-- ) {
+            for ( int findy = -1; findy >= -16; findy-- ) {
                 BlockPos test = new BlockPos( pos.getX(), pos.getY() + findy, pos.getZ() );
                 IBlockState bs = world.getBlockState( test );
                 // stop removing light once hit block
@@ -126,7 +126,6 @@ public abstract class AbstractBrightLight extends Block
                 }
             }
         }
-*/
     }
 
     @Override
@@ -276,7 +275,7 @@ public abstract class AbstractBrightLight extends Block
         }
         else if ( currentState == STATE_RS_OFF || currentState == STATE_RS_ON ) {
             // Check for redstone power and set state appropriately
-            boolean isPowered = world.isBlockPowered( pos );
+            /*boolean isPowered = world.isBlockPowered( pos );
             if ( currentState == STATE_RS_OFF && isPowered ) {
                 // Need to turn on light
                 world.setBlockState( pos, state.withProperty( STATE, STATE_RS_ON ), 3 );
@@ -286,7 +285,7 @@ public abstract class AbstractBrightLight extends Block
                 // Need to turn off light
                 world.setBlockState( pos, state.withProperty( STATE, STATE_RS_OFF ), 3 );
                 handleAirLightBlock( false, world, pos );
-            }
+            }*/
         }
         super.updateTick( world, pos, state, random );
         world.scheduleUpdate( pos, this, this.tickRate( world ) );
