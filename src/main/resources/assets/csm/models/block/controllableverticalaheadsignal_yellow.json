@@ -1,0 +1,10 @@
+{
+  "parent": "csm:custom/trafficlightvertical",
+  "textures": {
+    "all": "csm:blocks/solidoff",
+    "particle": "csm:blocks/solidoff",
+    "0": "csm:blocks/solidredoff",
+    "1": "csm:blocks/solidyellow",
+    "2": "csm:blocks/greenarrowaheadoff"
+  }
+}
