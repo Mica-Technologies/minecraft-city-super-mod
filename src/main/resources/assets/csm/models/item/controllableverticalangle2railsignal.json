@@ -3,8 +3,8 @@
   "textures": {
     "all": "csm:blocks/solidoff",
     "particle": "csm:blocks/solidoff",
-    "0": "csm:blocks/transitred",
-    "1": "csm:blocks/solidoff",
-    "2": "csm:blocks/solidoff"
+    "0": "csm:blocks/transitredoff",
+    "1": "csm:blocks/transityellowoff",
+    "2": "csm:blocks/transitgreen"
   }
 }

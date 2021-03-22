@@ -1,63 +1,63 @@
 {
   "variants": {
     "color=0,facing=north": {
-      "model": "csm:tlvtransitred"
+      "model": "csm:controllableverticalrailsignal_red"
     },
     "color=0,facing=east": {
-      "model": "csm:tlvtransitred",
+      "model": "csm:controllableverticalrailsignal_red",
       "y": 90
     },
     "color=0,facing=south": {
-      "model": "csm:tlvtransitred",
+      "model": "csm:controllableverticalrailsignal_red",
       "y": 180
     },
     "color=0,facing=west": {
-      "model": "csm:tlvtransitred",
+      "model": "csm:controllableverticalrailsignal_red",
       "y": 270
     },
     "color=1,facing=north": {
-      "model": "csm:tlvtransityellow"
+      "model": "csm:controllableverticalrailsignal_yellow"
     },
     "color=1,facing=east": {
-      "model": "csm:tlvtransityellow",
+      "model": "csm:controllableverticalrailsignal_yellow",
       "y": 90
     },
     "color=1,facing=south": {
-      "model": "csm:tlvtransityellow",
+      "model": "csm:controllableverticalrailsignal_yellow",
       "y": 180
     },
     "color=1,facing=west": {
-      "model": "csm:tlvtransityellow",
+      "model": "csm:controllableverticalrailsignal_yellow",
       "y": 270
     },
     "color=2,facing=north": {
-      "model": "csm:tlvtransitgreen"
+      "model": "csm:controllableverticalrailsignal_green"
     },
     "color=2,facing=east": {
-      "model": "csm:tlvtransitgreen",
+      "model": "csm:controllableverticalrailsignal_green",
       "y": 90
     },
     "color=2,facing=south": {
-      "model": "csm:tlvtransitgreen",
+      "model": "csm:controllableverticalrailsignal_green",
       "y": 180
     },
     "color=2,facing=west": {
-      "model": "csm:tlvtransitgreen",
+      "model": "csm:controllableverticalrailsignal_green",
       "y": 270
     },
     "color=3,facing=north": {
-      "model": "csm:tlvoff"
+      "model": "csm:controllableverticalrailsignal_off"
     },
     "color=3,facing=east": {
-      "model": "csm:tlvoff",
+      "model": "csm:controllableverticalrailsignal_off",
       "y": 90
     },
     "color=3,facing=south": {
-      "model": "csm:tlvoff",
+      "model": "csm:controllableverticalrailsignal_off",
       "y": 180
     },
     "color=3,facing=west": {
-      "model": "csm:tlvoff",
+      "model": "csm:controllableverticalrailsignal_off",
       "y": 270
     }
   }
