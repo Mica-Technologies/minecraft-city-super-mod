@@ -31,33 +31,33 @@
       "y": 270
     },
     "color=2,facing=north": {
-      "model": "csm:controllablesinglesolidsignal_off"
+      "model": "csm:controllablesinglesolidsignal_greenoff"
     },
     "color=2,facing=east": {
-      "model": "csm:controllablesinglesolidsignal_off",
+      "model": "csm:controllablesinglesolidsignal_greenoff",
       "y": 90
     },
     "color=2,facing=south": {
-      "model": "csm:controllablesinglesolidsignal_off",
+      "model": "csm:controllablesinglesolidsignal_greenoff",
       "y": 180
     },
     "color=2,facing=west": {
-      "model": "csm:controllablesinglesolidsignal_off",
+      "model": "csm:controllablesinglesolidsignal_greenoff",
       "y": 270
     },
     "color=3,facing=north": {
-      "model": "csm:controllablesinglesolidsignal_off"
+      "model": "csm:controllablesinglesolidsignal_greenoff"
     },
     "color=3,facing=east": {
-      "model": "csm:controllablesinglesolidsignal_off",
+      "model": "csm:controllablesinglesolidsignal_greenoff",
       "y": 90
     },
     "color=3,facing=south": {
-      "model": "csm:controllablesinglesolidsignal_off",
+      "model": "csm:controllablesinglesolidsignal_greenoff",
       "y": 180
     },
     "color=3,facing=west": {
-      "model": "csm:controllablesinglesolidsignal_off",
+      "model": "csm:controllablesinglesolidsignal_greenoff",
       "y": 270
     }
   }
