@@ -1,0 +1,64 @@
+{
+  "variants": {
+    "color=0,facing=north": {
+      "model": "csm:controllableverticalupleftaddonsignal_red"
+    },
+    "color=0,facing=east": {
+      "model": "csm:controllableverticalupleftaddonsignal_red",
+      "y": 90
+    },
+    "color=0,facing=south": {
+      "model": "csm:controllableverticalupleftaddonsignal_red",
+      "y": 180
+    },
+    "color=0,facing=west": {
+      "model": "csm:controllableverticalupleftaddonsignal_red",
+      "y": 270
+    },
+    "color=1,facing=north": {
+      "model": "csm:controllableverticalupleftaddonsignal_yellow"
+    },
+    "color=1,facing=east": {
+      "model": "csm:controllableverticalupleftaddonsignal_yellow",
+      "y": 90
+    },
+    "color=1,facing=south": {
+      "model": "csm:controllableverticalupleftaddonsignal_yellow",
+      "y": 180
+    },
+    "color=1,facing=west": {
+      "model": "csm:controllableverticalupleftaddonsignal_yellow",
+      "y": 270
+    },
+    "color=2,facing=north": {
+      "model": "csm:controllableverticalupleftaddonsignal_green"
+    },
+    "color=2,facing=east": {
+      "model": "csm:controllableverticalupleftaddonsignal_green",
+      "y": 90
+    },
+    "color=2,facing=south": {
+      "model": "csm:controllableverticalupleftaddonsignal_green",
+      "y": 180
+    },
+    "color=2,facing=west": {
+      "model": "csm:controllableverticalupleftaddonsignal_green",
+      "y": 270
+    },
+    "color=3,facing=north": {
+      "model": "csm:controllableverticalupleftaddonsignal"
+    },
+    "color=3,facing=east": {
+      "model": "csm:controllableverticalupleftaddonsignal",
+      "y": 90
+    },
+    "color=3,facing=south": {
+      "model": "csm:controllableverticalupleftaddonsignal",
+      "y": 180
+    },
+    "color=3,facing=west": {
+      "model": "csm:controllableverticalupleftaddonsignal",
+      "y": 270
+    }
+  }
+}

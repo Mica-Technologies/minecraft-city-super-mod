@@ -1,7 +1,7 @@
 {
 	"credit": "Made with Blockbench",
 	"textures": {
-		"0": "csm:blocks/rampmeteron"
+		"0": "csm:blocks/crosswalkon"
 	},
 	"elements": [
 		{
@@ -9,7 +9,7 @@
 			"to": [11, 12, 12],
 			"faces": {
 				"north": {"uv": [14.75, 4.875, 14.894, 5.028], "texture": "#0"},
-				"east": {"uv": [0.875, 0.625, 15.269, 14.778], "texture": "#0"},
+				"east": {"uv": [0.06838, 1.02564, 16, 15.24786], "texture": "#0"},
 				"south": {"uv": [14.75, 4.875, 14.894, 5.028], "texture": "#0"},
 				"west": {"uv": [14.75, 4.875, 14.894, 5.028], "texture": "#0"},
 				"up": {"uv": [14.75, 4.875, 14.894, 5.028], "texture": "#0"},
