@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:tlborderaddonblackyellow"
+    },
+    "facing=north": {
+      "model": "csm:tlborderaddonblackyellow"
+    },
+    "facing=east": {
+      "model": "csm:tlborderaddonblackyellow",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:tlborderaddonblackyellow",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:tlborderaddonblackyellow",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:tlborderaddonblackyellow",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:tlborderaddonblackyellow",
+      "x": 90
+    }
+  }
+}
