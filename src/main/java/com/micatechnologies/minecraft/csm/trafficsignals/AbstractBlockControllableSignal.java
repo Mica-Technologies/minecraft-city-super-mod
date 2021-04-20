@@ -20,10 +20,10 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public abstract class AbstractBlockControllableSignal extends Block
 {
-    public final        int               SIGNAL_RED    = 0;
-    public final        int               SIGNAL_YELLOW = 1;
-    public final        int               SIGNAL_GREEN  = 2;
-    public final        int               SIGNAL_OFF    = 3;
+    public static final        int               SIGNAL_RED    = 0;
+    public static final        int               SIGNAL_YELLOW = 1;
+    public static final        int               SIGNAL_GREEN  = 2;
+    public static final        int               SIGNAL_OFF    = 3;
     public static final PropertyDirection FACING        = BlockHorizontal.FACING;
     public static final PropertyInteger   COLOR         = PropertyInteger.create( "color", 0, 3 );
 

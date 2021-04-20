@@ -70,92 +70,22 @@ public class ItemEWSignalLinker extends ElementsCitySuperMod.ModElement
         {
             IBlockState state = worldIn.getBlockState( pos );
             if ( state.getBlock() instanceof BlockTrafficSignalController.BlockCustom ) {
-                signalControllerPos = pos;
                 if ( !worldIn.isRemote ) {
-                    player.sendMessage( new TextComponentString( "Linking to signal controller at " +
-                                                                         "(" +
-                                                                         pos.getX() +
-                                                                         "," +
-                                                                         pos.getY() +
-                                                                         "," +
-                                                                         pos.getZ() +
-                                                                         ")" ) );
+                    player.sendMessage( new TextComponentString( "This linker is not currently active. Stay tuned!" ) );
                 }
                 return EnumActionResult.SUCCESS;
             }
             else if ( signalControllerPos == null && state.getBlock() instanceof AbstractBlockControllableSignal ) {
                 if ( !worldIn.isRemote ) {
-                    player.sendMessage( new TextComponentString( "No signal controller has been selected." ) );
+                    player.sendMessage( new TextComponentString( "This linker is not currently active. Stay tuned!" ) );
                 }
-                return EnumActionResult.FAIL;
+                return EnumActionResult.SUCCESS;
             }
             else if ( signalControllerPos != null && state.getBlock() instanceof AbstractBlockControllableSignal ) {
-                Block clickedBlock = state.getBlock();
-                TileEntity tileEntity = worldIn.getTileEntity( signalControllerPos );
-                if ( tileEntity instanceof TileEntityTrafficSignalController ) {
-                    TileEntityTrafficSignalController tileEntityTrafficSignalController
-                            = ( TileEntityTrafficSignalController ) tileEntity;
-                    boolean linked = tileEntityTrafficSignalController.addEWSignal( pos );
-                    if ( !worldIn.isRemote &&
-                            linked &&
-                            ( clickedBlock instanceof BlockControllableCrosswalkLeftMount.BlockCustom ||
-                                    clickedBlock instanceof BlockControllableCrosswalkRightMount.BlockCustom ) ) {
-                        player.sendMessage( new TextComponentString(
-                                "Crosswalk light connected to Secondary circuit of signal controller at " +
-                                        "(" +
-                                        signalControllerPos.getX() +
-                                        "," +
-                                        signalControllerPos.getY() +
-                                        "," +
-                                        signalControllerPos.getZ() +
-                                        ")" ) );
-                    }
-                    else if ( !worldIn.isRemote &&
-                            linked &&
-                            clickedBlock instanceof BlockControllableTrafficSignalTrainController.BlockCustom ) {
-                        player.sendMessage( new TextComponentString(
-                                "Train locking rail controller connected to Secondary circuit of signal controller at " +
-                                        "(" +
-                                        signalControllerPos.getX() +
-                                        "," +
-                                        signalControllerPos.getY() +
-                                        "," +
-                                        signalControllerPos.getZ() +
-                                        ")" ) );
-                    }
-                    else if ( !worldIn.isRemote &&
-                            linked &&
-                            clickedBlock instanceof AbstractBlockControllableCrosswalkAccessory ) {
-                        player.sendMessage( new TextComponentString(
-                                "Crosswalk accessory connected to Secondary circuit of signal controller at " +
-                                        "(" +
-                                        signalControllerPos.getX() +
-                                        "," +
-                                        signalControllerPos.getY() +
-                                        "," +
-                                        signalControllerPos.getZ() +
-                                        ")" ) );
-                    }
-                    else if ( !worldIn.isRemote && linked ) {
-                        player.sendMessage( new TextComponentString(
-                                "Signal connected to Secondary circuit of signal controller at " +
-                                        "(" +
-                                        signalControllerPos.getX() +
-                                        "," +
-                                        signalControllerPos.getY() +
-                                        "," +
-                                        signalControllerPos.getZ() +
-                                        ")" ) );
-                    }
+                if ( !worldIn.isRemote ) {
+                    player.sendMessage( new TextComponentString( "This linker is not currently active. Stay tuned!" ) );
                 }
-                else {
-                    if ( !worldIn.isRemote ) {
-                        player.sendMessage(
-                                new TextComponentString( "Lost connection to previously connected controller!" ) );
-                    }
-                }
-
-                return EnumActionResult.FAIL;
+                return EnumActionResult.SUCCESS;
             }
             return EnumActionResult.PASS;
         }
