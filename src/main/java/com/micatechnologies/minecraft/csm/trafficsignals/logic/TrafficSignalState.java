@@ -165,6 +165,10 @@ public class TrafficSignalState
         return successful;
     }
 
+    public boolean isAllRed() {
+        return greenSignals.size() == 0 && yellowSignals.size() == 0 && offSignals.size() == 0 && redSignals.size() > 0;
+    }
+
     ///endregion
 
     ///region: Serialization (for NBT)
@@ -293,23 +297,27 @@ public class TrafficSignalState
         for ( int i = 0; i < NBT_SERIALIZATION_LIST_COUNT; i++ ) {
             // Get serialized list items
             String serializedList = serializedListStrings[ i ];
-            System.err.println("NBT LINE: "+serializedList);
             String[] serializedListItems = serializedList.split( NBT_SERIALIZATION_ELEMENT_SEP_CHAR );
 
             // Loop through each serialized list item
             for ( String serializedListItem : serializedListItems ) {
-                long serializedListItemLong = Long.parseLong( serializedListItem );
-                if ( i == NBT_SERIALIZATION_OFF_SIGNAL_LIST_INDEX ) {
-                    trafficSignalState.offSignals.add( BlockPos.fromLong( serializedListItemLong ) );
+                try {
+                    long serializedListItemLong = Long.parseLong( serializedListItem );
+                    if ( i == NBT_SERIALIZATION_OFF_SIGNAL_LIST_INDEX ) {
+                        trafficSignalState.offSignals.add( BlockPos.fromLong( serializedListItemLong ) );
+                    }
+                    else if ( i == NBT_SERIALIZATION_GREEN_SIGNAL_LIST_INDEX ) {
+                        trafficSignalState.greenSignals.add( BlockPos.fromLong( serializedListItemLong ) );
+                    }
+                    else if ( i == NBT_SERIALIZATION_YELLOW_SIGNAL_LIST_INDEX ) {
+                        trafficSignalState.yellowSignals.add( BlockPos.fromLong( serializedListItemLong ) );
+                    }
+                    else if ( i == NBT_SERIALIZATION_RED_SIGNAL_LIST_INDEX ) {
+                        trafficSignalState.redSignals.add( BlockPos.fromLong( serializedListItemLong ) );
+                    }
                 }
-                else if ( i == NBT_SERIALIZATION_GREEN_SIGNAL_LIST_INDEX ) {
-                    trafficSignalState.greenSignals.add( BlockPos.fromLong( serializedListItemLong ) );
-                }
-                else if ( i == NBT_SERIALIZATION_YELLOW_SIGNAL_LIST_INDEX ) {
-                    trafficSignalState.yellowSignals.add( BlockPos.fromLong( serializedListItemLong ) );
-                }
-                else {
-                    trafficSignalState.redSignals.add( BlockPos.fromLong( serializedListItemLong ) );
+                catch ( Exception e ) {
+                    System.err.println( "A malformed entry was detected in a signal controller's state memory!" );
                 }
             }
         }

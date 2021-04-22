@@ -172,16 +172,19 @@ public class TileEntityTrafficSignalController extends TileEntity
     }
     ///endregion
 
-    private static final String  KEY_LAST_PHASE_CHANGE_TIME = "LastPhaseChangeTime";
-    private static final String  KEY_CURR_PHASE_TIME        = "CurrPhaseTime";
-    private static final String  KEY_CURRENT_PHASE          = "CurrPhase";
-    private static final String  KEY_FLASH_MODE_ENABLED     = "FlashModeEnabled";
-    private              int     currentPhase;
-    private              int     currentPhaseTime;
-    private              long    lastPhaseChangeTime;
-    private              boolean flashModeEnabled;
-    private              String  ewSignalsString            = null;
-    private              String  nsSignalsString            = null;
+    private static final String KEY_LAST_PHASE_CHANGE_TIME = "LastPhaseChangeTime";
+    private static final String KEY_CURR_PHASE_TIME        = "CurrPhaseTime";
+    private static final String KEY_CURRENT_PHASE          = "CurrPhase";
+    private static final String KEY_CURRENT_MODE           = "CurrentMode";
+    private static final int    CURRENT_MODE_FLASH         = 0;
+    private static final int    CURRENT_MODE_STANDARD      = 1;
+    private static final int    CURRENT_MODE_METER         = 2;
+    private              int    currentPhase;
+    private              int    currentPhaseTime;
+    private              long   lastPhaseChangeTime;
+    private              int    currentMode;
+    private              String ewSignalsString            = null;
+    private              String nsSignalsString            = null;
 
     @Override
     public void readFromNBT( NBTTagCompound p_readFromNBT_1_ ) {
@@ -219,12 +222,12 @@ public class TileEntityTrafficSignalController extends TileEntity
             }
         }
 
-        // Load current flash mode enabled
-        if ( p_readFromNBT_1_.hasKey( KEY_FLASH_MODE_ENABLED ) ) {
-            this.flashModeEnabled = p_readFromNBT_1_.getBoolean( KEY_FLASH_MODE_ENABLED );
+        // Load current mode
+        if ( p_readFromNBT_1_.hasKey( KEY_CURRENT_MODE ) ) {
+            this.currentMode = p_readFromNBT_1_.getInteger( KEY_CURRENT_MODE );
         }
         else {
-            this.flashModeEnabled = true;
+            this.currentMode = 0;
         }
 
         // Load current phase
@@ -265,7 +268,7 @@ public class TileEntityTrafficSignalController extends TileEntity
     @Override
     public NBTTagCompound writeToNBT( NBTTagCompound p_writeToNBT_1_ ) {
         // Write current flash mode enabled
-        p_writeToNBT_1_.setBoolean( KEY_FLASH_MODE_ENABLED, flashModeEnabled );
+        p_writeToNBT_1_.setInteger( KEY_CURRENT_MODE, currentMode );
 
         // Write current phase
         p_writeToNBT_1_.setInteger( KEY_CURRENT_PHASE, currentPhase );
@@ -312,7 +315,7 @@ public class TileEntityTrafficSignalController extends TileEntity
     }
 
     public int getCycleTickRate() {
-        return flashModeEnabled ? 4 : 20;
+        return currentMode == 0 ? 4 : 20;
     }
 
     private boolean lastPowered = false;
@@ -322,7 +325,7 @@ public class TileEntityTrafficSignalController extends TileEntity
         ArrayList< TrafficSignalState > tempSignalStateList = new ArrayList<>();
 
         // Handle flash versus normal operation
-        if ( flashModeEnabled ) {
+        if ( currentMode == CURRENT_MODE_FLASH ) {
             // Create two flash states
             TrafficSignalState flashState1 = new TrafficSignalState( 1 );
             TrafficSignalState flashState2 = new TrafficSignalState( 1 );
@@ -378,7 +381,7 @@ public class TileEntityTrafficSignalController extends TileEntity
             tempSignalStateList.add( flashState1 );
             tempSignalStateList.add( flashState2 );
         }
-        else {
+        else if ( currentMode == CURRENT_MODE_STANDARD ) {
             // Loop through signal circuits
             for ( int index = 0; index < signalCircuitList.size(); index++ ) {
                 TrafficSignalCircuit signalCircuit = signalCircuitList.get( index );
@@ -391,6 +394,9 @@ public class TileEntityTrafficSignalController extends TileEntity
 
                 }
             }
+        }
+        else if ( currentMode == CURRENT_MODE_METER ) {
+
         }
 
         // Store updated state list
@@ -455,11 +461,25 @@ public class TileEntityTrafficSignalController extends TileEntity
         }
     }
 
-    public boolean toggleFlashMode( World world ) {
-        flashModeEnabled = !flashModeEnabled;
+    public String switchMode( World world ) {
+        currentMode++;
+        if ( currentMode > CURRENT_MODE_METER ) {
+            currentMode = CURRENT_MODE_FLASH;
+        }
         markDirty();
         updateSignalStates( world );
-        return flashModeEnabled;
+
+        String modeName = "[unknown, error]";
+        if ( currentMode == CURRENT_MODE_FLASH ) {
+            modeName = "flash";
+        }
+        else if ( currentMode == CURRENT_MODE_STANDARD ) {
+            modeName = "standard";
+        }
+        else if ( currentMode == CURRENT_MODE_METER ) {
+            modeName = "ramp meter";
+        }
+        return modeName;
     }
 
     public void cycleSignals( boolean powered ) {

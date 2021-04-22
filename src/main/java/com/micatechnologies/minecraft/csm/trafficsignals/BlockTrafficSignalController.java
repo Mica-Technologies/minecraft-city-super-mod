@@ -284,14 +284,10 @@ public class BlockTrafficSignalController extends ElementsCitySuperMod.ModElemen
                 if ( tileEntity instanceof TileEntityTrafficSignalController ) {
                     TileEntityTrafficSignalController tileEntityTrafficSignalController
                             = ( TileEntityTrafficSignalController ) tileEntity;
-                    boolean isFlashEnabled = tileEntityTrafficSignalController.toggleFlashMode( p_onBlockActivated_1_ );
-                    if ( !p_onBlockActivated_1_.isRemote && valid && isFlashEnabled ) {
+                    String modeName = tileEntityTrafficSignalController.switchMode( p_onBlockActivated_1_ );
+                    if ( !p_onBlockActivated_1_.isRemote && valid ) {
                         p_onBlockActivated_4_.sendMessage(
-                                new TextComponentString( "Controller has switched to flash mode!" ) );
-                    }
-                    else if ( !p_onBlockActivated_1_.isRemote && valid ) {
-                        p_onBlockActivated_4_.sendMessage(
-                                new TextComponentString( "Controller has switched to intelligent operation mode!" ) );
+                                new TextComponentString( "Controller has switched to " + modeName + " mode!" ) );
                     }
                 }
             }
