@@ -141,7 +141,7 @@ public class BlockTrafficSignalController extends ElementsCitySuperMod.ModElemen
 
         private double maxTimeSinceLastTick( World w, BlockPos p ) {
             // Get max time since last tick (x50 for ticks -> millis) (x1.5 to account for drift)
-            return ((double)getTickRate( w, p )) * 50.0 * 1.5;
+            return ( ( double ) getTickRate( w, p ) ) * 50.0 * 1.5;
         }
 
         @Override
@@ -162,7 +162,6 @@ public class BlockTrafficSignalController extends ElementsCitySuperMod.ModElemen
                     TileEntityTrafficSignalController tileEntityTrafficSignalController
                             = ( TileEntityTrafficSignalController ) tileEntity;
                     tileEntityTrafficSignalController.cycleSignals( powered );
-
                 }
             }
             catch ( Exception e ) {
@@ -216,6 +215,7 @@ public class BlockTrafficSignalController extends ElementsCitySuperMod.ModElemen
                                                p_onBlockActivated_4_, p_onBlockActivated_5_, p_onBlockActivated_6_,
                                                p_onBlockActivated_7_, p_onBlockActivated_8_, p_onBlockActivated_9_ );
             }
+
             TileEntity tileEntity = p_onBlockActivated_1_.getTileEntity( p_onBlockActivated_2_ );
 
             // Check if controller tile entity still present/valid
@@ -279,14 +279,29 @@ public class BlockTrafficSignalController extends ElementsCitySuperMod.ModElemen
                 }
             }
 
-            // Increment cycle index
-            if ( tileEntity instanceof TileEntityTrafficSignalController ) {
-                TileEntityTrafficSignalController tileEntityTrafficSignalController
-                        = ( TileEntityTrafficSignalController ) tileEntity;
-                String cycleTitle = tileEntityTrafficSignalController.incrementCycleIndex();
-                if ( !p_onBlockActivated_1_.isRemote && valid ) {
+            // Increment cycle index if not sneaking, else attempt old config import
+            if ( !p_onBlockActivated_4_.isSneaking() ) {
+                if ( tileEntity instanceof TileEntityTrafficSignalController ) {
+                    TileEntityTrafficSignalController tileEntityTrafficSignalController
+                            = ( TileEntityTrafficSignalController ) tileEntity;
+                    boolean isFlashEnabled = tileEntityTrafficSignalController.toggleFlashMode( p_onBlockActivated_1_ );
+                    if ( !p_onBlockActivated_1_.isRemote && valid && isFlashEnabled ) {
+                        p_onBlockActivated_4_.sendMessage(
+                                new TextComponentString( "Controller has switched to flash mode!" ) );
+                    }
+                    else if ( !p_onBlockActivated_1_.isRemote && valid ) {
+                        p_onBlockActivated_4_.sendMessage(
+                                new TextComponentString( "Controller has switched to intelligent operation mode!" ) );
+                    }
+                }
+            }
+            else {
+                if ( tileEntity instanceof TileEntityTrafficSignalController ) {
+                    TileEntityTrafficSignalController tileEntityTrafficSignalController
+                            = ( TileEntityTrafficSignalController ) tileEntity;
+                    tileEntityTrafficSignalController.importPreviousConfig( p_onBlockActivated_1_ );
                     p_onBlockActivated_4_.sendMessage(
-                            new TextComponentString( "Switching controller to mode: " + cycleTitle ) );
+                            new TextComponentString( "Forcing signal state regeneration!" ) );
                 }
             }
 

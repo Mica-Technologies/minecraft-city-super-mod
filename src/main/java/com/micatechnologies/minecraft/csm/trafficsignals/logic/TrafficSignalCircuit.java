@@ -1,7 +1,14 @@
 package com.micatechnologies.minecraft.csm.trafficsignals.logic;
 
+import com.micatechnologies.minecraft.csm.trafficsignals.AbstractBlockControllableSignal;
 import jdk.nashorn.internal.ir.Block;
+import net.minecraft.block.BlockDirectional;
+import net.minecraft.block.BlockHorizontal;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -113,7 +120,7 @@ public class TrafficSignalCircuit
 
             // Handle each item in list
             for ( String serializedListItem : serializedListItems ) {
-                if (serializedListItem.length() > 0) {
+                if ( serializedListItem.length() > 0 ) {
                     // Get block position
                     BlockPos listItemBlockPosition = BlockPos.fromLong( Long.parseLong( serializedListItem ) );
 
@@ -225,6 +232,83 @@ public class TrafficSignalCircuit
         return serializedStringBuilder.toString();
     }
 
+    public boolean areSignalsFacingSameDirection( World world ) {
+        // Track encountered facing direction
+        EnumFacing encounteredFacingDirection = null;
+
+        // Loop through hybrid left signals
+        for ( BlockPos signalPos : hybridLeftSignals ) {
+            IBlockState blockState = world.getBlockState( signalPos );
+            if ( blockState.getBlock() instanceof AbstractBlockControllableSignal ) {
+                EnumFacing currentFacingDirection = blockState.getValue( BlockDirectional.FACING );
+                if ( encounteredFacingDirection == null ) {
+                    encounteredFacingDirection = currentFacingDirection;
+                }
+                else if ( encounteredFacingDirection != currentFacingDirection ) {
+                    return false;
+                }
+            }
+        }
+
+        // Loop through left signals
+        for ( BlockPos signalPos : leftSignals ) {
+            IBlockState blockState = world.getBlockState( signalPos );
+            if ( blockState.getBlock() instanceof AbstractBlockControllableSignal ) {
+                EnumFacing currentFacingDirection = blockState.getValue( BlockDirectional.FACING );
+                if ( encounteredFacingDirection == null ) {
+                    encounteredFacingDirection = currentFacingDirection;
+                }
+                else if ( encounteredFacingDirection != currentFacingDirection ) {
+                    return false;
+                }
+            }
+        }
+
+        // Loop through ahead signals
+        for ( BlockPos signalPos : aheadSignals ) {
+            IBlockState blockState = world.getBlockState( signalPos );
+            if ( blockState.getBlock() instanceof AbstractBlockControllableSignal ) {
+                EnumFacing currentFacingDirection = blockState.getValue( BlockDirectional.FACING );
+                if ( encounteredFacingDirection == null ) {
+                    encounteredFacingDirection = currentFacingDirection;
+                }
+                else if ( encounteredFacingDirection != currentFacingDirection ) {
+                    return false;
+                }
+            }
+        }
+
+        // Loop through right signals
+        for ( BlockPos signalPos : rightSignals ) {
+            IBlockState blockState = world.getBlockState( signalPos );
+            if ( blockState.getBlock() instanceof AbstractBlockControllableSignal ) {
+                EnumFacing currentFacingDirection = blockState.getValue( BlockDirectional.FACING );
+                if ( encounteredFacingDirection == null ) {
+                    encounteredFacingDirection = currentFacingDirection;
+                }
+                else if ( encounteredFacingDirection != currentFacingDirection ) {
+                    return false;
+                }
+            }
+        }
+
+        // Loop through protected signals
+        for ( BlockPos signalPos : protectedSignals ) {
+            IBlockState blockState = world.getBlockState( signalPos );
+            if ( blockState.getBlock() instanceof AbstractBlockControllableSignal ) {
+                EnumFacing currentFacingDirection = blockState.getValue( BlockDirectional.FACING );
+                if ( encounteredFacingDirection == null ) {
+                    encounteredFacingDirection = currentFacingDirection;
+                }
+                else if ( encounteredFacingDirection != currentFacingDirection ) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
     /**
      * Returns a boolean value (true/false) indicating whether or not the specified {@link BlockPos} is linked to this
      * traffic signal circuit.
@@ -247,6 +331,7 @@ public class TrafficSignalCircuit
      * Removes any link to the specified {@link BlockPos} within the signal circuit.
      *
      * @param blockPos signal/sensor block position to unlink
+     *
      * @return true is signal found and unlinked
      */
     public boolean unlink( BlockPos blockPos ) {
@@ -407,4 +492,5 @@ public class TrafficSignalCircuit
     public List< BlockPos > getSensors() {
         return sensors;
     }
+
 }

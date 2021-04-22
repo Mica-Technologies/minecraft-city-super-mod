@@ -37,6 +37,18 @@ public class TrafficSignalState
      */
     private final List< BlockPos > redSignals = new ArrayList<>();
 
+    /**
+     * The length of time which the signal state is applied.
+     */
+    private final int length;
+
+    /**
+     * @param length
+     */
+    public TrafficSignalState( int length ) {
+        this.length = length;
+    }
+
     ///endregion
 
     ///region: Signal State List Accessors
@@ -75,6 +87,46 @@ public class TrafficSignalState
      */
     public List< BlockPos > getRedSignals() {
         return redSignals;
+    }
+
+    public int getLength() {
+        return length;
+    }
+
+    ///endregion
+
+    ///region: Signal State List Setters
+
+    public boolean addOffSignal( BlockPos blockPos ) {
+        return offSignals.add( blockPos );
+    }
+
+    public boolean addGreenSignal( BlockPos blockPos ) {
+        return greenSignals.add( blockPos );
+    }
+
+    public boolean addYellowSignal( BlockPos blockPos ) {
+        return yellowSignals.add( blockPos );
+    }
+
+    public boolean addRedSignal( BlockPos blockPos ) {
+        return redSignals.add( blockPos );
+    }
+
+    public boolean addOffSignals( List< BlockPos > blockPosList ) {
+        return offSignals.addAll( blockPosList );
+    }
+
+    public boolean addGreenSignals( List< BlockPos > blockPosList ) {
+        return greenSignals.addAll( blockPosList );
+    }
+
+    public boolean addYellowSignals( List< BlockPos > blockPosList ) {
+        return yellowSignals.addAll( blockPosList );
+    }
+
+    public boolean addRedSignals( List< BlockPos > blockPosList ) {
+        return redSignals.addAll( blockPosList );
     }
 
     ///endregion
@@ -148,6 +200,11 @@ public class TrafficSignalState
     private static final int NBT_SERIALIZATION_RED_SIGNAL_LIST_INDEX = 3;
 
     /**
+     * The index of the red signals list in NBT serialization strings.
+     */
+    private static final int NBT_SERIALIZATION_LENGTH_INDEX = 4;
+
+    /**
      * The number of lists in NBT serialization strings.
      */
     private static final int NBT_SERIALIZATION_LIST_COUNT = 4;
@@ -194,22 +251,25 @@ public class TrafficSignalState
             redSignalListString.append( redSignalBlockPos.toLong() );
         }
 
-        // Combine serialized list strings
+        // Append lists together
         StringBuilder allListString = new StringBuilder();
-        for ( int i = 0; i < NBT_SERIALIZATION_LIST_COUNT; i++ ) {
-            if ( i == NBT_SERIALIZATION_OFF_SIGNAL_LIST_INDEX ) {
-                allListString.append( offSignalListString.toString() );
-            }
-            else if ( i == NBT_SERIALIZATION_GREEN_SIGNAL_LIST_INDEX ) {
-                allListString.append( greenSignalListString.toString() );
-            }
-            else if ( i == NBT_SERIALIZATION_YELLOW_SIGNAL_LIST_INDEX ) {
-                allListString.append( yellowSignalListString.toString() );
-            }
-            else {
-                allListString.append( redSignalListString.toString() );
-            }
+        if ( offSignalListString.length() > 0 ) {
+            allListString.append( offSignalListString );
         }
+        allListString.append( NBT_SERIALIZATION_LIST_SEP_CHAR );
+        if ( greenSignalListString.length() > 0 ) {
+            allListString.append( greenSignalListString );
+        }
+        allListString.append( NBT_SERIALIZATION_LIST_SEP_CHAR );
+        if ( yellowSignalListString.length() > 0 ) {
+            allListString.append( yellowSignalListString );
+        }
+        allListString.append( NBT_SERIALIZATION_LIST_SEP_CHAR );
+        if ( redSignalListString.length() > 0 ) {
+            allListString.append( redSignalListString );
+        }
+        allListString.append( NBT_SERIALIZATION_LIST_SEP_CHAR );
+        allListString.append( length );
 
         return allListString.toString();
     }
@@ -226,12 +286,14 @@ public class TrafficSignalState
         String[] serializedListStrings = serializedTrafficSignalPhase.split( NBT_SERIALIZATION_LIST_SEP_CHAR );
 
         // Create traffic signal state object
-        TrafficSignalState trafficSignalState = new TrafficSignalState();
+        int castedLength = Integer.parseInt( serializedListStrings[ NBT_SERIALIZATION_LENGTH_INDEX ] );
+        TrafficSignalState trafficSignalState = new TrafficSignalState( castedLength );
 
         // Loop through each list and add all items to corresponding state object list
         for ( int i = 0; i < NBT_SERIALIZATION_LIST_COUNT; i++ ) {
             // Get serialized list items
             String serializedList = serializedListStrings[ i ];
+            System.err.println("NBT LINE: "+serializedList);
             String[] serializedListItems = serializedList.split( NBT_SERIALIZATION_ELEMENT_SEP_CHAR );
 
             // Loop through each serialized list item

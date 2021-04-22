@@ -2,16 +2,12 @@ package com.micatechnologies.minecraft.csm.trafficsignals;
 
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalCircuit;
-import net.minecraft.block.Block;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalState;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.common.Mod;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -26,6 +22,10 @@ public class TileEntityTrafficSignalController extends TileEntity
     private static final String                       SERIALIZED_SIGNAL_CIRCUIT_LIST_SEPARATOR = ":";
     private final        List< TrafficSignalCircuit > signalCircuitList                        = new ArrayList<>();
 
+    private static final String                     SERIALIZED_SIGNAL_STATE_LIST_KEY       = "SerializedSignalStateList";
+    private static final String                     SERIALIZED_SIGNAL_STATE_LIST_SEPARATOR = ":";
+    private final        List< TrafficSignalState > signalStateList                        = new ArrayList<>();
+
     /**
      * Former key for N/S signal list. Used to upgrade previous versions to the new logic.
      */
@@ -36,7 +36,19 @@ public class TileEntityTrafficSignalController extends TileEntity
      */
     private static final String KEY_EW_SIGNALS = "EWSigs";
 
-    private void importPreviousListFormat( String listString ) {
+    public void importPreviousConfig( World currWorld ) {
+        // Load previous format to new format (if present and not already upgraded)
+        if ( nsSignalsString != null && ewSignalsString != null ) {
+            importPreviousListFormat( currWorld, nsSignalsString );
+            importPreviousListFormat( currWorld, ewSignalsString );
+            markDirty();
+        }
+
+        // Trigger state regeneration
+        updateSignalStates( world );
+    }
+
+    private void importPreviousListFormat( World currWorld, String listString ) {
         // Create new signal circuit
         TrafficSignalCircuit newCircuit = new TrafficSignalCircuit();
 
@@ -53,7 +65,7 @@ public class TileEntityTrafficSignalController extends TileEntity
                                                    Integer.parseInt( coordinates[ 2 ] ) );
 
                 // Get signal type and add to appropriate list in signal circuit
-                IBlockState blockState = world.getBlockState( signalPos );
+                IBlockState blockState = currWorld.getBlockState( signalPos );
                 if ( blockState.getBlock() instanceof AbstractBlockControllableSignal ) {
                     AbstractBlockControllableSignal controllableSignal
                             = ( AbstractBlockControllableSignal ) blockState.getBlock();
@@ -110,7 +122,10 @@ public class TileEntityTrafficSignalController extends TileEntity
         return unlinked;
     }
 
-    public boolean linkDevice( BlockPos blockPos, AbstractBlockControllableSignal.SIGNAL_SIDE signalSide, int circuit )
+    public boolean linkDevice( World world,
+                               BlockPos blockPos,
+                               AbstractBlockControllableSignal.SIGNAL_SIDE signalSide,
+                               int circuit )
     {
         int actualCircuit = circuit - 1;
         boolean result = false;
@@ -148,79 +163,25 @@ public class TileEntityTrafficSignalController extends TileEntity
                 signalCircuitList.add( linkToCircuit );
             }
 
+            // Trigger state regeneration
+            updateSignalStates( world );
+
             result = true;
         }
         return result;
     }
     ///endregion
 
-    private static final int      NS_PROTECTED_AHEAD_CYCLE_INDEX = 0;
-    private static final int      NS_LEFT_CYCLE_INDEX            = 1;
-    private static final int      NS_AHEAD_CYCLE_INDEX           = 2;
-    private static final int      NS_RIGHT_CYCLE_INDEX           = 3;
-    private static final int      NS_CROSSWALK_CYCLE_INDEX       = 4;
-    private static final int      EW_PROTECTED_AHEAD_CYCLE_INDEX = 5;
-    private static final int      EW_LEFT_CYCLE_INDEX            = 6;
-    private static final int      EW_AHEAD_CYCLE_INDEX           = 7;
-    private static final int      EW_RIGHT_CYCLE_INDEX           = 8;
-    private static final int      EW_CROSSWALK_CYCLE_INDEX       = 9;
-    private static final int      CYCLE_LENGTH_INDEX             = 10;
-    public static final  String[] CYCLE_NAMES                    = { "Flash",
-                                                                     "Standard w/ Protected Left",
-                                                                     "Standard w/ Protected Left " +
-                                                                             "and Right (Train/Bike Lane Compatible)",
-                                                                     "Standard with No Protected Turns",
-                                                                     "One Car Per Green" };
-    private static final int[][]  CYCLE_LIST_0                   = { { 3, 0, 3, 0, 3, 0, 3, 0, 3, 3, 1 },
-                                                                     { 1, 3, 1, 3, 3, 3, 0, 3, 0, 3, 1 } };
-
-    private static final int[][] CYCLE_LIST_1 = { { 3, 0, 0, 0, 0, 3, 0, 0, 2, 0, 5 },
-                                                  { 3, 2, 0, 0, 0, 3, 0, 0, 2, 0, 10 },
-                                                  { 3, 1, 0, 0, 0, 3, 0, 0, 1, 0, 5 },
-                                                  { 3, 0, 0, 0, 0, 3, 0, 0, 0, 1, 5 },
-                                                  { 3, 0, 2, 2, 0, 3, 0, 0, 0, 1, 14 },
-                                                  { 3, 0, 1, 2, 0, 3, 0, 0, 0, 0, 5 },
-                                                  { 3, 0, 0, 2, 0, 3, 0, 0, 0, 0, 5 },
-                                                  { 3, 0, 0, 2, 0, 3, 2, 0, 0, 0, 10 },
-                                                  { 3, 0, 0, 1, 0, 3, 1, 0, 0, 0, 5 },
-                                                  { 3, 0, 0, 0, 1, 3, 0, 0, 0, 0, 5 },
-                                                  { 3, 0, 0, 0, 1, 3, 0, 2, 2, 0, 14 },
-                                                  { 3, 0, 0, 0, 0, 3, 0, 1, 2, 0, 5 } };
-
-    private static final int[][] CYCLE_LIST_2 = { { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5 },
-                                                  { 0, 2, 0, 0, 0, 0, 0, 0, 2, 0, 10 },
-                                                  { 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 5 },
-                                                  { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5 },
-                                                  { 2, 0, 2, 0, 0, 0, 0, 0, 0, 1, 14 },
-                                                  { 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 5 },
-                                                  { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5 },
-                                                  { 0, 0, 0, 2, 0, 0, 2, 0, 0, 0, 10 },
-                                                  { 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 5 },
-                                                  { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5 },
-                                                  { 0, 0, 0, 0, 1, 2, 0, 2, 0, 0, 14 },
-                                                  { 0, 0, 0, 0, 1, 1, 0, 1, 0, 0, 5 } };
-
-    private static final int[][] CYCLE_LIST_3         = { { 3, 0, 0, 0, 0, 3, 0, 0, 0, 1, 5 },
-                                                          { 3, 2, 2, 2, 0, 3, 0, 0, 0, 1, 14 },
-                                                          { 3, 1, 1, 1, 0, 3, 0, 0, 0, 0, 5 },
-                                                          { 3, 0, 0, 0, 1, 3, 0, 0, 0, 0, 5 },
-                                                          { 3, 0, 0, 0, 1, 3, 2, 2, 2, 0, 14 },
-                                                          { 3, 0, 0, 0, 0, 3, 1, 1, 1, 0, 5 } };
-    private static final int[][] CYCLE_LIST_4         = { { 2, 2, 2, 2, 2, 0, 0, 0, 0, 2, 3 },
-                                                          { 0, 0, 0, 0, 2, 0, 0, 0, 0, 2, 3 },
-                                                          { 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 3 },
-                                                          { 0, 0, 0, 0, 2, 0, 0, 0, 0, 2, 3 } };
-    private static final int     CYCLE_LIST_INDEX_MIN = 0;
-    private static final int     CYCLE_LIST_INDEX_MAX = 4;
-
-    private static final String KEY_LAST_PHASE_CHANGE_TIME   = "LastPhaseChangeTime";
-    private static final String KEY_CURR_PHASE_TIME          = "CurrPhaseTime";
-    private static final String KEY_CURRENT_PHASE            = "CurrPhase";
-    private static final String KEY_CURRENT_CYCLE_LIST_INDEX = "CurrCycleListIndex";
-    private              int    currentPhase;
-    private              int    currentPhaseTime;
-    private              int    currentCycleListIndex;
-    private              long   lastPhaseChangeTime;
+    private static final String  KEY_LAST_PHASE_CHANGE_TIME = "LastPhaseChangeTime";
+    private static final String  KEY_CURR_PHASE_TIME        = "CurrPhaseTime";
+    private static final String  KEY_CURRENT_PHASE          = "CurrPhase";
+    private static final String  KEY_FLASH_MODE_ENABLED     = "FlashModeEnabled";
+    private              int     currentPhase;
+    private              int     currentPhaseTime;
+    private              long    lastPhaseChangeTime;
+    private              boolean flashModeEnabled;
+    private              String  ewSignalsString            = null;
+    private              String  nsSignalsString            = null;
 
     @Override
     public void readFromNBT( NBTTagCompound p_readFromNBT_1_ ) {
@@ -229,34 +190,41 @@ public class TileEntityTrafficSignalController extends TileEntity
         // Load existing serialized signals list (if present)
         if ( p_readFromNBT_1_.hasKey( SERIALIZED_SIGNAL_CIRCUIT_LIST_KEY ) ) {
             String serializedSignalCircuitList = p_readFromNBT_1_.getString( SERIALIZED_SIGNAL_CIRCUIT_LIST_KEY );
-            String[] serializedSignalsLists = serializedSignalCircuitList.split(
+            String[] serializedSignalCircuits = serializedSignalCircuitList.split(
                     SERIALIZED_SIGNAL_CIRCUIT_LIST_SEPARATOR );
-            for ( String serializedSignalList : serializedSignalsLists ) {
-                TrafficSignalCircuit importedCircuit = new TrafficSignalCircuit( serializedSignalList );
+            for ( String serializedSignalCircuit : serializedSignalCircuits ) {
+                TrafficSignalCircuit importedCircuit = new TrafficSignalCircuit( serializedSignalCircuit );
                 signalCircuitList.add( importedCircuit );
             }
-        }
-        // Load previous format to new format (if present and not already upgraded)
-        else if ( p_readFromNBT_1_.hasKey( KEY_NS_SIGNALS ) && p_readFromNBT_1_.hasKey( KEY_EW_SIGNALS ) ) {
-            // Import previous N/S signals list
-            String nsSignalsString = p_readFromNBT_1_.getString( KEY_NS_SIGNALS );
-            importPreviousListFormat( nsSignalsString );
+
+            // Remove old config
             p_readFromNBT_1_.removeTag( KEY_NS_SIGNALS );
-            markDirty();
-
-            // Import previous N/S signals list
-            String ewSignalsString = p_readFromNBT_1_.getString( KEY_EW_SIGNALS );
-            importPreviousListFormat( ewSignalsString );
             p_readFromNBT_1_.removeTag( KEY_EW_SIGNALS );
-            markDirty();
         }
 
-        // Load current cycle list index
-        if ( p_readFromNBT_1_.hasKey( KEY_CURRENT_CYCLE_LIST_INDEX ) ) {
-            this.currentCycleListIndex = p_readFromNBT_1_.getInteger( KEY_CURRENT_CYCLE_LIST_INDEX );
+        // Load previous format to new format (if present)
+        if ( p_readFromNBT_1_.hasKey( KEY_NS_SIGNALS ) && p_readFromNBT_1_.hasKey( KEY_EW_SIGNALS ) ) {
+            // Import previous signals lists
+            nsSignalsString = p_readFromNBT_1_.getString( KEY_NS_SIGNALS );
+            ewSignalsString = p_readFromNBT_1_.getString( KEY_EW_SIGNALS );
+        }
+
+        // Load existing serialized signal state list (if present)
+        if ( p_readFromNBT_1_.hasKey( SERIALIZED_SIGNAL_STATE_LIST_KEY ) ) {
+            String serializedSignalStateList = p_readFromNBT_1_.getString( SERIALIZED_SIGNAL_STATE_LIST_KEY );
+            String[] serializedSignalStates = serializedSignalStateList.split( SERIALIZED_SIGNAL_STATE_LIST_SEPARATOR );
+            for ( String serializedSignalState : serializedSignalStates ) {
+                TrafficSignalState importedState = TrafficSignalState.deserialize( serializedSignalState );
+                signalStateList.add( importedState );
+            }
+        }
+
+        // Load current flash mode enabled
+        if ( p_readFromNBT_1_.hasKey( KEY_FLASH_MODE_ENABLED ) ) {
+            this.flashModeEnabled = p_readFromNBT_1_.getBoolean( KEY_FLASH_MODE_ENABLED );
         }
         else {
-            this.currentCycleListIndex = 0;
+            this.flashModeEnabled = true;
         }
 
         // Load current phase
@@ -296,8 +264,8 @@ public class TileEntityTrafficSignalController extends TileEntity
 
     @Override
     public NBTTagCompound writeToNBT( NBTTagCompound p_writeToNBT_1_ ) {
-        // Write current cycle list index
-        p_writeToNBT_1_.setInteger( KEY_CURRENT_CYCLE_LIST_INDEX, currentCycleListIndex );
+        // Write current flash mode enabled
+        p_writeToNBT_1_.setBoolean( KEY_FLASH_MODE_ENABLED, flashModeEnabled );
 
         // Write current phase
         p_writeToNBT_1_.setInteger( KEY_CURRENT_PHASE, currentPhase );
@@ -317,8 +285,24 @@ public class TileEntityTrafficSignalController extends TileEntity
                 serializedSignalCircuitListStringBuilder.append( SERIALIZED_SIGNAL_CIRCUIT_LIST_SEPARATOR );
             }
         }
-        p_writeToNBT_1_.setString( SERIALIZED_SIGNAL_CIRCUIT_LIST_KEY,
-                                   serializedSignalCircuitListStringBuilder.toString() );
+        if ( signalCircuitList.size() > 0 ) {
+            p_writeToNBT_1_.setString( SERIALIZED_SIGNAL_CIRCUIT_LIST_KEY,
+                                       serializedSignalCircuitListStringBuilder.toString() );
+        }
+
+        // Write signal state list
+        StringBuilder serializedSignalStateListStringBuilder = new StringBuilder();
+        Iterator< TrafficSignalState > signalStateIterator = signalStateList.iterator();
+        while ( signalStateIterator.hasNext() ) {
+            serializedSignalStateListStringBuilder.append( signalStateIterator.next().serialize() );
+            if ( signalStateIterator.hasNext() ) {
+                serializedSignalStateListStringBuilder.append( SERIALIZED_SIGNAL_STATE_LIST_SEPARATOR );
+            }
+        }
+        if ( signalStateList.size() > 0 ) {
+            p_writeToNBT_1_.setString( SERIALIZED_SIGNAL_STATE_LIST_KEY,
+                                       serializedSignalStateListStringBuilder.toString() );
+        }
 
         return super.writeToNBT( p_writeToNBT_1_ );
     }
@@ -328,182 +312,190 @@ public class TileEntityTrafficSignalController extends TileEntity
     }
 
     public int getCycleTickRate() {
-        return currentCycleListIndex == 0 ? 4 : 20;
-    }
-
-    public String incrementCycleIndex() {
-        currentCycleListIndex++;
-        if ( currentCycleListIndex > CYCLE_LIST_INDEX_MAX ) {
-            currentCycleListIndex = CYCLE_LIST_INDEX_MIN;
-        }
-        markDirty();
-        return CYCLE_NAMES[ currentCycleListIndex ];
+        return flashModeEnabled ? 4 : 20;
     }
 
     private boolean lastPowered = false;
 
-    public void updateSignals( int[][] cycle, boolean powered ) {
-        // Update N/S left Signals
-        TrafficSignalCircuit nsCircuit = signalCircuitList.get( 0 );
-        for ( BlockPos signalPos : nsCircuit.getLeftSignals() ) {
-            IBlockState blockState = world.getBlockState( signalPos );
-            if ( blockState.getBlock() instanceof AbstractBlockControllableSignal ) {
-                if ( powered ) {
-                    AbstractBlockControllableSignal.changeSignalColor( world, signalPos,
-                                                                       cycle[ currentPhase ][ NS_LEFT_CYCLE_INDEX ] );
+    public void updateSignalStates( World world ) {
+        // Create temporary list to store states as built
+        ArrayList< TrafficSignalState > tempSignalStateList = new ArrayList<>();
+
+        // Handle flash versus normal operation
+        if ( flashModeEnabled ) {
+            // Create two flash states
+            TrafficSignalState flashState1 = new TrafficSignalState( 1 );
+            TrafficSignalState flashState2 = new TrafficSignalState( 1 );
+
+            // Loop through signal circuits
+            for ( int index = 0; index < signalCircuitList.size(); index++ ) {
+                TrafficSignalCircuit signalCircuit = signalCircuitList.get( index );
+
+                // Add ahead/protected ahead flash to correct state
+                if ( index == 0 ) {
+                    // Primary circuit flashes yellow on state 1
+                    flashState1.addYellowSignals( signalCircuit.getAheadSignals() );
+                    flashState1.addYellowSignals( signalCircuit.getProtectedSignals() );
+                    flashState2.addOffSignals( signalCircuit.getAheadSignals() );
+                    flashState2.addOffSignals( signalCircuit.getProtectedSignals() );
                 }
-            }
-        }
-        // Update N/S ahead Signals
-        for ( BlockPos signalPos : nsCircuit.getAheadSignals() ) {
-            IBlockState blockState = world.getBlockState( signalPos );
-            if ( blockState.getBlock() instanceof AbstractBlockControllableSignal ) {
-                if ( powered ) {
-                    AbstractBlockControllableSignal.changeSignalColor( world, signalPos,
-                                                                       cycle[ currentPhase ][ NS_AHEAD_CYCLE_INDEX ] );
+                if ( index % 2 == 0 ) {
+                    // Secondary circuit (even #) flashes red on state 1
+                    flashState1.addRedSignals( signalCircuit.getAheadSignals() );
+                    flashState1.addRedSignals( signalCircuit.getProtectedSignals() );
+                    flashState2.addOffSignals( signalCircuit.getAheadSignals() );
+                    flashState2.addOffSignals( signalCircuit.getProtectedSignals() );
                 }
-            }
-        }
-        // Update N/S right Signals
-        for ( BlockPos signalPos : nsCircuit.getRightSignals() ) {
-            IBlockState blockState = world.getBlockState( signalPos );
-            if ( blockState.getBlock() instanceof AbstractBlockControllableSignal ) {
-                if ( powered ) {
-                    AbstractBlockControllableSignal.changeSignalColor( world, signalPos,
-                                                                       cycle[ currentPhase ][ NS_RIGHT_CYCLE_INDEX ] );
+                else {
+                    // Secondary circuit (odd #) flashes red on state 2
+                    flashState2.addRedSignals( signalCircuit.getAheadSignals() );
+                    flashState2.addRedSignals( signalCircuit.getProtectedSignals() );
+                    flashState1.addOffSignals( signalCircuit.getAheadSignals() );
+                    flashState1.addOffSignals( signalCircuit.getProtectedSignals() );
                 }
-            }
-        }
-        // Update N/S pedestrian Signals
-        for ( BlockPos signalPos : nsCircuit.getPedestrianSignals() ) {
-            IBlockState blockState = world.getBlockState( signalPos );
-            if ( blockState.getBlock() instanceof AbstractBlockControllableSignal ) {
-                if ( powered ) {
-                    AbstractBlockControllableSignal.changeSignalColor( world, signalPos,
-                                                                       cycle[ currentPhase ][ NS_CROSSWALK_CYCLE_INDEX ] );
+
+                // Add turn signals
+                if ( index % 2 == 0 ) {
+                    // Even # flashes red on state 2
+                    flashState2.addRedSignals( signalCircuit.getLeftSignals() );
+                    flashState2.addRedSignals( signalCircuit.getRightSignals() );
+                    flashState1.addOffSignals( signalCircuit.getLeftSignals() );
+                    flashState1.addOffSignals( signalCircuit.getRightSignals() );
                 }
+                else {
+                    // Odd # flashes red on state 1
+                    flashState1.addRedSignals( signalCircuit.getLeftSignals() );
+                    flashState1.addRedSignals( signalCircuit.getRightSignals() );
+                    flashState2.addOffSignals( signalCircuit.getLeftSignals() );
+                    flashState2.addOffSignals( signalCircuit.getRightSignals() );
+                }
+
+                // Add pedestrian signals
+                flashState1.addOffSignals( signalCircuit.getPedestrianSignals() );
             }
+
+            // Add completed flash states to new state list
+            tempSignalStateList.add( flashState1 );
+            tempSignalStateList.add( flashState2 );
         }
-        // Update N/S protected Signals
-        for ( BlockPos signalPos : nsCircuit.getProtectedSignals() ) {
-            IBlockState blockState = world.getBlockState( signalPos );
-            if ( blockState.getBlock() instanceof AbstractBlockControllableSignal ) {
-                if ( powered ) {
-                    AbstractBlockControllableSignal.changeSignalColor( world, signalPos,
-                                                                       cycle[ currentPhase ][ NS_PROTECTED_AHEAD_CYCLE_INDEX ] );
+        else {
+            // Loop through signal circuits
+            for ( int index = 0; index < signalCircuitList.size(); index++ ) {
+                TrafficSignalCircuit signalCircuit = signalCircuitList.get( index );
+
+                // If all signals facing same direction, can unify turns and ahead due to lack of conflict
+                if ( signalCircuit.areSignalsFacingSameDirection( world ) ) {
+
+                }
+                else {
+
                 }
             }
         }
 
-        // Update E/W left Signals
-        TrafficSignalCircuit ewCircuit = signalCircuitList.get( 1 );
-        for ( BlockPos signalPos : ewCircuit.getLeftSignals() ) {
+        // Store updated state list
+        signalStateList.clear();
+        signalStateList.addAll( tempSignalStateList );
+        markDirty();
+    }
+
+    public void updateSignals( TrafficSignalState signalState, boolean powered ) {
+        // Apply red signals
+        for ( BlockPos signalPos : signalState.getRedSignals() ) {
             IBlockState blockState = world.getBlockState( signalPos );
             if ( blockState.getBlock() instanceof AbstractBlockControllableSignal ) {
                 if ( powered ) {
                     AbstractBlockControllableSignal.changeSignalColor( world, signalPos,
-                                                                       cycle[ currentPhase ][ EW_LEFT_CYCLE_INDEX ] );
+                                                                       AbstractBlockControllableSignal.SIGNAL_RED );
+                }
+                else {
+                    AbstractBlockControllableSignal.changeSignalColor( world, signalPos,
+                                                                       AbstractBlockControllableSignal.SIGNAL_OFF );
                 }
             }
         }
-        // Update E/W ahead Signals
-        for ( BlockPos signalPos : ewCircuit.getAheadSignals() ) {
+
+        // Apply yellow signals
+        for ( BlockPos signalPos : signalState.getYellowSignals() ) {
             IBlockState blockState = world.getBlockState( signalPos );
             if ( blockState.getBlock() instanceof AbstractBlockControllableSignal ) {
                 if ( powered ) {
                     AbstractBlockControllableSignal.changeSignalColor( world, signalPos,
-                                                                       cycle[ currentPhase ][ EW_AHEAD_CYCLE_INDEX ] );
+                                                                       AbstractBlockControllableSignal.SIGNAL_YELLOW );
+                }
+                else {
+                    AbstractBlockControllableSignal.changeSignalColor( world, signalPos,
+                                                                       AbstractBlockControllableSignal.SIGNAL_OFF );
                 }
             }
         }
-        // Update E/W right Signals
-        for ( BlockPos signalPos : ewCircuit.getRightSignals() ) {
+
+        // Apply red signals
+        for ( BlockPos signalPos : signalState.getGreenSignals() ) {
             IBlockState blockState = world.getBlockState( signalPos );
             if ( blockState.getBlock() instanceof AbstractBlockControllableSignal ) {
                 if ( powered ) {
                     AbstractBlockControllableSignal.changeSignalColor( world, signalPos,
-                                                                       cycle[ currentPhase ][ EW_RIGHT_CYCLE_INDEX ] );
+                                                                       AbstractBlockControllableSignal.SIGNAL_GREEN );
+                }
+                else {
+                    AbstractBlockControllableSignal.changeSignalColor( world, signalPos,
+                                                                       AbstractBlockControllableSignal.SIGNAL_OFF );
                 }
             }
         }
-        // Update E/W pedestrian Signals
-        for ( BlockPos signalPos : ewCircuit.getPedestrianSignals() ) {
+
+        // Apply off signals
+        for ( BlockPos signalPos : signalState.getOffSignals() ) {
             IBlockState blockState = world.getBlockState( signalPos );
             if ( blockState.getBlock() instanceof AbstractBlockControllableSignal ) {
-                if ( powered ) {
-                    AbstractBlockControllableSignal.changeSignalColor( world, signalPos,
-                                                                       cycle[ currentPhase ][ EW_CROSSWALK_CYCLE_INDEX ] );
-                }
-            }
-        }
-        // Update E/W protected Signals
-        for ( BlockPos signalPos : ewCircuit.getProtectedSignals() ) {
-            IBlockState blockState = world.getBlockState( signalPos );
-            if ( blockState.getBlock() instanceof AbstractBlockControllableSignal ) {
-                if ( powered ) {
-                    AbstractBlockControllableSignal.changeSignalColor( world, signalPos,
-                                                                       cycle[ currentPhase ][ EW_PROTECTED_AHEAD_CYCLE_INDEX ] );
-                }
+                AbstractBlockControllableSignal.changeSignalColor( world, signalPos,
+                                                                   AbstractBlockControllableSignal.SIGNAL_OFF );
             }
         }
     }
 
+    public boolean toggleFlashMode( World world ) {
+        flashModeEnabled = !flashModeEnabled;
+        markDirty();
+        updateSignalStates( world );
+        return flashModeEnabled;
+    }
+
     public void cycleSignals( boolean powered ) {
-        this.lastPhaseChangeTime = System.currentTimeMillis();
+        if ( signalStateList.size() > 0 ) {
+            this.lastPhaseChangeTime = System.currentTimeMillis();
 
-        // Debug information
-        FMLCommonHandler.instance()
-                        .getMinecraftServerInstance()
-                        .sendMessage(
-                                new TextComponentString( "CIRCUIT " + "COUNT" + ": " + getSignalCircuitCount() ) );
+            // Reset current phase if out of bounds
+            boolean phaseChanged = false;
+            if ( currentPhase >= signalStateList.size() ) {
+                currentPhase = 0;
+                currentPhaseTime = 0;
+                phaseChanged = true;
+            }
 
-        // Get cycle
-        int[][] currCycleArr;
-        if ( currentCycleListIndex == 1 ) {
-            currCycleArr = CYCLE_LIST_1;
-        }
-        else if ( currentCycleListIndex == 2 ) {
-            currCycleArr = CYCLE_LIST_2;
-        }
-        else if ( currentCycleListIndex == 3 ) {
-            currCycleArr = CYCLE_LIST_3;
-        }
-        else if ( currentCycleListIndex == 4 ) {
-            currCycleArr = CYCLE_LIST_4;
-        }
-        else {
-            currCycleArr = CYCLE_LIST_0;
-        }
+            // Check for power change
+            if ( lastPowered != powered ) {
+                phaseChanged = true;
+                lastPowered = powered;
+            }
 
-        // Reset current phase if out of bounds
-        boolean phaseChanged = false;
-        if ( currentPhase >= currCycleArr.length ) {
-            currentPhase = 0;
-            currentPhaseTime = 0;
-            phaseChanged = true;
-        }
+            // Get phase
+            if ( currentPhaseTime++ > signalStateList.get( currentPhase ).getLength() ) {
+                currentPhase++;
+                currentPhaseTime = 0;
+                phaseChanged = true;
+            }
+            if ( currentPhase >= signalStateList.size() ) {
+                currentPhase = 0;
+                currentPhaseTime = 0;
+                phaseChanged = true;
+            }
 
-        // Check for power change
-        if ( lastPowered != powered ) {
-            phaseChanged = true;
-            lastPowered = powered;
-        }
-
-        // Get phase
-        if ( currentPhaseTime++ > currCycleArr[ currentPhase ][ CYCLE_LENGTH_INDEX ] ) {
-            currentPhase++;
-            currentPhaseTime = 0;
-            phaseChanged = true;
-        }
-        if ( currentPhase >= currCycleArr.length ) {
-            currentPhase = 0;
-            currentPhaseTime = 0;
-            phaseChanged = true;
-        }
-
-        // Update signals if phase changed
-        if ( phaseChanged ) {
-            updateSignals( currCycleArr, powered );
+            // Update signals if phase changed
+            if ( phaseChanged ) {
+                updateSignals( signalStateList.get( currentPhase ), powered );
+            }
         }
     }
 }

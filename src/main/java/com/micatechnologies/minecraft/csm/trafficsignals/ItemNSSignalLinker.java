@@ -99,7 +99,7 @@ public class ItemNSSignalLinker extends ElementsCitySuperMod.ModElement
                 if ( tileEntity instanceof TileEntityTrafficSignalController ) {
                     TileEntityTrafficSignalController tileEntityTrafficSignalController
                             = ( TileEntityTrafficSignalController ) tileEntity;
-                    boolean linked = tileEntityTrafficSignalController.linkDevice( pos,
+                    boolean linked = tileEntityTrafficSignalController.linkDevice( worldIn, pos,
                                                                                    clickedBlock.getSignalSide( null,
                                                                                                                null ),
                                                                                    circuitLinkIndex );
