@@ -817,5 +817,41 @@
         "stream": false
       }
     ]
+  },
+  "roadguyrob_gogogo": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:roadguyrob_gogogo",
+        "stream": false
+      }
+    ]
+  },
+  "roadguyrob_notgonnamakeit": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:roadguyrob_notgonnamakeit",
+        "stream": false
+      }
+    ]
+  },
+  "roadguyrob_stawp": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:roadguyrob_stawp",
+        "stream": false
+      }
+    ]
+  },
+  "roadguyrob_ticket_time": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:roadguyrob_ticket_time",
+        "stream": false
+      }
+    ]
   }
 }
