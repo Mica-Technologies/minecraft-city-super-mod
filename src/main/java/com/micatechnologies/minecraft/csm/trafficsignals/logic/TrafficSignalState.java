@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.trafficsignals.logic;
 
+import jdk.nashorn.internal.ir.Block;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.ArrayList;
@@ -43,10 +44,16 @@ public class TrafficSignalState
     private final int length;
 
     /**
+     * The number of the active traffic signal circuit in the signal state.
+     */
+    private final int activeCircuit;
+
+    /**
      * @param length
      */
-    public TrafficSignalState( int length ) {
+    public TrafficSignalState( int length, int activeCircuit ) {
         this.length = length;
+        this.activeCircuit = activeCircuit;
     }
 
     ///endregion
@@ -91,6 +98,10 @@ public class TrafficSignalState
 
     public int getLength() {
         return length;
+    }
+
+    public int getActiveCircuit() {
+        return activeCircuit;
     }
 
     ///endregion
@@ -144,16 +155,44 @@ public class TrafficSignalState
         boolean successful;
         try {
             // Combine off signals list
-            offSignals.addAll( trafficSignalState.getOffSignals() );
+            for ( BlockPos signalPos : trafficSignalState.getOffSignals() ) {
+                if ( !offSignals.contains( signalPos ) &&
+                        !greenSignals.contains( signalPos ) &&
+                        !yellowSignals.contains( signalPos ) &&
+                        !redSignals.contains( signalPos ) ) {
+                    offSignals.add( signalPos );
+                }
+            }
 
             // Combine green/equivalent signals list
-            greenSignals.addAll( trafficSignalState.getGreenSignals() );
+            for ( BlockPos signalPos : trafficSignalState.getGreenSignals() ) {
+                if ( !offSignals.contains( signalPos ) &&
+                        !greenSignals.contains( signalPos ) &&
+                        !yellowSignals.contains( signalPos ) &&
+                        !redSignals.contains( signalPos ) ) {
+                    greenSignals.add( signalPos );
+                }
+            }
 
             // Combine yellow/equivalent signals list
-            yellowSignals.addAll( trafficSignalState.getYellowSignals() );
+            for ( BlockPos signalPos : trafficSignalState.getYellowSignals() ) {
+                if ( !offSignals.contains( signalPos ) &&
+                        !greenSignals.contains( signalPos ) &&
+                        !yellowSignals.contains( signalPos ) &&
+                        !redSignals.contains( signalPos ) ) {
+                    yellowSignals.add( signalPos );
+                }
+            }
 
             // Combine red/equivalent signals list
-            redSignals.addAll( trafficSignalState.getRedSignals() );
+            for ( BlockPos signalPos : trafficSignalState.getRedSignals() ) {
+                if ( !offSignals.contains( signalPos ) &&
+                        !greenSignals.contains( signalPos ) &&
+                        !yellowSignals.contains( signalPos ) &&
+                        !redSignals.contains( signalPos ) ) {
+                    redSignals.add( signalPos );
+                }
+            }
 
             // Set successful flag to true
             successful = true;
@@ -204,9 +243,14 @@ public class TrafficSignalState
     private static final int NBT_SERIALIZATION_RED_SIGNAL_LIST_INDEX = 3;
 
     /**
-     * The index of the red signals list in NBT serialization strings.
+     * The index of the length in NBT serialization strings.
      */
     private static final int NBT_SERIALIZATION_LENGTH_INDEX = 4;
+
+    /**
+     * The index of the active circuit in NBT serialization strings.
+     */
+    private static final int NBT_SERIALIZATION_ACTIVE_CIRCUIT_INDEX = 5;
 
     /**
      * The number of lists in NBT serialization strings.
@@ -274,6 +318,8 @@ public class TrafficSignalState
         }
         allListString.append( NBT_SERIALIZATION_LIST_SEP_CHAR );
         allListString.append( length );
+        allListString.append( NBT_SERIALIZATION_LIST_SEP_CHAR );
+        allListString.append( activeCircuit );
 
         return allListString.toString();
     }
@@ -291,7 +337,8 @@ public class TrafficSignalState
 
         // Create traffic signal state object
         int castedLength = Integer.parseInt( serializedListStrings[ NBT_SERIALIZATION_LENGTH_INDEX ] );
-        TrafficSignalState trafficSignalState = new TrafficSignalState( castedLength );
+        int castedActiveCircuit = Integer.parseInt( serializedListStrings[ NBT_SERIALIZATION_ACTIVE_CIRCUIT_INDEX ] );
+        TrafficSignalState trafficSignalState = new TrafficSignalState( castedLength, castedActiveCircuit );
 
         // Loop through each list and add all items to corresponding state object list
         for ( int i = 0; i < NBT_SERIALIZATION_LIST_COUNT; i++ ) {

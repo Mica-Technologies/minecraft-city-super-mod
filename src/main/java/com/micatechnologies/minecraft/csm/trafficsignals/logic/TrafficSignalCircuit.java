@@ -240,7 +240,7 @@ public class TrafficSignalCircuit
         for ( BlockPos signalPos : hybridLeftSignals ) {
             IBlockState blockState = world.getBlockState( signalPos );
             if ( blockState.getBlock() instanceof AbstractBlockControllableSignal ) {
-                EnumFacing currentFacingDirection = blockState.getValue( BlockDirectional.FACING );
+                EnumFacing currentFacingDirection = blockState.getValue( BlockHorizontal.FACING );
                 if ( encounteredFacingDirection == null ) {
                     encounteredFacingDirection = currentFacingDirection;
                 }
@@ -254,7 +254,7 @@ public class TrafficSignalCircuit
         for ( BlockPos signalPos : leftSignals ) {
             IBlockState blockState = world.getBlockState( signalPos );
             if ( blockState.getBlock() instanceof AbstractBlockControllableSignal ) {
-                EnumFacing currentFacingDirection = blockState.getValue( BlockDirectional.FACING );
+                EnumFacing currentFacingDirection = blockState.getValue( BlockHorizontal.FACING );
                 if ( encounteredFacingDirection == null ) {
                     encounteredFacingDirection = currentFacingDirection;
                 }
@@ -268,7 +268,7 @@ public class TrafficSignalCircuit
         for ( BlockPos signalPos : aheadSignals ) {
             IBlockState blockState = world.getBlockState( signalPos );
             if ( blockState.getBlock() instanceof AbstractBlockControllableSignal ) {
-                EnumFacing currentFacingDirection = blockState.getValue( BlockDirectional.FACING );
+                EnumFacing currentFacingDirection = blockState.getValue( BlockHorizontal.FACING );
                 if ( encounteredFacingDirection == null ) {
                     encounteredFacingDirection = currentFacingDirection;
                 }
@@ -282,7 +282,7 @@ public class TrafficSignalCircuit
         for ( BlockPos signalPos : rightSignals ) {
             IBlockState blockState = world.getBlockState( signalPos );
             if ( blockState.getBlock() instanceof AbstractBlockControllableSignal ) {
-                EnumFacing currentFacingDirection = blockState.getValue( BlockDirectional.FACING );
+                EnumFacing currentFacingDirection = blockState.getValue( BlockHorizontal.FACING );
                 if ( encounteredFacingDirection == null ) {
                     encounteredFacingDirection = currentFacingDirection;
                 }
@@ -296,7 +296,7 @@ public class TrafficSignalCircuit
         for ( BlockPos signalPos : protectedSignals ) {
             IBlockState blockState = world.getBlockState( signalPos );
             if ( blockState.getBlock() instanceof AbstractBlockControllableSignal ) {
-                EnumFacing currentFacingDirection = blockState.getValue( BlockDirectional.FACING );
+                EnumFacing currentFacingDirection = blockState.getValue( BlockHorizontal.FACING );
                 if ( encounteredFacingDirection == null ) {
                     encounteredFacingDirection = currentFacingDirection;
                 }

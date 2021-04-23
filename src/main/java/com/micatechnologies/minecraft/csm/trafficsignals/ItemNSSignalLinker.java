@@ -49,7 +49,7 @@ public class ItemNSSignalLinker extends ElementsCitySuperMod.ModElement
     {
 
         private BlockPos signalControllerPos = null;
-        private int      circuitLinkIndex    = 1;
+        private int      circuitLinkIndex    = 0;
 
         public ItemCustom() {
             setMaxDamage( 0 );
@@ -178,7 +178,7 @@ public class ItemNSSignalLinker extends ElementsCitySuperMod.ModElement
                 if ( tileEntity instanceof TileEntityTrafficSignalController ) {
                     TileEntityTrafficSignalController tileEntityTrafficSignalController
                             = ( TileEntityTrafficSignalController ) tileEntity;
-                    boolean removed = tileEntityTrafficSignalController.unlinkDevice( pos );
+                    boolean removed = tileEntityTrafficSignalController.unlinkDevice( pos, worldIn );
 
                     // If unlinked, change device state to off
                     AbstractBlockControllableSignal.changeSignalColor( worldIn, pos,
@@ -246,33 +246,43 @@ public class ItemNSSignalLinker extends ElementsCitySuperMod.ModElement
                 return EnumActionResult.SUCCESS;
             }
             else {
-                TileEntity tileEntity = worldIn.getTileEntity( signalControllerPos );
-                if ( tileEntity instanceof TileEntityTrafficSignalController ) {
-                    TileEntityTrafficSignalController tileEntityTrafficSignalController
-                            = ( TileEntityTrafficSignalController ) tileEntity;
-                    if ( circuitLinkIndex > tileEntityTrafficSignalController.getSignalCircuitCount() ) {
-                        circuitLinkIndex = 0;
-                    }
-                    if ( !worldIn.isRemote ) {
-                        circuitLinkIndex++;
-                        if ( circuitLinkIndex > tileEntityTrafficSignalController.getSignalCircuitCount() ) {
-
-                            player.sendMessage(
-                                    new TextComponentString( "Linking to circuit #" + circuitLinkIndex + " (new)" ) );
-                        }
-                        else {
-
-                            player.sendMessage( new TextComponentString( "Linking to circuit #" + circuitLinkIndex ) );
-                        }
-                    }
+                TileEntity tileEntity = null;
+                try {
+                    tileEntity = worldIn.getTileEntity( signalControllerPos );
                 }
-                else {
+                catch ( Exception e ) {
                     if ( !worldIn.isRemote ) {
                         player.sendMessage( new TextComponentString(
                                 "Cannot change circuit until a signal controller has been selected!" ) );
                     }
                 }
-                return EnumActionResult.SUCCESS;
+
+                if ( tileEntity instanceof TileEntityTrafficSignalController ) {
+                    TileEntityTrafficSignalController tileEntityTrafficSignalController
+                            = ( TileEntityTrafficSignalController ) tileEntity;
+                    if ( !worldIn.isRemote ) {
+                        player.sendMessage( new TextComponentString( "Starting: " + circuitLinkIndex ) );
+                    }
+
+                    if ( circuitLinkIndex > tileEntityTrafficSignalController.getSignalCircuitCount() ) {
+                        circuitLinkIndex = 0;
+                    }
+                    circuitLinkIndex++;
+
+                    if ( !worldIn.isRemote ) {
+                        player.sendMessage( new TextComponentString( "Ending: " + circuitLinkIndex ) );
+                        if ( circuitLinkIndex > tileEntityTrafficSignalController.getSignalCircuitCount() ) {
+                            player.sendMessage(
+                                    new TextComponentString( "Linking to circuit #" + circuitLinkIndex + " (new)" ) );
+                        }
+                        else {
+                            player.sendMessage( new TextComponentString( "Linking to circuit #" + circuitLinkIndex ) );
+                        }
+                        player.sendMessage( new TextComponentString( "Closing: " + circuitLinkIndex ) );
+                    }
+                }
+
+                return EnumActionResult.PASS;
             }
         }
 
