@@ -48,8 +48,9 @@ public class ItemNSSignalLinker extends ElementsCitySuperMod.ModElement
     public static class ItemCustom extends Item
     {
 
-        private BlockPos signalControllerPos = null;
-        private int      circuitLinkIndex    = 0;
+        private BlockPos signalControllerPos    = null;
+        private int      circuitLinkIndexClient = 1;
+        private int      circuitLinkIndexServer = 1;
 
         public ItemCustom() {
             setMaxDamage( 0 );
@@ -99,16 +100,23 @@ public class ItemNSSignalLinker extends ElementsCitySuperMod.ModElement
                 if ( tileEntity instanceof TileEntityTrafficSignalController ) {
                     TileEntityTrafficSignalController tileEntityTrafficSignalController
                             = ( TileEntityTrafficSignalController ) tileEntity;
-                    boolean linked = tileEntityTrafficSignalController.linkDevice( worldIn, pos,
-                                                                                   clickedBlock.getSignalSide( null,
-                                                                                                               null ),
-                                                                                   circuitLinkIndex );
+                    boolean linked;
+                    if ( !worldIn.isRemote ) {
+                        linked = tileEntityTrafficSignalController.linkDevice( worldIn, pos,
+                                                                               clickedBlock.getSignalSide( null, null ),
+                                                                               circuitLinkIndexClient );
+                    }
+                    else {
+                        linked = tileEntityTrafficSignalController.linkDevice( worldIn, pos,
+                                                                               clickedBlock.getSignalSide( null, null ),
+                                                                               circuitLinkIndexServer );
+                    }
                     if ( !worldIn.isRemote &&
                             linked &&
                             ( clickedBlock instanceof BlockControllableCrosswalkLeftMount.BlockCustom ||
                                     clickedBlock instanceof BlockControllableCrosswalkRightMount.BlockCustom ) ) {
                         player.sendMessage( new TextComponentString( "Crosswalk light connected to circuit " +
-                                                                             circuitLinkIndex +
+                                                                             circuitLinkIndexClient +
                                                                              " of signal controller at " +
                                                                              "(" +
                                                                              signalControllerPos.getX() +
@@ -123,7 +131,7 @@ public class ItemNSSignalLinker extends ElementsCitySuperMod.ModElement
                             clickedBlock instanceof BlockControllableTrafficSignalTrainController.BlockCustom ) {
                         player.sendMessage( new TextComponentString(
                                 "Train locking rail controller connected to circuit " +
-                                        circuitLinkIndex +
+                                        circuitLinkIndexClient +
                                         " of signal controller at " +
                                         "(" +
                                         signalControllerPos.getX() +
@@ -137,7 +145,7 @@ public class ItemNSSignalLinker extends ElementsCitySuperMod.ModElement
                             linked &&
                             clickedBlock instanceof AbstractBlockControllableCrosswalkAccessory ) {
                         player.sendMessage( new TextComponentString( "Crosswalk accessory connected to circuit " +
-                                                                             circuitLinkIndex +
+                                                                             circuitLinkIndexClient +
                                                                              " of signal controller at " +
                                                                              "(" +
                                                                              signalControllerPos.getX() +
@@ -149,7 +157,7 @@ public class ItemNSSignalLinker extends ElementsCitySuperMod.ModElement
                     }
                     else if ( !worldIn.isRemote && linked ) {
                         player.sendMessage( new TextComponentString( "Signal connected to circuit " +
-                                                                             circuitLinkIndex +
+                                                                             circuitLinkIndexClient +
                                                                              " of signal controller at " +
                                                                              "(" +
                                                                              signalControllerPos.getX() +
@@ -246,43 +254,51 @@ public class ItemNSSignalLinker extends ElementsCitySuperMod.ModElement
                 return EnumActionResult.SUCCESS;
             }
             else {
-                TileEntity tileEntity = null;
-                try {
-                    tileEntity = worldIn.getTileEntity( signalControllerPos );
+                if ( signalControllerPos != null ) {
+                    TileEntity tileEntity = worldIn.getTileEntity( signalControllerPos );
+                    if ( tileEntity instanceof TileEntityTrafficSignalController ) {
+                        TileEntityTrafficSignalController tileEntityTrafficSignalController
+                                = ( TileEntityTrafficSignalController ) tileEntity;
+                        if ( !worldIn.isRemote ) {
+                            if ( circuitLinkIndexClient > tileEntityTrafficSignalController.getSignalCircuitCount() ) {
+                                circuitLinkIndexClient = 0;
+                            }
+                            circuitLinkIndexClient++;
+                        }
+                        else {
+                            if ( circuitLinkIndexServer > tileEntityTrafficSignalController.getSignalCircuitCount() ) {
+                                circuitLinkIndexServer = 0;
+                            }
+                            circuitLinkIndexServer++;
+                        }
+
+                        if ( !worldIn.isRemote ) {
+                            if ( circuitLinkIndexClient > tileEntityTrafficSignalController.getSignalCircuitCount() ) {
+
+                                player.sendMessage( new TextComponentString(
+                                        "Linking to circuit #" + circuitLinkIndexClient + " (new)" ) );
+                            }
+                            else {
+
+                                player.sendMessage(
+                                        new TextComponentString( "Linking to circuit #" + circuitLinkIndexClient ) );
+                            }
+                        }
+                    }
+                    else {
+                        if ( !worldIn.isRemote ) {
+                            player.sendMessage( new TextComponentString(
+                                    "Cannot change circuit until a signal controller has been selected!" ) );
+                        }
+                    }
                 }
-                catch ( Exception e ) {
+                else {
                     if ( !worldIn.isRemote ) {
                         player.sendMessage( new TextComponentString(
                                 "Cannot change circuit until a signal controller has been selected!" ) );
                     }
                 }
-
-                if ( tileEntity instanceof TileEntityTrafficSignalController ) {
-                    TileEntityTrafficSignalController tileEntityTrafficSignalController
-                            = ( TileEntityTrafficSignalController ) tileEntity;
-                    if ( !worldIn.isRemote ) {
-                        player.sendMessage( new TextComponentString( "Starting: " + circuitLinkIndex ) );
-                    }
-
-                    if ( circuitLinkIndex > tileEntityTrafficSignalController.getSignalCircuitCount() ) {
-                        circuitLinkIndex = 0;
-                    }
-                    circuitLinkIndex++;
-
-                    if ( !worldIn.isRemote ) {
-                        player.sendMessage( new TextComponentString( "Ending: " + circuitLinkIndex ) );
-                        if ( circuitLinkIndex > tileEntityTrafficSignalController.getSignalCircuitCount() ) {
-                            player.sendMessage(
-                                    new TextComponentString( "Linking to circuit #" + circuitLinkIndex + " (new)" ) );
-                        }
-                        else {
-                            player.sendMessage( new TextComponentString( "Linking to circuit #" + circuitLinkIndex ) );
-                        }
-                        player.sendMessage( new TextComponentString( "Closing: " + circuitLinkIndex ) );
-                    }
-                }
-
-                return EnumActionResult.PASS;
+                return EnumActionResult.SUCCESS;
             }
         }
 
