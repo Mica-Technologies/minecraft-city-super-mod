@@ -158,6 +158,9 @@ public class TileEntityTrafficSignalController extends TileEntity
             else if ( signalSide == AbstractBlockControllableSignal.SIGNAL_SIDE.PROTECTED_AHEAD ) {
                 linkToCircuit.linkProtectedSignal( blockPos );
             }
+            else if ( signalSide == AbstractBlockControllableSignal.SIGNAL_SIDE.HYBRID_LEFT ) {
+                linkToCircuit.linkHybridLeftSignal( blockPos );
+            }
 
             // Add new circuit if necessary
             if ( addCircuit ) {
@@ -361,15 +364,19 @@ public class TileEntityTrafficSignalController extends TileEntity
                 // Add turn signals
                 if ( index % 2 == 0 ) {
                     // Even # flashes red on state 2
+                    flashState2.addRedSignals( signalCircuit.getHybridLeftSignals() );
                     flashState2.addRedSignals( signalCircuit.getLeftSignals() );
                     flashState2.addRedSignals( signalCircuit.getRightSignals() );
+                    flashState1.addOffSignals( signalCircuit.getHybridLeftSignals() );
                     flashState1.addOffSignals( signalCircuit.getLeftSignals() );
                     flashState1.addOffSignals( signalCircuit.getRightSignals() );
                 }
                 else {
                     // Odd # flashes red on state 1
+                    flashState1.addRedSignals( signalCircuit.getHybridLeftSignals() );
                     flashState1.addRedSignals( signalCircuit.getLeftSignals() );
                     flashState1.addRedSignals( signalCircuit.getRightSignals() );
+                    flashState2.addOffSignals( signalCircuit.getHybridLeftSignals() );
                     flashState2.addOffSignals( signalCircuit.getLeftSignals() );
                     flashState2.addOffSignals( signalCircuit.getRightSignals() );
                 }

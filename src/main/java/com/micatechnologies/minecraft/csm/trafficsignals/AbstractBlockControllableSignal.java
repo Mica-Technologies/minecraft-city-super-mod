@@ -38,7 +38,7 @@ public abstract class AbstractBlockControllableSignal extends Block
 
     public enum SIGNAL_SIDE
     {
-        LEFT, AHEAD, RIGHT, CROSSWALK, PROTECTED_AHEAD
+        HYBRID_LEFT, LEFT, AHEAD, RIGHT, CROSSWALK, PROTECTED_AHEAD
     }
 
     @SideOnly( Side.CLIENT )
