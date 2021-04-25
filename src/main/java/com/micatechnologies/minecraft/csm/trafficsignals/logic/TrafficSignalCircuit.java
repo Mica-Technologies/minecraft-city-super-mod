@@ -327,6 +327,16 @@ public class TrafficSignalCircuit
                 sensors.contains( blockPos );
     }
 
+    public int getSize() {
+        return hybridLeftSignals.size() +
+                leftSignals.size() +
+                aheadSignals.size() +
+                rightSignals.size() +
+                pedestrianSignals.size() +
+                protectedSignals.size() +
+                sensors.size();
+    }
+
     /**
      * Removes any link to the specified {@link BlockPos} within the signal circuit.
      *

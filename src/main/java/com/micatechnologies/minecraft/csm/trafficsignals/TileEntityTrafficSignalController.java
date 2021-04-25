@@ -116,6 +116,11 @@ public class TileEntityTrafficSignalController extends TileEntity
         for ( TrafficSignalCircuit signalCircuit : signalCircuitList ) {
             unlinked = signalCircuit.unlink( blockPos );
             if ( unlinked ) {
+                // Remove circuit if now empty
+                if (signalCircuit.getSize() == 0) {
+                    signalCircuitList.remove( signalCircuit );
+                }
+
                 updateSignalStates( world );
                 break;
             }
@@ -417,6 +422,11 @@ public class TileEntityTrafficSignalController extends TileEntity
                     circuitGreenState.addGreenSignals( signalCircuit.getAheadSignals() );
                     circuitGreenState.addGreenSignals( signalCircuit.getRightSignals() );
                     circuitGreenState.addGreenSignals( signalCircuit.getProtectedSignals() );
+                    for ( int pedIndex = 0; pedIndex < signalCircuitList.size(); pedIndex++ ) {
+                        if (index != pedIndex) {
+                            circuitGreenState.addYellowSignals( signalCircuitList.get( pedIndex ).getPedestrianSignals() );
+                        }
+                    }
                     circuitGreenState.combine( allRedSignalState );
                     tempSignalStateList.add( circuitGreenState );
 
@@ -465,6 +475,11 @@ public class TileEntityTrafficSignalController extends TileEntity
                         }
                         circuitAheadGreenState.addGreenSignals( signalCircuit.getAheadSignals() );
                         circuitAheadGreenState.addGreenSignals( signalCircuit.getProtectedSignals() );
+                        for ( int pedIndex = 0; pedIndex < signalCircuitList.size(); pedIndex++ ) {
+                            if (index != pedIndex) {
+                                circuitAheadGreenState.addYellowSignals( signalCircuitList.get( pedIndex ).getPedestrianSignals() );
+                            }
+                        }
                         circuitAheadGreenState.combine( allRedSignalState );
                         tempSignalStateList.add( circuitAheadGreenState );
 
@@ -524,6 +539,11 @@ public class TileEntityTrafficSignalController extends TileEntity
                         }
                         circuitGreenState.addGreenSignals( signalCircuit.getAheadSignals() );
                         circuitGreenState.addGreenSignals( signalCircuit.getRightSignals() );
+                        for ( int pedIndex = 0; pedIndex < signalCircuitList.size(); pedIndex++ ) {
+                            if (index != pedIndex) {
+                                circuitGreenState.addYellowSignals( signalCircuitList.get( pedIndex ).getPedestrianSignals() );
+                            }
+                        }
                         circuitGreenState.combine( allRedSignalState );
                         tempSignalStateList.add( circuitGreenState );
 
