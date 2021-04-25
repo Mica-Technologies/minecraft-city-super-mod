@@ -364,7 +364,10 @@ public class TrafficSignalState
                     }
                 }
                 catch ( Exception e ) {
-                    System.err.println( "A malformed entry was detected in a signal controller's state memory!" );
+                    System.err.println( "A malformed entry was detected in a signal controller's state memory! " +
+                                                "(Value: " +
+                                                serializedListItem +
+                                                ")" );
                 }
             }
         }

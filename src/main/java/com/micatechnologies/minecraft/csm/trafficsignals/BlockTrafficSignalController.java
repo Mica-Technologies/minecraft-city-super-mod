@@ -135,6 +135,9 @@ public class BlockTrafficSignalController extends ElementsCitySuperMod.ModElemen
                     p_randomTick_1_.scheduleUpdate( p_randomTick_2_, this,
                                                     getTickRate( p_randomTick_1_, p_randomTick_2_ ) );
                 }
+
+                // Verify signal types match (left not linked to right, etc)
+                tileEntityTrafficSignalController.runAutomaticSystemVerification( p_randomTick_1_ );
             }
             super.randomTick( p_randomTick_1_, p_randomTick_2_, p_randomTick_3_, p_randomTick_4_ );
         }
@@ -296,8 +299,9 @@ public class BlockTrafficSignalController extends ElementsCitySuperMod.ModElemen
                     TileEntityTrafficSignalController tileEntityTrafficSignalController
                             = ( TileEntityTrafficSignalController ) tileEntity;
                     tileEntityTrafficSignalController.importPreviousConfig( p_onBlockActivated_1_ );
-                    if (!p_onBlockActivated_1_.isRemote) {
-                        p_onBlockActivated_4_.sendMessage( new TextComponentString( "Forcing signal state regeneration!" ) );
+                    if ( !p_onBlockActivated_1_.isRemote ) {
+                        p_onBlockActivated_4_.sendMessage(
+                                new TextComponentString( "Forcing signal state regeneration!" ) );
                     }
                 }
             }

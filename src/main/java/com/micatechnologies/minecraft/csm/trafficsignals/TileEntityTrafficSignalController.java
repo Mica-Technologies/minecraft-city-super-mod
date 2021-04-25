@@ -3,6 +3,7 @@ package com.micatechnologies.minecraft.csm.trafficsignals;
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalCircuit;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalState;
+import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -329,7 +330,173 @@ public class TileEntityTrafficSignalController extends TileEntity
 
     private boolean lastPowered = false;
 
+    public void runAutomaticSystemVerification( World world ) {
+        boolean didChange = verifyAndCleanupSignalTypes( world );
+        if ( didChange ) {
+            updateSignalStates( world );
+        }
+    }
+
+    private boolean verifyAndCleanupSignalTypes( World world ) {
+        // Boolean to track if changes made
+        boolean changed = false;
+
+        // Loop through each signal in each circuit - verify it is in correct list, else move
+        for ( TrafficSignalCircuit signalCircuit : signalCircuitList ) {
+            // Build list to unlink
+            List< BlockPos > signalsToUnlink = new ArrayList<>();
+
+            // Verify hybrid left signals
+            for ( BlockPos signalPos : signalCircuit.getHybridLeftSignals() ) {
+                IBlockState state = world.getBlockState( signalPos );
+                Block blockAtSignalPos = state.getBlock();
+                if ( blockAtSignalPos instanceof AbstractBlockControllableSignal ) {
+                    AbstractBlockControllableSignal signalAtSignalPos
+                            = ( AbstractBlockControllableSignal ) blockAtSignalPos;
+
+                    // Signal is wrong type, unlink and turn off
+                    if ( signalAtSignalPos.getSignalSide( world, signalPos ) !=
+                            AbstractBlockControllableSignal.SIGNAL_SIDE.HYBRID_LEFT ) {
+                        AbstractBlockControllableSignal.changeSignalColor( world, signalPos,
+                                                                           AbstractBlockControllableSignal.SIGNAL_OFF );
+                        signalsToUnlink.add( signalPos );
+                    }
+                }
+                else {
+                    // Signal not there anymore, unlink
+                    signalsToUnlink.add( signalPos );
+                }
+            }
+
+            // Verify left signals
+            for ( BlockPos signalPos : signalCircuit.getLeftSignals() ) {
+                IBlockState state = world.getBlockState( signalPos );
+                Block blockAtSignalPos = state.getBlock();
+                if ( blockAtSignalPos instanceof AbstractBlockControllableSignal ) {
+                    AbstractBlockControllableSignal signalAtSignalPos
+                            = ( AbstractBlockControllableSignal ) blockAtSignalPos;
+
+                    // Signal is wrong type, unlink and turn off
+                    if ( signalAtSignalPos.getSignalSide( world, signalPos ) !=
+                            AbstractBlockControllableSignal.SIGNAL_SIDE.LEFT ) {
+                        AbstractBlockControllableSignal.changeSignalColor( world, signalPos,
+                                                                           AbstractBlockControllableSignal.SIGNAL_OFF );
+                        signalsToUnlink.add( signalPos );
+                    }
+                }
+                else {
+                    // Signal not there anymore, unlink
+                    signalsToUnlink.add( signalPos );
+                }
+            }
+
+            // Verify ahead signals
+            for ( BlockPos signalPos : signalCircuit.getAheadSignals() ) {
+                IBlockState state = world.getBlockState( signalPos );
+                Block blockAtSignalPos = state.getBlock();
+                if ( blockAtSignalPos instanceof AbstractBlockControllableSignal ) {
+                    AbstractBlockControllableSignal signalAtSignalPos
+                            = ( AbstractBlockControllableSignal ) blockAtSignalPos;
+
+                    // Signal is wrong type, unlink and turn off
+                    if ( signalAtSignalPos.getSignalSide( world, signalPos ) !=
+                            AbstractBlockControllableSignal.SIGNAL_SIDE.AHEAD ) {
+                        AbstractBlockControllableSignal.changeSignalColor( world, signalPos,
+                                                                           AbstractBlockControllableSignal.SIGNAL_OFF );
+                        signalsToUnlink.add( signalPos );
+                    }
+                }
+                else {
+                    // Signal not there anymore, unlink
+                    signalsToUnlink.add( signalPos );
+                }
+            }
+
+            // Verify right signals
+            for ( BlockPos signalPos : signalCircuit.getRightSignals() ) {
+                IBlockState state = world.getBlockState( signalPos );
+                Block blockAtSignalPos = state.getBlock();
+                if ( blockAtSignalPos instanceof AbstractBlockControllableSignal ) {
+                    AbstractBlockControllableSignal signalAtSignalPos
+                            = ( AbstractBlockControllableSignal ) blockAtSignalPos;
+
+                    // Signal is wrong type, unlink and turn off
+                    if ( signalAtSignalPos.getSignalSide( world, signalPos ) !=
+                            AbstractBlockControllableSignal.SIGNAL_SIDE.RIGHT ) {
+                        AbstractBlockControllableSignal.changeSignalColor( world, signalPos,
+                                                                           AbstractBlockControllableSignal.SIGNAL_OFF );
+                        signalsToUnlink.add( signalPos );
+                    }
+                }
+                else {
+                    // Signal not there anymore, unlink
+                    signalsToUnlink.add( signalPos );
+                }
+            }
+
+            // Verify crosswalk signals
+            for ( BlockPos signalPos : signalCircuit.getPedestrianSignals() ) {
+                IBlockState state = world.getBlockState( signalPos );
+                Block blockAtSignalPos = state.getBlock();
+                if ( blockAtSignalPos instanceof AbstractBlockControllableSignal ) {
+                    AbstractBlockControllableSignal signalAtSignalPos
+                            = ( AbstractBlockControllableSignal ) blockAtSignalPos;
+
+                    // Signal is wrong type, unlink and turn off
+                    if ( signalAtSignalPos.getSignalSide( world, signalPos ) !=
+                            AbstractBlockControllableSignal.SIGNAL_SIDE.CROSSWALK ) {
+                        AbstractBlockControllableSignal.changeSignalColor( world, signalPos,
+                                                                           AbstractBlockControllableSignal.SIGNAL_OFF );
+                        signalsToUnlink.add( signalPos );
+                    }
+                }
+                else {
+                    // Signal not there anymore, unlink
+                    signalsToUnlink.add( signalPos );
+                }
+            }
+
+            // Verify protected ahead signals
+            for ( BlockPos signalPos : signalCircuit.getProtectedSignals() ) {
+                IBlockState state = world.getBlockState( signalPos );
+                Block blockAtSignalPos = state.getBlock();
+                if ( blockAtSignalPos instanceof AbstractBlockControllableSignal ) {
+                    AbstractBlockControllableSignal signalAtSignalPos
+                            = ( AbstractBlockControllableSignal ) blockAtSignalPos;
+
+                    // Signal is wrong type, unlink and turn off
+                    if ( signalAtSignalPos.getSignalSide( world, signalPos ) !=
+                            AbstractBlockControllableSignal.SIGNAL_SIDE.PROTECTED_AHEAD ) {
+                        AbstractBlockControllableSignal.changeSignalColor( world, signalPos,
+                                                                           AbstractBlockControllableSignal.SIGNAL_OFF );
+                        signalsToUnlink.add( signalPos );
+                    }
+                }
+                else {
+                    // Signal not there anymore, unlink
+                    signalsToUnlink.add( signalPos );
+                }
+            }
+
+            // Unlink signals that need to be unlinked
+            for ( BlockPos signalPos : signalsToUnlink ) {
+                if ( !changed ) {
+                    changed = true;
+                }
+                IBlockState state = world.getBlockState( signalPos );
+                Block blockAtUnlinkSignalPos = state.getBlock();
+                if ( blockAtUnlinkSignalPos instanceof AbstractBlockControllableSignal ) {
+                    signalCircuit.unlink( signalPos );
+                }
+            }
+        }
+        return changed;
+    }
+
     public void updateSignalStates( World world ) {
+        // Verify and cleanup signal types
+        verifyAndCleanupSignalTypes( world );
+
         // Create temporary list to store states as built
         ArrayList< TrafficSignalState > tempSignalStateList = new ArrayList<>();
 
