@@ -194,6 +194,13 @@ public class TileEntityTrafficSignalController extends TileEntity
     public void readFromNBT( NBTTagCompound p_readFromNBT_1_ ) {
         super.readFromNBT( p_readFromNBT_1_ );
 
+        // Load previous format to new format (if present)
+        if ( p_readFromNBT_1_.hasKey( KEY_NS_SIGNALS ) && p_readFromNBT_1_.hasKey( KEY_EW_SIGNALS ) ) {
+            // Import previous signals lists
+            nsSignalsString = p_readFromNBT_1_.getString( KEY_NS_SIGNALS );
+            ewSignalsString = p_readFromNBT_1_.getString( KEY_EW_SIGNALS );
+        }
+
         // Load existing serialized signals list (if present)
         if ( p_readFromNBT_1_.hasKey( SERIALIZED_SIGNAL_CIRCUIT_LIST_KEY ) ) {
             String serializedSignalCircuitList = p_readFromNBT_1_.getString( SERIALIZED_SIGNAL_CIRCUIT_LIST_KEY );
@@ -207,13 +214,6 @@ public class TileEntityTrafficSignalController extends TileEntity
             // Remove old config
             p_readFromNBT_1_.removeTag( KEY_NS_SIGNALS );
             p_readFromNBT_1_.removeTag( KEY_EW_SIGNALS );
-        }
-
-        // Load previous format to new format (if present)
-        if ( p_readFromNBT_1_.hasKey( KEY_NS_SIGNALS ) && p_readFromNBT_1_.hasKey( KEY_EW_SIGNALS ) ) {
-            // Import previous signals lists
-            nsSignalsString = p_readFromNBT_1_.getString( KEY_NS_SIGNALS );
-            ewSignalsString = p_readFromNBT_1_.getString( KEY_EW_SIGNALS );
         }
 
         // Load existing serialized signal state list (if present)
@@ -410,10 +410,152 @@ public class TileEntityTrafficSignalController extends TileEntity
 
                 // If all signals facing same direction, can unify turns and ahead due to lack of conflict
                 if ( signalCircuit.areSignalsFacingSameDirection( world ) ) {
+                    // Create state for signals on green
+                    TrafficSignalState circuitGreenState = new TrafficSignalState( 15, index );
+                    circuitGreenState.addGreenSignals( signalCircuit.getHybridLeftSignals() );
+                    circuitGreenState.addGreenSignals( signalCircuit.getLeftSignals() );
+                    circuitGreenState.addGreenSignals( signalCircuit.getAheadSignals() );
+                    circuitGreenState.addGreenSignals( signalCircuit.getRightSignals() );
+                    circuitGreenState.addGreenSignals( signalCircuit.getProtectedSignals() );
+                    circuitGreenState.combine( allRedSignalState );
+                    tempSignalStateList.add( circuitGreenState );
 
+                    // Create state for signals on yellow
+                    TrafficSignalState circuitYellowState = new TrafficSignalState( 5, index );
+                    circuitYellowState.addYellowSignals( signalCircuit.getHybridLeftSignals() );
+                    circuitYellowState.addYellowSignals( signalCircuit.getLeftSignals() );
+                    circuitYellowState.addYellowSignals( signalCircuit.getAheadSignals() );
+                    circuitYellowState.addYellowSignals( signalCircuit.getRightSignals() );
+                    circuitYellowState.addYellowSignals( signalCircuit.getProtectedSignals() );
+                    circuitYellowState.combine( allRedSignalState );
+                    tempSignalStateList.add( circuitYellowState );
+
+                    // Add all red phase to follow
+                    if ( index < signalCircuitList.size() - 1 ) {
+                        tempSignalStateList.add( allRedSignalState );
+                    }
                 }
                 else {
+                    if ( signalCircuit.getHybridLeftSignals().size() > 0 ||
+                            signalCircuit.getLeftSignals().size() > 0 ) {
+                        // Create state for left turn signals on green
+                        TrafficSignalState circuitLeftGreenState = new TrafficSignalState( 10, index );
+                        circuitLeftGreenState.addOffSignals( signalCircuit.getHybridLeftSignals() );
+                        circuitLeftGreenState.addGreenSignals( signalCircuit.getLeftSignals() );
+                        circuitLeftGreenState.combine( allRedSignalState );
+                        tempSignalStateList.add( circuitLeftGreenState );
 
+                        // Create state for left turn signals on yellow
+                        TrafficSignalState circuitLeftYellowState = new TrafficSignalState( 5, index );
+                        circuitLeftYellowState.addYellowSignals( signalCircuit.getHybridLeftSignals() );
+                        circuitLeftYellowState.addYellowSignals( signalCircuit.getLeftSignals() );
+                        circuitLeftYellowState.combine( allRedSignalState );
+                        tempSignalStateList.add( circuitLeftYellowState );
+
+                        // Add all red phase
+                        tempSignalStateList.add( allRedSignalState );
+                    }
+
+                    // Handle if circuit has protected signals
+                    if ( signalCircuit.getProtectedSignals().size() > 0 ) {
+                        // Create state for ahead/protected signals on green
+                        TrafficSignalState circuitAheadGreenState = new TrafficSignalState( 15, index );
+                        if ( signalCircuit.getHybridLeftSignals().size() > 0 ) {
+                            circuitAheadGreenState.addGreenSignals( signalCircuit.getHybridLeftSignals() );
+                        }
+                        circuitAheadGreenState.addGreenSignals( signalCircuit.getAheadSignals() );
+                        circuitAheadGreenState.addGreenSignals( signalCircuit.getProtectedSignals() );
+                        circuitAheadGreenState.combine( allRedSignalState );
+                        tempSignalStateList.add( circuitAheadGreenState );
+
+                        // Create state for ahead/protected signals on yellow
+                        TrafficSignalState circuitAheadYellowState = new TrafficSignalState( 5, index );
+                        if ( signalCircuit.getHybridLeftSignals().size() > 0 ) {
+                            circuitAheadYellowState.addGreenSignals( signalCircuit.getHybridLeftSignals() );
+                        }
+                        circuitAheadYellowState.addYellowSignals( signalCircuit.getAheadSignals() );
+                        circuitAheadYellowState.addYellowSignals( signalCircuit.getProtectedSignals() );
+                        circuitAheadYellowState.combine( allRedSignalState );
+                        tempSignalStateList.add( circuitAheadYellowState );
+
+                        // Add hybrid left yellow cycle (if present)
+                        if ( signalCircuit.getHybridLeftSignals().size() > 0 ) {
+                            // Add all red phase
+                            TrafficSignalState circuitSwitchRedState = new TrafficSignalState( 2, index );
+                            circuitSwitchRedState.addGreenSignals( signalCircuit.getHybridLeftSignals() );
+                            circuitSwitchRedState.combine( allRedSignalState );
+                            tempSignalStateList.add( circuitSwitchRedState );
+
+                            TrafficSignalState circuitHybridLeftYellowState = new TrafficSignalState( 5, index );
+                            circuitHybridLeftYellowState.addYellowSignals( signalCircuit.getHybridLeftSignals() );
+                            circuitHybridLeftYellowState.combine( allRedSignalState );
+                            tempSignalStateList.add( circuitHybridLeftYellowState );
+                        }
+
+                        // Create right turn states (if signals present)
+                        if ( signalCircuit.getRightSignals().size() > 0 ) {
+                            // Add all red phase
+                            tempSignalStateList.add( allRedSignalState );
+
+                            // Create state for right signals on green
+                            TrafficSignalState circuitRightGreenState = new TrafficSignalState( 10, index );
+                            circuitRightGreenState.addGreenSignals( signalCircuit.getRightSignals() );
+                            circuitRightGreenState.combine( allRedSignalState );
+                            tempSignalStateList.add( circuitRightGreenState );
+
+                            // Create state for right signals on yellow
+                            TrafficSignalState circuitRightYellowState = new TrafficSignalState( 5, index );
+                            circuitRightYellowState.addYellowSignals( signalCircuit.getRightSignals() );
+                            circuitRightYellowState.combine( allRedSignalState );
+                            tempSignalStateList.add( circuitRightYellowState );
+                        }
+
+                        // Add all red phase to follow
+                        if ( index < signalCircuitList.size() - 1 ) {
+                            tempSignalStateList.add( allRedSignalState );
+                        }
+                    }
+                    // Handle if circuit does not have protected signals
+                    else {
+                        // Create state for ahead/right signals on green
+                        TrafficSignalState circuitGreenState = new TrafficSignalState( 15, index );
+                        if ( signalCircuit.getHybridLeftSignals().size() > 0 ) {
+                            circuitGreenState.addGreenSignals( signalCircuit.getHybridLeftSignals() );
+                        }
+                        circuitGreenState.addGreenSignals( signalCircuit.getAheadSignals() );
+                        circuitGreenState.addGreenSignals( signalCircuit.getRightSignals() );
+                        circuitGreenState.combine( allRedSignalState );
+                        tempSignalStateList.add( circuitGreenState );
+
+                        // Create state for ahead/right signals on yellow
+                        TrafficSignalState circuitYellowState = new TrafficSignalState( 5, index );
+                        if ( signalCircuit.getHybridLeftSignals().size() > 0 ) {
+                            circuitYellowState.addGreenSignals( signalCircuit.getHybridLeftSignals() );
+                        }
+                        circuitYellowState.addYellowSignals( signalCircuit.getAheadSignals() );
+                        circuitYellowState.addYellowSignals( signalCircuit.getRightSignals() );
+                        circuitYellowState.combine( allRedSignalState );
+                        tempSignalStateList.add( circuitYellowState );
+
+                        // Add hybrid left yellow cycle (if present)
+                        if ( signalCircuit.getHybridLeftSignals().size() > 0 ) {
+                            // Add all red phase
+                            TrafficSignalState circuitSwitchRedState = new TrafficSignalState( 2, index );
+                            circuitSwitchRedState.addGreenSignals( signalCircuit.getHybridLeftSignals() );
+                            circuitSwitchRedState.combine( allRedSignalState );
+                            tempSignalStateList.add( circuitSwitchRedState );
+
+                            TrafficSignalState circuitHybridLeftYellowState = new TrafficSignalState( 5, index );
+                            circuitHybridLeftYellowState.addYellowSignals( signalCircuit.getHybridLeftSignals() );
+                            circuitHybridLeftYellowState.combine( allRedSignalState );
+                            tempSignalStateList.add( circuitHybridLeftYellowState );
+                        }
+
+                        // Add all red phase to follow
+                        if ( index < signalCircuitList.size() - 1 ) {
+                            tempSignalStateList.add( allRedSignalState );
+                        }
+                    }
                 }
             }
         }
