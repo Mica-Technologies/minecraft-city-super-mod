@@ -117,7 +117,7 @@ public class TileEntityTrafficSignalController extends TileEntity
             unlinked = signalCircuit.unlink( blockPos );
             if ( unlinked ) {
                 // Remove circuit if now empty
-                if (signalCircuit.getSize() == 0) {
+                if ( signalCircuit.getSize() == 0 ) {
                     signalCircuitList.remove( signalCircuit );
                 }
 
@@ -415,34 +415,102 @@ public class TileEntityTrafficSignalController extends TileEntity
 
                 // If all signals facing same direction, can unify turns and ahead due to lack of conflict
                 if ( signalCircuit.areSignalsFacingSameDirection( world ) ) {
-                    // Create state for signals on green
-                    TrafficSignalState circuitGreenState = new TrafficSignalState( 15, index );
-                    circuitGreenState.addGreenSignals( signalCircuit.getHybridLeftSignals() );
-                    circuitGreenState.addGreenSignals( signalCircuit.getLeftSignals() );
-                    circuitGreenState.addGreenSignals( signalCircuit.getAheadSignals() );
-                    circuitGreenState.addGreenSignals( signalCircuit.getRightSignals() );
-                    circuitGreenState.addGreenSignals( signalCircuit.getProtectedSignals() );
-                    for ( int pedIndex = 0; pedIndex < signalCircuitList.size(); pedIndex++ ) {
-                        if (index != pedIndex) {
-                            circuitGreenState.addYellowSignals( signalCircuitList.get( pedIndex ).getPedestrianSignals() );
+                    // Handle if circuit has protected signals
+                    if ( signalCircuit.getProtectedSignals().size() > 0 ) {
+                        if ( signalCircuit.getHybridLeftSignals().size() > 0 ||
+                                signalCircuit.getLeftSignals().size() > 0 ) {
+                            // Create state for left turn signals on green
+                            TrafficSignalState circuitLeftGreenState = new TrafficSignalState( 10, index );
+                            circuitLeftGreenState.addOffSignals( signalCircuit.getHybridLeftSignals() );
+                            circuitLeftGreenState.addGreenSignals( signalCircuit.getLeftSignals() );
+                            circuitLeftGreenState.combine( allRedSignalState );
+                            tempSignalStateList.add( circuitLeftGreenState );
+
+                            // Create state for left turn signals on yellow
+                            TrafficSignalState circuitLeftYellowState = new TrafficSignalState( 5, index );
+                            circuitLeftYellowState.addYellowSignals( signalCircuit.getHybridLeftSignals() );
+                            circuitLeftYellowState.addYellowSignals( signalCircuit.getLeftSignals() );
+                            circuitLeftYellowState.combine( allRedSignalState );
+                            tempSignalStateList.add( circuitLeftYellowState );
+
+                            // Add all red phase
+                            tempSignalStateList.add( allRedSignalState );
+                        }
+
+                        // Create state for ahead/protected signals on green
+                        TrafficSignalState circuitAheadGreenState = new TrafficSignalState( 15, index );
+                        circuitAheadGreenState.addGreenSignals( signalCircuit.getAheadSignals() );
+                        circuitAheadGreenState.addGreenSignals( signalCircuit.getProtectedSignals() );
+                        for ( int pedIndex = 0; pedIndex < signalCircuitList.size(); pedIndex++ ) {
+                            if ( index != pedIndex ) {
+                                circuitAheadGreenState.addYellowSignals(
+                                        signalCircuitList.get( pedIndex ).getPedestrianSignals() );
+                            }
+                        }
+                        circuitAheadGreenState.combine( allRedSignalState );
+                        tempSignalStateList.add( circuitAheadGreenState );
+
+                        // Create state for ahead/protected signals on yellow
+                        TrafficSignalState circuitAheadYellowState = new TrafficSignalState( 5, index );
+                        circuitAheadYellowState.addYellowSignals( signalCircuit.getAheadSignals() );
+                        circuitAheadYellowState.addYellowSignals( signalCircuit.getProtectedSignals() );
+                        circuitAheadYellowState.combine( allRedSignalState );
+                        tempSignalStateList.add( circuitAheadYellowState );
+
+                        // Create right turn states (if signals present)
+                        if ( signalCircuit.getRightSignals().size() > 0 ) {
+                            // Add all red phase
+                            tempSignalStateList.add( allRedSignalState );
+
+                            // Create state for right signals on green
+                            TrafficSignalState circuitRightGreenState = new TrafficSignalState( 10, index );
+                            circuitRightGreenState.addGreenSignals( signalCircuit.getRightSignals() );
+                            circuitRightGreenState.combine( allRedSignalState );
+                            tempSignalStateList.add( circuitRightGreenState );
+
+                            // Create state for right signals on yellow
+                            TrafficSignalState circuitRightYellowState = new TrafficSignalState( 5, index );
+                            circuitRightYellowState.addYellowSignals( signalCircuit.getRightSignals() );
+                            circuitRightYellowState.combine( allRedSignalState );
+                            tempSignalStateList.add( circuitRightYellowState );
+                        }
+
+                        // Add all red phase to follow
+                        if ( index < signalCircuitList.size() - 1 ) {
+                            tempSignalStateList.add( allRedSignalState );
                         }
                     }
-                    circuitGreenState.combine( allRedSignalState );
-                    tempSignalStateList.add( circuitGreenState );
+                    else {
+                        // Create state for signals on green
+                        TrafficSignalState circuitGreenState = new TrafficSignalState( 15, index );
+                        circuitGreenState.addGreenSignals( signalCircuit.getHybridLeftSignals() );
+                        circuitGreenState.addGreenSignals( signalCircuit.getLeftSignals() );
+                        circuitGreenState.addGreenSignals( signalCircuit.getAheadSignals() );
+                        circuitGreenState.addGreenSignals( signalCircuit.getRightSignals() );
+                        circuitGreenState.addGreenSignals( signalCircuit.getProtectedSignals() );
+                        for ( int pedIndex = 0; pedIndex < signalCircuitList.size(); pedIndex++ ) {
+                            if ( index != pedIndex ) {
+                                circuitGreenState.addYellowSignals(
+                                        signalCircuitList.get( pedIndex ).getPedestrianSignals() );
+                            }
+                        }
+                        circuitGreenState.combine( allRedSignalState );
+                        tempSignalStateList.add( circuitGreenState );
 
-                    // Create state for signals on yellow
-                    TrafficSignalState circuitYellowState = new TrafficSignalState( 5, index );
-                    circuitYellowState.addYellowSignals( signalCircuit.getHybridLeftSignals() );
-                    circuitYellowState.addYellowSignals( signalCircuit.getLeftSignals() );
-                    circuitYellowState.addYellowSignals( signalCircuit.getAheadSignals() );
-                    circuitYellowState.addYellowSignals( signalCircuit.getRightSignals() );
-                    circuitYellowState.addYellowSignals( signalCircuit.getProtectedSignals() );
-                    circuitYellowState.combine( allRedSignalState );
-                    tempSignalStateList.add( circuitYellowState );
+                        // Create state for signals on yellow
+                        TrafficSignalState circuitYellowState = new TrafficSignalState( 5, index );
+                        circuitYellowState.addYellowSignals( signalCircuit.getHybridLeftSignals() );
+                        circuitYellowState.addYellowSignals( signalCircuit.getLeftSignals() );
+                        circuitYellowState.addYellowSignals( signalCircuit.getAheadSignals() );
+                        circuitYellowState.addYellowSignals( signalCircuit.getRightSignals() );
+                        circuitYellowState.addYellowSignals( signalCircuit.getProtectedSignals() );
+                        circuitYellowState.combine( allRedSignalState );
+                        tempSignalStateList.add( circuitYellowState );
 
-                    // Add all red phase to follow
-                    if ( index < signalCircuitList.size() - 1 ) {
-                        tempSignalStateList.add( allRedSignalState );
+                        // Add all red phase to follow
+                        if ( index < signalCircuitList.size() - 1 ) {
+                            tempSignalStateList.add( allRedSignalState );
+                        }
                     }
                 }
                 else {
@@ -476,8 +544,9 @@ public class TileEntityTrafficSignalController extends TileEntity
                         circuitAheadGreenState.addGreenSignals( signalCircuit.getAheadSignals() );
                         circuitAheadGreenState.addGreenSignals( signalCircuit.getProtectedSignals() );
                         for ( int pedIndex = 0; pedIndex < signalCircuitList.size(); pedIndex++ ) {
-                            if (index != pedIndex) {
-                                circuitAheadGreenState.addYellowSignals( signalCircuitList.get( pedIndex ).getPedestrianSignals() );
+                            if ( index != pedIndex ) {
+                                circuitAheadGreenState.addYellowSignals(
+                                        signalCircuitList.get( pedIndex ).getPedestrianSignals() );
                             }
                         }
                         circuitAheadGreenState.combine( allRedSignalState );
@@ -540,8 +609,9 @@ public class TileEntityTrafficSignalController extends TileEntity
                         circuitGreenState.addGreenSignals( signalCircuit.getAheadSignals() );
                         circuitGreenState.addGreenSignals( signalCircuit.getRightSignals() );
                         for ( int pedIndex = 0; pedIndex < signalCircuitList.size(); pedIndex++ ) {
-                            if (index != pedIndex) {
-                                circuitGreenState.addYellowSignals( signalCircuitList.get( pedIndex ).getPedestrianSignals() );
+                            if ( index != pedIndex ) {
+                                circuitGreenState.addYellowSignals(
+                                        signalCircuitList.get( pedIndex ).getPedestrianSignals() );
                             }
                         }
                         circuitGreenState.combine( allRedSignalState );

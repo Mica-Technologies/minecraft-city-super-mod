@@ -296,8 +296,9 @@ public class BlockTrafficSignalController extends ElementsCitySuperMod.ModElemen
                     TileEntityTrafficSignalController tileEntityTrafficSignalController
                             = ( TileEntityTrafficSignalController ) tileEntity;
                     tileEntityTrafficSignalController.importPreviousConfig( p_onBlockActivated_1_ );
-                    p_onBlockActivated_4_.sendMessage(
-                            new TextComponentString( "Forcing signal state regeneration!" ) );
+                    if (!p_onBlockActivated_1_.isRemote) {
+                        p_onBlockActivated_4_.sendMessage( new TextComponentString( "Forcing signal state regeneration!" ) );
+                    }
                 }
             }
 

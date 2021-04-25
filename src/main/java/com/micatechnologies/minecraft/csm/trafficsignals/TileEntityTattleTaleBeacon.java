@@ -14,11 +14,12 @@ import java.util.ArrayList;
 @ElementsCitySuperMod.ModElement.Tag
 public class TileEntityTattleTaleBeacon extends TileEntity
 {
-    private static final int    LEFT_VAL  = 0;
-    private static final int    AHEAD_VAL = 1;
-    private static final int    RIGHT_VAL = 2;
-    private static final int    PA_VAL    = 3;
-    private static final String VAL_KEY   = "modeval";
+    private static final int    LEFT_VAL        = 0;
+    private static final int    AHEAD_VAL       = 1;
+    private static final int    RIGHT_VAL       = 2;
+    private static final int    PA_VAL          = 3;
+    private static final int    HYBRID_LEFT_VAL = 4;
+    private static final String VAL_KEY         = "modeval";
 
     private int currVal;
 
@@ -63,11 +64,22 @@ public class TileEntityTattleTaleBeacon extends TileEntity
         else if ( currVal == PA_VAL ) {
             side = AbstractBlockControllableSignal.SIGNAL_SIDE.PROTECTED_AHEAD;
         }
+        else if ( currVal == HYBRID_LEFT_VAL ) {
+            side = AbstractBlockControllableSignal.SIGNAL_SIDE.HYBRID_LEFT;
+        }
         return side;
     }
 
     public void cycleMode( EntityPlayer player ) {
         if ( currVal == LEFT_VAL ) {
+            currVal = HYBRID_LEFT_VAL;
+            if ( player != null && !world.isRemote ) {
+                player.sendStatusMessage(
+                        new TextComponentString( "Linked to HYBRID_LEFT (Flashing Yellow Left Arrow) signals" ),
+                        ( true ) );
+            }
+        }
+        else if ( currVal == HYBRID_LEFT_VAL ) {
             currVal = AHEAD_VAL;
             if ( player != null && !world.isRemote ) {
                 player.sendStatusMessage( new TextComponentString( "Linked to AHEAD signals" ), ( true ) );

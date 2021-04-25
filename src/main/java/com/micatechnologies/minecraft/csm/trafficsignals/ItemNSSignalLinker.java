@@ -103,12 +103,12 @@ public class ItemNSSignalLinker extends ElementsCitySuperMod.ModElement
                     boolean linked;
                     if ( !worldIn.isRemote ) {
                         linked = tileEntityTrafficSignalController.linkDevice( worldIn, pos,
-                                                                               clickedBlock.getSignalSide( null, null ),
+                                                                               clickedBlock.getSignalSide( worldIn, pos ),
                                                                                circuitLinkIndexClient );
                     }
                     else {
                         linked = tileEntityTrafficSignalController.linkDevice( worldIn, pos,
-                                                                               clickedBlock.getSignalSide( null, null ),
+                                                                               clickedBlock.getSignalSide( worldIn, pos ),
                                                                                circuitLinkIndexServer );
                     }
                     if ( !worldIn.isRemote &&
