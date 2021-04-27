@@ -2,6 +2,7 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockTrafficSignalSensor;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDirectional;
 import net.minecraft.block.SoundType;
@@ -43,8 +44,8 @@ public class BlockTrafficLightSensorBox extends ElementsCitySuperMod.ModElement 
 	public void registerModels(ModelRegistryEvent event) {
 		ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(block), 0, new ModelResourceLocation("csm:trafficlightsensorbox", "inventory"));
 	}
-	public static class BlockCustom extends Block {
-		public static final PropertyDirection FACING = BlockDirectional.FACING;
+	public static class BlockCustom extends AbstractBlockTrafficSignalSensor
+	{
 		public BlockCustom() {
 			super(Material.ROCK);
 			setUnlocalizedName("trafficlightsensorbox");
@@ -56,42 +57,6 @@ public class BlockTrafficLightSensorBox extends ElementsCitySuperMod.ModElement 
 			setLightOpacity(0);
 			setCreativeTab( TabTrafficSignals.tab);
 			this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH));
-		}
-
-		@Override
-		protected net.minecraft.block.state.BlockStateContainer createBlockState() {
-			return new net.minecraft.block.state.BlockStateContainer(this, new IProperty[]{FACING});
-		}
-
-		@Override
-		public IBlockState withRotation(IBlockState state, Rotation rot) {
-			return state.withProperty(FACING, rot.rotate((EnumFacing) state.getValue(FACING)));
-		}
-
-		@Override
-		public IBlockState withMirror(IBlockState state, Mirror mirrorIn) {
-			return state.withRotation(mirrorIn.toRotation((EnumFacing) state.getValue(FACING)));
-		}
-
-		@Override
-		public IBlockState getStateFromMeta(int meta) {
-			return this.getDefaultState().withProperty(FACING, EnumFacing.getFront(meta));
-		}
-
-		@Override
-		public int getMetaFromState(IBlockState state) {
-			return ((EnumFacing) state.getValue(FACING)).getIndex();
-		}
-
-		@Override
-		public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta,
-				EntityLivingBase placer) {
-			return this.getDefaultState().withProperty(FACING, EnumFacing.getDirectionFromEntityLiving(pos, placer));
-		}
-
-		@Override
-		public boolean isOpaqueCube(IBlockState state) {
-			return false;
 		}
 	}
 }
