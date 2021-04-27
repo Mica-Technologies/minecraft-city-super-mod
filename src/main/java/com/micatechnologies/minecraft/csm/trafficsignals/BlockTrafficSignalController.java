@@ -164,7 +164,7 @@ public class BlockTrafficSignalController extends ElementsCitySuperMod.ModElemen
                 if ( tileEntity instanceof TileEntityTrafficSignalController ) {
                     TileEntityTrafficSignalController tileEntityTrafficSignalController
                             = ( TileEntityTrafficSignalController ) tileEntity;
-                    tileEntityTrafficSignalController.cycleSignals( powered );
+                    tileEntityTrafficSignalController.cycleSignals( powered, p_updateTick_1_ );
                 }
             }
             catch ( Exception e ) {

@@ -1,10 +1,13 @@
 package com.micatechnologies.minecraft.csm.trafficsignals.logic;
 
 import com.micatechnologies.minecraft.csm.trafficsignals.AbstractBlockControllableSignal;
+import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalController;
+import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalSensor;
 import jdk.nashorn.internal.ir.Block;
 import net.minecraft.block.BlockDirectional;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -62,6 +65,11 @@ public class TrafficSignalCircuit
     private static final int SENSORS_LIST_INDEX = 6;
 
     /**
+     * Index of the last service time when performing serialization/deserialization
+     */
+    private static final int LAST_SERVICE_TIME_INDEX = 7;
+
+    /**
      * List of hybrid left turn signal block positions.
      */
     private final List< BlockPos > hybridLeftSignals = new ArrayList<>();
@@ -96,6 +104,8 @@ public class TrafficSignalCircuit
      */
     private final List< BlockPos > sensors = new ArrayList<>();
 
+    private long lastServiceTime = -1;
+
     /**
      * Constructs a traffic signal circuit with no links.
      */
@@ -109,46 +119,61 @@ public class TrafficSignalCircuit
      *
      * @param serialized serialized traffic signal circuit
      */
-    public TrafficSignalCircuit( String serialized ) {
+    public TrafficSignalCircuit( String serialized, World world ) {
         // Split serialized string to lists
         String[] serializedLists = serialized.split( LIST_SEPARATOR_CHAR );
 
         // Process each serialized list
         for ( int serializedListIndex = 0; serializedListIndex < serializedLists.length; serializedListIndex++ ) {
-            // Split list into individual items
-            String[] serializedListItems = serializedLists[ serializedListIndex ].split( ITEM_SEPARATOR_CHAR );
+            if ( serializedListIndex != LAST_SERVICE_TIME_INDEX ) {
+                // Split list into individual items
+                String[] serializedListItems = serializedLists[ serializedListIndex ].split( ITEM_SEPARATOR_CHAR );
 
-            // Handle each item in list
-            for ( String serializedListItem : serializedListItems ) {
-                if ( serializedListItem.length() > 0 ) {
-                    // Get block position
-                    BlockPos listItemBlockPosition = BlockPos.fromLong( Long.parseLong( serializedListItem ) );
+                // Handle each item in list
+                for ( String serializedListItem : serializedListItems ) {
+                    if ( serializedListItem.length() > 0 ) {
+                        // Get block position
+                        BlockPos listItemBlockPosition = BlockPos.fromLong( Long.parseLong( serializedListItem ) );
 
-                    // Add to proper list
-                    if ( serializedListIndex == HYBRID_LEFT_LIST_INDEX ) {
-                        hybridLeftSignals.add( listItemBlockPosition );
-                    }
-                    else if ( serializedListIndex == LEFT_LIST_INDEX ) {
-                        leftSignals.add( listItemBlockPosition );
-                    }
-                    else if ( serializedListIndex == AHEAD_LIST_INDEX ) {
-                        aheadSignals.add( listItemBlockPosition );
-                    }
-                    else if ( serializedListIndex == RIGHT_LIST_INDEX ) {
-                        rightSignals.add( listItemBlockPosition );
-                    }
-                    else if ( serializedListIndex == PEDESTRIAN_LIST_INDEX ) {
-                        pedestrianSignals.add( listItemBlockPosition );
-                    }
-                    else if ( serializedListIndex == PROTECTED_LIST_INDEX ) {
-                        protectedSignals.add( listItemBlockPosition );
-                    }
-                    else if ( serializedListIndex == SENSORS_LIST_INDEX ) {
-                        sensors.add( listItemBlockPosition );
+                        // Add to proper list
+                        if ( serializedListIndex == HYBRID_LEFT_LIST_INDEX ) {
+                            hybridLeftSignals.add( listItemBlockPosition );
+                        }
+                        else if ( serializedListIndex == LEFT_LIST_INDEX ) {
+                            leftSignals.add( listItemBlockPosition );
+                        }
+                        else if ( serializedListIndex == AHEAD_LIST_INDEX ) {
+                            aheadSignals.add( listItemBlockPosition );
+                        }
+                        else if ( serializedListIndex == RIGHT_LIST_INDEX ) {
+                            rightSignals.add( listItemBlockPosition );
+                        }
+                        else if ( serializedListIndex == PEDESTRIAN_LIST_INDEX ) {
+                            pedestrianSignals.add( listItemBlockPosition );
+                        }
+                        else if ( serializedListIndex == PROTECTED_LIST_INDEX ) {
+                            protectedSignals.add( listItemBlockPosition );
+                        }
+                        else if ( serializedListIndex == SENSORS_LIST_INDEX ) {
+                            sensors.add( listItemBlockPosition );
+                        }
                     }
                 }
+
+            }
+            else {
+                lastServiceTime = Long.parseLong( serializedLists[ serializedListIndex ] );
             }
         }
+
+        // Set circuit last service time to current time, if not populated
+        if ( lastServiceTime == -1 ) {
+            lastServiceTime = world.getTotalWorldTime();
+        }
+    }
+
+    public void markServiced( World world ) {
+        lastServiceTime = world.getTotalWorldTime();
     }
 
     /**
@@ -227,9 +252,29 @@ public class TrafficSignalCircuit
                 serializedStringBuilder.append( ITEM_SEPARATOR_CHAR );
             }
         }
+        serializedStringBuilder.append( LIST_SEPARATOR_CHAR );
+
+        // Add last service time
+        serializedStringBuilder.append( lastServiceTime );
 
         // Return built serialized string
         return serializedStringBuilder.toString();
+    }
+
+    public int getCircuitPriority( World world ) {
+        int waitingCount = 0;
+        for ( BlockPos sensorPos : sensors ) {
+            TileEntity tileEntity = world.getTileEntity( sensorPos );
+            if ( tileEntity instanceof TileEntityTrafficSignalSensor ) {
+                TileEntityTrafficSignalSensor tileEntityTrafficSignalSensor
+                        = ( TileEntityTrafficSignalSensor ) tileEntity;
+                waitingCount += tileEntityTrafficSignalSensor.getWaitingCount( world );
+            }
+        }
+        System.err.println( "LAST SERVICE AT " + lastServiceTime );
+        System.err.println( "CURRENT TIME " + world.getWorldTime() );
+        //TODO: Add priority for circuits that havent been serviced in a while
+        return waitingCount;
     }
 
     public boolean areSignalsFacingSameDirection( World world ) {

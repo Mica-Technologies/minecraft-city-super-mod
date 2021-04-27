@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockTrafficSignalSensor;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
@@ -91,10 +92,54 @@ public class ItemNSSignalLinker extends ElementsCitySuperMod.ModElement
                 }
                 return EnumActionResult.SUCCESS;
             }
-            else if ( signalControllerPos == null && state.getBlock() instanceof AbstractBlockControllableSignal ) {
+            else if ( signalControllerPos == null &&
+                    ( state.getBlock() instanceof AbstractBlockControllableSignal ||
+                            state.getBlock() instanceof AbstractBlockTrafficSignalSensor ) ) {
                 if ( !worldIn.isRemote ) {
                     player.sendMessage( new TextComponentString( "No signal controller has been selected." ) );
                 }
+                return EnumActionResult.SUCCESS;
+            }
+            else if ( signalControllerPos != null &&
+                    state.getBlock() instanceof AbstractBlockTrafficSignalSensor &&
+                    !player.isSneaking() ) {
+
+                TileEntity tileEntity = worldIn.getTileEntity( signalControllerPos );
+                if ( tileEntity instanceof TileEntityTrafficSignalController ) {
+                    TileEntityTrafficSignalController tileEntityTrafficSignalController
+                            = ( TileEntityTrafficSignalController ) tileEntity;
+                    boolean linked;
+                    if ( !worldIn.isRemote ) {
+                        linked = tileEntityTrafficSignalController.linkDevice( worldIn, pos,
+                                                                               AbstractBlockControllableSignal.SIGNAL_SIDE.NA_SENSOR,
+                                                                               circuitLinkIndexClient );
+                    }
+                    else {
+                        linked = tileEntityTrafficSignalController.linkDevice( worldIn, pos,
+                                                                               AbstractBlockControllableSignal.SIGNAL_SIDE.NA_SENSOR,
+                                                                               circuitLinkIndexServer );
+                    }
+
+                    if ( !worldIn.isRemote && linked ) {
+                        player.sendMessage( new TextComponentString( "Sensor connected to circuit " +
+                                                                             circuitLinkIndexClient +
+                                                                             " of signal controller at " +
+                                                                             "(" +
+                                                                             signalControllerPos.getX() +
+                                                                             "," +
+                                                                             signalControllerPos.getY() +
+                                                                             "," +
+                                                                             signalControllerPos.getZ() +
+                                                                             ")" ) );
+                    }
+                }
+                else {
+                    if ( !worldIn.isRemote ) {
+                        player.sendMessage( new TextComponentString(
+                                "Unable to link sensor! Lost connection to previously connected controller." ) );
+                    }
+                }
+
                 return EnumActionResult.SUCCESS;
             }
             else if ( signalControllerPos != null &&
