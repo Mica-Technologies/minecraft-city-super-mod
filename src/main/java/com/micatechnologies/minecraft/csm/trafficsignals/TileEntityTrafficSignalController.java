@@ -167,6 +167,9 @@ public class TileEntityTrafficSignalController extends TileEntity
             else if ( signalSide == AbstractBlockControllableSignal.SIGNAL_SIDE.HYBRID_LEFT ) {
                 linkToCircuit.linkHybridLeftSignal( blockPos );
             }
+            else if ( signalSide == AbstractBlockControllableSignal.SIGNAL_SIDE.NA_SENSOR ) {
+                linkToCircuit.linkSensor( blockPos );
+            }
 
             // Add new circuit if necessary
             if ( addCircuit ) {
@@ -213,7 +216,7 @@ public class TileEntityTrafficSignalController extends TileEntity
             String[] serializedSignalCircuits = serializedSignalCircuitList.split(
                     SERIALIZED_SIGNAL_CIRCUIT_LIST_SEPARATOR );
             for ( String serializedSignalCircuit : serializedSignalCircuits ) {
-                TrafficSignalCircuit importedCircuit = new TrafficSignalCircuit( serializedSignalCircuit );
+                TrafficSignalCircuit importedCircuit = new TrafficSignalCircuit( serializedSignalCircuit, world );
                 signalCircuitList.add( importedCircuit );
             }
 
@@ -264,6 +267,20 @@ public class TileEntityTrafficSignalController extends TileEntity
             this.lastPhaseChangeTime = System.currentTimeMillis();
         }
 
+    }
+
+    public int getCircuitPriorityJumpIndex( World world ) {
+        // Find circuit with highest priority
+        int highestPriorityCircuitIndex = 1;
+        int highestPriorityCircuitValue = 0;
+        for ( int index = 0; index < signalCircuitList.size(); index++ ) {
+            TrafficSignalCircuit signalCircuit = signalCircuitList.get( index );
+
+            if ( signalCircuit.getCircuitPriority( world ) > highestPriorityCircuitValue ) {
+                highestPriorityCircuitIndex = index;
+            }
+        }
+        return highestPriorityCircuitIndex;
     }
 
     @Override
@@ -650,7 +667,7 @@ public class TileEntityTrafficSignalController extends TileEntity
                     else {
                         // Create state for signals on green
                         TrafficSignalState circuitGreenState = new TrafficSignalState( 15, index );
-                        circuitGreenState.addGreenSignals( signalCircuit.getHybridLeftSignals() );
+                        circuitGreenState.addOffSignals( signalCircuit.getHybridLeftSignals() );
                         circuitGreenState.addGreenSignals( signalCircuit.getLeftSignals() );
                         circuitGreenState.addGreenSignals( signalCircuit.getAheadSignals() );
                         circuitGreenState.addGreenSignals( signalCircuit.getRightSignals() );
@@ -912,6 +929,18 @@ public class TileEntityTrafficSignalController extends TileEntity
                                                                    AbstractBlockControllableSignal.SIGNAL_OFF );
             }
         }
+
+        // Mark applicable circuit as serviced
+        try {
+            if ( signalState.getActiveCircuit() != -1 ) {
+                signalCircuitList.get( signalState.getActiveCircuit() ).markServiced( world );
+            }
+        }
+        catch ( Exception e ) {
+            System.err.println( "An error is preventing a traffic signal circuit from being marked as serviced! This " +
+                                        "may affect signal prioritization behavior!" );
+            e.printStackTrace();
+        }
     }
 
     public String switchMode( World world ) {
@@ -935,7 +964,7 @@ public class TileEntityTrafficSignalController extends TileEntity
         return modeName;
     }
 
-    public void cycleSignals( boolean powered ) {
+    public void cycleSignals( boolean powered, World world ) {
         if ( signalStateList.size() > 0 ) {
             this.lastPhaseChangeTime = System.currentTimeMillis();
 
@@ -955,7 +984,30 @@ public class TileEntityTrafficSignalController extends TileEntity
 
             // Get phase
             if ( currentPhaseTime++ > signalStateList.get( currentPhase ).getLength() ) {
-                currentPhase++;
+
+                // Check for prioritization
+                try {
+                    if ( currentMode == CURRENT_MODE_STANDARD &&
+                            signalStateList.get( currentPhase ).getActiveCircuit() == -1 ) {
+                        int topPriorityCircuit = getCircuitPriorityJumpIndex( world );
+                        for ( int stateIndex = 0; stateIndex < signalStateList.size(); stateIndex++ ) {
+                            if ( signalStateList.get( stateIndex ).getActiveCircuit() == topPriorityCircuit ) {
+                                currentPhase = stateIndex;
+                                break;
+                            }
+                        }
+                    }
+                    else {
+                        currentPhase++;
+                    }
+                }
+                catch ( Exception e ) {
+                    System.err.println( "An error is preventing a traffic signal controller from performing circuit " +
+                                                "prioritization! The signal controller will continue in standard mode " +
+                                                "without sensors or prioritization." );
+                    e.printStackTrace();
+                    currentPhase++;
+                }
                 currentPhaseTime = 0;
                 phaseChanged = true;
             }
