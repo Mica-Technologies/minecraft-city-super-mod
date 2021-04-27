@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockTrafficSignalSensor;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
@@ -48,7 +49,10 @@ public class ItemEWSignalLinker extends ElementsCitySuperMod.ModElement
     public static class ItemCustom extends Item
     {
 
-        private BlockPos signalControllerPos = null;
+        private BlockPos sensorPosClient  = null;
+        private BlockPos sensorPosServer  = null;
+        private BlockPos corner1PosClient = null;
+        private BlockPos corner1PosServer = null;
 
         public ItemCustom() {
             setMaxDamage( 0 );
@@ -69,25 +73,99 @@ public class ItemEWSignalLinker extends ElementsCitySuperMod.ModElement
                                            float hitZ )
         {
             IBlockState state = worldIn.getBlockState( pos );
-            if ( state.getBlock() instanceof BlockTrafficSignalController.BlockCustom ) {
+            if ( state.getBlock() instanceof AbstractBlockTrafficSignalSensor ) {
                 if ( !worldIn.isRemote ) {
-                    player.sendMessage( new TextComponentString( "This linker is not currently active. Stay tuned!" ) );
+                    sensorPosClient = pos;
+                    corner1PosClient = null;
+                }
+                else {
+                    sensorPosServer = pos;
+                    corner1PosServer = null;
+                }
+                if ( !worldIn.isRemote ) {
+                    player.sendMessage( new TextComponentString( "Selected sensor at position: [" +
+                                                                         pos.getX() +
+                                                                         ", " +
+                                                                         pos.getY() +
+                                                                         ", " +
+                                                                         pos.getZ() +
+                                                                         "]. " +
+                                                                         "Please select corner #1 of sensor search " +
+                                                                         "box!" ) );
                 }
                 return EnumActionResult.SUCCESS;
             }
-            else if ( signalControllerPos == null && state.getBlock() instanceof AbstractBlockControllableSignal ) {
-                if ( !worldIn.isRemote ) {
-                    player.sendMessage( new TextComponentString( "This linker is not currently active. Stay tuned!" ) );
-                }
+            else if ( !worldIn.isRemote && sensorPosClient != null && corner1PosClient == null ) {
+                corner1PosClient = pos;
+                player.sendMessage( new TextComponentString(
+                        "Search box corner 1 set to: [" + pos.getX() + ", " + pos.getY() + ", " + pos.getZ() + "]." ) );
                 return EnumActionResult.SUCCESS;
             }
-            else if ( signalControllerPos != null && state.getBlock() instanceof AbstractBlockControllableSignal ) {
-                if ( !worldIn.isRemote ) {
-                    player.sendMessage( new TextComponentString( "This linker is not currently active. Stay tuned!" ) );
-                }
+            else if ( worldIn.isRemote && sensorPosServer != null && corner1PosServer == null ) {
+                corner1PosServer = pos;
                 return EnumActionResult.SUCCESS;
             }
-            return EnumActionResult.PASS;
+            else if ( !worldIn.isRemote && sensorPosClient != null ) {
+                player.sendMessage( new TextComponentString(
+                        "Search box corner 2 set to: [" + pos.getX() + ", " + pos.getY() + ", " + pos.getZ() + "]." ) );
+
+                try {
+                    TileEntity tileEntity = worldIn.getTileEntity( sensorPosClient );
+                    if ( tileEntity instanceof TileEntityTrafficSignalSensor ) {
+                        TileEntityTrafficSignalSensor tileEntityTrafficSignalSensor
+                                = ( TileEntityTrafficSignalSensor ) tileEntity;
+                        boolean overwrote = tileEntityTrafficSignalSensor.setScanCorners( corner1PosClient, pos );
+                        if ( overwrote ) {
+                            player.sendMessage( new TextComponentString( "The selected search box corners have been " +
+                                                                                 "applied to the desired sensor " +
+                                                                                 "successfully! (Replaced previous " +
+                                                                                 "search box)" ) );
+                        }
+                        else {
+                            player.sendMessage( new TextComponentString( "The selected search box corners have been " +
+                                                                                 "applied to the desired sensor " +
+                                                                                 "successfully!" ) );
+                        }
+                    }
+                    else {
+                        player.sendMessage( new TextComponentString( "The selected traffic signal sensor did not " +
+                                                                             "respond to programming. Please " +
+                                                                             "replace the sensor and try again!" ) );
+                    }
+                }
+                catch ( Exception e ) {
+                    player.sendMessage( new TextComponentString( "An error occurred while programming the " +
+                                                                         "selected traffic signal sensor. Please " +
+                                                                         "replace the sensor and try again!" ) );
+                }
+
+                corner1PosClient = null;
+
+                return EnumActionResult.SUCCESS;
+            }
+            else if ( worldIn.isRemote && sensorPosServer != null ) {
+
+                try {
+                    TileEntity tileEntity = worldIn.getTileEntity( sensorPosServer );
+                    if ( tileEntity instanceof TileEntityTrafficSignalSensor ) {
+                        TileEntityTrafficSignalSensor tileEntityTrafficSignalSensor
+                                = ( TileEntityTrafficSignalSensor ) tileEntity;
+                        tileEntityTrafficSignalSensor.setScanCorners( corner1PosServer, pos );
+                    }
+                }
+                catch ( Exception ignored ) {
+                }
+
+                corner1PosServer = null;
+
+                return EnumActionResult.SUCCESS;
+            }
+            else if ( !worldIn.isRemote ) {
+                player.sendMessage( new TextComponentString( "Please select a sensor to begin configuration!" ) );
+                return EnumActionResult.SUCCESS;
+            }
+
+            return EnumActionResult.SUCCESS;
         }
 
         @Override

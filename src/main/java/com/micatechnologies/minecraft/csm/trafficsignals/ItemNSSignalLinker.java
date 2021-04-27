@@ -74,6 +74,12 @@ public class ItemNSSignalLinker extends ElementsCitySuperMod.ModElement
             if ( state.getBlock() instanceof BlockTrafficSignalController.BlockCustom ) {
                 signalControllerPos = pos;
                 if ( !worldIn.isRemote ) {
+                    circuitLinkIndexClient = 1;
+                }
+                else {
+                    circuitLinkIndexServer = 1;
+                }
+                if ( !worldIn.isRemote ) {
                     player.sendMessage( new TextComponentString( "Linking to signal controller at " +
                                                                          "(" +
                                                                          pos.getX() +
@@ -103,12 +109,14 @@ public class ItemNSSignalLinker extends ElementsCitySuperMod.ModElement
                     boolean linked;
                     if ( !worldIn.isRemote ) {
                         linked = tileEntityTrafficSignalController.linkDevice( worldIn, pos,
-                                                                               clickedBlock.getSignalSide( worldIn, pos ),
+                                                                               clickedBlock.getSignalSide( worldIn,
+                                                                                                           pos ),
                                                                                circuitLinkIndexClient );
                     }
                     else {
                         linked = tileEntityTrafficSignalController.linkDevice( worldIn, pos,
-                                                                               clickedBlock.getSignalSide( worldIn, pos ),
+                                                                               clickedBlock.getSignalSide( worldIn,
+                                                                                                           pos ),
                                                                                circuitLinkIndexServer );
                     }
                     if ( !worldIn.isRemote &&
