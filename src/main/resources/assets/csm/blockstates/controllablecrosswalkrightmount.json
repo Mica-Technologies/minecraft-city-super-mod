@@ -16,33 +16,33 @@
       "y": 270
     },
     "color=1,facing=north": {
-      "model": "csm:controllablecrosswalkrightmount_walk"
+      "model": "csm:controllablecrosswalkrightmount_meter"
     },
     "color=1,facing=east": {
-      "model": "csm:controllablecrosswalkrightmount_walk",
+      "model": "csm:controllablecrosswalkrightmount_meter",
       "y": 90
     },
     "color=1,facing=south": {
-      "model": "csm:controllablecrosswalkrightmount_walk",
+      "model": "csm:controllablecrosswalkrightmount_meter",
       "y": 180
     },
     "color=1,facing=west": {
-      "model": "csm:controllablecrosswalkrightmount_walk",
+      "model": "csm:controllablecrosswalkrightmount_meter",
       "y": 270
     },
     "color=2,facing=north": {
-      "model": "csm:controllablecrosswalkrightmount_meter"
+      "model": "csm:controllablecrosswalkrightmount_walk"
     },
     "color=2,facing=east": {
-      "model": "csm:controllablecrosswalkrightmount_meter",
+      "model": "csm:controllablecrosswalkrightmount_walk",
       "y": 90
     },
     "color=2,facing=south": {
-      "model": "csm:controllablecrosswalkrightmount_meter",
+      "model": "csm:controllablecrosswalkrightmount_walk",
       "y": 180
     },
     "color=2,facing=west": {
-      "model": "csm:controllablecrosswalkrightmount_meter",
+      "model": "csm:controllablecrosswalkrightmount_walk",
       "y": 270
     },
     "color=3,facing=north": {

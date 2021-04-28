@@ -271,7 +271,7 @@ public class TileEntityTrafficSignalController extends TileEntity
 
     public int getCircuitPriorityJumpIndex( World world ) {
         // Find circuit with highest priority
-        int highestPriorityCircuitIndex = 1;
+        int highestPriorityCircuitIndex = -1;
         int highestPriorityCircuitValue = 0;
         for ( int index = 0; index < signalCircuitList.size(); index++ ) {
             TrafficSignalCircuit signalCircuit = signalCircuitList.get( index );
@@ -618,7 +618,10 @@ public class TileEntityTrafficSignalController extends TileEntity
                             tempSignalStateList.add( circuitLeftYellowState );
 
                             // Add all red phase
-                            tempSignalStateList.add( allRedSignalState );
+                            TrafficSignalState indexedAllRedState = new TrafficSignalState(
+                                    allRedSignalState.getLength(), index );
+                            indexedAllRedState.combine( allRedSignalState );
+                            tempSignalStateList.add( indexedAllRedState );
                         }
 
                         // Create state for ahead/protected signals on green
@@ -627,7 +630,7 @@ public class TileEntityTrafficSignalController extends TileEntity
                         circuitAheadGreenState.addGreenSignals( signalCircuit.getProtectedSignals() );
                         for ( int pedIndex = 0; pedIndex < signalCircuitList.size(); pedIndex++ ) {
                             if ( index != pedIndex ) {
-                                circuitAheadGreenState.addYellowSignals(
+                                circuitAheadGreenState.addGreenSignals(
                                         signalCircuitList.get( pedIndex ).getPedestrianSignals() );
                             }
                         }
@@ -644,7 +647,10 @@ public class TileEntityTrafficSignalController extends TileEntity
                         // Create right turn states (if signals present)
                         if ( signalCircuit.getRightSignals().size() > 0 ) {
                             // Add all red phase
-                            tempSignalStateList.add( allRedSignalState );
+                            TrafficSignalState indexedAllRedState = new TrafficSignalState(
+                                    allRedSignalState.getLength(), index );
+                            indexedAllRedState.combine( allRedSignalState );
+                            tempSignalStateList.add( indexedAllRedState );
 
                             // Create state for right signals on green
                             TrafficSignalState circuitRightGreenState = new TrafficSignalState( 10, index );
@@ -674,7 +680,7 @@ public class TileEntityTrafficSignalController extends TileEntity
                         circuitGreenState.addGreenSignals( signalCircuit.getProtectedSignals() );
                         for ( int pedIndex = 0; pedIndex < signalCircuitList.size(); pedIndex++ ) {
                             if ( index != pedIndex ) {
-                                circuitGreenState.addYellowSignals(
+                                circuitGreenState.addGreenSignals(
                                         signalCircuitList.get( pedIndex ).getPedestrianSignals() );
                             }
                         }
@@ -715,7 +721,10 @@ public class TileEntityTrafficSignalController extends TileEntity
                         tempSignalStateList.add( circuitLeftYellowState );
 
                         // Add all red phase
-                        tempSignalStateList.add( allRedSignalState );
+                        TrafficSignalState indexedAllRedState = new TrafficSignalState( allRedSignalState.getLength(),
+                                                                                        index );
+                        indexedAllRedState.combine( allRedSignalState );
+                        tempSignalStateList.add( indexedAllRedState );
                     }
 
                     // Handle if circuit has protected signals
@@ -729,7 +738,7 @@ public class TileEntityTrafficSignalController extends TileEntity
                         circuitAheadGreenState.addGreenSignals( signalCircuit.getProtectedSignals() );
                         for ( int pedIndex = 0; pedIndex < signalCircuitList.size(); pedIndex++ ) {
                             if ( index != pedIndex ) {
-                                circuitAheadGreenState.addYellowSignals(
+                                circuitAheadGreenState.addGreenSignals(
                                         signalCircuitList.get( pedIndex ).getPedestrianSignals() );
                             }
                         }
@@ -763,7 +772,10 @@ public class TileEntityTrafficSignalController extends TileEntity
                         // Create right turn states (if signals present)
                         if ( signalCircuit.getRightSignals().size() > 0 ) {
                             // Add all red phase
-                            tempSignalStateList.add( allRedSignalState );
+                            TrafficSignalState indexedAllRedState = new TrafficSignalState(
+                                    allRedSignalState.getLength(), index );
+                            indexedAllRedState.combine( allRedSignalState );
+                            tempSignalStateList.add( indexedAllRedState );
 
                             // Create state for right signals on green
                             TrafficSignalState circuitRightGreenState = new TrafficSignalState( 10, index );
@@ -794,7 +806,7 @@ public class TileEntityTrafficSignalController extends TileEntity
                         circuitGreenState.addGreenSignals( signalCircuit.getRightSignals() );
                         for ( int pedIndex = 0; pedIndex < signalCircuitList.size(); pedIndex++ ) {
                             if ( index != pedIndex ) {
-                                circuitGreenState.addYellowSignals(
+                                circuitGreenState.addGreenSignals(
                                         signalCircuitList.get( pedIndex ).getPedestrianSignals() );
                             }
                         }
@@ -842,7 +854,7 @@ public class TileEntityTrafficSignalController extends TileEntity
                 allRedSignalState.addRedSignals( signalCircuit.getAheadSignals() );
                 allRedSignalState.addRedSignals( signalCircuit.getRightSignals() );
                 allRedSignalState.addRedSignals( signalCircuit.getProtectedSignals() );
-                allRedSignalState.addGreenSignals( signalCircuit.getPedestrianSignals() );
+                allRedSignalState.addYellowSignals( signalCircuit.getPedestrianSignals() );
             }
 
             // Add all red state as first
@@ -857,7 +869,7 @@ public class TileEntityTrafficSignalController extends TileEntity
                 circuitGreenState.addGreenSignals( signalCircuit.getHybridLeftSignals() );
                 circuitGreenState.addGreenSignals( signalCircuit.getLeftSignals() );
                 circuitGreenState.addGreenSignals( signalCircuit.getAheadSignals() );
-                circuitGreenState.addGreenSignals( signalCircuit.getProtectedSignals() );
+                circuitGreenState.addYellowSignals( signalCircuit.getProtectedSignals() );
                 circuitGreenState.addGreenSignals( signalCircuit.getRightSignals() );
                 circuitGreenState.combine( allRedSignalState );
                 tempSignalStateList.add( circuitGreenState );
@@ -934,6 +946,7 @@ public class TileEntityTrafficSignalController extends TileEntity
         try {
             if ( signalState.getActiveCircuit() != -1 ) {
                 signalCircuitList.get( signalState.getActiveCircuit() ).markServiced( world );
+                markDirty();
             }
         }
         catch ( Exception e ) {
@@ -983,22 +996,35 @@ public class TileEntityTrafficSignalController extends TileEntity
             }
 
             // Get phase
-            if ( currentPhaseTime++ > signalStateList.get( currentPhase ).getLength() ) {
+            TrafficSignalState currState = signalStateList.get( currentPhase );
+            if ( currentPhaseTime++ > currState.getLength() ) {
 
+                currentPhase++;
+                currentPhaseTime = 0;
+                phaseChanged = true;
                 // Check for prioritization
                 try {
-                    if ( currentMode == CURRENT_MODE_STANDARD &&
-                            signalStateList.get( currentPhase ).getActiveCircuit() == -1 ) {
+                    if ( currentMode == CURRENT_MODE_STANDARD && currState.getActiveCircuit() == -1 ) {
                         int topPriorityCircuit = getCircuitPriorityJumpIndex( world );
-                        for ( int stateIndex = 0; stateIndex < signalStateList.size(); stateIndex++ ) {
-                            if ( signalStateList.get( stateIndex ).getActiveCircuit() == topPriorityCircuit ) {
-                                currentPhase = stateIndex;
-                                break;
+                        if ( topPriorityCircuit != -1 ) {
+                            for ( int stateIndex = 0; stateIndex < signalStateList.size(); stateIndex++ ) {
+                                if ( signalStateList.get( stateIndex ).getActiveCircuit() == topPriorityCircuit ) {
+                                    currentPhase = stateIndex;
+                                    break;
+                                }
                             }
                         }
                     }
-                    else {
-                        currentPhase++;
+                    else if ( currentMode == CURRENT_MODE_STANDARD && currState.isAllRed() ) {
+                        int topPriorityCircuit = getCircuitPriorityJumpIndex( world );
+                        if ( topPriorityCircuit != currState.getActiveCircuit() && topPriorityCircuit != -1 ) {
+                            for ( int stateIndex = 0; stateIndex < signalStateList.size(); stateIndex++ ) {
+                                if ( signalStateList.get( stateIndex ).getActiveCircuit() == topPriorityCircuit ) {
+                                    currentPhase = stateIndex;
+                                    break;
+                                }
+                            }
+                        }
                     }
                 }
                 catch ( Exception e ) {
@@ -1006,10 +1032,21 @@ public class TileEntityTrafficSignalController extends TileEntity
                                                 "prioritization! The signal controller will continue in standard mode " +
                                                 "without sensors or prioritization." );
                     e.printStackTrace();
-                    currentPhase++;
                 }
-                currentPhaseTime = 0;
-                phaseChanged = true;
+            }
+            else {
+                // Cut green phase short if another circuit becomes top priority, extend if still top priority
+                TrafficSignalState signalState = signalStateList.get( currentPhase );
+                if ( currentMode == CURRENT_MODE_STANDARD &&
+                        signalState.getYellowSignals().size() == 0 &&
+                        !signalState.isAllRed() ) {
+                    int topPriorityCircuit = getCircuitPriorityJumpIndex( world );
+                    if ( topPriorityCircuit != signalState.getActiveCircuit() && topPriorityCircuit != -1 ) {
+                        currentPhaseTime = signalState.getLength() + 1;
+                    } /*else if ( topPriorityCircuit == signalState.getActiveCircuit() && topPriorityCircuit != -1 ) {
+                        currentPhaseTime = 0;
+                    }*/
+                }
             }
             if ( currentPhase >= signalStateList.size() ) {
                 currentPhase = 0;
@@ -1019,6 +1056,7 @@ public class TileEntityTrafficSignalController extends TileEntity
 
             // Update signals if phase changed
             if ( phaseChanged ) {
+                markDirty();
                 updateSignals( signalStateList.get( currentPhase ), powered );
             }
         }
