@@ -40,6 +40,7 @@ jobs:
         with:
           tag_name: csm-devbuild-${{ github.sha }}
           release_name: Dev Build ${{ github.sha }}
+          body: Automatic build from branch ${GITHUB_REF##*/} on commit SHA ${{ github.sha }}
           draft: false
           prerelease: true
       - name: Upload assembled mod .jar
