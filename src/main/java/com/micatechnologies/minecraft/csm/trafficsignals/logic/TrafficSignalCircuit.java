@@ -271,9 +271,13 @@ public class TrafficSignalCircuit
                 waitingCount += tileEntityTrafficSignalSensor.getWaitingCount( world );
             }
         }
-        System.err.println( "LAST SERVICE AT " + lastServiceTime );
-        System.err.println( "CURRENT TIME " + world.getWorldTime() );
-        //TODO: Add priority for circuits that havent been serviced in a while
+
+        // Get time diff since last service
+        if (waitingCount > 0) {
+            long lastServiceTimeDiff = world.getTotalWorldTime() - lastServiceTime;
+            int waitCountOffsetForTime = ( int ) ( lastServiceTimeDiff / 500 );
+            waitingCount += waitCountOffsetForTime;
+        }
         return waitingCount;
     }
 
