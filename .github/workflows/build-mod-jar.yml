@@ -30,8 +30,6 @@ jobs:
         with:
           path: ~/.gradle/wrapper
           key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}
-      #- name: Download mod development workspace
-       # run: ./gradlew setupDecompWorkspace
       - name: Assemble mod with Gradle
         run: ./gradlew assemble -Dhttp.socketTimeout=60000 -Dhttp.connectionTimeout=60000 -Dorg.gradle.internal.http.socketTimeout=60000 -Dorg.gradle.internal.http.connectionTimeout=60000
       - name: Create release entry
@@ -40,8 +38,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: csm-devbuild-$${{ github.sha }}
-          release_name: Dev Build $${{ github.sha }}
+          tag_name: csm-devbuild-${{ github.sha }}
+          release_name: Dev Build ${{ github.sha }}
           draft: false
           prerelease: true
       - name: Upload assembled mod .jar
@@ -52,5 +50,5 @@ jobs:
         with:
           upload_url: ${{ steps.create-release-entry.outputs.upload_url }}
           asset_path: ./build/libs/modid-1.0.jar
-          asset_name: csm-devbuild-$${{ github.sha }}.jar
+          asset_name: csm-devbuild-${{ github.sha }}.jar
           asset_content_type: application/java-archive
