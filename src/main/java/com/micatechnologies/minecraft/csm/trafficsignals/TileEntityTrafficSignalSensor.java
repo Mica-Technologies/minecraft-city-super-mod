@@ -79,13 +79,15 @@ public class TileEntityTrafficSignalSensor extends TileEntity
     }
 
     private int scanEntities( World world ) {
-        AxisAlignedBB scanRange = new AxisAlignedBB( corner1, corner2 );
-        List< Entity > entitiesWithinAABBExcludingEntity = world.getEntitiesWithinAABBExcludingEntity( null,
-                                                                                                       scanRange );
         int count = 0;
-        for ( Entity entity : entitiesWithinAABBExcludingEntity ) {
-            if ( entity instanceof EntityVillager || entity instanceof EntityPlayer ) {
-                count++;
+        if ( world != null && corner1 != null && corner2 != null ) {
+            AxisAlignedBB scanRange = new AxisAlignedBB( corner1, corner2 );
+            List< Entity > entitiesWithinAABBExcludingEntity = world.getEntitiesWithinAABBExcludingEntity( null,
+                                                                                                           scanRange );
+            for ( Entity entity : entitiesWithinAABBExcludingEntity ) {
+                if ( entity instanceof EntityVillager || entity instanceof EntityPlayer ) {
+                    count++;
+                }
             }
         }
         return count;
