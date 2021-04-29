@@ -276,9 +276,10 @@ public class TileEntityTrafficSignalController extends TileEntity
         int highestPriorityCircuitValue = 0;
         for ( int index = 0; index < signalCircuitList.size(); index++ ) {
             TrafficSignalCircuit signalCircuit = signalCircuitList.get( index );
-
-            if ( signalCircuit.getCircuitPriority( world ) > highestPriorityCircuitValue ) {
+            int signalCircuitPriority = signalCircuit.getCircuitPriority( world );
+            if ( signalCircuitPriority > highestPriorityCircuitValue ) {
                 highestPriorityCircuitIndex = index;
+                highestPriorityCircuitValue = signalCircuitPriority;
             }
         }
         return highestPriorityCircuitIndex;
@@ -947,7 +948,6 @@ public class TileEntityTrafficSignalController extends TileEntity
         try {
             if ( signalState.getActiveCircuit() != -1 ) {
                 signalCircuitList.get( signalState.getActiveCircuit() ).markServiced( world );
-                markDirty();
             }
         }
         catch ( Exception e ) {
@@ -1057,8 +1057,8 @@ public class TileEntityTrafficSignalController extends TileEntity
 
             // Update signals if phase changed
             if ( phaseChanged ) {
-                markDirty();
                 updateSignals( signalStateList.get( currentPhase ), powered );
+                markDirty();
             }
         }
     }
