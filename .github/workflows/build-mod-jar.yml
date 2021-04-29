@@ -38,6 +38,13 @@ jobs:
       - name: Assemble mod with Gradle
         run: ./gradlew assemble -Dhttp.socketTimeout=60000 -Dhttp.connectionTimeout=60000 -Dorg.gradle.internal.http.socketTimeout=60000 -Dorg.gradle.internal.http.connectionTimeout=60000
 
+      - name: Get Time
+        id: time
+        uses: nanzm/get-time-action@v1.1
+        with:
+          timeZone: 0
+          format: 'YYYY-MM-DD-HH-mm-ss'
+
       - name: Create release entry
         id: create-release-entry
         uses: actions/create-release@v1
@@ -45,8 +52,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: csm-devbuild-${{ github.sha }}
-          release_name: Dev Build ${{ github.sha }}
-          body: Automatic build from branch ${{ steps.branch-name.outputs.short_ref }} on commit SHA ${{ github.sha }}
+          release_name: Dev Build ${{ steps.time.outputs.time }}UTC (${{ github.sha }})
+          body: Automatic build from branch ${{ steps.branch-name.outputs.short_ref }} of commit SHA ${{ github.sha }} at time ${{ steps.time.outputs.time }}UTC.
           draft: false
           prerelease: true
 
