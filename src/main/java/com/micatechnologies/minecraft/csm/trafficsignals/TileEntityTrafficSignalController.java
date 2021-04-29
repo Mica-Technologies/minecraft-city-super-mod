@@ -5,6 +5,7 @@ import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalCirc
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalState;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
@@ -216,7 +217,7 @@ public class TileEntityTrafficSignalController extends TileEntity
             String[] serializedSignalCircuits = serializedSignalCircuitList.split(
                     SERIALIZED_SIGNAL_CIRCUIT_LIST_SEPARATOR );
             for ( String serializedSignalCircuit : serializedSignalCircuits ) {
-                TrafficSignalCircuit importedCircuit = new TrafficSignalCircuit( serializedSignalCircuit, world );
+                TrafficSignalCircuit importedCircuit = new TrafficSignalCircuit( serializedSignalCircuit );
                 signalCircuitList.add( importedCircuit );
             }
 

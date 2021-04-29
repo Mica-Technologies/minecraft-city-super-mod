@@ -119,7 +119,7 @@ public class TrafficSignalCircuit
      *
      * @param serialized serialized traffic signal circuit
      */
-    public TrafficSignalCircuit( String serialized, World world ) {
+    public TrafficSignalCircuit( String serialized ) {
         // Split serialized string to lists
         String[] serializedLists = serialized.split( LIST_SEPARATOR_CHAR );
 
@@ -164,11 +164,6 @@ public class TrafficSignalCircuit
             else {
                 lastServiceTime = Long.parseLong( serializedLists[ serializedListIndex ] );
             }
-        }
-
-        // Set circuit last service time to current time, if not populated
-        if ( lastServiceTime == -1 ) {
-            lastServiceTime = world.getTotalWorldTime();
         }
     }
 
@@ -273,7 +268,7 @@ public class TrafficSignalCircuit
         }
 
         // Get time diff since last service
-        if (waitingCount > 0) {
+        if ( waitingCount > 0 ) {
             long lastServiceTimeDiff = world.getTotalWorldTime() - lastServiceTime;
             int waitCountOffsetForTime = ( int ) ( lastServiceTimeDiff / 500 );
             waitingCount += waitCountOffsetForTime;
