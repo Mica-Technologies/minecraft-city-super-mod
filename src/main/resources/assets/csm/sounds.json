@@ -853,5 +853,41 @@
         "stream": false
       }
     ]
+  },
+  "yada_yada_yada": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:yada_yada_yada",
+        "stream": false
+      }
+    ]
+  },
+  "horizon_wireless_call_cannot_complete": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:horizon_wireless_call_cannot_complete",
+        "stream": false
+      }
+    ]
+  },
+  "horizon_wireless_star228": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:horizon_wireless_star228",
+        "stream": false
+      }
+    ]
+  },
+  "tears_of_a_clown_mt32": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:tears_of_a_clown_mt32",
+        "stream": false
+      }
+    ]
   }
 }
