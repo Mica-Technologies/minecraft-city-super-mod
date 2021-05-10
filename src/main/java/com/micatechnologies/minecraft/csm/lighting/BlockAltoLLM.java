@@ -25,12 +25,12 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @ElementsCitySuperMod.ModElement.Tag
-public class BlockAltoLMM extends ElementsCitySuperMod.ModElement
+public class BlockAltoLLM extends ElementsCitySuperMod.ModElement
 {
     @GameRegistry.ObjectHolder( "csm:altollm" )
     public static final Block block = null;
 
-    public BlockAltoLMM( ElementsCitySuperMod instance ) {
+    public BlockAltoLLM( ElementsCitySuperMod instance ) {
         super( instance, 89 );
     }
 
