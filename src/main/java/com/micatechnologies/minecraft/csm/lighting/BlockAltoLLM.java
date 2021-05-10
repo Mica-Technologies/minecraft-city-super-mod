@@ -36,7 +36,7 @@ public class BlockAltoLMM extends ElementsCitySuperMod.ModElement
 
     @Override
     public void initElements() {
-        elements.blocks.add( () -> new BlockCustom().setRegistryName( "fbm" ) );
+        elements.blocks.add( () -> new BlockCustom().setRegistryName( "altolmm" ) );
         elements.items.add( () -> new ItemBlock( block ).setRegistryName( block.getRegistryName() ) );
     }
 
@@ -44,7 +44,7 @@ public class BlockAltoLMM extends ElementsCitySuperMod.ModElement
     @Override
     public void registerModels( ModelRegistryEvent event ) {
         ModelLoader.setCustomModelResourceLocation( Item.getItemFromBlock( block ), 0,
-                                                    new ModelResourceLocation( "csm:fbm", "inventory" ) );
+                                                    new ModelResourceLocation( "csm:altolmm", "inventory" ) );
     }
 
     public static class BlockCustom extends Block
@@ -53,7 +53,7 @@ public class BlockAltoLMM extends ElementsCitySuperMod.ModElement
 
         public BlockCustom() {
             super( Material.ROCK );
-            setUnlocalizedName( "fbm" );
+            setUnlocalizedName( "altolmm" );
             setSoundType( SoundType.STONE );
             setHardness( 1F );
             setResistance( 10F );
