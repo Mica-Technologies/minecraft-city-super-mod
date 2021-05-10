@@ -11,9 +11,6 @@
     </facet>
   </component>
   <component name="McpModuleSettings">
-    <option name="mappingFile" value="C:\Users\ahawk\IdeaProjects\minecraft-city-super-mod\build\createMcpToSrg\output.tsrg" />
-    <option name="mcpVersion" value="snapshot_20171003-1.12" />
-    <option name="minecraftVersion" value="1.12.2" />
-    <option name="srgType" value="TSRG" />
+    <option name="srgType" value="SRG" />
   </component>
 </module>
