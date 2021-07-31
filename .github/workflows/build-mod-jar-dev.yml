@@ -1,0 +1,72 @@
+name: Build and Assemble Mod (Development Branch)
+
+on:
+  push:
+    branches-ignore:
+      - main
+      - master
+
+jobs:
+  build:
+    name: Assemble Mod and Publish Pre-Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set Up JDK 1.8
+        uses: actions/setup-java@v2
+        with:
+          distribution: "adopt"
+          java-version: "8"
+
+      - name: Get branch name
+        id: branch-name
+        run: echo ::set-output name=short_ref::${GITHUB_REF#refs/*/}
+
+      - name: Setup Gradle Dependencies Cache
+        uses: actions/cache@v2
+        if: ${{ always() }}
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-caches-${{ hashFiles('**/*.gradle', '**/*.gradle.kts') }}
+
+      - name: Setup Gradle Wrapper Cache
+        uses: actions/cache@v2
+        if: ${{ always() }}
+        with:
+          path: ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}
+
+      - name: Assemble mod with Gradle
+        run: ./gradlew assemble -Dhttp.socketTimeout=60000 -Dhttp.connectionTimeout=60000 -Dorg.gradle.internal.http.socketTimeout=60000 -Dorg.gradle.internal.http.connectionTimeout=60000
+
+      - name: Get Time
+        id: time
+        uses: nanzm/get-time-action@v1.1
+        with:
+          timeZone: 0
+          format: 'YYYY-MM-DD-HH-mm-ss'
+
+      - name: Create pre-release entry
+        id: create-release-entry
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: csm-devbuild-${{ github.sha }}
+          release_name: Dev Build ${{ steps.time.outputs.time }}UTC (${{ github.sha }})
+          body: Automatic build from branch ${{ steps.branch-name.outputs.short_ref }} of commit SHA ${{ github.sha }} at time ${{ steps.time.outputs.time }}UTC.
+          draft: false
+          prerelease: true
+
+      - name: Upload assembled mod .jar
+        id: upload-assembled-release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create-release-entry.outputs.upload_url }}
+          asset_path: ./build/libs/modid-1.0.jar
+          asset_name: csm-devbuild-${{ github.sha }}.jar
+          asset_content_type: application/java-archive
