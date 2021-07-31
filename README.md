@@ -2,10 +2,10 @@
 The City Super Mod is a mod for Minecraft 1.12.2 that brings a number of blocks and items to help build your Minecraft city. Initially, the mod was built for the City of MCLA (now City of Alto), but will soon become publicly available as source-code and a compiled mod.
 
 ## Information and Documentation
-Information and documentation for the City Super Mod is available on the [City Super Mod Wiki](https://git.micatechnologies.com/minecraft/city-super-mod/-/wikis/home). This documentation is currently under development, and at this time, may be incomplete or incorrect. 
+Information and documentation for the City Super Mod is available on the [City Super Mod Wiki](https://github.com/Mica-Technologies/minecraft-city-super-mod/wiki). This documentation is currently under development, and at this time, may be incomplete or incorrect. 
 
 ## Issues
-Having an issue with the mod? Error in the documentation or it just isn't clear enough? Let us know by using the GitLab issue tracker, available in the menu or by [clicking here](https://git.micatechnologies.com/minecraft/city-super-mod/-/issues).
+Having an issue with the mod? Error in the documentation or it just isn't clear enough? Let us know by using the GitLab issue tracker, available in the menu or by [clicking here](https://github.com/Mica-Technologies/minecraft-city-super-mod/issues).
 
 ## Team
 Contributions and modifications are not limited to the development team, and it is encouraged to file issues and create merge requests.
