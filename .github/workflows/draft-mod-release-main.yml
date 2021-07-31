@@ -1,11 +1,14 @@
-# Script to build pre-release tags containing an assembled mod jar for each push
-name: Build and Assemble Mod
+name: Draft Mod Release (Main Branch)
 
-on: [push]
+on:
+  push:
+    branches:
+      - main
+      - master
 
 jobs:
   build:
-    name: Assemble Mod .Jar
+    name: Assemble Mod and Draft Release
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -45,17 +48,17 @@ jobs:
           timeZone: 0
           format: 'YYYY-MM-DD-HH-mm-ss'
 
-      - name: Create release entry
+      - name: Create draft release entry
         id: create-release-entry
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: csm-devbuild-${{ github.sha }}
-          release_name: Dev Build ${{ steps.time.outputs.time }}UTC (${{ github.sha }})
-          body: Automatic build from branch ${{ steps.branch-name.outputs.short_ref }} of commit SHA ${{ github.sha }} at time ${{ steps.time.outputs.time }}UTC.
-          draft: false
-          prerelease: true
+          tag_name: csm-mainbuild-${{ github.sha }}
+          release_name: DRAFT RELEASE BUILD ${{ steps.time.outputs.time }}UTC (${{ github.sha }})
+          body: DRAFT RELEASE BUILD from branch ${{ steps.branch-name.outputs.short_ref }} of commit SHA ${{ github.sha }} at time ${{ steps.time.outputs.time }}UTC. EDIT THIS BODY PRIOR TO RELEASE.
+          draft: true
+          prerelease: false
 
       - name: Upload assembled mod .jar
         id: upload-assembled-release
@@ -65,5 +68,5 @@ jobs:
         with:
           upload_url: ${{ steps.create-release-entry.outputs.upload_url }}
           asset_path: ./build/libs/modid-1.0.jar
-          asset_name: csm-devbuild-${{ github.sha }}.jar
+          asset_name: city-super-mod-${{ github.sha }}.jar
           asset_content_type: application/java-archive
