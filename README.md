@@ -5,23 +5,23 @@ The City Super Mod is a mod for Minecraft 1.12.2 that brings a number of blocks 
 Information and documentation for the City Super Mod is available on the [City Super Mod Wiki](https://github.com/Mica-Technologies/minecraft-city-super-mod/wiki). This documentation is currently under development, and at this time, may be incomplete or incorrect. 
 
 ## Issues
-Having an issue with the mod? Error in the documentation or it just isn't clear enough? Let us know by using the GitLab issue tracker, available in the menu or by [clicking here](https://github.com/Mica-Technologies/minecraft-city-super-mod/issues).
+Having an issue with the mod? Error in the documentation or it just isn't clear enough? Let us know by using the [GitHub issue tracker](https://github.com/Mica-Technologies/minecraft-city-super-mod/issues).
 
 ## Team
-Contributions and modifications are not limited to the development team, and it is encouraged to file issues and create merge requests.
+Contributions and modifications are not limited to the development team, and it is encouraged to file issues and create pull requests.
 
 <img src="https://minotar.net/armor/bust/HawkA97/100.png" width="50"/>
 
 **Name:** Alex<br/>
-**Git Username:** ah<br/>
+**GitHub Username:** mica-alex<br/>
 **Minecraft Username:** HawkA97
 
 
-<img src="https://minotar.net/armor/bust/ThatCrazyPandog/100.png" width="50"/>
+<img src="https://minotar.net/armor/bust/AngelWingsPanda/100.png" width="50"/>
 
 **Name:** Brandon<br />
-**Git Username:** bh<br />
-**Minecraft Username:** ThatCrazyPandog
+**GitHub Username:** AngelWingsPanda<br />
+**Minecraft Username:** AngelWingsPanda
 
 ## Development
 ### IDE/Making Changes
@@ -53,16 +53,16 @@ To maintain proper segregation of model components, there are three models folde
 ``` 
 
 ### Contributing Code/Changes
-To contribute code, you will need to push your modifications to the Git server on a new branch. 
-To protect the working code, modification of the `master` branch is not permitted except through merge request. 
-After you submit a merge request, the development team will need to review and approve your modifications/contributions before they can be merged.
+To contribute code, you will need to push your modifications to GitHub on a new branch. 
+To protect the working code, modification of the `master` branch is not permitted except through pull request. 
+After you submit a pull request, the development team will need to review and approve your modifications/contributions before they can be merged.
 
 To learn more about using Git integration with the IntelliJ IDEA IDE, please see [https://www.jetbrains.com/help/idea/using-git-integration.html](https://www.jetbrains.com/help/idea/using-git-integration.html).
 
 To learn more about the version control system Git, please see [https://git-scm.com/doc](https://git-scm.com/doc).
 
 ## Credits
-Development and code for the City Super Mod began with [Pylo MCreator](https://mcreator.net). 
-Current development is performed with the JetBrains IntelliJ IDEA IDE.
+Development and code for the City Super Mod began with [Pylo MCreator](https://mcreator.net), a decent Minecraft mod maker for those who don't know how to code that was formally closed source and is now maintained by the community. 
+Current development is performed standalone with the JetBrains IntelliJ IDEA IDE.
 
 
