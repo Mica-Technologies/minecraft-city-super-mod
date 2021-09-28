@@ -889,5 +889,23 @@
         "stream": false
       }
     ]
+  },
+  "bsp_the_lofts_voic_evac": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:bsp_the_lofts_voic_evac",
+        "stream": false
+      }
+    ]
+  },
+  "xptitlewma_mt32": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:xptitlewma_mt32",
+        "stream": false
+      }
+    ]
   }
 }
