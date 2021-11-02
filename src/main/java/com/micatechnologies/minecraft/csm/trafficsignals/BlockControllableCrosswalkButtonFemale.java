@@ -107,6 +107,14 @@ public class BlockControllableCrosswalkButtonFemale extends ElementsCitySuperMod
                                          float p_onBlockActivated_8_,
                                          float p_onBlockActivated_9_ )
         {
+            if ( p_onBlockActivated_4_.inventory.getCurrentItem() != null &&
+                    p_onBlockActivated_4_.inventory.getCurrentItem()
+                                                   .getItem() instanceof ItemNSSignalLinker.ItemCustom ) {
+                return super.onBlockActivated( p_onBlockActivated_1_, p_onBlockActivated_2_, p_onBlockActivated_3_,
+                                               p_onBlockActivated_4_, p_onBlockActivated_5_, p_onBlockActivated_6_,
+                                               p_onBlockActivated_7_, p_onBlockActivated_8_, p_onBlockActivated_9_ );
+            }
+
             if (p_onBlockActivated_3_.getValue( COLOR ) == 0) {
                 p_onBlockActivated_1_.playSound( null, p_onBlockActivated_2_.getX(), p_onBlockActivated_2_.getY(),
                                                  p_onBlockActivated_2_.getZ(), net.minecraft.util.SoundEvent.REGISTRY.getObject(
