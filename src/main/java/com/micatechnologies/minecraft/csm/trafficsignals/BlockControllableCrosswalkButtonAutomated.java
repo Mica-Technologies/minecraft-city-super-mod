@@ -51,7 +51,7 @@ public class BlockControllableCrosswalkButtonAutomated extends ElementsCitySuper
     public static class BlockCustom extends AbstractBlockControllableCrosswalkAccessory
     {
         final int lenOfWalkSound           = 140;
-        final int lenOfDontWalkSound       = 30;
+        final int lenOfDontWalkSound       = 20;
         final int lenOfNotSafeToCrossSound = 140;
 
         public BlockCustom() {

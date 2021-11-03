@@ -28,77 +28,10 @@ public class TileEntityTrafficSignalController extends TileEntity
     private static final String                     SERIALIZED_SIGNAL_STATE_LIST_SEPARATOR = ":";
     private final        List< TrafficSignalState > signalStateList                        = new ArrayList<>();
 
-    /**
-     * Former key for N/S signal list. Used to upgrade previous versions to the new logic.
-     */
-    private static final String KEY_NS_SIGNALS = "NSSigs";
-
-    /**
-     * Former key for E/W signal list. Used to upgrade previous versions to the new logic.
-     */
-    private static final String KEY_EW_SIGNALS = "EWSigs";
-
-    public void importPreviousConfig( World currWorld ) {
-        // Load previous format to new format (if present and not already upgraded)
-        if ( nsSignalsString != null && ewSignalsString != null ) {
-            importPreviousListFormat( currWorld, nsSignalsString );
-            importPreviousListFormat( currWorld, ewSignalsString );
-            markDirty();
-        }
-
-        // Trigger state regeneration
-        updateSignalStates( world );
-    }
-
-    private void importPreviousListFormat( World currWorld, String listString ) {
-        // Create new signal circuit
-        TrafficSignalCircuit newCircuit = new TrafficSignalCircuit();
-
-        // Split list by items
-        String[] positions = listString.split( "\n" );
-        for ( String position : positions ) {
-            // Split items in to coordinates
-            String[] coordinates = position.split( " " );
-
-            // If coordinates valid, parse and add to new signal circuit
-            if ( coordinates.length == 3 ) {
-                BlockPos signalPos = new BlockPos( Integer.parseInt( coordinates[ 0 ] ),
-                                                   Integer.parseInt( coordinates[ 1 ] ),
-                                                   Integer.parseInt( coordinates[ 2 ] ) );
-
-                // Get signal type and add to appropriate list in signal circuit
-                IBlockState blockState = currWorld.getBlockState( signalPos );
-                if ( blockState.getBlock() instanceof AbstractBlockControllableSignal ) {
-                    AbstractBlockControllableSignal controllableSignal
-                            = ( AbstractBlockControllableSignal ) blockState.getBlock();
-                    if ( controllableSignal.getSignalSide( null, null ) ==
-                            AbstractBlockControllableSignal.SIGNAL_SIDE.LEFT ) {
-                        newCircuit.linkLeftSignal( signalPos );
-                    }
-                    else if ( controllableSignal.getSignalSide( null, null ) ==
-                            AbstractBlockControllableSignal.SIGNAL_SIDE.AHEAD ) {
-                        newCircuit.linkAheadSignal( signalPos );
-                    }
-                    else if ( controllableSignal.getSignalSide( null, null ) ==
-                            AbstractBlockControllableSignal.SIGNAL_SIDE.RIGHT ) {
-                        newCircuit.linkRightSignal( signalPos );
-                    }
-                    else if ( controllableSignal.getSignalSide( null, null ) ==
-                            AbstractBlockControllableSignal.SIGNAL_SIDE.CROSSWALK ) {
-                        newCircuit.linkPedestrianSignal( signalPos );
-                    }
-                    else if ( controllableSignal.getSignalSide( null, null ) ==
-                            AbstractBlockControllableSignal.SIGNAL_SIDE.PROTECTED_AHEAD ) {
-                        newCircuit.linkProtectedSignal( signalPos );
-                    }
-                }
-            }
-        }
-
-        // Add new signal circuit to list and mark dirty
-        signalCircuitList.add( newCircuit );
-        markDirty();
-    }
+    private static final String                     SERIALIZED_SIGNAL_FLASH_STATE_LIST_KEY
+                                                                                                 = "SerializedSignalFlashStateList";
+    private static final String                     SERIALIZED_SIGNAL_FLASH_STATE_LIST_SEPARATOR = ":";
+    private final        List< TrafficSignalState > signalFlashStateList                         = new ArrayList<>();
 
     public int getSignalCircuitCount() {
         return signalCircuitList.size();
@@ -186,30 +119,25 @@ public class TileEntityTrafficSignalController extends TileEntity
     }
     ///endregion
 
-    private static final String KEY_LAST_PHASE_CHANGE_TIME = "LastPhaseChangeTime";
-    private static final String KEY_CURR_PHASE_TIME        = "CurrPhaseTime";
-    private static final String KEY_CURRENT_PHASE          = "CurrPhase";
-    private static final String KEY_CURRENT_MODE           = "CurrentMode";
-    private static final int    CURRENT_MODE_FLASH         = 0;
-    private static final int    CURRENT_MODE_STANDARD      = 1;
-    private static final int    CURRENT_MODE_METER         = 2;
-    private              int    currentPhase;
-    private              int    currentPhaseTime;
-    private              long   lastPhaseChangeTime;
-    private              int    currentMode;
-    private              String ewSignalsString            = null;
-    private              String nsSignalsString            = null;
+    private static final String  KEY_BOOT_SAFE              = "BootSafe";
+    private static final String  KEY_BOOT_SAFE_FLASH        = "BootSafeFlash";
+    private static final String  KEY_LAST_PHASE_CHANGE_TIME = "LastPhaseChangeTime";
+    private static final String  KEY_CURR_PHASE_TIME        = "CurrPhaseTime";
+    private static final String  KEY_CURRENT_PHASE          = "CurrPhase";
+    private static final String  KEY_CURRENT_MODE           = "CurrentMode";
+    private static final int     CURRENT_MODE_FLASH         = 0;
+    private static final int     CURRENT_MODE_STANDARD      = 1;
+    private static final int     CURRENT_MODE_METER         = 2;
+    private              boolean bootSafe;
+    private              boolean bootSafeFlash;
+    private              int     currentPhase;
+    private              int     currentPhaseTime;
+    private              long    lastPhaseChangeTime;
+    private              int     currentMode;
 
     @Override
     public void readFromNBT( NBTTagCompound p_readFromNBT_1_ ) {
         super.readFromNBT( p_readFromNBT_1_ );
-
-        // Load previous format to new format (if present)
-        if ( p_readFromNBT_1_.hasKey( KEY_NS_SIGNALS ) && p_readFromNBT_1_.hasKey( KEY_EW_SIGNALS ) ) {
-            // Import previous signals lists
-            nsSignalsString = p_readFromNBT_1_.getString( KEY_NS_SIGNALS );
-            ewSignalsString = p_readFromNBT_1_.getString( KEY_EW_SIGNALS );
-        }
 
         // Load existing serialized signals list (if present)
         if ( p_readFromNBT_1_.hasKey( SERIALIZED_SIGNAL_CIRCUIT_LIST_KEY ) ) {
@@ -220,10 +148,6 @@ public class TileEntityTrafficSignalController extends TileEntity
                 TrafficSignalCircuit importedCircuit = new TrafficSignalCircuit( serializedSignalCircuit );
                 signalCircuitList.add( importedCircuit );
             }
-
-            // Remove old config
-            p_readFromNBT_1_.removeTag( KEY_NS_SIGNALS );
-            p_readFromNBT_1_.removeTag( KEY_EW_SIGNALS );
         }
 
         // Load existing serialized signal state list (if present)
@@ -234,6 +158,34 @@ public class TileEntityTrafficSignalController extends TileEntity
                 TrafficSignalState importedState = TrafficSignalState.deserialize( serializedSignalState );
                 signalStateList.add( importedState );
             }
+        }
+
+        // Load existing serialized signal flash state list (if present)
+        if ( p_readFromNBT_1_.hasKey( SERIALIZED_SIGNAL_FLASH_STATE_LIST_KEY ) ) {
+            String serializedSignalFlashStateList = p_readFromNBT_1_.getString(
+                    SERIALIZED_SIGNAL_FLASH_STATE_LIST_KEY );
+            String[] serializedSignalFlashStates = serializedSignalFlashStateList.split(
+                    SERIALIZED_SIGNAL_FLASH_STATE_LIST_SEPARATOR );
+            for ( String serializedSignalFlashState : serializedSignalFlashStates ) {
+                TrafficSignalState importedState = TrafficSignalState.deserialize( serializedSignalFlashState );
+                signalFlashStateList.add( importedState );
+            }
+        }
+
+        // Load boot safe flag
+        if ( p_readFromNBT_1_.hasKey( KEY_BOOT_SAFE ) ) {
+            this.bootSafe = p_readFromNBT_1_.getBoolean( KEY_BOOT_SAFE );
+        }
+        else {
+            this.bootSafe = false;
+        }
+
+        // Load boot safe flash flag
+        if ( p_readFromNBT_1_.hasKey( KEY_BOOT_SAFE_FLASH ) ) {
+            this.bootSafeFlash = p_readFromNBT_1_.getBoolean( KEY_BOOT_SAFE_FLASH );
+        }
+        else {
+            this.bootSafeFlash = false;
         }
 
         // Load current mode
@@ -296,7 +248,13 @@ public class TileEntityTrafficSignalController extends TileEntity
 
     @Override
     public NBTTagCompound writeToNBT( NBTTagCompound p_writeToNBT_1_ ) {
-        // Write current flash mode enabled
+        // Write boot safe flag
+        p_writeToNBT_1_.setBoolean( KEY_BOOT_SAFE, bootSafe );
+
+        // Write boot safe flash flag
+        p_writeToNBT_1_.setBoolean( KEY_BOOT_SAFE_FLASH, bootSafeFlash );
+
+        // Write current mode
         p_writeToNBT_1_.setInteger( KEY_CURRENT_MODE, currentMode );
 
         // Write current phase
@@ -336,6 +294,20 @@ public class TileEntityTrafficSignalController extends TileEntity
                                        serializedSignalStateListStringBuilder.toString() );
         }
 
+        // Write signal flash state list
+        StringBuilder serializedSignalFlashStateListStringBuilder = new StringBuilder();
+        Iterator< TrafficSignalState > signalFlashStateIterator = signalFlashStateList.iterator();
+        while ( signalFlashStateIterator.hasNext() ) {
+            serializedSignalFlashStateListStringBuilder.append( signalFlashStateIterator.next().serialize() );
+            if ( signalFlashStateIterator.hasNext() ) {
+                serializedSignalFlashStateListStringBuilder.append( SERIALIZED_SIGNAL_FLASH_STATE_LIST_SEPARATOR );
+            }
+        }
+        if ( signalFlashStateList.size() > 0 ) {
+            p_writeToNBT_1_.setString( SERIALIZED_SIGNAL_FLASH_STATE_LIST_KEY,
+                                       serializedSignalFlashStateListStringBuilder.toString() );
+        }
+
         return super.writeToNBT( p_writeToNBT_1_ );
     }
 
@@ -344,7 +316,18 @@ public class TileEntityTrafficSignalController extends TileEntity
     }
 
     public int getCycleTickRate() {
-        return currentMode == 0 ? 4 : 20;
+        // Get default tick rate
+        int currentTickRate = 20;
+
+        // Set tick rate to 4 if flashing
+        if ( currentMode == 0 ) {
+            currentTickRate = 4;
+        }
+        else if ( !bootSafe ) {
+            currentTickRate = 12;
+        }
+
+        return currentTickRate;
     }
 
     private boolean lastPowered = false;
@@ -516,69 +499,71 @@ public class TileEntityTrafficSignalController extends TileEntity
         // Verify and cleanup signal types
         verifyAndCleanupSignalTypes( world );
 
+        // Generate flash states (by default, used at power on)
+        TrafficSignalState flashState1 = new TrafficSignalState( 1, -1 );
+        TrafficSignalState flashState2 = new TrafficSignalState( 1, -1 );
+
+        // Loop through signal circuits
+        for ( int index = 0; index < signalCircuitList.size(); index++ ) {
+            TrafficSignalCircuit signalCircuit = signalCircuitList.get( index );
+
+            // Add ahead/protected ahead flash to correct state
+            if ( index == 0 ) {
+                // Primary circuit flashes yellow on state 1
+                flashState1.addYellowSignals( signalCircuit.getAheadSignals() );
+                flashState1.addYellowSignals( signalCircuit.getProtectedSignals() );
+                flashState2.addOffSignals( signalCircuit.getAheadSignals() );
+                flashState2.addOffSignals( signalCircuit.getProtectedSignals() );
+            }
+            if ( index % 2 == 0 ) {
+                // Secondary circuit (even #) flashes red on state 1
+                flashState1.addRedSignals( signalCircuit.getAheadSignals() );
+                flashState1.addRedSignals( signalCircuit.getProtectedSignals() );
+                flashState2.addOffSignals( signalCircuit.getAheadSignals() );
+                flashState2.addOffSignals( signalCircuit.getProtectedSignals() );
+            }
+            else {
+                // Secondary circuit (odd #) flashes red on state 2
+                flashState2.addRedSignals( signalCircuit.getAheadSignals() );
+                flashState2.addRedSignals( signalCircuit.getProtectedSignals() );
+                flashState1.addOffSignals( signalCircuit.getAheadSignals() );
+                flashState1.addOffSignals( signalCircuit.getProtectedSignals() );
+            }
+
+            // Add turn signals
+            if ( index % 2 == 0 ) {
+                // Even # flashes red on state 2
+                flashState2.addRedSignals( signalCircuit.getHybridLeftSignals() );
+                flashState2.addRedSignals( signalCircuit.getLeftSignals() );
+                flashState2.addRedSignals( signalCircuit.getRightSignals() );
+                flashState1.addOffSignals( signalCircuit.getHybridLeftSignals() );
+                flashState1.addOffSignals( signalCircuit.getLeftSignals() );
+                flashState1.addOffSignals( signalCircuit.getRightSignals() );
+            }
+            else {
+                // Odd # flashes red on state 1
+                flashState1.addRedSignals( signalCircuit.getHybridLeftSignals() );
+                flashState1.addRedSignals( signalCircuit.getLeftSignals() );
+                flashState1.addRedSignals( signalCircuit.getRightSignals() );
+                flashState2.addOffSignals( signalCircuit.getHybridLeftSignals() );
+                flashState2.addOffSignals( signalCircuit.getLeftSignals() );
+                flashState2.addOffSignals( signalCircuit.getRightSignals() );
+            }
+
+            // Add pedestrian signals
+            flashState1.addOffSignals( signalCircuit.getPedestrianSignals() );
+        }
+        signalFlashStateList.clear();
+        signalFlashStateList.add( flashState1 );
+        signalFlashStateList.add( flashState2 );
+
         // Create temporary list to store states as built
         ArrayList< TrafficSignalState > tempSignalStateList = new ArrayList<>();
 
         // Handle flash versus normal operation
         if ( currentMode == CURRENT_MODE_FLASH ) {
-            // Create two flash states
-            TrafficSignalState flashState1 = new TrafficSignalState( 1, -1 );
-            TrafficSignalState flashState2 = new TrafficSignalState( 1, -1 );
-
-            // Loop through signal circuits
-            for ( int index = 0; index < signalCircuitList.size(); index++ ) {
-                TrafficSignalCircuit signalCircuit = signalCircuitList.get( index );
-
-                // Add ahead/protected ahead flash to correct state
-                if ( index == 0 ) {
-                    // Primary circuit flashes yellow on state 1
-                    flashState1.addYellowSignals( signalCircuit.getAheadSignals() );
-                    flashState1.addYellowSignals( signalCircuit.getProtectedSignals() );
-                    flashState2.addOffSignals( signalCircuit.getAheadSignals() );
-                    flashState2.addOffSignals( signalCircuit.getProtectedSignals() );
-                }
-                if ( index % 2 == 0 ) {
-                    // Secondary circuit (even #) flashes red on state 1
-                    flashState1.addRedSignals( signalCircuit.getAheadSignals() );
-                    flashState1.addRedSignals( signalCircuit.getProtectedSignals() );
-                    flashState2.addOffSignals( signalCircuit.getAheadSignals() );
-                    flashState2.addOffSignals( signalCircuit.getProtectedSignals() );
-                }
-                else {
-                    // Secondary circuit (odd #) flashes red on state 2
-                    flashState2.addRedSignals( signalCircuit.getAheadSignals() );
-                    flashState2.addRedSignals( signalCircuit.getProtectedSignals() );
-                    flashState1.addOffSignals( signalCircuit.getAheadSignals() );
-                    flashState1.addOffSignals( signalCircuit.getProtectedSignals() );
-                }
-
-                // Add turn signals
-                if ( index % 2 == 0 ) {
-                    // Even # flashes red on state 2
-                    flashState2.addRedSignals( signalCircuit.getHybridLeftSignals() );
-                    flashState2.addRedSignals( signalCircuit.getLeftSignals() );
-                    flashState2.addRedSignals( signalCircuit.getRightSignals() );
-                    flashState1.addOffSignals( signalCircuit.getHybridLeftSignals() );
-                    flashState1.addOffSignals( signalCircuit.getLeftSignals() );
-                    flashState1.addOffSignals( signalCircuit.getRightSignals() );
-                }
-                else {
-                    // Odd # flashes red on state 1
-                    flashState1.addRedSignals( signalCircuit.getHybridLeftSignals() );
-                    flashState1.addRedSignals( signalCircuit.getLeftSignals() );
-                    flashState1.addRedSignals( signalCircuit.getRightSignals() );
-                    flashState2.addOffSignals( signalCircuit.getHybridLeftSignals() );
-                    flashState2.addOffSignals( signalCircuit.getLeftSignals() );
-                    flashState2.addOffSignals( signalCircuit.getRightSignals() );
-                }
-
-                // Add pedestrian signals
-                flashState1.addOffSignals( signalCircuit.getPedestrianSignals() );
-            }
-
             // Add completed flash states to new state list
-            tempSignalStateList.add( flashState1 );
-            tempSignalStateList.add( flashState2 );
+            tempSignalStateList.addAll( signalFlashStateList );
         }
         else if ( currentMode == CURRENT_MODE_STANDARD ) {
             // Create an all red state
@@ -992,6 +977,9 @@ public class TileEntityTrafficSignalController extends TileEntity
 
             // Check for power change
             if ( lastPowered != powered ) {
+                if ( !lastPowered ) {
+                    bootSafe = false;
+                }
                 phaseChanged = true;
                 lastPowered = powered;
             }
@@ -1055,9 +1043,48 @@ public class TileEntityTrafficSignalController extends TileEntity
                 phaseChanged = true;
             }
 
+            // Get signal state to apply (flash if not booted safely yet)
+            TrafficSignalState signalStateToApply = signalStateList.get( currentPhase );
+            if ( !bootSafe && currentMode == CURRENT_MODE_FLASH ) {
+                bootSafe = true;
+            }
+            else if ( !bootSafe ) {
+                // Get index of next signal state to apply
+                int nextPhase = currentPhase + 1;
+                if ( nextPhase >= signalStateList.size() ) {
+                    nextPhase = 0;
+                }
+
+                // Get next signal state to check
+                TrafficSignalState nextSignalStateToApply = signalStateList.get( nextPhase );
+                List< BlockPos > nextSignalStateToApplyCircuitAheadSignals = signalCircuitList.get( 0 )
+                                                                                              .getAheadSignals();
+                if ( currentMode == CURRENT_MODE_STANDARD ) {
+                    if ( nextSignalStateToApply.getActiveCircuit() == 0 &&
+                            nextSignalStateToApplyCircuitAheadSignals.size() > 0 &&
+                            nextSignalStateToApply.getGreenSignals()
+                                                  .contains( nextSignalStateToApplyCircuitAheadSignals.get( 0 ) ) ) {
+                        bootSafe = true;
+                    }
+                    else if ( nextSignalStateToApply.getActiveCircuit() == 0 &&
+                            nextSignalStateToApplyCircuitAheadSignals.size() == 0 ) {
+                        bootSafe = true;
+                    }
+                }
+                else {
+                    if ( nextSignalStateToApply.isAllRed() ) {
+                        bootSafe = true;
+                    }
+                }
+
+                signalStateToApply = signalFlashStateList.get( bootSafeFlash ? 1 : 0 );
+                phaseChanged = true;
+                bootSafeFlash = !bootSafeFlash;
+            }
+
             // Update signals if phase changed
             if ( phaseChanged ) {
-                updateSignals( signalStateList.get( currentPhase ), powered );
+                updateSignals( signalStateToApply, powered );
                 markDirty();
             }
         }
