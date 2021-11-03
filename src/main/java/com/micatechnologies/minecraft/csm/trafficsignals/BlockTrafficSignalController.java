@@ -283,7 +283,7 @@ public class BlockTrafficSignalController extends ElementsCitySuperMod.ModElemen
             }
 
             // Increment cycle index if not sneaking, else attempt old config import
-            if ( !p_onBlockActivated_4_.isSneaking() ) {
+            if ( p_onBlockActivated_4_.isSneaking() ) {
                 if ( tileEntity instanceof TileEntityTrafficSignalController ) {
                     TileEntityTrafficSignalController tileEntityTrafficSignalController
                             = ( TileEntityTrafficSignalController ) tileEntity;
@@ -291,17 +291,6 @@ public class BlockTrafficSignalController extends ElementsCitySuperMod.ModElemen
                     if ( !p_onBlockActivated_1_.isRemote && valid ) {
                         p_onBlockActivated_4_.sendMessage(
                                 new TextComponentString( "Controller has switched to " + modeName + " mode!" ) );
-                    }
-                }
-            }
-            else {
-                if ( tileEntity instanceof TileEntityTrafficSignalController ) {
-                    TileEntityTrafficSignalController tileEntityTrafficSignalController
-                            = ( TileEntityTrafficSignalController ) tileEntity;
-                    tileEntityTrafficSignalController.importPreviousConfig( p_onBlockActivated_1_ );
-                    if ( !p_onBlockActivated_1_.isRemote ) {
-                        p_onBlockActivated_4_.sendMessage(
-                                new TextComponentString( "Forcing signal state regeneration!" ) );
                     }
                 }
             }
