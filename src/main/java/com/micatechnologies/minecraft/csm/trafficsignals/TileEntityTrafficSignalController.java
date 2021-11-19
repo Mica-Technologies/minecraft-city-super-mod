@@ -513,43 +513,43 @@ public class TileEntityTrafficSignalController extends TileEntity
             if ( index == 0 ) {
                 // Primary circuit flashes yellow on state 1
                 flashState1.addYellowSignals( signalCircuit.getAheadSignals() );
-                flashState1.addYellowSignals( signalCircuit.getProtectedSignals() );
+                flashState1.addYellowSignals( signalCircuit.getRightSignals() );
                 flashState2.addOffSignals( signalCircuit.getAheadSignals() );
-                flashState2.addOffSignals( signalCircuit.getProtectedSignals() );
+                flashState2.addOffSignals( signalCircuit.getRightSignals() );
             }
             if ( index % 2 == 0 ) {
                 // Secondary circuit (even #) flashes red on state 1
                 flashState1.addRedSignals( signalCircuit.getAheadSignals() );
-                flashState1.addRedSignals( signalCircuit.getProtectedSignals() );
+                flashState1.addRedSignals( signalCircuit.getRightSignals() );
                 flashState2.addOffSignals( signalCircuit.getAheadSignals() );
-                flashState2.addOffSignals( signalCircuit.getProtectedSignals() );
+                flashState2.addOffSignals( signalCircuit.getRightSignals() );
             }
             else {
                 // Secondary circuit (odd #) flashes red on state 2
                 flashState2.addRedSignals( signalCircuit.getAheadSignals() );
-                flashState2.addRedSignals( signalCircuit.getProtectedSignals() );
+                flashState2.addRedSignals( signalCircuit.getRightSignals() );
                 flashState1.addOffSignals( signalCircuit.getAheadSignals() );
-                flashState1.addOffSignals( signalCircuit.getProtectedSignals() );
+                flashState1.addOffSignals( signalCircuit.getRightSignals() );
             }
 
-            // Add turn signals
+            // Add turn/protected signals
             if ( index % 2 == 0 ) {
                 // Even # flashes red on state 2
                 flashState2.addRedSignals( signalCircuit.getHybridLeftSignals() );
                 flashState2.addRedSignals( signalCircuit.getLeftSignals() );
-                flashState2.addRedSignals( signalCircuit.getRightSignals() );
+                flashState2.addRedSignals( signalCircuit.getProtectedSignals() );
                 flashState1.addOffSignals( signalCircuit.getHybridLeftSignals() );
                 flashState1.addOffSignals( signalCircuit.getLeftSignals() );
-                flashState1.addOffSignals( signalCircuit.getRightSignals() );
+                flashState1.addOffSignals( signalCircuit.getProtectedSignals() );
             }
             else {
                 // Odd # flashes red on state 1
                 flashState1.addRedSignals( signalCircuit.getHybridLeftSignals() );
                 flashState1.addRedSignals( signalCircuit.getLeftSignals() );
-                flashState1.addRedSignals( signalCircuit.getRightSignals() );
+                flashState1.addRedSignals( signalCircuit.getProtectedSignals() );
                 flashState2.addOffSignals( signalCircuit.getHybridLeftSignals() );
                 flashState2.addOffSignals( signalCircuit.getLeftSignals() );
-                flashState2.addOffSignals( signalCircuit.getRightSignals() );
+                flashState2.addOffSignals( signalCircuit.getProtectedSignals() );
             }
 
             // Add pedestrian signals
@@ -580,6 +580,18 @@ public class TileEntityTrafficSignalController extends TileEntity
             }
 
             // Add all red state as first
+            tempSignalStateList.add( allRedSignalState );
+
+            // Build crosswalk state
+            TrafficSignalState allCircuitCrosswalkState = new TrafficSignalState( 12, -1 );
+            for ( int pedIndex = 0; pedIndex < signalCircuitList.size(); pedIndex++ ) {
+
+                    allCircuitCrosswalkState.addGreenSignals(
+                            signalCircuitList.get( pedIndex ).getPedestrianSignals() );
+
+            }
+            allCircuitCrosswalkState.combine( allRedSignalState );
+            tempSignalStateList.add( allCircuitCrosswalkState );
             tempSignalStateList.add( allRedSignalState );
 
             // Loop through signal circuits
@@ -1030,6 +1042,7 @@ public class TileEntityTrafficSignalController extends TileEntity
             currentMode = CURRENT_MODE_FLASH;
         }
         markDirty();
+        bootSafe = false;
         updateSignalStates( world );
 
         String modeName = "[unknown, error]";
@@ -1059,9 +1072,6 @@ public class TileEntityTrafficSignalController extends TileEntity
 
             // Check for power change
             if ( lastPowered != powered ) {
-                if ( !lastPowered ) {
-                    bootSafe = false;
-                }
                 phaseChanged = true;
                 lastPowered = powered;
             }
