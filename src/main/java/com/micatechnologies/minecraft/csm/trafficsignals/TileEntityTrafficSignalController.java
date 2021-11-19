@@ -130,6 +130,7 @@ public class TileEntityTrafficSignalController extends TileEntity
     private static final int     CURRENT_MODE_FLASH         = 0;
     private static final int     CURRENT_MODE_STANDARD      = 1;
     private static final int     CURRENT_MODE_METER         = 2;
+    private static final int     CURRENT_MODE_REQUESTABLE   = 3;
     private              boolean bootSafe;
     private              boolean bootSafeFlash;
     private              int     currentPhase;
@@ -563,7 +564,7 @@ public class TileEntityTrafficSignalController extends TileEntity
         ArrayList< TrafficSignalState > tempSignalStateList = new ArrayList<>();
 
         // Handle flash versus normal operation
-        if ( currentMode == CURRENT_MODE_FLASH ) {
+        if ( currentMode == CURRENT_MODE_FLASH || currentMode == CURRENT_MODE_REQUESTABLE ) {
             // Add completed flash states to new state list
             tempSignalStateList.addAll( signalFlashStateList );
         }
@@ -586,8 +587,7 @@ public class TileEntityTrafficSignalController extends TileEntity
             TrafficSignalState allCircuitCrosswalkState = new TrafficSignalState( 12, -1 );
             for ( int pedIndex = 0; pedIndex < signalCircuitList.size(); pedIndex++ ) {
 
-                    allCircuitCrosswalkState.addGreenSignals(
-                            signalCircuitList.get( pedIndex ).getPedestrianSignals() );
+                allCircuitCrosswalkState.addGreenSignals( signalCircuitList.get( pedIndex ).getPedestrianSignals() );
 
             }
             allCircuitCrosswalkState.combine( allRedSignalState );
@@ -836,7 +836,7 @@ public class TileEntityTrafficSignalController extends TileEntity
                                     if ( blockState.getBlock() instanceof AbstractBlockControllableSignal ) {
                                         EnumFacing signalFacingDirection = blockState.getValue(
                                                 BlockHorizontal.FACING );
-                                        if (signalFacingDirection == encounteredFacingDirection) {
+                                        if ( signalFacingDirection == encounteredFacingDirection ) {
                                             addOverlapSignals.add( signalPos );
                                         }
                                     }
@@ -847,7 +847,7 @@ public class TileEntityTrafficSignalController extends TileEntity
                                     if ( blockState.getBlock() instanceof AbstractBlockControllableSignal ) {
                                         EnumFacing signalFacingDirection = blockState.getValue(
                                                 BlockHorizontal.FACING );
-                                        if (signalFacingDirection == encounteredFacingDirection) {
+                                        if ( signalFacingDirection == encounteredFacingDirection ) {
                                             addOverlapSignals.add( signalPos );
                                         }
                                     }
@@ -1038,7 +1038,7 @@ public class TileEntityTrafficSignalController extends TileEntity
 
     public String switchMode( World world ) {
         currentMode++;
-        if ( currentMode > CURRENT_MODE_METER ) {
+        if ( currentMode > CURRENT_MODE_REQUESTABLE ) {
             currentMode = CURRENT_MODE_FLASH;
         }
         markDirty();
@@ -1054,6 +1054,8 @@ public class TileEntityTrafficSignalController extends TileEntity
         }
         else if ( currentMode == CURRENT_MODE_METER ) {
             modeName = "ramp meter";
+        }else if ( currentMode == CURRENT_MODE_REQUESTABLE ) {
+            modeName = "requestable/emergency access";
         }
         return modeName;
     }
