@@ -1,0 +1,8 @@
+{
+  "parent": "csm:custom/trafficlightsingle_leftangle",
+  "textures": {
+    "all": "csm:blocks/solidgreenoff",
+    "particle": "csm:blocks/solidgreenoff",
+    "0": "csm:blocks/solidgreenoff"
+  }
+}

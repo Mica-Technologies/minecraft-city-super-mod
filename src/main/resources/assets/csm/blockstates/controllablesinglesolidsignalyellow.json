@@ -1,63 +1,63 @@
 {
   "variants": {
     "color=0,facing=north": {
-      "model": "csm:controllablesinglesolidsignal_yellow"
+      "model": "csm:controllablesinglesolidsignalyellow"
     },
     "color=0,facing=east": {
-      "model": "csm:controllablesinglesolidsignal_yellow",
+      "model": "csm:controllablesinglesolidsignalyellow",
       "y": 90
     },
     "color=0,facing=south": {
-      "model": "csm:controllablesinglesolidsignal_yellow",
+      "model": "csm:controllablesinglesolidsignalyellow",
       "y": 180
     },
     "color=0,facing=west": {
-      "model": "csm:controllablesinglesolidsignal_yellow",
+      "model": "csm:controllablesinglesolidsignalyellow",
       "y": 270
     },
     "color=1,facing=north": {
-      "model": "csm:controllablesinglesolidsignal_yellow"
+      "model": "csm:controllablesinglesolidsignalyellow"
     },
     "color=1,facing=east": {
-      "model": "csm:controllablesinglesolidsignal_yellow",
+      "model": "csm:controllablesinglesolidsignalyellow",
       "y": 90
     },
     "color=1,facing=south": {
-      "model": "csm:controllablesinglesolidsignal_yellow",
+      "model": "csm:controllablesinglesolidsignalyellow",
       "y": 180
     },
     "color=1,facing=west": {
-      "model": "csm:controllablesinglesolidsignal_yellow",
+      "model": "csm:controllablesinglesolidsignalyellow",
       "y": 270
     },
     "color=2,facing=north": {
-      "model": "csm:controllablesinglesolidsignal_yellowoff"
+      "model": "csm:controllablesinglesolidsignalyellowoff"
     },
     "color=2,facing=east": {
-      "model": "csm:controllablesinglesolidsignal_yellowoff",
+      "model": "csm:controllablesinglesolidsignalyellowoff",
       "y": 90
     },
     "color=2,facing=south": {
-      "model": "csm:controllablesinglesolidsignal_yellowoff",
+      "model": "csm:controllablesinglesolidsignalyellowoff",
       "y": 180
     },
     "color=2,facing=west": {
-      "model": "csm:controllablesinglesolidsignal_yellowoff",
+      "model": "csm:controllablesinglesolidsignalyellowoff",
       "y": 270
     },
     "color=3,facing=north": {
-      "model": "csm:controllablesinglesolidsignal_yellowoff"
+      "model": "csm:controllablesinglesolidsignalyellowoff"
     },
     "color=3,facing=east": {
-      "model": "csm:controllablesinglesolidsignal_yellowoff",
+      "model": "csm:controllablesinglesolidsignalyellowoff",
       "y": 90
     },
     "color=3,facing=south": {
-      "model": "csm:controllablesinglesolidsignal_yellowoff",
+      "model": "csm:controllablesinglesolidsignalyellowoff",
       "y": 180
     },
     "color=3,facing=west": {
-      "model": "csm:controllablesinglesolidsignal_yellowoff",
+      "model": "csm:controllablesinglesolidsignalyellowoff",
       "y": 270
     }
   }
