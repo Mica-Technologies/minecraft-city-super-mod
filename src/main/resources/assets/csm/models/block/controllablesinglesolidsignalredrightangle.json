@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/trafficlightsingle",
+  "parent": "csm:custom/trafficlightsingle_rightangle",
   "textures": {
     "all": "csm:blocks/solidred",
     "particle": "csm:blocks/solidred",

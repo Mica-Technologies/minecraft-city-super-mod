@@ -1,63 +1,63 @@
 {
   "variants": {
     "color=0,facing=north": {
-      "model": "csm:controllablesinglesolidsignal_red"
+      "model": "csm:controllablesinglesolidsignalred"
     },
     "color=0,facing=east": {
-      "model": "csm:controllablesinglesolidsignal_red",
+      "model": "csm:controllablesinglesolidsignalred",
       "y": 90
     },
     "color=0,facing=south": {
-      "model": "csm:controllablesinglesolidsignal_red",
+      "model": "csm:controllablesinglesolidsignalred",
       "y": 180
     },
     "color=0,facing=west": {
-      "model": "csm:controllablesinglesolidsignal_red",
+      "model": "csm:controllablesinglesolidsignalred",
       "y": 270
     },
     "color=1,facing=north": {
-      "model": "csm:controllablesinglesolidsignal_red"
+      "model": "csm:controllablesinglesolidsignalred"
     },
     "color=1,facing=east": {
-      "model": "csm:controllablesinglesolidsignal_red",
+      "model": "csm:controllablesinglesolidsignalred",
       "y": 90
     },
     "color=1,facing=south": {
-      "model": "csm:controllablesinglesolidsignal_red",
+      "model": "csm:controllablesinglesolidsignalred",
       "y": 180
     },
     "color=1,facing=west": {
-      "model": "csm:controllablesinglesolidsignal_red",
+      "model": "csm:controllablesinglesolidsignalred",
       "y": 270
     },
     "color=2,facing=north": {
-      "model": "csm:controllablesinglesolidsignal_redoff"
+      "model": "csm:controllablesinglesolidsignalredoff"
     },
     "color=2,facing=east": {
-      "model": "csm:controllablesinglesolidsignal_redoff",
+      "model": "csm:controllablesinglesolidsignalredoff",
       "y": 90
     },
     "color=2,facing=south": {
-      "model": "csm:controllablesinglesolidsignal_redoff",
+      "model": "csm:controllablesinglesolidsignalredoff",
       "y": 180
     },
     "color=2,facing=west": {
-      "model": "csm:controllablesinglesolidsignal_redoff",
+      "model": "csm:controllablesinglesolidsignalredoff",
       "y": 270
     },
     "color=3,facing=north": {
-      "model": "csm:controllablesinglesolidsignal_redoff"
+      "model": "csm:controllablesinglesolidsignalredoff"
     },
     "color=3,facing=east": {
-      "model": "csm:controllablesinglesolidsignal_redoff",
+      "model": "csm:controllablesinglesolidsignalredoff",
       "y": 90
     },
     "color=3,facing=south": {
-      "model": "csm:controllablesinglesolidsignal_redoff",
+      "model": "csm:controllablesinglesolidsignalredoff",
       "y": 180
     },
     "color=3,facing=west": {
-      "model": "csm:controllablesinglesolidsignal_redoff",
+      "model": "csm:controllablesinglesolidsignalredoff",
       "y": 270
     }
   }

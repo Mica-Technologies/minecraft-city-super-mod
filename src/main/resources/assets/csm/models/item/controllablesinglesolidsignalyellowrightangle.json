@@ -1,0 +1,8 @@
+{
+  "parent": "csm:custom/trafficlightsingle_rightangle",
+  "textures": {
+    "all": "csm:blocks/solidyellow",
+    "particle": "csm:blocks/solidyellow",
+    "0": "csm:blocks/solidyellow"
+  }
+}
