@@ -16,6 +16,8 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import javax.annotation.Nullable;
+
 public abstract class AbstractBlockFireAlarmSounder extends Block
 {
     public static final PropertyDirection FACING = BlockDirectional.FACING;
@@ -78,6 +80,15 @@ public abstract class AbstractBlockFireAlarmSounder extends Block
     @Override
     public BlockRenderLayer getBlockLayer() {
         return BlockRenderLayer.CUTOUT_MIPPED;
+    }
+
+    @Override
+    public boolean canConnectRedstone( IBlockState p_canConnectRedstone_1_,
+                                       IBlockAccess p_canConnectRedstone_2_,
+                                       BlockPos p_canConnectRedstone_3_,
+                                       @Nullable EnumFacing p_canConnectRedstone_4_ )
+    {
+        return true;
     }
 
     @Override

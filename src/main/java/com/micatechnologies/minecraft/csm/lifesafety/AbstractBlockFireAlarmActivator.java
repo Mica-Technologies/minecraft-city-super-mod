@@ -20,6 +20,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import javax.annotation.Nullable;
 import java.util.Random;
 
 public abstract class AbstractBlockFireAlarmActivator extends Block implements ITileEntityProvider
@@ -44,6 +45,15 @@ public abstract class AbstractBlockFireAlarmActivator extends Block implements I
     @Override
     public IBlockState getStateFromMeta( int meta ) {
         return this.getDefaultState().withProperty( FACING, EnumFacing.getFront( meta ) );
+    }
+
+    @Override
+    public boolean canConnectRedstone( IBlockState p_canConnectRedstone_1_,
+                                       IBlockAccess p_canConnectRedstone_2_,
+                                       BlockPos p_canConnectRedstone_3_,
+                                       @Nullable EnumFacing p_canConnectRedstone_4_ )
+    {
+        return true;
     }
 
     @Override
