@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:tldoghouseborderyellowblack"
+    },
+    "facing=north": {
+      "model": "csm:tldoghouseborderyellowblack"
+    },
+    "facing=east": {
+      "model": "csm:tldoghouseborderyellowblack",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:tldoghouseborderyellowblack",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:tldoghouseborderyellowblack",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:tldoghouseborderyellowblack",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:tldoghouseborderyellowblack",
+      "x": 90
+    }
+  }
+}
