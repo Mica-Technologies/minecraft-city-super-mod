@@ -1,0 +1,11 @@
+{
+  "parent": "csm:custom/trafficpolecamera_bell",
+  "textures": {
+    "all": "csm:blocks/metal_white",
+    "particle": "csm:blocks/metal_white",
+    "0": "csm:blocks/metal_silver",
+    "1": "csm:blocks/metal_white",
+    "2": "csm:blocks/solidoff",
+    "missing": "csm:blocks/metal_silver"
+  }
+}
