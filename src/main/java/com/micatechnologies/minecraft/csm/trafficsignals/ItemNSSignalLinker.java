@@ -2,10 +2,11 @@ package com.micatechnologies.minecraft.csm.trafficsignals;
 
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockTrafficSignalSensor;
-import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -124,6 +125,36 @@ public class ItemNSSignalLinker extends ElementsCitySuperMod.ModElement
                         player.sendMessage( new TextComponentString( "Sensor connected to circuit " +
                                                                              circuitLinkIndexClient +
                                                                              " of signal controller at " +
+                                                                             "(" +
+                                                                             signalControllerPos.getX() +
+                                                                             "," +
+                                                                             signalControllerPos.getY() +
+                                                                             "," +
+                                                                             signalControllerPos.getZ() +
+                                                                             ")" ) );
+                    }
+                }
+                else {
+                    if ( !worldIn.isRemote ) {
+                        player.sendMessage( new TextComponentString(
+                                "Unable to link sensor! Lost connection to previously connected controller." ) );
+                    }
+                }
+
+                return EnumActionResult.SUCCESS;
+            }
+            else if ( signalControllerPos != null &&
+                    state.getBlock() instanceof AbstractBlockTrafficSignalSensor &&
+                    player.isSneaking() ) {
+
+                TileEntity tileEntity = worldIn.getTileEntity( signalControllerPos );
+                if ( tileEntity instanceof TileEntityTrafficSignalController ) {
+                    TileEntityTrafficSignalController tileEntityTrafficSignalController
+                            = ( TileEntityTrafficSignalController ) tileEntity;
+                    tileEntityTrafficSignalController.unlinkDevice( pos, worldIn );
+
+                    if ( !worldIn.isRemote ) {
+                        player.sendMessage( new TextComponentString( "Sensor unlinked from signal controller at " +
                                                                              "(" +
                                                                              signalControllerPos.getX() +
                                                                              "," +
@@ -374,6 +405,25 @@ public class ItemNSSignalLinker extends ElementsCitySuperMod.ModElement
         @Override
         public int getItemEnchantability() {
             return 0;
+        }
+
+        @Override
+        public void onUpdate( ItemStack p_77663_1_,
+                              World p_77663_2_,
+                              Entity p_77663_3_,
+                              int p_77663_4_,
+                              boolean p_77663_5_ )
+        {
+            boolean isPlayerValid = p_77663_3_ instanceof EntityPlayer;
+            boolean isPlayerHolding = ( ( EntityPlayer ) p_77663_3_ ).getHeldItemMainhand().getItem() ==
+                    p_77663_1_.getItem();
+            if ( p_77663_3_ instanceof EntityPlayer &&
+                    ( ( EntityPlayer ) p_77663_3_ ).getHeldItemMainhand().getItem() != p_77663_1_.getItem() ) {
+                signalControllerPos = null;
+                circuitLinkIndexClient = 1;
+                circuitLinkIndexServer = 1;
+            }
+            super.onUpdate( p_77663_1_, p_77663_2_, p_77663_3_, p_77663_4_, p_77663_5_ );
         }
     }
 }

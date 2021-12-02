@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockTrafficSignalRequester;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
@@ -49,7 +50,7 @@ public class BlockControllableCrosswalkButtonFemale extends ElementsCitySuperMod
                                                                                "inventory" ) );
     }
 
-    public static class BlockCustom extends AbstractBlockControllableCrosswalkAccessory
+    public static class BlockCustom extends AbstractBlockTrafficSignalRequester
     {
         final int lenOfWalkSound           = 140;
         final int lenOfDontWalkSound       = 30;
@@ -107,25 +108,18 @@ public class BlockControllableCrosswalkButtonFemale extends ElementsCitySuperMod
                                          float p_onBlockActivated_8_,
                                          float p_onBlockActivated_9_ )
         {
-            if ( p_onBlockActivated_4_.inventory.getCurrentItem() != null &&
-                    p_onBlockActivated_4_.inventory.getCurrentItem()
-                                                   .getItem() instanceof ItemNSSignalLinker.ItemCustom ) {
-                return super.onBlockActivated( p_onBlockActivated_1_, p_onBlockActivated_2_, p_onBlockActivated_3_,
-                                               p_onBlockActivated_4_, p_onBlockActivated_5_, p_onBlockActivated_6_,
-                                               p_onBlockActivated_7_, p_onBlockActivated_8_, p_onBlockActivated_9_ );
-            }
-
-            if (p_onBlockActivated_3_.getValue( COLOR ) == 0) {
+            if ( p_onBlockActivated_3_.getValue( COLOR ) == 0 ) {
                 p_onBlockActivated_1_.playSound( null, p_onBlockActivated_2_.getX(), p_onBlockActivated_2_.getY(),
-                                                 p_onBlockActivated_2_.getZ(), net.minecraft.util.SoundEvent.REGISTRY.getObject(
-                                new ResourceLocation( "csm" + ":female_wait" ) ), SoundCategory.NEUTRAL, ( float ) 1,
-                                                 ( float ) 1 );
+                                                 p_onBlockActivated_2_.getZ(),
+                                                 net.minecraft.util.SoundEvent.REGISTRY.getObject(
+                                                         new ResourceLocation( "csm" + ":female_wait" ) ),
+                                                 SoundCategory.NEUTRAL, ( float ) 2, ( float ) 1 );
             }
 
-            return true;
+            return super.onBlockActivated( p_onBlockActivated_1_, p_onBlockActivated_2_, p_onBlockActivated_3_,
+                                           p_onBlockActivated_4_, p_onBlockActivated_5_, p_onBlockActivated_6_,
+                                           p_onBlockActivated_7_, p_onBlockActivated_8_, p_onBlockActivated_9_ );
         }
-
-
 
         @Override
         public void updateTick( World p_updateTick_1_,
@@ -136,20 +130,19 @@ public class BlockControllableCrosswalkButtonFemale extends ElementsCitySuperMod
             int color = p_updateTick_3_.getValue( COLOR );
             if ( color == 0 ) {
                 // Play beep
-                p_updateTick_1_.playSound( null, p_updateTick_2_.getX(), p_updateTick_2_.getY(),
-                                           p_updateTick_2_.getZ(),
-                                           net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation( "csm:female_beep")),
-                                           SoundCategory.NEUTRAL, (float) 1, (float) 1);
+                p_updateTick_1_.playSound( null, p_updateTick_2_.getX(), p_updateTick_2_.getY(), p_updateTick_2_.getZ(),
+                                           net.minecraft.util.SoundEvent.REGISTRY.getObject(
+                                                   new ResourceLocation( "csm:female_beep" ) ), SoundCategory.NEUTRAL,
+                                           ( float ) 1, ( float ) 1 );
 
                 p_updateTick_1_.scheduleUpdate( p_updateTick_2_, this, lenOfDontWalkSound );
             }
             else if ( color == 1 ) {
                 // Play walk voice
-                p_updateTick_1_.playSound( null, p_updateTick_2_.getX(), p_updateTick_2_.getY(),
-                                           p_updateTick_2_.getZ(),
-                                           net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation(
-                                                   "csm:male_crosswalk_on")),
-                                           SoundCategory.NEUTRAL, (float) 1, (float) 1);
+                p_updateTick_1_.playSound( null, p_updateTick_2_.getX(), p_updateTick_2_.getY(), p_updateTick_2_.getZ(),
+                                           net.minecraft.util.SoundEvent.REGISTRY.getObject(
+                                                   new ResourceLocation( "csm:male_crosswalk_on" ) ),
+                                           SoundCategory.NEUTRAL, ( float ) 1, ( float ) 1 );
 
                 p_updateTick_1_.scheduleUpdate( p_updateTick_2_, this, lenOfWalkSound );
             }
