@@ -2,7 +2,6 @@ package com.micatechnologies.minecraft.csm.trafficsignals;
 
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockTrafficSignalSensor;
-import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.util.ITooltipFlag;
@@ -106,15 +105,21 @@ public class ItemEWSignalLinker extends ElementsCitySuperMod.ModElement
                 return EnumActionResult.SUCCESS;
             }
             else if ( !worldIn.isRemote && sensorPosClient != null ) {
-                player.sendMessage( new TextComponentString(
-                        "Search box corner 2 set to: [" + pos.getX() + ", " + pos.getY() + ", " + pos.getZ() + "]." ) );
+                BlockPos posWith4 = pos.add( 0, 4, 0 );
+                player.sendMessage( new TextComponentString( "Search box corner 2 set to: [" +
+                                                                     posWith4.getX() +
+                                                                     ", " +
+                                                                     posWith4.getY() +
+                                                                     ", " +
+                                                                     posWith4.getZ() +
+                                                                     "]." ) );
 
                 try {
                     TileEntity tileEntity = worldIn.getTileEntity( sensorPosClient );
                     if ( tileEntity instanceof TileEntityTrafficSignalSensor ) {
                         TileEntityTrafficSignalSensor tileEntityTrafficSignalSensor
                                 = ( TileEntityTrafficSignalSensor ) tileEntity;
-                        boolean overwrote = tileEntityTrafficSignalSensor.setScanCorners( corner1PosClient, pos );
+                        boolean overwrote = tileEntityTrafficSignalSensor.setScanCorners( corner1PosClient, posWith4 );
                         if ( overwrote ) {
                             player.sendMessage( new TextComponentString( "The selected search box corners have been " +
                                                                                  "applied to the desired sensor " +

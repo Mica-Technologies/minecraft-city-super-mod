@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockTrafficSignalRequester;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
@@ -48,7 +49,7 @@ public class BlockControllableCrosswalkButtonAutomated extends ElementsCitySuper
                 "csm:controllablecrosswalkbuttonautomated", "inventory" ) );
     }
 
-    public static class BlockCustom extends AbstractBlockControllableCrosswalkAccessory
+    public static class BlockCustom extends AbstractBlockTrafficSignalRequester
     {
         final int lenOfWalkSound           = 140;
         final int lenOfDontWalkSound       = 20;
@@ -106,14 +107,6 @@ public class BlockControllableCrosswalkButtonAutomated extends ElementsCitySuper
                                          float p_onBlockActivated_8_,
                                          float p_onBlockActivated_9_ )
         {
-            if ( p_onBlockActivated_4_.inventory.getCurrentItem() != null &&
-                    p_onBlockActivated_4_.inventory.getCurrentItem()
-                                                   .getItem() instanceof ItemNSSignalLinker.ItemCustom ) {
-                return super.onBlockActivated( p_onBlockActivated_1_, p_onBlockActivated_2_, p_onBlockActivated_3_,
-                                               p_onBlockActivated_4_, p_onBlockActivated_5_, p_onBlockActivated_6_,
-                                               p_onBlockActivated_7_, p_onBlockActivated_8_, p_onBlockActivated_9_ );
-            }
-
             if ( p_onBlockActivated_3_.getValue( COLOR ) == 0 ) {
                 p_onBlockActivated_1_.playSound( null, p_onBlockActivated_2_.getX(), p_onBlockActivated_2_.getY(),
                                                  p_onBlockActivated_2_.getZ(),
@@ -122,7 +115,9 @@ public class BlockControllableCrosswalkButtonAutomated extends ElementsCitySuper
                                                  SoundCategory.NEUTRAL, ( float ) 1, ( float ) 1 );
             }
 
-            return true;
+            return super.onBlockActivated( p_onBlockActivated_1_, p_onBlockActivated_2_, p_onBlockActivated_3_,
+                                           p_onBlockActivated_4_, p_onBlockActivated_5_, p_onBlockActivated_6_,
+                                           p_onBlockActivated_7_, p_onBlockActivated_8_, p_onBlockActivated_9_ );
         }
 
         @Override
@@ -134,10 +129,10 @@ public class BlockControllableCrosswalkButtonAutomated extends ElementsCitySuper
             int color = p_updateTick_3_.getValue( COLOR );
             if ( color == 0 ) {
                 // Play beep
-                p_updateTick_1_.playSound( null, p_updateTick_2_.getX(), p_updateTick_2_.getY(),
-                                           p_updateTick_2_.getZ(),
-                                           net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation( "csm:male_beep")),
-                                           SoundCategory.NEUTRAL, (float) 1, (float) 1);
+                p_updateTick_1_.playSound( null, p_updateTick_2_.getX(), p_updateTick_2_.getY(), p_updateTick_2_.getZ(),
+                                           net.minecraft.util.SoundEvent.REGISTRY.getObject(
+                                                   new ResourceLocation( "csm:male_beep" ) ), SoundCategory.NEUTRAL,
+                                           ( float ) 1, ( float ) 1 );
 
                 p_updateTick_1_.scheduleUpdate( p_updateTick_2_, this, lenOfDontWalkSound );
             }
