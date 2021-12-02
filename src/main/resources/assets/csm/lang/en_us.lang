@@ -359,6 +359,7 @@ tile.uledf.name=Sylvania Ultra LED (Full)
 tile.trafficlightsensor.name=Traffic Light Camera/Sensor
 tile.trafficlightsensorshort.name=Traffic Light Camera/Sensor (Short)
 tile.trafficlightsensorbox.name=Traffic Light Camera/Sensor (Box)
+tile.trafficlightsensorbell.name=Traffic Light Camera/Sensor (Bell)
 tile.atls1.name=Atlas Speaker 1
 tile.signweightlimit10ton.name=Weight Limit 10 Tons Sign
 tile.signarv.name=ARV Sign
