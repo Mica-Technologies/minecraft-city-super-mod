@@ -798,84 +798,56 @@ public class TileEntityTrafficSignalController extends TileEntity
                     }
                     // Handle if circuit does not have protected signals
                     else {
-                        if ( signalCircuit.getHybridLeftSignals().size() > 0 ||
-                                signalCircuit.getLeftSignals().size() > 0 ) {
-                            // Check if left signals all facing same direction
-                            boolean areLeftsAllFacingSame = true;
-                            EnumFacing encounteredFacingDirection = null;
-                            for ( BlockPos signalPos : signalCircuit.getHybridLeftSignals() ) {
+                        // Check if left signals all facing same direction
+                        boolean areLeftsAllFacingSame = true;
+                        EnumFacing encounteredFacingDirection = null;
+                        for ( BlockPos signalPos : signalCircuit.getHybridLeftSignals() ) {
+                            IBlockState blockState = world.getBlockState( signalPos );
+                            if ( blockState.getBlock() instanceof AbstractBlockControllableSignal ) {
+                                EnumFacing currentFacingDirection = blockState.getValue( BlockHorizontal.FACING );
+                                if ( encounteredFacingDirection == null ) {
+                                    encounteredFacingDirection = currentFacingDirection;
+                                }
+                                else if ( encounteredFacingDirection != currentFacingDirection ) {
+                                    areLeftsAllFacingSame = false;
+                                }
+                            }
+                        }
+                        for ( BlockPos signalPos : signalCircuit.getLeftSignals() ) {
+                            IBlockState blockState = world.getBlockState( signalPos );
+                            if ( blockState.getBlock() instanceof AbstractBlockControllableSignal ) {
+                                EnumFacing currentFacingDirection = blockState.getValue( BlockHorizontal.FACING );
+                                if ( encounteredFacingDirection == null ) {
+                                    encounteredFacingDirection = currentFacingDirection;
+                                }
+                                else if ( encounteredFacingDirection != currentFacingDirection ) {
+                                    areLeftsAllFacingSame = false;
+                                }
+                            }
+                        }
+
+                        // If lefts are facing same direction, get ahead/right for same direction to overlap
+                        List< BlockPos > leftOverlapSignals = new ArrayList<>();
+                        if ( areLeftsAllFacingSame ) {
+                            for ( BlockPos signalPos : signalCircuit.getAheadSignals() ) {
                                 IBlockState blockState = world.getBlockState( signalPos );
                                 if ( blockState.getBlock() instanceof AbstractBlockControllableSignal ) {
-                                    EnumFacing currentFacingDirection = blockState.getValue( BlockHorizontal.FACING );
-                                    if ( encounteredFacingDirection == null ) {
-                                        encounteredFacingDirection = currentFacingDirection;
-                                    }
-                                    else if ( encounteredFacingDirection != currentFacingDirection ) {
-                                        areLeftsAllFacingSame = false;
+                                    EnumFacing signalFacingDirection = blockState.getValue( BlockHorizontal.FACING );
+                                    if ( signalFacingDirection == encounteredFacingDirection ) {
+                                        leftOverlapSignals.add( signalPos );
                                     }
                                 }
                             }
-                            for ( BlockPos signalPos : signalCircuit.getLeftSignals() ) {
+
+                            for ( BlockPos signalPos : signalCircuit.getRightSignals() ) {
                                 IBlockState blockState = world.getBlockState( signalPos );
                                 if ( blockState.getBlock() instanceof AbstractBlockControllableSignal ) {
-                                    EnumFacing currentFacingDirection = blockState.getValue( BlockHorizontal.FACING );
-                                    if ( encounteredFacingDirection == null ) {
-                                        encounteredFacingDirection = currentFacingDirection;
-                                    }
-                                    else if ( encounteredFacingDirection != currentFacingDirection ) {
-                                        areLeftsAllFacingSame = false;
+                                    EnumFacing signalFacingDirection = blockState.getValue( BlockHorizontal.FACING );
+                                    if ( signalFacingDirection == encounteredFacingDirection ) {
+                                        leftOverlapSignals.add( signalPos );
                                     }
                                 }
                             }
-
-                            // If lefts are facing same direction, get ahead/right for same direction to overlap
-                            List< BlockPos > addOverlapSignals = new ArrayList<>();
-                            if ( areLeftsAllFacingSame ) {
-                                for ( BlockPos signalPos : signalCircuit.getAheadSignals() ) {
-                                    IBlockState blockState = world.getBlockState( signalPos );
-                                    if ( blockState.getBlock() instanceof AbstractBlockControllableSignal ) {
-                                        EnumFacing signalFacingDirection = blockState.getValue(
-                                                BlockHorizontal.FACING );
-                                        if ( signalFacingDirection == encounteredFacingDirection ) {
-                                            addOverlapSignals.add( signalPos );
-                                        }
-                                    }
-                                }
-
-                                for ( BlockPos signalPos : signalCircuit.getRightSignals() ) {
-                                    IBlockState blockState = world.getBlockState( signalPos );
-                                    if ( blockState.getBlock() instanceof AbstractBlockControllableSignal ) {
-                                        EnumFacing signalFacingDirection = blockState.getValue(
-                                                BlockHorizontal.FACING );
-                                        if ( signalFacingDirection == encounteredFacingDirection ) {
-                                            addOverlapSignals.add( signalPos );
-                                        }
-                                    }
-                                }
-                            }
-
-                            // Create state for left turn signals on green
-                            TrafficSignalState circuitLeftGreenState = new TrafficSignalState( 10, index );
-                            circuitLeftGreenState.addOffSignals( signalCircuit.getHybridLeftSignals() );
-                            circuitLeftGreenState.addGreenSignals( signalCircuit.getLeftSignals() );
-                            circuitLeftGreenState.addGreenSignals( addOverlapSignals );
-                            circuitLeftGreenState.combine( allRedSignalState );
-                            tempSignalStateList.add( circuitLeftGreenState );
-
-                            // Create state for left turn signals on yellow
-                            TrafficSignalState circuitLeftYellowState = new TrafficSignalState( 5, index );
-                            circuitLeftYellowState.addYellowSignals( signalCircuit.getHybridLeftSignals() );
-                            circuitLeftYellowState.addYellowSignals( signalCircuit.getLeftSignals() );
-                            circuitLeftYellowState.addGreenSignals( addOverlapSignals );
-                            circuitLeftYellowState.combine( allRedSignalState );
-                            tempSignalStateList.add( circuitLeftYellowState );
-
-                            // Add all red phase
-                            TrafficSignalState indexedAllRedState = new TrafficSignalState(
-                                    allRedSignalState.getLength(), index );
-                            indexedAllRedState.addGreenSignals( addOverlapSignals );
-                            indexedAllRedState.combine( allRedSignalState );
-                            tempSignalStateList.add( indexedAllRedState );
                         }
 
                         // Create state for ahead/right signals on green
@@ -896,26 +868,55 @@ public class TileEntityTrafficSignalController extends TileEntity
 
                         // Create state for ahead/right signals on yellow
                         TrafficSignalState circuitYellowState = new TrafficSignalState( 5, index );
+                        TrafficSignalState circuitYellowStateOverlap = new TrafficSignalState( 5, index );
+                        if ( leftOverlapSignals.size() > 0 ) {
+                            circuitYellowStateOverlap.addGreenSignals( leftOverlapSignals );
+                        }
                         if ( signalCircuit.getHybridLeftSignals().size() > 0 ) {
                             circuitYellowState.addGreenSignals( signalCircuit.getHybridLeftSignals() );
                         }
                         circuitYellowState.addYellowSignals( signalCircuit.getAheadSignals() );
                         circuitYellowState.addYellowSignals( signalCircuit.getRightSignals() );
                         circuitYellowState.combine( allRedSignalState );
-                        tempSignalStateList.add( circuitYellowState );
+                        circuitYellowStateOverlap.combine( circuitYellowState );
+                        tempSignalStateList.add( circuitYellowStateOverlap );
 
-                        // Add hybrid left yellow cycle (if present)
-                        if ( signalCircuit.getHybridLeftSignals().size() > 0 ) {
-                            // Add all red phase
-                            TrafficSignalState circuitSwitchRedState = new TrafficSignalState( 2, index );
-                            circuitSwitchRedState.addGreenSignals( signalCircuit.getHybridLeftSignals() );
-                            circuitSwitchRedState.combine( allRedSignalState );
-                            tempSignalStateList.add( circuitSwitchRedState );
+                        // Create state for ahead/right signals on red w/ overlap
+                        if ( leftOverlapSignals.size() > 0 ) {
+                            TrafficSignalState circuitRedOverlapState = new TrafficSignalState( 4, index );
+                            TrafficSignalState circuitRedOverlapStateOverlap = new TrafficSignalState( 5, index );
+                            if ( leftOverlapSignals.size() > 0 ) {
+                                circuitRedOverlapStateOverlap.addGreenSignals( leftOverlapSignals );
+                            }
+                            if ( signalCircuit.getHybridLeftSignals().size() > 0 ) {
+                                circuitRedOverlapState.addGreenSignals( signalCircuit.getHybridLeftSignals() );
+                            }
+                            circuitRedOverlapState.addRedSignals( signalCircuit.getAheadSignals() );
+                            circuitRedOverlapState.addRedSignals( signalCircuit.getRightSignals() );
+                            circuitRedOverlapState.combine( allRedSignalState );
+                            circuitRedOverlapStateOverlap.combine( circuitRedOverlapState );
+                            tempSignalStateList.add( circuitRedOverlapStateOverlap );
+                        }
 
-                            TrafficSignalState circuitHybridLeftYellowState = new TrafficSignalState( 5, index );
-                            circuitHybridLeftYellowState.addYellowSignals( signalCircuit.getHybridLeftSignals() );
-                            circuitHybridLeftYellowState.combine( allRedSignalState );
-                            tempSignalStateList.add( circuitHybridLeftYellowState );
+                        // Handle left signals
+                        if ( signalCircuit.getHybridLeftSignals().size() > 0 ||
+                                signalCircuit.getLeftSignals().size() > 0 ) {
+
+                            // Create state for left turn signals on green
+                            TrafficSignalState circuitLeftGreenState = new TrafficSignalState( 10, index );
+                            circuitLeftGreenState.addOffSignals( signalCircuit.getHybridLeftSignals() );
+                            circuitLeftGreenState.addGreenSignals( signalCircuit.getLeftSignals() );
+                            circuitLeftGreenState.addGreenSignals( leftOverlapSignals );
+                            circuitLeftGreenState.combine( allRedSignalState );
+                            tempSignalStateList.add( circuitLeftGreenState );
+
+                            // Create state for left turn signals on yellow
+                            TrafficSignalState circuitLeftYellowState = new TrafficSignalState( 5, index );
+                            circuitLeftYellowState.addYellowSignals( signalCircuit.getHybridLeftSignals() );
+                            circuitLeftYellowState.addYellowSignals( signalCircuit.getLeftSignals() );
+                            circuitLeftYellowState.addYellowSignals( leftOverlapSignals );
+                            circuitLeftYellowState.combine( allRedSignalState );
+                            tempSignalStateList.add( circuitLeftYellowState );
                         }
 
                         // Add all red phase to follow
@@ -1054,7 +1055,8 @@ public class TileEntityTrafficSignalController extends TileEntity
         }
         else if ( currentMode == CURRENT_MODE_METER ) {
             modeName = "ramp meter";
-        }else if ( currentMode == CURRENT_MODE_REQUESTABLE ) {
+        }
+        else if ( currentMode == CURRENT_MODE_REQUESTABLE ) {
             modeName = "requestable/emergency access";
         }
         return modeName;
