@@ -20,10 +20,10 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public abstract class AbstractBlockControllableSignal extends Block
 {
-    public static final        int               SIGNAL_RED    = 0;
-    public static final        int               SIGNAL_YELLOW = 1;
-    public static final        int               SIGNAL_GREEN  = 2;
-    public static final        int               SIGNAL_OFF    = 3;
+    public static final int               SIGNAL_RED    = 0;
+    public static final int               SIGNAL_YELLOW = 1;
+    public static final int               SIGNAL_GREEN  = 2;
+    public static final int               SIGNAL_OFF    = 3;
     public static final PropertyDirection FACING        = BlockHorizontal.FACING;
     public static final PropertyInteger   COLOR         = PropertyInteger.create( "color", 0, 3 );
 
@@ -81,7 +81,7 @@ public abstract class AbstractBlockControllableSignal extends Block
 
     @Override
     public int getLightValue( IBlockState state, IBlockAccess world, BlockPos pos ) {
-        return 15;
+        return ( state.getValue( COLOR ) == SIGNAL_OFF ) ? 0 : 15;
     }
 
     @Override
@@ -89,7 +89,7 @@ public abstract class AbstractBlockControllableSignal extends Block
         return false;
     }
 
-    public abstract SIGNAL_SIDE getSignalSide(World world, BlockPos blockPos);
+    public abstract SIGNAL_SIDE getSignalSide( World world, BlockPos blockPos );
 
     public static void changeSignalColor( World world, BlockPos blockPos, int signalColor ) {
         IBlockState blockState = world.getBlockState( blockPos );
