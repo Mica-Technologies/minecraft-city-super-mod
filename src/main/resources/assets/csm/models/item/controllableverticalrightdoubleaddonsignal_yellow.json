@@ -1,0 +1,9 @@
+{
+  "parent": "csm:custom/trafficlightvertical_twoarrowaddon",
+  "textures": {
+    "all": "csm:blocks/solidoff",
+    "particle": "csm:blocks/solidoff",
+    "0": "csm:blocks/greenarrowrightoff",
+    "1":"csm:blocks/yellowarrowright"
+  }
+}
