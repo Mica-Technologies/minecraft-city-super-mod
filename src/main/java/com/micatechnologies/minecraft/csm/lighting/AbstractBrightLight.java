@@ -31,10 +31,6 @@ public abstract class AbstractBrightLight extends Block
 {
     private static final int STATE_RS_OFF   = 0;
     private static final int STATE_RS_ON    = 1;
-    private static final int STATE_AUTO_OFF = 2;
-    private static final int STATE_AUTO_ON  = 3;
-
-    private static final int LIGHT_LEVEL_TURN_ON = 10;
 
     public static final PropertyDirection FACING = BlockHorizontal.FACING;
     public static final PropertyInteger   STATE  = PropertyInteger.create( "state", 0, 3 );
@@ -145,37 +141,19 @@ public abstract class AbstractBrightLight extends Block
             if ( currentState == STATE_RS_OFF ) {
                 world.setBlockState( pos, state.withProperty( STATE, STATE_RS_ON ), 3 );
                 handleAirLightBlock( true, world, pos );
+            }
 
-                if ( player instanceof EntityPlayer && !world.isRemote ) {
-                    ( ( EntityPlayer ) player ).sendStatusMessage(
-                            new TextComponentString( "§6ON (Manual/Redstone Control)" ), ( true ) );
-                }
-            }
-            // Cycle to auto if on
+            // Cycle to off if on
             else if ( currentState == STATE_RS_ON ) {
-                world.setBlockState( pos, state.withProperty( STATE, STATE_AUTO_OFF ), 3 );
-                handleAirLightBlock( false, world, pos );
-                if ( player instanceof EntityPlayer && !world.isRemote ) {
-                    ( ( EntityPlayer ) player ).sendStatusMessage(
-                            new TextComponentString( "§6AUTO (Light Sensor Control)" ), ( true ) );
-                }
-            }
-            // Cycle to off if auto
-            else if ( currentState == STATE_AUTO_OFF || currentState == STATE_AUTO_ON ) {
                 world.setBlockState( pos, state.withProperty( STATE, STATE_RS_OFF ), 3 );
                 handleAirLightBlock( false, world, pos );
-                if ( player instanceof EntityPlayer && !world.isRemote ) {
-                    ( ( EntityPlayer ) player ).sendStatusMessage(
-                            new TextComponentString( "§7OFF (Manual/Redstone Control)" ), ( true ) );
-                }
             }
         }
         else {
             // Show warning if light is powered by redstone
             if ( player instanceof EntityPlayer && !world.isRemote && world.isBlockPowered( pos ) ) {
                 ( ( EntityPlayer ) player ).sendStatusMessage( new TextComponentString(
-                                                                       "§cThis light is connected to" + " redstone!" + "§cManual control is not possible!" ),
-                                                               ( true ) );
+                        "§cThis light is connected to" + " redstone!" + "§cManual control is not possible!" ), ( true ) );
             }
 
             // Cycle to on if off
@@ -243,7 +221,7 @@ public abstract class AbstractBrightLight extends Block
     public int getLightValue( IBlockState state, IBlockAccess world, BlockPos pos ) {
         int currentState = state.getValue( STATE );
         int lightLevel = 0;
-        if ( currentState == STATE_RS_ON || currentState == STATE_AUTO_ON ) {
+        if ( currentState == STATE_RS_ON  ) {
             lightLevel = 15;
         }
         return lightLevel;
@@ -258,22 +236,8 @@ public abstract class AbstractBrightLight extends Block
     public void updateTick( World world, BlockPos pos, IBlockState state, Random random )
     {
         int currentState = state.getValue( STATE );
-        // Check if in automatic mode
-        if ( currentState == STATE_AUTO_OFF || currentState == STATE_AUTO_ON ) {
-            // Check ambient light level and set state appropriately
-            int ambientLightLevel = 15 - world.getSkylightSubtracted();
-            if ( currentState == STATE_AUTO_OFF && ambientLightLevel <= LIGHT_LEVEL_TURN_ON ) {
-                // Need to turn on light
-                world.setBlockState( pos, state.withProperty( STATE, STATE_AUTO_ON ), 3 );
-                handleAirLightBlock( true, world, pos );
-            }
-            else if ( currentState == STATE_AUTO_ON && ambientLightLevel > LIGHT_LEVEL_TURN_ON ) {
-                // Need to turn off light
-                world.setBlockState( pos, state.withProperty( STATE, STATE_AUTO_OFF ), 3 );
-                handleAirLightBlock( false, world, pos );
-            }
-        }
-        else if ( currentState == STATE_RS_OFF || currentState == STATE_RS_ON ) {
+
+        if ( currentState == STATE_RS_OFF || currentState == STATE_RS_ON ) {
             // Check for redstone power and set state appropriately
             /*boolean isPowered = world.isBlockPowered( pos );
             if ( currentState == STATE_RS_OFF && isPowered ) {
