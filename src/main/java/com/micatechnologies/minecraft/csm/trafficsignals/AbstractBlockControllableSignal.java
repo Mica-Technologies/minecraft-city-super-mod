@@ -81,7 +81,7 @@ public abstract class AbstractBlockControllableSignal extends Block
 
     @Override
     public int getLightValue( IBlockState state, IBlockAccess world, BlockPos pos ) {
-        return ( state.getValue( COLOR ) == SIGNAL_OFF ) ? 0 : 15;
+        return 15;
     }
 
     @Override
