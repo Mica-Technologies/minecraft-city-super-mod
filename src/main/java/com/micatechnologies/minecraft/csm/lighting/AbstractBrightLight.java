@@ -1,12 +1,9 @@
 package com.micatechnologies.minecraft.csm.lighting;
 
-import com.micatechnologies.minecraft.csm.codeutils.TickTimeConverter;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockDirectional;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.properties.PropertyInteger;
 import net.minecraft.block.state.BlockStateContainer;
@@ -14,26 +11,26 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.*;
+import net.minecraft.util.BlockRenderLayer;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nullable;
-import java.util.Random;
 
 public abstract class AbstractBrightLight extends Block
 {
-    private static final int STATE_RS_OFF   = 0;
-    private static final int STATE_RS_ON    = 1;
-
-    public static final PropertyDirection FACING = BlockHorizontal.FACING;
-    public static final PropertyInteger   STATE  = PropertyInteger.create( "state", 0, 3 );
+    public static final  PropertyDirection FACING        = BlockHorizontal.FACING;
+    public static final  PropertyInteger   STATE         = PropertyInteger.create( "state", 0, 3 );
+    private static final int               STATE_RS_OFF  = 0;
+    private static final int               STATE_RS_ON   = 1;
+    private static final int               STATE_MAN_OFF = 2;
+    private static final int               STATE_MAN_ON  = 3;
 
     public AbstractBrightLight() {
         super( Material.ROCK );
@@ -46,22 +43,27 @@ public abstract class AbstractBrightLight extends Block
         setLightLevel( 0F );
         setLightOpacity( 0 );
         setCreativeTab( TabLighting.tab );
-        this.setDefaultState( this.blockState.getBaseState().withProperty( FACING, EnumFacing.NORTH ) );
+        this.setDefaultState( this.blockState.getBaseState()
+                                             .withProperty( FACING, EnumFacing.NORTH )
+                                             .withProperty( STATE, STATE_RS_OFF ) );
     }
 
-    @SideOnly( Side.CLIENT )
+    abstract public String getBlockRegistryName();
+
     @Override
-    public BlockRenderLayer getBlockLayer() {
-        return BlockRenderLayer.CUTOUT_MIPPED;
+    public IBlockState getStateFromMeta( int meta ) {
+        int stateVal = meta % 4;
+        int facingVal = ( meta - stateVal ) / 4;
+
+        return getDefaultState().withProperty( FACING, EnumFacing.getHorizontal( facingVal ) )
+                                .withProperty( STATE, stateVal );
     }
 
     @Override
-    public boolean canConnectRedstone( IBlockState p_canConnectRedstone_1_,
-                                       IBlockAccess p_canConnectRedstone_2_,
-                                       BlockPos p_canConnectRedstone_3_,
-                                       @Nullable EnumFacing p_canConnectRedstone_4_ )
-    {
-        return true;
+    public int getMetaFromState( IBlockState state ) {
+        int facingVal = state.getValue( FACING ).getHorizontalIndex() * 4;
+        int stateVal = state.getValue( STATE );
+        return facingVal + stateVal;
     }
 
     @Override
@@ -70,22 +72,24 @@ public abstract class AbstractBrightLight extends Block
     }
 
     @Override
+    public boolean isOpaqueCube( IBlockState state ) {
+        return false;
+    }
+
+    @Override
     public void neighborChanged( IBlockState state, World world, BlockPos pos, Block blockIn, BlockPos p_189540_5_ ) {
+        // Check for redstone power and set state appropriately
         int currentState = state.getValue( STATE );
-        // Check if in redstone mode
-        if ( currentState == STATE_RS_OFF || currentState == STATE_RS_ON ) {
-            // Check for redstone power and set state appropriately
-            boolean isPowered = world.isBlockPowered( pos );
-            if ( currentState == STATE_RS_OFF && isPowered ) {
-                // Need to turn on light
-                world.setBlockState( pos, state.withProperty( STATE, STATE_RS_ON ), 3 );
-                handleAirLightBlock( true, world, pos );
-            }
-            else if ( currentState == STATE_RS_ON && !isPowered ) {
-                // Need to turn off light
-                world.setBlockState( pos, state.withProperty( STATE, STATE_RS_OFF ), 3 );
-                handleAirLightBlock( false, world, pos );
-            }
+        boolean isPowered = world.isBlockPowered( pos );
+        if ( currentState == STATE_RS_OFF && isPowered ) {
+            // Need to turn on light
+            world.setBlockState( pos, state.withProperty( STATE, STATE_RS_ON ), 3 );
+            handleAirLightBlock( true, world, pos );
+        }
+        else if ( currentState == STATE_RS_ON && !isPowered ) {
+            // Need to turn off light
+            world.setBlockState( pos, state.withProperty( STATE, STATE_RS_OFF ), 3 );
+            handleAirLightBlock( false, world, pos );
         }
     }
 
@@ -125,6 +129,26 @@ public abstract class AbstractBrightLight extends Block
     }
 
     @Override
+    public void onBlockAdded( World p_onBlockAdded_1_, BlockPos p_onBlockAdded_2_, IBlockState p_onBlockAdded_3_ ) {
+        p_onBlockAdded_1_.scheduleUpdate( p_onBlockAdded_2_, this, this.tickRate( p_onBlockAdded_1_ ) );
+        super.onBlockAdded( p_onBlockAdded_1_, p_onBlockAdded_2_, p_onBlockAdded_3_ );
+    }
+
+    @Override
+    public void breakBlock( World p_breakBlock_1_, BlockPos p_breakBlock_2_, IBlockState p_breakBlock_3_ ) {
+        // Cleanup existing light block (if present)
+        handleAirLightBlock( false, p_breakBlock_1_, p_breakBlock_2_ );
+
+        super.breakBlock( p_breakBlock_1_, p_breakBlock_2_, p_breakBlock_3_ );
+    }
+
+    @SideOnly( Side.CLIENT )
+    @Override
+    public BlockRenderLayer getBlockLayer() {
+        return BlockRenderLayer.CUTOUT_MIPPED;
+    }
+
+    @Override
     public boolean onBlockActivated( World world,
                                      BlockPos pos,
                                      IBlockState state,
@@ -136,44 +160,30 @@ public abstract class AbstractBrightLight extends Block
                                      float p_onBlockActivated_9_ )
     {
         int currentState = state.getValue( STATE );
-        if ( blockHasAutomaticFunctionality() ) {
-            // Cycle to on if off
-            if ( currentState == STATE_RS_OFF ) {
-                world.setBlockState( pos, state.withProperty( STATE, STATE_RS_ON ), 3 );
-                handleAirLightBlock( true, world, pos );
-            }
 
-            // Cycle to off if on
-            else if ( currentState == STATE_RS_ON ) {
-                world.setBlockState( pos, state.withProperty( STATE, STATE_RS_OFF ), 3 );
-                handleAirLightBlock( false, world, pos );
+        if ( currentState == STATE_RS_OFF || currentState == STATE_RS_ON ) {
+            world.setBlockState( pos, state.withProperty( STATE, STATE_MAN_OFF ), 3 );
+            handleAirLightBlock( false, world, pos );
+            if ( player instanceof EntityPlayer && !world.isRemote ) {
+                player.sendStatusMessage( new TextComponentString( "§6MANUAL Off" ), ( true ) );
+            }
+        }
+        else if ( currentState == STATE_MAN_OFF ) {
+            world.setBlockState( pos, state.withProperty( STATE, STATE_MAN_ON ), 3 );
+            handleAirLightBlock( true, world, pos );
+            if ( player instanceof EntityPlayer && !world.isRemote ) {
+                player.sendStatusMessage( new TextComponentString( "§6MANUAL On" ), ( true ) );
             }
         }
         else {
-            // Show warning if light is powered by redstone
-            if ( player instanceof EntityPlayer && !world.isRemote && world.isBlockPowered( pos ) ) {
-                ( ( EntityPlayer ) player ).sendStatusMessage( new TextComponentString(
-                        "§cThis light is connected to" + " redstone!" + "§cManual control is not possible!" ), ( true ) );
-            }
+            boolean isPowered = world.isBlockPowered( pos );
+            int autoState = isPowered ? STATE_RS_ON : STATE_RS_OFF;
 
-            // Cycle to on if off
-            if ( currentState == STATE_RS_OFF ) {
-                world.setBlockState( pos, state.withProperty( STATE, STATE_RS_ON ), 3 );
-                handleAirLightBlock( true, world, pos );
-
-                if ( player instanceof EntityPlayer && !world.isRemote ) {
-                    ( ( EntityPlayer ) player ).sendStatusMessage(
-                            new TextComponentString( "§6ON (Manual/Redstone Control)" ), ( true ) );
-                }
-            }
-            // Cycle to off if on
-            else if ( currentState == STATE_RS_ON ) {
-                world.setBlockState( pos, state.withProperty( STATE, STATE_RS_OFF ), 3 );
-                handleAirLightBlock( false, world, pos );
-                if ( player instanceof EntityPlayer && !world.isRemote ) {
-                    ( ( EntityPlayer ) player ).sendStatusMessage(
-                            new TextComponentString( "§7OFF (Manual/Redstone Control)" ), ( true ) );
-                }
+            world.setBlockState( pos, state.withProperty( STATE, autoState ), 3 );
+            handleAirLightBlock( isPowered, world, pos );
+            if ( player instanceof EntityPlayer && !world.isRemote ) {
+                String autoLog = "§6AUTOMATIC (Has Power: " + isPowered + ")";
+                player.sendStatusMessage( new TextComponentString( autoLog ), ( true ) );
             }
         }
 
@@ -191,84 +201,26 @@ public abstract class AbstractBrightLight extends Block
     }
 
     @Override
-    public void onBlockAdded( World p_onBlockAdded_1_, BlockPos p_onBlockAdded_2_, IBlockState p_onBlockAdded_3_ ) {
-        p_onBlockAdded_1_.scheduleUpdate( p_onBlockAdded_2_, this, this.tickRate( p_onBlockAdded_1_ ) );
-        super.onBlockAdded( p_onBlockAdded_1_, p_onBlockAdded_2_, p_onBlockAdded_3_ );
-    }
-
-    @Override
-    public IBlockState getStateFromMeta( int meta ) {
-        int stateVal = meta % 4;
-        int facingVal = ( meta - stateVal ) / 4;
-
-        return getDefaultState().withProperty( FACING, EnumFacing.getHorizontal( facingVal ) )
-                                .withProperty( STATE, stateVal );
-    }
-
-    @Override
-    public int getMetaFromState( IBlockState state ) {
-        int facingVal = state.getValue( FACING ).getHorizontalIndex() * 4;
-        int stateVal = state.getValue( STATE );
-        return facingVal + stateVal;
-    }
-
-    @Override
     protected BlockStateContainer createBlockState() {
         return new BlockStateContainer( this, FACING, STATE );
     }
 
     @Override
     public int getLightValue( IBlockState state, IBlockAccess world, BlockPos pos ) {
-        int currentState = state.getValue( STATE );
-        int lightLevel = 0;
-        if ( currentState == STATE_RS_ON  ) {
-            lightLevel = 15;
+        boolean shouldLight = false;
+        int stateValue = state.getValue( STATE );
+        if ( stateValue == STATE_MAN_ON || stateValue == STATE_RS_ON ) {
+            shouldLight = true;
         }
-        return lightLevel;
+        return shouldLight ? 15 : 0;
     }
 
     @Override
-    public boolean isOpaqueCube( IBlockState state ) {
-        return false;
-    }
-
-    @Override
-    public void updateTick( World world, BlockPos pos, IBlockState state, Random random )
+    public boolean canConnectRedstone( IBlockState p_canConnectRedstone_1_,
+                                       IBlockAccess p_canConnectRedstone_2_,
+                                       BlockPos p_canConnectRedstone_3_,
+                                       @Nullable EnumFacing p_canConnectRedstone_4_ )
     {
-        int currentState = state.getValue( STATE );
-
-        if ( currentState == STATE_RS_OFF || currentState == STATE_RS_ON ) {
-            // Check for redstone power and set state appropriately
-            /*boolean isPowered = world.isBlockPowered( pos );
-            if ( currentState == STATE_RS_OFF && isPowered ) {
-                // Need to turn on light
-                world.setBlockState( pos, state.withProperty( STATE, STATE_RS_ON ), 3 );
-                handleAirLightBlock( true, world, pos );
-            }
-            else if ( currentState == STATE_RS_ON && !isPowered ) {
-                // Need to turn off light
-                world.setBlockState( pos, state.withProperty( STATE, STATE_RS_OFF ), 3 );
-                handleAirLightBlock( false, world, pos );
-            }*/
-        }
-        super.updateTick( world, pos, state, random );
-        world.scheduleUpdate( pos, this, this.tickRate( world ) );
+        return true;
     }
-
-    @Override
-    public int tickRate( World p_tickRate_1_ ) {
-        return TickTimeConverter.getTicksFromSeconds( 2 );
-    }
-
-    @Override
-    public void breakBlock( World p_breakBlock_1_, BlockPos p_breakBlock_2_, IBlockState p_breakBlock_3_ ) {
-        // Cleanup existing light block (if present)
-        handleAirLightBlock( false, p_breakBlock_1_, p_breakBlock_2_ );
-
-        super.breakBlock( p_breakBlock_1_, p_breakBlock_2_, p_breakBlock_3_ );
-    }
-
-    abstract public String getBlockRegistryName();
-
-    abstract public boolean blockHasAutomaticFunctionality();
 }

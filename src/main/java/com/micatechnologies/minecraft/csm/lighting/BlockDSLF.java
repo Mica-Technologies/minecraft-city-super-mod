@@ -2,7 +2,6 @@ package com.micatechnologies.minecraft.csm.lighting;
 
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockDirectional;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
@@ -64,9 +63,5 @@ public class BlockDSLF extends ElementsCitySuperMod.ModElement
             return elementId;
         }
 
-        @Override
-        public boolean blockHasAutomaticFunctionality() {
-            return false;
-        }
     }
 }

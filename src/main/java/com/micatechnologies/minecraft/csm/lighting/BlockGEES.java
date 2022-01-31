@@ -67,9 +67,5 @@ public class BlockGEES extends ElementsCitySuperMod.ModElement
             return elementId;
         }
 
-        @Override
-        public boolean blockHasAutomaticFunctionality() {
-            return true;
-        }
     }
 }

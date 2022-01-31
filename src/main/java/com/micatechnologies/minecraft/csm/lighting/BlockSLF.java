@@ -67,9 +67,5 @@ public class BlockSLF extends ElementsCitySuperMod.ModElement
             return elementId;
         }
 
-        @Override
-        public boolean blockHasAutomaticFunctionality() {
-            return false;
-        }
     }
 }

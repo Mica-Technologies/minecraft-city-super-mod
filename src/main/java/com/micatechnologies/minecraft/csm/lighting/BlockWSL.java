@@ -67,9 +67,5 @@ public class BlockWSL extends ElementsCitySuperMod.ModElement
             return elementId;
         }
 
-        @Override
-        public boolean blockHasAutomaticFunctionality() {
-            return false;
-        }
     }
 }
