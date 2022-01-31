@@ -1,7 +1,6 @@
 package com.micatechnologies.minecraft.csm.lighting;
 
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
-import com.micatechnologies.minecraft.csm.lighting.BlockAltoMVUL;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.relauncher.Side;
@@ -10,7 +9,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @ElementsCitySuperMod.ModElement.Tag
 public class TabLighting extends ElementsCitySuperMod.ModElement
 {
-    private final static String       ID_NAME   = "tablighting";
+    private final static String       ID_NAME = "tablighting";
     public static        CreativeTabs tab;
 
     public TabLighting( ElementsCitySuperMod instance ) {
