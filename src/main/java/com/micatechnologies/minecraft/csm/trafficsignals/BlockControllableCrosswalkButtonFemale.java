@@ -137,7 +137,7 @@ public class BlockControllableCrosswalkButtonFemale extends ElementsCitySuperMod
 
                 p_updateTick_1_.scheduleUpdate( p_updateTick_2_, this, lenOfDontWalkSound );
             }
-            else if ( color == 1 ) {
+            else if ( color == 2 ) {
                 // Play walk voice
                 p_updateTick_1_.playSound( null, p_updateTick_2_.getX(), p_updateTick_2_.getY(), p_updateTick_2_.getZ(),
                                            net.minecraft.util.SoundEvent.REGISTRY.getObject(
