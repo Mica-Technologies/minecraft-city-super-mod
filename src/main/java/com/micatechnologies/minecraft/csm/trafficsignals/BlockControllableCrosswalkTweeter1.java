@@ -77,7 +77,7 @@ public class BlockControllableCrosswalkTweeter1 extends ElementsCitySuperMod.Mod
                                 Random p_updateTick_4_ )
         {
             int color = p_updateTick_3_.getValue( COLOR );
-            if ( color == 1 ) {
+            if ( color == 2 ) {
                 // Play cookoo sound
                 p_updateTick_1_.playSound( null, p_updateTick_2_.getX(), p_updateTick_2_.getY(), p_updateTick_2_.getZ(),
                                            net.minecraft.util.SoundEvent.REGISTRY.getObject(
