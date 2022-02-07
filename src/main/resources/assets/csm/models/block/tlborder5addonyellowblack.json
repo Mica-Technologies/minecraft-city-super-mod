@@ -1,0 +1,8 @@
+{
+  "parent": "csm:custom/border_addon5",
+  "textures": {
+    "all": "csm:blocks/borderyellowblack",
+    "particle": "csm:blocks/borderyellowblack",
+    "0": "csm:blocks/borderyellowblack"
+  }
+}
