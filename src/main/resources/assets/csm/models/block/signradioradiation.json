@@ -1,0 +1,9 @@
+{
+  "parent": "csm:custom/metal_signpostback_tall_sign",
+  "textures": {
+    "all": "csm:blocks/h1525",
+    "particle": "csm:blocks/h1525",
+    "0": "csm:blocks/metal",
+    "1": "csm:blocks/h1525"
+  }
+}

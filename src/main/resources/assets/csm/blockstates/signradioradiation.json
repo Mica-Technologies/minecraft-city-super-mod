@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:signradioradiation"
+    },
+    "facing=north": {
+      "model": "csm:signradioradiation"
+    },
+    "facing=east": {
+      "model": "csm:signradioradiation",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:signradioradiation",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:signradioradiation",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:signradioradiation",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:signradioradiation",
+      "x": 90
+    }
+  }
+}
