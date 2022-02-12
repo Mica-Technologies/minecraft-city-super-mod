@@ -1,6 +1,5 @@
 package com.micatechnologies.minecraft.csm.trafficsignals.logic;
 
-import jdk.nashorn.internal.ir.Block;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.ArrayList;
@@ -348,26 +347,28 @@ public class TrafficSignalState
 
             // Loop through each serialized list item
             for ( String serializedListItem : serializedListItems ) {
-                try {
-                    long serializedListItemLong = Long.parseLong( serializedListItem );
-                    if ( i == NBT_SERIALIZATION_OFF_SIGNAL_LIST_INDEX ) {
-                        trafficSignalState.offSignals.add( BlockPos.fromLong( serializedListItemLong ) );
+                if ( serializedListItem.length() > 0 ) {
+                    try {
+                        long serializedListItemLong = Long.parseLong( serializedListItem );
+                        if ( i == NBT_SERIALIZATION_OFF_SIGNAL_LIST_INDEX ) {
+                            trafficSignalState.offSignals.add( BlockPos.fromLong( serializedListItemLong ) );
+                        }
+                        else if ( i == NBT_SERIALIZATION_GREEN_SIGNAL_LIST_INDEX ) {
+                            trafficSignalState.greenSignals.add( BlockPos.fromLong( serializedListItemLong ) );
+                        }
+                        else if ( i == NBT_SERIALIZATION_YELLOW_SIGNAL_LIST_INDEX ) {
+                            trafficSignalState.yellowSignals.add( BlockPos.fromLong( serializedListItemLong ) );
+                        }
+                        else if ( i == NBT_SERIALIZATION_RED_SIGNAL_LIST_INDEX ) {
+                            trafficSignalState.redSignals.add( BlockPos.fromLong( serializedListItemLong ) );
+                        }
                     }
-                    else if ( i == NBT_SERIALIZATION_GREEN_SIGNAL_LIST_INDEX ) {
-                        trafficSignalState.greenSignals.add( BlockPos.fromLong( serializedListItemLong ) );
+                    catch ( Exception e ) {
+                        System.err.println( "A malformed entry was detected in a signal controller's state memory! " +
+                                                    "(Value: " +
+                                                    serializedListItem +
+                                                    ")" );
                     }
-                    else if ( i == NBT_SERIALIZATION_YELLOW_SIGNAL_LIST_INDEX ) {
-                        trafficSignalState.yellowSignals.add( BlockPos.fromLong( serializedListItemLong ) );
-                    }
-                    else if ( i == NBT_SERIALIZATION_RED_SIGNAL_LIST_INDEX ) {
-                        trafficSignalState.redSignals.add( BlockPos.fromLong( serializedListItemLong ) );
-                    }
-                }
-                catch ( Exception e ) {
-                    System.err.println( "A malformed entry was detected in a signal controller's state memory! " +
-                                                "(Value: " +
-                                                serializedListItem +
-                                                ")" );
                 }
             }
         }
