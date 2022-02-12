@@ -32,6 +32,7 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 import java.util.Random;
@@ -275,6 +276,32 @@ public class BlockFireAlarmControlPanel extends ElementsCitySuperMod.ModElement
         @ParametersAreNonnullByDefault
         public TileEntity createNewTileEntity( World world, int i ) {
             return new TileEntityFireAlarmControlPanel();
+        }
+
+        @Override
+        public boolean canConnectRedstone( IBlockState p_canConnectRedstone_1_,
+                                           IBlockAccess p_canConnectRedstone_2_,
+                                           BlockPos p_canConnectRedstone_3_,
+                                           @Nullable EnumFacing p_canConnectRedstone_4_ )
+        {
+            return true;
+        }
+
+        @Override
+        public void neighborChanged( IBlockState state,
+                                     World world,
+                                     BlockPos pos,
+                                     Block blockIn,
+                                     BlockPos p_189540_5_ )
+        {
+            // Check for redstone power and set alarm storm state
+            boolean isPowered = world.isBlockPowered( pos );
+            TileEntity tileEntity = world.getTileEntity( pos );
+            if ( tileEntity instanceof TileEntityFireAlarmControlPanel ) {
+                TileEntityFireAlarmControlPanel tileEntityFireAlarmControlPanel
+                        = ( TileEntityFireAlarmControlPanel ) tileEntity;
+                tileEntityFireAlarmControlPanel.setAlarmStormState( isPowered );
+            }
         }
     }
 }

@@ -22,6 +22,7 @@ public class TileEntityFireAlarmControlPanel extends TileEntity
 {
     private static final String   soundIndexKey          = "soundIndex";
     private static final String   alarmKey               = "alarm";
+    private static final String   alarmStormKey          = "alarmStorm";
     private static final String   connectedAppliancesKey = "connectedAppliances";
     private static final String[] SOUND_RESOURCE_NAMES   = { "csm:svenew",
                                                              "csm:sveold",
@@ -44,11 +45,15 @@ public class TileEntityFireAlarmControlPanel extends TileEntity
                                                              "Notifier Voice Evac 5",
                                                              "Notifier Voice Evac 6",
                                                              "Mica Voice Evac 1" };
+    private static final String   STORM_SOUND_NAME       = "csm:notifier_tornado_voice_evac";
+    private static final int      STORM_SOUND_LENGTH     = 460;
 
     private int                        soundIndex;
     private boolean                    alarm;
-    private HashMap< String, Integer > alarmSoundTracking  = null;
-    private ArrayList< BlockPos >      connectedAppliances = new ArrayList<>();
+    private boolean                    alarmStorm;
+    private int                        alarmStormSoundTracking = 0;
+    private HashMap< String, Integer > alarmSoundTracking      = null;
+    private ArrayList< BlockPos >      connectedAppliances     = new ArrayList<>();
 
     @Override
     public void readFromNBT( NBTTagCompound p_readFromNBT_1_ ) {
@@ -66,6 +71,14 @@ public class TileEntityFireAlarmControlPanel extends TileEntity
         }
         catch ( Exception e ) {
             alarm = false;
+        }
+
+        // Read alarm storm state
+        try {
+            alarmStorm = p_readFromNBT_1_.getBoolean( alarmStormKey );
+        }
+        catch ( Exception e ) {
+            alarmStorm = false;
         }
 
         // Read connected appliance locations
@@ -93,6 +106,9 @@ public class TileEntityFireAlarmControlPanel extends TileEntity
 
         // Write alarm state
         p_writeToNBT_1_.setBoolean( alarmKey, alarm );
+
+        // Write alarm storm state
+        p_writeToNBT_1_.setBoolean( alarmStormKey, alarmStorm );
 
         // Write connected appliance locations
         StringBuilder connectedAppliancesString = new StringBuilder();
@@ -143,6 +159,11 @@ public class TileEntityFireAlarmControlPanel extends TileEntity
         markDirty();
     }
 
+    public void setAlarmStormState( boolean alarmStormState ) {
+        alarmStorm = alarmStormState;
+        markDirty();
+    }
+
     public String getCurrentSoundName() {
         return SOUND_NAMES[ soundIndex ];
     }
@@ -152,6 +173,11 @@ public class TileEntityFireAlarmControlPanel extends TileEntity
                                          BlockFireAlarmControlPanel.BlockCustom fireAlarmControlPanel )
     {
         if ( alarm ) {
+            // Reset storm alarm (fire alarm overrrides storm)
+            if ( alarmStormSoundTracking > 0 ) {
+                alarmStormSoundTracking = 0;
+            }
+
             // Alarm is starting
             if ( alarmSoundTracking == null ) {
                 alarmSoundTracking = new HashMap<>();
@@ -232,6 +258,42 @@ public class TileEntityFireAlarmControlPanel extends TileEntity
                                                                          "has been reset." ) );
                 }
             }
+
+            // Handle storm alarm
+            if ( alarmStorm ) {
+                // Perform sound handling
+                for ( BlockPos bp : connectedAppliances ) {
+                    // Get block at linked position
+                    IBlockState blockStateAtPos = world.getBlockState( bp );
+                    Block blockAtPos = blockStateAtPos.getBlock();
+
+                    // Check for alarm sound values at location
+                    if ( blockAtPos instanceof AbstractBlockFireAlarmSounderVoiceEvac ) {
+                        if ( alarmStormSoundTracking > STORM_SOUND_LENGTH ) {
+                            alarmStormSoundTracking = 0;
+                        }
+
+                        // Play sound
+                        if ( alarmStormSoundTracking == 0 ) {
+                            world.playSound( ( EntityPlayer ) null, bp.getX(), bp.getY(), bp.getZ(),
+                                             ( net.minecraft.util.SoundEvent ) net.minecraft.util.SoundEvent.REGISTRY.getObject(
+                                                     new ResourceLocation( STORM_SOUND_NAME ) ), SoundCategory.AMBIENT,
+                                             ( float ) 2, ( float ) 1 );
+
+                        }
+                    }
+                }
+
+                // Increment storm sound tracker
+                final int incrementSize = fireAlarmControlPanel.tickRate( world );
+                alarmStormSoundTracking += incrementSize;
+            }
+            else {
+                // Reset storm alarm
+                if ( alarmStormSoundTracking > 0 ) {
+                    alarmStormSoundTracking = 0;
+                }
+            }
         }
     }
 
@@ -242,5 +304,5 @@ public class TileEntityFireAlarmControlPanel extends TileEntity
     public String getCurrentSoundResourceName() {
         return SOUND_RESOURCE_NAMES[ soundIndex ];
     }
-    
+
 }
