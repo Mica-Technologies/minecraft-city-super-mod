@@ -278,7 +278,7 @@ public class TileEntityFireAlarmControlPanel extends TileEntity
                             world.playSound( ( EntityPlayer ) null, bp.getX(), bp.getY(), bp.getZ(),
                                              ( net.minecraft.util.SoundEvent ) net.minecraft.util.SoundEvent.REGISTRY.getObject(
                                                      new ResourceLocation( STORM_SOUND_NAME ) ), SoundCategory.AMBIENT,
-                                             ( float ) 2, ( float ) 1 );
+                                             ( float ) 3, ( float ) 1 );
 
                         }
                     }
