@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:mclacodeapprovedexitsignrightisa"
+    },
+    "facing=north": {
+      "model": "csm:mclacodeapprovedexitsignrightisa"
+    },
+    "facing=east": {
+      "model": "csm:mclacodeapprovedexitsignrightisa",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:mclacodeapprovedexitsignrightisa",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:mclacodeapprovedexitsignrightisa",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:mclacodeapprovedexitsignrightisa",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:mclacodeapprovedexitsignrightisa",
+      "x": 90
+    }
+  }
+}

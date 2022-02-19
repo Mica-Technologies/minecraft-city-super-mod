@@ -1,0 +1,10 @@
+{
+  "parent": "csm:custom/mclaapprovedexitsignedgelitwide",
+  "textures": {
+    "all": "csm:blocks/ctexitsignbothways",
+    "particle": "csm:blocks/ctexitsignbothways",
+    "0": "csm:blocks/metal_silver",
+    "1": "csm:blocks/ctexitsignbothways",
+    "2": "csm:blocks/ctexitsignbothways"
+  }
+}
