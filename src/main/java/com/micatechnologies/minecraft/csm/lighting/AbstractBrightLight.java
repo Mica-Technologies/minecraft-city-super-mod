@@ -50,6 +50,8 @@ public abstract class AbstractBrightLight extends Block
 
     abstract public String getBlockRegistryName();
 
+    abstract public int getBrightLightXOffset();
+
     @Override
     public IBlockState getStateFromMeta( int meta ) {
         int stateVal = meta % 4;
@@ -98,7 +100,9 @@ public abstract class AbstractBrightLight extends Block
         if ( on ) {
             BlockPos doAddAt = null;
             for ( int findy = -1; findy >= -16; findy-- ) {
-                BlockPos test = new BlockPos( pos.getX(), pos.getY() + findy, pos.getZ() );
+                final int xWithOffset = pos.getX() + getBrightLightXOffset();
+                final int yWithOffset = pos.getY() + findy;
+                BlockPos test = new BlockPos( xWithOffset, yWithOffset, pos.getZ() );
                 // found block that is not air
                 if ( world.isAirBlock( test ) ) {
                     // dont add light if block is right below street light
@@ -118,7 +122,9 @@ public abstract class AbstractBrightLight extends Block
         // Remove light
         else {
             for ( int findy = -1; findy >= -16; findy-- ) {
-                BlockPos test = new BlockPos( pos.getX(), pos.getY() + findy, pos.getZ() );
+                final int xWithOffset = pos.getX() + getBrightLightXOffset();
+                final int yWithOffset = pos.getY() + findy;
+                BlockPos test = new BlockPos( xWithOffset, yWithOffset, pos.getZ() );
                 IBlockState bs = world.getBlockState( test );
                 // stop removing light once hit block
                 if ( bs.getBlock() == Block.getBlockFromName( "csm:lightupair" ) ) {

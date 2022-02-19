@@ -62,5 +62,10 @@ public class BlockAEATB2 extends ElementsCitySuperMod.ModElement
         public String getBlockRegistryName() {
             return elementId;
         }
+
+        @Override
+        public int getBrightLightXOffset() {
+            return 0;
+        }
     }
 }
