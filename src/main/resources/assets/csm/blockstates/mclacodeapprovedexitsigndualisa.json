@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:mclacodeapprovedexitsigndualisa"
+    },
+    "facing=north": {
+      "model": "csm:mclacodeapprovedexitsigndualisa"
+    },
+    "facing=east": {
+      "model": "csm:mclacodeapprovedexitsigndualisa",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:mclacodeapprovedexitsigndualisa",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:mclacodeapprovedexitsigndualisa",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:mclacodeapprovedexitsigndualisa",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:mclacodeapprovedexitsigndualisa",
+      "x": 90
+    }
+  }
+}
