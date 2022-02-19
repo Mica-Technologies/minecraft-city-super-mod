@@ -1,0 +1,8 @@
+{
+  "parent": "csm:custom/border_addon_inverted5",
+  "textures": {
+    "all": "csm:blocks/borderblackwhite",
+    "particle": "csm:blocks/borderblackwhite",
+    "0": "csm:blocks/borderblackwhite"
+  }
+}
