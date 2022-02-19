@@ -24,18 +24,18 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @ElementsCitySuperMod.ModElement.Tag
-public class BlockDMPT extends ElementsCitySuperMod.ModElement
+public class BlockDMPTUnpainted extends ElementsCitySuperMod.ModElement
 {
-    @GameRegistry.ObjectHolder( "csm:dmpt" )
+    @GameRegistry.ObjectHolder( "csm:dmptunpainted" )
     public static final Block block = null;
 
-    public BlockDMPT( ElementsCitySuperMod instance ) {
-        super( instance, 1159 );
+    public BlockDMPTUnpainted( ElementsCitySuperMod instance ) {
+        super( instance, 1163 );
     }
 
     @Override
     public void initElements() {
-        elements.blocks.add( () -> new BlockCustom().setRegistryName( "dmpt" ) );
+        elements.blocks.add( () -> new BlockCustom().setRegistryName( "dmptunpainted" ) );
         elements.items.add( () -> new ItemBlock( block ).setRegistryName( block.getRegistryName() ) );
     }
 
@@ -43,7 +43,7 @@ public class BlockDMPT extends ElementsCitySuperMod.ModElement
     @Override
     public void registerModels( ModelRegistryEvent event ) {
         ModelLoader.setCustomModelResourceLocation( Item.getItemFromBlock( block ), 0,
-                                                    new ModelResourceLocation( "csm:dmpt", "inventory" ) );
+                                                    new ModelResourceLocation( "csm:dmptunpainted", "inventory" ) );
     }
 
     public static class BlockCustom extends Block
@@ -52,7 +52,7 @@ public class BlockDMPT extends ElementsCitySuperMod.ModElement
 
         public BlockCustom() {
             super( Material.ROCK );
-            setUnlocalizedName( "dmpt" );
+            setUnlocalizedName( "dmptunpainted" );
             setSoundType( SoundType.STONE );
             setHardness( 1F );
             setResistance( 10F );

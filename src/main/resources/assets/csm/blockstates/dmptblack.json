@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:dmptblack"
+    },
+    "facing=north": {
+      "model": "csm:dmptblack"
+    },
+    "facing=east": {
+      "model": "csm:dmptblack",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:dmptblack",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:dmptblack",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:dmptblack",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:dmptblack",
+      "x": 90
+    }
+  }
+}

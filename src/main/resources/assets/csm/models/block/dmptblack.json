@@ -1,0 +1,8 @@
+{
+  "parent": "csm:custom/decorative_metal_pole_top",
+  "textures": {
+    "all": "csm:blocks/metal_black",
+    "particle": "csm:blocks/metal_black",
+    "1": "csm:blocks/metal_black"
+  }
+}
