@@ -67,5 +67,10 @@ public class BlockGEPB extends ElementsCitySuperMod.ModElement
             return elementId;
         }
 
+        @Override
+        public int getBrightLightXOffset() {
+            return 0;
+        }
+
     }
 }

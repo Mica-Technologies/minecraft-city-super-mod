@@ -63,5 +63,10 @@ public class BlockWHOV50ShadedNP extends ElementsCitySuperMod.ModElement
             return elementId;
         }
 
+        @Override
+        public int getBrightLightXOffset() {
+            return 0;
+        }
+
     }
 }

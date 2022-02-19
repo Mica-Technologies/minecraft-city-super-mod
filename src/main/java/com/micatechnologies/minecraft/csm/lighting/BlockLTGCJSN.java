@@ -63,5 +63,10 @@ public class BlockLTGCJSN extends ElementsCitySuperMod.ModElement
             return elementId;
         }
 
+        @Override
+        public int getBrightLightXOffset() {
+            return 0;
+        }
+
     }
 }
