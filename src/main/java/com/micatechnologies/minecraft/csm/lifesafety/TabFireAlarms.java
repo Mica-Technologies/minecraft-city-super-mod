@@ -23,7 +23,7 @@ public class TabFireAlarms extends ElementsCitySuperMod.ModElement
             @SideOnly( Side.CLIENT )
             @Override
             public ItemStack getTabIconItem() {
-                return new ItemStack( BlockFireAlarmWheelockASRed.block, 1 );
+                return new ItemStack( BlockMCLACodeApprovedExitSignISA.block, 1 );
             }
 
             @SideOnly( Side.CLIENT )
