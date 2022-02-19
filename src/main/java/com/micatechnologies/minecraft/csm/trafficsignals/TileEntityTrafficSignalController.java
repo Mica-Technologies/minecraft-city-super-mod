@@ -513,7 +513,7 @@ public class TileEntityTrafficSignalController extends TileEntity
             if ( index == 0 ) {
                 // Primary circuit flashes yellow on state 1
                 flashState1.addYellowSignals( signalCircuit.getAheadSignals() );
-                flashState1.addYellowSignals( signalCircuit.getRightSignals() );
+                flashState1.addRedSignals( signalCircuit.getRightSignals() );
                 flashState2.addOffSignals( signalCircuit.getAheadSignals() );
                 flashState2.addOffSignals( signalCircuit.getRightSignals() );
             }
