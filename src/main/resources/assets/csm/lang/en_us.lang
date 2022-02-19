@@ -1412,4 +1412,5 @@ tile.mclacodeapprovedexitsignleftisa.name=Edge Lit ISA Exit Sign (Left, Double-S
 tile.mclacodeapprovedexitsignrightisa.name=Edge Lit ISA Exit Sign (Right, Double-Sided)
 tile.mclacodeapprovedexitsignisa.name=Edge Lit ISA Exit Sign (Double-Sided)
 tile.mclacodeapprovedexitsignisasinglesided.name=Edge Lit ISA Exit Sign (Single-Sided)
+tile.tlfatiguemitigator3.name=Traffic Signal Mast Fatigue Mitigator (Style 3)
 tile.tldoghouseborderblackyellow.name=Doghouse Signal Border (Black/Yellow)
