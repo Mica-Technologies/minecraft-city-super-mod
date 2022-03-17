@@ -23,7 +23,7 @@ public class TabPowerGrid extends ElementsCitySuperMod.ModElement
             @SideOnly( Side.CLIENT )
             @Override
             public ItemStack getTabIconItem() {
-                return new ItemStack( BlockRFtoRS.block, 1 );
+                return new ItemStack( BlockForgeEnergyToRedstone.block, 1 );
             }
 
             @SideOnly( Side.CLIENT )
