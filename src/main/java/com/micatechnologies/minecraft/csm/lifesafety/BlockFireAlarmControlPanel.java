@@ -126,37 +126,6 @@ public class BlockFireAlarmControlPanel extends ElementsCitySuperMod.ModElement
         }
 
         @Override
-        public void updateTick( World p_updateTick_1_,
-                                BlockPos p_updateTick_2_,
-                                IBlockState p_updateTick_3_,
-                                Random p_updateTick_4_ )
-        {
-            try {
-                TileEntity tileEntity = p_updateTick_1_.getTileEntity( p_updateTick_2_ );
-                if ( tileEntity instanceof TileEntityFireAlarmControlPanel ) {
-                    TileEntityFireAlarmControlPanel tileEntityFireAlarmControlPanel
-                            = ( TileEntityFireAlarmControlPanel ) tileEntity;
-                    tileEntityFireAlarmControlPanel.updateTick( p_updateTick_1_, p_updateTick_2_, this );
-                }
-            }
-            catch ( Exception ignored ) {
-            }
-
-            p_updateTick_1_.scheduleUpdate( p_updateTick_2_, this, this.tickRate( p_updateTick_1_ ) );
-        }
-
-        @Override
-        public int tickRate( World p_tickRate_1_ ) {
-            return 20;
-        }
-
-        @Override
-        public void onBlockAdded( World p_onBlockAdded_1_, BlockPos p_onBlockAdded_2_, IBlockState p_onBlockAdded_3_ ) {
-            p_onBlockAdded_1_.scheduleUpdate( p_onBlockAdded_2_, this, this.tickRate( p_onBlockAdded_1_ ) );
-            super.onBlockAdded( p_onBlockAdded_1_, p_onBlockAdded_2_, p_onBlockAdded_3_ );
-        }
-
-        @Override
         public boolean onBlockActivated( World p_onBlockActivated_1_,
                                          BlockPos p_onBlockActivated_2_,
                                          IBlockState p_onBlockActivated_3_,
