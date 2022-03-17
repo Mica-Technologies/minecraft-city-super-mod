@@ -25,37 +25,43 @@ public abstract class AbstractBlockFireAlarmDetector extends AbstractBlockFireAl
     public void onTick( World world, BlockPos blockPos, IBlockState blockState ) {
         boolean foundFire = false;
 
-        // Search for fire
-        int deviceX = blockPos.getX();
-        int deviceY = blockPos.getY();
-        int deviceZ = blockPos.getZ();
-        for ( int searchX = deviceX - RADIUS_AROUND_BLOCKS_CHECK;
-              searchX <= deviceX + RADIUS_AROUND_BLOCKS_CHECK;
-              searchX++ ) {
-            for ( int searchZ = deviceZ - RADIUS_AROUND_BLOCKS_CHECK;
-                  searchZ <= deviceZ + RADIUS_AROUND_BLOCKS_CHECK;
-                  searchZ++ ) {
-                for ( int searchY = deviceY - VERT_BELOW_BLOCKS_CHECK; searchY <= deviceY; searchY++ ) {
-                    BlockPos searchBlockPos = new BlockPos( searchX, searchY, searchZ );
-                    IBlockState searchBlockState = world.getBlockState( searchBlockPos );
-                    Block searchBlock = searchBlockState.getBlock();
-                    if ( searchBlock == Blocks.FIRE || searchBlockState.getMaterial() == Material.FIRE ) {
-                        foundFire = true;
-                        MinecraftServer mcserv = FMLCommonHandler.instance().getMinecraftServerInstance();
-                        if ( mcserv != null ) {
-                            mcserv.sendMessage( new TextComponentString(
-                                    "A fire has been detected at [" + searchX + "," + searchY + "," + searchZ + "]" ) );
-                        }
-                        onFire( world, blockPos, blockState );
-                        break;
-                    }
+        // Build search corner positions
+        int corner1X = blockPos.getX() - RADIUS_AROUND_BLOCKS_CHECK;
+        int corner1Y = blockPos.getY() - VERT_BELOW_BLOCKS_CHECK;
+        int corner1Z = blockPos.getZ() - RADIUS_AROUND_BLOCKS_CHECK;
+        int corner2X = blockPos.getX() + RADIUS_AROUND_BLOCKS_CHECK;
+        int corner2Y = blockPos.getY();
+        int corner2Z = blockPos.getZ() + RADIUS_AROUND_BLOCKS_CHECK;
+        BlockPos corner1 = new BlockPos( corner1X, corner1Y, corner1Z );
+        BlockPos corner2 = new BlockPos( corner2X, corner2Y, corner2Z );
+
+        // Get blocks within search area
+        Iterable< BlockPos > blockPosListInSearchArea = BlockPos.getAllInBox( corner1, corner2 );
+
+        // Search for fire within area
+        for ( BlockPos blockPosInSearchArea : blockPosListInSearchArea ) {
+            IBlockState searchBlockState = world.getBlockState( blockPosInSearchArea );
+            Block searchBlock = searchBlockState.getBlock();
+            if ( searchBlock == Blocks.FIRE || searchBlockState.getMaterial() == Material.FIRE ) {
+                foundFire = true;
+                MinecraftServer minecraftServer = FMLCommonHandler.instance().getMinecraftServerInstance();
+                if ( minecraftServer != null ) {
+                    minecraftServer.sendMessage( new TextComponentString( "A fire has been detected at [" +
+                                                                                  blockPosInSearchArea.getX() +
+                                                                                  "," +
+                                                                                  blockPosInSearchArea.getY() +
+                                                                                  "," +
+                                                                                  blockPosInSearchArea.getZ() +
+                                                                                  "]" ) );
                 }
+                break;
             }
         }
 
         // If fire found, activate linked panel
         if ( foundFire ) {
             activateLinkedPanel( world, blockPos, null );
+            onFire( world, blockPos, blockState );
         }
     }
 
