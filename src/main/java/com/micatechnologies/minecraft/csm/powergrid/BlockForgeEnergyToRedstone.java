@@ -33,12 +33,12 @@ import java.util.List;
 import java.util.Random;
 
 @ElementsCitySuperMod.ModElement.Tag
-public class BlockRFtoRS extends ElementsCitySuperMod.ModElement
+public class BlockForgeEnergyToRedstone extends ElementsCitySuperMod.ModElement
 {
     @GameRegistry.ObjectHolder( "csm:rftors" )
     public static final Block block = null;
 
-    public BlockRFtoRS( ElementsCitySuperMod instance ) {
+    public BlockForgeEnergyToRedstone( ElementsCitySuperMod instance ) {
         super( instance, 1156 );
     }
 
@@ -64,7 +64,6 @@ public class BlockRFtoRS extends ElementsCitySuperMod.ModElement
     {
 
         public static final  PropertyBool POWERED       = PropertyBool.create( "powered" );
-        private static final int          energyConsume = 6;
 
         public BlockCustom() {
             super( Material.ROCK );
@@ -92,56 +91,6 @@ public class BlockRFtoRS extends ElementsCitySuperMod.ModElement
         @ParametersAreNonnullByDefault
         public boolean isOpaqueCube( IBlockState state ) {
             return false;
-        }
-
-        @Override
-        public void updateTick( World p_updateTick_1_,
-                                BlockPos p_updateTick_2_,
-                                IBlockState p_updateTick_3_,
-                                Random p_updateTick_4_ )
-        {
-            TileEntity tileEntity = p_updateTick_1_.getTileEntity( p_updateTick_2_ );
-
-            boolean power = false;
-            if ( tileEntity instanceof TileEntityForgeEnergyConsumer ) {
-                TileEntityForgeEnergyConsumer tileEntityForgeEnergyConsumer
-                        = ( TileEntityForgeEnergyConsumer ) tileEntity;
-                power = tileEntityForgeEnergyConsumer.consumeEnergy( energyConsume );
-            }
-
-            if ( p_updateTick_3_.getValue( POWERED ) != power ) {
-                p_updateTick_1_.setBlockState( p_updateTick_2_, p_updateTick_3_.withProperty( POWERED, power ), 3 );
-            }
-
-            p_updateTick_1_.scheduleUpdate( p_updateTick_2_, this, this.tickRate( p_updateTick_1_ ) );
-        }
-
-        @Override
-        public int tickRate( World p_tickRate_1_ ) {
-            return 40;
-        }
-
-        @Override
-        public void onBlockAdded( World p_onBlockAdded_1_, BlockPos p_onBlockAdded_2_, IBlockState p_onBlockAdded_3_ ) {
-            p_onBlockAdded_1_.scheduleUpdate( p_onBlockAdded_2_, this, this.tickRate( p_onBlockAdded_1_ ) );
-            super.onBlockAdded( p_onBlockAdded_1_, p_onBlockAdded_2_, p_onBlockAdded_3_ );
-        }
-
-        @Override
-        public boolean onBlockActivated( World p_onBlockActivated_1_,
-                                         BlockPos p_onBlockActivated_2_,
-                                         IBlockState p_onBlockActivated_3_,
-                                         EntityPlayer p_onBlockActivated_4_,
-                                         EnumHand p_onBlockActivated_5_,
-                                         EnumFacing p_onBlockActivated_6_,
-                                         float p_onBlockActivated_7_,
-                                         float p_onBlockActivated_8_,
-                                         float p_onBlockActivated_9_ )
-        {
-            updateTick( p_onBlockActivated_1_, p_onBlockActivated_2_, p_onBlockActivated_3_, new Random() );
-            return super.onBlockActivated( p_onBlockActivated_1_, p_onBlockActivated_2_, p_onBlockActivated_3_,
-                                           p_onBlockActivated_4_, p_onBlockActivated_5_, p_onBlockActivated_6_,
-                                           p_onBlockActivated_7_, p_onBlockActivated_8_, p_onBlockActivated_9_ );
         }
 
         @Override
