@@ -120,85 +120,6 @@ public class BlockTrafficSignalController extends ElementsCitySuperMod.ModElemen
         }
 
         @Override
-        public void randomTick( World p_randomTick_1_,
-                                BlockPos p_randomTick_2_,
-                                IBlockState p_randomTick_3_,
-                                Random p_randomTick_4_ )
-        {
-            TileEntity tileEntity = p_randomTick_1_.getTileEntity( p_randomTick_2_ );
-            if ( tileEntity instanceof TileEntityTrafficSignalController ) {
-                TileEntityTrafficSignalController tileEntityTrafficSignalController
-                        = ( TileEntityTrafficSignalController ) tileEntity;
-                final long timeSinceLastTick = System.currentTimeMillis() -
-                        tileEntityTrafficSignalController.getLastPhaseChangeTime();
-                if ( timeSinceLastTick > maxTimeSinceLastTick( p_randomTick_1_, p_randomTick_2_ ) ) {
-                    p_randomTick_1_.scheduleUpdate( p_randomTick_2_, this,
-                                                    getTickRate( p_randomTick_1_, p_randomTick_2_ ) );
-                }
-
-                // Verify signal types match (left not linked to right, etc)
-                tileEntityTrafficSignalController.runAutomaticSystemVerification( p_randomTick_1_ );
-            }
-            super.randomTick( p_randomTick_1_, p_randomTick_2_, p_randomTick_3_, p_randomTick_4_ );
-        }
-
-        private double maxTimeSinceLastTick( World w, BlockPos p ) {
-            // Get max time since last tick (x50 for ticks -> millis) (x1.5 to account for drift)
-            return ( ( double ) getTickRate( w, p ) ) * 50.0 * 1.5;
-        }
-
-        @Override
-        public void updateTick( World p_updateTick_1_,
-                                BlockPos p_updateTick_2_,
-                                IBlockState p_updateTick_3_,
-                                Random p_updateTick_4_ )
-        {
-            p_updateTick_1_.scheduleUpdate( p_updateTick_2_, this, getTickRate( p_updateTick_1_, p_updateTick_2_ ) );
-
-            try {
-                // Check if receiving power
-                boolean powered = p_updateTick_3_.getValue( POWERED );
-
-                TileEntity tileEntity = p_updateTick_1_.getTileEntity( p_updateTick_2_ );
-
-                if ( tileEntity instanceof TileEntityTrafficSignalController ) {
-                    TileEntityTrafficSignalController tileEntityTrafficSignalController
-                            = ( TileEntityTrafficSignalController ) tileEntity;
-                    tileEntityTrafficSignalController.cycleSignals( powered, p_updateTick_1_ );
-                }
-            }
-            catch ( Exception e ) {
-                System.err.println( "An error occurred while ticking a traffic signal controller: " );
-                e.printStackTrace();
-            }
-
-        }
-
-        public int getTickRate( World w, BlockPos p ) {
-            int tickRate = 4;
-            TileEntity tileEntity = w.getTileEntity( p );
-
-            if ( tileEntity instanceof TileEntityTrafficSignalController ) {
-                TileEntityTrafficSignalController tileEntityTrafficSignalController
-                        = ( TileEntityTrafficSignalController ) tileEntity;
-                tickRate = tileEntityTrafficSignalController.getCycleTickRate();
-            }
-            return tickRate;
-        }
-
-        @Override
-        public int tickRate( World p_tickRate_1_ ) {
-            return 20;
-        }
-
-        @Override
-        public void onBlockAdded( World p_onBlockAdded_1_, BlockPos p_onBlockAdded_2_, IBlockState p_onBlockAdded_3_ ) {
-            p_onBlockAdded_1_.scheduleUpdate( p_onBlockAdded_2_, this,
-                                              getTickRate( p_onBlockAdded_1_, p_onBlockAdded_2_ ) );
-            super.onBlockAdded( p_onBlockAdded_1_, p_onBlockAdded_2_, p_onBlockAdded_3_ );
-        }
-
-        @Override
         public boolean onBlockActivated( World p_onBlockActivated_1_,
                                          BlockPos p_onBlockActivated_2_,
                                          IBlockState p_onBlockActivated_3_,
@@ -258,26 +179,6 @@ public class BlockTrafficSignalController extends ElementsCitySuperMod.ModElemen
                     if ( !p_onBlockActivated_1_.isRemote ) {
                         p_onBlockActivated_4_.sendMessage( new TextComponentString(
                                 "Unable to replace broken controller tile entity. Replace this block." ) );
-                    }
-                }
-            }
-
-            // Check for ticking loss
-            if ( tileEntity instanceof TileEntityTrafficSignalController ) {
-                TileEntityTrafficSignalController tileEntityTrafficSignalController
-                        = ( TileEntityTrafficSignalController ) tileEntity;
-                final long timeSinceLastTick = System.currentTimeMillis() -
-                        tileEntityTrafficSignalController.getLastPhaseChangeTime();
-                if ( timeSinceLastTick > maxTimeSinceLastTick( p_onBlockActivated_1_, p_onBlockActivated_2_ ) ) {
-                    if ( !p_onBlockActivated_1_.isRemote ) {
-                        p_onBlockActivated_4_.sendMessage( new TextComponentString(
-                                "This block appears to be non-ticking. Attempting to restore..." ) );
-                    }
-                    p_onBlockActivated_1_.scheduleUpdate( p_onBlockActivated_2_, this,
-                                                          getTickRate( p_onBlockActivated_1_, p_onBlockActivated_2_ ) );
-                    if ( !p_onBlockActivated_1_.isRemote ) {
-                        p_onBlockActivated_4_.sendMessage( new TextComponentString(
-                                "Block ticking has been scheduled. If this did not resolve the problem, replace this block." ) );
                     }
                 }
             }

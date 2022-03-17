@@ -9,6 +9,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -17,7 +18,7 @@ import java.util.Iterator;
 import java.util.List;
 
 @ElementsCitySuperMod.ModElement.Tag
-public class TileEntityTrafficSignalController extends TileEntity
+public class TileEntityTrafficSignalController extends TileEntity implements ITickable
 {
     ///region: New Logic
     private static final String                       SERIALIZED_SIGNAL_CIRCUIT_LIST_KEY
@@ -1215,6 +1216,23 @@ public class TileEntityTrafficSignalController extends TileEntity
             if ( phaseChanged ) {
                 updateSignals( signalStateToApply, powered );
                 markDirty();
+            }
+        }
+    }
+
+    @Override
+    public void update() {
+        // This is called every tick, need to check if it is time to act
+        if ( getWorld().getTotalWorldTime() % getCycleTickRate() == 0L ) {
+            try {
+                // Check if block powered
+                boolean isBlockPowered = getWorld().getBlockState( getPos() )
+                                                   .getValue( BlockTrafficSignalController.BlockCustom.POWERED );
+                cycleSignals( isBlockPowered, getWorld() );
+            }
+            catch ( Exception e ) {
+                System.err.println( "An error occurred while ticking a traffic signal controller: " );
+                e.printStackTrace( System.err );
             }
         }
     }
