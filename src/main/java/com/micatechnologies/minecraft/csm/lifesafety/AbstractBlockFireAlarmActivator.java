@@ -99,8 +99,9 @@ public abstract class AbstractBlockFireAlarmActivator extends Block implements I
         try {
             onTick( p_updateTick_1_, p_updateTick_2_, p_updateTick_3_ );
         }
-        catch ( Exception ignored ) {
-
+        catch ( Exception e ) {
+            System.err.println( "An error occurred while ticking a fire alarm activator block: " );
+            e.printStackTrace( System.err );
         }
         p_updateTick_1_.scheduleUpdate( p_updateTick_2_, this, this.tickRate( p_updateTick_1_ ) );
     }
