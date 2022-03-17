@@ -7,6 +7,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ITickable;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
@@ -18,8 +19,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 @ElementsCitySuperMod.ModElement.Tag
-public class TileEntityFireAlarmControlPanel extends TileEntity
+public class TileEntityFireAlarmControlPanel extends TileEntity implements ITickable
 {
+    private static final int tickRate = 20;
+
     private static final String   soundIndexKey          = "soundIndex";
     private static final String   alarmKey               = "alarm";
     private static final String   alarmStormKey          = "alarmStorm";
@@ -168,12 +171,10 @@ public class TileEntityFireAlarmControlPanel extends TileEntity
         return SOUND_NAMES[ soundIndex ];
     }
 
-    public synchronized void updateTick( World world,
-                                         BlockPos p_updateTick_2_,
-                                         BlockFireAlarmControlPanel.BlockCustom fireAlarmControlPanel )
+    public synchronized void updateTick( World world, BlockPos p_updateTick_2_ )
     {
         if ( alarm ) {
-            // Reset storm alarm (fire alarm overrrides storm)
+            // Reset storm alarm (fire alarm overrides storm)
             if ( alarmStormSoundTracking > 0 ) {
                 alarmStormSoundTracking = 0;
             }
@@ -235,7 +236,7 @@ public class TileEntityFireAlarmControlPanel extends TileEntity
             }
 
             // Increment sound trackers
-            final int incrementSize = fireAlarmControlPanel.tickRate( world );
+            final int incrementSize = tickRate;
             for ( String key : alarmSoundTracking.keySet() ) {
                 int valForKey = alarmSoundTracking.get( key );
                 alarmSoundTracking.put( key, valForKey + incrementSize );
@@ -285,8 +286,7 @@ public class TileEntityFireAlarmControlPanel extends TileEntity
                 }
 
                 // Increment storm sound tracker
-                final int incrementSize = fireAlarmControlPanel.tickRate( world );
-                alarmStormSoundTracking += incrementSize;
+                alarmStormSoundTracking += tickRate;
             }
             else {
                 // Reset storm alarm
@@ -305,4 +305,17 @@ public class TileEntityFireAlarmControlPanel extends TileEntity
         return SOUND_RESOURCE_NAMES[ soundIndex ];
     }
 
+    @Override
+    public void update() {
+        // This is called every tick, need to check if it is time to act
+        if ( getWorld().getTotalWorldTime() % tickRate == 0L ) {
+            try {
+                updateTick( getWorld(), getPos() );
+            }
+            catch ( Exception e ) {
+                System.err.println( "An error occurred while ticking a fire alarm control panel: " );
+                e.printStackTrace( System.err );
+            }
+        }
+    }
 }
