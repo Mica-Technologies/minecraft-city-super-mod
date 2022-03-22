@@ -126,6 +126,17 @@ public class BlockFireAlarmControlPanel extends ElementsCitySuperMod.ModElement
         }
 
         @Override
+        public boolean hasTileEntity( IBlockState p_hasTileEntity_1_ ) {
+            return true;
+        }
+
+        @Override
+        public void breakBlock( World p_180663_1_, BlockPos p_180663_2_, IBlockState p_180663_3_ ) {
+            p_180663_1_.removeTileEntity( p_180663_2_ );
+            super.breakBlock( p_180663_1_, p_180663_2_, p_180663_3_ );
+        }
+
+        @Override
         public boolean onBlockActivated( World p_onBlockActivated_1_,
                                          BlockPos p_onBlockActivated_2_,
                                          IBlockState p_onBlockActivated_3_,

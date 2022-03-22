@@ -63,7 +63,7 @@ public class BlockForgeEnergyToRedstone extends ElementsCitySuperMod.ModElement
     public static class BlockCustom extends Block implements ITileEntityProvider
     {
 
-        public static final  PropertyBool POWERED       = PropertyBool.create( "powered" );
+        public static final PropertyBool POWERED = PropertyBool.create( "powered" );
 
         public BlockCustom() {
             super( Material.ROCK );
@@ -139,6 +139,11 @@ public class BlockForgeEnergyToRedstone extends ElementsCitySuperMod.ModElement
         @ParametersAreNonnullByDefault
         public TileEntity createNewTileEntity( World world, int i ) {
             return new TileEntityForgeEnergyConsumer();
+        }
+
+        @Override
+        public boolean hasTileEntity( IBlockState p_hasTileEntity_1_ ) {
+            return true;
         }
     }
 }
