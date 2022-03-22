@@ -1,0 +1,9 @@
+{
+  "parent": "csm:custom/trafficlighthawk",
+  "textures": {
+    "all": "csm:blocks/solidoff",
+    "particle": "csm:blocks/solidoff",
+    "0": "csm:blocks/solidreddoublewigwag",
+    "1": "csm:blocks/solidyellowoff"
+  }
+}

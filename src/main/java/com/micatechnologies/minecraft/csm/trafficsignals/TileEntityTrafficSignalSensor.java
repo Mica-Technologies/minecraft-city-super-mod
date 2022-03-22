@@ -6,12 +6,15 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 @ElementsCitySuperMod.ModElement.Tag
@@ -95,5 +98,34 @@ public class TileEntityTrafficSignalSensor extends TileEntity
 
     public int getWaitingCount( World world ) {
         return scanEntities( world );
+    }
+
+    @Override
+    @Nullable
+    public SPacketUpdateTileEntity getUpdatePacket()
+    {
+        NBTTagCompound nbtTagCompound = new NBTTagCompound();
+        writeToNBT( nbtTagCompound );
+        int metadata = getBlockMetadata();
+        return new SPacketUpdateTileEntity( this.pos, metadata, nbtTagCompound );
+    }
+
+    @Override
+    public void onDataPacket( NetworkManager networkManager, SPacketUpdateTileEntity pkt ) {
+        readFromNBT( pkt.getNbtCompound() );
+    }
+
+    @Override
+    public NBTTagCompound getUpdateTag()
+    {
+        NBTTagCompound nbtTagCompound = new NBTTagCompound();
+        writeToNBT( nbtTagCompound );
+        return nbtTagCompound;
+    }
+
+    @Override
+    public void handleUpdateTag( NBTTagCompound nbtTagCompound )
+    {
+        this.readFromNBT( nbtTagCompound );
     }
 }
