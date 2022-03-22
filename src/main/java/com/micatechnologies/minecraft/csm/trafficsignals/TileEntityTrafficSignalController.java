@@ -7,11 +7,14 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -1226,9 +1229,17 @@ public class TileEntityTrafficSignalController extends TileEntity implements ITi
         if ( getWorld().getTotalWorldTime() % getCycleTickRate() == 0L ) {
             try {
                 // Check if block powered
-                boolean isBlockPowered = getWorld().getBlockState( getPos() )
-                                                   .getValue( BlockTrafficSignalController.BlockCustom.POWERED );
-                cycleSignals( isBlockPowered, getWorld() );
+                boolean isBlockPowered = getWorld().isBlockIndirectlyGettingPowered( getPos() ) > 0;
+                boolean isTileValid = getWorld().getBlockState( getPos() )
+                                                .getBlock() instanceof BlockTrafficSignalController.BlockCustom;
+                if ( isTileValid ) {
+                    cycleSignals( isBlockPowered, getWorld() );
+                }
+                else {
+                    System.err.println( "Skipping tick of traffic signal controller tile entity, because the " +
+                                                "controller has been deleted. This tile entity should be/should have " +
+                                                "been deleted by Minecraft! Try reloading the map." );
+                }
             }
             catch ( Exception e ) {
                 System.err.println( "An error occurred while ticking a traffic signal controller: " );
