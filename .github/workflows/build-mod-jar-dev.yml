@@ -48,6 +48,12 @@ jobs:
           timeZone: 0
           format: 'YYYY-MM-DD-HH-mm-ss'
 
+      - name: Get Jar SHA1
+        id: jarsha
+        run: |
+          sha=`sha1sum ./build/libs/modid-1.0.jar`
+          echo "::set-output name=jarsha::$sha"
+
       - name: Create pre-release entry
         id: create-release-entry
         uses: actions/create-release@v1
@@ -56,7 +62,7 @@ jobs:
         with:
           tag_name: csm-devbuild-${{ github.sha }}
           release_name: Dev Build ${{ steps.time.outputs.time }}UTC (${{ github.sha }})
-          body: Automatic build from branch ${{ steps.branch-name.outputs.short_ref }} of commit SHA ${{ github.sha }} at time ${{ steps.time.outputs.time }}UTC.
+          body: Automatic build from branch ${{ steps.branch-name.outputs.short_ref }} of commit SHA ${{ github.sha }} at time ${{ steps.time.outputs.time }}UTC. The SHA-1 sum of the JAR is ${{ steps.jarsha.outputs.jarsha }}.
           draft: false
           prerelease: true
 
