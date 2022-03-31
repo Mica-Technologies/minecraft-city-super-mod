@@ -1243,6 +1243,7 @@ public class TileEntityTrafficSignalController extends TileEntity implements ITi
                                                 "controller has been deleted. This tile entity should be/should have " +
                                                 "been deleted by Minecraft! Try reloading the map." );
                 }
+                markDirty();
             }
             catch ( Exception e ) {
                 System.err.println( "An error occurred while ticking a traffic signal controller: " );
@@ -1250,7 +1251,6 @@ public class TileEntityTrafficSignalController extends TileEntity implements ITi
             }
         }
     }
-
     @Override
     @Nullable
     public SPacketUpdateTileEntity getUpdatePacket()
@@ -1279,4 +1279,5 @@ public class TileEntityTrafficSignalController extends TileEntity implements ITi
     {
         this.readFromNBT( nbtTagCompound );
     }
+
 }
