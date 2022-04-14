@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignal;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
@@ -58,8 +59,13 @@ public class BlockControllableVerticalLeftSignal8812Inch extends ElementsCitySup
         }
 
         @Override
-        public SIGNAL_SIDE getSignalSide( World world, BlockPos blockPos ) {
+        public SIGNAL_SIDE getSignalSide( World world, BlockPos blockPos) {
             return SIGNAL_SIDE.LEFT;
+        }
+
+        @Override
+        public boolean doesFlash() {
+            return true;
         }
 
     }

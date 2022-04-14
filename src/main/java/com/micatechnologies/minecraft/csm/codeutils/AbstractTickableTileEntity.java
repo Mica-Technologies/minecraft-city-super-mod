@@ -7,7 +7,7 @@ import net.minecraft.util.ITickable;
  * {@link AbstractTileEntity} class and implements the {@link ITickable} interface.
  *
  * @author Mica Technologies
- * @since 2022.1.0
+ * @since 2023.2.0
  */
 public abstract class AbstractTickableTileEntity extends AbstractTileEntity implements ITickable
 {
@@ -48,8 +48,8 @@ public abstract class AbstractTickableTileEntity extends AbstractTileEntity impl
      */
     @Override
     public void update() {
-        if ( !pauseTicking() && getWorld().getTotalWorldTime() % getTickRate() == 0L  ) {
-            if ( doClientTick() || !getWorld().isRemote ) {
+        if ( doClientTick() || !getWorld().isRemote ) {
+            if ( !pauseTicking() && getWorld().getTotalWorldTime() % getTickRate() == 0L ) {
                 try {
                     onTick();
                 }
@@ -58,6 +58,8 @@ public abstract class AbstractTickableTileEntity extends AbstractTileEntity impl
                                                 world.isRemote +
                                                 "] a tile entity [" +
                                                 this.getClass().getCanonicalName() +
+                                                ", " +
+                                                getPos() +
                                                 "]: " );
                     e.printStackTrace( System.err );
                 }

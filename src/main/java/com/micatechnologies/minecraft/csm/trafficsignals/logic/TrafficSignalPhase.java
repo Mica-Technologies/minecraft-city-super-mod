@@ -3,8 +3,11 @@ package com.micatechnologies.minecraft.csm.trafficsignals.logic;
 import com.micatechnologies.minecraft.csm.codeutils.SerializationUtils;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * The class representation of a traffic signal phase in a format which can be easily serialized and deserialized as
@@ -14,7 +17,7 @@ import java.util.ArrayList;
  * @version 1.0
  * @see #fromNBT(NBTTagCompound)
  * @see #toNBT()
- * @since 2022.1.0
+ * @since 2023.2.0
  */
 public class TrafficSignalPhase
 {
@@ -337,7 +340,7 @@ public class TrafficSignalPhase
      *
      * @since 1.0
      */
-    public boolean addOffSignals( ArrayList< BlockPos > pos )
+    public boolean addOffSignals( List< BlockPos > pos )
     {
         return offSignals.addAll( pos );
     }
@@ -354,7 +357,7 @@ public class TrafficSignalPhase
      *
      * @since 1.0
      */
-    public boolean addGreenSignals( ArrayList< BlockPos > pos )
+    public boolean addGreenSignals( List< BlockPos > pos )
     {
         return greenSignals.addAll( pos );
     }
@@ -371,7 +374,7 @@ public class TrafficSignalPhase
      *
      * @since 1.0
      */
-    public boolean addYellowSignals( ArrayList< BlockPos > pos )
+    public boolean addYellowSignals( List< BlockPos > pos )
     {
         return yellowSignals.addAll( pos );
     }
@@ -387,9 +390,27 @@ public class TrafficSignalPhase
      *
      * @since 1.0
      */
-    public boolean addRedSignals( ArrayList< BlockPos > pos )
+    public boolean addRedSignals( List< BlockPos > pos )
     {
         return redSignals.addAll( pos );
+    }
+
+    /**
+     * Applies the {@link TrafficSignalPhase} to the given {@link World}.
+     *
+     * @param world The {@link World} to apply the {@link TrafficSignalPhase} to.
+     *
+     * @since 1.0
+     */
+    public void apply( World world ) {
+        greenSignals.forEach( pos -> AbstractBlockControllableSignal.changeSignalColor( world, pos,
+                                                                                        AbstractBlockControllableSignal.SIGNAL_GREEN ) );
+        yellowSignals.forEach( pos -> AbstractBlockControllableSignal.changeSignalColor( world, pos,
+                                                                                         AbstractBlockControllableSignal.SIGNAL_YELLOW ) );
+        redSignals.forEach( pos -> AbstractBlockControllableSignal.changeSignalColor( world, pos,
+                                                                                      AbstractBlockControllableSignal.SIGNAL_RED ) );
+        offSignals.forEach( pos -> AbstractBlockControllableSignal.changeSignalColor( world, pos,
+                                                                                      AbstractBlockControllableSignal.SIGNAL_OFF ) );
     }
 
     //endregion
@@ -412,18 +433,20 @@ public class TrafficSignalPhase
         NBTTagCompound compound = new NBTTagCompound();
 
         // Serialize off signals
-        compound.setIntArray( NBT_KEY_OFF_SIGNAL_LIST, SerializationUtils.getBlockPosIntArrayFromList( offSignals ) );
+        compound.setTag( NBT_KEY_OFF_SIGNAL_LIST,
+                         SerializationUtils.getBlockPosNBTArrayFromBlockPosList( offSignals ) );
 
         // Serialize green signals
-        compound.setIntArray( NBT_KEY_GREEN_SIGNAL_LIST,
-                              SerializationUtils.getBlockPosIntArrayFromList( greenSignals ) );
+        compound.setTag( NBT_KEY_GREEN_SIGNAL_LIST,
+                         SerializationUtils.getBlockPosNBTArrayFromBlockPosList( greenSignals ) );
 
         // Serialize yellow signals
-        compound.setIntArray( NBT_KEY_YELLOW_SIGNAL_LIST,
-                              SerializationUtils.getBlockPosIntArrayFromList( yellowSignals ) );
+        compound.setTag( NBT_KEY_YELLOW_SIGNAL_LIST,
+                         SerializationUtils.getBlockPosNBTArrayFromBlockPosList( yellowSignals ) );
 
         // Serialize red signals
-        compound.setIntArray( NBT_KEY_RED_SIGNAL_LIST, SerializationUtils.getBlockPosIntArrayFromList( redSignals ) );
+        compound.setTag( NBT_KEY_RED_SIGNAL_LIST,
+                         SerializationUtils.getBlockPosNBTArrayFromBlockPosList( redSignals ) );
 
         // Serialize the circuit
         compound.setInteger( NBT_KEY_CIRCUIT, circuit );
@@ -435,7 +458,7 @@ public class TrafficSignalPhase
         compound.setInteger( NBT_KEY_MIN_GREEN_TIME, minGreenTime );
 
         // Serialize the applicability
-        compound.setInteger( NBT_KEY_APPLICABILITY, applicability.getId() );
+        compound.setInteger( NBT_KEY_APPLICABILITY, applicability.toNBT() );
 
         // Return the compound
         return compound;
@@ -463,27 +486,69 @@ public class TrafficSignalPhase
         TrafficSignalPhase phase = new TrafficSignalPhase( nbt.getInteger( NBT_KEY_CIRCUIT ),
                                                            nbt.getInteger( NBT_KEY_MAX_GREEN_TIME ),
                                                            nbt.getInteger( NBT_KEY_MIN_GREEN_TIME ),
-                                                           TrafficSignalPhaseApplicability.getDirection(
+                                                           TrafficSignalPhaseApplicability.fromNBT(
                                                                    nbt.getInteger( NBT_KEY_APPLICABILITY ) ) );
 
         // Deserialize off signals
         phase.offSignals.addAll(
-                SerializationUtils.getBlockPosListFromIntArray( nbt.getIntArray( NBT_KEY_OFF_SIGNAL_LIST ) ) );
+                SerializationUtils.getBlockPosListFromBlockPosNBTArray( nbt.getTag( NBT_KEY_OFF_SIGNAL_LIST ) ) );
 
         // Deserialize green signals
         phase.greenSignals.addAll(
-                SerializationUtils.getBlockPosListFromIntArray( nbt.getIntArray( NBT_KEY_GREEN_SIGNAL_LIST ) ) );
+                SerializationUtils.getBlockPosListFromBlockPosNBTArray( nbt.getTag( NBT_KEY_GREEN_SIGNAL_LIST ) ) );
 
         // Deserialize yellow signals
         phase.yellowSignals.addAll(
-                SerializationUtils.getBlockPosListFromIntArray( nbt.getIntArray( NBT_KEY_YELLOW_SIGNAL_LIST ) ) );
+                SerializationUtils.getBlockPosListFromBlockPosNBTArray( nbt.getTag( NBT_KEY_YELLOW_SIGNAL_LIST ) ) );
 
         // Deserialize red signals
         phase.redSignals.addAll(
-                SerializationUtils.getBlockPosListFromIntArray( nbt.getIntArray( NBT_KEY_RED_SIGNAL_LIST ) ) );
+                SerializationUtils.getBlockPosListFromBlockPosNBTArray( nbt.getTag( NBT_KEY_RED_SIGNAL_LIST ) ) );
 
         // Return the phase
         return phase;
+    }
+
+    /**
+     * Checks if the given {@link Object} is equal to this {@link TrafficSignalPhase}.
+     *
+     * @param o The {@link Object} to check.
+     *
+     * @return {@code true} if the given {@link Object} is equal to this {@link TrafficSignalPhase}; {@code false}
+     *         otherwise.
+     *
+     * @since 1.0
+     */
+    @Override
+    public boolean equals( Object o ) {
+        if ( this == o ) {
+            return true;
+        }
+        if ( o == null || getClass() != o.getClass() ) {
+            return false;
+        }
+        TrafficSignalPhase that = ( TrafficSignalPhase ) o;
+        return circuit == that.circuit &&
+                maxGreenTime == that.maxGreenTime &&
+                minGreenTime == that.minGreenTime &&
+                Objects.equals( offSignals, that.offSignals ) &&
+                Objects.equals( greenSignals, that.greenSignals ) &&
+                Objects.equals( yellowSignals, that.yellowSignals ) &&
+                Objects.equals( redSignals, that.redSignals ) &&
+                applicability == that.applicability;
+    }
+
+    /**
+     * Gets the hash code of this {@link TrafficSignalPhase}.
+     *
+     * @return The hash code of this {@link TrafficSignalPhase}.
+     *
+     * @since 1.0
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash( offSignals, greenSignals, yellowSignals, redSignals, circuit, maxGreenTime, minGreenTime,
+                             applicability );
     }
 
     //endregion
