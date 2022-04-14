@@ -111,14 +111,10 @@ public class ItemNSSignalLinker extends ElementsCitySuperMod.ModElement
                             = ( TileEntityTrafficSignalController ) tileEntity;
                     boolean linked;
                     if ( !worldIn.isRemote ) {
-                        linked = tileEntityTrafficSignalController.linkDevice( worldIn, pos,
-                                                                               AbstractBlockControllableSignal.SIGNAL_SIDE.NA_SENSOR,
-                                                                               circuitLinkIndexClient );
+                        linked = tileEntityTrafficSignalController.linkDevice( pos );
                     }
                     else {
-                        linked = tileEntityTrafficSignalController.linkDevice( worldIn, pos,
-                                                                               AbstractBlockControllableSignal.SIGNAL_SIDE.NA_SENSOR,
-                                                                               circuitLinkIndexServer );
+                        linked = tileEntityTrafficSignalController.linkDevice( pos );
                     }
 
                     if ( !worldIn.isRemote && linked ) {
@@ -151,7 +147,7 @@ public class ItemNSSignalLinker extends ElementsCitySuperMod.ModElement
                 if ( tileEntity instanceof TileEntityTrafficSignalController ) {
                     TileEntityTrafficSignalController tileEntityTrafficSignalController
                             = ( TileEntityTrafficSignalController ) tileEntity;
-                    tileEntityTrafficSignalController.unlinkDevice( pos, worldIn );
+                    tileEntityTrafficSignalController.unlinkDevice( pos );
 
                     if ( !worldIn.isRemote ) {
                         player.sendMessage( new TextComponentString( "Sensor unlinked from signal controller at " +
@@ -184,16 +180,10 @@ public class ItemNSSignalLinker extends ElementsCitySuperMod.ModElement
                             = ( TileEntityTrafficSignalController ) tileEntity;
                     boolean linked;
                     if ( !worldIn.isRemote ) {
-                        linked = tileEntityTrafficSignalController.linkDevice( worldIn, pos,
-                                                                               clickedBlock.getSignalSide( worldIn,
-                                                                                                           pos ),
-                                                                               circuitLinkIndexClient );
+                        linked = tileEntityTrafficSignalController.linkDevice( pos );
                     }
                     else {
-                        linked = tileEntityTrafficSignalController.linkDevice( worldIn, pos,
-                                                                               clickedBlock.getSignalSide( worldIn,
-                                                                                                           pos ),
-                                                                               circuitLinkIndexServer );
+                        linked = tileEntityTrafficSignalController.linkDevice( pos );
                     }
                     if ( !worldIn.isRemote &&
                             linked &&
@@ -270,7 +260,7 @@ public class ItemNSSignalLinker extends ElementsCitySuperMod.ModElement
                 if ( tileEntity instanceof TileEntityTrafficSignalController ) {
                     TileEntityTrafficSignalController tileEntityTrafficSignalController
                             = ( TileEntityTrafficSignalController ) tileEntity;
-                    boolean removed = tileEntityTrafficSignalController.unlinkDevice( pos, worldIn );
+                    boolean removed = tileEntityTrafficSignalController.unlinkDevice( pos );
 
                     // If unlinked, change device state to off
                     AbstractBlockControllableSignal.changeSignalColor( worldIn, pos,
@@ -344,20 +334,20 @@ public class ItemNSSignalLinker extends ElementsCitySuperMod.ModElement
                         TileEntityTrafficSignalController tileEntityTrafficSignalController
                                 = ( TileEntityTrafficSignalController ) tileEntity;
                         if ( !worldIn.isRemote ) {
-                            if ( circuitLinkIndexClient > tileEntityTrafficSignalController.getSignalCircuitCount() ) {
+                            if ( circuitLinkIndexClient > tileEntityTrafficSignalController.getCircuitCount() ) {
                                 circuitLinkIndexClient = 0;
                             }
                             circuitLinkIndexClient++;
                         }
                         else {
-                            if ( circuitLinkIndexServer > tileEntityTrafficSignalController.getSignalCircuitCount() ) {
+                            if ( circuitLinkIndexServer > tileEntityTrafficSignalController.getCircuitCount() ) {
                                 circuitLinkIndexServer = 0;
                             }
                             circuitLinkIndexServer++;
                         }
 
                         if ( !worldIn.isRemote ) {
-                            if ( circuitLinkIndexClient > tileEntityTrafficSignalController.getSignalCircuitCount() ) {
+                            if ( circuitLinkIndexClient > tileEntityTrafficSignalController.getCircuitCount() ) {
 
                                 player.sendMessage( new TextComponentString(
                                         "Linking to circuit #" + circuitLinkIndexClient + " (new)" ) );
