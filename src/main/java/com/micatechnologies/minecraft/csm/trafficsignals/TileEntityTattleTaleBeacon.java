@@ -9,8 +9,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 
-import java.util.ArrayList;
-
 @ElementsCitySuperMod.ModElement.Tag
 public class TileEntityTattleTaleBeacon extends TileEntity
 {
@@ -56,16 +54,16 @@ public class TileEntityTattleTaleBeacon extends TileEntity
             side = AbstractBlockControllableSignal.SIGNAL_SIDE.LEFT;
         }
         else if ( currVal == AHEAD_VAL ) {
-            side = AbstractBlockControllableSignal.SIGNAL_SIDE.AHEAD;
+            side = AbstractBlockControllableSignal.SIGNAL_SIDE.THROUGH;
         }
         else if ( currVal == RIGHT_VAL ) {
             side = AbstractBlockControllableSignal.SIGNAL_SIDE.RIGHT;
         }
         else if ( currVal == PA_VAL ) {
-            side = AbstractBlockControllableSignal.SIGNAL_SIDE.PROTECTED_AHEAD;
+            side = AbstractBlockControllableSignal.SIGNAL_SIDE.PROTECTED;
         }
         else if ( currVal == HYBRID_LEFT_VAL ) {
-            side = AbstractBlockControllableSignal.SIGNAL_SIDE.HYBRID_LEFT;
+            side = AbstractBlockControllableSignal.SIGNAL_SIDE.FLASHING_LEFT;
         }
         return side;
     }

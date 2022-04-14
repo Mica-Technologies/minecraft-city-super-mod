@@ -17,7 +17,7 @@ public class AbstractBlockControllableCrosswalkAccessory extends AbstractBlockCo
 
     @Override
     public SIGNAL_SIDE getSignalSide( World world, BlockPos blockPos) {
-        return SIGNAL_SIDE.CROSSWALK;
+        return SIGNAL_SIDE.PEDESTRIAN;
     }
 
 }

@@ -59,7 +59,7 @@ public class BlockControllableVerticalBikeSignal extends ElementsCitySuperMod.Mo
 
         @Override
         public SIGNAL_SIDE getSignalSide( World world, BlockPos blockPos ) {
-            return SIGNAL_SIDE.PROTECTED_AHEAD;
+            return SIGNAL_SIDE.PROTECTED;
         }
 
     }

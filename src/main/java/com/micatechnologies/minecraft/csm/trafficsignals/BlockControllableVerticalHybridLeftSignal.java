@@ -60,7 +60,7 @@ public class BlockControllableVerticalHybridLeftSignal extends ElementsCitySuper
 
         @Override
         public SIGNAL_SIDE getSignalSide( World world, BlockPos blockPos ) {
-            return SIGNAL_SIDE.HYBRID_LEFT;
+            return SIGNAL_SIDE.FLASHING_LEFT;
         }
 
     }

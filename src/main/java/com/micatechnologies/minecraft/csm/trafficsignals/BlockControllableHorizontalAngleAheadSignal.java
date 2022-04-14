@@ -59,7 +59,7 @@ public class BlockControllableHorizontalAngleAheadSignal extends ElementsCitySup
 
         @Override
         public SIGNAL_SIDE getSignalSide( World world, BlockPos blockPos ) {
-            return SIGNAL_SIDE.AHEAD;
+            return SIGNAL_SIDE.THROUGH;
         }
 
     }

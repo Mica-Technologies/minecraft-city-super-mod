@@ -199,7 +199,7 @@ public class BlockTrafficSignalController extends ElementsCitySuperMod.ModElemen
                 if ( tileEntity instanceof TileEntityTrafficSignalController ) {
                     TileEntityTrafficSignalController tileEntityTrafficSignalController
                             = ( TileEntityTrafficSignalController ) tileEntity;
-                    String modeName = tileEntityTrafficSignalController.switchMode( p_onBlockActivated_1_ );
+                    String modeName = tileEntityTrafficSignalController.switchMode();
                     if ( !p_onBlockActivated_1_.isRemote && valid ) {
                         p_onBlockActivated_4_.sendMessage(
                                 new TextComponentString( "Controller has switched to " + modeName + " mode!" ) );
