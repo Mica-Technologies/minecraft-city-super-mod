@@ -1,90 +1,151 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
-import net.minecraft.block.state.IBlockState;
+import com.micatechnologies.minecraft.csm.codeutils.AbstractTileEntity;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockTrafficSignalSensor;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.world.World;
 
-import javax.annotation.Nullable;
 import java.util.List;
 
+/**
+ * The {@link TileEntityTrafficSignalSensor} is a {@link TileEntity} which is paired with an
+ * {@link AbstractBlockTrafficSignalSensor} implementation. The {@link TileEntityTrafficSignalSensor} is used to detect
+ * entities within a specified region (defined by two corner positions) and report the number of entities detected to
+ * the paired {@link TileEntityTrafficSignalController}.
+ *
+ * @version 2.0
+ * @see AbstractBlockTrafficSignalSensor
+ * @see TileEntityTrafficSignalController
+ * @see TileEntity
+ * @since 2023.2.0
+ */
 @ElementsCitySuperMod.ModElement.Tag
-public class TileEntityTrafficSignalSensor extends TileEntity
+public class TileEntityTrafficSignalSensor extends AbstractTileEntity
 {
-    private static final String CORNER_1_KEY = "blockPos1";
-    private static final String CORNER_2_KEY = "blockPos2";
+    /**
+     * The key for storing and retrieving the {@link TileEntityTrafficSignalSensor}'s first scan corner from NBT data.
+     *
+     * @since 1.0
+     */
+    private static final String SCAN_CORNER_1_KEY = "blockPos1";
 
-    private BlockPos corner1;
-    private BlockPos corner2;
+    /**
+     * The key for storing and retrieving the {@link TileEntityTrafficSignalSensor}'s second scan corner from NBT data.
+     *
+     * @since 1.0
+     */
+    private static final String SCAN_CORNER_2_KEY = "blockPos2";
 
+    /**
+     * The {@link TileEntityTrafficSignalSensor}'s first scan corner.
+     *
+     * @since 1.0
+     */
+    private BlockPos scanCorner1;
+
+    /**
+     * The {@link TileEntityTrafficSignalSensor}'s second scan corner.
+     *
+     * @since 1.0
+     */
+    private BlockPos scanCorner2;
+
+    /**
+     * Returns the specified NBT tag compound with the {@link TileEntityTrafficSignalSensor}'s NBT data.
+     *
+     * @param compound the NBT tag compound to write the {@link TileEntityTrafficSignalSensor}'s NBT data to
+     *
+     * @return the NBT tag compound with the {@link TileEntityTrafficSignalSensor}'s NBT data
+     *
+     * @since 2.0
+     */
     @Override
-    public void readFromNBT( NBTTagCompound p_readFromNBT_1_ ) {
-        super.readFromNBT( p_readFromNBT_1_ );
+    public NBTTagCompound writeNBT( NBTTagCompound compound ) {
 
-        if ( p_readFromNBT_1_.hasKey( CORNER_1_KEY ) ) {
-            corner1 = BlockPos.fromLong( p_readFromNBT_1_.getLong( CORNER_1_KEY ) );
+        // Write the first corner to NBT
+        if ( scanCorner1 != null ) {
+            compound.setLong( SCAN_CORNER_1_KEY, scanCorner1.toLong() );
         }
         else {
-            corner1 = null;
+            compound.removeTag( SCAN_CORNER_1_KEY );
         }
 
-        if ( p_readFromNBT_1_.hasKey( CORNER_2_KEY ) ) {
-            corner2 = BlockPos.fromLong( p_readFromNBT_1_.getLong( CORNER_2_KEY ) );
+        // Write the second corner to NBT
+        if ( scanCorner2 != null ) {
+            compound.setLong( SCAN_CORNER_2_KEY, scanCorner2.toLong() );
         }
         else {
-            corner2 = null;
+            compound.removeTag( SCAN_CORNER_2_KEY );
+        }
+
+        // Return the NBT tag compound
+        return compound;
+    }
+
+    /**
+     * Processes the reading of the {@link TileEntityTrafficSignalSensor}'s NBT data from the supplied NBT tag
+     * compound.
+     *
+     * @param compound the NBT tag compound to read the {@link TileEntityTrafficSignalSensor}'s NBT data from
+     *
+     * @since 2.0
+     */
+    @Override
+    public void readNBT( NBTTagCompound compound ) {
+
+        // Read the first corner from NBT
+        if ( compound.hasKey( SCAN_CORNER_1_KEY ) ) {
+            scanCorner1 = BlockPos.fromLong( compound.getLong( SCAN_CORNER_1_KEY ) );
+        }
+        else {
+            scanCorner1 = null;
+        }
+
+        // Read the second corner from NBT
+        if ( compound.hasKey( SCAN_CORNER_2_KEY ) ) {
+            scanCorner2 = BlockPos.fromLong( compound.getLong( SCAN_CORNER_2_KEY ) );
+        }
+        else {
+            scanCorner2 = null;
         }
     }
 
-    @Override
-    public boolean shouldRefresh( World p_shouldRefresh_1_,
-                                  BlockPos p_shouldRefresh_2_,
-                                  IBlockState p_shouldRefresh_3_,
-                                  IBlockState p_shouldRefresh_4_ )
-    {
-        return false;
-    }
-
-    @Override
-    public NBTTagCompound writeToNBT( NBTTagCompound p_writeToNBT_1_ ) {
-        if ( corner1 != null ) {
-            p_writeToNBT_1_.setLong( CORNER_1_KEY, corner1.toLong() );
-        }
-        else {
-            p_writeToNBT_1_.removeTag( CORNER_1_KEY );
-        }
-
-        if ( corner2 != null ) {
-            p_writeToNBT_1_.setLong( CORNER_2_KEY, corner2.toLong() );
-        }
-        else {
-            p_writeToNBT_1_.removeTag( CORNER_2_KEY );
-        }
-
-        return super.writeToNBT( p_writeToNBT_1_ );
-    }
-
+    /**
+     * Sets the two corners of the {@link TileEntityTrafficSignalSensor}'s scan region.
+     *
+     * @param blockPos1 the first corner of the {@link TileEntityTrafficSignalSensor}'s scan region
+     * @param blockPos2 the second corner of the {@link TileEntityTrafficSignalSensor}'s scan region
+     *
+     * @return true if previously set corners were overwritten, false otherwise
+     *
+     * @since 1.0
+     */
     public boolean setScanCorners( BlockPos blockPos1, BlockPos blockPos2 ) {
-        boolean overwroteExisting = corner1 != null && corner2 != null;
-        corner1 = blockPos1;
-        corner2 = blockPos2;
-        markDirty();
+        boolean overwroteExisting = scanCorner1 != null && scanCorner2 != null;
+        scanCorner1 = blockPos1;
+        scanCorner2 = blockPos2;
+        markDirtySync( getWorld(), getPos() );
         return overwroteExisting;
     }
 
-    private int scanEntities( World world ) {
+    /**
+     * Scans for eligible entities within the {@link TileEntityTrafficSignalSensor}'s scan region and returns the number
+     * of entities found. Eligible entities are {@link EntityVillager} and {@link EntityPlayer}.
+     *
+     * @return the number of eligible entities found within the {@link TileEntityTrafficSignalSensor}'s scan region
+     *
+     * @since 1.0
+     */
+    public int scanEntities() {
         int count = 0;
-        if ( world != null && corner1 != null && corner2 != null ) {
-            AxisAlignedBB scanRange = new AxisAlignedBB( corner1, corner2 );
+        if ( world != null && scanCorner1 != null && scanCorner2 != null ) {
+            AxisAlignedBB scanRange = new AxisAlignedBB( scanCorner1, scanCorner2 );
             List< Entity > entitiesWithinAABBExcludingEntity = world.getEntitiesWithinAABBExcludingEntity( null,
                                                                                                            scanRange );
             for ( Entity entity : entitiesWithinAABBExcludingEntity ) {
@@ -94,38 +155,5 @@ public class TileEntityTrafficSignalSensor extends TileEntity
             }
         }
         return count;
-    }
-
-    public int getWaitingCount( World world ) {
-        return scanEntities( world );
-    }
-
-    @Override
-    @Nullable
-    public SPacketUpdateTileEntity getUpdatePacket()
-    {
-        NBTTagCompound nbtTagCompound = new NBTTagCompound();
-        writeToNBT( nbtTagCompound );
-        int metadata = getBlockMetadata();
-        return new SPacketUpdateTileEntity( this.pos, metadata, nbtTagCompound );
-    }
-
-    @Override
-    public void onDataPacket( NetworkManager networkManager, SPacketUpdateTileEntity pkt ) {
-        readFromNBT( pkt.getNbtCompound() );
-    }
-
-    @Override
-    public NBTTagCompound getUpdateTag()
-    {
-        NBTTagCompound nbtTagCompound = new NBTTagCompound();
-        writeToNBT( nbtTagCompound );
-        return nbtTagCompound;
-    }
-
-    @Override
-    public void handleUpdateTag( NBTTagCompound nbtTagCompound )
-    {
-        this.readFromNBT( nbtTagCompound );
     }
 }

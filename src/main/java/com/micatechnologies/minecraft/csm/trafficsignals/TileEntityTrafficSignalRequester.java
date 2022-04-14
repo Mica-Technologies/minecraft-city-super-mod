@@ -17,15 +17,17 @@ import net.minecraft.nbt.NBTTagCompound;
 public class TileEntityTrafficSignalRequester extends TileEntityTrafficSignalTickableRequester
 {
     /**
-     * Returns the tick rate of the tile entity. This implementation returns 0 as the tile entity does not tick.
+     * Returns the tick rate of the tile entity. This implementation returns {@link Long#MAX_VALUE} as the tile entity
+     * does not tick.
      *
-     * @return the tick rate of the tile entity. This implementation returns 0 as the tile entity does not tick.
+     * @return the tick rate of the tile entity. This implementation returns {@link Long#MAX_VALUE} as the tile entity
+     *         does not tick.
      *
      * @since 2.0
      */
     @Override
     public long getTickRate() {
-        return 0;
+        return Long.MAX_VALUE;
     }
 
     /**

@@ -115,6 +115,12 @@ public class BlockTrafficSignalController extends ElementsCitySuperMod.ModElemen
 
         @Override
         public void breakBlock( World p_180663_1_, BlockPos p_180663_2_, IBlockState p_180663_3_ ) {
+            TileEntity tileEntity = p_180663_1_.getTileEntity( p_180663_2_ );
+            if ( tileEntity instanceof TileEntityTrafficSignalController ) {
+                TileEntityTrafficSignalController controller = ( TileEntityTrafficSignalController ) tileEntity;
+                controller.forciblyPowerOff();
+            }
+
             p_180663_1_.removeTileEntity( p_180663_2_ );
             super.breakBlock( p_180663_1_, p_180663_2_, p_180663_3_ );
         }
@@ -145,7 +151,9 @@ public class BlockTrafficSignalController extends ElementsCitySuperMod.ModElemen
                     ( p_onBlockActivated_4_.inventory.getCurrentItem()
                                                      .getItem() instanceof ItemEWSignalLinker.ItemCustom ||
                             p_onBlockActivated_4_.inventory.getCurrentItem()
-                                                           .getItem() instanceof ItemNSSignalLinker.ItemCustom ) ) {
+                                                           .getItem() instanceof ItemNSSignalLinker.ItemCustom ||
+                            p_onBlockActivated_4_.inventory.getCurrentItem()
+                                                           .getItem() instanceof ItemSignalChanger.ItemCustom ) ) {
                 return super.onBlockActivated( p_onBlockActivated_1_, p_onBlockActivated_2_, p_onBlockActivated_3_,
                                                p_onBlockActivated_4_, p_onBlockActivated_5_, p_onBlockActivated_6_,
                                                p_onBlockActivated_7_, p_onBlockActivated_8_, p_onBlockActivated_9_ );
@@ -194,16 +202,44 @@ public class BlockTrafficSignalController extends ElementsCitySuperMod.ModElemen
                 }
             }
 
-            // Increment cycle index if not sneaking, else attempt old config import
-            if ( p_onBlockActivated_4_.isSneaking() ) {
-                if ( tileEntity instanceof TileEntityTrafficSignalController ) {
-                    TileEntityTrafficSignalController tileEntityTrafficSignalController
-                            = ( TileEntityTrafficSignalController ) tileEntity;
-                    String modeName = tileEntityTrafficSignalController.switchMode( p_onBlockActivated_1_ );
-                    if ( !p_onBlockActivated_1_.isRemote && valid ) {
-                        p_onBlockActivated_4_.sendMessage(
-                                new TextComponentString( "Controller has switched to " + modeName + " mode!" ) );
+            // Process click if controller tile entity is (now) valid
+            if ( valid ) {
+
+                // Increment cycle index or display fault message if sneaking
+                if ( p_onBlockActivated_4_.isSneaking() ) {
+                    if ( tileEntity instanceof TileEntityTrafficSignalController ) {
+                        // Get current mode and fault information from controller
+                        TileEntityTrafficSignalController tileEntityTrafficSignalController
+                                = ( TileEntityTrafficSignalController ) tileEntity;
+                        String modeName = tileEntityTrafficSignalController.switchMode();
+                        boolean isInFaultState = tileEntityTrafficSignalController.isInFaultState();
+                        String faultMessage = tileEntityTrafficSignalController.getCurrentFaultMessage();
+
+                        // Display player output only if not remote
+                        if ( !p_onBlockActivated_1_.isRemote ) {
+                            // Display player output in fault state
+                            if ( isInFaultState ) {
+                                p_onBlockActivated_4_.sendMessage( new TextComponentString(
+                                        "Controller has encountered a fault! To reset the fault, please " +
+                                                "click with the signal changer tool." ) );
+                                p_onBlockActivated_4_.sendMessage(
+                                        new TextComponentString( "Controller fault message: " + faultMessage ) );
+                            }
+                            // Display player output in non-fault state
+                            else {
+                                p_onBlockActivated_4_.sendMessage( new TextComponentString(
+                                        "Controller has switched to " + modeName + " mode!" ) );
+                            }
+                        }
                     }
+                }
+            }
+            else {
+
+                // Output error message if controller tile entity is invalid
+                if ( !p_onBlockActivated_1_.isRemote ) {
+                    p_onBlockActivated_4_.sendMessage(
+                            new TextComponentString( "Unable to process! An invalid TE condition was encountered." ) );
                 }
             }
 
