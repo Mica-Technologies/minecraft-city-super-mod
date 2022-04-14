@@ -13,11 +13,9 @@ package com.micatechnologies.minecraft.csm.trafficsignals.logic;
  * @see #ALL_NORTH
  * @see #ALL_SOUTH
  * @see #ALL_LEFTS
- * @see #ALL_RIGHTS
- * @see #ALL_PROTECTEDS
- * @see #ALL_THROUGHS
  * @see #ALL_THROUGHS_PROTECTEDS
- * @since 2022.1.0
+ * @see #ALL_THROUGHS_RIGHTS
+ * @since 2023.2.0
  */
 public enum TrafficSignalPhaseApplicability
 {
@@ -28,153 +26,249 @@ public enum TrafficSignalPhaseApplicability
      *
      * @since 1.0
      */
-    NO_POWER( -1 ),
+    NO_POWER,
 
     /**
      * Enumeration value for no applicability.
      *
      * @since 1.0
      */
-    NONE( 0 ),
+    NONE,
 
     /**
      * Enumeration value for pedestrian signals applicability.
      *
      * @since 1.0
      */
-    PEDESTRIAN( 1 ),
+    PEDESTRIAN,
 
     /**
      * Enumeration value for all east facing signals applicability.
      *
      * @since 1.0
      */
-    ALL_EAST( 2 ),
+    ALL_EAST,
 
     /**
      * Enumeration value for all west facing signals applicability.
      *
      * @since 1.0
      */
-    ALL_WEST( 3 ),
+    ALL_WEST,
 
     /**
      * Enumeration value for all north facing signals applicability.
      *
      * @since 1.0
      */
-    ALL_NORTH( 4 ),
+    ALL_NORTH,
 
     /**
      * Enumeration value for all south facing signals applicability.
      *
      * @since 1.0
      */
-    ALL_SOUTH( 5 ),
+    ALL_SOUTH,
 
     /**
      * Enumeration value for all left turn signals applicability.
      *
      * @since 1.0
      */
-    ALL_LEFTS( 6 ),
-
-    /**
-     * Enumeration value for all right turn signals applicability.
-     *
-     * @since 1.0
-     */
-    ALL_RIGHTS( 7 ),
-
-    /**
-     * Enumeration value for all protected signals applicability.
-     *
-     * @since 1.0
-     */
-    ALL_PROTECTEDS( 8 ),
-
-    /**
-     * Enumeration value for all through signals applicability.
-     *
-     * @since 1.0
-     */
-    ALL_THROUGHS( 9 ),
+    ALL_LEFTS,
 
     /**
      * Enumeration value for all through and protected signals applicability.
      *
      * @since 1.0
      */
-    ALL_THROUGHS_PROTECTEDS( 10 );
+    ALL_THROUGHS_PROTECTEDS,
+
+    /**
+     * Enumeration value for all through and right turn signals applicability.
+     *
+     * @since 1.0
+     */
+    ALL_THROUGHS_RIGHTS,
+
+    /**
+     * Enumeration value for all through and protected right turn signals applicability.
+     *
+     * @since 1.0
+     */
+    ALL_THROUGHS_PROTECTED_RIGHTS,
+
+    /**
+     * Enumeration value for ramp meter green signals applicability.
+     *
+     * @since 1.0
+     */
+    RAMP_METER_GREEN,
+
+    /**
+     * Enumeration value for ramp meter disabled signals applicability.
+     *
+     * @since 1.0
+     */
+    RAMP_METER_DISABLED,
+
+    /**
+     * Enumeration value for ramp meter starting signals applicability.
+     *
+     * @since 1.0
+     */
+    RAMP_METER_STARTING,
+
+    /**
+     * Enumeration value for requestable default green signals applicability.
+     *
+     * @since 1.0
+     */
+    REQUESTABLE_DEFAULT_GREEN,
+
+    /**
+     * Enumeration value for requestable default green + flashing don't walk signals applicability.
+     *
+     * @since 1.0
+     */
+    REQUESTABLE_DEFAULT_GREEN_FLASH_DW,
+
+    /**
+     * Enumeration value for requestable default green + flashing don't walk + flashing yellow HAWK (High-Intensity
+     * Activated crossWalK beacon) signals applicability.
+     *
+     * @since 1.0
+     */
+    REQUESTABLE_DEFAULT_GREEN_FLASH_DW_HAWK,
+
+    /**
+     * Enumeration value for requestable default yellow signals applicability.
+     *
+     * @since 1.0
+     */
+    REQUESTABLE_DEFAULT_YELLOW,
+
+    /**
+     * Enumeration value for requestable default red signals applicability.
+     *
+     * @since 1.0
+     */
+    REQUESTABLE_DEFAULT_RED,
+
+    /**
+     * Enumeration value for requestable service green signals applicability.
+     *
+     * @since 1.0
+     */
+    REQUESTABLE_SERVICE_GREEN,
+
+    /**
+     * Enumeration value for requestable service green + flashing don't walk signals applicability.
+     *
+     * @since 1.0
+     */
+    REQUESTABLE_SERVICE_GREEN_FLASH_DW,
+
+    /**
+     * Enumeration value for requestable service green + flashing don't walk + flashing yellow HAWK (High-Intensity
+     * Activated crossWalK beacon) signals applicability.
+     *
+     * @since 1.0
+     */
+    REQUESTABLE_SERVICE_GREEN_FLASH_DW_HAWK,
+
+    /**
+     * Enumeration value for requestable service yellow signals applicability.
+     *
+     * @since 1.0
+     */
+    REQUESTABLE_SERVICE_YELLOW,
+
+    /**
+     * Enumeration value for requestable service red signals applicability.
+     *
+     * @since 1.0
+     */
+    REQUESTABLE_SERVICE_RED,
+
+    /**
+     * Enumeration value for yellow transitioning signals applicability.
+     *
+     * @since 1.0
+     */
+    YELLOW_TRANSITIONING,
+
+    /**
+     * Enumeration value for flashing don't walk transitioning signals applicability.
+     *
+     * @since 1.0
+     */
+    FLASH_DONT_WALK_TRANSITIONING,
+
+    /**
+     * Enumeration value for red transitioning signals applicability.
+     *
+     * @since 1.0
+     */
+    RED_TRANSITIONING,
+
+    /**
+     * Enumeration value for all red signals applicability.
+     *
+     * @since 1.0
+     */
+    ALL_RED;
 
     //endregion
 
     //region: Instance Fields
 
-    /**
-     * The integer ID of the {@link TrafficSignalPhaseApplicability} object.
-     *
-     * @since 1.0
-     */
-    private final int id;
-
     //endregion
 
     //region: Constructors
-
-    /**
-     * Constructor of the enumeration with the corresponding integer ID of the {@link TrafficSignalPhaseApplicability}
-     * enum.
-     *
-     * @param id the integer ID of the {@link TrafficSignalPhaseApplicability} object to be constructed
-     *
-     * @since 1.0
-     */
-    TrafficSignalPhaseApplicability( int id )
-    {
-        this.id = id;
-    }
 
     //endregion
 
     //region: Instance Methods
 
     /**
-     * Gets the corresponding integer ID of the {@link TrafficSignalPhaseApplicability} object.
+     * Gets the ordinal value of the {@link TrafficSignalPhaseApplicability} enum. This can be used to store a
+     * {@link TrafficSignalPhaseApplicability} enum in NBT data to be retrieved later using the {@link #fromNBT(int)}
+     * method.
      *
-     * @return the integer ID of the {@link TrafficSignalPhaseApplicability} object
+     * @return the ordinal value of the {@link TrafficSignalPhaseApplicability} enum
      *
      * @since 1.0
      */
-    public int getId()
+    public int toNBT()
     {
-        return id;
+        return ordinal();
     }
 
     /**
-     * Gets the {@link TrafficSignalPhaseApplicability} enum with the specified integer value, or
+     * Gets the {@link TrafficSignalPhaseApplicability} enum with the specified ordinal value, or
      * {@link TrafficSignalPhaseApplicability#NONE} if no {@link TrafficSignalPhaseApplicability} enum with the
-     * specified integer value exists.
+     * specified ordinal value exists. This can be used to retrieve a {@link TrafficSignalPhaseApplicability} enum from
+     * NBT data which was saved using the {@link #toNBT()} method.
      *
-     * @param value the integer value of the {@link TrafficSignalPhaseApplicability} object to get
+     * @param ordinal the ordinal value of the {@link TrafficSignalPhaseApplicability} enum to get
      *
-     * @return the {@link TrafficSignalPhaseApplicability} enum with the specified integer value, or
+     * @return the {@link TrafficSignalPhaseApplicability} enum with the specified ordinal value, or
      *         {@link TrafficSignalPhaseApplicability#NONE} if no {@link TrafficSignalPhaseApplicability} enum with the
-     *         specified integer value exists
+     *         specified ordinal value exists
      *
      * @since 1.0
      */
-    public static TrafficSignalPhaseApplicability getDirection( int value )
+    public static TrafficSignalPhaseApplicability fromNBT( int ordinal )
     {
-        // Loop through all the values of the enumeration and return the one with the specified value
-        for ( TrafficSignalPhaseApplicability direction : TrafficSignalPhaseApplicability.values() ) {
-            if ( direction.getId() == value ) {
-                return direction;
-            }
+        // Check if the specified integer value is within the range of the enumeration
+        int finalOrdinal = ordinal;
+        if ( ordinal < 0 || ordinal >= values().length ) {
+            finalOrdinal = NONE.ordinal();
         }
 
-        // If no direction with the specified value exists, return NONE
-        return NONE;
+        // Return the enumeration value with the specified integer value
+        return values()[ finalOrdinal ];
     }
 
     //endregion

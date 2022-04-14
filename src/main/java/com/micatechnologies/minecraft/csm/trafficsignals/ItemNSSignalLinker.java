@@ -1,12 +1,12 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableCrosswalkAccessory;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignal;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockTrafficSignalSensor;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -27,7 +27,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 @ElementsCitySuperMod.ModElement.Tag
@@ -90,15 +89,7 @@ public class ItemNSSignalLinker extends ElementsCitySuperMod.ModElement
                                                                          pos.getY() +
                                                                          "," +
                                                                          pos.getZ() +
-                                                                         ")" +
-                                                                         circuitLinkIndexMap.size() +
-                                                                         "  " +
-                                                                         signalControllerPosMap.entrySet()
-                                                                                               .stream()
-                                                                                               .map( Object::toString )
-                                                                                               .collect(
-                                                                                                       Collectors.joining(
-                                                                                                               ", " ) ) ) );
+                                                                         ")" ) );
 
                     return EnumActionResult.SUCCESS;
                 }
@@ -118,7 +109,7 @@ public class ItemNSSignalLinker extends ElementsCitySuperMod.ModElement
                     if ( tileEntity instanceof TileEntityTrafficSignalController ) {
                         TileEntityTrafficSignalController tileEntityTrafficSignalController
                                 = ( TileEntityTrafficSignalController ) tileEntity;
-                        boolean linked = tileEntityTrafficSignalController.linkDevice( worldIn, pos,
+                        boolean linked = tileEntityTrafficSignalController.linkDevice( pos,
                                                                                        AbstractBlockControllableSignal.SIGNAL_SIDE.NA_SENSOR,
                                                                                        circuitLinkIndex );
 
@@ -151,7 +142,7 @@ public class ItemNSSignalLinker extends ElementsCitySuperMod.ModElement
                     if ( tileEntity instanceof TileEntityTrafficSignalController ) {
                         TileEntityTrafficSignalController tileEntityTrafficSignalController
                                 = ( TileEntityTrafficSignalController ) tileEntity;
-                        tileEntityTrafficSignalController.unlinkDevice( pos, worldIn );
+                        tileEntityTrafficSignalController.unlinkDevice( pos );
 
                         player.sendMessage( new TextComponentString( "Sensor unlinked from signal controller at " +
                                                                              "(" +
@@ -180,10 +171,8 @@ public class ItemNSSignalLinker extends ElementsCitySuperMod.ModElement
                     if ( tileEntity instanceof TileEntityTrafficSignalController ) {
                         TileEntityTrafficSignalController tileEntityTrafficSignalController
                                 = ( TileEntityTrafficSignalController ) tileEntity;
-                        boolean linked = tileEntityTrafficSignalController.linkDevice( worldIn, pos,
-                                                                                       clickedBlock.getSignalSide(
-                                                                                               worldIn, pos ),
-                                                                                       circuitLinkIndex );
+                        boolean linked = tileEntityTrafficSignalController.linkDevice( pos, clickedBlock.getSignalSide(
+                                worldIn, pos ), circuitLinkIndex );
 
                         if ( linked &&
                                 ( clickedBlock instanceof BlockControllableCrosswalkLeftMount.BlockCustom ||
@@ -257,7 +246,7 @@ public class ItemNSSignalLinker extends ElementsCitySuperMod.ModElement
                     if ( tileEntity instanceof TileEntityTrafficSignalController ) {
                         TileEntityTrafficSignalController tileEntityTrafficSignalController
                                 = ( TileEntityTrafficSignalController ) tileEntity;
-                        boolean removed = tileEntityTrafficSignalController.unlinkDevice( pos, worldIn );
+                        boolean removed = tileEntityTrafficSignalController.unlinkDevice( pos );
 
                         // If unlinked, change device state to off
                         AbstractBlockControllableSignal.changeSignalColor( worldIn, pos,
