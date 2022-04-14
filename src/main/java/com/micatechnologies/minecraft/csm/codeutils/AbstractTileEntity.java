@@ -14,7 +14,7 @@ import javax.annotation.Nullable;
  * Abstract tile entity implementation. This class is based on the {@link TileEntity} class.
  *
  * @author Mica Technologies
- * @since 2022.1.0
+ * @since 2023.2.0
  */
 public abstract class AbstractTileEntity extends TileEntity
 {
@@ -43,8 +43,8 @@ public abstract class AbstractTileEntity extends TileEntity
      */
     @Override
     public void readFromNBT( NBTTagCompound compound ) {
-        readNBT( compound );
         super.readFromNBT( compound );
+        readNBT( compound );
     }
 
     /**
@@ -56,7 +56,7 @@ public abstract class AbstractTileEntity extends TileEntity
      */
     @Override
     public NBTTagCompound writeToNBT( NBTTagCompound compound ) {
-        return super.writeToNBT( writeNBT( compound ) );
+        return writeNBT( super.writeToNBT( compound ) );
     }
 
     /**

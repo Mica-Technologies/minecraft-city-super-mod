@@ -1,0 +1,8 @@
+{
+  "parent": "csm:custom/crosswalklightsingle_base",
+  "textures": {
+    "all": "csm:blocks/crosswalkflashinghand",
+    "particle": "csm:blocks/crosswalkflashinghand",
+    "0": "csm:blocks/crosswalkflashinghand"
+  }
+}
