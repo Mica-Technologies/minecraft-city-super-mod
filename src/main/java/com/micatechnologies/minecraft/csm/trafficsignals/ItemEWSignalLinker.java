@@ -51,6 +51,7 @@ public class ItemEWSignalLinker extends ElementsCitySuperMod.ModElement
 
         private final Map< UUID, BlockPos > sensorPosMap  = new HashMap<>();
         private final Map< UUID, BlockPos > corner1PosMap = new HashMap<>();
+        private final Map< UUID, Integer >  modeMap       = new HashMap<>();
 
         public ItemCustom() {
             setMaxDamage( 0 );
@@ -58,6 +59,24 @@ public class ItemEWSignalLinker extends ElementsCitySuperMod.ModElement
             setUnlocalizedName( "ewsignallinker" );
             setRegistryName( "ewsignallinker" );
             setCreativeTab( TabTrafficSignals.tab );
+        }
+
+        public String getModeName( EntityPlayer player ) {
+            int currentMode = modeMap.getOrDefault( player.getUniqueID(), 1 );
+
+            // Get mode name string
+            String modeName = "";
+            if ( currentMode == 1 ) {
+                modeName = "Standard Lane(s) (Through/Right Turn)";
+            }
+            else if ( currentMode == 2 ) {
+                modeName = "Left Turn Lane(s)";
+            }
+            else if ( currentMode == 3 ) {
+                modeName = "Protected Lane(s) (Bus/Train/Bike)";
+            }
+
+            return modeName;
         }
 
         @Override
@@ -87,6 +106,22 @@ public class ItemEWSignalLinker extends ElementsCitySuperMod.ModElement
 
                     return EnumActionResult.SUCCESS;
                 }
+                else if ( player.isSneaking() ) {
+                    // Increment mode
+                    int currentMode = modeMap.getOrDefault( player.getUniqueID(), 1 );
+                    int newMode = currentMode + 1;
+                    if ( newMode > 3 ) {
+                        newMode = 1;
+                    }
+
+                    // Update mode
+                    modeMap.put( player.getUniqueID(), newMode );
+
+                    player.sendMessage(
+                            new TextComponentString( "Configuring sensor detection zone: " + getModeName( player ) ) );
+
+                    return EnumActionResult.SUCCESS;
+                }
                 else if ( sensorPosMap.getOrDefault( player.getUniqueID(), null ) != null &&
                         corner1PosMap.getOrDefault( player.getUniqueID(), null ) == null ) {
                     corner1PosMap.put( player.getUniqueID(), pos );
@@ -102,13 +137,20 @@ public class ItemEWSignalLinker extends ElementsCitySuperMod.ModElement
                 }
                 else if ( sensorPosMap.getOrDefault( player.getUniqueID(), null ) != null &&
                         corner1PosMap.getOrDefault( player.getUniqueID(), null ) != null ) {
-                    BlockPos posWith4 = pos.add( 0, 4, 0 );
+                    BlockPos corner1Pos = corner1PosMap.getOrDefault( player.getUniqueID(), null );
+                    BlockPos corner2Pos = pos;
+                    if ( corner1Pos.getY() > corner2Pos.getY() ) {
+                        corner1Pos = corner1Pos.add( 0, 4, 0 );
+                    }
+                    else {
+                        corner2Pos = corner2Pos.add( 0, 4, 0 );
+                    }
                     player.sendMessage( new TextComponentString( "Search box corner 2 set to: [" +
-                                                                         posWith4.getX() +
+                                                                         pos.getX() +
                                                                          ", " +
-                                                                         posWith4.getY() +
+                                                                         pos.getY() +
                                                                          ", " +
-                                                                         posWith4.getZ() +
+                                                                         pos.getZ() +
                                                                          "]." ) );
 
                     try {
@@ -117,21 +159,34 @@ public class ItemEWSignalLinker extends ElementsCitySuperMod.ModElement
                         if ( tileEntity instanceof TileEntityTrafficSignalSensor ) {
                             TileEntityTrafficSignalSensor tileEntityTrafficSignalSensor
                                     = ( TileEntityTrafficSignalSensor ) tileEntity;
-                            boolean overwrote = tileEntityTrafficSignalSensor.setScanCorners(
-                                    corner1PosMap.getOrDefault( player.getUniqueID(), null ), posWith4 );
+                            boolean overwrote;
+                            int currentMode = modeMap.getOrDefault( player.getUniqueID(), 1 );
+                            if ( currentMode == 2 ) {
+                                overwrote = tileEntityTrafficSignalSensor.setLeftScanCorners( corner1Pos, corner2Pos );
+                            }
+                            else if ( currentMode == 3 ) {
+                                overwrote = tileEntityTrafficSignalSensor.setProtectedScanCorners( corner1Pos,
+                                                                                                   corner2Pos );
+                            }
+                            else {
+                                overwrote = tileEntityTrafficSignalSensor.setScanCorners( corner1Pos, corner2Pos );
+                            }
 
                             if ( overwrote ) {
                                 player.sendMessage( new TextComponentString(
                                         "The selected search box corners have been " +
-                                                "applied to the desired sensor " +
-                                                "successfully! (Replaced previous " +
+                                                "applied to the following sensor detection zone" +
+                                                "successfully: " +
+                                                getModeName( player ) +
+                                                " (Replaced previous " +
                                                 "search box)" ) );
                             }
                             else {
                                 player.sendMessage( new TextComponentString(
                                         "The selected search box corners have been " +
-                                                "applied to the desired sensor " +
-                                                "successfully!" ) );
+                                                "applied to the following sensor detection zone" +
+                                                "successfully: " +
+                                                getModeName( player ) ) );
                             }
 
                         }
