@@ -1,6 +1,5 @@
 package com.micatechnologies.minecraft.csm.trafficsignals.logic;
 
-import com.micatechnologies.minecraft.csm.trafficsignals.AbstractBlockControllableCrosswalkAccessory;
 import com.micatechnologies.minecraft.csm.trafficsignals.ItemNSSignalLinker;
 import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalRequester;
 import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalTickableRequester;

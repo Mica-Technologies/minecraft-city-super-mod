@@ -16,18 +16,18 @@
       "y": 270
     },
     "color=1,facing=north": {
-      "model": "csm:controllablecrosswalkdoublewordedrightmount_meter"
+      "model": "csm:controllablecrosswalkdoublewordedrightmount_flashdontwalk"
     },
     "color=1,facing=east": {
-      "model": "csm:controllablecrosswalkdoublewordedrightmount_meter",
+      "model": "csm:controllablecrosswalkdoublewordedrightmount_flashdontwalk",
       "y": 90
     },
     "color=1,facing=south": {
-      "model": "csm:controllablecrosswalkdoublewordedrightmount_meter",
+      "model": "csm:controllablecrosswalkdoublewordedrightmount_flashdontwalk",
       "y": 180
     },
     "color=1,facing=west": {
-      "model": "csm:controllablecrosswalkdoublewordedrightmount_meter",
+      "model": "csm:controllablecrosswalkdoublewordedrightmount_flashdontwalk",
       "y": 270
     },
     "color=2,facing=north": {
