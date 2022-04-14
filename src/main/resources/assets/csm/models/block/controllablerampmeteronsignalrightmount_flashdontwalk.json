@@ -1,0 +1,8 @@
+{
+  "parent": "csm:custom/crosswalklightsingle_right",
+  "textures": {
+    "all": "csm:blocks/crosswalkmeteronflash",
+    "particle": "csm:blocks/crosswalkmeteronflash",
+    "0": "csm:blocks/crosswalkmeteronflash"
+  }
+}

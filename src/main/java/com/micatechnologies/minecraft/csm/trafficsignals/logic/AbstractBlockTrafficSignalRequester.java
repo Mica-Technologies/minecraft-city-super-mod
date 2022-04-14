@@ -1,6 +1,5 @@
 package com.micatechnologies.minecraft.csm.trafficsignals.logic;
 
-import com.micatechnologies.minecraft.csm.trafficsignals.AbstractBlockControllableCrosswalkAccessory;
 import com.micatechnologies.minecraft.csm.trafficsignals.ItemNSSignalLinker;
 import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalRequester;
 import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalTickableRequester;
@@ -69,4 +68,24 @@ public class AbstractBlockTrafficSignalRequester extends AbstractBlockControllab
 
         return true;
     }
+
+    public static void resetRequestCount( World world, BlockPos blockPos ) {
+        try {
+            TileEntity rawTileEntity = world.getTileEntity( blockPos );
+            if ( rawTileEntity instanceof TileEntityTrafficSignalTickableRequester ) {
+                TileEntityTrafficSignalTickableRequester tileEntity
+                        = ( TileEntityTrafficSignalTickableRequester ) rawTileEntity;
+                tileEntity.resetRequestCount();
+            }
+            else {
+                System.err.println(
+                        "Unable to reset the traffic signal's request count due to tile entity missing error!" );
+            }
+        }
+        catch ( Exception e ) {
+            System.err.println( "An error occurred while resetting the traffic signal's request count!" );
+            e.printStackTrace();
+        }
+    }
+
 }
