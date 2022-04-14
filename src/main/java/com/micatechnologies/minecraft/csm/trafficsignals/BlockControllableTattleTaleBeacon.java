@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignal;
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.SoundType;
@@ -17,7 +18,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
@@ -74,7 +74,7 @@ public class BlockControllableTattleTaleBeacon extends ElementsCitySuperMod.ModE
         @Override
         public SIGNAL_SIDE getSignalSide( World world, BlockPos blockPos ) {
             // Get tile entity and cycle mode
-            SIGNAL_SIDE side = SIGNAL_SIDE.AHEAD;
+            SIGNAL_SIDE side = SIGNAL_SIDE.THROUGH;
             TileEntity tileEntity = world.getTileEntity( blockPos );
             if ( tileEntity instanceof TileEntityTattleTaleBeacon ) {
                 TileEntityTattleTaleBeacon tileEntityTattleTaleBeacon = ( TileEntityTattleTaleBeacon ) tileEntity;
@@ -119,6 +119,11 @@ public class BlockControllableTattleTaleBeacon extends ElementsCitySuperMod.ModE
         @Override
         public TileEntity createNewTileEntity( World world, int i ) {
             return new TileEntityTattleTaleBeacon();
+        }
+
+        @Override
+        public boolean doesFlash() {
+            return false;
         }
     }
 }
