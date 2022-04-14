@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignal;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
@@ -35,9 +36,8 @@ public class BlockControllableVerticalRightFlashYellowSignal extends ElementsCit
     @SideOnly( Side.CLIENT )
     @Override
     public void registerModels( ModelRegistryEvent event ) {
-        ModelLoader.setCustomModelResourceLocation( Item.getItemFromBlock( block ), 0,
-                                                    new ModelResourceLocation( "csm:controllableverticalrightflashyellowsignal",
-                                                                               "inventory" ) );
+        ModelLoader.setCustomModelResourceLocation( Item.getItemFromBlock( block ), 0, new ModelResourceLocation(
+                "csm:controllableverticalrightflashyellowsignal", "inventory" ) );
     }
 
     public static class BlockCustom extends AbstractBlockControllableSignal
@@ -60,6 +60,11 @@ public class BlockControllableVerticalRightFlashYellowSignal extends ElementsCit
         @Override
         public SIGNAL_SIDE getSignalSide( World world, BlockPos blockPos ) {
             return SIGNAL_SIDE.RIGHT;
+        }
+
+        @Override
+        public boolean doesFlash() {
+            return true;
         }
 
     }
