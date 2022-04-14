@@ -1,1321 +1,1069 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
-import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalCircuit;
-import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalState;
-import net.minecraft.block.Block;
+import com.micatechnologies.minecraft.csm.codeutils.AbstractTickableTileEntity;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignal.SIGNAL_SIDE;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.*;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.PreviousFormatTrafficSignalCircuit;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SPacketUpdateTileEntity;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
+/**
+ * Tile entity for the traffic signal controller block.
+ *
+ * @author Mica Technologies
+ * @version 2.0
+ */
 @ElementsCitySuperMod.ModElement.Tag
-public class TileEntityTrafficSignalController extends TileEntity implements ITickable
+public class TileEntityTrafficSignalController extends AbstractTickableTileEntity
 {
-    ///region: New Logic
-    private static final String                       SERIALIZED_SIGNAL_CIRCUIT_LIST_KEY
-                                                                                               = "SerializedSignalCircuitList";
-    private static final String                       SERIALIZED_SIGNAL_CIRCUIT_LIST_SEPARATOR = ":";
-    private final        List< TrafficSignalCircuit > signalCircuitList                        = new ArrayList<>();
 
-    private static final String                     SERIALIZED_SIGNAL_STATE_LIST_KEY       = "SerializedSignalStateList";
-    private static final String                     SERIALIZED_SIGNAL_STATE_LIST_SEPARATOR = ":";
-    private final        List< TrafficSignalState > signalStateList                        = new ArrayList<>();
+    //region: Instance Fields
 
-    private static final String                     SERIALIZED_SIGNAL_FLASH_STATE_LIST_KEY
-                                                                                                 = "SerializedSignalFlashStateList";
-    private static final String                     SERIALIZED_SIGNAL_FLASH_STATE_LIST_SEPARATOR = ":";
-    private final        List< TrafficSignalState > signalFlashStateList                         = new ArrayList<>();
+    /**
+     * The current mode of the traffic signal controller.
+     *
+     * @since 2.0
+     */
+    private TrafficSignalControllerMode mode = TrafficSignalControllerMode.FLASH;
 
-    public int getSignalCircuitCount() {
-        return signalCircuitList.size();
+    /**
+     * The current operating mode of the traffic signal controller.
+     *
+     * @since 2.0
+     */
+    private TrafficSignalControllerMode operatingMode = mode;
+
+    /**
+     * Boolean indicating whether the traffic signal controller is currently paused.
+     *
+     * @since 2.0
+     */
+    private boolean paused = false;
+
+    /**
+     * The list of circuits for the traffic signal controller.
+     *
+     * @since 2.0
+     */
+    private TrafficSignalControllerCircuits circuits = new TrafficSignalControllerCircuits();
+
+    /**
+     * The list of cached phases for the traffic signal controller.
+     *
+     * @since 2.0
+     */
+    private TrafficSignalPhases cachedPhases = new TrafficSignalPhases( circuits );
+
+    /**
+     * The time of the last phase change for the traffic signal controller.
+     *
+     * @since 2.0
+     */
+    private long lastPhaseChangeTime = -1;
+
+    /**
+     * The time of the last phase applicability change for the traffic signal controller.
+     *
+     * @since 2.0
+     */
+    private long lastPhaseApplicabilityChangeTime = -1;
+
+    /**
+     * The time of the last pedestrian phase for the traffic signal controller.
+     *
+     * @since 2.0
+     */
+    private long lastPedPhaseTime = -1;
+
+    /**
+     * The current phase for the traffic signal controller.
+     *
+     * @since 2.0
+     */
+    private TrafficSignalPhase currentPhase = null;
+
+    /**
+     * The current fault message for the traffic signal controller. This is used to display fault messages to the user
+     * when the traffic signal controller is in fault mode.
+     * <p>
+     * If the traffic signal controller is not in fault mode, this will be an empty string.
+     *
+     * @since 2.0
+     */
+    private String currentFaultMessage = "";
+
+    /**
+     * Boolean indicating whether the traffic signal controller should fallback to flash mode at night.
+     *
+     * @since 2.0
+     */
+    private boolean nightlyFallbackToFlashMode = false;
+
+    /**
+     * Boolean indicating whether the traffic signal controller should fallback to flash mode after a power loss.
+     *
+     * @since 2.0
+     */
+    private boolean powerLossFallbackToFlashMode = false;
+
+    /**
+     * The overlap pedestrian signals setting for the traffic signal controller.
+     *
+     * @since 2.0
+     */
+    private boolean overlapPedestrianSignals = true;
+
+    /**
+     * The yellow time for the traffic signal controller.
+     *
+     * @since 2.0
+     */
+    private long yellowTime = 80;
+
+    /**
+     * The flashing don't walk time for the traffic signal controller.
+     *
+     * @since 2.0
+     */
+    private long flashDontWalkTime = 300;
+
+    /**
+     * The flashing all red time for the traffic signal controller.
+     *
+     * @since 2.0
+     */
+    private long allRedTime = 60;
+
+    /**
+     * The minimum service time when servicing requests to the traffic signal controller in
+     * {@link TrafficSignalControllerMode#REQUESTABLE} mode.
+     *
+     * @since 2.0
+     */
+    private long minRequestableServiceTime = 500;
+
+    /**
+     * The maximum service time when servicing requests to the traffic signal controller in
+     * {@link TrafficSignalControllerMode#REQUESTABLE} mode.
+     *
+     * @since 2.0
+     */
+    private long maxRequestableServiceTime = 2400;
+
+    /**
+     * The minimum green time when servicing circuits configured to the traffic signal controller in
+     * {@link TrafficSignalControllerMode#NORMAL} mode.
+     *
+     * @since 2.0
+     */
+    private long minGreenTime = 400;
+
+    /**
+     * The maximum green time when servicing circuits configured to the traffic signal controller in
+     * {@link TrafficSignalControllerMode#NORMAL} mode.
+     *
+     * @since 2.0
+     */
+    private long maxGreenTime = 1800;
+
+    /**
+     * The secondary minimum green time when servicing circuits configured to the traffic signal controller in
+     * {@link TrafficSignalControllerMode#NORMAL} mode.
+     *
+     * @since 2.0
+     */
+    private long minGreenTimeSecondary = 200;
+
+    /**
+     * The secondary maximum green time when servicing circuits configured to the traffic signal controller in
+     * {@link TrafficSignalControllerMode#NORMAL} mode.
+     *
+     * @since 2.0
+     */
+    private long maxGreenTimeSecondary = 1200;
+
+    /**
+     * The dedicated pedestrian signal time when servicing circuits configured to the traffic signal controller in
+     * {@link TrafficSignalControllerMode#NORMAL} mode.
+     *
+     * @since 2.0
+     */
+    private long dedicatedPedSignalTime = 300;
+
+    /**
+     * Boolean which alternates between true and false every time the traffic signal controller is updated. This is used
+     * to determine when the traffic signal controller should flash signals in flash mode.
+     *
+     * @since 2.0
+     */
+    private boolean alternatingFlash = false;
+
+    //endregion
+
+    //region: Tile Entity/NBT Methods
+
+    /**
+     * Returns the tick rate of the traffic signal controller tile entity.
+     *
+     * @return the tick rate of the traffic signal controller tile entity
+     *
+     * @since 2.0
+     */
+    @Override
+    public long getTickRate() {
+        return operatingMode.getTickRate();
     }
 
-    public boolean isDeviceLinked( BlockPos blockPos ) {
-        for ( TrafficSignalCircuit signalCircuit : signalCircuitList ) {
-            if ( signalCircuit.isLinked( blockPos ) ) {
-                return true;
+    /**
+     * Handles the tick event for the traffic signal controller.
+     *
+     * @since 2.0
+     */
+    @Override
+    public void onTick() {
+        // Place the entire tick event in a try/catch block to catch any exceptions and enter fault state
+        try {
+            // Verify integrity of cached phases and reset controller if necessary
+            if ( !cachedPhases.verifyPhaseCount() ) {
+                resetController( true, false );
+            }
+
+            // Pass tick event to traffic signal controller ticker
+            long tickTime = getWorld().getTotalWorldTime();
+            long timeSinceLastPhaseChange = tickTime - lastPhaseChangeTime;
+            long timeSinceLastPhaseApplicabilityChange = tickTime - lastPhaseApplicabilityChangeTime;
+            TrafficSignalPhase newPhase = TrafficSignalControllerTicker.tick( getWorld(), mode, operatingMode, circuits,
+                                                                              cachedPhases, currentPhase,
+                                                                              timeSinceLastPhaseApplicabilityChange,
+                                                                              timeSinceLastPhaseChange,
+                                                                              alternatingFlash,
+                                                                              overlapPedestrianSignals, yellowTime,
+                                                                              flashDontWalkTime, allRedTime,
+                                                                              minRequestableServiceTime,
+                                                                              maxRequestableServiceTime, minGreenTime,
+                                                                              maxGreenTime, minGreenTimeSecondary,
+                                                                              maxGreenTimeSecondary,
+                                                                              dedicatedPedSignalTime );
+
+            // If the phase index has changed, update the phase
+            if ( newPhase != null ) {
+                // Store previous phase temporarily
+                TrafficSignalPhase previousPhase = currentPhase;
+
+                // Update current phase and last phase change time
+                currentPhase = newPhase;
+                lastPhaseChangeTime = tickTime;
+                if ( currentPhase.getApplicability() == TrafficSignalPhaseApplicability.PEDESTRIAN ) {
+                    lastPedPhaseTime = lastPhaseChangeTime;
+                }
+
+                // Update last phase applicability change time, if applicable
+                if ( previousPhase == null || previousPhase.getApplicability() != currentPhase.getApplicability() ) {
+                    lastPhaseApplicabilityChangeTime = lastPhaseChangeTime;
+                }
+
+                // Change to the indicated phase (if valid)
+                currentPhase.apply( getWorld() );
+            }
+            // If the current phase is null (and newPhase is null also), enter fault state
+            else if ( currentPhase == null ) {
+                enterFaultState( "An invalid phase condition was encountered for the " + mode.getName() + " mode." );
+                System.err.println( "Traffic signal controller error: Invalid phase condition for mode " +
+                                            mode.getName() +
+                                            " on controller at " +
+                                            getPos() );
             }
         }
+        // If an exception is caught, enter fault state
+        catch ( Exception e ) {
+            enterFaultState( "A critical error occurred while ticking for the " + mode.getName() + " mode." );
+            System.err.println( "Traffic signal controller error: An exception was caught while ticking for mode " +
+                                        mode.getName() +
+                                        " on controller at " +
+                                        getPos() );
+            e.printStackTrace();
+        }
+
+        // Update alternating flash boolean
+        alternatingFlash = !alternatingFlash;
+
+        // Update the operating mode
+        updateOperatingMode();
+
+    }
+
+    /**
+     * Returns a boolean indicating if the traffic signal controller tile entity should also tick on the client side. By
+     * default, the traffic signal controller tile entity will always tick on the server side, and in the event of
+     * single-player/local mode, the host client is considered the server.
+     * <p>
+     * This method is overridden to return false, as the traffic signal controller tile entity should not tick on the
+     * client side.
+     * </p>
+     *
+     * @return a boolean indicating if the traffic signal controller tile entity should also tick on the client side.
+     *         This method always returns false.
+     *
+     * @since 2.0
+     */
+    @Override
+    public boolean doClientTick() {
         return false;
     }
 
-    public boolean unlinkDevice( BlockPos blockPos, World world ) {
-        boolean unlinked = false;
-        for ( TrafficSignalCircuit signalCircuit : signalCircuitList ) {
-            unlinked = signalCircuit.unlink( blockPos );
-            if ( unlinked ) {
-                // Remove circuit if now empty
-                if ( signalCircuit.getSize() == 0 ) {
-                    signalCircuitList.remove( signalCircuit );
-                }
+    /**
+     * Returns a boolean indicating if the traffic signal controller tile entity ticking should be paused. If the
+     * traffic signal controller tile entity is paused, the tick event will not be called.
+     * <p>
+     * This method returns true if the traffic signal controller is not powered, and false otherwise.
+     * </p>
+     *
+     * @return a boolean indicating if the traffic signal controller tile entity ticking should be paused. This method
+     *         returns true if the traffic signal controller is not powered, and false otherwise.
+     *
+     * @since 2.0
+     */
+    @Override
+    public boolean pauseTicking() {
+        boolean shouldPause = !getWorld().isBlockPowered( getPos() );
 
-                updateSignalStates( world );
+        // Mark dirty if the paused state has changed
+        if ( shouldPause != paused ) {
+            // Turn off all signals if the controller is not powered
+            if ( shouldPause ) {
+                circuits.powerOffAllSignals( getWorld() );
+            }
+
+            paused = shouldPause;
+            markDirtySync( getWorld(), getPos() );
+        }
+
+        return paused;
+    }
+
+    /**
+     * Returns the specified NBT tag compound with the {@link TileEntityTrafficSignalController}'s NBT data.
+     *
+     * @param compound the NBT tag compound to write the {@link TileEntityTrafficSignalController}'s NBT data to
+     *
+     * @return the NBT tag compound with the {@link TileEntityTrafficSignalController}'s NBT data
+     *
+     * @since 2.0
+     */
+    @Override
+    public NBTTagCompound writeNBT( NBTTagCompound compound ) {
+        // Write the mode to NBT
+        compound.setInteger( TrafficSignalControllerNBTKeys.MODE, mode.toNBT() );
+
+        // Write the operating mode to NBT
+        compound.setInteger( TrafficSignalControllerNBTKeys.OPERATING_MODE, operatingMode.toNBT() );
+
+        // Write the circuits to NBT
+        compound.setTag( TrafficSignalControllerNBTKeys.CIRCUITS, circuits.toNBT() );
+
+        // Write the paused state to NBT
+        compound.setBoolean( TrafficSignalControllerNBTKeys.PAUSED, paused );
+
+        // Write the cached phases to NBT
+        compound.setTag( TrafficSignalControllerNBTKeys.CACHED_PHASES, cachedPhases.toNBT() );
+
+        // Write the last phase change time to NBT
+        compound.setLong( TrafficSignalControllerNBTKeys.LAST_PHASE_CHANGE_TIME, lastPhaseChangeTime );
+
+        // Write the last phase applicability change time to NBT
+        compound.setLong( TrafficSignalControllerNBTKeys.LAST_PHASE_APPLICABILITY_CHANGE_TIME,
+                          lastPhaseApplicabilityChangeTime );
+
+        // Write the last pedestrian phase time to NBT
+        compound.setLong( TrafficSignalControllerNBTKeys.LAST_PEDESTRIAN_PHASE_TIME, lastPedPhaseTime );
+
+        // Write the current phase to NBT if non-null
+        if ( currentPhase != null ) {
+            compound.setTag( TrafficSignalControllerNBTKeys.CURRENT_PHASE, currentPhase.toNBT() );
+        }
+        else {
+            compound.removeTag( TrafficSignalControllerNBTKeys.CURRENT_PHASE );
+        }
+
+        // Write the current fault message to NBT
+        compound.setString( TrafficSignalControllerNBTKeys.CURRENT_FAULT_MESSAGE, currentFaultMessage );
+
+        // Write the nightly fallback to flash mode setting to NBT
+        compound.setBoolean( TrafficSignalControllerNBTKeys.NIGHTLY_FALLBACK_FLASH_MODE, nightlyFallbackToFlashMode );
+
+        // Write the power loss fallback to flash mode setting to NBT
+        compound.setBoolean( TrafficSignalControllerNBTKeys.POWER_LOSS_FALLBACK_FLASH_MODE,
+                             powerLossFallbackToFlashMode );
+
+        // Write the overlap pedestrian signals setting to NBT
+        compound.setBoolean( TrafficSignalControllerNBTKeys.OVERLAP_PEDESTRIAN_SIGNALS, overlapPedestrianSignals );
+
+        // Write the yellow time to NBT
+        compound.setLong( TrafficSignalControllerNBTKeys.YELLOW_TIME, yellowTime );
+
+        // Write the flashing don't walk time to NBT
+        compound.setLong( TrafficSignalControllerNBTKeys.FLASH_DONT_WALK_TIME, flashDontWalkTime );
+
+        // Write the all red time to NBT
+        compound.setLong( TrafficSignalControllerNBTKeys.ALL_RED_TIME, allRedTime );
+
+        // Write the minimum requestable service time to NBT
+        compound.setLong( TrafficSignalControllerNBTKeys.MIN_REQUESTABLE_SERVICE_TIME, minRequestableServiceTime );
+
+        // Write the maximum requestable service time to NBT
+        compound.setLong( TrafficSignalControllerNBTKeys.MAX_REQUESTABLE_SERVICE_TIME, maxRequestableServiceTime );
+
+        // Write the minimum green time to NBT
+        compound.setLong( TrafficSignalControllerNBTKeys.MIN_GREEN_TIME, minGreenTime );
+
+        // Write the maximum green time to NBT
+        compound.setLong( TrafficSignalControllerNBTKeys.MAX_GREEN_TIME, maxGreenTime );
+
+        // Write the secondary minimum green time to NBT
+        compound.setLong( TrafficSignalControllerNBTKeys.MIN_GREEN_TIME_SECONDARY, minGreenTimeSecondary );
+
+        // Write the secondary maximum green time to NBT
+        compound.setLong( TrafficSignalControllerNBTKeys.MAX_GREEN_TIME_SECONDARY, maxGreenTimeSecondary );
+
+        // Write the dedicated pedestrian signal time to NBT
+        compound.setLong( TrafficSignalControllerNBTKeys.DEDICATED_PED_SIGNAL_TIME, dedicatedPedSignalTime );
+
+        // Return the NBT tag compound with previous NBT data format removed
+        return removePreviousNBTDataFormat( compound );
+    }
+
+    /**
+     * Processes the reading of the {@link TileEntityTrafficSignalController}'s NBT data from the supplied NBT tag
+     * compound.
+     *
+     * @param compound the NBT tag compound to read the {@link TileEntityTrafficSignalController}'s NBT data from
+     *
+     * @since 2.0
+     */
+    @Override
+    public void readNBT( NBTTagCompound compound ) {
+        // Check for previous NBT data format and load it if present
+        if ( hasPreviousNBTDataFormat( compound ) ) {
+            importPreviousNBTDataFormat( compound );
+        }
+        // Otherwise, load the NBT data with the current format
+        else {
+            // Load the traffic signal controller mode
+            if ( compound.hasKey( TrafficSignalControllerNBTKeys.MODE ) ) {
+                mode = TrafficSignalControllerMode.fromNBT(
+                        compound.getInteger( TrafficSignalControllerNBTKeys.MODE ) );
+            }
+
+            // Load the traffic signal controller operating mode
+            if ( compound.hasKey( TrafficSignalControllerNBTKeys.OPERATING_MODE ) ) {
+                operatingMode = TrafficSignalControllerMode.fromNBT(
+                        compound.getInteger( TrafficSignalControllerNBTKeys.OPERATING_MODE ) );
+            }
+            else {
+                operatingMode = mode;
+            }
+
+            // Load the traffic signal controller circuits
+            if ( compound.hasKey( TrafficSignalControllerNBTKeys.CIRCUITS ) ) {
+                circuits = TrafficSignalControllerCircuits.fromNBT(
+                        compound.getCompoundTag( TrafficSignalControllerNBTKeys.CIRCUITS ) );
+            }
+
+            // Load the traffic signal controller paused state
+            if ( compound.hasKey( TrafficSignalControllerNBTKeys.PAUSED ) ) {
+                paused = compound.getBoolean( TrafficSignalControllerNBTKeys.PAUSED );
+            }
+
+            // Load the traffic signal controller cached phases
+            if ( compound.hasKey( TrafficSignalControllerNBTKeys.CACHED_PHASES ) ) {
+                cachedPhases = TrafficSignalPhases.fromNBT(
+                        compound.getCompoundTag( TrafficSignalControllerNBTKeys.CACHED_PHASES ) );
+            }
+
+            // Load the traffic signal controller last phase change time
+            if ( compound.hasKey( TrafficSignalControllerNBTKeys.LAST_PHASE_CHANGE_TIME ) ) {
+                lastPhaseChangeTime = compound.getLong( TrafficSignalControllerNBTKeys.LAST_PHASE_CHANGE_TIME );
+            }
+
+            // Load the traffic signal controller last phase applicability change time
+            if ( compound.hasKey( TrafficSignalControllerNBTKeys.LAST_PHASE_APPLICABILITY_CHANGE_TIME ) ) {
+                lastPhaseApplicabilityChangeTime = compound.getLong(
+                        TrafficSignalControllerNBTKeys.LAST_PHASE_APPLICABILITY_CHANGE_TIME );
+            }
+
+            // Load the traffic signal controller last pedestrian phase time
+            if ( compound.hasKey( TrafficSignalControllerNBTKeys.LAST_PEDESTRIAN_PHASE_TIME ) ) {
+                lastPedPhaseTime = compound.getLong( TrafficSignalControllerNBTKeys.LAST_PEDESTRIAN_PHASE_TIME );
+            }
+
+            // Load the traffic signal controller current phase
+            if ( compound.hasKey( TrafficSignalControllerNBTKeys.CURRENT_PHASE ) ) {
+                currentPhase = TrafficSignalPhase.fromNBT(
+                        compound.getCompoundTag( TrafficSignalControllerNBTKeys.CURRENT_PHASE ) );
+            }
+
+            // Load the traffic signal controller current fault message
+            if ( compound.hasKey( TrafficSignalControllerNBTKeys.CURRENT_FAULT_MESSAGE ) ) {
+                currentFaultMessage = compound.getString( TrafficSignalControllerNBTKeys.CURRENT_FAULT_MESSAGE );
+            }
+
+            // Load the traffic signal controller nightly fallback to flash mode setting
+            if ( compound.hasKey( TrafficSignalControllerNBTKeys.NIGHTLY_FALLBACK_FLASH_MODE ) ) {
+                nightlyFallbackToFlashMode = compound.getBoolean(
+                        TrafficSignalControllerNBTKeys.NIGHTLY_FALLBACK_FLASH_MODE );
+            }
+
+            // Load the traffic signal controller power loss fallback to flash mode setting
+            if ( compound.hasKey( TrafficSignalControllerNBTKeys.POWER_LOSS_FALLBACK_FLASH_MODE ) ) {
+                powerLossFallbackToFlashMode = compound.getBoolean(
+                        TrafficSignalControllerNBTKeys.POWER_LOSS_FALLBACK_FLASH_MODE );
+            }
+
+            // Load the traffic signal controller overlap pedestrian signals setting
+            if ( compound.hasKey( TrafficSignalControllerNBTKeys.OVERLAP_PEDESTRIAN_SIGNALS ) ) {
+                overlapPedestrianSignals = compound.getBoolean(
+                        TrafficSignalControllerNBTKeys.OVERLAP_PEDESTRIAN_SIGNALS );
+            }
+
+            // Load the traffic signal controller yellow time
+            if ( compound.hasKey( TrafficSignalControllerNBTKeys.YELLOW_TIME ) ) {
+                yellowTime = compound.getLong( TrafficSignalControllerNBTKeys.YELLOW_TIME );
+            }
+
+            // Load the traffic signal controller flashing don't walk time
+            if ( compound.hasKey( TrafficSignalControllerNBTKeys.FLASH_DONT_WALK_TIME ) ) {
+                flashDontWalkTime = compound.getLong( TrafficSignalControllerNBTKeys.FLASH_DONT_WALK_TIME );
+            }
+
+            // Load the traffic signal controller all red time
+            if ( compound.hasKey( TrafficSignalControllerNBTKeys.ALL_RED_TIME ) ) {
+                allRedTime = compound.getLong( TrafficSignalControllerNBTKeys.ALL_RED_TIME );
+            }
+
+            // Load the traffic signal controller minimum requestable service time
+            if ( compound.hasKey( TrafficSignalControllerNBTKeys.MIN_REQUESTABLE_SERVICE_TIME ) ) {
+                minRequestableServiceTime = compound.getLong(
+                        TrafficSignalControllerNBTKeys.MIN_REQUESTABLE_SERVICE_TIME );
+            }
+
+            // Load the traffic signal controller maximum requestable service time
+            if ( compound.hasKey( TrafficSignalControllerNBTKeys.MAX_REQUESTABLE_SERVICE_TIME ) ) {
+                maxRequestableServiceTime = compound.getLong(
+                        TrafficSignalControllerNBTKeys.MAX_REQUESTABLE_SERVICE_TIME );
+            }
+
+            // Load the traffic signal controller minimum green time
+            if ( compound.hasKey( TrafficSignalControllerNBTKeys.MIN_GREEN_TIME ) ) {
+                minGreenTime = compound.getLong( TrafficSignalControllerNBTKeys.MIN_GREEN_TIME );
+            }
+
+            // Load the traffic signal controller maximum green time
+            if ( compound.hasKey( TrafficSignalControllerNBTKeys.MAX_GREEN_TIME ) ) {
+                maxGreenTime = compound.getLong( TrafficSignalControllerNBTKeys.MAX_GREEN_TIME );
+            }
+
+            // Load the traffic signal controller secondary minimum green time
+            if ( compound.hasKey( TrafficSignalControllerNBTKeys.MIN_GREEN_TIME_SECONDARY ) ) {
+                minGreenTimeSecondary = compound.getLong( TrafficSignalControllerNBTKeys.MIN_GREEN_TIME_SECONDARY );
+            }
+
+            // Load the traffic signal controller secondary maximum green time
+            if ( compound.hasKey( TrafficSignalControllerNBTKeys.MAX_GREEN_TIME_SECONDARY ) ) {
+                maxGreenTimeSecondary = compound.getLong( TrafficSignalControllerNBTKeys.MAX_GREEN_TIME_SECONDARY );
+            }
+
+            // Load the traffic signal controller dedicated pedestrian signal time
+            if ( compound.hasKey( TrafficSignalControllerNBTKeys.DEDICATED_PED_SIGNAL_TIME ) ) {
+                dedicatedPedSignalTime = compound.getLong( TrafficSignalControllerNBTKeys.DEDICATED_PED_SIGNAL_TIME );
+            }
+        }
+    }
+
+    /**
+     * Utility method which returns a boolean indicating whether the provided {@link NBTTagCompound} has the previous
+     * NBT data format.
+     *
+     * @param compound The {@link NBTTagCompound} to check for the previous NBT data format.
+     *
+     * @return {@code true} if the provided {@link NBTTagCompound} has the previous NBT data format, {@code false}
+     *         otherwise.
+     *
+     * @since 2.0
+     */
+    public static boolean hasPreviousNBTDataFormat( NBTTagCompound compound ) {
+
+        // Check for any previous NBT data format keys
+        boolean previousNBTDataFormatFound = false;
+        for ( String key : TrafficSignalControllerNBTKeys.V1_KEY_LIST ) {
+            if ( compound.hasKey( key ) ) {
+                previousNBTDataFormatFound = true;
                 break;
             }
+        }
+
+        return previousNBTDataFormatFound;
+    }
+
+    /**
+     * Utility method which removes the previous NBT data format from the provided {@link NBTTagCompound}.
+     *
+     * @param compound The {@link NBTTagCompound} to remove the previous NBT data format from.
+     *
+     * @return The provided {@link NBTTagCompound} with the previous NBT data format removed.
+     *
+     * @since 2.0
+     */
+    public static NBTTagCompound removePreviousNBTDataFormat( NBTTagCompound compound ) {
+
+        // Remove any previous NBT data format keys
+        for ( String key : TrafficSignalControllerNBTKeys.V1_KEY_LIST ) {
+            if ( compound.hasKey( key ) ) {
+                compound.removeTag( key );
+            }
+        }
+
+        return compound;
+    }
+
+    /**
+     * Utility method which imports a previous NBT data formatted circuit ({@link PreviousFormatTrafficSignalCircuit})
+     * to the current/new format circuit ({@link TrafficSignalControllerCircuit}) and adds it to the traffic signal
+     * controller's {@link TrafficSignalControllerCircuits} list, {@link #circuits}.
+     *
+     * @param importSourceCircuit The {@link PreviousFormatTrafficSignalCircuit} to import the previous NBT data
+     *                            formatted circuit ({@link PreviousFormatTrafficSignalCircuit}) from.
+     *
+     * @since 2.0
+     */
+    public void importPreviousNBTDataFormatCircuit( PreviousFormatTrafficSignalCircuit importSourceCircuit ) {
+        // Create import destination circuit object
+        TrafficSignalControllerCircuit importDestinationCircuit = new TrafficSignalControllerCircuit();
+
+        // Get signal lists from imported old circuit
+        List< BlockPos > importedAheadSignals = importSourceCircuit.getAheadSignals();
+        List< BlockPos > importedLeftSignals = importSourceCircuit.getLeftSignals();
+        List< BlockPos > importedHybridLeftSignals = importSourceCircuit.getHybridLeftSignals();
+        List< BlockPos > importedRightSignals = importSourceCircuit.getRightSignals();
+        List< BlockPos > importedPedestrianSignals = importSourceCircuit.getPedestrianSignals();
+        List< BlockPos > importedProtectedSignals = importSourceCircuit.getProtectedSignals();
+        List< BlockPos > importedSensors = importSourceCircuit.getSensors();
+
+        // Loop through lists and add to new circuit format with proper facing direction and/or APS list
+        importDestinationCircuit.linkSensors( importedSensors );
+        importDestinationCircuit.linkRightSignals( importedRightSignals );
+        importDestinationCircuit.linkProtectedSignals( importedProtectedSignals );
+        importDestinationCircuit.linkFlashingLeftSignals( importedHybridLeftSignals );
+        importDestinationCircuit.linkThroughSignals( importedAheadSignals );
+        importedLeftSignals.forEach( signal -> {
+            AbstractBlockControllableSignal controllableSignal
+                    = AbstractBlockControllableSignal.getSignalBlockInstanceOrNull( world, signal );
+            SIGNAL_SIDE signalSide = SIGNAL_SIDE.LEFT;
+            if ( controllableSignal != null ) {
+                signalSide = controllableSignal.getSignalSide( world, signal );
+            }
+            importDestinationCircuit.linkDevice( signal, signalSide );
+        } );
+        importedPedestrianSignals.forEach( signal -> {
+            AbstractBlockControllableSignal controllableSignal
+                    = AbstractBlockControllableSignal.getSignalBlockInstanceOrNull( world, signal );
+            SIGNAL_SIDE signalSide = SIGNAL_SIDE.PEDESTRIAN;
+            if ( controllableSignal != null ) {
+                signalSide = controllableSignal.getSignalSide( world, signal );
+            }
+            importDestinationCircuit.linkDevice( signal, signalSide );
+        } );
+
+        // Add completed import destination circuit object
+        circuits.addCircuit( importDestinationCircuit );
+    }
+
+    /**
+     * Utility method which imports the previous NBT data format from the provided {@link NBTTagCompound}.
+     *
+     * @param compound The {@link NBTTagCompound} to import the previous NBT data format from.
+     *
+     * @since 2.0
+     */
+    public void importPreviousNBTDataFormat( NBTTagCompound compound ) {
+
+        // Import serialized signals list (if present)
+        if ( compound.hasKey( TrafficSignalControllerNBTKeys.V1_KEY_SERIALIZED_SIGNAL_CIRCUIT_LIST ) ) {
+            String serializedSignalCircuitList = compound.getString(
+                    TrafficSignalControllerNBTKeys.V1_KEY_SERIALIZED_SIGNAL_CIRCUIT_LIST );
+            String[] serializedSignalCircuits = serializedSignalCircuitList.split(
+                    TrafficSignalControllerNBTKeys.V1_SERIALIZED_SIGNAL_CIRCUIT_LIST_SEPARATOR );
+            for ( String serializedSignalCircuit : serializedSignalCircuits ) {
+                PreviousFormatTrafficSignalCircuit importedCircuit = new PreviousFormatTrafficSignalCircuit(
+                        serializedSignalCircuit );
+                importPreviousNBTDataFormatCircuit( importedCircuit );
+            }
+        }
+
+        // Import mode
+        if ( compound.hasKey( TrafficSignalControllerNBTKeys.V1_KEY_CURRENT_MODE ) ) {
+            int previousMode = compound.getInteger( TrafficSignalControllerNBTKeys.V1_KEY_CURRENT_MODE );
+            if ( previousMode == TrafficSignalControllerNBTKeys.V1_CURRENT_MODE_FLASH ) {
+                mode = TrafficSignalControllerMode.FLASH;
+            }
+            else if ( previousMode == TrafficSignalControllerNBTKeys.V1_CURRENT_MODE_STANDARD ) {
+                mode = TrafficSignalControllerMode.NORMAL;
+            }
+            else if ( previousMode == TrafficSignalControllerNBTKeys.V1_CURRENT_MODE_STANDARD_FLASH_NIGHT ) {
+                mode = TrafficSignalControllerMode.NORMAL;
+                nightlyFallbackToFlashMode = true;
+            }
+            else if ( previousMode == TrafficSignalControllerNBTKeys.V1_CURRENT_MODE_STANDARD_FLASH_NO_POWER ) {
+                mode = TrafficSignalControllerMode.NORMAL;
+                powerLossFallbackToFlashMode = true;
+            }
+            else if ( previousMode == TrafficSignalControllerNBTKeys.V1_CURRENT_MODE_STANDARD_FLASH_NO_POWER_NIGHT ) {
+                mode = TrafficSignalControllerMode.NORMAL;
+                nightlyFallbackToFlashMode = true;
+                powerLossFallbackToFlashMode = true;
+            }
+            else if ( previousMode == TrafficSignalControllerNBTKeys.V1_CURRENT_MODE_METER ) {
+                mode = TrafficSignalControllerMode.RAMP_METER_FULL_TIME;
+            }
+            else if ( previousMode == TrafficSignalControllerNBTKeys.V1_CURRENT_MODE_REQUESTABLE ) {
+                mode = TrafficSignalControllerMode.REQUESTABLE;
+            }
+            else {
+                mode = TrafficSignalControllerMode.FORCED_FAULT;
+            }
+        }
+
+        // Force a reset of the traffic signal controller
+        resetController( true, false );
+    }
+
+    //endregion
+
+    //region: Getters and Setters
+
+    /**
+     * Gets the traffic signal controller's fallback to flash mode at night setting.
+     *
+     * @return true if the traffic signal controller's fallback to flash mode at night is enabled, false otherwise
+     *
+     * @since 2.0
+     */
+    public boolean getNightlyFallbackToFlashMode() {
+        return nightlyFallbackToFlashMode;
+    }
+
+    /**
+     * Sets the traffic signal controller's fallback to flash mode at night setting.
+     *
+     * @param nightlyFallbackToFlashMode true if the traffic signal controller's fallback to flash mode at night setting
+     *                                   should be enabled, false otherwise
+     *
+     * @since 2.0
+     */
+    public void setNightlyFallbackToFlashMode( boolean nightlyFallbackToFlashMode ) {
+        if ( this.nightlyFallbackToFlashMode != nightlyFallbackToFlashMode ) {
+            this.nightlyFallbackToFlashMode = nightlyFallbackToFlashMode;
+            resetController( false, true );
+        }
+    }
+
+    /**
+     * Gets the traffic signal controller's fallback to flash during power loss setting.
+     *
+     * @return true if the traffic signal controller's fallback to flash during power loss setting is enabled, false
+     *         otherwise
+     *
+     * @since 2.0
+     */
+    public boolean getPowerLossFallbackToFlashMode() {
+        return powerLossFallbackToFlashMode;
+    }
+
+    /**
+     * Sets the traffic signal controller's fallback to flash during power loss setting.
+     *
+     * @param powerLossFallbackToFlashMode true if the traffic signal controller's fallback to flash during power loss
+     *                                     setting should be enabled, false otherwise
+     *
+     * @since 2.0
+     */
+    public void setPowerLossFallbackToFlashMode( boolean powerLossFallbackToFlashMode ) {
+        if ( this.powerLossFallbackToFlashMode != powerLossFallbackToFlashMode ) {
+            this.powerLossFallbackToFlashMode = powerLossFallbackToFlashMode;
+            resetController( false, true );
+        }
+    }
+
+    /**
+     * Gets the traffic signal controller's overlap pedestrian signals setting.
+     *
+     * @return true if the traffic signal controller's overlap pedestrian signals setting is enabled, false otherwise
+     *
+     * @since 2.0
+     */
+    public boolean getOverlapPedestrianSignals() {
+        return overlapPedestrianSignals;
+    }
+
+    /**
+     * Sets the traffic signal controller's overlap pedestrian signals setting.
+     *
+     * @param overlapPedestrianSignals true if the traffic signal controller's overlap pedestrian signals setting should
+     *                                 be enabled, false otherwise
+     *
+     * @since 2.0
+     */
+    public void setOverlapPedestrianSignals( boolean overlapPedestrianSignals ) {
+        if ( this.overlapPedestrianSignals != overlapPedestrianSignals ) {
+            this.overlapPedestrianSignals = overlapPedestrianSignals;
+            resetController( false, true );
+        }
+    }
+
+    //endregion
+
+    //region: Signal Controller Methods
+
+    /**
+     * Updates the operating traffic signal controller mode based on the current traffic signal controller state.
+     *
+     * @since 2.0
+     */
+    public void updateOperatingMode() {
+        TrafficSignalControllerMode desiredOperatingMode;
+
+        // If the traffic signal controller is currently in a fault state, return the fault mode
+        if ( isInFaultState() ) {
+            desiredOperatingMode = TrafficSignalControllerMode.FORCED_FAULT;
+        }
+        // If the traffic signal controller is currently in a fallback flash mode, return the flash mode
+        else if ( isInFallbackFlashMode() ) {
+            desiredOperatingMode = TrafficSignalControllerMode.FLASH;
+        }
+        // Otherwise, return the configured mode
+        else {
+            desiredOperatingMode = mode;
+        }
+
+        setOperatingMode( desiredOperatingMode );
+    }
+
+    /**
+     * Sets the operating traffic signal controller mode. This is the mode that the traffic signal controller is
+     * currently operating in. This may be different from the configured mode if the traffic signal controller is
+     * currently in a fault state, or has fallen back to flash mode.
+     *
+     * @param newOperatingMode the new operating mode to set
+     *
+     * @since 2.0
+     */
+    private void setOperatingMode( TrafficSignalControllerMode newOperatingMode ) {
+        if ( operatingMode != newOperatingMode ) {
+            operatingMode = newOperatingMode;
+            resetController( false, false );
+        }
+    }
+
+    /**
+     * Returns a boolean indicating if the traffic signal controller is currently in fallback flash mode.
+     *
+     * @return true if the traffic signal controller is currently in  fallback flash mode, false otherwise.
+     *
+     * @since 2.0
+     */
+    public boolean isInFallbackFlashMode() {
+        boolean inFallbackFlashMode = false;
+
+        // Set true if nightly fallback to flash mode is enabled and it is currently night time
+        if ( nightlyFallbackToFlashMode && !getWorld().isDaytime() ) {
+            inFallbackFlashMode = true;
+        }
+
+        // Set true if power loss fallback to flash mode is enabled and the traffic signal controller is currently
+        // in a power loss state
+        if ( powerLossFallbackToFlashMode && getWorld().isBlockIndirectlyGettingPowered( getPos() ) <= 0 ) {
+            inFallbackFlashMode = true;
+        }
+
+        // Return false otherwise
+        return inFallbackFlashMode;
+    }
+
+    /**
+     * Returns a boolean indicating if the traffic signal controller is currently in a fault state.
+     *
+     * @return true if the traffic signal controller is currently in a fault state, false otherwise.
+     *
+     * @since 2.0
+     */
+    public boolean isInFaultState() {
+        return currentFaultMessage != null && !currentFaultMessage.isEmpty();
+    }
+
+    /**
+     * Returns the current fault message if the traffic signal controller is currently in a fault state, or an empty
+     * string otherwise.
+     *
+     * @return the current fault message if the traffic signal controller is currently in a fault state, or an empty
+     *         string otherwise.
+     *
+     * @since 2.0
+     */
+    public String getCurrentFaultMessage() {
+        return currentFaultMessage;
+    }
+
+    /**
+     * Enters a fault state with the specified fault message.
+     *
+     * @param faultMessage the fault message to display
+     *
+     * @since 2.0
+     */
+    private void enterFaultState( String faultMessage ) {
+        // Store current fault message
+        currentFaultMessage = faultMessage;
+
+        // Switch to fault mode
+        operatingMode = TrafficSignalControllerMode.FORCED_FAULT;
+        resetController( false, false );
+    }
+
+    /**
+     * Clears the fault state if the traffic signal controller is currently in a fault state.
+     *
+     * @since 2.0
+     */
+    public void clearFaultState() {
+        // Clear current fault message
+        currentFaultMessage = "";
+
+        // Switch to configured mode
+        operatingMode = mode;
+        resetController( false, true );
+    }
+
+    /**
+     * Resets the traffic signal controller, then regenerates the cached {@link TrafficSignalPhases} (if desired), and
+     * forces a tick operation (if desired). This is useful to force an update when a device is linked, unlinked, or the
+     * traffic signal controller mode was changed.
+     *
+     * @param regeneratePhaseCache true to force a regeneration of the cached {@link TrafficSignalPhases}, false
+     *                             otherwise.
+     * @param forceTick            true to force a tick the traffic signal controller after resetting the traffic signal
+     *                             controller, false otherwise.
+     *
+     * @since 2.0
+     */
+    private void resetController( boolean regeneratePhaseCache, boolean forceTick ) {
+        lastPhaseChangeTime = -1;
+        currentPhase = null;
+        if ( regeneratePhaseCache ) {
+            cachedPhases = new TrafficSignalPhases( circuits );
+        }
+        if ( forceTick ) {
+            onTick();
+        }
+        markDirtySync( getWorld(), getPos() );
+    }
+
+    /**
+     * Forcibly power off all signals connected to the traffic signal controller. This is useful when removing a traffic
+     * signal controller from the world.
+     *
+     * @since 2.0
+     */
+    public void forciblyPowerOff() {
+        // Power off all signals
+        if ( circuits != null ) {
+            for ( TrafficSignalControllerCircuit circuit : circuits.getCircuits() ) {
+                circuit.powerOffAllSignals( getWorld() );
+            }
+        }
+
+        // Set the mode to off
+        mode = TrafficSignalControllerMode.MANUAL_OFF;
+        operatingMode = TrafficSignalControllerMode.MANUAL_OFF;
+    }
+
+    /**
+     * Switches the traffic signal controller to the next mode and returns the name of the new mode.
+     *
+     * @return The name of the new mode.
+     *
+     * @since 2.0
+     */
+    public String switchMode() {
+        // Switch to next mode if not in fault state
+        if ( !isInFaultState() ) {
+            mode = mode.getNextMode();
+            operatingMode = mode;
+            resetController( false, true );
+        }
+        return mode.getName();
+    }
+
+    /**
+     * Returns the current count of signal circuits for the traffic signal controller.
+     *
+     * @return the current count of signal circuits for the traffic signal controller
+     *
+     * @since 2.0
+     */
+    public int getSignalCircuitCount() {
+        return circuits.getCircuitCount();
+    }
+
+    /**
+     * Links the device at the specified {@link BlockPos} to the circuit with the specified circuit number. The device
+     * will be linked as the specified {@link SIGNAL_SIDE}.
+     *
+     * @param pos           the {@link BlockPos} of the device to link
+     * @param signalSide    the {@link SIGNAL_SIDE} of the device to link
+     * @param circuitNumber the circuit number to link the device to
+     *
+     * @return true if the device was successfully linked, false otherwise
+     *
+     * @since 2.0
+     */
+    public boolean linkDevice( BlockPos pos, SIGNAL_SIDE signalSide, int circuitNumber )
+    {
+        // Return false if device is already linked
+        boolean linked = !circuits.isDeviceLinked( pos ) &&
+                circuits.getCircuit( circuitNumber - 1 ).linkDevice( pos, signalSide );
+
+        if ( linked ) {
+            resetController( true, true );
+        }
+        return linked;
+    }
+
+    /**
+     * Unlinks the device at the specified {@link BlockPos}.
+     *
+     * @param pos the {@link BlockPos} of the device to unlink
+     *
+     * @return true if the device was successfully unlinked, false otherwise
+     *
+     * @since 2.0
+     */
+    public boolean unlinkDevice( BlockPos pos ) {
+        // Return true if device it was unlinked
+        boolean unlinked = circuits.unlinkDevice( pos );
+
+        if ( unlinked ) {
+            resetController( true, true );
         }
         return unlinked;
     }
 
-    public boolean linkDevice( World world,
-                               BlockPos blockPos,
-                               AbstractBlockControllableSignal.SIGNAL_SIDE signalSide,
-                               int circuit )
-    {
-        int actualCircuit = circuit - 1;
-        boolean result = false;
-        if ( !isDeviceLinked( blockPos ) ) {
-            // Get circuit to link to, create new one if necessary
-            TrafficSignalCircuit linkToCircuit;
-            boolean addCircuit = false;
-            if ( actualCircuit >= signalCircuitList.size() || circuit < 0 ) {
-                linkToCircuit = new TrafficSignalCircuit();
-                addCircuit = true;
-            }
-            else {
-                linkToCircuit = signalCircuitList.get( actualCircuit );
-            }
-
-            // Link to correct list
-            if ( signalSide == AbstractBlockControllableSignal.SIGNAL_SIDE.LEFT ) {
-                linkToCircuit.linkLeftSignal( blockPos );
-            }
-            else if ( signalSide == AbstractBlockControllableSignal.SIGNAL_SIDE.AHEAD ) {
-                linkToCircuit.linkAheadSignal( blockPos );
-            }
-            else if ( signalSide == AbstractBlockControllableSignal.SIGNAL_SIDE.RIGHT ) {
-                linkToCircuit.linkRightSignal( blockPos );
-            }
-            else if ( signalSide == AbstractBlockControllableSignal.SIGNAL_SIDE.CROSSWALK ) {
-                linkToCircuit.linkPedestrianSignal( blockPos );
-            }
-            else if ( signalSide == AbstractBlockControllableSignal.SIGNAL_SIDE.PROTECTED_AHEAD ) {
-                linkToCircuit.linkProtectedSignal( blockPos );
-            }
-            else if ( signalSide == AbstractBlockControllableSignal.SIGNAL_SIDE.HYBRID_LEFT ) {
-                linkToCircuit.linkHybridLeftSignal( blockPos );
-            }
-            else if ( signalSide == AbstractBlockControllableSignal.SIGNAL_SIDE.NA_SENSOR ) {
-                linkToCircuit.linkSensor( blockPos );
-            }
-
-            // Add new circuit if necessary
-            if ( addCircuit ) {
-                signalCircuitList.add( linkToCircuit );
-            }
-
-            // Trigger state regeneration
-            updateSignalStates( world );
-
-            result = true;
-        }
-        return result;
-    }
-    ///endregion
-
-    private static final String  KEY_BOOT_SAFE                              = "BootSafe";
-    private static final String  KEY_BOOT_SAFE_FLASH                        = "BootSafeFlash";
-    private static final String  KEY_LAST_PHASE_CHANGE_TIME                 = "LastPhaseChangeTime";
-    private static final String  KEY_CURR_PHASE_TIME                        = "CurrPhaseTime";
-    private static final String  KEY_CURRENT_PHASE                          = "CurrPhase";
-    private static final String  KEY_CURRENT_MODE                           = "CurrentMode";
-    private static final int     CURRENT_MODE_FLASH                         = 0;
-    private static final int     CURRENT_MODE_STANDARD                      = 1;
-    private static final int     CURRENT_MODE_METER                         = 2;
-    private static final int     CURRENT_MODE_REQUESTABLE                   = 3;
-    private static final int     CURRENT_MODE_STANDARD_FLASH_NIGHT          = 4;
-    private static final int     CURRENT_MODE_STANDARD_FLASH_NO_POWER       = 5;
-    private static final int     CURRENT_MODE_STANDARD_FLASH_NO_POWER_NIGHT = 6;
-    private              boolean bootSafe;
-    private              boolean bootSafeFlash;
-    private              int     currentPhase;
-    private              int     currentPhaseTime;
-    private              long    lastPhaseChangeTime;
-    private              int     currentMode;
-
-    @Override
-    public void readFromNBT( NBTTagCompound p_readFromNBT_1_ ) {
-        super.readFromNBT( p_readFromNBT_1_ );
-
-        // Load existing serialized signals list (if present)
-        if ( p_readFromNBT_1_.hasKey( SERIALIZED_SIGNAL_CIRCUIT_LIST_KEY ) ) {
-            String serializedSignalCircuitList = p_readFromNBT_1_.getString( SERIALIZED_SIGNAL_CIRCUIT_LIST_KEY );
-            String[] serializedSignalCircuits = serializedSignalCircuitList.split(
-                    SERIALIZED_SIGNAL_CIRCUIT_LIST_SEPARATOR );
-            for ( String serializedSignalCircuit : serializedSignalCircuits ) {
-                TrafficSignalCircuit importedCircuit = new TrafficSignalCircuit( serializedSignalCircuit );
-                signalCircuitList.add( importedCircuit );
-            }
-        }
-
-        // Load existing serialized signal state list (if present)
-        if ( p_readFromNBT_1_.hasKey( SERIALIZED_SIGNAL_STATE_LIST_KEY ) ) {
-            String serializedSignalStateList = p_readFromNBT_1_.getString( SERIALIZED_SIGNAL_STATE_LIST_KEY );
-            String[] serializedSignalStates = serializedSignalStateList.split( SERIALIZED_SIGNAL_STATE_LIST_SEPARATOR );
-            for ( String serializedSignalState : serializedSignalStates ) {
-                TrafficSignalState importedState = TrafficSignalState.deserialize( serializedSignalState );
-                signalStateList.add( importedState );
-            }
-        }
-
-        // Load existing serialized signal flash state list (if present)
-        if ( p_readFromNBT_1_.hasKey( SERIALIZED_SIGNAL_FLASH_STATE_LIST_KEY ) ) {
-            String serializedSignalFlashStateList = p_readFromNBT_1_.getString(
-                    SERIALIZED_SIGNAL_FLASH_STATE_LIST_KEY );
-            String[] serializedSignalFlashStates = serializedSignalFlashStateList.split(
-                    SERIALIZED_SIGNAL_FLASH_STATE_LIST_SEPARATOR );
-            for ( String serializedSignalFlashState : serializedSignalFlashStates ) {
-                TrafficSignalState importedState = TrafficSignalState.deserialize( serializedSignalFlashState );
-                signalFlashStateList.add( importedState );
-            }
-        }
-
-        // Load boot safe flag
-        if ( p_readFromNBT_1_.hasKey( KEY_BOOT_SAFE ) ) {
-            this.bootSafe = p_readFromNBT_1_.getBoolean( KEY_BOOT_SAFE );
-        }
-        else {
-            this.bootSafe = false;
-        }
-
-        // Load boot safe flash flag
-        if ( p_readFromNBT_1_.hasKey( KEY_BOOT_SAFE_FLASH ) ) {
-            this.bootSafeFlash = p_readFromNBT_1_.getBoolean( KEY_BOOT_SAFE_FLASH );
-        }
-        else {
-            this.bootSafeFlash = false;
-        }
-
-        // Load current mode
-        if ( p_readFromNBT_1_.hasKey( KEY_CURRENT_MODE ) ) {
-            this.currentMode = p_readFromNBT_1_.getInteger( KEY_CURRENT_MODE );
-        }
-        else {
-            this.currentMode = 0;
-        }
-
-        // Load current phase
-        if ( p_readFromNBT_1_.hasKey( KEY_CURRENT_PHASE ) ) {
-            this.currentPhase = p_readFromNBT_1_.getInteger( KEY_CURRENT_PHASE );
-        }
-        else {
-            this.currentPhase = 0;
-        }
-
-        // Load current phase time
-        if ( p_readFromNBT_1_.hasKey( KEY_CURR_PHASE_TIME ) ) {
-            this.currentPhaseTime = p_readFromNBT_1_.getInteger( KEY_CURR_PHASE_TIME );
-        }
-        else {
-            this.currentPhaseTime = 0;
-        }
-
-        // Load last phase change time
-        if ( p_readFromNBT_1_.hasKey( KEY_LAST_PHASE_CHANGE_TIME ) ) {
-            this.lastPhaseChangeTime = p_readFromNBT_1_.getLong( KEY_LAST_PHASE_CHANGE_TIME );
-        }
-        else {
-            this.lastPhaseChangeTime = System.currentTimeMillis();
-        }
-
-    }
-
-    public int getCircuitPriorityJumpIndex( World world ) {
-        // Find circuit with highest priority
-        int highestPriorityCircuitIndex = -1;
-        int highestPriorityCircuitValue = 0;
-        for ( int index = 0; index < signalCircuitList.size(); index++ ) {
-            TrafficSignalCircuit signalCircuit = signalCircuitList.get( index );
-            int signalCircuitPriority = signalCircuit.getCircuitPriority( world );
-            if ( signalCircuitPriority > highestPriorityCircuitValue ) {
-                highestPriorityCircuitIndex = index;
-                highestPriorityCircuitValue = signalCircuitPriority;
-            }
-        }
-        return highestPriorityCircuitIndex;
-    }
-
-    @Override
-    public boolean shouldRefresh( World p_shouldRefresh_1_,
-                                  BlockPos p_shouldRefresh_2_,
-                                  IBlockState p_shouldRefresh_3_,
-                                  IBlockState p_shouldRefresh_4_ )
-    {
-        return false;
-    }
-
-    @Override
-    public NBTTagCompound writeToNBT( NBTTagCompound p_writeToNBT_1_ ) {
-        // Write boot safe flag
-        p_writeToNBT_1_.setBoolean( KEY_BOOT_SAFE, bootSafe );
-
-        // Write boot safe flash flag
-        p_writeToNBT_1_.setBoolean( KEY_BOOT_SAFE_FLASH, bootSafeFlash );
-
-        // Write current mode
-        p_writeToNBT_1_.setInteger( KEY_CURRENT_MODE, currentMode );
-
-        // Write current phase
-        p_writeToNBT_1_.setInteger( KEY_CURRENT_PHASE, currentPhase );
-
-        // Write current phase time
-        p_writeToNBT_1_.setInteger( KEY_CURR_PHASE_TIME, currentPhaseTime );
-
-        // Write last phase change time
-        p_writeToNBT_1_.setLong( KEY_LAST_PHASE_CHANGE_TIME, lastPhaseChangeTime );
-
-        // Write signal circuit list
-        StringBuilder serializedSignalCircuitListStringBuilder = new StringBuilder();
-        Iterator< TrafficSignalCircuit > signalCircuitIterator = signalCircuitList.iterator();
-        while ( signalCircuitIterator.hasNext() ) {
-            serializedSignalCircuitListStringBuilder.append( signalCircuitIterator.next().getSerialized() );
-            if ( signalCircuitIterator.hasNext() ) {
-                serializedSignalCircuitListStringBuilder.append( SERIALIZED_SIGNAL_CIRCUIT_LIST_SEPARATOR );
-            }
-        }
-        if ( signalCircuitList.size() > 0 ) {
-            p_writeToNBT_1_.setString( SERIALIZED_SIGNAL_CIRCUIT_LIST_KEY,
-                                       serializedSignalCircuitListStringBuilder.toString() );
-        }
-
-        // Write signal state list
-        StringBuilder serializedSignalStateListStringBuilder = new StringBuilder();
-        Iterator< TrafficSignalState > signalStateIterator = signalStateList.iterator();
-        while ( signalStateIterator.hasNext() ) {
-            serializedSignalStateListStringBuilder.append( signalStateIterator.next().serialize() );
-            if ( signalStateIterator.hasNext() ) {
-                serializedSignalStateListStringBuilder.append( SERIALIZED_SIGNAL_STATE_LIST_SEPARATOR );
-            }
-        }
-        if ( signalStateList.size() > 0 ) {
-            p_writeToNBT_1_.setString( SERIALIZED_SIGNAL_STATE_LIST_KEY,
-                                       serializedSignalStateListStringBuilder.toString() );
-        }
-
-        // Write signal flash state list
-        StringBuilder serializedSignalFlashStateListStringBuilder = new StringBuilder();
-        Iterator< TrafficSignalState > signalFlashStateIterator = signalFlashStateList.iterator();
-        while ( signalFlashStateIterator.hasNext() ) {
-            serializedSignalFlashStateListStringBuilder.append( signalFlashStateIterator.next().serialize() );
-            if ( signalFlashStateIterator.hasNext() ) {
-                serializedSignalFlashStateListStringBuilder.append( SERIALIZED_SIGNAL_FLASH_STATE_LIST_SEPARATOR );
-            }
-        }
-        if ( signalFlashStateList.size() > 0 ) {
-            p_writeToNBT_1_.setString( SERIALIZED_SIGNAL_FLASH_STATE_LIST_KEY,
-                                       serializedSignalFlashStateListStringBuilder.toString() );
-        }
-
-        return super.writeToNBT( p_writeToNBT_1_ );
-    }
-
-    public long getLastPhaseChangeTime() {
-        return lastPhaseChangeTime;
-    }
-
-    public int getCycleTickRate() {
-        // Get default tick rate
-        int currentTickRate = 20;
-
-        // Set tick rate to 4 if flashing
-        if ( currentMode == 0 ) {
-            currentTickRate = 4;
-        }
-        else if ( !bootSafe || isStandardFlashAtNightFlash() || isStandardFlashAtNoPowerFlash() ) {
-            currentTickRate = 12;
-        }
-
-        return currentTickRate;
-    }
-
-    private boolean lastPowered = false;
-
-    public void runAutomaticSystemVerification( World world ) {
-        boolean didChange = verifyAndCleanupSignalTypes( world );
-        if ( didChange ) {
-            updateSignalStates( world );
-        }
-    }
-
-    private boolean verifyAndCleanupSignalTypes( World world ) {
-        // Boolean to track if changes made
-        boolean changed = false;
-
-        // Loop through each signal in each circuit - verify it is in correct list, else move
-        for ( TrafficSignalCircuit signalCircuit : signalCircuitList ) {
-            // Build list to unlink
-            List< BlockPos > signalsToUnlink = new ArrayList<>();
-
-            // Verify hybrid left signals
-            for ( BlockPos signalPos : signalCircuit.getHybridLeftSignals() ) {
-                IBlockState state = world.getBlockState( signalPos );
-                Block blockAtSignalPos = state.getBlock();
-                if ( blockAtSignalPos instanceof AbstractBlockControllableSignal ) {
-                    AbstractBlockControllableSignal signalAtSignalPos
-                            = ( AbstractBlockControllableSignal ) blockAtSignalPos;
-
-                    // Signal is wrong type, unlink and turn off
-                    if ( signalAtSignalPos.getSignalSide( world, signalPos ) !=
-                            AbstractBlockControllableSignal.SIGNAL_SIDE.HYBRID_LEFT ) {
-                        AbstractBlockControllableSignal.changeSignalColor( world, signalPos,
-                                                                           AbstractBlockControllableSignal.SIGNAL_OFF );
-                        signalsToUnlink.add( signalPos );
-                    }
-                }
-                else {
-                    // Signal not there anymore, unlink
-                    signalsToUnlink.add( signalPos );
-                }
-            }
-
-            // Verify left signals
-            for ( BlockPos signalPos : signalCircuit.getLeftSignals() ) {
-                IBlockState state = world.getBlockState( signalPos );
-                Block blockAtSignalPos = state.getBlock();
-                if ( blockAtSignalPos instanceof AbstractBlockControllableSignal ) {
-                    AbstractBlockControllableSignal signalAtSignalPos
-                            = ( AbstractBlockControllableSignal ) blockAtSignalPos;
-
-                    // Signal is wrong type, unlink and turn off
-                    if ( signalAtSignalPos.getSignalSide( world, signalPos ) !=
-                            AbstractBlockControllableSignal.SIGNAL_SIDE.LEFT ) {
-                        AbstractBlockControllableSignal.changeSignalColor( world, signalPos,
-                                                                           AbstractBlockControllableSignal.SIGNAL_OFF );
-                        signalsToUnlink.add( signalPos );
-                    }
-                }
-                else {
-                    // Signal not there anymore, unlink
-                    signalsToUnlink.add( signalPos );
-                }
-            }
-
-            // Verify ahead signals
-            for ( BlockPos signalPos : signalCircuit.getAheadSignals() ) {
-                IBlockState state = world.getBlockState( signalPos );
-                Block blockAtSignalPos = state.getBlock();
-                if ( blockAtSignalPos instanceof AbstractBlockControllableSignal ) {
-                    AbstractBlockControllableSignal signalAtSignalPos
-                            = ( AbstractBlockControllableSignal ) blockAtSignalPos;
-
-                    // Signal is wrong type, unlink and turn off
-                    if ( signalAtSignalPos.getSignalSide( world, signalPos ) !=
-                            AbstractBlockControllableSignal.SIGNAL_SIDE.AHEAD ) {
-                        AbstractBlockControllableSignal.changeSignalColor( world, signalPos,
-                                                                           AbstractBlockControllableSignal.SIGNAL_OFF );
-                        signalsToUnlink.add( signalPos );
-                    }
-                }
-                else {
-                    // Signal not there anymore, unlink
-                    signalsToUnlink.add( signalPos );
-                }
-            }
-
-            // Verify right signals
-            for ( BlockPos signalPos : signalCircuit.getRightSignals() ) {
-                IBlockState state = world.getBlockState( signalPos );
-                Block blockAtSignalPos = state.getBlock();
-                if ( blockAtSignalPos instanceof AbstractBlockControllableSignal ) {
-                    AbstractBlockControllableSignal signalAtSignalPos
-                            = ( AbstractBlockControllableSignal ) blockAtSignalPos;
-
-                    // Signal is wrong type, unlink and turn off
-                    if ( signalAtSignalPos.getSignalSide( world, signalPos ) !=
-                            AbstractBlockControllableSignal.SIGNAL_SIDE.RIGHT ) {
-                        AbstractBlockControllableSignal.changeSignalColor( world, signalPos,
-                                                                           AbstractBlockControllableSignal.SIGNAL_OFF );
-                        signalsToUnlink.add( signalPos );
-                    }
-                }
-                else {
-                    // Signal not there anymore, unlink
-                    signalsToUnlink.add( signalPos );
-                }
-            }
-
-            // Verify crosswalk signals
-            for ( BlockPos signalPos : signalCircuit.getPedestrianSignals() ) {
-                IBlockState state = world.getBlockState( signalPos );
-                Block blockAtSignalPos = state.getBlock();
-                if ( blockAtSignalPos instanceof AbstractBlockControllableSignal ) {
-                    AbstractBlockControllableSignal signalAtSignalPos
-                            = ( AbstractBlockControllableSignal ) blockAtSignalPos;
-
-                    // Signal is wrong type, unlink and turn off
-                    if ( signalAtSignalPos.getSignalSide( world, signalPos ) !=
-                            AbstractBlockControllableSignal.SIGNAL_SIDE.CROSSWALK ) {
-                        AbstractBlockControllableSignal.changeSignalColor( world, signalPos,
-                                                                           AbstractBlockControllableSignal.SIGNAL_OFF );
-                        signalsToUnlink.add( signalPos );
-                    }
-                }
-                else {
-                    // Signal not there anymore, unlink
-                    signalsToUnlink.add( signalPos );
-                }
-            }
-
-            // Verify protected ahead signals
-            for ( BlockPos signalPos : signalCircuit.getProtectedSignals() ) {
-                IBlockState state = world.getBlockState( signalPos );
-                Block blockAtSignalPos = state.getBlock();
-                if ( blockAtSignalPos instanceof AbstractBlockControllableSignal ) {
-                    AbstractBlockControllableSignal signalAtSignalPos
-                            = ( AbstractBlockControllableSignal ) blockAtSignalPos;
-
-                    // Signal is wrong type, unlink and turn off
-                    if ( signalAtSignalPos.getSignalSide( world, signalPos ) !=
-                            AbstractBlockControllableSignal.SIGNAL_SIDE.PROTECTED_AHEAD ) {
-                        AbstractBlockControllableSignal.changeSignalColor( world, signalPos,
-                                                                           AbstractBlockControllableSignal.SIGNAL_OFF );
-                        signalsToUnlink.add( signalPos );
-                    }
-                }
-                else {
-                    // Signal not there anymore, unlink
-                    signalsToUnlink.add( signalPos );
-                }
-            }
-
-            // Unlink signals that need to be unlinked
-            for ( BlockPos signalPos : signalsToUnlink ) {
-                if ( !changed ) {
-                    changed = true;
-                }
-                IBlockState state = world.getBlockState( signalPos );
-                Block blockAtUnlinkSignalPos = state.getBlock();
-                if ( blockAtUnlinkSignalPos instanceof AbstractBlockControllableSignal ) {
-                    signalCircuit.unlink( signalPos );
-                }
-            }
-        }
-        return changed;
-    }
-
-    public void updateSignalStates( World world ) {
-        // Verify and cleanup signal types
-        verifyAndCleanupSignalTypes( world );
-
-        // Generate flash states (by default, used at power on)
-        TrafficSignalState flashState1 = new TrafficSignalState( 1, -1 );
-        TrafficSignalState flashState2 = new TrafficSignalState( 1, -1 );
-
-        // Loop through signal circuits
-        for ( int index = 0; index < signalCircuitList.size(); index++ ) {
-            TrafficSignalCircuit signalCircuit = signalCircuitList.get( index );
-
-            // Add ahead/protected ahead flash to correct state
-            if ( index == 0 ) {
-                // Primary circuit flashes yellow on state 1
-                flashState1.addYellowSignals( signalCircuit.getAheadSignals() );
-                flashState1.addRedSignals( signalCircuit.getRightSignals() );
-                flashState2.addOffSignals( signalCircuit.getAheadSignals() );
-                flashState2.addOffSignals( signalCircuit.getRightSignals() );
-            }
-            if ( index % 2 == 0 ) {
-                // Secondary circuit (even #) flashes red on state 1
-                flashState1.addRedSignals( signalCircuit.getAheadSignals() );
-                flashState1.addRedSignals( signalCircuit.getRightSignals() );
-                flashState2.addOffSignals( signalCircuit.getAheadSignals() );
-                flashState2.addOffSignals( signalCircuit.getRightSignals() );
-            }
-            else {
-                // Secondary circuit (odd #) flashes red on state 2
-                flashState2.addRedSignals( signalCircuit.getAheadSignals() );
-                flashState2.addRedSignals( signalCircuit.getRightSignals() );
-                flashState1.addOffSignals( signalCircuit.getAheadSignals() );
-                flashState1.addOffSignals( signalCircuit.getRightSignals() );
-            }
-
-            // Add turn/protected signals
-            if ( index % 2 == 0 ) {
-                // Even # flashes red on state 2
-                flashState2.addRedSignals( signalCircuit.getHybridLeftSignals() );
-                flashState2.addRedSignals( signalCircuit.getLeftSignals() );
-                flashState2.addRedSignals( signalCircuit.getProtectedSignals() );
-                flashState1.addOffSignals( signalCircuit.getHybridLeftSignals() );
-                flashState1.addOffSignals( signalCircuit.getLeftSignals() );
-                flashState1.addOffSignals( signalCircuit.getProtectedSignals() );
-            }
-            else {
-                // Odd # flashes red on state 1
-                flashState1.addRedSignals( signalCircuit.getHybridLeftSignals() );
-                flashState1.addRedSignals( signalCircuit.getLeftSignals() );
-                flashState1.addRedSignals( signalCircuit.getProtectedSignals() );
-                flashState2.addOffSignals( signalCircuit.getHybridLeftSignals() );
-                flashState2.addOffSignals( signalCircuit.getLeftSignals() );
-                flashState2.addOffSignals( signalCircuit.getProtectedSignals() );
-            }
-
-            // Add pedestrian signals
-            flashState1.addOffSignals( signalCircuit.getPedestrianSignals() );
-        }
-        signalFlashStateList.clear();
-        signalFlashStateList.add( flashState1 );
-        signalFlashStateList.add( flashState2 );
-
-        // Create temporary list to store states as built
-        ArrayList< TrafficSignalState > tempSignalStateList = new ArrayList<>();
-
-        // Handle flash versus normal operation
-        if ( currentMode == CURRENT_MODE_FLASH || currentMode == CURRENT_MODE_REQUESTABLE ) {
-            // Add completed flash states to new state list
-            tempSignalStateList.addAll( signalFlashStateList );
-        }
-        else if ( currentMode == CURRENT_MODE_STANDARD ||
-                currentMode == CURRENT_MODE_STANDARD_FLASH_NIGHT ||
-                currentMode == CURRENT_MODE_STANDARD_FLASH_NO_POWER ||
-                currentMode == CURRENT_MODE_STANDARD_FLASH_NO_POWER_NIGHT ) {
-            // Create an all red state
-            TrafficSignalState allRedSignalState = new TrafficSignalState( 3, -1 );
-            for ( TrafficSignalCircuit signalCircuit : signalCircuitList ) {
-                allRedSignalState.addRedSignals( signalCircuit.getHybridLeftSignals() );
-                allRedSignalState.addRedSignals( signalCircuit.getLeftSignals() );
-                allRedSignalState.addRedSignals( signalCircuit.getAheadSignals() );
-                allRedSignalState.addRedSignals( signalCircuit.getRightSignals() );
-                allRedSignalState.addRedSignals( signalCircuit.getProtectedSignals() );
-                allRedSignalState.addRedSignals( signalCircuit.getPedestrianSignals() );
-            }
-
-            // Add all red state as first
-            tempSignalStateList.add( allRedSignalState );
-
-            // Build crosswalk state
-            TrafficSignalState allCircuitCrosswalkState = new TrafficSignalState( 12, -1 );
-            for ( int pedIndex = 0; pedIndex < signalCircuitList.size(); pedIndex++ ) {
-
-                allCircuitCrosswalkState.addGreenSignals( signalCircuitList.get( pedIndex ).getPedestrianSignals() );
-
-            }
-            allCircuitCrosswalkState.combine( allRedSignalState );
-            tempSignalStateList.add( allCircuitCrosswalkState );
-            tempSignalStateList.add( allRedSignalState );
-
-            // Loop through signal circuits
-            for ( int index = 0; index < signalCircuitList.size(); index++ ) {
-                TrafficSignalCircuit signalCircuit = signalCircuitList.get( index );
-
-                // If all signals facing same direction, can unify turns and ahead due to lack of conflict
-                if ( signalCircuit.areSignalsFacingSameDirection( world ) ) {
-                    // Handle if circuit has protected signals
-                    if ( signalCircuit.getProtectedSignals().size() > 0 ) {
-                        if ( signalCircuit.getHybridLeftSignals().size() > 0 ||
-                                signalCircuit.getLeftSignals().size() > 0 ) {
-                            // Create state for left turn signals on green
-                            TrafficSignalState circuitLeftGreenState = new TrafficSignalState( 10, index );
-                            circuitLeftGreenState.addOffSignals( signalCircuit.getHybridLeftSignals() );
-                            circuitLeftGreenState.addGreenSignals( signalCircuit.getLeftSignals() );
-                            circuitLeftGreenState.combine( allRedSignalState );
-                            tempSignalStateList.add( circuitLeftGreenState );
-
-                            // Create state for left turn signals on yellow
-                            TrafficSignalState circuitLeftYellowState = new TrafficSignalState( 5, index );
-                            circuitLeftYellowState.addYellowSignals( signalCircuit.getHybridLeftSignals() );
-                            circuitLeftYellowState.addYellowSignals( signalCircuit.getLeftSignals() );
-                            circuitLeftYellowState.combine( allRedSignalState );
-                            tempSignalStateList.add( circuitLeftYellowState );
-
-                            // Add all red phase
-                            TrafficSignalState indexedAllRedState = new TrafficSignalState(
-                                    allRedSignalState.getLength(), index );
-                            indexedAllRedState.combine( allRedSignalState );
-                            tempSignalStateList.add( indexedAllRedState );
-                        }
-
-                        // Create state for ahead/protected signals on green
-                        TrafficSignalState circuitAheadGreenState = new TrafficSignalState( 15, index );
-                        circuitAheadGreenState.addGreenSignals( signalCircuit.getAheadSignals() );
-                        circuitAheadGreenState.addGreenSignals( signalCircuit.getProtectedSignals() );
-                        for ( int pedIndex = 0; pedIndex < signalCircuitList.size(); pedIndex++ ) {
-                            if ( index != pedIndex ) {
-                                circuitAheadGreenState.addGreenSignals(
-                                        signalCircuitList.get( pedIndex ).getPedestrianSignals() );
-                            }
-                        }
-                        circuitAheadGreenState.combine( allRedSignalState );
-                        tempSignalStateList.add( circuitAheadGreenState );
-
-                        // Create right turn states (if signals present)
-                        if ( signalCircuit.getRightSignals().size() > 0 ) {
-                            // Create state for ahead/protected signals on yellow
-                            TrafficSignalState circuitAheadYellowState = new TrafficSignalState( 5, index );
-                            circuitAheadYellowState.addGreenSignals( signalCircuit.getAheadSignals() );
-                            circuitAheadYellowState.addYellowSignals( signalCircuit.getProtectedSignals() );
-                            circuitAheadYellowState.combine( allRedSignalState );
-                            tempSignalStateList.add( circuitAheadYellowState );
-
-                            // Add all red phase
-                            TrafficSignalState indexedAllRedState = new TrafficSignalState(
-                                    allRedSignalState.getLength(), index );
-                            indexedAllRedState.addGreenSignals( signalCircuit.getAheadSignals() );
-                            indexedAllRedState.combine( allRedSignalState );
-                            tempSignalStateList.add( indexedAllRedState );
-
-                            // Create state for right signals on green
-                            TrafficSignalState circuitRightGreenState = new TrafficSignalState( 10, index );
-                            circuitRightGreenState.addGreenSignals( signalCircuit.getAheadSignals() );
-                            circuitRightGreenState.addGreenSignals( signalCircuit.getRightSignals() );
-                            circuitRightGreenState.combine( allRedSignalState );
-                            tempSignalStateList.add( circuitRightGreenState );
-
-                            // Create state for right signals on yellow
-                            TrafficSignalState circuitRightYellowState = new TrafficSignalState( 5, index );
-                            circuitRightYellowState.addYellowSignals( signalCircuit.getAheadSignals() );
-                            circuitRightYellowState.addYellowSignals( signalCircuit.getRightSignals() );
-                            circuitRightYellowState.combine( allRedSignalState );
-                            tempSignalStateList.add( circuitRightYellowState );
-                        }
-                        else {
-                            // Create state for ahead/protected signals on yellow
-                            TrafficSignalState circuitAheadYellowState = new TrafficSignalState( 5, index );
-                            circuitAheadYellowState.addYellowSignals( signalCircuit.getAheadSignals() );
-                            circuitAheadYellowState.addYellowSignals( signalCircuit.getProtectedSignals() );
-                            circuitAheadYellowState.combine( allRedSignalState );
-                            tempSignalStateList.add( circuitAheadYellowState );
-                        }
-
-                        // Add all red phase to follow
-                        if ( index < signalCircuitList.size() - 1 ) {
-                            tempSignalStateList.add( allRedSignalState );
-                        }
-                    }
-                    else {
-                        // Create state for signals on green
-                        TrafficSignalState circuitGreenState = new TrafficSignalState( 15, index );
-                        circuitGreenState.addOffSignals( signalCircuit.getHybridLeftSignals() );
-                        circuitGreenState.addGreenSignals( signalCircuit.getLeftSignals() );
-                        circuitGreenState.addGreenSignals( signalCircuit.getAheadSignals() );
-                        circuitGreenState.addGreenSignals( signalCircuit.getRightSignals() );
-                        circuitGreenState.addGreenSignals( signalCircuit.getProtectedSignals() );
-                        for ( int pedIndex = 0; pedIndex < signalCircuitList.size(); pedIndex++ ) {
-                            if ( index != pedIndex ) {
-                                circuitGreenState.addGreenSignals(
-                                        signalCircuitList.get( pedIndex ).getPedestrianSignals() );
-                            }
-                        }
-                        circuitGreenState.combine( allRedSignalState );
-                        tempSignalStateList.add( circuitGreenState );
-
-                        // Create state for signals on yellow
-                        TrafficSignalState circuitYellowState = new TrafficSignalState( 5, index );
-                        circuitYellowState.addYellowSignals( signalCircuit.getHybridLeftSignals() );
-                        circuitYellowState.addYellowSignals( signalCircuit.getLeftSignals() );
-                        circuitYellowState.addYellowSignals( signalCircuit.getAheadSignals() );
-                        circuitYellowState.addYellowSignals( signalCircuit.getRightSignals() );
-                        circuitYellowState.addYellowSignals( signalCircuit.getProtectedSignals() );
-                        circuitYellowState.combine( allRedSignalState );
-                        tempSignalStateList.add( circuitYellowState );
-
-                        // Add all red phase to follow
-                        if ( index < signalCircuitList.size() - 1 ) {
-                            tempSignalStateList.add( allRedSignalState );
-                        }
-                    }
-                }
-                else {
-                    // Handle if circuit has protected signals
-                    if ( signalCircuit.getProtectedSignals().size() > 0 ) {
-                        if ( signalCircuit.getHybridLeftSignals().size() > 0 ||
-                                signalCircuit.getLeftSignals().size() > 0 ) {
-                            // Create state for left turn signals on green
-                            TrafficSignalState circuitLeftGreenState = new TrafficSignalState( 10, index );
-                            circuitLeftGreenState.addOffSignals( signalCircuit.getHybridLeftSignals() );
-                            circuitLeftGreenState.addGreenSignals( signalCircuit.getLeftSignals() );
-                            circuitLeftGreenState.combine( allRedSignalState );
-                            tempSignalStateList.add( circuitLeftGreenState );
-
-                            // Create state for left turn signals on yellow
-                            TrafficSignalState circuitLeftYellowState = new TrafficSignalState( 5, index );
-                            circuitLeftYellowState.addYellowSignals( signalCircuit.getHybridLeftSignals() );
-                            circuitLeftYellowState.addYellowSignals( signalCircuit.getLeftSignals() );
-                            circuitLeftYellowState.combine( allRedSignalState );
-                            tempSignalStateList.add( circuitLeftYellowState );
-
-                            // Add all red phase
-                            TrafficSignalState indexedAllRedState = new TrafficSignalState(
-                                    allRedSignalState.getLength(), index );
-                            indexedAllRedState.combine( allRedSignalState );
-                            tempSignalStateList.add( indexedAllRedState );
-                        }
-
-                        // Create state for ahead/protected signals on green
-                        TrafficSignalState circuitAheadGreenState = new TrafficSignalState( 15, index );
-                        if ( signalCircuit.getHybridLeftSignals().size() > 0 ) {
-                            circuitAheadGreenState.addGreenSignals( signalCircuit.getHybridLeftSignals() );
-                        }
-                        circuitAheadGreenState.addGreenSignals( signalCircuit.getAheadSignals() );
-                        circuitAheadGreenState.addGreenSignals( signalCircuit.getProtectedSignals() );
-                        for ( int pedIndex = 0; pedIndex < signalCircuitList.size(); pedIndex++ ) {
-                            if ( index != pedIndex ) {
-                                circuitAheadGreenState.addGreenSignals(
-                                        signalCircuitList.get( pedIndex ).getPedestrianSignals() );
-                            }
-                        }
-                        circuitAheadGreenState.combine( allRedSignalState );
-                        tempSignalStateList.add( circuitAheadGreenState );
-
-                        // Create right turn states (if signals present)
-                        if ( signalCircuit.getRightSignals().size() > 0 ) {
-                            // Create state for protected signals on yellow
-                            TrafficSignalState circuitAheadYellowState = new TrafficSignalState( 5, index );
-                            if ( signalCircuit.getHybridLeftSignals().size() > 0 ) {
-                                circuitAheadYellowState.addGreenSignals( signalCircuit.getHybridLeftSignals() );
-                            }
-                            circuitAheadYellowState.addGreenSignals( signalCircuit.getAheadSignals() );
-                            circuitAheadYellowState.addYellowSignals( signalCircuit.getProtectedSignals() );
-                            circuitAheadYellowState.combine( allRedSignalState );
-                            tempSignalStateList.add( circuitAheadYellowState );
-
-                            // Add all red phase
-                            TrafficSignalState indexedAllRedState = new TrafficSignalState(
-                                    allRedSignalState.getLength(), index );
-                            if ( signalCircuit.getHybridLeftSignals().size() > 0 ) {
-                                indexedAllRedState.addGreenSignals( signalCircuit.getHybridLeftSignals() );
-                            }
-                            indexedAllRedState.addGreenSignals( signalCircuit.getAheadSignals() );
-                            indexedAllRedState.combine( allRedSignalState );
-                            tempSignalStateList.add( indexedAllRedState );
-
-                            // Create state for right signals on green
-                            TrafficSignalState circuitRightGreenState = new TrafficSignalState( 10, index );
-                            if ( signalCircuit.getHybridLeftSignals().size() > 0 ) {
-                                circuitRightGreenState.addGreenSignals( signalCircuit.getHybridLeftSignals() );
-                            }
-                            circuitRightGreenState.addGreenSignals( signalCircuit.getAheadSignals() );
-                            circuitRightGreenState.addGreenSignals( signalCircuit.getRightSignals() );
-                            circuitRightGreenState.combine( allRedSignalState );
-                            tempSignalStateList.add( circuitRightGreenState );
-
-                            // Create state for right signals on yellow
-                            TrafficSignalState circuitRightYellowState = new TrafficSignalState( 5, index );
-                            if ( signalCircuit.getHybridLeftSignals().size() > 0 ) {
-                                circuitRightYellowState.addGreenSignals( signalCircuit.getHybridLeftSignals() );
-                            }
-                            circuitRightYellowState.addYellowSignals( signalCircuit.getAheadSignals() );
-                            circuitRightYellowState.addYellowSignals( signalCircuit.getRightSignals() );
-                            circuitRightYellowState.combine( allRedSignalState );
-                            tempSignalStateList.add( circuitRightYellowState );
-                        }
-                        else {
-                            // Create state for protected signals on yellow
-                            TrafficSignalState circuitAheadYellowState = new TrafficSignalState( 5, index );
-                            if ( signalCircuit.getHybridLeftSignals().size() > 0 ) {
-                                circuitAheadYellowState.addGreenSignals( signalCircuit.getHybridLeftSignals() );
-                            }
-                            circuitAheadYellowState.addYellowSignals( signalCircuit.getAheadSignals() );
-                            circuitAheadYellowState.addYellowSignals( signalCircuit.getProtectedSignals() );
-                            circuitAheadYellowState.combine( allRedSignalState );
-                            tempSignalStateList.add( circuitAheadYellowState );
-                        }
-
-                        // Add hybrid left yellow cycle (if present)
-                        if ( signalCircuit.getHybridLeftSignals().size() > 0 ) {
-                            // Add all red phase
-                            TrafficSignalState circuitSwitchRedState = new TrafficSignalState( 2, index );
-                            circuitSwitchRedState.addGreenSignals( signalCircuit.getHybridLeftSignals() );
-                            circuitSwitchRedState.combine( allRedSignalState );
-                            tempSignalStateList.add( circuitSwitchRedState );
-
-                            TrafficSignalState circuitHybridLeftYellowState = new TrafficSignalState( 5, index );
-                            circuitHybridLeftYellowState.addYellowSignals( signalCircuit.getHybridLeftSignals() );
-                            circuitHybridLeftYellowState.combine( allRedSignalState );
-                            tempSignalStateList.add( circuitHybridLeftYellowState );
-                        }
-
-                        // Add all red phase to follow
-                        if ( index < signalCircuitList.size() - 1 ) {
-                            tempSignalStateList.add( allRedSignalState );
-                        }
-                    }
-                    // Handle if circuit does not have protected signals
-                    else {
-                        // Check if left signals all facing same direction
-                        boolean areLeftsAllFacingSame = true;
-                        EnumFacing encounteredFacingDirection = null;
-                        for ( BlockPos signalPos : signalCircuit.getHybridLeftSignals() ) {
-                            IBlockState blockState = world.getBlockState( signalPos );
-                            if ( blockState.getBlock() instanceof AbstractBlockControllableSignal ) {
-                                EnumFacing currentFacingDirection = blockState.getValue( BlockHorizontal.FACING );
-                                if ( encounteredFacingDirection == null ) {
-                                    encounteredFacingDirection = currentFacingDirection;
-                                }
-                                else if ( encounteredFacingDirection != currentFacingDirection ) {
-                                    areLeftsAllFacingSame = false;
-                                }
-                            }
-                        }
-                        for ( BlockPos signalPos : signalCircuit.getLeftSignals() ) {
-                            IBlockState blockState = world.getBlockState( signalPos );
-                            if ( blockState.getBlock() instanceof AbstractBlockControllableSignal ) {
-                                EnumFacing currentFacingDirection = blockState.getValue( BlockHorizontal.FACING );
-                                if ( encounteredFacingDirection == null ) {
-                                    encounteredFacingDirection = currentFacingDirection;
-                                }
-                                else if ( encounteredFacingDirection != currentFacingDirection ) {
-                                    areLeftsAllFacingSame = false;
-                                }
-                            }
-                        }
-
-                        // If lefts are facing same direction, get ahead/right for same direction to overlap
-                        List< BlockPos > leftOverlapSignals = new ArrayList<>();
-                        if ( areLeftsAllFacingSame ) {
-                            for ( BlockPos signalPos : signalCircuit.getAheadSignals() ) {
-                                IBlockState blockState = world.getBlockState( signalPos );
-                                if ( blockState.getBlock() instanceof AbstractBlockControllableSignal ) {
-                                    EnumFacing signalFacingDirection = blockState.getValue( BlockHorizontal.FACING );
-                                    if ( signalFacingDirection == encounteredFacingDirection ) {
-                                        leftOverlapSignals.add( signalPos );
-                                    }
-                                }
-                            }
-
-                            for ( BlockPos signalPos : signalCircuit.getRightSignals() ) {
-                                IBlockState blockState = world.getBlockState( signalPos );
-                                if ( blockState.getBlock() instanceof AbstractBlockControllableSignal ) {
-                                    EnumFacing signalFacingDirection = blockState.getValue( BlockHorizontal.FACING );
-                                    if ( signalFacingDirection == encounteredFacingDirection ) {
-                                        leftOverlapSignals.add( signalPos );
-                                    }
-                                }
-                            }
-                        }
-
-                        // Create state for ahead/right signals on green
-                        TrafficSignalState circuitGreenState = new TrafficSignalState( 15, index );
-                        if ( signalCircuit.getHybridLeftSignals().size() > 0 ) {
-                            circuitGreenState.addGreenSignals( signalCircuit.getHybridLeftSignals() );
-                        }
-                        circuitGreenState.addGreenSignals( signalCircuit.getAheadSignals() );
-                        circuitGreenState.addGreenSignals( signalCircuit.getRightSignals() );
-                        for ( int pedIndex = 0; pedIndex < signalCircuitList.size(); pedIndex++ ) {
-                            if ( index != pedIndex ) {
-                                circuitGreenState.addGreenSignals(
-                                        signalCircuitList.get( pedIndex ).getPedestrianSignals() );
-                            }
-                        }
-                        circuitGreenState.combine( allRedSignalState );
-                        tempSignalStateList.add( circuitGreenState );
-
-                        // Create state for ahead/right signals on yellow
-                        TrafficSignalState circuitYellowState = new TrafficSignalState( 5, index );
-                        TrafficSignalState circuitYellowStateOverlap = new TrafficSignalState( 5, index );
-                        if ( leftOverlapSignals.size() > 0 ) {
-                            circuitYellowStateOverlap.addGreenSignals( leftOverlapSignals );
-                        }
-                        if ( signalCircuit.getHybridLeftSignals().size() > 0 ) {
-                            circuitYellowState.addGreenSignals( signalCircuit.getHybridLeftSignals() );
-                        }
-                        circuitYellowState.addYellowSignals( signalCircuit.getAheadSignals() );
-                        circuitYellowState.addYellowSignals( signalCircuit.getRightSignals() );
-                        circuitYellowState.combine( allRedSignalState );
-                        circuitYellowStateOverlap.combine( circuitYellowState );
-                        tempSignalStateList.add( circuitYellowStateOverlap );
-
-                        // Create state for ahead/right signals on red w/ overlap
-                        //if ( leftOverlapSignals.size() > 0 )
-                        {
-                            TrafficSignalState circuitRedOverlapState = new TrafficSignalState( 4, index );
-                            TrafficSignalState circuitRedOverlapStateOverlap = new TrafficSignalState( 5, index );
-                            if ( leftOverlapSignals.size() > 0 ) {
-                                circuitRedOverlapStateOverlap.addGreenSignals( leftOverlapSignals );
-                            }
-                            if ( signalCircuit.getHybridLeftSignals().size() > 0 ) {
-                                circuitRedOverlapState.addGreenSignals( signalCircuit.getHybridLeftSignals() );
-                            }
-                            circuitRedOverlapState.addRedSignals( signalCircuit.getAheadSignals() );
-                            circuitRedOverlapState.addRedSignals( signalCircuit.getRightSignals() );
-                            circuitRedOverlapState.combine( allRedSignalState );
-                            circuitRedOverlapStateOverlap.combine( circuitRedOverlapState );
-                            tempSignalStateList.add( circuitRedOverlapStateOverlap );
-                        }
-
-                        // Handle left signals
-                        if ( signalCircuit.getHybridLeftSignals().size() > 0 ||
-                                signalCircuit.getLeftSignals().size() > 0 ) {
-
-                            // Create state for left turn signals on green
-                            TrafficSignalState circuitLeftGreenState = new TrafficSignalState( 10, index );
-                            circuitLeftGreenState.addOffSignals( signalCircuit.getHybridLeftSignals() );
-                            circuitLeftGreenState.addGreenSignals( signalCircuit.getLeftSignals() );
-                            circuitLeftGreenState.addGreenSignals( leftOverlapSignals );
-                            circuitLeftGreenState.combine( allRedSignalState );
-                            tempSignalStateList.add( circuitLeftGreenState );
-
-                            // Create state for left turn signals on yellow
-                            TrafficSignalState circuitLeftYellowState = new TrafficSignalState( 5, index );
-                            circuitLeftYellowState.addYellowSignals( signalCircuit.getHybridLeftSignals() );
-                            circuitLeftYellowState.addYellowSignals( signalCircuit.getLeftSignals() );
-                            circuitLeftYellowState.addYellowSignals( leftOverlapSignals );
-                            circuitLeftYellowState.combine( allRedSignalState );
-                            tempSignalStateList.add( circuitLeftYellowState );
-                        }
-
-                        // Add all red phase to follow
-                        if ( index < signalCircuitList.size() - 1 ) {
-                            tempSignalStateList.add( allRedSignalState );
-                        }
-                    }
-                }
-            }
-        }
-        else if ( currentMode == CURRENT_MODE_METER ) {
-            // Create an all red state (pedestrian yellow - meter mode)
-            TrafficSignalState allRedSignalState = new TrafficSignalState( 4, -1 );
-            for ( TrafficSignalCircuit signalCircuit : signalCircuitList ) {
-                allRedSignalState.addRedSignals( signalCircuit.getHybridLeftSignals() );
-                allRedSignalState.addRedSignals( signalCircuit.getLeftSignals() );
-                allRedSignalState.addRedSignals( signalCircuit.getAheadSignals() );
-                allRedSignalState.addRedSignals( signalCircuit.getRightSignals() );
-                allRedSignalState.addRedSignals( signalCircuit.getProtectedSignals() );
-                allRedSignalState.addYellowSignals( signalCircuit.getPedestrianSignals() );
-            }
-
-            // Add all red state as first
-            tempSignalStateList.add( allRedSignalState );
-
-            // Loop through signal circuits
-            for ( int index = 0; index < signalCircuitList.size(); index++ ) {
-                TrafficSignalCircuit signalCircuit = signalCircuitList.get( index );
-
-                // Create green state for circuit
-                TrafficSignalState circuitGreenState = new TrafficSignalState( 3, index );
-                circuitGreenState.addGreenSignals( signalCircuit.getHybridLeftSignals() );
-                circuitGreenState.addGreenSignals( signalCircuit.getLeftSignals() );
-                circuitGreenState.addGreenSignals( signalCircuit.getAheadSignals() );
-                circuitGreenState.addYellowSignals( signalCircuit.getProtectedSignals() );
-                circuitGreenState.addGreenSignals( signalCircuit.getRightSignals() );
-                circuitGreenState.combine( allRedSignalState );
-                tempSignalStateList.add( circuitGreenState );
-
-                // Add all red phase to follow
-                if ( index < signalCircuitList.size() - 1 ) {
-                    tempSignalStateList.add( allRedSignalState );
-                }
-            }
-        }
-
-        // Store updated state list
-        signalStateList.clear();
-        signalStateList.addAll( tempSignalStateList );
-        markDirty();
-    }
-
-    public void updateSignals( TrafficSignalState signalState, boolean powered ) {
-        // Apply red signals
-        for ( BlockPos signalPos : signalState.getRedSignals() ) {
-            IBlockState blockState = world.getBlockState( signalPos );
-            if ( blockState.getBlock() instanceof AbstractBlockControllableSignal ) {
-                if ( powered ) {
-                    AbstractBlockControllableSignal.changeSignalColor( world, signalPos,
-                                                                       AbstractBlockControllableSignal.SIGNAL_RED );
-                }
-                else {
-                    AbstractBlockControllableSignal.changeSignalColor( world, signalPos,
-                                                                       AbstractBlockControllableSignal.SIGNAL_OFF );
-                }
-            }
-        }
-
-        // Apply yellow signals
-        for ( BlockPos signalPos : signalState.getYellowSignals() ) {
-            IBlockState blockState = world.getBlockState( signalPos );
-            if ( blockState.getBlock() instanceof AbstractBlockControllableSignal ) {
-                if ( powered ) {
-                    AbstractBlockControllableSignal.changeSignalColor( world, signalPos,
-                                                                       AbstractBlockControllableSignal.SIGNAL_YELLOW );
-                }
-                else {
-                    AbstractBlockControllableSignal.changeSignalColor( world, signalPos,
-                                                                       AbstractBlockControllableSignal.SIGNAL_OFF );
-                }
-            }
-        }
-
-        // Apply red signals
-        for ( BlockPos signalPos : signalState.getGreenSignals() ) {
-            IBlockState blockState = world.getBlockState( signalPos );
-            if ( blockState.getBlock() instanceof AbstractBlockControllableSignal ) {
-                if ( powered ) {
-                    AbstractBlockControllableSignal.changeSignalColor( world, signalPos,
-                                                                       AbstractBlockControllableSignal.SIGNAL_GREEN );
-                }
-                else {
-                    AbstractBlockControllableSignal.changeSignalColor( world, signalPos,
-                                                                       AbstractBlockControllableSignal.SIGNAL_OFF );
-                }
-            }
-        }
-
-        // Apply off signals
-        for ( BlockPos signalPos : signalState.getOffSignals() ) {
-            IBlockState blockState = world.getBlockState( signalPos );
-            if ( blockState.getBlock() instanceof AbstractBlockControllableSignal ) {
-                AbstractBlockControllableSignal.changeSignalColor( world, signalPos,
-                                                                   AbstractBlockControllableSignal.SIGNAL_OFF );
-            }
-        }
-
-        // Mark applicable circuit as serviced
-        try {
-            if ( signalState.getActiveCircuit() != -1 ) {
-                signalCircuitList.get( signalState.getActiveCircuit() ).markServiced( world );
-            }
-        }
-        catch ( Exception e ) {
-            System.err.println( "An error is preventing a traffic signal circuit from being marked as serviced! This " +
-                                        "may affect signal prioritization behavior!" );
-            e.printStackTrace();
-        }
-    }
-
-    public String switchMode( World world ) {
-        currentMode++;
-        if ( currentMode > CURRENT_MODE_STANDARD_FLASH_NO_POWER_NIGHT ) {
-            currentMode = CURRENT_MODE_FLASH;
-        }
-        markDirty();
-        bootSafe = false;
-        updateSignalStates( world );
-
-        String modeName = "[unknown, error]";
-        if ( currentMode == CURRENT_MODE_FLASH ) {
-            modeName = "flash";
-        }
-        else if ( currentMode == CURRENT_MODE_STANDARD ) {
-            modeName = "standard";
-        }
-        else if ( currentMode == CURRENT_MODE_METER ) {
-            modeName = "ramp meter";
-        }
-        else if ( currentMode == CURRENT_MODE_REQUESTABLE ) {
-            modeName = "requestable/emergency access";
-        }
-        else if ( currentMode == CURRENT_MODE_STANDARD_FLASH_NIGHT ) {
-            modeName = "standard (flash at night)";
-        }
-        else if ( currentMode == CURRENT_MODE_STANDARD_FLASH_NO_POWER ) {
-            modeName = "standard (flash at no power)";
-        }
-        else if ( currentMode == CURRENT_MODE_STANDARD_FLASH_NO_POWER_NIGHT ) {
-            modeName = "standard (flash at no power and night)";
-        }
-        return modeName;
-    }
-
-    public boolean isStandardFlashAtNightFlash() {
-        return ( currentMode == CURRENT_MODE_STANDARD_FLASH_NIGHT ||
-                currentMode == CURRENT_MODE_STANDARD_FLASH_NO_POWER_NIGHT ) && !getWorld().isDaytime();
-    }
-
-    public boolean isStandardFlashAtNoPowerFlash() {
-        return ( currentMode == CURRENT_MODE_STANDARD_FLASH_NO_POWER ||
-                currentMode == CURRENT_MODE_STANDARD_FLASH_NO_POWER_NIGHT ) &&
-                getWorld().isBlockIndirectlyGettingPowered( getPos() ) <= 0;
-    }
-
-    public void cycleSignals( boolean powered, World world, BlockPos blockPos, IBlockState blockState ) {
-        if ( signalStateList.size() > 0 ) {
-            this.lastPhaseChangeTime = System.currentTimeMillis();
-
-            // Reset current phase if out of bounds
-            boolean phaseChanged = false;
-            if ( currentPhase >= signalStateList.size() ) {
-                currentPhase = 0;
-                currentPhaseTime = 0;
-                phaseChanged = true;
-            }
-
-            // Check for power change
-            if ( lastPowered != powered ) {
-                phaseChanged = true;
-                lastPowered = powered;
-            }
-
-            // Get phase
-            TrafficSignalState currState = signalStateList.get( currentPhase );
-            if ( currentPhaseTime++ > currState.getLength() ) {
-
-                currentPhase++;
-                currentPhaseTime = 0;
-                phaseChanged = true;
-                // Check for prioritization
-                try {
-                    if ( currentMode == CURRENT_MODE_STANDARD && currState.getActiveCircuit() == -1 ) {
-                        int topPriorityCircuit = getCircuitPriorityJumpIndex( world );
-                        if ( topPriorityCircuit != -1 ) {
-                            for ( int stateIndex = 0; stateIndex < signalStateList.size(); stateIndex++ ) {
-                                if ( signalStateList.get( stateIndex ).getActiveCircuit() == topPriorityCircuit ) {
-                                    currentPhase = stateIndex;
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                    else if ( currentMode == CURRENT_MODE_STANDARD && currState.isAllRed() ) {
-                        int topPriorityCircuit = getCircuitPriorityJumpIndex( world );
-                        if ( topPriorityCircuit != currState.getActiveCircuit() && topPriorityCircuit != -1 ) {
-                            for ( int stateIndex = 0; stateIndex < signalStateList.size(); stateIndex++ ) {
-                                if ( signalStateList.get( stateIndex ).getActiveCircuit() == topPriorityCircuit ) {
-                                    currentPhase = stateIndex;
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
-                catch ( Exception e ) {
-                    System.err.println( "An error is preventing a traffic signal controller from performing circuit " +
-                                                "prioritization! The signal controller will continue in standard mode " +
-                                                "without sensors or prioritization." );
-                    e.printStackTrace();
-                }
-            }
-            else {
-                // Cut green phase short if another circuit becomes top priority, extend if still top priority
-                TrafficSignalState signalState = signalStateList.get( currentPhase );
-                if ( currentMode == CURRENT_MODE_STANDARD &&
-                        signalState.getYellowSignals().size() == 0 &&
-                        !signalState.isAllRed() ) {
-                    int topPriorityCircuit = getCircuitPriorityJumpIndex( world );
-                    if ( topPriorityCircuit != signalState.getActiveCircuit() && topPriorityCircuit != -1 ) {
-                        currentPhaseTime = signalState.getLength() + 1;
-                    } /*else if ( topPriorityCircuit == signalState.getActiveCircuit() && topPriorityCircuit != -1 ) {
-                        currentPhaseTime = 0;
-                    }*/
-                }
-            }
-            if ( currentPhase >= signalStateList.size() ) {
-                currentPhase = 0;
-                currentPhaseTime = 0;
-                phaseChanged = true;
-            }
-
-            // Get signal state to apply (flash if not booted safely yet)
-            TrafficSignalState signalStateToApply = signalStateList.get( currentPhase );
-            if ( !bootSafe && currentMode == CURRENT_MODE_FLASH ) {
-                bootSafe = true;
-            }
-            else if ( isStandardFlashAtNightFlash() || isStandardFlashAtNoPowerFlash() ) {
-                signalStateToApply = signalFlashStateList.get( bootSafeFlash ? 1 : 0 );
-                phaseChanged = true;
-                bootSafeFlash = !bootSafeFlash;
-            }
-            else if ( !bootSafe ) {
-                // Get index of next signal state to apply
-                int nextPhase = currentPhase + 1;
-                if ( nextPhase >= signalStateList.size() ) {
-                    nextPhase = 0;
-                }
-
-                // Get next signal state to check
-                TrafficSignalState nextSignalStateToApply = signalStateList.get( nextPhase );
-                List< BlockPos > nextSignalStateToApplyCircuitAheadSignals = signalCircuitList.get( 0 )
-                                                                                              .getAheadSignals();
-                if ( currentMode == CURRENT_MODE_STANDARD ) {
-                    if ( nextSignalStateToApply.getActiveCircuit() == 0 &&
-                            nextSignalStateToApplyCircuitAheadSignals.size() > 0 &&
-                            nextSignalStateToApply.getGreenSignals()
-                                                  .contains( nextSignalStateToApplyCircuitAheadSignals.get( 0 ) ) ) {
-                        bootSafe = true;
-                    }
-                    else if ( nextSignalStateToApply.getActiveCircuit() == 0 &&
-                            nextSignalStateToApplyCircuitAheadSignals.size() == 0 ) {
-                        bootSafe = true;
-                    }
-                }
-                else {
-                    if ( nextSignalStateToApply.isAllRed() ) {
-                        bootSafe = true;
-                    }
-                }
-
-                signalStateToApply = signalFlashStateList.get( bootSafeFlash ? 1 : 0 );
-                phaseChanged = true;
-                bootSafeFlash = !bootSafeFlash;
-            }
-
-            // Update signals if phase changed
-            if ( phaseChanged ) {
-                updateSignals( signalStateToApply, powered );
-                markDirty();
-            }
-        }
-    }
-
-    @Override
-    public void update() {
-        // This is called every tick, need to check if it is time to act
-        if ( !getWorld().isRemote && getWorld().getTotalWorldTime() % getCycleTickRate() == 0L ) {
-            try {
-                // Check if block powered
-                boolean isBlockPowered = getWorld().isBlockIndirectlyGettingPowered( getPos() ) > 0;
-                if ( currentMode == CURRENT_MODE_STANDARD_FLASH_NO_POWER_NIGHT ||
-                        currentMode == CURRENT_MODE_STANDARD_FLASH_NO_POWER ) {
-                    isBlockPowered = true;
-                }
-
-                // Check if tile valid
-                boolean isTileValid = getWorld().getBlockState( getPos() )
-                                                .getBlock() instanceof BlockTrafficSignalController.BlockCustom;
-                if ( isTileValid ) {
-                    cycleSignals( isBlockPowered, getWorld(), getPos(), getWorld().getBlockState( getPos() ) );
-                }
-                else {
-                    System.err.println( "Skipping tick of traffic signal controller tile entity, because the " +
-                                                "controller has been deleted. This tile entity should be/should have " +
-                                                "been deleted by Minecraft! Try reloading the map." );
-                }
-            }
-            catch ( Exception e ) {
-                System.err.println( "An error occurred while ticking a traffic signal controller: " );
-                e.printStackTrace( System.err );
-            }
-        }
-    }
-
-    @Override
-    @Nullable
-    public SPacketUpdateTileEntity getUpdatePacket()
-    {
-        NBTTagCompound nbtTagCompound = new NBTTagCompound();
-        writeToNBT( nbtTagCompound );
-        int metadata = getBlockMetadata();
-        return new SPacketUpdateTileEntity( this.pos, metadata, nbtTagCompound );
-    }
-
-    @Override
-    public void onDataPacket( NetworkManager networkManager, SPacketUpdateTileEntity pkt ) {
-        readFromNBT( pkt.getNbtCompound() );
-    }
-
-    @Override
-    public NBTTagCompound getUpdateTag()
-    {
-        NBTTagCompound nbtTagCompound = new NBTTagCompound();
-        writeToNBT( nbtTagCompound );
-        return nbtTagCompound;
-    }
-
-    @Override
-    public void handleUpdateTag( NBTTagCompound nbtTagCompound )
-    {
-        this.readFromNBT( nbtTagCompound );
-    }
-
+    //endregion
 }
