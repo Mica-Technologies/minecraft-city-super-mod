@@ -1422,4 +1422,5 @@ tile.controllableverticalsolidsignalbarlo.name=Vertical Traffic Signal (Solid w/
 tile.controllableverticalsolidsignalreversed.name=Vertical Traffic Signal (Solid, Reversed)
 tile.controllableverticalleftsignalsolidred.name=Vertical Traffic Signal (Left, Solid Red)
 tile.controllablehawksignal.name=Hawk Traffic Signal
+tile.controllableverticalrightflashyellowsignal.name=Vertical Traffic Signal (Right Arrow, Flashing Yellow)
 tile.tldoghouseborderblackyellow.name=Doghouse Signal Border (Black/Yellow)

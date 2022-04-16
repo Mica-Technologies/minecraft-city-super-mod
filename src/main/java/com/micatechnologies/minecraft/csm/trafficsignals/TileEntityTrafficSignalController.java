@@ -1102,7 +1102,7 @@ public class TileEntityTrafficSignalController extends TileEntity implements ITi
         return modeName;
     }
 
-    public void cycleSignals( boolean powered, World world ) {
+    public void cycleSignals( boolean powered, World world, BlockPos blockPos, IBlockState blockState ) {
         if ( signalStateList.size() > 0 ) {
             this.lastPhaseChangeTime = System.currentTimeMillis();
 
@@ -1222,6 +1222,7 @@ public class TileEntityTrafficSignalController extends TileEntity implements ITi
             if ( phaseChanged ) {
                 updateSignals( signalStateToApply, powered );
                 markDirty();
+                doDirtySync( world, blockPos, blockState );
             }
         }
     }
@@ -1236,14 +1237,13 @@ public class TileEntityTrafficSignalController extends TileEntity implements ITi
                 boolean isTileValid = getWorld().getBlockState( getPos() )
                                                 .getBlock() instanceof BlockTrafficSignalController.BlockCustom;
                 if ( isTileValid ) {
-                    cycleSignals( isBlockPowered, getWorld() );
+                    cycleSignals( isBlockPowered, getWorld(), getPos(), getWorld().getBlockState( getPos() ) );
                 }
                 else {
                     System.err.println( "Skipping tick of traffic signal controller tile entity, because the " +
                                                 "controller has been deleted. This tile entity should be/should have " +
                                                 "been deleted by Minecraft! Try reloading the map." );
                 }
-                markDirty();
             }
             catch ( Exception e ) {
                 System.err.println( "An error occurred while ticking a traffic signal controller: " );
@@ -1251,6 +1251,7 @@ public class TileEntityTrafficSignalController extends TileEntity implements ITi
             }
         }
     }
+
     @Override
     @Nullable
     public SPacketUpdateTileEntity getUpdatePacket()
@@ -1278,6 +1279,20 @@ public class TileEntityTrafficSignalController extends TileEntity implements ITi
     public void handleUpdateTag( NBTTagCompound nbtTagCompound )
     {
         this.readFromNBT( nbtTagCompound );
+    }
+
+    /**
+     * Helper method which marks the tile entity as dirty, and schedules a world update for the block/tile entity.
+     *
+     * @param world the block/tile entity's world
+     * @param pos   the block/tile entity's position
+     * @param state the block/tile entity's state
+     */
+    public void doDirtySync( World world, BlockPos pos, IBlockState state ) {
+        markDirty();
+        world.markBlockRangeForRenderUpdate( pos, pos );
+        world.notifyBlockUpdate( pos, state, state, 3 );
+        world.scheduleBlockUpdate( pos, this.getBlockType(), 0, 0 );
     }
 
 }
