@@ -1222,7 +1222,6 @@ public class TileEntityTrafficSignalController extends TileEntity implements ITi
             if ( phaseChanged ) {
                 updateSignals( signalStateToApply, powered );
                 markDirty();
-                doDirtySync( world, blockPos, blockState );
             }
         }
     }
@@ -1279,20 +1278,6 @@ public class TileEntityTrafficSignalController extends TileEntity implements ITi
     public void handleUpdateTag( NBTTagCompound nbtTagCompound )
     {
         this.readFromNBT( nbtTagCompound );
-    }
-
-    /**
-     * Helper method which marks the tile entity as dirty, and schedules a world update for the block/tile entity.
-     *
-     * @param world the block/tile entity's world
-     * @param pos   the block/tile entity's position
-     * @param state the block/tile entity's state
-     */
-    public void doDirtySync( World world, BlockPos pos, IBlockState state ) {
-        markDirty();
-        world.markBlockRangeForRenderUpdate( pos, pos );
-        world.notifyBlockUpdate( pos, state, state, 3 );
-        world.scheduleBlockUpdate( pos, this.getBlockType(), 0, 0 );
     }
 
 }
