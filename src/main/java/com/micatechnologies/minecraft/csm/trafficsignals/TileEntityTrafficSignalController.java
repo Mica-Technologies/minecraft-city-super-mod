@@ -1229,7 +1229,7 @@ public class TileEntityTrafficSignalController extends TileEntity implements ITi
     @Override
     public void update() {
         // This is called every tick, need to check if it is time to act
-        if ( getWorld().getTotalWorldTime() % getCycleTickRate() == 0L ) {
+        if ( getWorld().getTotalWorldTime() % getCycleTickRate() == 0L && !world.isRemote ) {
             try {
                 // Check if block powered
                 boolean isBlockPowered = getWorld().isBlockIndirectlyGettingPowered( getPos() ) > 0;
