@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:metalwireoffset"
+    },
+    "facing=north": {
+      "model": "csm:metalwireoffset"
+    },
+    "facing=east": {
+      "model": "csm:metalwireoffset",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:metalwireoffset",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:metalwireoffset",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:metalwireoffset",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:metalwireoffset",
+      "x": 90
+    }
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:metalwirecenter"
+    },
+    "facing=north": {
+      "model": "csm:metalwirecenter"
+    },
+    "facing=east": {
+      "model": "csm:metalwirecenter",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:metalwirecenter",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:metalwirecenter",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:metalwirecenter",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:metalwirecenter",
+      "x": 90
+    }
+  }
+}
