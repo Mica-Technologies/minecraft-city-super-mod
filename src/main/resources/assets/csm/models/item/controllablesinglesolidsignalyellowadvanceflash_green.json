@@ -1,0 +1,8 @@
+{
+  "parent": "csm:custom/trafficlightsingle",
+  "textures": {
+    "all": "csm:blocks/solidyellowoff",
+    "particle": "csm:blocks/solidyellowoff",
+    "0": "csm:blocks/solidyellowoff"
+  }
+}
