@@ -1,0 +1,8 @@
+{
+  "parent": "csm:custom/bordersingle_inverted",
+  "textures": {
+    "all": "csm:blocks/borderblackyellow",
+    "particle": "csm:blocks/borderblackyellow",
+    "0": "csm:blocks/borderblackyellow"
+  }
+}
