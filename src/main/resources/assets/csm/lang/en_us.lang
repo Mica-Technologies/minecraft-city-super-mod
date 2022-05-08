@@ -1436,4 +1436,5 @@ tile.tlbordersingleblackyellow.name=Single Signal Border (Black/Yellow)
 tile.tlbordersingleblackwhite.name=Single Signal Border (Black/White)
 tile.tlbordersingletan.name=Single Signal Border (Tan)
 tile.tlbordersingleblackblack.name=Single Signal Border (Black/Black)
+tile.controllablecrosswalkbuttonaudible.name=Crosswalk Button with Audible Tick
 tile.tldoghouseborderblackyellow.name=Doghouse Signal Border (Black/Yellow)

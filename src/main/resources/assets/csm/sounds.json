@@ -907,5 +907,14 @@
         "stream": false
       }
     ]
+  },
+  "8tick_per_second_crosswalk": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:8tick_per_second_crosswalk",
+        "stream": false
+      }
+    ]
   }
 }
