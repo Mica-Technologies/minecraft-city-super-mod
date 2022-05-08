@@ -119,7 +119,7 @@ public class BlockControllableCrosswalkButtonAudible extends ElementsCitySuperMo
                                                  p_onBlockActivated_2_.getZ(),
                                                  net.minecraft.util.SoundEvent.REGISTRY.getObject(
                                                          new ResourceLocation( "csm" + ":male_wait" ) ),
-                                                 SoundCategory.NEUTRAL, ( float ) 1, ( float ) 1 );
+                                                 SoundCategory.NEUTRAL, ( float ) 2, ( float ) 1 );
             }
 
             return super.onBlockActivated( p_onBlockActivated_1_, p_onBlockActivated_2_, p_onBlockActivated_3_,
@@ -139,7 +139,7 @@ public class BlockControllableCrosswalkButtonAudible extends ElementsCitySuperMo
                 p_updateTick_1_.playSound( null, p_updateTick_2_.getX(), p_updateTick_2_.getY(), p_updateTick_2_.getZ(),
                                            net.minecraft.util.SoundEvent.REGISTRY.getObject(
                                                    new ResourceLocation( "csm:female_beep" ) ), SoundCategory.NEUTRAL,
-                                           ( float ) 1, ( float ) 1 );
+                                           ( float ) 2, ( float ) 1 );
 
                 p_updateTick_1_.scheduleUpdate( p_updateTick_2_, this, lenOfDontWalkSound );
             }
@@ -148,7 +148,7 @@ public class BlockControllableCrosswalkButtonAudible extends ElementsCitySuperMo
                 p_updateTick_1_.playSound( null, p_updateTick_2_.getX(), p_updateTick_2_.getY(), p_updateTick_2_.getZ(),
                                            net.minecraft.util.SoundEvent.REGISTRY.getObject(
                                                    new ResourceLocation( "csm:8tick_per_second_crosswalk" ) ),
-                                           SoundCategory.NEUTRAL, ( float ) 1, ( float ) 1 );
+                                           SoundCategory.NEUTRAL, ( float ) 2, ( float ) 1 );
 
                 p_updateTick_1_.scheduleUpdate( p_updateTick_2_, this, lenOfWalkSound );
             }
