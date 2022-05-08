@@ -110,7 +110,9 @@ public class Sounds
                                                         "female_beep",
                                                         "female_wait",
                                                         "crosswalk_cookoo_1",
-                                                        "crosswalk_cookoo_2" };
+                                                        "crosswalk_cookoo_2",
+                                                        "8tick_per_second_crosswalk"
+    };
 
     /**
      * Sound initialization method. This method is called from {@link ElementsCitySuperMod} to load sounds in the mod.
