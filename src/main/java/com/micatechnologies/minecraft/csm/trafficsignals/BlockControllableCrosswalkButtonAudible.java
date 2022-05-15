@@ -148,7 +148,7 @@ public class BlockControllableCrosswalkButtonAudible extends ElementsCitySuperMo
                 p_updateTick_1_.playSound( null, p_updateTick_2_.getX(), p_updateTick_2_.getY(), p_updateTick_2_.getZ(),
                                            net.minecraft.util.SoundEvent.REGISTRY.getObject(
                                                    new ResourceLocation( "csm:8tick_per_second_crosswalk" ) ),
-                                           SoundCategory.NEUTRAL, ( float ) 2, ( float ) 1 );
+                                           SoundCategory.NEUTRAL, ( float ) 3, ( float ) 1 );
 
                 p_updateTick_1_.scheduleUpdate( p_updateTick_2_, this, lenOfWalkSound );
             }
