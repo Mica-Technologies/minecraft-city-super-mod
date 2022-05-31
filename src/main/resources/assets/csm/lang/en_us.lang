@@ -1438,4 +1438,5 @@ tile.tlbordersingletan.name=Single Signal Border (Tan)
 tile.tlbordersingleblackblack.name=Single Signal Border (Black/Black)
 tile.controllablecrosswalkbuttonaudible.name=Crosswalk Button with Audible Tick
 tile.controllableverticalsolidflashredsignal.name=Vertical Traffic Signal (Solid, Flashing Red for Green)
+tile.redstonetts.name=Redstone TTS Module
 tile.tldoghouseborderblackyellow.name=Doghouse Signal Border (Black/Yellow)

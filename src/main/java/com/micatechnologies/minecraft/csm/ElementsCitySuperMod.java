@@ -6,6 +6,10 @@
  */
 package com.micatechnologies.minecraft.csm;
 
+import com.micatechnologies.minecraft.csm.technology.BlockRedstoneTTSGui;
+import com.micatechnologies.minecraft.csm.technology.TileEntityRedstoneTTS;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.common.registry.EntityEntry;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
@@ -123,12 +127,18 @@ public class ElementsCitySuperMod implements IFuelHandler, IWorldGenerator {
 	public static class GuiHandler implements IGuiHandler {
 		@Override
 		public Object getServerGuiElement(int id, EntityPlayer player, World world, int x, int y, int z) {
-			return null;
+            return null;
 		}
 
 		@Override
 		public Object getClientGuiElement(int id, EntityPlayer player, World world, int x, int y, int z) {
-			return null;
+            BlockPos pos = new BlockPos( x,y,z );
+            TileEntity tileEntity = world.getTileEntity( pos );
+            Object returnValue = null;
+            if ( id == 0 ) {
+                returnValue = new BlockRedstoneTTSGui( ( TileEntityRedstoneTTS ) tileEntity );
+            }
+            return returnValue;
 		}
 	}
 	public List<ModElement> getElements() {
