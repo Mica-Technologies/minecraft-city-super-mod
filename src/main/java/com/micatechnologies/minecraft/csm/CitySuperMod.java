@@ -62,7 +62,6 @@ public class CitySuperMod
         MinecraftForge.EVENT_BUS.register( this );
         GameRegistry.registerWorldGenerator( elements, 5 );
         GameRegistry.registerFuelHandler( elements );
-        NetworkRegistry.INSTANCE.registerGuiHandler( this, new ElementsCitySuperMod.GuiHandler() );
         elements.preInit( event );
         MinecraftForge.EVENT_BUS.register( elements );
         elements.getElements().forEach( element -> element.preInit( event ) );
@@ -72,6 +71,7 @@ public class CitySuperMod
     @Mod.EventHandler
     public void init( FMLInitializationEvent event ) {
         elements.getElements().forEach( element -> element.init( event ) );
+        NetworkRegistry.INSTANCE.registerGuiHandler( this, new ElementsCitySuperMod.GuiHandler() );
         proxy.init( event );
     }
 
