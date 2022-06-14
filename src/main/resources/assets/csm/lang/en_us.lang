@@ -357,6 +357,7 @@ tile.cehalo.name=Commerical Electric LED Halo Light
 tile.trafficpolehorzdblconcrete.name=Concrete Double Horizontal Traffic Pole
 tile.uledf.name=Sylvania Ultra LED (Full)
 tile.trafficlightsensor.name=Traffic Light Camera/Sensor
+tile.trafficlightsensormodern.name=Traffic Light Camera/Sensor (Modern)
 tile.trafficlightsensorshort.name=Traffic Light Camera/Sensor (Short)
 tile.trafficlightsensorbox.name=Traffic Light Camera/Sensor (Box)
 tile.trafficlightsensorbell.name=Traffic Light Camera/Sensor (Bell)
