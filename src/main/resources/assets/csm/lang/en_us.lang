@@ -1441,4 +1441,5 @@ tile.controllablecrosswalkbuttonaudible.name=Crosswalk Button with Audible Tick
 tile.controllableverticalsolidflashredsignal.name=Vertical Traffic Signal (Solid, Flashing Red for Green)
 tile.tldoghouseborderblackyellow.name=Doghouse Signal Border (Black/Yellow)
 tile.controllableverticalsolidsignalnovisors.name=Vertical Traffic Signal (No Visors)
+tile.controllableverticalleftsignalled.name=Vertical Traffic Signal (Left Arrow, LED)
 tile.controllableverticalsolidsignalnoredvisor.name=Vertical Traffic Signal (No Red Visor)
