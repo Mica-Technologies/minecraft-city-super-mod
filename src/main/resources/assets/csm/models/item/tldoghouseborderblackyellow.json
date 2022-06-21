@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/borderdoghouse",
+  "parent": "csm:custom/borderdoghouse_inverted",
   "textures": {
     "all": "csm:blocks/borderblackyellow",
     "particle": "csm:blocks/borderblackyellow",
