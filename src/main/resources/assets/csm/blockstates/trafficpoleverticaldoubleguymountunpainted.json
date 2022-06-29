@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:trafficpoleverticaldoubleguymountunpainted"
+    },
+    "facing=north": {
+      "model": "csm:trafficpoleverticaldoubleguymountunpainted"
+    },
+    "facing=east": {
+      "model": "csm:trafficpoleverticaldoubleguymountunpainted",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:trafficpoleverticaldoubleguymountunpainted",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:trafficpoleverticaldoubleguymountunpainted",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:trafficpoleverticaldoubleguymountunpainted",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:trafficpoleverticaldoubleguymountunpainted",
+      "x": 90
+    }
+  }
+}
