@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:trafficpoleverticalconnectorangledblack"
+    },
+    "facing=north": {
+      "model": "csm:trafficpoleverticalconnectorangledblack"
+    },
+    "facing=east": {
+      "model": "csm:trafficpoleverticalconnectorangledblack",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:trafficpoleverticalconnectorangledblack",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:trafficpoleverticalconnectorangledblack",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:trafficpoleverticalconnectorangledblack",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:trafficpoleverticalconnectorangledblack",
+      "x": 90
+    }
+  }
+}

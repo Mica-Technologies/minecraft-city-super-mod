@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:trafficpolebasetan"
+    },
+    "facing=north": {
+      "model": "csm:trafficpolebasetan"
+    },
+    "facing=east": {
+      "model": "csm:trafficpolebasetan",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:trafficpolebasetan",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:trafficpolebasetan",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:trafficpolebasetan",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:trafficpolebasetan",
+      "x": 90
+    }
+  }
+}
