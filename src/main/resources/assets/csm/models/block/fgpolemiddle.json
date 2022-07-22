@@ -1,0 +1,8 @@
+{
+  "parent": "csm:custom/fiberglass_pole_middle",
+  "textures": {
+    "all": "csm:blocks/fiberglass_pole",
+    "particle": "csm:blocks/fiberglass_pole",
+    "0": "csm:blocks/fiberglass_pole"
+  }
+}
