@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:fgpolebottom"
+    },
+    "facing=north": {
+      "model": "csm:fgpolebottom"
+    },
+    "facing=east": {
+      "model": "csm:fgpolebottom",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:fgpolebottom",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:fgpolebottom",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:fgpolebottom",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:fgpolebottom",
+      "x": 90
+    }
+  }
+}
