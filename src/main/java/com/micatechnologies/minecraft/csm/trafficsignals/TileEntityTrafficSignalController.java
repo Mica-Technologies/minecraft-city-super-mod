@@ -922,7 +922,8 @@ public class TileEntityTrafficSignalController extends TileEntity implements ITi
                         tempSignalStateList.add( circuitYellowStateOverlap );
 
                         // Create state for ahead/right signals on red w/ overlap
-                        if ( leftOverlapSignals.size() > 0 ) {
+                        //if ( leftOverlapSignals.size() > 0 )
+                        {
                             TrafficSignalState circuitRedOverlapState = new TrafficSignalState( 4, index );
                             TrafficSignalState circuitRedOverlapStateOverlap = new TrafficSignalState( 5, index );
                             if ( leftOverlapSignals.size() > 0 ) {

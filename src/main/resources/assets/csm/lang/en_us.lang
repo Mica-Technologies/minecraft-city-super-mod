@@ -1473,3 +1473,5 @@ tile.polevisstrips.name=Power Pole Visibility Strips
 tile.lhsstopsign.name=LHS Stop Sign (Not Compliant)
 tile.afei.name=AF Extended Insulator (Upright Mount)
 tile.afeis.name=AF Extended Insulator (Side Mount)
+tile.signoncominghasextendedgreen.name=Oncoming Traffic Has Extended Green Sign
+tile.signoncomingmayextendedgreen.name=Oncoming Traffic May Have Extended Green Sign
