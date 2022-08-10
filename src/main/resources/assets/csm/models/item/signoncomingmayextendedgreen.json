@@ -1,0 +1,9 @@
+{
+  "parent": "csm:custom/metal_signpostback_tall_sign",
+  "textures": {
+    "all": "csm:blocks/signoncomingmayextendedgreen",
+    "particle": "csm:blocks/signoncomingmayextendedgreen",
+    "0": "csm:blocks/metal",
+    "1": "csm:blocks/signoncomingmayextendedgreen"
+  }
+}
