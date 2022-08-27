@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:signbikesignal"
+    },
+    "facing=north": {
+      "model": "csm:signbikesignal"
+    },
+    "facing=east": {
+      "model": "csm:signbikesignal",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:signbikesignal",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:signbikesignal",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:signbikesignal",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:signbikesignal2",
+      "x": 90
+    }
+  }
+}
