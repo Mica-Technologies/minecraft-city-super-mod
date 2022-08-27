@@ -765,6 +765,7 @@ tile.signhangglider.name=Hang Glider Sign
 tile.pingpongtable.name=Ping Pong Table
 tile.signleftshift.name=Left Shift Sign
 tile.signrightonly.name=Right Only Sign
+tile.signbikesignal.name=Bike Signal Sign
 tile.tlvleftyellow.name=Vertical Left Yellow
 tile.signyieldahead.name=Yield Ahead Sign
 tile.signparkingarea1mile.name=Parking Area 1 Mile Sign
