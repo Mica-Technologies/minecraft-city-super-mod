@@ -1,0 +1,9 @@
+{
+  "parent": "csm:custom/signal_fatigue_mitigator_4",
+  "textures": {
+    "all": "csm:blocks/metal_white",
+    "particle": "csm:blocks/metal_white",
+    "0": "csm:blocks/metal_white",
+    "1": "csm:blocks/metal_silver"
+  }
+}
