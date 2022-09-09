@@ -23,7 +23,7 @@
       "x": 270
     },
     "facing=down": {
-      "model": "csm:signbikesignal2",
+      "model": "csm:signbikesignal",
       "x": 90
     }
   }
