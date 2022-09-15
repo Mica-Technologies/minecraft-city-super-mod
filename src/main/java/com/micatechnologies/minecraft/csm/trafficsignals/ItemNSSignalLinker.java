@@ -406,24 +406,5 @@ public class ItemNSSignalLinker extends ElementsCitySuperMod.ModElement
         public int getItemEnchantability() {
             return 0;
         }
-
-        @Override
-        public void onUpdate( ItemStack p_77663_1_,
-                              World p_77663_2_,
-                              Entity p_77663_3_,
-                              int p_77663_4_,
-                              boolean p_77663_5_ )
-        {
-            boolean isPlayerValid = p_77663_3_ instanceof EntityPlayer;
-            boolean isPlayerHolding = ( ( EntityPlayer ) p_77663_3_ ).getHeldItemMainhand().getItem() ==
-                    p_77663_1_.getItem();
-            if ( p_77663_3_ instanceof EntityPlayer &&
-                    ( ( EntityPlayer ) p_77663_3_ ).getHeldItemMainhand().getItem() != p_77663_1_.getItem() ) {
-                signalControllerPos = null;
-                circuitLinkIndexClient = 1;
-                circuitLinkIndexServer = 1;
-            }
-            super.onUpdate( p_77663_1_, p_77663_2_, p_77663_3_, p_77663_4_, p_77663_5_ );
-        }
     }
 }
