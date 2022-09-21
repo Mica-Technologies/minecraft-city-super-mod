@@ -198,7 +198,9 @@ public class ItemNSSignalLinker extends ElementsCitySuperMod.ModElement
                     if ( !worldIn.isRemote &&
                             linked &&
                             ( clickedBlock instanceof BlockControllableCrosswalkLeftMount.BlockCustom ||
-                                    clickedBlock instanceof BlockControllableCrosswalkRightMount.BlockCustom ) ) {
+                                    clickedBlock instanceof BlockControllableCrosswalkRightMount.BlockCustom ||
+                                    clickedBlock instanceof BlockControllableCrosswalkMount.BlockCustom ||
+                                    clickedBlock instanceof BlockControllableCrosswalkMount90Deg.BlockCustom ) ) {
                         player.sendMessage( new TextComponentString( "Crosswalk light connected to circuit " +
                                                                              circuitLinkIndexClient +
                                                                              " of signal controller at " +
@@ -279,7 +281,9 @@ public class ItemNSSignalLinker extends ElementsCitySuperMod.ModElement
                     if ( !worldIn.isRemote &&
                             removed &&
                             ( clickedBlock instanceof BlockControllableCrosswalkLeftMount.BlockCustom ||
-                                    clickedBlock instanceof BlockControllableCrosswalkRightMount.BlockCustom ) ) {
+                                    clickedBlock instanceof BlockControllableCrosswalkRightMount.BlockCustom ||
+                                    clickedBlock instanceof BlockControllableCrosswalkMount.BlockCustom ||
+                                    clickedBlock instanceof BlockControllableCrosswalkMount90Deg.BlockCustom ) ) {
                         player.sendMessage( new TextComponentString( "Crosswalk light unlinked from signal controller" +
                                                                              " " +
                                                                              "at " +
