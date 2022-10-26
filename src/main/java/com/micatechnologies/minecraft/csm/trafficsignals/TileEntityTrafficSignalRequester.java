@@ -1,90 +1,69 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.passive.EntityVillager;
-import net.minecraft.entity.player.EntityPlayer;
+import com.micatechnologies.minecraft.csm.codeutils.AbstractTickableTileEntity;
+import com.micatechnologies.minecraft.csm.codeutils.AbstractTileEntity;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SPacketUpdateTileEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 
-import javax.annotation.Nullable;
-import java.util.List;
-
+/**
+ * Tile entity utility class for traffic signal requester blocks such as a crosswalk button or sensor. This class
+ * assists in tracking and managing the count and state of requests.
+ *
+ * @author Mica Technologies
+ * @version 2.0
+ * @since 2022.1
+ */
 @ElementsCitySuperMod.ModElement.Tag
-public class TileEntityTrafficSignalRequester extends TileEntity
+public class TileEntityTrafficSignalRequester extends TileEntityTrafficSignalTickableRequester
 {
-    private static final String REQUEST_COUNT_KEY = "requestCount";
-    private              int    requestCount      = 0;
-
+    /**
+     * Returns the tick rate of the tile entity. This implementation returns 0 as the tile entity does not tick.
+     *
+     * @return the tick rate of the tile entity. This implementation returns 0 as the tile entity does not tick.
+     *
+     * @since 2.0
+     */
     @Override
-    public void readFromNBT( NBTTagCompound p_readFromNBT_1_ ) {
-        super.readFromNBT( p_readFromNBT_1_ );
-
-        if ( p_readFromNBT_1_.hasKey( REQUEST_COUNT_KEY ) ) {
-            requestCount = p_readFromNBT_1_.getInteger( REQUEST_COUNT_KEY );
-        }
+    public long getTickRate() {
+        return 0;
     }
 
+    /**
+     * Handles the tick event of the tile entity. This implementation does nothing.
+     *
+     * @since 2.0
+     */
     @Override
-    public boolean shouldRefresh( World p_shouldRefresh_1_,
-                                  BlockPos p_shouldRefresh_2_,
-                                  IBlockState p_shouldRefresh_3_,
-                                  IBlockState p_shouldRefresh_4_ )
-    {
+    public void onTick() {
+        // Do nothing
+    }
+
+    /**
+     * Returns a boolean indicating if the tile entity should also tick on the client side. By default, the tile entity
+     * will always tick on the server side, and in the event of singleplayer/local mode, the host client is considered
+     * the server. This implementation always returns false, as the tile entity does not tick.
+     *
+     * @return a boolean indicating if the tile entity should also tick on the client side. This implementation always
+     *         returns false, as the tile entity does not tick.
+     *
+     * @since 2.0
+     */
+    @Override
+    public boolean doClientTick() {
         return false;
     }
 
+    /**
+     * Returns a boolean indicating if the tile entity ticking should be paused. If the tile entity is paused, the tick
+     * event will not be called. This implementation always returns true as the tile entity does not tick.
+     *
+     * @return a boolean indicating if the tile entity ticking should be paused. This implementation always returns true
+     *         as the tile entity does not tick.
+     *
+     * @since 2.0
+     */
     @Override
-    public NBTTagCompound writeToNBT( NBTTagCompound p_writeToNBT_1_ ) {
-        p_writeToNBT_1_.setInteger( REQUEST_COUNT_KEY, requestCount );
-
-        return super.writeToNBT( p_writeToNBT_1_ );
-    }
-
-    public void resetRequestCount() {
-        requestCount = 0;
-    }
-
-    public int getRequestCount() {
-        return requestCount;
-    }
-
-    public void incrementRequestCount() {
-        requestCount++;
-    }
-
-    @Override
-    @Nullable
-    public SPacketUpdateTileEntity getUpdatePacket()
-    {
-        NBTTagCompound nbtTagCompound = new NBTTagCompound();
-        writeToNBT( nbtTagCompound );
-        int metadata = getBlockMetadata();
-        return new SPacketUpdateTileEntity( this.pos, metadata, nbtTagCompound );
-    }
-
-    @Override
-    public void onDataPacket( NetworkManager networkManager, SPacketUpdateTileEntity pkt ) {
-        readFromNBT( pkt.getNbtCompound() );
-    }
-
-    @Override
-    public NBTTagCompound getUpdateTag()
-    {
-        NBTTagCompound nbtTagCompound = new NBTTagCompound();
-        writeToNBT( nbtTagCompound );
-        return nbtTagCompound;
-    }
-
-    @Override
-    public void handleUpdateTag( NBTTagCompound nbtTagCompound )
-    {
-        this.readFromNBT( nbtTagCompound );
+    public boolean pauseTicking() {
+        return true;
     }
 }

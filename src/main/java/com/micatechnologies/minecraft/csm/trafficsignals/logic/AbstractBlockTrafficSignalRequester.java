@@ -3,6 +3,7 @@ package com.micatechnologies.minecraft.csm.trafficsignals.logic;
 import com.micatechnologies.minecraft.csm.trafficsignals.AbstractBlockControllableCrosswalkAccessory;
 import com.micatechnologies.minecraft.csm.trafficsignals.ItemNSSignalLinker;
 import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalRequester;
+import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalTickableRequester;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
@@ -51,15 +52,13 @@ public class AbstractBlockTrafficSignalRequester extends AbstractBlockControllab
         }
 
         try {
-            TileEntity tileEntity = p_180639_1_.getTileEntity( p_180639_2_ );
-
-            if ( tileEntity instanceof TileEntityTrafficSignalRequester ) {
-                TileEntityTrafficSignalRequester tileEntityTrafficSignalRequester
-                        = ( TileEntityTrafficSignalRequester ) tileEntity;
-                tileEntityTrafficSignalRequester.incrementRequestCount();
+            TileEntity rawTileEntity = p_180639_1_.getTileEntity( p_180639_2_ );
+            if ( rawTileEntity instanceof TileEntityTrafficSignalTickableRequester ) {
+                TileEntityTrafficSignalTickableRequester tileEntity
+                        = ( TileEntityTrafficSignalTickableRequester ) rawTileEntity;
+                tileEntity.incrementRequestCount();
             }
             else {
-
                 System.err.println( "Unable to send a traffic signal request due to tile entity missing error!" );
             }
         }
