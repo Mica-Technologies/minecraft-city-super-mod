@@ -300,7 +300,7 @@ public class TileEntityTrafficSignalAPS extends TileEntityTrafficSignalTickableR
         final Sounds.SOUND walkSound;
         final int          lenOfWalkSound;
 
-        final float volume = 2;
+        final float volume = 1;
         final float pitch  = 1;
 
         CrosswalkSound( String name,
