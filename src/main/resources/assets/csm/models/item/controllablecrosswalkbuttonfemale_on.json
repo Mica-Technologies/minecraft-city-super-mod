@@ -1,0 +1,8 @@
+{
+  "parent": "csm:custom/aps",
+  "textures": {
+    "all": "csm:blocks/campbellguardianyellow_on",
+    "particle": "csm:blocks/campbellguardianyellow_on",
+    "0": "csm:blocks/campbellguardianyellow_on"
+  }
+}
