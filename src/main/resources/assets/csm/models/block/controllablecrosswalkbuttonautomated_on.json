@@ -1,0 +1,8 @@
+{
+  "parent": "csm:custom/aps",
+  "textures": {
+    "all": "csm:blocks/polarainavigatorin2yellow_on",
+    "particle": "csm:blocks/polarainavigatorin2yellow_on",
+    "0": "csm:blocks/polarainavigatorin2yellow_on"
+  }
+}
