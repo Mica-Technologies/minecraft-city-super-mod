@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockTrafficSignalAPS;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockTrafficSignalRequester;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
@@ -43,7 +44,7 @@ public class BlockControllableCrosswalkButtonFemale extends ElementsCitySuperMod
                                                                                "inventory" ) );
     }
 
-    public static class BlockCustom extends AbstractBlockTrafficSignalRequester
+    public static class BlockCustom extends AbstractBlockTrafficSignalAPS
     {
 
         public BlockCustom() {
@@ -59,30 +60,6 @@ public class BlockControllableCrosswalkButtonFemale extends ElementsCitySuperMod
             setCreativeTab( TabTrafficSignals.tab );
             this.setDefaultState(
                     this.blockState.getBaseState().withProperty( FACING, EnumFacing.NORTH ).withProperty( COLOR, 3 ) );
-        }
-
-        @Override
-        public AxisAlignedBB getBoundingBox( IBlockState state, IBlockAccess source, BlockPos pos ) {
-            switch ( state.getValue( FACING ) ) {
-                case SOUTH:
-                default:
-                    return new AxisAlignedBB( 1D, 0D, 0.2D, 0D, 1D, 0D );
-                case NORTH:
-                    return new AxisAlignedBB( 0D, 0D, 0.8D, 1D, 1D, 1D );
-                case WEST:
-                    return new AxisAlignedBB( 0.8D, 0D, 1D, 1D, 1D, 0D );
-                case EAST:
-                    return new AxisAlignedBB( 0.2D, 0D, 0D, 0D, 1D, 1D );
-                case UP:
-                    return new AxisAlignedBB( 0D, 0.2D, 0D, 1D, 0D, 1D );
-                case DOWN:
-                    return new AxisAlignedBB( 0D, 0.8D, 1D, 1D, 1D, 0D );
-            }
-        }
-
-        @Override
-        public int getLightValue( IBlockState state, IBlockAccess world, BlockPos pos ) {
-            return 0;
         }
     }
 }
