@@ -1,0 +1,8 @@
+{
+  "parent": "csm:custom/oldfiresprinkler3",
+  "textures": {
+    "all": "csm:blocks/metal_silver",
+    "particle": "csm:blocks/metal_white",
+    "0": "csm:blocks/metal_silver"
+  }
+}
