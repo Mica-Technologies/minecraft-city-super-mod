@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:oldfiresprinkler2"
+    },
+    "facing=north": {
+      "model": "csm:oldfiresprinkler2",
+	  "x": 270
+    },
+    "facing=east": {
+      "model": "csm:oldfiresprinkler2",
+	  "y": 180
+    },
+    "facing=south": {
+      "model": "csm:oldfiresprinkler2",
+	  "x": 90
+    },
+    "facing=west": {
+      "model": "csm:oldfiresprinkler2",
+	  "y": 0
+    },
+    "facing=up": {
+      "model": "csm:oldfiresprinkler2",
+	  "x": 180
+    },
+    "facing=down": {
+      "model": "csm:oldfiresprinkler2"
+    }
+  }
+}
