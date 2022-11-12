@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:tepg"
+    },
+    "facing=north": {
+      "model": "csm:tepg"
+    },
+    "facing=east": {
+      "model": "csm:tepg",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:tepg",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:tepg",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:tepg",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:tepg",
+      "x": 90
+    }
+  }
+}
