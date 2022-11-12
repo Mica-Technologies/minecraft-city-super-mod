@@ -1,0 +1,8 @@
+{
+  "parent": "csm:custom/ge_m240r2",
+  "textures": {
+    "all": "csm:blocks/ge_hps_fixtures",
+    "particle": "csm:blocks/ge_hps_fixtures",
+    "0": "csm:blocks/ge_hps_fixtures"
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:scelightmount"
+    },
+    "facing=north": {
+      "model": "csm:scelightmount"
+    },
+    "facing=east": {
+      "model": "csm:scelightmount",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:scelightmount",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:scelightmount",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:scelightmount",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:scelightmount",
+      "x": 90
+    }
+  }
+}
