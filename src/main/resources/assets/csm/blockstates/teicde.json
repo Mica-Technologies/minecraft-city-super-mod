@@ -1,29 +1,29 @@
 {
   "variants": {
     "normal": {
-      "model": "csm:pullymount"
+      "model": "csm:teicde"
     },
     "facing=north": {
-      "model": "csm:pullymount"
+      "model": "csm:teicde"
     },
     "facing=east": {
-      "model": "csm:pullymount",
+      "model": "csm:teicde",
       "y": 90
     },
     "facing=south": {
-      "model": "csm:pullymount",
+      "model": "csm:teicde",
       "y": 180
     },
     "facing=west": {
-      "model": "csm:pullymount",
+      "model": "csm:teicde",
       "y": 270
     },
     "facing=up": {
-      "model": "csm:pullymount",
+      "model": "csm:teicde",
       "x": 270
     },
     "facing=down": {
-      "model": "csm:pullymount",
+      "model": "csm:teicde",
       "x": 90
     }
   }

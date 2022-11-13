@@ -1,7 +1,7 @@
 {
 	"credit": "Model made by Brandon Holt (RinRin Blissgreen)",
 	"textures": {
-		"0": "csm:ge_hps_fixtures"
+		"0": "csm:blocks/ge_hps_fixtures"
 	},
 	"elements": [
 		{
@@ -46,9 +46,37 @@
 			}
 		},
 		{
+			"name": "base4",
+			"from": [6, 4, 10],
+			"to": [10, 4.5, 16],
+			"rotation": {"angle": 0, "axis": "y", "origin": [17, 11, 11]},
+			"faces": {
+				"north": {"uv": [8.625, 1.5, 10.125, 3], "texture": "#0"},
+				"east": {"uv": [8.625, 1.5, 10.125, 3], "texture": "#0"},
+				"south": {"uv": [8.625, 1.5, 10.125, 3], "texture": "#0"},
+				"west": {"uv": [8.625, 1.5, 10.125, 3], "texture": "#0"},
+				"up": {"uv": [8.625, 1.5, 10.125, 3], "texture": "#0"},
+				"down": {"uv": [8.625, 1.5, 10.125, 3], "texture": "#0"}
+			}
+		},
+		{
+			"name": "base4",
+			"from": [6, 2.5, 5],
+			"to": [10, 4, 16],
+			"rotation": {"angle": 0, "axis": "y", "origin": [17, 11, 11]},
+			"faces": {
+				"north": {"uv": [8.625, 1.5, 10.125, 3], "texture": "#0"},
+				"east": {"uv": [8.625, 1.5, 10.125, 3], "texture": "#0"},
+				"south": {"uv": [8.625, 1.5, 10.125, 3], "texture": "#0"},
+				"west": {"uv": [8.625, 1.5, 10.125, 3], "texture": "#0"},
+				"up": {"uv": [8.625, 1.5, 10.125, 3], "texture": "#0"},
+				"down": {"uv": [8.625, 1.5, 10.125, 3], "texture": "#0"}
+			}
+		},
+		{
 			"name": "photocell",
-			"from": [6.85, 4, 12],
-			"to": [9.1, 4.5, 14.25],
+			"from": [6.85, 4.5, 12],
+			"to": [9.1, 5, 14.25],
 			"rotation": {"angle": 0, "axis": "y", "origin": [8, 9, 9]},
 			"faces": {
 				"north": {"uv": [8.625, 1.5, 10.125, 3], "texture": "#0"},
