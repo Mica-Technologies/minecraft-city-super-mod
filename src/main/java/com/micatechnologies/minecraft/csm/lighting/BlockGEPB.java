@@ -7,6 +7,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
+import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
@@ -65,6 +66,12 @@ public class BlockGEPB extends ElementsCitySuperMod.ModElement
         @Override
         public String getBlockRegistryName() {
             return elementId;
+        }
+
+        @SideOnly( Side.CLIENT )
+        @Override
+        public BlockRenderLayer getBlockLayer() {
+            return BlockRenderLayer.TRANSLUCENT;
         }
 
         @Override
