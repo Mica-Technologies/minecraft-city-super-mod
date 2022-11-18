@@ -12,27 +12,27 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Set Up JDK 1.8
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v3
         with:
           distribution: "adopt"
           java-version: "8"
 
-      - name: Get branch name
+      - name: Save Branch Name to GITHUB_ENV
         id: branch-name
-        run: echo ::set-output name=short_ref::${GITHUB_REF#refs/*/}
+        run: echo "branch_name=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
 
       - name: Setup Gradle Dependencies Cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         if: ${{ always() }}
         with:
           path: ~/.gradle/caches
           key: ${{ runner.os }}-gradle-caches-${{ hashFiles('**/*.gradle', '**/*.gradle.kts') }}
 
       - name: Setup Gradle Wrapper Cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         if: ${{ always() }}
         with:
           path: ~/.gradle/wrapper
@@ -41,47 +41,31 @@ jobs:
       - name: Assemble mod with Gradle
         run: ./gradlew assemble -Dhttp.socketTimeout=60000 -Dhttp.connectionTimeout=60000 -Dorg.gradle.internal.http.socketTimeout=60000 -Dorg.gradle.internal.http.connectionTimeout=60000
 
-      - name: Get Time
-        id: time
-        uses: nanzm/get-time-action@v1.1
-        with:
-          timeZone: 0
-          format: 'YYYY-MM-DD-HH-mm-ss'
-
-      - name: Retrieve Version from Gradle
-        run: |
-          echo "::set-output name=VERSION_NUMBER::$(${{github.workspace}}/gradlew -q printVersionNumber)"
-        id: gradle_version
+      - name: Store YYYY-MM-DD-HH-mm-ss in GITHUB_ENV
+        run: echo "time_stamp=$(date +%Y-%m-%d-%H-%M-%S)" >> $GITHUB_ENV
 
       - name: Save Gradle version to GITHUB_ENV
-        run: |
-          echo "version_number=${{steps.gradle_version.outputs.VERSION_NUMBER}}" >> $GITHUB_ENV
+        run: echo "version_number=$(${{github.workspace}}/gradlew -q printVersionNumber)" >> $GITHUB_ENV
 
-      - name: Get Jar SHA1
-        id: jarsha
+      - name: Save Jar SHA1 to GITHUB_ENV
         run: |
           sha=`sha1sum ./build/libs/minecraft-city-super-mod-${{env.version_number}}.jar`
-          echo "::set-output name=jarsha::$sha"
+          echo "jar_sha1=$sha" >> $GITHUB_ENV
+
+      - name: Copy assembled mod .jar to GitHub Actions workspace
+        run: cp ./build/libs/minecraft-city-super-mod-${{env.version_number}}.jar ./minecraft-city-super-mod-${{env.version_number}}-dev${{ github.sha }}.jar
 
       - name: Create pre-release entry
-        id: create-release-entry
-        uses: actions/create-release@v1
+        uses: softprops/action-gh-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: csm-devbuild-${{ github.sha }}
-          release_name: Dev Build ${{ steps.time.outputs.time }}UTC (${{ github.sha }})
-          body: Automatic build from branch ${{ steps.branch-name.outputs.short_ref }} of commit SHA ${{ github.sha }} at time ${{ steps.time.outputs.time }}UTC. The SHA-1 sum of the JAR is ${{ steps.jarsha.outputs.jarsha }}.
+          target_commitish: ${{ github.sha }}
+          name: Dev Build ${{ env.time_stamp }}UTC (${{ github.sha }})
+          body: Automatic build from branch ${{ env.branch_name }} of commit SHA ${{ github.sha }} at time ${{ env.time_stamp }}UTC. The SHA-1 sum of the JAR is ${{ env.jar_sha1 }}.
           draft: false
           prerelease: true
-
-      - name: Upload assembled mod .jar
-        id: upload-assembled-release
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create-release-entry.outputs.upload_url }}
-          asset_path: ./build/libs/minecraft-city-super-mod-${{env.version_number}}.jar
-          asset_name: minecraft-city-super-mod-${{env.version_number}}.jar
-          asset_content_type: application/java-archive
+          generate_release_notes: true
+          files: |
+            minecraft-city-super-mod-${{env.version_number}}-dev${{ github.sha }}.jar
