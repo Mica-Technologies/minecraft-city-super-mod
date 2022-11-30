@@ -137,6 +137,7 @@ public class TileEntityTrafficSignalController extends TileEntity implements ITi
     private static final int     CURRENT_MODE_STANDARD      = 1;
     private static final int     CURRENT_MODE_METER         = 2;
     private static final int     CURRENT_MODE_REQUESTABLE   = 3;
+    private static final int     CURRENT_MODE_STANDARD_FLASH_NIGHT = 4;
     private              boolean bootSafe;
     private              boolean bootSafeFlash;
     private              int     currentPhase;
@@ -332,7 +333,7 @@ public class TileEntityTrafficSignalController extends TileEntity implements ITi
         if ( currentMode == 0 ) {
             currentTickRate = 4;
         }
-        else if ( !bootSafe ) {
+        else if ( !bootSafe || isStandardFlashAtNightFlash() ) {
             currentTickRate = 12;
         }
 
@@ -574,7 +575,7 @@ public class TileEntityTrafficSignalController extends TileEntity implements ITi
             // Add completed flash states to new state list
             tempSignalStateList.addAll( signalFlashStateList );
         }
-        else if ( currentMode == CURRENT_MODE_STANDARD ) {
+        else if ( currentMode == CURRENT_MODE_STANDARD || currentMode == CURRENT_MODE_STANDARD_FLASH_NIGHT ) {
             // Create an all red state
             TrafficSignalState allRedSignalState = new TrafficSignalState( 3, -1 );
             for ( TrafficSignalCircuit signalCircuit : signalCircuitList ) {
@@ -1080,7 +1081,7 @@ public class TileEntityTrafficSignalController extends TileEntity implements ITi
 
     public String switchMode( World world ) {
         currentMode++;
-        if ( currentMode > CURRENT_MODE_REQUESTABLE ) {
+        if ( currentMode > CURRENT_MODE_STANDARD_FLASH_NIGHT ) {
             currentMode = CURRENT_MODE_FLASH;
         }
         markDirty();
@@ -1100,7 +1101,16 @@ public class TileEntityTrafficSignalController extends TileEntity implements ITi
         else if ( currentMode == CURRENT_MODE_REQUESTABLE ) {
             modeName = "requestable/emergency access";
         }
+        else if ( currentMode == CURRENT_MODE_STANDARD_FLASH_NIGHT ) {
+            modeName = "standard (flash at night)";
+        }
         return modeName;
+    }
+
+    public boolean isStandardFlashAtNightFlash() {
+        return currentMode == CURRENT_MODE_STANDARD_FLASH_NIGHT &&
+                world.getWorldTime() > 12500 &&
+                world.getWorldTime() < 23000;
     }
 
     public void cycleSignals( boolean powered, World world, BlockPos blockPos, IBlockState blockState ) {
@@ -1184,6 +1194,11 @@ public class TileEntityTrafficSignalController extends TileEntity implements ITi
             TrafficSignalState signalStateToApply = signalStateList.get( currentPhase );
             if ( !bootSafe && currentMode == CURRENT_MODE_FLASH ) {
                 bootSafe = true;
+            }
+            else if ( isStandardFlashAtNightFlash() ) {
+                signalStateToApply = signalFlashStateList.get( bootSafeFlash ? 1 : 0 );
+                phaseChanged = true;
+                bootSafeFlash = !bootSafeFlash;
             }
             else if ( !bootSafe ) {
                 // Get index of next signal state to apply
