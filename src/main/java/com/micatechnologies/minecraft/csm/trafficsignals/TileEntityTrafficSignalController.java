@@ -1108,9 +1108,10 @@ public class TileEntityTrafficSignalController extends TileEntity implements ITi
     }
 
     public boolean isStandardFlashAtNightFlash() {
+        long time = getWorld().getWorldTime();
         return currentMode == CURRENT_MODE_STANDARD_FLASH_NIGHT &&
-                world.getWorldTime() > 12500 &&
-                world.getWorldTime() < 23000;
+                time > 12969 &&
+                time < 23031;
     }
 
     public void cycleSignals( boolean powered, World world, BlockPos blockPos, IBlockState blockState ) {
@@ -1245,7 +1246,7 @@ public class TileEntityTrafficSignalController extends TileEntity implements ITi
     @Override
     public void update() {
         // This is called every tick, need to check if it is time to act
-        if ( getWorld().getTotalWorldTime() % getCycleTickRate() == 0L && !world.isRemote ) {
+        if ( !getWorld().isRemote && getWorld().getTotalWorldTime() % getCycleTickRate() == 0L ) {
             try {
                 // Check if block powered
                 boolean isBlockPowered = getWorld().isBlockIndirectlyGettingPowered( getPos() ) > 0;
