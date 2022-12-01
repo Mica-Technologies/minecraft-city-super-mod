@@ -127,16 +127,16 @@ public class TileEntityTrafficSignalController extends TileEntity implements ITi
     }
     ///endregion
 
-    private static final String  KEY_BOOT_SAFE              = "BootSafe";
-    private static final String  KEY_BOOT_SAFE_FLASH        = "BootSafeFlash";
-    private static final String  KEY_LAST_PHASE_CHANGE_TIME = "LastPhaseChangeTime";
-    private static final String  KEY_CURR_PHASE_TIME        = "CurrPhaseTime";
-    private static final String  KEY_CURRENT_PHASE          = "CurrPhase";
-    private static final String  KEY_CURRENT_MODE           = "CurrentMode";
-    private static final int     CURRENT_MODE_FLASH         = 0;
-    private static final int     CURRENT_MODE_STANDARD      = 1;
-    private static final int     CURRENT_MODE_METER         = 2;
-    private static final int     CURRENT_MODE_REQUESTABLE   = 3;
+    private static final String  KEY_BOOT_SAFE                     = "BootSafe";
+    private static final String  KEY_BOOT_SAFE_FLASH               = "BootSafeFlash";
+    private static final String  KEY_LAST_PHASE_CHANGE_TIME        = "LastPhaseChangeTime";
+    private static final String  KEY_CURR_PHASE_TIME               = "CurrPhaseTime";
+    private static final String  KEY_CURRENT_PHASE                 = "CurrPhase";
+    private static final String  KEY_CURRENT_MODE                  = "CurrentMode";
+    private static final int     CURRENT_MODE_FLASH                = 0;
+    private static final int     CURRENT_MODE_STANDARD             = 1;
+    private static final int     CURRENT_MODE_METER                = 2;
+    private static final int     CURRENT_MODE_REQUESTABLE          = 3;
     private static final int     CURRENT_MODE_STANDARD_FLASH_NIGHT = 4;
     private              boolean bootSafe;
     private              boolean bootSafeFlash;
@@ -1107,10 +1107,18 @@ public class TileEntityTrafficSignalController extends TileEntity implements ITi
         return modeName;
     }
 
+    private static long highTime = Long.MIN_VALUE;
+    private static long lowTime  = Long.MAX_VALUE;
+
     public boolean isStandardFlashAtNightFlash() {
-        return currentMode == CURRENT_MODE_STANDARD_FLASH_NIGHT &&
-                world.getWorldTime() > 12500 &&
-                world.getWorldTime() < 23000;
+        long time = getWorld().getWorldTime();
+        if ( time > highTime ) {
+            highTime = time;
+        }
+        if ( time < lowTime ) {
+            lowTime = time;
+        }
+        return currentMode == CURRENT_MODE_STANDARD_FLASH_NIGHT && !getWorld().isDaytime();
     }
 
     public void cycleSignals( boolean powered, World world, BlockPos blockPos, IBlockState blockState ) {
@@ -1238,6 +1246,17 @@ public class TileEntityTrafficSignalController extends TileEntity implements ITi
             if ( phaseChanged ) {
                 updateSignals( signalStateToApply, powered );
                 markDirty();
+
+                //TEMP
+                if ( currentMode == CURRENT_MODE_STANDARD_FLASH_NIGHT ) {
+                    System.err.println( "Max world time: " + highTime );
+                    System.err.println( "Min world time: " + lowTime );
+                    System.err.println( "Current world time: " + world.getWorldTime() );
+                    System.err.println( "Current sun brightness: " + world.getSunBrightnessFactor( 1.0f ) );
+                    System.err.println( "Current isNightCheck:" +
+                                                ( world.getWorldTime() > 12969 && world.getWorldTime() < 23031 ) );
+                    System.err.println( "Current isDaytime:" + world.isDaytime() );
+                }
             }
         }
     }
@@ -1245,7 +1264,7 @@ public class TileEntityTrafficSignalController extends TileEntity implements ITi
     @Override
     public void update() {
         // This is called every tick, need to check if it is time to act
-        if ( getWorld().getTotalWorldTime() % getCycleTickRate() == 0L && !world.isRemote ) {
+        if ( !getWorld().isRemote && getWorld().getTotalWorldTime() % getCycleTickRate() == 0L ) {
             try {
                 // Check if block powered
                 boolean isBlockPowered = getWorld().isBlockIndirectlyGettingPowered( getPos() ) > 0;
