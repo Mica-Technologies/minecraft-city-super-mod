@@ -1505,3 +1505,6 @@ tile.searslf4.name=Sears Light Fixture 4
 tile.teic.name=TE Insulator Cover
 tile.teicde.name=Dead End TE Insulator Cover
 tile.tepg.name=TE Perch Guard
+tile.ltgcmv2.name=Leotek GCM (Version 2)
+tile.ltgcmv2np.name=Leotek GCM (Version 2, No Photocell)
+tile.ltgc1np.name=Leotek GreenCobra GC1 (Version 1, No Photocell)
