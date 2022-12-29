@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.powergrid;
 
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
+import com.micatechnologies.minecraft.csm.powergrid.fe.BlockForgeEnergyToRedstone;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.relauncher.Side;
