@@ -137,9 +137,19 @@ public class BlockForgeEnergyProducer extends ElementsCitySuperMod.ModElement
                                         " seconds)." ) );
                     }
                 }
-            }
 
-            return true;
+                return true;
+            } else {
+                return super.onBlockActivated( p_onBlockActivated_1_,
+                                               p_onBlockActivated_2_,
+                                               p_onBlockActivated_3_,
+                                               p_onBlockActivated_4_,
+                                               p_onBlockActivated_5_,
+                                               p_onBlockActivated_6_,
+                                               p_onBlockActivated_7_,
+                                               p_onBlockActivated_8_,
+                                               p_onBlockActivated_9_ );
+            }
         }
 
         @Override
