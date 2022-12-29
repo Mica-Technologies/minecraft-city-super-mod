@@ -1,7 +1,6 @@
 package com.micatechnologies.minecraft.csm.powergrid.fe;
 
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
-import com.micatechnologies.minecraft.csm.powergrid.fe.BlockForgeEnergyToRedstone;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
@@ -11,6 +10,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
@@ -57,10 +57,10 @@ public class TileEntityForgeEnergyConsumer extends TileEntity implements IEnergy
 
     @Override
     public synchronized int receiveEnergy( int i, boolean b ) {
-        int previousEnergy = storedEnergy;
-        int expectedAdd = i + storedEnergy;
-        storedEnergy = Math.min( expectedAdd, storedEnergyMax );
-        return storedEnergy - previousEnergy;
+        // Receive energy from the grid (up to max capacity)
+        int energyReceived = Math.min( storedEnergyMax - storedEnergy, i );
+        storedEnergy += energyReceived;
+        return energyReceived;
     }
 
     @Override
@@ -93,6 +93,7 @@ public class TileEntityForgeEnergyConsumer extends TileEntity implements IEnergy
         if ( storedEnergy >= i ) {
             storedEnergy -= i;
             consumed = true;
+            markDirty();
         }
         return consumed;
     }
@@ -100,24 +101,24 @@ public class TileEntityForgeEnergyConsumer extends TileEntity implements IEnergy
     @Override
     public void update() {
         // This is called every tick, need to check if it is time to act
-        if ( getWorld().getTotalWorldTime() % tickRate == 0L ) {
+        World world = getWorld();
+        if ( !world.isRemote && world.getTotalWorldTime() % tickRate == 0L ) {
             try {
                 // Get block and world information
-                PropertyBool blockPoweredProperty = BlockForgeEnergyToRedstone.BlockCustom.POWERED;
                 BlockPos blockPos = getPos();
-                IBlockState blockState = getWorld().getBlockState( blockPos );
+                IBlockState blockState = world.getBlockState( blockPos );
 
                 // Consume power from Forge Energy (true if power, false if none)
                 boolean isGridPowered = consumeEnergy( energyConsume );
 
                 // Check if block is already outputting power
+                PropertyBool blockPoweredProperty = BlockForgeEnergyToRedstone.BlockCustom.POWERED;
                 boolean isBlockPowered = blockState.getValue( blockPoweredProperty );
 
                 // Update block power state if grid power does not match
                 if ( isBlockPowered != isGridPowered ) {
                     world.setBlockState( blockPos, blockState.withProperty( blockPoweredProperty, isGridPowered ), 3 );
                 }
-
             }
             catch ( Exception e ) {
                 System.err.println( "An error occurred while ticking a Forge energy to redstone converter: " );
