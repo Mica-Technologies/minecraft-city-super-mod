@@ -127,16 +127,17 @@ public class TileEntityTrafficSignalController extends TileEntity implements ITi
     }
     ///endregion
 
-    private static final String  KEY_BOOT_SAFE              = "BootSafe";
-    private static final String  KEY_BOOT_SAFE_FLASH        = "BootSafeFlash";
-    private static final String  KEY_LAST_PHASE_CHANGE_TIME = "LastPhaseChangeTime";
-    private static final String  KEY_CURR_PHASE_TIME        = "CurrPhaseTime";
-    private static final String  KEY_CURRENT_PHASE          = "CurrPhase";
-    private static final String  KEY_CURRENT_MODE           = "CurrentMode";
-    private static final int     CURRENT_MODE_FLASH         = 0;
-    private static final int     CURRENT_MODE_STANDARD      = 1;
-    private static final int     CURRENT_MODE_METER         = 2;
-    private static final int     CURRENT_MODE_REQUESTABLE   = 3;
+    private static final String  KEY_BOOT_SAFE                     = "BootSafe";
+    private static final String  KEY_BOOT_SAFE_FLASH               = "BootSafeFlash";
+    private static final String  KEY_LAST_PHASE_CHANGE_TIME        = "LastPhaseChangeTime";
+    private static final String  KEY_CURR_PHASE_TIME               = "CurrPhaseTime";
+    private static final String  KEY_CURRENT_PHASE                 = "CurrPhase";
+    private static final String  KEY_CURRENT_MODE                  = "CurrentMode";
+    private static final int     CURRENT_MODE_FLASH                = 0;
+    private static final int     CURRENT_MODE_STANDARD             = 1;
+    private static final int     CURRENT_MODE_METER                = 2;
+    private static final int     CURRENT_MODE_REQUESTABLE          = 3;
+    private static final int     CURRENT_MODE_STANDARD_FLASH_NIGHT = 4;
     private              boolean bootSafe;
     private              boolean bootSafeFlash;
     private              int     currentPhase;
@@ -332,7 +333,7 @@ public class TileEntityTrafficSignalController extends TileEntity implements ITi
         if ( currentMode == 0 ) {
             currentTickRate = 4;
         }
-        else if ( !bootSafe ) {
+        else if ( !bootSafe || isStandardFlashAtNightFlash() ) {
             currentTickRate = 12;
         }
 
@@ -574,7 +575,7 @@ public class TileEntityTrafficSignalController extends TileEntity implements ITi
             // Add completed flash states to new state list
             tempSignalStateList.addAll( signalFlashStateList );
         }
-        else if ( currentMode == CURRENT_MODE_STANDARD ) {
+        else if ( currentMode == CURRENT_MODE_STANDARD || currentMode == CURRENT_MODE_STANDARD_FLASH_NIGHT ) {
             // Create an all red state
             TrafficSignalState allRedSignalState = new TrafficSignalState( 3, -1 );
             for ( TrafficSignalCircuit signalCircuit : signalCircuitList ) {
@@ -1080,7 +1081,7 @@ public class TileEntityTrafficSignalController extends TileEntity implements ITi
 
     public String switchMode( World world ) {
         currentMode++;
-        if ( currentMode > CURRENT_MODE_REQUESTABLE ) {
+        if ( currentMode > CURRENT_MODE_STANDARD_FLASH_NIGHT ) {
             currentMode = CURRENT_MODE_FLASH;
         }
         markDirty();
@@ -1100,7 +1101,14 @@ public class TileEntityTrafficSignalController extends TileEntity implements ITi
         else if ( currentMode == CURRENT_MODE_REQUESTABLE ) {
             modeName = "requestable/emergency access";
         }
+        else if ( currentMode == CURRENT_MODE_STANDARD_FLASH_NIGHT ) {
+            modeName = "standard (flash at night)";
+        }
         return modeName;
+    }
+
+    public boolean isStandardFlashAtNightFlash() {
+        return currentMode == CURRENT_MODE_STANDARD_FLASH_NIGHT && !getWorld().isDaytime();
     }
 
     public void cycleSignals( boolean powered, World world, BlockPos blockPos, IBlockState blockState ) {
@@ -1185,6 +1193,11 @@ public class TileEntityTrafficSignalController extends TileEntity implements ITi
             if ( !bootSafe && currentMode == CURRENT_MODE_FLASH ) {
                 bootSafe = true;
             }
+            else if ( isStandardFlashAtNightFlash() ) {
+                signalStateToApply = signalFlashStateList.get( bootSafeFlash ? 1 : 0 );
+                phaseChanged = true;
+                bootSafeFlash = !bootSafeFlash;
+            }
             else if ( !bootSafe ) {
                 // Get index of next signal state to apply
                 int nextPhase = currentPhase + 1;
@@ -1230,7 +1243,7 @@ public class TileEntityTrafficSignalController extends TileEntity implements ITi
     @Override
     public void update() {
         // This is called every tick, need to check if it is time to act
-        if ( getWorld().getTotalWorldTime() % getCycleTickRate() == 0L && !world.isRemote ) {
+        if ( !getWorld().isRemote && getWorld().getTotalWorldTime() % getCycleTickRate() == 0L ) {
             try {
                 // Check if block powered
                 boolean isBlockPowered = getWorld().isBlockIndirectlyGettingPowered( getPos() ) > 0;
