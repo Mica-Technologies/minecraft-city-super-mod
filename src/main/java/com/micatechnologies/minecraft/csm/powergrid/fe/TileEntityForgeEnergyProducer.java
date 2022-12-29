@@ -86,8 +86,13 @@ public class TileEntityForgeEnergyProducer extends TileEntity implements IEnergy
     }
 
     public int incrementTickRate() {
-        tickRate += 5;
-        if ( tickRate > 80 ) {
+        if ( tickRate == 1 ) {
+            tickRate += 9;
+        }
+        else {
+            tickRate += 10;
+        }
+        if ( tickRate > 200 ) {
             tickRate = 1;
         }
         markDirty();
