@@ -894,6 +894,7 @@ tile.signswimming.name=Swimming Sign
 tile.acgalaga.name=Galaga Arcade Cabinet
 tile.et70wnve.name=Wheelock ET70 White (Notifier VE)
 tile.rftors.name=IE/IF to Redstone Converter
+tile.rfprod.name=IE/IF Producer
 tile.signlowaircraft.name=Watch for Low Flying Aircraft Sign
 tile.signspeed45.name=Speed Limit 45 Sign
 tile.signdonotpass.name=Do Not Pass Sign
