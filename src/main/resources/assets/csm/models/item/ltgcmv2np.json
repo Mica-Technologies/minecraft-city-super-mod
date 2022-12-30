@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/ltgcmv2",
+  "parent": "csm:custom/ltgcmv2np",
   "textures": {
     "all": "csm:blocks/ltgcm_v2",
     "particle": "csm:blocks/ltgcm_v2",
