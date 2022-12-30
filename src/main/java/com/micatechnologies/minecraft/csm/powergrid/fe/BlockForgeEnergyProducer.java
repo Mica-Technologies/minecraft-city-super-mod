@@ -68,9 +68,9 @@ public class BlockForgeEnergyProducer extends ElementsCitySuperMod.ModElement
     {
 
         public BlockCustom() {
-            super( Material.ROCK );
+            super( Material.ANVIL );
             setUnlocalizedName( "rfprod" );
-            setSoundType( SoundType.STONE );
+            setSoundType( SoundType.ANVIL );
             setHarvestLevel( "pickaxe", 1 );
             setHardness( 2F );
             setResistance( 10F );
@@ -85,7 +85,7 @@ public class BlockForgeEnergyProducer extends ElementsCitySuperMod.ModElement
             return false;
         }
 
-        @Override
+		@Override
         @ParametersAreNonnullByDefault
         public boolean canProvidePower( IBlockState p_canProvidePower_1_ ) {
             return true;
