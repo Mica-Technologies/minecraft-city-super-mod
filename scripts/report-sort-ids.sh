@@ -45,7 +45,6 @@ for sid in `sids keys`; do
     # Output to report
     echo -e "SORT ID $sid\n-------------" >> ../$reportname
     echo -e `sids get "$sid"`  >> ../$reportname
-    echo -e "-------------\n"  >> ../$reportname
 done
 
 if $found_conflict
