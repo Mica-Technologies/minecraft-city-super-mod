@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:greenmanexitsignleftarrow"
+    },
+    "facing=north": {
+      "model": "csm:greenmanexitsignleftarrow"
+    },
+    "facing=east": {
+      "model": "csm:greenmanexitsignleftarrow",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:greenmanexitsignleftarrow",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:greenmanexitsignleftarrow",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:greenmanexitsignleftarrow",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:greenmanexitsignleftarrow",
+      "x": 90
+    }
+  }
+}

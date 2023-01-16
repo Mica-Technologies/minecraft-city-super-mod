@@ -1,0 +1,10 @@
+{
+  "parent": "csm:custom/greenmanexitsign",
+  "textures": {
+    "all": "csm:blocks/greenmanexitsignrightarrow",
+    "particle": "csm:blocks/greenmanexitsignrightarrow",
+    "0": "csm:blocks/metal_silver",
+    "1": "csm:blocks/greenmanexitsignrightarrow",
+    "2": "csm:blocks/greenmanexitsignleftarrow"
+  }
+}
