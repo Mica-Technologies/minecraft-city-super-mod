@@ -127,17 +127,19 @@ public class TileEntityTrafficSignalController extends TileEntity implements ITi
     }
     ///endregion
 
-    private static final String  KEY_BOOT_SAFE                     = "BootSafe";
-    private static final String  KEY_BOOT_SAFE_FLASH               = "BootSafeFlash";
-    private static final String  KEY_LAST_PHASE_CHANGE_TIME        = "LastPhaseChangeTime";
-    private static final String  KEY_CURR_PHASE_TIME               = "CurrPhaseTime";
-    private static final String  KEY_CURRENT_PHASE                 = "CurrPhase";
-    private static final String  KEY_CURRENT_MODE                  = "CurrentMode";
-    private static final int     CURRENT_MODE_FLASH                = 0;
-    private static final int     CURRENT_MODE_STANDARD             = 1;
-    private static final int     CURRENT_MODE_METER                = 2;
-    private static final int     CURRENT_MODE_REQUESTABLE          = 3;
-    private static final int     CURRENT_MODE_STANDARD_FLASH_NIGHT = 4;
+    private static final String  KEY_BOOT_SAFE                              = "BootSafe";
+    private static final String  KEY_BOOT_SAFE_FLASH                        = "BootSafeFlash";
+    private static final String  KEY_LAST_PHASE_CHANGE_TIME                 = "LastPhaseChangeTime";
+    private static final String  KEY_CURR_PHASE_TIME                        = "CurrPhaseTime";
+    private static final String  KEY_CURRENT_PHASE                          = "CurrPhase";
+    private static final String  KEY_CURRENT_MODE                           = "CurrentMode";
+    private static final int     CURRENT_MODE_FLASH                         = 0;
+    private static final int     CURRENT_MODE_STANDARD                      = 1;
+    private static final int     CURRENT_MODE_METER                         = 2;
+    private static final int     CURRENT_MODE_REQUESTABLE                   = 3;
+    private static final int     CURRENT_MODE_STANDARD_FLASH_NIGHT          = 4;
+    private static final int     CURRENT_MODE_STANDARD_FLASH_NO_POWER       = 5;
+    private static final int     CURRENT_MODE_STANDARD_FLASH_NO_POWER_NIGHT = 6;
     private              boolean bootSafe;
     private              boolean bootSafeFlash;
     private              int     currentPhase;
@@ -333,7 +335,7 @@ public class TileEntityTrafficSignalController extends TileEntity implements ITi
         if ( currentMode == 0 ) {
             currentTickRate = 4;
         }
-        else if ( !bootSafe || isStandardFlashAtNightFlash() ) {
+        else if ( !bootSafe || isStandardFlashAtNightFlash() || isStandardFlashAtNoPowerFlash() ) {
             currentTickRate = 12;
         }
 
@@ -575,7 +577,10 @@ public class TileEntityTrafficSignalController extends TileEntity implements ITi
             // Add completed flash states to new state list
             tempSignalStateList.addAll( signalFlashStateList );
         }
-        else if ( currentMode == CURRENT_MODE_STANDARD || currentMode == CURRENT_MODE_STANDARD_FLASH_NIGHT ) {
+        else if ( currentMode == CURRENT_MODE_STANDARD ||
+                currentMode == CURRENT_MODE_STANDARD_FLASH_NIGHT ||
+                currentMode == CURRENT_MODE_STANDARD_FLASH_NO_POWER ||
+                currentMode == CURRENT_MODE_STANDARD_FLASH_NO_POWER_NIGHT ) {
             // Create an all red state
             TrafficSignalState allRedSignalState = new TrafficSignalState( 3, -1 );
             for ( TrafficSignalCircuit signalCircuit : signalCircuitList ) {
@@ -1081,7 +1086,7 @@ public class TileEntityTrafficSignalController extends TileEntity implements ITi
 
     public String switchMode( World world ) {
         currentMode++;
-        if ( currentMode > CURRENT_MODE_STANDARD_FLASH_NIGHT ) {
+        if ( currentMode > CURRENT_MODE_STANDARD_FLASH_NO_POWER_NIGHT ) {
             currentMode = CURRENT_MODE_FLASH;
         }
         markDirty();
@@ -1104,11 +1109,24 @@ public class TileEntityTrafficSignalController extends TileEntity implements ITi
         else if ( currentMode == CURRENT_MODE_STANDARD_FLASH_NIGHT ) {
             modeName = "standard (flash at night)";
         }
+        else if ( currentMode == CURRENT_MODE_STANDARD_FLASH_NO_POWER ) {
+            modeName = "standard (flash at no power)";
+        }
+        else if ( currentMode == CURRENT_MODE_STANDARD_FLASH_NO_POWER_NIGHT ) {
+            modeName = "standard (flash at no power and night)";
+        }
         return modeName;
     }
 
     public boolean isStandardFlashAtNightFlash() {
-        return currentMode == CURRENT_MODE_STANDARD_FLASH_NIGHT && !getWorld().isDaytime();
+        return ( currentMode == CURRENT_MODE_STANDARD_FLASH_NIGHT ||
+                currentMode == CURRENT_MODE_STANDARD_FLASH_NO_POWER_NIGHT ) && !getWorld().isDaytime();
+    }
+
+    public boolean isStandardFlashAtNoPowerFlash() {
+        return ( currentMode == CURRENT_MODE_STANDARD_FLASH_NO_POWER ||
+                currentMode == CURRENT_MODE_STANDARD_FLASH_NO_POWER_NIGHT ) &&
+                getWorld().isBlockIndirectlyGettingPowered( getPos() ) <= 0;
     }
 
     public void cycleSignals( boolean powered, World world, BlockPos blockPos, IBlockState blockState ) {
@@ -1193,7 +1211,7 @@ public class TileEntityTrafficSignalController extends TileEntity implements ITi
             if ( !bootSafe && currentMode == CURRENT_MODE_FLASH ) {
                 bootSafe = true;
             }
-            else if ( isStandardFlashAtNightFlash() ) {
+            else if ( isStandardFlashAtNightFlash() || isStandardFlashAtNoPowerFlash() ) {
                 signalStateToApply = signalFlashStateList.get( bootSafeFlash ? 1 : 0 );
                 phaseChanged = true;
                 bootSafeFlash = !bootSafeFlash;
@@ -1247,6 +1265,12 @@ public class TileEntityTrafficSignalController extends TileEntity implements ITi
             try {
                 // Check if block powered
                 boolean isBlockPowered = getWorld().isBlockIndirectlyGettingPowered( getPos() ) > 0;
+                if ( currentMode == CURRENT_MODE_STANDARD_FLASH_NO_POWER_NIGHT ||
+                        currentMode == CURRENT_MODE_STANDARD_FLASH_NO_POWER ) {
+                    isBlockPowered = true;
+                }
+
+                // Check if tile valid
                 boolean isTileValid = getWorld().getBlockState( getPos() )
                                                 .getBlock() instanceof BlockTrafficSignalController.BlockCustom;
                 if ( isTileValid ) {
