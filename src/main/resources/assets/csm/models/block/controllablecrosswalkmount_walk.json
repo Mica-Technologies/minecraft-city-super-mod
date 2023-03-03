@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/crosswalklightmount",
+  "parent": "csm:custom/crosswalklightsingle_rear",
   "textures": {
     "all": "csm:blocks/crosswalkon",
     "particle": "csm:blocks/crosswalkon",

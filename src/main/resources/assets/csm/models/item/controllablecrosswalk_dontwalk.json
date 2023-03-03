@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/crosswalklight",
+  "parent": "csm:custom/crosswalklightsingle_base",
   "textures": {
     "all": "csm:blocks/crosswalkoff",
     "particle": "csm:blocks/crosswalkoff",

@@ -1,0 +1,7 @@
+{
+  "parent": "csm:custom/cube_consistent_texture_facing",
+  "textures": {
+    "all": "csm:blocks/below_ground_signal_sensor",
+    "particle": "csm:blocks/below_ground_signal_sensor"
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:trafficlightsensorbelowground"
+    },
+    "facing=north": {
+      "model": "csm:trafficlightsensorbelowground"
+    },
+    "facing=east": {
+      "model": "csm:trafficlightsensorbelowground",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:trafficlightsensorbelowground",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:trafficlightsensorbelowground",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:trafficlightsensorbelowground",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:trafficlightsensorbelowground",
+      "x": 90
+    }
+  }
+}

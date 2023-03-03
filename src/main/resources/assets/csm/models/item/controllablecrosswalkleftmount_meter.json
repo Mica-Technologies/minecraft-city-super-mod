@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/crosswalklightleft",
+  "parent": "csm:custom/crosswalklightsingle_left",
   "textures": {
     "all": "csm:blocks/rampmeteron",
     "particle": "csm:blocks/rampmeteron",
