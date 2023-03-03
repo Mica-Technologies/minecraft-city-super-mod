@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/crosswalklightright",
+  "parent": "csm:custom/crosswalklightsingle_right",
   "textures": {
     "all": "csm:blocks/crosswalknopower",
     "particle": "csm:blocks/crosswalknopower",

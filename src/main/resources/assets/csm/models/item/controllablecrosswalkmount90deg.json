@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/crosswalklightmount90deg",
+  "parent": "csm:custom/crosswalklightsingle_angle",
   "textures": {
     "all": "csm:blocks/crosswalknopower",
     "particle": "csm:blocks/crosswalknopower",
