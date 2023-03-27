@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:tlborderblackblack8812inch"
+    },
+    "facing=north": {
+      "model": "csm:tlborderblackblack8812inch"
+    },
+    "facing=east": {
+      "model": "csm:tlborderblackblack8812inch",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:tlborderblackblack8812inch",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:tlborderblackblack8812inch",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:tlborderblackblack8812inch",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:tlborderblackblack8812inch",
+      "x": 90
+    }
+  }
+}

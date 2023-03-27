@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:tlvmountkit8812inch"
+    },
+    "facing=north": {
+      "model": "csm:tlvmountkit8812inch"
+    },
+    "facing=east": {
+      "model": "csm:tlvmountkit8812inch",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:tlvmountkit8812inch",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:tlvmountkit8812inch",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:tlvmountkit8812inch",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:tlvmountkit8812inch",
+      "x": 90
+    }
+  }
+}
