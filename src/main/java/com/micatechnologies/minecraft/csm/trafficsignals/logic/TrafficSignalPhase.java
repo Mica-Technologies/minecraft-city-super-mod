@@ -655,7 +655,7 @@ public class TrafficSignalPhase
         offSignals.forEach( pos -> AbstractBlockControllableSignal.changeSignalColor( world, pos,
                                                                                       AbstractBlockControllableSignal.SIGNAL_OFF ) );
         fyaSignals.forEach( pos -> AbstractBlockControllableSignal.changeSignalColor( world, pos,
-                                                                                      AbstractBlockControllableSignal.SIGNAL_OFF ) );
+                                                                                      AbstractBlockControllableSignal.SIGNAL_GREEN ) );
         walkSignals.forEach( pos -> AbstractBlockControllableSignal.changeSignalColor( world, pos,
                                                                                        AbstractBlockControllableSignal.SIGNAL_GREEN ) );
         flashDontWalkSignals.forEach( pos -> AbstractBlockControllableSignal.changeSignalColor( world, pos,
