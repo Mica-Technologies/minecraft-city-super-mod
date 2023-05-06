@@ -227,7 +227,7 @@ public class TrafficSignalControllerTickerUtilities
             for ( int i = 1; i <= circuits.getCircuitCount(); i++ ) {
                 TrafficSignalControllerCircuit circuit = circuits.getCircuit( i - 1 );
                 if ( i == circuitNumber ) {
-                    defaultPhase.addOffSignals( circuit.getFlashingLeftSignals() );
+                    defaultPhase.addFyaSignals( circuit.getFlashingLeftSignals() );
                     defaultPhase.addOffSignals( circuit.getFlashingRightSignals() );
                     defaultPhase.addRedSignals( circuit.getLeftSignals() );
                     defaultPhase.addGreenSignals( circuit.getThroughSignals() );
