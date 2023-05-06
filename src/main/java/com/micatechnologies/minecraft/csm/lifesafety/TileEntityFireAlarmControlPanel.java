@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.lifesafety;
 
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
+import com.micatechnologies.minecraft.csm.codeutils.AbstractTickableTileEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
@@ -22,7 +23,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 @ElementsCitySuperMod.ModElement.Tag
-public class TileEntityFireAlarmControlPanel extends TileEntity implements ITickable
+public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity
 {
     private static final int tickRate = 20;
 
@@ -61,60 +62,23 @@ public class TileEntityFireAlarmControlPanel extends TileEntity implements ITick
     private HashMap< String, Integer > alarmSoundTracking      = null;
     private ArrayList< BlockPos >      connectedAppliances     = new ArrayList<>();
 
+    /**
+     * Abstract method which must be implemented to return the NBT tag compound with the tile entity's NBT data.
+     *
+     * @param compound the NBT tag compound to write the tile entity's NBT data to
+     *
+     * @return the NBT tag compound with the tile entity's NBT data
+     */
     @Override
-    public void readFromNBT( NBTTagCompound p_readFromNBT_1_ ) {
-        // Read sound index
-        try {
-            soundIndex = p_readFromNBT_1_.getInteger( soundIndexKey );
-        }
-        catch ( Exception e ) {
-            soundIndex = 0;
-        }
-
-        // Read alarm state
-        try {
-            alarm = p_readFromNBT_1_.getBoolean( alarmKey );
-        }
-        catch ( Exception e ) {
-            alarm = false;
-        }
-
-        // Read alarm storm state
-        try {
-            alarmStorm = p_readFromNBT_1_.getBoolean( alarmStormKey );
-        }
-        catch ( Exception e ) {
-            alarmStorm = false;
-        }
-
-        // Read connected appliance locations
-        connectedAppliances.clear();
-        if ( p_readFromNBT_1_.hasKey( connectedAppliancesKey ) ) {
-            // Split into each block position
-            String[] positions = p_readFromNBT_1_.getString( connectedAppliancesKey ).split( "\n" );
-            for ( String position : positions ) {
-                String[] coordinates = position.split( " " );
-                if ( coordinates.length == 3 ) {
-                    connectedAppliances.add(
-                            new BlockPos( Integer.parseInt( coordinates[ 0 ] ), Integer.parseInt( coordinates[ 1 ] ),
-                                          Integer.parseInt( coordinates[ 2 ] ) ) );
-                }
-            }
-        }
-
-        super.readFromNBT( p_readFromNBT_1_ );
-    }
-
-    @Override
-    public NBTTagCompound writeToNBT( NBTTagCompound p_writeToNBT_1_ ) {
+    public NBTTagCompound writeNBT( NBTTagCompound compound ) {
         // Write sound index
-        p_writeToNBT_1_.setInteger( soundIndexKey, soundIndex );
+        compound.setInteger( soundIndexKey, soundIndex );
 
         // Write alarm state
-        p_writeToNBT_1_.setBoolean( alarmKey, alarm );
+        compound.setBoolean( alarmKey, alarm );
 
         // Write alarm storm state
-        p_writeToNBT_1_.setBoolean( alarmStormKey, alarmStorm );
+        compound.setBoolean( alarmStormKey, alarmStorm );
 
         // Write connected appliance locations
         StringBuilder connectedAppliancesString = new StringBuilder();
@@ -126,17 +90,57 @@ public class TileEntityFireAlarmControlPanel extends TileEntity implements ITick
                                      .append( bp.getZ() )
                                      .append( "\n" );
         }
-        p_writeToNBT_1_.setString( connectedAppliancesKey, connectedAppliancesString.toString() );
-        return super.writeToNBT( p_writeToNBT_1_ );
+        compound.setString( connectedAppliancesKey, connectedAppliancesString.toString() );
+        return compound;
     }
 
+    /**
+     * Abstract method which must be implemented to process the reading of the tile entity's NBT data from the supplied
+     * NBT tag compound.
+     *
+     * @param compound the NBT tag compound to read the tile entity's NBT data from
+     */
     @Override
-    public boolean shouldRefresh( World p_shouldRefresh_1_,
-                                  BlockPos p_shouldRefresh_2_,
-                                  IBlockState p_shouldRefresh_3_,
-                                  IBlockState p_shouldRefresh_4_ )
-    {
-        return false;
+    public void readNBT( NBTTagCompound compound ) {
+
+        // Read sound index
+        try {
+            soundIndex = compound.getInteger( soundIndexKey );
+        }
+        catch ( Exception e ) {
+            soundIndex = 0;
+        }
+
+        // Read alarm state
+        try {
+            alarm = compound.getBoolean( alarmKey );
+        }
+        catch ( Exception e ) {
+            alarm = false;
+        }
+
+        // Read alarm storm state
+        try {
+            alarmStorm = compound.getBoolean( alarmStormKey );
+        }
+        catch ( Exception e ) {
+            alarmStorm = false;
+        }
+
+        // Read connected appliance locations
+        connectedAppliances.clear();
+        if ( compound.hasKey( connectedAppliancesKey ) ) {
+            // Split into each block position
+            String[] positions = compound.getString( connectedAppliancesKey ).split( "\n" );
+            for ( String position : positions ) {
+                String[] coordinates = position.split( " " );
+                if ( coordinates.length == 3 ) {
+                    connectedAppliances.add(
+                            new BlockPos( Integer.parseInt( coordinates[ 0 ] ), Integer.parseInt( coordinates[ 1 ] ),
+                                          Integer.parseInt( coordinates[ 2 ] ) ) );
+                }
+            }
+        }
     }
 
     public void switchSound() {
@@ -308,46 +312,51 @@ public class TileEntityFireAlarmControlPanel extends TileEntity implements ITick
         return SOUND_RESOURCE_NAMES[ soundIndex ];
     }
 
+    /**
+     * Abstract method which must be implemented to return the tick rate of the tile entity.
+     *
+     * @return the tick rate of the tile entity
+     */
     @Override
-    public void update() {
-        // This is called every tick, need to check if it is time to act
-        if ( getWorld().getTotalWorldTime() % tickRate == 0L ) {
-            try {
-                updateTick( getWorld(), getPos() );
-            }
-            catch ( Exception e ) {
-                System.err.println( "An error occurred while ticking a fire alarm control panel: " );
-                e.printStackTrace( System.err );
-            }
+    public long getTickRate() {
+        return tickRate;
+    }
+
+    /**
+     * Abstract method which must be implemented to handle the tick event of the tile entity.
+     */
+    @Override
+    public void onTick() {
+
+        try {
+            updateTick( getWorld(), getPos() );
+        }
+        catch ( Exception e ) {
+            System.err.println( "An error occurred while ticking a fire alarm control panel: " );
+            e.printStackTrace( System.err );
         }
     }
 
+    /**
+     * Abstract method which must be implemented to return a boolean indicating if the tile entity should also tick on
+     * the client side. By default, the tile entity will always tick on the server side, and in the event of
+     * singleplayer/local mode, the host client is considered the server.
+     *
+     * @return a boolean indicating if the tile entity should also tick on the client side
+     */
     @Override
-    @Nullable
-    public SPacketUpdateTileEntity getUpdatePacket()
-    {
-        NBTTagCompound nbtTagCompound = new NBTTagCompound();
-        writeToNBT( nbtTagCompound );
-        int metadata = getBlockMetadata();
-        return new SPacketUpdateTileEntity( this.pos, metadata, nbtTagCompound );
+    public boolean doClientTick() {
+        return true;
     }
 
+    /**
+     * Abstract method which must be implemented to return a boolean indicating if the tile entity ticking should be
+     * paused. If the tile entity is paused, the tick event will not be called.
+     *
+     * @return a boolean indicating if the tile entity ticking should be paused
+     */
     @Override
-    public void onDataPacket( NetworkManager networkManager, SPacketUpdateTileEntity pkt ) {
-        readFromNBT( pkt.getNbtCompound() );
-    }
-
-    @Override
-    public NBTTagCompound getUpdateTag()
-    {
-        NBTTagCompound nbtTagCompound = new NBTTagCompound();
-        writeToNBT( nbtTagCompound );
-        return nbtTagCompound;
-    }
-
-    @Override
-    public void handleUpdateTag( NBTTagCompound nbtTagCompound )
-    {
-        this.readFromNBT( nbtTagCompound );
+    public boolean pauseTicking() {
+        return false;
     }
 }
