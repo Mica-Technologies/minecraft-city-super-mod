@@ -128,7 +128,7 @@ public class TrafficSignalControllerTickerUtilities
         for ( BlockPos fyaSignal : currentPhase.getFyaSignals() ) {
             // Check if FYA signal is still in FYA or green state in the upcoming phase (stay in FYA state)
             if ( upcomingPhase.getFyaSignals().contains( fyaSignal ) ||
-                    upcomingPhase.getGreenSignals().contains( fyaSignal ) ) {
+                    upcomingPhase.getOffSignals().contains( fyaSignal ) ) {
                 // TODO: Take notice of behavior here
                 yellowTransitionPhase.addFyaSignal( fyaSignal );
             }
