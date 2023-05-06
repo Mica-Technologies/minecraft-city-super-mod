@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.lifesafety;
 
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
+import com.micatechnologies.minecraft.csm.codeutils.AbstractTileEntity;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -13,7 +14,7 @@ import net.minecraft.world.World;
 import javax.annotation.Nullable;
 
 @ElementsCitySuperMod.ModElement.Tag
-public class TileEntityFireAlarmSensor extends TileEntity
+public class TileEntityFireAlarmSensor extends AbstractTileEntity
 {
     private static final String linkedPanelPosXKey = "lpX";
     private static final String linkedPanelPosYKey = "lpY";
@@ -22,37 +23,39 @@ public class TileEntityFireAlarmSensor extends TileEntity
     private              int    linkedPanelY       = -500;
     private              int    linkedPanelZ;
 
+    /**
+     * Returns the NBT tag compound with the tile entity's NBT data.
+     *
+     * @param compound the NBT tag compound to write the tile entity's NBT data to
+     *
+     * @return the NBT tag compound with the tile entity's NBT data
+     */
     @Override
-    public void readFromNBT( NBTTagCompound p_readFromNBT_1_ ) {
-        if ( p_readFromNBT_1_.hasKey( linkedPanelPosXKey ) &&
-                p_readFromNBT_1_.hasKey( linkedPanelPosYKey ) &&
-                p_readFromNBT_1_.hasKey( linkedPanelPosZKey ) ) {
-            linkedPanelX = p_readFromNBT_1_.getInteger( linkedPanelPosXKey );
-            linkedPanelY = p_readFromNBT_1_.getInteger( linkedPanelPosYKey );
-            linkedPanelZ = p_readFromNBT_1_.getInteger( linkedPanelPosZKey );
+    public NBTTagCompound writeNBT( NBTTagCompound compound ) {
+        compound.setInteger( linkedPanelPosXKey, linkedPanelX );
+        compound.setInteger( linkedPanelPosYKey, linkedPanelY );
+        compound.setInteger( linkedPanelPosZKey, linkedPanelZ );
+
+        return compound;
+    }
+
+    /**
+     * Processes the reading of the tile entity's NBT data from the supplied NBT tag compound.
+     *
+     * @param compound the NBT tag compound to read the tile entity's NBT data from
+     */
+    @Override
+    public void readNBT( NBTTagCompound compound ) {
+        if ( compound.hasKey( linkedPanelPosXKey ) &&
+                compound.hasKey( linkedPanelPosYKey ) &&
+                compound.hasKey( linkedPanelPosZKey ) ) {
+            linkedPanelX = compound.getInteger( linkedPanelPosXKey );
+            linkedPanelY = compound.getInteger( linkedPanelPosYKey );
+            linkedPanelZ = compound.getInteger( linkedPanelPosZKey );
         }
         else {
             linkedPanelY = -500;
         }
-        super.readFromNBT( p_readFromNBT_1_ );
-    }
-
-    @Override
-    public NBTTagCompound writeToNBT( NBTTagCompound p_writeToNBT_1_ ) {
-        p_writeToNBT_1_.setInteger( linkedPanelPosXKey, linkedPanelX );
-        p_writeToNBT_1_.setInteger( linkedPanelPosYKey, linkedPanelY );
-        p_writeToNBT_1_.setInteger( linkedPanelPosZKey, linkedPanelZ );
-
-        return super.writeToNBT( p_writeToNBT_1_ );
-    }
-
-    @Override
-    public boolean shouldRefresh( World p_shouldRefresh_1_,
-                                  BlockPos p_shouldRefresh_2_,
-                                  IBlockState p_shouldRefresh_3_,
-                                  IBlockState p_shouldRefresh_4_ )
-    {
-        return false;
     }
 
     public BlockPos getLinkedPanelPos( World world ) {
@@ -70,34 +73,5 @@ public class TileEntityFireAlarmSensor extends TileEntity
         else {
             return false;
         }
-    }
-
-    @Override
-    @Nullable
-    public SPacketUpdateTileEntity getUpdatePacket()
-    {
-        NBTTagCompound nbtTagCompound = new NBTTagCompound();
-        writeToNBT( nbtTagCompound );
-        int metadata = getBlockMetadata();
-        return new SPacketUpdateTileEntity( this.pos, metadata, nbtTagCompound );
-    }
-
-    @Override
-    public void onDataPacket( NetworkManager networkManager, SPacketUpdateTileEntity pkt ) {
-        readFromNBT( pkt.getNbtCompound() );
-    }
-
-    @Override
-    public NBTTagCompound getUpdateTag()
-    {
-        NBTTagCompound nbtTagCompound = new NBTTagCompound();
-        writeToNBT( nbtTagCompound );
-        return nbtTagCompound;
-    }
-
-    @Override
-    public void handleUpdateTag( NBTTagCompound nbtTagCompound )
-    {
-        this.readFromNBT( nbtTagCompound );
     }
 }
