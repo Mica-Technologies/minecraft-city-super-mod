@@ -246,6 +246,12 @@ public class TrafficSignalControllerTicker
             long phaseMinGreenTimeMs = originalPhase.getCircuit() == 1 ? minGreenTime : minGreenTimeSecondary;
             long phaseMaxGreenTimeMs = originalPhase.getCircuit() == 1 ? maxGreenTime : maxGreenTimeSecondary;
 
+            // Special case time for pedestrian signals
+            if ( originalPhase.getApplicability() == TrafficSignalPhaseApplicability.PEDESTRIAN ) {
+                phaseMinGreenTimeMs = dedicatedPedSignalTime;
+                phaseMaxGreenTimeMs = dedicatedPedSignalTime;
+            }
+
             // If min green time is up, check for phase change
             if ( timeSinceLastPhaseChange >= phaseMinGreenTimeMs ) {
                 // Check if max green time is met
