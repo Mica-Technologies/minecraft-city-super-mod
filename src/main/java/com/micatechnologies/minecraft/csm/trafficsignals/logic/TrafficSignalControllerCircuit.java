@@ -818,6 +818,120 @@ public class TrafficSignalControllerCircuit
                 sensors.size();
     }
 
+    /**
+     * Gets a boolean indicating whether all the signals in this circuit are facing the same direction.
+     *
+     * @param world The {@link World} to check the signals in.
+     *
+     * @return {@code true} if all the signals in this circuit are facing the same direction, {@code false} otherwise.
+     *
+     * @since 1.0
+     */
+    public boolean areSignalsFacingSameDirection( World world ) {
+        // Track encountered facing direction
+        EnumFacing encounteredFacingDirection = null;
+
+        // Loop through all flashing left signals
+        for ( BlockPos signalPos : flashingLeftSignals ) {
+            IBlockState blockState = world.getBlockState( signalPos );
+            if ( blockState.getBlock() instanceof AbstractBlockControllableSignal ) {
+                EnumFacing currentFacingDirection = blockState.getValue( BlockHorizontal.FACING );
+                if ( encounteredFacingDirection == null ) {
+                    encounteredFacingDirection = currentFacingDirection;
+                }
+                else if ( encounteredFacingDirection != currentFacingDirection ) {
+                    return false;
+                }
+            }
+        }
+
+        // Loop through all flashing right signals
+        for ( BlockPos signalPos : flashingRightSignals ) {
+            IBlockState blockState = world.getBlockState( signalPos );
+            if ( blockState.getBlock() instanceof AbstractBlockControllableSignal ) {
+                EnumFacing currentFacingDirection = blockState.getValue( BlockHorizontal.FACING );
+                if ( encounteredFacingDirection == null ) {
+                    encounteredFacingDirection = currentFacingDirection;
+                }
+                else if ( encounteredFacingDirection != currentFacingDirection ) {
+                    return false;
+                }
+            }
+        }
+
+        // Loop through all left signals
+        for ( BlockPos signalPos : leftSignals ) {
+            IBlockState blockState = world.getBlockState( signalPos );
+            if ( blockState.getBlock() instanceof AbstractBlockControllableSignal ) {
+                EnumFacing currentFacingDirection = blockState.getValue( BlockHorizontal.FACING );
+                if ( encounteredFacingDirection == null ) {
+                    encounteredFacingDirection = currentFacingDirection;
+                }
+                else if ( encounteredFacingDirection != currentFacingDirection ) {
+                    return false;
+                }
+            }
+        }
+
+        // Loop through all right signals
+        for ( BlockPos signalPos : rightSignals ) {
+            IBlockState blockState = world.getBlockState( signalPos );
+            if ( blockState.getBlock() instanceof AbstractBlockControllableSignal ) {
+                EnumFacing currentFacingDirection = blockState.getValue( BlockHorizontal.FACING );
+                if ( encounteredFacingDirection == null ) {
+                    encounteredFacingDirection = currentFacingDirection;
+                }
+                else if ( encounteredFacingDirection != currentFacingDirection ) {
+                    return false;
+                }
+            }
+        }
+
+        // Loop through all through signals
+        for ( BlockPos signalPos : throughSignals ) {
+            IBlockState blockState = world.getBlockState( signalPos );
+            if ( blockState.getBlock() instanceof AbstractBlockControllableSignal ) {
+                EnumFacing currentFacingDirection = blockState.getValue( BlockHorizontal.FACING );
+                if ( encounteredFacingDirection == null ) {
+                    encounteredFacingDirection = currentFacingDirection;
+                }
+                else if ( encounteredFacingDirection != currentFacingDirection ) {
+                    return false;
+                }
+            }
+        }
+
+        // Loop through all protected signals
+        for ( BlockPos signalPos : protectedSignals ) {
+            IBlockState blockState = world.getBlockState( signalPos );
+            if ( blockState.getBlock() instanceof AbstractBlockControllableSignal ) {
+                EnumFacing currentFacingDirection = blockState.getValue( BlockHorizontal.FACING );
+                if ( encounteredFacingDirection == null ) {
+                    encounteredFacingDirection = currentFacingDirection;
+                }
+                else if ( encounteredFacingDirection != currentFacingDirection ) {
+                    return false;
+                }
+            }
+        }
+
+        // Loop through all pedestrian beacon signals
+        for ( BlockPos signalPos : pedestrianBeaconSignals ) {
+            IBlockState blockState = world.getBlockState( signalPos );
+            if ( blockState.getBlock() instanceof AbstractBlockControllableSignal ) {
+                EnumFacing currentFacingDirection = blockState.getValue( BlockHorizontal.FACING );
+                if ( encounteredFacingDirection == null ) {
+                    encounteredFacingDirection = currentFacingDirection;
+                }
+                else if ( encounteredFacingDirection != currentFacingDirection ) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
     //endregion
 
     //region: Serialization Methods

@@ -8,7 +8,6 @@ import net.minecraft.util.Tuple;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
@@ -129,7 +128,6 @@ public class TrafficSignalControllerTickerUtilities
             // Check if FYA signal is still in FYA or green state in the upcoming phase (stay in FYA state)
             if ( upcomingPhase.getFyaSignals().contains( fyaSignal ) ||
                     upcomingPhase.getOffSignals().contains( fyaSignal ) ) {
-                // TODO: Take notice of behavior here
                 yellowTransitionPhase.addFyaSignal( fyaSignal );
             }
             // Otherwise, FYA signal is not in FYA or green state in the upcoming phase (transition to yellow state)
@@ -301,27 +299,19 @@ public class TrafficSignalControllerTickerUtilities
         // Create variables to track the highest priority phase
         int highestPriorityCircuitNumber = Integer.MIN_VALUE;
         TrafficSignalPhaseApplicability highestPriorityPhaseApplicability = TrafficSignalPhaseApplicability.NONE;
-        int highestPriorityWaitingCount = 0;
+        int highestPriorityWaitingCount = 1;
 
         // Loop through all circuits
-        for ( int i = 1; i <= circuits.getCircuitCount(); i++ ) {
+        for ( int i = circuits.getCircuitCount(); i > 0; i-- ) {
             // Get the circuit
             TrafficSignalControllerCircuit circuit = circuits.getCircuit( i - 1 );
 
             // Get sensor summary for circuit
             TrafficSignalSensorSummary sensorSummary = circuit.getSensorsWaitingSummary( world );
 
-            // Check circuit pedestrian request count for highest priority
-            int pedestrianAccessoriesRequestCount = circuit.getPedestrianAccessoriesRequestCount( world );
-            if ( pedestrianAccessoriesRequestCount > highestPriorityWaitingCount ) {
-                highestPriorityCircuitNumber = -1;
-                highestPriorityPhaseApplicability = TrafficSignalPhaseApplicability.PEDESTRIAN;
-                highestPriorityWaitingCount = pedestrianAccessoriesRequestCount;
-            }
-
             // Check circuit all left turn lanes detection count for highest priority
             int allLeftTurnLanesDetectionCount = sensorSummary.getLeftTotal();
-            if ( allLeftTurnLanesDetectionCount > highestPriorityWaitingCount ) {
+            if ( allLeftTurnLanesDetectionCount >= highestPriorityWaitingCount ) {
                 highestPriorityCircuitNumber = i;
                 highestPriorityPhaseApplicability = TrafficSignalPhaseApplicability.ALL_LEFTS;
                 highestPriorityWaitingCount = allLeftTurnLanesDetectionCount;
@@ -329,7 +319,7 @@ public class TrafficSignalControllerTickerUtilities
 
             // Check circuit east facing sensors detection count for highest priority
             int eastFacingDetectionCount = sensorSummary.getNonProtectedTotalEast();
-            if ( eastFacingDetectionCount > highestPriorityWaitingCount ) {
+            if ( eastFacingDetectionCount >= highestPriorityWaitingCount ) {
                 highestPriorityCircuitNumber = i;
                 highestPriorityPhaseApplicability = TrafficSignalPhaseApplicability.ALL_EAST;
                 highestPriorityWaitingCount = eastFacingDetectionCount;
@@ -337,7 +327,7 @@ public class TrafficSignalControllerTickerUtilities
 
             // Check circuit west facing sensors detection count for highest priority
             int westFacingDetectionCount = sensorSummary.getNonProtectedTotalWest();
-            if ( westFacingDetectionCount > highestPriorityWaitingCount ) {
+            if ( westFacingDetectionCount >= highestPriorityWaitingCount ) {
                 highestPriorityCircuitNumber = i;
                 highestPriorityPhaseApplicability = TrafficSignalPhaseApplicability.ALL_WEST;
                 highestPriorityWaitingCount = westFacingDetectionCount;
@@ -345,7 +335,7 @@ public class TrafficSignalControllerTickerUtilities
 
             // Check circuit north facing sensors detection count for highest priority
             int northFacingDetectionCount = sensorSummary.getNonProtectedTotalNorth();
-            if ( northFacingDetectionCount > highestPriorityWaitingCount ) {
+            if ( northFacingDetectionCount >= highestPriorityWaitingCount ) {
                 highestPriorityCircuitNumber = i;
                 highestPriorityPhaseApplicability = TrafficSignalPhaseApplicability.ALL_NORTH;
                 highestPriorityWaitingCount = northFacingDetectionCount;
@@ -353,18 +343,26 @@ public class TrafficSignalControllerTickerUtilities
 
             // Check circuit south facing sensors detection count for highest priority
             int southFacingDetectionCount = sensorSummary.getNonProtectedTotalSouth();
-            if ( southFacingDetectionCount > highestPriorityWaitingCount ) {
+            if ( southFacingDetectionCount >= highestPriorityWaitingCount ) {
                 highestPriorityCircuitNumber = i;
                 highestPriorityPhaseApplicability = TrafficSignalPhaseApplicability.ALL_SOUTH;
                 highestPriorityWaitingCount = southFacingDetectionCount;
             }
 
+            // Check circuit pedestrian request count for highest priority
+            int pedestrianAccessoriesRequestCount = circuit.getPedestrianAccessoriesRequestCount( world );
+            if ( pedestrianAccessoriesRequestCount >= highestPriorityWaitingCount ) {
+                highestPriorityCircuitNumber = -1;
+                highestPriorityPhaseApplicability = TrafficSignalPhaseApplicability.PEDESTRIAN;
+                highestPriorityWaitingCount = pedestrianAccessoriesRequestCount;
+            }
+
             // Check circuit through/protecteds detection count for highest priority
             int throughsDetectionCount = sensorSummary.getStandardTotal();
             int throughsProtectedsDetectionCount = throughsDetectionCount + sensorSummary.getProtectedTotal();
-            if ( throughsDetectionCount > highestPriorityWaitingCount ) {
+            if ( throughsDetectionCount >= highestPriorityWaitingCount ) {
                 highestPriorityCircuitNumber = i;
-                if ( throughsProtectedsDetectionCount > throughsDetectionCount ) {
+                if ( throughsProtectedsDetectionCount >= throughsDetectionCount ) {
                     highestPriorityPhaseApplicability = TrafficSignalPhaseApplicability.ALL_THROUGHS_PROTECTEDS;
                     highestPriorityWaitingCount = throughsProtectedsDetectionCount;
                 }
@@ -481,8 +479,6 @@ public class TrafficSignalControllerTickerUtilities
             // Handle all throughs and rights phase applicability
             else if ( phaseApplicability == TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS ) {
                 if ( i == circuitNumber ) {
-                    upcomingPhase.addFyaSignals( circuit.getFlashingLeftSignals() );
-                    upcomingPhase.addRedSignals( circuit.getLeftSignals() );
                     upcomingPhase.addGreenSignals( circuit.getThroughSignals() );
                     upcomingPhase.addRedSignals( circuit.getProtectedSignals() );
                     upcomingPhase.addOffSignals( circuit.getPedestrianBeaconSignals() );
@@ -491,10 +487,20 @@ public class TrafficSignalControllerTickerUtilities
                     if ( overlapPedestrianSignals ) {
                         upcomingPhase.addFyaSignals( circuit.getFlashingRightSignals() );
                         upcomingPhase.addRedSignals( circuit.getRightSignals() );
+                        upcomingPhase.addFyaSignals( circuit.getFlashingLeftSignals() );
+                        upcomingPhase.addRedSignals( circuit.getLeftSignals() );
                     }
                     else {
                         upcomingPhase.addOffSignals( circuit.getFlashingRightSignals() );
                         upcomingPhase.addGreenSignals( circuit.getRightSignals() );
+                        if ( circuit.areSignalsFacingSameDirection( world ) ) {
+                            upcomingPhase.addOffSignals( circuit.getFlashingLeftSignals() );
+                            upcomingPhase.addGreenSignals( circuit.getLeftSignals() );
+                        }
+                        else {
+                            upcomingPhase.addFyaSignals( circuit.getFlashingLeftSignals() );
+                            upcomingPhase.addRedSignals( circuit.getLeftSignals() );
+                        }
                     }
                 }
                 else {
@@ -504,15 +510,21 @@ public class TrafficSignalControllerTickerUtilities
             // Handle all throughs and protected rights phase applicability
             else if ( phaseApplicability == TrafficSignalPhaseApplicability.ALL_THROUGHS_PROTECTED_RIGHTS ) {
                 if ( i == circuitNumber ) {
-                    upcomingPhase.addFyaSignals( circuit.getFlashingLeftSignals() );
                     upcomingPhase.addOffSignals( circuit.getFlashingRightSignals() );
-                    upcomingPhase.addRedSignals( circuit.getLeftSignals() );
                     upcomingPhase.addGreenSignals( circuit.getRightSignals() );
                     upcomingPhase.addGreenSignals( circuit.getThroughSignals() );
                     upcomingPhase.addRedSignals( circuit.getProtectedSignals() );
                     upcomingPhase.addOffSignals( circuit.getPedestrianBeaconSignals() );
                     upcomingPhase.addDontWalkSignals( circuit.getPedestrianSignals() );
                     upcomingPhase.addDontWalkSignals( circuit.getPedestrianAccessorySignals() );
+                    if ( circuit.areSignalsFacingSameDirection( world ) ) {
+                        upcomingPhase.addOffSignals( circuit.getFlashingLeftSignals() );
+                        upcomingPhase.addGreenSignals( circuit.getLeftSignals() );
+                    }
+                    else {
+                        upcomingPhase.addFyaSignals( circuit.getFlashingLeftSignals() );
+                        upcomingPhase.addRedSignals( circuit.getLeftSignals() );
+                    }
                 }
                 else {
                     boolean pedestrianSignalsWalk = false;
