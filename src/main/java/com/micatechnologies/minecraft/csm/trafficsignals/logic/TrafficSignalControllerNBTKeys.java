@@ -187,6 +187,14 @@ public class TrafficSignalControllerNBTKeys
      */
     public static final String DEDICATED_PED_SIGNAL_TIME = "tcDedicatedPedSignalTime";
 
+    /**
+     * The key for storing and retrieving the traffic signal controller's upgraded previous NBT format setting from NBT
+     * data.
+     *
+     * @since 2.0
+     */
+    public static final String UPGRADED_PREVIOUS_NBT_FORMAT = "tcUpgradedPreviousNbtFormat";
+
     ///endregion
 
     ///region: Previous Format Keys (v1.1)
