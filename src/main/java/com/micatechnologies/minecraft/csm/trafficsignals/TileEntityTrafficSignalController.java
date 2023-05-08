@@ -212,7 +212,7 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
      * Boolean indicating whether the traffic signal controller upgraded data from the previous NBT format. This is used
      * to determine whether to remove the previous NBT format on NBT save.
      */
-    private boolean upgradedPreviousNBT = false;
+    private boolean upgradedPreviousNBTFormat = false;
 
     //endregion
 
@@ -245,14 +245,14 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
             }
 
             // Check for previous NBT data format and load it if present
-            if ( previousNbt != null ) {
+            if ( !upgradedPreviousNBTFormat && previousNbt != null ) {
                 try {
                     System.err.println(
                             "Importing previous NBT data format for traffic signal controller at " + getPos() );
                     importPreviousNBTDataFormat( getWorld(), previousNbt );
-                    resetController( true, false );
                     previousNbt = null;
-                    upgradedPreviousNBT = true;
+                    upgradedPreviousNBTFormat = true;
+                    resetController( true, false );
                     System.err.println(
                             "Successfully imported previous NBT data format for traffic signal controller at " +
                                     getPos() );
@@ -463,8 +463,11 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
         // Write the dedicated pedestrian signal time to NBT
         compound.setLong( TrafficSignalControllerNBTKeys.DEDICATED_PED_SIGNAL_TIME, dedicatedPedSignalTime );
 
+        // Write the upgrade previous NBT data format flag to NBT
+        compound.setBoolean( TrafficSignalControllerNBTKeys.UPGRADED_PREVIOUS_NBT_FORMAT, upgradedPreviousNBTFormat );
+
         // Return the NBT tag compound with previous NBT data format removed
-        if ( upgradedPreviousNBT ) {
+        if ( upgradedPreviousNBTFormat && hasPreviousNBTDataFormat( compound ) ) {
             removePreviousNBTDataFormat( compound );
             System.out.println( "Removed previous NBT data format from traffic signal controller at " + getPos() );
         }
@@ -606,8 +609,14 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
             dedicatedPedSignalTime = compound.getLong( TrafficSignalControllerNBTKeys.DEDICATED_PED_SIGNAL_TIME );
         }
 
+        // Load the traffic signal controller upgrade previous NBT data format flag
+        if ( compound.hasKey( TrafficSignalControllerNBTKeys.UPGRADED_PREVIOUS_NBT_FORMAT ) ) {
+            upgradedPreviousNBTFormat = compound.getBoolean(
+                    TrafficSignalControllerNBTKeys.UPGRADED_PREVIOUS_NBT_FORMAT );
+        }
+
         // Check for any previous NBT data format keys
-        if ( hasPreviousNBTDataFormat( compound ) ) {
+        if ( !upgradedPreviousNBTFormat && hasPreviousNBTDataFormat( compound ) ) {
             previousNbt = compound;
         }
     }
