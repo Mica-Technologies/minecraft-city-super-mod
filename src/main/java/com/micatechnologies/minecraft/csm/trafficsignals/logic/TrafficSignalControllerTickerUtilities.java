@@ -362,7 +362,8 @@ public class TrafficSignalControllerTickerUtilities
             int throughsProtectedsDetectionCount = throughsDetectionCount + sensorSummary.getProtectedTotal();
             if ( throughsDetectionCount >= highestPriorityWaitingCount ) {
                 highestPriorityCircuitNumber = i;
-                if ( throughsProtectedsDetectionCount >= throughsDetectionCount ) {
+                if ( throughsProtectedsDetectionCount > throughsDetectionCount &&
+                        circuit.getProtectedSignals().size() > 0 ) {
                     highestPriorityPhaseApplicability = TrafficSignalPhaseApplicability.ALL_THROUGHS_PROTECTEDS;
                     highestPriorityWaitingCount = throughsProtectedsDetectionCount;
                 }
