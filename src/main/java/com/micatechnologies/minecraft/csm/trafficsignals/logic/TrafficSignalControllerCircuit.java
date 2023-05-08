@@ -839,7 +839,8 @@ public class TrafficSignalControllerCircuit
         NBTTagCompound compound = new NBTTagCompound();
 
         // Serialize flashing left signals
-        compound.setTag( NBT_KEY_FLASHING_LEFT_SIGNAL_LIST, new NBTTagCompound() );
+        compound.setTag( NBT_KEY_FLASHING_LEFT_SIGNAL_LIST,
+                         SerializationUtils.getBlockPosNBTArrayFromBlockPosList( flashingLeftSignals ) );
 
         // Serialize flashing right signals
         compound.setTag( NBT_KEY_FLASHING_RIGHT_SIGNAL_LIST,
