@@ -285,25 +285,44 @@ public class TrafficSignalControllerTickerUtilities
      * Gets the priority indicator of the upcoming phase to service. The priority indicator is a tuple containing the
      * circuit number and the applicability of the upcoming phase to service.
      *
-     * @param world    The world where the traffic signal controller and devices are  located.
-     * @param circuits The configured/connected circuits of the traffic signal controller.
+     * @param world                    The world where the traffic signal controller and devices are located.
+     * @param circuits                 The configured/connected circuits of the traffic signal controller.
+     * @param overlapPedestrianSignals The overlap pedestrian signals setting of the traffic signal controller. This
+     *                                 boolean value is used to determine if the pedestrian signals of all other
+     *                                 circuits should be overlapped when servicing a circuit.
      *
      * @return The priority indicator of the upcoming phase to service.
      *
      * @since 1.0
      */
     public static Tuple< Integer, TrafficSignalPhaseApplicability > getUpcomingPhasePriorityIndicator( World world,
-                                                                                                       TrafficSignalControllerCircuits circuits )
+                                                                                                       TrafficSignalControllerCircuits circuits,
+                                                                                                       boolean overlapPedestrianSignals )
     {
         // Create variables to track the highest priority phase
         int highestPriorityCircuitNumber = Integer.MIN_VALUE;
         TrafficSignalPhaseApplicability highestPriorityPhaseApplicability = TrafficSignalPhaseApplicability.NONE;
         int highestPriorityWaitingCount = 1;
 
+        // Loop through all circuits to map pedestrian request counts
+        int[] pedestrianRequestCount = new int[ circuits.getCircuitCount() ];
+        for ( int i = circuits.getCircuitCount(); i > 0; i-- ) {
+            // Get the circuit
+            int i0 = i - 1;
+            TrafficSignalControllerCircuit circuit = circuits.getCircuit( i0 );
+
+            // Get pedestrian request count for circuit
+            int pedestrianAccessoriesRequestCount = circuit.getPedestrianAccessoriesRequestCount( world );
+
+            // Store pedestrian request count for circuit
+            pedestrianRequestCount[ i0 ] = pedestrianAccessoriesRequestCount;
+        }
+
         // Loop through all circuits
         for ( int i = circuits.getCircuitCount(); i > 0; i-- ) {
             // Get the circuit
-            TrafficSignalControllerCircuit circuit = circuits.getCircuit( i - 1 );
+            int i0 = i - 1;
+            TrafficSignalControllerCircuit circuit = circuits.getCircuit( i0 );
 
             // Get sensor summary for circuit
             TrafficSignalSensorSummary sensorSummary = circuit.getSensorsWaitingSummary( world );
@@ -349,27 +368,48 @@ public class TrafficSignalControllerTickerUtilities
             }
 
             // Check circuit pedestrian request count for highest priority
-            int pedestrianAccessoriesRequestCount = circuit.getPedestrianAccessoriesRequestCount( world );
+            int pedestrianAccessoriesRequestCount = pedestrianRequestCount[ i0 ];
             if ( pedestrianAccessoriesRequestCount >= highestPriorityWaitingCount ) {
                 highestPriorityCircuitNumber = -1;
                 highestPriorityPhaseApplicability = TrafficSignalPhaseApplicability.PEDESTRIAN;
                 highestPriorityWaitingCount = pedestrianAccessoriesRequestCount;
             }
 
+            // Calculate the number of requests for services pedestrian overlaps
+            int pedestrianOverlapRequestCount = 0;
+            if ( overlapPedestrianSignals ) {
+                for ( int x = 0; x < pedestrianRequestCount.length; x++ ) {
+                    if ( x != i0 ) {
+                        pedestrianOverlapRequestCount += pedestrianRequestCount[ x ];
+                    }
+                }
+            }
+
             // Check circuit through/protecteds detection count for highest priority
-            int throughsDetectionCount = sensorSummary.getStandardTotal();
-            int throughsProtectedsDetectionCount = throughsDetectionCount + sensorSummary.getProtectedTotal();
+            int throughsProtectedsDetectionCount = sensorSummary.getStandardTotal() +
+                    sensorSummary.getProtectedTotal() +
+                    pedestrianOverlapRequestCount;
+            if ( throughsProtectedsDetectionCount >= highestPriorityWaitingCount &&
+                    circuit.getProtectedSignals().size() > 0 ) {
+                highestPriorityCircuitNumber = i;
+                highestPriorityPhaseApplicability = TrafficSignalPhaseApplicability.ALL_THROUGHS_PROTECTEDS;
+                highestPriorityWaitingCount = throughsProtectedsDetectionCount;
+            }
+
+            // Check circuit through/rights detection count for highest priority
+            int throughsDetectionCount = sensorSummary.getStandardTotal() + pedestrianOverlapRequestCount;
             if ( throughsDetectionCount >= highestPriorityWaitingCount ) {
                 highestPriorityCircuitNumber = i;
-                if ( throughsProtectedsDetectionCount > throughsDetectionCount &&
-                        circuit.getProtectedSignals().size() > 0 ) {
-                    highestPriorityPhaseApplicability = TrafficSignalPhaseApplicability.ALL_THROUGHS_PROTECTEDS;
-                    highestPriorityWaitingCount = throughsProtectedsDetectionCount;
-                }
-                else {
-                    highestPriorityPhaseApplicability = TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS;
-                    highestPriorityWaitingCount = throughsDetectionCount;
-                }
+                highestPriorityPhaseApplicability = TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS;
+                highestPriorityWaitingCount = throughsDetectionCount;
+            }
+
+            // Check circuit through/protected rights detection count for highest priority
+            int rawThroughsDetectionCount = sensorSummary.getStandardTotal();
+            if ( rawThroughsDetectionCount >= highestPriorityWaitingCount ) {
+                highestPriorityCircuitNumber = i;
+                highestPriorityPhaseApplicability = TrafficSignalPhaseApplicability.ALL_THROUGHS_PROTECTED_RIGHTS;
+                highestPriorityWaitingCount = rawThroughsDetectionCount;
             }
         }
 

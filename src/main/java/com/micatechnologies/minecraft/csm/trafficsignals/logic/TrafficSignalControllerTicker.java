@@ -256,7 +256,8 @@ public class TrafficSignalControllerTicker
                 Tuple< Integer, TrafficSignalPhaseApplicability > currentPhasePriorityIndicator
                         = originalPhase.getPriorityIndicator();
                 Tuple< Integer, TrafficSignalPhaseApplicability > upcomingPhasePriorityIndicator
-                        = TrafficSignalControllerTickerUtilities.getUpcomingPhasePriorityIndicator( world, circuits );
+                        = TrafficSignalControllerTickerUtilities.getUpcomingPhasePriorityIndicator( world, circuits,
+                                                                                                    overlapPedestrianSignals );
 
                 // Create variable to store upcoming phase
                 TrafficSignalPhase upcomingPhase = null;
