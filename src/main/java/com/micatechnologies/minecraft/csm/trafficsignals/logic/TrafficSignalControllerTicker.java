@@ -97,11 +97,10 @@ public class TrafficSignalControllerTicker
             case RAMP_METER_PART_TIME:
                 return rampMeterPartTimeModeTick( world, circuits, cachedPhases, originalPhase );
             case NORMAL:
-                return normalModeTick( world, configuredMode, operatingMode, circuits, cachedPhases, originalPhase,
-                                       timeSinceLastPhaseApplicabilityChange, timeSinceLastPhaseChange,
-                                       alternatingFlash, overlapPedestrianSignals, yellowTime, flashDontWalkTime,
-                                       allRedTime, minGreenTime, maxGreenTime, minGreenTimeSecondary,
-                                       maxGreenTimeSecondary, dedicatedPedSignalTime );
+                return normalModeTick( world, circuits, cachedPhases, originalPhase, timeSinceLastPhaseChange,
+                                       overlapPedestrianSignals, yellowTime, flashDontWalkTime, allRedTime,
+                                       minGreenTime, maxGreenTime, minGreenTimeSecondary, maxGreenTimeSecondary,
+                                       dedicatedPedSignalTime );
             case FLASH:
             default:
                 return flashModeTick( configuredMode, cachedPhases, alternatingFlash );
@@ -150,35 +149,25 @@ public class TrafficSignalControllerTicker
     /**
      * Handles the tick event for the traffic signal controller in {@link TrafficSignalControllerMode#NORMAL} mode.
      *
-     * @param world                                 The world in which the traffic signal controller is located.
-     * @param configuredMode                        The configured mode of the traffic signal controller.
-     * @param operatingMode                         The operating mode of the traffic signal controller.
-     * @param circuits                              The configured/connected circuits of the traffic signal controller.
-     * @param cachedPhases                          The programmed phases of the traffic signal controller.
-     * @param originalPhase                         The original (current) phase of the traffic signal controller.
-     * @param timeSinceLastPhaseApplicabilityChange The time since the traffic signal controller last changed phase
-     *                                              applicability.
-     * @param timeSinceLastPhaseChange              The time since the traffic signal controller last changed phases.
-     * @param alternatingFlash                      The alternating flash state of the traffic signal controller. This
-     *                                              boolean value alternates between true and false each tick and is
-     *                                              used to control the flashing of traffic signal devices.
-     * @param overlapPedestrianSignals              The overlap pedestrian signals setting of the traffic signal
-     *                                              controller. This boolean value is used to determine if the
-     *                                              pedestrian signals of all other circuits should be overlapped when
-     *                                              servicing a circuit.
-     * @param yellowTime                            The yellow time for the traffic signal controller.
-     * @param flashDontWalkTime                     The flashing don't walk time for the traffic signal controller.
-     * @param allRedTime                            The all red time for the traffic signal controller.
-     * @param minGreenTime                          The minimum green time for the traffic signal controller when in
-     *                                              normal mode.
-     * @param maxGreenTime                          The maximum green time for the traffic signal controller when in
-     *                                              normal mode.
-     * @param minGreenTimeSecondary                 The secondary minimum green time for the traffic signal controller
-     *                                              when in normal mode.
-     * @param maxGreenTimeSecondary                 The secondary maximum green time for the traffic signal controller
-     *                                              when in normal mode.
-     * @param dedicatedPedSignalTime                The dedicated pedestrian signal time for the traffic signal
-     *                                              controller when in normal mode.
+     * @param world                    The world in which the traffic signal controller is located.
+     * @param circuits                 The configured/connected circuits of the traffic signal controller.
+     * @param cachedPhases             The programmed phases of the traffic signal controller.
+     * @param originalPhase            The original (current) phase of the traffic signal controller.
+     * @param timeSinceLastPhaseChange The time since the traffic signal controller last changed phases.
+     * @param overlapPedestrianSignals The overlap pedestrian signals setting of the traffic signal controller. This
+     *                                 boolean value is used to determine if the pedestrian signals of all other
+     *                                 circuits should be overlapped when servicing a circuit.
+     * @param yellowTime               The yellow time for the traffic signal controller.
+     * @param flashDontWalkTime        The flashing don't walk time for the traffic signal controller.
+     * @param allRedTime               The all red time for the traffic signal controller.
+     * @param minGreenTime             The minimum green time for the traffic signal controller when in normal mode.
+     * @param maxGreenTime             The maximum green time for the traffic signal controller when in normal mode.
+     * @param minGreenTimeSecondary    The secondary minimum green time for the traffic signal controller when in normal
+     *                                 mode.
+     * @param maxGreenTimeSecondary    The secondary maximum green time for the traffic signal controller when in normal
+     *                                 mode.
+     * @param dedicatedPedSignalTime   The dedicated pedestrian signal time for the traffic signal controller when in
+     *                                 normal mode.
      *
      * @return The next phase to use for the traffic signal controller. If null is returned, then the phase is not
      *         changed.
@@ -186,14 +175,10 @@ public class TrafficSignalControllerTicker
      * @since 1.0
      */
     public static TrafficSignalPhase normalModeTick( World world,
-                                                     TrafficSignalControllerMode configuredMode,
-                                                     TrafficSignalControllerMode operatingMode,
                                                      TrafficSignalControllerCircuits circuits,
                                                      TrafficSignalPhases cachedPhases,
                                                      TrafficSignalPhase originalPhase,
-                                                     long timeSinceLastPhaseApplicabilityChange,
                                                      long timeSinceLastPhaseChange,
-                                                     boolean alternatingFlash,
                                                      boolean overlapPedestrianSignals,
                                                      long yellowTime,
                                                      long flashDontWalkTime,
@@ -477,7 +462,29 @@ public class TrafficSignalControllerTicker
                           .stream()
                           .mapToInt( value -> value.getPedestrianAccessoriesRequestCount( world ) )
                           .sum() > 0 ) ) {
-            nextPhase = cachedPhases.getPhase( TrafficSignalPhases.PHASE_INDEX_REQUESTABLE_DEFAULT_GREEN_FLASH_DW );
+
+            // Check if flashing don't walk phase is needed
+            boolean flashingDontWalkNeeded = true;
+            boolean flashingBeaconNeeded = true;
+            if ( circuits.getCircuitCount() > 0 ) {
+                flashingDontWalkNeeded = circuits.getCircuit( 0 ).getPedestrianSignals().size() > 0;
+                flashingBeaconNeeded = circuits.getCircuit( 0 ).getPedestrianBeaconSignals().size() > 0;
+            }
+
+            // Switch to flashing don't walk phase if needed
+            if ( flashingDontWalkNeeded ) {
+                nextPhase = cachedPhases.getPhase( TrafficSignalPhases.PHASE_INDEX_REQUESTABLE_DEFAULT_GREEN_FLASH_DW );
+            }
+            // Skip to flashing yellow pedestrian beacon phase if no pedestrian signals
+            else if ( flashingBeaconNeeded ) {
+                nextPhase = cachedPhases.getPhase( alternatingFlash ?
+                                                   TrafficSignalPhases.PHASE_INDEX_REQUESTABLE_DEFAULT_GREEN_FLASH_DW_HAWK_1 :
+                                                   TrafficSignalPhases.PHASE_INDEX_REQUESTABLE_DEFAULT_GREEN_FLASH_DW_HAWK_2 );
+            }
+            // Skip to yellow phase if flashing dont walk or flashing beacon not needed
+            else {
+                nextPhase = cachedPhases.getPhase( TrafficSignalPhases.PHASE_INDEX_REQUESTABLE_DEFAULT_YELLOW );
+            }
         }
         // If currently in default green phase + flashing don't walk and time met, switch to next phase
         else if ( originalPhase.getApplicability() ==
