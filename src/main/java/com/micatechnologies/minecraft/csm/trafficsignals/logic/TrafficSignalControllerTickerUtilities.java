@@ -1,6 +1,5 @@
 package com.micatechnologies.minecraft.csm.trafficsignals.logic;
 
-import jdk.nashorn.internal.ir.Block;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.EnumFacing;
@@ -226,18 +225,18 @@ public class TrafficSignalControllerTickerUtilities
                 TrafficSignalControllerCircuit circuit = circuits.getCircuit( i - 1 );
                 if ( i == circuitNumber ) {
                     defaultPhase.addFyaSignals( circuit.getFlashingLeftSignals() );
-                    defaultPhase.addOffSignals( circuit.getFlashingRightSignals() );
                     defaultPhase.addRedSignals( circuit.getLeftSignals() );
                     defaultPhase.addGreenSignals( circuit.getThroughSignals() );
                     if ( hasProtectedSignals ) {
+                        defaultPhase.addFyaSignals( circuit.getFlashingRightSignals() );
                         defaultPhase.addRedSignals( circuit.getRightSignals() );
                         defaultPhase.addGreenSignals( circuit.getProtectedSignals() );
                     }
                     else {
+                        defaultPhase.addOffSignals( circuit.getFlashingRightSignals() );
                         defaultPhase.addGreenSignals( circuit.getRightSignals() );
                         defaultPhase.addRedSignals( circuit.getProtectedSignals() );
                     }
-                    defaultPhase.addRedSignals( circuit.getProtectedSignals() );
                     defaultPhase.addOffSignals( circuit.getPedestrianBeaconSignals() );
                     defaultPhase.addDontWalkSignals( circuit.getPedestrianSignals() );
                     defaultPhase.addDontWalkSignals( circuit.getPedestrianAccessorySignals() );
