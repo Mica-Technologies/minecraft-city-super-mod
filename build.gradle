@@ -1,7 +1,6 @@
 buildscript {
     repositories {
-        maven { url = 'https://files.minecraftforge.net/maven' }
-        jcenter()
+        maven { url = 'https://maven.minecraftforge.net/' }
         mavenCentral()
     }
     dependencies {
@@ -15,7 +14,8 @@ apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 
 version = '2023.2'
-group = 'com.com.micatechnologies.minecraft.csm' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
+group = 'com.micatechnologies.minecraft.csm' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
+archivesBaseName = 'csm'
 
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
 
@@ -65,10 +65,6 @@ dependencies {
     // compile "some.group:artifact:version:classifier"
     // compile "some.group:artifact:version"
 
-    // https://mvnrepository.com/artifact/net.sf.sociaal/freetts
-    implementation 'net.sf.sociaal:freetts:1.2.2'
-
-
     // Real examples
     // compile 'com.mod-buildcraft:buildcraft:6.0.8:dev'  // adds buildcraft to the dev env
     // compile 'com.googlecode.efficient-java-matrix-library:ejml:0.24' // adds ejml to the dev env
@@ -100,19 +96,6 @@ jar {
     }
 }
 
-// Process resources
-processResources {
-    // Replace tokens in mcmod.info
-    inputs.property "version", project.version + "_" + getDate()
-
-    from(sourceSets.main.resources.srcDirs) {
-        include 'mcmod.info' // optional
-
-        // Replace tokens in mcmod.info
-        expand 'version': project.version + "_" + getDate()
-    }
-}
-
 // Example configuration to allow publishing using the maven-publish task
 // This is the preferred method to reobfuscate your jar file
 jar.finalizedBy('reobfJar')
@@ -129,21 +112,5 @@ publishing {
         maven {
             url "file:///${project.projectDir}/mcmodsrepo"
         }
-    }
-}
-
-sourceSets {
-    main {
-        output.resourcesDir = output.classesDir
-    }
-}
-
-static String getDate() {
-    return new Date().format("yyMMdd'T'HHmmssZ")
-}
-
-task printVersionNumber {
-    doLast {
-        println project.version
     }
 }
