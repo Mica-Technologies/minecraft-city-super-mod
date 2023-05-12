@@ -2,11 +2,8 @@ package com.micatechnologies.minecraft.csm.tabs;
 
 import com.micatechnologies.minecraft.csm.CsmRegistry;
 import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
-import com.micatechnologies.minecraft.csm.powergrid.fe.BlockForgeEnergyToRedstone;
 import com.micatechnologies.minecraft.csm.technology.*;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorderYellowBlack;
 import net.minecraft.block.Block;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 /**
@@ -14,7 +11,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
  *
  * @version 1.0
  */
-@CsmTab.Load(order=8)
+@CsmTab.Load( order = 8 )
 public class CsmTabTechnology extends CsmTab
 {
     /**
@@ -88,6 +85,7 @@ public class CsmTabTechnology extends CsmTab
         initTabBlock( BlockJBLC1.class, fmlPreInitializationEvent ); // JBLC1
         initTabBlock( BlockJBLC2.class, fmlPreInitializationEvent ); // JBLC2
         initTabBlock( BlockMbp.class, fmlPreInitializationEvent ); // Mbp
+        initTabBlock( BlockNintendoSw.class, fmlPreInitializationEvent ); // NintendoSw
         initTabBlock( BlockRedstoneTTS.class, fmlPreInitializationEvent ); // RedstoneTTS
         initTabBlock( BlockStbox.class, fmlPreInitializationEvent ); // Stbox
         initTabBlock( BlockTvdish.class, fmlPreInitializationEvent ); // Tvdish
