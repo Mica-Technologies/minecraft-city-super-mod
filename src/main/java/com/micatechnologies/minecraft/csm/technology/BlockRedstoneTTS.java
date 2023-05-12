@@ -101,7 +101,7 @@ public class BlockRedstoneTTS extends ElementsCitySuperMod.ModElement
         @Override
         public void neighborChanged( IBlockState state, World world, BlockPos pos, Block blockIn, BlockPos p_189540_5_ )
         {
-            if ( world.isBlockPowered( pos ) ) {
+            if ( world.isBlockPowered( pos ) && !world.isRemote ) {
                 // Get tile entity for block
                 TileEntity tileEntity = world.getTileEntity( pos );
 
@@ -131,7 +131,7 @@ public class BlockRedstoneTTS extends ElementsCitySuperMod.ModElement
             p_onBlockActivated_4_.openGui( CitySuperMod.instance, 0, p_onBlockActivated_1_,
                                            p_onBlockActivated_2_.getX(), p_onBlockActivated_2_.getY(),
                                            p_onBlockActivated_2_.getZ() );
-            return false;
+            return true;
         }
     }
 }

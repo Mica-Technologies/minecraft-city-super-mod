@@ -4,9 +4,11 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.Constants;
 
 import javax.annotation.Nullable;
 
@@ -77,6 +79,26 @@ public abstract class AbstractTileEntity extends TileEntity
     }
 
     /**
+     * Helper method which sends a data packet to the client to update the tile entity's NBT data. This method is
+     * similar to {@link #markDirtySync(World, BlockPos)}, but is used when it is necessary to send the tile entity's
+     * NBT data to the client.
+     *
+     * @param world the block/tile entity's world
+     */
+    public void syncServerToClient( World world ) {
+        if ( !world.isRemote ) {
+            // Send an update packet to the client
+            SPacketUpdateTileEntity packet = getUpdatePacket();
+            if ( packet != null ) {
+                MinecraftServer minecraftServer = world.getMinecraftServer();
+                if ( minecraftServer != null ) {
+                    minecraftServer.getPlayerList().sendPacketToAllPlayers( packet );
+                }
+            }
+        }
+    }
+
+    /**
      * Helper method which marks the tile entity as dirty, and schedules a world update for the block/tile entity. This
      * method does not trigger re-rendering of the block.
      *
@@ -84,8 +106,24 @@ public abstract class AbstractTileEntity extends TileEntity
      * @param pos   the block/tile entity's position
      */
     public void markDirtySync( World world, BlockPos pos ) {
-        markDirty();
+        boolean defaultSendClientUpdate = false;
+        markDirtySync( world, pos, defaultSendClientUpdate );
+    }
+
+    /**
+     * Helper method which marks the tile entity as dirty, and schedules a world update for the block/tile entity. This
+     * method does not trigger re-rendering of the block.
+     *
+     * @param world            the block/tile entity's world
+     * @param pos              the block/tile entity's position
+     * @param sendClientUpdate whether to send a client update packet or not
+     */
+    public void markDirtySync( World world, BlockPos pos, boolean sendClientUpdate ) {
         world.scheduleBlockUpdate( pos, this.getBlockType(), 0, 0 );
+        markDirty();
+        if ( sendClientUpdate ) {
+            syncServerToClient( world );
+        }
     }
 
     /**
@@ -97,9 +135,23 @@ public abstract class AbstractTileEntity extends TileEntity
      * @param state the block/tile entity's state
      */
     public void markDirtySync( World world, BlockPos pos, IBlockState state ) {
-        markDirtySync( world, pos );
+        boolean defaultSendClientUpdate = false;
+        markDirtySync( world, pos, state, defaultSendClientUpdate );
+    }
+
+    /**
+     * Helper method which marks the tile entity as dirty, and schedules a world update for the block/tile entity. This
+     * method triggers re-rendering of the block.
+     *
+     * @param world            the block/tile entity's world
+     * @param pos              the block/tile entity's position
+     * @param state            the block/tile entity's state
+     * @param sendClientUpdate whether to send a client update packet or not
+     */
+    public void markDirtySync( World world, BlockPos pos, IBlockState state, boolean sendClientUpdate ) {
         world.markBlockRangeForRenderUpdate( pos, pos );
-        world.notifyBlockUpdate( pos, state, state, 3 );
+        world.notifyBlockUpdate( pos, state, state, Constants.BlockFlags.DEFAULT );
+        markDirtySync( world, pos, sendClientUpdate );
     }
 
     /**
@@ -113,10 +165,6 @@ public abstract class AbstractTileEntity extends TileEntity
     @Nullable
     public SPacketUpdateTileEntity getUpdatePacket()
     {
-        // Create a new NBT tag compound and write the tile entity NBT data to it
-        NBTTagCompound nbtTagCompound = new NBTTagCompound();
-        this.writeToNBT( nbtTagCompound );
-
         // Create a new update packet with the new NBT tag compound
         return new SPacketUpdateTileEntity( getPos(), getBlockMetadata(), getUpdateTag() );
     }
@@ -146,8 +194,7 @@ public abstract class AbstractTileEntity extends TileEntity
     public NBTTagCompound getUpdateTag()
     {
         // Create a new NBT tag compound and write the tile entity NBT data to it
-        NBTTagCompound nbtTagCompound = new NBTTagCompound();
-        return this.writeToNBT( nbtTagCompound );
+        return this.writeToNBT( new NBTTagCompound() );
     }
 
     /**
