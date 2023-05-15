@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:signexceptbus"
+    },
+    "facing=north": {
+      "model": "csm:signexceptbus"
+    },
+    "facing=east": {
+      "model": "csm:signexceptbus",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:signexceptbus",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:signexceptbus",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:signexceptbus",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:signexceptbus",
+      "x": 90
+    }
+  }
+}
