@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:signexceptbusbicycle"
+    },
+    "facing=north": {
+      "model": "csm:signexceptbusbicycle"
+    },
+    "facing=east": {
+      "model": "csm:signexceptbusbicycle",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:signexceptbusbicycle",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:signexceptbusbicycle",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:signexceptbusbicycle",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:signexceptbusbicycle",
+      "x": 90
+    }
+  }
+}

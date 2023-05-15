@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:signbuslane"
+    },
+    "facing=north": {
+      "model": "csm:signbuslane"
+    },
+    "facing=east": {
+      "model": "csm:signbuslane",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:signbuslane",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:signbuslane",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:signbuslane",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:signbuslane",
+      "x": 90
+    }
+  }
+}
