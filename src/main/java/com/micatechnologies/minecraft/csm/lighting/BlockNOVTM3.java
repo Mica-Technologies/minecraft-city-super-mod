@@ -6,11 +6,13 @@ import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyDirection;
+import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.Mirror;
@@ -65,22 +67,12 @@ public class BlockNOVTM3 extends ElementsCitySuperMod.ModElement
 
         @Override
         public IBlockState getStateFromMeta( int meta ) {
-            return this.getDefaultState().withProperty( FACING, EnumFacing.getFront( meta ) );
+            return getDefaultState().withProperty( FACING, EnumFacing.getHorizontal( meta ) );
         }
 
         @Override
         public int getMetaFromState( IBlockState state ) {
-            return state.getValue( FACING ).getIndex();
-        }
-
-        @Override
-        public IBlockState withRotation( IBlockState state, Rotation rot ) {
-            return state.withProperty( FACING, rot.rotate( state.getValue( FACING ) ) );
-        }
-
-        @Override
-        public IBlockState withMirror( IBlockState state, Mirror mirrorIn ) {
-            return state.withRotation( mirrorIn.toRotation( state.getValue( FACING ) ) );
+            return state.getValue( FACING ).getHorizontalIndex();
         }
 
         @Override
@@ -100,17 +92,13 @@ public class BlockNOVTM3 extends ElementsCitySuperMod.ModElement
         }
 
         @Override
-        public IBlockState getStateForPlacement( World worldIn,
-                                                 BlockPos pos,
-                                                 EnumFacing facing,
-                                                 float hitX,
-                                                 float hitY,
-                                                 float hitZ,
-                                                 int meta,
-                                                 EntityLivingBase placer )
+        public void onBlockPlacedBy( World world,
+                                     BlockPos pos,
+                                     IBlockState state,
+                                     EntityLivingBase placer,
+                                     ItemStack stack )
         {
-            return this.getDefaultState()
-                       .withProperty( FACING, EnumFacing.getDirectionFromEntityLiving( pos, placer ) );
+            world.setBlockState( pos, state.withProperty( FACING, placer.getHorizontalFacing().getOpposite() ), 2 );
         }
 
         @Override
