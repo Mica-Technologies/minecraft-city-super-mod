@@ -53,10 +53,5 @@ public class BlockSignparkingarearight extends ElementsCitySuperMod.ModElement {
         public String getBlockRegistryName() {
             return "signparkingarearight";
         }
-
-		@Override
-		public boolean isReplaceable(IBlockAccess blockAccess, BlockPos pos) {
-			return true;
-		}
 	}
 }

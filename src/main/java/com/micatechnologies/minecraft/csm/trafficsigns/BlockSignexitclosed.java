@@ -52,10 +52,5 @@ public class BlockSignexitclosed extends ElementsCitySuperMod.ModElement {
         public String getBlockRegistryName() {
             return "signexitclosed";
         }
-
-		@Override
-		public boolean isReplaceable(IBlockAccess blockAccess, BlockPos pos) {
-			return true;
-		}
 	}
 }

@@ -53,10 +53,5 @@ public class BlockSignturnleftyieldped extends ElementsCitySuperMod.ModElement {
         public String getBlockRegistryName() {
             return "signturnleftyieldped";
         }
-
-		@Override
-		public boolean isReplaceable(IBlockAccess blockAccess, BlockPos pos) {
-			return true;
-		}
 	}
 }

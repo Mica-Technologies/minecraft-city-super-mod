@@ -52,10 +52,5 @@ public class BlockSignonpavement extends ElementsCitySuperMod.ModElement {
         public String getBlockRegistryName() {
             return "signonpavement";
         }
-
-		@Override
-		public boolean isReplaceable(IBlockAccess blockAccess, BlockPos pos) {
-			return true;
-		}
 	}
 }

@@ -53,10 +53,5 @@ public class BlockSignstopherepedright extends ElementsCitySuperMod.ModElement {
         public String getBlockRegistryName() {
             return "signstopherepedright";
         }
-
-		@Override
-		public boolean isReplaceable(IBlockAccess blockAccess, BlockPos pos) {
-			return true;
-		}
 	}
 }

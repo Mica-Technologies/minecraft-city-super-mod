@@ -53,10 +53,5 @@ public class BlockSignnomotorvehicles extends ElementsCitySuperMod.ModElement {
         public String getBlockRegistryName() {
             return "signnomotorvehicles";
         }
-
-		@Override
-		public boolean isReplaceable(IBlockAccess blockAccess, BlockPos pos) {
-			return true;
-		}
 	}
 }

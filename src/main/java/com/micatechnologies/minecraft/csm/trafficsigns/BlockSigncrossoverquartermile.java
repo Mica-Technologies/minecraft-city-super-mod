@@ -53,10 +53,5 @@ public class BlockSigncrossoverquartermile extends ElementsCitySuperMod.ModEleme
         public String getBlockRegistryName() {
             return "signcrossoverquartermile";
         }
-
-		@Override
-		public boolean isReplaceable(IBlockAccess blockAccess, BlockPos pos) {
-			return true;
-		}
 	}
 }

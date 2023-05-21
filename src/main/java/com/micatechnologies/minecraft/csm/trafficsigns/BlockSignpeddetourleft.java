@@ -52,10 +52,5 @@ public class BlockSignpeddetourleft extends ElementsCitySuperMod.ModElement {
         public String getBlockRegistryName() {
             return "signpeddetourleft";
         }
-
-		@Override
-		public boolean isReplaceable(IBlockAccess blockAccess, BlockPos pos) {
-			return true;
-		}
 	}
 }

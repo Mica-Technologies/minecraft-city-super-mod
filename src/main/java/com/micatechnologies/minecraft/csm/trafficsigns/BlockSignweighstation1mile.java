@@ -53,10 +53,5 @@ public class BlockSignweighstation1mile extends ElementsCitySuperMod.ModElement 
         public String getBlockRegistryName() {
             return "signweighstation1mile";
         }
-
-		@Override
-		public boolean isReplaceable(IBlockAccess blockAccess, BlockPos pos) {
-			return true;
-		}
 	}
 }

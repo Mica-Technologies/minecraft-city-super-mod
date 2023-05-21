@@ -53,10 +53,5 @@ public class BlockSignscenicoverlook2miles extends ElementsCitySuperMod.ModEleme
         public String getBlockRegistryName() {
             return "signscenicoverlook2miles";
         }
-
-		@Override
-		public boolean isReplaceable(IBlockAccess blockAccess, BlockPos pos) {
-			return true;
-		}
 	}
 }
