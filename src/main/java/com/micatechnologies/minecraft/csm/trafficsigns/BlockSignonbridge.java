@@ -52,10 +52,5 @@ public class BlockSignonbridge extends ElementsCitySuperMod.ModElement {
         public String getBlockRegistryName() {
             return "signonbridge";
         }
-
-		@Override
-		public boolean isReplaceable(IBlockAccess blockAccess, BlockPos pos) {
-			return true;
-		}
 	}
 }

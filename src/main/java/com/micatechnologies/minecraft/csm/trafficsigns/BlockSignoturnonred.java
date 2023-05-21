@@ -52,10 +52,5 @@ public class BlockSignoturnonred extends ElementsCitySuperMod.ModElement {
         public String getBlockRegistryName() {
             return "signoturnonred";
         }
-
-		@Override
-		public boolean isReplaceable(IBlockAccess blockAccess, BlockPos pos) {
-			return true;
-		}
 	}
 }

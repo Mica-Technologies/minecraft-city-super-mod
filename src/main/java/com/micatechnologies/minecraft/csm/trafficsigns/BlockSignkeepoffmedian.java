@@ -52,10 +52,5 @@ public class BlockSignkeepoffmedian extends ElementsCitySuperMod.ModElement {
         public String getBlockRegistryName() {
             return "signkeepoffmedian";
         }
-
-		@Override
-		public boolean isReplaceable(IBlockAccess blockAccess, BlockPos pos) {
-			return true;
-		}
 	}
 }

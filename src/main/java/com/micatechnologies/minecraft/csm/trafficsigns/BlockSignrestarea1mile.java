@@ -52,10 +52,5 @@ public class BlockSignrestarea1mile extends ElementsCitySuperMod.ModElement {
         public String getBlockRegistryName() {
             return "signrestarea1mile";
         }
-
-		@Override
-		public boolean isReplaceable(IBlockAccess blockAccess, BlockPos pos) {
-			return true;
-		}
 	}
 }

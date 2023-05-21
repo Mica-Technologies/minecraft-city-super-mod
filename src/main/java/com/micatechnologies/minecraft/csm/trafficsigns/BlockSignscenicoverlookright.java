@@ -53,10 +53,5 @@ public class BlockSignscenicoverlookright extends ElementsCitySuperMod.ModElemen
         public String getBlockRegistryName() {
             return "signscenicoverlookright";
         }
-
-		@Override
-		public boolean isReplaceable(IBlockAccess blockAccess, BlockPos pos) {
-			return true;
-		}
 	}
 }

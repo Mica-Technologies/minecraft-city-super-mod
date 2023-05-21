@@ -52,10 +52,5 @@ public class BlockSignrestarearight extends ElementsCitySuperMod.ModElement {
         public String getBlockRegistryName() {
             return "signrestarearight";
         }
-
-		@Override
-		public boolean isReplaceable(IBlockAccess blockAccess, BlockPos pos) {
-			return true;
-		}
 	}
 }

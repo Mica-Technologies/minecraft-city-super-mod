@@ -52,10 +52,5 @@ public class BlockSignturnoff2way extends ElementsCitySuperMod.ModElement {
         public String getBlockRegistryName() {
             return "signturnoff2way";
         }
-
-		@Override
-		public boolean isReplaceable(IBlockAccess blockAccess, BlockPos pos) {
-			return true;
-		}
 	}
 }

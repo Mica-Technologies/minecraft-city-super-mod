@@ -53,10 +53,5 @@ public class BlockSignweighstationnextright extends ElementsCitySuperMod.ModElem
         public String getBlockRegistryName() {
             return "signweighstationnextright";
         }
-
-		@Override
-		public boolean isReplaceable(IBlockAccess blockAccess, BlockPos pos) {
-			return true;
-		}
 	}
 }

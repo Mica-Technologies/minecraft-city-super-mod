@@ -53,10 +53,5 @@ public class BlockSignworkdetourright extends ElementsCitySuperMod.ModElement {
         public String getBlockRegistryName() {
             return "signworkdetourright";
         }
-
-		@Override
-		public boolean isReplaceable(IBlockAccess blockAccess, BlockPos pos) {
-			return true;
-		}
 	}
 }

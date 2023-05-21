@@ -53,10 +53,5 @@ public class BlockSignpostwallmounttop2 extends ElementsCitySuperMod.ModElement 
         public String getBlockRegistryName() {
             return "signpostwallmounttop2";
         }
-
-		@Override
-		public boolean isReplaceable(IBlockAccess blockAccess, BlockPos pos) {
-			return true;
-		}
 	}
 }
