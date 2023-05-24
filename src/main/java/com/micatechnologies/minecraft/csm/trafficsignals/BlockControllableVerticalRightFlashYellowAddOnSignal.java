@@ -18,13 +18,13 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @ElementsCitySuperMod.ModElement.Tag
-public class BlockControllableVerticalRightFlashYellowSignal extends ElementsCitySuperMod.ModElement
+public class BlockControllableVerticalRightFlashYellowAddOnSignal extends ElementsCitySuperMod.ModElement
 {
-    @GameRegistry.ObjectHolder( "csm:controllableverticalrightflashyellowsignal" )
+    @GameRegistry.ObjectHolder( "csm:controllableverticalrightflashyellowaddonsignal" )
     public static final Block block = null;
 
-    public BlockControllableVerticalRightFlashYellowSignal( ElementsCitySuperMod instance ) {
-        super( instance, 2989 );
+    public BlockControllableVerticalRightFlashYellowAddOnSignal( ElementsCitySuperMod instance ) {
+        super( instance, 4735 );
     }
 
     @Override
@@ -37,15 +37,15 @@ public class BlockControllableVerticalRightFlashYellowSignal extends ElementsCit
     @Override
     public void registerModels( ModelRegistryEvent event ) {
         ModelLoader.setCustomModelResourceLocation( Item.getItemFromBlock( block ), 0, new ModelResourceLocation(
-                "csm:controllableverticalrightflashyellowsignal", "inventory" ) );
+                "csm:controllableverticalrightflashyellowaddonsignal", "inventory" ) );
     }
 
     public static class BlockCustom extends AbstractBlockControllableSignal
     {
         public BlockCustom() {
             super( Material.ROCK );
-            setRegistryName( "controllableverticalrightflashyellowsignal" );
-            setUnlocalizedName( "controllableverticalrightflashyellowsignal" );
+            setRegistryName( "controllableverticalrightflashyellowaddonsignal" );
+            setUnlocalizedName( "controllableverticalrightflashyellowaddonsignal" );
             setSoundType( SoundType.STONE );
             setHarvestLevel( "pickaxe", 1 );
             setHardness( 2F );
@@ -59,7 +59,7 @@ public class BlockControllableVerticalRightFlashYellowSignal extends ElementsCit
 
         @Override
         public SIGNAL_SIDE getSignalSide( World world, BlockPos blockPos ) {
-            return SIGNAL_SIDE.FLASHING_RIGHT;
+            return SIGNAL_SIDE.RIGHT;
         }
 
         @Override

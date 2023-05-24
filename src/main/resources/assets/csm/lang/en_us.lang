@@ -1465,6 +1465,7 @@ tile.controllableverticalsolidsignalreversed.name=Vertical Traffic Signal (Solid
 tile.controllableverticalleftsignalsolidred.name=Vertical Traffic Signal (Left, Solid Red)
 tile.controllablehawksignal.name=Hawk Traffic Signal
 tile.controllableverticalrightflashyellowsignal.name=Vertical Traffic Signal (Right Arrow, Flashing Yellow)
+tile.controllableverticalrightflashyellowaddonsignal.name=Vertical Traffic Signal Add-On (Right Arrow, Flashing Yellow)
 tile.controllableverticalrightflashyellowsrsignal.name=Vertical Traffic Signal (Right Arrow, Flashing Yellow, Solid Red)
 tile.controllableverticalsolidflashyellowsignal.name=Vertical Traffic Signal (Solid, Flashing Yellow for Green)
 tile.controllableverticalsolidflashgreensignal.name=Vertical Traffic Signal (Solid, Flashing Green)
