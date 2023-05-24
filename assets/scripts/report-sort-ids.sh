@@ -12,7 +12,7 @@ source libs/shell_map.sh
 reportname="SORT_ID_REPORT.txt"
 
 # Clear old output report and map
-rm -r ../$reportname
+rm -r ../../$reportname
 
 # Create Sort ID Map
 shell_map new sids
@@ -21,7 +21,7 @@ sids clear_all
 # Get Sort IDs from Java Files
 
 found_conflict=false
-for FILE in `find ../src -name "*.java" -type f`; do
+for FILE in `find ../../src -name "*.java" -type f`; do
     SORTID=$(cat "$FILE" | grep "super(\s*instance,.*" | grep -o -E '[0-9]+')
     SHORTFILENAME=$(basename $FILE)
     if [ -z "$SORTID" ] 
@@ -43,8 +43,8 @@ done
 # Parse Sort IDs and Create Report
 for sid in `sids keys`; do
     # Output to report
-    echo -e "SORT ID $sid\n-------------" >> ../$reportname
-    echo -e `sids get "$sid"`  >> ../$reportname
+    echo -e "SORT ID $sid\n-------------" >> ../../$reportname
+    echo -e `sids get "$sid"`  >> ../../$reportname
 done
 
 if $found_conflict
