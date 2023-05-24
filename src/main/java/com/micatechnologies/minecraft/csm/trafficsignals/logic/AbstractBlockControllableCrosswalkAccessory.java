@@ -22,7 +22,7 @@ public class AbstractBlockControllableCrosswalkAccessory extends AbstractBlockCo
 
     @Override
     public boolean doesFlash() {
-        return true;
+        return false;
     }
 
 }

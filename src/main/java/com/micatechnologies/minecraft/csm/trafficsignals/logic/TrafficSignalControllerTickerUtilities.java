@@ -616,9 +616,9 @@ public class TrafficSignalControllerTickerUtilities
      *
      * @since 1.0
      */
-    private static Tuple< List< BlockPos >, List< BlockPos > > filterSignalsByFacingDirection( World world,
-                                                                                               List< BlockPos > signalBlockPoses,
-                                                                                               EnumFacing enumFacing )
+    public static Tuple< List< BlockPos >, List< BlockPos > > filterSignalsByFacingDirection( World world,
+                                                                                              List< BlockPos > signalBlockPoses,
+                                                                                              EnumFacing enumFacing )
     {
         // Create facing direction stream collector predicate
         Predicate< BlockPos > facingDirectionPredicate = signalPos -> {
@@ -631,6 +631,46 @@ public class TrafficSignalControllerTickerUtilities
         Map< Boolean, List< BlockPos > > filteredSignalLists = signalBlockPoses.stream()
                                                                                .collect( ( Collectors.partitioningBy(
                                                                                        facingDirectionPredicate ) ) );
+
+        // Return the filtered signal lists
+        return new Tuple<>( filteredSignalLists.get( true ), filteredSignalLists.get( false ) );
+    }
+
+    /**
+     * Utility method to filter signals in the specified {@link List<BlockPos>} by whether they should flash. This
+     * method will return a {@link Tuple} containing two {@link List<BlockPos>}, the first containing the signals that
+     * should flash, and the second containing the signals that should not flash.
+     *
+     * @param world            The world where the traffic signal controller and devices are located.
+     * @param signalBlockPoses The {@link List<BlockPos>} containing the signals to filter.
+     *
+     * @return A {@link Tuple} containing two {@link List<BlockPos>}, the first containing the signals that should
+     *         flash, and the second containing the signals that should not flash.
+     *
+     * @since 1.0
+     */
+    public static Tuple< List< BlockPos >, List< BlockPos > > filterSignalsByShouldFlash( World world,
+                                                                                          List< BlockPos > signalBlockPoses )
+    {
+        // Create flash enabled stream collector predicate
+        Predicate< BlockPos > flashEnabledPredicate = signalPos -> {
+            boolean shouldFlash = false;
+            if ( world != null ) {
+                IBlockState blockState = world.getBlockState( signalPos );
+                if ( blockState.getBlock() instanceof AbstractBlockControllableSignal ) {
+                    shouldFlash = ( ( AbstractBlockControllableSignal ) blockState.getBlock() ).doesFlash();
+                }
+            }
+            else {
+                shouldFlash = true;
+            }
+            return shouldFlash;
+        };
+
+        // Partition the signal list by the flash enabled predicate
+        Map< Boolean, List< BlockPos > > filteredSignalLists = signalBlockPoses.stream()
+                                                                               .collect( ( Collectors.partitioningBy(
+                                                                                       flashEnabledPredicate ) ) );
 
         // Return the filtered signal lists
         return new Tuple<>( filteredSignalLists.get( true ), filteredSignalLists.get( false ) );
