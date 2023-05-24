@@ -60,7 +60,7 @@ public class BlockControllableVerticalRightFlashYellowSRSignal extends ElementsC
 
         @Override
         public SIGNAL_SIDE getSignalSide( World world, BlockPos blockPos ) {
-            return SIGNAL_SIDE.RIGHT;
+            return SIGNAL_SIDE.FLASHING_RIGHT;
         }
 
         @Override
