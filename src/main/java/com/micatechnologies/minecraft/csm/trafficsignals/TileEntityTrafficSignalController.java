@@ -56,7 +56,7 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
      *
      * @since 2.0
      */
-    private TrafficSignalPhases cachedPhases = new TrafficSignalPhases( circuits );
+    private TrafficSignalPhases cachedPhases = new TrafficSignalPhases( getWorld(), circuits );
 
     /**
      * The time of the last phase change for the traffic signal controller.
@@ -998,7 +998,7 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
         lastPhaseChangeTime = -1;
         currentPhase = null;
         if ( regeneratePhaseCache ) {
-            cachedPhases = new TrafficSignalPhases( circuits );
+            cachedPhases = new TrafficSignalPhases( getWorld(), circuits );
         }
         if ( forceTick ) {
             onTick();

@@ -1,8 +1,12 @@
 package com.micatechnologies.minecraft.csm.trafficsignals.logic;
 
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.Tuple;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * A class implementation of an easily indexed and accessed array of {@link TrafficSignalPhase}s which can be easily
@@ -194,12 +198,13 @@ public class TrafficSignalPhases
      * Creates a new {@link TrafficSignalPhases} object with the applicable {@link TrafficSignalPhase}s from the given
      * {@link TrafficSignalControllerMode} and {@link TrafficSignalControllerCircuits}.
      *
+     * @param world                           The {@link World} that the traffic signal controller is in.
      * @param trafficSignalControllerCircuits The {@link TrafficSignalControllerCircuits} of the traffic signal
      *                                        controller.
      *
      * @since 1.0
      */
-    public TrafficSignalPhases( TrafficSignalControllerCircuits trafficSignalControllerCircuits )
+    public TrafficSignalPhases( World world, TrafficSignalControllerCircuits trafficSignalControllerCircuits )
     {
         // Create a new TrafficSignalPhase array
         phases = new TrafficSignalPhase[ PHASE_INDEX_COUNT ];
@@ -227,15 +232,57 @@ public class TrafficSignalPhases
         for ( TrafficSignalControllerCircuit circuit : trafficSignalControllerCircuits.getCircuits() ) {
             // First circuit should flash yellow, even circuits should be off, odd circuits should flash red
             if ( circuitIndex == 1 ) {
-                flashPhase1.addRedSignals( circuit.getFlashingLeftSignals() );
-                flashPhase1.addRedSignals( circuit.getFlashingRightSignals() );
-                flashPhase1.addRedSignals( circuit.getLeftSignals() );
-                flashPhase1.addRedSignals( circuit.getRightSignals() );
-                flashPhase1.addYellowSignals( circuit.getThroughSignals() );
-                flashPhase1.addYellowSignals( circuit.getProtectedSignals() );
+                // Check if circuit has protected signals
+                boolean hasProtectedSignals = circuit.getProtectedSignals().size() > 0;
+
+                // Get should flash filtered signal lists
+                Tuple< List< BlockPos >, List< BlockPos > > flashingLeftSignals
+                        = TrafficSignalControllerTickerUtilities.filterSignalsByShouldFlash( world,
+                                                                                             circuit.getFlashingLeftSignals() );
+                Tuple< List< BlockPos >, List< BlockPos > > flashingRightSignals
+                        = TrafficSignalControllerTickerUtilities.filterSignalsByShouldFlash( world,
+                                                                                             circuit.getFlashingRightSignals() );
+                Tuple< List< BlockPos >, List< BlockPos > > leftSignals
+                        = TrafficSignalControllerTickerUtilities.filterSignalsByShouldFlash( world,
+                                                                                             circuit.getLeftSignals() );
+                Tuple< List< BlockPos >, List< BlockPos > > rightSignals
+                        = TrafficSignalControllerTickerUtilities.filterSignalsByShouldFlash( world,
+                                                                                             circuit.getRightSignals() );
+                Tuple< List< BlockPos >, List< BlockPos > > throughSignals
+                        = TrafficSignalControllerTickerUtilities.filterSignalsByShouldFlash( world,
+                                                                                             circuit.getThroughSignals() );
+                Tuple< List< BlockPos >, List< BlockPos > > protectedSignals
+                        = TrafficSignalControllerTickerUtilities.filterSignalsByShouldFlash( world,
+                                                                                             circuit.getProtectedSignals() );
+                Tuple< List< BlockPos >, List< BlockPos > > pedestrianBeaconSignals
+                        = TrafficSignalControllerTickerUtilities.filterSignalsByShouldFlash( world,
+                                                                                             circuit.getPedestrianBeaconSignals() );
+                flashPhase1.addRedSignals( flashingLeftSignals.getFirst() );
+                flashPhase1.addOffSignals( flashingLeftSignals.getSecond() );
+                flashPhase1.addRedSignals( leftSignals.getFirst() );
+                flashPhase1.addOffSignals( leftSignals.getSecond() );
+                flashPhase1.addYellowSignals( throughSignals.getFirst() );
+                flashPhase1.addOffSignals( throughSignals.getSecond() );
+                flashPhase1.addYellowSignals( pedestrianBeaconSignals.getFirst() );
+                flashPhase1.addOffSignals( pedestrianBeaconSignals.getSecond() );
                 flashPhase1.addOffSignals( circuit.getPedestrianSignals() );
-                flashPhase1.addYellowSignals( circuit.getPedestrianBeaconSignals() );
                 flashPhase1.addOffSignals( circuit.getPedestrianAccessorySignals() );
+                if ( hasProtectedSignals ) {
+                    flashPhase1.addRedSignals( flashingRightSignals.getFirst() );
+                    flashPhase1.addOffSignals( flashingRightSignals.getSecond() );
+                    flashPhase1.addRedSignals( rightSignals.getFirst() );
+                    flashPhase1.addOffSignals( rightSignals.getSecond() );
+                    flashPhase1.addYellowSignals( protectedSignals.getFirst() );
+                    flashPhase1.addOffSignals( protectedSignals.getSecond() );
+                }
+                else {
+                    flashPhase1.addYellowSignals( flashingRightSignals.getFirst() );
+                    flashPhase1.addOffSignals( flashingRightSignals.getSecond() );
+                    flashPhase1.addYellowSignals( rightSignals.getFirst() );
+                    flashPhase1.addOffSignals( rightSignals.getSecond() );
+                    flashPhase1.addRedSignals( protectedSignals.getFirst() );
+                    flashPhase1.addOffSignals( protectedSignals.getSecond() );
+                }
             }
             else if ( circuitIndex % 2 == 0 ) {
                 flashPhase1.addOffSignals( circuit.getFlashingLeftSignals() );
@@ -249,14 +296,43 @@ public class TrafficSignalPhases
                 flashPhase1.addOffSignals( circuit.getPedestrianAccessorySignals() );
             }
             else {
-                flashPhase1.addRedSignals( circuit.getFlashingLeftSignals() );
-                flashPhase1.addRedSignals( circuit.getFlashingRightSignals() );
-                flashPhase1.addRedSignals( circuit.getLeftSignals() );
-                flashPhase1.addRedSignals( circuit.getRightSignals() );
-                flashPhase1.addRedSignals( circuit.getThroughSignals() );
-                flashPhase1.addRedSignals( circuit.getProtectedSignals() );
+                // Get should flash filtered signal lists
+                Tuple< List< BlockPos >, List< BlockPos > > flashingLeftSignals
+                        = TrafficSignalControllerTickerUtilities.filterSignalsByShouldFlash( world,
+                                                                                             circuit.getFlashingLeftSignals() );
+                Tuple< List< BlockPos >, List< BlockPos > > flashingRightSignals
+                        = TrafficSignalControllerTickerUtilities.filterSignalsByShouldFlash( world,
+                                                                                             circuit.getFlashingRightSignals() );
+                Tuple< List< BlockPos >, List< BlockPos > > leftSignals
+                        = TrafficSignalControllerTickerUtilities.filterSignalsByShouldFlash( world,
+                                                                                             circuit.getLeftSignals() );
+                Tuple< List< BlockPos >, List< BlockPos > > rightSignals
+                        = TrafficSignalControllerTickerUtilities.filterSignalsByShouldFlash( world,
+                                                                                             circuit.getRightSignals() );
+                Tuple< List< BlockPos >, List< BlockPos > > throughSignals
+                        = TrafficSignalControllerTickerUtilities.filterSignalsByShouldFlash( world,
+                                                                                             circuit.getThroughSignals() );
+                Tuple< List< BlockPos >, List< BlockPos > > protectedSignals
+                        = TrafficSignalControllerTickerUtilities.filterSignalsByShouldFlash( world,
+                                                                                             circuit.getProtectedSignals() );
+                Tuple< List< BlockPos >, List< BlockPos > > pedestrianBeaconSignals
+                        = TrafficSignalControllerTickerUtilities.filterSignalsByShouldFlash( world,
+                                                                                             circuit.getPedestrianBeaconSignals() );
+                flashPhase1.addRedSignals( flashingLeftSignals.getFirst() );
+                flashPhase1.addOffSignals( flashingLeftSignals.getSecond() );
+                flashPhase1.addRedSignals( flashingRightSignals.getFirst() );
+                flashPhase1.addOffSignals( flashingRightSignals.getSecond() );
+                flashPhase1.addRedSignals( leftSignals.getFirst() );
+                flashPhase1.addOffSignals( leftSignals.getSecond() );
+                flashPhase1.addRedSignals( rightSignals.getFirst() );
+                flashPhase1.addOffSignals( rightSignals.getSecond() );
+                flashPhase1.addRedSignals( throughSignals.getFirst() );
+                flashPhase1.addOffSignals( throughSignals.getSecond() );
+                flashPhase1.addRedSignals( protectedSignals.getFirst() );
+                flashPhase1.addOffSignals( protectedSignals.getSecond() );
+                flashPhase1.addRedSignals( pedestrianBeaconSignals.getFirst() );
+                flashPhase1.addOffSignals( pedestrianBeaconSignals.getSecond() );
                 flashPhase1.addOffSignals( circuit.getPedestrianSignals() );
-                flashPhase1.addRedSignals( circuit.getPedestrianBeaconSignals() );
                 flashPhase1.addOffSignals( circuit.getPedestrianAccessorySignals() );
             }
             circuitIndex++;
@@ -270,13 +346,42 @@ public class TrafficSignalPhases
         for ( TrafficSignalControllerCircuit circuit : trafficSignalControllerCircuits.getCircuits() ) {
             // Odd circuits should be off, even circuits should flash red
             if ( circuitIndex % 2 == 0 ) {
-                flashPhase2.addRedSignals( circuit.getFlashingLeftSignals() );
-                flashPhase2.addRedSignals( circuit.getFlashingRightSignals() );
-                flashPhase2.addRedSignals( circuit.getLeftSignals() );
-                flashPhase2.addRedSignals( circuit.getRightSignals() );
-                flashPhase2.addRedSignals( circuit.getThroughSignals() );
-                flashPhase2.addRedSignals( circuit.getProtectedSignals() );
-                flashPhase2.addRedSignals( circuit.getPedestrianBeaconSignals() );
+                // Get should flash filtered signal lists
+                Tuple< List< BlockPos >, List< BlockPos > > flashingLeftSignals
+                        = TrafficSignalControllerTickerUtilities.filterSignalsByShouldFlash( world,
+                                                                                             circuit.getFlashingLeftSignals() );
+                Tuple< List< BlockPos >, List< BlockPos > > flashingRightSignals
+                        = TrafficSignalControllerTickerUtilities.filterSignalsByShouldFlash( world,
+                                                                                             circuit.getFlashingRightSignals() );
+                Tuple< List< BlockPos >, List< BlockPos > > leftSignals
+                        = TrafficSignalControllerTickerUtilities.filterSignalsByShouldFlash( world,
+                                                                                             circuit.getLeftSignals() );
+                Tuple< List< BlockPos >, List< BlockPos > > rightSignals
+                        = TrafficSignalControllerTickerUtilities.filterSignalsByShouldFlash( world,
+                                                                                             circuit.getRightSignals() );
+                Tuple< List< BlockPos >, List< BlockPos > > throughSignals
+                        = TrafficSignalControllerTickerUtilities.filterSignalsByShouldFlash( world,
+                                                                                             circuit.getThroughSignals() );
+                Tuple< List< BlockPos >, List< BlockPos > > protectedSignals
+                        = TrafficSignalControllerTickerUtilities.filterSignalsByShouldFlash( world,
+                                                                                             circuit.getProtectedSignals() );
+                Tuple< List< BlockPos >, List< BlockPos > > pedestrianBeaconSignals
+                        = TrafficSignalControllerTickerUtilities.filterSignalsByShouldFlash( world,
+                                                                                             circuit.getPedestrianBeaconSignals() );
+                flashPhase2.addRedSignals( flashingLeftSignals.getFirst() );
+                flashPhase2.addOffSignals( flashingLeftSignals.getSecond() );
+                flashPhase2.addRedSignals( flashingRightSignals.getFirst() );
+                flashPhase2.addOffSignals( flashingRightSignals.getSecond() );
+                flashPhase2.addRedSignals( leftSignals.getFirst() );
+                flashPhase2.addOffSignals( leftSignals.getSecond() );
+                flashPhase2.addRedSignals( rightSignals.getFirst() );
+                flashPhase2.addOffSignals( rightSignals.getSecond() );
+                flashPhase2.addRedSignals( throughSignals.getFirst() );
+                flashPhase2.addOffSignals( throughSignals.getSecond() );
+                flashPhase2.addRedSignals( protectedSignals.getFirst() );
+                flashPhase2.addOffSignals( protectedSignals.getSecond() );
+                flashPhase2.addRedSignals( pedestrianBeaconSignals.getFirst() );
+                flashPhase2.addOffSignals( pedestrianBeaconSignals.getSecond() );
                 flashPhase2.addOffSignals( circuit.getPedestrianSignals() );
                 flashPhase2.addOffSignals( circuit.getPedestrianAccessorySignals() );
             }
