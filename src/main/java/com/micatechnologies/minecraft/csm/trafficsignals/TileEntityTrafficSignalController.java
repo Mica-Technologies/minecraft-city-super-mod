@@ -360,7 +360,7 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
      */
     @Override
     public boolean pauseTicking() {
-        boolean shouldPause = !getWorld().isBlockPowered( getPos() );
+        boolean shouldPause = !getWorld().isBlockPowered( getPos() ) && !powerLossFallbackToFlashMode;
 
         // Mark dirty if the paused state has changed
         if ( shouldPause != paused ) {
