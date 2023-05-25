@@ -92,6 +92,7 @@ public class ItemEWSignalLinker extends ElementsCitySuperMod.ModElement
             if ( !worldIn.isRemote ) {
                 IBlockState state = worldIn.getBlockState( pos );
                 if ( state.getBlock() instanceof AbstractBlockTrafficSignalSensor ) {
+                    modeMap.put( player.getUniqueID(), 1 );
                     sensorPosMap.put( player.getUniqueID(), pos );
                     corner1PosMap.remove( player.getUniqueID() );
                     player.sendMessage( new TextComponentString( "Selected sensor at position: [" +
