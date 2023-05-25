@@ -25,6 +25,7 @@ public class TrafficSignalControllerTicker
      * @param configuredMode                        The configured mode of the traffic signal controller.
      * @param operatingMode                         The operating mode of the traffic signal controller.
      * @param circuits                              The configured/connected circuits of the traffic signal controller.
+     * @param overlaps                              The configured overlaps of the traffic signal controller.
      * @param cachedPhases                          The programmed phases of the traffic signal controller.
      * @param originalPhase                         The original (current) phase of the traffic signal controller.
      * @param timeSinceLastPhaseApplicabilityChange The time since the traffic signal controller last changed phase
@@ -64,6 +65,7 @@ public class TrafficSignalControllerTicker
                                            TrafficSignalControllerMode configuredMode,
                                            TrafficSignalControllerMode operatingMode,
                                            TrafficSignalControllerCircuits circuits,
+                                           TrafficSignalControllerOverlaps overlaps,
                                            TrafficSignalPhases cachedPhases,
                                            TrafficSignalPhase originalPhase,
                                            long timeSinceLastPhaseApplicabilityChange,
@@ -97,7 +99,7 @@ public class TrafficSignalControllerTicker
             case RAMP_METER_PART_TIME:
                 return rampMeterPartTimeModeTick( world, circuits, cachedPhases, originalPhase );
             case NORMAL:
-                return normalModeTick( world, circuits, cachedPhases, originalPhase, timeSinceLastPhaseChange,
+                return normalModeTick( world, circuits, overlaps, cachedPhases, originalPhase, timeSinceLastPhaseChange,
                                        overlapPedestrianSignals, yellowTime, flashDontWalkTime, allRedTime,
                                        minGreenTime, maxGreenTime, minGreenTimeSecondary, maxGreenTimeSecondary,
                                        dedicatedPedSignalTime );
@@ -151,6 +153,7 @@ public class TrafficSignalControllerTicker
      *
      * @param world                    The world in which the traffic signal controller is located.
      * @param circuits                 The configured/connected circuits of the traffic signal controller.
+     * @param overlaps                 The configured overlaps of the traffic signal controller.
      * @param cachedPhases             The programmed phases of the traffic signal controller.
      * @param originalPhase            The original (current) phase of the traffic signal controller.
      * @param timeSinceLastPhaseChange The time since the traffic signal controller last changed phases.
@@ -176,6 +179,7 @@ public class TrafficSignalControllerTicker
      */
     public static TrafficSignalPhase normalModeTick( World world,
                                                      TrafficSignalControllerCircuits circuits,
+                                                     TrafficSignalControllerOverlaps overlaps,
                                                      TrafficSignalPhases cachedPhases,
                                                      TrafficSignalPhase originalPhase,
                                                      long timeSinceLastPhaseChange,
@@ -200,7 +204,7 @@ public class TrafficSignalControllerTicker
         else if ( originalPhase.getApplicability() == TrafficSignalPhaseApplicability.ALL_RED &&
                 timeSinceLastPhaseChange >= allRedTime ) {
             // Change to initial green phase (on circuit 1)
-            nextPhase = TrafficSignalControllerTickerUtilities.getDefaultPhaseForCircuitNumber( circuits, 1,
+            nextPhase = TrafficSignalControllerTickerUtilities.getDefaultPhaseForCircuitNumber( circuits, overlaps, 1,
                                                                                                 overlapPedestrianSignals );
         }
         // If original phase is flashing don't walk transitioning to yellow, and flashing don't walk time is up,
@@ -271,6 +275,7 @@ public class TrafficSignalControllerTicker
                                         upcomingPhasePriorityIndicator.getSecond() ) ) {
                     upcomingPhase = TrafficSignalControllerTickerUtilities.getUpcomingPhaseForPriorityIndicator( world,
                                                                                                                  circuits,
+                                                                                                                 overlaps,
                                                                                                                  upcomingPhasePriorityIndicator,
                                                                                                                  overlapPedestrianSignals );
                 }
@@ -285,6 +290,7 @@ public class TrafficSignalControllerTicker
 
                     // Get next circuit default phase to set as upcoming phase
                     upcomingPhase = TrafficSignalControllerTickerUtilities.getDefaultPhaseForCircuitNumber( circuits,
+                                                                                                            overlaps,
                                                                                                             nextCircuitNumber,
                                                                                                             overlapPedestrianSignals );
                 }

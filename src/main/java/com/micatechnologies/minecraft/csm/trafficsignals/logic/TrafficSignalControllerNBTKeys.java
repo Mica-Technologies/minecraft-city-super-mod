@@ -45,6 +45,13 @@ public class TrafficSignalControllerNBTKeys
     public static final String CIRCUITS = "tcCircuits";
 
     /**
+     * The key for storing and retrieving the traffic signal controller's overlaps from NBT data.
+     *
+     * @since 2.0
+     */
+    public static final String OVERLAPS = "tcOverlaps";
+
+    /**
      * The key for storing and retrieving the traffic signal controller's cached phases from NBT data.
      *
      * @since 2.0
