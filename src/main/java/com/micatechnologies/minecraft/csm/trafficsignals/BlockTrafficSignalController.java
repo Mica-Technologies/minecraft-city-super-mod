@@ -31,7 +31,6 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
-import java.util.Random;
 
 @ElementsCitySuperMod.ModElement.Tag
 public class BlockTrafficSignalController extends ElementsCitySuperMod.ModElement
@@ -153,7 +152,7 @@ public class BlockTrafficSignalController extends ElementsCitySuperMod.ModElemen
                             p_onBlockActivated_4_.inventory.getCurrentItem()
                                                            .getItem() instanceof ItemNSSignalLinker.ItemCustom ||
                             p_onBlockActivated_4_.inventory.getCurrentItem()
-                                                           .getItem() instanceof ItemSignalChanger.ItemCustom ) ) {
+                                                           .getItem() instanceof ItemSignalConfigurationTool.ItemCustom ) ) {
                 return super.onBlockActivated( p_onBlockActivated_1_, p_onBlockActivated_2_, p_onBlockActivated_3_,
                                                p_onBlockActivated_4_, p_onBlockActivated_5_, p_onBlockActivated_6_,
                                                p_onBlockActivated_7_, p_onBlockActivated_8_, p_onBlockActivated_9_ );

@@ -639,6 +639,43 @@ public class TrafficSignalPhase
     }
 
     /**
+     * Moves the given {@link BlockPos} of an overlap signal to the 'green' state. If the given {@link BlockPos} was in
+     * any other state, it will be removed from that state and added to the 'green' state.
+     *
+     * @param pos The {@link BlockPos} of the overlap signal to move to the 'green' state.
+     *
+     * @return true if the given {@link BlockPos} was moved from another state to the 'green' state; false otherwise.
+     */
+    public boolean moveOverlapSignalToGreen( BlockPos pos ) {
+        boolean moved = false;
+        if ( !greenSignals.contains( pos ) ) {
+            if ( redSignals.remove( pos ) ) {
+                moved = greenSignals.add( pos );
+            }
+            else if ( yellowSignals.remove( pos ) ) {
+                moved = greenSignals.add( pos );
+            }
+            else if ( fyaSignals.remove( pos ) ) {
+                moved = greenSignals.add( pos );
+            }
+            else if ( walkSignals.remove( pos ) ) {
+                moved = greenSignals.add( pos );
+            }
+            else if ( flashDontWalkSignals.remove( pos ) ) {
+                moved = greenSignals.add( pos );
+            }
+            else if ( dontWalkSignals.remove( pos ) ) {
+                moved = greenSignals.add( pos );
+            }
+            else if ( offSignals.remove( pos ) ) {
+                moved = greenSignals.add( pos );
+            }
+        }
+
+        return moved;
+    }
+
+    /**
      * Applies the {@link TrafficSignalPhase} to the given {@link World}.
      *
      * @param world The {@link World} to apply the {@link TrafficSignalPhase} to.

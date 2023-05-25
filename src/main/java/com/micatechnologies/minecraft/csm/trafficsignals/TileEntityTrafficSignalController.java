@@ -52,6 +52,13 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
     private TrafficSignalControllerCircuits circuits = new TrafficSignalControllerCircuits();
 
     /**
+     * The overlaps for the traffic signal controller.
+     *
+     * @since 2.0
+     */
+    private TrafficSignalControllerOverlaps overlaps = new TrafficSignalControllerOverlaps();
+
+    /**
      * The list of cached phases for the traffic signal controller.
      *
      * @since 2.0
@@ -268,7 +275,7 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
             long timeSinceLastPhaseChange = tickTime - lastPhaseChangeTime;
             long timeSinceLastPhaseApplicabilityChange = tickTime - lastPhaseApplicabilityChangeTime;
             TrafficSignalPhase newPhase = TrafficSignalControllerTicker.tick( getWorld(), mode, operatingMode, circuits,
-                                                                              cachedPhases, currentPhase,
+                                                                              overlaps, cachedPhases, currentPhase,
                                                                               timeSinceLastPhaseApplicabilityChange,
                                                                               timeSinceLastPhaseChange,
                                                                               alternatingFlash,
@@ -396,6 +403,9 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
         // Write the circuits to NBT
         compound.setTag( TrafficSignalControllerNBTKeys.CIRCUITS, circuits.toNBT() );
 
+        // Write the overlaps to NBT
+        compound.setTag( TrafficSignalControllerNBTKeys.OVERLAPS, overlaps.toNBT() );
+
         // Write the paused state to NBT
         compound.setBoolean( TrafficSignalControllerNBTKeys.PAUSED, paused );
 
@@ -502,6 +512,12 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
         if ( compound.hasKey( TrafficSignalControllerNBTKeys.CIRCUITS ) ) {
             circuits = TrafficSignalControllerCircuits.fromNBT(
                     compound.getCompoundTag( TrafficSignalControllerNBTKeys.CIRCUITS ) );
+        }
+
+        // Load the traffic signal controller overlaps
+        if ( compound.hasKey( TrafficSignalControllerNBTKeys.OVERLAPS ) ) {
+            overlaps = TrafficSignalControllerOverlaps.fromNBT(
+                    compound.getCompoundTag( TrafficSignalControllerNBTKeys.OVERLAPS ) );
         }
 
         // Load the traffic signal controller paused state
@@ -1078,6 +1094,27 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
     }
 
     /**
+     * Creates an overlap from the specified source {@link BlockPos} to the specified target {@link BlockPos}.
+     *
+     * @param overlapSource the {@link BlockPos} of the source device
+     * @param overlapTarget the {@link BlockPos} of the target device
+     *
+     * @return true if the overlap was successfully created, false otherwise
+     *
+     * @since 2.0
+     */
+    public boolean createOverlap( BlockPos overlapSource, BlockPos overlapTarget )
+    {
+        // Create overlap
+        boolean created = overlaps.addOverlap( overlapSource, overlapTarget );
+
+        if ( created ) {
+            resetController( true, true );
+        }
+        return created;
+    }
+
+    /**
      * Unlinks the device at the specified {@link BlockPos}.
      *
      * @param pos the {@link BlockPos} of the device to unlink
@@ -1089,6 +1126,11 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
     public boolean unlinkDevice( BlockPos pos ) {
         // Return true if device it was unlinked
         boolean unlinked = circuits.unlinkDevice( pos );
+
+        // Remove overlaps if they exist
+        if ( unlinked ) {
+            overlaps.removeOverlaps( pos );
+        }
 
         if ( unlinked ) {
             resetController( true, true );

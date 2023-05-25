@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.trafficsignals.logic;
 
+import com.google.common.collect.Lists;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.EnumFacing;
@@ -193,6 +194,8 @@ public class TrafficSignalControllerTickerUtilities
      * {@link TrafficSignalControllerMode#NORMAL} mode.
      *
      * @param circuits                 The configured/connected circuits of the traffic signal controller.
+     * @param overlaps                 The {@link TrafficSignalControllerOverlaps} to apply to the specified
+     *                                 {@link TrafficSignalPhase}.
      * @param circuitNumber            The circuit number to get the default phase for. This is a 1-based index.
      * @param overlapPedestrianSignals The overlap pedestrian signals setting of the traffic signal controller. This
      *                                 boolean value is used to determine if the pedestrian signals of all other
@@ -204,6 +207,7 @@ public class TrafficSignalControllerTickerUtilities
      * @since 1.0
      */
     public static TrafficSignalPhase getDefaultPhaseForCircuitNumber( TrafficSignalControllerCircuits circuits,
+                                                                      TrafficSignalControllerOverlaps overlaps,
                                                                       int circuitNumber,
                                                                       boolean overlapPedestrianSignals )
     {
@@ -246,6 +250,10 @@ public class TrafficSignalControllerTickerUtilities
                 }
             }
         }
+
+        // Add overlaps if necessary
+        defaultPhase = TrafficSignalControllerTickerUtilities.getPhaseWithOverlapsApplied( defaultPhase, overlaps );
+
         return defaultPhase;
     }
 
@@ -423,10 +431,50 @@ public class TrafficSignalControllerTickerUtilities
     }
 
     /**
+     * Gets the specified {@link TrafficSignalPhase} with all applicable overlaps applied.
+     *
+     * @param phase    The {@link TrafficSignalPhase} to apply overlaps to.
+     * @param overlaps The {@link TrafficSignalControllerOverlaps} to apply to the specified
+     *                 {@link TrafficSignalPhase}.
+     *
+     * @return The specified {@link TrafficSignalPhase} with all applicable overlaps applied.
+     *
+     * @since 1.0
+     */
+    public static TrafficSignalPhase getPhaseWithOverlapsApplied( TrafficSignalPhase phase,
+                                                                  TrafficSignalControllerOverlaps overlaps )
+    {
+        // Check if overlaps are configured
+        if ( overlaps == null || overlaps.getOverlapCount() == 0 ) {
+            return phase;
+        }
+
+        // Loop through each green signal in the phase
+        List< BlockPos > greenSignals = Lists.newArrayList( phase.getGreenSignals() );
+        for ( BlockPos greenSignal : greenSignals ) {
+
+            // Get the overlap signals for the green signal
+            List< BlockPos > overlapSignals = overlaps.getOverlapsForSource( greenSignal );
+
+            // Check if overlap signals were found
+            if ( overlapSignals != null ) {
+
+                // Loop through each overlap signal
+                overlapSignals.forEach( phase::moveOverlapSignalToGreen );
+            }
+        }
+
+        // Return the updated phase
+        return phase;
+    }
+
+    /**
      * Gets the upcoming {@link TrafficSignalPhase} to service based on the specified priority indicator.
      *
-     * @param world                    The world where the traffic signal controller and devices are  located.
+     * @param world                    The world where the traffic signal controller and devices are located.
      * @param circuits                 The configured/connected circuits of the traffic signal controller.
+     * @param overlaps                 The {@link TrafficSignalControllerOverlaps} to apply to the specified
+     *                                 {@link TrafficSignalPhase}.
      * @param priorityIndicator        The priority indicator of the upcoming phase to service.
      * @param overlapPedestrianSignals The overlap pedestrian signals setting of the traffic signal controller. This
      *                                 boolean value is used to determine if the pedestrian signals of all other
@@ -438,6 +486,7 @@ public class TrafficSignalControllerTickerUtilities
      */
     public static TrafficSignalPhase getUpcomingPhaseForPriorityIndicator( World world,
                                                                            TrafficSignalControllerCircuits circuits,
+                                                                           TrafficSignalControllerOverlaps overlaps,
                                                                            Tuple< Integer, TrafficSignalPhaseApplicability > priorityIndicator,
                                                                            boolean overlapPedestrianSignals )
     {
@@ -595,6 +644,9 @@ public class TrafficSignalControllerTickerUtilities
             }
 
         }
+
+        // Add overlaps if necessary
+        upcomingPhase = TrafficSignalControllerTickerUtilities.getPhaseWithOverlapsApplied( upcomingPhase, overlaps );
 
         // Return the upcoming phase
         return upcomingPhase;
