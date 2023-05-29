@@ -2,6 +2,7 @@
 package com.micatechnologies.minecraft.csm.technology;
 
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
+import com.micatechnologies.minecraft.csm.tabs.CsmTabTechnology;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.common.registry.GameRegistry;
@@ -58,7 +59,7 @@ public class BlockVf915 extends ElementsCitySuperMod.ModElement {
 			setResistance(10F);
 			setLightLevel(0.6F);
 			setLightOpacity(0);
-			setCreativeTab( TabTechnology.tab);
+			setCreativeTab( CsmTabTechnology.get());
 			this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH));
 		}
 

@@ -36,6 +36,7 @@ import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 import java.util.Random;
+import com.micatechnologies.minecraft.csm.tabs.CsmTabLifeSafety;
 
 @ElementsCitySuperMod.ModElement.Tag
 public class BlockFireAlarmControlPanel extends ElementsCitySuperMod.ModElement
@@ -81,7 +82,7 @@ public class BlockFireAlarmControlPanel extends ElementsCitySuperMod.ModElement
             setResistance( 10F );
             setLightLevel( 0F );
             setLightOpacity( 0 );
-            setCreativeTab( TabFireAlarms.tab );
+            setCreativeTab( CsmTabLifeSafety.get() );
         }
 
         public static EnumFacing getFacingFromEntity( BlockPos clickedBlock, EntityLivingBase entity ) {

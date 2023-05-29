@@ -22,6 +22,7 @@ import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import com.micatechnologies.minecraft.csm.tabs.CsmTabHvac;
 
 @ElementsCitySuperMod.ModElement.Tag
 public class BlockSV3 extends ElementsCitySuperMod.ModElement
@@ -59,7 +60,7 @@ public class BlockSV3 extends ElementsCitySuperMod.ModElement
             setResistance( 10F );
             setLightLevel( 0F );
             setLightOpacity( 255 );
-            setCreativeTab( TabHVAC.tab );
+            setCreativeTab( CsmTabHvac.get() );
             this.setDefaultState( this.blockState.getBaseState().withProperty( FACING, EnumFacing.NORTH ) );
         }
 

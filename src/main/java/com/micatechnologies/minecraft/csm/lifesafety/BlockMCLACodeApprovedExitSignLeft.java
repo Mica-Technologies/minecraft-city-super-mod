@@ -28,7 +28,7 @@ import net.minecraft.block.SoundType;
 import net.minecraft.block.BlockDirectional;
 import net.minecraft.block.Block;
 
-import com.micatechnologies.minecraft.csm.lifesafety.TabFireAlarms;
+import com.micatechnologies.minecraft.csm.tabs.CsmTabLifeSafety;
 
 @ElementsCitySuperMod.ModElement.Tag
 public class BlockMCLACodeApprovedExitSignLeft extends ElementsCitySuperMod.ModElement {
@@ -60,7 +60,7 @@ public class BlockMCLACodeApprovedExitSignLeft extends ElementsCitySuperMod.ModE
 			setResistance(10F);
 			setLightLevel(0.85F);
 			setLightOpacity(0);
-			setCreativeTab(TabFireAlarms.tab);
+			setCreativeTab(CsmTabLifeSafety.get());
 			this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH));
 		}
 

@@ -2,6 +2,7 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories;
 
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
+import com.micatechnologies.minecraft.csm.tabs.CsmTabTrafficAccessories;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDirectional;
 import net.minecraft.block.SoundType;
@@ -59,7 +60,7 @@ public class BlockTLDoghouseBorderYellowBlack extends ElementsCitySuperMod.ModEl
 			setResistance(10F);
 			setLightLevel(0F);
 			setLightOpacity(0);
-			setCreativeTab( TabTrafficAccessories.tab);
+			setCreativeTab( CsmTabTrafficAccessories.get());
 			this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH));
 		}
 

@@ -1,7 +1,7 @@
 package com.micatechnologies.minecraft.csm.powergrid.fe;
 
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
-import com.micatechnologies.minecraft.csm.powergrid.TabPowerGrid;
+import com.micatechnologies.minecraft.csm.tabs.CsmTabPowerGrid;
 import com.micatechnologies.minecraft.csm.trafficsignals.ItemEWSignalLinker;
 import com.micatechnologies.minecraft.csm.trafficsignals.ItemNSSignalLinker;
 import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalController;
@@ -76,7 +76,7 @@ public class BlockForgeEnergyProducer extends ElementsCitySuperMod.ModElement
             setResistance( 10F );
             setLightLevel( 0F );
             setLightOpacity( 0 );
-            setCreativeTab( TabPowerGrid.tab );
+            setCreativeTab( CsmTabPowerGrid.get() );
         }
 
         @Override

@@ -17,6 +17,7 @@
  */
 package com.micatechnologies.minecraft.csm;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.potion.Potion;
@@ -62,6 +63,13 @@ public class CitySuperMod
         MinecraftForge.EVENT_BUS.register( this );
         GameRegistry.registerWorldGenerator( elements, 5 );
         GameRegistry.registerFuelHandler( elements );
+        try {
+            CsmTab.initTabs( event );
+        }
+        catch ( Exception e ) {
+            System.err.println( "Failed to initialize tabs!" );
+            e.printStackTrace();
+        }
         elements.preInit( event );
         MinecraftForge.EVENT_BUS.register( elements );
         elements.getElements().forEach( element -> element.preInit( event ) );

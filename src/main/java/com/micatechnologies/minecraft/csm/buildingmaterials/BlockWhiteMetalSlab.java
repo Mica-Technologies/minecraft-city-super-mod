@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.buildingmaterials;
 
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
+import com.micatechnologies.minecraft.csm.tabs.CsmTabBuildingMaterials;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockSlab;
 import net.minecraft.block.SoundType;
@@ -68,7 +69,7 @@ public class BlockWhiteMetalSlab extends ElementsCitySuperMod.ModElement
             setResistance( 10F );
             setLightLevel( 0F );
             setLightOpacity( 0 );
-            setCreativeTab( TabBuildingMaterials.tab );
+            setCreativeTab( CsmTabBuildingMaterials.get() );
             IBlockState state = this.blockState.getBaseState().withProperty( VARIANT, BlockCustom.Variant.DEFAULT );
             if ( !this.isDouble() ) {
                 state = state.withProperty( BlockSlab.HALF, EnumBlockHalf.BOTTOM );

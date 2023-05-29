@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
+import com.micatechnologies.minecraft.csm.tabs.CsmTabTrafficSignals;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableCrosswalkAccessory;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignal;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockTrafficSignalSensor;
@@ -62,7 +63,7 @@ public class ItemNSSignalLinker extends ElementsCitySuperMod.ModElement
             maxStackSize = 1;
             setUnlocalizedName( "nssignallinker" );
             setRegistryName( "nssignallinker" );
-            setCreativeTab( TabTrafficSignals.tab );
+            setCreativeTab( CsmTabTrafficSignals.get() );
         }
 
         @Override

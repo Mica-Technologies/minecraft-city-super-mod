@@ -36,6 +36,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.Random;
+import com.micatechnologies.minecraft.csm.tabs.CsmTabLifeSafety;
 
 @ElementsCitySuperMod.ModElement.Tag
 public class BlockFireAlarmNestProtectGen2 extends ElementsCitySuperMod.ModElement
@@ -75,7 +76,7 @@ public class BlockFireAlarmNestProtectGen2 extends ElementsCitySuperMod.ModEleme
             setResistance( 10F );
             setLightLevel( 0.1F );
             setLightOpacity( 0 );
-            setCreativeTab( TabFireAlarms.tab );
+            setCreativeTab( CsmTabLifeSafety.get() );
             this.setDefaultState( this.blockState.getBaseState().withProperty( FACING, EnumFacing.NORTH ) );
         }
 

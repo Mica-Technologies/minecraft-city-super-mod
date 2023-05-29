@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.technology;
 
 import com.micatechnologies.minecraft.csm.CitySuperMod;
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
+import com.micatechnologies.minecraft.csm.tabs.CsmTabTechnology;
 import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalController;
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
@@ -70,7 +71,7 @@ public class BlockRedstoneTTS extends ElementsCitySuperMod.ModElement
             setResistance( 10F );
             setLightLevel( 0F );
             setLightOpacity( 255 );
-            setCreativeTab( TabTechnology.tab );
+            setCreativeTab( CsmTabTechnology.get() );
         }
 
         @Override
