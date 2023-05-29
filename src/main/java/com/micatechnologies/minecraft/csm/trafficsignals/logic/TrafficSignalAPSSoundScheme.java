@@ -1,6 +1,6 @@
 package com.micatechnologies.minecraft.csm.trafficsignals.logic;
 
-import com.micatechnologies.minecraft.csm.Sounds;
+import com.micatechnologies.minecraft.csm.CsmSounds;
 
 /**
  * The {@link TrafficSignalAPSSoundScheme} enum defines the various sound schemes which can be used by traffic signal
@@ -19,62 +19,62 @@ public enum TrafficSignalAPSSoundScheme
      *
      * @since 1.0
      */
-    MALE_CAMPBELL( "Campbell/PedSafety (Male)", Sounds.SOUND.MALE_BEEP, Sounds.SOUND.MALE_WAIT, 30,
-                   Sounds.SOUND.MALE_WAIT, 15, Sounds.SOUND.MALE_CROSSWALK_ON, 140 ),
+    MALE_CAMPBELL( "Campbell/PedSafety (Male)", CsmSounds.SOUND.MALE_BEEP, CsmSounds.SOUND.MALE_WAIT, 30,
+                   CsmSounds.SOUND.MALE_WAIT, 15, CsmSounds.SOUND.MALE_CROSSWALK_ON, 140 ),
     /**
      * Enum value for the Campbell/PedSafety (Female) sound scheme.
      *
      * @since 1.0
      */
-    FEMALE_CAMPBELL( "Campbell/PedSafety (Female)", Sounds.SOUND.FEMALE_BEEP, Sounds.SOUND.FEMALE_WAIT, 30,
-                     Sounds.SOUND.FEMALE_WAIT, 15, Sounds.SOUND.MALE_CROSSWALK_ON, 140 ),
+    FEMALE_CAMPBELL( "Campbell/PedSafety (Female)", CsmSounds.SOUND.FEMALE_BEEP, CsmSounds.SOUND.FEMALE_WAIT, 30,
+                     CsmSounds.SOUND.FEMALE_WAIT, 15, CsmSounds.SOUND.MALE_CROSSWALK_ON, 140 ),
     /**
      * Enum value for the Campbell/PedSafety (Automated/Male) sound scheme.
      *
      * @since 1.0
      */
-    MALE_CAMPBELL_AUTOMATED( "Campbell/PedSafety (Automated/Male)", Sounds.SOUND.MALE_BEEP, Sounds.SOUND.MALE_WAIT, 30,
-                             Sounds.SOUND.FEMALE_AUTOMATED, 80, Sounds.SOUND.MALE_CROSSWALK_ON, 140 ),
+    MALE_CAMPBELL_AUTOMATED( "Campbell/PedSafety (Automated/Male)", CsmSounds.SOUND.MALE_BEEP, CsmSounds.SOUND.MALE_WAIT, 30,
+                             CsmSounds.SOUND.FEMALE_AUTOMATED, 80, CsmSounds.SOUND.MALE_CROSSWALK_ON, 140 ),
     /**
      * Enum value for the Campbell/PedSafety (Automated/Female) sound scheme.
      *
      * @since 1.0
      */
-    FEMALE_CAMPBELL_AUTOMATED( "Campbell/PedSafety (Automated/Female)", Sounds.SOUND.FEMALE_BEEP,
-                               Sounds.SOUND.FEMALE_WAIT, 30, Sounds.SOUND.FEMALE_AUTOMATED, 80,
-                               Sounds.SOUND.MALE_CROSSWALK_ON, 140 ),
+    FEMALE_CAMPBELL_AUTOMATED( "Campbell/PedSafety (Automated/Female)", CsmSounds.SOUND.FEMALE_BEEP,
+                               CsmSounds.SOUND.FEMALE_WAIT, 30, CsmSounds.SOUND.FEMALE_AUTOMATED, 80,
+                               CsmSounds.SOUND.MALE_CROSSWALK_ON, 140 ),
     /**
      * Enum value for the Campbell/PedSafety (Male with Audible Tick) sound scheme.
      *
      * @since 1.0
      */
-    MALE_CAMPBELL_WITH_TICK( "Campbell/PedSafety (Male with Audible Tick)", Sounds.SOUND.MALE_BEEP,
-                             Sounds.SOUND.MALE_WAIT, 30, Sounds.SOUND.MALE_WAIT, 15,
-                             Sounds.SOUND._8TICK_PER_SECOND_CROSSWALK, 45 ),
+    MALE_CAMPBELL_WITH_TICK( "Campbell/PedSafety (Male with Audible Tick)", CsmSounds.SOUND.MALE_BEEP,
+                             CsmSounds.SOUND.MALE_WAIT, 30, CsmSounds.SOUND.MALE_WAIT, 15,
+                             CsmSounds.SOUND._8TICK_PER_SECOND_CROSSWALK, 45 ),
     /**
      * Enum value for the Campbell/PedSafety (Female with Audible Tick) sound scheme.
      *
      * @since 1.0
      */
-    FEMALE_CAMPBELL_WITH_TICK( "Campbell/PedSafety (Female with Audible Tick)", Sounds.SOUND.FEMALE_BEEP,
-                               Sounds.SOUND.FEMALE_WAIT, 30, Sounds.SOUND.FEMALE_WAIT, 15,
-                               Sounds.SOUND._8TICK_PER_SECOND_CROSSWALK, 45 ),
+    FEMALE_CAMPBELL_WITH_TICK( "Campbell/PedSafety (Female with Audible Tick)", CsmSounds.SOUND.FEMALE_BEEP,
+                               CsmSounds.SOUND.FEMALE_WAIT, 30, CsmSounds.SOUND.FEMALE_WAIT, 15,
+                               CsmSounds.SOUND._8TICK_PER_SECOND_CROSSWALK, 45 ),
     /**
      * Enum value for the Campbell/PedSafety (Automated/Male with Audible Tick) sound scheme.
      *
      * @since 1.0
      */
-    MALE_CAMPBELL_AUTOMATED_WITH_TICK( "Campbell/PedSafety (Automated/Male with Audible Tick)", Sounds.SOUND.MALE_BEEP,
-                                       Sounds.SOUND.MALE_WAIT, 30, Sounds.SOUND.FEMALE_AUTOMATED, 80,
-                                       Sounds.SOUND._8TICK_PER_SECOND_CROSSWALK, 45 ),
+    MALE_CAMPBELL_AUTOMATED_WITH_TICK( "Campbell/PedSafety (Automated/Male with Audible Tick)", CsmSounds.SOUND.MALE_BEEP,
+                                       CsmSounds.SOUND.MALE_WAIT, 30, CsmSounds.SOUND.FEMALE_AUTOMATED, 80,
+                                       CsmSounds.SOUND._8TICK_PER_SECOND_CROSSWALK, 45 ),
     /**
      * Enum value for the Campbell/PedSafety (Automated/Female with Audible Tick) sound scheme.
      *
      * @since 1.0
      */
     FEMALE_CAMPBELL_AUTOMATED_WITH_TICK( "Campbell/PedSafety (Automated/Female with Audible Tick)",
-                                         Sounds.SOUND.FEMALE_BEEP, Sounds.SOUND.FEMALE_WAIT, 30,
-                                         Sounds.SOUND.FEMALE_AUTOMATED, 80, Sounds.SOUND._8TICK_PER_SECOND_CROSSWALK,
+                                         CsmSounds.SOUND.FEMALE_BEEP, CsmSounds.SOUND.FEMALE_WAIT, 30,
+                                         CsmSounds.SOUND.FEMALE_AUTOMATED, 80, CsmSounds.SOUND._8TICK_PER_SECOND_CROSSWALK,
                                          45 );
 
     /**
@@ -89,7 +89,7 @@ public enum TrafficSignalAPSSoundScheme
      *
      * @since 1.0
      */
-    final Sounds.SOUND locateSound;
+    final CsmSounds.SOUND locateSound;
 
     /**
      * The length of the locator sound for the APS sound scheme.
@@ -103,7 +103,7 @@ public enum TrafficSignalAPSSoundScheme
      *
      * @since 1.0
      */
-    final Sounds.SOUND waitSound;
+    final CsmSounds.SOUND waitSound;
 
     /**
      * The length of the wait sound for the APS sound scheme.
@@ -117,7 +117,7 @@ public enum TrafficSignalAPSSoundScheme
      *
      * @since 1.0
      */
-    final Sounds.SOUND pressSound;
+    final CsmSounds.SOUND pressSound;
 
     /**
      * The length of the press sound for the APS sound scheme.
@@ -131,7 +131,7 @@ public enum TrafficSignalAPSSoundScheme
      *
      * @since 1.0
      */
-    final Sounds.SOUND walkSound;
+    final CsmSounds.SOUND walkSound;
 
     /**
      * The length of the walk sound for the APS sound scheme.
@@ -169,12 +169,12 @@ public enum TrafficSignalAPSSoundScheme
      * @since 1.0
      */
     TrafficSignalAPSSoundScheme( String name,
-                                 Sounds.SOUND locateSound,
-                                 Sounds.SOUND waitSound,
+                                 CsmSounds.SOUND locateSound,
+                                 CsmSounds.SOUND waitSound,
                                  int lenOfWaitSound,
-                                 Sounds.SOUND pressSound,
+                                 CsmSounds.SOUND pressSound,
                                  int lenOfPressSound,
-                                 Sounds.SOUND walkSound,
+                                 CsmSounds.SOUND walkSound,
                                  int lenOfWalkSound )
     {
         this.name = name;
@@ -203,13 +203,13 @@ public enum TrafficSignalAPSSoundScheme
      * @since 1.0
      */
     TrafficSignalAPSSoundScheme( String name,
-                                 Sounds.SOUND locateSound,
+                                 CsmSounds.SOUND locateSound,
                                  int lenOfLocateSound,
-                                 Sounds.SOUND waitSound,
+                                 CsmSounds.SOUND waitSound,
                                  int lenOfWaitSound,
-                                 Sounds.SOUND pressSound,
+                                 CsmSounds.SOUND pressSound,
                                  int lenOfPressSound,
-                                 Sounds.SOUND walkSound,
+                                 CsmSounds.SOUND walkSound,
                                  int lenOfWalkSound )
     {
         this.name = name;
@@ -241,7 +241,7 @@ public enum TrafficSignalAPSSoundScheme
      *
      * @since 1.0
      */
-    public Sounds.SOUND getLocateSound() {
+    public CsmSounds.SOUND getLocateSound() {
         return locateSound;
     }
 
@@ -263,7 +263,7 @@ public enum TrafficSignalAPSSoundScheme
      *
      * @since 1.0
      */
-    public Sounds.SOUND getWaitSound() {
+    public CsmSounds.SOUND getWaitSound() {
         return waitSound;
     }
 
@@ -285,7 +285,7 @@ public enum TrafficSignalAPSSoundScheme
      *
      * @since 1.0
      */
-    public Sounds.SOUND getPressSound() {
+    public CsmSounds.SOUND getPressSound() {
         return pressSound;
     }
 
@@ -307,7 +307,7 @@ public enum TrafficSignalAPSSoundScheme
      *
      * @since 1.0
      */
-    public Sounds.SOUND getWalkSound() {
+    public CsmSounds.SOUND getWalkSound() {
         return walkSound;
     }
 

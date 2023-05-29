@@ -49,17 +49,13 @@ import java.util.ArrayList;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Retention;
 
-public class ElementsCitySuperMod implements IFuelHandler, IWorldGenerator {
+public class ElementsCitySuperMod {
 	public final List<ModElement> elements = new ArrayList<>();
 	public final List<Supplier<Block>> blocks = new ArrayList<>();
 	public final List<Supplier<Item>> items = new ArrayList<>();
 	public final List<Supplier<Biome>> biomes = new ArrayList<>();
 	public final List<Supplier<EntityEntry>> entities = new ArrayList<>();
 	public final List<Supplier<Potion>> potions = new ArrayList<>();
-	public static Map<ResourceLocation, net.minecraft.util.SoundEvent> sounds = new HashMap<>();
-	public ElementsCitySuperMod() {
-		Sounds.init();
-	}
 
 	public void preInit(FMLPreInitializationEvent event) {
 		try {
@@ -77,69 +73,12 @@ public class ElementsCitySuperMod implements IFuelHandler, IWorldGenerator {
 				Side.SERVER, Side.CLIENT);
 	}
 
-	public void registerSounds(RegistryEvent.Register<net.minecraft.util.SoundEvent> event) {
-		for (Map.Entry<ResourceLocation, net.minecraft.util.SoundEvent> sound : sounds.entrySet())
-			event.getRegistry().register(sound.getValue().setRegistryName(sound.getKey()));
-	}
-
-	@Override
-	public void generate(Random random, int chunkX, int chunkZ, World world, IChunkGenerator cg, IChunkProvider cp) {
-		elements.forEach(element -> element.generateWorld(random, chunkX * 16, chunkZ * 16, world, world.provider.getDimension(), cg, cp));
-	}
-
-	@Override
-	public int getBurnTime(ItemStack fuel) {
-		for (ModElement element : elements) {
-			int ret = element.addFuel(fuel);
-			if (ret != 0)
-				return ret;
-		}
-		return 0;
-	}
-
-	@SubscribeEvent
-	public void onPlayerLoggedIn(net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent event) {
-		if (!event.player.world.isRemote) {
-			WorldSavedData mapdata = CitySuperModVariables.MapVariables.get(event.player.world);
-			WorldSavedData worlddata = CitySuperModVariables.WorldVariables.get(event.player.world);
-			if (mapdata != null)
-				CitySuperMod.PACKET_HANDLER.sendTo(new CitySuperModVariables.WorldSavedDataSyncMessage(0, mapdata), (EntityPlayerMP) event.player);
-			if (worlddata != null)
-				CitySuperMod.PACKET_HANDLER.sendTo(new CitySuperModVariables.WorldSavedDataSyncMessage(1, worlddata), (EntityPlayerMP) event.player);
-		}
-	}
-
-	@SubscribeEvent
-	public void onPlayerChangedDimension(net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerChangedDimensionEvent event) {
-		if (!event.player.world.isRemote) {
-			WorldSavedData worlddata = CitySuperModVariables.WorldVariables.get(event.player.world);
-			if (worlddata != null)
-				CitySuperMod.PACKET_HANDLER.sendTo(new CitySuperModVariables.WorldSavedDataSyncMessage(1, worlddata), (EntityPlayerMP) event.player);
-		}
-	}
 	private int messageID = 0;
 	public <T extends IMessage, V extends IMessage> void addNetworkMessage(Class<? extends IMessageHandler<T, V>> handler, Class<T> messageClass,
 			Side... sides) {
 		for (Side side : sides)
 			CitySuperMod.PACKET_HANDLER.registerMessage(handler, messageClass, messageID, side);
 		messageID++;
-	}
-	public static class GuiHandler implements IGuiHandler {
-		@Override
-		public Object getServerGuiElement(int id, EntityPlayer player, World world, int x, int y, int z) {
-            return null;
-		}
-
-		@Override
-		public Object getClientGuiElement(int id, EntityPlayer player, World world, int x, int y, int z) {
-            BlockPos pos = new BlockPos( x,y,z );
-            TileEntity tileEntity = world.getTileEntity( pos );
-            Object returnValue = null;
-            if ( id == 0 ) {
-                returnValue = new BlockRedstoneTTSGui( ( TileEntityRedstoneTTS ) tileEntity );
-            }
-            return returnValue;
-		}
 	}
 	public List<ModElement> getElements() {
 		return elements;
@@ -184,17 +123,7 @@ public class ElementsCitySuperMod implements IFuelHandler, IWorldGenerator {
 		public void preInit(FMLPreInitializationEvent event) {
 		}
 
-		public void generateWorld(Random random, int posX, int posZ, World world, int dimID, IChunkGenerator cg, IChunkProvider cp) {
-		}
-
-		public void serverLoad(FMLServerStartingEvent event) {
-		}
-
 		public void registerModels(ModelRegistryEvent event) {
-		}
-
-		public int addFuel(ItemStack fuel) {
-			return 0;
 		}
 
 		@Override
