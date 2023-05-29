@@ -1,20 +1,17 @@
 package com.micatechnologies.minecraft.csm.trafficsigns;
 
+import com.micatechnologies.minecraft.csm.tabs.CsmTabRoadSigns;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockDirectional;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.Mirror;
-import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
@@ -34,7 +31,7 @@ public abstract class AbstractBlockSign extends Block
         setResistance( 10F );
         setLightLevel( 0F );
         setLightOpacity( 0 );
-        setCreativeTab( TabRoadSignTab.tab );
+        setCreativeTab( CsmTabRoadSigns.get() );
         this.setDefaultState( this.blockState.getBaseState().withProperty( FACING, EnumFacing.NORTH ) );
     }
 
