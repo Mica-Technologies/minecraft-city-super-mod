@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.technology;
 
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
+import com.micatechnologies.minecraft.csm.tabs.CsmTabTechnology;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.util.ITooltipFlag;
@@ -44,7 +45,7 @@ public class ItemAppleIpadPro extends ElementsCitySuperMod.ModElement
             maxStackSize = 64;
             setUnlocalizedName( "appleipadpro" );
             setRegistryName( "appleipadpro" );
-            setCreativeTab( TabTechnology.tab );
+            setCreativeTab( CsmTabTechnology.get() );
         }
 
         @Override

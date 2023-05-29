@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.technology;
 
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
+import com.micatechnologies.minecraft.csm.tabs.CsmTabTechnology;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemSpade;
@@ -38,7 +39,7 @@ public class ItemApplePencil extends ElementsCitySuperMod.ModElement
                 ret.put( "spade", 1 );
                 return ret.keySet();
             }
-        }.setUnlocalizedName( "applepencil" ).setRegistryName( "applepencil" ).setCreativeTab( TabTechnology.tab ) );
+        }.setUnlocalizedName( "applepencil" ).setRegistryName( "applepencil" ).setCreativeTab( CsmTabTechnology.get() ) );
     }
 
     @SideOnly( Side.CLIENT )

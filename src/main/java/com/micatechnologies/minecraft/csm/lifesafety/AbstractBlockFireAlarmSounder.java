@@ -18,6 +18,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nullable;
 
+import com.micatechnologies.minecraft.csm.tabs.CsmTabLifeSafety;
+
 public abstract class AbstractBlockFireAlarmSounder extends Block
 {
     public static final PropertyDirection FACING = BlockDirectional.FACING;
@@ -31,7 +33,7 @@ public abstract class AbstractBlockFireAlarmSounder extends Block
         setResistance( 10F );
         setLightLevel( 0F );
         setLightOpacity( 0 );
-        setCreativeTab( TabFireAlarms.tab );
+        setCreativeTab( CsmTabLifeSafety.get() );
         this.setDefaultState( this.blockState.getBaseState().withProperty( FACING, EnumFacing.NORTH ) );
     }
 

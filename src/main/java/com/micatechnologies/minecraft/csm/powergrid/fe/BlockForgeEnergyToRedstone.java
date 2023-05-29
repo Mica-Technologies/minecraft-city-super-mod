@@ -1,7 +1,7 @@
 package com.micatechnologies.minecraft.csm.powergrid.fe;
 
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
-import com.micatechnologies.minecraft.csm.powergrid.TabPowerGrid;
+import com.micatechnologies.minecraft.csm.tabs.CsmTabPowerGrid;
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.SoundType;
@@ -72,7 +72,7 @@ public class BlockForgeEnergyToRedstone extends ElementsCitySuperMod.ModElement
             setResistance( 10F );
             setLightLevel( 0F );
             setLightOpacity( 0 );
-            setCreativeTab( TabPowerGrid.tab );
+            setCreativeTab( CsmTabPowerGrid.get() );
         }
 
         @Override

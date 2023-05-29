@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
+import com.micatechnologies.minecraft.csm.tabs.CsmTabTrafficSignals;
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.SoundType;
@@ -75,7 +76,7 @@ public class BlockTrafficSignalController extends ElementsCitySuperMod.ModElemen
             setResistance( 10F );
             setLightLevel( 0F );
             setLightOpacity( 0 );
-            setCreativeTab( TabTrafficSignals.tab );
+            setCreativeTab( CsmTabTrafficSignals.get() );
             setTickRandomly( true );
         }
 

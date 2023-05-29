@@ -2,6 +2,7 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
+import com.micatechnologies.minecraft.csm.tabs.CsmTabTrafficSignals;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockTrafficSignalSensor;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDirectional;
@@ -55,7 +56,7 @@ public class BlockTrafficLightSensorBox extends ElementsCitySuperMod.ModElement 
 			setResistance(10F);
 			setLightLevel(0F);
 			setLightOpacity(0);
-			setCreativeTab( TabTrafficSignals.tab);
+			setCreativeTab( CsmTabTrafficSignals.get());
 			this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH));
 		}
 	}

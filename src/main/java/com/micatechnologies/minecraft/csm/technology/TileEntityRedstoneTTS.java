@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.technology;
 
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
+import com.micatechnologies.minecraft.csm.tabs.CsmTabTechnology;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractTileEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.NBTTagCompound;

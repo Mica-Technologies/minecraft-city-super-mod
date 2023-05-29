@@ -21,6 +21,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.List;
+import com.micatechnologies.minecraft.csm.tabs.CsmTabLifeSafety;
 
 @ElementsCitySuperMod.ModElement.Tag
 public class ItemFireAlarmLinker extends ElementsCitySuperMod.ModElement
@@ -55,7 +56,7 @@ public class ItemFireAlarmLinker extends ElementsCitySuperMod.ModElement
             maxStackSize = 1;
             setUnlocalizedName( itemRegistryName );
             setRegistryName( itemRegistryName );
-            setCreativeTab( TabFireAlarms.tab );
+            setCreativeTab( CsmTabLifeSafety.get() );
         }
 
         @Override

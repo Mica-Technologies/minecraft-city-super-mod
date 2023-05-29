@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.lighting;
 
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
+import com.micatechnologies.minecraft.csm.tabs.CsmTabLighting;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.SoundType;
@@ -59,7 +60,7 @@ public class BlockFBM extends ElementsCitySuperMod.ModElement
             setResistance( 10F );
             setLightLevel( 0F );
             setLightOpacity( 0 );
-            setCreativeTab( TabLighting.tab );
+            setCreativeTab( CsmTabLighting.get() );
             this.setDefaultState( this.blockState.getBaseState().withProperty( FACING, EnumFacing.NORTH ) );
         }
 

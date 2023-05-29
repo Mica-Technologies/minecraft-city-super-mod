@@ -26,6 +26,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.BlockDirectional;
 import net.minecraft.block.Block;
+import com.micatechnologies.minecraft.csm.tabs.CsmTabLifeSafety;
 
 
 @ElementsCitySuperMod.ModElement.Tag
@@ -58,7 +59,7 @@ public class BlockFireAlarmHoneywellAddressableModule extends ElementsCitySuperM
 			setResistance(10F);
 			setLightLevel(0F);
 			setLightOpacity(0);
-			setCreativeTab( TabFireAlarms.tab);
+			setCreativeTab( CsmTabLifeSafety.get());
 			this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH));
 		}
 

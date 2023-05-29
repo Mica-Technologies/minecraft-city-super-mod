@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.lifesafety;
 
+import com.micatechnologies.minecraft.csm.tabs.CsmTabLifeSafety;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDirectional;
 import net.minecraft.block.ITileEntityProvider;
@@ -36,7 +37,7 @@ public abstract class AbstractBlockFireAlarmActivator extends Block implements I
         setResistance( 10F );
         setLightLevel( 0F );
         setLightOpacity( 0 );
-        setCreativeTab( TabFireAlarms.tab );
+        setCreativeTab( CsmTabLifeSafety.get() );
         this.setDefaultState( this.blockState.getBaseState().withProperty( FACING, EnumFacing.NORTH ) );
     }
 

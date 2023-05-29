@@ -25,6 +25,7 @@ import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import com.micatechnologies.minecraft.csm.tabs.CsmTabLifeSafety;
 
 @ElementsCitySuperMod.ModElement.Tag
 public class BlockSslstrobe extends ElementsCitySuperMod.ModElement
@@ -62,7 +63,7 @@ public class BlockSslstrobe extends ElementsCitySuperMod.ModElement
             setResistance( 10F );
             setLightLevel( 0F );
             setLightOpacity( 0 );
-            setCreativeTab( TabFireAlarms.tab );
+            setCreativeTab( CsmTabLifeSafety.get() );
             this.setDefaultState( this.blockState.getBaseState().withProperty( FACING, EnumFacing.NORTH ) );
         }
 

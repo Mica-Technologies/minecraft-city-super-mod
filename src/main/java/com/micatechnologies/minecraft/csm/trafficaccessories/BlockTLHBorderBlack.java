@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories;
 
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
+import com.micatechnologies.minecraft.csm.tabs.CsmTabTrafficAccessories;
 ;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.IBlockAccess;
@@ -64,7 +65,7 @@ public class BlockTLHBorderBlack extends ElementsCitySuperMod.ModElement
             setResistance( 10F );
             setLightLevel( 0F );
             setLightOpacity( 0 );
-            setCreativeTab( TabTrafficAccessories.tab );
+            setCreativeTab( CsmTabTrafficAccessories.get() );
             this.setDefaultState( this.blockState.getBaseState().withProperty( FACING, EnumFacing.NORTH ) );
         }
 

@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.hvac;
 
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
+import com.micatechnologies.minecraft.csm.tabs.CsmTabHvac;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDirectional;
 import net.minecraft.block.SoundType;
@@ -59,7 +60,7 @@ public class BlockSVD5 extends ElementsCitySuperMod.ModElement
             setResistance( 10F );
             setLightLevel( 0F );
             setLightOpacity( 255 );
-            setCreativeTab( TabHVAC.tab );
+            setCreativeTab( CsmTabHvac.get() );
             this.setDefaultState( this.blockState.getBaseState().withProperty( FACING, EnumFacing.NORTH ) );
         }
 

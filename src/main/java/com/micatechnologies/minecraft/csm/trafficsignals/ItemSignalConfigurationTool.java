@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
+import com.micatechnologies.minecraft.csm.tabs.CsmTabTrafficSignals;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignal;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockTrafficSignalSensor;
 import net.minecraft.block.Block;
@@ -62,7 +63,7 @@ public class ItemSignalConfigurationTool extends ElementsCitySuperMod.ModElement
             maxStackSize = 1;
             setUnlocalizedName( "signalconfigurationtool" );
             setRegistryName( "signalconfigurationtool" );
-            setCreativeTab( TabTrafficSignals.tab );
+            setCreativeTab( CsmTabTrafficSignals.get() );
         }
 
         public ItemSignalConfigurationToolMode getMode( EntityPlayer player ) {

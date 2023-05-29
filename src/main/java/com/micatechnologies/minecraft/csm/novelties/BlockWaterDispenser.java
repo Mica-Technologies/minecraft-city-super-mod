@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.novelties;
 
 import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
+import com.micatechnologies.minecraft.csm.tabs.CsmTabNovelties;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDirectional;
 import net.minecraft.block.SoundType;
@@ -59,7 +60,7 @@ public class BlockWaterDispenser extends ElementsCitySuperMod.ModElement
             setResistance( 10F );
             setLightLevel( 0F );
             setLightOpacity( 0 );
-            setCreativeTab( TabNovelties.tab );
+            setCreativeTab( CsmTabNovelties.get() );
             this.setDefaultState( this.blockState.getBaseState().withProperty( FACING, EnumFacing.NORTH ) );
         }
 
