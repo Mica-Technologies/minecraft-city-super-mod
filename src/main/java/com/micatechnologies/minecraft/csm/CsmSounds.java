@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm;
 
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
+import net.minecraftforge.event.RegistryEvent;
 
 /**
  * Mod sound class. This class contains the list of sound resources and the method for initializing sounds on mod
@@ -11,7 +12,7 @@ import net.minecraft.util.SoundEvent;
  * @version 1.0
  * @since 2020.6
  */
-public class Sounds
+public class CsmSounds
 {
     /**
      * Master enum list of sounds in the mod. Each entry in this enum MUST correspond to a sound file in
@@ -140,7 +141,7 @@ public class Sounds
          * @since 2.0
          */
         public ResourceLocation getSoundLocation() {
-            return new ResourceLocation( ModConstants.MOD_NAMESPACE, soundName );
+            return new ResourceLocation( CsmConstants.MOD_NAMESPACE, soundName );
         }
 
         /**
@@ -158,21 +159,22 @@ public class Sounds
          * Registers the sound event for this sound with the sound event registry.
          * <p>This method should not be used or accessed directly as it is only for initialization.</p>
          */
-        private void registerSound() {
+        private void registerSound( RegistryEvent.Register< SoundEvent > event ) {
             final ResourceLocation soundResourceLocation = getSoundLocation();
-            final SoundEvent soundEvent = new SoundEvent( soundResourceLocation );
-            ElementsCitySuperMod.sounds.put( soundResourceLocation, soundEvent );
+            final SoundEvent soundEvent = new SoundEvent( soundResourceLocation ).setRegistryName(
+                    soundResourceLocation );
+            event.getRegistry().register( soundEvent );
         }
     }
 
     /**
-     * Sound initialization method. This method is called from {@link ElementsCitySuperMod} to load sounds in the mod.
+     * Sound registration method. This method is called from {@link CitySuperMod} to register sounds in the mod.
      *
      * @since 1.0
      */
-    public static void init() {
+    public static void registerSounds( RegistryEvent.Register< SoundEvent > event ) {
         for ( SOUND sound : SOUND.values() ) {
-            sound.registerSound();
+            sound.registerSound( event );
         }
     }
 }
