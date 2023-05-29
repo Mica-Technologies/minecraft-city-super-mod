@@ -1,10 +1,8 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
-import com.micatechnologies.minecraft.csm.Sounds;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalAPSSoundScheme;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.SoundCategory;
-import net.minecraft.world.World;
 
 /**
  * Tile entity utility class for an APS (accessible pedestrian signal) button. This class assists in tracking and

@@ -7,7 +7,7 @@ package com.micatechnologies.minecraft.csm;
  * @version N/T
  * @since 2020.6
  */
-public class ModConstants
+public class CsmConstants
 {
     /**
      * The namespace of the mod, which is used to identify the mod and its elements. The namespace prefixes each block
@@ -20,8 +20,13 @@ public class ModConstants
     public static final String MOD_NAMESPACE = "csm";
 
     /**
+     * The name of the mod. This name is displayed in the mod list and in the mod configuration screen.
+     */
+    public static final String MOD_NAME = "City Super Mod";
+
+    /**
      * The version of the mod. This number should be incremented by 0.0.1 for bug fix releases, incremented by 0.1 for
      * feature and bug fix releases, or incremented by 1.0 for large or breaking changes.
      */
-    public static final String MOD_VERSION = "2021.3b3";
+    public static final String MOD_VERSION = "2023.2.1";
 }
