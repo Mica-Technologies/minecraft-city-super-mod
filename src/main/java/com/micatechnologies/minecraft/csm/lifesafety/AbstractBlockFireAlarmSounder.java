@@ -1,114 +1,61 @@
 package com.micatechnologies.minecraft.csm.lifesafety;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockDirectional;
+import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEWUD;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.BlockRenderLayer;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-
-import javax.annotation.Nullable;
 
 import com.micatechnologies.minecraft.csm.tabs.CsmTabLifeSafety;
 
-public abstract class AbstractBlockFireAlarmSounder extends Block
+public abstract class AbstractBlockFireAlarmSounder extends AbstractBlockRotatableNSEWUD
 {
-    public static final PropertyDirection FACING = BlockDirectional.FACING;
-
     public AbstractBlockFireAlarmSounder() {
-        super( Material.ROCK );
-        setUnlocalizedName( getBlockRegistryName() );
-        setSoundType( SoundType.STONE );
-        setHarvestLevel( "pickaxe", 1 );
-        setHardness( 2F );
-        setResistance( 10F );
-        setLightLevel( 0F );
-        setLightOpacity( 0 );
-        setCreativeTab( CsmTabLifeSafety.get() );
-        this.setDefaultState( this.blockState.getBaseState().withProperty( FACING, EnumFacing.NORTH ) );
+        super( Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0, true, BlockRenderLayer.CUTOUT_MIPPED,
+               CsmTabLifeSafety.get() );
     }
 
-    abstract public String getBlockRegistryName();
-
+    /**
+     * Retrieves the bounding box of the block.
+     *
+     * @return The bounding box of the block.
+     *
+     * @since 1.0
+     */
     @Override
-    public IBlockState getStateFromMeta( int meta ) {
-        return this.getDefaultState().withProperty( FACING, EnumFacing.getFront( meta ) );
+    public AxisAlignedBB getBlockBoundingBox() {
+        return new AxisAlignedBB( 0D, 0D, 0.8D, 1D, 1D, 1D );
     }
 
+    /**
+     * Retrieves whether the block is an opaque cube.
+     *
+     * @param state The block state.
+     *
+     * @return {@code true} if the block is an opaque cube, {@code false} otherwise.
+     *
+     * @since 1.0
+     */
     @Override
-    public int getMetaFromState( IBlockState state ) {
-        return state.getValue( FACING ).getIndex();
-    }
-
-    @Override
-    public boolean isFullCube( IBlockState state ) {
+    public boolean getBlockIsOpaqueCube( IBlockState state ) {
         return false;
     }
 
+    /**
+     * Retrieves whether the block is a full cube.
+     *
+     * @param state The block state.
+     *
+     * @return {@code true} if the block is a full cube, {@code false} otherwise.
+     *
+     * @since 1.0
+     */
     @Override
-    public AxisAlignedBB getBoundingBox( IBlockState state, IBlockAccess source, BlockPos pos ) {
-        switch ( state.getValue( FACING ) ) {
-            case SOUTH:
-            default:
-                return new AxisAlignedBB( 1D, 0D, 0.2D, 0D, 1D, 0D );
-            case NORTH:
-                return new AxisAlignedBB( 0D, 0D, 0.8D, 1D, 1D, 1D );
-            case WEST:
-                return new AxisAlignedBB( 0.8D, 0D, 1D, 1D, 1D, 0D );
-            case EAST:
-                return new AxisAlignedBB( 0.2D, 0D, 0D, 0D, 1D, 1D );
-            case UP:
-                return new AxisAlignedBB( 0D, 0.2D, 0D, 1D, 0D, 1D );
-            case DOWN:
-                return new AxisAlignedBB( 0D, 0.8D, 1D, 1D, 1D, 0D );
-        }
-    }
-
-    @Override
-    public boolean isOpaqueCube( IBlockState state ) {
+    public boolean getBlockIsFullCube( IBlockState state ) {
         return false;
-    }
-
-    @SideOnly( Side.CLIENT )
-    @Override
-    public BlockRenderLayer getBlockLayer() {
-        return BlockRenderLayer.CUTOUT_MIPPED;
-    }
-
-    @Override
-    public boolean canConnectRedstone( IBlockState p_canConnectRedstone_1_,
-                                       IBlockAccess p_canConnectRedstone_2_,
-                                       BlockPos p_canConnectRedstone_3_,
-                                       @Nullable EnumFacing p_canConnectRedstone_4_ )
-    {
-        return true;
-    }
-
-    @Override
-    public IBlockState getStateForPlacement( World worldIn,
-                                             BlockPos pos,
-                                             EnumFacing facing,
-                                             float hitX,
-                                             float hitY,
-                                             float hitZ,
-                                             int meta,
-                                             EntityLivingBase placer )
-    {
-        return this.getDefaultState().withProperty( FACING, EnumFacing.getDirectionFromEntityLiving( pos, placer ) );
-    }
-
-    @Override
-    protected net.minecraft.block.state.BlockStateContainer createBlockState() {
-        return new net.minecraft.block.state.BlockStateContainer( this, FACING );
     }
 
     @Override
