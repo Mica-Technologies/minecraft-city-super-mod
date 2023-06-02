@@ -1,11 +1,5 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
-import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
-import com.micatechnologies.minecraft.csm.tabs.CsmTabTrafficSignals;
-import com.micatechnologies.minecraft.csm.codeutils.AbstractTickableTileEntity;
-import com.micatechnologies.minecraft.csm.codeutils.AbstractTileEntity;
-import net.minecraft.nbt.NBTTagCompound;
-
 /**
  * Tile entity utility class for traffic signal requester blocks such as a crosswalk button or sensor. This class
  * assists in tracking and managing the count and state of requests.

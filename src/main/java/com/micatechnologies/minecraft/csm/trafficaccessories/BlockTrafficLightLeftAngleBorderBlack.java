@@ -1,6 +1,5 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories;
 
-import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
 import com.micatechnologies.minecraft.csm.tabs.CsmTabTrafficAccessories;
 ;
 import net.minecraft.block.Block;

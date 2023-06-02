@@ -34,9 +34,9 @@ public class CitySuperModVariables {
 		public void syncData(World world) {
 			this.markDirty();
 			if (world.isRemote) {
-				CitySuperMod.PACKET_HANDLER.sendToServer(new WorldSavedDataSyncMessage(0, this));
+				Csm.PACKET_HANDLER.sendToServer( new WorldSavedDataSyncMessage( 0, this));
 			} else {
-				CitySuperMod.PACKET_HANDLER.sendToAll(new WorldSavedDataSyncMessage(0, this));
+				Csm.PACKET_HANDLER.sendToAll( new WorldSavedDataSyncMessage( 0, this));
 			}
 		}
 
@@ -84,9 +84,9 @@ public class CitySuperModVariables {
 		public void syncData(World world) {
 			this.markDirty();
 			if (world.isRemote) {
-				CitySuperMod.PACKET_HANDLER.sendToServer(new WorldSavedDataSyncMessage(1, this));
+				Csm.PACKET_HANDLER.sendToServer( new WorldSavedDataSyncMessage( 1, this));
 			} else {
-				CitySuperMod.PACKET_HANDLER.sendToDimension(new WorldSavedDataSyncMessage(1, this), world.provider.getDimension());
+				Csm.PACKET_HANDLER.sendToDimension( new WorldSavedDataSyncMessage( 1, this), world.provider.getDimension());
 			}
 		}
 
@@ -115,9 +115,9 @@ public class CitySuperModVariables {
 			if (context.side == Side.SERVER) {
 				message.data.markDirty();
 				if (message.type == 0)
-					CitySuperMod.PACKET_HANDLER.sendToAll(message);
+					Csm.PACKET_HANDLER.sendToAll( message);
 				else
-					CitySuperMod.PACKET_HANDLER.sendToDimension(message, world.provider.getDimension());
+					Csm.PACKET_HANDLER.sendToDimension( message, world.provider.getDimension());
 			}
 			if (message.type == 0) {
 				world.getMapStorage().setData(MapVariables.DATA_NAME, message.data);

@@ -1,7 +1,6 @@
 
 package com.micatechnologies.minecraft.csm.trafficaccessories;
 
-import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
 import com.micatechnologies.minecraft.csm.tabs.CsmTabTrafficAccessories;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.relauncher.Side;

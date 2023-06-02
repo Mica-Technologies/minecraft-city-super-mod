@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.codeutils;
 
+import net.minecraft.item.Item;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
@@ -42,4 +43,15 @@ public interface ICsmProxy
      * @since 1.0
      */
     void serverLoad( FMLServerStartingEvent event );
+
+    /**
+     * Set the custom model resource location for the specified {@link Item} with the specified metadata and id.
+     *
+     * @param item The {@link Item} to set the custom model resource location for.
+     * @param meta The metadata of the {@link Item} to set the custom model resource location for.
+     * @param id   The id to set the custom model resource location for.
+     *
+     * @since 1.0
+     */
+    void setCustomModelResourceLocation( Item item, int meta, String id );
 }

@@ -1,6 +1,5 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
-import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
 import com.micatechnologies.minecraft.csm.tabs.CsmTabTrafficSignals;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockTrafficSignalAPS;
 import net.minecraft.block.Block;
@@ -15,8 +14,6 @@ import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-
-import java.util.Random;
 
 @ElementsCitySuperMod.ModElement.Tag
 public class BlockControllableCrosswalkButtonAutomated extends ElementsCitySuperMod.ModElement

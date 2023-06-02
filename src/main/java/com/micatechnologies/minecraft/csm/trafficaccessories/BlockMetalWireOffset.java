@@ -1,7 +1,6 @@
 
 package com.micatechnologies.minecraft.csm.trafficaccessories;
 
-import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
 import com.micatechnologies.minecraft.csm.tabs.CsmTabTrafficAccessories;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDirectional;
@@ -17,9 +16,7 @@ import net.minecraft.item.ItemBlock;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.Mirror;
 import net.minecraft.util.Rotation;
-import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;

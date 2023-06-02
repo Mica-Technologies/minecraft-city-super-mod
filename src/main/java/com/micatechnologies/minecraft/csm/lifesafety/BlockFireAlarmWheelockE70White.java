@@ -1,6 +1,5 @@
 package com.micatechnologies.minecraft.csm.lifesafety;
 
-import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;

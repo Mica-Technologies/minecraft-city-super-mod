@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.lifesafety;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEWUD;
+import com.micatechnologies.minecraft.csm.tabs.CsmTabLifeSafety;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -9,13 +10,14 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 
-import com.micatechnologies.minecraft.csm.tabs.CsmTabLifeSafety;
-
 public abstract class AbstractBlockFireAlarmSounder extends AbstractBlockRotatableNSEWUD
 {
     public AbstractBlockFireAlarmSounder() {
-        super( Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0, true, BlockRenderLayer.CUTOUT_MIPPED,
-               CsmTabLifeSafety.get() );
+        super( Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0, true, BlockRenderLayer.CUTOUT_MIPPED );
+
+        // TODO: REMOVE ME ONCE MOD RESTRUCTURE IS COMPLETE
+        // I AM TEMPORARY CODE
+        setCreativeTab( CsmTabLifeSafety.get( CsmTabLifeSafety.class ) );
     }
 
     /**
