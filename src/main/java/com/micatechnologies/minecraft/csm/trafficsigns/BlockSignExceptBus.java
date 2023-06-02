@@ -1,7 +1,6 @@
 
 package com.micatechnologies.minecraft.csm.trafficsigns;
 
-import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;

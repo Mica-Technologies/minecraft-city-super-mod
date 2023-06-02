@@ -1,6 +1,5 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
-import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
 import com.micatechnologies.minecraft.csm.tabs.CsmTabTrafficSignals;
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;

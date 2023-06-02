@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.codeutils;
 
 import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.discovery.ASMDataTable;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -53,28 +54,36 @@ public abstract class CsmTab
      * @since 1.0
      */
     public CsmTab() {
-        tab = new CreativeTabs( getTabId() )
-        {
-            /**
-             * Creative tab implementation method for getting the tab icon item.
-             * @return an {@link ItemStack} to display as the tab icon item
-             */
-            @SideOnly( Side.CLIENT )
-            @Override
-            @Nonnull
-            public ItemStack getTabIconItem() {
-                return new ItemStack( getTabIcon(), TAB_ICON_STACK_ITEM_COUNT );
-            }
+        if ( !getTabHidden() ) {
+            tab = new CreativeTabs( getTabId() )
+            {
+                /**
+                 * Creative tab implementation method for getting the tab icon item.
+                 *
+                 * @return an {@link ItemStack} to display as the tab icon item
+                 */
+                @SideOnly( Side.CLIENT )
+                @Override
+                @Nonnull
+                public ItemStack getTabIconItem() {
+                    return new ItemStack( getTabIcon(), TAB_ICON_STACK_ITEM_COUNT );
+                }
 
-            /**
-             * Creative tab implementation method for getting if the tab is searchable.
-             * @return {@code true} if the tab is searchable (has a search bar), {@code false} otherwise
-             */
-            @SideOnly( Side.CLIENT )
-            public boolean hasSearchBar() {
-                return getTabSearchable();
-            }
-        };
+                /**
+                 * Creative tab implementation method for getting if the tab is searchable.
+                 *
+                 * @return {@code true} if the tab is searchable (has a search bar),
+                 *         {@code false} otherwise
+                 */
+                @SideOnly( Side.CLIENT )
+                public boolean hasSearchBar() {
+                    return getTabSearchable();
+                }
+            };
+        }
+        else {
+            tab = null;
+        }
     }
 
     /**
@@ -116,6 +125,82 @@ public abstract class CsmTab
     public abstract boolean getTabSearchable();
 
     /**
+     * Gets a boolean indicating if the tab is hidden (not displayed in the inventory).
+     *
+     * @return {@code true} if the tab is hidden, otherwise {@code false}
+     *
+     * @since 1.0
+     */
+    public abstract boolean getTabHidden();
+
+    /**
+     * Initializes all the elements belonging to the tab.
+     *
+     * @param fmlPreInitializationEvent the {@link FMLPreInitializationEvent} that is being processed
+     *
+     * @since 1.0
+     */
+    public abstract void initTabElements( FMLPreInitializationEvent fmlPreInitializationEvent );
+
+    /**
+     * Initializes the element with the specified class.
+     *
+     * @param entryClass                the class of the element to initialize
+     * @param fmlPreInitializationEvent the {@link FMLPreInitializationEvent} that is being processed
+     *
+     * @return the initialized element
+     *
+     * @since 1.0
+     */
+    private Object initTabElement( Class< ? > entryClass, FMLPreInitializationEvent fmlPreInitializationEvent ) {
+        try {
+            return entryClass.newInstance();
+        }
+        catch ( Exception e ) {
+            fmlPreInitializationEvent.getModLog().error( "Error initializing tab element: " + entryClass.getName(), e );
+        }
+        return null;
+    }
+
+    /**
+     * Initializes the block with the specified class.
+     *
+     * @param blockClass                the class of the block to initialize
+     * @param fmlPreInitializationEvent the {@link FMLPreInitializationEvent} that is being processed
+     *
+     * @since 1.0
+     */
+    public Block initTabBlock( Class< ? extends Block > blockClass,
+                               FMLPreInitializationEvent fmlPreInitializationEvent )
+    {
+        Block block = null;
+        Object entry = initTabElement( blockClass, fmlPreInitializationEvent );
+        if ( entry != null ) {
+            block = blockClass.cast( entry ).setCreativeTab( tab );
+        }
+        return block;
+    }
+
+    /**
+     * Initializes the item with the specified class.
+     *
+     * @param itemClass                 the class of the item to initialize
+     * @param fmlPreInitializationEvent the {@link FMLPreInitializationEvent} that is being processed
+     *
+     * @since 1.0
+     */
+    public Item initTabItem( Class< ? extends Item > itemClass,
+                             FMLPreInitializationEvent fmlPreInitializationEvent )
+    {
+        Item item = null;
+        Object entry = initTabElement( itemClass, fmlPreInitializationEvent );
+        if ( entry != null ) {
+            item = itemClass.cast( entry ).setCreativeTab( tab );
+        }
+        return item;
+    }
+
+    /**
      * Initializes all of the {@link CsmTab} implementations found in the {@link ASMDataTable} of the
      * {@link FMLPreInitializationEvent} during mod startup.
      *
@@ -131,7 +216,9 @@ public abstract class CsmTab
             Class< ? > clazz = Class.forName( asmData.getClassName() );
             if ( clazz.getSuperclass() == CsmTab.class ) {
                 Class< ? extends CsmTab > csmTabClass = clazz.asSubclass( CsmTab.class );
-                TABS.put( csmTabClass, csmTabClass.newInstance() );
+                CsmTab tab = csmTabClass.newInstance();
+                TABS.put( csmTabClass, tab );
+                tab.initTabElements( fmlPreInitializationEvent );
             }
         }
     }

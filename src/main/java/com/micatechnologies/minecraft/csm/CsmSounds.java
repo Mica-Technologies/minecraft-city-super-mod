@@ -168,7 +168,7 @@ public class CsmSounds
     }
 
     /**
-     * Sound registration method. This method is called from {@link CitySuperMod} to register sounds in the mod.
+     * Sound registration method. This method is called from {@link Csm} to register sounds in the mod.
      *
      * @since 1.0
      */

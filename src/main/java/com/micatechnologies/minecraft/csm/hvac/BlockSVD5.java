@@ -1,6 +1,5 @@
 package com.micatechnologies.minecraft.csm.hvac;
 
-import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
 import com.micatechnologies.minecraft.csm.tabs.CsmTabHvac;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDirectional;

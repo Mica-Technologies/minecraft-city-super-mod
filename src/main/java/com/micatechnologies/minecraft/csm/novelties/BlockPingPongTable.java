@@ -1,6 +1,5 @@
 package com.micatechnologies.minecraft.csm.novelties;
 
-import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
 import com.micatechnologies.minecraft.csm.tabs.CsmTabNovelties;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;

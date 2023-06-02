@@ -1,6 +1,5 @@
 package com.micatechnologies.minecraft.csm.powergrid.fe;
 
-import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
 import com.micatechnologies.minecraft.csm.tabs.CsmTabPowerGrid;
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;

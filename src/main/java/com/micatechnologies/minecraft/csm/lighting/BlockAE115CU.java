@@ -1,7 +1,5 @@
 package com.micatechnologies.minecraft.csm.lighting;
 
-import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
-import com.micatechnologies.minecraft.csm.tabs.CsmTabLighting;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.state.IBlockState;

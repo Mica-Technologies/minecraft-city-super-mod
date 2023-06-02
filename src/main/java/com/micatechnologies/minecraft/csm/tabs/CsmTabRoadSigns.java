@@ -4,6 +4,7 @@ import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignpoststopsign;
 import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 /**
  * The tab for road sign blocks.
@@ -50,13 +51,24 @@ public class CsmTabRoadSigns extends CsmTab
     }
 
     /**
-     * Gets the {@link CreativeTabs} instance for the {@link CsmTab} implementation.
+     * Gets a boolean indicating if the tab is hidden (not displayed in the inventory).
      *
-     * @return the {@link CreativeTabs} instance for the {@link CsmTab} implementation class
+     * @return {@code true} if the tab is hidden, otherwise {@code false}
      *
      * @since 1.0
      */
-    public static CreativeTabs get() {
-        return get( CsmTabRoadSigns.class );
+    @Override
+    public boolean getTabHidden() {
+        return false;
+    }
+
+    /**
+     * Initializes all the items belonging to the tab.
+     *
+     * @since 1.0
+     */
+    @Override
+    public void initTabElements( FMLPreInitializationEvent fmlPreInitializationEvent ) {
+
     }
 }
