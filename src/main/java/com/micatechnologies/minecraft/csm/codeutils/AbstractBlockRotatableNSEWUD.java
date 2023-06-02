@@ -97,16 +97,8 @@ public abstract class AbstractBlockRotatableNSEWUD extends AbstractBlock
     @Nonnull
     public IBlockState getStateFromMeta( int meta ) {
         int facingVal = meta;
-        // Convert old directional WEST to new horizontal WEST
-        if ( facingVal == 4 ) {
-            facingVal = 1;
-        }
-        // Convert old directional EAST to new horizontal EAST
-        else if ( facingVal == 5 ) {
-            facingVal = 3;
-        }
-        // Otherwise, fallback to SOUTH (0) if invalid
-        else if ( facingVal < 0 || facingVal > 3 ) {
+        // Fallback to DOWN (0) if invalid
+        if ( facingVal < 0 || facingVal > 5 ) {
             facingVal = 0;
         }
         return getDefaultState().withProperty( FACING, EnumFacing.getFront( facingVal ) );
