@@ -1,6 +1,5 @@
 package com.micatechnologies.minecraft.csm.lifesafety;
 
-import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.ITileEntityProvider;
@@ -35,7 +34,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
-import java.util.Random;
+
 import com.micatechnologies.minecraft.csm.tabs.CsmTabLifeSafety;
 
 @ElementsCitySuperMod.ModElement.Tag

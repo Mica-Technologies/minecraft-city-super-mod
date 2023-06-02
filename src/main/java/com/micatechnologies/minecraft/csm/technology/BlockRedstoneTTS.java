@@ -1,15 +1,12 @@
 package com.micatechnologies.minecraft.csm.technology;
 
-import com.micatechnologies.minecraft.csm.CitySuperMod;
-import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
+import com.micatechnologies.minecraft.csm.Csm;
 import com.micatechnologies.minecraft.csm.tabs.CsmTabTechnology;
-import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalController;
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -18,12 +15,10 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
@@ -129,7 +124,7 @@ public class BlockRedstoneTTS extends ElementsCitySuperMod.ModElement
                                          float p_onBlockActivated_8_,
                                          float p_onBlockActivated_9_ )
         {
-            p_onBlockActivated_4_.openGui( CitySuperMod.instance, 0, p_onBlockActivated_1_,
+            p_onBlockActivated_4_.openGui( Csm.instance, 0, p_onBlockActivated_1_,
                                            p_onBlockActivated_2_.getX(), p_onBlockActivated_2_.getY(),
                                            p_onBlockActivated_2_.getZ() );
             return true;

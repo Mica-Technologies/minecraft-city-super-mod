@@ -38,19 +38,16 @@ public abstract class AbstractBlockRotatableNSEWUD extends AbstractBlock
     public static final PropertyDirection FACING = BlockDirectional.FACING;
 
     /**
-     * Constructs an AbstractBlock.
+     * Constructs an {@link AbstractBlockRotatableNSEWUD} instance.
      *
-     * @param material              The material of the block.
-     * @param soundType             The sound type of the block.
-     * @param harvestToolClass      The harvest tool class of the block.
-     * @param harvestLevel          The harvest level of the block.
-     * @param hardness              The block's hardness.
-     * @param resistance            The block's resistance to explosions.
-     * @param lightLevel            The block's light level.
-     * @param lightOpacity          The block's light opacity.
-     * @param blockConnectsRedstone The blocks connect to redstone property.
-     * @param blockRenderLayer      The block's render layer.
-     * @param creativeTab           The creative tab for the block.
+     * @param material         The material of the block.
+     * @param soundType        The sound type of the block.
+     * @param harvestToolClass The harvest tool class of the block.
+     * @param harvestLevel     The harvest level of the block.
+     * @param hardness         The block's hardness.
+     * @param resistance       The block's resistance to explosions.
+     * @param lightLevel       The block's light level.
+     * @param lightOpacity     The block's light opacity.
      *
      * @since 1.0
      */
@@ -61,13 +58,9 @@ public abstract class AbstractBlockRotatableNSEWUD extends AbstractBlock
                                          float hardness,
                                          float resistance,
                                          float lightLevel,
-                                         int lightOpacity,
-                                         boolean blockConnectsRedstone,
-                                         BlockRenderLayer blockRenderLayer,
-                                         CreativeTabs creativeTab )
+                                         int lightOpacity )
     {
-        super( material, soundType, harvestToolClass, harvestLevel, hardness, resistance, lightLevel, lightOpacity,
-               blockConnectsRedstone, blockRenderLayer, creativeTab );
+        super( material, soundType, harvestToolClass, harvestLevel, hardness, resistance, lightLevel, lightOpacity );
         this.setDefaultState( this.blockState.getBaseState().withProperty( FACING, EnumFacing.NORTH ) );
     }
 
@@ -76,6 +69,7 @@ public abstract class AbstractBlockRotatableNSEWUD extends AbstractBlock
      *
      * @return a new {@link BlockStateContainer} for the block
      *
+     * @see Block#createBlockState()
      * @since 1.0
      */
     @Override
@@ -91,6 +85,7 @@ public abstract class AbstractBlockRotatableNSEWUD extends AbstractBlock
      *
      * @return the {@link IBlockState} equivalent for the specified {@code meta} value
      *
+     * @see Block#getStateFromMeta(int)
      * @since 1.0
      */
     @Override
@@ -111,6 +106,7 @@ public abstract class AbstractBlockRotatableNSEWUD extends AbstractBlock
      *
      * @return the equivalent {@link Integer} meta value for the specified {@link IBlockState}
      *
+     * @see Block#getMetaFromState(IBlockState)
      * @since 1.0
      */
     @Override

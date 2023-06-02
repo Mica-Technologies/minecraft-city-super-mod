@@ -1,10 +1,10 @@
 package com.micatechnologies.minecraft.csm.tabs;
 
-import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSilverMetal;
+import com.micatechnologies.minecraft.csm.CsmRegistry;
+import com.micatechnologies.minecraft.csm.buildingmaterials.*;
 import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
-import com.micatechnologies.minecraft.csm.hvac.BlockSV4;
 import net.minecraft.block.Block;
-import net.minecraft.creativetab.CreativeTabs;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 /**
  * The tab for building material blocks.
@@ -35,7 +35,7 @@ public class CsmTabBuildingMaterials extends CsmTab
      */
     @Override
     public Block getTabIcon() {
-        return BlockSilverMetal.block;
+        return CsmRegistry.getBlock( BlockPCC.class );
     }
 
     /**
@@ -51,13 +51,41 @@ public class CsmTabBuildingMaterials extends CsmTab
     }
 
     /**
-     * Gets the {@link CreativeTabs} instance for the {@link CsmTab} implementation.
+     * Gets a boolean indicating if the tab is hidden (not displayed in the inventory).
      *
-     * @return the {@link CreativeTabs} instance for the {@link CsmTab} implementation class
+     * @return {@code true} if the tab is hidden, otherwise {@code false}
      *
      * @since 1.0
      */
-    public static CreativeTabs get() {
-        return get( CsmTabBuildingMaterials.class );
+    @Override
+    public boolean getTabHidden() {
+        return false;
+    }
+
+    /**
+     * Initializes all the items belonging to the tab.
+     *
+     * @since 1.0
+     */
+    @Override
+    public void initTabElements( FMLPreInitializationEvent fmlPreInitializationEvent ) {
+        initTabBlock( BlockSetBlackMetal.class,
+                      fmlPreInitializationEvent ); // Black Metal Set (Block, Fence, Slab, Stairs)
+        initTabBlock( BlockSetSilverMetal.class,
+                      fmlPreInitializationEvent ); // Silver Metal Set (Block, Fence, Slab, Stairs)
+        initTabBlock( BlockSetWhiteMetal.class,
+                      fmlPreInitializationEvent ); // White Metal Set (Block, Fence, Slab, Stairs)
+        initTabBlock( BlockPCC.class, fmlPreInitializationEvent ); // PCC
+        initTabBlock( BlockCTF.class, fmlPreInitializationEvent ); // CTF
+        initTabBlock( BlockCT50s1.class, fmlPreInitializationEvent ); // CT50s1
+        initTabBlock( BlockCT50s2.class, fmlPreInitializationEvent ); // CT50s2
+        initTabBlock( BlockCT50s3.class, fmlPreInitializationEvent ); // CT50s3
+        initTabBlock( BlockCTS1.class, fmlPreInitializationEvent ); // CTS1
+        initTabBlock( BlockCTS2.class, fmlPreInitializationEvent ); // CTS2
+        initTabBlock( BlockCTS3.class, fmlPreInitializationEvent ); // CTS3
+        initTabBlock( BlockDCT1.class, fmlPreInitializationEvent ); // DCT1
+        initTabBlock( BlockDCT2.class, fmlPreInitializationEvent ); // DCT2
+        initTabBlock( BlockDCT3.class, fmlPreInitializationEvent ); // DCT3
+
     }
 }

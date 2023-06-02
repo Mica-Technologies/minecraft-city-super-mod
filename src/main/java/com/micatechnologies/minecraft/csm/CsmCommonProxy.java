@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm;
 
 import com.micatechnologies.minecraft.csm.codeutils.ICsmProxy;
+import net.minecraft.item.Item;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
@@ -8,7 +9,7 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 
 /**
  * Sided proxy for initialization and loading of the mod on the server/common side. This class is referenced by the
- * {@code @SidedProxy} annotation in {@link CitySuperMod}. This class is instantiated by Forge.
+ * {@code @SidedProxy} annotation in {@link Csm}. This class is instantiated by Forge.
  *
  * @version 1.0
  * @see ICsmProxy
@@ -63,5 +64,19 @@ public class CsmCommonProxy implements ICsmProxy
     @Override
     public void serverLoad( FMLServerStartingEvent event ) {
         // Not implemented (yet)
+    }
+
+    /**
+     * Set the custom model resource location for the specified {@link Item} with the specified metadata and id.
+     *
+     * @param item The {@link Item} to set the custom model resource location for.
+     * @param meta The metadata of the {@link Item} to set the custom model resource location for.
+     * @param id   The id to set the custom model resource location for.
+     *
+     * @since 1.0
+     */
+    @Override
+    public void setCustomModelResourceLocation( Item item, int meta, String id ) {
+        // Does nothing on the server side
     }
 }

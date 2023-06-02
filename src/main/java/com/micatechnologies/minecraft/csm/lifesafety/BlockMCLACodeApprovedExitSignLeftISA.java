@@ -1,7 +1,6 @@
 
 package com.micatechnologies.minecraft.csm.lifesafety;
 
-import com.micatechnologies.minecraft.csm.ElementsCitySuperMod;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDirectional;
 import net.minecraft.block.SoundType;
