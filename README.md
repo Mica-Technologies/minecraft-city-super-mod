@@ -5,6 +5,17 @@ city.
 Initially, the mod was built for the City of MCLA (now City of Alto/UIA), but will soon become publicly available as
 source-code and a compiled mod.
 
+## Player and Developer Safety
+
+The official GitHub repository for the City Super Mod project is [https://github.com/Mica-Technologies/minecraft-city-super-mod](https://github.com/Mica-Technologies/minecraft-city-super-mod).<br>
+The official Mica Minecraft homepage is [https://minecraft.micatechnologies.com](https://minecraft.micatechnologies.com).
+
+_**Under no circumstances should you (or anyone) download, run, or execute the City Super Mod from unapproved or unofficial locations.**_
+
+_**There are NO other official locations to download or access the City Super Mod.**_
+
+_**Downloading, running, or executing the City Super Mod from unapproved and/or unofficial locations may put yourself, your computer, and/or your network at risk.**_
+
 ## Information and Documentation
 
 Information and documentation for the City Super Mod is available on
