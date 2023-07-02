@@ -1,0 +1,105 @@
+{
+	"credit": "Model made by Brandon Holt (RinRin Blissgreen)",
+	"textures": {
+		"0": "motorola_ont",
+		"particle": "motorola_ont"
+	},
+	"elements": [
+		{
+			"from": [2, 6, 0],
+			"to": [14, 14, 1],
+			"faces": {
+				"north": {"uv": [0, 0, 16, 8], "texture": "#0"},
+				"east": {"uv": [0, 0, 16, 8], "texture": "#0"},
+				"south": {"uv": [0, 0, 16, 15.125], "texture": "#0"},
+				"west": {"uv": [0, 0, 16, 8], "texture": "#0"},
+				"up": {"uv": [0, 0, 16, 7.75], "texture": "#0"},
+				"down": {"uv": [0, 0, 16, 7.875], "texture": "#0"}
+			}
+		},
+		{
+			"from": [3, 14, 0],
+			"to": [13, 15, 1],
+			"faces": {
+				"north": {"uv": [0, 0, 16, 7.875], "texture": "#0"},
+				"east": {"uv": [0, 0, 16, 7.875], "texture": "#0"},
+				"south": {"uv": [0, 0, 16, 7.875], "texture": "#0"},
+				"west": {"uv": [0, 0, 16, 7.875], "texture": "#0"},
+				"up": {"uv": [0, 0, 16, 7.875], "texture": "#0"},
+				"down": {"uv": [0, 0, 16, 7.875], "texture": "#0"}
+			}
+		},
+		{
+			"from": [3, 5, 0],
+			"to": [7, 6, 1],
+			"faces": {
+				"north": {"uv": [0, 0, 16, 7.75], "texture": "#0"},
+				"east": {"uv": [0, 0, 16, 7.625], "texture": "#0"},
+				"south": {"uv": [0, 15, 5.25, 16], "texture": "#0"},
+				"west": {"uv": [0, 0, 16, 7.75], "texture": "#0"},
+				"up": {"uv": [0, 0, 4, 1], "texture": "#missing"},
+				"down": {"uv": [0, 0, 16, 7.875], "texture": "#0"}
+			}
+		},
+		{
+			"from": [9, 5, 0],
+			"to": [13, 6, 1],
+			"faces": {
+				"north": {"uv": [0, 0, 16, 7.875], "texture": "#0"},
+				"east": {"uv": [0, 0, 16, 7.75], "texture": "#0"},
+				"south": {"uv": [8.625, 15, 16, 16], "texture": "#0"},
+				"west": {"uv": [0, 0, 16, 7.75], "texture": "#0"},
+				"up": {"uv": [0, 0, 4, 1], "texture": "#missing"},
+				"down": {"uv": [0, 0, 15.875, 8], "texture": "#0"}
+			}
+		},
+		{
+			"from": [7, 5, 0],
+			"to": [9, 6, 0.5],
+			"faces": {
+				"north": {"uv": [0, 0, 16, 7.875], "texture": "#0"},
+				"east": {"uv": [0, 0, 0.5, 1], "texture": "#missing"},
+				"south": {"uv": [5.25, 15.625, 8.75, 16], "texture": "#0"},
+				"west": {"uv": [0, 0, 0.5, 1], "texture": "#missing"},
+				"up": {"uv": [0, 0, 2, 0.5], "texture": "#missing"},
+				"down": {"uv": [0, 0, 16, 7.75], "texture": "#0"}
+			}
+		},
+		{
+			"from": [2, 9, 1],
+			"to": [14, 10, 1.25],
+			"faces": {
+				"north": {"uv": [0, 8.125, 16, 9], "texture": "#0"},
+				"east": {"uv": [0, 8.125, 16, 9], "texture": "#0"},
+				"south": {"uv": [0, 8.125, 16, 9.625], "texture": "#0"},
+				"west": {"uv": [0, 8.125, 16, 9], "texture": "#0"},
+				"up": {"uv": [0, 8.125, 16, 9], "texture": "#0"},
+				"down": {"uv": [0, 8.125, 16, 9], "texture": "#0"}
+			}
+		}
+	],
+	"display": {
+		"thirdperson_righthand": {
+			"translation": [0, 0, 7.5]
+		},
+		"thirdperson_lefthand": {
+			"translation": [0, 0, 7.5]
+		},
+		"firstperson_righthand": {
+			"translation": [0, 0, 7.5]
+		},
+		"firstperson_lefthand": {
+			"translation": [0, 0, 7.5]
+		},
+		"gui": {
+			"translation": [0.25, -1.75, 0]
+		},
+		"head": {
+			"translation": [0, 0, 0.5]
+		},
+		"fixed": {
+			"rotation": [0, 180, 0],
+			"translation": [0, -1.75, -6.75]
+		}
+	}
+}
