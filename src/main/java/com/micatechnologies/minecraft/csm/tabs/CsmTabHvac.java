@@ -1,11 +1,11 @@
 package com.micatechnologies.minecraft.csm.tabs;
 
-import com.micatechnologies.minecraft.csm.buildingmaterials.BlockART1;
 import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
+import com.micatechnologies.minecraft.csm.hvac.BlockART1;
+import com.micatechnologies.minecraft.csm.hvac.BlockART2;
+import com.micatechnologies.minecraft.csm.hvac.BlockARTD1;
 import com.micatechnologies.minecraft.csm.hvac.BlockSV4;
-import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignpoststopsign;
 import net.minecraft.block.Block;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 /**
@@ -72,5 +72,7 @@ public class CsmTabHvac extends CsmTab
     @Override
     public void initTabElements( FMLPreInitializationEvent fmlPreInitializationEvent ) {
         initTabBlock( BlockART1.class, fmlPreInitializationEvent ); // ART1
+        initTabBlock( BlockART2.class, fmlPreInitializationEvent ); // ART2
+        initTabBlock( BlockARTD1.class, fmlPreInitializationEvent ); // ARTD1
     }
 }
