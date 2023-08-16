@@ -27,3 +27,7 @@ forge*changelog.txt
 # The annoying little one
 .DS_Store
 /SORT_ID_REPORT.txt
+
+/dev-env-utils/target/*
+/dev-env-utils/target/
+/dev-env-utils/target
