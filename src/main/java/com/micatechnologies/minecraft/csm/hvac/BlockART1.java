@@ -1,4 +1,4 @@
-package com.micatechnologies.minecraft.csm.buildingmaterials;
+package com.micatechnologies.minecraft.csm.hvac;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEWUD;
 import net.minecraft.block.SoundType;
