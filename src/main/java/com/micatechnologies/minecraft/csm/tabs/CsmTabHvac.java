@@ -1,10 +1,9 @@
 package com.micatechnologies.minecraft.csm.tabs;
 
+import com.micatechnologies.minecraft.csm.CsmRegistry;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockPCC;
 import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
-import com.micatechnologies.minecraft.csm.hvac.BlockART1;
-import com.micatechnologies.minecraft.csm.hvac.BlockART2;
-import com.micatechnologies.minecraft.csm.hvac.BlockARTD1;
-import com.micatechnologies.minecraft.csm.hvac.BlockSV4;
+import com.micatechnologies.minecraft.csm.hvac.*;
 import net.minecraft.block.Block;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
@@ -37,7 +36,7 @@ public class CsmTabHvac extends CsmTab
      */
     @Override
     public Block getTabIcon() {
-        return BlockSV4.block;
+        return CsmRegistry.getBlock( BlockSV4.class );
     }
 
     /**
@@ -74,5 +73,32 @@ public class CsmTabHvac extends CsmTab
         initTabBlock( BlockART1.class, fmlPreInitializationEvent ); // ART1
         initTabBlock( BlockART2.class, fmlPreInitializationEvent ); // ART2
         initTabBlock( BlockARTD1.class, fmlPreInitializationEvent ); // ARTD1
+        initTabBlock( BlockARTD2.class, fmlPreInitializationEvent ); // ARTD2
+        initTabBlock( BlockDFV1.class, fmlPreInitializationEvent ); // DFV1
+        initTabBlock( BlockDFV2.class, fmlPreInitializationEvent ); // DFV2
+        initTabBlock( BlockDFVD1.class, fmlPreInitializationEvent ); // DFVD1
+        initTabBlock( BlockDFVD2.class, fmlPreInitializationEvent ); // DFVD2
+        initTabBlock( BlockLCV.class, fmlPreInitializationEvent ); // LCV
+        initTabBlock( BlockMV1.class, fmlPreInitializationEvent ); // MV1
+        initTabBlock( BlockMV2.class, fmlPreInitializationEvent ); // MV2
+        initTabBlock( BlockMV3.class, fmlPreInitializationEvent ); // MV3
+        initTabBlock( BlockMVD1.class, fmlPreInitializationEvent ); // MVD1
+        initTabBlock( BlockMVD2.class, fmlPreInitializationEvent ); // MVD2
+        initTabBlock( BlockPBF.class, fmlPreInitializationEvent ); // PBF
+        initTabBlock( BlockPV.class, fmlPreInitializationEvent ); // PV
+        initTabBlock( BlockPVD.class, fmlPreInitializationEvent ); // PVD
+        initTabBlock( BlockRV1.class, fmlPreInitializationEvent ); // RV1
+        initTabBlock( BlockRV2.class, fmlPreInitializationEvent ); // RV2
+        initTabBlock( BlockSCV.class, fmlPreInitializationEvent ); // SCV
+        initTabBlock( BlockSV1.class, fmlPreInitializationEvent ); // SV1
+        initTabBlock( BlockSV2.class, fmlPreInitializationEvent ); // SV2
+        initTabBlock( BlockSV3.class, fmlPreInitializationEvent ); // SV3
+        initTabBlock( BlockSV4.class, fmlPreInitializationEvent ); // SV4
+        initTabBlock( BlockSV5.class, fmlPreInitializationEvent ); // SV5
+        initTabBlock( BlockSVD1.class, fmlPreInitializationEvent ); // SVD1
+        initTabBlock( BlockSVD2.class, fmlPreInitializationEvent ); // SVD2
+        initTabBlock( BlockSVD3.class, fmlPreInitializationEvent ); // SVD3
+        initTabBlock( BlockSVD4.class, fmlPreInitializationEvent ); // SVD4
+        initTabBlock( BlockSVD5.class, fmlPreInitializationEvent ); // SVD5
     }
 }
