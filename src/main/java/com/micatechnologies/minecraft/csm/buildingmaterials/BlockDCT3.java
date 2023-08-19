@@ -5,9 +5,13 @@ import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.BlockRenderLayer;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockAccess;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public class BlockDCT3 extends AbstractBlock
 {
@@ -30,12 +34,16 @@ public class BlockDCT3 extends AbstractBlock
     /**
      * Retrieves the bounding box of the block.
      *
+     * @param state  the block state
+     * @param source the block access
+     * @param pos    the block position
+     *
      * @return The bounding box of the block.
      *
      * @since 1.0
      */
     @Override
-    public AxisAlignedBB getBlockBoundingBox() {
+    public AxisAlignedBB getBlockBoundingBox( IBlockState state, IBlockAccess source, BlockPos pos ) {
         return SQUARE_BOUNDING_BOX;
     }
 
@@ -70,12 +78,21 @@ public class BlockDCT3 extends AbstractBlock
     /**
      * Retrieves whether the block connects to redstone.
      *
+     * @param state  the block state
+     * @param access the block access
+     * @param pos    the block position
+     * @param facing the block facing direction
+     *
      * @return {@code true} if the block connects to redstone, {@code false} otherwise.
      *
      * @since 1.0
      */
     @Override
-    public boolean getBlockConnectsRedstone() {
+    public boolean getBlockConnectsRedstone( IBlockState state,
+                                             IBlockAccess access,
+                                             BlockPos pos,
+                                             @Nullable EnumFacing facing )
+    {
         return false;
     }
 

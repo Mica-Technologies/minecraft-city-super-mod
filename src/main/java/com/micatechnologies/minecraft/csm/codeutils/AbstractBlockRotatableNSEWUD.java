@@ -146,7 +146,7 @@ public abstract class AbstractBlockRotatableNSEWUD extends AbstractBlock
 
     /**
      * Overridden method from {@link Block} which retrieves the bounding box of the block from
-     * {@link #getBlockBoundingBox()} and rotates as necessary.
+     * {@link #getBlockBoundingBox(IBlockState, IBlockAccess, BlockPos)} and rotates as necessary.
      *
      * @param state  the block state
      * @param source the block access
@@ -159,6 +159,7 @@ public abstract class AbstractBlockRotatableNSEWUD extends AbstractBlock
     @Override
     @Nonnull
     public AxisAlignedBB getBoundingBox( IBlockState state, IBlockAccess source, BlockPos pos ) {
-        return RotationUtils.rotateBoundingBoxByFacing( getBlockBoundingBox(), state.getValue( FACING ) );
+        return RotationUtils.rotateBoundingBoxByFacing( getBlockBoundingBox( state, source, pos ),
+                                                        state.getValue( FACING ) );
     }
 }

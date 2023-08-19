@@ -11,9 +11,13 @@ import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.util.BlockRenderLayer;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockAccess;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Objects;
 
 /**
@@ -76,9 +80,14 @@ public abstract class AbstractBlockStairs extends BlockStairs implements IHasMod
     }
 
     /**
-     * Implementation of the {@link ICsmBlock#getBlockBoundingBox()} method which returns {@code null}, as this class
-     * uses the standard/default {@link BlockSlab} bounding boxes. This method is overridden to prevent the need to
-     * implement the {@link ICsmBlock#getBlockBoundingBox()} method in subclasses.
+     * Implementation of the {@link ICsmBlock#getBlockBoundingBox(IBlockState, IBlockAccess, BlockPos)} method which
+     * returns {@code null}, as this class uses the standard/default {@link BlockStairs} bounding boxes. This method is
+     * overridden to prevent the need to implement the
+     * {@link ICsmBlock#getBlockBoundingBox(IBlockState, IBlockAccess, BlockPos)} method in subclasses.
+     *
+     * @param state  the block state
+     * @param source the block access
+     * @param pos    the block position
      *
      * @return {@code null}
      *
@@ -86,7 +95,7 @@ public abstract class AbstractBlockStairs extends BlockStairs implements IHasMod
      * @since 1.0
      */
     @Override
-    public AxisAlignedBB getBlockBoundingBox() {
+    public AxisAlignedBB getBlockBoundingBox( IBlockState state, IBlockAccess source, BlockPos pos ) {
         return null;
     }
 
@@ -108,9 +117,16 @@ public abstract class AbstractBlockStairs extends BlockStairs implements IHasMod
     }
 
     /**
-     * Implementation of the {@link ICsmBlock#getBlockConnectsRedstone()} method which returns {@code false}, as this
-     * class uses the standard/default {@link BlockSlab} redstone connection value. This method is overridden to prevent
-     * the need to implement the {@link ICsmBlock#getBlockConnectsRedstone()} method in subclasses.
+     * Implementation of the {@link ICsmBlock#getBlockConnectsRedstone(IBlockState, IBlockAccess, BlockPos, EnumFacing)}
+     * method which returns {@code false}, as this class uses the standard/default {@link BlockStairs} redstone
+     * connection value. This method is overridden to prevent the need to implement the
+     * {@link ICsmBlock#getBlockConnectsRedstone(IBlockState, IBlockAccess, BlockPos, EnumFacing)} method in
+     * subclasses.
+     *
+     * @param state  the block state
+     * @param access the block access
+     * @param pos    the block position
+     * @param facing the block facing direction
      *
      * @return {@code false}
      *
@@ -118,7 +134,11 @@ public abstract class AbstractBlockStairs extends BlockStairs implements IHasMod
      * @since 1.0
      */
     @Override
-    public boolean getBlockConnectsRedstone() {
+    public boolean getBlockConnectsRedstone( IBlockState state,
+                                             IBlockAccess access,
+                                             BlockPos pos,
+                                             @Nullable EnumFacing facing )
+    {
         return false;
     }
 

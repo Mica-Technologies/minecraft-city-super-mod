@@ -71,7 +71,7 @@ public abstract class AbstractBlock extends Block implements IHasModel, ICsmBloc
 
     /**
      * Overridden method from {@link Block} which retrieves the bounding box of the block from
-     * {@link #getBlockBoundingBox()}.
+     * {@link #getBlockBoundingBox(IBlockState, IBlockAccess, BlockPos)}.
      *
      * @param state  the block state
      * @param source the block access
@@ -83,7 +83,7 @@ public abstract class AbstractBlock extends Block implements IHasModel, ICsmBloc
      */
     @Override
     public AxisAlignedBB getBoundingBox( IBlockState state, IBlockAccess source, BlockPos pos ) {
-        AxisAlignedBB blockBoundingBox = getBlockBoundingBox();
+        AxisAlignedBB blockBoundingBox = getBlockBoundingBox( state, source, pos );
         return blockBoundingBox == null ? SQUARE_BOUNDING_BOX : blockBoundingBox;
     }
 
@@ -141,7 +141,7 @@ public abstract class AbstractBlock extends Block implements IHasModel, ICsmBloc
                                        BlockPos pos,
                                        @Nullable EnumFacing facing )
     {
-        return getBlockConnectsRedstone();
+        return getBlockConnectsRedstone( state, access, pos, facing );
     }
 
     /**

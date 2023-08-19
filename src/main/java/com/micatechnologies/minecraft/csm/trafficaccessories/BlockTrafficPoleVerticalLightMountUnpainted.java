@@ -4,8 +4,6 @@ import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEWUD
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.block.BlockDirectional;
-import net.minecraft.block.BlockHorizontal;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -15,10 +13,10 @@ import net.minecraft.world.IBlockAccess;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class BlockTrafficPoleBaseTan extends AbstractBlockRotatableNSEWUD
+public class BlockTrafficPoleVerticalLightMountUnpainted extends AbstractBlockRotatableNSEWUD
 {
-    public BlockTrafficPoleBaseTan() {
-        super( Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0 );
+    public BlockTrafficPoleVerticalLightMountUnpainted() {
+        super( Material.ROCK, SoundType.STONE , "pickaxe", 1 , 2F , 10F , 0F , 0  );
     }
 
     /**
@@ -30,7 +28,7 @@ public class BlockTrafficPoleBaseTan extends AbstractBlockRotatableNSEWUD
      */
     @Override
     public String getBlockRegistryName() {
-        return "trafficpolebasetan";
+        return "trafficpoleverticallightmountunpainted";
     }
 
     /**
@@ -74,7 +72,7 @@ public class BlockTrafficPoleBaseTan extends AbstractBlockRotatableNSEWUD
      */
     @Override
     public boolean getBlockIsFullCube( IBlockState state ) {
-        return true;
+        return false;
     }
 
     /**
