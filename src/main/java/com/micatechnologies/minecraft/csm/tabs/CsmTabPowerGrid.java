@@ -2,6 +2,10 @@ package com.micatechnologies.minecraft.csm.tabs;
 
 import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
 import com.micatechnologies.minecraft.csm.hvac.BlockSV4;
+import com.micatechnologies.minecraft.csm.novelties.BlockACAsteroids;
+import com.micatechnologies.minecraft.csm.powergrid.BlockAFEI;
+import com.micatechnologies.minecraft.csm.powergrid.BlockAFEIS;
+import com.micatechnologies.minecraft.csm.powergrid.fe.BlockForgeEnergyProducer;
 import com.micatechnologies.minecraft.csm.powergrid.fe.BlockForgeEnergyToRedstone;
 import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
@@ -70,6 +74,10 @@ public class CsmTabPowerGrid extends CsmTab
      */
     @Override
     public void initTabElements( FMLPreInitializationEvent fmlPreInitializationEvent ) {
+        initTabBlock( BlockAFEI.class, fmlPreInitializationEvent ); // AFEI
+        initTabBlock( BlockAFEIS.class, fmlPreInitializationEvent ); // AFEIS
 
+        initTabBlock( BlockForgeEnergyProducer.class, fmlPreInitializationEvent ); // Forge Energy Producer
+        initTabBlock( BlockForgeEnergyToRedstone.class, fmlPreInitializationEvent ); // Forge Energy to Redstone
     }
 }

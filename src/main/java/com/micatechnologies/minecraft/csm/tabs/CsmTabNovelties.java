@@ -1,8 +1,11 @@
 package com.micatechnologies.minecraft.csm.tabs;
 
+import com.micatechnologies.minecraft.csm.CsmRegistry;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockPCC;
 import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
+import com.micatechnologies.minecraft.csm.hvac.BlockART1;
 import com.micatechnologies.minecraft.csm.hvac.BlockSV4;
-import com.micatechnologies.minecraft.csm.novelties.BlockAirHockeyTable;
+import com.micatechnologies.minecraft.csm.novelties.*;
 import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -36,7 +39,7 @@ public class CsmTabNovelties extends CsmTab
      */
     @Override
     public Block getTabIcon() {
-        return BlockAirHockeyTable.block;
+        return CsmRegistry.getBlock( BlockAirHockeyTable.class );
     }
 
     /**
@@ -70,6 +73,22 @@ public class CsmTabNovelties extends CsmTab
      */
     @Override
     public void initTabElements( FMLPreInitializationEvent fmlPreInitializationEvent ) {
-
+        initTabBlock( BlockACAsteroids.class, fmlPreInitializationEvent ); // AC Asteroids
+        initTabBlock( BlockACBattleZone.class, fmlPreInitializationEvent ); // AC Battle Zone
+        initTabBlock( BlockACCentipede.class, fmlPreInitializationEvent ); // AC Centipede
+        initTabBlock( BlockACGalaga.class, fmlPreInitializationEvent ); // AC Galaga
+        initTabBlock( BlockACMisCmd.class, fmlPreInitializationEvent ); // AC Missile Command
+        initTabBlock( BlockACPacMan.class, fmlPreInitializationEvent ); // AC PacMan
+        initTabBlock( BlockACTempest.class, fmlPreInitializationEvent ); // AC Tempest
+        initTabBlock( BlockAirHockeyTable.class, fmlPreInitializationEvent ); // Air Hockey Table
+        initTabBlock( BlockHd.class, fmlPreInitializationEvent ); // Hand Dryer
+        initTabBlock( BlockOldRecordPlayer.class, fmlPreInitializationEvent ); // Old Record Player
+        initTabBlock( BlockPingPongTable.class, fmlPreInitializationEvent ); // Ping Pong Table
+        initTabBlock( BlockPSHawkA97.class, fmlPreInitializationEvent ); // Player Statue HawkA97
+        initTabBlock( BlockPSPapaGinos.class, fmlPreInitializationEvent ); // Player Statue PapaGinos
+        initTabBlock( BlockPSThatCrazyPandog.class, fmlPreInitializationEvent ); // Player Statue ThatCrazyPandog
+        initTabBlock( BlockWaterDispenser.class, fmlPreInitializationEvent ); // Water Dispenser
+        initTabBlock( BlockWbs.class, fmlPreInitializationEvent ); // Water Bubbler (Short)
+        initTabBlock( BlockWbt.class, fmlPreInitializationEvent ); // Water Bubbler (Tall)
     }
 }

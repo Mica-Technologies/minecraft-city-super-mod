@@ -1,79 +1,52 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories;
 
-import com.micatechnologies.minecraft.csm.tabs.CsmTabTrafficAccessories;
-import net.minecraftforge.fml.relauncher.SideOnly;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.common.registry.GameRegistry;
-import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.client.event.ModelRegistryEvent;
-
-import net.minecraft.world.World;
-import net.minecraft.world.IBlockAccess;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.BlockRenderLayer;
-import net.minecraft.item.ItemBlock;
-import net.minecraft.item.Item;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.block.properties.PropertyDirection;
-import net.minecraft.block.material.Material;
+import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEW;
 import net.minecraft.block.SoundType;
+import net.minecraft.block.material.Material;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockDirectional;
 import net.minecraft.block.BlockHorizontal;
-import net.minecraft.block.Block;
+import net.minecraft.util.BlockRenderLayer;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockAccess;
 
-@ElementsCitySuperMod.ModElement.Tag
-public class BlockTrafficStreetNameSign extends ElementsCitySuperMod.ModElement {
-	@GameRegistry.ObjectHolder("csm:trafficstreetnamesign")
-	public static final Block block = null;
-	public BlockTrafficStreetNameSign(ElementsCitySuperMod instance) {
-		super(instance, 560);
-	}
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
-	@Override
-	public void initElements() {
-		elements.blocks.add(() -> new BlockCustom());
-		elements.items.add(() -> new ItemBlock(block).setRegistryName(block.getRegistryName()));
-	}
+public class BlockTrafficStreetNameSign extends AbstractBlockRotatableNSEW
+{
+    public BlockTrafficStreetNameSign() {
+        super( Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0.65F, 0 );
+    }
 
-	@SideOnly(Side.CLIENT)
-	@Override
-	public void registerModels(ModelRegistryEvent event) {
-		ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(block), 0,
-				new ModelResourceLocation("csm:trafficstreetnamesign", "inventory"));
-	}
-	public static class BlockCustom extends Block {
-		public static final PropertyDirection FACING = BlockHorizontal.FACING;
-		public BlockCustom() {
-			super(Material.ROCK);
-			setRegistryName("trafficstreetnamesign");
-			setUnlocalizedName("trafficstreetnamesign");
-			setSoundType(SoundType.STONE);
-			setHarvestLevel("pickaxe", 1);
-			setHardness(2F);
-			setResistance(10F);
-			setLightLevel(0.65F);
-			setLightOpacity(0);
-			setCreativeTab( CsmTabTrafficAccessories.get());
-			this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH));
-		}
+    /**
+     * Retrieves the registry name of the block.
+     *
+     * @return The registry name of the block.
+     *
+     * @since 1.0
+     */
+    @Override
+    public String getBlockRegistryName() {
+        return "trafficstreetnamesign";
+    }
 
-		@SideOnly(Side.CLIENT)
-		@Override
-		public BlockRenderLayer getBlockLayer() {
-			return BlockRenderLayer.CUTOUT_MIPPED;
-		}
-
-		@Override
-		public boolean isFullCube(IBlockState state) {
-			return false;
-		}
-
-		@Override
-		public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-			switch ((EnumFacing) state.getValue(BlockHorizontal.FACING)) {
+    /**
+     * Retrieves the bounding box of the block.
+     *
+     * @param state  the block state
+     * @param source the block access
+     * @param pos    the block position
+     *
+     * @return The bounding box of the block.
+     *
+     * @since 1.0
+     */
+    @Override
+    public AxisAlignedBB getBlockBoundingBox( IBlockState state, IBlockAccess source, BlockPos pos ) {
+        switch ((EnumFacing) state.getValue(BlockHorizontal.FACING)) {
 				case UP :
 				case DOWN :
 				case SOUTH :
@@ -86,32 +59,67 @@ public class BlockTrafficStreetNameSign extends ElementsCitySuperMod.ModElement 
 				case EAST :
 					return new AxisAlignedBB(1D, 0D, -0.3D, 0D, 1D, 1.3D);
 			}
-		}
+    }
 
-		@Override
-		protected net.minecraft.block.state.BlockStateContainer createBlockState() {
-			return new net.minecraft.block.state.BlockStateContainer(this, FACING);
-		}
+    /**
+     * Retrieves whether the block is an opaque cube.
+     *
+     * @param state The block state.
+     *
+     * @return {@code true} if the block is an opaque cube, {@code false} otherwise.
+     *
+     * @since 1.0
+     */
+    @Override
+    public boolean getBlockIsOpaqueCube( IBlockState state ) {
+        return false;
+    }
 
-		@Override
-		public IBlockState getStateFromMeta(int meta) {
-			return this.getDefaultState().withProperty(FACING, EnumFacing.getHorizontal(meta));
-		}
+    /**
+     * Retrieves whether the block is a full cube.
+     *
+     * @param state The block state.
+     *
+     * @return {@code true} if the block is a full cube, {@code false} otherwise.
+     *
+     * @since 1.0
+     */
+    @Override
+    public boolean getBlockIsFullCube( IBlockState state ) {
+        return false;
+    }
 
-		@Override
-		public int getMetaFromState(IBlockState state) {
-			return ((EnumFacing) state.getValue(FACING)).getHorizontalIndex();
-		}
+    /**
+     * Retrieves whether the block connects to redstone.
+     *
+     * @param state  the block state
+     * @param access the block access
+     * @param pos    the block position
+     * @param facing the block facing direction
+     *
+     * @return {@code true} if the block connects to redstone, {@code false} otherwise.
+     *
+     * @since 1.0
+     */
+    @Override
+    public boolean getBlockConnectsRedstone( IBlockState state,
+                                             IBlockAccess access,
+                                             BlockPos pos,
+                                             @Nullable EnumFacing facing )
+    {
+        return false;
+    }
 
-		@Override
-		public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta,
-				EntityLivingBase placer) {
-			return this.getDefaultState().withProperty(FACING, placer.getHorizontalFacing().getOpposite());
-		}
-
-		@Override
-		public boolean isOpaqueCube(IBlockState state) {
-			return false;
-		}
-	}
+    /**
+     * Retrieves the block's render layer.
+     *
+     * @return The block's render layer.
+     *
+     * @since 1.0
+     */
+    @Nonnull
+    @Override
+    public BlockRenderLayer getBlockRenderLayer() {
+        return BlockRenderLayer.CUTOUT_MIPPED;
+    }
 }

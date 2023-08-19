@@ -19,6 +19,7 @@ import net.minecraft.util.Mirror;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
@@ -27,6 +28,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public class BlockPCC extends AbstractBlockRotatableNSEWUD
 {
@@ -50,12 +52,16 @@ public class BlockPCC extends AbstractBlockRotatableNSEWUD
     /**
      * Retrieves the bounding box of the block.
      *
+     * @param state  the block state
+     * @param source the block access
+     * @param pos    the block position
+     *
      * @return The bounding box of the block.
      *
      * @since 1.0
      */
     @Override
-    public AxisAlignedBB getBlockBoundingBox() {
+    public AxisAlignedBB getBlockBoundingBox( IBlockState state, IBlockAccess source, BlockPos pos ) {
         return SQUARE_BOUNDING_BOX;
     }
 
@@ -90,12 +96,21 @@ public class BlockPCC extends AbstractBlockRotatableNSEWUD
     /**
      * Retrieves whether the block connects to redstone.
      *
+     * @param state  the block state
+     * @param access the block access
+     * @param pos    the block position
+     * @param facing the block facing direction
+     *
      * @return {@code true} if the block connects to redstone, {@code false} otherwise.
      *
      * @since 1.0
      */
     @Override
-    public boolean getBlockConnectsRedstone() {
+    public boolean getBlockConnectsRedstone( IBlockState state,
+                                             IBlockAccess access,
+                                             BlockPos pos,
+                                             @Nullable EnumFacing facing )
+    {
         return false;
     }
 
