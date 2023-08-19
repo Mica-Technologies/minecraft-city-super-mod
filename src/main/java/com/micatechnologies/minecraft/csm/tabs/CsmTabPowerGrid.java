@@ -76,7 +76,48 @@ public class CsmTabPowerGrid extends CsmTab
     public void initTabElements( FMLPreInitializationEvent fmlPreInitializationEvent ) {
         initTabBlock( BlockAFEI.class, fmlPreInitializationEvent ); // AFEI
         initTabBlock( BlockAFEIS.class, fmlPreInitializationEvent ); // AFEIS
-
+        initTabBlock( BlockFGPHVSign.class, fmlPreInitializationEvent ); // FGPHVSign
+        initTabBlock( BlockFGPoleBottom.class, fmlPreInitializationEvent ); // FGPoleBottom
+        initTabBlock( BlockFGPoleMiddle.class, fmlPreInitializationEvent ); // FGPPoleMiddle
+        initTabBlock( BlockFGPoleTop.class, fmlPreInitializationEvent ); // FGPoleTop
+        initTabBlock( BlockMLUVMB1.class, fmlPreInitializationEvent ); // MLUVMB1
+        initTabBlock( BlockMLUVMB2.class, fmlPreInitializationEvent ); // MLUVMB2
+        initTabBlock( BlockMLUVMB3.class, fmlPreInitializationEvent ); // MLUVMB3
+        initTabBlock( BlockMLUVMB4.class, fmlPreInitializationEvent ); // MLUVMB4
+        initTabBlock( BlockMLUVMB5.class, fmlPreInitializationEvent ); // MLUVMB5
+        initTabBlock( BlockMPHVSign.class, fmlPreInitializationEvent ); // MPHVSign
+        initTabBlock( BlockNewBrooksXArm1.class, fmlPreInitializationEvent ); // NewBrooksXArm1
+        initTabBlock( BlockNewBrooksXArm2.class, fmlPreInitializationEvent ); // NewBrooksXArm2
+        initTabBlock( BlockNewBrooksXArm3.class, fmlPreInitializationEvent ); // NewBrooksXArm3
+        initTabBlock( BlockNewBrooksXArm4.class, fmlPreInitializationEvent ); // NewBrooksXArm4
+        initTabBlock( BlockNewESBrooksXArm1.class, fmlPreInitializationEvent ); // NewESBrooksXArm1
+        initTabBlock( BlockNewESBrooksXArm1.class, fmlPreInitializationEvent ); // NewESBrooksXArm2
+        initTabBlock( BlockNewESBrooksXArm1.class, fmlPreInitializationEvent ); // NewESBrooksXArm1
+        initTabBlock( BlockOldBrooksXArm1.class, fmlPreInitializationEvent ); // OldBrooksXArm1
+        initTabBlock( BlockOldBrooksXArm2.class, fmlPreInitializationEvent ); // OldBrooksXArm2
+        initTabBlock( BlockOldBrooksXArm3.class, fmlPreInitializationEvent ); // OldBrooksXArm3
+        initTabBlock( BlockOldBrooksXArm4.class, fmlPreInitializationEvent ); // OldBrooksXArm4
+        initTabBlock( BlockOldBrooksXArm5.class, fmlPreInitializationEvent ); // OldBrooksXArm5
+        initTabBlock( BlockOldBrooksXArm6.class, fmlPreInitializationEvent ); // OldBrooksXArm6
+        initTabBlock( BlockOldBrooksXArm7.class, fmlPreInitializationEvent ); // OldBrooksXArm7
+        initTabBlock( BlockOldESBrooksXArm.class, fmlPreInitializationEvent ); // OldESBrooksXArm
+        initTabBlock( BlockPCAB1.class, fmlPreInitializationEvent ); // PCAB1
+        initTabBlock( BlockPCAB2.class, fmlPreInitializationEvent ); // PCAB2
+        initTabBlock( BlockPCAB3.class, fmlPreInitializationEvent ); // PCAB3
+        initTabBlock( BlockPCAW1.class, fmlPreInitializationEvent ); // PCAW1
+        initTabBlock( BlockPCAW2.class, fmlPreInitializationEvent ); // PCAW2
+        initTabBlock( BlockPCAW3.class, fmlPreInitializationEvent ); // PCAW3
+        initTabBlock( BlockPoleHVSign.class, fmlPreInitializationEvent ); // PoleHVSign
+        initTabBlock( BlockPoleVisStrips.class, fmlPreInitializationEvent ); // PoleVisStrips
+        initTabBlock( BlockPoleWireMount.class, fmlPreInitializationEvent ); // PoleWireMount
+        initTabBlock( BlockPullyMount.class, fmlPreInitializationEvent ); // PullyMount
+        initTabBlock( BlockSCELightMount.class, fmlPreInitializationEvent ); // SCELightMount
+        initTabBlock( BlockSCELightMountSmall.class, fmlPreInitializationEvent ); // SCELightMountSmall
+        initTabBlock( BlockTEInsulatorCover.class, fmlPreInitializationEvent ); // TEInsulatorCover
+        initTabBlock( BlockTEInsulatorCoverDE.class, fmlPreInitializationEvent ); // TEInsulatorCoverDE
+        initTabBlock( BlockTEPerchGard.class, fmlPreInitializationEvent ); // TEPerchGard
+        initTabBlock( BlockTransformerMount.class, fmlPreInitializationEvent ); // TransformerMount
+        initTabBlock( BlockTEInsulatorCover.class, fmlPreInitializationEvent ); // TSC
         initTabBlock( BlockForgeEnergyProducer.class, fmlPreInitializationEvent ); // Forge Energy Producer
         initTabBlock( BlockForgeEnergyToRedstone.class, fmlPreInitializationEvent ); // Forge Energy to Redstone
     }
