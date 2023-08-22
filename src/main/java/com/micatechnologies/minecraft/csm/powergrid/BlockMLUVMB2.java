@@ -16,7 +16,7 @@ import net.minecraft.world.IBlockAccess;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class BlockMLUVMB2 extends CsmTileEntityProvider< AbstractBlockRotatableNSEWUD >
+public class BlockMLUVMB2 extends AbstractBlockRotatableNSEWUD
 {
     public BlockMLUVMB2() {
         super( Material.ROCK, SoundType.STONE, "pickaxe", 1, 1F, 10F, 0F, 0 );
