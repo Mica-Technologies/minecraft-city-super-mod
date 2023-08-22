@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.lighting;
 
+import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEWUD;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDirectional;
 import net.minecraft.block.SoundType;
@@ -25,136 +26,125 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-@ElementsCitySuperMod.ModElement.Tag
-public class BlockLightupAir extends ElementsCitySuperMod.ModElement
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+public class BlockLightupAir extends AbstractBlockRotatableNSEWUD
 {
-    @GameRegistry.ObjectHolder( "csm:lightupair" )
-    public static final Block block = null;
-
-    public BlockLightupAir( ElementsCitySuperMod instance ) {
-        super( instance, 1062 );
+    public BlockLightupAir() {
+        super( Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 1F, 0 );
     }
 
     @Override
-    public void initElements() {
-        elements.blocks.add( () -> new BlockCustom().setRegistryName( "lightupair" ) );
-        elements.items.add( () -> new ItemBlock( block ).setRegistryName( block.getRegistryName() ) );
+    public boolean isPassable( IBlockAccess worldIn, BlockPos pos ) {
+        return true;
     }
 
-    @SideOnly( Side.CLIENT )
     @Override
-    public void registerModels( ModelRegistryEvent event ) {
-        ModelLoader.setCustomModelResourceLocation( Item.getItemFromBlock( block ), 0,
-                                                    new ModelResourceLocation( "csm:lightupair", "inventory" ) );
+    public boolean isReplaceable( IBlockAccess blockAccess, BlockPos pos ) {
+        return true;
     }
 
-    public static class BlockCustom extends Block
+    @Override
+    public BlockFaceShape getBlockFaceShape( IBlockAccess world, IBlockState state, BlockPos pos, EnumFacing face )
     {
-        public static final PropertyDirection FACING = BlockDirectional.FACING;
+        return BlockFaceShape.UNDEFINED;
+    }
 
-        public BlockCustom() {
-            super( Material.ROCK );
-            setUnlocalizedName( "lightupair" );
-            setSoundType( SoundType.STONE );
-            setHarvestLevel( "pickaxe", 1 );
-            setHardness( 2F );
-            setResistance( 10F );
-            setLightLevel( 1F );
-            setLightOpacity( 0 );
-            setCreativeTab( null );
-            this.setDefaultState( this.blockState.getBaseState().withProperty( FACING, EnumFacing.NORTH ) );
-        }
+    @Override
+    @javax.annotation.Nullable
+    public AxisAlignedBB getCollisionBoundingBox( IBlockState blockState, IBlockAccess worldIn, BlockPos pos ) {
+        return NULL_AABB;
+    }
 
-        @Override
-        public IBlockState getStateFromMeta( int meta ) {
-            return this.getDefaultState().withProperty( FACING, EnumFacing.getFront( meta ) );
-        }
+    /**
+     * Retrieves the registry name of the block.
+     *
+     * @return The registry name of the block.
+     *
+     * @since 1.0
+     */
+    @Override
+    public String getBlockRegistryName() {
+        return "lightupair";
+    }
 
-        @Override
-        public int getMetaFromState( IBlockState state ) {
-            return state.getValue( FACING ).getIndex();
-        }
+    /**
+     * Retrieves the bounding box of the block.
+     *
+     * @param state  the block state
+     * @param source the block access
+     * @param pos    the block position
+     *
+     * @return The bounding box of the block.
+     *
+     * @since 1.0
+     */
+    @Override
+    public AxisAlignedBB getBlockBoundingBox( IBlockState state, IBlockAccess source, BlockPos pos ) {
+        return new AxisAlignedBB( 1D, 0D, 1D, 1D, 0.05D, 1D );
+    }
 
-        @Override
-        public IBlockState withRotation( IBlockState state, Rotation rot ) {
-            return state.withProperty( FACING, rot.rotate( state.getValue( FACING ) ) );
-        }
+    /**
+     * Retrieves whether the block is an opaque cube.
+     *
+     * @param state The block state.
+     *
+     * @return {@code true} if the block is an opaque cube, {@code false} otherwise.
+     *
+     * @since 1.0
+     */
+    @Override
+    public boolean getBlockIsOpaqueCube( IBlockState state ) {
+        return false;
+    }
 
-        @Override
-        public IBlockState withMirror( IBlockState state, Mirror mirrorIn ) {
-            return state.withRotation( mirrorIn.toRotation( state.getValue( FACING ) ) );
-        }
+    /**
+     * Retrieves whether the block is a full cube.
+     *
+     * @param state The block state.
+     *
+     * @return {@code true} if the block is a full cube, {@code false} otherwise.
+     *
+     * @since 1.0
+     */
+    @Override
+    public boolean getBlockIsFullCube( IBlockState state ) {
+        return false;
+    }
 
-        @Override
-        public boolean isFullCube( IBlockState state ) {
-            return false;
-        }
+    /**
+     * Retrieves whether the block connects to redstone.
+     *
+     * @param state  the block state
+     * @param access the block access
+     * @param pos    the block position
+     * @param facing the block facing direction
+     *
+     * @return {@code true} if the block connects to redstone, {@code false} otherwise.
+     *
+     * @since 1.0
+     */
+    @Override
+    public boolean getBlockConnectsRedstone( IBlockState state,
+                                             IBlockAccess access,
+                                             BlockPos pos,
+                                             @Nullable EnumFacing facing )
+    {
+        return false;
+    }
 
-        @Override
-        public boolean isPassable( IBlockAccess worldIn, BlockPos pos ) {
-            return true;
-        }
-
-        @Override
-        public boolean isReplaceable( IBlockAccess blockAccess, BlockPos pos ) {
-            return true;
-        }
-
-        @Override
-        public AxisAlignedBB getBoundingBox( IBlockState state, IBlockAccess source, BlockPos pos ) {
-            switch ( state.getValue( BlockDirectional.FACING ) ) {
-                case SOUTH:
-                default:
-                    return new AxisAlignedBB( 1D, 0D, 1D, 1D, 0.05D, 1D );
-                case NORTH:
-                    return new AxisAlignedBB( 0D, 0D, 0D, 0D, 0.05D, 0D );
-                case WEST:
-                    return new AxisAlignedBB( 0D, 0D, 1D, 0D, 0.05D, 1D );
-                case EAST:
-                    return new AxisAlignedBB( 1D, 0D, 0D, 1D, 0.05D, 0D );
-            }
-        }
-
-        @Override
-        public BlockFaceShape getBlockFaceShape( IBlockAccess world, IBlockState state, BlockPos pos, EnumFacing face )
-        {
-            return BlockFaceShape.UNDEFINED;
-        }
-
-        @Override
-        @javax.annotation.Nullable
-        public AxisAlignedBB getCollisionBoundingBox( IBlockState blockState, IBlockAccess worldIn, BlockPos pos ) {
-            return NULL_AABB;
-        }
-
-        @Override
-        public boolean isOpaqueCube( IBlockState state ) {
-            return false;
-        }
-
-        @SideOnly( Side.CLIENT )
-        @Override
-        public BlockRenderLayer getBlockLayer() {
-            return BlockRenderLayer.TRANSLUCENT;
-        }
-
-        @Override
-        public IBlockState getStateForPlacement( World worldIn,
-                                                 BlockPos pos,
-                                                 EnumFacing facing,
-                                                 float hitX,
-                                                 float hitY,
-                                                 float hitZ,
-                                                 int meta,
-                                                 EntityLivingBase placer )
-        {
-            return this.getDefaultState()
-                       .withProperty( FACING, EnumFacing.getDirectionFromEntityLiving( pos, placer ) );
-        }
-
-        @Override
-        protected net.minecraft.block.state.BlockStateContainer createBlockState() {
-            return new net.minecraft.block.state.BlockStateContainer( this, FACING );
-        }
+    /**
+     * Retrieves the block's render layer.
+     *
+     * @return The block's render layer.
+     *
+     * @since 1.0
+     */
+    @Nonnull
+    @Override
+    public BlockRenderLayer getBlockRenderLayer() {
+        return BlockRenderLayer.TRANSLUCENT;
     }
 }
+

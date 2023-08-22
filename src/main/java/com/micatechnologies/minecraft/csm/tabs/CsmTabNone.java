@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.tabs;
 
 import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
 import com.micatechnologies.minecraft.csm.hvac.BlockSV4;
+import com.micatechnologies.minecraft.csm.lighting.BlockLightupAir;
 import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -69,6 +70,6 @@ public class CsmTabNone extends CsmTab
      */
     @Override
     public void initTabElements( FMLPreInitializationEvent fmlPreInitializationEvent ) {
-
+        initTabBlock( BlockLightupAir.class, fmlPreInitializationEvent ); // Lightup Air
     }
 }

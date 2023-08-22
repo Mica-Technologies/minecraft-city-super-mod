@@ -1,10 +1,10 @@
 package com.micatechnologies.minecraft.csm.tabs;
 
+import com.micatechnologies.minecraft.csm.CsmRegistry;
 import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
 import com.micatechnologies.minecraft.csm.hvac.BlockSV4;
 import com.micatechnologies.minecraft.csm.novelties.BlockACAsteroids;
-import com.micatechnologies.minecraft.csm.powergrid.BlockAFEI;
-import com.micatechnologies.minecraft.csm.powergrid.BlockAFEIS;
+import com.micatechnologies.minecraft.csm.powergrid.*;
 import com.micatechnologies.minecraft.csm.powergrid.fe.BlockForgeEnergyProducer;
 import com.micatechnologies.minecraft.csm.powergrid.fe.BlockForgeEnergyToRedstone;
 import net.minecraft.block.Block;
@@ -40,7 +40,7 @@ public class CsmTabPowerGrid extends CsmTab
      */
     @Override
     public Block getTabIcon() {
-        return BlockForgeEnergyToRedstone.block;
+        return CsmRegistry.getBlock( BlockForgeEnergyToRedstone.class );
     }
 
     /**
@@ -115,7 +115,7 @@ public class CsmTabPowerGrid extends CsmTab
         initTabBlock( BlockSCELightMountSmall.class, fmlPreInitializationEvent ); // SCELightMountSmall
         initTabBlock( BlockTEInsulatorCover.class, fmlPreInitializationEvent ); // TEInsulatorCover
         initTabBlock( BlockTEInsulatorCoverDE.class, fmlPreInitializationEvent ); // TEInsulatorCoverDE
-        initTabBlock( BlockTEPerchGard.class, fmlPreInitializationEvent ); // TEPerchGard
+        initTabBlock( BlockTEPerchGuard.class, fmlPreInitializationEvent ); // TEPerchGuard
         initTabBlock( BlockTransformerMount.class, fmlPreInitializationEvent ); // TransformerMount
         initTabBlock( BlockTEInsulatorCover.class, fmlPreInitializationEvent ); // TSC
         initTabBlock( BlockForgeEnergyProducer.class, fmlPreInitializationEvent ); // Forge Energy Producer
