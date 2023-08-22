@@ -14,7 +14,7 @@ public class ArchUpgradeClassConverter
 
         // Define upgrade path
         final String upgradePath
-                = "E:\\source\\repos\\minecraft-city-super-mod\\src\\main\\java\\com\\micatechnologies\\minecraft\\csm\\lighting";
+                = "E:\\source\\repos\\minecraft-city-super-mod\\src\\main\\java\\com\\micatechnologies\\minecraft\\csm\\trafficsigns";
         final boolean upgradeIsFileNotFolder = false;
 
         // Upgrade
@@ -55,9 +55,89 @@ public class ArchUpgradeClassConverter
         if ( checkLightingClass( file, fileContents ) ) {
             return upgradeLightingClass( file, fileContents );
         }
+        else if ( checkTrafficSignClass( file, fileContents ) ) {
+            return upgradeTrafficSignClass( file, fileContents );
+        }
         else {
             return upgradeRegularClass( file, fileContents );
         }
+    }
+
+    public static boolean checkTrafficSignClass( File file, String fileContents ) throws Exception {
+        final String filePath = file.getPath();
+        return fileContents.contains( "extends AbstractBlockSign" );
+    }
+
+    public static boolean upgradeTrafficSignClass( File file, String fileContents ) throws Exception {
+        final String filePath = file.getPath();
+
+        // Check if class contains previous version
+        final String previousVersionHeaderRegex = "@ElementsCitySuperMod\\.ModElement\\.Tag";
+        boolean previousVersionHeaderFound = Pattern.compile( previousVersionHeaderRegex )
+                                                    .matcher( fileContents )
+                                                    .find();
+
+        if ( previousVersionHeaderFound ) {
+            // Get block ID
+            String blockIdRegex = "public\\sString\\sgetBlockRegistryName\\(\\)\\s?\\{\\s*return\\s?\"(.*)\";";
+            int blockIdIndex = 1;
+            Matcher matcher = Pattern.compile( blockIdRegex ).matcher( fileContents );
+            String blockId;
+            if ( matcher.find() ) {
+                blockId = matcher.group( blockIdIndex );
+            }
+            else {
+
+                throw new Exception( "Failed to get block ID from file: " + filePath );
+            }
+
+            // Get package name
+            String packageNameRegex = "package\\s(.*);";
+            int packageNameIndex = 1;
+            matcher = Pattern.compile( packageNameRegex ).matcher( fileContents );
+            String packageName;
+            if ( matcher.find() ) {
+                packageName = matcher.group( packageNameIndex );
+            }
+            else {
+                throw new Exception( "Failed to get package name from file: " + filePath );
+            }
+
+            // Get block class name
+            String classNameRegex = "public\\sclass\\s(.*)\\sextends\\sElementsCitySuperMod\\.ModElement";
+            int classNameIndex = 1;
+            matcher = Pattern.compile( classNameRegex ).matcher( fileContents );
+            String className;
+            if ( matcher.find() ) {
+                className = matcher.group( classNameIndex );
+            }
+            else {
+                throw new Exception( "Failed to get class name from file: " + filePath );
+            }
+
+            // Build new class
+            StringBuilder newClass = new StringBuilder();
+            newClass.append( "package " +
+                                     packageName +
+                                     ";\n" +
+                                     "\n" +
+                                     "public class " +
+                                     className +
+                                     " extends AbstractBlockSign\n" +
+                                     "{\n" +
+                                     "    @Override\n" +
+                                     "    public String getBlockRegistryName() {\n" +
+                                     "        return \"" +
+                                     blockId +
+                                     "\";\n" +
+                                     "    }\n" +
+                                     "}\n" );
+
+            // Write back to file
+            FileUtils.writeStringToFile( file, newClass.toString() );
+        }
+
+        return true;
     }
 
     public static boolean checkLightingClass( File file, String fileContents ) throws Exception {

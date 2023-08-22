@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.trafficsigns;
 
+import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEW;
 import com.micatechnologies.minecraft.csm.tabs.CsmTabRoadSigns;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.block.Block;
@@ -12,77 +13,99 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 @MethodsReturnNonnullByDefault
-public abstract class AbstractBlockSign extends Block
+public abstract class AbstractBlockSign extends AbstractBlockRotatableNSEW
 {
-    public static final PropertyDirection FACING = BlockHorizontal.FACING;
 
     public AbstractBlockSign() {
-        super( Material.ROCK );
-        setUnlocalizedName( getBlockRegistryName() );
-        setSoundType( SoundType.STONE );
-        setHarvestLevel( "pickaxe", 1 );
-        setHardness( 2F );
-        setResistance( 10F );
-        setLightLevel( 0F );
-        setLightOpacity( 0 );
-        setCreativeTab( CsmTabRoadSigns.get() );
-        this.setDefaultState( this.blockState.getBaseState().withProperty( FACING, EnumFacing.NORTH ) );
+        super( Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0 );
     }
 
-    @SideOnly( Side.CLIENT )
+    /**
+     * Retrieves the bounding box of the block.
+     *
+     * @param state  the block state
+     * @param source the block access
+     * @param pos    the block position
+     *
+     * @return The bounding box of the block.
+     *
+     * @since 1.0
+     */
     @Override
-    public BlockRenderLayer getBlockLayer() {
-        return BlockRenderLayer.CUTOUT_MIPPED;
+    public AxisAlignedBB getBlockBoundingBox( IBlockState state, IBlockAccess source, BlockPos pos ) {
+        return SQUARE_BOUNDING_BOX;
     }
 
+    /**
+     * Retrieves whether the block is an opaque cube.
+     *
+     * @param state The block state.
+     *
+     * @return {@code true} if the block is an opaque cube, {@code false} otherwise.
+     *
+     * @since 1.0
+     */
     @Override
-    protected net.minecraft.block.state.BlockStateContainer createBlockState() {
-        return new net.minecraft.block.state.BlockStateContainer( this, FACING );
-    }
-
-    @Override
-    public IBlockState getStateFromMeta( int meta ) {
-        int facingVal = meta;
-        // Convert old directional WEST to new horizontal WEST
-        if ( facingVal == 4 ) {
-            facingVal = 1;
-        }
-        // Convert old directional EAST to new horizontal EAST
-        else if ( facingVal == 5 ) {
-            facingVal = 3;
-        }
-        // Otherwise, fallback to SOUTH (0) if invalid
-        else if ( facingVal < 0 || facingVal > 3 ) {
-            facingVal = 0;
-        }
-        return getDefaultState().withProperty( FACING, EnumFacing.getHorizontal( facingVal ) );
-    }
-
-    @Override
-    public int getMetaFromState( IBlockState state ) {
-        return state.getValue( FACING ).getHorizontalIndex();
-    }
-
-    @Override
-    public void onBlockPlacedBy( World world,
-                                 BlockPos pos,
-                                 IBlockState state,
-                                 EntityLivingBase placer,
-                                 ItemStack stack )
-    {
-        world.setBlockState( pos, state.withProperty( FACING, placer.getHorizontalFacing().getOpposite() ), 2 );
-    }
-
-    @Override
-    public boolean isOpaqueCube( IBlockState state ) {
+    public boolean getBlockIsOpaqueCube( IBlockState state ) {
         return false;
     }
 
-    abstract public String getBlockRegistryName();
+    /**
+     * Retrieves whether the block is a full cube.
+     *
+     * @param state The block state.
+     *
+     * @return {@code true} if the block is a full cube, {@code false} otherwise.
+     *
+     * @since 1.0
+     */
+    @Override
+    public boolean getBlockIsFullCube( IBlockState state ) {
+        return false;
+    }
+
+    /**
+     * Retrieves whether the block connects to redstone.
+     *
+     * @param state  the block state
+     * @param access the block access
+     * @param pos    the block position
+     * @param facing the block facing direction
+     *
+     * @return {@code true} if the block connects to redstone, {@code false} otherwise.
+     *
+     * @since 1.0
+     */
+    @Override
+    public boolean getBlockConnectsRedstone( IBlockState state,
+                                             IBlockAccess access,
+                                             BlockPos pos,
+                                             @Nullable EnumFacing facing )
+    {
+        return false;
+    }
+
+    /**
+     * Retrieves the block's render layer.
+     *
+     * @return The block's render layer.
+     *
+     * @since 1.0
+     */
+    @Nonnull
+    @Override
+    public BlockRenderLayer getBlockRenderLayer() {
+        return BlockRenderLayer.CUTOUT_MIPPED;
+    }
 }
