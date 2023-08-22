@@ -13,7 +13,6 @@ import net.minecraftforge.energy.IEnergyStorage;
 
 import javax.annotation.Nullable;
 
-@ElementsCitySuperMod.ModElement.Tag
 public class TileEntityForgeEnergyProducer extends TileEntity implements IEnergyStorage, ITickable
 {
     private static final String NBT_TICK_RATE_KEY = "tickRate";

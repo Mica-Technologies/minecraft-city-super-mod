@@ -16,7 +16,6 @@ import net.minecraftforge.energy.IEnergyStorage;
 
 import javax.annotation.Nullable;
 
-@ElementsCitySuperMod.ModElement.Tag
 public class TileEntityForgeEnergyConsumer extends TileEntity implements IEnergyStorage, ITickable
 {
 
@@ -111,7 +110,7 @@ public class TileEntityForgeEnergyConsumer extends TileEntity implements IEnergy
                 boolean isGridPowered = consumeEnergy( energyConsume );
 
                 // Check if block is already outputting power
-                PropertyBool blockPoweredProperty = BlockForgeEnergyToRedstone.BlockCustom.POWERED;
+                PropertyBool blockPoweredProperty = BlockForgeEnergyToRedstone.POWERED;
                 boolean isBlockPowered = blockState.getValue( blockPoweredProperty );
 
                 // Update block power state if grid power does not match

@@ -7,11 +7,9 @@ import net.minecraft.world.IBlockAccess;
 
 public class BlockAE115CU extends AbstractBrightLight
 {
-    public static final String elementId = "ae115cu";
-
     @Override
     public String getBlockRegistryName() {
-        return elementId;
+        return "ae115cu";
     }
 
     /**

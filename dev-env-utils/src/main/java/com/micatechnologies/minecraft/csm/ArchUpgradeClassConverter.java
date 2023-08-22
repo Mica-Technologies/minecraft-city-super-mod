@@ -13,9 +13,9 @@ public class ArchUpgradeClassConverter
         System.out.println( "Running CSM Class Converter..." );
 
         // Define upgrade path
-        final String upgradePath = "E:\\source\\repos\\minecraft-city-super-mod\\src\\main\\java\\com" +
-                "\\micatechnologies\\minecraft\\csm\\hvac\\BlockARTD1.java";
-        final boolean upgradeIsFileNotFolder = true;
+        final String upgradePath
+                = "E:\\source\\repos\\minecraft-city-super-mod\\src\\main\\java\\com\\micatechnologies\\minecraft\\csm\\lighting";
+        final boolean upgradeIsFileNotFolder = false;
 
         // Upgrade
         if ( upgradeIsFileNotFolder ) {
@@ -52,6 +52,167 @@ public class ArchUpgradeClassConverter
         // Read file to string
         String fileContents = FileUtils.readFileToString( file );
 
+        if ( checkLightingClass( file, fileContents ) ) {
+            return upgradeLightingClass( file, fileContents );
+        }
+        else {
+            return upgradeRegularClass( file, fileContents );
+        }
+    }
+
+    public static boolean checkLightingClass( File file, String fileContents ) throws Exception {
+        final String filePath = file.getPath();
+        return fileContents.contains( "extends AbstractBrightLight" );
+    }
+
+    public static boolean upgradeLightingClass( File file, String fileContents ) throws Exception {
+        final String filePath = file.getPath();
+
+        // Check if class contains previous version
+        final String previousVersionHeaderRegex = "@ElementsCitySuperMod\\.ModElement\\.Tag";
+        boolean previousVersionHeaderFound = Pattern.compile( previousVersionHeaderRegex )
+                                                    .matcher( fileContents )
+                                                    .find();
+
+        if ( previousVersionHeaderFound ) {
+            // Get block ID
+            String blockIdRegex = "static\\sfinal\\sString\\selementId\\s?=\\s?\"(.*)\";";
+            int blockIdIndex = 1;
+            Matcher matcher = Pattern.compile( blockIdRegex ).matcher( fileContents );
+            String blockId;
+            if ( matcher.find() ) {
+                blockId = matcher.group( blockIdIndex );
+            }
+            else {
+
+                throw new Exception( "Failed to get block ID from file: " + filePath );
+            }
+
+            // Get bright light X offset
+            String brightLightXOffsetRegex
+                    = "public\\sint\\sgetBrightLightXOffset\\(\\)\\s?\\{\\s*return\\s(.*);\\s*\\}";
+            int brightLightXOffsetIndex = 1;
+            matcher = Pattern.compile( brightLightXOffsetRegex ).matcher( fileContents );
+            String brightLightXOffset;
+            if ( matcher.find() ) {
+                brightLightXOffset = matcher.group( brightLightXOffsetIndex );
+            }
+            else {
+                throw new Exception( "Failed to get bright light x offset from file: " + filePath );
+            }
+
+            // Get block bounding box
+            String boundingBoxRegex1
+                    = ".*getBoundingBox.*IBlockState\\s*.*\\s*IBlockAccess\\s*.*\\s*BlockPos\\s*.*\\s*(switch\\s.*(\\s*[^}]*default:\\s*([^}\\r\\n]*)[^}]*)})\\s*}";
+            String boundingBoxRegex2
+                    = ".*getBoundingBox.*IBlockState\\s*.*\\s*IBlockAccess\\s*.*\\s*BlockPos\\s*.*\\s*(switch\\s.*(\\s*[^}]*)})\\s*}";
+            int boundingBoxIndex1 = 3;
+            int boundingBoxIndex2 = 1;
+            matcher = Pattern.compile( boundingBoxRegex1 ).matcher( fileContents );
+            String boundingBox;
+            if ( matcher.find() ) {
+                boundingBox = matcher.group( boundingBoxIndex1 );
+            }
+            else {
+                matcher = Pattern.compile( boundingBoxRegex2 ).matcher( fileContents );
+                if ( matcher.find() ) {
+                    System.err.println( "[WARN] Failed to get default bounding box from bright light file and " +
+                                                "full copied bounding box will be used: " +
+                                                filePath );
+                    boundingBox = matcher.group( boundingBoxIndex2 );
+                }
+                else {
+                    System.err.println(
+                            "[WARN] Failed to get bounding box from bright light file and default (SQUARE) " +
+                                    "bounding box will be used: " +
+                                    filePath );
+                    boundingBox = "return SQUARE_BOUNDING_BOX;";
+                }
+            }
+
+            // Get package name
+            String packageNameRegex = "package\\s(.*);";
+            int packageNameIndex = 1;
+            matcher = Pattern.compile( packageNameRegex ).matcher( fileContents );
+            String packageName;
+            if ( matcher.find() ) {
+                packageName = matcher.group( packageNameIndex );
+            }
+            else {
+                throw new Exception( "Failed to get package name from file: " + filePath );
+            }
+
+            // Get block class name
+            String classNameRegex = "public\\sclass\\s(.*)\\sextends\\sElementsCitySuperMod\\.ModElement";
+            int classNameIndex = 1;
+            matcher = Pattern.compile( classNameRegex ).matcher( fileContents );
+            String className;
+            if ( matcher.find() ) {
+                className = matcher.group( classNameIndex );
+            }
+            else {
+                throw new Exception( "Failed to get class name from file: " + filePath );
+            }
+
+            // Build new class
+            StringBuilder newClass = new StringBuilder();
+            newClass.append( "package " +
+                                     packageName +
+                                     ";\n" +
+                                     "\n" +
+                                     "import net.minecraft.block.state.IBlockState;\n" +
+                                     "import net.minecraft.util.math.AxisAlignedBB;\n" +
+                                     "import net.minecraft.util.math.BlockPos;\n" +
+                                     "import net.minecraft.world.IBlockAccess;\n" +
+                                     "\n" +
+                                     "public class " +
+                                     className +
+                                     " extends AbstractBrightLight\n" +
+                                     "{\n" +
+                                     "    @Override\n" +
+                                     "    public String getBlockRegistryName() {\n" +
+                                     "        return \"" +
+                                     blockId +
+                                     "\";\n" +
+                                     "    }\n" +
+                                     "\n" +
+                                     "    /**\n" +
+                                     "     * Retrieves the bounding box of the block.\n" +
+                                     "     *\n" +
+                                     "     * @param state  the block state\n" +
+                                     "     * @param source the block access\n" +
+                                     "     * @param pos    the block position\n" +
+                                     "     *\n" +
+                                     "     * @return The bounding box of the block.\n" +
+                                     "     *\n" +
+                                     "     * @since 1.0\n" +
+                                     "     */\n" +
+                                     "    @Override\n" +
+                                     "    public AxisAlignedBB getBlockBoundingBox( IBlockState state, IBlockAccess source, BlockPos pos ) {\n" +
+                                     "        " +
+                                     boundingBox +
+                                     "\n" +
+                                     "    }\n" +
+                                     "\n" +
+                                     "    @Override\n" +
+                                     "    public int getBrightLightXOffset() {\n" +
+                                     "        return " +
+                                     brightLightXOffset +
+                                     ";\n" +
+                                     "    }\n" +
+                                     "\n" +
+                                     "}\n" );
+
+            // Write back to file
+            FileUtils.writeStringToFile( file, newClass.toString() );
+        }
+
+        return true;
+    }
+
+    public static boolean upgradeRegularClass( File file, String fileContents ) throws Exception {
+        final String filePath = file.getPath();
+
         // Define new class names
         final String[] newClassNames = new String[]{ "AbstractBlock",
                                                      "AbstractBlockRotatableNSEWUD",
@@ -74,7 +235,7 @@ public class ArchUpgradeClassConverter
 
         // Throw exception if class is unsupported (not previous version or new class)
         if ( !previousVersionHeaderFound && !newClassFound ) {
-            throw new Exception( "Unsupported file: " + file.getPath() );
+            throw new Exception( "Unsupported file: " + filePath );
         }
 
         // Upgrade class if needed
@@ -89,12 +250,12 @@ public class ArchUpgradeClassConverter
             final String[] unsupportedRegex = new String[]{};
             for ( String unsupported : unsupportedContains ) {
                 if ( fileContents.contains( unsupported ) ) {
-                    throw new Exception( "Unsupported code found in file: " + file.getPath() );
+                    throw new Exception( "Unsupported code found in file: " + filePath );
                 }
             }
             for ( String unsupported : unsupportedRegex ) {
                 if ( Pattern.compile( unsupported ).matcher( fileContents ).find() ) {
-                    throw new Exception( "Unsupported code found in file: " + file.getPath() );
+                    throw new Exception( "Unsupported code found in file: " + filePath );
                 }
             }
 
@@ -122,7 +283,7 @@ public class ArchUpgradeClassConverter
                     blockId = matcher.group( blockIdIndex );
                 }
                 else {
-                    throw new Exception( "Failed to get block ID from file: " + file.getPath() );
+                    throw new Exception( "Failed to get block ID from file: " + filePath );
                 }
             }
 
@@ -136,7 +297,7 @@ public class ArchUpgradeClassConverter
                 materialType = matcher.group( materialTypeIndex );
             }
             else {
-                throw new Exception( "Failed to get material type from file: " + file.getPath() );
+                throw new Exception( "Failed to get material type from file: " + filePath );
             }
 
             // Get sound type
@@ -148,7 +309,7 @@ public class ArchUpgradeClassConverter
                 soundType = matcher.group( soundTypeIndex );
             }
             else {
-                throw new Exception( "Failed to get sound type from file: " + file.getPath() );
+                throw new Exception( "Failed to get sound type from file: " + filePath );
             }
 
             // Get harvest level
@@ -164,7 +325,7 @@ public class ArchUpgradeClassConverter
                 System.err.println( "[WARN] Failed to get harvest level from file and default (" +
                                             defaultHarvestLevel +
                                             ") will be used: " +
-                                            file.getPath() );
+                                            filePath );
                 harvestLevel = defaultHarvestLevel;
             }
 
@@ -177,7 +338,7 @@ public class ArchUpgradeClassConverter
                 hardness = matcher.group( hardnessIndex );
             }
             else {
-                throw new Exception( "Failed to get hardness from file: " + file.getPath() );
+                throw new Exception( "Failed to get hardness from file: " + filePath );
             }
 
             // Get resistance
@@ -189,7 +350,7 @@ public class ArchUpgradeClassConverter
                 resistance = matcher.group( resistanceIndex );
             }
             else {
-                throw new Exception( "Failed to get resistance from file: " + file.getPath() );
+                throw new Exception( "Failed to get resistance from file: " + filePath );
             }
 
             // Get light level
@@ -201,7 +362,7 @@ public class ArchUpgradeClassConverter
                 lightLevel = matcher.group( lightLevelIndex );
             }
             else {
-                throw new Exception( "Failed to get light level from file: " + file.getPath() );
+                throw new Exception( "Failed to get light level from file: " + filePath );
             }
 
             // Get light opacity
@@ -213,7 +374,7 @@ public class ArchUpgradeClassConverter
                 lightOpacity = matcher.group( lightOpacityIndex );
             }
             else {
-                throw new Exception( "Failed to get light opacity from file: " + file.getPath() );
+                throw new Exception( "Failed to get light opacity from file: " + filePath );
             }
 
             // Get full cube value
@@ -257,16 +418,32 @@ public class ArchUpgradeClassConverter
             }
 
             // Get block bounding box
-            String boundingBoxRegex
+            String boundingBoxRegex1
+                    = ".*getBoundingBox.*IBlockState\\s*.*\\s*IBlockAccess\\s*.*\\s*BlockPos\\s*.*\\s*(switch\\s.*(\\s*[^}]*default:\\s*([^}\\r\\n]*)[^}]*)})\\s*}";
+            String boundingBoxRegex2
                     = ".*getBoundingBox.*IBlockState\\s*.*\\s*IBlockAccess\\s*.*\\s*BlockPos\\s*.*\\s*(switch\\s.*(\\s*[^}]*)})\\s*}";
-            int boundingBoxIndex = 1;
-            matcher = Pattern.compile( boundingBoxRegex ).matcher( fileContents );
+            int boundingBoxIndex1 = 3;
+            int boundingBoxIndex2 = 1;
+            matcher = Pattern.compile( boundingBoxRegex1 ).matcher( fileContents );
             String boundingBox;
             if ( matcher.find() ) {
-                boundingBox = matcher.group( boundingBoxIndex );
+                boundingBox = matcher.group( boundingBoxIndex1 );
             }
             else {
-                boundingBox = "return SQUARE_BOUNDING_BOX;";
+                matcher = Pattern.compile( boundingBoxRegex2 ).matcher( fileContents );
+                if ( matcher.find() ) {
+                    System.err.println( "[WARN] Failed to get default bounding box from bright light file and " +
+                                                "full copied bounding box will be used: " +
+                                                filePath );
+                    boundingBox = matcher.group( boundingBoxIndex2 );
+                }
+                else {
+                    System.err.println(
+                            "[WARN] Failed to get bounding box from bright light file and default (SQUARE) " +
+                                    "bounding box will be used: " +
+                                    filePath );
+                    boundingBox = "return SQUARE_BOUNDING_BOX;";
+                }
             }
 
             // Get block class name
@@ -278,7 +455,7 @@ public class ArchUpgradeClassConverter
                 className = matcher.group( classNameIndex );
             }
             else {
-                throw new Exception( "Failed to get class name from file: " + file.getPath() );
+                throw new Exception( "Failed to get class name from file: " + filePath );
             }
 
             // Get new block extends class name
@@ -299,7 +476,7 @@ public class ArchUpgradeClassConverter
                 packageName = matcher.group( packageNameIndex );
             }
             else {
-                throw new Exception( "Failed to get package name from file: " + file.getPath() );
+                throw new Exception( "Failed to get package name from file: " + filePath );
             }
 
             // Build new class
