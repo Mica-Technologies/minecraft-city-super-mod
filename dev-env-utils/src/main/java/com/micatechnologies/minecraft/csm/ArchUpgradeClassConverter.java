@@ -14,7 +14,8 @@ public class ArchUpgradeClassConverter
 
         // Define upgrade path
         final String upgradePath
-                = "E:\\source\\repos\\minecraft-city-super-mod\\src\\main\\java\\com\\micatechnologies\\minecraft\\csm\\trafficsigns";
+                = "/Users/ahawk/IdeaProjects/minecraft-city-super-mod/src/main/java/com/micatechnologies/minecraft" +
+                "/csm/technology";
         final boolean upgradeIsFileNotFolder = false;
 
         // Upgrade

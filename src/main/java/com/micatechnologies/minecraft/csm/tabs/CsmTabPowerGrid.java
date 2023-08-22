@@ -2,13 +2,10 @@ package com.micatechnologies.minecraft.csm.tabs;
 
 import com.micatechnologies.minecraft.csm.CsmRegistry;
 import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
-import com.micatechnologies.minecraft.csm.hvac.BlockSV4;
-import com.micatechnologies.minecraft.csm.novelties.BlockACAsteroids;
 import com.micatechnologies.minecraft.csm.powergrid.*;
 import com.micatechnologies.minecraft.csm.powergrid.fe.BlockForgeEnergyProducer;
 import com.micatechnologies.minecraft.csm.powergrid.fe.BlockForgeEnergyToRedstone;
 import net.minecraft.block.Block;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 /**
