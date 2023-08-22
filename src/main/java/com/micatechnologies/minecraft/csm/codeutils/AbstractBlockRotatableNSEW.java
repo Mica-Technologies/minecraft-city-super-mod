@@ -59,8 +59,39 @@ public abstract class AbstractBlockRotatableNSEW extends AbstractBlock
                                        float lightLevel,
                                        int lightOpacity )
     {
+        this( material, soundType, harvestToolClass, harvestLevel, hardness, resistance, lightLevel, lightOpacity,
+              true );
+    }
+
+    /**
+     * Constructs an {@link AbstractBlockRotatableNSEW} instance.
+     *
+     * @param material         The material of the block.
+     * @param soundType        The sound type of the block.
+     * @param harvestToolClass The harvest tool class of the block.
+     * @param harvestLevel     The harvest level of the block.
+     * @param hardness         The block's hardness.
+     * @param resistance       The block's resistance to explosions.
+     * @param lightLevel       The block's light level.
+     * @param lightOpacity     The block's light opacity.
+     * @param setDefaultState  Whether to set the default state of the block
+     *
+     * @since 1.0
+     */
+    public AbstractBlockRotatableNSEW( Material material,
+                                       SoundType soundType,
+                                       String harvestToolClass,
+                                       int harvestLevel,
+                                       float hardness,
+                                       float resistance,
+                                       float lightLevel,
+                                       int lightOpacity,
+                                       boolean setDefaultState )
+    {
         super( material, soundType, harvestToolClass, harvestLevel, hardness, resistance, lightLevel, lightOpacity );
-        this.setDefaultState( this.blockState.getBaseState().withProperty( FACING, EnumFacing.NORTH ) );
+        if ( setDefaultState ) {
+            this.setDefaultState( this.blockState.getBaseState().withProperty( FACING, EnumFacing.NORTH ) );
+        }
     }
 
     /**
