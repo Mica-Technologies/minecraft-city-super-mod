@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.powergrid.fe;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlock;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import com.micatechnologies.minecraft.csm.tabs.CsmTabPowerGrid;
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
@@ -34,11 +35,8 @@ import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 
-public class BlockForgeEnergyToRedstone extends AbstractBlock implements ITileEntityProvider
+public class BlockForgeEnergyToRedstone extends AbstractBlock implements ICsmTileEntityProvider
 {
-
-
-    public static error; // TODO: Fix tile entity registration
     public static final PropertyBool POWERED = PropertyBool.create( "powered" );
 
     public BlockForgeEnergyToRedstone() {
@@ -101,17 +99,6 @@ public class BlockForgeEnergyToRedstone extends AbstractBlock implements ITileEn
     {
         super.addInformation( p_addInformation_1_, p_addInformation_2_, p_addInformation_3_, p_addInformation_4_ );
         p_addInformation_3_.add( I18n.format( "csm.highvoltage" ) );
-    }
-
-    @Override
-    @ParametersAreNonnullByDefault
-    public TileEntity createNewTileEntity( World world, int i ) {
-        return new TileEntityForgeEnergyConsumer();
-    }
-
-    @Override
-    public boolean hasTileEntity( IBlockState p_hasTileEntity_1_ ) {
-        return true;
     }
 
     /**
@@ -202,6 +189,18 @@ public class BlockForgeEnergyToRedstone extends AbstractBlock implements ITileEn
     @Override
     public BlockRenderLayer getBlockRenderLayer() {
         return BlockRenderLayer.SOLID;
+    }
+
+    /**
+     * Gets the tile entity class for the block.
+     *
+     * @return the tile entity class for the block
+     *
+     * @since 1.0
+     */
+    @Override
+    public Class< ? extends TileEntity > getTileEntityClass() {
+        return TileEntityForgeEnergyConsumer.class;
     }
 }
 

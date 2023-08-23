@@ -1,133 +1,164 @@
 package com.micatechnologies.minecraft.csm.technology;
 
 import com.micatechnologies.minecraft.csm.Csm;
-import com.micatechnologies.minecraft.csm.tabs.CsmTabTechnology;
-import net.minecraft.block.Block;
-import net.minecraft.block.ITileEntityProvider;
+import com.micatechnologies.minecraft.csm.codeutils.AbstractBlock;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockDirectional;
+import net.minecraft.block.BlockHorizontal;
+import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
-import net.minecraft.world.World;
-import net.minecraftforge.client.event.ModelRegistryEvent;
-import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.world.World;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-@ElementsCitySuperMod.ModElement.Tag
-public class BlockRedstoneTTS extends ElementsCitySuperMod.ModElement
+public class BlockRedstoneTTS extends AbstractBlock implements ICsmTileEntityProvider
 {
-    @GameRegistry.ObjectHolder( "csm:redstonetts" )
-    public static final Block block = null;
+    public BlockRedstoneTTS() {
+        super( Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 255 );
+    }
 
-    public BlockRedstoneTTS( ElementsCitySuperMod instance ) {
-        super( instance, 4210 );
+    /**
+     * Retrieves the registry name of the block.
+     *
+     * @return The registry name of the block.
+     *
+     * @since 1.0
+     */
+    @Override
+    public String getBlockRegistryName() {
+        return "redstonetts";
+    }
+
+    /**
+     * Retrieves the bounding box of the block.
+     *
+     * @param state  the block state
+     * @param source the block access
+     * @param pos    the block position
+     *
+     * @return The bounding box of the block.
+     *
+     * @since 1.0
+     */
+    @Override
+    public AxisAlignedBB getBlockBoundingBox( IBlockState state, IBlockAccess source, BlockPos pos ) {
+        return SQUARE_BOUNDING_BOX;
+    }
+
+    /**
+     * Retrieves whether the block is an opaque cube.
+     *
+     * @param state The block state.
+     *
+     * @return {@code true} if the block is an opaque cube, {@code false} otherwise.
+     *
+     * @since 1.0
+     */
+    @Override
+    public boolean getBlockIsOpaqueCube( IBlockState state ) {
+        return false;
+    }
+
+    /**
+     * Retrieves whether the block is a full cube.
+     *
+     * @param state The block state.
+     *
+     * @return {@code true} if the block is a full cube, {@code false} otherwise.
+     *
+     * @since 1.0
+     */
+    @Override
+    public boolean getBlockIsFullCube( IBlockState state ) {
+        return true;
+    }
+
+    /**
+     * Retrieves whether the block connects to redstone.
+     *
+     * @param state  the block state
+     * @param access the block access
+     * @param pos    the block position
+     * @param facing the block facing direction
+     *
+     * @return {@code true} if the block connects to redstone, {@code false} otherwise.
+     *
+     * @since 1.0
+     */
+    @Override
+    public boolean getBlockConnectsRedstone( IBlockState state,
+                                             IBlockAccess access,
+                                             BlockPos pos,
+                                             @Nullable EnumFacing facing )
+    {
+        return true;
+    }
+
+    /**
+     * Retrieves the block's render layer.
+     *
+     * @return The block's render layer.
+     *
+     * @since 1.0
+     */
+    @Nonnull
+    @Override
+    public BlockRenderLayer getBlockRenderLayer() {
+        return BlockRenderLayer.SOLID;
+    }
+
+    /**
+     * Gets the tile entity class for the block.
+     *
+     * @return the tile entity class for the block
+     *
+     * @since 1.0
+     */
+    @Override
+    public Class< ? extends TileEntity > getTileEntityClass() {
+        return TileEntityRedstoneTTS.class;
     }
 
     @Override
-    public void initElements() {
-        elements.blocks.add( () -> new BlockCustom().setRegistryName( "redstonetts" ) );
-        elements.items.add( () -> new ItemBlock( block ).setRegistryName( block.getRegistryName() ) );
-    }
-
-    @Override
-    public void init( FMLInitializationEvent event ) {
-        GameRegistry.registerTileEntity( TileEntityRedstoneTTS.class, "csm" + ":tileentityredstonetts" );
-        System.setProperty( "freetts.voices", "com.sun.speech.freetts.en.us.cmu_us_kal.KevinVoiceDirectory" );
+    public void neighborChanged( IBlockState state, World world, BlockPos pos, Block blockIn, BlockPos p_189540_5_ )
+    {
+        if ( world.isBlockPowered( pos ) && !world.isRemote ) {
+            TileEntity tileEntity = world.getTileEntity( pos );
+            if ( tileEntity instanceof TileEntityRedstoneTTS ) {
+                TileEntityRedstoneTTS tileEntityRedstoneTTS = ( TileEntityRedstoneTTS ) tileEntity;
+                tileEntityRedstoneTTS.readTtsString();
+            }
+        }
     }
 
     @SideOnly( Side.CLIENT )
     @Override
-    public void registerModels( ModelRegistryEvent event ) {
-        ModelLoader.setCustomModelResourceLocation( Item.getItemFromBlock( block ), 0,
-                                                    new ModelResourceLocation( "csm:redstonetts", "inventory" ) );
-    }
-
-    public static class BlockCustom extends Block implements ITileEntityProvider
+    public boolean onBlockActivated( World p_onBlockActivated_1_,
+                                     BlockPos p_onBlockActivated_2_,
+                                     IBlockState p_onBlockActivated_3_,
+                                     EntityPlayer p_onBlockActivated_4_,
+                                     EnumHand p_onBlockActivated_5_,
+                                     EnumFacing p_onBlockActivated_6_,
+                                     float p_onBlockActivated_7_,
+                                     float p_onBlockActivated_8_,
+                                     float p_onBlockActivated_9_ )
     {
-        public BlockCustom() {
-            super( Material.ROCK );
-            setUnlocalizedName( "redstonetts" );
-            setSoundType( SoundType.STONE );
-            setHarvestLevel( "pickaxe", 1 );
-            setHardness( 2F );
-            setResistance( 10F );
-            setLightLevel( 0F );
-            setLightOpacity( 255 );
-            setCreativeTab( CsmTabTechnology.get() );
-        }
-
-        @Override
-        public boolean isOpaqueCube( IBlockState state ) {
-            return false;
-        }
-
-        @Override
-        public boolean hasTileEntity( IBlockState p_hasTileEntity_1_ ) {
-            return true;
-        }
-
-        @Nullable
-        @Override
-        public TileEntity createNewTileEntity( World worldIn, int meta ) {
-            return new TileEntityRedstoneTTS();
-        }
-
-        @Override
-        public boolean canConnectRedstone( IBlockState p_canConnectRedstone_1_,
-                                           IBlockAccess p_canConnectRedstone_2_,
-                                           BlockPos p_canConnectRedstone_3_,
-                                           @Nullable EnumFacing p_canConnectRedstone_4_ )
-        {
-            return true;
-        }
-
-        @Override
-        public void neighborChanged( IBlockState state, World world, BlockPos pos, Block blockIn, BlockPos p_189540_5_ )
-        {
-            if ( world.isBlockPowered( pos ) && !world.isRemote ) {
-                // Get tile entity for block
-                TileEntity tileEntity = world.getTileEntity( pos );
-
-                // Check if tile entity valid or not
-                if ( tileEntity instanceof TileEntityRedstoneTTS ) {
-                    // Cast tile entity object to proper type
-                    TileEntityRedstoneTTS tileEntityRedstoneTTS = ( TileEntityRedstoneTTS ) tileEntity;
-
-                    // Play TTS voice
-                    tileEntityRedstoneTTS.readTtsString();
-                }
-            }
-        }
-
-        @SideOnly( Side.CLIENT )
-        @Override
-        public boolean onBlockActivated( World p_onBlockActivated_1_,
-                                         BlockPos p_onBlockActivated_2_,
-                                         IBlockState p_onBlockActivated_3_,
-                                         EntityPlayer p_onBlockActivated_4_,
-                                         EnumHand p_onBlockActivated_5_,
-                                         EnumFacing p_onBlockActivated_6_,
-                                         float p_onBlockActivated_7_,
-                                         float p_onBlockActivated_8_,
-                                         float p_onBlockActivated_9_ )
-        {
-            p_onBlockActivated_4_.openGui( Csm.instance, 0, p_onBlockActivated_1_,
-                                           p_onBlockActivated_2_.getX(), p_onBlockActivated_2_.getY(),
-                                           p_onBlockActivated_2_.getZ() );
-            return true;
-        }
+        p_onBlockActivated_4_.openGui( Csm.instance, 0, p_onBlockActivated_1_, p_onBlockActivated_2_.getX(),
+                                       p_onBlockActivated_2_.getY(), p_onBlockActivated_2_.getZ() );
+        return true;
     }
+
 }

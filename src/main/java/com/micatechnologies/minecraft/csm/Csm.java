@@ -342,4 +342,8 @@ public class Csm
             }
         }
     }
+
+    public static Logger getLogger() {
+        return logger;
+    }
 }

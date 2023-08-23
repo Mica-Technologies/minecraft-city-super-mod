@@ -40,6 +40,9 @@ public class CsmCommonProxy implements ICsmProxy
     @Override
     public void init( FMLInitializationEvent event ) {
         // Not implemented (yet)
+
+        // Load FreeTTS voice
+        System.setProperty( "freetts.voices", "com.sun.speech.freetts.en.us.cmu_us_kal.KevinVoiceDirectory" );
     }
 
     /**
