@@ -46,21 +46,7 @@ public class BlockImacpro extends AbstractBlockRotatableNSEWUD
      */
     @Override
     public AxisAlignedBB getBlockBoundingBox( IBlockState state, IBlockAccess source, BlockPos pos ) {
-        switch ((EnumFacing) state.getValue(BlockDirectional.FACING)) {
-				case SOUTH :
-				default :
-					return new AxisAlignedBB(1D, 0D, 1D, 0D, 0.75D, 0.25D);
-				case NORTH :
-					return new AxisAlignedBB(0D, 0D, 0D, 1D, 0.75D, 0.75D);
-				case WEST :
-					return new AxisAlignedBB(0D, 0D, 1D, 0.75D, 0.75D, 0D);
-				case EAST :
-					return new AxisAlignedBB(1D, 0D, 0D, 0.25D, 0.75D, 1D);
-				case UP :
-					return new AxisAlignedBB(0D, 1D, 0D, 1D, 0.25D, 0.75D);
-				case DOWN :
-					return new AxisAlignedBB(0D, 0D, 1D, 1D, 0.75D, 0.25D);
-			}
+        return new AxisAlignedBB( 1D, 0D, 1D, 0D, 0.75D, 0.25D );
     }
 
     /**

@@ -3,18 +3,22 @@ package com.micatechnologies.minecraft.csm.codeutils;
 import com.micatechnologies.minecraft.csm.Csm;
 import com.micatechnologies.minecraft.csm.CsmConstants;
 import com.micatechnologies.minecraft.csm.CsmRegistry;
+import com.micatechnologies.minecraft.csm.technology.TileEntityRedstoneTTS;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.block.Block;
+import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -168,5 +172,52 @@ public abstract class AbstractBlock extends Block implements IHasModel, ICsmBloc
     @Override
     public void registerModels() {
         Csm.proxy.setCustomModelResourceLocation( Item.getItemFromBlock( this ), 0, "inventory" );
+    }
+
+    /**
+     * Indicates whether the block has a tile entity. This method returns {@code true} if the block implements the
+     * {@link ICsmTileEntityProvider} interface.
+     *
+     * @param blockState the block state
+     *
+     * @return {@code true} if the block has a tile entity, {@code false} otherwise
+     *
+     * @since 1.0
+     */
+    @Override
+    public boolean hasTileEntity( IBlockState blockState ) {
+        return this instanceof ICsmTileEntityProvider;
+    }
+
+    /**
+     * Creates a new tile entity for the block. This method returns {@code null} if the block does not implement the
+     * {@link ICsmTileEntityProvider} interface.
+     *
+     * @param worldIn the world
+     * @param meta    the block metadata
+     *
+     * @return the new tile entity
+     *
+     * @since 1.0
+     */
+    @Nullable
+    public TileEntity createNewTileEntity( World worldIn, int meta ) {
+        TileEntity returnVal = null;
+        if ( this instanceof ICsmTileEntityProvider ) {
+            ICsmTileEntityProvider tileEntityProvider = ( ICsmTileEntityProvider ) this;
+            Class< ? extends TileEntity > tileEntityClass = tileEntityProvider.getTileEntityClass();
+            if ( tileEntityClass != null ) {
+                try {
+                    returnVal = tileEntityClass.newInstance();
+                }
+                catch ( Exception e ) {
+                    Csm.getLogger().error( "Failed to create tile entity for block: " + this.getRegistryName(), e );
+                }
+            }
+            else {
+                Csm.getLogger().error( "Tile entity class is null for block: " + this.getRegistryName() );
+            }
+        }
+        return returnVal;
     }
 }

@@ -89,7 +89,6 @@ public class CsmTabTechnology extends CsmTab
         initTabBlock( BlockJBLC2.class, fmlPreInitializationEvent ); // JBLC2
         initTabBlock( BlockMbp.class, fmlPreInitializationEvent ); // Mbp
         initTabBlock( BlockRedstoneTTS.class, fmlPreInitializationEvent ); // RedstoneTTS
-        initTabBlock( BlockRedstoneTTSGui.class, fmlPreInitializationEvent ); // RedstoneTTSGui
         initTabBlock( BlockStbox.class, fmlPreInitializationEvent ); // Stbox
         initTabBlock( BlockTvdish.class, fmlPreInitializationEvent ); // Tvdish
         initTabBlock( BlockTvdishside.class, fmlPreInitializationEvent ); // Tvdishside
@@ -107,5 +106,15 @@ public class CsmTabTechnology extends CsmTab
         initTabBlock( BlockWapac.class, fmlPreInitializationEvent ); // Wapac
         initTabBlock( BlockWapn.class, fmlPreInitializationEvent ); // Wapn
         initTabBlock( BlockWg.class, fmlPreInitializationEvent ); // Wg
+        initTabItem( ItemAppleIpadPro.class, fmlPreInitializationEvent ); // AppleIpadPro
+        initTabItem( ItemAppleIphoneSE2020.class, fmlPreInitializationEvent ); // AppleIphoneSE2020
+        initTabItem( ItemAppleIphoneXR.class, fmlPreInitializationEvent ); // AppleIphoneXR
+        initTabItem( ItemAppleIphoneXS.class, fmlPreInitializationEvent ); // AppleIphoneXS
+        initTabItem( ItemApplePencil.class, fmlPreInitializationEvent ); // ApplePencil
+        initTabItem( ItemAppleWatch.class, fmlPreInitializationEvent ); // AppleWatch
+        initTabItem( ItemDirecTVRemote.class, fmlPreInitializationEvent ); // DirecTVRemote
+        initTabItem( ItemDishRemote.class, fmlPreInitializationEvent ); // DishRemote
+        initTabItem( ItemFiosRemote.class, fmlPreInitializationEvent ); // FiosRemote
+        initTabItem( ItemSpectrumRemote.class, fmlPreInitializationEvent ); // SpectrumRemote
     }
 }

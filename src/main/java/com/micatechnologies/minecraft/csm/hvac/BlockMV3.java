@@ -45,21 +45,7 @@ public class BlockMV3 extends AbstractBlockRotatableNSEWUD
      */
     @Override
     public AxisAlignedBB getBlockBoundingBox( IBlockState state, IBlockAccess source, BlockPos pos ) {
-        switch ( state.getValue( BlockDirectional.FACING ) ) {
-            case SOUTH:
-            default:
-                return new AxisAlignedBB( 1D, 0.9D, 1D, 0D, 1D, 0D );
-            case NORTH:
-                return new AxisAlignedBB( 0D, 0.9D, 0D, 1D, 1D, 1D );
-            case WEST:
-                return new AxisAlignedBB( 0D, 0.9D, 1D, 1D, 1D, 0D );
-            case EAST:
-                return new AxisAlignedBB( 1D, 0.9D, 0D, 0D, 1D, 1D );
-            case UP:
-                return new AxisAlignedBB( 0D, 1D, 0.9D, 1D, 0D, 1D );
-            case DOWN:
-                return new AxisAlignedBB( 0D, 0D, 0.1D, 1D, 1D, 0D );
-        }
+        return new AxisAlignedBB( 1D, 0.9D, 1D, 0D, 1D, 0D );
     }
 
     /**

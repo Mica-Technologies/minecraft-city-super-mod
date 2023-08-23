@@ -1,9 +1,13 @@
 package com.micatechnologies.minecraft.csm;
 
+import com.github.javaparser.StaticJavaParser;
+import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.body.MethodDeclaration;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -14,8 +18,7 @@ public class ArchUpgradeClassConverter
 
         // Define upgrade path
         final String upgradePath
-                = "/Users/ahawk/IdeaProjects/minecraft-city-super-mod/src/main/java/com/micatechnologies/minecraft" +
-                "/csm/technology";
+                = "E:\\source\\repos\\minecraft-city-super-mod\\src\\main\\java\\com\\micatechnologies\\minecraft\\csm\\technology";
         final boolean upgradeIsFileNotFolder = false;
 
         // Upgrade
@@ -322,21 +325,19 @@ public class ArchUpgradeClassConverter
         // Upgrade class if needed
         if ( !newClassFound ) {
             // Check if class contains something unsupported
-            final String[] unsupportedContains = new String[]{ "getCollisionBoundingBox",
-                                                               "PropertyInteger",
+            final String[] unsupportedContains = new String[]{ "PropertyInteger",
                                                                "PropertyBool",
                                                                "PropertyEnum",
-                                                               "ITileEntityProvider",
-                                                               "isPassable" };
+                                                               "extends Item" };
             final String[] unsupportedRegex = new String[]{};
             for ( String unsupported : unsupportedContains ) {
                 if ( fileContents.contains( unsupported ) ) {
-                    throw new Exception( "Unsupported code found in file: " + filePath );
+                    throw new Exception( "Unsupported code (" + unsupported + ") found in file: " + filePath );
                 }
             }
             for ( String unsupported : unsupportedRegex ) {
                 if ( Pattern.compile( unsupported ).matcher( fileContents ).find() ) {
-                    throw new Exception( "Unsupported code found in file: " + filePath );
+                    throw new Exception( "Unsupported code (Regex: " + unsupported + ") found in file: " + filePath );
                 }
             }
 
@@ -513,18 +514,207 @@ public class ArchUpgradeClassConverter
             else {
                 matcher = Pattern.compile( boundingBoxRegex2 ).matcher( fileContents );
                 if ( matcher.find() ) {
-                    System.err.println( "[WARN] Failed to get default bounding box from bright light file and " +
+                    System.err.println( "[WARN] Failed to get default bounding box from block file and " +
                                                 "full copied bounding box will be used: " +
                                                 filePath );
                     boundingBox = matcher.group( boundingBoxIndex2 );
                 }
                 else {
-                    System.err.println(
-                            "[WARN] Failed to get bounding box from bright light file and default (SQUARE) " +
-                                    "bounding box will be used: " +
-                                    filePath );
+                    System.err.println( "[WARN] Failed to get bounding box from block file and default (SQUARE) " +
+                                                "bounding box will be used: " +
+                                                filePath );
                     boundingBox = "return SQUARE_BOUNDING_BOX;";
                 }
+            }
+
+            // Get block isPassable
+            boolean hasIsPassable = false;
+            String isPassable = null;
+            if ( fileContents.contains( "isPassable" ) ) {
+                hasIsPassable = true;
+                String isPassableRegex
+                        = "\\s*@Override\\s*public\\sboolean\\sisPassable\\(\\s?IBlockAccess\\s.*,\\s?BlockPos\\s.*\\)\\s?\\{\\s*(.*)\\s*}";
+                matcher = Pattern.compile( isPassableRegex ).matcher( fileContents );
+                if ( matcher.find() ) {
+                    isPassable = matcher.group();
+                }
+                else {
+                    throw new Exception( "Failed to get isPassable from file: " + filePath );
+                }
+            }
+            if ( hasIsPassable && isPassable == null ) {
+                throw new IllegalAccessException( "isPassable is null" );
+            }
+
+            // Get block collision bounding box
+            boolean hasCollisionBoundingBox = false;
+            String collisionBoundingBox = null;
+            if ( fileContents.contains( "getCollisionBoundingBox" ) ) {
+                hasCollisionBoundingBox = true;
+                String collisionBoundingBoxRegex
+                        = "\\s*@Override\\s*.*\\s*public\\sAxisAlignedBB\\sgetCollisionBoundingBox\\(\\s?IBlockState\\s.*,\\s?IBlockAccess\\s.*,\\s?BlockPos\\s.*\\s?\\)\\s?\\{\\s*(.*)\\s*}";
+                matcher = Pattern.compile( collisionBoundingBoxRegex ).matcher( fileContents );
+                if ( matcher.find() ) {
+                    collisionBoundingBox = matcher.group();
+                }
+                else {
+                    throw new Exception( "Failed to get collision bounding box from file: " + filePath );
+                }
+            }
+            if ( hasCollisionBoundingBox && collisionBoundingBox == null ) {
+                throw new IllegalAccessException( "collisionBoundingBox is null" );
+            }
+
+            // Get tile entity class name
+            boolean hasTileEntity = false;
+            String tileEntityClassName = null;
+            int tileEntityClassNameIndex = 2;
+            if ( fileContents.contains( "ITileEntityProvider" ) ) {
+                hasTileEntity = true;
+                String tileEntityCreateMethodRegex
+                        = "\\s*(@Nullable)?\\s*@Override\\s*public\\sTileEntity\\screateNewTileEntity\\(\\s?World\\s.*,\\s?int\\s.*\\s?\\)\\s?\\{\\s*return\\snew\\s(.*)\\(\\);\\s*}";
+                matcher = Pattern.compile( tileEntityCreateMethodRegex ).matcher( fileContents );
+                if ( matcher.find() ) {
+                    tileEntityClassName = matcher.group( tileEntityClassNameIndex );
+                }
+                else {
+                    throw new Exception( "Failed to get tile entity class name from file: " + filePath );
+                }
+            }
+            if ( hasTileEntity && tileEntityClassName == null ) {
+                throw new IllegalAccessException( "tileEntityClassName is null" );
+            }
+            String tileEntityMethod = null;
+            if ( hasTileEntity ) {
+                tileEntityMethod = "    /**\n" +
+                        "         * Gets the tile entity class for the block.\n" +
+                        "         *\n" +
+                        "         * @return the tile entity class for the block\n" +
+                        "         *\n" +
+                        "         * @since 1.0\n" +
+                        "         */\n" +
+                        "        @Override\n" +
+                        "        public Class< ? extends TileEntity > getTileEntityClass() {\n" +
+                        "            return " +
+                        tileEntityClassName +
+                        ".class;\n" +
+                        "        }";
+            }
+
+            // Parse Java file
+            CompilationUnit parseResult = StaticJavaParser.parse( file );
+            if ( parseResult == null ) {
+                throw new Exception( "Failed to parse Java file: " + filePath );
+            }
+
+            // Get neighbor changed method
+            boolean hasNeighborChanged = false;
+            AtomicReference< String > neighborChangedMethodSignature = new AtomicReference<>( null );
+            AtomicReference< String > neighborChangedMethodBody = new AtomicReference<>( null );
+            if ( fileContents.contains( "neighborChanged" ) ) {
+                hasNeighborChanged = true;
+                parseResult.findAll( MethodDeclaration.class ).forEach( methodDeclaration -> {
+                    if ( methodDeclaration.getNameAsString().equals( "neighborChanged" ) ) {
+                        neighborChangedMethodSignature.set(
+                                "@Override\n" + methodDeclaration.getDeclarationAsString() );
+                        methodDeclaration.getBody()
+                                         .ifPresent(
+                                                 blockStmt -> neighborChangedMethodBody.set( blockStmt.toString() ) );
+                    }
+                } );
+            }
+            if ( hasNeighborChanged && neighborChangedMethodSignature.get() == null ) {
+                throw new IllegalAccessException( "neighborChangedMethod signature is null" );
+            }
+            if ( hasNeighborChanged && neighborChangedMethodBody.get() == null ) {
+                throw new IllegalAccessException( "neighborChangedMethod body is null" );
+            }
+            String neighborChangedMethod = null;
+            if ( hasNeighborChanged ) {
+                neighborChangedMethod = neighborChangedMethodSignature.get() + "\n" + neighborChangedMethodBody.get();
+            }
+
+            // Get on block activated method
+            boolean hasOnBlockActivated = false;
+            AtomicReference< String > onBlockActivatedMethodSignature = new AtomicReference<>( null );
+            AtomicReference< String > onBlockActivatedMethodBody = new AtomicReference<>( null );
+            if ( fileContents.contains( "onBlockActivated" ) ) {
+                hasOnBlockActivated = true;
+                parseResult.findAll( MethodDeclaration.class ).forEach( methodDeclaration -> {
+                    if ( methodDeclaration.getNameAsString().equals( "onBlockActivated" ) ) {
+                        onBlockActivatedMethodSignature.set(
+                                "@SideOnly( Side.CLIENT )\n@Override\n" + methodDeclaration.getDeclarationAsString() );
+                        methodDeclaration.getBody()
+                                         .ifPresent(
+                                                 blockStmt -> onBlockActivatedMethodBody.set( blockStmt.toString() ) );
+                    }
+                } );
+            }
+            if ( hasOnBlockActivated && onBlockActivatedMethodSignature.get() == null ) {
+                throw new IllegalAccessException( "onBlockActivatedMethod signature is null" );
+            }
+            if ( hasOnBlockActivated && onBlockActivatedMethodBody.get() == null ) {
+                throw new IllegalAccessException( "onBlockActivatedMethod body is null" );
+            }
+            String onBlockActivatedMethod = null;
+            if ( hasOnBlockActivated ) {
+                onBlockActivatedMethod = onBlockActivatedMethodSignature.get() +
+                        "\n" +
+                        onBlockActivatedMethodBody.get();
+            }
+
+            // Get can provide power method
+            boolean hasCanProvidePower = false;
+            AtomicReference< String > canProvidePowerMethodSignature = new AtomicReference<>( null );
+            AtomicReference< String > canProvidePowerMethodBody = new AtomicReference<>( null );
+            if ( fileContents.contains( "canProvidePower" ) ) {
+                hasCanProvidePower = true;
+                parseResult.findAll( MethodDeclaration.class ).forEach( methodDeclaration -> {
+                    if ( methodDeclaration.getNameAsString().equals( "canProvidePower" ) ) {
+                        canProvidePowerMethodSignature.set( "@Override\n@ParametersAreNonnullByDefault\n" +
+                                                                    methodDeclaration.getDeclarationAsString() );
+                        methodDeclaration.getBody()
+                                         .ifPresent(
+                                                 blockStmt -> canProvidePowerMethodBody.set( blockStmt.toString() ) );
+                    }
+                } );
+            }
+            if ( hasCanProvidePower && canProvidePowerMethodSignature.get() == null ) {
+                throw new IllegalAccessException( "canProvidePowerMethod signature is null" );
+            }
+            if ( hasCanProvidePower && canProvidePowerMethodBody.get() == null ) {
+                throw new IllegalAccessException( "canProvidePowerMethod body is null" );
+            }
+            String canProvidePowerMethod = null;
+            if ( hasCanProvidePower ) {
+                canProvidePowerMethod = canProvidePowerMethodSignature.get() + "\n" + canProvidePowerMethodBody.get();
+            }
+
+            // Get add information method
+            boolean hasAddInformation = false;
+            AtomicReference< String > addInformationMethodSignature = new AtomicReference<>( null );
+            AtomicReference< String > addInformationMethodBody = new AtomicReference<>( null );
+            if ( fileContents.contains( "addInformation" ) ) {
+                hasAddInformation = true;
+                parseResult.findAll( MethodDeclaration.class ).forEach( methodDeclaration -> {
+                    if ( methodDeclaration.getNameAsString().equals( "addInformation" ) ) {
+                        addInformationMethodSignature.set( "@Override\n@ParametersAreNonnullByDefault\n" +
+                                                                   methodDeclaration.getDeclarationAsString() );
+                        methodDeclaration.getBody()
+                                         .ifPresent(
+                                                 blockStmt -> addInformationMethodBody.set( blockStmt.toString() ) );
+                    }
+                } );
+            }
+            if ( hasAddInformation && addInformationMethodSignature.get() == null ) {
+                throw new IllegalAccessException( "addInformationMethod signature is null" );
+            }
+            if ( hasAddInformation && addInformationMethodBody.get() == null ) {
+                throw new IllegalAccessException( "addInformationMethod body is null" );
+            }
+            String addInformationMethod = null;
+            if ( hasAddInformation ) {
+                addInformationMethod = addInformationMethodSignature.get() + "\n" + addInformationMethodBody.get();
             }
 
             // Get block class name
@@ -560,25 +750,41 @@ public class ArchUpgradeClassConverter
                 throw new Exception( "Failed to get package name from file: " + filePath );
             }
 
+            // Check if contains raw mod import
+            boolean hasRawCsmModImport = fileContents.contains( "import com.micatechnologies.minecraft.csm.Csm;" );
+
             // Build new class
             StringBuilder newClass = new StringBuilder();
             newClass.append( "package " +
                                      packageName +
                                      ";\n" +
                                      "\n" +
+                                     ( hasRawCsmModImport ? "import com.micatechnologies.minecraft.csm.Csm;\n" : "" ) +
                                      "import com.micatechnologies.minecraft.csm.codeutils." +
                                      newBlockExtendsClassName +
                                      ";\n" +
+                                     ( hasTileEntity ?
+                                       "import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;\n" :
+                                       "" ) +
                                      "import net.minecraft.block.SoundType;\n" +
                                      "import net.minecraft.block.material.Material;\n" +
                                      "import net.minecraft.block.state.IBlockState;\n" +
+                                     ( hasTileEntity ? "import net.minecraft.tileentity.TileEntity;\n" : "" ) +
+                                     ( hasNeighborChanged ? "import net.minecraft.block.Block;\n" : "" ) +
                                      "import net.minecraft.block.BlockDirectional;\n" +
                                      "import net.minecraft.block.BlockHorizontal;\n" +
                                      "import net.minecraft.util.BlockRenderLayer;\n" +
                                      "import net.minecraft.util.EnumFacing;\n" +
+                                     ( hasOnBlockActivated ? "import net.minecraft.util.EnumHand;\n" : "" ) +
+                                     ( hasOnBlockActivated ?
+                                       "import net.minecraft.entity.player.EntityPlayer;\n" :
+                                       "" ) +
                                      "import net.minecraft.util.math.AxisAlignedBB;\n" +
                                      "import net.minecraft.util.math.BlockPos;\n" +
                                      "import net.minecraft.world.IBlockAccess;\n" +
+                                     "import net.minecraftforge.fml.relauncher.Side;\n" +
+                                     "import net.minecraftforge.fml.relauncher.SideOnly;\n" +
+                                     ( hasTileEntity ? "import net.minecraft.world.World;\n" : "" ) +
                                      "\n" +
                                      "import javax.annotation.Nonnull;\n" +
                                      "import javax.annotation.Nullable;\n" +
@@ -587,6 +793,7 @@ public class ArchUpgradeClassConverter
                                      className +
                                      " extends " +
                                      newBlockExtendsClassName +
+                                     ( hasTileEntity ? " implements ICsmTileEntityProvider" : "" ) +
                                      "\n" +
                                      "{\n" +
                                      "    public " +
@@ -710,7 +917,13 @@ public class ArchUpgradeClassConverter
                                      "        return " +
                                      renderLayer +
                                      ";\n" +
-                                     "    }\n" +
+                                     "    }" +
+                                     ( hasIsPassable ? isPassable : "\n" ) +
+                                     ( hasCollisionBoundingBox ? collisionBoundingBox : "\n" ) +
+                                     ( hasTileEntity ? "\n" + tileEntityMethod + "\n" : "\n" ) +
+                                     ( hasNeighborChanged ? "\n" + neighborChangedMethod + "\n" : "\n" ) +
+                                     ( hasOnBlockActivated ? "\n" + onBlockActivatedMethod + "\n" : "\n" ) +
+                                     ( hasCanProvidePower ? "\n" + canProvidePowerMethod + "\n" : "\n" ) +
                                      "}\n" );
 
             // Write back to file

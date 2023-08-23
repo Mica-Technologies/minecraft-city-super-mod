@@ -1,6 +1,10 @@
 package com.micatechnologies.minecraft.csm.technology;
 
+import com.micatechnologies.minecraft.csm.codeutils.AbstractBlock;
+import com.micatechnologies.minecraft.csm.codeutils.AbstractItem;
+import com.micatechnologies.minecraft.csm.codeutils.AbstractItemSpade;
 import com.micatechnologies.minecraft.csm.tabs.CsmTabTechnology;
+import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemSpade;
@@ -12,39 +16,36 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.HashMap;
 import java.util.Set;
 
-@ElementsCitySuperMod.ModElement.Tag
-public class ItemApplePencil extends ElementsCitySuperMod.ModElement
+public class ItemApplePencil extends AbstractItemSpade
 {
-    @GameRegistry.ObjectHolder( "csm:applepencil" )
-    public static final Item block = null;
+    public ItemApplePencil() {
+        super( 0, 64, EnumHelper.addToolMaterial( "APPLEPENCIL", 1, 100, 4f, 1f, 2 ) );
+        this.attackSpeed = -1.2f;
+    }
 
-    public ItemApplePencil( ElementsCitySuperMod instance ) {
-        super( instance, 77 );
+    /**
+     * Retrieves the registry name of the item.
+     *
+     * @return The registry name of the item.
+     *
+     * @since 1.0
+     */
+    @Override
+    public String getItemRegistryName() {
+        return "applepencil";
     }
 
     @Override
-    public void initElements() {
-        elements.items.add( () -> new ItemSpade( EnumHelper.addToolMaterial( "APPLEPENCIL", 1, 100, 4f, 1f, 2 ) )
-        {
-            {
-                this.attackSpeed = -1.2f;
-            }
-
-            public Set< String > getToolClasses( ItemStack stack ) {
-                HashMap< String, Integer > ret = new HashMap< String, Integer >();
-                ret.put( "spade", 1 );
-                return ret.keySet();
-            }
-        }.setUnlocalizedName( "applepencil" ).setRegistryName( "applepencil" ).setCreativeTab( CsmTabTechnology.get() ) );
-    }
-
-    @SideOnly( Side.CLIENT )
-    @Override
-    public void registerModels( ModelRegistryEvent event ) {
-        ModelLoader.setCustomModelResourceLocation( block, 0,
-                                                    new ModelResourceLocation( "csm:applepencil", "inventory" ) );
+    @Nonnull
+    @ParametersAreNonnullByDefault
+    public Set< String > getToolClasses( ItemStack stack ) {
+        HashMap< String, Integer > ret = new HashMap<>();
+        ret.put( "spade", 1 );
+        return ret.keySet();
     }
 }
