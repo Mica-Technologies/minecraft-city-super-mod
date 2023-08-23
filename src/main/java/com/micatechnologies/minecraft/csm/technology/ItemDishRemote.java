@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.technology;
 
+import com.micatechnologies.minecraft.csm.codeutils.AbstractItem;
 import com.micatechnologies.minecraft.csm.tabs.CsmTabTechnology;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
@@ -15,57 +16,24 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.List;
 
-@ElementsCitySuperMod.ModElement.Tag
-public class ItemDishRemote extends ElementsCitySuperMod.ModElement
+public class ItemDishRemote extends AbstractItem
 {
-    @GameRegistry.ObjectHolder( "csm:dishremote" )
-    public static final Item block = null;
-
-    public ItemDishRemote( ElementsCitySuperMod instance ) {
-        super( instance, 243 );
-    }
 
     @Override
-    public void initElements() {
-        elements.items.add( () -> new ItemCustom() );
+    public void addInformation( ItemStack itemstack, World world, List< String > list, ITooltipFlag flag ) {
+        super.addInformation( itemstack, world, list, flag );
+        list.add( "This remote does nothing and is only for looks!" );
     }
 
-    @SideOnly( Side.CLIENT )
+    /**
+     * Retrieves the registry name of the item.
+     *
+     * @return The registry name of the item.
+     *
+     * @since 1.0
+     */
     @Override
-    public void registerModels( ModelRegistryEvent event ) {
-        ModelLoader.setCustomModelResourceLocation( block, 0,
-                                                    new ModelResourceLocation( "csm:dishremote", "inventory" ) );
-    }
-
-    public static class ItemCustom extends Item
-    {
-        public ItemCustom() {
-            setMaxDamage( 0 );
-            maxStackSize = 64;
-            setUnlocalizedName( "dishremote" );
-            setRegistryName( "dishremote" );
-            setCreativeTab( CsmTabTechnology.get() );
-        }
-
-        @Override
-        public float getDestroySpeed( ItemStack par1ItemStack, IBlockState par2Block ) {
-            return 1F;
-        }
-
-        @Override
-        public int getMaxItemUseDuration( ItemStack itemstack ) {
-            return 0;
-        }
-
-        @Override
-        public void addInformation( ItemStack itemstack, World world, List< String > list, ITooltipFlag flag ) {
-            super.addInformation( itemstack, world, list, flag );
-            list.add( "This remote does nothing and is only for looks!" );
-        }
-
-        @Override
-        public int getItemEnchantability() {
-            return 0;
-        }
+    public String getItemRegistryName() {
+        return "dishremote";
     }
 }

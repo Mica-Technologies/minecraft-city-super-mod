@@ -18,7 +18,7 @@ import javax.annotation.Nullable;
 public class BlockATLS2 extends AbstractBlockRotatableNSEWUD
 {
     public BlockATLS2() {
-        super( Material.ROCK, SoundType.STONE , "pickaxe", 1 , 2F , 10F , 0F , 0  );
+        super( Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0 );
     }
 
     /**
@@ -46,21 +46,7 @@ public class BlockATLS2 extends AbstractBlockRotatableNSEWUD
      */
     @Override
     public AxisAlignedBB getBlockBoundingBox( IBlockState state, IBlockAccess source, BlockPos pos ) {
-        switch ( state.getValue( FACING ) ) {
-                case SOUTH:
-                default:
-                    return new AxisAlignedBB( 1D, 0D, 0.2D, 0D, 1D, 0D );
-                case NORTH:
-                    return new AxisAlignedBB( 0D, 0D, 0.8D, 1D, 1D, 1D );
-                case WEST:
-                    return new AxisAlignedBB( 0.8D, 0D, 1D, 1D, 1D, 0D );
-                case EAST:
-                    return new AxisAlignedBB( 0.2D, 0D, 0D, 0D, 1D, 1D );
-                case UP:
-                    return new AxisAlignedBB( 0D, 0.2D, 0D, 1D, 0D, 1D );
-                case DOWN:
-                    return new AxisAlignedBB( 0D, 0.8D, 1D, 1D, 1D, 0D );
-            }
+        return new AxisAlignedBB( 1D, 0D, 0.2D, 0D, 1D, 0D );
     }
 
     /**
