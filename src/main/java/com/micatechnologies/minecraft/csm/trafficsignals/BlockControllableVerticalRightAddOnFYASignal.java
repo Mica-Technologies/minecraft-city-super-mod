@@ -19,13 +19,13 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @ElementsCitySuperMod.ModElement.Tag
-public class BlockControllableDoghouseSecondaryLeftSignal extends ElementsCitySuperMod.ModElement
+public class BlockControllableVerticalRightAddOnFYASignal extends ElementsCitySuperMod.ModElement
 {
-    @GameRegistry.ObjectHolder( "csm:controllabledoghousesignalsecondaryleft" )
+    @GameRegistry.ObjectHolder( "csm:controllableverticalrightaddonfyasignal" )
     public static final Block block = null;
 
-    public BlockControllableDoghouseSecondaryLeftSignal( ElementsCitySuperMod instance ) {
-        super( instance, 2554 );
+    public BlockControllableVerticalRightAddOnFYASignal( ElementsCitySuperMod instance ) {
+        super( instance, 2881 );
     }
 
     @Override
@@ -38,7 +38,7 @@ public class BlockControllableDoghouseSecondaryLeftSignal extends ElementsCitySu
     @Override
     public void registerModels( ModelRegistryEvent event ) {
         ModelLoader.setCustomModelResourceLocation( Item.getItemFromBlock( block ), 0,
-                                                    new ModelResourceLocation( "csm:controllabledoghousesignalsecondaryleft",
+                                                    new ModelResourceLocation( "csm:controllableverticalrightaddonfyasignal",
                                                                                "inventory" ) );
     }
 
@@ -46,8 +46,8 @@ public class BlockControllableDoghouseSecondaryLeftSignal extends ElementsCitySu
     {
         public BlockCustom() {
             super( Material.ROCK );
-            setRegistryName( "controllabledoghousesignalsecondaryleft" );
-            setUnlocalizedName( "controllabledoghousesignalsecondaryleft" );
+            setRegistryName( "controllableverticalrightaddonfyasignal" );
+            setUnlocalizedName( "controllableverticalrightaddonfyasignal" );
             setSoundType( SoundType.STONE );
             setHarvestLevel( "pickaxe", 1 );
             setHardness( 2F );
@@ -61,12 +61,12 @@ public class BlockControllableDoghouseSecondaryLeftSignal extends ElementsCitySu
 
         @Override
         public SIGNAL_SIDE getSignalSide( World world, BlockPos blockPos ) {
-            return SIGNAL_SIDE.LEFT;
+            return SIGNAL_SIDE.THROUGH;
         }
 
         @Override
         public boolean doesFlash() {
-            return true;
+            return false;
         }
 
     }
