@@ -111,6 +111,7 @@ public class CsmTabTechnology extends CsmTab
         initTabItem( ItemAppleIphoneXR.class, fmlPreInitializationEvent ); // AppleIphoneXR
         initTabItem( ItemAppleIphoneXS.class, fmlPreInitializationEvent ); // AppleIphoneXS
         initTabItem( ItemApplePencil.class, fmlPreInitializationEvent ); // ApplePencil
+        initTabItem( ItemAppleTVRemote.class, fmlPreInitializationEvent ); // AppleTVRemote
         initTabItem( ItemAppleWatch.class, fmlPreInitializationEvent ); // AppleWatch
         initTabItem( ItemDirecTVRemote.class, fmlPreInitializationEvent ); // DirecTVRemote
         initTabItem( ItemDishRemote.class, fmlPreInitializationEvent ); // DishRemote

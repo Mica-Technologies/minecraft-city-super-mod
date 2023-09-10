@@ -193,6 +193,46 @@ public class CsmTabTrafficAccessories extends CsmTab
         initTabBlock( BlockTrafficPoleHorizSignMountWhite.class,
                       fmlPreInitializationEvent ); // TrafficPoleHorizSignMountWhite
         initTabBlock( BlockTrafficPoleHorizontal.class, fmlPreInitializationEvent ); // TrafficPoleHorizontal
+        initTabBlock( BlockTrafficPoleHorizontalAngleBlack.class,
+                      fmlPreInitializationEvent ); // TrafficPoleHorizontalAngleBlack
+        initTabBlock( BlockTrafficPoleHorizontalAngleMount1Black.class,
+                      fmlPreInitializationEvent ); // TrafficPoleHorizontalAngleMount1Black
+        initTabBlock( BlockTrafficPoleHorizontalAngleMount1Silver.class,
+                      fmlPreInitializationEvent ); // TrafficPoleHorizontalAngleMount1Silver
+        initTabBlock( BlockTrafficPoleHorizontalAngleMount1Tan.class,
+                      fmlPreInitializationEvent ); // TrafficPoleHorizontalAngleMount1Tan
+        initTabBlock( BlockTrafficPoleHorizontalAngleMount1Unpainted.class,
+                      fmlPreInitializationEvent ); // TrafficPoleHorizontalAngleMount1Unpainted
+        initTabBlock( BlockTrafficPoleHorizontalAngleMount1White.class,
+                      fmlPreInitializationEvent ); // TrafficPoleHorizontalAngleMount1White
+        initTabBlock( BlockTrafficPoleHorizontalAngleMount2Black.class,
+                      fmlPreInitializationEvent ); // TrafficPoleHorizontalAngleMount2Black
+        initTabBlock( BlockTrafficPoleHorizontalAngleMount2Silver.class,
+                      fmlPreInitializationEvent ); // TrafficPoleHorizontalAngleMount2Silver
+        initTabBlock( BlockTrafficPoleHorizontalAngleMount2Tan.class,
+                      fmlPreInitializationEvent ); // TrafficPoleHorizontalAngleMount2Tan
+        initTabBlock( BlockTrafficPoleHorizontalAngleMount2Unpainted.class,
+                      fmlPreInitializationEvent ); // TrafficPoleHorizontalAngleMount2Unpainted
+        initTabBlock( BlockTrafficPoleHorizontalAngleMount2White.class,
+                      fmlPreInitializationEvent ); // TrafficPoleHorizontalAngleMount2White
+        initTabBlock( BlockTrafficPoleHorizontalAngleMount3Black.class,
+                      fmlPreInitializationEvent ); // TrafficPoleHorizontalAngleMount3Black
+        initTabBlock( BlockTrafficPoleHorizontalAngleMount3Silver.class,
+                      fmlPreInitializationEvent ); // TrafficPoleHorizontalAngleMount3Silver
+        initTabBlock( BlockTrafficPoleHorizontalAngleMount3Tan.class,
+                      fmlPreInitializationEvent ); // TrafficPoleHorizontalAngleMount3Tan
+        initTabBlock( BlockTrafficPoleHorizontalAngleMount3Unpainted.class,
+                      fmlPreInitializationEvent ); // TrafficPoleHorizontalAngleMount3Unpainted
+        initTabBlock( BlockTrafficPoleHorizontalAngleMount3White.class,
+                      fmlPreInitializationEvent ); // TrafficPoleHorizontalAngleMount3White
+        initTabBlock( BlockTrafficPoleHorizontalAngleSilver.class,
+                      fmlPreInitializationEvent ); // TrafficPoleHorizontalAngleSilver
+        initTabBlock( BlockTrafficPoleHorizontalAngleTan.class,
+                      fmlPreInitializationEvent ); // TrafficPoleHorizontalAngleTan
+        initTabBlock( BlockTrafficPoleHorizontalAngleUnpainted.class,
+                      fmlPreInitializationEvent ); // TrafficPoleHorizontalAngleUnpainted
+        initTabBlock( BlockTrafficPoleHorizontalAngleWhite.class,
+                      fmlPreInitializationEvent ); // TrafficPoleHorizontalAngleWhite
         initTabBlock( BlockTrafficPoleHorizontalBlack.class, fmlPreInitializationEvent ); // TrafficPoleHorizontalBlack
         initTabBlock( BlockTrafficPoleHorizontalMountDouble.class,
                       fmlPreInitializationEvent ); // TrafficPoleHorizontalMountDouble
@@ -228,6 +268,16 @@ public class CsmTabTrafficAccessories extends CsmTab
                       fmlPreInitializationEvent ); // TrafficPoleVerticalConnectorAngledWhite
         initTabBlock( BlockTrafficPoleVerticalConnectorBlack.class,
                       fmlPreInitializationEvent ); // TrafficPoleVerticalConnectorBlack
+        initTabBlock( BlockTrafficPoleVerticalConnectorDoubleBlack.class,
+                      fmlPreInitializationEvent ); // TrafficPoleVerticalConnectorDoubleBlack
+        initTabBlock( BlockTrafficPoleVerticalConnectorDoubleSilver.class,
+                      fmlPreInitializationEvent ); // TrafficPoleVerticalConnectorDoubleSilver
+        initTabBlock( BlockTrafficPoleVerticalConnectorDoubleTan.class,
+                      fmlPreInitializationEvent ); // TrafficPoleVerticalConnectorDoubleTan
+        initTabBlock( BlockTrafficPoleVerticalConnectorDoubleUnpainted.class,
+                      fmlPreInitializationEvent ); // TrafficPoleVerticalConnectorDoubleUnpainted
+        initTabBlock( BlockTrafficPoleVerticalConnectorDoubleWhite.class,
+                      fmlPreInitializationEvent ); // TrafficPoleVerticalConnectorDoubleWhite
         initTabBlock( BlockTrafficPoleVerticalConnectorTan.class,
                       fmlPreInitializationEvent ); // TrafficPoleVerticalConnectorTan
         initTabBlock( BlockTrafficPoleVerticalConnectorWhite.class,
