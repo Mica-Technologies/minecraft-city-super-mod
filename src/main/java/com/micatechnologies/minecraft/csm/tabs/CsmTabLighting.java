@@ -81,23 +81,25 @@ public class CsmTabLighting extends CsmTab
         initTabBlock( BlockAltoMVUL.class, fmlPreInitializationEvent ); // AltoMVUL
         initTabBlock( BlockAltoMVWL.class, fmlPreInitializationEvent ); // AltoMVWL
         initTabBlock( BlockAltoMVWLSlim.class, fmlPreInitializationEvent ); // AltoMVWLSlim
-        initTabBlock( BlockAltoReLL.class, fmlPreInitializationEvent ); // AltoReLL
         initTabBlock( BlockAltoRLL.class, fmlPreInitializationEvent ); // AltoRLL
+        initTabBlock( BlockAltoReLL.class, fmlPreInitializationEvent ); // AltoReLL
         initTabBlock( BlockAltoSQLL.class, fmlPreInitializationEvent ); // AltoSQLL
         initTabBlock( BlockCEHalo.class, fmlPreInitializationEvent ); // CEHalo
         initTabBlock( BlockCESquare.class, fmlPreInitializationEvent ); // CESquare
+        initTabBlock( BlockCINavion.class, fmlPreInitializationEvent ); // CINavion
         initTabBlock( BlockCINavionAlt.class, fmlPreInitializationEvent ); // CINavionAlt
         initTabBlock( BlockCreeLEDway.class, fmlPreInitializationEvent ); // CreeLEDway
-        initTabBlock( BlockCreeledwaysmall.class, fmlPreInitializationEvent ); // Creeledwaysmall
         initTabBlock( BlockCreeStylusFull.class, fmlPreInitializationEvent ); // CreeStylusFull
         initTabBlock( BlockCreeStylusHalf.class, fmlPreInitializationEvent ); // CreeStylusHalf
         initTabBlock( BlockCreeXSP.class, fmlPreInitializationEvent ); // CreeXSP
+        initTabBlock( BlockCreeledwaysmall.class, fmlPreInitializationEvent ); // Creeledwaysmall
         initTabBlock( BlockDSLF.class, fmlPreInitializationEvent ); // DSLF
         initTabBlock( BlockDSLFR.class, fmlPreInitializationEvent ); // DSLFR
         initTabBlock( BlockDSLH.class, fmlPreInitializationEvent ); // DSLH
         initTabBlock( BlockDSLHR.class, fmlPreInitializationEvent ); // DSLHR
         initTabBlock( BlockFBM.class, fmlPreInitializationEvent ); // FBM
         initTabBlock( BlockFBM2.class, fmlPreInitializationEvent ); // FBM2
+        initTabBlock( BlockGEEL.class, fmlPreInitializationEvent ); // GEEL
         initTabBlock( BlockGEELPO.class, fmlPreInitializationEvent ); // GEELPO
         initTabBlock( BlockGEELSN.class, fmlPreInitializationEvent ); // GEELSN
         initTabBlock( BlockGEES.class, fmlPreInitializationEvent ); // GEES
@@ -105,13 +107,14 @@ public class CsmTabLighting extends CsmTab
         initTabBlock( BlockGEESSN.class, fmlPreInitializationEvent ); // GEESSN
         initTabBlock( BlockGEForm109.class, fmlPreInitializationEvent ); // GEForm109
         initTabBlock( BlockGEForm109TD.class, fmlPreInitializationEvent ); // GEForm109TD
+        initTabBlock( BlockGEM400r3.class, fmlPreInitializationEvent ); // GEM400r3
+        initTabBlock( BlockGEM400r3cu.class, fmlPreInitializationEvent ); // GEM400r3cu
+        initTabBlock( BlockGEM400r3cunp.class, fmlPreInitializationEvent ); // GEM400r3cunp
+        initTabBlock( BlockGEPB.class, fmlPreInitializationEvent ); // GEPB
         initTabBlock( BlockGEm240r1.class, fmlPreInitializationEvent ); // GEm240r1
         initTabBlock( BlockGEm240r1np.class, fmlPreInitializationEvent ); // GEm240r1np
         initTabBlock( BlockGEm240r2.class, fmlPreInitializationEvent ); // GEm240r2
         initTabBlock( BlockGEm240r2cu.class, fmlPreInitializationEvent ); // GEm240r2cu
-        initTabBlock( BlockGEM400r3cu.class, fmlPreInitializationEvent ); // GEM400r3cu
-        initTabBlock( BlockGEM400r3cunp.class, fmlPreInitializationEvent ); // GEM400r3cunp
-        initTabBlock( BlockGEPB.class, fmlPreInitializationEvent ); // GEPB
         initTabBlock( BlockHB1.class, fmlPreInitializationEvent ); // HB1
         initTabBlock( BlockHB2.class, fmlPreInitializationEvent ); // HB2
         initTabBlock( BlockHBM.class, fmlPreInitializationEvent ); // HBM
@@ -120,19 +123,21 @@ public class CsmTabLighting extends CsmTab
         initTabBlock( BlockL2ESL2.class, fmlPreInitializationEvent ); // L2ESL2
         initTabBlock( BlockL2ESL4.class, fmlPreInitializationEvent ); // L2ESL4
         initTabBlock( BlockLGTLF.class, fmlPreInitializationEvent ); // LGTLF
+        initTabBlock( BlockLGTLH.class, fmlPreInitializationEvent ); // LGTLH
         initTabBlock( BlockLRTLF.class, fmlPreInitializationEvent ); // LRTLF
         initTabBlock( BlockLRTLH.class, fmlPreInitializationEvent ); // LRTLH
-        initTabBlock( BlockLtec.class, fmlPreInitializationEvent ); // Ltec
         initTabBlock( BlockLTECDTD.class, fmlPreInitializationEvent ); // LTECDTD
-        initTabBlock( BlockLtgc1v1.class, fmlPreInitializationEvent ); // Ltgc1v1
         initTabBlock( BlockLTGC1v1np.class, fmlPreInitializationEvent ); // LTGC1v1np
-        initTabBlock( BlockLtgc1v2.class, fmlPreInitializationEvent ); // Ltgc1v2
         initTabBlock( BlockLTGCJ.class, fmlPreInitializationEvent ); // LTGCJ
         initTabBlock( BlockLTGCJSN.class, fmlPreInitializationEvent ); // LTGCJSN
         initTabBlock( BlockLTGCL.class, fmlPreInitializationEvent ); // LTGCL
-        initTabBlock( BlockLtgcm.class, fmlPreInitializationEvent ); // Ltgcm
         initTabBlock( BlockLTGCMSN.class, fmlPreInitializationEvent ); // LTGCMSN
+        initTabBlock( BlockLTGCMv2.class, fmlPreInitializationEvent ); // LTGCMv2
         initTabBlock( BlockLTGCMv2np.class, fmlPreInitializationEvent ); // LTGCMv2np
+        initTabBlock( BlockLtec.class, fmlPreInitializationEvent ); // Ltec
+        initTabBlock( BlockLtgc1v1.class, fmlPreInitializationEvent ); // Ltgc1v1
+        initTabBlock( BlockLtgc1v2.class, fmlPreInitializationEvent ); // Ltgc1v2
+        initTabBlock( BlockLtgcm.class, fmlPreInitializationEvent ); // Ltgcm
         initTabBlock( BlockMCLAClassicPostLight.class, fmlPreInitializationEvent ); // MCLAClassicPostLight
         initTabBlock( BlockMCLAParkLight.class, fmlPreInitializationEvent ); // MCLAParkLight
         initTabBlock( BlockNOVTM.class, fmlPreInitializationEvent ); // NOVTM
@@ -143,21 +148,23 @@ public class CsmTabLighting extends CsmTab
         initTabBlock( BlockOCPB.class, fmlPreInitializationEvent ); // OCPB
         initTabBlock( BlockOCPM.class, fmlPreInitializationEvent ); // OCPM
         initTabBlock( BlockOCPT.class, fmlPreInitializationEvent ); // OCPT
+        initTabBlock( BlockPCRM.class, fmlPreInitializationEvent ); // PCRM
         initTabBlock( BlockRBM.class, fmlPreInitializationEvent ); // RBM
         initTabBlock( BlockRCPB.class, fmlPreInitializationEvent ); // RCPB
         initTabBlock( BlockRCPB2.class, fmlPreInitializationEvent ); // RCPB2
         initTabBlock( BlockRCPM.class, fmlPreInitializationEvent ); // RCPM
         initTabBlock( BlockRCPT.class, fmlPreInitializationEvent ); // RCPT
+        initTabBlock( BlockSLF.class, fmlPreInitializationEvent ); // SLF
+        initTabBlock( BlockSLH.class, fmlPreInitializationEvent ); // SLH
+        initTabBlock( BlockSMSMX.class, fmlPreInitializationEvent ); // SMSMX
+        initTabBlock( BlockSSLF.class, fmlPreInitializationEvent ); // SSLF
+        initTabBlock( BlockSSLFR.class, fmlPreInitializationEvent ); // SSLFR
+        initTabBlock( BlockSSLH.class, fmlPreInitializationEvent ); // SSLH
+        initTabBlock( BlockSSLHR.class, fmlPreInitializationEvent ); // SSLHR
         initTabBlock( BlockSearsLF.class, fmlPreInitializationEvent ); // SearsLF
         initTabBlock( BlockSearsLF2.class, fmlPreInitializationEvent ); // SearsLF2
         initTabBlock( BlockSearsLF3.class, fmlPreInitializationEvent ); // SearsLF3
         initTabBlock( BlockSearsLF4.class, fmlPreInitializationEvent ); // SearsLF4
-        initTabBlock( BlockSLF.class, fmlPreInitializationEvent ); // SLF
-        initTabBlock( BlockSLH.class, fmlPreInitializationEvent ); // SLH
-        initTabBlock( BlockSMSMX.class, fmlPreInitializationEvent ); // SMSMX
-        initTabBlock( BlockSSLFR.class, fmlPreInitializationEvent ); // SSLFR
-        initTabBlock( BlockSSLH.class, fmlPreInitializationEvent ); // SSLH
-        initTabBlock( BlockSSLHR.class, fmlPreInitializationEvent ); // SSLHR
         initTabBlock( BlockULEDF.class, fmlPreInitializationEvent ); // ULEDF
         initTabBlock( BlockULEDH.class, fmlPreInitializationEvent ); // ULEDH
         initTabBlock( BlockWHOV20.class, fmlPreInitializationEvent ); // WHOV20
