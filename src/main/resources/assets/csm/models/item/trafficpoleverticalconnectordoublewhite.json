@@ -1,0 +1,8 @@
+{
+  "parent": "csm:custom/trafficpoleverticalconnectordouble",
+  "textures": {
+    "all": "csm:blocks/metal_mattewhite",
+    "particle": "csm:blocks/metal_mattewhite",
+    "0": "csm:blocks/metal_mattewhite"
+  }
+}
