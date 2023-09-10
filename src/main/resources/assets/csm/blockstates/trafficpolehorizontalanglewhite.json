@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:trafficpolehorizontalanglewhite"
+    },
+    "facing=north": {
+      "model": "csm:trafficpolehorizontalanglewhite"
+    },
+    "facing=east": {
+      "model": "csm:trafficpolehorizontalanglewhite",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:trafficpolehorizontalanglewhite",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:trafficpolehorizontalanglewhite",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:trafficpolehorizontalanglewhite",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:trafficpolehorizontalanglewhite",
+      "x": 90
+    }
+  }
+}
