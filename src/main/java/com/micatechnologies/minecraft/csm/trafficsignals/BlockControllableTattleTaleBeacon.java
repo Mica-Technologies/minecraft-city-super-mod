@@ -23,6 +23,7 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 @ElementsCitySuperMod.ModElement.Tag
@@ -119,7 +120,7 @@ public class BlockControllableTattleTaleBeacon extends ElementsCitySuperMod.ModE
 
         @Nullable
         @Override
-        public TileEntity createNewTileEntity( World world, int i ) {
+        public TileEntity createNewTileEntity( @Nonnull World world, int i ) {
             return new TileEntityTattleTaleBeacon();
         }
 

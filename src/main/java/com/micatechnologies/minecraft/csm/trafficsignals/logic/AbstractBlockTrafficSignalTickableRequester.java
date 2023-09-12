@@ -10,10 +10,6 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 public abstract class AbstractBlockTrafficSignalTickableRequester extends AbstractBlockTrafficSignalRequester
 {
-    public AbstractBlockTrafficSignalTickableRequester( Material p_i46399_1_, MapColor p_i46399_2_ )
-    {
-        super( p_i46399_1_, p_i46399_2_ );
-    }
 
     public AbstractBlockTrafficSignalTickableRequester( Material p_i45394_1_ ) {
         super( p_i45394_1_ );

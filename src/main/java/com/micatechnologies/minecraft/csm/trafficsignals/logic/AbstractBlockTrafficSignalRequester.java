@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.trafficsignals.logic;
 
+import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import com.micatechnologies.minecraft.csm.trafficsignals.ItemNSSignalLinker;
 import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalRequester;
 import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalTickableRequester;
@@ -15,22 +16,12 @@ import net.minecraft.world.World;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
-public class AbstractBlockTrafficSignalRequester extends AbstractBlockControllableCrosswalkAccessory
-        implements ITileEntityProvider
+public abstract class AbstractBlockTrafficSignalRequester extends AbstractBlockControllableCrosswalkAccessory
+        implements ICsmTileEntityProvider
 {
-
-    public AbstractBlockTrafficSignalRequester( Material p_i46399_1_, MapColor p_i46399_2_ ) {
-        super( p_i46399_1_, p_i46399_2_ );
-    }
 
     public AbstractBlockTrafficSignalRequester( Material p_i45394_1_ ) {
         super( p_i45394_1_ );
-    }
-
-    @Override
-    @ParametersAreNonnullByDefault
-    public TileEntity createNewTileEntity( World world, int i ) {
-        return new TileEntityTrafficSignalRequester();
     }
 
     @Override
@@ -88,4 +79,15 @@ public class AbstractBlockTrafficSignalRequester extends AbstractBlockControllab
         }
     }
 
+    /**
+     * Gets the tile entity class for the block.
+     *
+     * @return the tile entity class for the block
+     *
+     * @since 1.0
+     */
+    @Override
+    public Class< ? extends TileEntity > getTileEntityClass() {
+        return TileEntityTrafficSignalRequester.class;
+    }
 }

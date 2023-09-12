@@ -17,57 +17,31 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-@ElementsCitySuperMod.ModElement.Tag
-public class BlockControllableVerticalRightDoubleAddOnSignal extends ElementsCitySuperMod.ModElement
+public class BlockControllableVerticalRightDoubleAddOnSignal extends AbstractBlockControllableSignal
 {
-    @GameRegistry.ObjectHolder( "csm:controllableverticalrightdoubleaddonsignal" )
-    public static final Block block = null;
-
-    public BlockControllableVerticalRightDoubleAddOnSignal( ElementsCitySuperMod instance ) {
-        super( instance, 2998 );
+    public BlockControllableVerticalRightDoubleAddOnSignal() {
+        super( Material.ROCK );
     }
 
     @Override
-    public void initElements() {
-        elements.blocks.add( () -> new BlockCustom() );
-        elements.items.add( () -> new ItemBlock( block ).setRegistryName( block.getRegistryName() ) );
+    public SIGNAL_SIDE getSignalSide( World world, BlockPos blockPos ) {
+        return SIGNAL_SIDE.RIGHT;
     }
 
-    @SideOnly( Side.CLIENT )
     @Override
-    public void registerModels( ModelRegistryEvent event ) {
-        ModelLoader.setCustomModelResourceLocation( Item.getItemFromBlock( block ), 0,
-                                                    new ModelResourceLocation( "csm" +
-                                                                                       ":controllableverticalrightdoubleaddonsignal",
-                                                                               "inventory" ) );
+    public boolean doesFlash() {
+        return false;
     }
 
-    public static class BlockCustom extends AbstractBlockControllableSignal
-    {
-        public BlockCustom() {
-            super( Material.ROCK );
-            setRegistryName( "controllableverticalrightdoubleaddonsignal" );
-            setUnlocalizedName( "controllableverticalrightdoubleaddonsignal" );
-            setSoundType( SoundType.STONE );
-            setHarvestLevel( "pickaxe", 1 );
-            setHardness( 2F );
-            setResistance( 10F );
-            setLightLevel( 0F );
-            setLightOpacity( 0 );
-            setCreativeTab( CsmTabTrafficSignals.get() );
-            this.setDefaultState(
-                    this.blockState.getBaseState().withProperty( FACING, EnumFacing.NORTH ).withProperty( COLOR, 3 ) );
-        }
-
-        @Override
-        public SIGNAL_SIDE getSignalSide( World world, BlockPos blockPos ) {
-            return SIGNAL_SIDE.RIGHT;
-        }
-
-        @Override
-        public boolean doesFlash() {
-            return false;
-        }
-
+    /**
+     * Retrieves the registry name of the block.
+     *
+     * @return The registry name of the block.
+     *
+     * @since 1.0
+     */
+    @Override
+    public String getBlockRegistryName() {
+        return "controllableverticalrightdoubleaddonsignal";
     }
 }
