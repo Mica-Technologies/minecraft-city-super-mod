@@ -9,7 +9,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 
-@ElementsCitySuperMod.ModElement.Tag
 public class TileEntityTattleTaleBeacon extends TileEntity
 {
     private static final int    LEFT_VAL        = 0;

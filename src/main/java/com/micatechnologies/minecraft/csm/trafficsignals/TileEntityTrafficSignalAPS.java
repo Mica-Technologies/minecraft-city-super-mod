@@ -210,13 +210,13 @@ public class TileEntityTrafficSignalAPS extends TileEntityTrafficSignalTickableR
     public void onTick() {
         // Get block color value
         int blockColor = world.getBlockState( pos )
-                              .getValue( BlockControllableCrosswalkButtonAudible.BlockCustom.COLOR );
+                              .getValue( BlockControllableCrosswalkButtonAudible.COLOR );
 
         // Handle for each color state
-        if ( blockColor == BlockControllableCrosswalkButtonAudible.BlockCustom.SIGNAL_OFF ) {
+        if ( blockColor == BlockControllableCrosswalkButtonAudible.SIGNAL_OFF ) {
             // Do nothing if no power/turned off
         }
-        else if ( blockColor == BlockControllableCrosswalkButtonAudible.BlockCustom.SIGNAL_GREEN ) {
+        else if ( blockColor == BlockControllableCrosswalkButtonAudible.SIGNAL_GREEN ) {
             // Play walk sound if it's time (not still playing)
             boolean isWalkSoundAlreadyPlaying = ( crosswalkSoundLastPlayedTime +
                     getCrosswalkSound().getLenOfWalkSound() ) > world.getTotalWorldTime();
@@ -229,13 +229,13 @@ public class TileEntityTrafficSignalAPS extends TileEntityTrafficSignalTickableR
                 crosswalkSoundLastPlayedTime = world.getTotalWorldTime();
             }
         }
-        else if ( blockColor == BlockControllableCrosswalkButtonAudible.BlockCustom.SIGNAL_YELLOW ) {
+        else if ( blockColor == BlockControllableCrosswalkButtonAudible.SIGNAL_YELLOW ) {
             // Play locate sound (future: countdown when controller updated)
             world.playSound( null, pos.getX(), pos.getY(), pos.getZ(),
                              getCrosswalkSound().getLocateSound().getSoundEvent(), SoundCategory.NEUTRAL,
                              getCrosswalkSound().getVolume(), getCrosswalkSound().getPitch() );
         }
-        else if ( blockColor == BlockControllableCrosswalkButtonAudible.BlockCustom.SIGNAL_RED ) {
+        else if ( blockColor == BlockControllableCrosswalkButtonAudible.SIGNAL_RED ) {
             // Play locate sound
             world.playSound( null, pos.getX(), pos.getY(), pos.getZ(),
                              getCrosswalkSound().getLocateSound().getSoundEvent(), SoundCategory.NEUTRAL,
