@@ -40,6 +40,34 @@ public abstract class AbstractBlockRotatableNSEWUD extends AbstractBlock
     /**
      * Constructs an {@link AbstractBlockRotatableNSEWUD} instance.
      *
+     * @param material The material of the block.
+     *
+     * @since 1.0
+     */
+    public AbstractBlockRotatableNSEWUD( Material material )
+    {
+        this( material, true );
+    }
+
+    /**
+     * Constructs an {@link AbstractBlockRotatableNSEWUD} instance.
+     *
+     * @param material        The material of the block.
+     * @param setDefaultState Whether to set the default state of the block
+     *
+     * @since 1.0
+     */
+    public AbstractBlockRotatableNSEWUD( Material material, boolean setDefaultState )
+    {
+        super( material );
+        if ( setDefaultState ) {
+            this.setDefaultState( this.blockState.getBaseState().withProperty( FACING, EnumFacing.NORTH ) );
+        }
+    }
+
+    /**
+     * Constructs an {@link AbstractBlockRotatableNSEWUD} instance.
+     *
      * @param material         The material of the block.
      * @param soundType        The sound type of the block.
      * @param harvestToolClass The harvest tool class of the block.

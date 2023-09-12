@@ -34,6 +34,22 @@ import java.util.Objects;
 @MethodsReturnNonnullByDefault
 public abstract class AbstractBlockFence extends BlockFence implements IHasModel, ICsmBlock
 {
+    /**
+     * Constructs an {@link AbstractBlockFence} instance.
+     *
+     * @param material The material of the fence block.
+     *
+     * @since 1.0
+     */
+    public AbstractBlockFence( Material material )
+    {
+        super( material, material.getMaterialMapColor() );
+        setUnlocalizedName( getBlockRegistryName() );
+        setRegistryName( CsmConstants.MOD_NAMESPACE, getBlockRegistryName() );
+        CsmRegistry.registerBlock( this );
+        CsmRegistry.registerItem(
+                new ItemBlock( this ).setRegistryName( Objects.requireNonNull( this.getRegistryName() ) ) );
+    }
 
     /**
      * Constructs an {@link AbstractBlockFence} instance.

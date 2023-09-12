@@ -15,13 +15,8 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
-public class AbstractBlockTrafficSignalAPS extends AbstractBlockTrafficSignalTickableRequester
+public abstract class AbstractBlockTrafficSignalAPS extends AbstractBlockTrafficSignalTickableRequester
 {
-    public AbstractBlockTrafficSignalAPS( Material p_i46399_1_, MapColor p_i46399_2_ )
-    {
-        super( p_i46399_1_, p_i46399_2_ );
-    }
-
     public AbstractBlockTrafficSignalAPS( Material p_i45394_1_ ) {
         super( p_i45394_1_ );
     }
@@ -31,23 +26,19 @@ public class AbstractBlockTrafficSignalAPS extends AbstractBlockTrafficSignalTic
         return 0;
     }
 
-    @Override
-    public AxisAlignedBB getBoundingBox( IBlockState state, IBlockAccess source, BlockPos pos ) {
-        switch ( state.getValue( FACING ) ) {
-            case SOUTH:
-            default:
-                return new AxisAlignedBB( 1D, 0D, 0.2D, 0D, 1D, 0D );
-            case NORTH:
-                return new AxisAlignedBB( 0D, 0D, 0.8D, 1D, 1D, 1D );
-            case WEST:
-                return new AxisAlignedBB( 0.8D, 0D, 1D, 1D, 1D, 0D );
-            case EAST:
-                return new AxisAlignedBB( 0.2D, 0D, 0D, 0D, 1D, 1D );
-            case UP:
-                return new AxisAlignedBB( 0D, 0.2D, 0D, 1D, 0D, 1D );
-            case DOWN:
-                return new AxisAlignedBB( 0D, 0.8D, 1D, 1D, 1D, 0D );
-        }
+    /**
+     * Retrieves the bounding box of the block.
+     *
+     * @param state  the block state
+     * @param source the block access
+     * @param pos    the block position
+     *
+     * @return The bounding box of the block.
+     *
+     * @since 1.0
+     */
+    public AxisAlignedBB getBlockBoundingBox( IBlockState state, IBlockAccess source, BlockPos pos ) {
+        return new AxisAlignedBB( 1D, 0D, 0.2D, 0D, 1D, 0D );
     }
 
     @Override

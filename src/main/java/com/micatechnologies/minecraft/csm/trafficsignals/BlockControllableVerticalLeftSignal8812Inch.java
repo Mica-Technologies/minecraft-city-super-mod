@@ -17,56 +17,31 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-@ElementsCitySuperMod.ModElement.Tag
-public class BlockControllableVerticalLeftSignal8812Inch extends ElementsCitySuperMod.ModElement
+public class BlockControllableVerticalLeftSignal8812Inch extends AbstractBlockControllableSignal
 {
-    @GameRegistry.ObjectHolder( "csm:controllableverticalleftsignal8812inch" )
-    public static final Block block = null;
-
-    public BlockControllableVerticalLeftSignal8812Inch( ElementsCitySuperMod instance ) {
-        super( instance, 2975 );
+    public BlockControllableVerticalLeftSignal8812Inch() {
+        super( Material.ROCK );
     }
 
     @Override
-    public void initElements() {
-        elements.blocks.add( () -> new BlockCustom() );
-        elements.items.add( () -> new ItemBlock( block ).setRegistryName( block.getRegistryName() ) );
+    public SIGNAL_SIDE getSignalSide( World world, BlockPos blockPos ) {
+        return SIGNAL_SIDE.LEFT;
     }
 
-    @SideOnly( Side.CLIENT )
     @Override
-    public void registerModels( ModelRegistryEvent event ) {
-        ModelLoader.setCustomModelResourceLocation( Item.getItemFromBlock( block ), 0,
-                                                    new ModelResourceLocation( "csm:controllableverticalleftsignal8812inch",
-                                                                               "inventory" ) );
+    public boolean doesFlash() {
+        return true;
     }
 
-    public static class BlockCustom extends AbstractBlockControllableSignal
-    {
-        public BlockCustom() {
-            super( Material.ROCK );
-            setRegistryName( "controllableverticalleftsignal8812inch" );
-            setUnlocalizedName( "controllableverticalleftsignal8812inch" );
-            setSoundType( SoundType.STONE );
-            setHarvestLevel( "pickaxe", 1 );
-            setHardness( 2F );
-            setResistance( 10F );
-            setLightLevel( 0F );
-            setLightOpacity( 0 );
-            setCreativeTab( CsmTabTrafficSignals.get() );
-            this.setDefaultState(
-                    this.blockState.getBaseState().withProperty( FACING, EnumFacing.NORTH ).withProperty( COLOR, 3 ) );
-        }
-
-        @Override
-        public SIGNAL_SIDE getSignalSide( World world, BlockPos blockPos) {
-            return SIGNAL_SIDE.LEFT;
-        }
-
-        @Override
-        public boolean doesFlash() {
-            return true;
-        }
-
+    /**
+     * Retrieves the registry name of the block.
+     *
+     * @return The registry name of the block.
+     *
+     * @since 1.0
+     */
+    @Override
+    public String getBlockRegistryName() {
+        return "controllableverticalleftsignal8812inch";
     }
 }
