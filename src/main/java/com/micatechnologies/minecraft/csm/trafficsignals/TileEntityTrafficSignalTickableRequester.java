@@ -11,7 +11,6 @@ import net.minecraft.nbt.NBTTagCompound;
  * @version 2.0
  * @since 2022.1
  */
-@ElementsCitySuperMod.ModElement.Tag
 public abstract class TileEntityTrafficSignalTickableRequester extends AbstractTickableTileEntity
 {
     /**
