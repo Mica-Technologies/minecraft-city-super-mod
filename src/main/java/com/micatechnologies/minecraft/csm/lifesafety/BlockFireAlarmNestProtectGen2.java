@@ -1,226 +1,148 @@
 package com.micatechnologies.minecraft.csm.lifesafety;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockDirectional;
+import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEWUD;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.IProperty;
-import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockDirectional;
+import net.minecraft.block.BlockHorizontal;
+import net.minecraft.util.BlockRenderLayer;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
-import net.minecraft.util.*;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
-import net.minecraft.world.World;
-import net.minecraftforge.client.event.ModelRegistryEvent;
-import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import java.util.Random;
-import com.micatechnologies.minecraft.csm.tabs.CsmTabLifeSafety;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
-@ElementsCitySuperMod.ModElement.Tag
-public class BlockFireAlarmNestProtectGen2 extends ElementsCitySuperMod.ModElement
+public class BlockFireAlarmNestProtectGen2 extends AbstractBlockRotatableNSEWUD
 {
-    @GameRegistry.ObjectHolder( "csm:nestprotect" )
-    public static final Block block = null;
-
-    public BlockFireAlarmNestProtectGen2( ElementsCitySuperMod instance ) {
-        super( instance, 50 );
+    public BlockFireAlarmNestProtectGen2() {
+        super( Material.ROCK, SoundType.STONE , "pickaxe", 1 , 2F , 10F , 0.1F , 0  );
     }
 
+    /**
+     * Retrieves the registry name of the block.
+     *
+     * @return The registry name of the block.
+     *
+     * @since 1.0
+     */
     @Override
-    public void initElements() {
-        elements.blocks.add( () -> new BlockCustom() );
-        elements.items.add( () -> new ItemBlock( block ).setRegistryName( block.getRegistryName() ) );
+    public String getBlockRegistryName() {
+        return "nestprotect";
     }
 
-    @SideOnly( Side.CLIENT )
+    /**
+     * Retrieves the bounding box of the block.
+     *
+     * @param state  the block state
+     * @param source the block access
+     * @param pos    the block position
+     *
+     * @return The bounding box of the block.
+     *
+     * @since 1.0
+     */
     @Override
-    public void registerModels( ModelRegistryEvent event ) {
-        ModelLoader.setCustomModelResourceLocation( Item.getItemFromBlock( block ), 0,
-                                                    new ModelResourceLocation( "csm:nestprotect", "inventory" ) );
+    public AxisAlignedBB getBlockBoundingBox( IBlockState state, IBlockAccess source, BlockPos pos ) {
+        return new AxisAlignedBB( 1D, 0D, 0.1D, 0D, 1D, 0D );
     }
 
-    public static class BlockCustom extends Block
+    /**
+     * Retrieves whether the block is an opaque cube.
+     *
+     * @param state The block state.
+     *
+     * @return {@code true} if the block is an opaque cube, {@code false} otherwise.
+     *
+     * @since 1.0
+     */
+    @Override
+    public boolean getBlockIsOpaqueCube( IBlockState state ) {
+        return false;
+    }
+
+    /**
+     * Retrieves whether the block is a full cube.
+     *
+     * @param state The block state.
+     *
+     * @return {@code true} if the block is a full cube, {@code false} otherwise.
+     *
+     * @since 1.0
+     */
+    @Override
+    public boolean getBlockIsFullCube( IBlockState state ) {
+        return false;
+    }
+
+    /**
+     * Retrieves whether the block connects to redstone.
+     *
+     * @param state  the block state
+     * @param access the block access
+     * @param pos    the block position
+     * @param facing the block facing direction
+     *
+     * @return {@code true} if the block connects to redstone, {@code false} otherwise.
+     *
+     * @since 1.0
+     */
+    @Override
+    public boolean getBlockConnectsRedstone( IBlockState state,
+                                             IBlockAccess access,
+                                             BlockPos pos,
+                                             @Nullable EnumFacing facing )
     {
-        public static final PropertyDirection FACING = BlockDirectional.FACING;
-        private             boolean           red    = false;
+        return true;
+    }
 
-        public BlockCustom() {
-            super( Material.ROCK );
-            setRegistryName( "nestprotect" );
-            setUnlocalizedName( "nestprotect" );
-            setSoundType( SoundType.STONE );
-            setHarvestLevel( "pickaxe", 1 );
-            setHardness( 2F );
-            setResistance( 10F );
-            setLightLevel( 0.1F );
-            setLightOpacity( 0 );
-            setCreativeTab( CsmTabLifeSafety.get() );
-            this.setDefaultState( this.blockState.getBaseState().withProperty( FACING, EnumFacing.NORTH ) );
-        }
+    /**
+     * Retrieves the block's render layer.
+     *
+     * @return The block's render layer.
+     *
+     * @since 1.0
+     */
+    @Nonnull
+    @Override
+    public BlockRenderLayer getBlockRenderLayer() {
+        return BlockRenderLayer.CUTOUT_MIPPED;
+    }
 
-        @Override
-        public IBlockState getStateFromMeta( int meta ) {
-            return this.getDefaultState().withProperty( FACING, EnumFacing.getFront( meta ) );
-        }
 
-        @Override
-        public int getMetaFromState( IBlockState state ) {
-            return ( ( EnumFacing ) state.getValue( FACING ) ).getIndex();
-        }
 
-        @Override
-        public boolean isFullCube( IBlockState state ) {
-            return false;
-        }
-
-        @Override
-        public EnumBlockRenderType getRenderType( IBlockState state ) {
-            return EnumBlockRenderType.MODEL;
-        }
-
-        @Override
-        public AxisAlignedBB getBoundingBox( IBlockState state, IBlockAccess source, BlockPos pos ) {
-            switch ( ( EnumFacing ) state.getValue( BlockDirectional.FACING ) ) {
-                case SOUTH:
-                default:
-                    return new AxisAlignedBB( 1D, 0D, 0.1D, 0D, 1D, 0D );
-                case NORTH:
-                    return new AxisAlignedBB( 0D, 0D, 0.9D, 1D, 1D, 1D );
-                case WEST:
-                    return new AxisAlignedBB( 0.9D, 0D, 1D, 1D, 1D, 0D );
-                case EAST:
-                    return new AxisAlignedBB( 0.1D, 0D, 0D, 0D, 1D, 1D );
-                case UP:
-                    return new AxisAlignedBB( 0D, 0.1D, 0D, 1D, 0D, 1D );
-                case DOWN:
-                    return new AxisAlignedBB( 0D, 0.9D, 1D, 1D, 1D, 0D );
-            }
-        }
-
-        @Override
-        public boolean isOpaqueCube( IBlockState state ) {
-            return false;
-        }
-
-        @Override
-        public void updateTick( World world, BlockPos pos, IBlockState state, Random random ) {
-            super.updateTick( world, pos, state, random );
-            int x = pos.getX();
-            int y = pos.getY();
-            int z = pos.getZ();
-            if ( world.isBlockIndirectlyGettingPowered( new BlockPos( x, y, z ) ) > 0 ) {
-                world.playSound((EntityPlayer) null, x, y, z,
-                                (net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("csm:nest_test")),
-                                SoundCategory.NEUTRAL, (float) 5, (float) 1);
-                world.scheduleUpdate( new BlockPos( x, y, z ), this, this.tickRate( world ) );
-            }
-        }
-
-        @Override
-        public void neighborChanged( IBlockState state,
-                                     World world,
-                                     BlockPos pos,
-                                     Block neighborBlock,
-                                     BlockPos fromPos )
+@Override
+public void neighborChanged(IBlockState state, World world, BlockPos pos, Block neighborBlock, BlockPos fromPos)
+{
+    super.neighborChanged(state, world, pos, neighborBlock, fromPos);
+    int x = pos.getX();
+    int y = pos.getY();
+    int z = pos.getZ();
+    Block block = this;
+    if (world.isBlockIndirectlyGettingPowered(new BlockPos(x, y, z)) > 0) {
         {
-            super.neighborChanged( state, world, pos, neighborBlock, fromPos );
-            int x = pos.getX();
-            int y = pos.getY();
-            int z = pos.getZ();
-            Block block = this;
-            if ( world.isBlockIndirectlyGettingPowered( new BlockPos( x, y, z ) ) > 0 ) {
-                {
-                    world.playSound((EntityPlayer) null, x, y, z,
-                                    (net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("csm:nest_test")),
-                                    SoundCategory.NEUTRAL, (float) 5, (float) 1);
-                }
-            }
-        }
-
-        @Override
-        public int tickRate( World world ) {
-            return 140;
-        }
-
-        @Override
-        public void onBlockAdded( World world, BlockPos pos, IBlockState state ) {
-            super.onBlockAdded( world, pos, state );
-            int x = pos.getX();
-            int y = pos.getY();
-            int z = pos.getZ();
-            Block block = this;
-            world.scheduleUpdate( new BlockPos( x, y, z ), this, this.tickRate( world ) );
-        }
-
-        @SideOnly( Side.CLIENT )
-        @Override
-        public BlockRenderLayer getBlockLayer() {
-            return BlockRenderLayer.CUTOUT_MIPPED;
-        }
-
-        @Override
-        public boolean onBlockActivated( World world,
-                                         BlockPos pos,
-                                         IBlockState state,
-                                         EntityPlayer entity,
-                                         EnumHand hand,
-                                         EnumFacing side,
-                                         float hitX,
-                                         float hitY,
-                                         float hitZ )
-        {
-            super.onBlockActivated( world, pos, state, entity, hand, side, hitX, hitY, hitZ );
-            int x = pos.getX();
-            int y = pos.getY();
-            int z = pos.getZ();
-            world.playSound((EntityPlayer) null, x, y, z,
-                            (net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("csm:nest_test")),
-                            SoundCategory.NEUTRAL, (float) 5, (float) 1);
-            return true;
-        }
-
-        @Override
-        public IBlockState getStateForPlacement( World worldIn,
-                                                 BlockPos pos,
-                                                 EnumFacing facing,
-                                                 float hitX,
-                                                 float hitY,
-                                                 float hitZ,
-                                                 int meta,
-                                                 EntityLivingBase placer )
-        {
-            return this.getDefaultState()
-                       .withProperty( FACING, EnumFacing.getDirectionFromEntityLiving( pos, placer ) );
-        }
-
-        @Override
-        public int getWeakPower( IBlockState state, IBlockAccess baccess, BlockPos pos, EnumFacing side ) {
-            return red ? 15 : 0;
-        }
-
-        @Override
-        public int getStrongPower( IBlockState state, IBlockAccess baccess, BlockPos pos, EnumFacing side ) {
-            return red ? 15 : 0;
-        }
-
-        @Override
-        protected net.minecraft.block.state.BlockStateContainer createBlockState() {
-            return new net.minecraft.block.state.BlockStateContainer( this, new IProperty[]{ FACING } );
-        }
-
-        @Override
-        public boolean canConnectRedstone( IBlockState state, IBlockAccess world, BlockPos pos, EnumFacing side ) {
-            return true;
+            world.playSound((EntityPlayer) null, x, y, z, (net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("csm:nest_test")), SoundCategory.NEUTRAL, (float) 5, (float) 1);
         }
     }
+}
+
+@SideOnly( Side.CLIENT )
+@Override
+public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer entity, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ)
+{
+    super.onBlockActivated(world, pos, state, entity, hand, side, hitX, hitY, hitZ);
+    int x = pos.getX();
+    int y = pos.getY();
+    int z = pos.getZ();
+    world.playSound((EntityPlayer) null, x, y, z, (net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("csm:nest_test")), SoundCategory.NEUTRAL, (float) 5, (float) 1);
+    return true;
+}
+
 }
