@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
+import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import com.micatechnologies.minecraft.csm.tabs.CsmTabTrafficSignals;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignal;
 import net.minecraft.block.Block;
@@ -26,107 +27,84 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-@ElementsCitySuperMod.ModElement.Tag
-public class BlockControllableTattleTaleBeacon extends ElementsCitySuperMod.ModElement
+public class BlockControllableTattleTaleBeacon extends AbstractBlockControllableSignal implements ICsmTileEntityProvider
 {
-    @GameRegistry.ObjectHolder( "csm:controllabletattletalebeacon" )
-    public static final Block block = null;
-
-    public BlockControllableTattleTaleBeacon( ElementsCitySuperMod instance ) {
-        super( instance, 2119 );
+    public BlockControllableTattleTaleBeacon() {
+        super( Material.ROCK );
     }
 
     @Override
-    public void initElements() {
-        elements.blocks.add( () -> new BlockCustom() );
-        elements.items.add( () -> new ItemBlock( block ).setRegistryName( block.getRegistryName() ) );
+    public SIGNAL_SIDE getSignalSide( World world, BlockPos blockPos ) {
+        // Get tile entity and cycle mode
+        SIGNAL_SIDE side = SIGNAL_SIDE.THROUGH;
+        if ( world != null && blockPos != null ) {
+            TileEntity tileEntity = world.getTileEntity( blockPos );
+            if ( tileEntity instanceof TileEntityTattleTaleBeacon ) {
+                TileEntityTattleTaleBeacon tileEntityTattleTaleBeacon = ( TileEntityTattleTaleBeacon ) tileEntity;
+                side = tileEntityTattleTaleBeacon.getSignalSide();
+            }
+        }
+
+        return side;
     }
 
     @Override
-    public void init( FMLInitializationEvent event ) {
-        GameRegistry.registerTileEntity( TileEntityTattleTaleBeacon.class, "csm" + ":tileentitytattletalebeacon" );
-    }
-
-    @SideOnly( Side.CLIENT )
-    @Override
-    public void registerModels( ModelRegistryEvent event ) {
-        ModelLoader.setCustomModelResourceLocation( Item.getItemFromBlock( block ), 0,
-                                                    new ModelResourceLocation( "csm:controllabletattletalebeacon",
-                                                                               "inventory" ) );
-    }
-
-    public static class BlockCustom extends AbstractBlockControllableSignal implements ITileEntityProvider
+    public boolean onBlockActivated( World p_onBlockActivated_1_,
+                                     BlockPos p_onBlockActivated_2_,
+                                     IBlockState p_onBlockActivated_3_,
+                                     EntityPlayer p_onBlockActivated_4_,
+                                     EnumHand p_onBlockActivated_5_,
+                                     EnumFacing p_onBlockActivated_6_,
+                                     float p_onBlockActivated_7_,
+                                     float p_onBlockActivated_8_,
+                                     float p_onBlockActivated_9_ )
     {
-        public BlockCustom() {
-            super( Material.ROCK );
-            setRegistryName( "controllabletattletalebeacon" );
-            setUnlocalizedName( "controllabletattletalebeacon" );
-            setSoundType( SoundType.STONE );
-            setHarvestLevel( "pickaxe", 1 );
-            setHardness( 2F );
-            setResistance( 10F );
-            setLightLevel( 0F );
-            setLightOpacity( 0 );
-            setCreativeTab( CsmTabTrafficSignals.get() );
-            this.setDefaultState(
-                    this.blockState.getBaseState().withProperty( FACING, EnumFacing.NORTH ).withProperty( COLOR, 3 ) );
-        }
-
-        @Override
-        public SIGNAL_SIDE getSignalSide( World world, BlockPos blockPos ) {
+        if ( !( p_onBlockActivated_4_.inventory.getCurrentItem().getItem() instanceof ItemEWSignalLinker ) &&
+                !( p_onBlockActivated_4_.inventory.getCurrentItem()
+                                                  .getItem() instanceof ItemNSSignalLinker ) ) {
             // Get tile entity and cycle mode
-            SIGNAL_SIDE side = SIGNAL_SIDE.THROUGH;
-            if ( world != null && blockPos != null ) {
-                TileEntity tileEntity = world.getTileEntity( blockPos );
-                if ( tileEntity instanceof TileEntityTattleTaleBeacon ) {
-                    TileEntityTattleTaleBeacon tileEntityTattleTaleBeacon = ( TileEntityTattleTaleBeacon ) tileEntity;
-                    side = tileEntityTattleTaleBeacon.getSignalSide();
-                }
+            TileEntity tileEntity = p_onBlockActivated_1_.getTileEntity( p_onBlockActivated_2_ );
+            if ( tileEntity instanceof TileEntityTattleTaleBeacon ) {
+                TileEntityTattleTaleBeacon tileEntityTattleTaleBeacon = ( TileEntityTattleTaleBeacon ) tileEntity;
+                tileEntityTattleTaleBeacon.cycleMode( p_onBlockActivated_4_ );
             }
-
-            return side;
+        }
+        else {
+            return super.onBlockActivated( p_onBlockActivated_1_, p_onBlockActivated_2_, p_onBlockActivated_3_,
+                                           p_onBlockActivated_4_, p_onBlockActivated_5_, p_onBlockActivated_6_,
+                                           p_onBlockActivated_7_, p_onBlockActivated_8_, p_onBlockActivated_9_ );
         }
 
-        @Override
-        public boolean onBlockActivated( World p_onBlockActivated_1_,
-                                         BlockPos p_onBlockActivated_2_,
-                                         IBlockState p_onBlockActivated_3_,
-                                         EntityPlayer p_onBlockActivated_4_,
-                                         EnumHand p_onBlockActivated_5_,
-                                         EnumFacing p_onBlockActivated_6_,
-                                         float p_onBlockActivated_7_,
-                                         float p_onBlockActivated_8_,
-                                         float p_onBlockActivated_9_ )
-        {
-            if ( !( p_onBlockActivated_4_.inventory.getCurrentItem()
-                                                   .getItem() instanceof ItemEWSignalLinker.ItemCustom ) &&
-                    !( p_onBlockActivated_4_.inventory.getCurrentItem()
-                                                      .getItem() instanceof ItemNSSignalLinker.ItemCustom ) ) {
-                // Get tile entity and cycle mode
-                TileEntity tileEntity = p_onBlockActivated_1_.getTileEntity( p_onBlockActivated_2_ );
-                if ( tileEntity instanceof TileEntityTattleTaleBeacon ) {
-                    TileEntityTattleTaleBeacon tileEntityTattleTaleBeacon = ( TileEntityTattleTaleBeacon ) tileEntity;
-                    tileEntityTattleTaleBeacon.cycleMode( p_onBlockActivated_4_ );
-                }
-            }
-            else {
-                return super.onBlockActivated( p_onBlockActivated_1_, p_onBlockActivated_2_, p_onBlockActivated_3_,
-                                               p_onBlockActivated_4_, p_onBlockActivated_5_, p_onBlockActivated_6_,
-                                               p_onBlockActivated_7_, p_onBlockActivated_8_, p_onBlockActivated_9_ );
-            }
-
-            return true;
-        }
-
-        @Nullable
-        @Override
-        public TileEntity createNewTileEntity( @Nonnull World world, int i ) {
-            return new TileEntityTattleTaleBeacon();
-        }
-
-        @Override
-        public boolean doesFlash() {
-            return false;
-        }
+        return true;
     }
+
+    @Override
+    public boolean doesFlash() {
+        return false;
+    }
+
+    /**
+     * Retrieves the registry name of the block.
+     *
+     * @return The registry name of the block.
+     *
+     * @since 1.0
+     */
+    @Override
+    public String getBlockRegistryName() {
+        return "controllabletattletalebeacon";
+    }
+
+    /**
+     * Gets the tile entity class for the block.
+     *
+     * @return the tile entity class for the block
+     *
+     * @since 1.0
+     */
+    @Override
+    public Class< ? extends TileEntity > getTileEntityClass() {
+        return TileEntityTattleTaleBeacon.class;
+    }
+
 }

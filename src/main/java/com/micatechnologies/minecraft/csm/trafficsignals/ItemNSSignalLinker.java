@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
+import com.micatechnologies.minecraft.csm.codeutils.AbstractItem;
 import com.micatechnologies.minecraft.csm.tabs.CsmTabTrafficSignals;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableCrosswalkAccessory;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignal;
@@ -29,122 +30,64 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-@ElementsCitySuperMod.ModElement.Tag
-public class ItemNSSignalLinker extends ElementsCitySuperMod.ModElement
+public class ItemNSSignalLinker extends AbstractItem
 {
-    @GameRegistry.ObjectHolder( "csm:nssignallinker" )
-    public static final Item block = null;
 
-    public ItemNSSignalLinker( ElementsCitySuperMod instance ) {
-        super( instance, 1998 );
-    }
+    private final Map< UUID, BlockPos > signalControllerPosMap = new HashMap<>();
+    private final Map< UUID, Integer >  circuitLinkIndexMap    = new HashMap<>();
 
     @Override
-    public void initElements() {
-        elements.items.add( () -> new ItemCustom() );
-    }
-
-    @SideOnly( Side.CLIENT )
-    @Override
-    public void registerModels( ModelRegistryEvent event ) {
-        ModelLoader.setCustomModelResourceLocation( block, 0,
-                                                    new ModelResourceLocation( "csm:nssignallinker", "inventory" ) );
-    }
-
-    public static class ItemCustom extends Item
+    public EnumActionResult onItemUse( EntityPlayer player,
+                                       World worldIn,
+                                       BlockPos pos,
+                                       EnumHand hand,
+                                       EnumFacing facing,
+                                       float hitX,
+                                       float hitY,
+                                       float hitZ )
     {
+        if ( !worldIn.isRemote ) {
+            IBlockState state = worldIn.getBlockState( pos );
+            final BlockPos signalControllerPos = signalControllerPosMap.getOrDefault( player.getUniqueID(), null );
+            final int circuitLinkIndex = circuitLinkIndexMap.getOrDefault( player.getUniqueID(), 1 );
+            if ( state.getBlock() instanceof BlockTrafficSignalController ) {
+                signalControllerPosMap.put( player.getUniqueID(), pos );
+                circuitLinkIndexMap.put( player.getUniqueID(), 1 );
+                player.sendMessage( new TextComponentString( "Linking to signal controller at " +
+                                                                     "(" +
+                                                                     pos.getX() +
+                                                                     "," +
+                                                                     pos.getY() +
+                                                                     "," +
+                                                                     pos.getZ() +
+                                                                     ")" ) );
 
-        private final Map< UUID, BlockPos > signalControllerPosMap = new HashMap<>();
-        private final Map< UUID, Integer >  circuitLinkIndexMap    = new HashMap<>();
+                return EnumActionResult.SUCCESS;
+            }
+            else if ( signalControllerPos == null &&
+                    ( state.getBlock() instanceof AbstractBlockControllableSignal ||
+                            state.getBlock() instanceof AbstractBlockTrafficSignalSensor ) ) {
 
-        public ItemCustom() {
-            setMaxDamage( 0 );
-            maxStackSize = 1;
-            setUnlocalizedName( "nssignallinker" );
-            setRegistryName( "nssignallinker" );
-            setCreativeTab( CsmTabTrafficSignals.get() );
-        }
+                player.sendMessage( new TextComponentString( "No signal controller has been selected." ) );
 
-        @Override
-        public EnumActionResult onItemUse( EntityPlayer player,
-                                           World worldIn,
-                                           BlockPos pos,
-                                           EnumHand hand,
-                                           EnumFacing facing,
-                                           float hitX,
-                                           float hitY,
-                                           float hitZ )
-        {
-            if ( !worldIn.isRemote ) {
-                IBlockState state = worldIn.getBlockState( pos );
-                final BlockPos signalControllerPos = signalControllerPosMap.getOrDefault( player.getUniqueID(), null );
-                final int circuitLinkIndex = circuitLinkIndexMap.getOrDefault( player.getUniqueID(), 1 );
-                if ( state.getBlock() instanceof BlockTrafficSignalController.BlockCustom ) {
-                    signalControllerPosMap.put( player.getUniqueID(), pos );
-                    circuitLinkIndexMap.put( player.getUniqueID(), 1 );
-                    player.sendMessage( new TextComponentString( "Linking to signal controller at " +
-                                                                         "(" +
-                                                                         pos.getX() +
-                                                                         "," +
-                                                                         pos.getY() +
-                                                                         "," +
-                                                                         pos.getZ() +
-                                                                         ")" ) );
+                return EnumActionResult.SUCCESS;
+            }
+            else if ( signalControllerPos != null &&
+                    state.getBlock() instanceof AbstractBlockTrafficSignalSensor &&
+                    !player.isSneaking() ) {
 
-                    return EnumActionResult.SUCCESS;
-                }
-                else if ( signalControllerPos == null &&
-                        ( state.getBlock() instanceof AbstractBlockControllableSignal ||
-                                state.getBlock() instanceof AbstractBlockTrafficSignalSensor ) ) {
+                TileEntity tileEntity = worldIn.getTileEntity( signalControllerPos );
+                if ( tileEntity instanceof TileEntityTrafficSignalController ) {
+                    TileEntityTrafficSignalController tileEntityTrafficSignalController
+                            = ( TileEntityTrafficSignalController ) tileEntity;
+                    boolean linked = tileEntityTrafficSignalController.linkDevice( pos,
+                                                                                   AbstractBlockControllableSignal.SIGNAL_SIDE.NA_SENSOR,
+                                                                                   circuitLinkIndex );
 
-                    player.sendMessage( new TextComponentString( "No signal controller has been selected." ) );
-
-                    return EnumActionResult.SUCCESS;
-                }
-                else if ( signalControllerPos != null &&
-                        state.getBlock() instanceof AbstractBlockTrafficSignalSensor &&
-                        !player.isSneaking() ) {
-
-                    TileEntity tileEntity = worldIn.getTileEntity( signalControllerPos );
-                    if ( tileEntity instanceof TileEntityTrafficSignalController ) {
-                        TileEntityTrafficSignalController tileEntityTrafficSignalController
-                                = ( TileEntityTrafficSignalController ) tileEntity;
-                        boolean linked = tileEntityTrafficSignalController.linkDevice( pos,
-                                                                                       AbstractBlockControllableSignal.SIGNAL_SIDE.NA_SENSOR,
-                                                                                       circuitLinkIndex );
-
-                        if ( linked ) {
-                            player.sendMessage( new TextComponentString( "Sensor connected to circuit " +
-                                                                                 circuitLinkIndex +
-                                                                                 " of signal controller at " +
-                                                                                 "(" +
-                                                                                 signalControllerPos.getX() +
-                                                                                 "," +
-                                                                                 signalControllerPos.getY() +
-                                                                                 "," +
-                                                                                 signalControllerPos.getZ() +
-                                                                                 ")" ) );
-                        }
-                    }
-                    else {
-                        player.sendMessage( new TextComponentString(
-                                "Unable to link sensor! Lost connection to previously connected controller." ) );
-
-                    }
-
-                    return EnumActionResult.SUCCESS;
-                }
-                else if ( signalControllerPos != null &&
-                        state.getBlock() instanceof AbstractBlockTrafficSignalSensor &&
-                        player.isSneaking() ) {
-
-                    TileEntity tileEntity = worldIn.getTileEntity( signalControllerPos );
-                    if ( tileEntity instanceof TileEntityTrafficSignalController ) {
-                        TileEntityTrafficSignalController tileEntityTrafficSignalController
-                                = ( TileEntityTrafficSignalController ) tileEntity;
-                        tileEntityTrafficSignalController.unlinkDevice( pos );
-
-                        player.sendMessage( new TextComponentString( "Sensor unlinked from signal controller at " +
+                    if ( linked ) {
+                        player.sendMessage( new TextComponentString( "Sensor connected to circuit " +
+                                                                             circuitLinkIndex +
+                                                                             " of signal controller at " +
                                                                              "(" +
                                                                              signalControllerPos.getX() +
                                                                              "," +
@@ -152,237 +95,260 @@ public class ItemNSSignalLinker extends ElementsCitySuperMod.ModElement
                                                                              "," +
                                                                              signalControllerPos.getZ() +
                                                                              ")" ) );
-
                     }
-                    else {
-                        player.sendMessage( new TextComponentString(
-                                "Unable to link sensor! Lost connection to previously connected controller." ) );
-
-                    }
-
-                    return EnumActionResult.SUCCESS;
-                }
-                else if ( signalControllerPos != null &&
-                        state.getBlock() instanceof AbstractBlockControllableSignal &&
-                        !player.isSneaking() ) {
-                    AbstractBlockControllableSignal clickedBlock = ( AbstractBlockControllableSignal ) state.getBlock();
-
-                    TileEntity tileEntity = worldIn.getTileEntity( signalControllerPos );
-                    if ( tileEntity instanceof TileEntityTrafficSignalController ) {
-                        TileEntityTrafficSignalController tileEntityTrafficSignalController
-                                = ( TileEntityTrafficSignalController ) tileEntity;
-                        boolean linked = tileEntityTrafficSignalController.linkDevice( pos, clickedBlock.getSignalSide(
-                                worldIn, pos ), circuitLinkIndex );
-
-                        if ( linked &&
-                                ( clickedBlock instanceof BlockControllableCrosswalkLeftMount.BlockCustom ||
-                                        clickedBlock instanceof BlockControllableCrosswalkRightMount.BlockCustom ||
-                                        clickedBlock instanceof BlockControllableCrosswalkMount.BlockCustom ||
-                                        clickedBlock instanceof BlockControllableCrosswalkMount90Deg.BlockCustom ) ) {
-                            player.sendMessage( new TextComponentString( "Crosswalk light connected to circuit " +
-                                                                                 circuitLinkIndex +
-                                                                                 " of signal controller at " +
-                                                                                 "(" +
-                                                                                 signalControllerPos.getX() +
-                                                                                 "," +
-                                                                                 signalControllerPos.getY() +
-                                                                                 "," +
-                                                                                 signalControllerPos.getZ() +
-                                                                                 ")" ) );
-                        }
-                        else if ( linked &&
-                                clickedBlock instanceof BlockControllableTrafficSignalTrainController.BlockCustom ) {
-                            player.sendMessage( new TextComponentString(
-                                    "Train locking rail controller connected to circuit " +
-                                            circuitLinkIndex +
-                                            " of signal controller at " +
-                                            "(" +
-                                            signalControllerPos.getX() +
-                                            "," +
-                                            signalControllerPos.getY() +
-                                            "," +
-                                            signalControllerPos.getZ() +
-                                            ")" ) );
-                        }
-                        else if ( linked && clickedBlock instanceof AbstractBlockControllableCrosswalkAccessory ) {
-                            player.sendMessage( new TextComponentString( "Crosswalk accessory connected to circuit " +
-                                                                                 circuitLinkIndex +
-                                                                                 " of signal controller at " +
-                                                                                 "(" +
-                                                                                 signalControllerPos.getX() +
-                                                                                 "," +
-                                                                                 signalControllerPos.getY() +
-                                                                                 "," +
-                                                                                 signalControllerPos.getZ() +
-                                                                                 ")" ) );
-                        }
-                        else if ( linked ) {
-                            player.sendMessage( new TextComponentString( "Signal connected to circuit " +
-                                                                                 circuitLinkIndex +
-                                                                                 " of signal controller at " +
-                                                                                 "(" +
-                                                                                 signalControllerPos.getX() +
-                                                                                 "," +
-                                                                                 signalControllerPos.getY() +
-                                                                                 "," +
-                                                                                 signalControllerPos.getZ() +
-                                                                                 ")" ) );
-                        }
-                    }
-                    else {
-                        player.sendMessage( new TextComponentString(
-                                "Unable to link device! Lost connection to previously connected controller." ) );
-
-                    }
-
-                    return EnumActionResult.SUCCESS;
-                }
-                else if ( signalControllerPos != null &&
-                        state.getBlock() instanceof AbstractBlockControllableSignal &&
-                        player.isSneaking() ) {
-                    AbstractBlockControllableSignal clickedBlock = ( AbstractBlockControllableSignal ) state.getBlock();
-
-                    TileEntity tileEntity = worldIn.getTileEntity( signalControllerPos );
-                    if ( tileEntity instanceof TileEntityTrafficSignalController ) {
-                        TileEntityTrafficSignalController tileEntityTrafficSignalController
-                                = ( TileEntityTrafficSignalController ) tileEntity;
-                        boolean removed = tileEntityTrafficSignalController.unlinkDevice( pos );
-
-                        // If unlinked, change device state to off
-                        AbstractBlockControllableSignal.changeSignalColor( worldIn, pos,
-                                                                           AbstractBlockControllableSignal.SIGNAL_OFF );
-
-                        if ( removed &&
-                                ( clickedBlock instanceof BlockControllableCrosswalkLeftMount.BlockCustom ||
-                                        clickedBlock instanceof BlockControllableCrosswalkRightMount.BlockCustom ||
-                                        clickedBlock instanceof BlockControllableCrosswalkMount.BlockCustom ||
-                                        clickedBlock instanceof BlockControllableCrosswalkMount90Deg.BlockCustom ) ) {
-                            player.sendMessage( new TextComponentString(
-                                    "Crosswalk light unlinked from signal controller" +
-                                            " " +
-                                            "at " +
-                                            "(" +
-                                            signalControllerPos.getX() +
-                                            "," +
-                                            signalControllerPos.getY() +
-                                            "," +
-                                            signalControllerPos.getZ() +
-                                            ")" ) );
-                        }
-                        else if ( removed &&
-                                clickedBlock instanceof BlockControllableTrafficSignalTrainController.BlockCustom ) {
-                            player.sendMessage( new TextComponentString(
-                                    "Train locking rail controller unlinked from signal controller at " +
-                                            "(" +
-                                            signalControllerPos.getX() +
-                                            "," +
-                                            signalControllerPos.getY() +
-                                            "," +
-                                            signalControllerPos.getZ() +
-                                            ")" ) );
-                        }
-                        else if ( removed && clickedBlock instanceof AbstractBlockControllableCrosswalkAccessory ) {
-                            player.sendMessage( new TextComponentString(
-                                    "Crosswalk accessory unlinked from signal controller at " +
-                                            "(" +
-                                            signalControllerPos.getX() +
-                                            "," +
-                                            signalControllerPos.getY() +
-                                            "," +
-                                            signalControllerPos.getZ() +
-                                            ")" ) );
-                        }
-                        else if ( removed ) {
-                            player.sendMessage( new TextComponentString( "Signal unlinked from signal controller at " +
-                                                                                 "(" +
-                                                                                 signalControllerPos.getX() +
-                                                                                 "," +
-                                                                                 signalControllerPos.getY() +
-                                                                                 "," +
-                                                                                 signalControllerPos.getZ() +
-                                                                                 ")" ) );
-                        }
-                    }
-                    else {
-                        player.sendMessage( new TextComponentString(
-                                "Unable to unlink device! Lost connection to previously " + "connected controller." ) );
-
-                    }
-
-                    return EnumActionResult.SUCCESS;
                 }
                 else {
-                    if ( signalControllerPos != null ) {
-                        TileEntity tileEntity = worldIn.getTileEntity( signalControllerPos );
-                        if ( tileEntity instanceof TileEntityTrafficSignalController ) {
-                            TileEntityTrafficSignalController tileEntityTrafficSignalController
-                                    = ( TileEntityTrafficSignalController ) tileEntity;
+                    player.sendMessage( new TextComponentString(
+                            "Unable to link sensor! Lost connection to previously connected controller." ) );
 
-                            if ( circuitLinkIndex > tileEntityTrafficSignalController.getSignalCircuitCount() ) {
-                                circuitLinkIndexMap.put( player.getUniqueID(), 0 );
-                            }
-                            circuitLinkIndexMap.put( player.getUniqueID(),
-                                                     circuitLinkIndexMap.getOrDefault( player.getUniqueID(), 1 ) + 1 );
+                }
 
-                            if ( circuitLinkIndexMap.getOrDefault( player.getUniqueID(), 1 ) >
-                                    tileEntityTrafficSignalController.getSignalCircuitCount() ) {
+                return EnumActionResult.SUCCESS;
+            }
+            else if ( signalControllerPos != null &&
+                    state.getBlock() instanceof AbstractBlockTrafficSignalSensor &&
+                    player.isSneaking() ) {
 
-                                player.sendMessage( new TextComponentString( "Linking to circuit #" +
-                                                                                     circuitLinkIndexMap.getOrDefault(
-                                                                                             player.getUniqueID(), 1 ) +
-                                                                                     " (new)" ) );
-                            }
-                            else {
+                TileEntity tileEntity = worldIn.getTileEntity( signalControllerPos );
+                if ( tileEntity instanceof TileEntityTrafficSignalController ) {
+                    TileEntityTrafficSignalController tileEntityTrafficSignalController
+                            = ( TileEntityTrafficSignalController ) tileEntity;
+                    tileEntityTrafficSignalController.unlinkDevice( pos );
 
-                                player.sendMessage( new TextComponentString( "Linking to circuit #" +
-                                                                                     circuitLinkIndexMap.getOrDefault(
-                                                                                             player.getUniqueID(),
-                                                                                             1 ) ) );
-                            }
+                    player.sendMessage( new TextComponentString( "Sensor unlinked from signal controller at " +
+                                                                         "(" +
+                                                                         signalControllerPos.getX() +
+                                                                         "," +
+                                                                         signalControllerPos.getY() +
+                                                                         "," +
+                                                                         signalControllerPos.getZ() +
+                                                                         ")" ) );
 
+                }
+                else {
+                    player.sendMessage( new TextComponentString(
+                            "Unable to link sensor! Lost connection to previously connected controller." ) );
+
+                }
+
+                return EnumActionResult.SUCCESS;
+            }
+            else if ( signalControllerPos != null &&
+                    state.getBlock() instanceof AbstractBlockControllableSignal &&
+                    !player.isSneaking() ) {
+                AbstractBlockControllableSignal clickedBlock = ( AbstractBlockControllableSignal ) state.getBlock();
+
+                TileEntity tileEntity = worldIn.getTileEntity( signalControllerPos );
+                if ( tileEntity instanceof TileEntityTrafficSignalController ) {
+                    TileEntityTrafficSignalController tileEntityTrafficSignalController
+                            = ( TileEntityTrafficSignalController ) tileEntity;
+                    boolean linked = tileEntityTrafficSignalController.linkDevice( pos,
+                                                                                   clickedBlock.getSignalSide( worldIn,
+                                                                                                               pos ),
+                                                                                   circuitLinkIndex );
+
+                    if ( linked &&
+                            ( clickedBlock instanceof BlockControllableCrosswalkLeftMount ||
+                                    clickedBlock instanceof BlockControllableCrosswalkRightMount ||
+                                    clickedBlock instanceof BlockControllableCrosswalkMount ||
+                                    clickedBlock instanceof BlockControllableCrosswalkMount90Deg ) ) {
+                        player.sendMessage( new TextComponentString( "Crosswalk light connected to circuit " +
+                                                                             circuitLinkIndex +
+                                                                             " of signal controller at " +
+                                                                             "(" +
+                                                                             signalControllerPos.getX() +
+                                                                             "," +
+                                                                             signalControllerPos.getY() +
+                                                                             "," +
+                                                                             signalControllerPos.getZ() +
+                                                                             ")" ) );
+                    }
+                    else if ( linked && clickedBlock instanceof BlockControllableTrafficSignalTrainController ) {
+                        player.sendMessage( new TextComponentString(
+                                "Train locking rail controller connected to circuit " +
+                                        circuitLinkIndex +
+                                        " of signal controller at " +
+                                        "(" +
+                                        signalControllerPos.getX() +
+                                        "," +
+                                        signalControllerPos.getY() +
+                                        "," +
+                                        signalControllerPos.getZ() +
+                                        ")" ) );
+                    }
+                    else if ( linked && clickedBlock instanceof AbstractBlockControllableCrosswalkAccessory ) {
+                        player.sendMessage( new TextComponentString( "Crosswalk accessory connected to circuit " +
+                                                                             circuitLinkIndex +
+                                                                             " of signal controller at " +
+                                                                             "(" +
+                                                                             signalControllerPos.getX() +
+                                                                             "," +
+                                                                             signalControllerPos.getY() +
+                                                                             "," +
+                                                                             signalControllerPos.getZ() +
+                                                                             ")" ) );
+                    }
+                    else if ( linked ) {
+                        player.sendMessage( new TextComponentString( "Signal connected to circuit " +
+                                                                             circuitLinkIndex +
+                                                                             " of signal controller at " +
+                                                                             "(" +
+                                                                             signalControllerPos.getX() +
+                                                                             "," +
+                                                                             signalControllerPos.getY() +
+                                                                             "," +
+                                                                             signalControllerPos.getZ() +
+                                                                             ")" ) );
+                    }
+                }
+                else {
+                    player.sendMessage( new TextComponentString(
+                            "Unable to link device! Lost connection to previously connected controller." ) );
+
+                }
+
+                return EnumActionResult.SUCCESS;
+            }
+            else if ( signalControllerPos != null &&
+                    state.getBlock() instanceof AbstractBlockControllableSignal &&
+                    player.isSneaking() ) {
+                AbstractBlockControllableSignal clickedBlock = ( AbstractBlockControllableSignal ) state.getBlock();
+
+                TileEntity tileEntity = worldIn.getTileEntity( signalControllerPos );
+                if ( tileEntity instanceof TileEntityTrafficSignalController ) {
+                    TileEntityTrafficSignalController tileEntityTrafficSignalController
+                            = ( TileEntityTrafficSignalController ) tileEntity;
+                    boolean removed = tileEntityTrafficSignalController.unlinkDevice( pos );
+
+                    // If unlinked, change device state to off
+                    AbstractBlockControllableSignal.changeSignalColor( worldIn, pos,
+                                                                       AbstractBlockControllableSignal.SIGNAL_OFF );
+
+                    if ( removed &&
+                            ( clickedBlock instanceof BlockControllableCrosswalkLeftMount ||
+                                    clickedBlock instanceof BlockControllableCrosswalkRightMount ||
+                                    clickedBlock instanceof BlockControllableCrosswalkMount ||
+                                    clickedBlock instanceof BlockControllableCrosswalkMount90Deg ) ) {
+                        player.sendMessage( new TextComponentString( "Crosswalk light unlinked from signal controller" +
+                                                                             " " +
+                                                                             "at " +
+                                                                             "(" +
+                                                                             signalControllerPos.getX() +
+                                                                             "," +
+                                                                             signalControllerPos.getY() +
+                                                                             "," +
+                                                                             signalControllerPos.getZ() +
+                                                                             ")" ) );
+                    }
+                    else if ( removed && clickedBlock instanceof BlockControllableTrafficSignalTrainController ) {
+                        player.sendMessage( new TextComponentString(
+                                "Train locking rail controller unlinked from signal controller at " +
+                                        "(" +
+                                        signalControllerPos.getX() +
+                                        "," +
+                                        signalControllerPos.getY() +
+                                        "," +
+                                        signalControllerPos.getZ() +
+                                        ")" ) );
+                    }
+                    else if ( removed && clickedBlock instanceof AbstractBlockControllableCrosswalkAccessory ) {
+                        player.sendMessage( new TextComponentString(
+                                "Crosswalk accessory unlinked from signal controller at " +
+                                        "(" +
+                                        signalControllerPos.getX() +
+                                        "," +
+                                        signalControllerPos.getY() +
+                                        "," +
+                                        signalControllerPos.getZ() +
+                                        ")" ) );
+                    }
+                    else if ( removed ) {
+                        player.sendMessage( new TextComponentString( "Signal unlinked from signal controller at " +
+                                                                             "(" +
+                                                                             signalControllerPos.getX() +
+                                                                             "," +
+                                                                             signalControllerPos.getY() +
+                                                                             "," +
+                                                                             signalControllerPos.getZ() +
+                                                                             ")" ) );
+                    }
+                }
+                else {
+                    player.sendMessage( new TextComponentString(
+                            "Unable to unlink device! Lost connection to previously " + "connected controller." ) );
+
+                }
+
+                return EnumActionResult.SUCCESS;
+            }
+            else {
+                if ( signalControllerPos != null ) {
+                    TileEntity tileEntity = worldIn.getTileEntity( signalControllerPos );
+                    if ( tileEntity instanceof TileEntityTrafficSignalController ) {
+                        TileEntityTrafficSignalController tileEntityTrafficSignalController
+                                = ( TileEntityTrafficSignalController ) tileEntity;
+
+                        if ( circuitLinkIndex > tileEntityTrafficSignalController.getSignalCircuitCount() ) {
+                            circuitLinkIndexMap.put( player.getUniqueID(), 0 );
+                        }
+                        circuitLinkIndexMap.put( player.getUniqueID(),
+                                                 circuitLinkIndexMap.getOrDefault( player.getUniqueID(), 1 ) + 1 );
+
+                        if ( circuitLinkIndexMap.getOrDefault( player.getUniqueID(), 1 ) >
+                                tileEntityTrafficSignalController.getSignalCircuitCount() ) {
+
+                            player.sendMessage( new TextComponentString( "Linking to circuit #" +
+                                                                                 circuitLinkIndexMap.getOrDefault(
+                                                                                         player.getUniqueID(), 1 ) +
+                                                                                 " (new)" ) );
                         }
                         else {
-                            player.sendMessage( new TextComponentString(
-                                    "Cannot change circuit until a signal controller has been selected!" ) );
 
+                            player.sendMessage( new TextComponentString( "Linking to circuit #" +
+                                                                                 circuitLinkIndexMap.getOrDefault(
+                                                                                         player.getUniqueID(), 1 ) ) );
                         }
+
                     }
                     else {
                         player.sendMessage( new TextComponentString(
-                                "Cannot change circuit until a signal controller has been selected!   " +
-                                        circuitLinkIndexMap.size() +
-                                        "  " +
-                                        signalControllerPosMap.entrySet()
-                                                              .stream()
-                                                              .map( Object::toString )
-                                                              .collect( Collectors.joining( ", " ) ) ) );
+                                "Cannot change circuit until a signal controller has been selected!" ) );
 
                     }
-                    return EnumActionResult.SUCCESS;
                 }
+                else {
+                    player.sendMessage( new TextComponentString(
+                            "Cannot change circuit until a signal controller has been selected!   " +
+                                    circuitLinkIndexMap.size() +
+                                    "  " +
+                                    signalControllerPosMap.entrySet()
+                                                          .stream()
+                                                          .map( Object::toString )
+                                                          .collect( Collectors.joining( ", " ) ) ) );
+
+                }
+                return EnumActionResult.SUCCESS;
             }
-            return EnumActionResult.SUCCESS;
         }
+        return EnumActionResult.SUCCESS;
+    }
 
-        @Override
-        public float getDestroySpeed( ItemStack par1ItemStack, IBlockState par2Block ) {
-            return 1F;
-        }
+    @Override
+    public void addInformation( ItemStack itemstack, World world, List< String > list, ITooltipFlag flag ) {
+        super.addInformation( itemstack, world, list, flag );
+        list.add( "Link traffic signals to the Primary circuit of a signal controller." );
+    }
 
-        @Override
-        public int getMaxItemUseDuration( ItemStack itemstack ) {
-            return 0;
-        }
+    /**
+     * Retrieves the registry name of the item.
+     *
+     * @return The registry name of the item.
+     *
+     * @since 1.0
+     */
+    @Override
+    public String getItemRegistryName() {
+        return "nssignallinker";
 
-        @Override
-        public void addInformation( ItemStack itemstack, World world, List< String > list, ITooltipFlag flag ) {
-            super.addInformation( itemstack, world, list, flag );
-            list.add( "Link traffic signals to the Primary circuit of a signal controller." );
-        }
-
-        @Override
-        public int getItemEnchantability() {
-            return 0;
-        }
     }
 }

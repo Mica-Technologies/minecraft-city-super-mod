@@ -16,7 +16,6 @@ import java.util.List;
  * @author Mica Technologies
  * @version 2.0
  */
-@ElementsCitySuperMod.ModElement.Tag
 public class TileEntityTrafficSignalController extends AbstractTickableTileEntity
 {
 

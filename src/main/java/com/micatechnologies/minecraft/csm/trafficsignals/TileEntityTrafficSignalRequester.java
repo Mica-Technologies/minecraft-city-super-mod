@@ -8,7 +8,6 @@ package com.micatechnologies.minecraft.csm.trafficsignals;
  * @version 2.0
  * @since 2022.1
  */
-@ElementsCitySuperMod.ModElement.Tag
 public class TileEntityTrafficSignalRequester extends TileEntityTrafficSignalTickableRequester
 {
     /**

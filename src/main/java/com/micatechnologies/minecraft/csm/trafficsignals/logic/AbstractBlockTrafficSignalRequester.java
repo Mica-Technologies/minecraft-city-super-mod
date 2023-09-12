@@ -36,7 +36,7 @@ public abstract class AbstractBlockTrafficSignalRequester extends AbstractBlockC
                                      float p_180639_9_ )
     {
         if ( p_180639_4_.inventory.getCurrentItem() != null &&
-                p_180639_4_.inventory.getCurrentItem().getItem() instanceof ItemNSSignalLinker.ItemCustom ) {
+                p_180639_4_.inventory.getCurrentItem().getItem() instanceof ItemNSSignalLinker ) {
             return super.onBlockActivated( p_180639_1_, p_180639_2_, p_180639_3_, p_180639_4_, p_180639_5_, p_180639_6_,
                                            p_180639_7_, p_180639_8_, p_180639_9_ );
         }

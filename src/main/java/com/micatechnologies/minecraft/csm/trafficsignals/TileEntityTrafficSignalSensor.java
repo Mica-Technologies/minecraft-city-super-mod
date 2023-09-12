@@ -25,7 +25,6 @@ import java.util.List;
  * @see TileEntity
  * @since 2023.2.0
  */
-@ElementsCitySuperMod.ModElement.Tag
 public class TileEntityTrafficSignalSensor extends AbstractTileEntity
 {
     /**

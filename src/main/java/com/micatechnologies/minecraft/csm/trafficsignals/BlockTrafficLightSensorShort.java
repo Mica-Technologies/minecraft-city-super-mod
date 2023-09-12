@@ -15,45 +15,23 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-@ElementsCitySuperMod.ModElement.Tag
-public class BlockTrafficLightSensorShort extends ElementsCitySuperMod.ModElement
+public class BlockTrafficLightSensorShort extends AbstractBlockTrafficSignalSensor
 {
-    @GameRegistry.ObjectHolder( "csm:trafficlightsensorshort" )
-    public static final Block block = null;
 
-    public BlockTrafficLightSensorShort( ElementsCitySuperMod instance ) {
-        super( instance, 2243 );
+    public BlockTrafficLightSensorShort() {
+        super( Material.ROCK );
     }
 
+    /**
+     * Retrieves the registry name of the block.
+     *
+     * @return The registry name of the block.
+     *
+     * @since 1.0
+     */
     @Override
-    public void initElements() {
-        elements.blocks.add( () -> new BlockCustom().setRegistryName( "trafficlightsensorshort" ) );
-        elements.items.add( () -> new ItemBlock( block ).setRegistryName( block.getRegistryName() ) );
+    public String getBlockRegistryName() {
+        return "trafficlightsensorshort";
     }
 
-    @SideOnly( Side.CLIENT )
-    @Override
-    public void registerModels( ModelRegistryEvent event ) {
-        ModelLoader.setCustomModelResourceLocation( Item.getItemFromBlock( block ), 0,
-                                                    new ModelResourceLocation( "csm:trafficlightsensorshort",
-                                                                               "inventory" ) );
-    }
-
-    public static class BlockCustom extends AbstractBlockTrafficSignalSensor
-    {
-
-        public BlockCustom() {
-            super( Material.ROCK );
-            setUnlocalizedName( "trafficlightsensorshort" );
-            setSoundType( SoundType.STONE );
-            setHarvestLevel( "pickaxe", 1 );
-            setHardness( 2F );
-            setResistance( 10F );
-            setLightLevel( 0F );
-            setLightOpacity( 0 );
-            setCreativeTab( CsmTabTrafficSignals.get() );
-            this.setDefaultState( this.blockState.getBaseState().withProperty( FACING, EnumFacing.NORTH ) );
-        }
-
-    }
 }
