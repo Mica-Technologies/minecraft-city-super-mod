@@ -3,10 +3,8 @@ package com.micatechnologies.minecraft.csm.codeutils;
 import com.micatechnologies.minecraft.csm.Csm;
 import com.micatechnologies.minecraft.csm.CsmConstants;
 import com.micatechnologies.minecraft.csm.CsmRegistry;
-import com.micatechnologies.minecraft.csm.technology.TileEntityRedstoneTTS;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.block.Block;
-import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -22,7 +20,9 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Objects;
 
 /**
@@ -35,6 +35,23 @@ import java.util.Objects;
 @MethodsReturnNonnullByDefault
 public abstract class AbstractBlock extends Block implements IHasModel, ICsmBlock
 {
+
+    /**
+     * Constructs an {@link AbstractBlock} instance.
+     *
+     * @param material The material of the block.
+     *
+     * @since 1.0
+     */
+    public AbstractBlock( Material material )
+    {
+        super( material );
+        setUnlocalizedName( getBlockRegistryName() );
+        setRegistryName( CsmConstants.MOD_NAMESPACE, getBlockRegistryName() );
+        CsmRegistry.registerBlock( this );
+        CsmRegistry.registerItem(
+                new ItemBlock( this ).setRegistryName( Objects.requireNonNull( this.getRegistryName() ) ) );
+    }
 
     /**
      * Constructs an {@link AbstractBlock} instance.
@@ -185,6 +202,7 @@ public abstract class AbstractBlock extends Block implements IHasModel, ICsmBloc
      * @since 1.0
      */
     @Override
+    @ParametersAreNonnullByDefault
     public boolean hasTileEntity( IBlockState blockState ) {
         return this instanceof ICsmTileEntityProvider;
     }
@@ -201,7 +219,7 @@ public abstract class AbstractBlock extends Block implements IHasModel, ICsmBloc
      * @since 1.0
      */
     @Nullable
-    public TileEntity createNewTileEntity( World worldIn, int meta ) {
+    public TileEntity createNewTileEntity( @Nonnull World worldIn, int meta ) {
         TileEntity returnVal = null;
         if ( this instanceof ICsmTileEntityProvider ) {
             ICsmTileEntityProvider tileEntityProvider = ( ICsmTileEntityProvider ) this;

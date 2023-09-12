@@ -62,9 +62,164 @@ public class ArchUpgradeClassConverter
         else if ( checkTrafficSignClass( file, fileContents ) ) {
             return upgradeTrafficSignClass( file, fileContents );
         }
+        else if ( checkTrafficSignalClass( file, fileContents ) ) {
+            return upgradeTrafficSignalClass( file, fileContents );
+        }
         else {
             return upgradeRegularClass( file, fileContents );
         }
+    }
+
+    public static boolean checkTrafficSignalClass( File file, String fileContents ) throws Exception {
+        final String filePath = file.getPath();
+        return fileContents.contains( "extends AbstractBlockControllableSignal" );
+    }
+
+    public static boolean upgradeTrafficSignalClass( File file, String fileContents ) throws Exception {
+        final String filePath = file.getPath();
+
+        // Check if class contains previous version
+        final String previousVersionHeaderRegex = "@ElementsCitySuperMod\\.ModElement\\.Tag";
+        boolean previousVersionHeaderFound = Pattern.compile( previousVersionHeaderRegex )
+                                                    .matcher( fileContents )
+                                                    .find();
+
+        if ( previousVersionHeaderFound ) {
+            // Get block ID
+            String blockIdRegex1 = "setUnlocalizedName\\(\\s*\"(\\w+)\"\\s*\\)";
+            String blockIdRegex2 = "setRegistryName\\(\\s*\"(\\w+)\"\\s*\\)";
+            int blockIdIndex = 1;
+            Matcher matcher = Pattern.compile( blockIdRegex1 ).matcher( fileContents );
+            String blockId;
+            if ( matcher.find() ) {
+                blockId = matcher.group( blockIdIndex );
+            }
+            else {
+                matcher = Pattern.compile( blockIdRegex2 ).matcher( fileContents );
+                if ( matcher.find() ) {
+                    blockId = matcher.group( blockIdIndex );
+                }
+                else {
+                    throw new Exception( "Failed to get block ID from file: " + filePath );
+                }
+            }
+
+            // Get package name
+            String packageNameRegex = "package\\s(.*);";
+            int packageNameIndex = 1;
+            matcher = Pattern.compile( packageNameRegex ).matcher( fileContents );
+            String packageName;
+            if ( matcher.find() ) {
+                packageName = matcher.group( packageNameIndex );
+            }
+            else {
+                throw new Exception( "Failed to get package name from file: " + filePath );
+            }
+
+            // Get block class name
+            String classNameRegex = "public\\sclass\\s(.*)\\sextends\\sElementsCitySuperMod\\.ModElement";
+            int classNameIndex = 1;
+            matcher = Pattern.compile( classNameRegex ).matcher( fileContents );
+            String className;
+            if ( matcher.find() ) {
+                className = matcher.group( classNameIndex );
+            }
+            else {
+                throw new Exception( "Failed to get class name from file: " + filePath );
+            }
+
+            // Get block signal side
+            String signalSideRegex
+                    = "public\\sSIGNAL_SIDE\\sgetSignalSide\\(\\s?World\\s.*,\\s?BlockPos\\s.*\\s?\\)\\s?\\{\\s*(.*)\\s*}";
+            int signalSideIndex = 1;
+            matcher = Pattern.compile( signalSideRegex ).matcher( fileContents );
+            String signalSide;
+            if ( matcher.find() ) {
+                signalSide = matcher.group( signalSideIndex );
+            }
+            else {
+                throw new Exception( "Failed to get signal side from file: " + filePath );
+            }
+
+            // Get block does flash
+            String doesFlashRegex = "public\\sboolean\\sdoesFlash\\(\\s?\\)\\s?\\{\\s*(.*)\\s*\\}";
+            int doesFlashIndex = 1;
+            matcher = Pattern.compile( doesFlashRegex ).matcher( fileContents );
+            String doesFlash;
+            if ( matcher.find() ) {
+                doesFlash = matcher.group( doesFlashIndex );
+            }
+            else {
+                throw new Exception( "Failed to get does flash from file: " + filePath );
+            }
+
+            // Build new class
+            StringBuilder newClass = new StringBuilder();
+            newClass.append( "package " +
+                                     packageName +
+                                     ";\n" +
+                                     "\n" +
+                                     "import com.micatechnologies.minecraft.csm.tabs.CsmTabTrafficSignals;\n" +
+                                     "import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignal;\n" +
+                                     "import net.minecraft.block.Block;\n" +
+                                     "import net.minecraft.block.SoundType;\n" +
+                                     "import net.minecraft.block.material.Material;\n" +
+                                     "import net.minecraft.client.renderer.block.model.ModelResourceLocation;\n" +
+                                     "import net.minecraft.item.Item;\n" +
+                                     "import net.minecraft.item.ItemBlock;\n" +
+                                     "import net.minecraft.util.EnumFacing;\n" +
+                                     "import net.minecraft.util.math.BlockPos;\n" +
+                                     "import net.minecraft.world.World;\n" +
+                                     "import net.minecraftforge.client.event.ModelRegistryEvent;\n" +
+                                     "import net.minecraftforge.client.model.ModelLoader;\n" +
+                                     "import net.minecraftforge.fml.common.registry.GameRegistry;\n" +
+                                     "import net.minecraftforge.fml.relauncher.Side;\n" +
+                                     "import net.minecraftforge.fml.relauncher.SideOnly;\n" +
+                                     "\n" +
+                                     "public class " +
+                                     className +
+                                     " extends AbstractBlockControllableSignal\n" +
+                                     "{\n" +
+                                     "    public " +
+                                     className +
+                                     "() {\n" +
+                                     "        super( Material.ROCK );\n" +
+                                     "    }\n" +
+                                     "\n" +
+                                     "    @Override\n" +
+                                     "    public SIGNAL_SIDE getSignalSide( World world, BlockPos blockPos ) {\n" +
+                                     "        " +
+                                     signalSide +
+                                     "\n" +
+                                     "    }\n" +
+                                     "\n" +
+                                     "    @Override\n" +
+                                     "    public boolean doesFlash() {\n" +
+                                     "        " +
+                                     doesFlash +
+                                     "\n" +
+                                     "    }\n" +
+                                     "\n" +
+                                     "    /**\n" +
+                                     "     * Retrieves the registry name of the block.\n" +
+                                     "     *\n" +
+                                     "     * @return The registry name of the block.\n" +
+                                     "     *\n" +
+                                     "     * @since 1.0\n" +
+                                     "     */\n" +
+                                     "    @Override\n" +
+                                     "    public String getBlockRegistryName() {\n" +
+                                     "        return \"" +
+                                     blockId +
+                                     "\";\n" +
+                                     "    }\n" +
+                                     "}\n" );
+
+            // Write back to file
+            FileUtils.writeStringToFile( file, newClass.toString() );
+        }
+
+        return true;
     }
 
     public static boolean checkTrafficSignClass( File file, String fileContents ) throws Exception {
