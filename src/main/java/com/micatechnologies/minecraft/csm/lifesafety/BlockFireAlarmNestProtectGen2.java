@@ -1,19 +1,16 @@
 package com.micatechnologies.minecraft.csm.lifesafety;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEWUD;
+import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockDirectional;
-import net.minecraft.block.BlockHorizontal;
-import net.minecraft.util.BlockRenderLayer;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.*;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -23,7 +20,7 @@ import javax.annotation.Nullable;
 public class BlockFireAlarmNestProtectGen2 extends AbstractBlockRotatableNSEWUD
 {
     public BlockFireAlarmNestProtectGen2() {
-        super( Material.ROCK, SoundType.STONE , "pickaxe", 1 , 2F , 10F , 0.1F , 0  );
+        super( Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0.1F, 0 );
     }
 
     /**
@@ -116,33 +113,44 @@ public class BlockFireAlarmNestProtectGen2 extends AbstractBlockRotatableNSEWUD
         return BlockRenderLayer.CUTOUT_MIPPED;
     }
 
-
-
-@Override
-public void neighborChanged(IBlockState state, World world, BlockPos pos, Block neighborBlock, BlockPos fromPos)
-{
-    super.neighborChanged(state, world, pos, neighborBlock, fromPos);
-    int x = pos.getX();
-    int y = pos.getY();
-    int z = pos.getZ();
-    Block block = this;
-    if (world.isBlockIndirectlyGettingPowered(new BlockPos(x, y, z)) > 0) {
-        {
-            world.playSound((EntityPlayer) null, x, y, z, (net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("csm:nest_test")), SoundCategory.NEUTRAL, (float) 5, (float) 1);
+    @Override
+    public void neighborChanged( IBlockState state, World world, BlockPos pos, Block neighborBlock, BlockPos fromPos )
+    {
+        super.neighborChanged( state, world, pos, neighborBlock, fromPos );
+        int x = pos.getX();
+        int y = pos.getY();
+        int z = pos.getZ();
+        Block block = this;
+        if ( world.isBlockIndirectlyGettingPowered( new BlockPos( x, y, z ) ) > 0 ) {
+            {
+                world.playSound( ( EntityPlayer ) null, x, y, z,
+                                 ( net.minecraft.util.SoundEvent ) net.minecraft.util.SoundEvent.REGISTRY.getObject(
+                                         new ResourceLocation( "csm:nest_test" ) ), SoundCategory.NEUTRAL, ( float ) 5,
+                                 ( float ) 1 );
+            }
         }
     }
-}
 
-@SideOnly( Side.CLIENT )
-@Override
-public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer entity, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ)
-{
-    super.onBlockActivated(world, pos, state, entity, hand, side, hitX, hitY, hitZ);
-    int x = pos.getX();
-    int y = pos.getY();
-    int z = pos.getZ();
-    world.playSound((EntityPlayer) null, x, y, z, (net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("csm:nest_test")), SoundCategory.NEUTRAL, (float) 5, (float) 1);
-    return true;
-}
-
+    @SideOnly( Side.CLIENT )
+    @Override
+    public boolean onBlockActivated( World world,
+                                     BlockPos pos,
+                                     IBlockState state,
+                                     EntityPlayer entity,
+                                     EnumHand hand,
+                                     EnumFacing side,
+                                     float hitX,
+                                     float hitY,
+                                     float hitZ )
+    {
+        super.onBlockActivated( world, pos, state, entity, hand, side, hitX, hitY, hitZ );
+        int x = pos.getX();
+        int y = pos.getY();
+        int z = pos.getZ();
+        world.playSound( ( EntityPlayer ) null, x, y, z,
+                         ( net.minecraft.util.SoundEvent ) net.minecraft.util.SoundEvent.REGISTRY.getObject(
+                                 new ResourceLocation( "csm:nest_test" ) ), SoundCategory.NEUTRAL, ( float ) 5,
+                         ( float ) 1 );
+        return true;
+    }
 }

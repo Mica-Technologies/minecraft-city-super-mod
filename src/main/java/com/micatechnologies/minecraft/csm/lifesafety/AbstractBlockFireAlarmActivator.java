@@ -30,6 +30,7 @@ import java.util.Random;
 public abstract class AbstractBlockFireAlarmActivator extends AbstractBlockRotatableNSEWUD
         implements ICsmTileEntityProvider
 {
+    // TODO: Why is this here because it concerns me
     public static final PropertyDirection FACING = BlockDirectional.FACING;
 
     public AbstractBlockFireAlarmActivator() {
@@ -179,5 +180,17 @@ public abstract class AbstractBlockFireAlarmActivator extends AbstractBlockRotat
     @Override
     public Class< ? extends TileEntity > getTileEntityClass() {
         return TileEntityFireAlarmSensor.class;
+    }
+
+    /**
+     * Gets the tile entity name for the block.
+     *
+     * @return the tile entity name for the block
+     *
+     * @since 1.0
+     */
+    @Override
+    public String getTileEntityName() {
+        return "tileentityfirealarmsensor";
     }
 }
