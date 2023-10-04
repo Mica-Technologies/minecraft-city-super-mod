@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.trafficsignals.logic;
 
+import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalRequester;
 import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalTickableRequester;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
@@ -16,17 +17,26 @@ public abstract class AbstractBlockTrafficSignalTickableRequester extends Abstra
     }
 
     /**
-     * Creates a new tile entity instance for this block.
+     * Gets the tile entity class for the block.
      *
-     * @param world The world in which the tile entity will be created.
-     * @param i     The metadata value of the block.
+     * @return the tile entity class for the block
      *
-     * @return A new tile entity instance.
-     *
-     * @see TileEntity
-     * @see TileEntityTrafficSignalTickableRequester
+     * @since 1.0
      */
     @Override
-    @ParametersAreNonnullByDefault
-    public abstract TileEntity createNewTileEntity( World world, int i );
+    public Class< ? extends TileEntity > getTileEntityClass() {
+        return TileEntityTrafficSignalTickableRequester.class;
+    }
+
+    /**
+     * Gets the tile entity name for the block.
+     *
+     * @return the tile entity name for the block
+     *
+     * @since 1.0
+     */
+    @Override
+    public String getTileEntityName() {
+        return "tileentitytrafficsignaltickablerequester";
+    }
 }

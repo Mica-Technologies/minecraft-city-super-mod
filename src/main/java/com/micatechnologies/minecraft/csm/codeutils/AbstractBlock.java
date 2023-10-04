@@ -238,4 +238,22 @@ public abstract class AbstractBlock extends Block implements IHasModel, ICsmBloc
         }
         return returnVal;
     }
+
+    /**
+     * Overridden method from {@link Block} which handles the removal of the block. This method removes the tile entity
+     * from the world if the block has a tile entity.
+     *
+     * @param worldIn the world
+     * @param pos     the block position
+     * @param state   the block state
+     *
+     * @since 1.0
+     */
+    @Override
+    public void breakBlock( World worldIn, BlockPos pos, IBlockState state ) {
+        if ( hasTileEntity( state ) ) {
+            worldIn.removeTileEntity( pos );
+        }
+        super.breakBlock( worldIn, pos, state );
+    }
 }

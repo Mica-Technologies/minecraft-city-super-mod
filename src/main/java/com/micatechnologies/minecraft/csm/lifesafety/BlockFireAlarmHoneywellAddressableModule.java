@@ -1,18 +1,15 @@
 package com.micatechnologies.minecraft.csm.lifesafety;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEWUD;
+import net.minecraft.block.BlockDirectional;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.block.BlockDirectional;
-import net.minecraft.block.BlockHorizontal;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -48,21 +45,21 @@ public class BlockFireAlarmHoneywellAddressableModule extends AbstractBlockRotat
      */
     @Override
     public AxisAlignedBB getBlockBoundingBox( IBlockState state, IBlockAccess source, BlockPos pos ) {
-        switch ((EnumFacing) state.getValue(BlockDirectional.FACING)) {
-				case SOUTH :
-				default :
-					return new AxisAlignedBB(0.9375D, 0D, 0D, 0D, 1D, 0D);
-				case NORTH :
-					return new AxisAlignedBB(0.0625D, 0D, 1D, 1D, 1D, 1D);
-				case WEST :
-					return new AxisAlignedBB(1D, 0D, 0.9375D, 1D, 1D, 0D);
-				case EAST :
-					return new AxisAlignedBB(0D, 0D, 0.0625D, 0D, 1D, 1D);
-				case UP :
-					return new AxisAlignedBB(0.0625D, 0D, 0D, 1D, 0D, 1D);
-				case DOWN :
-					return new AxisAlignedBB(0.0625D, 1D, 1D, 1D, 1D, 0D);
-			}
+        switch ( ( EnumFacing ) state.getValue( BlockDirectional.FACING ) ) {
+            case SOUTH:
+            default:
+                return new AxisAlignedBB( 0.9375D, 0D, 0D, 0D, 1D, 0D );
+            case NORTH:
+                return new AxisAlignedBB( 0.0625D, 0D, 1D, 1D, 1D, 1D );
+            case WEST:
+                return new AxisAlignedBB( 1D, 0D, 0.9375D, 1D, 1D, 0D );
+            case EAST:
+                return new AxisAlignedBB( 0D, 0D, 0.0625D, 0D, 1D, 1D );
+            case UP:
+                return new AxisAlignedBB( 0.0625D, 0D, 0D, 1D, 0D, 1D );
+            case DOWN:
+                return new AxisAlignedBB( 0.0625D, 1D, 1D, 1D, 1D, 0D );
+        }
     }
 
     /**
@@ -126,9 +123,4 @@ public class BlockFireAlarmHoneywellAddressableModule extends AbstractBlockRotat
     public BlockRenderLayer getBlockRenderLayer() {
         return BlockRenderLayer.SOLID;
     }
-
-
-
-
-
 }
