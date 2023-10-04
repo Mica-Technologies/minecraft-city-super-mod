@@ -16,7 +16,6 @@ import net.minecraftforge.fml.common.FMLCommonHandler;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-@ElementsCitySuperMod.ModElement.Tag
 public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity
 {
     private static final int tickRate = 20;

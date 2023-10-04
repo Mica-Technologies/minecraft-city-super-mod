@@ -6,7 +6,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-@ElementsCitySuperMod.ModElement.Tag
 public class TileEntityFireAlarmSensor extends AbstractTileEntity
 {
     private static final String linkedPanelPosXKey = "lpX";
