@@ -6,7 +6,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.SoundCategory;
 import com.sun.speech.freetts.*;
 
-@ElementsCitySuperMod.ModElement.Tag
 public class TileEntityRedstoneTTS extends AbstractTileEntity
 {
     private static final String TTS_STRING_KEY     = "ttsString";

@@ -43,6 +43,8 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.logging.log4j.Logger;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.function.Supplier;
 
 /**
@@ -57,6 +59,10 @@ import java.util.function.Supplier;
 @Mod( modid = CsmConstants.MOD_NAMESPACE, name = CsmConstants.MOD_NAME, version = CsmConstants.MOD_VERSION )
 public class Csm
 {
+    static {
+        System.setProperty( "freetts.voices", "com.sun.speech.freetts.en.us.cmu_us_kal.KevinVoiceDirectory" );
+    }
+
     /**
      * The network channel for the mod. Used for sending packets between client and server.
      *
@@ -170,12 +176,20 @@ public class Csm
 
         // Register the mod's tile entities
         logger.info( "Registering tile entities" );
+        Set<String> registeredTileEntities = new HashSet<>();
         CsmRegistry.getBlocks().forEach( block -> {
             try {
                 if ( block instanceof ICsmTileEntityProvider ) {
                     ICsmTileEntityProvider tileEntityProvider = ( ICsmTileEntityProvider ) block;
                     String tileEntityName = CsmConstants.MOD_NAMESPACE + ":" + tileEntityProvider.getTileEntityName();
-                    GameRegistry.registerTileEntity( tileEntityProvider.getTileEntityClass(), tileEntityName );
+
+                    // Check if tileEntityName is already registered
+                    if (!registeredTileEntities.contains(tileEntityName)) {
+                        GameRegistry.registerTileEntity(tileEntityProvider.getTileEntityClass(), tileEntityName);
+                        registeredTileEntities.add(tileEntityName); // Add the name to the set
+                    } else {
+                        logger.warn("Attempted to register tile entity with name: " + tileEntityName + " more than once.");
+                    }
                 }
             }
             catch ( Exception e ) {
