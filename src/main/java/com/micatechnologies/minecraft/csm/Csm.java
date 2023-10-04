@@ -17,9 +17,8 @@
  */
 package com.micatechnologies.minecraft.csm;
 
-import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
-import com.micatechnologies.minecraft.csm.codeutils.ICsmProxy;
-import com.micatechnologies.minecraft.csm.codeutils.IHasModel;
+import com.micatechnologies.minecraft.csm.codeutils.*;
+import com.micatechnologies.minecraft.csm.lifesafety.TileEntityFireAlarmControlPanel;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
@@ -168,6 +167,22 @@ public class Csm
     public void init( FMLInitializationEvent event ) {
         // Output start of initialization
         logger.info( "Initializing " + CsmConstants.MOD_NAME + " v" + CsmConstants.MOD_VERSION );
+
+        // Register the mod's tile entities
+        logger.info( "Registering tile entities" );
+        CsmRegistry.getBlocks().forEach( block -> {
+            try {
+                if ( block instanceof ICsmTileEntityProvider ) {
+                    ICsmTileEntityProvider tileEntityProvider = ( ICsmTileEntityProvider ) block;
+                    String tileEntityName = CsmConstants.MOD_NAMESPACE + ":" + tileEntityProvider.getTileEntityName();
+                    GameRegistry.registerTileEntity( tileEntityProvider.getTileEntityClass(), tileEntityName );
+                }
+            }
+            catch ( Exception e ) {
+                logger.error( "Failed to register tile entity for block: " + block.getRegistryName(), e );
+            }
+        } );
+        logger.info( "Finished registering tile entities" );
 
         // Register the mod's GUI handler
         logger.info( "Registering GUI handler" );

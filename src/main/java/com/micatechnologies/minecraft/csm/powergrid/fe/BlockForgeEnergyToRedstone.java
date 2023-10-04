@@ -202,5 +202,17 @@ public class BlockForgeEnergyToRedstone extends AbstractBlock implements ICsmTil
     public Class< ? extends TileEntity > getTileEntityClass() {
         return TileEntityForgeEnergyConsumer.class;
     }
+
+    /**
+     * Gets the tile entity name for the block.
+     *
+     * @return the tile entity name for the block
+     *
+     * @since 1.0
+     */
+    @Override
+    public String getTileEntityName() {
+        return "tileentityforgeenergyconsumer";
+    }
 }
 

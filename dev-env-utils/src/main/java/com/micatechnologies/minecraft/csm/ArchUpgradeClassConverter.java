@@ -65,9 +65,488 @@ public class ArchUpgradeClassConverter
         else if ( checkTrafficSignalClass( file, fileContents ) ) {
             return upgradeTrafficSignalClass( file, fileContents );
         }
+        else if ( checkFireAlarmClassA( file, fileContents ) ) {
+            return upgradeFireAlarmClassA( file, fileContents );
+        }
+        else if ( checkFireAlarmClassB( file, fileContents ) ) {
+            return upgradeFireAlarmClassB( file, fileContents );
+        }
+        else if ( checkFireAlarmClassC( file, fileContents ) ) {
+            return upgradeFireAlarmClassC( file, fileContents );
+        }
+        else if ( checkFireAlarmClassD( file, fileContents ) ) {
+            return upgradeFireAlarmClassD( file, fileContents );
+        }
         else {
             return upgradeRegularClass( file, fileContents );
         }
+    }
+
+    public static boolean checkFireAlarmClassA( File file, String fileContents ) throws Exception {
+        final String filePath = file.getPath();
+        return fileContents.contains( "extends AbstractBlockFireAlarmDetector" );
+    }
+
+    public static boolean checkFireAlarmClassB( File file, String fileContents ) throws Exception {
+        final String filePath = file.getPath();
+        return fileContents.contains( "extends AbstractBlockFireAlarmActivator" );
+    }
+
+    public static boolean checkFireAlarmClassC( File file, String fileContents ) throws Exception {
+        final String filePath = file.getPath();
+        return fileContents.contains( "extends AbstractBlockFireAlarmSounderVoiceEvac" );
+    }
+
+    public static boolean checkFireAlarmClassD( File file, String fileContents ) throws Exception {
+        final String filePath = file.getPath();
+        return fileContents.contains( "extends AbstractBlockFireAlarmSounder" );
+    }
+
+    public static boolean upgradeFireAlarmClassA( File file, String fileContents ) throws Exception {
+        final String filePath = file.getPath();
+
+        // Check if class contains previous version
+        final String previousVersionHeaderRegex = "@ElementsCitySuperMod\\.ModElement\\.Tag";
+        boolean previousVersionHeaderFound = Pattern.compile( previousVersionHeaderRegex )
+                                                    .matcher( fileContents )
+                                                    .find();
+
+        if ( previousVersionHeaderFound ) {
+            // Get block ID
+            String blockIdRegex = "public\\sstatic\\sfinal\\sString\\sblockRegistryName\\s=\\s\"(.*)\";";
+            int blockIdIndex = 1;
+            Matcher matcher = Pattern.compile( blockIdRegex ).matcher( fileContents );
+            String blockId;
+            if ( matcher.find() ) {
+                blockId = matcher.group( blockIdIndex );
+            }
+            else {
+                throw new Exception( "Failed to get block ID from file: " + filePath );
+            }
+
+            // Get package name
+            String packageNameRegex = "package\\s(.*);";
+            int packageNameIndex = 1;
+            matcher = Pattern.compile( packageNameRegex ).matcher( fileContents );
+            String packageName;
+            if ( matcher.find() ) {
+                packageName = matcher.group( packageNameIndex );
+            }
+            else {
+                throw new Exception( "Failed to get package name from file: " + filePath );
+            }
+
+            // Get block class name
+            String classNameRegex = "public\\sclass\\s(.*)\\sextends\\sElementsCitySuperMod\\.ModElement";
+            int classNameIndex = 1;
+            matcher = Pattern.compile( classNameRegex ).matcher( fileContents );
+            String className;
+            if ( matcher.find() ) {
+                className = matcher.group( classNameIndex );
+            }
+            else {
+                throw new Exception( "Failed to get class name from file: " + filePath );
+            }
+
+            // Get onFire method
+            String onFireRegex
+                    = "public\\svoid\\sonFire\\(\\s?World\\s.*,\\s?BlockPos\\s.*,\\s?IBlockState\\s.*\\s?\\)\\s?\\{(\\s*[^}]*)}";
+            int onFireIndex = 1;
+            matcher = Pattern.compile( onFireRegex ).matcher( fileContents );
+            String onFire;
+            if ( matcher.find() ) {
+                onFire = matcher.group( onFireIndex );
+            }
+            else {
+                throw new Exception( "Failed to get on fire method from file: " + filePath );
+            }
+
+            // Build new class
+            StringBuilder newClass = new StringBuilder();
+            newClass.append( "package " +
+                                     packageName +
+                                     ";\n" +
+                                     "\n" +
+                                     "import net.minecraft.block.state.IBlockState;\n" +
+                                     "import net.minecraft.util.math.BlockPos;\n" +
+                                     "import net.minecraft.world.World;\n" +
+                                     "\n" +
+                                     "public class " +
+                                     className +
+                                     " extends AbstractBlockFireAlarmDetector\n" +
+                                     "{\n" +
+                                     "    @Override\n" +
+                                     "    public String getBlockRegistryName() {\n" +
+                                     "        return \"" +
+                                     blockId +
+                                     "\";\n" +
+                                     "    }\n" +
+                                     "\n" +
+                                     "    @Override\n" +
+                                     "    public void onFire( World world, BlockPos blockPos, IBlockState blockState ) {\n" +
+                                     onFire +
+                                     "    }\n" +
+                                     "}\n" );
+
+            // Write back to file
+            FileUtils.writeStringToFile( file, newClass.toString() );
+        }
+
+        return true;
+    }
+
+    public static boolean upgradeFireAlarmClassB( File file, String fileContents ) throws Exception {
+        final String filePath = file.getPath();
+
+        // Check if class contains previous version
+        final String previousVersionHeaderRegex = "@ElementsCitySuperMod\\.ModElement\\.Tag";
+        boolean previousVersionHeaderFound = Pattern.compile( previousVersionHeaderRegex )
+                                                    .matcher( fileContents )
+                                                    .find();
+
+        if ( previousVersionHeaderFound ) {
+            // Get block ID
+            String blockIdRegex = "public\\sstatic\\sfinal\\sString\\sblockRegistryName\\s=\\s\"(.*)\";";
+            int blockIdIndex = 1;
+            Matcher matcher = Pattern.compile( blockIdRegex ).matcher( fileContents );
+            String blockId;
+            if ( matcher.find() ) {
+                blockId = matcher.group( blockIdIndex );
+            }
+            else {
+                throw new Exception( "Failed to get block ID from file: " + filePath );
+            }
+
+            // Get package name
+            String packageNameRegex = "package\\s(.*);";
+            int packageNameIndex = 1;
+            matcher = Pattern.compile( packageNameRegex ).matcher( fileContents );
+            String packageName;
+            if ( matcher.find() ) {
+                packageName = matcher.group( packageNameIndex );
+            }
+            else {
+                throw new Exception( "Failed to get package name from file: " + filePath );
+            }
+
+            // Get block class name
+            String classNameRegex = "public\\sclass\\s(.*)\\sextends\\sElementsCitySuperMod\\.ModElement";
+            int classNameIndex = 1;
+            matcher = Pattern.compile( classNameRegex ).matcher( fileContents );
+            String className;
+            if ( matcher.find() ) {
+                className = matcher.group( classNameIndex );
+            }
+            else {
+                throw new Exception( "Failed to get class name from file: " + filePath );
+            }
+
+            // Get onTick method
+            String onTickRegex
+                    = "public\\svoid\\sonTick\\(\\s?World\\s.*,\\s?BlockPos\\s.*,\\s?IBlockState\\s.*\\s?\\)\\s?\\{(\\s*[^}]*)}";
+            int onTickIndex = 1;
+            matcher = Pattern.compile( onTickRegex ).matcher( fileContents );
+            String onTick;
+            if ( matcher.find() ) {
+                onTick = matcher.group( onTickIndex );
+            }
+            else {
+                throw new Exception( "Failed to get on tick method from file: " + filePath );
+            }
+
+            // Get getBlockTickRate() method
+            String getBlockTickRateRegex = "public\\sint\\sgetBlockTickRate\\(\\s?\\)\\s?\\{\\s*return\\s(.*);\\s*}";
+            int getBlockTickRateIndex = 1;
+            matcher = Pattern.compile( getBlockTickRateRegex ).matcher( fileContents );
+            String getBlockTickRate;
+            if ( matcher.find() ) {
+                getBlockTickRate = matcher.group( getBlockTickRateIndex );
+            }
+            else {
+                throw new Exception( "Failed to get getBlockTickRate method from file: " + filePath );
+            }
+
+            // Parse Java file
+            CompilationUnit parseResult = StaticJavaParser.parse( file );
+            if ( parseResult == null ) {
+                throw new Exception( "Failed to parse Java file: " + filePath );
+            }
+
+            // Get on block activated method
+            boolean hasOnBlockActivated = false;
+            AtomicReference< String > onBlockActivatedMethodSignature = new AtomicReference<>( null );
+            AtomicReference< String > onBlockActivatedMethodBody = new AtomicReference<>( null );
+            if ( fileContents.contains( "onBlockActivated" ) ) {
+                hasOnBlockActivated = true;
+                parseResult.findAll( MethodDeclaration.class ).forEach( methodDeclaration -> {
+                    if ( methodDeclaration.getNameAsString().equals( "onBlockActivated" ) ) {
+                        onBlockActivatedMethodSignature.set(
+                                "@SideOnly( Side.CLIENT )\n@Override\n" + methodDeclaration.getDeclarationAsString() );
+                        methodDeclaration.getBody()
+                                         .ifPresent(
+                                                 blockStmt -> onBlockActivatedMethodBody.set( blockStmt.toString() ) );
+                    }
+                } );
+            }
+            if ( hasOnBlockActivated && onBlockActivatedMethodSignature.get() == null ) {
+                throw new IllegalAccessException( "onBlockActivatedMethod signature is null" );
+            }
+            if ( hasOnBlockActivated && onBlockActivatedMethodBody.get() == null ) {
+                throw new IllegalAccessException( "onBlockActivatedMethod body is null" );
+            }
+            String onBlockActivatedMethod = null;
+            if ( hasOnBlockActivated ) {
+                onBlockActivatedMethod = onBlockActivatedMethodSignature.get() +
+                        "\n" +
+                        onBlockActivatedMethodBody.get();
+            }
+
+            // Build new class
+            StringBuilder newClass = new StringBuilder();
+            newClass.append( "package " +
+                                     packageName +
+                                     ";\n" +
+                                     "\n" +
+                                     "import net.minecraft.block.state.IBlockState;\n" +
+                                     "import net.minecraft.entity.player.EntityPlayer;\n" +
+                                     "import net.minecraft.util.EnumFacing;\n" +
+                                     "import net.minecraft.util.EnumHand;\n" +
+                                     "import net.minecraft.util.math.BlockPos;\n" +
+                                     "import net.minecraft.util.text.TextComponentString;\n" +
+                                     "import net.minecraft.world.World;\n" +
+                                     "\n" +
+                                     "public class " +
+                                     className +
+                                     " extends AbstractBlockFireAlarmActivator\n" +
+                                     "{\n" +
+                                     "\n" +
+                                     ( hasOnBlockActivated ? "\n" + onBlockActivatedMethod + "\n" : "\n" ) +
+                                     "\n" +
+                                     "    @Override\n" +
+                                     "    public String getBlockRegistryName() {\n" +
+                                     "        return \"" +
+                                     blockId +
+                                     "\";\n" +
+                                     "    }\n" +
+                                     "\n" +
+                                     "    @Override\n" +
+                                     "    public int getBlockTickRate() {\n" +
+                                     "        return " +
+                                     getBlockTickRate +
+                                     ";\n" +
+                                     "    }\n" +
+                                     "\n" +
+                                     "    @Override\n" +
+                                     "    public void onTick( World world, BlockPos blockPos, IBlockState blockState ) {\n" +
+                                     "        " +
+                                     onTick +
+                                     "    }\n" +
+                                     "}\n" );
+
+            // Write back to file
+            FileUtils.writeStringToFile( file, newClass.toString() );
+        }
+
+        return true;
+    }
+
+    public static boolean upgradeFireAlarmClassC( File file, String fileContents ) throws Exception {
+        final String filePath = file.getPath();
+
+        // Check if class contains previous version
+        final String previousVersionHeaderRegex = "@ElementsCitySuperMod\\.ModElement\\.Tag";
+        boolean previousVersionHeaderFound = Pattern.compile( previousVersionHeaderRegex )
+                                                    .matcher( fileContents )
+                                                    .find();
+
+        if ( previousVersionHeaderFound ) {
+            // Get block ID
+            String blockIdRegex = "public\\sstatic\\sfinal\\sString\\sblockRegistryName\\s=\\s\"(.*)\";";
+            int blockIdIndex = 1;
+            Matcher matcher = Pattern.compile( blockIdRegex ).matcher( fileContents );
+            String blockId;
+            if ( matcher.find() ) {
+                blockId = matcher.group( blockIdIndex );
+            }
+            else {
+                throw new Exception( "Failed to get block ID from file: " + filePath );
+            }
+
+            // Get package name
+            String packageNameRegex = "package\\s(.*);";
+            int packageNameIndex = 1;
+            matcher = Pattern.compile( packageNameRegex ).matcher( fileContents );
+            String packageName;
+            if ( matcher.find() ) {
+                packageName = matcher.group( packageNameIndex );
+            }
+            else {
+                throw new Exception( "Failed to get package name from file: " + filePath );
+            }
+
+            // Get block class name
+            String classNameRegex = "public\\sclass\\s(.*)\\sextends\\sElementsCitySuperMod\\.ModElement";
+            int classNameIndex = 1;
+            matcher = Pattern.compile( classNameRegex ).matcher( fileContents );
+            String className;
+            if ( matcher.find() ) {
+                className = matcher.group( classNameIndex );
+            }
+            else {
+                throw new Exception( "Failed to get class name from file: " + filePath );
+            }
+
+            // Build new class
+            StringBuilder newClass = new StringBuilder();
+            newClass.append( "package " +
+                                     packageName +
+                                     ";\n" +
+                                     "\n" +
+                                     "import net.minecraft.block.state.IBlockState;\n" +
+                                     "import net.minecraft.util.math.BlockPos;\n" +
+                                     "import net.minecraft.world.World;\n" +
+                                     "\n" +
+                                     "public class " +
+                                     className +
+                                     " extends AbstractBlockFireAlarmSounderVoiceEvac\n" +
+                                     "{\n" +
+                                     "    @Override\n" +
+                                     "    public String getBlockRegistryName() {\n" +
+                                     "        return \"" +
+                                     blockId +
+                                     "\";\n" +
+                                     "    }\n" +
+                                     "\n" +
+                                     "}\n" );
+
+            // Write back to file
+            FileUtils.writeStringToFile( file, newClass.toString() );
+        }
+
+        return true;
+    }
+
+    public static boolean upgradeFireAlarmClassD( File file, String fileContents ) throws Exception {
+        final String filePath = file.getPath();
+
+        // Check if class contains previous version
+        final String previousVersionHeaderRegex = "@ElementsCitySuperMod\\.ModElement\\.Tag";
+        boolean previousVersionHeaderFound = Pattern.compile( previousVersionHeaderRegex )
+                                                    .matcher( fileContents )
+                                                    .find();
+
+        if ( previousVersionHeaderFound ) {
+            // Get block ID
+            String blockIdRegex = "public\\sstatic\\sfinal\\sString\\sblockRegistryName\\s=\\s\"(.*)\";";
+            int blockIdIndex = 1;
+            Matcher matcher = Pattern.compile( blockIdRegex ).matcher( fileContents );
+            String blockId;
+            if ( matcher.find() ) {
+                blockId = matcher.group( blockIdIndex );
+            }
+            else {
+                throw new Exception( "Failed to get block ID from file: " + filePath );
+            }
+
+            // Get package name
+            String packageNameRegex = "package\\s(.*);";
+            int packageNameIndex = 1;
+            matcher = Pattern.compile( packageNameRegex ).matcher( fileContents );
+            String packageName;
+            if ( matcher.find() ) {
+                packageName = matcher.group( packageNameIndex );
+            }
+            else {
+                throw new Exception( "Failed to get package name from file: " + filePath );
+            }
+
+            // Get block class name
+            String classNameRegex = "public\\sclass\\s(.*)\\sextends\\sElementsCitySuperMod\\.ModElement";
+            int classNameIndex = 1;
+            matcher = Pattern.compile( classNameRegex ).matcher( fileContents );
+            String className;
+            if ( matcher.find() ) {
+                className = matcher.group( classNameIndex );
+            }
+            else {
+                throw new Exception( "Failed to get class name from file: " + filePath );
+            }
+
+            // Get getSoundResourceName method
+            String getSoundResourceNameRegex
+                    = "public\\sString\\sgetSoundResourceName\\(\\s?IBlockState\\s.*\\s?\\)\\s?\\{(\\s*[^}]*)}";
+            int getSoundResourceNameIndex = 1;
+            matcher = Pattern.compile( getSoundResourceNameRegex ).matcher( fileContents );
+            String getSoundResourceName;
+            if ( matcher.find() ) {
+                getSoundResourceName = matcher.group( getSoundResourceNameIndex );
+                if ( getSoundResourceName.contains( "if" ) ) {
+                    throw new Exception( "getSoundResourceName contains dynamic sound selection logic and requires " +
+                                                 "manual conversion!" );
+                }
+            }
+            else {
+                throw new Exception( "Failed to get getSoundResourceName method from file: " + filePath );
+            }
+
+            // Get getSoundTickLen method
+            String getSoundTickLenRegex
+                    = "public\\sint\\sgetSoundTickLen\\(\\s?IBlockState\\s.*\\s?\\)\\s?\\{(\\s*[^}]*)}";
+            int getSoundTickLenIndex = 1;
+            matcher = Pattern.compile( getSoundTickLenRegex ).matcher( fileContents );
+            String getSoundTickLen;
+            if ( matcher.find() ) {
+                getSoundTickLen = matcher.group( getSoundTickLenIndex );
+                if ( getSoundTickLen.contains( "if" ) ) {
+                    throw new Exception( "getSoundTickLen contains dynamic sound selection logic and requires manual " +
+                                                 "conversion!" );
+                }
+            }
+            else {
+                throw new Exception( "Failed to get getSoundTickLen method from file: " + filePath );
+            }
+
+            // Build new class
+            StringBuilder newClass = new StringBuilder();
+            newClass.append( "package " +
+                                     packageName +
+                                     ";\n" +
+                                     "\n" +
+                                     "import net.minecraft.block.state.IBlockState;\n" +
+                                     "import net.minecraft.util.math.BlockPos;\n" +
+                                     "import net.minecraft.world.World;\n" +
+                                     "\n" +
+                                     "public class " +
+                                     className +
+                                     " extends AbstractBlockFireAlarmSounder\n" +
+                                     "{\n" +
+                                     "    @Override\n" +
+                                     "    public String getBlockRegistryName() {\n" +
+                                     "        return \"" +
+                                     blockId +
+                                     "\";\n" +
+                                     "    }\n" +
+                                     "\n" +
+                                     "    @Override\n" +
+                                     "    public String getSoundResourceName( IBlockState blockState ) {\n" +
+                                     "        " +
+                                     getSoundResourceName +
+                                     "\n" +
+                                     "    }\n" +
+                                     "\n" +
+                                     "    @Override\n" +
+                                     "    public int getSoundTickLen( IBlockState blockState ) {\n" +
+                                     "        " +
+                                     getSoundTickLen +
+                                     "\n" +
+                                     "    }\n" +
+                                     "}\n" );
+
+            // Write back to file
+            FileUtils.writeStringToFile( file, newClass.toString() );
+        }
+
+        return true;
     }
 
     public static boolean checkTrafficSignalClass( File file, String fileContents ) throws Exception {

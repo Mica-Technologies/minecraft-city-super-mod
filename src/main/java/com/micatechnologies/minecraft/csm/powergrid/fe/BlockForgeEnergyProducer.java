@@ -199,5 +199,17 @@ public class BlockForgeEnergyProducer extends AbstractBlock implements ICsmTileE
     public Class< ? extends TileEntity > getTileEntityClass() {
         return TileEntityForgeEnergyProducer.class;
     }
+
+    /**
+     * Gets the tile entity name for the block.
+     *
+     * @return the tile entity name for the block
+     *
+     * @since 1.0
+     */
+    @Override
+    public String getTileEntityName() {
+        return "tileentityforgeenergyproducer";
+    }
 }
 

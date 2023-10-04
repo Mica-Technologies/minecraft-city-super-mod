@@ -19,4 +19,13 @@ public interface ICsmTileEntityProvider extends ITileEntityProvider
      * @since 1.0
      */
     Class< ? extends TileEntity > getTileEntityClass();
+
+    /**
+     * Gets the tile entity name for the block.
+     *
+     * @return the tile entity name for the block
+     *
+     * @since 1.0
+     */
+    String getTileEntityName();
 }
