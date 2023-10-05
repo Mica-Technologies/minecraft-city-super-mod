@@ -88,8 +88,8 @@ public class CsmTabPowerGrid extends CsmTab
         initTabBlock( BlockNewBrooksXArm3.class, fmlPreInitializationEvent ); // NewBrooksXArm3
         initTabBlock( BlockNewBrooksXArm4.class, fmlPreInitializationEvent ); // NewBrooksXArm4
         initTabBlock( BlockNewESBrooksXArm1.class, fmlPreInitializationEvent ); // NewESBrooksXArm1
-        initTabBlock( BlockNewESBrooksXArm1.class, fmlPreInitializationEvent ); // NewESBrooksXArm2
-        initTabBlock( BlockNewESBrooksXArm1.class, fmlPreInitializationEvent ); // NewESBrooksXArm1
+        initTabBlock( BlockNewESBrooksXArm2.class, fmlPreInitializationEvent ); // NewESBrooksXArm2
+        initTabBlock( BlockNewESBrooksXArm3.class, fmlPreInitializationEvent ); // NewESBrooksXArm3
         initTabBlock( BlockOldBrooksXArm1.class, fmlPreInitializationEvent ); // OldBrooksXArm1
         initTabBlock( BlockOldBrooksXArm2.class, fmlPreInitializationEvent ); // OldBrooksXArm2
         initTabBlock( BlockOldBrooksXArm3.class, fmlPreInitializationEvent ); // OldBrooksXArm3
@@ -114,7 +114,7 @@ public class CsmTabPowerGrid extends CsmTab
         initTabBlock( BlockTEInsulatorCoverDE.class, fmlPreInitializationEvent ); // TEInsulatorCoverDE
         initTabBlock( BlockTEPerchGuard.class, fmlPreInitializationEvent ); // TEPerchGuard
         initTabBlock( BlockTransformerMount.class, fmlPreInitializationEvent ); // TransformerMount
-        initTabBlock( BlockTEInsulatorCover.class, fmlPreInitializationEvent ); // TSC
+        initTabBlock( BlockTSC.class, fmlPreInitializationEvent ); // TSC
         initTabBlock( BlockForgeEnergyProducer.class, fmlPreInitializationEvent ); // Forge Energy Producer
         initTabBlock( BlockForgeEnergyToRedstone.class, fmlPreInitializationEvent ); // Forge Energy to Redstone
     }
