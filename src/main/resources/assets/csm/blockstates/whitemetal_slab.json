@@ -1,10 +1,10 @@
 {
   "variants": {
     "half=bottom,variant=default": {
-      "model": "csm:whitemetalslab"
+      "model": "csm:whitemetal_slab"
     },
     "half=top,variant=default": {
-      "model": "csm:whitemetalslab_top"
+      "model": "csm:whitemetal_slab_top"
     }
   }
 }

@@ -39,7 +39,7 @@ public class CsmTabNovelties extends CsmTab
      */
     @Override
     public Block getTabIcon() {
-        return CsmRegistry.getBlock( BlockAirHockeyTable.class );
+        return CsmRegistry.getBlock( "airhockeytable" );
     }
 
     /**

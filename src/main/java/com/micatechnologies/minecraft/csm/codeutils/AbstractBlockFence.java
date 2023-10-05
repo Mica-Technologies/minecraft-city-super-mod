@@ -44,11 +44,12 @@ public abstract class AbstractBlockFence extends BlockFence implements IHasModel
     public AbstractBlockFence( Material material )
     {
         super( material, material.getMaterialMapColor() );
-        setUnlocalizedName( getBlockRegistryName() );
-        setRegistryName( CsmConstants.MOD_NAMESPACE, getBlockRegistryName() );
-        CsmRegistry.registerBlock( this );
-        CsmRegistry.registerItem(
-                new ItemBlock( this ).setRegistryName( Objects.requireNonNull( this.getRegistryName() ) ) );
+        AbstractBlockFence.this.setUnlocalizedName( AbstractBlockFence.this.getBlockRegistryName() );
+        AbstractBlockFence.this.setRegistryName( CsmConstants.MOD_NAMESPACE,
+                                                 AbstractBlockFence.this.getBlockRegistryName() );
+        CsmRegistry.registerBlock( AbstractBlockFence.this );
+        CsmRegistry.registerItem( new ItemBlock( AbstractBlockFence.this ).setRegistryName(
+                Objects.requireNonNull( AbstractBlockFence.this.getRegistryName() ) ) );
     }
 
     /**
@@ -75,17 +76,17 @@ public abstract class AbstractBlockFence extends BlockFence implements IHasModel
                                int lightOpacity )
     {
         super( material, material.getMaterialMapColor() );
-        setUnlocalizedName( getBlockRegistryName() );
-        setRegistryName( CsmConstants.MOD_NAMESPACE, getBlockRegistryName() );
-        setSoundType( soundType );
-        setHarvestLevel( harvestToolClass, harvestLevel );
-        setHardness( hardness );
-        setResistance( resistance );
-        setLightLevel( lightLevel );
-        setLightOpacity( lightOpacity );
-        CsmRegistry.registerBlock( this );
-        CsmRegistry.registerItem(
-                new ItemBlock( this ).setRegistryName( Objects.requireNonNull( this.getRegistryName() ) ) );
+        AbstractBlockFence.this.setUnlocalizedName( AbstractBlockFence.this.getBlockRegistryName() );
+        AbstractBlockFence.this.setRegistryName( CsmConstants.MOD_NAMESPACE, AbstractBlockFence.this.getBlockRegistryName() );
+        AbstractBlockFence.this.setSoundType( soundType );
+        AbstractBlockFence.this.setHarvestLevel( harvestToolClass, harvestLevel );
+        AbstractBlockFence.this.setHardness( hardness );
+        AbstractBlockFence.this.setResistance( resistance );
+        AbstractBlockFence.this.setLightLevel( lightLevel );
+        AbstractBlockFence.this.setLightOpacity( lightOpacity );
+        CsmRegistry.registerBlock( AbstractBlockFence.this );
+        CsmRegistry.registerItem( new ItemBlock( AbstractBlockFence.this ).setRegistryName(
+                Objects.requireNonNull( AbstractBlockFence.this.getRegistryName() ) ) );
     }
 
     /**
@@ -96,7 +97,7 @@ public abstract class AbstractBlockFence extends BlockFence implements IHasModel
      */
     @Override
     public void registerModels() {
-        Csm.proxy.setCustomModelResourceLocation( Item.getItemFromBlock( this ), 0, "inventory" );
+        Csm.proxy.setCustomModelResourceLocation( Item.getItemFromBlock( AbstractBlockFence.this ), 0, "inventory" );
     }
 
     /**

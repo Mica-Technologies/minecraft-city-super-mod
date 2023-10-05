@@ -22,10 +22,9 @@ import java.util.List;
 public abstract class AbstractBlockSetBasic extends AbstractBlock implements IHasModel, ICsmBlock
 {
 
-    /**
-     * List of all blocks in the variant set.
-     */
-    private final List< Block > variantSet = new ArrayList<>();
+    private final BlockSetVariantFence  fence;
+    private final BlockSetVariantSlab   slab;
+    private final BlockSetVariantStairs stairs;
 
     /**
      * Constructs an {@link AbstractBlockSetBasic} instance.
@@ -51,93 +50,9 @@ public abstract class AbstractBlockSetBasic extends AbstractBlock implements IHa
                                   int lightOpacity )
     {
         super( material, soundType, harvestToolClass, harvestLevel, hardness, resistance, lightLevel, lightOpacity );
-        final AbstractBlockSetBasic baseVariant = this;
-
-        // Create fence variant
-        final String fenceVariantName = this.getBlockRegistryName() + "_fence";
-        variantSet.add(
-                new AbstractBlockFence( material, soundType, harvestToolClass, harvestLevel, hardness, resistance,
-                                        lightLevel, lightOpacity )
-                {
-                    /**
-                     * Retrieves the registry name of the block.
-                     *
-                     * @return The registry name of the block.
-                     *
-                     * @since 1.0
-                     */
-                    @Override
-                    public String getBlockRegistryName() {
-                        return fenceVariantName;
-                    }
-
-                    /**
-                     * Retrieves whether the block is an opaque cube.
-                     *
-                     * @param state The block state.
-                     *
-                     * @return {@code true} if the block is an opaque cube, {@code false} otherwise.
-                     *
-                     * @since 1.0
-                     */
-                    @Override
-                    public boolean getBlockIsOpaqueCube( IBlockState state ) {
-                        return baseVariant.getBlockIsOpaqueCube( state );
-                    }
-                } );
-
-        // Create slab variant
-        final String slabVariantName = this.getBlockRegistryName() + "_slab";
-        variantSet.add(
-                new AbstractBlockSlab( material, soundType, harvestToolClass, harvestLevel, hardness, resistance,
-                                       lightLevel, lightOpacity )
-                {
-
-                    /**
-                     * Retrieves the registry name of the block.
-                     *
-                     * @return The registry name of the block.
-                     *
-                     * @since 1.0
-                     */
-                    @Override
-                    public String getBlockRegistryName() {
-                        return slabVariantName;
-                    }
-                } );
-
-        // Create stair variant
-        final String stairVariantName = this.getBlockRegistryName() + "_stairs";
-        variantSet.add(
-                new AbstractBlockStairs( baseVariant, soundType, harvestToolClass, harvestLevel, hardness, resistance,
-                                         lightLevel, lightOpacity )
-                {
-                    /**
-                     * Retrieves the registry name of the block.
-                     *
-                     * @return The registry name of the block.
-                     *
-                     * @since 1.0
-                     */
-                    @Override
-                    public String getBlockRegistryName() {
-                        return stairVariantName;
-                    }
-
-                    /**
-                     * Retrieves whether the block is an opaque cube.
-                     *
-                     * @param state The block state.
-                     *
-                     * @return {@code true} if the block is an opaque cube, {@code false} otherwise.
-                     *
-                     * @since 1.0
-                     */
-                    @Override
-                    public boolean getBlockIsOpaqueCube( IBlockState state ) {
-                        return baseVariant.getBlockIsOpaqueCube( state );
-                    }
-                } );
+        this.fence = new BlockSetVariantFence();
+        this.slab = new BlockSetVariantSlab();
+        this.stairs = new BlockSetVariantStairs();
     }
 
     /**
@@ -153,9 +68,123 @@ public abstract class AbstractBlockSetBasic extends AbstractBlock implements IHa
     @Nonnull
     @Override
     public Block setCreativeTab( CreativeTabs tab ) {
-        for ( Block block : variantSet ) {
-            block.setCreativeTab( tab );
-        }
+        this.fence.setCreativeTab( tab );
+        this.slab.setCreativeTab( tab );
+        this.stairs.setCreativeTab( tab );
         return super.setCreativeTab( tab );
+    }
+
+    public class BlockSetVariantFence extends AbstractBlockFence
+    {
+
+        /**
+         * Constructs a {@link BlockSetVariantFence} instance.
+         *
+         * @since 1.0
+         */
+        public BlockSetVariantFence()
+        {
+            super( AbstractBlockSetBasic.this.blockMaterial );
+        }
+
+        /**
+         * Retrieves the registry name of the block.
+         *
+         * @return The registry name of the block.
+         *
+         * @since 1.0
+         */
+        @Override
+        public String getBlockRegistryName() {
+            return AbstractBlockSetBasic.this.getBlockRegistryName() + "_fence";
+        }
+
+        /**
+         * Retrieves whether the block is an opaque cube.
+         *
+         * @param state The block state.
+         *
+         * @return {@code true} if the block is an opaque cube, {@code false} otherwise.
+         *
+         * @since 1.0
+         */
+        @Override
+        public boolean getBlockIsOpaqueCube( IBlockState state ) {
+            return false;
+        }
+    }
+
+    public class BlockSetVariantSlab extends AbstractBlockSlab
+    {
+
+        /**
+         * Constructs a {@link BlockSetVariantSlab} instance.
+         *
+         * @since 1.0
+         */
+        public BlockSetVariantSlab()
+        {
+            super( AbstractBlockSetBasic.this.blockMaterial, AbstractBlockSetBasic.this.blockSoundType,
+                   AbstractBlockSetBasic.this.getHarvestTool( AbstractBlockSetBasic.this.getDefaultState() ),
+                   AbstractBlockSetBasic.this.getHarvestLevel( AbstractBlockSetBasic.this.getDefaultState() ),
+                   AbstractBlockSetBasic.this.blockHardness, AbstractBlockSetBasic.this.blockResistance,
+                   AbstractBlockSetBasic.this.lightValue, AbstractBlockSetBasic.this.lightOpacity );
+        }
+
+        /**
+         * Retrieves the registry name of the block.
+         *
+         * @return The registry name of the block.
+         *
+         * @since 1.0
+         */
+        @Override
+        public String getBlockRegistryName() {
+            return AbstractBlockSetBasic.this.getBlockRegistryName() + "_slab";
+        }
+    }
+
+    public class BlockSetVariantStairs extends AbstractBlockStairs
+    {
+
+        /**
+         * Constructs a {@link BlockSetVariantStairs} instance.
+         *
+         * @since 1.0
+         */
+        public BlockSetVariantStairs()
+        {
+            super( AbstractBlockSetBasic.this, AbstractBlockSetBasic.this.blockSoundType,
+                   AbstractBlockSetBasic.this.getHarvestTool( AbstractBlockSetBasic.this.getDefaultState() ),
+                   AbstractBlockSetBasic.this.getHarvestLevel( AbstractBlockSetBasic.this.getDefaultState() ),
+                   AbstractBlockSetBasic.this.blockHardness, AbstractBlockSetBasic.this.blockResistance,
+                   AbstractBlockSetBasic.this.lightValue, AbstractBlockSetBasic.this.lightOpacity );
+        }
+
+        /**
+         * Retrieves the registry name of the block.
+         *
+         * @return The registry name of the block.
+         *
+         * @since 1.0
+         */
+        @Override
+        public String getBlockRegistryName() {
+            return AbstractBlockSetBasic.this.getBlockRegistryName() + "_stairs";
+        }
+
+        /**
+         * Retrieves whether the block is an opaque cube.
+         *
+         * @param state The block state.
+         *
+         * @return {@code true} if the block is an opaque cube, {@code false} otherwise.
+         *
+         * @since 1.0
+         */
+        @Override
+        public boolean getBlockIsOpaqueCube( IBlockState state ) {
+            return false;
+        }
     }
 }

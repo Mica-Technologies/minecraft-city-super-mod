@@ -77,17 +77,19 @@ public abstract class AbstractBlockSlab extends BlockSlab implements IHasModel, 
                               int lightOpacity )
     {
         super( material, material.getMaterialMapColor() );
-        setUnlocalizedName( getBlockRegistryName() );
-        setRegistryName( CsmConstants.MOD_NAMESPACE, getBlockRegistryName() );
-        setSoundType( soundType );
-        setHarvestLevel( harvestToolClass, harvestLevel );
-        setHardness( hardness );
-        setResistance( resistance );
-        setLightLevel( lightLevel );
-        setLightOpacity( lightOpacity );
-        CsmRegistry.registerBlock( this );
-        if ( !this.isDouble() ) {
-            final String doubleSlabRegistryName = getBlockRegistryName() + DOUBLE_VARIANT_POSTFIX;
+        AbstractBlockSlab.this.setUnlocalizedName( AbstractBlockSlab.this.getBlockRegistryName() );
+        AbstractBlockSlab.this.setRegistryName( CsmConstants.MOD_NAMESPACE,
+                                                AbstractBlockSlab.this.getBlockRegistryName() );
+        AbstractBlockSlab.this.setSoundType( soundType );
+        AbstractBlockSlab.this.setHarvestLevel( harvestToolClass, harvestLevel );
+        AbstractBlockSlab.this.setHardness( hardness );
+        AbstractBlockSlab.this.setResistance( resistance );
+        AbstractBlockSlab.this.setLightLevel( lightLevel );
+        AbstractBlockSlab.this.setLightOpacity( lightOpacity );
+        CsmRegistry.registerBlock( AbstractBlockSlab.this );
+        if ( !AbstractBlockSlab.this.isDouble() ) {
+            final String doubleSlabRegistryName = AbstractBlockSlab.this.getBlockRegistryName() +
+                    DOUBLE_VARIANT_POSTFIX;
             Double doubleSlabVariant = new Double( material, soundType, harvestToolClass, harvestLevel, hardness,
                                                    resistance, lightLevel, lightOpacity )
             {
@@ -96,17 +98,19 @@ public abstract class AbstractBlockSlab extends BlockSlab implements IHasModel, 
                     return doubleSlabRegistryName;
                 }
             };
-            CsmRegistry.registerItem( new ItemSlab( this, this, doubleSlabVariant ).setRegistryName(
-                    Objects.requireNonNull( this.getRegistryName() ) ) );
+            CsmRegistry.registerItem(
+                    new ItemSlab( AbstractBlockSlab.this, AbstractBlockSlab.this, doubleSlabVariant ).setRegistryName(
+                            Objects.requireNonNull( AbstractBlockSlab.this.getRegistryName() ) ) );
 
         }
-        IBlockState iblockstate = this.blockState.getBaseState().withProperty( VARIANT, Variant.DEFAULT );
+        IBlockState iblockstate = AbstractBlockSlab.this.blockState.getBaseState()
+                                                                   .withProperty( VARIANT, Variant.DEFAULT );
 
-        if ( !this.isDouble() ) {
+        if ( !AbstractBlockSlab.this.isDouble() ) {
             iblockstate.withProperty( HALF, BlockSlab.EnumBlockHalf.BOTTOM );
         }
-        this.setDefaultState( iblockstate );
-        this.useNeighborBrightness = !this.isDouble();
+        AbstractBlockSlab.this.setDefaultState( iblockstate );
+        AbstractBlockSlab.this.useNeighborBrightness = !AbstractBlockSlab.this.isDouble();
     }
 
     /**
@@ -117,8 +121,8 @@ public abstract class AbstractBlockSlab extends BlockSlab implements IHasModel, 
      */
     @Override
     public void registerModels() {
-        if ( !this.isDouble() ) {
-            Csm.proxy.setCustomModelResourceLocation( Item.getItemFromBlock( this ), 0, "inventory" );
+        if ( !AbstractBlockSlab.this.isDouble() ) {
+            Csm.proxy.setCustomModelResourceLocation( Item.getItemFromBlock( AbstractBlockSlab.this ), 0, "inventory" );
         }
     }
 
@@ -164,7 +168,10 @@ public abstract class AbstractBlockSlab extends BlockSlab implements IHasModel, 
      */
     @Override
     public Item getItemDropped( IBlockState state, Random rand, int fortune ) {
-        return Item.getItemFromBlock( CsmRegistry.getBlocksMap().get( getClass() ) );
+        return Item.getItemFromBlock( CsmRegistry.getBlocksMap()
+                                                 .get( AbstractBlockSlab.this.getRegistryName() != null ?
+                                                       AbstractBlockSlab.this.getRegistryName().toString() :
+                                                       AbstractBlockSlab.this.getUnlocalizedName() ) );
     }
 
     /**
@@ -181,7 +188,10 @@ public abstract class AbstractBlockSlab extends BlockSlab implements IHasModel, 
      */
     @Override
     public ItemStack getItem( World worldIn, BlockPos pos, IBlockState state ) {
-        return new ItemStack( CsmRegistry.getBlocksMap().get( getClass() ) );
+        return new ItemStack( CsmRegistry.getBlocksMap()
+                                         .get( AbstractBlockSlab.this.getRegistryName() != null ?
+                                               AbstractBlockSlab.this.getRegistryName().toString() :
+                                               AbstractBlockSlab.this.getUnlocalizedName() ) );
     }
 
     /**
@@ -217,9 +227,10 @@ public abstract class AbstractBlockSlab extends BlockSlab implements IHasModel, 
      */
     @Override
     public final IBlockState getStateFromMeta( final int meta ) {
-        IBlockState blockstate = this.blockState.getBaseState().withProperty( VARIANT, Variant.DEFAULT );
+        IBlockState blockstate = AbstractBlockSlab.this.blockState.getBaseState()
+                                                                  .withProperty( VARIANT, Variant.DEFAULT );
 
-        if ( !this.isDouble() ) {
+        if ( !AbstractBlockSlab.this.isDouble() ) {
             blockstate = blockstate.withProperty( HALF,
                                                   ( ( meta & 8 ) != 0 ) ? EnumBlockHalf.TOP : EnumBlockHalf.BOTTOM );
         }
@@ -241,7 +252,7 @@ public abstract class AbstractBlockSlab extends BlockSlab implements IHasModel, 
     public final int getMetaFromState( final IBlockState state ) {
         int meta = 0;
 
-        if ( !this.isDouble() && state.getValue( HALF ) == EnumBlockHalf.TOP ) {
+        if ( !AbstractBlockSlab.this.isDouble() && state.getValue( HALF ) == EnumBlockHalf.TOP ) {
             meta |= 8;
         }
 
@@ -259,9 +270,9 @@ public abstract class AbstractBlockSlab extends BlockSlab implements IHasModel, 
     @Override
     protected BlockStateContainer createBlockState() {
         if ( !this.isDouble() ) {
-            return new BlockStateContainer( this, VARIANT, HALF );
+            return new BlockStateContainer( AbstractBlockSlab.this, VARIANT, HALF );
         }
-        return new BlockStateContainer( this, VARIANT );
+        return new BlockStateContainer( AbstractBlockSlab.this, VARIANT );
     }
 
     /**

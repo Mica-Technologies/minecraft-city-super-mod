@@ -22,7 +22,7 @@ public class CsmRegistry
      *
      * @since 1.0
      */
-    private static final Map< Class< ? extends Block >, Block > BLOCKS = new HashMap<>();
+    private static final Map< String, Block > BLOCKS = new HashMap<>();
 
     /**
      * The list of items registered with the mod.
@@ -45,7 +45,7 @@ public class CsmRegistry
      *
      * @since 1.0
      */
-    public static Map< Class< ? extends Block >, Block > getBlocksMap() {
+    public static Map< String, Block > getBlocksMap() {
         return BLOCKS;
     }
 
@@ -63,14 +63,18 @@ public class CsmRegistry
     /**
      * Returns the block registered with the mod that is of the specified class.
      *
-     * @param blockClass The class of the block to return.
+     * @param blockId The ID of the block to return.
      *
      * @return The block registered with the mod that is of the specified class.
      *
      * @since 1.0
      */
-    public static Block getBlock( Class< ? extends Block > blockClass ) {
-        return BLOCKS.get( blockClass );
+    public static Block getBlock( String blockId ) {
+        Block block = BLOCKS.get( CsmConstants.MOD_NAMESPACE + ":" + blockId );
+        if ( block == null ) {
+            block = BLOCKS.get( blockId );
+        }
+        return block;
     }
 
     /**
@@ -92,7 +96,15 @@ public class CsmRegistry
      * @since 1.0
      */
     public static void registerBlock( Block block ) {
-        BLOCKS.put( block.getClass(), block );
+        // Use the block's registry name as the key
+        String key = block.getRegistryName() != null ? block.getRegistryName().toString() : block.getUnlocalizedName();
+
+        // Check if the block is already registered.
+        if ( BLOCKS.containsKey( key ) ) {
+            throw new IllegalArgumentException( "Block with registry name " + key + " already registered." );
+        }
+
+        BLOCKS.put( key, block );
     }
 
     /**
@@ -103,6 +115,11 @@ public class CsmRegistry
      * @since 1.0
      */
     public static void registerItem( Item item ) {
+        // Check if the item is already registered.
+        if ( ITEMS.contains( item ) ) {
+            throw new IllegalArgumentException( "Item " + item.getRegistryName() + " already registered." );
+        }
+
         ITEMS.add( item );
     }
 

@@ -38,7 +38,7 @@ public class CsmTabTrafficSignals extends CsmTab
      */
     @Override
     public Block getTabIcon() {
-        return CsmRegistry.getBlock( BlockControllableVerticalSolidSignal.class );
+        return CsmRegistry.getBlock( "controllableverticalsolidsignal" );
     }
 
     /**

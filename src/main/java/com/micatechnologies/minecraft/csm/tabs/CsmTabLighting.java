@@ -39,7 +39,7 @@ public class CsmTabLighting extends CsmTab
      */
     @Override
     public Block getTabIcon() {
-        return CsmRegistry.getBlock( BlockAltoMVUL.class );
+        return CsmRegistry.getBlock( "altomvul" );
     }
 
     /**

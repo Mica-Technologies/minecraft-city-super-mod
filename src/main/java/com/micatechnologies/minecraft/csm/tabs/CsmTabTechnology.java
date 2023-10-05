@@ -38,7 +38,7 @@ public class CsmTabTechnology extends CsmTab
      */
     @Override
     public Block getTabIcon() {
-        return CsmRegistry.getBlock( BlockImacpro.class );
+        return CsmRegistry.getBlock( "imacpro" );
     }
 
     /**

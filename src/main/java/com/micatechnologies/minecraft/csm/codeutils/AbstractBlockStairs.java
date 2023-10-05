@@ -55,17 +55,18 @@ public abstract class AbstractBlockStairs extends BlockStairs implements IHasMod
                                 int lightOpacity )
     {
         super( modelBlock.getDefaultState() );
-        setUnlocalizedName( getBlockRegistryName() );
-        setRegistryName( CsmConstants.MOD_NAMESPACE, getBlockRegistryName() );
-        setSoundType( soundType );
-        setHarvestLevel( harvestToolClass, harvestLevel );
-        setHardness( hardness );
-        setResistance( resistance );
-        setLightLevel( lightLevel );
-        setLightOpacity( lightOpacity );
-        CsmRegistry.registerBlock( this );
-        CsmRegistry.registerItem(
-                new ItemBlock( this ).setRegistryName( Objects.requireNonNull( this.getRegistryName() ) ) );
+        AbstractBlockStairs.this.setUnlocalizedName( AbstractBlockStairs.this.getBlockRegistryName() );
+        AbstractBlockStairs.this.setRegistryName( CsmConstants.MOD_NAMESPACE,
+                                                  AbstractBlockStairs.this.getBlockRegistryName() );
+        AbstractBlockStairs.this.setSoundType( soundType );
+        AbstractBlockStairs.this.setHarvestLevel( harvestToolClass, harvestLevel );
+        AbstractBlockStairs.this.setHardness( hardness );
+        AbstractBlockStairs.this.setResistance( resistance );
+        AbstractBlockStairs.this.setLightLevel( lightLevel );
+        AbstractBlockStairs.this.setLightOpacity( lightOpacity );
+        CsmRegistry.registerBlock( AbstractBlockStairs.this );
+        CsmRegistry.registerItem( new ItemBlock( AbstractBlockStairs.this ).setRegistryName(
+                Objects.requireNonNull( AbstractBlockStairs.this.getRegistryName() ) ) );
     }
 
     /**
@@ -76,7 +77,7 @@ public abstract class AbstractBlockStairs extends BlockStairs implements IHasMod
      */
     @Override
     public void registerModels() {
-        Csm.proxy.setCustomModelResourceLocation( Item.getItemFromBlock( this ), 0, "inventory" );
+        Csm.proxy.setCustomModelResourceLocation( Item.getItemFromBlock( AbstractBlockStairs.this ), 0, "inventory" );
     }
 
     /**
