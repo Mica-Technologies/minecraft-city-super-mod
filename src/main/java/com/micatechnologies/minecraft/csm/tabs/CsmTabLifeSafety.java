@@ -11,7 +11,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
  *
  * @version 1.0
  */
-@CsmTab.Load
+@CsmTab.Load( order = 3 )
 public class CsmTabLifeSafety extends CsmTab
 {
     /**

@@ -15,7 +15,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
  *
  * @version 1.0
  */
-@CsmTab.Load
+@CsmTab.Load( order = 5)
 public class CsmTabNovelties extends CsmTab
 {
     /**

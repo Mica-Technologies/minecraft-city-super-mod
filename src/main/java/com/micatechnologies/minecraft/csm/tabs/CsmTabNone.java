@@ -12,7 +12,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
  *
  * @version 1.0
  */
-@CsmTab.Load
+@CsmTab.Load( order = 0 )
 public class CsmTabNone extends CsmTab
 {
     /**
