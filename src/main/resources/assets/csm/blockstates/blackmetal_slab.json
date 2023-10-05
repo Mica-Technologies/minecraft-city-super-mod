@@ -1,10 +1,10 @@
 {
   "variants": {
     "half=bottom,variant=default": {
-      "model": "csm:blackmetalslab"
+      "model": "csm:blackmetal_slab"
     },
     "half=top,variant=default": {
-      "model": "csm:blackmetalslab_top"
+      "model": "csm:blackmetal_slab_top"
     }
   }
 }

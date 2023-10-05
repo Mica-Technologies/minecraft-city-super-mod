@@ -1,7 +1,7 @@
 {
   "variants": {
     "variant=default": {
-      "model": "csm:blackmetalslab_double"
+      "model": "csm:blackmetal_slab_double"
     }
   }
 }

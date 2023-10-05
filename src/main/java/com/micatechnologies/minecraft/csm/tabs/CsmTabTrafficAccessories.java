@@ -38,7 +38,7 @@ public class CsmTabTrafficAccessories extends CsmTab
      */
     @Override
     public Block getTabIcon() {
-        return CsmRegistry.getBlock( BlockTLBorderYellowBlack.class );
+        return CsmRegistry.getBlock( "tlborderyellowblack" );
     }
 
     /**

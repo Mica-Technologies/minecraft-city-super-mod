@@ -36,7 +36,7 @@ public class CsmTabHvac extends CsmTab
      */
     @Override
     public Block getTabIcon() {
-        return CsmRegistry.getBlock( BlockSV4.class );
+        return CsmRegistry.getBlock( "sv4" );
     }
 
     /**
