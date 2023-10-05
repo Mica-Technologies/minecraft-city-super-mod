@@ -35,7 +35,7 @@ public class CsmTabBuildingMaterials extends CsmTab
      */
     @Override
     public Block getTabIcon() {
-        return CsmRegistry.getBlock( BlockPCC.class );
+        return CsmRegistry.getBlock( "pcc" );
     }
 
     /**

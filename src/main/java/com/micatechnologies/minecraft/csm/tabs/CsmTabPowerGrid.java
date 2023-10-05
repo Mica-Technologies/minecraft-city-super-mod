@@ -37,7 +37,7 @@ public class CsmTabPowerGrid extends CsmTab
      */
     @Override
     public Block getTabIcon() {
-        return CsmRegistry.getBlock( BlockForgeEnergyToRedstone.class );
+        return CsmRegistry.getBlock( "rftors" );
     }
 
     /**

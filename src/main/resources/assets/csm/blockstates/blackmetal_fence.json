@@ -2,7 +2,7 @@
   "multipart": [
     {
       "apply": {
-        "model": "csm:blackmetalfence_post"
+        "model": "csm:blackmetal_fence_post"
       }
     },
     {
@@ -10,7 +10,7 @@
         "north": "true"
       },
       "apply": {
-        "model": "csm:blackmetalfence",
+        "model": "csm:blackmetal_fence",
         "uvlock": true
       }
     },
@@ -19,7 +19,7 @@
         "south": "true"
       },
       "apply": {
-        "model": "csm:blackmetalfence",
+        "model": "csm:blackmetal_fence",
         "y": 180,
         "uvlock": true
       }
@@ -29,7 +29,7 @@
         "west": "true"
       },
       "apply": {
-        "model": "csm:blackmetalfence",
+        "model": "csm:blackmetal_fence",
         "y": 270,
         "uvlock": true
       }
@@ -39,7 +39,7 @@
         "east": "true"
       },
       "apply": {
-        "model": "csm:blackmetalfence",
+        "model": "csm:blackmetal_fence",
         "y": 90,
         "uvlock": true
       }

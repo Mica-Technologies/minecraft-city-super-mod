@@ -35,7 +35,7 @@ public class CsmTabRoadSigns extends CsmTab
      */
     @Override
     public Block getTabIcon() {
-        return CsmRegistry.getBlock( BlockSignpoststopsign.class );
+        return CsmRegistry.getBlock( "signpoststopsign" );
     }
 
     /**

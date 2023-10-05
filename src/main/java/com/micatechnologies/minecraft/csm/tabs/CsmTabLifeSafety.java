@@ -35,7 +35,7 @@ public class CsmTabLifeSafety extends CsmTab
      */
     @Override
     public Block getTabIcon() {
-        return CsmRegistry.getBlock( BlockMCLACodeApprovedExitSignISA.class );
+        return CsmRegistry.getBlock( "mclacodeapprovedexitsignisa" );
     }
 
     /**
