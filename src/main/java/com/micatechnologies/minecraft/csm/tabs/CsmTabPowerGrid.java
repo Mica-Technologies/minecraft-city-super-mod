@@ -13,7 +13,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
  *
  * @version 1.0
  */
-@CsmTab.Load
+@CsmTab.Load(order = 6)
 public class CsmTabPowerGrid extends CsmTab
 {
     /**

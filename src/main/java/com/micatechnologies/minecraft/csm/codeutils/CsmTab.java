@@ -14,7 +14,9 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -189,8 +191,7 @@ public abstract class CsmTab
      *
      * @since 1.0
      */
-    public Item initTabItem( Class< ? extends Item > itemClass,
-                             FMLPreInitializationEvent fmlPreInitializationEvent )
+    public Item initTabItem( Class< ? extends Item > itemClass, FMLPreInitializationEvent fmlPreInitializationEvent )
     {
         Item item = null;
         Object entry = initTabElement( itemClass, fmlPreInitializationEvent );
@@ -211,15 +212,29 @@ public abstract class CsmTab
      * @since 1.0
      */
     public static void initTabs( FMLPreInitializationEvent fmlPreInitializationEvent ) throws Exception {
+        // Collect all CsmTab classes with the Load annotation
+        List< Class< ? extends CsmTab > > tabClasses = new ArrayList<>();
         for ( ASMDataTable.ASMData asmData : fmlPreInitializationEvent.getAsmData()
                                                                       .getAll( CsmTab.Load.class.getName() ) ) {
             Class< ? > clazz = Class.forName( asmData.getClassName() );
             if ( clazz.getSuperclass() == CsmTab.class ) {
                 Class< ? extends CsmTab > csmTabClass = clazz.asSubclass( CsmTab.class );
-                CsmTab tab = csmTabClass.newInstance();
-                TABS.put( csmTabClass, tab );
-                tab.initTabElements( fmlPreInitializationEvent );
+                tabClasses.add( csmTabClass );
             }
+        }
+
+        // Sort tab classes based on their order in the Load annotation
+        tabClasses.sort( ( class1, class2 ) -> {
+            int order1 = class1.getAnnotation( Load.class ).order();
+            int order2 = class2.getAnnotation( Load.class ).order();
+            return Integer.compare( order1, order2 );
+        } );
+
+        // Initialize the sorted tabs
+        for ( Class< ? extends CsmTab > csmTabClass : tabClasses ) {
+            CsmTab tab = csmTabClass.newInstance();
+            TABS.put( csmTabClass, tab );
+            tab.initTabElements( fmlPreInitializationEvent );
         }
     }
 
@@ -246,5 +261,11 @@ public abstract class CsmTab
     @Target( { ElementType.TYPE } )
     public @interface Load
     {
+        /**
+         * The order in which the annotated {@link CsmTab} implementations should be processed.
+         *
+         * @return the processing order
+         */
+        int order();
     }
 }
