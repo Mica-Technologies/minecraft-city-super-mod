@@ -1,4 +1,9 @@
 {
+  "variants": {
+    "inventory": {
+      "model": "csm:silvermetal_fence_inventory"
+    }
+  },
   "multipart": [
     {
       "apply": {
