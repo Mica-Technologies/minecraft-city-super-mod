@@ -46,7 +46,7 @@ public class BlockVCS5 extends AbstractBlockRotatableNSEWUD
      */
     @Override
     public AxisAlignedBB getBlockBoundingBox( IBlockState state, IBlockAccess source, BlockPos pos ) {
-        return new AxisAlignedBB( 1D, 0D, 0.2D, 0D, 1D, 0D );
+        return new AxisAlignedBB(0D, 0D, 0.8D, 1D, 1D, 1D );
     }
 
     /**
