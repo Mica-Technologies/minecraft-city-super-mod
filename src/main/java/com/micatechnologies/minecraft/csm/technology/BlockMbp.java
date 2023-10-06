@@ -46,7 +46,7 @@ public class BlockMbp extends AbstractBlockRotatableNSEWUD
      */
     @Override
     public AxisAlignedBB getBlockBoundingBox( IBlockState state, IBlockAccess source, BlockPos pos ) {
-        return new AxisAlignedBB( 0.8D, 0D, 0.8D, 0.2D, 0.6D, 0.2D );
+        return new AxisAlignedBB(0.2D, 0D, 0.2D, 0.8D, 0.6D, 0.8D );
     }
 
     /**

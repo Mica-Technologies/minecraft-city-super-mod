@@ -48,7 +48,7 @@ public class BlockEdwardsEmergencyPhone extends AbstractBlockRotatableNSEWUD
      */
     @Override
     public AxisAlignedBB getBlockBoundingBox( IBlockState state, IBlockAccess source, BlockPos pos ) {
-        return new AxisAlignedBB( 0.9375D, 0D, 0.125D, 0.125D, 1D, 0D );
+        return new AxisAlignedBB(0.0625D, 0D, 0.875D, 0.875D, 1D, 1D );
     }
 
     /**

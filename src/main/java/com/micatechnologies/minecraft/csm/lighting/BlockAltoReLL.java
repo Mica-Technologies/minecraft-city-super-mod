@@ -36,7 +36,7 @@ public class BlockAltoReLL extends AbstractBrightLight
      */
     @Override
     public AxisAlignedBB getBlockBoundingBox( IBlockState state, IBlockAccess source, BlockPos pos ) {
-        return new AxisAlignedBB( 1D, 0D, 1D, 0D, 0.5D, 0D );
+        return new AxisAlignedBB(0D, 0D, 0D, 1D, 0.5D, 1D );
     }
 
     @Override

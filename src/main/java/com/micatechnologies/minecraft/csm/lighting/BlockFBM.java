@@ -46,9 +46,7 @@ public class BlockFBM extends AbstractBlockRotatableNSEW
      */
     @Override
     public AxisAlignedBB getBlockBoundingBox( IBlockState state, IBlockAccess source, BlockPos pos ) {
-
-                    return new AxisAlignedBB( 1D, 0D, 0D, 0D, 1D, 2D );
-
+        return new AxisAlignedBB(0D, 0D, 1D, 1D, 1D, -1D );
     }
 
     /**
