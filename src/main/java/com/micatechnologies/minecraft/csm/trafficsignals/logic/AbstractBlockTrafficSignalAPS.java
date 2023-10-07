@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.trafficsignals.logic;
 
+import com.micatechnologies.minecraft.csm.technology.TileEntityRedstoneTTS;
 import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalAPS;
 import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalRequester;
 import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalTickableRequester;
@@ -103,5 +104,17 @@ public abstract class AbstractBlockTrafficSignalAPS extends AbstractBlockTraffic
     @Override
     public String getTileEntityName() {
         return "tileentitytrafficsignalaps";
+    }
+
+    /**
+     * Gets a new tile entity for the block.
+     *
+     * @return the new tile entity for the block
+     *
+     * @since 1.1
+     */
+    @Override
+    public TileEntity getNewTileEntity() {
+        return new TileEntityTrafficSignalAPS();
     }
 }

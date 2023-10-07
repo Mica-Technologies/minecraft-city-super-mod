@@ -6,11 +6,20 @@ import net.minecraft.tileentity.TileEntity;
 /**
  * Mod tile entity provider interface which provides common method stubs and properties for all providers in this mod.
  *
- * @version 1.0
+ * @version 1.1
  * @since 2023.3
  */
 public interface ICsmTileEntityProvider extends ITileEntityProvider
 {
+    /**
+     * Gets a new tile entity for the block.
+     *
+     * @return the new tile entity for the block
+     *
+     * @since 1.1
+     */
+    TileEntity getNewTileEntity();
+
     /**
      * Gets the tile entity class for the block.
      *

@@ -223,18 +223,7 @@ public abstract class AbstractBlock extends Block implements IHasModel, ICsmBloc
         TileEntity returnVal = null;
         if ( this instanceof ICsmTileEntityProvider ) {
             ICsmTileEntityProvider tileEntityProvider = ( ICsmTileEntityProvider ) this;
-            Class< ? extends TileEntity > tileEntityClass = tileEntityProvider.getTileEntityClass();
-            if ( tileEntityClass != null ) {
-                try {
-                    returnVal = tileEntityClass.newInstance();
-                }
-                catch ( Exception e ) {
-                    Csm.getLogger().error( "Failed to create tile entity for block: " + this.getRegistryName(), e );
-                }
-            }
-            else {
-                Csm.getLogger().error( "Tile entity class is null for block: " + this.getRegistryName() );
-            }
+            returnVal = tileEntityProvider.getNewTileEntity();
         }
         return returnVal;
     }

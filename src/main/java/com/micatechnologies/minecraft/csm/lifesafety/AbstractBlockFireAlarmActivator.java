@@ -105,7 +105,7 @@ public abstract class AbstractBlockFireAlarmActivator extends AbstractBlockRotat
      */
     @Override
     public AxisAlignedBB getBlockBoundingBox( IBlockState state, IBlockAccess source, BlockPos pos ) {
-        return new AxisAlignedBB(0D, 0D, 0.8D, 1D, 1D, 1D );
+        return new AxisAlignedBB( 0D, 0D, 0.8D, 1D, 1D, 1D );
     }
 
     /**
@@ -192,5 +192,17 @@ public abstract class AbstractBlockFireAlarmActivator extends AbstractBlockRotat
     @Override
     public String getTileEntityName() {
         return "tileentityfirealarmsensor";
+    }
+
+    /**
+     * Gets a new tile entity for the block.
+     *
+     * @return the new tile entity for the block
+     *
+     * @since 1.1
+     */
+    @Override
+    public TileEntity getNewTileEntity() {
+        return new TileEntityFireAlarmSensor();
     }
 }

@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.trafficsignals.logic;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEW;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
+import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTattleTaleBeacon;
 import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalSensor;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockHorizontal;
@@ -133,5 +134,17 @@ public abstract class AbstractBlockTrafficSignalSensor extends AbstractBlockRota
     @Override
     public String getTileEntityName() {
         return "tileentitytrafficsignalsensor";
+    }
+
+    /**
+     * Gets a new tile entity for the block.
+     *
+     * @return the new tile entity for the block
+     *
+     * @since 1.1
+     */
+    @Override
+    public TileEntity getNewTileEntity() {
+        return new TileEntityTrafficSignalSensor();
     }
 }

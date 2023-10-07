@@ -44,8 +44,7 @@ public class BlockFireAlarmControlPanel extends AbstractBlockRotatableNSEW imple
                                      float p_onBlockActivated_9_ )
     {
         if ( p_onBlockActivated_4_.inventory.getCurrentItem() != null &&
-                ( p_onBlockActivated_4_.inventory.getCurrentItem()
-                                                 .getItem() instanceof ItemFireAlarmLinker ) ) {
+                ( p_onBlockActivated_4_.inventory.getCurrentItem().getItem() instanceof ItemFireAlarmLinker ) ) {
             return super.onBlockActivated( p_onBlockActivated_1_, p_onBlockActivated_2_, p_onBlockActivated_3_,
                                            p_onBlockActivated_4_, p_onBlockActivated_5_, p_onBlockActivated_6_,
                                            p_onBlockActivated_7_, p_onBlockActivated_8_, p_onBlockActivated_9_ );
@@ -167,7 +166,7 @@ public class BlockFireAlarmControlPanel extends AbstractBlockRotatableNSEW imple
      */
     @Override
     public AxisAlignedBB getBlockBoundingBox( IBlockState state, IBlockAccess source, BlockPos pos ) {
-        return new AxisAlignedBB(0D, 0D, 0.8D, 1D, 1D, 1D );
+        return new AxisAlignedBB( 0D, 0D, 0.8D, 1D, 1D, 1D );
     }
 
     /**
@@ -233,6 +232,18 @@ public class BlockFireAlarmControlPanel extends AbstractBlockRotatableNSEW imple
     }
 
     /**
+     * Gets a new tile entity for the block.
+     *
+     * @return the new tile entity for the block
+     *
+     * @since 1.1
+     */
+    @Override
+    public TileEntity getNewTileEntity() {
+        return new TileEntityFireAlarmControlPanel();
+    }
+
+    /**
      * Gets the tile entity class for the block.
      *
      * @return the tile entity class for the block
@@ -255,5 +266,6 @@ public class BlockFireAlarmControlPanel extends AbstractBlockRotatableNSEW imple
     public String getTileEntityName() {
         return "tileentityfirealarmcontrolpanel";
     }
+
 }
 
