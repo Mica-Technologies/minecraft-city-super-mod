@@ -46,7 +46,7 @@ public class BlockImacpro extends AbstractBlockRotatableNSEWUD
      */
     @Override
     public AxisAlignedBB getBlockBoundingBox( IBlockState state, IBlockAccess source, BlockPos pos ) {
-        return new AxisAlignedBB( 1D, 0D, 1D, 0D, 0.75D, 0.25D );
+        return new AxisAlignedBB(-0.573103, 0.000000, 0.117500, 1.437500, 1.421875, 1.439273);
     }
 
     /**

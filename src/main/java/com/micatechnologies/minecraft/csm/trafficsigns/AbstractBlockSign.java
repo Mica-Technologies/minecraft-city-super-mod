@@ -44,7 +44,7 @@ public abstract class AbstractBlockSign extends AbstractBlockRotatableNSEW
      */
     @Override
     public AxisAlignedBB getBlockBoundingBox( IBlockState state, IBlockAccess source, BlockPos pos ) {
-        return SQUARE_BOUNDING_BOX;
+        return new AxisAlignedBB(0.000000, 0.000000, -0.000625, 1.000000, 1.000000, 0.218750);
     }
 
     /**
