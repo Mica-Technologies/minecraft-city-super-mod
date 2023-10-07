@@ -13,7 +13,7 @@ apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 
-version = '2023.2.1'
+version = '2023.3'
 group = 'com.micatechnologies.minecraft.csm' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'minecraft-city-super-mod'
 
