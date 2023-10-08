@@ -98,12 +98,16 @@ public class BlockControllableTattleTaleBeacon extends AbstractBlockControllable
     /**
      * Gets a new tile entity for the block.
      *
+     * @param worldIn the world
+     * @param meta    the block metadata
+     *
      * @return the new tile entity for the block
      *
      * @since 1.1
      */
+    @Nullable
     @Override
-    public TileEntity getNewTileEntity() {
+    public TileEntity createNewTileEntity( World worldIn, int meta ) {
         return new TileEntityTattleTaleBeacon();
     }
 
