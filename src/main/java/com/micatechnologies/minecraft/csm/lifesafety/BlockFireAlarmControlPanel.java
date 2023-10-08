@@ -232,18 +232,6 @@ public class BlockFireAlarmControlPanel extends AbstractBlockRotatableNSEW imple
     }
 
     /**
-     * Gets a new tile entity for the block.
-     *
-     * @return the new tile entity for the block
-     *
-     * @since 1.1
-     */
-    @Override
-    public TileEntity getNewTileEntity() {
-        return new TileEntityFireAlarmControlPanel();
-    }
-
-    /**
      * Gets the tile entity class for the block.
      *
      * @return the tile entity class for the block
@@ -267,5 +255,20 @@ public class BlockFireAlarmControlPanel extends AbstractBlockRotatableNSEW imple
         return "tileentityfirealarmcontrolpanel";
     }
 
+    /**
+     * Gets a new tile entity for the block.
+     *
+     * @param worldIn the world
+     * @param meta    the block metadata
+     *
+     * @return the new tile entity for the block
+     *
+     * @since 1.1
+     */
+    @Nullable
+    @Override
+    public TileEntity createNewTileEntity( World worldIn, int meta ) {
+        return new TileEntityFireAlarmControlPanel();
+    }
 }
 

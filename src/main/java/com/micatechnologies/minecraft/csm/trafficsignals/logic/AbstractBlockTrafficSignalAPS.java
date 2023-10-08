@@ -17,6 +17,8 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
+import javax.annotation.Nullable;
+
 public abstract class AbstractBlockTrafficSignalAPS extends AbstractBlockTrafficSignalTickableRequester
 {
     public AbstractBlockTrafficSignalAPS( Material p_i45394_1_ ) {
@@ -109,12 +111,16 @@ public abstract class AbstractBlockTrafficSignalAPS extends AbstractBlockTraffic
     /**
      * Gets a new tile entity for the block.
      *
+     * @param worldIn the world
+     * @param meta    the block metadata
+     *
      * @return the new tile entity for the block
      *
      * @since 1.1
      */
+    @Nullable
     @Override
-    public TileEntity getNewTileEntity() {
+    public TileEntity createNewTileEntity( World worldIn, int meta ) {
         return new TileEntityTrafficSignalAPS();
     }
 }
