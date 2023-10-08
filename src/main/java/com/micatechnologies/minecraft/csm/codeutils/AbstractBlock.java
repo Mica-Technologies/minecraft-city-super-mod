@@ -208,27 +208,6 @@ public abstract class AbstractBlock extends Block implements IHasModel, ICsmBloc
     }
 
     /**
-     * Creates a new tile entity for the block. This method returns {@code null} if the block does not implement the
-     * {@link ICsmTileEntityProvider} interface.
-     *
-     * @param worldIn the world
-     * @param meta    the block metadata
-     *
-     * @return the new tile entity
-     *
-     * @since 1.0
-     */
-    @Nullable
-    public TileEntity createNewTileEntity( @Nonnull World worldIn, int meta ) {
-        TileEntity returnVal = null;
-        if ( this instanceof ICsmTileEntityProvider ) {
-            ICsmTileEntityProvider tileEntityProvider = ( ICsmTileEntityProvider ) this;
-            returnVal = tileEntityProvider.getNewTileEntity();
-        }
-        return returnVal;
-    }
-
-    /**
      * Overridden method from {@link Block} which handles the removal of the block. This method removes the tile entity
      * from the world if the block has a tile entity.
      *

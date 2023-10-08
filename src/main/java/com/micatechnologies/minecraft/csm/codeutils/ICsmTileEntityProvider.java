@@ -12,15 +12,6 @@ import net.minecraft.tileentity.TileEntity;
 public interface ICsmTileEntityProvider extends ITileEntityProvider
 {
     /**
-     * Gets a new tile entity for the block.
-     *
-     * @return the new tile entity for the block
-     *
-     * @since 1.1
-     */
-    TileEntity getNewTileEntity();
-
-    /**
      * Gets the tile entity class for the block.
      *
      * @return the tile entity class for the block
