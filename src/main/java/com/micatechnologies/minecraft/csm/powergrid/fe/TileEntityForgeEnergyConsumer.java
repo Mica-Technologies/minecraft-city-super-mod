@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.powergrid.fe;
 
+import com.micatechnologies.minecraft.csm.codeutils.AbstractTickableTileEntity;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
@@ -16,7 +17,7 @@ import net.minecraftforge.energy.IEnergyStorage;
 
 import javax.annotation.Nullable;
 
-public class TileEntityForgeEnergyConsumer extends TileEntity implements IEnergyStorage, ITickable
+public class TileEntityForgeEnergyConsumer extends AbstractTickableTileEntity implements IEnergyStorage
 {
 
     private static final int    energyConsume   = 6;
@@ -25,16 +26,28 @@ public class TileEntityForgeEnergyConsumer extends TileEntity implements IEnergy
     private static final int    storedEnergyMax = 24;
     private              int    storedEnergy;
 
+    /**
+     * Abstract method which must be implemented to return the NBT tag compound with the tile entity's NBT data.
+     *
+     * @param compound the NBT tag compound to write the tile entity's NBT data to
+     *
+     * @return the NBT tag compound with the tile entity's NBT data
+     */
     @Override
-    public void readFromNBT( NBTTagCompound p_readFromNBT_1_ ) {
-        super.readFromNBT( p_readFromNBT_1_ );
-        this.storedEnergy = p_readFromNBT_1_.getInteger( NBT_ENERGY_KEY );
+    public NBTTagCompound writeNBT( NBTTagCompound compound ) {
+        compound.setInteger( NBT_ENERGY_KEY, storedEnergy );
+        return compound;
     }
 
+    /**
+     * Abstract method which must be implemented to process the reading of the tile entity's NBT data from the supplied
+     * NBT tag compound.
+     *
+     * @param compound the NBT tag compound to read the tile entity's NBT data from
+     */
     @Override
-    public NBTTagCompound writeToNBT( NBTTagCompound p_writeToNBT_1_ ) {
-        p_writeToNBT_1_.setInteger( NBT_ENERGY_KEY, storedEnergy );
-        return super.writeToNBT( p_writeToNBT_1_ );
+    public void readNBT( NBTTagCompound compound ) {
+        this.storedEnergy = compound.getInteger( NBT_ENERGY_KEY );
     }
 
     @Override
@@ -96,61 +109,64 @@ public class TileEntityForgeEnergyConsumer extends TileEntity implements IEnergy
         return consumed;
     }
 
+    /**
+     * Abstract method which must be implemented to return the tick rate of the tile entity.
+     *
+     * @return the tick rate of the tile entity
+     */
     @Override
-    public void update() {
-        // This is called every tick, need to check if it is time to act
-        World world = getWorld();
-        if ( !world.isRemote && world.getTotalWorldTime() % tickRate == 0L ) {
-            try {
-                // Get block and world information
-                BlockPos blockPos = getPos();
-                IBlockState blockState = world.getBlockState( blockPos );
+    public long getTickRate() {
+        return tickRate;
+    }
 
-                // Consume power from Forge Energy (true if power, false if none)
-                boolean isGridPowered = consumeEnergy( energyConsume );
+    /**
+     * Abstract method which must be implemented to handle the tick event of the tile entity.
+     */
+    @Override
+    public void onTick() {
+        try {
+            // Get block and world information
+            BlockPos blockPos = getPos();
+            IBlockState blockState = world.getBlockState( blockPos );
 
-                // Check if block is already outputting power
-                PropertyBool blockPoweredProperty = BlockForgeEnergyToRedstone.POWERED;
-                boolean isBlockPowered = blockState.getValue( blockPoweredProperty );
+            // Consume power from Forge Energy (true if power, false if none)
+            boolean isGridPowered = consumeEnergy( energyConsume );
 
-                // Update block power state if grid power does not match
-                if ( isBlockPowered != isGridPowered ) {
-                    world.setBlockState( blockPos, blockState.withProperty( blockPoweredProperty, isGridPowered ), 3 );
-                }
+            // Check if block is already outputting power
+            PropertyBool blockPoweredProperty = BlockForgeEnergyToRedstone.POWERED;
+            boolean isBlockPowered = blockState.getValue( blockPoweredProperty );
+
+            // Update block power state if grid power does not match
+            if ( isBlockPowered != isGridPowered ) {
+                world.setBlockState( blockPos, blockState.withProperty( blockPoweredProperty, isGridPowered ), 3 );
             }
-            catch ( Exception e ) {
-                System.err.println( "An error occurred while ticking a Forge energy to redstone converter: " );
-                e.printStackTrace( System.err );
-            }
+        }
+        catch ( Exception e ) {
+            System.err.println( "An error occurred while ticking a Forge energy to redstone converter: " );
+            e.printStackTrace( System.err );
         }
     }
 
+    /**
+     * Abstract method which must be implemented to return a boolean indicating if the tile entity should also tick on
+     * the client side. By default, the tile entity will always tick on the server side, and in the event of
+     * singleplayer/local mode, the host client is considered the server.
+     *
+     * @return a boolean indicating if the tile entity should also tick on the client side
+     */
     @Override
-    @Nullable
-    public SPacketUpdateTileEntity getUpdatePacket()
-    {
-        NBTTagCompound nbtTagCompound = new NBTTagCompound();
-        writeToNBT( nbtTagCompound );
-        int metadata = getBlockMetadata();
-        return new SPacketUpdateTileEntity( this.pos, metadata, nbtTagCompound );
+    public boolean doClientTick() {
+        return false;
     }
 
+    /**
+     * Abstract method which must be implemented to return a boolean indicating if the tile entity ticking should be
+     * paused. If the tile entity is paused, the tick event will not be called.
+     *
+     * @return a boolean indicating if the tile entity ticking should be paused
+     */
     @Override
-    public void onDataPacket( NetworkManager networkManager, SPacketUpdateTileEntity pkt ) {
-        readFromNBT( pkt.getNbtCompound() );
-    }
-
-    @Override
-    public NBTTagCompound getUpdateTag()
-    {
-        NBTTagCompound nbtTagCompound = new NBTTagCompound();
-        writeToNBT( nbtTagCompound );
-        return nbtTagCompound;
-    }
-
-    @Override
-    public void handleUpdateTag( NBTTagCompound nbtTagCompound )
-    {
-        this.readFromNBT( nbtTagCompound );
+    public boolean pauseTicking() {
+        return false;
     }
 }
