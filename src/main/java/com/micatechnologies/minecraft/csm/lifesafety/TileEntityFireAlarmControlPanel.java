@@ -171,132 +171,6 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity
         return SOUND_NAMES[ soundIndex ];
     }
 
-    public synchronized void updateTick( World world, BlockPos p_updateTick_2_ )
-    {
-        if ( alarm ) {
-            // Reset storm alarm (fire alarm overrides storm)
-            if ( alarmStormSoundTracking > 0 ) {
-                alarmStormSoundTracking = 0;
-            }
-
-            // Alarm is starting
-            if ( alarmSoundTracking == null ) {
-                alarmSoundTracking = new HashMap<>();
-                MinecraftServer mcserv = FMLCommonHandler.instance().getMinecraftServerInstance();
-                if ( mcserv != null ) {
-                    mcserv.getPlayerList()
-                          .sendMessage( new TextComponentString( "The fire alarm at [" +
-                                                                         p_updateTick_2_.getX() +
-                                                                         "," +
-                                                                         p_updateTick_2_.getY() +
-                                                                         "," +
-                                                                         p_updateTick_2_.getZ() +
-                                                                         "] " +
-                                                                         "has been activated!" ) );
-                }
-            }
-
-            // Perform sound handling
-            for ( BlockPos bp : connectedAppliances ) {
-                // Get block at linked position
-                IBlockState blockStateAtPos = world.getBlockState( bp );
-                Block blockAtPos = blockStateAtPos.getBlock();
-
-                // Check for alarm sound values at location
-                String alarmSoundName = null;
-                int alarmSoundLength = -1;
-                if ( blockAtPos instanceof AbstractBlockFireAlarmSounderVoiceEvac ) {
-                    alarmSoundName = getCurrentSoundResourceName();
-                    alarmSoundLength = getCurrentSoundLength();
-                }
-                else if ( blockAtPos instanceof AbstractBlockFireAlarmSounder ) {
-                    AbstractBlockFireAlarmSounder blockFireAlarmSounder = ( AbstractBlockFireAlarmSounder ) blockAtPos;
-                    alarmSoundName = blockFireAlarmSounder.getSoundResourceName( blockStateAtPos );
-                    alarmSoundLength = blockFireAlarmSounder.getSoundTickLen( blockStateAtPos );
-                }
-
-                // Handle only if alarm at location
-                if ( alarmSoundName != null && alarmSoundLength != -1 ) {
-                    // Add sound tracker if does not exist and reset sound tracker to 0 if sound length reached (or
-                    // greater)
-                    if ( !alarmSoundTracking.containsKey( alarmSoundName ) ||
-                            alarmSoundTracking.get( alarmSoundName ) > alarmSoundLength ) {
-                        alarmSoundTracking.put( alarmSoundName, 0 );
-                    }
-
-                    // Play sound
-                    if ( alarmSoundTracking.get( alarmSoundName ) == 0 ) {
-                        world.playSound( ( EntityPlayer ) null, bp.getX(), bp.getY(), bp.getZ(),
-                                         ( net.minecraft.util.SoundEvent ) net.minecraft.util.SoundEvent.REGISTRY.getObject(
-                                                 new ResourceLocation( alarmSoundName ) ), SoundCategory.AMBIENT,
-                                         ( float ) 2, ( float ) 1 );
-
-                    }
-                }
-            }
-
-            // Increment sound trackers
-            final int incrementSize = tickRate;
-            for ( String key : alarmSoundTracking.keySet() ) {
-                int valForKey = alarmSoundTracking.get( key );
-                alarmSoundTracking.put( key, valForKey + incrementSize );
-            }
-        }
-        else {
-            // Alarm has ended
-            if ( alarmSoundTracking != null ) {
-                alarmSoundTracking = null;
-                MinecraftServer mcserv = FMLCommonHandler.instance().getMinecraftServerInstance();
-                if ( mcserv != null ) {
-                    mcserv.getPlayerList()
-                          .sendMessage( new TextComponentString( "The fire alarm at [" +
-                                                                         p_updateTick_2_.getX() +
-                                                                         "," +
-                                                                         p_updateTick_2_.getY() +
-                                                                         "," +
-                                                                         p_updateTick_2_.getZ() +
-                                                                         "] " +
-                                                                         "has been reset." ) );
-                }
-            }
-
-            // Handle storm alarm
-            if ( alarmStorm ) {
-                // Perform sound handling
-                for ( BlockPos bp : connectedAppliances ) {
-                    // Get block at linked position
-                    IBlockState blockStateAtPos = world.getBlockState( bp );
-                    Block blockAtPos = blockStateAtPos.getBlock();
-
-                    // Check for alarm sound values at location
-                    if ( blockAtPos instanceof AbstractBlockFireAlarmSounderVoiceEvac ) {
-                        if ( alarmStormSoundTracking > STORM_SOUND_LENGTH ) {
-                            alarmStormSoundTracking = 0;
-                        }
-
-                        // Play sound
-                        if ( alarmStormSoundTracking == 0 ) {
-                            world.playSound( ( EntityPlayer ) null, bp.getX(), bp.getY(), bp.getZ(),
-                                             ( net.minecraft.util.SoundEvent ) net.minecraft.util.SoundEvent.REGISTRY.getObject(
-                                                     new ResourceLocation( STORM_SOUND_NAME ) ), SoundCategory.AMBIENT,
-                                             ( float ) 3, ( float ) 1 );
-
-                        }
-                    }
-                }
-
-                // Increment storm sound tracker
-                alarmStormSoundTracking += tickRate;
-            }
-            else {
-                // Reset storm alarm
-                if ( alarmStormSoundTracking > 0 ) {
-                    alarmStormSoundTracking = 0;
-                }
-            }
-        }
-    }
-
     public int getCurrentSoundLength() {
         return SOUND_LENGTHS[ soundIndex ];
     }
@@ -322,7 +196,130 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity
     public void onTick() {
 
         try {
-            updateTick( getWorld(), getPos() );
+            if ( alarm ) {
+                // Reset storm alarm (fire alarm overrides storm)
+                if ( alarmStormSoundTracking > 0 ) {
+                    alarmStormSoundTracking = 0;
+                }
+
+                // Alarm is starting
+                if ( alarmSoundTracking == null ) {
+                    alarmSoundTracking = new HashMap<>();
+                    MinecraftServer mcserv = FMLCommonHandler.instance().getMinecraftServerInstance();
+                    if ( mcserv != null ) {
+                        BlockPos blockPos = getPos();
+                        mcserv.getPlayerList()
+                              .sendMessage( new TextComponentString( "The fire alarm at [" +
+                                                                             blockPos.getX() +
+                                                                             "," +
+                                                                             blockPos.getY() +
+                                                                             "," +
+                                                                             blockPos.getZ() +
+                                                                             "] " +
+                                                                             "has been activated!" ) );
+                    }
+                }
+
+                // Perform sound handling
+                for ( BlockPos bp : connectedAppliances ) {
+                    // Get block at linked position
+                    IBlockState blockStateAtPos = world.getBlockState( bp );
+                    Block blockAtPos = blockStateAtPos.getBlock();
+
+                    // Check for alarm sound values at location
+                    String alarmSoundName = null;
+                    int alarmSoundLength = -1;
+                    if ( blockAtPos instanceof AbstractBlockFireAlarmSounderVoiceEvac ) {
+                        alarmSoundName = getCurrentSoundResourceName();
+                        alarmSoundLength = getCurrentSoundLength();
+                    }
+                    else if ( blockAtPos instanceof AbstractBlockFireAlarmSounder ) {
+                        AbstractBlockFireAlarmSounder blockFireAlarmSounder = ( AbstractBlockFireAlarmSounder ) blockAtPos;
+                        alarmSoundName = blockFireAlarmSounder.getSoundResourceName( blockStateAtPos );
+                        alarmSoundLength = blockFireAlarmSounder.getSoundTickLen( blockStateAtPos );
+                    }
+
+                    // Handle only if alarm at location
+                    if ( alarmSoundName != null && alarmSoundLength != -1 ) {
+                        // Add sound tracker if does not exist and reset sound tracker to 0 if sound length reached (or
+                        // greater)
+                        if ( !alarmSoundTracking.containsKey( alarmSoundName ) ||
+                                alarmSoundTracking.get( alarmSoundName ) > alarmSoundLength ) {
+                            alarmSoundTracking.put( alarmSoundName, 0 );
+                        }
+
+                        // Play sound
+                        if ( alarmSoundTracking.get( alarmSoundName ) == 0 ) {
+                            world.playSound( ( EntityPlayer ) null, bp.getX(), bp.getY(), bp.getZ(),
+                                             ( net.minecraft.util.SoundEvent ) net.minecraft.util.SoundEvent.REGISTRY.getObject(
+                                                     new ResourceLocation( alarmSoundName ) ), SoundCategory.AMBIENT,
+                                             ( float ) 2, ( float ) 1 );
+
+                        }
+                    }
+                }
+
+                // Increment sound trackers
+                final int incrementSize = tickRate;
+                for ( String key : alarmSoundTracking.keySet() ) {
+                    int valForKey = alarmSoundTracking.get( key );
+                    alarmSoundTracking.put( key, valForKey + incrementSize );
+                }
+            }
+            else {
+                // Alarm has ended
+                if ( alarmSoundTracking != null ) {
+                    alarmSoundTracking = null;
+                    MinecraftServer mcserv = FMLCommonHandler.instance().getMinecraftServerInstance();
+                    if ( mcserv != null ) {
+                        BlockPos blockPos = getPos();
+                        mcserv.getPlayerList()
+                              .sendMessage( new TextComponentString( "The fire alarm at [" +
+                                                                             blockPos.getX() +
+                                                                             "," +
+                                                                             blockPos.getY() +
+                                                                             "," +
+                                                                             blockPos.getZ() +
+                                                                             "] " +
+                                                                             "has been reset." ) );
+                    }
+                }
+
+                // Handle storm alarm
+                if ( alarmStorm ) {
+                    // Perform sound handling
+                    for ( BlockPos bp : connectedAppliances ) {
+                        // Get block at linked position
+                        IBlockState blockStateAtPos = world.getBlockState( bp );
+                        Block blockAtPos = blockStateAtPos.getBlock();
+
+                        // Check for alarm sound values at location
+                        if ( blockAtPos instanceof AbstractBlockFireAlarmSounderVoiceEvac ) {
+                            if ( alarmStormSoundTracking > STORM_SOUND_LENGTH ) {
+                                alarmStormSoundTracking = 0;
+                            }
+
+                            // Play sound
+                            if ( alarmStormSoundTracking == 0 ) {
+                                world.playSound( ( EntityPlayer ) null, bp.getX(), bp.getY(), bp.getZ(),
+                                                 ( net.minecraft.util.SoundEvent ) net.minecraft.util.SoundEvent.REGISTRY.getObject(
+                                                         new ResourceLocation( STORM_SOUND_NAME ) ), SoundCategory.AMBIENT,
+                                                 ( float ) 3, ( float ) 1 );
+
+                            }
+                        }
+                    }
+
+                    // Increment storm sound tracker
+                    alarmStormSoundTracking += tickRate;
+                }
+                else {
+                    // Reset storm alarm
+                    if ( alarmStormSoundTracking > 0 ) {
+                        alarmStormSoundTracking = 0;
+                    }
+                }
+            }
         }
         catch ( Exception e ) {
             System.err.println( "An error occurred while ticking a fire alarm control panel: " );
