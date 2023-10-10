@@ -50,9 +50,9 @@ public class RotationUtils
                                                             1.0D - defaultBoundingBox.minZ, defaultBoundingBox.maxY );
                     break;
                 case DOWN:
-                    defaultBoundingBox = new AxisAlignedBB( defaultBoundingBox.minX, defaultBoundingBox.minZ,
-                                                            defaultBoundingBox.minY, defaultBoundingBox.maxX,
-                                                            defaultBoundingBox.maxZ, defaultBoundingBox.maxY );
+                    defaultBoundingBox = new AxisAlignedBB( 1.0D - defaultBoundingBox.maxX, defaultBoundingBox.minZ,
+                                                            1.0D - defaultBoundingBox.maxY, 1.0D - defaultBoundingBox.minX,
+                                                            defaultBoundingBox.maxZ, 1.0D - defaultBoundingBox.minY );
                     break;
             }
         }
