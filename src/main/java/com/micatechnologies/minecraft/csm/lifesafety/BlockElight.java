@@ -17,7 +17,10 @@ public class BlockElight extends AbstractPoweredBlockRotatableNSEWUD
 {
 
     public BlockElight() {
-        super( Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0 );
+        super( Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0, false );
+        this.setDefaultState( this.blockState.getBaseState()
+                                             .withProperty( FACING, EnumFacing.NORTH )
+                                             .withProperty( POWERED, false ) );
     }
 
     @Override
@@ -50,7 +53,7 @@ public class BlockElight extends AbstractPoweredBlockRotatableNSEWUD
      */
     @Override
     public AxisAlignedBB getBlockBoundingBox( IBlockState state, IBlockAccess source, BlockPos pos ) {
-        return new AxisAlignedBB(0D, 0.2D, 0.8D, 1D, 0.8D, 1D );
+        return new AxisAlignedBB(0.062500, 0.187500, 0.812500, 0.937500, 0.562500, 1.000000);
     }
 
     /**
