@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "variant=default": {
+      "model": "csm:bluemetal_slab_double"
+    }
+  }
+}
