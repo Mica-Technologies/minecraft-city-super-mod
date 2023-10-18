@@ -75,6 +75,12 @@ public class CsmTabBuildingMaterials extends CsmTab
                       fmlPreInitializationEvent ); // Silver Metal Set (Block, Fence, Slab, Stairs)
         initTabBlock( BlockSetWhiteMetal.class,
                       fmlPreInitializationEvent ); // White Metal Set (Block, Fence, Slab, Stairs)
+        initTabBlock( BlockSetGreenMetal.class,
+                      fmlPreInitializationEvent ); // Green Metal Set (Block, Fence, Slab, Stairs)
+        initTabBlock( BlockSetBlueMetal.class,
+                      fmlPreInitializationEvent ); // Blue Metal Set (Block, Fence, Slab, Stairs)
+        initTabBlock( BlockSetRedMetal.class,
+                      fmlPreInitializationEvent ); // Red Metal Set (Block, Fence, Slab, Stairs)
         initTabBlock( BlockPCC.class, fmlPreInitializationEvent ); // PCC
         initTabBlock( BlockCTF.class, fmlPreInitializationEvent ); // CTF
         initTabBlock( BlockCTFD.class, fmlPreInitializationEvent ); // CTFD
