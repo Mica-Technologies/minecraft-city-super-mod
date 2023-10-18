@@ -61,6 +61,7 @@ public class Csm
 {
     static {
         System.setProperty( "freetts.voices", "com.sun.speech.freetts.en.us.cmu_us_kal.KevinVoiceDirectory" );
+        FluidRegistry.enableUniversalBucket(); // Enables the required universal bucket
     }
 
     /**
@@ -86,11 +87,6 @@ public class Csm
      */
     @Mod.Instance( CsmConstants.MOD_NAMESPACE )
     public static Csm instance;
-
-    // Enables the required universal bucket
-    static {
-        FluidRegistry.enableUniversalBucket();
-    }
 
     /**
      * The world generator for the mod.
