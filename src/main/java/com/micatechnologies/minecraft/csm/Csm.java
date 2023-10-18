@@ -17,8 +17,10 @@
  */
 package com.micatechnologies.minecraft.csm;
 
-import com.micatechnologies.minecraft.csm.codeutils.*;
-import com.micatechnologies.minecraft.csm.lifesafety.TileEntityFireAlarmControlPanel;
+import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmProxy;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
+import com.micatechnologies.minecraft.csm.codeutils.IHasModel;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
@@ -29,6 +31,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.ProgressManager;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
@@ -45,7 +48,6 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.function.Supplier;
 
 /**
  * The main class of the City Super Mod.
@@ -118,42 +120,52 @@ public class Csm
 
         // Output start of pre-initialization
         logger.info( "Pre-initializing " + CsmConstants.MOD_NAME + " v" + CsmConstants.MOD_VERSION );
+        ProgressManager.ProgressBar progressBar = ProgressManager.push( "City Super Mod (Pre-Init)", 6 );
 
-        // Register the mod's event bus
-        logger.info( "Registering event bus" );
-        MinecraftForge.EVENT_BUS.register( this );
-        logger.info( "Finished registering event bus" );
-
-        // Register the mod's world generator
-        logger.info( "Registering world generator" );
-        GameRegistry.registerWorldGenerator( csmWorldGenerator, CsmWorldGenerator.WORLD_GENERATION_WEIGHT );
-        logger.info( "Finished registering world generator" );
-
-        // Register the mod's network message(s)
-        logger.info( "Registering network message(s)" );
-        CsmRegistry.registerNetworkMessage( CitySuperModVariables.WorldSavedDataSyncMessageHandler.class,
-                                            CitySuperModVariables.WorldSavedDataSyncMessage.class, Side.SERVER,
-                                            Side.CLIENT );
-        logger.info( "Finished registering network message(s)" );
-
-        // Build the mod's tabs and elements
-        logger.info( "Building mod tabs and elements" );
         try {
+            // Register the mod's event bus
+            logger.info( "Registering event bus" );
+            MinecraftForge.EVENT_BUS.register( this );
+            logger.info( "Finished registering event bus" );
+            progressBar.step( "Event Bus Registration" );
+
+            // Register the mod's world generator
+            logger.info( "Registering world generator" );
+            GameRegistry.registerWorldGenerator( csmWorldGenerator, CsmWorldGenerator.WORLD_GENERATION_WEIGHT );
+            logger.info( "Finished registering world generator" );
+            progressBar.step( "World Generator Registration" );
+
+            // Register the mod's network message(s)
+            logger.info( "Registering network message(s)" );
+            CsmRegistry.registerNetworkMessage( CitySuperModVariables.WorldSavedDataSyncMessageHandler.class,
+                                                CitySuperModVariables.WorldSavedDataSyncMessage.class, Side.SERVER,
+                                                Side.CLIENT );
+            logger.info( "Finished registering network message(s)" );
+            progressBar.step( "Network Messages Registration" );
+
+            // Build the mod's tabs and elements
+            logger.info( "Building mod tabs and elements" );
             CsmTab.initTabs( event );
+            logger.info( "Finished building mod tabs and elements" );
+            progressBar.step( "Tabs and Elements Initialization" );
+
+            // Call pre-initialization of the proxy (client or server/common)
+            String side = event.getSide().isClient() ? "client" : "server";
+            logger.info( "Calling pre-initialization of proxy (" + side + ")" );
+            proxy.preInit( event );
+            logger.info( "Finished pre-initialization of proxy (" + side + ")" );
+            progressBar.step( "Proxy Pre-Initialization" );
+
+            // Output completion of pre-initialization
+            logger.info( "Finished pre-initializing " + CsmConstants.MOD_NAME + " v" + CsmConstants.MOD_VERSION );
+            progressBar.step( "Pre-Initialization Complete" );
         }
         catch ( Exception e ) {
-            logger.error( "Failed to build tabs and/or elements!", e );
+            logger.error( "Error during pre-initialization", e );
         }
-        logger.info( "Finished building mod tabs and elements" );
-
-        // Call pre-initialization of the proxy (client or server/common)
-        String side = event.getSide().isClient() ? "client" : "server";
-        logger.info( "Calling pre-initialization of proxy (" + side + ")" );
-        proxy.preInit( event );
-        logger.info( "Finished pre-initialization of proxy (" + side + ")" );
-
-        // Output completion of pre-initialization
-        logger.info( "Finished pre-initializing " + CsmConstants.MOD_NAME + " v" + CsmConstants.MOD_VERSION );
+        finally {
+            ProgressManager.pop( progressBar );
+        }
     }
 
     /**
@@ -169,44 +181,62 @@ public class Csm
     public void init( FMLInitializationEvent event ) {
         // Output start of initialization
         logger.info( "Initializing " + CsmConstants.MOD_NAME + " v" + CsmConstants.MOD_VERSION );
+        ProgressManager.ProgressBar progressBar = ProgressManager.push( "City Super Mod (Init)", 4 );
 
-        // Register the mod's tile entities
-        logger.info( "Registering tile entities" );
-        Set<String> registeredTileEntities = new HashSet<>();
-        CsmRegistry.getBlocks().forEach( block -> {
-            try {
-                if ( block instanceof ICsmTileEntityProvider ) {
-                    ICsmTileEntityProvider tileEntityProvider = ( ICsmTileEntityProvider ) block;
-                    String tileEntityName = CsmConstants.MOD_NAMESPACE + ":" + tileEntityProvider.getTileEntityName();
+        try {
+            // Register the mod's tile entities
+            logger.info( "Registering tile entities" );
+            Set< String > registeredTileEntities = new HashSet<>();
+            CsmRegistry.getBlocks().forEach( block -> {
+                try {
+                    if ( block instanceof ICsmTileEntityProvider ) {
+                        ICsmTileEntityProvider tileEntityProvider = ( ICsmTileEntityProvider ) block;
+                        String tileEntityName = CsmConstants.MOD_NAMESPACE +
+                                ":" +
+                                tileEntityProvider.getTileEntityName();
 
-                    // Check if tileEntityName is already registered
-                    if (!registeredTileEntities.contains(tileEntityName)) {
-                        GameRegistry.registerTileEntity(tileEntityProvider.getTileEntityClass(), tileEntityName);
-                        registeredTileEntities.add(tileEntityName); // Add the name to the set
-                    } else {
-                        logger.warn("Attempted to register tile entity with name: " + tileEntityName + " more than once.");
+                        // Check if tileEntityName is already registered
+                        if ( !registeredTileEntities.contains( tileEntityName ) ) {
+                            GameRegistry.registerTileEntity( tileEntityProvider.getTileEntityClass(), tileEntityName );
+                            registeredTileEntities.add( tileEntityName ); // Add the name to the set
+                        }
+                        else {
+                            logger.warn( "Attempted to register tile entity with name: " +
+                                                 tileEntityName +
+                                                 " more than once." );
+                        }
                     }
                 }
-            }
-            catch ( Exception e ) {
-                logger.error( "Failed to register tile entity for block: " + block.getRegistryName(), e );
-            }
-        } );
-        logger.info( "Finished registering tile entities" );
+                catch ( Exception e ) {
+                    logger.error( "Failed to register tile entity for block: " + block.getRegistryName(), e );
+                }
+            } );
+            logger.info( "Finished registering tile entities" );
+            progressBar.step( "Tile Entity Registration" );
 
-        // Register the mod's GUI handler
-        logger.info( "Registering GUI handler" );
-        NetworkRegistry.INSTANCE.registerGuiHandler( this, new CsmGuiHandler() );
-        logger.info( "Finished registering GUI handler" );
+            // Register the mod's GUI handler
+            logger.info( "Registering GUI handler" );
+            NetworkRegistry.INSTANCE.registerGuiHandler( this, new CsmGuiHandler() );
+            logger.info( "Finished registering GUI handler" );
+            progressBar.step( "GUI Handler Registration" );
 
-        // Call initialization of the proxy (client or server/common)
-        String side = event.getSide().isClient() ? "client" : "server";
-        logger.info( "Calling initialization of proxy (" + side + ")" );
-        proxy.init( event );
-        logger.info( "Finished initialization of proxy (" + side + ")" );
+            // Call initialization of the proxy (client or server/common)
+            String side = event.getSide().isClient() ? "client" : "server";
+            logger.info( "Calling initialization of proxy (" + side + ")" );
+            proxy.init( event );
+            logger.info( "Finished initialization of proxy (" + side + ")" );
+            progressBar.step( "Proxy Initialization" );
 
-        // Output completion of initialization
-        logger.info( "Finished initializing " + CsmConstants.MOD_NAME + " v" + CsmConstants.MOD_VERSION );
+            // Output completion of initialization
+            logger.info( "Finished initializing " + CsmConstants.MOD_NAME + " v" + CsmConstants.MOD_VERSION );
+            progressBar.step( "Initialization Complete" );
+        }
+        catch ( Exception e ) {
+            logger.error( "Error during initialization", e );
+        }
+        finally {
+            ProgressManager.pop( progressBar );
+        }
     }
 
     /**
@@ -222,15 +252,26 @@ public class Csm
     public void postInit( FMLPostInitializationEvent event ) {
         // Output start of post-initialization
         logger.info( "Post-initializing " + CsmConstants.MOD_NAME + " v" + CsmConstants.MOD_VERSION );
+        ProgressManager.ProgressBar progressBar = ProgressManager.push( "City Super Mod (Post-Init)", 2 );
 
-        // Call post-initialization of the proxy (client or server/common)
-        String side = event.getSide().isClient() ? "client" : "server";
-        logger.info( "Calling post-initialization of proxy (" + side + ")" );
-        proxy.postInit( event );
-        logger.info( "Finished post-initialization of proxy (" + side + ")" );
+        try {
+            // Call post-initialization of the proxy (client or server/common)
+            String side = event.getSide().isClient() ? "client" : "server";
+            logger.info( "Calling post-initialization of proxy (" + side + ")" );
+            proxy.postInit( event );
+            logger.info( "Finished post-initialization of proxy (" + side + ")" );
+            progressBar.step( "Proxy Post-Initialization" );
 
-        // Output completion of post-initialization
-        logger.info( "Finished post-initializing " + CsmConstants.MOD_NAME + " v" + CsmConstants.MOD_VERSION );
+            // Output completion of post-initialization
+            logger.info( "Finished post-initializing " + CsmConstants.MOD_NAME + " v" + CsmConstants.MOD_VERSION );
+            progressBar.step( "Post-Initialization Complete" );
+        }
+        catch ( Exception e ) {
+            logger.error( "Error during post-initialization", e );
+        }
+        finally {
+            ProgressManager.pop( progressBar );
+        }
     }
 
     /**
