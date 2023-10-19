@@ -1,13 +1,12 @@
-name: Draft Mod Release (Main Branch)
+name: Draft Mod Final Release (Tagged)
 
 on:
   push:
-    branches:
-      - main
-      - master
+    tags:
+      - 'v*'
 
 jobs:
-  build:
+  draft_mod_release:
     name: Assemble Mod and Draft Release
     runs-on: ubuntu-latest
     steps:
