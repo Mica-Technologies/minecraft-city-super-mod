@@ -1,5 +1,6 @@
-package com.micatechnologies.minecraft.csm;
+package com.micatechnologies.minecraft.csm.tools;
 
+import com.micatechnologies.minecraft.csm.tools.tool_framework.CsmToolUtility;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
@@ -9,47 +10,50 @@ import java.util.Map;
 
 public class BatchRenameTool
 {
+    private static final String BATCH_RENAME_TOOL_INPUT_FOLDER_PATH_RELATIVE  = "dev-env-utils/batchRenameToolInput";
+    private static final String BATCH_RENAME_TOOL_OUTPUT_FOLDER_PATH_RELATIVE = "dev-env-utils/batchRenameToolOutput";
+
     public static void main( String[] args ) {
-        System.out.println( "Running CSM Batch Rename Tool..." );
+        CsmToolUtility.doToolExecuteWrapped( "CSM Batch Rename Tool", args, ( devEnvironmentPath ) -> {
+            // File name replacements
+            /*
+             * NOTE: Multiple `to`s are supported to allow for multiple replacement variations of the same original file(s).
+             *
+             * EXAMPLE: Replacing "A" with "B" in file names
+             * > FileNameReplacement.from( "A" ).to( "B" );
+             *
+             * EXAMPLE: Replacing "A" with "B" and "C" in file names, and "X" with "Y" in contents of files renamed with "C"
+             * > FileNameReplacement.from( "A" ).to( "B" ).to( "C", FileContentReplacement.from( "X" ).to( "Y" ) );
+             *
+             * EXAMPLE: Replacing "A" with "B" and "C" in both file names and corresponding contents
+             * > FileNameReplacement.from( "A" ).to( "B", true ).to( "C", true );
+             */
+            final FileNameReplacement[] fileNameReplacements = new FileNameReplacement[]{ FileNameReplacement.from(
+                                                                                                                     "blackmetal" )
+                                                                                                             .to( "bluemetal",
+                                                                                                                  FileContentReplacement.from(
+                                                                                                                                                "blackmetal" )
+                                                                                                                                        .to( "bluemetal" ),
+                                                                                                                  FileContentReplacement.from(
+                                                                                                                                                "metal_black" )
+                                                                                                                                        .to( "metal_blue" ) )
+                                                                                                             .to( "redmetal",
+                                                                                                                  FileContentReplacement.from(
+                                                                                                                                                "blackmetal" )
+                                                                                                                                        .to( "redmetal" ),
+                                                                                                                  FileContentReplacement.from(
+                                                                                                                                                "metal_black" )
+                                                                                                                                        .to( "metal_red" ) ).to(
+                    "greenmetal", FileContentReplacement.from( "blackmetal" ).to( "greenmetal" ),
+                    FileContentReplacement.from( "metal_black" ).to( "metal_green" ) ) };
 
-        // Input folder path (../../../../../../../batchRenameToolInput)
-        final String processPath = "E:\\source\\repos\\minecraft-city-super-mod\\dev-env-utils\\batchRenameToolInput";
-
-        // Output folder path (../../../../../../../batchRenameToolOutput)
-        final String outputPath = "E:\\source\\repos\\minecraft-city-super-mod\\dev-env-utils\\batchRenameToolOutput";
-
-        // File name replacements
-        /*
-         * NOTE: Multiple `to`s are supported to allow for multiple replacement variations of the same original file(s).
-         *
-         * EXAMPLE: Replacing "A" with "B" in file names
-         * > FileNameReplacement.from( "A" ).to( "B" );
-         *
-         * EXAMPLE: Replacing "A" with "B" and "C" in file names, and "X" with "Y" in contents of files renamed with "C"
-         * > FileNameReplacement.from( "A" ).to( "B" ).to( "C", FileContentReplacement.from( "X" ).to( "Y" ) );
-         *
-         * EXAMPLE: Replacing "A" with "B" and "C" in both file names and corresponding contents
-         * > FileNameReplacement.from( "A" ).to( "B", true ).to( "C", true );
-         */
-        final FileNameReplacement[] fileNameReplacements = new FileNameReplacement[]{ FileNameReplacement
-                                                                                              .from( "blackmetal" ).to(
-                        "bluemetal",
-                        FileContentReplacement.from( "blackmetal" ).to( "bluemetal" ),
-                        FileContentReplacement.from( "metal_black" ).to( "metal_blue" ) ).to( "redmetal",
-                                                                                              FileContentReplacement
-                                                                                                      .from( "blackmetal" )
-                                                                                                      .to( "redmetal" ),
-                                                                                              FileContentReplacement
-                                                                                                      .from( "metal_black" )
-                                                                                                      .to( "metal_red" ) ).to(
-                "greenmetal",
-                FileContentReplacement.from( "blackmetal" ).to( "greenmetal" ),
-                FileContentReplacement.from( "metal_black" ).to( "metal_green" ) ) };
-
-        // Process folder
-        processFolder( processPath, outputPath, fileNameReplacements );
-
-        System.out.println( "Finished Running CSM Batch Rename Tool." );
+            // Process folder
+            final String processPath = new File( devEnvironmentPath,
+                                                 BATCH_RENAME_TOOL_INPUT_FOLDER_PATH_RELATIVE ).getAbsolutePath();
+            final String outputPath = new File( devEnvironmentPath,
+                                                BATCH_RENAME_TOOL_OUTPUT_FOLDER_PATH_RELATIVE ).getAbsolutePath();
+            processFolder( processPath, outputPath, fileNameReplacements );
+        } );
     }
 
     private static void processFolder( String processPath,
@@ -97,8 +101,8 @@ public class BatchRenameTool
                         if ( fileName.contains( fileNameReplacement.getOriginalText() ) ) {
                             if ( fileNameReplacement.getReplacementTexts().isEmpty() ) {
                                 throw new IllegalArgumentException( "No new/replacement file name text(s) found for " +
-                                                                    "original file name text: " +
-                                                                    fileNameReplacement.getOriginalText() );
+                                                                            "original file name text: " +
+                                                                            fileNameReplacement.getOriginalText() );
                             }
                             else {
                                 for ( String replacementText : fileNameReplacement.getReplacementTexts() ) {
@@ -110,8 +114,8 @@ public class BatchRenameTool
 
                                     // Process file content replacements (if any)
                                     if ( fileNameReplacement.getFileContentReplacements().isEmpty() ||
-                                         !fileNameReplacement.getFileContentReplacements()
-                                                             .containsKey( replacementText ) ) {
+                                            !fileNameReplacement.getFileContentReplacements()
+                                                                .containsKey( replacementText ) ) {
                                         // No file content replacements, just copy the file
                                         FileUtils.copyFile( file, newFile );
                                         System.out.println( logIndent + "    ->" + newFileName + " (copied)" );
@@ -119,11 +123,11 @@ public class BatchRenameTool
                                     else {
                                         // Get file contents and replace original text with replacement text
                                         String fileContent = FileUtils.readFileToString( file );
-                                        for ( FileContentReplacement fileContentReplacement : fileNameReplacement
-                                                .getFileContentReplacements().get( replacementText ) ) {
-                                            fileContent
-                                                    = fileContent.replaceAll( fileContentReplacement.getOriginalText(),
-                                                                              fileContentReplacement.getReplacementText() );
+                                        for ( FileContentReplacement fileContentReplacement : fileNameReplacement.getFileContentReplacements()
+                                                                                                                 .get( replacementText ) ) {
+                                            fileContent = fileContent.replaceAll(
+                                                    fileContentReplacement.getOriginalText(),
+                                                    fileContentReplacement.getReplacementText() );
                                         }
 
                                         // Write file contents to new file
@@ -195,10 +199,8 @@ public class BatchRenameTool
 
         private void checkReplacementTextExists( String replacementText ) {
             if ( this.replacementTexts.contains( replacementText ) ) {
-                throw new IllegalArgumentException( "Duplicate replacement text: " +
-                                                    replacementText +
-                                                    " for original text: " +
-                                                    originalText );
+                throw new IllegalArgumentException(
+                        "Duplicate replacement text: " + replacementText + " for original text: " + originalText );
             }
         }
 
