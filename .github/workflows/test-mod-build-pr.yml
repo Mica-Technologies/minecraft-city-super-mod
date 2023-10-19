@@ -1,10 +1,10 @@
-name: Test Build Mod (PR)
+name: Test Mod Build (Pull Request)
 
 on: pull_request
 
 jobs:
-  build:
-    name: Assemble Mod
+  test_assemble_mod:
+    name: Test Assemble Mod
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
