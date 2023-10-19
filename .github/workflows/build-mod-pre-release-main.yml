@@ -1,13 +1,13 @@
-name: Build and Assemble Mod (Development Branch)
+name: Build Mod Pre-Release (Main Branch)
 
 on:
   push:
-    branches-ignore:
+    branches:
       - main
       - master
 
 jobs:
-  build:
+  assemble_pre_release:
     name: Assemble Mod and Publish Pre-Release
     runs-on: ubuntu-latest
     steps:
