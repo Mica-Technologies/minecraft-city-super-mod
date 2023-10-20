@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "half=bottom,variant=default": {
+      "model": "csm:magentametal_slab"
+    },
+    "half=top,variant=default": {
+      "model": "csm:magentametal_slab_top"
+    }
+  }
+}

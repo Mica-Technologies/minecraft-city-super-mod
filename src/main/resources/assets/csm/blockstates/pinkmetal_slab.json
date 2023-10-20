@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "half=bottom,variant=default": {
+      "model": "csm:pinkmetal_slab"
+    },
+    "half=top,variant=default": {
+      "model": "csm:pinkmetal_slab_top"
+    }
+  }
+}

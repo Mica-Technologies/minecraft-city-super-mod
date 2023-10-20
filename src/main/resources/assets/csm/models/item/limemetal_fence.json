@@ -1,0 +1,7 @@
+{
+  "parent": "block/fence_side",
+  "textures": {
+    "texture": "csm:blocks/metal_lime",
+    "particle": "csm:blocks/metal_lime"
+  }
+}
