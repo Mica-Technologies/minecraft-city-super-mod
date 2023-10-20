@@ -1,0 +1,7 @@
+{
+  "parent": "block/fence_inventory",
+  "textures": {
+    "texture": "csm:blocks/metal_purple",
+    "particle": "csm:blocks/metal_purple"
+  }
+}

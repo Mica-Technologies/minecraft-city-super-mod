@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "variant=default": {
+      "model": "csm:coppermetal_slab_double"
+    }
+  }
+}

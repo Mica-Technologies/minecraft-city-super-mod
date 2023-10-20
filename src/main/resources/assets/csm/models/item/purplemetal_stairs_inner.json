@@ -1,0 +1,8 @@
+{
+  "parent": "block/inner_stairs",
+  "textures": {
+    "bottom": "csm:blocks/metal_purple",
+    "top": "csm:blocks/metal_purple",
+    "side": "csm:blocks/metal_purple"
+  }
+}
