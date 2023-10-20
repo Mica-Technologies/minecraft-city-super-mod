@@ -1,9 +1,9 @@
 package com.micatechnologies.minecraft.csm.trafficsigns;
 
-public class BlockSignbusstopnoparking extends AbstractBlockSign
-{
-    @Override
-    public String getBlockRegistryName() {
-        return "signbusstopnoparking";
-    }
+public class BlockSignbusstopnoparking extends AbstractBlockSign {
+
+  @Override
+  public String getBlockRegistryName() {
+    return "signbusstopnoparking";
+  }
 }

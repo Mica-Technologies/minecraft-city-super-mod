@@ -2,20 +2,20 @@ package com.micatechnologies.minecraft.csm.lifesafety;
 
 import net.minecraft.block.state.IBlockState;
 
-public class BlockFireAlarmSimplexTrueAlertHornRed extends AbstractBlockFireAlarmSounder
-{
-    @Override
-    public String getBlockRegistryName() {
-        return "firealarmsimplextruealerthornred";
-    }
+public class BlockFireAlarmSimplexTrueAlertHornRed extends AbstractBlockFireAlarmSounder {
 
-    @Override
-    public String getSoundResourceName( IBlockState blockState ) {
-        return "csm:stahorn";
-    }
+  @Override
+  public String getBlockRegistryName() {
+    return "firealarmsimplextruealerthornred";
+  }
 
-    @Override
-    public int getSoundTickLen( IBlockState blockState ) {
-        return 60;
-    }
+  @Override
+  public String getSoundResourceName(IBlockState blockState) {
+    return "csm:stahorn";
+  }
+
+  @Override
+  public int getSoundTickLen(IBlockState blockState) {
+    return 60;
+  }
 }

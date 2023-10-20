@@ -3,22 +3,22 @@ package com.micatechnologies.minecraft.csm.trafficsignals;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockTrafficSignalSensor;
 import net.minecraft.block.material.Material;
 
-public class BlockTrafficLightSensorBelowGround extends AbstractBlockTrafficSignalSensor
-{
-    public BlockTrafficLightSensorBelowGround() {
-        super( Material.ROCK );
-    }
+public class BlockTrafficLightSensorBelowGround extends AbstractBlockTrafficSignalSensor {
 
-    /**
-     * Retrieves the registry name of the block.
-     *
-     * @return The registry name of the block.
-     *
-     * @since 1.0
-     */
-    @Override
-    public String getBlockRegistryName() {
-        return "trafficlightsensorbelowground";
-    }
+  public BlockTrafficLightSensorBelowGround() {
+    super(Material.ROCK);
+  }
+
+  /**
+   * Retrieves the registry name of the block.
+   *
+   * @return The registry name of the block.
+   *
+   * @since 1.0
+   */
+  @Override
+  public String getBlockRegistryName() {
+    return "trafficlightsensorbelowground";
+  }
 }
 
