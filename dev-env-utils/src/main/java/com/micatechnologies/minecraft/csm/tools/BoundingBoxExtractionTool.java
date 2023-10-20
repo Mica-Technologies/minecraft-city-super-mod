@@ -1,34 +1,26 @@
-package com.micatechnologies.minecraft.csm;
+package com.micatechnologies.minecraft.csm.tools;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.micatechnologies.minecraft.csm.tools.tool_framework.CsmToolUtility;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
 
-public class BoundingBoxExtractor
+public class BoundingBoxExtractionTool
 {
 
     public static void main( String[] args ) {
-        System.out.println( "Running CSM Bounding Box Extractor Tool..." );
-
-        String modelFolderPath = "E:\\source\\repos\\minecraft-city-super-mod\\src\\main\\resources\\assets\\csm" +
-                "\\models\\custom";
-        String modelBoundingBoxFolderPath
-                = "E:\\source\\repos\\minecraft-city-super-mod\\dev-env-utils\\boundingBoxExtractorToolOutput";
-        File modelFolder = new File( modelFolderPath );
-        File modelBoundingBoxFolder = new File( modelBoundingBoxFolderPath );
-        try {
+        CsmToolUtility.doToolExecuteWrapped( "CSM Bounding Box Extractor Tool", args, ( devEnvironmentPath ) -> {
+            final String modelFolderPathRelative = "src/main/resources/assets/csm/models/custom";
+            final String modelBoundingBoxFolderPathRelative = "dev-env-utils/boundingBoxExtractorToolOutput";
+            File modelFolder = new File( devEnvironmentPath, modelFolderPathRelative );
+            File modelBoundingBoxFolder = new File( devEnvironmentPath, modelBoundingBoxFolderPathRelative );
             extractBoundingBoxFromModelsInFolder( modelFolder, modelBoundingBoxFolder );
-        }
-        catch ( IOException e ) {
-            System.err.println( "Failed to complete CSM Bounding Box Extractor Tool!" );
-        }
-
-        System.out.println( "Finished Running CSM Bounding Box Extractor Tool." );
+        } );
     }
 
     public static void extractBoundingBoxFromModelsInFolder( File modelFolder, File modelBoundingBoxFolder )
@@ -94,15 +86,15 @@ public class BoundingBoxExtractor
         FileUtils.writeStringToFile( boundingBoxFile, javaCode, false );
 
         // Rounded bounding box
-        minX = roundToSignificantValue(minX);
-        minY = roundToSignificantValue(minY);
-        minZ = roundToSignificantValue(minZ);
-        maxX = roundToSignificantValue(maxX);
-        maxY = roundToSignificantValue(maxY);
-        maxZ = roundToSignificantValue(maxZ);
+        minX = roundToSignificantValue( minX );
+        minY = roundToSignificantValue( minY );
+        minZ = roundToSignificantValue( minZ );
+        maxX = roundToSignificantValue( maxX );
+        maxY = roundToSignificantValue( maxY );
+        maxZ = roundToSignificantValue( maxZ );
 
         javaCode = fromJsonToJavaCode( new double[]{ minX, minY, minZ }, new double[]{ maxX, maxY, maxZ } );
-        File roundedBoundingBoxFile = new File( modelBoundingBoxFolder, modelName.replace( ".json","_rounded.json" ) );
+        File roundedBoundingBoxFile = new File( modelBoundingBoxFolder, modelName.replace( ".json", "_rounded.json" ) );
         FileUtils.writeStringToFile( roundedBoundingBoxFile, javaCode, false );
     }
 
@@ -135,20 +127,21 @@ public class BoundingBoxExtractor
         double y2 = to[ 1 ] / 16.0;
         double z2 = to[ 2 ] / 16.0;
 
-        return String.format( "    /**\n" +
-                                      "     * Retrieves the bounding box of the block.\n" +
-                                      "     *\n" +
-                                      "     * @param state  the block state\n" +
-                                      "     * @param source the block access\n" +
-                                      "     * @param pos    the block position\n" +
-                                      "     *\n" +
-                                      "     * @return The bounding box of the block.\n" +
-                                      "     *\n" +
-                                      "     * @since 1.0\n" +
-                                      "     */\n" +
-                                      "    @Override\n" +
-                                      "    public AxisAlignedBB getBlockBoundingBox( IBlockState state, IBlockAccess source, BlockPos pos ) {\n" +
-                                      "        return new AxisAlignedBB(%f, %f, %f, %f, %f, %f);\n" +
+        return String.format( "    /**\r\n" +
+                                      "     * Retrieves the bounding box of the block.\r\n" +
+                                      "     *\r\n" +
+                                      "     * @param state  the block state\r\n" +
+                                      "     * @param source the block access\r\n" +
+                                      "     * @param pos    the block position\r\n" +
+                                      "     *\r\n" +
+                                      "     * @return The bounding box of the block.\r\n" +
+                                      "     *\r\n" +
+                                      "     * @since 1.0\r\n" +
+                                      "     */\r\n" +
+                                      "    @Override\r\n" +
+                                      "    public AxisAlignedBB getBlockBoundingBox( IBlockState state, IBlockAccess " +
+                                      "source, BlockPos pos ) {\r\n" +
+                                      "        return new AxisAlignedBB(%f, %f, %f, %f, %f, %f);\r\n" +
                                       "    }", x1, y1, z1, x2, y2, z2 );
     }
 
