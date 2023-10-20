@@ -14,8 +14,9 @@ jobs:
       - name: Delete old pre-releases
         uses: dev-drprasad/delete-older-releases@v0.3.2
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          delete_expired_data: '90'    # Delete releases older than 90 days
-          delete_prelease_only: 'true'  # Only target pre-releases
-          keep_latest: '3'              # Keep the latest 3 pre-releases minimum
-          keep_min_download_counts: '5' # Keep all pre-releases with at least 5 downloads
+          delete_expired_data: '90'       # Delete releases older than 90 days
+          delete_prerelease_only: 'true'  # Only target pre-releases
+          keep_latest: '3'                # Keep the latest 3 pre-releases minimum
+          keep_min_download_counts: '5'   # Keep all pre-releases with at least 5 downloads
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
