@@ -1,6 +1,10 @@
 package com.micatechnologies.minecraft.csm.trafficsignals.logic;
 
 import com.google.common.collect.Lists;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.EnumFacing;
@@ -8,779 +12,785 @@ import net.minecraft.util.Tuple;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-import java.util.List;
-import java.util.Map;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-
 /**
- * Utility class for the {@link TrafficSignalControllerTicker} which provides core functionality to the various tick
- * methods without cluttering the class and possibly making it more difficult to interpret/understand.
+ * Utility class for the {@link TrafficSignalControllerTicker} which provides core functionality to
+ * the various tick methods without cluttering the class and possibly making it more difficult to
+ * interpret/understand.
  *
  * @author Mica Technologies
  * @version 1.0
  * @since 2023.2.0
  */
-public class TrafficSignalControllerTickerUtilities
-{
+public class TrafficSignalControllerTickerUtilities {
 
-    /**
-     * Gets the flashing don't walk transition phase for the transition from the specified current phase to the
-     * specified upcoming phase.
-     *
-     * @param currentPhase  The current phase.
-     * @param upcomingPhase The upcoming phase.
-     *
-     * @return The flashing don't walk transition phase for the transition from the specified current phase to the
-     *         specified upcoming phase.
-     *
-     * @since 1.0
-     */
-    public static TrafficSignalPhase getFlashDontWalkTransitionPhaseForUpcoming( TrafficSignalPhase currentPhase,
-                                                                                 TrafficSignalPhase upcomingPhase )
-    {
-        // Check for green walk signals in the current phase
-        TrafficSignalPhase flashDontWalkTransitionPhase = null;
-        if ( currentPhase.getWalkSignals().size() > 0 ) {
-            // Create the flash don't walk transition phase
-            TrafficSignalPhase tempFlashDontWalkTransitionPhase = new TrafficSignalPhase( currentPhase.getCircuit(),
-                                                                                          upcomingPhase,
-                                                                                          TrafficSignalPhaseApplicability.FLASH_DONT_WALK_TRANSITIONING );
+  /**
+   * Gets the flashing don't walk transition phase for the transition from the specified current
+   * phase to the specified upcoming phase.
+   *
+   * @param currentPhase  The current phase.
+   * @param upcomingPhase The upcoming phase.
+   *
+   * @return The flashing don't walk transition phase for the transition from the specified current
+   *     phase to the specified upcoming phase.
+   *
+   * @since 1.0
+   */
+  public static TrafficSignalPhase getFlashDontWalkTransitionPhaseForUpcoming(
+      TrafficSignalPhase currentPhase,
+      TrafficSignalPhase upcomingPhase) {
+    // Check for green walk signals in the current phase
+    TrafficSignalPhase flashDontWalkTransitionPhase = null;
+    if (currentPhase.getWalkSignals().size() > 0) {
+      // Create the flash don't walk transition phase
+      TrafficSignalPhase tempFlashDontWalkTransitionPhase =
+          new TrafficSignalPhase(currentPhase.getCircuit(),
+              upcomingPhase,
+              TrafficSignalPhaseApplicability.FLASH_DONT_WALK_TRANSITIONING);
 
-            // Add the current phase walk signals to the flash don't walk transition phase
-            boolean flashDontWalkSignalsAdded = false;
-            for ( BlockPos walkSignal : currentPhase.getWalkSignals() ) {
-                // Check if walk signal is still in walk state in the upcoming phase (stay in walk state)
-                if ( upcomingPhase.getWalkSignals().contains( walkSignal ) ) {
-                    // Add walk signal to flash don't walk transition phase (stay in walk state)
-                    tempFlashDontWalkTransitionPhase.addWalkSignal( walkSignal );
-                }
-                // Otherwise, walk signal is not in walk state in the upcoming phase (transition to don't walk state)
-                else {
-                    // Add don't walk signal to flash don't walk transition phase (transition to don't walk state)
-                    tempFlashDontWalkTransitionPhase.addFlashDontWalkSignal( walkSignal );
-                    flashDontWalkSignalsAdded = true;
-                }
-            }
-
-            // Check if flash don't walk signals were added to the flash don't walk transition phase
-            if ( flashDontWalkSignalsAdded ) {
-                // Build the rest of the phase (no need to do before and waste tick time otherwise)
-                // Copy the previous phase signals to the flash don't walk transition phase (except for walk signals)
-                tempFlashDontWalkTransitionPhase.addOffSignals( currentPhase.getOffSignals() );
-                tempFlashDontWalkTransitionPhase.addFyaSignals( currentPhase.getFyaSignals() );
-                tempFlashDontWalkTransitionPhase.addRedSignals( currentPhase.getRedSignals() );
-                tempFlashDontWalkTransitionPhase.addYellowSignals( currentPhase.getYellowSignals() );
-                tempFlashDontWalkTransitionPhase.addGreenSignals( currentPhase.getGreenSignals() );
-                tempFlashDontWalkTransitionPhase.addFlashDontWalkSignals( currentPhase.getFlashDontWalkSignals() );
-                tempFlashDontWalkTransitionPhase.addDontWalkSignals( currentPhase.getDontWalkSignals() );
-
-                // Set the flash don't walk transition phase
-                flashDontWalkTransitionPhase = tempFlashDontWalkTransitionPhase;
-            }
+      // Add the current phase walk signals to the flash don't walk transition phase
+      boolean flashDontWalkSignalsAdded = false;
+      for (BlockPos walkSignal : currentPhase.getWalkSignals()) {
+        // Check if walk signal is still in walk state in the upcoming phase (stay in walk state)
+        if (upcomingPhase.getWalkSignals().contains(walkSignal)) {
+          // Add walk signal to flash don't walk transition phase (stay in walk state)
+          tempFlashDontWalkTransitionPhase.addWalkSignal(walkSignal);
         }
-
-        // Return resulting flash don't walk transition phase (null if none)
-        return flashDontWalkTransitionPhase;
-    }
-
-    /**
-     * Gets the yellow transition phase for the transition from the specified current phase to the specified upcoming
-     * phase.
-     *
-     * @param currentPhase  The current phase.
-     * @param upcomingPhase The upcoming phase.
-     *
-     * @return The yellow transition phase for the transition from the specified current phase to the specified upcoming
-     *         phase.
-     *
-     * @since 1.0
-     */
-    public static TrafficSignalPhase getYellowTransitionPhaseForUpcoming( TrafficSignalPhase currentPhase,
-                                                                          TrafficSignalPhase upcomingPhase )
-    {
-        // Create the yellow transition phase
-        TrafficSignalPhase yellowTransitionPhase = new TrafficSignalPhase( currentPhase.getCircuit(), upcomingPhase,
-                                                                           TrafficSignalPhaseApplicability.YELLOW_TRANSITIONING );
-
-        // Copy the previous phase signals to the yellow transition phase (except for off/green/FYA signals)
-        yellowTransitionPhase.addRedSignals( currentPhase.getRedSignals() );
-        yellowTransitionPhase.addYellowSignals( currentPhase.getYellowSignals() );
-        yellowTransitionPhase.addWalkSignals( currentPhase.getWalkSignals() );
-        yellowTransitionPhase.addDontWalkSignals( currentPhase.getFlashDontWalkSignals() );
-        yellowTransitionPhase.addDontWalkSignals( currentPhase.getDontWalkSignals() );
-
-        // Add the current phase green signals to the yellow transition phase
-        for ( BlockPos greenSignal : currentPhase.getGreenSignals() ) {
-            // Check if green signal is still in green state in the upcoming phase (stay in green state)
-            if ( upcomingPhase.getGreenSignals().contains( greenSignal ) ) {
-                yellowTransitionPhase.addGreenSignal( greenSignal );
-            }
-            // Otherwise, green signal is not in green state in the upcoming phase (transition to yellow state)
-            else {
-                // Add off signal to yellow transition phase (transition to yellow state)
-                yellowTransitionPhase.addYellowSignal( greenSignal );
-            }
-        }
-
-        // Add the current phase FYA signals to the yellow transition phase
-        for ( BlockPos fyaSignal : currentPhase.getFyaSignals() ) {
-            // Check if FYA signal is still in FYA or green state in the upcoming phase (stay in FYA state)
-            if ( upcomingPhase.getFyaSignals().contains( fyaSignal ) ||
-                    upcomingPhase.getOffSignals().contains( fyaSignal ) ) {
-                yellowTransitionPhase.addFyaSignal( fyaSignal );
-            }
-            // Otherwise, FYA signal is not in FYA or green state in the upcoming phase (transition to yellow state)
-            else {
-                // Add off signal to yellow transition phase (transition to yellow state)
-                yellowTransitionPhase.addYellowSignal( fyaSignal );
-            }
-        }
-
-        // Add the current phase off signals to the yellow transition phase
-        for ( BlockPos offSignal : currentPhase.getOffSignals() ) {
-            // Check if off signal is still in off state in the upcoming phase (stay in off state)
-            if ( upcomingPhase.getOffSignals().contains( offSignal ) ) {
-                yellowTransitionPhase.addOffSignal( offSignal );
-            }
-            // Otherwise, off signal is not in off state in the upcoming phase (transition to yellow state)
-            else {
-                // Add off signal to yellow transition phase (transition to yellow state)
-                yellowTransitionPhase.addYellowSignal( offSignal );
-            }
-        }
-
-        // Return resulting yellow transition phase
-        return yellowTransitionPhase;
-    }
-
-    /**
-     * Gets the red transition phase for the transition from the specified current phase to the specified upcoming
-     * phase.
-     *
-     * @param currentPhase  The current phase.
-     * @param upcomingPhase The upcoming phase.
-     *
-     * @return The red transition phase for the transition from the specified current phase to the specified upcoming
-     *         phase.
-     *
-     * @since 1.0
-     */
-    public static TrafficSignalPhase getRedTransitionPhaseForUpcoming( TrafficSignalPhase currentPhase,
-                                                                       TrafficSignalPhase upcomingPhase )
-    {
-        // Create the red transition phase
-        TrafficSignalPhase redTransitionPhase = new TrafficSignalPhase( currentPhase.getCircuit(), upcomingPhase,
-                                                                        TrafficSignalPhaseApplicability.RED_TRANSITIONING );
-
-        // Copy the previous phase signals to the red transition phase (except for yellow signals)
-        redTransitionPhase.addOffSignals( currentPhase.getOffSignals() );
-        redTransitionPhase.addFyaSignals( currentPhase.getFyaSignals() );
-        redTransitionPhase.addRedSignals( currentPhase.getRedSignals() );
-        redTransitionPhase.addGreenSignals( currentPhase.getGreenSignals() );
-        redTransitionPhase.addWalkSignals( currentPhase.getWalkSignals() );
-        redTransitionPhase.addFlashDontWalkSignals( currentPhase.getFlashDontWalkSignals() );
-        redTransitionPhase.addDontWalkSignals( currentPhase.getDontWalkSignals() );
-
-        // Add the current phase yellow signals to the red transition phase
-        redTransitionPhase.addRedSignals( currentPhase.getYellowSignals() );
-
-        // Return resulting red transition phase
-        return redTransitionPhase;
-    }
-
-    /**
-     * Gets the default phase for the specified circuit number when the traffic signal controller is operating in
-     * {@link TrafficSignalControllerMode#NORMAL} mode.
-     *
-     * @param circuits                 The configured/connected circuits of the traffic signal controller.
-     * @param overlaps                 The {@link TrafficSignalControllerOverlaps} to apply to the specified
-     *                                 {@link TrafficSignalPhase}.
-     * @param circuitNumber            The circuit number to get the default phase for. This is a 1-based index.
-     * @param overlapPedestrianSignals The overlap pedestrian signals setting of the traffic signal controller. This
-     *                                 boolean value is used to determine if the pedestrian signals of all other
-     *                                 circuits should be overlapped when servicing a circuit.
-     *
-     * @return The default phase for the specified circuit number when the traffic signal controller is operating in
-     *         {@link TrafficSignalControllerMode#NORMAL} mode.
-     *
-     * @since 1.0
-     */
-    public static TrafficSignalPhase getDefaultPhaseForCircuitNumber( TrafficSignalControllerCircuits circuits,
-                                                                      TrafficSignalControllerOverlaps overlaps,
-                                                                      int circuitNumber,
-                                                                      boolean overlapPedestrianSignals )
-    {
-        // Only create a default phase if there are circuits
-        TrafficSignalPhase defaultPhase = null;
-        if ( circuits.getCircuitCount() > 0 ) {
-            // Check if circuit has protected signals
-            boolean hasProtectedSignals = circuits.getCircuit( circuitNumber - 1 ).getProtectedSignals().size() > 0;
-
-            // Get appropriate phase applicability
-            TrafficSignalPhaseApplicability phaseApplicability = TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS;
-            if ( hasProtectedSignals ) {
-                phaseApplicability = TrafficSignalPhaseApplicability.ALL_THROUGHS_PROTECTEDS;
-            }
-
-            // Create the default phase
-            defaultPhase = new TrafficSignalPhase( circuitNumber, null, phaseApplicability );
-            for ( int i = 1; i <= circuits.getCircuitCount(); i++ ) {
-                TrafficSignalControllerCircuit circuit = circuits.getCircuit( i - 1 );
-                if ( i == circuitNumber ) {
-                    defaultPhase.addFyaSignals( circuit.getFlashingLeftSignals() );
-                    defaultPhase.addRedSignals( circuit.getLeftSignals() );
-                    defaultPhase.addGreenSignals( circuit.getThroughSignals() );
-                    if ( hasProtectedSignals ) {
-                        defaultPhase.addFyaSignals( circuit.getFlashingRightSignals() );
-                        defaultPhase.addRedSignals( circuit.getRightSignals() );
-                        defaultPhase.addGreenSignals( circuit.getProtectedSignals() );
-                    }
-                    else {
-                        defaultPhase.addOffSignals( circuit.getFlashingRightSignals() );
-                        defaultPhase.addGreenSignals( circuit.getRightSignals() );
-                        defaultPhase.addRedSignals( circuit.getProtectedSignals() );
-                    }
-                    defaultPhase.addOffSignals( circuit.getPedestrianBeaconSignals() );
-                    defaultPhase.addDontWalkSignals( circuit.getPedestrianSignals() );
-                    defaultPhase.addDontWalkSignals( circuit.getPedestrianAccessorySignals() );
-                }
-                else {
-                    addCircuitToPhaseAllRed( circuit, defaultPhase, overlapPedestrianSignals );
-                }
-            }
-        }
-
-        // Add overlaps if necessary
-        defaultPhase = TrafficSignalControllerTickerUtilities.getPhaseWithOverlapsApplied( defaultPhase, overlaps );
-
-        return defaultPhase;
-    }
-
-    /**
-     * Utility method to add all signals from the specified {@link TrafficSignalControllerCircuit} to their respective
-     * red states in the specified {@link TrafficSignalPhase}.
-     *
-     * @param circuit               The circuit to add to the specified phase.
-     * @param destinationPhase      The phase to add the specified circuit to.
-     * @param pedestrianSignalsWalk The boolean indicating if the circuit's pedestrian signals should be set to walk or
-     *                              don't walk.
-     *
-     * @since 1.0
-     */
-    public static void addCircuitToPhaseAllRed( TrafficSignalControllerCircuit circuit,
-                                                TrafficSignalPhase destinationPhase,
-                                                boolean pedestrianSignalsWalk )
-    {
-        destinationPhase.addRedSignals( circuit.getFlashingLeftSignals() );
-        destinationPhase.addRedSignals( circuit.getFlashingRightSignals() );
-        destinationPhase.addRedSignals( circuit.getLeftSignals() );
-        destinationPhase.addRedSignals( circuit.getRightSignals() );
-        destinationPhase.addRedSignals( circuit.getThroughSignals() );
-        destinationPhase.addRedSignals( circuit.getProtectedSignals() );
-        destinationPhase.addRedSignals( circuit.getPedestrianBeaconSignals() );
-        if ( pedestrianSignalsWalk ) {
-            destinationPhase.addWalkSignals( circuit.getPedestrianSignals() );
-            destinationPhase.addWalkSignals( circuit.getPedestrianAccessorySignals() );
-        }
+        // Otherwise, walk signal is not in walk state in the upcoming phase (transition to don't
+        // walk state)
         else {
-            destinationPhase.addDontWalkSignals( circuit.getPedestrianSignals() );
-            destinationPhase.addDontWalkSignals( circuit.getPedestrianAccessorySignals() );
+          // Add don't walk signal to flash don't walk transition phase (transition to don't walk
+          // state)
+          tempFlashDontWalkTransitionPhase.addFlashDontWalkSignal(walkSignal);
+          flashDontWalkSignalsAdded = true;
         }
+      }
+
+      // Check if flash don't walk signals were added to the flash don't walk transition phase
+      if (flashDontWalkSignalsAdded) {
+        // Build the rest of the phase (no need to do before and waste tick time otherwise)
+        // Copy the previous phase signals to the flash don't walk transition phase (except for
+        // walk signals)
+        tempFlashDontWalkTransitionPhase.addOffSignals(currentPhase.getOffSignals());
+        tempFlashDontWalkTransitionPhase.addFyaSignals(currentPhase.getFyaSignals());
+        tempFlashDontWalkTransitionPhase.addRedSignals(currentPhase.getRedSignals());
+        tempFlashDontWalkTransitionPhase.addYellowSignals(currentPhase.getYellowSignals());
+        tempFlashDontWalkTransitionPhase.addGreenSignals(currentPhase.getGreenSignals());
+        tempFlashDontWalkTransitionPhase.addFlashDontWalkSignals(
+            currentPhase.getFlashDontWalkSignals());
+        tempFlashDontWalkTransitionPhase.addDontWalkSignals(currentPhase.getDontWalkSignals());
+
+        // Set the flash don't walk transition phase
+        flashDontWalkTransitionPhase = tempFlashDontWalkTransitionPhase;
+      }
     }
 
-    /**
-     * Gets the priority indicator of the upcoming phase to service. The priority indicator is a tuple containing the
-     * circuit number and the applicability of the upcoming phase to service.
-     *
-     * @param world                    The world where the traffic signal controller and devices are located.
-     * @param circuits                 The configured/connected circuits of the traffic signal controller.
-     * @param overlapPedestrianSignals The overlap pedestrian signals setting of the traffic signal controller. This
-     *                                 boolean value is used to determine if the pedestrian signals of all other
-     *                                 circuits should be overlapped when servicing a circuit.
-     *
-     * @return The priority indicator of the upcoming phase to service.
-     *
-     * @since 1.0
-     */
-    public static Tuple< Integer, TrafficSignalPhaseApplicability > getUpcomingPhasePriorityIndicator( World world,
-                                                                                                       TrafficSignalControllerCircuits circuits,
-                                                                                                       boolean overlapPedestrianSignals )
-    {
-        // Create variables to track the highest priority phase
-        int highestPriorityCircuitNumber = Integer.MIN_VALUE;
-        TrafficSignalPhaseApplicability highestPriorityPhaseApplicability = TrafficSignalPhaseApplicability.NONE;
-        int highestPriorityWaitingCount = 1;
+    // Return resulting flash don't walk transition phase (null if none)
+    return flashDontWalkTransitionPhase;
+  }
 
-        // Loop through all circuits to map pedestrian request counts
-        int[] pedestrianRequestCount = new int[ circuits.getCircuitCount() ];
-        for ( int i = circuits.getCircuitCount(); i > 0; i-- ) {
-            // Get the circuit
-            int i0 = i - 1;
-            TrafficSignalControllerCircuit circuit = circuits.getCircuit( i0 );
+  /**
+   * Gets the yellow transition phase for the transition from the specified current phase to the
+   * specified upcoming phase.
+   *
+   * @param currentPhase  The current phase.
+   * @param upcomingPhase The upcoming phase.
+   *
+   * @return The yellow transition phase for the transition from the specified current phase to the
+   *     specified upcoming phase.
+   *
+   * @since 1.0
+   */
+  public static TrafficSignalPhase getYellowTransitionPhaseForUpcoming(
+      TrafficSignalPhase currentPhase,
+      TrafficSignalPhase upcomingPhase) {
+    // Create the yellow transition phase
+    TrafficSignalPhase yellowTransitionPhase =
+        new TrafficSignalPhase(currentPhase.getCircuit(), upcomingPhase,
+            TrafficSignalPhaseApplicability.YELLOW_TRANSITIONING);
 
-            // Get pedestrian request count for circuit
-            int pedestrianAccessoriesRequestCount = circuit.getPedestrianAccessoriesRequestCount( world );
+    // Copy the previous phase signals to the yellow transition phase (except for off/green/FYA
+    // signals)
+    yellowTransitionPhase.addRedSignals(currentPhase.getRedSignals());
+    yellowTransitionPhase.addYellowSignals(currentPhase.getYellowSignals());
+    yellowTransitionPhase.addWalkSignals(currentPhase.getWalkSignals());
+    yellowTransitionPhase.addDontWalkSignals(currentPhase.getFlashDontWalkSignals());
+    yellowTransitionPhase.addDontWalkSignals(currentPhase.getDontWalkSignals());
 
-            // Store pedestrian request count for circuit
-            pedestrianRequestCount[ i0 ] = pedestrianAccessoriesRequestCount;
-        }
-
-        // Loop through all circuits
-        for ( int i = circuits.getCircuitCount(); i > 0; i-- ) {
-            // Get the circuit
-            int i0 = i - 1;
-            TrafficSignalControllerCircuit circuit = circuits.getCircuit( i0 );
-
-            // Get sensor summary for circuit
-            TrafficSignalSensorSummary sensorSummary = circuit.getSensorsWaitingSummary( world );
-
-            // Check circuit all left turn lanes detection count for highest priority
-            int allLeftTurnLanesDetectionCount = sensorSummary.getLeftTotal();
-            if ( allLeftTurnLanesDetectionCount >= highestPriorityWaitingCount ) {
-                highestPriorityCircuitNumber = i;
-                highestPriorityPhaseApplicability = TrafficSignalPhaseApplicability.ALL_LEFTS;
-                highestPriorityWaitingCount = allLeftTurnLanesDetectionCount;
-            }
-
-            // Check circuit east facing sensors detection count for highest priority
-            int eastFacingDetectionCount = sensorSummary.getNonProtectedTotalEast();
-            if ( eastFacingDetectionCount >= highestPriorityWaitingCount ) {
-                highestPriorityCircuitNumber = i;
-                highestPriorityPhaseApplicability = TrafficSignalPhaseApplicability.ALL_EAST;
-                highestPriorityWaitingCount = eastFacingDetectionCount;
-            }
-
-            // Check circuit west facing sensors detection count for highest priority
-            int westFacingDetectionCount = sensorSummary.getNonProtectedTotalWest();
-            if ( westFacingDetectionCount >= highestPriorityWaitingCount ) {
-                highestPriorityCircuitNumber = i;
-                highestPriorityPhaseApplicability = TrafficSignalPhaseApplicability.ALL_WEST;
-                highestPriorityWaitingCount = westFacingDetectionCount;
-            }
-
-            // Check circuit north facing sensors detection count for highest priority
-            int northFacingDetectionCount = sensorSummary.getNonProtectedTotalNorth();
-            if ( northFacingDetectionCount >= highestPriorityWaitingCount ) {
-                highestPriorityCircuitNumber = i;
-                highestPriorityPhaseApplicability = TrafficSignalPhaseApplicability.ALL_NORTH;
-                highestPriorityWaitingCount = northFacingDetectionCount;
-            }
-
-            // Check circuit south facing sensors detection count for highest priority
-            int southFacingDetectionCount = sensorSummary.getNonProtectedTotalSouth();
-            if ( southFacingDetectionCount >= highestPriorityWaitingCount ) {
-                highestPriorityCircuitNumber = i;
-                highestPriorityPhaseApplicability = TrafficSignalPhaseApplicability.ALL_SOUTH;
-                highestPriorityWaitingCount = southFacingDetectionCount;
-            }
-
-            // Check circuit pedestrian request count for highest priority
-            int pedestrianAccessoriesRequestCount = pedestrianRequestCount[ i0 ];
-            if ( pedestrianAccessoriesRequestCount >= highestPriorityWaitingCount ) {
-                highestPriorityCircuitNumber = -1;
-                highestPriorityPhaseApplicability = TrafficSignalPhaseApplicability.PEDESTRIAN;
-                highestPriorityWaitingCount = pedestrianAccessoriesRequestCount;
-            }
-
-            // Calculate the number of requests for services pedestrian overlaps
-            int pedestrianOverlapRequestCount = 0;
-            if ( overlapPedestrianSignals ) {
-                for ( int x = 0; x < pedestrianRequestCount.length; x++ ) {
-                    if ( x != i0 ) {
-                        pedestrianOverlapRequestCount += pedestrianRequestCount[ x ];
-                    }
-                }
-            }
-
-            // Check circuit through/protecteds detection count for highest priority
-            int throughsProtectedsDetectionCount = sensorSummary.getStandardTotal() +
-                    sensorSummary.getProtectedTotal() +
-                    pedestrianOverlapRequestCount;
-            if ( throughsProtectedsDetectionCount >= highestPriorityWaitingCount &&
-                    circuit.getProtectedSignals().size() > 0 ) {
-                highestPriorityCircuitNumber = i;
-                highestPriorityPhaseApplicability = TrafficSignalPhaseApplicability.ALL_THROUGHS_PROTECTEDS;
-                highestPriorityWaitingCount = throughsProtectedsDetectionCount;
-            }
-
-            // Check circuit through/rights detection count for highest priority
-            int throughsDetectionCount = sensorSummary.getStandardTotal() + pedestrianOverlapRequestCount;
-            if ( throughsDetectionCount >= highestPriorityWaitingCount ) {
-                highestPriorityCircuitNumber = i;
-                highestPriorityPhaseApplicability = TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS;
-                highestPriorityWaitingCount = throughsDetectionCount;
-            }
-
-            // Check circuit through/protected rights detection count for highest priority
-            int rawThroughsDetectionCount = sensorSummary.getStandardTotal();
-            if ( rawThroughsDetectionCount >= highestPriorityWaitingCount ) {
-                highestPriorityCircuitNumber = i;
-                highestPriorityPhaseApplicability = TrafficSignalPhaseApplicability.ALL_THROUGHS_PROTECTED_RIGHTS;
-                highestPriorityWaitingCount = rawThroughsDetectionCount;
-            }
-        }
-
-        // Return the highest priority phase (or null if none)
-        if ( highestPriorityCircuitNumber == Integer.MIN_VALUE ) {
-            return null;
-        }
-        else {
-            return new Tuple<>( highestPriorityCircuitNumber, highestPriorityPhaseApplicability );
-        }
+    // Add the current phase green signals to the yellow transition phase
+    for (BlockPos greenSignal : currentPhase.getGreenSignals()) {
+      // Check if green signal is still in green state in the upcoming phase (stay in green state)
+      if (upcomingPhase.getGreenSignals().contains(greenSignal)) {
+        yellowTransitionPhase.addGreenSignal(greenSignal);
+      }
+      // Otherwise, green signal is not in green state in the upcoming phase (transition to
+      // yellow state)
+      else {
+        // Add off signal to yellow transition phase (transition to yellow state)
+        yellowTransitionPhase.addYellowSignal(greenSignal);
+      }
     }
 
-    /**
-     * Gets the specified {@link TrafficSignalPhase} with all applicable overlaps applied.
-     *
-     * @param phase    The {@link TrafficSignalPhase} to apply overlaps to.
-     * @param overlaps The {@link TrafficSignalControllerOverlaps} to apply to the specified
-     *                 {@link TrafficSignalPhase}.
-     *
-     * @return The specified {@link TrafficSignalPhase} with all applicable overlaps applied.
-     *
-     * @since 1.0
-     */
-    public static TrafficSignalPhase getPhaseWithOverlapsApplied( TrafficSignalPhase phase,
-                                                                  TrafficSignalControllerOverlaps overlaps )
-    {
-        // Check if overlaps are configured
-        if ( overlaps == null || overlaps.getOverlapCount() == 0 ) {
-            return phase;
+    // Add the current phase FYA signals to the yellow transition phase
+    for (BlockPos fyaSignal : currentPhase.getFyaSignals()) {
+      // Check if FYA signal is still in FYA or green state in the upcoming phase (stay in FYA
+      // state)
+      if (upcomingPhase.getFyaSignals().contains(fyaSignal) ||
+          upcomingPhase.getOffSignals().contains(fyaSignal)) {
+        yellowTransitionPhase.addFyaSignal(fyaSignal);
+      }
+      // Otherwise, FYA signal is not in FYA or green state in the upcoming phase (transition to
+      // yellow state)
+      else {
+        // Add off signal to yellow transition phase (transition to yellow state)
+        yellowTransitionPhase.addYellowSignal(fyaSignal);
+      }
+    }
+
+    // Add the current phase off signals to the yellow transition phase
+    for (BlockPos offSignal : currentPhase.getOffSignals()) {
+      // Check if off signal is still in off state in the upcoming phase (stay in off state)
+      if (upcomingPhase.getOffSignals().contains(offSignal)) {
+        yellowTransitionPhase.addOffSignal(offSignal);
+      }
+      // Otherwise, off signal is not in off state in the upcoming phase (transition to yellow
+      // state)
+      else {
+        // Add off signal to yellow transition phase (transition to yellow state)
+        yellowTransitionPhase.addYellowSignal(offSignal);
+      }
+    }
+
+    // Return resulting yellow transition phase
+    return yellowTransitionPhase;
+  }
+
+  /**
+   * Gets the red transition phase for the transition from the specified current phase to the
+   * specified upcoming phase.
+   *
+   * @param currentPhase  The current phase.
+   * @param upcomingPhase The upcoming phase.
+   *
+   * @return The red transition phase for the transition from the specified current phase to the
+   *     specified upcoming phase.
+   *
+   * @since 1.0
+   */
+  public static TrafficSignalPhase getRedTransitionPhaseForUpcoming(TrafficSignalPhase currentPhase,
+      TrafficSignalPhase upcomingPhase) {
+    // Create the red transition phase
+    TrafficSignalPhase redTransitionPhase =
+        new TrafficSignalPhase(currentPhase.getCircuit(), upcomingPhase,
+            TrafficSignalPhaseApplicability.RED_TRANSITIONING);
+
+    // Copy the previous phase signals to the red transition phase (except for yellow signals)
+    redTransitionPhase.addOffSignals(currentPhase.getOffSignals());
+    redTransitionPhase.addFyaSignals(currentPhase.getFyaSignals());
+    redTransitionPhase.addRedSignals(currentPhase.getRedSignals());
+    redTransitionPhase.addGreenSignals(currentPhase.getGreenSignals());
+    redTransitionPhase.addWalkSignals(currentPhase.getWalkSignals());
+    redTransitionPhase.addFlashDontWalkSignals(currentPhase.getFlashDontWalkSignals());
+    redTransitionPhase.addDontWalkSignals(currentPhase.getDontWalkSignals());
+
+    // Add the current phase yellow signals to the red transition phase
+    redTransitionPhase.addRedSignals(currentPhase.getYellowSignals());
+
+    // Return resulting red transition phase
+    return redTransitionPhase;
+  }
+
+  /**
+   * Gets the default phase for the specified circuit number when the traffic signal controller is
+   * operating in {@link TrafficSignalControllerMode#NORMAL} mode.
+   *
+   * @param circuits                 The configured/connected circuits of the traffic signal
+   *                                 controller.
+   * @param overlaps                 The {@link TrafficSignalControllerOverlaps} to apply to the
+   *                                 specified {@link TrafficSignalPhase}.
+   * @param circuitNumber            The circuit number to get the default phase for. This is a
+   *                                 1-based index.
+   * @param overlapPedestrianSignals The overlap pedestrian signals setting of the traffic signal
+   *                                 controller. This boolean value is used to determine if the
+   *                                 pedestrian signals of all other circuits should be overlapped
+   *                                 when servicing a circuit.
+   *
+   * @return The default phase for the specified circuit number when the traffic signal controller
+   *     is operating in {@link TrafficSignalControllerMode#NORMAL} mode.
+   *
+   * @since 1.0
+   */
+  public static TrafficSignalPhase getDefaultPhaseForCircuitNumber(
+      TrafficSignalControllerCircuits circuits,
+      TrafficSignalControllerOverlaps overlaps,
+      int circuitNumber,
+      boolean overlapPedestrianSignals) {
+    // Only create a default phase if there are circuits
+    TrafficSignalPhase defaultPhase = null;
+    if (circuits.getCircuitCount() > 0) {
+      // Check if circuit has protected signals
+      boolean hasProtectedSignals =
+          circuits.getCircuit(circuitNumber - 1).getProtectedSignals().size() > 0;
+
+      // Get appropriate phase applicability
+      TrafficSignalPhaseApplicability phaseApplicability =
+          TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS;
+      if (hasProtectedSignals) {
+        phaseApplicability = TrafficSignalPhaseApplicability.ALL_THROUGHS_PROTECTEDS;
+      }
+
+      // Create the default phase
+      defaultPhase = new TrafficSignalPhase(circuitNumber, null, phaseApplicability);
+      for (int i = 1; i <= circuits.getCircuitCount(); i++) {
+        TrafficSignalControllerCircuit circuit = circuits.getCircuit(i - 1);
+        if (i == circuitNumber) {
+          defaultPhase.addFyaSignals(circuit.getFlashingLeftSignals());
+          defaultPhase.addRedSignals(circuit.getLeftSignals());
+          defaultPhase.addGreenSignals(circuit.getThroughSignals());
+          if (hasProtectedSignals) {
+            defaultPhase.addFyaSignals(circuit.getFlashingRightSignals());
+            defaultPhase.addRedSignals(circuit.getRightSignals());
+            defaultPhase.addGreenSignals(circuit.getProtectedSignals());
+          } else {
+            defaultPhase.addOffSignals(circuit.getFlashingRightSignals());
+            defaultPhase.addGreenSignals(circuit.getRightSignals());
+            defaultPhase.addRedSignals(circuit.getProtectedSignals());
+          }
+          defaultPhase.addOffSignals(circuit.getPedestrianBeaconSignals());
+          defaultPhase.addDontWalkSignals(circuit.getPedestrianSignals());
+          defaultPhase.addDontWalkSignals(circuit.getPedestrianAccessorySignals());
+        } else {
+          addCircuitToPhaseAllRed(circuit, defaultPhase, overlapPedestrianSignals);
         }
+      }
+    }
 
-        // Loop through each green signal in the phase
-        List< BlockPos > greenSignals = Lists.newArrayList( phase.getGreenSignals() );
-        for ( BlockPos greenSignal : greenSignals ) {
+    // Add overlaps if necessary
+    defaultPhase =
+        TrafficSignalControllerTickerUtilities.getPhaseWithOverlapsApplied(defaultPhase, overlaps);
 
-            // Get the overlap signals for the green signal
-            List< BlockPos > overlapSignals = overlaps.getOverlapsForSource( greenSignal );
+    return defaultPhase;
+  }
 
-            // Check if overlap signals were found
-            if ( overlapSignals != null ) {
+  /**
+   * Utility method to add all signals from the specified {@link TrafficSignalControllerCircuit} to
+   * their respective red states in the specified {@link TrafficSignalPhase}.
+   *
+   * @param circuit               The circuit to add to the specified phase.
+   * @param destinationPhase      The phase to add the specified circuit to.
+   * @param pedestrianSignalsWalk The boolean indicating if the circuit's pedestrian signals should
+   *                              be set to walk or don't walk.
+   *
+   * @since 1.0
+   */
+  public static void addCircuitToPhaseAllRed(TrafficSignalControllerCircuit circuit,
+      TrafficSignalPhase destinationPhase,
+      boolean pedestrianSignalsWalk) {
+    destinationPhase.addRedSignals(circuit.getFlashingLeftSignals());
+    destinationPhase.addRedSignals(circuit.getFlashingRightSignals());
+    destinationPhase.addRedSignals(circuit.getLeftSignals());
+    destinationPhase.addRedSignals(circuit.getRightSignals());
+    destinationPhase.addRedSignals(circuit.getThroughSignals());
+    destinationPhase.addRedSignals(circuit.getProtectedSignals());
+    destinationPhase.addRedSignals(circuit.getPedestrianBeaconSignals());
+    if (pedestrianSignalsWalk) {
+      destinationPhase.addWalkSignals(circuit.getPedestrianSignals());
+      destinationPhase.addWalkSignals(circuit.getPedestrianAccessorySignals());
+    } else {
+      destinationPhase.addDontWalkSignals(circuit.getPedestrianSignals());
+      destinationPhase.addDontWalkSignals(circuit.getPedestrianAccessorySignals());
+    }
+  }
 
-                // Loop through each overlap signal
-                overlapSignals.forEach( phase::moveOverlapSignalToGreen );
-            }
+  /**
+   * Gets the specified {@link TrafficSignalPhase} with all applicable overlaps applied.
+   *
+   * @param phase    The {@link TrafficSignalPhase} to apply overlaps to.
+   * @param overlaps The {@link TrafficSignalControllerOverlaps} to apply to the specified
+   *                 {@link TrafficSignalPhase}.
+   *
+   * @return The specified {@link TrafficSignalPhase} with all applicable overlaps applied.
+   *
+   * @since 1.0
+   */
+  public static TrafficSignalPhase getPhaseWithOverlapsApplied(TrafficSignalPhase phase,
+      TrafficSignalControllerOverlaps overlaps) {
+    // Check if overlaps are configured
+    if (overlaps == null || overlaps.getOverlapCount() == 0) {
+      return phase;
+    }
+
+    // Loop through each green signal in the phase
+    List<BlockPos> greenSignals = Lists.newArrayList(phase.getGreenSignals());
+    for (BlockPos greenSignal : greenSignals) {
+
+      // Get the overlap signals for the green signal
+      List<BlockPos> overlapSignals = overlaps.getOverlapsForSource(greenSignal);
+
+      // Check if overlap signals were found
+      if (overlapSignals != null) {
+
+        // Loop through each overlap signal
+        overlapSignals.forEach(phase::moveOverlapSignalToGreen);
+      }
+    }
+
+    // Return the updated phase
+    return phase;
+  }
+
+  /**
+   * Gets the priority indicator of the upcoming phase to service. The priority indicator is a tuple
+   * containing the circuit number and the applicability of the upcoming phase to service.
+   *
+   * @param world                    The world where the traffic signal controller and devices are
+   *                                 located.
+   * @param circuits                 The configured/connected circuits of the traffic signal
+   *                                 controller.
+   * @param overlapPedestrianSignals The overlap pedestrian signals setting of the traffic signal
+   *                                 controller. This boolean value is used to determine if the
+   *                                 pedestrian signals of all other circuits should be overlapped
+   *                                 when servicing a circuit.
+   *
+   * @return The priority indicator of the upcoming phase to service.
+   *
+   * @since 1.0
+   */
+  public static Tuple<Integer, TrafficSignalPhaseApplicability> getUpcomingPhasePriorityIndicator(
+      World world,
+      TrafficSignalControllerCircuits circuits,
+      boolean overlapPedestrianSignals) {
+    // Create variables to track the highest priority phase
+    int highestPriorityCircuitNumber = Integer.MIN_VALUE;
+    TrafficSignalPhaseApplicability highestPriorityPhaseApplicability =
+        TrafficSignalPhaseApplicability.NONE;
+    int highestPriorityWaitingCount = 1;
+
+    // Loop through all circuits to map pedestrian request counts
+    int[] pedestrianRequestCount = new int[circuits.getCircuitCount()];
+    for (int i = circuits.getCircuitCount(); i > 0; i--) {
+      // Get the circuit
+      int i0 = i - 1;
+      TrafficSignalControllerCircuit circuit = circuits.getCircuit(i0);
+
+      // Get pedestrian request count for circuit
+      int pedestrianAccessoriesRequestCount = circuit.getPedestrianAccessoriesRequestCount(world);
+
+      // Store pedestrian request count for circuit
+      pedestrianRequestCount[i0] = pedestrianAccessoriesRequestCount;
+    }
+
+    // Loop through all circuits
+    for (int i = circuits.getCircuitCount(); i > 0; i--) {
+      // Get the circuit
+      int i0 = i - 1;
+      TrafficSignalControllerCircuit circuit = circuits.getCircuit(i0);
+
+      // Get sensor summary for circuit
+      TrafficSignalSensorSummary sensorSummary = circuit.getSensorsWaitingSummary(world);
+
+      // Check circuit all left turn lanes detection count for highest priority
+      int allLeftTurnLanesDetectionCount = sensorSummary.getLeftTotal();
+      if (allLeftTurnLanesDetectionCount >= highestPriorityWaitingCount) {
+        highestPriorityCircuitNumber = i;
+        highestPriorityPhaseApplicability = TrafficSignalPhaseApplicability.ALL_LEFTS;
+        highestPriorityWaitingCount = allLeftTurnLanesDetectionCount;
+      }
+
+      // Check circuit east facing sensors detection count for highest priority
+      int eastFacingDetectionCount = sensorSummary.getNonProtectedTotalEast();
+      if (eastFacingDetectionCount >= highestPriorityWaitingCount) {
+        highestPriorityCircuitNumber = i;
+        highestPriorityPhaseApplicability = TrafficSignalPhaseApplicability.ALL_EAST;
+        highestPriorityWaitingCount = eastFacingDetectionCount;
+      }
+
+      // Check circuit west facing sensors detection count for highest priority
+      int westFacingDetectionCount = sensorSummary.getNonProtectedTotalWest();
+      if (westFacingDetectionCount >= highestPriorityWaitingCount) {
+        highestPriorityCircuitNumber = i;
+        highestPriorityPhaseApplicability = TrafficSignalPhaseApplicability.ALL_WEST;
+        highestPriorityWaitingCount = westFacingDetectionCount;
+      }
+
+      // Check circuit north facing sensors detection count for highest priority
+      int northFacingDetectionCount = sensorSummary.getNonProtectedTotalNorth();
+      if (northFacingDetectionCount >= highestPriorityWaitingCount) {
+        highestPriorityCircuitNumber = i;
+        highestPriorityPhaseApplicability = TrafficSignalPhaseApplicability.ALL_NORTH;
+        highestPriorityWaitingCount = northFacingDetectionCount;
+      }
+
+      // Check circuit south facing sensors detection count for highest priority
+      int southFacingDetectionCount = sensorSummary.getNonProtectedTotalSouth();
+      if (southFacingDetectionCount >= highestPriorityWaitingCount) {
+        highestPriorityCircuitNumber = i;
+        highestPriorityPhaseApplicability = TrafficSignalPhaseApplicability.ALL_SOUTH;
+        highestPriorityWaitingCount = southFacingDetectionCount;
+      }
+
+      // Check circuit pedestrian request count for highest priority
+      int pedestrianAccessoriesRequestCount = pedestrianRequestCount[i0];
+      if (pedestrianAccessoriesRequestCount >= highestPriorityWaitingCount) {
+        highestPriorityCircuitNumber = -1;
+        highestPriorityPhaseApplicability = TrafficSignalPhaseApplicability.PEDESTRIAN;
+        highestPriorityWaitingCount = pedestrianAccessoriesRequestCount;
+      }
+
+      // Calculate the number of requests for services pedestrian overlaps
+      int pedestrianOverlapRequestCount = 0;
+      if (overlapPedestrianSignals) {
+        for (int x = 0; x < pedestrianRequestCount.length; x++) {
+          if (x != i0) {
+            pedestrianOverlapRequestCount += pedestrianRequestCount[x];
+          }
         }
+      }
 
-        // Return the updated phase
-        return phase;
+      // Check circuit through/protecteds detection count for highest priority
+      int throughsProtectedsDetectionCount = sensorSummary.getStandardTotal() +
+          sensorSummary.getProtectedTotal() +
+          pedestrianOverlapRequestCount;
+      if (throughsProtectedsDetectionCount >= highestPriorityWaitingCount &&
+          circuit.getProtectedSignals().size() > 0) {
+        highestPriorityCircuitNumber = i;
+        highestPriorityPhaseApplicability = TrafficSignalPhaseApplicability.ALL_THROUGHS_PROTECTEDS;
+        highestPriorityWaitingCount = throughsProtectedsDetectionCount;
+      }
+
+      // Check circuit through/rights detection count for highest priority
+      int throughsDetectionCount = sensorSummary.getStandardTotal() + pedestrianOverlapRequestCount;
+      if (throughsDetectionCount >= highestPriorityWaitingCount) {
+        highestPriorityCircuitNumber = i;
+        highestPriorityPhaseApplicability = TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS;
+        highestPriorityWaitingCount = throughsDetectionCount;
+      }
+
+      // Check circuit through/protected rights detection count for highest priority
+      int rawThroughsDetectionCount = sensorSummary.getStandardTotal();
+      if (rawThroughsDetectionCount >= highestPriorityWaitingCount) {
+        highestPriorityCircuitNumber = i;
+        highestPriorityPhaseApplicability =
+            TrafficSignalPhaseApplicability.ALL_THROUGHS_PROTECTED_RIGHTS;
+        highestPriorityWaitingCount = rawThroughsDetectionCount;
+      }
     }
 
-    /**
-     * Gets the upcoming {@link TrafficSignalPhase} to service based on the specified priority indicator.
-     *
-     * @param world                    The world where the traffic signal controller and devices are located.
-     * @param circuits                 The configured/connected circuits of the traffic signal controller.
-     * @param overlaps                 The {@link TrafficSignalControllerOverlaps} to apply to the specified
-     *                                 {@link TrafficSignalPhase}.
-     * @param priorityIndicator        The priority indicator of the upcoming phase to service.
-     * @param overlapPedestrianSignals The overlap pedestrian signals setting of the traffic signal controller. This
-     *                                 boolean value is used to determine if the pedestrian signals of all other
-     *                                 circuits should be overlapped when servicing a circuit.
-     *
-     * @return The upcoming {@link TrafficSignalPhase} to service based on the specified priority indicator.
-     *
-     * @since 1.0
-     */
-    public static TrafficSignalPhase getUpcomingPhaseForPriorityIndicator( World world,
-                                                                           TrafficSignalControllerCircuits circuits,
-                                                                           TrafficSignalControllerOverlaps overlaps,
-                                                                           Tuple< Integer, TrafficSignalPhaseApplicability > priorityIndicator,
-                                                                           boolean overlapPedestrianSignals )
-    {
-        // Get the circuit number and phase applicability from the priority indicator
-        int circuitNumber = priorityIndicator.getFirst();
-        TrafficSignalPhaseApplicability phaseApplicability = priorityIndicator.getSecond();
+    // Return the highest priority phase (or null if none)
+    if (highestPriorityCircuitNumber == Integer.MIN_VALUE) {
+      return null;
+    } else {
+      return new Tuple<>(highestPriorityCircuitNumber, highestPriorityPhaseApplicability);
+    }
+  }
 
-        // Create the upcoming phase object
-        TrafficSignalPhase upcomingPhase = new TrafficSignalPhase( circuitNumber, phaseApplicability );
+  /**
+   * Gets the upcoming {@link TrafficSignalPhase} to service based on the specified priority
+   * indicator.
+   *
+   * @param world                    The world where the traffic signal controller and devices are
+   *                                 located.
+   * @param circuits                 The configured/connected circuits of the traffic signal
+   *                                 controller.
+   * @param overlaps                 The {@link TrafficSignalControllerOverlaps} to apply to the
+   *                                 specified {@link TrafficSignalPhase}.
+   * @param priorityIndicator        The priority indicator of the upcoming phase to service.
+   * @param overlapPedestrianSignals The overlap pedestrian signals setting of the traffic signal
+   *                                 controller. This boolean value is used to determine if the
+   *                                 pedestrian signals of all other circuits should be overlapped
+   *                                 when servicing a circuit.
+   *
+   * @return The upcoming {@link TrafficSignalPhase} to service based on the specified priority
+   *     indicator.
+   *
+   * @since 1.0
+   */
+  public static TrafficSignalPhase getUpcomingPhaseForPriorityIndicator(World world,
+      TrafficSignalControllerCircuits circuits,
+      TrafficSignalControllerOverlaps overlaps,
+      Tuple<Integer, TrafficSignalPhaseApplicability> priorityIndicator,
+      boolean overlapPedestrianSignals) {
+    // Get the circuit number and phase applicability from the priority indicator
+    int circuitNumber = priorityIndicator.getFirst();
+    TrafficSignalPhaseApplicability phaseApplicability = priorityIndicator.getSecond();
 
-        // Loop through all circuits
-        for ( int i = 1; i <= circuits.getCircuitCount(); i++ ) {
-            // Get the circuit
-            TrafficSignalControllerCircuit circuit = circuits.getCircuit( i - 1 );
+    // Create the upcoming phase object
+    TrafficSignalPhase upcomingPhase = new TrafficSignalPhase(circuitNumber, phaseApplicability);
 
-            // Handle dedicated pedestrian phase applicability
-            if ( phaseApplicability == TrafficSignalPhaseApplicability.PEDESTRIAN ) {
-                boolean pedestrianSignalsWalk = true;
-                addCircuitToPhaseAllRed( circuit, upcomingPhase, pedestrianSignalsWalk );
-            }
-            // Handle all left turn lanes phase applicability
-            else if ( phaseApplicability == TrafficSignalPhaseApplicability.ALL_LEFTS ) {
-                if ( i == circuitNumber ) {
-                    upcomingPhase.addOffSignals( circuit.getFlashingLeftSignals() );
-                    upcomingPhase.addRedSignals( circuit.getFlashingRightSignals() );
-                    upcomingPhase.addGreenSignals( circuit.getLeftSignals() );
-                    upcomingPhase.addRedSignals( circuit.getRightSignals() );
-                    upcomingPhase.addRedSignals( circuit.getThroughSignals() );
-                    upcomingPhase.addRedSignals( circuit.getProtectedSignals() );
-                    upcomingPhase.addRedSignals( circuit.getPedestrianBeaconSignals() );
-                    upcomingPhase.addDontWalkSignals( circuit.getPedestrianSignals() );
-                    upcomingPhase.addDontWalkSignals( circuit.getPedestrianAccessorySignals() );
-                }
-                else {
-                    boolean pedestrianSignalsWalk = false;
-                    addCircuitToPhaseAllRed( circuit, upcomingPhase, pedestrianSignalsWalk );
-                }
-            }
-            // Handle all east facing lanes phase applicability
-            else if ( phaseApplicability == TrafficSignalPhaseApplicability.ALL_EAST ) {
-                if ( i == circuitNumber ) {
-                    addActiveCircuitToDirectionalGreenPhase( world, circuit, upcomingPhase, EnumFacing.EAST );
-                }
-                else {
-                    boolean pedestrianSignalsWalk = false;
-                    addCircuitToPhaseAllRed( circuit, upcomingPhase, pedestrianSignalsWalk );
-                }
-            }
-            // Handle all west facing lanes phase applicability
-            else if ( phaseApplicability == TrafficSignalPhaseApplicability.ALL_WEST ) {
-                if ( i == circuitNumber ) {
-                    addActiveCircuitToDirectionalGreenPhase( world, circuit, upcomingPhase, EnumFacing.WEST );
-                }
-                else {
-                    boolean pedestrianSignalsWalk = false;
-                    addCircuitToPhaseAllRed( circuit, upcomingPhase, pedestrianSignalsWalk );
-                }
-            }
-            // Handle all north facing lanes phase applicability
-            else if ( phaseApplicability == TrafficSignalPhaseApplicability.ALL_NORTH ) {
-                if ( i == circuitNumber ) {
-                    addActiveCircuitToDirectionalGreenPhase( world, circuit, upcomingPhase, EnumFacing.NORTH );
-                }
-                else {
-                    boolean pedestrianSignalsWalk = false;
-                    addCircuitToPhaseAllRed( circuit, upcomingPhase, pedestrianSignalsWalk );
-                }
-            }
-            // Handle all south facing lanes phase applicability
-            else if ( phaseApplicability == TrafficSignalPhaseApplicability.ALL_SOUTH ) {
-                if ( i == circuitNumber ) {
-                    addActiveCircuitToDirectionalGreenPhase( world, circuit, upcomingPhase, EnumFacing.SOUTH );
-                }
-                else {
-                    boolean pedestrianSignalsWalk = false;
-                    addCircuitToPhaseAllRed( circuit, upcomingPhase, pedestrianSignalsWalk );
-                }
-            }
-            // Handle all throughs and rights phase applicability
-            else if ( phaseApplicability == TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS ) {
-                if ( i == circuitNumber ) {
-                    upcomingPhase.addGreenSignals( circuit.getThroughSignals() );
-                    upcomingPhase.addRedSignals( circuit.getProtectedSignals() );
-                    upcomingPhase.addOffSignals( circuit.getPedestrianBeaconSignals() );
-                    upcomingPhase.addDontWalkSignals( circuit.getPedestrianSignals() );
-                    upcomingPhase.addDontWalkSignals( circuit.getPedestrianAccessorySignals() );
-                    if ( overlapPedestrianSignals ) {
-                        upcomingPhase.addFyaSignals( circuit.getFlashingRightSignals() );
-                        upcomingPhase.addRedSignals( circuit.getRightSignals() );
-                        upcomingPhase.addFyaSignals( circuit.getFlashingLeftSignals() );
-                        upcomingPhase.addRedSignals( circuit.getLeftSignals() );
-                    }
-                    else {
-                        upcomingPhase.addOffSignals( circuit.getFlashingRightSignals() );
-                        upcomingPhase.addGreenSignals( circuit.getRightSignals() );
-                        if ( circuit.areSignalsFacingSameDirection( world ) ) {
-                            upcomingPhase.addOffSignals( circuit.getFlashingLeftSignals() );
-                            upcomingPhase.addGreenSignals( circuit.getLeftSignals() );
-                        }
-                        else {
-                            upcomingPhase.addFyaSignals( circuit.getFlashingLeftSignals() );
-                            upcomingPhase.addRedSignals( circuit.getLeftSignals() );
-                        }
-                    }
-                }
-                else {
-                    addCircuitToPhaseAllRed( circuit, upcomingPhase, overlapPedestrianSignals );
-                }
-            }
-            // Handle all throughs and protected rights phase applicability
-            else if ( phaseApplicability == TrafficSignalPhaseApplicability.ALL_THROUGHS_PROTECTED_RIGHTS ) {
-                if ( i == circuitNumber ) {
-                    upcomingPhase.addOffSignals( circuit.getFlashingRightSignals() );
-                    upcomingPhase.addGreenSignals( circuit.getRightSignals() );
-                    upcomingPhase.addGreenSignals( circuit.getThroughSignals() );
-                    upcomingPhase.addRedSignals( circuit.getProtectedSignals() );
-                    upcomingPhase.addOffSignals( circuit.getPedestrianBeaconSignals() );
-                    upcomingPhase.addDontWalkSignals( circuit.getPedestrianSignals() );
-                    upcomingPhase.addDontWalkSignals( circuit.getPedestrianAccessorySignals() );
-                    if ( circuit.areSignalsFacingSameDirection( world ) ) {
-                        upcomingPhase.addOffSignals( circuit.getFlashingLeftSignals() );
-                        upcomingPhase.addGreenSignals( circuit.getLeftSignals() );
-                    }
-                    else {
-                        upcomingPhase.addFyaSignals( circuit.getFlashingLeftSignals() );
-                        upcomingPhase.addRedSignals( circuit.getLeftSignals() );
-                    }
-                }
-                else {
-                    boolean pedestrianSignalsWalk = false;
-                    addCircuitToPhaseAllRed( circuit, upcomingPhase, pedestrianSignalsWalk );
-                }
-            }
-            // Handle all throughs and protecteds phase applicability
-            else if ( phaseApplicability == TrafficSignalPhaseApplicability.ALL_THROUGHS_PROTECTEDS ) {
-                if ( i == circuitNumber ) {
-                    upcomingPhase.addFyaSignals( circuit.getFlashingLeftSignals() );
-                    upcomingPhase.addFyaSignals( circuit.getFlashingRightSignals() );
-                    upcomingPhase.addRedSignals( circuit.getLeftSignals() );
-                    upcomingPhase.addRedSignals( circuit.getRightSignals() );
-                    upcomingPhase.addGreenSignals( circuit.getThroughSignals() );
-                    upcomingPhase.addGreenSignals( circuit.getProtectedSignals() );
-                    upcomingPhase.addOffSignals( circuit.getPedestrianBeaconSignals() );
-                    upcomingPhase.addDontWalkSignals( circuit.getPedestrianSignals() );
-                    upcomingPhase.addDontWalkSignals( circuit.getPedestrianAccessorySignals() );
-                }
-                else {
-                    addCircuitToPhaseAllRed( circuit, upcomingPhase, overlapPedestrianSignals );
-                }
-            }
-            else {
-                throw new IllegalStateException( "Encountered an improper phase applicability during standard " +
-                                                         "operation: " +
-                                                         phaseApplicability );
-            }
+    // Loop through all circuits
+    for (int i = 1; i <= circuits.getCircuitCount(); i++) {
+      // Get the circuit
+      TrafficSignalControllerCircuit circuit = circuits.getCircuit(i - 1);
 
+      // Handle dedicated pedestrian phase applicability
+      if (phaseApplicability == TrafficSignalPhaseApplicability.PEDESTRIAN) {
+        boolean pedestrianSignalsWalk = true;
+        addCircuitToPhaseAllRed(circuit, upcomingPhase, pedestrianSignalsWalk);
+      }
+      // Handle all left turn lanes phase applicability
+      else if (phaseApplicability == TrafficSignalPhaseApplicability.ALL_LEFTS) {
+        if (i == circuitNumber) {
+          upcomingPhase.addOffSignals(circuit.getFlashingLeftSignals());
+          upcomingPhase.addRedSignals(circuit.getFlashingRightSignals());
+          upcomingPhase.addGreenSignals(circuit.getLeftSignals());
+          upcomingPhase.addRedSignals(circuit.getRightSignals());
+          upcomingPhase.addRedSignals(circuit.getThroughSignals());
+          upcomingPhase.addRedSignals(circuit.getProtectedSignals());
+          upcomingPhase.addRedSignals(circuit.getPedestrianBeaconSignals());
+          upcomingPhase.addDontWalkSignals(circuit.getPedestrianSignals());
+          upcomingPhase.addDontWalkSignals(circuit.getPedestrianAccessorySignals());
+        } else {
+          boolean pedestrianSignalsWalk = false;
+          addCircuitToPhaseAllRed(circuit, upcomingPhase, pedestrianSignalsWalk);
         }
-
-        // Add overlaps if necessary
-        upcomingPhase = TrafficSignalControllerTickerUtilities.getPhaseWithOverlapsApplied( upcomingPhase, overlaps );
-
-        // Return the upcoming phase
-        return upcomingPhase;
-    }
-
-    /**
-     * Utility method to filter signals in the specified {@link List<BlockPos>} by their facing direction. This method
-     * will return a {@link Tuple} containing two {@link List<BlockPos>}, the first containing the signals that are
-     * facing the specified direction, and the second containing the signals that are not facing the specified
-     * direction.
-     *
-     * @param world            The world where the traffic signal controller and devices are located.
-     * @param signalBlockPoses The {@link List<BlockPos>} containing the signals to filter.
-     * @param enumFacing       The {@link EnumFacing} to filter the signals by.
-     *
-     * @return A {@link Tuple} containing two {@link List<BlockPos>}, the first containing the signals that are facing
-     *         the specified direction, and the second containing the signals that are not facing the specified
-     *         direction.
-     *
-     * @since 1.0
-     */
-    public static Tuple< List< BlockPos >, List< BlockPos > > filterSignalsByFacingDirection( World world,
-                                                                                              List< BlockPos > signalBlockPoses,
-                                                                                              EnumFacing enumFacing )
-    {
-        // Create facing direction stream collector predicate
-        Predicate< BlockPos > facingDirectionPredicate = signalPos -> {
-            IBlockState blockState = world.getBlockState( signalPos );
-            EnumFacing sensorFacingDirection = blockState.getValue( BlockHorizontal.FACING );
-            return sensorFacingDirection == enumFacing;
-        };
-
-        // Partition the signal list by the facing direction predicate
-        Map< Boolean, List< BlockPos > > filteredSignalLists = signalBlockPoses.stream()
-                                                                               .collect( ( Collectors.partitioningBy(
-                                                                                       facingDirectionPredicate ) ) );
-
-        // Return the filtered signal lists
-        return new Tuple<>( filteredSignalLists.get( true ), filteredSignalLists.get( false ) );
-    }
-
-    /**
-     * Utility method to filter signals in the specified {@link List<BlockPos>} by whether they should flash. This
-     * method will return a {@link Tuple} containing two {@link List<BlockPos>}, the first containing the signals that
-     * should flash, and the second containing the signals that should not flash.
-     *
-     * @param world            The world where the traffic signal controller and devices are located.
-     * @param signalBlockPoses The {@link List<BlockPos>} containing the signals to filter.
-     *
-     * @return A {@link Tuple} containing two {@link List<BlockPos>}, the first containing the signals that should
-     *         flash, and the second containing the signals that should not flash.
-     *
-     * @since 1.0
-     */
-    public static Tuple< List< BlockPos >, List< BlockPos > > filterSignalsByShouldFlash( World world,
-                                                                                          List< BlockPos > signalBlockPoses )
-    {
-        // Create flash enabled stream collector predicate
-        Predicate< BlockPos > flashEnabledPredicate = signalPos -> {
-            boolean shouldFlash = false;
-            if ( world != null ) {
-                IBlockState blockState = world.getBlockState( signalPos );
-                if ( blockState.getBlock() instanceof AbstractBlockControllableSignal ) {
-                    shouldFlash = ( ( AbstractBlockControllableSignal ) blockState.getBlock() ).doesFlash();
-                }
+      }
+      // Handle all east facing lanes phase applicability
+      else if (phaseApplicability == TrafficSignalPhaseApplicability.ALL_EAST) {
+        if (i == circuitNumber) {
+          addActiveCircuitToDirectionalGreenPhase(world, circuit, upcomingPhase, EnumFacing.EAST);
+        } else {
+          boolean pedestrianSignalsWalk = false;
+          addCircuitToPhaseAllRed(circuit, upcomingPhase, pedestrianSignalsWalk);
+        }
+      }
+      // Handle all west facing lanes phase applicability
+      else if (phaseApplicability == TrafficSignalPhaseApplicability.ALL_WEST) {
+        if (i == circuitNumber) {
+          addActiveCircuitToDirectionalGreenPhase(world, circuit, upcomingPhase, EnumFacing.WEST);
+        } else {
+          boolean pedestrianSignalsWalk = false;
+          addCircuitToPhaseAllRed(circuit, upcomingPhase, pedestrianSignalsWalk);
+        }
+      }
+      // Handle all north facing lanes phase applicability
+      else if (phaseApplicability == TrafficSignalPhaseApplicability.ALL_NORTH) {
+        if (i == circuitNumber) {
+          addActiveCircuitToDirectionalGreenPhase(world, circuit, upcomingPhase, EnumFacing.NORTH);
+        } else {
+          boolean pedestrianSignalsWalk = false;
+          addCircuitToPhaseAllRed(circuit, upcomingPhase, pedestrianSignalsWalk);
+        }
+      }
+      // Handle all south facing lanes phase applicability
+      else if (phaseApplicability == TrafficSignalPhaseApplicability.ALL_SOUTH) {
+        if (i == circuitNumber) {
+          addActiveCircuitToDirectionalGreenPhase(world, circuit, upcomingPhase, EnumFacing.SOUTH);
+        } else {
+          boolean pedestrianSignalsWalk = false;
+          addCircuitToPhaseAllRed(circuit, upcomingPhase, pedestrianSignalsWalk);
+        }
+      }
+      // Handle all throughs and rights phase applicability
+      else if (phaseApplicability == TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS) {
+        if (i == circuitNumber) {
+          upcomingPhase.addGreenSignals(circuit.getThroughSignals());
+          upcomingPhase.addRedSignals(circuit.getProtectedSignals());
+          upcomingPhase.addOffSignals(circuit.getPedestrianBeaconSignals());
+          upcomingPhase.addDontWalkSignals(circuit.getPedestrianSignals());
+          upcomingPhase.addDontWalkSignals(circuit.getPedestrianAccessorySignals());
+          if (overlapPedestrianSignals) {
+            upcomingPhase.addFyaSignals(circuit.getFlashingRightSignals());
+            upcomingPhase.addRedSignals(circuit.getRightSignals());
+            upcomingPhase.addFyaSignals(circuit.getFlashingLeftSignals());
+            upcomingPhase.addRedSignals(circuit.getLeftSignals());
+          } else {
+            upcomingPhase.addOffSignals(circuit.getFlashingRightSignals());
+            upcomingPhase.addGreenSignals(circuit.getRightSignals());
+            if (circuit.areSignalsFacingSameDirection(world)) {
+              upcomingPhase.addOffSignals(circuit.getFlashingLeftSignals());
+              upcomingPhase.addGreenSignals(circuit.getLeftSignals());
+            } else {
+              upcomingPhase.addFyaSignals(circuit.getFlashingLeftSignals());
+              upcomingPhase.addRedSignals(circuit.getLeftSignals());
             }
-            else {
-                shouldFlash = true;
-            }
-            return shouldFlash;
-        };
+          }
+        } else {
+          addCircuitToPhaseAllRed(circuit, upcomingPhase, overlapPedestrianSignals);
+        }
+      }
+      // Handle all throughs and protected rights phase applicability
+      else if (phaseApplicability
+          == TrafficSignalPhaseApplicability.ALL_THROUGHS_PROTECTED_RIGHTS) {
+        if (i == circuitNumber) {
+          upcomingPhase.addOffSignals(circuit.getFlashingRightSignals());
+          upcomingPhase.addGreenSignals(circuit.getRightSignals());
+          upcomingPhase.addGreenSignals(circuit.getThroughSignals());
+          upcomingPhase.addRedSignals(circuit.getProtectedSignals());
+          upcomingPhase.addOffSignals(circuit.getPedestrianBeaconSignals());
+          upcomingPhase.addDontWalkSignals(circuit.getPedestrianSignals());
+          upcomingPhase.addDontWalkSignals(circuit.getPedestrianAccessorySignals());
+          if (circuit.areSignalsFacingSameDirection(world)) {
+            upcomingPhase.addOffSignals(circuit.getFlashingLeftSignals());
+            upcomingPhase.addGreenSignals(circuit.getLeftSignals());
+          } else {
+            upcomingPhase.addFyaSignals(circuit.getFlashingLeftSignals());
+            upcomingPhase.addRedSignals(circuit.getLeftSignals());
+          }
+        } else {
+          boolean pedestrianSignalsWalk = false;
+          addCircuitToPhaseAllRed(circuit, upcomingPhase, pedestrianSignalsWalk);
+        }
+      }
+      // Handle all throughs and protecteds phase applicability
+      else if (phaseApplicability == TrafficSignalPhaseApplicability.ALL_THROUGHS_PROTECTEDS) {
+        if (i == circuitNumber) {
+          upcomingPhase.addFyaSignals(circuit.getFlashingLeftSignals());
+          upcomingPhase.addFyaSignals(circuit.getFlashingRightSignals());
+          upcomingPhase.addRedSignals(circuit.getLeftSignals());
+          upcomingPhase.addRedSignals(circuit.getRightSignals());
+          upcomingPhase.addGreenSignals(circuit.getThroughSignals());
+          upcomingPhase.addGreenSignals(circuit.getProtectedSignals());
+          upcomingPhase.addOffSignals(circuit.getPedestrianBeaconSignals());
+          upcomingPhase.addDontWalkSignals(circuit.getPedestrianSignals());
+          upcomingPhase.addDontWalkSignals(circuit.getPedestrianAccessorySignals());
+        } else {
+          addCircuitToPhaseAllRed(circuit, upcomingPhase, overlapPedestrianSignals);
+        }
+      } else {
+        throw new IllegalStateException(
+            "Encountered an improper phase applicability during standard " +
+                "operation: " +
+                phaseApplicability);
+      }
 
-        // Partition the signal list by the flash enabled predicate
-        Map< Boolean, List< BlockPos > > filteredSignalLists = signalBlockPoses.stream()
-                                                                               .collect( ( Collectors.partitioningBy(
-                                                                                       flashEnabledPredicate ) ) );
-
-        // Return the filtered signal lists
-        return new Tuple<>( filteredSignalLists.get( true ), filteredSignalLists.get( false ) );
     }
 
-    /**
-     * Utility method to add all signals from the specified active {@link TrafficSignalControllerCircuit} to their
-     * respective states (green or red) in the specified {@link TrafficSignalPhase} based on the specified
-     * {@link EnumFacing}.
-     *
-     * @param world            The world where the traffic signal controller and devices are located.
-     * @param circuit          The active circuit to add to the specified phase.
-     * @param destinationPhase The phase to add the specified active circuit to.
-     * @param enumFacing       The {@link EnumFacing} direction to apply green signals to.
-     *
-     * @since 1.0
-     */
-    public static void addActiveCircuitToDirectionalGreenPhase( World world,
-                                                                TrafficSignalControllerCircuit circuit,
-                                                                TrafficSignalPhase destinationPhase,
-                                                                EnumFacing enumFacing )
-    {
-        // Get directionally filtered signal lists
-        Tuple< List< BlockPos >, List< BlockPos > > flashingLeftSignals = filterSignalsByFacingDirection( world,
-                                                                                                          circuit.getFlashingLeftSignals(),
-                                                                                                          enumFacing );
-        Tuple< List< BlockPos >, List< BlockPos > > flashingRightSignals = filterSignalsByFacingDirection( world,
-                                                                                                           circuit.getFlashingRightSignals(),
-                                                                                                           enumFacing );
-        Tuple< List< BlockPos >, List< BlockPos > > leftSignals = filterSignalsByFacingDirection( world,
-                                                                                                  circuit.getLeftSignals(),
-                                                                                                  enumFacing );
-        Tuple< List< BlockPos >, List< BlockPos > > rightSignals = filterSignalsByFacingDirection( world,
-                                                                                                   circuit.getRightSignals(),
-                                                                                                   enumFacing );
-        Tuple< List< BlockPos >, List< BlockPos > > throughSignals = filterSignalsByFacingDirection( world,
-                                                                                                     circuit.getThroughSignals(),
-                                                                                                     enumFacing );
-        Tuple< List< BlockPos >, List< BlockPos > > pedestrianBeaconSignals = filterSignalsByFacingDirection( world,
-                                                                                                              circuit.getPedestrianBeaconSignals(),
-                                                                                                              enumFacing );
+    // Add overlaps if necessary
+    upcomingPhase =
+        TrafficSignalControllerTickerUtilities.getPhaseWithOverlapsApplied(upcomingPhase, overlaps);
 
-        // Add signals to phase
-        destinationPhase.addOffSignals( flashingLeftSignals.getFirst() );
-        destinationPhase.addGreenSignals( leftSignals.getFirst() );
-        destinationPhase.addFyaSignals( flashingLeftSignals.getSecond() );
-        destinationPhase.addRedSignals( leftSignals.getSecond() );
-        destinationPhase.addOffSignals( flashingRightSignals.getFirst() );
-        destinationPhase.addGreenSignals( rightSignals.getFirst() );
-        destinationPhase.addRedSignals( flashingRightSignals.getSecond() );
-        destinationPhase.addRedSignals( rightSignals.getSecond() );
-        destinationPhase.addGreenSignals( throughSignals.getFirst() );
-        destinationPhase.addRedSignals( throughSignals.getSecond() );
-        destinationPhase.addOffSignals( pedestrianBeaconSignals.getFirst() );
-        destinationPhase.addRedSignals( pedestrianBeaconSignals.getSecond() );
-        destinationPhase.addRedSignals( circuit.getProtectedSignals() );
-        destinationPhase.addDontWalkSignals( circuit.getPedestrianSignals() );
-        destinationPhase.addDontWalkSignals( circuit.getPedestrianAccessorySignals() );
-    }
+    // Return the upcoming phase
+    return upcomingPhase;
+  }
+
+  /**
+   * Utility method to add all signals from the specified active
+   * {@link TrafficSignalControllerCircuit} to their respective states (green or red) in the
+   * specified {@link TrafficSignalPhase} based on the specified {@link EnumFacing}.
+   *
+   * @param world            The world where the traffic signal controller and devices are located.
+   * @param circuit          The active circuit to add to the specified phase.
+   * @param destinationPhase The phase to add the specified active circuit to.
+   * @param enumFacing       The {@link EnumFacing} direction to apply green signals to.
+   *
+   * @since 1.0
+   */
+  public static void addActiveCircuitToDirectionalGreenPhase(World world,
+      TrafficSignalControllerCircuit circuit,
+      TrafficSignalPhase destinationPhase,
+      EnumFacing enumFacing) {
+    // Get directionally filtered signal lists
+    Tuple<List<BlockPos>, List<BlockPos>> flashingLeftSignals =
+        filterSignalsByFacingDirection(world,
+            circuit.getFlashingLeftSignals(),
+            enumFacing);
+    Tuple<List<BlockPos>, List<BlockPos>> flashingRightSignals =
+        filterSignalsByFacingDirection(world,
+            circuit.getFlashingRightSignals(),
+            enumFacing);
+    Tuple<List<BlockPos>, List<BlockPos>> leftSignals = filterSignalsByFacingDirection(world,
+        circuit.getLeftSignals(),
+        enumFacing);
+    Tuple<List<BlockPos>, List<BlockPos>> rightSignals = filterSignalsByFacingDirection(world,
+        circuit.getRightSignals(),
+        enumFacing);
+    Tuple<List<BlockPos>, List<BlockPos>> throughSignals = filterSignalsByFacingDirection(world,
+        circuit.getThroughSignals(),
+        enumFacing);
+    Tuple<List<BlockPos>, List<BlockPos>> pedestrianBeaconSignals =
+        filterSignalsByFacingDirection(world,
+            circuit.getPedestrianBeaconSignals(),
+            enumFacing);
+
+    // Add signals to phase
+    destinationPhase.addOffSignals(flashingLeftSignals.getFirst());
+    destinationPhase.addGreenSignals(leftSignals.getFirst());
+    destinationPhase.addFyaSignals(flashingLeftSignals.getSecond());
+    destinationPhase.addRedSignals(leftSignals.getSecond());
+    destinationPhase.addOffSignals(flashingRightSignals.getFirst());
+    destinationPhase.addGreenSignals(rightSignals.getFirst());
+    destinationPhase.addRedSignals(flashingRightSignals.getSecond());
+    destinationPhase.addRedSignals(rightSignals.getSecond());
+    destinationPhase.addGreenSignals(throughSignals.getFirst());
+    destinationPhase.addRedSignals(throughSignals.getSecond());
+    destinationPhase.addOffSignals(pedestrianBeaconSignals.getFirst());
+    destinationPhase.addRedSignals(pedestrianBeaconSignals.getSecond());
+    destinationPhase.addRedSignals(circuit.getProtectedSignals());
+    destinationPhase.addDontWalkSignals(circuit.getPedestrianSignals());
+    destinationPhase.addDontWalkSignals(circuit.getPedestrianAccessorySignals());
+  }
+
+  /**
+   * Utility method to filter signals in the specified {@link List<BlockPos>} by their facing
+   * direction. This method will return a {@link Tuple} containing two {@link List<BlockPos>}, the
+   * first containing the signals that are facing the specified direction, and the second containing
+   * the signals that are not facing the specified direction.
+   *
+   * @param world            The world where the traffic signal controller and devices are located.
+   * @param signalBlockPoses The {@link List<BlockPos>} containing the signals to filter.
+   * @param enumFacing       The {@link EnumFacing} to filter the signals by.
+   *
+   * @return A {@link Tuple} containing two {@link List<BlockPos>}, the first containing the signals
+   *     that are facing the specified direction, and the second containing the signals that are not
+   *     facing the specified direction.
+   *
+   * @since 1.0
+   */
+  public static Tuple<List<BlockPos>, List<BlockPos>> filterSignalsByFacingDirection(World world,
+      List<BlockPos> signalBlockPoses,
+      EnumFacing enumFacing) {
+    // Create facing direction stream collector predicate
+    Predicate<BlockPos> facingDirectionPredicate = signalPos -> {
+      IBlockState blockState = world.getBlockState(signalPos);
+      EnumFacing sensorFacingDirection = blockState.getValue(BlockHorizontal.FACING);
+      return sensorFacingDirection == enumFacing;
+    };
+
+    // Partition the signal list by the facing direction predicate
+    Map<Boolean, List<BlockPos>> filteredSignalLists = signalBlockPoses.stream()
+        .collect((Collectors.partitioningBy(
+            facingDirectionPredicate)));
+
+    // Return the filtered signal lists
+    return new Tuple<>(filteredSignalLists.get(true), filteredSignalLists.get(false));
+  }
+
+  /**
+   * Utility method to filter signals in the specified {@link List<BlockPos>} by whether they should
+   * flash. This method will return a {@link Tuple} containing two {@link List<BlockPos>}, the first
+   * containing the signals that should flash, and the second containing the signals that should not
+   * flash.
+   *
+   * @param world            The world where the traffic signal controller and devices are located.
+   * @param signalBlockPoses The {@link List<BlockPos>} containing the signals to filter.
+   *
+   * @return A {@link Tuple} containing two {@link List<BlockPos>}, the first containing the signals
+   *     that should flash, and the second containing the signals that should not flash.
+   *
+   * @since 1.0
+   */
+  public static Tuple<List<BlockPos>, List<BlockPos>> filterSignalsByShouldFlash(World world,
+      List<BlockPos> signalBlockPoses) {
+    // Create flash enabled stream collector predicate
+    Predicate<BlockPos> flashEnabledPredicate = signalPos -> {
+      boolean shouldFlash = false;
+      if (world != null) {
+        IBlockState blockState = world.getBlockState(signalPos);
+        if (blockState.getBlock() instanceof AbstractBlockControllableSignal) {
+          shouldFlash = ((AbstractBlockControllableSignal) blockState.getBlock()).doesFlash();
+        }
+      } else {
+        shouldFlash = true;
+      }
+      return shouldFlash;
+    };
+
+    // Partition the signal list by the flash enabled predicate
+    Map<Boolean, List<BlockPos>> filteredSignalLists = signalBlockPoses.stream()
+        .collect((Collectors.partitioningBy(
+            flashEnabledPredicate)));
+
+    // Return the filtered signal lists
+    return new Tuple<>(filteredSignalLists.get(true), filteredSignalLists.get(false));
+  }
 
 }

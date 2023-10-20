@@ -1,9 +1,9 @@
 package com.micatechnologies.minecraft.csm.trafficsigns;
 
-public class BlockSignstatepropertynotrasspassing extends AbstractBlockSign
-{
-    @Override
-    public String getBlockRegistryName() {
-        return "signstatepropertynotrasspassing";
-    }
+public class BlockSignstatepropertynotrasspassing extends AbstractBlockSign {
+
+  @Override
+  public String getBlockRegistryName() {
+    return "signstatepropertynotrasspassing";
+  }
 }

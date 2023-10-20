@@ -14,43 +14,40 @@ import net.minecraft.item.Item;
  * @since 2023.3
  */
 @MethodsReturnNonnullByDefault
-public abstract class AbstractItem extends Item implements IHasModel, ICsmItem
-{
+public abstract class AbstractItem extends Item implements IHasModel, ICsmItem {
 
-    /**
-     * Constructs an AbstractItem using default values (0 damage, 64 stack size).
-     *
-     * @since 1.0
-     */
-    public AbstractItem()
-    {
-        this( 0, 64 );
-    }
+  /**
+   * Constructs an AbstractItem using default values (0 damage, 64 stack size).
+   *
+   * @since 1.0
+   */
+  public AbstractItem() {
+    this(0, 64);
+  }
 
-    /**
-     * Constructs an AbstractItem.
-     *
-     * @param maxDamage    The maximum damage of the item.
-     * @param maxStackSize The maximum stack size of the item.
-     *
-     * @since 1.0
-     */
-    public AbstractItem( int maxDamage, int maxStackSize )
-    {
-        setUnlocalizedName( getItemRegistryName() );
-        setRegistryName( CsmConstants.MOD_NAMESPACE, getItemRegistryName() );
-        setMaxDamage( maxDamage );
-        setMaxStackSize( maxStackSize );
-        CsmRegistry.registerItem( this );
-    }
+  /**
+   * Constructs an AbstractItem.
+   *
+   * @param maxDamage    The maximum damage of the item.
+   * @param maxStackSize The maximum stack size of the item.
+   *
+   * @since 1.0
+   */
+  public AbstractItem(int maxDamage, int maxStackSize) {
+    setUnlocalizedName(getItemRegistryName());
+    setRegistryName(CsmConstants.MOD_NAMESPACE, getItemRegistryName());
+    setMaxDamage(maxDamage);
+    setMaxStackSize(maxStackSize);
+    CsmRegistry.registerItem(this);
+  }
 
-    /**
-     * Registers the block's model.
-     *
-     * @since 1.0
-     */
-    @Override
-    public void registerModels() {
-        Csm.proxy.setCustomModelResourceLocation( this, 0, "inventory" );
-    }
+  /**
+   * Registers the block's model.
+   *
+   * @since 1.0
+   */
+  @Override
+  public void registerModels() {
+    Csm.proxy.setCustomModelResourceLocation(this, 0, "inventory");
+  }
 }

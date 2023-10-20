@@ -1,37 +1,24 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
-import com.micatechnologies.minecraft.csm.tabs.CsmTabTrafficSignals;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockTrafficSignalSensor;
-import net.minecraft.block.Block;
-import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
-import net.minecraft.util.EnumFacing;
-import net.minecraftforge.client.event.ModelRegistryEvent;
-import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.fml.common.registry.GameRegistry;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class BlockTrafficLightSensorShort extends AbstractBlockTrafficSignalSensor
-{
+public class BlockTrafficLightSensorShort extends AbstractBlockTrafficSignalSensor {
 
-    public BlockTrafficLightSensorShort() {
-        super( Material.ROCK );
-    }
+  public BlockTrafficLightSensorShort() {
+    super(Material.ROCK);
+  }
 
-    /**
-     * Retrieves the registry name of the block.
-     *
-     * @return The registry name of the block.
-     *
-     * @since 1.0
-     */
-    @Override
-    public String getBlockRegistryName() {
-        return "trafficlightsensorshort";
-    }
+  /**
+   * Retrieves the registry name of the block.
+   *
+   * @return The registry name of the block.
+   *
+   * @since 1.0
+   */
+  @Override
+  public String getBlockRegistryName() {
+    return "trafficlightsensorshort";
+  }
 
 }

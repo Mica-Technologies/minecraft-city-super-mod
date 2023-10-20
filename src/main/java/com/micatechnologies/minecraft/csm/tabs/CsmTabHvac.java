@@ -1,9 +1,37 @@
 package com.micatechnologies.minecraft.csm.tabs;
 
 import com.micatechnologies.minecraft.csm.CsmRegistry;
-import com.micatechnologies.minecraft.csm.buildingmaterials.BlockPCC;
 import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
-import com.micatechnologies.minecraft.csm.hvac.*;
+import com.micatechnologies.minecraft.csm.hvac.BlockART1;
+import com.micatechnologies.minecraft.csm.hvac.BlockART2;
+import com.micatechnologies.minecraft.csm.hvac.BlockARTD1;
+import com.micatechnologies.minecraft.csm.hvac.BlockARTD2;
+import com.micatechnologies.minecraft.csm.hvac.BlockDFV1;
+import com.micatechnologies.minecraft.csm.hvac.BlockDFV2;
+import com.micatechnologies.minecraft.csm.hvac.BlockDFVD1;
+import com.micatechnologies.minecraft.csm.hvac.BlockDFVD2;
+import com.micatechnologies.minecraft.csm.hvac.BlockLCV;
+import com.micatechnologies.minecraft.csm.hvac.BlockMV1;
+import com.micatechnologies.minecraft.csm.hvac.BlockMV2;
+import com.micatechnologies.minecraft.csm.hvac.BlockMV3;
+import com.micatechnologies.minecraft.csm.hvac.BlockMVD1;
+import com.micatechnologies.minecraft.csm.hvac.BlockMVD2;
+import com.micatechnologies.minecraft.csm.hvac.BlockPBF;
+import com.micatechnologies.minecraft.csm.hvac.BlockPV;
+import com.micatechnologies.minecraft.csm.hvac.BlockPVD;
+import com.micatechnologies.minecraft.csm.hvac.BlockRV1;
+import com.micatechnologies.minecraft.csm.hvac.BlockRV2;
+import com.micatechnologies.minecraft.csm.hvac.BlockSCV;
+import com.micatechnologies.minecraft.csm.hvac.BlockSV1;
+import com.micatechnologies.minecraft.csm.hvac.BlockSV2;
+import com.micatechnologies.minecraft.csm.hvac.BlockSV3;
+import com.micatechnologies.minecraft.csm.hvac.BlockSV4;
+import com.micatechnologies.minecraft.csm.hvac.BlockSV5;
+import com.micatechnologies.minecraft.csm.hvac.BlockSVD1;
+import com.micatechnologies.minecraft.csm.hvac.BlockSVD2;
+import com.micatechnologies.minecraft.csm.hvac.BlockSVD3;
+import com.micatechnologies.minecraft.csm.hvac.BlockSVD4;
+import com.micatechnologies.minecraft.csm.hvac.BlockSVD5;
 import net.minecraft.block.Block;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
@@ -12,93 +40,93 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
  *
  * @version 1.0
  */
-@CsmTab.Load( order = 2)
-public class CsmTabHvac extends CsmTab
-{
-    /**
-     * Gets the ID (unique identifier) of the tab.
-     *
-     * @return the ID of the tab
-     *
-     * @since 1.0
-     */
-    @Override
-    public String getTabId() {
-        return "tabhvac";
-    }
+@CsmTab.Load(order = 2)
+public class CsmTabHvac extends CsmTab {
 
-    /**
-     * Gets the block to use as the icon of the tab
-     *
-     * @return the block to use as the icon of the tab
-     *
-     * @since 1.0
-     */
-    @Override
-    public Block getTabIcon() {
-        return CsmRegistry.getBlock( "sv4" );
-    }
+  /**
+   * Gets the ID (unique identifier) of the tab.
+   *
+   * @return the ID of the tab
+   *
+   * @since 1.0
+   */
+  @Override
+  public String getTabId() {
+    return "tabhvac";
+  }
 
-    /**
-     * Gets a boolean indicating if the tab is searchable (has its own search bar).
-     *
-     * @return {@code true} if the tab is searchable, otherwise {@code false}
-     *
-     * @since 1.0
-     */
-    @Override
-    public boolean getTabSearchable() {
-        return false;
-    }
+  /**
+   * Gets the block to use as the icon of the tab
+   *
+   * @return the block to use as the icon of the tab
+   *
+   * @since 1.0
+   */
+  @Override
+  public Block getTabIcon() {
+    return CsmRegistry.getBlock("sv4");
+  }
 
-    /**
-     * Gets a boolean indicating if the tab is hidden (not displayed in the inventory).
-     *
-     * @return {@code true} if the tab is hidden, otherwise {@code false}
-     *
-     * @since 1.0
-     */
-    @Override
-    public boolean getTabHidden() {
-        return false;
-    }
+  /**
+   * Gets a boolean indicating if the tab is searchable (has its own search bar).
+   *
+   * @return {@code true} if the tab is searchable, otherwise {@code false}
+   *
+   * @since 1.0
+   */
+  @Override
+  public boolean getTabSearchable() {
+    return false;
+  }
 
-    /**
-     * Initializes all the items belonging to the tab.
-     *
-     * @since 1.0
-     */
-    @Override
-    public void initTabElements( FMLPreInitializationEvent fmlPreInitializationEvent ) {
-        initTabBlock( BlockART1.class, fmlPreInitializationEvent ); // ART1
-        initTabBlock( BlockART2.class, fmlPreInitializationEvent ); // ART2
-        initTabBlock( BlockARTD1.class, fmlPreInitializationEvent ); // ARTD1
-        initTabBlock( BlockARTD2.class, fmlPreInitializationEvent ); // ARTD2
-        initTabBlock( BlockDFV1.class, fmlPreInitializationEvent ); // DFV1
-        initTabBlock( BlockDFV2.class, fmlPreInitializationEvent ); // DFV2
-        initTabBlock( BlockDFVD1.class, fmlPreInitializationEvent ); // DFVD1
-        initTabBlock( BlockDFVD2.class, fmlPreInitializationEvent ); // DFVD2
-        initTabBlock( BlockLCV.class, fmlPreInitializationEvent ); // LCV
-        initTabBlock( BlockMV1.class, fmlPreInitializationEvent ); // MV1
-        initTabBlock( BlockMV2.class, fmlPreInitializationEvent ); // MV2
-        initTabBlock( BlockMV3.class, fmlPreInitializationEvent ); // MV3
-        initTabBlock( BlockMVD1.class, fmlPreInitializationEvent ); // MVD1
-        initTabBlock( BlockMVD2.class, fmlPreInitializationEvent ); // MVD2
-        initTabBlock( BlockPBF.class, fmlPreInitializationEvent ); // PBF
-        initTabBlock( BlockPV.class, fmlPreInitializationEvent ); // PV
-        initTabBlock( BlockPVD.class, fmlPreInitializationEvent ); // PVD
-        initTabBlock( BlockRV1.class, fmlPreInitializationEvent ); // RV1
-        initTabBlock( BlockRV2.class, fmlPreInitializationEvent ); // RV2
-        initTabBlock( BlockSCV.class, fmlPreInitializationEvent ); // SCV
-        initTabBlock( BlockSV1.class, fmlPreInitializationEvent ); // SV1
-        initTabBlock( BlockSV2.class, fmlPreInitializationEvent ); // SV2
-        initTabBlock( BlockSV3.class, fmlPreInitializationEvent ); // SV3
-        initTabBlock( BlockSV4.class, fmlPreInitializationEvent ); // SV4
-        initTabBlock( BlockSV5.class, fmlPreInitializationEvent ); // SV5
-        initTabBlock( BlockSVD1.class, fmlPreInitializationEvent ); // SVD1
-        initTabBlock( BlockSVD2.class, fmlPreInitializationEvent ); // SVD2
-        initTabBlock( BlockSVD3.class, fmlPreInitializationEvent ); // SVD3
-        initTabBlock( BlockSVD4.class, fmlPreInitializationEvent ); // SVD4
-        initTabBlock( BlockSVD5.class, fmlPreInitializationEvent ); // SVD5
-    }
+  /**
+   * Gets a boolean indicating if the tab is hidden (not displayed in the inventory).
+   *
+   * @return {@code true} if the tab is hidden, otherwise {@code false}
+   *
+   * @since 1.0
+   */
+  @Override
+  public boolean getTabHidden() {
+    return false;
+  }
+
+  /**
+   * Initializes all the items belonging to the tab.
+   *
+   * @since 1.0
+   */
+  @Override
+  public void initTabElements(FMLPreInitializationEvent fmlPreInitializationEvent) {
+    initTabBlock(BlockART1.class, fmlPreInitializationEvent); // ART1
+    initTabBlock(BlockART2.class, fmlPreInitializationEvent); // ART2
+    initTabBlock(BlockARTD1.class, fmlPreInitializationEvent); // ARTD1
+    initTabBlock(BlockARTD2.class, fmlPreInitializationEvent); // ARTD2
+    initTabBlock(BlockDFV1.class, fmlPreInitializationEvent); // DFV1
+    initTabBlock(BlockDFV2.class, fmlPreInitializationEvent); // DFV2
+    initTabBlock(BlockDFVD1.class, fmlPreInitializationEvent); // DFVD1
+    initTabBlock(BlockDFVD2.class, fmlPreInitializationEvent); // DFVD2
+    initTabBlock(BlockLCV.class, fmlPreInitializationEvent); // LCV
+    initTabBlock(BlockMV1.class, fmlPreInitializationEvent); // MV1
+    initTabBlock(BlockMV2.class, fmlPreInitializationEvent); // MV2
+    initTabBlock(BlockMV3.class, fmlPreInitializationEvent); // MV3
+    initTabBlock(BlockMVD1.class, fmlPreInitializationEvent); // MVD1
+    initTabBlock(BlockMVD2.class, fmlPreInitializationEvent); // MVD2
+    initTabBlock(BlockPBF.class, fmlPreInitializationEvent); // PBF
+    initTabBlock(BlockPV.class, fmlPreInitializationEvent); // PV
+    initTabBlock(BlockPVD.class, fmlPreInitializationEvent); // PVD
+    initTabBlock(BlockRV1.class, fmlPreInitializationEvent); // RV1
+    initTabBlock(BlockRV2.class, fmlPreInitializationEvent); // RV2
+    initTabBlock(BlockSCV.class, fmlPreInitializationEvent); // SCV
+    initTabBlock(BlockSV1.class, fmlPreInitializationEvent); // SV1
+    initTabBlock(BlockSV2.class, fmlPreInitializationEvent); // SV2
+    initTabBlock(BlockSV3.class, fmlPreInitializationEvent); // SV3
+    initTabBlock(BlockSV4.class, fmlPreInitializationEvent); // SV4
+    initTabBlock(BlockSV5.class, fmlPreInitializationEvent); // SV5
+    initTabBlock(BlockSVD1.class, fmlPreInitializationEvent); // SVD1
+    initTabBlock(BlockSVD2.class, fmlPreInitializationEvent); // SVD2
+    initTabBlock(BlockSVD3.class, fmlPreInitializationEvent); // SVD3
+    initTabBlock(BlockSVD4.class, fmlPreInitializationEvent); // SVD4
+    initTabBlock(BlockSVD5.class, fmlPreInitializationEvent); // SVD5
+  }
 }

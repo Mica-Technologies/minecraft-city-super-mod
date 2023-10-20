@@ -1,9 +1,9 @@
 package com.micatechnologies.minecraft.csm.trafficsigns;
 
-public class BlockSignkayak extends AbstractBlockSign
-{
-    @Override
-    public String getBlockRegistryName() {
-        return "signkayak";
-    }
+public class BlockSignkayak extends AbstractBlockSign {
+
+  @Override
+  public String getBlockRegistryName() {
+    return "signkayak";
+  }
 }
