@@ -17,6 +17,7 @@ import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetBlackMetal;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetBlueMetal;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetCopperMetal;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetGreenMetal;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetIridescentMetal;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetLightBlueMetal;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetLimeMetal;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetMagentaMetal;
@@ -122,6 +123,8 @@ public class CsmTabBuildingMaterials extends CsmTab {
         fmlPreInitializationEvent); // Purple Metal Set (Block, Fence, Slab, Stairs)
     initTabBlock(BlockSetYellowMetal.class,
         fmlPreInitializationEvent); // Yellow Metal Set (Block, Fence, Slab, Stairs)
+    initTabBlock(BlockSetIridescentMetal.class,
+        fmlPreInitializationEvent); // Iridescent Metal Set (Block, Fence, Slab, Stairs)
     initTabBlock(BlockPCC.class, fmlPreInitializationEvent); // PCC
     initTabBlock(BlockCTF.class, fmlPreInitializationEvent); // CTF
     initTabBlock(BlockCTFD.class, fmlPreInitializationEvent); // CTFD
