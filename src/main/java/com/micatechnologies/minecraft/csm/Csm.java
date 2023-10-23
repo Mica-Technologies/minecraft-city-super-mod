@@ -125,9 +125,15 @@ public class Csm {
 
     // Output start of pre-initialization
     logger.info("Pre-initializing " + CsmConstants.MOD_NAME + " v" + CsmConstants.MOD_VERSION);
-    ProgressManager.ProgressBar progressBar = ProgressManager.push("City Super Mod (Pre-Init)", 6);
+    ProgressManager.ProgressBar progressBar = ProgressManager.push("City Super Mod (Pre-Init)", 7);
 
     try {
+      // Load the mod configuration file
+      logger.info("Loading configuration file");
+      CsmConfig.init(event.getSuggestedConfigurationFile());
+      logger.info("Finished loading configuration file");
+      progressBar.step("Configuration File Loaded");
+
       // Register the mod's event bus
       logger.info("Registering event bus");
       MinecraftForge.EVENT_BUS.register(this);
