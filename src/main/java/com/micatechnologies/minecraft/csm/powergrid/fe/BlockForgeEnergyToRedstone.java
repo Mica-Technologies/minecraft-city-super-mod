@@ -160,7 +160,7 @@ public class BlockForgeEnergyToRedstone extends AbstractBlock implements ICsmTil
       BlockPos pos,
       @Nullable
       EnumFacing facing) {
-    return false;
+    return true;
   }
 
   /**
