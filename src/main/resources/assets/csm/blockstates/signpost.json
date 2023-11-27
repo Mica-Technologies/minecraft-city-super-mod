@@ -7,22 +7,37 @@
     "normal": {
       "model": "csm:signpost"
     },
-    "downward=false,facing=north": {
+    "downward=false,facing=n": {
       "model": "csm:signpost"
     },
-    "downward=false,facing=east": {
+    "downward=false,facing=ne": {
+      "model": "csm:signpost_angle"
+    },
+    "downward=false,facing=e": {
       "model": "csm:signpost",
       "y": 90
     },
-    "downward=false,facing=south": {
+    "downward=false,facing=se": {
+      "model": "csm:signpost_angle",
+      "y": 90
+    },
+    "downward=false,facing=s": {
       "model": "csm:signpost",
       "y": 180
     },
-    "downward=false,facing=west": {
+    "downward=false,facing=sw": {
+      "model": "csm:signpost_angle",
+      "y": 180
+    },
+    "downward=false,facing=w": {
       "model": "csm:signpost",
       "y": 270
     },
-    "downward=true,facing=north": {
+    "downward=false,facing=nw": {
+      "model": "csm:signpost_angle",
+      "y": 270
+    },
+    "downward=true,facing=n": {
       "model": "csm:signpost",
       "submodel": {
         "extension": {
@@ -37,7 +52,22 @@
         }
       }
     },
-    "downward=true,facing=east": {
+    "downward=true,facing=ne": {
+      "model": "csm:signpost_angle",
+      "submodel": {
+        "extension": {
+          "model": "csm:signpost_angle",
+          "transform": {
+            "translation": [
+              0,
+              -1,
+              0
+            ]
+          }
+        }
+      }
+    },
+    "downward=true,facing=e": {
       "model": "csm:signpost",
       "y": 90,
       "submodel": {
@@ -53,7 +83,23 @@
         }
       }
     },
-    "downward=true,facing=south": {
+    "downward=true,facing=se": {
+      "model": "csm:signpost_angle",
+      "y": 90,
+      "submodel": {
+        "extension": {
+          "model": "csm:signpost_angle",
+          "transform": {
+            "translation": [
+              0,
+              -1,
+              0
+            ]
+          }
+        }
+      }
+    },
+    "downward=true,facing=s": {
       "model": "csm:signpost",
       "y": 180,
       "submodel": {
@@ -69,12 +115,44 @@
         }
       }
     },
-    "downward=true,facing=west": {
+    "downward=true,facing=sw": {
+      "model": "csm:signpost_angle",
+      "y": 180,
+      "submodel": {
+        "extension": {
+          "model": "csm:signpost_angle",
+          "transform": {
+            "translation": [
+              0,
+              -1,
+              0
+            ]
+          }
+        }
+      }
+    },
+    "downward=true,facing=w": {
       "model": "csm:signpost",
       "y": 270,
       "submodel": {
         "extension": {
           "model": "csm:signpost",
+          "transform": {
+            "translation": [
+              0,
+              -1,
+              0
+            ]
+          }
+        }
+      }
+    },
+    "downward=true,facing=nw": {
+      "model": "csm:signpost_angle",
+      "y": 270,
+      "submodel": {
+        "extension": {
+          "model": "csm:signpost_angle",
           "transform": {
             "translation": [
               0,
