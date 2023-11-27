@@ -1,9 +1,0 @@
-{
-  "parent": "csm:custom/metal_signpostback_tall_sign",
-  "textures": {
-    "all": "csm:blocks/advisory_curve_speed_english_15.svg",
-    "particle": "csm:blocks/advisory_curve_speed_english_15.svg",
-    "0": "csm:blocks/metal",
-    "1": "csm:blocks/advisory_curve_speed_english_15.svg"
-  }
-}

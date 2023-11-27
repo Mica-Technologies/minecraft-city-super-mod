@@ -1,9 +1,0 @@
-{
-  "parent": "csm:custom/metal_signpostback_half_sign",
-  "textures": {
-    "all": "csm:blocks/signbuslane",
-    "particle": "csm:blocks/signbuslane",
-    "0": "csm:blocks/metal",
-    "1": "csm:blocks/signbuslane"
-  }
-}

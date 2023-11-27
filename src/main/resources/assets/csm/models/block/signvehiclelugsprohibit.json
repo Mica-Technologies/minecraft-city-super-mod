@@ -1,9 +1,0 @@
-{
-  "parent": "csm:custom/metal_signpostback_midlargerectanglesign",
-  "textures": {
-    "all": "csm:blocks/cr5-5.eps",
-    "particle": "csm:blocks/cr5-5.eps",
-    "0": "csm:blocks/metal",
-    "1": "csm:blocks/cr5-5.eps"
-  }
-}

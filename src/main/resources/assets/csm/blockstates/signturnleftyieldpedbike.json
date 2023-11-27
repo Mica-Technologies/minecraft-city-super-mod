@@ -1,30 +1,142 @@
 {
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:metal_signpostback_tall_sign",
+    "textures": {
+      "all": "csm:blocks/mutcd_r10-15bl_fluorescent.svg",
+      "particle": "csm:blocks/mutcd_r10-15bl_fluorescent.svg",
+      "0": "csm:blocks/metal",
+      "1": "csm:blocks/mutcd_r10-15bl_fluorescent.svg"
+    }
+  },
   "variants": {
-    "normal": {
-      "model": "csm:signturnleftyieldpedbike"
+    "inventory": [
+      {}
+    ],
+    "facing": {
+      "n": {},
+      "nw": {
+        "transform": {
+          "rotation": [
+            {
+              "x": 0
+            },
+            {
+              "y": 45
+            },
+            {
+              "z": 0
+            }
+          ]
+        }
+      },
+      "w": {
+        "transform": {
+          "rotation": [
+            {
+              "x": 0
+            },
+            {
+              "y": 90
+            },
+            {
+              "z": 0
+            }
+          ]
+        }
+      },
+      "sw": {
+        "transform": {
+          "rotation": [
+            {
+              "x": 0
+            },
+            {
+              "y": 135
+            },
+            {
+              "z": 0
+            }
+          ]
+        }
+      },
+      "s": {
+        "transform": {
+          "rotation": [
+            {
+              "x": 0
+            },
+            {
+              "y": 180
+            },
+            {
+              "z": 0
+            }
+          ]
+        }
+      },
+      "se": {
+        "transform": {
+          "rotation": [
+            {
+              "x": 0
+            },
+            {
+              "y": 225
+            },
+            {
+              "z": 0
+            }
+          ]
+        }
+      },
+      "e": {
+        "transform": {
+          "rotation": [
+            {
+              "x": 0
+            },
+            {
+              "y": 270
+            },
+            {
+              "z": 0
+            }
+          ]
+        }
+      },
+      "ne": {
+        "transform": {
+          "rotation": [
+            {
+              "x": 0
+            },
+            {
+              "y": 315
+            },
+            {
+              "z": 0
+            }
+          ]
+        }
+      }
     },
-    "facing=north": {
-      "model": "csm:signturnleftyieldpedbike"
-    },
-    "facing=east": {
-      "model": "csm:signturnleftyieldpedbike",
-      "y": 90
-    },
-    "facing=south": {
-      "model": "csm:signturnleftyieldpedbike",
-      "y": 180
-    },
-    "facing=west": {
-      "model": "csm:signturnleftyieldpedbike",
-      "y": 270
-    },
-    "facing=up": {
-      "model": "csm:signturnleftyieldpedbike",
-      "x": 270
-    },
-    "facing=down": {
-      "model": "csm:signturnleftyieldpedbike",
-      "x": 90
+    "downward": {
+      "false": {},
+      "true": {
+        "submodel": {
+          "extension": {
+            "model": "csm:metal_signpost",
+            "transform": {
+              "translation": [
+                0.0,
+                -1.0,
+                0.0
+              ]
+            }
+          }
+        }
+      }
     }
   }
 }

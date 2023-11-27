@@ -1,30 +1,142 @@
 {
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:metal_signpostback_sign",
+    "textures": {
+      "all": "csm:blocks/r3-7.eps",
+      "particle": "csm:blocks/r3-7.eps",
+      "0": "csm:blocks/metal",
+      "1": "csm:blocks/r3-7.eps"
+    }
+  },
   "variants": {
-    "normal": {
-      "model": "csm:signleftmustturnleft"
+    "inventory": [
+      {}
+    ],
+    "facing": {
+      "n": {},
+      "nw": {
+        "transform": {
+          "rotation": [
+            {
+              "x": 0
+            },
+            {
+              "y": 45
+            },
+            {
+              "z": 0
+            }
+          ]
+        }
+      },
+      "w": {
+        "transform": {
+          "rotation": [
+            {
+              "x": 0
+            },
+            {
+              "y": 90
+            },
+            {
+              "z": 0
+            }
+          ]
+        }
+      },
+      "sw": {
+        "transform": {
+          "rotation": [
+            {
+              "x": 0
+            },
+            {
+              "y": 135
+            },
+            {
+              "z": 0
+            }
+          ]
+        }
+      },
+      "s": {
+        "transform": {
+          "rotation": [
+            {
+              "x": 0
+            },
+            {
+              "y": 180
+            },
+            {
+              "z": 0
+            }
+          ]
+        }
+      },
+      "se": {
+        "transform": {
+          "rotation": [
+            {
+              "x": 0
+            },
+            {
+              "y": 225
+            },
+            {
+              "z": 0
+            }
+          ]
+        }
+      },
+      "e": {
+        "transform": {
+          "rotation": [
+            {
+              "x": 0
+            },
+            {
+              "y": 270
+            },
+            {
+              "z": 0
+            }
+          ]
+        }
+      },
+      "ne": {
+        "transform": {
+          "rotation": [
+            {
+              "x": 0
+            },
+            {
+              "y": 315
+            },
+            {
+              "z": 0
+            }
+          ]
+        }
+      }
     },
-    "facing=north": {
-      "model": "csm:signleftmustturnleft"
-    },
-    "facing=east": {
-      "model": "csm:signleftmustturnleft",
-      "y": 90
-    },
-    "facing=south": {
-      "model": "csm:signleftmustturnleft",
-      "y": 180
-    },
-    "facing=west": {
-      "model": "csm:signleftmustturnleft",
-      "y": 270
-    },
-    "facing=up": {
-      "model": "csm:signleftmustturnleft",
-      "x": 270
-    },
-    "facing=down": {
-      "model": "csm:signleftmustturnleft",
-      "x": 90
+    "downward": {
+      "false": {},
+      "true": {
+        "submodel": {
+          "extension": {
+            "model": "csm:metal_signpost",
+            "transform": {
+              "translation": [
+                0.0,
+                -1.0,
+                0.0
+              ]
+            }
+          }
+        }
+      }
     }
   }
 }
