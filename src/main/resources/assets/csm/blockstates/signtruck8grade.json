@@ -1,30 +1,142 @@
 {
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:metal_signpostback_diamond_sign",
+    "textures": {
+      "all": "csm:blocks/w7-1b.eps",
+      "particle": "csm:blocks/w7-1b.eps",
+      "0": "csm:blocks/metal",
+      "1": "csm:blocks/w7-1b.eps"
+    }
+  },
   "variants": {
-    "normal": {
-      "model": "csm:signtruck8grade"
+    "inventory": [
+      {}
+    ],
+    "facing": {
+      "n": {},
+      "nw": {
+        "transform": {
+          "rotation": [
+            {
+              "x": 0
+            },
+            {
+              "y": 45
+            },
+            {
+              "z": 0
+            }
+          ]
+        }
+      },
+      "w": {
+        "transform": {
+          "rotation": [
+            {
+              "x": 0
+            },
+            {
+              "y": 90
+            },
+            {
+              "z": 0
+            }
+          ]
+        }
+      },
+      "sw": {
+        "transform": {
+          "rotation": [
+            {
+              "x": 0
+            },
+            {
+              "y": 135
+            },
+            {
+              "z": 0
+            }
+          ]
+        }
+      },
+      "s": {
+        "transform": {
+          "rotation": [
+            {
+              "x": 0
+            },
+            {
+              "y": 180
+            },
+            {
+              "z": 0
+            }
+          ]
+        }
+      },
+      "se": {
+        "transform": {
+          "rotation": [
+            {
+              "x": 0
+            },
+            {
+              "y": 225
+            },
+            {
+              "z": 0
+            }
+          ]
+        }
+      },
+      "e": {
+        "transform": {
+          "rotation": [
+            {
+              "x": 0
+            },
+            {
+              "y": 270
+            },
+            {
+              "z": 0
+            }
+          ]
+        }
+      },
+      "ne": {
+        "transform": {
+          "rotation": [
+            {
+              "x": 0
+            },
+            {
+              "y": 315
+            },
+            {
+              "z": 0
+            }
+          ]
+        }
+      }
     },
-    "facing=north": {
-      "model": "csm:signtruck8grade"
-    },
-    "facing=east": {
-      "model": "csm:signtruck8grade",
-      "y": 90
-    },
-    "facing=south": {
-      "model": "csm:signtruck8grade",
-      "y": 180
-    },
-    "facing=west": {
-      "model": "csm:signtruck8grade",
-      "y": 270
-    },
-    "facing=up": {
-      "model": "csm:signtruck8grade",
-      "x": 270
-    },
-    "facing=down": {
-      "model": "csm:signtruck8grade",
-      "x": 90
+    "downward": {
+      "false": {},
+      "true": {
+        "submodel": {
+          "extension": {
+            "model": "csm:metal_signpost",
+            "transform": {
+              "translation": [
+                0.0,
+                -1.0,
+                0.0
+              ]
+            }
+          }
+        }
+      }
     }
   }
 }

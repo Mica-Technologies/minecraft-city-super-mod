@@ -1,9 +1,0 @@
-{
-  "parent": "csm:custom/metal_signpostback_tall_sign",
-  "textures": {
-    "all": "csm:blocks/800px-nysdot_nyr2-4.svg",
-    "particle": "csm:blocks/800px-nysdot_nyr2-4.svg",
-    "0": "csm:blocks/metal",
-    "1": "csm:blocks/800px-nysdot_nyr2-4.svg"
-  }
-}

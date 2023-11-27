@@ -1,8 +1,0 @@
-{
-  "parent": "csm:custom/metal_signpost_street_name_sign_mount_2",
-  "textures": {
-    "all": "csm:blocks/metal",
-    "particle": "csm:blocks/metal",
-    "0": "csm:blocks/metal"
-  }
-}

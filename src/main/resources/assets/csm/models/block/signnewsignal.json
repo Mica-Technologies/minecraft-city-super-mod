@@ -1,9 +1,0 @@
-{
-  "parent": "csm:custom/metal_signpostback_diamond_sign",
-  "textures": {
-    "all": "csm:blocks/mdot_w3-3b.svg",
-    "particle": "csm:blocks/mdot_w3-3b.svg",
-    "0": "csm:blocks/metal",
-    "1": "csm:blocks/mdot_w3-3b.svg"
-  }
-}

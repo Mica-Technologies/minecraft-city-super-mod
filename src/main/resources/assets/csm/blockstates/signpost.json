@@ -1,86 +1,138 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "uvlock": true
+    "model": "csm:metal_signpost",
+    "textures": {
+      "all": "csm:blocks/metal",
+      "particle": "csm:blocks/metal",
+      "0": "csm:blocks/metal"
+    }
   },
   "variants": {
-    "normal": {
-      "model": "csm:signpost"
-    },
-    "downward=false,facing=north": {
-      "model": "csm:signpost"
-    },
-    "downward=false,facing=east": {
-      "model": "csm:signpost",
-      "y": 90
-    },
-    "downward=false,facing=south": {
-      "model": "csm:signpost",
-      "y": 180
-    },
-    "downward=false,facing=west": {
-      "model": "csm:signpost",
-      "y": 270
-    },
-    "downward=true,facing=north": {
-      "model": "csm:signpost",
-      "submodel": {
-        "extension": {
-          "model": "csm:signpost",
-          "transform": {
-            "translation": [
-              0,
-              -1,
-              0
-            ]
-          }
+    "inventory": [
+      {}
+    ],
+    "facing": {
+      "n": {},
+      "nw": {
+        "transform": {
+          "rotation": [
+            {
+              "x": 0
+            },
+            {
+              "y": 45
+            },
+            {
+              "z": 0
+            }
+          ]
+        }
+      },
+      "w": {
+        "transform": {
+          "rotation": [
+            {
+              "x": 0
+            },
+            {
+              "y": 90
+            },
+            {
+              "z": 0
+            }
+          ]
+        }
+      },
+      "sw": {
+        "transform": {
+          "rotation": [
+            {
+              "x": 0
+            },
+            {
+              "y": 135
+            },
+            {
+              "z": 0
+            }
+          ]
+        }
+      },
+      "s": {
+        "transform": {
+          "rotation": [
+            {
+              "x": 0
+            },
+            {
+              "y": 180
+            },
+            {
+              "z": 0
+            }
+          ]
+        }
+      },
+      "se": {
+        "transform": {
+          "rotation": [
+            {
+              "x": 0
+            },
+            {
+              "y": 225
+            },
+            {
+              "z": 0
+            }
+          ]
+        }
+      },
+      "e": {
+        "transform": {
+          "rotation": [
+            {
+              "x": 0
+            },
+            {
+              "y": 270
+            },
+            {
+              "z": 0
+            }
+          ]
+        }
+      },
+      "ne": {
+        "transform": {
+          "rotation": [
+            {
+              "x": 0
+            },
+            {
+              "y": 315
+            },
+            {
+              "z": 0
+            }
+          ]
         }
       }
     },
-    "downward=true,facing=east": {
-      "model": "csm:signpost",
-      "y": 90,
-      "submodel": {
-        "extension": {
-          "model": "csm:signpost",
-          "transform": {
-            "translation": [
-              0,
-              -1,
-              0
-            ]
-          }
-        }
-      }
-    },
-    "downward=true,facing=south": {
-      "model": "csm:signpost",
-      "y": 180,
-      "submodel": {
-        "extension": {
-          "model": "csm:signpost",
-          "transform": {
-            "translation": [
-              0,
-              -1,
-              0
-            ]
-          }
-        }
-      }
-    },
-    "downward=true,facing=west": {
-      "model": "csm:signpost",
-      "y": 270,
-      "submodel": {
-        "extension": {
-          "model": "csm:signpost",
-          "transform": {
-            "translation": [
-              0,
-              -1,
-              0
-            ]
+    "downward": {
+      "false": {},
+      "true": {
+        "submodel": {
+          "extension": {
+            "model": "csm:metal_signpost",
+            "transform": {
+              "translation": [
+                0.0,
+                -1.0,
+                0.0
+              ]
+            }
           }
         }
       }
