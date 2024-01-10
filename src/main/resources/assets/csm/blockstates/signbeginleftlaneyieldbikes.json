@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:signbeginleftlaneyieldbikes"
+    },
+    "facing=north": {
+      "model": "csm:signbeginleftlaneyieldbikes"
+    },
+    "facing=east": {
+      "model": "csm:signbeginleftlaneyieldbikes",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:signbeginleftlaneyieldbikes",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:signbeginleftlaneyieldbikes",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:signbeginleftlaneyieldbikes",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:signbeginleftlaneyieldbikes",
+      "x": 90
+    }
+  }
+}
