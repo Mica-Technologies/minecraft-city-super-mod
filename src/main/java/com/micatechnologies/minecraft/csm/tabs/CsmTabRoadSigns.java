@@ -28,6 +28,8 @@ import com.micatechnologies.minecraft.csm.trafficsigns.BlockSign3left;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockSign3right;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockSign3wayt;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockSign4way;
+import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignBeginLeftLaneYieldBikes;
+import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignBeginRightLaneYieldBikes;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignBikeLane;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignBikeSignal;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignBikeSignalDoubleSided;
@@ -583,6 +585,11 @@ public class CsmTabRoadSigns extends CsmTab {
     initTabBlock(BlockSignarv.class, fmlPreInitializationEvent); // Signarv
     initTabBlock(BlockSignatv.class, fmlPreInitializationEvent); // Signatv
     initTabBlock(BlockSignaxle5tonlimit.class, fmlPreInitializationEvent); // Signaxle5tonlimit
+    initTabBlock(BlockSignBeginLeftLaneYieldBikes.class,
+        fmlPreInitializationEvent); // BlockSignBeginLeftLaneYieldBikes
+    initTabBlock(BlockSignBeginRightLaneYieldBikes.class,
+        fmlPreInitializationEvent); // BlockSignBeginRightLaneYieldBikes
+    initTabBlock(BlockSignbicycle.class, fmlPreInitializationEvent); // Signbicycle
     initTabBlock(BlockSignbicycle.class, fmlPreInitializationEvent); // Signbicycle
     initTabBlock(BlockSignbikelaneahead.class, fmlPreInitializationEvent); // Signbikelaneahead
     initTabBlock(BlockSignbikelaneends.class, fmlPreInitializationEvent); // Signbikelaneends
