@@ -4,3 +4,9 @@ task printVersionNumber {
         println project.version
     }
 }
+
+task printGameVersionNumber {
+    doLast {
+        println project.findProperty('minecraftVersion')
+    }
+}

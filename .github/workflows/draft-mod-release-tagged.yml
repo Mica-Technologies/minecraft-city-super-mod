@@ -11,59 +11,63 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Set Up JDK 1.8
-        uses: actions/setup-java@v3
+        uses: actions/checkout@v4
         with:
-          distribution: "adopt"
-          java-version: "8"
+          fetch-depth: 0
 
-      - name: Save Branch Name to GITHUB_ENV
-        id: branch-name
-        run: echo "branch_name=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
-
-      - name: Setup Gradle Dependencies Cache
-        uses: actions/cache@v3
-        if: ${{ always() }}
+      - uses: nowsprinting/check-version-format-action@v3
+        id: version
         with:
-          path: ~/.gradle/caches
-          key: ${{ runner.os }}-gradle-caches-${{ hashFiles('**/*.gradle', '**/*.gradle.kts') }}
+          prefix: 'v'
 
-      - name: Setup Gradle Wrapper Cache
-        uses: actions/cache@v3
-        if: ${{ always() }}
+      - name: Set Up JDK 17
+        uses: actions/setup-java@v4
         with:
-          path: ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}
+          distribution: 'corretto'
+          java-version: '17'
+
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
 
       - name: Assemble mod with Gradle
-        run: ./gradlew assemble -Dhttp.socketTimeout=60000 -Dhttp.connectionTimeout=60000 -Dorg.gradle.internal.http.socketTimeout=60000 -Dorg.gradle.internal.http.connectionTimeout=60000
+        run: ./gradlew build -Dhttp.socketTimeout=60000 -Dhttp.connectionTimeout=60000 -Dorg.gradle.internal.http.socketTimeout=60000 -Dorg.gradle.internal.http.connectionTimeout=60000
 
-      - name: Store YYYY-MM-DD-HH-mm-ss in GITHUB_ENV
-        run: echo "time_stamp=$(date +%Y-%m-%d-%H-%M-%S)" >> $GITHUB_ENV
-
-      - name: Save Gradle version to GITHUB_ENV
+      - name: Save Mod version to GITHUB_ENV
         run: echo "version_number=$(${{github.workspace}}/gradlew -q printVersionNumber)" >> $GITHUB_ENV
 
-      - name: Save Jar SHA1 to GITHUB_ENV
-        run: |
-          sha=`sha1sum ./build/libs/minecraft-city-super-mod-${{env.version_number}}.jar`
-          echo "jar_sha1=$sha" >> $GITHUB_ENV
+      - name: Save Game version to GITHUB_ENV
+        run: echo "mc_version_number=$(${{github.workspace}}/gradlew -q printGameVersionNumber)" >> $GITHUB_ENV
 
       - name: Copy assembled mod .jar to GitHub Actions workspace
         run: cp ./build/libs/minecraft-city-super-mod-${{env.version_number}}.jar ./
+
+      - name: Calculate Hashes for the Jar
+        id: calculate-hashes
+        run: |
+          sha1=$(sha1sum ./minecraft-city-super-mod-${{env.version_number}}.jar | awk '{print $1}')
+          md5=$(md5sum ./minecraft-city-super-mod-${{env.version_number}}.jar | awk '{print $1}')
+          sha256=$(sha256sum ./minecraft-city-super-mod-${{env.version_number}}.jar | awk '{print $1}')
+          crc32=$(cksum ./minecraft-city-super-mod-${{env.version_number}}.jar | awk '{print $1}')
+          echo "::set-output name=sha1::$sha1"
+          echo "::set-output name=md5::$md5"
+          echo "::set-output name=sha256::$sha256"
+          echo "::set-output name=crc32::$crc32"
 
       - name: Create draft release entry with assembled mod .jar
         uses: softprops/action-gh-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: csm-mainbuild-${{ github.sha }}
-          target_commitish: ${{ github.sha }}
-          name: Draft Release Build ${{ env.time_stamp }}UTC (${{ github.sha }})
-          body: Draft Release Build from branch ${{ env.branch_name }} of commit SHA ${{ github.sha }} at time ${{ env.time_stamp }}UTC. The SHA-1 sum of the JAR is ${{ env.jar_sha1 }}. EDIT THIS BODY PRIOR TO RELEASE.
-          draft: true
+          name: Release ${{env.version_number}} (${{ env.mc_version_number }})
+          body: |
+            Release of CSM
+            Mod Version: ${{ env.version_number }}
+            Game Version: ${{ env.mc_version_number }}
+
+            SHA-1: `${{ steps.calculate-hashes.outputs.sha1 }}`
+            SHA-256: `${{ steps.calculate-hashes.outputs.sha256 }}`
+            MD5: `${{ steps.calculate-hashes.outputs.md5 }}`
+            CRC-32: `${{ steps.calculate-hashes.outputs.crc32 }}`
           prerelease: false
           generate_release_notes: true
           files: |
