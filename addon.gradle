@@ -1,0 +1,6 @@
+// Add any additional Gradle commands or configuration here
+task printVersionNumber {
+    doLast {
+        println project.version
+    }
+}
