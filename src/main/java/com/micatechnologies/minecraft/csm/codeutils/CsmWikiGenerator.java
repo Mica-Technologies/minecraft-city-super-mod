@@ -82,7 +82,7 @@ public class CsmWikiGenerator {
   private static Map<CreativeTabs, List<Block>> groupBlocksByTab(Collection<Block> blocks) {
     Map<CreativeTabs, List<Block>> blocksByTab = new HashMap<>();
     for (Block block : blocks) {
-      blocksByTab.computeIfAbsent(block.getCreativeTabToDisplayOn(), k -> new ArrayList<>())
+      blocksByTab.computeIfAbsent(block.getCreativeTab(), k -> new ArrayList<>())
           .add(block);
     }
     return blocksByTab;

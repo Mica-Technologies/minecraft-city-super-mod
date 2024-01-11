@@ -37,7 +37,7 @@ public abstract class AbstractItemSpade extends ItemSpade implements IHasModel, 
    */
   public AbstractItemSpade(int maxDamage, int maxStackSize, ToolMaterial material) {
     super(material);
-    setUnlocalizedName(getItemRegistryName());
+    setTranslationKey(getItemRegistryName());
     setRegistryName(CsmConstants.MOD_NAMESPACE, getItemRegistryName());
     setMaxDamage(maxDamage);
     setMaxStackSize(maxStackSize);

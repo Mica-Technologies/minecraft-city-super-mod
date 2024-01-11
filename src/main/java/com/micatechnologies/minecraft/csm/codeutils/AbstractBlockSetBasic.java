@@ -78,7 +78,7 @@ public abstract class AbstractBlockSetBasic extends AbstractBlock implements IHa
      * @since 1.0
      */
     public BlockSetVariantFence() {
-      super(AbstractBlockSetBasic.this.blockMaterial);
+      super(AbstractBlockSetBasic.this.material);
     }
 
     /**
@@ -116,7 +116,7 @@ public abstract class AbstractBlockSetBasic extends AbstractBlock implements IHa
      * @since 1.0
      */
     public BlockSetVariantSlab() {
-      super(AbstractBlockSetBasic.this.blockMaterial, AbstractBlockSetBasic.this.blockSoundType,
+      super(AbstractBlockSetBasic.this.material, AbstractBlockSetBasic.this.blockSoundType,
           AbstractBlockSetBasic.this.getHarvestTool(AbstractBlockSetBasic.this.getDefaultState()),
           AbstractBlockSetBasic.this.getHarvestLevel(AbstractBlockSetBasic.this.getDefaultState()),
           AbstractBlockSetBasic.this.blockHardness, AbstractBlockSetBasic.this.blockResistance,

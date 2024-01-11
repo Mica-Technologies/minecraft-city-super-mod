@@ -75,7 +75,7 @@ public abstract class AbstractBlockSlab extends BlockSlab implements IHasModel, 
       float lightLevel,
       int lightOpacity) {
     super(material, material.getMaterialMapColor());
-    AbstractBlockSlab.this.setUnlocalizedName(AbstractBlockSlab.this.getBlockRegistryName());
+    AbstractBlockSlab.this.setTranslationKey(AbstractBlockSlab.this.getBlockRegistryName());
     AbstractBlockSlab.this.setRegistryName(CsmConstants.MOD_NAMESPACE,
         AbstractBlockSlab.this.getBlockRegistryName());
     AbstractBlockSlab.this.setSoundType(soundType);
@@ -157,12 +157,12 @@ public abstract class AbstractBlockSlab extends BlockSlab implements IHasModel, 
    *
    * @return the unlocalized name of the slab block
    *
-   * @see BlockSlab#getUnlocalizedName(int)
+   * @see BlockSlab#getTranslationKey(int)
    * @since 1.0
    */
   @Override
-  public String getUnlocalizedName(int meta) {
-    return super.getUnlocalizedName();
+  public String getTranslationKey(int meta) {
+    return super.getTranslationKey();
   }
 
   /**
@@ -272,7 +272,7 @@ public abstract class AbstractBlockSlab extends BlockSlab implements IHasModel, 
     return Item.getItemFromBlock(CsmRegistry.getBlocksMap()
         .get(AbstractBlockSlab.this.getRegistryName() != null ?
             AbstractBlockSlab.this.getRegistryName().toString() :
-            AbstractBlockSlab.this.getUnlocalizedName()));
+            AbstractBlockSlab.this.getTranslationKey()));
   }
 
   /**
@@ -292,7 +292,7 @@ public abstract class AbstractBlockSlab extends BlockSlab implements IHasModel, 
     return new ItemStack(CsmRegistry.getBlocksMap()
         .get(AbstractBlockSlab.this.getRegistryName() != null ?
             AbstractBlockSlab.this.getRegistryName().toString() :
-            AbstractBlockSlab.this.getUnlocalizedName()));
+            AbstractBlockSlab.this.getTranslationKey()));
   }
 
   /**

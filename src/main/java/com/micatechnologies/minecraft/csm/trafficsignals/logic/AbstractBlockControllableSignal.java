@@ -76,7 +76,7 @@ public abstract class AbstractBlockControllableSignal extends AbstractBlockRotat
     int colorVal = meta % 4;
     int facingVal = (meta - colorVal) / 4;
 
-    return getDefaultState().withProperty(FACING, EnumFacing.getHorizontal(facingVal))
+    return getDefaultState().withProperty(FACING, EnumFacing.byHorizontalIndex(facingVal))
         .withProperty(COLOR, colorVal);
   }
 

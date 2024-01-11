@@ -65,7 +65,7 @@ public abstract class CsmTab {
         @SideOnly(Side.CLIENT)
         @Override
         @Nonnull
-        public ItemStack getTabIconItem() {
+        public ItemStack createIcon() {
           return new ItemStack(getTabIcon(), TAB_ICON_STACK_ITEM_COUNT);
         }
 

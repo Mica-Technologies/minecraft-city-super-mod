@@ -54,7 +54,7 @@ public class BlockTrafficSignalController extends AbstractBlock implements ICsmT
   @Override
   public void neighborChanged(IBlockState state, World world, BlockPos pos, Block blockIn,
       BlockPos p_189540_5_) {
-    int powered = world.isBlockIndirectlyGettingPowered(pos);
+    int powered = world.getRedstonePowerFromNeighbors(pos);
     world.setBlockState(pos, state.withProperty(POWERED, powered > 0), 3);
   }
 
@@ -171,7 +171,7 @@ public class BlockTrafficSignalController extends AbstractBlock implements ICsmT
       IBlockState state,
       EntityLivingBase placer,
       ItemStack stack) {
-    int powered = world.isBlockIndirectlyGettingPowered(pos);
+    int powered = world.getRedstonePowerFromNeighbors(pos);
     world.setBlockState(pos, state.withProperty(POWERED, powered > 0), 2);
   }
 

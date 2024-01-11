@@ -103,7 +103,7 @@ public class CsmRegistry {
     // Use the block's registry name as the key
     String key = block.getRegistryName() != null
         ? block.getRegistryName().toString()
-        : block.getUnlocalizedName();
+        : block.getTranslationKey();
 
     // Check if the block is already registered.
     if (BLOCKS.containsKey(key)) {

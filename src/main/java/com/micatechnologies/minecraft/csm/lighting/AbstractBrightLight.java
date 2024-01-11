@@ -247,7 +247,7 @@ public abstract class AbstractBrightLight extends AbstractBlockRotatableNSEW {
     int stateVal = meta % 4;
     int facingVal = (meta - stateVal) / 4;
 
-    return getDefaultState().withProperty(FACING, EnumFacing.getHorizontal(facingVal))
+    return getDefaultState().withProperty(FACING, EnumFacing.byHorizontalIndex(facingVal))
         .withProperty(STATE, stateVal);
   }
 

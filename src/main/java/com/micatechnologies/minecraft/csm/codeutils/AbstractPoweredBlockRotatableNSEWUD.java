@@ -141,7 +141,7 @@ public abstract class AbstractPoweredBlockRotatableNSEWUD extends AbstractBlock 
   public IBlockState getStateFromMeta(int meta) {
     int facingVal = meta & 7;
     boolean poweredVal = (meta & 8) != 0;
-    return getDefaultState().withProperty(FACING, EnumFacing.getFront(facingVal))
+    return getDefaultState().withProperty(FACING, EnumFacing.byIndex(facingVal))
         .withProperty(POWERED, poweredVal);
   }
 
@@ -175,7 +175,7 @@ public abstract class AbstractPoweredBlockRotatableNSEWUD extends AbstractBlock 
   @Override
   public void neighborChanged(IBlockState state, World world, BlockPos pos, Block blockIn,
       BlockPos fromPos) {
-    int powered = world.isBlockIndirectlyGettingPowered(pos);
+    int powered = world.getRedstonePowerFromNeighbors(pos);
     world.setBlockState(pos, state.withProperty(POWERED, powered > 0), 3);
   }
 

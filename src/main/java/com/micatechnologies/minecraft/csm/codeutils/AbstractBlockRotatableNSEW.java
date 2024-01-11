@@ -143,7 +143,7 @@ public abstract class AbstractBlockRotatableNSEW extends AbstractBlock {
     else if (facingVal < 0 || facingVal > 3) {
       facingVal = 0;
     }
-    return getDefaultState().withProperty(FACING, EnumFacing.getHorizontal(facingVal));
+    return getDefaultState().withProperty(FACING, EnumFacing.byHorizontalIndex(facingVal));
   }
 
   /**

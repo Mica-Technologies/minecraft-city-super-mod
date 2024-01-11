@@ -24,7 +24,7 @@ public class BlockFireAlarmWheelock7002TRed extends AbstractBlockFireAlarmSounde
     int facingVal = meta % 6;
     int soundVal = (int) Math.floor((double) meta / 6.0);
     return this.getDefaultState()
-        .withProperty(FACING, EnumFacing.getFront(facingVal))
+        .withProperty(FACING, EnumFacing.byIndex(facingVal))
         .withProperty(SOUND, soundVal);
   }
 
