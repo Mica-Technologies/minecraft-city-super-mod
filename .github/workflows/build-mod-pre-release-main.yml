@@ -29,7 +29,7 @@ jobs:
         run: |
           calculatedSha=$(git rev-parse --short ${{ github.sha }})
           echo "COMMIT_SHORT_SHA=$calculatedSha" >> $GITHUB_ENV
-          newTag="pre-${{env.COMMIT_SHORT_SHA}}"
+          newTag="pre-$calculatedSha"
           echo "PRE_TAG=$newTag" >> $GITHUB_ENV
 
       - name: Create pre-release tag
