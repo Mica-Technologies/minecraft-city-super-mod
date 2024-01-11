@@ -565,7 +565,7 @@ public class ArchUpgradeClassConverter
 
         if ( previousVersionHeaderFound ) {
             // Get block ID
-            String blockIdRegex1 = "setUnlocalizedName\\(\\s*\"(\\w+)\"\\s*\\)";
+            String blockIdRegex1 = "setTranslationKey\\(\\s*\"(\\w+)\"\\s*\\)";
             String blockIdRegex2 = "setRegistryName\\(\\s*\"(\\w+)\"\\s*\\)";
             int blockIdIndex = 1;
             Matcher matcher = Pattern.compile( blockIdRegex1 ).matcher( fileContents );
@@ -986,7 +986,7 @@ public class ArchUpgradeClassConverter
 
             // Get block ID
             String blockIdRegex1 = "\\.setRegistryName\\(\\s*\"(\\w+)\"\\s*\\)";
-            String blockIdRegex2 = "setUnlocalizedName\\(\\s*\"(\\w+)\"\\s*\\)";
+            String blockIdRegex2 = "setTranslationKey\\(\\s*\"(\\w+)\"\\s*\\)";
             int blockIdIndex = 1;
             Matcher matcher = Pattern.compile( blockIdRegex1 ).matcher( fileContents );
             String blockId;

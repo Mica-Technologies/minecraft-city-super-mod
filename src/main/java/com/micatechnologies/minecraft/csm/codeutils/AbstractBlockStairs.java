@@ -54,7 +54,7 @@ public abstract class AbstractBlockStairs extends BlockStairs implements IHasMod
       float lightLevel,
       int lightOpacity) {
     super(modelBlock.getDefaultState());
-    AbstractBlockStairs.this.setUnlocalizedName(AbstractBlockStairs.this.getBlockRegistryName());
+    AbstractBlockStairs.this.setTranslationKey(AbstractBlockStairs.this.getBlockRegistryName());
     AbstractBlockStairs.this.setRegistryName(CsmConstants.MOD_NAMESPACE,
         AbstractBlockStairs.this.getBlockRegistryName());
     AbstractBlockStairs.this.setSoundType(soundType);

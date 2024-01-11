@@ -2,13 +2,35 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <annotationProcessing>
-      <profile name="Maven default annotation processors profile" enabled="true">
-        <sourceOutputDir name="target/generated-sources/annotations" />
-        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+      <profile name="Gradle Imported" enabled="true">
         <outputRelativeToContentRoot value="true" />
-        <module name="dev-env-utils" />
+        <processorPath useClasspath="false">
+          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.bsideup.jabel/jabel-javac-plugin/1.0.0/f6ec2a4deac41871ea4366ff8680f51413a18139/jabel-javac-plugin-1.0.0.jar" />
+          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.java.dev.jna/jna-platform/5.13.0/88e9a306715e9379f3122415ef4ae759a352640d/jna-platform-5.13.0.jar" />
+          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jetbrains/annotations/24.1.0/7af6a669488450c4a07c2c3254e2151df42d7d04/annotations-24.1.0.jar" />
+          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.bytebuddy/byte-buddy/1.12.18/875a9c3f29d2f6f499dfd60d76e97a343f9b1233/byte-buddy-1.12.18.jar" />
+          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.bytebuddy/byte-buddy-agent/1.12.18/417a7310a7bf1c1aae5ca502d26515f9c2f94396/byte-buddy-agent-1.12.18.jar" />
+          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.java.dev.jna/jna/5.13.0/1200e7ebeedbe0d10062093f32925a912020e747/jna-5.13.0.jar" />
+        </processorPath>
+        <module name="minecraft-city-super-mod.main" />
+      </profile>
+      <profile name="Gradle Imported" enabled="true">
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.bsideup.jabel/jabel-javac-plugin/1.0.0/f6ec2a4deac41871ea4366ff8680f51413a18139/jabel-javac-plugin-1.0.0.jar" />
+          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.bytebuddy/byte-buddy/1.12.18/875a9c3f29d2f6f499dfd60d76e97a343f9b1233/byte-buddy-1.12.18.jar" />
+          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.bytebuddy/byte-buddy-agent/1.12.18/417a7310a7bf1c1aae5ca502d26515f9c2f94396/byte-buddy-agent-1.12.18.jar" />
+          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.java.dev.jna/jna/5.12.1/b1e93a735caea94f503e95e6fe79bf9cdc1e985d/jna-5.12.1.jar" />
+        </processorPath>
+        <module name="minecraft-city-super-mod.test" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel target="1.8" />
+    <bytecodeTargetLevel target="17" />
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_STRING" value="-encoding utf8" />
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="minecraft-city-super-mod.main" options="" />
+    </option>
   </component>
 </project>

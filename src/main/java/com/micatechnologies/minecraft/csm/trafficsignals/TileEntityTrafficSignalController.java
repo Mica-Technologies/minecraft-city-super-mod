@@ -971,7 +971,7 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
     // Set true if power loss fallback to flash mode is enabled and the traffic signal controller
     // is currently
     // in a power loss state
-    if (powerLossFallbackToFlashMode && getWorld().isBlockIndirectlyGettingPowered(getPos()) <= 0) {
+    if (powerLossFallbackToFlashMode && getWorld().getRedstonePowerFromNeighbors(getPos()) <= 0) {
       inFallbackFlashMode = true;
     }
 

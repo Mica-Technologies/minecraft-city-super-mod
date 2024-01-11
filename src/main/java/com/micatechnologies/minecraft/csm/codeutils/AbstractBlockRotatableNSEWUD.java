@@ -136,7 +136,7 @@ public abstract class AbstractBlockRotatableNSEWUD extends AbstractBlock {
     if (facingVal < 0 || facingVal > 5) {
       facingVal = 0;
     }
-    return getDefaultState().withProperty(FACING, EnumFacing.getFront(facingVal));
+    return getDefaultState().withProperty(FACING, EnumFacing.byIndex(facingVal));
   }
 
   /**

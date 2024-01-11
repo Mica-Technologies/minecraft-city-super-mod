@@ -34,7 +34,7 @@ public abstract class AbstractItem extends Item implements IHasModel, ICsmItem {
    * @since 1.0
    */
   public AbstractItem(int maxDamage, int maxStackSize) {
-    setUnlocalizedName(getItemRegistryName());
+    setTranslationKey(getItemRegistryName());
     setRegistryName(CsmConstants.MOD_NAMESPACE, getItemRegistryName());
     setMaxDamage(maxDamage);
     setMaxStackSize(maxStackSize);

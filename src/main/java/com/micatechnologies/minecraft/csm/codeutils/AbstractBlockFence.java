@@ -41,7 +41,7 @@ public abstract class AbstractBlockFence extends BlockFence implements IHasModel
    */
   public AbstractBlockFence(Material material) {
     super(material, material.getMaterialMapColor());
-    AbstractBlockFence.this.setUnlocalizedName(AbstractBlockFence.this.getBlockRegistryName());
+    AbstractBlockFence.this.setTranslationKey(AbstractBlockFence.this.getBlockRegistryName());
     AbstractBlockFence.this.setRegistryName(CsmConstants.MOD_NAMESPACE,
         AbstractBlockFence.this.getBlockRegistryName());
     CsmRegistry.registerBlock(AbstractBlockFence.this);
@@ -72,7 +72,7 @@ public abstract class AbstractBlockFence extends BlockFence implements IHasModel
       float lightLevel,
       int lightOpacity) {
     super(material, material.getMaterialMapColor());
-    AbstractBlockFence.this.setUnlocalizedName(AbstractBlockFence.this.getBlockRegistryName());
+    AbstractBlockFence.this.setTranslationKey(AbstractBlockFence.this.getBlockRegistryName());
     AbstractBlockFence.this.setRegistryName(CsmConstants.MOD_NAMESPACE,
         AbstractBlockFence.this.getBlockRegistryName());
     AbstractBlockFence.this.setSoundType(soundType);

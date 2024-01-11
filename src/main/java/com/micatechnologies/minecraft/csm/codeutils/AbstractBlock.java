@@ -41,7 +41,7 @@ public abstract class AbstractBlock extends Block implements IHasModel, ICsmBloc
    */
   public AbstractBlock(Material material) {
     super(material);
-    setUnlocalizedName(getBlockRegistryName());
+    setTranslationKey(getBlockRegistryName());
     setRegistryName(CsmConstants.MOD_NAMESPACE, getBlockRegistryName());
     CsmRegistry.registerBlock(this);
     CsmRegistry.registerItem(
@@ -71,7 +71,7 @@ public abstract class AbstractBlock extends Block implements IHasModel, ICsmBloc
       float lightLevel,
       int lightOpacity) {
     super(material);
-    setUnlocalizedName(getBlockRegistryName());
+    setTranslationKey(getBlockRegistryName());
     setRegistryName(CsmConstants.MOD_NAMESPACE, getBlockRegistryName());
     setSoundType(soundType);
     setHarvestLevel(harvestToolClass, harvestLevel);
@@ -161,12 +161,12 @@ public abstract class AbstractBlock extends Block implements IHasModel, ICsmBloc
    *
    * @return the block's render layer
    *
-   * @see Block#getBlockLayer()
+   * @see Block#getRenderLayer()
    * @since 1.0
    */
   @Override
   @SideOnly(Side.CLIENT)
-  public BlockRenderLayer getBlockLayer() {
+  public BlockRenderLayer getRenderLayer() {
     return getBlockRenderLayer();
   }
 

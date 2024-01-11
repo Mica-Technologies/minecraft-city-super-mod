@@ -124,7 +124,7 @@ public class BlockFireAlarmNestProtectGen2 extends AbstractBlockRotatableNSEWUD 
     int y = pos.getY();
     int z = pos.getZ();
     Block block = this;
-    if (world.isBlockIndirectlyGettingPowered(new BlockPos(x, y, z)) > 0) {
+    if (world.getRedstonePowerFromNeighbors(new BlockPos(x, y, z)) > 0) {
       {
         world.playSound(null, x, y, z,
             net.minecraft.util.SoundEvent.REGISTRY.getObject(
