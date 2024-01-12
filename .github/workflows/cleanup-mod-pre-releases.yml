@@ -2,7 +2,7 @@ name: Cleanup Old/Outdated Mod Pre-Release(s)
 
 on:
   workflow_run:
-    workflows: [ "Build Mod Pre-Release (Main Branch)" ]
+    workflows: [ "Build Mod Release/Pre-Release (Main Branch)" ]
     types:
       - completed
 
