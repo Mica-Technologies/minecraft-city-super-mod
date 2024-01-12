@@ -1,11 +1,25 @@
 // Add any additional Gradle commands or configuration here
-task printVersionNumber {
+
+// TOOLS FOR GITHUB ACTIONS
+task printModVersion {
     doLast {
         println project.version
     }
 }
 
-task printGameVersionNumber {
+task printArchivesBaseName {
+    doLast {
+        println project.findProperty('archivesBaseName')
+    }
+}
+
+task printModName {
+    doLast {
+        println project.findProperty('modName')
+    }
+}
+
+task printMinecraftVersion {
     doLast {
         println project.findProperty('minecraftVersion')
     }
