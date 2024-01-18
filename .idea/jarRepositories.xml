@@ -2,24 +2,19 @@
 <project version="4">
   <component name="RemoteRepositoriesConfiguration">
     <remote-repository>
+      <option name="id" value="GTNH Maven" />
+      <option name="name" value="GTNH Maven" />
+      <option name="url" value="https://nexus.gtnewhorizons.com/repository/public/" />
+    </remote-repository>
+    <remote-repository>
       <option name="id" value="central" />
-      <option name="name" value="Maven Central repository" />
-      <option name="url" value="https://repo1.maven.org/maven2" />
+      <option name="name" value="Central Repository" />
+      <option name="url" value="https://repo.maven.apache.org/maven2" />
     </remote-repository>
     <remote-repository>
-      <option name="id" value="jboss.community" />
-      <option name="name" value="JBoss Community repository" />
-      <option name="url" value="https://repository.jboss.org/nexus/content/repositories/public/" />
-    </remote-repository>
-    <remote-repository>
-      <option name="id" value="Modrinth" />
-      <option name="name" value="Modrinth" />
-      <option name="url" value="https://api.modrinth.com/maven" />
-    </remote-repository>
-    <remote-repository>
-      <option name="id" value="MavenRepo" />
-      <option name="name" value="MavenRepo" />
-      <option name="url" value="https://repo.maven.apache.org/maven2/" />
+      <option name="id" value="sponge" />
+      <option name="name" value="sponge" />
+      <option name="url" value="https://repo.spongepowered.org/maven/" />
     </remote-repository>
     <remote-repository>
       <option name="id" value="MavenLocal" />
@@ -30,6 +25,36 @@
       <option name="id" value="Curse Maven" />
       <option name="name" value="Curse Maven" />
       <option name="url" value="https://www.cursemaven.com" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="maven" />
+      <option name="name" value="maven" />
+      <option name="url" value="https://maven.minecraftforge.net/" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="central" />
+      <option name="name" value="Maven Central repository" />
+      <option name="url" value="https://repo1.maven.org/maven2" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="forge" />
+      <option name="name" value="forge" />
+      <option name="url" value="https://maven.minecraftforge.net" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="maven2" />
+      <option name="name" value="maven2" />
+      <option name="url" value="https://libraries.minecraft.net/" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="Cleanroom Maven" />
+      <option name="name" value="Cleanroom Maven" />
+      <option name="url" value="https://maven.cleanroommc.com" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="MavenRepo" />
+      <option name="name" value="MavenRepo" />
+      <option name="url" value="https://repo.maven.apache.org/maven2/" />
     </remote-repository>
     <remote-repository>
       <option name="id" value="BlameJared Maven" />
@@ -47,34 +72,24 @@
       <option name="url" value="http://jenkins.usrv.eu:8081/nexus/content/groups/public" />
     </remote-repository>
     <remote-repository>
-      <option name="id" value="forge" />
-      <option name="name" value="forge" />
-      <option name="url" value="https://maven.minecraftforge.net" />
+      <option name="id" value="jboss.community" />
+      <option name="name" value="JBoss Community repository" />
+      <option name="url" value="https://repository.jboss.org/nexus/content/repositories/public/" />
     </remote-repository>
     <remote-repository>
-      <option name="id" value="sponge" />
-      <option name="name" value="sponge" />
-      <option name="url" value="https://repo.spongepowered.org/maven/" />
+      <option name="id" value="Modrinth" />
+      <option name="name" value="Modrinth" />
+      <option name="url" value="https://api.modrinth.com/maven" />
     </remote-repository>
     <remote-repository>
-      <option name="id" value="Cleanroom Maven" />
-      <option name="name" value="Cleanroom Maven" />
-      <option name="url" value="https://maven.cleanroommc.com" />
+      <option name="id" value="MavenLocal" />
+      <option name="name" value="MavenLocal" />
+      <option name="url" value="file:/$MAVEN_REPOSITORY$/" />
     </remote-repository>
     <remote-repository>
-      <option name="id" value="GTNH Maven" />
-      <option name="name" value="GTNH Maven" />
-      <option name="url" value="https://nexus.gtnewhorizons.com/repository/public/" />
-    </remote-repository>
-    <remote-repository>
-      <option name="id" value="maven2" />
-      <option name="name" value="maven2" />
-      <option name="url" value="https://libraries.minecraft.net/" />
-    </remote-repository>
-    <remote-repository>
-      <option name="id" value="maven" />
-      <option name="name" value="maven" />
-      <option name="url" value="https://maven.minecraftforge.net/" />
+      <option name="id" value="log4j2beta9fixed" />
+      <option name="name" value="log4j2beta9fixed" />
+      <option name="url" value="https://files.prismlauncher.org/maven/" />
     </remote-repository>
   </component>
 </project>
