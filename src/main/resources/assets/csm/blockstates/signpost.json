@@ -1,30 +1,89 @@
 {
+  "forge_marker": 1,
+  "defaults": {
+    "uvlock": true
+  },
   "variants": {
     "normal": {
       "model": "csm:signpost"
     },
-    "facing=north": {
+    "downward=false,facing=north": {
       "model": "csm:signpost"
     },
-    "facing=east": {
+    "downward=false,facing=east": {
       "model": "csm:signpost",
       "y": 90
     },
-    "facing=south": {
+    "downward=false,facing=south": {
       "model": "csm:signpost",
       "y": 180
     },
-    "facing=west": {
+    "downward=false,facing=west": {
       "model": "csm:signpost",
       "y": 270
     },
-    "facing=up": {
+    "downward=true,facing=north": {
       "model": "csm:signpost",
-      "x": 270
+      "submodel": {
+        "extension": {
+          "model": "csm:signpost",
+          "transform": {
+            "translation": [
+              0,
+              -1,
+              0
+            ]
+          }
+        }
+      }
     },
-    "facing=down": {
+    "downward=true,facing=east": {
       "model": "csm:signpost",
-      "x": 90
+      "y": 90,
+      "submodel": {
+        "extension": {
+          "model": "csm:signpost",
+          "transform": {
+            "translation": [
+              0,
+              -1,
+              0
+            ]
+          }
+        }
+      }
+    },
+    "downward=true,facing=south": {
+      "model": "csm:signpost",
+      "y": 180,
+      "submodel": {
+        "extension": {
+          "model": "csm:signpost",
+          "transform": {
+            "translation": [
+              0,
+              -1,
+              0
+            ]
+          }
+        }
+      }
+    },
+    "downward=true,facing=west": {
+      "model": "csm:signpost",
+      "y": 270,
+      "submodel": {
+        "extension": {
+          "model": "csm:signpost",
+          "transform": {
+            "translation": [
+              0,
+              -1,
+              0
+            ]
+          }
+        }
+      }
     }
   }
 }
