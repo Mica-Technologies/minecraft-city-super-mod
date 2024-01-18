@@ -3,7 +3,8 @@ package com.micatechnologies.minecraft.csm.tabs;
 import com.micatechnologies.minecraft.csm.CsmRegistry;
 import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
 import com.micatechnologies.minecraft.csm.lifesafety.BlockEdwardsEmergencyPhone;
-import com.micatechnologies.minecraft.csm.lifesafety.BlockElight;
+import com.micatechnologies.minecraft.csm.lifesafety.BlockEmergencyLightBlack;
+import com.micatechnologies.minecraft.csm.lifesafety.BlockEmergencyLightWhite;
 import com.micatechnologies.minecraft.csm.lifesafety.BlockExitSignSingleSided;
 import com.micatechnologies.minecraft.csm.lifesafety.BlockFireAlarmControlPanel;
 import com.micatechnologies.minecraft.csm.lifesafety.BlockFireAlarmESTAdaptahornGray;
@@ -197,7 +198,8 @@ public class CsmTabLifeSafety extends CsmTab {
   public void initTabElements(FMLPreInitializationEvent fmlPreInitializationEvent) {
     initTabBlock(BlockEdwardsEmergencyPhone.class,
         fmlPreInitializationEvent); // EdwardsEmergencyPhone
-    initTabBlock(BlockElight.class, fmlPreInitializationEvent); // Elight
+    initTabBlock(BlockEmergencyLightWhite.class, fmlPreInitializationEvent); // Elight
+    initTabBlock(BlockEmergencyLightBlack.class, fmlPreInitializationEvent); // ElightBlack
     initTabBlock(BlockExitSignSingleSided.class, fmlPreInitializationEvent); // ExitSignSingleSided
     initTabBlock(BlockFireAlarmControlPanel.class,
         fmlPreInitializationEvent); // FireAlarmControlPanel
