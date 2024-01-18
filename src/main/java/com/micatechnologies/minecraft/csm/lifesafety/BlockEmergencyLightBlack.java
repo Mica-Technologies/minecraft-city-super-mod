@@ -12,9 +12,9 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 
-public class BlockElight extends AbstractPoweredBlockRotatableNSEWUD {
+public class BlockEmergencyLightBlack extends AbstractPoweredBlockRotatableNSEWUD {
 
-  public BlockElight() {
+  public BlockEmergencyLightBlack() {
     super(Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0, false);
     this.setDefaultState(this.blockState.getBaseState()
         .withProperty(FACING, EnumFacing.NORTH)
@@ -35,7 +35,7 @@ public class BlockElight extends AbstractPoweredBlockRotatableNSEWUD {
    */
   @Override
   public String getBlockRegistryName() {
-    return "elight";
+    return "elightblack";
   }
 
   /**
