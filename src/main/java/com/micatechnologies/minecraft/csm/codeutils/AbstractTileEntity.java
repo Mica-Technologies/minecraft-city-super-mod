@@ -1,7 +1,9 @@
 package com.micatechnologies.minecraft.csm.codeutils;
 
+import java.util.Objects;
 import javax.annotation.Nullable;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
@@ -9,7 +11,10 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.common.util.Constants.BlockFlags;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Abstract tile entity implementation. This class is based on the {@link TileEntity} class.
@@ -44,8 +49,11 @@ public abstract class AbstractTileEntity extends TileEntity {
     markDirty();
     if (sendClientUpdate) {
       syncServerToClient(world);
+      syncClientToServer(world);
     }
-  }  /**
+  }
+
+  /**
    * Abstract method which must be implemented to process the reading of the tile entity's NBT data
    * from the supplied NBT tag compound.
    *
@@ -71,7 +79,26 @@ public abstract class AbstractTileEntity extends TileEntity {
         }
       }
     }
-  }  /**
+  }
+
+  /**
+   * Helper method which sends a data packet to the server to update the tile entity's NBT data.
+   * This method is similar to {@link #markDirtySync(World, BlockPos)}, but is used when it is
+   * necessary to send the tile entity's NBT data to the server.
+   *
+   * @param world the block/tile entity's world
+   */
+  public void syncClientToServer(World world) {
+    if (world.isRemote) {
+      // Send an update packet to the client
+      SPacketUpdateTileEntity packet = getUpdatePacket();
+      if (packet != null) {
+        Objects.requireNonNull(Objects.requireNonNull(Minecraft.getMinecraft().getConnection()).getNetworkManager()).sendPacket(packet);
+      }
+    }
+  }
+
+  /**
    * Method which processes the reading of the tile entity's NBT data from the supplied NBT tag
    * compound.
    *
@@ -91,7 +118,9 @@ public abstract class AbstractTileEntity extends TileEntity {
    *
    * @return the NBT tag compound with the tile entity's NBT data
    */
-  public abstract NBTTagCompound writeNBT(NBTTagCompound compound);  /**
+  public abstract NBTTagCompound writeNBT(NBTTagCompound compound);
+
+  /**
    * Method which processes the writing of the tile entity's NBT data to the supplied NBT tag
    * compound.
    *
@@ -115,7 +144,9 @@ public abstract class AbstractTileEntity extends TileEntity {
   public void markDirtySync(World world, BlockPos pos, IBlockState state) {
     boolean defaultSendClientUpdate = false;
     markDirtySync(world, pos, state, defaultSendClientUpdate);
-  }  /**
+  }
+
+  /**
    * Overridden handler which returns whether the tile entity should be refreshed or not. In this
    * case, we always return false, as we don't want to refresh the tile entity.
    *
@@ -146,14 +177,11 @@ public abstract class AbstractTileEntity extends TileEntity {
     world.markBlockRangeForRenderUpdate(pos, pos);
     world.notifyBlockUpdate(pos, state, state, Constants.BlockFlags.DEFAULT);
     markDirtySync(world, pos, sendClientUpdate);
+    if (sendClientUpdate) {
+      syncServerToClient(world);
+      syncClientToServer(world);
+    }
   }
-
-
-
-
-
-
-
 
 
   /**
@@ -166,8 +194,9 @@ public abstract class AbstractTileEntity extends TileEntity {
   @Override
   @Nullable
   public SPacketUpdateTileEntity getUpdatePacket() {
+    System.err.println("getUpdatePacket: (isRemote: " + getWorld().isRemote + ")");
     // Create a new update packet with the new NBT tag compound
-    return new SPacketUpdateTileEntity(getPos(), getBlockMetadata(), getUpdateTag());
+    return new SPacketUpdateTileEntity(getPos(), getBlockMetadata(), this.getUpdateTag());
   }
 
   /**
@@ -180,9 +209,13 @@ public abstract class AbstractTileEntity extends TileEntity {
    * @param pkt            the tile entity update packet for reading the tile entity NBT data
    */
   @Override
-  public void onDataPacket(NetworkManager networkManager, SPacketUpdateTileEntity pkt) {
+  public void onDataPacket(@NotNull NetworkManager networkManager, SPacketUpdateTileEntity pkt) {
     // Read the update packet data NBT tag compound in to the tile entity NBT data
-    this.readFromNBT(pkt.getNbtCompound());
+    System.err.println("onDataPacket: (isRemote: " + getWorld().isRemote + "): ");
+    for (String key : pkt.getNbtCompound().getKeySet()) {
+      System.err.println("  " + key + ": " + pkt.getNbtCompound().getTag(key));
+    }
+    readFromNBT(pkt.getNbtCompound());
   }
 
   /**
@@ -193,9 +226,10 @@ public abstract class AbstractTileEntity extends TileEntity {
    * @return the tile entity update tag for syncing the tile entity to the client
    */
   @Override
-  public NBTTagCompound getUpdateTag() {
+  public @NotNull NBTTagCompound getUpdateTag() {
+    System.err.println("getUpdateTag: (isRemote: " + getWorld().isRemote + ")");
     // Create a new NBT tag compound and write the tile entity NBT data to it
-    return this.writeToNBT(new NBTTagCompound());
+    return writeToNBT(new NBTTagCompound());
   }
 
   /**
@@ -207,8 +241,12 @@ public abstract class AbstractTileEntity extends TileEntity {
    * @param nbtTagCompound the tile entity update tag for reading the tile entity NBT data
    */
   @Override
-  public void handleUpdateTag(NBTTagCompound nbtTagCompound) {
+  public void handleUpdateTag(@NotNull NBTTagCompound nbtTagCompound) {
+    System.err.println("handleUpdateTag: (isRemote: " + getWorld().isRemote + "): ");
+    for (String key : nbtTagCompound.getKeySet()) {
+      System.err.println("  " + key + ": " + nbtTagCompound.getTag(key));
+    }
     // Read the update tag data NBT tag compound in to the tile entity NBT data
-    this.readFromNBT(nbtTagCompound);
+    readFromNBT(nbtTagCompound);
   }
 }

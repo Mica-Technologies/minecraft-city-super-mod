@@ -22,5 +22,11 @@
  * For more details, see https://docs.gradle.org/8.0.1/userguide/java_library_plugin.html#sec:java_library_configurations_graph
  */
 dependencies {
-    implementation("net.sf.sociaal:freetts:1.2.2")
+    shadowImplementation("org.mobicents.external.freetts:freetts:1.0")
+    shadowImplementation("org.mobicents.external.freetts:en_us:1.0")
+    shadowImplementation("org.mobicents.external.freetts:cmu_us_kal:1.0")
+    shadowImplementation("org.mobicents.external.freetts:cmu_time_awb:1.0")
+    shadowImplementation("org.mobicents.external.freetts:cmulex:1.0")
+    shadowImplementation("org.mobicents.external.freetts:cmutimelex:1.0")
+    shadowImplementation("org.mobicents.external.freetts:cmudict04:1.0")
 }

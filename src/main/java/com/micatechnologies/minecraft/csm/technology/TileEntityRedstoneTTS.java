@@ -12,6 +12,8 @@ public class TileEntityRedstoneTTS extends AbstractTileEntity {
   private static final String TTS_STRING_KEY = "ttsString";
   private static final String TTS_VOICE_NAME_KEY = "ttsVoice";
 
+  private static Thread ttsThread = null;
+
   private static final String TTS_VOICE_DURATION_SRETCH_KEY = "ttsVoiceDurationStretch";
   private String ttsString = "Setup is Required!";
   private String ttsVoiceName = "kevin16";
@@ -51,35 +53,43 @@ public class TileEntityRedstoneTTS extends AbstractTileEntity {
   }
 
   public void readTtsString() {
-    Thread ttsThread = new Thread(() -> {
-      try {
-        // Get voice
-        Voice ttsVoice = VoiceManager.getInstance().getVoice(ttsVoiceName);
+    System.err.println("My position is: " + getPos());
+    System.err.println("My string is: " + ttsString);
+    System.err.println("My voice is: " + ttsVoiceName);
+    System.err.println("My duration stretch is: " + ttsVoiceDurationStretch);
+    System.err.println("World is remote: " + getWorld().isRemote);
 
-        // Allocate any required data for the voice
-        ttsVoice.allocate();
+    if (ttsThread == null || ttsThread.getState() == Thread.State.TERMINATED) {
+      ttsThread = new Thread(() -> {
+        try {
+          // Get voice
+          Voice ttsVoice = VoiceManager.getInstance().getVoice(ttsVoiceName);
 
-        // This part actually reads the text
-        ttsVoice.setVolume(
-            Minecraft.getMinecraft().gameSettings.getSoundLevel(SoundCategory.BLOCKS));
-        ttsVoice.setDurationStretch(ttsVoiceDurationStretch);
-        ttsVoice.speak(ttsString);
+          // Allocate any required data for the voice
+          ttsVoice.allocate();
 
-        // Deallocate the data
-        ttsVoice.deallocate();
-      } catch (Exception e) {
-        e.printStackTrace();
-      }
-    });
-    ttsThread.start();
+          // This part actually reads the text
+          ttsVoice.setVolume(
+              Minecraft.getMinecraft().gameSettings.getSoundLevel(SoundCategory.BLOCKS));
+          ttsVoice.setDurationStretch(ttsVoiceDurationStretch);
+          ttsVoice.speak(ttsString);
+
+          // Deallocate the data
+          ttsVoice.deallocate();
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
+      });
+      ttsThread.start();
+    }
   }
 
   public String getTtsString() {
     return ttsString;
   }
 
-  public void setTtsString(String ttsString) {
-    this.ttsString = ttsString;
+  public void setTtsString(String newTtsString) {
+    ttsString = newTtsString;
     System.err.println("Trig time:" + System.currentTimeMillis());
     markDirtySync(getWorld(), getPos(), true);
     System.out.println("setTtsString (remote: " +
