@@ -17,18 +17,18 @@ public class CsmConstants {
    * Note: Changing this value has little effect on new maps, but existing maps will lost any
    * previously placed blocks in the previous namespace.
    */
-  public static final String MOD_NAMESPACE = "csm";
+  public static final String MOD_NAMESPACE = Tags.MODID;
 
   /**
    * The name of the mod. This name is displayed in the mod list and in the mod configuration
    * screen.
    */
-  public static final String MOD_NAME = "City Super Mod";
+  public static final String MOD_NAME = Tags.MODNAME;
 
   /**
    * The version of the mod. This number should be incremented by 0.0.1 for bug fix releases,
    * incremented by 0.1 for feature and bug fix releases, or incremented by 1.0 for large or
    * breaking changes.
    */
-  public static final String MOD_VERSION = "2023.2.1";
+  public static final String MOD_VERSION = Tags.VERSION;
 }
