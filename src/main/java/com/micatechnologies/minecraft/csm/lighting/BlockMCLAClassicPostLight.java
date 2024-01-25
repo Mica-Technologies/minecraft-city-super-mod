@@ -24,8 +24,8 @@ public class BlockMCLAClassicPostLight extends AbstractBrightLight {
    * @since 1.0
    */
   @Override
-  public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-    return new AxisAlignedBB(0D, 0D, 0D, 1D, 0.5D, 1D);
+  public AxisAlignedBB getBlockBoundingBox( IBlockState state, IBlockAccess source, BlockPos pos ) {
+    return new AxisAlignedBB(0.117188, 0.000000, 0.117188, 0.882813, 1.250000, 0.882813);
   }
 
   @Override
