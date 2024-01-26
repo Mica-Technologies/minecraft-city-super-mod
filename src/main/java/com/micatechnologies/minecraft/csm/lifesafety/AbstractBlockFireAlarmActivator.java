@@ -20,7 +20,7 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 public abstract class AbstractBlockFireAlarmActivator extends AbstractBlockRotatableNSEWUD
-    implements ICsmTileEntityProvider {
+    implements ICsmTileEntityProvider<TileEntityFireAlarmSensor> {
 
   // TODO: Why is this here because it concerns me
   public static final PropertyDirection FACING = BlockDirectional.FACING;
@@ -170,7 +170,7 @@ public abstract class AbstractBlockFireAlarmActivator extends AbstractBlockRotat
    * @since 1.0
    */
   @Override
-  public Class<? extends TileEntity> getTileEntityClass() {
+  public Class<TileEntityFireAlarmSensor> getTileEntityClass() {
     return TileEntityFireAlarmSensor.class;
   }
 

@@ -204,11 +204,15 @@ public abstract class CsmTab {
    */
   public Block initTabBlock(Class<? extends Block> blockClass,
       FMLPreInitializationEvent fmlPreInitializationEvent) {
+    long start = System.currentTimeMillis();
     Block block = null;
     Object entry = initTabElement(blockClass, fmlPreInitializationEvent);
     if (entry != null) {
       block = blockClass.cast(entry).setCreativeTab(tab);
     }
+    long end = System.currentTimeMillis();
+    fmlPreInitializationEvent.getModLog()
+        .info("Block ("+blockClass.getName()+") initialization time: " + (end - start) + "ms");
     return block;
   }
 

@@ -16,7 +16,7 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 public abstract class AbstractBlockTrafficSignalSensor extends AbstractBlockRotatableNSEW
-    implements ICsmTileEntityProvider {
+    implements ICsmTileEntityProvider<TileEntityTrafficSignalSensor> {
 
   public AbstractBlockTrafficSignalSensor(Material materialIn) {
     super(materialIn);
@@ -108,7 +108,7 @@ public abstract class AbstractBlockTrafficSignalSensor extends AbstractBlockRota
    * @since 1.0
    */
   @Override
-  public Class<? extends TileEntity> getTileEntityClass() {
+  public Class<TileEntityTrafficSignalSensor> getTileEntityClass() {
     return TileEntityTrafficSignalSensor.class;
   }
 

@@ -25,7 +25,7 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 public class BlockFireAlarmControlPanel extends AbstractBlockRotatableNSEW implements
-    ICsmTileEntityProvider {
+    ICsmTileEntityProvider<TileEntityFireAlarmControlPanel> {
 
   public BlockFireAlarmControlPanel() {
     super(Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0);
@@ -240,7 +240,7 @@ public class BlockFireAlarmControlPanel extends AbstractBlockRotatableNSEW imple
    * @since 1.0
    */
   @Override
-  public Class<? extends TileEntity> getTileEntityClass() {
+  public Class<TileEntityFireAlarmControlPanel> getTileEntityClass() {
     return TileEntityFireAlarmControlPanel.class;
   }
 

@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.trafficsignals.logic;
 
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import com.micatechnologies.minecraft.csm.trafficsignals.ItemNSSignalLinker;
+import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalHead;
 import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalRequester;
 import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalTickableRequester;
 import net.minecraft.block.material.Material;
@@ -15,7 +16,7 @@ import net.minecraft.world.World;
 
 public abstract class AbstractBlockTrafficSignalRequester
     extends AbstractBlockControllableCrosswalkAccessory
-    implements ICsmTileEntityProvider {
+    implements ICsmTileEntityProvider<TileEntityTrafficSignalRequester> {
 
   public AbstractBlockTrafficSignalRequester(Material p_i45394_1_) {
     super(p_i45394_1_);
@@ -81,7 +82,7 @@ public abstract class AbstractBlockTrafficSignalRequester
    * @since 1.0
    */
   @Override
-  public Class<? extends TileEntity> getTileEntityClass() {
+  public Class<TileEntityTrafficSignalRequester> getTileEntityClass() {
     return TileEntityTrafficSignalRequester.class;
   }
 
