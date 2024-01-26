@@ -1,8 +1,8 @@
 {
-  "parent": "csm:custom/bordersingle_inverted",
+  "parent": "csm:custom/trafficsignals/backplates/signal_backplate_vertical_1",
   "textures": {
-    "all": "csm:blocks/borderblackyellow",
-    "particle": "csm:blocks/borderblackyellow",
-    "0": "csm:blocks/borderblackyellow"
+    "all": "csm:blocks/signalbackplateblackyellowblack",
+    "particle": "csm:blocks/signalbackplateblackyellowblack",
+    "0": "csm:blocks/signalbackplateblackyellowblack"
   }
 }

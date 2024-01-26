@@ -1,30 +1,36 @@
 {
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:tldoghouseborderblackyellow"
+  },
   "variants": {
-    "normal": {
-      "model": "csm:tldoghouseborderblackyellow"
+    "fitted": {
+      "true": {
+        "model": "csm:tldoghouseborderblackyellowfitted"
+      },
+      "false": {
+        "model": "csm:tldoghouseborderblackyellow"
+      }
     },
-    "facing=north": {
-      "model": "csm:tldoghouseborderblackyellow"
-    },
-    "facing=east": {
-      "model": "csm:tldoghouseborderblackyellow",
-      "y": 90
-    },
-    "facing=south": {
-      "model": "csm:tldoghouseborderblackyellow",
-      "y": 180
-    },
-    "facing=west": {
-      "model": "csm:tldoghouseborderblackyellow",
-      "y": 270
-    },
-    "facing=up": {
-      "model": "csm:tldoghouseborderblackyellow",
-      "x": 270
-    },
-    "facing=down": {
-      "model": "csm:tldoghouseborderblackyellow",
-      "x": 90
+    "facing": {
+      "north": {
+        "y": 0
+      },
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      },
+      "up": {
+        "x": 270
+      },
+      "down": {
+        "x": 90
+      }
     }
   }
 }
