@@ -22,10 +22,11 @@
             <version>2.13.0</version>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/com.github.javaparser/javaparser-core-serialization -->
         <dependency>
             <groupId>com.github.javaparser</groupId>
             <artifactId>javaparser-core-serialization</artifactId>
-            <version>3.25.4</version>
+            <version>3.25.9</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->

@@ -1,27 +1,36 @@
 package com.micatechnologies.minecraft.csm.trafficsignals.logic;
 
-import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEW;
+import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableHZSixteen;
+import com.micatechnologies.minecraft.csm.codeutils.DirectionSixteen;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmTESRProvider;
+import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalHead;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.properties.PropertyInteger;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.NotNull;
 
-public abstract class AbstractBlockControllableSignal extends AbstractBlockRotatableNSEW {
+public abstract class AbstractBlockControllableSignal extends AbstractBlockRotatableHZSixteen
+    implements ICsmTESRProvider<TileEntityTrafficSignalHead> {
 
   public static final int SIGNAL_RED = 0;
   public static final int SIGNAL_YELLOW = 1;
   public static final int SIGNAL_GREEN = 2;
   public static final int SIGNAL_OFF = 3;
   public static final PropertyInteger COLOR = PropertyInteger.create("color", 0, 3);
+
 
   public AbstractBlockControllableSignal(Material p_i45394_1_) {
     super(p_i45394_1_);
@@ -32,10 +41,9 @@ public abstract class AbstractBlockControllableSignal extends AbstractBlockRotat
     if (blockState.getBlock() instanceof AbstractBlockControllableSignal) {
       world.setBlockState(blockPos, blockState.withProperty(COLOR, signalColor));
     } else {
-      System.err.println("Cannot set traffic signal color of a non-traffic signal block: " +
-          blockState.getBlock().getLocalizedName() +
-          " at " +
-          blockPos);
+      System.err.println(
+          "Cannot set traffic signal color of a non-traffic signal block: " + blockState.getBlock()
+              .getLocalizedName() + " at " + blockPos);
     }
 
     // Reset request count (if applicable)
@@ -76,15 +84,21 @@ public abstract class AbstractBlockControllableSignal extends AbstractBlockRotat
     int colorVal = meta % 4;
     int facingVal = (meta - colorVal) / 4;
 
-    return getDefaultState().withProperty(FACING, EnumFacing.byHorizontalIndex(facingVal))
-        .withProperty(COLOR, colorVal);
+    if (facingVal > 0) {
+      DirectionSixteen directionSixteen = DirectionSixteen.fromIndex(facingVal);
+      if (directionSixteen != null) {
+        return getDefaultState().withProperty(FACING, directionSixteen)
+            .withProperty(COLOR, colorVal);
+      }
+    }
+
+    return getDefaultState().withProperty(COLOR, colorVal);
   }
 
   @Override
   public int getMetaFromState(IBlockState state) {
-    int facingVal = state.getValue(FACING).getHorizontalIndex() * 4;
     int colorVal = state.getValue(COLOR);
-    return facingVal + colorVal;
+    return colorVal;
   }
 
   /**
@@ -105,22 +119,32 @@ public abstract class AbstractBlockControllableSignal extends AbstractBlockRotat
    */
   @Override
   @Nonnull
-  public IBlockState getStateForPlacement(World worldIn,
-      BlockPos pos,
-      EnumFacing facing,
-      float hitX,
-      float hitY,
-      float hitZ,
-      int meta,
-      EntityLivingBase placer) {
-    return this.getDefaultState()
-        .withProperty(FACING, placer.getHorizontalFacing().getOpposite())
-        .withProperty(COLOR, SIGNAL_OFF);
+  public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing,
+      float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
+    IBlockState stateForPlacement =
+        super.getStateForPlacement(worldIn, pos, facing, hitX, hitY, hitZ, meta, placer);
+    return stateForPlacement.withProperty(COLOR, SIGNAL_OFF);
+
   }
 
   @Override
   protected BlockStateContainer createBlockState() {
     return new BlockStateContainer(this, FACING, COLOR);
+  }
+
+  @Override
+  @SuppressWarnings("deprecation")
+  public @NotNull IBlockState getActualState(IBlockState state,
+      @NotNull
+      IBlockAccess worldIn,
+      @NotNull
+      BlockPos pos) {
+    TileEntity tileEntity = worldIn.getTileEntity(pos);
+    if (tileEntity instanceof TileEntityTrafficSignalHead) {
+      TileEntityTrafficSignalHead signalHead = (TileEntityTrafficSignalHead) tileEntity;
+      return state.withProperty(FACING, signalHead.getFacing());
+    }
+    return state;
   }
 
   @Override
@@ -181,9 +205,7 @@ public abstract class AbstractBlockControllableSignal extends AbstractBlockRotat
    *
    * @since 1.0
    */
-  public boolean getBlockConnectsRedstone(IBlockState state,
-      IBlockAccess access,
-      BlockPos pos,
+  public boolean getBlockConnectsRedstone(IBlockState state, IBlockAccess access, BlockPos pos,
       @Nullable
       EnumFacing facing) {
     return false;
@@ -200,6 +222,20 @@ public abstract class AbstractBlockControllableSignal extends AbstractBlockRotat
   public BlockRenderLayer getBlockRenderLayer() {
     return BlockRenderLayer.CUTOUT_MIPPED;
   }
+
+
+  /**
+   * Gets the tile entity special renderer (TESR) class for the block.
+   *
+   * @return the TESR class for the block
+   *
+   * @since 1.0
+   */
+  @Override
+  public TileEntitySpecialRenderer<TileEntityTrafficSignalHead> getNewTESR() {
+    return new TrafficSignalTESR();
+  }
+
 
   public abstract SIGNAL_SIDE getSignalSide(World world, BlockPos blockPos);
 

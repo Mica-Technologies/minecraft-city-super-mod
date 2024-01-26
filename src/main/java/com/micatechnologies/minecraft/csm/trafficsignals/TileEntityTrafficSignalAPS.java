@@ -1,9 +1,11 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockTrafficSignalAPS;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalAPSSoundScheme;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.SoundCategory;
+import net.minecraftforge.common.util.Constants;
 
 /**
  * Tile entity utility class for an APS (accessible pedestrian signal) button. This class assists in
@@ -265,7 +267,11 @@ public class TileEntityTrafficSignalAPS extends TileEntityTrafficSignalTickableR
     }
 
     // Mark the tile entity as dirty
-    markDirtySync(world, pos, state, true);
+    IBlockState newBlockState = state.withProperty(AbstractBlockTrafficSignalAPS.ARROW_ORIENTATION,
+        crosswalkArrowOrientation);
+    world.setBlockState(pos, newBlockState, Constants.BlockFlags.DEFAULT);
+    world.markBlockRangeForRenderUpdate(pos, pos);
+    markDirtySync(world, pos, true);
 
     return crosswalkArrowOrientation;
   }

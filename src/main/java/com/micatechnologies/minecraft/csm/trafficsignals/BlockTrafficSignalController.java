@@ -26,7 +26,8 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
-public class BlockTrafficSignalController extends AbstractBlock implements ICsmTileEntityProvider {
+public class BlockTrafficSignalController extends AbstractBlock
+    implements ICsmTileEntityProvider<TileEntityTrafficSignalController> {
 
   public static final PropertyBool POWERED = PropertyBool.create("powered");
 
@@ -317,7 +318,7 @@ public class BlockTrafficSignalController extends AbstractBlock implements ICsmT
    * @since 1.0
    */
   @Override
-  public Class<? extends TileEntity> getTileEntityClass() {
+  public Class<TileEntityTrafficSignalController> getTileEntityClass() {
     return TileEntityTrafficSignalController.class;
   }
 

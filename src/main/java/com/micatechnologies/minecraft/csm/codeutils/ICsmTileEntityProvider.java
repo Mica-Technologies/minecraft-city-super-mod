@@ -10,7 +10,7 @@ import net.minecraft.tileentity.TileEntity;
  * @version 1.1
  * @since 2023.3
  */
-public interface ICsmTileEntityProvider extends ITileEntityProvider {
+public interface ICsmTileEntityProvider<T extends TileEntity> extends ITileEntityProvider {
 
   /**
    * Gets the tile entity class for the block.
@@ -19,7 +19,7 @@ public interface ICsmTileEntityProvider extends ITileEntityProvider {
    *
    * @since 1.0
    */
-  Class<? extends TileEntity> getTileEntityClass();
+  Class<T> getTileEntityClass();
 
   /**
    * Gets the tile entity name for the block.

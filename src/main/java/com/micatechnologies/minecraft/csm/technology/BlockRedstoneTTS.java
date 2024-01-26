@@ -22,7 +22,8 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class BlockRedstoneTTS extends AbstractBlock implements ICsmTileEntityProvider {
+public class BlockRedstoneTTS extends AbstractBlock
+    implements ICsmTileEntityProvider<TileEntityRedstoneTTS> {
 
   public BlockRedstoneTTS() {
     super(Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 255);
@@ -142,7 +143,7 @@ public class BlockRedstoneTTS extends AbstractBlock implements ICsmTileEntityPro
    * @since 1.0
    */
   @Override
-  public Class<? extends TileEntity> getTileEntityClass() {
+  public Class<TileEntityRedstoneTTS> getTileEntityClass() {
     return TileEntityRedstoneTTS.class;
   }
 
