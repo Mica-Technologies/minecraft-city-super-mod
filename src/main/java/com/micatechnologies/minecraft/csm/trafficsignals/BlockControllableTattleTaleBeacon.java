@@ -13,7 +13,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class BlockControllableTattleTaleBeacon extends AbstractBlockControllableSignal
-    implements ICsmTileEntityProvider {
+    implements ICsmTileEntityProvider<TileEntityTattleTaleBeacon> {
 
   public BlockControllableTattleTaleBeacon() {
     super(Material.ROCK);
@@ -107,7 +107,7 @@ public class BlockControllableTattleTaleBeacon extends AbstractBlockControllable
    * @since 1.0
    */
   @Override
-  public Class<? extends TileEntity> getTileEntityClass() {
+  public Class<TileEntityTattleTaleBeacon> getTileEntityClass() {
     return TileEntityTattleTaleBeacon.class;
   }
 

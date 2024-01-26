@@ -31,6 +31,7 @@ import java.util.Set;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.world.storage.WorldSavedData;
 import net.minecraftforge.client.event.ModelRegistryEvent;
@@ -160,8 +161,11 @@ public class Csm {
 
       // Build the mod's tabs and elements
       logger.info("Building mod tabs and elements");
+      long start = System.currentTimeMillis();
       CsmTab.initTabs(event);
-      logger.info("Finished building mod tabs and elements");
+      long end = System.currentTimeMillis();
+      long took = end - start;
+      logger.info("Finished building mod tabs and elements (took " + took + " ms)");
       progressBar.step("Tabs and Elements Initialization");
 
       // Call pre-initialization of the proxy (client or server/common)
@@ -204,15 +208,15 @@ public class Csm {
       Set<String> warnedTileEntities = new HashSet<>();
       CsmRegistry.getBlocks().forEach(block -> {
         try {
-          if (block instanceof ICsmTileEntityProvider) {
-            ICsmTileEntityProvider tileEntityProvider = (ICsmTileEntityProvider) block;
+          if (block instanceof ICsmTileEntityProvider<?> tileEntityProvider) {
             String tileEntityName = CsmConstants.MOD_NAMESPACE +
                 ":" +
                 tileEntityProvider.getTileEntityName();
 
             // Check if tileEntityName is already registered
             if (!registeredTileEntities.contains(tileEntityName)) {
-              GameRegistry.registerTileEntity(tileEntityProvider.getTileEntityClass(),
+              Class<? extends TileEntity> tileEntityClass = tileEntityProvider.getTileEntityClass();
+              GameRegistry.registerTileEntity(tileEntityClass,
                   tileEntityName);
               registeredTileEntities.add(tileEntityName); // Add the name to the set
             } else if (!warnedTileEntities.contains(tileEntityName)) {
