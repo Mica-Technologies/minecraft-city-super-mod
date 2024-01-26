@@ -23,7 +23,8 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
-public class BlockForgeEnergyProducer extends AbstractBlock implements ICsmTileEntityProvider {
+public class BlockForgeEnergyProducer extends AbstractBlock
+    implements ICsmTileEntityProvider<TileEntityForgeEnergyProducer> {
 
   public BlockForgeEnergyProducer() {
     super(Material.ANVIL, SoundType.ANVIL, "pickaxe", 1, 2F, 10F, 0F, 0);
@@ -198,7 +199,7 @@ public class BlockForgeEnergyProducer extends AbstractBlock implements ICsmTileE
    * @since 1.0
    */
   @Override
-  public Class<? extends TileEntity> getTileEntityClass() {
+  public Class<TileEntityForgeEnergyProducer> getTileEntityClass() {
     return TileEntityForgeEnergyProducer.class;
   }
 

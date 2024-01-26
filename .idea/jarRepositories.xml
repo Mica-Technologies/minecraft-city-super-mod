@@ -17,11 +17,6 @@
       <option name="url" value="https://repo.spongepowered.org/maven/" />
     </remote-repository>
     <remote-repository>
-      <option name="id" value="MavenLocal" />
-      <option name="name" value="MavenLocal" />
-      <option name="url" value="file:/$MAVEN_REPOSITORY$" />
-    </remote-repository>
-    <remote-repository>
       <option name="id" value="Curse Maven" />
       <option name="name" value="Curse Maven" />
       <option name="url" value="https://www.cursemaven.com" />
@@ -32,9 +27,19 @@
       <option name="url" value="https://maven.minecraftforge.net/" />
     </remote-repository>
     <remote-repository>
+      <option name="id" value="MavenLocal" />
+      <option name="name" value="MavenLocal" />
+      <option name="url" value="file:/$MAVEN_REPOSITORY$" />
+    </remote-repository>
+    <remote-repository>
       <option name="id" value="central" />
       <option name="name" value="Maven Central repository" />
       <option name="url" value="https://repo1.maven.org/maven2" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="GTCEu Maven" />
+      <option name="name" value="GTCEu Maven" />
+      <option name="url" value="https://maven.gtceu.com" />
     </remote-repository>
     <remote-repository>
       <option name="id" value="GTCEu Maven" />
@@ -52,6 +57,11 @@
       <option name="url" value="https://files.prismlauncher.org/maven/" />
     </remote-repository>
     <remote-repository>
+      <option name="id" value="MavenLocal" />
+      <option name="name" value="MavenLocal" />
+      <option name="url" value="file:$MAVEN_REPOSITORY$/" />
+    </remote-repository>
+    <remote-repository>
       <option name="id" value="maven2" />
       <option name="name" value="maven2" />
       <option name="url" value="https://libraries.minecraft.net/" />
@@ -67,11 +77,6 @@
       <option name="url" value="https://repo.maven.apache.org/maven2/" />
     </remote-repository>
     <remote-repository>
-      <option name="id" value="MavenLocal" />
-      <option name="name" value="MavenLocal" />
-      <option name="url" value="file:/$MAVEN_REPOSITORY$/" />
-    </remote-repository>
-    <remote-repository>
       <option name="id" value="BlameJared Maven" />
       <option name="name" value="BlameJared Maven" />
       <option name="url" value="https://maven.blamejared.com" />
@@ -85,6 +90,11 @@
       <option name="id" value="GTNH Maven" />
       <option name="name" value="GTNH Maven" />
       <option name="url" value="http://jenkins.usrv.eu:8081/nexus/content/groups/public" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="MavenLocal" />
+      <option name="name" value="MavenLocal" />
+      <option name="url" value="file:/$MAVEN_REPOSITORY$/" />
     </remote-repository>
     <remote-repository>
       <option name="id" value="jboss.community" />

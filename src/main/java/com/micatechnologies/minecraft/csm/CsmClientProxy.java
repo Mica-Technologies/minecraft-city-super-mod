@@ -1,10 +1,19 @@
 package com.micatechnologies.minecraft.csm;
 
 import com.micatechnologies.minecraft.csm.codeutils.ICsmProxy;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmTESRProvider;
+import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalHead;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalTESR;
+import java.util.HashSet;
+import java.util.Set;
+import net.minecraft.block.Block;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.item.Item;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.model.obj.OBJLoader;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -15,11 +24,25 @@ import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
  * referenced by the {@code @SidedProxy} annotation in {@link Csm}. This class is instantiated by
  * Forge.
  *
- * @version 1.0
+ * @version 1.1
  * @see ICsmProxy
  * @since 1.0
  */
 public class CsmClientProxy implements ICsmProxy {
+
+  /**
+   * Set of registered TESRs.
+   *
+   * @since 1.1
+   */
+  private final Set<String> registeredTESRs = new HashSet<>();
+
+  /**
+   * Set of warned TESRs.
+   *
+   * @since 1.1
+   */
+  Set<String> warnedTESRs = new HashSet<>();
 
   /**
    * Pre-initialize the mod. This method is called by Minecraft Forge during pre-initialization.
@@ -43,7 +66,64 @@ public class CsmClientProxy implements ICsmProxy {
    */
   @Override
   public void init(FMLInitializationEvent event) {
-    // Not implemented (yet)
+    CsmRegistry.getBlocks().stream().filter(block -> block instanceof ICsmTESRProvider)
+        .forEach(this::registerBlockTESR);
+  }
+
+  /**
+   * Register the TESR for the specified block.
+   * <p>
+   * This method is called by the {@link #init(FMLInitializationEvent)} method for each block that
+   * implements the {@link ICsmTESRProvider} interface.
+   * </p>
+   * <p>
+   * If the block is not an instance of {@link ICsmTESRProvider}, a fatal error is logged, and the
+   * game will crash. If the TESR is already registered, a warning is logged (once) and the TESR is
+   * not registered again.
+   * </p>
+   *
+   * @param block The block to register the TESR for.
+   * @param <T>   The type of the tile entity.
+   *
+   * @since 1.1
+   */
+  private <T extends TileEntity> void registerBlockTESR(Block block) {
+    try {
+      // Check if the block is an ICsmTESRProvider
+      if (!(block instanceof ICsmTESRProvider)) {
+        Csm.getLogger().fatal("Illegal attempt to register non-existent TESR mapping for block: {}",
+            block.getRegistryName());
+        return;
+      }
+
+      // Cast the block to an ICsmTESRProvider (ignore the warning, we check instanceof above)
+      ICsmTESRProvider<T> tesrProvider = (ICsmTESRProvider<T>) block;
+
+      // Get TESR tile entity name
+      String tesrName = CsmConstants.MOD_NAMESPACE + ":" + tesrProvider.getTileEntityName();
+
+      // Check if tesrName is already registered
+      if (!registeredTESRs.contains(tesrName)) {
+        // Create a new TESR instance
+        TileEntitySpecialRenderer<T> tesr = tesrProvider.getNewTESR();
+
+        // Bind the TESR to the tile entity class
+        ClientRegistry.bindTileEntitySpecialRenderer(tesrProvider.getTileEntityClass(), tesr);
+
+        // Add the name to the set
+        registeredTESRs.add(tesrName);
+      } else if (!warnedTESRs.contains(tesrName)) {
+        // Log a warning if the TESR is already registered
+        Csm.getLogger()
+            .warn("Attempted to register TESR for tile entity with name: {} more than once.",
+                tesrName);
+
+        // Add the name to the set
+        warnedTESRs.add(tesrName);
+      }
+    } catch (Exception e) {
+      Csm.getLogger().fatal("Failed to register TESR for block: " + block.getRegistryName(), e);
+    }
   }
 
   /**

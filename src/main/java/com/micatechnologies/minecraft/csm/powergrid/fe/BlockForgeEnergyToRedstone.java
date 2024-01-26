@@ -22,7 +22,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
-public class BlockForgeEnergyToRedstone extends AbstractBlock implements ICsmTileEntityProvider {
+public class BlockForgeEnergyToRedstone extends AbstractBlock
+    implements ICsmTileEntityProvider<TileEntityForgeEnergyConsumer> {
 
   public static final PropertyBool POWERED = PropertyBool.create("powered");
 
@@ -200,7 +201,7 @@ public class BlockForgeEnergyToRedstone extends AbstractBlock implements ICsmTil
    * @since 1.0
    */
   @Override
-  public Class<? extends TileEntity> getTileEntityClass() {
+  public Class<TileEntityForgeEnergyConsumer> getTileEntityClass() {
     return TileEntityForgeEnergyConsumer.class;
   }
 

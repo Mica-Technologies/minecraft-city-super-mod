@@ -30,6 +30,8 @@ public class BlockItemIntegrityTool {
   private static final String[] SOURCE_FILE_EXCLUDES =
       {"src/main/java/com/micatechnologies/minecraft/csm/codeutils/AbstractBlockRotatableHZEight"
           + ".java",
+          "src/main/java/com/micatechnologies/minecraft/csm/codeutils"
+              + "/AbstractBlockRotatableHZSixteen.java",
           "src/main/java/com/micatechnologies/minecraft/csm/codeutils/AbstractBlockRotatableNSEWUD"
               + ".java", "src/main/java/com/micatechnologies/minecraft/csm/codeutils"
           + "/AbstractBlockRotatableNSEW.java",
@@ -62,6 +64,7 @@ public class BlockItemIntegrityTool {
           "src/main/java/com/micatechnologies/minecraft/csm/tabs/CsmTabNone.java"};
   private static final String[] SOURCE_FILE_ELIGIBLE_EXTENDS_BLOCKS =
       {"AbstractBlock", "AbstractBlockRotatableNSEW", "AbstractBlockRotatableNSEWUD",
+          "AbstractBlockRotatableHZEight", "AbstractBlockRotatableHZSixteen",
           "AbstractPoweredBlockRotatableNSEWUD", "AbstractBrightLight", "AbstractBlockSetBasic",
           "AbstractBlockFireAlarmSounderVoiceEvac", "AbstractBlockFireAlarmSounder",
           "AbstractBlockFireAlarmDetector", "AbstractBlockFireAlarmActivator",
