@@ -1,8 +1,8 @@
 package com.micatechnologies.minecraft.csm.trafficsignals.logic;
 
+import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalHead;
 import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalTickableRequester;
 import net.minecraft.block.material.Material;
-import net.minecraft.tileentity.TileEntity;
 
 public abstract class AbstractBlockTrafficSignalTickableRequester
     extends AbstractBlockTrafficSignalRequester {
@@ -19,7 +19,7 @@ public abstract class AbstractBlockTrafficSignalTickableRequester
    * @since 1.0
    */
   @Override
-  public Class<? extends TileEntity> getTileEntityClass() {
+  public Class<TileEntityTrafficSignalHead> getTileEntityClass() {
     return TileEntityTrafficSignalTickableRequester.class;
   }
 

@@ -4,6 +4,7 @@ import com.micatechnologies.minecraft.csm.trafficsignals.ItemEWSignalLinker;
 import com.micatechnologies.minecraft.csm.trafficsignals.ItemNSSignalLinker;
 import com.micatechnologies.minecraft.csm.trafficsignals.ItemSignalConfigurationTool;
 import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalAPS;
+import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalHead;
 import javax.annotation.Nullable;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyInteger;
@@ -107,7 +108,7 @@ public abstract class AbstractBlockTrafficSignalAPS extends
    * @since 1.0
    */
   @Override
-  public Class<? extends TileEntity> getTileEntityClass() {
+  public Class<TileEntityTrafficSignalHead> getTileEntityClass() {
     return TileEntityTrafficSignalAPS.class;
   }
 
@@ -158,9 +159,9 @@ public abstract class AbstractBlockTrafficSignalAPS extends
 
 
 
-  public static int incrementArrowDirection(IBlockAccess source, BlockPos pos, IBlockState state) {
+  public static int incrementArrowDirection(World worldIn, BlockPos pos, IBlockState state) {
 
-    TileEntity rawTileEntity = source.getTileEntity(pos);
+    TileEntity rawTileEntity = worldIn.getTileEntity(pos);
     int orientation = 0;
     if (rawTileEntity instanceof TileEntityTrafficSignalAPS tileEntity) {
       orientation = tileEntity.incrementCrosswalkArrowOrientation(state);
