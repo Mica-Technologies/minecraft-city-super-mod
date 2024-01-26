@@ -1,8 +1,8 @@
 {
-  "parent": "csm:custom/border_addon",
+  "parent": "csm:custom/trafficsignals/backplates/signal_backplate_vertical_addon_1",
   "textures": {
-    "all": "csm:blocks/metal_mattetan",
-    "particle": "csm:blocks/metal_mattetan",
-    "0": "csm:blocks/metal_mattetan"
+    "all": "csm:blocks/signalbackplatetantantan",
+    "particle": "csm:blocks/signalbackplatetantantan",
+    "0": "csm:blocks/signalbackplatetantantan"
   }
 }

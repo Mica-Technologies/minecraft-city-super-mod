@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/borderlarge_addon",
+  "parent": "csm:custom/trafficsignals/backplates/signal_backplate_vertical_addon_1",
   "textures": {
     "all": "csm:blocks/gray_traffic_signal_border",
     "particle": "csm:blocks/gray_traffic_signal_border",

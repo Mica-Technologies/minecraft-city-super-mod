@@ -1,0 +1,36 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:tldoghouseborderblackblue"
+  },
+  "variants": {
+    "fitted": {
+      "true": {
+        "model": "csm:tldoghouseborderblackbluefitted"
+      },
+      "false": {
+        "model": "csm:tldoghouseborderblackblue"
+      }
+    },
+    "facing": {
+      "north": {
+        "y": 0
+      },
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      },
+      "up": {
+        "x": 270
+      },
+      "down": {
+        "x": 90
+      }
+    }
+  }
+}

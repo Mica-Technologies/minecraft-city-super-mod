@@ -1,0 +1,8 @@
+{
+  "parent": "csm:custom/trafficsignals/backplates/signal_backplate_doghouse_fitted",
+  "textures": {
+    "all": "csm:blocks/signalbackplateblackblackwhite",
+    "particle": "csm:blocks/signalbackplateblackblackwhite",
+    "0": "csm:blocks/signalbackplateblackblackwhite"
+  }
+}

@@ -1,8 +1,8 @@
 {
-  "parent": "csm:custom/border8inch",
+  "parent": "csm:custom/trafficsignals/backplates/signal_backplate_888_vertical_3",
   "textures": {
-    "all": "csm:blocks/borderwhiteblack",
-    "particle": "csm:blocks/borderwhiteblack",
-    "0": "csm:blocks/borderwhiteblack"
+    "all": "csm:blocks/signalbackplateblackblackwhite",
+    "particle": "csm:blocks/signalbackplateblackblackwhite",
+    "0": "csm:blocks/signalbackplateblackblackwhite"
   }
 }

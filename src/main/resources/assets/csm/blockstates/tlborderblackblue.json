@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:tlborderblackblue"
+    },
+    "facing=north": {
+      "model": "csm:tlborderblackblue"
+    },
+    "facing=east": {
+      "model": "csm:tlborderblackblue",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:tlborderblackblue",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:tlborderblackblue",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "csm:tlborderblackblue",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "csm:tlborderblackblue",
+      "x": 90
+    }
+  }
+}

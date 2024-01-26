@@ -26,39 +26,55 @@ import com.micatechnologies.minecraft.csm.trafficaccessories.BlockMetalWireOffse
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockMetalWireOffsetTop;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockSignalPoleMount2;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorder5AddOnBlackBlack;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorder5AddOnBlackBlue;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorder5AddOnBlackPink;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorder5AddOnBlackWhite;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorder5AddOnBlackYellow;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorder5AddOnLargeGray;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorder5AddOnTan;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorder5AddOnBlueBlack;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorder5AddOnGrayGray;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorder5AddOnPinkBlack;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorder5AddOnWhiteBlack;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorder5AddOnYellowBlack;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorderAddOnBlackBlack;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorderAddOnBlackBlue;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorderAddOnBlackPink;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorderAddOnBlackWhite;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorderAddOnBlackYellow;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorderAddOnLargeGray;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorderAddOnTan;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorderAddOnBlueBlack;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorderAddOnGrayGray;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorderAddOnPinkBlack;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorderAddOnWhiteBlack;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorderAddOnYellowBlack;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorderBlackBlack;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorderBlackBlack1288Inch;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorderBlackBlack8812Inch;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorderBlackBlack8Inch;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorderBlackBlue;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorderBlackPink;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorderBlackWhite;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorderBlackYellow;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorderLArgeGray;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorderBlueBlack;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorderBlueBlack8812Inch;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorderBlueBlack8Inch;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorderGrayGray;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorderGrayGray8812Inch;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorderGrayGray8Inch;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorderPinkBlack;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorderPinkBlack8812Inch;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorderPinkBlack8Inch;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorderSingleBlackBlack;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorderSingleBlackBlue;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorderSingleBlackPink;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorderSingleBlackWhite;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorderSingleBlackYellow;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorderSingleTan;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorderSingleBlueBlack;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorderSingleGrayGray;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorderSinglePinkBlack;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorderSingleWhiteBlack;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorderSingleYellowBlack;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorderTan;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorderWhiteBlack;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorderWhiteBlack1288Inch;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorderWhiteBlack8812Inch;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorderWhiteBlack8Inch;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorderYellowBlack;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorderYellowBlack1288Inch;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorderYellowBlack8812Inch;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorderYellowBlack8Inch;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLController;
@@ -68,9 +84,13 @@ import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLControllerSi
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLControllerTan;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLControllerWhite;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLDoghouseBorderBlackBlack;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLDoghouseBorderBlackBlue;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLDoghouseBorderBlackPink;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLDoghouseBorderBlackWhite;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLDoghouseBorderBlackYellow;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLDoghouseBorderTan;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLDoghouseBorderBlueBlack;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLDoghouseBorderGrayGray;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLDoghouseBorderPinkBlack;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLDoghouseBorderWhiteBlack;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLDoghouseBorderYellowBlack;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLHBorderBlack;
@@ -327,9 +347,16 @@ public class CsmTabTrafficAccessories extends CsmTab {
         fmlPreInitializationEvent); // TLBorder5AddOnBlackWhite
     initTabBlock(BlockTLBorder5AddOnBlackYellow.class,
         fmlPreInitializationEvent); // TLBorder5AddOnBlackYellow
-    initTabBlock(BlockTLBorder5AddOnLargeGray.class,
-        fmlPreInitializationEvent); // TLBorder5AddOnLargeGray
-    initTabBlock(BlockTLBorder5AddOnTan.class, fmlPreInitializationEvent); // TLBorder5AddOnTan
+    initTabBlock(BlockTLBorder5AddOnGrayGray.class,
+        fmlPreInitializationEvent); // TLBorder5AddOnGrayGray
+    initTabBlock(BlockTLBorder5AddOnBlueBlack.class,
+        fmlPreInitializationEvent); // TLBorder5AddOnBlueBlack
+    initTabBlock(BlockTLBorder5AddOnPinkBlack.class,
+        fmlPreInitializationEvent); // TLBorder5AddOnPinkBlack
+    initTabBlock(BlockTLBorder5AddOnBlackBlue.class,
+        fmlPreInitializationEvent); // TLBorder5AddOnBlackBlue
+    initTabBlock(BlockTLBorder5AddOnBlackPink.class,
+        fmlPreInitializationEvent); // TLBorder5AddOnBlackPink
     initTabBlock(BlockTLBorder5AddOnWhiteBlack.class,
         fmlPreInitializationEvent); // TLBorder5AddOnWhiteBlack
     initTabBlock(BlockTLBorder5AddOnYellowBlack.class,
@@ -340,49 +367,74 @@ public class CsmTabTrafficAccessories extends CsmTab {
         fmlPreInitializationEvent); // TLBorderAddOnBlackWhite
     initTabBlock(BlockTLBorderAddOnBlackYellow.class,
         fmlPreInitializationEvent); // TLBorderAddOnBlackYellow
-    initTabBlock(BlockTLBorderAddOnLargeGray.class,
-        fmlPreInitializationEvent); // TLBorderAddOnLargeGray
-    initTabBlock(BlockTLBorderAddOnTan.class, fmlPreInitializationEvent); // TLBorderAddOnTan
+    initTabBlock(BlockTLBorderAddOnGrayGray.class,
+        fmlPreInitializationEvent); // TLBorderAddOnGrayGray
+    initTabBlock(BlockTLBorderAddOnBlueBlack.class,
+        fmlPreInitializationEvent); // TLBorderAddOnBlueBlack
+    initTabBlock(BlockTLBorderAddOnPinkBlack.class,
+        fmlPreInitializationEvent); // TLBorderAddOnPinkBlack
+    initTabBlock(BlockTLBorderAddOnBlackBlue.class,
+        fmlPreInitializationEvent); // TLBorderAddOnBlackBlue
+    initTabBlock(BlockTLBorderAddOnBlackPink.class,
+        fmlPreInitializationEvent); // TLBorderAddOnBlackPink
     initTabBlock(BlockTLBorderAddOnWhiteBlack.class,
         fmlPreInitializationEvent); // TLBorderAddOnWhiteBlack
     initTabBlock(BlockTLBorderAddOnYellowBlack.class,
         fmlPreInitializationEvent); // TLBorderAddOnYellowBlack
     initTabBlock(BlockTLBorderBlackBlack.class, fmlPreInitializationEvent); // TLBorderBlackBlack
-    initTabBlock(BlockTLBorderBlackBlack1288Inch.class,
-        fmlPreInitializationEvent); // TLBorderBlackBlack1288Inch
     initTabBlock(BlockTLBorderBlackBlack8812Inch.class,
         fmlPreInitializationEvent); // TLBorderBlackBlack8812Inch
     initTabBlock(BlockTLBorderBlackBlack8Inch.class,
         fmlPreInitializationEvent); // TLBorderBlackBlack8Inch
     initTabBlock(BlockTLBorderBlackWhite.class, fmlPreInitializationEvent); // TLBorderBlackWhite
     initTabBlock(BlockTLBorderBlackYellow.class, fmlPreInitializationEvent); // TLBorderBlackYellow
-    initTabBlock(BlockTLBorderLArgeGray.class, fmlPreInitializationEvent); // TLBorderLArgeGray
+    initTabBlock(BlockTLBorderGrayGray.class, fmlPreInitializationEvent); // TLBorderGrayGray
+    initTabBlock(BlockTLBorderBlueBlack.class, fmlPreInitializationEvent); // TLBorderBlueBlack
+    initTabBlock(BlockTLBorderPinkBlack.class, fmlPreInitializationEvent); // TLBorderPinkBlack
+    initTabBlock(BlockTLBorderBlackBlue.class, fmlPreInitializationEvent); // TLBorderBlackBlue
+    initTabBlock(BlockTLBorderBlackPink.class, fmlPreInitializationEvent); // TLBorderBlackPink
     initTabBlock(BlockTLBorderSingleBlackBlack.class,
         fmlPreInitializationEvent); // TLBorderSingleBlackBlack
     initTabBlock(BlockTLBorderSingleBlackWhite.class,
         fmlPreInitializationEvent); // TLBorderSingleBlackWhite
     initTabBlock(BlockTLBorderSingleBlackYellow.class,
         fmlPreInitializationEvent); // TLBorderSingleBlackYellow
-    initTabBlock(BlockTLBorderSingleTan.class, fmlPreInitializationEvent); // TLBorderSingleTan
+    initTabBlock(BlockTLBorderSingleGrayGray.class,
+        fmlPreInitializationEvent); // TLBorderSingleGrayGray
     initTabBlock(BlockTLBorderSingleWhiteBlack.class,
         fmlPreInitializationEvent); // TLBorderSingleWhiteBlack
     initTabBlock(BlockTLBorderSingleYellowBlack.class,
         fmlPreInitializationEvent); // TLBorderSingleYellowBlack
-    initTabBlock(BlockTLBorderTan.class, fmlPreInitializationEvent); // TLBorderTan
+    initTabBlock(BlockTLBorderSingleBlackBlue.class,
+        fmlPreInitializationEvent); // TLBorderSingleBlackBlue
+    initTabBlock(BlockTLBorderSingleBlackPink.class,
+        fmlPreInitializationEvent); // TLBorderSingleBlackPink
+    initTabBlock(BlockTLBorderSingleBlueBlack.class,
+        fmlPreInitializationEvent); // TLBorderSingleBlueBlack
+    initTabBlock(BlockTLBorderSinglePinkBlack.class,
+        fmlPreInitializationEvent); // TLBorderSinglePinkBlack
     initTabBlock(BlockTLBorderWhiteBlack.class, fmlPreInitializationEvent); // TLBorderWhiteBlack
-    initTabBlock(BlockTLBorderWhiteBlack1288Inch.class,
-        fmlPreInitializationEvent); // TLBorderWhiteBlack1288Inch
     initTabBlock(BlockTLBorderWhiteBlack8812Inch.class,
         fmlPreInitializationEvent); // TLBorderWhiteBlack8812Inch
     initTabBlock(BlockTLBorderWhiteBlack8Inch.class,
         fmlPreInitializationEvent); // TLBorderWhiteBlack8Inch
     initTabBlock(BlockTLBorderYellowBlack.class, fmlPreInitializationEvent); // TLBorderYellowBlack
-    initTabBlock(BlockTLBorderYellowBlack1288Inch.class,
-        fmlPreInitializationEvent); // TLBorderYellowBlack1288Inch
     initTabBlock(BlockTLBorderYellowBlack8812Inch.class,
         fmlPreInitializationEvent); // TLBorderYellowBlack8812Inch
     initTabBlock(BlockTLBorderYellowBlack8Inch.class,
         fmlPreInitializationEvent); // TLBorderYellowBlack8Inch
+    initTabBlock(BlockTLBorderBlueBlack8Inch.class,
+        fmlPreInitializationEvent); // TLBorderBlueBlack8Inch
+    initTabBlock(BlockTLBorderPinkBlack8Inch.class,
+        fmlPreInitializationEvent); // TLBorderPinkBlack8Inch
+    initTabBlock(BlockTLBorderGrayGray8Inch.class,
+        fmlPreInitializationEvent); // TLBorderGrayGray8Inch
+    initTabBlock(BlockTLBorderBlueBlack8812Inch.class,
+        fmlPreInitializationEvent); // TLBorderBlueBlack8812Inch
+    initTabBlock(BlockTLBorderPinkBlack8812Inch.class,
+        fmlPreInitializationEvent); // TLBorderPinkBlack8812Inch
+    initTabBlock(BlockTLBorderGrayGray8812Inch.class,
+        fmlPreInitializationEvent); // TLBorderGrayGray1288Inch
     initTabBlock(BlockTLController.class, fmlPreInitializationEvent); // TLController
     initTabBlock(BlockTLControllerBlack.class, fmlPreInitializationEvent); // TLControllerBlack
     initTabBlock(BlockTLControllerMatteWhite.class,
@@ -396,7 +448,16 @@ public class CsmTabTrafficAccessories extends CsmTab {
         fmlPreInitializationEvent); // TLDoghouseBorderBlackWhite
     initTabBlock(BlockTLDoghouseBorderBlackYellow.class,
         fmlPreInitializationEvent); // TLDoghouseBorderBlackYellow
-    initTabBlock(BlockTLDoghouseBorderTan.class, fmlPreInitializationEvent); // TLDoghouseBorderTan
+    initTabBlock(BlockTLDoghouseBorderGrayGray.class,
+        fmlPreInitializationEvent); // TLDoghouseBorderGrayGray
+    initTabBlock(BlockTLDoghouseBorderBlueBlack.class,
+        fmlPreInitializationEvent); // TLDoghouseBorderBlueBlack
+    initTabBlock(BlockTLDoghouseBorderPinkBlack.class,
+        fmlPreInitializationEvent); // TLDoghouseBorderPinkBlack
+    initTabBlock(BlockTLDoghouseBorderBlackBlue.class,
+        fmlPreInitializationEvent); // TLDoghouseBorderBlackBlue
+    initTabBlock(BlockTLDoghouseBorderBlackPink.class,
+        fmlPreInitializationEvent); // TLDoghouseBorderBlackPink
     initTabBlock(BlockTLDoghouseBorderWhiteBlack.class,
         fmlPreInitializationEvent); // TLDoghouseBorderWhiteBlack
     initTabBlock(BlockTLDoghouseBorderYellowBlack.class,

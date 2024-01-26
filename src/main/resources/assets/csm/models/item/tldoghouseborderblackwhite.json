@@ -1,8 +1,8 @@
 {
-  "parent": "csm:custom/borderdoghouse_inverted",
+  "parent": "csm:custom/trafficsignals/backplates/signal_backplate_doghouse_full",
   "textures": {
-    "all": "csm:blocks/borderblackwhite",
-    "particle": "csm:blocks/borderblackwhite",
-    "0": "csm:blocks/borderblackwhite"
+    "all": "csm:blocks/signalbackplateblackwhiteblack",
+    "particle": "csm:blocks/signalbackplateblackwhiteblack",
+    "0": "csm:blocks/signalbackplateblackwhiteblack"
   }
 }
