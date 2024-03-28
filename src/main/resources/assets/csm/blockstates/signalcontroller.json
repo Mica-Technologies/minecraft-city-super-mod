@@ -1,13 +1,23 @@
 {
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:signalcontroller.obj",
+    "custom": {
+      "flip-v": true
+    }
+  },
   "variants": {
-    "normal": {
-      "model": "csm:signalcontroller"
-    },
-    "powered=false": {
-      "model": "csm:signalcontroller"
-    },
-    "powered=true": {
-      "model": "csm:signalcontroller"
+    "normal": [
+      {}
+    ],
+    "inventory": [
+      {
+        "transform": "forge:default-block"
+      }
+    ],
+    "powered": {
+      "false": {},
+      "true": {}
     }
   }
 }
