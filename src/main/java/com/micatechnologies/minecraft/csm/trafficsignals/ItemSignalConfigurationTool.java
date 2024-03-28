@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.trafficsignals;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractItem;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignal;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockTrafficSignalAPS;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockTrafficSignalSensor;
 import java.util.HashMap;
 import java.util.List;
@@ -64,6 +65,44 @@ public class ItemSignalConfigurationTool extends AbstractItem {
 
           // Notify player
           player.sendMessage(new TextComponentString("Cycling traffic signal color/state!"));
+
+          // Mark result as success
+          result = EnumActionResult.PASS;
+        }
+      }
+      // If in aps arrow direction change mode, change APS arrow direction if clicked block is an
+      // aps crosswalk button
+      else if (mode == ItemSignalConfigurationToolMode.CHANGE_APS_ARROW_DIRECTION) {
+        // Check if clicked block is a sensor
+        if (clickedBlock instanceof AbstractBlockTrafficSignalAPS) {
+          // Get block object
+          int arrowDirection =
+              AbstractBlockTrafficSignalAPS.incrementArrowDirection(worldIn, pos, state);
+
+          // Get direction string
+          String direction = "";
+          String oldDirection = "";
+          switch (arrowDirection) {
+            case 0:
+              oldDirection = "BOTH";
+              direction = "LEFT";
+              break;
+            case 1:
+              oldDirection = "LEFT";
+              direction = "RIGHT";
+              break;
+            case 2:
+              oldDirection = "RIGHT";
+              direction = "BOTH";
+              break;
+          }
+          worldIn.setBlockState(pos,
+              state.withProperty(AbstractBlockTrafficSignalAPS.ARROW_ORIENTATION,
+                  arrowDirection));
+
+          // Notify player
+          player.sendMessage(new TextComponentString("Changed APS arrow direction from " +
+              oldDirection + " to " + direction + "!"));
 
           // Mark result as success
           result = EnumActionResult.PASS;

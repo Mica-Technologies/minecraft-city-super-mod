@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalAPSSoundScheme;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.SoundCategory;
 
@@ -9,7 +10,7 @@ import net.minecraft.util.SoundCategory;
  * tracking and managing the APS' configured sounds and requests.
  *
  * @author Mica Technologies
- * @version 1.0
+ * @version 1.1
  * @since 2022.1
  */
 public class TileEntityTrafficSignalAPS extends TileEntityTrafficSignalTickableRequester {
@@ -36,6 +37,27 @@ public class TileEntityTrafficSignalAPS extends TileEntityTrafficSignalTickableR
   private static final String CROSSWALK_LAST_PRESS_TIME_NBT_KEY = "CrosswalkLastPressTime";
 
   /**
+   * The NBT key used to store the current crosswalk arrow orientation.
+   *
+   * @since 1.1
+   */
+  private static final String CROSSWALK_ARROW_ORIENTATION_NBT_KEY = "CrosswalkArrowOrientation";
+
+  /**
+   * The minimum value for the crosswalk arrow orientation.
+   *
+   * @since 1.1
+   */
+  public static final int CROSSWALK_ARROW_ORIENTATION_MIN = 0;
+
+  /**
+   * The maximum value for the crosswalk arrow orientation. (0, 1, 2; aka left, right, both)
+   *
+   * @since 1.1
+   */
+  public static final int CROSSWALK_ARROW_ORIENTATION_MAX = 2;
+
+  /**
    * The current crosswalk sound index.
    *
    * @since 1.0
@@ -57,6 +79,13 @@ public class TileEntityTrafficSignalAPS extends TileEntityTrafficSignalTickableR
   private long crosswalkLastPressTime = 0;
 
   /**
+   * The current crosswalk arrow orientation.
+   *
+   * @since 1.1
+   */
+  private int crosswalkArrowOrientation = 0;
+
+  /**
    * Writes to the NBT tag compound with the tile entity's NBT data and returns the compound.
    *
    * @param compound the NBT tag compound to write the tile entity's NBT data to
@@ -75,6 +104,9 @@ public class TileEntityTrafficSignalAPS extends TileEntityTrafficSignalTickableR
 
     // Write crosswalk last pressed time to NBT
     compound.setLong(CROSSWALK_LAST_PRESS_TIME_NBT_KEY, crosswalkLastPressTime);
+
+    // Write crosswalk arrow orientation to NBT
+    compound.setInteger(CROSSWALK_ARROW_ORIENTATION_NBT_KEY, crosswalkArrowOrientation);
 
     // Return the NBT tag compound
     return compound;
@@ -96,7 +128,6 @@ public class TileEntityTrafficSignalAPS extends TileEntityTrafficSignalTickableR
           storedCrosswalkSoundIndex < TrafficSignalAPSSoundScheme.values().length) {
         crosswalkSoundIndex = storedCrosswalkSoundIndex;
       } else {
-        crosswalkSoundIndex = 0;
         System.err.println("Invalid crosswalk sound index: " +
             crosswalkSoundIndex +
             " for crosswalk button tile entity " +
@@ -104,10 +135,10 @@ public class TileEntityTrafficSignalAPS extends TileEntityTrafficSignalTickableR
             pos.getX() +
             ", Y: " +
             pos.getY() +
-            pos.getY() +
             ", Z: " +
             pos.getZ() +
             "]. Reverting to default (0).");
+        crosswalkSoundIndex = 0;
       }
     }
 
@@ -118,7 +149,6 @@ public class TileEntityTrafficSignalAPS extends TileEntityTrafficSignalTickableR
       if (storedCrosswalkSoundLastPlayedTime >= 0) {
         crosswalkSoundLastPlayedTime = storedCrosswalkSoundLastPlayedTime;
       } else {
-        crosswalkSoundLastPlayedTime = 0;
         System.err.println("Invalid crosswalk sound last played time: " +
             crosswalkSoundLastPlayedTime +
             " for crosswalk button tile entity " +
@@ -126,10 +156,10 @@ public class TileEntityTrafficSignalAPS extends TileEntityTrafficSignalTickableR
             pos.getX() +
             ", Y: " +
             pos.getY() +
-            pos.getY() +
             ", Z: " +
             pos.getZ() +
             "]. Reverting to default (0).");
+        crosswalkSoundLastPlayedTime = 0;
       }
     }
 
@@ -139,7 +169,6 @@ public class TileEntityTrafficSignalAPS extends TileEntityTrafficSignalTickableR
       if (storedCrosswalkLastPressTime >= 0) {
         crosswalkLastPressTime = storedCrosswalkLastPressTime;
       } else {
-        crosswalkLastPressTime = 0;
         System.err.println("Invalid crosswalk last pressed time: " +
             crosswalkLastPressTime +
             " for crosswalk button tile entity " +
@@ -147,10 +176,32 @@ public class TileEntityTrafficSignalAPS extends TileEntityTrafficSignalTickableR
             pos.getX() +
             ", Y: " +
             pos.getY() +
+            ", Z: " +
+            pos.getZ() +
+            "]. Reverting to default (0).");
+        crosswalkLastPressTime = 0;
+      }
+    }
+
+    // Read crosswalk arrow orientation from NBT and check validity
+    if (compound.hasKey(CROSSWALK_ARROW_ORIENTATION_NBT_KEY)) {
+      int storedCrosswalkArrowOrientation =
+          compound.getInteger(CROSSWALK_ARROW_ORIENTATION_NBT_KEY);
+      if (storedCrosswalkArrowOrientation >= CROSSWALK_ARROW_ORIENTATION_MIN &&
+          storedCrosswalkArrowOrientation <= CROSSWALK_ARROW_ORIENTATION_MAX) {
+        crosswalkArrowOrientation = storedCrosswalkArrowOrientation;
+      } else {
+        System.err.println("Invalid crosswalk arrow orientation: " +
+            crosswalkArrowOrientation +
+            " for crosswalk button tile entity " +
+            "at [X: " +
+            pos.getX() +
+            ", Y: " +
             pos.getY() +
             ", Z: " +
             pos.getZ() +
             "]. Reverting to default (0).");
+        crosswalkArrowOrientation = 0;
       }
     }
   }
@@ -170,7 +221,7 @@ public class TileEntityTrafficSignalAPS extends TileEntityTrafficSignalTickableR
     }
 
     // Mark the tile entity as dirty
-    markDirtySync(world, pos);
+    markDirtySync(world, pos, true);
 
     // Return the new crosswalk sound name
     return getCrosswalkSound().getName();
@@ -185,6 +236,37 @@ public class TileEntityTrafficSignalAPS extends TileEntityTrafficSignalTickableR
    */
   public TrafficSignalAPSSoundScheme getCrosswalkSound() {
     return TrafficSignalAPSSoundScheme.values()[crosswalkSoundIndex];
+  }
+
+  /**
+   * Gets the current crosswalk arrow orientation.
+   *
+   * @return The current crosswalk arrow orientation.
+   *
+   * @since 1.1
+   */
+  public int getCrosswalkArrowOrientation() {
+    return crosswalkArrowOrientation;
+  }
+
+  /**
+   * Increments the current crosswalk arrow orientation and returns the new orientation.
+   *
+   * @return The new crosswalk arrow orientation.
+   *
+   * @since 1.1
+   */
+  public int incrementCrosswalkArrowOrientation(IBlockState state) {
+    int oldCrosswalkArrowOrientation = crosswalkArrowOrientation;
+    crosswalkArrowOrientation++;
+    if (crosswalkArrowOrientation > CROSSWALK_ARROW_ORIENTATION_MAX) {
+      crosswalkArrowOrientation = CROSSWALK_ARROW_ORIENTATION_MIN;
+    }
+
+    // Mark the tile entity as dirty
+    markDirtySync(world, pos, state, true);
+
+    return crosswalkArrowOrientation;
   }
 
   /**
