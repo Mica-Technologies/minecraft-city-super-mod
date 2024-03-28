@@ -91,5 +91,10 @@
       <option name="name" value="Modrinth" />
       <option name="url" value="https://api.modrinth.com/maven" />
     </remote-repository>
+    <remote-repository>
+      <option name="id" value="GTCEu Maven" />
+      <option name="name" value="GTCEu Maven" />
+      <option name="url" value="https://maven.gtceu.com" />
+    </remote-repository>
   </component>
 </project>
