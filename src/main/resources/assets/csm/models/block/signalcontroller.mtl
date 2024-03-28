@@ -1,0 +1,30 @@
+# Minecraft Block Material File
+
+# This file is used to define the textures for a block model.
+
+# East Texture
+newmtl east
+map_Kd csm:blocks/signal_controller_side
+
+# West Texture
+newmtl west
+map_Kd csm:blocks/signal_controller_side
+
+# Top Texture
+newmtl top
+map_Kd csm:blocks/signal_controller_front
+
+# Bottom Texture
+newmtl bottom
+map_Kd csm:blocks/signal_controller_side
+
+# South Texture
+newmtl south
+map_Kd csm:blocks/signal_controller_side
+
+# North Texture
+newmtl north
+map_Kd csm:blocks/signal_controller_side
+
+# None Texture
+newmtl none
