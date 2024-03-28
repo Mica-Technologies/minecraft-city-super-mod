@@ -1,67 +1,76 @@
 {
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:aps_polara",
+    "textures": {
+      "all": "csm:blocks/aps_polara_black",
+      "particle": "csm:blocks/aps_polara_black",
+      "front": "csm:blocks/aps_polara_black",
+      "back": "csm:blocks/aps_polara_black_back",
+      "sign": "csm:blocks/mutcd_r10-3erl",
+      "button": "csm:blocks/aps_button_both_dark",
+      "pilotlight": "csm:blocks/aps_pilot_light_off"
+    }
+  },
   "variants": {
-    "normal": {
-      "model": "csm:controllablecrosswalkbuttonmale_off"
+    "inventory": [
+      {}
+    ],
+    "color": {
+      "0": {
+        "textures": {
+          "pilotlight": "csm:blocks/aps_pilot_light_on"
+        }
+      },
+      "1": {
+        "textures": {
+          "pilotlight": "csm:blocks/aps_pilot_light_on"
+        }
+      },
+      "2": {
+        "textures": {
+          "pilotlight": "csm:blocks/aps_pilot_light_off"
+        }
+      },
+      "3": {
+        "textures": {
+          "pilotlight": "csm:blocks/aps_pilot_light_off"
+        }
+      }
     },
-    "color=0,facing=north": {
-      "model": "csm:controllablecrosswalkbuttonmale_on"
+    "facing": {
+      "north": {
+        "y": 0
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      },
+      "east": {
+        "y": 90
+      }
     },
-    "color=0,facing=east": {
-      "model": "csm:controllablecrosswalkbuttonmale_on",
-      "y": 90
-    },
-    "color=0,facing=south": {
-      "model": "csm:controllablecrosswalkbuttonmale_on",
-      "y": 180
-    },
-    "color=0,facing=west": {
-      "model": "csm:controllablecrosswalkbuttonmale_on",
-      "y": 270
-    },
-    "color=1,facing=north": {
-      "model": "csm:controllablecrosswalkbuttonmale_on"
-    },
-    "color=1,facing=east": {
-      "model": "csm:controllablecrosswalkbuttonmale_on",
-      "y": 90
-    },
-    "color=1,facing=south": {
-      "model": "csm:controllablecrosswalkbuttonmale_on",
-      "y": 180
-    },
-    "color=1,facing=west": {
-      "model": "csm:controllablecrosswalkbuttonmale_on",
-      "y": 270
-    },
-    "color=2,facing=north": {
-      "model": "csm:controllablecrosswalkbuttonmale_off"
-    },
-    "color=2,facing=east": {
-      "model": "csm:controllablecrosswalkbuttonmale_off",
-      "y": 90
-    },
-    "color=2,facing=south": {
-      "model": "csm:controllablecrosswalkbuttonmale_off",
-      "y": 180
-    },
-    "color=2,facing=west": {
-      "model": "csm:controllablecrosswalkbuttonmale_off",
-      "y": 270
-    },
-    "color=3,facing=north": {
-      "model": "csm:controllablecrosswalkbuttonmale_off"
-    },
-    "color=3,facing=east": {
-      "model": "csm:controllablecrosswalkbuttonmale_off",
-      "y": 90
-    },
-    "color=3,facing=south": {
-      "model": "csm:controllablecrosswalkbuttonmale_off",
-      "y": 180
-    },
-    "color=3,facing=west": {
-      "model": "csm:controllablecrosswalkbuttonmale_off",
-      "y": 270
+    "arrowdir": {
+      "0": {
+        "textures": {
+          "sign": "csm:blocks/mutcd_r10-3el",
+          "button": "csm:blocks/aps_button_left_dark"
+        }
+      },
+      "1": {
+        "textures": {
+          "sign": "csm:blocks/mutcd_r10-3er",
+          "button": "csm:blocks/aps_button_right_dark"
+        }
+      },
+      "2": {
+        "textures": {
+          "sign": "csm:blocks/mutcd_r10-3erl",
+          "button": "csm:blocks/aps_button_both_dark"
+        }
+      }
     }
   }
 }

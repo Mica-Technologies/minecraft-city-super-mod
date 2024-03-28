@@ -15,7 +15,8 @@ public enum ItemSignalConfigurationToolMode {
   TOGGLE_CONTROLLER_OVERLAP_PEDESTRIAN_SIGNALS_SETTING(
       "Toggle Controller Overlap Pedestrian Signals Setting"),
   CLEAR_CONTROLLER_FAULTS("Clear Controller Faults"),
-  CREATE_SIGNAL_OVERLAPS("Create Signal Overlaps");
+  CREATE_SIGNAL_OVERLAPS("Create Signal Overlaps"),
+  CHANGE_APS_ARROW_DIRECTION("Change APS Arrow Direction");
 
   /**
    * The friendly name for the {@link ItemSignalConfigurationToolMode} enum value.

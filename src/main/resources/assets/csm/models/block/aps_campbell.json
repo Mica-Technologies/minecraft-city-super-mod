@@ -1,0 +1,55 @@
+{
+	"credit": "Made with Blockbench",
+	"textures": {
+		"front": "csm:blocks/aps_guardian_black",
+		"back": "csm:blocks/aps_guardian_black_back",
+		"particle": "csm:blocks/mutcd_r10-3erl",
+		"sign": "csm:blocks/mutcd_r10-3erl",
+		"button": "csm:blocks/aps_button_both_light",
+		"pilotlight": "csm:blocks/aps_pilot_light_on"
+	},
+	"elements": [
+		{
+			"name": "sign_cube",
+			"from": [4.5, 6, 15.84],
+			"to": [11.5, 15, 15.9],
+			"rotation": {"angle": 0, "axis": "y", "origin": [8, 0, 8]},
+			"faces": {
+				"north": {"uv": [0, 0, 16, 16], "texture": "#sign"}
+			}
+		},
+		{
+			"name": "button_cube",
+			"from": [6.4, 3.55, 15.84],
+			"to": [9.6, 6, 15.9],
+			"rotation": {"angle": 0, "axis": "y", "origin": [8, 0, 8]},
+			"faces": {
+				"north": {"uv": [0, 0, 16, 16], "texture": "#button"}
+			}
+		},
+		{
+			"name": "pilot_light_cube",
+			"from": [7.825, 3.2, 15.84],
+			"to": [8.125, 3.5, 15.9],
+			"rotation": {"angle": 0, "axis": "y", "origin": [8, 0, 8]},
+			"faces": {
+				"north": {"uv": [0, 0, 16, 16], "texture": "#pilotlight"}
+			}
+		},
+		{
+			"name": "device_cube",
+			"from": [4.5, 0, 15.89],
+			"to": [11.5, 15, 16],
+			"rotation": {"angle": 0, "axis": "y", "origin": [8, 0, 8]},
+			"faces": {
+				"north": {"uv": [0, 0, 16, 16], "texture": "#front"},
+				"south": {"uv": [0, 0, 16, 16], "texture": "#back"}
+			}
+		}
+	],
+	"display": {
+		"gui": {
+			"rotation": [0, 180, 0]
+		}
+	}
+}
