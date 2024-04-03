@@ -200,6 +200,7 @@ public class Csm {
       // Register the mod's tile entities
       logger.info("Registering tile entities");
       Set<String> registeredTileEntities = new HashSet<>();
+      Set<String> warnedTileEntities = new HashSet<>();
       CsmRegistry.getBlocks().forEach(block -> {
         try {
           if (block instanceof ICsmTileEntityProvider) {
@@ -213,10 +214,11 @@ public class Csm {
               GameRegistry.registerTileEntity(tileEntityProvider.getTileEntityClass(),
                   tileEntityName);
               registeredTileEntities.add(tileEntityName); // Add the name to the set
-            } else {
+            } else if (!warnedTileEntities.contains(tileEntityName)) {
               logger.warn("Attempted to register tile entity with name: " +
                   tileEntityName +
                   " more than once.");
+              warnedTileEntities.add(tileEntityName);
             }
           }
         } catch (Exception e) {
