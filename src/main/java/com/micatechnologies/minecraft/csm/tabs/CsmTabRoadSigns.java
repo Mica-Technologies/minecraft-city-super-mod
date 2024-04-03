@@ -590,7 +590,6 @@ public class CsmTabRoadSigns extends CsmTab {
     initTabBlock(BlockSignBeginRightLaneYieldBikes.class,
         fmlPreInitializationEvent); // BlockSignBeginRightLaneYieldBikes
     initTabBlock(BlockSignbicycle.class, fmlPreInitializationEvent); // Signbicycle
-    initTabBlock(BlockSignbicycle.class, fmlPreInitializationEvent); // Signbicycle
     initTabBlock(BlockSignbikelaneahead.class, fmlPreInitializationEvent); // Signbikelaneahead
     initTabBlock(BlockSignbikelaneends.class, fmlPreInitializationEvent); // Signbikelaneends
     initTabBlock(BlockSignblastingzone.class, fmlPreInitializationEvent); // Signblastingzone
