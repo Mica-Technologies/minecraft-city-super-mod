@@ -1,7 +1,7 @@
 {
 	"credit": "Model made by Brandon Holt (RinRin Blissgreen)",
 	"textures": {
-		"0": "street lights/westinghouse_ov50"
+		"0": "csm:blocks/westinghouse_ov50"
 	},
 	"elements": [
 		{

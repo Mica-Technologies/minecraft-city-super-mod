@@ -305,15 +305,6 @@
       }
     ]
   },
-  "walksig_wait": {
-    "category": "block",
-    "sounds": [
-      {
-        "name": "csm:walksig_wait",
-        "stream": false
-      }
-    ]
-  },
   "mclalsve": {
     "category": "block",
     "sounds": [
@@ -418,24 +409,6 @@
     "sounds": [
       {
         "name": "csm:marchtime_bell",
-        "stream": false
-      }
-    ]
-  },
-  "elevator_dooropen": {
-    "category": "block",
-    "sounds": [
-      {
-        "name": "csm:elevator_dooropen",
-        "stream": false
-      }
-    ]
-  },
-  "elevator_fan": {
-    "category": "block",
-    "sounds": [
-      {
-        "name": "csm:elevator_fan",
         "stream": false
       }
     ]

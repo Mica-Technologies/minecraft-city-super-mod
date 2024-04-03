@@ -1,8 +1,0 @@
-{
-  "parent": "block/upper_slab",
-  "textures": {
-    "bottom": "csm:blocks/metal_iridescent",
-    "top": "csm:blocks/metal_iridescent",
-    "side": "csm:blocks/metal_iridescent"
-  }
-}

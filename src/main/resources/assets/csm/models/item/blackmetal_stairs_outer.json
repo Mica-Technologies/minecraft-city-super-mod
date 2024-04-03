@@ -1,8 +1,0 @@
-{
-  "parent": "block/outer_stairs",
-  "textures": {
-    "bottom": "csm:blocks/metal_black",
-    "top": "csm:blocks/metal_black",
-    "side": "csm:blocks/metal_black"
-  }
-}

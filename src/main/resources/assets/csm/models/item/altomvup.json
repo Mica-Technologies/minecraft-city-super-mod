@@ -1,8 +1,0 @@
-{
-  "parent": "csm:custom/altomvup",
-  "textures": {
-    "all": "csm:blocks/altomvup",
-    "particle": "csm:blocks/altomvup",
-    "0": "csm:blocks/altomvup"
-  }
-}

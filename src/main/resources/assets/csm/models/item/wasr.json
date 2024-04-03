@@ -1,8 +1,0 @@
-{
-  "parent": "csm:custom/wheelock_as_hornstrobe_red",
-  "textures": {
-    "all": "csm:blocks/wheelock_as_hornstrobe_red",
-    "particle": "csm:blocks/wheelock_as_hornstrobe_red",
-    "0": "csm:blocks/wheelock_as_hornstrobe_red"
-  }
-}

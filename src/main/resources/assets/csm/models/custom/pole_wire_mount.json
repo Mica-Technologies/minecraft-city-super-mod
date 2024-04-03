@@ -1,8 +1,8 @@
 {
 	"credit": "Made with Blockbench",
 	"textures": {
-		"0": "user:blocks/mountingbrackets",
-		"particle": "user:blocks/mountingbrackets"
+		"0": "csm:blocks/mountingbrackets",
+		"particle": "csm:blocks/mountingbrackets"
 	},
 	"elements": [
 		{
