@@ -1,0 +1,8 @@
+{
+  "parent": "csm:custom/trafficlightdoghousecover",
+  "textures": {
+    "all": "csm:blocks/metal_black",
+    "particle": "csm:blocks/metal_black",
+    "0": "csm:blocks/solidoff"
+  }
+}

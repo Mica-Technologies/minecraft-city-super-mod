@@ -1,8 +1,0 @@
-{
-  "parent": "csm:custom/trafficlightsingle",
-  "textures": {
-    "all": "csm:blocks/greenuturn",
-    "particle": "csm:blocks/greenuturn",
-    "0": "csm:blocks/greenuturn"
-  }
-}

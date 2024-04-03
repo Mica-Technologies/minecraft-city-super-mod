@@ -1,8 +1,0 @@
-{
-  "parent": "csm:custom/simplex_4903_speakerstrobe_white",
-  "textures": {
-    "all": "csm:blocks/simplex_4903_speakerstrobe_white",
-    "particle": "csm:blocks/simplex_4903_speakerstrobe_white",
-    "0": "csm:blocks/simplex_4903_speakerstrobe_white"
-  }
-}

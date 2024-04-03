@@ -1,8 +1,0 @@
-{
-  "parent": "csm:custom/edwards_io_white",
-  "textures": {
-    "all": "csm:blocks/edwards_io_white",
-    "particle": "csm:blocks/edwards_io_white",
-    "0": "csm:blocks/edwards_io_white"
-  }
-}

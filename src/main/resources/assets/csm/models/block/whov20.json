@@ -2,7 +2,7 @@
   "parent": "csm:custom/westinghouse_ov20",
   "textures": {
     "all": "csm:blocks/merc_fixtures",
-    "particle": "csm:merc_fixtures",
+    "particle": "csm:blocks/merc_fixtures",
     "0": "csm:blocks/merc_fixtures"
   }
 }

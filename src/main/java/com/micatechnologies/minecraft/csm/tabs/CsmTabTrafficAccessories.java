@@ -83,6 +83,7 @@ import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLControllerMa
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLControllerSilver;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLControllerTan;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLControllerWhite;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLDCover;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLDoghouseBorderBlackBlack;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLDoghouseBorderBlackBlue;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLDoghouseBorderBlackPink;
@@ -442,6 +443,7 @@ public class CsmTabTrafficAccessories extends CsmTab {
     initTabBlock(BlockTLControllerSilver.class, fmlPreInitializationEvent); // TLControllerSilver
     initTabBlock(BlockTLControllerTan.class, fmlPreInitializationEvent); // TLControllerTan
     initTabBlock(BlockTLControllerWhite.class, fmlPreInitializationEvent); // TLControllerWhite
+    initTabBlock(BlockTLDCover.class, fmlPreInitializationEvent); // TLDCover
     initTabBlock(BlockTLDoghouseBorderBlackBlack.class,
         fmlPreInitializationEvent); // TLDoghouseBorderBlackBlack
     initTabBlock(BlockTLDoghouseBorderBlackWhite.class,

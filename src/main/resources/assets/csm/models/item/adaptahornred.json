@@ -1,8 +1,0 @@
-{
-  "parent": "csm:custom/edwards_adaptahorn_red",
-  "textures": {
-    "all": "csm:blocks/edwards_adaptahorn_red",
-    "particle": "csm:blocks/edwards_adaptahorn_red",
-    "0": "csm:blocks/edwards_adaptahorn_red"
-  }
-}
