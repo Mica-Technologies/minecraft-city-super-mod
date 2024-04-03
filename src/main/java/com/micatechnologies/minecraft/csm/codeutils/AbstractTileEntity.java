@@ -45,7 +45,9 @@ public abstract class AbstractTileEntity extends TileEntity {
     if (sendClientUpdate) {
       syncServerToClient(world);
     }
-  }  /**
+  }
+
+  /**
    * Abstract method which must be implemented to process the reading of the tile entity's NBT data
    * from the supplied NBT tag compound.
    *
@@ -71,7 +73,9 @@ public abstract class AbstractTileEntity extends TileEntity {
         }
       }
     }
-  }  /**
+  }
+
+  /**
    * Method which processes the reading of the tile entity's NBT data from the supplied NBT tag
    * compound.
    *
@@ -91,7 +95,9 @@ public abstract class AbstractTileEntity extends TileEntity {
    *
    * @return the NBT tag compound with the tile entity's NBT data
    */
-  public abstract NBTTagCompound writeNBT(NBTTagCompound compound);  /**
+  public abstract NBTTagCompound writeNBT(NBTTagCompound compound);
+
+  /**
    * Method which processes the writing of the tile entity's NBT data to the supplied NBT tag
    * compound.
    *
@@ -115,9 +121,12 @@ public abstract class AbstractTileEntity extends TileEntity {
   public void markDirtySync(World world, BlockPos pos, IBlockState state) {
     boolean defaultSendClientUpdate = false;
     markDirtySync(world, pos, state, defaultSendClientUpdate);
-  }  /**
+  }
+
+  /**
    * Overridden handler which returns whether the tile entity should be refreshed or not. In this
-   * case, we always return false, as we don't want to refresh the tile entity.
+   * case, we return false, as we don't want to refresh the tile entity, unless the block has
+   * changed.
    *
    * @param world    the block/tile entity's world
    * @param pos      the block/tile entity's position
@@ -129,7 +138,7 @@ public abstract class AbstractTileEntity extends TileEntity {
   @Override
   public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState,
       IBlockState newState) {
-    return false;
+    return oldState.getBlock() != newState.getBlock();
   }
 
   /**
@@ -147,13 +156,6 @@ public abstract class AbstractTileEntity extends TileEntity {
     world.notifyBlockUpdate(pos, state, state, Constants.BlockFlags.DEFAULT);
     markDirtySync(world, pos, sendClientUpdate);
   }
-
-
-
-
-
-
-
 
 
   /**
