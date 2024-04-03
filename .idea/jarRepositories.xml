@@ -37,6 +37,11 @@
       <option name="url" value="https://repo1.maven.org/maven2" />
     </remote-repository>
     <remote-repository>
+      <option name="id" value="GTCEu Maven" />
+      <option name="name" value="GTCEu Maven" />
+      <option name="url" value="https://maven.gtceu.com" />
+    </remote-repository>
+    <remote-repository>
       <option name="id" value="forge" />
       <option name="name" value="forge" />
       <option name="url" value="https://maven.minecraftforge.net" />
@@ -90,11 +95,6 @@
       <option name="id" value="Modrinth" />
       <option name="name" value="Modrinth" />
       <option name="url" value="https://api.modrinth.com/maven" />
-    </remote-repository>
-    <remote-repository>
-      <option name="id" value="GTCEu Maven" />
-      <option name="name" value="GTCEu Maven" />
-      <option name="url" value="https://maven.gtceu.com" />
     </remote-repository>
   </component>
 </project>
