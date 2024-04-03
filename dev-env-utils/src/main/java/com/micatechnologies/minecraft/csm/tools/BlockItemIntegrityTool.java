@@ -1,10 +1,13 @@
 package com.micatechnologies.minecraft.csm.tools;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.micatechnologies.minecraft.csm.tools.tool_framework.CsmToolUtility;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -55,7 +58,8 @@ public class BlockItemIntegrityTool {
               + "/AbstractBlockTrafficSignalTickableRequester.java",
           "src/main/java/com/micatechnologies/minecraft/csm/trafficsignals/logic"
               + "/AbstractBlockTrafficSignalAPS.java",
-          "src/main/java/com/micatechnologies/minecraft/csm/trafficsigns/AbstractBlockSign.java"};
+          "src/main/java/com/micatechnologies/minecraft/csm/trafficsigns/AbstractBlockSign.java",
+          "src/main/java/com/micatechnologies/minecraft/csm/tabs/CsmTabNone.java"};
   private static final String[] SOURCE_FILE_ELIGIBLE_EXTENDS_BLOCKS =
       {"AbstractBlock", "AbstractBlockRotatableNSEW", "AbstractBlockRotatableNSEWUD",
           "AbstractPoweredBlockRotatableNSEWUD", "AbstractBrightLight", "AbstractBlockSetBasic",
@@ -66,6 +70,8 @@ public class BlockItemIntegrityTool {
           "AbstractBlockTrafficSignalTickableRequester", "AbstractBlockTrafficSignalAPS",
           "AbstractBlockSign"};
   private static final String[] SOURCE_FILE_ELIGIBLE_EXTENDS_ITEMS = {"AbstractItem"};
+
+  private static final String[] SOURCE_FILE_ELIGIBLE_EXTENDS_TAB = {"CsmTab"};
 
   private static final String BLOCKSTATE_FILE_FOLDER_PATH_RELATIVE =
       "src/main/resources/assets/csm/blockstates";
@@ -92,6 +98,9 @@ public class BlockItemIntegrityTool {
   private static final String SOUNDS_JSON_FILE_PATH_RELATIVE =
       "src/main/resources/assets/csm/sounds.json";
 
+  private static final String TABS_FILE_FOLDER_PATH_RELATIVE =
+      "src/main/java/com/micatechnologies/minecraft/csm/tabs";
+
   private static final String LANG_FILE_FOLDER_PATH_RELATIVE = "src/main/resources/assets/csm/lang";
   private static final String LANG_FILE_EXTENSION = ".lang";
   private static final String SOUND_FILE_EXTENSION = ".ogg";
@@ -102,10 +111,13 @@ public class BlockItemIntegrityTool {
   private static final AtomicInteger validationsCount = new AtomicInteger(0);
   private static final AtomicInteger checkCount = new AtomicInteger(0);
   private static final AtomicInteger errorCount = new AtomicInteger(0);
+  private static final AtomicInteger suppressedErrorCount = new AtomicInteger(0);
   private static final AtomicInteger unusedCount = new AtomicInteger(0);
   private static final AtomicInteger unusedLangCount = new AtomicInteger(0);
 
+  private static final List<String> knownMetaLangs = new ArrayList<>();
   private static final List<String> knownBlockIds = new ArrayList<>();
+  private static final List<String> knownTabIds = new ArrayList<>();
   private static final List<String> knownItemIds = new ArrayList<>();
   private static final List<String> blockSetBlockIds = new ArrayList<>();
   private static final List<File> usedBlockstateFiles = new ArrayList<>();
@@ -116,6 +128,8 @@ public class BlockItemIntegrityTool {
   private static final List<File> usedItemTexturesFiles = new ArrayList<>();
   private static final List<File> usedSoundFiles = new ArrayList<>();
 
+  private static final List<String> loggedErrorMessages = new ArrayList<String>();
+
   public static void main(String[] args) {
 
     CsmToolUtility.doToolExecuteWrapped("CSM Block/Item Integrity Verification Tool", args,
@@ -123,6 +137,7 @@ public class BlockItemIntegrityTool {
           // List eligible source files (blocks and items)
           List<File> blockSourceFiles = listEligibleBlockSourceFiles(devEnvironmentPath);
           List<File> itemSourceFiles = listEligibleItemSourceFiles(devEnvironmentPath);
+          List<File> tabSourceFiles = listEligibleTabSourceFiles(devEnvironmentPath);
           List<String> soundFiles = listEligibleSoundFiles(devEnvironmentPath);
 
           // Build source file excludes
@@ -131,6 +146,9 @@ public class BlockItemIntegrityTool {
           // Verify block/item integrity
           verifyBlockItemIntegritys(devEnvironmentPath, sourceExcludes, blockSourceFiles,
               itemSourceFiles);
+
+          // Verify tab integrity
+          verifyTabIntegritys(devEnvironmentPath, sourceExcludes, tabSourceFiles);
 
           // Verify sound file integrity
           checkSoundFilesIntegrity(devEnvironmentPath, soundFiles);
@@ -147,10 +165,80 @@ public class BlockItemIntegrityTool {
           System.out.println("Total Checked: " + checkCount.get());
           System.out.println("Total Validations: " + validationsCount.get());
           System.out.println("Total Errors: " + errorCount.get());
+          System.out.println("Total Suppressed Errors: " + suppressedErrorCount.get());
           System.out.println("Total Unused Files: " + unusedCount.get());
           System.out.println("Total Unused Lang Entries: " + unusedLangCount.get());
           System.out.println("========================================\n");
         });
+  }
+
+  private static void verifyTabIntegritys(File devEnvironmentPath, List<File> sourceExcludes,
+      List<File> tabSourceFiles) {
+    for (File tabSourceFile : tabSourceFiles) {
+      checkCount.incrementAndGet(); // Increment check count
+      if (sourceExcludes.contains(tabSourceFile)) {
+        continue;
+      }
+      verifyTabIntegrity(devEnvironmentPath, tabSourceFile);
+    }
+  }
+
+  private static void verifyTabIntegrity(File devEnvironmentPath, File tabSourceFile) {
+    try {
+      // Read file contents
+      String fileContents = Files.readString(tabSourceFile.toPath());
+
+      // Get tab ID
+      String tabId = getTabIdFromSourceFileContents(tabSourceFile, fileContents);
+
+      // Check for lang file entries
+      File langFolder = new File(devEnvironmentPath, LANG_FILE_FOLDER_PATH_RELATIVE);
+      for (File langFile : Objects.requireNonNull(langFolder.listFiles())) {
+        if (langFile.getName().endsWith(LANG_FILE_EXTENSION)) {
+          validationsCount.incrementAndGet(); // Increment validation count
+          String fullyQualifiedNameTab = "itemGroup." + tabId;
+          if (!Files.readString(langFile.toPath()).contains(fullyQualifiedNameTab)) {
+            logError(
+                "Lang file entry does not exist for tab: " + tabId + " in " + langFile.getPath());
+          }
+        }
+      }
+
+    } catch (Exception e) {
+      logError("Failed to verify tab file integrity: " + tabSourceFile.getPath());
+      e.printStackTrace();
+    }
+  }
+
+  private static String getTabIdFromSourceFileContents(File tabSourceFile, String fileContents)
+      throws Exception {
+
+    String tabId = getIdFromSourceFileContents(tabSourceFile, fileContents, "getTabId");
+
+    knownTabIds.add(tabId);
+    if (DEBUG) {
+      System.out.println("Found tab ID: " + tabId);
+    }
+    return tabId;
+  }
+
+  private static List<File> listEligibleTabSourceFiles(File devEnvironmentPath) throws Exception {
+    File tabSourceFolder = new File(devEnvironmentPath, TABS_FILE_FOLDER_PATH_RELATIVE);
+    List<File> tabSourceFiles = new ArrayList<>();
+    if (tabSourceFolder.exists()) {
+      for (File tabSourceFile : Objects.requireNonNull(tabSourceFolder.listFiles())) {
+        if (tabSourceFile.getName().endsWith(SOURCE_FILE_EXTENSION)) {
+          String tabSourceFileContents = Files.readString(tabSourceFile.toPath());
+          for (String eligibleExtends : SOURCE_FILE_ELIGIBLE_EXTENDS_TAB) {
+            if (tabSourceFileContents.contains("extends " + eligibleExtends)) {
+              tabSourceFiles.add(tabSourceFile);
+              break;
+            }
+          }
+        }
+      }
+    }
+    return tabSourceFiles;
   }
 
   public static void checkForUnusedFiles(File devEnvironmentPath) {
@@ -174,14 +262,10 @@ public class BlockItemIntegrityTool {
       checkUnusedFiles(customModelsFolder, usedCustomModelFiles);
       checkUnusedFiles(blockTexturesFolder, usedBlockTexturesFiles);
       checkUnusedFiles(itemTexturesFolder, usedItemTexturesFiles);
-      // TODO: checkUnusedFiles(soundsResourceFolder, usedSoundFiles);
+      checkUnusedFiles(soundsResourceFolder, usedSoundFiles);
       checkForUnusedLang(devEnvironmentPath);
     } catch (Exception e) {
-      // Increment error count and pad with leading zeros up to 4 digits
-      int currentErrorCount = errorCount.incrementAndGet();
-      String errorCountString = String.format("%04d", currentErrorCount);
-
-      System.err.println("E" + errorCountString + ": Unable to check for unused files.");
+      logError("Unable to check for unused files.");
       e.printStackTrace();
     }
   }
@@ -219,9 +303,22 @@ public class BlockItemIntegrityTool {
               }
             }
 
-            // TODO: CURRENTLY UNSUPPORTED (tabs and customs)
-            if (line.startsWith(MOD_PREFIX + ".") || line.startsWith("itemGroup.")) {
-              unused = false;
+            // Check if for meta
+            if (unused) {
+              for (String metaLang : knownMetaLangs) {
+                if (line.startsWith(metaLang + "=")) {
+                  unused = false;
+                  break;
+                }
+              }
+            }
+
+            // Check if for tab
+            if (line.startsWith("itemGroup.")) {
+              String tabId = line.substring("itemGroup.".length(), line.indexOf("="));
+              if (knownTabIds.contains(tabId)) {
+                unused = false;
+              }
             }
 
             if (unused) {
@@ -234,12 +331,7 @@ public class BlockItemIntegrityTool {
         }
       }
     } catch (Exception e) {
-      // Increment error count and pad with leading zeros up to 4 digits
-      int currentErrorCount = errorCount.incrementAndGet();
-      String errorCountString = String.format("%04d", currentErrorCount);
-
-      System.err.println(
-          "E" + errorCountString + ": Unable to check for unused lang files entries.");
+      logError("Unable to check for unused lang files entries.");
       e.printStackTrace();
     }
   }
@@ -267,8 +359,8 @@ public class BlockItemIntegrityTool {
   }
 
   public static List<String> listEligibleSoundFiles(File devEnvironmentPath) {
-    // TODO: Implement sound file listing
-    return new ArrayList<>();
+    File soundsClassFile = new File(devEnvironmentPath, SOUNDS_CLASS_FILE_PATH_RELATIVE);
+    return parseSoundNames(soundsClassFile);
   }
 
   public static void checkSoundFilesIntegrity(File devEnvironmentPath, List<String> soundFiles) {
@@ -276,6 +368,14 @@ public class BlockItemIntegrityTool {
     File soundsResourceFolder = new File(devEnvironmentPath, SOUNDS_FILE_FOLDER_PATH_RELATIVE);
     File soundsClassFile = new File(devEnvironmentPath, SOUNDS_CLASS_FILE_PATH_RELATIVE);
     File soundsJsonFile = new File(devEnvironmentPath, SOUNDS_JSON_FILE_PATH_RELATIVE);
+
+    if (!soundsClassFile.exists()) {
+      logError("Sounds class file does not exist: " + soundsClassFile.getPath());
+    }
+
+    if (!soundsJsonFile.exists()) {
+      logError("Sounds json file does not exist: " + soundsJsonFile.getPath());
+    }
 
     for (String soundFile : soundFiles) {
       checkSoundFileIntegrity(soundsResourceFolder, soundsClassFile, soundsJsonFile, soundFile);
@@ -286,17 +386,148 @@ public class BlockItemIntegrityTool {
       File soundsJsonFile, String soundFile) {
     try {
       validationsCount.incrementAndGet(); // Increment validation count
-      // TODO: Implement sound file integrity check
 
+      // Check for sound file in sounds class file
+      if (!Files.readString(soundsClassFile.toPath()).contains("\"" + soundFile + "\"")) {
+        logError("Sound file entry does not exist in sounds class file: " + soundFile);
+      }
+
+      // Check for sound file in sounds json file
+      validationsCount.incrementAndGet(); // Increment validation count
+      String soundsJsonContents = Files.readString(soundsJsonFile.toPath());
+      JsonObject soundsJson = JsonParser.parseString(soundsJsonContents).getAsJsonObject();
+      if (!soundsJson.has(soundFile)) {
+        logError("Sound file entry does not exist in sounds json file: " + soundFile);
+      } else {
+        JsonObject soundJson = soundsJson.getAsJsonObject(soundFile);
+        validationsCount.incrementAndGet(); // Increment validation count
+        if (!soundJson.has("category")) {
+          logError("Sound file entry does not have a category in sounds json file: " + soundFile);
+        }
+
+        validationsCount.incrementAndGet(); // Increment validation count
+        if (!soundJson.has("sounds")) {
+          logError("Sound file entry does not have sounds in sounds json file: " + soundFile);
+        } else {
+          JsonArray soundsArray = soundJson.getAsJsonArray("sounds");
+          // Loop through sounds array
+          for (JsonElement soundElement : soundsArray) {
+            JsonObject soundObject = soundElement.getAsJsonObject();
+
+            validationsCount.incrementAndGet(); // Increment validation count
+
+            if (!soundObject.has("stream")) {
+              logError(
+                  "Sound file entry does not have a stream flag in sounds json file: " + soundFile);
+            }
+            if (!soundObject.has("name")) {
+              logError("Sound file entry does not have a name in sounds json file: " + soundFile);
+            } else {
+              String soundName = soundObject.get("name").getAsString();
+              String modPrefixCheck = MOD_PREFIX + ":";
+              if (!soundName.startsWith(modPrefixCheck)) {
+                logError("Sound file entry name does not have mod prefix in sounds json file: "
+                    + soundFile);
+              } else {
+                soundName = soundName.substring(modPrefixCheck.length());
+              }
+
+              // Check for sound file in sounds resource folder
+              File soundFileOgg = new File(soundsResourceFolder, soundName + SOUND_FILE_EXTENSION);
+              if (!soundFileOgg.exists()) {
+                logError(
+                    "Sound file (ID: " + soundFile + ") does not exist: " + soundFileOgg.getPath());
+              } else {
+                usedSoundFiles.add(soundFileOgg);
+              }
+            }
+          }
+        }
+      }
     } catch (Exception e) {
-      // Increment error count and pad with leading zeros up to 4 digits
-      int currentErrorCount = errorCount.incrementAndGet();
-      String errorCountString = String.format("%04d", currentErrorCount);
-
-      System.err.println(
-          "E" + errorCountString + ": Failed to verify sound file integrity: " + soundFile);
+      logError("Failed to verify sound file integrity: " + soundFile);
       e.printStackTrace();
     }
+  }
+
+  public static List<String> parseSoundNames(File file) {
+    List<String> soundNames = new ArrayList<>();
+    Pattern pattern = Pattern.compile("\\w+\\(\"(.*?)\"\\)"); // Pattern to match the enum values.
+    try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+      String line;
+      while ((line = reader.readLine()) != null) {
+        Matcher matcher = pattern.matcher(line.trim());
+        if (matcher.find()) {
+          soundNames.add(matcher.group(1)); // Add the matched sound name to the list.
+        }
+      }
+    } catch (IOException e) {
+      logError("Failed to parse sound names from file: " + file.getPath());
+      e.printStackTrace();
+    }
+    return soundNames;
+  }
+
+  public static void logError(String error) {
+    if (loggedErrorMessages.contains(error) && !DEBUG) {
+      suppressedErrorCount.incrementAndGet();
+      return;
+    }
+    loggedErrorMessages.add(error);
+    int currentErrorCount = errorCount.incrementAndGet();
+    String errorCountString = String.format("%04d", currentErrorCount);
+    System.err.println("E" + errorCountString + ": " + error);
+  }
+
+  public static void checkObjModelIntegrity(File blockModelsFolder, File itemModelsFolder,
+      File customModelsFolder, File blockTexturesFolder, File itemTexturesFolder, File modelFileObj)
+      throws Exception {
+    File modelFileMtl = new File(modelFileObj.getPath().replaceAll(".obj", ".mtl"));
+    usedBlockModelFiles.add(modelFileObj);
+    usedBlockModelFiles.add(modelFileMtl);
+    validationsCount.incrementAndGet(); // Increment validation count
+    if (!modelFileObj.exists()) {
+      logError("Model file does not exist: " + modelFileObj.getPath());
+    }
+    if (!modelFileMtl.exists()) {
+
+      logError("Model material file does not exist: " + modelFileMtl.getPath());
+    }
+
+    if (usedBlockModelFiles.contains(modelFileObj)) {
+      usedBlockModelFiles.add(modelFileMtl);
+    } else if (usedItemModelFiles.contains(modelFileObj)) {
+      usedItemModelFiles.add(modelFileMtl);
+    } else if (usedCustomModelFiles.contains(modelFileObj)) {
+      usedCustomModelFiles.add(modelFileMtl);
+    } else {
+      logError("Model file use is unknown: " + modelFileObj.getPath());
+    }
+
+    // Read mtl file contents
+    List<String> mtlFileContents = Files.readAllLines(modelFileMtl.toPath());
+    for (String line : mtlFileContents) {
+      if (line.startsWith("map_Kd")) {
+        String textureFileName = line.substring("map_Kd".length()).trim();
+        String modPrefixCheck = MOD_PREFIX + ":";
+        textureFileName = textureFileName.substring(modPrefixCheck.length()) + ".png";
+        boolean isItemTexture = textureFileName.startsWith("items/");
+        textureFileName =
+            textureFileName.substring(isItemTexture ? "items/".length() : "blocks/".length());
+        File textureFile =
+            new File(isItemTexture ? itemTexturesFolder : blockTexturesFolder, textureFileName);
+        File textureFileMcMeta = new File(isItemTexture ? itemTexturesFolder : blockTexturesFolder,
+            textureFileName + ".mcmeta");
+        if (!textureFile.exists()) {
+          logError("Texture file does not exist: " + textureFile.getPath());
+        }
+
+        usedBlockTexturesFiles.add(textureFile);
+        usedBlockTexturesFiles.add(textureFileMcMeta);
+
+      }
+    }
+
   }
 
   public static void checkJsonModelIntegrity(File blockModelsFolder, File itemModelsFolder,
@@ -305,7 +536,7 @@ public class BlockItemIntegrityTool {
 
     validationsCount.incrementAndGet(); // Increment validation count
     if (!modelFileJson.exists()) {
-      throw new Exception("Model file does not exist: " + modelFileJson.getPath());
+      logError("Model file does not exist: " + modelFileJson.getPath());
     }
 
     String modelJsonRaw = Files.readString(modelFileJson.toPath());
@@ -342,7 +573,7 @@ public class BlockItemIntegrityTool {
               blockTexturesFolder, itemTexturesFolder, parentModelFile);
           usedModelFiles.add(parentModelFile);
         } else {
-          throw new Exception("Unexpected or invalid parent model value: " + parentValue);
+          logError("Unexpected or invalid parent model value: " + parentValue);
         }
       }
     }
@@ -362,8 +593,8 @@ public class BlockItemIntegrityTool {
       String textureValue = texturesBlockToCheck.get(textureKey).getAsString();
       if (textureValue.startsWith(prefixCheck)) {
         String strippedTextureValue = textureValue.substring(prefixCheck.length());
-        String textureFileName = strippedTextureValue + ".png";
-        File textureFile = new File(blockTexturesFolder, textureFileName);
+        String textureFileName = null;
+        File textureFile = null;
         if (strippedTextureValue.startsWith("blocks/")) {
           textureFileName = strippedTextureValue.substring("blocks/".length()) + ".png";
           textureFile = new File(blockTexturesFolder, textureFileName);
@@ -376,13 +607,16 @@ public class BlockItemIntegrityTool {
           usedItemTexturesFiles.add(new File(itemTexturesFolder, textureFileName + ".mcmeta"));
         }
         if (textureFile == null) {
-          throw new Exception("Texture file does not exist: " + textureValue);
-        }
-        if (!textureFile.exists()) {
-          throw new Exception(
+          logError(
+              "Texture '" + textureValue + "' does not exist (--) in " + validateFile.getPath());
+        } else if (!textureFile.exists()) {
+          logError(
               "Texture '" + textureValue + "' does not exist (" + textureFile.getPath() + ") in "
                   + validateFile.getPath());
         }
+      } else if (!textureValue.startsWith("minecraft:")) {
+        logError("Texture '" + textureValue + "' is not a valid texture value in "
+            + validateFile.getPath());
       }
     }
 
@@ -396,6 +630,22 @@ public class BlockItemIntegrityTool {
     }
   }
 
+
+  public static void checkAndLogMetaText(String fileContents) {
+    // Regular expression pattern to match I18n.format("...") calls.
+    // It accounts for any characters (including new lines and spaces) between 'I18n.format(' and
+    // the next ')'
+    // and captures the string literal argument inside the parentheses.
+    String regex = "I18n\\.format\\(\\s*\"([^\"]*)\"\\s*\\)";
+    Pattern pattern = Pattern.compile(regex);
+    Matcher matcher = pattern.matcher(fileContents);
+
+    while (matcher.find()) {
+      // Add the captured string literal (the argument of I18n.format call) to the list
+      knownMetaLangs.add(matcher.group(1));
+    }
+  }
+
   public static void verifyItemIntegrity(File blockModelsFolder, File itemModelsFolder,
       File customModelsFolder, File blockstateFolder, File langFolder, File blockTexturesFolder,
       File itemTexturesFolder, File sourceFile) {
@@ -406,13 +656,16 @@ public class BlockItemIntegrityTool {
       // Get item ID from block code file
       String itemId = getBlockItemIdFromSourceFileContents(sourceFile, fileContents, true);
 
+      // Check and log meta text
+      checkAndLogMetaText(fileContents);
+
       // Check for lang file entries
       for (File langFile : Objects.requireNonNull(langFolder.listFiles())) {
         if (langFile.getName().endsWith(LANG_FILE_EXTENSION)) {
           validationsCount.incrementAndGet(); // Increment validation count
           String fullyQualifiedNameItem = "item." + itemId + ".name";
           if (!Files.readString(langFile.toPath()).contains(fullyQualifiedNameItem)) {
-            throw new Exception(
+            logError(
                 "Lang file entry does not exist for item: " + itemId + " in " + langFile.getPath());
           }
         }
@@ -423,27 +676,25 @@ public class BlockItemIntegrityTool {
       File itemModelFileJson = new File(itemModelsFolder, itemId + ".json");
       File itemModelFileObj = new File(itemModelsFolder, itemId + ".obj");
       if (!itemModelFileJson.exists() && !itemModelFileObj.exists()) {
-        throw new Exception("Item model file does not exist: " + itemModelFileJson.getPath());
+        logError("Item model file does not exist: " + itemModelFileJson.getPath());
       }
 
       // If item model file exists and is JSON, check integrity
       if (itemModelFileJson.exists()) {
         // Validation count is incremented in checkJsonModelIntegrity
+        usedItemModelFiles.add(itemModelFileJson);
         checkJsonModelIntegrity(blockModelsFolder, itemModelsFolder, customModelsFolder,
             blockTexturesFolder, itemTexturesFolder, itemModelFileJson);
-        usedItemModelFiles.add(itemModelFileJson);
       }
 
       if (itemModelFileObj.exists()) {
         usedItemModelFiles.add(itemModelFileObj);
+        checkObjModelIntegrity(blockModelsFolder, itemModelsFolder, customModelsFolder,
+            blockTexturesFolder, itemTexturesFolder, itemModelFileObj);
       }
     } catch (Exception e) {
-      // Increment error count and pad with leading zeros up to 4 digits
-      int currentErrorCount = errorCount.incrementAndGet();
-      String errorCountString = String.format("%04d", currentErrorCount);
 
-      System.err.println("E" + errorCountString + ": Failed to verify item file integrity: "
-          + sourceFile.getPath());
+      logError("Failed to verify item file integrity: " + sourceFile.getPath());
       e.printStackTrace();
     }
   }
@@ -471,7 +722,7 @@ public class BlockItemIntegrityTool {
       validationsCount.incrementAndGet(); // Increment validation count
       File blockstateFileJson = new File(blockstateFolder, blockId + BLOCKSTATE_FILE_EXTENSION);
       if (!blockstateFileJson.exists()) {
-        throw new Exception("Blockstate file does not exist: " + blockstateFileJson.getPath());
+        logError("Blockstate file does not exist: " + blockstateFileJson.getPath());
       } else {
         usedBlockstateFiles.add(blockstateFileJson);
       }
@@ -490,7 +741,7 @@ public class BlockItemIntegrityTool {
       }
       hasInventoryItemModel = itemModelFileJson.exists();
       if (!hasInventoryVariant && !hasInventoryItemModel) {
-        throw new Exception("Block with ID '" + blockId
+        logError("Block with ID '" + blockId
             + "' does not have an inventory variant in blockstate file or an item model file (for"
             + " inventory display)!");
       }
@@ -503,17 +754,22 @@ public class BlockItemIntegrityTool {
       }
 
       // heck for model files in blockstate file
-      List<File> dugModels = digForModels(blockModelsFolder, blockstateJson);
+      List<File> dugModels =
+          digForModels(blockModelsFolder, itemModelsFolder, customModelsFolder, blockstateJson);
       for (File file : dugModels) {
         if (!file.exists()) {
-          throw new Exception("Model file does not exist: " + file.getPath());
+          logError("Model file does not exist: " + file.getPath());
         }
 
+        usedBlockModelFiles.add(file);
         if (file.getName().endsWith(".json")) {
           checkJsonModelIntegrity(blockModelsFolder, itemModelsFolder, customModelsFolder,
               blockTexturesFolder, itemTexturesFolder, file);
         }
-        usedBlockModelFiles.add(file);
+        if (file.getName().endsWith(".obj")) {
+          checkObjModelIntegrity(blockModelsFolder, itemModelsFolder, customModelsFolder,
+              blockTexturesFolder, itemTexturesFolder, file);
+        }
       }
 
       // Check for textures blocks in blockstate file and validate
@@ -534,6 +790,9 @@ public class BlockItemIntegrityTool {
 
       // Get block ID from block code file
       String blockId = getBlockItemIdFromSourceFileContents(sourceFile, fileContents, false);
+
+      // Check and log meta text
+      checkAndLogMetaText(fileContents);
 
       // Check for blockstate file
       verifyBlockStateIntegrity(blockModelsFolder, itemModelsFolder, customModelsFolder,
@@ -574,7 +833,7 @@ public class BlockItemIntegrityTool {
           validationsCount.incrementAndGet(); // Increment validation count
           String fullyQualifiedNameBlock = "tile." + blockId + ".name";
           if (!Files.readString(langFile.toPath()).contains(fullyQualifiedNameBlock)) {
-            throw new Exception("Lang file entry does not exist for block: " + blockId + " in "
+            logError("Lang file entry does not exist for block: " + blockId + " in "
                 + langFile.getPath());
           }
         }
@@ -582,25 +841,21 @@ public class BlockItemIntegrityTool {
 
 
     } catch (Exception e) {
-      // Increment error count and pad with leading zeros up to 4 digits
-      int currentErrorCount = errorCount.incrementAndGet();
-      String errorCountString = String.format("%04d", currentErrorCount);
-
-      System.err.println("E" + errorCountString + ": Failed to verify block file integrity: "
-          + sourceFile.getPath());
+      logError("Failed to verify block file integrity: " + sourceFile.getPath());
       e.printStackTrace();
     }
   }
 
-  public static List<File> digForModels(File blockModelsFolder, JsonObject jsonToCheck) {
+  public static List<File> digForModels(File blockModelsFolder, File itemModelsFolder,
+      File customModelsFolder, JsonObject jsonToCheck) {
     // Recursively get all JsonObjects with key "textures"
     List<File> modelFiles = new ArrayList<>();
-    digForModels(blockModelsFolder, jsonToCheck, modelFiles);
+    digForModels(blockModelsFolder, itemModelsFolder, customModelsFolder, jsonToCheck, modelFiles);
     return modelFiles;
   }
 
-  public static void digForModels(File blockModelsFolder, JsonObject jsonToCheck,
-      List<File> modelFiles) {
+  public static void digForModels(File blockModelsFolder, File itemModelsFolder,
+      File customModelsFolder, JsonObject jsonToCheck, List<File> modelFiles) {
     if (jsonToCheck == null) {
       return;
     }
@@ -613,10 +868,23 @@ public class BlockItemIntegrityTool {
         if (modelValue.startsWith(prefixCheck)) {
           String strippedModelValue = modelValue.substring(prefixCheck.length());
           String modelFileName = strippedModelValue + ".json";
+          File modelFolder = blockModelsFolder;
+          if (strippedModelValue.startsWith("custom/")) {
+            modelFolder = customModelsFolder;
+            modelFileName = strippedModelValue.substring("custom/".length());
+          } else if (strippedModelValue.startsWith("block/")) {
+            modelFolder = blockModelsFolder;
+            modelFileName = strippedModelValue.substring("block/".length());
+          } else if (strippedModelValue.startsWith("item/")) {
+            modelFolder = itemModelsFolder;
+            modelFileName = strippedModelValue.substring("item/".length());
+          }
           if (strippedModelValue.endsWith(".obj")) {
             modelFileName = strippedModelValue;
+            File modelFileMtl = new File(modelFolder, modelFileName.replaceAll(".obj", ".mtl"));
+            modelFiles.add(modelFileMtl);
           }
-          File modelFile = new File(blockModelsFolder, modelFileName);
+          File modelFile = new File(modelFolder, modelFileName);
           modelFiles.add(modelFile);
         }
       } else if (element.isJsonObject()) {
@@ -626,14 +894,27 @@ public class BlockItemIntegrityTool {
           if (modelValue.startsWith(prefixCheck)) {
             String strippedModelValue = modelValue.substring(prefixCheck.length());
             String modelFileName = strippedModelValue + ".json";
+            File modelFolder = blockModelsFolder;
+            if (strippedModelValue.startsWith("custom/")) {
+              modelFolder = customModelsFolder;
+              modelFileName = strippedModelValue.substring("custom/".length());
+            } else if (strippedModelValue.startsWith("block/")) {
+              modelFolder = blockModelsFolder;
+              modelFileName = strippedModelValue.substring("block/".length());
+            } else if (strippedModelValue.startsWith("item/")) {
+              modelFolder = itemModelsFolder;
+              modelFileName = strippedModelValue.substring("item/".length());
+            }
             if (strippedModelValue.endsWith(".obj")) {
               modelFileName = strippedModelValue;
+              File modelFileMtl = new File(modelFolder, modelFileName.replaceAll(".obj", ".mtl"));
+              modelFiles.add(modelFileMtl);
             }
-            File modelFile = new File(blockModelsFolder, modelFileName);
+            File modelFile = new File(modelFolder, modelFileName);
             modelFiles.add(modelFile);
           }
         }
-        digForModels(blockModelsFolder, obj, modelFiles);
+        digForModels(blockModelsFolder, itemModelsFolder, customModelsFolder, obj, modelFiles);
       } else if (element.isJsonArray()) {
         for (JsonElement arrayElement : element.getAsJsonArray()) {
           if (arrayElement.isJsonObject()) {
@@ -643,14 +924,28 @@ public class BlockItemIntegrityTool {
               if (modelValue.startsWith(prefixCheck)) {
                 String strippedModelValue = modelValue.substring(prefixCheck.length());
                 String modelFileName = strippedModelValue + ".json";
+                File modelFolder = blockModelsFolder;
+                if (strippedModelValue.startsWith("custom/")) {
+                  modelFolder = customModelsFolder;
+                  modelFileName = strippedModelValue.substring("custom/".length());
+                } else if (strippedModelValue.startsWith("block/")) {
+                  modelFolder = blockModelsFolder;
+                  modelFileName = strippedModelValue.substring("block/".length());
+                } else if (strippedModelValue.startsWith("item/")) {
+                  modelFolder = itemModelsFolder;
+                  modelFileName = strippedModelValue.substring("item/".length());
+                }
                 if (strippedModelValue.endsWith(".obj")) {
                   modelFileName = strippedModelValue;
+                  File modelFileMtl =
+                      new File(modelFolder, modelFileName.replaceAll(".obj", ".mtl"));
+                  modelFiles.add(modelFileMtl);
                 }
-                File modelFile = new File(blockModelsFolder, modelFileName);
+                File modelFile = new File(modelFolder, modelFileName);
                 modelFiles.add(modelFile);
               }
             }
-            digForModels(blockModelsFolder, obj, modelFiles);
+            digForModels(blockModelsFolder, itemModelsFolder, customModelsFolder, obj, modelFiles);
           }
         }
       }
@@ -844,6 +1139,24 @@ public class BlockItemIntegrityTool {
       boolean asItem) throws Exception {
     String filterMethodName = asItem ? "getItemRegistryName" : "getBlockRegistryName";
 
+    String blockId = getIdFromSourceFileContents(file, fileContents, filterMethodName);
+
+    if (asItem) {
+      knownItemIds.add(blockId);
+      if (DEBUG) {
+        System.out.println("Found item ID: " + blockId);
+      }
+    } else {
+      knownBlockIds.add(blockId);
+      if (DEBUG) {
+        System.out.println("Found block ID: " + blockId);
+      }
+    }
+    return blockId;
+  }
+
+  public static String getIdFromSourceFileContents(File file, String fileContents,
+      String filterMethodName) throws Exception {
     // Get block ID
     final String filePath = file.getPath();
     String blockIdRegex =
@@ -853,19 +1166,9 @@ public class BlockItemIntegrityTool {
     String blockId;
     if (matcher.find()) {
       blockId = matcher.group(blockIdIndex);
-      if (asItem) {
-        knownItemIds.add(blockId);
-        if (DEBUG) {
-          System.out.println("Found item ID: " + blockId);
-        }
-      } else {
-        knownBlockIds.add(blockId);
-        if (DEBUG) {
-          System.out.println("Found block ID: " + blockId);
-        }
-      }
+
     } else {
-      throw new Exception("Failed to get block ID from file: " + filePath);
+      throw new Exception("Failed to get ID from file: " + filePath);
     }
     return blockId;
   }
