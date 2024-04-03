@@ -1,9 +1,9 @@
 {
 	"credit": "Made with Blockbench",
 	"textures": {
-		"0": "csm:Downloads/crosswalkoff",
-		"1": "Downloads/crosswalkon",
-		"particle": "Downloads/crosswalkon"
+		"0": "csm:blocks/crosswalktextdontwalkoff",
+		"1": "csm:blocks/crosswalktextwalkoff",
+		"particle": "csm:blocks/crosswalktextdontwalkoff"
 	},
 	"elements": [
 		{

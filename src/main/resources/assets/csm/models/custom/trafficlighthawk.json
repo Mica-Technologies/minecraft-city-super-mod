@@ -1,7 +1,7 @@
 {
 	"credit": "Made with Blockbench",
 	"textures": {
-		"0": "csm:blocks/solidredwigwag",
+		"0": "csm:blocks/solidreddoublewigwag",
 		"1": "csm:blocks/solidyellow"
 	},
 	"elements": [

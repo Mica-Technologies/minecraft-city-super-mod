@@ -1,5 +1,8 @@
 {
   "variants": {
+    "inventory": {
+      "model": "csm:yellowmetal_stairs"
+    },
     "facing=east,half=bottom,shape=straight": {
       "model": "csm:yellowmetal_stairs"
     },
