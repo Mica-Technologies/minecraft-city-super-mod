@@ -2,9 +2,9 @@
 	"credit": "Made with Blockbench",
 	"texture_size": [512, 512],
 	"textures": {
-		"0": "csm:2021.2/imac_pro",
-		"1": "csm:2021.2/imac_pro_keyboard",
-		"particle": "csm:2021.2/imac_pro_keyboard"
+		"0": "csm:blocks/imac_pro",
+		"1": "csm:blocks/imac_pro_keyboard",
+		"particle": "csm:blocks/imac_pro_keyboard"
 	},
 	"elements": [
 		{

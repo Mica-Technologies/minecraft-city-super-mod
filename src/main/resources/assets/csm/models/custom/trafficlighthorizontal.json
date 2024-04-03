@@ -1,7 +1,7 @@
 {
 	"credit": "Made with Blockbench",
 	"textures": {
-		"0": "csm:blocks/flashrightred"
+		"0": "csm:blocks/solidred"
 	},
 	"elements": [
 		{

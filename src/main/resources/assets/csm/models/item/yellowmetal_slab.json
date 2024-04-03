@@ -1,8 +1,0 @@
-{
-  "parent": "block/half_slab",
-  "textures": {
-    "bottom": "csm:blocks/metal_yellow",
-    "top": "csm:blocks/metal_yellow",
-    "side": "csm:blocks/metal_yellow"
-  }
-}

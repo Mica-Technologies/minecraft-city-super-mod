@@ -1351,6 +1351,7 @@ tile.tlvaaheadgreen.name=Ahead Green Traffic Signal (Angled Vertical)
 tile.tlvaborderblack.name=Vertical Angle Black Border
 tile.tlvaborderblackwhite.name=Vertical Angle Black/White Border
 tile.tlvaborderblackyellow.name=Vertical Angle Black/Yellow Border
+tile.tlvabordertan.name=Vertical Angle Tan Border
 tile.tlvaflashrightred.name=Vertical Angle Flash Right Red
 tile.tlvaflashrightyellow.name=Vertical Angle Flash Right Yellow
 tile.tlvaheadgreen.name=Vertical Ahead Green

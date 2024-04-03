@@ -1,8 +1,8 @@
 {
   "parent": "csm:custom/trafficlightvertical",
   "textures": {
-    "all": "csm:blocks/ledsolidoff",
-    "particle": "csm:blocks/ledsolidoff",
+    "all": "csm:blocks/ledsolidredoff",
+    "particle": "csm:blocks/ledsolidredoff",
     "0": "csm:blocks/ledsolidredoff",
     "1": "csm:blocks/ledsolidyellowoff",
     "2": "csm:blocks/ledsolidgreen"

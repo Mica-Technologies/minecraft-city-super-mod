@@ -1,7 +1,7 @@
 {
 	"credit": "Model made by Brandon Holt (RinRin Blissgreen)",
 	"textures": {
-		"0": "csm:street lights/merc_fixtures"
+		"0": "csm:blocks/merc_fixtures"
 	},
 	"elements": [
 		{

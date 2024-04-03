@@ -1,5 +1,8 @@
 {
   "variants": {
+    "inventory": {
+      "model": "csm:yellowmetal_slab"
+    },
     "half=bottom,variant=default": {
       "model": "csm:yellowmetal_slab"
     },
