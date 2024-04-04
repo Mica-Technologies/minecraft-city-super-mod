@@ -7,14 +7,11 @@ import java.util.List;
 import java.util.Map;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
-import net.minecraftforge.fml.relauncher.Side;
 
 /**
  * Registry utility class for the City Super Mod.
  *
- * @version 1.0
+ * @version 1.1
  * @since 2.0
  * @since 2023.2.1
  */
@@ -34,13 +31,6 @@ public class CsmRegistry {
    */
   private static final List<Item> ITEMS = new ArrayList<>();
 
-  /**
-   * The next network message ID to use. This value is incremented each time a new network message
-   * is registered.
-   *
-   * @since 1.0
-   */
-  private static int nextNetworkMessageId = 0;
 
   /**
    * Returns the map of blocks registered with the mod.
@@ -128,26 +118,5 @@ public class CsmRegistry {
     }
 
     ITEMS.add(item);
-  }
-
-  /**
-   * Registers a network message with the mod.
-   *
-   * @param handler      The message handler.
-   * @param messageClass The message class.
-   * @param sides        The sides to register the message for.
-   * @param <T>          The message type.
-   * @param <V>          The reply type.
-   *
-   * @since 1.0
-   */
-  public static <T extends IMessage, V extends IMessage> void registerNetworkMessage(
-      Class<? extends IMessageHandler<T, V>> handler,
-      Class<T> messageClass,
-      Side... sides) {
-    for (Side side : sides) {
-      Csm.PACKET_HANDLER.registerMessage(handler, messageClass, nextNetworkMessageId, side);
-    }
-    nextNetworkMessageId++;
   }
 }

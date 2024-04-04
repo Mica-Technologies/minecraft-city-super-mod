@@ -22,6 +22,8 @@ import com.micatechnologies.minecraft.csm.codeutils.CsmWikiGenerator;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmProxy;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import com.micatechnologies.minecraft.csm.codeutils.IHasModel;
+import com.micatechnologies.minecraft.csm.codeutils.packets.TileEntityRedstoneTTSUpdateHandler;
+import com.micatechnologies.minecraft.csm.codeutils.packets.TileEntityRedstoneTTSUpdatePacket;
 import java.util.HashSet;
 import java.util.Set;
 import net.minecraft.block.Block;
@@ -43,7 +45,6 @@ import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
-import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -63,14 +64,7 @@ import org.apache.logging.log4j.Logger;
      version = CsmConstants.MOD_VERSION)
 public class Csm {
 
-  /**
-   * The network channel for the mod. Used for sending packets between client and server.
-   *
-   * @since 1.0.0
-   */
-  public static final SimpleNetworkWrapper PACKET_HANDLER =
-      NetworkRegistry.INSTANCE.newSimpleChannel(
-          CsmConstants.MOD_NAMESPACE + ":a");
+
   /**
    * The sided proxy for initialization and loading of client or server/common specific code.
    *
@@ -150,10 +144,13 @@ public class Csm {
 
       // Register the mod's network message(s)
       logger.info("Registering network message(s)");
-      CsmRegistry.registerNetworkMessage(
+      CsmNetwork.registerNetworkMessage(
           CitySuperModVariables.WorldSavedDataSyncMessageHandler.class,
           CitySuperModVariables.WorldSavedDataSyncMessage.class, Side.SERVER,
           Side.CLIENT);
+      CsmNetwork.registerNetworkMessage(
+          TileEntityRedstoneTTSUpdateHandler.class, TileEntityRedstoneTTSUpdatePacket.class,
+          Side.SERVER);
       logger.info("Finished registering network message(s)");
       progressBar.step("Network Messages Registration");
 
@@ -406,11 +403,11 @@ public class Csm {
       WorldSavedData mapdata = CitySuperModVariables.MapVariables.get(event.player.world);
       WorldSavedData worlddata = CitySuperModVariables.WorldVariables.get(event.player.world);
       if (mapdata != null) {
-        Csm.PACKET_HANDLER.sendTo(new CitySuperModVariables.WorldSavedDataSyncMessage(0, mapdata),
+        CsmNetwork.sendTo(new CitySuperModVariables.WorldSavedDataSyncMessage(0, mapdata),
             (EntityPlayerMP) event.player);
       }
       if (worlddata != null) {
-        Csm.PACKET_HANDLER.sendTo(new CitySuperModVariables.WorldSavedDataSyncMessage(1, worlddata),
+        CsmNetwork.sendTo(new CitySuperModVariables.WorldSavedDataSyncMessage(1, worlddata),
             (EntityPlayerMP) event.player);
       }
     }
@@ -431,7 +428,7 @@ public class Csm {
     if (!event.player.world.isRemote) {
       WorldSavedData worlddata = CitySuperModVariables.WorldVariables.get(event.player.world);
       if (worlddata != null) {
-        Csm.PACKET_HANDLER.sendTo(new CitySuperModVariables.WorldSavedDataSyncMessage(1, worlddata),
+        CsmNetwork.sendTo(new CitySuperModVariables.WorldSavedDataSyncMessage(1, worlddata),
             (EntityPlayerMP) event.player);
       }
     }

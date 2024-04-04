@@ -1,21 +1,16 @@
 package com.micatechnologies.minecraft.csm.technology;
 
+import com.micatechnologies.minecraft.csm.CsmNetwork;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractTileEntity;
-import com.sun.speech.freetts.Voice;
-import com.sun.speech.freetts.VoiceManager;
-import net.minecraft.client.Minecraft;
+import com.micatechnologies.minecraft.csm.codeutils.packets.TileEntityRedstoneTTSUpdatePacket;
+import com.mojang.text2speech.Narrator;
+import java.util.concurrent.atomic.AtomicBoolean;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.SoundCategory;
 
 public class TileEntityRedstoneTTS extends AbstractTileEntity {
 
   private static final String TTS_STRING_KEY = "ttsString";
-  private static final String TTS_VOICE_NAME_KEY = "ttsVoice";
-
-  private static final String TTS_VOICE_DURATION_SRETCH_KEY = "ttsVoiceDurationStretch";
   private String ttsString = "Setup is Required!";
-  private String ttsVoiceName = "kevin16";
-  private float ttsVoiceDurationStretch = 1f;
 
   /**
    * Processes the reading of the tile entity's NBT data from the supplied NBT tag compound.
@@ -26,12 +21,6 @@ public class TileEntityRedstoneTTS extends AbstractTileEntity {
   public void readNBT(NBTTagCompound compound) {
     if (compound.hasKey(TTS_STRING_KEY)) {
       ttsString = compound.getString(TTS_STRING_KEY);
-    }
-    if (compound.hasKey(TTS_VOICE_NAME_KEY)) {
-      ttsVoiceName = compound.getString(TTS_VOICE_NAME_KEY);
-    }
-    if (compound.hasKey(TTS_VOICE_DURATION_SRETCH_KEY)) {
-      ttsVoiceDurationStretch = compound.getFloat(TTS_VOICE_DURATION_SRETCH_KEY);
     }
   }
 
@@ -45,28 +34,21 @@ public class TileEntityRedstoneTTS extends AbstractTileEntity {
   @Override
   public NBTTagCompound writeNBT(NBTTagCompound compound) {
     compound.setString(TTS_STRING_KEY, ttsString);
-    compound.setString(TTS_VOICE_NAME_KEY, ttsVoiceName);
-    compound.setFloat(TTS_VOICE_DURATION_SRETCH_KEY, ttsVoiceDurationStretch);
     return compound;
   }
+
+  private AtomicBoolean isTtsPlaying = new AtomicBoolean(false);
 
   public void readTtsString() {
     Thread ttsThread = new Thread(() -> {
       try {
-        // Get voice
-        Voice ttsVoice = VoiceManager.getInstance().getVoice(ttsVoiceName);
-
-        // Allocate any required data for the voice
-        ttsVoice.allocate();
-
-        // This part actually reads the text
-        ttsVoice.setVolume(
-            Minecraft.getMinecraft().gameSettings.getSoundLevel(SoundCategory.BLOCKS));
-        ttsVoice.setDurationStretch(ttsVoiceDurationStretch);
-        ttsVoice.speak(ttsString);
-
-        // Deallocate the data
-        ttsVoice.deallocate();
+        if (isTtsPlaying.get()) {
+          return;
+        }
+        isTtsPlaying.set(true);
+        Narrator narrator = Narrator.getNarrator();
+        narrator.say(ttsString);
+        isTtsPlaying.set(false);
       } catch (Exception e) {
         e.printStackTrace();
       }
@@ -78,24 +60,21 @@ public class TileEntityRedstoneTTS extends AbstractTileEntity {
     return ttsString;
   }
 
+  public void setTtsStringFromGui(String newTtsString) {
+    if (world.isRemote) { // Check if we're on the client side
+      // Send packet to server with the new TTS string and tile entity position
+      CsmNetwork.sendToServer(new TileEntityRedstoneTTSUpdatePacket(this.pos, newTtsString));
+    } else {
+      // Update the TTS string on the server side
+      setTtsString(newTtsString);
+    }
+  }
+
   public void setTtsString(String ttsString) {
+    if (world.isRemote) {
+      System.err.println("Attempted to set TTS string on client side! This is a bug!");
+    }
     this.ttsString = ttsString;
-    System.err.println("Trig time:" + System.currentTimeMillis());
-    markDirtySync(getWorld(), getPos(), true);
-    System.out.println("setTtsString (remote: " +
-        getWorld().isRemote +
-        ") at pos " +
-        getPos() +
-        " with string: " +
-        ttsString);
-  }
-
-  public float getTtsVoiceDurationStretch() {
-    return ttsVoiceDurationStretch;
-  }
-
-  public void setTtsVoiceDurationStretch(float ttsVoiceDurationStretch) {
-    this.ttsVoiceDurationStretch = ttsVoiceDurationStretch;
     markDirtySync(getWorld(), getPos(), true);
   }
 }
