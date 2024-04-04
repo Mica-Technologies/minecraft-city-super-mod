@@ -36,7 +36,6 @@
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_STRING" value="-encoding utf8" />
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
-      <module name="dev-env-utils" options="" />
       <module name="minecraft-city-super-mod.main" options="" />
     </option>
   </component>

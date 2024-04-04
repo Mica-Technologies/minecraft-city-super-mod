@@ -1,20 +1,13 @@
 package com.micatechnologies.minecraft.csm.codeutils;
 
-import com.google.common.base.Predicate;
-import com.google.common.base.Predicates;
 import java.util.ArrayList;
-import net.minecraft.client.Minecraft;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiPageButtonList;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ChatAllowedCharacters;
-import net.minecraft.util.math.MathHelper;
-import org.lwjgl.input.Mouse;
+import org.lwjgl.input.Keyboard;
 
 /**
  * This multi-line text field component was adapted from the publicly available version by
@@ -26,830 +19,461 @@ public class GuiMultiLineTextField extends Gui {
 
   private final int id;
   private final FontRenderer fontRenderer;
-  /**
-   * Has the current text being edited on the textbox.
-   */
-  private final ArrayList<String> text = new ArrayList<String>();
-  public int x;
-  public int y;
-  /**
-   * The width of this text field.
-   */
-  public int width;
-  public int height;
-  private int currentLine = 0;
-  private int verticalScrollOffset = 0;
-  private int maxStringLength = 32;
-  private int cursorCounter;
-  private boolean enableBackgroundDrawing = true;
-  /**
-   * if true the textbox can lose focus by clicking elsewhere on the screen
-   */
-  private boolean canLoseFocus = true;
-  /**
-   * If this value is true along with isEnabled, keyTyped will process the keys.
-   */
-  private boolean isFocused;
-  /**
-   * If this value is true along with isFocused, keyTyped will process the keys.
-   */
-  private boolean isEnabled = true;
-  /**
-   * The current character index that should be used as start of the rendered text.
-   */
-  private int lineScrollOffset;
-  private int cursorPosition;
-  /**
-   * other selection position, maybe the same as the cursor
-   */
-  private int selectionEnd;
-  private int enabledColor = 14737632;
-  private int disabledColor = 7368816;
-  /**
-   * True if this textbox is visible
-   */
-  private boolean visible = true;
-  private GuiPageButtonList.GuiResponder guiResponder;
-  /**
-   * Called to check if the text is valid
-   */
-  private Predicate<String> validator = Predicates.alwaysTrue();
+  private final List<String> lines = new ArrayList<>();
+  private final int x, y, width, height;
+  private boolean isFocused = false;
+  private int cursorPos = 0; // Overall cursor position in the text
+  private int viewOffset = 0; // Line offset for viewing
+  private Set<Integer> userInsertedNewLines = new HashSet<>();
 
-  public GuiMultiLineTextField(int componentId,
-      FontRenderer fontrendererObj,
-      int x,
-      int y,
-      int par5Width,
-      int par6Height) {
-    this.id = componentId;
-    this.fontRenderer = fontrendererObj;
+  public GuiMultiLineTextField(int id, FontRenderer fontRenderer, int x, int y, int width,
+      int height) {
+    this.id = id;
+    this.fontRenderer = fontRenderer;
     this.x = x;
     this.y = y;
-    this.width = par5Width;
-    this.height = Math.max(par6Height, fontRenderer.FONT_HEIGHT * 2);
-    text.add("");
+    this.width = width;
+    this.height = height;
+    lines.add("");
   }
 
-  /**
-   * Sets the GuiResponder associated with this text box.
-   */
-  public void setGuiResponder(GuiPageButtonList.GuiResponder guiResponderIn) {
-    this.guiResponder = guiResponderIn;
-  }
-
-  /**
-   * Increments the cursor counter
-   */
-  public void updateCursorCounter() {
-    ++this.cursorCounter;
-  }
-
-  /**
-   * Returns the contents of the textbox
-   */
-  public String getText() {
-    String str = "";
-    for (String s : text) {
-      str += s + (text.indexOf(s) < text.size() - 1 ? "\n" : "");
-    }
-    return str;
-  }
-
-  /**
-   * Sets the text of the textbox, and moves the cursor to the end.
-   */
-  public void setText(String textIn) {
-    if (this.validator.apply(textIn)) {
-      String[] lines = textIn.split("\n");
-      for (int l = 0; l < lines.length; l++) {
-        if (lines[l].length() > this.maxStringLength) {
-          // this.text = textIn.substring(0, this.maxStringLength);
-          text.set(l, lines[l].substring(0, this.maxStringLength));
-        } else {
-          if (text.size() <= l) {
-            text.add(lines[l]);
-          } else {
-            text.set(l, lines[l]);
-          }
-        }
-      }
-      this.setCursorPositionEnd();
-    }
-  }
-
-  /**
-   * Moves the cursor to the very end of this text box.
-   */
-  public void setCursorPositionEnd() {
-    this.setCursorPosition(this.text.get(currentLine).length());
-  }
-
-  /**
-   * Sets the position of the selection anchor (the selection anchor and the cursor position mark
-   * the edges of the selection). If the anchor is set beyond the bounds of the current text, it
-   * will be put back inside.
-   */
-  public void setSelectionPos(int position) {
-    int i = this.text.get(currentLine).length();
-
-    if (position > i) {
-      position = i;
-    }
-
-    if (position < 0) {
-      position = 0;
-    }
-
-    this.selectionEnd = position;
-
-    if (this.fontRenderer != null) {
-      if (this.lineScrollOffset > i) {
-        this.lineScrollOffset = i;
-      }
-
-      int j = this.getWidth();
-      String s = this.fontRenderer.trimStringToWidth(
-          this.text.get(currentLine).substring(this.lineScrollOffset), j);
-      int k = s.length() + this.lineScrollOffset;
-
-      if (position == this.lineScrollOffset) {
-        this.lineScrollOffset -= this.fontRenderer.trimStringToWidth(this.text.get(currentLine), j,
-                true)
-            .length();
-      }
-
-      if (position > k) {
-        this.lineScrollOffset += position - k;
-      } else if (position <= this.lineScrollOffset) {
-        this.lineScrollOffset -= this.lineScrollOffset - position;
-      }
-
-      this.lineScrollOffset = MathHelper.clamp(this.lineScrollOffset, 0, i);
-    }
-  }
-
-  /**
-   * returns the width of the textbox depending on if background drawing is enabled
-   */
-  public int getWidth() {
-    return this.getEnableBackgroundDrawing() ? this.width - 8 : this.width;
-  }
-
-  /**
-   * Gets whether the background and outline of this text box should be drawn (true if so).
-   */
-  public boolean getEnableBackgroundDrawing() {
-    return this.enableBackgroundDrawing;
-  }
-
-  /**
-   * Sets whether or not the background and outline of this text box should be drawn.
-   */
-  public void setEnableBackgroundDrawing(boolean enableBackgroundDrawingIn) {
-    this.enableBackgroundDrawing = enableBackgroundDrawingIn;
-  }
-
-  /**
-   * returns the text between the cursor and selectionEnd
-   */
-  public String getSelectedText() {
-    int i = this.cursorPosition < this.selectionEnd ? this.cursorPosition : this.selectionEnd;
-    int j = this.cursorPosition < this.selectionEnd ? this.selectionEnd : this.cursorPosition;
-    return this.text.get(currentLine).substring(i, j);
-  }
-
-  public void setValidator(Predicate<String> theValidator) {
-    this.validator = theValidator;
-  }
-
-  /**
-   * Adds the given text after the cursor, or replaces the currently selected text if there is a
-   * selection.
-   */
-  public void writeText(String textToWrite) {
-    String s = "";
-    String s1 = ChatAllowedCharacters.filterAllowedCharacters(textToWrite);
-    int i = this.cursorPosition < this.selectionEnd ? this.cursorPosition : this.selectionEnd;
-    int j = this.cursorPosition < this.selectionEnd ? this.selectionEnd : this.cursorPosition;
-    int k = this.maxStringLength - this.text.get(currentLine).length() - (i - j);
-
-    if (!this.text.isEmpty()) {
-      s = s + this.text.get(currentLine).substring(0, i);
-    }
-
-    int l;
-
-    if (k < s1.length()) {
-      s = s + s1.substring(0, k);
-      l = k;
-    } else {
-      s = s + s1;
-      l = s1.length();
-    }
-
-    if (!this.text.isEmpty() && j < this.text.get(currentLine).length()) {
-      s = s + this.text.get(currentLine).substring(j);
-    }
-
-    if (this.validator.apply(s)) {
-      this.text.set(currentLine, s);
-      this.moveCursorBy(i - this.selectionEnd + l);
-      this.setResponderEntryValue(this.id, this.text.get(currentLine));
-    }
-  }
-
-  /**
-   * Notifies this text box's {@linkplain GuiPageButtonList.GuiResponder responder} that the text
-   * has changed.
-   */
-  public void setResponderEntryValue(int idIn, String textIn) {
-    if (this.guiResponder != null) {
-      this.guiResponder.setEntryValue(idIn, textIn);
-    }
-  }
-
-  /**
-   * Deletes the given number of words from the current cursor's position, unless there is currently
-   * a selection, in which case the selection is deleted instead.
-   */
-  public void deleteWords(int num) {
-    if (!this.text.isEmpty()) {
-      if (this.selectionEnd != this.cursorPosition) {
-        this.writeText("");
-      } else {
-        this.deleteFromCursor(this.getNthWordFromCursor(num) - this.cursorPosition);
-      }
-    }
-  }
-
-  /**
-   * Deletes the given number of characters from the current cursor's position, unless there is
-   * currently a selection, in which case the selection is deleted instead.
-   */
-  public void deleteFromCursor(int num) {
-    if (!this.text.isEmpty()) {
-      if (this.selectionEnd != this.cursorPosition) {
-        this.writeText("");
-      } else {
-        boolean flag = num < 0;
-        int i = flag ? this.cursorPosition + num : this.cursorPosition;
-        int j = flag ? this.cursorPosition : this.cursorPosition + num;
-        String s = "";
-
-        if (i >= 0) {
-          if (num > 0 &&
-              this.cursorPosition == this.text.get(currentLine).length() &&
-              this.text.size() > currentLine + 1) {
-            s = this.text.get(currentLine) + this.text.get(currentLine + 1);
-            this.text.remove(currentLine + 1);
-          } else {
-            s = this.text.get(currentLine).substring(0, i);
-          }
-        }
-
-        if (j < this.text.get(currentLine).length()) {
-          if (num < 0 && this.cursorPosition == 0 && currentLine > 0) {
-            String curline = this.text.get(currentLine);
-            this.text.remove(currentLine);
-            currentLine--;
-            this.setCursorPosition(this.text.get(currentLine).length() + 1);
-            flag = true;
-            num = 0;
-            s = this.text.get(currentLine) + curline;
-          } else {
-            s = s + this.text.get(currentLine).substring(j);
-          }
-        } else if (j == 0 && this.text.size() > 1 && currentLine > 0) {
-          text.remove(currentLine);
-          currentLine--;
-          this.setCursorPositionEnd();
-          return;
-        }
-
-        if (this.validator.apply(s)) {
-          this.text.set(currentLine, s);
-
-          if (flag) {
-            this.moveCursorBy(num);
-          }
-          this.setResponderEntryValue(this.id, this.text.get(currentLine));
-        }
-      }
-    }
-  }
-
-  public int getId() {
-    return this.id;
-  }
-
-  /**
-   * Gets the starting index of the word at the specified number of words away from the cursor
-   * position.
-   */
-  public int getNthWordFromCursor(int numWords) {
-    return this.getNthWordFromPos(numWords, this.getCursorPosition());
-  }
-
-  /**
-   * Gets the starting index of the word at a distance of the specified number of words away from
-   * the given position.
-   */
-  public int getNthWordFromPos(int n, int pos) {
-    return this.getNthWordFromPosWS(n, pos, true);
-  }
-
-  /**
-   * Like getNthWordFromPos (which wraps this), but adds option for skipping consecutive spaces
-   */
-  public int getNthWordFromPosWS(int n, int pos, boolean skipWs) {
-    int i = pos;
-    boolean flag = n < 0;
-    int j = Math.abs(n);
-
-    for (int k = 0; k < j; ++k) {
-      if (!flag) {
-        int l = this.text.get(currentLine).length();
-        i = this.text.get(currentLine).indexOf(32, i);
-
-        if (i == -1) {
-          i = l;
-        } else {
-          while (skipWs && i < l && this.text.get(currentLine).charAt(i) == ' ') {
-            ++i;
-          }
-        }
-      } else {
-        while (skipWs && i > 0 && this.text.get(currentLine).charAt(i - 1) == ' ') {
-          --i;
-        }
-
-        while (i > 0 && this.text.get(currentLine).charAt(i - 1) != ' ') {
-          --i;
-        }
-      }
-    }
-
-    return i;
-  }
-
-  /**
-   * Moves the text cursor by a specified number of characters and clears the selection
-   */
-  public void moveCursorBy(int num) {
-    this.setCursorPosition(this.selectionEnd + num);
-  }
-
-  /**
-   * Moves the cursor to the very start of this text box.
-   */
-  public void setCursorPositionZero() {
-    this.setCursorPosition(0);
-  }
-
-  /**
-   * Call this method from your GuiScreen to process the keys into the textbox
-   */
-  public boolean textboxKeyTyped(char typedChar, int keyCode) {
-    if (!this.isFocused) {
-      return false;
-    } else if (GuiScreen.isKeyComboCtrlA(keyCode)) {
-      this.setCursorPositionEnd();
-      this.setSelectionPos(0);
-      return true;
-    } else if (GuiScreen.isKeyComboCtrlC(keyCode)) {
-      GuiScreen.setClipboardString(this.getSelectedText());
-      return true;
-    } else if (GuiScreen.isKeyComboCtrlV(keyCode)) {
-      if (this.isEnabled) {
-        String[] lines = GuiScreen.getClipboardString().split("\n");
-        this.writeText(lines[0]);
-        for (int l = 1; l < lines.length; l++) {
-          currentLine++;
-          text.add(currentLine, lines[l]);
-        }
-      }
-
-      return true;
-    } else if (GuiScreen.isKeyComboCtrlX(keyCode)) {
-      GuiScreen.setClipboardString(this.getSelectedText());
-
-      if (this.isEnabled) {
-        this.writeText("");
-      }
-
-      return true;
-    } else {
-      switch (keyCode) {
-        case 28:
-          int lin = text.get(currentLine).length();
-          if (this.cursorPosition == lin) {
-            currentLine++;
-            text.add(currentLine, "");
-            setCursorPosition(0);
-          } else {
-            String rem = text.get(currentLine).substring(cursorPosition);
-            text.set(currentLine, text.get(currentLine).substring(0, cursorPosition));
-            currentLine++;
-            this.text.add(currentLine, rem);
-            this.setCursorPositionZero();
-          }
-          return true;
-        case 200:
-          currentLine = Math.max(currentLine - 1, 0);
-          if (this.cursorPosition > text.get(currentLine).length()) {
-            this.selectionEnd = this.cursorPosition = text.get(currentLine).length();
-          } else {
-            this.moveCursorBy(0);
-          }
-          return true;
-        case 208:
-          currentLine = Math.min(currentLine + 1, text.size() - 1);
-          if (this.cursorPosition > text.get(currentLine).length()) {
-            this.selectionEnd = this.cursorPosition = text.get(currentLine).length();
-          } else {
-            this.moveCursorBy(0);
-          }
-          return true;
-        case 14:
-
-          if (GuiScreen.isCtrlKeyDown()) {
-            if (this.isEnabled) {
-              this.deleteWords(-1);
-            }
-          } else if (this.isEnabled) {
-            this.deleteFromCursor(-1);
-          }
-
-          return true;
-        case 199:
-
-          if (GuiScreen.isShiftKeyDown()) {
-            this.setSelectionPos(0);
-          } else {
-            this.setCursorPositionZero();
-          }
-
-          return true;
-        case 203:
-
-          if (GuiScreen.isShiftKeyDown()) {
-            if (GuiScreen.isCtrlKeyDown()) {
-              this.setSelectionPos(this.getNthWordFromPos(-1, this.getSelectionEnd()));
-            } else {
-              this.setSelectionPos(this.getSelectionEnd() - 1);
-            }
-          } else if (GuiScreen.isCtrlKeyDown()) {
-            this.setCursorPosition(this.getNthWordFromCursor(-1));
-          } else {
-            this.moveCursorBy(-1);
-          }
-
-          return true;
-        case 205:
-
-          if (GuiScreen.isShiftKeyDown()) {
-            if (GuiScreen.isCtrlKeyDown()) {
-              this.setSelectionPos(this.getNthWordFromPos(1, this.getSelectionEnd()));
-            } else {
-              this.setSelectionPos(this.getSelectionEnd() + 1);
-            }
-          } else if (GuiScreen.isCtrlKeyDown()) {
-            this.setCursorPosition(this.getNthWordFromCursor(1));
-          } else {
-            this.moveCursorBy(1);
-          }
-
-          return true;
-        case 207:
-
-          if (GuiScreen.isShiftKeyDown()) {
-            this.setSelectionPos(this.text.get(currentLine).length());
-          } else {
-            this.setCursorPositionEnd();
-          }
-
-          return true;
-        case 211:
-
-          if (GuiScreen.isCtrlKeyDown()) {
-            if (this.isEnabled) {
-              this.deleteWords(1);
-            }
-          } else if (this.isEnabled) {
-            this.deleteFromCursor(1);
-          }
-
-          return true;
-        default:
-
-          if (ChatAllowedCharacters.isAllowedCharacter(typedChar)) {
-            if (this.isEnabled) {
-              this.writeText(Character.toString(typedChar));
-            }
-
-            return true;
-          } else {
-            return false;
-          }
-      }
-    }
-  }
-
-  /**
-   * Called when mouse is clicked, regardless as to whether it is over this button or not.
-   */
-  public boolean mouseClicked(int mouseX, int mouseY, int mouseButton) {
-    boolean flag = mouseX >= this.x &&
-        mouseX < this.x + this.width &&
-        mouseY >= this.y &&
-        mouseY < this.y + this.height;
-
-    if (this.canLoseFocus) {
-      this.setFocused(flag);
-    }
-
-    if (this.isFocused && flag && mouseButton == 0) {
-      int i = mouseX - this.x;
-
-      if (this.enableBackgroundDrawing) {
-        i -= 4;
-      }
-
-      int j = mouseY - this.y;
-      j /= fontRenderer.FONT_HEIGHT;
-
-      currentLine = MathHelper.clamp(j + this.verticalScrollOffset, 0, text.size() - 1);
-
-      String s = this.fontRenderer.trimStringToWidth(
-          this.text.get(currentLine).substring(this.lineScrollOffset), this.getWidth());
-
-      this.setCursorPosition(
-          this.fontRenderer.trimStringToWidth(s, i).length() + this.lineScrollOffset);
-
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  /**
-   * Draws the textbox
-   */
   public void drawTextBox() {
-    if (this.getVisible()) {
-      if (this.getEnableBackgroundDrawing()) {
-        drawRect(this.x - 1, this.y - 1, this.x + this.width + 1, this.y + this.height + 1,
-            -6250336);
-        drawRect(this.x, this.y, this.x + this.width, this.y + this.height, -16777216);
+    if (isFocused) {
+      // Background
+      drawRect(this.x, this.y, this.x + this.width, this.y + this.height, 0xFF000000);
+
+      // Text rendering starts here
+      int yPos = this.y + 2; // Start a bit inside the box
+      int lineCounter = 0;
+      int renderedLines = 0; // Keep track of how many lines have been rendered
+      for (int i = 0; i < lines.size(); i++) {
+        if (renderedLines >= viewOffset) {
+          String line = lines.get(i);
+          fontRenderer.drawString(line, this.x + 2, yPos, 0xE0E0E0);
+          yPos += fontRenderer.FONT_HEIGHT;
+          lineCounter++;
+        }
+        if (lineCounter >= (this.height / fontRenderer.FONT_HEIGHT)) {
+          break; // Stop if we've rendered enough lines to fill the text field
+        }
+        renderedLines++;
       }
 
-      int i = this.isEnabled ? this.enabledColor : this.disabledColor;
-      int j = this.cursorPosition - this.lineScrollOffset;
-      int k = this.selectionEnd - this.lineScrollOffset;
-      int cls = verticalScrollOffset;
-      int maxLines = this.height / fontRenderer.FONT_HEIGHT;
-      while (currentLine >= (maxLines + cls)) {
-        cls += 1;
-        verticalScrollOffset = cls;
-      }
-      while (currentLine < cls) {
-        cls -= 1;
-        verticalScrollOffset = cls;
-      }
-      for (int cl = cls; cl < (maxLines + cls) && cl < text.size(); cl++) {
-        int pos = this.lineScrollOffset;
-        if (pos < 0 || pos > text.get(cl).length()) {
-          continue;
-        }
-        String s = this.fontRenderer.trimStringToWidth(this.text.get(cl).substring(pos),
-            this.getWidth());
-        boolean flag = cl == currentLine && j >= 0 && j <= s.length();
-        boolean flag1 = this.isFocused && this.cursorCounter / 6 % 2 == 0 && flag;
-        int l = this.enableBackgroundDrawing ? this.x + 4 : this.x;
-        int i1 = this.enableBackgroundDrawing ? this.y + (this.height - 8) / 2 : this.y;
-        i1 += fontRenderer.FONT_HEIGHT * (cl - cls);
-        int j1 = l;
+      // Improved Cursor Rendering
+      if ((System.currentTimeMillis() / 500) % 2 == 0) { // Blinking effect
+        int cursorLineIndex = findCurrentLine();
+        if (cursorLineIndex >= viewOffset && cursorLineIndex < viewOffset + lineCounter) {
+          int cursorColumn = findColumnInLine(cursorLineIndex);
+          String currentLineText = cursorLineIndex < lines.size() ? lines.get(cursorLineIndex) : "";
 
-        if (!s.isEmpty()) {
-          String s1 = flag ? s.substring(0, j) : s;
-          j1 = this.fontRenderer.drawStringWithShadow(s1, (float) l, (float) i1, i);
-        }
+          // Calculate cursorX considering the special case where the cursor moves to a blank
+          // line below
+          int cursorX = this.x + 2; // Default starting position
+          String textUpToCursor =
+              currentLineText.substring(0, Math.min(cursorColumn, currentLineText.length()));
+          cursorX += fontRenderer.getStringWidth(textUpToCursor);
 
-        boolean flag2 = cl == currentLine &&
-            (this.cursorPosition < this.text.get(cl).length() ||
-                this.text.get(cl).length() >= this.getMaxStringLength());
-        int k1 = j1;
+          // Calculate cursorY to potentially move the cursor to the start of the next line if
+          // it's blank
+          int cursorY = this.y + 2 + (cursorLineIndex - viewOffset) * fontRenderer.FONT_HEIGHT;
 
-        if (!flag) {
-          k1 = j > 0 ? l + this.width : l;
-        } else if (flag2) {
-          k1 = j1 - 1;
-          --j1;
-        }
-
-        if (cl == currentLine) {
-
-          if (k > s.length()) {
-            k = s.length();
-          }
-
-          if (!s.isEmpty() && flag && j < s.length()) {
-            j1 = this.fontRenderer.drawStringWithShadow(s.substring(j), (float) j1, (float) i1, i);
-          }
-
-          if (flag1) {
-            if (flag2) {
-              Gui.drawRect(k1, i1 - 1, k1 + 1, i1 + 1 + this.fontRenderer.FONT_HEIGHT, -3092272);
-            } else {
-              this.fontRenderer.drawStringWithShadow("_", (float) k1, (float) i1, i);
-            }
-          }
-
-          if (k != j) {
-            int l1 = l + this.fontRenderer.getStringWidth(s.substring(0, k));
-            this.drawSelectionBox(k1, i1 - 1, l1 - 1, i1 + 1 + this.fontRenderer.FONT_HEIGHT);
-          }
+          drawRect(cursorX, cursorY, cursorX + 1, cursorY + fontRenderer.FONT_HEIGHT - 1,
+              0xFFFFFFFF);
         }
       }
     }
-    float md = Mouse.getDWheel();
-    if (md != 0) {
-      int m = md > 0 ? -1 : 1;
-      this.verticalScrollOffset += m;
-      verticalScrollOffset = MathHelper.clamp(verticalScrollOffset, 0, text.size() - 1);
+  }
+
+  public void textboxKeyTyped(char typedChar, int keyCode) {
+    if (!isFocused) {
+      return;
+    }
+
+    switch (keyCode) {
+      case Keyboard.KEY_RETURN:
+        // Handle newline insertion
+        insertNewLineAtCursor();
+        break;
+      case Keyboard.KEY_BACK:
+        // Handle backspace
+        deleteCharacterBeforeCursor();
+        break;
+      case Keyboard.KEY_LEFT:
+        // Move cursor left
+        if (cursorPos > 0) {
+          cursorPos--;
+        }
+        break;
+      case Keyboard.KEY_RIGHT:
+        // Move cursor right, ensuring not to exceed text length
+        if (cursorPos < getText().length()) {
+          cursorPos++;
+        }
+        break;
+      case Keyboard.KEY_UP:
+        // Move cursor up to the previous line
+        moveCursorUp();
+        break;
+      case Keyboard.KEY_DOWN:
+        // Move cursor down to the next line
+        moveCursorDown();
+        break;
+      default:
+        // Handle character input
+        if (ChatAllowedCharacters.isAllowedCharacter(typedChar)) {
+          insertCharacterAtCursor(typedChar);
+        }
+        break;
+    }
+    updateViewOffsetForCursor();
+  }
+
+  private void insertNewLineAtCursor() {
+    int lineIndex = findLineIndexByCursorPos();
+    String currentLine = lines.size() > lineIndex ? lines.get(lineIndex) : "";
+    int columnInLine = cursorPos - sumLengthsUpTo(lineIndex);
+
+    // Ensure columnInLine does not exceed current line's length
+    columnInLine = Math.min(columnInLine, currentLine.length());
+
+    String lineBeforeCursor = currentLine.substring(0, columnInLine);
+    String lineAfterCursor = currentLine.substring(columnInLine);
+    lines.set(lineIndex, lineBeforeCursor);
+    lines.add(lineIndex + 1, lineAfterCursor);
+
+    userInsertedNewLines.add(lineIndex + 1);
+
+    // Adjust cursorPos for the newline. Add 1 to position cursor at the start of the next line.
+    cursorPos = sumLengthsUpTo(lineIndex + 1) + 1;
+  }
+
+  private void deleteCharacterBeforeCursors() {
+    if (cursorPos <= 0) {
+      return;
+    }
+
+    int lineIndex = findLineIndexByCursorPos();
+    int offsetForUserDefinedNewLine = userInsertedNewLines.contains(lineIndex) ? 1 : 0;
+    int columnInLine = cursorPos - sumLengthsUpTo(lineIndex) - offsetForUserDefinedNewLine;
+
+    // Ensuring columnInLine is not negative for the substring operation
+    columnInLine = Math.max(0, columnInLine);
+
+    if (columnInLine == 0 && lineIndex > 0) {
+      // If at the start of a line (and not the very first line), attempt to merge with the
+      // previous line
+      mergeWithPreviousLine(lineIndex);
+      // Adjust cursor position after merge
+      cursorPos = sumLengthsUpTo(lineIndex - 1) + lines.get(Math.max(0, lineIndex - 1)).length();
+      cursorPos +=
+          userInsertedNewLines.contains(lineIndex) ? 1 : 0; // Adjust if the line was user-defined
+    } else {
+      // Normal character deletion within the line
+      String currentLine = lines.get(lineIndex);
+      String newLine =
+          currentLine.substring(0, columnInLine - 1) + currentLine.substring(columnInLine);
+      lines.set(lineIndex, newLine);
+      cursorPos--;
     }
   }
 
-  /**
-   * returns true if this textbox is visible
-   */
-  public boolean getVisible() {
-    return this.visible;
-  }
-
-  /**
-   * returns the maximum number of character that can be contained in this textbox
-   */
-  public int getMaxStringLength() {
-    return this.maxStringLength;
-  }
-
-  /**
-   * Draws the blue selection box.
-   */
-  private void drawSelectionBox(int startX, int startY, int endX, int endY) {
-    if (startX < endX) {
-      int i = startX;
-      startX = endX;
-      endX = i;
+  private void deleteCharacterBeforeCursor() {
+    if (cursorPos <= 0) {
+      return;
     }
 
-    if (startY < endY) {
-      int j = startY;
-      startY = endY;
-      endY = j;
-    }
+    int lineIndex = findLineIndexByCursorPos();
+    int offsetForUserDefinedNewLine = userInsertedNewLines.contains(lineIndex) ? 1 : 0;
+    int columnInLine = cursorPos - sumLengthsUpTo(lineIndex) - offsetForUserDefinedNewLine;
+    System.out.println("Column in line: " + columnInLine);
+    System.out.println("Line index: " + lineIndex);
 
-    if (endX > this.x + this.width) {
-      endX = this.x + this.width;
-    }
-
-    if (startX > this.x + this.width) {
-      startX = this.x + this.width;
-    }
-
-    Tessellator tessellator = Tessellator.getInstance();
-    BufferBuilder bufferbuilder = tessellator.getBuffer();
-    GlStateManager.color(0.0F, 0.0F, 255.0F, 255.0F);
-    GlStateManager.disableTexture2D();
-    GlStateManager.enableColorLogic();
-    GlStateManager.colorLogicOp(GlStateManager.LogicOp.OR_REVERSE);
-    bufferbuilder.begin(7, DefaultVertexFormats.POSITION);
-    bufferbuilder.pos(startX, endY, 0.0D).endVertex();
-    bufferbuilder.pos(endX, endY, 0.0D).endVertex();
-    bufferbuilder.pos(endX, startY, 0.0D).endVertex();
-    bufferbuilder.pos(startX, startY, 0.0D).endVertex();
-    tessellator.draw();
-    GlStateManager.disableColorLogic();
-    GlStateManager.enableTexture2D();
-  }
-
-  /**
-   * Sets the maximum length for the text in this text box. If the current text is longer than this
-   * length, the current text will be trimmed.
-   */
-  public void setMaxStringLength(int length) {
-    this.maxStringLength = length;
-
-    if (this.text.get(currentLine).length() > length) {
-      this.text.set(currentLine, this.text.get(currentLine).substring(0, length));
-    }
-  }
-
-  /**
-   * Sets whether or not this textbox is visible
-   */
-  public void setVisible(boolean isVisible) {
-    this.visible = isVisible;
-  }
-
-  public char getCharAtCursor(int offset) {
-    if (getCursorPosition() == 0) {
-      return ' ';
-    }
-    if (text.get(currentLine).length() < getCursorPosition() + offset) {
-      return ' ';
-    }
-    return text.get(currentLine).charAt(getCursorPosition() - 1 + offset);
-  }
-
-  /**
-   * returns the current position of the cursor
-   */
-  public int getCursorPosition() {
-    return this.cursorPosition;
-  }
-
-  /**
-   * Sets the current position of the cursor.
-   */
-  public void setCursorPosition(int pos) {
-    this.cursorPosition = pos;
-    int i = this.text.get(currentLine).length();
-    if (this.cursorPosition > i && currentLine + 1 < text.size()) {
-      currentLine++;
-      this.cursorPosition = 0;
-      i = this.text.get(currentLine).length();
-      if (this.lineScrollOffset > i) {
-        this.lineScrollOffset = i;
+    // Ensuring columnInLine is not negative for the substring operation
+    columnInLine = Math.max(0, columnInLine);
+    if (columnInLine == 0 && lineIndex > 0) {
+      // Merge with previous line if at the start of a line
+      mergeWithPreviousLine(lineIndex);
+    } else {
+      String currentLine = lines.get(lineIndex);
+      // Adjusting for the case where cursor visually appears after a newline
+      int adjustment = userInsertedNewLines.contains(lineIndex + 1) ? 1 : 0;
+      columnInLine = Math.max(0, columnInLine - adjustment); // Ensure columnInLine is not negative
+      if (columnInLine < currentLine.length()) {
+        String newLine =
+            currentLine.substring(0, columnInLine) + currentLine.substring(columnInLine + 1);
+        lines.set(lineIndex, newLine);
+        cursorPos--;
       }
     }
-    if (this.cursorPosition < 0 && currentLine > 0) {
-      currentLine--;
-      this.cursorPosition = i = this.text.get(currentLine).length();
-      if (this.lineScrollOffset > i) {
-        this.lineScrollOffset = i;
+  }
+
+
+  private void insertCharacterAtCursor(char character) {
+    int lineIndex = findLineIndexByCursorPos();
+    // Adjustment for cursorPos with user-defined newlines
+    int offsetForUserDefinedNewLine = userInsertedNewLines.contains(lineIndex) ? 1 : 0;
+    int columnInLine = cursorPos - sumLengthsUpTo(lineIndex) - offsetForUserDefinedNewLine;
+
+    // Ensure columnInLine does not go negative, which could happen with the new adjustment
+    columnInLine = Math.max(0, columnInLine);
+
+    String currentLine = lines.size() > lineIndex ? lines.get(lineIndex) : "";
+    // Construct the new line with inserted character
+    String newLine =
+        currentLine.substring(0, columnInLine) + character + currentLine.substring(columnInLine);
+
+    if (fontRenderer.getStringWidth(newLine) > width - 4) {
+      // Auto-wrap to a new line if the width exceeds the text field width
+      int lastSpaceIndex = newLine.lastIndexOf(' ', columnInLine - 1);
+      if (lastSpaceIndex != -1) {
+        // Split at the last space in the current line
+        lines.set(lineIndex, newLine.substring(0, lastSpaceIndex));
+        lines.add(lineIndex + 1, newLine.substring(lastSpaceIndex + 1));
+      } else {
+        // No space found; split at the current position
+        lines.set(lineIndex, currentLine.substring(0, columnInLine));
+        lines.add(lineIndex + 1, currentLine.substring(columnInLine) + character);
+      }
+      cursorPos = sumLengthsUpTo(lineIndex + 1) + 1 + offsetForUserDefinedNewLine;
+    } else {
+      // No wrapping needed, insert character normally
+      lines.set(lineIndex, newLine);
+      cursorPos++;
+    }
+  }
+
+  private void updateViewOffsetForCursor() {
+    // Check if the cursor is out of view after backspacing
+    int currentLineIndex = findCurrentLine();
+    int currentLineHeight = fontRenderer.FONT_HEIGHT;
+    int cursorY = (currentLineIndex - viewOffset) * currentLineHeight;
+    int maxY = this.height - currentLineHeight;
+
+    if (cursorY < 0) {
+      // Cursor is above the view, adjust the view offset immediately
+      this.viewOffset = currentLineIndex;
+    } else if (cursorY > maxY) {
+      // Cursor is below the view, adjust the view offset immediately
+      this.viewOffset = currentLineIndex - (this.height / currentLineHeight) + 1;
+    }
+
+    // Adjust view offset if lines were removed due to backspace
+    if (lines.size() < (this.height / currentLineHeight)) {
+      this.viewOffset = 0;
+    }
+    if (lines.size() - viewOffset < (this.height / currentLineHeight)) {
+      this.viewOffset = Math.max(0, lines.size() - (this.height / currentLineHeight));
+    }
+  }
+
+  private void mergeWithPreviousLine(int lineIndex) {
+    if (lineIndex <= 0) {
+      return; // No previous line to merge with
+    }
+    String prevLine = lines.get(lineIndex - 1);
+    if (userInsertedNewLines.contains(lineIndex)) {
+      // If there was a user-inserted newline, just remove it without merging lines
+      userInsertedNewLines.remove(lineIndex);
+      lines.remove(lineIndex);
+      cursorPos = sumLengthsUpTo(lineIndex - 1) + prevLine.length();
+    } else if (prevLine.isEmpty()) {
+      // Merge an empty previous line with the current line (essentially removing an empty line)
+      lines.remove(lineIndex - 1);
+      cursorPos = sumLengthsUpTo(lineIndex - 1);
+    } else {
+      // Merge lines and remove the current line
+      String currentLine = lines.get(lineIndex);
+      lines.set(lineIndex - 1, prevLine + currentLine);
+      lines.remove(lineIndex);
+      cursorPos =
+          sumLengthsUpTo(lineIndex - 1) + prevLine.length(); // Move cursor to end of merged line
+    }
+    adjustUserInsertedNewLines(lineIndex);
+  }
+
+
+  // Helper method to adjust the indices in userInsertedNewLines after a line is removed
+  private void adjustUserInsertedNewLines(int removedLineIndex) {
+    Set<Integer> updatedUserInsertedNewLines = new HashSet<>();
+    for (Integer index : userInsertedNewLines) {
+      if (index > removedLineIndex) {
+        updatedUserInsertedNewLines.add(
+            index - 1); // Adjust index down by one for lines after the removed line
+      } else if (index < removedLineIndex) {
+        updatedUserInsertedNewLines.add(
+            index); // Keep index the same for lines before the removed line
+      }
+      // Note: If index == removedLineIndex, we're removing that newline, so don't add it back
+    }
+    userInsertedNewLines = updatedUserInsertedNewLines;
+  }
+
+  private void moveCursorUp() {
+    int currentLineIndex = findCurrentLine();
+    if (currentLineIndex > 0) {
+      int currentColumnPosition = findColumnInLine(currentLineIndex);
+
+      // Move to the previous line
+      int prevLineIndex = currentLineIndex - 1;
+      String prevLine = lines.get(prevLineIndex);
+
+      // Attempt to maintain the same column position in the previous line
+      int newPositionWithinPrevLine = Math.min(currentColumnPosition, prevLine.length());
+
+      // Adjust the global cursor position to reflect its position within the previous line
+      cursorPos = sumLengthsUpTo(prevLineIndex) + newPositionWithinPrevLine;
+    }
+  }
+
+  private void moveCursorDown() {
+    int currentLineIndex = findCurrentLine();
+    if (currentLineIndex < lines.size() - 1) {
+      // Determine the relative cursor position within the current line
+      int currentLineLength =
+          currentLineIndex > 0 ? cursorPos - sumLengthsUpTo(currentLineIndex) : cursorPos;
+      int nextLineLength = lines.get(currentLineIndex + 1).length();
+
+      // If the current cursor position within the line exceeds the length of the next line,
+      // adjust it.
+      int newPositionWithinNextLine = Math.min(currentLineLength, nextLineLength);
+      // Adjust the global cursor position to reflect its position within the next line
+      cursorPos = sumLengthsUpTo(currentLineIndex + 1) + newPositionWithinNextLine;
+    }
+  }
+
+  private int findCurrentLine() {
+    int totalLength = 0;
+    for (int i = 0; i < lines.size(); i++) {
+      // Add 1 for each user-inserted newline character before this line
+      totalLength += lines.get(i).length() + (userInsertedNewLines.contains(i + 1) ? 1 : 0);
+      if (cursorPos <= totalLength) {
+        return i;
       }
     }
-    this.cursorPosition = MathHelper.clamp(this.cursorPosition, 0, i);
-    this.setSelectionPos(this.cursorPosition);
+    return lines.size() - 1;
   }
 
-  /**
-   * Sets the color to use when drawing this text box's text. A different color is used if this text
-   * box is disabled.
-   */
-  public void setTextColor(int color) {
-    this.enabledColor = color;
+  private int sumLengthsUpTo(int index) {
+    int sum = 0;
+    for (int i = 0; i < index; i++) {
+      // Include the newline character in the sum for user-inserted new lines
+      sum += lines.get(i).length() + (userInsertedNewLines.contains(i + 1) ? 1 : 0);
+    }
+    return sum;
   }
 
-  /**
-   * Sets the color to use for text in this text box when this text box is disabled.
-   */
-  public void setDisabledTextColour(int color) {
-    this.disabledColor = color;
+  private int findColumnInLine(int lineIndex) {
+    int lineStartPos = sumLengthsUpTo(lineIndex);
+    return cursorPos - lineStartPos;
   }
 
-  /**
-   * Getter for the focused field
-   */
+  public void scrollUp() {
+    if (viewOffset > 0) {
+      viewOffset--;
+    }
+  }
+
+  public void scrollDown() {
+    if (viewOffset < lines.size() - 1) {
+      viewOffset++;
+    }
+  }
+
+
+  public void mouseClicked(int mouseX, int mouseY, int mouseButton) {
+    isFocused = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width
+        && mouseY < this.y + this.height;
+  }
+
+  // Add the following method to handle mouse wheel events
+  public void handleMouseInput(int mouseX, int mouseY, int scrollDelta) {
+    if (isFocused) {
+      // Adjust the view offset based on the scroll direction
+      if (scrollDelta > 0) { // Scrolling up
+        if (viewOffset > 0) {
+          viewOffset--;
+        }
+      } else if (scrollDelta < 0) { // Scrolling down
+        int totalLines = lines.size();
+        if (totalLines > (height / fontRenderer.FONT_HEIGHT) && viewOffset < totalLines - (height
+            / fontRenderer.FONT_HEIGHT)) {
+          viewOffset++;
+        }
+      }
+    }
+  }
+
+  private int findLineIndexByCursorPos() {
+    // This method needs to determine which line the cursor is currently on based on cursorPos
+    // Assuming cursorPos is an overall position index in the text, you would calculate which line
+    // it falls on. This is a placeholder for the logic you'll need to implement.
+    int totalChars = 0;
+    for (int i = 0; i < lines.size(); i++) {
+      totalChars += lines.get(i).length();
+      if (cursorPos <= totalChars) {
+        return i;
+      }
+    }
+    return lines.size() - 1; // Default to last line if not found
+  }
+
+  public String getText() {
+    StringBuilder sb = new StringBuilder();
+    for (int i = 0; i < lines.size(); i++) {
+      sb.append(lines.get(i));
+      // Add a new line character if this line index is marked
+      if (userInsertedNewLines.contains(i + 1)) {
+        sb.append("\n");
+      }
+    }
+    return sb.toString().trim();
+  }
+
+  public void setText(String text) {
+    lines.clear();
+    userInsertedNewLines.clear();
+    StringBuilder currentLine = new StringBuilder();
+
+    for (int index = 0; index < text.length(); index++) {
+      char c = text.charAt(index);
+      if (c == '\n') {
+        lines.add(currentLine.toString());
+        currentLine = new StringBuilder();
+        userInsertedNewLines.add(lines.size());
+      } else {
+        currentLine.append(c);
+        // Check if adding 'c' exceeds width, considering left padding of 2
+        if (fontRenderer.getStringWidth(currentLine.toString()) > width - 4) {
+          // Find last space to break line or break at current position if no space
+          int lastSpace = currentLine.lastIndexOf(" ");
+          if (lastSpace != -1) {
+            // If there's a space, split at the last space
+            lines.add(currentLine.substring(0, lastSpace));
+            // Start new line after the last space
+            currentLine = new StringBuilder(currentLine.substring(lastSpace + 1));
+          } else {
+            // No space found, directly add and reset for new content
+            lines.add(currentLine.toString());
+            currentLine = new StringBuilder();
+          }
+        }
+      }
+    }
+    // Add the remaining content as the last line
+    if (currentLine.length() > 0) {
+      lines.add(currentLine.toString());
+    }
+    // Reset cursor position
+    cursorPos = getText().length();
+    // Adjust viewOffset for new content
+    viewOffset = Math.max(0, lines.size() - (height / fontRenderer.FONT_HEIGHT));
+  }
+
+  public void setFocused(boolean isFocused) {
+    this.isFocused = true;
+  }
+
   public boolean isFocused() {
-    return this.isFocused;
-  }
-
-  /**
-   * Sets focus to this gui element
-   */
-  public void setFocused(boolean isFocusedIn) {
-    if (isFocusedIn && !this.isFocused) {
-      this.cursorCounter = 0;
-    }
-
-    this.isFocused = isFocusedIn;
-
-    if (Minecraft.getMinecraft().currentScreen != null) {
-      Minecraft.getMinecraft().currentScreen.setFocused(isFocusedIn);
-    }
-  }
-
-  /**
-   * Sets whether this text box is enabled. Disabled text boxes cannot be typed in.
-   */
-  public void setEnabled(boolean enabled) {
-    this.isEnabled = enabled;
-  }
-
-  /**
-   * the side of the selection that is not the cursor, may be the same as the cursor
-   */
-  public int getSelectionEnd() {
-    return this.selectionEnd;
-  }
-
-  /**
-   * Sets whether this text box loses focus when something other than it is clicked.
-   */
-  public void setCanLoseFocus(boolean canLoseFocusIn) {
-    this.canLoseFocus = canLoseFocusIn;
+    return true;
   }
 }

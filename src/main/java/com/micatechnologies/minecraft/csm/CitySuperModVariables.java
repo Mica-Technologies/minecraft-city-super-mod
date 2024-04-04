@@ -46,9 +46,9 @@ public class CitySuperModVariables {
     public void syncData(World world) {
       this.markDirty();
       if (world.isRemote) {
-        Csm.PACKET_HANDLER.sendToServer(new WorldSavedDataSyncMessage(0, this));
+        CsmNetwork.sendToServer(new WorldSavedDataSyncMessage(0, this));
       } else {
-        Csm.PACKET_HANDLER.sendToAll(new WorldSavedDataSyncMessage(0, this));
+        CsmNetwork.sendToAll(new WorldSavedDataSyncMessage(0, this));
       }
     }
   }
@@ -99,9 +99,9 @@ public class CitySuperModVariables {
     public void syncData(World world) {
       this.markDirty();
       if (world.isRemote) {
-        Csm.PACKET_HANDLER.sendToServer(new WorldSavedDataSyncMessage(1, this));
+        CsmNetwork.sendToServer(new WorldSavedDataSyncMessage(1, this));
       } else {
-        Csm.PACKET_HANDLER.sendToDimension(new WorldSavedDataSyncMessage(1, this),
+        CsmNetwork.sendToDimension(new WorldSavedDataSyncMessage(1, this),
             world.provider.getDimension());
       }
     }
@@ -127,9 +127,9 @@ public class CitySuperModVariables {
       if (context.side == Side.SERVER) {
         message.data.markDirty();
         if (message.type == 0) {
-          Csm.PACKET_HANDLER.sendToAll(message);
+          CsmNetwork.sendToAll(message);
         } else {
-          Csm.PACKET_HANDLER.sendToDimension(message, world.provider.getDimension());
+          CsmNetwork.sendToDimension(message, world.provider.getDimension());
         }
       }
       if (message.type == 0) {
