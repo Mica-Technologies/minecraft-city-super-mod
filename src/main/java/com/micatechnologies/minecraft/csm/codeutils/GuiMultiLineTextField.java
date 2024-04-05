@@ -22,7 +22,9 @@ public class GuiMultiLineTextField extends Gui {
   private final List<String> lines = new ArrayList<>();
   private final int x, y, width, height;
   private boolean isFocused = false;
-  private int cursorPos = 0; // Overall cursor position in the text
+  // private int cursorPos = 0; // Overall cursor position in the text
+  private int cursorLine = 0; // Line index of the cursor
+  private int cursorColumn = 0; // Column index of the cursor within the line
   private int viewOffset = 0; // Line offset for viewing
   private Set<Integer> userInsertedNewLines = new HashSet<>();
 
@@ -61,10 +63,8 @@ public class GuiMultiLineTextField extends Gui {
 
       // Improved Cursor Rendering
       if ((System.currentTimeMillis() / 500) % 2 == 0) { // Blinking effect
-        int cursorLineIndex = findCurrentLine();
-        if (cursorLineIndex >= viewOffset && cursorLineIndex < viewOffset + lineCounter) {
-          int cursorColumn = findColumnInLine(cursorLineIndex);
-          String currentLineText = cursorLineIndex < lines.size() ? lines.get(cursorLineIndex) : "";
+        if (cursorLine >= viewOffset && cursorLine < viewOffset + lineCounter) {
+          String currentLineText = cursorLine < lines.size() ? lines.get(cursorLine) : "";
 
           // Calculate cursorX considering the special case where the cursor moves to a blank
           // line below
@@ -75,7 +75,7 @@ public class GuiMultiLineTextField extends Gui {
 
           // Calculate cursorY to potentially move the cursor to the start of the next line if
           // it's blank
-          int cursorY = this.y + 2 + (cursorLineIndex - viewOffset) * fontRenderer.FONT_HEIGHT;
+          int cursorY = this.y + 2 + (cursorLine - viewOffset) * fontRenderer.FONT_HEIGHT;
 
           drawRect(cursorX, cursorY, cursorX + 1, cursorY + fontRenderer.FONT_HEIGHT - 1,
               0xFFFFFFFF);
@@ -98,16 +98,28 @@ public class GuiMultiLineTextField extends Gui {
         // Handle backspace
         deleteCharacterBeforeCursor();
         break;
+      case Keyboard.KEY_DELETE:
+        // Handle delete
+        deleteCharacterAfterCursor();
+        break;
       case Keyboard.KEY_LEFT:
         // Move cursor left
-        if (cursorPos > 0) {
-          cursorPos--;
+        if (cursorColumn > 0 || cursorLine > 0) {
+          cursorColumn--;
+          if (cursorColumn < 0) {
+            cursorLine--;
+            cursorColumn = lines.get(cursorLine).length();
+          }
         }
         break;
       case Keyboard.KEY_RIGHT:
         // Move cursor right, ensuring not to exceed text length
-        if (cursorPos < getText().length()) {
-          cursorPos++;
+        if (cursorColumn < getText().length()) {
+          cursorColumn++;
+          if (cursorColumn > lines.get(cursorLine).length() && cursorLine < lines.size() - 1) {
+            cursorLine++;
+            cursorColumn = 0;
+          }
         }
         break;
       case Keyboard.KEY_UP:
@@ -129,132 +141,135 @@ public class GuiMultiLineTextField extends Gui {
   }
 
   private void insertNewLineAtCursor() {
-    int lineIndex = findLineIndexByCursorPos();
-    String currentLine = lines.size() > lineIndex ? lines.get(lineIndex) : "";
-    int columnInLine = cursorPos - sumLengthsUpTo(lineIndex);
+    String currentLine = lines.size() > cursorLine ? lines.get(cursorLine) : "";
 
     // Ensure columnInLine does not exceed current line's length
-    columnInLine = Math.min(columnInLine, currentLine.length());
+    cursorColumn = Math.min(cursorColumn, currentLine.length());
 
-    String lineBeforeCursor = currentLine.substring(0, columnInLine);
-    String lineAfterCursor = currentLine.substring(columnInLine);
-    lines.set(lineIndex, lineBeforeCursor);
-    lines.add(lineIndex + 1, lineAfterCursor);
+    String lineBeforeCursor = currentLine.substring(0, cursorColumn);
+    String lineAfterCursor = currentLine.substring(cursorColumn);
+    lines.set(cursorLine, lineBeforeCursor);
+    lines.add(cursorLine + 1, lineAfterCursor);
 
-    userInsertedNewLines.add(lineIndex + 1);
+    userInsertedNewLines.add(cursorLine + 1);
 
     // Adjust cursorPos for the newline. Add 1 to position cursor at the start of the next line.
-    cursorPos = sumLengthsUpTo(lineIndex + 1) + 1;
-  }
-
-  private void deleteCharacterBeforeCursors() {
-    if (cursorPos <= 0) {
-      return;
-    }
-
-    int lineIndex = findLineIndexByCursorPos();
-    int offsetForUserDefinedNewLine = userInsertedNewLines.contains(lineIndex) ? 1 : 0;
-    int columnInLine = cursorPos - sumLengthsUpTo(lineIndex) - offsetForUserDefinedNewLine;
-
-    // Ensuring columnInLine is not negative for the substring operation
-    columnInLine = Math.max(0, columnInLine);
-
-    if (columnInLine == 0 && lineIndex > 0) {
-      // If at the start of a line (and not the very first line), attempt to merge with the
-      // previous line
-      mergeWithPreviousLine(lineIndex);
-      // Adjust cursor position after merge
-      cursorPos = sumLengthsUpTo(lineIndex - 1) + lines.get(Math.max(0, lineIndex - 1)).length();
-      cursorPos +=
-          userInsertedNewLines.contains(lineIndex) ? 1 : 0; // Adjust if the line was user-defined
-    } else {
-      // Normal character deletion within the line
-      String currentLine = lines.get(lineIndex);
-      String newLine =
-          currentLine.substring(0, columnInLine - 1) + currentLine.substring(columnInLine);
-      lines.set(lineIndex, newLine);
-      cursorPos--;
-    }
+    cursorLine++;
+    cursorColumn = 0;
   }
 
   private void deleteCharacterBeforeCursor() {
-    if (cursorPos <= 0) {
+    if (cursorLine == 0 && cursorColumn == 0) {
+      // Cursor is at the very start of the text; nothing to delete.
+      return;
+    } else if (cursorLine < 0 || cursorLine >= lines.size()) {
+      cursorLine = 0; // Cursor is out of bounds; reset to the first line
+      cursorColumn = 0; // Cursor is out of bounds; reset to the first column
+      return;
+    } else if (cursorColumn < 0 || cursorColumn > lines.get(cursorLine).length()) {
+      cursorLine = 0; // Cursor is out of bounds; reset to the first line
+      cursorColumn = 0; // Cursor is out of bounds; reset to the first column\
       return;
     }
 
-    int lineIndex = findLineIndexByCursorPos();
-    int offsetForUserDefinedNewLine = userInsertedNewLines.contains(lineIndex) ? 1 : 0;
-    int columnInLine = cursorPos - sumLengthsUpTo(lineIndex) - offsetForUserDefinedNewLine;
-    System.out.println("Column in line: " + columnInLine);
-    System.out.println("Line index: " + lineIndex);
-
-    // Ensuring columnInLine is not negative for the substring operation
-    columnInLine = Math.max(0, columnInLine);
-    if (columnInLine == 0 && lineIndex > 0) {
-      // Merge with previous line if at the start of a line
-      mergeWithPreviousLine(lineIndex);
+    if (cursorColumn == 0) {
+      mergeWithPreviousLine(cursorLine);
+      return;
     } else {
-      String currentLine = lines.get(lineIndex);
-      // Adjusting for the case where cursor visually appears after a newline
-      int adjustment = userInsertedNewLines.contains(lineIndex + 1) ? 1 : 0;
-      columnInLine = Math.max(0, columnInLine - adjustment); // Ensure columnInLine is not negative
-      if (columnInLine < currentLine.length()) {
-        String newLine =
-            currentLine.substring(0, columnInLine) + currentLine.substring(columnInLine + 1);
-        lines.set(lineIndex, newLine);
-        cursorPos--;
+      // Safely delete a character within the line.
+      String currentLine = lines.get(cursorLine);
+      String newLine =
+          currentLine.substring(0, cursorColumn - 1) + currentLine.substring(cursorColumn);
+      lines.set(cursorLine, newLine);
+      cursorColumn--;
+      if (newLine.isEmpty() && !userInsertedNewLines.contains(cursorLine)) {
+        cursorLine--;
+        cursorColumn = lines.get(cursorLine).length();
+      }
+    }
+  }
+
+  private void deleteCharacterAfterCursor() {
+    if (cursorLine == lines.size() - 1 && cursorColumn == lines.get(cursorLine).length()) {
+      // Cursor is at the very end of the text; nothing to delete.
+      return;
+    } else if (cursorLine < 0 || cursorLine >= lines.size()) {
+      cursorLine = 0; // Cursor is out of bounds; reset to the first line
+      cursorColumn = 0; // Cursor is out of bounds; reset to the first column
+      return;
+    } else if (cursorColumn < 0 || cursorColumn > lines.get(cursorLine).length()) {
+      cursorLine = 0; // Cursor is out of bounds; reset to the first line
+      cursorColumn = 0; // Cursor is out of bounds; reset to the first column
+      return;
+    }
+
+    if (cursorColumn == lines.get(cursorLine).length()) {
+      mergeWithNextLine(cursorLine);
+      return;
+    } else {
+      // Safely delete a character within the line.
+      String currentLine = lines.get(cursorLine);
+      String newLine =
+          currentLine.substring(0, cursorColumn) + currentLine.substring(cursorColumn + 1);
+      lines.set(cursorLine, newLine);
+      if (newLine.isEmpty() && !userInsertedNewLines.contains(cursorLine)) {
+        mergeWithNextLine(cursorLine);
       }
     }
   }
 
 
   private void insertCharacterAtCursor(char character) {
-    int lineIndex = findLineIndexByCursorPos();
-    // Adjustment for cursorPos with user-defined newlines
-    int offsetForUserDefinedNewLine = userInsertedNewLines.contains(lineIndex) ? 1 : 0;
-    int columnInLine = cursorPos - sumLengthsUpTo(lineIndex) - offsetForUserDefinedNewLine;
+    String currentLine = lines.size() > cursorLine ? lines.get(cursorLine) : "";
 
-    // Ensure columnInLine does not go negative, which could happen with the new adjustment
-    columnInLine = Math.max(0, columnInLine);
-
-    String currentLine = lines.size() > lineIndex ? lines.get(lineIndex) : "";
-    // Construct the new line with inserted character
-    String newLine =
-        currentLine.substring(0, columnInLine) + character + currentLine.substring(columnInLine);
-
-    if (fontRenderer.getStringWidth(newLine) > width - 4) {
-      // Auto-wrap to a new line if the width exceeds the text field width
-      int lastSpaceIndex = newLine.lastIndexOf(' ', columnInLine - 1);
+    // If adding the character exceeds the width, we need to wrap
+    if (fontRenderer.getStringWidth(currentLine + character) > width - 4) {
+      int lastSpaceIndex = currentLine.lastIndexOf(' ', cursorColumn - 1);
       if (lastSpaceIndex != -1) {
-        // Split at the last space in the current line
-        lines.set(lineIndex, newLine.substring(0, lastSpaceIndex));
-        lines.add(lineIndex + 1, newLine.substring(lastSpaceIndex + 1));
+        // If there's a space, split at the last space and insert the rest on a new line
+        String lineBeforeSpace = currentLine.substring(0, lastSpaceIndex);
+        String lineAfterSpace = currentLine.substring(lastSpaceIndex + 1) + character;
+        lines.set(cursorLine, lineBeforeSpace);
+        lines.add(cursorLine + 1, lineAfterSpace);
+        // Adjust cursorPos to new position after wrap
+        cursorColumn = lineAfterSpace.length();
+        cursorLine++;
       } else {
         // No space found; split at the current position
-        lines.set(lineIndex, currentLine.substring(0, columnInLine));
-        lines.add(lineIndex + 1, currentLine.substring(columnInLine) + character);
+        String newLine = currentLine + character;
+        lines.set(cursorLine, newLine.substring(0, cursorColumn));
+        lines.add(cursorLine + 1, newLine.substring(cursorColumn));
+        // Adjust cursorPos to new position after wrap
+        cursorColumn = 1; // +1 for the character just added
+        cursorLine++;
       }
-      cursorPos = sumLengthsUpTo(lineIndex + 1) + 1 + offsetForUserDefinedNewLine;
     } else {
       // No wrapping needed, insert character normally
-      lines.set(lineIndex, newLine);
-      cursorPos++;
+      String newLine = "";
+      try {
+        newLine =
+            currentLine.substring(0, cursorColumn) + character + currentLine.substring(
+                cursorColumn);
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+      lines.set(cursorLine, newLine);
+      cursorColumn++; // Move cursor right by one, as before
     }
   }
 
   private void updateViewOffsetForCursor() {
     // Check if the cursor is out of view after backspacing
-    int currentLineIndex = findCurrentLine();
     int currentLineHeight = fontRenderer.FONT_HEIGHT;
-    int cursorY = (currentLineIndex - viewOffset) * currentLineHeight;
+    int cursorY = (cursorLine - viewOffset) * currentLineHeight;
     int maxY = this.height - currentLineHeight;
 
     if (cursorY < 0) {
       // Cursor is above the view, adjust the view offset immediately
-      this.viewOffset = currentLineIndex;
+      this.viewOffset = cursorLine;
     } else if (cursorY > maxY) {
       // Cursor is below the view, adjust the view offset immediately
-      this.viewOffset = currentLineIndex - (this.height / currentLineHeight) + 1;
+      this.viewOffset = cursorLine - (this.height / currentLineHeight) + 1;
     }
 
     // Adjust view offset if lines were removed due to backspace
@@ -275,20 +290,43 @@ public class GuiMultiLineTextField extends Gui {
       // If there was a user-inserted newline, just remove it without merging lines
       userInsertedNewLines.remove(lineIndex);
       lines.remove(lineIndex);
-      cursorPos = sumLengthsUpTo(lineIndex - 1) + prevLine.length();
+      cursorColumn = prevLine.length();
+      cursorLine = lineIndex - 1;
     } else if (prevLine.isEmpty()) {
       // Merge an empty previous line with the current line (essentially removing an empty line)
       lines.remove(lineIndex - 1);
-      cursorPos = sumLengthsUpTo(lineIndex - 1);
+      cursorColumn = 0;
+      cursorLine = lineIndex - 1;
     } else {
       // Merge lines and remove the current line
       String currentLine = lines.get(lineIndex);
       lines.set(lineIndex - 1, prevLine + currentLine);
       lines.remove(lineIndex);
-      cursorPos =
-          sumLengthsUpTo(lineIndex - 1) + prevLine.length(); // Move cursor to end of merged line
+      cursorColumn = prevLine.length();
+      cursorLine = lineIndex - 1;
     }
     adjustUserInsertedNewLines(lineIndex);
+  }
+
+  private void mergeWithNextLine(int cursorLine) {
+    if (cursorLine >= lines.size() - 1) {
+      return; // No next line to merge with
+    }
+    String currentLine = lines.get(cursorLine);
+    String nextLine = lines.get(cursorLine + 1);
+    if (userInsertedNewLines.contains(cursorLine + 1)) {
+      // If there was a user-inserted newline, just remove it without merging lines
+      userInsertedNewLines.remove(cursorLine + 1);
+      lines.remove(cursorLine + 1);
+    } else if (nextLine.isEmpty()) {
+      // Merge an empty next line with the current line (essentially removing an empty line)
+      lines.remove(cursorLine + 1);
+    } else {
+      // Merge lines and remove the next line
+      lines.set(cursorLine, currentLine + nextLine);
+      lines.remove(cursorLine + 1);
+    }
+    adjustUserInsertedNewLines(cursorLine + 1);
   }
 
 
@@ -309,73 +347,36 @@ public class GuiMultiLineTextField extends Gui {
   }
 
   private void moveCursorUp() {
-    int currentLineIndex = findCurrentLine();
-    if (currentLineIndex > 0) {
-      int currentColumnPosition = findColumnInLine(currentLineIndex);
+    if (cursorLine > 0) {
+      int currentColumnPosition = cursorColumn;
 
       // Move to the previous line
-      int prevLineIndex = currentLineIndex - 1;
+      int prevLineIndex = cursorLine - 1;
       String prevLine = lines.get(prevLineIndex);
 
       // Attempt to maintain the same column position in the previous line
       int newPositionWithinPrevLine = Math.min(currentColumnPosition, prevLine.length());
 
       // Adjust the global cursor position to reflect its position within the previous line
-      cursorPos = sumLengthsUpTo(prevLineIndex) + newPositionWithinPrevLine;
+      cursorLine--;
+      cursorColumn = newPositionWithinPrevLine;
     }
   }
 
   private void moveCursorDown() {
-    int currentLineIndex = findCurrentLine();
-    if (currentLineIndex < lines.size() - 1) {
-      // Determine the relative cursor position within the current line
-      int currentLineLength =
-          currentLineIndex > 0 ? cursorPos - sumLengthsUpTo(currentLineIndex) : cursorPos;
-      int nextLineLength = lines.get(currentLineIndex + 1).length();
+    if (cursorLine < lines.size() - 1) {
+      int currentColumnPosition = cursorColumn;
 
-      // If the current cursor position within the line exceeds the length of the next line,
-      // adjust it.
-      int newPositionWithinNextLine = Math.min(currentLineLength, nextLineLength);
+      // Move to the next line
+      int nextLineIndex = cursorLine + 1;
+      String nextLine = lines.get(nextLineIndex);
+
+      // Attempt to maintain the same column position in the next line
+      int newPositionWithinNextLine = Math.min(currentColumnPosition, nextLine.length());
+
       // Adjust the global cursor position to reflect its position within the next line
-      cursorPos = sumLengthsUpTo(currentLineIndex + 1) + newPositionWithinNextLine;
-    }
-  }
-
-  private int findCurrentLine() {
-    int totalLength = 0;
-    for (int i = 0; i < lines.size(); i++) {
-      // Add 1 for each user-inserted newline character before this line
-      totalLength += lines.get(i).length() + (userInsertedNewLines.contains(i + 1) ? 1 : 0);
-      if (cursorPos <= totalLength) {
-        return i;
-      }
-    }
-    return lines.size() - 1;
-  }
-
-  private int sumLengthsUpTo(int index) {
-    int sum = 0;
-    for (int i = 0; i < index; i++) {
-      // Include the newline character in the sum for user-inserted new lines
-      sum += lines.get(i).length() + (userInsertedNewLines.contains(i + 1) ? 1 : 0);
-    }
-    return sum;
-  }
-
-  private int findColumnInLine(int lineIndex) {
-    int lineStartPos = sumLengthsUpTo(lineIndex);
-    return cursorPos - lineStartPos;
-  }
-
-  public void scrollUp() {
-    if (viewOffset > 0) {
-      viewOffset--;
-    }
-  }
-
-  public void scrollDown() {
-    if (viewOffset < lines.size() - 1) {
-      viewOffset++;
+      cursorLine++;
+      cursorColumn = newPositionWithinNextLine;
     }
   }
 
@@ -403,20 +404,6 @@ public class GuiMultiLineTextField extends Gui {
     }
   }
 
-  private int findLineIndexByCursorPos() {
-    // This method needs to determine which line the cursor is currently on based on cursorPos
-    // Assuming cursorPos is an overall position index in the text, you would calculate which line
-    // it falls on. This is a placeholder for the logic you'll need to implement.
-    int totalChars = 0;
-    for (int i = 0; i < lines.size(); i++) {
-      totalChars += lines.get(i).length();
-      if (cursorPos <= totalChars) {
-        return i;
-      }
-    }
-    return lines.size() - 1; // Default to last line if not found
-  }
-
   public String getText() {
     StringBuilder sb = new StringBuilder();
     for (int i = 0; i < lines.size(); i++) {
@@ -426,46 +413,97 @@ public class GuiMultiLineTextField extends Gui {
         sb.append("\n");
       }
     }
-    return sb.toString().trim();
+    System.err.println("Text: " + sb.toString());
+    return sb.toString();
   }
 
   public void setText(String text) {
+    System.err.println("Setting text: " + text);
     lines.clear();
     userInsertedNewLines.clear();
     StringBuilder currentLine = new StringBuilder();
 
-    for (int index = 0; index < text.length(); index++) {
-      char c = text.charAt(index);
-      if (c == '\n') {
-        lines.add(currentLine.toString());
-        currentLine = new StringBuilder();
-        userInsertedNewLines.add(lines.size());
-      } else {
-        currentLine.append(c);
-        // Check if adding 'c' exceeds width, considering left padding of 2
-        if (fontRenderer.getStringWidth(currentLine.toString()) > width - 4) {
-          // Find last space to break line or break at current position if no space
-          int lastSpace = currentLine.lastIndexOf(" ");
-          if (lastSpace != -1) {
-            // If there's a space, split at the last space
-            lines.add(currentLine.substring(0, lastSpace));
-            // Start new line after the last space
-            currentLine = new StringBuilder(currentLine.substring(lastSpace + 1));
+    String[] paragraphs = text.split("\n", -1);
+    boolean previousParagraphWasEmpty = false;
+
+    for (String para : paragraphs) {
+      if (para.isEmpty()) {
+        if (currentLine.length() > 0) {
+          lines.add(currentLine.toString());
+          currentLine = new StringBuilder();
+        }
+        if (previousParagraphWasEmpty || lines.isEmpty()) {
+          // This handles consecutive new lines and ensures at least one line exists before
+          // adding another
+          lines.add("");
+          userInsertedNewLines.add(lines.size());
+        }
+        previousParagraphWasEmpty = true;
+        continue;
+      }
+
+      // Reset flag when encountering a non-empty paragraph
+      previousParagraphWasEmpty = false;
+      StringBuilder wordBuffer = new StringBuilder();
+      for (char c : para.toCharArray()) {
+        wordBuffer.append(c);
+        if (c == ' ' || c == para.charAt(para.length() - 1)) {
+          // Check if adding the wordBuffer to currentLine exceeds the width
+          if (fontRenderer.getStringWidth(currentLine.toString() + wordBuffer.toString())
+              <= width - 4) {
+            currentLine.append(wordBuffer);
           } else {
-            // No space found, directly add and reset for new content
-            lines.add(currentLine.toString());
-            currentLine = new StringBuilder();
+            // Does not fit; need to wrap
+            if (currentLine.length() > 0) {
+              lines.add(currentLine.toString());
+              currentLine = new StringBuilder();
+            }
+            // Handle long word wrapping
+            while (fontRenderer.getStringWidth(wordBuffer.toString()) > width - 4) {
+              String part = splitWordToFit(wordBuffer.toString(), width - 4);
+              lines.add(part);
+              wordBuffer = new StringBuilder(wordBuffer.substring(part.length()));
+            }
+            currentLine.append(wordBuffer);
           }
+          wordBuffer = new StringBuilder(); // Reset word buffer
         }
       }
+      // Add the current line if it has content
+      if (currentLine.length() > 0) {
+        lines.add(currentLine.toString());
+        currentLine = new StringBuilder();
+      }
+      // Reflect explicit new lines from user input at the end of paragraphs
+      userInsertedNewLines.add(lines.size());
     }
-    // Add the remaining content as the last line
-    if (currentLine.length() > 0) {
-      lines.add(currentLine.toString());
+
+    // Special case: if the text ends with new lines, ensure they're respected
+    if (previousParagraphWasEmpty) {
+      lines.add("");
+      userInsertedNewLines.add(lines.size());
     }
-    // Reset cursor position
-    cursorPos = getText().length();
-    // Adjust viewOffset for new content
+
+    // Reset cursor to the end of the text
+    cursorLine = lines.size() - 1;
+    cursorColumn = lines.get(cursorLine).length();
+    adjustViewOffsetForNewContent();
+  }
+
+  // Utility method to split a long word to fit the specified width
+  private String splitWordToFit(String word, int maxWidth) {
+    for (int i = 1; i < word.length(); i++) {
+      String part = word.substring(0, i);
+      if (fontRenderer.getStringWidth(part) > maxWidth) {
+        return word.substring(0, i - 1); // Return part of the word that fits
+      }
+    }
+    return word; // In case the whole word fits or is a single character
+  }
+
+  private void adjustViewOffsetForNewContent() {
+    // Adjust viewOffset based on new content, if necessary.
+    // Placeholder for logic to ensure the newly set text is properly viewable.
     viewOffset = Math.max(0, lines.size() - (height / fontRenderer.FONT_HEIGHT));
   }
 

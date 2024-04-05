@@ -2,15 +2,21 @@ package com.micatechnologies.minecraft.csm.technology;
 
 import com.micatechnologies.minecraft.csm.CsmNetwork;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractTileEntity;
+import com.micatechnologies.minecraft.csm.codeutils.packets.TileEntityRedstoneTTSInvokePacket;
 import com.micatechnologies.minecraft.csm.codeutils.packets.TileEntityRedstoneTTSUpdatePacket;
-import com.mojang.text2speech.Narrator;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 
 public class TileEntityRedstoneTTS extends AbstractTileEntity {
 
   private static final String TTS_STRING_KEY = "ttsString";
-  private String ttsString = "Setup is Required!";
+  private static final String TTS_STRING_DEFAULT = "Setup is Required!";
+  private static final String TTS_RADIUS_KEY = "ttsRadius";
+  private static final long COOLDOWN_DURATION = 2000; // Cooldown duration in milliseconds
+  private AtomicLong lastTtsInvocationTime = new AtomicLong(0);
+  private String ttsString = TTS_STRING_DEFAULT;
+  private double ttsRadius = 32.0;
 
   /**
    * Processes the reading of the tile entity's NBT data from the supplied NBT tag compound.
@@ -21,6 +27,10 @@ public class TileEntityRedstoneTTS extends AbstractTileEntity {
   public void readNBT(NBTTagCompound compound) {
     if (compound.hasKey(TTS_STRING_KEY)) {
       ttsString = compound.getString(TTS_STRING_KEY);
+    }
+
+    if (compound.hasKey(TTS_RADIUS_KEY)) {
+      ttsRadius = compound.getDouble(TTS_RADIUS_KEY);
     }
   }
 
@@ -34,26 +44,26 @@ public class TileEntityRedstoneTTS extends AbstractTileEntity {
   @Override
   public NBTTagCompound writeNBT(NBTTagCompound compound) {
     compound.setString(TTS_STRING_KEY, ttsString);
+    compound.setDouble(TTS_RADIUS_KEY, ttsRadius);
     return compound;
   }
 
-  private AtomicBoolean isTtsPlaying = new AtomicBoolean(false);
-
   public void readTtsString() {
-    Thread ttsThread = new Thread(() -> {
-      try {
-        if (isTtsPlaying.get()) {
-          return;
-        }
-        isTtsPlaying.set(true);
-        Narrator narrator = Narrator.getNarrator();
-        narrator.say(ttsString);
-        isTtsPlaying.set(false);
-      } catch (Exception e) {
-        e.printStackTrace();
-      }
-    });
-    ttsThread.start();
+    if (world.isRemote) {
+      System.err.println(
+          "Attempted to directly invoke TTS string read on client side! This is a bug!");
+    }
+
+    long currentTime = System.currentTimeMillis();
+    if (currentTime - lastTtsInvocationTime.get() < COOLDOWN_DURATION) {
+      // Method was called within the cooldown period, ignore this invocation
+      return;
+    }
+    lastTtsInvocationTime.set(currentTime); // Update last invocation time
+
+    // Send packet to trigger TTS reading on nearby clients
+    CsmNetwork.sendToAllAround(new TileEntityRedstoneTTSInvokePacket(ttsString), new TargetPoint(
+        world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), ttsRadius));
   }
 
   public String getTtsString() {

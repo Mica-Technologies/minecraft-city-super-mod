@@ -22,6 +22,8 @@ import com.micatechnologies.minecraft.csm.codeutils.CsmWikiGenerator;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmProxy;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import com.micatechnologies.minecraft.csm.codeutils.IHasModel;
+import com.micatechnologies.minecraft.csm.codeutils.packets.TileEntityRedstoneTTSInvokeHandler;
+import com.micatechnologies.minecraft.csm.codeutils.packets.TileEntityRedstoneTTSInvokePacket;
 import com.micatechnologies.minecraft.csm.codeutils.packets.TileEntityRedstoneTTSUpdateHandler;
 import com.micatechnologies.minecraft.csm.codeutils.packets.TileEntityRedstoneTTSUpdatePacket;
 import java.util.HashSet;
@@ -151,6 +153,8 @@ public class Csm {
       CsmNetwork.registerNetworkMessage(
           TileEntityRedstoneTTSUpdateHandler.class, TileEntityRedstoneTTSUpdatePacket.class,
           Side.SERVER);
+      CsmNetwork.registerNetworkMessage(TileEntityRedstoneTTSInvokeHandler.class,
+          TileEntityRedstoneTTSInvokePacket.class, Side.CLIENT);
       logger.info("Finished registering network message(s)");
       progressBar.step("Network Messages Registration");
 
