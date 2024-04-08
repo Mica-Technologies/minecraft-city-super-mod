@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.util.ChatAllowedCharacters;
 import org.lwjgl.input.Keyboard;
 
@@ -28,6 +29,12 @@ public class GuiMultiLineTextField extends Gui {
   private int viewOffset = 0; // Line offset for viewing
   private Set<Integer> userInsertedNewLines = new HashSet<>();
 
+  private boolean isTextSelected = false;
+  private int selectionStartLine = 0;
+  private int selectionStartColumn = 0;
+  private int selectionEndLine = 0;
+  private int selectionEndColumn = 0;
+
   public GuiMultiLineTextField(int id, FontRenderer fontRenderer, int x, int y, int width,
       int height) {
     this.id = id;
@@ -46,19 +53,59 @@ public class GuiMultiLineTextField extends Gui {
 
       // Text rendering starts here
       int yPos = this.y + 2; // Start a bit inside the box
-      int lineCounter = 0;
-      int renderedLines = 0; // Keep track of how many lines have been rendered
-      for (int i = 0; i < lines.size(); i++) {
-        if (renderedLines >= viewOffset) {
-          String line = lines.get(i);
-          fontRenderer.drawString(line, this.x + 2, yPos, 0xE0E0E0);
-          yPos += fontRenderer.FONT_HEIGHT;
-          lineCounter++;
-        }
+      int lineCounter = 0; // Keep track of how many lines have been rendered
+
+      int selectionStartLine;
+      int selectionEndLine;
+      int selectionStartColumn;
+      int selectionEndColumn;
+      if (this.selectionStartLine < this.selectionEndLine || (
+          this.selectionStartLine == this.selectionEndLine
+              && this.selectionStartColumn < this.selectionEndColumn)) {
+        selectionStartLine = this.selectionStartLine;
+        selectionEndLine = this.selectionEndLine;
+        selectionStartColumn = this.selectionStartColumn;
+        selectionEndColumn = this.selectionEndColumn;
+      } else {
+        selectionStartLine = this.selectionEndLine;
+        selectionEndLine = this.selectionStartLine;
+        selectionStartColumn = this.selectionEndColumn;
+        selectionEndColumn = this.selectionStartColumn;
+      }
+
+      for (int i = viewOffset; i < lines.size(); i++) {
+        String line = lines.get(i);
+        int xPos = this.x + 2; // X position to start drawing the line
+
         if (lineCounter >= (this.height / fontRenderer.FONT_HEIGHT)) {
           break; // Stop if we've rendered enough lines to fill the text field
         }
-        renderedLines++;
+
+        // Check if this line is within the selection
+        if (isTextSelected && i >= selectionStartLine && i <= selectionEndLine) {
+          int highlightStartX = xPos;
+          int highlightEndX = this.x + width - 2;
+
+          // Adjust the start and end positions for highlighting within the line
+          if (i == selectionStartLine) {
+            String textBeforeSelection =
+                line.substring(0, Math.min(selectionStartColumn, line.length()));
+            highlightStartX += fontRenderer.getStringWidth(textBeforeSelection);
+          }
+          if (i == selectionEndLine) {
+            String textInSelection = line.substring(0, Math.min(selectionEndColumn, line.length()));
+            highlightEndX = xPos + fontRenderer.getStringWidth(textInSelection);
+          }
+
+          // Highlight background for selected text
+          drawRect(highlightStartX, yPos, highlightEndX, yPos + fontRenderer.FONT_HEIGHT,
+              0x80FFFFFF); // Semi-transparent white
+        }
+
+        // Draw the text
+        fontRenderer.drawString(line, xPos, yPos, 0xE0E0E0);
+        yPos += fontRenderer.FONT_HEIGHT; // Move Y position down for the next line
+        lineCounter++;
       }
 
       // Improved Cursor Rendering
@@ -84,9 +131,214 @@ public class GuiMultiLineTextField extends Gui {
     }
   }
 
+  private void selectAll() {
+    if (lines.isEmpty()) {
+      return;
+    }
+
+    if (isTextSelected) {
+      deselectText();
+    } else {
+      isTextSelected = true;
+      selectionStartLine = 0;
+      selectionStartColumn = 0;
+      selectionEndLine = lines.size() - 1;
+      selectionEndColumn = lines.get(lines.size() - 1).length();
+    }
+  }
+
+  private void deselectText() {
+    isTextSelected = false;
+    selectionStartLine = 0;
+    selectionStartColumn = 0;
+    selectionEndLine = 0;
+    selectionEndColumn = 0;
+  }
+
+  private String getSelectedText() {
+    StringBuilder selectedText = new StringBuilder();
+    // Ensure selection start is before selection end
+    int startLine = Math.min(selectionStartLine, selectionEndLine);
+    int startColumn = startLine == selectionStartLine ? selectionStartColumn : selectionEndColumn;
+    int endLine = Math.max(selectionStartLine, selectionEndLine);
+    int endColumn = endLine == selectionEndLine ? selectionEndColumn : selectionStartColumn;
+    if (startLine == endLine && endColumn < startColumn) {
+      int temp = startColumn;
+      startColumn = endColumn;
+      endColumn = temp;
+    }
+
+    for (int i = startLine; i <= endLine; i++) {
+      String line = lines.get(i);
+      if (i == startLine) { // Start line of selection
+        if (startLine == endLine) { // Selection within a single line
+          selectedText.append(line.substring(startColumn, endColumn));
+        } else {
+          selectedText.append(line.substring(startColumn));
+        }
+      } else if (i == endLine) { // Last line of selection
+        selectedText.append('\n').append(line, 0, endColumn);
+      } else { // Full line within multi-line selection
+        selectedText.append('\n').append(line);
+      }
+    }
+
+    return selectedText.toString();
+  }
+
+
+  private void copy() {
+    if (isTextSelected) {
+      String selectedText = getSelectedText();
+      GuiScreen.setClipboardString(selectedText);
+    }
+  }
+
+  private void cut() {
+    if (isTextSelected) {
+      copy(); // Copy selected text to clipboard
+      deleteSelectedText(); // Delete the selected text
+      isTextSelected = false; // Clear selection after cut
+    }
+  }
+
+  private void deleteSelectedText() {
+    if (!isTextSelected) {
+      return; // Nothing to do if no text is selected
+    }
+
+    int startLine;
+    int endLine;
+    int startColumn;
+    int endColumn;
+    if (this.selectionStartLine < this.selectionEndLine || (
+        this.selectionStartLine == this.selectionEndLine
+            && this.selectionStartColumn < this.selectionEndColumn)) {
+      startLine = this.selectionStartLine;
+      endLine = this.selectionEndLine;
+      startColumn = this.selectionStartColumn;
+      endColumn = this.selectionEndColumn;
+    } else {
+      startLine = this.selectionEndLine;
+      endLine = this.selectionStartLine;
+      startColumn = this.selectionEndColumn;
+      endColumn = this.selectionStartColumn;
+    }
+
+    if (startLine == endLine) {
+      // Selection within a single line
+      String line = lines.get(startLine);
+      String newLine = line.substring(0, startColumn) + line.substring(endColumn);
+      lines.set(startLine, newLine);
+      cursorLine = startLine;
+      cursorColumn = startColumn;
+    } else {
+      // Selection spans multiple lines
+      // First, handle the start line
+      String firstLine = lines.get(startLine);
+      String firstLineNew = firstLine.substring(0, startColumn);
+
+      // Then, handle the end line
+      String lastLine = lines.get(endLine);
+      String lastLineNew = lastLine.substring(endColumn);
+
+      // Merge the start and end lines
+      lines.set(startLine, firstLineNew + lastLineNew);
+
+      // Remove lines fully covered by the selection
+      for (int i = endLine; i > startLine; i--) {
+        lines.remove(i);
+        // Also update the userInsertedNewLines set
+        userInsertedNewLines.remove(i + 1);
+      }
+      cursorLine = startLine;
+      cursorColumn = startColumn;
+    }
+
+    // Clear the selection
+    isTextSelected = false;
+    selectionStartLine = selectionStartColumn = selectionEndLine = selectionEndColumn = 0;
+
+    // Ensure lines are not empty after deletion
+    if (lines.isEmpty()) {
+      lines.add("");
+    }
+  }
+
+  private void paste() {
+    String clipboardText = GuiScreen.getClipboardString();
+    if (clipboardText != null && !clipboardText.isEmpty()) {
+      insertTextAtCursor(clipboardText);
+    }
+  }
+
+  private void insertTextAtCursor(String text) {
+    if (isTextSelected) {
+      deleteSelectedText();
+    }
+
+    int ogCursorLine = cursorLine;
+    int ogCursorColumn = cursorColumn;
+    String textToInsert = text.replaceAll("\r\n", "\n");
+    String[] paragraphs = textToInsert.split("\n", -1);
+    for (int i = 0; i < paragraphs.length; i++) {
+      if (i > 0) {
+        insertNewLineAtCursor();
+      }
+
+      // Directly insert the text at the current cursor position (handles wrapping)
+      int lineIndex = cursorLine;
+      String currentLine = lines.get(lineIndex);
+      if (cursorColumn > currentLine.length()) {
+        cursorColumn = currentLine.length();
+      }
+      String newLine =
+          currentLine.substring(0, cursorColumn) + paragraphs[i] + currentLine.substring(
+              cursorColumn);
+      cursorColumn = newLine.length();
+      lines.set(lineIndex, newLine);
+    }
+
+    // Re-render the text to ensure proper wrapping
+    setText(getText());
+
+    // Reposition the cursor after wrapping
+    cursorLine = ogCursorLine;
+    cursorColumn = ogCursorColumn;
+    int charCount = textToInsert.length();
+    for (int i = 0; i < charCount; i++) {
+      moveCursorRight();
+    }
+  }
+
   public void textboxKeyTyped(char typedChar, int keyCode) {
     if (!isFocused) {
       return;
+    }
+
+    if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL)) {
+      switch (keyCode) {
+        case Keyboard.KEY_A -> {
+          selectAll();
+          return;
+        }
+        case Keyboard.KEY_C -> {
+          copy();
+          return;
+        }
+        case Keyboard.KEY_X -> {
+          cut();
+          return;
+        }
+        case Keyboard.KEY_V -> {
+          paste();
+          return;
+        }
+        default -> {
+          // Do nothing
+          return;
+        }
+      }
     }
 
     switch (keyCode) {
@@ -103,31 +355,19 @@ public class GuiMultiLineTextField extends Gui {
         deleteCharacterAfterCursor();
         break;
       case Keyboard.KEY_LEFT:
-        // Move cursor left
-        if (cursorColumn > 0 || cursorLine > 0) {
-          cursorColumn--;
-          if (cursorColumn < 0) {
-            cursorLine--;
-            cursorColumn = lines.get(cursorLine).length();
-          }
-        }
+        // Handle cursor movement left
+        moveCursorLeft();
         break;
       case Keyboard.KEY_RIGHT:
-        // Move cursor right, ensuring not to exceed text length
-        if (cursorColumn < getText().length()) {
-          cursorColumn++;
-          if (cursorColumn > lines.get(cursorLine).length() && cursorLine < lines.size() - 1) {
-            cursorLine++;
-            cursorColumn = 0;
-          }
-        }
+        // Handle cursor movement right
+        moveCursorRight();
         break;
       case Keyboard.KEY_UP:
-        // Move cursor up to the previous line
+        // Handle cursor movement up
         moveCursorUp();
         break;
       case Keyboard.KEY_DOWN:
-        // Move cursor down to the next line
+        // Handle cursor movement down
         moveCursorDown();
         break;
       default:
@@ -141,6 +381,10 @@ public class GuiMultiLineTextField extends Gui {
   }
 
   private void insertNewLineAtCursor() {
+    if (isTextSelected) {
+      deleteSelectedText();
+    }
+
     String currentLine = lines.size() > cursorLine ? lines.get(cursorLine) : "";
 
     // Ensure columnInLine does not exceed current line's length
@@ -159,6 +403,11 @@ public class GuiMultiLineTextField extends Gui {
   }
 
   private void deleteCharacterBeforeCursor() {
+    if (isTextSelected) {
+      deleteSelectedText();
+      return;
+    }
+
     if (cursorLine == 0 && cursorColumn == 0) {
       // Cursor is at the very start of the text; nothing to delete.
       return;
@@ -184,12 +433,18 @@ public class GuiMultiLineTextField extends Gui {
       cursorColumn--;
       if (newLine.isEmpty() && !userInsertedNewLines.contains(cursorLine)) {
         cursorLine--;
+        cursorLine = Math.max(0, cursorLine);
         cursorColumn = lines.get(cursorLine).length();
       }
     }
   }
 
   private void deleteCharacterAfterCursor() {
+    if (isTextSelected) {
+      deleteSelectedText();
+      return;
+    }
+
     if (cursorLine == lines.size() - 1 && cursorColumn == lines.get(cursorLine).length()) {
       // Cursor is at the very end of the text; nothing to delete.
       return;
@@ -220,6 +475,10 @@ public class GuiMultiLineTextField extends Gui {
 
 
   private void insertCharacterAtCursor(char character) {
+    if (isTextSelected) {
+      deleteSelectedText();
+    }
+
     String currentLine = lines.size() > cursorLine ? lines.get(cursorLine) : "";
 
     // If adding the character exceeds the width, we need to wrap
@@ -247,9 +506,8 @@ public class GuiMultiLineTextField extends Gui {
       // No wrapping needed, insert character normally
       String newLine = "";
       try {
-        newLine =
-            currentLine.substring(0, cursorColumn) + character + currentLine.substring(
-                cursorColumn);
+        newLine = currentLine.substring(0, cursorColumn) + character + currentLine.substring(
+            cursorColumn);
       } catch (Exception e) {
         e.printStackTrace();
       }
@@ -348,6 +606,11 @@ public class GuiMultiLineTextField extends Gui {
 
   private void moveCursorUp() {
     if (cursorLine > 0) {
+      if (!isTextSelected) {
+        selectionStartLine = cursorLine;
+        selectionStartColumn = cursorColumn;
+      }
+
       int currentColumnPosition = cursorColumn;
 
       // Move to the previous line
@@ -360,11 +623,24 @@ public class GuiMultiLineTextField extends Gui {
       // Adjust the global cursor position to reflect its position within the previous line
       cursorLine--;
       cursorColumn = newPositionWithinPrevLine;
+
+      if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) {
+        isTextSelected = true;
+        selectionEndLine = cursorLine;
+        selectionEndColumn = cursorColumn;
+      } else {
+        deselectText();
+      }
     }
   }
 
   private void moveCursorDown() {
     if (cursorLine < lines.size() - 1) {
+      if (!isTextSelected) {
+        selectionStartLine = cursorLine;
+        selectionStartColumn = cursorColumn;
+      }
+
       int currentColumnPosition = cursorColumn;
 
       // Move to the next line
@@ -377,13 +653,96 @@ public class GuiMultiLineTextField extends Gui {
       // Adjust the global cursor position to reflect its position within the next line
       cursorLine++;
       cursorColumn = newPositionWithinNextLine;
+
+      if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) {
+        isTextSelected = true;
+        selectionEndLine = cursorLine;
+        selectionEndColumn = cursorColumn;
+      } else {
+        deselectText();
+      }
     }
   }
 
+  private void moveCursorLeft() {
+    // Move cursor left
+    if (cursorColumn > 0 || cursorLine > 0) {
+      if (!isTextSelected) {
+        selectionStartLine = cursorLine;
+        selectionStartColumn = cursorColumn;
+      }
+
+      cursorColumn--;
+      if (cursorColumn < 0) {
+        cursorLine--;
+        cursorColumn = lines.get(cursorLine).length();
+      }
+
+      if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) {
+        isTextSelected = true;
+        selectionEndLine = cursorLine;
+        selectionEndColumn = cursorColumn;
+      } else {
+        deselectText();
+      }
+    }
+  }
+
+  private void moveCursorRight() {
+    // Move cursor right, ensuring not to exceed text length
+    if (cursorColumn < getText().length()) {
+      if (!isTextSelected) {
+        selectionStartLine = cursorLine;
+        selectionStartColumn = cursorColumn;
+      }
+
+      cursorColumn++;
+      if (cursorColumn > lines.get(cursorLine).length() && cursorLine < lines.size() - 1) {
+        cursorLine++;
+        cursorColumn = 0;
+      }
+
+      if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) {
+        isTextSelected = true;
+        selectionEndLine = cursorLine;
+        selectionEndColumn = cursorColumn;
+      } else {
+        deselectText();
+      }
+    }
+  }
 
   public void mouseClicked(int mouseX, int mouseY, int mouseButton) {
-    isFocused = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width
-        && mouseY < this.y + this.height;
+    // isFocused = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width
+    //     && mouseY < this.y + this.height;
+    if (mouseButton == 0) {
+      if (!isTextSelected) {
+        selectionStartLine = cursorLine;
+        selectionStartColumn = cursorColumn;
+      }
+
+      int lineIndex = (mouseY - y) / fontRenderer.FONT_HEIGHT + viewOffset;
+      if (lineIndex >= 0 && lineIndex < lines.size()) {
+        cursorLine = lineIndex;
+        String currentLine = lines.get(cursorLine);
+        int column = 0;
+        for (int i = 0; i <= currentLine.length(); i++) {
+          int stringWidth = fontRenderer.getStringWidth(currentLine.substring(0, i));
+          if (stringWidth + 2 > mouseX - x) {
+            break;
+          }
+          column = i;
+        }
+        cursorColumn = column;
+      }
+      if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) {
+        isTextSelected = true;
+        selectionEndLine = cursorLine;
+        selectionEndColumn = cursorColumn;
+      } else {
+        deselectText();
+      }
+    }
   }
 
   // Add the following method to handle mouse wheel events
@@ -404,6 +763,7 @@ public class GuiMultiLineTextField extends Gui {
     }
   }
 
+
   public String getText() {
     StringBuilder sb = new StringBuilder();
     for (int i = 0; i < lines.size(); i++) {
@@ -413,14 +773,20 @@ public class GuiMultiLineTextField extends Gui {
         sb.append("\n");
       }
     }
-    System.err.println("Text: " + sb.toString());
-    return sb.toString();
+    return sb.toString().trim();
   }
 
   public void setText(String text) {
-    System.err.println("Setting text: " + text);
     lines.clear();
     userInsertedNewLines.clear();
+
+    if (text.isEmpty()) {
+      lines.add("");
+      cursorLine = 0;
+      cursorColumn = 0;
+      return;
+    }
+
     StringBuilder currentLine = new StringBuilder();
 
     String[] paragraphs = text.split("\n", -1);
@@ -428,16 +794,19 @@ public class GuiMultiLineTextField extends Gui {
 
     for (String para : paragraphs) {
       if (para.isEmpty()) {
-        if (currentLine.length() > 0) {
-          lines.add(currentLine.toString());
-          currentLine = new StringBuilder();
-        }
-        if (previousParagraphWasEmpty || lines.isEmpty()) {
-          // This handles consecutive new lines and ensures at least one line exists before
-          // adding another
-          lines.add("");
+        if (!previousParagraphWasEmpty) {
+          // End of a paragraph, add whatever is in currentLine to lines
+          if (currentLine.length() > 0) {
+            lines.add(currentLine.toString());
+            currentLine = new StringBuilder();
+          }
+          // Mark this position as a user-inserted new line
           userInsertedNewLines.add(lines.size());
         }
+        // Add an empty string for each consecutive new line encountered
+        lines.add("");
+        // Mark every new line position after the first as user-inserted
+        userInsertedNewLines.add(lines.size());
         previousParagraphWasEmpty = true;
         continue;
       }
