@@ -50,12 +50,8 @@ public class BlockSignpost extends AbstractBlockSign {
   public @NotNull AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source,
       BlockPos pos) {
     return getBlockBelowIsSlab(source, pos)
-        ? new AxisAlignedBB(0.000000, -0.500000, 0.000000, 1.000000, 1.000000, 0.218750)
-        : new AxisAlignedBB(0.000000, 0.000000, 0.000000, 1.000000, 1.000000, 0.218750);
-  }
-
-  public boolean getBlockBelowIsSlab(IBlockAccess source, BlockPos pos) {
-    return source.getBlockState(pos.down()).getBlock() instanceof BlockSlab;
+        ? new AxisAlignedBB(0.406250, -0.500000, 0.031250, 0.593750, 1.000000, 0.218750)
+        : new AxisAlignedBB(0.406250, 0.000000, 0.031250, 0.593750, 1.000000, 0.218750);
   }
 
   @Override
