@@ -282,6 +282,7 @@ import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignpostmbtalogo;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignpostmin40;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignpostmount;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignpostonewayleft;
+import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignpostonewayright;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignpostreduced30;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignpostreducedspeedahead;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignpostroadwork;
@@ -834,6 +835,7 @@ public class CsmTabRoadSigns extends CsmTab {
     initTabBlock(BlockSignpostmin40.class, fmlPreInitializationEvent); // Signpostmin40
     initTabBlock(BlockSignpostmount.class, fmlPreInitializationEvent); // Signpostmount
     initTabBlock(BlockSignpostonewayleft.class, fmlPreInitializationEvent); // Signpostonewayleft
+    initTabBlock(BlockSignpostonewayright.class, fmlPreInitializationEvent); // Signpostonewayright
     initTabBlock(BlockSignpostreduced30.class, fmlPreInitializationEvent); // Signpostreduced30
     initTabBlock(BlockSignpostreducedspeedahead.class,
         fmlPreInitializationEvent); // Signpostreducedspeedahead
