@@ -1,30 +1,150 @@
 {
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:trafficpole_large",
+    "textures": {
+      "all": "csm:blocks/metal_black",
+      "particle": "csm:blocks/metal_black",
+      "0": "csm:blocks/metal_black"
+    }
+  },
   "variants": {
-    "normal": {
-      "model": "csm:trafficpoleverticalblack"
+    "inventory": [
+      {}
+    ],
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      },
+      "up": {
+        "x": 270
+      },
+      "down": {
+        "x": 90
+      }
     },
-    "facing=north": {
-      "model": "csm:trafficpoleverticalblack"
+    "mounteast": {
+      "false": {},
+      "true": {
+        "submodel": {
+          "mounte": {
+            "uvlock": true,
+            "model": "csm:trafficpole_large_mount",
+            "textures": {
+              "all": "csm:blocks/metal_black",
+              "particle": "csm:blocks/metal_black",
+              "0": "csm:blocks/metal_black"
+            },
+            "transform": {
+              "rotation": [
+                {
+                  "x": 0
+                },
+                {
+                  "y": 90
+                },
+                {
+                  "z": 0
+                }
+              ]
+            }
+          }
+        }
+      }
     },
-    "facing=east": {
-      "model": "csm:trafficpoleverticalblack",
-      "y": 90
+    "mountwest": {
+      "false": {},
+      "true": {
+        "submodel": {
+          "mountw": {
+            "uvlock": true,
+            "model": "csm:trafficpole_large_mount",
+            "textures": {
+              "all": "csm:blocks/metal_black",
+              "particle": "csm:blocks/metal_black",
+              "0": "csm:blocks/metal_black"
+            },
+            "transform": {
+              "rotation": [
+                {
+                  "x": 0
+                },
+                {
+                  "y": 270
+                },
+                {
+                  "z": 0
+                }
+              ]
+            }
+          }
+        }
+      }
     },
-    "facing=south": {
-      "model": "csm:trafficpoleverticalblack",
-      "y": 180
+    "mountup": {
+      "false": {},
+      "true": {
+        "submodel": {
+          "mountu": {
+            "uvlock": true,
+            "model": "csm:trafficpole_large_mount",
+            "textures": {
+              "all": "csm:blocks/metal_black",
+              "particle": "csm:blocks/metal_black",
+              "0": "csm:blocks/metal_black"
+            },
+            "transform": {
+              "rotation": [
+                {
+                  "x": 270
+                },
+                {
+                  "y": 0
+                },
+                {
+                  "z": 0
+                }
+              ]
+            }
+          }
+        }
+      }
     },
-    "facing=west": {
-      "model": "csm:trafficpoleverticalblack",
-      "y": 270
-    },
-    "facing=up": {
-      "model": "csm:trafficpoleverticalblack",
-      "x": 270
-    },
-    "facing=down": {
-      "model": "csm:trafficpoleverticalblack",
-      "x": 90
+    "mountdown": {
+      "false": {},
+      "true": {
+        "submodel": {
+          "mountd": {
+            "uvlock": true,
+            "model": "csm:trafficpole_large_mount",
+            "textures": {
+              "all": "csm:blocks/metal_black",
+              "particle": "csm:blocks/metal_black",
+              "0": "csm:blocks/metal_black"
+            },
+            "transform": {
+              "rotation": [
+                {
+                  "x": 90
+                },
+                {
+                  "y": 0
+                },
+                {
+                  "z": 0
+                }
+              ]
+            }
+          }
+        }
+      }
     }
   }
 }
