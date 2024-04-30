@@ -131,7 +131,7 @@ import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleHor
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleHorizSignMountSilver;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleHorizSignMountTan;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleHorizSignMountWhite;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleHorizontal;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleSmallGray;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleHorizontalAngleBlack;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleHorizontalAngleMount1Black;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleHorizontalAngleMount1Silver;
@@ -152,7 +152,7 @@ import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleHor
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleHorizontalAngleTan;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleHorizontalAngleUnpainted;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleHorizontalAngleWhite;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleHorizontalBlack;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleSmallBlack;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleHorizontalMountDouble;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleHorizontalMountDoubleBlack;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleHorizontalMountDoubleTan;
@@ -161,10 +161,10 @@ import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleHor
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleHorizontalSingleMountBlack;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleHorizontalSingleMountTan;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleHorizontalSingleMountWhite;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleHorizontalTan;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleHorizontalWhite;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleVertical;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleVerticalBlack;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleSmallTan;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleSmallWhite;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleLargeGray;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleLargeBlack;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleVerticalConnector;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleVerticalConnectorAngledBlack;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleVerticalConnectorAngledSilver;
@@ -206,8 +206,8 @@ import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleVer
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleVerticalSignalMountBlack;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleVerticalSignalMountTan;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleVerticalSignalMountWhite;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleVerticalTan;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleVerticalWhite;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleLargeTan;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleLargeWhite;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficSignalFatigueMitigator1;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficSignalFatigueMitigator2;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficSignalFatigueMitigator3;
@@ -229,7 +229,7 @@ import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficpolehor
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficpolehorzdoublemountunpainted;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficpolehorzsignmountunpainted;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficpolehorzsinglemountunpainted;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficpolehorzunpainted;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleSmallUnpainted;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficpolevertdblblack;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficpolevertdblconcrete;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficpolevertdblsilver;
@@ -243,7 +243,7 @@ import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficpolever
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficpoleverticalquadmountunpainted;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficpoleverticalsignalmountconcrete;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficpoleverticalsignalmountunpainted;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficpoleverticalunpainted;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleLargeUnpainted;
 import net.minecraft.block.Block;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
@@ -515,7 +515,7 @@ public class CsmTabTrafficAccessories extends CsmTab {
         fmlPreInitializationEvent); // TrafficPoleHorizSignMountTan
     initTabBlock(BlockTrafficPoleHorizSignMountWhite.class,
         fmlPreInitializationEvent); // TrafficPoleHorizSignMountWhite
-    initTabBlock(BlockTrafficPoleHorizontal.class,
+    initTabBlock(BlockTrafficPoleSmallGray.class,
         fmlPreInitializationEvent); // TrafficPoleHorizontal
     initTabBlock(BlockTrafficPoleHorizontalAngleBlack.class,
         fmlPreInitializationEvent); // TrafficPoleHorizontalAngleBlack
@@ -557,7 +557,7 @@ public class CsmTabTrafficAccessories extends CsmTab {
         fmlPreInitializationEvent); // TrafficPoleHorizontalAngleUnpainted
     initTabBlock(BlockTrafficPoleHorizontalAngleWhite.class,
         fmlPreInitializationEvent); // TrafficPoleHorizontalAngleWhite
-    initTabBlock(BlockTrafficPoleHorizontalBlack.class,
+    initTabBlock(BlockTrafficPoleSmallBlack.class,
         fmlPreInitializationEvent); // TrafficPoleHorizontalBlack
     initTabBlock(BlockTrafficPoleHorizontalMountDouble.class,
         fmlPreInitializationEvent); // TrafficPoleHorizontalMountDouble
@@ -575,12 +575,12 @@ public class CsmTabTrafficAccessories extends CsmTab {
         fmlPreInitializationEvent); // TrafficPoleHorizontalSingleMountTan
     initTabBlock(BlockTrafficPoleHorizontalSingleMountWhite.class,
         fmlPreInitializationEvent); // TrafficPoleHorizontalSingleMountWhite
-    initTabBlock(BlockTrafficPoleHorizontalTan.class,
+    initTabBlock(BlockTrafficPoleSmallTan.class,
         fmlPreInitializationEvent); // TrafficPoleHorizontalTan
-    initTabBlock(BlockTrafficPoleHorizontalWhite.class,
+    initTabBlock(BlockTrafficPoleSmallWhite.class,
         fmlPreInitializationEvent); // TrafficPoleHorizontalWhite
-    initTabBlock(BlockTrafficPoleVertical.class, fmlPreInitializationEvent); // TrafficPoleVertical
-    initTabBlock(BlockTrafficPoleVerticalBlack.class,
+    initTabBlock(BlockTrafficPoleLargeGray.class, fmlPreInitializationEvent); // TrafficPoleVertical
+    initTabBlock(BlockTrafficPoleLargeBlack.class,
         fmlPreInitializationEvent); // TrafficPoleVerticalBlack
     initTabBlock(BlockTrafficPoleVerticalConnector.class,
         fmlPreInitializationEvent); // TrafficPoleVerticalConnector
@@ -664,9 +664,9 @@ public class CsmTabTrafficAccessories extends CsmTab {
         fmlPreInitializationEvent); // TrafficPoleVerticalSignalMountTan
     initTabBlock(BlockTrafficPoleVerticalSignalMountWhite.class,
         fmlPreInitializationEvent); // TrafficPoleVerticalSignalMountWhite
-    initTabBlock(BlockTrafficPoleVerticalTan.class,
+    initTabBlock(BlockTrafficPoleLargeTan.class,
         fmlPreInitializationEvent); // TrafficPoleVerticalTan
-    initTabBlock(BlockTrafficPoleVerticalWhite.class,
+    initTabBlock(BlockTrafficPoleLargeWhite.class,
         fmlPreInitializationEvent); // TrafficPoleVerticalWhite
     initTabBlock(BlockTrafficSignalFatigueMitigator1.class,
         fmlPreInitializationEvent); // TrafficSignalFatigueMitigator1
@@ -710,7 +710,7 @@ public class CsmTabTrafficAccessories extends CsmTab {
         fmlPreInitializationEvent); // Trafficpolehorzsignmountunpainted
     initTabBlock(BlockTrafficpolehorzsinglemountunpainted.class,
         fmlPreInitializationEvent); // Trafficpolehorzsinglemountunpainted
-    initTabBlock(BlockTrafficpolehorzunpainted.class,
+    initTabBlock(BlockTrafficPoleSmallUnpainted.class,
         fmlPreInitializationEvent); // Trafficpolehorzunpainted
     initTabBlock(BlockTrafficpolevertdblblack.class,
         fmlPreInitializationEvent); // Trafficpolevertdblblack
@@ -738,7 +738,7 @@ public class CsmTabTrafficAccessories extends CsmTab {
         fmlPreInitializationEvent); // Trafficpoleverticalsignalmountconcrete
     initTabBlock(BlockTrafficpoleverticalsignalmountunpainted.class,
         fmlPreInitializationEvent); // Trafficpoleverticalsignalmountunpainted
-    initTabBlock(BlockTrafficpoleverticalunpainted.class,
+    initTabBlock(BlockTrafficPoleLargeUnpainted.class,
         fmlPreInitializationEvent); // Trafficpoleverticalunpainted
   }
 }

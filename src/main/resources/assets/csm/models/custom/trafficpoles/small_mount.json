@@ -1,0 +1,21 @@
+{
+	"credit": "Made with Blockbench",
+	"textures": {
+		"0": "csm:blocks/metal_silver"
+	},
+	"elements": [
+		{
+			"from": [4, 5, 0],
+			"to": [12, 11, 10],
+			"rotation": {"angle": 0, "axis": "y", "origin": [8, 0, 8]},
+			"faces": {
+				"north": {"uv": [16, 0, 0, 16], "texture": "#0"},
+				"east": {"uv": [16, 0, 0, 16], "texture": "#0"},
+				"south": {"uv": [16, 0, 0, 16], "texture": "#0"},
+				"west": {"uv": [16, 0, 0, 16], "texture": "#0"},
+				"up": {"uv": [16, 0, 0, 16], "rotation": 270, "texture": "#0"},
+				"down": {"uv": [16, 0, 0, 16], "rotation": 90, "texture": "#0"}
+			}
+		}
+	]
+}
