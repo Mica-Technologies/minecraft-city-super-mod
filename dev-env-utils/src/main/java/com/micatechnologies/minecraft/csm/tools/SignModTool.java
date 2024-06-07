@@ -41,9 +41,8 @@ public class SignModTool {
     });
   }
 
-
-  public static void updateSignBlockStateFiles(List<String> signBlockIds, File blockStateFolder
-  ) throws Exception {
+  public static void updateSignBlockStateFiles(List<String> signBlockIds, File blockStateFolder)
+      throws Exception {
     for (String blockId : signBlockIds) {
       String blockIdFileName = blockId + ".json";
       File blockStateFile = new File(blockStateFolder, blockIdFileName);
@@ -67,17 +66,107 @@ public class SignModTool {
     String blockStateJson = FileUtils.readFileToString(blockStateFile, "UTF-8");
     JsonObject blockStateJsonObject = new Gson().fromJson(blockStateJson, JsonObject.class);
 
+    // Fetch the default model
     JsonObject defaults = blockStateJsonObject.getAsJsonObject("defaults");
-    if (defaults.has("uvlock")) {
-      defaults.remove("uvlock");
-    }
+    String defaultModel = defaults.get("model").getAsString();
+
+    // Create variants
+    JsonObject variants = createVariants(defaultModel);
 
     // Update the blockstate JSON object
-    blockStateJsonObject.add("defaults", defaults);
+    blockStateJsonObject.add("variants", variants);
 
     // Write the updated JSON back to the blockstate file
     Gson gson = new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create();
     FileUtils.writeStringToFile(blockStateFile, gson.toJson(blockStateJsonObject), "UTF-8");
+  }
+
+  public static JsonObject createVariants(String defaultModel) {
+    JsonObject variants = new JsonObject();
+
+    // Define facing transformations
+    JsonObject facing = new JsonObject();
+    facing.add("n", new JsonObject());
+    facing.add("nw", createRotationJson(45));
+    facing.add("w", createRotationJson(90));
+    facing.add("sw", createRotationJson(135));
+    facing.add("s", createRotationJson(180));
+    facing.add("se", createRotationJson(225));
+    facing.add("e", createRotationJson(270));
+    facing.add("ne", createRotationJson(315));
+
+    // Add facing to variants
+    variants.add("facing", facing);
+
+    // Add inventory variant
+    JsonArray inventoryArray = new JsonArray();
+    inventoryArray.add(new JsonObject());
+    variants.add("inventory", inventoryArray);
+
+    // Define downward submodel
+    JsonObject downwardFalse = new JsonObject();
+    JsonObject downwardTrue = new JsonObject();
+    downwardTrue.add("submodel", createDownwardJson());
+
+    JsonObject downward = new JsonObject();
+    downward.add("false", downwardFalse);
+    downward.add("true", downwardTrue);
+
+    // Add downward to variants
+    variants.add("downward", downward);
+
+    // Define setback model switch
+    JsonObject setbackFalse = new JsonObject();
+    JsonObject setbackTrue = new JsonObject();
+    setbackTrue.add("model", new JsonPrimitive(defaultModel + "_setback"));
+
+    JsonObject setback = new JsonObject();
+    setback.add("false", setbackFalse);
+    setback.add("true", setbackTrue);
+
+    // Add setback to variants
+    variants.add("setback", setback);
+
+    return variants;
+  }
+
+  private static JsonObject createRotationJson(int angleY) {
+    JsonObject rotation = new JsonObject();
+    JsonArray rotationArray = new JsonArray();
+    rotationArray.add(createRotationComponent("x", 0));
+    rotationArray.add(createRotationComponent("y", angleY));
+    rotationArray.add(createRotationComponent("z", 0));
+
+    JsonObject transformObject = new JsonObject();
+    transformObject.add("rotation", rotationArray);
+
+    rotation.add("transform", transformObject);
+    return rotation;
+  }
+
+  private static JsonObject createRotationComponent(String axis, int value) {
+    JsonObject component = new JsonObject();
+    component.add(axis, new JsonPrimitive(value));
+    return component;
+  }
+
+  private static JsonObject createDownwardJson() {
+    JsonObject extension = new JsonObject();
+    extension.add("model", new JsonPrimitive("csm:metal_signpost"));
+    JsonArray translationArray = new JsonArray();
+    translationArray.add(new JsonPrimitive(0.0));
+    translationArray.add(new JsonPrimitive(-1.0));
+    translationArray.add(new JsonPrimitive(0.0));
+
+    JsonObject transformObject = new JsonObject();
+    transformObject.add("translation", translationArray);
+
+    extension.add("transform", transformObject);
+
+    JsonObject submodel = new JsonObject();
+    submodel.add("extension", extension);
+
+    return submodel;
   }
 
   public static List<String> buildListOfSigns(File signsCodeFolder) throws Exception {

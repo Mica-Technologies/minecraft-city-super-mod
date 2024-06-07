@@ -11,9 +11,6 @@
     }
   },
   "variants": {
-    "inventory": [
-      {}
-    ],
     "facing": {
       "n": {},
       "nw": {
@@ -122,6 +119,9 @@
         }
       }
     },
+    "inventory": [
+      {}
+    ],
     "downward": {
       "false": {},
       "true": {
@@ -137,6 +137,12 @@
             }
           }
         }
+      }
+    },
+    "setback": {
+      "false": {},
+      "true": {
+        "model": "csm:metal_signpost_octagon_sign_setback"
       }
     }
   }
