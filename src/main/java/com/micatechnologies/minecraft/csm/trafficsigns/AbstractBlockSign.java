@@ -1,7 +1,10 @@
 package com.micatechnologies.minecraft.csm.trafficsigns;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableHZEight;
+import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockTrafficPole;
+import com.micatechnologies.minecraft.csm.codeutils.BlockUtils;
 import com.micatechnologies.minecraft.csm.codeutils.DirectionEight;
+import com.micatechnologies.minecraft.csm.codeutils.RotationUtils;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import mcp.MethodsReturnNonnullByDefault;
@@ -23,6 +26,7 @@ import org.jetbrains.annotations.NotNull;
 public abstract class AbstractBlockSign extends AbstractBlockRotatableHZEight {
 
   public static final PropertyBool DOWNWARD = PropertyBool.create("downward");
+  public static final PropertyBool SETBACK = PropertyBool.create("setback");
 
   public AbstractBlockSign() {
     super(Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0);
@@ -41,9 +45,16 @@ public abstract class AbstractBlockSign extends AbstractBlockRotatableHZEight {
    */
   @Override
   public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-    return getBlockBelowIsSlab(source, pos)
+    // TODO:: Fix bounding box for FRONT SIGNAL POLE
+    AxisAlignedBB bb = getBlockBelowIsSlab(source, pos)
         ? new AxisAlignedBB(0.000000, -0.500000, 0.000000, 1.000000, 1.000000, 0.218750)
         : new AxisAlignedBB(0.000000, 0.000000, 0.000000, 1.000000, 1.000000, 0.218750);
+
+    if (getBlockIsInFrontOfSignalArm(source, pos)) {
+      bb = RotationUtils.rotateBoundingBoxByFacing(bb, EnumFacing.SOUTH);
+    }
+
+    return bb;
   }
 
   /**
@@ -87,9 +98,7 @@ public abstract class AbstractBlockSign extends AbstractBlockRotatableHZEight {
    * @since 1.0
    */
   @Override
-  public boolean getBlockConnectsRedstone(IBlockState state,
-      IBlockAccess access,
-      BlockPos pos,
+  public boolean getBlockConnectsRedstone(IBlockState state, IBlockAccess access, BlockPos pos,
       @Nullable
       EnumFacing facing) {
     return false;
@@ -108,6 +117,70 @@ public abstract class AbstractBlockSign extends AbstractBlockRotatableHZEight {
     return BlockRenderLayer.CUTOUT_MIPPED;
   }
 
+  public boolean getBlockBelowIsSlab(IBlockAccess source, BlockPos pos) {
+    return source.getBlockState(pos.down()).getBlock() instanceof BlockSlab;
+  }
+
+  public boolean getBlockIsInFrontOfSignalArm(IBlockAccess source, BlockPos pos) {
+    IBlockState sourceBlockState = source.getBlockState(pos);
+    if (!(sourceBlockState.getBlock() instanceof AbstractBlockSign)) {
+      return false;
+    }
+    DirectionEight facing8 = source.getBlockState(pos).getValue(FACING);
+    if (facing8 == DirectionEight.N) {
+      return source.getBlockState(pos.offset(
+              BlockUtils.getRelativeFacing(EnumFacing.NORTH, EnumFacing.SOUTH)))
+          .getBlock() instanceof AbstractBlockTrafficPole;
+    } else if (facing8 == DirectionEight.S) {
+      return source.getBlockState(pos.offset(
+              BlockUtils.getRelativeFacing(EnumFacing.SOUTH, EnumFacing.SOUTH)))
+          .getBlock() instanceof AbstractBlockTrafficPole;
+    } else if (facing8 == DirectionEight.E) {
+      return source.getBlockState(
+              pos.offset(BlockUtils.getRelativeFacing(EnumFacing.EAST, EnumFacing.SOUTH)))
+          .getBlock() instanceof AbstractBlockTrafficPole;
+    } else if (facing8 == DirectionEight.W) {
+      return source.getBlockState(
+              pos.offset(BlockUtils.getRelativeFacing(EnumFacing.WEST, EnumFacing.SOUTH)))
+          .getBlock() instanceof AbstractBlockTrafficPole;
+    } else if (facing8 == DirectionEight.NE) {
+      return source.getBlockState(pos.offset(
+              BlockUtils.getRelativeFacing(EnumFacing.NORTH, EnumFacing.SOUTH)))
+          .getBlock() instanceof AbstractBlockTrafficPole || source.getBlockState(
+              pos.offset(BlockUtils.getRelativeFacing(EnumFacing.EAST, EnumFacing.SOUTH)))
+          .getBlock() instanceof AbstractBlockTrafficPole;
+    } else if (facing8 == DirectionEight.NW) {
+      return source.getBlockState(pos.offset(
+              BlockUtils.getRelativeFacing(EnumFacing.NORTH, EnumFacing.SOUTH)))
+          .getBlock() instanceof AbstractBlockTrafficPole || source.getBlockState(
+              pos.offset(BlockUtils.getRelativeFacing(EnumFacing.WEST, EnumFacing.SOUTH)))
+          .getBlock() instanceof AbstractBlockTrafficPole;
+    } else if (facing8 == DirectionEight.SE) {
+      return source.getBlockState(pos.offset(
+              BlockUtils.getRelativeFacing(EnumFacing.SOUTH, EnumFacing.SOUTH)))
+          .getBlock() instanceof AbstractBlockTrafficPole || source.getBlockState(
+              pos.offset(BlockUtils.getRelativeFacing(EnumFacing.EAST, EnumFacing.SOUTH)))
+          .getBlock() instanceof AbstractBlockTrafficPole;
+    } else if (facing8 == DirectionEight.SW) {
+      return source.getBlockState(pos.offset(
+              BlockUtils.getRelativeFacing(EnumFacing.SOUTH, EnumFacing.SOUTH)))
+          .getBlock() instanceof AbstractBlockTrafficPole || source.getBlockState(
+              pos.offset(BlockUtils.getRelativeFacing(EnumFacing.WEST, EnumFacing.SOUTH)))
+          .getBlock() instanceof AbstractBlockTrafficPole;
+    }
+    return false;
+  }
+
+  public boolean getShouldSetback(IBlockAccess source, BlockPos pos) {
+    // TODO: Implement setback logic for back to back signs
+    // TODO: If there is another sign behind this one, then set back
+    // TODO: [This Sign: W] [Other Sign: E] -> Setback
+    // TODO: [This Sign: NE] [Other Sign: SW] -> Setback
+
+    // Check if in front of a signal arm and setback if it is
+    return getBlockIsInFrontOfSignalArm(source, pos);
+  }
+
   /**
    * Creates a new {@link BlockStateContainer} for the block with the required property for
    * rotation.
@@ -120,17 +193,17 @@ public abstract class AbstractBlockSign extends AbstractBlockRotatableHZEight {
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, DOWNWARD);
-  }
-
-  public boolean getBlockBelowIsSlab(IBlockAccess source, BlockPos pos) {
-    return source.getBlockState(pos.down()).getBlock() instanceof BlockSlab;
+    return new BlockStateContainer(this, FACING, DOWNWARD, SETBACK);
   }
 
   @Override
   @SuppressWarnings("deprecation")
-  public @NotNull IBlockState getActualState(IBlockState state, @NotNull IBlockAccess worldIn,
-      @NotNull BlockPos pos) {
-    return state.withProperty(DOWNWARD, getBlockBelowIsSlab(worldIn, pos));
+  public @NotNull IBlockState getActualState(IBlockState state,
+      @NotNull
+      IBlockAccess worldIn,
+      @NotNull
+      BlockPos pos) {
+    return state.withProperty(DOWNWARD, getBlockBelowIsSlab(worldIn, pos))
+        .withProperty(SETBACK, getShouldSetback(worldIn, pos));
   }
 }
