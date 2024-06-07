@@ -13,26 +13,9 @@ import org.jetbrains.annotations.NotNull;
 
 public class BlockSignpost extends AbstractBlockSign {
 
-  public static final PropertyBool DOWNWARD = PropertyBool.create("downward");
-
   @Override
   public String getBlockRegistryName() {
     return "signpost";
-  }
-
-  /**
-   * Creates a new {@link BlockStateContainer} for the block with the required property for
-   * rotation.
-   *
-   * @return a new {@link BlockStateContainer} for the block
-   *
-   * @see Block#createBlockState()
-   * @since 1.0
-   */
-  @Override
-  @Nonnull
-  protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, DOWNWARD);
   }
 
   /**
@@ -49,15 +32,9 @@ public class BlockSignpost extends AbstractBlockSign {
   @Override
   public @NotNull AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source,
       BlockPos pos) {
+    // TODO:: Fix bounding box for FRONT SIGNAL POLE
     return getBlockBelowIsSlab(source, pos)
         ? new AxisAlignedBB(0.406250, -0.500000, 0.031250, 0.593750, 1.000000, 0.218750)
         : new AxisAlignedBB(0.406250, 0.000000, 0.031250, 0.593750, 1.000000, 0.218750);
-  }
-
-  @Override
-  @SuppressWarnings("deprecation")
-  public @NotNull IBlockState getActualState(IBlockState state, @NotNull IBlockAccess worldIn,
-      @NotNull BlockPos pos) {
-    return state.withProperty(DOWNWARD, getBlockBelowIsSlab(worldIn, pos));
   }
 }

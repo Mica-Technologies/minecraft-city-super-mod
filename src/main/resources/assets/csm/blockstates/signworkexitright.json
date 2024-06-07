@@ -138,6 +138,18 @@
           }
         }
       }
+    },
+    "frontsignalpole": {
+      "false": {},
+      "true": {
+        "transform": {
+          "translation": [
+            0.0,
+            0.0,
+            1.0
+          ]
+        }
+      }
     }
   }
 }
