@@ -70,6 +70,12 @@
           "sign": "csm:blocks/mutcd_r10-3erl",
           "button": "csm:blocks/aps_button_both_light"
         }
+      },
+      "3": {
+        "textures": {
+          "sign": "csm:blocks/mutcd_r10-3e",
+          "button": "csm:blocks/aps_button_none_light"
+        }
       }
     }
   }
