@@ -106,7 +106,7 @@ public class ItemEWSignalLinker extends AbstractItem {
             if (overwrote) {
               player.sendMessage(
                   new TextComponentString("The selected search box corners have been " +
-                      "applied to the following sensor detection zone" +
+                      "applied to the following sensor detection zone " +
                       "successfully: " +
                       getModeName(player) +
                       " (Replaced previous " +
@@ -114,7 +114,7 @@ public class ItemEWSignalLinker extends AbstractItem {
             } else {
               player.sendMessage(
                   new TextComponentString("The selected search box corners have been " +
-                      "applied to the following sensor detection zone" +
+                      "applied to the following sensor detection zone " +
                       "successfully: " +
                       getModeName(player)));
             }
