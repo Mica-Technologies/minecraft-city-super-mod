@@ -25,13 +25,11 @@ public class BlockFireAlarmEdwardsGlassRodPullStation extends AbstractBlockFireA
       return super.onBlockActivated(world, blockPos, blockState, entityPlayer, enumHand, enumFacing,
           p_onBlockActivated_7_, p_onBlockActivated_8_, p_onBlockActivated_9_);
     }
-
     boolean activated = activateLinkedPanel(world, blockPos, entityPlayer);
     if (!activated && !world.isRemote) {
       entityPlayer.sendMessage(
           new TextComponentString("WARNING: This pull station has lost connection, " +
               "has failed or is otherwise not functional."));
-
     }
     return true;
   }
