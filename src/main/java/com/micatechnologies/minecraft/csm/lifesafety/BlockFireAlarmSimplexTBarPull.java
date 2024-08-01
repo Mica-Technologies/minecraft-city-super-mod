@@ -12,7 +12,6 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class BlockFireAlarmSimplexTBarPull extends AbstractBlockFireAlarmActivator {
 
-  @SideOnly(Side.CLIENT)
   @Override
   public boolean onBlockActivated(World world,
       BlockPos blockPos,
