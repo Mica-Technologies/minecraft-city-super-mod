@@ -84,7 +84,7 @@ public class ItemSignalConfigurationTool extends AbstractItem {
           String oldDirection = "";
           switch (arrowDirection) {
             case 0:
-              oldDirection = "BOTH";
+              oldDirection = "NONE";
               direction = "LEFT";
               break;
             case 1:
@@ -94,6 +94,10 @@ public class ItemSignalConfigurationTool extends AbstractItem {
             case 2:
               oldDirection = "RIGHT";
               direction = "BOTH";
+              break;
+            case 3:
+              oldDirection = "BOTH";
+              direction = "NONE";
               break;
           }
           worldIn.setBlockState(pos,

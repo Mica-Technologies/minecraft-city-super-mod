@@ -51,11 +51,12 @@ public class TileEntityTrafficSignalAPS extends TileEntityTrafficSignalTickableR
   public static final int CROSSWALK_ARROW_ORIENTATION_MIN = 0;
 
   /**
-   * The maximum value for the crosswalk arrow orientation. (0, 1, 2; aka left, right, both)
+   * The maximum value for the crosswalk arrow orientation. (0, 1, 2, 3; aka left, right, both,
+   * none)
    *
    * @since 1.1
    */
-  public static final int CROSSWALK_ARROW_ORIENTATION_MAX = 2;
+  public static final int CROSSWALK_ARROW_ORIENTATION_MAX = 3;
 
   /**
    * The current crosswalk sound index.
