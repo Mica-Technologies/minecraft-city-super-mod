@@ -1,0 +1,21 @@
+{
+	"credit": "Model made by Brandon Holt (RinRin Blissgreen)",
+	"texture_size": [512, 512],
+	"elements": [
+		{
+			"name": "Cube",
+			"from": [6.5, 0, 6],
+			"to": [9.5, 3, 9],
+			"rotation": {"angle": 0, "axis": "y", "origin": [-1.5, 3, 1]},
+			"color": 2,
+			"faces": {
+				"north": {"uv": [4.5, 1.5, 6, 3], "texture": "#missing"},
+				"east": {"uv": [3, 1.5, 4.5, 3], "texture": "#missing"},
+				"south": {"uv": [1.5, 1.5, 3, 3], "texture": "#missing"},
+				"west": {"uv": [0, 1.5, 1.5, 3], "texture": "#missing"},
+				"up": {"uv": [1.5, 0, 3, 1.5], "texture": "#missing"},
+				"down": {"uv": [3, 0, 4.5, 1.5], "texture": "#missing"}
+			}
+		}
+	]
+}
