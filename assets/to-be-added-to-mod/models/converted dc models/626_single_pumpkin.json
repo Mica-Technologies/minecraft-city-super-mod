@@ -1,0 +1,21 @@
+{
+	"credit": "Model made by Brandon Holt (RinRin Blissgreen)",
+	"texture_size": [512, 512],
+	"elements": [
+		{
+			"name": "Pumpkin",
+			"from": [4.4, 0, 4.4],
+			"to": [11.6, 10, 11.6],
+			"rotation": {"angle": 0, "axis": "y", "origin": [-1.2, 10, 4]},
+			"color": 2,
+			"faces": {
+				"north": {"uv": [3.375, 1.125, 4.5, 2.6875], "texture": "#missing"},
+				"east": {"uv": [2.25, 1.125, 3.375, 2.6875], "texture": "#missing"},
+				"south": {"uv": [1.125, 1.125, 2.25, 2.6875], "texture": "#missing"},
+				"west": {"uv": [0, 1.125, 1.125, 2.6875], "texture": "#missing"},
+				"up": {"uv": [1.125, 0, 2.25, 1.125], "texture": "#missing"},
+				"down": {"uv": [2.25, 0, 3.375, 1.125], "texture": "#missing"}
+			}
+		}
+	]
+}

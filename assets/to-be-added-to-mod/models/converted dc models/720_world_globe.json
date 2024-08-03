@@ -1,0 +1,141 @@
+{
+	"credit": "Model made by Brandon Holt (RinRin Blissgreen)",
+	"texture_size": [64, 64],
+	"elements": [
+		{
+			"name": "base1",
+			"from": [3.8, 0, 3.8],
+			"to": [12.2, 0.7, 12.2],
+			"rotation": {"angle": 0, "axis": "y", "origin": [0, 0.7, 0]},
+			"color": 2,
+			"faces": {
+				"north": {"uv": [9, 3, 12, 3.25], "texture": "#missing"},
+				"east": {"uv": [6, 3, 9, 3.25], "texture": "#missing"},
+				"south": {"uv": [3, 3, 6, 3.25], "texture": "#missing"},
+				"west": {"uv": [0, 3, 3, 3.25], "texture": "#missing"},
+				"up": {"uv": [3, 0, 6, 3], "texture": "#missing"},
+				"down": {"uv": [6, 0, 9, 3], "texture": "#missing"}
+			}
+		},
+		{
+			"name": "base2",
+			"from": [4.5, 0.7, 4.5],
+			"to": [11.5, 1.4, 11.5],
+			"rotation": {"angle": 0, "axis": "y", "origin": [0, 1.4, 0]},
+			"color": 0,
+			"faces": {
+				"north": {"uv": [7.5, 2.5, 10, 2.75], "texture": "#missing"},
+				"east": {"uv": [5, 2.5, 7.5, 2.75], "texture": "#missing"},
+				"south": {"uv": [2.5, 2.5, 5, 2.75], "texture": "#missing"},
+				"west": {"uv": [0, 2.5, 2.5, 2.75], "texture": "#missing"},
+				"up": {"uv": [2.5, 0, 5, 2.5], "texture": "#missing"},
+				"down": {"uv": [5, 0, 7.5, 2.5], "texture": "#missing"}
+			}
+		},
+		{
+			"name": "base3",
+			"from": [5.2, 1.4, 5.2],
+			"to": [10.8, 2.1, 10.8],
+			"rotation": {"angle": 0, "axis": "y", "origin": [0, 2.1, 0]},
+			"color": 0,
+			"faces": {
+				"north": {"uv": [6, 2, 8, 2.25], "texture": "#missing"},
+				"east": {"uv": [4, 2, 6, 2.25], "texture": "#missing"},
+				"south": {"uv": [2, 2, 4, 2.25], "texture": "#missing"},
+				"west": {"uv": [0, 2, 2, 2.25], "texture": "#missing"},
+				"up": {"uv": [2, 0, 4, 2], "texture": "#missing"},
+				"down": {"uv": [4, 0, 6, 2], "texture": "#missing"}
+			}
+		},
+		{
+			"name": "base4",
+			"from": [7.65, 2.1, 7.65],
+			"to": [8.35, 4.2, 8.35],
+			"rotation": {"angle": 0, "axis": "y", "origin": [0, 4.2, 0]},
+			"color": 3,
+			"faces": {
+				"north": {"uv": [0.75, 0.25, 1, 1], "texture": "#missing"},
+				"east": {"uv": [0.5, 0.25, 0.75, 1], "texture": "#missing"},
+				"south": {"uv": [0.25, 0.25, 0.5, 1], "texture": "#missing"},
+				"west": {"uv": [0, 0.25, 0.25, 1], "texture": "#missing"},
+				"up": {"uv": [0.25, 0, 0.5, 0.25], "texture": "#missing"},
+				"down": {"uv": [0.5, 0, 0.75, 0.25], "texture": "#missing"}
+			}
+		},
+		{
+			"name": "Shape1",
+			"from": [6.6, 4.2, 6.95],
+			"to": [13.6, 4.9, 9.05],
+			"rotation": {"angle": 0, "axis": "y", "origin": [-0.7, 4.9, 0]},
+			"color": 5,
+			"faces": {
+				"north": {"uv": [4, 0.75, 6.5, 1], "texture": "#missing"},
+				"east": {"uv": [3.25, 0.75, 4, 1], "texture": "#missing"},
+				"south": {"uv": [0.75, 0.75, 3.25, 1], "texture": "#missing"},
+				"west": {"uv": [0, 0.75, 0.75, 1], "texture": "#missing"},
+				"up": {"uv": [0.75, 0, 3.25, 0.75], "texture": "#missing"},
+				"down": {"uv": [3.25, 0, 5.75, 0.75], "texture": "#missing"}
+			}
+		},
+		{
+			"name": "Globe",
+			"from": [3.45, 5.6, 3.45],
+			"to": [12.55, 14.7, 12.55],
+			"rotation": {"angle": 0, "axis": "y", "origin": [0, 14.7, 0]},
+			"color": 0,
+			"faces": {
+				"north": {"uv": [9.75, 12.5, 13, 15.75], "texture": "#missing"},
+				"east": {"uv": [6.5, 12.5, 9.75, 15.75], "texture": "#missing"},
+				"south": {"uv": [3.25, 12.5, 6.5, 15.75], "texture": "#missing"},
+				"west": {"uv": [0, 12.5, 3.25, 15.75], "texture": "#missing"},
+				"up": {"uv": [3.25, 9.25, 6.5, 12.5], "texture": "#missing"},
+				"down": {"uv": [6.5, 9.25, 9.75, 12.5], "texture": "#missing"}
+			}
+		},
+		{
+			"name": "Shape3",
+			"from": [12.9, 4.9, 6.95],
+			"to": [13.6, 15.4, 9.05],
+			"rotation": {"angle": 0, "axis": "y", "origin": [4.9, 15.4, 0]},
+			"color": 2,
+			"faces": {
+				"north": {"uv": [1.75, 0.75, 2, 4.5], "texture": "#missing"},
+				"east": {"uv": [1, 0.75, 1.75, 4.5], "texture": "#missing"},
+				"south": {"uv": [0.75, 0.75, 1, 4.5], "texture": "#missing"},
+				"west": {"uv": [0, 0.75, 0.75, 4.5], "texture": "#missing"},
+				"up": {"uv": [0.75, 0, 1, 0.75], "texture": "#missing"},
+				"down": {"uv": [1, 0, 1.25, 0.75], "texture": "#missing"}
+			}
+		},
+		{
+			"name": "axis",
+			"from": [8, 4.9, 7.65],
+			"to": [8.7, 15.4, 8.35],
+			"rotation": {"angle": 0, "axis": "y", "origin": [0, 15.4, 0]},
+			"color": 3,
+			"faces": {
+				"north": {"uv": [0.75, 5, 1, 8.75], "texture": "#missing"},
+				"east": {"uv": [0.5, 5, 0.75, 8.75], "texture": "#missing"},
+				"south": {"uv": [0.25, 5, 0.5, 8.75], "texture": "#missing"},
+				"west": {"uv": [0, 5, 0.25, 8.75], "texture": "#missing"},
+				"up": {"uv": [0.25, 4.75, 0.5, 5], "texture": "#missing"},
+				"down": {"uv": [0.5, 4.75, 0.75, 5], "texture": "#missing"}
+			}
+		},
+		{
+			"name": "Shape2",
+			"from": [6.6, 15.4, 6.95],
+			"to": [13.6, 16.1, 9.05],
+			"rotation": {"angle": 0, "axis": "y", "origin": [-0.7, 16.1, 0]},
+			"color": 2,
+			"faces": {
+				"north": {"uv": [4, 0.75, 6.5, 1], "texture": "#missing"},
+				"east": {"uv": [3.25, 0.75, 4, 1], "texture": "#missing"},
+				"south": {"uv": [0.75, 0.75, 3.25, 1], "texture": "#missing"},
+				"west": {"uv": [0, 0.75, 0.75, 1], "texture": "#missing"},
+				"up": {"uv": [0.75, 0, 3.25, 0.75], "texture": "#missing"},
+				"down": {"uv": [3.25, 0, 5.75, 0.75], "texture": "#missing"}
+			}
+		}
+	]
+}
