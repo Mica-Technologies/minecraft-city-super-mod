@@ -1,0 +1,81 @@
+{
+	"credit": "Model made by Brandon Holt (RinRin Blissgreen)",
+	"texture_size": [19, 14],
+	"elements": [
+		{
+			"name": "Body",
+			"from": [3, 0, 8],
+			"to": [13, 1, 8],
+			"rotation": {"angle": 0, "axis": "y", "origin": [5, 1, 0]},
+			"color": 0,
+			"faces": {
+				"north": {"uv": [7.57895, 6.85714, 16, 8], "texture": "#missing"},
+				"east": {"uv": [7.57895, 6.85714, 7.57895, 8], "texture": "#missing"},
+				"south": {"uv": [-0.84211, 6.85714, 7.57895, 8], "texture": "#missing"},
+				"west": {"uv": [-0.84211, 6.85714, -0.84211, 8], "texture": "#missing"},
+				"up": {"uv": [-0.84211, 6.85714, 7.57895, 6.85714], "texture": "#missing"},
+				"down": {"uv": [7.57895, 6.85714, 16, 6.85714], "texture": "#missing"}
+			}
+		},
+		{
+			"name": "Back",
+			"from": [10, 1, 5],
+			"to": [13, 1, 11],
+			"rotation": {"angle": 0, "axis": "y", "origin": [5, 1, 0]},
+			"color": 7,
+			"faces": {
+				"north": {"uv": [12.63158, 6.85714, 15.15789, 6.85714], "texture": "#missing"},
+				"east": {"uv": [7.57895, 6.85714, 12.63158, 6.85714], "texture": "#missing"},
+				"south": {"uv": [5.05263, 6.85714, 7.57895, 6.85714], "texture": "#missing"},
+				"west": {"uv": [0, 6.85714, 5.05263, 6.85714], "texture": "#missing"},
+				"up": {"uv": [5.05263, 0, 7.57895, 6.85714], "texture": "#missing"},
+				"down": {"uv": [7.57895, 0, 10.10526, 6.85714], "texture": "#missing"}
+			}
+		},
+		{
+			"name": "Middle",
+			"from": [7, 1, 6],
+			"to": [10, 1, 10],
+			"rotation": {"angle": 0, "axis": "y", "origin": [2, 1, 0]},
+			"color": 0,
+			"faces": {
+				"north": {"uv": [9.26316, 12.57143, 11.78947, 12.57143], "texture": "#missing"},
+				"east": {"uv": [5.89474, 12.57143, 9.26316, 12.57143], "texture": "#missing"},
+				"south": {"uv": [3.36842, 12.57143, 5.89474, 12.57143], "texture": "#missing"},
+				"west": {"uv": [0, 12.57143, 3.36842, 12.57143], "texture": "#missing"},
+				"up": {"uv": [3.36842, 8, 5.89474, 12.57143], "texture": "#missing"},
+				"down": {"uv": [5.89474, 8, 8.42105, 12.57143], "texture": "#missing"}
+			}
+		},
+		{
+			"name": "Tip",
+			"from": [4, 1, 7],
+			"to": [7, 1, 9],
+			"rotation": {"angle": 0, "axis": "y", "origin": [-1, 1, 0]},
+			"color": 3,
+			"faces": {
+				"north": {"uv": [5.89474, 14.85714, 8.42105, 14.85714], "texture": "#missing"},
+				"east": {"uv": [4.21053, 14.85714, 5.89474, 14.85714], "texture": "#missing"},
+				"south": {"uv": [1.68421, 14.85714, 4.21053, 14.85714], "texture": "#missing"},
+				"west": {"uv": [0, 14.85714, 1.68421, 14.85714], "texture": "#missing"},
+				"up": {"uv": [1.68421, 12.57143, 4.21053, 14.85714], "texture": "#missing"},
+				"down": {"uv": [4.21053, 12.57143, 6.73684, 14.85714], "texture": "#missing"}
+			}
+		},
+		{
+			"name": "Nose",
+			"from": [3, 1, 7.5],
+			"to": [4, 1, 8.5],
+			"rotation": {"angle": 0, "axis": "y", "origin": [-5, 1, 0.5]},
+			"color": 2,
+			"faces": {
+				"north": {"uv": [2.52632, 16, 3.36842, 16], "texture": "#missing"},
+				"east": {"uv": [1.68421, 16, 2.52632, 16], "texture": "#missing"},
+				"south": {"uv": [0.84211, 16, 1.68421, 16], "texture": "#missing"},
+				"west": {"uv": [0, 16, 0.84211, 16], "texture": "#missing"},
+				"up": {"uv": [0.84211, 14.85714, 1.68421, 16], "texture": "#missing"},
+				"down": {"uv": [1.68421, 14.85714, 2.52632, 16], "texture": "#missing"}
+			}
+		}
+	]
+}
