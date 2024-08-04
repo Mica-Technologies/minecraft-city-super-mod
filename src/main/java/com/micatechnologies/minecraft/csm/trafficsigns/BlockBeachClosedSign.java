@@ -1,6 +1,6 @@
 package com.micatechnologies.minecraft.csm.trafficsigns;
 
-public class BlockBeackClosedSign extends AbstractBlockSign {
+public class BlockBeachClosedSign extends AbstractBlockSign {
 
   @Override
   public String getBlockRegistryName() {
