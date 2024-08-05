@@ -3,8 +3,12 @@ package com.micatechnologies.minecraft.csm.tabs;
 import com.micatechnologies.minecraft.csm.CsmRegistry;
 import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockAbsolutelynothingsign;
+import com.micatechnologies.minecraft.csm.trafficsigns.BlockBeachClosedSign;
+import com.micatechnologies.minecraft.csm.trafficsigns.BlockBikesUsePedSignalSign;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockBuslaneahead;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockCautiondriveways;
+import com.micatechnologies.minecraft.csm.trafficsigns.BlockFalloutShelterSign;
+import com.micatechnologies.minecraft.csm.trafficsigns.BlockFalloutShelterSignAlt;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockLHSStopSign;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockLandslidearea;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockNoparking830530;
@@ -21,6 +25,8 @@ import com.micatechnologies.minecraft.csm.trafficsigns.BlockRwrkshiftleft2lanes;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockRwrkshiftright2lanes;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockRwrksignalahead;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockRwrkstopahead;
+import com.micatechnologies.minecraft.csm.trafficsigns.BlockSchoolSafetyZoneSign;
+import com.micatechnologies.minecraft.csm.trafficsigns.BlockSeniorSafetyZoneSign;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockSign;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockSign14_4;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockSign24hrparking;
@@ -1041,5 +1047,11 @@ public class CsmTabRoadSigns extends CsmTab {
     initTabBlock(BlockStreetsweepwedschool.class,
         fmlPreInitializationEvent); // Streetsweepwedschool
     initTabBlock(BlockTwohourpark830530.class, fmlPreInitializationEvent); // Twohourpark830530
+    initTabBlock(BlockBeachClosedSign.class, fmlPreInitializationEvent); // Beachclosedsign
+    initTabBlock(BlockFalloutShelterSign.class, fmlPreInitializationEvent); // Falloutsheltersign
+    initTabBlock(BlockFalloutShelterSignAlt.class, fmlPreInitializationEvent); // Falloutsheltersignalt
+    initTabBlock(BlockSchoolSafetyZoneSign.class, fmlPreInitializationEvent); // Schoolsafetyzonesign
+    initTabBlock(BlockSeniorSafetyZoneSign.class, fmlPreInitializationEvent); // Seniorsafetyzonesign
+    initTabBlock(BlockBikesUsePedSignalSign.class,fmlPreInitializationEvent); // Bikesusepedsignalsign
   }
 }
