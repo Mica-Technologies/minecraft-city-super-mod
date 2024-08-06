@@ -15,4 +15,15 @@ public class BlockTrafficPoleLargeTan extends AbstractBlockTrafficPole {
   public String getBlockRegistryName() {
     return "trafficpoleverticaltan";
   }
+
+  /**
+   * Method which returns the block classes of blocks which should be ignored when checking for
+   * adjacent blocks.
+   *
+   * @return Array of block classes to ignore when checking for adjacent blocks.
+   */
+  @Override
+  public Class<?>[] getIgnoreBlock() {
+    return null;
+  }
 }

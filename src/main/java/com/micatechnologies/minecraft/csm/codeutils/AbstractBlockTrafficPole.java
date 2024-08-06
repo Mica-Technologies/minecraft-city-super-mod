@@ -1,6 +1,8 @@
 package com.micatechnologies.minecraft.csm.codeutils;
 
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleLargeGray;
+import com.micatechnologies.minecraft.csm.trafficsignals.AbstractBlockControllableCrosswalkSignal;
+import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkTweeter1;
+import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkTweeter2;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
@@ -54,6 +56,12 @@ public abstract class AbstractBlockTrafficPole extends AbstractBlockRotatableNSE
    * @since 1.0
    */
   public static final PropertyBool MOUNT_DOWN = PropertyBool.create("mountdown");
+
+  /**
+   * The list of global ignore blocks.
+   */
+  public static final Class<?>[] IGNORE_BLOCK = {AbstractBlockControllableCrosswalkSignal.class,
+      BlockControllableCrosswalkTweeter1.class, BlockControllableCrosswalkTweeter2.class};
 
 
   /**
@@ -181,7 +189,17 @@ public abstract class AbstractBlockTrafficPole extends AbstractBlockRotatableNSE
       @NotNull
       BlockPos pos) {
     EnumFacing facing = state.getValue(FACING);
-    Class<?>[] ignoreBlock = {BlockTrafficPoleLargeGray.class};
+
+    Class<?>[] blockIgnoreBlock = getIgnoreBlock();
+    Class<?>[] ignoreBlock;
+    if (blockIgnoreBlock == null) {
+      ignoreBlock = IGNORE_BLOCK;
+    } else {
+      ignoreBlock = new Class<?>[IGNORE_BLOCK.length + blockIgnoreBlock.length];
+      System.arraycopy(IGNORE_BLOCK, 0, ignoreBlock, 0, IGNORE_BLOCK.length);
+      System.arraycopy(blockIgnoreBlock, 0, ignoreBlock, IGNORE_BLOCK.length,
+          blockIgnoreBlock.length);
+    }
 
     // Check for blocks in each direction relative to the block's facing direction
     boolean isBlockToEast = BlockUtils.getIsBlockToSide(worldIn,
@@ -200,4 +218,12 @@ public abstract class AbstractBlockTrafficPole extends AbstractBlockRotatableNSE
     return state.withProperty(MOUNT_EAST, isBlockToEast).withProperty(MOUNT_WEST, isBlockToWest)
         .withProperty(MOUNT_UP, isBlockAbove).withProperty(MOUNT_DOWN, isBlockBelow);
   }
+
+  /**
+   * Abstract method which must be implemented to return the block classes of blocks which should be
+   * ignored when checking for adjacent blocks.
+   *
+   * @return Array of block classes to ignore when checking for adjacent blocks.
+   */
+  public abstract Class<?>[] getIgnoreBlock();
 }

@@ -1,25 +1,6 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
-import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignal;
-import net.minecraft.block.material.Material;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-
-public class BlockControllableCrosswalkMount extends AbstractBlockControllableSignal {
-
-  public BlockControllableCrosswalkMount() {
-    super(Material.ROCK);
-  }
-
-  @Override
-  public SIGNAL_SIDE getSignalSide(World world, BlockPos blockPos) {
-    return SIGNAL_SIDE.PEDESTRIAN;
-  }
-
-  @Override
-  public boolean doesFlash() {
-    return true;
-  }
+public class BlockControllableCrosswalkMount extends AbstractBlockControllableCrosswalkSignal {
 
   /**
    * Retrieves the registry name of the block.
