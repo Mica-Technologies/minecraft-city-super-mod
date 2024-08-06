@@ -44,7 +44,8 @@ public class BlockUtils {
     // Check if the block is in the ignore list
     if (ignoreBlock != null) {
       for (Class<?> block : ignoreBlock) {
-        if (worldIn.getBlockState(pos).getBlock().getClass().equals(block)) {
+        Class<?> blockClass = worldIn.getBlockState(pos).getBlock().getClass();
+        if (blockClass.equals(block) || block.isAssignableFrom(blockClass)) {
           return false;
         }
       }
@@ -219,48 +220,78 @@ public class BlockUtils {
     switch (baseFacing) {
       case EAST:
         switch (direction) {
-          case NORTH: return EnumFacing.WEST;
-          case EAST: return EnumFacing.NORTH;
-          case SOUTH: return EnumFacing.EAST;
-          case WEST: return EnumFacing.SOUTH;
-          case UP: return EnumFacing.UP;
-          case DOWN: return EnumFacing.DOWN;
+          case NORTH:
+            return EnumFacing.WEST;
+          case EAST:
+            return EnumFacing.NORTH;
+          case SOUTH:
+            return EnumFacing.EAST;
+          case WEST:
+            return EnumFacing.SOUTH;
+          case UP:
+            return EnumFacing.UP;
+          case DOWN:
+            return EnumFacing.DOWN;
         }
       case SOUTH:
         switch (direction) {
-          case NORTH: return EnumFacing.SOUTH;
-          case EAST: return EnumFacing.WEST;
-          case SOUTH: return EnumFacing.NORTH;
-          case WEST: return EnumFacing.EAST;
-          case UP: return EnumFacing.UP;
-          case DOWN: return EnumFacing.DOWN;
+          case NORTH:
+            return EnumFacing.SOUTH;
+          case EAST:
+            return EnumFacing.WEST;
+          case SOUTH:
+            return EnumFacing.NORTH;
+          case WEST:
+            return EnumFacing.EAST;
+          case UP:
+            return EnumFacing.UP;
+          case DOWN:
+            return EnumFacing.DOWN;
         }
       case WEST:
         switch (direction) {
-          case NORTH: return EnumFacing.EAST;
-          case EAST: return EnumFacing.SOUTH;
-          case SOUTH: return EnumFacing.WEST;
-          case WEST: return EnumFacing.NORTH;
-          case UP: return EnumFacing.UP;
-          case DOWN: return EnumFacing.DOWN;
+          case NORTH:
+            return EnumFacing.EAST;
+          case EAST:
+            return EnumFacing.SOUTH;
+          case SOUTH:
+            return EnumFacing.WEST;
+          case WEST:
+            return EnumFacing.NORTH;
+          case UP:
+            return EnumFacing.UP;
+          case DOWN:
+            return EnumFacing.DOWN;
         }
       case UP:
         switch (direction) {
-          case NORTH: return EnumFacing.DOWN;
-          case EAST: return EnumFacing.WEST;
-          case SOUTH: return EnumFacing.UP;
-          case WEST: return EnumFacing.EAST;
-          case UP: return EnumFacing.SOUTH;
-          case DOWN: return EnumFacing.NORTH;
+          case NORTH:
+            return EnumFacing.DOWN;
+          case EAST:
+            return EnumFacing.WEST;
+          case SOUTH:
+            return EnumFacing.UP;
+          case WEST:
+            return EnumFacing.EAST;
+          case UP:
+            return EnumFacing.SOUTH;
+          case DOWN:
+            return EnumFacing.NORTH;
         }
       case DOWN:
         switch (direction) {
-          case NORTH: return EnumFacing.UP;
-          case EAST: return EnumFacing.EAST;
-          case SOUTH: return EnumFacing.DOWN;
-          case WEST: return EnumFacing.WEST;
-          case UP: return EnumFacing.NORTH;
-          case DOWN: return EnumFacing.SOUTH;
+          case NORTH:
+            return EnumFacing.UP;
+          case EAST:
+            return EnumFacing.EAST;
+          case SOUTH:
+            return EnumFacing.DOWN;
+          case WEST:
+            return EnumFacing.WEST;
+          case UP:
+            return EnumFacing.NORTH;
+          case DOWN:
+            return EnumFacing.SOUTH;
         }
       case NORTH:
       default:
