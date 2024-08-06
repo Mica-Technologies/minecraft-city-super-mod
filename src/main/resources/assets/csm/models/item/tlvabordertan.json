@@ -1,8 +1,8 @@
 {
   "parent": "csm:custom/trafficlightverticalangleborder",
   "textures": {
-    "all": "csm:blocks/metal_mattetan",
-    "particle": "csm:blocks/metal_mattetan",
-    "missing": "csm:blocks/metal_mattetan"
+    "all": "csm:blocks/gray_traffic_signal_border",
+    "particle": "csm:blocks/gray_traffic_signal_border",
+    "0": "csm:blocks/gray_traffic_signal_border"
   }
 }
