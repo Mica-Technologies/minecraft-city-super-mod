@@ -1,12 +1,13 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:metal_signpostback_midlargerectanglesign",
+    "model": "csm:metal_signpostback_medium_square_sign",
     "textures": {
-      "all": "csm:blocks/sign_mutcd_r3-17",
-      "particle": "csm:blocks/sign_mutcd_r3-17",
+      "all": "csm:blocks/sign_mutcd_r9-20",
+      "particle": "csm:blocks/sign_mutcd_r9-20",
       "0": "csm:blocks/metal",
-      "1": "csm:blocks/sign_mutcd_r3-17"
+      "1": "csm:blocks/sign_mutcd_r9-20",
+      "missing": "csm:blocks/metal"
     }
   },
   "variants": {

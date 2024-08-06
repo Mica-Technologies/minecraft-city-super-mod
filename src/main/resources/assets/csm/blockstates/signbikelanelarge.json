@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:metal_signpostback_midlargerectanglesign",
+    "model": "csm:metal_signpostback_largewidesign",
     "textures": {
       "all": "csm:blocks/sign_mutcd_r3-17",
       "particle": "csm:blocks/sign_mutcd_r3-17",

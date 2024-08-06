@@ -34,13 +34,24 @@ import com.micatechnologies.minecraft.csm.trafficsigns.BlockSign3left;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockSign3right;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockSign3wayt;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockSign4way;
+import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignAheadPlaque;
+import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignAheadPlaqueFloYellow;
+import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignArrowPlaqueFloYellowDownLeft;
+import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignArrowPlaqueFloYellowDownRight;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignBeginLeftLaneYieldBikes;
+import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignBeginPlaque;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignBeginRightLaneYieldBikes;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignBikeLane;
+import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignBikeLaneLarge;
+import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignBikeLanePlaque;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignBikeSignal;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignBikeSignalDoubleSided;
+import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignBikesAllowedUseFullLane;
+import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignBikesAllowedUseFullLaneLarge;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignBusLane;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignDontBlockTheBox;
+import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignEndPlaque;
+import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignEndsPlaque;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignExceptBicycle;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignExceptBicycleIcon;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignExceptBus;
@@ -542,7 +553,7 @@ public class CsmTabRoadSigns extends CsmTab {
     initTabBlock(BlockSign3right.class, fmlPreInitializationEvent); // Sign3right
     initTabBlock(BlockSign3wayt.class, fmlPreInitializationEvent); // Sign3wayt
     initTabBlock(BlockSign4way.class, fmlPreInitializationEvent); // Sign4way
-    initTabBlock(BlockSignBikeLane.class, fmlPreInitializationEvent); // SignBikeLane
+    initTabBlock(BlockSignBikeLanePlaque.class, fmlPreInitializationEvent); // SignBikeLanePlaque
     initTabBlock(BlockSignBikeSignal.class, fmlPreInitializationEvent); // SignBikeSignal
     initTabBlock(BlockSignBikeSignalDoubleSided.class,
         fmlPreInitializationEvent); // SignBikeSignalDoubleSided
@@ -565,6 +576,17 @@ public class CsmTabRoadSigns extends CsmTab {
     initTabBlock(BlockSignR1016.class, fmlPreInitializationEvent); // SignR1016
     initTabBlock(BlockSignR105.class, fmlPreInitializationEvent); // SignR105
     initTabBlock(BlockSignR105A.class, fmlPreInitializationEvent); // SignR105A
+    initTabBlock(BlockSignBikeLane.class,fmlPreInitializationEvent); // SignBikeLane
+    initTabBlock(BlockSignBikeLaneLarge.class,fmlPreInitializationEvent); // SignBikeLaneLarge
+    initTabBlock(BlockSignBikesAllowedUseFullLane.class,fmlPreInitializationEvent); // SignBikesAllowedUseFullLane
+    initTabBlock(BlockSignBikesAllowedUseFullLaneLarge.class,fmlPreInitializationEvent); // SignBikesAllowedUseFullLaneLarge
+    initTabBlock(BlockSignBeginPlaque.class,fmlPreInitializationEvent); // SignBeginPlaque
+    initTabBlock(BlockSignEndPlaque.class,fmlPreInitializationEvent); // SignEndPlaque
+    initTabBlock(BlockSignEndsPlaque.class,fmlPreInitializationEvent); // SignEndsPlaque
+    initTabBlock(BlockSignAheadPlaque.class,fmlPreInitializationEvent); // SignAheadPlaque
+    initTabBlock(BlockSignAheadPlaqueFloYellow.class,fmlPreInitializationEvent); // SignAheadPlaqueFloYellow
+    initTabBlock(BlockSignArrowPlaqueFloYellowDownLeft.class,fmlPreInitializationEvent); // SignArrowPlaqueDownLeft
+    initTabBlock(BlockSignArrowPlaqueFloYellowDownRight.class,fmlPreInitializationEvent); // SignArrowPlaqueDownRight
     initTabBlock(BlockSignRadioRadiation.class, fmlPreInitializationEvent); // SignRadioRadiation
     initTabBlock(BlockSignYintersection.class, fmlPreInitializationEvent); // SignYintersection
     initTabBlock(BlockSignaddleft.class, fmlPreInitializationEvent); // Signaddleft
