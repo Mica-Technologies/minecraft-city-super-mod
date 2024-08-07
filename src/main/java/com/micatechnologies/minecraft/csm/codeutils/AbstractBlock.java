@@ -4,6 +4,7 @@ import com.micatechnologies.minecraft.csm.Csm;
 import com.micatechnologies.minecraft.csm.CsmConstants;
 import com.micatechnologies.minecraft.csm.CsmRegistry;
 import java.util.Objects;
+import java.util.Random;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import mcp.MethodsReturnNonnullByDefault;
@@ -21,6 +22,7 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Abstract block class which provides common methods and properties for all blocks in this mod.
@@ -219,5 +221,36 @@ public abstract class AbstractBlock extends Block implements IHasModel, ICsmBloc
   @Override
   public void registerModels() {
     Csm.proxy.setCustomModelResourceLocation(Item.getItemFromBlock(this), 0, "inventory");
+  }
+
+  /**
+   * Called randomly when setTickRandomly is set to true (used by e.g. crops to grow, etc.)
+   *
+   * @param worldIn the world
+   * @param pos     the block position
+   * @param state   the block state
+   * @param random  the random number generator
+   *
+   * @since 2024.8.7
+   */
+  @Override
+  public void randomTick(
+      @NotNull
+      World worldIn,
+      @NotNull
+      BlockPos pos,
+      @NotNull
+      IBlockState state,
+      @NotNull
+      Random random) {
+    super.randomTick(worldIn, pos, state, random);
+    Block block = state.getBlock();
+    if (block instanceof ICsmRetiringBlock) {
+      String replacementBlockId = ((ICsmRetiringBlock) block).getReplacementBlockId();
+      Block replacementBlock = CsmRegistry.getBlock(replacementBlockId);
+      if (replacementBlock != null) {
+        worldIn.setBlockState(pos, replacementBlock.getDefaultState());
+      }
+    }
   }
 }
