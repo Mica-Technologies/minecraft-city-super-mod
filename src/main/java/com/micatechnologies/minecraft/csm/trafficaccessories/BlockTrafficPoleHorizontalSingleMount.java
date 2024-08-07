@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEWUD;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmRetiringBlock;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.block.SoundType;
@@ -12,7 +13,8 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 
-public class BlockTrafficPoleHorizontalSingleMount extends AbstractBlockRotatableNSEWUD {
+public class BlockTrafficPoleHorizontalSingleMount extends AbstractBlockRotatableNSEWUD implements
+    ICsmRetiringBlock {
 
   public BlockTrafficPoleHorizontalSingleMount() {
     super(Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0);
@@ -106,5 +108,17 @@ public class BlockTrafficPoleHorizontalSingleMount extends AbstractBlockRotatabl
   @Override
   public BlockRenderLayer getBlockRenderLayer() {
     return BlockRenderLayer.CUTOUT_MIPPED;
+  }
+
+  /**
+   * Retrieves the replacement block ID.
+   *
+   * @return The replacement block ID.
+   *
+   * @since 1.0
+   */
+  @Override
+  public String getReplacementBlockId() {
+    return "trafficpolehorizontal";
   }
 }

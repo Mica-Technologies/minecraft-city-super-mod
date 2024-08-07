@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm;
 
+import com.micatechnologies.minecraft.csm.codeutils.ICsmRetiringBlock;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -99,6 +100,11 @@ public class CsmRegistry {
     if (BLOCKS.containsKey(key)) {
       throw new IllegalArgumentException(
           "Block with registry name " + key + " already registered.");
+    }
+
+    // Set block tick randomly if it is a retiring block
+    if (block instanceof ICsmRetiringBlock) {
+      block.setTickRandomly(true);
     }
 
     BLOCKS.put(key, block);
