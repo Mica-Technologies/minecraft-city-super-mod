@@ -1,8 +1,13 @@
 package com.micatechnologies.minecraft.csm.codeutils;
 
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficSignalFatigueMitigator1;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficSignalFatigueMitigator2;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficSignalFatigueMitigator3;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficSignalFatigueMitigator4;
 import com.micatechnologies.minecraft.csm.trafficsignals.AbstractBlockControllableCrosswalkSignal;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkTweeter1;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkTweeter2;
+import com.micatechnologies.minecraft.csm.trafficsignals.BlockTrafficLightSensorBox;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
@@ -61,7 +66,10 @@ public abstract class AbstractBlockTrafficPole extends AbstractBlockRotatableNSE
    * The list of global ignore blocks.
    */
   public static final Class<?>[] IGNORE_BLOCK = {AbstractBlockControllableCrosswalkSignal.class,
-      BlockControllableCrosswalkTweeter1.class, BlockControllableCrosswalkTweeter2.class};
+      BlockControllableCrosswalkTweeter1.class, BlockControllableCrosswalkTweeter2.class,
+      BlockTrafficSignalFatigueMitigator1.class, BlockTrafficSignalFatigueMitigator2.class,
+      BlockTrafficSignalFatigueMitigator3.class, BlockTrafficSignalFatigueMitigator4.class,
+      BlockTrafficLightSensorBox.class};
 
 
   /**
