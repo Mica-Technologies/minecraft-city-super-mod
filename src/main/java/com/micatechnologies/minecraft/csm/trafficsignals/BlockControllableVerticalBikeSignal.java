@@ -1,11 +1,12 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignal;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignalHead;
 import net.minecraft.block.material.Material;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class BlockControllableVerticalBikeSignal extends AbstractBlockControllableSignal {
+public class BlockControllableVerticalBikeSignal extends AbstractBlockControllableSignalHead {
 
   public BlockControllableVerticalBikeSignal() {
     super(Material.ROCK);
