@@ -45,12 +45,17 @@ public abstract class AbstractBlockSign extends AbstractBlockRotatableHZEight {
    */
   @Override
   public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-    // TODO:: Fix bounding box for FRONT SIGNAL POLE
-    AxisAlignedBB bb = getBlockBelowIsSlab(source, pos)
-        ? new AxisAlignedBB(0.000000, -0.500000, 0.000000, 1.000000, 1.000000, 0.218750)
-        : new AxisAlignedBB(0.000000, 0.000000, 0.000000, 1.000000, 1.000000, 0.218750);
+    AxisAlignedBB bb =
+        new AxisAlignedBB(0.000000, 0.000000, 0.000000, 1.000000, 1.000000, 0.218750);
 
-    if (getBlockIsInFrontOfSignalArm(source, pos)) {
+    boolean isDownward = state.getValue(DOWNWARD);
+    boolean isSetback = state.getValue(SETBACK);
+
+    if (isDownward) {
+      bb = new AxisAlignedBB(0.000000, -0.500000, 0.000000, 1.000000, 1.000000, 0.218750);
+    }
+
+    if (isSetback) {
       bb = RotationUtils.rotateBoundingBoxByFacing(bb, EnumFacing.SOUTH);
     }
 
@@ -172,14 +177,31 @@ public abstract class AbstractBlockSign extends AbstractBlockRotatableHZEight {
   }
 
   public boolean getShouldSetback(IBlockAccess source, BlockPos pos) {
-    // TODO: Implement setback logic for back to back signs
-    // TODO: If there is another sign behind this one, then set back
-    // TODO: [This Sign: W] [Other Sign: E] -> Setback
-    // TODO: [This Sign: NE] [Other Sign: SW] -> Setback
+    // Priority 1: Check if the block is in front of a signal arm and should be set back
+    if (getBlockIsInFrontOfSignalArm(source, pos)) {
+      return true;
+    }
 
-    // Check if in front of a signal arm and setback if it is
-    return getBlockIsInFrontOfSignalArm(source, pos);
+    // Priority 2: Check the sign directly above
+    if (source.getBlockState(pos.up()).getBlock() instanceof AbstractBlockSign) {
+      // Only inherit setback if the sign above is in front of a signal arm
+      if (getBlockIsInFrontOfSignalArm(source, pos.up())) {
+        return true;
+      }
+    }
+
+    // Priority 3: Check the sign directly below
+    if (source.getBlockState(pos.down()).getBlock() instanceof AbstractBlockSign) {
+      // Only inherit setback if the sign below is in front of a signal arm
+      if (getBlockIsInFrontOfSignalArm(source, pos.down())) {
+        return true;
+      }
+    }
+
+    // No valid reason for setback
+    return false;
   }
+
 
   /**
    * Creates a new {@link BlockStateContainer} for the block with the required property for
