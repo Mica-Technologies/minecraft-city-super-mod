@@ -8,7 +8,7 @@ import net.minecraft.util.math.AxisAlignedBB;
  * and their bounding boxes.
  *
  * @author Mica Technologies
- * @version 1.1
+ * @version 1.2
  * @since 2023.2.0
  */
 public class RotationUtils {
@@ -40,6 +40,24 @@ public class RotationUtils {
 
       return firstBox.union(secondBox);
     }
+  }
+
+  /**
+   * Rotates the specified bounding box (default/north) to align with the specified
+   * {@link DirectionSixteen} value.
+   *
+   * @param boundingBox the bounding box to rotate (default/north)
+   * @param facing      the direction to rotate the bounding box to
+   *
+   * @return the rotated bounding box which aligns with the specified {@link DirectionSixteen} value
+   *
+   * @since 1.2
+   */
+  public static AxisAlignedBB rotateBoundingBoxByFacing(AxisAlignedBB boundingBox,
+      DirectionSixteen facing) {
+    // Map DirectionSixteen to EnumFacing, using the closest cardinal direction
+    EnumFacing enumFacing = mapDirectionSixteenToEnumFacing(facing);
+    return rotateBoundingBoxByFacing(boundingBox, enumFacing);
   }
 
   /**
@@ -120,6 +138,44 @@ public class RotationUtils {
         return EnumFacing.WEST;
       default:
         return EnumFacing.NORTH; // Default to North for any unexpected cases
+    }
+  }
+
+  /**
+   * Maps the specified {@link DirectionSixteen} value to the associated {@link EnumFacing} value.
+   *
+   * @param direction the {@link DirectionSixteen} value to map to an {@link EnumFacing} value
+   *
+   * @return the associated {@link EnumFacing} value
+   *
+   * @since 1.2
+   */
+  private static EnumFacing mapDirectionSixteenToEnumFacing(DirectionSixteen direction) {
+    switch (direction) {
+      case N:
+      case NNE:
+      case NNW:
+        return EnumFacing.NORTH;
+      case S:
+      case SSE:
+      case SSW:
+        return EnumFacing.SOUTH;
+      case E:
+      case ENE:
+      case ESE:
+        return EnumFacing.EAST;
+      case W:
+      case WNW:
+      case WSW:
+        return EnumFacing.WEST;
+      // For diagonal directions, choose the closest cardinal direction
+      case NE:
+      case SE:
+      case SW:
+      case NW:
+        return mapDirectionEightToEnumFacing(DirectionEight.valueOf(direction.name()));
+      default:
+        throw new IllegalArgumentException("Unexpected direction: " + direction);
     }
   }
 
