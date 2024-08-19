@@ -1,64 +1,219 @@
 {
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:trafficsignals/bodies/mccain/3_vertical_mccain",
+    "textures": {
+      "screws": "csm:blocks/metal_silver",
+      "backcolor": "csm:blocks/trafficsignals/bodies/battleship_gray",
+      "frontcolor": "csm:blocks/trafficsignals/bodies/battleship_gray",
+      "visorcolor": "csm:blocks/trafficsignals/bodies/battleship_gray",
+      "lightcolor1": "csm:blocks/trafficsignals/lights/iled_red",
+      "lightcolor2": "csm:blocks/trafficsignals/lights/iled_yellow",
+      "lightcolor3": "csm:blocks/trafficsignals/lights/iled_green"
+    }
+  },
   "variants": {
-    "color=0,facing=north": {
-      "model": "csm:controllableverticalsolidsignal_red"
+    "color": {
+      "0": {
+        "textures": {
+          "lightcolor1": "csm:blocks/trafficsignals/lights/iled_red",
+          "lightcolor2": "csm:blocks/trafficsignals/lights/iled_yellow_off",
+          "lightcolor3": "csm:blocks/trafficsignals/lights/iled_green_off"
+        }
+      },
+      "1": {
+        "textures": {
+          "lightcolor1": "csm:blocks/trafficsignals/lights/iled_red_off",
+          "lightcolor2": "csm:blocks/trafficsignals/lights/iled_yellow",
+          "lightcolor3": "csm:blocks/trafficsignals/lights/iled_green_off"
+        }
+      },
+      "2": {
+        "textures": {
+          "lightcolor1": "csm:blocks/trafficsignals/lights/iled_red_off",
+          "lightcolor2": "csm:blocks/trafficsignals/lights/iled_yellow_off",
+          "lightcolor3": "csm:blocks/trafficsignals/lights/iled_green"
+        }
+      },
+      "3": {
+        "textures": {
+          "lightcolor1": "csm:blocks/trafficsignals/lights/iled_red_off",
+          "lightcolor2": "csm:blocks/trafficsignals/lights/iled_yellow_off",
+          "lightcolor3": "csm:blocks/trafficsignals/lights/iled_green_off"
+        }
+      }
     },
-    "color=0,facing=east": {
-      "model": "csm:controllableverticalsolidsignal_red",
-      "y": 90
+    "body_color": {
+      "flat_black": {
+        "textures": {
+          "backcolor": "csm:blocks/trafficsignals/bodies/flat_black",
+          "frontcolor": "csm:blocks/trafficsignals/bodies/flat_black",
+          "visorcolor": "csm:blocks/trafficsignals/bodies/flat_black"
+        }
+      },
+      "battleship_gray": {
+        "textures": {
+          "backcolor": "csm:blocks/trafficsignals/bodies/battleship_gray",
+          "frontcolor": "csm:blocks/trafficsignals/bodies/battleship_gray",
+          "visorcolor": "csm:blocks/trafficsignals/bodies/battleship_gray"
+        }
+      },
+      "dark_olive_green": {
+        "textures": {
+          "backcolor": "csm:blocks/trafficsignals/bodies/dark_olive_green",
+          "frontcolor": "csm:blocks/trafficsignals/bodies/dark_olive_green",
+          "visorcolor": "csm:blocks/trafficsignals/bodies/dark_olive_green"
+        }
+      },
+      "yellow": {
+        "textures": {
+          "backcolor": "csm:blocks/trafficsignals/bodies/yellow",
+          "frontcolor": "csm:blocks/trafficsignals/bodies/yellow",
+          "visorcolor": "csm:blocks/trafficsignals/bodies/yellow"
+        }
+      },
+      "yellow_yellow_black": {
+        "textures": {
+          "backcolor": "csm:blocks/trafficsignals/bodies/yellow",
+          "frontcolor": "csm:blocks/trafficsignals/bodies/yellow",
+          "visorcolor": "csm:blocks/trafficsignals/bodies/flat_black"
+        }
+      },
+      "yellow_black_yellow": {
+        "textures": {
+          "backcolor": "csm:blocks/trafficsignals/bodies/yellow",
+          "frontcolor": "csm:blocks/trafficsignals/bodies/flat_black",
+          "visorcolor": "csm:blocks/trafficsignals/bodies/yellow"
+        }
+      }
     },
-    "color=0,facing=south": {
-      "model": "csm:controllableverticalsolidsignal_red",
-      "y": 180
+    "visor_type": {
+      "none": {
+        "__comment": "No transformation needed"
+      },
+      "circle": {
+        "submodel": {
+          "visors": {
+            "model": "csm:trafficsignals/visors/visor_circle",
+            "transform": {
+              "translation": [
+                0,
+                0.75,
+                0
+              ]
+            }
+          }
+        }
+      },
+      "tunnel": {
+        "submodel": {
+          "visors": {
+            "model": "csm:trafficsignals/visors/visor_tunnel",
+            "transform": {
+              "translation": [
+                0,
+                0.75,
+                0
+              ]
+            }
+          }
+        }
+      },
+      "cutaway": {
+        "submodel": {
+          "visors": {
+            "model": "csm:trafficsignals/visors/visor_cap",
+            "transform": {
+              "translation": [
+                0,
+                0.75,
+                0
+              ]
+            }
+          }
+        }
+      },
+      "louvered": {
+        "submodel": {
+          "visors": {
+            "model": "csm:trafficsignals/visors/visor_circle",
+            "transform": {
+              "translation": [
+                0,
+                0.75,
+                0
+              ]
+            }
+          }
+        }
+      }
     },
-    "color=0,facing=west": {
-      "model": "csm:controllableverticalsolidsignal_red",
-      "y": 270
+    "body_tilt": {
+      "none": {
+        "__comment": "No transformation needed"
+      },
+      "left_angle": {
+        "model": "csm:trafficsignals/bodies/mccain/3_vertical_mccain_angled_left"
+      },
+      "right_angle": {
+        "model": "csm:trafficsignals/bodies/mccain/3_vertical_mccain_angled_right"
+      },
+      "left_tilt": {
+        "model": "csm:trafficsignals/bodies/mccain/3_vertical_mccain_tilted_left"
+      },
+      "right_tilt": {
+        "model": "csm:trafficsignals/bodies/mccain/3_vertical_mccain_tilted_right"
+      }
     },
-    "color=1,facing=north": {
-      "model": "csm:controllableverticalsolidsignal_yellow"
-    },
-    "color=1,facing=east": {
-      "model": "csm:controllableverticalsolidsignal_yellow",
-      "y": 90
-    },
-    "color=1,facing=south": {
-      "model": "csm:controllableverticalsolidsignal_yellow",
-      "y": 180
-    },
-    "color=1,facing=west": {
-      "model": "csm:controllableverticalsolidsignal_yellow",
-      "y": 270
-    },
-    "color=2,facing=north": {
-      "model": "csm:controllableverticalsolidsignal_green"
-    },
-    "color=2,facing=east": {
-      "model": "csm:controllableverticalsolidsignal_green",
-      "y": 90
-    },
-    "color=2,facing=south": {
-      "model": "csm:controllableverticalsolidsignal_green",
-      "y": 180
-    },
-    "color=2,facing=west": {
-      "model": "csm:controllableverticalsolidsignal_green",
-      "y": 270
-    },
-    "color=3,facing=north": {
-      "model": "csm:controllableverticalsolidsignal_off"
-    },
-    "color=3,facing=east": {
-      "model": "csm:controllableverticalsolidsignal_off",
-      "y": 90
-    },
-    "color=3,facing=south": {
-      "model": "csm:controllableverticalsolidsignal_off",
-      "y": 180
-    },
-    "color=3,facing=west": {
-      "model": "csm:controllableverticalsolidsignal_off",
-      "y": 270
+    "facing": {
+      "north": {
+        "__comment": "No transformation needed"
+      },
+      "west": {
+        "transform": {
+          "rotation": [
+            {
+              "x": 0
+            },
+            {
+              "y": 90
+            },
+            {
+              "z": 0
+            }
+          ]
+        }
+      },
+      "south": {
+        "transform": {
+          "rotation": [
+            {
+              "x": 0
+            },
+            {
+              "y": 180
+            },
+            {
+              "z": 0
+            }
+          ]
+        }
+      },
+      "east": {
+        "transform": {
+          "rotation": [
+            {
+              "x": 0
+            },
+            {
+              "y": 270
+            },
+            {
+              "z": 0
+            }
+          ]
+        }
+      }
     }
   }
 }
