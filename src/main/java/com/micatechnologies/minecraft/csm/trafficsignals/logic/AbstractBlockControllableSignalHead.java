@@ -117,10 +117,13 @@ public abstract class AbstractBlockControllableSignalHead extends AbstractBlockC
             p_180639_4_.sendMessage(new TextComponentString(
                 "Traffic signal visor type set to " + tileEntity.getVisorType().getFriendlyName()));
           } else {
-            tileEntity.getNextPaintColor();
+            // tileEntity.getNextPaintColor();
+            // p_180639_4_.sendMessage(new TextComponentString(
+            //     "Traffic signal paint color set to " + tileEntity.getPaintColor()
+            //         .getFriendlyName()));
+            TrafficSignalBodyTilt nextBodyTilt=tileEntity.getNextBodyTilt();
             p_180639_4_.sendMessage(new TextComponentString(
-                "Traffic signal paint color set to " + tileEntity.getPaintColor()
-                    .getFriendlyName()));
+                "Traffic signal body tilt set to " + nextBodyTilt.getFriendlyName()));
           }
         } else {
           System.err.println(

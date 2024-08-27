@@ -73,10 +73,16 @@
         }
       },
       "yellow_yellow_black": {
+        "submodel": {
+          "visors": {
+            "textures": {
+              "visorcolor": "csm:blocks/trafficsignals/bodies/flat_black"
+            }
+          }
+        },
         "textures": {
           "backcolor": "csm:blocks/trafficsignals/bodies/yellow",
-          "frontcolor": "csm:blocks/trafficsignals/bodies/yellow",
-          "visorcolor": "csm:blocks/trafficsignals/bodies/flat_black"
+          "frontcolor": "csm:blocks/trafficsignals/bodies/yellow"
         }
       },
       "yellow_black_yellow": {
