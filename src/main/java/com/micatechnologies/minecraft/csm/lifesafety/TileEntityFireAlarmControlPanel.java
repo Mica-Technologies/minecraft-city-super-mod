@@ -31,8 +31,9 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
       "csm:notifier_voice_evac_alt",
       "csm:notifier_voice_evac_alt2",
       "csm:awful_notifier_ve",
-      "csm:mclalsve"};
-  private static final int[] SOUND_LENGTHS = {2100, 560, 560, 755, 700, 520, 520, 440, 460, 600};
+      "csm:mclalsve",
+      "csm:firecom8500"};
+  private static final int[] SOUND_LENGTHS = {2100, 560, 560, 755, 700, 520, 520, 440, 460, 600,660};
   private static final String[] SOUND_NAMES = {"Simplex Voice Evac 1",
       "Simplex Voice Evac 2",
       "Simplex Voice Evac 3",
@@ -42,7 +43,8 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
       "Notifier Voice Evac 4",
       "Notifier Voice Evac 5",
       "Notifier Voice Evac 6",
-      "Mica Voice Evac 1"};
+      "Mica Voice Evac 1",
+      "Firecom 8500"};
   private static final String STORM_SOUND_NAME = "csm:notifier_tornado_voice_evac";
   private static final int STORM_SOUND_LENGTH = 460;
   private final ArrayList<BlockPos> connectedAppliances = new ArrayList<>();
