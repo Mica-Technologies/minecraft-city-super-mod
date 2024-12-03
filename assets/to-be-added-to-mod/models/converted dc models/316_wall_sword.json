@@ -1,0 +1,221 @@
+{
+	"credit": "Model made by Brandon Holt (RinRin Blissgreen)",
+	"texture_size": [32, 32],
+	"elements": [
+		{
+			"name": "sword",
+			"from": [7.5, 0, 0.5],
+			"to": [8.5, 14, 1.5],
+			"rotation": {"angle": 0, "axis": "y", "origin": [2, 7, -6]},
+			"color": 2,
+			"faces": {
+				"north": {"uv": [1.5, 3.5, 2, 10.5], "texture": "#missing"},
+				"east": {"uv": [1, 3.5, 1.5, 10.5], "texture": "#missing"},
+				"south": {"uv": [0.5, 3.5, 1, 10.5], "texture": "#missing"},
+				"west": {"uv": [0, 3.5, 0.5, 10.5], "texture": "#missing"},
+				"up": {"uv": [0.5, 3, 1, 3.5], "texture": "#missing"},
+				"down": {"uv": [1, 3, 1.5, 3.5], "texture": "#missing"}
+			}
+		},
+		{
+			"name": "swordedge1",
+			"from": [7, 0.5, 0.5],
+			"to": [8, 13.5, 1.5],
+			"rotation": {"angle": 0, "axis": "y", "origin": [1.5, 7, -6]},
+			"color": 7,
+			"faces": {
+				"north": {"uv": [7, 3.5, 7.5, 10], "texture": "#missing"},
+				"east": {"uv": [6.5, 3.5, 7, 10], "texture": "#missing"},
+				"south": {"uv": [6, 3.5, 6.5, 10], "texture": "#missing"},
+				"west": {"uv": [5.5, 3.5, 6, 10], "texture": "#missing"},
+				"up": {"uv": [6, 3, 6.5, 3.5], "texture": "#missing"},
+				"down": {"uv": [6.5, 3, 7, 3.5], "texture": "#missing"}
+			}
+		},
+		{
+			"name": "swordedge2",
+			"from": [8, 0.5, 0.5],
+			"to": [9, 13.5, 1.5],
+			"rotation": {"angle": 0, "axis": "y", "origin": [2.5, 7, -6]},
+			"color": 4,
+			"faces": {
+				"north": {"uv": [7, 3.5, 7.5, 10], "texture": "#missing"},
+				"east": {"uv": [6.5, 3.5, 7, 10], "texture": "#missing"},
+				"south": {"uv": [6, 3.5, 6.5, 10], "texture": "#missing"},
+				"west": {"uv": [5.5, 3.5, 6, 10], "texture": "#missing"},
+				"up": {"uv": [6, 3, 6.5, 3.5], "texture": "#missing"},
+				"down": {"uv": [6.5, 3, 7, 3.5], "texture": "#missing"}
+			}
+		},
+		{
+			"name": "hilt",
+			"from": [6, 13.5, 0],
+			"to": [10, 14.5, 2],
+			"rotation": {"angle": 0, "axis": "y", "origin": [2, 14, -6]},
+			"color": 5,
+			"faces": {
+				"north": {"uv": [4.5, 1, 6.5, 1.5], "texture": "#missing"},
+				"east": {"uv": [3.5, 1, 4.5, 1.5], "texture": "#missing"},
+				"south": {"uv": [1.5, 1, 3.5, 1.5], "texture": "#missing"},
+				"west": {"uv": [0.5, 1, 1.5, 1.5], "texture": "#missing"},
+				"up": {"uv": [1.5, 0, 3.5, 1], "texture": "#missing"},
+				"down": {"uv": [3.5, 0, 5.5, 1], "texture": "#missing"}
+			}
+		},
+		{
+			"name": "hilt1",
+			"from": [7.5, 14.5, 0.5],
+			"to": [8.5, 17.5, 1.5],
+			"rotation": {"angle": 0, "axis": "y", "origin": [2, 16, -6]},
+			"color": 0,
+			"faces": {
+				"north": {"uv": [5, 5.5, 5.5, 7], "texture": "#missing"},
+				"east": {"uv": [4.5, 5.5, 5, 7], "texture": "#missing"},
+				"south": {"uv": [4, 5.5, 4.5, 7], "texture": "#missing"},
+				"west": {"uv": [3.5, 5.5, 4, 7], "texture": "#missing"},
+				"up": {"uv": [4, 5, 4.5, 5.5], "texture": "#missing"},
+				"down": {"uv": [4.5, 5, 5, 5.5], "texture": "#missing"}
+			}
+		},
+		{
+			"name": "hilt2",
+			"from": [7, 17.5, 0.5],
+			"to": [9, 18.5, 1.5],
+			"rotation": {"angle": 0, "axis": "y", "origin": [2, 18, -6]},
+			"color": 5,
+			"faces": {
+				"north": {"uv": [4, 0.5, 5, 1], "texture": "#missing"},
+				"east": {"uv": [3.5, 0.5, 4, 1], "texture": "#missing"},
+				"south": {"uv": [2.5, 0.5, 3.5, 1], "texture": "#missing"},
+				"west": {"uv": [2, 0.5, 2.5, 1], "texture": "#missing"},
+				"up": {"uv": [2.5, 0, 3.5, 0.5], "texture": "#missing"},
+				"down": {"uv": [3.5, 0, 4.5, 0.5], "texture": "#missing"}
+			}
+		},
+		{
+			"name": "hiltleft",
+			"from": [4, 13.5, 0],
+			"to": [6, 14.5, 2],
+			"rotation": {"angle": 0, "axis": "y", "origin": [0, 14.5, -6]},
+			"color": 7,
+			"faces": {
+				"north": {"uv": [3.5, 1, 4.5, 1.5], "texture": "#missing"},
+				"east": {"uv": [2.5, 1, 3.5, 1.5], "texture": "#missing"},
+				"south": {"uv": [1.5, 1, 2.5, 1.5], "texture": "#missing"},
+				"west": {"uv": [0.5, 1, 1.5, 1.5], "texture": "#missing"},
+				"up": {"uv": [1.5, 0, 2.5, 1], "texture": "#missing"},
+				"down": {"uv": [2.5, 0, 3.5, 1], "texture": "#missing"}
+			}
+		},
+		{
+			"name": "hiltright",
+			"from": [10, 13.5, 0],
+			"to": [12, 14.5, 2],
+			"rotation": {"angle": 0, "axis": "y", "origin": [4, 14.5, -6]},
+			"color": 1,
+			"faces": {
+				"north": {"uv": [3.5, 1, 4.5, 1.5], "texture": "#missing"},
+				"east": {"uv": [2.5, 1, 3.5, 1.5], "texture": "#missing"},
+				"south": {"uv": [1.5, 1, 2.5, 1.5], "texture": "#missing"},
+				"west": {"uv": [0.5, 1, 1.5, 1.5], "texture": "#missing"},
+				"up": {"uv": [1.5, 0, 2.5, 1], "texture": "#missing"},
+				"down": {"uv": [2.5, 0, 3.5, 1], "texture": "#missing"}
+			}
+		},
+		{
+			"name": "Gap1",
+			"from": [7.5, 1.5, 0],
+			"to": [8.5, 2.5, 2],
+			"rotation": {"angle": 0, "axis": "y", "origin": [0, 2.5, -6]},
+			"color": 3,
+			"faces": {
+				"north": {"uv": [12, 2.5, 12.5, 3], "texture": "#missing"},
+				"east": {"uv": [10, 2.5, 12, 3], "texture": "#missing"},
+				"south": {"uv": [9.5, 2.5, 10, 3], "texture": "#missing"},
+				"west": {"uv": [7.5, 2.5, 9.5, 3], "texture": "#missing"},
+				"up": {"uv": [9.5, 0.5, 10, 2.5], "texture": "#missing"},
+				"down": {"uv": [10, 0.5, 10.5, 2.5], "texture": "#missing"}
+			}
+		},
+		{
+			"name": "Gap1m1",
+			"from": [7.5, 1.5, 2],
+			"to": [8.5, 2.5, 3],
+			"rotation": {"angle": 0, "axis": "y", "origin": [1, 2.5, -4.5]},
+			"color": 6,
+			"faces": {
+				"north": {"uv": [10.5, 2.5, 11, 3], "texture": "#missing"},
+				"east": {"uv": [10, 2.5, 10.5, 3], "texture": "#missing"},
+				"south": {"uv": [9.5, 2.5, 10, 3], "texture": "#missing"},
+				"west": {"uv": [9, 2.5, 9.5, 3], "texture": "#missing"},
+				"up": {"uv": [9.5, 2, 10, 2.5], "texture": "#missing"},
+				"down": {"uv": [10, 2, 10.5, 2.5], "texture": "#missing"}
+			}
+		},
+		{
+			"name": "Gap2",
+			"from": [7.5, 15.5, 0],
+			"to": [8.5, 16.5, 3],
+			"rotation": {"angle": 0, "axis": "y", "origin": [0, 16.5, -6]},
+			"color": 0,
+			"faces": {
+				"north": {"uv": [12, 2.5, 12.5, 3], "texture": "#missing"},
+				"east": {"uv": [10, 2.5, 12, 3], "texture": "#missing"},
+				"south": {"uv": [9.5, 2.5, 10, 3], "texture": "#missing"},
+				"west": {"uv": [7.5, 2.5, 9.5, 3], "texture": "#missing"},
+				"up": {"uv": [9.5, 0.5, 10, 2.5], "texture": "#missing"},
+				"down": {"uv": [10, 0.5, 10.5, 2.5], "texture": "#missing"}
+			}
+		},
+		{
+			"name": "Gap2m1",
+			"from": [7.5, 15.5, 2],
+			"to": [8.5, 16.5, 3],
+			"rotation": {"angle": 0, "axis": "y", "origin": [1, 16.5, -4.5]},
+			"color": 4,
+			"faces": {
+				"north": {"uv": [10.5, 2.5, 11, 3], "texture": "#missing"},
+				"east": {"uv": [10, 2.5, 10.5, 3], "texture": "#missing"},
+				"south": {"uv": [9.5, 2.5, 10, 3], "texture": "#missing"},
+				"west": {"uv": [9, 2.5, 9.5, 3], "texture": "#missing"},
+				"up": {"uv": [9.5, 2, 10, 2.5], "texture": "#missing"},
+				"down": {"uv": [10, 2, 10.5, 2.5], "texture": "#missing"}
+			}
+		}
+	],
+	"groups": [
+		{
+			"name": "RootNode",
+			"origin": [0, 1, 0],
+			"children": [
+				{
+					"name": "sword",
+					"origin": [2, 7, -6],
+					"children": [0, 1, 2,
+						{
+							"name": "hilt",
+							"origin": [2, 14, -6],
+							"children": [3,
+								{
+									"name": "hilt1",
+									"origin": [2, 16, -6],
+									"children": [4, 5]
+								}
+							]
+						}, 6, 7,
+						{
+							"name": "Gap1",
+							"origin": [0, 2.5, -6],
+							"children": [8, 9]
+						},
+						{
+							"name": "Gap2",
+							"origin": [0, 16.5, -6],
+							"children": [10, 11]
+						}
+					]
+				}
+			]
+		}
+	]
+}

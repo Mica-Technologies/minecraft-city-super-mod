@@ -21,6 +21,7 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
   private static final String alarmKey = "alarm";
   private static final String alarmStormKey = "alarmStorm";
   private static final String connectedAppliancesKey = "connectedAppliances";
+  private static final String alarmAnnouncedKey = "alarmAnnounced";
   private static final String[] SOUND_RESOURCE_NAMES = {"csm:svenew",
       "csm:sveold",
       "csm:simplex_voice_evac_old_alt",
@@ -30,8 +31,9 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
       "csm:notifier_voice_evac_alt",
       "csm:notifier_voice_evac_alt2",
       "csm:awful_notifier_ve",
-      "csm:mclalsve"};
-  private static final int[] SOUND_LENGTHS = {2100, 560, 560, 755, 700, 520, 520, 440, 460, 600};
+      "csm:mclalsve",
+      "csm:firecom8500"};
+  private static final int[] SOUND_LENGTHS = {2100, 560, 560, 755, 700, 520, 520, 440, 460, 600,660};
   private static final String[] SOUND_NAMES = {"Simplex Voice Evac 1",
       "Simplex Voice Evac 2",
       "Simplex Voice Evac 3",
@@ -41,7 +43,8 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
       "Notifier Voice Evac 4",
       "Notifier Voice Evac 5",
       "Notifier Voice Evac 6",
-      "Mica Voice Evac 1"};
+      "Mica Voice Evac 1",
+      "Firecom 8500"};
   private static final String STORM_SOUND_NAME = "csm:notifier_tornado_voice_evac";
   private static final int STORM_SOUND_LENGTH = 460;
   private final ArrayList<BlockPos> connectedAppliances = new ArrayList<>();
@@ -50,6 +53,7 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
   private boolean alarmStorm;
   private int alarmStormSoundTracking = 0;
   private HashMap<String, Integer> alarmSoundTracking = null;
+  private boolean alarmAnnounced;
 
   /**
    * Abstract method which must be implemented to process the reading of the tile entity's NBT data
@@ -79,6 +83,13 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
       alarmStorm = compound.getBoolean(alarmStormKey);
     } catch (Exception e) {
       alarmStorm = false;
+    }
+
+    // Read alarm announced state
+    try {
+      alarmAnnounced = compound.getBoolean(alarmAnnouncedKey);
+    } catch (Exception e) {
+      alarmAnnounced = false;
     }
 
     // Read connected appliance locations
@@ -116,6 +127,9 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
     // Write alarm storm state
     compound.setBoolean(alarmStormKey, alarmStorm);
 
+    // Write alarm announced state
+    compound.setBoolean(alarmAnnouncedKey, alarmAnnounced);
+
     // Write connected appliance locations
     StringBuilder connectedAppliancesString = new StringBuilder();
     for (BlockPos bp : connectedAppliances) {
@@ -151,6 +165,10 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
     return alarm;
   }
 
+  public boolean getAlarmAnnouncedState() {
+    return alarmAnnounced;
+  }
+
   public void setAlarmState(boolean alarmState) {
     alarm = alarmState;
     markDirty();
@@ -158,6 +176,11 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
 
   public void setAlarmStormState(boolean alarmStormState) {
     alarmStorm = alarmStormState;
+    markDirty();
+  }
+
+  public void setAlarmAnnouncedState(boolean alarmAnnouncedState) {
+    alarmAnnounced = alarmAnnouncedState;
     markDirty();
   }
 
@@ -214,18 +237,23 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
         // Alarm is starting
         if (alarmSoundTracking == null) {
           alarmSoundTracking = new HashMap<>();
-          MinecraftServer mcserv = FMLCommonHandler.instance().getMinecraftServerInstance();
-          if (mcserv != null) {
-            BlockPos blockPos = getPos();
-            mcserv.getPlayerList()
-                .sendMessage(new TextComponentString("The fire alarm at [" +
-                    blockPos.getX() +
-                    "," +
-                    blockPos.getY() +
-                    "," +
-                    blockPos.getZ() +
-                    "] " +
-                    "has been activated!"));
+
+          // Announce alarm if not announced
+          if (!getAlarmAnnouncedState()) {
+            MinecraftServer mcserv = FMLCommonHandler.instance().getMinecraftServerInstance();
+            if (mcserv != null) {
+              BlockPos blockPos = getPos();
+              mcserv.getPlayerList()
+                  .sendMessage(new TextComponentString("The fire alarm at [" +
+                      blockPos.getX() +
+                      "," +
+                      blockPos.getY() +
+                      "," +
+                      blockPos.getZ() +
+                      "] " +
+                      "has been activated!"));
+            }
+            setAlarmAnnouncedState(true);
           }
         }
 
@@ -292,6 +320,7 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
                     "] " +
                     "has been reset."));
           }
+          setAlarmAnnouncedState(false);
         }
 
         // Handle storm alarm

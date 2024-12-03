@@ -1,0 +1,109 @@
+{
+	"credit": "Model made by Brandon Holt (RinRin Blissgreen)",
+	"texture_size": [64, 64],
+	"elements": [
+		{
+			"name": "LecternBase1",
+			"from": [2, 0, 2],
+			"to": [14, 2, 14],
+			"rotation": {"angle": 0, "axis": "y", "origin": [8, 1, 8]},
+			"color": 2,
+			"faces": {
+				"north": {"uv": [10, 15.5, 13, 16], "texture": "#missing"},
+				"east": {"uv": [7, 15.5, 10, 16], "texture": "#missing"},
+				"south": {"uv": [4, 15.5, 7, 16], "texture": "#missing"},
+				"west": {"uv": [1, 15.5, 4, 16], "texture": "#missing"},
+				"up": {"uv": [4, 12.5, 7, 15.5], "texture": "#missing"},
+				"down": {"uv": [7, 12.5, 10, 15.5], "texture": "#missing"}
+			}
+		},
+		{
+			"name": "LecternBase2",
+			"from": [4, 2, 5],
+			"to": [12, 13.88, 11],
+			"rotation": {"angle": 0, "axis": "y", "origin": [8, 1, 8]},
+			"color": 2,
+			"faces": {
+				"north": {"uv": [10, 15.5, 13, 16], "texture": "#missing"},
+				"east": {"uv": [7, 15.5, 10, 16], "texture": "#missing"},
+				"south": {"uv": [4, 15.5, 7, 16], "texture": "#missing"},
+				"west": {"uv": [1, 15.5, 4, 16], "texture": "#missing"},
+				"up": {"uv": [4, 12.5, 7, 15.5], "texture": "#missing"},
+				"down": {"uv": [7, 12.5, 10, 15.5], "texture": "#missing"}
+			}
+		},
+		{
+			"name": "LecternBase3",
+			"from": [0.08, 13.01, 0.08],
+			"to": [15.92, 14.99, 15.92],
+			"rotation": {"angle": 22.5, "axis": "x", "origin": [8, 14, 8]},
+			"color": 4,
+			"faces": {
+				"north": {"uv": [12, 15.5, 16, 16], "texture": "#missing"},
+				"east": {"uv": [8, 15.5, 12, 16], "texture": "#missing"},
+				"south": {"uv": [4, 15.5, 8, 16], "texture": "#missing"},
+				"west": {"uv": [0, 15.5, 4, 16], "texture": "#missing"},
+				"up": {"uv": [4, 11.5, 8, 15.5], "texture": "#missing"},
+				"down": {"uv": [8, 11.5, 12, 15.5], "texture": "#missing"}
+			}
+		},
+		{
+			"name": "LecternBase4",
+			"from": [8, 14.8, 2.5],
+			"to": [14, 15.3, 13.5],
+			"rotation": {"angle": 22.5, "axis": "x", "origin": [11, 15.8, 9]},
+			"color": 0,
+			"faces": {
+				"north": {"uv": [6, 7.5, 7.5, 8], "texture": "#missing"},
+				"east": {"uv": [3.75, 7.5, 6, 8], "texture": "#missing"},
+				"south": {"uv": [2.25, 7.5, 3.75, 8], "texture": "#missing"},
+				"west": {"uv": [0, 7.5, 2.25, 8], "texture": "#missing"},
+				"up": {"uv": [2.25, 5.25, 3.75, 7.5], "texture": "#missing"},
+				"down": {"uv": [3.75, 5.25, 5.25, 7.5], "texture": "#missing"}
+			}
+		},
+		{
+			"name": "Book1",
+			"from": [1, 11.5, 14],
+			"to": [15, 13.5, 15],
+			"rotation": {"angle": 0, "axis": "y", "origin": [8, 15, 9]},
+			"color": 5,
+			"faces": {
+				"north": {"uv": [8.5, 2.5, 12, 2.75], "texture": "#missing"},
+				"east": {"uv": [6, 2.5, 8.5, 2.75], "texture": "#missing"},
+				"south": {"uv": [2.5, 2.5, 6, 2.75], "texture": "#missing"},
+				"west": {"uv": [0, 2.5, 2.5, 2.75], "texture": "#missing"},
+				"up": {"uv": [2.5, 0, 6, 2.5], "texture": "#missing"},
+				"down": {"uv": [6, 0, 9.5, 2.5], "texture": "#missing"}
+			}
+		},
+		{
+			"name": "Book2",
+			"from": [2, 14.8, 2.5],
+			"to": [8, 14.8, 13.5],
+			"rotation": {"angle": 22.5, "axis": "x", "origin": [11, 15.8, 9]},
+			"color": 0,
+			"faces": {
+				"north": {"uv": [6, 7.5, 7.5, 8], "texture": "#missing"},
+				"east": {"uv": [3.75, 7.5, 6, 8], "texture": "#missing"},
+				"south": {"uv": [2.25, 7.5, 3.75, 8], "texture": "#missing"},
+				"west": {"uv": [0, 7.5, 2.25, 8], "texture": "#missing"},
+				"up": {"uv": [2.25, 5.25, 3.75, 7.5], "texture": "#missing"},
+				"down": {"uv": [3.75, 5.25, 5.25, 7.5], "texture": "#missing"}
+			}
+		}
+	],
+	"groups": [
+		{
+			"name": "LecternBase",
+			"origin": [0, 1, 0],
+			"children": [0, 1, 2, 3,
+				{
+					"name": "Book",
+					"origin": [0, 15, 1],
+					"children": [4, 5]
+				}
+			]
+		}
+	]
+}

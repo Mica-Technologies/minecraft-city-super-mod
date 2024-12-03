@@ -237,7 +237,21 @@ public abstract class AbstractBlockRotatableHZEight extends AbstractBlock {
   @Override
   @Nonnull
   public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-    return RotationUtils.rotateBoundingBoxByFacing(getBlockBoundingBox(state, source, pos),
-        state.getValue(FACING));
+
+    // Rotate the bounding box based on the facing direction if FACING property is present
+    if (state.getBlock() instanceof AbstractBlockRotatableHZEight) {
+      // Retrieve the actual state
+      IBlockState actualState = source.getBlockState(pos).getActualState(source, pos);
+
+      // Rotate the bounding box based on the facing direction if FACING property is present
+      if (actualState.getProperties().containsKey(FACING)) {
+        return RotationUtils.rotateBoundingBoxByFacing(
+            getBlockBoundingBox(actualState, source, pos),
+            actualState.getValue(FACING));
+      }
+    }
+
+    // Default to a square bounding box
+    return SQUARE_BOUNDING_BOX;
   }
 }

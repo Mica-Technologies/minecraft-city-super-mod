@@ -121,6 +121,7 @@ public class CsmSounds {
     FEMALE_WAIT("female_wait"),
     CROSSWALK_COOKOO_1("crosswalk_cookoo_1"),
     CROSSWALK_COOKOO_2("crosswalk_cookoo_2"),
+    FIRECOM8500("firecom8500"),
     _8TICK_PER_SECOND_CROSSWALK("8tick_per_second_crosswalk");
 
     /**

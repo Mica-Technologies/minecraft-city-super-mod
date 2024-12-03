@@ -35,6 +35,15 @@
       }
     ]
   },
+  "firecom8500": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:firecom8500",
+        "stream": false
+      }
+    ]
+  },
   "mills_firealarm": {
     "category": "block",
     "sounds": [

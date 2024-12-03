@@ -1,0 +1,163 @@
+{
+	"credit": "Model made by Brandon Holt (RinRin Blissgreen)",
+	"texture_size": [128, 64],
+	"elements": [
+		{
+			"name": "Shape1",
+			"from": [0, 0, 0],
+			"to": [16, 1, 4],
+			"rotation": {"angle": 0, "axis": "y", "origin": [-8, 1, 2]},
+			"color": 1,
+			"faces": {
+				"north": {"uv": [6, 9, 10, 9.5], "texture": "#missing"},
+				"east": {"uv": [5, 9, 6, 9.5], "texture": "#missing"},
+				"south": {"uv": [1, 9, 5, 9.5], "texture": "#missing"},
+				"west": {"uv": [0, 9, 1, 9.5], "texture": "#missing"},
+				"up": {"uv": [1, 7, 5, 9], "texture": "#missing"},
+				"down": {"uv": [5, 7, 9, 9], "texture": "#missing"}
+			}
+		},
+		{
+			"name": "Shape2",
+			"from": [0, 1, 0],
+			"to": [1, 14, 4],
+			"rotation": {"angle": 0, "axis": "y", "origin": [-8, 14, 2]},
+			"color": 0,
+			"faces": {
+				"north": {"uv": [15.25, 3.5, 15.5, 10], "texture": "#missing"},
+				"east": {"uv": [14.25, 3.5, 15.25, 10], "texture": "#missing"},
+				"south": {"uv": [14, 3.5, 14.25, 10], "texture": "#missing"},
+				"west": {"uv": [13, 3.5, 14, 10], "texture": "#missing"},
+				"up": {"uv": [14, 1.5, 14.25, 3.5], "texture": "#missing"},
+				"down": {"uv": [14.25, 1.5, 14.5, 3.5], "texture": "#missing"}
+			}
+		},
+		{
+			"name": "Shape3",
+			"from": [15, 1, 0],
+			"to": [16, 14, 4],
+			"rotation": {"angle": 0, "axis": "y", "origin": [7, 14, 2]},
+			"color": 4,
+			"faces": {
+				"north": {"uv": [15.25, 3.5, 15.5, 10], "texture": "#missing"},
+				"east": {"uv": [14.25, 3.5, 15.25, 10], "texture": "#missing"},
+				"south": {"uv": [14, 3.5, 14.25, 10], "texture": "#missing"},
+				"west": {"uv": [13, 3.5, 14, 10], "texture": "#missing"},
+				"up": {"uv": [14, 1.5, 14.25, 3.5], "texture": "#missing"},
+				"down": {"uv": [14.25, 1.5, 14.5, 3.5], "texture": "#missing"}
+			}
+		},
+		{
+			"name": "Shape4",
+			"from": [1, 13, 0],
+			"to": [4, 14, 4],
+			"rotation": {"angle": 0, "axis": "y", "origin": [-7, 14, 2]},
+			"color": 3,
+			"faces": {
+				"north": {"uv": [10.875, 5.75, 11.625, 6.25], "texture": "#missing"},
+				"east": {"uv": [9.875, 5.75, 10.875, 6.25], "texture": "#missing"},
+				"south": {"uv": [9.125, 5.75, 9.875, 6.25], "texture": "#missing"},
+				"west": {"uv": [8.125, 5.75, 9.125, 6.25], "texture": "#missing"},
+				"up": {"uv": [9.125, 3.75, 9.875, 5.75], "texture": "#missing"},
+				"down": {"uv": [9.875, 3.75, 10.625, 5.75], "texture": "#missing"}
+			}
+		},
+		{
+			"name": "Shape5",
+			"from": [12, 13, 0],
+			"to": [15, 14, 4],
+			"rotation": {"angle": 0, "axis": "y", "origin": [4, 14, 2]},
+			"color": 0,
+			"faces": {
+				"north": {"uv": [10.875, 5.75, 11.625, 6.25], "texture": "#missing"},
+				"east": {"uv": [9.875, 5.75, 10.875, 6.25], "texture": "#missing"},
+				"south": {"uv": [9.125, 5.75, 9.875, 6.25], "texture": "#missing"},
+				"west": {"uv": [8.125, 5.75, 9.125, 6.25], "texture": "#missing"},
+				"up": {"uv": [9.125, 3.75, 9.875, 5.75], "texture": "#missing"},
+				"down": {"uv": [9.875, 3.75, 10.625, 5.75], "texture": "#missing"}
+			}
+		},
+		{
+			"name": "Shape6",
+			"from": [3, 14, 0],
+			"to": [4, 16, 4],
+			"rotation": {"angle": 0, "axis": "y", "origin": [-5, 16, 2]},
+			"color": 3,
+			"faces": {
+				"north": {"uv": [12.375, 8.25, 12.625, 9.25], "texture": "#missing"},
+				"east": {"uv": [11.375, 8.25, 12.375, 9.25], "texture": "#missing"},
+				"south": {"uv": [11.125, 8.25, 11.375, 9.25], "texture": "#missing"},
+				"west": {"uv": [10.125, 8.25, 11.125, 9.25], "texture": "#missing"},
+				"up": {"uv": [11.125, 6.25, 11.375, 8.25], "texture": "#missing"},
+				"down": {"uv": [11.375, 6.25, 11.625, 8.25], "texture": "#missing"}
+			}
+		},
+		{
+			"name": "Shape7",
+			"from": [12, 14, 0],
+			"to": [13, 16, 4],
+			"rotation": {"angle": 0, "axis": "y", "origin": [4, 16, 2]},
+			"color": 3,
+			"faces": {
+				"north": {"uv": [12.375, 8.25, 12.625, 9.25], "texture": "#missing"},
+				"east": {"uv": [11.375, 8.25, 12.375, 9.25], "texture": "#missing"},
+				"south": {"uv": [11.125, 8.25, 11.375, 9.25], "texture": "#missing"},
+				"west": {"uv": [10.125, 8.25, 11.125, 9.25], "texture": "#missing"},
+				"up": {"uv": [11.125, 6.25, 11.375, 8.25], "texture": "#missing"},
+				"down": {"uv": [11.375, 6.25, 11.625, 8.25], "texture": "#missing"}
+			}
+		},
+		{
+			"name": "Shape8",
+			"from": [4, 15, 0],
+			"to": [12, 16, 4],
+			"rotation": {"angle": 0, "axis": "y", "origin": [-4, 16, 2]},
+			"color": 3,
+			"faces": {
+				"north": {"uv": [6.75, 11.5, 8.75, 12], "texture": "#missing"},
+				"east": {"uv": [5.75, 11.5, 6.75, 12], "texture": "#missing"},
+				"south": {"uv": [3.75, 11.5, 5.75, 12], "texture": "#missing"},
+				"west": {"uv": [2.75, 11.5, 3.75, 12], "texture": "#missing"},
+				"up": {"uv": [3.75, 9.5, 5.75, 11.5], "texture": "#missing"},
+				"down": {"uv": [5.75, 9.5, 7.75, 11.5], "texture": "#missing"}
+			}
+		},
+		{
+			"name": "Shape9",
+			"from": [4, 13, 1],
+			"to": [12, 15, 3],
+			"rotation": {"angle": 0, "axis": "y", "origin": [-4, 15, 1]},
+			"color": 3,
+			"faces": {
+				"north": {"uv": [6.25, 13, 8.25, 14], "texture": "#missing"},
+				"east": {"uv": [5.75, 13, 6.25, 14], "texture": "#missing"},
+				"south": {"uv": [3.75, 13, 5.75, 14], "texture": "#missing"},
+				"west": {"uv": [3.25, 13, 3.75, 14], "texture": "#missing"},
+				"up": {"uv": [3.75, 12, 5.75, 13], "texture": "#missing"},
+				"down": {"uv": [5.75, 12, 7.75, 13], "texture": "#missing"}
+			}
+		},
+		{
+			"name": "Shape10",
+			"from": [1, 1, 1],
+			"to": [15, 13, 3],
+			"rotation": {"angle": 0, "axis": "y", "origin": [-7, 13, 1]},
+			"color": 7,
+			"faces": {
+				"north": {"uv": [4.5, 1, 8, 7], "texture": "#missing"},
+				"east": {"uv": [4, 1, 4.5, 7], "texture": "#missing"},
+				"south": {"uv": [0.5, 1, 4, 7], "texture": "#missing"},
+				"west": {"uv": [0, 1, 0.5, 7], "texture": "#missing"},
+				"up": {"uv": [0.5, 0, 4, 1], "texture": "#missing"},
+				"down": {"uv": [4, 0, 7.5, 1], "texture": "#missing"}
+			}
+		}
+	],
+	"groups": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
+		{
+			"name": "RootNode",
+			"origin": [0, 0, 0],
+			"children": []
+		}
+	]
+}
