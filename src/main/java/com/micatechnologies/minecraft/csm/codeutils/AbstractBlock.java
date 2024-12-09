@@ -249,7 +249,21 @@ public abstract class AbstractBlock extends Block implements IHasModel, ICsmBloc
       String replacementBlockId = ((ICsmRetiringBlock) block).getReplacementBlockId();
       Block replacementBlock = CsmRegistry.getBlock(replacementBlockId);
       if (replacementBlock != null) {
-        worldIn.setBlockState(pos, replacementBlock.getDefaultState());
+        if (block instanceof AbstractBlockRotatableNSEW) {
+          EnumFacing facing = state.getValue(AbstractBlockRotatableNSEW.FACING);
+          worldIn.setBlockState(pos, replacementBlock.getDefaultState()
+              .withProperty(AbstractBlockRotatableNSEW.FACING, facing));
+        } else if (block instanceof AbstractBlockRotatableNSEWUD) {
+          EnumFacing facing = state.getValue(AbstractBlockRotatableNSEWUD.FACING);
+          worldIn.setBlockState(pos, replacementBlock.getDefaultState()
+              .withProperty(AbstractBlockRotatableNSEWUD.FACING, facing));
+        } else if (block instanceof AbstractBlockRotatableHZEight) {
+          DirectionEight facing = state.getValue(AbstractBlockRotatableHZEight.FACING);
+          worldIn.setBlockState(pos, replacementBlock.getDefaultState()
+              .withProperty(AbstractBlockRotatableHZEight.FACING, facing));
+        } else {
+          worldIn.setBlockState(pos, replacementBlock.getDefaultState());
+        }
       }
     }
   }
