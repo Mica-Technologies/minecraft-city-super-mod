@@ -1,0 +1,44 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:trafficsignals/backplates/signal_backplate_hawk_full",
+    "textures": {
+      "all": "csm:blocks/signalbackplateblackblackyellow",
+      "particle": "csm:blocks/signalbackplateblackblackyellow",
+      "0": "csm:blocks/signalbackplateblackblackyellow"
+    }
+  },
+  "variants": {
+    "inventory": [
+      {}
+    ],
+    "fitted": {
+      "true": {
+        "model": "csm:trafficsignals/backplates/signal_backplate_hawk_fitted"
+      },
+      "false": {
+        "model": "csm:trafficsignals/backplates/signal_backplate_hawk_full"
+      }
+    },
+    "facing": {
+      "north": {
+        "y": 0
+      },
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      },
+      "up": {
+        "x": 270
+      },
+      "down": {
+        "x": 90
+      }
+    }
+  }
+}
