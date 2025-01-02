@@ -908,6 +908,24 @@
       }
     ]
   },
+  "campbell_phil_crossing_lights_activated": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:campbell_phil_crossing_lights_activated",
+        "stream": false
+      }
+    ]
+  },
+  "campbell_phil_warning_lights_activated": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:campbell_phil_warning_lights_activated",
+        "stream": false
+      }
+    ]
+  },
   "campbell_tone1": {
     "category": "block",
     "sounds": [

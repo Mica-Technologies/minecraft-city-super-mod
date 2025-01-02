@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.trafficsignals.logic;
 
 import com.micatechnologies.minecraft.csm.CsmSounds;
+import com.micatechnologies.minecraft.csm.CsmSounds.SOUND;
 
 /**
  * The sound schemes for traffic signal APS devices.
@@ -32,41 +33,41 @@ public class TrafficSignalAPSSoundSchemes {
    */
   public static final TrafficSignalAPSSoundScheme[] CAMPBELL =
       {new TrafficSignalAPSSoundScheme("Campbell Standard Voice - Walk Sign is On",
-          CsmSounds.SOUND.CAMPBELL_TONE1, CsmSounds.SOUND.CAMPBELL_WAIT, 30,
-          CsmSounds.SOUND.CAMPBELL_WAIT, 15, CsmSounds.SOUND.CAMPBELL_WALK_SIGN_ON, 140),
+          CsmSounds.SOUND.CAMPBELL_TONE1, CsmSounds.SOUND.CAMPBELL_WAIT, 20,
+          CsmSounds.SOUND.CAMPBELL_WAIT, 20, CsmSounds.SOUND.CAMPBELL_WALK_SIGN_ON, 50),
           new TrafficSignalAPSSoundScheme("Campbell Standard Voice - Warning Lights are Flashing",
-              CsmSounds.SOUND.CAMPBELL_TONE1, CsmSounds.SOUND.CAMPBELL_WAIT_LOOK_BOTH_WAYS, 30,
-              CsmSounds.SOUND.CAMPBELL_WAIT_LOOK_BOTH_WAYS, 15,
-              CsmSounds.SOUND.CAMPBELL_WARNING_LIGHTS_ARE_FLASHING, 140),
+              CsmSounds.SOUND.CAMPBELL_TONE1, CsmSounds.SOUND.CAMPBELL_WAIT_LOOK_BOTH_WAYS, 50,
+              CsmSounds.SOUND.CAMPBELL_WAIT_LOOK_BOTH_WAYS, 50,
+              CsmSounds.SOUND.CAMPBELL_WARNING_LIGHTS_ARE_FLASHING, 60),
           new TrafficSignalAPSSoundScheme("Campbell Standard Voice - Yellow Lights are Flashing",
-              CsmSounds.SOUND.CAMPBELL_TONE1, CsmSounds.SOUND.CAMPBELL_WAIT_LOOK_BOTH_WAYS, 30,
-              CsmSounds.SOUND.CAMPBELL_WAIT_LOOK_BOTH_WAYS, 15,
-              CsmSounds.SOUND.CAMPBELL_YELLOW_LIGHTS_ARE_FLASHING, 140),
+              CsmSounds.SOUND.CAMPBELL_TONE1, CsmSounds.SOUND.CAMPBELL_WAIT_LOOK_BOTH_WAYS, 50,
+              CsmSounds.SOUND.CAMPBELL_WAIT_LOOK_BOTH_WAYS, 50,
+              CsmSounds.SOUND.CAMPBELL_YELLOW_LIGHTS_ARE_FLASHING, 60),
           new TrafficSignalAPSSoundScheme(
               "Campbell Standard Voice - Walk Sign is On for All Crossings",
-              CsmSounds.SOUND.CAMPBELL_TONE1, CsmSounds.SOUND.CAMPBELL_WAIT, 30,
-              CsmSounds.SOUND.CAMPBELL_WAIT, 80, CsmSounds.SOUND.CAMPBELL_WALK_EXCLUSIVE, 140),
+              CsmSounds.SOUND.CAMPBELL_TONE1, CsmSounds.SOUND.CAMPBELL_WAIT, 20,
+              CsmSounds.SOUND.CAMPBELL_WAIT, 20, CsmSounds.SOUND.CAMPBELL_WALK_EXCLUSIVE, 70),
           new TrafficSignalAPSSoundScheme("Campbell Standard Percussive (East-West)",
-              CsmSounds.SOUND.CAMPBELL_TONE1, CsmSounds.SOUND.CAMPBELL_PERC_EW, 30,
-              CsmSounds.SOUND.CAMPBELL_PERC_EW, 15, CsmSounds.SOUND.CAMPBELL_WALK_SIGN_ON, 140),
+              CsmSounds.SOUND.CAMPBELL_TONE1, CsmSounds.SOUND.CAMPBELL_WAIT, 20,
+              CsmSounds.SOUND.CAMPBELL_WAIT, 20, CsmSounds.SOUND.CAMPBELL_PERC_EW, 40),
           new TrafficSignalAPSSoundScheme("Campbell Standard Percussive (North-South)",
-              CsmSounds.SOUND.CAMPBELL_TONE1, CsmSounds.SOUND.CAMPBELL_PERC_NS, 30,
-              CsmSounds.SOUND.CAMPBELL_PERC_NS, 15, CsmSounds.SOUND.CAMPBELL_WALK_SIGN_ON, 140),
+              CsmSounds.SOUND.CAMPBELL_TONE1, CsmSounds.SOUND.CAMPBELL_WAIT, 20,
+              CsmSounds.SOUND.CAMPBELL_WAIT, 20, CsmSounds.SOUND.CAMPBELL_PERC_NS, 40),
           new TrafficSignalAPSSoundScheme("Campbell Phil Voice - Walk Sign is On",
-              CsmSounds.SOUND.CAMPBELL_TONE1, CsmSounds.SOUND.CAMPBELL_PHIL_WAIT, 30,
-              CsmSounds.SOUND.CAMPBELL_PHIL_WAIT, 15, CsmSounds.SOUND.CAMPBELL_PHIL_WALK_ON, 140),
-          new TrafficSignalAPSSoundScheme("Campbell Phil Voice - Warning Lights are Flashing",
-              CsmSounds.SOUND.CAMPBELL_TONE1, CsmSounds.SOUND.CAMPBELL_PHIL_WAIT_LOOK_BOTH_WAYS, 30,
-              CsmSounds.SOUND.CAMPBELL_PHIL_WAIT_LOOK_BOTH_WAYS, 15,
-              CsmSounds.SOUND.CAMPBELL_WARNING_LIGHTS_ARE_FLASHING, 140),
-          new TrafficSignalAPSSoundScheme("Campbell Phil Voice - Yellow Lights are Flashing",
-              CsmSounds.SOUND.CAMPBELL_TONE1, CsmSounds.SOUND.CAMPBELL_PHIL_WAIT_LOOK_BOTH_WAYS, 30,
-              CsmSounds.SOUND.CAMPBELL_PHIL_WAIT_LOOK_BOTH_WAYS, 15,
-              CsmSounds.SOUND.CAMPBELL_YELLOW_LIGHTS_ARE_FLASHING, 140),
+              CsmSounds.SOUND.CAMPBELL_TONE1, CsmSounds.SOUND.CAMPBELL_PHIL_WAIT, 20,
+              CsmSounds.SOUND.CAMPBELL_PHIL_WAIT, 20, CsmSounds.SOUND.CAMPBELL_PHIL_WALK_ON, 50),
+          new TrafficSignalAPSSoundScheme("Campbell Phil Voice - Warning Lights Activated",
+              CsmSounds.SOUND.CAMPBELL_TONE1, CsmSounds.SOUND.CAMPBELL_PHIL_WAIT_LOOK_BOTH_WAYS, 50,
+              CsmSounds.SOUND.CAMPBELL_PHIL_WAIT_LOOK_BOTH_WAYS, 50,
+              SOUND.CAMPBELL_PHIL_WARNING_LIGHTS_ACTIVATED, 130),
+          new TrafficSignalAPSSoundScheme("Campbell Phil Voice - Crossing Lights Activated",
+              CsmSounds.SOUND.CAMPBELL_TONE1, CsmSounds.SOUND.CAMPBELL_PHIL_WAIT_LOOK_BOTH_WAYS, 50,
+              CsmSounds.SOUND.CAMPBELL_PHIL_WAIT_LOOK_BOTH_WAYS, 50,
+              SOUND.CAMPBELL_PHIL_CROSSING_LIGHTS_ACTIVATED, 130),
           new TrafficSignalAPSSoundScheme("Campbell Phil Voice - Walk Sign is On for All Crossings",
-              CsmSounds.SOUND.CAMPBELL_TONE1, CsmSounds.SOUND.CAMPBELL_PHIL_WAIT, 30,
-              CsmSounds.SOUND.CAMPBELL_PHIL_WAIT, 80, CsmSounds.SOUND.CAMPBELL_PHIL_WALK_EXCLUSIVE,
-              140)};
+              CsmSounds.SOUND.CAMPBELL_TONE1, CsmSounds.SOUND.CAMPBELL_PHIL_WAIT, 20,
+              CsmSounds.SOUND.CAMPBELL_PHIL_WAIT, 20, CsmSounds.SOUND.CAMPBELL_PHIL_WALK_EXCLUSIVE,
+              70)};
   /**
    * The Polara sound schemes.
    *
@@ -83,23 +84,23 @@ public class TrafficSignalAPSSoundSchemes {
    */
   public static final TrafficSignalAPSSoundScheme[] POLARA =
       {new TrafficSignalAPSSoundScheme("Polara Standard Rapid Tick", CsmSounds.SOUND.POLARA_TONE1,
-          CsmSounds.SOUND.POLARA_WAIT, 30, CsmSounds.SOUND.POLARA_WAIT, 15,
-          CsmSounds.SOUND.POLARA_RAPID_TICK1, 140),
+          CsmSounds.SOUND.POLARA_WAIT, 20, CsmSounds.SOUND.POLARA_WAIT, 20,
+          CsmSounds.SOUND.POLARA_RAPID_TICK1, 50),
           new TrafficSignalAPSSoundScheme("Polara Voice - Walk Sign is On",
-              CsmSounds.SOUND.POLARA_TONE1, CsmSounds.SOUND.POLARA_WAIT, 30,
-              CsmSounds.SOUND.POLARA_WAIT, 15, CsmSounds.SOUND.POLARA_WALK, 140),
+              CsmSounds.SOUND.POLARA_TONE1, CsmSounds.SOUND.POLARA_WAIT, 20,
+              CsmSounds.SOUND.POLARA_WAIT, 20, CsmSounds.SOUND.POLARA_WALK, 45),
           new TrafficSignalAPSSoundScheme("Polara Voice - Walk Sign is on for All Crossings",
-              CsmSounds.SOUND.POLARA_TONE1, CsmSounds.SOUND.POLARA_WAIT, 30,
-              CsmSounds.SOUND.POLARA_WAIT, 80, CsmSounds.SOUND.POLARA_WALK_ALL_CROSSINGS, 140),
+              CsmSounds.SOUND.POLARA_TONE1, CsmSounds.SOUND.POLARA_WAIT, 20,
+              CsmSounds.SOUND.POLARA_WAIT, 20, CsmSounds.SOUND.POLARA_WALK_ALL_CROSSINGS, 55),
           new TrafficSignalAPSSoundScheme("Polara Spanish Standard Rapid Tick",
-              CsmSounds.SOUND.POLARA_TONE1, CsmSounds.SOUND.POLARA_LANG2_WAIT, 30,
-              CsmSounds.SOUND.POLARA_LANG2_WAIT, 15, CsmSounds.SOUND.POLARA_RAPID_TICK1, 140),
+              CsmSounds.SOUND.POLARA_TONE1, CsmSounds.SOUND.POLARA_LANG2_WAIT, 20,
+              CsmSounds.SOUND.POLARA_LANG2_WAIT, 20, CsmSounds.SOUND.POLARA_RAPID_TICK1, 50),
           new TrafficSignalAPSSoundScheme("Polara Spanish Voice - Walk Sign is On",
-              CsmSounds.SOUND.POLARA_TONE1, CsmSounds.SOUND.POLARA_LANG2_WAIT, 30,
-              CsmSounds.SOUND.POLARA_LANG2_WAIT, 15, CsmSounds.SOUND.POLARA_LANG2_WALK, 140),
+              CsmSounds.SOUND.POLARA_TONE1, CsmSounds.SOUND.POLARA_LANG2_WAIT, 20,
+              CsmSounds.SOUND.POLARA_LANG2_WAIT, 20, CsmSounds.SOUND.POLARA_LANG2_WALK, 60),
           new TrafficSignalAPSSoundScheme(
               "Polara Spanish Voice - Walk Sign is on for All Crossings",
-              CsmSounds.SOUND.POLARA_TONE1, CsmSounds.SOUND.POLARA_LANG2_WAIT, 30,
-              CsmSounds.SOUND.POLARA_LANG2_WAIT, 80,
-              CsmSounds.SOUND.POLARA_LANG2_WALK_ALL_CROSSINGS, 140)};
+              CsmSounds.SOUND.POLARA_TONE1, CsmSounds.SOUND.POLARA_LANG2_WAIT, 20,
+              CsmSounds.SOUND.POLARA_LANG2_WAIT, 20,
+              CsmSounds.SOUND.POLARA_LANG2_WALK_ALL_CROSSINGS, 80)};
 }
