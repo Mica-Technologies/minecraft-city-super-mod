@@ -42,4 +42,14 @@ public class BlockTrafficPoleSmallTan extends AbstractBlockTrafficPole {
   public Class<?>[] getIgnoreBlock() {
     return null;
   }
+
+  /**
+   * Method which returns the color of the traffic pole.
+   *
+   * @return The color of the traffic pole.
+   */
+  @Override
+  public TRAFFIC_POLE_COLOR getTrafficPoleColor() {
+    return TRAFFIC_POLE_COLOR.TAN;
+  }
 }

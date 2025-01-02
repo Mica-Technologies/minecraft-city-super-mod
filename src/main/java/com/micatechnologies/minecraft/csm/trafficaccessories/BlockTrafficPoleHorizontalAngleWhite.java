@@ -28,4 +28,9 @@ public class BlockTrafficPoleHorizontalAngleWhite extends AbstractBlockTrafficPo
     return null;
   }
 
+  @Override
+  public TRAFFIC_POLE_COLOR getTrafficPoleColor() {
+    return TRAFFIC_POLE_COLOR.WHITE;
+  }
+
 }
