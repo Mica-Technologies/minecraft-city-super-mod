@@ -78,6 +78,9 @@ import com.micatechnologies.minecraft.csm.lighting.BlockOCPB;
 import com.micatechnologies.minecraft.csm.lighting.BlockOCPM;
 import com.micatechnologies.minecraft.csm.lighting.BlockOCPT;
 import com.micatechnologies.minecraft.csm.lighting.BlockPCRM;
+import com.micatechnologies.minecraft.csm.lighting.BlockPostLight1;
+import com.micatechnologies.minecraft.csm.lighting.BlockPostLight2;
+import com.micatechnologies.minecraft.csm.lighting.BlockPostLight3;
 import com.micatechnologies.minecraft.csm.lighting.BlockRBM;
 import com.micatechnologies.minecraft.csm.lighting.BlockRCPB;
 import com.micatechnologies.minecraft.csm.lighting.BlockRCPB2;
@@ -271,5 +274,8 @@ public class CsmTabLighting extends CsmTab {
     initTabBlock(BlockWHOV50Shaded.class, fmlPreInitializationEvent); // WHOV50Shaded
     initTabBlock(BlockWHOV50ShadedNP.class, fmlPreInitializationEvent); // WHOV50ShadedNP
     initTabBlock(BlockWSL.class, fmlPreInitializationEvent); // WSL
+    initTabBlock(BlockPostLight1.class, fmlPreInitializationEvent); // PostLight1
+    initTabBlock(BlockPostLight2.class, fmlPreInitializationEvent); // PostLight2
+    initTabBlock(BlockPostLight3.class, fmlPreInitializationEvent); // PostLight3
   }
 }

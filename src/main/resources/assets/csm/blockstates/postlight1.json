@@ -1,0 +1,95 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:lighting/pole_light_vertical_1",
+    "textures": {
+      "all": "csm:blocks/metal_black",
+      "0": "csm:blocks/light_surface",
+      "1": "csm:blocks/metal_black",
+      "particle": "csm:blocks/metal_black"
+    }
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "state": {
+      "0": {
+        "textures": {
+          "0": "csm:blocks/light_surface_off"
+        }
+      },
+      "1": {
+        "textures": {
+          "0": "csm:blocks/light_surface"
+        }
+      },
+      "2": {
+        "textures": {
+          "0": "csm:blocks/light_surface_off"
+        }
+      },
+      "3": {
+        "textures": {
+          "0": "csm:blocks/light_surface"
+        }
+      }
+    },
+    "color": {
+      "black": {
+        "textures": {
+          "all": "csm:blocks/metal_black",
+          "particle": "csm:blocks/metal_black",
+          "1": "csm:blocks/metal_black"
+        }
+      },
+      "silver": {
+        "textures": {
+          "all": "csm:blocks/metal_silver",
+          "particle": "csm:blocks/metal_silver",
+          "1": "csm:blocks/metal_silver"
+        }
+      },
+      "white": {
+        "textures": {
+          "all": "csm:blocks/metal_mattewhite",
+          "particle": "csm:blocks/metal_mattewhite",
+          "1": "csm:blocks/metal_mattewhite"
+        }
+      },
+      "unpainted": {
+        "textures": {
+          "all": "csm:blocks/metal_white",
+          "particle": "csm:blocks/metal_white",
+          "1": "csm:blocks/metal_white"
+        }
+      },
+      "tan": {
+        "textures": {
+          "all": "csm:blocks/metal_mattetan",
+          "particle": "csm:blocks/metal_mattetan",
+          "1": "csm:blocks/metal_mattetan"
+        }
+      }
+    },
+    "inventory": [
+      {
+        "textures": {
+          "all": "csm:blocks/metal_iridescent",
+          "0": "csm:blocks/light_surface",
+          "1": "csm:blocks/metal_iridescent",
+          "particle": "csm:blocks/metal_iridescent"
+        }
+      }
+    ]
+  }
+}

@@ -24,6 +24,7 @@ import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
@@ -39,6 +40,22 @@ import org.jetbrains.annotations.NotNull;
  * @see AbstractBlockRotatableNSEWUD
  */
 public abstract class AbstractBlockTrafficPole extends AbstractBlockRotatableNSEWUD {
+
+  /**
+   * Enumerated type representing the color of the traffic pole.
+   */
+  public enum TRAFFIC_POLE_COLOR implements IStringSerializable {
+    BLACK,
+    SILVER,
+    TAN,
+    WHITE,
+    UNPAINTED;
+
+    @Override
+    public String getName() {
+      return this.toString().toLowerCase();
+    }
+  }
 
   /**
    * The east mounting property.
@@ -243,4 +260,6 @@ public abstract class AbstractBlockTrafficPole extends AbstractBlockRotatableNSE
    * @return Array of block classes to ignore when checking for adjacent blocks.
    */
   public abstract Class<?>[] getIgnoreBlock();
+
+  public abstract TRAFFIC_POLE_COLOR getTrafficPoleColor();
 }
