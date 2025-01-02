@@ -835,5 +835,212 @@
         "stream": false
       }
     ]
+  },
+  "campbell_perc_ew": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:campbell_perc_ew",
+        "stream": false
+      }
+    ]
+  },
+  "campbell_perc_ns": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:campbell_perc_ns",
+        "stream": false
+      }
+    ]
+  },
+  "campbell_phil_wait": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:campbell_phil_wait",
+        "stream": false
+      }
+    ]
+  },
+  "campbell_phil_wait_look_both_ways": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:campbell_phil_wait_look_both_ways",
+        "stream": false
+      }
+    ]
+  },
+  "campbell_phil_wait_to_cross": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:campbell_phil_wait_to_cross",
+        "stream": false
+      }
+    ]
+  },
+  "campbell_phil_walk_exclusive": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:campbell_phil_walk_exclusive",
+        "stream": false
+      }
+    ]
+  },
+  "campbell_phil_walk_on": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:campbell_phil_walk_on",
+        "stream": false
+      }
+    ]
+  },
+  "campbell_phil_walk_on_to_cross": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:campbell_phil_walk_on_to_cross",
+        "stream": false
+      }
+    ]
+  },
+  "campbell_tone1": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:campbell_tone1",
+        "stream": false
+      }
+    ]
+  },
+  "campbell_wait": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:campbell_wait",
+        "stream": false
+      }
+    ]
+  },
+  "campbell_wait_look_both_ways": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:campbell_wait_look_both_ways",
+        "stream": false
+      }
+    ]
+  },
+  "campbell_walk_exclusive": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:campbell_walk_exclusive",
+        "stream": false
+      }
+    ]
+  },
+  "campbell_walk_sign_on": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:campbell_walk_sign_on",
+        "stream": false
+      }
+    ]
+  },
+  "campbell_warning_lights_are_flashing": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:campbell_warning_lights_are_flashing",
+        "stream": false
+      }
+    ]
+  },
+  "campbell_yellow_lights_are_flashing": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:campbell_yellow_lights_are_flashing",
+        "stream": false
+      }
+    ]
+  },
+  "polara_lang2_wait": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:polara_lang2_wait",
+        "stream": false
+      }
+    ]
+  },
+  "polara_lang2_walk": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:polara_lang2_walk",
+        "stream": false
+      }
+    ]
+  },
+  "polara_lang2_walk_all_crossings": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:polara_lang2_walk_all_crossings",
+        "stream": false
+      }
+    ]
+  },
+  "polara_rapid_tick1": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:polara_rapid_tick1",
+        "stream": false
+      }
+    ]
+  },
+  "polara_tone1": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:polara_tone1",
+        "stream": false
+      }
+    ]
+  },
+  "polara_wait": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:polara_wait",
+        "stream": false
+      }
+    ]
+  },
+  "polara_walk": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:polara_walk",
+        "stream": false
+      }
+    ]
+  },
+  "polara_walk_all_crossings": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:polara_walk_all_crossings",
+        "stream": false
+      }
+    ]
   }
 }
