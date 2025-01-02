@@ -701,60 +701,6 @@
       }
     ]
   },
-  "male_wait": {
-    "category": "block",
-    "sounds": [
-      {
-        "name": "csm:male_wait",
-        "stream": false
-      }
-    ]
-  },
-  "male_beep": {
-    "category": "block",
-    "sounds": [
-      {
-        "name": "csm:male_beep",
-        "stream": false
-      }
-    ]
-  },
-  "female_wait": {
-    "category": "block",
-    "sounds": [
-      {
-        "name": "csm:female_wait",
-        "stream": false
-      }
-    ]
-  },
-  "male_crosswalk_on": {
-    "category": "block",
-    "sounds": [
-      {
-        "name": "csm:male_crosswalk_on",
-        "stream": false
-      }
-    ]
-  },
-  "female_beep": {
-    "category": "block",
-    "sounds": [
-      {
-        "name": "csm:female_beep",
-        "stream": false
-      }
-    ]
-  },
-  "female_automated": {
-    "category": "block",
-    "sounds": [
-      {
-        "name": "csm:female_automated",
-        "stream": false
-      }
-    ]
-  },
   "crosswalk_cookoo_1": {
     "category": "block",
     "sounds": [
@@ -886,15 +832,6 @@
     "sounds": [
       {
         "name": "csm:xptitlewma_mt32",
-        "stream": false
-      }
-    ]
-  },
-  "8tick_per_second_crosswalk": {
-    "category": "block",
-    "sounds": [
-      {
-        "name": "csm:8tick_per_second_crosswalk",
         "stream": false
       }
     ]

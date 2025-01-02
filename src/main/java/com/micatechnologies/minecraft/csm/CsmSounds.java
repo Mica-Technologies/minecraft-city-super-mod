@@ -113,16 +113,9 @@ public class CsmSounds {
     OLDRADIO2("oldradio2"),
     THREESTOOGES_VE("threestooges_ve"),
     MARCHTIME_AS("marchtime_as"),
-    MALE_WAIT("male_wait"),
-    MALE_BEEP("male_beep"),
-    FEMALE_AUTOMATED("female_automated"),
-    MALE_CROSSWALK_ON("male_crosswalk_on"),
-    FEMALE_BEEP("female_beep"),
-    FEMALE_WAIT("female_wait"),
     CROSSWALK_COOKOO_1("crosswalk_cookoo_1"),
     CROSSWALK_COOKOO_2("crosswalk_cookoo_2"),
-    FIRECOM8500("firecom8500"),
-    _8TICK_PER_SECOND_CROSSWALK("8tick_per_second_crosswalk");
+    FIRECOM8500("firecom8500");
 
     /**
      * The name of the sound.
