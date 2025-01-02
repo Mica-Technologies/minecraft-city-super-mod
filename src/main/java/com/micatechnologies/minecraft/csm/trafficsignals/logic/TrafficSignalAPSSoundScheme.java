@@ -3,155 +3,95 @@ package com.micatechnologies.minecraft.csm.trafficsignals.logic;
 import com.micatechnologies.minecraft.csm.CsmSounds;
 
 /**
- * The {@link TrafficSignalAPSSoundScheme} enum defines the various sound schemes which can be used
- * by traffic signal APS devices using the {@link AbstractBlockTrafficSignalAPS} block interface.
+ * The
  *
  * @author Mica Technologies
  * @version 1.0
  * @see AbstractBlockTrafficSignalAPS
  * @since 2023.2.0
  */
-public enum TrafficSignalAPSSoundScheme {
-
-  /**
-   * Enum value for the Campbell/PedSafety (Male) sound scheme.
-   *
-   * @since 1.0
-   */
-  MALE_CAMPBELL("Campbell/PedSafety (Male)", CsmSounds.SOUND.MALE_BEEP, CsmSounds.SOUND.MALE_WAIT,
-      30,
-      CsmSounds.SOUND.MALE_WAIT, 15, CsmSounds.SOUND.MALE_CROSSWALK_ON, 140),
-  /**
-   * Enum value for the Campbell/PedSafety (Female) sound scheme.
-   *
-   * @since 1.0
-   */
-  FEMALE_CAMPBELL("Campbell/PedSafety (Female)", CsmSounds.SOUND.FEMALE_BEEP,
-      CsmSounds.SOUND.FEMALE_WAIT, 30,
-      CsmSounds.SOUND.FEMALE_WAIT, 15, CsmSounds.SOUND.MALE_CROSSWALK_ON, 140),
-  /**
-   * Enum value for the Campbell/PedSafety (Automated/Male) sound scheme.
-   *
-   * @since 1.0
-   */
-  MALE_CAMPBELL_AUTOMATED("Campbell/PedSafety (Automated/Male)", CsmSounds.SOUND.MALE_BEEP,
-      CsmSounds.SOUND.MALE_WAIT, 30,
-      CsmSounds.SOUND.FEMALE_AUTOMATED, 80, CsmSounds.SOUND.MALE_CROSSWALK_ON, 140),
-  /**
-   * Enum value for the Campbell/PedSafety (Automated/Female) sound scheme.
-   *
-   * @since 1.0
-   */
-  FEMALE_CAMPBELL_AUTOMATED("Campbell/PedSafety (Automated/Female)", CsmSounds.SOUND.FEMALE_BEEP,
-      CsmSounds.SOUND.FEMALE_WAIT, 30, CsmSounds.SOUND.FEMALE_AUTOMATED, 80,
-      CsmSounds.SOUND.MALE_CROSSWALK_ON, 140),
-  /**
-   * Enum value for the Campbell/PedSafety (Male with Audible Tick) sound scheme.
-   *
-   * @since 1.0
-   */
-  MALE_CAMPBELL_WITH_TICK("Campbell/PedSafety (Male with Audible Tick)", CsmSounds.SOUND.MALE_BEEP,
-      CsmSounds.SOUND.MALE_WAIT, 30, CsmSounds.SOUND.MALE_WAIT, 15,
-      CsmSounds.SOUND._8TICK_PER_SECOND_CROSSWALK, 45),
-  /**
-   * Enum value for the Campbell/PedSafety (Female with Audible Tick) sound scheme.
-   *
-   * @since 1.0
-   */
-  FEMALE_CAMPBELL_WITH_TICK("Campbell/PedSafety (Female with Audible Tick)",
-      CsmSounds.SOUND.FEMALE_BEEP,
-      CsmSounds.SOUND.FEMALE_WAIT, 30, CsmSounds.SOUND.FEMALE_WAIT, 15,
-      CsmSounds.SOUND._8TICK_PER_SECOND_CROSSWALK, 45),
-  /**
-   * Enum value for the Campbell/PedSafety (Automated/Male with Audible Tick) sound scheme.
-   *
-   * @since 1.0
-   */
-  MALE_CAMPBELL_AUTOMATED_WITH_TICK("Campbell/PedSafety (Automated/Male with Audible Tick)",
-      CsmSounds.SOUND.MALE_BEEP,
-      CsmSounds.SOUND.MALE_WAIT, 30, CsmSounds.SOUND.FEMALE_AUTOMATED, 80,
-      CsmSounds.SOUND._8TICK_PER_SECOND_CROSSWALK, 45),
-  /**
-   * Enum value for the Campbell/PedSafety (Automated/Female with Audible Tick) sound scheme.
-   *
-   * @since 1.0
-   */
-  FEMALE_CAMPBELL_AUTOMATED_WITH_TICK("Campbell/PedSafety (Automated/Female with Audible Tick)",
-      CsmSounds.SOUND.FEMALE_BEEP, CsmSounds.SOUND.FEMALE_WAIT, 30,
-      CsmSounds.SOUND.FEMALE_AUTOMATED, 80, CsmSounds.SOUND._8TICK_PER_SECOND_CROSSWALK,
-      45);
+public class TrafficSignalAPSSoundScheme {
 
   /**
    * The name for the APS sound scheme.
    *
    * @since 1.0
    */
-  final String name;
+  private final String name;
 
   /**
    * The locator sound for the APS sound scheme.
    *
    * @since 1.0
    */
-  final CsmSounds.SOUND locateSound;
+  private final CsmSounds.SOUND locateSound;
+
   /**
    * The wait sound for the APS sound scheme.
    *
    * @since 1.0
    */
-  final CsmSounds.SOUND waitSound;
+  private final CsmSounds.SOUND waitSound;
+
   /**
    * The length of the wait sound for the APS sound scheme.
    *
    * @since 1.0
    */
-  final int lenOfWaitSound;
+  private final int lenOfWaitSound;
+
   /**
    * The press sound for the APS sound scheme.
    *
    * @since 1.0
    */
-  final CsmSounds.SOUND pressSound;
+  private final CsmSounds.SOUND pressSound;
+
   /**
    * The length of the press sound for the APS sound scheme.
    *
    * @since 1.0
    */
-  final int lenOfPressSound;
+  private final int lenOfPressSound;
+
   /**
    * The walk sound for the APS sound scheme.
    *
    * @since 1.0
    */
-  final CsmSounds.SOUND walkSound;
+  private final CsmSounds.SOUND walkSound;
+
   /**
    * The length of the walk sound for the APS sound scheme.
    *
    * @since 1.0
    */
-  final int lenOfWalkSound;
+  private final int lenOfWalkSound;
+
   /**
    * The volume for the APS sound scheme.
    *
    * @since 1.0
    */
-  final float volume = 1;
+  private final float volume;
+
   /**
    * The pitch for the APS sound scheme.
    *
    * @since 1.0
    */
-  final float pitch = 1;
+  private final float pitch;
+
   /**
    * The length of the locator sound for the APS sound scheme.
    *
    * @since 1.0
    */
-  int lenOfLocateSound = 20;
+  private final int lenOfLocateSound;
 
   /**
-   * The constructor for the {@link TrafficSignalAPSSoundScheme} enum with the default locator sound
-   * length.
+   * The constructor for an {@link TrafficSignalAPSSoundScheme} instance with the default locator
+   * sound length.
    *
    * @param name            The name for the APS sound scheme.
    * @param locateSound     The locator sound for the APS sound scheme.
@@ -164,27 +104,25 @@ public enum TrafficSignalAPSSoundScheme {
    *
    * @since 1.0
    */
-  TrafficSignalAPSSoundScheme(String name,
-      CsmSounds.SOUND locateSound,
-      CsmSounds.SOUND waitSound,
-      int lenOfWaitSound,
-      CsmSounds.SOUND pressSound,
-      int lenOfPressSound,
-      CsmSounds.SOUND walkSound,
-      int lenOfWalkSound) {
+  TrafficSignalAPSSoundScheme(String name, CsmSounds.SOUND locateSound,
+      CsmSounds.SOUND waitSound, int lenOfWaitSound, CsmSounds.SOUND pressSound,
+      int lenOfPressSound, CsmSounds.SOUND walkSound, int lenOfWalkSound) {
     this.name = name;
     this.locateSound = locateSound;
+    this.lenOfLocateSound = 20;
     this.waitSound = waitSound;
     this.lenOfWaitSound = lenOfWaitSound;
     this.pressSound = pressSound;
     this.lenOfPressSound = lenOfPressSound;
     this.walkSound = walkSound;
     this.lenOfWalkSound = lenOfWalkSound;
+    this.volume = 1;
+    this.pitch = 1;
   }
 
   /**
-   * The constructor for the {@link TrafficSignalAPSSoundScheme} enum with a specified locator sound
-   * length.
+   * The constructor for an {@link TrafficSignalAPSSoundScheme} instance with a specified locator
+   * sound length.
    *
    * @param name             The name for the APS sound scheme.
    * @param locateSound      The locator sound for the APS sound scheme.
@@ -198,15 +136,10 @@ public enum TrafficSignalAPSSoundScheme {
    *
    * @since 1.0
    */
-  TrafficSignalAPSSoundScheme(String name,
-      CsmSounds.SOUND locateSound,
+  TrafficSignalAPSSoundScheme(String name, CsmSounds.SOUND locateSound,
       int lenOfLocateSound,
-      CsmSounds.SOUND waitSound,
-      int lenOfWaitSound,
-      CsmSounds.SOUND pressSound,
-      int lenOfPressSound,
-      CsmSounds.SOUND walkSound,
-      int lenOfWalkSound) {
+      CsmSounds.SOUND waitSound, int lenOfWaitSound, CsmSounds.SOUND pressSound,
+      int lenOfPressSound, CsmSounds.SOUND walkSound, int lenOfWalkSound) {
     this.name = name;
     this.locateSound = locateSound;
     this.lenOfLocateSound = lenOfLocateSound;
@@ -216,6 +149,8 @@ public enum TrafficSignalAPSSoundScheme {
     this.lenOfPressSound = lenOfPressSound;
     this.walkSound = walkSound;
     this.lenOfWalkSound = lenOfWalkSound;
+    this.volume = 1;
+    this.pitch = 1;
   }
 
   /**

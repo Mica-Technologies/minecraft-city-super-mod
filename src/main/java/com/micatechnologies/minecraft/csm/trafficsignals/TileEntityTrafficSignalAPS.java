@@ -6,11 +6,11 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.SoundCategory;
 
 /**
- * Tile entity utility class for an APS (accessible pedestrian signal) button. This class assists in
+ * Tile entity class for an APS (accessible pedestrian signal) button. This class assists in
  * tracking and managing the APS' configured sounds and requests.
  *
  * @author Mica Technologies
- * @version 1.1
+ * @version 2.0
  * @since 2022.1
  */
 public class TileEntityTrafficSignalAPS extends TileEntityTrafficSignalTickableRequester {
@@ -59,6 +59,13 @@ public class TileEntityTrafficSignalAPS extends TileEntityTrafficSignalTickableR
   public static final int CROSSWALK_ARROW_ORIENTATION_MAX = 3;
 
   /**
+   * The possible/available sound schemes for the APS.
+   *
+   * @since 2.0
+   */
+  private final TrafficSignalAPSSoundScheme[] soundSchemes;
+
+  /**
    * The current crosswalk sound index.
    *
    * @since 1.0
@@ -85,6 +92,17 @@ public class TileEntityTrafficSignalAPS extends TileEntityTrafficSignalTickableR
    * @since 1.1
    */
   private int crosswalkArrowOrientation = 0;
+
+  /**
+   * Constructor for a {@link TileEntityTrafficSignalAPS} with the specified sound schemes.
+   *
+   * @param soundSchemes the sound schemes for the APS
+   *
+   * @since 2.0
+   */
+  public TileEntityTrafficSignalAPS(TrafficSignalAPSSoundScheme[] soundSchemes) {
+    this.soundSchemes = soundSchemes;
+  }
 
   /**
    * Writes to the NBT tag compound with the tile entity's NBT data and returns the compound.
@@ -125,20 +143,12 @@ public class TileEntityTrafficSignalAPS extends TileEntityTrafficSignalTickableR
     // Read crosswalk sound from NBT and check validity
     if (compound.hasKey(CROSSWALK_SOUND_INDEX_NBT_KEY)) {
       int storedCrosswalkSoundIndex = compound.getInteger(CROSSWALK_SOUND_INDEX_NBT_KEY);
-      if (storedCrosswalkSoundIndex >= 0 &&
-          storedCrosswalkSoundIndex < TrafficSignalAPSSoundScheme.values().length) {
+      if (storedCrosswalkSoundIndex >= 0 && storedCrosswalkSoundIndex < soundSchemes.length) {
         crosswalkSoundIndex = storedCrosswalkSoundIndex;
       } else {
-        System.err.println("Invalid crosswalk sound index: " +
-            crosswalkSoundIndex +
-            " for crosswalk button tile entity " +
-            "at [X: " +
-            pos.getX() +
-            ", Y: " +
-            pos.getY() +
-            ", Z: " +
-            pos.getZ() +
-            "]. Reverting to default (0).");
+        System.err.println("Invalid crosswalk sound index: " + crosswalkSoundIndex
+            + " for crosswalk button tile entity " + "at [X: " + pos.getX() + ", Y: " + pos.getY()
+            + ", Z: " + pos.getZ() + "]. Reverting to default (0).");
         crosswalkSoundIndex = 0;
       }
     }
@@ -150,16 +160,10 @@ public class TileEntityTrafficSignalAPS extends TileEntityTrafficSignalTickableR
       if (storedCrosswalkSoundLastPlayedTime >= 0) {
         crosswalkSoundLastPlayedTime = storedCrosswalkSoundLastPlayedTime;
       } else {
-        System.err.println("Invalid crosswalk sound last played time: " +
-            crosswalkSoundLastPlayedTime +
-            " for crosswalk button tile entity " +
-            "at [X: " +
-            pos.getX() +
-            ", Y: " +
-            pos.getY() +
-            ", Z: " +
-            pos.getZ() +
-            "]. Reverting to default (0).");
+        System.err.println(
+            "Invalid crosswalk sound last played time: " + crosswalkSoundLastPlayedTime
+                + " for crosswalk button tile entity " + "at [X: " + pos.getX() + ", Y: "
+                + pos.getY() + ", Z: " + pos.getZ() + "]. Reverting to default (0).");
         crosswalkSoundLastPlayedTime = 0;
       }
     }
@@ -170,16 +174,9 @@ public class TileEntityTrafficSignalAPS extends TileEntityTrafficSignalTickableR
       if (storedCrosswalkLastPressTime >= 0) {
         crosswalkLastPressTime = storedCrosswalkLastPressTime;
       } else {
-        System.err.println("Invalid crosswalk last pressed time: " +
-            crosswalkLastPressTime +
-            " for crosswalk button tile entity " +
-            "at [X: " +
-            pos.getX() +
-            ", Y: " +
-            pos.getY() +
-            ", Z: " +
-            pos.getZ() +
-            "]. Reverting to default (0).");
+        System.err.println("Invalid crosswalk last pressed time: " + crosswalkLastPressTime
+            + " for crosswalk button tile entity " + "at [X: " + pos.getX() + ", Y: " + pos.getY()
+            + ", Z: " + pos.getZ() + "]. Reverting to default (0).");
         crosswalkLastPressTime = 0;
       }
     }
@@ -188,20 +185,13 @@ public class TileEntityTrafficSignalAPS extends TileEntityTrafficSignalTickableR
     if (compound.hasKey(CROSSWALK_ARROW_ORIENTATION_NBT_KEY)) {
       int storedCrosswalkArrowOrientation =
           compound.getInteger(CROSSWALK_ARROW_ORIENTATION_NBT_KEY);
-      if (storedCrosswalkArrowOrientation >= CROSSWALK_ARROW_ORIENTATION_MIN &&
-          storedCrosswalkArrowOrientation <= CROSSWALK_ARROW_ORIENTATION_MAX) {
+      if (storedCrosswalkArrowOrientation >= CROSSWALK_ARROW_ORIENTATION_MIN
+          && storedCrosswalkArrowOrientation <= CROSSWALK_ARROW_ORIENTATION_MAX) {
         crosswalkArrowOrientation = storedCrosswalkArrowOrientation;
       } else {
-        System.err.println("Invalid crosswalk arrow orientation: " +
-            crosswalkArrowOrientation +
-            " for crosswalk button tile entity " +
-            "at [X: " +
-            pos.getX() +
-            ", Y: " +
-            pos.getY() +
-            ", Z: " +
-            pos.getZ() +
-            "]. Reverting to default (0).");
+        System.err.println("Invalid crosswalk arrow orientation: " + crosswalkArrowOrientation
+            + " for crosswalk button tile entity " + "at [X: " + pos.getX() + ", Y: " + pos.getY()
+            + ", Z: " + pos.getZ() + "]. Reverting to default (0).");
         crosswalkArrowOrientation = 0;
       }
     }
@@ -217,7 +207,7 @@ public class TileEntityTrafficSignalAPS extends TileEntityTrafficSignalTickableR
   public String switchSound() {
     // Increment crosswalk sound index and check validity
     crosswalkSoundIndex++;
-    if (crosswalkSoundIndex >= TrafficSignalAPSSoundScheme.values().length) {
+    if (crosswalkSoundIndex >= soundSchemes.length) {
       crosswalkSoundIndex = 0;
     }
 
@@ -236,7 +226,7 @@ public class TileEntityTrafficSignalAPS extends TileEntityTrafficSignalTickableR
    * @since 1.0
    */
   public TrafficSignalAPSSoundScheme getCrosswalkSound() {
-    return TrafficSignalAPSSoundScheme.values()[crosswalkSoundIndex];
+    return soundSchemes[crosswalkSoundIndex];
   }
 
   /**
@@ -321,19 +311,20 @@ public class TileEntityTrafficSignalAPS extends TileEntityTrafficSignalTickableR
   @Override
   public void onTick() {
     // Get block color value
-    int blockColor = world.getBlockState(pos)
-        .getValue(BlockControllableCrosswalkButtonAudible.COLOR);
+    int blockColor =
+        world.getBlockState(pos).getValue(BlockControllableCrosswalkButtonAudible.COLOR);
 
     // Handle for each color state
     if (blockColor == BlockControllableCrosswalkButtonAudible.SIGNAL_OFF) {
       // Do nothing if no power/turned off
     } else if (blockColor == BlockControllableCrosswalkButtonAudible.SIGNAL_GREEN) {
       // Play walk sound if it's time (not still playing)
-      boolean isWalkSoundAlreadyPlaying = (crosswalkSoundLastPlayedTime +
-          getCrosswalkSound().getLenOfWalkSound()) > world.getTotalWorldTime();
+      boolean isWalkSoundAlreadyPlaying =
+          (crosswalkSoundLastPlayedTime + getCrosswalkSound().getLenOfWalkSound())
+              > world.getTotalWorldTime();
       boolean isPressSoundAlreadyPlaying =
-          (crosswalkLastPressTime + getCrosswalkSound().getLenOfPressSound()) >
-              world.getTotalWorldTime();
+          (crosswalkLastPressTime + getCrosswalkSound().getLenOfPressSound())
+              > world.getTotalWorldTime();
       if (!isWalkSoundAlreadyPlaying && !isPressSoundAlreadyPlaying) {
         world.playSound(null, pos.getX(), pos.getY(), pos.getZ(),
             getCrosswalkSound().getWalkSound().getSoundEvent(), SoundCategory.NEUTRAL,
@@ -351,16 +342,9 @@ public class TileEntityTrafficSignalAPS extends TileEntityTrafficSignalTickableR
           getCrosswalkSound().getLocateSound().getSoundEvent(), SoundCategory.NEUTRAL,
           getCrosswalkSound().getVolume(), getCrosswalkSound().getPitch());
     } else {
-      System.err.println("Invalid block color value: " +
-          blockColor +
-          " for crosswalk button tile entity at [X: " +
-          pos.getX() +
-          ", Y: " +
-          pos.getY() +
-          pos.getY() +
-          ", Z: " +
-          pos.getZ() +
-          "]");
+      System.err.println(
+          "Invalid block color value: " + blockColor + " for crosswalk button tile entity at [X: "
+              + pos.getX() + ", Y: " + pos.getY() + pos.getY() + ", Z: " + pos.getZ() + "]");
     }
   }
 
@@ -372,8 +356,8 @@ public class TileEntityTrafficSignalAPS extends TileEntityTrafficSignalTickableR
   public void onPress() {
     // Play press sound if it's time (not still playing)
     boolean isPressSoundAlreadyPlaying =
-        (crosswalkLastPressTime + getCrosswalkSound().getLenOfPressSound()) >
-            world.getTotalWorldTime();
+        (crosswalkLastPressTime + getCrosswalkSound().getLenOfPressSound())
+            > world.getTotalWorldTime();
     if (!isPressSoundAlreadyPlaying) {
       world.playSound(null, pos.getX(), pos.getY(), pos.getZ(),
           getCrosswalkSound().getPressSound().getSoundEvent(), SoundCategory.NEUTRAL,

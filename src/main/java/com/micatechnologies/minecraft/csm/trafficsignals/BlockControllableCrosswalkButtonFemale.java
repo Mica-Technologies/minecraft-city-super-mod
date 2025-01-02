@@ -1,9 +1,10 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockTrafficSignalAPS;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockTrafficSignalAPSCampbell;
 import net.minecraft.block.material.Material;
 
-public class BlockControllableCrosswalkButtonFemale extends AbstractBlockTrafficSignalAPS {
+public class BlockControllableCrosswalkButtonFemale extends AbstractBlockTrafficSignalAPSCampbell {
 
   public BlockControllableCrosswalkButtonFemale() {
     super(Material.ROCK);

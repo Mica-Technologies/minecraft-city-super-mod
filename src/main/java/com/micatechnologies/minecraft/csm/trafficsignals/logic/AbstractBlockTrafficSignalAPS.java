@@ -136,7 +136,8 @@ public abstract class AbstractBlockTrafficSignalAPS extends
   @Nullable
   @Override
   public TileEntity createNewTileEntity(World worldIn, int meta) {
-    return new TileEntityTrafficSignalAPS();
+    System.err.println("CREATING A NEW TILE ENTITY!!!!!!!!!!!!!!!!!!!!!!!!");
+    return new TileEntityTrafficSignalAPS(TrafficSignalAPSSoundSchemes.CAMPBELL);
   }
 
   @Override
