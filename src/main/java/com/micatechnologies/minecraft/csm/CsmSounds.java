@@ -124,6 +124,8 @@ public class CsmSounds {
     CAMPBELL_PHIL_WALK_EXCLUSIVE("campbell_phil_walk_exclusive"),
     CAMPBELL_PHIL_WALK_ON("campbell_phil_walk_on"),
     CAMPBELL_PHIL_WALK_ON_TO_CROSS("campbell_phil_walk_on_to_cross"),
+    CAMPBELL_PHIL_CROSSING_LIGHTS_ACTIVATED("campbell_phil_crossing_lights_activated"),
+    CAMPBELL_PHIL_WARNING_LIGHTS_ACTIVATED("campbell_phil_warning_lights_activated"),
     CAMPBELL_TONE1("campbell_tone1"),
     CAMPBELL_WAIT("campbell_wait"),
     CAMPBELL_WAIT_LOOK_BOTH_WAYS("campbell_wait_look_both_ways"),
