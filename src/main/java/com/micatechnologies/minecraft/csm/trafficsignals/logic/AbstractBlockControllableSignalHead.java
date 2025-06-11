@@ -4,6 +4,7 @@ import com.micatechnologies.minecraft.csm.codeutils.DirectionSixteen;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import com.micatechnologies.minecraft.csm.trafficsignals.ItemNSSignalLinker;
 import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalHead;
+import java.util.Random;
 import javax.annotation.Nullable;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyEnum;
@@ -134,8 +135,10 @@ public abstract class AbstractBlockControllableSignalHead extends AbstractBlockC
   @Nullable
   @Override
   public TileEntity createNewTileEntity(World worldIn, int meta) {
-    return new TileEntityTrafficSignalHead();
+    return new TileEntityTrafficSignalHead(getDefaultTrafficSignalSectionInfo());
   }
+
+  public abstract TrafficSignalSectionInfo[] getDefaultTrafficSignalSectionInfo();
 
   @Override
   public boolean onBlockActivated(World p_180639_1_, BlockPos p_180639_2_, IBlockState p_180639_3_,
@@ -148,20 +151,32 @@ public abstract class AbstractBlockControllableSignalHead extends AbstractBlockC
     }
 
     if (!p_180639_1_.isRemote) {
+
+      // If tile entity is missing, create a new one
+      if (p_180639_1_.getTileEntity(p_180639_2_) == null) {
+        p_180639_1_.setTileEntity(p_180639_2_, createNewTileEntity(p_180639_1_, 0));
+      }
+
       try {
         TileEntity rawTileEntity = p_180639_1_.getTileEntity(p_180639_2_);
         if (rawTileEntity instanceof TileEntityTrafficSignalHead) {
           TileEntityTrafficSignalHead tileEntity = (TileEntityTrafficSignalHead) rawTileEntity;
+
+          if (tileEntity.getSectionCount() == 0) {
+            tileEntity.setSectionInfos(getDefaultTrafficSignalSectionInfo());
+          }
+
+
           if (p_180639_4_.isSneaking()) {
             tileEntity.getNextVisorType();
             tileEntity.getNextVisorPaintColor();
             p_180639_4_.sendMessage(new TextComponentString(
-                "Traffic signal visor type set to " + tileEntity.getVisorType().getFriendlyName()));
+                "Traffic signal visor type set to " + tileEntity.getSectionInfos()[0].getVisorType().getFriendlyName()));
           } else {
              tileEntity.getNextBodyPaintColor();
              tileEntity.getNextDoorPaintColor();
              p_180639_4_.sendMessage(new TextComponentString(
-                 "Traffic signal paint color set to " + tileEntity.getBodyPaintColor()
+                 "Traffic signal paint color set to " + tileEntity.getSectionInfos()[0].getBodyColor()
                      .getFriendlyName()));
             TrafficSignalBodyTilt nextBodyTilt = tileEntity.getNextBodyTilt();
             p_180639_4_.sendMessage(new TextComponentString(

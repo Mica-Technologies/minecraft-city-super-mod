@@ -6,6 +6,10 @@ import com.micatechnologies.minecraft.csm.codeutils.RenderHelper.Box;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignalHead;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyColor;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyTilt;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBulbColor;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBulbStyle;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBulbType;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalSectionInfo;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalVisorType;
 import java.util.Arrays;
 import java.util.List;
@@ -561,15 +565,12 @@ public class TileEntityTrafficSignalHeadRenderer extends
     // Gather block state information
     EnumFacing facing = te.getWorld().getBlockState(te.getPos())
         .getValue(AbstractBlockControllableSignalHead.FACING);
-    int bulbColor = te.getWorld().getBlockState(te.getPos())
+    int signalColorState = te.getWorld().getBlockState(te.getPos())
         .getValue(AbstractBlockControllableSignalHead.COLOR);
 
     // Gather tile entity information
-    TrafficSignalBodyColor bodyColor = te.getBodyPaintColor(); // Sides, top, bottom
-    TrafficSignalBodyColor doorColor = te.getDoorPaintColor(); // Front
-    TrafficSignalBodyColor visorColor = te.getVisorPaintColor(); // Not yet implemented
+    TrafficSignalSectionInfo[] sectionInfos = te.getSectionInfos(signalColorState);
     TrafficSignalBodyTilt bodyTilt = te.getBodyTilt(); // Body tilt angle
-    TrafficSignalVisorType visorType = te.getVisorType(); // Visor type
     DirectionSixteen bodyDirection =
         AbstractBlockControllableSignalHead.getTiltedFacing(bodyTilt, facing);
 
@@ -620,13 +621,25 @@ public class TileEntityTrafficSignalHeadRenderer extends
     GlStateManager.disableCull(); // Disable culling for visibility.
     GlStateManager.disableLighting(); // Disable lighting for color rendering.
 
-    renderSignalSection(te, bulbColor, bodyColor, doorColor, visorColor, visorType, 1);
-    renderSignalSection(te, bulbColor, bodyColor, doorColor, visorColor, visorType, 0);
-    renderSignalSection(te, bulbColor, bodyColor, doorColor, visorColor, visorType, -1);
+    // Get first section index for rendering
+    int firstSectionIndex = sectionInfos.length > 2 ? 1 : 0;
 
-    renderSignalBulb(te, bulbColor, 1);
-    renderSignalBulb(te, bulbColor, 0);
-    renderSignalBulb(te, bulbColor, -1);
+    // Render signal bodies and visors
+    int startingSectionIndex = firstSectionIndex;
+    for (TrafficSignalSectionInfo sectionInfo : sectionInfos) {
+      TrafficSignalBodyColor bodyColor = sectionInfo.getBodyColor();
+      TrafficSignalBodyColor doorColor = sectionInfo.getDoorColor();
+      TrafficSignalBodyColor visorColor = sectionInfo.getVisorColor();
+      TrafficSignalVisorType visorType = sectionInfo.getVisorType();
+      TrafficSignalBulbStyle bulbStyle = sectionInfo.getBulbStyle();
+      TrafficSignalBulbType bulbType = sectionInfo.getBulbType();
+      TrafficSignalBulbColor bulbColor = sectionInfo.getBulbCustomColor();
+      boolean isBulbLit = sectionInfo.isBulbLit();
+
+      // Render each section with the gathered colors and visor type
+      renderSignalSection(te, bodyColor, doorColor, visorColor, visorType, startingSectionIndex);
+      renderSignalBulb(te, bulbStyle,bulbType,bulbColor,isBulbLit, startingSectionIndex--);
+    }
 
     GlStateManager.enableLighting(); // Enable lighting.
     GlStateManager.enableCull(); // Enable culling.
@@ -635,10 +648,14 @@ public class TileEntityTrafficSignalHeadRenderer extends
   }
 
 
-  private void renderSignalSection(TileEntityTrafficSignalHead te, int bulbColor,
+
+  private void renderSignalSection(TileEntityTrafficSignalHead te,
       TrafficSignalBodyColor bodyColor,
       TrafficSignalBodyColor doorColor, TrafficSignalBodyColor visorColor,
       TrafficSignalVisorType visorType, int index) {
+    // Push OpenGL transformation matrix.
+    GL11.glPushMatrix();
+
     // Disable textures and set baseline color
     GlStateManager.disableTexture2D();
     GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
@@ -650,6 +667,9 @@ public class TileEntityTrafficSignalHeadRenderer extends
     // Restore textures and reset color
     GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
     GlStateManager.enableTexture2D();
+
+    // Pop OpenGL transformation matrix.
+    GL11.glPopMatrix();
   }
 
   /**
@@ -668,44 +688,23 @@ public class TileEntityTrafficSignalHeadRenderer extends
    */
   private void renderFrontDoor(TileEntityTrafficSignalHead te, TrafficSignalBodyColor doorColor,
       int index) {
-    // float x = 2, y = 0, z = 10.5f;
-    // float width = 12, height = 12, depth = 0.5f;
-    //
-    // y += (index * 12); // Move up based on index
-    //
-    // RenderHelper.drawCuboidColoredbySize(x, y, z, width, height, depth, doorColor.getRed(),
-    //     doorColor.getGreen(),
-    //     doorColor.getBlue(),1.0f); // Render cube
-
+    // Render the door using the vertex data
     float yOffset = index * 12.0f;
     RenderHelper.drawBoxes(SIGNAL_DOOR_VERTEX_DATA, doorColor.getRed(), doorColor.getGreen(),
         doorColor.getBlue(), 1.0f,0.0f,yOffset,0.0f);
   }
 
-  /**
-   * Renders the traffic signal bulb. Bulbs are positioned at specific heights on the front face.
-   */
-  private void renderSignalBulb(TileEntityTrafficSignalHead te, int bulbColor, int index) {
-    // Map bulbColor to texture name (just the base name, no extension or path)
-    String[] bulbTextures = {
-      "trafficsignals/lights/iled_red",      // 0
-      "trafficsignals/lights/iled_red_off",   // 1
-      "trafficsignals/lights/iled_yellow",   // 2
-      "trafficsignals/lights/iled_yellow_off",// 3
-      "trafficsignals/lights/iled_green",    // 4
-      "trafficsignals/lights/iled_green_off"  // 5
-      // Add more if needed
-    };
-    if (bulbColor < 0 || bulbColor >= bulbTextures.length) return;
 
-    String tex = bulbTextures[bulbColor];
+  private void renderSignalBulb(TileEntityTrafficSignalHead te, TrafficSignalBulbStyle bulbStyle,
+      TrafficSignalBulbType bulbType, TrafficSignalBulbColor bulbColor, boolean isBulbLit, int index) {
+    String tex = getSignalBulbTexture(bulbStyle,bulbType,bulbColor, isBulbLit);
     ResourceLocation texLoc = new ResourceLocation("csm", "textures/blocks/" + tex + ".png");
+
+    // Push OpenGL transformation matrix.
+    GL11.glPushMatrix();
 
     // Always bind the correct texture before rendering
     Minecraft.getMinecraft().getTextureManager().bindTexture(texLoc);
-
-    // Reset color to white before rendering the bulb
-    GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
 
     // Bulb quad parameters: cover the entire 12x12 front face of the section
     float x = 2f;
@@ -724,6 +723,17 @@ public class TileEntityTrafficSignalHeadRenderer extends
     buffer.pos(x+size, y,      z).tex(1, 0).endVertex();
 
     tessellator.draw();
+
+    // Pop OpenGL transformation matrix.
+    GL11.glPopMatrix();
+  }
+
+  private String getSignalBulbTexture(TrafficSignalBulbStyle bulbStyle,
+      TrafficSignalBulbType bulbType, TrafficSignalBulbColor bulbColor, boolean isBulbLit) {
+    // Map the bulb style, type, color, and lit state to a texture name
+    String baseName = "trafficsignals/lights/";
+
+    return "trafficsignals/lights/iled_red";
   }
 
   /**

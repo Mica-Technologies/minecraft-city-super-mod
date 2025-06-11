@@ -1,9 +1,14 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractTileEntity;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignal.SIGNAL_SIDE;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignalHead;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyColor;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyTilt;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBulbColor;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalSectionInfo;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalVisorType;
+import net.minecraft.block.Block;
 import net.minecraft.nbt.NBTTagCompound;
 
 /**
@@ -21,21 +26,7 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
    *
    * @since 1.0
    */
-  private static final String BODY_PAINT_COLOR_KEY = "bodyPaintColor";
-
-  /**
-   * The key used to store the body paint color in NBT data.
-   *
-   * @since 1.0
-   */
-  private static final String DOOR_PAINT_COLOR_KEY = "doorPaintColor";
-
-  /**
-   * The key used to store the body paint color in NBT data.
-   *
-   * @since 1.0
-   */
-  private static final String VISOR_PAINT_COLOR_KEY = "visorPaintColor";
+  private static final String SECTION_INFOS_KEY = "sectionInfos";
 
   /**
    * The key used to store the body tilt in NBT data.
@@ -45,32 +36,26 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
   private static final String BODY_TILT_KEY = "bodyTilt";
 
   /**
-   * The key used to store the visor type in NBT data.
+   * The key used to store the section count in the section info NBT data.
    *
    * @since 1.0
    */
-  private static final String VISOR_TYPE_KEY = "visorType";
+  private static final String SECTION_INFO_COMPOUND_COUNT_KEY = "count";
 
   /**
-   * The current body paint color.
+   * The key prefix used to store each section info in the section info NBT data.
    *
    * @since 1.0
    */
-  private TrafficSignalBodyColor bodyPaintColor = TrafficSignalBodyColor.FLAT_BLACK;
+  private static final String SECTION_INFO_COMPOUND_KEY_PREFIX = "s_";
 
   /**
-   * The current door paint color.
+   * The current visor type.
    *
    * @since 1.0
    */
-  private TrafficSignalBodyColor doorPaintColor = TrafficSignalBodyColor.FLAT_BLACK;
+  private TrafficSignalSectionInfo[] sectionInfos = {};
 
-  /**
-   * The current visor paint color.
-   *
-   * @since 1.0
-   */
-  private TrafficSignalBodyColor visorPaintColor = TrafficSignalBodyColor.FLAT_BLACK;
 
   /**
    * The current body tilt.
@@ -80,11 +65,23 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
   private TrafficSignalBodyTilt bodyTilt = TrafficSignalBodyTilt.NONE;
 
   /**
-   * The current visor type.
+   * Constructs a new TileEntityTrafficSignalHead instance.
    *
    * @since 1.0
    */
-  private TrafficSignalVisorType visorType = TrafficSignalVisorType.TUNNEL;
+  public TileEntityTrafficSignalHead() {
+    super();
+
+    // Initialize the section infos with default values
+    sectionInfos= new TrafficSignalSectionInfo[]{};
+  }
+
+  public TileEntityTrafficSignalHead(TrafficSignalSectionInfo[] sectionInfos) {
+    super();
+
+    // Initialize the section infos with the provided values
+    this.sectionInfos = sectionInfos;
+  }
 
   /**
    * Processes the reading of the tile entity's NBT data from the supplied NBT tag compound.
@@ -95,30 +92,34 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
    */
   @Override
   public void readNBT(NBTTagCompound compound) {
-    // Get the body paint color
-    if (compound.hasKey(BODY_PAINT_COLOR_KEY)) {
-      bodyPaintColor = TrafficSignalBodyColor.fromNBT(compound.getInteger(BODY_PAINT_COLOR_KEY));
-    }
-
-    // Get the door paint color
-    if (compound.hasKey(DOOR_PAINT_COLOR_KEY)) {
-      doorPaintColor = TrafficSignalBodyColor.fromNBT(compound.getInteger(DOOR_PAINT_COLOR_KEY));
-    }
-
-    // Get the visor paint color
-    if (compound.hasKey(VISOR_PAINT_COLOR_KEY)) {
-      visorPaintColor = TrafficSignalBodyColor.fromNBT(compound.getInteger(VISOR_PAINT_COLOR_KEY));
-    }
+    // Get the traffic signal section infos
+    readSectionInfo(compound);
 
     // Get the body tilt
     if (compound.hasKey(BODY_TILT_KEY)) {
       bodyTilt = TrafficSignalBodyTilt.fromNBT(compound.getInteger(BODY_TILT_KEY));
     }
+  }
 
-    // Get the visor type
-    if (compound.hasKey(VISOR_TYPE_KEY)) {
-      visorType = TrafficSignalVisorType.fromNBT(compound.getInteger(VISOR_TYPE_KEY));
+
+  private void readSectionInfo(NBTTagCompound compound) {
+    if (compound.hasKey(SECTION_INFOS_KEY)) {
+      NBTTagCompound sectionInfoCompound = compound.getCompoundTag(SECTION_INFOS_KEY);
+      sectionInfos = new TrafficSignalSectionInfo[sectionInfoCompound.getInteger(SECTION_INFO_COMPOUND_COUNT_KEY)];
+      for (int i = 0; i < sectionInfos.length; i++) {
+        int[] sectionData = sectionInfoCompound.getIntArray(SECTION_INFO_COMPOUND_KEY_PREFIX + i);
+        sectionInfos[i] = TrafficSignalSectionInfo.fromNBTArray(sectionData);
+      }
     }
+  }
+
+  private void writeSectionInfo(NBTTagCompound compound) {
+    NBTTagCompound sectionInfoCompound = new NBTTagCompound();
+    sectionInfoCompound.setInteger(SECTION_INFO_COMPOUND_COUNT_KEY, sectionInfos.length);
+    for (int i = 0; i < sectionInfos.length; i++) {
+      sectionInfoCompound.setIntArray(SECTION_INFO_COMPOUND_KEY_PREFIX + i, sectionInfos[i].toNBTArray());
+    }
+    compound.setTag(SECTION_INFOS_KEY, sectionInfoCompound);
   }
 
   /**
@@ -132,56 +133,77 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
    */
   @Override
   public NBTTagCompound writeNBT(NBTTagCompound compound) {
-    // Set the body paint color
-    compound.setInteger(BODY_PAINT_COLOR_KEY, bodyPaintColor.toNBT());
-
-    // Set the door paint color
-    compound.setInteger(DOOR_PAINT_COLOR_KEY, doorPaintColor.toNBT());
-
-    // Set the visor paint color
-    compound.setInteger(VISOR_PAINT_COLOR_KEY, visorPaintColor.toNBT());
+    // Write the section infos to the compound
+    writeSectionInfo(compound);
 
     // Set the body tilt
     compound.setInteger(BODY_TILT_KEY, bodyTilt.toNBT());
-
-    // Set the visor type
-    compound.setInteger(VISOR_TYPE_KEY, visorType.toNBT());
 
     // Return the compound
     return compound;
   }
 
   /**
-   * Gets the current body paint color.
+   * Gets the current section infos (non-live, meaning the bulb colors are not
+   * updated based on the current bulb color).
    *
-   * @return the current body paint color.
+   * @return the current section infos (non-live).
    *
    * @since 1.0
    */
-  public TrafficSignalBodyColor getBodyPaintColor() {
-    return bodyPaintColor;
+  public TrafficSignalSectionInfo[] getSectionInfos() {
+    return sectionInfos;
   }
 
   /**
-   * Gets the current door paint color.
+   * Gets the current section infos.
    *
-   * @return the current door paint color.
+   * @return the current section infos.
    *
    * @since 1.0
    */
-  public TrafficSignalBodyColor getDoorPaintColor() {
-    return doorPaintColor;
+  public TrafficSignalSectionInfo[] getSectionInfos(int currentBulbColor) {
+    // Red:0, Yellow:1, Green:2, Off:3
+    for (TrafficSignalSectionInfo sectionInfo : sectionInfos) {
+      if (currentBulbColor==0&&sectionInfo.getBulbColor()== TrafficSignalBulbColor.RED){
+        sectionInfo.setBulbLit(true);
+      } else if (currentBulbColor==1&&sectionInfo.getBulbColor()== TrafficSignalBulbColor.YELLOW){
+        sectionInfo.setBulbLit(true);
+      } else if (currentBulbColor==2&&sectionInfo.getBulbColor()== TrafficSignalBulbColor.GREEN){
+        sectionInfo.setBulbLit(true);
+      } else if (currentBulbColor==3){
+        sectionInfo.setBulbLit(false);
+      } else {
+        sectionInfo.setBulbLit(false);
+      }
+    }
+
+    // Loop again, and if the bulb is lit and set to flashing, handle the flashing logic
+    long blinkInterval = 500; // ms
+    boolean firstHalfOfSecond = (System.currentTimeMillis() % (blinkInterval * 2)) < blinkInterval;
+    for (TrafficSignalSectionInfo sectionInfo : sectionInfos) {
+      if (sectionInfo.isBulbLit() && sectionInfo.isBulbFlashing()&&firstHalfOfSecond) {
+        sectionInfo.setBulbLit(false);
+      }
+    }
+
+    return sectionInfos;
   }
 
   /**
-   * Gets the current visor paint color.
+   * Sets the section infos.
    *
-   * @return the current visor paint color.
+   * @param sectionInfos the new section infos
    *
    * @since 1.0
    */
-  public TrafficSignalBodyColor getVisorPaintColor() {
-    return visorPaintColor;
+  public void setSectionInfos(TrafficSignalSectionInfo[] sectionInfos) {
+    this.sectionInfos = sectionInfos;
+    markDirtySync(world, pos, true);
+  }
+
+  public int getSectionCount() {
+    return sectionInfos.length;
   }
 
   /**
@@ -193,55 +215,6 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
    */
   public TrafficSignalBodyTilt getBodyTilt() {
     return bodyTilt;
-  }
-
-  /**
-   * Gets the current visor type.
-   *
-   * @return the current visor type.
-   *
-   * @since 1.0
-   */
-  public TrafficSignalVisorType getVisorType() {
-    return visorType;
-  }
-
-  /**
-   * Sets the body paint color.
-   *
-   * @param bodyPaintColor the new body paint color
-   *
-   * @since 1.0
-   */
-  public void setBodyPaintColor(TrafficSignalBodyColor bodyPaintColor) {
-    this.bodyPaintColor = bodyPaintColor;
-    System.err.println(
-        "Body paint color set to [" + (world.isRemote ? "client" : "server") + "]: " + bodyPaintColor);
-    markDirtySync(world, pos, true);
-  }
-
-  /**
-   * Sets the door paint color.
-   *
-   * @param paintColor the new door paint color
-   *
-   * @since 1.0
-   */
-  public void setDoorPaintColor(TrafficSignalBodyColor paintColor) {
-    this.doorPaintColor = paintColor;
-    markDirtySync(world, pos, true);
-  }
-
-  /**
-   * Sets the visor paint color.
-   *
-   * @param paintColor the new visor paint color
-   *
-   * @since 1.0
-   */
-  public void setVisorPaintColor(TrafficSignalBodyColor paintColor) {
-    this.visorPaintColor = paintColor;
-    markDirtySync(world, pos, true);
   }
 
   /**
@@ -257,18 +230,6 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
   }
 
   /**
-   * Sets the visor type.
-   *
-   * @param visorType the new visor type
-   *
-   * @since 1.0
-   */
-  public void setVisorType(TrafficSignalVisorType visorType) {
-    this.visorType = visorType;
-    markDirtySync(world, pos, true);
-  }
-
-  /**
    * Gets the next body paint color in the sequence.
    *
    * @return the next body paint color in the sequence
@@ -276,9 +237,16 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
    * @since 1.0
    */
   public TrafficSignalBodyColor getNextBodyPaintColor() {
-    TrafficSignalBodyColor nextPaintColor = bodyPaintColor.getNextColor();
-    setBodyPaintColor(nextPaintColor);
-    return getBodyPaintColor();
+    if (sectionInfos.length == 0) {
+      System.err.println("No section infos available to get the next body paint color.");
+      return TrafficSignalBodyColor.FLAT_BLACK; // Default fallback color
+    }
+    TrafficSignalBodyColor nextPaintColor = sectionInfos[0].getBodyColor().getNextColor();
+    // Update the body color for all sections
+    for (TrafficSignalSectionInfo sectionInfo : sectionInfos) {
+      sectionInfo.setBodyColor(nextPaintColor);
+    }
+    return nextPaintColor;
   }
 
   /**
@@ -289,9 +257,12 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
    * @since 1.0
    */
   public TrafficSignalBodyColor getNextDoorPaintColor() {
-    TrafficSignalBodyColor nextPaintColor = doorPaintColor.getNextColor();
-    setDoorPaintColor(nextPaintColor);
-    return getDoorPaintColor();
+    TrafficSignalBodyColor nextPaintColor = sectionInfos[0].getDoorColor().getNextColor();
+    // Update the door color for all sections
+    for (TrafficSignalSectionInfo sectionInfo : sectionInfos) {
+      sectionInfo.setDoorColor(nextPaintColor);
+    }
+    return nextPaintColor;
   }
 
   /**
@@ -302,9 +273,12 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
    * @since 1.0
    */
   public TrafficSignalBodyColor getNextVisorPaintColor() {
-    TrafficSignalBodyColor nextPaintColor = visorPaintColor.getNextColor();
-    setVisorPaintColor(nextPaintColor);
-    return getVisorPaintColor();
+    TrafficSignalBodyColor nextPaintColor = sectionInfos[0].getVisorColor().getNextColor();
+    // Update the visor color for all sections
+    for (TrafficSignalSectionInfo sectionInfo : sectionInfos) {
+      sectionInfo.setVisorColor(nextPaintColor);
+    }
+    return nextPaintColor;
   }
 
   /**
@@ -328,8 +302,11 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
    * @since 1.0
    */
   public TrafficSignalVisorType getNextVisorType() {
-    TrafficSignalVisorType nextVisorType = visorType.getNextVisorType();
-    setVisorType(nextVisorType);
-    return getVisorType();
+    TrafficSignalVisorType nextVisorType = sectionInfos[0].getVisorType().getNextVisorType();
+    // Update the visor type for all sections
+    for (TrafficSignalSectionInfo sectionInfo : sectionInfos) {
+      sectionInfo.setVisorType(nextVisorType);
+    }
+    return nextVisorType;
   }
 }
