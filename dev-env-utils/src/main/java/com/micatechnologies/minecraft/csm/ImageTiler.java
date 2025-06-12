@@ -57,10 +57,17 @@ public class ImageTiler {
         "inca_green_off",
         "inca_yellow_off",
         "inca_red_off",
+        "inca_arrow_green_on",
+        "inca_arrow_yellow_on",
+        "inca_arrow_red_on",
+        "inca_arrow_green_off",
+        "inca_arrow_yellow_off",
+        "inca_arrow_red_off",
         "gtx_green_on",
         "gtx_yellow_on",
         "gtx_red_on",
-        "gtx_off"
+        "gtx_off",
+        "wled_red_x"
     };
     String inputImageExtension = ".png";
     // Define output image

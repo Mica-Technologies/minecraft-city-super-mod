@@ -11,6 +11,8 @@ import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBulb
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBulbType;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalSectionInfo;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalTextureMap;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalTextureMap.TextureInfo;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalVertexData;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalVisorType;
 import java.util.Arrays;
 import java.util.List;
@@ -27,537 +29,6 @@ import net.minecraft.client.renderer.BufferBuilder;
 
 public class TileEntityTrafficSignalHeadRenderer extends
     TileEntitySpecialRenderer<TileEntityTrafficSignalHead> {
-
-  private static final ResourceLocation BULB_TEXTURE =
-      new ResourceLocation("modid:textures/blocks/trafficsignal_bulbs.png");
-
-  private static final List<Box> TUNNEL_VISOR_VERTEX_DATA = Arrays.asList(
-      new Box(new float[]{2.90f, 8.10f, 2.00f}, new float[]{3.30f, 8.50f, 11.00f}),
-      new Box(new float[]{2.90f, 3.70f, 2.00f}, new float[]{3.30f, 4.10f, 11.00f}),
-      new Box(new float[]{12.70f, 8.10f, 2.00f}, new float[]{13.10f, 8.50f, 11.00f}),
-      new Box(new float[]{12.70f, 3.70f, 2.00f}, new float[]{13.10f, 4.10f, 11.00f}),
-      new Box(new float[]{3.10f, 8.50f, 2.00f}, new float[]{3.50f, 8.90f, 11.00f}),
-      new Box(new float[]{3.10f, 3.30f, 2.00f}, new float[]{3.50f, 3.70f, 11.00f}),
-      new Box(new float[]{12.50f, 8.50f, 2.00f}, new float[]{12.90f, 8.90f, 11.00f}),
-      new Box(new float[]{12.50f, 3.30f, 2.00f}, new float[]{12.90f, 3.70f, 11.00f}),
-      new Box(new float[]{3.30f, 8.90f, 2.00f}, new float[]{3.70f, 9.30f, 11.00f}),
-      new Box(new float[]{3.30f, 2.90f, 2.00f}, new float[]{3.70f, 3.30f, 11.00f}),
-      new Box(new float[]{12.30f, 8.90f, 2.00f}, new float[]{12.70f, 9.30f, 11.00f}),
-      new Box(new float[]{12.30f, 2.90f, 2.00f}, new float[]{12.70f, 3.30f, 11.00f}),
-      new Box(new float[]{3.60f, 9.30f, 2.00f}, new float[]{4.00f, 9.70f, 11.00f}),
-      new Box(new float[]{3.60f, 2.50f, 2.00f}, new float[]{4.00f, 2.90f, 11.00f}),
-      new Box(new float[]{12.00f, 9.30f, 2.00f}, new float[]{12.40f, 9.70f, 11.00f}),
-      new Box(new float[]{12.00f, 2.50f, 2.00f}, new float[]{12.40f, 2.90f, 11.00f}),
-      new Box(new float[]{3.90f, 9.70f, 2.00f}, new float[]{4.30f, 10.10f, 11.00f}),
-      new Box(new float[]{3.90f, 2.10f, 2.00f}, new float[]{4.30f, 2.50f, 11.00f}),
-      new Box(new float[]{11.70f, 9.70f, 2.00f}, new float[]{12.10f, 10.10f, 11.00f}),
-      new Box(new float[]{11.70f, 2.10f, 2.00f}, new float[]{12.10f, 2.50f, 11.00f}),
-      new Box(new float[]{4.20f, 9.90f, 2.00f}, new float[]{4.60f, 10.30f, 11.00f}),
-      new Box(new float[]{4.20f, 1.90f, 2.00f}, new float[]{4.60f, 2.30f, 11.00f}),
-      new Box(new float[]{11.40f, 9.90f, 2.00f}, new float[]{11.80f, 10.30f, 11.00f}),
-      new Box(new float[]{11.40f, 1.90f, 2.00f}, new float[]{11.80f, 2.30f, 11.00f}),
-      new Box(new float[]{2.70f, 7.70f, 2.00f}, new float[]{3.10f, 8.10f, 11.00f}),
-      new Box(new float[]{2.70f, 4.10f, 2.00f}, new float[]{3.10f, 4.50f, 11.00f}),
-      new Box(new float[]{12.90f, 7.70f, 2.00f}, new float[]{13.30f, 8.10f, 11.00f}),
-      new Box(new float[]{12.90f, 4.10f, 2.00f}, new float[]{13.30f, 4.50f, 11.00f}),
-      new Box(new float[]{6.00f, 10.90f, 2.00f}, new float[]{6.40f, 11.30f, 11.00f}),
-      new Box(new float[]{9.60f, 10.90f, 2.00f}, new float[]{10.00f, 11.30f, 11.00f}),
-      new Box(new float[]{5.60f, 10.70f, 2.00f}, new float[]{6.00f, 11.10f, 11.00f}),
-      new Box(new float[]{10.00f, 10.70f, 2.00f}, new float[]{10.40f, 11.10f, 11.00f}),
-      new Box(new float[]{5.20f, 10.50f, 2.00f}, new float[]{5.60f, 10.90f, 11.00f}),
-      new Box(new float[]{10.40f, 10.50f, 2.00f}, new float[]{10.80f, 10.90f, 11.00f}),
-      new Box(new float[]{4.80f, 10.30f, 2.00f}, new float[]{5.20f, 10.70f, 11.00f}),
-      new Box(new float[]{4.80f, 1.50f, 2.00f}, new float[]{5.20f, 1.90f, 11.00f}),
-      new Box(new float[]{10.80f, 10.30f, 2.00f}, new float[]{11.20f, 10.70f, 11.00f}),
-      new Box(new float[]{10.80f, 1.50f, 2.00f}, new float[]{11.20f, 1.90f, 11.00f}),
-      new Box(new float[]{4.50f, 10.10f, 2.00f}, new float[]{4.90f, 10.50f, 11.00f}),
-      new Box(new float[]{4.50f, 1.70f, 2.00f}, new float[]{4.90f, 2.10f, 11.00f}),
-      new Box(new float[]{11.10f, 10.10f, 2.00f}, new float[]{11.50f, 10.50f, 11.00f}),
-      new Box(new float[]{11.10f, 1.70f, 2.00f}, new float[]{11.50f, 2.10f, 11.00f}),
-      new Box(new float[]{2.50f, 7.30f, 2.00f}, new float[]{2.90f, 7.70f, 11.00f}),
-      new Box(new float[]{2.50f, 4.50f, 2.00f}, new float[]{2.90f, 4.90f, 11.00f}),
-      new Box(new float[]{13.10f, 7.30f, 2.00f}, new float[]{13.50f, 7.70f, 11.00f}),
-      new Box(new float[]{13.10f, 4.50f, 2.00f}, new float[]{13.50f, 4.90f, 11.00f}),
-      new Box(new float[]{6.40f, 11.10f, 2.00f}, new float[]{6.80f, 11.50f, 11.00f}),
-      new Box(new float[]{9.20f, 11.10f, 2.00f}, new float[]{9.60f, 11.50f, 11.00f}),
-      new Box(new float[]{2.40f, 4.90f, 2.00f}, new float[]{2.80f, 7.30f, 11.00f}),
-      new Box(new float[]{13.20f, 4.90f, 2.00f}, new float[]{13.60f, 7.30f, 11.00f}),
-      new Box(new float[]{6.80f, 11.30f, 2.00f}, new float[]{9.20f, 11.70f, 11.00f}),
-      new Box(new float[]{5.20f, 1.30f, 10.00f}, new float[]{5.60f, 1.70f, 11.00f}),
-      new Box(new float[]{5.60f, 1.10f, 10.00f}, new float[]{6.00f, 1.50f, 11.00f}),
-      new Box(new float[]{6.00f, 0.90f, 10.00f}, new float[]{6.40f, 1.30f, 11.00f}),
-      new Box(new float[]{6.40f, 0.70f, 10.00f}, new float[]{6.80f, 1.10f, 11.00f}),
-      new Box(new float[]{6.80f, 0.50f, 10.00f}, new float[]{9.20f, 0.90f, 11.00f}),
-      new Box(new float[]{9.60f, 0.90f, 10.00f}, new float[]{10.00f, 1.30f, 11.00f}),
-      new Box(new float[]{9.20f, 0.70f, 10.00f}, new float[]{9.60f, 1.10f, 11.00f}),
-      new Box(new float[]{10.00f, 1.10f, 10.00f}, new float[]{10.40f, 1.50f, 11.00f}),
-      new Box(new float[]{10.40f, 1.30f, 10.00f}, new float[]{10.80f, 1.70f, 11.00f})
-  );
-
-
-  private static final List<Box> NONE_VISOR_VERTEX_DATA = Arrays.asList(
-      new Box(new float[]{2.90f, 8.10f, 10.00f}, new float[]{3.30f, 8.50f, 11.00f}),
-      new Box(new float[]{2.90f, 3.70f, 10.00f}, new float[]{3.30f, 4.10f, 11.00f}),
-      new Box(new float[]{12.70f, 8.10f, 10.00f}, new float[]{13.10f, 8.50f, 11.00f}),
-      new Box(new float[]{12.70f, 3.70f, 10.00f}, new float[]{13.10f, 4.10f, 11.00f}),
-      new Box(new float[]{3.10f, 8.50f, 10.00f}, new float[]{3.50f, 8.90f, 11.00f}),
-      new Box(new float[]{3.10f, 3.30f, 10.00f}, new float[]{3.50f, 3.70f, 11.00f}),
-      new Box(new float[]{12.50f, 8.50f, 10.00f}, new float[]{12.90f, 8.90f, 11.00f}),
-      new Box(new float[]{12.50f, 3.30f, 10.00f}, new float[]{12.90f, 3.70f, 11.00f}),
-      new Box(new float[]{3.30f, 8.90f, 10.00f}, new float[]{3.70f, 9.30f, 11.00f}),
-      new Box(new float[]{3.30f, 2.90f, 10.00f}, new float[]{3.70f, 3.30f, 11.00f}),
-      new Box(new float[]{12.30f, 8.90f, 10.00f}, new float[]{12.70f, 9.30f, 11.00f}),
-      new Box(new float[]{12.30f, 2.90f, 10.00f}, new float[]{12.70f, 3.30f, 11.00f}),
-      new Box(new float[]{3.60f, 9.30f, 10.00f}, new float[]{4.00f, 9.70f, 11.00f}),
-      new Box(new float[]{3.60f, 2.50f, 10.00f}, new float[]{4.00f, 2.90f, 11.00f}),
-      new Box(new float[]{12.00f, 9.30f, 10.00f}, new float[]{12.40f, 9.70f, 11.00f}),
-      new Box(new float[]{12.00f, 2.50f, 10.00f}, new float[]{12.40f, 2.90f, 11.00f}),
-      new Box(new float[]{3.90f, 9.70f, 10.00f}, new float[]{4.30f, 10.10f, 11.00f}),
-      new Box(new float[]{3.90f, 2.10f, 10.00f}, new float[]{4.30f, 2.50f, 11.00f}),
-      new Box(new float[]{11.70f, 9.70f, 10.00f}, new float[]{12.10f, 10.10f, 11.00f}),
-      new Box(new float[]{11.70f, 2.10f, 10.00f}, new float[]{12.10f, 2.50f, 11.00f}),
-      new Box(new float[]{4.20f, 9.90f, 10.00f}, new float[]{4.60f, 10.30f, 11.00f}),
-      new Box(new float[]{4.20f, 1.90f, 10.00f}, new float[]{4.60f, 2.30f, 11.00f}),
-      new Box(new float[]{11.40f, 9.90f, 10.00f}, new float[]{11.80f, 10.30f, 11.00f}),
-      new Box(new float[]{11.40f, 1.90f, 10.00f}, new float[]{11.80f, 2.30f, 11.00f}),
-      new Box(new float[]{2.70f, 7.70f, 10.00f}, new float[]{3.10f, 8.10f, 11.00f}),
-      new Box(new float[]{2.70f, 4.10f, 10.00f}, new float[]{3.10f, 4.50f, 11.00f}),
-      new Box(new float[]{12.90f, 7.70f, 10.00f}, new float[]{13.30f, 8.10f, 11.00f}),
-      new Box(new float[]{12.90f, 4.10f, 10.00f}, new float[]{13.30f, 4.50f, 11.00f}),
-      new Box(new float[]{6.00f, 10.90f, 10.00f}, new float[]{6.40f, 11.30f, 11.00f}),
-      new Box(new float[]{9.60f, 10.90f, 10.00f}, new float[]{10.00f, 11.30f, 11.00f}),
-      new Box(new float[]{5.60f, 10.70f, 10.00f}, new float[]{6.00f, 11.10f, 11.00f}),
-      new Box(new float[]{10.00f, 10.70f, 10.00f}, new float[]{10.40f, 11.10f, 11.00f}),
-      new Box(new float[]{5.20f, 10.50f, 10.00f}, new float[]{5.60f, 10.90f, 11.00f}),
-      new Box(new float[]{10.40f, 10.50f, 10.00f}, new float[]{10.80f, 10.90f, 11.00f}),
-      new Box(new float[]{4.80f, 10.30f, 10.00f}, new float[]{5.20f, 10.70f, 11.00f}),
-      new Box(new float[]{4.80f, 1.50f, 10.00f}, new float[]{5.20f, 1.90f, 11.00f}),
-      new Box(new float[]{10.80f, 10.30f, 10.00f}, new float[]{11.20f, 10.70f, 11.00f}),
-      new Box(new float[]{10.80f, 1.50f, 10.00f}, new float[]{11.20f, 1.90f, 11.00f}),
-      new Box(new float[]{4.50f, 10.10f, 10.00f}, new float[]{4.90f, 10.50f, 11.00f}),
-      new Box(new float[]{4.50f, 1.70f, 10.00f}, new float[]{4.90f, 2.10f, 11.00f}),
-      new Box(new float[]{11.10f, 10.10f, 10.00f}, new float[]{11.50f, 10.50f, 11.00f}),
-      new Box(new float[]{11.10f, 1.70f, 10.00f}, new float[]{11.50f, 2.10f, 11.00f}),
-      new Box(new float[]{2.50f, 7.30f, 10.00f}, new float[]{2.90f, 7.70f, 11.00f}),
-      new Box(new float[]{2.50f, 4.50f, 10.00f}, new float[]{2.90f, 4.90f, 11.00f}),
-      new Box(new float[]{13.10f, 7.30f, 10.00f}, new float[]{13.50f, 7.70f, 11.00f}),
-      new Box(new float[]{13.10f, 4.50f, 10.00f}, new float[]{13.50f, 4.90f, 11.00f}),
-      new Box(new float[]{6.40f, 11.10f, 10.00f}, new float[]{6.80f, 11.50f, 11.00f}),
-      new Box(new float[]{9.20f, 11.10f, 10.00f}, new float[]{9.60f, 11.50f, 11.00f}),
-      new Box(new float[]{2.40f, 4.90f, 10.00f}, new float[]{2.80f, 7.30f, 11.00f}),
-      new Box(new float[]{13.20f, 4.90f, 10.00f}, new float[]{13.60f, 7.30f, 11.00f}),
-      new Box(new float[]{6.80f, 11.30f, 10.00f}, new float[]{9.20f, 11.70f, 11.00f}),
-      new Box(new float[]{6.80f, 0.50f, 10.00f}, new float[]{9.20f, 0.90f, 11.00f}),
-      new Box(new float[]{9.20f, 0.70f, 10.00f}, new float[]{9.60f, 1.10f, 11.00f}),
-      new Box(new float[]{9.60f, 0.90f, 10.00f}, new float[]{10.00f, 1.30f, 11.00f}),
-      new Box(new float[]{6.40f, 0.70f, 10.00f}, new float[]{6.80f, 1.10f, 11.00f}),
-      new Box(new float[]{6.00f, 0.90f, 10.00f}, new float[]{6.40f, 1.30f, 11.00f}),
-      new Box(new float[]{5.60f, 1.10f, 10.00f}, new float[]{6.00f, 1.50f, 11.00f}),
-      new Box(new float[]{5.20f, 1.30f, 10.00f}, new float[]{5.60f, 1.70f, 11.00f}),
-      new Box(new float[]{10.00f, 1.10f, 10.00f}, new float[]{10.40f, 1.50f, 11.00f}),
-      new Box(new float[]{10.40f, 1.30f, 10.00f}, new float[]{10.80f, 1.70f, 11.00f})
-  );
-
-
-
-  private static final List<Box> VERTICAL_LOUVERED_VISOR_VERTEX_DATA = Arrays.asList(
-      new Box(new float[]{2.90f, 8.10f, 2.00f}, new float[]{3.30f, 8.50f, 11.00f}),
-      new Box(new float[]{2.90f, 3.70f, 2.00f}, new float[]{3.30f, 4.10f, 11.00f}),
-      new Box(new float[]{12.70f, 8.10f, 2.00f}, new float[]{13.10f, 8.50f, 11.00f}),
-      new Box(new float[]{12.70f, 3.70f, 2.00f}, new float[]{13.10f, 4.10f, 11.00f}),
-      new Box(new float[]{3.10f, 8.50f, 2.00f}, new float[]{3.50f, 8.90f, 11.00f}),
-      new Box(new float[]{3.10f, 3.30f, 2.00f}, new float[]{3.50f, 3.70f, 11.00f}),
-      new Box(new float[]{12.50f, 8.50f, 2.00f}, new float[]{12.90f, 8.90f, 11.00f}),
-      new Box(new float[]{3.15f, 4.10f, 2.00f}, new float[]{3.20f, 8.10f, 11.00f}),
-      new Box(new float[]{12.80f, 4.10f, 2.00f}, new float[]{12.85f, 8.10f, 11.00f}),
-      new Box(new float[]{11.80f, 2.50f, 2.00f}, new float[]{11.85f, 9.70f, 11.00f}),
-      new Box(new float[]{10.80f, 1.90f, 2.00f}, new float[]{10.85f, 10.30f, 11.00f}),
-      new Box(new float[]{9.80f, 1.30f, 2.00f}, new float[]{9.85f, 10.90f, 11.00f}),
-      new Box(new float[]{8.70f, 0.90f, 2.00f}, new float[]{8.75f, 11.30f, 11.00f}),
-      new Box(new float[]{7.25f, 0.90f, 2.00f}, new float[]{7.30f, 11.30f, 11.00f}),
-      new Box(new float[]{6.15f, 1.30f, 2.00f}, new float[]{6.20f, 10.90f, 11.00f}),
-      new Box(new float[]{5.15f, 1.90f, 2.00f}, new float[]{5.20f, 10.30f, 11.00f}),
-      new Box(new float[]{4.15f, 2.50f, 2.00f}, new float[]{4.20f, 9.70f, 11.00f}),
-      new Box(new float[]{12.50f, 3.30f, 2.00f}, new float[]{12.90f, 3.70f, 11.00f}),
-      new Box(new float[]{3.30f, 8.90f, 2.00f}, new float[]{3.70f, 9.30f, 11.00f}),
-      new Box(new float[]{3.30f, 2.90f, 2.00f}, new float[]{3.70f, 3.30f, 11.00f}),
-      new Box(new float[]{12.30f, 8.90f, 2.00f}, new float[]{12.70f, 9.30f, 11.00f}),
-      new Box(new float[]{12.30f, 2.90f, 2.00f}, new float[]{12.70f, 3.30f, 11.00f}),
-      new Box(new float[]{3.60f, 9.30f, 2.00f}, new float[]{4.00f, 9.70f, 11.00f}),
-      new Box(new float[]{3.60f, 2.50f, 2.00f}, new float[]{4.00f, 2.90f, 11.00f}),
-      new Box(new float[]{12.00f, 9.30f, 2.00f}, new float[]{12.40f, 9.70f, 11.00f}),
-      new Box(new float[]{12.00f, 2.50f, 2.00f}, new float[]{12.40f, 2.90f, 11.00f}),
-      new Box(new float[]{3.90f, 9.70f, 2.00f}, new float[]{4.30f, 10.10f, 11.00f}),
-      new Box(new float[]{3.90f, 2.10f, 2.00f}, new float[]{4.30f, 2.50f, 11.00f}),
-      new Box(new float[]{11.70f, 9.70f, 2.00f}, new float[]{12.10f, 10.10f, 11.00f}),
-      new Box(new float[]{11.70f, 2.10f, 2.00f}, new float[]{12.10f, 2.50f, 11.00f}),
-      new Box(new float[]{4.20f, 9.90f, 2.00f}, new float[]{4.60f, 10.30f, 11.00f}),
-      new Box(new float[]{4.20f, 1.90f, 10.00f}, new float[]{4.60f, 2.30f, 11.00f}),
-      new Box(new float[]{11.40f, 9.90f, 2.00f}, new float[]{11.80f, 10.30f, 11.00f}),
-      new Box(new float[]{11.40f, 1.90f, 10.00f}, new float[]{11.80f, 2.30f, 11.00f}),
-      new Box(new float[]{2.70f, 7.70f, 2.00f}, new float[]{3.10f, 8.10f, 11.00f}),
-      new Box(new float[]{2.70f, 4.10f, 2.00f}, new float[]{3.10f, 4.50f, 11.00f}),
-      new Box(new float[]{12.90f, 7.70f, 2.00f}, new float[]{13.30f, 8.10f, 11.00f}),
-      new Box(new float[]{12.90f, 4.10f, 2.00f}, new float[]{13.30f, 4.50f, 11.00f}),
-      new Box(new float[]{6.00f, 10.90f, 2.00f}, new float[]{6.40f, 11.30f, 11.00f}),
-      new Box(new float[]{9.60f, 10.90f, 2.00f}, new float[]{10.00f, 11.30f, 11.00f}),
-      new Box(new float[]{5.60f, 10.70f, 2.00f}, new float[]{6.00f, 11.10f, 11.00f}),
-      new Box(new float[]{10.00f, 10.70f, 2.00f}, new float[]{10.40f, 11.10f, 11.00f}),
-      new Box(new float[]{5.20f, 10.50f, 2.00f}, new float[]{5.60f, 10.90f, 11.00f}),
-      new Box(new float[]{10.40f, 10.50f, 2.00f}, new float[]{10.80f, 10.90f, 11.00f}),
-      new Box(new float[]{4.80f, 10.30f, 2.00f}, new float[]{5.20f, 10.70f, 11.00f}),
-      new Box(new float[]{4.80f, 1.50f, 10.00f}, new float[]{5.20f, 1.90f, 11.00f}),
-      new Box(new float[]{10.80f, 10.30f, 2.00f}, new float[]{11.20f, 10.70f, 11.00f}),
-      new Box(new float[]{10.80f, 1.50f, 10.00f}, new float[]{11.20f, 1.90f, 11.00f}),
-      new Box(new float[]{4.50f, 10.10f, 2.00f}, new float[]{4.90f, 10.50f, 11.00f}),
-      new Box(new float[]{4.50f, 1.70f, 10.00f}, new float[]{4.90f, 2.10f, 11.00f}),
-      new Box(new float[]{11.10f, 10.10f, 2.00f}, new float[]{11.50f, 10.50f, 11.00f}),
-      new Box(new float[]{11.10f, 1.70f, 10.00f}, new float[]{11.50f, 2.10f, 11.00f}),
-      new Box(new float[]{2.50f, 7.30f, 2.00f}, new float[]{2.90f, 7.70f, 11.00f}),
-      new Box(new float[]{2.50f, 4.50f, 2.00f}, new float[]{2.90f, 4.90f, 11.00f}),
-      new Box(new float[]{13.10f, 7.30f, 2.00f}, new float[]{13.50f, 7.70f, 11.00f}),
-      new Box(new float[]{13.10f, 4.50f, 2.00f}, new float[]{13.50f, 4.90f, 11.00f}),
-      new Box(new float[]{6.40f, 11.10f, 2.00f}, new float[]{6.80f, 11.50f, 11.00f}),
-      new Box(new float[]{9.20f, 11.10f, 2.00f}, new float[]{9.60f, 11.50f, 11.00f}),
-      new Box(new float[]{2.40f, 4.90f, 2.00f}, new float[]{2.80f, 7.30f, 11.00f}),
-      new Box(new float[]{13.20f, 4.90f, 2.00f}, new float[]{13.60f, 7.30f, 11.00f}),
-      new Box(new float[]{6.80f, 11.30f, 2.00f}, new float[]{9.20f, 11.70f, 11.00f}),
-      new Box(new float[]{6.80f, 0.50f, 10.00f}, new float[]{9.20f, 0.90f, 11.00f}),
-      new Box(new float[]{9.20f, 0.70f, 10.00f}, new float[]{9.60f, 1.10f, 11.00f}),
-      new Box(new float[]{9.60f, 0.90f, 10.00f}, new float[]{10.00f, 1.30f, 11.00f}),
-      new Box(new float[]{6.40f, 0.70f, 10.00f}, new float[]{6.80f, 1.10f, 11.00f}),
-      new Box(new float[]{6.00f, 0.90f, 10.00f}, new float[]{6.40f, 1.30f, 11.00f}),
-      new Box(new float[]{5.60f, 1.10f, 10.00f}, new float[]{6.00f, 1.50f, 11.00f}),
-      new Box(new float[]{5.20f, 1.30f, 10.00f}, new float[]{5.60f, 1.70f, 11.00f}),
-      new Box(new float[]{4.80f, 1.50f, 2.00f}, new float[]{5.20f, 1.90f, 11.00f}),
-      new Box(new float[]{4.20f, 1.90f, 2.00f}, new float[]{4.60f, 2.30f, 11.00f}),
-      new Box(new float[]{4.50f, 1.70f, 2.00f}, new float[]{4.90f, 2.10f, 11.00f}),
-      new Box(new float[]{10.00f, 1.10f, 10.00f}, new float[]{10.40f, 1.50f, 11.00f}),
-      new Box(new float[]{10.40f, 1.30f, 10.00f}, new float[]{10.80f, 1.70f, 11.00f}),
-      new Box(new float[]{10.80f, 1.50f, 2.00f}, new float[]{11.20f, 1.90f, 11.00f}),
-      new Box(new float[]{11.10f, 1.70f, 2.00f}, new float[]{11.50f, 2.10f, 11.00f}),
-      new Box(new float[]{11.40f, 1.90f, 2.00f}, new float[]{11.80f, 2.30f, 11.00f})
-  );
-
-  private static final List<Box> HORIZONTAL_LOUVERED_VISOR_VERTEX_DATA = Arrays.asList(
-      new Box(new float[]{2.90f, 8.10f, 2.00f}, new float[]{3.30f, 8.50f, 11.00f}),
-      new Box(new float[]{2.90f, 3.70f, 2.00f}, new float[]{3.30f, 4.10f, 11.00f}),
-      new Box(new float[]{12.70f, 8.10f, 2.00f}, new float[]{13.10f, 8.50f, 11.00f}),
-      new Box(new float[]{12.70f, 3.70f, 2.00f}, new float[]{13.10f, 4.10f, 11.00f}),
-      new Box(new float[]{3.10f, 8.50f, 2.00f}, new float[]{3.50f, 8.90f, 11.00f}),
-      new Box(new float[]{3.10f, 3.30f, 2.00f}, new float[]{3.50f, 3.70f, 11.00f}),
-      new Box(new float[]{12.50f, 8.50f, 2.00f}, new float[]{12.90f, 8.90f, 11.00f}),
-      new Box(new float[]{6.00f, 10.80f, 2.00f}, new float[]{10.00f, 10.85f, 11.00f}),
-      new Box(new float[]{4.30f, 9.80f, 2.00f}, new float[]{11.70f, 9.85f, 11.00f}),
-      new Box(new float[]{3.50f, 8.80f, 2.00f}, new float[]{12.50f, 8.85f, 11.00f}),
-      new Box(new float[]{3.10f, 7.80f, 2.00f}, new float[]{12.90f, 7.85f, 11.00f}),
-      new Box(new float[]{2.80f, 6.80f, 2.00f}, new float[]{13.20f, 6.85f, 11.00f}),
-      new Box(new float[]{2.80f, 5.80f, 2.00f}, new float[]{13.20f, 5.85f, 11.00f}),
-      new Box(new float[]{2.90f, 4.80f, 2.00f}, new float[]{13.10f, 4.85f, 11.00f}),
-      new Box(new float[]{3.30f, 3.80f, 2.00f}, new float[]{12.70f, 3.85f, 11.00f}),
-      new Box(new float[]{4.00f, 2.80f, 2.00f}, new float[]{12.00f, 2.85f, 11.00f}),
-      new Box(new float[]{5.20f, 1.80f, 2.00f}, new float[]{10.80f, 1.85f, 11.00f}),
-      new Box(new float[]{12.50f, 3.30f, 2.00f}, new float[]{12.90f, 3.70f, 11.00f}),
-      new Box(new float[]{3.30f, 8.90f, 2.00f}, new float[]{3.70f, 9.30f, 11.00f}),
-      new Box(new float[]{3.30f, 2.90f, 2.00f}, new float[]{3.70f, 3.30f, 11.00f}),
-      new Box(new float[]{12.30f, 8.90f, 2.00f}, new float[]{12.70f, 9.30f, 11.00f}),
-      new Box(new float[]{12.30f, 2.90f, 2.00f}, new float[]{12.70f, 3.30f, 11.00f}),
-      new Box(new float[]{3.60f, 9.30f, 2.00f}, new float[]{4.00f, 9.70f, 11.00f}),
-      new Box(new float[]{3.60f, 2.50f, 2.00f}, new float[]{4.00f, 2.90f, 11.00f}),
-      new Box(new float[]{12.00f, 9.30f, 2.00f}, new float[]{12.40f, 9.70f, 11.00f}),
-      new Box(new float[]{12.00f, 2.50f, 2.00f}, new float[]{12.40f, 2.90f, 11.00f}),
-      new Box(new float[]{3.90f, 9.70f, 2.00f}, new float[]{4.30f, 10.10f, 11.00f}),
-      new Box(new float[]{3.90f, 2.10f, 2.00f}, new float[]{4.30f, 2.50f, 11.00f}),
-      new Box(new float[]{11.70f, 9.70f, 2.00f}, new float[]{12.10f, 10.10f, 11.00f}),
-      new Box(new float[]{11.70f, 2.10f, 2.00f}, new float[]{12.10f, 2.50f, 11.00f}),
-      new Box(new float[]{4.20f, 9.90f, 2.00f}, new float[]{4.60f, 10.30f, 11.00f}),
-      new Box(new float[]{4.20f, 1.90f, 10.00f}, new float[]{4.60f, 2.30f, 11.00f}),
-      new Box(new float[]{11.40f, 9.90f, 2.00f}, new float[]{11.80f, 10.30f, 11.00f}),
-      new Box(new float[]{11.40f, 1.90f, 10.00f}, new float[]{11.80f, 2.30f, 11.00f}),
-      new Box(new float[]{2.70f, 7.70f, 2.00f}, new float[]{3.10f, 8.10f, 11.00f}),
-      new Box(new float[]{2.70f, 4.10f, 2.00f}, new float[]{3.10f, 4.50f, 11.00f}),
-      new Box(new float[]{12.90f, 7.70f, 2.00f}, new float[]{13.30f, 8.10f, 11.00f}),
-      new Box(new float[]{12.90f, 4.10f, 2.00f}, new float[]{13.30f, 4.50f, 11.00f}),
-      new Box(new float[]{6.00f, 10.90f, 2.00f}, new float[]{6.40f, 11.30f, 11.00f}),
-      new Box(new float[]{9.60f, 10.90f, 2.00f}, new float[]{10.00f, 11.30f, 11.00f}),
-      new Box(new float[]{5.60f, 10.70f, 2.00f}, new float[]{6.00f, 11.10f, 11.00f}),
-      new Box(new float[]{10.00f, 10.70f, 2.00f}, new float[]{10.40f, 11.10f, 11.00f}),
-      new Box(new float[]{5.20f, 10.50f, 2.00f}, new float[]{5.60f, 10.90f, 11.00f}),
-      new Box(new float[]{10.40f, 10.50f, 2.00f}, new float[]{10.80f, 10.90f, 11.00f}),
-      new Box(new float[]{4.80f, 10.30f, 2.00f}, new float[]{5.20f, 10.70f, 11.00f}),
-      new Box(new float[]{4.80f, 1.50f, 10.00f}, new float[]{5.20f, 1.90f, 11.00f}),
-      new Box(new float[]{10.80f, 10.30f, 2.00f}, new float[]{11.20f, 10.70f, 11.00f}),
-      new Box(new float[]{10.80f, 1.50f, 10.00f}, new float[]{11.20f, 1.90f, 11.00f}),
-      new Box(new float[]{4.50f, 10.10f, 2.00f}, new float[]{4.90f, 10.50f, 11.00f}),
-      new Box(new float[]{4.50f, 1.70f, 10.00f}, new float[]{4.90f, 2.10f, 11.00f}),
-      new Box(new float[]{11.10f, 10.10f, 2.00f}, new float[]{11.50f, 10.50f, 11.00f}),
-      new Box(new float[]{11.10f, 1.70f, 10.00f}, new float[]{11.50f, 2.10f, 11.00f}),
-      new Box(new float[]{2.50f, 7.30f, 2.00f}, new float[]{2.90f, 7.70f, 11.00f}),
-      new Box(new float[]{2.50f, 4.50f, 2.00f}, new float[]{2.90f, 4.90f, 11.00f}),
-      new Box(new float[]{13.10f, 7.30f, 2.00f}, new float[]{13.50f, 7.70f, 11.00f}),
-      new Box(new float[]{13.10f, 4.50f, 2.00f}, new float[]{13.50f, 4.90f, 11.00f}),
-      new Box(new float[]{6.40f, 11.10f, 2.00f}, new float[]{6.80f, 11.50f, 11.00f}),
-      new Box(new float[]{9.20f, 11.10f, 2.00f}, new float[]{9.60f, 11.50f, 11.00f}),
-      new Box(new float[]{2.40f, 4.90f, 2.00f}, new float[]{2.80f, 7.30f, 11.00f}),
-      new Box(new float[]{13.20f, 4.90f, 2.00f}, new float[]{13.60f, 7.30f, 11.00f}),
-      new Box(new float[]{6.80f, 11.30f, 2.00f}, new float[]{9.20f, 11.70f, 11.00f}),
-      new Box(new float[]{6.80f, 0.50f, 10.00f}, new float[]{9.20f, 0.90f, 11.00f}),
-      new Box(new float[]{9.20f, 0.70f, 10.00f}, new float[]{9.60f, 1.10f, 11.00f}),
-      new Box(new float[]{9.60f, 0.90f, 10.00f}, new float[]{10.00f, 1.30f, 11.00f}),
-      new Box(new float[]{6.40f, 0.70f, 10.00f}, new float[]{6.80f, 1.10f, 11.00f}),
-      new Box(new float[]{6.00f, 0.90f, 10.00f}, new float[]{6.40f, 1.30f, 11.00f}),
-      new Box(new float[]{5.60f, 1.10f, 10.00f}, new float[]{6.00f, 1.50f, 11.00f}),
-      new Box(new float[]{5.20f, 1.30f, 10.00f}, new float[]{5.60f, 1.70f, 11.00f}),
-      new Box(new float[]{4.80f, 1.50f, 2.00f}, new float[]{5.20f, 1.90f, 11.00f}),
-      new Box(new float[]{4.20f, 1.90f, 2.00f}, new float[]{4.60f, 2.30f, 11.00f}),
-      new Box(new float[]{4.50f, 1.70f, 2.00f}, new float[]{4.90f, 2.10f, 11.00f}),
-      new Box(new float[]{10.00f, 1.10f, 10.00f}, new float[]{10.40f, 1.50f, 11.00f}),
-      new Box(new float[]{10.40f, 1.30f, 10.00f}, new float[]{10.80f, 1.70f, 11.00f}),
-      new Box(new float[]{10.80f, 1.50f, 2.00f}, new float[]{11.20f, 1.90f, 11.00f}),
-      new Box(new float[]{11.10f, 1.70f, 2.00f}, new float[]{11.50f, 2.10f, 11.00f}),
-      new Box(new float[]{11.40f, 1.90f, 2.00f}, new float[]{11.80f, 2.30f, 11.00f})
-  );
-
-  private static final List<Box> BOTH_LOUVERED_VISOR_VERTEX_DATA = Arrays.asList(
-      new Box(new float[]{2.90f, 8.10f, 2.00f}, new float[]{3.30f, 8.50f, 11.00f}),
-      new Box(new float[]{2.90f, 3.70f, 2.00f}, new float[]{3.30f, 4.10f, 11.00f}),
-      new Box(new float[]{12.70f, 8.10f, 2.00f}, new float[]{13.10f, 8.50f, 11.00f}),
-      new Box(new float[]{12.70f, 3.70f, 2.00f}, new float[]{13.10f, 4.10f, 11.00f}),
-      new Box(new float[]{3.10f, 8.50f, 2.00f}, new float[]{3.50f, 8.90f, 11.00f}),
-      new Box(new float[]{3.10f, 3.30f, 2.00f}, new float[]{3.50f, 3.70f, 11.00f}),
-      new Box(new float[]{12.50f, 8.50f, 2.00f}, new float[]{12.90f, 8.90f, 11.00f}),
-      new Box(new float[]{6.00f, 10.80f, 2.00f}, new float[]{10.00f, 10.85f, 11.00f}),
-      new Box(new float[]{4.30f, 9.80f, 2.00f}, new float[]{11.70f, 9.85f, 11.00f}),
-      new Box(new float[]{3.50f, 8.80f, 2.00f}, new float[]{12.50f, 8.85f, 11.00f}),
-      new Box(new float[]{3.10f, 7.80f, 2.00f}, new float[]{12.90f, 7.85f, 11.00f}),
-      new Box(new float[]{2.80f, 6.80f, 2.00f}, new float[]{13.20f, 6.85f, 11.00f}),
-      new Box(new float[]{2.80f, 5.80f, 2.00f}, new float[]{13.20f, 5.85f, 11.00f}),
-      new Box(new float[]{2.90f, 4.80f, 2.00f}, new float[]{13.10f, 4.85f, 11.00f}),
-      new Box(new float[]{3.30f, 3.80f, 2.00f}, new float[]{12.70f, 3.85f, 11.00f}),
-      new Box(new float[]{4.00f, 2.80f, 2.00f}, new float[]{12.00f, 2.85f, 11.00f}),
-      new Box(new float[]{5.20f, 1.80f, 2.00f}, new float[]{10.80f, 1.85f, 11.00f}),
-      new Box(new float[]{3.15f, 4.10f, 2.00f}, new float[]{3.20f, 8.10f, 11.00f}),
-      new Box(new float[]{4.15f, 2.50f, 2.00f}, new float[]{4.20f, 9.70f, 11.00f}),
-      new Box(new float[]{5.15f, 1.90f, 2.00f}, new float[]{5.20f, 10.30f, 11.00f}),
-      new Box(new float[]{6.15f, 1.30f, 2.00f}, new float[]{6.20f, 10.90f, 11.00f}),
-      new Box(new float[]{7.25f, 0.90f, 2.00f}, new float[]{7.30f, 11.30f, 11.00f}),
-      new Box(new float[]{8.70f, 0.90f, 2.00f}, new float[]{8.75f, 11.30f, 11.00f}),
-      new Box(new float[]{9.80f, 1.30f, 2.00f}, new float[]{9.85f, 10.90f, 11.00f}),
-      new Box(new float[]{10.80f, 1.90f, 2.00f}, new float[]{10.85f, 10.30f, 11.00f}),
-      new Box(new float[]{11.80f, 2.50f, 2.00f}, new float[]{11.85f, 9.70f, 11.00f}),
-      new Box(new float[]{12.80f, 4.10f, 2.00f}, new float[]{12.85f, 8.10f, 11.00f}),
-      new Box(new float[]{12.50f, 3.30f, 2.00f}, new float[]{12.90f, 3.70f, 11.00f}),
-      new Box(new float[]{3.30f, 8.90f, 2.00f}, new float[]{3.70f, 9.30f, 11.00f}),
-      new Box(new float[]{3.30f, 2.90f, 2.00f}, new float[]{3.70f, 3.30f, 11.00f}),
-      new Box(new float[]{12.30f, 8.90f, 2.00f}, new float[]{12.70f, 9.30f, 11.00f}),
-      new Box(new float[]{12.30f, 2.90f, 2.00f}, new float[]{12.70f, 3.30f, 11.00f}),
-      new Box(new float[]{3.60f, 9.30f, 2.00f}, new float[]{4.00f, 9.70f, 11.00f}),
-      new Box(new float[]{3.60f, 2.50f, 2.00f}, new float[]{4.00f, 2.90f, 11.00f}),
-      new Box(new float[]{12.00f, 9.30f, 2.00f}, new float[]{12.40f, 9.70f, 11.00f}),
-      new Box(new float[]{12.00f, 2.50f, 2.00f}, new float[]{12.40f, 2.90f, 11.00f}),
-      new Box(new float[]{3.90f, 9.70f, 2.00f}, new float[]{4.30f, 10.10f, 11.00f}),
-      new Box(new float[]{3.90f, 2.10f, 2.00f}, new float[]{4.30f, 2.50f, 11.00f}),
-      new Box(new float[]{11.70f, 9.70f, 2.00f}, new float[]{12.10f, 10.10f, 11.00f}),
-      new Box(new float[]{11.70f, 2.10f, 2.00f}, new float[]{12.10f, 2.50f, 11.00f}),
-      new Box(new float[]{4.20f, 9.90f, 2.00f}, new float[]{4.60f, 10.30f, 11.00f}),
-      new Box(new float[]{4.20f, 1.90f, 10.00f}, new float[]{4.60f, 2.30f, 11.00f}),
-      new Box(new float[]{11.40f, 9.90f, 2.00f}, new float[]{11.80f, 10.30f, 11.00f}),
-      new Box(new float[]{11.40f, 1.90f, 10.00f}, new float[]{11.80f, 2.30f, 11.00f}),
-      new Box(new float[]{2.70f, 7.70f, 2.00f}, new float[]{3.10f, 8.10f, 11.00f}),
-      new Box(new float[]{2.70f, 4.10f, 2.00f}, new float[]{3.10f, 4.50f, 11.00f}),
-      new Box(new float[]{12.90f, 7.70f, 2.00f}, new float[]{13.30f, 8.10f, 11.00f}),
-      new Box(new float[]{12.90f, 4.10f, 2.00f}, new float[]{13.30f, 4.50f, 11.00f}),
-      new Box(new float[]{6.00f, 10.90f, 2.00f}, new float[]{6.40f, 11.30f, 11.00f}),
-      new Box(new float[]{9.60f, 10.90f, 2.00f}, new float[]{10.00f, 11.30f, 11.00f}),
-      new Box(new float[]{5.60f, 10.70f, 2.00f}, new float[]{6.00f, 11.10f, 11.00f}),
-      new Box(new float[]{10.00f, 10.70f, 2.00f}, new float[]{10.40f, 11.10f, 11.00f}),
-      new Box(new float[]{5.20f, 10.50f, 2.00f}, new float[]{5.60f, 10.90f, 11.00f}),
-      new Box(new float[]{10.40f, 10.50f, 2.00f}, new float[]{10.80f, 10.90f, 11.00f}),
-      new Box(new float[]{4.80f, 10.30f, 2.00f}, new float[]{5.20f, 10.70f, 11.00f}),
-      new Box(new float[]{4.80f, 1.50f, 10.00f}, new float[]{5.20f, 1.90f, 11.00f}),
-      new Box(new float[]{10.80f, 10.30f, 2.00f}, new float[]{11.20f, 10.70f, 11.00f}),
-      new Box(new float[]{10.80f, 1.50f, 10.00f}, new float[]{11.20f, 1.90f, 11.00f}),
-      new Box(new float[]{4.50f, 10.10f, 2.00f}, new float[]{4.90f, 10.50f, 11.00f}),
-      new Box(new float[]{4.50f, 1.70f, 10.00f}, new float[]{4.90f, 2.10f, 11.00f}),
-      new Box(new float[]{11.10f, 10.10f, 2.00f}, new float[]{11.50f, 10.50f, 11.00f}),
-      new Box(new float[]{11.10f, 1.70f, 10.00f}, new float[]{11.50f, 2.10f, 11.00f}),
-      new Box(new float[]{2.50f, 7.30f, 2.00f}, new float[]{2.90f, 7.70f, 11.00f}),
-      new Box(new float[]{2.50f, 4.50f, 2.00f}, new float[]{2.90f, 4.90f, 11.00f}),
-      new Box(new float[]{13.10f, 7.30f, 2.00f}, new float[]{13.50f, 7.70f, 11.00f}),
-      new Box(new float[]{13.10f, 4.50f, 2.00f}, new float[]{13.50f, 4.90f, 11.00f}),
-      new Box(new float[]{6.40f, 11.10f, 2.00f}, new float[]{6.80f, 11.50f, 11.00f}),
-      new Box(new float[]{9.20f, 11.10f, 2.00f}, new float[]{9.60f, 11.50f, 11.00f}),
-      new Box(new float[]{2.40f, 4.90f, 2.00f}, new float[]{2.80f, 7.30f, 11.00f}),
-      new Box(new float[]{13.20f, 4.90f, 2.00f}, new float[]{13.60f, 7.30f, 11.00f}),
-      new Box(new float[]{6.80f, 11.30f, 2.00f}, new float[]{9.20f, 11.70f, 11.00f}),
-      new Box(new float[]{6.80f, 0.50f, 10.00f}, new float[]{9.20f, 0.90f, 11.00f}),
-      new Box(new float[]{9.20f, 0.70f, 10.00f}, new float[]{9.60f, 1.10f, 11.00f}),
-      new Box(new float[]{9.60f, 0.90f, 10.00f}, new float[]{10.00f, 1.30f, 11.00f}),
-      new Box(new float[]{6.40f, 0.70f, 10.00f}, new float[]{6.80f, 1.10f, 11.00f}),
-      new Box(new float[]{6.00f, 0.90f, 10.00f}, new float[]{6.40f, 1.30f, 11.00f}),
-      new Box(new float[]{5.60f, 1.10f, 10.00f}, new float[]{6.00f, 1.50f, 11.00f}),
-      new Box(new float[]{5.20f, 1.30f, 10.00f}, new float[]{5.60f, 1.70f, 11.00f}),
-      new Box(new float[]{4.80f, 1.50f, 2.00f}, new float[]{5.20f, 1.90f, 11.00f}),
-      new Box(new float[]{4.20f, 1.90f, 2.00f}, new float[]{4.60f, 2.30f, 11.00f}),
-      new Box(new float[]{4.50f, 1.70f, 2.00f}, new float[]{4.90f, 2.10f, 11.00f}),
-      new Box(new float[]{10.00f, 1.10f, 10.00f}, new float[]{10.40f, 1.50f, 11.00f}),
-      new Box(new float[]{10.40f, 1.30f, 10.00f}, new float[]{10.80f, 1.70f, 11.00f}),
-      new Box(new float[]{10.80f, 1.50f, 2.00f}, new float[]{11.20f, 1.90f, 11.00f}),
-      new Box(new float[]{11.10f, 1.70f, 2.00f}, new float[]{11.50f, 2.10f, 11.00f}),
-      new Box(new float[]{11.40f, 1.90f, 2.00f}, new float[]{11.80f, 2.30f, 11.00f})
-  );
-
-
-  private static final List<Box> CIRCLE_VISOR_VERTEX_DATA = Arrays.asList(
-      new Box(new float[]{2.90f, 8.10f, 2.00f}, new float[]{3.30f, 8.50f, 11.00f}),
-      new Box(new float[]{2.90f, 3.70f, 2.00f}, new float[]{3.30f, 4.10f, 11.00f}),
-      new Box(new float[]{12.70f, 8.10f, 2.00f}, new float[]{13.10f, 8.50f, 11.00f}),
-      new Box(new float[]{12.70f, 3.70f, 2.00f}, new float[]{13.10f, 4.10f, 11.00f}),
-      new Box(new float[]{3.10f, 8.50f, 2.00f}, new float[]{3.50f, 8.90f, 11.00f}),
-      new Box(new float[]{3.10f, 3.30f, 2.00f}, new float[]{3.50f, 3.70f, 11.00f}),
-      new Box(new float[]{12.50f, 8.50f, 2.00f}, new float[]{12.90f, 8.90f, 11.00f}),
-      new Box(new float[]{12.50f, 3.30f, 2.00f}, new float[]{12.90f, 3.70f, 11.00f}),
-      new Box(new float[]{3.30f, 8.90f, 2.00f}, new float[]{3.70f, 9.30f, 11.00f}),
-      new Box(new float[]{3.30f, 2.90f, 2.00f}, new float[]{3.70f, 3.30f, 11.00f}),
-      new Box(new float[]{12.30f, 8.90f, 2.00f}, new float[]{12.70f, 9.30f, 11.00f}),
-      new Box(new float[]{12.30f, 2.90f, 2.00f}, new float[]{12.70f, 3.30f, 11.00f}),
-      new Box(new float[]{3.60f, 9.30f, 2.00f}, new float[]{4.00f, 9.70f, 11.00f}),
-      new Box(new float[]{3.60f, 2.50f, 2.00f}, new float[]{4.00f, 2.90f, 11.00f}),
-      new Box(new float[]{12.00f, 9.30f, 2.00f}, new float[]{12.40f, 9.70f, 11.00f}),
-      new Box(new float[]{12.00f, 2.50f, 2.00f}, new float[]{12.40f, 2.90f, 11.00f}),
-      new Box(new float[]{3.90f, 9.70f, 2.00f}, new float[]{4.30f, 10.10f, 11.00f}),
-      new Box(new float[]{3.90f, 2.10f, 2.00f}, new float[]{4.30f, 2.50f, 11.00f}),
-      new Box(new float[]{11.70f, 9.70f, 2.00f}, new float[]{12.10f, 10.10f, 11.00f}),
-      new Box(new float[]{11.70f, 2.10f, 2.00f}, new float[]{12.10f, 2.50f, 11.00f}),
-      new Box(new float[]{4.20f, 9.90f, 2.00f}, new float[]{4.60f, 10.30f, 11.00f}),
-      new Box(new float[]{4.20f, 1.90f, 2.00f}, new float[]{4.60f, 2.30f, 11.00f}),
-      new Box(new float[]{11.40f, 9.90f, 2.00f}, new float[]{11.80f, 10.30f, 11.00f}),
-      new Box(new float[]{11.40f, 1.90f, 2.00f}, new float[]{11.80f, 2.30f, 11.00f}),
-      new Box(new float[]{2.70f, 7.70f, 2.00f}, new float[]{3.10f, 8.10f, 11.00f}),
-      new Box(new float[]{2.70f, 4.10f, 2.00f}, new float[]{3.10f, 4.50f, 11.00f}),
-      new Box(new float[]{12.90f, 7.70f, 2.00f}, new float[]{13.30f, 8.10f, 11.00f}),
-      new Box(new float[]{12.90f, 4.10f, 2.00f}, new float[]{13.30f, 4.50f, 11.00f}),
-      new Box(new float[]{6.00f, 10.90f, 2.00f}, new float[]{6.40f, 11.30f, 11.00f}),
-      new Box(new float[]{6.80f, 0.50f, 2.00f}, new float[]{9.20f, 0.90f, 11.00f}),
-      new Box(new float[]{9.20f, 0.70f, 2.00f}, new float[]{9.60f, 1.10f, 11.00f}),
-      new Box(new float[]{6.40f, 0.70f, 2.00f}, new float[]{6.80f, 1.10f, 11.00f}),
-      new Box(new float[]{10.80f, 1.50f, 2.00f}, new float[]{11.20f, 1.90f, 11.00f}),
-      new Box(new float[]{4.80f, 1.50f, 2.00f}, new float[]{5.20f, 1.90f, 11.00f}),
-      new Box(new float[]{10.40f, 1.30f, 2.00f}, new float[]{10.80f, 1.70f, 11.00f}),
-      new Box(new float[]{5.20f, 1.30f, 2.00f}, new float[]{5.60f, 1.70f, 11.00f}),
-      new Box(new float[]{10.00f, 1.10f, 2.00f}, new float[]{10.40f, 1.50f, 11.00f}),
-      new Box(new float[]{5.60f, 1.10f, 2.00f}, new float[]{6.00f, 1.50f, 11.00f}),
-      new Box(new float[]{9.60f, 0.90f, 2.00f}, new float[]{10.00f, 1.30f, 11.00f}),
-      new Box(new float[]{6.00f, 0.90f, 2.00f}, new float[]{6.40f, 1.30f, 11.00f}),
-      new Box(new float[]{9.60f, 10.90f, 2.00f}, new float[]{10.00f, 11.30f, 11.00f}),
-      new Box(new float[]{5.60f, 10.70f, 2.00f}, new float[]{6.00f, 11.10f, 11.00f}),
-      new Box(new float[]{10.00f, 10.70f, 2.00f}, new float[]{10.40f, 11.10f, 11.00f}),
-      new Box(new float[]{5.20f, 10.50f, 2.00f}, new float[]{5.60f, 10.90f, 11.00f}),
-      new Box(new float[]{10.40f, 10.50f, 2.00f}, new float[]{10.80f, 10.90f, 11.00f}),
-      new Box(new float[]{4.80f, 10.30f, 2.00f}, new float[]{5.20f, 10.70f, 11.00f}),
-      new Box(new float[]{10.80f, 10.30f, 2.00f}, new float[]{11.20f, 10.70f, 11.00f}),
-      new Box(new float[]{4.50f, 10.10f, 2.00f}, new float[]{4.90f, 10.50f, 11.00f}),
-      new Box(new float[]{4.50f, 1.70f, 2.00f}, new float[]{4.90f, 2.10f, 11.00f}),
-      new Box(new float[]{11.10f, 10.10f, 2.00f}, new float[]{11.50f, 10.50f, 11.00f}),
-      new Box(new float[]{11.10f, 1.70f, 2.00f}, new float[]{11.50f, 2.10f, 11.00f}),
-      new Box(new float[]{2.50f, 7.30f, 2.00f}, new float[]{2.90f, 7.70f, 11.00f}),
-      new Box(new float[]{2.50f, 4.50f, 2.00f}, new float[]{2.90f, 4.90f, 11.00f}),
-      new Box(new float[]{13.10f, 7.30f, 2.00f}, new float[]{13.50f, 7.70f, 11.00f}),
-      new Box(new float[]{13.10f, 4.50f, 2.00f}, new float[]{13.50f, 4.90f, 11.00f}),
-      new Box(new float[]{6.40f, 11.10f, 2.00f}, new float[]{6.80f, 11.50f, 11.00f}),
-      new Box(new float[]{9.20f, 11.10f, 2.00f}, new float[]{9.60f, 11.50f, 11.00f}),
-      new Box(new float[]{2.40f, 4.90f, 2.00f}, new float[]{2.80f, 7.30f, 11.00f}),
-      new Box(new float[]{13.20f, 4.90f, 2.00f}, new float[]{13.60f, 7.30f, 11.00f}),
-      new Box(new float[]{6.80f, 11.30f, 2.00f}, new float[]{9.20f, 11.70f, 11.00f})
-  );
-
-
-
-
-  private static final List<Box> CAP_VISOR_VERTEX_DATA = Arrays.asList(
-      new Box(new float[]{2.90f, 8.10f, 2.00f}, new float[]{3.30f, 8.50f, 11.00f}),
-      new Box(new float[]{2.90f, 3.70f, 7.00f}, new float[]{3.30f, 4.10f, 11.00f}),
-      new Box(new float[]{12.70f, 8.10f, 2.00f}, new float[]{13.10f, 8.50f, 11.00f}),
-      new Box(new float[]{12.70f, 3.70f, 7.00f}, new float[]{13.10f, 4.10f, 11.00f}),
-      new Box(new float[]{3.10f, 8.50f, 2.00f}, new float[]{3.50f, 8.90f, 11.00f}),
-      new Box(new float[]{3.10f, 3.30f, 7.00f}, new float[]{3.50f, 3.70f, 11.00f}),
-      new Box(new float[]{12.50f, 8.50f, 2.00f}, new float[]{12.90f, 8.90f, 11.00f}),
-      new Box(new float[]{12.50f, 3.30f, 7.00f}, new float[]{12.90f, 3.70f, 11.00f}),
-      new Box(new float[]{3.30f, 8.90f, 2.00f}, new float[]{3.70f, 9.30f, 11.00f}),
-      new Box(new float[]{3.30f, 2.90f, 7.50f}, new float[]{3.70f, 3.30f, 11.00f}),
-      new Box(new float[]{12.30f, 8.90f, 2.00f}, new float[]{12.70f, 9.30f, 11.00f}),
-      new Box(new float[]{12.30f, 2.90f, 7.50f}, new float[]{12.70f, 3.30f, 11.00f}),
-      new Box(new float[]{3.60f, 9.30f, 2.00f}, new float[]{4.00f, 9.70f, 11.00f}),
-      new Box(new float[]{3.60f, 2.50f, 7.50f}, new float[]{4.00f, 2.90f, 11.00f}),
-      new Box(new float[]{12.00f, 9.30f, 2.00f}, new float[]{12.40f, 9.70f, 11.00f}),
-      new Box(new float[]{12.00f, 2.50f, 7.50f}, new float[]{12.40f, 2.90f, 11.00f}),
-      new Box(new float[]{3.90f, 9.70f, 2.00f}, new float[]{4.30f, 10.10f, 11.00f}),
-      new Box(new float[]{3.90f, 2.10f, 8.00f}, new float[]{4.30f, 2.50f, 11.00f}),
-      new Box(new float[]{11.70f, 9.70f, 2.00f}, new float[]{12.10f, 10.10f, 11.00f}),
-      new Box(new float[]{11.70f, 2.10f, 8.00f}, new float[]{12.10f, 2.50f, 11.00f}),
-      new Box(new float[]{4.20f, 9.90f, 2.00f}, new float[]{4.60f, 10.30f, 11.00f}),
-      new Box(new float[]{4.20f, 1.90f, 8.00f}, new float[]{4.60f, 2.30f, 11.00f}),
-      new Box(new float[]{11.40f, 9.90f, 2.00f}, new float[]{11.80f, 10.30f, 11.00f}),
-      new Box(new float[]{11.40f, 1.90f, 8.00f}, new float[]{11.80f, 2.30f, 11.00f}),
-      new Box(new float[]{2.70f, 7.70f, 2.00f}, new float[]{3.10f, 8.10f, 11.00f}),
-      new Box(new float[]{2.70f, 4.10f, 5.00f}, new float[]{3.10f, 4.50f, 11.00f}),
-      new Box(new float[]{12.90f, 7.70f, 2.00f}, new float[]{13.30f, 8.10f, 11.00f}),
-      new Box(new float[]{12.90f, 4.10f, 5.00f}, new float[]{13.30f, 4.50f, 11.00f}),
-      new Box(new float[]{6.00f, 10.90f, 2.00f}, new float[]{6.40f, 11.30f, 11.00f}),
-      new Box(new float[]{9.60f, 10.90f, 2.00f}, new float[]{10.00f, 11.30f, 11.00f}),
-      new Box(new float[]{5.60f, 10.70f, 2.00f}, new float[]{6.00f, 11.10f, 11.00f}),
-      new Box(new float[]{10.00f, 10.70f, 2.00f}, new float[]{10.40f, 11.10f, 11.00f}),
-      new Box(new float[]{5.20f, 10.50f, 2.00f}, new float[]{5.60f, 10.90f, 11.00f}),
-      new Box(new float[]{10.40f, 10.50f, 2.00f}, new float[]{10.80f, 10.90f, 11.00f}),
-      new Box(new float[]{4.80f, 10.30f, 2.00f}, new float[]{5.20f, 10.70f, 11.00f}),
-      new Box(new float[]{4.80f, 1.50f, 8.00f}, new float[]{5.20f, 1.90f, 11.00f}),
-      new Box(new float[]{10.80f, 10.30f, 2.00f}, new float[]{11.20f, 10.70f, 11.00f}),
-      new Box(new float[]{10.80f, 1.50f, 8.00f}, new float[]{11.20f, 1.90f, 11.00f}),
-      new Box(new float[]{4.50f, 10.10f, 2.00f}, new float[]{4.90f, 10.50f, 11.00f}),
-      new Box(new float[]{4.50f, 1.70f, 8.00f}, new float[]{4.90f, 2.10f, 11.00f}),
-      new Box(new float[]{11.10f, 10.10f, 2.00f}, new float[]{11.50f, 10.50f, 11.00f}),
-      new Box(new float[]{11.10f, 1.70f, 8.00f}, new float[]{11.50f, 2.10f, 11.00f}),
-      new Box(new float[]{2.50f, 7.30f, 2.00f}, new float[]{2.90f, 7.70f, 11.00f}),
-      new Box(new float[]{2.50f, 4.50f, 5.00f}, new float[]{2.90f, 4.90f, 11.00f}),
-      new Box(new float[]{13.10f, 7.30f, 2.00f}, new float[]{13.50f, 7.70f, 11.00f}),
-      new Box(new float[]{13.10f, 4.50f, 5.00f}, new float[]{13.50f, 4.90f, 11.00f}),
-      new Box(new float[]{6.40f, 11.10f, 2.00f}, new float[]{6.80f, 11.50f, 11.00f}),
-      new Box(new float[]{9.20f, 11.10f, 2.00f}, new float[]{9.60f, 11.50f, 11.00f}),
-      new Box(new float[]{2.40f, 6.10f, 2.00f}, new float[]{2.80f, 7.30f, 11.00f}),
-      new Box(new float[]{13.20f, 4.90f, 3.00f}, new float[]{13.60f, 6.10f, 11.00f}),
-      new Box(new float[]{2.40f, 4.90f, 3.00f}, new float[]{2.80f, 6.10f, 11.00f}),
-      new Box(new float[]{13.20f, 6.10f, 2.00f}, new float[]{13.60f, 7.30f, 11.00f}),
-      new Box(new float[]{6.80f, 11.30f, 2.00f}, new float[]{9.20f, 11.70f, 11.00f}),
-      new Box(new float[]{5.20f, 1.30f, 10.00f}, new float[]{5.60f, 1.70f, 11.00f}),
-      new Box(new float[]{5.60f, 1.10f, 10.00f}, new float[]{6.00f, 1.50f, 11.00f}),
-      new Box(new float[]{6.00f, 0.90f, 10.00f}, new float[]{6.40f, 1.30f, 11.00f}),
-      new Box(new float[]{6.40f, 0.70f, 10.00f}, new float[]{6.80f, 1.10f, 11.00f}),
-      new Box(new float[]{6.80f, 0.50f, 10.00f}, new float[]{9.20f, 0.90f, 11.00f}),
-      new Box(new float[]{9.60f, 0.90f, 10.00f}, new float[]{10.00f, 1.30f, 11.00f}),
-      new Box(new float[]{9.20f, 0.70f, 10.00f}, new float[]{9.60f, 1.10f, 11.00f}),
-      new Box(new float[]{10.00f, 1.10f, 10.00f}, new float[]{10.40f, 1.50f, 11.00f}),
-      new Box(new float[]{10.40f, 1.30f, 10.00f}, new float[]{10.80f, 1.70f, 11.00f})
-  );
-
-  private static final List<Box> SIGNAL_BODY_VERTEX_DATA = Arrays.asList(
-      new Box(new float[]{4.00f, 0.00f, 15.80f}, new float[]{12.00f, 12.00f, 16.00f}),
-      new Box(new float[]{3.80f, 0.00f, 15.60f}, new float[]{12.20f, 12.00f, 15.80f}),
-      new Box(new float[]{3.60f, 0.00f, 15.40f}, new float[]{12.40f, 12.00f, 15.60f}),
-      new Box(new float[]{3.40f, 0.00f, 15.20f}, new float[]{12.60f, 12.00f, 15.40f}),
-      new Box(new float[]{3.20f, 0.00f, 15.00f}, new float[]{12.80f, 12.00f, 15.20f}),
-      new Box(new float[]{3.00f, 0.00f, 14.80f}, new float[]{13.00f, 12.00f, 15.00f}),
-      new Box(new float[]{2.80f, 0.00f, 14.60f}, new float[]{13.20f, 12.00f, 14.80f}),
-      new Box(new float[]{2.60f, 0.00f, 14.40f}, new float[]{13.40f, 12.00f, 14.60f}),
-      new Box(new float[]{2.40f, 0.00f, 14.20f}, new float[]{13.60f, 12.00f, 14.40f}),
-      new Box(new float[]{2.20f, 0.00f, 14.00f}, new float[]{13.80f, 12.00f, 14.20f}),
-      new Box(new float[]{2.00f, 0.00f, 11.00f}, new float[]{14.00f, 12.00f, 14.00f}),
-      new Box(new float[]{1.80f, 1.20f, 10.80f}, new float[]{2.40f, 1.60f, 11.50f}),
-      new Box(new float[]{1.80f, 10.20f, 10.80f}, new float[]{2.40f, 10.60f, 11.50f})
-  );
-
-  private static final List<Box> SIGNAL_DOOR_VERTEX_DATA = Arrays.asList(
-      new Box(new float[]{2.00f, 0.00f, 10.75f}, new float[]{14.00f, 12.00f, 11.00f})
-  );
 
   @Override
   public void render(TileEntityTrafficSignalHead te, double x, double y, double z,
@@ -680,7 +151,7 @@ public class TileEntityTrafficSignalHeadRenderer extends
       int index) {
     // Render the body using the vertex data
     float yOffset = index * 12.0f;
-    RenderHelper.drawBoxes(SIGNAL_BODY_VERTEX_DATA, bodyColor.getRed(), bodyColor.getGreen(),
+    RenderHelper.drawBoxes(TrafficSignalVertexData.SIGNAL_BODY_VERTEX_DATA, bodyColor.getRed(), bodyColor.getGreen(),
         bodyColor.getBlue(), 1.0f,0.0f,yOffset,0.0f);
   }
 
@@ -691,21 +162,18 @@ public class TileEntityTrafficSignalHeadRenderer extends
       int index) {
     // Render the door using the vertex data
     float yOffset = index * 12.0f;
-    RenderHelper.drawBoxes(SIGNAL_DOOR_VERTEX_DATA, doorColor.getRed(), doorColor.getGreen(),
+    RenderHelper.drawBoxes(TrafficSignalVertexData.SIGNAL_DOOR_VERTEX_DATA, doorColor.getRed(), doorColor.getGreen(),
         doorColor.getBlue(), 1.0f,0.0f,yOffset,0.0f);
   }
 
 
   private void renderSignalBulb(TileEntityTrafficSignalHead te, TrafficSignalBulbStyle bulbStyle,
       TrafficSignalBulbType bulbType, TrafficSignalBulbColor bulbColor, boolean isBulbLit, int index) {
-    String tex = TrafficSignalTextureMap.getTextureForBulb(bulbStyle,bulbType,bulbColor, isBulbLit);
-    ResourceLocation texLoc = new ResourceLocation("csm", "textures/blocks/" + tex + ".png");
+    TextureInfo texInfo = TrafficSignalTextureMap.getTextureInfoForBulb(bulbStyle, bulbType, bulbColor, isBulbLit);
+    ResourceLocation texLoc = new ResourceLocation("csm", texInfo.getTexture());
 
     // Push OpenGL transformation matrix.
     GL11.glPushMatrix();
-
-    // Always bind the correct texture before rendering
-    Minecraft.getMinecraft().getTextureManager().bindTexture(texLoc);
 
     // Bulb quad parameters: cover the entire 12x12 front face of the section
     float x = 2f;
@@ -713,15 +181,33 @@ public class TileEntityTrafficSignalHeadRenderer extends
     float z = 10.4f; // just in front of the door
     float size = 12f;
 
+    // Center of the quad for rotation
+    float cx = x + size / 2f;
+    float cy = y + size / 2f;
+
+    // Translate to center, rotate, then translate back
+    GL11.glTranslatef(cx, cy, z);
+    GL11.glRotatef(texInfo.getRotation(), 0, 0, 1);
+    GL11.glTranslatef(-cx, -cy, -z);
+
+    // Always bind the correct texture before rendering
+    Minecraft.getMinecraft().getTextureManager().bindTexture(texLoc);
+
+    // Use correct UVs from TextureInfo
+    float u1 = texInfo.getU1();
+    float v1 = texInfo.getV1();
+    float u2 = texInfo.getU2();
+    float v2 = texInfo.getV2();
+
     Tessellator tessellator = Tessellator.getInstance();
     BufferBuilder buffer = tessellator.getBuffer();
 
     buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
 
-    buffer.pos(x,      y,      z).tex(0, 0).endVertex();
-    buffer.pos(x,      y+size, z).tex(0, 1).endVertex();
-    buffer.pos(x+size, y+size, z).tex(1, 1).endVertex();
-    buffer.pos(x+size, y,      z).tex(1, 0).endVertex();
+    buffer.pos(x,      y,      z).tex(u1, v1).endVertex();
+    buffer.pos(x,      y+size, z).tex(u1, v2).endVertex();
+    buffer.pos(x+size, y+size, z).tex(u2, v2).endVertex();
+    buffer.pos(x+size, y,      z).tex(u2, v1).endVertex();
 
     tessellator.draw();
 
@@ -741,19 +227,19 @@ public class TileEntityTrafficSignalHeadRenderer extends
     float zOffset = 0.0f; // No Z offset
 
     if (visorType == TrafficSignalVisorType.CIRCLE) {
-      RenderHelper.drawBoxes(CIRCLE_VISOR_VERTEX_DATA, visorColor.getRed(), visorColor.getGreen(), visorColor.getBlue(),colorAlpha, xOffset,yOffset,zOffset);
+      RenderHelper.drawBoxes(TrafficSignalVertexData.CIRCLE_VISOR_VERTEX_DATA, visorColor.getRed(), visorColor.getGreen(), visorColor.getBlue(),colorAlpha, xOffset,yOffset,zOffset);
     } else if (visorType == TrafficSignalVisorType.TUNNEL) {
-      RenderHelper.drawBoxes(TUNNEL_VISOR_VERTEX_DATA, visorColor.getRed(), visorColor.getGreen(), visorColor.getBlue(),colorAlpha, xOffset,yOffset,zOffset);
+      RenderHelper.drawBoxes(TrafficSignalVertexData.TUNNEL_VISOR_VERTEX_DATA, visorColor.getRed(), visorColor.getGreen(), visorColor.getBlue(),colorAlpha, xOffset,yOffset,zOffset);
     } else if (visorType == TrafficSignalVisorType.CUTAWAY) {
-      RenderHelper.drawBoxes(CAP_VISOR_VERTEX_DATA, visorColor.getRed(), visorColor.getGreen(), visorColor.getBlue(),colorAlpha, xOffset,yOffset,zOffset);
+      RenderHelper.drawBoxes(TrafficSignalVertexData.CAP_VISOR_VERTEX_DATA, visorColor.getRed(), visorColor.getGreen(), visorColor.getBlue(),colorAlpha, xOffset,yOffset,zOffset);
     } else if (visorType == TrafficSignalVisorType.VERTICAL_LOUVERED) {
-      RenderHelper.drawBoxes(VERTICAL_LOUVERED_VISOR_VERTEX_DATA, visorColor.getRed(), visorColor.getGreen(), visorColor.getBlue(),colorAlpha, xOffset,yOffset,zOffset);
+      RenderHelper.drawBoxes(TrafficSignalVertexData.VERTICAL_LOUVERED_VISOR_VERTEX_DATA, visorColor.getRed(), visorColor.getGreen(), visorColor.getBlue(),colorAlpha, xOffset,yOffset,zOffset);
     }else if (visorType == TrafficSignalVisorType.HORIZONTAL_LOUVERED) {
-      RenderHelper.drawBoxes(HORIZONTAL_LOUVERED_VISOR_VERTEX_DATA, visorColor.getRed(), visorColor.getGreen(), visorColor.getBlue(),colorAlpha, xOffset,yOffset,zOffset);
+      RenderHelper.drawBoxes(TrafficSignalVertexData.HORIZONTAL_LOUVERED_VISOR_VERTEX_DATA, visorColor.getRed(), visorColor.getGreen(), visorColor.getBlue(),colorAlpha, xOffset,yOffset,zOffset);
     }else if (visorType == TrafficSignalVisorType.BOTH_LOUVERED) {
-      RenderHelper.drawBoxes(BOTH_LOUVERED_VISOR_VERTEX_DATA, visorColor.getRed(), visorColor.getGreen(), visorColor.getBlue(),colorAlpha, xOffset,yOffset,zOffset);
+      RenderHelper.drawBoxes(TrafficSignalVertexData.BOTH_LOUVERED_VISOR_VERTEX_DATA, visorColor.getRed(), visorColor.getGreen(), visorColor.getBlue(),colorAlpha, xOffset,yOffset,zOffset);
     } else if (visorType == TrafficSignalVisorType.NONE) {
-      RenderHelper.drawBoxes(NONE_VISOR_VERTEX_DATA, visorColor.getRed(), visorColor.getGreen(), visorColor.getBlue(),colorAlpha, xOffset,yOffset,zOffset);
+      RenderHelper.drawBoxes(TrafficSignalVertexData.NONE_VISOR_VERTEX_DATA, visorColor.getRed(), visorColor.getGreen(), visorColor.getBlue(),colorAlpha, xOffset,yOffset,zOffset);
     }
   }
 

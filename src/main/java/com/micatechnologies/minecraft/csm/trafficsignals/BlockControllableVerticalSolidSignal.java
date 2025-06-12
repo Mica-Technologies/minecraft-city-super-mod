@@ -44,14 +44,14 @@ public class BlockControllableVerticalSolidSignal extends AbstractBlockControlla
   public TrafficSignalSectionInfo[] getDefaultTrafficSignalSectionInfo() {
     System.out.println("BlockControllableVerticalSolidSignal.getDefaultTrafficSignalSectionInfo() called");
     TrafficSignalSectionInfo[] infos = new TrafficSignalSectionInfo[] {
-        new TrafficSignalSectionInfo(TrafficSignalBodyColor.FLAT_BLACK,TrafficSignalBodyColor.FLAT_BLACK,TrafficSignalBodyColor.FLAT_BLACK,
-            TrafficSignalVisorType.TUNNEL, TrafficSignalBulbStyle.LED, TrafficSignalBulbType.BALL,
+        new TrafficSignalSectionInfo(TrafficSignalBodyColor.BATTLESHIP_GRAY,TrafficSignalBodyColor.BATTLESHIP_GRAY,TrafficSignalBodyColor.BATTLESHIP_GRAY,
+            TrafficSignalVisorType.CUTAWAY, TrafficSignalBulbStyle.INCANDESCENT, TrafficSignalBulbType.UP,
             TrafficSignalBulbColor.RED,false),
         new TrafficSignalSectionInfo(TrafficSignalBodyColor.FLAT_BLACK,TrafficSignalBodyColor.FLAT_BLACK,TrafficSignalBodyColor.FLAT_BLACK,
-            TrafficSignalVisorType.TUNNEL, TrafficSignalBulbStyle.LED, TrafficSignalBulbType.BALL,
+            TrafficSignalVisorType.CIRCLE, TrafficSignalBulbStyle.INCANDESCENT, TrafficSignalBulbType.UP,
             TrafficSignalBulbColor.YELLOW,false),
-        new TrafficSignalSectionInfo(TrafficSignalBodyColor.FLAT_BLACK,TrafficSignalBodyColor.FLAT_BLACK,TrafficSignalBodyColor.FLAT_BLACK,
-            TrafficSignalVisorType.TUNNEL, TrafficSignalBulbStyle.LED, TrafficSignalBulbType.BALL,
+        new TrafficSignalSectionInfo(TrafficSignalBodyColor.YELLOW,TrafficSignalBodyColor.YELLOW,TrafficSignalBodyColor.YELLOW,
+            TrafficSignalVisorType.NONE, TrafficSignalBulbStyle.INCANDESCENT, TrafficSignalBulbType.UP,
             TrafficSignalBulbColor.GREEN,false)
     };
     System.out.println("BlockControllableVerticalSolidSignal.getDefaultTrafficSignalSectionInfo() created " + infos.length + " sections");
