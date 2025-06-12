@@ -10,6 +10,7 @@ import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBulb
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBulbStyle;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBulbType;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalSectionInfo;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalTextureMap;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalVisorType;
 import java.util.Arrays;
 import java.util.List;
@@ -697,7 +698,7 @@ public class TileEntityTrafficSignalHeadRenderer extends
 
   private void renderSignalBulb(TileEntityTrafficSignalHead te, TrafficSignalBulbStyle bulbStyle,
       TrafficSignalBulbType bulbType, TrafficSignalBulbColor bulbColor, boolean isBulbLit, int index) {
-    String tex = getSignalBulbTexture(bulbStyle,bulbType,bulbColor, isBulbLit);
+    String tex = TrafficSignalTextureMap.getTextureForBulb(bulbStyle,bulbType,bulbColor, isBulbLit);
     ResourceLocation texLoc = new ResourceLocation("csm", "textures/blocks/" + tex + ".png");
 
     // Push OpenGL transformation matrix.
@@ -726,14 +727,6 @@ public class TileEntityTrafficSignalHeadRenderer extends
 
     // Pop OpenGL transformation matrix.
     GL11.glPopMatrix();
-  }
-
-  private String getSignalBulbTexture(TrafficSignalBulbStyle bulbStyle,
-      TrafficSignalBulbType bulbType, TrafficSignalBulbColor bulbColor, boolean isBulbLit) {
-    // Map the bulb style, type, color, and lit state to a texture name
-    String baseName = "trafficsignals/lights/";
-
-    return "trafficsignals/lights/iled_red";
   }
 
   /**
