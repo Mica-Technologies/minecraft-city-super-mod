@@ -50,12 +50,12 @@ public class TrafficSignalTextureMap {
   private static float getRotationForType(TrafficSignalBulbType type) {
     switch (type) {
       case LEFT: return 0f;
-      case UP_LEFT: return 315f;
-      case UP: return 270f;
-      case UP_RIGHT: return 225f;
+      case UP_LEFT: return 45f;
+      case UP: return 90f;
+      case UP_RIGHT: return 135f;
       case RIGHT: return 180f;
-      case TRANSIT_LEFT: return 45f;
-      case TRANSIT_RIGHT: return -45f;
+      case TRANSIT_LEFT: return -45f;
+      case TRANSIT_RIGHT: return 45f;
       default: return 0f;
     }
   }
@@ -78,7 +78,9 @@ public class TrafficSignalTextureMap {
     int idx = getFlatAtlasIndex(style, type, color, isLit);
     int row = idx / 8;
     int col = idx % 8;
-    return new int[]{row, col};
+    // Flip row so row 0 is bottom (Minecraft expects V=0 at bottom)
+    int flippedRow = (uvHelper.texturesHigh - 1) - row;
+    return new int[]{flippedRow, col};
   }
 
   // Flat index mapping (same as before)
@@ -221,14 +223,15 @@ public class TrafficSignalTextureMap {
     public float getU1(int col) {
       return (float) col / texturesWide;
     }
+    // Invert V so V1 is bottom, V2 is top (Minecraft expects V=0 at bottom)
     public float getV1(int row) {
-      return (float) row / texturesHigh;
+      return 1.0f - ((float) (row + 1) / texturesHigh);
     }
     public float getU2(int col) {
       return (float) (col + 1) / texturesWide;
     }
     public float getV2(int row) {
-      return (float) (row + 1) / texturesHigh;
+      return 1.0f - ((float) row / texturesHigh);
     }
   }
 }

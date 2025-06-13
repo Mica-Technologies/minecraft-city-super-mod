@@ -109,7 +109,23 @@ public class TileEntityTrafficSignalHeadRenderer extends
       boolean isBulbLit = sectionInfo.isBulbLit();
 
       // Render each section with the gathered colors and visor type
-      renderSignalSection(te, bodyColor, doorColor, visorColor, visorType, startingSectionIndex);
+      renderSignalSection(te, bodyColor, doorColor, visorColor, visorType, startingSectionIndex--);
+    }
+
+
+
+    // Always bind the correct texture before rendering
+    ResourceLocation texLoc = new ResourceLocation("csm", "textures/blocks/trafficsignals/lights/atlas.png");
+    Minecraft.getMinecraft().getTextureManager().bindTexture(texLoc);
+
+    startingSectionIndex = firstSectionIndex;
+    for (TrafficSignalSectionInfo sectionInfo : sectionInfos) {
+      TrafficSignalBulbStyle bulbStyle = sectionInfo.getBulbStyle();
+      TrafficSignalBulbType bulbType = sectionInfo.getBulbType();
+      TrafficSignalBulbColor bulbColor = sectionInfo.getBulbCustomColor();
+      boolean isBulbLit = sectionInfo.isBulbLit();
+
+      // Render each section with the gathered colors and visor type
       renderSignalBulb(te, bulbStyle,bulbType,bulbColor,isBulbLit, startingSectionIndex--);
     }
 
@@ -191,7 +207,7 @@ public class TileEntityTrafficSignalHeadRenderer extends
     GL11.glTranslatef(-cx, -cy, -z);
 
     // Always bind the correct texture before rendering
-    Minecraft.getMinecraft().getTextureManager().bindTexture(texLoc);
+    //Minecraft.getMinecraft().getTextureManager().bindTexture(texLoc);
 
     // Use correct UVs from TextureInfo
     float u1 = texInfo.getU1();
@@ -204,10 +220,12 @@ public class TileEntityTrafficSignalHeadRenderer extends
 
     buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
 
-    buffer.pos(x,      y,      z).tex(u1, v1).endVertex();
-    buffer.pos(x,      y+size, z).tex(u1, v2).endVertex();
-    buffer.pos(x+size, y+size, z).tex(u2, v2).endVertex();
-    buffer.pos(x+size, y,      z).tex(u2, v1).endVertex();
+    // Fix: Swap u1 and u2 to correct horizontal mirroring
+    // bottom-left, bottom-right, top-right, top-left
+    buffer.pos(x,      y,      z).tex(u2, v1).endVertex(); // bottom-left
+    buffer.pos(x+size, y,      z).tex(u1, v1).endVertex(); // bottom-right
+    buffer.pos(x+size, y+size, z).tex(u1, v2).endVertex(); // top-right
+    buffer.pos(x,      y+size, z).tex(u2, v2).endVertex(); // top-left
 
     tessellator.draw();
 
