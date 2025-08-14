@@ -45,7 +45,8 @@ public class TileEntityTrafficSignalHeadRenderer extends
     // Gather tile entity information
     TrafficSignalSectionInfo[] sectionInfos = te.getSectionInfos(signalColorState);
     TrafficSignalBodyTilt bodyTilt = te.getBodyTilt();
-    DirectionSixteen bodyDirection = AbstractBlockControllableSignalHead.getTiltedFacing(bodyTilt, facing);
+    DirectionSixteen bodyDirection =
+        AbstractBlockControllableSignalHead.getTiltedFacing(bodyTilt, facing);
 
     GlStateManager.disableLighting();
     GlStateManager.disableCull();
@@ -66,13 +67,17 @@ public class TileEntityTrafficSignalHeadRenderer extends
     // --- Compensation for tilt: shift slightly left/right for visual alignment ---
     // 1 model unit = 1/16 block, so shift by ±2 for tilt, ±4 for angle
     int tiltOffset = 0;
-    if (bodyTilt == com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyTilt.RIGHT_ANGLE) {
+    if (bodyTilt
+        == com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyTilt.RIGHT_ANGLE) {
       tiltOffset = -4;
-    } else if (bodyTilt == com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyTilt.RIGHT_TILT) {
+    } else if (bodyTilt
+        == com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyTilt.RIGHT_TILT) {
       tiltOffset = -2;
-    } else if (bodyTilt == com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyTilt.LEFT_TILT) {
+    } else if (bodyTilt
+        == com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyTilt.LEFT_TILT) {
       tiltOffset = 2;
-    } else if (bodyTilt == com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyTilt.LEFT_ANGLE) {
+    } else if (bodyTilt
+        == com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyTilt.LEFT_ANGLE) {
       tiltOffset = 4;
     }
 
@@ -85,21 +90,15 @@ public class TileEntityTrafficSignalHeadRenderer extends
       GL11.glTranslated(tiltOffset, 0, 0);
     }
 
-    // Temporarily call directly without display list
-    renderStaticParts(te, sectionInfos);
-
-    // Uncomment for display list once stable
-        /*
-        if (staticDisplayList == -1 || te.isStateDirty()) {
-            if (staticDisplayList != -1) GL11.glDeleteLists(staticDisplayList, 1);
-            staticDisplayList = GL11.glGenLists(1);
-            GL11.glNewList(staticDisplayList, GL11.GL_COMPILE);
-            renderStaticParts(te, sectionInfos);
-            GL11.glEndList();
-            te.clearDirtyFlag();
-        }
-        GL11.glCallList(staticDisplayList);
-        */
+    if (staticDisplayList == -1 || te.isStateDirty()) {
+      if (staticDisplayList != -1) GL11.glDeleteLists(staticDisplayList, 1);
+      staticDisplayList = GL11.glGenLists(1);
+      GL11.glNewList(staticDisplayList, GL11.GL_COMPILE);
+      renderStaticParts(te, sectionInfos);
+      GL11.glEndList();
+      te.clearDirtyFlag();
+    }
+    GL11.glCallList(staticDisplayList);
 
     renderBulbs(te, sectionInfos);
 
@@ -110,7 +109,8 @@ public class TileEntityTrafficSignalHeadRenderer extends
   }
 
   // New: Render all static colored geometry (batched)
-  private void renderStaticParts(TileEntityTrafficSignalHead te, TrafficSignalSectionInfo[] sectionInfos) {
+  private void renderStaticParts(TileEntityTrafficSignalHead te,
+      TrafficSignalSectionInfo[] sectionInfos) {
     Tessellator tessellator = Tessellator.getInstance();
     BufferBuilder buffer = tessellator.getBuffer();
 
@@ -118,7 +118,6 @@ public class TileEntityTrafficSignalHeadRenderer extends
 
     // Batch all quads first
     buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
-    int startingSectionIndex = sectionInfos.length > 2 ? 1 : 0;
     for (int i = 0; i < sectionInfos.length; i++) {
       TrafficSignalSectionInfo sectionInfo = sectionInfos[i];
       TrafficSignalBodyColor bodyColor = sectionInfo.getBodyColor();
@@ -126,7 +125,8 @@ public class TileEntityTrafficSignalHeadRenderer extends
       TrafficSignalBodyColor visorColor = sectionInfo.getVisorColor();
       TrafficSignalVisorType visorType = sectionInfo.getVisorType();
 
-      float yOffset = (sectionInfos.length - 1 - (i + startingSectionIndex)) * 12.0f;
+      float yOffset = ((sectionInfos.length - 1 - i) - (sectionInfos.length - 1) / 2.0f) * 12.0f;
+      // For 3 sections: i=0 -> 12, i=1 -> 0, i=2 -> -12
 
       RenderHelper.addBoxesToBuffer(TrafficSignalVertexData.SIGNAL_BODY_VERTEX_DATA, buffer,
           bodyColor.getRed(), bodyColor.getGreen(), bodyColor.getBlue(), 1.0f, 0.0f, yOffset, 0.0f);
@@ -134,30 +134,32 @@ public class TileEntityTrafficSignalHeadRenderer extends
           doorColor.getRed(), doorColor.getGreen(), doorColor.getBlue(), 1.0f, 0.0f, yOffset, 0.0f);
 
       if (visorType != TrafficSignalVisorType.CIRCLE) {
-        addVisorQuadsToBuffer(visorType, buffer, visorColor.getRed(), visorColor.getGreen(), visorColor.getBlue(), 1.0f, yOffset);
+        addVisorQuadsToBuffer(visorType, buffer, visorColor.getRed(), visorColor.getGreen(),
+            visorColor.getBlue(), 1.0f, yOffset);
       }
     }
     tessellator.draw();
 
-    // Handle triangle-based visors separately
     for (int i = 0; i < sectionInfos.length; i++) {
       TrafficSignalSectionInfo sectionInfo = sectionInfos[i];
       TrafficSignalVisorType visorType = sectionInfo.getVisorType();
       TrafficSignalBodyColor visorColor = sectionInfo.getVisorColor();
 
-      float yOffset = (sectionInfos.length - 1 - (i + startingSectionIndex)) * 12.0f;
+      float yOffset = ((sectionInfos.length - 1 - i) - (sectionInfos.length - 1) / 2.0f) * 12.0f;
+      // For 3 sections: i=0 -> 12, i=1 -> 0, i=2 -> -12
 
       if (visorType == TrafficSignalVisorType.CIRCLE) {
         BufferBuilder triBuffer = tessellator.getBuffer();
         triBuffer.begin(GL11.GL_TRIANGLE_FAN, DefaultVertexFormats.POSITION_COLOR);
 
-        // Adjust center and depth based on your model
-        float centerX = 8.0f; // X center of bulb/visor
-        float centerY = 6.0f + yOffset; // Y offset per section
-        float centerZ = 10.0f; // Move forward slightly
-        float radius = 6.0f; // Match bulb size
-        float depth = 2.0f; // Push visor forward
-        List<float[]> perimeter = TrafficSignalVertexData.getOptimizedCircleVisorPerimeter(centerX, centerY, centerZ, radius, depth);
+        float centerX = 8.0f;
+        float centerY = 6.0f + yOffset;
+        float centerZ = 10.0f;
+        float radius = 6.0f;
+        float depth = 2.0f;
+        List<float[]> perimeter =
+            TrafficSignalVertexData.getOptimizedCircleVisorPerimeter(centerX, centerY, centerZ,
+                radius, depth, 16); // 16 segments for smoothness
         RenderHelper.addTriangleFanToBuffer(triBuffer, centerX, centerY, centerZ, perimeter,
             visorColor.getRed(), visorColor.getGreen(), visorColor.getBlue(), 1.0f);
 
@@ -168,17 +170,18 @@ public class TileEntityTrafficSignalHeadRenderer extends
     GlStateManager.enableTexture2D();
   }
 
-  private void addVisorQuadsToBuffer(TrafficSignalVisorType visorType, BufferBuilder buffer, float red, float green, float blue, float alpha, float yOffset) {
+  private void addVisorQuadsToBuffer(TrafficSignalVisorType visorType, BufferBuilder buffer,
+      float red, float green, float blue, float alpha, float yOffset) {
     List<RenderHelper.Box> visorData;
     switch (visorType) {
       case TUNNEL:
         visorData = TrafficSignalVertexData.TUNNEL_VISOR_VERTEX_DATA;
         break;
-      case CUTAWAY: // Assuming CUTAWAY is a quad-based visor
-        visorData = TrafficSignalVertexData.CAP_VISOR_VERTEX_DATA; // Add this to VertexData if not present
+      case CUTAWAY:
+        visorData = TrafficSignalVertexData.CAP_VISOR_VERTEX_DATA;
         break;
-      case BOTH_LOUVERED: // Assuming BOTH_LOUVERED is a quad-based visor
-        visorData = TrafficSignalVertexData.BOTH_LOUVERED_VISOR_VERTEX_DATA; // Add this to VertexData if not present
+      case BOTH_LOUVERED:
+        visorData = TrafficSignalVertexData.BOTH_LOUVERED_VISOR_VERTEX_DATA;
         break;
       case VERTICAL_LOUVERED:
         visorData = TrafficSignalVertexData.VERTICAL_LOUVERED_VISOR_VERTEX_DATA;
@@ -202,8 +205,8 @@ public class TileEntityTrafficSignalHeadRenderer extends
 
     Tessellator tessellator = Tessellator.getInstance();
 
-    int startingSectionIndex = sectionInfos.length > 2 ? 1 : 0;
-    for (TrafficSignalSectionInfo sectionInfo : sectionInfos) {
+    for (int i = 0; i < sectionInfos.length; i++) {
+      TrafficSignalSectionInfo sectionInfo = sectionInfos[i];
       TrafficSignalBulbStyle bulbStyle = sectionInfo.getBulbStyle();
       TrafficSignalBulbType bulbType = sectionInfo.getBulbType();
       TrafficSignalBulbColor bulbColor = sectionInfo.getBulbCustomColor();
@@ -215,7 +218,8 @@ public class TileEntityTrafficSignalHeadRenderer extends
 
       // Bulb quad parameters: cover the entire 12x12 front face of the section
       float x = 2f;
-      float y = (startingSectionIndex-- * 12f);
+      float y = ((sectionInfos.length - 1 - i) - (sectionInfos.length - 1) / 2.0f) * 12.0f;
+      // For 3 sections: i=0 -> 12, i=1 -> 0, i=2 -> -12
       float z = 10.4f; // Just in front of the door
       float size = 12f;
 

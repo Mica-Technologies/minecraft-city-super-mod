@@ -33,20 +33,38 @@ public class TrafficSignalVertexData {
     return boxes;
   }
 
-  // Updated: Generate optimized circle visor as triangle fan points (center + perimeter)
-  // Returns list of perimeter points (float[3] for x,y,z); center is separate
-  public static List<float[]> getOptimizedCircleVisorPerimeter(float centerX, float centerY, float centerZ, float radius, float depth) {
-    List<float[]> points = new ArrayList<>();
-    int segments = 16; // Adjustable; 16 is smooth enough for MC without too many verts
+  /**
+   * Generates an optimized circular perimeter for a visor, suitable for a triangle fan.
+   * The perimeter is offset along the Z-axis by the specified depth to create a 3D effect.
+   *
+   * @param centerX The X-coordinate of the circle's center.
+   * @param centerY The Y-coordinate of the circle's center.
+   * @param centerZ The Z-coordinate of the circle's center (base plane).
+   * @param radius The radius of the circle.
+   * @param depth The depth along the Z-axis to extend the perimeter.
+   * @param segments The number of segments/points to approximate the circle (e.g., 16 for smoothness).
+   * @return A list of float arrays, each containing [x, y, z] coordinates of the perimeter points.
+   */
+  public static List<float[]> getOptimizedCircleVisorPerimeter(float centerX, float centerY, float centerZ, float radius, float depth, int segments) {
+    List<float[]> perimeter = new ArrayList<>();
+
+    // Ensure at least 3 segments for a valid circle
+    if (segments < 3) segments = 3;
+
+    // Calculate the angle increment per segment
+    float angleIncrement = (float) (2.0 * Math.PI / segments);
+
+    // Generate points, offset by depth along Z-axis
     for (int i = 0; i < segments; i++) {
-      float angle = (float) (2 * Math.PI * i / segments);
+      float angle = i * angleIncrement;
       float x = centerX + radius * (float) Math.cos(angle);
       float y = centerY + radius * (float) Math.sin(angle);
-      points.add(new float[]{x, y, centerZ + depth}); // Extrude slightly for 3D if needed
+      float z = centerZ + depth; // Extend forward along Z
+      perimeter.add(new float[]{x, y, z});
     }
-    return points;
-  }
 
+    return perimeter;
+  }
   // New: Similar for tunnel (longer depth, perhaps tapered)
   public static List<Box> getOptimizedTunnelVisor() {
     List<Box> boxes = new ArrayList<>();
