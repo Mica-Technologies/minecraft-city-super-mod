@@ -64,6 +64,8 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
    */
   private TrafficSignalBodyTilt bodyTilt = TrafficSignalBodyTilt.NONE;
 
+  private boolean dirty = true;
+
   /**
    * Constructs a new TileEntityTrafficSignalHead instance.
    *
@@ -262,6 +264,7 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
     for (TrafficSignalSectionInfo sectionInfo : sectionInfos) {
       sectionInfo.setDoorColor(nextPaintColor);
     }
+    markDirtySync(world, pos, true);
     return nextPaintColor;
   }
 
@@ -278,6 +281,7 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
     for (TrafficSignalSectionInfo sectionInfo : sectionInfos) {
       sectionInfo.setVisorColor(nextPaintColor);
     }
+    markDirtySync(world, pos, true);
     return nextPaintColor;
   }
 
@@ -307,6 +311,22 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
     for (TrafficSignalSectionInfo sectionInfo : sectionInfos) {
       sectionInfo.setVisorType(nextVisorType);
     }
+    markDirtySync(world, pos, true);
     return nextVisorType;
+  }
+
+  public boolean isStateDirty() {
+    return dirty;
+  }
+
+  public void clearDirtyFlag() {
+    dirty = false;
+  }
+
+  // Call dirty = true; in methods that change state (e.g., set color, lit)
+  @Override
+  public void onDataPacket(net.minecraft.network.NetworkManager net, net.minecraft.network.play.server.SPacketUpdateTileEntity pkt) {
+    super.onDataPacket(net, pkt);
+    dirty = true;
   }
 }

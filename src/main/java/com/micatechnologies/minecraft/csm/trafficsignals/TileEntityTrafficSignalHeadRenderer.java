@@ -2,7 +2,6 @@ package com.micatechnologies.minecraft.csm.trafficsignals;
 
 import com.micatechnologies.minecraft.csm.codeutils.DirectionSixteen;
 import com.micatechnologies.minecraft.csm.codeutils.RenderHelper;
-import com.micatechnologies.minecraft.csm.codeutils.RenderHelper.Box;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignalHead;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyColor;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyTilt;
@@ -30,6 +29,9 @@ import net.minecraft.client.renderer.BufferBuilder;
 public class TileEntityTrafficSignalHeadRenderer extends
     TileEntitySpecialRenderer<TileEntityTrafficSignalHead> {
 
+  // Add per-instance display list for caching static geometry
+  private int staticDisplayList = -1;
+
   @Override
   public void render(TileEntityTrafficSignalHead te, double x, double y, double z,
       float partialTicks, int destroyStage, float alpha) {
@@ -42,27 +44,23 @@ public class TileEntityTrafficSignalHeadRenderer extends
 
     // Gather tile entity information
     TrafficSignalSectionInfo[] sectionInfos = te.getSectionInfos(signalColorState);
-    TrafficSignalBodyTilt bodyTilt = te.getBodyTilt(); // Body tilt angle
-    DirectionSixteen bodyDirection =
-        AbstractBlockControllableSignalHead.getTiltedFacing(bodyTilt, facing);
+    TrafficSignalBodyTilt bodyTilt = te.getBodyTilt();
+    DirectionSixteen bodyDirection = AbstractBlockControllableSignalHead.getTiltedFacing(bodyTilt, facing);
 
-    // Push OpenGL transformation matrix.
+    GlStateManager.disableLighting();
+    GlStateManager.disableCull();
+    GlStateManager.enableBlend(); // Added for smoother edges/lights
+    GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+
+    // Push matrix once
     GL11.glPushMatrix();
-
-    // 1. Translate to the block position in world space
     GL11.glTranslated(x, y, z);
-
-    // 2. Scale down to 1/16th size (model coordinates to block coordinates)
     GL11.glScaled(0.0625, 0.0625, 0.0625);
-
-    // 3. Translate to the block center (8, 8, 8)
     GL11.glTranslated(8, 8, 8);
 
-    // 4. Rotate based on the facing direction (around the block center)
+    // Apply rotation once
     float rotationAngle = bodyDirection.getRotation();
     GL11.glRotatef(rotationAngle, 0, 1, 0);
-
-    // 5. Translate back from block center
     GL11.glTranslated(-8, -8, -8);
 
     // --- Compensation for tilt: shift slightly left/right for visual alignment ---
@@ -87,177 +85,167 @@ public class TileEntityTrafficSignalHeadRenderer extends
       GL11.glTranslated(tiltOffset, 0, 0);
     }
 
-    // Now, rendering the signal body at (2, 0, 11) will always keep it at the correct offset
-    // relative to the block, regardless of facing.
+    // Temporarily call directly without display list
+    renderStaticParts(te, sectionInfos);
 
-    GlStateManager.disableCull(); // Disable culling for visibility.
-    GlStateManager.disableLighting(); // Disable lighting for color rendering.
+    // Uncomment for display list once stable
+        /*
+        if (staticDisplayList == -1 || te.isStateDirty()) {
+            if (staticDisplayList != -1) GL11.glDeleteLists(staticDisplayList, 1);
+            staticDisplayList = GL11.glGenLists(1);
+            GL11.glNewList(staticDisplayList, GL11.GL_COMPILE);
+            renderStaticParts(te, sectionInfos);
+            GL11.glEndList();
+            te.clearDirtyFlag();
+        }
+        GL11.glCallList(staticDisplayList);
+        */
 
-    // Get first section index for rendering
-    int firstSectionIndex = sectionInfos.length > 2 ? 1 : 0;
+    renderBulbs(te, sectionInfos);
 
-    // Render signal bodies and visors
-    int startingSectionIndex = firstSectionIndex;
-    for (TrafficSignalSectionInfo sectionInfo : sectionInfos) {
+    GL11.glPopMatrix();
+    GlStateManager.disableBlend();
+    GlStateManager.enableCull();
+    GlStateManager.enableLighting();
+  }
+
+  // New: Render all static colored geometry (batched)
+  private void renderStaticParts(TileEntityTrafficSignalHead te, TrafficSignalSectionInfo[] sectionInfos) {
+    Tessellator tessellator = Tessellator.getInstance();
+    BufferBuilder buffer = tessellator.getBuffer();
+
+    GlStateManager.disableTexture2D();
+
+    // Batch all quads first
+    buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
+    int startingSectionIndex = sectionInfos.length > 2 ? 1 : 0;
+    for (int i = 0; i < sectionInfos.length; i++) {
+      TrafficSignalSectionInfo sectionInfo = sectionInfos[i];
       TrafficSignalBodyColor bodyColor = sectionInfo.getBodyColor();
       TrafficSignalBodyColor doorColor = sectionInfo.getDoorColor();
       TrafficSignalBodyColor visorColor = sectionInfo.getVisorColor();
       TrafficSignalVisorType visorType = sectionInfo.getVisorType();
-      TrafficSignalBulbStyle bulbStyle = sectionInfo.getBulbStyle();
-      TrafficSignalBulbType bulbType = sectionInfo.getBulbType();
-      TrafficSignalBulbColor bulbColor = sectionInfo.getBulbCustomColor();
-      boolean isBulbLit = sectionInfo.isBulbLit();
 
-      // Render each section with the gathered colors and visor type
-      renderSignalSection(te, bodyColor, doorColor, visorColor, visorType, startingSectionIndex--);
+      float yOffset = (sectionInfos.length - 1 - (i + startingSectionIndex)) * 12.0f;
+
+      RenderHelper.addBoxesToBuffer(TrafficSignalVertexData.SIGNAL_BODY_VERTEX_DATA, buffer,
+          bodyColor.getRed(), bodyColor.getGreen(), bodyColor.getBlue(), 1.0f, 0.0f, yOffset, 0.0f);
+      RenderHelper.addBoxesToBuffer(TrafficSignalVertexData.SIGNAL_DOOR_VERTEX_DATA, buffer,
+          doorColor.getRed(), doorColor.getGreen(), doorColor.getBlue(), 1.0f, 0.0f, yOffset, 0.0f);
+
+      if (visorType != TrafficSignalVisorType.CIRCLE) {
+        addVisorQuadsToBuffer(visorType, buffer, visorColor.getRed(), visorColor.getGreen(), visorColor.getBlue(), 1.0f, yOffset);
+      }
+    }
+    tessellator.draw();
+
+    // Handle triangle-based visors separately
+    for (int i = 0; i < sectionInfos.length; i++) {
+      TrafficSignalSectionInfo sectionInfo = sectionInfos[i];
+      TrafficSignalVisorType visorType = sectionInfo.getVisorType();
+      TrafficSignalBodyColor visorColor = sectionInfo.getVisorColor();
+
+      float yOffset = (sectionInfos.length - 1 - (i + startingSectionIndex)) * 12.0f;
+
+      if (visorType == TrafficSignalVisorType.CIRCLE) {
+        BufferBuilder triBuffer = tessellator.getBuffer();
+        triBuffer.begin(GL11.GL_TRIANGLE_FAN, DefaultVertexFormats.POSITION_COLOR);
+
+        // Adjust center and depth based on your model
+        float centerX = 8.0f; // X center of bulb/visor
+        float centerY = 6.0f + yOffset; // Y offset per section
+        float centerZ = 10.0f; // Move forward slightly
+        float radius = 6.0f; // Match bulb size
+        float depth = 2.0f; // Push visor forward
+        List<float[]> perimeter = TrafficSignalVertexData.getOptimizedCircleVisorPerimeter(centerX, centerY, centerZ, radius, depth);
+        RenderHelper.addTriangleFanToBuffer(triBuffer, centerX, centerY, centerZ, perimeter,
+            visorColor.getRed(), visorColor.getGreen(), visorColor.getBlue(), 1.0f);
+
+        tessellator.draw();
+      }
     }
 
+    GlStateManager.enableTexture2D();
+  }
 
+  private void addVisorQuadsToBuffer(TrafficSignalVisorType visorType, BufferBuilder buffer, float red, float green, float blue, float alpha, float yOffset) {
+    List<RenderHelper.Box> visorData;
+    switch (visorType) {
+      case TUNNEL:
+        visorData = TrafficSignalVertexData.TUNNEL_VISOR_VERTEX_DATA;
+        break;
+      case CUTAWAY: // Assuming CUTAWAY is a quad-based visor
+        visorData = TrafficSignalVertexData.CAP_VISOR_VERTEX_DATA; // Add this to VertexData if not present
+        break;
+      case BOTH_LOUVERED: // Assuming BOTH_LOUVERED is a quad-based visor
+        visorData = TrafficSignalVertexData.BOTH_LOUVERED_VISOR_VERTEX_DATA; // Add this to VertexData if not present
+        break;
+      case VERTICAL_LOUVERED:
+        visorData = TrafficSignalVertexData.VERTICAL_LOUVERED_VISOR_VERTEX_DATA;
+        break;
+      case HORIZONTAL_LOUVERED:
+        visorData = TrafficSignalVertexData.HORIZONTAL_LOUVERED_VISOR_VERTEX_DATA;
+        break;
+      case NONE:
+        visorData = TrafficSignalVertexData.NONE_VISOR_VERTEX_DATA;
+        break;
+      default:
+        return;
+    }
+    RenderHelper.addBoxesToBuffer(visorData, buffer, red, green, blue, alpha, 0.0f, yOffset, 0.0f);
+  }
 
+  private void renderBulbs(TileEntityTrafficSignalHead te, TrafficSignalSectionInfo[] sectionInfos) {
     // Always bind the correct texture before rendering
     ResourceLocation texLoc = new ResourceLocation("csm", "textures/blocks/trafficsignals/lights/atlas.png");
     Minecraft.getMinecraft().getTextureManager().bindTexture(texLoc);
 
-    startingSectionIndex = firstSectionIndex;
+    Tessellator tessellator = Tessellator.getInstance();
+
+    int startingSectionIndex = sectionInfos.length > 2 ? 1 : 0;
     for (TrafficSignalSectionInfo sectionInfo : sectionInfos) {
       TrafficSignalBulbStyle bulbStyle = sectionInfo.getBulbStyle();
       TrafficSignalBulbType bulbType = sectionInfo.getBulbType();
       TrafficSignalBulbColor bulbColor = sectionInfo.getBulbCustomColor();
       boolean isBulbLit = sectionInfo.isBulbLit();
+      TextureInfo texInfo = TrafficSignalTextureMap.getTextureInfoForBulb(bulbStyle, bulbType, bulbColor, isBulbLit);
 
-      // Render each section with the gathered colors and visor type
-      renderSignalBulb(te, bulbStyle,bulbType,bulbColor,isBulbLit, startingSectionIndex--);
-    }
+      // Push OpenGL transformation matrix
+      GL11.glPushMatrix();
 
-    GlStateManager.enableLighting(); // Enable lighting.
-    GlStateManager.enableCull(); // Enable culling.
+      // Bulb quad parameters: cover the entire 12x12 front face of the section
+      float x = 2f;
+      float y = (startingSectionIndex-- * 12f);
+      float z = 10.4f; // Just in front of the door
+      float size = 12f;
 
-    GL11.glPopMatrix(); // Pop transformation matrix.
-  }
+      // Center of the quad for rotation
+      float cx = x + size / 2f;
+      float cy = y + size / 2f;
 
+      // Translate to center, rotate, then translate back
+      GL11.glTranslatef(cx, cy, z);
+      GL11.glRotatef(texInfo.getRotation(), 0.0f, 0.0f, 1.0f); // Rotate around Z-axis
+      GL11.glTranslatef(-cx, -cy, -z);
 
+      BufferBuilder buffer = tessellator.getBuffer();
+      buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
 
-  private void renderSignalSection(TileEntityTrafficSignalHead te,
-      TrafficSignalBodyColor bodyColor,
-      TrafficSignalBodyColor doorColor, TrafficSignalBodyColor visorColor,
-      TrafficSignalVisorType visorType, int index) {
-    // Push OpenGL transformation matrix.
-    GL11.glPushMatrix();
+      // Use correct UVs from TextureInfo (with u1/u2 swap for horizontal mirroring)
+      float u1 = texInfo.getU1();
+      float v1 = texInfo.getV1();
+      float u2 = texInfo.getU2();
+      float v2 = texInfo.getV2();
 
-    // Disable textures and set baseline color
-    GlStateManager.disableTexture2D();
-    GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+      // Vertex order: bottom-left, bottom-right, top-right, top-left (counterclockwise)
+      buffer.pos(x, y, z).tex(u2, v1).endVertex(); // bottom-left
+      buffer.pos(x + size, y, z).tex(u1, v1).endVertex(); // bottom-right
+      buffer.pos(x + size, y + size, z).tex(u1, v2).endVertex(); // top-right
+      buffer.pos(x, y + size, z).tex(u2, v2).endVertex(); // top-left
 
-    renderSignalBody(te, bodyColor, index);
-    renderFrontDoor(te, doorColor, index);
-    renderSignalVisor(te, visorColor, visorType, index);
+      tessellator.draw();
 
-    // Restore textures and reset color
-    GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-    GlStateManager.enableTexture2D();
-
-    // Pop OpenGL transformation matrix.
-    GL11.glPopMatrix();
-  }
-
-  /**
-   * Renders the traffic signal body. Coordinates are based on the "golden coordinates" provided.
-   */
-  private void renderSignalBody(TileEntityTrafficSignalHead te, TrafficSignalBodyColor bodyColor,
-      int index) {
-    // Render the body using the vertex data
-    float yOffset = index * 12.0f;
-    RenderHelper.drawBoxes(TrafficSignalVertexData.SIGNAL_BODY_VERTEX_DATA, bodyColor.getRed(), bodyColor.getGreen(),
-        bodyColor.getBlue(), 1.0f,0.0f,yOffset,0.0f);
-  }
-
-  /**
-   * Renders the front door of the traffic signal. This sits on the front face of the signal body.
-   */
-  private void renderFrontDoor(TileEntityTrafficSignalHead te, TrafficSignalBodyColor doorColor,
-      int index) {
-    // Render the door using the vertex data
-    float yOffset = index * 12.0f;
-    RenderHelper.drawBoxes(TrafficSignalVertexData.SIGNAL_DOOR_VERTEX_DATA, doorColor.getRed(), doorColor.getGreen(),
-        doorColor.getBlue(), 1.0f,0.0f,yOffset,0.0f);
-  }
-
-
-  private void renderSignalBulb(TileEntityTrafficSignalHead te, TrafficSignalBulbStyle bulbStyle,
-      TrafficSignalBulbType bulbType, TrafficSignalBulbColor bulbColor, boolean isBulbLit, int index) {
-    TextureInfo texInfo = TrafficSignalTextureMap.getTextureInfoForBulb(bulbStyle, bulbType, bulbColor, isBulbLit);
-    ResourceLocation texLoc = new ResourceLocation("csm", texInfo.getTexture());
-
-    // Push OpenGL transformation matrix.
-    GL11.glPushMatrix();
-
-    // Bulb quad parameters: cover the entire 12x12 front face of the section
-    float x = 2f;
-    float y = (index * 12f);
-    float z = 10.4f; // just in front of the door
-    float size = 12f;
-
-    // Center of the quad for rotation
-    float cx = x + size / 2f;
-    float cy = y + size / 2f;
-
-    // Translate to center, rotate, then translate back
-    GL11.glTranslatef(cx, cy, z);
-    GL11.glRotatef(texInfo.getRotation(), 0, 0, 1);
-    GL11.glTranslatef(-cx, -cy, -z);
-
-    // Always bind the correct texture before rendering
-    //Minecraft.getMinecraft().getTextureManager().bindTexture(texLoc);
-
-    // Use correct UVs from TextureInfo
-    float u1 = texInfo.getU1();
-    float v1 = texInfo.getV1();
-    float u2 = texInfo.getU2();
-    float v2 = texInfo.getV2();
-
-    Tessellator tessellator = Tessellator.getInstance();
-    BufferBuilder buffer = tessellator.getBuffer();
-
-    buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
-
-    // Fix: Swap u1 and u2 to correct horizontal mirroring
-    // bottom-left, bottom-right, top-right, top-left
-    buffer.pos(x,      y,      z).tex(u2, v1).endVertex(); // bottom-left
-    buffer.pos(x+size, y,      z).tex(u1, v1).endVertex(); // bottom-right
-    buffer.pos(x+size, y+size, z).tex(u1, v2).endVertex(); // top-right
-    buffer.pos(x,      y+size, z).tex(u2, v2).endVertex(); // top-left
-
-    tessellator.draw();
-
-    // Pop OpenGL transformation matrix.
-    GL11.glPopMatrix();
-  }
-
-  /**
-   * Renders the visor of the traffic signal using the baked model and applies color tinting.
-   */
-  private void renderSignalVisor(TileEntityTrafficSignalHead te, TrafficSignalBodyColor visorColor,
-      TrafficSignalVisorType visorType, int index) {
-
-    float colorAlpha = 1.0f; // Full opacity
-    float xOffset = 0.0f; // No X offset
-    float yOffset = (index * 12.0f);
-    float zOffset = 0.0f; // No Z offset
-
-    if (visorType == TrafficSignalVisorType.CIRCLE) {
-      RenderHelper.drawBoxes(TrafficSignalVertexData.CIRCLE_VISOR_VERTEX_DATA, visorColor.getRed(), visorColor.getGreen(), visorColor.getBlue(),colorAlpha, xOffset,yOffset,zOffset);
-    } else if (visorType == TrafficSignalVisorType.TUNNEL) {
-      RenderHelper.drawBoxes(TrafficSignalVertexData.TUNNEL_VISOR_VERTEX_DATA, visorColor.getRed(), visorColor.getGreen(), visorColor.getBlue(),colorAlpha, xOffset,yOffset,zOffset);
-    } else if (visorType == TrafficSignalVisorType.CUTAWAY) {
-      RenderHelper.drawBoxes(TrafficSignalVertexData.CAP_VISOR_VERTEX_DATA, visorColor.getRed(), visorColor.getGreen(), visorColor.getBlue(),colorAlpha, xOffset,yOffset,zOffset);
-    } else if (visorType == TrafficSignalVisorType.VERTICAL_LOUVERED) {
-      RenderHelper.drawBoxes(TrafficSignalVertexData.VERTICAL_LOUVERED_VISOR_VERTEX_DATA, visorColor.getRed(), visorColor.getGreen(), visorColor.getBlue(),colorAlpha, xOffset,yOffset,zOffset);
-    }else if (visorType == TrafficSignalVisorType.HORIZONTAL_LOUVERED) {
-      RenderHelper.drawBoxes(TrafficSignalVertexData.HORIZONTAL_LOUVERED_VISOR_VERTEX_DATA, visorColor.getRed(), visorColor.getGreen(), visorColor.getBlue(),colorAlpha, xOffset,yOffset,zOffset);
-    }else if (visorType == TrafficSignalVisorType.BOTH_LOUVERED) {
-      RenderHelper.drawBoxes(TrafficSignalVertexData.BOTH_LOUVERED_VISOR_VERTEX_DATA, visorColor.getRed(), visorColor.getGreen(), visorColor.getBlue(),colorAlpha, xOffset,yOffset,zOffset);
-    } else if (visorType == TrafficSignalVisorType.NONE) {
-      RenderHelper.drawBoxes(TrafficSignalVertexData.NONE_VISOR_VERTEX_DATA, visorColor.getRed(), visorColor.getGreen(), visorColor.getBlue(),colorAlpha, xOffset,yOffset,zOffset);
+      GL11.glPopMatrix();
     }
   }
 

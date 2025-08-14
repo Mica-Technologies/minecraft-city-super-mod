@@ -1,10 +1,64 @@
 package com.micatechnologies.minecraft.csm.trafficsignals.logic;
 
 import com.micatechnologies.minecraft.csm.codeutils.RenderHelper.Box;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class TrafficSignalVertexData {
+  // New: Generate optimized circle visor (segmented ring)
+  public static List<Box> getOptimizedCircleVisor() {
+    List<Box> boxes = new ArrayList<>();
+    int segments = 16; // Fewer than original; adjust for smoothness
+    float radius = 6.0f; // Approx radius of bulb
+    float thickness = 0.4f; // Visor thickness
+    float depth = 2.0f; // Visor protrusion
+
+    float centerX = 8.0f, centerY = 6.0f, startZ = 11.0f; // Aligned to bulb
+
+    for (int i = 0; i < segments; i++) {
+      float angle1 = (float) (2 * Math.PI * i / segments);
+      float angle2 = (float) (2 * Math.PI * (i + 1) / segments);
+
+      float x1 = centerX + radius * (float) Math.cos(angle1);
+      float y1 = centerY + radius * (float) Math.sin(angle1);
+      float x2 = centerX + radius * (float) Math.cos(angle2);
+      float y2 = centerY + radius * (float) Math.sin(angle2);
+
+      // Outer quad for thickness
+      boxes.add(new Box(new float[]{Math.min(x1, x2), Math.min(y1, y2), startZ},
+          new float[]{Math.max(x1, x2), Math.max(y1, y2), startZ + depth}));
+      // Add inner if needed for louvered, etc.
+    }
+    return boxes;
+  }
+
+  // Updated: Generate optimized circle visor as triangle fan points (center + perimeter)
+  // Returns list of perimeter points (float[3] for x,y,z); center is separate
+  public static List<float[]> getOptimizedCircleVisorPerimeter(float centerX, float centerY, float centerZ, float radius, float depth) {
+    List<float[]> points = new ArrayList<>();
+    int segments = 16; // Adjustable; 16 is smooth enough for MC without too many verts
+    for (int i = 0; i < segments; i++) {
+      float angle = (float) (2 * Math.PI * i / segments);
+      float x = centerX + radius * (float) Math.cos(angle);
+      float y = centerY + radius * (float) Math.sin(angle);
+      points.add(new float[]{x, y, centerZ + depth}); // Extrude slightly for 3D if needed
+    }
+    return points;
+  }
+
+  // New: Similar for tunnel (longer depth, perhaps tapered)
+  public static List<Box> getOptimizedTunnelVisor() {
+    List<Box> boxes = new ArrayList<>();
+    int segments = 16;
+    float radius = 6.0f;
+    float depth = 9.0f; // Longer for tunnel
+
+    // Similar loop as above, but extend Z deeper
+    // ... (adapt the circle logic, but with z1 = 2.0f, z2 = 11.0f or your original range)
+
+    return boxes;
+  }
   public static final List<Box> TUNNEL_VISOR_VERTEX_DATA = Arrays.asList(
       new Box(new float[]{2.90f, 8.10f, 2.00f}, new float[]{3.30f, 8.50f, 11.00f}),
       new Box(new float[]{2.90f, 3.70f, 2.00f}, new float[]{3.30f, 4.10f, 11.00f}),

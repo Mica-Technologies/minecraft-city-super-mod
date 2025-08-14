@@ -13,10 +13,26 @@ import org.lwjgl.opengl.GL11;
  */
 public class RenderHelper {
 
+  // New: Add a triangle fan to the buffer (for circles, efficient curves)
+  public static void addTriangleFanToBuffer(BufferBuilder buffer, float centerX, float centerY, float centerZ,
+      List<float[]> perimeterPoints, float red, float green, float blue, float alpha) {
+    // Center vertex
+    buffer.pos(centerX, centerY, centerZ).color(red, green, blue, alpha).endVertex();
+
+    // Perimeter vertices
+    for (float[] point : perimeterPoints) {
+      buffer.pos(point[0], point[1], point[2]).color(red, green, blue, alpha).endVertex();
+    }
+
+    // Close the fan by repeating the first perimeter point
+    if (!perimeterPoints.isEmpty()) {
+      float[] first = perimeterPoints.get(0);
+      buffer.pos(first[0], first[1], first[2]).color(red, green, blue, alpha).endVertex();
+    }
+  }
+
   public static void drawCuboidColoredbySize(double x, double y, double z, double width,
-      double height,
-      double depth, float red, float green, float blue, float alpha) {
-    // Draw cuboid using the existing method
+      double height, double depth, float red, float green, float blue, float alpha) {
     drawCuboidColored(x, y, z, x + width, y + height, z + depth, red, green, blue, alpha);
   }
 
@@ -26,13 +42,15 @@ public class RenderHelper {
     Tessellator tessellator = Tessellator.getInstance();
     BufferBuilder buffer = tessellator.getBuffer();
 
-    // Push matrix and attribs
-    GL11.glPushMatrix();
-    GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
-
-    // Draw cuboid (up, down, north, south, east, west)
+    // Start a single buffer for the cuboid
     buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
+    addCuboidVerticesToBuffer(buffer, x1, y1, z1, x2, y2, z2, red, green, blue, alpha);
+    tessellator.draw();
+  }
 
+  // New method: Add cuboid vertices to an existing buffer (for batching)
+  private static void addCuboidVerticesToBuffer(BufferBuilder buffer, double x1, double y1, double z1,
+      double x2, double y2, double z2, float red, float green, float blue, float alpha) {
     // Front
     buffer.pos(x1, y1, z2).color(red, green, blue, alpha).endVertex();
     buffer.pos(x2, y1, z2).color(red, green, blue, alpha).endVertex();
@@ -68,33 +86,19 @@ public class RenderHelper {
     buffer.pos(x2, y1, z1).color(red, green, blue, alpha).endVertex();
     buffer.pos(x2, y1, z2).color(red, green, blue, alpha).endVertex();
     buffer.pos(x1, y1, z2).color(red, green, blue, alpha).endVertex();
-
-    tessellator.draw();
-
-    // Pop matrix and attribs
-    GL11.glPopAttrib();
-    GL11.glPopMatrix();
   }
 
-  public static void drawBoxes(List<Box> boxes, float red, float green, float blue,float alpha) {
-    drawBoxes(boxes, red, green, blue, alpha, 0.0f, 0.0f, 0.0f);
-  }
-
-  public static void drawBoxes(List<Box> boxes, float red, float green, float blue,float alpha, float xOffset,
-      float yOffset, float zOffset) {
-    // Loop through each box and draw it
+  // Updated: Now adds to a buffer instead of drawing per box
+  public static void addBoxesToBuffer(List<Box> boxes, BufferBuilder buffer, float red, float green, float blue, float alpha,
+      float xOffset, float yOffset, float zOffset) {
     for (Box box : boxes) {
-      // Apply Y offset for all box vertices
       float x1 = box.from[0] + xOffset, y1 = box.from[1] + yOffset, z1 = box.from[2] + zOffset;
       float x2 = box.to[0] + xOffset, y2 = box.to[1] + yOffset, z2 = box.to[2] + zOffset;
-
-      // Draw the cuboid with the specified color
-      RenderHelper.drawCuboidColored(x1, y1, z1, x2, y2, z2, red,green,blue, alpha);
+      addCuboidVerticesToBuffer(buffer, x1, y1, z1, x2, y2, z2, red, green, blue, alpha);
     }
   }
 
   public static class Box {
-
     public final float[] from;
     public final float[] to;
 
