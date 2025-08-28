@@ -67,7 +67,8 @@ public class TrafficSignalAPSSoundSchemes {
           new TrafficSignalAPSSoundScheme("Campbell Phil Voice - Walk Sign is On for All Crossings",
               CsmSounds.SOUND.CAMPBELL_TONE1, CsmSounds.SOUND.CAMPBELL_PHIL_WAIT, 20,
               CsmSounds.SOUND.CAMPBELL_PHIL_WAIT, 20, CsmSounds.SOUND.CAMPBELL_PHIL_WALK_EXCLUSIVE,
-              70)};
+              70),
+          new TrafficSignalAPSSoundScheme("Audio Disabled", null, null, 20, null, 20, null, 20)};
   /**
    * The Polara sound schemes.
    *
@@ -102,5 +103,6 @@ public class TrafficSignalAPSSoundSchemes {
               "Polara Spanish Voice - Walk Sign is on for All Crossings",
               CsmSounds.SOUND.POLARA_TONE1, CsmSounds.SOUND.POLARA_LANG2_WAIT, 20,
               CsmSounds.SOUND.POLARA_LANG2_WAIT, 20,
-              CsmSounds.SOUND.POLARA_LANG2_WALK_ALL_CROSSINGS, 80)};
+              CsmSounds.SOUND.POLARA_LANG2_WALK_ALL_CROSSINGS, 80),
+          new TrafficSignalAPSSoundScheme("Audio Disabled", null, null, 20, null, 20, null, 20)};
 }
