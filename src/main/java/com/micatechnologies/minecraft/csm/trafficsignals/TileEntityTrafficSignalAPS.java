@@ -325,7 +325,7 @@ public class TileEntityTrafficSignalAPS extends TileEntityTrafficSignalTickableR
       boolean isPressSoundAlreadyPlaying =
           (crosswalkLastPressTime + getCrosswalkSound().getLenOfPressSound())
               > world.getTotalWorldTime();
-      if (!isWalkSoundAlreadyPlaying && !isPressSoundAlreadyPlaying) {
+      if (!isWalkSoundAlreadyPlaying && !isPressSoundAlreadyPlaying && getCrosswalkSound().getWalkSound() != null) {
         world.playSound(null, pos.getX(), pos.getY(), pos.getZ(),
             getCrosswalkSound().getWalkSound().getSoundEvent(), SoundCategory.NEUTRAL,
             getCrosswalkSound().getVolume(), getCrosswalkSound().getPitch());
@@ -333,14 +333,18 @@ public class TileEntityTrafficSignalAPS extends TileEntityTrafficSignalTickableR
       }
     } else if (blockColor == BlockControllableCrosswalkButtonAudible.SIGNAL_YELLOW) {
       // Play locate sound (future: countdown when controller updated)
-      world.playSound(null, pos.getX(), pos.getY(), pos.getZ(),
-          getCrosswalkSound().getLocateSound().getSoundEvent(), SoundCategory.NEUTRAL,
-          getCrosswalkSound().getVolume(), getCrosswalkSound().getPitch());
+      if (getCrosswalkSound().getLocateSound() != null) {
+        world.playSound(null, pos.getX(), pos.getY(), pos.getZ(),
+            getCrosswalkSound().getLocateSound().getSoundEvent(), SoundCategory.NEUTRAL,
+            getCrosswalkSound().getVolume(), getCrosswalkSound().getPitch());
+      }
     } else if (blockColor == BlockControllableCrosswalkButtonAudible.SIGNAL_RED) {
       // Play locate sound
-      world.playSound(null, pos.getX(), pos.getY(), pos.getZ(),
-          getCrosswalkSound().getLocateSound().getSoundEvent(), SoundCategory.NEUTRAL,
-          getCrosswalkSound().getVolume(), getCrosswalkSound().getPitch());
+      if (getCrosswalkSound().getLocateSound() != null) {
+        world.playSound(null, pos.getX(), pos.getY(), pos.getZ(),
+            getCrosswalkSound().getLocateSound().getSoundEvent(), SoundCategory.NEUTRAL,
+            getCrosswalkSound().getVolume(), getCrosswalkSound().getPitch());
+      }
     } else {
       System.err.println(
           "Invalid block color value: " + blockColor + " for crosswalk button tile entity at [X: "
@@ -358,7 +362,7 @@ public class TileEntityTrafficSignalAPS extends TileEntityTrafficSignalTickableR
     boolean isPressSoundAlreadyPlaying =
         (crosswalkLastPressTime + getCrosswalkSound().getLenOfPressSound())
             > world.getTotalWorldTime();
-    if (!isPressSoundAlreadyPlaying) {
+    if (!isPressSoundAlreadyPlaying && getCrosswalkSound().getPressSound() != null) {
       world.playSound(null, pos.getX(), pos.getY(), pos.getZ(),
           getCrosswalkSound().getPressSound().getSoundEvent(), SoundCategory.NEUTRAL,
           getCrosswalkSound().getVolume(), getCrosswalkSound().getPitch());
