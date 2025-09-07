@@ -11,6 +11,16 @@ import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficSignalP
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficSignalSnowBeacon;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficStreetNameSignMount;
 import com.micatechnologies.minecraft.csm.trafficsignals.AbstractBlockControllableCrosswalkSignal;
+import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkDoubleWordedBaseMount;
+import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkDoubleWordedLeftMount;
+import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkDoubleWordedRearMount;
+import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkDoubleWordedRightMount;
+import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkLeftMount;
+import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkLeftMount90Deg;
+import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkMount;
+import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkMount90Deg;
+import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkRightMount;
+import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkRightMount90Deg;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkTweeter1;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkTweeter2;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockTrafficLightSensorBox;
@@ -88,14 +98,22 @@ public abstract class AbstractBlockTrafficPole extends AbstractBlockRotatableNSE
   /**
    * The list of global ignore blocks.
    */
-  public static final Class<?>[] IGNORE_BLOCK = {AbstractBlockControllableCrosswalkSignal.class,
-      BlockControllableCrosswalkTweeter1.class, BlockControllableCrosswalkTweeter2.class,
-      BlockTrafficSignalFatigueMitigator1.class, BlockTrafficSignalFatigueMitigator2.class,
-      BlockTrafficSignalFatigueMitigator3.class, BlockTrafficSignalFatigueMitigator4.class,
-      BlockTrafficLightSensorBox.class, BlockTrafficStreetNameSignMount.class,
-      BlockTrafficSignalHangMount.class, BlockTrafficSignalSnowBeacon.class,
-      BlockTrafficSignalPreemptionBeacon.class, BlockTrafficSignalInterconnectModule1.class,
-      BlockTrafficSignalInterconnectModule2.class};
+  public static final Class<?>[] IGNORE_BLOCK =
+      {BlockControllableCrosswalkDoubleWordedBaseMount.class,
+          BlockControllableCrosswalkDoubleWordedLeftMount.class,
+          BlockControllableCrosswalkDoubleWordedRightMount.class,
+          BlockControllableCrosswalkDoubleWordedRearMount.class,
+          BlockControllableCrosswalkLeftMount.class,
+          BlockControllableCrosswalkLeftMount90Deg.class, BlockControllableCrosswalkMount.class,
+          BlockControllableCrosswalkMount90Deg.class, BlockControllableCrosswalkRightMount.class,
+          BlockControllableCrosswalkRightMount90Deg.class, BlockControllableCrosswalkTweeter1.class,
+          BlockControllableCrosswalkTweeter2.class,
+          BlockTrafficSignalFatigueMitigator1.class, BlockTrafficSignalFatigueMitigator2.class,
+          BlockTrafficSignalFatigueMitigator3.class, BlockTrafficSignalFatigueMitigator4.class,
+          BlockTrafficLightSensorBox.class, BlockTrafficStreetNameSignMount.class,
+          BlockTrafficSignalHangMount.class, BlockTrafficSignalSnowBeacon.class,
+          BlockTrafficSignalPreemptionBeacon.class, BlockTrafficSignalInterconnectModule1.class,
+          BlockTrafficSignalInterconnectModule2.class};
 
 
   /**
