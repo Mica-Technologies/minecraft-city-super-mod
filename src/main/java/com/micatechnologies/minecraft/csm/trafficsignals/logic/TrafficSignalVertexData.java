@@ -34,37 +34,50 @@ public class TrafficSignalVertexData {
   }
 
   /**
-   * Generates an optimized circular perimeter for a visor, suitable for a triangle fan.
-   * The perimeter is offset along the Z-axis by the specified depth to create a 3D effect.
+   * Generates an optimized cylindrical perimeter for a circle visor, suitable for quads.
+   * Returns two rings (top and bottom) to form a 3D visor.
    *
-   * @param centerX The X-coordinate of the circle's center.
-   * @param centerY The Y-coordinate of the circle's center.
-   * @param centerZ The Z-coordinate of the circle's center (base plane).
-   * @param radius The radius of the circle.
-   * @param depth The depth along the Z-axis to extend the perimeter.
-   * @param segments The number of segments/points to approximate the circle (e.g., 16 for smoothness).
-   * @return A list of float arrays, each containing [x, y, z] coordinates of the perimeter points.
+   * @param centerX The X-coordinate of the cylinder's center.
+   * @param centerY The Y-coordinate of the cylinder's center.
+   * @param centerZ The Z-coordinate of the cylinder's base.
+   * @param outerRadius The outer radius of the cylinder.
+   * @param innerRadius The inner radius of the cylinder (for thickness).
+   * @param height The height of the cylinder along Y-axis.
+   * @param depth The depth along the Z-axis to extend the visor.
+   * @param segments The number of segments/points to approximate the cylinder (e.g., 16).
+   * @return A list of lists, where each inner list contains [x, y, z] coordinates for top and bottom rings.
    */
-  public static List<float[]> getOptimizedCircleVisorPerimeter(float centerX, float centerY, float centerZ, float radius, float depth, int segments) {
-    List<float[]> perimeter = new ArrayList<>();
+  public static List<List<float[]>> getOptimizedCircleVisorPerimeter(float centerX, float centerY, float centerZ, float outerRadius, float innerRadius, float height, float depth, int segments) {
+    List<List<float[]>> rings = new ArrayList<>();
+    List<float[]> topRing = new ArrayList<>();
+    List<float[]> bottomRing = new ArrayList<>();
 
-    // Ensure at least 3 segments for a valid circle
     if (segments < 3) segments = 3;
-
-    // Calculate the angle increment per segment
     float angleIncrement = (float) (2.0 * Math.PI / segments);
 
-    // Generate points, offset by depth along Z-axis
     for (int i = 0; i < segments; i++) {
       float angle = i * angleIncrement;
-      float x = centerX + radius * (float) Math.cos(angle);
-      float y = centerY + radius * (float) Math.sin(angle);
-      float z = centerZ + depth; // Extend forward along Z
-      perimeter.add(new float[]{x, y, z});
+      float cos = (float) Math.cos(angle);
+      float sin = (float) Math.sin(angle);
+
+      // Top ring (at centerY + height/2)
+      float topX = centerX + outerRadius * cos;
+      float topY = centerY + height / 2.0f;
+      float topZ = centerZ + depth;
+      topRing.add(new float[]{topX, topY, topZ});
+
+      // Bottom ring (at centerY - height/2)
+      float bottomX = centerX + outerRadius * cos;
+      float bottomY = centerY - height / 2.0f;
+      float bottomZ = centerZ + depth;
+      bottomRing.add(new float[]{bottomX, bottomY, bottomZ});
     }
 
-    return perimeter;
+    rings.add(topRing);
+    rings.add(bottomRing);
+    return rings;
   }
+
   // New: Similar for tunnel (longer depth, perhaps tapered)
   public static List<Box> getOptimizedTunnelVisor() {
     List<Box> boxes = new ArrayList<>();

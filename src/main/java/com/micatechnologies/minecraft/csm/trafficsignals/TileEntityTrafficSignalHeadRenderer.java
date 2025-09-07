@@ -146,22 +146,36 @@ public class TileEntityTrafficSignalHeadRenderer extends
       TrafficSignalBodyColor visorColor = sectionInfo.getVisorColor();
 
       float yOffset = ((sectionInfos.length - 1 - i) - (sectionInfos.length - 1) / 2.0f) * 12.0f;
-      // For 3 sections: i=0 -> 12, i=1 -> 0, i=2 -> -12
 
       if (visorType == TrafficSignalVisorType.CIRCLE) {
         BufferBuilder triBuffer = tessellator.getBuffer();
-        triBuffer.begin(GL11.GL_TRIANGLE_FAN, DefaultVertexFormats.POSITION_COLOR);
+        triBuffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR); // Use QUADS for cylinder
 
         float centerX = 8.0f;
-        float centerY = 6.0f + yOffset;
+        float centerY = yOffset;
         float centerZ = 10.0f;
-        float radius = 6.0f;
-        float depth = 2.0f;
-        List<float[]> perimeter =
-            TrafficSignalVertexData.getOptimizedCircleVisorPerimeter(centerX, centerY, centerZ,
-                radius, depth, 16); // 16 segments for smoothness
-        RenderHelper.addTriangleFanToBuffer(triBuffer, centerX, centerY, centerZ, perimeter,
-            visorColor.getRed(), visorColor.getGreen(), visorColor.getBlue(), 1.0f);
+        float outerRadius = 6.0f;
+        float innerRadius = 4.0f; // Inner thickness
+        float height = 12.0f; // Match bulb height
+        float depth = 4.0f; // Extend further forward
+        List<List<float[]>> rings = TrafficSignalVertexData.getOptimizedCircleVisorPerimeter(centerX, centerY, centerZ, outerRadius, innerRadius, height, depth, 16);
+        List<float[]> topRing = rings.get(0);
+        List<float[]> bottomRing = rings.get(1);
+
+        // Draw quads between top and bottom rings
+        for (int j = 0; j < topRing.size(); j++) {
+          int nextJ = (j + 1) % topRing.size();
+          float[] top1 = topRing.get(j);
+          float[] top2 = topRing.get(nextJ);
+          float[] bottom1 = bottomRing.get(j);
+          float[] bottom2 = bottomRing.get(nextJ);
+
+          // Quad: top1 -> top2 -> bottom2 -> bottom1
+          triBuffer.pos(top1[0], top1[1], top1[2]).color(visorColor.getRed(), visorColor.getGreen(), visorColor.getBlue(), 1.0f).endVertex();
+          triBuffer.pos(top2[0], top2[1], top2[2]).color(visorColor.getRed(), visorColor.getGreen(), visorColor.getBlue(), 1.0f).endVertex();
+          triBuffer.pos(bottom2[0], bottom2[1], bottom2[2]).color(visorColor.getRed(), visorColor.getGreen(), visorColor.getBlue(), 1.0f).endVertex();
+          triBuffer.pos(bottom1[0], bottom1[1], bottom1[2]).color(visorColor.getRed(), visorColor.getGreen(), visorColor.getBlue(), 1.0f).endVertex();
+        }
 
         tessellator.draw();
       }
