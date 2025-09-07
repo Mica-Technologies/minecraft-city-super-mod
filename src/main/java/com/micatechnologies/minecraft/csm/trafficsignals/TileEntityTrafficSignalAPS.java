@@ -328,7 +328,7 @@ public class TileEntityTrafficSignalAPS extends TileEntityTrafficSignalTickableR
       if (!isWalkSoundAlreadyPlaying && !isPressSoundAlreadyPlaying && getCrosswalkSound().getWalkSound() != null) {
         world.playSound(null, pos.getX(), pos.getY(), pos.getZ(),
             getCrosswalkSound().getWalkSound().getSoundEvent(), SoundCategory.NEUTRAL,
-            getCrosswalkSound().getVolume(), getCrosswalkSound().getPitch());
+            getCrosswalkSound().getVolume()*1.5f, getCrosswalkSound().getPitch());
         crosswalkSoundLastPlayedTime = world.getTotalWorldTime();
       }
     } else if (blockColor == BlockControllableCrosswalkButtonAudible.SIGNAL_YELLOW) {
@@ -365,7 +365,7 @@ public class TileEntityTrafficSignalAPS extends TileEntityTrafficSignalTickableR
     if (!isPressSoundAlreadyPlaying && getCrosswalkSound().getPressSound() != null) {
       world.playSound(null, pos.getX(), pos.getY(), pos.getZ(),
           getCrosswalkSound().getPressSound().getSoundEvent(), SoundCategory.NEUTRAL,
-          getCrosswalkSound().getVolume(), getCrosswalkSound().getPitch());
+          getCrosswalkSound().getVolume()*1.5f, getCrosswalkSound().getPitch());
       crosswalkLastPressTime = world.getTotalWorldTime();
     }
   }
