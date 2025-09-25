@@ -57,7 +57,9 @@ import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignExceptBicycle;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignExceptBicycleIcon;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignExceptBus;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignExceptBusBicycle;
+import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignFreewayEntrance;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignLTYOFY;
+import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignNoParkingBikeLane;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignOncomingHasExtendedGreen;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignOncomingMayExtendedGreen;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignOneCarPerGreen;
@@ -1083,5 +1085,7 @@ public class CsmTabRoadSigns extends CsmTab {
     initTabBlock(BlockSignSharedPathway.class, fmlPreInitializationEvent); // Sharedpathway
     initTabBlock(BlockSignTurningVehiclesYieldToPed.class, fmlPreInitializationEvent); // Turningvehiclesyieldtoped
     initTabBlock(BlockSignTurningVehiclesYieldToPedBike.class, fmlPreInitializationEvent); // Turningvehiclesyieldtopedbike
+    initTabBlock(BlockSignFreewayEntrance.class, fmlPreInitializationEvent); // SignFreewayEntrance
+    initTabBlock(BlockSignNoParkingBikeLane.class, fmlPreInitializationEvent); // SignNoParkingBikeLane
   }
 }
