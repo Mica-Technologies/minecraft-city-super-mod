@@ -46,6 +46,7 @@ import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignBikeLaneLarge;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignBikeLanePlaque;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignBikeSignal;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignBikeSignalDoubleSided;
+import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignBikeYieldToPeds;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignBikesAllowedUseFullLane;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignBikesAllowedUseFullLaneLarge;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignBusLane;
@@ -65,6 +66,9 @@ import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignR1016;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignR105;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignR105A;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignRadioRadiation;
+import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignSharedPathway;
+import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignTurningVehiclesYieldToPed;
+import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignTurningVehiclesYieldToPedBike;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignYintersection;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignaddleft;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignaddright;
@@ -1075,5 +1079,9 @@ public class CsmTabRoadSigns extends CsmTab {
     initTabBlock(BlockSchoolSafetyZoneSign.class, fmlPreInitializationEvent); // Schoolsafetyzonesign
     initTabBlock(BlockSeniorSafetyZoneSign.class, fmlPreInitializationEvent); // Seniorsafetyzonesign
     initTabBlock(BlockBikesUsePedSignalSign.class,fmlPreInitializationEvent); // Bikesusepedsignalsign
+    initTabBlock(BlockSignBikeYieldToPeds.class, fmlPreInitializationEvent); // Bikeyieldtopeds
+    initTabBlock(BlockSignSharedPathway.class, fmlPreInitializationEvent); // Sharedpathway
+    initTabBlock(BlockSignTurningVehiclesYieldToPed.class, fmlPreInitializationEvent); // Turningvehiclesyieldtoped
+    initTabBlock(BlockSignTurningVehiclesYieldToPedBike.class, fmlPreInitializationEvent); // Turningvehiclesyieldtopedbike
   }
 }
