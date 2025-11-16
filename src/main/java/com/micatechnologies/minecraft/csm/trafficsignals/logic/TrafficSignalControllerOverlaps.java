@@ -189,6 +189,11 @@ public class TrafficSignalControllerOverlaps {
       removedOverlaps = true;
     }
 
+    // Remove overlaps with pos
+    for (Map.Entry<BlockPos, List<BlockPos>> entry : overlaps.entrySet()) {
+      entry.getValue().remove(overlapSource);
+    }
+
     return removedOverlaps;
   }
 
