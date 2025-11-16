@@ -1166,6 +1166,13 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
       overlaps.removeOverlaps(pos);
     }
 
+    // Remove last circuit if empty
+    int numCircuits =circuits.getCircuits().size();
+    TrafficSignalControllerCircuit lastCircuit =  circuits.getCircuit(numCircuits - 1);
+    if (lastCircuit.getSize() == 0) {
+      circuits.removeCircuit(lastCircuit);
+    }
+
     if (unlinked) {
       resetController(true, true);
     }
