@@ -229,7 +229,7 @@ public class TrafficSignalControllerTickerUtilities {
     if (circuits.getCircuitCount() > 0) {
       // Check if circuit has protected signals
       boolean hasProtectedSignals =
-          circuits.getCircuit(circuitNumber - 1).getProtectedSignals().size() > 0;
+          !circuits.getCircuit(circuitNumber - 1).getProtectedSignals().isEmpty();
 
       // Get appropriate phase applicability
       TrafficSignalPhaseApplicability phaseApplicability =
@@ -246,7 +246,7 @@ public class TrafficSignalControllerTickerUtilities {
           defaultPhase.addFyaSignals(circuit.getFlashingLeftSignals());
           defaultPhase.addRedSignals(circuit.getLeftSignals());
           defaultPhase.addGreenSignals(circuit.getThroughSignals());
-          if (hasProtectedSignals) {
+          if (hasProtectedSignals || overlapPedestrianSignals) {
             defaultPhase.addFyaSignals(circuit.getFlashingRightSignals());
             defaultPhase.addRedSignals(circuit.getRightSignals());
             defaultPhase.addGreenSignals(circuit.getProtectedSignals());
