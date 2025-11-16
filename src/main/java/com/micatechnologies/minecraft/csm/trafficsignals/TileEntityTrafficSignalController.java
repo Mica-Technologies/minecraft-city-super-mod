@@ -173,7 +173,7 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
    *
    * @since 2.0
    */
-  private long minGreenTime = 400;
+  private long minGreenTime = 300;
 
   /**
    * The maximum green time when servicing circuits configured to the traffic signal controller in
@@ -181,7 +181,7 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
    *
    * @since 2.0
    */
-  private long maxGreenTime = 1800;
+  private long maxGreenTime = 1400;
 
   /**
    * The secondary minimum green time when servicing circuits configured to the traffic signal
@@ -189,7 +189,7 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
    *
    * @since 2.0
    */
-  private long minGreenTimeSecondary = 200;
+  private long minGreenTimeSecondary = 140;
 
   /**
    * The secondary maximum green time when servicing circuits configured to the traffic signal
@@ -197,7 +197,7 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
    *
    * @since 2.0
    */
-  private long maxGreenTimeSecondary = 1200;
+  private long maxGreenTimeSecondary = 1000;
 
   /**
    * The dedicated pedestrian signal time when servicing circuits configured to the traffic signal
@@ -205,7 +205,7 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
    *
    * @since 2.0
    */
-  private long dedicatedPedSignalTime = 300;
+  private long dedicatedPedSignalTime = 160;
 
   /**
    * Boolean which alternates between true and false every time the traffic signal controller is
