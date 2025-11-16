@@ -65,7 +65,7 @@ public enum TrafficSignalControllerMode {
    *
    * @since 1.0
    */
-  FORCED_FAULT("Forced Fault", 10);
+  FORCED_FAULT("Flash (All Red)", 10);
 
   // endregion
 
