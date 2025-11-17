@@ -540,7 +540,7 @@ public class TrafficSignalControllerTicker {
       // Change to initial green phase (on circuit 1)
       nextPhase = TrafficSignalControllerTickerUtilities.getDefaultPhaseForCircuitNumber(circuits,
           overlaps, 1,
-          overlapPedestrianSignals);
+          overlapPedestrianSignals, world);
     }
     // If original phase is flashing don't walk transitioning to yellow, and flashing don't walk
     // time is up,
@@ -644,7 +644,7 @@ public class TrafficSignalControllerTicker {
               circuits,
               overlaps,
               nextCircuitNumber,
-              overlapPedestrianSignals);
+              overlapPedestrianSignals,world);
         }
 
         // Build next phase if an upcoming phase was generated

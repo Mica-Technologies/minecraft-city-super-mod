@@ -223,7 +223,7 @@ public class TrafficSignalControllerTickerUtilities {
       TrafficSignalControllerCircuits circuits,
       TrafficSignalControllerOverlaps overlaps,
       int circuitNumber,
-      boolean overlapPedestrianSignals) {
+      boolean overlapPedestrianSignals,World world) {
     // Only create a default phase if there are circuits
     TrafficSignalPhase defaultPhase = null;
     if (circuits.getCircuitCount() > 0) {
@@ -243,8 +243,17 @@ public class TrafficSignalControllerTickerUtilities {
       for (int i = 1; i <= circuits.getCircuitCount(); i++) {
         TrafficSignalControllerCircuit circuit = circuits.getCircuit(i - 1);
         if (i == circuitNumber) {
-          defaultPhase.addFyaSignals(circuit.getFlashingLeftSignals());
-          defaultPhase.addRedSignals(circuit.getLeftSignals());
+          // Check if all facing same direction
+          boolean allFacingSameDir = circuit.areSignalsFacingSameDirection(world);
+
+          if (allFacingSameDir && !hasProtectedSignals && !overlapPedestrianSignals) {
+            defaultPhase.addOffSignals(circuit.getFlashingLeftSignals());
+            defaultPhase.addGreenSignals(circuit.getLeftSignals());
+          } else {
+            defaultPhase.addFyaSignals(circuit.getFlashingLeftSignals());
+            defaultPhase.addRedSignals(circuit.getLeftSignals());
+          }
+
           defaultPhase.addGreenSignals(circuit.getThroughSignals());
           if (hasProtectedSignals || overlapPedestrianSignals) {
             defaultPhase.addFyaSignals(circuit.getFlashingRightSignals());
