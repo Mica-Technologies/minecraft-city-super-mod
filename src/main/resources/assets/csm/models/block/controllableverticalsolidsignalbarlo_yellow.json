@@ -1,10 +1,11 @@
 {
-  "parent": "csm:custom/trafficlightvertical",
+  "parent": "csm:custom/trafficlightvertical_barlo",
   "textures": {
     "all": "csm:blocks/solidoff",
     "particle": "csm:blocks/solidoff",
-    "0": "csm:blocks/solidredoffbarlo",
+    "0": "csm:blocks/solidredoff",
     "1": "csm:blocks/solidyellow",
-    "2": "csm:blocks/solidgreenoff"
+    "2": "csm:blocks/solidgreenoff",
+    "3": "csm:blocks/solidredoffbarlo"
   }
 }
