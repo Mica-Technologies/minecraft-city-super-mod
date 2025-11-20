@@ -57,8 +57,10 @@ import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignExceptBicycle;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignExceptBicycleIcon;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignExceptBus;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignExceptBusBicycle;
+import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignFdcStandpipe;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignFreewayEntrance;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignLTYOFY;
+import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignLeftPlaque;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignNoParkingBikeLane;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignOncomingHasExtendedGreen;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignOncomingMayExtendedGreen;
@@ -68,6 +70,7 @@ import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignR1016;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignR105;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignR105A;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignRadioRadiation;
+import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignRightPlaque;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignSharedPathway;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignTurningVehiclesYieldToPed;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignTurningVehiclesYieldToPedBike;
@@ -1087,5 +1090,8 @@ public class CsmTabRoadSigns extends CsmTab {
     initTabBlock(BlockSignTurningVehiclesYieldToPedBike.class, fmlPreInitializationEvent); // Turningvehiclesyieldtopedbike
     initTabBlock(BlockSignFreewayEntrance.class, fmlPreInitializationEvent); // SignFreewayEntrance
     initTabBlock(BlockSignNoParkingBikeLane.class, fmlPreInitializationEvent); // SignNoParkingBikeLane
+    initTabBlock(BlockSignFdcStandpipe.class, fmlPreInitializationEvent); // SignFdcStandpipe
+    initTabBlock(BlockSignLeftPlaque.class, fmlPreInitializationEvent); // SignLeftPlaque
+    initTabBlock(BlockSignRightPlaque.class, fmlPreInitializationEvent); // SignRightPlaque
   }
 }
