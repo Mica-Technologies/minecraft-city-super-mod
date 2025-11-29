@@ -1297,3 +1297,13 @@ tile.signnoparkingbikelane.name=No Parking Bike Lane Sign
 tile.signleftplaque.name=Left Plaque Sign
 tile.signrightplaque.name=Right Plaque Sign
 tile.signfdcstandpipe.name=FDC Standpipe Bullseye Sign
+tile.signstripgreen.name=Sign Strip (Green)
+tile.signstripyellowgreen.name=Sign Strip (Yellow-Green)
+tile.signstripyellow.name=Sign Strip (Yellow)
+tile.signstripred.name=Sign Strip (Red)
+tile.signstripwhite.name=Sign Strip (White)
+tile.minisolarpanel.name=Mini Solar Panel
+tile.trafficlightsensortinycam.name=Traffic Light Sensor (Tiny Cam)
+tile.signdoubleoneway.name=Double One-Way Sign (A)
+tile.signdoubleonewayb.name=Double One-Way Sign (B)
+

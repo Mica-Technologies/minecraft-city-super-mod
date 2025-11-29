@@ -51,6 +51,8 @@ import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignBikesAllowedUseF
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignBikesAllowedUseFullLaneLarge;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignBusLane;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignDontBlockTheBox;
+import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignDoubleOneWay;
+import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignDoubleOneWayB;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignEndPlaque;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignEndsPlaque;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignExceptBicycle;
@@ -72,6 +74,11 @@ import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignR105A;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignRadioRadiation;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignRightPlaque;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignSharedPathway;
+import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignStripGreen;
+import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignStripRed;
+import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignStripWhite;
+import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignStripYellow;
+import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignStripYellowGreen;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignTurningVehiclesYieldToPed;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignTurningVehiclesYieldToPedBike;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignYintersection;
@@ -1093,5 +1100,12 @@ public class CsmTabRoadSigns extends CsmTab {
     initTabBlock(BlockSignFdcStandpipe.class, fmlPreInitializationEvent); // SignFdcStandpipe
     initTabBlock(BlockSignLeftPlaque.class, fmlPreInitializationEvent); // SignLeftPlaque
     initTabBlock(BlockSignRightPlaque.class, fmlPreInitializationEvent); // SignRightPlaque
+    initTabBlock(BlockSignStripYellow.class, fmlPreInitializationEvent); // SignStripYellow
+    initTabBlock(BlockSignStripYellowGreen.class, fmlPreInitializationEvent); // SignStripYellowGreen
+    initTabBlock(BlockSignStripGreen.class, fmlPreInitializationEvent); // SignStripGreen
+    initTabBlock(BlockSignStripRed.class, fmlPreInitializationEvent); // SignStripRed
+    initTabBlock(BlockSignStripWhite.class, fmlPreInitializationEvent); // SignStripWhite
+    initTabBlock(BlockSignDoubleOneWay.class,  fmlPreInitializationEvent); // Signdoubleoneway
+    initTabBlock(BlockSignDoubleOneWayB.class,  fmlPreInitializationEvent); // Signdoubleonewayb
   }
 }

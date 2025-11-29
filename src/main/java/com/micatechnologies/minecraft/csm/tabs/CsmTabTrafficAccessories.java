@@ -175,6 +175,7 @@ import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleSma
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleSmallWhite;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleLargeGray;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleLargeBlack;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockMiniSolarPanel;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleVerticalConnector;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleVerticalConnectorAngledBlack;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleVerticalConnectorAngledSilver;
@@ -770,5 +771,6 @@ public class CsmTabTrafficAccessories extends CsmTab {
         fmlPreInitializationEvent); // Trafficpoleverticalsignalmountunpainted
     initTabBlock(BlockTrafficPoleLargeUnpainted.class,
         fmlPreInitializationEvent); // Trafficpoleverticalunpainted
+    initTabBlock(BlockMiniSolarPanel.class, fmlPreInitializationEvent); // Minisolarpanel
   }
 }
