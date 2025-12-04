@@ -7,6 +7,7 @@ import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrossw
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkButtonAutomated;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkButtonFemale;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkButtonMale;
+import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkButtonPsGray;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkDoubleWordedBaseMount;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkDoubleWordedLeftMount;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkDoubleWordedRearMount;
@@ -15,6 +16,7 @@ import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrossw
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkLeftMount90Deg;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkMount;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkMount90Deg;
+import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkMountGray;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkRightMount;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkRightMount90Deg;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkTweeter1;
@@ -61,6 +63,7 @@ import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableTattle
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableTrafficSignalTrainController;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalAheadSignal;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalAheadSignal8812Inch;
+import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalAheadSignalGray;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalAngle2AheadSignal;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalAngle2BikeSignal;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalAngle2LeftSignal;
@@ -82,16 +85,20 @@ import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVertic
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalBikeSignal;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalBikeSignal8Inch;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalBikeSignal8InchBlack;
+import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalBikeSignalGray;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalHybridLeftAddOnSignal;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalHybridLeftSignal;
+import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalHybridLeftSignalGray;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalLeftAddOnFYASignal;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalLeftAddOnSignal;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalLeftDoubleAddOnSignal;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalLeftSignal;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalLeftSignal8812Inch;
+import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalLeftSignalGray;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalLeftSignalLED;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalLeftSignalSolidRed;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalRailSignal;
+import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalRailSignalGray;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalRight2Signal;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalRightAddOnFYASignal;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalRightAddOnSignal;
@@ -101,14 +108,19 @@ import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVertic
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalRightFlashYellowSignal;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalRightSignal;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalRightSignal8812Inch;
+import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalRightSignalGray;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalSolidFlashGreenSignal;
+import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalSolidFlashGreenSignalGray;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalSolidFlashRedSignal;
+import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalSolidFlashRedSignalGray;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalSolidFlashYellowSignal;
+import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalSolidFlashYellowSignalGray;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalSolidSignal;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalSolidSignal1288Inch;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalSolidSignal8812Inch;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalSolidSignal8Inch;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalSolidSignalBarlo;
+import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalSolidSignalGray;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalSolidSignalLED;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalSolidSignalLED1288Inch;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalSolidSignalLED8812Inch;
@@ -430,6 +442,25 @@ public class CsmTabTrafficSignals extends CsmTab {
         fmlPreInitializationEvent); // ControllableVerticalUpLeftSignal
     initTabBlock(BlockControllableVerticalUturnSignal.class,
         fmlPreInitializationEvent); // ControllableVerticalUturnSignal
+    initTabBlock(BlockControllableVerticalSolidSignalGray.class,
+        fmlPreInitializationEvent); // ControllableVerticalSolidSignalGray
+    initTabBlock(BlockControllableVerticalLeftSignalGray.class,
+        fmlPreInitializationEvent); // ControllableVerticalLeftSignalGray
+    initTabBlock(BlockControllableVerticalRightSignalGray.class,
+        fmlPreInitializationEvent); // ControllableVerticalRightSignalGray
+    initTabBlock(BlockControllableVerticalSolidFlashGreenSignalGray.class,
+        fmlPreInitializationEvent); // ControllableVerticalSolidFlashGreenSignalGray
+    initTabBlock(BlockControllableVerticalSolidFlashYellowSignalGray.class,
+        fmlPreInitializationEvent); // ControllableVerticalSolidFlashYellowSignalGray
+    initTabBlock(BlockControllableVerticalSolidFlashRedSignalGray.class,
+        fmlPreInitializationEvent); // ControllableVerticalSolidFlashRedSignalGray
+    initTabBlock(BlockControllableVerticalHybridLeftSignalGray.class, fmlPreInitializationEvent); // ControllableVerticalHybridLeftSignalGray
+    initTabBlock(BlockControllableVerticalHybridLeftAddOnSignal.class, fmlPreInitializationEvent); // ControllableVerticalHybridLeftAddOnSignalGray
+    initTabBlock(BlockControllableVerticalAheadSignalGray.class, fmlPreInitializationEvent); // ControllableVerticalAheadSignalGray
+    initTabBlock(BlockControllableVerticalBikeSignalGray.class, fmlPreInitializationEvent); // ControllableVerticalBikeSignalGray
+    initTabBlock(BlockControllableVerticalRailSignalGray.class, fmlPreInitializationEvent); // ControllableVerticalRailSignalGray
+    initTabBlock(BlockControllableCrosswalkMountGray.class, fmlPreInitializationEvent); // ControllableCrosswalkMountGray
+    initTabBlock(BlockControllableCrosswalkButtonPsGray.class, fmlPreInitializationEvent); // ControllableCrosswalkButtonPsGray
     initTabBlock(BlockTrafficLightSensor.class, fmlPreInitializationEvent); // TrafficLightSensor
     initTabBlock(BlockTrafficLightSensorBell.class,
         fmlPreInitializationEvent); // TrafficLightSensorBell
@@ -441,7 +472,8 @@ public class CsmTabTrafficSignals extends CsmTab {
         fmlPreInitializationEvent); // TrafficLightSensorModern
     initTabBlock(BlockTrafficLightSensorShort.class,
         fmlPreInitializationEvent); // TrafficLightSensorShort
-    initTabBlock(BlockTrafficLightSensorTinyCam.class, fmlPreInitializationEvent); // TrafficLightSensorTinyCam
+    initTabBlock(BlockTrafficLightSensorTinyCam.class,
+        fmlPreInitializationEvent); // TrafficLightSensorTinyCam
     initTabBlock(BlockTrafficSignalController.class,
         fmlPreInitializationEvent); // TrafficSignalController
     initTabItem(ItemEWSignalLinker.class, fmlPreInitializationEvent); // EWSignalLinker
