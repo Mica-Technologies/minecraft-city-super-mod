@@ -1,0 +1,56 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:trafficsignals/backplates/models/trafficlightvertical",
+    "textures": {
+      "all": "csm:blocks/trafficsignals/old_bulb_body/gray/solidredoff",
+      "particle": "csm:blocks/trafficsignals/old_bulb_body/gray/solidredoff",
+      "0": "csm:blocks/trafficsignals/old_bulb_body/gray/solidredoff",
+      "1": "csm:blocks/trafficsignals/old_bulb_body/gray/solidyellowoff",
+      "2": "csm:blocks/trafficsignals/old_bulb_body/gray/solidgreenoff"
+    }
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "color": {
+      "0": {
+        "textures": {
+          "0": "csm:blocks/trafficsignals/old_bulb_body/gray/solidred"
+        }
+      },
+      "1": {
+        "textures": {
+          "1": "csm:blocks/trafficsignals/old_bulb_body/gray/solidyellow"
+        }
+      },
+      "2": {
+        "textures": {
+          "2": "csm:blocks/trafficsignals/old_bulb_body/gray/solidgreenflash"
+        }
+      },
+      "3": {}
+    },
+    "inventory": [
+      {
+        "textures": {
+          "all": "csm:blocks/trafficsignals/old_bulb_body/gray/solidredoff",
+          "particle": "csm:blocks/trafficsignals/old_bulb_body/gray/solidredoff",
+          "0": "csm:blocks/trafficsignals/old_bulb_body/gray/solidred",
+          "1": "csm:blocks/trafficsignals/old_bulb_body/gray/solidyellow",
+          "2": "csm:blocks/trafficsignals/old_bulb_body/gray/solidgreenflash"
+        }
+      }
+    ]
+  }
+}
