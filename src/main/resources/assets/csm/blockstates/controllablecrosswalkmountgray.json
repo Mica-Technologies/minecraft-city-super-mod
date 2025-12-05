@@ -29,12 +29,12 @@
       },
       "1": {
         "textures": {
-          "1": "csm:blocks/trafficsignals/old_bulb_body/gray/crosswalkflashinghand"
+          "0": "csm:blocks/trafficsignals/old_bulb_body/gray/crosswalkflashinghand"
         }
       },
       "2": {
         "textures": {
-          "2": "csm:blocks/trafficsignals/old_bulb_body/gray/crosswalkman"
+          "0": "csm:blocks/trafficsignals/old_bulb_body/gray/crosswalkman"
         }
       },
       "3": {}
