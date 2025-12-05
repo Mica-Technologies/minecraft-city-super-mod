@@ -1328,3 +1328,7 @@ tile.controllablesinglesolidsignalyellowgray.name=Single Solid Yellow Signal (Gr
 tile.controllablesinglesolidsignalgreengray.name=Single Solid Green Signal (Gray)
 tile.controllablesinglesolidsignalyellowadvanceflashgraya.name=Single Solid Yellow Advance Flashing Signal (Gray) (A)
 tile.controllablesinglesolidsignalyellowadvanceflashgrayb=Single Solid Yellow Advance Flashing Signal (Gray) (B)
+tile.controllableverticalrightdoubleaddonsignalgray.name=Vertical Right Double Add-On Signal (Gray)
+tile.controllableverticalleftdoubleaddonsignalgray.name=Vertical Left Double Add-On Signal (Gray)
+tile.controllableverticalupleftaddonsignalgray.name=Vertical Up Left Add-On Signal (Gray)
+tile.controllableverticalupleftsignalgray.name=Vertical Up Left Signal (Gray)
