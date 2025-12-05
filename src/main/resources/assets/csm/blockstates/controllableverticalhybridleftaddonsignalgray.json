@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:trafficsignals/backplates/models/trafficlightvertical",
+    "model": "csm:trafficsignals/backplates/models/trafficlightvertical_arrowaddon",
     "textures": {
       "all": "csm:blocks/trafficsignals/old_bulb_body/gray/greenarrowleftoff",
       "particle": "csm:blocks/trafficsignals/old_bulb_body/gray/greenarrowleftoff",

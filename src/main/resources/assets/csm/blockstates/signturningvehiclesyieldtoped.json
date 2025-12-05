@@ -141,7 +141,7 @@
     "setback": {
       "false": {},
       "true": {
-        "model": "csm:metal_signpostback_tall_sign_setback"
+        "model": "csm:metal_signpostback_sign_setback"
       }
     }
   }

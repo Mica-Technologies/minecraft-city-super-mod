@@ -1319,4 +1319,7 @@ tile.controllableverticalhybridleftsignalgray.name=Vertical FYA Left Upper Signa
 tile.controllableverticalhybridleftaddonsignalgray.name=Vertical FYA Left Lower Signal (Gray)
 tile.controllablecrosswalkmountgray.name=Crosswalk Signal (Gray)
 tile.controllablecrosswalkbuttonpsgray.name=PedSafety APS Push Button (Gray)
-
+tile.controllableverticalleftaddonsignalgray.name=Vertical Left Add-On Signal (Gray)
+tile.controllableverticalrightaddonsignalgray.name=Vertical Right Add-On Signal (Gray)
+tile.controllableverticalleftaddonfyasignalgray.name=Vertical FYA Left Add-On Signal (Gray)
+tile.controllableverticalrightaddonfyasignalgray.name=Vertical FYA Right Add-On Signal (Gray)
