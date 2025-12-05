@@ -50,13 +50,18 @@ import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableRampMe
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableRampMeterOnSignalMount;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableRampMeterOnSignalRightMount;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableSingleSolidSignalGreen;
+import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableSingleSolidSignalGreenGray;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableSingleSolidSignalGreenLeftAngle;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableSingleSolidSignalGreenRightAngle;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableSingleSolidSignalRed;
+import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableSingleSolidSignalRedGray;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableSingleSolidSignalRedLeftAngle;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableSingleSolidSignalRedRightAngle;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableSingleSolidSignalYellow;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableSingleSolidSignalYellowAdvanceFlash;
+import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableSingleSolidSignalYellowAdvanceFlashGrayA;
+import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableSingleSolidSignalYellowAdvanceFlashGrayB;
+import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableSingleSolidSignalYellowGray;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableSingleSolidSignalYellowLeftAngle;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableSingleSolidSignalYellowRightAngle;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableTattleTaleBeacon;
@@ -470,6 +475,11 @@ public class CsmTabTrafficSignals extends CsmTab {
     initTabBlock(BlockControllableVerticalRightAddOnSignalGray.class, fmlPreInitializationEvent); // ControllableVerticalRightAddOnSignalGray
     initTabBlock(BlockControllableVerticalLeftAddOnFYASignalGray.class, fmlPreInitializationEvent); // ControllableVerticalLeftAddOnFYASignalGray
     initTabBlock(BlockControllableVerticalRightAddOnFYASignalGray.class, fmlPreInitializationEvent); // ControllableVerticalRightAddOnFYASignalGray
+    initTabBlock(BlockControllableSingleSolidSignalRedGray.class, fmlPreInitializationEvent); // ControllableSingleSolidSignalRedGray
+    initTabBlock(BlockControllableSingleSolidSignalYellowGray.class, fmlPreInitializationEvent); // ControllableSingleSolidSignalYellowGray
+    initTabBlock(BlockControllableSingleSolidSignalGreenGray.class, fmlPreInitializationEvent); // ControllableSingleSolidSignalGreenGray
+    initTabBlock(BlockControllableSingleSolidSignalYellowAdvanceFlashGrayA.class, fmlPreInitializationEvent); // ControllableSingleSolidSignalYellowAdvanceFlashGrayA
+    initTabBlock(BlockControllableSingleSolidSignalYellowAdvanceFlashGrayB.class, fmlPreInitializationEvent); // ControllableSingleSolidSignalYellowAdvanceFlashGrayB
     initTabBlock(BlockTrafficLightSensor.class, fmlPreInitializationEvent); // TrafficLightSensor
     initTabBlock(BlockTrafficLightSensorBell.class,
         fmlPreInitializationEvent); // TrafficLightSensorBell
