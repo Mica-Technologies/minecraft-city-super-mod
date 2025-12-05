@@ -3,11 +3,11 @@
   "defaults": {
     "model": "csm:trafficsignals/backplates/models/trafficlightvertical",
     "textures": {
-      "all": "csm:blocks/trafficsignals/old_bulb_body/gray/solidredoff",
-      "particle": "csm:blocks/trafficsignals/old_bulb_body/gray/solidredoff",
-      "0": "csm:blocks/trafficsignals/old_bulb_body/gray/solidredoff",
-      "1": "csm:blocks/trafficsignals/old_bulb_body/gray/solidyellowoff",
-      "2": "csm:blocks/trafficsignals/old_bulb_body/gray/solidredoff"
+      "all": "csm:blocks/trafficsignals/old_bulb_body/gray/gtxoff",
+      "particle": "csm:blocks/trafficsignals/old_bulb_body/gray/gtxoff",
+      "0": "csm:blocks/trafficsignals/old_bulb_body/gray/gtxredoff",
+      "1": "csm:blocks/trafficsignals/old_bulb_body/gray/gtxyellowoff",
+      "2": "csm:blocks/trafficsignals/old_bulb_body/gray/gtxredoff"
     }
   },
   "variants": {
@@ -26,12 +26,12 @@
     "color": {
       "0": {
         "textures": {
-          "0": "csm:blocks/trafficsignals/old_bulb_body/gray/solidred"
+          "0": "csm:blocks/trafficsignals/old_bulb_body/gray/gtxred"
         }
       },
       "1": {
         "textures": {
-          "1": "csm:blocks/trafficsignals/old_bulb_body/gray/solidyellow"
+          "1": "csm:blocks/trafficsignals/old_bulb_body/gray/gtxyellow"
         }
       },
       "2": {
@@ -44,10 +44,10 @@
     "inventory": [
       {
         "textures": {
-          "all": "csm:blocks/trafficsignals/old_bulb_body/gray/solidredoff",
-          "particle": "csm:blocks/trafficsignals/old_bulb_body/gray/solidredoff",
-          "0": "csm:blocks/trafficsignals/old_bulb_body/gray/solidred",
-          "1": "csm:blocks/trafficsignals/old_bulb_body/gray/solidyellow",
+          "all": "csm:blocks/trafficsignals/old_bulb_body/gray/gtxoff",
+          "particle": "csm:blocks/trafficsignals/old_bulb_body/gray/gtxoff",
+          "0": "csm:blocks/trafficsignals/old_bulb_body/gray/gtxred",
+          "1": "csm:blocks/trafficsignals/old_bulb_body/gray/gtxyellow",
           "2": "csm:blocks/trafficsignals/old_bulb_body/gray/solidredflash"
         }
       }

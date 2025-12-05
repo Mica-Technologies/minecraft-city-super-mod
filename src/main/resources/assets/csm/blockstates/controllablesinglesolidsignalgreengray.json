@@ -3,9 +3,9 @@
   "defaults": {
     "model": "csm:trafficsignals/backplates/models/trafficlightsingle",
     "textures": {
-      "all": "csm:blocks/trafficsignals/old_bulb_body/gray/solidgreenoff",
-      "particle": "csm:blocks/trafficsignals/old_bulb_body/gray/solidgreenoff",
-      "0": "csm:blocks/trafficsignals/old_bulb_body/gray/solidgreenoff"
+      "all": "csm:blocks/trafficsignals/old_bulb_body/gray/gtxoff",
+      "particle": "csm:blocks/trafficsignals/old_bulb_body/gray/gtxoff",
+      "0": "csm:blocks/trafficsignals/old_bulb_body/gray/gtxoff"
     }
   },
   "variants": {
@@ -24,17 +24,17 @@
     "color": {
       "0": {
         "textures": {
-          "0": "csm:blocks/trafficsignals/old_bulb_body/gray/solidgreen"
+          "0": "csm:blocks/trafficsignals/old_bulb_body/gray/gtxgreen"
         }
       },
       "1": {
         "textures": {
-          "0": "csm:blocks/trafficsignals/old_bulb_body/gray/solidgreen"
+          "0": "csm:blocks/trafficsignals/old_bulb_body/gray/gtxgreen"
         }
       },
       "2": {
         "textures": {
-          "0": "csm:blocks/trafficsignals/old_bulb_body/gray/solidgreen"
+          "0": "csm:blocks/trafficsignals/old_bulb_body/gray/gtxgreen"
         }
       },
       "3": {}
@@ -42,9 +42,9 @@
     "inventory": [
       {
         "textures": {
-          "all": "csm:blocks/trafficsignals/old_bulb_body/gray/solidgreenoff",
-          "particle": "csm:blocks/trafficsignals/old_bulb_body/gray/solidgreenoff",
-          "0": "csm:blocks/trafficsignals/old_bulb_body/gray/solidgreen"
+          "all": "csm:blocks/trafficsignals/old_bulb_body/gray/gtxoff",
+          "particle": "csm:blocks/trafficsignals/old_bulb_body/gray/gtxoff",
+          "0": "csm:blocks/trafficsignals/old_bulb_body/gray/gtxgreen"
         }
       }
     ]
