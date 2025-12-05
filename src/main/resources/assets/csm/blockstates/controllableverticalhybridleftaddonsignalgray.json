@@ -26,7 +26,7 @@
       "1": {},
       "2": {
         "textures": {
-          "2": "csm:blocks/trafficsignals/old_bulb_body/gray/greenarrowleft"
+          "0": "csm:blocks/trafficsignals/old_bulb_body/gray/greenarrowleft"
         }
       },
       "3": {}
