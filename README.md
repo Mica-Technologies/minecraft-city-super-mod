@@ -32,16 +32,29 @@ version of IntelliJ IDEA for the best development experience.
 
 ### Making Changes
 
-To make changes to the City Super Mod, you will need to clone the project from the GitHub repository
-and open it in your preferred IDE.
+To make changes to the City Super Mod, you will need to clone the project from the GitHub repository and open it in your preferred IDE.
 
-To learn more about the version control system, Git, please
-see [https://git-scm.com/doc](https://git-scm.com/doc).
+#### Getting Started (IntelliJ IDEA)
 
-If you are using IntelliJ IDEA as your preferred IDE, you may use the built-in Git integration to
-clone the project from the GitHub repository. To learn more about using Git integration with
-IntelliJ IDEA, please see
-[https://www.jetbrains.com/help/idea/using-git-integration.html](https://www.jetbrains.com/help/idea/using-git-integration.html).
+1. **Open the Project**:
+   - Clone the repository and open the project in IntelliJ IDEA.
+2. **Install the Project SDK**:
+   - Open `File` > `Project Structure` > `Platform Settings` > `SDKs`.
+   - Click the `+` button and select `Download JDK`.
+   - Select `17` as the version and `Azul Zulu Community™` as the vendor.
+   - Leave the location as default and click `Download` to download and install the JDK.
+   - Once installed, go to `Project Settings` > `Project` and set the `Project SDK` to the newly installed JDK 17, if not already set.
+3. **Import Gradle Project**:
+   - If prompted, import the Gradle project. If not prompted, you can manually import it by going to `View` > `Tool Windows` > `Gradle`, then clicking the `Sync all Gradle Projects` button in the Gradle tool window.
+   - Wait for the Gradle import to complete.
+   - If you experience any issues during the Gradle import, try refreshing the Gradle project or invalidating caches and restarting IntelliJ IDEA (`File` > `Invalidate caches`).
+4. **Setup Workspace**:
+   - In IntelliJ, locate the `1. Setup Workspace` run configuration and run it. This will set up the Minecraft mod workspace using the GregTechCEu Buildscripts.
+   - Wait for the setup to complete before making changes or running the mod.
+
+To learn more about the version control system, Git, please see [https://git-scm.com/doc](https://git-scm.com/doc).
+
+If you are using IntelliJ IDEA as your preferred IDE, you may use the built-in Git integration to clone the project from the GitHub repository. To learn more about using Git integration with IntelliJ IDEA, please see [https://www.jetbrains.com/help/idea/using-git-integration.html](https://www.jetbrains.com/help/idea/using-git-integration.html).
 
 #### Adding a Block
 
@@ -89,6 +102,17 @@ within `src/main/resources/assets/csm/models/item` which references the block mo
     - If the block model is not suitable for use as an item model, a separate item model may be
       created.
 
+##### Example Block Class
+```java
+public class BlockExample extends AbstractBlock {
+    public BlockExample() {
+        super(Material.ROCK);
+        setRegistryName("example_block");
+        setTranslationKey("example_block");
+    }
+}
+```
+
 ##### Block Base Classes
 
 - `AbstractBlock`: The base class for all blocks in the City Super Mod, including the base classes
@@ -135,6 +159,17 @@ general, the following steps should be followed:
     - Item lang entries shall be named using the item's registry name.
     - Item lang entries shall contain a human-readable name for the item.
 
+##### Example Item Class
+```java
+public class ItemExample extends AbstractItem {
+    public ItemExample() {
+        super(0, 64); // maxDamage, maxStackSize
+        setRegistryName("example_item");
+        setTranslationKey("example_item");
+    }
+}
+```
+
 ##### Item Base Classes
 
 - `AbstractItem`: The base class for all items in the City Super Mod.
@@ -177,6 +212,26 @@ Adding a tab is a fairly simple process. To add a tab, follow these steps:
       methods, respectively.
     - Blocks and items shall be added in the order they are to be displayed in the tab.
 
+##### Example Tab Class
+```java
+@CsmTab.Load(order = 11)
+public class CsmTabExample extends CsmTab {
+    @Override
+    public boolean getTabHidden() { return false; }
+    @Override
+    public String getTabId() { return "tabexample"; }
+    @Override
+    public Block getTabIcon() { return ModBlocks.EXAMPLE_BLOCK; }
+    @Override
+    public boolean getTabSearchable() { return true; }
+    @Override
+    public void initTabElements(FMLPreInitializationEvent event) {
+        initTabBlock(BlockExample.class, event);
+        initTabItem(ItemExample.class, event);
+    }
+}
+```
+
 ### Submitting Changes
 
 After making changes, you can push your modifications to GitHub on a new branch. To protect the
@@ -186,14 +241,14 @@ working code, modification of the `main` branch is not permitted except through 
 
 ### Active Developers
 
-<img src="https://minotar.net/armor/bust/Akselhok/100.png" width="50"/>
+<img src="https://minotar.net/armor/bust/Akselhok/100.png" width="50" alt="Akselhok Minecraft Avatar"/>
 
 **Name:** Alex<br/>
 **GitHub Username:** mica-alex<br/>
 **Minecraft Username:** Akselhok
 
 
-<img src="https://minotar.net/armor/bust/AngelWingsPanda/100.png" width="50"/>
+<img src="https://minotar.net/armor/bust/AngelWingsPanda/100.png" width="50" alt="AngelWingsPanda Minecraft Avatar"/>
 
 **Name:** Brandon<br />
 **GitHub Username:** AngelWingsPanda<br />
@@ -201,9 +256,7 @@ working code, modification of the `main` branch is not permitted except through 
 
 ### Acknowledgments
 
-The City Super Mod began as an [MCreator](https://mcreator.net) project. While the project has
-since been migrated to a standalone project, the development team would like to acknowledge the
-MCreator project and its developers for their contributions to the Minecraft modding community.
+The City Super Mod began as an [MCreator](https://mcreator.net) project. While the project has since been migrated to a standalone project, the development team would like to acknowledge the MCreator project and its developers for their contributions to the Minecraft modding community.
 
-
-
+**Build System:**
+This mod uses the [GregTechCEu Buildscripts](https://github.com/GregTechCEu/Buildscripts) for Minecraft 1.12. Special thanks to the GregTechCEu team for their build infrastructure and support.
