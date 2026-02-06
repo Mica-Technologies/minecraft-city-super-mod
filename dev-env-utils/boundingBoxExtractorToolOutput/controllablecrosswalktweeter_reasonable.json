@@ -11,5 +11,5 @@
      */
     @Override
     public AxisAlignedBB getBlockBoundingBox( IBlockState state, IBlockAccess source, BlockPos pos ) {
-        return new AxisAlignedBB(0.375000, 0.812500, 0.437500, 0.625000, 1.000000, 0.562500);
+        return new AxisAlignedBB(0.375000, 0.812500, 0.425000, 0.625000, 1.000000, 0.568750);
     }
