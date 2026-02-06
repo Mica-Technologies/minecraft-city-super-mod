@@ -42,8 +42,8 @@ public class BlockPingPongTable extends AbstractBlock {
    * @since 1.0
    */
   @Override
-  public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-    return SQUARE_BOUNDING_BOX;
+  public AxisAlignedBB getBlockBoundingBox( IBlockState state, IBlockAccess source, BlockPos pos ) {
+    return new AxisAlignedBB(-1.000000, 0.000000, -0.375000, 2.000000, 1.375000, 1.375625);
   }
 
   /**

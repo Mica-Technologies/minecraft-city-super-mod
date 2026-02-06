@@ -43,22 +43,8 @@ public class BlockHd extends AbstractBlockRotatableNSEWUD {
    * @since 1.0
    */
   @Override
-  public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-    switch (state.getValue(BlockDirectional.FACING)) {
-      case SOUTH:
-      default:
-        return new AxisAlignedBB(1D, 0D, 0.6D, 0D, 1D, 0D);
-      case NORTH:
-        return new AxisAlignedBB(0D, 0D, 0.4D, 1D, 1D, 1D);
-      case WEST:
-        return new AxisAlignedBB(0.4D, 0D, 1D, 1D, 1D, 0D);
-      case EAST:
-        return new AxisAlignedBB(0.6D, 0D, 0D, 0D, 1D, 1D);
-      case UP:
-        return new AxisAlignedBB(0D, 0.6D, 0D, 1D, 0D, 1D);
-      case DOWN:
-        return new AxisAlignedBB(0D, 0.4D, 1D, 1D, 1D, 0D);
-    }
+  public AxisAlignedBB getBlockBoundingBox( IBlockState state, IBlockAccess source, BlockPos pos ) {
+    return new AxisAlignedBB(0.000000, 0.000000, 0.250000, 1.000000, 0.500000, 1.000000);
   }
 
   /**
