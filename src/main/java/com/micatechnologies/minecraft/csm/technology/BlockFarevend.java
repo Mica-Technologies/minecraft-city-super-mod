@@ -42,8 +42,8 @@ public class BlockFarevend extends AbstractBlockRotatableNSEWUD {
    * @since 1.0
    */
   @Override
-  public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-    return new AxisAlignedBB(1D, 0D, 0.8D, 0D, 1D, 0D);
+  public AxisAlignedBB getBlockBoundingBox( IBlockState state, IBlockAccess source, BlockPos pos ) {
+    return new AxisAlignedBB(0.000000, 0.000000, 0.937500, 1.000000, 2.000000, 1.000000);
   }
 
   /**
