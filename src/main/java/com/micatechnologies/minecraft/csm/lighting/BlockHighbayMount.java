@@ -42,8 +42,8 @@ public class BlockHighbayMount extends AbstractBlockRotatableNSEWUD {
    * @since 1.0
    */
   @Override
-  public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-    return SQUARE_BOUNDING_BOX;
+  public AxisAlignedBB getBlockBoundingBox( IBlockState state, IBlockAccess source, BlockPos pos ) {
+    return new AxisAlignedBB(0.375000, 0.000000, 0.375000, 0.625000, 1.000000, 0.625000);
   }
 
   /**

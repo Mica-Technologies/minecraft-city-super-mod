@@ -8,11 +8,6 @@ import net.minecraft.world.IBlockAccess;
 public class BlockAE115 extends AbstractBrightLight {
 
   @Override
-  public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-    return new AxisAlignedBB(1D, 0D, 1D, 0D, 0.5D, 0D);
-  }
-
-  @Override
   public String getBlockRegistryName() {
     return "ae115";
   }
@@ -29,8 +24,8 @@ public class BlockAE115 extends AbstractBrightLight {
    * @since 1.0
    */
   @Override
-  public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-    return null;
+  public AxisAlignedBB getBlockBoundingBox( IBlockState state, IBlockAccess source, BlockPos pos ) {
+    return new AxisAlignedBB(0.312500, -0.187500, 0.312500, 0.687500, 0.390625, 1.000000);
   }
 
   @Override
