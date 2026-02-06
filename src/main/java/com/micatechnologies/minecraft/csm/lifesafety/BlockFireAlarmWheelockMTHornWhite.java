@@ -5,8 +5,10 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 public class BlockFireAlarmWheelockMTHornWhite extends AbstractBlockFireAlarmSounder {
@@ -49,6 +51,22 @@ public class BlockFireAlarmWheelockMTHornWhite extends AbstractBlockFireAlarmSou
   //                       placer ) )
   //                       .withProperty( SOUND, 0 );
   //        }
+
+  /**
+   * Retrieves the bounding box of the block.
+   *
+   * @param state  the block state
+   * @param source the block access
+   * @param pos    the block position
+   *
+   * @return The bounding box of the block.
+   *
+   * @since 1.0
+   */
+  @Override
+  public AxisAlignedBB getBlockBoundingBox( IBlockState state, IBlockAccess source, BlockPos pos ) {
+    return new AxisAlignedBB(0.187500, 0.375000, 0.750000, 0.812500, 1.000000, 1.000000);
+  }
 
   @Override
   protected net.minecraft.block.state.BlockStateContainer createBlockState() {

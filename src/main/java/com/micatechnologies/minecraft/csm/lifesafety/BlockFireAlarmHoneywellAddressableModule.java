@@ -43,22 +43,8 @@ public class BlockFireAlarmHoneywellAddressableModule extends AbstractBlockRotat
    * @since 1.0
    */
   @Override
-  public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-    switch (state.getValue(BlockDirectional.FACING)) {
-      case SOUTH:
-      default:
-        return new AxisAlignedBB(0.9375D, 0D, 0D, 0D, 1D, 0D);
-      case NORTH:
-        return new AxisAlignedBB(0.0625D, 0D, 1D, 1D, 1D, 1D);
-      case WEST:
-        return new AxisAlignedBB(1D, 0D, 0.9375D, 1D, 1D, 0D);
-      case EAST:
-        return new AxisAlignedBB(0D, 0D, 0.0625D, 0D, 1D, 1D);
-      case UP:
-        return new AxisAlignedBB(0.0625D, 0D, 0D, 1D, 0D, 1D);
-      case DOWN:
-        return new AxisAlignedBB(0.0625D, 1D, 1D, 1D, 1D, 0D);
-    }
+  public AxisAlignedBB getBlockBoundingBox( IBlockState state, IBlockAccess source, BlockPos pos ) {
+    return new AxisAlignedBB(0.125000, 0.312500, 0.937500, 0.875000, 0.937500, 1.000000);
   }
 
   /**

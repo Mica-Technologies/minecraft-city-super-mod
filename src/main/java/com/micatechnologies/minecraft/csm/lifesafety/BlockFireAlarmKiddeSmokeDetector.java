@@ -51,8 +51,8 @@ public class BlockFireAlarmKiddeSmokeDetector extends AbstractBlockRotatableNSEW
    * @since 1.0
    */
   @Override
-  public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-    return new AxisAlignedBB(0.2D, 0.8D, 0.2D, 0.8D, 1D, 0.8D);
+  public AxisAlignedBB getBlockBoundingBox( IBlockState state, IBlockAccess source, BlockPos pos ) {
+    return new AxisAlignedBB(0.000000, 0.999375, 0.000000, 1.000000, 1.000000, 1.000000);
   }
 
   /**

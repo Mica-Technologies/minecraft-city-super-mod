@@ -50,7 +50,7 @@ public class BlockEmergencyLightBlack extends AbstractPoweredBlockRotatableNSEWU
    * @since 1.0
    */
   @Override
-  public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
+  public AxisAlignedBB getBlockBoundingBox( IBlockState state, IBlockAccess source, BlockPos pos ) {
     return new AxisAlignedBB(0.062500, 0.187500, 0.812500, 0.937500, 0.562500, 1.000000);
   }
 
