@@ -42,8 +42,8 @@ public class BlockAppleTV extends AbstractBlockRotatableNSEWUD {
    * @since 1.0
    */
   @Override
-  public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-    return new AxisAlignedBB(0D, 0.2D, 0D, 1D, 0D, 1D);
+  public AxisAlignedBB getBlockBoundingBox( IBlockState state, IBlockAccess source, BlockPos pos ) {
+    return new AxisAlignedBB(0.312500, 0.000000, 0.312500, 0.687500, 0.125000, 0.687500);
   }
 
   /**
