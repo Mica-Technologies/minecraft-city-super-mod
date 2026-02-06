@@ -43,7 +43,7 @@ public class BlockACMisCmd extends AbstractBlockRotatableNSEWUD {
    */
   @Override
   public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-    return SQUARE_BOUNDING_BOX;
+    return new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 2.0D, 1.0D);
   }
 
   /**
