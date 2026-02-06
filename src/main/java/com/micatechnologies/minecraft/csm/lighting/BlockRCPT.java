@@ -42,8 +42,8 @@ public class BlockRCPT extends AbstractBlockRotatableNSEWUD {
    * @since 1.0
    */
   @Override
-  public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-    return SQUARE_BOUNDING_BOX;
+  public AxisAlignedBB getBlockBoundingBox( IBlockState state, IBlockAccess source, BlockPos pos ) {
+    return new AxisAlignedBB(0.062500, 0.062500, -0.250000, 0.937500, 0.937500, 1.000000);
   }
 
   /**

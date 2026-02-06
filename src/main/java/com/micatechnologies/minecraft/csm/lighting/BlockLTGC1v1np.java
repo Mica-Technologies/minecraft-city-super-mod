@@ -24,8 +24,8 @@ public class BlockLTGC1v1np extends AbstractBrightLight {
    * @since 1.0
    */
   @Override
-  public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-    return new AxisAlignedBB(0D, 0D, 0D, 1D, 0.5D, 1D);
+  public AxisAlignedBB getBlockBoundingBox( IBlockState state, IBlockAccess source, BlockPos pos ) {
+    return new AxisAlignedBB(0.250000, 0.000000, 0.062500, 0.750000, 0.340625, 1.000000);
   }
 
   @Override

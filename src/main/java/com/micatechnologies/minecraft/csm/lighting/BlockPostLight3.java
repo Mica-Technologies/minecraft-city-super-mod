@@ -25,7 +25,7 @@ public class BlockPostLight3 extends AbstractBrightLightPoleColored {
    */
   @Override
   public AxisAlignedBB getBlockBoundingBox( IBlockState state, IBlockAccess source, BlockPos pos ) {
-    return new AxisAlignedBB(0.062500, 0.000000, 0.062500, 0.937500, 1.000000, 0.937500);
+    return new AxisAlignedBB(-0.125000, 0.000000, -0.125000, 1.125000, 1.437500, 1.125000);
   }
 
   @Override

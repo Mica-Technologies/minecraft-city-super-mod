@@ -42,8 +42,8 @@ public class BlockNOVTM2 extends AbstractBlockRotatableNSEWUD {
    * @since 1.0
    */
   @Override
-  public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-    return SQUARE_BOUNDING_BOX;
+  public AxisAlignedBB getBlockBoundingBox( IBlockState state, IBlockAccess source, BlockPos pos ) {
+    return new AxisAlignedBB(0.312500, 0.187500, -1.000000, 0.687500, 1.187500, 1.187500);
   }
 
   /**

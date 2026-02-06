@@ -24,8 +24,8 @@ public class BlockWHOV50ShadedNP extends AbstractBrightLight {
    * @since 1.0
    */
   @Override
-  public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-    return new AxisAlignedBB(0D, 0D, 0D, 1D, 0.5D, 1D);
+  public AxisAlignedBB getBlockBoundingBox( IBlockState state, IBlockAccess source, BlockPos pos ) {
+    return new AxisAlignedBB(0.125000, -0.187500, 0.062500, 0.875000, 0.281250, 1.000000);
   }
 
   @Override
