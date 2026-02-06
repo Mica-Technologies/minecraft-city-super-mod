@@ -4,8 +4,10 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -49,5 +51,21 @@ public class BlockFireAlarmFireLiteBG6 extends AbstractBlockFireAlarmActivator {
   @Override
   public void onTick(World world, BlockPos blockPos, IBlockState blockState) {
     // Do nothing
+  }
+
+  /**
+   * Retrieves the bounding box of the block.
+   *
+   * @param state  the block state
+   * @param source the block access
+   * @param pos    the block position
+   *
+   * @return The bounding box of the block.
+   *
+   * @since 1.0
+   */
+  @Override
+  public AxisAlignedBB getBlockBoundingBox( IBlockState state, IBlockAccess source, BlockPos pos ) {
+    return new AxisAlignedBB(0.125000, 0.312500, 0.937500, 0.875000, 0.937500, 1.000000);
   }
 }

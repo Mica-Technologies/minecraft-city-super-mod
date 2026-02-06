@@ -30,6 +30,6 @@ public class BlockFireAlarmHeatDetector extends AbstractBlockFireAlarmDetector {
    */
   @Override
   public AxisAlignedBB getBlockBoundingBox( IBlockState state, IBlockAccess source, BlockPos pos ) {
-    return new AxisAlignedBB(0.125000, 0.125000, 0.900000, 0.875000, 0.875000, 1.000000);
+    return new AxisAlignedBB(0.125000, 0.125000, 0.999375, 0.875000, 0.875000, 1.000000);
   }
 }
