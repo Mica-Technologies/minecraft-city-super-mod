@@ -43,22 +43,8 @@ public class BlockMCLACodeApprovedStairsSignRight extends AbstractBlockRotatable
    * @since 1.0
    */
   @Override
-  public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-    switch (state.getValue(BlockDirectional.FACING)) {
-      case SOUTH:
-      default:
-        return new AxisAlignedBB(1D, 0D, 0.2D, 0D, 1D, 0D);
-      case NORTH:
-        return new AxisAlignedBB(0D, 0D, 0.8D, 1D, 1D, 1D);
-      case WEST:
-        return new AxisAlignedBB(0.8D, 0D, 1D, 1D, 1D, 0D);
-      case EAST:
-        return new AxisAlignedBB(0.2D, 0D, 0D, 0D, 1D, 1D);
-      case UP:
-        return new AxisAlignedBB(0D, 0.2D, 0D, 1D, 0D, 1D);
-      case DOWN:
-        return new AxisAlignedBB(0D, 0.8D, 1D, 1D, 1D, 0D);
-    }
+  public AxisAlignedBB getBlockBoundingBox( IBlockState state, IBlockAccess source, BlockPos pos ) {
+    return new AxisAlignedBB(0.000000, 0.250000, 0.812500, 1.000000, 1.062500, 1.000000);
   }
 
   /**
