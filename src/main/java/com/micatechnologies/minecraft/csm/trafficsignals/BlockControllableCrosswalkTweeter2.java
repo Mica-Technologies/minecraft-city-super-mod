@@ -6,6 +6,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
@@ -51,6 +52,22 @@ public class BlockControllableCrosswalkTweeter2
       IBlockState p_onBlockAdded_3_) {
     p_onBlockAdded_1_.scheduleUpdate(p_onBlockAdded_2_, this, this.tickRate(p_onBlockAdded_1_));
     super.onBlockAdded(p_onBlockAdded_1_, p_onBlockAdded_2_, p_onBlockAdded_3_);
+  }
+
+  /**
+   * Retrieves the bounding box of the block.
+   *
+   * @param state  the block state
+   * @param source the block access
+   * @param pos    the block position
+   *
+   * @return The bounding box of the block.
+   *
+   * @since 1.0
+   */
+  @Override
+  public AxisAlignedBB getBlockBoundingBox( IBlockState state, IBlockAccess source, BlockPos pos ) {
+    return new AxisAlignedBB(0.375000, 0.812500, 0.425000, 0.625000, 1.000000, 0.568750);
   }
 
   /**
