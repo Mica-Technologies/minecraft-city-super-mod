@@ -42,8 +42,8 @@ public class BlockMCLACodeApprovedExitSignISA extends AbstractBlockRotatableNSEW
    * @since 1.0
    */
   @Override
-  public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-    return new AxisAlignedBB(0D, 0D, 0.8D, 1D, 1D, 1D);
+  public AxisAlignedBB getBlockBoundingBox( IBlockState state, IBlockAccess source, BlockPos pos ) {
+    return new AxisAlignedBB(-0.187500, 0.250000, 0.800000, 1.187500, 1.062500, 1.012500);
   }
 
   /**
