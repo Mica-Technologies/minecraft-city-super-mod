@@ -554,9 +554,9 @@ public class TrafficSignalControllerTicker {
               overlaps, 1,
               overlapPedestrianSignals, world);
 
-      // Insert LPI phase if applicable
-      nextPhase = TrafficSignalControllerTickerUtilities.maybeWrapWithLpi(greenPhase,
-          overlapPedestrianSignals, leadPedestrianIntervalTime);
+      // Insert LPI phase if applicable (originating from ALL_RED, so no signals are green)
+      nextPhase = TrafficSignalControllerTickerUtilities.maybeWrapWithLpi(originalPhase,
+          greenPhase, overlapPedestrianSignals, leadPedestrianIntervalTime);
     }
     // If original phase is lead pedestrian interval, and LPI time is up, change to the upcoming
     // green phase
@@ -594,9 +594,9 @@ public class TrafficSignalControllerTicker {
       // Get the upcoming green phase
       TrafficSignalPhase upcomingGreenPhase = originalPhase.getUpcomingPhase();
 
-      // Insert LPI phase if applicable
-      nextPhase = TrafficSignalControllerTickerUtilities.maybeWrapWithLpi(upcomingGreenPhase,
-          overlapPedestrianSignals, leadPedestrianIntervalTime);
+      // Insert LPI phase if applicable (originating phase preserves signals that stay green)
+      nextPhase = TrafficSignalControllerTickerUtilities.maybeWrapWithLpi(originalPhase,
+          upcomingGreenPhase, overlapPedestrianSignals, leadPedestrianIntervalTime);
 
     }
     // If original phase is green, get corresponding min/max green times and check for phase change

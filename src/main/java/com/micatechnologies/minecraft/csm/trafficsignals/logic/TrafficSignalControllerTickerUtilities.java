@@ -204,6 +204,9 @@ public class TrafficSignalControllerTickerUtilities {
    * phase that wraps the specified upcoming green phase. If LPI conditions are not met, returns
    * the upcoming green phase directly.
    *
+   * @param originatingPhase           The phase we are transitioning from (e.g., the ALL_RED or
+   *                                   RED_TRANSITIONING phase). Signals that are green in both this
+   *                                   phase and the upcoming phase will stay green during LPI.
    * @param upcomingGreenPhase         The upcoming green phase to potentially wrap with LPI.
    * @param overlapPedestrianSignals   Whether overlap pedestrian signals are enabled.
    * @param leadPedestrianIntervalTime The lead pedestrian interval time in ticks (0 = disabled).
@@ -213,7 +216,8 @@ public class TrafficSignalControllerTickerUtilities {
    *
    * @since 1.0
    */
-  public static TrafficSignalPhase maybeWrapWithLpi(TrafficSignalPhase upcomingGreenPhase,
+  public static TrafficSignalPhase maybeWrapWithLpi(TrafficSignalPhase originatingPhase,
+      TrafficSignalPhase upcomingGreenPhase,
       boolean overlapPedestrianSignals,
       long leadPedestrianIntervalTime) {
     // LPI only applies when overlap pedestrian signals are enabled and LPI time is configured
@@ -227,24 +231,32 @@ public class TrafficSignalControllerTickerUtilities {
     }
 
     // Create the LPI phase
-    return getLpiPhaseForUpcoming(upcomingGreenPhase);
+    return getLpiPhaseForUpcoming(originatingPhase, upcomingGreenPhase);
   }
 
   /**
    * Creates a lead pedestrian interval (LPI) phase for the specified upcoming green phase. During
-   * the LPI phase, all vehicle signals are set to red while pedestrian walk signals from the
-   * upcoming phase are displayed, giving pedestrians a head start before the vehicle phase begins.
+   * the LPI phase, vehicle signals that are newly turning green are held at red while pedestrian
+   * walk signals from the upcoming phase are displayed, giving pedestrians a head start before the
+   * vehicle phase begins. Signals that are already green in the originating phase and will remain
+   * green in the upcoming phase are kept green (not forced to red).
    *
+   * @param originatingPhase   The phase we are transitioning from. Signals green in both this
+   *                           phase and the upcoming phase will remain green during LPI.
    * @param upcomingGreenPhase The upcoming green phase that will follow the LPI phase.
    *
-   * @return The LPI phase with walk signals active and all vehicle signals red.
+   * @return The LPI phase with walk signals active and newly-green vehicle signals held at red.
    *
    * @since 1.0
    */
-  public static TrafficSignalPhase getLpiPhaseForUpcoming(TrafficSignalPhase upcomingGreenPhase) {
+  public static TrafficSignalPhase getLpiPhaseForUpcoming(TrafficSignalPhase originatingPhase,
+      TrafficSignalPhase upcomingGreenPhase) {
     TrafficSignalPhase lpiPhase = new TrafficSignalPhase(
         upcomingGreenPhase.getCircuit(), upcomingGreenPhase,
         TrafficSignalPhaseApplicability.LEAD_PEDESTRIAN_INTERVAL);
+
+    // Signals that are green in the originating phase (used to determine which greens to preserve)
+    List<BlockPos> originGreenSignals = originatingPhase.getGreenSignals();
 
     // Pedestrian walk signals get their head start during LPI
     lpiPhase.addWalkSignals(upcomingGreenPhase.getWalkSignals());
@@ -255,8 +267,16 @@ public class TrafficSignalControllerTickerUtilities {
     // Flash don't walk signals from the upcoming phase stay as don't walk during LPI
     lpiPhase.addDontWalkSignals(upcomingGreenPhase.getFlashDontWalkSignals());
 
-    // All vehicle signals remain red during LPI
-    lpiPhase.addRedSignals(upcomingGreenPhase.getGreenSignals());
+    // For green signals: keep green if already green in the originating phase, otherwise hold red
+    for (BlockPos greenSignal : upcomingGreenPhase.getGreenSignals()) {
+      if (originGreenSignals.contains(greenSignal)) {
+        lpiPhase.addGreenSignal(greenSignal);
+      } else {
+        lpiPhase.addRedSignal(greenSignal);
+      }
+    }
+
+    // All other vehicle signals remain red during LPI
     lpiPhase.addRedSignals(upcomingGreenPhase.getRedSignals());
     lpiPhase.addRedSignals(upcomingGreenPhase.getYellowSignals());
     lpiPhase.addRedSignals(upcomingGreenPhase.getFyaSignals());
