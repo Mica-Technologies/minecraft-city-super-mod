@@ -1,14 +1,21 @@
 package com.micatechnologies.minecraft.csm.lifesafety;
 
+import com.micatechnologies.minecraft.csm.CsmNetwork;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractTickableTileEntity;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.UUID;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.fml.common.FMLCommonHandler;
@@ -47,6 +54,11 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
       "Firecom 8500"};
   private static final String STORM_SOUND_NAME = "csm:notifier_tornado_voice_evac";
   private static final int STORM_SOUND_LENGTH = 460;
+  private static final float SOUNDER_VOLUME = 2.0f;
+  private static final float VOICE_EVAC_VOLUME = 3.0f;
+  private static final float STORM_VOICE_EVAC_VOLUME = 3.0f;
+  private static final int PRUNE_INTERVAL_TICKS = 6000; // ~5 minutes
+
   private final ArrayList<BlockPos> connectedAppliances = new ArrayList<>();
   private int soundIndex;
   private boolean alarm;
@@ -54,6 +66,11 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
   private int alarmStormSoundTracking = 0;
   private HashMap<String, Integer> alarmSoundTracking = null;
   private boolean alarmAnnounced;
+  private int pruneTickCounter = 0;
+  private final HashSet<UUID> voiceEvacActivePlayers = new HashSet<>();
+  private final HashSet<UUID> stormActivePlayers = new HashSet<>();
+  private String lastVoiceEvacSoundSent = null;
+  private String lastStormSoundSent = null;
 
   /**
    * Abstract method which must be implemented to process the reading of the tile entity's NBT data
@@ -197,7 +214,7 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
    */
   @Override
   public boolean doClientTick() {
-    return true;
+    return false;
   }
 
   /**
@@ -226,12 +243,34 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
    */
   @Override
   public void onTick() {
+    // Only process on server side (doClientTick is false, but guard just in case)
+    if (world.isRemote) {
+      return;
+    }
 
     try {
+      // Periodic lightweight pruning of invalid connected appliances
+      pruneTickCounter += tickRate;
+      if (pruneTickCounter >= PRUNE_INTERVAL_TICKS) {
+        pruneTickCounter = 0;
+        pruneInvalidAppliances();
+      }
+
+      MinecraftServer mcserv = FMLCommonHandler.instance().getMinecraftServerInstance();
+      if (mcserv == null) {
+        return;
+      }
+      List<EntityPlayerMP> players = mcserv.getPlayerList().getPlayers();
+
       if (alarm) {
         // Reset storm alarm (fire alarm overrides storm)
         if (alarmStormSoundTracking > 0) {
           alarmStormSoundTracking = 0;
+        }
+        // Stop storm sounds on clients if storm was playing
+        if (!stormActivePlayers.isEmpty()) {
+          sendStopToPlayers(players, stormActivePlayers);
+          lastStormSoundSent = null;
         }
 
         // Alarm is starting
@@ -240,75 +279,6 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
 
           // Announce alarm if not announced
           if (!getAlarmAnnouncedState()) {
-            MinecraftServer mcserv = FMLCommonHandler.instance().getMinecraftServerInstance();
-            if (mcserv != null) {
-              BlockPos blockPos = getPos();
-              mcserv.getPlayerList()
-                  .sendMessage(new TextComponentString("The fire alarm at [" +
-                      blockPos.getX() +
-                      "," +
-                      blockPos.getY() +
-                      "," +
-                      blockPos.getZ() +
-                      "] " +
-                      "has been activated!"));
-            }
-            setAlarmAnnouncedState(true);
-          }
-        }
-
-        // Perform sound handling
-        for (BlockPos bp : connectedAppliances) {
-          // Get block at linked position
-          IBlockState blockStateAtPos = world.getBlockState(bp);
-          Block blockAtPos = blockStateAtPos.getBlock();
-
-          // Check for alarm sound values at location
-          String alarmSoundName = null;
-          int alarmSoundLength = -1;
-          if (blockAtPos instanceof AbstractBlockFireAlarmSounderVoiceEvac) {
-            alarmSoundName = getCurrentSoundResourceName();
-            alarmSoundLength = getCurrentSoundLength();
-          } else if (blockAtPos instanceof AbstractBlockFireAlarmSounder) {
-            AbstractBlockFireAlarmSounder blockFireAlarmSounder =
-                (AbstractBlockFireAlarmSounder) blockAtPos;
-            alarmSoundName = blockFireAlarmSounder.getSoundResourceName(blockStateAtPos);
-            alarmSoundLength = blockFireAlarmSounder.getSoundTickLen(blockStateAtPos);
-          }
-
-          // Handle only if alarm at location
-          if (alarmSoundName != null && alarmSoundLength != -1) {
-            // Add sound tracker if does not exist and reset sound tracker to 0 if sound length
-            // reached (or
-            // greater)
-            if (!alarmSoundTracking.containsKey(alarmSoundName) ||
-                alarmSoundTracking.get(alarmSoundName) > alarmSoundLength) {
-              alarmSoundTracking.put(alarmSoundName, 0);
-            }
-
-            // Play sound
-            if (alarmSoundTracking.get(alarmSoundName) == 0) {
-              world.playSound(null, bp.getX(), bp.getY(), bp.getZ(),
-                  net.minecraft.util.SoundEvent.REGISTRY.getObject(
-                      new ResourceLocation(alarmSoundName)), SoundCategory.AMBIENT,
-                  (float) 2, (float) 1);
-
-            }
-          }
-        }
-
-        // Increment sound trackers
-        final int incrementSize = tickRate;
-        for (String key : alarmSoundTracking.keySet()) {
-          int valForKey = alarmSoundTracking.get(key);
-          alarmSoundTracking.put(key, valForKey + incrementSize);
-        }
-      } else {
-        // Alarm has ended
-        if (alarmSoundTracking != null) {
-          alarmSoundTracking = null;
-          MinecraftServer mcserv = FMLCommonHandler.instance().getMinecraftServerInstance();
-          if (mcserv != null) {
             BlockPos blockPos = getPos();
             mcserv.getPlayerList()
                 .sendMessage(new TextComponentString("The fire alarm at [" +
@@ -318,40 +288,115 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
                     "," +
                     blockPos.getZ() +
                     "] " +
-                    "has been reset."));
+                    "has been activated!"));
+            setAlarmAnnouncedState(true);
           }
+        }
+
+        // Collect voice evac speaker positions
+        String voiceEvacSoundName = getCurrentSoundResourceName();
+        float voiceEvacHearingRange = VOICE_EVAC_VOLUME * 16.0f;
+        List<BlockPos> voiceEvacPositions = new ArrayList<>();
+
+        for (BlockPos bp : connectedAppliances) {
+          IBlockState blockStateAtPos = world.getBlockState(bp);
+          Block blockAtPos = blockStateAtPos.getBlock();
+
+          if (blockAtPos instanceof AbstractBlockFireAlarmSounderVoiceEvac) {
+            voiceEvacPositions.add(bp);
+          } else if (blockAtPos instanceof AbstractBlockFireAlarmSounder) {
+            // Horn/sounder devices: positional audio (short sounds, loop quickly)
+            AbstractBlockFireAlarmSounder blockFireAlarmSounder =
+                (AbstractBlockFireAlarmSounder) blockAtPos;
+            String alarmSoundName = blockFireAlarmSounder.getSoundResourceName(blockStateAtPos);
+            int alarmSoundLength = blockFireAlarmSounder.getSoundTickLen(blockStateAtPos);
+
+            if (alarmSoundName != null && alarmSoundLength != -1) {
+              if (!alarmSoundTracking.containsKey(alarmSoundName) ||
+                  alarmSoundTracking.get(alarmSoundName) > alarmSoundLength) {
+                alarmSoundTracking.put(alarmSoundName, 0);
+              }
+
+              if (alarmSoundTracking.get(alarmSoundName) == 0) {
+                if (isAnyPlayerInRange(players, bp, SOUNDER_VOLUME)) {
+                  world.playSound(null, bp.getX(), bp.getY(), bp.getZ(),
+                      SoundEvent.REGISTRY.getObject(new ResourceLocation(alarmSoundName)),
+                      SoundCategory.AMBIENT, SOUNDER_VOLUME, (float) 1);
+                }
+              }
+            }
+          }
+        }
+
+        // Voice evac: manage client-side MovingSound via packets
+        if (!voiceEvacPositions.isEmpty()) {
+          // If the sound changed (user switched voice evac), restart on all active clients
+          boolean soundChanged = lastVoiceEvacSoundSent != null &&
+              !lastVoiceEvacSoundSent.equals(voiceEvacSoundName);
+          if (soundChanged) {
+            sendStopToPlayers(players, voiceEvacActivePlayers);
+          }
+
+          // Send start packets to players who are in range but don't have the sound yet
+          manageVoiceEvacForPlayers(players, voiceEvacPositions, voiceEvacSoundName,
+              voiceEvacHearingRange, voiceEvacActivePlayers);
+          lastVoiceEvacSoundSent = voiceEvacSoundName;
+        }
+
+        // Increment sound trackers (for horns/sounders only now)
+        final int incrementSize = tickRate;
+        HashMap<String, Integer> updatedTracking = new HashMap<>();
+        for (HashMap.Entry<String, Integer> entry : alarmSoundTracking.entrySet()) {
+          updatedTracking.put(entry.getKey(), entry.getValue() + incrementSize);
+        }
+        alarmSoundTracking = updatedTracking;
+      } else {
+        // Alarm has ended
+        if (alarmSoundTracking != null) {
+          alarmSoundTracking = null;
+          BlockPos blockPos = getPos();
+          mcserv.getPlayerList()
+              .sendMessage(new TextComponentString("The fire alarm at [" +
+                  blockPos.getX() +
+                  "," +
+                  blockPos.getY() +
+                  "," +
+                  blockPos.getZ() +
+                  "] " +
+                  "has been reset."));
           setAlarmAnnouncedState(false);
+        }
+
+        // Stop voice evac sounds on all clients
+        if (!voiceEvacActivePlayers.isEmpty()) {
+          sendStopToPlayers(players, voiceEvacActivePlayers);
+          lastVoiceEvacSoundSent = null;
         }
 
         // Handle storm alarm
         if (alarmStorm) {
-          // Perform sound handling
+          float stormHearingRange = STORM_VOICE_EVAC_VOLUME * 16.0f;
+          List<BlockPos> stormVoiceEvacPositions = new ArrayList<>();
+
           for (BlockPos bp : connectedAppliances) {
-            // Get block at linked position
             IBlockState blockStateAtPos = world.getBlockState(bp);
             Block blockAtPos = blockStateAtPos.getBlock();
-
-            // Check for alarm sound values at location
             if (blockAtPos instanceof AbstractBlockFireAlarmSounderVoiceEvac) {
-              if (alarmStormSoundTracking > STORM_SOUND_LENGTH) {
-                alarmStormSoundTracking = 0;
-              }
-
-              // Play sound
-              if (alarmStormSoundTracking == 0) {
-                world.playSound(null, bp.getX(), bp.getY(), bp.getZ(),
-                    net.minecraft.util.SoundEvent.REGISTRY.getObject(
-                        new ResourceLocation(STORM_SOUND_NAME)), SoundCategory.AMBIENT,
-                    (float) 3, (float) 1);
-
-              }
+              stormVoiceEvacPositions.add(bp);
             }
           }
 
-          // Increment storm sound tracker
-          alarmStormSoundTracking += tickRate;
+          if (!stormVoiceEvacPositions.isEmpty()) {
+            manageVoiceEvacForPlayers(players, stormVoiceEvacPositions, STORM_SOUND_NAME,
+                stormHearingRange, stormActivePlayers);
+            lastStormSoundSent = STORM_SOUND_NAME;
+          }
         } else {
-          // Reset storm alarm
+          // Storm alarm off - stop storm sounds
+          if (!stormActivePlayers.isEmpty()) {
+            sendStopToPlayers(players, stormActivePlayers);
+            lastStormSoundSent = null;
+          }
           if (alarmStormSoundTracking > 0) {
             alarmStormSoundTracking = 0;
           }
@@ -360,6 +405,108 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
     } catch (Exception e) {
       System.err.println("An error occurred while ticking a fire alarm control panel: ");
       e.printStackTrace(System.err);
+    }
+  }
+
+  /**
+   * Manages the client-side voice evac MovingSound for all players. Sends start packets to
+   * players who are in range of a speaker but don't have the sound playing yet. Sends stop
+   * packets to players who have moved out of range of all speakers.
+   */
+  private void manageVoiceEvacForPlayers(List<EntityPlayerMP> players,
+      List<BlockPos> speakerPositions, String soundName, float hearingRange,
+      HashSet<UUID> activePlayers) {
+    double hearingRangeSq = hearingRange * (double) hearingRange;
+
+    for (EntityPlayerMP player : players) {
+      UUID playerId = player.getUniqueID();
+      boolean inRange = isPlayerInRangeOfAny(player, speakerPositions, hearingRangeSq);
+
+      if (inRange && !activePlayers.contains(playerId)) {
+        // Player entered range - start their client-side MovingSound
+        CsmNetwork.sendTo(
+            FireAlarmSoundPacket.start(soundName, hearingRange, speakerPositions), player);
+        activePlayers.add(playerId);
+      } else if (!inRange && activePlayers.contains(playerId)) {
+        // Player left range - stop their client-side MovingSound
+        CsmNetwork.sendTo(FireAlarmSoundPacket.stop(), player);
+        activePlayers.remove(playerId);
+      }
+    }
+
+    // Clean up players who disconnected
+    activePlayers.removeIf(id -> {
+      for (EntityPlayerMP p : players) {
+        if (p.getUniqueID().equals(id)) {
+          return false;
+        }
+      }
+      return true;
+    });
+  }
+
+  /**
+   * Sends stop packets to all players in the active set and clears it.
+   */
+  private void sendStopToPlayers(List<EntityPlayerMP> players, HashSet<UUID> activePlayers) {
+    FireAlarmSoundPacket stopPacket = FireAlarmSoundPacket.stop();
+    for (EntityPlayerMP player : players) {
+      if (activePlayers.contains(player.getUniqueID())) {
+        CsmNetwork.sendTo(stopPacket, player);
+      }
+    }
+    activePlayers.clear();
+  }
+
+  /**
+   * Checks if any player is within hearing range of the given position. The hearing range is
+   * derived from the sound volume (volume * 16 blocks, matching Minecraft's sound attenuation).
+   */
+  private boolean isAnyPlayerInRange(List<EntityPlayerMP> players, BlockPos pos, float volume) {
+    double rangeSq = (volume * 16.0) * (volume * 16.0);
+    for (EntityPlayerMP player : players) {
+      if (player.getDistanceSq(pos) <= rangeSq) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Checks if a specific player is within hearing range of any position in the list.
+   */
+  private boolean isPlayerInRangeOfAny(EntityPlayerMP player, List<BlockPos> positions,
+      double hearingRangeSq) {
+    for (BlockPos pos : positions) {
+      if (player.getDistanceSq(pos) <= hearingRangeSq) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Removes connected appliance entries that no longer point to valid fire alarm sounder blocks.
+   * Only prunes one invalid entry per call to keep the operation lightweight.
+   */
+  private void pruneInvalidAppliances() {
+    Iterator<BlockPos> it = connectedAppliances.iterator();
+    boolean pruned = false;
+    while (it.hasNext()) {
+      BlockPos bp = it.next();
+      // Only check loaded chunks to avoid forcing chunk loads
+      if (world.isBlockLoaded(bp)) {
+        Block blockAtPos = world.getBlockState(bp).getBlock();
+        if (!(blockAtPos instanceof AbstractBlockFireAlarmSounder)) {
+          it.remove();
+          pruned = true;
+          // Only prune one per cycle to stay lightweight
+          break;
+        }
+      }
+    }
+    if (pruned) {
+      markDirty();
     }
   }
 

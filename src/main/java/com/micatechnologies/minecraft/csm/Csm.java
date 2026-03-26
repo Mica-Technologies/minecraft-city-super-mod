@@ -26,6 +26,8 @@ import com.micatechnologies.minecraft.csm.codeutils.packets.TileEntityRedstoneTT
 import com.micatechnologies.minecraft.csm.codeutils.packets.TileEntityRedstoneTTSInvokePacket;
 import com.micatechnologies.minecraft.csm.codeutils.packets.TileEntityRedstoneTTSUpdateHandler;
 import com.micatechnologies.minecraft.csm.codeutils.packets.TileEntityRedstoneTTSUpdatePacket;
+import com.micatechnologies.minecraft.csm.lifesafety.FireAlarmSoundPacket;
+import com.micatechnologies.minecraft.csm.lifesafety.FireAlarmSoundPacketHandler;
 import java.util.HashSet;
 import java.util.Set;
 import net.minecraft.block.Block;
@@ -155,6 +157,8 @@ public class Csm {
           Side.SERVER);
       CsmNetwork.registerNetworkMessage(TileEntityRedstoneTTSInvokeHandler.class,
           TileEntityRedstoneTTSInvokePacket.class, Side.CLIENT);
+      CsmNetwork.registerNetworkMessage(FireAlarmSoundPacketHandler.class,
+          FireAlarmSoundPacket.class, Side.CLIENT);
       logger.info("Finished registering network message(s)");
       progressBar.step("Network Messages Registration");
 
