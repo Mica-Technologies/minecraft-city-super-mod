@@ -54,7 +54,7 @@ public class ItemEWSignalLinker extends AbstractItem {
         // Increment mode
         int currentMode = modeMap.getOrDefault(player.getUniqueID(), 1);
         int newMode = currentMode + 1;
-        if (newMode > 3) {
+        if (newMode > 4) {
           newMode = 1;
         }
 
@@ -99,6 +99,9 @@ public class ItemEWSignalLinker extends AbstractItem {
             } else if (currentMode == 3) {
               overwrote =
                   tileEntityTrafficSignalSensor.setProtectedScanCorners(corner1Pos, corner2Pos);
+            } else if (currentMode == 4) {
+              overwrote =
+                  tileEntityTrafficSignalSensor.setRightScanCorners(corner1Pos, corner2Pos);
             } else {
               overwrote = tileEntityTrafficSignalSensor.setScanCorners(corner1Pos, corner2Pos);
             }
@@ -149,11 +152,13 @@ public class ItemEWSignalLinker extends AbstractItem {
     // Get mode name string
     String modeName = "";
     if (currentMode == 1) {
-      modeName = "Standard Lane(s) (Through/Right Turn)";
+      modeName = "Standard Lane(s) (Through)";
     } else if (currentMode == 2) {
       modeName = "Left Turn Lane(s)";
     } else if (currentMode == 3) {
       modeName = "Protected Lane(s) (Bus/Train/Bike)";
+    } else if (currentMode == 4) {
+      modeName = "Right Turn Lane(s)";
     }
 
     return modeName;
@@ -163,7 +168,7 @@ public class ItemEWSignalLinker extends AbstractItem {
   public void addInformation(ItemStack itemstack, World world, List<String> list,
       ITooltipFlag flag) {
     super.addInformation(itemstack, world, list, flag);
-    list.add("Link traffic signals to the Secondary circuit of a signal controller.");
+    list.add("Configure detection zones on traffic signal sensors (Standard, Left, Right, Protected).");
   }
 
   /**

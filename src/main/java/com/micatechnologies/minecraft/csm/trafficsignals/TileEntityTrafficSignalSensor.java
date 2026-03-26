@@ -76,6 +76,22 @@ public class TileEntityTrafficSignalSensor extends AbstractTileEntity {
   private static final String PROTECTED_SCAN_CORNER_2_KEY = "protectedBlockPos2";
 
   /**
+   * The key for storing and retrieving the {@link TileEntityTrafficSignalSensor}'s first right turn
+   * lane scan corner from NBT data.
+   *
+   * @since 1.0
+   */
+  private static final String RIGHT_SCAN_CORNER_1_KEY = "rightBlockPos1";
+
+  /**
+   * The key for storing and retrieving the {@link TileEntityTrafficSignalSensor}'s second right
+   * turn lane scan corner from NBT data.
+   *
+   * @since 1.0
+   */
+  private static final String RIGHT_SCAN_CORNER_2_KEY = "rightBlockPos2";
+
+  /**
    * The {@link TileEntityTrafficSignalSensor}'s first scan corner.
    *
    * @since 1.0
@@ -118,6 +134,20 @@ public class TileEntityTrafficSignalSensor extends AbstractTileEntity {
   private BlockPos protectedScanCorner2;
 
   /**
+   * The {@link TileEntityTrafficSignalSensor}'s first right turn lane scan corner.
+   *
+   * @since 1.0
+   */
+  private BlockPos rightScanCorner1;
+
+  /**
+   * The {@link TileEntityTrafficSignalSensor}'s second right turn lane scan corner.
+   *
+   * @since 1.0
+   */
+  private BlockPos rightScanCorner2;
+
+  /**
    * Processes the reading of the {@link TileEntityTrafficSignalSensor}'s NBT data from the supplied
    * NBT tag compound.
    *
@@ -148,6 +178,14 @@ public class TileEntityTrafficSignalSensor extends AbstractTileEntity {
     // Read the second protected lane corner from NBT
     protectedScanCorner2 =
         SerializationUtils.getBlockPosFromNBTOrNull(compound, PROTECTED_SCAN_CORNER_2_KEY);
+
+    // Read the first right turn lane corner from NBT
+    rightScanCorner1 =
+        SerializationUtils.getBlockPosFromNBTOrNull(compound, RIGHT_SCAN_CORNER_1_KEY);
+
+    // Read the second right turn lane corner from NBT
+    rightScanCorner2 =
+        SerializationUtils.getBlockPosFromNBTOrNull(compound, RIGHT_SCAN_CORNER_2_KEY);
   }
 
   /**
@@ -185,6 +223,14 @@ public class TileEntityTrafficSignalSensor extends AbstractTileEntity {
     // Write the second protected lane corner to NBT
     SerializationUtils.setBlockPosInNBTOrRemoveIfNull(compound, PROTECTED_SCAN_CORNER_2_KEY,
         protectedScanCorner2);
+
+    // Write the first right turn lane corner to NBT
+    SerializationUtils.setBlockPosInNBTOrRemoveIfNull(compound, RIGHT_SCAN_CORNER_1_KEY,
+        rightScanCorner1);
+
+    // Write the second right turn lane corner to NBT
+    SerializationUtils.setBlockPosInNBTOrRemoveIfNull(compound, RIGHT_SCAN_CORNER_2_KEY,
+        rightScanCorner2);
 
     // Return the NBT tag compound
     return compound;
@@ -318,5 +364,40 @@ public class TileEntityTrafficSignalSensor extends AbstractTileEntity {
    */
   public int scanProtectedEntities() {
     return scanCornersForEntities(protectedScanCorner1, protectedScanCorner2);
+  }
+
+  /**
+   * Sets the two corners of the {@link TileEntityTrafficSignalSensor}'s right turn lane scan
+   * region.
+   *
+   * @param blockPos1 the first corner of the {@link TileEntityTrafficSignalSensor}'s right turn
+   *                  lane scan region
+   * @param blockPos2 the second corner of the {@link TileEntityTrafficSignalSensor}'s right turn
+   *                  lane scan region
+   *
+   * @return true if previously set corners were overwritten, false otherwise
+   *
+   * @since 1.0
+   */
+  public boolean setRightScanCorners(BlockPos blockPos1, BlockPos blockPos2) {
+    boolean overwroteExisting = rightScanCorner1 != null && rightScanCorner2 != null;
+    rightScanCorner1 = blockPos1;
+    rightScanCorner2 = blockPos2;
+    markDirtySync(getWorld(), getPos());
+    return overwroteExisting;
+  }
+
+  /**
+   * Scans for eligible entities within the {@link TileEntityTrafficSignalSensor}'s right turn lane
+   * scan region and returns the number of entities found. Eligible entities are
+   * {@link EntityVillager} and {@link EntityPlayer}.
+   *
+   * @return the number of eligible entities found within the
+   *     {@link TileEntityTrafficSignalSensor}'s right turn lane scan region
+   *
+   * @since 1.0
+   */
+  public int scanRightEntities() {
+    return scanCornersForEntities(rightScanCorner1, rightScanCorner2);
   }
 }
