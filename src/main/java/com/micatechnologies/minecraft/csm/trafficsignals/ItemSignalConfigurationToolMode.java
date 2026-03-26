@@ -15,6 +15,15 @@ public enum ItemSignalConfigurationToolMode {
   TOGGLE_CONTROLLER_OVERLAP_PEDESTRIAN_SIGNALS_SETTING(
       "Toggle Controller Overlap Pedestrian Signals Setting"),
   CYCLE_CONTROLLER_LPI_SETTING("Cycle Controller Lead Pedestrian Interval Setting"),
+  CYCLE_CONTROLLER_YELLOW_TIME("Cycle Controller Yellow Time"),
+  CYCLE_CONTROLLER_ALL_RED_TIME("Cycle Controller All Red Time"),
+  CYCLE_CONTROLLER_FLASH_DONT_WALK_TIME("Cycle Controller Ped Clearance Time"),
+  CYCLE_CONTROLLER_DEDICATED_PED_SIGNAL_TIME("Cycle Controller Ped Signal Time"),
+  CYCLE_CONTROLLER_MIN_GREEN_TIME("Cycle Controller Min Green Time"),
+  CYCLE_CONTROLLER_MAX_GREEN_TIME("Cycle Controller Max Green Time"),
+  CYCLE_CONTROLLER_MIN_GREEN_TIME_SECONDARY("Cycle Controller Min Green Time (Secondary)"),
+  CYCLE_CONTROLLER_MAX_GREEN_TIME_SECONDARY("Cycle Controller Max Green Time (Secondary)"),
+  TOGGLE_CONTROLLER_ALL_RED_FLASH("Toggle Controller All Red Flash"),
   CLEAR_CONTROLLER_FAULTS("Clear Controller Faults"),
   CREATE_SIGNAL_OVERLAPS("Create Signal Overlaps"),
   CHANGE_APS_ARROW_DIRECTION("Change APS Arrow Direction");

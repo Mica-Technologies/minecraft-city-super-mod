@@ -220,6 +220,14 @@ public class TrafficSignalControllerNBTKeys {
    */
   public static final String LEAD_PEDESTRIAN_INTERVAL_TIME = "tcLeadPedestrianIntervalTime";
 
+  /**
+   * The key for storing and retrieving the traffic signal controller's all red flash setting from
+   * NBT data.
+   *
+   * @since 2.0
+   */
+  public static final String ALL_RED_FLASH = "tcAllRedFlash";
+
   ///endregion
 
   ///region: Previous Format Keys (v1.1)
