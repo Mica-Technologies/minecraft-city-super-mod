@@ -119,6 +119,41 @@ public class TrafficSignalSensorSummary {
   private final int protectedSouth;
 
   /**
+   * The total count of waiting entities at all right turn sensors.
+   *
+   * @since 1.0
+   */
+  private final int rightTotal;
+
+  /**
+   * The count of waiting entities at right turn east sensors.
+   *
+   * @since 1.0
+   */
+  private final int rightEast;
+
+  /**
+   * The count of waiting entities at right turn west sensors.
+   *
+   * @since 1.0
+   */
+  private final int rightWest;
+
+  /**
+   * The count of waiting entities at right turn north sensors.
+   *
+   * @since 1.0
+   */
+  private final int rightNorth;
+
+  /**
+   * The count of waiting entities at right turn south sensors.
+   *
+   * @since 1.0
+   */
+  private final int rightSouth;
+
+  /**
    * The total count of waiting entities at all sensors.
    *
    * @since 1.0
@@ -212,6 +247,11 @@ public class TrafficSignalSensorSummary {
    * @param protectedWest  The count of waiting entities at protected west sensors.
    * @param protectedNorth The count of waiting entities at protected north sensors.
    * @param protectedSouth The count of waiting entities at protected south sensors.
+   * @param rightTotal     The total count of waiting entities at all right turn sensors.
+   * @param rightEast      The count of waiting entities at right turn east sensors.
+   * @param rightWest      The count of waiting entities at right turn west sensors.
+   * @param rightNorth     The count of waiting entities at right turn north sensors.
+   * @param rightSouth     The count of waiting entities at right turn south sensors.
    *
    * @since 1.0
    */
@@ -229,7 +269,12 @@ public class TrafficSignalSensorSummary {
       int protectedEast,
       int protectedWest,
       int protectedNorth,
-      int protectedSouth) {
+      int protectedSouth,
+      int rightTotal,
+      int rightEast,
+      int rightWest,
+      int rightNorth,
+      int rightSouth) {
     this.standardTotal = standardTotal;
     this.standardEast = standardEast;
     this.standardWest = standardWest;
@@ -245,11 +290,16 @@ public class TrafficSignalSensorSummary {
     this.protectedWest = protectedWest;
     this.protectedNorth = protectedNorth;
     this.protectedSouth = protectedSouth;
-    this.totalAll = standardTotal + leftTotal + protectedTotal;
-    this.totalEast = standardEast + leftEast + protectedEast;
-    this.totalWest = standardWest + leftWest + protectedWest;
-    this.totalNorth = standardNorth + leftNorth + protectedNorth;
-    this.totalSouth = standardSouth + leftSouth + protectedSouth;
+    this.rightTotal = rightTotal;
+    this.rightEast = rightEast;
+    this.rightWest = rightWest;
+    this.rightNorth = rightNorth;
+    this.rightSouth = rightSouth;
+    this.totalAll = standardTotal + leftTotal + protectedTotal + rightTotal;
+    this.totalEast = standardEast + leftEast + protectedEast + rightEast;
+    this.totalWest = standardWest + leftWest + protectedWest + rightWest;
+    this.totalNorth = standardNorth + leftNorth + protectedNorth + rightNorth;
+    this.totalSouth = standardSouth + leftSouth + protectedSouth + rightSouth;
     this.nonProtectedTotalAll = standardTotal + leftTotal;
     this.nonProtectedTotalEast = standardEast + leftEast;
     this.nonProtectedTotalWest = standardWest + leftWest;
@@ -424,6 +474,61 @@ public class TrafficSignalSensorSummary {
    */
   public int getProtectedSouth() {
     return protectedSouth;
+  }
+
+  /**
+   * Gets the total count of waiting entities at all right turn sensors.
+   *
+   * @return The total count of waiting entities at all right turn sensors.
+   *
+   * @since 1.0
+   */
+  public int getRightTotal() {
+    return rightTotal;
+  }
+
+  /**
+   * Gets the count of waiting entities at right turn east sensors.
+   *
+   * @return The count of waiting entities at right turn east sensors.
+   *
+   * @since 1.0
+   */
+  public int getRightEast() {
+    return rightEast;
+  }
+
+  /**
+   * Gets the count of waiting entities at right turn west sensors.
+   *
+   * @return The count of waiting entities at right turn west sensors.
+   *
+   * @since 1.0
+   */
+  public int getRightWest() {
+    return rightWest;
+  }
+
+  /**
+   * Gets the count of waiting entities at right turn north sensors.
+   *
+   * @return The count of waiting entities at right turn north sensors.
+   *
+   * @since 1.0
+   */
+  public int getRightNorth() {
+    return rightNorth;
+  }
+
+  /**
+   * Gets the count of waiting entities at right turn south sensors.
+   *
+   * @return The count of waiting entities at right turn south sensors.
+   *
+   * @since 1.0
+   */
+  public int getRightSouth() {
+    return rightSouth;
   }
 
   /**

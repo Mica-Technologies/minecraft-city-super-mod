@@ -387,11 +387,11 @@ public class TrafficSignalControllerCircuit {
    */
   public TrafficSignalSensorSummary getSensorsWaitingSummary(World world) {
     // Create variables to track counts
-    int standardAll = 0, leftAll = 0, protectedAll = 0;
-    int standardEast = 0, leftEast = 0, protectedEast = 0;
-    int standardWest = 0, leftWest = 0, protectedWest = 0;
-    int standardNorth = 0, leftNorth = 0, protectedNorth = 0;
-    int standardSouth = 0, leftSouth = 0, protectedSouth = 0;
+    int standardAll = 0, leftAll = 0, protectedAll = 0, rightAll = 0;
+    int standardEast = 0, leftEast = 0, protectedEast = 0, rightEast = 0;
+    int standardWest = 0, leftWest = 0, protectedWest = 0, rightWest = 0;
+    int standardNorth = 0, leftNorth = 0, protectedNorth = 0, rightNorth = 0;
+    int standardSouth = 0, leftSouth = 0, protectedSouth = 0, rightSouth = 0;
 
     // Loop through each sensor and count appropriately
     for (BlockPos sensorPos : sensors) {
@@ -402,9 +402,11 @@ public class TrafficSignalControllerCircuit {
         int standardCount = tileEntityTrafficSignalSensor.scanEntities();
         int leftCount = tileEntityTrafficSignalSensor.scanLeftEntities();
         int protectedCount = tileEntityTrafficSignalSensor.scanProtectedEntities();
+        int rightCount = tileEntityTrafficSignalSensor.scanRightEntities();
         standardAll += standardCount;
         leftAll += leftCount;
         protectedAll += protectedCount;
+        rightAll += rightCount;
 
         // Get the direction of the sensor
         IBlockState blockState = world.getBlockState(sensorPos);
@@ -413,18 +415,22 @@ public class TrafficSignalControllerCircuit {
           standardEast += standardCount;
           leftEast += leftCount;
           protectedEast += protectedCount;
+          rightEast += rightCount;
         } else if (sensorFacingDirection == EnumFacing.WEST) {
           standardWest += standardCount;
           leftWest += leftCount;
           protectedWest += protectedCount;
+          rightWest += rightCount;
         } else if (sensorFacingDirection == EnumFacing.NORTH) {
           standardNorth += standardCount;
           leftNorth += leftCount;
           protectedNorth += protectedCount;
+          rightNorth += rightCount;
         } else if (sensorFacingDirection == EnumFacing.SOUTH) {
           standardSouth += standardCount;
           leftSouth += leftCount;
           protectedSouth += protectedCount;
+          rightSouth += rightCount;
         }
       }
     }
@@ -433,7 +439,8 @@ public class TrafficSignalControllerCircuit {
     return new TrafficSignalSensorSummary(standardAll, standardEast, standardWest, standardNorth,
         standardSouth,
         leftAll, leftEast, leftWest, leftNorth, leftSouth, protectedAll,
-        protectedEast, protectedWest, protectedNorth, protectedSouth);
+        protectedEast, protectedWest, protectedNorth, protectedSouth,
+        rightAll, rightEast, rightWest, rightNorth, rightSouth);
   }
 
   /**
