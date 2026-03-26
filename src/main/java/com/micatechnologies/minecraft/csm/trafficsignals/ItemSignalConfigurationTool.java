@@ -100,9 +100,6 @@ public class ItemSignalConfigurationTool extends AbstractItem {
               direction = "NONE";
               break;
           }
-          worldIn.setBlockState(pos,
-              state.withProperty(AbstractBlockTrafficSignalAPS.ARROW_ORIENTATION,
-                  arrowDirection));
 
           // Notify player
           player.sendMessage(new TextComponentString("Changed APS arrow direction from " +

@@ -185,6 +185,13 @@ public abstract class AbstractTileEntity extends TileEntity {
   public void onDataPacket(NetworkManager networkManager, SPacketUpdateTileEntity pkt) {
     // Read the update packet data NBT tag compound in to the tile entity NBT data
     this.readFromNBT(pkt.getNbtCompound());
+
+    // Trigger a re-render on the client so that getActualState properties (which are
+    // computed from tile entity data) are visually updated immediately
+    if (world != null) {
+      IBlockState state = world.getBlockState(pos);
+      world.notifyBlockUpdate(pos, state, state, Constants.BlockFlags.DEFAULT);
+    }
   }
 
   /**
