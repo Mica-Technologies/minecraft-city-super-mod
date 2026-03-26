@@ -141,6 +141,14 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
   private long leadPedestrianIntervalTime = 0;
 
   /**
+   * Boolean indicating whether the traffic signal controller should use all-red flashing instead
+   * of yellow/red flashing when in flash mode (including nightly and power loss fallback flash).
+   *
+   * @since 2.0
+   */
+  private boolean allRedFlash = false;
+
+  /**
    * The yellow time for the traffic signal controller.
    *
    * @since 2.0
@@ -356,7 +364,8 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
               maxGreenTime, minGreenTimeSecondary,
               maxGreenTimeSecondary,
               dedicatedPedSignalTime,
-              leadPedestrianIntervalTime);
+              leadPedestrianIntervalTime,
+              allRedFlash);
 
       // If the phase index has changed, update the phase
       if (newPhase != null) {
@@ -510,6 +519,11 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
           compound.getLong(TrafficSignalControllerNBTKeys.LEAD_PEDESTRIAN_INTERVAL_TIME);
     }
 
+    // Load the traffic signal controller all red flash setting
+    if (compound.hasKey(TrafficSignalControllerNBTKeys.ALL_RED_FLASH)) {
+      allRedFlash = compound.getBoolean(TrafficSignalControllerNBTKeys.ALL_RED_FLASH);
+    }
+
     // Load the traffic signal controller yellow time
     if (compound.hasKey(TrafficSignalControllerNBTKeys.YELLOW_TIME)) {
       yellowTime = compound.getLong(TrafficSignalControllerNBTKeys.YELLOW_TIME);
@@ -643,6 +657,9 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
     // Write the lead pedestrian interval time to NBT
     compound.setLong(TrafficSignalControllerNBTKeys.LEAD_PEDESTRIAN_INTERVAL_TIME,
         leadPedestrianIntervalTime);
+
+    // Write the all red flash setting to NBT
+    compound.setBoolean(TrafficSignalControllerNBTKeys.ALL_RED_FLASH, allRedFlash);
 
     // Write the yellow time to NBT
     compound.setLong(TrafficSignalControllerNBTKeys.YELLOW_TIME, yellowTime);
@@ -951,6 +968,231 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
   public void setLeadPedestrianIntervalTime(long leadPedestrianIntervalTime) {
     if (this.leadPedestrianIntervalTime != leadPedestrianIntervalTime) {
       this.leadPedestrianIntervalTime = leadPedestrianIntervalTime;
+      resetController(false, true);
+    }
+  }
+
+  /**
+   * Gets the traffic signal controller's all red flash setting.
+   *
+   * @return true if all red flash is enabled, false otherwise
+   *
+   * @since 2.0
+   */
+  public boolean getAllRedFlash() {
+    return allRedFlash;
+  }
+
+  /**
+   * Sets the traffic signal controller's all red flash setting.
+   *
+   * @param allRedFlash true to enable all red flash, false for standard yellow/red flash
+   *
+   * @since 2.0
+   */
+  public void setAllRedFlash(boolean allRedFlash) {
+    if (this.allRedFlash != allRedFlash) {
+      this.allRedFlash = allRedFlash;
+      resetController(false, true);
+    }
+  }
+
+  /**
+   * Gets the traffic signal controller's yellow time.
+   *
+   * @return the yellow time in ticks
+   *
+   * @since 2.0
+   */
+  public long getYellowTime() {
+    return yellowTime;
+  }
+
+  /**
+   * Sets the traffic signal controller's yellow time.
+   *
+   * @param yellowTime the yellow time in ticks
+   *
+   * @since 2.0
+   */
+  public void setYellowTime(long yellowTime) {
+    if (this.yellowTime != yellowTime) {
+      this.yellowTime = yellowTime;
+      resetController(false, true);
+    }
+  }
+
+  /**
+   * Gets the traffic signal controller's all red time.
+   *
+   * @return the all red time in ticks
+   *
+   * @since 2.0
+   */
+  public long getAllRedTime() {
+    return allRedTime;
+  }
+
+  /**
+   * Sets the traffic signal controller's all red time.
+   *
+   * @param allRedTime the all red time in ticks
+   *
+   * @since 2.0
+   */
+  public void setAllRedTime(long allRedTime) {
+    if (this.allRedTime != allRedTime) {
+      this.allRedTime = allRedTime;
+      resetController(false, true);
+    }
+  }
+
+  /**
+   * Gets the traffic signal controller's flash don't walk time.
+   *
+   * @return the flash don't walk time in ticks
+   *
+   * @since 2.0
+   */
+  public long getFlashDontWalkTime() {
+    return flashDontWalkTime;
+  }
+
+  /**
+   * Sets the traffic signal controller's flash don't walk time.
+   *
+   * @param flashDontWalkTime the flash don't walk time in ticks
+   *
+   * @since 2.0
+   */
+  public void setFlashDontWalkTime(long flashDontWalkTime) {
+    if (this.flashDontWalkTime != flashDontWalkTime) {
+      this.flashDontWalkTime = flashDontWalkTime;
+      resetController(false, true);
+    }
+  }
+
+  /**
+   * Gets the traffic signal controller's dedicated pedestrian signal time.
+   *
+   * @return the dedicated pedestrian signal time in ticks
+   *
+   * @since 2.0
+   */
+  public long getDedicatedPedSignalTime() {
+    return dedicatedPedSignalTime;
+  }
+
+  /**
+   * Sets the traffic signal controller's dedicated pedestrian signal time.
+   *
+   * @param dedicatedPedSignalTime the dedicated pedestrian signal time in ticks
+   *
+   * @since 2.0
+   */
+  public void setDedicatedPedSignalTime(long dedicatedPedSignalTime) {
+    if (this.dedicatedPedSignalTime != dedicatedPedSignalTime) {
+      this.dedicatedPedSignalTime = dedicatedPedSignalTime;
+      resetController(false, true);
+    }
+  }
+
+  /**
+   * Gets the traffic signal controller's minimum green time.
+   *
+   * @return the minimum green time in ticks
+   *
+   * @since 2.0
+   */
+  public long getMinGreenTime() {
+    return minGreenTime;
+  }
+
+  /**
+   * Sets the traffic signal controller's minimum green time.
+   *
+   * @param minGreenTime the minimum green time in ticks
+   *
+   * @since 2.0
+   */
+  public void setMinGreenTime(long minGreenTime) {
+    if (this.minGreenTime != minGreenTime) {
+      this.minGreenTime = minGreenTime;
+      resetController(false, true);
+    }
+  }
+
+  /**
+   * Gets the traffic signal controller's maximum green time.
+   *
+   * @return the maximum green time in ticks
+   *
+   * @since 2.0
+   */
+  public long getMaxGreenTime() {
+    return maxGreenTime;
+  }
+
+  /**
+   * Sets the traffic signal controller's maximum green time.
+   *
+   * @param maxGreenTime the maximum green time in ticks
+   *
+   * @since 2.0
+   */
+  public void setMaxGreenTime(long maxGreenTime) {
+    if (this.maxGreenTime != maxGreenTime) {
+      this.maxGreenTime = maxGreenTime;
+      resetController(false, true);
+    }
+  }
+
+  /**
+   * Gets the traffic signal controller's secondary minimum green time.
+   *
+   * @return the secondary minimum green time in ticks
+   *
+   * @since 2.0
+   */
+  public long getMinGreenTimeSecondary() {
+    return minGreenTimeSecondary;
+  }
+
+  /**
+   * Sets the traffic signal controller's secondary minimum green time.
+   *
+   * @param minGreenTimeSecondary the secondary minimum green time in ticks
+   *
+   * @since 2.0
+   */
+  public void setMinGreenTimeSecondary(long minGreenTimeSecondary) {
+    if (this.minGreenTimeSecondary != minGreenTimeSecondary) {
+      this.minGreenTimeSecondary = minGreenTimeSecondary;
+      resetController(false, true);
+    }
+  }
+
+  /**
+   * Gets the traffic signal controller's secondary maximum green time.
+   *
+   * @return the secondary maximum green time in ticks
+   *
+   * @since 2.0
+   */
+  public long getMaxGreenTimeSecondary() {
+    return maxGreenTimeSecondary;
+  }
+
+  /**
+   * Sets the traffic signal controller's secondary maximum green time.
+   *
+   * @param maxGreenTimeSecondary the secondary maximum green time in ticks
+   *
+   * @since 2.0
+   */
+  public void setMaxGreenTimeSecondary(long maxGreenTimeSecondary) {
+    if (this.maxGreenTimeSecondary != maxGreenTimeSecondary) {
+      this.maxGreenTimeSecondary = maxGreenTimeSecondary;
       resetController(false, true);
     }
   }

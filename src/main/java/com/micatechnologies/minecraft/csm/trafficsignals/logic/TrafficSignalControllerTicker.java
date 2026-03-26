@@ -69,6 +69,8 @@ public class TrafficSignalControllerTicker {
    * @param leadPedestrianIntervalTime            The lead pedestrian interval time for the traffic
    *                                              signal controller when in normal mode. A value of
    *                                              zero disables the lead pedestrian interval.
+   * @param allRedFlash                           Whether to use all-red flashing instead of
+   *                                              yellow/red flashing when in flash mode.
    *
    * @return The next phase to use for the traffic signal controller. If null is returned, then the
    *     phase is not changed.
@@ -96,7 +98,8 @@ public class TrafficSignalControllerTicker {
       long minGreenTimeSecondary,
       long maxGreenTimeSecondary,
       long dedicatedPedSignalTime,
-      long leadPedestrianIntervalTime) {
+      long leadPedestrianIntervalTime,
+      boolean allRedFlash) {
     // Call appropriate tick method based on mode
     switch (operatingMode) {
       case FORCED_FAULT:
@@ -120,7 +123,7 @@ public class TrafficSignalControllerTicker {
             dedicatedPedSignalTime, leadPedestrianIntervalTime);
       case FLASH:
       default:
-        return flashModeTick(configuredMode, cachedPhases, alternatingFlash);
+        return flashModeTick(configuredMode, cachedPhases, alternatingFlash, allRedFlash);
     }
   }
 
@@ -709,7 +712,8 @@ public class TrafficSignalControllerTicker {
    */
   public static TrafficSignalPhase flashModeTick(TrafficSignalControllerMode configuredMode,
       TrafficSignalPhases cachedPhases,
-      boolean alternatingFlash) {
+      boolean alternatingFlash,
+      boolean allRedFlash) {
     TrafficSignalPhase flashPhase;
 
     // If configured mode is ramp meter, return ramp meter specific alternating flash phase from
@@ -719,6 +723,13 @@ public class TrafficSignalControllerTicker {
       flashPhase = cachedPhases.getPhase(alternatingFlash ?
           TrafficSignalPhases.PHASE_INDEX_RAMP_METER_FLASH_1 :
           TrafficSignalPhases.PHASE_INDEX_RAMP_METER_FLASH_2);
+    }
+    // If all red flash is enabled, use fault phases (all-red alternating) instead of standard
+    // yellow/red flash
+    else if (allRedFlash) {
+      flashPhase = cachedPhases.getPhase(alternatingFlash ?
+          TrafficSignalPhases.PHASE_INDEX_FAULT_1 :
+          TrafficSignalPhases.PHASE_INDEX_FAULT_2);
     }
     // Otherwise, return standard alternating flash phase from cached phases
     else {

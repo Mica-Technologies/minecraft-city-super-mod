@@ -196,28 +196,151 @@ public class ItemSignalConfigurationTool extends AbstractItem {
           TileEntityTrafficSignalController tileEntityTrafficSignalController
               = (TileEntityTrafficSignalController) tileEntity;
 
-          // LPI options in ticks: 0s, 1s, 2s, 3s, 5s, 7s (at 20 TPS)
           long[] lpiOptions = {0, 20, 40, 60, 100, 140};
           String[] lpiLabels = {"0s (Disabled)", "1s", "2s", "3s", "5s", "7s"};
-
-          // Find current index and cycle to next
-          long currentLpi = tileEntityTrafficSignalController.getLeadPedestrianIntervalTime();
-          int currentIndex = 0;
-          for (int j = 0; j < lpiOptions.length; j++) {
-            if (lpiOptions[j] == currentLpi) {
-              currentIndex = j;
-              break;
-            }
-          }
-          int nextIndex = (currentIndex + 1) % lpiOptions.length;
+          int nextIndex = findNextIndex(lpiOptions,
+              tileEntityTrafficSignalController.getLeadPedestrianIntervalTime());
           tileEntityTrafficSignalController.setLeadPedestrianIntervalTime(lpiOptions[nextIndex]);
-
-          // Notify player
           player.sendMessage(new TextComponentString(
               "Set traffic signal controller lead pedestrian interval to "
                   + lpiLabels[nextIndex]));
 
           // Mark result as success
+          result = EnumActionResult.PASS;
+        }
+      }
+      // If in cycle controller yellow time mode, cycle through yellow time values
+      else if (mode == ItemSignalConfigurationToolMode.CYCLE_CONTROLLER_YELLOW_TIME) {
+        TileEntity tileEntity = worldIn.getTileEntity(pos);
+        if (tileEntity instanceof TileEntityTrafficSignalController) {
+          TileEntityTrafficSignalController controller
+              = (TileEntityTrafficSignalController) tileEntity;
+          long[] options = {40, 60, 80, 100, 120};
+          String[] labels = {"2s", "3s", "4s", "5s", "6s"};
+          int nextIndex = findNextIndex(options, controller.getYellowTime());
+          controller.setYellowTime(options[nextIndex]);
+          player.sendMessage(new TextComponentString(
+              "Set traffic signal controller yellow time to " + labels[nextIndex]));
+          result = EnumActionResult.PASS;
+        }
+      }
+      // If in cycle controller all red time mode, cycle through all red time values
+      else if (mode == ItemSignalConfigurationToolMode.CYCLE_CONTROLLER_ALL_RED_TIME) {
+        TileEntity tileEntity = worldIn.getTileEntity(pos);
+        if (tileEntity instanceof TileEntityTrafficSignalController) {
+          TileEntityTrafficSignalController controller
+              = (TileEntityTrafficSignalController) tileEntity;
+          long[] options = {0, 20, 40, 60, 80};
+          String[] labels = {"0s", "1s", "2s", "3s", "4s"};
+          int nextIndex = findNextIndex(options, controller.getAllRedTime());
+          controller.setAllRedTime(options[nextIndex]);
+          player.sendMessage(new TextComponentString(
+              "Set traffic signal controller all red time to " + labels[nextIndex]));
+          result = EnumActionResult.PASS;
+        }
+      }
+      // If in cycle controller flash don't walk time mode, cycle through ped clearance time values
+      else if (mode == ItemSignalConfigurationToolMode.CYCLE_CONTROLLER_FLASH_DONT_WALK_TIME) {
+        TileEntity tileEntity = worldIn.getTileEntity(pos);
+        if (tileEntity instanceof TileEntityTrafficSignalController) {
+          TileEntityTrafficSignalController controller
+              = (TileEntityTrafficSignalController) tileEntity;
+          long[] options = {140, 200, 300, 400, 600};
+          String[] labels = {"7s", "10s", "15s", "20s", "30s"};
+          int nextIndex = findNextIndex(options, controller.getFlashDontWalkTime());
+          controller.setFlashDontWalkTime(options[nextIndex]);
+          player.sendMessage(new TextComponentString(
+              "Set traffic signal controller ped clearance time to " + labels[nextIndex]));
+          result = EnumActionResult.PASS;
+        }
+      }
+      // If in cycle controller dedicated ped signal time mode, cycle through ped signal time values
+      else if (mode == ItemSignalConfigurationToolMode.CYCLE_CONTROLLER_DEDICATED_PED_SIGNAL_TIME) {
+        TileEntity tileEntity = worldIn.getTileEntity(pos);
+        if (tileEntity instanceof TileEntityTrafficSignalController) {
+          TileEntityTrafficSignalController controller
+              = (TileEntityTrafficSignalController) tileEntity;
+          long[] options = {140, 160, 200, 300, 400};
+          String[] labels = {"7s", "8s", "10s", "15s", "20s"};
+          int nextIndex = findNextIndex(options, controller.getDedicatedPedSignalTime());
+          controller.setDedicatedPedSignalTime(options[nextIndex]);
+          player.sendMessage(new TextComponentString(
+              "Set traffic signal controller ped signal time to " + labels[nextIndex]));
+          result = EnumActionResult.PASS;
+        }
+      }
+      // If in cycle controller min green time mode, cycle through min green time values
+      else if (mode == ItemSignalConfigurationToolMode.CYCLE_CONTROLLER_MIN_GREEN_TIME) {
+        TileEntity tileEntity = worldIn.getTileEntity(pos);
+        if (tileEntity instanceof TileEntityTrafficSignalController) {
+          TileEntityTrafficSignalController controller
+              = (TileEntityTrafficSignalController) tileEntity;
+          long[] options = {100, 140, 200, 300, 400, 500};
+          String[] labels = {"5s", "7s", "10s", "15s", "20s", "25s"};
+          int nextIndex = findNextIndex(options, controller.getMinGreenTime());
+          controller.setMinGreenTime(options[nextIndex]);
+          player.sendMessage(new TextComponentString(
+              "Set traffic signal controller min green time to " + labels[nextIndex]));
+          result = EnumActionResult.PASS;
+        }
+      }
+      // If in cycle controller max green time mode, cycle through max green time values
+      else if (mode == ItemSignalConfigurationToolMode.CYCLE_CONTROLLER_MAX_GREEN_TIME) {
+        TileEntity tileEntity = worldIn.getTileEntity(pos);
+        if (tileEntity instanceof TileEntityTrafficSignalController) {
+          TileEntityTrafficSignalController controller
+              = (TileEntityTrafficSignalController) tileEntity;
+          long[] options = {600, 900, 1000, 1200, 1400, 1600, 1800};
+          String[] labels = {"30s", "45s", "50s", "60s", "70s", "80s", "90s"};
+          int nextIndex = findNextIndex(options, controller.getMaxGreenTime());
+          controller.setMaxGreenTime(options[nextIndex]);
+          player.sendMessage(new TextComponentString(
+              "Set traffic signal controller max green time to " + labels[nextIndex]));
+          result = EnumActionResult.PASS;
+        }
+      }
+      // If in cycle controller min green time secondary mode
+      else if (mode == ItemSignalConfigurationToolMode.CYCLE_CONTROLLER_MIN_GREEN_TIME_SECONDARY) {
+        TileEntity tileEntity = worldIn.getTileEntity(pos);
+        if (tileEntity instanceof TileEntityTrafficSignalController) {
+          TileEntityTrafficSignalController controller
+              = (TileEntityTrafficSignalController) tileEntity;
+          long[] options = {100, 140, 200, 300, 400, 500};
+          String[] labels = {"5s", "7s", "10s", "15s", "20s", "25s"};
+          int nextIndex = findNextIndex(options, controller.getMinGreenTimeSecondary());
+          controller.setMinGreenTimeSecondary(options[nextIndex]);
+          player.sendMessage(new TextComponentString(
+              "Set traffic signal controller min green time (secondary) to "
+                  + labels[nextIndex]));
+          result = EnumActionResult.PASS;
+        }
+      }
+      // If in cycle controller max green time secondary mode
+      else if (mode == ItemSignalConfigurationToolMode.CYCLE_CONTROLLER_MAX_GREEN_TIME_SECONDARY) {
+        TileEntity tileEntity = worldIn.getTileEntity(pos);
+        if (tileEntity instanceof TileEntityTrafficSignalController) {
+          TileEntityTrafficSignalController controller
+              = (TileEntityTrafficSignalController) tileEntity;
+          long[] options = {600, 900, 1000, 1200, 1400, 1600, 1800};
+          String[] labels = {"30s", "45s", "50s", "60s", "70s", "80s", "90s"};
+          int nextIndex = findNextIndex(options, controller.getMaxGreenTimeSecondary());
+          controller.setMaxGreenTimeSecondary(options[nextIndex]);
+          player.sendMessage(new TextComponentString(
+              "Set traffic signal controller max green time (secondary) to "
+                  + labels[nextIndex]));
+          result = EnumActionResult.PASS;
+        }
+      }
+      // If in toggle controller all red flash mode, toggle all red flash setting
+      else if (mode == ItemSignalConfigurationToolMode.TOGGLE_CONTROLLER_ALL_RED_FLASH) {
+        TileEntity tileEntity = worldIn.getTileEntity(pos);
+        if (tileEntity instanceof TileEntityTrafficSignalController) {
+          TileEntityTrafficSignalController controller
+              = (TileEntityTrafficSignalController) tileEntity;
+          boolean newSetting = !controller.getAllRedFlash();
+          controller.setAllRedFlash(newSetting);
+          player.sendMessage(new TextComponentString(
+              "Set traffic signal controller all red flash to " + newSetting));
           result = EnumActionResult.PASS;
         }
       }
@@ -391,6 +514,21 @@ public class ItemSignalConfigurationTool extends AbstractItem {
     newMode = ItemSignalConfigurationToolMode.values()[newModeOrdinal];
     modeMap.put(player.getUniqueID(), newMode);
     return newMode.getFriendlyName();
+  }
+
+  /**
+   * Finds the current value in the options array and returns the next index (wrapping around). If
+   * the current value is not found, returns 0.
+   */
+  private static int findNextIndex(long[] options, long currentValue) {
+    int currentIndex = 0;
+    for (int i = 0; i < options.length; i++) {
+      if (options[i] == currentValue) {
+        currentIndex = i;
+        break;
+      }
+    }
+    return (currentIndex + 1) % options.length;
   }
 
   @Override
