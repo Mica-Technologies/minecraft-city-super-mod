@@ -14,6 +14,7 @@ public enum ItemSignalConfigurationToolMode {
   TOGGLE_CONTROLLER_POWER_LOSS_FLASH_SETTING("Toggle Controller Power Loss Flash Setting"),
   TOGGLE_CONTROLLER_OVERLAP_PEDESTRIAN_SIGNALS_SETTING(
       "Toggle Controller Overlap Pedestrian Signals Setting"),
+  CYCLE_CONTROLLER_LPI_SETTING("Cycle Controller Lead Pedestrian Interval Setting"),
   CLEAR_CONTROLLER_FAULTS("Clear Controller Faults"),
   CREATE_SIGNAL_OVERLAPS("Create Signal Overlaps"),
   CHANGE_APS_ARROW_DIRECTION("Change APS Arrow Direction");

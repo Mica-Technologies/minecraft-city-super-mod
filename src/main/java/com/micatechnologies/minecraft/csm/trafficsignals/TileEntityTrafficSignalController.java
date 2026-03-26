@@ -131,6 +131,16 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
   private boolean overlapPedestrianSignals = false;
 
   /**
+   * The lead pedestrian interval time for the traffic signal controller. When greater than zero and
+   * overlap pedestrian signals is enabled, pedestrian walk signals are displayed for this duration
+   * before the concurrent vehicle phase begins. A value of zero disables the lead pedestrian
+   * interval.
+   *
+   * @since 2.0
+   */
+  private long leadPedestrianIntervalTime = 0;
+
+  /**
    * The yellow time for the traffic signal controller.
    *
    * @since 2.0
@@ -345,7 +355,8 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
               maxRequestableServiceTime, minGreenTime,
               maxGreenTime, minGreenTimeSecondary,
               maxGreenTimeSecondary,
-              dedicatedPedSignalTime);
+              dedicatedPedSignalTime,
+              leadPedestrianIntervalTime);
 
       // If the phase index has changed, update the phase
       if (newPhase != null) {
@@ -493,6 +504,12 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
           compound.getBoolean(TrafficSignalControllerNBTKeys.OVERLAP_PEDESTRIAN_SIGNALS);
     }
 
+    // Load the traffic signal controller lead pedestrian interval time
+    if (compound.hasKey(TrafficSignalControllerNBTKeys.LEAD_PEDESTRIAN_INTERVAL_TIME)) {
+      leadPedestrianIntervalTime =
+          compound.getLong(TrafficSignalControllerNBTKeys.LEAD_PEDESTRIAN_INTERVAL_TIME);
+    }
+
     // Load the traffic signal controller yellow time
     if (compound.hasKey(TrafficSignalControllerNBTKeys.YELLOW_TIME)) {
       yellowTime = compound.getLong(TrafficSignalControllerNBTKeys.YELLOW_TIME);
@@ -622,6 +639,10 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
     // Write the overlap pedestrian signals setting to NBT
     compound.setBoolean(TrafficSignalControllerNBTKeys.OVERLAP_PEDESTRIAN_SIGNALS,
         overlapPedestrianSignals);
+
+    // Write the lead pedestrian interval time to NBT
+    compound.setLong(TrafficSignalControllerNBTKeys.LEAD_PEDESTRIAN_INTERVAL_TIME,
+        leadPedestrianIntervalTime);
 
     // Write the yellow time to NBT
     compound.setLong(TrafficSignalControllerNBTKeys.YELLOW_TIME, yellowTime);
@@ -905,6 +926,31 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
   public void setOverlapPedestrianSignals(boolean overlapPedestrianSignals) {
     if (this.overlapPedestrianSignals != overlapPedestrianSignals) {
       this.overlapPedestrianSignals = overlapPedestrianSignals;
+      resetController(false, true);
+    }
+  }
+
+  /**
+   * Gets the traffic signal controller's lead pedestrian interval time.
+   *
+   * @return the lead pedestrian interval time in ticks (0 = disabled)
+   *
+   * @since 2.0
+   */
+  public long getLeadPedestrianIntervalTime() {
+    return leadPedestrianIntervalTime;
+  }
+
+  /**
+   * Sets the traffic signal controller's lead pedestrian interval time.
+   *
+   * @param leadPedestrianIntervalTime the lead pedestrian interval time in ticks (0 = disabled)
+   *
+   * @since 2.0
+   */
+  public void setLeadPedestrianIntervalTime(long leadPedestrianIntervalTime) {
+    if (this.leadPedestrianIntervalTime != leadPedestrianIntervalTime) {
+      this.leadPedestrianIntervalTime = leadPedestrianIntervalTime;
       resetController(false, true);
     }
   }
