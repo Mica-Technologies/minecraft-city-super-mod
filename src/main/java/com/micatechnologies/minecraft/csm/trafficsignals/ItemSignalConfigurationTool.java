@@ -188,6 +188,39 @@ public class ItemSignalConfigurationTool extends AbstractItem {
           result = EnumActionResult.PASS;
         }
       }
+      // If in cycle controller LPI setting mode, cycle through LPI values if clicked block is a
+      // controller
+      else if (mode == ItemSignalConfigurationToolMode.CYCLE_CONTROLLER_LPI_SETTING) {
+        TileEntity tileEntity = worldIn.getTileEntity(pos);
+        if (tileEntity instanceof TileEntityTrafficSignalController) {
+          TileEntityTrafficSignalController tileEntityTrafficSignalController
+              = (TileEntityTrafficSignalController) tileEntity;
+
+          // LPI options in ticks: 0s, 1s, 2s, 3s, 5s, 7s (at 20 TPS)
+          long[] lpiOptions = {0, 20, 40, 60, 100, 140};
+          String[] lpiLabels = {"0s (Disabled)", "1s", "2s", "3s", "5s", "7s"};
+
+          // Find current index and cycle to next
+          long currentLpi = tileEntityTrafficSignalController.getLeadPedestrianIntervalTime();
+          int currentIndex = 0;
+          for (int j = 0; j < lpiOptions.length; j++) {
+            if (lpiOptions[j] == currentLpi) {
+              currentIndex = j;
+              break;
+            }
+          }
+          int nextIndex = (currentIndex + 1) % lpiOptions.length;
+          tileEntityTrafficSignalController.setLeadPedestrianIntervalTime(lpiOptions[nextIndex]);
+
+          // Notify player
+          player.sendMessage(new TextComponentString(
+              "Set traffic signal controller lead pedestrian interval to "
+                  + lpiLabels[nextIndex]));
+
+          // Mark result as success
+          result = EnumActionResult.PASS;
+        }
+      }
       // If in clear controller faults mode, clear controller faults if clicked block is a
       // controller
       else if (mode == ItemSignalConfigurationToolMode.CLEAR_CONTROLLER_FAULTS) {

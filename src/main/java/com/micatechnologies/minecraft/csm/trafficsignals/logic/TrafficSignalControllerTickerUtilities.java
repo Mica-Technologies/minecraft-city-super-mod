@@ -200,6 +200,72 @@ public class TrafficSignalControllerTickerUtilities {
   }
 
   /**
+   * Checks whether LPI (Lead Pedestrian Interval) conditions are met, and if so, returns an LPI
+   * phase that wraps the specified upcoming green phase. If LPI conditions are not met, returns
+   * the upcoming green phase directly.
+   *
+   * @param upcomingGreenPhase         The upcoming green phase to potentially wrap with LPI.
+   * @param overlapPedestrianSignals   Whether overlap pedestrian signals are enabled.
+   * @param leadPedestrianIntervalTime The lead pedestrian interval time in ticks (0 = disabled).
+   *
+   * @return An LPI phase wrapping the upcoming green phase if conditions are met, otherwise the
+   *     upcoming green phase itself.
+   *
+   * @since 1.0
+   */
+  public static TrafficSignalPhase maybeWrapWithLpi(TrafficSignalPhase upcomingGreenPhase,
+      boolean overlapPedestrianSignals,
+      long leadPedestrianIntervalTime) {
+    // LPI only applies when overlap pedestrian signals are enabled and LPI time is configured
+    if (!overlapPedestrianSignals || leadPedestrianIntervalTime <= 0) {
+      return upcomingGreenPhase;
+    }
+
+    // LPI only makes sense if the upcoming phase has walk signals
+    if (upcomingGreenPhase.getWalkSignals().isEmpty()) {
+      return upcomingGreenPhase;
+    }
+
+    // Create the LPI phase
+    return getLpiPhaseForUpcoming(upcomingGreenPhase);
+  }
+
+  /**
+   * Creates a lead pedestrian interval (LPI) phase for the specified upcoming green phase. During
+   * the LPI phase, all vehicle signals are set to red while pedestrian walk signals from the
+   * upcoming phase are displayed, giving pedestrians a head start before the vehicle phase begins.
+   *
+   * @param upcomingGreenPhase The upcoming green phase that will follow the LPI phase.
+   *
+   * @return The LPI phase with walk signals active and all vehicle signals red.
+   *
+   * @since 1.0
+   */
+  public static TrafficSignalPhase getLpiPhaseForUpcoming(TrafficSignalPhase upcomingGreenPhase) {
+    TrafficSignalPhase lpiPhase = new TrafficSignalPhase(
+        upcomingGreenPhase.getCircuit(), upcomingGreenPhase,
+        TrafficSignalPhaseApplicability.LEAD_PEDESTRIAN_INTERVAL);
+
+    // Pedestrian walk signals get their head start during LPI
+    lpiPhase.addWalkSignals(upcomingGreenPhase.getWalkSignals());
+
+    // Don't walk signals remain as don't walk
+    lpiPhase.addDontWalkSignals(upcomingGreenPhase.getDontWalkSignals());
+
+    // Flash don't walk signals from the upcoming phase stay as don't walk during LPI
+    lpiPhase.addDontWalkSignals(upcomingGreenPhase.getFlashDontWalkSignals());
+
+    // All vehicle signals remain red during LPI
+    lpiPhase.addRedSignals(upcomingGreenPhase.getGreenSignals());
+    lpiPhase.addRedSignals(upcomingGreenPhase.getRedSignals());
+    lpiPhase.addRedSignals(upcomingGreenPhase.getYellowSignals());
+    lpiPhase.addRedSignals(upcomingGreenPhase.getFyaSignals());
+    lpiPhase.addRedSignals(upcomingGreenPhase.getOffSignals());
+
+    return lpiPhase;
+  }
+
+  /**
    * Determines whether the right turn signals for the specified active circuit should display a
    * green arrow (suppressing concurrent pedestrian walk) or a flashing yellow arrow (permitting
    * concurrent pedestrian walk). This method is only meaningful when

@@ -216,7 +216,18 @@ public enum TrafficSignalPhaseApplicability {
    *
    * @since 1.0
    */
-  ALL_RED;
+  ALL_RED,
+
+  /**
+   * Enumeration value for lead pedestrian interval applicability. During this phase, pedestrian
+   * walk signals are displayed while all vehicle signals remain red, giving pedestrians a head
+   * start before the concurrent vehicle phase begins. This phase is only used when overlap
+   * pedestrian signals are enabled and a lead pedestrian interval time greater than zero is
+   * configured.
+   *
+   * @since 1.0
+   */
+  LEAD_PEDESTRIAN_INTERVAL;
 
   // endregion
 

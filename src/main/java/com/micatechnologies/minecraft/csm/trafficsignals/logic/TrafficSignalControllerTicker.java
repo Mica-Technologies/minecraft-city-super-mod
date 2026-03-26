@@ -66,6 +66,9 @@ public class TrafficSignalControllerTicker {
    *                                              signal controller when in normal mode.
    * @param dedicatedPedSignalTime                The dedicated pedestrian signal time for the
    *                                              traffic signal controller when in normal mode.
+   * @param leadPedestrianIntervalTime            The lead pedestrian interval time for the traffic
+   *                                              signal controller when in normal mode. A value of
+   *                                              zero disables the lead pedestrian interval.
    *
    * @return The next phase to use for the traffic signal controller. If null is returned, then the
    *     phase is not changed.
@@ -92,7 +95,8 @@ public class TrafficSignalControllerTicker {
       long maxGreenTime,
       long minGreenTimeSecondary,
       long maxGreenTimeSecondary,
-      long dedicatedPedSignalTime) {
+      long dedicatedPedSignalTime,
+      long leadPedestrianIntervalTime) {
     // Call appropriate tick method based on mode
     switch (operatingMode) {
       case FORCED_FAULT:
@@ -113,7 +117,7 @@ public class TrafficSignalControllerTicker {
             timeSinceLastPhaseChange,
             overlapPedestrianSignals, yellowTime, flashDontWalkTime, allRedTime,
             minGreenTime, maxGreenTime, minGreenTimeSecondary, maxGreenTimeSecondary,
-            dedicatedPedSignalTime);
+            dedicatedPedSignalTime, leadPedestrianIntervalTime);
       case FLASH:
       default:
         return flashModeTick(configuredMode, cachedPhases, alternatingFlash);
@@ -504,8 +508,11 @@ public class TrafficSignalControllerTicker {
    *                                 controller when in normal mode.
    * @param maxGreenTimeSecondary    The secondary maximum green time for the traffic signal
    *                                 controller when in normal mode.
-   * @param dedicatedPedSignalTime   The dedicated pedestrian signal time for the traffic signal
-   *                                 controller when in normal mode.
+   * @param dedicatedPedSignalTime       The dedicated pedestrian signal time for the traffic
+   *                                     signal controller when in normal mode.
+   * @param leadPedestrianIntervalTime   The lead pedestrian interval time for the traffic signal
+   *                                     controller when in normal mode. A value of zero disables
+   *                                     the lead pedestrian interval.
    *
    * @return The next phase to use for the traffic signal controller. If null is returned, then the
    *     phase is not changed.
@@ -526,7 +533,8 @@ public class TrafficSignalControllerTicker {
       long maxGreenTime,
       long minGreenTimeSecondary,
       long maxGreenTimeSecondary,
-      long dedicatedPedSignalTime) {
+      long dedicatedPedSignalTime,
+      long leadPedestrianIntervalTime) {
     // Create variable to store next phase (null phase indicates no change)
     TrafficSignalPhase nextPhase = null;
 
@@ -534,13 +542,25 @@ public class TrafficSignalControllerTicker {
     if (originalPhase == null) {
       nextPhase = cachedPhases.getPhase(TrafficSignalPhases.PHASE_INDEX_ALL_RED);
     }
-    // If original phase is all red, change to initial green phase
+    // If original phase is all red, change to initial green phase (or LPI if applicable)
     else if (originalPhase.getApplicability() == TrafficSignalPhaseApplicability.ALL_RED &&
         timeSinceLastPhaseChange >= allRedTime) {
       // Change to initial green phase (on circuit 1)
-      nextPhase = TrafficSignalControllerTickerUtilities.getDefaultPhaseForCircuitNumber(circuits,
-          overlaps, 1,
-          overlapPedestrianSignals, world);
+      TrafficSignalPhase greenPhase =
+          TrafficSignalControllerTickerUtilities.getDefaultPhaseForCircuitNumber(circuits,
+              overlaps, 1,
+              overlapPedestrianSignals, world);
+
+      // Insert LPI phase if applicable
+      nextPhase = TrafficSignalControllerTickerUtilities.maybeWrapWithLpi(greenPhase,
+          overlapPedestrianSignals, leadPedestrianIntervalTime);
+    }
+    // If original phase is lead pedestrian interval, and LPI time is up, change to the upcoming
+    // green phase
+    else if (originalPhase.getApplicability()
+        == TrafficSignalPhaseApplicability.LEAD_PEDESTRIAN_INTERVAL &&
+        timeSinceLastPhaseChange >= leadPedestrianIntervalTime) {
+      nextPhase = originalPhase.getUpcomingPhase();
     }
     // If original phase is flashing don't walk transitioning to yellow, and flashing don't walk
     // time is up,
@@ -564,12 +584,16 @@ public class TrafficSignalControllerTicker {
           originalPhase.getUpcomingPhase());
     }
     // If original phase is red transitioning to upcoming, and all red time is up, change to
-    // green phase
+    // green phase (or LPI if applicable)
     else if (originalPhase.getApplicability() == TrafficSignalPhaseApplicability.RED_TRANSITIONING
         &&
         timeSinceLastPhaseChange >= allRedTime) {
-      // Set to upcoming phase
-      nextPhase = originalPhase.getUpcomingPhase();
+      // Get the upcoming green phase
+      TrafficSignalPhase upcomingGreenPhase = originalPhase.getUpcomingPhase();
+
+      // Insert LPI phase if applicable
+      nextPhase = TrafficSignalControllerTickerUtilities.maybeWrapWithLpi(upcomingGreenPhase,
+          overlapPedestrianSignals, leadPedestrianIntervalTime);
 
     }
     // If original phase is green, get corresponding min/max green times and check for phase change

@@ -212,6 +212,14 @@ public class TrafficSignalControllerNBTKeys {
    */
   public static final String UPGRADED_PREVIOUS_NBT_FORMAT = "tcUpgradedPreviousNbtFormat";
 
+  /**
+   * The key for storing and retrieving the traffic signal controller's lead pedestrian interval
+   * time setting from NBT data.
+   *
+   * @since 2.0
+   */
+  public static final String LEAD_PEDESTRIAN_INTERVAL_TIME = "tcLeadPedestrianIntervalTime";
+
   ///endregion
 
   ///region: Previous Format Keys (v1.1)
