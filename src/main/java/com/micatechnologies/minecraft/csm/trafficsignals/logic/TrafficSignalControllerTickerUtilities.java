@@ -635,8 +635,7 @@ public class TrafficSignalControllerTickerUtilities {
             upcomingPhase.addRedSignals(circuit.getLeftSignals());
           }
         } else {
-          boolean pedestrianSignalsWalk = false;
-          addCircuitToPhaseAllRed(circuit, upcomingPhase, pedestrianSignalsWalk);
+          addCircuitToPhaseAllRed(circuit, upcomingPhase, overlapPedestrianSignals);
         }
       }
       // Handle all throughs and protecteds phase applicability
