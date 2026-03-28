@@ -1,12 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:controllablesinglesolidsignalyellow",
-    "textures": {
-      "all": "csm:blocks/solidyellowoff",
-      "particle": "csm:blocks/solidyellowoff",
-      "0": "csm:blocks/solidyellowoff"
-    }
+    "model": "csm:lightupair"
   },
   "variants": {
     "facing": {
@@ -22,25 +17,14 @@
       }
     },
     "color": {
-      "0": {
-        "textures": {
-          "0": "csm:blocks/solidyellow",
-          "all": "csm:blocks/solidyellow",
-          "particle": "csm:blocks/solidyellow"
-        }
-      },
-      "1": {
-        "textures": {
-          "0": "csm:blocks/solidyellow",
-          "all": "csm:blocks/solidyellow",
-          "particle": "csm:blocks/solidyellow"
-        }
-      },
+      "0": {},
+      "1": {},
       "2": {},
       "3": {}
     },
     "inventory": [
       {
+        "model": "csm:controllablesinglesolidsignalyellow",
         "textures": {
           "0": "csm:blocks/solidyellow",
           "all": "csm:blocks/solidyellow",

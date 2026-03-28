@@ -139,6 +139,16 @@ public abstract class AbstractBlockControllableSignalHead extends AbstractBlockC
   public abstract TrafficSignalSectionInfo[] getDefaultTrafficSignalSectionInfo();
 
   /**
+   * Returns the Y offset (in model units) to shift the entire signal rendering.
+   * Override in subclasses whose JSON model positions the signal body at a different
+   * Y origin than the standard 3-section vertical (which uses Y=0 as baseline).
+   * For example, single-section signals need +2 to match their model's Y=2-14 range.
+   */
+  public float getSignalYOffset() {
+    return 0.0f;
+  }
+
+  /**
    * Ensures a tile entity exists for this block. Handles migration of blocks that existed
    * in the world before being converted to custom rendering (they were saved without a TE).
    * Called from neighborChanged and onBlockActivated so the TE is created automatically
