@@ -125,12 +125,14 @@ public class TileEntityTrafficSignalHeadRenderer extends
     float[] sectionYPositions;
     float[] sectionXPositions;
     int[] sectionSizes;
+    boolean horizontal = false;
     if (blockState.getBlock() instanceof AbstractBlockControllableSignalHead) {
       AbstractBlockControllableSignalHead signalBlock =
           (AbstractBlockControllableSignalHead) blockState.getBlock();
       sectionYPositions = signalBlock.getSectionYPositions(sectionCount);
       sectionXPositions = signalBlock.getSectionXPositions(sectionCount);
       sectionSizes = signalBlock.getSectionSizes(sectionCount);
+      horizontal = signalBlock.isHorizontal();
       // Safety: if TE has more sections than the block expects (e.g., world migration from
       // old 3-section defaults), pad the position arrays to avoid ArrayIndexOutOfBoundsException
       if (sectionYPositions.length < sectionCount) {
@@ -173,7 +175,7 @@ public class TileEntityTrafficSignalHeadRenderer extends
       displayList = GL11.glGenLists(1);
       displayListCache.put(pos, displayList);
       GL11.glNewList(displayList, GL11.GL_COMPILE);
-      renderStaticParts(sectionInfos, sectionYPositions, sectionXPositions, sectionSizes);
+      renderStaticParts(sectionInfos, sectionYPositions, sectionXPositions, sectionSizes, horizontal);
       GL11.glEndList();
       te.clearDirtyFlag();
     }
@@ -191,7 +193,8 @@ public class TileEntityTrafficSignalHeadRenderer extends
   }
 
   private void renderStaticParts(TrafficSignalSectionInfo[] sectionInfos,
-      float[] sectionYPositions, float[] sectionXPositions, int[] sectionSizes) {
+      float[] sectionYPositions, float[] sectionXPositions, int[] sectionSizes,
+      boolean horizontal) {
     Tessellator tessellator = Tessellator.getInstance();
     BufferBuilder buffer = tessellator.getBuffer();
 
@@ -210,12 +213,18 @@ public class TileEntityTrafficSignalHeadRenderer extends
       float yOffset = sectionYPositions[i];
       boolean is8Inch = sectionSizes[i] == 8;
 
-      List<RenderHelper.Box> bodyData = is8Inch
-          ? TrafficSignalVertexData.SIGNAL_BODY_8INCH_VERTEX_DATA
-          : TrafficSignalVertexData.SIGNAL_BODY_VERTEX_DATA;
-      List<RenderHelper.Box> doorData = is8Inch
-          ? TrafficSignalVertexData.SIGNAL_DOOR_8INCH_VERTEX_DATA
-          : TrafficSignalVertexData.SIGNAL_DOOR_VERTEX_DATA;
+      List<RenderHelper.Box> bodyData;
+      List<RenderHelper.Box> doorData;
+      if (horizontal) {
+        bodyData = TrafficSignalVertexData.SIGNAL_BODY_HORIZONTAL_VERTEX_DATA;
+        doorData = TrafficSignalVertexData.SIGNAL_DOOR_HORIZONTAL_VERTEX_DATA;
+      } else if (is8Inch) {
+        bodyData = TrafficSignalVertexData.SIGNAL_BODY_8INCH_VERTEX_DATA;
+        doorData = TrafficSignalVertexData.SIGNAL_DOOR_8INCH_VERTEX_DATA;
+      } else {
+        bodyData = TrafficSignalVertexData.SIGNAL_BODY_VERTEX_DATA;
+        doorData = TrafficSignalVertexData.SIGNAL_DOOR_VERTEX_DATA;
+      }
 
       RenderHelper.addBoxesToBuffer(bodyData, buffer,
           bodyColor.getRed(), bodyColor.getGreen(), bodyColor.getBlue(), 1.0f, xOffset, yOffset, 0.0f);
