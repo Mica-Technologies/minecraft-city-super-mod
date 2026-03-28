@@ -1,6 +1,8 @@
 package com.micatechnologies.minecraft.csm;
 
 import com.micatechnologies.minecraft.csm.codeutils.ICsmProxy;
+import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityCrosswalkSignal;
+import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityCrosswalkSignalRenderer;
 import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalHead;
 import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalHeadRenderer;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
@@ -50,6 +52,7 @@ public class CsmClientProxy implements ICsmProxy {
 
     // Bind the TESR to the TileEntity
     ClientRegistry.bindTileEntitySpecialRenderer(TileEntityTrafficSignalHead.class, new TileEntityTrafficSignalHeadRenderer());
+    ClientRegistry.bindTileEntitySpecialRenderer(TileEntityCrosswalkSignal.class, new TileEntityCrosswalkSignalRenderer());
   }
 
   /**
