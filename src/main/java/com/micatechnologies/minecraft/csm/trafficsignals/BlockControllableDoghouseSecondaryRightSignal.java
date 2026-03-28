@@ -41,20 +41,17 @@ public class BlockControllableDoghouseSecondaryRightSignal extends AbstractBlock
 
   @Override
   public float[] getSectionXPositions(int sectionCount) {
-    return new float[] {6, 6, 6};
+    return new float[] {6, 6};
   }
 
   @Override
   public float[] getSectionYPositions(int sectionCount) {
-    return new float[] {12.0f, 0.0f, -12.0f};
+    return new float[] {0.0f, -12.0f};
   }
 
   @Override
   public TrafficSignalSectionInfo[] getDefaultTrafficSignalSectionInfo() {
     return new TrafficSignalSectionInfo[] {
-        new TrafficSignalSectionInfo(TrafficSignalBodyColor.FLAT_BLACK, TrafficSignalBodyColor.FLAT_BLACK, TrafficSignalBodyColor.FLAT_BLACK,
-            TrafficSignalVisorType.CUTAWAY, TrafficSignalBulbStyle.LED, TrafficSignalBulbType.LEFT,
-            TrafficSignalBulbColor.RED, false),
         new TrafficSignalSectionInfo(TrafficSignalBodyColor.FLAT_BLACK, TrafficSignalBodyColor.FLAT_BLACK, TrafficSignalBodyColor.FLAT_BLACK,
             TrafficSignalVisorType.CUTAWAY, TrafficSignalBulbStyle.LED, TrafficSignalBulbType.LEFT,
             TrafficSignalBulbColor.YELLOW, false),
