@@ -4,8 +4,8 @@ Custom TESR-based rendering for traffic signal heads, enabling runtime customiza
 body color, visor type, bulb style, and tilt without needing separate block variants.
 
 **Created:** 2026-03-28
-**Branch:** `dev/signal-custom-rendering-rebase` (rebased from `dev/signal-custom-rendering-work-archived`)
-**Status:** In Progress — Rebase complete, display list bug fixed, needs in-game testing
+**Branch:** `dev/signal-custom-rendering-rebase`
+**Status:** Core system working — test block validated, ready for rollout planning
 
 ---
 
@@ -14,298 +14,364 @@ body color, visor type, bulb style, and tilt without needing separate block vari
 > I'm continuing custom signal rendering work. The progress document is at
 > `assets/docs/agent_progress/CUSTOM_SIGNAL_RENDERING_PLAN.md`.
 >
-> **Branch:** `dev/signal-custom-rendering-rebase` — this is a NEW branch created from
-> `dev/signal-custom-rendering-work-archived` and rebased onto the latest `main`. The
-> original archived branch is preserved for reference. Do NOT push — the user will push
-> when ready.
+> **Branch:** `dev/signal-custom-rendering-rebase`
 >
-> **What's been done:**
-> - Rebased 8 custom rendering commits onto latest main (which has all the Forge blockstate
->   and shared_models work from the big cleanup session)
-> - 4 rebase conflicts resolved (blockstate format + model locations)
-> - Build passes on the rebased branch
-> - **The core state-sharing bug has been FIXED.** The bug was: changing one signal head's
->   appearance (body color, visor, etc.) would affect ALL other signal heads. Root cause:
->   `TileEntityTrafficSignalHeadRenderer` had a single `staticDisplayList` field, but
->   Minecraft uses ONE renderer instance for ALL tile entities of the same class. Fix:
->   replaced with `HashMap<BlockPos, Integer> displayListCache` keyed by tile entity position.
->   The fix is committed but NOT yet tested in-game.
->
-> **What needs to happen next:**
-> 1. **In-game testing** — Place multiple signal heads, configure each differently (body
->    color, visor type, etc.), verify they maintain independent state
-> 2. **If the fix works** — Clean up the 8 dev commits into logical commits (the user is OK
->    with rewriting history on this unmerged branch)
-> 3. **If additional issues found** — Debug further. Check `TileEntityTrafficSignalHead`
->    NBT read/write, check `getSectionInfos()` for potential reference aliasing
-> 4. **Expand** — Once working, apply custom rendering to more signal block types beyond the
->    current 2 (VerticalSolidSignal, VerticalBikeSignal)
+> **Current state:** The TESR-based custom rendering system is fully working on the test
+> block (`BlockControllableVerticalTestSolidSignal`). All existing signal blocks remain
+> untouched and use the traditional JSON model pipeline. The system supports runtime
+> customization of body color, door color, visor color, visor type, body tilt, bulb style,
+> and bulb type via `ItemSignalHeadConfigTool`.
 >
 > **Key source files (all in `src/main/java/com/micatechnologies/minecraft/csm/`):**
 >
 > Rendering system:
-> - `trafficsignals/TileEntityTrafficSignalHead.java` — Tile entity storing per-signal state
->   (section infos array, body tilt, dirty flag). Serializes to NBT. The `getSectionInfos(int
->   currentBulbColor)` method returns the section info array with bulb colors updated based on
->   the current signal color state (0=red, 1=yellow, 2=green, 3=off).
-> - `trafficsignals/TileEntityTrafficSignalHeadRenderer.java` — TESR (TileEntitySpecialRenderer).
->   Renders signal heads using OpenGL display lists for static geometry (body, visors) and
->   direct rendering for bulbs (which change with signal color). The display list cache is now
->   per-BlockPos (the bug fix). Reads `.ogldata` vertex data files for 3D geometry.
-> - `trafficsignals/logic/AbstractBlockControllableSignalHead.java` — Block base class extending
->   `AbstractBlockControllableSignal`. Adds tile entity support (`hasTileEntity=true`,
->   `createNewTileEntity()`). Implements player interaction for cycling through body colors,
->   visor types, and tilt via sneak-click.
+> - `trafficsignals/TileEntityTrafficSignalHead.java` — Tile entity with per-signal state
+> - `trafficsignals/TileEntityTrafficSignalHeadRenderer.java` — TESR with display list
+>   cache, batched bulb rendering, fullbright lightmap
+> - `trafficsignals/logic/AbstractBlockControllableSignalHead.java` — Block base class
+>
+> Configuration tool:
+> - `trafficsignals/ItemSignalHeadConfigTool.java` — 8-mode config tool
+> - `trafficsignals/ItemSignalHeadConfigToolMode.java` — Mode enum
 >
 > State/data classes:
-> - `trafficsignals/logic/TrafficSignalSectionInfo.java` — Per-section state container. Each
->   signal head has an array of these (one per light section). Stores body color, visor type,
->   bulb style, bulb type, bulb color for that section.
-> - `trafficsignals/logic/TrafficSignalVertexData.java` — Parses `.ogldata` files into vertex
->   arrays for OpenGL rendering. These files are pre-processed model data in
->   `dev-env-utils/openGlData/`.
-> - `trafficsignals/logic/TrafficSignalTextureMap.java` — Maps texture coordinates for signal
->   component textures (lights, body colors).
+> - `trafficsignals/logic/TrafficSignalSectionInfo.java` — Per-section state
+> - `trafficsignals/logic/TrafficSignalVertexData.java` — .ogldata vertex arrays
+> - `trafficsignals/logic/TrafficSignalTextureMap.java` — Atlas UV mapping
 >
-> Enum types (all in `trafficsignals/logic/`):
-> - `TrafficSignalBodyColor` — BLACK, GRAY, YELLOW (housing paint color)
-> - `TrafficSignalVisorType` — NONE, CAP, CIRCLE, TUNNEL, LOUVERED_H, LOUVERED_V, LOUVERED_BOTH
-> - `TrafficSignalBodyTilt` — NONE, LEFT_TILT, RIGHT_TILT, LEFT_ANGLE, RIGHT_ANGLE
-> - `TrafficSignalBulbStyle` — INCANDESCENT, LED, WLED (bulb technology)
-> - `TrafficSignalBulbType` — SOLID, LEFT, RIGHT, AHEAD, UTURN, BIKE, RAIL (arrow direction)
-> - `TrafficSignalBulbColor` — RED, YELLOW, GREEN
->
-> Utility classes:
-> - `codeutils/RenderHelper.java` — OpenGL rendering helpers
-> - `codeutils/RotationUtils.java` — Rotation math for signal orientation
-> - `codeutils/DirectionSixteen.java` — 16-direction enum for fine-grained rotation
-> - `codeutils/AbstractBlockRotatableHZSixteen.java` — Base class for 16-direction blocks
->
-> Blocks currently using custom rendering:
-> - `trafficsignals/BlockControllableVerticalSolidSignal.java` — 3-section vertical solid signal
-> - `trafficsignals/BlockControllableVerticalBikeSignal.java` — 3-section vertical bike signal
->
-> Renderer registration:
-> - `CsmClientProxy.java` line ~52: `ClientRegistry.bindTileEntitySpecialRenderer(
->   TileEntityTrafficSignalHead.class, new TileEntityTrafficSignalHeadRenderer())`
->
-> Pre-processed model data:
-> - `dev-env-utils/openGlData/*.ogldata` — Vertex data for signal bodies and visors
-> - `dev-env-utils/src/main/java/.../tools/ModelToOglDataTool.java` — Tool that converts
->   Blockbench JSON models to `.ogldata` format
->
-> New textures added by the custom rendering branch:
-> - `textures/blocks/trafficsignals/lights/` — LED, WLED, and incandescent bulb textures
->   for various arrow types and colors
-> - `textures/blocks/trafficsignals/bodies/` — Body color textures
+> Dev tools:
+> - `dev-env-utils/.../tools/ImageTilerTool.java` — Atlas generator
+> - `dev-env-utils/.../tools/ModelToOglDataTool.java` — Blockbench → .ogldata converter
 
 ---
 
-## Rebase Summary (2026-03-28)
+## Phase 1: Core System (COMPLETE)
 
-Rebased 8 commits from `dev/signal-custom-rendering-work-archived` onto latest `main`
-(which includes all the Forge blockstate conversions, shared_models migration, dev-env-utils
-improvements, and unused asset cleanup from the massive 2026-03-27 session).
+All items below are done and working in-game.
 
-**Commits on the rebased branch (oldest first):**
-1. `b9061b96` WIP: Traffic Signal Models and States — The big initial commit: new Java classes
-   (TE, TESR, block base, enums, vertex data, texture map), .ogldata files, body/visor models,
-   new light textures
-2. `40343bfd` Further progress — Iterative development
-3. `a5610a4c` Further progress
-4. `4873ff6c` Further progress
-5. `92e399cf` Further progress
-6. `cfd7d4f2` Further progress
-7. `7778cd8d` Progress further 2
-8. `ac808b3e` Progress further 3
-9. `b5858ead` Fix shared display list bug in signal head renderer ← **THE BUG FIX**
-
-**4 conflicts resolved during rebase:**
-- `blockstates/controllableverticalsolidsignal.json` — accepted main's Forge format (the custom
-  rendering branch had modified it for the old vanilla format)
-- 3 backplate model files in `models/custom/trafficsignals/backplates/` — moved to the new
-  `models/block/shared_models/trafficsignals/` location per main's restructuring
-
-Build passes after rebase.
+- [x] TESR rendering with OpenGL display lists for static geometry
+- [x] Per-BlockPos display list cache (fixed shared state bug)
+- [x] Display list cleanup on block break (prevents memory leak)
+- [x] Single texture atlas for all bulb textures (eliminated per-texture GL binds)
+- [x] Batched bulb quad rendering (single draw call for all sections)
+- [x] Pre-computed rotation for arrow-type bulbs (no per-section GL matrix ops)
+- [x] Fullbright lightmap rendering (signals not dimmed by world lighting)
+- [x] GL color state reset via GL11.glColor4f (bypasses GlStateManager cache)
+- [x] 2% bulb quad inset to prevent visor bleed
+- [x] Dirty flag set in readNBT for client-side display list recompilation
+- [x] Atlas index mapping verified correct for all 55 tiles
+- [x] Fixed atlas index misalignment for LED and eLED styles
+- [x] Test block (`controllableverticaltestsolidsignal`) isolated from existing blocks
+- [x] ItemSignalHeadConfigTool with 8 independent modes
+- [x] Commit history cleaned up into logical commits
+- [x] ImageTilerTool refactored into tools framework
+- [x] Documentation for ImageTilerTool and ModelToOglDataTool
 
 ---
 
-## Root Cause Analysis: State-Sharing Bug
+## Phase 2: Rollout to All Signal Blocks
 
-**Symptom:** Changing body color/visor on one signal head changes ALL other signal heads to match.
+### Conversion Strategy
 
-**Root cause:** `TileEntityTrafficSignalHeadRenderer` stored a single `int staticDisplayList`
-field. Since Minecraft registers ONE renderer instance per tile entity class (via
-`ClientRegistry.bindTileEntitySpecialRenderer`), all `TileEntityTrafficSignalHead` tile entities
-shared this single renderer instance, and therefore shared the same OpenGL display list.
+Each signal block conversion follows this pattern:
+1. Change class to extend `AbstractBlockControllableSignalHead`
+2. Add `getDefaultTrafficSignalSectionInfo()` with appropriate defaults
+3. Update blockstate JSON to use `lightupair` model for in-world (TESR handles rendering)
+4. Keep `inventory` variant pointing to the original model (item rendering in creative tab)
+5. Keep blockstate `color`/`facing` variant structure unchanged
+6. Keep `SIGNAL_SIDE`, `doesFlash()`, and all controller integration unchanged
 
-**The bug in action:**
-1. Signal A at pos (10,5,20) renders → `staticDisplayList` compiled with A's body color (BLACK)
-   and visor (CIRCLE)
-2. Signal B at pos (15,5,20) renders → reuses `staticDisplayList` → appears identical to A
-3. Player sneak-clicks Signal A to change body to GRAY → `dirty=true`
-4. Signal A re-renders → `staticDisplayList` recompiled with GRAY body
-5. Signal B re-renders → `staticDisplayList` now shows GRAY body too (even though B's tile
-   entity still stores BLACK)
+**Critical constraints:**
+- Do NOT change the blockstate COLOR property logic or controller integration
+- Do NOT merge multi-block signal assemblies (e.g., doghouse main + secondary stay separate)
+- Do NOT change registry names or break existing world compatibility
+- The blockstate still needs `color` variants (0-3) even though the TESR reads them — the
+  controller sets these, and the TE reads them for bulb lit/unlit state
 
-**The fix (committed as `b5858ead`):**
-```java
-// BEFORE (broken — shared across all TEs):
-private int staticDisplayList = -1;
+### Signal Body Configurations
 
-// AFTER (fixed — per-TE cache):
-private final Map<BlockPos, Integer> displayListCache = new HashMap<>();
+The renderer currently handles a single body geometry: the standard 3-section 12-inch
+vertical McCain body. To support all signal types, we need additional body vertex data
+sets and renderer logic for different configurations.
+
+#### Body Type: Standard 3x12-inch Vertical
+**Geometry:** `SIGNAL_BODY_VERTEX_DATA` + `SIGNAL_DOOR_VERTEX_DATA` (existing)
+**Section layout:** 3 sections at yOffset = +12, 0, -12 (12-unit spacing)
+**Bulb size:** 12x12 quad per section
+
+Blocks using this body (49 blocks):
+- Vertical solid signals: standard, LED, gray, barlo, no-visor, no-red-visor, reversed
+- Vertical arrow signals: left, right, right2, ahead, up-left, uturn, rail (+ gray variants)
+- Vertical flashing signals: flash green, flash red, flash yellow (+ gray variants)
+- Vertical bike signals: standard, gray
+
+#### Body Type: 3x8-inch Vertical (NEEDS NEW VERTEX DATA)
+**Section layout:** 3 sections, ~8-unit section height, narrower body
+**Bulb size:** 8x8 quad per section (scaled down from 12x12)
+
+Blocks using this body (4 blocks):
+- `controllableverticalsolidsignal8inch`
+- `controllableverticalsolidsignalled8inch`
+- `controllableverticalbikesignal8inch`
+- `controllableverticalbikesignal8inchblack`
+
+**Renderer changes needed:**
+- New `SIGNAL_BODY_8INCH_VERTEX_DATA` from Blockbench model
+- Section yOffset spacing reduced to ~8 units
+- Bulb quad size reduced to 8x8
+- Scale factor for body width (narrower than 12-inch)
+
+#### Body Type: Mixed 8-8-12 Vertical (NEEDS NEW VERTEX DATA)
+**Section layout:** Top two sections 8-inch, bottom section 12-inch
+**Geometry:** Asymmetric body with mixed section heights
+
+Blocks using this body (6 blocks):
+- `controllableverticalsolidsignal8812inch`
+- `controllableverticalsolidsignalled8812inch`
+- `controllableverticalleftsignal8812inch`
+- `controllableverticalrightsignal8812inch`
+- `controllableverticalahaedsignal8812inch`
+- (+ any additional 8812 variants)
+
+**Renderer changes needed:**
+- New body vertex data for asymmetric housing
+- Per-section size parameter in SectionInfo (8 or 12)
+- Bulb quad size varies per section
+- yOffset spacing accounts for mixed heights
+
+#### Body Type: Mixed 12-8-8 Vertical (NEEDS NEW VERTEX DATA)
+**Section layout:** Top section 12-inch, bottom two sections 8-inch
+
+Blocks using this body (2 blocks):
+- `controllableverticalsolidsignal1288inch`
+- `controllableverticalsolidsignalled1288inch`
+
+**Renderer changes needed:** Same as 8-8-12 but mirrored layout.
+
+#### Body Type: Horizontal 3-Section (NEEDS NEW VERTEX DATA)
+**Section layout:** 3 sections arranged left-to-right instead of top-to-bottom
+**Orientation:** xOffset instead of yOffset for section spacing
+
+Blocks using this body (18 blocks):
+- All `controllablehorizontal*` signals (solid, left, right, right2, ahead, up-left,
+  uturn, rail, bike) plus their angle variants
+
+**Renderer changes needed:**
+- New body vertex data for horizontal housing
+- Section positioning uses xOffset instead of yOffset
+- Rotation logic unchanged (still uses facing property)
+
+#### Body Type: Single Section (NEEDS NEW VERTEX DATA)
+**Section layout:** 1 section only
+**Used for:** Single-color signals, ramp meters
+
+Blocks using this body (18 blocks):
+- All `controllablesinglesolidsignal*` variants (red, green, yellow × standard, gray,
+  left-angle, right-angle)
+- Ramp meter signals (3 blocks)
+
+**Renderer changes needed:**
+- Single-section body vertex data
+- sectionInfos array length = 1
+- No yOffset needed (single section centered)
+- Angle variants handled by existing tilt logic
+
+#### Body Type: Arrow Add-On (NEEDS NEW VERTEX DATA)
+**Section layout:** 1 or 2 sections, minimal body depth, flat profile
+**Mounting:** Typically below a main signal head
+
+Blocks using this body (19 blocks):
+- Left add-on signals (standard, gray, FYA, double)
+- Right add-on signals (standard, gray, FYA, double)
+- Up-left add-on signals
+- Hybrid signals (left + add-on combinations)
+
+**Renderer changes needed:**
+- Thin flat body vertex data (Z depth much smaller than standard)
+- Single-section and dual-section variants
+- FYA (Flashing Yellow Arrow) variants may need special flash logic
+- Hybrid signals combine a main 3-section + add-on in a single block — these may need
+  composite rendering with two body types
+
+#### Body Type: Doghouse (NEEDS NEW VERTEX DATA)
+**Section layout:** Asymmetric peaked housing, 2 or 3 sections
+**Implementation:** Two separate blocks per doghouse (main + secondary)
+
+Blocks using this body (6 blocks):
+- Main left/right: 3 sections (R/Y/G), signal side THROUGH
+- Secondary left/right: 2 sections (Y/G arrows), signal side LEFT
+- FYA variants: 2 sections with flashing yellow
+
+**Renderer changes needed:**
+- Doghouse-specific body vertex data with peaked roof geometry
+- Main blocks: 3 sections, standard yOffset
+- Secondary blocks: 2 sections, adjusted yOffset (no red section)
+- Left/right mounting mirror (separate vertex data or X-flip)
+
+#### Body Type: HAWK Beacon (NEEDS NEW VERTEX DATA)
+**Section layout:** Unique 2-over-1 arrangement (2 red on top, 1 yellow below)
+**Signal side:** PEDESTRIAN_BEACON
+
+Blocks using this body (1 block):
+- `controllablehawksignal`
+
+**Renderer changes needed:**
+- HAWK-specific body vertex data
+- Custom section layout (not uniform vertical stack)
+- Special color state mapping for HAWK flash patterns
+
+#### Body Type: Angled Vertical (REUSES STANDARD BODY)
+**Section layout:** Same as standard 3x12-inch but tilted 45° on mounting
+**Note:** These are currently handled as separate model files but geometrically identical
+to the standard body — the angle is in the mounting, not the body itself.
+
+Blocks using this body (16 blocks):
+- All `controllableverticalangle*` and `controllableverticalangle2*` signals
+
+**Renderer changes needed:**
+- These can likely use the same body vertex data as standard vertical
+- The angle is applied via existing tilt/rotation logic (LEFT_ANGLE, RIGHT_ANGLE)
+- These are already handled by the existing `TrafficSignalBodyTilt` enum
+
+### Texture Atlas Considerations
+
+**Current atlas coverage:**
+- BALL type: LED (iLED), LED_DOTTED (eLED), INCANDESCENT — all 3 styles have on/off for R/Y/G ✓
+- BIKE type: LED style only (biled textures) — no eLED or incandescent bike textures exist
+- UTURN type: LED style only (uturn textures) — no style variants
+- TRANSIT type: WLED style only — no style variants
+- Arrow types (LEFT/RIGHT/UP/etc.): LED_DOTTED and LED have textures; INCANDESCENT has textures
+- GTX textures in atlas at indices 50-53 but no code path reaches them (future use)
+
+**What this means for the rollout:**
+- When converting a BIKE signal block, default bulb style should be LED (the only style
+  with bike textures). The config tool will let users switch to other styles, but those
+  will show the fallback texture.
+- Same for UTURN and TRANSIT — default to the style that has textures.
+- Future work could add more texture variants, but it's not blocking the conversion.
+
+### Vertex Data Pipeline
+
+For each new body type, the workflow is:
+1. The Blockbench JSON model already exists in `models/block/shared_models/trafficsignals/`
+2. Add the model path to `ModelToOglDataTool.MODEL_FILES_TO_CONVERT`
+3. Run the tool to generate `.ogldata` files in `dev-env-utils/openGlData/`
+4. Add the vertex data as a `static final List<Box>` in `TrafficSignalVertexData.java`
+5. Add the body type selection logic in the renderer
+
+**Important:** The existing JSON models include the full signal body with visors baked in.
+The TESR renders body and visors separately (body from `.ogldata`, visors from visor
+`.ogldata` files). We need to extract JUST the body shell geometry, not the visor parts.
+The `ModelToOglDataTool` may need enhancement to support element filtering or the models
+may need to be split in Blockbench.
+
+### Renderer Architecture Changes
+
+The current renderer assumes a fixed 3-section 12-inch vertical body. To support all body
+types, we need to parameterize:
+
+```
+AbstractBlockControllableSignalHead
+  ├── getDefaultTrafficSignalSectionInfo()    // already exists
+  ├── getSignalBodyType()                     // NEW: which body vertex data to use
+  ├── getSectionCount()                       // implied by sectionInfos.length
+  └── getSectionLayout()                      // NEW: per-section size/offset config
 ```
 
-The render method now looks up `displayListCache.get(te.getPos())` to get the display list
-for that specific signal head. Each signal head gets its own cached display list that is only
-recompiled when THAT head's `dirty` flag is set.
+The renderer would then dispatch based on body type:
+- Select the correct body/door vertex data
+- Use per-section size (8 or 12) for bulb quad dimensions
+- Use per-section offset for vertical/horizontal positioning
+- Apply appropriate scale factors
 
-**Potential remaining concern:** The `displayListCache` HashMap grows indefinitely as signals are
-placed. It doesn't clean up entries when signals are broken. For a normal gameplay session this
-is fine (the map stores just a BlockPos and an int per signal), but for very long sessions with
-lots of signal placement/removal, it could accumulate stale entries. A future improvement could
-use `invalidate()` on block break or use a WeakHashMap alternative.
+### Rollout Order (Recommended)
 
----
+**Wave 1 — Standard 3x12-inch Vertical (49 blocks)**
+Highest impact, uses existing body vertex data. No renderer changes needed beyond
+converting blocks to extend `AbstractBlockControllableSignalHead`.
 
-## Architecture Overview
+**Wave 2 — Angled Vertical (16 blocks)**
+Same body geometry as Wave 1. Existing tilt logic already handles the mounting angles.
 
-### How Custom Rendering Works
+**Wave 3 — Single Section (18 blocks)**
+Simple 1-section body. Needs new vertex data but renderer logic is straightforward.
 
-Traditional Minecraft blocks use JSON blockstate → JSON model → texture pipeline. The custom
-rendering system bypasses this for the signal HEAD (the light sections) using a
-TileEntitySpecialRenderer (TESR) that draws directly with OpenGL.
+**Wave 4 — 8-inch and Mixed-Size (12 blocks)**
+Needs new body vertex data and per-section sizing in the renderer.
 
-**Rendering pipeline:**
-1. Block is placed → `AbstractBlockControllableSignalHead.createNewTileEntity()` creates a
-   `TileEntityTrafficSignalHead` with default section infos
-2. Player can sneak-click to cycle body color, visor type, tilt (modifies TE, sets dirty flag)
-3. Signal controller changes color state (0-3) via blockstate `COLOR` property
-4. Each render tick, `TileEntityTrafficSignalHeadRenderer.render()`:
-   a. Reads facing/color from blockstate, section infos/tilt from TE
-   b. Applies GL transformations (translation, rotation, tilt offset)
-   c. If dirty: recompiles display list with static geometry (body + visors)
-   d. Calls cached display list for static parts
-   e. Renders bulbs directly (these change with signal color, not cached)
+**Wave 5 — Horizontal (18 blocks)**
+Needs horizontal body vertex data and xOffset section positioning.
 
-**Static parts** (cached in display list): Signal body housing, visor geometry, backplate
-**Dynamic parts** (rendered every frame): Bulb faces (change color with signal state)
+**Wave 6 — Add-On Signals (19 blocks)**
+Needs thin flat body vertex data. FYA and hybrid types add complexity.
 
-### Data Flow
+**Wave 7 — Doghouse (6 blocks)**
+Needs doghouse body vertex data. Two-block assembly stays as-is.
 
-```
-Player Click → TileEntityTrafficSignalHead (modify sectionInfos, set dirty)
-                    ↓
-Signal Controller → blockstate COLOR property (0=red, 1=yellow, 2=green, 3=off)
-                    ↓
-TileEntityTrafficSignalHeadRenderer.render()
-  ├── Read sectionInfos from TE
-  ├── Read COLOR from blockstate
-  ├── If dirty: recompile display list (body + visors)
-  ├── GL call cached display list
-  └── Render bulbs (texture varies by COLOR + bulb style + bulb type)
-```
+**Wave 8 — HAWK and Special (4 blocks)**
+HAWK needs unique layout. Ramp meters and special signals.
 
-### Components
+**Not converting (leave as JSON):**
+- Crosswalk signals (12 blocks) — different rendering paradigm (word/symbol displays)
+- Crosswalk buttons/mounts — mechanical devices, not signal heads
+- Traffic sensors — camera/detector housings, not lights
+- Signal controller — infrastructure block, not a visual signal
+- Tattletale beacon — unique TileEntity-based cycling, special case
 
-| Class | Location | Role |
-|-------|----------|------|
-| `TileEntityTrafficSignalHead` | `trafficsignals/` | Per-signal state: sectionInfos[], bodyTilt, dirty flag. NBT read/write. |
-| `TileEntityTrafficSignalHeadRenderer` | `trafficsignals/` | TESR: OpenGL rendering with per-BlockPos display list cache |
-| `AbstractBlockControllableSignalHead` | `trafficsignals/logic/` | Block base: TE provider, player interaction, default section infos |
-| `TrafficSignalSectionInfo` | `trafficsignals/logic/` | Per-section state: bodyColor, visorType, bulbStyle, bulbType, bulbColor |
-| `TrafficSignalVertexData` | `trafficsignals/logic/` | Parses .ogldata files → float[] vertex arrays for GL rendering |
-| `TrafficSignalTextureMap` | `trafficsignals/logic/` | Texture coordinate mapping for signal light/body textures |
-| `RenderHelper` | `codeutils/` | GL rendering utilities (quad drawing, etc.) |
-| `RotationUtils` | `codeutils/` | Rotation math helpers |
-| `DirectionSixteen` | `codeutils/` | 16-direction enum for fine-grained rotation |
-| `ModelToOglDataTool` | `dev-env-utils/` | Converts Blockbench JSON → .ogldata vertex format |
+### Estimated Scope
 
-### Enum Types
-
-| Enum | Values | Stored In | Purpose |
-|------|--------|-----------|---------|
-| `TrafficSignalBodyColor` | BLACK, GRAY, YELLOW | SectionInfo | Housing paint color |
-| `TrafficSignalVisorType` | NONE, CAP, CIRCLE, TUNNEL, LOUVERED_H, LOUVERED_V, LOUVERED_BOTH | SectionInfo | Visor/shroud shape |
-| `TrafficSignalBodyTilt` | NONE, LEFT_TILT, RIGHT_TILT, LEFT_ANGLE, RIGHT_ANGLE | TileEntity | Signal head tilt direction |
-| `TrafficSignalBulbStyle` | INCANDESCENT, LED, WLED | SectionInfo | Bulb technology (affects texture) |
-| `TrafficSignalBulbType` | SOLID, LEFT, RIGHT, AHEAD, UTURN, BIKE, RAIL | SectionInfo | Arrow/symbol direction |
-| `TrafficSignalBulbColor` | RED, YELLOW, GREEN | SectionInfo | Which bulb color this section is |
-
-### Pre-Processed Model Data
-
-The `.ogldata` files in `dev-env-utils/openGlData/` contain pre-processed vertex data for
-signal body and visor geometry. These are generated from Blockbench JSON models using the
-`ModelToOglDataTool`. Files include:
-- `1_vertical_mccain.ogldata` — McCain-style vertical signal body (single section)
-- `1_vertical_mccain_door.ogldata` — Door/access panel for the body
-- `visor_cap.ogldata`, `visor_circle.ogldata`, `visor_tunnel.ogldata`, etc. — Various visor shapes
-- `visor_louvered_horizontal.ogldata`, `visor_louvered_vertical.ogldata`, `visor_louvered_both.ogldata`
-- `visor_none.ogldata` — Placeholder for no visor
-
-### Blocks Using Custom Rendering (2 of ~140+ signal blocks)
-
-| Block | Registry Name | Sections | Default Config |
-|-------|---------------|----------|----------------|
-| `BlockControllableVerticalSolidSignal` | `controllableverticalsolidsignal` | 3 (R/Y/G solid) | Black body, circle visors |
-| `BlockControllableVerticalBikeSignal` | `controllableverticalbikesignal` | 3 (R/Y/G bike) | Black body, circle visors |
-
-All other signal blocks still use the traditional JSON model approach.
+| Wave | Blocks | New Vertex Data | Renderer Changes |
+|------|--------|----------------|-----------------|
+| 1 | 49 | None | Block class changes only |
+| 2 | 16 | None | Block class changes only |
+| 3 | 18 | Single-section body | 1-section layout |
+| 4 | 12 | 8-inch + mixed bodies | Per-section sizing |
+| 5 | 18 | Horizontal body | xOffset positioning |
+| 6 | 19 | Flat add-on body | Thin profile, hybrid |
+| 7 | 6 | Doghouse body | 2/3 section peaked |
+| 8 | 4 | HAWK body | Custom layout |
+| **Total** | **142** | **~6-8 new data sets** | **Incremental** |
 
 ---
 
-## Commit History on Rebased Branch
+## Phase 3: Polish and Merge (Future)
 
-```
-b5858ead Fix shared display list bug in signal head renderer    ← THE FIX
-ac808b3e Progress further 3
-7778cd8d Progress further 2
-cfd7d4f2 Progress further
-92e399cf Further progress
-4873ff6c Further progress
-a5610a4c Further progress
-40343bfd Further progress
-b9061b96 WIP: Traffic Signal Models and States                  ← Initial custom rendering code
-```
-
-These sit on top of main's full commit history including all the Forge blockstate, shared_models,
-dev-env-utils work from the 2026-03-27 session.
+- [ ] Remove test block (`controllableverticaltestsolidsignal`) once real blocks are converted
+- [ ] Add missing texture variants (bike eLED, bike incandescent, etc.) as needed
+- [ ] Consider per-section independent body/door/visor colors (currently all sections share)
+- [ ] UX polish on config tool (tooltips, visual feedback)
+- [ ] Final performance profiling with 30+ signals in view
+- [ ] Merge to main when stable across all signal types
 
 ---
 
-## Checklist
+## Historical Context
 
-- [x] Create working branch from archived branch
-- [x] Rebase onto latest main (79 commits)
-- [x] Resolve rebase conflicts (4 total)
-- [x] Build verification
-- [x] Root cause identification (shared display list)
-- [x] Fix display list state-sharing bug (HashMap per BlockPos)
-- [ ] In-game testing of the fix (multiple heads, different configs)
-- [ ] Investigate any remaining issues (if found during testing)
-- [ ] Clean up 8 dev commits into logical structure (user OK with history rewrite on branch)
-- [ ] Expand custom rendering to more signal block types
-- [ ] Consider display list cleanup on block break (minor memory leak)
-- [ ] Eventually: merge to main when stable
+### Original Development (Pre-Rebase)
 
----
+The custom rendering system was initially developed on branch
+`dev/signal-custom-rendering-work-archived` with 8 iterative "progress" commits. The
+branch was rebased onto main (which had the Forge blockstate cleanup from 2026-03-27) and
+the commits were reorganized into logical groups on 2026-03-28.
 
-## Known Considerations
+### Bugs Fixed During Current Session (2026-03-28)
 
-- The custom rendering branch modifies `BlockControllableVerticalSolidSignal.java` which is one
-  of the most important signal blocks. Main's Forge blockstate for this block was accepted during
-  rebase, so the blockstate format is correct, but the block class now extends
-  `AbstractBlockControllableSignalHead` instead of `AbstractBlockControllableSignal`.
+1. **Shared display list** — All TEs shared one display list (HashMap per BlockPos fix)
+2. **Client dirty flag** — readNBT didn't set dirty, display list never recompiled on sync
+3. **GL color tinting** — Display list GL color leaked into textured bulb rendering
+   (GlStateManager cache bypass via GL11.glColor4f)
+4. **Circle visor broken** — Procedural circle code was wrong, switched to .ogldata boxes
+5. **Atlas index misalignment** — LED and eLED indices off by +2
+6. **Bulb texture bleed** — 2% inset on bulb quad prevents overlap past visor edges
+7. **Dim textures** — Added fullbright lightmap coords (240, 240)
+8. **Missing markDirtySync** — getNextBodyPaintColor didn't sync to client
 
-- The `.ogldata` files and `ModelToOglDataTool` are development-time tools — the vertex data is
-  read at runtime by the renderer. These files are NOT included in the mod JAR (they're in
-  dev-env-utils).
+### Performance Optimizations Applied
 
-- The custom rendering code adds new textures in `textures/blocks/trafficsignals/lights/` for
-  different bulb styles (LED, WLED, incandescent) and `textures/blocks/trafficsignals/bodies/`
-  for body color textures. These ARE included in the mod JAR.
-
-- Player interaction (sneak-click to cycle options) is handled in
-  `AbstractBlockControllableSignalHead.onBlockActivated()`. The order of cycling and which
-  options are available per click type may need UX refinement.
+- Single texture atlas (eliminated per-bulb texture bind state changes)
+- Display list caching for static geometry (body + visors compiled once)
+- Batched bulb rendering (all sections in single draw call)
+- Pre-computed rotation (no GL matrix push/pop per section for arrows)
+- Static ResourceLocation field (no per-frame allocation)
+- Display list cleanup on block break (prevents unbounded HashMap growth)
+- TextureInfo cache (ConcurrentHashMap keyed by style/type/color/lit/rotation)
