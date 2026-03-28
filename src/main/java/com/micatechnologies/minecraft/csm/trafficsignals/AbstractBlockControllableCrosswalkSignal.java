@@ -42,6 +42,23 @@ public abstract class AbstractBlockControllableCrosswalkSignal extends AbstractB
     return new TileEntityCrosswalkSignal();
   }
 
+  /**
+   * Returns the Z offset from block center to the display face for countdown rendering.
+   * Positive values move toward the viewer (north face direction in model space).
+   * Return -1 to disable countdown rendering for this variant.
+   */
+  public float getCountdownZOffset() {
+    return 0.4375f; // base model: north face at Z=1/16
+  }
+
+  /**
+   * Returns the Y center of the signal body element in block space (0-1).
+   * Used to vertically center the countdown overlay on the signal face.
+   */
+  public float getCountdownYCenter() {
+    return 0.5625f; // base model: element Y 1-17, center at 9/16
+  }
+
   @Override
   public void neighborChanged(IBlockState state, World worldIn, BlockPos pos,
       net.minecraft.block.Block blockIn, BlockPos fromPos) {

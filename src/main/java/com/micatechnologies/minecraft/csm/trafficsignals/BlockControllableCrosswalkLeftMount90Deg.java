@@ -20,6 +20,11 @@ public class BlockControllableCrosswalkLeftMount90Deg
     return "controllablecrosswalkleftmount90deg";
   }
 
+  @Override
+  public float getCountdownZOffset() {
+    return -1; // 45-degree angled model: countdown overlay not supported
+  }
+
   /**
    * Retrieves the bounding box of the block.
    *

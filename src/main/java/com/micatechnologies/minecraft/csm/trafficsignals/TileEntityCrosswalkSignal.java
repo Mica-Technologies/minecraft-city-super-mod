@@ -32,9 +32,6 @@ public class TileEntityCrosswalkSignal extends AbstractTickableTileEntity {
     lastColorState = compound.getInteger(NBT_KEY_LAST_COLOR);
     measuring = compound.getBoolean(NBT_KEY_MEASURING);
     measureTicks = compound.getInteger(NBT_KEY_MEASURE_TICKS);
-    if (world != null && world.isRemote && currentCountdown >= 0) {
-      System.out.println("[CrosswalkTE-CLIENT] readNBT at " + pos + " countdown=" + currentCountdown);
-    }
   }
 
   @Override
@@ -71,17 +68,8 @@ public class TileEntityCrosswalkSignal extends AbstractTickableTileEntity {
 
     int currentColor = state.getValue(AbstractBlockControllableSignal.COLOR);
 
-    // Debug: log every 100 ticks to confirm TE is alive
-    if (world.getTotalWorldTime() % 100 == 0) {
-      System.out.println("[CrosswalkTE] pos=" + pos + " color=" + currentColor
-          + " lastColor=" + lastColorState + " learned=" + learnedClearanceTicks
-          + " countdown=" + currentCountdown + " measuring=" + measuring
-          + " measureTicks=" + measureTicks);
-    }
-
     // Detect state transitions
     if (currentColor != lastColorState) {
-      System.out.println("[CrosswalkTE] COLOR CHANGE at " + pos + ": " + lastColorState + " -> " + currentColor);
       onColorChanged(lastColorState, currentColor);
       lastColorState = currentColor;
     }
@@ -105,12 +93,10 @@ public class TileEntityCrosswalkSignal extends AbstractTickableTileEntity {
     // Transition from WALK (2) to CLEARANCE (1): start measuring or counting down
     if (oldColor == 2 && newColor == 1) {
       if (learnedClearanceTicks == 0) {
-        System.out.println("[CrosswalkTE] Starting MEASUREMENT at " + pos);
         measuring = true;
         measureTicks = 0;
       } else {
         currentCountdown = learnedClearanceTicks / 20;
-        System.out.println("[CrosswalkTE] Starting COUNTDOWN at " + pos + ": " + currentCountdown + "s (from " + learnedClearanceTicks + " ticks)");
       }
       markDirtySync(world, pos, true);
     }
@@ -119,15 +105,14 @@ public class TileEntityCrosswalkSignal extends AbstractTickableTileEntity {
       if (measuring) {
         learnedClearanceTicks = measureTicks;
         measuring = false;
-        System.out.println("[CrosswalkTE] LEARNED clearance duration at " + pos + ": " + learnedClearanceTicks + " ticks (" + (learnedClearanceTicks / 20) + "s)");
       }
       currentCountdown = -1;
       markDirtySync(world, pos, true);
     }
     // Any other transition: reset countdown display
     else if (newColor != 1) {
-      currentCountdown = -1;
       if (currentCountdown != -1) {
+        currentCountdown = -1;
         markDirtySync(world, pos, true);
       }
     }
