@@ -113,7 +113,11 @@ All items below are done and working in-game.
   - 12-8-8: Y={4, -6, -14}, sizes={12,8,8}
   - All bottoms align with standard signal at Y=-12
   - Left/right 8812 corrected to BALL red/yellow, arrow green only (per MUTCD)
-- [ ] **Wave 6** — Horizontal signals (needs xOffset, split body/texture rotation)
+- [x] **Wave 6** — 18 horizontal signals converted
+  - Added rotateBoxes90Z() for horizontal body/door with taper going top-to-bottom
+  - Added isHorizontal() flag, renderer selects rotated body data
+  - Sections arranged side-by-side via X offsets {12, 0, -12} (MUTCD: red=left)
+  - Includes 9 standard + 9 angle horizontal variants
 - [ ] **Wave 7** — Angled signals (deprecation + auto-migration)
   - Also: improve controller fault detection for invalid/removed signal blocks
     (controller should reliably switch to fault flash with message when setBlockState
