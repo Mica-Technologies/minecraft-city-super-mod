@@ -46,7 +46,7 @@
     "inventory": [
       {
         "textures": {
-          "0": "csm:blocks/ledgreenarrowleft"
+          "0": "csm:blocks/ledyellowarrowleft"
         }
       }
     ],
