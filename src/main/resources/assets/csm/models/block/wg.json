@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/wireless_gateway",
+  "parent": "csm:block/shared_models/technology/wireless_gateway",
   "textures": {
     "all": "csm:blocks/wireless_gateway",
     "particle": "csm:blocks/wireless_gateway",

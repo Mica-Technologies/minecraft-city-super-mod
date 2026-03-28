@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/waterbubbler_tall",
+  "parent": "csm:block/shared_models/novelties/waterbubbler_tall",
   "textures": {
     "all": "csm:blocks/waterbubblers",
     "particle": "csm:blocks/waterbubblers",

@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/gamewell_century_pull_station",
+  "parent": "csm:block/shared_models/lifesafety/gamewell_century_pull_station",
   "textures": {
     "all": "csm:blocks/gamewell_century_pull",
     "particle": "csm:blocks/gamewell_century_pull",

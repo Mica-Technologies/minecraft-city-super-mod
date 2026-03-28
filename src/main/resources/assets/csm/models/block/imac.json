@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/imac",
+  "parent": "csm:block/shared_models/technology/imac",
   "textures": {
     "0": "csm:blocks/imac",
 		"1": "csm:blocks/apple_magic_keyboard",

@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/metal_wire_offset",
+  "parent": "csm:block/shared_models/trafficaccessories/metal_wire_offset",
   "textures": {
     "all": "csm:blocks/metal_silver",
     "particle": "csm:blocks/metal_silver",

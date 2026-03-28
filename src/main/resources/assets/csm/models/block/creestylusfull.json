@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/cree_stylus_full",
+  "parent": "csm:block/shared_models/lighting/cree_stylus_full",
   "textures": {
     "all": "csm:blocks/troffers",
     "particle": "csm:blocks/troffers",

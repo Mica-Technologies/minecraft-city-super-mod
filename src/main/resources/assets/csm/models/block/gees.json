@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/ge_evolve_small",
+  "parent": "csm:block/shared_models/lighting/ge_evolve_small",
   "textures": {
     "all": "csm:blocks/ge_evolve_small",
     "particle": "csm:blocks/ge_evolve_small",

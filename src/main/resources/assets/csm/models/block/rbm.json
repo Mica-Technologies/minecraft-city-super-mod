@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/remote_ballast_module",
+  "parent": "csm:block/shared_models/lighting/remote_ballast_module",
   "textures": {
     "all": "csm:blocks/slmodules",
     "particle": "csm:blocks/slmodules",

@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/trafficpoles/large_mount",
+  "parent": "csm:block/shared_models/lighting/large_mount",
   "textures": {
     "all": "csm:blocks/metal_silver",
     "particle": "csm:blocks/metal_silver",

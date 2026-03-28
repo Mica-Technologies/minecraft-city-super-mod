@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/decorative_metal_pole_top",
+  "parent": "csm:block/shared_models/trafficaccessories/decorative_metal_pole_top",
   "textures": {
     "all": "csm:blocks/metal_mattetan",
     "particle": "csm:blocks/metal_mattetan",

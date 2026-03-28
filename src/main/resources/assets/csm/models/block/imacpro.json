@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/imacpro",
+  "parent": "csm:block/shared_models/technology/imacpro",
   "textures": {
     "0": "csm:blocks/imac_pro",
 		"1": "csm:blocks/imac_pro_keyboard",

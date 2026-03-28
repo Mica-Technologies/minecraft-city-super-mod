@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/faic_combo",
+  "parent": "csm:block/shared_models/lifesafety/faic_combo",
   "textures": {
     "all": "csm:blocks/faic_combo",
     "particle": "csm:blocks/faic_combo",

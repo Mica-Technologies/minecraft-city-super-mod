@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/trafficlightvertical_barlo",
+  "parent": "csm:block/shared_models/trafficsignals/trafficlightvertical_barlo",
   "textures": {
     "all": "csm:blocks/solidoff",
     "particle": "csm:blocks/solidoff",

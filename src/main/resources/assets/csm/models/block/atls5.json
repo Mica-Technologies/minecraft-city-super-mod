@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/atlas_speaker_5",
+  "parent": "csm:block/shared_models/technology/atlas_speaker_5",
   "textures": {
     "all": "csm:blocks/atlas_speaker_5",
     "particle": "csm:blocks/atlas_speaker_5",

@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/crosswalklightsingle_right",
+  "parent": "csm:block/shared_models/trafficsignals/crosswalklightsingle_right",
   "textures": {
     "all": "csm:blocks/crosswalkmeteronoff",
     "particle": "csm:blocks/crosswalkmeteronoff",

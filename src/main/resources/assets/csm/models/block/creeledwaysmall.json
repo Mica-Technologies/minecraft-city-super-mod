@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/cree_ledway_small",
+  "parent": "csm:block/shared_models/lighting/cree_ledway_small",
   "textures": {
     "all": "csm:blocks/cree_ledway_small",
     "particle": "csm:blocks/cree_ledway_small",

@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/large_cricle_vent",
+  "parent": "csm:block/shared_models/hvac/large_cricle_vent",
   "textures": {
     "all": "csm:blocks/large_circle_vent",
     "particle": "csm:blocks/large_circle_vent",

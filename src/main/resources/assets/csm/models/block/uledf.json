@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/sylvania_ultraled_full",
+  "parent": "csm:block/shared_models/lighting/sylvania_ultraled_full",
   "textures": {
     "all": "csm:blocks/troffers",
     "particle": "csm:blocks/troffers",

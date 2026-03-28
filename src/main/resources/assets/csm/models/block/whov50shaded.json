@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/westinghouse_ov50_shaded",
+  "parent": "csm:block/shared_models/lighting/westinghouse_ov50_shaded",
   "textures": {
     "all": "csm:blocks/westinghouse_ov50",
     "particle": "csm:blocks/westinghouse_ov50",

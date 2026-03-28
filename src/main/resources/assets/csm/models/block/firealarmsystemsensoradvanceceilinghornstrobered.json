@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/systemsensor_sa_hornstrobe_white_ceiling",
+  "parent": "csm:block/shared_models/lifesafety/systemsensor_sa_hornstrobe_white_ceiling",
   "textures": {
     "all": "csm:blocks/systemsensor-spectralert-red-hornstrobe",
     "particle": "csm:blocks/systemsensor-spectralert-red-hornstrobe",

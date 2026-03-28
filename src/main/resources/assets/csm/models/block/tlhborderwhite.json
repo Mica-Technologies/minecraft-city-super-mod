@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/borderhorizontal",
+  "parent": "csm:block/shared_models/trafficaccessories/borderhorizontal",
   "textures": {
     "all": "csm:blocks/signalbackplateblackblackwhite",
     "particle": "csm:blocks/signalbackplateblackblackwhite",

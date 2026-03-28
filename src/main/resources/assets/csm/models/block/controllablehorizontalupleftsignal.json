@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/trafficlighthorizontal",
+  "parent": "csm:block/shared_models/trafficsignals/trafficlighthorizontal",
   "textures": {
     "all": "csm:blocks/solidoff",
     "particle": "csm:blocks/solidoff",

@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/maclean_uvmaxx_crossarm_brown_3",
+  "parent": "csm:block/shared_models/powergrid/maclean_uvmaxx_crossarm_brown_3",
   "textures": {
     "all": "csm:blocks/maclean_uvmaxx_crossarms",
     "particle": "csm:blocks/maclean_uvmaxx_crossarms",

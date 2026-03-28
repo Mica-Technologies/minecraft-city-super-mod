@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/signal_tattle_tale_beacon",
+  "parent": "csm:block/shared_models/trafficsignals/signal_tattle_tale_beacon",
   "textures": {
     "all": "csm:blocks/metal_white",
     "particle": "csm:blocks/metal_white",

@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/ge_form_109_teardrop",
+  "parent": "csm:block/shared_models/lighting/ge_form_109_teardrop",
   "textures": {
     "all": "csm:blocks/merc_fixtures",
     "particle": "csm:blocks/merc_fixtures",

@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/macbook_pro",
+  "parent": "csm:block/shared_models/technology/macbook_pro",
   "textures": {
     "all": "csm:blocks/macbook_pro",
     "particle": "csm:blocks/macbook_pro",

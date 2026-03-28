@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/ltgcl",
+  "parent": "csm:block/shared_models/lighting/ltgcl",
   "textures": {
     "all": "csm:blocks/ltgcl",
     "particle": "csm:blocks/ltgcl",

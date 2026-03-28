@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/ge_powerbracket",
+  "parent": "csm:block/shared_models/lighting/ge_powerbracket",
   "textures": {
     "all": "csm:blocks/merc_fixtures",
     "particle": "csm:blocks/merc_fixtures",

@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/highbay_light_mount",
+  "parent": "csm:block/shared_models/lighting/highbay_light_mount",
   "textures": {
     "all": "csm:blocks/troffers",
     "particle": "csm:blocks/troffers",

@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/oldfiresprinkler3",
+  "parent": "csm:block/shared_models/lifesafety/oldfiresprinkler3",
   "textures": {
     "all": "csm:blocks/metal_silver",
     "particle": "csm:blocks/metal_white",

@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/firelite_bg6",
+  "parent": "csm:block/shared_models/lifesafety/firelite_bg6",
   "textures": {
     "all": "csm:blocks/firelite_bg6",
     "particle": "csm:blocks/firelite_bg6",

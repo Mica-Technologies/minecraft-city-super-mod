@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/nestprotect",
+  "parent": "csm:block/shared_models/lifesafety/nestprotect",
   "textures": {
     "all": "csm:blocks/nestprotect",
     "particle": "csm:blocks/nestprotect",

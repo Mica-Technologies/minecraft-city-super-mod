@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/photocell_relay_module",
+  "parent": "csm:block/shared_models/lighting/photocell_relay_module",
   "textures": {
     "all": "csm:blocks/slmodules",
     "particle": "csm:blocks/slmodules",

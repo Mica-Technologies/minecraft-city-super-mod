@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/elight",
+  "parent": "csm:block/shared_models/lifesafety/elight",
   "textures": {
     "all": "csm:blocks/elightblack",
     "particle": "csm:blocks/elightblack",

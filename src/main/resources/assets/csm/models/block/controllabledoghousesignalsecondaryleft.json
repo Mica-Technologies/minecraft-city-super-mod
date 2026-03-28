@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/trafficlightdoghouse_secondary_left",
+  "parent": "csm:block/shared_models/trafficsignals/trafficlightdoghouse_secondary_left",
   "textures": {
     "all": "csm:blocks/solidoff",
     "particle": "csm:blocks/solidoff",

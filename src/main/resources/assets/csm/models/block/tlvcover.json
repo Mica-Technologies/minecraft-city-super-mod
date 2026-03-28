@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/trafficlightverticalcover",
+  "parent": "csm:block/shared_models/trafficaccessories/trafficlightverticalcover",
   "textures": {
     "all": "csm:blocks/metal_black",
     "particle": "csm:blocks/metal_black",

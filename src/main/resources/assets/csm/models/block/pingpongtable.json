@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/ping_pong_table",
+  "parent": "csm:block/shared_models/novelties/ping_pong_table",
   "textures": {
     "all": "csm:blocks/ping_pong_table",
     "particle": "csm:blocks/ping_pong_table",

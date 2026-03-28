@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/round_concrete_pole_top",
+  "parent": "csm:block/shared_models/lighting/round_concrete_pole_top",
   "textures": {
     "all": "csm:blocks/metal_silver",
     "particle": "csm:blocks/metal_silver",

@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/infinte_power_block",
+  "parent": "csm:block/shared_models/powergrid/infinte_power_block",
   "textures": {
     "all": "csm:blocks/metal_gold",
     "particle": "csm:blocks/metal_gold",

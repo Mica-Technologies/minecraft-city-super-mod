@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/trafficpoleverticalconnector",
+  "parent": "csm:block/shared_models/trafficaccessories/trafficpoleverticalconnector",
   "textures": {
     "all": "csm:blocks/concrete_light_pole",
     "particle": "csm:blocks/concrete_light_pole",

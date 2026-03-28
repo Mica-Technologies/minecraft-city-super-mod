@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/trafficsignals/backplates/signal_backplate_8812_vertical_3",
+  "parent": "csm:block/shared_models/trafficsignals/signal_backplate_8812_vertical_3",
   "textures": {
     "all": "csm:blocks/signalbackplateblackblackpink",
     "particle": "csm:blocks/signalbackplateblackblackpink",

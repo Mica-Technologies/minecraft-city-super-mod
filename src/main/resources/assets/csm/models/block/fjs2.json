@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/fourjay_speaker_2",
+  "parent": "csm:block/shared_models/technology/fourjay_speaker_2",
   "textures": {
     "all": "csm:blocks/fourjay_speaker_2",
     "particle": "csm:blocks/fourjay_speaker_2",

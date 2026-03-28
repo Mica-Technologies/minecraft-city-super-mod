@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/brookscrossarm_es_old",
+  "parent": "csm:block/shared_models/powergrid/brookscrossarm_es_old",
   "textures": {
     "all": "csm:blocks/crossarms",
     "particle": "csm:blocks/crossarms",

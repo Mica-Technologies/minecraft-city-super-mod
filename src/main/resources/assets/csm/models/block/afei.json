@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/af_extended_insulator",
+  "parent": "csm:block/shared_models/powergrid/af_extended_insulator",
   "textures": {
     "all": "csm:blocks/af_extended_insulators",
     "particle": "csm:blocks/af_extended_insulators",

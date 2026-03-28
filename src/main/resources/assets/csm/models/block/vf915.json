@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/verifone_mx_915",
+  "parent": "csm:block/shared_models/technology/verifone_mx_915",
   "textures": {
     "all": "csm:blocks/verifone_mx_915",
     "particle": "csm:blocks/verifone_mx_915",

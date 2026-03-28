@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/systemsensor_lseries_hornstrobe_red_ceiling",
+  "parent": "csm:block/shared_models/lifesafety/systemsensor_lseries_hornstrobe_red_ceiling",
   "textures": {
     "all": "csm:blocks/sslseries-hornstrobe",
     "particle": "csm:blocks/sslseries-hornstrobe",

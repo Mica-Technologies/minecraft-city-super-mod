@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/signal_preempt_beacon",
+  "parent": "csm:block/shared_models/trafficaccessories/signal_preempt_beacon",
   "textures": {
     "all": "csm:blocks/metal_white",
     "particle": "csm:blocks/metal_white",

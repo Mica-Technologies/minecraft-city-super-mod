@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/lithonia_wall_strip_light",
+  "parent": "csm:block/shared_models/lighting/lithonia_wall_strip_light",
   "textures": {
     "all": "csm:blocks/troffers",
     "particle": "csm:blocks/troffers",

@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/adt_heat_detector",
+  "parent": "csm:block/shared_models/lifesafety/adt_heat_detector",
   "textures": {
     "all": "csm:blocks/adt_heat_detector",
     "particle": "csm:blocks/adt_heat_detector",

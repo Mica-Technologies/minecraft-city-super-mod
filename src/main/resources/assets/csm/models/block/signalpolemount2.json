@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/signal_pole_mount_2",
+  "parent": "csm:block/shared_models/trafficaccessories/signal_pole_mount_2",
   "textures": {
     "all": "csm:blocks/metal_silver",
     "particle": "csm:blocks/metal_silver",

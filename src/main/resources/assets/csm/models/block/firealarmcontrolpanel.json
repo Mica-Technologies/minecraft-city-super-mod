@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/firepanel",
+  "parent": "csm:block/shared_models/lifesafety/firepanel",
   "textures": {
     "all": "csm:blocks/firepanel",
     "particle": "csm:blocks/firepanel",

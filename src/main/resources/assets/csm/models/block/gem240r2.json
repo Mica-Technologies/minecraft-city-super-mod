@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/ge_m240r2",
+  "parent": "csm:block/shared_models/lighting/ge_m240r2",
   "textures": {
     "all": "csm:blocks/ge_hps_fixtures",
     "particle": "csm:blocks/ge_hps_fixtures",

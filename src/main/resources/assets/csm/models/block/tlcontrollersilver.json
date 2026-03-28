@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/trafficlightcontroller",
+  "parent": "csm:block/shared_models/trafficaccessories/trafficlightcontroller",
   "textures": {
     "all": "csm:blocks/metal_silver",
     "particle": "csm:blocks/metal_silver",

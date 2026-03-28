@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/trafficlightvertical8812inch",
+  "parent": "csm:block/shared_models/trafficsignals/trafficlightvertical8812inch",
   "textures": {
     "all": "csm:blocks/ledsolidredoff",
     "particle": "csm:blocks/ledsolidredoff",

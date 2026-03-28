@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/trafficsignals/backplates/signal_backplate_vertical_1",
+  "parent": "csm:block/shared_models/trafficsignals/signal_backplate_vertical_1",
   "textures": {
     "all": "csm:blocks/signalbackplateblackblackblue",
     "particle": "csm:blocks/signalbackplateblackblackblue",

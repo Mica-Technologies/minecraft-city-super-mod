@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/ltgcj_smartnode",
+  "parent": "csm:block/shared_models/lighting/ltgcj_smartnode",
   "textures": {
     "all": "csm:blocks/ltgcj_smartnode",
     "particle": "csm:blocks/ltgcj_smartnode",

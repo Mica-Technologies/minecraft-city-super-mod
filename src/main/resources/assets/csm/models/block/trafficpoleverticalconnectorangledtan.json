@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/trafficpolecurveconnector",
+  "parent": "csm:block/shared_models/trafficaccessories/trafficpolecurveconnector",
   "textures": {
     "all": "csm:blocks/metal_mattetan",
     "particle": "csm:blocks/metal_mattetan",

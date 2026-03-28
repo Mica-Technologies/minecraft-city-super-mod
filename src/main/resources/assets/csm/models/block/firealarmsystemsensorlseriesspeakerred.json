@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/sprl_straight_lores",
+  "parent": "csm:block/shared_models/lifesafety/sprl_straight_lores",
   "textures": {
     "all": "csm:blocks/sprl_straight_lores",
     "particle": "csm:blocks/sprl_straight_lores",

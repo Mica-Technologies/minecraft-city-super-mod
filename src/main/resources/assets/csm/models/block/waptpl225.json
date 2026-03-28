@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/waptpl225",
+  "parent": "csm:block/shared_models/technology/waptpl225",
   "textures": {
     "all": "csm:blocks/waptpl225",
     "particle": "csm:blocks/waptpl225",

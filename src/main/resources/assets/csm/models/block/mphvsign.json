@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/pole_hv_sign",
+  "parent": "csm:block/shared_models/powergrid/pole_hv_sign",
   "textures": {
     "all": "csm:blocks/metal_pole_hv_sign",
     "particle": "csm:blocks/metal_pole_hv_sign",

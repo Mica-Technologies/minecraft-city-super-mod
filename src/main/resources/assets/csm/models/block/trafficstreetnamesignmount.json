@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/streetnamesignceilingmount",
+  "parent": "csm:block/shared_models/trafficaccessories/streetnamesignceilingmount",
   "textures": {
     "all": "csm:blocks/metal_black",
     "particle": "csm:blocks/metal_black",
