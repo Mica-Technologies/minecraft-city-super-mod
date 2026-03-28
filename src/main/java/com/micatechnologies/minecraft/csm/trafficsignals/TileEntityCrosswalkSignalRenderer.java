@@ -23,7 +23,7 @@ public class TileEntityCrosswalkSignalRenderer extends
       float partialTicks, int destroyStage, float alpha) {
 
     int countdown = te.getCurrentCountdown();
-    if (countdown < 0) return; // No countdown active, nothing to render
+    if (countdown < 0) return; // No countdown active
 
     // Only render during clearance phase (color=1)
     IBlockState state = te.getWorld().getBlockState(te.getPos());
@@ -36,20 +36,22 @@ public class TileEntityCrosswalkSignalRenderer extends
     GlStateManager.pushMatrix();
     GlStateManager.translate((float) x + 0.5f, (float) y + 0.5f, (float) z + 0.5f);
 
-    // Rotate to face the same direction as the block
+    // Rotate to match block facing. The display face is the NORTH face of the model.
+    // For a north-facing block, no rotation needed (display already faces -Z).
     float rotation = 0;
+    float zOffset = -0.44f;
     switch (facing) {
-      case SOUTH: rotation = 0; break;
-      case WEST: rotation = 90; break;
-      case NORTH: rotation = 180; break;
+      case NORTH: rotation = 0; break;
       case EAST: rotation = 270; break;
+      case SOUTH: rotation = 180; break;
+      case WEST: rotation = 90; break;
       default: break;
     }
     GlStateManager.rotate(rotation, 0, 1, 0);
 
-    // Position the text on the front face of the signal
-    GlStateManager.translate(0, -0.05f, -0.44f);
-    GlStateManager.scale(0.02f, -0.02f, 0.02f);
+    // Position on the display face (north face at Z≈0.06 in block space)
+    GlStateManager.translate(0, 0.1f, zOffset);
+    GlStateManager.scale(0.025f, -0.025f, 0.025f);
 
     // Fullbright
     int prevBrightnessX = (int) OpenGlHelper.lastBrightnessX;
@@ -61,13 +63,11 @@ public class TileEntityCrosswalkSignalRenderer extends
     GlStateManager.enableBlend();
     GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 
-    // Render the countdown number
+    // Render the countdown number in amber/orange
     FontRenderer fontRenderer = Minecraft.getMinecraft().fontRenderer;
     String countdownStr = String.valueOf(countdown);
     int textWidth = fontRenderer.getStringWidth(countdownStr);
-    // Orange/amber color for countdown (matches real-world pedestrian countdown modules)
-    int textColor = 0xFFFF8800;
-    fontRenderer.drawString(countdownStr, -textWidth / 2, 0, textColor);
+    fontRenderer.drawString(countdownStr, -textWidth / 2, 0, 0xFFFF8800);
 
     GlStateManager.enableLighting();
     GlStateManager.depthMask(true);
