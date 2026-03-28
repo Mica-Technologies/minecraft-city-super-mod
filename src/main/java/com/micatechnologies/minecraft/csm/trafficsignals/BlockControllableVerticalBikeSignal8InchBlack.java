@@ -40,6 +40,11 @@ public class BlockControllableVerticalBikeSignal8InchBlack extends AbstractBlock
   }
 
   @Override
+  public float[] getSectionYPositions(int sectionCount) {
+    return new float[] {8.0f, 0.0f, -8.0f};
+  }
+
+  @Override
   public int[] getSectionSizes(int sectionCount) {
     return new int[] {8, 8, 8};
   }
