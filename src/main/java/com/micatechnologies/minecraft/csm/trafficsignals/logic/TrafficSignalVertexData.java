@@ -33,63 +33,6 @@ public class TrafficSignalVertexData {
     return boxes;
   }
 
-  /**
-   * Generates an optimized cylindrical perimeter for a circle visor, suitable for quads.
-   * Returns two rings (top and bottom) to form a 3D visor.
-   *
-   * @param centerX The X-coordinate of the cylinder's center.
-   * @param centerY The Y-coordinate of the cylinder's center.
-   * @param centerZ The Z-coordinate of the cylinder's base.
-   * @param outerRadius The outer radius of the cylinder.
-   * @param innerRadius The inner radius of the cylinder (for thickness).
-   * @param height The height of the cylinder along Y-axis.
-   * @param depth The depth along the Z-axis to extend the visor.
-   * @param segments The number of segments/points to approximate the cylinder (e.g., 16).
-   * @return A list of lists, where each inner list contains [x, y, z] coordinates for top and bottom rings.
-   */
-  public static List<List<float[]>> getOptimizedCircleVisorPerimeter(float centerX, float centerY, float centerZ, float outerRadius, float innerRadius, float height, float depth, int segments) {
-    List<List<float[]>> rings = new ArrayList<>();
-    List<float[]> topRing = new ArrayList<>();
-    List<float[]> bottomRing = new ArrayList<>();
-
-    if (segments < 3) segments = 3;
-    float angleIncrement = (float) (2.0 * Math.PI / segments);
-
-    for (int i = 0; i < segments; i++) {
-      float angle = i * angleIncrement;
-      float cos = (float) Math.cos(angle);
-      float sin = (float) Math.sin(angle);
-
-      // Top ring (at centerY + height/2)
-      float topX = centerX + outerRadius * cos;
-      float topY = centerY + height / 2.0f;
-      float topZ = centerZ + depth;
-      topRing.add(new float[]{topX, topY, topZ});
-
-      // Bottom ring (at centerY - height/2)
-      float bottomX = centerX + outerRadius * cos;
-      float bottomY = centerY - height / 2.0f;
-      float bottomZ = centerZ + depth;
-      bottomRing.add(new float[]{bottomX, bottomY, bottomZ});
-    }
-
-    rings.add(topRing);
-    rings.add(bottomRing);
-    return rings;
-  }
-
-  // New: Similar for tunnel (longer depth, perhaps tapered)
-  public static List<Box> getOptimizedTunnelVisor() {
-    List<Box> boxes = new ArrayList<>();
-    int segments = 16;
-    float radius = 6.0f;
-    float depth = 9.0f; // Longer for tunnel
-
-    // Similar loop as above, but extend Z deeper
-    // ... (adapt the circle logic, but with z1 = 2.0f, z2 = 11.0f or your original range)
-
-    return boxes;
-  }
   public static final List<Box> TUNNEL_VISOR_VERTEX_DATA = Arrays.asList(
       new Box(new float[]{2.90f, 8.10f, 2.00f}, new float[]{3.30f, 8.50f, 11.00f}),
       new Box(new float[]{2.90f, 3.70f, 2.00f}, new float[]{3.30f, 4.10f, 11.00f}),

@@ -6,6 +6,8 @@ import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockCont
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyColor;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyTilt;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBulbColor;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBulbStyle;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBulbType;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalSectionInfo;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalVisorType;
 import net.minecraft.block.Block;
@@ -101,6 +103,9 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
     if (compound.hasKey(BODY_TILT_KEY)) {
       bodyTilt = TrafficSignalBodyTilt.fromNBT(compound.getInteger(BODY_TILT_KEY));
     }
+
+    // Mark as dirty so the renderer recompiles the display list with updated state
+    dirty = true;
   }
 
 
@@ -248,6 +253,7 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
     for (TrafficSignalSectionInfo sectionInfo : sectionInfos) {
       sectionInfo.setBodyColor(nextPaintColor);
     }
+    markDirtySync(world, pos, true);
     return nextPaintColor;
   }
 
@@ -313,6 +319,30 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
     }
     markDirtySync(world, pos, true);
     return nextVisorType;
+  }
+
+  public TrafficSignalBulbStyle getNextBulbStyle() {
+    if (sectionInfos.length == 0) {
+      return TrafficSignalBulbStyle.INCANDESCENT;
+    }
+    TrafficSignalBulbStyle next = sectionInfos[0].getBulbStyle().getNextBulbStyle();
+    for (TrafficSignalSectionInfo sectionInfo : sectionInfos) {
+      sectionInfo.setBulbStyle(next);
+    }
+    markDirtySync(world, pos, true);
+    return next;
+  }
+
+  public TrafficSignalBulbType getNextBulbType() {
+    if (sectionInfos.length == 0) {
+      return TrafficSignalBulbType.BALL;
+    }
+    TrafficSignalBulbType next = sectionInfos[0].getBulbType().getNextBulbType();
+    for (TrafficSignalSectionInfo sectionInfo : sectionInfos) {
+      sectionInfo.setBulbType(next);
+    }
+    markDirtySync(world, pos, true);
+    return next;
   }
 
   public boolean isStateDirty() {
