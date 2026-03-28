@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:controllableverticalsolidsignal"
+    "model": "csm:lightupair"
   },
   "variants": {
     "facing": {
@@ -17,25 +17,14 @@
       }
     },
     "color": {
-      "0": {
-        "textures": {
-          "0": "csm:blocks/solidred"
-        }
-      },
-      "1": {
-        "textures": {
-          "1": "csm:blocks/solidyellow"
-        }
-      },
-      "2": {
-        "textures": {
-          "2": "csm:blocks/solidgreen"
-        }
-      },
+      "0": {},
+      "1": {},
+      "2": {},
       "3": {}
     },
     "inventory": [
       {
+        "model": "csm:controllableverticaltestsolidsignal",
         "textures": {
           "0": "csm:blocks/solidred",
           "1": "csm:blocks/solidyellow",

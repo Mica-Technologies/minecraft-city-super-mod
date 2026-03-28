@@ -140,6 +140,7 @@ import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVertic
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalSolidSignalNoRedVisor;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalSolidSignalNoVisors;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalSolidSignalReversed;
+import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalTestSolidSignal;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalUpLeftAddOnSignal;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalUpLeftAddOnSignalGray;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalUpLeftSignal;
@@ -450,6 +451,8 @@ public class CsmTabTrafficSignals extends CsmTab {
         fmlPreInitializationEvent); // ControllableVerticalSolidSignalNoVisors
     initTabBlock(BlockControllableVerticalSolidSignalReversed.class,
         fmlPreInitializationEvent); // ControllableVerticalSolidSignalReversed
+    initTabBlock(BlockControllableVerticalTestSolidSignal.class,
+        fmlPreInitializationEvent); // ControllableVerticalTestSolidSignal
     initTabBlock(BlockControllableVerticalUpLeftAddOnSignal.class,
         fmlPreInitializationEvent); // ControllableVerticalUpLeftAddOnSignal
     initTabBlock(BlockControllableVerticalUpLeftSignal.class,
