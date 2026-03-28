@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -68,7 +69,10 @@ public class TextureUsageAuditTool {
           System.out.println("Phase 4: Scanning item models for texture references...");
           scanAllModels(itemModelsDir, sharedModelsDir);
 
-          System.out.println("Phase 5: Comparing against texture files on disk...");
+          System.out.println("Phase 5: Scanning OBJ/MTL files for texture references...");
+          scanMtlFiles(blockModelsDir);
+
+          System.out.println("Phase 6: Comparing against texture files on disk...");
 
           // Find all texture files on disk
           Set<String> diskBlockTextures = new TreeSet<>();
@@ -128,6 +132,33 @@ public class TextureUsageAuditTool {
           System.out.println("Missing textures: " + (missingBlock.size() + missingItem.size()));
           System.out.println("========================================\n");
         });
+  }
+
+  private static void scanMtlFiles(File blockModelsDir) {
+    try (Stream<Path> files = Files.walk(blockModelsDir.toPath())) {
+      files.filter(p -> p.toString().endsWith(".mtl"))
+          .forEach(p -> {
+            try {
+              List<String> lines = Files.readAllLines(p);
+              for (String line : lines) {
+                line = line.trim();
+                if (line.startsWith("map_Kd") && line.contains(MOD_PREFIX)) {
+                  String ref = line.substring(line.indexOf(MOD_PREFIX) + MOD_PREFIX.length());
+                  if (ref.startsWith("blocks/")) {
+                    referencedBlockTextures.add(ref.substring("blocks/".length()));
+                  } else if (ref.startsWith("items/")) {
+                    referencedItemTextures.add(ref.substring("items/".length()));
+                  }
+                  modelsScanned.incrementAndGet();
+                }
+              }
+            } catch (IOException e) {
+              // Skip
+            }
+          });
+    } catch (IOException e) {
+      System.err.println("Error scanning MTL files: " + e.getMessage());
+    }
   }
 
   private static void scanAllBlockstates(File blockstateDir, File blockModelsDir,
