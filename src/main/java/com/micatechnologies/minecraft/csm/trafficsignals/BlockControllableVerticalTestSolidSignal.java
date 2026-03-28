@@ -61,15 +61,15 @@ public class BlockControllableVerticalTestSolidSignal extends AbstractBlockContr
   @Override
   public TrafficSignalSectionInfo[] getDefaultTrafficSignalSectionInfo() {
     TrafficSignalSectionInfo[] infos = new TrafficSignalSectionInfo[] {
-        new TrafficSignalSectionInfo(TrafficSignalBodyColor.BATTLESHIP_GRAY,TrafficSignalBodyColor.BATTLESHIP_GRAY,TrafficSignalBodyColor.BATTLESHIP_GRAY,
+        new TrafficSignalSectionInfo(TrafficSignalBodyColor.YELLOW,TrafficSignalBodyColor.YELLOW,TrafficSignalBodyColor.YELLOW,
             TrafficSignalVisorType.CUTAWAY, TrafficSignalBulbStyle.INCANDESCENT, TrafficSignalBulbType.UP,
             TrafficSignalBulbColor.RED,false),
-        new TrafficSignalSectionInfo(TrafficSignalBodyColor.FLAT_BLACK,TrafficSignalBodyColor.FLAT_BLACK,TrafficSignalBodyColor.FLAT_BLACK,
-            TrafficSignalVisorType.CUTAWAY, TrafficSignalBulbStyle.INCANDESCENT, TrafficSignalBulbType.UP_RIGHT,
+        new TrafficSignalSectionInfo(TrafficSignalBodyColor.YELLOW,TrafficSignalBodyColor.YELLOW,TrafficSignalBodyColor.YELLOW,
+            TrafficSignalVisorType.CUTAWAY, TrafficSignalBulbStyle.INCANDESCENT, TrafficSignalBulbType.UP,
             TrafficSignalBulbColor.YELLOW,false),
         new TrafficSignalSectionInfo(TrafficSignalBodyColor.YELLOW,TrafficSignalBodyColor.YELLOW,TrafficSignalBodyColor.YELLOW,
-            TrafficSignalVisorType.CUTAWAY, TrafficSignalBulbStyle.INCANDESCENT, TrafficSignalBulbType.TRANSIT_RIGHT,
-            TrafficSignalBulbColor.GREEN,true)
+            TrafficSignalVisorType.CUTAWAY, TrafficSignalBulbStyle.INCANDESCENT, TrafficSignalBulbType.UP,
+            TrafficSignalBulbColor.GREEN,false)
     };
     return infos;
   }

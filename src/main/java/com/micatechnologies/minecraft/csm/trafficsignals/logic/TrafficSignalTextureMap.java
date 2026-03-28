@@ -100,17 +100,17 @@ public class TrafficSignalTextureMap {
       TrafficSignalBulbColor color, boolean isLit) {
     int colorIdx = color.ordinal(); // 0=green, 1=yellow, 2=red
     // Atlas tile order (from ImageTilerTool INPUT_IMAGE_NAMES):
-    //  0-2:  biled off (G/Y/R)        3-5:  biled on (G/Y/R)
-    //  6:    led arrow off             7-9:  led arrow on (G/Y/R)
-    // 10-12: inca arrow off (G/Y/R)  13-15: inca arrow on (G/Y/R)
-    // 16-18: uturn off (G/Y/R)       19-21: uturn on (G/Y/R)
-    // 22-24: wled off (G/Y/R)        25-27: wled on (G/Y/R)
-    // 28-30: iled off (G/Y/R)        31-33: iled on (G/Y/R)
-    // 34-36: inca off (G/Y/R)        37-39: inca on (G/Y/R)
-    // 40-42: inca arrow off (G/Y/R)  43-45: inca arrow on (G/Y/R)
-    // 46:    eled off                 47-49: eled on (G/Y/R)
-    // 50:    gtx off                  51-53: gtx on (G/Y/R)
-    // 54:    wled_red_x
+    //  0-2:  biled off (G/Y/R)        3-5:  biled on (G/Y/R)         [BIKE]
+    //  6:    led dotted arrow off      7-9:  led dotted arrow (G/Y/R) [LED_DOTTED arrow]
+    // 10-12: arrow off (G/Y/R)       13-15: arrow on (G/Y/R)         [LED arrow]
+    // 16-18: uturn off (G/Y/R)       19-21: uturn on (G/Y/R)         [UTURN]
+    // 22-24: wled off (G/Y/R)        25-27: wled on (G/Y/R)          [TRANSIT]
+    // 28-30: iled off (G/Y/R)        31-33: iled on (G/Y/R)          [LED ball]
+    // 34-36: inca off (G/Y/R)        37-39: inca on (G/Y/R)          [INCANDESCENT ball]
+    // 40-42: inca arrow off (G/Y/R)  43-45: inca arrow on (G/Y/R)    [INCANDESCENT arrow]
+    // 46:    eled off                 47-49: eled on (G/Y/R)          [LED_DOTTED ball]
+    // 50:    gtx off                  51-53: gtx on (G/Y/R)           [unused/future]
+    // 54:    wled_red_x                                               [unused/future]
     if (!isLit) {
       switch (type) {
         case BIKE:
@@ -141,7 +141,7 @@ public class TrafficSignalTextureMap {
             return 6; // led arrow off
           }
           if (style == TrafficSignalBulbStyle.LED) {
-            return 10 + colorIdx; // 10-12: inca arrow off (G/Y/R)
+            return 10 + colorIdx; // 10-12: arrow off (G/Y/R)
           }
           if (style == TrafficSignalBulbStyle.INCANDESCENT) {
             return 40 + colorIdx; // 40-42: inca arrow off (G/Y/R)
@@ -175,10 +175,10 @@ public class TrafficSignalTextureMap {
         case UP_RIGHT:
         case RIGHT:
           if (style == TrafficSignalBulbStyle.LED_DOTTED) {
-            return 7 + colorIdx; // 7-9: led arrow on (G/Y/R)
+            return 7 + colorIdx; // 7-9: led dotted arrow (G/Y/R)
           }
           if (style == TrafficSignalBulbStyle.LED) {
-            return 13 + colorIdx; // 13-15: inca arrow on (G/Y/R)
+            return 13 + colorIdx; // 13-15: arrow on (G/Y/R)
           }
           if (style == TrafficSignalBulbStyle.INCANDESCENT) {
             return 43 + colorIdx; // 43-45: inca arrow on (G/Y/R)
