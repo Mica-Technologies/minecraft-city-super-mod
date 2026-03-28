@@ -1,5 +1,8 @@
 {
   "forge_marker": 1,
+  "defaults": {
+    "model": "csm:controllablecrosswalkleftmount_off"
+  },
   "variants": {
     "color": {
       "0": {
@@ -11,14 +14,10 @@
       "2": {
         "model": "csm:controllablecrosswalkleftmount_walk"
       },
-      "3": {
-        "model": "csm:controllablecrosswalkleftmount_off"
-      }
+      "3": {}
     },
     "facing": {
-      "north": {
-        "y": 0
-      },
+      "north": {},
       "east": {
         "y": 90
       },
@@ -28,6 +27,11 @@
       "west": {
         "y": 270
       }
-    }
+    },
+    "inventory": [
+      {
+        "model": "csm:controllablecrosswalkleftmount_walk"
+      }
+    ]
   }
 }

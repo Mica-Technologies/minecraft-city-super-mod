@@ -7,7 +7,7 @@
       "particle": "csm:blocks/solidoff",
       "0": "csm:blocks/redarrowleftoff",
       "1": "csm:blocks/yellowarrowleftoff",
-      "2": "csm:blocks/greenarrowleft"
+      "2": "csm:blocks/greenarrowleftoff"
     }
   },
   "variants": {
