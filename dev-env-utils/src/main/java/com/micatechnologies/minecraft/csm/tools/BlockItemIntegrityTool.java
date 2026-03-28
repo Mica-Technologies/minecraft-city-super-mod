@@ -294,7 +294,7 @@ public class BlockItemIntegrityTool {
             boolean unused = true;
 
             // Check if for block
-            if (line.startsWith("tile.")) {
+            if (line.startsWith("tile.") && line.contains(".name")) {
               String blockId = line.substring("tile.".length(), line.indexOf(".name"));
               if (knownBlockIds.contains(blockId)) {
                 unused = false;
@@ -302,7 +302,7 @@ public class BlockItemIntegrityTool {
             }
 
             // Check if for item
-            if (line.startsWith("item.")) {
+            if (line.startsWith("item.") && line.contains(".name")) {
               String itemId = line.substring("item.".length(), line.indexOf(".name"));
               if (knownItemIds.contains(itemId)) {
                 unused = false;
