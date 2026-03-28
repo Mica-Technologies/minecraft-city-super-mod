@@ -149,12 +149,25 @@ The mod's resource structure was significantly cleaned up:
 - [ ] **11.** ResourceUsageDetectionTool: Batch/report mode
 - [ ] **12.** ResourceUsageDetectionTool: Texture usage detection
 
-### Completed Results (2026-03-27)
+### Completed Results (2026-03-27 — 2026-03-28)
 
-BlockItemIntegrityTool now reports:
-- **0 errors** (down from 19)
-- **0 suppressed errors** (down from 48)
-- **7 unused files** (down from 413) — 3 remaining false positives are Forge blockstate
-  texture overrides in subdirectories that the tool doesn't trace yet
-- **14 genuinely unused assets moved** to `assets/cleaned_unused_assets/` (10 textures + 4 sounds)
-- [ ] **10.** ResourceUsageDetectionTool: Texture usage detection
+**BlockItemIntegrityTool:**
+- **0 errors** (down from 19), **0 suppressed errors** (down from 48)
+- **7 unused files** (down from 413) — remaining are OBJ/MTL texture refs the tool doesn't trace
+- **17 genuinely unused assets moved** to `assets/cleaned_unused_assets/` (13 textures + 4 sounds)
+
+**New Tools Created (2026-03-28):**
+- **ForgeBlockstateValidator** — Validates all 1,321 blockstates: JSON structure, model/texture
+  refs, inventory/normal variants, facing values, double-block/ prefix detection. Reports 0
+  errors on clean codebase.
+- **TextureUsageAuditTool** — Full blockstate→model→texture chain tracing including Forge
+  texture overrides. Found 5 unused textures (3 borders + 2 OBJ-referenced false positives).
+  Scans 1,321 blockstates + 1,428 models. Only known gap: OBJ/MTL texture references.
+- **RegistryConsistencyTool** — Cross-references 1,261 block classes, 15 item classes, 1,321
+  blockstates, 1,306 lang entries. Reports 0 issues on clean codebase.
+
+**Existing Tool Fixes:**
+- **BoundingBoxExtractionTool** — Updated model path from old `models/custom/` to
+  `models/block/shared_models/`
+
+**IntelliJ Run Configurations** — Created for all 3 new tools (in `Dev Tools` folder).
