@@ -50,7 +50,7 @@ public class BlockControllableVerticalSolidFlashRedSignalGray extends AbstractBl
             TrafficSignalBulbColor.YELLOW, false),
         new TrafficSignalSectionInfo(TrafficSignalBodyColor.BATTLESHIP_GRAY, TrafficSignalBodyColor.BATTLESHIP_GRAY, TrafficSignalBodyColor.BATTLESHIP_GRAY,
             TrafficSignalVisorType.CUTAWAY, TrafficSignalBulbStyle.LED, TrafficSignalBulbType.BALL,
-            TrafficSignalBulbColor.GREEN, false)
+            TrafficSignalBulbColor.GREEN, TrafficSignalBulbColor.RED, false, true)
     };
     return infos;
   }
