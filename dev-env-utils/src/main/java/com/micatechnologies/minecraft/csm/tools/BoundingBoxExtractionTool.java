@@ -28,7 +28,7 @@ public class BoundingBoxExtractionTool {
   public static void main(String[] args) {
     CsmToolUtility.doToolExecuteWrapped("CSM Bounding Box Extractor Tool", args,
         (devEnvironmentPath) -> {
-          final String modelFolderPathRelative = "src/main/resources/assets/csm/models/custom";
+          final String modelFolderPathRelative = "src/main/resources/assets/csm/models/block/shared_models";
           final String modelBoundingBoxFolderPathRelative =
               "dev-env-utils/boundingBoxExtractorToolOutput";
           File modelFolder = new File(devEnvironmentPath, modelFolderPathRelative);
