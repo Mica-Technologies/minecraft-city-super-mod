@@ -1,14 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:controllablehorizontalangleuturnsignal",
-    "textures": {
-      "all": "csm:blocks/solidoff",
-      "particle": "csm:blocks/solidoff",
-      "0": "csm:blocks/greenuturnoff",
-      "1": "csm:blocks/yellowuturnoff",
-      "2": "csm:blocks/reduturnoff"
-    }
+    "model": "csm:lightupair"
   },
   "variants": {
     "facing": {
@@ -24,41 +17,20 @@
       }
     },
     "color": {
-      "0": {
-        "textures": {
-          "0": "csm:blocks/greenuturnoff",
-          "1": "csm:blocks/yellowuturnoff",
-          "2": "csm:blocks/reduturn"
-        }
-      },
-      "1": {
-        "textures": {
-          "0": "csm:blocks/greenuturnoff",
-          "1": "csm:blocks/yellowuturn",
-          "2": "csm:blocks/reduturnoff"
-        }
-      },
-      "2": {
-        "textures": {
-          "0": "csm:blocks/greenuturn",
-          "1": "csm:blocks/yellowuturnoff",
-          "2": "csm:blocks/reduturnoff"
-        }
-      },
-      "3": {
-        "textures": {
-          "0": "csm:blocks/greenuturnoff",
-          "1": "csm:blocks/yellowuturnoff",
-          "2": "csm:blocks/reduturnoff"
-        }
-      }
+      "0": {},
+      "1": {},
+      "2": {},
+      "3": {}
     },
     "inventory": [
       {
+        "model": "csm:controllablehorizontalangleuturnsignal",
         "textures": {
-          "2": "csm:blocks/reduturn",
+          "all": "csm:blocks/solidoff",
+          "particle": "csm:blocks/solidoff",
+          "0": "csm:blocks/greenuturn",
           "1": "csm:blocks/yellowuturn",
-          "0": "csm:blocks/greenuturn"
+          "2": "csm:blocks/reduturn"
         }
       }
     ],
