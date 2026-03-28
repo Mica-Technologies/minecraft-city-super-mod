@@ -188,6 +188,15 @@ public abstract class AbstractBlockControllableSignalHead extends AbstractBlockC
   }
 
   /**
+   * Returns per-section X offsets for the renderer. Default is 0 for all sections
+   * (straight vertical stack). Override for doghouse signals where lower sections
+   * are shifted left or right relative to the top section.
+   */
+  public float[] getSectionXPositions(int sectionCount) {
+    return new float[sectionCount]; // all zeros
+  }
+
+  /**
    * Ensures a tile entity exists for this block. Handles migration of blocks that existed
    * in the world before being converted to custom rendering (they were saved without a TE).
    * Called from neighborChanged and onBlockActivated so the TE is created automatically

@@ -27,6 +27,11 @@ public class BlockControllableDoghouseMainLeftSignal extends AbstractBlockContro
     return true;
   }
 
+  @Override
+  public float[] getSectionXPositions(int sectionCount) {
+    return new float[] {0, 6, 6};
+  }
+
   /**
    * Retrieves the registry name of the block.
    *
