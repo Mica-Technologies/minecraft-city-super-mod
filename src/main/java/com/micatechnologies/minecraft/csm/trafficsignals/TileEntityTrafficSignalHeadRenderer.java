@@ -13,7 +13,6 @@ import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalText
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalTextureMap.TextureInfo;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalVertexData;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalVisorType;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +22,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 import net.minecraft.client.renderer.Tessellator;
@@ -53,8 +53,13 @@ public class TileEntityTrafficSignalHeadRenderer extends
 
     GlStateManager.disableLighting();
     GlStateManager.disableCull();
-    GlStateManager.enableBlend(); // Added for smoother edges/lights
+    GlStateManager.enableBlend();
     GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+
+    // Set fullbright lightmap so signal textures aren't dimmed by world lighting
+    int prevBrightnessX = (int) OpenGlHelper.lastBrightnessX;
+    int prevBrightnessY = (int) OpenGlHelper.lastBrightnessY;
+    OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240f, 240f);
 
     // Push matrix once
     GL11.glPushMatrix();
@@ -111,6 +116,9 @@ public class TileEntityTrafficSignalHeadRenderer extends
     renderBulbs(te, sectionInfos);
 
     GL11.glPopMatrix();
+
+    // Restore previous lightmap brightness
+    OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, prevBrightnessX, prevBrightnessY);
     GlStateManager.disableBlend();
     GlStateManager.enableCull();
     GlStateManager.enableLighting();
@@ -141,53 +149,10 @@ public class TileEntityTrafficSignalHeadRenderer extends
       RenderHelper.addBoxesToBuffer(TrafficSignalVertexData.SIGNAL_DOOR_VERTEX_DATA, buffer,
           doorColor.getRed(), doorColor.getGreen(), doorColor.getBlue(), 1.0f, 0.0f, yOffset, 0.0f);
 
-      if (visorType != TrafficSignalVisorType.CIRCLE) {
-        addVisorQuadsToBuffer(visorType, buffer, visorColor.getRed(), visorColor.getGreen(),
-            visorColor.getBlue(), 1.0f, yOffset);
-      }
+      addVisorQuadsToBuffer(visorType, buffer, visorColor.getRed(), visorColor.getGreen(),
+          visorColor.getBlue(), 1.0f, yOffset);
     }
     tessellator.draw();
-
-    for (int i = 0; i < sectionInfos.length; i++) {
-      TrafficSignalSectionInfo sectionInfo = sectionInfos[i];
-      TrafficSignalVisorType visorType = sectionInfo.getVisorType();
-      TrafficSignalBodyColor visorColor = sectionInfo.getVisorColor();
-
-      float yOffset = ((sectionInfos.length - 1 - i) - (sectionInfos.length - 1) / 2.0f) * 12.0f;
-
-      if (visorType == TrafficSignalVisorType.CIRCLE) {
-        BufferBuilder triBuffer = tessellator.getBuffer();
-        triBuffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR); // Use QUADS for cylinder
-
-        float centerX = 8.0f;
-        float centerY = yOffset;
-        float centerZ = 10.0f;
-        float outerRadius = 6.0f;
-        float innerRadius = 4.0f; // Inner thickness
-        float height = 12.0f; // Match bulb height
-        float depth = 4.0f; // Extend further forward
-        List<List<float[]>> rings = TrafficSignalVertexData.getOptimizedCircleVisorPerimeter(centerX, centerY, centerZ, outerRadius, innerRadius, height, depth, 16);
-        List<float[]> topRing = rings.get(0);
-        List<float[]> bottomRing = rings.get(1);
-
-        // Draw quads between top and bottom rings
-        for (int j = 0; j < topRing.size(); j++) {
-          int nextJ = (j + 1) % topRing.size();
-          float[] top1 = topRing.get(j);
-          float[] top2 = topRing.get(nextJ);
-          float[] bottom1 = bottomRing.get(j);
-          float[] bottom2 = bottomRing.get(nextJ);
-
-          // Quad: top1 -> top2 -> bottom2 -> bottom1
-          triBuffer.pos(top1[0], top1[1], top1[2]).color(visorColor.getRed(), visorColor.getGreen(), visorColor.getBlue(), 1.0f).endVertex();
-          triBuffer.pos(top2[0], top2[1], top2[2]).color(visorColor.getRed(), visorColor.getGreen(), visorColor.getBlue(), 1.0f).endVertex();
-          triBuffer.pos(bottom2[0], bottom2[1], bottom2[2]).color(visorColor.getRed(), visorColor.getGreen(), visorColor.getBlue(), 1.0f).endVertex();
-          triBuffer.pos(bottom1[0], bottom1[1], bottom1[2]).color(visorColor.getRed(), visorColor.getGreen(), visorColor.getBlue(), 1.0f).endVertex();
-        }
-
-        tessellator.draw();
-      }
-    }
 
     GlStateManager.enableTexture2D();
   }
@@ -196,6 +161,9 @@ public class TileEntityTrafficSignalHeadRenderer extends
       float red, float green, float blue, float alpha, float yOffset) {
     List<RenderHelper.Box> visorData;
     switch (visorType) {
+      case CIRCLE:
+        visorData = TrafficSignalVertexData.CIRCLE_VISOR_VERTEX_DATA;
+        break;
       case TUNNEL:
         visorData = TrafficSignalVertexData.TUNNEL_VISOR_VERTEX_DATA;
         break;
@@ -221,6 +189,9 @@ public class TileEntityTrafficSignalHeadRenderer extends
   }
 
   private void renderBulbs(TileEntityTrafficSignalHead te, TrafficSignalSectionInfo[] sectionInfos) {
+    // Reset GL color to white so textures are not tinted by leftover static part colors
+    GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
+
     // Always bind the correct texture before rendering
     ResourceLocation texLoc = new ResourceLocation("csm", "textures/blocks/trafficsignals/lights/atlas.png");
     Minecraft.getMinecraft().getTextureManager().bindTexture(texLoc);

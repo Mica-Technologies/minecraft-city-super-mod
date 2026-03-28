@@ -99,77 +99,89 @@ public class TrafficSignalTextureMap {
   private static int getFlatAtlasIndex(TrafficSignalBulbStyle style, TrafficSignalBulbType type,
       TrafficSignalBulbColor color, boolean isLit) {
     int colorIdx = color.ordinal(); // 0=green, 1=yellow, 2=red
+    // Atlas tile order (from ImageTilerTool INPUT_IMAGE_NAMES):
+    //  0-2:  biled off (G/Y/R)        3-5:  biled on (G/Y/R)
+    //  6:    led arrow off             7-9:  led arrow on (G/Y/R)
+    // 10-12: inca arrow off (G/Y/R)  13-15: inca arrow on (G/Y/R)
+    // 16-18: uturn off (G/Y/R)       19-21: uturn on (G/Y/R)
+    // 22-24: wled off (G/Y/R)        25-27: wled on (G/Y/R)
+    // 28-30: iled off (G/Y/R)        31-33: iled on (G/Y/R)
+    // 34-36: inca off (G/Y/R)        37-39: inca on (G/Y/R)
+    // 40-42: inca arrow off (G/Y/R)  43-45: inca arrow on (G/Y/R)
+    // 46:    eled off                 47-49: eled on (G/Y/R)
+    // 50:    gtx off                  51-53: gtx on (G/Y/R)
+    // 54:    wled_red_x
     if (!isLit) {
       switch (type) {
         case BIKE:
-          return colorIdx; // Row 0: 0, 1, 2
+          return colorIdx; // 0, 1, 2: biled off (G/Y/R)
         case BALL:
           if (style == TrafficSignalBulbStyle.LED_DOTTED) {
-            return 48; // Row 6: 48
+            return 46; // eled_off
           }
           if (style == TrafficSignalBulbStyle.LED) {
-            return 30 + colorIdx; // Row 3: 30, 31, 32
+            return 28 + colorIdx; // 28-30: iled off (G/Y/R)
           }
           if (style == TrafficSignalBulbStyle.INCANDESCENT) {
-            return 34 + colorIdx; // Row 4: 34, 35, 36
+            return 34 + colorIdx; // 34-36: inca off (G/Y/R)
           }
           break;
         case UTURN:
-          return 16 + colorIdx; // Row 2: 16, 17, 18
+          return 16 + colorIdx; // 16-18: uturn off (G/Y/R)
         case TRANSIT:
         case TRANSIT_LEFT:
         case TRANSIT_RIGHT:
-          return 22 + colorIdx; // Row 2: 22, 23,
+          return 22 + colorIdx; // 22-24: wled off (G/Y/R)
         case LEFT:
         case UP:
         case UP_LEFT:
         case UP_RIGHT:
         case RIGHT:
           if (style == TrafficSignalBulbStyle.LED_DOTTED) {
-            return 6; // Row 0: 6
+            return 6; // led arrow off
           }
           if (style == TrafficSignalBulbStyle.LED) {
-            return 10 + colorIdx; // Row 1: 10, 11, 12
+            return 10 + colorIdx; // 10-12: inca arrow off (G/Y/R)
           }
           if (style == TrafficSignalBulbStyle.INCANDESCENT) {
-            return 40 + colorIdx; // Row 5: 40, 41, 42
+            return 40 + colorIdx; // 40-42: inca arrow off (G/Y/R)
           }
           break;
       }
     } else {
       switch (type) {
         case BIKE:
-          return 3 + colorIdx; // Row 0: 3, 4, 5
+          return 3 + colorIdx; // 3-5: biled on (G/Y/R)
         case BALL:
           if (style == TrafficSignalBulbStyle.LED_DOTTED) {
-            return 49 + colorIdx; // Row 6: 49, 50, 51
+            return 47 + colorIdx; // 47-49: eled on (G/Y/R)
           }
           if (style == TrafficSignalBulbStyle.LED) {
-            return 33 + colorIdx; // Row 3: 33, 34, 35
+            return 31 + colorIdx; // 31-33: iled on (G/Y/R)
           }
           if (style == TrafficSignalBulbStyle.INCANDESCENT) {
-            return 37 + colorIdx; // Row 4: 37, 38, 39
+            return 37 + colorIdx; // 37-39: inca on (G/Y/R)
           }
           break;
         case UTURN:
-          return 19 + colorIdx; // Row 2: 19, 20, 21
+          return 19 + colorIdx; // 19-21: uturn on (G/Y/R)
         case TRANSIT:
         case TRANSIT_LEFT:
         case TRANSIT_RIGHT:
-          return 25 + colorIdx; // Row 3: 25, 26, 27
+          return 25 + colorIdx; // 25-27: wled on (G/Y/R)
         case LEFT:
         case UP:
         case UP_LEFT:
         case UP_RIGHT:
         case RIGHT:
           if (style == TrafficSignalBulbStyle.LED_DOTTED) {
-            return 7 + colorIdx; // Row 0-1: 7, 8, 9
+            return 7 + colorIdx; // 7-9: led arrow on (G/Y/R)
           }
           if (style == TrafficSignalBulbStyle.LED) {
-            return 13 + colorIdx; // Row 1: 13, 14, 15
+            return 13 + colorIdx; // 13-15: inca arrow on (G/Y/R)
           }
           if (style == TrafficSignalBulbStyle.INCANDESCENT) {
-            return 43 + colorIdx; // Row 5: 43, 44, 45
+            return 43 + colorIdx; // 43-45: inca arrow on (G/Y/R)
           }
           break;
       }
