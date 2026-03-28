@@ -32,8 +32,11 @@ All tools are in `src/main/java/com/micatechnologies/minecraft/csm/tools/`.
 | Tool | Purpose | IntelliJ Run Config |
 |------|---------|-------------------|
 | [BlockItemIntegrityTool](docs/BlockItemIntegrityTool.md) | Deep integrity verification of all blocks, items, models, textures, sounds, and lang entries | `Check Block Item Integrity` |
+| [ForgeBlockstateValidator](docs/ForgeBlockstateValidator.md) | Validates all Forge blockstates for correct structure, model refs, and texture refs | `Validate Forge Blockstates` |
+| [TextureUsageAuditTool](docs/TextureUsageAuditTool.md) | Traces full blockstate→model→texture chain to find unused/missing textures | `Audit Texture Usage` |
+| [RegistryConsistencyTool](docs/RegistryConsistencyTool.md) | Cross-references Java classes, blockstates, models, and lang entries for consistency | `Check Registry Consistency` |
 | [ResourceUsageDetectionTool](docs/ResourceUsageDetectionTool.md) | Interactive GUI tool to check if a specific resource is used in the mod | — |
-| [BoundingBoxExtractionTool](docs/BoundingBoxExtractionTool.md) | Extracts and calculates bounding boxes from custom model JSON files | `Extract Bounding Boxes` |
+| [BoundingBoxExtractionTool](docs/BoundingBoxExtractionTool.md) | Extracts and calculates bounding boxes from shared model JSON files | `Extract Bounding Boxes` |
 | [BatchRenameTool](docs/BatchRenameTool.md) | Batch rename files and their contents using configurable replacement rules | `Process Batch Rename` |
 | LangFileSortTool | Alphabetically sorts all `.lang` files | `Sort Lang File(s)` |
 | SignModTool | Updates traffic sign blockstate files with 8-directional rotation variants | — |
