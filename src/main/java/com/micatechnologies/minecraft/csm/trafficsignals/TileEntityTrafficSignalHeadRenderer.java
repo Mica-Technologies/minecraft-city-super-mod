@@ -166,9 +166,15 @@ public class TileEntityTrafficSignalHeadRenderer extends
     GlStateManager.enableTexture2D();
   }
 
+  // Downward tilt angle for visors (degrees). Makes bulbs visible from below, as real
+  // traffic signals are mounted high on mast arms. Pivot is at the body face (z=11).
+  private static final float VISOR_TILT_DEGREES = 6.5f;
+  private static final float VISOR_PIVOT_Z = 11.0f;
+
   private void addVisorQuadsToBuffer(TrafficSignalVisorType visorType, BufferBuilder buffer,
       float red, float green, float blue, float alpha, float yOffset) {
     List<RenderHelper.Box> visorData;
+    boolean applyTilt = true;
     switch (visorType) {
       case CIRCLE:
         visorData = TrafficSignalVertexData.CIRCLE_VISOR_VERTEX_DATA;
@@ -190,11 +196,18 @@ public class TileEntityTrafficSignalHeadRenderer extends
         break;
       case NONE:
         visorData = TrafficSignalVertexData.NONE_VISOR_VERTEX_DATA;
+        applyTilt = false; // None visor is just a tiny lip, no tilt needed
         break;
       default:
         return;
     }
-    RenderHelper.addBoxesToBuffer(visorData, buffer, red, green, blue, alpha, 0.0f, yOffset, 0.0f);
+    if (applyTilt) {
+      RenderHelper.addTiltedBoxesToBuffer(visorData, buffer, red, green, blue, alpha,
+          0.0f, yOffset, 0.0f, VISOR_PIVOT_Z, VISOR_TILT_DEGREES);
+    } else {
+      RenderHelper.addBoxesToBuffer(visorData, buffer, red, green, blue, alpha,
+          0.0f, yOffset, 0.0f);
+    }
   }
 
   /**
