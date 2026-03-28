@@ -142,6 +142,9 @@
       "true": {
         "model": "csm:metal_signpostback_top_wallmount_setback"
       }
-    }
+    },
+    "normal": [
+      {}
+    ]
   }
 }

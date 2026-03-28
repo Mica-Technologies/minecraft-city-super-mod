@@ -52,6 +52,9 @@
           "2": "csm:blocks/solidgreen"
         }
       }
+    ],
+    "normal": [
+      {}
     ]
   }
 }

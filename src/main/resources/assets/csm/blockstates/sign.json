@@ -142,6 +142,9 @@
       "true": {
         "model": "csm:metal_signback_setback"
       }
-    }
+    },
+    "normal": [
+      {}
+    ]
   }
 }

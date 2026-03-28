@@ -142,6 +142,9 @@
       "true": {
         "model": "csm:metal_signpost_mount_setback"
       }
-    }
+    },
+    "normal": [
+      {}
+    ]
   }
 }

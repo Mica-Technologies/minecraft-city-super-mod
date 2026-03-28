@@ -42,13 +42,18 @@
       "3": {}
     },
     "inventory": [
-      {"textures": {
-        "all": "csm:blocks/trafficsignals/old_bulb_body/gray/redarrowleft",
-        "particle": "csm:blocks/trafficsignals/old_bulb_body/gray/redarrowleft",
-        "0": "csm:blocks/trafficsignals/old_bulb_body/gray/redarrowleft",
-        "1": "csm:blocks/trafficsignals/old_bulb_body/gray/yellowarrowleft",
-        "2": "csm:blocks/trafficsignals/old_bulb_body/gray/yellowarrowleftflash"
-      }}
+      {
+        "textures": {
+          "all": "csm:blocks/trafficsignals/old_bulb_body/gray/redarrowleft",
+          "particle": "csm:blocks/trafficsignals/old_bulb_body/gray/redarrowleft",
+          "0": "csm:blocks/trafficsignals/old_bulb_body/gray/redarrowleft",
+          "1": "csm:blocks/trafficsignals/old_bulb_body/gray/yellowarrowleft",
+          "2": "csm:blocks/trafficsignals/old_bulb_body/gray/yellowarrowleftflash"
+        }
+      }
+    ],
+    "normal": [
+      {}
     ]
   }
 }

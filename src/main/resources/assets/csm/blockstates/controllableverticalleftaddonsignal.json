@@ -49,6 +49,9 @@
           "0": "csm:blocks/ledgreenarrowleft"
         }
       }
+    ],
+    "normal": [
+      {}
     ]
   }
 }

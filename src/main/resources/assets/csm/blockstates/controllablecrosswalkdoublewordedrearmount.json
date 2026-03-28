@@ -59,6 +59,9 @@
           "1": "csm:blocks/crosswalktextwalkon"
         }
       }
+    ],
+    "normal": [
+      {}
     ]
   }
 }

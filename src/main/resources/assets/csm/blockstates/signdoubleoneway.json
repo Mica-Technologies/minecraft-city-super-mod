@@ -144,6 +144,9 @@
       "true": {
         "model": "csm:metal_signpostback_double1way_sign_setback"
       }
-    }
+    },
+    "normal": [
+      {}
+    ]
   }
 }

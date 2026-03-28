@@ -43,6 +43,9 @@
           "0": "csm:blocks/trafficsignals/old_bulb_body/gray/ledgreenarrowupleft"
         }
       }
+    ],
+    "normal": [
+      {}
     ]
   }
 }

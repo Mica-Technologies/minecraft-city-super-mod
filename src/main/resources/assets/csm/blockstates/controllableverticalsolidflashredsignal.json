@@ -49,6 +49,9 @@
           "2": "csm:blocks/solidredflash"
         }
       }
+    ],
+    "normal": [
+      {}
     ]
   }
 }

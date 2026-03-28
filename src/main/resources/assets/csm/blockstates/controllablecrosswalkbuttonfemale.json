@@ -81,6 +81,9 @@
           "button": "csm:blocks/aps_button_none_light"
         }
       }
-    }
+    },
+    "normal": [
+      {}
+    ]
   }
 }
