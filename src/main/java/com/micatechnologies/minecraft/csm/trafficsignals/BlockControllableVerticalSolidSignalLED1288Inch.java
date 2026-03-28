@@ -41,6 +41,11 @@ public class BlockControllableVerticalSolidSignalLED1288Inch
   }
 
   @Override
+  public float[] getSectionYPositions(int sectionCount) {
+    return new float[] {4.0f, -4.0f, -12.0f};
+  }
+
+  @Override
   public int[] getSectionSizes(int sectionCount) {
     return new int[] {12, 8, 8};
   }
