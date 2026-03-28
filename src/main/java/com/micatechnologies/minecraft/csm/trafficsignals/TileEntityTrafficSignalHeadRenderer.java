@@ -348,10 +348,10 @@ public class TileEntityTrafficSignalHeadRenderer extends
       float rotation = texInfo.getRotation();
       if (rotation == 0f) {
         // No rotation — emit quad directly (fast path, most common for BALL type)
-        buffer.pos(baseX, baseY, z).tex(u2, v1).endVertex();
-        buffer.pos(baseX + size, baseY, z).tex(u1, v1).endVertex();
-        buffer.pos(baseX + size, baseY + size, z).tex(u1, v2).endVertex();
-        buffer.pos(baseX, baseY + size, z).tex(u2, v2).endVertex();
+        buffer.pos(baseX, baseY, z).tex(u2, v2).endVertex();
+        buffer.pos(baseX + size, baseY, z).tex(u1, v2).endVertex();
+        buffer.pos(baseX + size, baseY + size, z).tex(u1, v1).endVertex();
+        buffer.pos(baseX, baseY + size, z).tex(u2, v1).endVertex();
       } else {
         // Pre-compute rotated corners in Java to avoid GL matrix push/pop per section
         float cx = baseX + size / 2f;
@@ -371,10 +371,10 @@ public class TileEntityTrafficSignalHeadRenderer extends
         float x3 = cx + (-halfSize * cos - halfSize * sin);
         float y3 = cy + (-halfSize * sin + halfSize * cos);
 
-        buffer.pos(x0, y0, z).tex(u2, v1).endVertex();
-        buffer.pos(x1, y1, z).tex(u1, v1).endVertex();
-        buffer.pos(x2, y2, z).tex(u1, v2).endVertex();
-        buffer.pos(x3, y3, z).tex(u2, v2).endVertex();
+        buffer.pos(x0, y0, z).tex(u2, v2).endVertex();
+        buffer.pos(x1, y1, z).tex(u1, v2).endVertex();
+        buffer.pos(x2, y2, z).tex(u1, v1).endVertex();
+        buffer.pos(x3, y3, z).tex(u2, v1).endVertex();
       }
     }
 
