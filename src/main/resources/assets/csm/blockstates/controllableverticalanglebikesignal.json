@@ -1,14 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:controllableverticalanglebikesignal",
-    "textures": {
-      "all": "csm:blocks/solidoff",
-      "particle": "csm:blocks/solidoff",
-      "0": "csm:blocks/redbikeoff",
-      "1": "csm:blocks/yellowbikeoff",
-      "2": "csm:blocks/greenbikeoff"
-    }
+    "model": "csm:lightupair"
   },
   "variants": {
     "facing": {
@@ -24,38 +17,17 @@
       }
     },
     "color": {
-      "0": {
-        "textures": {
-          "0": "csm:blocks/redbike",
-          "1": "csm:blocks/yellowbikeoff",
-          "2": "csm:blocks/greenbikeoff"
-        }
-      },
-      "1": {
-        "textures": {
-          "0": "csm:blocks/redbikeoff",
-          "1": "csm:blocks/yellowbike",
-          "2": "csm:blocks/greenbikeoff"
-        }
-      },
-      "2": {
-        "textures": {
-          "0": "csm:blocks/redbikeoff",
-          "1": "csm:blocks/yellowbikeoff",
-          "2": "csm:blocks/greenbike"
-        }
-      },
-      "3": {
-        "textures": {
-          "0": "csm:blocks/redbikeoff",
-          "1": "csm:blocks/yellowbikeoff",
-          "2": "csm:blocks/greenbikeoff"
-        }
-      }
+      "0": {},
+      "1": {},
+      "2": {},
+      "3": {}
     },
     "inventory": [
       {
+        "model": "csm:controllableverticalanglebikesignal",
         "textures": {
+          "all": "csm:blocks/solidoff",
+          "particle": "csm:blocks/solidoff",
           "0": "csm:blocks/redbike",
           "1": "csm:blocks/yellowbike",
           "2": "csm:blocks/greenbike"
