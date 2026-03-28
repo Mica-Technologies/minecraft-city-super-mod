@@ -41,6 +41,11 @@ public class BlockControllableVerticalSolidSignalLED1288Inch
   }
 
   @Override
+  public int[] getSectionSizes(int sectionCount) {
+    return new int[] {12, 8, 8};
+  }
+
+  @Override
   public TrafficSignalSectionInfo[] getDefaultTrafficSignalSectionInfo() {
     return new TrafficSignalSectionInfo[] {
         new TrafficSignalSectionInfo(TrafficSignalBodyColor.FLAT_BLACK, TrafficSignalBodyColor.FLAT_BLACK, TrafficSignalBodyColor.FLAT_BLACK,

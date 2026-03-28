@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.trafficsignals.logic;
 
+import java.util.Arrays;
 import com.micatechnologies.minecraft.csm.codeutils.DirectionSixteen;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalHead;
@@ -185,6 +186,16 @@ public abstract class AbstractBlockControllableSignalHead extends AbstractBlockC
       positions[i] = ((sectionCount - 1 - i) - (sectionCount - 1) / 2.0f) * 12.0f;
     }
     return positions;
+  }
+
+  /**
+   * Returns per-section sizes (12 or 8) for the renderer. Default is 12 for all sections.
+   * Override for 8-inch signals or mixed-size (8-8-12, 12-8-8) signals.
+   */
+  public int[] getSectionSizes(int sectionCount) {
+    int[] sizes = new int[sectionCount];
+    Arrays.fill(sizes, 12);
+    return sizes;
   }
 
   /**
