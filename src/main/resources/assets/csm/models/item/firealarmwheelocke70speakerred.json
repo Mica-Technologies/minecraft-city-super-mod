@@ -1,8 +1,0 @@
-{
-  "parent": "csm:custom/wheelock_e70_speaker_red",
-  "textures": {
-    "all": "csm:blocks/wheelock_e70_speaker_red",
-    "particle": "csm:blocks/wheelock_e70_speaker_red",
-    "0": "csm:blocks/wheelock_e70_speaker_red"
-  }
-}

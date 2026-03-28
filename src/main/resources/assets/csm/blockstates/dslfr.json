@@ -1,67 +1,29 @@
 {
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:dslfr"
+  },
   "variants": {
-    "normal": {
-      "model": "csm:dslfr"
+    "facing": {
+      "east": {
+        "y": 90
+      },
+      "north": {},
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
     },
-    "facing=north,state=0": {
-      "model": "csm:dslfr"
+    "state": {
+      "0": {},
+      "1": {},
+      "2": {},
+      "3": {}
     },
-    "facing=east,state=0": {
-      "model": "csm:dslfr",
-      "y": 90
-    },
-    "facing=south,state=0": {
-      "model": "csm:dslfr",
-      "y": 180
-    },
-    "facing=west,state=0": {
-      "model": "csm:dslfr",
-      "y": 270
-    },
-    "facing=north,state=1": {
-      "model": "csm:dslfr"
-    },
-    "facing=east,state=1": {
-      "model": "csm:dslfr",
-      "y": 90
-    },
-    "facing=south,state=1": {
-      "model": "csm:dslfr",
-      "y": 180
-    },
-    "facing=west,state=1": {
-      "model": "csm:dslfr",
-      "y": 270
-    },
-    "facing=north,state=2": {
-      "model": "csm:dslfr"
-    },
-    "facing=east,state=2": {
-      "model": "csm:dslfr",
-      "y": 90
-    },
-    "facing=south,state=2": {
-      "model": "csm:dslfr",
-      "y": 180
-    },
-    "facing=west,state=2": {
-      "model": "csm:dslfr",
-      "y": 270
-    },
-    "facing=north,state=3": {
-      "model": "csm:dslfr"
-    },
-    "facing=east,state=3": {
-      "model": "csm:dslfr",
-      "y": 90
-    },
-    "facing=south,state=3": {
-      "model": "csm:dslfr",
-      "y": 180
-    },
-    "facing=west,state=3": {
-      "model": "csm:dslfr",
-      "y": 270
-    }
+    "inventory": [
+      {}
+    ]
   }
 }

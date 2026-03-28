@@ -1,22 +1,23 @@
 {
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:novtm5"
+  },
   "variants": {
-    "normal": {
-      "model": "csm:novtm5"
+    "facing": {
+      "east": {
+        "y": 90
+      },
+      "north": {},
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
     },
-    "facing=north": {
-      "model": "csm:novtm5"
-    },
-    "facing=east": {
-      "model": "csm:novtm5",
-      "y": 90
-    },
-    "facing=south": {
-      "model": "csm:novtm5",
-      "y": 180
-    },
-    "facing=west": {
-      "model": "csm:novtm5",
-      "y": 270
-    }
+    "inventory": [
+      {}
+    ]
   }
 }

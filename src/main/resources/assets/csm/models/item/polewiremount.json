@@ -1,8 +1,0 @@
-{
-  "parent": "csm:custom/pole_wire_mount",
-  "textures": {
-    "all": "csm:blocks/mountingbrackets",
-    "particle": "csm:blocks/mountingbrackets",
-    "0": "csm:blocks/mountingbrackets"
-  }
-}

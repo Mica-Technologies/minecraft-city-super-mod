@@ -1,8 +1,0 @@
-{
-  "parent": "csm:custom/macbook_pro",
-  "textures": {
-    "all": "csm:blocks/macbook_pro",
-    "particle": "csm:blocks/macbook_pro",
-    "0": "csm:blocks/macbook_pro"
-  }
-}

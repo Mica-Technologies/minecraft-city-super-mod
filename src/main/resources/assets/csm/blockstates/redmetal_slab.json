@@ -1,10 +1,20 @@
 {
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:redmetal_slab"
+  },
   "variants": {
-    "half=bottom,variant=default": {
-      "model": "csm:redmetal_slab"
+    "half": {
+      "bottom": {},
+      "top": {
+        "model": "csm:redmetal_slab_top"
+      }
     },
-    "half=top,variant=default": {
-      "model": "csm:redmetal_slab_top"
-    }
+    "variant": {
+      "default": {}
+    },
+    "inventory": [
+      {}
+    ]
   }
 }

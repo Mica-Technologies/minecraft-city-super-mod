@@ -1,30 +1,29 @@
 {
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:s4903hs"
+  },
   "variants": {
-    "normal": {
-      "model": "csm:s4903hs"
+    "facing": {
+      "down": {
+        "x": 90
+      },
+      "east": {
+        "y": 90
+      },
+      "north": {},
+      "south": {
+        "y": 180
+      },
+      "up": {
+        "x": 270
+      },
+      "west": {
+        "y": 270
+      }
     },
-    "facing=north": {
-      "model": "csm:s4903hs"
-    },
-    "facing=east": {
-      "model": "csm:s4903hs",
-      "y": 90
-    },
-    "facing=south": {
-      "model": "csm:s4903hs",
-      "y": 180
-    },
-    "facing=west": {
-      "model": "csm:s4903hs",
-      "y": 270
-    },
-    "facing=up": {
-      "model": "csm:s4903hs",
-      "x": 270
-    },
-    "facing=down": {
-      "model": "csm:s4903hs",
-      "x": 90
-    }
+    "inventory": [
+      {}
+    ]
   }
 }

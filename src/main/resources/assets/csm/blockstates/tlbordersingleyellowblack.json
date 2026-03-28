@@ -1,30 +1,29 @@
 {
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:tlbordersingleyellowblack"
+  },
   "variants": {
-    "normal": {
-      "model": "csm:tlbordersingleyellowblack"
+    "facing": {
+      "down": {
+        "x": 90
+      },
+      "east": {
+        "y": 90
+      },
+      "north": {},
+      "south": {
+        "y": 180
+      },
+      "up": {
+        "x": 270
+      },
+      "west": {
+        "y": 270
+      }
     },
-    "facing=north": {
-      "model": "csm:tlbordersingleyellowblack"
-    },
-    "facing=east": {
-      "model": "csm:tlbordersingleyellowblack",
-      "y": 90
-    },
-    "facing=south": {
-      "model": "csm:tlbordersingleyellowblack",
-      "y": 180
-    },
-    "facing=west": {
-      "model": "csm:tlbordersingleyellowblack",
-      "y": 270
-    },
-    "facing=up": {
-      "model": "csm:tlbordersingleyellowblack",
-      "x": 270
-    },
-    "facing=down": {
-      "model": "csm:tlbordersingleyellowblack",
-      "x": 90
-    }
+    "inventory": [
+      {}
+    ]
   }
 }

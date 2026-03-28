@@ -1,7 +1,14 @@
 {
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:ct50s2"
+  },
   "variants": {
-    "normal": {
-      "model": "csm:ct50s2"
-    }
+    "inventory": [
+      {}
+    ],
+    "normal": [
+      {}
+    ]
   }
 }

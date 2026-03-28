@@ -1,8 +1,0 @@
-{
-  "parent": "csm:custom/trafficsignals/backplates/signal_backplate_vertical_3",
-  "textures": {
-    "all": "csm:blocks/signalbackplateblackyellowblack",
-    "particle": "csm:blocks/signalbackplateblackyellowblack",
-    "0": "csm:blocks/signalbackplateblackyellowblack"
-  }
-}

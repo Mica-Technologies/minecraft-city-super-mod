@@ -1,8 +1,0 @@
-{
-  "parent": "csm:custom/est_genesis_hornstrobe_micro_white",
-  "textures": {
-    "all": "csm:blocks/est_genesis_hornstrobe_micro_white",
-    "particle": "csm:blocks/est_genesis_hornstrobe_micro_white",
-    "0": "csm:blocks/est_genesis_hornstrobe_micro_white"
-  }
-}

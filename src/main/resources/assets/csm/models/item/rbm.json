@@ -1,8 +1,0 @@
-{
-  "parent": "csm:custom/remote_ballast_module",
-  "textures": {
-    "all": "csm:blocks/slmodules",
-    "particle": "csm:blocks/slmodules",
-    "0": "csm:blocks/slmodules"
-  }
-}

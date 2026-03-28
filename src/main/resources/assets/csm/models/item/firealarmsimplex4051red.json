@@ -1,8 +1,0 @@
-{
-  "parent": "csm:custom/simplex_4051",
-  "textures": {
-    "all": "csm:blocks/simplex_4051",
-    "particle": "csm:blocks/simplex_4051",
-    "0": "csm:blocks/simplex_4051"
-  }
-}

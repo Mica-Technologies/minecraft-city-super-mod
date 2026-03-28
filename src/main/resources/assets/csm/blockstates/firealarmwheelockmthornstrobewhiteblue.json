@@ -1,53 +1,33 @@
 {
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:mtwb"
+  },
   "variants": {
-    "normal": {
-      "model": "csm:mtwb"
+    "facing": {
+      "down": {
+        "x": 90
+      },
+      "east": {
+        "y": 90
+      },
+      "north": {},
+      "south": {
+        "y": 180
+      },
+      "up": {
+        "x": 270
+      },
+      "west": {
+        "y": 270
+      }
     },
-    "facing=north,sound=0": {
-      "model": "csm:mtwb"
+    "sound": {
+      "0": {},
+      "1": {}
     },
-    "facing=east,sound=0": {
-      "model": "csm:mtwb",
-      "y": 90
-    },
-    "facing=south,sound=0": {
-      "model": "csm:mtwb",
-      "y": 180
-    },
-    "facing=west,sound=0": {
-      "model": "csm:mtwb",
-      "y": 270
-    },
-    "facing=up,sound=0": {
-      "model": "csm:mtwb",
-      "x": 270
-    },
-    "facing=down,sound=0": {
-      "model": "csm:mtwb",
-      "x": 90
-    },
-    "facing=north,sound=1": {
-      "model": "csm:mtwb"
-    },
-    "facing=east,sound=1": {
-      "model": "csm:mtwb",
-      "y": 90
-    },
-    "facing=south,sound=1": {
-      "model": "csm:mtwb",
-      "y": 180
-    },
-    "facing=west,sound=1": {
-      "model": "csm:mtwb",
-      "y": 270
-    },
-    "facing=up,sound=1": {
-      "model": "csm:mtwb",
-      "x": 270
-    },
-    "facing=down,sound=1": {
-      "model": "csm:mtwb",
-      "x": 90
-    }
+    "inventory": [
+      {}
+    ]
   }
 }

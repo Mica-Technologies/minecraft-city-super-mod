@@ -1,10 +1,20 @@
 {
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:blackmetal_slab"
+  },
   "variants": {
-    "half=bottom,variant=default": {
-      "model": "csm:blackmetal_slab"
+    "half": {
+      "bottom": {},
+      "top": {
+        "model": "csm:blackmetal_slab_top"
+      }
     },
-    "half=top,variant=default": {
-      "model": "csm:blackmetal_slab_top"
-    }
+    "variant": {
+      "default": {}
+    },
+    "inventory": [
+      {}
+    ]
   }
 }

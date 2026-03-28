@@ -1,25 +1,19 @@
 {
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:lightupair"
+  },
   "variants": {
-    "normal": {
-      "model": "csm:lightupair"
+    "facing": {
+      "down": {},
+      "east": {},
+      "north": {},
+      "south": {},
+      "up": {},
+      "west": {}
     },
-    "facing=north": {
-      "model": "csm:lightupair"
-    },
-    "facing=east": {
-      "model": "csm:lightupair"
-    },
-    "facing=south": {
-      "model": "csm:lightupair"
-    },
-    "facing=west": {
-      "model": "csm:lightupair"
-    },
-    "facing=up": {
-      "model": "csm:lightupair"
-    },
-    "facing=down": {
-      "model": "csm:lightupair"
-    }
+    "inventory": [
+      {}
+    ]
   }
 }

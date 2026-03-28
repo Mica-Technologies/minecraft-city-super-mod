@@ -1,10 +1,20 @@
 {
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:magentametal_slab"
+  },
   "variants": {
-    "half=bottom,variant=default": {
-      "model": "csm:magentametal_slab"
+    "half": {
+      "bottom": {},
+      "top": {
+        "model": "csm:magentametal_slab_top"
+      }
     },
-    "half=top,variant=default": {
-      "model": "csm:magentametal_slab_top"
-    }
+    "variant": {
+      "default": {}
+    },
+    "inventory": [
+      {}
+    ]
   }
 }

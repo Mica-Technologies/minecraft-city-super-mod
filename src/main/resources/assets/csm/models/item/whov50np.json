@@ -1,8 +1,0 @@
-{
-  "parent": "csm:custom/westinghouse_ov50_nophotocell",
-  "textures": {
-    "all": "csm:blocks/westinghouse_ov50",
-    "particle": "csm:blocks/westinghouse_ov50",
-    "0": "csm:blocks/westinghouse_ov50"
-  }
-}

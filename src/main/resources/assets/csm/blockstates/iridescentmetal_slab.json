@@ -1,10 +1,20 @@
 {
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:iridescentmetal_slab"
+  },
   "variants": {
-    "half=bottom,variant=default": {
-      "model": "csm:iridescentmetal_slab"
+    "half": {
+      "bottom": {},
+      "top": {
+        "model": "csm:iridescentmetal_slab_top"
+      }
     },
-    "half=top,variant=default": {
-      "model": "csm:iridescentmetal_slab_top"
-    }
+    "variant": {
+      "default": {}
+    },
+    "inventory": [
+      {}
+    ]
   }
 }
