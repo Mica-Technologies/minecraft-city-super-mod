@@ -59,6 +59,12 @@ public class BlockItemIntegrityTool {
           "src/main/java/com/micatechnologies/minecraft/csm/trafficsignals/logic"
               + "/AbstractBlockTrafficSignalAPS.java",
           "src/main/java/com/micatechnologies/minecraft/csm/trafficsigns/AbstractBlockSign.java",
+          "src/main/java/com/micatechnologies/minecraft/csm/codeutils/AbstractBlockTrafficPole.java",
+          "src/main/java/com/micatechnologies/minecraft/csm/codeutils/AbstractBlockTrafficPoleDiagonal.java",
+          "src/main/java/com/micatechnologies/minecraft/csm/lighting/AbstractBrightLightPoleColored.java",
+          "src/main/java/com/micatechnologies/minecraft/csm/trafficsignals/AbstractBlockControllableCrosswalkSignal.java",
+          "src/main/java/com/micatechnologies/minecraft/csm/trafficsignals/logic/AbstractBlockTrafficSignalAPSCampbell.java",
+          "src/main/java/com/micatechnologies/minecraft/csm/trafficsignals/logic/AbstractBlockTrafficSignalAPSPolara.java",
           "src/main/java/com/micatechnologies/minecraft/csm/tabs/CsmTabNone.java"};
   private static final String[] SOURCE_FILE_ELIGIBLE_EXTENDS_BLOCKS =
       {"AbstractBlock", "AbstractBlockRotatableNSEW", "AbstractBlockRotatableNSEWUD",
@@ -83,7 +89,7 @@ public class BlockItemIntegrityTool {
   private static final String ITEM_MODELS_FILE_FOLDER_PATH_RELATIVE =
       "src/main/resources/assets/csm/models/item";
   private static final String CUSTOM_MODELS_FILE_FOLDER_PATH_RELATIVE =
-      "src/main/resources/assets/csm/models/custom";
+      "src/main/resources/assets/csm/models/block/shared_models";
 
   private static final String BLOCK_TEXTURES_FILE_FOLDER_PATH_RELATIVE =
       "src/main/resources/assets/csm/textures/blocks";
@@ -553,7 +559,11 @@ public class BlockItemIntegrityTool {
         File parentModelFolder = null;
         String modelFileName = null;
         List<File> usedModelFiles = null;
-        if (strippedParentValue.startsWith("custom/")) {
+        if (strippedParentValue.startsWith("block/shared_models/")) {
+          parentModelFolder = customModelsFolder;
+          modelFileName = strippedParentValue.substring("block/shared_models/".length());
+          usedModelFiles = usedCustomModelFiles;
+        } else if (strippedParentValue.startsWith("custom/")) {
           parentModelFolder = customModelsFolder;
           modelFileName = strippedParentValue.substring("custom/".length());
           usedModelFiles = usedCustomModelFiles;
@@ -869,7 +879,10 @@ public class BlockItemIntegrityTool {
           String strippedModelValue = modelValue.substring(prefixCheck.length());
           String modelFileName = strippedModelValue + ".json";
           File modelFolder = blockModelsFolder;
-          if (strippedModelValue.startsWith("custom/")) {
+          if (strippedModelValue.startsWith("block/shared_models/")) {
+            modelFolder = customModelsFolder;
+            modelFileName = strippedModelValue.substring("block/shared_models/".length()) + ".json";
+          } else if (strippedModelValue.startsWith("custom/")) {
             modelFolder = customModelsFolder;
             modelFileName = strippedModelValue.substring("custom/".length());
           } else if (strippedModelValue.startsWith("block/")) {
@@ -895,7 +908,10 @@ public class BlockItemIntegrityTool {
             String strippedModelValue = modelValue.substring(prefixCheck.length());
             String modelFileName = strippedModelValue + ".json";
             File modelFolder = blockModelsFolder;
-            if (strippedModelValue.startsWith("custom/")) {
+            if (strippedModelValue.startsWith("block/shared_models/")) {
+              modelFolder = customModelsFolder;
+              modelFileName = strippedModelValue.substring("block/shared_models/".length()) + ".json";
+            } else if (strippedModelValue.startsWith("custom/")) {
               modelFolder = customModelsFolder;
               modelFileName = strippedModelValue.substring("custom/".length());
             } else if (strippedModelValue.startsWith("block/")) {
@@ -925,7 +941,10 @@ public class BlockItemIntegrityTool {
                 String strippedModelValue = modelValue.substring(prefixCheck.length());
                 String modelFileName = strippedModelValue + ".json";
                 File modelFolder = blockModelsFolder;
-                if (strippedModelValue.startsWith("custom/")) {
+                if (strippedModelValue.startsWith("block/shared_models/")) {
+                  modelFolder = customModelsFolder;
+                  modelFileName = strippedModelValue.substring("block/shared_models/".length()) + ".json";
+                } else if (strippedModelValue.startsWith("custom/")) {
                   modelFolder = customModelsFolder;
                   modelFileName = strippedModelValue.substring("custom/".length());
                 } else if (strippedModelValue.startsWith("block/")) {
