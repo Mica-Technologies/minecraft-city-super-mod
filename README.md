@@ -102,14 +102,43 @@ within `src/main/resources/assets/csm/models/item` which references the block mo
     - If the block model is not suitable for use as an item model, a separate item model may be
       created.
 
-##### Example Block Class
+##### Example Block Class (Simple Non-Rotatable Block)
 ```java
-public class BlockExample extends AbstractBlock {
-    public BlockExample() {
-        super(Material.ROCK);
-        setRegistryName("example_block");
-        setTranslationKey("example_block");
+public class BlockExampleBasic extends AbstractBlock {
+    // Constructor, material, sound, tool, harvest level, hardness, resistance, light, light opacity
+    public BlockExampleBasic() {
+        super(Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0);
     }
+
+    @Override
+    public String getBlockRegistryName() {
+        return "example_basic";
+    }
+}
+```
+
+##### Example Block Class (Rotatable Block with Custom Bounding Box)
+```java
+public class BlockExampleRotatable extends AbstractBlockRotatableNSEWUD {
+    public BlockExampleRotatable() {
+        super(Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0);
+    }
+
+    @Override
+    public String getBlockRegistryName() {
+        return "example_rotatable";
+    }
+
+    @Override
+    public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
+        return new AxisAlignedBB(0.0, 0.0, 0.8, 1.0, 1.0, 1.0);
+    }
+
+    @Override
+    public boolean getBlockIsOpaqueCube(IBlockState state) { return false; }
+
+    @Override
+    public boolean getBlockIsFullCube(IBlockState state) { return false; }
 }
 ```
 
@@ -186,6 +215,93 @@ register a block or item, an entry must be added to the appropriate tab class fi
 - If a new tab is required for the block or item, a new tab class file shall be created using the
   process outlined in the [Adding a Tab](#adding-a-tab) section below.
 
+#### Adding a Sound
+
+Sounds must be registered in three places:
+
+1. **Add the `.ogg` file** to `src/main/resources/assets/csm/sounds/`
+   - Sound files must be in OGG Vorbis format.
+   - Use `snake_case` naming (e.g., `example_alarm_tone.ogg`).
+   - For horn/alarm sounds, target ~9,900 burst RMS for consistent volume across devices.
+
+2. **Register in `sounds.json`** (`src/main/resources/assets/csm/sounds.json`):
+   ```json
+   "example_alarm_tone": {
+     "category": "block",
+     "sounds": [
+       {
+         "name": "csm:example_alarm_tone",
+         "stream": false
+       }
+     ]
+   }
+   ```
+   - The key (`"example_alarm_tone"`) becomes the sound event ID, referenced in code as
+     `"csm:example_alarm_tone"`.
+   - Use `"stream": false` for short sounds (horns, chimes). Use `"stream": true` for long
+     sounds if needed (to avoid loading the entire file into memory).
+
+3. **Register in `CsmSounds.java`** (`src/main/java/.../CsmSounds.java`):
+   ```java
+   EXAMPLE_ALARM_TONE("example_alarm_tone"),
+   ```
+   - Add an enum entry matching the sound event ID from `sounds.json`.
+   - The enum name is `UPPER_SNAKE_CASE`, the string parameter matches the `sounds.json` key.
+
+Sounds are automatically registered during mod initialization via `CsmSounds.registerSounds()`.
+No additional registration code is needed beyond these three steps.
+
+#### Adding a Tile Entity
+
+Tile entities store per-block data beyond what fits in the 4-bit block metadata. To add one:
+
+1. **Create a tile entity class** extending `AbstractTileEntity` (non-ticking) or
+   `AbstractTickableTileEntity` (ticking):
+   ```java
+   public class TileEntityExample extends AbstractTileEntity {
+       private int myData = 0;
+
+       @Override
+       public void readNBT(NBTTagCompound compound) {
+           myData = compound.getInteger("myData");
+       }
+
+       @Override
+       public NBTTagCompound writeNBT(NBTTagCompound compound) {
+           compound.setInteger("myData", myData);
+           return compound;
+       }
+   }
+   ```
+
+2. **Implement `ICsmTileEntityProvider`** on the block class:
+   ```java
+   public class BlockExample extends AbstractBlock implements ICsmTileEntityProvider {
+       @Override
+       public Class<? extends TileEntity> getTileEntityClass() {
+           return TileEntityExample.class;
+       }
+
+       @Override
+       public String getTileEntityName() {
+           return "tileentityexample";  // Must be unique across all tile entities
+       }
+
+       @Override
+       public TileEntity createNewTileEntity(World worldIn, int meta) {
+           return new TileEntityExample();
+       }
+   }
+   ```
+
+Tile entities are automatically registered during mod initialization when the block implements
+`ICsmTileEntityProvider`. No manual registration step is needed.
+
+**Note on block metadata limits:** Minecraft 1.12.2 block meta is 4 bits (0-15). With NSEWUD
+rotation using 6 values, only `floor(15/6) + 1 = 2` additional property values fit in meta. For
+blocks that need more states (e.g., more than 2 selectable sounds), use a tile entity to store
+the extra data instead of block meta.
+
 #### Adding a Tab
 
 Adding a tab is a fairly simple process. To add a tab, follow these steps:
@@ -231,6 +347,86 @@ public class CsmTabExample extends CsmTab {
     }
 }
 ```
+
+#### Fire Alarm System Architecture
+
+The fire alarm system is a major subsystem in the `lifesafety` package. It uses a custom
+client-side `MovingSound` system for audio that follows the player with distance-based volume
+attenuation.
+
+##### Key Components
+
+- **`BlockFireAlarmControlPanel`** / **`TileEntityFireAlarmControlPanel`** -- The central
+  controller. Detects redstone input to activate alarms. Manages connected appliances and sends
+  sound packets to players.
+- **`AbstractBlockFireAlarmSounder`** -- Base class for all horn and horn strobe devices.
+  Subclasses implement `getSoundResourceName()` to return their sound event ID.
+- **`AbstractBlockFireAlarmSounderVoiceEvac`** -- Base class for voice evac speaker/speaker
+  strobe devices. Returns `null` from `getSoundResourceName()` since voice evac audio is
+  managed differently (single MovingSound per voice evac channel).
+- **`FireAlarmVoiceEvacSound`** -- Client-side `MovingSound` that follows the player. Volume
+  is calculated based on distance to the nearest speaker/horn position.
+- **`FireAlarmSoundPacket`** / **`FireAlarmSoundPacketHandler`** -- Network packets for
+  starting/stopping sounds on the client. Each sound type gets its own "channel" (voice evac,
+  storm, or each unique horn sound resource name).
+
+##### How Sound Playback Works
+
+1. Server-side: `TileEntityFireAlarmControlPanel.onTick()` groups connected horn blocks by their
+   `getSoundResourceName()` return value.
+2. For each unique sound, it collects all horn positions and checks which players are in range.
+3. It sends `FireAlarmSoundPacket.start(channel, soundName, hearingRange, positions)` to
+   in-range players.
+4. Client-side: `FireAlarmSoundPacketHandler` creates a `FireAlarmVoiceEvacSound` (MovingSound)
+   per channel, which loops the sound and adjusts volume based on distance to nearest horn.
+5. Multiple channels play simultaneously (e.g., different horn types + voice evac).
+
+##### Adding a New Fire Alarm Horn Block
+
+1. Create a class extending `AbstractBlockFireAlarmSounder`.
+2. Implement `getSoundResourceName()` to return the sound event ID (e.g., `"csm:my_horn"`).
+3. Follow the [Adding a Sound](#adding-a-sound) steps to register the sound file.
+4. Follow the standard [Adding a Block](#adding-a-block) steps for blockstate, model, texture,
+   lang, and tab registration.
+5. The control panel will automatically detect and play the horn when connected.
+
+For blocks with selectable sounds (more than 2 options), use a tile entity. See
+`BlockFireAlarmGentexCommander3Red` for an example using `TileEntityFireAlarmSoundIndex`.
+
+##### Sound File Standards for Code 3 Horns
+
+Code 3 horn sounds should follow these targets for consistency:
+- **Total length:** ~4.024 seconds
+- **Burst alignment:** 3 bursts with onsets at ~0.040s, ~1.020s, ~2.000s
+- **Volume:** ~9,900 burst RMS (measure during the first burst)
+- **Format:** OGG Vorbis, `"stream": false` in sounds.json
+
+### Developer Documentation
+
+The `assets/docs/` directory contains in-depth technical documentation for the mod's major
+subsystems:
+
+- **[BLOCK_AND_ITEM_BASE_CLASSES.md](assets/docs/BLOCK_AND_ITEM_BASE_CLASSES.md)** --
+  Comprehensive reference for every abstract block, item, and tile entity class. Covers
+  constructors, rotation systems, meta encoding, registration, and choosing the right base
+  class. Start here if you're adding any new content to the mod.
+- **[FIRE_ALARM_SYSTEM.md](assets/docs/FIRE_ALARM_SYSTEM.md)** -- Complete guide to the fire
+  alarm notification system: MovingSound architecture, channel-based audio, sound file
+  standards, adding new horn blocks, and the full sound inventory.
+- **[TRAFFIC_SIGNAL_SYSTEM.md](assets/docs/TRAFFIC_SIGNAL_SYSTEM.md)** -- Guide to the traffic
+  signal controller system, signal phases, pedestrian signals, and sensors.
+- **[LIGHTING_SYSTEM.md](assets/docs/LIGHTING_SYSTEM.md)** -- The 4-state on/off control
+  system, light-up air projection, redstone vs manual control, and the AbstractBrightLight
+  hierarchy.
+- **[POWER_GRID_SYSTEM.md](assets/docs/POWER_GRID_SYSTEM.md)** -- Forge Energy integration,
+  utility pole system, and decorative electrical infrastructure.
+- **[TRAFFIC_SIGNS.md](assets/docs/TRAFFIC_SIGNS.md)** -- The 472-sign system: Forge
+  blockstate format, dynamic DOWNWARD/SETBACK properties, shared base models, and how to add
+  new signs.
+
+The `assets/docs/agent_progress/` subdirectory contains work-in-progress tracking documents
+used by AI coding agents (Claude Code). These track ongoing improvement efforts and contain
+resume prompts for continuing work across sessions.
 
 ### Submitting Changes
 
