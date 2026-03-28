@@ -189,8 +189,10 @@ public class TileEntityTrafficSignalHeadRenderer extends
   }
 
   private void renderBulbs(TileEntityTrafficSignalHead te, TrafficSignalSectionInfo[] sectionInfos) {
-    // Reset GL color to white so textures are not tinted by leftover static part colors
-    GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
+    // Reset GL color to white so textures are not tinted by leftover static part colors.
+    // Must use GL11.glColor4f directly because GlStateManager caches state and the display
+    // list replay changes GL color behind GlStateManager's back, making it skip the reset.
+    GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 
     // Always bind the correct texture before rendering
     ResourceLocation texLoc = new ResourceLocation("csm", "textures/blocks/trafficsignals/lights/atlas.png");
