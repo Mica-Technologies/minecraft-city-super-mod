@@ -16,12 +16,6 @@ public class BlockFireAlarmSpaceAgeAV32Red extends AbstractBlockFireAlarmSounder
   public String getSoundResourceName(IBlockState blockState) {
     return "csm:sae_marchtime";
   }
-
-  @Override
-  public int getSoundTickLen(IBlockState blockState) {
-    return 30;
-  }
-
   /**
    * Retrieves the bounding box of the block.
    *

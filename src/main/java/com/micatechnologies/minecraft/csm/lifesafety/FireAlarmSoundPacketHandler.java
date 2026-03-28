@@ -1,5 +1,7 @@
 package com.micatechnologies.minecraft.csm.lifesafety;
 
+import java.util.HashMap;
+import java.util.Map;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
@@ -9,15 +11,14 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 /**
- * Client-side handler for fire alarm voice evac sound packets. Manages a single
- * {@link FireAlarmVoiceEvacSound} instance that follows the player with distance-based volume.
- * When a start packet arrives, any existing sound is stopped and a new one begins. When a stop
- * packet arrives, the current sound is stopped.
+ * Client-side handler for fire alarm sound packets. Manages multiple concurrent
+ * {@link FireAlarmVoiceEvacSound} instances keyed by channel name, allowing voice evac, storm,
+ * and multiple horn sound types to play simultaneously with independent distance-based volume.
  */
 public class FireAlarmSoundPacketHandler implements
     IMessageHandler<FireAlarmSoundPacket, IMessage> {
 
-  private static FireAlarmVoiceEvacSound currentSound = null;
+  private static final Map<String, FireAlarmVoiceEvacSound> activeSounds = new HashMap<>();
 
   @Override
   public IMessage onMessage(FireAlarmSoundPacket message, MessageContext ctx) {
@@ -27,32 +28,52 @@ public class FireAlarmSoundPacketHandler implements
 
   @SideOnly(Side.CLIENT)
   private static void handlePacket(FireAlarmSoundPacket message) {
-    // Stop any currently playing voice evac sound
-    if (currentSound != null) {
-      currentSound.stopPlaying();
-      Minecraft.getMinecraft().getSoundHandler().stopSound(currentSound);
-      currentSound = null;
+    String channel = message.getChannel();
+
+    if (!message.isStart()) {
+      if (channel == null || channel.isEmpty()) {
+        // Empty channel = stop all sounds
+        stopAllSounds();
+      } else {
+        // Stop specific channel
+        stopChannel(channel);
+      }
+      return;
     }
 
-    if (message.isStart() && !message.getSpeakerPositions().isEmpty()) {
-      currentSound = new FireAlarmVoiceEvacSound(
-          new ResourceLocation(message.getSoundResource()),
-          message.getSpeakerPositions(),
-          message.getHearingRange());
-      Minecraft.getMinecraft().getSoundHandler().playSound(currentSound);
+    // Start: stop existing sound on this channel, then create a new one
+    if (message.getSpeakerPositions().isEmpty()) {
+      return;
+    }
+
+    stopChannel(channel);
+
+    FireAlarmVoiceEvacSound sound = new FireAlarmVoiceEvacSound(
+        new ResourceLocation(message.getSoundResource()),
+        message.getSpeakerPositions(),
+        message.getHearingRange());
+    activeSounds.put(channel, sound);
+    Minecraft.getMinecraft().getSoundHandler().playSound(sound);
+  }
+
+  @SideOnly(Side.CLIENT)
+  private static void stopChannel(String channel) {
+    FireAlarmVoiceEvacSound sound = activeSounds.remove(channel);
+    if (sound != null) {
+      sound.stopPlaying();
+      Minecraft.getMinecraft().getSoundHandler().stopSound(sound);
     }
   }
 
   /**
-   * Stops the currently playing voice evac sound, if any. Can be called from other client-side
-   * code if needed.
+   * Stops all currently playing fire alarm sounds across all channels.
    */
   @SideOnly(Side.CLIENT)
-  public static void stopCurrentSound() {
-    if (currentSound != null) {
-      currentSound.stopPlaying();
-      Minecraft.getMinecraft().getSoundHandler().stopSound(currentSound);
-      currentSound = null;
+  public static void stopAllSounds() {
+    for (FireAlarmVoiceEvacSound sound : activeSounds.values()) {
+      sound.stopPlaying();
+      Minecraft.getMinecraft().getSoundHandler().stopSound(sound);
     }
+    activeSounds.clear();
   }
 }

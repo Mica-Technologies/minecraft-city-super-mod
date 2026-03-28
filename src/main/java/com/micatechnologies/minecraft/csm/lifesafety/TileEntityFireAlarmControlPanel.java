@@ -7,15 +7,14 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.fml.common.FMLCommonHandler;
@@ -40,7 +39,6 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
       "csm:awful_notifier_ve",
       "csm:mclalsve",
       "csm:firecom8500"};
-  private static final int[] SOUND_LENGTHS = {2100, 560, 560, 755, 700, 520, 520, 440, 460, 600,660};
   private static final String[] SOUND_NAMES = {"Simplex Voice Evac 1",
       "Simplex Voice Evac 2",
       "Simplex Voice Evac 3",
@@ -53,66 +51,55 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
       "Mica Voice Evac 1",
       "Firecom 8500"};
   private static final String STORM_SOUND_NAME = "csm:notifier_tornado_voice_evac";
-  private static final int STORM_SOUND_LENGTH = 460;
   private static final float SOUNDER_VOLUME = 2.0f;
   private static final float VOICE_EVAC_VOLUME = 3.0f;
   private static final float STORM_VOICE_EVAC_VOLUME = 3.0f;
   private static final int PRUNE_INTERVAL_TICKS = 6000; // ~5 minutes
 
+  private static final String CHANNEL_VOICE_EVAC = "voiceevac";
+  private static final String CHANNEL_STORM = "storm";
+
   private final ArrayList<BlockPos> connectedAppliances = new ArrayList<>();
   private int soundIndex;
   private boolean alarm;
   private boolean alarmStorm;
-  private int alarmStormSoundTracking = 0;
-  private HashMap<String, Integer> alarmSoundTracking = null;
   private boolean alarmAnnounced;
+  private boolean alarmWasActive = false;
   private int pruneTickCounter = 0;
-  private final HashSet<UUID> voiceEvacActivePlayers = new HashSet<>();
-  private final HashSet<UUID> stormActivePlayers = new HashSet<>();
-  private String lastVoiceEvacSoundSent = null;
-  private String lastStormSoundSent = null;
 
-  /**
-   * Abstract method which must be implemented to process the reading of the tile entity's NBT data
-   * from the supplied NBT tag compound.
-   *
-   * @param compound the NBT tag compound to read the tile entity's NBT data from
-   */
+  // Channel-based active player tracking (voice evac, storm, and each horn sound)
+  private final Map<String, HashSet<UUID>> channelActivePlayers = new HashMap<>();
+  private final Set<String> lastActiveChannels = new HashSet<>();
+  private String lastVoiceEvacSoundSent = null;
+
   @Override
   public void readNBT(NBTTagCompound compound) {
-
-    // Read sound index
     try {
       soundIndex = compound.getInteger(soundIndexKey);
     } catch (Exception e) {
       soundIndex = 0;
     }
 
-    // Read alarm state
     try {
       alarm = compound.getBoolean(alarmKey);
     } catch (Exception e) {
       alarm = false;
     }
 
-    // Read alarm storm state
     try {
       alarmStorm = compound.getBoolean(alarmStormKey);
     } catch (Exception e) {
       alarmStorm = false;
     }
 
-    // Read alarm announced state
     try {
       alarmAnnounced = compound.getBoolean(alarmAnnouncedKey);
     } catch (Exception e) {
       alarmAnnounced = false;
     }
 
-    // Read connected appliance locations
     connectedAppliances.clear();
     if (compound.hasKey(connectedAppliancesKey)) {
-      // Split into each block position
       String[] positions = compound.getString(connectedAppliancesKey).split("\n");
       for (String position : positions) {
         String[] coordinates = position.split(" ");
@@ -125,29 +112,13 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
     }
   }
 
-  /**
-   * Abstract method which must be implemented to return the NBT tag compound with the tile entity's
-   * NBT data.
-   *
-   * @param compound the NBT tag compound to write the tile entity's NBT data to
-   *
-   * @return the NBT tag compound with the tile entity's NBT data
-   */
   @Override
   public NBTTagCompound writeNBT(NBTTagCompound compound) {
-    // Write sound index
     compound.setInteger(soundIndexKey, soundIndex);
-
-    // Write alarm state
     compound.setBoolean(alarmKey, alarm);
-
-    // Write alarm storm state
     compound.setBoolean(alarmStormKey, alarmStorm);
-
-    // Write alarm announced state
     compound.setBoolean(alarmAnnouncedKey, alarmAnnounced);
 
-    // Write connected appliance locations
     StringBuilder connectedAppliancesString = new StringBuilder();
     for (BlockPos bp : connectedAppliances) {
       connectedAppliancesString.append(bp.getX())
@@ -205,45 +176,23 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
     return SOUND_NAMES[soundIndex];
   }
 
-  /**
-   * Abstract method which must be implemented to return a boolean indicating if the tile entity
-   * should also tick on the client side. By default, the tile entity will always tick on the server
-   * side, and in the event of singleplayer/local mode, the host client is considered the server.
-   *
-   * @return a boolean indicating if the tile entity should also tick on the client side
-   */
   @Override
   public boolean doClientTick() {
     return false;
   }
 
-  /**
-   * Abstract method which must be implemented to return a boolean indicating if the tile entity
-   * ticking should be paused. If the tile entity is paused, the tick event will not be called.
-   *
-   * @return a boolean indicating if the tile entity ticking should be paused
-   */
   @Override
   public boolean pauseTicking() {
     return false;
   }
 
-  /**
-   * Abstract method which must be implemented to return the tick rate of the tile entity.
-   *
-   * @return the tick rate of the tile entity
-   */
   @Override
   public long getTickRate() {
     return tickRate;
   }
 
-  /**
-   * Abstract method which must be implemented to handle the tick event of the tile entity.
-   */
   @Override
   public void onTick() {
-    // Only process on server side (doClientTick is false, but guard just in case)
     if (world.isRemote) {
       return;
     }
@@ -263,21 +212,12 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
       List<EntityPlayerMP> players = mcserv.getPlayerList().getPlayers();
 
       if (alarm) {
-        // Reset storm alarm (fire alarm overrides storm)
-        if (alarmStormSoundTracking > 0) {
-          alarmStormSoundTracking = 0;
-        }
-        // Stop storm sounds on clients if storm was playing
-        if (!stormActivePlayers.isEmpty()) {
-          sendStopToPlayers(players, stormActivePlayers);
-          lastStormSoundSent = null;
-        }
+        // Fire alarm active -- stop storm channel if it was playing
+        stopChannel(players, CHANNEL_STORM);
 
-        // Alarm is starting
-        if (alarmSoundTracking == null) {
-          alarmSoundTracking = new HashMap<>();
-
-          // Announce alarm if not announced
+        // Announce alarm if not announced
+        if (!alarmWasActive) {
+          alarmWasActive = true;
           if (!getAlarmAnnouncedState()) {
             BlockPos blockPos = getPos();
             mcserv.getPlayerList()
@@ -293,10 +233,11 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
           }
         }
 
-        // Collect voice evac speaker positions
+        // Collect voice evac speaker positions and group horn positions by sound
         String voiceEvacSoundName = getCurrentSoundResourceName();
         float voiceEvacHearingRange = VOICE_EVAC_VOLUME * 16.0f;
         List<BlockPos> voiceEvacPositions = new ArrayList<>();
+        Map<String, List<BlockPos>> hornGroups = new HashMap<>();
 
         for (BlockPos bp : connectedAppliances) {
           IBlockState blockStateAtPos = world.getBlockState(bp);
@@ -305,28 +246,26 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
           if (blockAtPos instanceof AbstractBlockFireAlarmSounderVoiceEvac) {
             voiceEvacPositions.add(bp);
           } else if (blockAtPos instanceof AbstractBlockFireAlarmSounder) {
-            // Horn/sounder devices: positional audio (short sounds, loop quickly)
-            AbstractBlockFireAlarmSounder blockFireAlarmSounder =
-                (AbstractBlockFireAlarmSounder) blockAtPos;
-            String alarmSoundName = blockFireAlarmSounder.getSoundResourceName(blockStateAtPos);
-            int alarmSoundLength = blockFireAlarmSounder.getSoundTickLen(blockStateAtPos);
-
-            if (alarmSoundName != null && alarmSoundLength != -1) {
-              if (!alarmSoundTracking.containsKey(alarmSoundName) ||
-                  alarmSoundTracking.get(alarmSoundName) > alarmSoundLength) {
-                alarmSoundTracking.put(alarmSoundName, 0);
-              }
-
-              if (alarmSoundTracking.get(alarmSoundName) == 0) {
-                if (isAnyPlayerInRange(players, bp, SOUNDER_VOLUME)) {
-                  world.playSound(null, bp.getX(), bp.getY(), bp.getZ(),
-                      SoundEvent.REGISTRY.getObject(new ResourceLocation(alarmSoundName)),
-                      SoundCategory.AMBIENT, SOUNDER_VOLUME, (float) 1);
-                }
-              }
+            AbstractBlockFireAlarmSounder sounder = (AbstractBlockFireAlarmSounder) blockAtPos;
+            String soundName;
+            // Check for tile entity-based sound selection (e.g., Gentex Commander 3)
+            if (blockAtPos instanceof BlockFireAlarmGentexCommander3Red) {
+              soundName = ((BlockFireAlarmGentexCommander3Red) blockAtPos)
+                  .getSoundResourceName(world, bp, blockStateAtPos);
+            } else if (blockAtPos instanceof BlockFireAlarmGentexCommander3White) {
+              soundName = ((BlockFireAlarmGentexCommander3White) blockAtPos)
+                  .getSoundResourceName(world, bp, blockStateAtPos);
+            } else {
+              soundName = sounder.getSoundResourceName(blockStateAtPos);
+            }
+            if (soundName != null) {
+              hornGroups.computeIfAbsent(soundName, k -> new ArrayList<>()).add(bp);
             }
           }
         }
+
+        // Track which channels are active this tick
+        Set<String> currentActiveChannels = new HashSet<>();
 
         // Voice evac: manage client-side MovingSound via packets
         if (!voiceEvacPositions.isEmpty()) {
@@ -334,26 +273,38 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
           boolean soundChanged = lastVoiceEvacSoundSent != null &&
               !lastVoiceEvacSoundSent.equals(voiceEvacSoundName);
           if (soundChanged) {
-            sendStopToPlayers(players, voiceEvacActivePlayers);
+            stopChannel(players, CHANNEL_VOICE_EVAC);
           }
 
-          // Send start packets to players who are in range but don't have the sound yet
-          manageVoiceEvacForPlayers(players, voiceEvacPositions, voiceEvacSoundName,
-              voiceEvacHearingRange, voiceEvacActivePlayers);
+          manageSoundForPlayers(players, voiceEvacPositions, CHANNEL_VOICE_EVAC,
+              voiceEvacSoundName, voiceEvacHearingRange);
           lastVoiceEvacSoundSent = voiceEvacSoundName;
+          currentActiveChannels.add(CHANNEL_VOICE_EVAC);
         }
 
-        // Increment sound trackers (for horns/sounders only now)
-        final int incrementSize = tickRate;
-        HashMap<String, Integer> updatedTracking = new HashMap<>();
-        for (HashMap.Entry<String, Integer> entry : alarmSoundTracking.entrySet()) {
-          updatedTracking.put(entry.getKey(), entry.getValue() + incrementSize);
+        // Horns: one MovingSound channel per unique horn sound
+        float hornHearingRange = SOUNDER_VOLUME * 16.0f;
+        for (Map.Entry<String, List<BlockPos>> entry : hornGroups.entrySet()) {
+          String hornChannel = entry.getKey();
+          List<BlockPos> hornPositions = entry.getValue();
+          manageSoundForPlayers(players, hornPositions, hornChannel, hornChannel,
+              hornHearingRange);
+          currentActiveChannels.add(hornChannel);
         }
-        alarmSoundTracking = updatedTracking;
+
+        // Stop channels that were active last tick but are no longer (horn removed/sound changed)
+        for (String oldChannel : lastActiveChannels) {
+          if (!currentActiveChannels.contains(oldChannel)) {
+            stopChannel(players, oldChannel);
+          }
+        }
+        lastActiveChannels.clear();
+        lastActiveChannels.addAll(currentActiveChannels);
+
       } else {
         // Alarm has ended
-        if (alarmSoundTracking != null) {
-          alarmSoundTracking = null;
+        if (alarmWasActive) {
+          alarmWasActive = false;
           BlockPos blockPos = getPos();
           mcserv.getPlayerList()
               .sendMessage(new TextComponentString("The fire alarm at [" +
@@ -365,11 +316,9 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
                   "] " +
                   "has been reset."));
           setAlarmAnnouncedState(false);
-        }
 
-        // Stop voice evac sounds on all clients
-        if (!voiceEvacActivePlayers.isEmpty()) {
-          sendStopToPlayers(players, voiceEvacActivePlayers);
+          // Stop all fire alarm sounds on all clients
+          stopAllChannels(players);
           lastVoiceEvacSoundSent = null;
         }
 
@@ -387,19 +336,12 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
           }
 
           if (!stormVoiceEvacPositions.isEmpty()) {
-            manageVoiceEvacForPlayers(players, stormVoiceEvacPositions, STORM_SOUND_NAME,
-                stormHearingRange, stormActivePlayers);
-            lastStormSoundSent = STORM_SOUND_NAME;
+            manageSoundForPlayers(players, stormVoiceEvacPositions, CHANNEL_STORM,
+                STORM_SOUND_NAME, stormHearingRange);
           }
         } else {
           // Storm alarm off - stop storm sounds
-          if (!stormActivePlayers.isEmpty()) {
-            sendStopToPlayers(players, stormActivePlayers);
-            lastStormSoundSent = null;
-          }
-          if (alarmStormSoundTracking > 0) {
-            alarmStormSoundTracking = 0;
-          }
+          stopChannel(players, CHANNEL_STORM);
         }
       }
     } catch (Exception e) {
@@ -409,27 +351,28 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
   }
 
   /**
-   * Manages the client-side voice evac MovingSound for all players. Sends start packets to
-   * players who are in range of a speaker but don't have the sound playing yet. Sends stop
-   * packets to players who have moved out of range of all speakers.
+   * Manages the client-side MovingSound for a specific channel for all players. Sends start
+   * packets to players who are in range but don't have the sound playing yet. Sends stop
+   * packets to players who have moved out of range of all speakers/horns.
    */
-  private void manageVoiceEvacForPlayers(List<EntityPlayerMP> players,
-      List<BlockPos> speakerPositions, String soundName, float hearingRange,
-      HashSet<UUID> activePlayers) {
+  private void manageSoundForPlayers(List<EntityPlayerMP> players,
+      List<BlockPos> positions, String channel, String soundName, float hearingRange) {
     double hearingRangeSq = hearingRange * (double) hearingRange;
+    HashSet<UUID> activePlayers =
+        channelActivePlayers.computeIfAbsent(channel, k -> new HashSet<>());
 
     for (EntityPlayerMP player : players) {
       UUID playerId = player.getUniqueID();
-      boolean inRange = isPlayerInRangeOfAny(player, speakerPositions, hearingRangeSq);
+      boolean inRange = isPlayerInRangeOfAny(player, positions, hearingRangeSq);
 
       if (inRange && !activePlayers.contains(playerId)) {
         // Player entered range - start their client-side MovingSound
         CsmNetwork.sendTo(
-            FireAlarmSoundPacket.start(soundName, hearingRange, speakerPositions), player);
+            FireAlarmSoundPacket.start(channel, soundName, hearingRange, positions), player);
         activePlayers.add(playerId);
       } else if (!inRange && activePlayers.contains(playerId)) {
-        // Player left range - stop their client-side MovingSound
-        CsmNetwork.sendTo(FireAlarmSoundPacket.stop(), player);
+        // Player left range - stop their client-side MovingSound for this channel
+        CsmNetwork.sendTo(FireAlarmSoundPacket.stop(channel), player);
         activePlayers.remove(playerId);
       }
     }
@@ -446,10 +389,14 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
   }
 
   /**
-   * Sends stop packets to all players in the active set and clears it.
+   * Stops a specific channel: sends stop packets to all active players on that channel.
    */
-  private void sendStopToPlayers(List<EntityPlayerMP> players, HashSet<UUID> activePlayers) {
-    FireAlarmSoundPacket stopPacket = FireAlarmSoundPacket.stop();
+  private void stopChannel(List<EntityPlayerMP> players, String channel) {
+    HashSet<UUID> activePlayers = channelActivePlayers.get(channel);
+    if (activePlayers == null || activePlayers.isEmpty()) {
+      return;
+    }
+    FireAlarmSoundPacket stopPacket = FireAlarmSoundPacket.stop(channel);
     for (EntityPlayerMP player : players) {
       if (activePlayers.contains(player.getUniqueID())) {
         CsmNetwork.sendTo(stopPacket, player);
@@ -459,17 +406,25 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
   }
 
   /**
-   * Checks if any player is within hearing range of the given position. The hearing range is
-   * derived from the sound volume (volume * 16 blocks, matching Minecraft's sound attenuation).
+   * Stops all channels: sends a stop-all packet to every player that has any active sound.
    */
-  private boolean isAnyPlayerInRange(List<EntityPlayerMP> players, BlockPos pos, float volume) {
-    double rangeSq = (volume * 16.0) * (volume * 16.0);
+  private void stopAllChannels(List<EntityPlayerMP> players) {
+    // Collect all players with any active channel
+    HashSet<UUID> allActive = new HashSet<>();
+    for (HashSet<UUID> active : channelActivePlayers.values()) {
+      allActive.addAll(active);
+    }
+    if (allActive.isEmpty()) {
+      return;
+    }
+    FireAlarmSoundPacket stopAllPacket = FireAlarmSoundPacket.stopAll();
     for (EntityPlayerMP player : players) {
-      if (player.getDistanceSq(pos) <= rangeSq) {
-        return true;
+      if (allActive.contains(player.getUniqueID())) {
+        CsmNetwork.sendTo(stopAllPacket, player);
       }
     }
-    return false;
+    channelActivePlayers.clear();
+    lastActiveChannels.clear();
   }
 
   /**
@@ -494,13 +449,11 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
     boolean pruned = false;
     while (it.hasNext()) {
       BlockPos bp = it.next();
-      // Only check loaded chunks to avoid forcing chunk loads
       if (world.isBlockLoaded(bp)) {
         Block blockAtPos = world.getBlockState(bp).getBlock();
         if (!(blockAtPos instanceof AbstractBlockFireAlarmSounder)) {
           it.remove();
           pruned = true;
-          // Only prune one per cycle to stay lightweight
           break;
         }
       }
@@ -512,9 +465,5 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
 
   public String getCurrentSoundResourceName() {
     return SOUND_RESOURCE_NAMES[soundIndex];
-  }
-
-  public int getCurrentSoundLength() {
-    return SOUND_LENGTHS[soundIndex];
   }
 }

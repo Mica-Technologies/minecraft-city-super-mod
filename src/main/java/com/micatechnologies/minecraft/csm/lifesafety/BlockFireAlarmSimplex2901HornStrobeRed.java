@@ -16,12 +16,6 @@ public class BlockFireAlarmSimplex2901HornStrobeRed extends AbstractBlockFireAla
   public String getSoundResourceName(IBlockState blockState) {
     return "csm:2910calcode";
   }
-
-  @Override
-  public int getSoundTickLen(IBlockState blockState) {
-    return 360;
-  }
-
   /**
    * Retrieves the bounding box of the block.
    *

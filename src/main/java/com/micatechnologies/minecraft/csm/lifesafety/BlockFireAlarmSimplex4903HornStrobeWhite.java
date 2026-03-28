@@ -26,15 +26,6 @@ public class BlockFireAlarmSimplex4903HornStrobeWhite extends AbstractBlockFireA
   }
 
   @Override
-  public int getSoundTickLen(IBlockState blockState) {
-    if (blockState.getValue(SOUND) == 0) {
-      return 115;
-    } else {
-      return 60;
-    }
-  }
-
-  @Override
   public String getBlockRegistryName() {
     return "firealarmsimplex4903hornstrobewhite";
   }

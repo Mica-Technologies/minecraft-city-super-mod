@@ -16,12 +16,6 @@ public class BlockFireAlarmESTGenesisRed extends AbstractBlockFireAlarmSounder {
   public String getSoundResourceName(IBlockState blockState) {
     return "csm:est_genesis";
   }
-
-  @Override
-  public int getSoundTickLen(IBlockState blockState) {
-    return 70;
-  }
-
   /**
    * Retrieves the bounding box of the block.
    *

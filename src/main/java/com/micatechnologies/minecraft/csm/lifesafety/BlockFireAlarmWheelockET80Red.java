@@ -16,12 +16,6 @@ public class BlockFireAlarmWheelockET80Red extends AbstractBlockFireAlarmSounder
   public String getSoundResourceName(IBlockState blockState) {
     return "csm:simplex_4051_marchtime";
   }
-
-  @Override
-  public int getSoundTickLen(IBlockState blockState) {
-    return 130;
-  }
-
   /**
    * Retrieves the bounding box of the block.
    *
