@@ -152,11 +152,20 @@
       }
     ]
   },
-  "kac": {
+  "kac_continuous": {
     "category": "block",
     "sounds": [
       {
-        "name": "csm:kac_sounder_calcode",
+        "name": "csm:kac_sounder_calcode_continuous",
+        "stream": false
+      }
+    ]
+  },
+  "kac_code3": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:kac_sounder_code3",
         "stream": false
       }
     ]
@@ -283,6 +292,33 @@
     "sounds": [
       {
         "name": "csm:gentex_gos_code3",
+        "stream": false
+      }
+    ]
+  },
+  "gentex_gos_code3_chime": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:gentex_gos_code3_chime",
+        "stream": false
+      }
+    ]
+  },
+  "gentex_gos_whoop": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:gentex_gos_whoop",
+        "stream": false
+      }
+    ]
+  },
+  "gentex_gos_continuous_chime": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:gentex_gos_continuous_chime",
         "stream": false
       }
     ]

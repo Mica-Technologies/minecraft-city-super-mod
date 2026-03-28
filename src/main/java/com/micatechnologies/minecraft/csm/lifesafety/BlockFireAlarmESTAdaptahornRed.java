@@ -16,12 +16,6 @@ public class BlockFireAlarmESTAdaptahornRed extends AbstractBlockFireAlarmSounde
   public String getSoundResourceName(IBlockState blockState) {
     return "csm:edwards_adaptahorn_code44";
   }
-
-  @Override
-  public int getSoundTickLen(IBlockState blockState) {
-    return 170;
-  }
-
   /**
    * Retrieves the bounding box of the block.
    *

@@ -16,12 +16,6 @@ public class BlockFireAlarmSimplexTrueAlertHornStrobeRed extends AbstractBlockFi
   public String getSoundResourceName(IBlockState blockState) {
     return "csm:stahorn";
   }
-
-  @Override
-  public int getSoundTickLen(IBlockState blockState) {
-    return 60;
-  }
-
   /**
    * Retrieves the bounding box of the block.
    *

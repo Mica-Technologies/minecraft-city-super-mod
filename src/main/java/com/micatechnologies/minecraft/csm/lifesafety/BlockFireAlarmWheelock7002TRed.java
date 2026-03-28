@@ -83,15 +83,6 @@ public class BlockFireAlarmWheelock7002TRed extends AbstractBlockFireAlarmSounde
   }
 
   @Override
-  public int getSoundTickLen(IBlockState blockState) {
-    if (blockState.getValue(SOUND) == 0) {
-      return 45;
-    } else {
-      return 115;
-    }
-  }
-
-  @Override
   public boolean onBlockActivated(World p_onBlockActivated_1_,
       BlockPos p_onBlockActivated_2_,
       IBlockState p_onBlockActivated_3_,

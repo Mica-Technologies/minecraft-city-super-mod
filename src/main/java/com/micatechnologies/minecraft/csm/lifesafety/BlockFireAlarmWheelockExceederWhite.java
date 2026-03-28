@@ -25,15 +25,6 @@ public class BlockFireAlarmWheelockExceederWhite extends AbstractBlockFireAlarmS
     }
   }
 
-  @Override
-  public int getSoundTickLen(IBlockState blockState) {
-    if (blockState.getValue(SOUND) == 0) {
-      return 60;
-    } else {
-      return 15;
-    }
-  }
-
   /**
    * Retrieves the bounding box of the block.
    *

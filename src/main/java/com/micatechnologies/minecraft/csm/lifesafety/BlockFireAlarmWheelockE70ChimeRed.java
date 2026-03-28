@@ -16,12 +16,6 @@ public class BlockFireAlarmWheelockE70ChimeRed extends AbstractBlockFireAlarmSou
   public String getSoundResourceName(IBlockState blockState) {
     return "csm:et70_chime";
   }
-
-  @Override
-  public int getSoundTickLen(IBlockState blockState) {
-    return 140;
-  }
-
   /**
    * Retrieves the bounding box of the block.
    *

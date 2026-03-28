@@ -14,7 +14,7 @@ import net.minecraft.world.World;
 public class BlockFireAlarmWheelockMTHornRed extends AbstractBlockFireAlarmSounder {
 
   public static final PropertyInteger SOUND = PropertyInteger.create("sound", 0, 1);
-  public static final String[] SOUND_NAMES = {"Code 3", "Alt Code 3"};
+  public static final String[] SOUND_NAMES = {"MT Code 3", "Wheelock AS"};
 
   @Override
   public String getBlockRegistryName() {
@@ -76,18 +76,9 @@ public class BlockFireAlarmWheelockMTHornRed extends AbstractBlockFireAlarmSound
   @Override
   public String getSoundResourceName(IBlockState blockState) {
     if (blockState.getValue(SOUND) == 0) {
-      return "csm:wheelockas";
-    } else {
       return "csm:mt_code3";
-    }
-  }
-
-  @Override
-  public int getSoundTickLen(IBlockState blockState) {
-    if (blockState.getValue(SOUND) == 0) {
-      return 60;
     } else {
-      return 60;
+      return "csm:wheelockas";
     }
   }
 

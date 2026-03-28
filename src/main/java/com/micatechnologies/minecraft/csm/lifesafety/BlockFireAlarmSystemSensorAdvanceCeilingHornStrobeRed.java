@@ -17,12 +17,6 @@ public class BlockFireAlarmSystemSensorAdvanceCeilingHornStrobeRed extends
   public String getSoundResourceName(IBlockState blockState) {
     return "csm:spectralert";
   }
-
-  @Override
-  public int getSoundTickLen(IBlockState blockState) {
-    return 60;
-  }
-
   /**
    * Retrieves the bounding box of the block.
    *

@@ -14,14 +14,8 @@ public class BlockFireAlarmSimplexTrueAlertLEDRed extends AbstractBlockFireAlarm
 
   @Override
   public String getSoundResourceName(IBlockState blockState) {
-    return "csm:4030code44";
+    return "csm:stahorn";
   }
-
-  @Override
-  public int getSoundTickLen(IBlockState blockState) {
-    return 115;
-  }
-
   /**
    * Retrieves the bounding box of the block.
    *

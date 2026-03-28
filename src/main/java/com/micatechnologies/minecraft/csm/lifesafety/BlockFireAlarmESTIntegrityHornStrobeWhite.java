@@ -16,12 +16,6 @@ public class BlockFireAlarmESTIntegrityHornStrobeWhite extends AbstractBlockFire
   public String getSoundResourceName(IBlockState blockState) {
     return "csm:est_integrity";
   }
-
-  @Override
-  public int getSoundTickLen(IBlockState blockState) {
-    return 70;
-  }
-
   /**
    * Retrieves the bounding box of the block.
    *

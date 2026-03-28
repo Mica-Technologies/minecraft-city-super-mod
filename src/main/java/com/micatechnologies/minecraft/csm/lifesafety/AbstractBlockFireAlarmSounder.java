@@ -102,6 +102,4 @@ public abstract class AbstractBlockFireAlarmSounder extends AbstractBlockRotatab
   }
 
   abstract public String getSoundResourceName(IBlockState blockState);
-
-  abstract public int getSoundTickLen(IBlockState blockState);
 }

@@ -78,15 +78,6 @@ public class BlockFireAlarmWheelockASRed extends AbstractBlockFireAlarmSounder {
   }
 
   @Override
-  public int getSoundTickLen(IBlockState blockState) {
-    if (blockState.getValue(SOUND) == 0) {
-      return 60;
-    } else {
-      return 15;
-    }
-  }
-
-  @Override
   public String getBlockRegistryName() {
     return "firealarmwheelockasred";
   }

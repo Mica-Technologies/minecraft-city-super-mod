@@ -15,6 +15,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 public class FireAlarmSoundPacket implements IMessage {
 
   private boolean start;
+  private String channel;
   private String soundResource;
   private float hearingRange;
   private List<BlockPos> speakerPositions;
@@ -24,11 +25,12 @@ public class FireAlarmSoundPacket implements IMessage {
   }
 
   /**
-   * Creates a stop packet.
+   * Creates a stop packet for a specific channel.
    */
-  public static FireAlarmSoundPacket stop() {
+  public static FireAlarmSoundPacket stop(String channel) {
     FireAlarmSoundPacket pkt = new FireAlarmSoundPacket();
     pkt.start = false;
+    pkt.channel = channel;
     pkt.soundResource = "";
     pkt.hearingRange = 0;
     pkt.speakerPositions = new ArrayList<>();
@@ -36,12 +38,20 @@ public class FireAlarmSoundPacket implements IMessage {
   }
 
   /**
-   * Creates a start packet with the given sound, range, and speaker positions.
+   * Creates a stop packet that stops all channels (empty channel = stop all).
    */
-  public static FireAlarmSoundPacket start(String soundResource, float hearingRange,
-      List<BlockPos> speakerPositions) {
+  public static FireAlarmSoundPacket stopAll() {
+    return stop("");
+  }
+
+  /**
+   * Creates a start packet with the given channel, sound, range, and speaker positions.
+   */
+  public static FireAlarmSoundPacket start(String channel, String soundResource,
+      float hearingRange, List<BlockPos> speakerPositions) {
     FireAlarmSoundPacket pkt = new FireAlarmSoundPacket();
     pkt.start = true;
+    pkt.channel = channel;
     pkt.soundResource = soundResource;
     pkt.hearingRange = hearingRange;
     pkt.speakerPositions = speakerPositions;
@@ -51,6 +61,10 @@ public class FireAlarmSoundPacket implements IMessage {
   @Override
   public void fromBytes(ByteBuf buf) {
     start = buf.readBoolean();
+    int channelLen = buf.readInt();
+    byte[] channelBytes = new byte[channelLen];
+    buf.readBytes(channelBytes);
+    channel = new String(channelBytes, StandardCharsets.UTF_8);
     int strLen = buf.readInt();
     byte[] bytes = new byte[strLen];
     buf.readBytes(bytes);
@@ -66,6 +80,9 @@ public class FireAlarmSoundPacket implements IMessage {
   @Override
   public void toBytes(ByteBuf buf) {
     buf.writeBoolean(start);
+    byte[] channelBytes = channel.getBytes(StandardCharsets.UTF_8);
+    buf.writeInt(channelBytes.length);
+    buf.writeBytes(channelBytes);
     byte[] bytes = soundResource.getBytes(StandardCharsets.UTF_8);
     buf.writeInt(bytes.length);
     buf.writeBytes(bytes);
@@ -80,6 +97,10 @@ public class FireAlarmSoundPacket implements IMessage {
 
   public boolean isStart() {
     return start;
+  }
+
+  public String getChannel() {
+    return channel;
   }
 
   public String getSoundResource() {
