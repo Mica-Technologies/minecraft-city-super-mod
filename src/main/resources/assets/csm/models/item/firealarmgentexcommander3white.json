@@ -1,8 +1,0 @@
-{
-  "parent": "csm:custom/gentex_commander3_hornstrobe_white",
-  "textures": {
-    "all": "csm:blocks/gentex_commander3_hornstrobe_white",
-    "particle": "csm:blocks/gentex_commander3_hornstrobe_white",
-    "0": "csm:blocks/gentex_commander3_hornstrobe_white"
-  }
-}

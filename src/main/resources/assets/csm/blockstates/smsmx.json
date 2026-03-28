@@ -1,67 +1,29 @@
 {
-    "variants": {
-      "normal": {
-        "model": "csm:smsmx"
-      },
-      "facing=north,state=0": {
-        "model": "csm:smsmx"
-      },
-      "facing=east,state=0": {
-        "model": "csm:smsmx",
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:smsmx"
+  },
+  "variants": {
+    "facing": {
+      "east": {
         "y": 90
       },
-      "facing=south,state=0": {
-        "model": "csm:smsmx",
+      "north": {},
+      "south": {
         "y": 180
       },
-      "facing=west,state=0": {
-        "model": "csm:smsmx",
-        "y": 270
-      },
-      "facing=north,state=1": {
-        "model": "csm:smsmx"
-      },
-      "facing=east,state=1": {
-        "model": "csm:smsmx",
-        "y": 90
-      },
-      "facing=south,state=1": {
-        "model": "csm:smsmx",
-        "y": 180
-      },
-      "facing=west,state=1": {
-        "model": "csm:smsmx",
-        "y": 270
-      },
-      "facing=north,state=2": {
-        "model": "csm:smsmx"
-      },
-      "facing=east,state=2": {
-        "model": "csm:smsmx",
-        "y": 90
-      },
-      "facing=south,state=2": {
-        "model": "csm:smsmx",
-        "y": 180
-      },
-      "facing=west,state=2": {
-        "model": "csm:smsmx",
-        "y": 270
-      },
-      "facing=north,state=3": {
-        "model": "csm:smsmx"
-      },
-      "facing=east,state=3": {
-        "model": "csm:smsmx",
-        "y": 90
-      },
-      "facing=south,state=3": {
-        "model": "csm:smsmx",
-        "y": 180
-      },
-      "facing=west,state=3": {
-        "model": "csm:smsmx",
+      "west": {
         "y": 270
       }
-    }
+    },
+    "state": {
+      "0": {},
+      "1": {},
+      "2": {},
+      "3": {}
+    },
+    "inventory": [
+      {}
+    ]
   }
+}

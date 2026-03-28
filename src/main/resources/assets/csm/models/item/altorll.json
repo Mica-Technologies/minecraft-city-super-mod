@@ -1,8 +1,0 @@
-{
-  "parent": "csm:custom/alto_round_lot_light",
-  "textures": {
-    "all": "csm:blocks/merc_fixtures",
-    "particle": "csm:blocks/merc_fixtures",
-    "0": "csm:blocks/merc_fixtures"
-  }
-}

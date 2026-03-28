@@ -1,9 +1,0 @@
-{
-  "parent": "csm:custom/wheelock_et70_speakerstrobe_white",
-  "textures": {
-    "all": "csm:blocks/wheelock_et70_white",
-    "particle": "csm:blocks/wheelock_et70_white",
-    "0": "csm:blocks/wheelock_et70_white",
-    "missing": "csm:blocks/wheelock_et70_white"
-  }
-}

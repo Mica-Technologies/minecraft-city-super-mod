@@ -1,8 +1,0 @@
-{
-  "parent": "csm:custom/wheelock_exceeder_hornstrobe_white",
-  "textures": {
-    "all": "csm:blocks/wheelock_exceeder_hornstrobe_white",
-    "particle": "csm:blocks/wheelock_exceeder_hornstrobe_white",
-    "0": "csm:blocks/wheelock_exceeder_hornstrobe_white"
-  }
-}

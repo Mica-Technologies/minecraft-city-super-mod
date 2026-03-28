@@ -1,8 +1,0 @@
-{
-  "parent": "csm:custom/firelite_bg6",
-  "textures": {
-    "all": "csm:blocks/firelite_bg6",
-    "particle": "csm:blocks/firelite_bg6",
-    "0": "csm:blocks/firelite_bg6"
-  }
-}

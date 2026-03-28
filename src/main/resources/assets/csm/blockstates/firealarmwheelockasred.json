@@ -1,53 +1,33 @@
 {
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:firealarmwheelockasred"
+  },
   "variants": {
-    "normal": {
-      "model": "csm:firealarmwheelockasred"
+    "facing": {
+      "down": {
+        "x": 90
+      },
+      "east": {
+        "y": 90
+      },
+      "north": {},
+      "south": {
+        "y": 180
+      },
+      "up": {
+        "x": 270
+      },
+      "west": {
+        "y": 270
+      }
     },
-    "facing=north,sound=0": {
-      "model": "csm:firealarmwheelockasred"
+    "sound": {
+      "0": {},
+      "1": {}
     },
-    "facing=east,sound=0": {
-      "model": "csm:firealarmwheelockasred",
-      "y": 90
-    },
-    "facing=south,sound=0": {
-      "model": "csm:firealarmwheelockasred",
-      "y": 180
-    },
-    "facing=west,sound=0": {
-      "model": "csm:firealarmwheelockasred",
-      "y": 270
-    },
-    "facing=up,sound=0": {
-      "model": "csm:firealarmwheelockasred",
-      "x": 270
-    },
-    "facing=down,sound=0": {
-      "model": "csm:firealarmwheelockasred",
-      "x": 90
-    },
-    "facing=north,sound=1": {
-      "model": "csm:firealarmwheelockasred"
-    },
-    "facing=east,sound=1": {
-      "model": "csm:firealarmwheelockasred",
-      "y": 90
-    },
-    "facing=south,sound=1": {
-      "model": "csm:firealarmwheelockasred",
-      "y": 180
-    },
-    "facing=west,sound=1": {
-      "model": "csm:firealarmwheelockasred",
-      "y": 270
-    },
-    "facing=up,sound=1": {
-      "model": "csm:firealarmwheelockasred",
-      "x": 270
-    },
-    "facing=down,sound=1": {
-      "model": "csm:firealarmwheelockasred",
-      "x": 90
-    }
+    "inventory": [
+      {}
+    ]
   }
 }

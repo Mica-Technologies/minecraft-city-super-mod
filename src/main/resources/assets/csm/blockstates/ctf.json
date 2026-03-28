@@ -1,7 +1,14 @@
 {
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:ctf"
+  },
   "variants": {
-    "normal": {
-      "model": "csm:ctf"
-    }
+    "inventory": [
+      {}
+    ],
+    "normal": [
+      {}
+    ]
   }
 }

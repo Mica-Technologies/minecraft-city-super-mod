@@ -1,8 +1,0 @@
-{
-  "parent": "csm:custom/vent_residential_2",
-  "textures": {
-    "all": "csm:blocks/vent_residential_2",
-    "particle": "csm:blocks/vent_residential_2",
-    "0": "csm:blocks/vent_residential_2"
-  }
-}

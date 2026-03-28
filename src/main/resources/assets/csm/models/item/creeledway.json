@@ -1,8 +1,0 @@
-{
-  "parent": "csm:custom/cree_ledway",
-  "textures": {
-    "all": "csm:blocks/cree_ledway",
-    "particle": "csm:blocks/cree_ledway",
-    "0": "csm:blocks/cree_ledway"
-  }
-}

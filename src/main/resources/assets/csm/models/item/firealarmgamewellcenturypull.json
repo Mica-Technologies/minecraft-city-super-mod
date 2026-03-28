@@ -1,8 +1,0 @@
-{
-  "parent": "csm:custom/gamewell_century_pull_station",
-  "textures": {
-    "all": "csm:blocks/gamewell_century_pull",
-    "particle": "csm:blocks/gamewell_century_pull",
-    "0": "csm:blocks/gamewell_century_pull"
-  }
-}

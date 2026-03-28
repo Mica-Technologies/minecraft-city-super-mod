@@ -1,30 +1,29 @@
 {
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:stahsrm"
+  },
   "variants": {
-    "normal": {
-      "model": "csm:stahsrm"
+    "facing": {
+      "down": {
+        "x": 90
+      },
+      "east": {
+        "y": 90
+      },
+      "north": {},
+      "south": {
+        "y": 180
+      },
+      "up": {
+        "x": 270
+      },
+      "west": {
+        "y": 270
+      }
     },
-    "facing=north": {
-      "model": "csm:stahsrm"
-    },
-    "facing=east": {
-      "model": "csm:stahsrm",
-      "y": 90
-    },
-    "facing=south": {
-      "model": "csm:stahsrm",
-      "y": 180
-    },
-    "facing=west": {
-      "model": "csm:stahsrm",
-      "y": 270
-    },
-    "facing=up": {
-      "model": "csm:stahsrm",
-      "x": 270
-    },
-    "facing=down": {
-      "model": "csm:stahsrm",
-      "x": 90
-    }
+    "inventory": [
+      {}
+    ]
   }
 }

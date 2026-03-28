@@ -1,8 +1,0 @@
-{
-  "parent": "csm:custom/brookscrossarm_new_4",
-  "textures": {
-    "all": "csm:blocks/crossarms",
-    "particle": "csm:blocks/crossarms",
-    "0": "csm:blocks/crossarms"
-  }
-}

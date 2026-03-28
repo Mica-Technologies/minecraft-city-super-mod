@@ -1,8 +1,0 @@
-{
-  "parent": "csm:custom/est_integrity_hornstrobe_white",
-  "textures": {
-    "all": "csm:blocks/est_integrity_hornstrobe_white",
-    "particle": "csm:blocks/est_integrity_hornstrobe_white",
-    "0": "csm:blocks/est_integrity_hornstrobe_white"
-  }
-}

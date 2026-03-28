@@ -1,13 +1,15 @@
 {
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:rftors"
+  },
   "variants": {
-    "normal": {
-      "model": "csm:rftors"
+    "powered": {
+      "false": {},
+      "true": {}
     },
-    "powered=false": {
-      "model": "csm:rftors"
-    },
-    "powered=true": {
-      "model": "csm:rftors"
-    }
+    "inventory": [
+      {}
+    ]
   }
 }

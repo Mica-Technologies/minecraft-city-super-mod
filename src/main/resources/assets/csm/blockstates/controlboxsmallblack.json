@@ -1,30 +1,29 @@
 {
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:controlboxsmallblack"
+  },
   "variants": {
-    "normal": {
-      "model": "csm:controlboxsmallblack"
+    "facing": {
+      "down": {
+        "x": 90
+      },
+      "east": {
+        "y": 90
+      },
+      "north": {},
+      "south": {
+        "y": 180
+      },
+      "up": {
+        "x": 270
+      },
+      "west": {
+        "y": 270
+      }
     },
-    "facing=north": {
-      "model": "csm:controlboxsmallblack"
-    },
-    "facing=east": {
-      "model": "csm:controlboxsmallblack",
-      "y": 90
-    },
-    "facing=south": {
-      "model": "csm:controlboxsmallblack",
-      "y": 180
-    },
-    "facing=west": {
-      "model": "csm:controlboxsmallblack",
-      "y": 270
-    },
-    "facing=up": {
-      "model": "csm:controlboxsmallblack",
-      "x": 270
-    },
-    "facing=down": {
-      "model": "csm:controlboxsmallblack",
-      "x": 90
-    }
+    "inventory": [
+      {}
+    ]
   }
 }

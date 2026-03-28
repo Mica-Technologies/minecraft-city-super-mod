@@ -1,8 +1,0 @@
-{
-  "parent": "csm:custom/ge_evolve_large",
-  "textures": {
-    "all": "csm:blocks/ge_evolve_large",
-    "particle": "csm:blocks/ge_evolve_large",
-    "0": "csm:blocks/ge_evolve_large"
-  }
-}

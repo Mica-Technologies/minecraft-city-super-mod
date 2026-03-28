@@ -1,8 +1,0 @@
-{
-  "parent": "csm:custom/ps3",
-  "textures": {
-    "all": "csm:blocks/ps3",
-    "particle": "csm:blocks/ps3",
-    "0": "csm:blocks/ps3"
-  }
-}

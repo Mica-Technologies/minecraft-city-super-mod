@@ -1,9 +1,0 @@
-{
-  "parent": "csm:custom/playerstatue",
-  "textures": {
-    "all": "csm:blocks/skin_thatcrazypandog",
-    "particle": "csm:blocks/skin_thatcrazypandog",
-    "0": "csm:blocks/skin_thatcrazypandog",
-    "1": "csm:blocks/statue_base"
-  }
-}

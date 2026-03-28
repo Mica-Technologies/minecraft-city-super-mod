@@ -1,22 +1,23 @@
 {
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:altollm"
+  },
   "variants": {
-    "normal": {
-      "model": "csm:altollm"
+    "facing": {
+      "east": {
+        "y": 90
+      },
+      "north": {},
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
     },
-    "facing=north": {
-      "model": "csm:altollm"
-    },
-    "facing=east": {
-      "model": "csm:altollm",
-      "y": 90
-    },
-    "facing=south": {
-      "model": "csm:altollm",
-      "y": 180
-    },
-    "facing=west": {
-      "model": "csm:altollm",
-      "y": 270
-    }
+    "inventory": [
+      {}
+    ]
   }
 }
