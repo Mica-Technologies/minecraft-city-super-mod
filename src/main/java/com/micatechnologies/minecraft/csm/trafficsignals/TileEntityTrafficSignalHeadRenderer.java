@@ -211,12 +211,14 @@ public class TileEntityTrafficSignalHeadRenderer extends
       // Push OpenGL transformation matrix
       GL11.glPushMatrix();
 
-      // Bulb quad parameters: cover the entire 12x12 front face of the section
-      float x = 2f;
-      float y = ((sectionInfos.length - 1 - i) - (sectionInfos.length - 1) / 2.0f) * 12.0f;
-      // For 3 sections: i=0 -> 12, i=1 -> 0, i=2 -> -12
+      // Bulb quad parameters: slightly inset from the 12x12 section face to avoid bleed past visors
+      float fullSize = 12f;
+      float inset = fullSize * 0.03f; // 3% inset on each side
+      float size = fullSize - inset * 2f;
+      float x = 2f + inset;
+      float y = ((sectionInfos.length - 1 - i) - (sectionInfos.length - 1) / 2.0f) * 12.0f + inset;
+      // For 3 sections: i=0 -> 12, i=1 -> 0, i=2 -> -12 (before inset)
       float z = 10.4f; // Just in front of the door
-      float size = 12f;
 
       // Center of the quad for rotation
       float cx = x + size / 2f;
