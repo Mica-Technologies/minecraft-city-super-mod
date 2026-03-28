@@ -192,6 +192,15 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
       }
     }
 
+    // HAWK wigwag: for color=2 on HAWK signals, override per-section lighting with
+    // alternating pattern. This is handled in the block class via shouldLightWigwagSection.
+    if (currentBulbColor == 2 && block instanceof BlockControllableHawkSignal) {
+      BlockControllableHawkSignal hawkBlock = (BlockControllableHawkSignal) block;
+      for (int i = 0; i < sectionInfos.length; i++) {
+        sectionInfos[i].setBulbLit(hawkBlock.shouldLightWigwagSection(i));
+      }
+    }
+
     // Loop again, and if the bulb is lit and set to flashing, handle the flashing logic
     long blinkInterval = 500; // ms
     boolean firstHalfOfSecond = (System.currentTimeMillis() % (blinkInterval * 2)) < blinkInterval;
