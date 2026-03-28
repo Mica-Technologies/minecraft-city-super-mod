@@ -140,10 +140,13 @@ All items below are done and working in-game.
   block's shouldLightWigwagSection() method (option 3 approach). If timing precision
   or synchronization becomes an issue, consider adding bulbFlashInverted to SectionInfo
   (option 1) for proper phase-offset flash support in the TE flash loop.
-- **Crosswalk signal improvements**: Future phase — add countdown timer during ped
-  clearance phase using a tile entity that "learns" the timing from the controller
-  (measures the clearance interval on first cycle, then displays countdown on
-  subsequent cycles, matching real-world countdown module behavior)
+- **Crosswalk countdown polish**: Initial implementation complete (TileEntityCrosswalkSignal
+  + TESR). Remaining work:
+  - Update crosswalk textures to include a designated area for the countdown overlay
+  - Refine font rendering (size, positioning, color) to match real-world countdown modules
+  - Test with various controller timing configurations
+  - Tweeters stay as JSON models (sound accessories, not visual signals)
+  - Ramp meters stay as JSON (use crosswalk housing models, not signal heads)
 - **Barlo signal**: Review defaults for barlo-specific configuration
 
 ### Known Issues to Circle Back To
