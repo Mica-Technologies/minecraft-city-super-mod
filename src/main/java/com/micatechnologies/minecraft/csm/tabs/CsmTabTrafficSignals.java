@@ -157,6 +157,7 @@ import com.micatechnologies.minecraft.csm.trafficsignals.BlockTrafficSignalContr
 import com.micatechnologies.minecraft.csm.trafficsignals.ItemEWSignalLinker;
 import com.micatechnologies.minecraft.csm.trafficsignals.ItemNSSignalLinker;
 import com.micatechnologies.minecraft.csm.trafficsignals.ItemSignalConfigurationTool;
+import com.micatechnologies.minecraft.csm.trafficsignals.ItemSignalHeadConfigTool;
 import net.minecraft.block.Block;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
@@ -510,5 +511,7 @@ public class CsmTabTrafficSignals extends CsmTab {
     initTabItem(ItemNSSignalLinker.class, fmlPreInitializationEvent); // NSSignalLinker
     initTabItem(ItemSignalConfigurationTool.class,
         fmlPreInitializationEvent); // SignalConfigurationTool
+    initTabItem(ItemSignalHeadConfigTool.class,
+        fmlPreInitializationEvent); // SignalHeadConfigTool
   }
 }

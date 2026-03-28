@@ -15,6 +15,7 @@ item.fiosremote.name=Frontier Fiber/Verizon Fios Remote
 item.firealarmlinker.name=Fire Alarm Appliance Linker
 item.nssignallinker.name=Traffic Signal Device Linker
 item.signalconfigurationtool.name=Traffic Signal Configuration Tool
+item.signalheadconfigtool.name=Signal Head Configuration Tool
 item.spectrumremote.name=Spectrum Remote
 itemGroup.tabbuildingmaterials=CSM: Building Materials
 itemGroup.tabhvac=CSM: HVAC
