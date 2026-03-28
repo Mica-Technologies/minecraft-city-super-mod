@@ -47,6 +47,9 @@
           "0": "csm:blocks/trafficsignals/old_bulb_body/gray/gtxyellow"
         }
       }
+    ],
+    "normal": [
+      {}
     ]
   }
 }

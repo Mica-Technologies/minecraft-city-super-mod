@@ -60,6 +60,9 @@
           "2": "csm:blocks/yellowarrowrightflash"
         }
       }
+    ],
+    "normal": [
+      {}
     ]
   }
 }

@@ -57,6 +57,9 @@
           "0": "csm:blocks/crosswalkman"
         }
       }
+    ],
+    "normal": [
+      {}
     ]
   }
 }

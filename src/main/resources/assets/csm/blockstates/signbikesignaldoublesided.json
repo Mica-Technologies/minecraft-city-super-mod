@@ -143,6 +143,9 @@
       "true": {
         "model": "csm:metal_signpostback_tall_sign_double_sided_setback"
       }
-    }
+    },
+    "normal": [
+      {}
+    ]
   }
 }

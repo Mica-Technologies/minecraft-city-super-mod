@@ -47,6 +47,9 @@
           "particle": "csm:blocks/solidgreen"
         }
       }
+    ],
+    "normal": [
+      {}
     ]
   }
 }

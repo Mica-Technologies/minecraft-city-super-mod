@@ -51,6 +51,9 @@
           "2": "csm:blocks/trafficsignals/old_bulb_body/gray/greenarrowright"
         }
       }
+    ],
+    "normal": [
+      {}
     ]
   }
 }

@@ -90,6 +90,9 @@
           "particle": "csm:blocks/metal_iridescent"
         }
       }
+    ],
+    "normal": [
+      {}
     ]
   }
 }

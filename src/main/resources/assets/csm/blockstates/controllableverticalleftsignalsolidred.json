@@ -55,6 +55,9 @@
           "1": "csm:blocks/yellowarrowleft"
         }
       }
+    ],
+    "normal": [
+      {}
     ]
   }
 }

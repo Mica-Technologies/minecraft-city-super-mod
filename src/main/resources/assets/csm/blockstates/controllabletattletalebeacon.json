@@ -39,6 +39,9 @@
           "1": "csm:blocks/blue_beacon"
         }
       }
+    ],
+    "normal": [
+      {}
     ]
   }
 }

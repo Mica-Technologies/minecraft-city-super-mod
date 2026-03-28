@@ -142,6 +142,9 @@
       "true": {
         "model": "csm:metal_signpost_street_name_sign_mount_2_setback"
       }
-    }
+    },
+    "normal": [
+      {}
+    ]
   }
 }
