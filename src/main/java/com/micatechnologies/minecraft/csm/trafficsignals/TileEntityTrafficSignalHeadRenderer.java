@@ -121,19 +121,35 @@ public class TileEntityTrafficSignalHeadRenderer extends
     }
 
     // Get per-section positions from the block (supports offsets for doghouse, overlapping for add-ons)
+    int sectionCount = sectionInfos.length;
     float[] sectionYPositions;
     float[] sectionXPositions;
     if (blockState.getBlock() instanceof AbstractBlockControllableSignalHead) {
       AbstractBlockControllableSignalHead signalBlock =
           (AbstractBlockControllableSignalHead) blockState.getBlock();
-      sectionYPositions = signalBlock.getSectionYPositions(sectionInfos.length);
-      sectionXPositions = signalBlock.getSectionXPositions(sectionInfos.length);
+      sectionYPositions = signalBlock.getSectionYPositions(sectionCount);
+      sectionXPositions = signalBlock.getSectionXPositions(sectionCount);
+      // Safety: if TE has more sections than the block expects (e.g., world migration from
+      // old 3-section defaults), pad the position arrays to avoid ArrayIndexOutOfBoundsException
+      if (sectionYPositions.length < sectionCount) {
+        float[] padded = new float[sectionCount];
+        System.arraycopy(sectionYPositions, 0, padded, 0, sectionYPositions.length);
+        for (int i = sectionYPositions.length; i < sectionCount; i++) {
+          padded[i] = ((sectionCount - 1 - i) - (sectionCount - 1) / 2.0f) * 12.0f;
+        }
+        sectionYPositions = padded;
+      }
+      if (sectionXPositions.length < sectionCount) {
+        float[] padded = new float[sectionCount];
+        System.arraycopy(sectionXPositions, 0, padded, 0, sectionXPositions.length);
+        sectionXPositions = padded;
+      }
     } else {
       // Fallback: standard vertical stack, no X offset
-      sectionYPositions = new float[sectionInfos.length];
-      sectionXPositions = new float[sectionInfos.length];
-      for (int i = 0; i < sectionInfos.length; i++) {
-        sectionYPositions[i] = ((sectionInfos.length - 1 - i) - (sectionInfos.length - 1) / 2.0f) * 12.0f;
+      sectionYPositions = new float[sectionCount];
+      sectionXPositions = new float[sectionCount];
+      for (int i = 0; i < sectionCount; i++) {
+        sectionYPositions[i] = ((sectionCount - 1 - i) - (sectionCount - 1) / 2.0f) * 12.0f;
       }
     }
 
