@@ -98,6 +98,11 @@ All items below are done and working in-game.
   - Secondary sits one block below main → Y positions shifted +16 to align
   - Secondary FYA: 2-section (Y + flashing Y), same positioning as regular secondary
   - Fixed crash from TE section count vs position array mismatch during migration
+- [x] **Wave 4.5** — Model cleanup per MODEL_BLOCKSTATE_CLEANUP_PLAN
+  - Moved 5 orphaned models/custom/ files to assets/cleaned_unused_assets/
+  - Removed models/custom/ directory (was reintroduced by custom rendering branch)
+  - Deleted output.png dev artifact from repo root
+  - Stripped unused ModelResourceLocation from TrafficSignalVisorType enum
 - [ ] **Wave 5** — 8-inch and mixed-size signals (needs 8-inch vertex data + visor data)
   - Need to scale down 12-inch visor vertex data for 8-inch sections
 - [ ] **Wave 6** — Horizontal signals (needs xOffset, split body/texture rotation)
