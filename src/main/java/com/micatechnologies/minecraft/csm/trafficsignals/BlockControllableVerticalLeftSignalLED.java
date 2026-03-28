@@ -1,11 +1,17 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
-import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignal;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignalHead;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyColor;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBulbColor;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBulbStyle;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBulbType;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalSectionInfo;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalVisorType;
 import net.minecraft.block.material.Material;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class BlockControllableVerticalLeftSignalLED extends AbstractBlockControllableSignal {
+public class BlockControllableVerticalLeftSignalLED extends AbstractBlockControllableSignalHead {
 
   public BlockControllableVerticalLeftSignalLED() {
     super(Material.ROCK);
@@ -31,5 +37,20 @@ public class BlockControllableVerticalLeftSignalLED extends AbstractBlockControl
   @Override
   public String getBlockRegistryName() {
     return "controllableverticalleftsignalled";
+  }
+
+  @Override
+  public TrafficSignalSectionInfo[] getDefaultTrafficSignalSectionInfo() {
+    return new TrafficSignalSectionInfo[] {
+        new TrafficSignalSectionInfo(TrafficSignalBodyColor.FLAT_BLACK, TrafficSignalBodyColor.FLAT_BLACK, TrafficSignalBodyColor.FLAT_BLACK,
+            TrafficSignalVisorType.CUTAWAY, TrafficSignalBulbStyle.LED_DOTTED, TrafficSignalBulbType.LEFT,
+            TrafficSignalBulbColor.RED, false),
+        new TrafficSignalSectionInfo(TrafficSignalBodyColor.FLAT_BLACK, TrafficSignalBodyColor.FLAT_BLACK, TrafficSignalBodyColor.FLAT_BLACK,
+            TrafficSignalVisorType.CUTAWAY, TrafficSignalBulbStyle.LED_DOTTED, TrafficSignalBulbType.LEFT,
+            TrafficSignalBulbColor.YELLOW, false),
+        new TrafficSignalSectionInfo(TrafficSignalBodyColor.FLAT_BLACK, TrafficSignalBodyColor.FLAT_BLACK, TrafficSignalBodyColor.FLAT_BLACK,
+            TrafficSignalVisorType.CUTAWAY, TrafficSignalBulbStyle.LED_DOTTED, TrafficSignalBulbType.LEFT,
+            TrafficSignalBulbColor.GREEN, false)
+    };
   }
 }
