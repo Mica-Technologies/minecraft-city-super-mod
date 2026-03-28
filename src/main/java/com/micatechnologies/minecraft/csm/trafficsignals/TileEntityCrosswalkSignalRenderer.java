@@ -43,10 +43,10 @@ public class TileEntityCrosswalkSignalRenderer extends
     }
     GlStateManager.rotate(rot, 0, 1, 0);
 
-    // Move to just in front of the block face, shifted down and right for countdown area
-    // The model's north face is at Z=1/16=0.0625 from block origin.
-    // Block center is at 0.5, so the face is at -0.4375 from center.
-    GlStateManager.translate(0.12f, -0.15f, -0.4376f);
+    // Move to just in front of the display face, shifted down and right for countdown area
+    // After rotation, +Z points towards the viewer (out of the display face).
+    // The display face is 0.4375 from block center (model north face at Z=1/16).
+    GlStateManager.translate(0.12f, -0.15f, 0.438f);
 
     // Scale: make the number tall enough to fill the lower portion of the signal face
     // Use non-uniform scale to make the number taller
