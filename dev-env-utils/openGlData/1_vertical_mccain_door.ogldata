@@ -1,0 +1,3 @@
+private static final List<Box> MODEL_BOXES = Arrays.asList(
+    new Box(new float[]{2.00f, 0.00f, 10.75f}, new float[]{14.00f, 12.00f, 11.00f})
+);
