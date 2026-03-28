@@ -1,14 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:controllableverticalbikesignal8inchblack",
-    "textures": {
-      "all": "csm:blocks/solidoff",
-      "particle": "csm:blocks/solidoff",
-      "0": "csm:blocks/blackredbikeoff",
-      "1": "csm:blocks/blackyellowbikeoff",
-      "2": "csm:blocks/blackgreenbikeoff"
-    }
+    "model": "csm:lightupair"
   },
   "variants": {
     "facing": {
@@ -24,37 +17,14 @@
       }
     },
     "color": {
-      "0": {
-        "textures": {
-          "0": "csm:blocks/blackredbike",
-          "1": "csm:blocks/blackyellowbikeoff",
-          "2": "csm:blocks/blackgreenbikeoff"
-        }
-      },
-      "1": {
-        "textures": {
-          "0": "csm:blocks/blackredbikeoff",
-          "1": "csm:blocks/blackyellowbike",
-          "2": "csm:blocks/blackgreenbikeoff"
-        }
-      },
-      "2": {
-        "textures": {
-          "0": "csm:blocks/blackredbikeoff",
-          "1": "csm:blocks/blackyellowbikeoff",
-          "2": "csm:blocks/blackgreenbike"
-        }
-      },
-      "3": {
-        "textures": {
-          "0": "csm:blocks/blackredbikeoff",
-          "1": "csm:blocks/blackyellowbikeoff",
-          "2": "csm:blocks/blackgreenbikeoff"
-        }
-      }
+      "0": {},
+      "1": {},
+      "2": {},
+      "3": {}
     },
     "inventory": [
       {
+        "model": "csm:controllableverticalbikesignal8inchblack",
         "textures": {
           "0": "csm:blocks/blackredbike",
           "1": "csm:blocks/blackyellowbike",
