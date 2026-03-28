@@ -1,12 +1,18 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
-import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignal;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignalHead;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyColor;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBulbColor;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBulbStyle;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBulbType;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalSectionInfo;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalVisorType;
 import net.minecraft.block.material.Material;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class BlockControllableSingleSolidSignalYellowAdvanceFlashGrayB
-    extends AbstractBlockControllableSignal {
+    extends AbstractBlockControllableSignalHead {
 
   public BlockControllableSingleSolidSignalYellowAdvanceFlashGrayB() {
     super(Material.ROCK);
@@ -32,5 +38,20 @@ public class BlockControllableSingleSolidSignalYellowAdvanceFlashGrayB
   @Override
   public String getBlockRegistryName() {
     return "controllablesinglesolidsignalyellowadvanceflashgrayb";
+  }
+
+  @Override
+  public float getSignalYOffset() {
+    return 2.0f;
+  }
+
+  @Override
+  public TrafficSignalSectionInfo[] getDefaultTrafficSignalSectionInfo() {
+    TrafficSignalSectionInfo[] infos = new TrafficSignalSectionInfo[] {
+        new TrafficSignalSectionInfo(TrafficSignalBodyColor.BATTLESHIP_GRAY, TrafficSignalBodyColor.BATTLESHIP_GRAY, TrafficSignalBodyColor.BATTLESHIP_GRAY,
+            TrafficSignalVisorType.CUTAWAY, TrafficSignalBulbStyle.LED, TrafficSignalBulbType.BALL,
+            TrafficSignalBulbColor.GREEN, TrafficSignalBulbColor.YELLOW, false, true)
+    };
+    return infos;
   }
 }

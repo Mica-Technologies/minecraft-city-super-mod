@@ -1,12 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:shared_models/trafficsignals/backplates/trafficlightsingle",
-    "textures": {
-      "all": "csm:blocks/trafficsignals/old_bulb_body/gray/gtxyellowoff",
-      "particle": "csm:blocks/trafficsignals/old_bulb_body/gray/gtxyellowoff",
-      "0": "csm:blocks/trafficsignals/old_bulb_body/gray/gtxyellowoff"
-    }
+    "model": "csm:lightupair"
   },
   "variants": {
     "facing": {
@@ -22,21 +17,14 @@
       }
     },
     "color": {
-      "0": {
-        "textures": {
-          "0": "csm:blocks/trafficsignals/old_bulb_body/gray/solidyellowflash"
-        }
-      },
-      "1": {
-        "textures": {
-          "0": "csm:blocks/trafficsignals/old_bulb_body/gray/solidyellowflash"
-        }
-      },
+      "0": {},
+      "1": {},
       "2": {},
       "3": {}
     },
     "inventory": [
       {
+        "model": "csm:shared_models/trafficsignals/backplates/trafficlightsingle",
         "textures": {
           "all": "csm:blocks/trafficsignals/old_bulb_body/gray/gtxyellowoff",
           "particle": "csm:blocks/trafficsignals/old_bulb_body/gray/gtxyellowoff",

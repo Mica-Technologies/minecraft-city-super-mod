@@ -21,6 +21,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.util.ResourceLocation;
@@ -55,10 +56,15 @@ public class TileEntityTrafficSignalHeadRenderer extends
       float partialTicks, int destroyStage, float alpha) {
 
     // Gather block state information
-    EnumFacing facing = te.getWorld().getBlockState(te.getPos())
-        .getValue(AbstractBlockControllableSignalHead.FACING);
-    int signalColorState = te.getWorld().getBlockState(te.getPos())
-        .getValue(AbstractBlockControllableSignalHead.COLOR);
+    IBlockState blockState = te.getWorld().getBlockState(te.getPos());
+    EnumFacing facing = blockState.getValue(AbstractBlockControllableSignalHead.FACING);
+    int signalColorState = blockState.getValue(AbstractBlockControllableSignalHead.COLOR);
+
+    // Get per-block-type Y offset for signal positioning
+    float signalYOffset = 0.0f;
+    if (blockState.getBlock() instanceof AbstractBlockControllableSignalHead) {
+      signalYOffset = ((AbstractBlockControllableSignalHead) blockState.getBlock()).getSignalYOffset();
+    }
 
     // Gather tile entity information
     TrafficSignalSectionInfo[] sectionInfos = te.getSectionInfos(signalColorState);
@@ -107,6 +113,11 @@ public class TileEntityTrafficSignalHeadRenderer extends
 
     if (tiltOffset != 0) {
       GL11.glTranslated(tiltOffset, 0, 0);
+    }
+
+    // Apply per-block-type Y offset (e.g., single-section signals sit higher)
+    if (signalYOffset != 0.0f) {
+      GL11.glTranslated(0, signalYOffset, 0);
     }
 
     BlockPos pos = te.getPos();
