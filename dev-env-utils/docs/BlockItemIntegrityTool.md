@@ -94,18 +94,28 @@ Uses `AtomicInteger` counters for thread-safe error/warning reporting.
 5. **No JSON schema validation** — Checks for file existence and basic structure but doesn't
    validate that JSON files conform to Minecraft's expected schema.
 
-6. **Forge blockstate format** — Limited understanding of Forge blockstate features like
-   `forge_marker`, `defaults`, `submodel`, and `transform` blocks. May incorrectly flag
-   Forge-format resources as unused.
+6. **Forge blockstate texture tracing** — Correctly resolves `defaults.model` and variant model
+   references, but does not trace texture references from Forge blockstate `defaults.textures`
+   or variant `textures` overrides. Textures referenced only via blockstate overrides (not in
+   model files) may be falsely flagged as unused.
 
 7. **BlockSet variant names** — Hardcoded to check fence/stairs/slab. If new variant types are
    added to `AbstractBlockSetBasic`, the tool won't know to check them.
 
+## Recent Improvements (2026-03-27)
+
+- **Shared model path resolution** — Correctly resolves `csm:block/shared_models/<subsystem>/<name>`
+  parent references in all code paths (parent tracing + model digging).
+- **Unused file detection accuracy** — Excludes `shared_models/` from block model walk (checked
+  separately). Routes blockstate model refs to correct used-files list. False unused reports
+  reduced from 413 to 7.
+- **Abstract class exclusions** — Added 6 missing abstract classes to the exclude list.
+- **Lang parser crash fix** — Added `.name` substring check to prevent `StringIndexOutOfBoundsException`.
+
 ## Planned Improvements
 
-See `assets/docs/agent_progress/MODEL_BLOCKSTATE_CLEANUP_PLAN.md` Phase 3 for planned improvements
-including circular reference detection, Forge blockstate support, configurable exclusions, and
-auto-fix mode.
+See `assets/docs/agent_progress/DEV_ENV_UTILS_IMPROVEMENT_PLAN.md` for remaining work including
+circular reference detection, Forge blockstate texture tracing, and configurable exclusions.
 
 ## Usage
 
