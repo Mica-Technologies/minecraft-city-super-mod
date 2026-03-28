@@ -1,30 +1,29 @@
 {
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:trafficpolehorizontalmountdoubletan"
+  },
   "variants": {
-    "normal": {
-      "model": "csm:trafficpolehorizontalmountdoubletan"
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      },
+      "up": {
+        "x": 270
+      },
+      "down": {
+        "x": 90
+      }
     },
-    "facing=north": {
-      "model": "csm:trafficpolehorizontalmountdoubletan"
-    },
-    "facing=east": {
-      "model": "csm:trafficpolehorizontalmountdoubletan",
-      "y": 90
-    },
-    "facing=south": {
-      "model": "csm:trafficpolehorizontalmountdoubletan",
-      "y": 180
-    },
-    "facing=west": {
-      "model": "csm:trafficpolehorizontalmountdoubletan",
-      "y": 270
-    },
-    "facing=up": {
-      "model": "csm:trafficpolehorizontalmountdoubletan",
-      "x": 270
-    },
-    "facing=down": {
-      "model": "csm:trafficpolehorizontalmountdoubletan",
-      "x": 90
-    }
+    "inventory": [
+      {}
+    ]
   }
 }

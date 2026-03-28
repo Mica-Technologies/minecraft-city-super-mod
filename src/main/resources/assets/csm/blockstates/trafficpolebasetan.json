@@ -1,30 +1,29 @@
 {
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:trafficpolebasetan"
+  },
   "variants": {
-    "normal": {
-      "model": "csm:trafficpolebasetan"
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      },
+      "up": {
+        "x": 270
+      },
+      "down": {
+        "x": 90
+      }
     },
-    "facing=north": {
-      "model": "csm:trafficpolebasetan"
-    },
-    "facing=east": {
-      "model": "csm:trafficpolebasetan",
-      "y": 90
-    },
-    "facing=south": {
-      "model": "csm:trafficpolebasetan",
-      "y": 180
-    },
-    "facing=west": {
-      "model": "csm:trafficpolebasetan",
-      "y": 270
-    },
-    "facing=up": {
-      "model": "csm:trafficpolebasetan",
-      "x": 270
-    },
-    "facing=down": {
-      "model": "csm:trafficpolebasetan",
-      "x": 90
-    }
+    "inventory": [
+      {}
+    ]
   }
 }

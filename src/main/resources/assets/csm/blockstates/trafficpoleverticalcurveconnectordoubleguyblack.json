@@ -1,30 +1,29 @@
 {
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:trafficpoleverticalcurveconnectordoubleguyblack"
+  },
   "variants": {
-    "normal": {
-      "model": "csm:trafficpoleverticalcurveconnectordoubleguyblack"
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      },
+      "up": {
+        "x": 270
+      },
+      "down": {
+        "x": 90
+      }
     },
-    "facing=north": {
-      "model": "csm:trafficpoleverticalcurveconnectordoubleguyblack"
-    },
-    "facing=east": {
-      "model": "csm:trafficpoleverticalcurveconnectordoubleguyblack",
-      "y": 90
-    },
-    "facing=south": {
-      "model": "csm:trafficpoleverticalcurveconnectordoubleguyblack",
-      "y": 180
-    },
-    "facing=west": {
-      "model": "csm:trafficpoleverticalcurveconnectordoubleguyblack",
-      "y": 270
-    },
-    "facing=up": {
-      "model": "csm:trafficpoleverticalcurveconnectordoubleguyblack",
-      "x": 270
-    },
-    "facing=down": {
-      "model": "csm:trafficpoleverticalcurveconnectordoubleguyblack",
-      "x": 90
-    }
+    "inventory": [
+      {}
+    ]
   }
 }

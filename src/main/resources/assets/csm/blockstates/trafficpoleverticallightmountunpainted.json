@@ -1,30 +1,29 @@
 {
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:trafficpoleverticallightmountunpainted"
+  },
   "variants": {
-    "normal": {
-      "model": "csm:trafficpoleverticallightmountunpainted"
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      },
+      "up": {
+        "x": 270
+      },
+      "down": {
+        "x": 90
+      }
     },
-    "facing=north": {
-      "model": "csm:trafficpoleverticallightmountunpainted"
-    },
-    "facing=east": {
-      "model": "csm:trafficpoleverticallightmountunpainted",
-      "y": 90
-    },
-    "facing=south": {
-      "model": "csm:trafficpoleverticallightmountunpainted",
-      "y": 180
-    },
-    "facing=west": {
-      "model": "csm:trafficpoleverticallightmountunpainted",
-      "y": 270
-    },
-    "facing=up": {
-      "model": "csm:trafficpoleverticallightmountunpainted",
-      "x": 270
-    },
-    "facing=down": {
-      "model": "csm:trafficpoleverticallightmountunpainted",
-      "x": 90
-    }
+    "inventory": [
+      {}
+    ]
   }
 }

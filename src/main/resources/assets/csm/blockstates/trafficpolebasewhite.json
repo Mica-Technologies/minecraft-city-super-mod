@@ -1,30 +1,29 @@
 {
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:trafficpolebasewhite"
+  },
   "variants": {
-    "normal": {
-      "model": "csm:trafficpolebasewhite"
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      },
+      "up": {
+        "x": 270
+      },
+      "down": {
+        "x": 90
+      }
     },
-    "facing=north": {
-      "model": "csm:trafficpolebasewhite"
-    },
-    "facing=east": {
-      "model": "csm:trafficpolebasewhite",
-      "y": 90
-    },
-    "facing=south": {
-      "model": "csm:trafficpolebasewhite",
-      "y": 180
-    },
-    "facing=west": {
-      "model": "csm:trafficpolebasewhite",
-      "y": 270
-    },
-    "facing=up": {
-      "model": "csm:trafficpolebasewhite",
-      "x": 270
-    },
-    "facing=down": {
-      "model": "csm:trafficpolebasewhite",
-      "x": 90
-    }
+    "inventory": [
+      {}
+    ]
   }
 }
