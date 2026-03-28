@@ -47,7 +47,7 @@ public class BlockControllableDoghouseSecondaryLeftFYASignal
 
   @Override
   public float[] getSectionYPositions(int sectionCount) {
-    return new float[] {0.0f, -12.0f};
+    return new float[] {16.0f, 4.0f};
   }
 
   @Override
