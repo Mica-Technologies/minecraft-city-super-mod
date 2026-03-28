@@ -51,7 +51,7 @@ public class BlockControllableVerticalSolidFlashYellowSignal
             TrafficSignalBulbColor.YELLOW, false),
         new TrafficSignalSectionInfo(TrafficSignalBodyColor.FLAT_BLACK, TrafficSignalBodyColor.FLAT_BLACK, TrafficSignalBodyColor.FLAT_BLACK,
             TrafficSignalVisorType.CUTAWAY, TrafficSignalBulbStyle.LED, TrafficSignalBulbType.BALL,
-            TrafficSignalBulbColor.GREEN, false)
+            TrafficSignalBulbColor.GREEN, TrafficSignalBulbColor.YELLOW, false, true)
     };
     return infos;
   }

@@ -51,7 +51,7 @@ public class BlockControllableVerticalSolidFlashGreenSignalGray
             TrafficSignalBulbColor.YELLOW, false),
         new TrafficSignalSectionInfo(TrafficSignalBodyColor.BATTLESHIP_GRAY, TrafficSignalBodyColor.BATTLESHIP_GRAY, TrafficSignalBodyColor.BATTLESHIP_GRAY,
             TrafficSignalVisorType.CUTAWAY, TrafficSignalBulbStyle.LED, TrafficSignalBulbType.BALL,
-            TrafficSignalBulbColor.GREEN, false)
+            TrafficSignalBulbColor.GREEN, true)
     };
     return infos;
   }
