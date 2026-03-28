@@ -1,12 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:shared_models/trafficsignals/backplates/trafficlightvertical_arrowaddon",
-    "textures": {
-      "all": "csm:blocks/trafficsignals/old_bulb_body/gray/ledleftarrowoff",
-      "particle": "csm:blocks/trafficsignals/old_bulb_body/gray/ledleftarrowoff",
-      "0": "csm:blocks/trafficsignals/old_bulb_body/gray/ledleftarrowoff"
-    }
+    "model": "csm:lightupair"
   },
   "variants": {
     "facing": {
@@ -23,20 +18,13 @@
     },
     "color": {
       "0": {},
-      "1": {
-        "textures": {
-          "0": "csm:blocks/trafficsignals/old_bulb_body/gray/ledyellowarrowleft"
-        }
-      },
-      "2": {
-        "textures": {
-          "0": "csm:blocks/trafficsignals/old_bulb_body/gray/ledgreenarrowleft"
-        }
-      },
+      "1": {},
+      "2": {},
       "3": {}
     },
     "inventory": [
       {
+        "model": "csm:shared_models/trafficsignals/backplates/trafficlightvertical_arrowaddon",
         "textures": {
           "all": "csm:blocks/trafficsignals/old_bulb_body/gray/ledleftarrowoff",
           "particle": "csm:blocks/trafficsignals/old_bulb_body/gray/ledleftarrowoff",

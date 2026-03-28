@@ -120,6 +120,19 @@ public class TileEntityTrafficSignalHeadRenderer extends
       GL11.glTranslated(0, signalYOffset, 0);
     }
 
+    // Get per-section Y positions from the block (supports overlapping sections for add-ons)
+    float[] sectionYPositions;
+    if (blockState.getBlock() instanceof AbstractBlockControllableSignalHead) {
+      sectionYPositions = ((AbstractBlockControllableSignalHead) blockState.getBlock())
+          .getSectionYPositions(sectionInfos.length);
+    } else {
+      // Fallback: standard vertical stack
+      sectionYPositions = new float[sectionInfos.length];
+      for (int i = 0; i < sectionInfos.length; i++) {
+        sectionYPositions[i] = ((sectionInfos.length - 1 - i) - (sectionInfos.length - 1) / 2.0f) * 12.0f;
+      }
+    }
+
     BlockPos pos = te.getPos();
     Integer displayList = displayListCache.get(pos);
     if (displayList == null || te.isStateDirty()) {
@@ -129,13 +142,13 @@ public class TileEntityTrafficSignalHeadRenderer extends
       displayList = GL11.glGenLists(1);
       displayListCache.put(pos, displayList);
       GL11.glNewList(displayList, GL11.GL_COMPILE);
-      renderStaticParts(te, sectionInfos);
+      renderStaticParts(sectionInfos, sectionYPositions);
       GL11.glEndList();
       te.clearDirtyFlag();
     }
     GL11.glCallList(displayList);
 
-    renderBulbs(sectionInfos);
+    renderBulbs(sectionInfos, sectionYPositions);
 
     GL11.glPopMatrix();
 
@@ -146,8 +159,8 @@ public class TileEntityTrafficSignalHeadRenderer extends
     GlStateManager.enableLighting();
   }
 
-  private void renderStaticParts(TileEntityTrafficSignalHead te,
-      TrafficSignalSectionInfo[] sectionInfos) {
+  private void renderStaticParts(TrafficSignalSectionInfo[] sectionInfos,
+      float[] sectionYPositions) {
     Tessellator tessellator = Tessellator.getInstance();
     BufferBuilder buffer = tessellator.getBuffer();
 
@@ -162,7 +175,7 @@ public class TileEntityTrafficSignalHeadRenderer extends
       TrafficSignalBodyColor visorColor = sectionInfo.getVisorColor();
       TrafficSignalVisorType visorType = sectionInfo.getVisorType();
 
-      float yOffset = ((sectionInfos.length - 1 - i) - (sectionInfos.length - 1) / 2.0f) * 12.0f;
+      float yOffset = sectionYPositions[i];
 
       RenderHelper.addBoxesToBuffer(TrafficSignalVertexData.SIGNAL_BODY_VERTEX_DATA, buffer,
           bodyColor.getRed(), bodyColor.getGreen(), bodyColor.getBlue(), 1.0f, 0.0f, yOffset, 0.0f);
@@ -225,7 +238,7 @@ public class TileEntityTrafficSignalHeadRenderer extends
    * Renders all bulb face quads in a single batched draw call. Pre-computes rotated vertex
    * positions in Java to avoid per-section GL matrix push/pop and separate draw calls.
    */
-  private void renderBulbs(TrafficSignalSectionInfo[] sectionInfos) {
+  private void renderBulbs(TrafficSignalSectionInfo[] sectionInfos, float[] sectionYPositions) {
     // Reset GL color to white so textures are not tinted by leftover static part colors.
     // Must use GL11.glColor4f directly because GlStateManager caches state and the display
     // list replay changes GL color behind GlStateManager's back, making it skip the reset.
@@ -250,7 +263,7 @@ public class TileEntityTrafficSignalHeadRenderer extends
       float inset = fullSize * 0.02f;
       float size = fullSize - inset * 2f;
       float baseX = 2f + inset;
-      float baseY = ((sectionInfos.length - 1 - i) - (sectionInfos.length - 1) / 2.0f) * 12.0f + inset;
+      float baseY = sectionYPositions[i] + inset;
       float z = 10.4f;
 
       float u1 = texInfo.getU1();

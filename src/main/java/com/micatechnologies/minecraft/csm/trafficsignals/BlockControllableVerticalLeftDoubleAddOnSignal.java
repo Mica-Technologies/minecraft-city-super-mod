@@ -1,12 +1,18 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
-import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignal;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignalHead;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyColor;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBulbColor;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBulbStyle;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBulbType;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalSectionInfo;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalVisorType;
 import net.minecraft.block.material.Material;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class BlockControllableVerticalLeftDoubleAddOnSignal
-    extends AbstractBlockControllableSignal {
+    extends AbstractBlockControllableSignalHead {
 
   public BlockControllableVerticalLeftDoubleAddOnSignal() {
     super(Material.ROCK);
@@ -32,5 +38,22 @@ public class BlockControllableVerticalLeftDoubleAddOnSignal
   @Override
   public String getBlockRegistryName() {
     return "controllableverticalleftdoubleaddonsignal";
+  }
+
+  @Override
+  public float getSignalYOffset() {
+    return -4.0f;
+  }
+
+  @Override
+  public TrafficSignalSectionInfo[] getDefaultTrafficSignalSectionInfo() {
+    return new TrafficSignalSectionInfo[] {
+        new TrafficSignalSectionInfo(TrafficSignalBodyColor.FLAT_BLACK, TrafficSignalBodyColor.FLAT_BLACK, TrafficSignalBodyColor.FLAT_BLACK,
+            TrafficSignalVisorType.CUTAWAY, TrafficSignalBulbStyle.LED, TrafficSignalBulbType.LEFT,
+            TrafficSignalBulbColor.YELLOW, false),
+        new TrafficSignalSectionInfo(TrafficSignalBodyColor.FLAT_BLACK, TrafficSignalBodyColor.FLAT_BLACK, TrafficSignalBodyColor.FLAT_BLACK,
+            TrafficSignalVisorType.CUTAWAY, TrafficSignalBulbStyle.LED, TrafficSignalBulbType.LEFT,
+            TrafficSignalBulbColor.GREEN, false)
+    };
   }
 }
