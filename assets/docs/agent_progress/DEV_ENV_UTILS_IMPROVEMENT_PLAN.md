@@ -4,7 +4,7 @@ Overhaul the BlockItemIntegrityTool and ResourceUsageDetectionTool to be accurat
 reliable with the mod's current resource structure (Forge blockstates, shared models, etc.).
 
 **Created:** 2026-03-27
-**Status:** Pending
+**Status:** In Progress — BlockItemIntegrityTool improvements largely complete
 
 ---
 
@@ -136,13 +136,25 @@ The mod's resource structure was significantly cleaned up:
 
 ## Checklist
 
-- [ ] **1.** BlockItemIntegrityTool: Parse Forge blockstate format
-- [ ] **2.** BlockItemIntegrityTool: Update model path resolution for shared_models
+- [x] **1.** BlockItemIntegrityTool: Parse Forge blockstate format — digForModels already handles defaults.model recursively
+- [x] **2.** BlockItemIntegrityTool: Update model path resolution for shared_models — all 3 digForModels paths + parent resolution updated
 - [ ] **3.** BlockItemIntegrityTool: Add circular reference detection
-- [ ] **4.** BlockItemIntegrityTool: Understand inventory variants
-- [ ] **5.** BlockItemIntegrityTool: Walk shared_models for unused detection
-- [ ] **6.** ResourceUsageDetectionTool: Gson-based JSON parsing
-- [ ] **7.** ResourceUsageDetectionTool: Model chain tracing
-- [ ] **8.** ResourceUsageDetectionTool: Forge blockstate support
-- [ ] **9.** ResourceUsageDetectionTool: Batch/report mode
+- [x] **4.** BlockItemIntegrityTool: Understand inventory variants — already checks variants.inventory
+- [x] **5.** BlockItemIntegrityTool: Walk shared_models for unused detection — fixed: exclude shared_models from block walk, route refs to correct list
+- [x] **6.** BlockItemIntegrityTool: Add missing abstract classes to exclude list (6 added)
+- [x] **7.** BlockItemIntegrityTool: Fix lang parser crash (StringIndexOutOfBoundsException)
+- [ ] **8.** ResourceUsageDetectionTool: Gson-based JSON parsing
+- [ ] **9.** ResourceUsageDetectionTool: Model chain tracing
+- [ ] **10.** ResourceUsageDetectionTool: Forge blockstate support
+- [ ] **11.** ResourceUsageDetectionTool: Batch/report mode
+- [ ] **12.** ResourceUsageDetectionTool: Texture usage detection
+
+### Completed Results (2026-03-27)
+
+BlockItemIntegrityTool now reports:
+- **0 errors** (down from 19)
+- **0 suppressed errors** (down from 48)
+- **7 unused files** (down from 413) — 3 remaining false positives are Forge blockstate
+  texture overrides in subdirectories that the tool doesn't trace yet
+- **14 genuinely unused assets moved** to `assets/cleaned_unused_assets/` (10 textures + 4 sounds)
 - [ ] **10.** ResourceUsageDetectionTool: Texture usage detection
