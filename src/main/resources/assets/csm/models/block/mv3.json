@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/modular_vent_3",
+  "parent": "csm:block/shared_models/hvac/modular_vent_3",
   "textures": {
     "all": "csm:blocks/modular_vent_3",
     "particle": "csm:blocks/modular_vent_3",

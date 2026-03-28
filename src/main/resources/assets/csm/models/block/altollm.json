@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/alto_lot_light_mount",
+  "parent": "csm:block/shared_models/lighting/alto_lot_light_mount",
   "textures": {
     "all": "csm:blocks/metal_silver",
     "particle": "csm:blocks/metal_silver",

@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/est_pull_station_mclals_branded",
+  "parent": "csm:block/shared_models/lifesafety/est_pull_station_mclals_branded",
   "textures": {
     "all": "csm:blocks/est_pull_station_mclals_branded",
     "particle": "csm:blocks/est_pull_station_mclals_branded",

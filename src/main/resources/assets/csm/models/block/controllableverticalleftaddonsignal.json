@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/trafficlightvertical_arrowaddon",
+  "parent": "csm:block/shared_models/trafficsignals/trafficlightvertical_arrowaddon",
   "textures": {
     "all": "csm:blocks/solidoff",
     "particle": "csm:blocks/solidoff",

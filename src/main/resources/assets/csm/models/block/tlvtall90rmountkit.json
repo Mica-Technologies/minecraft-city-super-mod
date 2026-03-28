@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/verticallightmounttall90r",
+  "parent": "csm:block/shared_models/trafficaccessories/verticallightmounttall90r",
   "textures": {
     "all": "csm:blocks/metal_silver",
     "particle": "csm:blocks/metal_silver",

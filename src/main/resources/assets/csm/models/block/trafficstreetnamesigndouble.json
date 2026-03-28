@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/trafficpolestreetnamesigndouble",
+  "parent": "csm:block/shared_models/trafficaccessories/trafficpolestreetnamesigndouble",
   "textures": {
     "all": "csm:blocks/metal_black",
     "particle": "csm:blocks/metal_black",

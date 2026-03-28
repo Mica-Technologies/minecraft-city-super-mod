@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/bose_speaker_1",
+  "parent": "csm:block/shared_models/technology/bose_speaker_1",
   "textures": {
     "all": "csm:blocks/bose_speaker",
     "particle": "csm:blocks/bose_speaker",

@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/wheelock-e70ss-red",
+  "parent": "csm:block/shared_models/lifesafety/wheelock-e70ss-red",
   "textures": {
     "all": "csm:blocks/images",
     "particle": "csm:blocks/images",

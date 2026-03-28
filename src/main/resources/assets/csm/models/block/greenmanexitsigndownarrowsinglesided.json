@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/greenmanexitsign",
+  "parent": "csm:block/shared_models/lifesafety/greenmanexitsign",
   "textures": {
     "all": "csm:blocks/greenmanexitsigndownarrow",
     "particle": "csm:blocks/greenmanexitsigndownarrow",

@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/trafficpoleverticalquadmount",
+  "parent": "csm:block/shared_models/trafficaccessories/trafficpoleverticalquadmount",
   "textures": {
     "all": "csm:blocks/metal_mattewhite",
     "particle": "csm:blocks/metal_mattewhite",

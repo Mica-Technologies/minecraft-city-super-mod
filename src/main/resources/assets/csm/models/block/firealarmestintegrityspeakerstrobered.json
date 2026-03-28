@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/est_integrity_hornstrobe_red",
+  "parent": "csm:block/shared_models/lifesafety/est_integrity_hornstrobe_red",
   "textures": {
     "all": "csm:blocks/est_integrity_hornstrobe_red",
     "particle": "csm:blocks/est_integrity_hornstrobe_red",

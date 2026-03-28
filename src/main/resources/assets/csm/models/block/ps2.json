@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/ps2",
+  "parent": "csm:block/shared_models/lifesafety/ps2",
   "textures": {
     "all": "csm:blocks/ps2",
     "particle": "csm:blocks/ps2",

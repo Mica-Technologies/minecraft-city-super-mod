@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/arcade_cabinet",
+  "parent": "csm:block/shared_models/novelties/arcade_cabinet",
   "textures": {
     "all": "csm:blocks/arcade_cabinet",
     "particle": "csm:blocks/arcade_cabinet",

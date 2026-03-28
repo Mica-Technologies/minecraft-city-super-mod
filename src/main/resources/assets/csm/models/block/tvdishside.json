@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/tvdishside",
+  "parent": "csm:block/shared_models/technology/tvdishside",
   "textures": {
     "all": "csm:blocks/sat_tv_dish",
     "particle": "csm:blocks/sat_tv_dish",

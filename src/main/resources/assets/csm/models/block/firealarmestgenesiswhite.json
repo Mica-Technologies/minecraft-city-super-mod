@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/est_genesis_hornstrobe_micro_white",
+  "parent": "csm:block/shared_models/lifesafety/est_genesis_hornstrobe_micro_white",
   "textures": {
     "all": "csm:blocks/est_genesis_hornstrobe_micro_white",
     "particle": "csm:blocks/est_genesis_hornstrobe_micro_white",

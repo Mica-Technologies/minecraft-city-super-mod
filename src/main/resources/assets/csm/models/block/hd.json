@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/handdryer",
+  "parent": "csm:block/shared_models/novelties/handdryer",
   "textures": {
     "all": "csm:blocks/handdryer",
     "particle": "csm:blocks/handdryer",

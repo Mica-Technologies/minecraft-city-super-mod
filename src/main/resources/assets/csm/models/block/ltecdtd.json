@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/ltecdtd",
+  "parent": "csm:block/shared_models/lighting/ltecdtd",
   "textures": {
     "all": "csm:blocks/ltecdtd",
     "particle": "csm:blocks/ltecdtd",

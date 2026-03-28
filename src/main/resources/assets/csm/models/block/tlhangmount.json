@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/trafficlighthangmount",
+  "parent": "csm:block/shared_models/trafficaccessories/trafficlighthangmount",
   "textures": {
     "all": "csm:blocks/metal_white",
     "particle": "csm:blocks/metal_white",

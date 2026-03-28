@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/mt4-115-s_13_red",
+  "parent": "csm:block/shared_models/lifesafety/mt4-115-s_13_red",
   "textures": {
     "all": "csm:blocks/mt4-115-s_13_red",
     "particle": "csm:blocks/mt4-115-s_13_red",

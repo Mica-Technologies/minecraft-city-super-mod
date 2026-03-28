@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/wapn",
+  "parent": "csm:block/shared_models/technology/wapn",
   "textures": {
     "all": "csm:blocks/wapn",
     "particle": "csm:blocks/wapn",

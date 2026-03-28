@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/lithonia_singled_strip_light_half_reflectors",
+  "parent": "csm:block/shared_models/lighting/lithonia_singled_strip_light_half_reflectors",
   "textures": {
     "all": "csm:blocks/striplights",
     "particle": "csm:blocks/striplights",

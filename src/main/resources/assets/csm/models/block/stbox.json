@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/setupbox",
+  "parent": "csm:block/shared_models/technology/setupbox",
   "textures": {
     "all": "csm:blocks/setup_box",
     "particle": "csm:blocks/setup_box",

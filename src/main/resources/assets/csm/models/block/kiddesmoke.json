@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/kidde_smoke_alarm",
+  "parent": "csm:block/shared_models/lifesafety/kidde_smoke_alarm",
   "textures": {
     "all": "csm:blocks/kidde_smoke_alarm",
     "particle": "csm:blocks/kidde_smoke_alarm",

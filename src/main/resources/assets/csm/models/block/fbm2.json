@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/full_ballast_mount_2",
+  "parent": "csm:block/shared_models/lighting/full_ballast_mount_2",
   "textures": {
     "all": "csm:blocks/troffers",
     "particle": "csm:blocks/troffers",

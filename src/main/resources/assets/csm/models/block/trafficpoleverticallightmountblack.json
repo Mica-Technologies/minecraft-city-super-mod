@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/trafficpoleverticallightmount",
+  "parent": "csm:block/shared_models/trafficaccessories/trafficpoleverticallightmount",
   "textures": {
     "all": "csm:blocks/metal_black",
     "particle": "csm:blocks/metal_black",

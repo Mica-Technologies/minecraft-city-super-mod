@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/wheelock_7002t",
+  "parent": "csm:block/shared_models/lifesafety/wheelock_7002t",
   "textures": {
     "all": "csm:blocks/wheelock_7002t",
     "particle": "csm:blocks/wheelock_7002t",

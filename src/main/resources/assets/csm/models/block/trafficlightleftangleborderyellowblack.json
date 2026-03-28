@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/trafficlightverticalangle2border",
+  "parent": "csm:block/shared_models/trafficaccessories/trafficlightverticalangle2border",
   "textures": {
     "all": "csm:blocks/signalbackplateblackblackyellow",
     "particle": "csm:blocks/signalbackplateblackblackyellow",

@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/systemsensor_lseries_strobe_red",
+  "parent": "csm:block/shared_models/lifesafety/systemsensor_lseries_strobe_red",
   "textures": {
     "all": "csm:blocks/sslseries-strobe",
     "particle": "csm:blocks/sslseries-strobe",

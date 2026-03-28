@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/trafficpolecamera_short",
+  "parent": "csm:block/shared_models/trafficsignals/trafficpolecamera_short",
   "textures": {
     "all": "csm:blocks/metal_white",
     "particle": "csm:blocks/metal_white",

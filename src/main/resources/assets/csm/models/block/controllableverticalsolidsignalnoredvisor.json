@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/trafficlightvertical_noredvisor",
+  "parent": "csm:block/shared_models/trafficsignals/trafficlightvertical_noredvisor",
   "textures": {
     "all": "csm:blocks/solidoff",
     "particle": "csm:blocks/solidoff",

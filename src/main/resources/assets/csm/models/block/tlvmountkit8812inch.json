@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/verticallightmount8812inch",
+  "parent": "csm:block/shared_models/trafficaccessories/verticallightmount8812inch",
   "textures": {
     "all": "csm:blocks/metal_silver",
     "particle": "csm:blocks/metal_silver",

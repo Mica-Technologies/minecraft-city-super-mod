@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/sears_light_fixture",
+  "parent": "csm:block/shared_models/lighting/sears_light_fixture",
   "textures": {
     "all": "csm:blocks/troffers",
     "particle": "csm:blocks/troffers",

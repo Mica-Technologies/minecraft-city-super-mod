@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/lithonia_rtl_full",
+  "parent": "csm:block/shared_models/lighting/lithonia_rtl_full",
   "textures": {
     "all": "csm:blocks/troffers",
     "particle": "csm:blocks/troffers",

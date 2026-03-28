@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/simplex_t_bar_pull_station",
+  "parent": "csm:block/shared_models/lifesafety/simplex_t_bar_pull_station",
   "textures": {
     "all": "csm:blocks/simplex_t_bar_pull_station",
     "particle": "csm:blocks/simplex_t_bar_pull_station",

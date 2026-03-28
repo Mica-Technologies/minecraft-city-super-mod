@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/mclaapprovedexitsignedgelit",
+  "parent": "csm:block/shared_models/lifesafety/mclaapprovedexitsignedgelit",
   "textures": {
     "all": "csm:blocks/mclaapprovedstairssignnoarrow",
     "particle": "csm:blocks/mclaapprovedstairssignnoarrow",

@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/appletv",
+  "parent": "csm:block/shared_models/technology/appletv",
   "textures": {
     "all": "csm:blocks/apple_tv",
     "particle": "csm:blocks/apple_tv",

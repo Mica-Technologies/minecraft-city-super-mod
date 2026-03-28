@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/transformermount",
+  "parent": "csm:block/shared_models/powergrid/transformermount",
   "textures": {
     "all": "csm:blocks/metal",
     "particle": "csm:blocks/metal",

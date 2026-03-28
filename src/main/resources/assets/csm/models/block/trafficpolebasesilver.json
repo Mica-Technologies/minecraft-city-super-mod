@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/trafficpoleverticalbase",
+  "parent": "csm:block/shared_models/trafficaccessories/trafficpoleverticalbase",
   "textures": {
     "all": "csm:blocks/metal_silver",
     "particle": "csm:blocks/metal_silver",

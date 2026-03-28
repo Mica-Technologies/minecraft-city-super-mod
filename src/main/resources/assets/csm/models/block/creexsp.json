@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/cree_xsp",
+  "parent": "csm:block/shared_models/lighting/cree_xsp",
   "textures": {
     "all": "csm:blocks/cree_xsp",
     "particle": "csm:blocks/cree_xsp",

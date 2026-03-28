@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/westinghouse_ov20",
+  "parent": "csm:block/shared_models/lighting/westinghouse_ov20",
   "textures": {
     "all": "csm:blocks/merc_fixtures",
     "particle": "csm:blocks/merc_fixtures",

@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/air_hockey_table",
+  "parent": "csm:block/shared_models/novelties/air_hockey_table",
   "textures": {
     "all": "csm:blocks/air_hockey_table",
     "particle": "csm:blocks/air_hockey_table",

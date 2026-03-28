@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/trafficpoleverticalconnectordouble",
+  "parent": "csm:block/shared_models/trafficaccessories/trafficpoleverticalconnectordouble",
   "textures": {
     "all": "csm:blocks/metal_white",
     "particle": "csm:blocks/metal_white",

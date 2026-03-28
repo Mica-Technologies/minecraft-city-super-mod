@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/ci_navion",
+  "parent": "csm:block/shared_models/lighting/ci_navion",
   "textures": {
     "all": "csm:blocks/ci_navion",
     "particle": "csm:blocks/ci_navion",

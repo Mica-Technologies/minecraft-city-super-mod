@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/gamewell_fire_box",
+  "parent": "csm:block/shared_models/lifesafety/gamewell_fire_box",
   "textures": {
     "all": "csm:blocks/gamewell_fire_box",
     "particle": "csm:blocks/gamewell_fire_box",

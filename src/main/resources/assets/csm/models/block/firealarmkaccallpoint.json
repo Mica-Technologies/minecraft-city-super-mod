@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/facallpoint",
+  "parent": "csm:block/shared_models/lifesafety/facallpoint",
   "textures": {
     "all": "csm:blocks/intnl_pull_station",
     "particle": "csm:blocks/intnl_pull_station",

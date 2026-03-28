@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/playerstatue",
+  "parent": "csm:block/shared_models/novelties/playerstatue",
   "textures": {
     "all": "csm:blocks/skin_hawka97",
     "particle": "csm:blocks/skin_hawka97",

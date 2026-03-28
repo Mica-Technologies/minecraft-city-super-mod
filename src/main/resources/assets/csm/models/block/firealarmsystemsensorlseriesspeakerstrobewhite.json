@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/systemsensor_lseries_speakerstrobe_white",
+  "parent": "csm:block/shared_models/lifesafety/systemsensor_lseries_speakerstrobe_white",
   "textures": {
     "all": "csm:blocks/systemsensor_lseries_speakerstrobe_white",
     "particle": "csm:blocks/systemsensor_lseries_speakerstrobe_white",

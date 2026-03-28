@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/trafficlightvertical",
+  "parent": "csm:block/shared_models/trafficsignals/trafficlightvertical",
   "textures": {
     "all": "csm:blocks/ledsolidredoff",
     "particle": "csm:blocks/ledsolidredoff",

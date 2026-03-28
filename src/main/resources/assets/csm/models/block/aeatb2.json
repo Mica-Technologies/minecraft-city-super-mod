@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/ae_atb2",
+  "parent": "csm:block/shared_models/lighting/ae_atb2",
   "textures": {
     "all": "csm:blocks/ae_autobahn_atb2",
     "particle": "csm:blocks/ae_autobahn_atb2",

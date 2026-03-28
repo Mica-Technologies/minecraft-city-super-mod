@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/rss",
+  "parent": "csm:block/shared_models/lifesafety/rss",
   "textures": {
     "all": "csm:blocks/rss",
     "particle": "csm:blocks/rss",

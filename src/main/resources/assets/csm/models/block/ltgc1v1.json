@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/ltgc1_v1",
+  "parent": "csm:block/shared_models/lighting/ltgc1_v1",
   "textures": {
     "all": "csm:blocks/ltgc1_v1",
     "particle": "csm:blocks/ltgc1_v1",

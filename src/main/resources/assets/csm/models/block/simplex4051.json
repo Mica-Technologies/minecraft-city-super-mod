@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/simplex_4051",
+  "parent": "csm:block/shared_models/lifesafety/simplex_4051",
   "textures": {
     "all": "csm:blocks/simplex_4051",
     "particle": "csm:blocks/simplex_4051",

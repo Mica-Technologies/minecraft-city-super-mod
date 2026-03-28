@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/signal_fatigue_mitigator_4",
+  "parent": "csm:block/shared_models/trafficaccessories/signal_fatigue_mitigator_4",
   "textures": {
     "all": "csm:blocks/metal_white",
     "particle": "csm:blocks/metal_white",

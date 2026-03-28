@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/trafficpolehorizontalanglemount1",
+  "parent": "csm:block/shared_models/trafficaccessories/trafficpolehorizontalanglemount1",
   "textures": {
     "all": "csm:blocks/metal_mattewhite",
     "particle": "csm:blocks/metal_mattewhite",

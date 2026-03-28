@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/transformer_screw_caps",
+  "parent": "csm:block/shared_models/powergrid/transformer_screw_caps",
   "textures": {
     "all": "csm:blocks/metal",
     "particle": "csm:blocks/metal",

@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/jbl_control_speaker",
+  "parent": "csm:block/shared_models/technology/jbl_control_speaker",
   "textures": {
     "all": "csm:blocks/jbl_control_speaker",
     "particle": "csm:blocks/jbl_control_speaker",

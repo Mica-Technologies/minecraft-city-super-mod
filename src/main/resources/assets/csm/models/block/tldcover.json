@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/trafficlightdoghousecover",
+  "parent": "csm:block/shared_models/trafficaccessories/trafficlightdoghousecover",
   "textures": {
     "all": "csm:blocks/metal_black",
     "particle": "csm:blocks/metal_black",

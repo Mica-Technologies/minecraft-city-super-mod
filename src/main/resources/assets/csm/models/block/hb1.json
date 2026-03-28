@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/mcla_led_highbay_light_1",
+  "parent": "csm:block/shared_models/lighting/mcla_led_highbay_light_1",
   "textures": {
     "all": "csm:blocks/troffers",
     "particle": "csm:blocks/troffers",

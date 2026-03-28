@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/farevend",
+  "parent": "csm:block/shared_models/technology/farevend",
   "textures": {
     "all": "csm:blocks/farevend",
     "particle": "csm:blocks/farevend",

@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/trafficsignalpolemount",
+  "parent": "csm:block/shared_models/trafficaccessories/trafficsignalpolemount",
   "textures": {
     "all": "csm:blocks/metal_mattetan",
     "particle": "csm:blocks/metal_mattetan",

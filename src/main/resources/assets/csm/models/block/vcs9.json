@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/valcom_speaker_9",
+  "parent": "csm:block/shared_models/technology/valcom_speaker_9",
   "textures": {
     "all": "csm:blocks/valcom_speaker_9",
     "particle": "csm:blocks/valcom_speaker_9",

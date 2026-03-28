@@ -1,5 +1,5 @@
 {
-  "parent": "csm:custom/vent_residential_1",
+  "parent": "csm:block/shared_models/hvac/vent_residential_1",
   "textures": {
     "all": "csm:blocks/vent_residential_1",
     "particle": "csm:blocks/vent_residential_1",
