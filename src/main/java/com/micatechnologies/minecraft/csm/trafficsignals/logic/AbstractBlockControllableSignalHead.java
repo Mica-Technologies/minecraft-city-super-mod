@@ -189,6 +189,15 @@ public abstract class AbstractBlockControllableSignalHead extends AbstractBlockC
   }
 
   /**
+   * Returns whether this signal uses horizontal body orientation. When true, the renderer
+   * uses body/door vertex data rotated 90° so the back taper goes top-to-bottom instead
+   * of left-to-right. Visors and bulb textures are NOT rotated.
+   */
+  public boolean isHorizontal() {
+    return false;
+  }
+
+  /**
    * Returns per-section sizes (12 or 8) for the renderer. Default is 12 for all sections.
    * Override for 8-inch signals or mixed-size (8-8-12, 12-8-8) signals.
    */

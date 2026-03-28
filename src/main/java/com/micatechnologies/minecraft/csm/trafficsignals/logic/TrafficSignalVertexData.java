@@ -548,6 +548,26 @@ public class TrafficSignalVertexData {
   private static final float CENTER_Y = 6.0f;
 
   /**
+   * Rotates a list of boxes 90° around the Z axis by swapping X and Y coordinates
+   * relative to the section center (8, 6). Used for horizontal signal body/door geometry
+   * where the back taper should be top-to-bottom instead of left-to-right.
+   */
+  private static List<Box> rotateBoxes90Z(List<Box> source) {
+    List<Box> result = new ArrayList<>();
+    for (Box box : source) {
+      // Swap X↔Y relative to center: newX = centerX + (oldY - centerY), newY = centerY + (oldX - centerX)
+      float x1 = CENTER_X + (box.from[1] - CENTER_Y);
+      float y1 = CENTER_Y + (box.from[0] - CENTER_X);
+      float x2 = CENTER_X + (box.to[1] - CENTER_Y);
+      float y2 = CENTER_Y + (box.to[0] - CENTER_X);
+      result.add(new Box(
+          new float[]{Math.min(x1, x2), Math.min(y1, y2), box.from[2]},
+          new float[]{Math.max(x1, x2), Math.max(y1, y2), box.to[2]}));
+    }
+    return result;
+  }
+
+  /**
    * Scales a list of boxes from 12-inch to 8-inch by scaling X and Y coordinates
    * relative to the section center (8, 6). Z coordinates are preserved.
    */
@@ -584,6 +604,13 @@ public class TrafficSignalVertexData {
   public static final List<Box> SIGNAL_DOOR_VERTEX_DATA = Arrays.asList(
       new Box(new float[]{2.00f, 0.00f, 10.75f}, new float[]{14.00f, 12.00f, 11.00f})
   );
+
+  // --- Horizontal section data (body/door rotated 90° around Z) ---
+
+  public static final List<Box> SIGNAL_BODY_HORIZONTAL_VERTEX_DATA =
+      rotateBoxes90Z(SIGNAL_BODY_VERTEX_DATA);
+  public static final List<Box> SIGNAL_DOOR_HORIZONTAL_VERTEX_DATA =
+      rotateBoxes90Z(SIGNAL_DOOR_VERTEX_DATA);
 
   // --- 8-inch section data (scaled from 12-inch) ---
 

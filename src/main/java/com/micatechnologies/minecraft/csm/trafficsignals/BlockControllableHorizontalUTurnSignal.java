@@ -40,6 +40,11 @@ public class BlockControllableHorizontalUTurnSignal extends AbstractBlockControl
   }
 
   @Override
+  public boolean isHorizontal() {
+    return true;
+  }
+
+  @Override
   public float[] getSectionYPositions(int sectionCount) {
     return new float[] {0.0f, 0.0f, 0.0f};
   }

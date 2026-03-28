@@ -40,6 +40,11 @@ public class BlockControllableHorizontalAngleUpLeftSignal extends AbstractBlockC
   }
 
   @Override
+  public boolean isHorizontal() {
+    return true;
+  }
+
+  @Override
   public float[] getSectionYPositions(int sectionCount) {
     return new float[] {0.0f, 0.0f, 0.0f};
   }
