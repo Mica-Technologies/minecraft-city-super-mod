@@ -223,7 +223,7 @@ public class TileEntityTrafficSignalHeadRenderer extends
 
       // Bulb quad parameters: slightly inset from the 12x12 section face to avoid bleed past visors
       float fullSize = 12f;
-      float inset = fullSize * 0.03f;
+      float inset = fullSize * 0.02f;
       float size = fullSize - inset * 2f;
       float baseX = 2f + inset;
       float baseY = ((sectionInfos.length - 1 - i) - (sectionInfos.length - 1) / 2.0f) * 12.0f + inset;
