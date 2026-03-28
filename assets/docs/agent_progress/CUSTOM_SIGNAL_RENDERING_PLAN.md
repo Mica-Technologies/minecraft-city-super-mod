@@ -122,11 +122,13 @@ All items below are done and working in-game.
   - Angle and Angle2 variants, standard 3-section vertical with mounting angle
   - Angle is redundant with TrafficSignalBodyTilt system
   - Auto-migration and controller fault detection deferred to future pass
-- [x] **Wave 8** — Remaining blocks assessed, no further conversions needed
+- [x] **Wave 8** — HAWK signal converted, remaining blocks assessed
+  - HAWK: 3-section layout (left red, right red, yellow) with X offsets {-6, +6, 0}
+    and Y positions {0, 0, -12}. Wigwag (color=2) implemented via timer-based
+    alternating in shouldLightWigwagSection() on the block class — left and right
+    reds alternate at 500ms. No changes to SectionInfo flash system needed.
   - Train controller: plain textured cube, emits redstone — not a visual signal head
-  - Ramp meters (3): use crosswalk housing models (crosswalklightsingle_*), different
-    form factor than cylindrical signal heads — stay as JSON
-  - HAWK (1): unique 2-over-1 layout — deferred to future pass when needed
+  - Ramp meters (3): use crosswalk housing models, different form factor — stay as JSON
 
 ### Deferred Items
 
@@ -134,7 +136,10 @@ All items below are done and working in-game.
   equivalents with TrafficSignalBodyTilt applied. Hide angled blocks from creative tab.
 - **Controller fault detection**: Improve reliability of fault flash when setBlockState
   fails for linked signals (deleted/replaced blocks)
-- **HAWK signal conversion**: Needs custom 2-over-1 section layout in renderer
+- **HAWK wigwag refinement**: Current wigwag uses System.currentTimeMillis() in the
+  block's shouldLightWigwagSection() method (option 3 approach). If timing precision
+  or synchronization becomes an issue, consider adding bulbFlashInverted to SectionInfo
+  (option 1) for proper phase-offset flash support in the TE flash loop.
 - **Crosswalk signal improvements**: Future phase — add countdown timer during ped
   clearance phase using a tile entity that "learns" the timing from the controller
   (measures the clearance interval on first cycle, then displays countdown on
