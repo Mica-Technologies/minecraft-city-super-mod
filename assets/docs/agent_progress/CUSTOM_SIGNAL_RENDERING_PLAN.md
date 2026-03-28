@@ -66,6 +66,25 @@ All items below are done and working in-game.
 - [x] Commit history cleaned up into logical commits
 - [x] ImageTilerTool refactored into tools framework
 - [x] Documentation for ImageTilerTool and ModelToOglDataTool
+- [x] Downward visor tilt (6.5°) for realistic mast arm viewing angle
+- [x] Auto-create TE on migration (neighborChanged + onBlockActivated)
+
+### Phase 2 Progress
+
+- [x] **Wave 1** — 33 standard 3x12" vertical signals converted
+  - Fixed ahead signal (BALL red/yellow, UP green only per MUTCD)
+  - Fixed hybrid/flash signals (flashing yellow arrows, bulbCustomColor)
+  - Fixed solid-red left signal (BALL red section per MUTCD)
+  - Fixed missed blockstate updates for solid and bike signals
+- [x] **Wave 2** — 15 single-section signals converted
+  - Added getSignalYOffset() to renderer (+2.0 for single-section model positioning)
+  - Yellow advance flash uses bulbCustomColor=YELLOW on green phase with flashing
+- [ ] **Wave 3** — Add-on signals (needs overlapping section support for multi-color single-section)
+- [ ] **Wave 4** — Doghouse signals (needs lateral offset)
+- [ ] **Wave 5** — 8-inch and mixed-size signals (needs 8-inch vertex data)
+- [ ] **Wave 6** — Horizontal signals (needs xOffset, split body/texture rotation)
+- [ ] **Wave 7** — Angled signals (deprecation + auto-migration)
+- [ ] **Wave 8** — HAWK and special signals
 
 ---
 
