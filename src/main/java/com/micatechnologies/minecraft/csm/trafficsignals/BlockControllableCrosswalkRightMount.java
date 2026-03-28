@@ -19,6 +19,16 @@ public class BlockControllableCrosswalkRightMount extends AbstractBlockControlla
     return "controllablecrosswalkrightmount";
   }
 
+  @Override
+  public float getCountdownZOffset() {
+    return 0.25f; // right model: north face at Z=4/16
+  }
+
+  @Override
+  public float getCountdownYCenter() {
+    return 0.625f; // right model: element Y 2-18, center at 10/16
+  }
+
   /**
    * Retrieves the bounding box of the block.
    *

@@ -19,6 +19,16 @@ public class BlockControllableCrosswalkMountGray extends AbstractBlockControllab
     return "controllablecrosswalkmountgray";
   }
 
+  @Override
+  public float getCountdownZOffset() {
+    return 0.125f; // rear model: north face at Z=6/16
+  }
+
+  @Override
+  public float getCountdownYCenter() {
+    return 0.625f; // rear model: element Y 2-18, center at 10/16
+  }
+
   /**
    * Retrieves the bounding box of the block.
    *
