@@ -41,7 +41,7 @@ public class BlockControllableVerticalLeftSignal8812Inch extends AbstractBlockCo
 
   @Override
   public float[] getSectionYPositions(int sectionCount) {
-    return new float[] {8.0f, 0.0f, -12.0f};
+    return new float[] {6.0f, -2.0f, -12.0f};
   }
 
   @Override

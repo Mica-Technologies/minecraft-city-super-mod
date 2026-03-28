@@ -41,7 +41,7 @@ public class BlockControllableVerticalBikeSignal8Inch extends AbstractBlockContr
 
   @Override
   public float[] getSectionYPositions(int sectionCount) {
-    return new float[] {8.0f, 0.0f, -8.0f};
+    return new float[] {2.0f, -6.0f, -14.0f};
   }
 
   @Override
