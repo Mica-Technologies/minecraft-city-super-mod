@@ -89,11 +89,17 @@ All items below are done and working in-game.
   - FYA add-ons: 1 section, flashing yellow on green phase
   - Double add-ons: 2-section standard vertical stack
   - RightFlashYellowAddOn corrected to 1 section green-only (per original blockstate)
+- [x] **Wave 3 fix** — Skip unlit bulb rendering for overlapping sections
+  - Unlit off-texture was overdrawing lit section at same Z on add-on signals
 - [x] **Wave 4** — 6 doghouse signals converted
-  - Main left/right: 3-section BALL, standard positioning
-  - Secondary left/right: 3-section arrows, Y offset +4.0
-  - Secondary FYA: 2 overlapping sections, flashing yellow on green phase
-- [ ] **Wave 5** — 8-inch and mixed-size signals (needs 8-inch vertex data)
+  - Added getSectionXPositions() for lateral offsets per section
+  - Main left/right: 3-section BALL, top centered, lower 2 shifted ±6
+  - Secondary left/right: 2-section arrows (Y/G only, no red), shifted ±6
+  - Secondary sits one block below main → Y positions shifted +16 to align
+  - Secondary FYA: 2-section (Y + flashing Y), same positioning as regular secondary
+  - Fixed crash from TE section count vs position array mismatch during migration
+- [ ] **Wave 5** — 8-inch and mixed-size signals (needs 8-inch vertex data + visor data)
+  - Need to scale down 12-inch visor vertex data for 8-inch sections
 - [ ] **Wave 6** — Horizontal signals (needs xOffset, split body/texture rotation)
 - [ ] **Wave 7** — Angled signals (deprecation + auto-migration)
   - Also: improve controller fault detection for invalid/removed signal blocks
@@ -106,6 +112,8 @@ All items below are done and working in-game.
 - **Barlo signal** (`controllableverticalsolidsignalbarlo`): Needs review for correct
   default section info and any special rendering requirements. Currently converted with
   standard flat black BALL defaults but may need barlo-specific configuration.
+- **8-inch visor vertex data**: No 8-inch visor models exist yet. Plan is to scale down
+  the 12-inch visor data (multiply X/Y relative to section center by 8/12).
 
 ---
 
