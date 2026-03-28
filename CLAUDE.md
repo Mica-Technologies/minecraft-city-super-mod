@@ -174,5 +174,9 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
 - Bounding box extraction
 - Lang file sorting
 - Block/item integrity checking
+- Signal light texture atlas generation (ImageTilerTool)
+- Blockbench model to `.ogldata` vertex data conversion (ModelToOglDataTool)
 
-These correspond to IntelliJ run configurations: `Check Block Item Integrity`, `Extract Bounding Boxes`, `Process Batch Rename`, `Sort Lang File(s)`.
+These correspond to IntelliJ run configurations: `Check Block Item Integrity`, `Extract Bounding Boxes`, `Process Batch Rename`, `Sort Lang File(s)`, `Generate Signal Light Atlas`.
+
+Per-tool documentation is in `dev-env-utils/docs/`.
