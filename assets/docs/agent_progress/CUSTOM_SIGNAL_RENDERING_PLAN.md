@@ -103,8 +103,16 @@ All items below are done and working in-game.
   - Removed models/custom/ directory (was reintroduced by custom rendering branch)
   - Deleted output.png dev artifact from repo root
   - Stripped unused ModelResourceLocation from TrafficSignalVisorType enum
-- [ ] **Wave 5** — 8-inch and mixed-size signals (needs 8-inch vertex data + visor data)
-  - Need to scale down 12-inch visor vertex data for 8-inch sections
+- [x] **Wave 5** — 11 8-inch and mixed-size signals converted
+  - Added scaleBoxes() utility to generate 8-inch body/door/visor data from 12-inch
+    (scaled at class load time, stored as static final — no per-frame computation)
+  - Added getSectionSizes() to block base class, renderer selects 8/12-inch data per section
+  - Section Y positions account for scaled body base offset (8-inch body at Y=2-10 not Y=0-8)
+  - All 8-inch: Y={2, -6, -14}, sizes={8,8,8}
+  - 8-8-12: Y={6, -2, -12}, sizes={8,8,12}
+  - 12-8-8: Y={4, -6, -14}, sizes={12,8,8}
+  - All bottoms align with standard signal at Y=-12
+  - Left/right 8812 corrected to BALL red/yellow, arrow green only (per MUTCD)
 - [ ] **Wave 6** — Horizontal signals (needs xOffset, split body/texture rotation)
 - [ ] **Wave 7** — Angled signals (deprecation + auto-migration)
   - Also: improve controller fault detection for invalid/removed signal blocks
