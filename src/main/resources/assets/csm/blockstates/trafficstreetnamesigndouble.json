@@ -1,22 +1,23 @@
 {
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:trafficstreetnamesigndouble"
+  },
   "variants": {
-    "normal": {
-      "model": "csm:trafficstreetnamesigndouble"
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
     },
-    "facing=north": {
-      "model": "csm:trafficstreetnamesigndouble"
-    },
-    "facing=east": {
-      "model": "csm:trafficstreetnamesigndouble",
-      "y": 90
-    },
-    "facing=south": {
-      "model": "csm:trafficstreetnamesigndouble",
-      "y": 180
-    },
-    "facing=west": {
-      "model": "csm:trafficstreetnamesigndouble",
-      "y": 270
-    }
+    "inventory": [
+      {}
+    ]
   }
 }

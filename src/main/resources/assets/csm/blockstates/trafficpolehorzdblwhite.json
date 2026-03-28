@@ -1,30 +1,29 @@
 {
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:trafficpolehorzdblwhite"
+  },
   "variants": {
-    "normal": {
-      "model": "csm:trafficpolehorzdblwhite"
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      },
+      "up": {
+        "x": 270
+      },
+      "down": {
+        "x": 90
+      }
     },
-    "facing=north": {
-      "model": "csm:trafficpolehorzdblwhite"
-    },
-    "facing=east": {
-      "model": "csm:trafficpolehorzdblwhite",
-      "y": 90
-    },
-    "facing=south": {
-      "model": "csm:trafficpolehorzdblwhite",
-      "y": 180
-    },
-    "facing=west": {
-      "model": "csm:trafficpolehorzdblwhite",
-      "y": 270
-    },
-    "facing=up": {
-      "model": "csm:trafficpolehorzdblwhite",
-      "x": 270
-    },
-    "facing=down": {
-      "model": "csm:trafficpolehorzdblwhite",
-      "x": 90
-    }
+    "inventory": [
+      {}
+    ]
   }
 }

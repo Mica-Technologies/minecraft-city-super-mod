@@ -1,30 +1,29 @@
 {
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:trafficpoleverticalquadmountunpainted"
+  },
   "variants": {
-    "normal": {
-      "model": "csm:trafficpoleverticalquadmountunpainted"
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      },
+      "up": {
+        "x": 270
+      },
+      "down": {
+        "x": 90
+      }
     },
-    "facing=north": {
-      "model": "csm:trafficpoleverticalquadmountunpainted"
-    },
-    "facing=east": {
-      "model": "csm:trafficpoleverticalquadmountunpainted",
-      "y": 90
-    },
-    "facing=south": {
-      "model": "csm:trafficpoleverticalquadmountunpainted",
-      "y": 180
-    },
-    "facing=west": {
-      "model": "csm:trafficpoleverticalquadmountunpainted",
-      "y": 270
-    },
-    "facing=up": {
-      "model": "csm:trafficpoleverticalquadmountunpainted",
-      "x": 270
-    },
-    "facing=down": {
-      "model": "csm:trafficpoleverticalquadmountunpainted",
-      "x": 90
-    }
+    "inventory": [
+      {}
+    ]
   }
 }

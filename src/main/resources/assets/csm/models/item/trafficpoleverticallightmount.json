@@ -1,8 +1,0 @@
-{
-  "parent": "csm:custom/trafficpoleverticallightmount",
-  "textures": {
-    "all": "csm:blocks/metal_silver",
-    "particle": "csm:blocks/metal_silver",
-    "0": "csm:blocks/metal_silver"
-  }
-}
