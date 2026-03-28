@@ -4,7 +4,7 @@ Comprehensive plan for migrating the mod's resource structure from its MCreator-
 clean, traditional Minecraft Forge mod structure — starting with the traffic signal system.
 
 **Created:** 2026-03-27
-**Status:** Phase 1 Complete — Phase 2 & 3 pending
+**Status:** Phase 1 & 2 Complete — Phase 3 (dev-env-utils) pending, tracked in `DEV_ENV_UTILS_IMPROVEMENT_PLAN.md`
 
 ---
 
@@ -451,18 +451,24 @@ street name signs). 119 item model files deleted. Net reduction of ~1,000 lines.
 files retained (still needed as bridge to custom parents). Existing Forge-format pole
 blockstates (with submodel systems) already had inventory variants and were left as-is.
 
-### Phase 2: Broader Modernization
-- [ ] **2.1** Subsystem audit
-- [ ] **2.2** Convert each subsystem
-- [ ] **2.3** Reorganize `models/custom/` → `models/block/`
-- [ ] **2.4** Clean up item models
+### Phase 2: Broader Modernization — COMPLETED 2026-03-27
+- [x] **2.1** Subsystem audit
+- [x] **2.2** Convert all remaining subsystems (life safety, lighting, power grid, HVAC, technology, novelties, building materials, misc)
+- [x] **2.3** Reorganize `models/custom/` → `models/block/shared_models/<subsystem>/`
+- [x] **2.4** Clean up item models (786 total deleted across all phases)
+- [x] **2.5** Consolidate color variant block models — deferred (noted for future optimization)
+
+**Results:** 529 additional blockstates converted to Forge format. 556 item model files deleted.
+All 1,306 non-multipart blockstates now use Forge format (98.8%). Only 15 item models remain
+(actual items: phones, remotes, tools). `models/custom/` eliminated entirely — all 386 shared
+models migrated to `models/block/shared_models/` organized by subsystem (hvac, lifesafety,
+lighting, novelties, powergrid, technology, trafficaccessories, trafficsignals).
 
 ### Phase 3: Dev-Env-Utils
 - [x] **3.4** Documentation (README, per-tool docs) — completed 2026-03-27
-- [ ] **3.1** ResourceUsageDetectionTool overhaul
-- [ ] **3.2** BlockItemIntegrityTool improvements
-- [ ] **3.3** New Forge Blockstate Converter tool
-- [ ] **3.4** Documentation (README, per-tool docs)
+- [ ] **3.1** ResourceUsageDetectionTool overhaul — see `DEV_ENV_UTILS_IMPROVEMENT_PLAN.md`
+- [ ] **3.2** BlockItemIntegrityTool improvements — see `DEV_ENV_UTILS_IMPROVEMENT_PLAN.md`
+- [ ] **3.3** New Forge Blockstate Converter tool — no longer needed (conversions done manually)
 
 ---
 

@@ -54,9 +54,17 @@ src/main/java/com/micatechnologies/minecraft/csm/
 
 src/main/resources/assets/csm/
 ├── blockstates/      # One JSON per block; prefer Forge format (forge_marker: 1)
-├── models/block/     # Block model JSONs (base models referencing custom parents)
-├── models/item/      # Item model JSONs (not needed if blockstate has inventory variant)
-├── models/custom/    # Shared/reusable base models (3D geometry from Blockbench)
+├── models/block/     # Block model JSONs (base models referencing shared parents)
+│   └── shared_models/  # Shared 3D geometry (Blockbench), organized by subsystem:
+│       ├── hvac/            # 5 models
+│       ├── lifesafety/      # 84 models
+│       ├── lighting/        # 102 models
+│       ├── novelties/       # 9 models
+│       ├── powergrid/       # 42 models
+│       ├── technology/      # 33 models
+│       ├── trafficaccessories/ # 61 models
+│       └── trafficsignals/  # 50 models
+├── models/item/      # Item model JSONs (only for actual items, not block inventory)
 ├── textures/block/
 ├── textures/item/
 ├── sounds/
@@ -100,7 +108,7 @@ Version is derived from Git tags (format: `YYYY.MM.DD` for releases). No manual 
 
 1. Create class in the appropriate subsystem package extending a base class; use `snake_case` registry name
 2. Create `src/main/resources/assets/csm/blockstates/<registry_name>.json` (prefer Forge format with `forge_marker: 1` — see below)
-3. Create `src/main/resources/assets/csm/models/block/<registry_name>.json`
+3. Create `src/main/resources/assets/csm/models/block/<registry_name>.json` (parent references shared model via `csm:block/shared_models/<subsystem>/<model_name>`)
 4. Add textures to `src/main/resources/assets/csm/textures/block/` (PNG, power-of-two resolution)
 5. Add lang entry to `src/main/resources/assets/csm/lang/en_us.lang`: `tile.<registry_name>.name=Human Name`
 6. Register the block in the appropriate `tabs/CsmTab*.java` via `initTabBlock(BlockExample.class, event)`
