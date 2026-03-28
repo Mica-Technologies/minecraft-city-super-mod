@@ -41,6 +41,11 @@ public class BlockControllableSingleSolidSignalYellowRightAngle
   }
 
   @Override
+  public boolean shouldLightAllSections(int colorState) {
+    return colorState == 0 || colorState == 1;
+  }
+
+  @Override
   public float getSignalYOffset() {
     return 2.0f;
   }

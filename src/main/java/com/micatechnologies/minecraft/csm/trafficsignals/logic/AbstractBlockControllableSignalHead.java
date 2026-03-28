@@ -139,6 +139,32 @@ public abstract class AbstractBlockControllableSignalHead extends AbstractBlockC
   public abstract TrafficSignalSectionInfo[] getDefaultTrafficSignalSectionInfo();
 
   /**
+   * Returns whether the given blockstate color value (0=red, 1=yellow, 2=green, 3=off)
+   * should light up sections with the given bulb color. The default maps color=0 to RED,
+   * color=1 to YELLOW, color=2 to GREEN, and color=3 to nothing.
+   *
+   * Override for signals that respond to multiple color states, such as single-section
+   * flasher signals that light on both color=0 (red phase) and color=1 (yellow phase)
+   * so they work with the controller's flash mode.
+   */
+  public boolean shouldLightBulb(int colorState, TrafficSignalBulbColor bulbColor) {
+    if (colorState == 0 && bulbColor == TrafficSignalBulbColor.RED) return true;
+    if (colorState == 1 && bulbColor == TrafficSignalBulbColor.YELLOW) return true;
+    if (colorState == 2 && bulbColor == TrafficSignalBulbColor.GREEN) return true;
+    return false;
+  }
+
+  /**
+   * Returns whether the given blockstate color value (0=red, 1=yellow, 2=green, 3=off)
+   * should light up ALL sections regardless of their bulb color. Default is false.
+   * Override to true for single-section flasher signals that should light on multiple
+   * controller color states.
+   */
+  public boolean shouldLightAllSections(int colorState) {
+    return false;
+  }
+
+  /**
    * Returns the Y offset (in model units) to shift the entire signal rendering.
    * Override in subclasses whose JSON model positions the signal body at a different
    * Y origin than the standard 3-section vertical (which uses Y=0 as baseline).
@@ -146,6 +172,19 @@ public abstract class AbstractBlockControllableSignalHead extends AbstractBlockC
    */
   public float getSignalYOffset() {
     return 0.0f;
+  }
+
+  /**
+   * Returns per-section Y offsets for the renderer. Default uses the standard vertical
+   * stack formula (evenly spaced 12 units apart, centered). Override for non-standard
+   * layouts such as add-on signals where multiple sections overlap at the same position.
+   */
+  public float[] getSectionYPositions(int sectionCount) {
+    float[] positions = new float[sectionCount];
+    for (int i = 0; i < sectionCount; i++) {
+      positions[i] = ((sectionCount - 1 - i) - (sectionCount - 1) / 2.0f) * 12.0f;
+    }
+    return positions;
   }
 
   /**

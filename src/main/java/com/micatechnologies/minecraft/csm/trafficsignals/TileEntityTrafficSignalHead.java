@@ -170,18 +170,25 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
    * @since 1.0
    */
   public TrafficSignalSectionInfo[] getSectionInfos(int currentBulbColor) {
-    // Red:0, Yellow:1, Green:2, Off:3
+    // Determine lighting using the block's shouldLightBulb/shouldLightAllSections methods
+    // which allows per-block-type color mapping (e.g., single flashers light on both 0 and 1)
+    Block block = world != null ? world.getBlockState(pos).getBlock() : null;
+    boolean useBlockMapping = block instanceof AbstractBlockControllableSignalHead;
+
     for (TrafficSignalSectionInfo sectionInfo : sectionInfos) {
-      if (currentBulbColor==0&&sectionInfo.getBulbColor()== TrafficSignalBulbColor.RED){
-        sectionInfo.setBulbLit(true);
-      } else if (currentBulbColor==1&&sectionInfo.getBulbColor()== TrafficSignalBulbColor.YELLOW){
-        sectionInfo.setBulbLit(true);
-      } else if (currentBulbColor==2&&sectionInfo.getBulbColor()== TrafficSignalBulbColor.GREEN){
-        sectionInfo.setBulbLit(true);
-      } else if (currentBulbColor==3){
+      if (currentBulbColor == 3) {
         sectionInfo.setBulbLit(false);
+      } else if (useBlockMapping) {
+        AbstractBlockControllableSignalHead signalBlock = (AbstractBlockControllableSignalHead) block;
+        sectionInfo.setBulbLit(
+            signalBlock.shouldLightAllSections(currentBulbColor)
+            || signalBlock.shouldLightBulb(currentBulbColor, sectionInfo.getBulbColor()));
       } else {
-        sectionInfo.setBulbLit(false);
+        // Fallback: default color mapping
+        boolean lit = (currentBulbColor == 0 && sectionInfo.getBulbColor() == TrafficSignalBulbColor.RED)
+            || (currentBulbColor == 1 && sectionInfo.getBulbColor() == TrafficSignalBulbColor.YELLOW)
+            || (currentBulbColor == 2 && sectionInfo.getBulbColor() == TrafficSignalBulbColor.GREEN);
+        sectionInfo.setBulbLit(lit);
       }
     }
 
