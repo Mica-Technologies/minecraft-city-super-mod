@@ -98,6 +98,65 @@ public class RenderHelper {
     }
   }
 
+  /**
+   * Adds boxes to the buffer with a downward tilt applied. Vertices are shifted downward
+   * proportionally to their distance from the pivot Z (where the visor meets the body).
+   * This creates a realistic visor angle so bulbs are visible from below.
+   *
+   * @param pivotZ     the Z coordinate where the visor attaches to the body (no shift here)
+   * @param tiltAngleDeg downward tilt in degrees (positive = front edge tilts down)
+   */
+  public static void addTiltedBoxesToBuffer(List<Box> boxes, BufferBuilder buffer,
+      float red, float green, float blue, float alpha,
+      float xOffset, float yOffset, float zOffset,
+      float pivotZ, float tiltAngleDeg) {
+    float tiltSlope = (float) Math.tan(Math.toRadians(tiltAngleDeg));
+    for (Box box : boxes) {
+      float x1 = box.from[0] + xOffset, y1 = box.from[1] + yOffset, z1 = box.from[2] + zOffset;
+      float x2 = box.to[0] + xOffset, y2 = box.to[1] + yOffset, z2 = box.to[2] + zOffset;
+
+      // Y shift per vertex based on distance from pivot (positive distance = forward = shift down)
+      float yShift1 = -(pivotZ - z1) * tiltSlope;
+      float yShift2 = -(pivotZ - z2) * tiltSlope;
+
+      // Front face (z2 side) — both y corners get yShift2
+      buffer.pos(x1, y1 + yShift2, z2).color(red, green, blue, alpha).endVertex();
+      buffer.pos(x2, y1 + yShift2, z2).color(red, green, blue, alpha).endVertex();
+      buffer.pos(x2, y2 + yShift2, z2).color(red, green, blue, alpha).endVertex();
+      buffer.pos(x1, y2 + yShift2, z2).color(red, green, blue, alpha).endVertex();
+
+      // Back face (z1 side)
+      buffer.pos(x2, y1 + yShift1, z1).color(red, green, blue, alpha).endVertex();
+      buffer.pos(x1, y1 + yShift1, z1).color(red, green, blue, alpha).endVertex();
+      buffer.pos(x1, y2 + yShift1, z1).color(red, green, blue, alpha).endVertex();
+      buffer.pos(x2, y2 + yShift1, z1).color(red, green, blue, alpha).endVertex();
+
+      // Left face (x1 side) — z1 edge uses yShift1, z2 edge uses yShift2
+      buffer.pos(x1, y1 + yShift1, z1).color(red, green, blue, alpha).endVertex();
+      buffer.pos(x1, y1 + yShift2, z2).color(red, green, blue, alpha).endVertex();
+      buffer.pos(x1, y2 + yShift2, z2).color(red, green, blue, alpha).endVertex();
+      buffer.pos(x1, y2 + yShift1, z1).color(red, green, blue, alpha).endVertex();
+
+      // Right face (x2 side)
+      buffer.pos(x2, y1 + yShift2, z2).color(red, green, blue, alpha).endVertex();
+      buffer.pos(x2, y1 + yShift1, z1).color(red, green, blue, alpha).endVertex();
+      buffer.pos(x2, y2 + yShift1, z1).color(red, green, blue, alpha).endVertex();
+      buffer.pos(x2, y2 + yShift2, z2).color(red, green, blue, alpha).endVertex();
+
+      // Top face — front edge (z2) shifted, back edge (z1) shifted differently
+      buffer.pos(x1, y2 + yShift2, z2).color(red, green, blue, alpha).endVertex();
+      buffer.pos(x2, y2 + yShift2, z2).color(red, green, blue, alpha).endVertex();
+      buffer.pos(x2, y2 + yShift1, z1).color(red, green, blue, alpha).endVertex();
+      buffer.pos(x1, y2 + yShift1, z1).color(red, green, blue, alpha).endVertex();
+
+      // Bottom face
+      buffer.pos(x1, y1 + yShift1, z1).color(red, green, blue, alpha).endVertex();
+      buffer.pos(x2, y1 + yShift1, z1).color(red, green, blue, alpha).endVertex();
+      buffer.pos(x2, y1 + yShift2, z2).color(red, green, blue, alpha).endVertex();
+      buffer.pos(x1, y1 + yShift2, z2).color(red, green, blue, alpha).endVertex();
+    }
+  }
+
   public static class Box {
     public final float[] from;
     public final float[] to;
