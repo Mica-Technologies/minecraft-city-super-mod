@@ -214,6 +214,7 @@ tile.controllableverticalsolidflashredsignalgray.name=Vertical Solid Flashing R 
 tile.controllableverticalsolidflashyellowsignal.name=Vertical Traffic Signal (Solid, Flashing Yellow for Green)
 tile.controllableverticalsolidflashyellowsignalgray.name=Vertical Solid Flashing Y Signal (Gray)
 tile.controllableverticalsolidsignal.name=Vertical Traffic Signal (Solid)
+tile.controllableverticaltestsolidsignal.name=Vertical Traffic Signal (Test Solid, Custom Rendering)
 tile.controllableverticalsolidsignal1288inch.name=Vertical Traffic Signal (Solid, 12-8-8 Inch)
 tile.controllableverticalsolidsignal8812inch.name=Vertical Traffic Signal (Solid, 8-8-12 Inch)
 tile.controllableverticalsolidsignal8inch.name=Vertical Traffic Signal (Solid, 8 Inch)
