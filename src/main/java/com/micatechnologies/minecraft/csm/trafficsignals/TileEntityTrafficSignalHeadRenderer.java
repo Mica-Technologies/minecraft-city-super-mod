@@ -120,15 +120,17 @@ public class TileEntityTrafficSignalHeadRenderer extends
       GL11.glTranslated(0, signalYOffset, 0);
     }
 
-    // Get per-section positions from the block (supports offsets for doghouse, overlapping for add-ons)
+    // Get per-section positions and sizes from the block
     int sectionCount = sectionInfos.length;
     float[] sectionYPositions;
     float[] sectionXPositions;
+    int[] sectionSizes;
     if (blockState.getBlock() instanceof AbstractBlockControllableSignalHead) {
       AbstractBlockControllableSignalHead signalBlock =
           (AbstractBlockControllableSignalHead) blockState.getBlock();
       sectionYPositions = signalBlock.getSectionYPositions(sectionCount);
       sectionXPositions = signalBlock.getSectionXPositions(sectionCount);
+      sectionSizes = signalBlock.getSectionSizes(sectionCount);
       // Safety: if TE has more sections than the block expects (e.g., world migration from
       // old 3-section defaults), pad the position arrays to avoid ArrayIndexOutOfBoundsException
       if (sectionYPositions.length < sectionCount) {
@@ -144,12 +146,21 @@ public class TileEntityTrafficSignalHeadRenderer extends
         System.arraycopy(sectionXPositions, 0, padded, 0, sectionXPositions.length);
         sectionXPositions = padded;
       }
+      // Safety: pad sectionSizes if needed
+      if (sectionSizes.length < sectionCount) {
+        int[] padded = new int[sectionCount];
+        System.arraycopy(sectionSizes, 0, padded, 0, sectionSizes.length);
+        for (int i = sectionSizes.length; i < sectionCount; i++) padded[i] = 12;
+        sectionSizes = padded;
+      }
     } else {
-      // Fallback: standard vertical stack, no X offset
+      // Fallback: standard vertical stack, no X offset, all 12-inch
       sectionYPositions = new float[sectionCount];
       sectionXPositions = new float[sectionCount];
+      sectionSizes = new int[sectionCount];
       for (int i = 0; i < sectionCount; i++) {
         sectionYPositions[i] = ((sectionCount - 1 - i) - (sectionCount - 1) / 2.0f) * 12.0f;
+        sectionSizes[i] = 12;
       }
     }
 
@@ -162,13 +173,13 @@ public class TileEntityTrafficSignalHeadRenderer extends
       displayList = GL11.glGenLists(1);
       displayListCache.put(pos, displayList);
       GL11.glNewList(displayList, GL11.GL_COMPILE);
-      renderStaticParts(sectionInfos, sectionYPositions, sectionXPositions);
+      renderStaticParts(sectionInfos, sectionYPositions, sectionXPositions, sectionSizes);
       GL11.glEndList();
       te.clearDirtyFlag();
     }
     GL11.glCallList(displayList);
 
-    renderBulbs(sectionInfos, sectionYPositions, sectionXPositions);
+    renderBulbs(sectionInfos, sectionYPositions, sectionXPositions, sectionSizes);
 
     GL11.glPopMatrix();
 
@@ -180,7 +191,7 @@ public class TileEntityTrafficSignalHeadRenderer extends
   }
 
   private void renderStaticParts(TrafficSignalSectionInfo[] sectionInfos,
-      float[] sectionYPositions, float[] sectionXPositions) {
+      float[] sectionYPositions, float[] sectionXPositions, int[] sectionSizes) {
     Tessellator tessellator = Tessellator.getInstance();
     BufferBuilder buffer = tessellator.getBuffer();
 
@@ -197,14 +208,22 @@ public class TileEntityTrafficSignalHeadRenderer extends
 
       float xOffset = sectionXPositions[i];
       float yOffset = sectionYPositions[i];
+      boolean is8Inch = sectionSizes[i] == 8;
 
-      RenderHelper.addBoxesToBuffer(TrafficSignalVertexData.SIGNAL_BODY_VERTEX_DATA, buffer,
+      List<RenderHelper.Box> bodyData = is8Inch
+          ? TrafficSignalVertexData.SIGNAL_BODY_8INCH_VERTEX_DATA
+          : TrafficSignalVertexData.SIGNAL_BODY_VERTEX_DATA;
+      List<RenderHelper.Box> doorData = is8Inch
+          ? TrafficSignalVertexData.SIGNAL_DOOR_8INCH_VERTEX_DATA
+          : TrafficSignalVertexData.SIGNAL_DOOR_VERTEX_DATA;
+
+      RenderHelper.addBoxesToBuffer(bodyData, buffer,
           bodyColor.getRed(), bodyColor.getGreen(), bodyColor.getBlue(), 1.0f, xOffset, yOffset, 0.0f);
-      RenderHelper.addBoxesToBuffer(TrafficSignalVertexData.SIGNAL_DOOR_VERTEX_DATA, buffer,
+      RenderHelper.addBoxesToBuffer(doorData, buffer,
           doorColor.getRed(), doorColor.getGreen(), doorColor.getBlue(), 1.0f, xOffset, yOffset, 0.0f);
 
       addVisorQuadsToBuffer(visorType, buffer, visorColor.getRed(), visorColor.getGreen(),
-          visorColor.getBlue(), 1.0f, xOffset, yOffset);
+          visorColor.getBlue(), 1.0f, xOffset, yOffset, is8Inch);
     }
     tessellator.draw();
 
@@ -217,31 +236,39 @@ public class TileEntityTrafficSignalHeadRenderer extends
   private static final float VISOR_PIVOT_Z = 11.0f;
 
   private void addVisorQuadsToBuffer(TrafficSignalVisorType visorType, BufferBuilder buffer,
-      float red, float green, float blue, float alpha, float xOffset, float yOffset) {
+      float red, float green, float blue, float alpha, float xOffset, float yOffset,
+      boolean is8Inch) {
     List<RenderHelper.Box> visorData;
     boolean applyTilt = true;
     switch (visorType) {
       case CIRCLE:
-        visorData = TrafficSignalVertexData.CIRCLE_VISOR_VERTEX_DATA;
+        visorData = is8Inch ? TrafficSignalVertexData.CIRCLE_VISOR_8INCH_VERTEX_DATA
+            : TrafficSignalVertexData.CIRCLE_VISOR_VERTEX_DATA;
         break;
       case TUNNEL:
-        visorData = TrafficSignalVertexData.TUNNEL_VISOR_VERTEX_DATA;
+        visorData = is8Inch ? TrafficSignalVertexData.TUNNEL_VISOR_8INCH_VERTEX_DATA
+            : TrafficSignalVertexData.TUNNEL_VISOR_VERTEX_DATA;
         break;
       case CUTAWAY:
-        visorData = TrafficSignalVertexData.CAP_VISOR_VERTEX_DATA;
+        visorData = is8Inch ? TrafficSignalVertexData.CAP_VISOR_8INCH_VERTEX_DATA
+            : TrafficSignalVertexData.CAP_VISOR_VERTEX_DATA;
         break;
       case BOTH_LOUVERED:
-        visorData = TrafficSignalVertexData.BOTH_LOUVERED_VISOR_VERTEX_DATA;
+        visorData = is8Inch ? TrafficSignalVertexData.BOTH_LOUVERED_VISOR_8INCH_VERTEX_DATA
+            : TrafficSignalVertexData.BOTH_LOUVERED_VISOR_VERTEX_DATA;
         break;
       case VERTICAL_LOUVERED:
-        visorData = TrafficSignalVertexData.VERTICAL_LOUVERED_VISOR_VERTEX_DATA;
+        visorData = is8Inch ? TrafficSignalVertexData.VERTICAL_LOUVERED_VISOR_8INCH_VERTEX_DATA
+            : TrafficSignalVertexData.VERTICAL_LOUVERED_VISOR_VERTEX_DATA;
         break;
       case HORIZONTAL_LOUVERED:
-        visorData = TrafficSignalVertexData.HORIZONTAL_LOUVERED_VISOR_VERTEX_DATA;
+        visorData = is8Inch ? TrafficSignalVertexData.HORIZONTAL_LOUVERED_VISOR_8INCH_VERTEX_DATA
+            : TrafficSignalVertexData.HORIZONTAL_LOUVERED_VISOR_VERTEX_DATA;
         break;
       case NONE:
-        visorData = TrafficSignalVertexData.NONE_VISOR_VERTEX_DATA;
-        applyTilt = false; // None visor is just a tiny lip, no tilt needed
+        visorData = is8Inch ? TrafficSignalVertexData.NONE_VISOR_8INCH_VERTEX_DATA
+            : TrafficSignalVertexData.NONE_VISOR_VERTEX_DATA;
+        applyTilt = false;
         break;
       default:
         return;
@@ -260,7 +287,7 @@ public class TileEntityTrafficSignalHeadRenderer extends
    * positions in Java to avoid per-section GL matrix push/pop and separate draw calls.
    */
   private void renderBulbs(TrafficSignalSectionInfo[] sectionInfos, float[] sectionYPositions,
-      float[] sectionXPositions) {
+      float[] sectionXPositions, int[] sectionSizes) {
     // Reset GL color to white so textures are not tinted by leftover static part colors.
     // Must use GL11.glColor4f directly because GlStateManager caches state and the display
     // list replay changes GL color behind GlStateManager's back, making it skip the reset.
@@ -295,12 +322,13 @@ public class TileEntityTrafficSignalHeadRenderer extends
       boolean isBulbLit = sectionInfo.isBulbLit();
       TextureInfo texInfo = TrafficSignalTextureMap.getTextureInfoForBulb(bulbStyle, bulbType, bulbColor, isBulbLit);
 
-      // Bulb quad parameters: slightly inset from the 12x12 section face to avoid bleed past visors
-      float fullSize = 12f;
+      // Bulb quad parameters: sized to section (12 or 8), slightly inset to avoid visor bleed
+      float fullSize = sectionSizes[i];
       float inset = fullSize * 0.02f;
       float size = fullSize - inset * 2f;
-      float baseX = 2f + inset + sectionXPositions[i];
-      float baseY = sectionYPositions[i] + inset;
+      float sectionOffset = (12f - fullSize) / 2f; // center smaller sections within the 12-unit slot
+      float baseX = 2f + inset + sectionXPositions[i] + sectionOffset;
+      float baseY = sectionYPositions[i] + inset + sectionOffset;
       float z = 10.4f;
 
       float u1 = texInfo.getU1();
