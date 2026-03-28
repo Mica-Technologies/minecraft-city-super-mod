@@ -1,11 +1,17 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
-import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignal;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignalHead;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyColor;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBulbColor;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBulbStyle;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBulbType;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalSectionInfo;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalVisorType;
 import net.minecraft.block.material.Material;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class BlockControllableHorizontalRight2Signal extends AbstractBlockControllableSignal {
+public class BlockControllableHorizontalRight2Signal extends AbstractBlockControllableSignalHead {
 
   public BlockControllableHorizontalRight2Signal() {
     super(Material.ROCK);
@@ -31,5 +37,30 @@ public class BlockControllableHorizontalRight2Signal extends AbstractBlockContro
   @Override
   public String getBlockRegistryName() {
     return "controllablehorizontalright2signal";
+  }
+
+  @Override
+  public float[] getSectionYPositions(int sectionCount) {
+    return new float[] {0.0f, 0.0f, 0.0f};
+  }
+
+  @Override
+  public float[] getSectionXPositions(int sectionCount) {
+    return new float[] {-12.0f, 0.0f, 12.0f};
+  }
+
+  @Override
+  public TrafficSignalSectionInfo[] getDefaultTrafficSignalSectionInfo() {
+    return new TrafficSignalSectionInfo[] {
+        new TrafficSignalSectionInfo(TrafficSignalBodyColor.FLAT_BLACK, TrafficSignalBodyColor.FLAT_BLACK, TrafficSignalBodyColor.FLAT_BLACK,
+            TrafficSignalVisorType.CUTAWAY, TrafficSignalBulbStyle.LED, TrafficSignalBulbType.RIGHT,
+            TrafficSignalBulbColor.RED, false),
+        new TrafficSignalSectionInfo(TrafficSignalBodyColor.FLAT_BLACK, TrafficSignalBodyColor.FLAT_BLACK, TrafficSignalBodyColor.FLAT_BLACK,
+            TrafficSignalVisorType.CUTAWAY, TrafficSignalBulbStyle.LED, TrafficSignalBulbType.RIGHT,
+            TrafficSignalBulbColor.YELLOW, false),
+        new TrafficSignalSectionInfo(TrafficSignalBodyColor.FLAT_BLACK, TrafficSignalBodyColor.FLAT_BLACK, TrafficSignalBodyColor.FLAT_BLACK,
+            TrafficSignalVisorType.CUTAWAY, TrafficSignalBulbStyle.LED, TrafficSignalBulbType.RIGHT,
+            TrafficSignalBulbColor.GREEN, false)
+    };
   }
 }
