@@ -32,6 +32,9 @@ public class TileEntityCrosswalkSignal extends AbstractTickableTileEntity {
     lastColorState = compound.getInteger(NBT_KEY_LAST_COLOR);
     measuring = compound.getBoolean(NBT_KEY_MEASURING);
     measureTicks = compound.getInteger(NBT_KEY_MEASURE_TICKS);
+    if (world != null && world.isRemote && currentCountdown >= 0) {
+      System.out.println("[CrosswalkTE-CLIENT] readNBT at " + pos + " countdown=" + currentCountdown);
+    }
   }
 
   @Override

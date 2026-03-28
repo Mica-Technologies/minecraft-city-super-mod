@@ -23,6 +23,9 @@ public class TileEntityCrosswalkSignalRenderer extends
       float partialTicks, int destroyStage, float alpha) {
 
     int countdown = te.getCurrentCountdown();
+    if (countdown >= 0) {
+      System.out.println("[CrosswalkTESR] Rendering countdown=" + countdown + " at " + te.getPos());
+    }
     if (countdown < 0) return; // No countdown active
 
     // Only render during clearance phase (color=1)
