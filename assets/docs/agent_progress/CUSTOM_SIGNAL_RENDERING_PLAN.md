@@ -5,7 +5,7 @@ body color, visor type, bulb style, and tilt without needing separate block vari
 
 **Created:** 2026-03-28
 **Branch:** `dev/signal-custom-rendering-rebase`
-**Status:** Core system working — test block validated, ready for rollout planning
+**Status:** 119 signal blocks converted (Waves 1-8 complete). Crosswalk countdown in progress.
 
 ---
 
@@ -140,13 +140,26 @@ All items below are done and working in-game.
   block's shouldLightWigwagSection() method (option 3 approach). If timing precision
   or synchronization becomes an issue, consider adding bulbFlashInverted to SectionInfo
   (option 1) for proper phase-offset flash support in the TE flash loop.
-- **Crosswalk countdown polish**: Initial implementation complete (TileEntityCrosswalkSignal
-  + TESR). Remaining work:
-  - Update crosswalk textures to include a designated area for the countdown overlay
-  - Refine font rendering (size, positioning, color) to match real-world countdown modules
-  - Test with various controller timing configurations
-  - Tweeters stay as JSON models (sound accessories, not visual signals)
-  - Ramp meters stay as JSON (use crosswalk housing models, not signal heads)
+- **Crosswalk countdown — IN PROGRESS**: Core system working, needs positioning polish.
+  - TileEntityCrosswalkSignal: learning-based countdown fully functional server-side
+    (measures first clearance duration, counts down on subsequent clearances)
+  - TileEntityCrosswalkSignalRenderer: TESR registered and rendering on all 4 facings
+  - Client sync working (markDirtySync sends countdown to client TE every second)
+  - Rotation fixed: NORTH=180, EAST=90, SOUTH=0, WEST=-90
+  - **Current issue**: Z position of countdown text not aligned with signal face surface.
+    The crosswalk model element goes from Z=1 to Z=9 (block space 0.0625 to 0.5625).
+    Display face is the NORTH face at Z=1. After rotation, the +Z translate should
+    place text at 0.4375 from block center, but current value (0.438) doesn't match
+    visually — may be affected by the mounting variant models (base, left, right, 90deg)
+    which have different element positions.
+  - **Still TODO**:
+    - Fix Z positioning to sit flush on the signal face
+    - Update crosswalk textures to include designated countdown overlay area
+    - Refine font scale/style to match real-world countdown modules (reference images saved)
+    - Test with double-digit values and various controller timing configs
+    - Remove debug logging from TE and TESR once finalized
+    - Tweeters stay as JSON (sound accessories, not visual signals)
+    - Ramp meters stay as JSON (crosswalk housing form factor)
 - **Barlo signal**: Review defaults for barlo-specific configuration
 
 ### Known Issues to Circle Back To
@@ -154,8 +167,8 @@ All items below are done and working in-game.
 - **Barlo signal** (`controllableverticalsolidsignalbarlo`): Needs review for correct
   default section info and any special rendering requirements. Currently converted with
   standard flat black BALL defaults but may need barlo-specific configuration.
-- **8-inch visor vertex data**: No 8-inch visor models exist yet. Plan is to scale down
-  the 12-inch visor data (multiply X/Y relative to section center by 8/12).
+- **8-inch visor vertex data**: Already implemented — scaleBoxes() generates 8-inch
+  body/door/visor data from 12-inch at class load time. All 8-inch signals working.
 
 ---
 
