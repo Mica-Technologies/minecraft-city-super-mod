@@ -263,7 +263,10 @@ public class BlockItemIntegrityTool {
 
       // Check for unused files
       checkUnusedFiles(blockstateFolder, usedBlockstateFiles);
-      checkUnusedFiles(blockModelsFolder, usedBlockModelFiles);
+      // Exclude shared_models/ from block model walk (checked separately as custom models)
+      Path sharedModelsPath = customModelsFolder.toPath();
+      checkUnusedFiles(blockModelsFolder, usedBlockModelFiles,
+          path -> !path.startsWith(sharedModelsPath));
       checkUnusedFiles(itemModelsFolder, usedItemModelFiles);
       checkUnusedFiles(customModelsFolder, usedCustomModelFiles);
       checkUnusedFiles(blockTexturesFolder, usedBlockTexturesFiles);
@@ -343,9 +346,17 @@ public class BlockItemIntegrityTool {
   }
 
   public static void checkUnusedFiles(File folder, List<File> usedFiles) throws Exception {
+    checkUnusedFiles(folder, usedFiles, null);
+  }
+
+  public static void checkUnusedFiles(File folder, List<File> usedFiles,
+      Predicate<Path> excludeFilter) throws Exception {
     try (Stream<Path> filesStream = Files.walk(folder.toPath()).parallel()) {
-      List<File> allFiles =
-          filesStream.filter(Files::isRegularFile).map(Path::toFile).collect(Collectors.toList());
+      Stream<Path> filtered = filesStream.filter(Files::isRegularFile);
+      if (excludeFilter != null) {
+        filtered = filtered.filter(excludeFilter);
+      }
+      List<File> allFiles = filtered.map(Path::toFile).collect(Collectors.toList());
 
       // Increment validations count by the number of files checked
       validationsCount.addAndGet(allFiles.size());
@@ -771,7 +782,16 @@ public class BlockItemIntegrityTool {
           logError("Model file does not exist: " + file.getPath());
         }
 
-        usedBlockModelFiles.add(file);
+        // Add to correct used list based on whether file is in shared_models
+        try {
+          if (file.getCanonicalPath().contains("shared_models")) {
+            usedCustomModelFiles.add(file);
+          } else {
+            usedBlockModelFiles.add(file);
+          }
+        } catch (IOException e) {
+          usedBlockModelFiles.add(file);
+        }
         if (file.getName().endsWith(".json")) {
           checkJsonModelIntegrity(blockModelsFolder, itemModelsFolder, customModelsFolder,
               blockTexturesFolder, itemTexturesFolder, file);
