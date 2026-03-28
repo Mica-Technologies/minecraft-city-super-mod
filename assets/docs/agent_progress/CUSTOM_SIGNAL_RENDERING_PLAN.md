@@ -90,148 +90,96 @@ Each signal block conversion follows this pattern:
 
 ### Signal Body Configurations
 
-The renderer currently handles a single body geometry: the standard 3-section 12-inch
-vertical McCain body. To support all signal types, we need additional body vertex data
-sets and renderer logic for different configurations.
+The renderer uses the same basic building blocks for all signal types: a per-section body
+shell, door, and visor. Different signal "types" are composed by varying the number of
+sections, their sizes, their spatial arrangement (vertical stack, horizontal row, offset),
+and their bulb defaults. We do NOT need separate body vertex data for most configurations.
 
-#### Body Type: Standard 3x12-inch Vertical
+**Core insight:** A doghouse signal, a horizontal signal, and a vertical signal all use the
+same section geometry — the difference is how sections are positioned relative to each
+other. The renderer should parameterize section layout (count, size, offset per section)
+rather than having separate body models per signal type.
+
+#### Section Size: Standard 12-inch (EXISTING)
 **Geometry:** `SIGNAL_BODY_VERTEX_DATA` + `SIGNAL_DOOR_VERTEX_DATA` (existing)
-**Section layout:** 3 sections at yOffset = +12, 0, -12 (12-unit spacing)
-**Bulb size:** 12x12 quad per section
+**Section dimensions:** 12x12 model units per section
+**Bulb size:** ~11.52x11.52 quad (12 minus 2% inset)
 
-Blocks using this body (49 blocks):
-- Vertical solid signals: standard, LED, gray, barlo, no-visor, no-red-visor, reversed
-- Vertical arrow signals: left, right, right2, ahead, up-left, uturn, rail (+ gray variants)
-- Vertical flashing signals: flash green, flash red, flash yellow (+ gray variants)
-- Vertical bike signals: standard, gray
+Used by the vast majority of signal blocks.
 
-#### Body Type: 3x8-inch Vertical (NEEDS NEW VERTEX DATA)
-**Section layout:** 3 sections, ~8-unit section height, narrower body
-**Bulb size:** 8x8 quad per section (scaled down from 12x12)
+#### Section Size: 8-inch (NEEDS NEW VERTEX DATA)
+**Section dimensions:** ~8x8 model units per section
+**Bulb size:** ~7.68x7.68 quad (8 minus 2% inset)
 
-Blocks using this body (4 blocks):
-- `controllableverticalsolidsignal8inch`
-- `controllableverticalsolidsignalled8inch`
-- `controllableverticalbikesignal8inch`
-- `controllableverticalbikesignal8inchblack`
+New body/door vertex data needed at 8-inch scale. Used by:
+- 8-inch solid/LED/bike signals (4 blocks)
+- 8-inch sections within mixed 8-8-12 and 12-8-8 signals (8 blocks)
 
-**Renderer changes needed:**
-- New `SIGNAL_BODY_8INCH_VERTEX_DATA` from Blockbench model
-- Section yOffset spacing reduced to ~8 units
-- Bulb quad size reduced to 8x8
-- Scale factor for body width (narrower than 12-inch)
+**Only new vertex data required for the entire rollout.** Everything else is layout.
 
-#### Body Type: Mixed 8-8-12 Vertical (NEEDS NEW VERTEX DATA)
-**Section layout:** Top two sections 8-inch, bottom section 12-inch
-**Geometry:** Asymmetric body with mixed section heights
+#### Section Arrangements
 
-Blocks using this body (6 blocks):
-- `controllableverticalsolidsignal8812inch`
-- `controllableverticalsolidsignalled8812inch`
-- `controllableverticalleftsignal8812inch`
-- `controllableverticalrightsignal8812inch`
-- `controllableverticalahaedsignal8812inch`
-- (+ any additional 8812 variants)
+**Vertical stack (EXISTING):** Sections stacked top-to-bottom with yOffset spacing.
+- 3-section: yOffset = +12, 0, -12
+- 2-section: yOffset = +6, -6 (or similar centered layout)
+- 1-section: yOffset = 0
 
-**Renderer changes needed:**
-- New body vertex data for asymmetric housing
-- Per-section size parameter in SectionInfo (8 or 12)
-- Bulb quad size varies per section
-- yOffset spacing accounts for mixed heights
+Used by: all standard vertical signals, single-section signals, add-on signals
 
-#### Body Type: Mixed 12-8-8 Vertical (NEEDS NEW VERTEX DATA)
-**Section layout:** Top section 12-inch, bottom two sections 8-inch
+**Horizontal row (RENDERER CHANGE NEEDED):** Sections arranged left-to-right with xOffset.
+- Per MUTCD: Red on LEFT, Yellow in CENTER, Green on RIGHT (viewer's perspective)
+- Body sections are rotated 90° but bulb textures and visors are NOT rotated — an
+  up arrow should still appear as an up arrow on a horizontal signal
+- The section body geometry rotates, but texture UV and visor orientation stay upright
+- 3-section: xOffset = -12, 0, +12
 
-Blocks using this body (2 blocks):
-- `controllableverticalsolidsignal1288inch`
-- `controllableverticalsolidsignalled1288inch`
+Used by: all horizontal signals (18 blocks)
 
-**Renderer changes needed:** Same as 8-8-12 but mirrored layout.
+**Vertical with lateral offset (RENDERER CHANGE NEEDED):** Standard vertical stack but
+with the lower sections shifted left or right — this is how doghouse signals work.
+- Main doghouse: 3 sections, standard vertical stack (same as any 3-section signal)
+- Secondary doghouse: 2 sections, vertically stacked but the entire assembly is offset
+  laterally (left or right) so it sits beside the main head
+- The peaked roof geometry is part of the backplate/mounting, NOT the signal head body.
+  The signal sections themselves are standard sections.
 
-#### Body Type: Horizontal 3-Section (NEEDS NEW VERTEX DATA)
-**Section layout:** 3 sections arranged left-to-right instead of top-to-bottom
-**Orientation:** xOffset instead of yOffset for section spacing
+Used by: doghouse main (3 sections) and secondary (2 sections) signals (6 blocks)
 
-Blocks using this body (18 blocks):
-- All `controllablehorizontal*` signals (solid, left, right, right2, ahead, up-left,
-  uturn, rail, bike) plus their angle variants
+**Mixed-size vertical (RENDERER CHANGE NEEDED):** Vertical stack with per-section size.
+- 8-8-12: top two sections use 8-inch body, bottom uses 12-inch body
+- 12-8-8: top uses 12-inch body, bottom two use 8-inch body
+- yOffset spacing must account for mixed heights
 
-**Renderer changes needed:**
-- New body vertex data for horizontal housing
-- Section positioning uses xOffset instead of yOffset
-- Rotation logic unchanged (still uses facing property)
+Used by: 8-8-12 and 12-8-8 variant signals (8 blocks)
 
-#### Body Type: Single Section (NEEDS NEW VERTEX DATA)
-**Section layout:** 1 section only
-**Used for:** Single-color signals, ramp meters
+#### Angled Signals — Deprecation Path
 
-Blocks using this body (18 blocks):
-- All `controllablesinglesolidsignal*` variants (red, green, yellow × standard, gray,
-  left-angle, right-angle)
-- Ramp meter signals (3 blocks)
+The 16 angled signal blocks (`controllableverticalangle*`, `controllableverticalangle2*`)
+will be **obsoleted** by the custom rendering system since body tilt is now a runtime
+property via `TrafficSignalBodyTilt` (NONE, LEFT_TILT, RIGHT_TILT, LEFT_ANGLE,
+RIGHT_ANGLE).
 
-**Renderer changes needed:**
-- Single-section body vertex data
-- sectionInfos array length = 1
-- No yOffset needed (single section centered)
-- Angle variants handled by existing tilt logic
+**Auto-conversion plan:**
+- When an angled signal block is loaded in a world, detect it and replace it with the
+  corresponding non-angled custom-rendered version
+- Map the old block's angle to the appropriate `TrafficSignalBodyTilt` value on the new TE
+- Preserve the blockstate COLOR and FACING properties
+- This can be done via `Block.neighborChanged()` or a one-time world migration pass
+- The angled blocks remain in the codebase during transition but are hidden from the
+  creative tab once their non-angled equivalents support custom rendering
 
-#### Body Type: Arrow Add-On (NEEDS NEW VERTEX DATA)
-**Section layout:** 1 or 2 sections, minimal body depth, flat profile
-**Mounting:** Typically below a main signal head
-
-Blocks using this body (19 blocks):
-- Left add-on signals (standard, gray, FYA, double)
-- Right add-on signals (standard, gray, FYA, double)
-- Up-left add-on signals
-- Hybrid signals (left + add-on combinations)
-
-**Renderer changes needed:**
-- Thin flat body vertex data (Z depth much smaller than standard)
-- Single-section and dual-section variants
-- FYA (Flashing Yellow Arrow) variants may need special flash logic
-- Hybrid signals combine a main 3-section + add-on in a single block — these may need
-  composite rendering with two body types
-
-#### Body Type: Doghouse (NEEDS NEW VERTEX DATA)
-**Section layout:** Asymmetric peaked housing, 2 or 3 sections
-**Implementation:** Two separate blocks per doghouse (main + secondary)
-
-Blocks using this body (6 blocks):
-- Main left/right: 3 sections (R/Y/G), signal side THROUGH
-- Secondary left/right: 2 sections (Y/G arrows), signal side LEFT
-- FYA variants: 2 sections with flashing yellow
-
-**Renderer changes needed:**
-- Doghouse-specific body vertex data with peaked roof geometry
-- Main blocks: 3 sections, standard yOffset
-- Secondary blocks: 2 sections, adjusted yOffset (no red section)
-- Left/right mounting mirror (separate vertex data or X-flip)
-
-#### Body Type: HAWK Beacon (NEEDS NEW VERTEX DATA)
+#### HAWK Beacon (SPECIAL CASE)
 **Section layout:** Unique 2-over-1 arrangement (2 red on top, 1 yellow below)
-**Signal side:** PEDESTRIAN_BEACON
+**Implementation:** Custom section layout in the renderer — not a standard stack
+Used by: 1 block (`controllablehawksignal`)
 
-Blocks using this body (1 block):
-- `controllablehawksignal`
+#### Add-On Signals
+Add-on signals use standard sections (1 or 2) in a vertical stack. The "thin flat
+profile" is a property of the add-on's mounting/backplate, not the signal section itself.
+The sections are the same 12-inch sections as any other signal — they just have fewer of
+them and sit below/beside a main signal head.
 
-**Renderer changes needed:**
-- HAWK-specific body vertex data
-- Custom section layout (not uniform vertical stack)
-- Special color state mapping for HAWK flash patterns
-
-#### Body Type: Angled Vertical (REUSES STANDARD BODY)
-**Section layout:** Same as standard 3x12-inch but tilted 45° on mounting
-**Note:** These are currently handled as separate model files but geometrically identical
-to the standard body — the angle is in the mounting, not the body itself.
-
-Blocks using this body (16 blocks):
-- All `controllableverticalangle*` and `controllableverticalangle2*` signals
-
-**Renderer changes needed:**
-- These can likely use the same body vertex data as standard vertical
-- The angle is applied via existing tilt/rotation logic (LEFT_ANGLE, RIGHT_ANGLE)
-- These are already handled by the existing `TrafficSignalBodyTilt` enum
+Used by: 19 blocks (left/right add-ons, FYA variants, hybrid signals)
 
 ### Texture Atlas Considerations
 
@@ -252,37 +200,45 @@ Blocks using this body (16 blocks):
 
 ### Vertex Data Pipeline
 
-For each new body type, the workflow is:
-1. The Blockbench JSON model already exists in `models/block/shared_models/trafficsignals/`
+The only new vertex data needed is for 8-inch sections. The workflow:
+1. Create or extract an 8-inch signal body model in Blockbench (scale down from 12-inch)
 2. Add the model path to `ModelToOglDataTool.MODEL_FILES_TO_CONVERT`
 3. Run the tool to generate `.ogldata` files in `dev-env-utils/openGlData/`
 4. Add the vertex data as a `static final List<Box>` in `TrafficSignalVertexData.java`
-5. Add the body type selection logic in the renderer
+5. Add size-based body data selection in the renderer
 
-**Important:** The existing JSON models include the full signal body with visors baked in.
-The TESR renders body and visors separately (body from `.ogldata`, visors from visor
-`.ogldata` files). We need to extract JUST the body shell geometry, not the visor parts.
-The `ModelToOglDataTool` may need enhancement to support element filtering or the models
-may need to be split in Blockbench.
+**Note:** The existing JSON shared models include visors baked into the body geometry.
+The TESR renders body and visors separately. The current 12-inch `.ogldata` files were
+manually split from the full model. The 8-inch files will need the same treatment.
 
 ### Renderer Architecture Changes
 
-The current renderer assumes a fixed 3-section 12-inch vertical body. To support all body
-types, we need to parameterize:
+The current renderer assumes a fixed 3-section 12-inch vertical body. To support all
+signal types, we need to parameterize section layout. The key changes:
 
+**Per-section parameters (stored in SectionInfo or provided by block class):**
+- `sectionSize`: 8 or 12 (determines which body/door vertex data and bulb quad size)
+- `offsetX`, `offsetY`: position of this section relative to the signal center
+  (vertical: Y varies; horizontal: X varies; doghouse secondary: both vary)
+
+**Renderer dispatch logic:**
+- Select body/door vertex data based on section size (8-inch vs 12-inch)
+- Select visor vertex data based on section size (may need 8-inch visor variants)
+- Use per-section offset for positioning instead of the current hardcoded yOffset formula
+- For horizontal signals: rotate body geometry 90° but keep bulb UV and visor upright
+
+**Block class interface:**
 ```
 AbstractBlockControllableSignalHead
   ├── getDefaultTrafficSignalSectionInfo()    // already exists
-  ├── getSignalBodyType()                     // NEW: which body vertex data to use
-  ├── getSectionCount()                       // implied by sectionInfos.length
-  └── getSectionLayout()                      // NEW: per-section size/offset config
+  ├── getSectionLayout()                      // NEW: returns per-section size + offset
+  └── isHorizontal()                          // NEW: flag for horizontal body rotation
 ```
 
-The renderer would then dispatch based on body type:
-- Select the correct body/door vertex data
-- Use per-section size (8 or 12) for bulb quad dimensions
-- Use per-section offset for vertical/horizontal positioning
-- Apply appropriate scale factors
+The section layout can be a simple array of structs: `{size, offsetX, offsetY}` per
+section. Most signals use a standard vertical layout that can be computed from section
+count and size, so only the non-standard layouts (horizontal, doghouse secondary, HAWK)
+need explicit layout definitions.
 
 ### Rollout Order (Recommended)
 
@@ -290,26 +246,44 @@ The renderer would then dispatch based on body type:
 Highest impact, uses existing body vertex data. No renderer changes needed beyond
 converting blocks to extend `AbstractBlockControllableSignalHead`.
 
-**Wave 2 — Angled Vertical (16 blocks)**
-Same body geometry as Wave 1. Existing tilt logic already handles the mounting angles.
+**Wave 2 — Single Section (18 blocks)**
+Uses existing 12-inch section geometry. Renderer already handles variable section
+count via sectionInfos.length. Trivial conversion.
 
-**Wave 3 — Single Section (18 blocks)**
-Simple 1-section body. Needs new vertex data but renderer logic is straightforward.
+**Wave 3 — Add-On Signals (19 blocks)**
+Standard 12-inch sections, just 1 or 2 of them. Same renderer logic as Wave 2.
+FYA variants use existing flash logic. Hybrid signals may need attention.
 
-**Wave 4 — 8-inch and Mixed-Size (12 blocks)**
-Needs new body vertex data and per-section sizing in the renderer.
+**Wave 4 — Doghouse (6 blocks)**
+Main doghouse: standard 3-section vertical (same geometry as Wave 1). Secondary
+doghouse: 2-section vertical — sections are standard, just shifted laterally beside
+the main head. The peaked roof is part of the backplate/mounting, not the signal
+head body. Renderer needs lateral offset parameter for secondary positioning.
 
-**Wave 5 — Horizontal (18 blocks)**
-Needs horizontal body vertex data and xOffset section positioning.
+**Wave 5 — 8-inch and Mixed-Size (12 blocks)**
+Only wave requiring new vertex data: 8-inch body and door. Renderer needs per-section
+size parameter so 8-8-12 and 12-8-8 layouts can mix 8-inch and 12-inch sections in
+the same signal head. All-8-inch signals just use 8-inch for all 3 sections.
 
-**Wave 6 — Add-On Signals (19 blocks)**
-Needs thin flat body vertex data. FYA and hybrid types add complexity.
+**Wave 6 — Horizontal (18 blocks)**
+Sections are the same 12-inch body geometry, rotated 90° and arranged side-by-side
+with xOffset instead of yOffset. Critical: bulb textures and visors do NOT rotate
+with the body — an up arrow stays an up arrow. Body sections rotate but texture UV
+orientation stays upright. Per MUTCD: Red on LEFT, Yellow in CENTER, Green on RIGHT
+from the viewer's perspective.
 
-**Wave 7 — Doghouse (6 blocks)**
-Needs doghouse body vertex data. Two-block assembly stays as-is.
+**Wave 7 — Angled Signals (16 blocks) — DEPRECATION**
+These blocks are made redundant by the `TrafficSignalBodyTilt` system. Plan:
+1. Convert to non-angled custom-rendered equivalents during the wave
+2. Add auto-migration logic: when an old angled block is loaded, replace it with the
+   corresponding non-angled version and set the TE's body tilt to match the old angle
+3. Preserve blockstate COLOR and FACING during migration
+4. Hide angled blocks from creative tab once migration is active
+5. Eventually remove the angled block classes in a future cleanup
 
 **Wave 8 — HAWK and Special (4 blocks)**
-HAWK needs unique layout. Ramp meters and special signals.
+HAWK needs a unique 2-over-1 section layout (not a standard vertical stack). Ramp
+meters are single-section, similar to Wave 2.
 
 **Not converting (leave as JSON):**
 - Crosswalk signals (12 blocks) — different rendering paradigm (word/symbol displays)
@@ -323,14 +297,14 @@ HAWK needs unique layout. Ramp meters and special signals.
 | Wave | Blocks | New Vertex Data | Renderer Changes |
 |------|--------|----------------|-----------------|
 | 1 | 49 | None | Block class changes only |
-| 2 | 16 | None | Block class changes only |
-| 3 | 18 | Single-section body | 1-section layout |
-| 4 | 12 | 8-inch + mixed bodies | Per-section sizing |
-| 5 | 18 | Horizontal body | xOffset positioning |
-| 6 | 19 | Flat add-on body | Thin profile, hybrid |
-| 7 | 6 | Doghouse body | 2/3 section peaked |
-| 8 | 4 | HAWK body | Custom layout |
-| **Total** | **142** | **~6-8 new data sets** | **Incremental** |
+| 2 | 18 | None | 1-section layout (trivial) |
+| 3 | 19 | None | 1-2 section layout |
+| 4 | 6 | None | 2-section + lateral offset |
+| 5 | 12 | 8-inch body/door | Per-section size parameter |
+| 6 | 18 | None | xOffset, split body/texture rotation |
+| 7 | 16 | None | Auto-migration logic |
+| 8 | 4 | None | HAWK 2-over-1 layout |
+| **Total** | **142** | **1 new data set** | **Incremental** |
 
 ---
 
