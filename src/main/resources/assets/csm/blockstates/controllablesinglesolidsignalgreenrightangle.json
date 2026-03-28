@@ -1,64 +1,52 @@
 {
-  "variants": {
-    "color=0,facing=north": {
-      "model": "csm:controllablesinglesolidsignalgreenrightangle"
-    },
-    "color=0,facing=east": {
-      "model": "csm:controllablesinglesolidsignalgreenrightangle",
-      "y": 90
-    },
-    "color=0,facing=south": {
-      "model": "csm:controllablesinglesolidsignalgreenrightangle",
-      "y": 180
-    },
-    "color=0,facing=west": {
-      "model": "csm:controllablesinglesolidsignalgreenrightangle",
-      "y": 270
-    },
-    "color=1,facing=north": {
-      "model": "csm:controllablesinglesolidsignalgreenrightangle"
-    },
-    "color=1,facing=east": {
-      "model": "csm:controllablesinglesolidsignalgreenrightangle",
-      "y": 90
-    },
-    "color=1,facing=south": {
-      "model": "csm:controllablesinglesolidsignalgreenrightangle",
-      "y": 180
-    },
-    "color=1,facing=west": {
-      "model": "csm:controllablesinglesolidsignalgreenrightangle",
-      "y": 270
-    },
-    "color=2,facing=north": {
-      "model": "csm:controllablesinglesolidsignalgreenoffrightangle"
-    },
-    "color=2,facing=east": {
-      "model": "csm:controllablesinglesolidsignalgreenoffrightangle",
-      "y": 90
-    },
-    "color=2,facing=south": {
-      "model": "csm:controllablesinglesolidsignalgreenoffrightangle",
-      "y": 180
-    },
-    "color=2,facing=west": {
-      "model": "csm:controllablesinglesolidsignalgreenoffrightangle",
-      "y": 270
-    },
-    "color=3,facing=north": {
-      "model": "csm:controllablesinglesolidsignalgreenoffrightangle"
-    },
-    "color=3,facing=east": {
-      "model": "csm:controllablesinglesolidsignalgreenoffrightangle",
-      "y": 90
-    },
-    "color=3,facing=south": {
-      "model": "csm:controllablesinglesolidsignalgreenoffrightangle",
-      "y": 180
-    },
-    "color=3,facing=west": {
-      "model": "csm:controllablesinglesolidsignalgreenoffrightangle",
-      "y": 270
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:controllablesinglesolidsignalgreenrightangle",
+    "textures": {
+      "all": "csm:blocks/solidgreenoff",
+      "particle": "csm:blocks/solidgreenoff",
+      "0": "csm:blocks/solidgreenoff"
     }
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "color": {
+      "0": {
+        "textures": {
+          "0": "csm:blocks/solidgreen",
+          "all": "csm:blocks/solidgreen",
+          "particle": "csm:blocks/solidgreen"
+        }
+      },
+      "1": {
+        "textures": {
+          "0": "csm:blocks/solidgreen",
+          "all": "csm:blocks/solidgreen",
+          "particle": "csm:blocks/solidgreen"
+        }
+      },
+      "2": {},
+      "3": {}
+    },
+    "inventory": [
+      {
+        "textures": {
+          "0": "csm:blocks/solidgreen",
+          "all": "csm:blocks/solidgreen",
+          "particle": "csm:blocks/solidgreen"
+        }
+      }
+    ]
   }
 }

@@ -1,64 +1,62 @@
 {
-  "variants": {
-    "color=0,facing=north": {
-      "model": "csm:controllablecrosswalk_dontwalk"
-    },
-    "color=0,facing=east": {
-      "model": "csm:controllablecrosswalk_dontwalk",
-      "y": 90
-    },
-    "color=0,facing=south": {
-      "model": "csm:controllablecrosswalk_dontwalk",
-      "y": 180
-    },
-    "color=0,facing=west": {
-      "model": "csm:controllablecrosswalk_dontwalk",
-      "y": 270
-    },
-    "color=1,facing=north": {
-      "model": "csm:controllablecrosswalk_flashdontwalk"
-    },
-    "color=1,facing=east": {
-      "model": "csm:controllablecrosswalk_flashdontwalk",
-      "y": 90
-    },
-    "color=1,facing=south": {
-      "model": "csm:controllablecrosswalk_flashdontwalk",
-      "y": 180
-    },
-    "color=1,facing=west": {
-      "model": "csm:controllablecrosswalk_flashdontwalk",
-      "y": 270
-    },
-    "color=2,facing=north": {
-      "model": "csm:controllablecrosswalk_walk"
-    },
-    "color=2,facing=east": {
-      "model": "csm:controllablecrosswalk_walk",
-      "y": 90
-    },
-    "color=2,facing=south": {
-      "model": "csm:controllablecrosswalk_walk",
-      "y": 180
-    },
-    "color=2,facing=west": {
-      "model": "csm:controllablecrosswalk_walk",
-      "y": 270
-    },
-    "color=3,facing=north": {
-      "model": "csm:controllablecrosswalk_off"
-    },
-    "color=3,facing=east": {
-      "model": "csm:controllablecrosswalk_off",
-      "y": 90
-    },
-    "color=3,facing=south": {
-      "model": "csm:controllablecrosswalk_off",
-      "y": 180
-    },
-    "color=3,facing=west": {
-      "model": "csm:controllablecrosswalk_off",
-      "y": 270
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:controllablecrosswalk",
+    "textures": {
+      "all": "csm:blocks/crosswalkoff",
+      "particle": "csm:blocks/crosswalkoff",
+      "0": "csm:blocks/crosswalkoff"
     }
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "color": {
+      "0": {
+        "textures": {
+          "0": "csm:blocks/crosswalkhand"
+        }
+      },
+      "1": {
+        "textures": {
+          "0": "csm:blocks/crosswalkflashinghand",
+          "all": "csm:blocks/crosswalkflashinghand",
+          "particle": "csm:blocks/crosswalkflashinghand"
+        }
+      },
+      "2": {
+        "textures": {
+          "0": "csm:blocks/crosswalkman",
+          "all": "csm:blocks/crosswalkman",
+          "particle": "csm:blocks/crosswalkman"
+        }
+      },
+      "3": {
+        "textures": {
+          "0": "csm:blocks/crosswalkoff",
+          "all": "csm:blocks/crosswalkoff",
+          "particle": "csm:blocks/crosswalkoff"
+        }
+      }
+    },
+    "inventory": [
+      {
+        "textures": {
+          "all": "csm:blocks/crosswalkman",
+          "particle": "csm:blocks/crosswalkman",
+          "0": "csm:blocks/crosswalkman"
+        }
+      }
+    ]
   }
 }

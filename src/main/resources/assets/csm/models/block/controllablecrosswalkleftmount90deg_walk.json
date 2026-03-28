@@ -1,8 +1,0 @@
-{
-  "parent": "csm:custom/crosswalklightsingle_left90",
-  "textures": {
-    "all": "csm:blocks/crosswalkman",
-    "particle": "csm:blocks/crosswalkman",
-    "0": "csm:blocks/crosswalkman"
-  }
-}

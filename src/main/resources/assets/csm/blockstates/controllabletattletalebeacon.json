@@ -1,64 +1,44 @@
 {
-  "variants": {
-    "color=0,facing=north": {
-      "model": "csm:controllabletattletalebeacon_on"
-    },
-    "color=0,facing=east": {
-      "model": "csm:controllabletattletalebeacon_on",
-      "y": 90
-    },
-    "color=0,facing=south": {
-      "model": "csm:controllabletattletalebeacon_on",
-      "y": 180
-    },
-    "color=0,facing=west": {
-      "model": "csm:controllabletattletalebeacon_on",
-      "y": 270
-    },
-    "color=1,facing=north": {
-      "model": "csm:controllabletattletalebeacon"
-    },
-    "color=1,facing=east": {
-      "model": "csm:controllabletattletalebeacon",
-      "y": 90
-    },
-    "color=1,facing=south": {
-      "model": "csm:controllabletattletalebeacon",
-      "y": 180
-    },
-    "color=1,facing=west": {
-      "model": "csm:controllabletattletalebeacon",
-      "y": 270
-    },
-    "color=2,facing=north": {
-      "model": "csm:controllabletattletalebeacon"
-    },
-    "color=2,facing=east": {
-      "model": "csm:controllabletattletalebeacon",
-      "y": 90
-    },
-    "color=2,facing=south": {
-      "model": "csm:controllabletattletalebeacon",
-      "y": 180
-    },
-    "color=2,facing=west": {
-      "model": "csm:controllabletattletalebeacon",
-      "y": 270
-    },
-    "color=3,facing=north": {
-      "model": "csm:controllabletattletalebeacon"
-    },
-    "color=3,facing=east": {
-      "model": "csm:controllabletattletalebeacon",
-      "y": 90
-    },
-    "color=3,facing=south": {
-      "model": "csm:controllabletattletalebeacon",
-      "y": 180
-    },
-    "color=3,facing=west": {
-      "model": "csm:controllabletattletalebeacon",
-      "y": 270
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:controllabletattletalebeacon",
+    "textures": {
+      "all": "csm:blocks/metal_white",
+      "particle": "csm:blocks/metal_white",
+      "0": "csm:blocks/metal_white",
+      "1": "csm:blocks/white_beacon",
+      "2": "csm:blocks/blue_beacon"
     }
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "color": {
+      "0": {
+        "textures": {
+          "1": "csm:blocks/blue_beacon"
+        }
+      },
+      "1": {},
+      "2": {},
+      "3": {}
+    },
+    "inventory": [
+      {
+        "textures": {
+          "1": "csm:blocks/blue_beacon"
+        }
+      }
+    ]
   }
 }
