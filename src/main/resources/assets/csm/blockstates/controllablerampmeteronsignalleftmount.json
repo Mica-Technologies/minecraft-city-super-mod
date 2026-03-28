@@ -1,64 +1,60 @@
 {
-  "variants": {
-    "color=0,facing=north": {
-      "model": "csm:controllablerampmeteronsignalleftmount_dontwalk"
-    },
-    "color=0,facing=east": {
-      "model": "csm:controllablerampmeteronsignalleftmount_dontwalk",
-      "y": 90
-    },
-    "color=0,facing=south": {
-      "model": "csm:controllablerampmeteronsignalleftmount_dontwalk",
-      "y": 180
-    },
-    "color=0,facing=west": {
-      "model": "csm:controllablerampmeteronsignalleftmount_dontwalk",
-      "y": 270
-    },
-    "color=1,facing=north": {
-      "model": "csm:controllablerampmeteronsignalleftmount_flashdontwalk"
-    },
-    "color=1,facing=east": {
-      "model": "csm:controllablerampmeteronsignalleftmount_flashdontwalk",
-      "y": 90
-    },
-    "color=1,facing=south": {
-      "model": "csm:controllablerampmeteronsignalleftmount_flashdontwalk",
-      "y": 180
-    },
-    "color=1,facing=west": {
-      "model": "csm:controllablerampmeteronsignalleftmount_flashdontwalk",
-      "y": 270
-    },
-    "color=2,facing=north": {
-      "model": "csm:controllablerampmeteronsignalleftmount_walk"
-    },
-    "color=2,facing=east": {
-      "model": "csm:controllablerampmeteronsignalleftmount_walk",
-      "y": 90
-    },
-    "color=2,facing=south": {
-      "model": "csm:controllablerampmeteronsignalleftmount_walk",
-      "y": 180
-    },
-    "color=2,facing=west": {
-      "model": "csm:controllablerampmeteronsignalleftmount_walk",
-      "y": 270
-    },
-    "color=3,facing=north": {
-      "model": "csm:controllablerampmeteronsignalleftmount_off"
-    },
-    "color=3,facing=east": {
-      "model": "csm:controllablerampmeteronsignalleftmount_off",
-      "y": 90
-    },
-    "color=3,facing=south": {
-      "model": "csm:controllablerampmeteronsignalleftmount_off",
-      "y": 180
-    },
-    "color=3,facing=west": {
-      "model": "csm:controllablerampmeteronsignalleftmount_off",
-      "y": 270
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:controllablerampmeteronsignalleftmount",
+    "textures": {
+      "all": "csm:blocks/crosswalkmeteronoff",
+      "particle": "csm:blocks/crosswalkmeteronoff",
+      "0": "csm:blocks/crosswalkmeteronoff"
     }
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "color": {
+      "0": {
+        "textures": {
+          "0": "csm:blocks/crosswalkmeteronon"
+        }
+      },
+      "1": {
+        "textures": {
+          "0": "csm:blocks/crosswalkmeteronflash",
+          "all": "csm:blocks/crosswalkmeteronflash",
+          "particle": "csm:blocks/crosswalkmeteronflash"
+        }
+      },
+      "2": {
+        "textures": {
+          "0": "csm:blocks/crosswalkmeteronon"
+        }
+      },
+      "3": {
+        "textures": {
+          "0": "csm:blocks/crosswalkmeteronoff",
+          "all": "csm:blocks/crosswalkmeteronoff",
+          "particle": "csm:blocks/crosswalkmeteronoff"
+        }
+      }
+    },
+    "inventory": [
+      {
+        "textures": {
+          "all": "csm:blocks/crosswalkmeteronon",
+          "particle": "csm:blocks/crosswalkmeteronon",
+          "0": "csm:blocks/crosswalkmeteronon"
+        }
+      }
+    ]
   }
 }

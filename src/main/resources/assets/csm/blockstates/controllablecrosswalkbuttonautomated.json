@@ -14,7 +14,11 @@
   },
   "variants": {
     "inventory": [
-      {}
+      {
+        "textures": {
+          "pilotlight": "csm:blocks/aps_pilot_light_on"
+        }
+      }
     ],
     "color": {
       "0": {

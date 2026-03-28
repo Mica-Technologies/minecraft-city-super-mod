@@ -1,9 +1,0 @@
-{
-  "parent": "csm:custom/crosswalklightdouble_rear",
-  "textures": {
-    "all": "csm:blocks/crosswalktextdontwalkoff",
-    "particle": "csm:blocks/crosswalktextdontwalkoff",
-    "0": "csm:blocks/crosswalktextdontwalkon",
-    "1": "csm:blocks/crosswalktextwalkoff"
-  }
-}

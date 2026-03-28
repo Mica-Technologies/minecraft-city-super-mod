@@ -1,64 +1,60 @@
 {
-  "variants": {
-    "color=0,facing=north": {
-      "model": "csm:controllableverticalleftsignal_red"
-    },
-    "color=0,facing=east": {
-      "model": "csm:controllableverticalleftsignal_red",
-      "y": 90
-    },
-    "color=0,facing=south": {
-      "model": "csm:controllableverticalleftsignal_red",
-      "y": 180
-    },
-    "color=0,facing=west": {
-      "model": "csm:controllableverticalleftsignal_red",
-      "y": 270
-    },
-    "color=1,facing=north": {
-      "model": "csm:controllableverticalleftsignal_yellow"
-    },
-    "color=1,facing=east": {
-      "model": "csm:controllableverticalleftsignal_yellow",
-      "y": 90
-    },
-    "color=1,facing=south": {
-      "model": "csm:controllableverticalleftsignal_yellow",
-      "y": 180
-    },
-    "color=1,facing=west": {
-      "model": "csm:controllableverticalleftsignal_yellow",
-      "y": 270
-    },
-    "color=2,facing=north": {
-      "model": "csm:controllableverticalleftsignal_green"
-    },
-    "color=2,facing=east": {
-      "model": "csm:controllableverticalleftsignal_green",
-      "y": 90
-    },
-    "color=2,facing=south": {
-      "model": "csm:controllableverticalleftsignal_green",
-      "y": 180
-    },
-    "color=2,facing=west": {
-      "model": "csm:controllableverticalleftsignal_green",
-      "y": 270
-    },
-    "color=3,facing=north": {
-      "model": "csm:controllableverticalleftsignal"
-    },
-    "color=3,facing=east": {
-      "model": "csm:controllableverticalleftsignal",
-      "y": 90
-    },
-    "color=3,facing=south": {
-      "model": "csm:controllableverticalleftsignal",
-      "y": 180
-    },
-    "color=3,facing=west": {
-      "model": "csm:controllableverticalleftsignal",
-      "y": 270
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:controllableverticalleftsignal",
+    "textures": {
+      "all": "csm:blocks/solidoff",
+      "particle": "csm:blocks/solidoff",
+      "0": "csm:blocks/redarrowleftoff",
+      "1": "csm:blocks/yellowarrowleftoff",
+      "2": "csm:blocks/greenarrowleft"
     }
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "color": {
+      "0": {
+        "textures": {
+          "0": "csm:blocks/redarrowleft",
+          "1": "csm:blocks/yellowarrowleftoff",
+          "2": "csm:blocks/greenarrowleftoff"
+        }
+      },
+      "1": {
+        "textures": {
+          "0": "csm:blocks/redarrowleftoff",
+          "1": "csm:blocks/yellowarrowleft",
+          "2": "csm:blocks/greenarrowleftoff"
+        }
+      },
+      "2": {
+        "textures": {
+          "0": "csm:blocks/redarrowleftoff",
+          "1": "csm:blocks/yellowarrowleftoff",
+          "2": "csm:blocks/greenarrowleft"
+        }
+      },
+      "3": {}
+    },
+    "inventory": [
+      {
+        "textures": {
+          "0": "csm:blocks/redarrowleft",
+          "2": "csm:blocks/greenarrowleftoff",
+          "1": "csm:blocks/yellowarrowleft"
+        }
+      }
+    ]
   }
 }
