@@ -89,10 +89,16 @@ All items below are done and working in-game.
   - FYA add-ons: 1 section, flashing yellow on green phase
   - Double add-ons: 2-section standard vertical stack
   - RightFlashYellowAddOn corrected to 1 section green-only (per original blockstate)
-- [ ] **Wave 4** — Doghouse signals (needs lateral offset)
+- [x] **Wave 4** — 6 doghouse signals converted
+  - Main left/right: 3-section BALL, standard positioning
+  - Secondary left/right: 3-section arrows, Y offset +4.0
+  - Secondary FYA: 2 overlapping sections, flashing yellow on green phase
 - [ ] **Wave 5** — 8-inch and mixed-size signals (needs 8-inch vertex data)
 - [ ] **Wave 6** — Horizontal signals (needs xOffset, split body/texture rotation)
 - [ ] **Wave 7** — Angled signals (deprecation + auto-migration)
+  - Also: improve controller fault detection for invalid/removed signal blocks
+    (controller should reliably switch to fault flash with message when setBlockState
+    fails for a linked signal, e.g., block was deleted or replaced)
 - [ ] **Wave 8** — HAWK and special signals
 
 ### Known Issues to Circle Back To
