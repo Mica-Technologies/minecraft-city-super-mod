@@ -10,11 +10,6 @@ import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.util.EnumFacing;
 import org.lwjgl.opengl.GL11;
 
-/**
- * TESR for crosswalk signals that renders a countdown number overlay during the
- * pedestrian clearance phase. The countdown is managed by TileEntityCrosswalkSignal
- * which learns the clearance duration from the traffic signal controller.
- */
 public class TileEntityCrosswalkSignalRenderer extends
     TileEntitySpecialRenderer<TileEntityCrosswalkSignal> {
 
@@ -23,12 +18,8 @@ public class TileEntityCrosswalkSignalRenderer extends
       float partialTicks, int destroyStage, float alpha) {
 
     int countdown = te.getCurrentCountdown();
-    if (countdown >= 0) {
-      System.out.println("[CrosswalkTESR] Rendering countdown=" + countdown + " at " + te.getPos());
-    }
-    if (countdown < 0) return; // No countdown active
+    if (countdown < 0) return;
 
-    // Only render during clearance phase (color=1)
     IBlockState state = te.getWorld().getBlockState(te.getPos());
     if (!(state.getBlock() instanceof AbstractBlockControllableSignal)) return;
     int color = state.getValue(AbstractBlockControllableSignal.COLOR);
@@ -37,46 +28,54 @@ public class TileEntityCrosswalkSignalRenderer extends
     EnumFacing facing = state.getValue(AbstractBlockControllableSignal.FACING);
 
     GlStateManager.pushMatrix();
-    GlStateManager.translate((float) x + 0.5f, (float) y + 0.5f, (float) z + 0.5f);
+    GlStateManager.translate((float) x + 0.5f, (float) y + 0.5625f, (float) z + 0.5f);
 
-    // Rotate to match block facing. The display face is the NORTH face of the model.
-    // For a north-facing block, no rotation needed (display already faces -Z).
-    float rotation = 0;
-    float zOffset = -0.44f;
+    // Rotate to match the blockstate model rotation. The blockstate rotates the model:
+    // north=0, east=90, south=180, west=270. We apply the same rotation so the text
+    // overlay stays aligned with the rotated model's display face.
+    float rot = 0;
     switch (facing) {
-      case NORTH: rotation = 0; break;
-      case EAST: rotation = 270; break;
-      case SOUTH: rotation = 180; break;
-      case WEST: rotation = 90; break;
+      case NORTH: rot = 180; break;
+      case EAST: rot = 90; break;
+      case SOUTH: rot = 0; break;
+      case WEST: rot = -90; break;
       default: break;
     }
-    GlStateManager.rotate(rotation, 0, 1, 0);
+    GlStateManager.rotate(rot, 0, 1, 0);
 
-    // Position on the display face (north face at Z≈0.06 in block space)
-    GlStateManager.translate(0, 0.1f, zOffset);
-    GlStateManager.scale(0.025f, -0.025f, 0.025f);
+    // Move to just in front of the block face, shifted down and right for countdown area
+    // The model's north face is at Z=1/16=0.0625 from block origin.
+    // Block center is at 0.5, so the face is at -0.4375 from center.
+    GlStateManager.translate(0.12f, -0.15f, -0.4376f);
+
+    // Scale: make the number tall enough to fill the lower portion of the signal face
+    // Use non-uniform scale to make the number taller
+    float scaleX = 0.04f;
+    float scaleY = 0.055f;
+    GlStateManager.scale(scaleX, -scaleY, scaleX);
 
     // Fullbright
-    int prevBrightnessX = (int) OpenGlHelper.lastBrightnessX;
-    int prevBrightnessY = (int) OpenGlHelper.lastBrightnessY;
+    int prevBX = (int) OpenGlHelper.lastBrightnessX;
+    int prevBY = (int) OpenGlHelper.lastBrightnessY;
     OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240f, 240f);
 
     GlStateManager.disableLighting();
     GlStateManager.depthMask(false);
+    GlStateManager.disableDepth(); // Render on top of everything
     GlStateManager.enableBlend();
     GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 
-    // Render the countdown number in amber/orange
-    FontRenderer fontRenderer = Minecraft.getMinecraft().fontRenderer;
-    String countdownStr = String.valueOf(countdown);
-    int textWidth = fontRenderer.getStringWidth(countdownStr);
-    fontRenderer.drawString(countdownStr, -textWidth / 2, 0, 0xFFFF8800);
+    FontRenderer font = Minecraft.getMinecraft().fontRenderer;
+    String text = String.valueOf(countdown);
+    int textWidth = font.getStringWidth(text);
+    font.drawString(text, -textWidth / 2, -4, 0xFFFF8800);
 
+    GlStateManager.enableDepth();
     GlStateManager.enableLighting();
     GlStateManager.depthMask(true);
     GlStateManager.disableBlend();
 
-    OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, prevBrightnessX, prevBrightnessY);
+    OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, prevBX, prevBY);
 
     GlStateManager.popMatrix();
   }
