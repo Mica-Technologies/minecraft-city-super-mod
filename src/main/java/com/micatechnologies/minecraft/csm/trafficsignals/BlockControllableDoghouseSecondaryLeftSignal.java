@@ -40,8 +40,13 @@ public class BlockControllableDoghouseSecondaryLeftSignal extends AbstractBlockC
   }
 
   @Override
-  public float getSignalYOffset() {
-    return 4.0f;
+  public float[] getSectionXPositions(int sectionCount) {
+    return new float[] {-6, -6, -6};
+  }
+
+  @Override
+  public float[] getSectionYPositions(int sectionCount) {
+    return new float[] {16.5f, 4.5f, -7.5f};
   }
 
   @Override
