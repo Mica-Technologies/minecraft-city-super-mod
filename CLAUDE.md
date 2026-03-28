@@ -53,10 +53,10 @@ src/main/java/com/micatechnologies/minecraft/csm/
 └── trafficsigns/     # Largest: 472 road sign blocks
 
 src/main/resources/assets/csm/
-├── blockstates/      # One JSON per block (named by registry name)
-├── models/block/     # Block model JSONs (named by registry name)
-├── models/item/      # Item model JSONs
-├── models/custom/    # Shared/reusable base models
+├── blockstates/      # One JSON per block; prefer Forge format (forge_marker: 1)
+├── models/block/     # Block model JSONs (base models referencing custom parents)
+├── models/item/      # Item model JSONs (not needed if blockstate has inventory variant)
+├── models/custom/    # Shared/reusable base models (3D geometry from Blockbench)
 ├── textures/block/
 ├── textures/item/
 ├── sounds/
@@ -99,12 +99,18 @@ Version is derived from Git tags (format: `YYYY.MM.DD` for releases). No manual 
 ## Adding a Block (Checklist)
 
 1. Create class in the appropriate subsystem package extending a base class; use `snake_case` registry name
-2. Create `src/main/resources/assets/csm/blockstates/<registry_name>.json`
+2. Create `src/main/resources/assets/csm/blockstates/<registry_name>.json` (prefer Forge format with `forge_marker: 1` — see below)
 3. Create `src/main/resources/assets/csm/models/block/<registry_name>.json`
 4. Add textures to `src/main/resources/assets/csm/textures/block/` (PNG, power-of-two resolution)
 5. Add lang entry to `src/main/resources/assets/csm/lang/en_us.lang`: `tile.<registry_name>.name=Human Name`
 6. Register the block in the appropriate `tabs/CsmTab*.java` via `initTabBlock(BlockExample.class, event)`
 7. If the blockstate has no `inventory` variant, create `src/main/resources/assets/csm/models/item/<registry_name>.json`
+
+**Forge blockstate format (preferred):** Use `"forge_marker": 1` with `defaults`, separate variant
+blocks for each property, and `"inventory": [{}]` to handle item rendering without a separate item
+model file. Texture overrides per variant state eliminate the need for multiple block model files.
+See `trafficsignals/` and `trafficsigns/` blockstates for reference. The traffic signal system docs
+(`assets/docs/TRAFFIC_SIGNAL_SYSTEM.md`) include a full template.
 
 ## Adding an Item (Checklist)
 
@@ -113,6 +119,45 @@ Version is derived from Git tags (format: `YYYY.MM.DD` for releases). No manual 
 3. Add texture to `src/main/resources/assets/csm/textures/item/`
 4. Add lang entry: `item.<registry_name>.name=Human Name`
 5. Register in appropriate tab via `initTabItem(ItemExample.class, event)`
+
+## Adding a Sound (Checklist)
+
+1. Add `.ogg` file to `src/main/resources/assets/csm/sounds/` (OGG Vorbis, `snake_case` name)
+2. Add entry to `src/main/resources/assets/csm/sounds.json` with matching key and `"name": "csm:<filename_without_ext>"`
+3. Add enum entry to `CsmSounds.java`: `MY_SOUND_NAME("sound_event_id")`
+
+Sound is referenced in code as `"csm:sound_event_id"` (matching the sounds.json key).
+
+## Fire Alarm System
+
+The fire alarm system uses a channel-based `MovingSound` architecture. Key files:
+- `TileEntityFireAlarmControlPanel.java` -- Server-side: groups horns by sound, sends packets per channel
+- `FireAlarmSoundPacket.java` -- Network packet with `channel`, `soundResource`, `hearingRange`, `speakerPositions`
+- `FireAlarmSoundPacketHandler.java` -- Client-side: manages `Map<String, FireAlarmVoiceEvacSound>` by channel
+- `FireAlarmVoiceEvacSound.java` -- Client-side `MovingSound` with distance-based volume
+- `AbstractBlockFireAlarmSounder.java` -- Base class for horns; subclasses implement `getSoundResourceName()`
+- `AbstractBlockFireAlarmSounderVoiceEvac.java` -- Base for speakers (returns null sound, managed via voice evac channel)
+- `TileEntityFireAlarmSoundIndex.java` -- Simple TE for blocks needing >2 selectable sounds (bypasses 4-bit meta limit)
+
+Blocks with `SOUND` property in meta (max 2 options with NSEWUD rotation): Wheelock MT, Simplex 4903, Wheelock AS, etc.
+Blocks with `TileEntityFireAlarmSoundIndex` (unlimited options): Gentex Commander 3.
+
+For Gentex Commander 3 blocks, the control panel checks for the tile entity via `instanceof` to get the world-aware `getSoundResourceName(World, BlockPos, IBlockState)`.
+
+Code 3 horn sound targets: ~4.024s total, bursts at ~0.040/1.020/2.000, ~9,900 burst RMS.
+Voice evac sound volume target: ~4,500 RMS.
+
+## In-Depth System Documentation
+
+See `assets/docs/` for detailed technical documentation on major subsystems:
+- `assets/docs/BLOCK_AND_ITEM_BASE_CLASSES.md` -- Every abstract class, constructors, rotation, meta encoding, registration
+- `assets/docs/FIRE_ALARM_SYSTEM.md` -- MovingSound architecture, channel system, sound standards, full inventory
+- `assets/docs/TRAFFIC_SIGNAL_SYSTEM.md` -- Controller system, signal phases, pedestrian signals
+- `assets/docs/LIGHTING_SYSTEM.md` -- 4-state on/off control, light-up air projection, AbstractBrightLight
+- `assets/docs/POWER_GRID_SYSTEM.md` -- Forge Energy integration, utility poles, electrical infrastructure
+- `assets/docs/TRAFFIC_SIGNS.md` -- Forge blockstate format, dynamic properties, 472-sign system
+
+Agent progress/tracking docs are in `assets/docs/agent_progress/`.
 
 ## Developer Utilities
 
