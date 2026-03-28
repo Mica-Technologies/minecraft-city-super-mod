@@ -81,3 +81,4 @@ local.properties
 run/
 
 logs/
+.claude/settings.local.json
