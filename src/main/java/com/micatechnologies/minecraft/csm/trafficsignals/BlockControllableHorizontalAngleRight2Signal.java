@@ -51,7 +51,7 @@ public class BlockControllableHorizontalAngleRight2Signal extends AbstractBlockC
 
   @Override
   public float[] getSectionXPositions(int sectionCount) {
-    return new float[] {-12.0f, 0.0f, 12.0f};
+    return new float[] {12.0f, 0.0f, -12.0f};
   }
 
   @Override
