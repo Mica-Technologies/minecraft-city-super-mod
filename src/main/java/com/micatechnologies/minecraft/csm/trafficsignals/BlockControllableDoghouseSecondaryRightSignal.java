@@ -46,7 +46,7 @@ public class BlockControllableDoghouseSecondaryRightSignal extends AbstractBlock
 
   @Override
   public float[] getSectionYPositions(int sectionCount) {
-    return new float[] {16.5f, 4.5f, -7.5f};
+    return new float[] {12.0f, 0.0f, -12.0f};
   }
 
   @Override
