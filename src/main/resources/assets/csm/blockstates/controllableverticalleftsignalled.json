@@ -51,7 +51,7 @@
       {
         "textures": {
           "0": "csm:blocks/ledredarrowleft",
-          "2": "csm:blocks/ledleftarrowoff",
+          "2": "csm:blocks/ledgreenarrowleft",
           "1": "csm:blocks/ledyellowarrowleft"
         }
       }

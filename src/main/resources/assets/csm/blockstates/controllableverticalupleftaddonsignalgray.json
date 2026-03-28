@@ -40,7 +40,7 @@
         "textures": {
           "all": "csm:blocks/trafficsignals/old_bulb_body/gray/ledarrowupleftoff",
           "particle": "csm:blocks/trafficsignals/old_bulb_body/gray/ledarrowupleftoff",
-          "0": "csm:blocks/trafficsignals/old_bulb_body/gray/ledgreenarrowupleft"
+          "0": "csm:blocks/trafficsignals/old_bulb_body/gray/ledyellowarrowupleft"
         }
       }
     ],
