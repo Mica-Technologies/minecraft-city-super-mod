@@ -138,6 +138,25 @@ public abstract class AbstractBlockControllableSignalHead extends AbstractBlockC
 
   public abstract TrafficSignalSectionInfo[] getDefaultTrafficSignalSectionInfo();
 
+  /**
+   * Ensures a tile entity exists for this block. Handles migration of blocks that existed
+   * in the world before being converted to custom rendering (they were saved without a TE).
+   * Called from neighborChanged and onBlockActivated so the TE is created automatically
+   * when the signal controller cycles colors or the player interacts.
+   */
+  private void ensureTileEntity(World worldIn, BlockPos pos) {
+    if (!worldIn.isRemote && worldIn.getTileEntity(pos) == null) {
+      worldIn.setTileEntity(pos, createNewTileEntity(worldIn, 0));
+    }
+  }
+
+  @Override
+  public void neighborChanged(IBlockState state, World worldIn, BlockPos pos,
+      net.minecraft.block.Block blockIn, BlockPos fromPos) {
+    ensureTileEntity(worldIn, pos);
+    super.neighborChanged(state, worldIn, pos, blockIn, fromPos);
+  }
+
   @Override
   public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
     // Clean up the renderer's cached display list for this position
@@ -155,7 +174,7 @@ public abstract class AbstractBlockControllableSignalHead extends AbstractBlockC
   public boolean onBlockActivated(World p_180639_1_, BlockPos p_180639_2_, IBlockState p_180639_3_,
       EntityPlayer p_180639_4_, EnumHand p_180639_5_, EnumFacing p_180639_6_, float p_180639_7_,
       float p_180639_8_, float p_180639_9_) {
-    // Delegate to parent for signal linker handling
+    ensureTileEntity(p_180639_1_, p_180639_2_);
     return super.onBlockActivated(p_180639_1_, p_180639_2_, p_180639_3_, p_180639_4_, p_180639_5_,
         p_180639_6_, p_180639_7_, p_180639_8_, p_180639_9_);
   }
