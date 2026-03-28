@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:controllabledoghousesignalsecondaryleftfya",
+    "model": "csm:lightupair",
     "textures": {
       "all": "csm:blocks/solidoff",
       "particle": "csm:blocks/solidoff",
@@ -24,37 +24,14 @@
       }
     },
     "color": {
-      "0": {
-        "textures": {
-          "0": "csm:blocks/redarrowrightoff",
-          "1": "csm:blocks/yellowarrowrightoff",
-          "2": "csm:blocks/yellowarrowrightoff"
-        }
-      },
-      "1": {
-        "textures": {
-          "0": "csm:blocks/redarrowrightoff",
-          "1": "csm:blocks/yellowarrowright",
-          "2": "csm:blocks/yellowarrowrightoff"
-        }
-      },
-      "2": {
-        "textures": {
-          "0": "csm:blocks/redarrowrightoff",
-          "1": "csm:blocks/yellowarrowrightoff",
-          "2": "csm:blocks/yellowarrowrightflash"
-        }
-      },
-      "3": {
-        "textures": {
-          "0": "csm:blocks/redarrowrightoff",
-          "1": "csm:blocks/yellowarrowrightoff",
-          "2": "csm:blocks/yellowarrowrightoff"
-        }
-      }
+      "0": {},
+      "1": {},
+      "2": {},
+      "3": {}
     },
     "inventory": [
       {
+        "model": "csm:controllabledoghousesignalsecondaryleftfya",
         "textures": {
           "1": "csm:blocks/yellowarrowright",
           "2": "csm:blocks/yellowarrowrightflash"
