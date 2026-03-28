@@ -79,12 +79,27 @@ All items below are done and working in-game.
 - [x] **Wave 2** — 15 single-section signals converted
   - Added getSignalYOffset() to renderer (+2.0 for single-section model positioning)
   - Yellow advance flash uses bulbCustomColor=YELLOW on green phase with flashing
-- [ ] **Wave 3** — Add-on signals (needs overlapping section support for multi-color single-section)
+- [x] **Wave 2 fix** — Single flasher signals now light on both color=0 and color=1
+  - Added shouldLightBulb/shouldLightAllSections to block base class
+  - TE getSectionInfos uses per-block color mapping instead of hardcoded logic
+- [x] **Wave 3** — 17 add-on signals converted
+  - Added getSectionYPositions() for overlapping sections (single add-ons use {0,0})
+  - Renderer refactored to use per-block section positions instead of hardcoded formula
+  - Left/right single add-ons use LED_DOTTED (verified against original blockstate textures)
+  - FYA add-ons: 1 section, flashing yellow on green phase
+  - Double add-ons: 2-section standard vertical stack
+  - RightFlashYellowAddOn corrected to 1 section green-only (per original blockstate)
 - [ ] **Wave 4** — Doghouse signals (needs lateral offset)
 - [ ] **Wave 5** — 8-inch and mixed-size signals (needs 8-inch vertex data)
 - [ ] **Wave 6** — Horizontal signals (needs xOffset, split body/texture rotation)
 - [ ] **Wave 7** — Angled signals (deprecation + auto-migration)
 - [ ] **Wave 8** — HAWK and special signals
+
+### Known Issues to Circle Back To
+
+- **Barlo signal** (`controllableverticalsolidsignalbarlo`): Needs review for correct
+  default section info and any special rendering requirements. Currently converted with
+  standard flat black BALL defaults but may need barlo-specific configuration.
 
 ---
 
