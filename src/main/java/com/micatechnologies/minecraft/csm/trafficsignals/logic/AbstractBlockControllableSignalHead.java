@@ -3,9 +3,12 @@ package com.micatechnologies.minecraft.csm.trafficsignals.logic;
 import com.micatechnologies.minecraft.csm.codeutils.DirectionSixteen;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalHead;
+import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalHeadRenderer;
 import javax.annotation.Nullable;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
+import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
@@ -134,6 +137,19 @@ public abstract class AbstractBlockControllableSignalHead extends AbstractBlockC
   }
 
   public abstract TrafficSignalSectionInfo[] getDefaultTrafficSignalSectionInfo();
+
+  @Override
+  public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
+    // Clean up the renderer's cached display list for this position
+    if (worldIn.isRemote) {
+      TileEntitySpecialRenderer<?> renderer =
+          TileEntityRendererDispatcher.instance.renderers.get(TileEntityTrafficSignalHead.class);
+      if (renderer instanceof TileEntityTrafficSignalHeadRenderer) {
+        ((TileEntityTrafficSignalHeadRenderer) renderer).cleanupDisplayList(pos);
+      }
+    }
+    super.breakBlock(worldIn, pos, state);
+  }
 
   @Override
   public boolean onBlockActivated(World p_180639_1_, BlockPos p_180639_2_, IBlockState p_180639_3_,

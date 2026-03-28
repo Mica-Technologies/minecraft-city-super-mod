@@ -32,8 +32,23 @@ import net.minecraft.client.renderer.BufferBuilder;
 public class TileEntityTrafficSignalHeadRenderer extends
     TileEntitySpecialRenderer<TileEntityTrafficSignalHead> {
 
+  private static final ResourceLocation ATLAS_TEXTURE =
+      new ResourceLocation("csm", "textures/blocks/trafficsignals/lights/atlas.png");
+
   // Per-tile-entity display list cache (keyed by BlockPos to avoid shared state bug)
   private final Map<BlockPos, Integer> displayListCache = new HashMap<>();
+
+  /**
+   * Cleans up the cached display list for a signal head at the given position.
+   * Called from AbstractBlockControllableSignalHead.breakBlock() to prevent
+   * stale entries from accumulating during long play sessions.
+   */
+  public void cleanupDisplayList(BlockPos pos) {
+    Integer displayList = displayListCache.remove(pos);
+    if (displayList != null) {
+      GL11.glDeleteLists(displayList, 1);
+    }
+  }
 
   @Override
   public void render(TileEntityTrafficSignalHead te, double x, double y, double z,
@@ -75,22 +90,18 @@ public class TileEntityTrafficSignalHeadRenderer extends
     // --- Compensation for tilt: shift slightly left/right for visual alignment ---
     // 1 model unit = 1/16 block, so shift by ±2 for tilt, ±4 for angle
     int tiltOffset = 0;
-    if (bodyTilt
-        == com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyTilt.RIGHT_ANGLE) {
+    if (bodyTilt == TrafficSignalBodyTilt.RIGHT_ANGLE) {
       tiltOffset = -4;
-    } else if (bodyTilt
-        == com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyTilt.RIGHT_TILT) {
+    } else if (bodyTilt == TrafficSignalBodyTilt.RIGHT_TILT) {
       tiltOffset = -2;
-    } else if (bodyTilt
-        == com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyTilt.LEFT_TILT) {
+    } else if (bodyTilt == TrafficSignalBodyTilt.LEFT_TILT) {
       tiltOffset = 2;
-    } else if (bodyTilt
-        == com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyTilt.LEFT_ANGLE) {
+    } else if (bodyTilt == TrafficSignalBodyTilt.LEFT_ANGLE) {
       tiltOffset = 4;
     }
 
     // Reverse the offset for SOUTH facing
-    if (facing == net.minecraft.util.EnumFacing.SOUTH) {
+    if (facing == EnumFacing.SOUTH) {
       tiltOffset = -tiltOffset;
     }
 
@@ -113,7 +124,7 @@ public class TileEntityTrafficSignalHeadRenderer extends
     }
     GL11.glCallList(displayList);
 
-    renderBulbs(te, sectionInfos);
+    renderBulbs(sectionInfos);
 
     GL11.glPopMatrix();
 
@@ -124,7 +135,6 @@ public class TileEntityTrafficSignalHeadRenderer extends
     GlStateManager.enableLighting();
   }
 
-  // New: Render all static colored geometry (batched)
   private void renderStaticParts(TileEntityTrafficSignalHead te,
       TrafficSignalSectionInfo[] sectionInfos) {
     Tessellator tessellator = Tessellator.getInstance();
@@ -132,7 +142,7 @@ public class TileEntityTrafficSignalHeadRenderer extends
 
     GlStateManager.disableTexture2D();
 
-    // Batch all quads first
+    // Batch all body, door, and visor quads into a single draw call
     buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
     for (int i = 0; i < sectionInfos.length; i++) {
       TrafficSignalSectionInfo sectionInfo = sectionInfos[i];
@@ -142,7 +152,6 @@ public class TileEntityTrafficSignalHeadRenderer extends
       TrafficSignalVisorType visorType = sectionInfo.getVisorType();
 
       float yOffset = ((sectionInfos.length - 1 - i) - (sectionInfos.length - 1) / 2.0f) * 12.0f;
-      // For 3 sections: i=0 -> 12, i=1 -> 0, i=2 -> -12
 
       RenderHelper.addBoxesToBuffer(TrafficSignalVertexData.SIGNAL_BODY_VERTEX_DATA, buffer,
           bodyColor.getRed(), bodyColor.getGreen(), bodyColor.getBlue(), 1.0f, 0.0f, yOffset, 0.0f);
@@ -188,17 +197,21 @@ public class TileEntityTrafficSignalHeadRenderer extends
     RenderHelper.addBoxesToBuffer(visorData, buffer, red, green, blue, alpha, 0.0f, yOffset, 0.0f);
   }
 
-  private void renderBulbs(TileEntityTrafficSignalHead te, TrafficSignalSectionInfo[] sectionInfos) {
+  /**
+   * Renders all bulb face quads in a single batched draw call. Pre-computes rotated vertex
+   * positions in Java to avoid per-section GL matrix push/pop and separate draw calls.
+   */
+  private void renderBulbs(TrafficSignalSectionInfo[] sectionInfos) {
     // Reset GL color to white so textures are not tinted by leftover static part colors.
     // Must use GL11.glColor4f directly because GlStateManager caches state and the display
     // list replay changes GL color behind GlStateManager's back, making it skip the reset.
     GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 
-    // Always bind the correct texture before rendering
-    ResourceLocation texLoc = new ResourceLocation("csm", "textures/blocks/trafficsignals/lights/atlas.png");
-    Minecraft.getMinecraft().getTextureManager().bindTexture(texLoc);
+    Minecraft.getMinecraft().getTextureManager().bindTexture(ATLAS_TEXTURE);
 
     Tessellator tessellator = Tessellator.getInstance();
+    BufferBuilder buffer = tessellator.getBuffer();
+    buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
 
     for (int i = 0; i < sectionInfos.length; i++) {
       TrafficSignalSectionInfo sectionInfo = sectionInfos[i];
@@ -208,47 +221,52 @@ public class TileEntityTrafficSignalHeadRenderer extends
       boolean isBulbLit = sectionInfo.isBulbLit();
       TextureInfo texInfo = TrafficSignalTextureMap.getTextureInfoForBulb(bulbStyle, bulbType, bulbColor, isBulbLit);
 
-      // Push OpenGL transformation matrix
-      GL11.glPushMatrix();
-
       // Bulb quad parameters: slightly inset from the 12x12 section face to avoid bleed past visors
       float fullSize = 12f;
-      float inset = fullSize * 0.03f; // 3% inset on each side
+      float inset = fullSize * 0.03f;
       float size = fullSize - inset * 2f;
-      float x = 2f + inset;
-      float y = ((sectionInfos.length - 1 - i) - (sectionInfos.length - 1) / 2.0f) * 12.0f + inset;
-      // For 3 sections: i=0 -> 12, i=1 -> 0, i=2 -> -12 (before inset)
-      float z = 10.4f; // Just in front of the door
+      float baseX = 2f + inset;
+      float baseY = ((sectionInfos.length - 1 - i) - (sectionInfos.length - 1) / 2.0f) * 12.0f + inset;
+      float z = 10.4f;
 
-      // Center of the quad for rotation
-      float cx = x + size / 2f;
-      float cy = y + size / 2f;
-
-      // Translate to center, rotate, then translate back
-      GL11.glTranslatef(cx, cy, z);
-      GL11.glRotatef(texInfo.getRotation(), 0.0f, 0.0f, 1.0f); // Rotate around Z-axis
-      GL11.glTranslatef(-cx, -cy, -z);
-
-      BufferBuilder buffer = tessellator.getBuffer();
-      buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
-
-      // Use correct UVs from TextureInfo (with u1/u2 swap for horizontal mirroring)
       float u1 = texInfo.getU1();
       float v1 = texInfo.getV1();
       float u2 = texInfo.getU2();
       float v2 = texInfo.getV2();
 
-      // Vertex order: bottom-left, bottom-right, top-right, top-left (counterclockwise)
-      buffer.pos(x, y, z).tex(u2, v1).endVertex(); // bottom-left
-      buffer.pos(x + size, y, z).tex(u1, v1).endVertex(); // bottom-right
-      buffer.pos(x + size, y + size, z).tex(u1, v2).endVertex(); // top-right
-      buffer.pos(x, y + size, z).tex(u2, v2).endVertex(); // top-left
+      float rotation = texInfo.getRotation();
+      if (rotation == 0f) {
+        // No rotation — emit quad directly (fast path, most common for BALL type)
+        buffer.pos(baseX, baseY, z).tex(u2, v1).endVertex();
+        buffer.pos(baseX + size, baseY, z).tex(u1, v1).endVertex();
+        buffer.pos(baseX + size, baseY + size, z).tex(u1, v2).endVertex();
+        buffer.pos(baseX, baseY + size, z).tex(u2, v2).endVertex();
+      } else {
+        // Pre-compute rotated corners in Java to avoid GL matrix push/pop per section
+        float cx = baseX + size / 2f;
+        float cy = baseY + size / 2f;
+        float rad = (float) Math.toRadians(rotation);
+        float cos = (float) Math.cos(rad);
+        float sin = (float) Math.sin(rad);
+        float halfSize = size / 2f;
 
-      tessellator.draw();
+        // Unrotated corners relative to center: (-h,-h), (+h,-h), (+h,+h), (-h,+h)
+        float x0 = cx + (-halfSize * cos - (-halfSize) * sin);
+        float y0 = cy + (-halfSize * sin + (-halfSize) * cos);
+        float x1 = cx + (halfSize * cos - (-halfSize) * sin);
+        float y1 = cy + (halfSize * sin + (-halfSize) * cos);
+        float x2 = cx + (halfSize * cos - halfSize * sin);
+        float y2 = cy + (halfSize * sin + halfSize * cos);
+        float x3 = cx + (-halfSize * cos - halfSize * sin);
+        float y3 = cy + (-halfSize * sin + halfSize * cos);
 
-      GL11.glPopMatrix();
+        buffer.pos(x0, y0, z).tex(u2, v1).endVertex();
+        buffer.pos(x1, y1, z).tex(u1, v1).endVertex();
+        buffer.pos(x2, y2, z).tex(u1, v2).endVertex();
+        buffer.pos(x3, y3, z).tex(u2, v2).endVertex();
+      }
     }
+
+    tessellator.draw();
   }
-
-
 }
