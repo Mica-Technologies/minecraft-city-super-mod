@@ -118,11 +118,28 @@ All items below are done and working in-game.
   - Added isHorizontal() flag, renderer selects rotated body data
   - Sections arranged side-by-side via X offsets {12, 0, -12} (MUTCD: red=left)
   - Includes 9 standard + 9 angle horizontal variants
-- [ ] **Wave 7** — Angled signals (deprecation + auto-migration)
-  - Also: improve controller fault detection for invalid/removed signal blocks
-    (controller should reliably switch to fault flash with message when setBlockState
-    fails for a linked signal, e.g., block was deleted or replaced)
-- [ ] **Wave 8** — HAWK and special signals
+- [x] **Wave 7** — 18 angled vertical signals converted
+  - Angle and Angle2 variants, standard 3-section vertical with mounting angle
+  - Angle is redundant with TrafficSignalBodyTilt system
+  - Auto-migration and controller fault detection deferred to future pass
+- [x] **Wave 8** — Remaining blocks assessed, no further conversions needed
+  - Train controller: plain textured cube, emits redstone — not a visual signal head
+  - Ramp meters (3): use crosswalk housing models (crosswalklightsingle_*), different
+    form factor than cylindrical signal heads — stay as JSON
+  - HAWK (1): unique 2-over-1 layout — deferred to future pass when needed
+
+### Deferred Items
+
+- **Angled signal auto-migration**: Convert placed angle/angle2 blocks to non-angled
+  equivalents with TrafficSignalBodyTilt applied. Hide angled blocks from creative tab.
+- **Controller fault detection**: Improve reliability of fault flash when setBlockState
+  fails for linked signals (deleted/replaced blocks)
+- **HAWK signal conversion**: Needs custom 2-over-1 section layout in renderer
+- **Crosswalk signal improvements**: Future phase — add countdown timer during ped
+  clearance phase using a tile entity that "learns" the timing from the controller
+  (measures the clearance interval on first cycle, then displays countdown on
+  subsequent cycles, matching real-world countdown module behavior)
+- **Barlo signal**: Review defaults for barlo-specific configuration
 
 ### Known Issues to Circle Back To
 
