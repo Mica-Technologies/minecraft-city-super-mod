@@ -558,8 +558,10 @@ public class TrafficSignalControllerTickerUtilities {
         highestPriorityWaitingCount = allLeftTurnLanesDetectionCount;
       }
 
-      // Check circuit east facing sensors detection count for highest priority
-      int eastFacingDetectionCount = sensorSummary.getNonProtectedTotalEast();
+      // Check circuit east facing sensors detection count for highest priority.
+      // Use standard (through) counts only — left turn counts are handled separately
+      // by the ALL_LEFTS check above to avoid overriding left turn demand.
+      int eastFacingDetectionCount = sensorSummary.getStandardEast();
       if (eastFacingDetectionCount >= highestPriorityWaitingCount) {
         highestPriorityCircuitNumber = i;
         highestPriorityPhaseApplicability = TrafficSignalPhaseApplicability.ALL_EAST;
@@ -567,7 +569,7 @@ public class TrafficSignalControllerTickerUtilities {
       }
 
       // Check circuit west facing sensors detection count for highest priority
-      int westFacingDetectionCount = sensorSummary.getNonProtectedTotalWest();
+      int westFacingDetectionCount = sensorSummary.getStandardWest();
       if (westFacingDetectionCount >= highestPriorityWaitingCount) {
         highestPriorityCircuitNumber = i;
         highestPriorityPhaseApplicability = TrafficSignalPhaseApplicability.ALL_WEST;
@@ -575,7 +577,7 @@ public class TrafficSignalControllerTickerUtilities {
       }
 
       // Check circuit north facing sensors detection count for highest priority
-      int northFacingDetectionCount = sensorSummary.getNonProtectedTotalNorth();
+      int northFacingDetectionCount = sensorSummary.getStandardNorth();
       if (northFacingDetectionCount >= highestPriorityWaitingCount) {
         highestPriorityCircuitNumber = i;
         highestPriorityPhaseApplicability = TrafficSignalPhaseApplicability.ALL_NORTH;
@@ -583,7 +585,7 @@ public class TrafficSignalControllerTickerUtilities {
       }
 
       // Check circuit south facing sensors detection count for highest priority
-      int southFacingDetectionCount = sensorSummary.getNonProtectedTotalSouth();
+      int southFacingDetectionCount = sensorSummary.getStandardSouth();
       if (southFacingDetectionCount >= highestPriorityWaitingCount) {
         highestPriorityCircuitNumber = i;
         highestPriorityPhaseApplicability = TrafficSignalPhaseApplicability.ALL_SOUTH;
