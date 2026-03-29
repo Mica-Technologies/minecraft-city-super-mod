@@ -94,6 +94,12 @@ public class TileEntityTrafficSignalAPS extends TileEntityTrafficSignalTickableR
   private int crosswalkArrowOrientation = 0;
 
   /**
+   * Tracks the last color state for which a sound was started, so we only send start/stop
+   * packets on state changes rather than every tick. -1 means no sound is active.
+   */
+  private int lastSoundColorState = -1;
+
+  /**
    * Constructor for a {@link TileEntityTrafficSignalAPS} with the specified sound schemes.
    *
    * @param soundSchemes the sound schemes for the APS
@@ -330,12 +336,12 @@ public class TileEntityTrafficSignalAPS extends TileEntityTrafficSignalTickableR
    */
   @Override
   public long getTickRate() {
-    return getCrosswalkSound().getLenOfLocateSound();
+    return 1; // Tick every game tick for responsive state change detection
   }
 
   /**
-   * Handles the tick event of the crosswalk button. Uses packet-based MovingSound for
-   * distance-based volume attenuation.
+   * Handles the tick event of the crosswalk button. Sends start/stop packets only on
+   * state changes. Sounds loop on the client with silence baked into the audio files.
    *
    * @since 2.0
    */
@@ -343,37 +349,32 @@ public class TileEntityTrafficSignalAPS extends TileEntityTrafficSignalTickableR
   public void onTick() {
     if (world == null || world.isRemote) return;
 
-    // Get block color value
     int blockColor =
         world.getBlockState(pos).getValue(BlockControllableCrosswalkButtonAudible.COLOR);
 
-    // Handle for each color state
-    if (blockColor == BlockControllableCrosswalkButtonAudible.SIGNAL_OFF) {
-      // Do nothing if no power/turned off
-    } else if (blockColor == BlockControllableCrosswalkButtonAudible.SIGNAL_GREEN) {
-      // Play walk sound if it's time (not still playing)
-      boolean isWalkSoundAlreadyPlaying =
-          (crosswalkSoundLastPlayedTime + getCrosswalkSound().getLenOfWalkSound())
-              > world.getTotalWorldTime();
-      boolean isPressSoundAlreadyPlaying =
-          (crosswalkLastPressTime + getCrosswalkSound().getLenOfPressSound())
-              > world.getTotalWorldTime();
-      if (!isWalkSoundAlreadyPlaying && !isPressSoundAlreadyPlaying
-          && getCrosswalkSound().getWalkSound() != null) {
+    // Only act on state changes
+    if (blockColor == lastSoundColorState) return;
+
+    // Stop any currently playing sound before starting a new one
+    if (lastSoundColorState != -1) {
+      stopSoundViaPacket();
+    }
+
+    lastSoundColorState = blockColor;
+
+    if (blockColor == BlockControllableCrosswalkButtonAudible.SIGNAL_GREEN) {
+      // Start walk sound (loops with built-in silence)
+      if (getCrosswalkSound().getWalkSound() != null) {
         playSoundViaPacket(getCrosswalkSound().getWalkSound().getSoundLocation().toString());
-        crosswalkSoundLastPlayedTime = world.getTotalWorldTime();
       }
-    } else if (blockColor == BlockControllableCrosswalkButtonAudible.SIGNAL_YELLOW) {
-      // Play locate sound
-      if (getCrosswalkSound().getLocateSound() != null) {
-        playSoundViaPacket(getCrosswalkSound().getLocateSound().getSoundLocation().toString());
-      }
-    } else if (blockColor == BlockControllableCrosswalkButtonAudible.SIGNAL_RED) {
-      // Play locate sound
+    } else if (blockColor == BlockControllableCrosswalkButtonAudible.SIGNAL_YELLOW
+        || blockColor == BlockControllableCrosswalkButtonAudible.SIGNAL_RED) {
+      // Start locate tone (loops with built-in silence)
       if (getCrosswalkSound().getLocateSound() != null) {
         playSoundViaPacket(getCrosswalkSound().getLocateSound().getSoundLocation().toString());
       }
     }
+    // SIGNAL_OFF: no sound started, just the stop above
   }
 
   /**
@@ -384,7 +385,6 @@ public class TileEntityTrafficSignalAPS extends TileEntityTrafficSignalTickableR
   public void onPress() {
     if (world == null || world.isRemote) return;
 
-    // Play press sound if it's time (not still playing)
     boolean isPressSoundAlreadyPlaying =
         (crosswalkLastPressTime + getCrosswalkSound().getLenOfPressSound())
             > world.getTotalWorldTime();
