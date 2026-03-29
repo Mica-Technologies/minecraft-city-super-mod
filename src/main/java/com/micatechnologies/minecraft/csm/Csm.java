@@ -159,6 +159,9 @@ public class Csm {
           TileEntityRedstoneTTSInvokePacket.class, Side.CLIENT);
       CsmNetwork.registerNetworkMessage(FireAlarmSoundPacketHandler.class,
           FireAlarmSoundPacket.class, Side.CLIENT);
+      CsmNetwork.registerNetworkMessage(
+          com.micatechnologies.minecraft.csm.trafficsignals.APSSoundPacketHandler.class,
+          com.micatechnologies.minecraft.csm.trafficsignals.APSSoundPacket.class, Side.CLIENT);
       logger.info("Finished registering network message(s)");
       progressBar.step("Network Messages Registration");
 
