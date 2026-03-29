@@ -100,11 +100,10 @@ public class TileEntityTrafficSignalAPS extends TileEntityTrafficSignalTickableR
   private int lastSoundColorState = -1;
 
   /**
-   * When true, the TE is waiting for the next 1-second global boundary (worldTime % 20 == 0)
-   * to start the locate tone. This ensures all APS buttons start their locate tones at the
-   * same world tick, keeping them in sync across devices.
+   * The sound resource currently playing on this channel, used to avoid re-sending
+   * start packets for the same sound.
    */
-  private boolean pendingLocateStart = false;
+  private String currentSoundResource = null;
 
   /**
    * Constructor for a {@link TileEntityTrafficSignalAPS} with the specified sound schemes.
@@ -352,57 +351,42 @@ public class TileEntityTrafficSignalAPS extends TileEntityTrafficSignalTickableR
    *
    * @since 2.0
    */
-  /**
-   * The global tick interval for locate tone sync. All APS buttons align their locate
-   * tone start to multiples of this value (20 ticks = 1 second).
-   */
-  private static final long LOCATE_SYNC_INTERVAL = 20L;
-
   @Override
   public void onTick() {
     if (world == null || world.isRemote) return;
 
-    // Handle pending locate tone start — wait for global 1-second boundary
-    if (pendingLocateStart && world.getTotalWorldTime() % LOCATE_SYNC_INTERVAL == 0) {
-      pendingLocateStart = false;
-      if (getCrosswalkSound().getLocateSound() != null) {
-        playSoundViaPacket(getCrosswalkSound().getLocateSound().getSoundLocation().toString());
-      }
-    }
-
     int blockColor =
         world.getBlockState(pos).getValue(BlockControllableCrosswalkButtonAudible.COLOR);
 
-    // Only act on state changes
-    if (blockColor == lastSoundColorState) return;
-
-    // Stop any currently playing sound before starting a new one
-    if (lastSoundColorState != -1) {
-      stopSoundViaPacket();
-    }
-
-    lastSoundColorState = blockColor;
-    pendingLocateStart = false;
-
+    // Determine what sound should be playing for the current color state
+    String targetSound = null;
     if (blockColor == BlockControllableCrosswalkButtonAudible.SIGNAL_GREEN) {
-      // Start walk sound immediately (loops with built-in silence)
       if (getCrosswalkSound().getWalkSound() != null) {
-        playSoundViaPacket(getCrosswalkSound().getWalkSound().getSoundLocation().toString());
+        targetSound = getCrosswalkSound().getWalkSound().getSoundLocation().toString();
       }
     } else if (blockColor == BlockControllableCrosswalkButtonAudible.SIGNAL_YELLOW
         || blockColor == BlockControllableCrosswalkButtonAudible.SIGNAL_RED) {
-      // Defer locate tone start to next global 1-second boundary for sync
-      if (world.getTotalWorldTime() % LOCATE_SYNC_INTERVAL == 0) {
-        // Already on a boundary — start immediately
-        if (getCrosswalkSound().getLocateSound() != null) {
-          playSoundViaPacket(getCrosswalkSound().getLocateSound().getSoundLocation().toString());
-        }
-      } else {
-        // Wait for next boundary
-        pendingLocateStart = true;
+      if (getCrosswalkSound().getLocateSound() != null) {
+        targetSound = getCrosswalkSound().getLocateSound().getSoundLocation().toString();
       }
     }
-    // SIGNAL_OFF: no sound started, just the stop above
+    // SIGNAL_OFF: targetSound stays null (silence)
+
+    // Only act if the target sound changed
+    if (java.util.Objects.equals(targetSound, currentSoundResource)) return;
+
+    // Stop current sound
+    if (currentSoundResource != null) {
+      stopSoundViaPacket();
+    }
+
+    currentSoundResource = targetSound;
+    lastSoundColorState = blockColor;
+
+    // Start new sound
+    if (targetSound != null) {
+      playSoundViaPacket(targetSound);
+    }
   }
 
   /**
