@@ -20,6 +20,7 @@ public class APSSoundPacket implements IMessage {
   private String channel;
   private String soundResource;
   private float hearingRange;
+  private boolean repeatSound;
   private List<BlockPos> sourcePositions;
 
   public APSSoundPacket() {
@@ -35,6 +36,7 @@ public class APSSoundPacket implements IMessage {
     pkt.channel = channel;
     pkt.soundResource = "";
     pkt.hearingRange = 0;
+    pkt.repeatSound = false;
     pkt.sourcePositions = new ArrayList<>();
     return pkt;
   }
@@ -50,20 +52,22 @@ public class APSSoundPacket implements IMessage {
    * Creates a start packet for a single source position.
    */
   public static APSSoundPacket start(String channel, String soundResource,
-      float hearingRange, BlockPos sourcePosition) {
-    return start(channel, soundResource, hearingRange, Collections.singletonList(sourcePosition));
+      float hearingRange, boolean repeat, BlockPos sourcePosition) {
+    return start(channel, soundResource, hearingRange, repeat,
+        Collections.singletonList(sourcePosition));
   }
 
   /**
    * Creates a start packet with the given channel, sound, range, and source positions.
    */
   public static APSSoundPacket start(String channel, String soundResource,
-      float hearingRange, List<BlockPos> sourcePositions) {
+      float hearingRange, boolean repeat, List<BlockPos> sourcePositions) {
     APSSoundPacket pkt = new APSSoundPacket();
     pkt.start = true;
     pkt.channel = channel;
     pkt.soundResource = soundResource;
     pkt.hearingRange = hearingRange;
+    pkt.repeatSound = repeat;
     pkt.sourcePositions = sourcePositions;
     return pkt;
   }
@@ -80,6 +84,7 @@ public class APSSoundPacket implements IMessage {
     buf.readBytes(bytes);
     soundResource = new String(bytes, StandardCharsets.UTF_8);
     hearingRange = buf.readFloat();
+    repeatSound = buf.readBoolean();
     int count = buf.readInt();
     sourcePositions = new ArrayList<>(count);
     for (int i = 0; i < count; i++) {
@@ -97,6 +102,7 @@ public class APSSoundPacket implements IMessage {
     buf.writeInt(bytes.length);
     buf.writeBytes(bytes);
     buf.writeFloat(hearingRange);
+    buf.writeBoolean(repeatSound);
     buf.writeInt(sourcePositions.size());
     for (BlockPos pos : sourcePositions) {
       buf.writeInt(pos.getX());
@@ -119,6 +125,10 @@ public class APSSoundPacket implements IMessage {
 
   public float getHearingRange() {
     return hearingRange;
+  }
+
+  public boolean isRepeatSound() {
+    return repeatSound;
   }
 
   public List<BlockPos> getSourcePositions() {

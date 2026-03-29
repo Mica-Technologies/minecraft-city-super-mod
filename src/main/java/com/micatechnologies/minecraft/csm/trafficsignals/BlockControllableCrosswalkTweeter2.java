@@ -32,7 +32,7 @@ public class BlockControllableCrosswalkTweeter2
     if (color == 2 && !world.isRemote) {
       String channel = "tweeter_" + pos.getX() + "_" + pos.getY() + "_" + pos.getZ();
       CsmNetwork.sendToAll(APSSoundPacket.start(
-          channel, "csm:crosswalk_cookoo_2", TWEETER_HEARING_RANGE, pos));
+          channel, "csm:crosswalk_cookoo_2", TWEETER_HEARING_RANGE, false, pos));
     }
     world.scheduleUpdate(pos, this, this.tickRate(world));
   }
