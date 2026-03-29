@@ -130,18 +130,16 @@ public class TrafficSignalControllerTickerUtilities {
       }
     }
 
-    // Add the current phase FYA signals to the yellow transition phase
+    // Add the current phase FYA signals to the yellow transition phase.
+    // Per MUTCD, FYA→GREEN is allowed without a yellow clearance interval, so FYA signals
+    // that are going to GREEN, FYA, or OFF in the upcoming phase stay as FYA during the
+    // transition. FYA signals going to RED need a solid yellow clearance first.
     for (BlockPos fyaSignal : currentPhase.getFyaSignals()) {
-      // Check if FYA signal is still in FYA or green state in the upcoming phase (stay in FYA
-      // state)
       if (upcomingPhase.getFyaSignals().contains(fyaSignal) ||
-          upcomingPhase.getOffSignals().contains(fyaSignal)) {
+          upcomingPhase.getOffSignals().contains(fyaSignal) ||
+          upcomingPhase.getGreenSignals().contains(fyaSignal)) {
         yellowTransitionPhase.addFyaSignal(fyaSignal);
-      }
-      // Otherwise, FYA signal is not in FYA or green state in the upcoming phase (transition to
-      // yellow state)
-      else {
-        // Add off signal to yellow transition phase (transition to yellow state)
+      } else {
         yellowTransitionPhase.addYellowSignal(fyaSignal);
       }
     }
@@ -729,7 +727,7 @@ public class TrafficSignalControllerTickerUtilities {
       // Handle all left turn lanes phase applicability
       else if (phaseApplicability == TrafficSignalPhaseApplicability.ALL_LEFTS) {
         if (i == circuitNumber) {
-          upcomingPhase.addOffSignals(circuit.getFlashingLeftSignals());
+          upcomingPhase.addGreenSignals(circuit.getFlashingLeftSignals());
           upcomingPhase.addRedSignals(circuit.getFlashingRightSignals());
           upcomingPhase.addGreenSignals(circuit.getLeftSignals());
           upcomingPhase.addRedSignals(circuit.getRightSignals());
