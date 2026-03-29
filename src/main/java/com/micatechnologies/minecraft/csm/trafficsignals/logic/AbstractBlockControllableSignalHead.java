@@ -217,6 +217,16 @@ public abstract class AbstractBlockControllableSignalHead extends AbstractBlockC
   }
 
   /**
+   * Returns an enforced bulb style for this signal head, or null if the user may freely
+   * choose any style. Override in subclasses that only work correctly with a specific
+   * bulb style (e.g., bi-modal/hybrid arrows that require LED_DOTTED for a proper
+   * color-independent off-state texture).
+   */
+  public TrafficSignalBulbStyle getEnforcedBulbStyle() {
+    return null;
+  }
+
+  /**
    * Ensures a tile entity exists for this block. Handles migration of blocks that existed
    * in the world before being converted to custom rendering (they were saved without a TE).
    * Called from neighborChanged and onBlockActivated so the TE is created automatically

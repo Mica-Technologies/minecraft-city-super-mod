@@ -201,6 +201,17 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
       }
     }
 
+    // Enforce bulb style if the block requires a specific style (e.g., bi-modal arrows)
+    if (useBlockMapping) {
+      TrafficSignalBulbStyle enforced =
+          ((AbstractBlockControllableSignalHead) block).getEnforcedBulbStyle();
+      if (enforced != null) {
+        for (TrafficSignalSectionInfo sectionInfo : sectionInfos) {
+          sectionInfo.setBulbStyle(enforced);
+        }
+      }
+    }
+
     // Loop again, and if the bulb is lit and set to flashing, handle the flashing logic
     long blinkInterval = 500; // ms
     boolean firstHalfOfSecond = (System.currentTimeMillis() % (blinkInterval * 2)) < blinkInterval;
@@ -340,6 +351,17 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
   public TrafficSignalBulbStyle getNextBulbStyle() {
     if (sectionInfos.length == 0) {
       return TrafficSignalBulbStyle.INCANDESCENT;
+    }
+    // If the block enforces a specific style, don't cycle — return the enforced style
+    if (world != null) {
+      Block block = world.getBlockState(pos).getBlock();
+      if (block instanceof AbstractBlockControllableSignalHead) {
+        TrafficSignalBulbStyle enforced =
+            ((AbstractBlockControllableSignalHead) block).getEnforcedBulbStyle();
+        if (enforced != null) {
+          return enforced;
+        }
+      }
     }
     TrafficSignalBulbStyle next = sectionInfos[0].getBulbStyle().getNextBulbStyle();
     for (TrafficSignalSectionInfo sectionInfo : sectionInfos) {
