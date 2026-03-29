@@ -49,10 +49,32 @@ Flat black → #181818, yellow → Federal Yellow #13507, glossy black added.
 BlockControllableDoghouseSecondaryLeftSignal: LEFT→RIGHT (renders right arrows).
 FYA variants intentionally stay THROUGH (piggyback on through phase).
 
-### Bug 12: Crosswalk Countdown Timing — UNDER REVIEW
-Rounding to 0.5s and 30-tick tolerance added. Periodic re-learning still observed.
-Needs further investigation.
+### Bug 12: Crosswalk Countdown Timing — COMPLETE
+- Rounding to 0.5s and 30-tick tolerance
+- Fixed ped recycle (CLEARANCE→WALK) causing resets via catch-all handler
+- Rounded verifyTicks before comparison to prevent rounding mismatch
+- Removed learned value reset from generic catch-all
+- Two-digit display shifted slightly left for better visual balance
 
-## Remaining Issues
-- Crosswalk countdown periodic re-learning (investigating)
-- Backplate accessories tilt/angle (deferred)
+## Upcoming Work
+
+### Enhancement 13: APS/Tweeter Audio — MovingSound + Volume Normalization
+**Status:** Planned
+**Current state:** APS buttons and tweeters use `world.playSound()` with fixed volume. No
+distance-based attenuation. Sounds are inconsistent in volume across different schemes.
+
+**Plan:** Adopt the fire alarm MovingSound architecture:
+1. Create `APSMovingSound` class (like `FireAlarmVoiceEvacSound`) with distance-based volume
+2. Create `APSSoundPacket` / `APSSoundPacketHandler` (packet-based client-side sound management)
+3. Normalize volume levels across all crosswalk button sounds and tweeter sounds
+4. Convert `TileEntityTrafficSignalAPS` and tweeter blocks to use new packet system
+5. No peak syncing needed (unlike fire alarms) — just volume normalization + distance attenuation
+
+**Key files:**
+- Current APS: `TileEntityTrafficSignalAPS.java`, `TrafficSignalAPSSoundScheme.java`
+- Current tweeters: `BlockControllableCrosswalkTweeter1/2.java`
+- Fire alarm reference: `FireAlarmVoiceEvacSound.java`, `FireAlarmSoundPacket.java`,
+  `FireAlarmSoundPacketHandler.java`
+
+## Deferred Issues
+- Backplate accessories tilt/angle (needs design discussion)
