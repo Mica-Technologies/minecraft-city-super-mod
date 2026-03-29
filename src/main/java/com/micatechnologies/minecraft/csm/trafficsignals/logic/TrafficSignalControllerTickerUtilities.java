@@ -123,9 +123,9 @@ public class TrafficSignalControllerTickerUtilities {
         yellowTransitionPhase.addGreenSignal(greenSignal);
       }
       // Otherwise, green signal is not in green state in the upcoming phase (transition to
-      // yellow state)
+      // yellow state). This applies to all transitions including GREEN→FYA — the yellow
+      // clearance interval must always occur per MUTCD requirements.
       else {
-        // Add off signal to yellow transition phase (transition to yellow state)
         yellowTransitionPhase.addYellowSignal(greenSignal);
       }
     }
@@ -729,7 +729,7 @@ public class TrafficSignalControllerTickerUtilities {
       // Handle all left turn lanes phase applicability
       else if (phaseApplicability == TrafficSignalPhaseApplicability.ALL_LEFTS) {
         if (i == circuitNumber) {
-          upcomingPhase.addGreenSignals(circuit.getFlashingLeftSignals());
+          upcomingPhase.addOffSignals(circuit.getFlashingLeftSignals());
           upcomingPhase.addRedSignals(circuit.getFlashingRightSignals());
           upcomingPhase.addGreenSignals(circuit.getLeftSignals());
           upcomingPhase.addRedSignals(circuit.getRightSignals());
