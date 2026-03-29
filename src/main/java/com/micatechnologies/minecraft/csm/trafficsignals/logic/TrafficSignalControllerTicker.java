@@ -718,13 +718,13 @@ public class TrafficSignalControllerTicker {
             phaseRecall = true;
           } else if (originalPhase.getCircuit() > 0 &&
               upcomingPhasePriorityIndicator.getFirst() == originalPhase.getCircuit()) {
-            // Demand is for the same circuit — only recall if BOTH the current phase AND
-            // the demand are through-type. A left turn phase should not be held just because
-            // through demand exists, and vice versa.
-            phaseRecall = TrafficSignalControllerTickerUtilities.isThroughTypeApplicability(
-                upcomingPhasePriorityIndicator.getSecond()) &&
-                TrafficSignalControllerTickerUtilities.isThroughTypeApplicability(
-                    originalPhase.getApplicability());
+            // Demand is for the same circuit — recall only if the demand and current phase
+            // are in the same movement category (e.g., both through-type, or both left turn).
+            // This allows extended recall for any phase type while ensuring mismatched demand
+            // (e.g., through demand during a left turn phase) triggers a phase change.
+            phaseRecall = TrafficSignalControllerTickerUtilities.isSamePhaseCategory(
+                upcomingPhasePriorityIndicator.getSecond(),
+                originalPhase.getApplicability());
           }
         }
 
