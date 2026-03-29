@@ -78,27 +78,76 @@ Mirrors the fire alarm MovingSound system but for APS/tweeter use:
 | `BlockControllableCrosswalkTweeter1` | `csm:crosswalk_cookoo_1` | 40 ticks |
 | `BlockControllableCrosswalkTweeter2` | `csm:crosswalk_cookoo_2` | 40 ticks |
 
-## Volume Normalization — TODO
+## Sound File Profiling
 
-All APS sound schemes currently use `volume=1, pitch=1` (hardcoded in `TrafficSignalAPSSoundScheme`
-constructors). The old code applied multipliers at play time (`*1.5f` for walk and press sounds).
+All sound files profiled with ffmpeg volumedetect filter (2026-03-29).
 
-With the new MovingSound system, volume is controlled by distance attenuation (MIN_VOLUME=0.05 to
-MAX_VOLUME=1.0). The sound files themselves need to be normalized to consistent RMS levels so that
-different schemes sound equally loud at the same distance.
+### Locate Tones (beep once per second)
 
-**Volume normalization targets (TBD):**
-- Locate/tone sounds: baseline reference level
-- Walk sounds (voice): should match locate tone perceived loudness
-- Walk sounds (percussive/rapid tick): may need slight boost since they're rhythmic, not voice
-- Tweeter cookoo sounds: should match APS locate tone level
-- Press/wait sounds: should match locate tone level
+| File | Duration (s) | Ticks (~) | Mean Vol (dB) | Max Vol (dB) | Gap (s) |
+|---|---|---|---|---|---|
+| campbell_tone1.ogg | 0.10 | 2 | -7.4 | -4.0 | 0.90 |
+| polara_tone1.ogg | 0.10 | 2 | -10.8 | -2.5 | 0.90 |
 
-**Next steps:**
-1. Test in-game to verify MovingSound packet system works correctly
-2. Evaluate perceived volume of each sound at various distances
-3. Determine if sound file normalization is needed or if per-scheme volume multipliers suffice
-4. Apply normalization (either to .ogg files or via volume parameter in sound scheme)
+Both locate tones are ~0.1s long, played every 20 ticks (1s) = 0.9s silence gap.
+**Volume gap: 3.4 dB** between Campbell and Polara tones. Campbell is louder.
+
+### Wait/Press Sounds
+
+| File | Duration (s) | Ticks (~) | Mean Vol (dB) | Max Vol (dB) |
+|---|---|---|---|---|
+| campbell_wait.ogg | 0.38 | 8 | -15.2 | -1.6 |
+| polara_wait.ogg | 0.44 | 9 | -15.7 | -0.3 |
+| campbell_phil_wait.ogg | 0.50 | 10 | -13.9 | 0.0 |
+| campbell_wait_look_both_ways.ogg | 1.75 | 35 | -16.5 | 0.0 |
+| campbell_phil_wait_look_both_ways.ogg | 1.97 | 39 | -11.3 | 0.0 |
+| polara_lang2_wait.ogg | 0.69 | 14 | -13.8 | 0.0 |
+
+### Walk Sounds
+
+| File | Duration (s) | Ticks (~) | Code Len (ticks) | Mean Vol (dB) | Max Vol (dB) |
+|---|---|---|---|---|---|
+| campbell_walk_sign_on.ogg | 2.11 | 42 | 50 | -16.0 | -0.2 |
+| campbell_perc_ew.ogg | 1.00 | 20 | 40 | -14.0 | 0.0 |
+| campbell_perc_ns.ogg | 1.00 | 20 | 40 | -13.2 | -0.1 |
+| campbell_walk_exclusive.ogg | 2.85 | 57 | 70 | -16.9 | -0.2 |
+| campbell_warning_lights_are_flashing.ogg | 1.99 | 40 | 60 | -16.5 | -0.1 |
+| campbell_yellow_lights_are_flashing.ogg | 1.99 | 40 | 60 | -17.5 | -0.1 |
+| campbell_phil_walk_on.ogg | 1.87 | 37 | 50 | -13.7 | 0.0 |
+| campbell_phil_walk_exclusive.ogg | 2.87 | 57 | 70 | -13.4 | 0.0 |
+| campbell_phil_warning_lights_activated.ogg | 5.81 | 116 | 130 | -14.2 | 0.0 |
+| campbell_phil_crossing_lights_activated.ogg | 5.46 | 109 | 130 | -14.9 | 0.0 |
+| polara_rapid_tick1.ogg | 1.59 | 32 | 50 | -15.7 | 0.0 |
+| polara_walk.ogg | 1.73 | 35 | 45 | -14.8 | -0.1 |
+| polara_walk_all_crossings.ogg | 2.32 | 46 | 55 | -13.2 | 0.0 |
+| polara_lang2_walk.ogg | 2.30 | 46 | 60 | -15.3 | -1.5 |
+| polara_lang2_walk_all_crossings.ogg | 3.25 | 65 | 80 | -12.4 | 0.0 |
+
+### Tweeter Sounds
+
+| File | Duration (s) | Ticks (~) | Code Tick Rate | Mean Vol (dB) | Max Vol (dB) |
+|---|---|---|---|---|---|
+| crosswalk_cookoo_1.ogg | 1.50 | 30 | 40 | -17.9 | 0.0 |
+| crosswalk_cookoo_2.ogg | 1.50 | 30 | 40 | -18.3 | 0.0 |
+
+### Volume Analysis Summary
+
+Mean volume range across all files: **-7.4 dB to -18.3 dB** (10.9 dB spread).
+Target normalization: ~-14 dB mean (midpoint). Key outliers:
+- **campbell_tone1.ogg**: -7.4 dB (too loud, 6.6 dB above target)
+- **crosswalk_cookoo_1/2.ogg**: -17.9/-18.3 dB (too quiet, ~4 dB below target)
+- **campbell_phil_wait_look_both_ways.ogg**: -11.3 dB (3 dB above target)
+
+## Playback Architecture
+
+**Changed from fire alarm pattern:** APS uses `repeat=false` (single-shot sounds) instead of
+`repeat=true` (continuous looping). The server sends a new packet at each tick interval, and the
+client plays the sound once with distance-based volume. The tick interval creates natural gaps
+between sounds (e.g., 0.1s tone + 0.9s silence = 1s period for locate tones).
+
+**Locate tone sync:** All schemes use a 20-tick (1s) tick rate for locate sounds. Since the server
+tick drives when packets are sent, all APS buttons on the same server naturally sync their locate
+tones to the same 1-second server tick cadence.
 
 ## Configuration
 
@@ -110,6 +159,6 @@ different schemes sound equally loud at the same distance.
 | Max volume | 1.0 | Full volume at source position |
 | Attenuation | Linear | `MIN + (MAX - MIN) * (1 - dist/range)` |
 | Sound category | NEUTRAL | Appropriate for environmental/ambient crosswalk sounds |
-| Repeat | true | Sounds loop until stopped |
+| Repeat | false | Single-shot, server re-sends at tick interval for natural gaps |
 | Channel format (APS) | `aps_X_Y_Z` | Unique per button position |
 | Channel format (Tweeter) | `tweeter_X_Y_Z` | Unique per tweeter position |
