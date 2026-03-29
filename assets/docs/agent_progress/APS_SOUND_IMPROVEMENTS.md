@@ -1,7 +1,7 @@
 # APS & Tweeter Sound Improvements
 
 **Created:** 2026-03-29
-**Status:** In Progress — Core architecture implemented, needs testing and volume normalization
+**Status:** Complete — MovingSound architecture, volume normalization, locate sync, press channel separation all done
 
 ## Resume Prompt
 
