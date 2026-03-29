@@ -404,11 +404,14 @@ public class TrafficSignalControllerTickerUtilities {
             if (greenRightTurn) {
               defaultPhase.addOffSignals(circuit.getFlashingRightSignals());
               defaultPhase.addGreenSignals(circuit.getRightSignals());
+              // Solid green right turn conflicts with transit/bike
+              defaultPhase.addRedSignals(circuit.getProtectedSignals());
             } else {
               defaultPhase.addFyaSignals(circuit.getFlashingRightSignals());
               defaultPhase.addRedSignals(circuit.getRightSignals());
+              // FYA right turn (permissive) — no conflict with transit/bike
+              defaultPhase.addGreenSignals(circuit.getProtectedSignals());
             }
-            defaultPhase.addGreenSignals(circuit.getProtectedSignals());
           } else {
             defaultPhase.addOffSignals(circuit.getFlashingRightSignals());
             defaultPhase.addGreenSignals(circuit.getRightSignals());
@@ -746,7 +749,6 @@ public class TrafficSignalControllerTickerUtilities {
       else if (phaseApplicability == TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS) {
         if (i == circuitNumber) {
           upcomingPhase.addGreenSignals(circuit.getThroughSignals());
-          upcomingPhase.addRedSignals(circuit.getProtectedSignals());
           upcomingPhase.addOffSignals(circuit.getPedestrianBeaconSignals());
           upcomingPhase.addDontWalkSignals(circuit.getPedestrianSignals());
           upcomingPhase.addDontWalkSignals(circuit.getPedestrianAccessorySignals());
@@ -754,15 +756,21 @@ public class TrafficSignalControllerTickerUtilities {
             if (greenRightTurn) {
               upcomingPhase.addOffSignals(circuit.getFlashingRightSignals());
               upcomingPhase.addGreenSignals(circuit.getRightSignals());
+              // Solid green right turn conflicts with transit/bike
+              upcomingPhase.addRedSignals(circuit.getProtectedSignals());
             } else {
               upcomingPhase.addFyaSignals(circuit.getFlashingRightSignals());
               upcomingPhase.addRedSignals(circuit.getRightSignals());
+              // FYA right turn (permissive) — no conflict with transit/bike
+              upcomingPhase.addGreenSignals(circuit.getProtectedSignals());
             }
             upcomingPhase.addFyaSignals(circuit.getFlashingLeftSignals());
             upcomingPhase.addRedSignals(circuit.getLeftSignals());
           } else {
             upcomingPhase.addOffSignals(circuit.getFlashingRightSignals());
             upcomingPhase.addGreenSignals(circuit.getRightSignals());
+            // Solid green right turn — protected must be red
+            upcomingPhase.addRedSignals(circuit.getProtectedSignals());
             if (circuit.areSignalsFacingSameDirection(world)) {
               upcomingPhase.addOffSignals(circuit.getFlashingLeftSignals());
               upcomingPhase.addGreenSignals(circuit.getLeftSignals());
@@ -782,12 +790,15 @@ public class TrafficSignalControllerTickerUtilities {
           if (greenRightTurn) {
             upcomingPhase.addOffSignals(circuit.getFlashingRightSignals());
             upcomingPhase.addGreenSignals(circuit.getRightSignals());
+            // Solid green right turn conflicts with transit/bike
+            upcomingPhase.addRedSignals(circuit.getProtectedSignals());
           } else {
             upcomingPhase.addFyaSignals(circuit.getFlashingRightSignals());
             upcomingPhase.addRedSignals(circuit.getRightSignals());
+            // FYA right turn (permissive) — no conflict with transit/bike
+            upcomingPhase.addGreenSignals(circuit.getProtectedSignals());
           }
           upcomingPhase.addGreenSignals(circuit.getThroughSignals());
-          upcomingPhase.addRedSignals(circuit.getProtectedSignals());
           upcomingPhase.addOffSignals(circuit.getPedestrianBeaconSignals());
           upcomingPhase.addDontWalkSignals(circuit.getPedestrianSignals());
           upcomingPhase.addDontWalkSignals(circuit.getPedestrianAccessorySignals());
@@ -968,6 +979,29 @@ public class TrafficSignalControllerTickerUtilities {
 
     // Return the filtered signal lists
     return new Tuple<>(filteredSignalLists.get(true), filteredSignalLists.get(false));
+  }
+
+  /**
+   * Checks whether all circuits in the controller have at least one sensor configured.
+   * When true, the controller can rely on sensor data for demand-based decisions like
+   * vehicle phase recall (holding green when no conflicting demand exists).
+   *
+   * @param circuits The configured/connected circuits of the traffic signal controller.
+   *
+   * @return {@code true} if every circuit has at least one sensor, {@code false} otherwise.
+   *
+   * @since 1.0
+   */
+  public static boolean allCircuitsHaveSensors(TrafficSignalControllerCircuits circuits) {
+    if (circuits.getCircuitCount() == 0) {
+      return false;
+    }
+    for (int i = 0; i < circuits.getCircuitCount(); i++) {
+      if (circuits.getCircuit(i).getSensors().isEmpty()) {
+        return false;
+      }
+    }
+    return true;
   }
 
 }
