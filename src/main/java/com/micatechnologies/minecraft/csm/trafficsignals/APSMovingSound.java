@@ -39,7 +39,7 @@ public class APSMovingSound extends MovingSound {
     super(SoundEvent.REGISTRY.getObject(soundResource), SoundCategory.NEUTRAL);
     this.sourcePositions = sourcePositions;
     this.hearingRange = hearingRange;
-    this.repeat = true;
+    this.repeat = false;
     this.repeatDelay = 0;
     this.attenuationType = AttenuationType.NONE;
 
