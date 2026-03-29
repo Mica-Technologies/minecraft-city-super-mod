@@ -1,9 +1,9 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
+import com.micatechnologies.minecraft.csm.CsmNetwork;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalAPSSoundScheme;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.SoundCategory;
 
 /**
  * Tile entity class for an APS (accessible pedestrian signal) button. This class assists in
@@ -261,19 +261,49 @@ public class TileEntityTrafficSignalAPS extends TileEntityTrafficSignalTickableR
   }
 
   /**
-   * Returns a boolean indicating if the tile entity should also tick on the client side. By
-   * default, the tile entity will always tick on the server side, and in the event of
-   * singleplayer/local mode, the host client is considered the server. This implementation always
-   * returns true to ensure that sound is played on the client side.
+   * The hearing range for APS sounds in blocks. Determines the maximum distance at which
+   * the sound is audible, with volume attenuating linearly as the player moves away.
+   */
+  private static final float APS_HEARING_RANGE = 10.0f;
+
+  /**
+   * Returns a boolean indicating if the tile entity should also tick on the client side.
+   * Sound is now handled via network packets and client-side MovingSound, so client ticking
+   * is no longer needed.
    *
-   * @return a boolean indicating if the tile entity should also tick on the client side. This
-   *     implementation always returns true to ensure that sound is played on the client side.
+   * @return false — sound is managed server-side via packets.
    *
-   * @since 1.0
+   * @since 2.0
    */
   @Override
   public boolean doClientTick() {
-    return true;
+    return false;
+  }
+
+  /**
+   * Gets a unique channel name for this APS button based on its position.
+   */
+  private String getChannel() {
+    return "aps_" + pos.getX() + "_" + pos.getY() + "_" + pos.getZ();
+  }
+
+  /**
+   * Sends an APS sound packet to all clients to start a sound with distance-based volume.
+   */
+  private void playSoundViaPacket(String soundResource) {
+    if (world != null && !world.isRemote && soundResource != null) {
+      CsmNetwork.sendToAll(APSSoundPacket.start(
+          getChannel(), soundResource, APS_HEARING_RANGE, pos));
+    }
+  }
+
+  /**
+   * Sends an APS sound packet to stop the current sound on this channel.
+   */
+  private void stopSoundViaPacket() {
+    if (world != null && !world.isRemote) {
+      CsmNetwork.sendToAll(APSSoundPacket.stop(getChannel()));
+    }
   }
 
   /**
@@ -304,12 +334,15 @@ public class TileEntityTrafficSignalAPS extends TileEntityTrafficSignalTickableR
   }
 
   /**
-   * Handles the tick event of the crosswalk button.
+   * Handles the tick event of the crosswalk button. Uses packet-based MovingSound for
+   * distance-based volume attenuation.
    *
-   * @since 1.0
+   * @since 2.0
    */
   @Override
   public void onTick() {
+    if (world == null || world.isRemote) return;
+
     // Get block color value
     int blockColor =
         world.getBlockState(pos).getValue(BlockControllableCrosswalkButtonAudible.COLOR);
@@ -325,47 +358,38 @@ public class TileEntityTrafficSignalAPS extends TileEntityTrafficSignalTickableR
       boolean isPressSoundAlreadyPlaying =
           (crosswalkLastPressTime + getCrosswalkSound().getLenOfPressSound())
               > world.getTotalWorldTime();
-      if (!isWalkSoundAlreadyPlaying && !isPressSoundAlreadyPlaying && getCrosswalkSound().getWalkSound() != null) {
-        world.playSound(null, pos.getX(), pos.getY(), pos.getZ(),
-            getCrosswalkSound().getWalkSound().getSoundEvent(), SoundCategory.NEUTRAL,
-            getCrosswalkSound().getVolume()*1.5f, getCrosswalkSound().getPitch());
+      if (!isWalkSoundAlreadyPlaying && !isPressSoundAlreadyPlaying
+          && getCrosswalkSound().getWalkSound() != null) {
+        playSoundViaPacket(getCrosswalkSound().getWalkSound().getSoundLocation().toString());
         crosswalkSoundLastPlayedTime = world.getTotalWorldTime();
       }
     } else if (blockColor == BlockControllableCrosswalkButtonAudible.SIGNAL_YELLOW) {
-      // Play locate sound (future: countdown when controller updated)
+      // Play locate sound
       if (getCrosswalkSound().getLocateSound() != null) {
-        world.playSound(null, pos.getX(), pos.getY(), pos.getZ(),
-            getCrosswalkSound().getLocateSound().getSoundEvent(), SoundCategory.NEUTRAL,
-            getCrosswalkSound().getVolume(), getCrosswalkSound().getPitch());
+        playSoundViaPacket(getCrosswalkSound().getLocateSound().getSoundLocation().toString());
       }
     } else if (blockColor == BlockControllableCrosswalkButtonAudible.SIGNAL_RED) {
       // Play locate sound
       if (getCrosswalkSound().getLocateSound() != null) {
-        world.playSound(null, pos.getX(), pos.getY(), pos.getZ(),
-            getCrosswalkSound().getLocateSound().getSoundEvent(), SoundCategory.NEUTRAL,
-            getCrosswalkSound().getVolume(), getCrosswalkSound().getPitch());
+        playSoundViaPacket(getCrosswalkSound().getLocateSound().getSoundLocation().toString());
       }
-    } else {
-      System.err.println(
-          "Invalid block color value: " + blockColor + " for crosswalk button tile entity at [X: "
-              + pos.getX() + ", Y: " + pos.getY() + pos.getY() + ", Z: " + pos.getZ() + "]");
     }
   }
 
   /**
-   * Handles the press event of the crosswalk button.
+   * Handles the press event of the crosswalk button. Uses packet-based MovingSound.
    *
-   * @since 1.0
+   * @since 2.0
    */
   public void onPress() {
+    if (world == null || world.isRemote) return;
+
     // Play press sound if it's time (not still playing)
     boolean isPressSoundAlreadyPlaying =
         (crosswalkLastPressTime + getCrosswalkSound().getLenOfPressSound())
             > world.getTotalWorldTime();
     if (!isPressSoundAlreadyPlaying && getCrosswalkSound().getPressSound() != null) {
-      world.playSound(null, pos.getX(), pos.getY(), pos.getZ(),
-          getCrosswalkSound().getPressSound().getSoundEvent(), SoundCategory.NEUTRAL,
-          getCrosswalkSound().getVolume()*1.5f, getCrosswalkSound().getPitch());
+      playSoundViaPacket(getCrosswalkSound().getPressSound().getSoundLocation().toString());
       crosswalkLastPressTime = world.getTotalWorldTime();
     }
   }

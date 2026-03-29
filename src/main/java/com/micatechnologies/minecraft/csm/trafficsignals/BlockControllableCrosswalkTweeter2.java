@@ -1,11 +1,10 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
+import com.micatechnologies.minecraft.csm.CsmNetwork;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableCrosswalkAccessory;
 import java.util.Random;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
@@ -25,21 +24,17 @@ public class BlockControllableCrosswalkTweeter2
     return 0;
   }
 
+  private static final float TWEETER_HEARING_RANGE = 10.0f;
+
   @Override
-  public void updateTick(World p_updateTick_1_,
-      BlockPos p_updateTick_2_,
-      IBlockState p_updateTick_3_,
-      Random p_updateTick_4_) {
-    int color = p_updateTick_3_.getValue(COLOR);
-    if (color == 2) {
-      // Play cookoo sound
-      p_updateTick_1_.playSound(null, p_updateTick_2_.getX(), p_updateTick_2_.getY(),
-          p_updateTick_2_.getZ(),
-          net.minecraft.util.SoundEvent.REGISTRY.getObject(
-              new ResourceLocation("csm:crosswalk_cookoo_2")),
-          SoundCategory.NEUTRAL, (float) 1, (float) 1);
+  public void updateTick(World world, BlockPos pos, IBlockState state, Random rand) {
+    int color = state.getValue(COLOR);
+    if (color == 2 && !world.isRemote) {
+      String channel = "tweeter_" + pos.getX() + "_" + pos.getY() + "_" + pos.getZ();
+      CsmNetwork.sendToAll(APSSoundPacket.start(
+          channel, "csm:crosswalk_cookoo_2", TWEETER_HEARING_RANGE, pos));
     }
-    p_updateTick_1_.scheduleUpdate(p_updateTick_2_, this, this.tickRate(p_updateTick_1_));
+    world.scheduleUpdate(pos, this, this.tickRate(world));
   }
 
   @Override
