@@ -304,20 +304,29 @@ public class TileEntityTrafficSignalAPS extends TileEntityTrafficSignalTickableR
   }
 
   /**
+   * Gets a separate channel for press/wait sounds so they don't conflict with the
+   * locate tone that fires every 20 ticks on the main channel.
+   */
+  private String getPressChannel() {
+    return "aps_press_" + pos.getX() + "_" + pos.getY() + "_" + pos.getZ();
+  }
+
+  /**
    * Sends an APS sound packet to all clients to start a sound with distance-based volume.
    *
+   * @param channel       the channel to play on
    * @param soundResource the sound resource to play
    * @param repeat        true for looping sounds (walk), false for one-shot (locate tone)
    */
-  private void playSoundViaPacket(String soundResource, boolean repeat) {
+  private void playSoundOnChannel(String channel, String soundResource, boolean repeat) {
     if (world != null && !world.isRemote && soundResource != null) {
       CsmNetwork.sendToAll(APSSoundPacket.start(
-          getChannel(), soundResource, APS_HEARING_RANGE, repeat, pos));
+          channel, soundResource, APS_HEARING_RANGE, repeat, pos));
     }
   }
 
   /**
-   * Sends an APS sound packet to stop the current sound on this channel.
+   * Sends an APS sound packet to stop the current sound on the main channel.
    */
   private void stopSoundViaPacket() {
     if (world != null && !world.isRemote) {
@@ -385,7 +394,7 @@ public class TileEntityTrafficSignalAPS extends TileEntityTrafficSignalTickableR
       if (blockColor == BlockControllableCrosswalkButtonAudible.SIGNAL_GREEN) {
         if (getCrosswalkSound().getWalkSound() != null) {
           currentWalkSound = getCrosswalkSound().getWalkSound().getSoundLocation().toString();
-          playSoundViaPacket(currentWalkSound, true);
+          playSoundOnChannel(getChannel(), currentWalkSound, true);
         }
       }
     }
@@ -398,7 +407,7 @@ public class TileEntityTrafficSignalAPS extends TileEntityTrafficSignalTickableR
         && world.getTotalWorldTime() % LOCATE_TONE_INTERVAL == 0) {
       locateToneActive = true;
       if (getCrosswalkSound().getLocateSound() != null) {
-        playSoundViaPacket(
+        playSoundOnChannel(getChannel(),
             getCrosswalkSound().getLocateSound().getSoundLocation().toString(), false);
       }
     }
@@ -416,7 +425,7 @@ public class TileEntityTrafficSignalAPS extends TileEntityTrafficSignalTickableR
         (crosswalkLastPressTime + getCrosswalkSound().getLenOfPressSound())
             > world.getTotalWorldTime();
     if (!isPressSoundAlreadyPlaying && getCrosswalkSound().getPressSound() != null) {
-      playSoundViaPacket(
+      playSoundOnChannel(getPressChannel(),
           getCrosswalkSound().getPressSound().getSoundLocation().toString(), false);
       crosswalkLastPressTime = world.getTotalWorldTime();
     }
