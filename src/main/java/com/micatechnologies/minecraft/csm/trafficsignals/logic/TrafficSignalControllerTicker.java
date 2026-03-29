@@ -588,8 +588,19 @@ public class TrafficSignalControllerTicker {
           // No demand anywhere — recycle peds to walk, stay green
           recycleToGreen = true;
         } else if (activeCircuit > 0 && currentDemand.getFirst() == activeCircuit) {
-          // Demand is back on the active circuit — recycle peds to walk, stay green
-          recycleToGreen = true;
+          // Demand is for the same circuit — only recycle if it's through-type demand.
+          // Left turn or pedestrian demand on the same circuit requires its own phase,
+          // so we must proceed to yellow transition for those.
+          TrafficSignalPhaseApplicability demandType = currentDemand.getSecond();
+          boolean isThroughDemand =
+              demandType == TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS ||
+              demandType == TrafficSignalPhaseApplicability.ALL_THROUGHS_PROTECTED_RIGHTS ||
+              demandType == TrafficSignalPhaseApplicability.ALL_THROUGHS_PROTECTEDS ||
+              demandType == TrafficSignalPhaseApplicability.ALL_EAST ||
+              demandType == TrafficSignalPhaseApplicability.ALL_WEST ||
+              demandType == TrafficSignalPhaseApplicability.ALL_NORTH ||
+              demandType == TrafficSignalPhaseApplicability.ALL_SOUTH;
+          recycleToGreen = isThroughDemand;
         }
       }
 
@@ -642,10 +653,23 @@ public class TrafficSignalControllerTicker {
               .getDefaultPhaseForCircuitNumber(circuits, overlaps,
                   activeCircuit > 0 ? activeCircuit : 1, overlapPedestrianSignals, world);
         } else if (activeCircuit > 0 && currentDemand.getFirst() == activeCircuit) {
-          // Demand is back on the original circuit — serve it instead of the stored target
-          upcomingGreenPhase = TrafficSignalControllerTickerUtilities
-              .getDefaultPhaseForCircuitNumber(circuits, overlaps, activeCircuit,
-                  overlapPedestrianSignals, world);
+          // Demand is for the original circuit — only redirect to default if it's
+          // through-type demand. Left turn demand on the same circuit should proceed
+          // to the stored upcoming phase (which is the left turn phase).
+          TrafficSignalPhaseApplicability demandType = currentDemand.getSecond();
+          boolean isThroughDemand =
+              demandType == TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS ||
+              demandType == TrafficSignalPhaseApplicability.ALL_THROUGHS_PROTECTED_RIGHTS ||
+              demandType == TrafficSignalPhaseApplicability.ALL_THROUGHS_PROTECTEDS ||
+              demandType == TrafficSignalPhaseApplicability.ALL_EAST ||
+              demandType == TrafficSignalPhaseApplicability.ALL_WEST ||
+              demandType == TrafficSignalPhaseApplicability.ALL_NORTH ||
+              demandType == TrafficSignalPhaseApplicability.ALL_SOUTH;
+          if (isThroughDemand) {
+            upcomingGreenPhase = TrafficSignalControllerTickerUtilities
+                .getDefaultPhaseForCircuitNumber(circuits, overlaps, activeCircuit,
+                    overlapPedestrianSignals, world);
+          }
         }
         // If demand is still for another circuit, keep the stored upcoming phase
       }
