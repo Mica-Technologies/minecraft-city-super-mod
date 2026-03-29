@@ -1050,6 +1050,30 @@ public class TrafficSignalControllerTickerUtilities {
         applicability == TrafficSignalPhaseApplicability.ALL_SOUTH;
   }
 
+  /**
+   * Returns whether two phase applicabilities are in the same movement category and thus
+   * compatible for phase recall. Through-type variants (ALL_THROUGHS_*, directional) are
+   * all compatible with each other. ALL_LEFTS is only compatible with ALL_LEFTS. This
+   * allows phase recall to hold green for any phase type when the demand matches, while
+   * ensuring mismatched demand (e.g., left turn demand during a through phase) triggers
+   * a proper phase change.
+   *
+   * @param a The first phase applicability.
+   * @param b The second phase applicability.
+   *
+   * @return {@code true} if both applicabilities are in the same movement category.
+   *
+   * @since 1.0
+   */
+  public static boolean isSamePhaseCategory(TrafficSignalPhaseApplicability a,
+      TrafficSignalPhaseApplicability b) {
+    if (isThroughTypeApplicability(a) && isThroughTypeApplicability(b)) {
+      return true;
+    }
+    // Non-through types must match exactly (ALL_LEFTS↔ALL_LEFTS, PEDESTRIAN↔PEDESTRIAN)
+    return a == b;
+  }
+
   public static boolean allCircuitsHaveSensors(TrafficSignalControllerCircuits circuits) {
     if (circuits.getCircuitCount() == 0) {
       return false;
