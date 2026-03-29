@@ -35,11 +35,11 @@ public class APSMovingSound extends MovingSound {
    * @param hearingRange    the maximum distance at which the sound is audible
    */
   public APSMovingSound(ResourceLocation soundResource, List<BlockPos> sourcePositions,
-      float hearingRange) {
+      float hearingRange, boolean repeat) {
     super(SoundEvent.REGISTRY.getObject(soundResource), SoundCategory.NEUTRAL);
     this.sourcePositions = sourcePositions;
     this.hearingRange = hearingRange;
-    this.repeat = true;
+    this.repeat = repeat;
     this.repeatDelay = 0;
     this.attenuationType = AttenuationType.NONE;
 
@@ -58,8 +58,8 @@ public class APSMovingSound extends MovingSound {
    * Convenience constructor for a single source position.
    */
   public APSMovingSound(ResourceLocation soundResource, BlockPos sourcePosition,
-      float hearingRange) {
-    this(soundResource, Collections.singletonList(sourcePosition), hearingRange);
+      float hearingRange, boolean repeat) {
+    this(soundResource, Collections.singletonList(sourcePosition), hearingRange, repeat);
   }
 
   private float calculateVolume(EntityPlayer player) {

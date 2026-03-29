@@ -100,10 +100,14 @@ public class TileEntityTrafficSignalAPS extends TileEntityTrafficSignalTickableR
   private int lastSoundColorState = -1;
 
   /**
-   * The sound resource currently playing on this channel, used to avoid re-sending
-   * start packets for the same sound.
+   * The walk sound resource currently looping on this channel, or null if no walk sound active.
    */
-  private String currentSoundResource = null;
+  private String currentWalkSound = null;
+
+  /**
+   * Whether the locate tone is currently active (sent per-interval for sync).
+   */
+  private boolean locateToneActive = false;
 
   /**
    * Constructor for a {@link TileEntityTrafficSignalAPS} with the specified sound schemes.
@@ -301,11 +305,14 @@ public class TileEntityTrafficSignalAPS extends TileEntityTrafficSignalTickableR
 
   /**
    * Sends an APS sound packet to all clients to start a sound with distance-based volume.
+   *
+   * @param soundResource the sound resource to play
+   * @param repeat        true for looping sounds (walk), false for one-shot (locate tone)
    */
-  private void playSoundViaPacket(String soundResource) {
+  private void playSoundViaPacket(String soundResource, boolean repeat) {
     if (world != null && !world.isRemote && soundResource != null) {
       CsmNetwork.sendToAll(APSSoundPacket.start(
-          getChannel(), soundResource, APS_HEARING_RANGE, pos));
+          getChannel(), soundResource, APS_HEARING_RANGE, repeat, pos));
     }
   }
 
@@ -351,6 +358,12 @@ public class TileEntityTrafficSignalAPS extends TileEntityTrafficSignalTickableR
    *
    * @since 2.0
    */
+  /**
+   * The global tick interval for locate tone playback. All APS buttons send their locate
+   * tone beep at worldTime % this value == 0, ensuring perfect sync across devices.
+   */
+  private static final long LOCATE_TONE_INTERVAL = 20L;
+
   @Override
   public void onTick() {
     if (world == null || world.isRemote) return;
@@ -358,34 +371,36 @@ public class TileEntityTrafficSignalAPS extends TileEntityTrafficSignalTickableR
     int blockColor =
         world.getBlockState(pos).getValue(BlockControllableCrosswalkButtonAudible.COLOR);
 
-    // Determine what sound should be playing for the current color state
-    String targetSound = null;
-    if (blockColor == BlockControllableCrosswalkButtonAudible.SIGNAL_GREEN) {
-      if (getCrosswalkSound().getWalkSound() != null) {
-        targetSound = getCrosswalkSound().getWalkSound().getSoundLocation().toString();
+    // Detect state changes for walk sound management
+    if (blockColor != lastSoundColorState) {
+      // Stop any active walk sound when leaving the walk phase
+      if (currentWalkSound != null) {
+        stopSoundViaPacket();
+        currentWalkSound = null;
       }
-    } else if (blockColor == BlockControllableCrosswalkButtonAudible.SIGNAL_YELLOW
-        || blockColor == BlockControllableCrosswalkButtonAudible.SIGNAL_RED) {
+      locateToneActive = false;
+      lastSoundColorState = blockColor;
+
+      // Start walk sound on transition to GREEN (loops with repeat=true, padded audio)
+      if (blockColor == BlockControllableCrosswalkButtonAudible.SIGNAL_GREEN) {
+        if (getCrosswalkSound().getWalkSound() != null) {
+          currentWalkSound = getCrosswalkSound().getWalkSound().getSoundLocation().toString();
+          playSoundViaPacket(currentWalkSound, true);
+        }
+      }
+    }
+
+    // Per-interval locate tone: send a one-shot beep at each global 20-tick boundary.
+    // All APS buttons with the same interval fire at the same world tick = perfect sync.
+    // Uses repeat=false (original 0.1s beep files, no padding).
+    if ((blockColor == BlockControllableCrosswalkButtonAudible.SIGNAL_YELLOW
+        || blockColor == BlockControllableCrosswalkButtonAudible.SIGNAL_RED)
+        && world.getTotalWorldTime() % LOCATE_TONE_INTERVAL == 0) {
+      locateToneActive = true;
       if (getCrosswalkSound().getLocateSound() != null) {
-        targetSound = getCrosswalkSound().getLocateSound().getSoundLocation().toString();
+        playSoundViaPacket(
+            getCrosswalkSound().getLocateSound().getSoundLocation().toString(), false);
       }
-    }
-    // SIGNAL_OFF: targetSound stays null (silence)
-
-    // Only act if the target sound changed
-    if (java.util.Objects.equals(targetSound, currentSoundResource)) return;
-
-    // Stop current sound
-    if (currentSoundResource != null) {
-      stopSoundViaPacket();
-    }
-
-    currentSoundResource = targetSound;
-    lastSoundColorState = blockColor;
-
-    // Start new sound
-    if (targetSound != null) {
-      playSoundViaPacket(targetSound);
     }
   }
 
@@ -401,7 +416,8 @@ public class TileEntityTrafficSignalAPS extends TileEntityTrafficSignalTickableR
         (crosswalkLastPressTime + getCrosswalkSound().getLenOfPressSound())
             > world.getTotalWorldTime();
     if (!isPressSoundAlreadyPlaying && getCrosswalkSound().getPressSound() != null) {
-      playSoundViaPacket(getCrosswalkSound().getPressSound().getSoundLocation().toString());
+      playSoundViaPacket(
+          getCrosswalkSound().getPressSound().getSoundLocation().toString(), false);
       crosswalkLastPressTime = world.getTotalWorldTime();
     }
   }

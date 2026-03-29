@@ -47,7 +47,8 @@ public class APSSoundPacketHandler implements IMessageHandler<APSSoundPacket, IM
     APSMovingSound sound = new APSMovingSound(
         new ResourceLocation(message.getSoundResource()),
         message.getSourcePositions(),
-        message.getHearingRange());
+        message.getHearingRange(),
+        message.isRepeatSound());
     activeSounds.put(channel, sound);
     Minecraft.getMinecraft().getSoundHandler().playSound(sound);
   }
