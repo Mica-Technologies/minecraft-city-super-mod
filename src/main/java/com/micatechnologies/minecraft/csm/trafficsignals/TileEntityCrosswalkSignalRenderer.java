@@ -111,7 +111,9 @@ public class TileEntityCrosswalkSignalRenderer extends
     int numDigits = text.length();
 
     float totalWidth = numDigits * DIGIT_WIDTH + (numDigits - 1) * DIGIT_GAP;
-    float startX = AREA_CENTER_X - totalWidth / 2;
+    // Shift two-digit values slightly left so they don't crowd the signal edge
+    float centerX = numDigits > 1 ? AREA_CENTER_X - 0.03f : AREA_CENTER_X;
+    float startX = centerX - totalWidth / 2;
 
     Tessellator tess = Tessellator.getInstance();
     BufferBuilder buf = tess.getBuffer();
