@@ -42,7 +42,12 @@ public class BlockControllableVerticalRightDoubleAddOnSignal
 
   @Override
   public float getSignalYOffset() {
-    return -4.0f;
+    return -7.9f;
+  }
+
+  @Override
+  public float[] getSectionYPositions(int sectionCount) {
+    return new float[] {0, -12};
   }
 
   @Override

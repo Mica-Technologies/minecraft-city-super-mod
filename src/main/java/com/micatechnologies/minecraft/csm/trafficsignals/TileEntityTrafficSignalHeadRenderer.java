@@ -311,18 +311,27 @@ public class TileEntityTrafficSignalHeadRenderer extends
     for (int i = 0; i < sectionInfos.length; i++) {
       TrafficSignalSectionInfo sectionInfo = sectionInfos[i];
 
-      // Skip unlit sections that share a position with another section (overlapping add-ons).
-      // The off-state texture would overdraw a lit section at the same position.
+      // Skip unlit sections that share a position with a LIT section (overlapping add-ons).
+      // This prevents the off-state texture from overdrawing a lit bulb at the same position.
+      // If ALL sections at this position are unlit, allow the FIRST one to render so the
+      // off-state texture is visible (important for bi-modal/hybrid signals).
       if (!sectionInfo.isBulbLit()) {
-        boolean hasOverlap = false;
+        boolean litSectionAtSamePos = false;
+        boolean earlierUnlitAtSamePos = false;
         for (int j = 0; j < sectionInfos.length; j++) {
           if (j != i && sectionYPositions[j] == sectionYPositions[i]
               && sectionXPositions[j] == sectionXPositions[i]) {
-            hasOverlap = true;
-            break;
+            if (sectionInfos[j].isBulbLit()) {
+              litSectionAtSamePos = true;
+              break;
+            } else if (j < i) {
+              earlierUnlitAtSamePos = true;
+            }
           }
         }
-        if (hasOverlap) continue;
+        // Skip if a lit section is at this position (it takes visual priority)
+        // Also skip if an earlier unlit section already rendered the off texture here
+        if (litSectionAtSamePos || earlierUnlitAtSamePos) continue;
       }
 
       TrafficSignalBulbStyle bulbStyle = sectionInfo.getBulbStyle();
