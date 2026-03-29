@@ -134,14 +134,15 @@ public class TileEntityCrosswalkSignal extends AbstractTickableTileEntity {
       }
       markDirtySync(world, pos, true);
     }
-    // Transition from CLEARANCE (1) to DON'T WALK (0) or OFF (3): finish measuring/verifying
+    // Transition from CLEARANCE (1) to DON'T WALK (0) or OFF (3): normal end of clearance
     else if (oldColor == 1 && (newColor == 0 || newColor == 3)) {
       if (measuring) {
         learnedClearanceTicks = roundToHalfSecond(measureTicks);
         measuring = false;
       } else if (verifying) {
-        // Check if actual duration matches learned value within tolerance
-        int difference = Math.abs(verifyTicks - learnedClearanceTicks);
+        // Round the verify ticks before comparing against the rounded learned value
+        int roundedVerifyTicks = roundToHalfSecond(verifyTicks);
+        int difference = Math.abs(roundedVerifyTicks - learnedClearanceTicks);
         if (difference > VERIFY_TOLERANCE_TICKS) {
           // Duration changed significantly — reset and re-learn next cycle
           learnedClearanceTicks = 0;
@@ -152,16 +153,32 @@ public class TileEntityCrosswalkSignal extends AbstractTickableTileEntity {
       currentCountdown = -1;
       markDirtySync(world, pos, true);
     }
-    // Any other transition (e.g., clearance cut short by unexpected state): reset
-    else if (newColor != 1) {
+    // Transition from CLEARANCE (1) to WALK (2): ped recycle — the controller recycled
+    // pedestrians back to walk because demand dropped. This is normal operation, not a
+    // fault. Stop measuring/verifying gracefully without resetting learned timing.
+    else if (oldColor == 1 && newColor == 2) {
       if (measuring) {
-        // Clearance was interrupted before completing — don't trust partial measurement
+        // Partial measurement during recycle — discard but don't reset learned value
         measuring = false;
         measureTicks = 0;
       }
       if (verifying) {
-        // Clearance was cut short — reset learned value and re-learn
-        learnedClearanceTicks = 0;
+        // Verification interrupted by recycle — keep learned value (it's still valid)
+        verifying = false;
+        verifyTicks = 0;
+      }
+      currentCountdown = -1;
+      markDirtySync(world, pos, true);
+    }
+    // Any other unexpected transition while measuring/verifying: reset gracefully
+    else if (newColor != 1) {
+      if (measuring) {
+        measuring = false;
+        measureTicks = 0;
+      }
+      if (verifying) {
+        // Only reset learned value for truly unexpected transitions (e.g., OFF→RED)
+        // that indicate the controller changed behavior, not normal operation
         verifying = false;
         verifyTicks = 0;
       }
