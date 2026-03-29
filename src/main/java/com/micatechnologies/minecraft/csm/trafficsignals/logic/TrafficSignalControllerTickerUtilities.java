@@ -558,38 +558,53 @@ public class TrafficSignalControllerTickerUtilities {
         highestPriorityWaitingCount = allLeftTurnLanesDetectionCount;
       }
 
-      // Check circuit east facing sensors detection count for highest priority.
-      // Use standard (through) counts only — left turn counts are handled separately
-      // by the ALL_LEFTS check above to avoid overriding left turn demand.
-      int eastFacingDetectionCount = sensorSummary.getStandardEast();
-      if (eastFacingDetectionCount >= highestPriorityWaitingCount) {
+      // Check circuit directional detection counts for highest priority.
+      // Uses getNonProtectedTotal*() which includes both standard and left turn counts,
+      // enabling split phasing and lead-lag scenarios where one approach has more total
+      // demand. Like through-type checks, directional phases cannot override ALL_LEFTS
+      // at equal count — they need strictly more demand to justify a directional phase
+      // over a dedicated left turn phase.
+      boolean leftsWasBest =
+          highestPriorityPhaseApplicability == TrafficSignalPhaseApplicability.ALL_LEFTS;
+
+      int eastFacingDetectionCount = sensorSummary.getNonProtectedTotalEast();
+      if (leftsWasBest
+          ? eastFacingDetectionCount > highestPriorityWaitingCount
+          : eastFacingDetectionCount >= highestPriorityWaitingCount) {
         highestPriorityCircuitNumber = i;
         highestPriorityPhaseApplicability = TrafficSignalPhaseApplicability.ALL_EAST;
         highestPriorityWaitingCount = eastFacingDetectionCount;
+        leftsWasBest = false;
       }
 
-      // Check circuit west facing sensors detection count for highest priority
-      int westFacingDetectionCount = sensorSummary.getStandardWest();
-      if (westFacingDetectionCount >= highestPriorityWaitingCount) {
+      int westFacingDetectionCount = sensorSummary.getNonProtectedTotalWest();
+      if (leftsWasBest
+          ? westFacingDetectionCount > highestPriorityWaitingCount
+          : westFacingDetectionCount >= highestPriorityWaitingCount) {
         highestPriorityCircuitNumber = i;
         highestPriorityPhaseApplicability = TrafficSignalPhaseApplicability.ALL_WEST;
         highestPriorityWaitingCount = westFacingDetectionCount;
+        leftsWasBest = false;
       }
 
-      // Check circuit north facing sensors detection count for highest priority
-      int northFacingDetectionCount = sensorSummary.getStandardNorth();
-      if (northFacingDetectionCount >= highestPriorityWaitingCount) {
+      int northFacingDetectionCount = sensorSummary.getNonProtectedTotalNorth();
+      if (leftsWasBest
+          ? northFacingDetectionCount > highestPriorityWaitingCount
+          : northFacingDetectionCount >= highestPriorityWaitingCount) {
         highestPriorityCircuitNumber = i;
         highestPriorityPhaseApplicability = TrafficSignalPhaseApplicability.ALL_NORTH;
         highestPriorityWaitingCount = northFacingDetectionCount;
+        leftsWasBest = false;
       }
 
-      // Check circuit south facing sensors detection count for highest priority
-      int southFacingDetectionCount = sensorSummary.getStandardSouth();
-      if (southFacingDetectionCount >= highestPriorityWaitingCount) {
+      int southFacingDetectionCount = sensorSummary.getNonProtectedTotalSouth();
+      if (leftsWasBest
+          ? southFacingDetectionCount > highestPriorityWaitingCount
+          : southFacingDetectionCount >= highestPriorityWaitingCount) {
         highestPriorityCircuitNumber = i;
         highestPriorityPhaseApplicability = TrafficSignalPhaseApplicability.ALL_SOUTH;
         highestPriorityWaitingCount = southFacingDetectionCount;
+        leftsWasBest = false;
       }
 
       // Check circuit pedestrian request count for highest priority
@@ -610,28 +625,45 @@ public class TrafficSignalControllerTickerUtilities {
         }
       }
 
+      // Through-type checks: these use >= to match the baseline threshold, BUT they cannot
+      // override ALL_LEFTS demand at equal count. Left turn demand should only be overridden
+      // by through traffic that genuinely exceeds it, since left turns are a more specific
+      // movement that would otherwise never get served against through-heavy traffic.
+      // Re-check whether ALL_LEFTS is still the best (directional checks above may have
+      // already overridden it with strictly higher demand).
+      boolean currentBestIsLefts =
+          highestPriorityPhaseApplicability == TrafficSignalPhaseApplicability.ALL_LEFTS;
+
       // Check circuit through/protecteds detection count for highest priority
       int throughsProtectedsDetectionCount = sensorSummary.getStandardTotal() +
           sensorSummary.getProtectedTotal() +
           pedestrianOverlapRequestCount;
-      if (throughsProtectedsDetectionCount >= highestPriorityWaitingCount &&
-          circuit.getProtectedSignals().size() > 0) {
+      if (circuit.getProtectedSignals().size() > 0 &&
+          (currentBestIsLefts
+              ? throughsProtectedsDetectionCount > highestPriorityWaitingCount
+              : throughsProtectedsDetectionCount >= highestPriorityWaitingCount)) {
         highestPriorityCircuitNumber = i;
         highestPriorityPhaseApplicability = TrafficSignalPhaseApplicability.ALL_THROUGHS_PROTECTEDS;
         highestPriorityWaitingCount = throughsProtectedsDetectionCount;
+        currentBestIsLefts = false;
       }
 
       // Check circuit through/rights detection count for highest priority
       int throughsDetectionCount = sensorSummary.getStandardTotal() + pedestrianOverlapRequestCount;
-      if (throughsDetectionCount >= highestPriorityWaitingCount) {
+      if (currentBestIsLefts
+          ? throughsDetectionCount > highestPriorityWaitingCount
+          : throughsDetectionCount >= highestPriorityWaitingCount) {
         highestPriorityCircuitNumber = i;
         highestPriorityPhaseApplicability = TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS;
         highestPriorityWaitingCount = throughsDetectionCount;
+        currentBestIsLefts = false;
       }
 
       // Check circuit through/protected rights detection count for highest priority
       int rawThroughsDetectionCount = sensorSummary.getStandardTotal();
-      if (rawThroughsDetectionCount >= highestPriorityWaitingCount) {
+      if (currentBestIsLefts
+          ? rawThroughsDetectionCount > highestPriorityWaitingCount
+          : rawThroughsDetectionCount >= highestPriorityWaitingCount) {
         highestPriorityCircuitNumber = i;
         highestPriorityPhaseApplicability =
             TrafficSignalPhaseApplicability.ALL_THROUGHS_PROTECTED_RIGHTS;

@@ -104,9 +104,20 @@ public class TileEntityCrosswalkSignal extends AbstractTickableTileEntity {
    * Tolerance in ticks for clearance duration verification. If the actual clearance
    * differs from the learned value by more than this, the learned value is reset and
    * a new learning cycle begins — matching real-world countdown module behavior.
-   * 20 ticks = 1 second of tolerance.
+   * Controller timing options are in whole seconds, so 30 ticks (1.5s) gives enough
+   * margin for minor tick-level variation between cycles while still detecting real
+   * timing changes.
    */
-  private static final int VERIFY_TOLERANCE_TICKS = 20;
+  private static final int VERIFY_TOLERANCE_TICKS = 30;
+
+  /**
+   * Rounds a tick count to the nearest 10 ticks (0.5 seconds). This stabilizes the
+   * learned clearance duration against minor tick-level variation between cycles,
+   * since controller phase timing is configured in whole-second increments.
+   */
+  private static int roundToHalfSecond(int ticks) {
+    return ((ticks + 5) / 10) * 10;
+  }
 
   private void onColorChanged(int oldColor, int newColor) {
     // Transition from WALK (2) to CLEARANCE (1): start measuring or counting down
@@ -126,7 +137,7 @@ public class TileEntityCrosswalkSignal extends AbstractTickableTileEntity {
     // Transition from CLEARANCE (1) to DON'T WALK (0) or OFF (3): finish measuring/verifying
     else if (oldColor == 1 && (newColor == 0 || newColor == 3)) {
       if (measuring) {
-        learnedClearanceTicks = measureTicks;
+        learnedClearanceTicks = roundToHalfSecond(measureTicks);
         measuring = false;
       } else if (verifying) {
         // Check if actual duration matches learned value within tolerance
