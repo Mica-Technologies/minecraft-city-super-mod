@@ -565,16 +565,47 @@ public class TrafficSignalControllerTicker {
         timeSinceLastPhaseChange >= leadPedestrianIntervalTime) {
       nextPhase = originalPhase.getUpcomingPhase();
     }
-    // If original phase is flashing don't walk transitioning to yellow, and flashing don't walk
-    // time is up,
-    // change to yellow transition phase
+    // If original phase is flashing don't walk transitioning and FDW time is complete,
+    // re-check demand before proceeding. At this point ped clearance has fully completed
+    // but vehicle signals are still green — ideal checkpoint for ped recycle. If the
+    // demand that triggered the transition is gone, recycle peds back to walk and resume
+    // the current circuit's green phase with no vehicle signal disruption.
     else if (originalPhase.getApplicability()
         == TrafficSignalPhaseApplicability.FLASH_DONT_WALK_TRANSITIONING &&
         timeSinceLastPhaseChange >= flashDontWalkTime) {
-      // Change to yellow transition phase
-      nextPhase = TrafficSignalControllerTickerUtilities.getYellowTransitionPhaseForUpcoming(
-          originalPhase,
-          originalPhase.getUpcomingPhase());
+      // Re-check demand at FDW completion
+      boolean allSensored =
+          TrafficSignalControllerTickerUtilities.allCircuitsHaveSensors(circuits);
+      boolean recycleToGreen = false;
+
+      if (allSensored) {
+        int activeCircuit = originalPhase.getCircuit();
+        Tuple<Integer, TrafficSignalPhaseApplicability> currentDemand =
+            TrafficSignalControllerTickerUtilities.getUpcomingPhasePriorityIndicator(world,
+                circuits, overlapPedestrianSignals);
+
+        if (currentDemand == null) {
+          // No demand anywhere — recycle peds to walk, stay green
+          recycleToGreen = true;
+        } else if (activeCircuit > 0 && currentDemand.getFirst() == activeCircuit) {
+          // Demand is back on the active circuit — recycle peds to walk, stay green
+          recycleToGreen = true;
+        }
+      }
+
+      if (recycleToGreen) {
+        // Recycle: return to the active circuit's default phase (restores walk signals)
+        // Vehicle signals stay green since they were never transitioned
+        int activeCircuit = originalPhase.getCircuit();
+        nextPhase = TrafficSignalControllerTickerUtilities.getDefaultPhaseForCircuitNumber(
+            circuits, overlaps, activeCircuit > 0 ? activeCircuit : 1,
+            overlapPedestrianSignals, world);
+      } else {
+        // Demand still present on another circuit — proceed to yellow transition
+        nextPhase = TrafficSignalControllerTickerUtilities.getYellowTransitionPhaseForUpcoming(
+            originalPhase,
+            originalPhase.getUpcomingPhase());
+      }
     }
     // If original phase is yellow transitioning to red, and yellow time is up, change to red
     // transition phase
@@ -586,13 +617,38 @@ public class TrafficSignalControllerTicker {
           originalPhase,
           originalPhase.getUpcomingPhase());
     }
-    // If original phase is red transitioning to upcoming, and all red time is up, change to
-    // green phase (or LPI if applicable)
+    // If original phase is red transitioning to upcoming, and all red time is up, re-check
+    // demand and change to the most appropriate green phase (or LPI if applicable).
+    // This is the ped recycle point: if demand that triggered the transition is now gone
+    // (e.g., vehicle turned right on red, pedestrian walked away), redirect to the
+    // appropriate circuit instead of blindly going to the stored upcoming phase.
     else if (originalPhase.getApplicability() == TrafficSignalPhaseApplicability.RED_TRANSITIONING
         &&
         timeSinceLastPhaseChange >= allRedTime) {
-      // Get the upcoming green phase
+      // Re-check current demand to decide which circuit to serve
       TrafficSignalPhase upcomingGreenPhase = originalPhase.getUpcomingPhase();
+      int activeCircuit = originalPhase.getCircuit();
+      boolean allSensored =
+          TrafficSignalControllerTickerUtilities.allCircuitsHaveSensors(circuits);
+
+      if (allSensored && upcomingGreenPhase != null) {
+        Tuple<Integer, TrafficSignalPhaseApplicability> currentDemand =
+            TrafficSignalControllerTickerUtilities.getUpcomingPhasePriorityIndicator(world,
+                circuits, overlapPedestrianSignals);
+
+        if (currentDemand == null) {
+          // No demand anywhere — go back to the original circuit's default phase
+          upcomingGreenPhase = TrafficSignalControllerTickerUtilities
+              .getDefaultPhaseForCircuitNumber(circuits, overlaps,
+                  activeCircuit > 0 ? activeCircuit : 1, overlapPedestrianSignals, world);
+        } else if (activeCircuit > 0 && currentDemand.getFirst() == activeCircuit) {
+          // Demand is back on the original circuit — serve it instead of the stored target
+          upcomingGreenPhase = TrafficSignalControllerTickerUtilities
+              .getDefaultPhaseForCircuitNumber(circuits, overlaps, activeCircuit,
+                  overlapPedestrianSignals, world);
+        }
+        // If demand is still for another circuit, keep the stored upcoming phase
+      }
 
       // Insert LPI phase if applicable (originating phase preserves signals that stay green)
       nextPhase = TrafficSignalControllerTickerUtilities.maybeWrapWithLpi(originalPhase,
@@ -636,42 +692,77 @@ public class TrafficSignalControllerTicker {
             circuits,
             overlapPedestrianSignals);
 
+        // Vehicle phase recall / max recall: when all circuits have sensors and no demand
+        // exists on any other circuit, hold the current circuit's green phase indefinitely
+        // — even past max green time. This prevents unnecessary red cycling when no one is
+        // waiting, matching real-world actuated controller behavior. Pedestrians stay in
+        // walk state since no FDW transition is triggered. As soon as conflicting demand
+        // appears on another circuit, normal phase change logic resumes immediately.
+        // Phase recall only applies when demand is for the same circuit AND the same type
+        // of movement (through variants). Left turn demand on the same circuit should still
+        // trigger a phase change to serve the left turn.
+        boolean allSensored =
+            TrafficSignalControllerTickerUtilities.allCircuitsHaveSensors(circuits);
+        boolean phaseRecall = false;
+        if (allSensored) {
+          if (upcomingPhasePriorityIndicator == null) {
+            // No demand anywhere — hold green (max recall)
+            phaseRecall = true;
+          } else if (originalPhase.getCircuit() > 0 &&
+              upcomingPhasePriorityIndicator.getFirst() == originalPhase.getCircuit()) {
+            // Demand is for the same circuit — only recall if it's a through-type phase
+            // (don't suppress left turn or pedestrian phase changes on the same circuit)
+            TrafficSignalPhaseApplicability demandApplicability =
+                upcomingPhasePriorityIndicator.getSecond();
+            boolean isThroughDemand =
+                demandApplicability == TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS ||
+                demandApplicability == TrafficSignalPhaseApplicability.ALL_THROUGHS_PROTECTED_RIGHTS ||
+                demandApplicability == TrafficSignalPhaseApplicability.ALL_THROUGHS_PROTECTEDS ||
+                demandApplicability == TrafficSignalPhaseApplicability.ALL_EAST ||
+                demandApplicability == TrafficSignalPhaseApplicability.ALL_WEST ||
+                demandApplicability == TrafficSignalPhaseApplicability.ALL_NORTH ||
+                demandApplicability == TrafficSignalPhaseApplicability.ALL_SOUTH;
+            phaseRecall = isThroughDemand;
+          }
+        }
+
         // Create variable to store upcoming phase
         TrafficSignalPhase upcomingPhase = null;
 
-        // If the current phase priority indicator is different than the upcoming phase priority
-        // indicator, then
-        // we need to change phases
-        if (upcomingPhasePriorityIndicator != null &&
-            (currentPhasePriorityIndicator.getFirst().intValue() !=
-                upcomingPhasePriorityIndicator.getFirst().intValue() ||
-                currentPhasePriorityIndicator.getSecond() !=
-                    upcomingPhasePriorityIndicator.getSecond())) {
-          upcomingPhase =
-              TrafficSignalControllerTickerUtilities.getUpcomingPhaseForPriorityIndicator(
-                  world,
-                  circuits,
-                  overlaps,
-                  upcomingPhasePriorityIndicator,
-                  overlapPedestrianSignals);
-        }
-        // If max green time is met (and priority indicators are the same), then we need to
-        // change phases to
-        // the next circuit default phase
-        else if (maxGreenTimeMet) {
-          // Get next circuit number
-          int nextCircuitNumber = 1;
-          if (originalPhase.getCircuit() >= 0
-              && originalPhase.getCircuit() < circuits.getCircuitCount()) {
-            nextCircuitNumber = originalPhase.getCircuit() + 1;
+        // If phase recall is active, skip the phase change — hold current green
+        if (!phaseRecall) {
+          // If the current phase priority indicator is different than the upcoming phase priority
+          // indicator, then we need to change phases
+          if (upcomingPhasePriorityIndicator != null &&
+              (currentPhasePriorityIndicator.getFirst().intValue() !=
+                  upcomingPhasePriorityIndicator.getFirst().intValue() ||
+                  currentPhasePriorityIndicator.getSecond() !=
+                      upcomingPhasePriorityIndicator.getSecond())) {
+            upcomingPhase =
+                TrafficSignalControllerTickerUtilities.getUpcomingPhaseForPriorityIndicator(
+                    world,
+                    circuits,
+                    overlaps,
+                    upcomingPhasePriorityIndicator,
+                    overlapPedestrianSignals);
           }
+          // If max green time is met (and priority indicators are the same), then we need to
+          // change phases to the next circuit default phase
+          else if (maxGreenTimeMet) {
+            // Get next circuit number
+            int nextCircuitNumber = 1;
+            if (originalPhase.getCircuit() >= 0
+                && originalPhase.getCircuit() < circuits.getCircuitCount()) {
+              nextCircuitNumber = originalPhase.getCircuit() + 1;
+            }
 
-          // Get next circuit default phase to set as upcoming phase
-          upcomingPhase = TrafficSignalControllerTickerUtilities.getDefaultPhaseForCircuitNumber(
-              circuits,
-              overlaps,
-              nextCircuitNumber,
-              overlapPedestrianSignals,world);
+            // Get next circuit default phase to set as upcoming phase
+            upcomingPhase = TrafficSignalControllerTickerUtilities.getDefaultPhaseForCircuitNumber(
+                circuits,
+                overlaps,
+                nextCircuitNumber,
+                overlapPedestrianSignals, world);
+          }
         }
 
         // Build next phase if an upcoming phase was generated
