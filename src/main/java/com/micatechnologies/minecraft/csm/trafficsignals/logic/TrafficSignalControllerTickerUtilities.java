@@ -1026,6 +1026,30 @@ public class TrafficSignalControllerTickerUtilities {
    *
    * @since 1.0
    */
+  /**
+   * Returns whether the given phase applicability represents a through-type movement
+   * (straight, directional, or through+turns). Through-type demand is compatible with
+   * the current circuit's green phase and can be served without a phase change — making
+   * it safe for phase recall and ped recycle decisions. Non-through demand (left turns,
+   * pedestrian phases) requires its own dedicated phase and must not be suppressed.
+   *
+   * @param applicability The phase applicability to check.
+   *
+   * @return {@code true} if the applicability is a through-type movement, {@code false}
+   *     for left turns, pedestrian phases, or other non-through movements.
+   *
+   * @since 1.0
+   */
+  public static boolean isThroughTypeApplicability(TrafficSignalPhaseApplicability applicability) {
+    return applicability == TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS ||
+        applicability == TrafficSignalPhaseApplicability.ALL_THROUGHS_PROTECTED_RIGHTS ||
+        applicability == TrafficSignalPhaseApplicability.ALL_THROUGHS_PROTECTEDS ||
+        applicability == TrafficSignalPhaseApplicability.ALL_EAST ||
+        applicability == TrafficSignalPhaseApplicability.ALL_WEST ||
+        applicability == TrafficSignalPhaseApplicability.ALL_NORTH ||
+        applicability == TrafficSignalPhaseApplicability.ALL_SOUTH;
+  }
+
   public static boolean allCircuitsHaveSensors(TrafficSignalControllerCircuits circuits) {
     if (circuits.getCircuitCount() == 0) {
       return false;
