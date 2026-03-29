@@ -19,7 +19,7 @@ public class BlockControllableDoghouseSecondaryLeftSignal extends AbstractBlockC
 
   @Override
   public SIGNAL_SIDE getSignalSide(World world, BlockPos blockPos) {
-    return SIGNAL_SIDE.LEFT;
+    return SIGNAL_SIDE.RIGHT;
   }
 
   @Override
