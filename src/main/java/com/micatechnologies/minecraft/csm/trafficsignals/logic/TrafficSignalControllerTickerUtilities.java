@@ -548,8 +548,10 @@ public class TrafficSignalControllerTickerUtilities {
       // Get sensor summary for circuit
       TrafficSignalSensorSummary sensorSummary = circuit.getSensorsWaitingSummary(world);
 
-      // Check circuit all left turn lanes detection count for highest priority
-      int allLeftTurnLanesDetectionCount = sensorSummary.getLeftTotal();
+      // Check circuit left turn demand, adjusted for permissive FYA turns.
+      // Directions with FYA left signals require 2+ detections to trigger a protected
+      // left phase (single detection is assumed to clear on the permissive turn).
+      int allLeftTurnLanesDetectionCount = getEffectiveLeftDemand(world, circuit, sensorSummary);
       if (allLeftTurnLanesDetectionCount >= highestPriorityWaitingCount) {
         highestPriorityCircuitNumber = i;
         highestPriorityPhaseApplicability = TrafficSignalPhaseApplicability.ALL_LEFTS;
@@ -1070,6 +1072,64 @@ public class TrafficSignalControllerTickerUtilities {
     }
     // Non-through types must match exactly (ALL_LEFTS↔ALL_LEFTS, PEDESTRIAN↔PEDESTRIAN)
     return a == b;
+  }
+
+  /**
+   * Computes the effective left turn demand for a circuit, accounting for permissive FYA
+   * (flashing yellow arrow) turns. When a direction has a FYA left signal active, a single
+   * vehicle in the left turn detection zone is expected to clear on the permissive turn.
+   * Only when 2+ vehicles are detected in a FYA-equipped direction does it count toward
+   * protected left turn demand. Directions without FYA count all detections normally.
+   *
+   * <p>This handles mixed installations where one approach has FYA and another has a
+   * standard protected-only left turn signal.</p>
+   *
+   * @param world   The world where the controller is located.
+   * @param circuit The circuit to compute effective left demand for.
+   * @param summary The sensor summary for the circuit.
+   *
+   * @return The effective left turn demand count, adjusted for FYA permissive turns.
+   *
+   * @since 1.0
+   */
+  public static int getEffectiveLeftDemand(World world, TrafficSignalControllerCircuit circuit,
+      TrafficSignalSensorSummary summary) {
+    // If no left demand at all, return 0 immediately
+    if (summary.getLeftTotal() == 0) {
+      return 0;
+    }
+
+    // Determine which directions have flashing left signals (FYA)
+    boolean fyaEast = false, fyaWest = false, fyaNorth = false, fyaSouth = false;
+    for (BlockPos signalPos : circuit.getFlashingLeftSignals()) {
+      IBlockState blockState = world.getBlockState(signalPos);
+      if (blockState.getBlock() instanceof AbstractBlockControllableSignal) {
+        EnumFacing facing = blockState.getValue(BlockHorizontal.FACING);
+        switch (facing) {
+          case EAST:  fyaEast = true;  break;
+          case WEST:  fyaWest = true;  break;
+          case NORTH: fyaNorth = true; break;
+          case SOUTH: fyaSouth = true; break;
+        }
+      }
+    }
+
+    // For each direction, apply the FYA threshold: if that direction has FYA,
+    // a single detection is assumed to clear on the permissive turn (don't count it).
+    // Two or more detections indicate the permissive turn isn't sufficient.
+    int effectiveCount = 0;
+    effectiveCount += adjustForFya(summary.getLeftEast(), fyaEast);
+    effectiveCount += adjustForFya(summary.getLeftWest(), fyaWest);
+    effectiveCount += adjustForFya(summary.getLeftNorth(), fyaNorth);
+    effectiveCount += adjustForFya(summary.getLeftSouth(), fyaSouth);
+    return effectiveCount;
+  }
+
+  private static int adjustForFya(int leftCount, boolean hasFya) {
+    if (hasFya && leftCount <= 1) {
+      return 0; // Single detection with FYA available — assume permissive turn
+    }
+    return leftCount;
   }
 
   public static boolean allCircuitsHaveSensors(TrafficSignalControllerCircuits circuits) {
