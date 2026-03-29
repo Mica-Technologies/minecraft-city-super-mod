@@ -22,10 +22,22 @@
         "y": 270
       }
     },
+    "tilt": {
+      "none": {},
+      "left_tilt": {
+        "model": "csm:tlborderblueblack_left_tilt"
+      },
+      "right_tilt": {
+        "model": "csm:tlborderblueblack_right_tilt"
+      },
+      "left_angle": {
+        "model": "csm:tlborderblueblack_left_angle"
+      },
+      "right_angle": {
+        "model": "csm:tlborderblueblack_right_angle"
+      }
+    },
     "inventory": [
-      {}
-    ],
-    "normal": [
       {}
     ]
   }
