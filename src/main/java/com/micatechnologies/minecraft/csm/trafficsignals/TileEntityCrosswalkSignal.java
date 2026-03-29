@@ -18,12 +18,16 @@ public class TileEntityCrosswalkSignal extends AbstractTickableTileEntity {
   private static final String NBT_KEY_LAST_COLOR = "lastColorState";
   private static final String NBT_KEY_MEASURING = "measuring";
   private static final String NBT_KEY_MEASURE_TICKS = "measureTicks";
+  private static final String NBT_KEY_VERIFYING = "verifying";
+  private static final String NBT_KEY_VERIFY_TICKS = "verifyTicks";
 
   private int learnedClearanceTicks = 0;
   private int currentCountdown = -1;
   private int lastColorState = 3; // OFF
   private boolean measuring = false;
   private int measureTicks = 0;
+  private boolean verifying = false;
+  private int verifyTicks = 0;
 
   @Override
   public void readNBT(NBTTagCompound compound) {
@@ -32,6 +36,8 @@ public class TileEntityCrosswalkSignal extends AbstractTickableTileEntity {
     lastColorState = compound.getInteger(NBT_KEY_LAST_COLOR);
     measuring = compound.getBoolean(NBT_KEY_MEASURING);
     measureTicks = compound.getInteger(NBT_KEY_MEASURE_TICKS);
+    verifying = compound.getBoolean(NBT_KEY_VERIFYING);
+    verifyTicks = compound.getInteger(NBT_KEY_VERIFY_TICKS);
   }
 
   @Override
@@ -41,6 +47,8 @@ public class TileEntityCrosswalkSignal extends AbstractTickableTileEntity {
     compound.setInteger(NBT_KEY_LAST_COLOR, lastColorState);
     compound.setBoolean(NBT_KEY_MEASURING, measuring);
     compound.setInteger(NBT_KEY_MEASURE_TICKS, measureTicks);
+    compound.setBoolean(NBT_KEY_VERIFYING, verifying);
+    compound.setInteger(NBT_KEY_VERIFY_TICKS, verifyTicks);
     return compound;
   }
 
@@ -79,6 +87,9 @@ public class TileEntityCrosswalkSignal extends AbstractTickableTileEntity {
       if (measuring) {
         measureTicks++;
       }
+      if (verifying) {
+        verifyTicks++;
+      }
       if (currentCountdown > 0) {
         // Decrement every 20 ticks (1 second)
         if (world.getTotalWorldTime() % 20 == 0) {
@@ -89,28 +100,60 @@ public class TileEntityCrosswalkSignal extends AbstractTickableTileEntity {
     }
   }
 
+  /**
+   * Tolerance in ticks for clearance duration verification. If the actual clearance
+   * differs from the learned value by more than this, the learned value is reset and
+   * a new learning cycle begins — matching real-world countdown module behavior.
+   * 20 ticks = 1 second of tolerance.
+   */
+  private static final int VERIFY_TOLERANCE_TICKS = 20;
+
   private void onColorChanged(int oldColor, int newColor) {
     // Transition from WALK (2) to CLEARANCE (1): start measuring or counting down
     if (oldColor == 2 && newColor == 1) {
       if (learnedClearanceTicks == 0) {
+        // First cycle: measure the clearance duration
         measuring = true;
         measureTicks = 0;
       } else {
+        // Subsequent cycles: start countdown and verify actual duration
         currentCountdown = learnedClearanceTicks / 20;
+        verifying = true;
+        verifyTicks = 0;
       }
       markDirtySync(world, pos, true);
     }
-    // Transition from CLEARANCE (1) to DON'T WALK (0) or OFF (3): finish measuring
+    // Transition from CLEARANCE (1) to DON'T WALK (0) or OFF (3): finish measuring/verifying
     else if (oldColor == 1 && (newColor == 0 || newColor == 3)) {
       if (measuring) {
         learnedClearanceTicks = measureTicks;
         measuring = false;
+      } else if (verifying) {
+        // Check if actual duration matches learned value within tolerance
+        int difference = Math.abs(verifyTicks - learnedClearanceTicks);
+        if (difference > VERIFY_TOLERANCE_TICKS) {
+          // Duration changed significantly — reset and re-learn next cycle
+          learnedClearanceTicks = 0;
+        }
+        verifying = false;
+        verifyTicks = 0;
       }
       currentCountdown = -1;
       markDirtySync(world, pos, true);
     }
-    // Any other transition: reset countdown display
+    // Any other transition (e.g., clearance cut short by unexpected state): reset
     else if (newColor != 1) {
+      if (measuring) {
+        // Clearance was interrupted before completing — don't trust partial measurement
+        measuring = false;
+        measureTicks = 0;
+      }
+      if (verifying) {
+        // Clearance was cut short — reset learned value and re-learn
+        learnedClearanceTicks = 0;
+        verifying = false;
+        verifyTicks = 0;
+      }
       if (currentCountdown != -1) {
         currentCountdown = -1;
         markDirtySync(world, pos, true);
