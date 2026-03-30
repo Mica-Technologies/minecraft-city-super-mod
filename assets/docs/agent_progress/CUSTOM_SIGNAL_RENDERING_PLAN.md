@@ -5,7 +5,7 @@ body color, visor type, bulb style, and tilt without needing separate block vari
 
 **Created:** 2026-03-28
 **Branch:** `dev/signal-custom-rendering-rebase`
-**Status:** 119 signal blocks converted (Waves 1-8 complete). Crosswalk countdown in progress.
+**Status:** 119 signal blocks converted (Waves 1-8 complete). 57 deprecated angled/gray blocks auto-converting. Test block removed. Crosswalk countdown in progress.
 
 ---
 
@@ -132,8 +132,9 @@ All items below are done and working in-game.
 
 ### Deferred Items
 
-- **Angled signal auto-migration**: Convert placed angle/angle2 blocks to non-angled
-  equivalents with TrafficSignalBodyTilt applied. Hide angled blocks from creative tab.
+- ~~**Angled signal auto-migration**~~: DONE (2026-03-30). All 57 angled signal blocks
+  (18 vertical angle/angle2, 9 horizontal angle, 6 single-section angle, 24 gray) now
+  implement ICsmRetiringBlock with auto-conversion via randomTick. Hidden in CsmTabNone.
 - **Controller fault detection**: Improve reliability of fault flash when setBlockState
   fails for linked signals (deleted/replaced blocks)
 - **HAWK wigwag refinement**: Current wigwag uses System.currentTimeMillis() in the
@@ -161,6 +162,13 @@ All items below are done and working in-game.
     - Tweeters stay as JSON (sound accessories, not visual signals)
     - Ramp meters stay as JSON (crosswalk housing form factor)
 - **Barlo signal**: Review defaults for barlo-specific configuration
+- **Crosswalk signal custom rendering (FUTURE)**: Extend the custom rendering system to
+  crosswalk signals (walk/don't walk displays) to support runtime body color customization.
+  This would enable deprecating the 2 gray crosswalk blocks
+  (`BlockControllableCrosswalkMountGray`, `BlockControllableCrosswalkButtonPsGray`) via
+  the same ICsmRetiringBlock pattern used for gray signal heads. Crosswalk rendering is a
+  different paradigm (symbol/word displays + countdown) so this is a larger effort than
+  the signal head conversions.
 
 ### Known Issues to Circle Back To
 
@@ -419,7 +427,7 @@ meters are single-section, similar to Wave 2.
 
 ## Phase 3: Polish and Merge (Future)
 
-- [ ] Remove test block (`controllableverticaltestsolidsignal`) once real blocks are converted
+- [x] Remove test block (`controllableverticaltestsolidsignal`) — removed 2026-03-30
 - [ ] Add missing texture variants (bike eLED, bike incandescent, etc.) as needed
 - [ ] Consider per-section independent body/door/visor colors (currently all sections share)
 - [ ] UX polish on config tool (tooltips, visual feedback)
