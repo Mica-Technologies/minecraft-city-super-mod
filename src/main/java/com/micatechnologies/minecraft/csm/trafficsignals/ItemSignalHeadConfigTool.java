@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
+import com.micatechnologies.minecraft.csm.Csm;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractItem;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignal;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignalHead;
@@ -102,6 +103,10 @@ public class ItemSignalHeadConfigTool extends AbstractItem {
           worldIn.setBlockState(pos, state.cycleProperty(AbstractBlockControllableSignal.COLOR));
           int newColor = worldIn.getBlockState(pos).getValue(AbstractBlockControllableSignal.COLOR);
           player.sendMessage(new TextComponentString("Signal color set to " + colorName(newColor)));
+          break;
+        }
+        case OPEN_GUI: {
+          player.openGui(Csm.instance, 1, worldIn, pos.getX(), pos.getY(), pos.getZ());
           break;
         }
       }

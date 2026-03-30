@@ -8,7 +8,8 @@ public enum ItemSignalHeadConfigToolMode {
   CYCLE_BODY_TILT("Cycle Body Tilt"),
   CYCLE_BULB_STYLE("Cycle Bulb Style"),
   CYCLE_BULB_TYPE("Cycle Bulb Type"),
-  CYCLE_SIGNAL_COLOR("Cycle Signal Color");
+  CYCLE_SIGNAL_COLOR("Cycle Signal Color"),
+  OPEN_GUI("Open Config GUI");
 
   private final String friendlyName;
 
