@@ -194,17 +194,24 @@ public class TrafficSignalTextureMap {
 
   public static TextureInfo getTextureInfoForBulb(TrafficSignalBulbStyle bulbStyle,
       TrafficSignalBulbType bulbType, TrafficSignalBulbColor bulbColor, boolean isBulbLit) {
-    TrafficSignalBulbStyle effectiveStyle = getEffectiveStyle(bulbStyle, bulbType);
-    float rotation = getRotationForType(bulbType);
+    // AHEAD type: UP arrow for green aspect, BALL for red/yellow
+    TrafficSignalBulbType effectiveBulbType = bulbType;
+    if (bulbType == TrafficSignalBulbType.AHEAD) {
+      effectiveBulbType = (bulbColor == TrafficSignalBulbColor.GREEN)
+          ? TrafficSignalBulbType.UP
+          : TrafficSignalBulbType.BALL;
+    }
+    TrafficSignalBulbStyle effectiveStyle = getEffectiveStyle(bulbStyle, effectiveBulbType);
+    float rotation = getRotationForType(effectiveBulbType);
 
-    TextureKey key = new TextureKey(effectiveStyle, bulbType, bulbColor, isBulbLit, rotation);
+    TextureKey key = new TextureKey(effectiveStyle, effectiveBulbType, bulbColor, isBulbLit, rotation);
 
     TextureInfo cached = textureInfoCache.get(key);
     if (cached != null) {
       return cached;
     }
 
-    int[] rowCol = getAtlasRowCol(effectiveStyle, bulbType, bulbColor, isBulbLit);
+    int[] rowCol = getAtlasRowCol(effectiveStyle, effectiveBulbType, bulbColor, isBulbLit);
     int row = rowCol[0];
     int col = rowCol[1];
 
