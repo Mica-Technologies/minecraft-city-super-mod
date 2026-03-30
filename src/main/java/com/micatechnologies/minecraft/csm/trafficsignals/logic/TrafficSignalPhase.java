@@ -777,30 +777,67 @@ public class TrafficSignalPhase {
   }
 
   /**
-   * Applies the {@link TrafficSignalPhase} to the given {@link World}.
+   * Applies the {@link TrafficSignalPhase} to the given {@link World}. Sets all signals to their
+   * designated colors, skipping any that are missing. Returns the position of the first missing
+   * signal encountered, or null if all signals were set successfully.
    *
    * @param world The {@link World} to apply the {@link TrafficSignalPhase} to.
    *
+   * @return The {@link BlockPos} of the first missing signal, or null if all succeeded.
+   *
    * @since 1.0
    */
-  public void apply(World world) {
-    greenSignals.forEach(pos -> AbstractBlockControllableSignal.changeSignalColor(world, pos,
-        AbstractBlockControllableSignal.SIGNAL_GREEN));
-    yellowSignals.forEach(pos -> AbstractBlockControllableSignal.changeSignalColor(world, pos,
-        AbstractBlockControllableSignal.SIGNAL_YELLOW));
-    redSignals.forEach(pos -> AbstractBlockControllableSignal.changeSignalColor(world, pos,
-        AbstractBlockControllableSignal.SIGNAL_RED));
-    offSignals.forEach(pos -> AbstractBlockControllableSignal.changeSignalColor(world, pos,
-        AbstractBlockControllableSignal.SIGNAL_OFF));
-    fyaSignals.forEach(pos -> AbstractBlockControllableSignal.changeSignalColor(world, pos,
-        AbstractBlockControllableSignal.SIGNAL_GREEN));
-    walkSignals.forEach(pos -> AbstractBlockControllableSignal.changeSignalColor(world, pos,
-        AbstractBlockControllableSignal.SIGNAL_GREEN));
-    flashDontWalkSignals.forEach(
-        pos -> AbstractBlockControllableSignal.changeSignalColor(world, pos,
-            AbstractBlockControllableSignal.SIGNAL_YELLOW));
-    dontWalkSignals.forEach(pos -> AbstractBlockControllableSignal.changeSignalColor(world, pos,
-        AbstractBlockControllableSignal.SIGNAL_RED));
+  public BlockPos apply(World world) {
+    BlockPos firstMissing = null;
+    for (BlockPos pos : greenSignals) {
+      if (!AbstractBlockControllableSignal.changeSignalColor(world, pos,
+          AbstractBlockControllableSignal.SIGNAL_GREEN) && firstMissing == null) {
+        firstMissing = pos;
+      }
+    }
+    for (BlockPos pos : yellowSignals) {
+      if (!AbstractBlockControllableSignal.changeSignalColor(world, pos,
+          AbstractBlockControllableSignal.SIGNAL_YELLOW) && firstMissing == null) {
+        firstMissing = pos;
+      }
+    }
+    for (BlockPos pos : redSignals) {
+      if (!AbstractBlockControllableSignal.changeSignalColor(world, pos,
+          AbstractBlockControllableSignal.SIGNAL_RED) && firstMissing == null) {
+        firstMissing = pos;
+      }
+    }
+    for (BlockPos pos : offSignals) {
+      if (!AbstractBlockControllableSignal.changeSignalColor(world, pos,
+          AbstractBlockControllableSignal.SIGNAL_OFF) && firstMissing == null) {
+        firstMissing = pos;
+      }
+    }
+    for (BlockPos pos : fyaSignals) {
+      if (!AbstractBlockControllableSignal.changeSignalColor(world, pos,
+          AbstractBlockControllableSignal.SIGNAL_GREEN) && firstMissing == null) {
+        firstMissing = pos;
+      }
+    }
+    for (BlockPos pos : walkSignals) {
+      if (!AbstractBlockControllableSignal.changeSignalColor(world, pos,
+          AbstractBlockControllableSignal.SIGNAL_GREEN) && firstMissing == null) {
+        firstMissing = pos;
+      }
+    }
+    for (BlockPos pos : flashDontWalkSignals) {
+      if (!AbstractBlockControllableSignal.changeSignalColor(world, pos,
+          AbstractBlockControllableSignal.SIGNAL_YELLOW) && firstMissing == null) {
+        firstMissing = pos;
+      }
+    }
+    for (BlockPos pos : dontWalkSignals) {
+      if (!AbstractBlockControllableSignal.changeSignalColor(world, pos,
+          AbstractBlockControllableSignal.SIGNAL_RED) && firstMissing == null) {
+        firstMissing = pos;
+      }
+    }
+    return firstMissing;
   }
 
   /**

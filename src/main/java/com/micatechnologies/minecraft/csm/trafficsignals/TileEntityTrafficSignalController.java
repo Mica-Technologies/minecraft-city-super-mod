@@ -385,8 +385,12 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
           lastPhaseApplicabilityChangeTime = lastPhaseChangeTime;
         }
 
-        // Change to the indicated phase (if valid)
-        currentPhase.apply(getWorld());
+        // Change to the indicated phase (if valid), fault if a signal is missing
+        // (but don't re-fault when already in fault mode — let fault flash work)
+        BlockPos missingSignal = currentPhase.apply(getWorld());
+        if (missingSignal != null && !isInFaultState()) {
+          enterFaultState("Linked signal missing at " + missingSignal);
+        }
       }
       // If the current phase is null (and newPhase is null also), enter fault state
       else if (currentPhase == null) {
