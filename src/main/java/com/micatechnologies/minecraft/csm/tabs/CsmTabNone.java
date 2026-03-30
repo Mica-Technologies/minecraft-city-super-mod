@@ -2,7 +2,22 @@ package com.micatechnologies.minecraft.csm.tabs;
 
 import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
 import com.micatechnologies.minecraft.csm.lighting.BlockLightupAir;
+import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableHorizontalAngleAheadSignal;
+import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableHorizontalAngleBikeSignal;
+import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableHorizontalAngleLeftSignal;
+import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableHorizontalAngleRailSignal;
+import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableHorizontalAngleRight2Signal;
+import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableHorizontalAngleRightSignal;
+import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableHorizontalAngleSolidSignal;
+import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableHorizontalAngleUTurnSignal;
+import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableHorizontalAngleUpLeftSignal;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableSingleSolidSignalGreenGray;
+import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableSingleSolidSignalGreenLeftAngle;
+import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableSingleSolidSignalGreenRightAngle;
+import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableSingleSolidSignalRedLeftAngle;
+import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableSingleSolidSignalRedRightAngle;
+import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableSingleSolidSignalYellowLeftAngle;
+import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableSingleSolidSignalYellowRightAngle;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableSingleSolidSignalRedGray;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableSingleSolidSignalYellowAdvanceFlashGrayA;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableSingleSolidSignalYellowAdvanceFlashGrayB;
@@ -157,5 +172,24 @@ public class CsmTabNone extends CsmTab {
     initTabBlock(BlockControllableSingleSolidSignalGreenGray.class, fmlPreInitializationEvent);
     initTabBlock(BlockControllableSingleSolidSignalYellowAdvanceFlashGrayA.class, fmlPreInitializationEvent);
     initTabBlock(BlockControllableSingleSolidSignalYellowAdvanceFlashGrayB.class, fmlPreInitializationEvent);
+
+    // Deprecated single-section angled signal blocks
+    initTabBlock(BlockControllableSingleSolidSignalRedLeftAngle.class, fmlPreInitializationEvent);
+    initTabBlock(BlockControllableSingleSolidSignalRedRightAngle.class, fmlPreInitializationEvent);
+    initTabBlock(BlockControllableSingleSolidSignalYellowLeftAngle.class, fmlPreInitializationEvent);
+    initTabBlock(BlockControllableSingleSolidSignalYellowRightAngle.class, fmlPreInitializationEvent);
+    initTabBlock(BlockControllableSingleSolidSignalGreenLeftAngle.class, fmlPreInitializationEvent);
+    initTabBlock(BlockControllableSingleSolidSignalGreenRightAngle.class, fmlPreInitializationEvent);
+
+    // Deprecated horizontal angled signal blocks
+    initTabBlock(BlockControllableHorizontalAngleAheadSignal.class, fmlPreInitializationEvent);
+    initTabBlock(BlockControllableHorizontalAngleBikeSignal.class, fmlPreInitializationEvent);
+    initTabBlock(BlockControllableHorizontalAngleLeftSignal.class, fmlPreInitializationEvent);
+    initTabBlock(BlockControllableHorizontalAngleRailSignal.class, fmlPreInitializationEvent);
+    initTabBlock(BlockControllableHorizontalAngleRight2Signal.class, fmlPreInitializationEvent);
+    initTabBlock(BlockControllableHorizontalAngleRightSignal.class, fmlPreInitializationEvent);
+    initTabBlock(BlockControllableHorizontalAngleSolidSignal.class, fmlPreInitializationEvent);
+    initTabBlock(BlockControllableHorizontalAngleUTurnSignal.class, fmlPreInitializationEvent);
+    initTabBlock(BlockControllableHorizontalAngleUpLeftSignal.class, fmlPreInitializationEvent);
   }
 }

@@ -29,15 +29,6 @@ import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableDoghou
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableDoghouseSecondaryRightSignal;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableHawkSignal;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableHorizontalAheadSignal;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableHorizontalAngleAheadSignal;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableHorizontalAngleBikeSignal;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableHorizontalAngleLeftSignal;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableHorizontalAngleRailSignal;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableHorizontalAngleRight2Signal;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableHorizontalAngleRightSignal;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableHorizontalAngleSolidSignal;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableHorizontalAngleUTurnSignal;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableHorizontalAngleUpLeftSignal;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableHorizontalBikeSignal;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableHorizontalLeftSignal;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableHorizontalRailSignal;
@@ -50,15 +41,9 @@ import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableRampMe
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableRampMeterOnSignalMount;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableRampMeterOnSignalRightMount;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableSingleSolidSignalGreen;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableSingleSolidSignalGreenLeftAngle;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableSingleSolidSignalGreenRightAngle;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableSingleSolidSignalRed;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableSingleSolidSignalRedLeftAngle;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableSingleSolidSignalRedRightAngle;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableSingleSolidSignalYellow;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableSingleSolidSignalYellowAdvanceFlash;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableSingleSolidSignalYellowLeftAngle;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableSingleSolidSignalYellowRightAngle;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableTattleTaleBeacon;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableTrafficSignalTrainController;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalAheadSignal;
@@ -231,24 +216,6 @@ public class CsmTabTrafficSignals extends CsmTab {
         fmlPreInitializationEvent); // ControllableHawkSignal
     initTabBlock(BlockControllableHorizontalAheadSignal.class,
         fmlPreInitializationEvent); // ControllableHorizontalAheadSignal
-    initTabBlock(BlockControllableHorizontalAngleAheadSignal.class,
-        fmlPreInitializationEvent); // ControllableHorizontalAngleAheadSignal
-    initTabBlock(BlockControllableHorizontalAngleBikeSignal.class,
-        fmlPreInitializationEvent); // ControllableHorizontalAngleBikeSignal
-    initTabBlock(BlockControllableHorizontalAngleLeftSignal.class,
-        fmlPreInitializationEvent); // ControllableHorizontalAngleLeftSignal
-    initTabBlock(BlockControllableHorizontalAngleRailSignal.class,
-        fmlPreInitializationEvent); // ControllableHorizontalAngleRailSignal
-    initTabBlock(BlockControllableHorizontalAngleRight2Signal.class,
-        fmlPreInitializationEvent); // ControllableHorizontalAngleRight2Signal
-    initTabBlock(BlockControllableHorizontalAngleRightSignal.class,
-        fmlPreInitializationEvent); // ControllableHorizontalAngleRightSignal
-    initTabBlock(BlockControllableHorizontalAngleSolidSignal.class,
-        fmlPreInitializationEvent); // ControllableHorizontalAngleSolidSignal
-    initTabBlock(BlockControllableHorizontalAngleUTurnSignal.class,
-        fmlPreInitializationEvent); // ControllableHorizontalAngleUTurnSignal
-    initTabBlock(BlockControllableHorizontalAngleUpLeftSignal.class,
-        fmlPreInitializationEvent); // ControllableHorizontalAngleUpLeftSignal
     initTabBlock(BlockControllableHorizontalBikeSignal.class,
         fmlPreInitializationEvent); // ControllableHorizontalBikeSignal
     initTabBlock(BlockControllableHorizontalLeftSignal.class,
@@ -273,24 +240,12 @@ public class CsmTabTrafficSignals extends CsmTab {
         fmlPreInitializationEvent); // ControllableRampMeterOnSignalRightMount
     initTabBlock(BlockControllableSingleSolidSignalGreen.class,
         fmlPreInitializationEvent); // ControllableSingleSolidSignalGreen
-    initTabBlock(BlockControllableSingleSolidSignalGreenLeftAngle.class,
-        fmlPreInitializationEvent); // ControllableSingleSolidSignalGreenLeftAngle
-    initTabBlock(BlockControllableSingleSolidSignalGreenRightAngle.class,
-        fmlPreInitializationEvent); // ControllableSingleSolidSignalGreenRightAngle
     initTabBlock(BlockControllableSingleSolidSignalRed.class,
         fmlPreInitializationEvent); // ControllableSingleSolidSignalRed
-    initTabBlock(BlockControllableSingleSolidSignalRedLeftAngle.class,
-        fmlPreInitializationEvent); // ControllableSingleSolidSignalRedLeftAngle
-    initTabBlock(BlockControllableSingleSolidSignalRedRightAngle.class,
-        fmlPreInitializationEvent); // ControllableSingleSolidSignalRedRightAngle
     initTabBlock(BlockControllableSingleSolidSignalYellow.class,
         fmlPreInitializationEvent); // ControllableSingleSolidSignalYellow
     initTabBlock(BlockControllableSingleSolidSignalYellowAdvanceFlash.class,
         fmlPreInitializationEvent); // ControllableSingleSolidSignalYellowAdvanceFlash
-    initTabBlock(BlockControllableSingleSolidSignalYellowLeftAngle.class,
-        fmlPreInitializationEvent); // ControllableSingleSolidSignalYellowLeftAngle
-    initTabBlock(BlockControllableSingleSolidSignalYellowRightAngle.class,
-        fmlPreInitializationEvent); // ControllableSingleSolidSignalYellowRightAngle
     initTabBlock(BlockControllableTattleTaleBeacon.class,
         fmlPreInitializationEvent); // ControllableTattleTaleBeacon
     initTabBlock(BlockControllableTrafficSignalTrainController.class,
