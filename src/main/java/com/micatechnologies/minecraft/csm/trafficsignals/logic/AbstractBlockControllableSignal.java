@@ -39,6 +39,10 @@ public abstract class AbstractBlockControllableSignal extends AbstractBlockRotat
 
     IBlockState blockState = world.getBlockState(blockPos);
     if (blockState.getBlock() instanceof AbstractBlockControllableSignal) {
+      // Skip if color already matches — avoids redundant setBlockState calls
+      if (blockState.getValue(COLOR) == signalColor) {
+        return true;
+      }
       world.setBlockState(blockPos, blockState.withProperty(COLOR, signalColor));
     } else {
       return false;
