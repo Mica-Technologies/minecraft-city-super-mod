@@ -140,10 +140,9 @@ All items below are done and working in-game.
   returns the first missing position. Controller enters fault on missing signal detection
   but doesn't re-fault while already in fault mode (so fault flash works on remaining
   signals). Unloaded chunks are skipped (not a fault).
-- **Controller phase apply optimization (FUTURE)**: Currently the controller sets
-  blockstate on ALL linked signals every phase change, even if a signal's color isn't
-  changing. This wastes TPS. Optimize apply() to only call setBlockState on signals
-  whose target color differs from their current blockstate COLOR property.
+- ~~**Controller phase apply optimization**~~: DONE (2026-03-30). changeSignalColor now
+  checks current COLOR property and early-returns if already matching, skipping redundant
+  setBlockState calls.
 - ~~**HAWK wigwag refinement**~~: CLOSED (2026-03-30). Working fine after testing. Current
   approach uses System.currentTimeMillis() in shouldLightWigwagSection(). If timing issues
   arise in the future, consider bulbFlashInverted on SectionInfo for tick-driven alternation.
