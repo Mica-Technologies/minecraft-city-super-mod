@@ -28,6 +28,13 @@ public class ItemSignalHeadConfigTool extends AbstractItem {
   @Override
   public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos,
       EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+    // OPEN_GUI mode must run on client side (GuiScreen has no server Container)
+    if (worldIn.isRemote && !player.isSneaking()
+        && getMode(player) == ItemSignalHeadConfigToolMode.OPEN_GUI
+        && worldIn.getBlockState(pos).getBlock() instanceof AbstractBlockControllableSignalHead) {
+      player.openGui(Csm.instance, 1, worldIn, pos.getX(), pos.getY(), pos.getZ());
+      return EnumActionResult.SUCCESS;
+    }
     if (!worldIn.isRemote) {
       IBlockState state = worldIn.getBlockState(pos);
       Block clickedBlock = state.getBlock();
@@ -105,10 +112,9 @@ public class ItemSignalHeadConfigTool extends AbstractItem {
           player.sendMessage(new TextComponentString("Signal color set to " + colorName(newColor)));
           break;
         }
-        case OPEN_GUI: {
-          player.openGui(Csm.instance, 1, worldIn, pos.getX(), pos.getY(), pos.getZ());
+        case OPEN_GUI:
+          // Handled on client side above
           break;
-        }
       }
 
       return EnumActionResult.SUCCESS;
