@@ -398,17 +398,19 @@ public class TileEntityTrafficSignalHeadRenderer extends
   }
 
   /**
-   * Renders Barlo Safety Beam strobe bars for any sections with BARLO visor type. The strobe bar
+   * Renders Barlo Safety Beam strobe bars for RED sections with BARLO visor type. The strobe bar
    * is a thin white horizontal quad rendered in front of the bulb face, flashing with a rapid
-   * 5-pulse pattern (500ms) followed by 800ms dark (1.3s total cycle).
+   * 5-pulse pattern (500ms) followed by 800ms dark (1.3s total cycle). Only renders on red
+   * sections — yellow and green use the tunnel visor shape without a strobe.
    */
   private void renderBarloStrobeBars(TrafficSignalSectionInfo[] sectionInfos,
       float[] sectionYPositions, float[] sectionXPositions, int[] sectionSizes) {
-    // Quick check: any BARLO sections that are lit?
+    // Quick check: any BARLO red sections that are lit?
     boolean hasBarloLit = false;
     for (int i = 0; i < sectionInfos.length; i++) {
       if (sectionInfos[i].getVisorType() == TrafficSignalVisorType.BARLO
-          && sectionInfos[i].isBulbLit()) {
+          && sectionInfos[i].isBulbLit()
+          && sectionInfos[i].getBulbColor() == TrafficSignalBulbColor.RED) {
         hasBarloLit = true;
         break;
       }
@@ -420,15 +422,17 @@ public class TileEntityTrafficSignalHeadRenderer extends
     boolean strobeOn = t < 500L && (t / 50L) % 2L == 1L;
     if (!strobeOn) return;
 
-    // Render untextured white quads for each qualifying section
+    // Render untextured white quads — bypass GlStateManager color cache
     GlStateManager.disableTexture2D();
+    GL11.glColor4f(1f, 1f, 1f, 1f);
     Tessellator tessellator = Tessellator.getInstance();
     BufferBuilder buffer = tessellator.getBuffer();
-    buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
+    buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
 
     for (int i = 0; i < sectionInfos.length; i++) {
       if (sectionInfos[i].getVisorType() != TrafficSignalVisorType.BARLO
-          || !sectionInfos[i].isBulbLit()) {
+          || !sectionInfos[i].isBulbLit()
+          || sectionInfos[i].getBulbColor() != TrafficSignalBulbColor.RED) {
         continue;
       }
 
@@ -436,21 +440,17 @@ public class TileEntityTrafficSignalHeadRenderer extends
       float sectionOffset = (12f - fullSize) / 2f;
       float scale = fullSize / 12f;
 
-      // Strobe bar: centered horizontally and vertically in section
+      // Strobe bar: centered horizontally and vertically in section, 0.8 units tall
       float strobeWidth = 10.4f * scale;
-      float strobeHeight = 0.4f * scale;
+      float strobeHeight = 0.8f * scale;
       float strobeX = 2f + sectionXPositions[i] + sectionOffset + (fullSize - strobeWidth) / 2f;
       float strobeY = sectionYPositions[i] + sectionOffset + (fullSize - strobeHeight) / 2f;
       float strobeZ = 10.5f;
 
-      buffer.pos(strobeX, strobeY, strobeZ)
-          .color(1f, 1f, 1f, 1f).endVertex();
-      buffer.pos(strobeX + strobeWidth, strobeY, strobeZ)
-          .color(1f, 1f, 1f, 1f).endVertex();
-      buffer.pos(strobeX + strobeWidth, strobeY + strobeHeight, strobeZ)
-          .color(1f, 1f, 1f, 1f).endVertex();
-      buffer.pos(strobeX, strobeY + strobeHeight, strobeZ)
-          .color(1f, 1f, 1f, 1f).endVertex();
+      buffer.pos(strobeX, strobeY, strobeZ).endVertex();
+      buffer.pos(strobeX + strobeWidth, strobeY, strobeZ).endVertex();
+      buffer.pos(strobeX + strobeWidth, strobeY + strobeHeight, strobeZ).endVertex();
+      buffer.pos(strobeX, strobeY + strobeHeight, strobeZ).endVertex();
     }
 
     tessellator.draw();
