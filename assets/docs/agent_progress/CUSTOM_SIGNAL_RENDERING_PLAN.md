@@ -151,7 +151,9 @@ All items below are done and working in-game.
   facings with correct positioning, font scale, and single/double digit support.
   Texture updates for countdown overlay area deferred to crosswalk custom rendering.
   Tweeters and ramp meters stay as JSON.
-- **Barlo signal**: Review defaults for barlo-specific configuration
+- ~~**Barlo signal**~~: DONE (2026-03-30). Added BARLO (horizontal, tunnel visor) and
+  BARLO_VERTICAL (vertical, circle visor) visor types with dynamic strobe bar rendering.
+  Barlo block retired via ICsmRetiringBlock, defaults updated to use BARLO visor on red.
 - **Crosswalk signal custom rendering (FUTURE)**: Extend the custom rendering system to
   crosswalk signals (walk/don't walk displays) to support runtime body color customization.
   This would enable deprecating the 2 gray crosswalk blocks
@@ -163,9 +165,8 @@ All items below are done and working in-game.
 
 ### Known Issues to Circle Back To
 
-- **Barlo signal** (`controllableverticalsolidsignalbarlo`): Needs review for correct
-  default section info and any special rendering requirements. Currently converted with
-  standard flat black BALL defaults but may need barlo-specific configuration.
+- ~~**Barlo signal**~~: RESOLVED (2026-03-30). BARLO and BARLO_VERTICAL visor types added.
+  Block retired via ICsmRetiringBlock with BARLO visor on red section default.
 - **8-inch visor vertex data**: Already implemented — scaleBoxes() generates 8-inch
   body/door/visor data from 12-inch at class load time. All 8-inch signals working.
 
