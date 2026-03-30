@@ -36,10 +36,9 @@ public abstract class AbstractBlockControllableSignal extends AbstractBlockRotat
     if (blockState.getBlock() instanceof AbstractBlockControllableSignal) {
       world.setBlockState(blockPos, blockState.withProperty(COLOR, signalColor));
     } else {
-      System.err.println("Cannot set traffic signal color of a non-traffic signal block: " +
-          blockState.getBlock().getLocalizedName() +
-          " at " +
-          blockPos);
+      throw new IllegalStateException(
+          "Linked signal missing at " + blockPos + " (found " +
+              blockState.getBlock().getLocalizedName() + ")");
     }
 
     // Reset request count (if applicable)
