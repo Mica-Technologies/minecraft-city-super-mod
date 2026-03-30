@@ -14,6 +14,8 @@ import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -249,6 +251,14 @@ public abstract class AbstractBlock extends Block implements IHasModel, ICsmBloc
       String replacementBlockId = ((ICsmRetiringBlock) block).getReplacementBlockId();
       Block replacementBlock = CsmRegistry.getBlock(replacementBlockId);
       if (replacementBlock != null) {
+        // Save old tile entity data before replacement
+        TileEntity oldTE = worldIn.getTileEntity(pos);
+        NBTTagCompound oldNBT = null;
+        if (oldTE != null) {
+          oldNBT = new NBTTagCompound();
+          oldTE.writeToNBT(oldNBT);
+        }
+
         if (block instanceof AbstractBlockRotatableNSEW) {
           EnumFacing facing = state.getValue(AbstractBlockRotatableNSEW.FACING);
           worldIn.setBlockState(pos, replacementBlock.getDefaultState()
@@ -263,6 +273,11 @@ public abstract class AbstractBlock extends Block implements IHasModel, ICsmBloc
               .withProperty(AbstractBlockRotatableHZEight.FACING, facing));
         } else {
           worldIn.setBlockState(pos, replacementBlock.getDefaultState());
+        }
+
+        // Configure the replacement block's tile entity with old data
+        if (oldNBT != null) {
+          ((ICsmRetiringBlock) block).configureReplacement(worldIn, pos, oldNBT);
         }
       }
     }
