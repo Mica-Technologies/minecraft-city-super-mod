@@ -31,14 +31,17 @@ public abstract class AbstractBlockControllableSignal extends AbstractBlockRotat
     super(p_i45394_1_);
   }
 
-  public static void changeSignalColor(World world, BlockPos blockPos, int signalColor) {
+  public static boolean changeSignalColor(World world, BlockPos blockPos, int signalColor) {
+    // Skip signals in unloaded chunks — not a fault, just out of range
+    if (!world.isBlockLoaded(blockPos)) {
+      return true;
+    }
+
     IBlockState blockState = world.getBlockState(blockPos);
     if (blockState.getBlock() instanceof AbstractBlockControllableSignal) {
       world.setBlockState(blockPos, blockState.withProperty(COLOR, signalColor));
     } else {
-      throw new IllegalStateException(
-          "Linked signal missing at " + blockPos + " (found " +
-              blockState.getBlock().getLocalizedName() + ")");
+      return false;
     }
 
     // Reset request count (if applicable)
@@ -49,6 +52,7 @@ public abstract class AbstractBlockControllableSignal extends AbstractBlockRotat
         AbstractBlockTrafficSignalRequester.resetRequestCount(world, blockPos);
       }
     }
+    return true;
   }
 
   public static AbstractBlockControllableSignal getSignalBlockInstanceOrNull(World world,
