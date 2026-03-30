@@ -48,13 +48,13 @@ public class BlockControllableVerticalAngle2UpLeftSignal extends AbstractBlockCo
   public TrafficSignalSectionInfo[] getDefaultTrafficSignalSectionInfo() {
     return new TrafficSignalSectionInfo[] {
         new TrafficSignalSectionInfo(TrafficSignalBodyColor.FLAT_BLACK, TrafficSignalBodyColor.FLAT_BLACK, TrafficSignalBodyColor.FLAT_BLACK,
-            TrafficSignalVisorType.CUTAWAY, TrafficSignalBulbStyle.LED, TrafficSignalBulbType.UP_LEFT,
+            TrafficSignalVisorType.CIRCLE, TrafficSignalBulbStyle.LED, TrafficSignalBulbType.UP_LEFT,
             TrafficSignalBulbColor.RED, false),
         new TrafficSignalSectionInfo(TrafficSignalBodyColor.FLAT_BLACK, TrafficSignalBodyColor.FLAT_BLACK, TrafficSignalBodyColor.FLAT_BLACK,
-            TrafficSignalVisorType.CUTAWAY, TrafficSignalBulbStyle.LED, TrafficSignalBulbType.UP_LEFT,
+            TrafficSignalVisorType.CIRCLE, TrafficSignalBulbStyle.LED, TrafficSignalBulbType.UP_LEFT,
             TrafficSignalBulbColor.YELLOW, false),
         new TrafficSignalSectionInfo(TrafficSignalBodyColor.FLAT_BLACK, TrafficSignalBodyColor.FLAT_BLACK, TrafficSignalBodyColor.FLAT_BLACK,
-            TrafficSignalVisorType.CUTAWAY, TrafficSignalBulbStyle.LED, TrafficSignalBulbType.UP_LEFT,
+            TrafficSignalVisorType.CIRCLE, TrafficSignalBulbStyle.LED, TrafficSignalBulbType.UP_LEFT,
             TrafficSignalBulbColor.GREEN, false)
     };
   }

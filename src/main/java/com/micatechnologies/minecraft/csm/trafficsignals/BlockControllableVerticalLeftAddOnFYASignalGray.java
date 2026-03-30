@@ -50,7 +50,7 @@ public class BlockControllableVerticalLeftAddOnFYASignalGray extends AbstractBlo
   public TrafficSignalSectionInfo[] getDefaultTrafficSignalSectionInfo() {
     return new TrafficSignalSectionInfo[] {
         new TrafficSignalSectionInfo(TrafficSignalBodyColor.BATTLESHIP_GRAY, TrafficSignalBodyColor.BATTLESHIP_GRAY, TrafficSignalBodyColor.BATTLESHIP_GRAY,
-            TrafficSignalVisorType.CUTAWAY, TrafficSignalBulbStyle.LED, TrafficSignalBulbType.LEFT,
+            TrafficSignalVisorType.CIRCLE, TrafficSignalBulbStyle.LED, TrafficSignalBulbType.LEFT,
             TrafficSignalBulbColor.GREEN, TrafficSignalBulbColor.YELLOW, false, true)
     };
   }

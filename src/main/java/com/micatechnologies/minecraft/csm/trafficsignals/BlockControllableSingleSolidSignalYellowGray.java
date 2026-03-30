@@ -55,7 +55,7 @@ public class BlockControllableSingleSolidSignalYellowGray extends AbstractBlockC
   public TrafficSignalSectionInfo[] getDefaultTrafficSignalSectionInfo() {
     TrafficSignalSectionInfo[] infos = new TrafficSignalSectionInfo[] {
         new TrafficSignalSectionInfo(TrafficSignalBodyColor.BATTLESHIP_GRAY, TrafficSignalBodyColor.BATTLESHIP_GRAY, TrafficSignalBodyColor.BATTLESHIP_GRAY,
-            TrafficSignalVisorType.CUTAWAY, TrafficSignalBulbStyle.LED, TrafficSignalBulbType.BALL,
+            TrafficSignalVisorType.CIRCLE, TrafficSignalBulbStyle.LED, TrafficSignalBulbType.BALL,
             TrafficSignalBulbColor.YELLOW, false)
     };
     return infos;

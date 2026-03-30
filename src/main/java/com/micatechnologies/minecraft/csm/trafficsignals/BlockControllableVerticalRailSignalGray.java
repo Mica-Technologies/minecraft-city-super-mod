@@ -45,13 +45,13 @@ public class BlockControllableVerticalRailSignalGray extends AbstractBlockContro
   public TrafficSignalSectionInfo[] getDefaultTrafficSignalSectionInfo() {
     TrafficSignalSectionInfo[] infos = new TrafficSignalSectionInfo[] {
         new TrafficSignalSectionInfo(TrafficSignalBodyColor.BATTLESHIP_GRAY, TrafficSignalBodyColor.BATTLESHIP_GRAY, TrafficSignalBodyColor.BATTLESHIP_GRAY,
-            TrafficSignalVisorType.CUTAWAY, TrafficSignalBulbStyle.LED, TrafficSignalBulbType.TRANSIT,
+            TrafficSignalVisorType.CIRCLE, TrafficSignalBulbStyle.LED, TrafficSignalBulbType.TRANSIT,
             TrafficSignalBulbColor.RED, false),
         new TrafficSignalSectionInfo(TrafficSignalBodyColor.BATTLESHIP_GRAY, TrafficSignalBodyColor.BATTLESHIP_GRAY, TrafficSignalBodyColor.BATTLESHIP_GRAY,
-            TrafficSignalVisorType.CUTAWAY, TrafficSignalBulbStyle.LED, TrafficSignalBulbType.TRANSIT,
+            TrafficSignalVisorType.CIRCLE, TrafficSignalBulbStyle.LED, TrafficSignalBulbType.TRANSIT,
             TrafficSignalBulbColor.YELLOW, false),
         new TrafficSignalSectionInfo(TrafficSignalBodyColor.BATTLESHIP_GRAY, TrafficSignalBodyColor.BATTLESHIP_GRAY, TrafficSignalBodyColor.BATTLESHIP_GRAY,
-            TrafficSignalVisorType.CUTAWAY, TrafficSignalBulbStyle.LED, TrafficSignalBulbType.TRANSIT,
+            TrafficSignalVisorType.CIRCLE, TrafficSignalBulbStyle.LED, TrafficSignalBulbType.TRANSIT,
             TrafficSignalBulbColor.GREEN, false)
     };
     return infos;

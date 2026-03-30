@@ -55,10 +55,10 @@ public class BlockControllableVerticalRightAddOnSignalGray extends AbstractBlock
   public TrafficSignalSectionInfo[] getDefaultTrafficSignalSectionInfo() {
     return new TrafficSignalSectionInfo[] {
         new TrafficSignalSectionInfo(TrafficSignalBodyColor.BATTLESHIP_GRAY, TrafficSignalBodyColor.BATTLESHIP_GRAY, TrafficSignalBodyColor.BATTLESHIP_GRAY,
-            TrafficSignalVisorType.CUTAWAY, TrafficSignalBulbStyle.LED_DOTTED, TrafficSignalBulbType.RIGHT,
+            TrafficSignalVisorType.CIRCLE, TrafficSignalBulbStyle.LED_DOTTED, TrafficSignalBulbType.RIGHT,
             TrafficSignalBulbColor.YELLOW, false),
         new TrafficSignalSectionInfo(TrafficSignalBodyColor.BATTLESHIP_GRAY, TrafficSignalBodyColor.BATTLESHIP_GRAY, TrafficSignalBodyColor.BATTLESHIP_GRAY,
-            TrafficSignalVisorType.CUTAWAY, TrafficSignalBulbStyle.LED_DOTTED, TrafficSignalBulbType.RIGHT,
+            TrafficSignalVisorType.CIRCLE, TrafficSignalBulbStyle.LED_DOTTED, TrafficSignalBulbType.RIGHT,
             TrafficSignalBulbColor.GREEN, false)
     };
   }

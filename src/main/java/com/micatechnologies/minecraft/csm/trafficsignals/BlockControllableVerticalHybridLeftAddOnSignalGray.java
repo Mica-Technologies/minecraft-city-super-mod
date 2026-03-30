@@ -56,7 +56,7 @@ public class BlockControllableVerticalHybridLeftAddOnSignalGray
   public TrafficSignalSectionInfo[] getDefaultTrafficSignalSectionInfo() {
     return new TrafficSignalSectionInfo[] {
         new TrafficSignalSectionInfo(TrafficSignalBodyColor.BATTLESHIP_GRAY, TrafficSignalBodyColor.BATTLESHIP_GRAY, TrafficSignalBodyColor.BATTLESHIP_GRAY,
-            TrafficSignalVisorType.CUTAWAY, TrafficSignalBulbStyle.LED_DOTTED, TrafficSignalBulbType.LEFT,
+            TrafficSignalVisorType.CIRCLE, TrafficSignalBulbStyle.LED_DOTTED, TrafficSignalBulbType.LEFT,
             TrafficSignalBulbColor.GREEN, false)
     };
   }
