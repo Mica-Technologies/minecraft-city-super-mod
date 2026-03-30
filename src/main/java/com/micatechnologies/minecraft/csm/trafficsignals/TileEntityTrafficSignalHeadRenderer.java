@@ -278,6 +278,10 @@ public class TileEntityTrafficSignalHeadRenderer extends
         visorData = is8Inch ? TrafficSignalVertexData.TUNNEL_VISOR_8INCH_VERTEX_DATA
             : TrafficSignalVertexData.TUNNEL_VISOR_VERTEX_DATA;
         break;
+      case BARLO_VERTICAL:
+        visorData = is8Inch ? TrafficSignalVertexData.CIRCLE_VISOR_8INCH_VERTEX_DATA
+            : TrafficSignalVertexData.CIRCLE_VISOR_VERTEX_DATA;
+        break;
       case NONE:
         visorData = is8Inch ? TrafficSignalVertexData.NONE_VISOR_8INCH_VERTEX_DATA
             : TrafficSignalVertexData.NONE_VISOR_VERTEX_DATA;
@@ -397,18 +401,23 @@ public class TileEntityTrafficSignalHeadRenderer extends
     renderBarloStrobeBars(sectionInfos, sectionYPositions, sectionXPositions, sectionSizes);
   }
 
+  private static boolean isBarloVisor(TrafficSignalVisorType type) {
+    return type == TrafficSignalVisorType.BARLO || type == TrafficSignalVisorType.BARLO_VERTICAL;
+  }
+
   /**
-   * Renders Barlo Safety Beam for RED sections with BARLO visor type. Draws a permanent dark
-   * mounting bar (flat black) and a flashing white strobe on top of it. The strobe flashes with
-   * a rapid 5-pulse pattern (500ms) followed by 800ms dark (1.3s total cycle). Only renders on
-   * red sections — yellow and green use the tunnel visor shape without a strobe.
+   * Renders Barlo Safety Beam for RED sections with BARLO or BARLO_VERTICAL visor type. Draws a
+   * permanent dark mounting bar (flat black) and a flashing white strobe on top. BARLO uses a
+   * horizontal bar with tunnel visor; BARLO_VERTICAL uses a vertical bar with circle visor.
+   * The strobe flashes with a rapid 5-pulse pattern (500ms) followed by 800ms dark (1.3s cycle).
+   * Only renders on red sections.
    */
   private void renderBarloStrobeBars(TrafficSignalSectionInfo[] sectionInfos,
       float[] sectionYPositions, float[] sectionXPositions, int[] sectionSizes) {
-    // Quick check: any BARLO red sections?
+    // Quick check: any Barlo red sections?
     boolean hasBarlo = false;
     for (int i = 0; i < sectionInfos.length; i++) {
-      if (sectionInfos[i].getVisorType() == TrafficSignalVisorType.BARLO
+      if (isBarloVisor(sectionInfos[i].getVisorType())
           && sectionInfos[i].getBulbColor() == TrafficSignalBulbColor.RED) {
         hasBarlo = true;
         break;
@@ -420,32 +429,18 @@ public class TileEntityTrafficSignalHeadRenderer extends
     Tessellator tessellator = Tessellator.getInstance();
     BufferBuilder buffer = tessellator.getBuffer();
 
-    // Always render the dark mounting bar (flat black) for all BARLO red sections
-    float fb = TrafficSignalBodyColor.FLAT_BLACK.getRed(); // 0.094
+    // Always render the dark mounting bar (flat black) for all Barlo red sections
+    float fb = TrafficSignalBodyColor.FLAT_BLACK.getRed();
     GL11.glColor4f(fb, fb, fb, 1f);
     buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
 
     for (int i = 0; i < sectionInfos.length; i++) {
-      if (sectionInfos[i].getVisorType() != TrafficSignalVisorType.BARLO
+      if (!isBarloVisor(sectionInfos[i].getVisorType())
           || sectionInfos[i].getBulbColor() != TrafficSignalBulbColor.RED) {
         continue;
       }
-
-      float fullSize = sectionSizes[i];
-      float sectionOffset = (12f - fullSize) / 2f;
-      float scale = fullSize / 12f;
-
-      // Mounting bar: centered in section, 0.8 units tall at z=7.0 (in front of bulb)
-      float barWidth = 10.4f * scale;
-      float barHeight = 0.8f * scale;
-      float barX = 2f + sectionXPositions[i] + sectionOffset + (fullSize - barWidth) / 2f;
-      float barY = sectionYPositions[i] + sectionOffset + (fullSize - barHeight) / 2f;
-      float barZ = 7.0f;
-
-      buffer.pos(barX, barY, barZ).endVertex();
-      buffer.pos(barX + barWidth, barY, barZ).endVertex();
-      buffer.pos(barX + barWidth, barY + barHeight, barZ).endVertex();
-      buffer.pos(barX, barY + barHeight, barZ).endVertex();
+      emitBarloQuad(buffer, sectionInfos[i].getVisorType(), sectionSizes[i],
+          sectionXPositions[i], sectionYPositions[i], 7.0f);
     }
     tessellator.draw();
 
@@ -458,31 +453,52 @@ public class TileEntityTrafficSignalHeadRenderer extends
       buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
 
       for (int i = 0; i < sectionInfos.length; i++) {
-        if (sectionInfos[i].getVisorType() != TrafficSignalVisorType.BARLO
+        if (!isBarloVisor(sectionInfos[i].getVisorType())
             || !sectionInfos[i].isBulbLit()
             || sectionInfos[i].getBulbColor() != TrafficSignalBulbColor.RED) {
           continue;
         }
-
-        float fullSize = sectionSizes[i];
-        float sectionOffset = (12f - fullSize) / 2f;
-        float scale = fullSize / 12f;
-
-        // Strobe flash: same size as mounting bar but slightly in front (z=6.9)
-        float barWidth = 10.4f * scale;
-        float barHeight = 0.8f * scale;
-        float barX = 2f + sectionXPositions[i] + sectionOffset + (fullSize - barWidth) / 2f;
-        float barY = sectionYPositions[i] + sectionOffset + (fullSize - barHeight) / 2f;
-        float barZ = 6.9f;
-
-        buffer.pos(barX, barY, barZ).endVertex();
-        buffer.pos(barX + barWidth, barY, barZ).endVertex();
-        buffer.pos(barX + barWidth, barY + barHeight, barZ).endVertex();
-        buffer.pos(barX, barY + barHeight, barZ).endVertex();
+        emitBarloQuad(buffer, sectionInfos[i].getVisorType(), sectionSizes[i],
+            sectionXPositions[i], sectionYPositions[i], 6.9f);
       }
       tessellator.draw();
     }
 
     GlStateManager.enableTexture2D();
+  }
+
+  /**
+   * Emits a single Barlo strobe quad into the buffer. Horizontal for BARLO, vertical for
+   * BARLO_VERTICAL. Centered in the section.
+   */
+  private void emitBarloQuad(BufferBuilder buffer, TrafficSignalVisorType visorType,
+      int fullSize, float xPos, float yPos, float z) {
+    float sectionOffset = (12f - fullSize) / 2f;
+    float scale = fullSize / 12f;
+    float sectionCenterX = 2f + xPos + sectionOffset + fullSize / 2f;
+    float sectionCenterY = yPos + sectionOffset + fullSize / 2f;
+
+    float barLong = 10.4f * scale;   // length along the long axis
+    float barShort = 1.0f * scale;   // thickness
+
+    float x1, y1, x2, y2;
+    if (visorType == TrafficSignalVisorType.BARLO_VERTICAL) {
+      // Vertical bar: narrow in X, tall in Y
+      x1 = sectionCenterX - barShort / 2f;
+      y1 = sectionCenterY - barLong / 2f;
+      x2 = sectionCenterX + barShort / 2f;
+      y2 = sectionCenterY + barLong / 2f;
+    } else {
+      // Horizontal bar: wide in X, narrow in Y
+      x1 = sectionCenterX - barLong / 2f;
+      y1 = sectionCenterY - barShort / 2f;
+      x2 = sectionCenterX + barLong / 2f;
+      y2 = sectionCenterY + barShort / 2f;
+    }
+
+    buffer.pos(x1, y1, z).endVertex();
+    buffer.pos(x2, y1, z).endVertex();
+    buffer.pos(x2, y2, z).endVertex();
+    buffer.pos(x1, y2, z).endVertex();
   }
 }
