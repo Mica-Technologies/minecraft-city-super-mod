@@ -424,8 +424,9 @@ meters are single-section, similar to Wave 2.
 - ~~Per-section independent colors~~: CANCELLED. Too much TE bloat for minimal benefit.
 - ~~Performance profiling~~: CLOSED (2026-03-30). Testing with many signals shows no
   concerns. Revisit if issues arise in the future.
-- [ ] **GE GTX bulb style (FUTURE)**: Atlas indices 50-53 have GTX textures (1 off + 3 on
-  for R/Y/G). Add as a new `TrafficSignalBulbStyle` for BALL-type bulbs only.
+- ~~**GE GTX bulb style**~~: DONE (2026-03-30). Added GTX as TrafficSignalBulbStyle (ordinal
+  3). Uses atlas indices 50 (off) and 51-53 (on G/Y/R) for BALL type. Falls back to LED
+  textures for arrow types since GTX has no arrow variants.
 - [ ] **Config tool UI mode (FUTURE)**: Add a beta UI mode to the signal config tool —
   clicking a signal in this mode opens a GUI for configuring all section properties
   visually, rather than cycling through options one at a time.
