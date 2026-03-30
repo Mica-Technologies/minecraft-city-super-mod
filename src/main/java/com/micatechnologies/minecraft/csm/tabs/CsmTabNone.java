@@ -3,6 +3,7 @@ package com.micatechnologies.minecraft.csm.tabs;
 import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
 import com.micatechnologies.minecraft.csm.lighting.BlockLightupAir;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableHorizontalAngleAheadSignal;
+import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalSolidSignalBarlo;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableHorizontalAngleBikeSignal;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableHorizontalAngleLeftSignal;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableHorizontalAngleRailSignal;
@@ -191,5 +192,8 @@ public class CsmTabNone extends CsmTab {
     initTabBlock(BlockControllableHorizontalAngleSolidSignal.class, fmlPreInitializationEvent);
     initTabBlock(BlockControllableHorizontalAngleUTurnSignal.class, fmlPreInitializationEvent);
     initTabBlock(BlockControllableHorizontalAngleUpLeftSignal.class, fmlPreInitializationEvent);
+
+    // Deprecated Barlo strobe signal (now a visor type option on any signal)
+    initTabBlock(BlockControllableVerticalSolidSignalBarlo.class, fmlPreInitializationEvent);
   }
 }

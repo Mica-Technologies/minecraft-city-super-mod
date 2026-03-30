@@ -77,7 +77,6 @@ import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVertic
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalSolidSignal1288Inch;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalSolidSignal8812Inch;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalSolidSignal8Inch;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalSolidSignalBarlo;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalSolidSignalLED;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalSolidSignalLED1288Inch;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalSolidSignalLED8812Inch;
@@ -312,8 +311,6 @@ public class CsmTabTrafficSignals extends CsmTab {
         fmlPreInitializationEvent); // ControllableVerticalSolidSignal8812Inch
     initTabBlock(BlockControllableVerticalSolidSignal8Inch.class,
         fmlPreInitializationEvent); // ControllableVerticalSolidSignal8Inch
-    initTabBlock(BlockControllableVerticalSolidSignalBarlo.class,
-        fmlPreInitializationEvent); // ControllableVerticalSolidSignalBarlo
     initTabBlock(BlockControllableVerticalSolidSignalLED.class,
         fmlPreInitializationEvent); // ControllableVerticalSolidSignalLED
     initTabBlock(BlockControllableVerticalSolidSignalLED1288Inch.class,
