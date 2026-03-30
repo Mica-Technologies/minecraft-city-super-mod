@@ -440,12 +440,13 @@ public class TileEntityTrafficSignalHeadRenderer extends
       float sectionOffset = (12f - fullSize) / 2f;
       float scale = fullSize / 12f;
 
-      // Strobe bar: centered horizontally and vertically in section, 0.8 units tall
+      // Strobe bar: centered horizontally and vertically in section, 0.8 units tall.
+      // Z=7.0 places it in front of the bulb face (z=10.4) — lower Z = closer to viewer.
       float strobeWidth = 10.4f * scale;
       float strobeHeight = 0.8f * scale;
       float strobeX = 2f + sectionXPositions[i] + sectionOffset + (fullSize - strobeWidth) / 2f;
       float strobeY = sectionYPositions[i] + sectionOffset + (fullSize - strobeHeight) / 2f;
-      float strobeZ = 10.5f;
+      float strobeZ = 7.0f;
 
       buffer.pos(strobeX, strobeY, strobeZ).endVertex();
       buffer.pos(strobeX + strobeWidth, strobeY, strobeZ).endVertex();
