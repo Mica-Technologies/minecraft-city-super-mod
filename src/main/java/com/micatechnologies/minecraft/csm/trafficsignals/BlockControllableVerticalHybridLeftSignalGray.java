@@ -10,8 +10,10 @@ import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalViso
 import net.minecraft.block.material.Material;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmRetiringBlock;
 
-public class BlockControllableVerticalHybridLeftSignalGray extends AbstractBlockControllableSignalHead {
+public class BlockControllableVerticalHybridLeftSignalGray extends AbstractBlockControllableSignalHead implements
+    ICsmRetiringBlock {
 
   public BlockControllableVerticalHybridLeftSignalGray() {
     super(Material.ROCK);
@@ -53,5 +55,10 @@ public class BlockControllableVerticalHybridLeftSignalGray extends AbstractBlock
             TrafficSignalBulbColor.GREEN, TrafficSignalBulbColor.YELLOW, false, true)
     };
     return infos;
+  }
+
+  @Override
+  public String getReplacementBlockId() {
+    return "controllableverticalhybridleftsignal";
   }
 }

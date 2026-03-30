@@ -255,21 +255,27 @@ Used by: doghouse main (3 sections) and secondary (2 sections) signals (6 blocks
 
 Used by: 8-8-12 and 12-8-8 variant signals (8 blocks)
 
-#### Angled Signals — Deprecation Path
+#### Angled Signals — DEPRECATED + AUTO-CONVERTING ✓ (2026-03-30)
 
-The 16 angled signal blocks (`controllableverticalangle*`, `controllableverticalangle2*`)
-will be **obsoleted** by the custom rendering system since body tilt is now a runtime
-property via `TrafficSignalBodyTilt` (NONE, LEFT_TILT, RIGHT_TILT, LEFT_ANGLE,
-RIGHT_ANGLE).
+The 18 angled signal blocks (`controllableverticalangle*`, `controllableverticalangle2*`)
+are now **deprecated** via `ICsmRetiringBlock`. They are:
+- Hidden from the creative tab (removed from `CsmTabTrafficSignals`)
+- Auto-converting via `randomTick` to their non-angled equivalents
+- TE data (section infos, customizations) is preserved during conversion
+- Body tilt is set on the new TE: `angle*` → RIGHT_ANGLE, `angle2*` → LEFT_ANGLE
+- Blocks remain registered so existing worlds don't break
 
-**Auto-conversion plan:**
-- When an angled signal block is loaded in a world, detect it and replace it with the
-  corresponding non-angled custom-rendered version
-- Map the old block's angle to the appropriate `TrafficSignalBodyTilt` value on the new TE
-- Preserve the blockstate COLOR and FACING properties
-- This can be done via `Block.neighborChanged()` or a one-time world migration pass
-- The angled blocks remain in the codebase during transition but are hidden from the
-  creative tab once their non-angled equivalents support custom rendering
+#### Gray Signal Heads — DEPRECATED + AUTO-CONVERTING ✓ (2026-03-30)
+
+24 hardcoded gray signal head blocks are now **deprecated** via `ICsmRetiringBlock`. They are:
+- Hidden from the creative tab (removed from `CsmTabTrafficSignals`)
+- Auto-converting via `randomTick` to their non-gray equivalents
+- TE data (including BATTLESHIP_GRAY body color) is preserved during conversion
+- Users can then change body color at runtime on the converted blocks
+
+**Note:** 2 gray crosswalk blocks (`BlockControllableCrosswalkMountGray`,
+`BlockControllableCrosswalkButtonPsGray`) are NOT yet deprecated — crosswalk signals
+don't yet have runtime color customization. These remain in the creative tab for now.
 
 #### HAWK Beacon (SPECIAL CASE)
 **Section layout:** Unique 2-over-1 arrangement (2 red on top, 1 yellow below)
