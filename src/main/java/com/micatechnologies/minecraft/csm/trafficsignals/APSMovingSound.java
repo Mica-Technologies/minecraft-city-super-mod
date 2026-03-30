@@ -72,7 +72,7 @@ public class APSMovingSound extends MovingSound {
     }
 
     if (minDist > hearingRange) {
-      return MIN_VOLUME;
+      return 0.0f;
     }
     float ratio = (float) (1.0 - minDist / hearingRange);
     return MIN_VOLUME + (MAX_VOLUME - MIN_VOLUME) * ratio;

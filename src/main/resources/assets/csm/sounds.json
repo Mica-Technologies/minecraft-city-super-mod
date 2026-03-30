@@ -742,7 +742,8 @@
     "sounds": [
       {
         "name": "csm:crosswalk_cookoo_1",
-        "stream": false
+        "stream": false,
+        "volume": 0.6
       }
     ]
   },
@@ -751,7 +752,8 @@
     "sounds": [
       {
         "name": "csm:crosswalk_cookoo_2",
-        "stream": false
+        "stream": false,
+        "volume": 0.6
       }
     ]
   },
