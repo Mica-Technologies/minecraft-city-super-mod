@@ -148,32 +148,17 @@ All items below are done and working in-game.
   block's shouldLightWigwagSection() method (option 3 approach). If timing precision
   or synchronization becomes an issue, consider adding bulbFlashInverted to SectionInfo
   (option 1) for proper phase-offset flash support in the TE flash loop.
-- **Crosswalk countdown — IN PROGRESS**: Core system working, needs positioning polish.
-  - TileEntityCrosswalkSignal: learning-based countdown fully functional server-side
-    (measures first clearance duration, counts down on subsequent clearances)
-  - TileEntityCrosswalkSignalRenderer: TESR registered and rendering on all 4 facings
-  - Client sync working (markDirtySync sends countdown to client TE every second)
-  - Rotation fixed: NORTH=180, EAST=90, SOUTH=0, WEST=-90
-  - **Current issue**: Z position of countdown text not aligned with signal face surface.
-    The crosswalk model element goes from Z=1 to Z=9 (block space 0.0625 to 0.5625).
-    Display face is the NORTH face at Z=1. After rotation, the +Z translate should
-    place text at 0.4375 from block center, but current value (0.438) doesn't match
-    visually — may be affected by the mounting variant models (base, left, right, 90deg)
-    which have different element positions.
-  - **Still TODO**:
-    - Fix Z positioning to sit flush on the signal face
-    - Update crosswalk textures to include designated countdown overlay area
-    - Refine font scale/style to match real-world countdown modules (reference images saved)
-    - Test with double-digit values and various controller timing configs
-    - Remove debug logging from TE and TESR once finalized
-    - Tweeters stay as JSON (sound accessories, not visual signals)
-    - Ramp meters stay as JSON (crosswalk housing form factor)
+- ~~**Crosswalk countdown**~~: DONE (2026-03-30). Countdown rendering working on all
+  facings with correct positioning, font scale, and single/double digit support.
+  Texture updates for countdown overlay area deferred to crosswalk custom rendering.
+  Tweeters and ramp meters stay as JSON.
 - **Barlo signal**: Review defaults for barlo-specific configuration
 - **Crosswalk signal custom rendering (FUTURE)**: Extend the custom rendering system to
   crosswalk signals (walk/don't walk displays) to support runtime body color customization.
   This would enable deprecating the 2 gray crosswalk blocks
   (`BlockControllableCrosswalkMountGray`, `BlockControllableCrosswalkButtonPsGray`) via
-  the same ICsmRetiringBlock pattern used for gray signal heads. Crosswalk rendering is a
+  the same ICsmRetiringBlock pattern used for gray signal heads. Also includes updating
+  crosswalk textures with designated countdown overlay area. Crosswalk rendering is a
   different paradigm (symbol/word displays + countdown) so this is a larger effort than
   the signal head conversions.
 
