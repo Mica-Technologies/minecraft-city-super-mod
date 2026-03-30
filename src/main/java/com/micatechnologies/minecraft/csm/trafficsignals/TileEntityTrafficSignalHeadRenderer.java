@@ -398,40 +398,35 @@ public class TileEntityTrafficSignalHeadRenderer extends
   }
 
   /**
-   * Renders Barlo Safety Beam strobe bars for RED sections with BARLO visor type. The strobe bar
-   * is a thin white horizontal quad rendered in front of the bulb face, flashing with a rapid
-   * 5-pulse pattern (500ms) followed by 800ms dark (1.3s total cycle). Only renders on red
-   * sections — yellow and green use the tunnel visor shape without a strobe.
+   * Renders Barlo Safety Beam for RED sections with BARLO visor type. Draws a permanent dark
+   * mounting bar (flat black) and a flashing white strobe on top of it. The strobe flashes with
+   * a rapid 5-pulse pattern (500ms) followed by 800ms dark (1.3s total cycle). Only renders on
+   * red sections — yellow and green use the tunnel visor shape without a strobe.
    */
   private void renderBarloStrobeBars(TrafficSignalSectionInfo[] sectionInfos,
       float[] sectionYPositions, float[] sectionXPositions, int[] sectionSizes) {
-    // Quick check: any BARLO red sections that are lit?
-    boolean hasBarloLit = false;
+    // Quick check: any BARLO red sections?
+    boolean hasBarlo = false;
     for (int i = 0; i < sectionInfos.length; i++) {
       if (sectionInfos[i].getVisorType() == TrafficSignalVisorType.BARLO
-          && sectionInfos[i].isBulbLit()
           && sectionInfos[i].getBulbColor() == TrafficSignalBulbColor.RED) {
-        hasBarloLit = true;
+        hasBarlo = true;
         break;
       }
     }
-    if (!hasBarloLit) return;
+    if (!hasBarlo) return;
 
-    // Compute strobe flash state: 5 rapid 50ms flashes in 500ms, then 800ms dark
-    long t = System.currentTimeMillis() % 1300L;
-    boolean strobeOn = t < 500L && (t / 50L) % 2L == 1L;
-    if (!strobeOn) return;
-
-    // Render untextured white quads — bypass GlStateManager color cache
     GlStateManager.disableTexture2D();
-    GL11.glColor4f(1f, 1f, 1f, 1f);
     Tessellator tessellator = Tessellator.getInstance();
     BufferBuilder buffer = tessellator.getBuffer();
+
+    // Always render the dark mounting bar (flat black) for all BARLO red sections
+    float fb = TrafficSignalBodyColor.FLAT_BLACK.getRed(); // 0.094
+    GL11.glColor4f(fb, fb, fb, 1f);
     buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
 
     for (int i = 0; i < sectionInfos.length; i++) {
       if (sectionInfos[i].getVisorType() != TrafficSignalVisorType.BARLO
-          || !sectionInfos[i].isBulbLit()
           || sectionInfos[i].getBulbColor() != TrafficSignalBulbColor.RED) {
         continue;
       }
@@ -440,21 +435,54 @@ public class TileEntityTrafficSignalHeadRenderer extends
       float sectionOffset = (12f - fullSize) / 2f;
       float scale = fullSize / 12f;
 
-      // Strobe bar: centered horizontally and vertically in section, 0.8 units tall.
-      // Z=7.0 places it in front of the bulb face (z=10.4) — lower Z = closer to viewer.
-      float strobeWidth = 10.4f * scale;
-      float strobeHeight = 0.8f * scale;
-      float strobeX = 2f + sectionXPositions[i] + sectionOffset + (fullSize - strobeWidth) / 2f;
-      float strobeY = sectionYPositions[i] + sectionOffset + (fullSize - strobeHeight) / 2f;
-      float strobeZ = 7.0f;
+      // Mounting bar: centered in section, 0.8 units tall at z=7.0 (in front of bulb)
+      float barWidth = 10.4f * scale;
+      float barHeight = 0.8f * scale;
+      float barX = 2f + sectionXPositions[i] + sectionOffset + (fullSize - barWidth) / 2f;
+      float barY = sectionYPositions[i] + sectionOffset + (fullSize - barHeight) / 2f;
+      float barZ = 7.0f;
 
-      buffer.pos(strobeX, strobeY, strobeZ).endVertex();
-      buffer.pos(strobeX + strobeWidth, strobeY, strobeZ).endVertex();
-      buffer.pos(strobeX + strobeWidth, strobeY + strobeHeight, strobeZ).endVertex();
-      buffer.pos(strobeX, strobeY + strobeHeight, strobeZ).endVertex();
+      buffer.pos(barX, barY, barZ).endVertex();
+      buffer.pos(barX + barWidth, barY, barZ).endVertex();
+      buffer.pos(barX + barWidth, barY + barHeight, barZ).endVertex();
+      buffer.pos(barX, barY + barHeight, barZ).endVertex();
+    }
+    tessellator.draw();
+
+    // Conditionally render the white strobe flash on top of the mounting bar
+    long t = System.currentTimeMillis() % 1300L;
+    boolean strobeOn = t < 500L && (t / 50L) % 2L == 1L;
+
+    if (strobeOn) {
+      GL11.glColor4f(1f, 1f, 1f, 1f);
+      buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
+
+      for (int i = 0; i < sectionInfos.length; i++) {
+        if (sectionInfos[i].getVisorType() != TrafficSignalVisorType.BARLO
+            || !sectionInfos[i].isBulbLit()
+            || sectionInfos[i].getBulbColor() != TrafficSignalBulbColor.RED) {
+          continue;
+        }
+
+        float fullSize = sectionSizes[i];
+        float sectionOffset = (12f - fullSize) / 2f;
+        float scale = fullSize / 12f;
+
+        // Strobe flash: same size as mounting bar but slightly in front (z=6.9)
+        float barWidth = 10.4f * scale;
+        float barHeight = 0.8f * scale;
+        float barX = 2f + sectionXPositions[i] + sectionOffset + (fullSize - barWidth) / 2f;
+        float barY = sectionYPositions[i] + sectionOffset + (fullSize - barHeight) / 2f;
+        float barZ = 6.9f;
+
+        buffer.pos(barX, barY, barZ).endVertex();
+        buffer.pos(barX + barWidth, barY, barZ).endVertex();
+        buffer.pos(barX + barWidth, barY + barHeight, barZ).endVertex();
+        buffer.pos(barX, barY + barHeight, barZ).endVertex();
+      }
+      tessellator.draw();
     }
 
-    tessellator.draw();
     GlStateManager.enableTexture2D();
   }
 }
