@@ -10,7 +10,8 @@ public enum TrafficSignalVisorType implements IStringSerializable {
   VERTICAL_LOUVERED("louvered_vertical", "Vertical Louvered"),
   HORIZONTAL_LOUVERED("louvered_horizontal", "Horizontal Louvered"),
   BOTH_LOUVERED("louvered_both", "Vertical and Horizontal Louvered"),
-  NONE("none", "None");
+  NONE("none", "None"),
+  BARLO("barlo", "Barlo Safety Beam");
 
   // Instance fields
   private final String name;          // The identifier used for serialization

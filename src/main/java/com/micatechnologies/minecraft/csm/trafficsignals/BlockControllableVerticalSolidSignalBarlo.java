@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
+import com.micatechnologies.minecraft.csm.codeutils.ICsmRetiringBlock;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignalHead;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyColor;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBulbColor;
@@ -11,7 +12,8 @@ import net.minecraft.block.material.Material;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class BlockControllableVerticalSolidSignalBarlo extends AbstractBlockControllableSignalHead {
+public class BlockControllableVerticalSolidSignalBarlo extends AbstractBlockControllableSignalHead
+    implements ICsmRetiringBlock {
 
   public BlockControllableVerticalSolidSignalBarlo() {
     super(Material.ROCK);
@@ -43,7 +45,7 @@ public class BlockControllableVerticalSolidSignalBarlo extends AbstractBlockCont
   public TrafficSignalSectionInfo[] getDefaultTrafficSignalSectionInfo() {
     return new TrafficSignalSectionInfo[] {
         new TrafficSignalSectionInfo(TrafficSignalBodyColor.FLAT_BLACK,TrafficSignalBodyColor.FLAT_BLACK,TrafficSignalBodyColor.FLAT_BLACK,
-            TrafficSignalVisorType.CIRCLE, TrafficSignalBulbStyle.LED, TrafficSignalBulbType.BALL,
+            TrafficSignalVisorType.BARLO, TrafficSignalBulbStyle.LED, TrafficSignalBulbType.BALL,
             TrafficSignalBulbColor.RED,false),
         new TrafficSignalSectionInfo(TrafficSignalBodyColor.FLAT_BLACK,TrafficSignalBodyColor.FLAT_BLACK,TrafficSignalBodyColor.FLAT_BLACK,
             TrafficSignalVisorType.CIRCLE, TrafficSignalBulbStyle.LED, TrafficSignalBulbType.BALL,
@@ -52,5 +54,10 @@ public class BlockControllableVerticalSolidSignalBarlo extends AbstractBlockCont
             TrafficSignalVisorType.CIRCLE, TrafficSignalBulbStyle.LED, TrafficSignalBulbType.BALL,
             TrafficSignalBulbColor.GREEN,false)
     };
+  }
+
+  @Override
+  public String getReplacementBlockId() {
+    return "controllableverticalsolidsignal";
   }
 }
