@@ -14,7 +14,8 @@ public enum TrafficSignalBulbType implements IStringSerializable {
   UTURN("u_turn", "U-Turn"),
   TRANSIT_LEFT("transit_left", "Transit Left"),
   TRANSIT("transit", "Transit"),
-  TRANSIT_RIGHT("transit_right", "Transit Right");
+  TRANSIT_RIGHT("transit_right", "Transit Right"),
+  AHEAD("ahead", "Ahead");
 
   // Instance fields
   private final String name;          // The identifier used for serialization
