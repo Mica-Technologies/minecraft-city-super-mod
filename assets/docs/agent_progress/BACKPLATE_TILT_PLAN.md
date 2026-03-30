@@ -1,39 +1,60 @@
 # Backplate Tilt/Angle Support Progress
 
 **Created:** 2026-03-29
-**Status:** Phase 1 Complete — Vertical standard backplates working. Phase 2 planned.
+**Status:** Phase 2 Complete — All backplate types (vertical, horizontal, doghouse, hawk) tested and working.
 
 ## Resume Prompt
 
-> Backplate tilt/angle support is implemented and working for all 52 vertical standard
-> backplate blocks (BlockTLBorder*). The approach: AbstractBlockSignalBackplate base class
-> adds a computed TILT PropertyEnum via getActualState that reads the TileEntityTrafficSignalHead
-> on the same facing axis. For SOUTH-facing backplates, left/right tilt is mirrored via
-> mirrorTilt() to match the signal renderer's SOUTH reversal. The blockstate JSON uses vanilla
-> facing rotation + model swap for tilt variants. Pre-rotated shared models use per-element
-> JSON rotation at ±22.5° (tilt) and ±45° (angle) around pivot points matching the existing
-> angled backplate models. There are 32 more blocks to convert in Phase 2: 4 horizontal, 10
-> doghouse, 10 hawk, 4 TLVA (pre-angled), 4 TrafficLightLeftAngle (pre-angled). The TLVA and
-> LeftAngle blocks are candidates for deprecation since native tilt support now covers their
-> use case. New shared models may be needed for doghouse and hawk shapes. See the full plan
-> at assets/docs/agent_progress/BACKPLATE_TILT_PLAN.md for the complete block inventory and
-> Phase 2 attack plan.
+> Backplate tilt/angle support is fully implemented and tested for all 76 backplate blocks:
+> 52 vertical standard (BlockTLBorder*, Phase 1), 4 horizontal (BlockTLHBorder*, Phase 2),
+> 10 doghouse (BlockTLDoghouseBorder*, Phase 2), and 10 hawk (BlockTLHawkBorder*, Phase 2).
+>
+> **Architecture:**
+> - `AbstractBlockSignalBackplate` (base): computed TILT PropertyEnum via getActualState,
+>   reads TileEntityTrafficSignalHead on same facing axis, mirrorTilt() for SOUTH reversal.
+>   Used by vertical standard (52) and horizontal (4) backplates.
+> - `AbstractBlockSignalBackplateFitted` (extends above): adds FITTED PropertyBool in meta
+>   bit 3 (sneak-to-place toggles fitted/full model). Used by doghouse (10) and hawk (10).
+>
+> **Blockstate formats (critical lesson — do NOT use combined property name keys):**
+> - Simple blocks (vertical, horizontal): Forge separate property blocks — `facing` uses
+>   rotation, `tilt` uses model swap. These compose cleanly.
+> - Fitted blocks (doghouse, hawk): Forge format with fully enumerated vanilla-style keys
+>   (`"facing=X,fitted=Y,tilt=Z"`) — 60 entries per blockstate. Required because two
+>   properties (fitted + tilt) both need model swap and Forge separate blocks can't compose
+>   two model swaps. The `"fitted,tilt"` combined key approach does NOT work — Forge treats
+>   it as a single property name.
+>
+> **Model structure:**
+> - Pre-rotated shared models use per-element JSON rotation at ±22.5°/±45° around pivots
+>   LEFT=(8.5,6,28.5) / RIGHT=(8.4,6,29.4).
+> - Hawk blocks reference shared models directly in blockstate with texture overrides in
+>   defaults (no per-block model files for tilt variants).
+> - Doghouse blocks use per-block model files for each fitted×tilt combination.
+>
+> **Remaining:** 8 pre-existing angled variants (TLVA + TrafficLightLeftAngle) are deprecation
+> candidates since native tilt support now covers their use case. No other backplate work needed.
 
 ## Architecture (Working)
 
 | Component | Purpose |
 |---|---|
 | `AbstractBlockSignalBackplate` | Base class: TILT PropertyEnum, getActualState, mirrorTilt |
-| Blockstate JSON | vanilla facing rotation + model swap for tilt variants |
+| `AbstractBlockSignalBackplateFitted` | Extends above: adds FITTED PropertyBool in meta bit 3 |
+| Blockstate JSON (simple) | vanilla facing rotation + separate tilt model swap (horizontal) |
+| Blockstate JSON (fitted) | fully enumerated vanilla-style keys under forge_marker (doghouse/hawk) |
 | Pre-rotated shared models | Per-element `rotation` field matching existing angled models |
 | Block model variants | Reference rotated shared models with same textures |
 
 **Key implementation details:**
 - TILT property: `PropertyEnum<TrafficSignalBodyTilt>` — NOT in metadata, computed in getActualState
+- FITTED property: `PropertyBool` — stored in meta bit 3 (doghouse/hawk only)
 - Signal detection: checks `pos.offset(dir)` for all 4 horizontal directions, filtered to same axis
 - SOUTH mirror: `mirrorTilt()` swaps left↔right for SOUTH facing to match renderer reversal
 - Rotation pivots: LEFT = (8.5, 6, 28.5), RIGHT = (8.4, 6, 29.4) — matching existing angled models
 - Angles: LEFT_TILT=-22.5°, RIGHT_TILT=+22.5°, LEFT_ANGLE=-45°, RIGHT_ANGLE=+45°
+- Fully enumerated keys: 60 entries per blockstate (6 facings × 2 fitted × 5 tilts) for doghouse/hawk
+- Hawk blocks use direct shared model refs in blockstate with texture overrides (no per-block models)
 
 ## Phase 1: Vertical Standard Backplates — COMPLETE ✓
 
@@ -59,54 +80,56 @@
 | Updated blockstates | 52 | `tlborder*.json` |
 | Updated Java classes | 52 | `BlockTLBorder*.java` |
 
-## Phase 2: Remaining Backplate Types — PLANNED
+## Phase 2: Remaining Backplate Types — COMPLETE ✓
 
-### 2A. Horizontal Signal Borders (4 blocks)
+### 2A. Horizontal Signal Borders (4 blocks) — COMPLETE ✓
 
-| Block | Registry | Current Base | Shared Model |
+| Block | Registry | Base Class | Shared Model |
 |---|---|---|---|
-| BlockTLHBorderBlack | tlhborderblack | AbstractBlockRotatableNSEWUD | TBD |
-| BlockTLHBorderTan | tlhbordertan | AbstractBlockRotatableNSEWUD | TBD |
-| BlockTLHBorderWhite | tlhborderwhite | AbstractBlockRotatableNSEWUD | TBD |
-| BlockTLHBorderYellow | tlhborderyellow | AbstractBlockRotatableNSEWUD | TBD |
+| BlockTLHBorderBlack | tlhborderblack | AbstractBlockSignalBackplate | borderhorizontal |
+| BlockTLHBorderTan | tlhbordertan | AbstractBlockSignalBackplate | borderhorizontal |
+| BlockTLHBorderWhite | tlhborderwhite | AbstractBlockSignalBackplate | borderhorizontal |
+| BlockTLHBorderYellow | tlhborderyellow | AbstractBlockSignalBackplate | borderhorizontal |
 
-**Notes:** Horizontal signals may need different tilt behavior since the signal body
-is oriented differently. Need to check shared model geometry.
+Simple conversion — no FITTED property. Same approach as Phase 1.
 
-### 2B. Doghouse Signal Borders (10 blocks)
+### 2B. Doghouse Signal Borders (10 blocks) — COMPLETE ✓
 
-| Block | Registry | Current Base |
+| Block | Registry | Base Class |
 |---|---|---|
-| BlockTLDoghouseBorderBlackBlack | tldoghouseborderblackblack | AbstractBlockRotatableNSEWUD |
-| BlockTLDoghouseBorderBlackBlue | tldoghouseborderblackblue | AbstractBlockRotatableNSEWUD |
-| BlockTLDoghouseBorderBlackPink | tldoghouseborderblackpink | AbstractBlockRotatableNSEWUD |
-| BlockTLDoghouseBorderBlackWhite | tldoghouseborderblackwhite | AbstractBlockRotatableNSEWUD |
-| BlockTLDoghouseBorderBlackYellow | tldoghouseborderblackyellow | AbstractBlockRotatableNSEWUD |
-| BlockTLDoghouseBorderBlueBlack | tldoghouseborderblueblack | AbstractBlockRotatableNSEWUD |
-| BlockTLDoghouseBorderGrayGray | tldoghouseborderlargegray | AbstractBlockRotatableNSEWUD |
-| BlockTLDoghouseBorderPinkBlack | tldoghouseborderpinkblack | AbstractBlockRotatableNSEWUD |
-| BlockTLDoghouseBorderWhiteBlack | tldoghouseborderwhiteblack | AbstractBlockRotatableNSEWUD |
-| BlockTLDoghouseBorderYellowBlack | tldoghouseborderyellowblack | AbstractBlockRotatableNSEWUD |
+| BlockTLDoghouseBorderBlackBlack | tldoghouseborderblackblack | AbstractBlockSignalBackplateFitted |
+| BlockTLDoghouseBorderBlackBlue | tldoghouseborderblackblue | AbstractBlockSignalBackplateFitted |
+| BlockTLDoghouseBorderBlackPink | tldoghouseborderblackpink | AbstractBlockSignalBackplateFitted |
+| BlockTLDoghouseBorderBlackWhite | tldoghouseborderblackwhite | AbstractBlockSignalBackplateFitted |
+| BlockTLDoghouseBorderBlackYellow | tldoghouseborderblackyellow | AbstractBlockSignalBackplateFitted |
+| BlockTLDoghouseBorderBlueBlack | tldoghouseborderblueblack | AbstractBlockSignalBackplateFitted |
+| BlockTLDoghouseBorderGrayGray | tldoghousebordergraygray | AbstractBlockSignalBackplateFitted |
+| BlockTLDoghouseBorderPinkBlack | tldoghouseborderpinkblack | AbstractBlockSignalBackplateFitted |
+| BlockTLDoghouseBorderWhiteBlack | tldoghouseborderwhiteblack | AbstractBlockSignalBackplateFitted |
+| BlockTLDoghouseBorderYellowBlack | tldoghouseborderyellowblack | AbstractBlockSignalBackplateFitted |
 
-**Notes:** Doghouse models have a different shape (wider for the doghouse layout). Need to
-identify the shared models and create rotated variants with correct pivot points.
+Has FITTED property. Uses fully enumerated vanilla-style blockstate keys (60 entries per block).
+Two shared models: doghouse_full (unfitted) and doghouse_fitted.
+Per-block model files for each fitted×tilt combination (80 files total).
 
-### 2C. Hawk Signal Borders (10 blocks)
+### 2C. Hawk Signal Borders (10 blocks) — COMPLETE ✓
 
-| Block | Registry | Current Base |
+| Block | Registry | Base Class |
 |---|---|---|
-| BlockTLHawkBorderBlackBlack | tlhawkborderblackblack | AbstractBlockRotatableNSEWUD |
-| BlockTLHawkBorderBlackBlue | tlhawkborderblackblue | AbstractBlockRotatableNSEWUD |
-| BlockTLHawkBorderBlackPink | tlhawkborderblackpink | AbstractBlockRotatableNSEWUD |
-| BlockTLHawkBorderBlackWhite | tlhawkborderblackwhite | AbstractBlockRotatableNSEWUD |
-| BlockTLHawkBorderBlackYellow | tlhawkborderblackyellow | AbstractBlockRotatableNSEWUD |
-| BlockTLHawkBorderBlueBlack | tlhawkborderblueblack | AbstractBlockRotatableNSEWUD |
-| BlockTLHawkBorderGrayGray | tlhawkborderlargegray | AbstractBlockRotatableNSEWUD |
-| BlockTLHawkBorderPinkBlack | tlhawkborderpinkblack | AbstractBlockRotatableNSEWUD |
-| BlockTLHawkBorderWhiteBlack | tlhawkborderwhiteblack | AbstractBlockRotatableNSEWUD |
-| BlockTLHawkBorderYellowBlack | tlhawkborderyellowblack | AbstractBlockRotatableNSEWUD |
+| BlockTLHawkBorderBlackBlack | tlhawkborderblackblack | AbstractBlockSignalBackplateFitted |
+| BlockTLHawkBorderBlackBlue | tlhawkborderblackblue | AbstractBlockSignalBackplateFitted |
+| BlockTLHawkBorderBlackPink | tlhawkborderblackpink | AbstractBlockSignalBackplateFitted |
+| BlockTLHawkBorderBlackWhite | tlhawkborderblackwhite | AbstractBlockSignalBackplateFitted |
+| BlockTLHawkBorderBlackYellow | tlhawkborderblackyellow | AbstractBlockSignalBackplateFitted |
+| BlockTLHawkBorderBlueBlack | tlhawkborderblueblack | AbstractBlockSignalBackplateFitted |
+| BlockTLHawkBorderGrayGray | tlhawkbordergraygray | AbstractBlockSignalBackplateFitted |
+| BlockTLHawkBorderPinkBlack | tlhawkborderpinkblack | AbstractBlockSignalBackplateFitted |
+| BlockTLHawkBorderWhiteBlack | tlhawkborderwhiteblack | AbstractBlockSignalBackplateFitted |
+| BlockTLHawkBorderYellowBlack | tlhawkborderyellowblack | AbstractBlockSignalBackplateFitted |
 
-**Notes:** HAWK signal borders may have unique geometry. Need to check shared models.
+Has FITTED property. Uses fully enumerated vanilla-style blockstate keys (60 entries per block).
+Two shared models: hawk_full and hawk_fitted (in backplates/ subfolder).
+References shared models directly in blockstate with texture overrides — no per-block model files for tilt variants.
 
 ### 2D. Pre-Existing Angled Variants (8 blocks) — Deprecation Candidates
 
@@ -125,29 +148,15 @@ identify the shared models and create rotated variants with correct pivot points
 standard vertical backplates. They can be deprecated but should remain for backward
 compatibility with existing worlds. No conversion needed.
 
-## Phase 2 Attack Plan
+## Phase 2 Files Created
 
-### Step 1: Identify shared models for remaining block types
-For each unconverted category (horizontal, doghouse, hawk), find the shared models
-they reference and determine if they need new pre-rotated variants.
-
-### Step 2: Create pre-rotated shared models
-Generate rotated variants for each new shared model shape using the same per-element
-rotation technique (with appropriate pivot points for each shape).
-
-### Step 3: Create block model variants
-For each unconverted block, create 4 tilt model variants referencing the rotated shared models.
-
-### Step 4: Convert Java classes
-Change `extends AbstractBlockRotatableNSEWUD` to `extends AbstractBlockSignalBackplate`
-for all 24 blocks (horizontal + doghouse + hawk). The pre-existing angled variants (8 blocks)
-do NOT need conversion.
-
-### Step 5: Update blockstate JSONs
-Add tilt model swap variants to each blockstate file.
-
-### Step 6: Test
-Test each category with all 4 facings and all tilt values.
+| Type | Count | Pattern |
+|---|---|---|
+| New Java class | 1 | `AbstractBlockSignalBackplateFitted.java` |
+| Rotated shared models | 20 | `*_{tilt}.json` across 3 directories |
+| Block model tilt variants | 96 | 16 horizontal + 80 doghouse |
+| Updated Java classes | 24 | 4 horizontal + 10 doghouse + 10 hawk |
+| Updated blockstates | 24 | 4 horizontal + 10 doghouse + 10 hawk |
 
 ## Lessons Learned
 
@@ -159,3 +168,12 @@ Test each category with all 4 facings and all tilt values.
 4. **Per-element JSON rotation** supports ±45° in 22.5° increments — sufficient for tilt/angle
 5. **SOUTH facing reversal** — the signal renderer reverses left/right for SOUTH, backplate must match
 6. **`getActualState` works for model selection** — proven by the sign system (DOWNWARD/SETBACK properties)
+7. **Combined property names DON'T work** — Forge format does NOT support comma-separated property
+   names (e.g., `"fitted,tilt"`) as a combined key. Forge treats it as a single property name.
+   When two properties both need model swap, use fully enumerated vanilla-style keys
+   (`"facing=X,fitted=Y,tilt=Z"`) under `forge_marker: 1`.
+8. **Hawk blocks use direct shared model refs** — No per-block model files needed when blockstate
+   defaults include texture overrides. The `"textures"` in defaults propagate to all variant models.
+9. **AbstractBlockSignalBackplateFitted** — When adding a second meta-encoded property to a base class
+   that already has getActualState-computed properties, override createBlockState to include all three
+   (FACING, TILT, FITTED) and handle meta encoding for FACING + FITTED only.
