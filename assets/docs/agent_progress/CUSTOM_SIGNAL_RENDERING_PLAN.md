@@ -144,10 +144,9 @@ All items below are done and working in-game.
   blockstate on ALL linked signals every phase change, even if a signal's color isn't
   changing. This wastes TPS. Optimize apply() to only call setBlockState on signals
   whose target color differs from their current blockstate COLOR property.
-- **HAWK wigwag refinement**: Current wigwag uses System.currentTimeMillis() in the
-  block's shouldLightWigwagSection() method (option 3 approach). If timing precision
-  or synchronization becomes an issue, consider adding bulbFlashInverted to SectionInfo
-  (option 1) for proper phase-offset flash support in the TE flash loop.
+- ~~**HAWK wigwag refinement**~~: CLOSED (2026-03-30). Working fine after testing. Current
+  approach uses System.currentTimeMillis() in shouldLightWigwagSection(). If timing issues
+  arise in the future, consider bulbFlashInverted on SectionInfo for tick-driven alternation.
 - ~~**Crosswalk countdown**~~: DONE (2026-03-30). Countdown rendering working on all
   facings with correct positioning, font scale, and single/double digit support.
   Texture updates for countdown overlay area deferred to crosswalk custom rendering.
