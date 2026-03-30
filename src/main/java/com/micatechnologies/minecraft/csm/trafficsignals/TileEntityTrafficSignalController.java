@@ -400,14 +400,11 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
     }
     // If an exception is caught, enter fault state
     catch (Exception e) {
-      enterFaultState(
-          "A critical error occurred while ticking for the " + mode.getName() + " mode.");
+      enterFaultState(e.getMessage() != null ? e.getMessage()
+          : "A critical error occurred while ticking for the " + mode.getName() + " mode.");
       System.err.println(
-          "Traffic signal controller error: An exception was caught while ticking for mode " +
-              mode.getName() +
-              " on controller at " +
-              getPos());
-      e.printStackTrace();
+          "Traffic signal controller fault at " + getPos() + " (" + mode.getName() +
+              " mode): " + e.getMessage());
     }
 
     // Update alternating flash boolean
