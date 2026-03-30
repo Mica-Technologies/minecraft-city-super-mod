@@ -417,14 +417,19 @@ meters are single-section, similar to Wave 2.
 
 ---
 
-## Phase 3: Polish and Merge (Future)
+## Phase 3: Polish (Future)
 
 - [x] Remove test block (`controllableverticaltestsolidsignal`) — removed 2026-03-30
-- [ ] Add missing texture variants (bike eLED, bike incandescent, etc.) as needed
-- [ ] Consider per-section independent body/door/visor colors (currently all sections share)
-- [ ] UX polish on config tool (tooltips, visual feedback)
-- [ ] Final performance profiling with 30+ signals in view
-- [ ] Merge to main when stable across all signal types
+- ~~Missing texture variants~~: CLOSED. Bike, U-turn, and transit permanently LED-only.
+  `getEffectiveStyle()` already forces LED for these bulb types regardless of user setting.
+- ~~Per-section independent colors~~: CANCELLED. Too much TE bloat for minimal benefit.
+- ~~Performance profiling~~: CLOSED (2026-03-30). Testing with many signals shows no
+  concerns. Revisit if issues arise in the future.
+- [ ] **GE GTX bulb style (FUTURE)**: Atlas indices 50-53 have GTX textures (1 off + 3 on
+  for R/Y/G). Add as a new `TrafficSignalBulbStyle` for BALL-type bulbs only.
+- [ ] **Config tool UI mode (FUTURE)**: Add a beta UI mode to the signal config tool —
+  clicking a signal in this mode opens a GUI for configuring all section properties
+  visually, rather than cycling through options one at a time.
 
 ---
 
