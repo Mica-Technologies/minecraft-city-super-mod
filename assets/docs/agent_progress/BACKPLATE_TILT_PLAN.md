@@ -1,7 +1,7 @@
 # Backplate Tilt/Angle Support Progress
 
 **Created:** 2026-03-29
-**Status:** Phase 2 Complete — All backplate types (vertical, horizontal, doghouse, hawk) tested and working.
+**Status:** COMPLETE — All phases done. 8 pre-angled variants removed (2026-03-30).
 
 ## Resume Prompt
 
@@ -32,8 +32,9 @@
 >   defaults (no per-block model files for tilt variants).
 > - Doghouse blocks use per-block model files for each fitted×tilt combination.
 >
-> **Remaining:** 8 pre-existing angled variants (TLVA + TrafficLightLeftAngle) are deprecation
-> candidates since native tilt support now covers their use case. No other backplate work needed.
+> **Remaining:** None. 8 pre-existing angled variants (TLVA + TrafficLightLeftAngle) were
+> removed on 2026-03-30 — all classes, models, blockstates, lang entries, and tab registrations
+> deleted. Shared textures retained. Backplate tilt project is fully complete.
 
 ## Architecture (Working)
 
@@ -131,22 +132,22 @@ Has FITTED property. Uses fully enumerated vanilla-style blockstate keys (60 ent
 Two shared models: hawk_full and hawk_fitted (in backplates/ subfolder).
 References shared models directly in blockstate with texture overrides — no per-block model files for tilt variants.
 
-### 2D. Pre-Existing Angled Variants (8 blocks) — Deprecation Candidates
+### 2D. Pre-Existing Angled Variants (8 blocks) — REMOVED ✓
 
-| Block | Registry | Angle | Replacement |
-|---|---|---|---|
-| BlockTLVABorderBlack | tlvaborderblack | Right angle (-45°) | Native tilt on standard backplate |
-| BlockTLVABorderBlackWhite | tlvaborderblackwhite | Right angle (-45°) | Native tilt on standard backplate |
-| BlockTLVABorderBlackYellow | tlvaborderblackyellow | Right angle (-45°) | Native tilt on standard backplate |
-| BlockTLVABorderTan | tlvabordertan | Right angle (-45°) | Native tilt on standard backplate |
-| BlockTrafficLightLeftAngleBorderBlack | trafficlightleftangleborderblack | Left angle (+45°) | Native tilt on standard backplate |
-| BlockTrafficLightLeftAngleBorderTan | trafficlightleftanglebordertan | Left angle (+45°) | Native tilt on standard backplate |
-| BlockTrafficLightLeftAngleBorderWhiteBlack | trafficlightleftangleborderwhiteblack | Left angle (+45°) | Native tilt on standard backplate |
-| BlockTrafficLightLeftAngleBorderYellowBlack | trafficlightleftangleborderyellowblack | Left angle (+45°) | Native tilt on standard backplate |
+Removed 2026-03-30. These 8 blocks were fully replaced by native tilt support on standard
+vertical backplates. All Java classes, blockstates, block models, shared models, tab
+registrations, and lang entries deleted. Textures retained (shared with other blocks).
 
-**Notes:** These blocks are now functionally replaced by the native tilt support on
-standard vertical backplates. They can be deprecated but should remain for backward
-compatibility with existing worlds. No conversion needed.
+| Block (removed) | Registry (removed) | Was |
+|---|---|---|
+| BlockTLVABorderBlack | tlvaborderblack | Right angle (-45°) |
+| BlockTLVABorderBlackWhite | tlvaborderblackwhite | Right angle (-45°) |
+| BlockTLVABorderBlackYellow | tlvaborderblackyellow | Right angle (-45°) |
+| BlockTLVABorderTan | tlvabordertan | Right angle (-45°) |
+| BlockTrafficLightLeftAngleBorderBlack | trafficlightleftangleborderblack | Left angle (+45°) |
+| BlockTrafficLightLeftAngleBorderTan | trafficlightleftanglebordertan | Left angle (+45°) |
+| BlockTrafficLightLeftAngleBorderWhiteBlack | trafficlightleftangleborderwhiteblack | Left angle (+45°) |
+| BlockTrafficLightLeftAngleBorderYellowBlack | trafficlightleftangleborderyellowblack | Left angle (+45°) |
 
 ## Phase 2 Files Created
 
