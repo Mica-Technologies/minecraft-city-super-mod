@@ -10,8 +10,10 @@ import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalViso
 import net.minecraft.block.material.Material;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmRetiringBlock;
 
-public class BlockControllableVerticalLeftAddOnSignalGray extends AbstractBlockControllableSignalHead {
+public class BlockControllableVerticalLeftAddOnSignalGray extends AbstractBlockControllableSignalHead implements
+    ICsmRetiringBlock {
 
   public BlockControllableVerticalLeftAddOnSignalGray() {
     super(Material.ROCK);
@@ -59,5 +61,10 @@ public class BlockControllableVerticalLeftAddOnSignalGray extends AbstractBlockC
             TrafficSignalVisorType.CUTAWAY, TrafficSignalBulbStyle.LED_DOTTED, TrafficSignalBulbType.LEFT,
             TrafficSignalBulbColor.GREEN, false)
     };
+  }
+
+  @Override
+  public String getReplacementBlockId() {
+    return "controllableverticalleftaddonsignal";
   }
 }

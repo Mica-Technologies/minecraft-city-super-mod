@@ -10,8 +10,10 @@ import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalViso
 import net.minecraft.block.material.Material;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmRetiringBlock;
 
-public class BlockControllableSingleSolidSignalYellowGray extends AbstractBlockControllableSignalHead {
+public class BlockControllableSingleSolidSignalYellowGray extends AbstractBlockControllableSignalHead implements
+    ICsmRetiringBlock {
 
   public BlockControllableSingleSolidSignalYellowGray() {
     super(Material.ROCK);
@@ -57,5 +59,10 @@ public class BlockControllableSingleSolidSignalYellowGray extends AbstractBlockC
             TrafficSignalBulbColor.YELLOW, false)
     };
     return infos;
+  }
+
+  @Override
+  public String getReplacementBlockId() {
+    return "controllablesinglesolidsignalyellow";
   }
 }
