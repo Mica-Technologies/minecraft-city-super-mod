@@ -427,9 +427,12 @@ meters are single-section, similar to Wave 2.
 - ~~**GE GTX bulb style**~~: DONE (2026-03-30). Added GTX as TrafficSignalBulbStyle (ordinal
   3). Uses atlas indices 50 (off) and 51-53 (on G/Y/R) for BALL type. Falls back to LED
   textures for arrow types since GTX has no arrow variants.
-- [ ] **Config tool UI mode (FUTURE)**: Add a beta UI mode to the signal config tool —
-  clicking a signal in this mode opens a GUI for configuring all section properties
-  visually, rather than cycling through options one at a time.
+- ~~**Signal head config tool UI**~~: DONE (2026-03-30). Added OPEN_GUI mode to signal head
+  config tool with GuiScreen showing all 7 properties as cycle buttons. Uses
+  SignalHeadConfigPacket for client→server communication. Real-time feedback (no pause).
+- [ ] **Signal controller config tool UI (IN PROGRESS)**: Add similar OPEN_GUI mode to the
+  signal controller config tool (ItemSignalConfigurationTool) with cycle buttons for
+  operating mode, timing settings, and other controller properties.
 
 ---
 
