@@ -114,10 +114,6 @@ import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLPMblack;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLPMsilver;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLPMtan;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLPMwhite;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLVABorderBlack;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLVABorderBlackWhite;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLVABorderBlackYellow;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLVABorderTan;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLVCover;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLVMountKit;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLVMountKit8812Inch;
@@ -128,10 +124,6 @@ import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLVTallMountKi
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLiteHorzWireMount;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLiteVertWireMount;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTlpmunpainted;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficLightLeftAngleBorderBlack;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficLightLeftAngleBorderTan;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficLightLeftAngleBorderWhiteBlack;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficLightLeftAngleBorderYellowBlack;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleBaseBlack;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleBaseSilver;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleBaseTan;
@@ -505,12 +497,6 @@ public class CsmTabTrafficAccessories extends CsmTab {
     initTabBlock(BlockTLPMsilver.class, fmlPreInitializationEvent); // TLPMsilver
     initTabBlock(BlockTLPMtan.class, fmlPreInitializationEvent); // TLPMtan
     initTabBlock(BlockTLPMwhite.class, fmlPreInitializationEvent); // TLPMwhite
-    initTabBlock(BlockTLVABorderBlack.class, fmlPreInitializationEvent); // TLVABorderBlack
-    initTabBlock(BlockTLVABorderBlackWhite.class,
-        fmlPreInitializationEvent); // TLVABorderBlackWhite
-    initTabBlock(BlockTLVABorderBlackYellow.class,
-        fmlPreInitializationEvent); // TLVABorderBlackYellow
-    initTabBlock(BlockTLVABorderTan.class, fmlPreInitializationEvent); // TLVABorderTan
     initTabBlock(BlockTLVCover.class, fmlPreInitializationEvent); // TLVCover
     initTabBlock(BlockTLVMountKit.class, fmlPreInitializationEvent); // TLVMountKit
     initTabBlock(BlockTLVMountKit8812Inch.class, fmlPreInitializationEvent); // TLVMountKit8812Inch
@@ -521,14 +507,6 @@ public class CsmTabTrafficAccessories extends CsmTab {
     initTabBlock(BlockTLiteHorzWireMount.class, fmlPreInitializationEvent); // TLiteHorzWireMount
     initTabBlock(BlockTLiteVertWireMount.class, fmlPreInitializationEvent); // TLiteVertWireMount
     initTabBlock(BlockTlpmunpainted.class, fmlPreInitializationEvent); // Tlpmunpainted
-    initTabBlock(BlockTrafficLightLeftAngleBorderBlack.class,
-        fmlPreInitializationEvent); // TrafficLightLeftAngleBorderBlack
-    initTabBlock(BlockTrafficLightLeftAngleBorderTan.class,
-        fmlPreInitializationEvent); // TrafficLightLeftAngleBorderTan
-    initTabBlock(BlockTrafficLightLeftAngleBorderWhiteBlack.class,
-        fmlPreInitializationEvent); // TrafficLightLeftAngleBorderWhiteBlack
-    initTabBlock(BlockTrafficLightLeftAngleBorderYellowBlack.class,
-        fmlPreInitializationEvent); // TrafficLightLeftAngleBorderYellowBlack
     initTabBlock(BlockTrafficPoleBaseBlack.class,
         fmlPreInitializationEvent); // TrafficPoleBaseBlack
     initTabBlock(BlockTrafficPoleBaseSilver.class,
