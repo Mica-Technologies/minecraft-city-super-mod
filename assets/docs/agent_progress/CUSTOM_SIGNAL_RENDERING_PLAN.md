@@ -135,8 +135,15 @@ All items below are done and working in-game.
 - ~~**Angled signal auto-migration**~~: DONE (2026-03-30). All 57 angled signal blocks
   (18 vertical angle/angle2, 9 horizontal angle, 6 single-section angle, 24 gray) now
   implement ICsmRetiringBlock with auto-conversion via randomTick. Hidden in CsmTabNone.
-- **Controller fault detection**: Improve reliability of fault flash when setBlockState
-  fails for linked signals (deleted/replaced blocks)
+- ~~**Controller fault detection**~~: DONE (2026-03-30). changeSignalColor returns boolean
+  instead of throwing. Phase apply() sets all existing signals, skips missing ones, and
+  returns the first missing position. Controller enters fault on missing signal detection
+  but doesn't re-fault while already in fault mode (so fault flash works on remaining
+  signals). Unloaded chunks are skipped (not a fault).
+- **Controller phase apply optimization (FUTURE)**: Currently the controller sets
+  blockstate on ALL linked signals every phase change, even if a signal's color isn't
+  changing. This wastes TPS. Optimize apply() to only call setBlockState on signals
+  whose target color differs from their current blockstate COLOR property.
 - **HAWK wigwag refinement**: Current wigwag uses System.currentTimeMillis() in the
   block's shouldLightWigwagSection() method (option 3 approach). If timing precision
   or synchronization becomes an issue, consider adding bulbFlashInverted to SectionInfo
