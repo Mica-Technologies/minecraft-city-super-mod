@@ -10,8 +10,13 @@ import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalViso
 import net.minecraft.block.material.Material;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmRetiringBlock;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyTilt;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 
-public class BlockControllableHorizontalAngleAheadSignal extends AbstractBlockControllableSignalHead {
+public class BlockControllableHorizontalAngleAheadSignal extends AbstractBlockControllableSignalHead implements
+    ICsmRetiringBlock {
 
   public BlockControllableHorizontalAngleAheadSignal() {
     super(Material.ROCK);
@@ -67,5 +72,20 @@ public class BlockControllableHorizontalAngleAheadSignal extends AbstractBlockCo
             TrafficSignalVisorType.CIRCLE, TrafficSignalBulbStyle.LED, TrafficSignalBulbType.UP,
             TrafficSignalBulbColor.GREEN, false)
     };
+  }
+
+  @Override
+  public String getReplacementBlockId() {
+    return "controllablehorizontalaheadsignal";
+  }
+
+  @Override
+  public void configureReplacement(net.minecraft.world.World world,
+      net.minecraft.util.math.BlockPos pos, NBTTagCompound oldTileEntityNBT) {
+    ICsmRetiringBlock.super.configureReplacement(world, pos, oldTileEntityNBT);
+    TileEntity te = world.getTileEntity(pos);
+    if (te instanceof TileEntityTrafficSignalHead) {
+      ((TileEntityTrafficSignalHead) te).setBodyTilt(TrafficSignalBodyTilt.LEFT_ANGLE);
+    }
   }
 }
