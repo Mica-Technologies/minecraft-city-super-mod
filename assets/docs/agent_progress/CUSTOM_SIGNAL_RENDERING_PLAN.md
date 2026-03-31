@@ -5,43 +5,49 @@ body color, visor type, bulb style, and tilt without needing separate block vari
 
 **Created:** 2026-03-28
 **Branch:** `dev/signal-custom-rendering-rebase`
-**Status:** 119 signal blocks converted (Waves 1-8 complete). 57 deprecated angled/gray blocks auto-converting. Test block removed. Crosswalk countdown in progress.
+**Status:** 119 signal blocks converted. 58 deprecated blocks (57 angled/gray + Barlo) auto-converting.
+BARLO visor type + AHEAD bulb type + GE GTX bulb style added. Signal head config GUI done.
+Signal controller config GUI in testing. Crosswalk countdown done.
 
 ---
 
 ## Resume Prompt
 
-> I'm continuing custom signal rendering work. The progress document is at
-> `assets/docs/agent_progress/CUSTOM_SIGNAL_RENDERING_PLAN.md`.
+> The progress document is at `assets/docs/agent_progress/CUSTOM_SIGNAL_RENDERING_PLAN.md`.
 >
-> **Branch:** `dev/signal-custom-rendering-rebase`
+> **Session summary (2026-03-30):** Major cleanup and feature session:
 >
-> **Current state:** The TESR-based custom rendering system is fully working on the test
-> block (`BlockControllableVerticalTestSolidSignal`). All existing signal blocks remain
-> untouched and use the traditional JSON model pipeline. The system supports runtime
-> customization of body color, door color, visor color, visor type, body tilt, bulb style,
-> and bulb type via `ItemSignalHeadConfigTool`.
+> **Completed this session:**
+> - Removed 8 pre-angled backplate blocks (fully replaced by native tilt)
+> - Added ICsmRetiringBlock TE data transfer (configureReplacement default method)
+> - Deprecated 58 signal blocks (angled, gray, Barlo) via ICsmRetiringBlock with auto-conversion
+> - Removed test signal block
+> - Added AHEAD bulb type (up arrow on green, ball on red/yellow)
+> - Changed default visor from CUTAWAY to CIRCLE across 119 blocks
+> - Added BARLO and BARLO_VERTICAL visor types with dynamic strobe rendering
+> - Added GE GTX bulb style (atlas indices 50-53)
+> - Controller fault detection: throws on missing signal, enters fault mode
+> - Fixed fault mode bugs (partial phase apply, fault won't clear)
+> - Controller phase apply optimization (skip unchanged signals)
+> - APS/tweeter sound fix (volume 0 beyond hearing range, tweeter volume reduction)
+> - Signal head config GUI (OPEN_GUI mode, 7 property buttons, real-time feedback)
+> - Signal controller config GUI (OPEN_GUI mode, 15 buttons in two columns)
 >
-> **Key source files (all in `src/main/java/com/micatechnologies/minecraft/csm/`):**
+> **In progress — needs testing:**
+> - Signal controller config GUI: two-column layout + syncServerToClient fix committed,
+>   awaiting verification that buttons work and layout fits. Files:
+>   - `trafficsignals/SignalControllerConfigGui.java` — two-column GuiScreen
+>   - `trafficsignals/SignalControllerConfigPacket.java` — client→server packet
+>   - `trafficsignals/SignalControllerConfigPacketHandler.java` — server handler with cycling
+>   - `trafficsignals/SignalControllerConfigAction.java` — 15-action enum
+>   - `trafficsignals/ItemSignalConfigurationTool.java` — OPEN_GUI mode (client-side openGui)
+>   - `trafficsignals/ItemSignalConfigurationToolMode.java` — appended OPEN_GUI
+>   - `CsmGuiHandler.java` — GUI ID 2 for controller config
+>   - `Csm.java` — packet registration
 >
-> Rendering system:
-> - `trafficsignals/TileEntityTrafficSignalHead.java` — Tile entity with per-signal state
-> - `trafficsignals/TileEntityTrafficSignalHeadRenderer.java` — TESR with display list
->   cache, batched bulb rendering, fullbright lightmap
-> - `trafficsignals/logic/AbstractBlockControllableSignalHead.java` — Block base class
->
-> Configuration tool:
-> - `trafficsignals/ItemSignalHeadConfigTool.java` — 8-mode config tool
-> - `trafficsignals/ItemSignalHeadConfigToolMode.java` — Mode enum
->
-> State/data classes:
-> - `trafficsignals/logic/TrafficSignalSectionInfo.java` — Per-section state
-> - `trafficsignals/logic/TrafficSignalVertexData.java` — .ogldata vertex arrays
-> - `trafficsignals/logic/TrafficSignalTextureMap.java` — Atlas UV mapping
->
-> Dev tools:
-> - `dev-env-utils/.../tools/ImageTilerTool.java` — Atlas generator
-> - `dev-env-utils/.../tools/ModelToOglDataTool.java` — Blockbench → .ogldata converter
+> **Remaining future items:**
+> - Crosswalk custom rendering (body color + gray crosswalk deprecation)
+> - Config tool UI polish (if needed after testing)
 
 ---
 
@@ -430,9 +436,11 @@ meters are single-section, similar to Wave 2.
 - ~~**Signal head config tool UI**~~: DONE (2026-03-30). Added OPEN_GUI mode to signal head
   config tool with GuiScreen showing all 7 properties as cycle buttons. Uses
   SignalHeadConfigPacket for client→server communication. Real-time feedback (no pause).
-- [ ] **Signal controller config tool UI (IN PROGRESS)**: Add similar OPEN_GUI mode to the
-  signal controller config tool (ItemSignalConfigurationTool) with cycle buttons for
-  operating mode, timing settings, and other controller properties.
+- **Signal controller config tool UI (IN PROGRESS — TESTING)**: OPEN_GUI mode added to
+  ItemSignalConfigurationTool. Two-column GUI implemented with 15 cycle buttons (mode,
+  9 timing, 4 toggles, clear faults). Uses SignalControllerConfigPacket for client→server.
+  Server handler calls syncServerToClient after changes. Awaiting user testing to verify
+  buttons work and layout fits correctly after two-column fix.
 
 ---
 
