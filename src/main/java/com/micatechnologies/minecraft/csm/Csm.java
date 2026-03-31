@@ -165,6 +165,9 @@ public class Csm {
       CsmNetwork.registerNetworkMessage(
           com.micatechnologies.minecraft.csm.trafficsignals.SignalHeadConfigPacketHandler.class,
           com.micatechnologies.minecraft.csm.trafficsignals.SignalHeadConfigPacket.class, Side.SERVER);
+      CsmNetwork.registerNetworkMessage(
+          com.micatechnologies.minecraft.csm.trafficsignals.SignalControllerConfigPacketHandler.class,
+          com.micatechnologies.minecraft.csm.trafficsignals.SignalControllerConfigPacket.class, Side.SERVER);
       logger.info("Finished registering network message(s)");
       progressBar.step("Network Messages Registration");
 
