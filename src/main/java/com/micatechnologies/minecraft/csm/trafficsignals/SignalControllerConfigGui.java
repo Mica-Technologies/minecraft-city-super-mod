@@ -9,34 +9,37 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 /**
- * Configuration GUI for traffic signal controllers. Displays all configurable properties with
- * cycle buttons that send packets to the server. Values refresh automatically every frame.
+ * Configuration GUI for traffic signal controllers. Displays all configurable properties in a
+ * two-column layout with cycle buttons that send packets to the server.
  */
 @SideOnly(Side.CLIENT)
 public class SignalControllerConfigGui extends GuiScreen {
 
-  private static final int BUTTON_WIDTH = 240;
+  private static final int COL_WIDTH = 180;
+  private static final int COL_GAP = 8;
   private static final int BUTTON_HEIGHT = 15;
   private static final int ROW_SPACING = 17;
   private static final int CLOSE_BUTTON_ID = SignalControllerConfigAction.values().length;
 
   private static final String[] LABELS = {
-      "Operating Mode",
-      "Yellow Time",
-      "All Red Time",
-      "Ped Clearance Time",
-      "Ped Signal Time",
-      "Min Green Time",
-      "Max Green Time",
-      "Min Green Time (Secondary)",
-      "Max Green Time (Secondary)",
-      "Lead Pedestrian Interval",
-      "Nightly Flash",
-      "Power Loss Flash",
-      "Overlap Ped Signals",
-      "All Red Flash",
-      "Clear Faults"
+      "Mode",                         // 0  - left col
+      "Yellow Time",                  // 1  - left col
+      "All Red Time",                 // 2  - left col
+      "Min Green Time",               // 3  - left col
+      "Max Green Time",               // 4  - left col
+      "Min Green (Secondary)",        // 5  - left col
+      "Max Green (Secondary)",        // 6  - left col
+      "Ped Clearance Time",           // 7  - left col
+      "Ped Signal Time",              // 8  - right col
+      "Lead Ped Interval",            // 9  - right col
+      "Nightly Flash",                // 10 - right col
+      "Power Loss Flash",             // 11 - right col
+      "Overlap Ped Signals",          // 12 - right col
+      "All Red Flash",                // 13 - right col
+      "Clear Faults"                  // 14 - right col
   };
+
+  private static final int LEFT_COL_COUNT = 8;
 
   // Display strings for timing values (ticks -> human-readable)
   private static final long[] LPI_OPTIONS = SignalControllerConfigPacketHandler.LPI_OPTIONS;
@@ -65,29 +68,42 @@ public class SignalControllerConfigGui extends GuiScreen {
   @Override
   public void initGui() {
     buttonList.clear();
-    int centerX = width / 2;
-    int totalHeight = (LABELS.length + 1) * ROW_SPACING;
-    int topY = Math.max(4, height / 2 - totalHeight / 2);
+    int totalWidth = COL_WIDTH * 2 + COL_GAP;
+    int leftX = width / 2 - totalWidth / 2;
+    int rightX = leftX + COL_WIDTH + COL_GAP;
+    int topY = height / 2 - (LEFT_COL_COUNT * ROW_SPACING + 20) / 2;
 
-    for (int i = 0; i < LABELS.length; i++) {
-      buttonList.add(new GuiButton(i, centerX - BUTTON_WIDTH / 2,
-          topY + i * ROW_SPACING, BUTTON_WIDTH, BUTTON_HEIGHT, ""));
+    // Left column: indices 0 through LEFT_COL_COUNT-1
+    for (int i = 0; i < LEFT_COL_COUNT; i++) {
+      buttonList.add(new GuiButton(i, leftX, topY + i * ROW_SPACING,
+          COL_WIDTH, BUTTON_HEIGHT, ""));
     }
 
-    buttonList.add(new GuiButton(CLOSE_BUTTON_ID, centerX - BUTTON_WIDTH / 2,
-        topY + LABELS.length * ROW_SPACING + 2, BUTTON_WIDTH, BUTTON_HEIGHT, "Close"));
+    // Right column: indices LEFT_COL_COUNT through LABELS.length-1
+    for (int i = LEFT_COL_COUNT; i < LABELS.length; i++) {
+      int row = i - LEFT_COL_COUNT;
+      buttonList.add(new GuiButton(i, rightX, topY + row * ROW_SPACING,
+          COL_WIDTH, BUTTON_HEIGHT, ""));
+    }
+
+    // Close button centered below both columns
+    int closeY = topY + LEFT_COL_COUNT * ROW_SPACING + 4;
+    buttonList.add(new GuiButton(CLOSE_BUTTON_ID, width / 2 - COL_WIDTH / 2, closeY,
+        COL_WIDTH, BUTTON_HEIGHT, "Close"));
   }
 
   @Override
   public void drawScreen(int mouseX, int mouseY, float partialTicks) {
     drawDefaultBackground();
 
-    for (int i = 0; i < LABELS.length && i < buttonList.size(); i++) {
-      buttonList.get(i).displayString = LABELS[i] + ": " + getCurrentValue(i);
+    for (GuiButton button : buttonList) {
+      if (button.id >= 0 && button.id < LABELS.length) {
+        button.displayString = LABELS[button.id] + ": " + getCurrentValue(button.id);
+      }
     }
 
-    int totalHeight = (LABELS.length + 1) * ROW_SPACING;
-    int topY = Math.max(4, height / 2 - totalHeight / 2);
+    int totalWidth = COL_WIDTH * 2 + COL_GAP;
+    int topY = height / 2 - (LEFT_COL_COUNT * ROW_SPACING + 20) / 2;
     drawCenteredString(fontRenderer, "Signal Controller Configuration",
         width / 2, topY - 12, 0xFFFFFF);
 

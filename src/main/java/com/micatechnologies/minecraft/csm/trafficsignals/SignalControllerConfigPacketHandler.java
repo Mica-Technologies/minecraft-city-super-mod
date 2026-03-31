@@ -92,6 +92,8 @@ public class SignalControllerConfigPacketHandler implements
           controller.clearFaultState();
           break;
       }
+      // Force sync to client so the GUI sees updated values
+      controller.syncServerToClient(world);
     });
     return null;
   }
