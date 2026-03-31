@@ -5,9 +5,8 @@ body color, visor type, bulb style, and tilt without needing separate block vari
 
 **Created:** 2026-03-28
 **Branch:** `dev/signal-custom-rendering-rebase`
-**Status:** 119 signal blocks converted. 58 deprecated blocks (57 angled/gray + Barlo) auto-converting.
-BARLO visor type + AHEAD bulb type + GE GTX bulb style added. Signal head config GUI done.
-Signal controller config GUI in testing. Crosswalk countdown done.
+**Status:** COMPLETE — 119 signal blocks converted. 58 deprecated blocks auto-converting.
+All config GUIs verified working. Crosswalk custom rendering deferred to a future session.
 
 ---
 
@@ -15,39 +14,12 @@ Signal controller config GUI in testing. Crosswalk countdown done.
 
 > The progress document is at `assets/docs/agent_progress/CUSTOM_SIGNAL_RENDERING_PLAN.md`.
 >
-> **Session summary (2026-03-30):** Major cleanup and feature session:
+> **Project complete as of 2026-03-30.** All signal head and controller config GUIs
+> verified working in-game. 119 signal blocks use custom TESR rendering. 58 legacy
+> blocks auto-convert via ICsmRetiringBlock.
 >
-> **Completed this session:**
-> - Removed 8 pre-angled backplate blocks (fully replaced by native tilt)
-> - Added ICsmRetiringBlock TE data transfer (configureReplacement default method)
-> - Deprecated 58 signal blocks (angled, gray, Barlo) via ICsmRetiringBlock with auto-conversion
-> - Removed test signal block
-> - Added AHEAD bulb type (up arrow on green, ball on red/yellow)
-> - Changed default visor from CUTAWAY to CIRCLE across 119 blocks
-> - Added BARLO and BARLO_VERTICAL visor types with dynamic strobe rendering
-> - Added GE GTX bulb style (atlas indices 50-53)
-> - Controller fault detection: throws on missing signal, enters fault mode
-> - Fixed fault mode bugs (partial phase apply, fault won't clear)
-> - Controller phase apply optimization (skip unchanged signals)
-> - APS/tweeter sound fix (volume 0 beyond hearing range, tweeter volume reduction)
-> - Signal head config GUI (OPEN_GUI mode, 7 property buttons, real-time feedback)
-> - Signal controller config GUI (OPEN_GUI mode, 15 buttons in two columns)
->
-> **In progress — needs testing:**
-> - Signal controller config GUI: two-column layout + syncServerToClient fix committed,
->   awaiting verification that buttons work and layout fits. Files:
->   - `trafficsignals/SignalControllerConfigGui.java` — two-column GuiScreen
->   - `trafficsignals/SignalControllerConfigPacket.java` — client→server packet
->   - `trafficsignals/SignalControllerConfigPacketHandler.java` — server handler with cycling
->   - `trafficsignals/SignalControllerConfigAction.java` — 15-action enum
->   - `trafficsignals/ItemSignalConfigurationTool.java` — OPEN_GUI mode (client-side openGui)
->   - `trafficsignals/ItemSignalConfigurationToolMode.java` — appended OPEN_GUI
->   - `CsmGuiHandler.java` — GUI ID 2 for controller config
->   - `Csm.java` — packet registration
->
-> **Remaining future items:**
+> **Deferred to future session:**
 > - Crosswalk custom rendering (body color + gray crosswalk deprecation)
-> - Config tool UI polish (if needed after testing)
 
 ---
 
