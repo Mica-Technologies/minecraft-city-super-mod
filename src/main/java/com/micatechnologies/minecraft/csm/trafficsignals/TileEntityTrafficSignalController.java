@@ -1337,6 +1337,11 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
   private void resetController(boolean regeneratePhaseCache, boolean forceTick) {
     lastPhaseChangeTime = -1;
     currentPhase = null;
+    // Prune trailing empty circuits before regenerating phases
+    while (circuits.getCircuits().size() > 0
+        && circuits.getCircuit(circuits.getCircuits().size() - 1).getSize() == 0) {
+      circuits.removeCircuit(circuits.getCircuit(circuits.getCircuits().size() - 1));
+    }
     if (regeneratePhaseCache) {
       cachedPhases = new TrafficSignalPhases(getWorld(), circuits);
     }
@@ -1466,11 +1471,17 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
       overlaps.removeOverlaps(pos);
     }
 
-    // Remove last circuit if empty
-    int numCircuits =circuits.getCircuits().size();
-    TrafficSignalControllerCircuit lastCircuit =  circuits.getCircuit(numCircuits - 1);
-    if (lastCircuit.getSize() == 0) {
-      circuits.removeCircuit(lastCircuit);
+    // Prune all trailing empty circuits (can't remove from the middle without
+    // shifting circuit numbering, but trailing empties serve no purpose and
+    // cause allSensored checks to fail)
+    while (circuits.getCircuits().size() > 0) {
+      TrafficSignalControllerCircuit lastCircuit =
+          circuits.getCircuit(circuits.getCircuits().size() - 1);
+      if (lastCircuit.getSize() == 0) {
+        circuits.removeCircuit(lastCircuit);
+      } else {
+        break;
+      }
     }
 
     if (unlinked) {
