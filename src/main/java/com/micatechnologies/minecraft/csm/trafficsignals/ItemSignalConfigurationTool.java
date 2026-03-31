@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
+import com.micatechnologies.minecraft.csm.Csm;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractItem;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignal;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockTrafficSignalAPS;
@@ -37,6 +38,13 @@ public class ItemSignalConfigurationTool extends AbstractItem {
       float hitX,
       float hitY,
       float hitZ) {
+    // OPEN_GUI mode must run on client side (GuiScreen has no server Container)
+    if (worldIn.isRemote && !player.isSneaking()
+        && getMode(player) == ItemSignalConfigurationToolMode.OPEN_GUI
+        && worldIn.getBlockState(pos).getBlock() instanceof BlockTrafficSignalController) {
+      player.openGui(Csm.instance, 2, worldIn, pos.getX(), pos.getY(), pos.getZ());
+      return EnumActionResult.SUCCESS;
+    }
     if (!worldIn.isRemote) {
       IBlockState state = worldIn.getBlockState(pos);
       Block clickedBlock = state.getBlock();
@@ -480,6 +488,9 @@ public class ItemSignalConfigurationTool extends AbstractItem {
           // Mark result as success
           result = EnumActionResult.PASS;
         }
+      } else if (mode == ItemSignalConfigurationToolMode.OPEN_GUI) {
+        // Handled on client side above
+        result = EnumActionResult.PASS;
       } else {
         player.sendMessage(
             new TextComponentString("Not sure how we got here, but something has clearly" +

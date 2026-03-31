@@ -26,7 +26,8 @@ public enum ItemSignalConfigurationToolMode {
   TOGGLE_CONTROLLER_ALL_RED_FLASH("Toggle Controller All Red Flash"),
   CLEAR_CONTROLLER_FAULTS("Clear Controller Faults"),
   CREATE_SIGNAL_OVERLAPS("Create Signal Overlaps"),
-  CHANGE_APS_ARROW_DIRECTION("Change APS Arrow Direction");
+  CHANGE_APS_ARROW_DIRECTION("Change APS Arrow Direction"),
+  OPEN_GUI("Open Controller Config GUI");
 
   /**
    * The friendly name for the {@link ItemSignalConfigurationToolMode} enum value.

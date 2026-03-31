@@ -1383,6 +1383,17 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
   }
 
   /**
+   * Returns the configured mode name for display purposes.
+   *
+   * @return the configured mode name
+   *
+   * @since 2.0
+   */
+  public String getModeName() {
+    return mode.getName();
+  }
+
+  /**
    * Returns the current count of signal circuits for the traffic signal controller.
    *
    * @return the current count of signal circuits for the traffic signal controller

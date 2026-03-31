@@ -2,7 +2,9 @@ package com.micatechnologies.minecraft.csm;
 
 import com.micatechnologies.minecraft.csm.technology.BlockRedstoneTTSGui;
 import com.micatechnologies.minecraft.csm.technology.TileEntityRedstoneTTS;
+import com.micatechnologies.minecraft.csm.trafficsignals.SignalControllerConfigGui;
 import com.micatechnologies.minecraft.csm.trafficsignals.SignalHeadConfigGui;
+import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalController;
 import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalHead;
 import javax.annotation.Nullable;
 import net.minecraft.entity.player.EntityPlayer;
@@ -62,6 +64,8 @@ public class CsmGuiHandler implements IGuiHandler {
       returnValue = new BlockRedstoneTTSGui((TileEntityRedstoneTTS) tileEntity);
     } else if (id == 1 && tileEntity instanceof TileEntityTrafficSignalHead) {
       returnValue = new SignalHeadConfigGui((TileEntityTrafficSignalHead) tileEntity);
+    } else if (id == 2 && tileEntity instanceof TileEntityTrafficSignalController) {
+      returnValue = new SignalControllerConfigGui((TileEntityTrafficSignalController) tileEntity);
     }
     return returnValue;
   }
