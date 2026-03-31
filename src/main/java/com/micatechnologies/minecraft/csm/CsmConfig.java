@@ -69,6 +69,16 @@ public class CsmConfig {
    */
   private static final String FIELD_DEFAULT_WIKI_FILES_FOLDER = "csmWiki";
 
+  private static final String FIELD_KEY_ENABLE_UPDATE_CHECK = "enableUpdateCheck";
+  private static final String FIELD_DESCRIPTION_ENABLE_UPDATE_CHECK =
+      "Set to false to disable automatic update checking on world join.";
+  private static final boolean FIELD_DEFAULT_ENABLE_UPDATE_CHECK = true;
+
+  /**
+   * The configuration field value for the enableUpdateCheck option.
+   */
+  private static boolean enableUpdateCheck;
+
   /**
    * The configuration field value for the generateWikiFiles option.
    *
@@ -111,6 +121,8 @@ public class CsmConfig {
    * @since 1.0
    */
   private static void loadConfig() {
+    enableUpdateCheck = config.getBoolean(FIELD_KEY_ENABLE_UPDATE_CHECK, CATEGORY_GENERAL,
+        FIELD_DEFAULT_ENABLE_UPDATE_CHECK, FIELD_DESCRIPTION_ENABLE_UPDATE_CHECK);
     generateWikiFiles = config.getBoolean(FIELD_KEY_GENERATE_WIKI_FILES, CATEGORY_WIKI,
         FIELD_DEFAULT_GENERATE_WIKI_FILES, FIELD_DESCRIPTION_GENERATE_WIKI_FILES);
     wikiFilesFolder = config.getString(FIELD_KEY_WIKI_FILES_FOLDER, CATEGORY_WIKI,
@@ -141,5 +153,14 @@ public class CsmConfig {
    */
   public static String getWikiFilesFolder() {
     return wikiFilesFolder;
+  }
+
+  /**
+   * Retrieves whether the automatic update check is enabled.
+   *
+   * @return {@code true} if the update check is enabled, {@code false} otherwise.
+   */
+  public static boolean isUpdateCheckEnabled() {
+    return enableUpdateCheck;
   }
 }

@@ -1,19 +1,25 @@
 package com.micatechnologies.minecraft.csm;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmVersionChecker;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmProxy;
 import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityCrosswalkSignal;
 import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityCrosswalkSignalRenderer;
 import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalHead;
 import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalHeadRenderer;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.model.obj.OBJLoader;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 /**
  * Sided proxy for initialization and loading of the mod on the client side. This class is
@@ -48,11 +54,22 @@ public class CsmClientProxy implements ICsmProxy {
    */
   @Override
   public void init(FMLInitializationEvent event) {
-    // Not implemented (yet)
-
     // Bind the TESR to the TileEntity
     ClientRegistry.bindTileEntitySpecialRenderer(TileEntityTrafficSignalHead.class, new TileEntityTrafficSignalHeadRenderer());
     ClientRegistry.bindTileEntitySpecialRenderer(TileEntityCrosswalkSignal.class, new TileEntityCrosswalkSignalRenderer());
+
+    // Register client-side event handler for version check on world join
+    MinecraftForge.EVENT_BUS.register(this);
+  }
+
+  @SubscribeEvent
+  public void onEntityJoinWorld(EntityJoinWorldEvent event) {
+    if (event.getWorld().isRemote
+        && event.getEntity() instanceof EntityPlayer
+        && event.getEntity() == Minecraft.getMinecraft().player
+        && CsmConfig.isUpdateCheckEnabled()) {
+      CsmVersionChecker.checkForUpdatesAsync();
+    }
   }
 
   /**
