@@ -6,7 +6,8 @@
 ## Completed Fixes
 
 ### Bug 1: Double Arrow Add-On Signals Positioned Too Low — COMPLETE
-Changed Y offset to -7.9f, added section positions [0, -12].
+Changed Y offset to 8.1f (+16 from original -7.9f) to account for 1-block gap between
+add-on and parent signal (legacy JSON model placement). Section positions [0, -12].
 
 ### Bug 2: Bi-Modal Add-On Signal Off-State Texture — COMPLETE
 Added getEnforcedBulbStyle() mechanism forcing LED_DOTTED on hybrid add-ons.
