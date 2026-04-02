@@ -416,6 +416,7 @@ public class TrafficSignalControllerTickerUtilities {
             defaultPhase.addRedSignals(circuit.getProtectedSignals());
           }
           defaultPhase.addOffSignals(circuit.getPedestrianBeaconSignals());
+          defaultPhase.addOffSignals(circuit.getBeaconSignals());
           defaultPhase.addDontWalkSignals(circuit.getPedestrianSignals());
           defaultPhase.addDontWalkSignals(circuit.getPedestrianAccessorySignals());
         } else {
@@ -451,6 +452,7 @@ public class TrafficSignalControllerTickerUtilities {
     destinationPhase.addRedSignals(circuit.getRightSignals());
     destinationPhase.addRedSignals(circuit.getThroughSignals());
     destinationPhase.addRedSignals(circuit.getProtectedSignals());
+    destinationPhase.addYellowSignals(circuit.getBeaconSignals());
     destinationPhase.addRedSignals(circuit.getPedestrianBeaconSignals());
     if (pedestrianSignalsWalk) {
       destinationPhase.addWalkSignals(circuit.getPedestrianSignals());
@@ -735,6 +737,7 @@ public class TrafficSignalControllerTickerUtilities {
           upcomingPhase.addRedSignals(circuit.getRightSignals());
           upcomingPhase.addRedSignals(circuit.getThroughSignals());
           upcomingPhase.addRedSignals(circuit.getProtectedSignals());
+          upcomingPhase.addYellowSignals(circuit.getBeaconSignals());
           upcomingPhase.addRedSignals(circuit.getPedestrianBeaconSignals());
           upcomingPhase.addDontWalkSignals(circuit.getPedestrianSignals());
           upcomingPhase.addDontWalkSignals(circuit.getPedestrianAccessorySignals());
@@ -784,6 +787,7 @@ public class TrafficSignalControllerTickerUtilities {
         if (i == circuitNumber) {
           upcomingPhase.addGreenSignals(circuit.getThroughSignals());
           upcomingPhase.addOffSignals(circuit.getPedestrianBeaconSignals());
+          upcomingPhase.addOffSignals(circuit.getBeaconSignals());
           upcomingPhase.addDontWalkSignals(circuit.getPedestrianSignals());
           upcomingPhase.addDontWalkSignals(circuit.getPedestrianAccessorySignals());
           if (overlapPedestrianSignals) {
@@ -834,6 +838,7 @@ public class TrafficSignalControllerTickerUtilities {
           }
           upcomingPhase.addGreenSignals(circuit.getThroughSignals());
           upcomingPhase.addOffSignals(circuit.getPedestrianBeaconSignals());
+          upcomingPhase.addOffSignals(circuit.getBeaconSignals());
           upcomingPhase.addDontWalkSignals(circuit.getPedestrianSignals());
           upcomingPhase.addDontWalkSignals(circuit.getPedestrianAccessorySignals());
           if (circuit.areSignalsFacingSameDirection(world)) {
@@ -862,6 +867,7 @@ public class TrafficSignalControllerTickerUtilities {
           upcomingPhase.addGreenSignals(circuit.getThroughSignals());
           upcomingPhase.addGreenSignals(circuit.getProtectedSignals());
           upcomingPhase.addOffSignals(circuit.getPedestrianBeaconSignals());
+          upcomingPhase.addOffSignals(circuit.getBeaconSignals());
           upcomingPhase.addDontWalkSignals(circuit.getPedestrianSignals());
           upcomingPhase.addDontWalkSignals(circuit.getPedestrianAccessorySignals());
         } else {
@@ -937,6 +943,7 @@ public class TrafficSignalControllerTickerUtilities {
     destinationPhase.addOffSignals(pedestrianBeaconSignals.getFirst());
     destinationPhase.addRedSignals(pedestrianBeaconSignals.getSecond());
     destinationPhase.addRedSignals(circuit.getProtectedSignals());
+    destinationPhase.addOffSignals(circuit.getBeaconSignals());
     destinationPhase.addDontWalkSignals(circuit.getPedestrianSignals());
     destinationPhase.addDontWalkSignals(circuit.getPedestrianAccessorySignals());
   }

@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.trafficsignals.logic;
 
 import java.util.ArrayList;
 import net.minecraft.util.Tuple;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 /**
@@ -416,6 +417,7 @@ public class TrafficSignalControllerTicker {
           nextPhase.addGreenSignals(circuit.getRightSignals());
           nextPhase.addGreenSignals(circuit.getThroughSignals());
           nextPhase.addOffSignals(circuit.getProtectedSignals());
+          nextPhase.addYellowSignals(circuit.getBeaconSignals());
           nextPhase.addOffSignals(circuit.getPedestrianBeaconSignals());
           nextPhase.addDontWalkSignals(circuit.getPedestrianSignals());
           nextPhase.addDontWalkSignals(circuit.getPedestrianAccessorySignals());
@@ -428,6 +430,9 @@ public class TrafficSignalControllerTicker {
         }
       }
     }
+
+    // Beacons should flash continuously while the ramp meter is active
+    nextPhase = overrideBeaconsToYellow(nextPhase, circuits);
 
     // Return next phase (null phase indicates no change)
     return nextPhase;
@@ -786,6 +791,61 @@ public class TrafficSignalControllerTicker {
       }
     }
 
+    // Beacon advance warning: override per-circuit beacons based on whether their
+    // circuit's through signals are green in this phase. Beacons on circuits where
+    // through signals are NOT green should flash yellow. This handles transition phases
+    // where the generic phase builders may not preserve beacon state correctly.
+    if (nextPhase != null) {
+      boolean needsCopy = false;
+      for (TrafficSignalControllerCircuit circuit : circuits.getCircuits()) {
+        if (circuit.getBeaconSignals().isEmpty()) continue;
+        boolean throughIsGreen = false;
+        for (BlockPos tp : circuit.getThroughSignals()) {
+          if (nextPhase.getGreenSignals().contains(tp)) {
+            throughIsGreen = true;
+            break;
+          }
+        }
+        for (BlockPos bp : circuit.getBeaconSignals()) {
+          boolean beaconShouldBeYellow = !throughIsGreen;
+          boolean beaconIsYellow = nextPhase.getYellowSignals().contains(bp);
+          boolean beaconIsOff = nextPhase.getOffSignals().contains(bp);
+          if (beaconShouldBeYellow && !beaconIsYellow) { needsCopy = true; break; }
+          if (!beaconShouldBeYellow && !beaconIsOff) { needsCopy = true; break; }
+        }
+        if (needsCopy) break;
+      }
+      if (needsCopy) {
+        TrafficSignalPhase overridden = new TrafficSignalPhase(
+            nextPhase.getCircuit(), nextPhase.getUpcomingPhase(), nextPhase.getApplicability());
+        overridden.addOffSignals(nextPhase.getOffSignals());
+        overridden.addGreenSignals(nextPhase.getGreenSignals());
+        overridden.addYellowSignals(nextPhase.getYellowSignals());
+        overridden.addRedSignals(nextPhase.getRedSignals());
+        overridden.addFyaSignals(nextPhase.getFyaSignals());
+        overridden.addWalkSignals(nextPhase.getWalkSignals());
+        overridden.addDontWalkSignals(nextPhase.getDontWalkSignals());
+        overridden.addFlashDontWalkSignals(nextPhase.getFlashDontWalkSignals());
+        for (TrafficSignalControllerCircuit circuit : circuits.getCircuits()) {
+          if (circuit.getBeaconSignals().isEmpty()) continue;
+          boolean throughIsGreen = false;
+          for (BlockPos tp : circuit.getThroughSignals()) {
+            if (nextPhase.getGreenSignals().contains(tp)) {
+              throughIsGreen = true;
+              break;
+            }
+          }
+          overridden.removeSignals(circuit.getBeaconSignals());
+          if (throughIsGreen) {
+            overridden.addOffSignals(circuit.getBeaconSignals());
+          } else {
+            overridden.addYellowSignals(circuit.getBeaconSignals());
+          }
+        }
+        nextPhase = overridden;
+      }
+    }
+
     // Return next phase (null phase indicates no change)
     return nextPhase;
   }
@@ -836,5 +896,42 @@ public class TrafficSignalControllerTicker {
     }
 
     return flashPhase;
+  }
+
+  /**
+   * Returns a copy of the given phase with all beacon signals overridden to yellow.
+   * If all beacons are already yellow, returns the original phase unchanged (avoids
+   * unnecessary copy). Creates a fresh phase to avoid mutating cached phases.
+   */
+  private static TrafficSignalPhase overrideBeaconsToYellow(
+      TrafficSignalPhase phase, TrafficSignalControllerCircuits circuits) {
+    if (phase == null) return null;
+    boolean needsOverride = false;
+    for (TrafficSignalControllerCircuit circuit : circuits.getCircuits()) {
+      for (BlockPos bp : circuit.getBeaconSignals()) {
+        if (!phase.getYellowSignals().contains(bp)) {
+          needsOverride = true;
+          break;
+        }
+      }
+      if (needsOverride) break;
+    }
+    if (!needsOverride) return phase;
+
+    TrafficSignalPhase overridden = new TrafficSignalPhase(
+        phase.getCircuit(), phase.getUpcomingPhase(), phase.getApplicability());
+    overridden.addOffSignals(phase.getOffSignals());
+    overridden.addGreenSignals(phase.getGreenSignals());
+    overridden.addYellowSignals(phase.getYellowSignals());
+    overridden.addRedSignals(phase.getRedSignals());
+    overridden.addFyaSignals(phase.getFyaSignals());
+    overridden.addWalkSignals(phase.getWalkSignals());
+    overridden.addDontWalkSignals(phase.getDontWalkSignals());
+    overridden.addFlashDontWalkSignals(phase.getFlashDontWalkSignals());
+    for (TrafficSignalControllerCircuit circuit : circuits.getCircuits()) {
+      overridden.removeSignals(circuit.getBeaconSignals());
+      overridden.addYellowSignals(circuit.getBeaconSignals());
+    }
+    return overridden;
   }
 }
