@@ -8,6 +8,7 @@ import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignal
 import javax.annotation.Nullable;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.entity.player.EntityPlayer;
@@ -22,8 +23,18 @@ import org.jetbrains.annotations.NotNull;
 public abstract class AbstractBlockControllableSignalHead extends AbstractBlockControllableSignal
     implements ICsmTileEntityProvider {
 
+  private transient AxisAlignedBB cachedBoundingBox;
+
   public AbstractBlockControllableSignalHead(Material p_i45394_1_) {
     super(p_i45394_1_);
+  }
+
+  @Override
+  public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
+    if (cachedBoundingBox == null) {
+      cachedBoundingBox = TrafficSignalBoundingBoxHelper.computeBoundingBox(this);
+    }
+    return cachedBoundingBox;
   }
 
   public DirectionSixteen getTiltedFacing(
