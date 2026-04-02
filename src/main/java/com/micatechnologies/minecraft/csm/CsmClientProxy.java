@@ -60,6 +60,11 @@ public class CsmClientProxy implements ICsmProxy {
     ClientRegistry.bindTileEntitySpecialRenderer(
         com.micatechnologies.minecraft.csm.lifesafety.TileEntityFireAlarmStrobe.class,
         new com.micatechnologies.minecraft.csm.lifesafety.TileEntityFireAlarmStrobeRenderer());
+    // Also bind to TileEntityFireAlarmSoundIndex so Gentex Commander 3 (which uses that TE
+    // for sound selection) can also render strobe effects — the renderer checks IStrobeBlock
+    ClientRegistry.bindTileEntitySpecialRenderer(
+        com.micatechnologies.minecraft.csm.lifesafety.TileEntityFireAlarmSoundIndex.class,
+        new com.micatechnologies.minecraft.csm.lifesafety.TileEntityFireAlarmStrobeRenderer());
 
     // Register client-side event handler for version check on world join
     MinecraftForge.EVENT_BUS.register(this);

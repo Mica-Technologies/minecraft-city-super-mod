@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.lifesafety;
 
 import com.micatechnologies.minecraft.csm.CsmConfig;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEWUD;
+import com.micatechnologies.minecraft.csm.codeutils.AbstractTileEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -23,13 +24,13 @@ import org.lwjgl.opengl.GL11;
  */
 @SideOnly(Side.CLIENT)
 public class TileEntityFireAlarmStrobeRenderer
-    extends TileEntitySpecialRenderer<TileEntityFireAlarmStrobe> {
+    extends TileEntitySpecialRenderer<AbstractTileEntity> {
 
   private static final long STROBE_CYCLE_MS = 1000L;
   private static final long STROBE_FLASH_MS = 75L;
 
   @Override
-  public void render(TileEntityFireAlarmStrobe te, double x, double y, double z,
+  public void render(AbstractTileEntity te, double x, double y, double z,
       float partialTicks, int destroyStage, float alpha) {
     if (!CsmConfig.isStrobeEffectEnabled()) return;
     if (te.getWorld() == null) return;
@@ -78,7 +79,12 @@ public class TileEntityFireAlarmStrobeRenderer
     Tessellator tessellator = Tessellator.getInstance();
     BufferBuilder buffer = tessellator.getBuffer();
 
-    // Main flash quad — covers the strobe lens area
+    float maxZ = to[2] / 16f - 0.5f;
+    float depth = maxZ - minZ;
+    float centerX = (minX + maxX) * 0.5f;
+    float centerY = (minY + maxY) * 0.5f;
+
+    // Front face — main flash quad covering the strobe lens
     GL11.glColor4f(1.0f, 1.0f, 1.0f, 0.95f);
     buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
     buffer.pos(minX, minY, quadZ).endVertex();
@@ -87,15 +93,40 @@ public class TileEntityFireAlarmStrobeRenderer
     buffer.pos(minX, maxY, quadZ).endVertex();
     tessellator.draw();
 
-    // Glow halo — 50% larger in each direction, semi-transparent
-    float padX = (maxX - minX) * 0.25f;
-    float padY = (maxY - minY) * 0.25f;
-    GL11.glColor4f(1.0f, 1.0f, 1.0f, 0.25f);
+    // Side quads — make the strobe visible from angles (along the lens depth)
+    GL11.glColor4f(1.0f, 1.0f, 1.0f, 0.6f);
     buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
-    buffer.pos(minX - padX, minY - padY, quadZ - 0.01f).endVertex();
-    buffer.pos(maxX + padX, minY - padY, quadZ - 0.01f).endVertex();
-    buffer.pos(maxX + padX, maxY + padY, quadZ - 0.01f).endVertex();
-    buffer.pos(minX - padX, maxY + padY, quadZ - 0.01f).endVertex();
+    // Left side
+    buffer.pos(minX, minY, quadZ).endVertex();
+    buffer.pos(minX, minY, quadZ + depth).endVertex();
+    buffer.pos(minX, maxY, quadZ + depth).endVertex();
+    buffer.pos(minX, maxY, quadZ).endVertex();
+    // Right side
+    buffer.pos(maxX, minY, quadZ + depth).endVertex();
+    buffer.pos(maxX, minY, quadZ).endVertex();
+    buffer.pos(maxX, maxY, quadZ).endVertex();
+    buffer.pos(maxX, maxY, quadZ + depth).endVertex();
+    // Top side
+    buffer.pos(minX, maxY, quadZ).endVertex();
+    buffer.pos(minX, maxY, quadZ + depth).endVertex();
+    buffer.pos(maxX, maxY, quadZ + depth).endVertex();
+    buffer.pos(maxX, maxY, quadZ).endVertex();
+    // Bottom side
+    buffer.pos(minX, minY, quadZ + depth).endVertex();
+    buffer.pos(minX, minY, quadZ).endVertex();
+    buffer.pos(maxX, minY, quadZ).endVertex();
+    buffer.pos(maxX, minY, quadZ + depth).endVertex();
+    tessellator.draw();
+
+    // Glow halo — larger semi-transparent front quad for bloom effect
+    float padX = (maxX - minX) * 0.35f;
+    float padY = (maxY - minY) * 0.35f;
+    GL11.glColor4f(1.0f, 1.0f, 1.0f, 0.2f);
+    buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
+    buffer.pos(minX - padX, minY - padY, quadZ - 0.02f).endVertex();
+    buffer.pos(maxX + padX, minY - padY, quadZ - 0.02f).endVertex();
+    buffer.pos(maxX + padX, maxY + padY, quadZ - 0.02f).endVertex();
+    buffer.pos(minX - padX, maxY + padY, quadZ - 0.02f).endVertex();
     tessellator.draw();
 
     // Restore GL state
