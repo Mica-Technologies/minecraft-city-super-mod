@@ -3,6 +3,7 @@ package com.micatechnologies.minecraft.csm.lifesafety;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEWUD;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -11,6 +12,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.World;
 
 public abstract class AbstractBlockFireAlarmSounder extends AbstractBlockRotatableNSEWUD {
 
@@ -102,4 +104,18 @@ public abstract class AbstractBlockFireAlarmSounder extends AbstractBlockRotatab
   }
 
   abstract public String getSoundResourceName(IBlockState blockState);
+
+  /**
+   * Ensures a tile entity exists for strobe blocks that were placed before the strobe
+   * TESR was added. Called from neighborChanged so that existing world blocks get the TE
+   * automatically when the fire alarm panel triggers a block update during alarm.
+   */
+  @Override
+  public void neighborChanged(IBlockState state, World worldIn, BlockPos pos,
+      Block blockIn, BlockPos fromPos) {
+    if (!worldIn.isRemote && this instanceof IStrobeBlock && worldIn.getTileEntity(pos) == null) {
+      worldIn.setTileEntity(pos, new TileEntityFireAlarmStrobe());
+    }
+    super.neighborChanged(state, worldIn, pos, blockIn, fromPos);
+  }
 }
