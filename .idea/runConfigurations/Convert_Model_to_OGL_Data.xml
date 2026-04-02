@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Process Batch Rename" type="Application" factoryName="Application" folderName="Dev Tools">
-    <option name="MAIN_CLASS_NAME" value="com.micatechnologies.minecraft.csm.tools.BatchRenameTool" />
+  <configuration default="false" name="Convert Model to OGL Data" type="Application" factoryName="Application" folderName="Dev Tools">
+    <option name="MAIN_CLASS_NAME" value="com.micatechnologies.minecraft.csm.tools.ModelToOglDataTool" />
     <module name="dev-env-utils" />
     <option name="PROGRAM_PARAMETERS" value="$ProjectFileDir$" />
     <extension name="coverage">
