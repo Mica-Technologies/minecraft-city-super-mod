@@ -190,6 +190,15 @@ public class TileEntityTrafficSignalHeadRenderer extends
 
     GL11.glPopMatrix();
 
+    // Reset GL color to white and sync GlStateManager's cached color state.
+    // The Barlo strobe code (and display list replay) sets GL color via GL11.glColor4f()
+    // directly, bypassing GlStateManager's cache. If we don't reset here, the stale color
+    // leaks into subsequent renderers (e.g., vanilla sign TESR) — GlStateManager thinks the
+    // color is already white and skips the actual GL call, causing other blocks to inherit
+    // whatever color the strobe left behind (strobing dark/white on the Barlo cycle).
+    GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+    GlStateManager.resetColor();
+
     // Restore previous lightmap brightness
     OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, prevBrightnessX, prevBrightnessY);
     GlStateManager.disableBlend();
