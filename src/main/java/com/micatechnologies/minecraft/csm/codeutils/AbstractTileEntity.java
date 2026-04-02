@@ -5,10 +5,13 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.management.PlayerChunkMapEntry;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.util.Constants;
 
 /**
@@ -64,12 +67,14 @@ public abstract class AbstractTileEntity extends TileEntity {
    */
   public void syncServerToClient(World world) {
     if (!world.isRemote) {
-      // Send an update packet to the client
       SPacketUpdateTileEntity packet = getUpdatePacket();
-      if (packet != null) {
-        MinecraftServer minecraftServer = world.getMinecraftServer();
-        if (minecraftServer != null) {
-          minecraftServer.getPlayerList().sendPacketToAllPlayers(packet);
+      if (packet != null && world instanceof WorldServer) {
+        // Send only to players tracking this chunk (avoids "null tile entity" errors
+        // for players who don't have the chunk loaded)
+        PlayerChunkMapEntry entry = ((WorldServer) world).getPlayerChunkMap()
+            .getEntry(pos.getX() >> 4, pos.getZ() >> 4);
+        if (entry != null) {
+          entry.sendPacket(packet);
         }
       }
     }
