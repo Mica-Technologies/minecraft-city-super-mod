@@ -31,6 +31,16 @@ public class BlockFireAlarmSimplex4903HornStrobeWhite extends AbstractBlockFireA
     return new TileEntityFireAlarmStrobe();
   }
 
+  @Override
+  public float[] getStrobeLensFrom() {
+    return new float[]{1.3f, 7.3f, 11f};
+  }
+
+  @Override
+  public float[] getStrobeLensTo() {
+    return new float[]{4.7f, 15.8f, 14f};
+  }
+
   public static final PropertyInteger SOUND = PropertyInteger.create("sound", 0, 1);
   public static final String[] SOUND_NAMES = {"Old", "New"};
 

@@ -28,6 +28,16 @@ public class BlockFireAlarmSystemSensorLSeriesCeilingSpeakerStrobeWhite extends
   }
 
   @Override
+  public float[] getStrobeLensFrom() {
+    return new float[]{6f, 6f, 15f};
+  }
+
+  @Override
+  public float[] getStrobeLensTo() {
+    return new float[]{10f, 10f, 16f};
+  }
+
+  @Override
   public String getBlockRegistryName() {
     return "firealarmsystemsensorlseriesceilingspeakerstrobewhite";
   }
