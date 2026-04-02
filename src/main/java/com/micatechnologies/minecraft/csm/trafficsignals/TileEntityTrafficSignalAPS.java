@@ -387,7 +387,7 @@ public class TileEntityTrafficSignalAPS extends TileEntityTrafficSignalTickableR
    * The client handler stops the old sound before starting a new one, so this is safe
    * for players already hearing the sound (brief restart, inaudible in practice).
    */
-  private static final long WALK_SOUND_REBROADCAST_INTERVAL = 100L;
+  private static final long WALK_SOUND_REBROADCAST_INTERVAL = 200L;
 
   @Override
   public void onTick() {
