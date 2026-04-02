@@ -70,7 +70,7 @@ public class BlockControllableVerticalAngle2AheadSignal extends AbstractBlockCon
     ICsmRetiringBlock.super.configureReplacement(world, pos, oldTileEntityNBT);
     TileEntity te = world.getTileEntity(pos);
     if (te instanceof TileEntityTrafficSignalHead) {
-      ((TileEntityTrafficSignalHead) te).setBodyTilt(TrafficSignalBodyTilt.LEFT_ANGLE);
+      ((TileEntityTrafficSignalHead) te).setBodyTilt(TrafficSignalBodyTilt.RIGHT_ANGLE);
     }
   }
 }
