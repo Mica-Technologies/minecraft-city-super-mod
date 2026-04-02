@@ -10,7 +10,6 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
@@ -29,12 +28,31 @@ public class TileEntityFireAlarmStrobeRenderer
   private static final long STROBE_CYCLE_MS = 1000L;
   private static final long STROBE_FLASH_MS = 75L;
 
+  /** Strobe quad dimensions in block units, centered on the device face. */
+  private static final float STROBE_HALF_W = 0.15f;
+  private static final float STROBE_HALF_H = 0.10f;
+
+  /**
+   * Z offset from block center to place the quad just in front of the device face.
+   * Most fire alarm devices are mounted against the back of the block cell (Z near 1.0
+   * in un-rotated coords), with the strobe lens on the front face (Z near 0.6-0.7).
+   * This places the quad at 0.5 - 0.19 = 0.31 from block origin, which is roughly
+   * where the device front face sits for typical fire alarm models.
+   */
+  private static final float STROBE_Z_OFFSET = -0.19f;
+
+  /** Y offset from block center to place the strobe lens in the lower portion of the device. */
+  private static final float STROBE_Y_OFFSET = -0.10f;
+
   @Override
   public void render(TileEntityFireAlarmStrobe te, double x, double y, double z,
       float partialTicks, int destroyStage, float alpha) {
     if (!CsmConfig.isStrobeEffectEnabled()) return;
     if (te.getWorld() == null) return;
-    if (!ActiveStrobeRegistry.isActive(te.getPos())) return;
+
+    // Check alarm state from the client-side strobe registry
+    boolean alarmActive = ActiveStrobeRegistry.isActive(te.getPos());
+    if (!alarmActive) return;
 
     // Check strobe timing — only render during the 75ms flash window
     long t = System.currentTimeMillis() % STROBE_CYCLE_MS;
@@ -45,9 +63,6 @@ public class TileEntityFireAlarmStrobeRenderer
     if (!state.getPropertyKeys().contains(AbstractBlockRotatableNSEWUD.FACING)) return;
     EnumFacing facing = state.getValue(AbstractBlockRotatableNSEWUD.FACING);
 
-    // Compute strobe quad position from the block's bounding box
-    AxisAlignedBB bb = state.getBoundingBox(te.getWorld(), te.getPos());
-
     // Save lightmap state and set fullbright
     int prevBrightnessX = (int) OpenGlHelper.lastBrightnessX;
     int prevBrightnessY = (int) OpenGlHelper.lastBrightnessY;
@@ -56,45 +71,39 @@ public class TileEntityFireAlarmStrobeRenderer
     GlStateManager.pushMatrix();
     GlStateManager.translate((float) x + 0.5f, (float) y + 0.5f, (float) z + 0.5f);
 
-    // Rotate quad to face the correct direction based on block FACING
+    // Rotate so the quad faces outward from the device's mounting direction
     applyFacingRotation(facing);
 
-    // Disable texture, enable additive blending for bright flash
+    // Disable texture and face culling, enable additive blending
     GlStateManager.disableTexture2D();
+    GlStateManager.disableCull();
     GlStateManager.enableBlend();
     GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA,
         GlStateManager.DestFactor.ONE);
     GlStateManager.depthMask(false);
     GlStateManager.disableLighting();
 
-    // Compute quad dimensions from bounding box (strobe lens in lower portion of device)
-    float halfW = (float) (bb.maxX - bb.minX) * 0.3f;  // 60% of block width
-    float halfH = (float) (bb.maxY - bb.minY) * 0.1f;  // 20% of block height
-    float centerY = (float) (bb.minY + (bb.maxY - bb.minY) * 0.35f) - 0.5f; // 35% up from bottom
-    float faceZ = (float) (bb.minZ - 0.5f) - 0.005f; // slightly in front of block face
-
-    // Draw bright white strobe quad
     Tessellator tessellator = Tessellator.getInstance();
     BufferBuilder buffer = tessellator.getBuffer();
 
     // Main flash quad (bright white)
     GL11.glColor4f(1.0f, 1.0f, 1.0f, 0.95f);
     buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
-    buffer.pos(-halfW, centerY - halfH, faceZ).endVertex();
-    buffer.pos(halfW, centerY - halfH, faceZ).endVertex();
-    buffer.pos(halfW, centerY + halfH, faceZ).endVertex();
-    buffer.pos(-halfW, centerY + halfH, faceZ).endVertex();
+    buffer.pos(-STROBE_HALF_W, STROBE_Y_OFFSET - STROBE_HALF_H, STROBE_Z_OFFSET).endVertex();
+    buffer.pos(STROBE_HALF_W, STROBE_Y_OFFSET - STROBE_HALF_H, STROBE_Z_OFFSET).endVertex();
+    buffer.pos(STROBE_HALF_W, STROBE_Y_OFFSET + STROBE_HALF_H, STROBE_Z_OFFSET).endVertex();
+    buffer.pos(-STROBE_HALF_W, STROBE_Y_OFFSET + STROBE_HALF_H, STROBE_Z_OFFSET).endVertex();
     tessellator.draw();
 
     // Glow halo (larger, semi-transparent)
-    float glowW = halfW * 1.8f;
-    float glowH = halfH * 1.8f;
-    GL11.glColor4f(1.0f, 1.0f, 1.0f, 0.35f);
+    float glowW = STROBE_HALF_W * 2.5f;
+    float glowH = STROBE_HALF_H * 2.5f;
+    GL11.glColor4f(1.0f, 1.0f, 1.0f, 0.25f);
     buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
-    buffer.pos(-glowW, centerY - glowH, faceZ - 0.005f).endVertex();
-    buffer.pos(glowW, centerY - glowH, faceZ - 0.005f).endVertex();
-    buffer.pos(glowW, centerY + glowH, faceZ - 0.005f).endVertex();
-    buffer.pos(-glowW, centerY + glowH, faceZ - 0.005f).endVertex();
+    buffer.pos(-glowW, STROBE_Y_OFFSET - glowH, STROBE_Z_OFFSET - 0.01f).endVertex();
+    buffer.pos(glowW, STROBE_Y_OFFSET - glowH, STROBE_Z_OFFSET - 0.01f).endVertex();
+    buffer.pos(glowW, STROBE_Y_OFFSET + glowH, STROBE_Z_OFFSET - 0.01f).endVertex();
+    buffer.pos(-glowW, STROBE_Y_OFFSET + glowH, STROBE_Z_OFFSET - 0.01f).endVertex();
     tessellator.draw();
 
     // Restore GL state
@@ -102,6 +111,7 @@ public class TileEntityFireAlarmStrobeRenderer
     GlStateManager.resetColor();
     GlStateManager.depthMask(true);
     GlStateManager.enableLighting();
+    GlStateManager.enableCull();
     GlStateManager.disableBlend();
     GlStateManager.enableTexture2D();
     GlStateManager.popMatrix();
@@ -113,12 +123,12 @@ public class TileEntityFireAlarmStrobeRenderer
 
   /**
    * Applies GL rotation so that the strobe quad faces outward from the block's mounting face.
-   * The quad is drawn on the -Z face by default; this rotates it to match the block's FACING.
+   * The quad is drawn on the -Z face by default (facing north); this rotates it to match
+   * the block's FACING direction.
    */
   private static void applyFacingRotation(EnumFacing facing) {
     switch (facing) {
       case NORTH:
-        // Default: quad on -Z face, no rotation needed
         break;
       case SOUTH:
         GlStateManager.rotate(180f, 0f, 1f, 0f);

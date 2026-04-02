@@ -55,6 +55,8 @@ public class FireAlarmSoundPacketHandler implements
 
     // Track positions for this channel and register with strobe registry
     Set<BlockPos> positions = new HashSet<>(message.getSpeakerPositions());
+    System.out.println("[CSM Strobe Debug] Sound packet START on channel '" + channel +
+        "' with " + positions.size() + " positions: " + positions);
     channelPositions.put(channel, positions);
     ActiveStrobeRegistry.addPositions(positions);
 
