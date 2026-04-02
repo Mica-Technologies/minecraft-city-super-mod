@@ -423,9 +423,10 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
               " mode): " + e.getMessage());
     }
 
-    // Derive alternating flash from wall clock to stay in sync with the signal head
-    // renderer's bulbFlashing logic (which uses System.currentTimeMillis() % 1000 < 500)
-    alternatingFlash = (System.currentTimeMillis() % 1000L) < 500L;
+    // Toggle alternating flash each controller tick. In flash mode (tick rate 10),
+    // this produces a 0.5s on / 0.5s off cycle. Beacons use their own renderer-driven
+    // flash (bulbFlashing=true) independent of this toggle.
+    alternatingFlash = !alternatingFlash;
 
   }
 
