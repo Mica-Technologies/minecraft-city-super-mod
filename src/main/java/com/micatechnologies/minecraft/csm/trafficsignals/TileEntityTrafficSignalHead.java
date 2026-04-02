@@ -426,4 +426,9 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
     super.onDataPacket(net, pkt);
     dirty = true;
   }
+
+  @Override
+  public double getMaxRenderDistanceSquared() {
+    return 128.0 * 128.0; // 128 blocks
+  }
 }
