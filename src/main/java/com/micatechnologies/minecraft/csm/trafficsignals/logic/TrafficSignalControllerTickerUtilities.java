@@ -339,6 +339,54 @@ public class TrafficSignalControllerTickerUtilities {
   }
 
   /**
+   * Determines whether the active circuit's left turn signals should display a green arrow
+   * (protected left, suppressing concurrent pedestrian walk) or a flashing yellow arrow (permissive
+   * left, allowing concurrent pedestrian walk). This method mirrors {@link #computeGreenRightTurn}
+   * but uses the left turn scan zone count.
+   *
+   * @param circuits                 The configured/connected circuits of the traffic signal
+   *                                 controller.
+   * @param activeCircuitNumber      The 1-based circuit number currently being served.
+   * @param overlapPedestrianSignals Whether concurrent pedestrian signals are enabled.
+   * @param world                    The world in which the controller is located.
+   *
+   * @return {@code true} if the active circuit's left turn signals should show a green arrow and
+   *     concurrent pedestrian signals should be suppressed; {@code false} if a flashing yellow
+   *     arrow should be used and concurrent pedestrian walk is permitted.
+   *
+   * @since 1.0
+   */
+  public static boolean computeGreenLeftTurn(TrafficSignalControllerCircuits circuits,
+      int activeCircuitNumber,
+      boolean overlapPedestrianSignals,
+      World world) {
+    if (!overlapPedestrianSignals) {
+      return false;
+    }
+
+    // Get left turn waiting count for the active circuit
+    int leftCount = circuits.getCircuit(activeCircuitNumber - 1)
+        .getSensorsWaitingSummary(world)
+        .getLeftTotal();
+
+    // No left turn detection zone configured (or no vehicles) → FYA, peds may walk
+    if (leftCount == 0) {
+      return false;
+    }
+
+    // Sum pedestrian accessory requests across all other circuits
+    int otherPedCount = 0;
+    for (int i = 1; i <= circuits.getCircuitCount(); i++) {
+      if (i != activeCircuitNumber) {
+        otherPedCount += circuits.getCircuit(i - 1).getPedestrianAccessoriesRequestCount(world);
+      }
+    }
+
+    // Green left turn only when left turn vehicles outnumber pedestrian requests
+    return leftCount > otherPedCount;
+  }
+
+  /**
    * Gets the default phase for the specified circuit number when the traffic signal controller is
    * operating in {@link TrafficSignalControllerMode#NORMAL} mode.
    *
@@ -370,9 +418,11 @@ public class TrafficSignalControllerTickerUtilities {
       boolean hasProtectedSignals =
           !circuits.getCircuit(circuitNumber - 1).getProtectedSignals().isEmpty();
 
-      // Determine if right turn vehicles outnumber pedestrian requests (green arrow vs FYA)
+      // Determine if turn vehicles outnumber pedestrian requests (green arrow vs FYA)
       boolean greenRightTurn =
           computeGreenRightTurn(circuits, circuitNumber, overlapPedestrianSignals, world);
+      boolean greenLeftTurn =
+          computeGreenLeftTurn(circuits, circuitNumber, overlapPedestrianSignals, world);
 
       // Get appropriate phase applicability
       TrafficSignalPhaseApplicability phaseApplicability =
@@ -389,7 +439,8 @@ public class TrafficSignalControllerTickerUtilities {
           // Check if all facing same direction
           boolean allFacingSameDir = circuit.areSignalsFacingSameDirection(world);
 
-          if (allFacingSameDir && !hasProtectedSignals && !overlapPedestrianSignals) {
+          if (greenLeftTurn ||
+              (allFacingSameDir && !hasProtectedSignals && !overlapPedestrianSignals)) {
             defaultPhase.addOffSignals(circuit.getFlashingLeftSignals());
             defaultPhase.addGreenSignals(circuit.getLeftSignals());
           } else {
@@ -420,7 +471,8 @@ public class TrafficSignalControllerTickerUtilities {
           defaultPhase.addDontWalkSignals(circuit.getPedestrianSignals());
           defaultPhase.addDontWalkSignals(circuit.getPedestrianAccessorySignals());
         } else {
-          addCircuitToPhaseAllRed(circuit, defaultPhase, overlapPedestrianSignals && !greenRightTurn);
+          addCircuitToPhaseAllRed(circuit, defaultPhase,
+              overlapPedestrianSignals && !greenRightTurn && !greenLeftTurn);
         }
       }
     }
@@ -711,9 +763,11 @@ public class TrafficSignalControllerTickerUtilities {
     int circuitNumber = priorityIndicator.getFirst();
     TrafficSignalPhaseApplicability phaseApplicability = priorityIndicator.getSecond();
 
-    // Determine if right turn vehicles outnumber pedestrian requests (green arrow vs FYA)
+    // Determine if turn vehicles outnumber pedestrian requests (green arrow vs FYA)
     boolean greenRightTurn =
         computeGreenRightTurn(circuits, circuitNumber, overlapPedestrianSignals, world);
+    boolean greenLeftTurn =
+        computeGreenLeftTurn(circuits, circuitNumber, overlapPedestrianSignals, world);
 
     // Create the upcoming phase object
     TrafficSignalPhase upcomingPhase = new TrafficSignalPhase(circuitNumber, phaseApplicability);
@@ -802,8 +856,13 @@ public class TrafficSignalControllerTickerUtilities {
               // FYA right turn (permissive) — no conflict with transit/bike
               upcomingPhase.addGreenSignals(circuit.getProtectedSignals());
             }
-            upcomingPhase.addFyaSignals(circuit.getFlashingLeftSignals());
-            upcomingPhase.addRedSignals(circuit.getLeftSignals());
+            if (greenLeftTurn) {
+              upcomingPhase.addOffSignals(circuit.getFlashingLeftSignals());
+              upcomingPhase.addGreenSignals(circuit.getLeftSignals());
+            } else {
+              upcomingPhase.addFyaSignals(circuit.getFlashingLeftSignals());
+              upcomingPhase.addRedSignals(circuit.getLeftSignals());
+            }
           } else {
             upcomingPhase.addOffSignals(circuit.getFlashingRightSignals());
             upcomingPhase.addGreenSignals(circuit.getRightSignals());
@@ -818,7 +877,8 @@ public class TrafficSignalControllerTickerUtilities {
             }
           }
         } else {
-          addCircuitToPhaseAllRed(circuit, upcomingPhase, overlapPedestrianSignals && !greenRightTurn);
+          addCircuitToPhaseAllRed(circuit, upcomingPhase,
+              overlapPedestrianSignals && !greenRightTurn && !greenLeftTurn);
         }
       }
       // Handle all throughs and protected rights phase applicability
@@ -841,7 +901,8 @@ public class TrafficSignalControllerTickerUtilities {
           upcomingPhase.addOffSignals(circuit.getBeaconSignals());
           upcomingPhase.addDontWalkSignals(circuit.getPedestrianSignals());
           upcomingPhase.addDontWalkSignals(circuit.getPedestrianAccessorySignals());
-          if (circuit.areSignalsFacingSameDirection(world)) {
+          if (greenLeftTurn ||
+              (circuit.areSignalsFacingSameDirection(world) && !overlapPedestrianSignals)) {
             upcomingPhase.addOffSignals(circuit.getFlashingLeftSignals());
             upcomingPhase.addGreenSignals(circuit.getLeftSignals());
           } else {
@@ -849,14 +910,20 @@ public class TrafficSignalControllerTickerUtilities {
             upcomingPhase.addRedSignals(circuit.getLeftSignals());
           }
         } else {
-          addCircuitToPhaseAllRed(circuit, upcomingPhase, overlapPedestrianSignals && !greenRightTurn);
+          addCircuitToPhaseAllRed(circuit, upcomingPhase,
+              overlapPedestrianSignals && !greenRightTurn && !greenLeftTurn);
         }
       }
       // Handle all throughs and protecteds phase applicability
       else if (phaseApplicability == TrafficSignalPhaseApplicability.ALL_THROUGHS_PROTECTEDS) {
         if (i == circuitNumber) {
-          upcomingPhase.addFyaSignals(circuit.getFlashingLeftSignals());
-          upcomingPhase.addRedSignals(circuit.getLeftSignals());
+          if (greenLeftTurn) {
+            upcomingPhase.addOffSignals(circuit.getFlashingLeftSignals());
+            upcomingPhase.addGreenSignals(circuit.getLeftSignals());
+          } else {
+            upcomingPhase.addFyaSignals(circuit.getFlashingLeftSignals());
+            upcomingPhase.addRedSignals(circuit.getLeftSignals());
+          }
           if (greenRightTurn) {
             upcomingPhase.addOffSignals(circuit.getFlashingRightSignals());
             upcomingPhase.addGreenSignals(circuit.getRightSignals());
@@ -871,7 +938,8 @@ public class TrafficSignalControllerTickerUtilities {
           upcomingPhase.addDontWalkSignals(circuit.getPedestrianSignals());
           upcomingPhase.addDontWalkSignals(circuit.getPedestrianAccessorySignals());
         } else {
-          addCircuitToPhaseAllRed(circuit, upcomingPhase, overlapPedestrianSignals && !greenRightTurn);
+          addCircuitToPhaseAllRed(circuit, upcomingPhase,
+              overlapPedestrianSignals && !greenRightTurn && !greenLeftTurn);
         }
       } else {
         throw new IllegalStateException(
