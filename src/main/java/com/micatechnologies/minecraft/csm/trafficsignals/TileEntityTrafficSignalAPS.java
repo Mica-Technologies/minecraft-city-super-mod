@@ -227,6 +227,14 @@ public class TileEntityTrafficSignalAPS extends TileEntityTrafficSignalTickableR
       crosswalkSoundIndex = 0;
     }
 
+    // Stop any currently playing sound and reset state so the next tick
+    // immediately starts the new scheme's sound for the current signal phase
+    if (currentWalkSound != null) {
+      stopSoundViaPacket();
+      currentWalkSound = null;
+    }
+    lastSoundColorState = -1;
+
     // Mark the tile entity as dirty
     markDirtySync(world, pos, true);
 
@@ -280,7 +288,7 @@ public class TileEntityTrafficSignalAPS extends TileEntityTrafficSignalTickableR
    * The hearing range for APS sounds in blocks. Determines the maximum distance at which
    * the sound is audible, with volume attenuating linearly as the player moves away.
    */
-  private static final float APS_HEARING_RANGE = 10.0f;
+  private static final float APS_HEARING_RANGE = 16.0f;
 
   /**
    * Returns a boolean indicating if the tile entity should also tick on the client side.
@@ -373,6 +381,14 @@ public class TileEntityTrafficSignalAPS extends TileEntityTrafficSignalTickableR
    */
   private static final long LOCATE_TONE_INTERVAL = 20L;
 
+  /**
+   * How often (in ticks) the walk sound start packet is re-broadcast while in GREEN state.
+   * This ensures players who load in or walk into range pick up the active walk sound.
+   * The client handler stops the old sound before starting a new one, so this is safe
+   * for players already hearing the sound (brief restart, inaudible in practice).
+   */
+  private static final long WALK_SOUND_REBROADCAST_INTERVAL = 100L;
+
   @Override
   public void onTick() {
     if (world == null || world.isRemote) return;
@@ -397,6 +413,16 @@ public class TileEntityTrafficSignalAPS extends TileEntityTrafficSignalTickableR
           playSoundOnChannel(getChannel(), currentWalkSound, true);
         }
       }
+    }
+
+    // Re-broadcast walk sound periodically while GREEN so players loading in or
+    // walking into range pick it up. The client handler stops any existing sound
+    // on the channel before starting the new one, so already-listening players
+    // experience only a brief inaudible restart.
+    if (blockColor == BlockControllableCrosswalkButtonAudible.SIGNAL_GREEN
+        && currentWalkSound != null
+        && world.getTotalWorldTime() % WALK_SOUND_REBROADCAST_INTERVAL == 0) {
+      playSoundOnChannel(getChannel(), currentWalkSound, true);
     }
 
     // Per-interval locate tone: send a one-shot beep at each global 20-tick boundary.

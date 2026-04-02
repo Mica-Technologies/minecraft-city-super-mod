@@ -24,7 +24,7 @@ public class BlockControllableCrosswalkTweeter1
     return 0;
   }
 
-  private static final float TWEETER_HEARING_RANGE = 10.0f;
+  private static final float TWEETER_HEARING_RANGE = 16.0f;
 
   @Override
   public void updateTick(World world, BlockPos pos, IBlockState state, Random rand) {

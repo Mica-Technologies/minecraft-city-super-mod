@@ -132,14 +132,13 @@ All measurements taken with ffmpeg volumedetect (2026-03-29).
 
 ## Volume Normalization Status
 
-**Current spread:** -7.4 dB to -18.3 dB (10.9 dB range)
-**Target:** ~-14 dB mean across all files
+**COMPLETE (2026-03-31).** All 27 files normalized to -14.0 dB mean via ffmpeg volume filter.
 
-| Category | Current Range | Notes |
+| Metric | Before | After |
 |---|---|---|
-| Locate tones | -7.4 to -10.8 dB | Campbell too loud relative to Polara |
-| Wait sounds | -11.3 to -16.5 dB | Wide spread |
-| Walk sounds | -12.4 to -17.5 dB | Wide spread |
-| Tweeters | -17.9 to -18.3 dB | Too quiet |
+| Volume spread | 8.6 dB (-7.4 to -16.0) | **1.3 dB** (-15.2 to -13.9) |
+| Files adjusted | — | 24 of 27 |
 
-**Status:** Profiled, not yet normalized. Normalization approach TBD (file-level vs code multiplier).
+Tweeter `volume: 0.6` multiplier removed from sounds.json (no longer needed).
+Originals backed up in `sounds/_originals_backup/`.
+Full before/after data in `agent_progress/APS_SOUND_IMPROVEMENTS.md`.

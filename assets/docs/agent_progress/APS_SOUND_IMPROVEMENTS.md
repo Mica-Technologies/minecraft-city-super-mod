@@ -1,19 +1,19 @@
 # APS & Tweeter Sound Improvements
 
 **Created:** 2026-03-29
-**Status:** Complete — MovingSound architecture, volume normalization, locate sync, press channel separation all done
+**Status:** Complete — MovingSound architecture, volume normalization (2026-03-31), locate sync, press channel separation all done
 
 ## Resume Prompt
 
-> We implemented the MovingSound architecture for APS buttons and crosswalk tweeters, mirroring
-> the fire alarm voice evac system. The core classes (APSMovingSound, APSSoundPacket,
-> APSSoundPacketHandler) are created and wired up. TileEntityTrafficSignalAPS and both tweeter
-> blocks have been converted from world.playSound() to the packet-based system. The packet is
-> registered in Csm.java. Hearing range is set to 10 blocks. Volume normalization across sound
-> schemes still needs to be evaluated and tuned. The MovingSound uses repeat=true with
-> AttenuationType.NONE for custom distance-based volume. Need to test in-game to verify sounds
-> play correctly with distance attenuation, and then normalize volumes across all APS sound
-> schemes and tweeter sounds.
+> MovingSound architecture for APS buttons and crosswalk tweeters is complete, mirroring
+> the fire alarm voice evac system. Core classes: APSMovingSound, APSSoundPacket,
+> APSSoundPacketHandler. TileEntityTrafficSignalAPS and both tweeter blocks converted
+> from world.playSound() to packet-based system. Packet registered in Csm.java.
+>
+> **Volume normalization completed 2026-03-31.** All 27 sound files normalized to -14.0 dB
+> mean via ffmpeg volume filter. Spread reduced from 8.6 dB to 1.3 dB. Originals backed
+> up in `sounds/_originals_backup/`. Tweeter `volume: 0.6` multiplier removed from
+> sounds.json (no longer needed post-normalization).
 
 ## Architecture Overview
 
@@ -78,65 +78,85 @@ Mirrors the fire alarm MovingSound system but for APS/tweeter use:
 | `BlockControllableCrosswalkTweeter1` | `csm:crosswalk_cookoo_1` | 40 ticks |
 | `BlockControllableCrosswalkTweeter2` | `csm:crosswalk_cookoo_2` | 40 ticks |
 
-## Sound File Profiling
+## Volume Normalization (2026-03-31)
 
-All sound files profiled with ffmpeg volumedetect filter (2026-03-29).
+All 27 APS/crosswalk sound files normalized to a target of **-14.0 dB mean volume** using
+ffmpeg's `volume` filter with per-file dB adjustments. Original files backed up in
+`src/main/resources/assets/csm/sounds/_originals_backup/`.
 
-### Locate Tones (beep once per second)
+**Tool:** `ffmpeg -i <input> -af volume=<adj>dB -c:a libvorbis -q:a 6 <output>`
+**Target:** -14.0 dB mean volume (midpoint of original spread)
+**Tolerance:** ±0.3 dB (files within tolerance were not re-encoded)
 
-| File | Duration (s) | Ticks (~) | Mean Vol (dB) | Max Vol (dB) | Gap (s) |
-|---|---|---|---|---|---|
-| campbell_tone1.ogg | 0.10 | 2 | -7.4 | -4.0 | 0.90 |
-| polara_tone1.ogg | 0.10 | 2 | -10.8 | -2.5 | 0.90 |
+### Before/After — All Files
+
+| File | Before (dB) | Adjustment | After (dB) |
+|---|---|---|---|
+| **Locate Tones** ||||
+| campbell_tone1.ogg | -7.4 | -6.6 dB | -14.0 |
+| polara_tone1.ogg | -10.8 | -3.2 dB | -14.0 |
+| **Wait/Press Sounds** ||||
+| campbell_wait.ogg | -14.5 | +0.5 dB | -14.0 |
+| campbell_phil_wait.ogg | -13.9 | skip | -13.9 |
+| campbell_wait_look_both_ways.ogg | -13.0 | -1.0 dB | -14.0 |
+| campbell_phil_wait_look_both_ways.ogg | -12.1 | -1.9 dB | -13.9 |
+| campbell_phil_wait_to_cross.ogg | -15.6 | +1.6 dB | -14.2 |
+| polara_wait.ogg | -14.0 | skip | -14.0 |
+| polara_lang2_wait.ogg | -12.5 | -1.5 dB | -13.9 |
+| **Walk Sounds** ||||
+| campbell_walk_sign_on.ogg | -12.5 | -1.5 dB | -13.9 |
+| campbell_perc_ew.ogg | -14.6 | +0.6 dB | -14.3 |
+| campbell_perc_ns.ogg | -14.3 | +0.3 dB | -14.2 |
+| campbell_walk_exclusive.ogg | -12.1 | -1.9 dB | -14.0 |
+| campbell_warning_lights_are_flashing.ogg | -12.8 | -1.2 dB | -13.9 |
+| campbell_yellow_lights_are_flashing.ogg | -13.0 | -1.0 dB | -13.9 |
+| campbell_phil_walk_on.ogg | -12.8 | -1.2 dB | -13.9 |
+| campbell_phil_walk_on_to_cross.ogg | -14.2 | skip | -14.2 |
+| campbell_phil_walk_exclusive.ogg | -12.1 | -1.9 dB | -14.0 |
+| campbell_phil_warning_lights_activated.ogg | -11.3 | -2.7 dB | -14.0 |
+| campbell_phil_crossing_lights_activated.ogg | -11.4 | -2.6 dB | -13.9 |
+| polara_rapid_tick1.ogg | -12.9 | -1.1 dB | -14.0 |
+| polara_walk.ogg | -12.8 | -1.2 dB | -13.9 |
+| polara_walk_all_crossings.ogg | -12.1 | -1.9 dB | -14.0 |
+| polara_lang2_walk.ogg | -12.0 | -2.0 dB | -14.0 |
+| polara_lang2_walk_all_crossings.ogg | -11.6 | -2.4 dB | -13.9 |
+| **Tweeter Sounds** ||||
+| crosswalk_cookoo_1.ogg | -16.0 | +2.0 dB | -15.2 |
+| crosswalk_cookoo_2.ogg | -15.9 | +1.9 dB | -15.1 |
+
+### Results Summary
+
+| Metric | Before | After |
+|---|---|---|
+| Volume spread | 8.6 dB (-7.4 to -16.0) | **1.3 dB** (-15.2 to -13.9) |
+| Mean of means | ~-13.1 dB | ~-14.0 dB |
+| Files adjusted | — | 24 of 27 |
+| Files skipped (in tolerance) | — | 3 (campbell_phil_wait, campbell_phil_walk_on_to_cross, polara_wait) |
+
+### Additional Changes
+
+- **Removed `volume: 0.6` multiplier** from `crosswalk_cookoo_1` and `crosswalk_cookoo_2`
+  entries in `sounds.json`. This multiplier was a pre-normalization workaround to reduce
+  their perceived loudness relative to other sounds. Now that all files are normalized to
+  the same target, the multiplier is no longer needed and would make tweeters 40% quieter
+  than intended.
+
+### Sound File Metadata
+
+All sound files profiled with ffmpeg volumedetect filter. Durations and tick rates below
+are reference data for the sound scheme tables above.
+
+#### Locate Tones
 
 Both locate tones are ~0.1s long, played every 20 ticks (1s) = 0.9s silence gap.
-**Volume gap: 3.4 dB** between Campbell and Polara tones. Campbell is louder.
+After normalization, Campbell and Polara tones are at the same volume level (-14.0 dB).
 
-### Wait/Press Sounds
+#### Tweeter Sounds
 
-| File | Duration (s) | Ticks (~) | Mean Vol (dB) | Max Vol (dB) |
-|---|---|---|---|---|
-| campbell_wait.ogg | 0.38 | 8 | -15.2 | -1.6 |
-| polara_wait.ogg | 0.44 | 9 | -15.7 | -0.3 |
-| campbell_phil_wait.ogg | 0.50 | 10 | -13.9 | 0.0 |
-| campbell_wait_look_both_ways.ogg | 1.75 | 35 | -16.5 | 0.0 |
-| campbell_phil_wait_look_both_ways.ogg | 1.97 | 39 | -11.3 | 0.0 |
-| polara_lang2_wait.ogg | 0.69 | 14 | -13.8 | 0.0 |
-
-### Walk Sounds
-
-| File | Duration (s) | Ticks (~) | Code Len (ticks) | Mean Vol (dB) | Max Vol (dB) |
-|---|---|---|---|---|---|
-| campbell_walk_sign_on.ogg | 2.11 | 42 | 50 | -16.0 | -0.2 |
-| campbell_perc_ew.ogg | 1.00 | 20 | 40 | -14.0 | 0.0 |
-| campbell_perc_ns.ogg | 1.00 | 20 | 40 | -13.2 | -0.1 |
-| campbell_walk_exclusive.ogg | 2.85 | 57 | 70 | -16.9 | -0.2 |
-| campbell_warning_lights_are_flashing.ogg | 1.99 | 40 | 60 | -16.5 | -0.1 |
-| campbell_yellow_lights_are_flashing.ogg | 1.99 | 40 | 60 | -17.5 | -0.1 |
-| campbell_phil_walk_on.ogg | 1.87 | 37 | 50 | -13.7 | 0.0 |
-| campbell_phil_walk_exclusive.ogg | 2.87 | 57 | 70 | -13.4 | 0.0 |
-| campbell_phil_warning_lights_activated.ogg | 5.81 | 116 | 130 | -14.2 | 0.0 |
-| campbell_phil_crossing_lights_activated.ogg | 5.46 | 109 | 130 | -14.9 | 0.0 |
-| polara_rapid_tick1.ogg | 1.59 | 32 | 50 | -15.7 | 0.0 |
-| polara_walk.ogg | 1.73 | 35 | 45 | -14.8 | -0.1 |
-| polara_walk_all_crossings.ogg | 2.32 | 46 | 55 | -13.2 | 0.0 |
-| polara_lang2_walk.ogg | 2.30 | 46 | 60 | -15.3 | -1.5 |
-| polara_lang2_walk_all_crossings.ogg | 3.25 | 65 | 80 | -12.4 | 0.0 |
-
-### Tweeter Sounds
-
-| File | Duration (s) | Ticks (~) | Code Tick Rate | Mean Vol (dB) | Max Vol (dB) |
-|---|---|---|---|---|---|
-| crosswalk_cookoo_1.ogg | 1.50 | 30 | 40 | -17.9 | 0.0 |
-| crosswalk_cookoo_2.ogg | 1.50 | 30 | 40 | -18.3 | 0.0 |
-
-### Volume Analysis Summary
-
-Mean volume range across all files: **-7.4 dB to -18.3 dB** (10.9 dB spread).
-Target normalization: ~-14 dB mean (midpoint). Key outliers:
-- **campbell_tone1.ogg**: -7.4 dB (too loud, 6.6 dB above target)
-- **crosswalk_cookoo_1/2.ogg**: -17.9/-18.3 dB (too quiet, ~4 dB below target)
-- **campbell_phil_wait_look_both_ways.ogg**: -11.3 dB (3 dB above target)
+| File | Duration (s) | Tick Rate |
+|---|---|---|
+| crosswalk_cookoo_1.ogg | 2.75 | 40 ticks |
+| crosswalk_cookoo_2.ogg | 2.75 | 40 ticks |
 
 ## Playback Architecture
 
@@ -153,12 +173,35 @@ tones to the same 1-second server tick cadence.
 
 | Parameter | Value | Notes |
 |---|---|---|
-| Hearing range (APS) | 10 blocks | Approximate real-world APS audible range |
-| Hearing range (Tweeter) | 10 blocks | Same as APS |
-| Min volume | 0.05 | Prevents MC from discarding the sound |
+| Hearing range (APS) | 16 blocks | Increased from 10 (2026-03-31) for perceptible fade |
+| Hearing range (Tweeter) | 16 blocks | Same as APS |
+| Min volume | 0.05 | Floor for attenuation curve (0.0 returned beyond range) |
 | Max volume | 1.0 | Full volume at source position |
-| Attenuation | Linear | `MIN + (MAX - MIN) * (1 - dist/range)` |
+| Attenuation | Quadratic | `MIN + (MAX - MIN) * ratio²` where `ratio = 1 - dist/range` |
+| Out-of-range volume | 0.0 | Hard cutoff beyond hearing range (not MIN_VOLUME) |
 | Sound category | NEUTRAL | Appropriate for environmental/ambient crosswalk sounds |
-| Repeat | false | Single-shot, server re-sends at tick interval for natural gaps |
+| Repeat (walk) | true | Looping, re-broadcast every 100 ticks for range-enter |
+| Repeat (locate/press) | false | Single-shot, server re-sends at tick interval |
+| Walk rebroadcast | 100 ticks | Ensures players entering range hear active walk sounds |
 | Channel format (APS) | `aps_X_Y_Z` | Unique per button position |
 | Channel format (Tweeter) | `tweeter_X_Y_Z` | Unique per tweeter position |
+
+## Sound Behavior Fixes (2026-03-31)
+
+### Scheme change immediate playback
+When switching sound schemes via sneak-click, `switchSound()` now stops any active walk
+sound and resets `lastSoundColorState = -1` so the next server tick immediately starts the
+new scheme's sound. Previously required waiting for the next signal state transition.
+
+### Quadratic distance attenuation
+Switched from linear to quadratic (squared) falloff for realistic volume dropoff. At half
+the hearing range, volume is ~29% instead of ~53%. Volume floor remains 0.0f beyond
+hearing range (intentional hard cutoff — MIN_VOLUME floor caused sounds to bleed too far).
+Same change applied to `FireAlarmVoiceEvacSound` for consistency.
+
+### Walk sound re-broadcast
+Walk sound start packets were only sent on the GREEN transition. Players loading in or
+walking into range after the transition never received the packet. Added periodic
+re-broadcast every 100 ticks (5s) while GREEN. Client handler stops/restarts on receipt,
+so already-listening players experience only a brief inaudible restart. Locate tones and
+tweeters already re-send on their tick intervals and are unaffected.

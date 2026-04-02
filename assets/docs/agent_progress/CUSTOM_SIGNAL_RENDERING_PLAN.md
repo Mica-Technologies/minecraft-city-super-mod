@@ -463,8 +463,8 @@ handles dedicated servers transparently.
 
 - [x] Refactor `ItemSignalHeadConfigTool` to store mode in ItemStack NBT
 - [x] Refactor `ItemSignalConfigurationTool` to store mode in ItemStack NBT
-- [ ] Test on dedicated server: verify mode switching and GUI opening both work
-- [ ] Test singleplayer: verify no regression
+- [x] Test on dedicated server: verify mode switching and GUI opening both work
+- [x] Test singleplayer: verify no regression
 
 ### Fix 2: Backplate click-through for signal tools (QoL)
 
