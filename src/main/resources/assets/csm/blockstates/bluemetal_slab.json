@@ -1,7 +1,12 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:buildingmaterials/bluemetal_slab"
+    "model": "block/half_slab",
+    "textures": {
+      "bottom": "csm:blocks/buildingmaterials/shared_textures/metal_blue",
+      "top": "csm:blocks/buildingmaterials/shared_textures/metal_blue",
+      "side": "csm:blocks/buildingmaterials/shared_textures/metal_blue"
+    }
   },
   "variants": {
     "half": {

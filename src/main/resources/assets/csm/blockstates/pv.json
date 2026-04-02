@@ -1,7 +1,11 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:hvac/plaque_vent_white"
+    "model": "block/cube_all",
+    "textures": {
+      "all": "csm:blocks/hvac/plaque_vent_white",
+      "particle": "csm:blocks/hvac/plaque_vent_white"
+    }
   },
   "variants": {
     "facing": {

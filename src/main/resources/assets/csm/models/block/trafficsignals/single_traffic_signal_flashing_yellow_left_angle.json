@@ -1,5 +1,5 @@
 {
-  "parent": "csm:block/shared_models/trafficsignals/trafficlightsingle_leftangle",
+  "parent": "csm:block/trafficsignals/shared_models/trafficlightsingle_leftangle",
   "textures": {
     "all": "csm:blocks/trafficsignals/shared_textures/solidyellowoff",
     "particle": "csm:blocks/trafficsignals/shared_textures/solidyellowoff",

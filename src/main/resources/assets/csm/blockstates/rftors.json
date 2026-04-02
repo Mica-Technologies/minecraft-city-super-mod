@@ -1,7 +1,11 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:buildingmaterials/rftors"
+    "model": "block/cube_all",
+    "textures": {
+      "all": "csm:blocks/buildingmaterials/electrical_box",
+      "particle": "csm:blocks/buildingmaterials/electrical_box"
+    }
   },
   "variants": {
     "powered": {

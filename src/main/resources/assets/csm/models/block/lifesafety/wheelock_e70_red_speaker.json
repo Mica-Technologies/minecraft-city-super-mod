@@ -1,5 +1,5 @@
 {
-  "parent": "csm:block/shared_models/lifesafety/wheelock_e70_speaker_red",
+  "parent": "csm:block/lifesafety/shared_models/wheelock_e70_speaker_red",
   "textures": {
     "all": "csm:blocks/lifesafety/wheelock_e70_red_speaker",
     "particle": "csm:blocks/lifesafety/wheelock_e70_red_speaker",

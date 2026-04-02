@@ -1,7 +1,12 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:technology/valcom_speaker_7"
+    "model": "csm:technology/shared_models/valcom_speaker_7",
+    "textures": {
+      "all": "csm:blocks/technology/valcom_speaker_7",
+      "particle": "csm:blocks/technology/valcom_speaker_7",
+      "0": "csm:blocks/technology/valcom_speaker_7"
+    }
   },
   "variants": {
     "facing": {

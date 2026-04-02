@@ -1,7 +1,12 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:lighting/alto_classic_post_light"
+    "model": "csm:lighting/shared_models/mcla_classic_post_light",
+    "textures": {
+      "all": "csm:blocks/lighting/shared_textures/mcla_classic_post_light",
+      "particle": "csm:blocks/lighting/shared_textures/mcla_classic_post_light",
+      "0": "csm:blocks/lighting/shared_textures/mcla_classic_post_light"
+    }
   },
   "variants": {
     "facing": {

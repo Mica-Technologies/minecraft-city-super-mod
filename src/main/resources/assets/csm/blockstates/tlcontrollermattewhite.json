@@ -1,7 +1,13 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:trafficaccessories/traffic_light_controller_matte_white"
+    "model": "csm:trafficaccessories/shared_models/trafficlightcontroller",
+    "textures": {
+      "all": "csm:blocks/trafficsignals/shared_textures/metal_mattewhite",
+      "particle": "csm:blocks/trafficsignals/shared_textures/metal_mattewhite",
+      "0": "csm:blocks/trafficsignals/shared_textures/metal_mattewhite",
+      "1": "csm:blocks/trafficsignals/shared_textures/metal_silver"
+    }
   },
   "variants": {
     "facing": {

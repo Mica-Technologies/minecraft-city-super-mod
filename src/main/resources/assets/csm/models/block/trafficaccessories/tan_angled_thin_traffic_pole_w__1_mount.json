@@ -1,8 +1,0 @@
-{
-  "parent": "csm:block/shared_models/trafficaccessories/trafficpolehorizontalanglemount1",
-  "textures": {
-    "all": "csm:blocks/trafficaccessories/shared_textures/metal_mattetan",
-    "particle": "csm:blocks/trafficaccessories/shared_textures/metal_mattetan",
-    "0": "csm:blocks/trafficaccessories/shared_textures/metal_mattetan"
-  }
-}

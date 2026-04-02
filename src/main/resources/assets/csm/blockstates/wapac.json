@@ -1,7 +1,12 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:technology/enterasys_wireless_ac_ap"
+    "model": "csm:technology/shared_models/wapac",
+    "textures": {
+      "all": "csm:blocks/technology/enterasys_wireless_ac_ap",
+      "particle": "csm:blocks/technology/enterasys_wireless_ac_ap",
+      "0": "csm:blocks/technology/enterasys_wireless_ac_ap"
+    }
   },
   "variants": {
     "facing": {

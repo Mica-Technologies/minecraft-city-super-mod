@@ -1,7 +1,12 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:lighting/nov_round_concrete_pole_middle"
+    "model": "csm:lighting/shared_models/trafficpolevertical",
+    "textures": {
+      "all": "csm:blocks/trafficsignals/shared_textures/concrete_light_pole",
+      "particle": "csm:blocks/trafficsignals/shared_textures/concrete_light_pole",
+      "0": "csm:blocks/trafficsignals/shared_textures/concrete_light_pole"
+    }
   },
   "variants": {
     "facing": {

@@ -1,7 +1,12 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:trafficaccessories/vertical_signal_mount_kit_8_8_12_or_12_8_8_inch"
+    "model": "csm:trafficaccessories/shared_models/verticallightmount8812inch",
+    "textures": {
+      "all": "csm:blocks/trafficsignals/shared_textures/metal_silver",
+      "particle": "csm:blocks/trafficsignals/shared_textures/metal_silver",
+      "0": "csm:blocks/trafficsignals/shared_textures/metal_silver"
+    }
   },
   "variants": {
     "facing": {

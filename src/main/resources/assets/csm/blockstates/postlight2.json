@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:shared_models/lighting/pole_light_vertical_2",
+    "model": "csm:lighting/shared_models/pole_light_vertical_2",
     "textures": {
       "all": "csm:blocks/trafficsignals/shared_textures/metal_black",
       "0": "csm:blocks/lighting/shared_textures/light_surface",

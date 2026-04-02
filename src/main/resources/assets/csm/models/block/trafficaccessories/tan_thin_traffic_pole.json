@@ -1,5 +1,5 @@
 {
-  "parent": "csm:block/shared_models/trafficaccessories/trafficpolehorizontal",
+  "parent": "csm:block/trafficaccessories/shared_models/trafficpolehorizontal",
   "textures": {
     "all": "csm:blocks/trafficaccessories/shared_textures/metal_mattetan",
     "particle": "csm:blocks/trafficaccessories/shared_textures/metal_mattetan",

@@ -1,8 +1,0 @@
-{
-  "parent": "csm:block/shared_models/trafficaccessories/trafficpoleverticalbase",
-  "textures": {
-    "all": "csm:blocks/trafficsignals/shared_textures/metal_white",
-    "particle": "csm:blocks/trafficsignals/shared_textures/metal_white",
-    "0": "csm:blocks/trafficsignals/shared_textures/metal_white"
-  }
-}

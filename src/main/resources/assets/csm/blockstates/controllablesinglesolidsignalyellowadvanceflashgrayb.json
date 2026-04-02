@@ -24,7 +24,7 @@
     },
     "inventory": [
       {
-        "model": "csm:shared_models/trafficsignals/backplates/trafficlightsingle",
+        "model": "csm:trafficsignals/shared_models/backplates/trafficlightsingle",
         "textures": {
           "all": "csm:blocks/trafficsignals/old_bulb_body/gray/gtxyellowoff",
           "particle": "csm:blocks/trafficsignals/old_bulb_body/gray/gtxyellowoff",

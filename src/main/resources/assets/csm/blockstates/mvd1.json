@@ -1,7 +1,16 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:hvac/modular_vent_1_black"
+    "model": "block/cube",
+    "textures": {
+      "down": "csm:blocks/hvac/modular_vent_1_black",
+      "up": "csm:blocks/hvac/modular_vent_1_black",
+      "north": "csm:blocks/hvac/modular_vent_1_black",
+      "east": "csm:blocks/hvac/modular_vent_1_black",
+      "south": "csm:blocks/hvac/modular_vent_1_black",
+      "west": "csm:blocks/hvac/modular_vent_1_black",
+      "particle": "csm:blocks/hvac/modular_vent_1_black"
+    }
   },
   "variants": {
     "facing": {

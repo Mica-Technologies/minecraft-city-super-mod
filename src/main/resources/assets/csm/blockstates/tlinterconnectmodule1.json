@@ -1,7 +1,13 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:trafficaccessories/traffic_signal_interconnect_antenna_style_1"
+    "model": "csm:trafficaccessories/shared_models/signal_interconnect_module_1",
+    "textures": {
+      "all": "csm:blocks/trafficsigns/absolutely_nothing_sign",
+      "particle": "csm:blocks/trafficsigns/absolutely_nothing_sign",
+      "0": "csm:blocks/trafficsigns/absolutely_nothing_sign",
+      "1": "csm:blocks/trafficaccessories/shared_textures/antenna"
+    }
   },
   "variants": {
     "facing": {

@@ -1,7 +1,12 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:powergrid/brooks_duralife_crossarm_2_new"
+    "model": "csm:powergrid/shared_models/brookscrossarm_new_2",
+    "textures": {
+      "all": "csm:blocks/powergrid/shared_textures/crossarms",
+      "particle": "csm:blocks/powergrid/shared_textures/crossarms",
+      "0": "csm:blocks/powergrid/shared_textures/crossarms"
+    }
   },
   "variants": {
     "facing": {

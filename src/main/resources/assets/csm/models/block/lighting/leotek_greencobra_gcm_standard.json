@@ -1,8 +1,0 @@
-{
-  "parent": "csm:block/shared_models/lighting/ltgcm",
-  "textures": {
-    "all": "csm:blocks/lighting/shared_textures/ltgcm",
-    "particle": "csm:blocks/lighting/shared_textures/ltgcm",
-    "0": "csm:blocks/lighting/shared_textures/ltgcm"
-  }
-}

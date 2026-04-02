@@ -1,5 +1,5 @@
 {
-  "parent": "csm:block/shared_models/lifesafety/spaceageelectronics_av32",
+  "parent": "csm:block/lifesafety/shared_models/spaceageelectronics_av32",
   "textures": {
     "all": "csm:blocks/lifesafety/space_age_elec_av32_red_horn_strobe",
     "particle": "csm:blocks/lifesafety/space_age_elec_av32_red_horn_strobe",

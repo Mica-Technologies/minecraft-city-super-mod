@@ -1,7 +1,0 @@
-{
-  "parent": "block/cube_all",
-  "textures": {
-    "all": "csm:blocks/technology/redstone_tts_module",
-    "particle": "csm:blocks/technology/redstone_tts_module"
-  }
-}

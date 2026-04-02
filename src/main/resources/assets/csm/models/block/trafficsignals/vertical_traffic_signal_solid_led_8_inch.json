@@ -1,5 +1,5 @@
 {
-  "parent": "csm:block/shared_models/trafficsignals/trafficlightvertical8inch",
+  "parent": "csm:block/trafficsignals/shared_models/trafficlightvertical8inch",
   "textures": {
     "all": "csm:blocks/trafficsignals/shared_textures/ledsolidredoff",
     "particle": "csm:blocks/trafficsignals/shared_textures/ledsolidredoff",

@@ -1,8 +1,0 @@
-{
-  "parent": "csm:block/shared_models/technology/wapac",
-  "textures": {
-    "all": "csm:blocks/technology/enterasys_wireless_ac_ap",
-    "particle": "csm:blocks/technology/enterasys_wireless_ac_ap",
-    "0": "csm:blocks/technology/enterasys_wireless_ac_ap"
-  }
-}

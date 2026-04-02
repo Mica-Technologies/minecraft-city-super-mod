@@ -1,7 +1,12 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:buildingmaterials/iridescentmetal_slab"
+    "model": "block/half_slab",
+    "textures": {
+      "bottom": "csm:blocks/trafficsignals/shared_textures/metal_iridescent",
+      "top": "csm:blocks/trafficsignals/shared_textures/metal_iridescent",
+      "side": "csm:blocks/trafficsignals/shared_textures/metal_iridescent"
+    }
   },
   "variants": {
     "half": {

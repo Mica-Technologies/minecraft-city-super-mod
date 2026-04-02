@@ -1,7 +1,12 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:trafficaccessories/nov_decorative_metal_pole_top_tan"
+    "model": "csm:trafficaccessories/shared_models/decorative_metal_pole_top",
+    "textures": {
+      "all": "csm:blocks/trafficaccessories/shared_textures/metal_mattetan",
+      "particle": "csm:blocks/trafficaccessories/shared_textures/metal_mattetan",
+      "1": "csm:blocks/trafficaccessories/shared_textures/metal_mattetan"
+    }
   },
   "variants": {
     "facing": {

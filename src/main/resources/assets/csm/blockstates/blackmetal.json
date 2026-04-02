@@ -1,7 +1,11 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:buildingmaterials/metal_black"
+    "model": "block/cube_all",
+    "textures": {
+      "all": "csm:blocks/trafficsignals/shared_textures/metal_black",
+      "particle": "csm:blocks/trafficsignals/shared_textures/metal_black"
+    }
   },
   "variants": {
     "inventory": [

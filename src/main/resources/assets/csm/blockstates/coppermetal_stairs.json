@@ -1,7 +1,12 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:buildingmaterials/coppermetal_stairs"
+    "model": "block/stairs",
+    "textures": {
+      "bottom": "csm:blocks/buildingmaterials/shared_textures/metal_copper",
+      "top": "csm:blocks/buildingmaterials/shared_textures/metal_copper",
+      "side": "csm:blocks/buildingmaterials/shared_textures/metal_copper"
+    }
   },
   "variants": {
     "facing": {

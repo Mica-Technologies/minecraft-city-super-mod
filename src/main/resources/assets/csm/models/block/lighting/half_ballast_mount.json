@@ -1,8 +1,0 @@
-{
-  "parent": "csm:block/shared_models/lighting/half_ballast_mount",
-  "textures": {
-    "all": "csm:blocks/lighting/shared_textures/troffers",
-    "particle": "csm:blocks/lighting/shared_textures/troffers",
-    "0": "csm:blocks/lighting/shared_textures/troffers"
-  }
-}

@@ -1,7 +1,12 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:lifesafety/system_sensor_l_series_red_speaker"
+    "model": "csm:lifesafety/shared_models/sprl_straight_lores",
+    "textures": {
+      "all": "csm:blocks/lifesafety/system_sensor_l_series_red_speaker",
+      "particle": "csm:blocks/lifesafety/system_sensor_l_series_red_speaker",
+      "0": "csm:blocks/lifesafety/system_sensor_l_series_red_speaker"
+    }
   },
   "variants": {
     "facing": {

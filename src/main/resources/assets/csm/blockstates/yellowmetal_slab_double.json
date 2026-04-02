@@ -1,7 +1,11 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:buildingmaterials/yellowmetal_slab_double"
+    "model": "block/cube_all",
+    "textures": {
+      "all": "csm:blocks/buildingmaterials/shared_textures/metal_yellow",
+      "particle": "csm:blocks/buildingmaterials/shared_textures/metal_yellow"
+    }
   },
   "variants": {
     "variant": {

@@ -1,7 +1,12 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:technology/apple_macbook_pro"
+    "model": "csm:technology/shared_models/macbook_pro",
+    "textures": {
+      "all": "csm:blocks/technology/macbook_pro",
+      "particle": "csm:blocks/technology/macbook_pro",
+      "0": "csm:blocks/technology/macbook_pro"
+    }
   },
   "variants": {
     "facing": {

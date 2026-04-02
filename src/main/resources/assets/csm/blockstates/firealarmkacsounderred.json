@@ -1,7 +1,12 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:lifesafety/kac_sounder_red_horn_ounder"
+    "model": "csm:lifesafety/shared_models/kacsounder",
+    "textures": {
+      "all": "csm:blocks/lifesafety/kac_sounder_red_horn",
+      "particle": "csm:blocks/lifesafety/kac_sounder_red_horn",
+      "0": "csm:blocks/lifesafety/kac_sounder_red_horn"
+    }
   },
   "variants": {
     "facing": {

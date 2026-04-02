@@ -1,5 +1,5 @@
 {
-  "parent": "csm:block/shared_models/trafficsignals/trafficlightverticalangle2",
+  "parent": "csm:block/trafficsignals/shared_models/trafficlightverticalangle2",
   "textures": {
     "all": "csm:blocks/trafficsignals/shared_textures/solidoff",
     "particle": "csm:blocks/trafficsignals/shared_textures/solidoff",

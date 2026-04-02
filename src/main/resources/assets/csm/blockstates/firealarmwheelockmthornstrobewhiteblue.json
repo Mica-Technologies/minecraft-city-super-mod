@@ -1,7 +1,12 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:lifesafety/wheelock_mt_white_blue_horn_strobe_mtwb"
+    "model": "csm:lifesafety/shared_models/wheelock_mt_hornstrobe_white--bluestrobe",
+    "textures": {
+      "all": "csm:blocks/lifesafety/wheelock_mt_white_blue_horn_strobe",
+      "particle": "csm:blocks/lifesafety/wheelock_mt_white_blue_horn_strobe",
+      "0": "csm:blocks/lifesafety/wheelock_mt_white_blue_horn_strobe"
+    }
   },
   "variants": {
     "facing": {

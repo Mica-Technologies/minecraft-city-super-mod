@@ -1,8 +1,0 @@
-{
-  "parent": "csm:block/shared_models/technology/wireless_gateway",
-  "textures": {
-    "all": "csm:blocks/technology/spectrum_wireless_gateway",
-    "particle": "csm:blocks/technology/spectrum_wireless_gateway",
-    "0": "csm:blocks/technology/spectrum_wireless_gateway"
-  }
-}

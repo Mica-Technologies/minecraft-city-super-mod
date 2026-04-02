@@ -1,8 +1,0 @@
-{
-  "parent": "csm:block/shared_models/lifesafety/edwards_adaptahorn_red",
-  "textures": {
-    "all": "csm:blocks/lifesafety/est_adaptahorn_red_horn",
-    "particle": "csm:blocks/lifesafety/est_adaptahorn_red_horn",
-    "0": "csm:blocks/lifesafety/est_adaptahorn_red_horn"
-  }
-}

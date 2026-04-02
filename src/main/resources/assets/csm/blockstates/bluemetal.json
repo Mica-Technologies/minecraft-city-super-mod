@@ -1,7 +1,11 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:buildingmaterials/metal_blue"
+    "model": "block/cube_all",
+    "textures": {
+      "all": "csm:blocks/buildingmaterials/shared_textures/metal_blue",
+      "particle": "csm:blocks/buildingmaterials/shared_textures/metal_blue"
+    }
   },
   "variants": {
     "inventory": [

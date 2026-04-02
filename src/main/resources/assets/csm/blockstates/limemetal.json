@@ -1,7 +1,11 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:buildingmaterials/metal_lime"
+    "model": "block/cube_all",
+    "textures": {
+      "all": "csm:blocks/buildingmaterials/shared_textures/metal_lime",
+      "particle": "csm:blocks/buildingmaterials/shared_textures/metal_lime"
+    }
   },
   "variants": {
     "inventory": [

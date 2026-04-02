@@ -1,7 +1,12 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:lighting/leotek_greencobra_gcj_standard"
+    "model": "csm:lighting/shared_models/ltgcj",
+    "textures": {
+      "all": "csm:blocks/lighting/shared_textures/ltgcj",
+      "particle": "csm:blocks/lighting/shared_textures/ltgcj",
+      "0": "csm:blocks/lighting/shared_textures/ltgcj"
+    }
   },
   "variants": {
     "facing": {

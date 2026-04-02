@@ -1,7 +1,12 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:trafficaccessories/silver_double_horizontal_traffic_pole"
+    "model": "csm:trafficaccessories/shared_models/trafficpolehorizontal_double",
+    "textures": {
+      "all": "csm:blocks/trafficsignals/shared_textures/metal_silver",
+      "particle": "csm:blocks/trafficsignals/shared_textures/metal_silver",
+      "0": "csm:blocks/trafficsignals/shared_textures/metal_silver"
+    }
   },
   "variants": {
     "facing": {

@@ -1,5 +1,5 @@
 {
-  "parent": "csm:block/shared_models/trafficsignals/trafficlightvertical_twoarrowaddon",
+  "parent": "csm:block/trafficsignals/shared_models/trafficlightvertical_twoarrowaddon",
   "textures": {
     "all": "csm:blocks/trafficsignals/shared_textures/solidoff",
     "particle": "csm:blocks/trafficsignals/shared_textures/solidoff",

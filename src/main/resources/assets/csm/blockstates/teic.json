@@ -1,7 +1,12 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:powergrid/te_insulator_cover"
+    "model": "csm:powergrid/shared_models/teinsulatorcover",
+    "textures": {
+      "all": "csm:blocks/powergrid/shared_textures/mountingbrackets",
+      "particle": "csm:blocks/powergrid/shared_textures/mountingbrackets",
+      "0": "csm:blocks/powergrid/shared_textures/mountingbrackets"
+    }
   },
   "variants": {
     "facing": {

@@ -1,8 +1,0 @@
-{
-  "parent": "block/half_slab",
-  "textures": {
-    "bottom": "csm:blocks/buildingmaterials/shared_textures/metal_green",
-    "top": "csm:blocks/buildingmaterials/shared_textures/metal_green",
-    "side": "csm:blocks/buildingmaterials/shared_textures/metal_green"
-  }
-}

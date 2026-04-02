@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:trafficsignals/symbolic_crosswalk_light_single_16_inch_angle_mount",
+    "model": "csm:trafficsignals/shared_models/crosswalklightsingle_angle",
     "textures": {
       "all": "csm:blocks/trafficsignals/shared_textures/crosswalkoff",
       "particle": "csm:blocks/trafficsignals/shared_textures/crosswalkoff",

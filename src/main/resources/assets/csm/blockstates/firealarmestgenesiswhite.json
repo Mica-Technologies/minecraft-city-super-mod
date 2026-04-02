@@ -1,7 +1,12 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:lifesafety/est_genesis_white_horn_strobe_swhite"
+    "model": "csm:lifesafety/shared_models/est_genesis_hornstrobe_micro_white",
+    "textures": {
+      "all": "csm:blocks/lifesafety/est_genesis_white_horn_strobe",
+      "particle": "csm:blocks/lifesafety/est_genesis_white_horn_strobe",
+      "0": "csm:blocks/lifesafety/est_genesis_white_horn_strobe"
+    }
   },
   "variants": {
     "facing": {

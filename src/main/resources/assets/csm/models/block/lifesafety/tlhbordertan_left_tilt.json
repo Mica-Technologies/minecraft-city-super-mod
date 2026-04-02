@@ -1,5 +1,5 @@
 {
-  "parent": "csm:block/shared_models/trafficaccessories/borderhorizontal_left_tilt",
+  "parent": "csm:block/trafficaccessories/shared_models/borderhorizontal_left_tilt",
   "textures": {
     "all": "csm:blocks/trafficaccessories/shared_textures/gray_traffic_signal_border",
     "particle": "csm:blocks/trafficaccessories/shared_textures/gray_traffic_signal_border",

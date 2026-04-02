@@ -1,7 +1,12 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:technology/spectrum_wireless_gateway"
+    "model": "csm:technology/shared_models/wireless_gateway",
+    "textures": {
+      "all": "csm:blocks/technology/spectrum_wireless_gateway",
+      "particle": "csm:blocks/technology/spectrum_wireless_gateway",
+      "0": "csm:blocks/technology/spectrum_wireless_gateway"
+    }
   },
   "variants": {
     "facing": {

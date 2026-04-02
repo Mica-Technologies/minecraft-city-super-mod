@@ -1,7 +1,12 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:powergrid/af_insulator_upright"
+    "model": "csm:powergrid/shared_models/af_extended_insulator",
+    "textures": {
+      "all": "csm:blocks/powergrid/shared_textures/af_extended_insulators",
+      "particle": "csm:blocks/powergrid/shared_textures/af_extended_insulators",
+      "0": "csm:blocks/powergrid/shared_textures/af_extended_insulators"
+    }
   },
   "variants": {
     "facing": {

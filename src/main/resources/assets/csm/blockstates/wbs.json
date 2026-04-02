@@ -1,7 +1,12 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:novelties/water_bubbler_short"
+    "model": "csm:novelties/shared_models/waterbubbler_short",
+    "textures": {
+      "all": "csm:blocks/novelties/shared_textures/water_bubbler",
+      "particle": "csm:blocks/novelties/shared_textures/water_bubbler",
+      "0": "csm:blocks/novelties/shared_textures/water_bubbler"
+    }
   },
   "variants": {
     "facing": {

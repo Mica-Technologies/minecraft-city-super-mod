@@ -1,7 +1,13 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:trafficaccessories/vertical_traffic_pole_with_signal_mount_concrete"
+    "model": "csm:trafficaccessories/shared_models/trafficpoleverticalsignalmount",
+    "textures": {
+      "all": "csm:blocks/trafficsignals/shared_textures/concrete_light_pole",
+      "particle": "csm:blocks/trafficsignals/shared_textures/concrete_light_pole",
+      "0": "csm:blocks/trafficsignals/shared_textures/concrete_light_pole",
+      "missing": "csm:blocks/trafficsignals/shared_textures/concrete_light_pole"
+    }
   },
   "variants": {
     "facing": {

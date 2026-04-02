@@ -1,7 +1,12 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:lifesafety/est_pull_station_llmcla"
+    "model": "csm:lifesafety/shared_models/est_pull_station_mclals_branded",
+    "textures": {
+      "all": "csm:blocks/lifesafety/est_pull_station",
+      "particle": "csm:blocks/lifesafety/est_pull_station",
+      "0": "csm:blocks/lifesafety/est_pull_station"
+    }
   },
   "variants": {
     "facing": {

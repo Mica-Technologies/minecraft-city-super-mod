@@ -1,8 +1,0 @@
-{
-  "parent": "csm:block/shared_models/lighting/remote_ballast_module",
-  "textures": {
-    "all": "csm:blocks/lighting/shared_textures/slmodules",
-    "particle": "csm:blocks/lighting/shared_textures/slmodules",
-    "0": "csm:blocks/lighting/shared_textures/slmodules"
-  }
-}

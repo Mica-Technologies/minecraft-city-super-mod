@@ -1,7 +1,12 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:buildingmaterials/redmetal_stairs"
+    "model": "block/stairs",
+    "textures": {
+      "bottom": "csm:blocks/buildingmaterials/shared_textures/metal_red",
+      "top": "csm:blocks/buildingmaterials/shared_textures/metal_red",
+      "side": "csm:blocks/buildingmaterials/shared_textures/metal_red"
+    }
   },
   "variants": {
     "facing": {

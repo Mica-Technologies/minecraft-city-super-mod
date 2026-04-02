@@ -1,5 +1,5 @@
 {
-  "parent": "csm:block/shared_models/trafficsignals/signal_backplate_888_vertical_3_left_angle",
+  "parent": "csm:block/trafficsignals/shared_models/signal_backplate_888_vertical_3_left_angle",
   "textures": {
     "all": "csm:blocks/trafficaccessories/shared_textures/gray_traffic_signal_border",
     "particle": "csm:blocks/trafficaccessories/shared_textures/gray_traffic_signal_border",

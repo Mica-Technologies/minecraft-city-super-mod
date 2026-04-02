@@ -1,5 +1,5 @@
 {
-  "parent": "csm:block/shared_models/trafficaccessories/borderhorizontal_right_tilt",
+  "parent": "csm:block/trafficaccessories/shared_models/borderhorizontal_right_tilt",
   "textures": {
     "all": "csm:blocks/trafficaccessories/shared_textures/signalbackplateblackblackblack",
     "particle": "csm:blocks/trafficaccessories/shared_textures/signalbackplateblackblackblack",

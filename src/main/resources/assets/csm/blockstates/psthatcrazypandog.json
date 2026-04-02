@@ -1,7 +1,13 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:novelties/player_statue_angelwingspanda"
+    "model": "csm:novelties/shared_models/playerstatue",
+    "textures": {
+      "all": "csm:blocks/novelties/player_statue_angelwingspanda_skin",
+      "particle": "csm:blocks/novelties/player_statue_angelwingspanda_skin",
+      "0": "csm:blocks/novelties/player_statue_angelwingspanda_skin",
+      "1": "csm:blocks/novelties/shared_textures/statue_base"
+    }
   },
   "variants": {
     "facing": {

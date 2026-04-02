@@ -1,8 +1,0 @@
-{
-  "parent": "csm:block/shared_models/powergrid/transformer_screw_caps",
-  "textures": {
-    "all": "csm:blocks/trafficsigns/absolutely_nothing_sign",
-    "particle": "csm:blocks/trafficsigns/absolutely_nothing_sign",
-    "0": "csm:blocks/powergrid/shared_textures/mountingbrackets"
-  }
-}

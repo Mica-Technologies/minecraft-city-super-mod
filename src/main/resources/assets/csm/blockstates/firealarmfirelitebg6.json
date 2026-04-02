@@ -1,7 +1,12 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:lifesafety/fire_lite_bg_6_pull_station_flbg6"
+    "model": "csm:lifesafety/shared_models/firelite_bg6",
+    "textures": {
+      "all": "csm:blocks/lifesafety/fire_lite_bg_6_pull_station",
+      "particle": "csm:blocks/lifesafety/fire_lite_bg_6_pull_station",
+      "0": "csm:blocks/lifesafety/fire_lite_bg_6_pull_station"
+    }
   },
   "variants": {
     "facing": {

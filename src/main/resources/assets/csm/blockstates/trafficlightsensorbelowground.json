@@ -1,7 +1,11 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:trafficsignals/traffic_light_sensor_induction_loop_below_pavement"
+    "model": "csm:trafficsignals/shared_models/cube_consistent_texture_facing",
+    "textures": {
+      "all": "csm:blocks/trafficsignals/shared_textures/below_ground_signal_sensor",
+      "particle": "csm:blocks/trafficsignals/shared_textures/below_ground_signal_sensor"
+    }
   },
   "variants": {
     "facing": {

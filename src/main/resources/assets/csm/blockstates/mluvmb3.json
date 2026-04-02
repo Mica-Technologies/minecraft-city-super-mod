@@ -1,7 +1,12 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:powergrid/maclean_uvmaxx_crossarm_3"
+    "model": "csm:powergrid/shared_models/maclean_uvmaxx_crossarm_brown_3",
+    "textures": {
+      "all": "csm:blocks/powergrid/shared_textures/maclean_uvmaxx_crossarms",
+      "particle": "csm:blocks/powergrid/shared_textures/maclean_uvmaxx_crossarms",
+      "0": "csm:blocks/powergrid/shared_textures/maclean_uvmaxx_crossarms"
+    }
   },
   "variants": {
     "facing": {

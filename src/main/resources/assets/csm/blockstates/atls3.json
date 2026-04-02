@@ -1,7 +1,12 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:technology/atlas_speaker_3"
+    "model": "csm:technology/shared_models/atlas_speaker_3",
+    "textures": {
+      "all": "csm:blocks/technology/atlas_speaker_3",
+      "particle": "csm:blocks/technology/atlas_speaker_3",
+      "0": "csm:blocks/technology/atlas_speaker_3"
+    }
   },
   "variants": {
     "facing": {

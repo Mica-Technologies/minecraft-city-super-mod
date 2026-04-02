@@ -1,5 +1,5 @@
 {
-  "parent": "csm:block/shared_models/lighting/alto_round_lot_light",
+  "parent": "csm:block/lighting/shared_models/alto_round_lot_light",
   "textures": {
     "all": "csm:blocks/lighting/shared_textures/merc_fixtures",
     "particle": "csm:blocks/lighting/shared_textures/merc_fixtures",
