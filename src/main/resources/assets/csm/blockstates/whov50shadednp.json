@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:whov50shadednp"
+    "model": "csm:lighting/westinghouse_ov50_shaded,_no_photocell"
   },
   "variants": {
     "facing": {

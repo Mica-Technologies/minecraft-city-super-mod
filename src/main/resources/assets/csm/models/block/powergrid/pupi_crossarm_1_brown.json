@@ -1,0 +1,8 @@
+{
+  "parent": "csm:block/shared_models/powergrid/pupi_crossarm_brown_1",
+  "textures": {
+    "all": "csm:blocks/powergrid/shared_textures/pupi_crossarms",
+    "particle": "csm:blocks/powergrid/shared_textures/pupi_crossarms",
+    "0": "csm:blocks/powergrid/shared_textures/pupi_crossarms"
+  }
+}

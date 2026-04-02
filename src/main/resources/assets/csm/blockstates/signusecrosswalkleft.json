@@ -3,10 +3,10 @@
   "defaults": {
     "model": "csm:metal_signpostback_midlargerectanglesign",
     "textures": {
-      "all": "csm:blocks/cr9-3c",
-      "particle": "csm:blocks/cr9-3c",
-      "0": "csm:blocks/metal",
-      "1": "csm:blocks/cr9-3c"
+      "all": "csm:blocks/trafficsigns/use_crosswalk_left_arrow",
+      "particle": "csm:blocks/trafficsigns/use_crosswalk_left_arrow",
+      "0": "csm:blocks/trafficsigns/absolutely_nothing_sign",
+      "1": "csm:blocks/trafficsigns/use_crosswalk_left_arrow"
     }
   },
   "variants": {

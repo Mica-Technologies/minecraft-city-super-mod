@@ -3,10 +3,10 @@
   "defaults": {
     "model": "csm:metal_signpostback_sign",
     "textures": {
-      "all": "csm:blocks/sign_mutcd_r9-20",
-      "particle": "csm:blocks/sign_mutcd_r9-20",
-      "0": "csm:blocks/metal",
-      "1": "csm:blocks/sign_mutcd_r9-20"
+      "all": "csm:blocks/trafficsigns/bikes_allowed_to_use_full_lane",
+      "particle": "csm:blocks/trafficsigns/bikes_allowed_to_use_full_lane",
+      "0": "csm:blocks/trafficsigns/absolutely_nothing_sign",
+      "1": "csm:blocks/trafficsigns/bikes_allowed_to_use_full_lane"
     }
   },
   "variants": {

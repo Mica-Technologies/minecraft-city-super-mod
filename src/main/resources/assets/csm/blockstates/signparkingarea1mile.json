@@ -3,10 +3,10 @@
   "defaults": {
     "model": "csm:metal_signpostback_largewidesign",
     "textures": {
-      "all": "csm:blocks/d5-3.eps",
-      "particle": "csm:blocks/d5-3.eps",
-      "0": "csm:blocks/metal",
-      "1": "csm:blocks/d5-3.eps"
+      "all": "csm:blocks/trafficsigns/parking_area_1_mile",
+      "particle": "csm:blocks/trafficsigns/parking_area_1_mile",
+      "0": "csm:blocks/trafficsigns/absolutely_nothing_sign",
+      "1": "csm:blocks/trafficsigns/parking_area_1_mile"
     }
   },
   "variants": {

@@ -3,10 +3,10 @@
   "defaults": {
     "model": "csm:metal_signpostback_tall_sign",
     "textures": {
-      "all": "csm:blocks/advisory_curve_speed_english_35.svg",
-      "particle": "csm:blocks/advisory_curve_speed_english_35.svg",
-      "0": "csm:blocks/metal",
-      "1": "csm:blocks/advisory_curve_speed_english_35.svg"
+      "all": "csm:blocks/trafficsigns/curve_35_mph",
+      "particle": "csm:blocks/trafficsigns/curve_35_mph",
+      "0": "csm:blocks/trafficsigns/absolutely_nothing_sign",
+      "1": "csm:blocks/trafficsigns/curve_35_mph"
     }
   },
   "variants": {

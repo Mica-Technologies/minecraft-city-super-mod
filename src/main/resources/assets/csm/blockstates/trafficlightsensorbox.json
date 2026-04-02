@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:trafficlightsensorbox"
+    "model": "csm:trafficsignals/traffic_light_sensor_generic"
   },
   "variants": {
     "facing": {

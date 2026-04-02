@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:jblc1"
+    "model": "csm:technology/jbl_control_speaker_white"
   },
   "variants": {
     "facing": {

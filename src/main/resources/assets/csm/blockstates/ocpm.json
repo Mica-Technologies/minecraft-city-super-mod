@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:ocpm"
+    "model": "csm:lighting/nov_octagon_concrete_pole_middle"
   },
   "variants": {
     "facing": {

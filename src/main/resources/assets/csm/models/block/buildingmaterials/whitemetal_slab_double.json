@@ -1,0 +1,7 @@
+{
+  "parent": "block/cube_all",
+  "textures": {
+    "all": "csm:blocks/shared_textures/metal_white",
+    "particle": "csm:blocks/shared_textures/metal_white"
+  }
+}

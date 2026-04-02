@@ -1,0 +1,10 @@
+{
+  "parent": "csm:block/shared_models/trafficsignals/trafficlightvertical8inch",
+  "textures": {
+    "all": "csm:blocks/shared_textures/solidoff",
+    "particle": "csm:blocks/shared_textures/solidoff",
+    "0": "csm:blocks/shared_textures/redbikeoff",
+    "1": "csm:blocks/shared_textures/yellowbikeoff",
+    "2": "csm:blocks/shared_textures/greenbikeoff"
+  }
+}

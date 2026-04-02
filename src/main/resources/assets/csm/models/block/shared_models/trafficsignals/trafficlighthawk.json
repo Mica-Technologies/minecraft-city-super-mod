@@ -2,7 +2,7 @@
 	"credit": "Made with Blockbench",
 	"textures": {
 		"0": "csm:blocks/solidreddoublewigwag",
-		"1": "csm:blocks/solidyellow"
+		"1": "csm:blocks/shared_textures/solidyellow"
 	},
 	"elements": [
 		{

@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:lgtlf"
+    "model": "csm:lighting/lithonia_gtl_full"
   },
   "variants": {
     "facing": {

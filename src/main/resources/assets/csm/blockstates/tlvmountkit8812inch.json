@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:tlvmountkit8812inch"
+    "model": "csm:trafficaccessories/vertical_signal_mount_kit_8_8_12_or_12_8_8_inch"
   },
   "variants": {
     "facing": {

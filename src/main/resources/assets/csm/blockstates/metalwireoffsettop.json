@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:metalwireoffsettop"
+    "model": "csm:trafficaccessories/metal_wire_offset_top"
   },
   "variants": {
     "facing": {

@@ -3,10 +3,10 @@
   "defaults": {
     "model": "csm:metal_signpostback_sign",
     "textures": {
-      "all": "csm:blocks/dont_block_the_box",
-      "particle": "csm:blocks/dont_block_the_box",
-      "0": "csm:blocks/metal",
-      "1": "csm:blocks/dont_block_the_box"
+      "all": "csm:blocks/trafficsigns/don't_block_the_box",
+      "particle": "csm:blocks/trafficsigns/don't_block_the_box",
+      "0": "csm:blocks/trafficsigns/absolutely_nothing_sign",
+      "1": "csm:blocks/trafficsigns/don't_block_the_box"
     }
   },
   "variants": {

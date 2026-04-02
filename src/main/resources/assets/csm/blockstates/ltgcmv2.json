@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:ltgcmv2"
+    "model": "csm:lighting/leotek_gcm_version_2"
   },
   "variants": {
     "facing": {

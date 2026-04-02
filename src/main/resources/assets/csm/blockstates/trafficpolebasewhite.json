@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:trafficpolebasewhite"
+    "model": "csm:trafficaccessories/traffic_pole_base_white"
   },
   "variants": {
     "facing": {

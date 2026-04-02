@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:trafficpoleverticalcurveconnectorunpainted"
+    "model": "csm:trafficaccessories/vertical_traffic_pole_with_curve_connector_unpainted"
   },
   "variants": {
     "facing": {

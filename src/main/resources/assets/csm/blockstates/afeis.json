@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:afeis"
+    "model": "csm:powergrid/af_insulator_side"
   },
   "variants": {
     "facing": {

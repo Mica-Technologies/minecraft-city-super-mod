@@ -1,0 +1,8 @@
+{
+  "parent": "block/stairs",
+  "textures": {
+    "bottom": "csm:blocks/shared_textures/metal_iridescent",
+    "top": "csm:blocks/shared_textures/metal_iridescent",
+    "side": "csm:blocks/shared_textures/metal_iridescent"
+  }
+}

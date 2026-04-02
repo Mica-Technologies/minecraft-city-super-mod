@@ -3,7 +3,7 @@
 	"textures": {
 		"particle": "csm:blocks/trafficsignals/bodies/battleship_gray",
 		"bodycolor": "csm:blocks/trafficsignals/bodies/battleship_gray",
-		"screws": "csm:blocks/metal_silver"
+		"screws": "csm:blocks/shared_textures/metal_silver"
 	},
 	"elements": [
 		{

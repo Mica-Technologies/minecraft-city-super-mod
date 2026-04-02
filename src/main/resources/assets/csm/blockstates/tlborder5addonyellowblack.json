@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:tlborder5addonyellowblack"
+    "model": "csm:trafficaccessories/vertical_5_tall_add_on_signal_border_yellow_black"
   },
   "variants": {
     "facing": {

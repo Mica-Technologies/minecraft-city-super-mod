@@ -3,11 +3,11 @@
   "defaults": {
     "model": "csm:metal_signpostback_medium_wide_sign",
     "textures": {
-      "all": "csm:blocks/w1-6.eps",
-      "particle": "csm:blocks/w1-6.eps",
-      "0": "csm:blocks/metal",
-      "1": "csm:blocks/w1-6.eps",
-      "missing": "csm:blocks/metal"
+      "all": "csm:blocks/trafficsigns/right_arrow",
+      "particle": "csm:blocks/trafficsigns/right_arrow",
+      "0": "csm:blocks/trafficsigns/absolutely_nothing_sign",
+      "1": "csm:blocks/trafficsigns/right_arrow",
+      "missing": "csm:blocks/trafficsigns/absolutely_nothing_sign"
     }
   },
   "variants": {

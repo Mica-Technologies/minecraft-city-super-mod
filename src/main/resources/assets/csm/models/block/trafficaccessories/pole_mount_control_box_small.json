@@ -1,0 +1,8 @@
+{
+  "parent": "csm:block/shared_models/trafficaccessories/polecontrolboxsmall",
+  "textures": {
+    "all": "csm:blocks/trafficsigns/absolutely_nothing_sign",
+    "particle": "csm:blocks/trafficsigns/absolutely_nothing_sign",
+    "0": "csm:blocks/trafficsigns/absolutely_nothing_sign"
+  }
+}

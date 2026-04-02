@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:trafficpoleverticallightmountwhite"
+    "model": "csm:trafficaccessories/white_vertical_traffic_pole_with_light_mount"
   },
   "variants": {
     "facing": {

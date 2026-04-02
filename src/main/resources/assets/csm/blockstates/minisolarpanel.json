@@ -3,11 +3,11 @@
   "defaults": {
     "model": "csm:mini_solar_panel",
     "textures": {
-      "all": "csm:blocks/metal_white",
-      "particle": "csm:blocks/metal_white",
-      "0": "csm:blocks/metal_white",
-      "1": "csm:blocks/metal_silver",
-      "2": "csm:blocks/solar_panel"
+      "all": "csm:blocks/shared_textures/metal_white",
+      "particle": "csm:blocks/shared_textures/metal_white",
+      "0": "csm:blocks/shared_textures/metal_white",
+      "1": "csm:blocks/shared_textures/metal_silver",
+      "2": "csm:blocks/shared_textures/solar_panel"
     }
   },
   "variants": {

@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:redstonetts"
+    "model": "csm:technology/redstone_tts_module"
   },
   "variants": {
     "inventory": [

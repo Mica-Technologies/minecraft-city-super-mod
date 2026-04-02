@@ -3,10 +3,10 @@
   "defaults": {
     "model": "csm:metal_signpostback_diamond_sign",
     "textures": {
-      "all": "csm:blocks/mutcd_w1-13r.svg",
-      "particle": "csm:blocks/mutcd_w1-13r.svg",
-      "0": "csm:blocks/metal",
-      "1": "csm:blocks/mutcd_w1-13r.svg"
+      "all": "csm:blocks/trafficsigns/truck_roll_hazard",
+      "particle": "csm:blocks/trafficsigns/truck_roll_hazard",
+      "0": "csm:blocks/trafficsigns/absolutely_nothing_sign",
+      "1": "csm:blocks/trafficsigns/truck_roll_hazard"
     }
   },
   "variants": {

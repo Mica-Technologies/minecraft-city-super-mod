@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:orangemetal"
+    "model": "csm:buildingmaterials/metal_orange"
   },
   "variants": {
     "inventory": [

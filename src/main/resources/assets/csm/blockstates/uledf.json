@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:uledf"
+    "model": "csm:lighting/sylvania_ultra_led_full"
   },
   "variants": {
     "facing": {

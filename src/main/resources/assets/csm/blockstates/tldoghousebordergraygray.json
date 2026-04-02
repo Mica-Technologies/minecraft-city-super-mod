@@ -1,11 +1,11 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:tldoghousebordergraygray"
+    "model": "csm:trafficaccessories/doghouse_signal_border_gray_gray"
   },
   "variants": {
     "facing=down,fitted=false,tilt=none": {
-      "model": "csm:tldoghousebordergraygray",
+      "model": "csm:trafficaccessories/doghouse_signal_border_gray_gray",
       "x": 90
     },
     "facing=down,fitted=false,tilt=left_tilt": {
@@ -45,7 +45,7 @@
       "x": 90
     },
     "facing=east,fitted=false,tilt=none": {
-      "model": "csm:tldoghousebordergraygray",
+      "model": "csm:trafficaccessories/doghouse_signal_border_gray_gray",
       "y": 90
     },
     "facing=east,fitted=false,tilt=left_tilt": {
@@ -85,7 +85,7 @@
       "y": 90
     },
     "facing=north,fitted=false,tilt=none": {
-      "model": "csm:tldoghousebordergraygray"
+      "model": "csm:trafficaccessories/doghouse_signal_border_gray_gray"
     },
     "facing=north,fitted=false,tilt=left_tilt": {
       "model": "csm:tldoghousebordergraygray_left_tilt"
@@ -115,7 +115,7 @@
       "model": "csm:tldoghousebordergraygrayfitted_right_angle"
     },
     "facing=south,fitted=false,tilt=none": {
-      "model": "csm:tldoghousebordergraygray",
+      "model": "csm:trafficaccessories/doghouse_signal_border_gray_gray",
       "y": 180
     },
     "facing=south,fitted=false,tilt=left_tilt": {
@@ -155,7 +155,7 @@
       "y": 180
     },
     "facing=up,fitted=false,tilt=none": {
-      "model": "csm:tldoghousebordergraygray",
+      "model": "csm:trafficaccessories/doghouse_signal_border_gray_gray",
       "x": 270
     },
     "facing=up,fitted=false,tilt=left_tilt": {
@@ -195,7 +195,7 @@
       "x": 270
     },
     "facing=west,fitted=false,tilt=none": {
-      "model": "csm:tldoghousebordergraygray",
+      "model": "csm:trafficaccessories/doghouse_signal_border_gray_gray",
       "y": 270
     },
     "facing=west,fitted=false,tilt=left_tilt": {

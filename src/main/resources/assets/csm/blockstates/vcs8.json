@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:vcs8"
+    "model": "csm:technology/valcom_speaker_8"
   },
   "variants": {
     "facing": {

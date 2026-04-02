@@ -3,9 +3,9 @@
 	"credit": "Made with Blockbench",
 	"texture_size": [512, 512],
 	"textures": {
-		"0": "csm:blocks/imac_pro",
-		"1": "csm:blocks/imac_pro_keyboard",
-		"particle": "csm:blocks/imac_pro_keyboard"
+		"0": "csm:blocks/technology/imac_pro",
+		"1": "csm:blocks/technology/imac_pro_keyboard",
+		"particle": "csm:blocks/technology/imac_pro_keyboard"
 	},
 	"elements": [
 		{

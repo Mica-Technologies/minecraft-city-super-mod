@@ -1,0 +1,8 @@
+{
+  "parent": "csm:block/shared_models/lifesafety/ss_sa_speakerstrobe",
+  "textures": {
+    "all": "csm:blocks/shared_textures/systemsensor_spectralertadvance_white_speakerstrobe",
+    "particle": "csm:blocks/shared_textures/systemsensor_spectralertadvance_white_speakerstrobe",
+    "0": "csm:blocks/shared_textures/systemsensor_spectralertadvance_white_speakerstrobe"
+  }
+}

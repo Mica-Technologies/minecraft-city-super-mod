@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:lrtlh"
+    "model": "csm:lighting/lithonia_rtl_half"
   },
   "variants": {
     "facing": {

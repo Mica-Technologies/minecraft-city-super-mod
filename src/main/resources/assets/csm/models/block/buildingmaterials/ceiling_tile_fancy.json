@@ -1,0 +1,12 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "csm:blocks/buildingmaterials/ceiling_tile_fancy",
+    "up": "csm:blocks/buildingmaterials/ceiling_tile_fancy",
+    "north": "csm:blocks/buildingmaterials/ceiling_tile_fancy",
+    "east": "csm:blocks/buildingmaterials/ceiling_tile_fancy",
+    "south": "csm:blocks/buildingmaterials/ceiling_tile_fancy",
+    "west": "csm:blocks/buildingmaterials/ceiling_tile_fancy",
+    "particle": "csm:blocks/buildingmaterials/ceiling_tile_fancy"
+  }
+}

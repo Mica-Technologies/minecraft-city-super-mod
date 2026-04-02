@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:trafficlightsensorbell"
+    "model": "csm:trafficsignals/traffic_light_sensor_gridsmart_fe3"
   },
   "variants": {
     "facing": {

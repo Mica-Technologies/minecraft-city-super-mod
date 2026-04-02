@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:pspapaginos"
+    "model": "csm:novelties/player_statue_papaginos"
   },
   "variants": {
     "facing": {

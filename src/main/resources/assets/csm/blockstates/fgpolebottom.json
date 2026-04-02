@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:fgpolebottom"
+    "model": "csm:powergrid/fiberglass_pole_bottom"
   },
   "variants": {
     "facing": {

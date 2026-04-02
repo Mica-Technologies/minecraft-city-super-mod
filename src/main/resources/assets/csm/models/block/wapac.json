@@ -1,8 +1,0 @@
-{
-  "parent": "csm:block/shared_models/technology/wapac",
-  "textures": {
-    "all": "csm:blocks/wapac",
-    "particle": "csm:blocks/wapac",
-    "0": "csm:blocks/wapac"
-  }
-}

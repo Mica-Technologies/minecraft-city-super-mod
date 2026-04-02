@@ -1,0 +1,8 @@
+{
+  "parent": "csm:block/shared_models/lifesafety/elight",
+  "textures": {
+    "all": "csm:blocks/shared_textures/elight",
+    "particle": "csm:blocks/shared_textures/elight",
+    "0": "csm:blocks/shared_textures/elight"
+  }
+}

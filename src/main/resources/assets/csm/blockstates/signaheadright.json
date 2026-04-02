@@ -3,10 +3,10 @@
   "defaults": {
     "model": "csm:metal_signpostback_half_sign",
     "textures": {
-      "all": "csm:blocks/m6-8.eps",
-      "particle": "csm:blocks/m6-8.eps",
-      "0": "csm:blocks/metal",
-      "1": "csm:blocks/m6-8.eps"
+      "all": "csm:blocks/trafficsigns/ahead_and_right",
+      "particle": "csm:blocks/trafficsigns/ahead_and_right",
+      "0": "csm:blocks/trafficsigns/absolutely_nothing_sign",
+      "1": "csm:blocks/trafficsigns/ahead_and_right"
     }
   },
   "variants": {

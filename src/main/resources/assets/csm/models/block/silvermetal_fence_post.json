@@ -1,7 +1,7 @@
 {
   "parent": "block/fence_post",
   "textures": {
-    "texture": "csm:blocks/metal_silver",
-    "particle": "csm:blocks/metal_silver"
+    "texture": "csm:blocks/shared_textures/metal_silver",
+    "particle": "csm:blocks/shared_textures/metal_silver"
   }
 }

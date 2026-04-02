@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:silvermetal_slab"
+    "model": "csm:buildingmaterials/silvermetal_slab"
   },
   "variants": {
     "half": {

@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:magentametal_slab_double"
+    "model": "csm:buildingmaterials/magentametal_slab_double"
   },
   "variants": {
     "variant": {

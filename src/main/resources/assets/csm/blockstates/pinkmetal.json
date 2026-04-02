@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:pinkmetal"
+    "model": "csm:buildingmaterials/metal_pink"
   },
   "variants": {
     "inventory": [

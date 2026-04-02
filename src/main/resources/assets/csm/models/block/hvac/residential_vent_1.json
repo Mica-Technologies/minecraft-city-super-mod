@@ -1,0 +1,8 @@
+{
+  "parent": "csm:block/shared_models/hvac/vent_residential_1",
+  "textures": {
+    "all": "csm:blocks/hvac/residential_vent_1",
+    "particle": "csm:blocks/hvac/residential_vent_1",
+    "0": "csm:blocks/hvac/residential_vent_1"
+  }
+}

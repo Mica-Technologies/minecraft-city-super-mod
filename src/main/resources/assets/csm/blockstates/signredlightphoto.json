@@ -3,10 +3,10 @@
   "defaults": {
     "model": "csm:metal_signpostback_sign",
     "textures": {
-      "all": "csm:blocks/delaware_r10-19-de.svg",
-      "particle": "csm:blocks/delaware_r10-19-de.svg",
-      "0": "csm:blocks/metal",
-      "1": "csm:blocks/delaware_r10-19-de.svg"
+      "all": "csm:blocks/trafficsigns/red_light_photo_enforced_hoto",
+      "particle": "csm:blocks/trafficsigns/red_light_photo_enforced_hoto",
+      "0": "csm:blocks/trafficsigns/absolutely_nothing_sign",
+      "1": "csm:blocks/trafficsigns/red_light_photo_enforced_hoto"
     }
   },
   "variants": {

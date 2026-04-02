@@ -1,9 +1,0 @@
-{
-  "parent": "csm:block/shared_models/trafficaccessories/signal_interconnect_module_1",
-  "textures": {
-    "all": "csm:blocks/metal",
-    "particle": "csm:blocks/metal",
-    "0": "csm:blocks/metal",
-    "1": "csm:blocks/antenna"
-  }
-}

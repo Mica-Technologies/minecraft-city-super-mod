@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:lightupair"
+    "model": "csm:trafficsignals/mclaglowair"
   },
   "variants": {
     "facing": {
@@ -24,11 +24,11 @@
     },
     "inventory": [
       {
-        "model": "csm:controllableverticalbikesignal8inchblack",
+        "model": "csm:trafficsignals/vertical_traffic_signal_bike_protected_8_inch_black_paint",
         "textures": {
-          "0": "csm:blocks/blackredbike",
-          "1": "csm:blocks/blackyellowbike",
-          "2": "csm:blocks/blackgreenbike"
+          "0": "csm:blocks/shared_textures/blackredbike",
+          "1": "csm:blocks/shared_textures/blackyellowbike",
+          "2": "csm:blocks/shared_textures/blackgreenbike"
         }
       }
     ],

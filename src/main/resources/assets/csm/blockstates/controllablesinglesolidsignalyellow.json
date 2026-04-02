@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:lightupair"
+    "model": "csm:trafficsignals/mclaglowair"
   },
   "variants": {
     "facing": {
@@ -24,11 +24,11 @@
     },
     "inventory": [
       {
-        "model": "csm:controllablesinglesolidsignalyellow",
+        "model": "csm:trafficsignals/single_traffic_signal_flashing_yellow",
         "textures": {
-          "0": "csm:blocks/solidyellow",
-          "all": "csm:blocks/solidyellow",
-          "particle": "csm:blocks/solidyellow"
+          "0": "csm:blocks/shared_textures/solidyellow",
+          "all": "csm:blocks/shared_textures/solidyellow",
+          "particle": "csm:blocks/shared_textures/solidyellow"
         }
       }
     ],

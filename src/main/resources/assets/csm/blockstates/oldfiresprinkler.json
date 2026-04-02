@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:oldfiresprinkler"
+    "model": "csm:lifesafety/old_fire_sprinkler_1"
   },
   "variants": {
     "facing": {

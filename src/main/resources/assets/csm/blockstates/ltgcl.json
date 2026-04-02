@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:ltgcl"
+    "model": "csm:lighting/leotek_greencobra_gcl"
   },
   "variants": {
     "facing": {

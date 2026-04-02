@@ -3,11 +3,11 @@
   "defaults": {
     "model": "csm:metal_signpost_octagon_sign",
     "textures": {
-      "all": "csm:blocks/mutcd_r1-1_non-compliant.svg",
-      "particle": "csm:blocks/mutcd_r1-1_non-compliant.svg",
-      "0": "csm:blocks/metal",
-      "1": "csm:blocks/mutcd_r1-1_non-compliant.svg",
-      "missing": "csm:blocks/metal"
+      "all": "csm:blocks/trafficsigns/blue_stop_sign_hawaii_non_compliant",
+      "particle": "csm:blocks/trafficsigns/blue_stop_sign_hawaii_non_compliant",
+      "0": "csm:blocks/trafficsigns/absolutely_nothing_sign",
+      "1": "csm:blocks/trafficsigns/blue_stop_sign_hawaii_non_compliant",
+      "missing": "csm:blocks/trafficsigns/absolutely_nothing_sign"
     }
   },
   "variants": {

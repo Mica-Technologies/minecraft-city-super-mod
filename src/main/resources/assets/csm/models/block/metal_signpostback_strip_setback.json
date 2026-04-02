@@ -2,9 +2,9 @@
 	"format_version": "1.21.6",
 	"credit": "Made with Blockbench",
 	"textures": {
-		"0": "csm:blocks/metal",
-		"1": "csm:blocks/sign_color_yellowgreen",
-		"particle": "csm:blocks/sign_color_yellowgreen"
+		"0": "csm:blocks/trafficsigns/absolutely_nothing_sign",
+		"1": "csm:blocks/trafficsigns/strip_yellow_green",
+		"particle": "csm:blocks/trafficsigns/strip_yellow_green"
 	},
 	"elements": [
 		{

@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:mclacodeapprovedexitsignleft"
+    "model": "csm:lifesafety/edge_lit_exit_sign_left_double_sided"
   },
   "variants": {
     "facing": {

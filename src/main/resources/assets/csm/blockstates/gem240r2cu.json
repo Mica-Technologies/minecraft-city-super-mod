@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:gem240r2cu"
+    "model": "csm:lighting/ge_m240r2_cutoff_optics"
   },
   "variants": {
     "facing": {

@@ -2,10 +2,10 @@
 	"format_version": "1.21.6",
 	"credit": "Made with Blockbench",
 	"textures": {
-		"0": "csm:blocks/metal",
-		"1": "csm:blocks/one-way-left-sign",
-		"2": "csm:blocks/one-way-right-sign",
-		"particle": "csm:blocks/one-way-right-sign"
+		"0": "csm:blocks/trafficsigns/absolutely_nothing_sign",
+		"1": "csm:blocks/trafficsigns/double_one_way_sign_a",
+		"2": "csm:blocks/trafficsigns/double_one_way_sign_a_eway",
+		"particle": "csm:blocks/trafficsigns/double_one_way_sign_a_eway"
 	},
 	"elements": [
 		{

@@ -3,10 +3,10 @@
   "defaults": {
     "model": "csm:metal_signpostback_tall_sign",
     "textures": {
-      "all": "csm:blocks/800px-nysdot_nyr2-11.svg",
-      "particle": "csm:blocks/800px-nysdot_nyr2-11.svg",
-      "0": "csm:blocks/metal",
-      "1": "csm:blocks/800px-nysdot_nyr2-11.svg"
+      "all": "csm:blocks/trafficsigns/end_35_mph_speed_limit",
+      "particle": "csm:blocks/trafficsigns/end_35_mph_speed_limit",
+      "0": "csm:blocks/trafficsigns/absolutely_nothing_sign",
+      "1": "csm:blocks/trafficsigns/end_35_mph_speed_limit"
     }
   },
   "variants": {

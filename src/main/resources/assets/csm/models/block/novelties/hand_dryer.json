@@ -1,0 +1,8 @@
+{
+  "parent": "csm:block/shared_models/novelties/handdryer",
+  "textures": {
+    "all": "csm:blocks/novelties/hand_dryer",
+    "particle": "csm:blocks/novelties/hand_dryer",
+    "0": "csm:blocks/novelties/hand_dryer"
+  }
+}

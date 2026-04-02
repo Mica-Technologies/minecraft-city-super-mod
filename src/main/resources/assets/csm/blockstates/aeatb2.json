@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:aeatb2"
+    "model": "csm:lighting/american_electric_autobahn_atb2"
   },
   "variants": {
     "facing": {

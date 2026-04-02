@@ -1,0 +1,10 @@
+{
+  "parent": "csm:block/shared_models/lifesafety/greenmanexitsign",
+  "textures": {
+    "all": "csm:blocks/shared_textures/greenmanexitsignleftarrow",
+    "particle": "csm:blocks/shared_textures/greenmanexitsignleftarrow",
+    "0": "csm:blocks/shared_textures/metal_silver",
+    "1": "csm:blocks/shared_textures/greenmanexitsignleftarrow",
+    "2": "csm:blocks/shared_textures/greenmanexitsignrightarrow"
+  }
+}

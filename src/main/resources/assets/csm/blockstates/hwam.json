@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:hwam"
+    "model": "csm:lifesafety/honeywell_addressable_module"
   },
   "variants": {
     "facing": {

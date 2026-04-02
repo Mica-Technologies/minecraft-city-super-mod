@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:wbs"
+    "model": "csm:novelties/water_bubbler_short"
   },
   "variants": {
     "facing": {

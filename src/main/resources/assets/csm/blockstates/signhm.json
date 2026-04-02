@@ -3,10 +3,10 @@
   "defaults": {
     "model": "csm:metal_signpostback_sign",
     "textures": {
-      "all": "csm:blocks/mutcd_r14-2.svg",
-      "particle": "csm:blocks/mutcd_r14-2.svg",
-      "0": "csm:blocks/metal",
-      "1": "csm:blocks/mutcd_r14-2.svg"
+      "all": "csm:blocks/trafficsigns/hazardous_materials_permitted",
+      "particle": "csm:blocks/trafficsigns/hazardous_materials_permitted",
+      "0": "csm:blocks/trafficsigns/absolutely_nothing_sign",
+      "1": "csm:blocks/trafficsigns/hazardous_materials_permitted"
     }
   },
   "variants": {

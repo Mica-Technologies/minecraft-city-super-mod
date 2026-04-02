@@ -3,10 +3,10 @@
   "defaults": {
     "model": "csm:metal_signpostback_sign",
     "textures": {
-      "all": "csm:blocks/afishing.eps",
-      "particle": "csm:blocks/afishing.eps",
-      "0": "csm:blocks/metal",
-      "1": "csm:blocks/afishing.eps"
+      "all": "csm:blocks/trafficsigns/fishing",
+      "particle": "csm:blocks/trafficsigns/fishing",
+      "0": "csm:blocks/trafficsigns/absolutely_nothing_sign",
+      "1": "csm:blocks/trafficsigns/fishing"
     }
   },
   "variants": {

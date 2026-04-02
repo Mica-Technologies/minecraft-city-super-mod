@@ -1,7 +1,7 @@
 {
   "parent": "block/fence_inventory",
   "textures": {
-    "texture": "csm:blocks/metal_iridescent",
-    "particle": "csm:blocks/metal_iridescent"
+    "texture": "csm:blocks/shared_textures/metal_iridescent",
+    "particle": "csm:blocks/shared_textures/metal_iridescent"
   }
 }

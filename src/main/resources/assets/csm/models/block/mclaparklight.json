@@ -1,8 +1,0 @@
-{
-  "parent": "csm:block/shared_models/lighting/mcla_park_light",
-  "textures": {
-    "all": "csm:blocks/mcla_park_light",
-    "particle": "csm:blocks/mcla_park_light",
-    "0": "csm:blocks/mcla_park_light"
-  }
-}

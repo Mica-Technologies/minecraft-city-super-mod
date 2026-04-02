@@ -3,10 +3,10 @@
   "defaults": {
     "model": "csm:metal_signpostback_sign",
     "textures": {
-      "all": "csm:blocks/d9-1.eps",
-      "particle": "csm:blocks/d9-1.eps",
-      "0": "csm:blocks/metal",
-      "1": "csm:blocks/d9-1.eps"
+      "all": "csm:blocks/trafficsigns/telephone_payphone",
+      "particle": "csm:blocks/trafficsigns/telephone_payphone",
+      "0": "csm:blocks/trafficsigns/absolutely_nothing_sign",
+      "1": "csm:blocks/trafficsigns/telephone_payphone"
     }
   },
   "variants": {

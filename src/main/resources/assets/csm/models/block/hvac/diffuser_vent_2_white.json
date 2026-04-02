@@ -1,0 +1,12 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "csm:blocks/hvac/diffuser_vent_2_white",
+    "up": "csm:blocks/hvac/diffuser_vent_2_white",
+    "north": "csm:blocks/hvac/diffuser_vent_2_white",
+    "east": "csm:blocks/hvac/diffuser_vent_2_white",
+    "south": "csm:blocks/hvac/diffuser_vent_2_white",
+    "west": "csm:blocks/hvac/diffuser_vent_2_white",
+    "particle": "csm:blocks/hvac/diffuser_vent_2_white"
+  }
+}

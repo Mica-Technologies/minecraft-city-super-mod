@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:signalpolemount2"
+    "model": "csm:trafficaccessories/traffic_signal_pole_mount_style_2"
   },
   "variants": {
     "facing": {

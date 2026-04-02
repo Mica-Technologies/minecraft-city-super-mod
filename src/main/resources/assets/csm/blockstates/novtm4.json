@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:novtm4"
+    "model": "csm:lighting/nov_tapered_mast_straight_mount_long"
   },
   "variants": {
     "facing": {

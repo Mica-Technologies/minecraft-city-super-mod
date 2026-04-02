@@ -3,10 +3,10 @@
   "defaults": {
     "model": "csm:metal_signpostback_diamond_sign",
     "textures": {
-      "all": "csm:blocks/cautiondrivewayssign",
-      "particle": "csm:blocks/cautiondrivewayssign",
-      "0": "csm:blocks/metal",
-      "1": "csm:blocks/cautiondrivewayssign"
+      "all": "csm:blocks/trafficsigns/caution_driveways",
+      "particle": "csm:blocks/trafficsigns/caution_driveways",
+      "0": "csm:blocks/trafficsigns/absolutely_nothing_sign",
+      "1": "csm:blocks/trafficsigns/caution_driveways"
     }
   },
   "variants": {

@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:wapn"
+    "model": "csm:technology/enterasys_wireless_n_ap"
   },
   "variants": {
     "facing": {

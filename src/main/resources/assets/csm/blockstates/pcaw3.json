@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:pcaw3"
+    "model": "csm:powergrid/pupi_crossarm_3_white"
   },
   "variants": {
     "facing": {

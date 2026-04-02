@@ -1,9 +1,9 @@
 {
 	"credit": "Made with Blockbench",
 	"textures": {
-		"0": "csm:blocks/crosswalktextdontwalkoff",
-		"1": "csm:blocks/crosswalktextwalkoff",
-		"particle": "csm:blocks/crosswalktextdontwalkoff"
+		"0": "csm:blocks/shared_textures/crosswalktextdontwalkoff",
+		"1": "csm:blocks/shared_textures/crosswalktextwalkoff",
+		"particle": "csm:blocks/shared_textures/crosswalktextdontwalkoff"
 	},
 	"elements": [
 		{

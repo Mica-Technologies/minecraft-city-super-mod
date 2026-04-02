@@ -3,10 +3,10 @@
   "defaults": {
     "model": "csm:metal_signpostback_diamond_sign",
     "textures": {
-      "all": "csm:blocks/w11-1.eps",
-      "particle": "csm:blocks/w11-1.eps",
-      "0": "csm:blocks/metal",
-      "1": "csm:blocks/w11-1.eps"
+      "all": "csm:blocks/trafficsigns/pole_bicycle",
+      "particle": "csm:blocks/trafficsigns/pole_bicycle",
+      "0": "csm:blocks/trafficsigns/absolutely_nothing_sign",
+      "1": "csm:blocks/trafficsigns/pole_bicycle"
     }
   },
   "variants": {

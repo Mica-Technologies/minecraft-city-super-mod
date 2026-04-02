@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:trafficpolehorzdblunpainted"
+    "model": "csm:trafficaccessories/unpainted_double_horizontal_traffic_pole"
   },
   "variants": {
     "facing": {

@@ -3,10 +3,10 @@
   "defaults": {
     "model": "csm:metal_signpostback_sign",
     "textures": {
-      "all": "csm:blocks/ahang_glider.eps",
-      "particle": "csm:blocks/ahang_glider.eps",
-      "0": "csm:blocks/metal",
-      "1": "csm:blocks/ahang_glider.eps"
+      "all": "csm:blocks/trafficsigns/hang_glider",
+      "particle": "csm:blocks/trafficsigns/hang_glider",
+      "0": "csm:blocks/trafficsigns/absolutely_nothing_sign",
+      "1": "csm:blocks/trafficsigns/hang_glider"
     }
   },
   "variants": {

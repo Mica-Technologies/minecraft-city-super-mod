@@ -1,0 +1,8 @@
+{
+  "parent": "csm:block/shared_models/lighting/ltgcj_smartnode",
+  "textures": {
+    "all": "csm:blocks/shared_textures/ltgcj_smartnode",
+    "particle": "csm:blocks/shared_textures/ltgcj_smartnode",
+    "0": "csm:blocks/shared_textures/ltgcj_smartnode"
+  }
+}

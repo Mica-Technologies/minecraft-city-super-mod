@@ -1,0 +1,8 @@
+{
+  "parent": "csm:block/shared_models/lighting/ltgcmv2",
+  "textures": {
+    "all": "csm:blocks/shared_textures/ltgcm_v2",
+    "particle": "csm:blocks/shared_textures/ltgcm_v2",
+    "0": "csm:blocks/shared_textures/ltgcm_v2"
+  }
+}

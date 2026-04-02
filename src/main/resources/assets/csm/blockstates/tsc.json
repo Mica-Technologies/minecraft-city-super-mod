@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:tsc"
+    "model": "csm:powergrid/transformer_screw_caps"
   },
   "variants": {
     "facing": {

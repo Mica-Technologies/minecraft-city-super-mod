@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:pbf"
+    "model": "csm:hvac/panasonic_bath_fan"
   },
   "variants": {
     "facing": {

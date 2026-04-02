@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:firealarmwheelockasred"
+    "model": "csm:lifesafety/wheelock_as_red_horn_strobe"
   },
   "variants": {
     "facing": {

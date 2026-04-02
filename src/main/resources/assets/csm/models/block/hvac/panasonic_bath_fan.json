@@ -1,0 +1,12 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "csm:blocks/hvac/panasonic_bath_fan",
+    "up": "csm:blocks/hvac/panasonic_bath_fan",
+    "north": "csm:blocks/hvac/panasonic_bath_fan",
+    "east": "csm:blocks/hvac/panasonic_bath_fan",
+    "south": "csm:blocks/hvac/panasonic_bath_fan",
+    "west": "csm:blocks/hvac/panasonic_bath_fan",
+    "particle": "csm:blocks/hvac/panasonic_bath_fan"
+  }
+}

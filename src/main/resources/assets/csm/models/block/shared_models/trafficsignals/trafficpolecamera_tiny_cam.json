@@ -2,8 +2,8 @@
 	"format_version": "1.21.6",
 	"credit": "Made with Blockbench",
 	"textures": {
-		"0": "csm:blocks/metal_black",
-		"1": "csm:blocks/solidoff"
+		"0": "csm:blocks/shared_textures/metal_black",
+		"1": "csm:blocks/shared_textures/solidoff"
 	},
 	"elements": [
 		{

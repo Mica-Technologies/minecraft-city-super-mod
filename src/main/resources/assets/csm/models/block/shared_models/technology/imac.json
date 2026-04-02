@@ -3,9 +3,9 @@
 	"credit": "Made with Blockbench",
 	"texture_size": [512, 512],
 	"textures": {
-		"0": "csm:blocks/imac",
-		"1": "csm:blocks/apple_magic_keyboard",
-		"particle": "csm:blocks/apple_magic_keyboard"
+		"0": "csm:blocks/technology/imac",
+		"1": "csm:blocks/technology/apple_magic_keyboard",
+		"particle": "csm:blocks/technology/apple_magic_keyboard"
 	},
 	"elements": [
 		{

@@ -3,9 +3,9 @@
   "defaults": {
     "model": "csm:trafficpole_small",
     "textures": {
-      "all": "csm:blocks/metal_black",
-      "particle": "csm:blocks/metal_black",
-      "0": "csm:blocks/metal_black"
+      "all": "csm:blocks/shared_textures/metal_black",
+      "particle": "csm:blocks/shared_textures/metal_black",
+      "0": "csm:blocks/shared_textures/metal_black"
     }
   },
   "variants": {
@@ -38,9 +38,9 @@
             "uvlock": true,
             "model": "csm:trafficpole_small_mount",
             "textures": {
-              "all": "csm:blocks/metal_black",
-              "particle": "csm:blocks/metal_black",
-              "0": "csm:blocks/metal_black"
+              "all": "csm:blocks/shared_textures/metal_black",
+              "particle": "csm:blocks/shared_textures/metal_black",
+              "0": "csm:blocks/shared_textures/metal_black"
             },
             "transform": {
               "rotation": [
@@ -67,9 +67,9 @@
             "uvlock": true,
             "model": "csm:trafficpole_small_mount",
             "textures": {
-              "all": "csm:blocks/metal_black",
-              "particle": "csm:blocks/metal_black",
-              "0": "csm:blocks/metal_black"
+              "all": "csm:blocks/shared_textures/metal_black",
+              "particle": "csm:blocks/shared_textures/metal_black",
+              "0": "csm:blocks/shared_textures/metal_black"
             },
             "transform": {
               "rotation": [
@@ -96,9 +96,9 @@
             "uvlock": true,
             "model": "csm:trafficpole_small_mount",
             "textures": {
-              "all": "csm:blocks/metal_black",
-              "particle": "csm:blocks/metal_black",
-              "0": "csm:blocks/metal_black"
+              "all": "csm:blocks/shared_textures/metal_black",
+              "particle": "csm:blocks/shared_textures/metal_black",
+              "0": "csm:blocks/shared_textures/metal_black"
             },
             "transform": {
               "rotation": [
@@ -125,9 +125,9 @@
             "uvlock": true,
             "model": "csm:trafficpole_small_mount",
             "textures": {
-              "all": "csm:blocks/metal_black",
-              "particle": "csm:blocks/metal_black",
-              "0": "csm:blocks/metal_black"
+              "all": "csm:blocks/shared_textures/metal_black",
+              "particle": "csm:blocks/shared_textures/metal_black",
+              "0": "csm:blocks/shared_textures/metal_black"
             },
             "transform": {
               "rotation": [

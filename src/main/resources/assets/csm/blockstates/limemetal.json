@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:limemetal"
+    "model": "csm:buildingmaterials/metal_lime"
   },
   "variants": {
     "inventory": [

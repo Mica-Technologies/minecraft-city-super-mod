@@ -1,0 +1,10 @@
+{
+  "parent": "csm:block/shared_models/lifesafety/mclaapprovedexitsignedgelit",
+  "textures": {
+    "all": "csm:blocks/shared_textures/mclaapprovedstairssignleftarrow",
+    "particle": "csm:blocks/shared_textures/mclaapprovedstairssignleftarrow",
+    "0": "csm:blocks/shared_textures/metal_silver",
+    "1": "csm:blocks/shared_textures/mclaapprovedstairssignleftarrow",
+    "2": "csm:blocks/shared_textures/mclaapprovedstairssignrightarrow"
+  }
+}

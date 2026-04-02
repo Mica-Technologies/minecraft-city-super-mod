@@ -3,9 +3,9 @@
   "defaults": {
     "model": "csm:trafficpole_large",
     "textures": {
-      "all": "csm:blocks/metal_mattewhite",
-      "particle": "csm:blocks/metal_mattewhite",
-      "0": "csm:blocks/metal_mattewhite"
+      "all": "csm:blocks/shared_textures/metal_mattewhite",
+      "particle": "csm:blocks/shared_textures/metal_mattewhite",
+      "0": "csm:blocks/shared_textures/metal_mattewhite"
     }
   },
   "variants": {
@@ -38,9 +38,9 @@
             "uvlock": true,
             "model": "csm:trafficpole_large_mount",
             "textures": {
-              "all": "csm:blocks/metal_mattewhite",
-              "particle": "csm:blocks/metal_mattewhite",
-              "0": "csm:blocks/metal_mattewhite"
+              "all": "csm:blocks/shared_textures/metal_mattewhite",
+              "particle": "csm:blocks/shared_textures/metal_mattewhite",
+              "0": "csm:blocks/shared_textures/metal_mattewhite"
             },
             "transform": {
               "rotation": [
@@ -67,9 +67,9 @@
             "uvlock": true,
             "model": "csm:trafficpole_large_mount",
             "textures": {
-              "all": "csm:blocks/metal_mattewhite",
-              "particle": "csm:blocks/metal_mattewhite",
-              "0": "csm:blocks/metal_mattewhite"
+              "all": "csm:blocks/shared_textures/metal_mattewhite",
+              "particle": "csm:blocks/shared_textures/metal_mattewhite",
+              "0": "csm:blocks/shared_textures/metal_mattewhite"
             },
             "transform": {
               "rotation": [
@@ -96,9 +96,9 @@
             "uvlock": true,
             "model": "csm:trafficpole_large_mount",
             "textures": {
-              "all": "csm:blocks/metal_mattewhite",
-              "particle": "csm:blocks/metal_mattewhite",
-              "0": "csm:blocks/metal_mattewhite"
+              "all": "csm:blocks/shared_textures/metal_mattewhite",
+              "particle": "csm:blocks/shared_textures/metal_mattewhite",
+              "0": "csm:blocks/shared_textures/metal_mattewhite"
             },
             "transform": {
               "rotation": [
@@ -125,9 +125,9 @@
             "uvlock": true,
             "model": "csm:trafficpole_large_mount",
             "textures": {
-              "all": "csm:blocks/metal_mattewhite",
-              "particle": "csm:blocks/metal_mattewhite",
-              "0": "csm:blocks/metal_mattewhite"
+              "all": "csm:blocks/shared_textures/metal_mattewhite",
+              "particle": "csm:blocks/shared_textures/metal_mattewhite",
+              "0": "csm:blocks/shared_textures/metal_mattewhite"
             },
             "transform": {
               "rotation": [

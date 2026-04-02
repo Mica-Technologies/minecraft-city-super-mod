@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:dfv2"
+    "model": "csm:hvac/diffuser_vent_2_white"
   },
   "variants": {
     "facing": {

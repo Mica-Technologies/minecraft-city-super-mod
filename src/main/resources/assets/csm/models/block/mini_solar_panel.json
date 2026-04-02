@@ -2,10 +2,10 @@
 	"format_version": "1.9.0",
 	"credit": "Made with Blockbench",
 	"textures": {
-		"0": "csm:blocks/metal_white",
-		"1": "csm:blocks/metal_silver",
-		"2": "csm:blocks/solar_panel",
-		"particle": "csm:blocks/metal_white"
+		"0": "csm:blocks/shared_textures/metal_white",
+		"1": "csm:blocks/shared_textures/metal_silver",
+		"2": "csm:blocks/shared_textures/solar_panel",
+		"particle": "csm:blocks/shared_textures/metal_white"
 	},
 	"elements": [
 		{

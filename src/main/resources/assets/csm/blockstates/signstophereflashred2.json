@@ -3,10 +3,10 @@
   "defaults": {
     "model": "csm:metal_signpostback_tall_sign",
     "textures": {
-      "all": "csm:blocks/mutcd_r8-10r.svg",
-      "particle": "csm:blocks/mutcd_r8-10r.svg",
-      "0": "csm:blocks/metal",
-      "1": "csm:blocks/mutcd_r8-10r.svg"
+      "all": "csm:blocks/trafficsigns/pole_stop_here_on_flashing_red_right",
+      "particle": "csm:blocks/trafficsigns/pole_stop_here_on_flashing_red_right",
+      "0": "csm:blocks/trafficsigns/absolutely_nothing_sign",
+      "1": "csm:blocks/trafficsigns/pole_stop_here_on_flashing_red_right"
     }
   },
   "variants": {

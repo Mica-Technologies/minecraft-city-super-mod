@@ -1,0 +1,8 @@
+{
+  "parent": "csm:block/shared_models/lifesafety/systemsensor_lseries_speaker_white_ceiling",
+  "textures": {
+    "all": "csm:blocks/shared_textures/systemsensor_lseries_speaker_white_ceiling",
+    "particle": "csm:blocks/shared_textures/systemsensor_lseries_speaker_white_ceiling",
+    "0": "csm:blocks/shared_textures/systemsensor_lseries_speaker_white_ceiling"
+  }
+}

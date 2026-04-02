@@ -3,10 +3,10 @@
   "defaults": {
     "model": "csm:metal_signpostback_sign",
     "textures": {
-      "all": "csm:blocks/ahiking.eps",
-      "particle": "csm:blocks/ahiking.eps",
-      "0": "csm:blocks/metal",
-      "1": "csm:blocks/ahiking.eps"
+      "all": "csm:blocks/trafficsigns/hiking",
+      "particle": "csm:blocks/trafficsigns/hiking",
+      "0": "csm:blocks/trafficsigns/absolutely_nothing_sign",
+      "1": "csm:blocks/trafficsigns/hiking"
     }
   },
   "variants": {

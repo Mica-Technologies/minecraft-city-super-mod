@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:trafficpoleverticalconnectordoubleblack"
+    "model": "csm:trafficaccessories/black_vertical_traffic_pole_with_double_connector"
   },
   "variants": {
     "facing": {

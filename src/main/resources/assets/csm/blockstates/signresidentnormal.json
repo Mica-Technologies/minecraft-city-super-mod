@@ -3,10 +3,10 @@
   "defaults": {
     "model": "csm:metal_signpostback_sign",
     "textures": {
-      "all": "csm:blocks/residents-parking-permit-sign-k-1179",
-      "particle": "csm:blocks/residents-parking-permit-sign-k-1179",
-      "0": "csm:blocks/metal",
-      "1": "csm:blocks/residents-parking-permit-sign-k-1179"
+      "all": "csm:blocks/trafficsigns/large_permit_resident_parking",
+      "particle": "csm:blocks/trafficsigns/large_permit_resident_parking",
+      "0": "csm:blocks/trafficsigns/absolutely_nothing_sign",
+      "1": "csm:blocks/trafficsigns/large_permit_resident_parking"
     }
   },
   "variants": {

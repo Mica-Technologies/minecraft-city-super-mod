@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:trafficpoleverticalconnectorangledblack"
+    "model": "csm:trafficaccessories/vertical_traffic_pole_with_angled_connector_black"
   },
   "variants": {
     "facing": {

@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:lightupair"
+    "model": "csm:trafficsignals/mclaglowair"
   },
   "variants": {
     "facing": {
@@ -24,11 +24,11 @@
     },
     "inventory": [
       {
-        "model": "csm:controllableverticalrailsignal",
+        "model": "csm:trafficsignals/vertical_traffic_signal_rail_protected",
         "textures": {
-          "0": "csm:blocks/transitred",
-          "1": "csm:blocks/transityellow",
-          "2": "csm:blocks/transitgreen"
+          "0": "csm:blocks/shared_textures/transitred",
+          "1": "csm:blocks/shared_textures/transityellow",
+          "2": "csm:blocks/shared_textures/transitgreen"
         }
       }
     ],

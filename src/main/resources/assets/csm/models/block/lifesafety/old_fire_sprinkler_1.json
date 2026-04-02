@@ -1,0 +1,7 @@
+{
+  "parent": "csm:block/shared_models/lifesafety/oldfiresprinkler",
+  "textures": {
+		"0": "csm:blocks/shared_textures/metal_silver",
+		"particle": "csm:blocks/shared_textures/metal_silver"
+	}
+}

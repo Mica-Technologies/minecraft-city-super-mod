@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:tlpmsilver"
+    "model": "csm:trafficaccessories/silver_metal_signal_mount"
   },
   "variants": {
     "facing": {

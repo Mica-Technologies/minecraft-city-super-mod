@@ -3,10 +3,10 @@
   "defaults": {
     "model": "csm:metal_signpostback_tall_sign",
     "textures": {
-      "all": "csm:blocks/slowschool",
-      "particle": "csm:blocks/slowschool",
-      "0": "csm:blocks/metal",
-      "1": "csm:blocks/slowschool"
+      "all": "csm:blocks/trafficsigns/slow_school",
+      "particle": "csm:blocks/trafficsigns/slow_school",
+      "0": "csm:blocks/trafficsigns/absolutely_nothing_sign",
+      "1": "csm:blocks/trafficsigns/slow_school"
     }
   },
   "variants": {

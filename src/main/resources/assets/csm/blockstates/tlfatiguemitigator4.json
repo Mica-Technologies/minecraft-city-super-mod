@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:tlfatiguemitigator4"
+    "model": "csm:trafficaccessories/traffic_signal_mast_fatigue_mitigator_style_4"
   },
   "variants": {
     "facing": {

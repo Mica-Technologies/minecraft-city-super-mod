@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:scelightmountsmall"
+    "model": "csm:powergrid/nov_street_light_mount_small"
   },
   "variants": {
     "facing": {

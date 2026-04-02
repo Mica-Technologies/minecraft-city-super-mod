@@ -1,7 +1,7 @@
 {
 	"credit": "Model made by Brandon Holt (RinRin Blissgreen)",
 	"textures": {
-		"0": "csm:blocks/crossarms"
+		"0": "csm:blocks/powergrid/shared_textures/crossarms"
 	},
 	"elements": [
 		{

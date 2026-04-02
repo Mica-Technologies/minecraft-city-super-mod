@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:fgphvsign"
+    "model": "csm:powergrid/fiberglass_pole_hv_sign"
   },
   "variants": {
     "facing": {

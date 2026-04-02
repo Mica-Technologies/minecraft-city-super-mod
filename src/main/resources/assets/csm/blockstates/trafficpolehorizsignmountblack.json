@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:trafficpolehorizsignmountblack"
+    "model": "csm:trafficaccessories/black_horizontal_traffic_pole_sign_mount"
   },
   "variants": {
     "facing": {

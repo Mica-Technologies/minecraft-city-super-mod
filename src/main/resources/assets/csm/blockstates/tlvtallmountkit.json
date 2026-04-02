@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:tlvtallmountkit"
+    "model": "csm:trafficaccessories/vertical_tall_signal_mount_kit"
   },
   "variants": {
     "facing": {

@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:acgalaga"
+    "model": "csm:novelties/arcade_galaga"
   },
   "variants": {
     "facing": {

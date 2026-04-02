@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:redmetal_slab"
+    "model": "csm:buildingmaterials/redmetal_slab"
   },
   "variants": {
     "half": {

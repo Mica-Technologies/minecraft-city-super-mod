@@ -1,8 +1,0 @@
-{
-  "parent": "csm:block/shared_models/novelties/old_record_player",
-  "textures": {
-    "all": "csm:blocks/old_record_player",
-    "particle": "csm:blocks/old_record_player",
-    "0": "csm:blocks/old_record_player"
-  }
-}

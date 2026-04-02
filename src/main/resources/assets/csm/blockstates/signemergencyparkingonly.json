@@ -3,10 +3,10 @@
   "defaults": {
     "model": "csm:metal_signpostback_midlargerectanglesign",
     "textures": {
-      "all": "csm:blocks/cr8-4.eps",
-      "particle": "csm:blocks/cr8-4.eps",
-      "0": "csm:blocks/metal",
-      "1": "csm:blocks/cr8-4.eps"
+      "all": "csm:blocks/trafficsigns/emergency_parking_only",
+      "particle": "csm:blocks/trafficsigns/emergency_parking_only",
+      "0": "csm:blocks/trafficsigns/absolutely_nothing_sign",
+      "1": "csm:blocks/trafficsigns/emergency_parking_only"
     }
   },
   "variants": {

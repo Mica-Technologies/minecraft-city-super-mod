@@ -1,12 +1,12 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:controllablecrosswalkdoublewordedbasemount",
+    "model": "csm:trafficsignals/worded_crosswalk_light_dual_12_inch_base_mount",
     "textures": {
-      "all": "csm:blocks/crosswalktextdontwalkoff",
-      "particle": "csm:blocks/crosswalktextdontwalkoff",
-      "0": "csm:blocks/crosswalktextdontwalkoff",
-      "1": "csm:blocks/crosswalktextwalkoff"
+      "all": "csm:blocks/shared_textures/crosswalktextdontwalkoff",
+      "particle": "csm:blocks/shared_textures/crosswalktextdontwalkoff",
+      "0": "csm:blocks/shared_textures/crosswalktextdontwalkoff",
+      "1": "csm:blocks/shared_textures/crosswalktextwalkoff"
     }
   },
   "variants": {
@@ -25,38 +25,38 @@
     "color": {
       "0": {
         "textures": {
-          "0": "csm:blocks/crosswalktextdontwalkon",
-          "1": "csm:blocks/crosswalktextwalkoff"
+          "0": "csm:blocks/shared_textures/crosswalktextdontwalkon",
+          "1": "csm:blocks/shared_textures/crosswalktextwalkoff"
         }
       },
       "1": {
         "textures": {
           "0": "csm:blocks/crosswalktextdontwalkflash",
-          "1": "csm:blocks/crosswalktextwalkoff",
+          "1": "csm:blocks/shared_textures/crosswalktextwalkoff",
           "all": "csm:blocks/crosswalktextdontwalkflash",
           "particle": "csm:blocks/crosswalktextdontwalkflash"
         }
       },
       "2": {
         "textures": {
-          "0": "csm:blocks/crosswalktextdontwalkoff",
-          "1": "csm:blocks/crosswalktextwalkon"
+          "0": "csm:blocks/shared_textures/crosswalktextdontwalkoff",
+          "1": "csm:blocks/shared_textures/crosswalktextwalkon"
         }
       },
       "3": {
         "textures": {
-          "0": "csm:blocks/crosswalktextdontwalkoff",
-          "1": "csm:blocks/crosswalktextwalkoff"
+          "0": "csm:blocks/shared_textures/crosswalktextdontwalkoff",
+          "1": "csm:blocks/shared_textures/crosswalktextwalkoff"
         }
       }
     },
     "inventory": [
       {
         "textures": {
-          "all": "csm:blocks/crosswalktextdontwalkoff",
-          "particle": "csm:blocks/crosswalktextdontwalkoff",
-          "0": "csm:blocks/crosswalktextdontwalkon",
-          "1": "csm:blocks/crosswalktextwalkon"
+          "all": "csm:blocks/shared_textures/crosswalktextdontwalkoff",
+          "particle": "csm:blocks/shared_textures/crosswalktextdontwalkoff",
+          "0": "csm:blocks/shared_textures/crosswalktextdontwalkon",
+          "1": "csm:blocks/shared_textures/crosswalktextwalkon"
         }
       }
     ],
