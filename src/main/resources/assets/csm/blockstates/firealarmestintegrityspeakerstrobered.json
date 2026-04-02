@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:lifesafety/est_integrity_red_horn_strobe_intred"
+    "model": "csm:lifesafety/est_integrity_red_speaker_strobe"
   },
   "variants": {
     "facing": {

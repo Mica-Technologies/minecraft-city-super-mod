@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:lifesafety/shared_models/ps2",
+    "model": "csm:lifesafety/shared_models/edwards_glass_rod_pull_station",
     "textures": {
       "all": "csm:blocks/lifesafety/edwards_glass_rod_pull_station",
       "particle": "csm:blocks/lifesafety/edwards_glass_rod_pull_station",

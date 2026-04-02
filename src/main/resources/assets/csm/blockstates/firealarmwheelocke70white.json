@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:lifesafety/wheelock_e70_white_chime_strobe_70wnve"
+    "model": "csm:lifesafety/wheelock_e70_white_chime_strobe"
   },
   "variants": {
     "facing": {

@@ -30,16 +30,16 @@
     "tilt": {
       "none": {},
       "left_tilt": {
-        "model": "csm:lifesafety/tlbordersingleblueblack_left_tilt"
+        "model": "csm:trafficaccessories/tlbordersingleblueblack_left_tilt"
       },
       "right_tilt": {
-        "model": "csm:lifesafety/tlbordersingleblueblack_right_tilt"
+        "model": "csm:trafficaccessories/tlbordersingleblueblack_right_tilt"
       },
       "left_angle": {
-        "model": "csm:lifesafety/tlbordersingleblueblack_left_angle"
+        "model": "csm:trafficaccessories/tlbordersingleblueblack_left_angle"
       },
       "right_angle": {
-        "model": "csm:lifesafety/tlbordersingleblueblack_right_angle"
+        "model": "csm:trafficaccessories/tlbordersingleblueblack_right_angle"
       }
     },
     "inventory": [

@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:lifesafety/black_angled_thin_traffic_pole",
+    "model": "csm:trafficaccessories/black_angled_thin_traffic_pole",
     "textures": {
       "all": "csm:blocks/trafficsignals/shared_textures/metal_black",
       "particle": "csm:blocks/trafficsignals/shared_textures/metal_black",
@@ -36,7 +36,7 @@
         "submodel": {
           "mounte": {
             "uvlock": true,
-            "model": "csm:lifesafety/trafficpole_small_mount",
+            "model": "csm:trafficaccessories/trafficpole_small_mount",
             "textures": {
               "all": "csm:blocks/trafficsignals/shared_textures/metal_black",
               "particle": "csm:blocks/trafficsignals/shared_textures/metal_black",
@@ -65,7 +65,7 @@
         "submodel": {
           "mountw": {
             "uvlock": true,
-            "model": "csm:lifesafety/trafficpole_small_mount",
+            "model": "csm:trafficaccessories/trafficpole_small_mount",
             "textures": {
               "all": "csm:blocks/trafficsignals/shared_textures/metal_black",
               "particle": "csm:blocks/trafficsignals/shared_textures/metal_black",
@@ -94,7 +94,7 @@
         "submodel": {
           "mountu": {
             "uvlock": true,
-            "model": "csm:lifesafety/trafficpole_small_mount",
+            "model": "csm:trafficaccessories/trafficpole_small_mount",
             "textures": {
               "all": "csm:blocks/trafficsignals/shared_textures/metal_black",
               "particle": "csm:blocks/trafficsignals/shared_textures/metal_black",
@@ -123,7 +123,7 @@
         "submodel": {
           "mountd": {
             "uvlock": true,
-            "model": "csm:lifesafety/trafficpole_small_mount",
+            "model": "csm:trafficaccessories/trafficpole_small_mount",
             "textures": {
               "all": "csm:blocks/trafficsignals/shared_textures/metal_black",
               "particle": "csm:blocks/trafficsignals/shared_textures/metal_black",
@@ -152,7 +152,7 @@
         "submodel": {
           "mountn": {
             "uvlock": true,
-            "model": "csm:lifesafety/trafficpole_small_mount",
+            "model": "csm:trafficaccessories/trafficpole_small_mount",
             "textures": {
               "all": "csm:blocks/trafficsignals/shared_textures/metal_black",
               "particle": "csm:blocks/trafficsignals/shared_textures/metal_black",
@@ -181,7 +181,7 @@
         "submodel": {
           "mounts": {
             "uvlock": true,
-            "model": "csm:lifesafety/trafficpole_small_mount",
+            "model": "csm:trafficaccessories/trafficpole_small_mount",
             "textures": {
               "all": "csm:blocks/trafficsignals/shared_textures/metal_black",
               "particle": "csm:blocks/trafficsignals/shared_textures/metal_black",

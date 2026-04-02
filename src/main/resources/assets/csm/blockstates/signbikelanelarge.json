@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:lifesafety/begin_left_lane_yield_to_bikes_sign",
+    "model": "csm:trafficsigns/begin_left_lane_yield_to_bikes_sign",
     "textures": {
       "all": "csm:blocks/trafficsigns/bike_lane",
       "particle": "csm:blocks/trafficsigns/bike_lane",
@@ -126,7 +126,7 @@
       "true": {
         "submodel": {
           "extension": {
-            "model": "csm:lifesafety/sign_pole",
+            "model": "csm:trafficsigns/sign_pole",
             "transform": {
               "translation": [
                 0.0,
@@ -141,7 +141,7 @@
     "setback": {
       "false": {},
       "true": {
-        "model": "csm:lifesafety/metal_signpostback_largewidesign_setback"
+        "model": "csm:trafficsigns/metal_signpostback_largewidesign_setback"
       }
     },
     "normal": [

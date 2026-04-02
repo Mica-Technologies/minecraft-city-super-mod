@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:lifesafety/fdc_standpipe_bullseye_sign",
+    "model": "csm:trafficsigns/fdc_standpipe_bullseye_sign",
     "textures": {
       "all": "csm:blocks/trafficsigns/hurricane_evacuation_route_ahead",
       "particle": "csm:blocks/trafficsigns/hurricane_evacuation_route_ahead",
@@ -126,7 +126,7 @@
       "true": {
         "submodel": {
           "extension": {
-            "model": "csm:lifesafety/sign_pole",
+            "model": "csm:trafficsigns/sign_pole",
             "transform": {
               "translation": [
                 0.0,
@@ -141,7 +141,7 @@
     "setback": {
       "false": {},
       "true": {
-        "model": "csm:lifesafety/metal_signpostback_circle_sign_setback"
+        "model": "csm:trafficsigns/metal_signpostback_circle_sign_setback"
       }
     },
     "normal": [

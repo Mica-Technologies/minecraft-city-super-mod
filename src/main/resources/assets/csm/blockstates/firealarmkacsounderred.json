@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:lifesafety/shared_models/kacsounder",
+    "model": "csm:lifesafety/shared_models/kac_sounder_horn",
     "textures": {
       "all": "csm:blocks/lifesafety/kac_sounder_red_horn",
       "particle": "csm:blocks/lifesafety/kac_sounder_red_horn",

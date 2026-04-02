@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "block/half_slab",
+    "model": "half_slab",
     "textures": {
       "bottom": "csm:blocks/buildingmaterials/shared_textures/metal_lime",
       "top": "csm:blocks/buildingmaterials/shared_textures/metal_lime",

@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "block/cube_all",
+    "model": "cube_all",
     "textures": {
       "all": "csm:blocks/technology/redstone_tts_module",
       "particle": "csm:blocks/technology/redstone_tts_module"

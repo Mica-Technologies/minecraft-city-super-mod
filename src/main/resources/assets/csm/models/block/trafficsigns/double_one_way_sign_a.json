@@ -3,21 +3,35 @@
 	"credit": "Made with Blockbench",
 	"textures": {
 		"0": "csm:blocks/trafficsigns/absolutely_nothing_sign",
-		"1": "csm:blocks/trafficsigns/strip_green_reen",
-		"particle": "csm:blocks/trafficsigns/strip_green_reen"
+		"1": "csm:blocks/trafficsigns/double_one_way_left",
+		"2": "csm:blocks/trafficsigns/double_one_way_right",
+		"particle": "csm:blocks/trafficsigns/double_one_way_right"
 	},
 	"elements": [
 		{
-			"from": [6, 0, 0.25],
-			"to": [10, 16, 0.5],
-			"rotation": {"angle": 0, "axis": "y", "origin": [8, 0, 8]},
+			"from": [6, 6, -11],
+			"to": [6.5, 12, 15],
+			"rotation": {"angle": 0, "axis": "y", "origin": [8, 7, 2]},
 			"faces": {
-				"north": {"uv": [0, 0, 16, 16], "texture": "#1"},
+				"north": {"uv": [0, 0, 16, 16], "texture": "#0"},
 				"east": {"uv": [0, 0, 16, 16], "texture": "#0"},
 				"south": {"uv": [0, 0, 16, 16], "texture": "#0"},
+				"west": {"uv": [0, 0, 16, 16], "texture": "#2"},
+				"up": {"uv": [0, 0, 16, 16], "rotation": 270, "texture": "#0"},
+				"down": {"uv": [0, 0, 16, 16], "rotation": 90, "texture": "#0"}
+			}
+		},
+		{
+			"from": [9.5, 6, -11],
+			"to": [10, 12, 15],
+			"rotation": {"angle": 0, "axis": "y", "origin": [11.5, 7, 2]},
+			"faces": {
+				"north": {"uv": [0, 0, 16, 16], "texture": "#0"},
+				"east": {"uv": [0, 0, 16, 16], "texture": "#1"},
+				"south": {"uv": [0, 0, 16, 16], "texture": "#0"},
 				"west": {"uv": [0, 0, 16, 16], "texture": "#0"},
-				"up": {"uv": [0, 0, 16, 16], "texture": "#0"},
-				"down": {"uv": [0, 0, 16, 16], "texture": "#0"}
+				"up": {"uv": [0, 0, 16, 16], "rotation": 270, "texture": "#0"},
+				"down": {"uv": [0, 0, 16, 16], "rotation": 90, "texture": "#0"}
 			}
 		},
 		{
@@ -88,8 +102,9 @@
 	],
 	"display": {
 		"gui": {
-			"rotation": [-180, 0, -180],
-			"scale": [0.625, 0.625, 0.625]
+			"rotation": [0, -141, 0],
+			"translation": [-1.5, -0.25, 0],
+			"scale": [0.5, 0.5, 0.5]
 		}
 	}
 }

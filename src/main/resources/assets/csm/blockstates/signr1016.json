@@ -1,12 +1,12 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:lifesafety/bikes_use_ped_signal_sign",
+    "model": "csm:trafficsigns/bikes_use_ped_signal_sign",
     "textures": {
-      "all": "csm:blocks/trafficsigns/u_turn_yield_to_right_turn_sing",
-      "particle": "csm:blocks/trafficsigns/u_turn_yield_to_right_turn_sing",
+      "all": "csm:blocks/trafficsigns/u_turn_yield_to_right_turn_sign",
+      "particle": "csm:blocks/trafficsigns/u_turn_yield_to_right_turn_sign",
       "0": "csm:blocks/trafficsigns/absolutely_nothing_sign",
-      "1": "csm:blocks/trafficsigns/u_turn_yield_to_right_turn_sing"
+      "1": "csm:blocks/trafficsigns/u_turn_yield_to_right_turn_sign"
     }
   },
   "variants": {
@@ -126,7 +126,7 @@
       "true": {
         "submodel": {
           "extension": {
-            "model": "csm:lifesafety/sign_pole",
+            "model": "csm:trafficsigns/sign_pole",
             "transform": {
               "translation": [
                 0.0,
@@ -141,7 +141,7 @@
     "setback": {
       "false": {},
       "true": {
-        "model": "csm:lifesafety/metal_signpostback_tall_sign_setback"
+        "model": "csm:trafficsigns/metal_signpostback_tall_sign_setback"
       }
     },
     "normal": [

@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "block/half_slab",
+    "model": "half_slab",
     "textures": {
       "bottom": "csm:blocks/trafficsignals/shared_textures/metal_black",
       "top": "csm:blocks/trafficsignals/shared_textures/metal_black",

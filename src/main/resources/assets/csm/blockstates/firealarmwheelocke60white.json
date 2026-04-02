@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:lifesafety/shared_models/faic_combo",
+    "model": "csm:lifesafety/shared_models/wheelock_e60_ceiling_speaker_strobe",
     "textures": {
       "all": "csm:blocks/lifesafety/wheelock_e60_white_ceiling_speaker_strobe",
       "particle": "csm:blocks/lifesafety/wheelock_e60_white_ceiling_speaker_strobe",

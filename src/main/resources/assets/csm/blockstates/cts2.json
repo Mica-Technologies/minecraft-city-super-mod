@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "block/cube",
+    "model": "cube",
     "textures": {
       "down": "csm:blocks/buildingmaterials/ceiling_tile_standard_2",
       "up": "csm:blocks/buildingmaterials/ceiling_tile_standard_2",

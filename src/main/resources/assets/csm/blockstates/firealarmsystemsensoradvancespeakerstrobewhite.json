@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:lifesafety/shared_models/ss_sa_speakerstrobe",
+    "model": "csm:lifesafety/shared_models/systemsensor_spectralert_advance_speaker_strobe",
     "textures": {
       "all": "csm:blocks/lifesafety/system_sensor_spectralert_advance_white_speaker_strobe",
       "particle": "csm:blocks/lifesafety/system_sensor_spectralert_advance_white_speaker_strobe",
