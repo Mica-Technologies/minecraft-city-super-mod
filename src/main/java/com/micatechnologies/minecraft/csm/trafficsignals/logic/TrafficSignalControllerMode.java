@@ -27,7 +27,7 @@ public enum TrafficSignalControllerMode {
    *
    * @since 1.0
    */
-  NORMAL("Normal", 20),
+  NORMAL("Normal", 4),
 
   /**
    * Enumeration value for the traffic signal controller mode "ramp meter (full time)" with a tick
@@ -50,7 +50,7 @@ public enum TrafficSignalControllerMode {
    *
    * @since 1.0
    */
-  REQUESTABLE("Requestable", 10),
+  REQUESTABLE("Requestable", 4),
 
   /**
    * Enumeration value for the traffic signal controller mode "manual off" with a tick rate of 300.
