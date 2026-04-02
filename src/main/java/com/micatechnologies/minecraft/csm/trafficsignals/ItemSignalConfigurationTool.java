@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.trafficsignals;
 
 import com.micatechnologies.minecraft.csm.Csm;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractItem;
+import com.micatechnologies.minecraft.csm.trafficaccessories.AbstractBlockSignalBackplate;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignal;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockTrafficSignalAPS;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockTrafficSignalSensor;
@@ -14,6 +15,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
@@ -24,7 +26,7 @@ import net.minecraft.world.World;
 
 public class ItemSignalConfigurationTool extends AbstractItem {
 
-  private final Map<UUID, ItemSignalConfigurationToolMode> modeMap = new HashMap<>();
+  private static final String NBT_MODE_KEY = "csm_tool_mode";
 
   private final Map<UUID, BlockPos> posMap1 = new HashMap<>();
   private final Map<UUID, BlockPos> posMap2 = new HashMap<>();
@@ -38,9 +40,23 @@ public class ItemSignalConfigurationTool extends AbstractItem {
       float hitX,
       float hitY,
       float hitZ) {
+    ItemStack heldStack = player.getHeldItem(hand);
+
+    // Resolve backplate clicks to the signal behind them
+    if (worldIn.getBlockState(pos).getBlock() instanceof AbstractBlockSignalBackplate) {
+      BlockPos signalPos = AbstractBlockSignalBackplate.findSignalBehind(worldIn, pos);
+      if (signalPos != null) {
+        pos = signalPos;
+      } else if (!worldIn.isRemote && !player.isSneaking()) {
+        player.sendMessage(
+            new TextComponentString("Backplate not connected to a configurable signal."));
+        return EnumActionResult.FAIL;
+      }
+    }
+
     // OPEN_GUI mode must run on client side (GuiScreen has no server Container)
     if (worldIn.isRemote && !player.isSneaking()
-        && getMode(player) == ItemSignalConfigurationToolMode.OPEN_GUI
+        && getMode(heldStack) == ItemSignalConfigurationToolMode.OPEN_GUI
         && worldIn.getBlockState(pos).getBlock() instanceof BlockTrafficSignalController) {
       player.openGui(Csm.instance, 2, worldIn, pos.getX(), pos.getY(), pos.getZ());
       return EnumActionResult.SUCCESS;
@@ -48,18 +64,18 @@ public class ItemSignalConfigurationTool extends AbstractItem {
     if (!worldIn.isRemote) {
       IBlockState state = worldIn.getBlockState(pos);
       Block clickedBlock = state.getBlock();
-      ItemSignalConfigurationToolMode mode = getMode(player);
+      ItemSignalConfigurationToolMode mode = getMode(heldStack);
 
       // If sneaking, change mode
       EnumActionResult expectedResult = EnumActionResult.PASS;
       EnumActionResult result = EnumActionResult.FAIL;
       if (player.isSneaking()) {
         // Switch to next mode
-        switchToNextMode(player);
+        switchToNextMode(heldStack);
 
         // Notify player
         player.sendMessage(
-            new TextComponentString("Mode changed to: " + getMode(player).getFriendlyName()));
+            new TextComponentString("Mode changed to: " + getMode(heldStack).getFriendlyName()));
 
         // Mark result as success
         result = EnumActionResult.PASS;
@@ -509,19 +525,27 @@ public class ItemSignalConfigurationTool extends AbstractItem {
     }
   }
 
-  public ItemSignalConfigurationToolMode getMode(EntityPlayer player) {
-    return modeMap.getOrDefault(player.getUniqueID(),
-        ItemSignalConfigurationToolMode.CYCLE_SIGNAL_COLORS);
+  public static ItemSignalConfigurationToolMode getMode(ItemStack stack) {
+    NBTTagCompound tag = stack.getTagCompound();
+    if (tag != null && tag.hasKey(NBT_MODE_KEY)) {
+      int ordinal = tag.getInteger(NBT_MODE_KEY);
+      ItemSignalConfigurationToolMode[] values = ItemSignalConfigurationToolMode.values();
+      if (ordinal >= 0 && ordinal < values.length) {
+        return values[ordinal];
+      }
+    }
+    return ItemSignalConfigurationToolMode.CYCLE_SIGNAL_COLORS;
   }
 
-  public String switchToNextMode(EntityPlayer player) {
-    ItemSignalConfigurationToolMode newMode = modeMap.getOrDefault(player.getUniqueID(),
-        ItemSignalConfigurationToolMode.CYCLE_SIGNAL_COLORS);
-    int newModeOrdinal = newMode.ordinal() + 1;
-    newModeOrdinal %= ItemSignalConfigurationToolMode.values().length;
-    newMode = ItemSignalConfigurationToolMode.values()[newModeOrdinal];
-    modeMap.put(player.getUniqueID(), newMode);
-    return newMode.getFriendlyName();
+  public static void switchToNextMode(ItemStack stack) {
+    ItemSignalConfigurationToolMode current = getMode(stack);
+    int next = (current.ordinal() + 1) % ItemSignalConfigurationToolMode.values().length;
+    NBTTagCompound tag = stack.getTagCompound();
+    if (tag == null) {
+      tag = new NBTTagCompound();
+      stack.setTagCompound(tag);
+    }
+    tag.setInteger(NBT_MODE_KEY, next);
   }
 
   /**
@@ -543,10 +567,10 @@ public class ItemSignalConfigurationTool extends AbstractItem {
   public void addInformation(ItemStack itemstack, World world, List<String> list,
       ITooltipFlag flag) {
     super.addInformation(itemstack, world, list, flag);
-    list.add(
-        "Configuration tool for changing signal colors, resetting controller faults, re-orienting "
-            +
-            "sensors, and more...");
+    list.add("Configure controller timing, toggles, signal colors,");
+    list.add("sensor orientation, overlaps, and more.");
+    list.add("Right-click to apply. Sneak + right-click to switch modes.");
+    list.add("Current mode: " + getMode(itemstack).getFriendlyName());
   }
 
   /**

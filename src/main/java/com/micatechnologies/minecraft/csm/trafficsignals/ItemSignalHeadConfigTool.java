@@ -2,17 +2,16 @@ package com.micatechnologies.minecraft.csm.trafficsignals;
 
 import com.micatechnologies.minecraft.csm.Csm;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractItem;
+import com.micatechnologies.minecraft.csm.trafficaccessories.AbstractBlockSignalBackplate;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignal;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignalHead;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
@@ -23,14 +22,28 @@ import net.minecraft.world.World;
 
 public class ItemSignalHeadConfigTool extends AbstractItem {
 
-  private final Map<UUID, ItemSignalHeadConfigToolMode> modeMap = new HashMap<>();
+  private static final String NBT_MODE_KEY = "csm_tool_mode";
 
   @Override
   public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos,
       EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+    ItemStack heldStack = player.getHeldItem(hand);
+
+    // Resolve backplate clicks to the signal behind them
+    if (worldIn.getBlockState(pos).getBlock() instanceof AbstractBlockSignalBackplate) {
+      BlockPos signalPos = AbstractBlockSignalBackplate.findSignalBehind(worldIn, pos);
+      if (signalPos != null) {
+        pos = signalPos;
+      } else if (!worldIn.isRemote && !player.isSneaking()) {
+        player.sendMessage(
+            new TextComponentString("Backplate not connected to a configurable signal head."));
+        return EnumActionResult.FAIL;
+      }
+    }
+
     // OPEN_GUI mode must run on client side (GuiScreen has no server Container)
     if (worldIn.isRemote && !player.isSneaking()
-        && getMode(player) == ItemSignalHeadConfigToolMode.OPEN_GUI
+        && getMode(heldStack) == ItemSignalHeadConfigToolMode.OPEN_GUI
         && worldIn.getBlockState(pos).getBlock() instanceof AbstractBlockControllableSignalHead) {
       player.openGui(Csm.instance, 1, worldIn, pos.getX(), pos.getY(), pos.getZ());
       return EnumActionResult.SUCCESS;
@@ -38,13 +51,13 @@ public class ItemSignalHeadConfigTool extends AbstractItem {
     if (!worldIn.isRemote) {
       IBlockState state = worldIn.getBlockState(pos);
       Block clickedBlock = state.getBlock();
-      ItemSignalHeadConfigToolMode mode = getMode(player);
+      ItemSignalHeadConfigToolMode mode = getMode(heldStack);
 
       // Sneak-click to change mode
       if (player.isSneaking()) {
-        switchToNextMode(player);
+        switchToNextMode(heldStack);
         player.sendMessage(
-            new TextComponentString("Signal Head Config Mode: " + getMode(player).getFriendlyName()));
+            new TextComponentString("Signal Head Config Mode: " + getMode(heldStack).getFriendlyName()));
         return EnumActionResult.SUCCESS;
       }
 
@@ -132,24 +145,37 @@ public class ItemSignalHeadConfigTool extends AbstractItem {
     }
   }
 
-  public ItemSignalHeadConfigToolMode getMode(EntityPlayer player) {
-    return modeMap.getOrDefault(player.getUniqueID(),
-        ItemSignalHeadConfigToolMode.CYCLE_BODY_COLOR);
+  public static ItemSignalHeadConfigToolMode getMode(ItemStack stack) {
+    NBTTagCompound tag = stack.getTagCompound();
+    if (tag != null && tag.hasKey(NBT_MODE_KEY)) {
+      int ordinal = tag.getInteger(NBT_MODE_KEY);
+      ItemSignalHeadConfigToolMode[] values = ItemSignalHeadConfigToolMode.values();
+      if (ordinal >= 0 && ordinal < values.length) {
+        return values[ordinal];
+      }
+    }
+    return ItemSignalHeadConfigToolMode.CYCLE_BODY_COLOR;
   }
 
-  public void switchToNextMode(EntityPlayer player) {
-    ItemSignalHeadConfigToolMode current = getMode(player);
+  public static void switchToNextMode(ItemStack stack) {
+    ItemSignalHeadConfigToolMode current = getMode(stack);
     int next = (current.ordinal() + 1) % ItemSignalHeadConfigToolMode.values().length;
-    modeMap.put(player.getUniqueID(), ItemSignalHeadConfigToolMode.values()[next]);
+    NBTTagCompound tag = stack.getTagCompound();
+    if (tag == null) {
+      tag = new NBTTagCompound();
+      stack.setTagCompound(tag);
+    }
+    tag.setInteger(NBT_MODE_KEY, next);
   }
 
   @Override
   public void addInformation(ItemStack itemstack, World world, List<String> list,
       ITooltipFlag flag) {
     super.addInformation(itemstack, world, list, flag);
-    list.add("Configuration tool for custom rendering signal heads.");
-    list.add("Right-click a signal head to apply the current mode.");
-    list.add("Sneak + right-click to switch modes.");
+    list.add("Customize signal head appearance: body color, visor,");
+    list.add("door color, bulb style, tilt, and more.");
+    list.add("Right-click to apply. Sneak + right-click to switch modes.");
+    list.add("Current mode: " + getMode(itemstack).getFriendlyName());
   }
 
   @Override

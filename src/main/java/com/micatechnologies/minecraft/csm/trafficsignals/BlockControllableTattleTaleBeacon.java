@@ -50,10 +50,10 @@ public class BlockControllableTattleTaleBeacon extends AbstractBlockControllable
       float p_onBlockActivated_7_,
       float p_onBlockActivated_8_,
       float p_onBlockActivated_9_) {
-    if (!(p_onBlockActivated_4_.inventory.getCurrentItem().getItem() instanceof ItemEWSignalLinker)
+    if (!(p_onBlockActivated_4_.inventory.getCurrentItem().getItem() instanceof ItemSensorZoneTool)
         &&
         !(p_onBlockActivated_4_.inventory.getCurrentItem()
-            .getItem() instanceof ItemNSSignalLinker)) {
+            .getItem() instanceof ItemSignalLinkTool)) {
       // Get tile entity and cycle mode
       TileEntity tileEntity = p_onBlockActivated_1_.getTileEntity(p_onBlockActivated_2_);
       if (tileEntity instanceof TileEntityTattleTaleBeacon) {

@@ -1,7 +1,7 @@
 package com.micatechnologies.minecraft.csm.trafficsignals.logic;
 
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
-import com.micatechnologies.minecraft.csm.trafficsignals.ItemNSSignalLinker;
+import com.micatechnologies.minecraft.csm.trafficsignals.ItemSignalLinkTool;
 import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalRequester;
 import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalTickableRequester;
 import net.minecraft.block.material.Material;
@@ -49,7 +49,7 @@ public abstract class AbstractBlockTrafficSignalRequester
       float p_180639_8_,
       float p_180639_9_) {
     if (p_180639_4_.inventory.getCurrentItem() != null &&
-        p_180639_4_.inventory.getCurrentItem().getItem() instanceof ItemNSSignalLinker) {
+        p_180639_4_.inventory.getCurrentItem().getItem() instanceof ItemSignalLinkTool) {
       return super.onBlockActivated(p_180639_1_, p_180639_2_, p_180639_3_, p_180639_4_, p_180639_5_,
           p_180639_6_,
           p_180639_7_, p_180639_8_, p_180639_9_);

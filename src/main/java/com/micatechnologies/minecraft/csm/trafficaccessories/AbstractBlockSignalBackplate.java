@@ -3,6 +3,7 @@ package com.micatechnologies.minecraft.csm.trafficaccessories;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEWUD;
 import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalHead;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyTilt;
+import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyEnum;
@@ -12,6 +13,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.World;
 
 /**
  * Abstract base class for traffic signal backplate blocks. Adds a computed TILT property
@@ -76,6 +78,35 @@ public abstract class AbstractBlockSignalBackplate extends AbstractBlockRotatabl
     }
 
     return state.withProperty(TILT, TrafficSignalBodyTilt.NONE);
+  }
+
+  /**
+   * Given a block position, checks if the block there is a backplate and, if so, searches
+   * along its facing axis for an adjacent signal or controllable signal block. Returns the
+   * position of the signal found, or {@code null} if the block is not a backplate or no
+   * signal is adjacent.
+   *
+   * @param world the world
+   * @param pos   the position of the potential backplate block
+   * @return the BlockPos of the adjacent signal, or null
+   */
+  public static BlockPos findSignalBehind(World world, BlockPos pos) {
+    IBlockState state = world.getBlockState(pos);
+    Block block = state.getBlock();
+    if (!(block instanceof AbstractBlockSignalBackplate)) {
+      return null;
+    }
+    EnumFacing facing = state.getValue(FACING);
+    EnumFacing[] horizontalDirs = {EnumFacing.NORTH, EnumFacing.SOUTH, EnumFacing.EAST, EnumFacing.WEST};
+    for (EnumFacing checkDir : horizontalDirs) {
+      if (checkDir.getAxis() != facing.getAxis()) continue;
+      BlockPos signalPos = pos.offset(checkDir);
+      TileEntity te = world.getTileEntity(signalPos);
+      if (te instanceof com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalHead) {
+        return signalPos;
+      }
+    }
+    return null;
   }
 
   /**

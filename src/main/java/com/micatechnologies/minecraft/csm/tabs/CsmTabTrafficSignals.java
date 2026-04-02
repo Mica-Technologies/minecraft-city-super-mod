@@ -95,8 +95,8 @@ import com.micatechnologies.minecraft.csm.trafficsignals.BlockTrafficLightSensor
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockTrafficLightSensorShort;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockTrafficLightSensorTinyCam;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockTrafficSignalController;
-import com.micatechnologies.minecraft.csm.trafficsignals.ItemEWSignalLinker;
-import com.micatechnologies.minecraft.csm.trafficsignals.ItemNSSignalLinker;
+import com.micatechnologies.minecraft.csm.trafficsignals.ItemSensorZoneTool;
+import com.micatechnologies.minecraft.csm.trafficsignals.ItemSignalLinkTool;
 import com.micatechnologies.minecraft.csm.trafficsignals.ItemSignalConfigurationTool;
 import com.micatechnologies.minecraft.csm.trafficsignals.ItemSignalHeadConfigTool;
 import net.minecraft.block.Block;
@@ -348,8 +348,8 @@ public class CsmTabTrafficSignals extends CsmTab {
         fmlPreInitializationEvent); // TrafficLightSensorTinyCam
     initTabBlock(BlockTrafficSignalController.class,
         fmlPreInitializationEvent); // TrafficSignalController
-    initTabItem(ItemEWSignalLinker.class, fmlPreInitializationEvent); // EWSignalLinker
-    initTabItem(ItemNSSignalLinker.class, fmlPreInitializationEvent); // NSSignalLinker
+    initTabItem(ItemSensorZoneTool.class, fmlPreInitializationEvent); // Sensor Zone Tool
+    initTabItem(ItemSignalLinkTool.class, fmlPreInitializationEvent); // Signal Link Tool
     initTabItem(ItemSignalConfigurationTool.class,
         fmlPreInitializationEvent); // SignalConfigurationTool
     initTabItem(ItemSignalHeadConfigTool.class,

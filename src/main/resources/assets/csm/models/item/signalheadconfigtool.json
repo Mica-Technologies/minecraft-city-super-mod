@@ -1,6 +1,6 @@
 {
   "parent": "item/generated",
   "textures": {
-    "layer0": "csm:items/wrench"
+    "layer0": "csm:items/signal_head_config_tool"
   }
 }

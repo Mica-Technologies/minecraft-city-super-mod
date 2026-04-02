@@ -1,7 +1,7 @@
 package com.micatechnologies.minecraft.csm.trafficsignals.logic;
 
-import com.micatechnologies.minecraft.csm.trafficsignals.ItemEWSignalLinker;
-import com.micatechnologies.minecraft.csm.trafficsignals.ItemNSSignalLinker;
+import com.micatechnologies.minecraft.csm.trafficsignals.ItemSensorZoneTool;
+import com.micatechnologies.minecraft.csm.trafficsignals.ItemSignalLinkTool;
 import com.micatechnologies.minecraft.csm.trafficsignals.ItemSignalConfigurationTool;
 import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalAPS;
 import javax.annotation.Nullable;
@@ -63,8 +63,8 @@ public abstract class AbstractBlockTrafficSignalAPS extends
       float p_onBlockActivated_8_,
       float p_onBlockActivated_9_) {
     // Return immediately if clicked with configuration tool
-    if (p_onBlockActivated_4_.inventory.getCurrentItem().getItem() instanceof ItemEWSignalLinker
-        || p_onBlockActivated_4_.inventory.getCurrentItem().getItem() instanceof ItemNSSignalLinker
+    if (p_onBlockActivated_4_.inventory.getCurrentItem().getItem() instanceof ItemSensorZoneTool
+        || p_onBlockActivated_4_.inventory.getCurrentItem().getItem() instanceof ItemSignalLinkTool
         || p_onBlockActivated_4_.inventory.getCurrentItem()
         .getItem() instanceof ItemSignalConfigurationTool) {
       return false;
