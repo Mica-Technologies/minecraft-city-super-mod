@@ -18,7 +18,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 
-public class ItemEWSignalLinker extends AbstractItem {
+public class ItemSensorZoneTool extends AbstractItem {
 
   private final Map<UUID, BlockPos> sensorPosMap = new HashMap<>();
   private final Map<UUID, BlockPos> corner1PosMap = new HashMap<>();

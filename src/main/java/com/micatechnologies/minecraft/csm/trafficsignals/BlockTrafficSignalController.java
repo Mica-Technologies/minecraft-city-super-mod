@@ -69,8 +69,8 @@ public class BlockTrafficSignalController extends AbstractBlock implements ICsmT
       float p_onBlockActivated_8_,
       float p_onBlockActivated_9_) {
     if (p_onBlockActivated_4_.inventory.getCurrentItem() != null &&
-        (p_onBlockActivated_4_.inventory.getCurrentItem().getItem() instanceof ItemEWSignalLinker ||
-            p_onBlockActivated_4_.inventory.getCurrentItem().getItem() instanceof ItemNSSignalLinker
+        (p_onBlockActivated_4_.inventory.getCurrentItem().getItem() instanceof ItemSensorZoneTool ||
+            p_onBlockActivated_4_.inventory.getCurrentItem().getItem() instanceof ItemSignalLinkTool
             ||
             p_onBlockActivated_4_.inventory.getCurrentItem()
                 .getItem() instanceof ItemSignalConfigurationTool)) {

@@ -5,8 +5,8 @@ body color, visor type, bulb style, and tilt without needing separate block vari
 
 **Created:** 2026-03-28
 **Branch:** `dev/signal-custom-rendering-rebase`
-**Status:** COMPLETE — 119 signal blocks converted. 58 deprecated blocks auto-converting.
-All config GUIs verified working. Crosswalk custom rendering deferred to a future session.
+**Status:** Phase 4 in progress — post-merge fixes for dedicated server GUI and tool QoL.
+119 signal blocks converted, 58 deprecated blocks auto-converting. Crosswalk deferred.
 
 ---
 
@@ -14,9 +14,13 @@ All config GUIs verified working. Crosswalk custom rendering deferred to a futur
 
 > The progress document is at `assets/docs/agent_progress/CUSTOM_SIGNAL_RENDERING_PLAN.md`.
 >
-> **Project complete as of 2026-03-30.** All signal head and controller config GUIs
-> verified working in-game. 119 signal blocks use custom TESR rendering. 58 legacy
-> blocks auto-convert via ICsmRetiringBlock.
+> **Phases 1-3 complete as of 2026-03-30.** 119 signal blocks use custom TESR rendering.
+> 58 legacy blocks auto-convert via ICsmRetiringBlock. Merged to main and live in modpack.
+>
+> **Phase 4 (post-merge fixes) started 2026-03-31:**
+> - Fix 1: Signal head & controller GUIs don't open on dedicated server (modeMap not
+>   synced to client — recommend ItemStack NBT storage)
+> - Fix 2: Backplate click-through for signal tools (QoL — resolve signal behind backplate)
 >
 > **Deferred to future session:**
 > - Crosswalk custom rendering (body color + gray crosswalk deprecation)
@@ -408,11 +412,140 @@ meters are single-section, similar to Wave 2.
 - ~~**Signal head config tool UI**~~: DONE (2026-03-30). Added OPEN_GUI mode to signal head
   config tool with GuiScreen showing all 7 properties as cycle buttons. Uses
   SignalHeadConfigPacket for client→server communication. Real-time feedback (no pause).
-- **Signal controller config tool UI (IN PROGRESS — TESTING)**: OPEN_GUI mode added to
-  ItemSignalConfigurationTool. Two-column GUI implemented with 15 cycle buttons (mode,
-  9 timing, 4 toggles, clear faults). Uses SignalControllerConfigPacket for client→server.
-  Server handler calls syncServerToClient after changes. Awaiting user testing to verify
-  buttons work and layout fits correctly after two-column fix.
+- ~~**Signal controller config tool UI**~~: DONE (2026-03-30). OPEN_GUI mode added to
+  ItemSignalConfigurationTool. Two-column GUI with 15 cycle buttons. Uses
+  SignalControllerConfigPacket for client→server. Merged to main and working in
+  singleplayer. **Note:** Both this GUI and the signal head config GUI fail to open on
+  dedicated servers — see Phase 4 Fix 1 below.
+
+---
+
+## Phase 4: Post-Merge Fixes & QoL (2026-03-31)
+
+Fixes and improvements identified after the custom signal rendering merge went live in the
+modpack. These address dedicated-server compatibility and tool usability.
+
+### Fix 1: GUI does not open on dedicated server (BUG)
+
+**Symptom:** Signal head config GUI and signal controller config GUI open fine in
+singleplayer but do not open on a dedicated server.
+
+**Root cause:** The tool mode (`OPEN_GUI`, `CYCLE_BODY_COLOR`, etc.) is stored in a
+`HashMap<UUID, Mode>` field on the `Item` singleton. Mode switching happens server-side
+(in the `!worldIn.isRemote` block of `onItemUse`). In singleplayer, the server and client
+share the same JVM and Item instances, so the modeMap is shared. On a **dedicated server**,
+the client has its own separate Item instance with an empty/default modeMap. The GUI-open
+check runs on the client (`worldIn.isRemote`), but the client's modeMap never receives the
+`OPEN_GUI` mode — it always returns the default (`CYCLE_BODY_COLOR` /
+`CYCLE_SIGNAL_COLORS`).
+
+**Affected files:**
+- `ItemSignalHeadConfigTool.java` — line 32: client-side `getMode()` check
+- `ItemSignalConfigurationTool.java` — line 42: client-side `getMode()` check
+
+**Fix approach options (pick one):**
+1. **ItemStack NBT mode storage** — Store the current mode in the ItemStack's NBT tag
+   compound instead of a HashMap. NBT is automatically synced between server and client.
+   Pros: simplest, no new packets. Cons: mode is per-stack, not per-player (but that's
+   probably fine for a tool item).
+2. **Mode sync packet** — When the server switches mode, send a packet to the client with
+   the new mode. Client updates its local modeMap on receipt. Pros: per-player mode.
+   Cons: new packet class + handler.
+3. **Server-initiated GUI open packet** — Instead of the client checking mode and opening
+   the GUI, the server detects OPEN_GUI mode and sends a custom packet telling the client
+   to open the specific GUI. Pros: centralizes logic on server. Cons: new packet, and
+   the client still needs to know what GUI to open.
+
+**Recommended:** Option 1 (ItemStack NBT). Simplest, no new network code, and the auto-sync
+handles dedicated servers transparently.
+
+**Status:** IMPLEMENTED — awaiting server testing
+
+- [x] Refactor `ItemSignalHeadConfigTool` to store mode in ItemStack NBT
+- [x] Refactor `ItemSignalConfigurationTool` to store mode in ItemStack NBT
+- [ ] Test on dedicated server: verify mode switching and GUI opening both work
+- [ ] Test singleplayer: verify no regression
+
+### Fix 2: Backplate click-through for signal tools (QoL)
+
+**Symptom:** When using the signal head config tool, signal configuration tool, or signal
+linker on a signal assembly, clicking a backplate instead of the signal head behind it does
+nothing (or shows "not a signal head" error). Since backplates sit directly in front of
+signals and can be tricky to click past, this is a common frustration.
+
+**Opportunity:** Backplates already know how to find their adjacent signal head — the
+`AbstractBlockSignalBackplate.getActualState()` method searches along the facing axis for a
+`TileEntityTrafficSignalHead`. We can reuse this pattern in the tool items.
+
+**Design:** When a tool's `onItemUse` detects that the clicked block is an
+`AbstractBlockSignalBackplate` (or `AbstractBlockSignalBackplateFitted`), look behind the
+backplate for a signal head and re-target the click to that block position. "Behind" = one
+block in the direction opposite to the backplate's FACING (since FACING points toward the
+viewer, the signal is behind it).
+
+**Affected tools:**
+- `ItemSignalHeadConfigTool` — all modes should work through backplates to signal heads
+- `ItemSignalConfigurationTool` — CYCLE_SIGNAL_COLORS mode (works on any controllable
+  signal) should pass through backplates
+- `ItemSignalLinkTool` (renamed from `ItemNSSignalLinker`) — linking signals to controllers
+  should work through backplates
+
+**Implementation approach:**
+1. Add a static utility method `findSignalBehind(World, BlockPos)` on
+   `AbstractBlockSignalBackplate` that searches along the facing axis for an adjacent
+   `TileEntityTrafficSignalHead` and returns its `BlockPos`, or `null` if none found
+2. At the top of each tool's `onItemUse`, if the clicked block is a backplate, resolve the
+   signal position and substitute `pos` for the rest of the method. If no signal found,
+   show "Backplate not connected to a configurable signal" message.
+3. `AbstractBlockSignalBackplateFitted` extends `AbstractBlockSignalBackplate`, so a single
+   `instanceof AbstractBlockSignalBackplate` check covers both types
+
+**Status:** IMPLEMENTED — awaiting testing
+
+- [x] Add `AbstractBlockSignalBackplate.findSignalBehind(World, BlockPos)` utility method
+- [x] Update `ItemSignalHeadConfigTool` to resolve backplate clicks
+- [x] Update `ItemSignalConfigurationTool` to resolve backplate clicks
+- [x] Update `ItemSignalLinkTool` to resolve backplate clicks
+- [ ] Test: click backplate with each tool, verify action applies to signal behind it
+- [ ] Test: click signal directly still works (no regression)
+
+### Fix 2b: Rename linker tools (QoL)
+
+**Class renames** (registry names unchanged for world compatibility):
+- `ItemNSSignalLinker` → `ItemSignalLinkTool` (registry: `nssignallinker`)
+- `ItemEWSignalLinker` → `ItemSensorZoneTool` (registry: `ewsignallinker`)
+
+**Lang name updates:**
+- `nssignallinker`: "Traffic Signal Device Linker" → "Signal Link Tool"
+- `ewsignallinker`: "Traffic Sensor Configuration Tool" → "Sensor Zone Tool"
+
+**Status:** DONE
+
+- [x] Create new class files with renamed classes
+- [x] Update all references (6 files: tab, controller, tattletale, APS, APSPolara, requester)
+- [x] Delete old class files
+- [x] Update lang entries
+- [x] Build verified
+
+### Fix 3: Signal tool textures
+
+All four signal tools replaced with unique, distinguishable pixel-art style textures
+(128×128 RGBA with transparent backgrounds). Old textures moved to
+`assets/cleaned_unused_assets/textures/items/`.
+
+| Tool | Registry Name | Old Texture | New Texture |
+|---|---|---|---|
+| Signal Link Tool | `nssignallinker` | `traffic_light_linker_ns.png` | `signal_link_tool.png` (multimeter) |
+| Sensor Zone Tool | `ewsignallinker` | `traffic_light_linker_ew.png` | `sensor_zone_tool.png` (scanner) |
+| Traffic Signal Configuration Tool | `signalconfigurationtool` | `wrench.png` (shared) | `signal_config_tool.png` (config tablet) |
+| Signal Head Configuration Tool | `signalheadconfigtool` | `wrench.png` (shared) | `signal_head_config_tool.png` (mini signal) |
+
+**Status:** DONE
+
+- [x] New textures created from atlas (split + resize to 128×128)
+- [x] Item model JSONs updated to reference new texture names
+- [x] Old textures moved to `assets/cleaned_unused_assets/textures/items/`
+- [ ] Test in-game: verify all four tools display correct textures
 
 ---
 

@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractItem;
+import com.micatechnologies.minecraft.csm.trafficaccessories.AbstractBlockSignalBackplate;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableCrosswalkAccessory;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignal;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockTrafficSignalSensor;
@@ -9,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
@@ -21,7 +23,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 
-public class ItemNSSignalLinker extends AbstractItem {
+public class ItemSignalLinkTool extends AbstractItem {
 
   private final Map<UUID, BlockPos> signalControllerPosMap = new HashMap<>();
   private final Map<UUID, Integer> circuitLinkIndexMap = new HashMap<>();
@@ -37,6 +39,21 @@ public class ItemNSSignalLinker extends AbstractItem {
       float hitZ) {
     if (!worldIn.isRemote) {
       IBlockState state = worldIn.getBlockState(pos);
+      Block clickedBlock = state.getBlock();
+
+      // Resolve backplate clicks to the signal behind them
+      if (clickedBlock instanceof AbstractBlockSignalBackplate) {
+        BlockPos signalPos = AbstractBlockSignalBackplate.findSignalBehind(worldIn, pos);
+        if (signalPos != null) {
+          pos = signalPos;
+          state = worldIn.getBlockState(pos);
+        } else {
+          player.sendMessage(
+              new TextComponentString("Backplate not connected to a configurable signal."));
+          return EnumActionResult.FAIL;
+        }
+      }
+
       final BlockPos signalControllerPos =
           signalControllerPosMap.getOrDefault(player.getUniqueID(), null);
       final int circuitLinkIndex = circuitLinkIndexMap.getOrDefault(player.getUniqueID(), 1);
@@ -120,7 +137,7 @@ public class ItemNSSignalLinker extends AbstractItem {
       } else if (signalControllerPos != null &&
           state.getBlock() instanceof AbstractBlockControllableSignal &&
           !player.isSneaking()) {
-        AbstractBlockControllableSignal clickedBlock =
+        AbstractBlockControllableSignal signalBlock =
             (AbstractBlockControllableSignal) state.getBlock();
 
         TileEntity tileEntity = worldIn.getTileEntity(signalControllerPos);
@@ -128,15 +145,15 @@ public class ItemNSSignalLinker extends AbstractItem {
           TileEntityTrafficSignalController tileEntityTrafficSignalController
               = (TileEntityTrafficSignalController) tileEntity;
           boolean linked = tileEntityTrafficSignalController.linkDevice(pos,
-              clickedBlock.getSignalSide(worldIn,
+              signalBlock.getSignalSide(worldIn,
                   pos),
               circuitLinkIndex);
 
           if (linked &&
-              (clickedBlock instanceof BlockControllableCrosswalkLeftMount ||
-                  clickedBlock instanceof BlockControllableCrosswalkRightMount ||
-                  clickedBlock instanceof BlockControllableCrosswalkMount ||
-                  clickedBlock instanceof BlockControllableCrosswalkMount90Deg)) {
+              (signalBlock instanceof BlockControllableCrosswalkLeftMount ||
+                  signalBlock instanceof BlockControllableCrosswalkRightMount ||
+                  signalBlock instanceof BlockControllableCrosswalkMount ||
+                  signalBlock instanceof BlockControllableCrosswalkMount90Deg)) {
             player.sendMessage(new TextComponentString("Crosswalk light connected to circuit " +
                 circuitLinkIndex +
                 " of signal controller at " +
@@ -148,7 +165,7 @@ public class ItemNSSignalLinker extends AbstractItem {
                 signalControllerPos.getZ() +
                 ")"));
           } else if (linked
-              && clickedBlock instanceof BlockControllableTrafficSignalTrainController) {
+              && signalBlock instanceof BlockControllableTrafficSignalTrainController) {
             player.sendMessage(new TextComponentString(
                 "Train locking rail controller connected to circuit " +
                     circuitLinkIndex +
@@ -161,7 +178,7 @@ public class ItemNSSignalLinker extends AbstractItem {
                     signalControllerPos.getZ() +
                     ")"));
           } else if (linked
-              && clickedBlock instanceof AbstractBlockControllableCrosswalkAccessory) {
+              && signalBlock instanceof AbstractBlockControllableCrosswalkAccessory) {
             player.sendMessage(new TextComponentString("Crosswalk accessory connected to circuit " +
                 circuitLinkIndex +
                 " of signal controller at " +
@@ -194,7 +211,7 @@ public class ItemNSSignalLinker extends AbstractItem {
       } else if (signalControllerPos != null &&
           state.getBlock() instanceof AbstractBlockControllableSignal &&
           player.isSneaking()) {
-        AbstractBlockControllableSignal clickedBlock =
+        AbstractBlockControllableSignal signalBlock =
             (AbstractBlockControllableSignal) state.getBlock();
 
         TileEntity tileEntity = worldIn.getTileEntity(signalControllerPos);
@@ -208,10 +225,10 @@ public class ItemNSSignalLinker extends AbstractItem {
               AbstractBlockControllableSignal.SIGNAL_OFF);
 
           if (removed &&
-              (clickedBlock instanceof BlockControllableCrosswalkLeftMount ||
-                  clickedBlock instanceof BlockControllableCrosswalkRightMount ||
-                  clickedBlock instanceof BlockControllableCrosswalkMount ||
-                  clickedBlock instanceof BlockControllableCrosswalkMount90Deg)) {
+              (signalBlock instanceof BlockControllableCrosswalkLeftMount ||
+                  signalBlock instanceof BlockControllableCrosswalkRightMount ||
+                  signalBlock instanceof BlockControllableCrosswalkMount ||
+                  signalBlock instanceof BlockControllableCrosswalkMount90Deg)) {
             player.sendMessage(
                 new TextComponentString("Crosswalk light unlinked from signal controller" +
                     " " +
@@ -224,7 +241,7 @@ public class ItemNSSignalLinker extends AbstractItem {
                     signalControllerPos.getZ() +
                     ")"));
           } else if (removed
-              && clickedBlock instanceof BlockControllableTrafficSignalTrainController) {
+              && signalBlock instanceof BlockControllableTrafficSignalTrainController) {
             player.sendMessage(new TextComponentString(
                 "Train locking rail controller unlinked from signal controller at " +
                     "(" +
@@ -235,7 +252,7 @@ public class ItemNSSignalLinker extends AbstractItem {
                     signalControllerPos.getZ() +
                     ")"));
           } else if (removed
-              && clickedBlock instanceof AbstractBlockControllableCrosswalkAccessory) {
+              && signalBlock instanceof AbstractBlockControllableCrosswalkAccessory) {
             player.sendMessage(new TextComponentString(
                 "Crosswalk accessory unlinked from signal controller at " +
                     "(" +
@@ -316,7 +333,9 @@ public class ItemNSSignalLinker extends AbstractItem {
   public void addInformation(ItemStack itemstack, World world, List<String> list,
       ITooltipFlag flag) {
     super.addInformation(itemstack, world, list, flag);
-    list.add("Link traffic signals to the Primary circuit of a signal controller.");
+    list.add("Link signals, sensors, and crosswalks to controller circuits.");
+    list.add("Click controller to select, click device to link.");
+    list.add("Sneak + click to unlink. Click empty to change circuit.");
   }
 
   /**

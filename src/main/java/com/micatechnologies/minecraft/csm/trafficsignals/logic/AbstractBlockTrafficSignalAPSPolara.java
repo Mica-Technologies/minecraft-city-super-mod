@@ -1,7 +1,7 @@
 package com.micatechnologies.minecraft.csm.trafficsignals.logic;
 
-import com.micatechnologies.minecraft.csm.trafficsignals.ItemEWSignalLinker;
-import com.micatechnologies.minecraft.csm.trafficsignals.ItemNSSignalLinker;
+import com.micatechnologies.minecraft.csm.trafficsignals.ItemSensorZoneTool;
+import com.micatechnologies.minecraft.csm.trafficsignals.ItemSignalLinkTool;
 import com.micatechnologies.minecraft.csm.trafficsignals.ItemSignalConfigurationTool;
 import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalAPS;
 import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalAPSPolara;
