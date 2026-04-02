@@ -36,7 +36,8 @@ public class SignalControllerConfigGui extends GuiScreen {
       "Power Loss Flash",             // 11 - right col
       "Overlap Ped Signals",          // 12 - right col
       "All Red Flash",                // 13 - right col
-      "Clear Faults"                  // 14 - right col
+      "Ramp Meter Night",             // 14 - right col
+      "Clear Faults"                  // 15 - right col
   };
 
   private static final int LEFT_COL_COUNT = 8;
@@ -140,6 +141,8 @@ public class SignalControllerConfigGui extends GuiScreen {
         return controller.getOverlapPedestrianSignals() ? "On" : "Off";
       case TOGGLE_ALL_RED_FLASH:
         return controller.getAllRedFlash() ? "On" : "Off";
+      case CYCLE_RAMP_METER_NIGHT_MODE:
+        return controller.getRampMeterNightModeName();
       case CLEAR_FAULTS:
         return controller.isInFaultState() ? "FAULT ACTIVE" : "No Faults";
       default:
