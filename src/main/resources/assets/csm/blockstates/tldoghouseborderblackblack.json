@@ -10,7 +10,7 @@
   },
   "variants": {
     "facing=down,fitted=false,tilt=none": {
-      "model": "csm:trafficsignals/shared_models/signal_backplate_doghouse_full_left_angle",
+      "model": "csm:trafficsignals/shared_models/signal_backplate_doghouse_full",
       "x": 90
     },
     "facing=down,fitted=false,tilt=left_tilt": {
@@ -50,7 +50,7 @@
       "x": 90
     },
     "facing=east,fitted=false,tilt=none": {
-      "model": "csm:trafficsignals/shared_models/signal_backplate_doghouse_full_left_angle",
+      "model": "csm:trafficsignals/shared_models/signal_backplate_doghouse_full",
       "y": 90
     },
     "facing=east,fitted=false,tilt=left_tilt": {
@@ -90,7 +90,7 @@
       "y": 90
     },
     "facing=north,fitted=false,tilt=none": {
-      "model": "csm:trafficsignals/shared_models/signal_backplate_doghouse_full_left_angle"
+      "model": "csm:trafficsignals/shared_models/signal_backplate_doghouse_full"
     },
     "facing=north,fitted=false,tilt=left_tilt": {
       "model": "csm:trafficsignals/shared_models/signal_backplate_doghouse_full_left_tilt"
@@ -120,7 +120,7 @@
       "model": "csm:trafficsignals/shared_models/signal_backplate_doghouse_fitted_right_angle"
     },
     "facing=south,fitted=false,tilt=none": {
-      "model": "csm:trafficsignals/shared_models/signal_backplate_doghouse_full_left_angle",
+      "model": "csm:trafficsignals/shared_models/signal_backplate_doghouse_full",
       "y": 180
     },
     "facing=south,fitted=false,tilt=left_tilt": {
@@ -160,7 +160,7 @@
       "y": 180
     },
     "facing=up,fitted=false,tilt=none": {
-      "model": "csm:trafficsignals/shared_models/signal_backplate_doghouse_full_left_angle",
+      "model": "csm:trafficsignals/shared_models/signal_backplate_doghouse_full",
       "x": 270
     },
     "facing=up,fitted=false,tilt=left_tilt": {
@@ -200,7 +200,7 @@
       "x": 270
     },
     "facing=west,fitted=false,tilt=none": {
-      "model": "csm:trafficsignals/shared_models/signal_backplate_doghouse_full_left_angle",
+      "model": "csm:trafficsignals/shared_models/signal_backplate_doghouse_full",
       "y": 270
     },
     "facing=west,fitted=false,tilt=left_tilt": {
