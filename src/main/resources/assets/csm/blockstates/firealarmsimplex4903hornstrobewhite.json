@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:s4903hsw"
+    "model": "csm:lifesafety/simplex_4903_white_horn_strobe_903hsw"
   },
   "variants": {
     "facing": {

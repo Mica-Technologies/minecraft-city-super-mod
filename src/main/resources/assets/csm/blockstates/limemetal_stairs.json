@@ -22,16 +22,16 @@
     },
     "shape": {
       "inner_left": {
-        "model": "csm:limemetal_stairs_inner"
+        "model": "csm:buildingmaterials/limemetal_stairs_inner"
       },
       "inner_right": {
-        "model": "csm:limemetal_stairs_inner"
+        "model": "csm:buildingmaterials/limemetal_stairs_inner"
       },
       "outer_left": {
-        "model": "csm:limemetal_stairs_outer"
+        "model": "csm:buildingmaterials/limemetal_stairs_outer"
       },
       "outer_right": {
-        "model": "csm:limemetal_stairs_outer"
+        "model": "csm:buildingmaterials/limemetal_stairs_outer"
       },
       "straight": {}
     },

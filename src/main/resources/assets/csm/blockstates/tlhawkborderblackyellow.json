@@ -3,9 +3,9 @@
   "defaults": {
     "model": "csm:shared_models/trafficsignals/backplates/signal_backplate_hawk_full",
     "textures": {
-      "all": "csm:blocks/shared_textures/signalbackplateblackyellowblack",
-      "particle": "csm:blocks/shared_textures/signalbackplateblackyellowblack",
-      "0": "csm:blocks/shared_textures/signalbackplateblackyellowblack"
+      "all": "csm:blocks/trafficaccessories/shared_textures/signalbackplateblackyellowblack",
+      "particle": "csm:blocks/trafficaccessories/shared_textures/signalbackplateblackyellowblack",
+      "0": "csm:blocks/trafficaccessories/shared_textures/signalbackplateblackyellowblack"
     }
   },
   "variants": {

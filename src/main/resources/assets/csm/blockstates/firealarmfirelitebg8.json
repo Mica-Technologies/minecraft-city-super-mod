@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:flbg8"
+    "model": "csm:lifesafety/fire_lite_bg_8_pull_station_flbg8"
   },
   "variants": {
     "facing": {

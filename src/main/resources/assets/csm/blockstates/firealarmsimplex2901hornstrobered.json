@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:s2910hs"
+    "model": "csm:lifesafety/simplex_2901_red_horn_strobe_2910hs"
   },
   "variants": {
     "facing": {

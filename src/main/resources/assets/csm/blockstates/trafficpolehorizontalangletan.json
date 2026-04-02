@@ -1,11 +1,11 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:trafficpolehorizontalangle",
+    "model": "csm:lifesafety/black_angled_thin_traffic_pole",
     "textures": {
-      "all": "csm:blocks/shared_textures/metal_mattetan",
-      "particle": "csm:blocks/shared_textures/metal_mattetan",
-      "0": "csm:blocks/shared_textures/metal_mattetan"
+      "all": "csm:blocks/trafficaccessories/shared_textures/metal_mattetan",
+      "particle": "csm:blocks/trafficaccessories/shared_textures/metal_mattetan",
+      "0": "csm:blocks/trafficaccessories/shared_textures/metal_mattetan"
     }
   },
   "variants": {
@@ -36,11 +36,11 @@
         "submodel": {
           "mounte": {
             "uvlock": true,
-            "model": "csm:trafficpole_small_mount",
+            "model": "csm:lifesafety/trafficpole_small_mount",
             "textures": {
-              "all": "csm:blocks/shared_textures/metal_mattetan",
-              "particle": "csm:blocks/shared_textures/metal_mattetan",
-              "0": "csm:blocks/shared_textures/metal_mattetan"
+              "all": "csm:blocks/trafficaccessories/shared_textures/metal_mattetan",
+              "particle": "csm:blocks/trafficaccessories/shared_textures/metal_mattetan",
+              "0": "csm:blocks/trafficaccessories/shared_textures/metal_mattetan"
             },
             "transform": {
               "rotation": [
@@ -65,11 +65,11 @@
         "submodel": {
           "mountw": {
             "uvlock": true,
-            "model": "csm:trafficpole_small_mount",
+            "model": "csm:lifesafety/trafficpole_small_mount",
             "textures": {
-              "all": "csm:blocks/shared_textures/metal_mattetan",
-              "particle": "csm:blocks/shared_textures/metal_mattetan",
-              "0": "csm:blocks/shared_textures/metal_mattetan"
+              "all": "csm:blocks/trafficaccessories/shared_textures/metal_mattetan",
+              "particle": "csm:blocks/trafficaccessories/shared_textures/metal_mattetan",
+              "0": "csm:blocks/trafficaccessories/shared_textures/metal_mattetan"
             },
             "transform": {
               "rotation": [
@@ -94,11 +94,11 @@
         "submodel": {
           "mountu": {
             "uvlock": true,
-            "model": "csm:trafficpole_small_mount",
+            "model": "csm:lifesafety/trafficpole_small_mount",
             "textures": {
-              "all": "csm:blocks/shared_textures/metal_mattetan",
-              "particle": "csm:blocks/shared_textures/metal_mattetan",
-              "0": "csm:blocks/shared_textures/metal_mattetan"
+              "all": "csm:blocks/trafficaccessories/shared_textures/metal_mattetan",
+              "particle": "csm:blocks/trafficaccessories/shared_textures/metal_mattetan",
+              "0": "csm:blocks/trafficaccessories/shared_textures/metal_mattetan"
             },
             "transform": {
               "rotation": [
@@ -123,11 +123,11 @@
         "submodel": {
           "mountd": {
             "uvlock": true,
-            "model": "csm:trafficpole_small_mount",
+            "model": "csm:lifesafety/trafficpole_small_mount",
             "textures": {
-              "all": "csm:blocks/shared_textures/metal_mattetan",
-              "particle": "csm:blocks/shared_textures/metal_mattetan",
-              "0": "csm:blocks/shared_textures/metal_mattetan"
+              "all": "csm:blocks/trafficaccessories/shared_textures/metal_mattetan",
+              "particle": "csm:blocks/trafficaccessories/shared_textures/metal_mattetan",
+              "0": "csm:blocks/trafficaccessories/shared_textures/metal_mattetan"
             },
             "transform": {
               "rotation": [
@@ -152,11 +152,11 @@
         "submodel": {
           "mountn": {
             "uvlock": true,
-            "model": "csm:trafficpole_small_mount",
+            "model": "csm:lifesafety/trafficpole_small_mount",
             "textures": {
-              "all": "csm:blocks/shared_textures/metal_mattetan",
-              "particle": "csm:blocks/shared_textures/metal_mattetan",
-              "0": "csm:blocks/shared_textures/metal_mattetan"
+              "all": "csm:blocks/trafficaccessories/shared_textures/metal_mattetan",
+              "particle": "csm:blocks/trafficaccessories/shared_textures/metal_mattetan",
+              "0": "csm:blocks/trafficaccessories/shared_textures/metal_mattetan"
             },
             "transform": {
               "rotation": [
@@ -181,11 +181,11 @@
         "submodel": {
           "mounts": {
             "uvlock": true,
-            "model": "csm:trafficpole_small_mount",
+            "model": "csm:lifesafety/trafficpole_small_mount",
             "textures": {
-              "all": "csm:blocks/shared_textures/metal_mattetan",
-              "particle": "csm:blocks/shared_textures/metal_mattetan",
-              "0": "csm:blocks/shared_textures/metal_mattetan"
+              "all": "csm:blocks/trafficaccessories/shared_textures/metal_mattetan",
+              "particle": "csm:blocks/trafficaccessories/shared_textures/metal_mattetan",
+              "0": "csm:blocks/trafficaccessories/shared_textures/metal_mattetan"
             },
             "transform": {
               "rotation": [

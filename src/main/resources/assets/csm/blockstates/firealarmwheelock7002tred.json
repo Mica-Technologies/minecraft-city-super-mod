@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:w7002tnorm"
+    "model": "csm:lifesafety/wheelock_7002t_red_horn_strobe_2tnorm"
   },
   "variants": {
     "facing": {

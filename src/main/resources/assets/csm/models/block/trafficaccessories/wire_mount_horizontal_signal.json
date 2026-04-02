@@ -1,8 +1,8 @@
 {
   "parent": "csm:block/shared_models/trafficaccessories/tlitehorizontalwiremount",
   "textures": {
-    "all": "csm:blocks/shared_textures/signalbody",
-    "particle": "csm:blocks/shared_textures/signalbody",
-    "0": "csm:blocks/shared_textures/signalbody"
+    "all": "csm:blocks/trafficaccessories/shared_textures/signalbody",
+    "particle": "csm:blocks/trafficaccessories/shared_textures/signalbody",
+    "0": "csm:blocks/trafficaccessories/shared_textures/signalbody"
   }
 }

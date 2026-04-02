@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:ps3"
+    "model": "csm:lifesafety/fire_lite_bg_12_pull_station_ps3"
   },
   "variants": {
     "facing": {

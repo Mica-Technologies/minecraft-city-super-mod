@@ -1,8 +1,0 @@
-{
-  "parent": "block/upper_slab",
-  "textures": {
-    "bottom": "csm:blocks/shared_textures/metal_black",
-    "top": "csm:blocks/shared_textures/metal_black",
-    "side": "csm:blocks/shared_textures/metal_black"
-  }
-}

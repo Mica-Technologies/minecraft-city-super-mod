@@ -7,7 +7,7 @@
     "half": {
       "bottom": {},
       "top": {
-        "model": "csm:iridescentmetal_slab_top"
+        "model": "csm:buildingmaterials/iridescentmetal_slab_top"
       }
     },
     "variant": {

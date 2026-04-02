@@ -1,13 +1,13 @@
 {
   "variants": {
     "inventory": {
-      "model": "csm:yellowmetal_fence_inventory"
+      "model": "csm:buildingmaterials/yellowmetal_fence_inventory"
     }
   },
   "multipart": [
     {
       "apply": {
-        "model": "csm:yellowmetal_fence_post"
+        "model": "csm:buildingmaterials/yellowmetal_fence_post"
       }
     },
     {

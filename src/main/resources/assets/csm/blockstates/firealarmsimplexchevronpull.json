@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:simplexchevronpull"
+    "model": "csm:lifesafety/simplex_chevron_pull_station_onpull"
   },
   "variants": {
     "facing": {

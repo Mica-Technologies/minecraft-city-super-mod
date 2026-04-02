@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:metal_signpostback_double1way_sign",
+    "model": "csm:lifesafety/double_one_way_sign_a",
     "textures": {
       "all": "csm:blocks/trafficsigns/absolutely_nothing_sign",
       "particle": "csm:blocks/trafficsigns/absolutely_nothing_sign",
@@ -127,7 +127,7 @@
       "true": {
         "submodel": {
           "extension": {
-            "model": "csm:metal_signpost",
+            "model": "csm:lifesafety/sign_pole",
             "transform": {
               "translation": [
                 0.0,
@@ -142,7 +142,7 @@
     "setback": {
       "false": {},
       "true": {
-        "model": "csm:metal_signpostback_double1way_sign_setback"
+        "model": "csm:lifesafety/metal_signpostback_double1way_sign_setback"
       }
     },
     "normal": [

@@ -7,7 +7,7 @@
     "half": {
       "bottom": {},
       "top": {
-        "model": "csm:bluemetal_slab_top"
+        "model": "csm:buildingmaterials/bluemetal_slab_top"
       }
     },
     "variant": {

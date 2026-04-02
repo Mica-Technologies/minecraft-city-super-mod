@@ -7,7 +7,7 @@
     "half": {
       "bottom": {},
       "top": {
-        "model": "csm:pinkmetal_slab_top"
+        "model": "csm:buildingmaterials/pinkmetal_slab_top"
       }
     },
     "variant": {

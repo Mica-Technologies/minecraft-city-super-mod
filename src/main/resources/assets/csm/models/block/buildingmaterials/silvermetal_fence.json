@@ -1,7 +1,7 @@
 {
   "parent": "block/fence_side",
   "textures": {
-    "texture": "csm:blocks/shared_textures/metal_silver",
-    "particle": "csm:blocks/shared_textures/metal_silver"
+    "texture": "csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "particle": "csm:blocks/trafficsignals/shared_textures/metal_silver"
   }
 }

@@ -1,7 +1,7 @@
 {
   "parent": "block/cube_all",
   "textures": {
-    "all": "csm:blocks/metal_copper",
-    "particle": "csm:blocks/metal_copper"
+    "all": "csm:blocks/buildingmaterials/shared_textures/metal_copper",
+    "particle": "csm:blocks/buildingmaterials/shared_textures/metal_copper"
   }
 }

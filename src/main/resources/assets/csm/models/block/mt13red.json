@@ -1,8 +1,0 @@
-{
-  "parent": "csm:block/shared_models/lifesafety/mt4-115-s_13_red",
-  "textures": {
-    "all": "csm:blocks/shared_textures/mt4-115-s_13_red",
-    "particle": "csm:blocks/shared_textures/mt4-115-s_13_red",
-    "0": "csm:blocks/shared_textures/mt4-115-s_13_red"
-  }
-}

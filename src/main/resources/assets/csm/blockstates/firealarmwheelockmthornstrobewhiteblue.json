@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:mtwb"
+    "model": "csm:lifesafety/wheelock_mt_white_blue_horn_strobe_mtwb"
   },
   "variants": {
     "facing": {

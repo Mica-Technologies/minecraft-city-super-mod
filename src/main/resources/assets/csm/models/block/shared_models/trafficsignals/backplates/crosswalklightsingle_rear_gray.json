@@ -2,7 +2,7 @@
 	"format_version": "1.21.6",
 	"credit": "Made with Blockbench",
 	"textures": {
-		"0": "csm:blocks/shared_textures/crosswalkflashinghand",
+		"0": "csm:blocks/trafficsignals/shared_textures/crosswalkflashinghand",
 		"1": "csm:blocks/trafficsignals/old_bulb_body/gray/solidgreen",
 		"particle": "csm:blocks/trafficsignals/old_bulb_body/gray/solidgreen"
 	},

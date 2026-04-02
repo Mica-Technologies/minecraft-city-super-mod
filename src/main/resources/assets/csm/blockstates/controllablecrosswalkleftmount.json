@@ -1,18 +1,18 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:controllablecrosswalkleftmount_off"
+    "model": "csm:trafficsignals/controllablecrosswalkleftmount_off"
   },
   "variants": {
     "color": {
       "0": {
-        "model": "csm:controllablecrosswalkleftmount_dontwalk"
+        "model": "csm:trafficsignals/controllablecrosswalkleftmount_dontwalk"
       },
       "1": {
-        "model": "csm:controllablecrosswalkleftmount_flashdontwalk"
+        "model": "csm:trafficsignals/controllablecrosswalkleftmount_flashdontwalk"
       },
       "2": {
-        "model": "csm:controllablecrosswalkleftmount_walk"
+        "model": "csm:trafficsignals/controllablecrosswalkleftmount_walk"
       },
       "3": {}
     },
@@ -30,7 +30,7 @@
     },
     "inventory": [
       {
-        "model": "csm:controllablecrosswalkleftmount_walk"
+        "model": "csm:trafficsignals/controllablecrosswalkleftmount_walk"
       }
     ],
     "normal": [

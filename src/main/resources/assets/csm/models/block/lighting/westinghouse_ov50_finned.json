@@ -1,8 +1,8 @@
 {
   "parent": "csm:block/shared_models/lighting/westinghouse_ov50_finned",
   "textures": {
-    "all": "csm:blocks/shared_textures/westinghouse_ov50",
-    "particle": "csm:blocks/shared_textures/westinghouse_ov50",
-    "0": "csm:blocks/shared_textures/westinghouse_ov50"
+    "all": "csm:blocks/lighting/shared_textures/westinghouse_ov50",
+    "particle": "csm:blocks/lighting/shared_textures/westinghouse_ov50",
+    "0": "csm:blocks/lighting/shared_textures/westinghouse_ov50"
   }
 }

@@ -1,8 +1,0 @@
-{
-  "parent": "block/outer_stairs",
-  "textures": {
-    "bottom": "csm:blocks/shared_textures/metal_silver",
-    "top": "csm:blocks/shared_textures/metal_silver",
-    "side": "csm:blocks/shared_textures/metal_silver"
-  }
-}

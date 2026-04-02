@@ -1,0 +1,8 @@
+{
+  "parent": "block/inner_stairs",
+  "textures": {
+    "bottom": "csm:blocks/buildingmaterials/shared_textures/metal_lightblue",
+    "top": "csm:blocks/buildingmaterials/shared_textures/metal_lightblue",
+    "side": "csm:blocks/buildingmaterials/shared_textures/metal_lightblue"
+  }
+}

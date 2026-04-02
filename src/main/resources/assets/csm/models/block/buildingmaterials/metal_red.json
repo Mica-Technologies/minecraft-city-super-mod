@@ -1,7 +1,7 @@
 {
   "parent": "block/cube_all",
   "textures": {
-    "all": "csm:blocks/metal_red",
-    "particle": "csm:blocks/metal_red"
+    "all": "csm:blocks/buildingmaterials/shared_textures/metal_red",
+    "particle": "csm:blocks/buildingmaterials/shared_textures/metal_red"
   }
 }

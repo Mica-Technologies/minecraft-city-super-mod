@@ -3,9 +3,9 @@
   "defaults": {
     "model": "csm:trafficsignals/symbolic_crosswalk_light_single_16_inch_base_mount",
     "textures": {
-      "all": "csm:blocks/shared_textures/crosswalkoff",
-      "particle": "csm:blocks/shared_textures/crosswalkoff",
-      "0": "csm:blocks/shared_textures/crosswalkoff"
+      "all": "csm:blocks/trafficsignals/shared_textures/crosswalkoff",
+      "particle": "csm:blocks/trafficsignals/shared_textures/crosswalkoff",
+      "0": "csm:blocks/trafficsignals/shared_textures/crosswalkoff"
     }
   },
   "variants": {
@@ -24,37 +24,37 @@
     "color": {
       "0": {
         "textures": {
-          "0": "csm:blocks/shared_textures/crosswalkhand"
+          "0": "csm:blocks/trafficsignals/shared_textures/crosswalkhand"
         }
       },
       "1": {
         "textures": {
-          "0": "csm:blocks/shared_textures/crosswalkflashinghand",
-          "all": "csm:blocks/shared_textures/crosswalkflashinghand",
-          "particle": "csm:blocks/shared_textures/crosswalkflashinghand"
+          "0": "csm:blocks/trafficsignals/shared_textures/crosswalkflashinghand",
+          "all": "csm:blocks/trafficsignals/shared_textures/crosswalkflashinghand",
+          "particle": "csm:blocks/trafficsignals/shared_textures/crosswalkflashinghand"
         }
       },
       "2": {
         "textures": {
-          "0": "csm:blocks/shared_textures/crosswalkman",
-          "all": "csm:blocks/shared_textures/crosswalkman",
-          "particle": "csm:blocks/shared_textures/crosswalkman"
+          "0": "csm:blocks/trafficsignals/shared_textures/crosswalkman",
+          "all": "csm:blocks/trafficsignals/shared_textures/crosswalkman",
+          "particle": "csm:blocks/trafficsignals/shared_textures/crosswalkman"
         }
       },
       "3": {
         "textures": {
-          "0": "csm:blocks/shared_textures/crosswalkoff",
-          "all": "csm:blocks/shared_textures/crosswalkoff",
-          "particle": "csm:blocks/shared_textures/crosswalkoff"
+          "0": "csm:blocks/trafficsignals/shared_textures/crosswalkoff",
+          "all": "csm:blocks/trafficsignals/shared_textures/crosswalkoff",
+          "particle": "csm:blocks/trafficsignals/shared_textures/crosswalkoff"
         }
       }
     },
     "inventory": [
       {
         "textures": {
-          "all": "csm:blocks/shared_textures/crosswalkman",
-          "particle": "csm:blocks/shared_textures/crosswalkman",
-          "0": "csm:blocks/shared_textures/crosswalkhand"
+          "all": "csm:blocks/trafficsignals/shared_textures/crosswalkman",
+          "particle": "csm:blocks/trafficsignals/shared_textures/crosswalkman",
+          "0": "csm:blocks/trafficsignals/shared_textures/crosswalkhand"
         }
       }
     ],

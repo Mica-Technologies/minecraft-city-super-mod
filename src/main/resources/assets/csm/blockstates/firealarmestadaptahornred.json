@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:adaptahornred"
+    "model": "csm:lifesafety/est_adaptahorn_red_horn_ornred"
   },
   "variants": {
     "facing": {

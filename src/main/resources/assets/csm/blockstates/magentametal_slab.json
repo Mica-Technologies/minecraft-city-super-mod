@@ -7,7 +7,7 @@
     "half": {
       "bottom": {},
       "top": {
-        "model": "csm:magentametal_slab_top"
+        "model": "csm:buildingmaterials/magentametal_slab_top"
       }
     },
     "variant": {

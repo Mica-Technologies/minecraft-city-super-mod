@@ -1,0 +1,8 @@
+{
+  "parent": "block/inner_stairs",
+  "textures": {
+    "bottom": "csm:blocks/buildingmaterials/shared_textures/metal_orange",
+    "top": "csm:blocks/buildingmaterials/shared_textures/metal_orange",
+    "side": "csm:blocks/buildingmaterials/shared_textures/metal_orange"
+  }
+}

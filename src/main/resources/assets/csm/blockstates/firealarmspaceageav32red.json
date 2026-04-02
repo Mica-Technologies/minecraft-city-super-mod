@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:saeav32"
+    "model": "csm:lifesafety/space_age_elec_av32_red_horn_strobe"
   },
   "variants": {
     "facing": {

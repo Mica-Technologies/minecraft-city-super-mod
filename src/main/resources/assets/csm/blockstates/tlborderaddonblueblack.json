@@ -25,16 +25,16 @@
     "tilt": {
       "none": {},
       "left_tilt": {
-        "model": "csm:tlborderaddonblueblack_left_tilt"
+        "model": "csm:lifesafety/tlborderaddonblueblack_left_tilt"
       },
       "right_tilt": {
-        "model": "csm:tlborderaddonblueblack_right_tilt"
+        "model": "csm:lifesafety/tlborderaddonblueblack_right_tilt"
       },
       "left_angle": {
-        "model": "csm:tlborderaddonblueblack_left_angle"
+        "model": "csm:lifesafety/tlborderaddonblueblack_left_angle"
       },
       "right_angle": {
-        "model": "csm:tlborderaddonblueblack_right_angle"
+        "model": "csm:lifesafety/tlborderaddonblueblack_right_angle"
       }
     },
     "inventory": [

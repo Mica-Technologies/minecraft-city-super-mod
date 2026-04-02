@@ -3,10 +3,10 @@
   "defaults": {
     "model": "csm:shared_models/lighting/pole_light_vertical_2",
     "textures": {
-      "all": "csm:blocks/shared_textures/metal_black",
-      "0": "csm:blocks/shared_textures/light_surface",
-      "1": "csm:blocks/shared_textures/metal_black",
-      "particle": "csm:blocks/shared_textures/metal_black"
+      "all": "csm:blocks/trafficsignals/shared_textures/metal_black",
+      "0": "csm:blocks/lighting/shared_textures/light_surface",
+      "1": "csm:blocks/trafficsignals/shared_textures/metal_black",
+      "particle": "csm:blocks/trafficsignals/shared_textures/metal_black"
     }
   },
   "variants": {
@@ -25,69 +25,69 @@
     "state": {
       "0": {
         "textures": {
-          "0": "csm:blocks/light_surface_off"
+          "0": "csm:blocks/lighting/shared_textures/light_surface_off"
         }
       },
       "1": {
         "textures": {
-          "0": "csm:blocks/shared_textures/light_surface"
+          "0": "csm:blocks/lighting/shared_textures/light_surface"
         }
       },
       "2": {
         "textures": {
-          "0": "csm:blocks/light_surface_off"
+          "0": "csm:blocks/lighting/shared_textures/light_surface_off"
         }
       },
       "3": {
         "textures": {
-          "0": "csm:blocks/shared_textures/light_surface"
+          "0": "csm:blocks/lighting/shared_textures/light_surface"
         }
       }
     },
     "color": {
       "black": {
         "textures": {
-          "all": "csm:blocks/shared_textures/metal_black",
-          "particle": "csm:blocks/shared_textures/metal_black",
-          "1": "csm:blocks/shared_textures/metal_black"
+          "all": "csm:blocks/trafficsignals/shared_textures/metal_black",
+          "particle": "csm:blocks/trafficsignals/shared_textures/metal_black",
+          "1": "csm:blocks/trafficsignals/shared_textures/metal_black"
         }
       },
       "silver": {
         "textures": {
-          "all": "csm:blocks/shared_textures/metal_silver",
-          "particle": "csm:blocks/shared_textures/metal_silver",
-          "1": "csm:blocks/shared_textures/metal_silver"
+          "all": "csm:blocks/trafficsignals/shared_textures/metal_silver",
+          "particle": "csm:blocks/trafficsignals/shared_textures/metal_silver",
+          "1": "csm:blocks/trafficsignals/shared_textures/metal_silver"
         }
       },
       "white": {
         "textures": {
-          "all": "csm:blocks/shared_textures/metal_mattewhite",
-          "particle": "csm:blocks/shared_textures/metal_mattewhite",
-          "1": "csm:blocks/shared_textures/metal_mattewhite"
+          "all": "csm:blocks/trafficsignals/shared_textures/metal_mattewhite",
+          "particle": "csm:blocks/trafficsignals/shared_textures/metal_mattewhite",
+          "1": "csm:blocks/trafficsignals/shared_textures/metal_mattewhite"
         }
       },
       "unpainted": {
         "textures": {
-          "all": "csm:blocks/shared_textures/metal_white",
-          "particle": "csm:blocks/shared_textures/metal_white",
-          "1": "csm:blocks/shared_textures/metal_white"
+          "all": "csm:blocks/trafficsignals/shared_textures/metal_white",
+          "particle": "csm:blocks/trafficsignals/shared_textures/metal_white",
+          "1": "csm:blocks/trafficsignals/shared_textures/metal_white"
         }
       },
       "tan": {
         "textures": {
-          "all": "csm:blocks/shared_textures/metal_mattetan",
-          "particle": "csm:blocks/shared_textures/metal_mattetan",
-          "1": "csm:blocks/shared_textures/metal_mattetan"
+          "all": "csm:blocks/trafficaccessories/shared_textures/metal_mattetan",
+          "particle": "csm:blocks/trafficaccessories/shared_textures/metal_mattetan",
+          "1": "csm:blocks/trafficaccessories/shared_textures/metal_mattetan"
         }
       }
     },
     "inventory": [
       {
         "textures": {
-          "all": "csm:blocks/shared_textures/metal_iridescent",
-          "0": "csm:blocks/shared_textures/light_surface",
-          "1": "csm:blocks/shared_textures/metal_iridescent",
-          "particle": "csm:blocks/shared_textures/metal_iridescent"
+          "all": "csm:blocks/trafficsignals/shared_textures/metal_iridescent",
+          "0": "csm:blocks/lighting/shared_textures/light_surface",
+          "1": "csm:blocks/trafficsignals/shared_textures/metal_iridescent",
+          "particle": "csm:blocks/trafficsignals/shared_textures/metal_iridescent"
         }
       }
     ],

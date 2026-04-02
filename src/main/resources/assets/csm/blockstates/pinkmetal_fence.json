@@ -1,13 +1,13 @@
 {
   "variants": {
     "inventory": {
-      "model": "csm:pinkmetal_fence_inventory"
+      "model": "csm:buildingmaterials/pinkmetal_fence_inventory"
     }
   },
   "multipart": [
     {
       "apply": {
-        "model": "csm:pinkmetal_fence_post"
+        "model": "csm:buildingmaterials/pinkmetal_fence_post"
       }
     },
     {

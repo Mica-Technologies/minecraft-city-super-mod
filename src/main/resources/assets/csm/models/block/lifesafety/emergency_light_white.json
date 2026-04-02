@@ -1,8 +1,8 @@
 {
   "parent": "csm:block/shared_models/lifesafety/elight",
   "textures": {
-    "all": "csm:blocks/shared_textures/elight",
-    "particle": "csm:blocks/shared_textures/elight",
-    "0": "csm:blocks/shared_textures/elight"
+    "all": "csm:blocks/lifesafety/emergency_light_white",
+    "particle": "csm:blocks/lifesafety/emergency_light_white",
+    "0": "csm:blocks/lifesafety/emergency_light_white"
   }
 }

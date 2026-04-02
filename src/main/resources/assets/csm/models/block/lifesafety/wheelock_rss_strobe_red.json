@@ -1,8 +1,8 @@
 {
   "parent": "csm:block/shared_models/lifesafety/rss",
   "textures": {
-    "all": "csm:blocks/shared_textures/rss",
-    "particle": "csm:blocks/shared_textures/rss",
-    "0": "csm:blocks/shared_textures/rss"
+    "all": "csm:blocks/lifesafety/wheelock_rss_strobe_red",
+    "particle": "csm:blocks/lifesafety/wheelock_rss_strobe_red",
+    "0": "csm:blocks/lifesafety/wheelock_rss_strobe_red"
   }
 }

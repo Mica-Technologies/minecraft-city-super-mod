@@ -1,0 +1,8 @@
+{
+  "parent": "block/outer_stairs",
+  "textures": {
+    "bottom": "csm:blocks/buildingmaterials/shared_textures/metal_magenta",
+    "top": "csm:blocks/buildingmaterials/shared_textures/metal_magenta",
+    "side": "csm:blocks/buildingmaterials/shared_textures/metal_magenta"
+  }
+}

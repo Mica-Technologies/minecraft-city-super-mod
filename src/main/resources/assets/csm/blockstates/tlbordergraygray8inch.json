@@ -25,16 +25,16 @@
     "tilt": {
       "none": {},
       "left_tilt": {
-        "model": "csm:tlbordergraygray8inch_left_tilt"
+        "model": "csm:lifesafety/tlbordergraygray8inch_left_tilt"
       },
       "right_tilt": {
-        "model": "csm:tlbordergraygray8inch_right_tilt"
+        "model": "csm:lifesafety/tlbordergraygray8inch_right_tilt"
       },
       "left_angle": {
-        "model": "csm:tlbordergraygray8inch_left_angle"
+        "model": "csm:lifesafety/tlbordergraygray8inch_left_angle"
       },
       "right_angle": {
-        "model": "csm:tlbordergraygray8inch_right_angle"
+        "model": "csm:lifesafety/tlbordergraygray8inch_right_angle"
       }
     },
     "inventory": [

@@ -22,16 +22,16 @@
     },
     "shape": {
       "inner_left": {
-        "model": "csm:yellowmetal_stairs_inner"
+        "model": "csm:buildingmaterials/yellowmetal_stairs_inner"
       },
       "inner_right": {
-        "model": "csm:yellowmetal_stairs_inner"
+        "model": "csm:buildingmaterials/yellowmetal_stairs_inner"
       },
       "outer_left": {
-        "model": "csm:yellowmetal_stairs_outer"
+        "model": "csm:buildingmaterials/yellowmetal_stairs_outer"
       },
       "outer_right": {
-        "model": "csm:yellowmetal_stairs_outer"
+        "model": "csm:buildingmaterials/yellowmetal_stairs_outer"
       },
       "straight": {}
     },

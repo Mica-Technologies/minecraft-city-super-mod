@@ -1,8 +1,8 @@
 {
 	"credit": "Made with Blockbench",
 	"textures": {
-		"0": "csm:blocks/solidreddoublewigwag",
-		"1": "csm:blocks/shared_textures/solidyellow"
+		"0": "csm:blocks/trafficsignals/shared_textures/solidreddoublewigwag",
+		"1": "csm:blocks/trafficsignals/shared_textures/solidyellow"
 	},
 	"elements": [
 		{
