@@ -44,7 +44,7 @@ public class BlockControllableVerticalRightDoubleAddOnSignalGray
 
   @Override
   public float getSignalYOffset() {
-    return -7.9f;
+    return 8.1f;
   }
 
   @Override
