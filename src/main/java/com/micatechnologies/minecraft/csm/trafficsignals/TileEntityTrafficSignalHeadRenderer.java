@@ -3,6 +3,7 @@ package com.micatechnologies.minecraft.csm.trafficsignals;
 import com.micatechnologies.minecraft.csm.codeutils.DirectionSixteen;
 import com.micatechnologies.minecraft.csm.codeutils.RenderHelper;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignalHead;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBoundingBoxHelper;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyColor;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyTilt;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBulbColor;
@@ -164,7 +165,7 @@ public class TileEntityTrafficSignalHeadRenderer extends
     // Compute Z push-back for uniform-size signals so the back stays flush with the
     // block face (Z=16) for mounting. Mixed-size signals (e.g., 8-8-12) keep fronts
     // aligned instead (no push-back).
-    float zPushBack = computeZPushBack(sectionSizes);
+    float zPushBack = TrafficSignalBoundingBoxHelper.computeZPushBack(sectionSizes);
 
     BlockPos pos = te.getPos();
     Integer displayList = displayListCache.get(pos);
@@ -319,25 +320,6 @@ public class TileEntityTrafficSignalHeadRenderer extends
       RenderHelper.addBoxesToBuffer(visorData, buffer, red, green, blue, alpha,
           xOffset, yOffset, zPushBack);
     }
-  }
-
-  /**
-   * Computes the Z push-back offset for uniform-size signals so the back stays flush with
-   * the block face (Z=16) for mounting. Mixed-size signals (e.g., 8-8-12) get no push-back
-   * so that section fronts align with the largest section.
-   *
-   * The body vertex data is scaled from Z=11 (body face), so the back of a scaled section
-   * moves to 11 + 5*scale instead of 16. The push-back is 5*(1-scale) to close the gap.
-   */
-  private static float computeZPushBack(int[] sectionSizes) {
-    if (sectionSizes.length == 0) return 0f;
-    int firstSize = sectionSizes[0];
-    if (firstSize >= 12) return 0f; // 12-inch: no push-back needed
-    for (int size : sectionSizes) {
-      if (size != firstSize) return 0f; // Mixed sizes: no push-back, fronts align
-    }
-    float scale = firstSize / 12f;
-    return 5f * (1f - scale);
   }
 
   private static List<RenderHelper.Box> selectVisorData(List<RenderHelper.Box> data12,
