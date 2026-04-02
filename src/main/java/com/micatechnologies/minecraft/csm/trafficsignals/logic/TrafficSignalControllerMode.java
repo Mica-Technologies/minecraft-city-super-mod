@@ -16,52 +16,56 @@ public enum TrafficSignalControllerMode {
   // region: Enumeration Values
 
   /**
-   * Enumeration value for the traffic signal controller mode "flash" with a tick rate of 4.
+   * Flash mode. Alternates between two cached flash phases via tick-based toggle.
+   * Tick rate 10 (0.5 seconds per phase = 1 second full cycle).
    *
    * @since 1.0
    */
   FLASH("Flash", 10),
 
   /**
-   * Enumeration value for the traffic signal controller mode "normal" with a tick rate of 20.
+   * Normal mode. Cycles through green/yellow/red phases with configured durations.
+   * Tick rate 20 (1 second): phase durations are 2-90+ seconds, so ±1s jitter is fine.
    *
    * @since 1.0
    */
-  NORMAL("Normal", 4),
+  NORMAL("Normal", 20),
 
   /**
-   * Enumeration value for the traffic signal controller mode "ramp meter (full time)" with a tick
-   * rate of 20.
+   * Full-time ramp meter. Checks sensors for waiting vehicles and alternates green/red.
+   * Tick rate 20 (1 second): responsive enough for vehicle detection without wasting ticks.
    *
    * @since 1.0
    */
-  RAMP_METER_FULL_TIME("Ramp Meter (Full Time)", 80),
+  RAMP_METER_FULL_TIME("Ramp Meter (Full Time)", 20),
 
   /**
-   * Enumeration value for the traffic signal controller mode "ramp meter (part time)" with a tick
-   * rate of 20.
+   * Part-time ramp meter. Same as full-time during the day, disabled/flash/off at night.
+   * Tick rate 20 (1 second): same reasoning as full-time.
    *
    * @since 1.0
    */
-  RAMP_METER_PART_TIME("Ramp Meter (Part Time)", 80),
+  RAMP_METER_PART_TIME("Ramp Meter (Part Time)", 20),
 
   /**
-   * Enumeration value for the traffic signal controller mode "requestable" with a tick rate of 20.
+   * Requestable mode. Polls sensors and changes phases on request. Tick rate 10 (0.5 seconds):
+   * needs faster sensor polling than normal mode for responsive vehicle/pedestrian detection.
    *
    * @since 1.0
    */
-  REQUESTABLE("Requestable", 4),
+  REQUESTABLE("Requestable", 10),
 
   /**
-   * Enumeration value for the traffic signal controller mode "manual off" with a tick rate of 300.
+   * Manual off. Sets all signals to off once, then idles. Tick rate 300 (15 seconds):
+   * nothing to do after the initial off phase is set.
    *
    * @since 1.0
    */
   MANUAL_OFF("Manual Off", 300),
 
   /**
-   * Enumeration value for the traffic signal controller mode "forced fault" with a tick rate of
-   * 10.
+   * Forced fault (all-red flash). Alternates all-red phases via tick-based toggle.
+   * Tick rate 10 (0.5 seconds per phase = 1 second full cycle).
    *
    * @since 1.0
    */

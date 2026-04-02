@@ -166,6 +166,11 @@ public class TileEntityTrafficSignalHeadRenderer extends
       }
     }
 
+    // Compute Z push-back for uniform-size signals so the back stays flush with the
+    // block face (Z=16) for mounting. Mixed-size signals (e.g., 8-8-12) keep fronts
+    // aligned instead (no push-back).
+    float zPushBack = computeZPushBack(sectionSizes);
+
     BlockPos pos = te.getPos();
     Integer displayList = displayListCache.get(pos);
     if (displayList == null || te.isStateDirty()) {
@@ -175,13 +180,13 @@ public class TileEntityTrafficSignalHeadRenderer extends
       displayList = GL11.glGenLists(1);
       displayListCache.put(pos, displayList);
       GL11.glNewList(displayList, GL11.GL_COMPILE);
-      renderStaticParts(sectionInfos, sectionYPositions, sectionXPositions, sectionSizes, horizontal);
+      renderStaticParts(sectionInfos, sectionYPositions, sectionXPositions, sectionSizes, horizontal, zPushBack);
       GL11.glEndList();
       te.clearDirtyFlag();
     }
     GL11.glCallList(displayList);
 
-    renderBulbs(sectionInfos, sectionYPositions, sectionXPositions, sectionSizes);
+    renderBulbs(sectionInfos, sectionYPositions, sectionXPositions, sectionSizes, zPushBack);
 
     GL11.glPopMatrix();
 
@@ -194,7 +199,7 @@ public class TileEntityTrafficSignalHeadRenderer extends
 
   private void renderStaticParts(TrafficSignalSectionInfo[] sectionInfos,
       float[] sectionYPositions, float[] sectionXPositions, int[] sectionSizes,
-      boolean horizontal) {
+      boolean horizontal, float zPushBack) {
     Tessellator tessellator = Tessellator.getInstance();
     BufferBuilder buffer = tessellator.getBuffer();
 
@@ -231,12 +236,12 @@ public class TileEntityTrafficSignalHeadRenderer extends
       }
 
       RenderHelper.addBoxesToBuffer(bodyData, buffer,
-          bodyColor.getRed(), bodyColor.getGreen(), bodyColor.getBlue(), 1.0f, xOffset, yOffset, 0.0f);
+          bodyColor.getRed(), bodyColor.getGreen(), bodyColor.getBlue(), 1.0f, xOffset, yOffset, zPushBack);
       RenderHelper.addBoxesToBuffer(doorData, buffer,
-          doorColor.getRed(), doorColor.getGreen(), doorColor.getBlue(), 1.0f, xOffset, yOffset, 0.0f);
+          doorColor.getRed(), doorColor.getGreen(), doorColor.getBlue(), 1.0f, xOffset, yOffset, zPushBack);
 
       addVisorQuadsToBuffer(visorType, buffer, visorColor.getRed(), visorColor.getGreen(),
-          visorColor.getBlue(), 1.0f, xOffset, yOffset, sectionSizes[i]);
+          visorColor.getBlue(), 1.0f, xOffset, yOffset, sectionSizes[i], zPushBack);
     }
     tessellator.draw();
 
@@ -250,7 +255,7 @@ public class TileEntityTrafficSignalHeadRenderer extends
 
   private void addVisorQuadsToBuffer(TrafficSignalVisorType visorType, BufferBuilder buffer,
       float red, float green, float blue, float alpha, float xOffset, float yOffset,
-      int sectionSize) {
+      int sectionSize, float zPushBack) {
     List<RenderHelper.Box> visorData;
     boolean applyTilt = true;
     switch (visorType) {
@@ -305,11 +310,30 @@ public class TileEntityTrafficSignalHeadRenderer extends
     }
     if (applyTilt) {
       RenderHelper.addTiltedBoxesToBuffer(visorData, buffer, red, green, blue, alpha,
-          xOffset, yOffset, 0.0f, VISOR_PIVOT_Z, VISOR_TILT_DEGREES);
+          xOffset, yOffset, zPushBack, VISOR_PIVOT_Z + zPushBack, VISOR_TILT_DEGREES);
     } else {
       RenderHelper.addBoxesToBuffer(visorData, buffer, red, green, blue, alpha,
-          xOffset, yOffset, 0.0f);
+          xOffset, yOffset, zPushBack);
     }
+  }
+
+  /**
+   * Computes the Z push-back offset for uniform-size signals so the back stays flush with
+   * the block face (Z=16) for mounting. Mixed-size signals (e.g., 8-8-12) get no push-back
+   * so that section fronts align with the largest section.
+   *
+   * The body vertex data is scaled from Z=11 (body face), so the back of a scaled section
+   * moves to 11 + 5*scale instead of 16. The push-back is 5*(1-scale) to close the gap.
+   */
+  private static float computeZPushBack(int[] sectionSizes) {
+    if (sectionSizes.length == 0) return 0f;
+    int firstSize = sectionSizes[0];
+    if (firstSize >= 12) return 0f; // 12-inch: no push-back needed
+    for (int size : sectionSizes) {
+      if (size != firstSize) return 0f; // Mixed sizes: no push-back, fronts align
+    }
+    float scale = firstSize / 12f;
+    return 5f * (1f - scale);
   }
 
   private static List<RenderHelper.Box> selectVisorData(List<RenderHelper.Box> data12,
@@ -324,7 +348,7 @@ public class TileEntityTrafficSignalHeadRenderer extends
    * positions in Java to avoid per-section GL matrix push/pop and separate draw calls.
    */
   private void renderBulbs(TrafficSignalSectionInfo[] sectionInfos, float[] sectionYPositions,
-      float[] sectionXPositions, int[] sectionSizes) {
+      float[] sectionXPositions, int[] sectionSizes, float zPushBack) {
     // Reset GL color to white so textures are not tinted by leftover static part colors.
     // Must use GL11.glColor4f directly because GlStateManager caches state and the display
     // list replay changes GL color behind GlStateManager's back, making it skip the reset.
@@ -376,8 +400,8 @@ public class TileEntityTrafficSignalHeadRenderer extends
       float sectionOffset = (12f - fullSize) / 2f; // center smaller sections within the 12-unit slot
       float baseX = 2f + inset + sectionXPositions[i] + sectionOffset;
       float baseY = sectionYPositions[i] + inset + sectionOffset;
-      // Scale bulb Z to stay just in front of the (now depth-scaled) door
-      float z = VISOR_PIVOT_Z + (10.4f - VISOR_PIVOT_Z) * sizeScale;
+      // Scale bulb Z to stay just in front of the (now depth-scaled) door, plus push-back
+      float z = VISOR_PIVOT_Z + (10.4f - VISOR_PIVOT_Z) * sizeScale + zPushBack;
 
       float u1 = texInfo.getU1();
       float v1 = texInfo.getV1();
@@ -420,7 +444,7 @@ public class TileEntityTrafficSignalHeadRenderer extends
     tessellator.draw();
 
     // Render Barlo strobe bars (dynamic, untextured white quads)
-    renderBarloStrobeBars(sectionInfos, sectionYPositions, sectionXPositions, sectionSizes);
+    renderBarloStrobeBars(sectionInfos, sectionYPositions, sectionXPositions, sectionSizes, zPushBack);
   }
 
   private static boolean isBarloVisor(TrafficSignalVisorType type) {
@@ -435,7 +459,7 @@ public class TileEntityTrafficSignalHeadRenderer extends
    * Only renders on red sections.
    */
   private void renderBarloStrobeBars(TrafficSignalSectionInfo[] sectionInfos,
-      float[] sectionYPositions, float[] sectionXPositions, int[] sectionSizes) {
+      float[] sectionYPositions, float[] sectionXPositions, int[] sectionSizes, float zPushBack) {
     // Quick check: any Barlo red sections?
     boolean hasBarlo = false;
     for (int i = 0; i < sectionInfos.length; i++) {
@@ -461,9 +485,8 @@ public class TileEntityTrafficSignalHeadRenderer extends
           || sectionInfos[i].getBulbColor() != TrafficSignalBulbColor.RED) {
         continue;
       }
-      // Scale strobe Z position to match visor depth: pivot at body face (Z=11),
-      // base position at Z=7 for 12-inch, scaled proportionally for smaller sections
-      float barZ = VISOR_PIVOT_Z + (7.0f - VISOR_PIVOT_Z) * (sectionSizes[i] / 12f);
+      // Scale strobe Z position to match visor depth + push-back for flush mounting
+      float barZ = VISOR_PIVOT_Z + (7.0f - VISOR_PIVOT_Z) * (sectionSizes[i] / 12f) + zPushBack;
       emitBarloQuad(buffer, sectionInfos[i].getVisorType(), sectionSizes[i],
           sectionXPositions[i], sectionYPositions[i], barZ);
     }
@@ -483,7 +506,7 @@ public class TileEntityTrafficSignalHeadRenderer extends
             || sectionInfos[i].getBulbColor() != TrafficSignalBulbColor.RED) {
           continue;
         }
-        float strobeZ = VISOR_PIVOT_Z + (6.9f - VISOR_PIVOT_Z) * (sectionSizes[i] / 12f);
+        float strobeZ = VISOR_PIVOT_Z + (6.9f - VISOR_PIVOT_Z) * (sectionSizes[i] / 12f) + zPushBack;
         emitBarloQuad(buffer, sectionInfos[i].getVisorType(), sectionSizes[i],
             sectionXPositions[i], sectionYPositions[i], strobeZ);
       }
