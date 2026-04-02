@@ -1,7 +1,11 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:trafficsignals/mclaglowair"
+    "model": "cube_all",
+    "textures": {
+      "all": "csm:blocks/trafficsignals/shared_textures/transparent",
+      "particle": "csm:blocks/trafficsignals/shared_textures/transparent"
+    }
   },
   "variants": {
     "facing": {
@@ -24,7 +28,7 @@
     },
     "inventory": [
       {
-        "model": "csm:trafficsignals/vertical_signal_right_fya_arrow_add_on_permissive_only",
+        "model": "csm:trafficsignals/shared_models/trafficlightvertical_arrowaddon",
         "textures": {
           "all": "csm:blocks/trafficsignals/shared_textures/solidoff",
           "particle": "csm:blocks/trafficsignals/shared_textures/solidoff",

@@ -90,7 +90,7 @@ blockstate `defaults.textures` blocks.
 4. **Transparent placeholder** (mclaglowair): used as submodel by ~113 signal blockstates
 5. **OBJ model** (signalcontroller.obj + .mtl): Forge OBJ loader doesn't support subdirs
 
-## Current Directory Structure
+## Current Directory Structure (updated 2026-04-01)
 
 ```
 models/block/
@@ -102,10 +102,10 @@ models/block/
 ├── hvac/
 │   └── shared_models/             (5 shared 3D geometry models)
 ├── lifesafety/
-│   ├── *.json                     (392 block/variant models)
+│   ├── *.json                     (61 fire alarm/emergency wrapper models)
 │   └── shared_models/             (84 shared 3D geometry models)
 ├── lighting/
-│   ├── *.json                     (2 complex models)
+│   ├── *.json                     (3 block models incl. GE smart node)
 │   └── shared_models/             (105 shared 3D geometry models)
 ├── novelties/
 │   └── shared_models/             (9 shared 3D geometry models)
@@ -114,11 +114,12 @@ models/block/
 ├── technology/
 │   └── shared_models/             (33 shared 3D geometry models)
 ├── trafficaccessories/
-│   ├── *.json                     (65 backplate tilt variant models)
+│   ├── *.json                     (335 border/tilt/pole variant models)
 │   └── shared_models/             (63 shared 3D geometry models)
 ├── trafficsignals/
 │   ├── *.json                     (101 crosswalk/signal/inventory models)
 │   └── shared_models/             (100 shared models + backplates/)
 └── trafficsigns/
-    (no models — signs use blockstate texture overrides on shared sign model)
+    ├── *.json                     (60 sign pole/signpost/sign shape models)
+    └── (signs use blockstate texture overrides on these shared shapes)
 ```

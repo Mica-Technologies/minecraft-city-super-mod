@@ -30,16 +30,16 @@
     "tilt": {
       "none": {},
       "left_tilt": {
-        "model": "csm:trafficaccessories/tlborder5addonblackblack_left_tilt"
+        "model": "csm:trafficsignals/shared_models/signal_backplate_vertical_addon_2_left_tilt"
       },
       "right_tilt": {
-        "model": "csm:trafficaccessories/tlborder5addonblackblack_right_tilt"
+        "model": "csm:trafficsignals/shared_models/signal_backplate_vertical_addon_2_right_tilt"
       },
       "left_angle": {
-        "model": "csm:trafficaccessories/tlborder5addonblackblack_left_angle"
+        "model": "csm:trafficsignals/shared_models/signal_backplate_vertical_addon_2_left_angle"
       },
       "right_angle": {
-        "model": "csm:trafficaccessories/tlborder5addonblackblack_right_angle"
+        "model": "csm:trafficsignals/shared_models/signal_backplate_vertical_addon_2_right_angle"
       }
     },
     "inventory": [

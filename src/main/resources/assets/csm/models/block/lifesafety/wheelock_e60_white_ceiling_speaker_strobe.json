@@ -1,9 +1,0 @@
-{
-  "parent": "csm:block/lifesafety/shared_models/wheelock_e60_ceiling_speaker_strobe",
-  "textures": {
-    "all": "csm:blocks/lifesafety/wheelock_e60_white_ceiling_speaker_strobe",
-    "particle": "csm:blocks/lifesafety/wheelock_e60_white_ceiling_speaker_strobe",
-    "0": "csm:blocks/lifesafety/wheelock_e60_white_ceiling_speaker_strobe",
-    "missing": "csm:blocks/lifesafety/wheelock_e60_white_ceiling_speaker_strobe"
-  }
-}

@@ -1,8 +1,0 @@
-{
-  "parent": "csm:block/lifesafety/shared_models/kac_call_point",
-  "textures": {
-    "all": "csm:blocks/lifesafety/kac_call_point",
-    "particle": "csm:blocks/lifesafety/kac_call_point",
-    "0": "csm:blocks/lifesafety/kac_call_point"
-  }
-}

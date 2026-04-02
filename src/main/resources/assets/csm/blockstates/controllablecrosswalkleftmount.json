@@ -11,13 +11,28 @@
   "variants": {
     "color": {
       "0": {
-        "model": "csm:trafficsignals/controllablecrosswalkleftmount_dontwalk"
+        "model": "csm:trafficsignals/shared_models/crosswalklightsingle_left",
+        "textures": {
+          "all": "csm:blocks/trafficsignals/shared_textures/crosswalkhand",
+          "particle": "csm:blocks/trafficsignals/shared_textures/crosswalkhand",
+          "0": "csm:blocks/trafficsignals/shared_textures/crosswalkhand"
+        }
       },
       "1": {
-        "model": "csm:trafficsignals/controllablecrosswalkleftmount_flashdontwalk"
+        "model": "csm:trafficsignals/shared_models/crosswalklightsingle_left",
+        "textures": {
+          "all": "csm:blocks/trafficsignals/shared_textures/crosswalkflashinghand",
+          "particle": "csm:blocks/trafficsignals/shared_textures/crosswalkflashinghand",
+          "0": "csm:blocks/trafficsignals/shared_textures/crosswalkflashinghand"
+        }
       },
       "2": {
-        "model": "csm:trafficsignals/controllablecrosswalkleftmount_walk"
+        "model": "csm:trafficsignals/shared_models/crosswalklightsingle_left",
+        "textures": {
+          "all": "csm:blocks/trafficsignals/shared_textures/crosswalkman",
+          "particle": "csm:blocks/trafficsignals/shared_textures/crosswalkman",
+          "0": "csm:blocks/trafficsignals/shared_textures/crosswalkman"
+        }
       },
       "3": {}
     },
@@ -35,7 +50,12 @@
     },
     "inventory": [
       {
-        "model": "csm:trafficsignals/controllablecrosswalkleftmount_walk"
+        "model": "csm:trafficsignals/shared_models/crosswalklightsingle_left",
+        "textures": {
+          "all": "csm:blocks/trafficsignals/shared_textures/crosswalkman",
+          "particle": "csm:blocks/trafficsignals/shared_textures/crosswalkman",
+          "0": "csm:blocks/trafficsignals/shared_textures/crosswalkman"
+        }
       }
     ],
     "normal": [
