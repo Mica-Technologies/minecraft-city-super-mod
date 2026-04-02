@@ -69,6 +69,11 @@ public class CsmConfig {
    */
   private static final String FIELD_DEFAULT_WIKI_FILES_FOLDER = "csmWiki";
 
+  private static final String FIELD_KEY_ENABLE_STROBE_EFFECT = "enableStrobeEffect";
+  private static final String FIELD_DESCRIPTION_ENABLE_STROBE_EFFECT =
+      "Set to false to disable the visual strobe flash effect on fire alarm strobe devices.";
+  private static final boolean FIELD_DEFAULT_ENABLE_STROBE_EFFECT = true;
+
   private static final String FIELD_KEY_ENABLE_UPDATE_CHECK = "enableUpdateCheck";
   private static final String FIELD_DESCRIPTION_ENABLE_UPDATE_CHECK =
       "Set to false to disable automatic update checking on world join.";
@@ -77,6 +82,8 @@ public class CsmConfig {
   /**
    * The configuration field value for the enableUpdateCheck option.
    */
+  private static boolean enableStrobeEffect;
+
   private static boolean enableUpdateCheck;
 
   /**
@@ -121,6 +128,8 @@ public class CsmConfig {
    * @since 1.0
    */
   private static void loadConfig() {
+    enableStrobeEffect = config.getBoolean(FIELD_KEY_ENABLE_STROBE_EFFECT, CATEGORY_GENERAL,
+        FIELD_DEFAULT_ENABLE_STROBE_EFFECT, FIELD_DESCRIPTION_ENABLE_STROBE_EFFECT);
     enableUpdateCheck = config.getBoolean(FIELD_KEY_ENABLE_UPDATE_CHECK, CATEGORY_GENERAL,
         FIELD_DEFAULT_ENABLE_UPDATE_CHECK, FIELD_DESCRIPTION_ENABLE_UPDATE_CHECK);
     generateWikiFiles = config.getBoolean(FIELD_KEY_GENERATE_WIKI_FILES, CATEGORY_WIKI,
@@ -162,5 +171,14 @@ public class CsmConfig {
    */
   public static boolean isUpdateCheckEnabled() {
     return enableUpdateCheck;
+  }
+
+  /**
+   * Retrieves whether the visual strobe flash effect on fire alarm devices is enabled.
+   *
+   * @return {@code true} if the strobe effect is enabled, {@code false} otherwise.
+   */
+  public static boolean isStrobeEffectEnabled() {
+    return enableStrobeEffect;
   }
 }
