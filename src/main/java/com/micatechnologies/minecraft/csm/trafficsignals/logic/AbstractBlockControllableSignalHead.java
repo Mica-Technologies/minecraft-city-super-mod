@@ -68,13 +68,13 @@ public abstract class AbstractBlockControllableSignalHead extends AbstractBlockC
     } else if (facing4 == EnumFacing.SOUTH) {
       // Rotate the signal head based on the body tilt
       if (stateBodyTilt == TrafficSignalBodyTilt.LEFT_ANGLE) {
-        stateTiltedFacing = DirectionSixteen.SE;
-      } else if (stateBodyTilt == TrafficSignalBodyTilt.RIGHT_ANGLE) {
         stateTiltedFacing = DirectionSixteen.SW;
+      } else if (stateBodyTilt == TrafficSignalBodyTilt.RIGHT_ANGLE) {
+        stateTiltedFacing = DirectionSixteen.SE;
       } else if (stateBodyTilt == TrafficSignalBodyTilt.LEFT_TILT) {
-        stateTiltedFacing = DirectionSixteen.SSE;
-      } else if (stateBodyTilt == TrafficSignalBodyTilt.RIGHT_TILT) {
         stateTiltedFacing = DirectionSixteen.SSW;
+      } else if (stateBodyTilt == TrafficSignalBodyTilt.RIGHT_TILT) {
+        stateTiltedFacing = DirectionSixteen.SSE;
       } else {
         stateTiltedFacing = DirectionSixteen.S;
       }
