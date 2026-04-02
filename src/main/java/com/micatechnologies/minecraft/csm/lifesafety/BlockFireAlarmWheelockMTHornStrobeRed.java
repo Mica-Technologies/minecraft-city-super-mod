@@ -10,8 +10,26 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
+import net.minecraft.tileentity.TileEntity;
 
-public class BlockFireAlarmWheelockMTHornStrobeRed extends AbstractBlockFireAlarmSounder {
+public class BlockFireAlarmWheelockMTHornStrobeRed extends AbstractBlockFireAlarmSounder
+    implements ICsmTileEntityProvider, IStrobeBlock {
+
+  @Override
+  public Class<? extends TileEntity> getTileEntityClass() {
+    return TileEntityFireAlarmStrobe.class;
+  }
+
+  @Override
+  public String getTileEntityName() {
+    return "tileentityfirealarmstrobe";
+  }
+
+  @Override
+  public TileEntity createNewTileEntity(World worldIn, int meta) {
+    return new TileEntityFireAlarmStrobe();
+  }
 
   public static final PropertyInteger SOUND = PropertyInteger.create("sound", 0, 1);
   public static final String[] SOUND_NAMES = {"MT Code 3", "Wheelock AS"};
