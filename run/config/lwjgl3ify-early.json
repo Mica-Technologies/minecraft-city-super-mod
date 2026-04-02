@@ -1,0 +1,23 @@
+{
+  "extensibleEnums": [
+    "net.minecraft.enchantment.EnumEnchantmentType",
+    "net.minecraft.entity.EntityLiving$SpawnPlacementType",
+    "net.minecraft.entity.player.EntityPlayer$SleepResult",
+    "net.minecraft.world.DimensionType",
+    "net.minecraft.block.BlockPressurePlate$Sensitivity",
+    "net.minecraft.item.Item$ToolMaterial",
+    "net.minecraft.util.BlockRenderLayer",
+    "net.minecraft.entity.EnumCreatureType",
+    "net.minecraft.item.EnumRarity",
+    "net.minecraft.item.ItemArmor$ArmorMaterial",
+    "net.minecraft.entity.item.EntityPainting$EnumArt",
+    "net.minecraft.item.EnumAction",
+    "net.minecraft.world.EnumSkyBlock",
+    "net.minecraft.world.gen.structure.StructureStrongholdPieces$Stronghold$Door",
+    "net.minecraft.entity.EnumCreatureAttribute",
+    "net.minecraft.util.math.RayTraceResult$Type",
+    "net.minecraft.entity.passive.HorseArmorType",
+    "net.minecraft.util.EnumBlockRenderType",
+    "net.minecraft.tileentity.BannerPattern"
+  ]
+}

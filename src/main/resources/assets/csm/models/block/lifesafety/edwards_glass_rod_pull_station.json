@@ -1,5 +1,5 @@
 {
-  "parent": "csm:block/lifesafety/shared_models/ps2",
+  "parent": "csm:block/lifesafety/shared_models/edwards_glass_rod_pull_station",
   "textures": {
     "all": "csm:blocks/lifesafety/edwards_glass_rod_pull_station",
     "particle": "csm:blocks/lifesafety/edwards_glass_rod_pull_station",

@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:lifesafety/shared_models/mclaapprovedexitsignedgelit",
+    "model": "csm:lifesafety/shared_models/edge_lit_exit_sign",
     "textures": {
       "all": "csm:blocks/lifesafety/edge_lit_stairs_sign_bi_double_sided",
       "particle": "csm:blocks/lifesafety/edge_lit_stairs_sign_bi_double_sided",

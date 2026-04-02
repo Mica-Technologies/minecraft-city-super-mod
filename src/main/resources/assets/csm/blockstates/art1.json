@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "block/cube",
+    "model": "cube",
     "textures": {
       "down": "csm:blocks/hvac/air_return_1_white",
       "up": "csm:blocks/hvac/air_return_1_white",

@@ -2,11 +2,11 @@
 
 Move shared models from `models/block/shared_models/<subsystem>/` to
 `models/block/<subsystem>/shared_models/` to match the texture folder structure.
-Also consolidate child-parent model chains into Forge blockstate texture overrides
-where possible.
+Consolidate child-parent model chains into Forge blockstate texture overrides.
 
 **Created:** 2026-03-31
-**Status:** In progress
+**Updated:** 2026-04-01
+**Status:** Phase 1 complete, Phase 2 substantially complete, model loading errors resolved
 
 ---
 
@@ -14,88 +14,111 @@ where possible.
 
 > Progress doc: `assets/docs/agent_progress/SHARED_MODELS_RESTRUCTURE_PLAN.md`
 >
-> **Goal:** Move 441 shared models from `shared_models/<subsystem>/` to
-> `<subsystem>/shared_models/`. Then consolidate duplicate child-parent model files
-> by moving texture info into Forge blockstate texture overrides.
+> **Phase 1 COMPLETE:** All 441 shared models moved from `shared_models/<subsystem>/`
+> to `<subsystem>/shared_models/`. The centralized `shared_models/` dir is removed.
 >
-> **Cross-subsystem analysis done:** hvac, lifesafety, novelties, powergrid, technology
-> have 0-1 cross-subsystem refs (safe to move). Traffic accessories has 36 and traffic
-> signals has 841 cross-subsystem refs (need careful handling).
+> **Phase 2 substantially complete:** 663 wrapper models consolidated into Forge
+> blockstate texture overrides across all 10 subsystems. 649 models remain that
+> cannot be consolidated (multipart fence/slab/stairs variants, blockstate variant
+> models, complex models with elements/display, and the transparent TESR placeholder).
+>
+> **Known special cases:**
+> - `signalcontroller.obj` + `.mtl` stay in flat `models/block/` (Forge OBJ limitation)
+> - `trafficsignals/mclaglowair.json` is a transparent cube placeholder used as a
+>   submodel by ~113 signal blockstates for TESR-rendered blocks. Must NOT be deleted.
+> - Building materials has 90 fence/slab/stairs variant models (multipart blockstates)
+> - Traffic signals has ~100 block models (crosswalk variants, inventory models) and
+>   ~100 shared models (backplate tilt variants, crosswalk mounts, signal geometry)
+>
+> **2026-04-01 session:**
+> - Renamed 17 cryptic lifesafety shared_models to descriptive names
+> - Fixed 566 → 0 model loading errors (doubled block/ prefix, cross-subsystem
+>   refs, spurious suffixes from batch rename, missing textures)
+> - Fixed dslh.json missing striplights texture (lost during Phase 2 consolidation)
+> - Renamed 11 corrupted sign textures
+> - Audited all blockstate→model references: all now resolve correctly
+>
+> **Remaining work for future sessions:**
+> - 330 lifesafety wrapper models consolidatable only via blockstate rewrite campaign
+> - 62 complex lifesafety models (Blockbench geometry) must stay as files
+> - 65 traffic accessories backplate tilt variant models must stay
 
 ---
 
-## Phase 1: Move shared_models to tab-specific folders
+## Phase 1: Move shared_models to tab-specific folders (COMPLETE)
 
-Move `models/block/shared_models/<subsystem>/` → `models/block/<subsystem>/shared_models/`
+Moved `models/block/shared_models/<subsystem>/` → `models/block/<subsystem>/shared_models/`
+for all 8 subsystems. 441 files moved, 1,096 reference files updated. Centralized
+`shared_models/` directory removed.
 
-### Cross-subsystem analysis
+- [x] hvac (5 models)
+- [x] novelties (9 models)
+- [x] lifesafety (84 models)
+- [x] technology (33 models)
+- [x] powergrid (42 models)
+- [x] lighting (105 models)
+- [x] trafficaccessories (63 models)
+- [x] trafficsignals (100 models, includes backplates/ subdir)
 
-| Subsystem | Models | Cross-subsystem refs | Safe to move directly? |
+## Phase 2: Consolidate wrapper models (SUBSTANTIALLY COMPLETE)
+
+Eliminated simple parent+texture wrapper models by moving texture info into Forge
+blockstate `defaults.textures` blocks.
+
+| Subsystem | Wrappers Eliminated | Remaining | Notes |
 |---|---|---|---|
-| hvac | 5 | 0 | Yes |
-| lifesafety | 84 | 0 | Yes |
-| lighting | 105 | 11 | Mostly (11 refs from other tabs) |
-| novelties | 9 | 0 | Yes |
-| powergrid | 42 | 1 | Mostly (1 ref from other tab) |
-| technology | 33 | 0 | Yes |
-| trafficaccessories | 63 | 36 | Partially (backplate models ref'd by signals) |
-| trafficsignals | 100 | 841 | Complex (heavily cross-referenced) |
+| HVAC | 30 | 0 | Complete |
+| Novelties | 17 | 0 | Complete |
+| Building Materials | 74 | 90 | 90 = fence/slab/stairs multipart variants |
+| Power Grid | 44 | 0 | Complete |
+| Technology | 34 | 0 | Complete |
+| Lighting | 98 | 2 | 2 complex models with extra keys |
+| Life Safety | 121 | 392 | Many shared parent models + variant models |
+| Traffic Accessories | 219 | 65 | Backplate tilt variant models |
+| Traffic Signals | 26 | 101 | Crosswalk variants, inventory models, mclaglowair |
+| **Total** | **663** | **649** | |
 
-### Checklist
+### Models that cannot be consolidated
 
-- [ ] Move hvac shared_models (5 models, 0 cross-refs)
-- [ ] Move novelties shared_models (9 models, 0 cross-refs)
-- [ ] Move lifesafety shared_models (84 models, 0 cross-refs)
-- [ ] Move technology shared_models (33 models, 0 cross-refs)
-- [ ] Move powergrid shared_models (42 models, 1 cross-ref)
-- [ ] Move lighting shared_models (105 models, 11 cross-refs)
-- [ ] Move trafficaccessories shared_models (63 models, 36 cross-refs)
-- [ ] Move trafficsignals shared_models (100 models, 841 cross-refs)
-- [ ] Remove empty shared_models/ directory
-- [ ] Build verify after each move
-- [ ] In-game test
+1. **Multipart variants** (90 in buildingmaterials): fence_post, fence_inventory,
+   slab_top, stairs_inner, stairs_outer — required by multipart blockstates
+2. **Blockstate variant models** (65 in trafficaccessories, ~40 in trafficsignals):
+   backplate tilt/fitted variants, crosswalk state variants — referenced by specific
+   blockstate variant entries, not `defaults`
+3. **Complex models** (2 in lighting, ~350 in lifesafety): models with `elements`,
+   `display`, or other keys beyond simple parent+textures
+4. **Transparent placeholder** (mclaglowair): used as submodel by ~113 signal blockstates
+5. **OBJ model** (signalcontroller.obj + .mtl): Forge OBJ loader doesn't support subdirs
 
-### Reference update pattern
+## Current Directory Structure
 
-All references follow the pattern:
 ```
-"parent": "csm:block/shared_models/<subsystem>/<model>"
+models/block/
+├── signalcontroller.obj           (OBJ - must stay in flat dir)
+├── signalcontroller.mtl
+├── buildingmaterials/
+│   ├── *_fence_post.json          (90 multipart variant models)
+│   └── (no shared_models — inline geometry)
+├── hvac/
+│   └── shared_models/             (5 shared 3D geometry models)
+├── lifesafety/
+│   ├── *.json                     (392 block/variant models)
+│   └── shared_models/             (84 shared 3D geometry models)
+├── lighting/
+│   ├── *.json                     (2 complex models)
+│   └── shared_models/             (105 shared 3D geometry models)
+├── novelties/
+│   └── shared_models/             (9 shared 3D geometry models)
+├── powergrid/
+│   └── shared_models/             (42 shared 3D geometry models)
+├── technology/
+│   └── shared_models/             (33 shared 3D geometry models)
+├── trafficaccessories/
+│   ├── *.json                     (65 backplate tilt variant models)
+│   └── shared_models/             (63 shared 3D geometry models)
+├── trafficsignals/
+│   ├── *.json                     (101 crosswalk/signal/inventory models)
+│   └── shared_models/             (100 shared models + backplates/)
+└── trafficsigns/
+    (no models — signs use blockstate texture overrides on shared sign model)
 ```
-Must become:
-```
-"parent": "csm:block/<subsystem>/shared_models/<model>"
-```
-
-Also blockstates with direct model refs:
-```
-"model": "csm:shared_models/<subsystem>/<model>"
-```
-Must become:
-```
-"model": "csm:<subsystem>/shared_models/<model>"
-```
-
-## Phase 2: Consolidate child-parent model chains (future)
-
-Many blocks have a per-block model file that simply sets a parent shared model and
-overrides textures. These can be eliminated by moving the texture info into the
-Forge blockstate's `defaults.textures` block, reducing the model count significantly.
-
-**Example before:**
-```
-blockstates/art1.json:     "model": "csm:hvac/air_return_1_white"
-models/block/hvac/air_return_1_white.json:
-  "parent": "csm:block/hvac/shared_models/large_circle_vent"
-  "textures": { "all": "csm:blocks/hvac/air_return_1_white" }
-```
-
-**Example after (blockstate handles textures directly):**
-```
-blockstates/art1.json:
-  "model": "csm:hvac/shared_models/large_circle_vent"
-  "textures": { "all": "csm:blocks/hvac/air_return_1_white" }
-```
-→ `models/block/hvac/air_return_1_white.json` can be deleted.
-
-This is a larger effort and should be done subsystem-by-subsystem after Phase 1
-is complete.

@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:lifesafety/shared_models/rss",
+    "model": "csm:lifesafety/shared_models/wheelock_rss_strobe",
     "textures": {
       "all": "csm:blocks/lifesafety/wheelock_rss_strobe_red",
       "particle": "csm:blocks/lifesafety/wheelock_rss_strobe_red",

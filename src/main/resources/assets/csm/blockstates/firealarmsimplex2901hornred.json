@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:lifesafety/shared_models/dscn1043",
+    "model": "csm:lifesafety/shared_models/simplex_2901_horn",
     "textures": {
       "all": "csm:blocks/lifesafety/simplex_2901_red_horn",
       "particle": "csm:blocks/lifesafety/simplex_2901_red_horn",

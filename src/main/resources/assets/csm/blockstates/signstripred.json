@@ -1,12 +1,12 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:lifesafety/sign_strip_green",
+    "model": "csm:trafficsigns/sign_strip_green",
     "textures": {
       "all": "csm:blocks/trafficsigns/absolutely_nothing_sign",
       "particle": "csm:blocks/trafficsigns/absolutely_nothing_sign",
       "0": "csm:blocks/trafficsigns/absolutely_nothing_sign",
-      "1": "csm:blocks/trafficsigns/strip_green_reen"
+      "1": "csm:blocks/trafficsigns/strip_red"
     }
   },
   "variants": {
@@ -126,7 +126,7 @@
       "true": {
         "submodel": {
           "extension": {
-            "model": "csm:lifesafety/sign_pole",
+            "model": "csm:trafficsigns/sign_pole",
             "transform": {
               "translation": [
                 0.0,
@@ -141,7 +141,7 @@
     "setback": {
       "false": {},
       "true": {
-        "model": "csm:lifesafety/metal_signpostback_strip_setback"
+        "model": "csm:trafficsigns/metal_signpostback_strip_setback"
       }
     },
     "normal": [

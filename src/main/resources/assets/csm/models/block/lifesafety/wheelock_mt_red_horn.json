@@ -1,5 +1,5 @@
 {
-  "parent": "csm:block/lifesafety/shared_models/mt4-115-s_13_red",
+  "parent": "csm:block/lifesafety/shared_models/wheelock_mt_horn_red",
   "textures": {
     "all": "csm:blocks/lifesafety/wheelock_mt_red_horn",
     "particle": "csm:blocks/lifesafety/wheelock_mt_red_horn",

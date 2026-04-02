@@ -1,12 +1,12 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:lifesafety/ahead_straight_arrow_sign",
+    "model": "csm:trafficsigns/ahead_straight_arrow_sign",
     "textures": {
-      "all": "csm:blocks/trafficsigns/red_light_photo_enforced_hoto",
-      "particle": "csm:blocks/trafficsigns/red_light_photo_enforced_hoto",
+      "all": "csm:blocks/trafficsigns/red_light_photo_enforced_full",
+      "particle": "csm:blocks/trafficsigns/red_light_photo_enforced_full",
       "0": "csm:blocks/trafficsigns/absolutely_nothing_sign",
-      "1": "csm:blocks/trafficsigns/red_light_photo_enforced_hoto"
+      "1": "csm:blocks/trafficsigns/red_light_photo_enforced_full"
     }
   },
   "variants": {
@@ -126,7 +126,7 @@
       "true": {
         "submodel": {
           "extension": {
-            "model": "csm:lifesafety/sign_pole",
+            "model": "csm:trafficsigns/sign_pole",
             "transform": {
               "translation": [
                 0.0,
@@ -141,7 +141,7 @@
     "setback": {
       "false": {},
       "true": {
-        "model": "csm:lifesafety/metal_signpostback_sign_setback"
+        "model": "csm:trafficsigns/metal_signpostback_sign_setback"
       }
     },
     "normal": [

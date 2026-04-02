@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:lifesafety/bikes_allowed_to_use_full_lane_sign_large",
+    "model": "csm:trafficsigns/bikes_allowed_to_use_full_lane_sign_large",
     "textures": {
       "all": "csm:blocks/trafficsigns/turn_lane_left",
       "particle": "csm:blocks/trafficsigns/turn_lane_left",
@@ -127,7 +127,7 @@
       "true": {
         "submodel": {
           "extension": {
-            "model": "csm:lifesafety/sign_pole",
+            "model": "csm:trafficsigns/sign_pole",
             "transform": {
               "translation": [
                 0.0,
@@ -142,7 +142,7 @@
     "setback": {
       "false": {},
       "true": {
-        "model": "csm:lifesafety/metal_signpostback_medium_square_sign_setback"
+        "model": "csm:trafficsigns/metal_signpostback_medium_square_sign_setback"
       }
     },
     "normal": [

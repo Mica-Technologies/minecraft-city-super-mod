@@ -78,7 +78,10 @@ local.properties
 # Linux
 *~
 
-run/
+run/*
+!run/config/
+run/config/*
+!run/config/lwjgl3ify-early.json
 
 logs/
 .claude/settings.local.json

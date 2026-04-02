@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:lifesafety/lhs_stop_sign_not_compliant",
+    "model": "csm:trafficsigns/lhs_stop_sign_not_compliant",
     "textures": {
       "all": "csm:blocks/trafficsigns/pole_stop",
       "particle": "csm:blocks/trafficsigns/pole_stop",
@@ -127,7 +127,7 @@
       "true": {
         "submodel": {
           "extension": {
-            "model": "csm:lifesafety/sign_pole",
+            "model": "csm:trafficsigns/sign_pole",
             "transform": {
               "translation": [
                 0.0,
@@ -142,7 +142,7 @@
     "setback": {
       "false": {},
       "true": {
-        "model": "csm:lifesafety/metal_signpost_octagon_sign_setback"
+        "model": "csm:trafficsigns/metal_signpost_octagon_sign_setback"
       }
     },
     "normal": [

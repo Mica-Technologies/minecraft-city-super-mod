@@ -24,3 +24,15 @@ task printMinecraftVersion {
         println project.findProperty('minecraftVersion')
     }
 }
+
+// ARM macOS (Apple Silicon) support for runClient17/runClient21:
+// MC 1.12.2 bundles JNA 4.4.0 and java-objc-bridge 1.0.0, both x86_64-only.
+// Override with arm64-compatible versions via java17PatchDependencies
+// (loaded before MC's bundled libs on the classpath).
+if (project.hasProperty('enableJava17RunTasks') && enableJava17RunTasks.toBoolean()) {
+    dependencies {
+        java17PatchDependencies('net.java.dev.jna:jna:5.13.0') { transitive = false }
+        java17PatchDependencies('net.java.dev.jna:jna-platform:5.13.0') { transitive = false }
+        java17PatchDependencies('ca.weblite:java-objc-bridge:1.1') { transitive = false }
+    }
+}

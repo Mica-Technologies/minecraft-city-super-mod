@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:lifesafety/shared_models/elight",
+    "model": "csm:lifesafety/shared_models/emergency_light",
     "textures": {
       "all": "csm:blocks/lifesafety/emergency_light_black",
       "particle": "csm:blocks/lifesafety/emergency_light_black",

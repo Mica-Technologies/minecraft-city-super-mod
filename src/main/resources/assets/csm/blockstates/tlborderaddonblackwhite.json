@@ -30,16 +30,16 @@
     "tilt": {
       "none": {},
       "left_tilt": {
-        "model": "csm:lifesafety/tlborderaddonblackwhite_left_tilt"
+        "model": "csm:trafficaccessories/tlborderaddonblackwhite_left_tilt"
       },
       "right_tilt": {
-        "model": "csm:lifesafety/tlborderaddonblackwhite_right_tilt"
+        "model": "csm:trafficaccessories/tlborderaddonblackwhite_right_tilt"
       },
       "left_angle": {
-        "model": "csm:lifesafety/tlborderaddonblackwhite_left_angle"
+        "model": "csm:trafficaccessories/tlborderaddonblackwhite_left_angle"
       },
       "right_angle": {
-        "model": "csm:lifesafety/tlborderaddonblackwhite_right_angle"
+        "model": "csm:trafficaccessories/tlborderaddonblackwhite_right_angle"
       }
     },
     "inventory": [

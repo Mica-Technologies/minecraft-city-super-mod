@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:lifesafety/shared_models/greenmanexitsign",
+    "model": "csm:lifesafety/shared_models/green_man_exit_sign",
     "textures": {
       "all": "csm:blocks/lifesafety/shared_textures/exit_sign_green_man_left_arrow",
       "particle": "csm:blocks/lifesafety/shared_textures/exit_sign_green_man_left_arrow",

@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:lifesafety/shared_models/mclaapprovedexitsignedgelitwide",
+    "model": "csm:lifesafety/shared_models/edge_lit_exit_sign_wide",
     "textures": {
       "all": "csm:blocks/lifesafety/shared_textures/edge_lit_isa_exit_sign_left_double_sided",
       "particle": "csm:blocks/lifesafety/shared_textures/edge_lit_isa_exit_sign_left_double_sided",

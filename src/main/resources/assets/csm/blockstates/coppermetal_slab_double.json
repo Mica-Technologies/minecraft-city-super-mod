@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "block/cube_all",
+    "model": "cube_all",
     "textures": {
       "all": "csm:blocks/buildingmaterials/shared_textures/metal_copper",
       "particle": "csm:blocks/buildingmaterials/shared_textures/metal_copper"
