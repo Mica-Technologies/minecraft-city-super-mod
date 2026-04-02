@@ -1,8 +1,0 @@
-{
-  "parent": "csm:block/lifesafety/shared_models/fci_ms_pull_station",
-  "textures": {
-    "all": "csm:blocks/lifesafety/fci_pull_station",
-    "particle": "csm:blocks/lifesafety/fci_pull_station",
-    "0": "csm:blocks/lifesafety/fci_pull_station"
-  }
-}

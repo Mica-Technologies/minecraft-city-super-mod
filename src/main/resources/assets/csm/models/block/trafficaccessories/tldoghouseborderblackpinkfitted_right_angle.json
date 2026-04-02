@@ -1,8 +1,0 @@
-{
-  "parent": "csm:block/trafficsignals/shared_models/signal_backplate_doghouse_fitted_right_angle",
-  "textures": {
-    "all": "csm:blocks/trafficaccessories/shared_textures/signalbackplateblackpinkblack",
-    "particle": "csm:blocks/trafficaccessories/shared_textures/signalbackplateblackpinkblack",
-    "0": "csm:blocks/trafficaccessories/shared_textures/signalbackplateblackpinkblack"
-  }
-}

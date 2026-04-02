@@ -1,8 +1,0 @@
-{
-  "parent": "csm:block/lifesafety/shared_models/wheelock_exceeder_hornstrobe_white",
-  "textures": {
-    "all": "csm:blocks/lifesafety/wheelock_exceeder_white_horn_strobe",
-    "particle": "csm:blocks/lifesafety/wheelock_exceeder_white_horn_strobe",
-    "0": "csm:blocks/lifesafety/wheelock_exceeder_white_horn_strobe"
-  }
-}

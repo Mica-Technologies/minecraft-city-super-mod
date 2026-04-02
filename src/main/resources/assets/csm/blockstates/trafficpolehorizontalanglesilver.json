@@ -36,7 +36,7 @@
         "submodel": {
           "mounte": {
             "uvlock": true,
-            "model": "csm:trafficaccessories/trafficpole_small_mount",
+            "model": "csm:trafficaccessories/shared_models/small_mount",
             "textures": {
               "all": "csm:blocks/trafficsignals/shared_textures/metal_silver",
               "particle": "csm:blocks/trafficsignals/shared_textures/metal_silver",
@@ -65,7 +65,7 @@
         "submodel": {
           "mountw": {
             "uvlock": true,
-            "model": "csm:trafficaccessories/trafficpole_small_mount",
+            "model": "csm:trafficaccessories/shared_models/small_mount",
             "textures": {
               "all": "csm:blocks/trafficsignals/shared_textures/metal_silver",
               "particle": "csm:blocks/trafficsignals/shared_textures/metal_silver",
@@ -94,7 +94,7 @@
         "submodel": {
           "mountu": {
             "uvlock": true,
-            "model": "csm:trafficaccessories/trafficpole_small_mount",
+            "model": "csm:trafficaccessories/shared_models/small_mount",
             "textures": {
               "all": "csm:blocks/trafficsignals/shared_textures/metal_silver",
               "particle": "csm:blocks/trafficsignals/shared_textures/metal_silver",
@@ -123,7 +123,7 @@
         "submodel": {
           "mountd": {
             "uvlock": true,
-            "model": "csm:trafficaccessories/trafficpole_small_mount",
+            "model": "csm:trafficaccessories/shared_models/small_mount",
             "textures": {
               "all": "csm:blocks/trafficsignals/shared_textures/metal_silver",
               "particle": "csm:blocks/trafficsignals/shared_textures/metal_silver",
@@ -152,7 +152,7 @@
         "submodel": {
           "mountn": {
             "uvlock": true,
-            "model": "csm:trafficaccessories/trafficpole_small_mount",
+            "model": "csm:trafficaccessories/shared_models/small_mount",
             "textures": {
               "all": "csm:blocks/trafficsignals/shared_textures/metal_silver",
               "particle": "csm:blocks/trafficsignals/shared_textures/metal_silver",
@@ -181,7 +181,7 @@
         "submodel": {
           "mounts": {
             "uvlock": true,
-            "model": "csm:trafficaccessories/trafficpole_small_mount",
+            "model": "csm:trafficaccessories/shared_models/small_mount",
             "textures": {
               "all": "csm:blocks/trafficsignals/shared_textures/metal_silver",
               "particle": "csm:blocks/trafficsignals/shared_textures/metal_silver",
