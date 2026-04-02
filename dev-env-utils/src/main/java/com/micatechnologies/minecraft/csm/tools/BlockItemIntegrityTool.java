@@ -12,8 +12,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
@@ -65,6 +67,10 @@ public class BlockItemIntegrityTool {
           "src/main/java/com/micatechnologies/minecraft/csm/trafficsignals/AbstractBlockControllableCrosswalkSignal.java",
           "src/main/java/com/micatechnologies/minecraft/csm/trafficsignals/logic/AbstractBlockTrafficSignalAPSCampbell.java",
           "src/main/java/com/micatechnologies/minecraft/csm/trafficsignals/logic/AbstractBlockTrafficSignalAPSPolara.java",
+          "src/main/java/com/micatechnologies/minecraft/csm/codeutils/AbstractBlockRotatableHZSixteen.java",
+          "src/main/java/com/micatechnologies/minecraft/csm/trafficsignals/logic/AbstractBlockControllableSignalHead.java",
+          "src/main/java/com/micatechnologies/minecraft/csm/trafficaccessories/AbstractBlockSignalBackplate.java",
+          "src/main/java/com/micatechnologies/minecraft/csm/trafficaccessories/AbstractBlockSignalBackplateFitted.java",
           "src/main/java/com/micatechnologies/minecraft/csm/tabs/CsmTabNone.java"};
   private static final String[] SOURCE_FILE_ELIGIBLE_EXTENDS_BLOCKS =
       {"AbstractBlock", "AbstractBlockRotatableNSEW", "AbstractBlockRotatableNSEWUD",
@@ -74,7 +80,9 @@ public class BlockItemIntegrityTool {
           "AbstractBlockControllableCrosswalkAccessory", "AbstractBlockControllableSignal",
           "AbstractBlockTrafficSignalRequester", "AbstractBlockTrafficSignalSensor",
           "AbstractBlockTrafficSignalTickableRequester", "AbstractBlockTrafficSignalAPS",
-          "AbstractBlockSign"};
+          "AbstractBlockSign", "AbstractBlockControllableSignalHead",
+          "AbstractBlockSignalBackplate", "AbstractBlockSignalBackplateFitted",
+          "AbstractBlockRotatableHZSixteen"};
   private static final String[] SOURCE_FILE_ELIGIBLE_EXTENDS_ITEMS = {"AbstractItem"};
 
   private static final String[] SOURCE_FILE_ELIGIBLE_EXTENDS_TAB = {"CsmTab"};
@@ -88,8 +96,10 @@ public class BlockItemIntegrityTool {
 
   private static final String ITEM_MODELS_FILE_FOLDER_PATH_RELATIVE =
       "src/main/resources/assets/csm/models/item";
+  // Note: shared_models are now inside subsystem subdirs (e.g., models/block/lifesafety/shared_models/)
+  // This constant is kept for checkJsonModelIntegrity compatibility but the centralized dir no longer exists
   private static final String CUSTOM_MODELS_FILE_FOLDER_PATH_RELATIVE =
-      "src/main/resources/assets/csm/models/block/shared_models";
+      "src/main/resources/assets/csm/models/block";
 
   private static final String BLOCK_TEXTURES_FILE_FOLDER_PATH_RELATIVE =
       "src/main/resources/assets/csm/textures/blocks";
@@ -263,12 +273,12 @@ public class BlockItemIntegrityTool {
 
       // Check for unused files
       checkUnusedFiles(blockstateFolder, usedBlockstateFiles);
-      // Exclude shared_models/ from block model walk (checked separately as custom models)
-      Path sharedModelsPath = customModelsFolder.toPath();
-      checkUnusedFiles(blockModelsFolder, usedBlockModelFiles,
-          path -> !path.startsWith(sharedModelsPath));
+      // Walk all block models (including shared_models in subsystem subdirs) as one combined set
+      List<File> allUsedBlockModels = new ArrayList<>();
+      allUsedBlockModels.addAll(usedBlockModelFiles);
+      allUsedBlockModels.addAll(usedCustomModelFiles);
+      checkUnusedFiles(blockModelsFolder, allUsedBlockModels);
       checkUnusedFiles(itemModelsFolder, usedItemModelFiles);
-      checkUnusedFiles(customModelsFolder, usedCustomModelFiles);
       checkUnusedFiles(blockTexturesFolder, usedBlockTexturesFiles);
       checkUnusedFiles(itemTexturesFolder, usedItemTexturesFiles);
       checkUnusedFiles(soundsResourceFolder, usedSoundFiles);
@@ -547,13 +557,57 @@ public class BlockItemIntegrityTool {
 
   }
 
+  private static final int MAX_MODEL_RECURSION_DEPTH = 20;
+
+  /**
+   * Wrapper method with the original signature for backward compatibility.
+   * Creates an empty visited set and passes depth=0.
+   */
   public static void checkJsonModelIntegrity(File blockModelsFolder, File itemModelsFolder,
       File customModelsFolder, File blockTexturesFolder, File itemTexturesFolder,
       File modelFileJson) throws Exception {
+    checkJsonModelIntegrity(blockModelsFolder, itemModelsFolder, customModelsFolder,
+        blockTexturesFolder, itemTexturesFolder, modelFileJson, new HashSet<>(), 0);
+  }
+
+  /**
+   * Checks the integrity of a JSON model file, recursively following parent references.
+   * Tracks visited models to detect circular references and enforces a max depth limit.
+   *
+   * @param blockModelsFolder  The block models folder.
+   * @param itemModelsFolder   The item models folder.
+   * @param customModelsFolder The custom/shared models folder.
+   * @param blockTexturesFolder The block textures folder.
+   * @param itemTexturesFolder  The item textures folder.
+   * @param modelFileJson      The model JSON file to check.
+   * @param visitedModels      Set of canonical paths already visited (for circular reference detection).
+   * @param depth              Current recursion depth.
+   */
+  public static void checkJsonModelIntegrity(File blockModelsFolder, File itemModelsFolder,
+      File customModelsFolder, File blockTexturesFolder, File itemTexturesFolder,
+      File modelFileJson, Set<String> visitedModels, int depth) throws Exception {
 
     validationsCount.incrementAndGet(); // Increment validation count
     if (!modelFileJson.exists()) {
       logError("Model file does not exist: " + modelFileJson.getPath());
+      return;
+    }
+
+    // Circular reference detection
+    String canonicalPath = modelFileJson.getCanonicalPath();
+    if (visitedModels.contains(canonicalPath)) {
+      if (DEBUG) {
+        System.out.println("Skipping already-visited model: " + canonicalPath);
+      }
+      return;
+    }
+    visitedModels.add(canonicalPath);
+
+    // Max depth check
+    if (depth >= MAX_MODEL_RECURSION_DEPTH) {
+      logError("Model recursion depth exceeded (" + MAX_MODEL_RECURSION_DEPTH
+          + ") at: " + modelFileJson.getPath());
+      return;
     }
 
     String modelJsonRaw = Files.readString(modelFileJson.toPath());
@@ -586,12 +640,24 @@ public class BlockItemIntegrityTool {
           parentModelFolder = itemModelsFolder;
           modelFileName = strippedParentValue.substring("item/".length());
           usedModelFiles = usedItemModelFiles;
+        } else {
+          // Subsystem path: e.g. "trafficsigns/metal_signback_setback" or
+          // "lifesafety/shared_models/emergency_light"
+          // These resolve relative to models/block/
+          parentModelFolder = blockModelsFolder;
+          modelFileName = strippedParentValue;
+          // Determine used list based on whether this is a shared_models path
+          if (strippedParentValue.contains("/shared_models/")) {
+            usedModelFiles = usedCustomModelFiles;
+          } else {
+            usedModelFiles = usedBlockModelFiles;
+          }
         }
 
         if (parentModelFolder != null && modelFileName != null && usedModelFiles != null) {
           File parentModelFile = new File(parentModelFolder, modelFileName + ".json");
           checkJsonModelIntegrity(blockModelsFolder, itemModelsFolder, customModelsFolder,
-              blockTexturesFolder, itemTexturesFolder, parentModelFile);
+              blockTexturesFolder, itemTexturesFolder, parentModelFile, visitedModels, depth + 1);
           usedModelFiles.add(parentModelFile);
         } else {
           logError("Unexpected or invalid parent model value: " + parentValue);
@@ -884,6 +950,59 @@ public class BlockItemIntegrityTool {
     return modelFiles;
   }
 
+  /**
+   * Resolves a model value string (e.g. "csm:block/shared_models/foo") to a list of File objects.
+   * Handles all known prefixes: block/shared_models/, custom/, block/, item/, and subsystem paths
+   * like "csm:trafficsigns/metal_signback_setback" or "csm:lifesafety/shared_models/emergency_light".
+   * For .obj models, also adds the corresponding .mtl file.
+   *
+   * @param blockModelsFolder  The block models folder (models/block/).
+   * @param itemModelsFolder   The item models folder (models/item/).
+   * @param customModelsFolder The custom/shared models folder (models/block/shared_models/).
+   * @param modelValue         The full model value string including the mod prefix (e.g. "csm:block/foo").
+   *
+   * @return A list of resolved model files (may include both .json/.obj and .mtl).
+   */
+  private static List<File> resolveModelFiles(File blockModelsFolder, File itemModelsFolder,
+      File customModelsFolder, String modelValue) {
+    List<File> resolved = new ArrayList<>();
+    String prefixCheck = MOD_PREFIX + ":";
+    if (!modelValue.startsWith(prefixCheck)) {
+      return resolved;
+    }
+    String strippedModelValue = modelValue.substring(prefixCheck.length());
+    String modelFileName = strippedModelValue + ".json";
+    File modelFolder = blockModelsFolder;
+
+    if (strippedModelValue.startsWith("block/shared_models/")) {
+      modelFolder = customModelsFolder;
+      modelFileName = strippedModelValue.substring("block/shared_models/".length()) + ".json";
+    } else if (strippedModelValue.startsWith("custom/")) {
+      modelFolder = customModelsFolder;
+      modelFileName = strippedModelValue.substring("custom/".length());
+    } else if (strippedModelValue.startsWith("block/")) {
+      modelFolder = blockModelsFolder;
+      modelFileName = strippedModelValue.substring("block/".length());
+    } else if (strippedModelValue.startsWith("item/")) {
+      modelFolder = itemModelsFolder;
+      modelFileName = strippedModelValue.substring("item/".length());
+    } else {
+      // Subsystem path: e.g. "trafficsigns/metal_signback_setback" or
+      // "lifesafety/shared_models/emergency_light"
+      // These resolve relative to models/block/
+      modelFolder = blockModelsFolder;
+      modelFileName = strippedModelValue + ".json";
+    }
+
+    if (strippedModelValue.endsWith(".obj")) {
+      modelFileName = strippedModelValue;
+      File modelFileMtl = new File(modelFolder, modelFileName.replaceAll(".obj", ".mtl"));
+      resolved.add(modelFileMtl);
+    }
+    resolved.add(new File(modelFolder, modelFileName));
+    return resolved;
+  }
+
   public static void digForModels(File blockModelsFolder, File itemModelsFolder,
       File customModelsFolder, JsonObject jsonToCheck, List<File> modelFiles) {
     if (jsonToCheck == null) {
@@ -896,58 +1015,16 @@ public class BlockItemIntegrityTool {
       if (key.equals("model") && element.isJsonPrimitive()) {
         String modelValue = element.getAsString();
         if (modelValue.startsWith(prefixCheck)) {
-          String strippedModelValue = modelValue.substring(prefixCheck.length());
-          String modelFileName = strippedModelValue + ".json";
-          File modelFolder = blockModelsFolder;
-          if (strippedModelValue.startsWith("block/shared_models/")) {
-            modelFolder = customModelsFolder;
-            modelFileName = strippedModelValue.substring("block/shared_models/".length()) + ".json";
-          } else if (strippedModelValue.startsWith("custom/")) {
-            modelFolder = customModelsFolder;
-            modelFileName = strippedModelValue.substring("custom/".length());
-          } else if (strippedModelValue.startsWith("block/")) {
-            modelFolder = blockModelsFolder;
-            modelFileName = strippedModelValue.substring("block/".length());
-          } else if (strippedModelValue.startsWith("item/")) {
-            modelFolder = itemModelsFolder;
-            modelFileName = strippedModelValue.substring("item/".length());
-          }
-          if (strippedModelValue.endsWith(".obj")) {
-            modelFileName = strippedModelValue;
-            File modelFileMtl = new File(modelFolder, modelFileName.replaceAll(".obj", ".mtl"));
-            modelFiles.add(modelFileMtl);
-          }
-          File modelFile = new File(modelFolder, modelFileName);
-          modelFiles.add(modelFile);
+          modelFiles.addAll(resolveModelFiles(blockModelsFolder, itemModelsFolder,
+              customModelsFolder, modelValue));
         }
       } else if (element.isJsonObject()) {
         JsonObject obj = element.getAsJsonObject();
         if (obj.has("model")) {
           String modelValue = obj.get("model").getAsString();
           if (modelValue.startsWith(prefixCheck)) {
-            String strippedModelValue = modelValue.substring(prefixCheck.length());
-            String modelFileName = strippedModelValue + ".json";
-            File modelFolder = blockModelsFolder;
-            if (strippedModelValue.startsWith("block/shared_models/")) {
-              modelFolder = customModelsFolder;
-              modelFileName = strippedModelValue.substring("block/shared_models/".length()) + ".json";
-            } else if (strippedModelValue.startsWith("custom/")) {
-              modelFolder = customModelsFolder;
-              modelFileName = strippedModelValue.substring("custom/".length());
-            } else if (strippedModelValue.startsWith("block/")) {
-              modelFolder = blockModelsFolder;
-              modelFileName = strippedModelValue.substring("block/".length());
-            } else if (strippedModelValue.startsWith("item/")) {
-              modelFolder = itemModelsFolder;
-              modelFileName = strippedModelValue.substring("item/".length());
-            }
-            if (strippedModelValue.endsWith(".obj")) {
-              modelFileName = strippedModelValue;
-              File modelFileMtl = new File(modelFolder, modelFileName.replaceAll(".obj", ".mtl"));
-              modelFiles.add(modelFileMtl);
-            }
-            File modelFile = new File(modelFolder, modelFileName);
-            modelFiles.add(modelFile);
+            modelFiles.addAll(resolveModelFiles(blockModelsFolder, itemModelsFolder,
+                customModelsFolder, modelValue));
           }
         }
         digForModels(blockModelsFolder, itemModelsFolder, customModelsFolder, obj, modelFiles);
@@ -958,30 +1035,8 @@ public class BlockItemIntegrityTool {
             if (obj.has("model")) {
               String modelValue = obj.get("model").getAsString();
               if (modelValue.startsWith(prefixCheck)) {
-                String strippedModelValue = modelValue.substring(prefixCheck.length());
-                String modelFileName = strippedModelValue + ".json";
-                File modelFolder = blockModelsFolder;
-                if (strippedModelValue.startsWith("block/shared_models/")) {
-                  modelFolder = customModelsFolder;
-                  modelFileName = strippedModelValue.substring("block/shared_models/".length()) + ".json";
-                } else if (strippedModelValue.startsWith("custom/")) {
-                  modelFolder = customModelsFolder;
-                  modelFileName = strippedModelValue.substring("custom/".length());
-                } else if (strippedModelValue.startsWith("block/")) {
-                  modelFolder = blockModelsFolder;
-                  modelFileName = strippedModelValue.substring("block/".length());
-                } else if (strippedModelValue.startsWith("item/")) {
-                  modelFolder = itemModelsFolder;
-                  modelFileName = strippedModelValue.substring("item/".length());
-                }
-                if (strippedModelValue.endsWith(".obj")) {
-                  modelFileName = strippedModelValue;
-                  File modelFileMtl =
-                      new File(modelFolder, modelFileName.replaceAll(".obj", ".mtl"));
-                  modelFiles.add(modelFileMtl);
-                }
-                File modelFile = new File(modelFolder, modelFileName);
-                modelFiles.add(modelFile);
+                modelFiles.addAll(resolveModelFiles(blockModelsFolder, itemModelsFolder,
+                    customModelsFolder, modelValue));
               }
             }
             digForModels(blockModelsFolder, itemModelsFolder, customModelsFolder, obj, modelFiles);
