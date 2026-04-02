@@ -212,12 +212,16 @@ public class TileEntityTrafficSignalHeadRenderer extends
       float xOffset = sectionXPositions[i];
       float yOffset = sectionYPositions[i];
       boolean is8Inch = sectionSizes[i] == 8;
+      boolean is4Inch = sectionSizes[i] == 4;
 
       List<RenderHelper.Box> bodyData;
       List<RenderHelper.Box> doorData;
       if (horizontal) {
         bodyData = TrafficSignalVertexData.SIGNAL_BODY_HORIZONTAL_VERTEX_DATA;
         doorData = TrafficSignalVertexData.SIGNAL_DOOR_HORIZONTAL_VERTEX_DATA;
+      } else if (is4Inch) {
+        bodyData = TrafficSignalVertexData.SIGNAL_BODY_4INCH_VERTEX_DATA;
+        doorData = TrafficSignalVertexData.SIGNAL_DOOR_4INCH_VERTEX_DATA;
       } else if (is8Inch) {
         bodyData = TrafficSignalVertexData.SIGNAL_BODY_8INCH_VERTEX_DATA;
         doorData = TrafficSignalVertexData.SIGNAL_DOOR_8INCH_VERTEX_DATA;
@@ -232,7 +236,7 @@ public class TileEntityTrafficSignalHeadRenderer extends
           doorColor.getRed(), doorColor.getGreen(), doorColor.getBlue(), 1.0f, xOffset, yOffset, 0.0f);
 
       addVisorQuadsToBuffer(visorType, buffer, visorColor.getRed(), visorColor.getGreen(),
-          visorColor.getBlue(), 1.0f, xOffset, yOffset, is8Inch);
+          visorColor.getBlue(), 1.0f, xOffset, yOffset, sectionSizes[i]);
     }
     tessellator.draw();
 
@@ -246,45 +250,54 @@ public class TileEntityTrafficSignalHeadRenderer extends
 
   private void addVisorQuadsToBuffer(TrafficSignalVisorType visorType, BufferBuilder buffer,
       float red, float green, float blue, float alpha, float xOffset, float yOffset,
-      boolean is8Inch) {
+      int sectionSize) {
     List<RenderHelper.Box> visorData;
     boolean applyTilt = true;
     switch (visorType) {
       case CIRCLE:
-        visorData = is8Inch ? TrafficSignalVertexData.CIRCLE_VISOR_8INCH_VERTEX_DATA
-            : TrafficSignalVertexData.CIRCLE_VISOR_VERTEX_DATA;
+        visorData = selectVisorData(TrafficSignalVertexData.CIRCLE_VISOR_VERTEX_DATA,
+            TrafficSignalVertexData.CIRCLE_VISOR_8INCH_VERTEX_DATA,
+            TrafficSignalVertexData.CIRCLE_VISOR_4INCH_VERTEX_DATA, sectionSize);
         break;
       case TUNNEL:
-        visorData = is8Inch ? TrafficSignalVertexData.TUNNEL_VISOR_8INCH_VERTEX_DATA
-            : TrafficSignalVertexData.TUNNEL_VISOR_VERTEX_DATA;
+        visorData = selectVisorData(TrafficSignalVertexData.TUNNEL_VISOR_VERTEX_DATA,
+            TrafficSignalVertexData.TUNNEL_VISOR_8INCH_VERTEX_DATA,
+            TrafficSignalVertexData.TUNNEL_VISOR_4INCH_VERTEX_DATA, sectionSize);
         break;
       case CUTAWAY:
-        visorData = is8Inch ? TrafficSignalVertexData.CAP_VISOR_8INCH_VERTEX_DATA
-            : TrafficSignalVertexData.CAP_VISOR_VERTEX_DATA;
+        visorData = selectVisorData(TrafficSignalVertexData.CAP_VISOR_VERTEX_DATA,
+            TrafficSignalVertexData.CAP_VISOR_8INCH_VERTEX_DATA,
+            TrafficSignalVertexData.CAP_VISOR_4INCH_VERTEX_DATA, sectionSize);
         break;
       case BOTH_LOUVERED:
-        visorData = is8Inch ? TrafficSignalVertexData.BOTH_LOUVERED_VISOR_8INCH_VERTEX_DATA
-            : TrafficSignalVertexData.BOTH_LOUVERED_VISOR_VERTEX_DATA;
+        visorData = selectVisorData(TrafficSignalVertexData.BOTH_LOUVERED_VISOR_VERTEX_DATA,
+            TrafficSignalVertexData.BOTH_LOUVERED_VISOR_8INCH_VERTEX_DATA,
+            TrafficSignalVertexData.BOTH_LOUVERED_VISOR_4INCH_VERTEX_DATA, sectionSize);
         break;
       case VERTICAL_LOUVERED:
-        visorData = is8Inch ? TrafficSignalVertexData.VERTICAL_LOUVERED_VISOR_8INCH_VERTEX_DATA
-            : TrafficSignalVertexData.VERTICAL_LOUVERED_VISOR_VERTEX_DATA;
+        visorData = selectVisorData(TrafficSignalVertexData.VERTICAL_LOUVERED_VISOR_VERTEX_DATA,
+            TrafficSignalVertexData.VERTICAL_LOUVERED_VISOR_8INCH_VERTEX_DATA,
+            TrafficSignalVertexData.VERTICAL_LOUVERED_VISOR_4INCH_VERTEX_DATA, sectionSize);
         break;
       case HORIZONTAL_LOUVERED:
-        visorData = is8Inch ? TrafficSignalVertexData.HORIZONTAL_LOUVERED_VISOR_8INCH_VERTEX_DATA
-            : TrafficSignalVertexData.HORIZONTAL_LOUVERED_VISOR_VERTEX_DATA;
+        visorData = selectVisorData(TrafficSignalVertexData.HORIZONTAL_LOUVERED_VISOR_VERTEX_DATA,
+            TrafficSignalVertexData.HORIZONTAL_LOUVERED_VISOR_8INCH_VERTEX_DATA,
+            TrafficSignalVertexData.HORIZONTAL_LOUVERED_VISOR_4INCH_VERTEX_DATA, sectionSize);
         break;
       case BARLO:
-        visorData = is8Inch ? TrafficSignalVertexData.TUNNEL_VISOR_8INCH_VERTEX_DATA
-            : TrafficSignalVertexData.TUNNEL_VISOR_VERTEX_DATA;
+        visorData = selectVisorData(TrafficSignalVertexData.TUNNEL_VISOR_VERTEX_DATA,
+            TrafficSignalVertexData.TUNNEL_VISOR_8INCH_VERTEX_DATA,
+            TrafficSignalVertexData.TUNNEL_VISOR_4INCH_VERTEX_DATA, sectionSize);
         break;
       case BARLO_VERTICAL:
-        visorData = is8Inch ? TrafficSignalVertexData.CIRCLE_VISOR_8INCH_VERTEX_DATA
-            : TrafficSignalVertexData.CIRCLE_VISOR_VERTEX_DATA;
+        visorData = selectVisorData(TrafficSignalVertexData.CIRCLE_VISOR_VERTEX_DATA,
+            TrafficSignalVertexData.CIRCLE_VISOR_8INCH_VERTEX_DATA,
+            TrafficSignalVertexData.CIRCLE_VISOR_4INCH_VERTEX_DATA, sectionSize);
         break;
       case NONE:
-        visorData = is8Inch ? TrafficSignalVertexData.NONE_VISOR_8INCH_VERTEX_DATA
-            : TrafficSignalVertexData.NONE_VISOR_VERTEX_DATA;
+        visorData = selectVisorData(TrafficSignalVertexData.NONE_VISOR_VERTEX_DATA,
+            TrafficSignalVertexData.NONE_VISOR_8INCH_VERTEX_DATA,
+            TrafficSignalVertexData.NONE_VISOR_4INCH_VERTEX_DATA, sectionSize);
         applyTilt = false;
         break;
       default:
@@ -297,6 +310,13 @@ public class TileEntityTrafficSignalHeadRenderer extends
       RenderHelper.addBoxesToBuffer(visorData, buffer, red, green, blue, alpha,
           xOffset, yOffset, 0.0f);
     }
+  }
+
+  private static List<RenderHelper.Box> selectVisorData(List<RenderHelper.Box> data12,
+      List<RenderHelper.Box> data8, List<RenderHelper.Box> data4, int sectionSize) {
+    if (sectionSize <= 4) return data4;
+    if (sectionSize <= 8) return data8;
+    return data12;
   }
 
   /**
@@ -348,14 +368,16 @@ public class TileEntityTrafficSignalHeadRenderer extends
       boolean isBulbLit = sectionInfo.isBulbLit();
       TextureInfo texInfo = TrafficSignalTextureMap.getTextureInfoForBulb(bulbStyle, bulbType, bulbColor, isBulbLit);
 
-      // Bulb quad parameters: sized to section (12 or 8), slightly inset to avoid visor bleed
+      // Bulb quad parameters: sized to section (12, 8, or 4), slightly inset to avoid visor bleed
       float fullSize = sectionSizes[i];
+      float sizeScale = fullSize / 12f;
       float inset = fullSize * 0.02f;
       float size = fullSize - inset * 2f;
       float sectionOffset = (12f - fullSize) / 2f; // center smaller sections within the 12-unit slot
       float baseX = 2f + inset + sectionXPositions[i] + sectionOffset;
       float baseY = sectionYPositions[i] + inset + sectionOffset;
-      float z = 10.4f;
+      // Scale bulb Z to stay just in front of the (now depth-scaled) door
+      float z = VISOR_PIVOT_Z + (10.4f - VISOR_PIVOT_Z) * sizeScale;
 
       float u1 = texInfo.getU1();
       float v1 = texInfo.getV1();
@@ -439,8 +461,11 @@ public class TileEntityTrafficSignalHeadRenderer extends
           || sectionInfos[i].getBulbColor() != TrafficSignalBulbColor.RED) {
         continue;
       }
+      // Scale strobe Z position to match visor depth: pivot at body face (Z=11),
+      // base position at Z=7 for 12-inch, scaled proportionally for smaller sections
+      float barZ = VISOR_PIVOT_Z + (7.0f - VISOR_PIVOT_Z) * (sectionSizes[i] / 12f);
       emitBarloQuad(buffer, sectionInfos[i].getVisorType(), sectionSizes[i],
-          sectionXPositions[i], sectionYPositions[i], 7.0f);
+          sectionXPositions[i], sectionYPositions[i], barZ);
     }
     tessellator.draw();
 
@@ -458,8 +483,9 @@ public class TileEntityTrafficSignalHeadRenderer extends
             || sectionInfos[i].getBulbColor() != TrafficSignalBulbColor.RED) {
           continue;
         }
+        float strobeZ = VISOR_PIVOT_Z + (6.9f - VISOR_PIVOT_Z) * (sectionSizes[i] / 12f);
         emitBarloQuad(buffer, sectionInfos[i].getVisorType(), sectionSizes[i],
-            sectionXPositions[i], sectionYPositions[i], 6.9f);
+            sectionXPositions[i], sectionYPositions[i], strobeZ);
       }
       tessellator.draw();
     }

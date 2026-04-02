@@ -177,6 +177,7 @@ tile.controllableverticalangleuturnsignal.name=Vertical Right Angle Traffic Sign
 tile.controllableverticalbikesignal.name=Vertical Traffic Signal (Bike, Protected)
 tile.controllableverticalbikesignal8inch.name=Vertical Traffic Signal (Bike, Protected, 8 Inch)
 tile.controllableverticalbikesignal8inchblack.name=Vertical Traffic Signal (Bike, Protected, 8 Inch, Black Paint)
+tile.controllableverticalbikesignal4inch.name=Vertical Traffic Signal (Bike, Protected, 4 Inch)
 tile.controllableverticalbikesignalgray.name=Vertical Bike Signal (Gray)
 tile.controllableverticalhybridleftaddonsignal.name=Vertical Traffic Signal Add-On (Left w/ Flashing Yellow)
 tile.controllableverticalhybridleftaddonsignalgray.name=Vertical FYA Left Lower Signal (Gray)
