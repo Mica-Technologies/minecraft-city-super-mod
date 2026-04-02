@@ -66,6 +66,9 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
    */
   private TrafficSignalBodyTilt bodyTilt = TrafficSignalBodyTilt.NONE;
 
+  private static final String ALTERNATE_FLASH_KEY = "alternateFlash";
+  private boolean alternateFlash = false;
+
   private boolean dirty = true;
 
   /**
@@ -102,6 +105,11 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
     // Get the body tilt
     if (compound.hasKey(BODY_TILT_KEY)) {
       bodyTilt = TrafficSignalBodyTilt.fromNBT(compound.getInteger(BODY_TILT_KEY));
+    }
+
+    // Get the alternate flash setting
+    if (compound.hasKey(ALTERNATE_FLASH_KEY)) {
+      alternateFlash = compound.getBoolean(ALTERNATE_FLASH_KEY);
     }
 
     // Mark as dirty so the renderer recompiles the display list with updated state
@@ -145,6 +153,9 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
 
     // Set the body tilt
     compound.setInteger(BODY_TILT_KEY, bodyTilt.toNBT());
+
+    // Set the alternate flash setting
+    compound.setBoolean(ALTERNATE_FLASH_KEY, alternateFlash);
 
     // Return the compound
     return compound;
@@ -212,11 +223,13 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
       }
     }
 
-    // Loop again, and if the bulb is lit and set to flashing, handle the flashing logic
+    // Loop again, and if the bulb is lit and set to flashing, handle the flashing logic.
+    // alternateFlash inverts the flash phase for wig-wag beacon pairs.
     long blinkInterval = 500; // ms
     boolean firstHalfOfSecond = (System.currentTimeMillis() % (blinkInterval * 2)) < blinkInterval;
+    if (alternateFlash) firstHalfOfSecond = !firstHalfOfSecond;
     for (TrafficSignalSectionInfo sectionInfo : sectionInfos) {
-      if (sectionInfo.isBulbLit() && sectionInfo.isBulbFlashing()&&firstHalfOfSecond) {
+      if (sectionInfo.isBulbLit() && sectionInfo.isBulbFlashing() && firstHalfOfSecond) {
         sectionInfo.setBulbLit(false);
       }
     }
@@ -329,6 +342,22 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
     TrafficSignalBodyTilt nextBodyTilt = bodyTilt.getNextTilt();
     setBodyTilt(nextBodyTilt);
     return getBodyTilt();
+  }
+
+  /**
+   * Returns whether this signal head uses alternate (inverted) flash timing for wig-wag.
+   */
+  public boolean isAlternateFlash() {
+    return alternateFlash;
+  }
+
+  /**
+   * Toggles the alternate flash setting and returns the new value.
+   */
+  public boolean toggleAlternateFlash() {
+    alternateFlash = !alternateFlash;
+    markDirtySync(world, pos, true);
+    return alternateFlash;
   }
 
   /**

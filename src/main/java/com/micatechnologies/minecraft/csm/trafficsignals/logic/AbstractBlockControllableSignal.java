@@ -226,6 +226,7 @@ public abstract class AbstractBlockControllableSignal extends AbstractBlockRotat
     PEDESTRIAN_BEACON,
     PEDESTRIAN_ACCESSORY,
     PROTECTED,
-    NA_SENSOR
+    NA_SENSOR,
+    BEACON
   }
 }

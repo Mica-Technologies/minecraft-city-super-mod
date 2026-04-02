@@ -21,7 +21,7 @@ public class BlockControllableSingleSolidSignalRedGray extends AbstractBlockCont
 
   @Override
   public SIGNAL_SIDE getSignalSide(World world, BlockPos blockPos) {
-    return SIGNAL_SIDE.THROUGH;
+    return SIGNAL_SIDE.BEACON;
   }
 
   @Override
@@ -56,7 +56,7 @@ public class BlockControllableSingleSolidSignalRedGray extends AbstractBlockCont
     TrafficSignalSectionInfo[] infos = new TrafficSignalSectionInfo[] {
         new TrafficSignalSectionInfo(TrafficSignalBodyColor.BATTLESHIP_GRAY, TrafficSignalBodyColor.BATTLESHIP_GRAY, TrafficSignalBodyColor.BATTLESHIP_GRAY,
             TrafficSignalVisorType.CIRCLE, TrafficSignalBulbStyle.LED, TrafficSignalBulbType.BALL,
-            TrafficSignalBulbColor.RED, false)
+            TrafficSignalBulbColor.RED, true)
     };
     return infos;
   }

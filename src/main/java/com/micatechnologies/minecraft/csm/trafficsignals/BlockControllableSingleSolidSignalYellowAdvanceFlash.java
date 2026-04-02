@@ -20,7 +20,7 @@ public class BlockControllableSingleSolidSignalYellowAdvanceFlash
 
   @Override
   public SIGNAL_SIDE getSignalSide(World world, BlockPos blockPos) {
-    return SIGNAL_SIDE.THROUGH;
+    return SIGNAL_SIDE.BEACON;
   }
 
   @Override

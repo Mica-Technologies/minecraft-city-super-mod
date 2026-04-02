@@ -221,6 +221,7 @@ public class TrafficSignalPhases {
       offPhase.addOffSignals(circuit.getThroughSignals());
       offPhase.addOffSignals(circuit.getProtectedSignals());
       offPhase.addOffSignals(circuit.getPedestrianSignals());
+      offPhase.addOffSignals(circuit.getBeaconSignals());
       offPhase.addOffSignals(circuit.getPedestrianBeaconSignals());
       offPhase.addOffSignals(circuit.getPedestrianAccessorySignals());
     }
@@ -260,6 +261,9 @@ public class TrafficSignalPhases {
         Tuple<List<BlockPos>, List<BlockPos>> pedestrianBeaconSignals
             = TrafficSignalControllerTickerUtilities.filterSignalsByShouldFlash(world,
             circuit.getPedestrianBeaconSignals());
+        Tuple<List<BlockPos>, List<BlockPos>> beaconSignals
+            = TrafficSignalControllerTickerUtilities.filterSignalsByShouldFlash(world,
+            circuit.getBeaconSignals());
         flashPhase1.addRedSignals(flashingLeftSignals.getFirst());
         flashPhase1.addOffSignals(flashingLeftSignals.getSecond());
         flashPhase1.addRedSignals(leftSignals.getFirst());
@@ -268,6 +272,8 @@ public class TrafficSignalPhases {
         flashPhase1.addOffSignals(throughSignals.getSecond());
         flashPhase1.addYellowSignals(pedestrianBeaconSignals.getFirst());
         flashPhase1.addOffSignals(pedestrianBeaconSignals.getSecond());
+        flashPhase1.addYellowSignals(beaconSignals.getFirst());
+        flashPhase1.addOffSignals(beaconSignals.getSecond());
         flashPhase1.addOffSignals(circuit.getPedestrianSignals());
         flashPhase1.addOffSignals(circuit.getPedestrianAccessorySignals());
         if (hasProtectedSignals) {
@@ -292,6 +298,7 @@ public class TrafficSignalPhases {
         flashPhase1.addOffSignals(circuit.getRightSignals());
         flashPhase1.addOffSignals(circuit.getThroughSignals());
         flashPhase1.addOffSignals(circuit.getProtectedSignals());
+        flashPhase1.addOffSignals(circuit.getBeaconSignals());
         flashPhase1.addOffSignals(circuit.getPedestrianSignals());
         flashPhase1.addOffSignals(circuit.getPedestrianBeaconSignals());
         flashPhase1.addOffSignals(circuit.getPedestrianAccessorySignals());
@@ -332,6 +339,11 @@ public class TrafficSignalPhases {
         flashPhase1.addOffSignals(protectedSignals.getSecond());
         flashPhase1.addRedSignals(pedestrianBeaconSignals.getFirst());
         flashPhase1.addOffSignals(pedestrianBeaconSignals.getSecond());
+        Tuple<List<BlockPos>, List<BlockPos>> beaconSignals
+            = TrafficSignalControllerTickerUtilities.filterSignalsByShouldFlash(world,
+            circuit.getBeaconSignals());
+        flashPhase1.addRedSignals(beaconSignals.getFirst());
+        flashPhase1.addOffSignals(beaconSignals.getSecond());
         flashPhase1.addOffSignals(circuit.getPedestrianSignals());
         flashPhase1.addOffSignals(circuit.getPedestrianAccessorySignals());
       }
@@ -383,6 +395,11 @@ public class TrafficSignalPhases {
         flashPhase2.addOffSignals(protectedSignals.getSecond());
         flashPhase2.addRedSignals(pedestrianBeaconSignals.getFirst());
         flashPhase2.addOffSignals(pedestrianBeaconSignals.getSecond());
+        Tuple<List<BlockPos>, List<BlockPos>> beaconSignals
+            = TrafficSignalControllerTickerUtilities.filterSignalsByShouldFlash(world,
+            circuit.getBeaconSignals());
+        flashPhase2.addRedSignals(beaconSignals.getFirst());
+        flashPhase2.addOffSignals(beaconSignals.getSecond());
         flashPhase2.addOffSignals(circuit.getPedestrianSignals());
         flashPhase2.addOffSignals(circuit.getPedestrianAccessorySignals());
       } else {
@@ -392,6 +409,7 @@ public class TrafficSignalPhases {
         flashPhase2.addOffSignals(circuit.getRightSignals());
         flashPhase2.addOffSignals(circuit.getThroughSignals());
         flashPhase2.addOffSignals(circuit.getProtectedSignals());
+        flashPhase2.addOffSignals(circuit.getBeaconSignals());
         flashPhase2.addOffSignals(circuit.getPedestrianBeaconSignals());
         flashPhase2.addOffSignals(circuit.getPedestrianSignals());
         flashPhase2.addOffSignals(circuit.getPedestrianAccessorySignals());
@@ -414,6 +432,7 @@ public class TrafficSignalPhases {
         faultPhase1.addOffSignals(circuit.getRightSignals());
         faultPhase1.addOffSignals(circuit.getThroughSignals());
         faultPhase1.addOffSignals(circuit.getProtectedSignals());
+        faultPhase1.addOffSignals(circuit.getBeaconSignals());
         faultPhase1.addOffSignals(circuit.getPedestrianBeaconSignals());
         faultPhase1.addOffSignals(circuit.getPedestrianSignals());
         faultPhase1.addOffSignals(circuit.getPedestrianAccessorySignals());
@@ -424,6 +443,7 @@ public class TrafficSignalPhases {
         faultPhase1.addRedSignals(circuit.getRightSignals());
         faultPhase1.addRedSignals(circuit.getThroughSignals());
         faultPhase1.addRedSignals(circuit.getProtectedSignals());
+        faultPhase1.addRedSignals(circuit.getBeaconSignals());
         faultPhase1.addRedSignals(circuit.getPedestrianBeaconSignals());
         faultPhase1.addOffSignals(circuit.getPedestrianSignals());
         faultPhase1.addOffSignals(circuit.getPedestrianAccessorySignals());
@@ -446,6 +466,7 @@ public class TrafficSignalPhases {
         faultPhase2.addRedSignals(circuit.getRightSignals());
         faultPhase2.addRedSignals(circuit.getThroughSignals());
         faultPhase2.addRedSignals(circuit.getProtectedSignals());
+        faultPhase2.addRedSignals(circuit.getBeaconSignals());
         faultPhase2.addRedSignals(circuit.getPedestrianBeaconSignals());
         faultPhase2.addOffSignals(circuit.getPedestrianSignals());
         faultPhase2.addOffSignals(circuit.getPedestrianAccessorySignals());
@@ -456,6 +477,7 @@ public class TrafficSignalPhases {
         faultPhase2.addOffSignals(circuit.getRightSignals());
         faultPhase2.addOffSignals(circuit.getThroughSignals());
         faultPhase2.addOffSignals(circuit.getProtectedSignals());
+        faultPhase2.addOffSignals(circuit.getBeaconSignals());
         faultPhase2.addOffSignals(circuit.getPedestrianBeaconSignals());
         faultPhase2.addOffSignals(circuit.getPedestrianSignals());
         faultPhase2.addOffSignals(circuit.getPedestrianAccessorySignals());
@@ -475,6 +497,7 @@ public class TrafficSignalPhases {
       allRedPhase.addRedSignals(circuit.getRightSignals());
       allRedPhase.addRedSignals(circuit.getThroughSignals());
       allRedPhase.addRedSignals(circuit.getProtectedSignals());
+      allRedPhase.addRedSignals(circuit.getBeaconSignals());
       allRedPhase.addRedSignals(circuit.getPedestrianBeaconSignals());
       allRedPhase.addDontWalkSignals(circuit.getPedestrianSignals());
       allRedPhase.addDontWalkSignals(circuit.getPedestrianAccessorySignals());
@@ -493,6 +516,7 @@ public class TrafficSignalPhases {
       rampMeterDisabledPhase.addGreenSignals(circuit.getRightSignals());
       rampMeterDisabledPhase.addGreenSignals(circuit.getThroughSignals());
       rampMeterDisabledPhase.addOffSignals(circuit.getProtectedSignals());
+      rampMeterDisabledPhase.addOffSignals(circuit.getBeaconSignals());
       rampMeterDisabledPhase.addOffSignals(circuit.getPedestrianBeaconSignals());
       rampMeterDisabledPhase.addOffSignals(circuit.getPedestrianSignals());
       rampMeterDisabledPhase.addOffSignals(circuit.getPedestrianAccessorySignals());
@@ -511,6 +535,7 @@ public class TrafficSignalPhases {
       rampMeterStartingPhase.addYellowSignals(circuit.getRightSignals());
       rampMeterStartingPhase.addYellowSignals(circuit.getThroughSignals());
       rampMeterStartingPhase.addOffSignals(circuit.getProtectedSignals());
+      rampMeterStartingPhase.addYellowSignals(circuit.getBeaconSignals());
       rampMeterStartingPhase.addOffSignals(circuit.getPedestrianBeaconSignals());
       rampMeterStartingPhase.addOffSignals(circuit.getPedestrianSignals());
       rampMeterStartingPhase.addOffSignals(circuit.getPedestrianAccessorySignals());
@@ -528,6 +553,7 @@ public class TrafficSignalPhases {
       rampMeterFlash1Phase.addYellowSignals(circuit.getRightSignals());
       rampMeterFlash1Phase.addYellowSignals(circuit.getThroughSignals());
       rampMeterFlash1Phase.addOffSignals(circuit.getProtectedSignals());
+      rampMeterFlash1Phase.addYellowSignals(circuit.getBeaconSignals());
       rampMeterFlash1Phase.addOffSignals(circuit.getPedestrianBeaconSignals());
       rampMeterFlash1Phase.addFlashDontWalkSignals(circuit.getPedestrianSignals());
       rampMeterFlash1Phase.addOffSignals(circuit.getPedestrianAccessorySignals());
@@ -545,6 +571,7 @@ public class TrafficSignalPhases {
       rampMeterFlash2Phase.addOffSignals(circuit.getRightSignals());
       rampMeterFlash2Phase.addOffSignals(circuit.getThroughSignals());
       rampMeterFlash2Phase.addOffSignals(circuit.getProtectedSignals());
+      rampMeterFlash2Phase.addOffSignals(circuit.getBeaconSignals());
       rampMeterFlash2Phase.addOffSignals(circuit.getPedestrianBeaconSignals());
       rampMeterFlash2Phase.addFlashDontWalkSignals(circuit.getPedestrianSignals());
       rampMeterFlash2Phase.addOffSignals(circuit.getPedestrianAccessorySignals());
@@ -566,6 +593,7 @@ public class TrafficSignalPhases {
         requestableDefaultGreenPhase.addGreenSignals(circuit.getThroughSignals());
         requestableDefaultGreenPhase.addGreenSignals(circuit.getProtectedSignals());
         requestableDefaultGreenPhase.addOffSignals(circuit.getPedestrianBeaconSignals());
+        requestableDefaultGreenPhase.addOffSignals(circuit.getBeaconSignals());
         requestableDefaultGreenPhase.addWalkSignals(circuit.getPedestrianSignals());
         requestableDefaultGreenPhase.addWalkSignals(circuit.getPedestrianAccessorySignals());
       }
@@ -577,6 +605,7 @@ public class TrafficSignalPhases {
         requestableDefaultGreenPhase.addRedSignals(circuit.getRightSignals());
         requestableDefaultGreenPhase.addRedSignals(circuit.getThroughSignals());
         requestableDefaultGreenPhase.addRedSignals(circuit.getProtectedSignals());
+        requestableDefaultGreenPhase.addOffSignals(circuit.getBeaconSignals());
         requestableDefaultGreenPhase.addRedSignals(circuit.getPedestrianBeaconSignals());
         requestableDefaultGreenPhase.addDontWalkSignals(circuit.getPedestrianSignals());
         requestableDefaultGreenPhase.addDontWalkSignals(circuit.getPedestrianAccessorySignals());
@@ -600,6 +629,7 @@ public class TrafficSignalPhases {
         requestableDefaultGreenFlashDwPhase.addGreenSignals(circuit.getRightSignals());
         requestableDefaultGreenFlashDwPhase.addGreenSignals(circuit.getThroughSignals());
         requestableDefaultGreenFlashDwPhase.addGreenSignals(circuit.getProtectedSignals());
+        requestableDefaultGreenFlashDwPhase.addOffSignals(circuit.getBeaconSignals());
         requestableDefaultGreenFlashDwPhase.addOffSignals(circuit.getPedestrianBeaconSignals());
         requestableDefaultGreenFlashDwPhase.addFlashDontWalkSignals(circuit.getPedestrianSignals());
         requestableDefaultGreenFlashDwPhase.addFlashDontWalkSignals(
@@ -613,6 +643,7 @@ public class TrafficSignalPhases {
         requestableDefaultGreenFlashDwPhase.addRedSignals(circuit.getRightSignals());
         requestableDefaultGreenFlashDwPhase.addRedSignals(circuit.getThroughSignals());
         requestableDefaultGreenFlashDwPhase.addRedSignals(circuit.getProtectedSignals());
+        requestableDefaultGreenFlashDwPhase.addOffSignals(circuit.getBeaconSignals());
         requestableDefaultGreenFlashDwPhase.addGreenSignals(circuit.getPedestrianBeaconSignals());
         requestableDefaultGreenFlashDwPhase.addDontWalkSignals(circuit.getPedestrianSignals());
         requestableDefaultGreenFlashDwPhase.addDontWalkSignals(
@@ -638,6 +669,7 @@ public class TrafficSignalPhases {
         requestableDefaultGreenFlashDwHawkPhase1.addGreenSignals(circuit.getRightSignals());
         requestableDefaultGreenFlashDwHawkPhase1.addGreenSignals(circuit.getThroughSignals());
         requestableDefaultGreenFlashDwHawkPhase1.addGreenSignals(circuit.getProtectedSignals());
+        requestableDefaultGreenFlashDwHawkPhase1.addOffSignals(circuit.getBeaconSignals());
         requestableDefaultGreenFlashDwHawkPhase1.addYellowSignals(
             circuit.getPedestrianBeaconSignals());
         requestableDefaultGreenFlashDwHawkPhase1.addFlashDontWalkSignals(
@@ -653,6 +685,7 @@ public class TrafficSignalPhases {
         requestableDefaultGreenFlashDwHawkPhase1.addRedSignals(circuit.getRightSignals());
         requestableDefaultGreenFlashDwHawkPhase1.addRedSignals(circuit.getThroughSignals());
         requestableDefaultGreenFlashDwHawkPhase1.addRedSignals(circuit.getProtectedSignals());
+        requestableDefaultGreenFlashDwHawkPhase1.addOffSignals(circuit.getBeaconSignals());
         requestableDefaultGreenFlashDwHawkPhase1.addGreenSignals(
             circuit.getPedestrianBeaconSignals());
         requestableDefaultGreenFlashDwHawkPhase1.addDontWalkSignals(circuit.getPedestrianSignals());
@@ -680,6 +713,7 @@ public class TrafficSignalPhases {
         requestableDefaultGreenFlashDwHawkPhase2.addGreenSignals(circuit.getRightSignals());
         requestableDefaultGreenFlashDwHawkPhase2.addGreenSignals(circuit.getThroughSignals());
         requestableDefaultGreenFlashDwHawkPhase2.addGreenSignals(circuit.getProtectedSignals());
+        requestableDefaultGreenFlashDwHawkPhase2.addOffSignals(circuit.getBeaconSignals());
         requestableDefaultGreenFlashDwHawkPhase2.addOffSignals(
             circuit.getPedestrianBeaconSignals());
         requestableDefaultGreenFlashDwHawkPhase2.addFlashDontWalkSignals(
@@ -695,6 +729,7 @@ public class TrafficSignalPhases {
         requestableDefaultGreenFlashDwHawkPhase2.addRedSignals(circuit.getRightSignals());
         requestableDefaultGreenFlashDwHawkPhase2.addRedSignals(circuit.getThroughSignals());
         requestableDefaultGreenFlashDwHawkPhase2.addRedSignals(circuit.getProtectedSignals());
+        requestableDefaultGreenFlashDwHawkPhase2.addOffSignals(circuit.getBeaconSignals());
         requestableDefaultGreenFlashDwHawkPhase2.addGreenSignals(
             circuit.getPedestrianBeaconSignals());
         requestableDefaultGreenFlashDwHawkPhase2.addDontWalkSignals(circuit.getPedestrianSignals());
@@ -720,6 +755,7 @@ public class TrafficSignalPhases {
         requestableDefaultYellowPhase.addYellowSignals(circuit.getRightSignals());
         requestableDefaultYellowPhase.addYellowSignals(circuit.getThroughSignals());
         requestableDefaultYellowPhase.addYellowSignals(circuit.getProtectedSignals());
+        requestableDefaultYellowPhase.addOffSignals(circuit.getBeaconSignals());
         requestableDefaultYellowPhase.addYellowSignals(circuit.getPedestrianBeaconSignals());
         requestableDefaultYellowPhase.addDontWalkSignals(circuit.getPedestrianSignals());
         requestableDefaultYellowPhase.addDontWalkSignals(circuit.getPedestrianAccessorySignals());
@@ -732,6 +768,7 @@ public class TrafficSignalPhases {
         requestableDefaultYellowPhase.addRedSignals(circuit.getRightSignals());
         requestableDefaultYellowPhase.addRedSignals(circuit.getThroughSignals());
         requestableDefaultYellowPhase.addRedSignals(circuit.getProtectedSignals());
+        requestableDefaultYellowPhase.addOffSignals(circuit.getBeaconSignals());
         requestableDefaultYellowPhase.addGreenSignals(circuit.getPedestrianBeaconSignals());
         requestableDefaultYellowPhase.addDontWalkSignals(circuit.getPedestrianSignals());
         requestableDefaultYellowPhase.addDontWalkSignals(circuit.getPedestrianAccessorySignals());
@@ -754,6 +791,7 @@ public class TrafficSignalPhases {
         requestableDefaultRedPhase.addRedSignals(circuit.getRightSignals());
         requestableDefaultRedPhase.addRedSignals(circuit.getThroughSignals());
         requestableDefaultRedPhase.addRedSignals(circuit.getProtectedSignals());
+        requestableDefaultRedPhase.addOffSignals(circuit.getBeaconSignals());
         requestableDefaultRedPhase.addRedSignals(circuit.getPedestrianBeaconSignals());
         requestableDefaultRedPhase.addDontWalkSignals(circuit.getPedestrianSignals());
         requestableDefaultRedPhase.addDontWalkSignals(circuit.getPedestrianAccessorySignals());
@@ -766,6 +804,7 @@ public class TrafficSignalPhases {
         requestableDefaultRedPhase.addRedSignals(circuit.getRightSignals());
         requestableDefaultRedPhase.addRedSignals(circuit.getThroughSignals());
         requestableDefaultRedPhase.addRedSignals(circuit.getProtectedSignals());
+        requestableDefaultRedPhase.addOffSignals(circuit.getBeaconSignals());
         requestableDefaultRedPhase.addGreenSignals(circuit.getPedestrianBeaconSignals());
         requestableDefaultRedPhase.addDontWalkSignals(circuit.getPedestrianSignals());
         requestableDefaultRedPhase.addDontWalkSignals(circuit.getPedestrianAccessorySignals());
@@ -788,6 +827,7 @@ public class TrafficSignalPhases {
         requestableServiceGreenPhase.addRedSignals(circuit.getRightSignals());
         requestableServiceGreenPhase.addRedSignals(circuit.getThroughSignals());
         requestableServiceGreenPhase.addRedSignals(circuit.getProtectedSignals());
+        requestableServiceGreenPhase.addOffSignals(circuit.getBeaconSignals());
         requestableServiceGreenPhase.addRedSignals(circuit.getPedestrianBeaconSignals());
         requestableServiceGreenPhase.addDontWalkSignals(circuit.getPedestrianSignals());
         requestableServiceGreenPhase.addDontWalkSignals(circuit.getPedestrianAccessorySignals());
@@ -800,6 +840,7 @@ public class TrafficSignalPhases {
         requestableServiceGreenPhase.addGreenSignals(circuit.getRightSignals());
         requestableServiceGreenPhase.addGreenSignals(circuit.getThroughSignals());
         requestableServiceGreenPhase.addGreenSignals(circuit.getProtectedSignals());
+        requestableServiceGreenPhase.addOffSignals(circuit.getBeaconSignals());
         requestableServiceGreenPhase.addOffSignals(circuit.getPedestrianBeaconSignals());
         requestableServiceGreenPhase.addWalkSignals(circuit.getPedestrianSignals());
         requestableServiceGreenPhase.addWalkSignals(circuit.getPedestrianAccessorySignals());
@@ -823,6 +864,7 @@ public class TrafficSignalPhases {
         requestableServiceGreenFlashDwPhase.addRedSignals(circuit.getRightSignals());
         requestableServiceGreenFlashDwPhase.addRedSignals(circuit.getThroughSignals());
         requestableServiceGreenFlashDwPhase.addRedSignals(circuit.getProtectedSignals());
+        requestableServiceGreenFlashDwPhase.addOffSignals(circuit.getBeaconSignals());
         requestableServiceGreenFlashDwPhase.addGreenSignals(circuit.getPedestrianBeaconSignals());
         requestableServiceGreenFlashDwPhase.addDontWalkSignals(circuit.getPedestrianSignals());
         requestableServiceGreenFlashDwPhase.addDontWalkSignals(
@@ -836,6 +878,7 @@ public class TrafficSignalPhases {
         requestableServiceGreenFlashDwPhase.addGreenSignals(circuit.getRightSignals());
         requestableServiceGreenFlashDwPhase.addGreenSignals(circuit.getThroughSignals());
         requestableServiceGreenFlashDwPhase.addGreenSignals(circuit.getProtectedSignals());
+        requestableServiceGreenFlashDwPhase.addOffSignals(circuit.getBeaconSignals());
         requestableServiceGreenFlashDwPhase.addOffSignals(circuit.getPedestrianBeaconSignals());
         requestableServiceGreenFlashDwPhase.addFlashDontWalkSignals(circuit.getPedestrianSignals());
         requestableServiceGreenFlashDwPhase.addFlashDontWalkSignals(
@@ -861,6 +904,7 @@ public class TrafficSignalPhases {
         requestableServiceGreenFlashDwHawkPhase1.addRedSignals(circuit.getRightSignals());
         requestableServiceGreenFlashDwHawkPhase1.addRedSignals(circuit.getThroughSignals());
         requestableServiceGreenFlashDwHawkPhase1.addRedSignals(circuit.getProtectedSignals());
+        requestableServiceGreenFlashDwHawkPhase1.addOffSignals(circuit.getBeaconSignals());
         requestableServiceGreenFlashDwHawkPhase1.addGreenSignals(
             circuit.getPedestrianBeaconSignals());
         requestableServiceGreenFlashDwHawkPhase1.addDontWalkSignals(circuit.getPedestrianSignals());
@@ -875,6 +919,7 @@ public class TrafficSignalPhases {
         requestableServiceGreenFlashDwHawkPhase1.addGreenSignals(circuit.getRightSignals());
         requestableServiceGreenFlashDwHawkPhase1.addGreenSignals(circuit.getThroughSignals());
         requestableServiceGreenFlashDwHawkPhase1.addGreenSignals(circuit.getProtectedSignals());
+        requestableServiceGreenFlashDwHawkPhase1.addOffSignals(circuit.getBeaconSignals());
         requestableServiceGreenFlashDwHawkPhase1.addYellowSignals(
             circuit.getPedestrianBeaconSignals());
         requestableServiceGreenFlashDwHawkPhase1.addFlashDontWalkSignals(
@@ -903,6 +948,7 @@ public class TrafficSignalPhases {
         requestableServiceGreenFlashDwHawkPhase2.addRedSignals(circuit.getRightSignals());
         requestableServiceGreenFlashDwHawkPhase2.addRedSignals(circuit.getThroughSignals());
         requestableServiceGreenFlashDwHawkPhase2.addRedSignals(circuit.getProtectedSignals());
+        requestableServiceGreenFlashDwHawkPhase2.addOffSignals(circuit.getBeaconSignals());
         requestableServiceGreenFlashDwHawkPhase2.addGreenSignals(
             circuit.getPedestrianBeaconSignals());
         requestableServiceGreenFlashDwHawkPhase2.addDontWalkSignals(circuit.getPedestrianSignals());
@@ -917,6 +963,7 @@ public class TrafficSignalPhases {
         requestableServiceGreenFlashDwHawkPhase2.addGreenSignals(circuit.getRightSignals());
         requestableServiceGreenFlashDwHawkPhase2.addGreenSignals(circuit.getThroughSignals());
         requestableServiceGreenFlashDwHawkPhase2.addGreenSignals(circuit.getProtectedSignals());
+        requestableServiceGreenFlashDwHawkPhase2.addOffSignals(circuit.getBeaconSignals());
         requestableServiceGreenFlashDwHawkPhase2.addOffSignals(
             circuit.getPedestrianBeaconSignals());
         requestableServiceGreenFlashDwHawkPhase2.addFlashDontWalkSignals(
@@ -943,6 +990,7 @@ public class TrafficSignalPhases {
         requestableServiceYellowPhase.addRedSignals(circuit.getRightSignals());
         requestableServiceYellowPhase.addRedSignals(circuit.getThroughSignals());
         requestableServiceYellowPhase.addRedSignals(circuit.getProtectedSignals());
+        requestableServiceYellowPhase.addOffSignals(circuit.getBeaconSignals());
         requestableServiceYellowPhase.addGreenSignals(circuit.getPedestrianBeaconSignals());
         requestableServiceYellowPhase.addDontWalkSignals(circuit.getPedestrianSignals());
         requestableServiceYellowPhase.addDontWalkSignals(circuit.getPedestrianAccessorySignals());
@@ -955,6 +1003,7 @@ public class TrafficSignalPhases {
         requestableServiceYellowPhase.addYellowSignals(circuit.getRightSignals());
         requestableServiceYellowPhase.addYellowSignals(circuit.getThroughSignals());
         requestableServiceYellowPhase.addYellowSignals(circuit.getProtectedSignals());
+        requestableServiceYellowPhase.addOffSignals(circuit.getBeaconSignals());
         requestableServiceYellowPhase.addYellowSignals(circuit.getPedestrianBeaconSignals());
         requestableServiceYellowPhase.addDontWalkSignals(circuit.getPedestrianSignals());
         requestableServiceYellowPhase.addDontWalkSignals(circuit.getPedestrianAccessorySignals());
@@ -977,6 +1026,7 @@ public class TrafficSignalPhases {
         requestableServiceRedPhase.addRedSignals(circuit.getRightSignals());
         requestableServiceRedPhase.addRedSignals(circuit.getThroughSignals());
         requestableServiceRedPhase.addRedSignals(circuit.getProtectedSignals());
+        requestableServiceRedPhase.addOffSignals(circuit.getBeaconSignals());
         requestableServiceRedPhase.addGreenSignals(circuit.getPedestrianBeaconSignals());
         requestableServiceRedPhase.addDontWalkSignals(circuit.getPedestrianSignals());
         requestableServiceRedPhase.addDontWalkSignals(circuit.getPedestrianAccessorySignals());
@@ -989,6 +1039,7 @@ public class TrafficSignalPhases {
         requestableServiceRedPhase.addRedSignals(circuit.getRightSignals());
         requestableServiceRedPhase.addRedSignals(circuit.getThroughSignals());
         requestableServiceRedPhase.addRedSignals(circuit.getProtectedSignals());
+        requestableServiceRedPhase.addOffSignals(circuit.getBeaconSignals());
         requestableServiceRedPhase.addRedSignals(circuit.getPedestrianBeaconSignals());
         requestableServiceRedPhase.addDontWalkSignals(circuit.getPedestrianSignals());
         requestableServiceRedPhase.addDontWalkSignals(circuit.getPedestrianAccessorySignals());

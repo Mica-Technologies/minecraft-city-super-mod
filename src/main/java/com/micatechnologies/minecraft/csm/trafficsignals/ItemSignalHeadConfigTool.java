@@ -125,6 +125,11 @@ public class ItemSignalHeadConfigTool extends AbstractItem {
           player.sendMessage(new TextComponentString("Signal color set to " + colorName(newColor)));
           break;
         }
+        case TOGGLE_ALTERNATE_FLASH: {
+          boolean newVal = te.toggleAlternateFlash();
+          player.sendMessage(new TextComponentString("Alternate flash: " + (newVal ? "ON (wig-wag B)" : "OFF (normal)")));
+          break;
+        }
         case OPEN_GUI:
           // Handled on client side above
           break;

@@ -628,6 +628,21 @@ public class TrafficSignalPhase {
   }
 
   /**
+   * Removes the given list of {@link BlockPos}s from ALL signal lists in this phase.
+   * Used to re-assign signals to a different state after initial phase construction.
+   */
+  public void removeSignals(List<BlockPos> positions) {
+    offSignals.removeAll(positions);
+    greenSignals.removeAll(positions);
+    yellowSignals.removeAll(positions);
+    redSignals.removeAll(positions);
+    fyaSignals.removeAll(positions);
+    walkSignals.removeAll(positions);
+    dontWalkSignals.removeAll(positions);
+    flashDontWalkSignals.removeAll(positions);
+  }
+
+  /**
    * Adds the given list of {@link BlockPos}s to the list of signals which are in the 'fya' state
    * during this phase.
    *
