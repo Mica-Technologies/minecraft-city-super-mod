@@ -35,6 +35,21 @@
             <version>2.10.1</version>
         </dependency>
 
+        <!-- Block model renderer for wiki image generation -->
+        <dependency>
+            <groupId>com.loohp</groupId>
+            <artifactId>BlockModelRenderer</artifactId>
+            <version>1.1.4.0</version>
+            <scope>compile</scope>
+        </dependency>
+
     </dependencies>
+
+    <repositories>
+        <repository>
+            <id>loohp-repo</id>
+            <url>https://repo.loohpjames.com/repository</url>
+        </repository>
+    </repositories>
 
 </project>

@@ -18,7 +18,6 @@
 package com.micatechnologies.minecraft.csm;
 
 import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
-import com.micatechnologies.minecraft.csm.codeutils.CsmWikiGenerator;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmProxy;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import com.micatechnologies.minecraft.csm.codeutils.IHasModel;
@@ -208,7 +207,7 @@ public class Csm {
   public void init(FMLInitializationEvent event) {
     // Output start of initialization
     logger.info("Initializing " + CsmConstants.MOD_NAME + " v" + CsmConstants.MOD_VERSION);
-    ProgressManager.ProgressBar progressBar = ProgressManager.push("City Super Mod (Init)", 5);
+    ProgressManager.ProgressBar progressBar = ProgressManager.push("City Super Mod (Init)", 4);
 
     try {
       // Register the mod's tile entities
@@ -254,19 +253,6 @@ public class Csm {
       proxy.init(event);
       logger.info("Finished initialization of proxy (" + side + ")");
       progressBar.step("Proxy Initialization");
-
-      // Generate the mod Wiki files (if enabled)
-      logger.info("Generating mod wiki files (if enabled)");
-      try {
-        if (CsmConfig.isWikiGenerationEnabled()) {
-          CsmWikiGenerator.generateWikiFiles();
-        }
-        logger.info("Finished generating mod wiki files (if enabled)");
-        progressBar.step("Mod Wiki Generation");
-      } catch (Exception e) {
-        logger.error("Error generating mod wiki files", e);
-        progressBar.step("Mod Wiki Generation (FAILED)");
-      }
 
       // Output completion of initialization
       logger.info(
