@@ -68,11 +68,6 @@ public abstract class AbstractBlockSignalBackplate extends AbstractBlockRotatabl
       TileEntity te = worldIn.getTileEntity(signalPos);
       if (te instanceof TileEntityTrafficSignalHead) {
         TrafficSignalBodyTilt tilt = ((TileEntityTrafficSignalHead) te).getBodyTilt();
-        // For SOUTH facing, the blockstate's 180° rotation flips left/right visually,
-        // so we swap left↔right to match the signal renderer's SOUTH reversal
-        if (facing == EnumFacing.SOUTH) {
-          tilt = mirrorTilt(tilt);
-        }
         return state.withProperty(TILT, tilt);
       }
     }
@@ -109,17 +104,4 @@ public abstract class AbstractBlockSignalBackplate extends AbstractBlockRotatabl
     return null;
   }
 
-  /**
-   * Mirrors a tilt value (swaps left↔right). Used for SOUTH-facing backplates where the
-   * 180° blockstate rotation flips the visual direction.
-   */
-  private static TrafficSignalBodyTilt mirrorTilt(TrafficSignalBodyTilt tilt) {
-    switch (tilt) {
-      case LEFT_TILT:   return TrafficSignalBodyTilt.RIGHT_TILT;
-      case RIGHT_TILT:  return TrafficSignalBodyTilt.LEFT_TILT;
-      case LEFT_ANGLE:  return TrafficSignalBodyTilt.RIGHT_ANGLE;
-      case RIGHT_ANGLE: return TrafficSignalBodyTilt.LEFT_ANGLE;
-      default:          return tilt;
-    }
-  }
 }
