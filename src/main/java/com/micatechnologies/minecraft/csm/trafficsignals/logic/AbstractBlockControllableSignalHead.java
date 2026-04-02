@@ -9,6 +9,8 @@ import javax.annotation.Nullable;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.entity.player.EntityPlayer;
@@ -35,6 +37,23 @@ public abstract class AbstractBlockControllableSignalHead extends AbstractBlockC
       cachedBoundingBox = TrafficSignalBoundingBoxHelper.computeBoundingBox(this);
     }
     return cachedBoundingBox;
+  }
+
+  /**
+   * Uses a clamped AABB (0-1 per axis) for raytrace/click targeting so that the oversized
+   * visual selection box doesn't steal clicks from adjacent blocks (e.g., placing add-on
+   * signals below a 3-section signal). The full AABB from {@link #getBoundingBox} is still
+   * used for the visual selection outline.
+   */
+  @Nullable
+  @Override
+  public RayTraceResult collisionRayTrace(IBlockState state, World worldIn, BlockPos pos,
+      Vec3d start, Vec3d end) {
+    AxisAlignedBB bb = getBoundingBox(state, worldIn, pos);
+    AxisAlignedBB clamped = new AxisAlignedBB(
+        Math.max(0.0, bb.minX), Math.max(0.0, bb.minY), Math.max(0.0, bb.minZ),
+        Math.min(1.0, bb.maxX), Math.min(1.0, bb.maxY), Math.min(1.0, bb.maxZ));
+    return rayTrace(pos, start, end, clamped);
   }
 
   public DirectionSixteen getTiltedFacing(
