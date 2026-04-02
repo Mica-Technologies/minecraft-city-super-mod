@@ -100,9 +100,15 @@ public class TileEntityTrafficSignalAPS extends TileEntityTrafficSignalTickableR
   private int lastSoundColorState = -1;
 
   /**
-   * The walk sound resource currently looping on this channel, or null if no walk sound active.
+   * The walk sound resource currently playing on this channel, or null if no walk sound active.
    */
   private String currentWalkSound = null;
+
+  /**
+   * The cycle length (in ticks) for the current walk sound. The server resends the start
+   * packet at this interval, giving precise loop timing independent of audio file duration.
+   */
+  private int currentWalkSoundLen = 0;
 
   /**
    * Whether the locate tone is currently active (sent per-interval for sync).
@@ -232,6 +238,7 @@ public class TileEntityTrafficSignalAPS extends TileEntityTrafficSignalTickableR
     if (currentWalkSound != null) {
       stopSoundViaPacket();
       currentWalkSound = null;
+      currentWalkSoundLen = 0;
     }
     lastSoundColorState = -1;
 
@@ -381,14 +388,6 @@ public class TileEntityTrafficSignalAPS extends TileEntityTrafficSignalTickableR
    */
   private static final long LOCATE_TONE_INTERVAL = 20L;
 
-  /**
-   * How often (in ticks) the walk sound start packet is re-broadcast while in GREEN state.
-   * This ensures players who load in or walk into range pick up the active walk sound.
-   * The client handler stops the old sound before starting a new one, so this is safe
-   * for players already hearing the sound (brief restart, inaudible in practice).
-   */
-  private static final long WALK_SOUND_REBROADCAST_INTERVAL = 200L;
-
   @Override
   public void onTick() {
     if (world == null || world.isRemote) return;
@@ -402,27 +401,31 @@ public class TileEntityTrafficSignalAPS extends TileEntityTrafficSignalTickableR
       if (currentWalkSound != null) {
         stopSoundViaPacket();
         currentWalkSound = null;
+        currentWalkSoundLen = 0;
       }
       locateToneActive = false;
       lastSoundColorState = blockColor;
 
-      // Start walk sound on transition to GREEN (loops with repeat=true, padded audio)
+      // Start walk sound on transition to GREEN (one-shot, server controls cycle timing)
       if (blockColor == BlockControllableCrosswalkButtonAudible.SIGNAL_GREEN) {
         if (getCrosswalkSound().getWalkSound() != null) {
           currentWalkSound = getCrosswalkSound().getWalkSound().getSoundLocation().toString();
-          playSoundOnChannel(getChannel(), currentWalkSound, true);
+          currentWalkSoundLen = getCrosswalkSound().getLenOfWalkSound();
+          playSoundOnChannel(getChannel(), currentWalkSound, false);
         }
       }
     }
 
-    // Re-broadcast walk sound periodically while GREEN so players loading in or
-    // walking into range pick it up. The client handler stops any existing sound
-    // on the channel before starting the new one, so already-listening players
-    // experience only a brief inaudible restart.
+    // Server-controlled walk sound cycling: resend the one-shot start packet at each
+    // lenOfWalkSound interval. The client handler stops the old sound (which is in its
+    // baked-silence tail by now) and starts a fresh one. This gives precise loop timing
+    // from the server tick counter, avoids client-side repeat timing drift, and ensures
+    // newly loaded clients pick up the sound within one cycle.
     if (blockColor == BlockControllableCrosswalkButtonAudible.SIGNAL_GREEN
         && currentWalkSound != null
-        && world.getTotalWorldTime() % WALK_SOUND_REBROADCAST_INTERVAL == 0) {
-      playSoundOnChannel(getChannel(), currentWalkSound, true);
+        && currentWalkSoundLen > 0
+        && world.getTotalWorldTime() % currentWalkSoundLen == 0) {
+      playSoundOnChannel(getChannel(), currentWalkSound, false);
     }
 
     // Per-interval locate tone: send a one-shot beep at each global 20-tick boundary.

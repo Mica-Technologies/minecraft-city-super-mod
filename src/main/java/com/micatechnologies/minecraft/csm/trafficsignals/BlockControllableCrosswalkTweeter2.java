@@ -13,7 +13,7 @@ import net.minecraft.world.World;
 public class BlockControllableCrosswalkTweeter2
     extends AbstractBlockControllableCrosswalkAccessory {
 
-  final int lenOfTweetSound = 40;
+  final int lenOfTweetSound = 80;
 
   public BlockControllableCrosswalkTweeter2() {
     super(Material.ROCK);
