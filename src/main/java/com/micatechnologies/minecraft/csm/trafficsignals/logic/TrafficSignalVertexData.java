@@ -568,17 +568,31 @@ public class TrafficSignalVertexData {
   }
 
   /**
-   * Scales a list of boxes from 12-inch to 8-inch by scaling X and Y coordinates
-   * relative to the section center (8, 6). Z coordinates are preserved.
+   * Scales a list of boxes by scaling X and Y coordinates relative to the section center (8, 6).
+   * Z coordinates are preserved (appropriate for body/door geometry where back taper depth is
+   * consistent across sizes).
    */
   private static List<Box> scaleBoxes(List<Box> source, float scale) {
+    return scaleBoxes(source, scale, false);
+  }
+
+  /**
+   * Scales a list of boxes by scaling X and Y coordinates relative to the section center (8, 6).
+   * When scaleZ is true, Z coordinates are also scaled relative to the body face (Z=11), which
+   * keeps visor depth proportional to the section size.
+   */
+  private static final float CENTER_Z_VISOR = 11.0f;
+
+  private static List<Box> scaleBoxes(List<Box> source, float scale, boolean scaleZ) {
     List<Box> result = new ArrayList<>();
     for (Box box : source) {
       float x1 = CENTER_X + (box.from[0] - CENTER_X) * scale;
       float y1 = CENTER_Y + (box.from[1] - CENTER_Y) * scale;
       float x2 = CENTER_X + (box.to[0] - CENTER_X) * scale;
       float y2 = CENTER_Y + (box.to[1] - CENTER_Y) * scale;
-      result.add(new Box(new float[]{x1, y1, box.from[2]}, new float[]{x2, y2, box.to[2]}));
+      float z1 = scaleZ ? CENTER_Z_VISOR + (box.from[2] - CENTER_Z_VISOR) * scale : box.from[2];
+      float z2 = scaleZ ? CENTER_Z_VISOR + (box.to[2] - CENTER_Z_VISOR) * scale : box.to[2];
+      result.add(new Box(new float[]{x1, y1, z1}, new float[]{x2, y2, z2}));
     }
     return result;
   }
@@ -615,22 +629,46 @@ public class TrafficSignalVertexData {
   // --- 8-inch section data (scaled from 12-inch) ---
 
   public static final List<Box> SIGNAL_BODY_8INCH_VERTEX_DATA =
-      scaleBoxes(SIGNAL_BODY_VERTEX_DATA, SCALE_8_INCH);
+      scaleBoxes(SIGNAL_BODY_VERTEX_DATA, SCALE_8_INCH, true);
   public static final List<Box> SIGNAL_DOOR_8INCH_VERTEX_DATA =
-      scaleBoxes(SIGNAL_DOOR_VERTEX_DATA, SCALE_8_INCH);
+      scaleBoxes(SIGNAL_DOOR_VERTEX_DATA, SCALE_8_INCH, true);
 
   public static final List<Box> CIRCLE_VISOR_8INCH_VERTEX_DATA =
-      scaleBoxes(CIRCLE_VISOR_VERTEX_DATA, SCALE_8_INCH);
+      scaleBoxes(CIRCLE_VISOR_VERTEX_DATA, SCALE_8_INCH, true);
   public static final List<Box> TUNNEL_VISOR_8INCH_VERTEX_DATA =
-      scaleBoxes(TUNNEL_VISOR_VERTEX_DATA, SCALE_8_INCH);
+      scaleBoxes(TUNNEL_VISOR_VERTEX_DATA, SCALE_8_INCH, true);
   public static final List<Box> CAP_VISOR_8INCH_VERTEX_DATA =
-      scaleBoxes(CAP_VISOR_VERTEX_DATA, SCALE_8_INCH);
+      scaleBoxes(CAP_VISOR_VERTEX_DATA, SCALE_8_INCH, true);
   public static final List<Box> BOTH_LOUVERED_VISOR_8INCH_VERTEX_DATA =
-      scaleBoxes(BOTH_LOUVERED_VISOR_VERTEX_DATA, SCALE_8_INCH);
+      scaleBoxes(BOTH_LOUVERED_VISOR_VERTEX_DATA, SCALE_8_INCH, true);
   public static final List<Box> VERTICAL_LOUVERED_VISOR_8INCH_VERTEX_DATA =
-      scaleBoxes(VERTICAL_LOUVERED_VISOR_VERTEX_DATA, SCALE_8_INCH);
+      scaleBoxes(VERTICAL_LOUVERED_VISOR_VERTEX_DATA, SCALE_8_INCH, true);
   public static final List<Box> HORIZONTAL_LOUVERED_VISOR_8INCH_VERTEX_DATA =
-      scaleBoxes(HORIZONTAL_LOUVERED_VISOR_VERTEX_DATA, SCALE_8_INCH);
+      scaleBoxes(HORIZONTAL_LOUVERED_VISOR_VERTEX_DATA, SCALE_8_INCH, true);
   public static final List<Box> NONE_VISOR_8INCH_VERTEX_DATA =
-      scaleBoxes(NONE_VISOR_VERTEX_DATA, SCALE_8_INCH);
+      scaleBoxes(NONE_VISOR_VERTEX_DATA, SCALE_8_INCH, true);
+
+  // --- 4-inch section data (scaled from 12-inch) ---
+
+  private static final float SCALE_4_INCH = 4.0f / 12.0f; // 0.333
+
+  public static final List<Box> SIGNAL_BODY_4INCH_VERTEX_DATA =
+      scaleBoxes(SIGNAL_BODY_VERTEX_DATA, SCALE_4_INCH, true);
+  public static final List<Box> SIGNAL_DOOR_4INCH_VERTEX_DATA =
+      scaleBoxes(SIGNAL_DOOR_VERTEX_DATA, SCALE_4_INCH, true);
+
+  public static final List<Box> CIRCLE_VISOR_4INCH_VERTEX_DATA =
+      scaleBoxes(CIRCLE_VISOR_VERTEX_DATA, SCALE_4_INCH, true);
+  public static final List<Box> TUNNEL_VISOR_4INCH_VERTEX_DATA =
+      scaleBoxes(TUNNEL_VISOR_VERTEX_DATA, SCALE_4_INCH, true);
+  public static final List<Box> CAP_VISOR_4INCH_VERTEX_DATA =
+      scaleBoxes(CAP_VISOR_VERTEX_DATA, SCALE_4_INCH, true);
+  public static final List<Box> BOTH_LOUVERED_VISOR_4INCH_VERTEX_DATA =
+      scaleBoxes(BOTH_LOUVERED_VISOR_VERTEX_DATA, SCALE_4_INCH, true);
+  public static final List<Box> VERTICAL_LOUVERED_VISOR_4INCH_VERTEX_DATA =
+      scaleBoxes(VERTICAL_LOUVERED_VISOR_VERTEX_DATA, SCALE_4_INCH, true);
+  public static final List<Box> HORIZONTAL_LOUVERED_VISOR_4INCH_VERTEX_DATA =
+      scaleBoxes(HORIZONTAL_LOUVERED_VISOR_VERTEX_DATA, SCALE_4_INCH, true);
+  public static final List<Box> NONE_VISOR_4INCH_VERTEX_DATA =
+      scaleBoxes(NONE_VISOR_VERTEX_DATA, SCALE_4_INCH, true);
 }

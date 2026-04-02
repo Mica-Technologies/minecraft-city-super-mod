@@ -49,6 +49,7 @@ import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableTraffi
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalAheadSignal;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalAheadSignal8812Inch;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalBikeSignal;
+import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalBikeSignal4Inch;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalBikeSignal8Inch;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalBikeSignal8InchBlack;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalHybridLeftAddOnSignal;
@@ -259,6 +260,8 @@ public class CsmTabTrafficSignals extends CsmTab {
         fmlPreInitializationEvent); // ControllableVerticalBikeSignal8Inch
     initTabBlock(BlockControllableVerticalBikeSignal8InchBlack.class,
         fmlPreInitializationEvent); // ControllableVerticalBikeSignal8InchBlack
+    initTabBlock(BlockControllableVerticalBikeSignal4Inch.class,
+        fmlPreInitializationEvent); // ControllableVerticalBikeSignal4Inch
     initTabBlock(BlockControllableVerticalHybridLeftAddOnSignal.class,
         fmlPreInitializationEvent); // ControllableVerticalHybridLeftAddOnSignal
     initTabBlock(BlockControllableVerticalHybridLeftSignal.class,

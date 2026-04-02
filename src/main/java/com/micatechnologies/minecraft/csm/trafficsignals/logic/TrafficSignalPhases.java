@@ -298,7 +298,8 @@ public class TrafficSignalPhases {
         flashPhase1.addOffSignals(circuit.getRightSignals());
         flashPhase1.addOffSignals(circuit.getThroughSignals());
         flashPhase1.addOffSignals(circuit.getProtectedSignals());
-        flashPhase1.addOffSignals(circuit.getBeaconSignals());
+        // Beacons: YELLOW even when this circuit's other signals are off — renderer flashes them
+        flashPhase1.addYellowSignals(circuit.getBeaconSignals());
         flashPhase1.addOffSignals(circuit.getPedestrianSignals());
         flashPhase1.addOffSignals(circuit.getPedestrianBeaconSignals());
         flashPhase1.addOffSignals(circuit.getPedestrianAccessorySignals());
@@ -339,11 +340,10 @@ public class TrafficSignalPhases {
         flashPhase1.addOffSignals(protectedSignals.getSecond());
         flashPhase1.addRedSignals(pedestrianBeaconSignals.getFirst());
         flashPhase1.addOffSignals(pedestrianBeaconSignals.getSecond());
-        Tuple<List<BlockPos>, List<BlockPos>> beaconSignals
-            = TrafficSignalControllerTickerUtilities.filterSignalsByShouldFlash(world,
-            circuit.getBeaconSignals());
-        flashPhase1.addRedSignals(beaconSignals.getFirst());
-        flashPhase1.addOffSignals(beaconSignals.getSecond());
+        // Beacons: set to YELLOW (solid on) in flash mode — the TESR renderer handles
+        // visual flashing via bulbFlashing in the signal head's default section infos.
+        // Setting them to alternating RED/OFF here would double-flash with the renderer.
+        flashPhase1.addYellowSignals(circuit.getBeaconSignals());
         flashPhase1.addOffSignals(circuit.getPedestrianSignals());
         flashPhase1.addOffSignals(circuit.getPedestrianAccessorySignals());
       }
@@ -395,11 +395,8 @@ public class TrafficSignalPhases {
         flashPhase2.addOffSignals(protectedSignals.getSecond());
         flashPhase2.addRedSignals(pedestrianBeaconSignals.getFirst());
         flashPhase2.addOffSignals(pedestrianBeaconSignals.getSecond());
-        Tuple<List<BlockPos>, List<BlockPos>> beaconSignals
-            = TrafficSignalControllerTickerUtilities.filterSignalsByShouldFlash(world,
-            circuit.getBeaconSignals());
-        flashPhase2.addRedSignals(beaconSignals.getFirst());
-        flashPhase2.addOffSignals(beaconSignals.getSecond());
+        // Beacons: set to YELLOW (solid on) — renderer handles visual flashing
+        flashPhase2.addYellowSignals(circuit.getBeaconSignals());
         flashPhase2.addOffSignals(circuit.getPedestrianSignals());
         flashPhase2.addOffSignals(circuit.getPedestrianAccessorySignals());
       } else {
@@ -409,7 +406,8 @@ public class TrafficSignalPhases {
         flashPhase2.addOffSignals(circuit.getRightSignals());
         flashPhase2.addOffSignals(circuit.getThroughSignals());
         flashPhase2.addOffSignals(circuit.getProtectedSignals());
-        flashPhase2.addOffSignals(circuit.getBeaconSignals());
+        // Beacons: YELLOW even when this circuit's other signals are off — renderer flashes them
+        flashPhase2.addYellowSignals(circuit.getBeaconSignals());
         flashPhase2.addOffSignals(circuit.getPedestrianBeaconSignals());
         flashPhase2.addOffSignals(circuit.getPedestrianSignals());
         flashPhase2.addOffSignals(circuit.getPedestrianAccessorySignals());
@@ -553,7 +551,9 @@ public class TrafficSignalPhases {
       rampMeterFlash1Phase.addYellowSignals(circuit.getRightSignals());
       rampMeterFlash1Phase.addYellowSignals(circuit.getThroughSignals());
       rampMeterFlash1Phase.addOffSignals(circuit.getProtectedSignals());
-      rampMeterFlash1Phase.addYellowSignals(circuit.getBeaconSignals());
+      // Beacons OFF in ramp meter flash — metering is inactive at night, so the
+      // beacon (which indicates active metering) should not flash
+      rampMeterFlash1Phase.addOffSignals(circuit.getBeaconSignals());
       rampMeterFlash1Phase.addOffSignals(circuit.getPedestrianBeaconSignals());
       rampMeterFlash1Phase.addFlashDontWalkSignals(circuit.getPedestrianSignals());
       rampMeterFlash1Phase.addOffSignals(circuit.getPedestrianAccessorySignals());
