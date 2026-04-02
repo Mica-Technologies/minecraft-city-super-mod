@@ -506,8 +506,8 @@ viewer, the signal is behind it).
 - [x] Update `ItemSignalHeadConfigTool` to resolve backplate clicks
 - [x] Update `ItemSignalConfigurationTool` to resolve backplate clicks
 - [x] Update `ItemSignalLinkTool` to resolve backplate clicks
-- [ ] Test: click backplate with each tool, verify action applies to signal behind it
-- [ ] Test: click signal directly still works (no regression)
+- [x] Test: click backplate with each tool, verify action applies to signal behind it
+- [x] Test: click signal directly still works (no regression)
 
 ### Fix 2b: Rename linker tools (QoL)
 
@@ -545,7 +545,7 @@ All four signal tools replaced with unique, distinguishable pixel-art style text
 - [x] New textures created from atlas (split + resize to 128×128)
 - [x] Item model JSONs updated to reference new texture names
 - [x] Old textures moved to `assets/cleaned_unused_assets/textures/items/`
-- [ ] Test in-game: verify all four tools display correct textures
+- [x] Test in-game: verify all four tools display correct textures
 
 ---
 

@@ -15,11 +15,19 @@ Fixed renderer overlap check to render off texture when all sections are unlit.
 ### Bug 3: Backplate Accessories — CLOSED
 Closed 2026-03-31. Likely resolved by backplate tilt system (BACKPLATE_TILT_PLAN.md).
 
-### Bug 4: Ped Clearance Timing Consistency — COMPLETE (analysis)
-Consistent in NORMAL mode (always flashDontWalkTime ticks). Re-learn logic handles edge cases.
+### Bug 4: Ped Clearance Timing Consistency — FIXED (2026-03-31)
+**Root cause found:** The `normalModeTick()` else-if chain had an unguarded final `else`
+block for green phase logic. Non-green phases (FDW, yellow, red, LPI) that hadn't met their
+timing threshold fell through to the green handler. If elapsed time exceeded `minGreenTime`,
+the green handler triggered a new phase change, cutting FDW short (~140 ticks instead of
+configured 300). Fix: guard the green handler with explicit phase type checks.
 
-### Bug 5: Countdown Reset/Re-Learn — COMPLETE (under review)
-Added verification + rounding to nearest 0.5s. Tolerance 30 ticks. May need further tuning.
+Also reduced NORMAL/REQUESTABLE tick rate from 20/10 to 4/4 to minimize phase timing jitter
+(max ±3 ticks instead of ±19/±9).
+
+### Bug 5: Countdown Reset/Re-Learn — COMPLETE
+Added verification + rounding to nearest 0.5s. Tolerance 30 ticks. Bug 4 fix resolved the
+root cause of constant relearning.
 
 ### Bug 6: Transit/Bike/Protected Phasing — COMPLETE
 Protected signals green during thru unless solid green right turn conflicts.
@@ -73,7 +81,7 @@ FYA variants intentionally stay THROUGH (piggyback on through phase).
 - [x] Spread reduced from 8.6 dB to 1.3 dB
 - [x] Tweeter `volume: 0.6` multiplier removed from sounds.json
 - [x] Originals backed up in `sounds/_originals_backup/`
-- [ ] Test in-game: verify volume consistency across all APS schemes
+- [x] Test in-game: verify volume consistency across all APS schemes
 
 See `agent_progress/APS_SOUND_IMPROVEMENTS.md` for full before/after data.
 

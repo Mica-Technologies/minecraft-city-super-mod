@@ -664,7 +664,11 @@ public class TrafficSignalControllerTicker {
 
     }
     // If original phase is green, get corresponding min/max green times and check for phase change
-    else {
+    else if (originalPhase.getApplicability() != TrafficSignalPhaseApplicability.FLASH_DONT_WALK_TRANSITIONING
+        && originalPhase.getApplicability() != TrafficSignalPhaseApplicability.YELLOW_TRANSITIONING
+        && originalPhase.getApplicability() != TrafficSignalPhaseApplicability.RED_TRANSITIONING
+        && originalPhase.getApplicability() != TrafficSignalPhaseApplicability.LEAD_PEDESTRIAN_INTERVAL
+        && originalPhase.getApplicability() != TrafficSignalPhaseApplicability.ALL_RED) {
       // Get corresponding min/max green times
       long phaseMinGreenTimeMs = minGreenTimeSecondary;
       long phaseMaxGreenTimeMs = maxGreenTimeSecondary;
