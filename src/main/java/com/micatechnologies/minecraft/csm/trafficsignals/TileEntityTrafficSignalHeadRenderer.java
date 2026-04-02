@@ -106,11 +106,6 @@ public class TileEntityTrafficSignalHeadRenderer extends
       tiltOffset = 4;
     }
 
-    // Reverse the offset for SOUTH facing
-    if (facing == EnumFacing.SOUTH) {
-      tiltOffset = -tiltOffset;
-    }
-
     if (tiltOffset != 0) {
       GL11.glTranslated(tiltOffset, 0, 0);
     }
