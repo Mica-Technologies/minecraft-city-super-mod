@@ -27,6 +27,16 @@ public class BlockFireAlarmSystemSensorLSeriesHornStrobeRed extends AbstractBloc
   }
 
   @Override
+  public float[] getStrobeLensFrom() {
+    return new float[]{5.2f, 5f, 13f};
+  }
+
+  @Override
+  public float[] getStrobeLensTo() {
+    return new float[]{11.2f, 9f, 14f};
+  }
+
+  @Override
   public String getBlockRegistryName() {
     return "firealarmsystemsensorlserieshornstrobered";
   }

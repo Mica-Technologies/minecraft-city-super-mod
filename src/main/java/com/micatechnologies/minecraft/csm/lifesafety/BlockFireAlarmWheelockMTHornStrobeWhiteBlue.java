@@ -31,6 +31,16 @@ public class BlockFireAlarmWheelockMTHornStrobeWhiteBlue extends AbstractBlockFi
     return new TileEntityFireAlarmStrobe();
   }
 
+  @Override
+  public float[] getStrobeLensFrom() {
+    return new float[]{3.9f, 11.5f, 12f};
+  }
+
+  @Override
+  public float[] getStrobeLensTo() {
+    return new float[]{12.1f, 14f, 14f};
+  }
+
   public static final PropertyInteger SOUND = PropertyInteger.create("sound", 0, 1);
   public static final String[] SOUND_NAMES = {"MT Code 3", "Wheelock AS"};
 

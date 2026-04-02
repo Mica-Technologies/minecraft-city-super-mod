@@ -28,6 +28,16 @@ public class BlockFireAlarmSimplex4903SpeakerStrobeWhite extends
   }
 
   @Override
+  public float[] getStrobeLensFrom() {
+    return new float[]{1.3f, 7.3f, 11f};
+  }
+
+  @Override
+  public float[] getStrobeLensTo() {
+    return new float[]{4.7f, 15.8f, 14f};
+  }
+
+  @Override
   public String getBlockRegistryName() {
     return "firealarmsimplex4903speakerstrobewhite";
   }

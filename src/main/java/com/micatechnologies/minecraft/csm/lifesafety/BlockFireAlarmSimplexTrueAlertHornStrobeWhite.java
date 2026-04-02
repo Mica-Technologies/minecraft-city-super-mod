@@ -27,6 +27,16 @@ public class BlockFireAlarmSimplexTrueAlertHornStrobeWhite extends AbstractBlock
   }
 
   @Override
+  public float[] getStrobeLensFrom() {
+    return new float[]{2.7f, 5.5f, 13f};
+  }
+
+  @Override
+  public float[] getStrobeLensTo() {
+    return new float[]{13.2f, 9.5f, 15f};
+  }
+
+  @Override
   public String getBlockRegistryName() {
     return "firealarmsimplextruealerthornstrobewhite";
   }

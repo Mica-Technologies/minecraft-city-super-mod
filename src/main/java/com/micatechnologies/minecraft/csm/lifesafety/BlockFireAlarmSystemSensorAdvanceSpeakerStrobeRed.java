@@ -28,6 +28,16 @@ public class BlockFireAlarmSystemSensorAdvanceSpeakerStrobeRed extends
   }
 
   @Override
+  public float[] getStrobeLensFrom() {
+    return new float[]{6f, 7.7f, 13f};
+  }
+
+  @Override
+  public float[] getStrobeLensTo() {
+    return new float[]{10f, 12.2f, 14f};
+  }
+
+  @Override
   public String getBlockRegistryName() {
     return "firealarmsystemsensoradvancespeakerstrobered";
   }
