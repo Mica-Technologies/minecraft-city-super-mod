@@ -31,35 +31,21 @@ public class BlockControlBoxLargeSilver extends AbstractBlockRotatableNSEWUD {
     return "controlboxlargesilver";
   }
 
-  /**
-   * Retrieves the bounding box of the block.
-   *
-   * @param state  the block state
-   * @param source the block access
-   * @param pos    the block position
-   *
-   * @return The bounding box of the block.
-   *
-   * @since 1.0
-   */
-  @Override
-  public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-    switch (state.getValue(BlockDirectional.FACING)) {
-      case SOUTH:
-      default:
-        return new AxisAlignedBB(2D, -1D, 1.25D, -1D, 2D, -0.25D);
-      case NORTH:
-        return new AxisAlignedBB(-1D, -1D, -0.25D, 2D, 2D, 1.25D);
-      case WEST:
-        return new AxisAlignedBB(-0.25D, -1D, 2D, 1.25D, 2D, -1D);
-      case EAST:
-        return new AxisAlignedBB(1.25D, -1D, -1D, -0.25D, 2D, 2D);
-      case UP:
-        return new AxisAlignedBB(-1D, 1.25D, -1D, 2D, -0.25D, 2D);
-      case DOWN:
-        return new AxisAlignedBB(-1D, -0.25D, 2D, 2D, 1.25D, -1D);
+    /**
+     * Retrieves the bounding box of the block.
+     *
+     * @param state  the block state
+     * @param source the block access
+     * @param pos    the block position
+     *
+     * @return The bounding box of the block.
+     *
+     * @since 1.0
+     */
+    @Override
+    public AxisAlignedBB getBlockBoundingBox( IBlockState state, IBlockAccess source, BlockPos pos ) {
+        return new AxisAlignedBB(-0.312500, -0.562500, 0.312500, 1.312500, 1.625000, 1.375000);
     }
-  }
 
   /**
    * Retrieves whether the block is an opaque cube.

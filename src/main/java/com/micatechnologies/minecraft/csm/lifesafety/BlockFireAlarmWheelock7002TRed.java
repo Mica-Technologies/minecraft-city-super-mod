@@ -52,21 +52,21 @@ public class BlockFireAlarmWheelock7002TRed extends AbstractBlockFireAlarmSounde
   //                   .withProperty( SOUND, 0 );
   //    }
 
-  /**
-   * Retrieves the bounding box of the block.
-   *
-   * @param state  the block state
-   * @param source the block access
-   * @param pos    the block position
-   *
-   * @return The bounding box of the block.
-   *
-   * @since 1.0
-   */
-  @Override
-  public AxisAlignedBB getBlockBoundingBox( IBlockState state, IBlockAccess source, BlockPos pos ) {
-    return new AxisAlignedBB(0.187500, 0.250000, 0.875000, 0.812500, 1.000000, 1.000000);
-  }
+    /**
+     * Retrieves the bounding box of the block.
+     *
+     * @param state  the block state
+     * @param source the block access
+     * @param pos    the block position
+     *
+     * @return The bounding box of the block.
+     *
+     * @since 1.0
+     */
+    @Override
+    public AxisAlignedBB getBlockBoundingBox( IBlockState state, IBlockAccess source, BlockPos pos ) {
+        return new AxisAlignedBB(0.187500, 0.250000, 0.875000, 0.812500, 1.000000, 1.000000);
+    }
 
   @Override
   protected net.minecraft.block.state.BlockStateContainer createBlockState() {

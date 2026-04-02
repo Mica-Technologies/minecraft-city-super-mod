@@ -31,35 +31,21 @@ public class BlockTLVMountKit8Inch extends AbstractBlockRotatableNSEWUD {
     return "tlvmountkit8inch";
   }
 
-  /**
-   * Retrieves the bounding box of the block.
-   *
-   * @param state  the block state
-   * @param source the block access
-   * @param pos    the block position
-   *
-   * @return The bounding box of the block.
-   *
-   * @since 1.0
-   */
-  @Override
-  public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-    switch (state.getValue(BlockDirectional.FACING)) {
-      case SOUTH:
-      default:
-        return new AxisAlignedBB(1D, -1D, 1D, 0D, 2D, 0D);
-      case NORTH:
-        return new AxisAlignedBB(0D, -1D, 0D, 1D, 2D, 1D);
-      case WEST:
-        return new AxisAlignedBB(0D, -1D, 1D, 1D, 2D, 0D);
-      case EAST:
-        return new AxisAlignedBB(1D, -1D, 0D, 0D, 2D, 1D);
-      case UP:
-        return new AxisAlignedBB(0D, 1D, -1D, 1D, 0D, 2D);
-      case DOWN:
-        return new AxisAlignedBB(0D, 0D, 2D, 1D, 1D, -1D);
+    /**
+     * Retrieves the bounding box of the block.
+     *
+     * @param state  the block state
+     * @param source the block access
+     * @param pos    the block position
+     *
+     * @return The bounding box of the block.
+     *
+     * @since 1.0
+     */
+    @Override
+    public AxisAlignedBB getBlockBoundingBox( IBlockState state, IBlockAccess source, BlockPos pos ) {
+        return new AxisAlignedBB(0.437500, -0.812500, -0.125000, 0.562500, 0.812500, 1.000000);
     }
-  }
 
   /**
    * Retrieves whether the block is an opaque cube.

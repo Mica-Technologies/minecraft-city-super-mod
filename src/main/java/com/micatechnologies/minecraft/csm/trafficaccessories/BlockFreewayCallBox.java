@@ -31,35 +31,21 @@ public class BlockFreewayCallBox extends AbstractBlockRotatableNSEWUD {
     return "freewaycallbox";
   }
 
-  /**
-   * Retrieves the bounding box of the block.
-   *
-   * @param state  the block state
-   * @param source the block access
-   * @param pos    the block position
-   *
-   * @return The bounding box of the block.
-   *
-   * @since 1.0
-   */
-  @Override
-  public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-    switch (state.getValue(BlockDirectional.FACING)) {
-      case SOUTH:
-      default:
-        return new AxisAlignedBB(0.9375D, 0D, 0.125D, 0.125D, 1D, 0D);
-      case NORTH:
-        return new AxisAlignedBB(0.0625D, 0D, 0.875D, 0.875D, 1D, 1D);
-      case WEST:
-        return new AxisAlignedBB(0.875D, 0D, 0.9375D, 1D, 1D, 0.125D);
-      case EAST:
-        return new AxisAlignedBB(0.125D, 0D, 0.0625D, 0D, 1D, 0.875D);
-      case UP:
-        return new AxisAlignedBB(0.0625D, 0.125D, 0D, 0.875D, 0D, 1D);
-      case DOWN:
-        return new AxisAlignedBB(0.0625D, 0.875D, 1D, 0.875D, 1D, 0D);
+    /**
+     * Retrieves the bounding box of the block.
+     *
+     * @param state  the block state
+     * @param source the block access
+     * @param pos    the block position
+     *
+     * @return The bounding box of the block.
+     *
+     * @since 1.0
+     */
+    @Override
+    public AxisAlignedBB getBlockBoundingBox( IBlockState state, IBlockAccess source, BlockPos pos ) {
+        return new AxisAlignedBB(0.125000, 0.062500, 0.937500, 0.875000, 0.937500, 1.000000);
     }
-  }
 
   /**
    * Retrieves whether the block is an opaque cube.

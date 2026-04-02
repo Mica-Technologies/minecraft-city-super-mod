@@ -38,21 +38,21 @@ public class BlockFireAlarmNestProtectGen2 extends AbstractBlockRotatableNSEWUD 
     return "nestprotect";
   }
 
-  /**
-   * Retrieves the bounding box of the block.
-   *
-   * @param state  the block state
-   * @param source the block access
-   * @param pos    the block position
-   *
-   * @return The bounding box of the block.
-   *
-   * @since 1.0
-   */
-  @Override
-  public AxisAlignedBB getBlockBoundingBox( IBlockState state, IBlockAccess source, BlockPos pos ) {
-    return new AxisAlignedBB(0.125000, 0.999375, 0.125000, 0.875000, 1.000000, 0.875000);
-  }
+    /**
+     * Retrieves the bounding box of the block.
+     *
+     * @param state  the block state
+     * @param source the block access
+     * @param pos    the block position
+     *
+     * @return The bounding box of the block.
+     *
+     * @since 1.0
+     */
+    @Override
+    public AxisAlignedBB getBlockBoundingBox( IBlockState state, IBlockAccess source, BlockPos pos ) {
+        return new AxisAlignedBB(0.125000, 0.900000, 0.125000, 0.875000, 1.000000, 0.875000);
+    }
 
   /**
    * Retrieves whether the block is an opaque cube.

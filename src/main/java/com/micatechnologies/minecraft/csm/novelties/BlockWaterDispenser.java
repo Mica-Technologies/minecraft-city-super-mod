@@ -30,21 +30,21 @@ public class BlockWaterDispenser extends AbstractBlockRotatableNSEWUD {
     return "waterdispenser";
   }
 
-  /**
-   * Retrieves the bounding box of the block.
-   *
-   * @param state  the block state
-   * @param source the block access
-   * @param pos    the block position
-   *
-   * @return The bounding box of the block.
-   *
-   * @since 1.0
-   */
-  @Override
-  public AxisAlignedBB getBlockBoundingBox( IBlockState state, IBlockAccess source, BlockPos pos ) {
-    return new AxisAlignedBB(0.187500, 0.000000, 0.140625, 0.812500, 2.000000, 0.843750);
-  }
+    /**
+     * Retrieves the bounding box of the block.
+     *
+     * @param state  the block state
+     * @param source the block access
+     * @param pos    the block position
+     *
+     * @return The bounding box of the block.
+     *
+     * @since 1.0
+     */
+    @Override
+    public AxisAlignedBB getBlockBoundingBox( IBlockState state, IBlockAccess source, BlockPos pos ) {
+        return new AxisAlignedBB(0.187500, 0.000000, 0.140625, 0.812500, 2.000000, 0.843750);
+    }
 
   /**
    * Retrieves whether the block is an opaque cube.

@@ -31,33 +31,21 @@ public class BlockTrafficStreetNameSignDouble extends AbstractBlockRotatableNSEW
     return "trafficstreetnamesigndouble";
   }
 
-  /**
-   * Retrieves the bounding box of the block.
-   *
-   * @param state  the block state
-   * @param source the block access
-   * @param pos    the block position
-   *
-   * @return The bounding box of the block.
-   *
-   * @since 1.0
-   */
-  @Override
-  public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-    switch (state.getValue(BlockHorizontal.FACING)) {
-      case UP:
-      case DOWN:
-      case SOUTH:
-      default:
-        return new AxisAlignedBB(1.3D, 0D, 1D, -0.3D, 1D, 0D);
-      case NORTH:
-        return new AxisAlignedBB(-0.3D, 0D, 0D, 1.3D, 1D, 1D);
-      case WEST:
-        return new AxisAlignedBB(0D, 0D, 1.3D, 1D, 1D, -0.3D);
-      case EAST:
-        return new AxisAlignedBB(1D, 0D, -0.3D, 0D, 1D, 1.3D);
+    /**
+     * Retrieves the bounding box of the block.
+     *
+     * @param state  the block state
+     * @param source the block access
+     * @param pos    the block position
+     *
+     * @return The bounding box of the block.
+     *
+     * @since 1.0
+     */
+    @Override
+    public AxisAlignedBB getBlockBoundingBox( IBlockState state, IBlockAccess source, BlockPos pos ) {
+        return new AxisAlignedBB(-0.500000, 0.000000, 0.000000, 1.500000, 1.000000, 1.000000);
     }
-  }
 
   /**
    * Retrieves whether the block is an opaque cube.

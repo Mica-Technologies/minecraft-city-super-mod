@@ -27,19 +27,19 @@ public class BlockFireAlarmSprinklerBlack extends AbstractBlockFireAlarmDetector
     world.notifyNeighborsOfStateChange(waterBlockPos, Blocks.FLOWING_WATER, true);
   }
 
-  /**
-   * Retrieves the bounding box of the block.
-   *
-   * @param state  the block state
-   * @param source the block access
-   * @param pos    the block position
-   *
-   * @return The bounding box of the block.
-   *
-   * @since 1.0
-   */
-  @Override
-  public AxisAlignedBB getBlockBoundingBox( IBlockState state, IBlockAccess source, BlockPos pos ) {
-    return new AxisAlignedBB(0.500000, 0.437500, 0.890625, 0.593750, 0.562500, 1.000000);
-  }
+    /**
+     * Retrieves the bounding box of the block.
+     *
+     * @param state  the block state
+     * @param source the block access
+     * @param pos    the block position
+     *
+     * @return The bounding box of the block.
+     *
+     * @since 1.0
+     */
+    @Override
+    public AxisAlignedBB getBlockBoundingBox( IBlockState state, IBlockAccess source, BlockPos pos ) {
+        return new AxisAlignedBB(0.500000, 0.437500, 0.890625, 0.593750, 0.562500, 1.000000);
+    }
 }
