@@ -11,7 +11,26 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
-public class BlockFireAlarmSimplex4903HornStrobeRed extends AbstractBlockFireAlarmSounder {
+import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
+import net.minecraft.tileentity.TileEntity;
+
+public class BlockFireAlarmSimplex4903HornStrobeRed extends AbstractBlockFireAlarmSounder
+    implements ICsmTileEntityProvider, IStrobeBlock {
+
+  @Override
+  public Class<? extends TileEntity> getTileEntityClass() {
+    return TileEntityFireAlarmStrobe.class;
+  }
+
+  @Override
+  public String getTileEntityName() {
+    return "tileentityfirealarmstrobe";
+  }
+
+  @Override
+  public TileEntity createNewTileEntity(World worldIn, int meta) {
+    return new TileEntityFireAlarmStrobe();
+  }
 
   public static final PropertyInteger SOUND = PropertyInteger.create("sound", 0, 1);
   public static final String[] SOUND_NAMES = {"Old", "New"};

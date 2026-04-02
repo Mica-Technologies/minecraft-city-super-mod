@@ -57,6 +57,9 @@ public class CsmClientProxy implements ICsmProxy {
     // Bind the TESR to the TileEntity
     ClientRegistry.bindTileEntitySpecialRenderer(TileEntityTrafficSignalHead.class, new TileEntityTrafficSignalHeadRenderer());
     ClientRegistry.bindTileEntitySpecialRenderer(TileEntityCrosswalkSignal.class, new TileEntityCrosswalkSignalRenderer());
+    ClientRegistry.bindTileEntitySpecialRenderer(
+        com.micatechnologies.minecraft.csm.lifesafety.TileEntityFireAlarmStrobe.class,
+        new com.micatechnologies.minecraft.csm.lifesafety.TileEntityFireAlarmStrobeRenderer());
 
     // Register client-side event handler for version check on world join
     MinecraftForge.EVENT_BUS.register(this);
