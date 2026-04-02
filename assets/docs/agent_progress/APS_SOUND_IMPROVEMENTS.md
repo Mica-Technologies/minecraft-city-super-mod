@@ -180,9 +180,9 @@ tones to the same 1-second server tick cadence.
 | Attenuation | Quadratic | `MIN + (MAX - MIN) * ratio²` where `ratio = 1 - dist/range` |
 | Out-of-range volume | 0.0 | Hard cutoff beyond hearing range (not MIN_VOLUME) |
 | Sound category | NEUTRAL | Appropriate for environmental/ambient crosswalk sounds |
-| Repeat (walk) | true | Looping, re-broadcast every 100 ticks for range-enter |
+| Repeat (walk) | true | Looping, re-broadcast every 200 ticks for range-enter |
 | Repeat (locate/press) | false | Single-shot, server re-sends at tick interval |
-| Walk rebroadcast | 100 ticks | Ensures players entering range hear active walk sounds |
+| Walk rebroadcast | 200 ticks (10s) | Ensures players entering range hear active walk sounds |
 | Channel format (APS) | `aps_X_Y_Z` | Unique per button position |
 | Channel format (Tweeter) | `tweeter_X_Y_Z` | Unique per tweeter position |
 
@@ -202,6 +202,14 @@ Same change applied to `FireAlarmVoiceEvacSound` for consistency.
 ### Walk sound re-broadcast
 Walk sound start packets were only sent on the GREEN transition. Players loading in or
 walking into range after the transition never received the packet. Added periodic
-re-broadcast every 100 ticks (5s) while GREEN. Client handler stops/restarts on receipt,
-so already-listening players experience only a brief inaudible restart. Locate tones and
-tweeters already re-send on their tick intervals and are unaffected.
+re-broadcast every 200 ticks (10s) while GREEN. Client handler stops/restarts on receipt.
+Initially set to 100 ticks (5s) but this interrupted 4-second walk sound loops every other
+cycle. Increased to 200 ticks so even the longest walk sound (8s) completes before
+re-broadcast. Locate tones and tweeters already re-send on their tick intervals.
+
+### Walk sound loop gap padding
+Walk sounds use `repeat=true` (MovingSound loops immediately when finished). The gap
+between loops must come from silence at the end of the audio file. All 15 walk sound files
+were padded with silence so their total duration matches the configured tick rate
+(`tickRate / 20` seconds), providing ~0.75-1.3s gaps between loops. Without padding, sounds
+overlapped or had inconsistent/no gaps.
