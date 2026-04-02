@@ -1,7 +1,13 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:novelties/arcade_asteroids"
+    "model": "csm:novelties/shared_models/arcade_cabinet",
+    "textures": {
+      "all": "csm:blocks/novelties/shared_textures/arcade_cabinet",
+      "particle": "csm:blocks/novelties/shared_textures/arcade_cabinet",
+      "0": "csm:blocks/novelties/shared_textures/arcade_cabinet",
+      "1": "csm:blocks/novelties/arcade_asteroids_screen"
+    }
   },
   "variants": {
     "facing": {

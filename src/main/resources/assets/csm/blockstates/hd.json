@@ -1,7 +1,12 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:novelties/hand_dryer"
+    "model": "csm:novelties/shared_models/handdryer",
+    "textures": {
+      "all": "csm:blocks/novelties/hand_dryer",
+      "particle": "csm:blocks/novelties/hand_dryer",
+      "0": "csm:blocks/novelties/hand_dryer"
+    }
   },
   "variants": {
     "facing": {

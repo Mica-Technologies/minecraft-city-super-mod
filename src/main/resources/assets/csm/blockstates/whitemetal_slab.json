@@ -1,7 +1,12 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:buildingmaterials/whitemetal_slab"
+    "model": "block/half_slab",
+    "textures": {
+      "bottom": "csm:blocks/trafficsignals/shared_textures/metal_white",
+      "top": "csm:blocks/trafficsignals/shared_textures/metal_white",
+      "side": "csm:blocks/trafficsignals/shared_textures/metal_white"
+    }
   },
   "variants": {
     "half": {

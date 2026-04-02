@@ -1,7 +1,12 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:lighting/ge_evolve_esr2_large_photocell_outlet"
+    "model": "csm:lighting/shared_models/ge_evolve_large_photocell_outlet",
+    "textures": {
+      "all": "csm:blocks/lighting/shared_textures/ge_evolve_large",
+      "particle": "csm:blocks/lighting/shared_textures/ge_evolve_large",
+      "0": "csm:blocks/lighting/shared_textures/ge_evolve_large"
+    }
   },
   "variants": {
     "facing": {

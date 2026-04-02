@@ -1,5 +1,5 @@
 {
-  "parent": "csm:block/shared_models/lifesafety/simplex_chevron_pull_station",
+  "parent": "csm:block/lifesafety/shared_models/simplex_chevron_pull_station",
   "textures": {
     "all": "csm:blocks/lifesafety/simplex_chevron_pull_station",
     "particle": "csm:blocks/lifesafety/simplex_chevron_pull_station",

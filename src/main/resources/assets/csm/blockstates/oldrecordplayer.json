@@ -1,7 +1,12 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:novelties/old_record_player"
+    "model": "csm:novelties/shared_models/old_record_player",
+    "textures": {
+      "all": "csm:blocks/novelties/old_record_player",
+      "particle": "csm:blocks/novelties/old_record_player",
+      "0": "csm:blocks/novelties/old_record_player"
+    }
   },
   "variants": {
     "facing": {

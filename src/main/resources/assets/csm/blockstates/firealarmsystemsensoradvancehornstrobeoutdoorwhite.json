@@ -1,7 +1,12 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:lifesafety/sawpw1"
+    "model": "csm:lifesafety/shared_models/systemsensor_sa_hornstrobewp_white",
+    "textures": {
+      "all": "csm:blocks/lifesafety/systemsensor_sa_hornstrobewp_white",
+      "particle": "csm:blocks/lifesafety/systemsensor_sa_hornstrobewp_white",
+      "0": "csm:blocks/lifesafety/systemsensor_sa_hornstrobewp_white"
+    }
   },
   "variants": {
     "facing": {

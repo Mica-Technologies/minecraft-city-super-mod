@@ -1,7 +1,12 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:lighting/american_electric_autobahn_atb2"
+    "model": "csm:lighting/shared_models/ae_atb2",
+    "textures": {
+      "all": "csm:blocks/lighting/shared_textures/ae_autobahn_atb2",
+      "particle": "csm:blocks/lighting/shared_textures/ae_autobahn_atb2",
+      "0": "csm:blocks/lighting/shared_textures/ae_autobahn_atb2"
+    }
   },
   "variants": {
     "facing": {

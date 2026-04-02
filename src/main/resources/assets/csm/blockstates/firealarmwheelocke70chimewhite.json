@@ -1,7 +1,12 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:lifesafety/wheelock_e70_white_chime_strobe_70wnve"
+    "model": "csm:lifesafety/shared_models/wheelock_e70_speakerstrobe_white",
+    "textures": {
+      "all": "csm:blocks/lifesafety/shared_textures/wheelock_e70_white_chime_strobe",
+      "particle": "csm:blocks/lifesafety/shared_textures/wheelock_e70_white_chime_strobe",
+      "0": "csm:blocks/lifesafety/shared_textures/wheelock_e70_white_chime_strobe"
+    }
   },
   "variants": {
     "facing": {

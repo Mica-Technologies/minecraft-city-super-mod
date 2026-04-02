@@ -1,5 +1,5 @@
 {
-  "parent": "csm:block/shared_models/lifesafety/wheelock_7002t",
+  "parent": "csm:block/lifesafety/shared_models/wheelock_7002t",
   "textures": {
     "all": "csm:blocks/lifesafety/wheelock_7002t_red_horn_strobe",
     "particle": "csm:blocks/lifesafety/wheelock_7002t_red_horn_strobe",

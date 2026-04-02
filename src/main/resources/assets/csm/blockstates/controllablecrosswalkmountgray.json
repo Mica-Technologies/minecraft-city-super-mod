@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:shared_models/trafficsignals/backplates/crosswalklightsingle_rear_gray",
+    "model": "csm:trafficsignals/shared_models/backplates/crosswalklightsingle_rear_gray",
     "textures": {
       "all": "csm:blocks/trafficsignals/old_bulb_body/gray/crosswalkoff",
       "particle": "csm:blocks/trafficsignals/old_bulb_body/gray/crosswalkoff",

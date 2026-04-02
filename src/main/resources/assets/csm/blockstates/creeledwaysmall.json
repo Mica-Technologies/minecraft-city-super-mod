@@ -1,7 +1,12 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:lighting/cree_ledway_small"
+    "model": "csm:lighting/shared_models/cree_ledway_small",
+    "textures": {
+      "all": "csm:blocks/lighting/shared_textures/cree_ledway_small",
+      "particle": "csm:blocks/lighting/shared_textures/cree_ledway_small",
+      "0": "csm:blocks/lighting/shared_textures/cree_ledway_small"
+    }
   },
   "variants": {
     "facing": {

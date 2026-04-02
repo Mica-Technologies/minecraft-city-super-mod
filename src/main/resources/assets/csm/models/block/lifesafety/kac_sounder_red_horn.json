@@ -1,5 +1,5 @@
 {
-  "parent": "csm:block/shared_models/lifesafety/kacsounder",
+  "parent": "csm:block/lifesafety/shared_models/kacsounder",
   "textures": {
     "all": "csm:blocks/lifesafety/kac_sounder_red_horn",
     "particle": "csm:blocks/lifesafety/kac_sounder_red_horn",

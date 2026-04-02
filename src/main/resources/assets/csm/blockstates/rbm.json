@@ -1,7 +1,12 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:lighting/remote_street_light_series_ballast_module"
+    "model": "csm:lighting/shared_models/remote_ballast_module",
+    "textures": {
+      "all": "csm:blocks/lighting/shared_textures/slmodules",
+      "particle": "csm:blocks/lighting/shared_textures/slmodules",
+      "0": "csm:blocks/lighting/shared_textures/slmodules"
+    }
   },
   "variants": {
     "facing": {

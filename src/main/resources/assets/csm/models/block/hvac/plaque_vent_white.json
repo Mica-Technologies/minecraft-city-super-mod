@@ -1,7 +1,0 @@
-{
-  "parent": "block/cube_all",
-  "textures": {
-    "all": "csm:blocks/hvac/plaque_vent_white",
-    "particle": "csm:blocks/hvac/plaque_vent_white"
-  }
-}

@@ -1,7 +1,12 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:trafficaccessories/traffic_pole_curved_double_guy_connector_black"
+    "model": "csm:trafficaccessories/shared_models/trafficpoledoubleguymount",
+    "textures": {
+      "all": "csm:blocks/trafficsignals/shared_textures/metal_black",
+      "particle": "csm:blocks/trafficsignals/shared_textures/metal_black",
+      "0": "csm:blocks/trafficsignals/shared_textures/metal_black"
+    }
   },
   "variants": {
     "facing": {

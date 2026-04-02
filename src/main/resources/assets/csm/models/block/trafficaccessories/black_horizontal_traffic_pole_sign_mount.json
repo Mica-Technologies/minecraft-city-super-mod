@@ -1,9 +1,0 @@
-{
-  "parent": "csm:block/shared_models/trafficaccessories/trafficpolehorizontalsignmount",
-  "textures": {
-    "all": "csm:blocks/trafficsignals/shared_textures/metal_black",
-    "particle": "csm:blocks/trafficsignals/shared_textures/metal_black",
-    "0": "csm:blocks/trafficsignals/shared_textures/metal_black",
-    "1": "csm:blocks/trafficsigns/absolutely_nothing_sign"
-  }
-}

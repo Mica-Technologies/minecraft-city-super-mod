@@ -24,7 +24,7 @@
     },
     "inventory": [
       {
-        "model": "csm:shared_models/trafficsignals/backplates/trafficlightvertical",
+        "model": "csm:trafficsignals/shared_models/backplates/trafficlightvertical",
         "textures": {
           "all": "csm:blocks/trafficsignals/old_bulb_body/gray/gtxoff",
           "particle": "csm:blocks/trafficsignals/old_bulb_body/gray/gtxoff",

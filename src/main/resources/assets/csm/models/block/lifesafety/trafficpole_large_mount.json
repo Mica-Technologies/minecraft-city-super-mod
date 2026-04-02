@@ -1,5 +1,5 @@
 {
-  "parent": "csm:block/shared_models/lighting/large_mount",
+  "parent": "csm:block/lighting/shared_models/large_mount",
   "textures": {
     "all": "csm:blocks/trafficsignals/shared_textures/metal_silver",
     "particle": "csm:blocks/trafficsignals/shared_textures/metal_silver",

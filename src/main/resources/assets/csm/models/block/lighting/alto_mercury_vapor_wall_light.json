@@ -1,8 +1,0 @@
-{
-  "parent": "csm:block/shared_models/lighting/alto_mv_wall_light",
-  "textures": {
-    "all": "csm:blocks/lighting/shared_textures/merc_fixtures",
-    "particle": "csm:blocks/lighting/shared_textures/merc_fixtures",
-    "0": "csm:blocks/lighting/shared_textures/merc_fixtures"
-  }
-}

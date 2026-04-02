@@ -1,7 +1,12 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:technology/apple_imac"
+    "model": "csm:technology/shared_models/imac",
+    "textures": {
+      "0": "csm:blocks/technology/imac",
+      "1": "csm:blocks/technology/apple_magic_keyboard",
+      "particle": "csm:blocks/technology/apple_magic_keyboard"
+    }
   },
   "variants": {
     "facing": {

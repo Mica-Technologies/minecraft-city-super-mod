@@ -1,7 +1,12 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:lifesafety/gamewell_fire_box"
+    "model": "csm:lifesafety/shared_models/gamewell_fire_box",
+    "textures": {
+      "all": "csm:blocks/lifesafety/gamewell_fire_box",
+      "particle": "csm:blocks/lifesafety/gamewell_fire_box",
+      "0": "csm:blocks/lifesafety/gamewell_fire_box"
+    }
   },
   "variants": {
     "facing": {

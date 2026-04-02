@@ -1,7 +1,12 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:trafficaccessories/hanging_signal_mount_kit_vertical"
+    "model": "csm:trafficaccessories/shared_models/trafficlighthangmount",
+    "textures": {
+      "all": "csm:blocks/trafficsignals/shared_textures/metal_white",
+      "particle": "csm:blocks/trafficsignals/shared_textures/metal_white",
+      "0": "csm:blocks/trafficsignals/shared_textures/metal_white"
+    }
   },
   "variants": {
     "facing": {

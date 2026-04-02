@@ -1,7 +1,12 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:trafficaccessories/doghouse_signal_border_black_pink"
+    "model": "csm:trafficsignals/shared_models/signal_backplate_doghouse_full",
+    "textures": {
+      "all": "csm:blocks/trafficaccessories/shared_textures/signalbackplateblackpinkblack",
+      "particle": "csm:blocks/trafficaccessories/shared_textures/signalbackplateblackpinkblack",
+      "0": "csm:blocks/trafficaccessories/shared_textures/signalbackplateblackpinkblack"
+    }
   },
   "variants": {
     "facing=down,fitted=false,tilt=none": {

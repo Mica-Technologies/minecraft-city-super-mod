@@ -1,8 +1,0 @@
-{
-  "parent": "block/stairs",
-  "textures": {
-    "bottom": "csm:blocks/buildingmaterials/shared_textures/metal_red",
-    "top": "csm:blocks/buildingmaterials/shared_textures/metal_red",
-    "side": "csm:blocks/buildingmaterials/shared_textures/metal_red"
-  }
-}

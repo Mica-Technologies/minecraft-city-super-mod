@@ -1,7 +1,12 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:lighting/cooper_industries_navion_3_light_squares"
+    "model": "csm:lighting/shared_models/ci_navion_alt",
+    "textures": {
+      "all": "csm:blocks/lighting/shared_textures/ci_navion_alt",
+      "particle": "csm:blocks/lighting/shared_textures/ci_navion_alt",
+      "0": "csm:blocks/lighting/shared_textures/ci_navion_alt"
+    }
   },
   "variants": {
     "facing": {

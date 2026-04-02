@@ -1,8 +1,0 @@
-{
-  "parent": "csm:block/shared_models/lifesafety/sprl_straight_lores",
-  "textures": {
-    "all": "csm:blocks/lifesafety/system_sensor_l_series_white_speaker",
-    "particle": "csm:blocks/lifesafety/system_sensor_l_series_white_speaker",
-    "0": "csm:blocks/lifesafety/system_sensor_l_series_white_speaker"
-  }
-}

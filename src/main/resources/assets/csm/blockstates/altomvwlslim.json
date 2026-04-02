@@ -1,7 +1,12 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:lighting/alto_slim_mercury_vapor_wall_light"
+    "model": "csm:lighting/shared_models/alto_mv_wall_light_slim",
+    "textures": {
+      "all": "csm:blocks/lighting/shared_textures/merc_fixtures",
+      "particle": "csm:blocks/lighting/shared_textures/merc_fixtures",
+      "0": "csm:blocks/lighting/shared_textures/merc_fixtures"
+    }
   },
   "variants": {
     "facing": {

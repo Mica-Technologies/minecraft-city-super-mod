@@ -1,5 +1,5 @@
 {
-  "parent": "csm:block/shared_models/trafficsignals/signal_backplate_doghouse_full_right_tilt",
+  "parent": "csm:block/trafficsignals/shared_models/signal_backplate_doghouse_full_right_tilt",
   "textures": {
     "all": "csm:blocks/trafficaccessories/shared_textures/signalbackplateblackblackyellow",
     "particle": "csm:blocks/trafficaccessories/shared_textures/signalbackplateblackblackyellow",

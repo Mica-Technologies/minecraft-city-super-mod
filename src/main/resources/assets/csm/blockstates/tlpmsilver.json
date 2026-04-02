@@ -1,7 +1,12 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:trafficaccessories/silver_metal_signal_mount"
+    "model": "csm:trafficaccessories/shared_models/trafficsignalpolemount",
+    "textures": {
+      "all": "csm:blocks/trafficsignals/shared_textures/metal_silver",
+      "particle": "csm:blocks/trafficsignals/shared_textures/metal_silver",
+      "0": "csm:blocks/trafficsignals/shared_textures/metal_silver"
+    }
   },
   "variants": {
     "facing": {

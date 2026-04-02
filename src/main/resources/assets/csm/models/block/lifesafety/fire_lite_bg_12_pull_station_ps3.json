@@ -1,8 +1,0 @@
-{
-  "parent": "csm:block/shared_models/lifesafety/ps3",
-  "textures": {
-    "all": "csm:blocks/lifesafety/fire_lite_bg_12_pull_station",
-    "particle": "csm:blocks/lifesafety/fire_lite_bg_12_pull_station",
-    "0": "csm:blocks/lifesafety/fire_lite_bg_12_pull_station"
-  }
-}

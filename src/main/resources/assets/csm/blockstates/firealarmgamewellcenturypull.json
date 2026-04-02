@@ -1,7 +1,12 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:lifesafety/gamewell_century_pull_station_rypull"
+    "model": "csm:lifesafety/shared_models/gamewell_century_pull_station",
+    "textures": {
+      "all": "csm:blocks/lifesafety/gamewell_century_pull_station",
+      "particle": "csm:blocks/lifesafety/gamewell_century_pull_station",
+      "0": "csm:blocks/lifesafety/gamewell_century_pull_station"
+    }
   },
   "variants": {
     "facing": {

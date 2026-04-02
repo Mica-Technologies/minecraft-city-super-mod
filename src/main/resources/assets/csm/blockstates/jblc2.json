@@ -1,7 +1,12 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:technology/jbl_control_speaker_black"
+    "model": "csm:technology/shared_models/jbl_control_speaker_black",
+    "textures": {
+      "all": "csm:blocks/technology/jbl_control_speaker_black",
+      "particle": "csm:blocks/technology/jbl_control_speaker_black",
+      "0": "csm:blocks/technology/jbl_control_speaker_black"
+    }
   },
   "variants": {
     "facing": {

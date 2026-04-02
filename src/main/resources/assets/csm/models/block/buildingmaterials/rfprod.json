@@ -1,8 +1,0 @@
-{
-  "parent": "csm:block/shared_models/powergrid/infinte_power_block",
-  "textures": {
-    "all": "csm:blocks/buildingmaterials/shared_textures/metal_gold",
-    "particle": "csm:blocks/buildingmaterials/shared_textures/metal_gold",
-    "0": "csm:blocks/buildingmaterials/shared_textures/metal_gold"
-  }
-}

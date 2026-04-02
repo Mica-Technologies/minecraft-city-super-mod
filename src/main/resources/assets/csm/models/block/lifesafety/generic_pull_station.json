@@ -1,5 +1,5 @@
 {
-  "parent": "csm:block/shared_models/lifesafety/ps1",
+  "parent": "csm:block/lifesafety/shared_models/ps1",
   "textures": {
     "all": "csm:blocks/lifesafety/generic_pull_station",
     "particle": "csm:blocks/lifesafety/generic_pull_station",

@@ -1,7 +1,16 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:buildingmaterials/ceiling_tile_standard_1"
+    "model": "block/cube",
+    "textures": {
+      "down": "csm:blocks/buildingmaterials/ceiling_tile_standard_1",
+      "up": "csm:blocks/buildingmaterials/ceiling_tile_standard_1",
+      "north": "csm:blocks/buildingmaterials/ceiling_tile_standard_1",
+      "east": "csm:blocks/buildingmaterials/ceiling_tile_standard_1",
+      "south": "csm:blocks/buildingmaterials/ceiling_tile_standard_1",
+      "west": "csm:blocks/buildingmaterials/ceiling_tile_standard_1",
+      "particle": "csm:blocks/buildingmaterials/ceiling_tile_standard_1"
+    }
   },
   "variants": {
     "inventory": [

@@ -1,7 +1,12 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:lighting/lithonia_single_led_strip_light_full"
+    "model": "csm:lighting/shared_models/lithonia_singled_strip_light_full",
+    "textures": {
+      "all": "csm:blocks/lighting/shared_textures/striplights",
+      "particle": "csm:blocks/lighting/shared_textures/striplights",
+      "0": "csm:blocks/lighting/shared_textures/striplights"
+    }
   },
   "variants": {
     "facing": {

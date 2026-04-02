@@ -1,7 +1,13 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:trafficaccessories/black_vertical_traffic_pole_with_signal_mount"
+    "model": "csm:trafficaccessories/shared_models/trafficpoleverticalsignalmount",
+    "textures": {
+      "all": "csm:blocks/trafficsignals/shared_textures/metal_black",
+      "particle": "csm:blocks/trafficsignals/shared_textures/metal_black",
+      "0": "csm:blocks/trafficsignals/shared_textures/metal_black",
+      "missing": "csm:blocks/trafficsignals/shared_textures/metal_black"
+    }
   },
   "variants": {
     "facing": {

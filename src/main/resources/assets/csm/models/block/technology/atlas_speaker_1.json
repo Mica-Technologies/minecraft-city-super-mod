@@ -1,8 +1,0 @@
-{
-  "parent": "csm:block/shared_models/technology/atlas_speaker_1",
-  "textures": {
-    "all": "csm:blocks/technology/atlas_speaker_1",
-    "particle": "csm:blocks/technology/atlas_speaker_1",
-    "0": "csm:blocks/technology/atlas_speaker_1"
-  }
-}

@@ -1,7 +1,12 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:lighting/ge_m240r1_standard"
+    "model": "csm:lighting/shared_models/ge_m240r1",
+    "textures": {
+      "all": "csm:blocks/lighting/shared_textures/ge_hps_fixtures",
+      "particle": "csm:blocks/lighting/shared_textures/ge_hps_fixtures",
+      "0": "csm:blocks/lighting/shared_textures/ge_hps_fixtures"
+    }
   },
   "variants": {
     "facing": {

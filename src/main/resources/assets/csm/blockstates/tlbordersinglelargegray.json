@@ -1,7 +1,12 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:trafficaccessories/single_signal_border_gray_gray"
+    "model": "csm:trafficsignals/shared_models/signal_backplate_vertical_1",
+    "textures": {
+      "all": "csm:blocks/trafficaccessories/shared_textures/gray_traffic_signal_border",
+      "particle": "csm:blocks/trafficaccessories/shared_textures/gray_traffic_signal_border",
+      "0": "csm:blocks/trafficaccessories/shared_textures/gray_traffic_signal_border"
+    }
   },
   "variants": {
     "facing": {

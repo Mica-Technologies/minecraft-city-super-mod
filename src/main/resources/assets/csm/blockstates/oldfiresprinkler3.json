@@ -1,7 +1,12 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:lifesafety/old_fire_sprinkler_3"
+    "model": "csm:lifesafety/shared_models/oldfiresprinkler3",
+    "textures": {
+      "all": "csm:blocks/trafficsignals/shared_textures/metal_silver",
+      "particle": "csm:blocks/trafficsignals/shared_textures/metal_white",
+      "0": "csm:blocks/trafficsignals/shared_textures/metal_silver"
+    }
   },
   "variants": {
     "facing": {

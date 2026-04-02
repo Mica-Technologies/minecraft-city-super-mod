@@ -1,5 +1,5 @@
 {
-  "parent": "csm:block/shared_models/lighting/trafficpolevertical",
+  "parent": "csm:block/lighting/shared_models/trafficpolevertical",
   "textures": {
     "all": "csm:blocks/trafficsignals/shared_textures/metal_mattewhite",
     "particle": "csm:blocks/trafficsignals/shared_textures/metal_mattewhite",

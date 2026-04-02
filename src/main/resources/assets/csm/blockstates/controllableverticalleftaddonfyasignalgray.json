@@ -24,7 +24,7 @@
     },
     "inventory": [
       {
-        "model": "csm:shared_models/trafficsignals/backplates/trafficlightvertical_arrowaddon",
+        "model": "csm:trafficsignals/shared_models/backplates/trafficlightvertical_arrowaddon",
         "textures": {
           "all": "csm:blocks/trafficsignals/old_bulb_body/gray/yellowarrowleftoff",
           "particle": "csm:blocks/trafficsignals/old_bulb_body/gray/yellowarrowleftoff",

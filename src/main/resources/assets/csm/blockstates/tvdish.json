@@ -1,7 +1,12 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:technology/sat_tv_dish"
+    "model": "csm:technology/shared_models/tvdish",
+    "textures": {
+      "all": "csm:blocks/technology/sat_tv_dish",
+      "particle": "csm:blocks/technology/sat_tv_dish",
+      "0": "csm:blocks/technology/sat_tv_dish"
+    }
   },
   "variants": {
     "facing": {

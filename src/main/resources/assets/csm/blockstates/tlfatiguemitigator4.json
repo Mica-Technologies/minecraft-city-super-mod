@@ -1,7 +1,13 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:trafficaccessories/traffic_signal_mast_fatigue_mitigator_style_4"
+    "model": "csm:trafficaccessories/shared_models/signal_fatigue_mitigator_4",
+    "textures": {
+      "all": "csm:blocks/trafficsignals/shared_textures/metal_white",
+      "particle": "csm:blocks/trafficsignals/shared_textures/metal_white",
+      "0": "csm:blocks/trafficsignals/shared_textures/metal_white",
+      "1": "csm:blocks/trafficsignals/shared_textures/metal_silver"
+    }
   },
   "variants": {
     "facing": {

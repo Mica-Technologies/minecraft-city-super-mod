@@ -1,9 +1,0 @@
-{
-  "parent": "csm:block/shared_models/novelties/arcade_cabinet",
-  "textures": {
-    "all": "csm:blocks/novelties/shared_textures/arcade_cabinet",
-    "particle": "csm:blocks/novelties/shared_textures/arcade_cabinet",
-    "0": "csm:blocks/novelties/shared_textures/arcade_cabinet",
-    "1": "csm:blocks/novelties/arcade_pacman_screen"
-  }
-}

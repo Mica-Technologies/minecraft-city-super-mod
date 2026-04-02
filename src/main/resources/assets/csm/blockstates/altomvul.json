@@ -1,7 +1,12 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:lighting/alto_mercury_vapor_underpass_light"
+    "model": "csm:lighting/shared_models/alto_mv_underpass_light",
+    "textures": {
+      "all": "csm:blocks/lighting/shared_textures/merc_fixtures",
+      "particle": "csm:blocks/lighting/shared_textures/merc_fixtures",
+      "0": "csm:blocks/lighting/shared_textures/merc_fixtures"
+    }
   },
   "variants": {
     "facing": {

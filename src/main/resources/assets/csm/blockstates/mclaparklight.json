@@ -1,7 +1,12 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:lighting/alto_park_light"
+    "model": "csm:lighting/shared_models/mcla_park_light",
+    "textures": {
+      "all": "csm:blocks/lighting/shared_textures/mcla_park_light",
+      "particle": "csm:blocks/lighting/shared_textures/mcla_park_light",
+      "0": "csm:blocks/lighting/shared_textures/mcla_park_light"
+    }
   },
   "variants": {
     "facing": {

@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:trafficsignals/traffic_signal_tattle_tale_beacon",
+    "model": "csm:trafficsignals/shared_models/signal_tattle_tale_beacon",
     "textures": {
       "all": "csm:blocks/trafficsignals/shared_textures/metal_white",
       "particle": "csm:blocks/trafficsignals/shared_textures/metal_white",

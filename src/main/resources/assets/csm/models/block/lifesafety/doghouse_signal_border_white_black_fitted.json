@@ -1,5 +1,5 @@
 {
-  "parent": "csm:block/shared_models/trafficsignals/signal_backplate_doghouse_fitted",
+  "parent": "csm:block/trafficsignals/shared_models/signal_backplate_doghouse_fitted",
   "textures": {
     "all": "csm:blocks/trafficaccessories/shared_textures/signalbackplateblackblackwhite",
     "particle": "csm:blocks/trafficaccessories/shared_textures/signalbackplateblackblackwhite",

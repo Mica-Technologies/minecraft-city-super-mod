@@ -1,7 +1,12 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:lighting/cree_xsp"
+    "model": "csm:lighting/shared_models/cree_xsp",
+    "textures": {
+      "all": "csm:blocks/lighting/shared_textures/cree_xsp",
+      "particle": "csm:blocks/lighting/shared_textures/cree_xsp",
+      "0": "csm:blocks/lighting/shared_textures/cree_xsp"
+    }
   },
   "variants": {
     "facing": {

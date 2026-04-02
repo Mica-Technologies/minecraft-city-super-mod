@@ -1,7 +1,12 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:hvac/residential_vent_2"
+    "model": "csm:hvac/shared_models/vent_residential_2",
+    "textures": {
+      "all": "csm:blocks/hvac/residential_vent_2",
+      "particle": "csm:blocks/hvac/residential_vent_2",
+      "0": "csm:blocks/hvac/residential_vent_2"
+    }
   },
   "variants": {
     "facing": {

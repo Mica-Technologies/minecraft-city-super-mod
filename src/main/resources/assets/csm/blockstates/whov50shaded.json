@@ -1,7 +1,12 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:lighting/westinghouse_ov50_shaded"
+    "model": "csm:lighting/shared_models/westinghouse_ov50_shaded",
+    "textures": {
+      "all": "csm:blocks/lighting/shared_textures/westinghouse_ov50",
+      "particle": "csm:blocks/lighting/shared_textures/westinghouse_ov50",
+      "0": "csm:blocks/lighting/shared_textures/westinghouse_ov50"
+    }
   },
   "variants": {
     "facing": {

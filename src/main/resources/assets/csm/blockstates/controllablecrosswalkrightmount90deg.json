@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:trafficsignals/controllablecrosswalkrightmount90deg",
+    "model": "csm:trafficsignals/shared_models/crosswalklightsingle_right90",
     "textures": {
       "all": "csm:blocks/trafficsignals/shared_textures/crosswalkoff",
       "particle": "csm:blocks/trafficsignals/shared_textures/crosswalkoff",

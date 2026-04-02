@@ -1,7 +1,13 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:lifesafety/modern_fire_sprinkler_silver_inkler"
+    "model": "csm:lifesafety/shared_models/firesprinkler",
+    "textures": {
+      "all": "csm:blocks/trafficsignals/shared_textures/metal_white",
+      "particle": "csm:blocks/trafficsignals/shared_textures/metal_white",
+      "0": "csm:blocks/trafficsigns/absolutely_nothing_sign",
+      "1": "csm:blocks/lifesafety/shared_textures/modern_fire_sprinkler_black"
+    }
   },
   "variants": {
     "facing": {

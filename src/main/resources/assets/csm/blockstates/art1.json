@@ -1,7 +1,16 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:hvac/air_return_1_white"
+    "model": "block/cube",
+    "textures": {
+      "down": "csm:blocks/hvac/air_return_1_white",
+      "up": "csm:blocks/hvac/air_return_1_white",
+      "north": "csm:blocks/hvac/air_return_1_white",
+      "east": "csm:blocks/hvac/air_return_1_white",
+      "south": "csm:blocks/hvac/air_return_1_white",
+      "west": "csm:blocks/hvac/air_return_1_white",
+      "particle": "csm:blocks/hvac/air_return_1_white"
+    }
   },
   "variants": {
     "facing": {

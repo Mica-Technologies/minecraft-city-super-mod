@@ -1,7 +1,12 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:trafficaccessories/pole_mount_control_box_small_tan"
+    "model": "csm:trafficaccessories/shared_models/polecontrolboxsmall",
+    "textures": {
+      "all": "csm:blocks/trafficaccessories/shared_textures/metal_mattetan",
+      "particle": "csm:blocks/trafficaccessories/shared_textures/metal_mattetan",
+      "0": "csm:blocks/trafficaccessories/shared_textures/metal_mattetan"
+    }
   },
   "variants": {
     "facing": {

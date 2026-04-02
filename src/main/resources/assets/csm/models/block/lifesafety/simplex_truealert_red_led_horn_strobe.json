@@ -1,5 +1,5 @@
 {
-  "parent": "csm:block/shared_models/lifesafety/simplex_truealert_hornstrobe_micro_red",
+  "parent": "csm:block/lifesafety/shared_models/simplex_truealert_hornstrobe_micro_red",
   "textures": {
     "all": "csm:blocks/lifesafety/simplex_truealert_red_led_horn_strobe",
     "particle": "csm:blocks/lifesafety/simplex_truealert_red_led_horn_strobe",

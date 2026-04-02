@@ -1,7 +1,12 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:lifesafety/fire_alarm_control_panel"
+    "model": "csm:lifesafety/shared_models/firepanel",
+    "textures": {
+      "all": "csm:blocks/lifesafety/fire_alarm_control_panel",
+      "particle": "csm:blocks/lifesafety/fire_alarm_control_panel",
+      "0": "csm:blocks/lifesafety/fire_alarm_control_panel"
+    }
   },
   "variants": {
     "facing": {
