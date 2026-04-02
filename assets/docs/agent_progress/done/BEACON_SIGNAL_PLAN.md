@@ -4,7 +4,7 @@ Warning beacon support for ramp meter and advance warning applications.
 Builds on the new `SIGNAL_SIDE.BEACON` type added for #120.
 
 **Created:** 2026-03-31
-**Status:** Phase 1 complete, Phase 2 planned
+**Status:** COMPLETE — Phase 1 and Phase 2 both done
 
 ---
 

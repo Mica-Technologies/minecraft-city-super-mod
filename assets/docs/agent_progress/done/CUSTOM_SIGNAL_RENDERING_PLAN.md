@@ -5,8 +5,8 @@ body color, visor type, bulb style, and tilt without needing separate block vari
 
 **Created:** 2026-03-28
 **Branch:** `dev/signal-custom-rendering-rebase`
-**Status:** Phase 4 in progress — post-merge fixes for dedicated server GUI and tool QoL.
-119 signal blocks converted, 58 deprecated blocks auto-converting. Crosswalk deferred.
+**Status:** Phases 1-4 COMPLETE. 119 signal blocks converted, 58 deprecated blocks auto-converting.
+Only remaining work: crosswalk custom rendering (deferred, tracked separately).
 
 ---
 
@@ -459,7 +459,7 @@ check runs on the client (`worldIn.isRemote`), but the client's modeMap never re
 **Recommended:** Option 1 (ItemStack NBT). Simplest, no new network code, and the auto-sync
 handles dedicated servers transparently.
 
-**Status:** IMPLEMENTED — awaiting server testing
+**Status:** COMPLETE — tested successfully on dedicated server and singleplayer (2026-04-01)
 
 - [x] Refactor `ItemSignalHeadConfigTool` to store mode in ItemStack NBT
 - [x] Refactor `ItemSignalConfigurationTool` to store mode in ItemStack NBT
@@ -500,7 +500,7 @@ viewer, the signal is behind it).
 3. `AbstractBlockSignalBackplateFitted` extends `AbstractBlockSignalBackplate`, so a single
    `instanceof AbstractBlockSignalBackplate` check covers both types
 
-**Status:** IMPLEMENTED — awaiting testing
+**Status:** COMPLETE — tested successfully (2026-04-01)
 
 - [x] Add `AbstractBlockSignalBackplate.findSignalBehind(World, BlockPos)` utility method
 - [x] Update `ItemSignalHeadConfigTool` to resolve backplate clicks
