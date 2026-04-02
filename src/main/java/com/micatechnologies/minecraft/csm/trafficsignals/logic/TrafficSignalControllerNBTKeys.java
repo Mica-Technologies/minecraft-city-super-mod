@@ -228,6 +228,14 @@ public class TrafficSignalControllerNBTKeys {
    */
   public static final String ALL_RED_FLASH = "tcAllRedFlash";
 
+  /**
+   * The key for storing and retrieving the traffic signal controller's ramp meter night mode
+   * setting from NBT data.
+   *
+   * @since 2.0
+   */
+  public static final String RAMP_METER_NIGHT_MODE = "tcRampMeterNightMode";
+
   ///endregion
 
   ///region: Previous Format Keys (v1.1)

@@ -365,6 +365,20 @@ public class ItemSignalConfigurationTool extends AbstractItem {
           result = EnumActionResult.PASS;
         }
       }
+      // If in cycle controller ramp meter night mode, cycle through Green/Flash/Off
+      else if (mode == ItemSignalConfigurationToolMode.CYCLE_CONTROLLER_RAMP_METER_NIGHT_MODE) {
+        TileEntity tileEntity = worldIn.getTileEntity(pos);
+        if (tileEntity instanceof TileEntityTrafficSignalController) {
+          TileEntityTrafficSignalController controller
+              = (TileEntityTrafficSignalController) tileEntity;
+          int newMode = (controller.getRampMeterNightMode() + 1) % 3;
+          controller.setRampMeterNightMode(newMode);
+          player.sendMessage(new TextComponentString(
+              "Set traffic signal controller ramp meter night mode to "
+                  + controller.getRampMeterNightModeName()));
+          result = EnumActionResult.PASS;
+        }
+      }
       // If in clear controller faults mode, clear controller faults if clicked block is a
       // controller
       else if (mode == ItemSignalConfigurationToolMode.CLEAR_CONTROLLER_FAULTS) {

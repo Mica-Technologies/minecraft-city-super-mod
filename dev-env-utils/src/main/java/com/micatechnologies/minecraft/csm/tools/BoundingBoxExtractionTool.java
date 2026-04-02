@@ -51,7 +51,7 @@ public class BoundingBoxExtractionTool {
    * method to block classes that don't already have one. When false, blocks without an existing
    * method are skipped. This allows covering all calculable bounding boxes in the mod.
    */
-  private static final boolean ADD_NEW_METHODS = false;
+  private static final boolean ADD_NEW_METHODS = true;
 
   /**
    * The default bounding box variant to use when no override is specified.
@@ -554,14 +554,28 @@ public class BoundingBoxExtractionTool {
   }
 
   /**
+   * Imports required by getBlockBoundingBox that may not exist in files without one.
+   */
+  private static final String[] REQUIRED_IMPORTS = {
+      "net.minecraft.util.math.AxisAlignedBB",
+      "net.minecraft.block.state.IBlockState",
+      "net.minecraft.world.IBlockAccess",
+      "net.minecraft.util.math.BlockPos"
+  };
+
+  /**
    * Adds a new getBlockBoundingBox method to a Java source file that doesn't have one.
-   * Inserts the method before the last closing brace of the class.
+   * Inserts the method before the last closing brace of the class, and ensures all
+   * required imports are present.
    *
    * @return true if the method was successfully added, false on failure.
    */
   private static boolean addMethodToJavaFile(File javaFile, String newMethodCode) {
     try {
       String content = Files.readString(javaFile.toPath());
+
+      // Ensure required imports are present
+      content = ensureImports(content);
 
       // Find the last } in the file (the class closing brace)
       int lastBrace = content.lastIndexOf('}');
@@ -581,6 +595,49 @@ public class BoundingBoxExtractionTool {
       System.err.println("  ERROR writing to " + javaFile.getName() + ": " + e.getMessage());
       return false;
     }
+  }
+
+  /**
+   * Ensures all required imports for getBlockBoundingBox are present in the file content.
+   * Adds missing imports after the last existing import statement.
+   */
+  private static String ensureImports(String content) {
+    List<String> missingImports = new ArrayList<>();
+    for (String requiredImport : REQUIRED_IMPORTS) {
+      if (!content.contains("import " + requiredImport + ";")) {
+        missingImports.add(requiredImport);
+      }
+    }
+
+    if (missingImports.isEmpty()) {
+      return content;
+    }
+
+    // Find the last import statement to insert after it
+    int lastImportEnd = -1;
+    Pattern importPattern = Pattern.compile("^import\\s+[\\w.]+;", Pattern.MULTILINE);
+    Matcher importMatcher = importPattern.matcher(content);
+    while (importMatcher.find()) {
+      lastImportEnd = importMatcher.end();
+    }
+
+    if (lastImportEnd < 0) {
+      // No existing imports — insert after the package statement
+      Pattern packagePattern = Pattern.compile("^package\\s+[\\w.]+;", Pattern.MULTILINE);
+      Matcher packageMatcher = packagePattern.matcher(content);
+      if (packageMatcher.find()) {
+        lastImportEnd = packageMatcher.end();
+      } else {
+        lastImportEnd = 0; // Fallback: insert at the top
+      }
+    }
+
+    StringBuilder importBlock = new StringBuilder();
+    for (String imp : missingImports) {
+      importBlock.append("\r\nimport ").append(imp).append(";");
+    }
+
+    return content.substring(0, lastImportEnd) + importBlock + content.substring(lastImportEnd);
   }
 
   // ==================== Rounding Methods (Preserved from Original) ====================

@@ -124,6 +124,24 @@ public abstract class AbstractBlock extends Block implements IHasModel, ICsmBloc
   }
 
   /**
+   * Returns the collision bounding box, clamped to the 0.0-1.0 block cell range. This prevents
+   * players from bouncing off blocks whose visual bounding box extends beyond the block cell
+   * (e.g., tall lights, large control boxes). Without clamping, Minecraft's entity collision
+   * resolver pushes entities out of neighboring cells that the oversized box overlaps into.
+   */
+  @Nullable
+  @Override
+  public AxisAlignedBB getCollisionBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
+    AxisAlignedBB bb = getBoundingBox(state, source, pos);
+    if (bb == null) {
+      return NULL_AABB;
+    }
+    return new AxisAlignedBB(
+        Math.max(0.0, bb.minX), Math.max(0.0, bb.minY), Math.max(0.0, bb.minZ),
+        Math.min(1.0, bb.maxX), Math.min(1.0, bb.maxY), Math.min(1.0, bb.maxZ));
+  }
+
+  /**
    * Overridden method from {@link Block} which determines if the block is an opaque cube. This
    * method is overridden and passed to a required abstract method to ensure all blocks are
    * developed and implemented using a consistent API.

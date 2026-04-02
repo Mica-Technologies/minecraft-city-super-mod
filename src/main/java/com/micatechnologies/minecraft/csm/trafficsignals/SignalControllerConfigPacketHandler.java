@@ -88,6 +88,9 @@ public class SignalControllerConfigPacketHandler implements
         case TOGGLE_ALL_RED_FLASH:
           controller.setAllRedFlash(!controller.getAllRedFlash());
           break;
+        case CYCLE_RAMP_METER_NIGHT_MODE:
+          controller.setRampMeterNightMode((controller.getRampMeterNightMode() + 1) % 3);
+          break;
         case CLEAR_FAULTS:
           controller.clearFaultState();
           break;

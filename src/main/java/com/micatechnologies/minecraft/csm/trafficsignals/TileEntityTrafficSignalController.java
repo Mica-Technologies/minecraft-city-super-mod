@@ -149,6 +149,14 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
   private boolean allRedFlash = false;
 
   /**
+   * The ramp meter night mode. Controls what part-time ramp meters do at night:
+   * 0 = GREEN (metering disabled, signals show green/unrestricted)
+   * 1 = FLASH (signals flash yellow/red, same as nightly flash)
+   * 2 = OFF (signals turned off completely)
+   */
+  private int rampMeterNightMode = 0;
+
+  /**
    * The yellow time for the traffic signal controller.
    *
    * @since 2.0
@@ -347,6 +355,10 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
         }
       }
 
+      // Update the operating mode before ticking to avoid a one-tick race condition
+      // (e.g. brief green flash before nightly flash starts)
+      updateOperatingMode();
+
       // Pass tick event to traffic signal controller ticker
       long tickTime = getWorld().getTotalWorldTime();
       long timeSinceLastPhaseChange = tickTime - lastPhaseChangeTime;
@@ -413,9 +425,6 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
 
     // Update alternating flash boolean
     alternatingFlash = !alternatingFlash;
-
-    // Update the operating mode
-    updateOperatingMode();
 
   }
 
@@ -523,6 +532,11 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
     // Load the traffic signal controller all red flash setting
     if (compound.hasKey(TrafficSignalControllerNBTKeys.ALL_RED_FLASH)) {
       allRedFlash = compound.getBoolean(TrafficSignalControllerNBTKeys.ALL_RED_FLASH);
+    }
+
+    // Load the traffic signal controller ramp meter night mode
+    if (compound.hasKey(TrafficSignalControllerNBTKeys.RAMP_METER_NIGHT_MODE)) {
+      rampMeterNightMode = compound.getInteger(TrafficSignalControllerNBTKeys.RAMP_METER_NIGHT_MODE);
     }
 
     // Load the traffic signal controller yellow time
@@ -661,6 +675,9 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
 
     // Write the all red flash setting to NBT
     compound.setBoolean(TrafficSignalControllerNBTKeys.ALL_RED_FLASH, allRedFlash);
+
+    // Write the ramp meter night mode to NBT
+    compound.setInteger(TrafficSignalControllerNBTKeys.RAMP_METER_NIGHT_MODE, rampMeterNightMode);
 
     // Write the yellow time to NBT
     compound.setLong(TrafficSignalControllerNBTKeys.YELLOW_TIME, yellowTime);
@@ -999,6 +1016,46 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
   }
 
   /**
+   * Gets the traffic signal controller's ramp meter night mode.
+   *
+   * @return the ramp meter night mode (0=GREEN, 1=FLASH, 2=OFF)
+   *
+   * @since 2.0
+   */
+  public int getRampMeterNightMode() {
+    return rampMeterNightMode;
+  }
+
+  /**
+   * Sets the traffic signal controller's ramp meter night mode.
+   *
+   * @param rampMeterNightMode the ramp meter night mode (0=GREEN, 1=FLASH, 2=OFF)
+   *
+   * @since 2.0
+   */
+  public void setRampMeterNightMode(int rampMeterNightMode) {
+    if (this.rampMeterNightMode != rampMeterNightMode) {
+      this.rampMeterNightMode = rampMeterNightMode;
+      resetController(false, true);
+    }
+  }
+
+  /**
+   * Gets a human-readable name for the current ramp meter night mode.
+   *
+   * @return the ramp meter night mode name
+   *
+   * @since 2.0
+   */
+  public String getRampMeterNightModeName() {
+    switch (rampMeterNightMode) {
+      case 1: return "Flash";
+      case 2: return "Off";
+      default: return "Green";
+    }
+  }
+
+  /**
    * Gets the traffic signal controller's yellow time.
    *
    * @return the yellow time in ticks
@@ -1219,6 +1276,12 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
     else if (isInFallbackFlashMode()) {
       desiredOperatingMode = TrafficSignalControllerMode.FLASH;
     }
+    // Ramp meter night mode OFF: turn signals off at night
+    else if (rampMeterNightMode == 2 && !getWorld().isDaytime()
+        && (mode == TrafficSignalControllerMode.RAMP_METER_PART_TIME
+            || mode == TrafficSignalControllerMode.RAMP_METER_FULL_TIME)) {
+      desiredOperatingMode = TrafficSignalControllerMode.MANUAL_OFF;
+    }
     // Otherwise, return the configured mode
     else {
       desiredOperatingMode = mode;
@@ -1255,16 +1318,19 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
   public boolean isInFallbackFlashMode() {
     boolean inFallbackFlashMode = nightlyFallbackToFlashMode && !getWorld().isDaytime();
 
-    // Set true if nightly fallback to flash mode is enabled and it is currently night time
+    // Also flash at night if ramp meter night mode is FLASH and mode is a ramp meter mode
+    if (!inFallbackFlashMode && rampMeterNightMode == 1 && !getWorld().isDaytime()
+        && (mode == TrafficSignalControllerMode.RAMP_METER_PART_TIME
+            || mode == TrafficSignalControllerMode.RAMP_METER_FULL_TIME)) {
+      inFallbackFlashMode = true;
+    }
 
     // Set true if power loss fallback to flash mode is enabled and the traffic signal controller
-    // is currently
-    // in a power loss state
+    // is currently in a power loss state
     if (powerLossFallbackToFlashMode && getWorld().getRedstonePowerFromNeighbors(getPos()) <= 0) {
       inFallbackFlashMode = true;
     }
 
-    // Return false otherwise
     return inFallbackFlashMode;
   }
 

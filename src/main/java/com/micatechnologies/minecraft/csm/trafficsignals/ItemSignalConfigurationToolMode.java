@@ -24,6 +24,7 @@ public enum ItemSignalConfigurationToolMode {
   CYCLE_CONTROLLER_MIN_GREEN_TIME_SECONDARY("Cycle Controller Min Green Time (Secondary)"),
   CYCLE_CONTROLLER_MAX_GREEN_TIME_SECONDARY("Cycle Controller Max Green Time (Secondary)"),
   TOGGLE_CONTROLLER_ALL_RED_FLASH("Toggle Controller All Red Flash"),
+  CYCLE_CONTROLLER_RAMP_METER_NIGHT_MODE("Cycle Controller Ramp Meter Night Mode"),
   CLEAR_CONTROLLER_FAULTS("Clear Controller Faults"),
   CREATE_SIGNAL_OVERLAPS("Create Signal Overlaps"),
   CHANGE_APS_ARROW_DIRECTION("Change APS Arrow Direction"),
