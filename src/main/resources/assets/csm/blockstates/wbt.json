@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:wbt"
+    "model": "csm:novelties/water_bubbler_tall"
   },
   "variants": {
     "facing": {

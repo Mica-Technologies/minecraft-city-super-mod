@@ -1,8 +1,0 @@
-{
-  "parent": "csm:block/shared_models/powergrid/pole_hv_sign",
-  "textures": {
-    "all": "csm:blocks/pole_visibility_strips",
-    "particle": "csm:blocks/pole_visibility_strips",
-    "0": "csm:blocks/pole_visibility_strips"
-  }
-}

@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:geelpo"
+    "model": "csm:lighting/ge_evolve_esr2_large_photocell_outlet"
   },
   "variants": {
     "facing": {

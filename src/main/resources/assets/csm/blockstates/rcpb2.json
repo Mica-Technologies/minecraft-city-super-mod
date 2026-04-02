@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:rcpb2"
+    "model": "csm:lighting/nov_round_concrete_pole_base_2"
   },
   "variants": {
     "facing": {

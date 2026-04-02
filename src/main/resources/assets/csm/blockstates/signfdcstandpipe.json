@@ -3,10 +3,10 @@
   "defaults": {
     "model": "csm:metal_signpostback_circle_sign",
     "textures": {
-      "all": "csm:blocks/fdc-standpipe-bullseye",
-      "particle": "csm:blocks/fdc-standpipe-bullseye",
-      "0": "csm:blocks/metal",
-      "1": "csm:blocks/fdc-standpipe-bullseye"
+      "all": "csm:blocks/trafficsigns/fdc_standpipe_bullseye",
+      "particle": "csm:blocks/trafficsigns/fdc_standpipe_bullseye",
+      "0": "csm:blocks/trafficsigns/absolutely_nothing_sign",
+      "1": "csm:blocks/trafficsigns/fdc_standpipe_bullseye"
     }
   },
   "variants": {

@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:searslf2"
+    "model": "csm:lighting/sears_light_fixture_2"
   },
   "variants": {
     "facing": {

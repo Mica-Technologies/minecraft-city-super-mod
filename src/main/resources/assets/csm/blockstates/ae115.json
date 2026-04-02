@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:ae115"
+    "model": "csm:lighting/american_electric_115_standard"
   },
   "variants": {
     "facing": {

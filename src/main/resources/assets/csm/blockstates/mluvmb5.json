@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:mluvmb5"
+    "model": "csm:powergrid/maclean_uvmaxx_crossarm_5"
   },
   "variants": {
     "facing": {

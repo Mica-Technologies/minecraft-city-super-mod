@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:altomvwl"
+    "model": "csm:lighting/alto_mercury_vapor_wall_light"
   },
   "variants": {
     "facing": {

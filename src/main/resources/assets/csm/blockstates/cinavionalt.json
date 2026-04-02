@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:cinavionalt"
+    "model": "csm:lighting/cooper_industries_navion_3_light_squares"
   },
   "variants": {
     "facing": {

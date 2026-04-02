@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:tlcontrollermattewhite"
+    "model": "csm:trafficaccessories/traffic_light_controller_matte_white"
   },
   "variants": {
     "facing": {

@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:novtm"
+    "model": "csm:lighting/nov_tapered_mast_truss_style"
   },
   "variants": {
     "facing": {

@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:sv4"
+    "model": "csm:hvac/four_way_vent_4_white"
   },
   "variants": {
     "facing": {

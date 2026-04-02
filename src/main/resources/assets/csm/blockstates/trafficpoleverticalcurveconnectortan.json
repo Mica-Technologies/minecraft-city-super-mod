@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:trafficpoleverticalcurveconnectortan"
+    "model": "csm:trafficaccessories/tan_vertical_traffic_pole_with_curve_connector"
   },
   "variants": {
     "facing": {

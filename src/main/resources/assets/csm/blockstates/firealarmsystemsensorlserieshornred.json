@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:firealarmsystemsensorlserieshornred"
+    "model": "csm:lifesafety/system_sensor_l_series_red_horn"
   },
   "variants": {
     "facing": {

@@ -1,7 +1,7 @@
 {
 	"credit": "Made with Blockbench",
 	"textures": {
-		"0": "csm:blocks/wapac"
+		"0": "csm:blocks/technology/enterasys_wireless_ac_ap"
 	},
 	"elements": [
 		{

@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:polevisstrips"
+    "model": "csm:powergrid/pole_visibility_strips"
   },
   "variants": {
     "facing": {

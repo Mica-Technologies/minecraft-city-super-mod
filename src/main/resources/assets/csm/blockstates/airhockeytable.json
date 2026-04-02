@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:airhockeytable"
+    "model": "csm:novelties/air_hockey_table"
   },
   "variants": {
     "facing": {

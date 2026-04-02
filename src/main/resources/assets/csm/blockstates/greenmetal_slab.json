@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:greenmetal_slab"
+    "model": "csm:buildingmaterials/greenmetal_slab"
   },
   "variants": {
     "half": {

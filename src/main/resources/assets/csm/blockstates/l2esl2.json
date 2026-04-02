@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:l2esl2"
+    "model": "csm:lighting/lithonia_2esl2"
   },
   "variants": {
     "facing": {

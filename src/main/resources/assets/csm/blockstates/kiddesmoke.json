@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:kiddesmoke"
+    "model": "csm:lifesafety/kidde_smoke_alarm"
   },
   "variants": {
     "facing": {

@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:polewiremount"
+    "model": "csm:powergrid/pole_wire_mount"
   },
   "variants": {
     "facing": {

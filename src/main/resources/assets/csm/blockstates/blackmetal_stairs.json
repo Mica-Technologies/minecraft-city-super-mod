@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:blackmetal_stairs"
+    "model": "csm:buildingmaterials/blackmetal_stairs"
   },
   "variants": {
     "facing": {

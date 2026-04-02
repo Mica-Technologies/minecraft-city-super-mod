@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:firealarmsystemsensorlseriesspeakerstrobewhite"
+    "model": "csm:lifesafety/system_sensor_l_series_white_speaker_strobe"
   },
   "variants": {
     "facing": {

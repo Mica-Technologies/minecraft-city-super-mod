@@ -3,9 +3,9 @@
   "defaults": {
     "model": "csm:trafficpolehorizontalangle",
     "textures": {
-      "all": "csm:blocks/metal_mattetan",
-      "particle": "csm:blocks/metal_mattetan",
-      "0": "csm:blocks/metal_mattetan"
+      "all": "csm:blocks/shared_textures/metal_mattetan",
+      "particle": "csm:blocks/shared_textures/metal_mattetan",
+      "0": "csm:blocks/shared_textures/metal_mattetan"
     }
   },
   "variants": {
@@ -38,9 +38,9 @@
             "uvlock": true,
             "model": "csm:trafficpole_small_mount",
             "textures": {
-              "all": "csm:blocks/metal_mattetan",
-              "particle": "csm:blocks/metal_mattetan",
-              "0": "csm:blocks/metal_mattetan"
+              "all": "csm:blocks/shared_textures/metal_mattetan",
+              "particle": "csm:blocks/shared_textures/metal_mattetan",
+              "0": "csm:blocks/shared_textures/metal_mattetan"
             },
             "transform": {
               "rotation": [
@@ -67,9 +67,9 @@
             "uvlock": true,
             "model": "csm:trafficpole_small_mount",
             "textures": {
-              "all": "csm:blocks/metal_mattetan",
-              "particle": "csm:blocks/metal_mattetan",
-              "0": "csm:blocks/metal_mattetan"
+              "all": "csm:blocks/shared_textures/metal_mattetan",
+              "particle": "csm:blocks/shared_textures/metal_mattetan",
+              "0": "csm:blocks/shared_textures/metal_mattetan"
             },
             "transform": {
               "rotation": [
@@ -96,9 +96,9 @@
             "uvlock": true,
             "model": "csm:trafficpole_small_mount",
             "textures": {
-              "all": "csm:blocks/metal_mattetan",
-              "particle": "csm:blocks/metal_mattetan",
-              "0": "csm:blocks/metal_mattetan"
+              "all": "csm:blocks/shared_textures/metal_mattetan",
+              "particle": "csm:blocks/shared_textures/metal_mattetan",
+              "0": "csm:blocks/shared_textures/metal_mattetan"
             },
             "transform": {
               "rotation": [
@@ -125,9 +125,9 @@
             "uvlock": true,
             "model": "csm:trafficpole_small_mount",
             "textures": {
-              "all": "csm:blocks/metal_mattetan",
-              "particle": "csm:blocks/metal_mattetan",
-              "0": "csm:blocks/metal_mattetan"
+              "all": "csm:blocks/shared_textures/metal_mattetan",
+              "particle": "csm:blocks/shared_textures/metal_mattetan",
+              "0": "csm:blocks/shared_textures/metal_mattetan"
             },
             "transform": {
               "rotation": [
@@ -154,9 +154,9 @@
             "uvlock": true,
             "model": "csm:trafficpole_small_mount",
             "textures": {
-              "all": "csm:blocks/metal_mattetan",
-              "particle": "csm:blocks/metal_mattetan",
-              "0": "csm:blocks/metal_mattetan"
+              "all": "csm:blocks/shared_textures/metal_mattetan",
+              "particle": "csm:blocks/shared_textures/metal_mattetan",
+              "0": "csm:blocks/shared_textures/metal_mattetan"
             },
             "transform": {
               "rotation": [
@@ -183,9 +183,9 @@
             "uvlock": true,
             "model": "csm:trafficpole_small_mount",
             "textures": {
-              "all": "csm:blocks/metal_mattetan",
-              "particle": "csm:blocks/metal_mattetan",
-              "0": "csm:blocks/metal_mattetan"
+              "all": "csm:blocks/shared_textures/metal_mattetan",
+              "particle": "csm:blocks/shared_textures/metal_mattetan",
+              "0": "csm:blocks/shared_textures/metal_mattetan"
             },
             "transform": {
               "rotation": [

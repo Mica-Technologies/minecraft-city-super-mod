@@ -3,11 +3,11 @@
   "defaults": {
     "model": "csm:metal_signpost_octagon_sign",
     "textures": {
-      "all": "csm:blocks/lhs_stop_sign",
-      "particle": "csm:blocks/lhs_stop_sign",
-      "0": "csm:blocks/metal",
-      "1": "csm:blocks/lhs_stop_sign",
-      "missing": "csm:blocks/metal"
+      "all": "csm:blocks/trafficsigns/lhs_stop_sign_not_compliant",
+      "particle": "csm:blocks/trafficsigns/lhs_stop_sign_not_compliant",
+      "0": "csm:blocks/trafficsigns/absolutely_nothing_sign",
+      "1": "csm:blocks/trafficsigns/lhs_stop_sign_not_compliant",
+      "missing": "csm:blocks/trafficsigns/absolutely_nothing_sign"
     }
   },
   "variants": {

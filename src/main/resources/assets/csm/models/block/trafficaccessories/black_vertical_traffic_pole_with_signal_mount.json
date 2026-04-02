@@ -1,0 +1,9 @@
+{
+  "parent": "csm:block/shared_models/trafficaccessories/trafficpoleverticalsignalmount",
+  "textures": {
+    "all": "csm:blocks/shared_textures/metal_black",
+    "particle": "csm:blocks/shared_textures/metal_black",
+    "0": "csm:blocks/shared_textures/metal_black",
+    "missing": "csm:blocks/shared_textures/metal_black"
+  }
+}

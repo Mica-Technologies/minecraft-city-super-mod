@@ -3,10 +3,10 @@
   "defaults": {
     "model": "csm:metal_signpostback_diamond_sign",
     "textures": {
-      "all": "csm:blocks/curvy-road-sign",
-      "particle": "csm:blocks/curvy-road-sign",
-      "0": "csm:blocks/metal",
-      "1": "csm:blocks/curvy-road-sign"
+      "all": "csm:blocks/trafficsigns/pole_curvy_road",
+      "particle": "csm:blocks/trafficsigns/pole_curvy_road",
+      "0": "csm:blocks/trafficsigns/absolutely_nothing_sign",
+      "1": "csm:blocks/trafficsigns/pole_curvy_road"
     }
   },
   "variants": {

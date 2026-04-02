@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:gem240r1"
+    "model": "csm:lighting/ge_m240r1_standard"
   },
   "variants": {
     "facing": {

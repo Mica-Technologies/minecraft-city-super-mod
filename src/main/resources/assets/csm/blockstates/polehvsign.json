@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:polehvsign"
+    "model": "csm:powergrid/pole_hv_sign"
   },
   "variants": {
     "facing": {

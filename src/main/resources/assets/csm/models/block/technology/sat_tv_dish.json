@@ -1,0 +1,8 @@
+{
+  "parent": "csm:block/shared_models/technology/tvdish",
+  "textures": {
+    "all": "csm:blocks/technology/sat_tv_dish",
+    "particle": "csm:blocks/technology/sat_tv_dish",
+    "0": "csm:blocks/technology/sat_tv_dish"
+  }
+}

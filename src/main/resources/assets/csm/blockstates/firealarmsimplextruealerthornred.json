@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:firealarmsimplextruealerthornred"
+    "model": "csm:lifesafety/simplex_truealert_red_horn"
   },
   "variants": {
     "facing": {

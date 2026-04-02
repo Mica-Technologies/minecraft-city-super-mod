@@ -1,0 +1,9 @@
+{
+  "parent": "csm:block/shared_models/novelties/playerstatue",
+  "textures": {
+    "all": "csm:blocks/novelties/player_statue_papaginos_skin",
+    "particle": "csm:blocks/novelties/player_statue_papaginos_skin",
+    "0": "csm:blocks/novelties/player_statue_papaginos_skin",
+    "1": "csm:blocks/novelties/shared_textures/statue_base"
+  }
+}

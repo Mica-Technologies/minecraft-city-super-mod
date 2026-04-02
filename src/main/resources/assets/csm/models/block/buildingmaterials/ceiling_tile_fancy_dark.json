@@ -1,0 +1,12 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "csm:blocks/buildingmaterials/ceiling_tile_fancy_dark",
+    "up": "csm:blocks/buildingmaterials/ceiling_tile_fancy_dark",
+    "north": "csm:blocks/buildingmaterials/ceiling_tile_fancy_dark",
+    "east": "csm:blocks/buildingmaterials/ceiling_tile_fancy_dark",
+    "south": "csm:blocks/buildingmaterials/ceiling_tile_fancy_dark",
+    "west": "csm:blocks/buildingmaterials/ceiling_tile_fancy_dark",
+    "particle": "csm:blocks/buildingmaterials/ceiling_tile_fancy_dark"
+  }
+}

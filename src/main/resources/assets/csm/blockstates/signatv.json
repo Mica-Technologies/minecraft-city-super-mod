@@ -3,10 +3,10 @@
   "defaults": {
     "model": "csm:metal_signpostback_sign",
     "textures": {
-      "all": "csm:blocks/atv.eps",
-      "particle": "csm:blocks/atv.eps",
-      "0": "csm:blocks/metal",
-      "1": "csm:blocks/atv.eps"
+      "all": "csm:blocks/trafficsigns/atv",
+      "particle": "csm:blocks/trafficsigns/atv",
+      "0": "csm:blocks/trafficsigns/absolutely_nothing_sign",
+      "1": "csm:blocks/trafficsigns/atv"
     }
   },
   "variants": {

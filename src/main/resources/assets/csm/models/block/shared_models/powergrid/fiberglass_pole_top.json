@@ -1,8 +1,8 @@
 {
 	"credit": "Model made by Brandon Holt (RinRin Blissgreen)",
 	"textures": {
-		"0": "csm:blocks/fiberglass_pole",
-		"particle": "csm:blocks/fiberglass_pole"
+		"0": "csm:blocks/powergrid/shared_textures/fiberglass_pole",
+		"particle": "csm:blocks/powergrid/shared_textures/fiberglass_pole"
 	},
 	"elements": [
 		{

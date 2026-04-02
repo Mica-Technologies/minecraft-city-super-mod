@@ -1,0 +1,8 @@
+{
+  "parent": "csm:block/shared_models/technology/wapn",
+  "textures": {
+    "all": "csm:blocks/technology/enterasys_wireless_n_ap",
+    "particle": "csm:blocks/technology/enterasys_wireless_n_ap",
+    "0": "csm:blocks/technology/enterasys_wireless_n_ap"
+  }
+}

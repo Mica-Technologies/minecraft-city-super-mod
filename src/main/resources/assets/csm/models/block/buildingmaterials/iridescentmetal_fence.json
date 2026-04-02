@@ -1,0 +1,7 @@
+{
+  "parent": "block/fence_side",
+  "textures": {
+    "texture": "csm:blocks/shared_textures/metal_iridescent",
+    "particle": "csm:blocks/shared_textures/metal_iridescent"
+  }
+}

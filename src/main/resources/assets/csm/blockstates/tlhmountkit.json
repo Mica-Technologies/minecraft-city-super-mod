@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:tlhmountkit"
+    "model": "csm:trafficaccessories/horizontal_signal_mount_kit"
   },
   "variants": {
     "facing": {

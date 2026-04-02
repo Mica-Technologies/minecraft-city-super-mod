@@ -1,0 +1,8 @@
+{
+  "parent": "csm:block/shared_models/lifesafety/rss",
+  "textures": {
+    "all": "csm:blocks/shared_textures/rss",
+    "particle": "csm:blocks/shared_textures/rss",
+    "0": "csm:blocks/shared_textures/rss"
+  }
+}

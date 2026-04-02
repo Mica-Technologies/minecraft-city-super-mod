@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:trafficpolehorizontalanglemount2unpainted"
+    "model": "csm:trafficaccessories/unpainted_angled_thin_traffic_pole_w__2_mounts"
   },
   "variants": {
     "facing": {

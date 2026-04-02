@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:geform109"
+    "model": "csm:lighting/ge_form_109_regular"
   },
   "variants": {
     "facing": {

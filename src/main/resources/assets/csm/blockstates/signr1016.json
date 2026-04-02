@@ -3,10 +3,10 @@
   "defaults": {
     "model": "csm:metal_signpostback_tall_sign",
     "textures": {
-      "all": "csm:blocks/r10-16",
-      "particle": "csm:blocks/r10-16",
-      "0": "csm:blocks/metal",
-      "1": "csm:blocks/r10-16"
+      "all": "csm:blocks/trafficsigns/u_turn_yield_to_right_turn_sing",
+      "particle": "csm:blocks/trafficsigns/u_turn_yield_to_right_turn_sing",
+      "0": "csm:blocks/trafficsigns/absolutely_nothing_sign",
+      "1": "csm:blocks/trafficsigns/u_turn_yield_to_right_turn_sing"
     }
   },
   "variants": {

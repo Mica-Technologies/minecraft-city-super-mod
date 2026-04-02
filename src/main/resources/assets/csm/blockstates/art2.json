@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:art2"
+    "model": "csm:hvac/air_return_2_white"
   },
   "variants": {
     "facing": {

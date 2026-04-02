@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:mclaclassicpostlight"
+    "model": "csm:lighting/alto_classic_post_light"
   },
   "variants": {
     "facing": {

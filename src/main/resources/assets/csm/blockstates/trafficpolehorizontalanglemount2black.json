@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:trafficpolehorizontalanglemount2black"
+    "model": "csm:trafficaccessories/black_angled_thin_traffic_pole_w__2_mounts"
   },
   "variants": {
     "facing": {

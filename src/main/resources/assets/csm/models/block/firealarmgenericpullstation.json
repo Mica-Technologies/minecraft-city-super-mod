@@ -1,8 +1,0 @@
-{
-  "parent": "csm:block/shared_models/lifesafety/ps1",
-  "textures": {
-    "all": "csm:blocks/ps1",
-    "particle": "csm:blocks/ps1",
-    "0": "csm:blocks/ps1"
-  }
-}

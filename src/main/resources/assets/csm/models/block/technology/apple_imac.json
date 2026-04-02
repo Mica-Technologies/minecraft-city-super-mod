@@ -1,0 +1,8 @@
+{
+  "parent": "csm:block/shared_models/technology/imac",
+  "textures": {
+    "0": "csm:blocks/technology/imac",
+		"1": "csm:blocks/technology/apple_magic_keyboard",
+		"particle": "csm:blocks/technology/apple_magic_keyboard"
+  }
+}

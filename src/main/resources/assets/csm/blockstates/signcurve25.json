@@ -3,10 +3,10 @@
   "defaults": {
     "model": "csm:metal_signpostback_tall_sign",
     "textures": {
-      "all": "csm:blocks/w13-5.eps",
-      "particle": "csm:blocks/w13-5.eps",
-      "0": "csm:blocks/metal",
-      "1": "csm:blocks/w13-5.eps"
+      "all": "csm:blocks/trafficsigns/pole_curve_speed_25",
+      "particle": "csm:blocks/trafficsigns/pole_curve_speed_25",
+      "0": "csm:blocks/trafficsigns/absolutely_nothing_sign",
+      "1": "csm:blocks/trafficsigns/pole_curve_speed_25"
     }
   },
   "variants": {

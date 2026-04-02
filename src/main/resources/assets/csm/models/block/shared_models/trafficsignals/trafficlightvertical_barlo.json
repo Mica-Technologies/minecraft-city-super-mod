@@ -2,11 +2,11 @@
 	"format_version": "1.21.6",
 	"credit": "Made with Blockbench",
 	"textures": {
-		"0": "csm:blocks/ledsolidred",
-		"1": "csm:blocks/ledsolidyellow",
-		"2": "csm:blocks/ledsolidgreen",
-		"3": "csm:blocks/solidredbarlo",
-		"particle": "csm:blocks/solidredbarlo"
+		"0": "csm:blocks/shared_textures/ledsolidred",
+		"1": "csm:blocks/shared_textures/ledsolidyellow",
+		"2": "csm:blocks/shared_textures/ledsolidgreen",
+		"3": "csm:blocks/shared_textures/solidredbarlo",
+		"particle": "csm:blocks/shared_textures/solidredbarlo"
 	},
 	"elements": [
 		{

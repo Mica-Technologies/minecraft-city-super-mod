@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:creexsp"
+    "model": "csm:lighting/cree_xsp"
   },
   "variants": {
     "facing": {

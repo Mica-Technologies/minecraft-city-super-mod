@@ -3,10 +3,10 @@
   "defaults": {
     "model": "csm:metal_signpostback_tall_sign",
     "textures": {
-      "all": "csm:blocks/no-long-term-parking-sign-k-9002",
-      "particle": "csm:blocks/no-long-term-parking-sign-k-9002",
-      "0": "csm:blocks/metal",
-      "1": "csm:blocks/no-long-term-parking-sign-k-9002"
+      "all": "csm:blocks/trafficsigns/visitor_parking_no_long_term_parking",
+      "particle": "csm:blocks/trafficsigns/visitor_parking_no_long_term_parking",
+      "0": "csm:blocks/trafficsigns/absolutely_nothing_sign",
+      "1": "csm:blocks/trafficsigns/visitor_parking_no_long_term_parking"
     }
   },
   "variants": {

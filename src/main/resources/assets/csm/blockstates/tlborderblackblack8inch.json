@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:tlborderblackblack8inch"
+    "model": "csm:trafficaccessories/vertical_signal_border_black_black_8_inch"
   },
   "variants": {
     "facing": {

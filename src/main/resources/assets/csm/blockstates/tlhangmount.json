@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:tlhangmount"
+    "model": "csm:trafficaccessories/hanging_signal_mount_kit_vertical"
   },
   "variants": {
     "facing": {

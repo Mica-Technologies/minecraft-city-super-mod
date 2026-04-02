@@ -3,10 +3,10 @@
   "defaults": {
     "model": "csm:metal_signpostback_half_sign",
     "textures": {
-      "all": "csm:blocks/sidewalk-closed-use-other-side",
-      "particle": "csm:blocks/sidewalk-closed-use-other-side",
-      "0": "csm:blocks/metal",
-      "1": "csm:blocks/sidewalk-closed-use-other-side"
+      "all": "csm:blocks/trafficsigns/pole_sidewalk_closed",
+      "particle": "csm:blocks/trafficsigns/pole_sidewalk_closed",
+      "0": "csm:blocks/trafficsigns/absolutely_nothing_sign",
+      "1": "csm:blocks/trafficsigns/pole_sidewalk_closed"
     }
   },
   "variants": {

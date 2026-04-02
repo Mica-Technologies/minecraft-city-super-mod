@@ -1,8 +1,8 @@
 {
   "parent": "csm:block/shared_models/trafficsignals/signal_backplate_vertical_addon_2_left_tilt",
   "textures": {
-    "all": "csm:blocks/signalbackplateblackpinkblack",
-    "particle": "csm:blocks/signalbackplateblackpinkblack",
-    "0": "csm:blocks/signalbackplateblackpinkblack"
+    "all": "csm:blocks/shared_textures/signalbackplateblackpinkblack",
+    "particle": "csm:blocks/shared_textures/signalbackplateblackpinkblack",
+    "0": "csm:blocks/shared_textures/signalbackplateblackpinkblack"
   }
 }

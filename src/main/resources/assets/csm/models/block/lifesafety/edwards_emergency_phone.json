@@ -1,0 +1,8 @@
+{
+  "parent": "csm:block/shared_models/lifesafety/edwards_emergency_phone",
+  "textures": {
+    "all": "csm:blocks/shared_textures/edwards_emergency_phone",
+    "particle": "csm:blocks/shared_textures/edwards_emergency_phone",
+    "0": "csm:blocks/shared_textures/edwards_emergency_phone"
+  }
+}

@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:firealarmsystemsensoradvancehornstrobewhite"
+    "model": "csm:lifesafety/system_sensor_spectralert_advance_white_horn_strobe"
   },
   "variants": {
     "facing": {

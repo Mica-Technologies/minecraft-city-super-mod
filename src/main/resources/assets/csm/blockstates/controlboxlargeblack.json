@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:controlboxlargeblack"
+    "model": "csm:trafficaccessories/pole_mount_control_box_large_black"
   },
   "variants": {
     "facing": {

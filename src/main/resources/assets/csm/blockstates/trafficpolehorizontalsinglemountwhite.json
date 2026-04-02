@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:trafficpolehorizontalsinglemountwhite"
+    "model": "csm:trafficaccessories/white_horizontal_traffic_pole_with_single_mount"
   },
   "variants": {
     "facing": {

@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:atls3"
+    "model": "csm:technology/atlas_speaker_3"
   },
   "variants": {
     "facing": {

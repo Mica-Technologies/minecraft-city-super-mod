@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:novtm2"
+    "model": "csm:lighting/nov_tapered_mast_eliptical_curve"
   },
   "variants": {
     "facing": {

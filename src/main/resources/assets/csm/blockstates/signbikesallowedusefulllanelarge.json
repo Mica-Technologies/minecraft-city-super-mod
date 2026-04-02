@@ -3,11 +3,11 @@
   "defaults": {
     "model": "csm:metal_signpostback_medium_square_sign",
     "textures": {
-      "all": "csm:blocks/sign_mutcd_r9-20",
-      "particle": "csm:blocks/sign_mutcd_r9-20",
-      "0": "csm:blocks/metal",
-      "1": "csm:blocks/sign_mutcd_r9-20",
-      "missing": "csm:blocks/metal"
+      "all": "csm:blocks/trafficsigns/bikes_allowed_to_use_full_lane",
+      "particle": "csm:blocks/trafficsigns/bikes_allowed_to_use_full_lane",
+      "0": "csm:blocks/trafficsigns/absolutely_nothing_sign",
+      "1": "csm:blocks/trafficsigns/bikes_allowed_to_use_full_lane",
+      "missing": "csm:blocks/trafficsigns/absolutely_nothing_sign"
     }
   },
   "variants": {

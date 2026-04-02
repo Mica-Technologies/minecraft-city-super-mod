@@ -3,10 +3,10 @@
   "defaults": {
     "model": "csm:metal_signpostback_sign",
     "textures": {
-      "all": "csm:blocks/mutcd_m1-10.svg",
-      "particle": "csm:blocks/mutcd_m1-10.svg",
-      "0": "csm:blocks/metal",
-      "1": "csm:blocks/mutcd_m1-10.svg"
+      "all": "csm:blocks/trafficsigns/eisenhower_interstate_system",
+      "particle": "csm:blocks/trafficsigns/eisenhower_interstate_system",
+      "0": "csm:blocks/trafficsigns/absolutely_nothing_sign",
+      "1": "csm:blocks/trafficsigns/eisenhower_interstate_system"
     }
   },
   "variants": {

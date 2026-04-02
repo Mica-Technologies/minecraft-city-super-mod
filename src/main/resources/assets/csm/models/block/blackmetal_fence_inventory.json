@@ -1,7 +1,7 @@
 {
   "parent": "block/fence_inventory",
   "textures": {
-    "texture": "csm:blocks/metal_black",
-    "particle": "csm:blocks/metal_black"
+    "texture": "csm:blocks/shared_textures/metal_black",
+    "particle": "csm:blocks/shared_textures/metal_black"
   }
 }

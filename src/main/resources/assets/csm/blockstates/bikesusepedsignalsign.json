@@ -3,10 +3,10 @@
   "defaults": {
     "model": "csm:metal_signpostback_tall_sign",
     "textures": {
-      "all": "csm:blocks/bikes_use_ped_signal_sign",
-      "particle": "csm:blocks/bikes_use_ped_signal_sign",
-      "0": "csm:blocks/metal",
-      "1": "csm:blocks/bikes_use_ped_signal_sign"
+      "all": "csm:blocks/trafficsigns/bikes_use_ped_signal",
+      "particle": "csm:blocks/trafficsigns/bikes_use_ped_signal",
+      "0": "csm:blocks/trafficsigns/absolutely_nothing_sign",
+      "1": "csm:blocks/trafficsigns/bikes_use_ped_signal"
     }
   },
   "variants": {

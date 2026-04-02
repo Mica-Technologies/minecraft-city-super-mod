@@ -1,7 +1,7 @@
 {
 	"credit": "Made with Blockbench",
 	"textures": {
-		"screws": "csm:blocks/metal_silver",
+		"screws": "csm:blocks/shared_textures/metal_silver",
 		"light1": "csm:blocks/trafficsignals/lights/iled_red",
 		"light2": "csm:blocks/trafficsignals/lights/eled_yellow",
 		"light3": "csm:blocks/trafficsignals/lights/iled_green",

@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:altollm"
+    "model": "csm:lighting/alto_lot_light_mount"
   },
   "variants": {
     "facing": {

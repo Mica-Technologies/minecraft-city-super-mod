@@ -1,0 +1,12 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "csm:blocks/hvac/air_return_2_dark",
+    "up": "csm:blocks/hvac/air_return_2_dark",
+    "north": "csm:blocks/hvac/air_return_2_dark",
+    "east": "csm:blocks/hvac/air_return_2_dark",
+    "south": "csm:blocks/hvac/air_return_2_dark",
+    "west": "csm:blocks/hvac/air_return_2_dark",
+    "particle": "csm:blocks/hvac/air_return_2_dark"
+  }
+}

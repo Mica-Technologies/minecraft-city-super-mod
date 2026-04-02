@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:fbm2"
+    "model": "csm:lighting/full_ballast_mount_2"
   },
   "variants": {
     "facing": {

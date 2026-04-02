@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:appletv"
+    "model": "csm:technology/apple_tv"
   },
   "variants": {
     "facing": {

@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:oldbrooksxarm6"
+    "model": "csm:powergrid/brooks_duralife_crossarm_6_old"
   },
   "variants": {
     "facing": {

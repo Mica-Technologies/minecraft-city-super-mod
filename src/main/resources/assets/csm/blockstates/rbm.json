@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:rbm"
+    "model": "csm:lighting/remote_street_light_series_ballast_module"
   },
   "variants": {
     "facing": {

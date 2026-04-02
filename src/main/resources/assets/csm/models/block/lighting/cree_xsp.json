@@ -1,0 +1,8 @@
+{
+  "parent": "csm:block/shared_models/lighting/cree_xsp",
+  "textures": {
+    "all": "csm:blocks/shared_textures/cree_xsp",
+    "particle": "csm:blocks/shared_textures/cree_xsp",
+    "0": "csm:blocks/shared_textures/cree_xsp"
+  }
+}

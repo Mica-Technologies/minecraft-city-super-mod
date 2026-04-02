@@ -3,10 +3,10 @@
   "defaults": {
     "model": "csm:metal_signpostback_diamond_sign",
     "textures": {
-      "all": "csm:blocks/endsign",
-      "particle": "csm:blocks/endsign",
-      "0": "csm:blocks/metal",
-      "1": "csm:blocks/endsign"
+      "all": "csm:blocks/trafficsigns/end_road",
+      "particle": "csm:blocks/trafficsigns/end_road",
+      "0": "csm:blocks/trafficsigns/absolutely_nothing_sign",
+      "1": "csm:blocks/trafficsigns/end_road"
     }
   },
   "variants": {

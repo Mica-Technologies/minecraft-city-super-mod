@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:greenmanexitsignleftarrow"
+    "model": "csm:lifesafety/exit_sign_green_man_left_arrow"
   },
   "variants": {
     "facing": {

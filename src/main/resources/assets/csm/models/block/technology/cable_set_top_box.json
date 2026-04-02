@@ -1,0 +1,8 @@
+{
+  "parent": "csm:block/shared_models/technology/setupbox",
+  "textures": {
+    "all": "csm:blocks/technology/cable_set_top_box",
+    "particle": "csm:blocks/technology/cable_set_top_box",
+    "0": "csm:blocks/technology/cable_set_top_box"
+  }
+}

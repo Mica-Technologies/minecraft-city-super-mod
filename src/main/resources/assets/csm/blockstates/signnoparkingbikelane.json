@@ -3,10 +3,10 @@
   "defaults": {
     "model": "csm:metal_signpostback_tall_sign",
     "textures": {
-      "all": "csm:blocks/no-parking-bike-lane",
-      "particle": "csm:blocks/no-parking-bike-lane",
-      "0": "csm:blocks/metal",
-      "1": "csm:blocks/no-parking-bike-lane"
+      "all": "csm:blocks/trafficsigns/no_parking_bike_lane",
+      "particle": "csm:blocks/trafficsigns/no_parking_bike_lane",
+      "0": "csm:blocks/trafficsigns/absolutely_nothing_sign",
+      "1": "csm:blocks/trafficsigns/no_parking_bike_lane"
     }
   },
   "variants": {

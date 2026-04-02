@@ -1,9 +1,9 @@
 {
 	"credit": "Made with Blockbench",
 	"textures": {
-		"0": "csm:blocks/greenarrowleft",
-		"1": "csm:blocks/yellowarrowleft",
-		"particle": "csm:blocks/yellowarrowleft"
+		"0": "csm:blocks/shared_textures/greenarrowleft",
+		"1": "csm:blocks/shared_textures/yellowarrowleft",
+		"particle": "csm:blocks/shared_textures/yellowarrowleft"
 	},
 	"elements": [
 		{

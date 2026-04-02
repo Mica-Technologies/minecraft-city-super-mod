@@ -1,0 +1,8 @@
+{
+  "parent": "csm:block/shared_models/trafficsignals/crosswalklightsingle_rear",
+  "textures": {
+    "all": "csm:blocks/shared_textures/crosswalkmeteronoff",
+    "particle": "csm:blocks/shared_textures/crosswalkmeteronoff",
+    "0": "csm:blocks/shared_textures/crosswalkmeteronoff"
+  }
+}

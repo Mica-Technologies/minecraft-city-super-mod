@@ -1,7 +1,7 @@
 {
 	"credit": "Made with Blockbench",
 	"textures": {
-		"0": "csm:blocks/below_ground_signal_sensor"
+		"0": "csm:blocks/shared_textures/below_ground_signal_sensor"
 	},
 	"elements": [
 		{

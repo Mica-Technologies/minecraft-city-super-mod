@@ -3,9 +3,9 @@
   "defaults": {
     "model": "csm:metal_signpostback",
     "textures": {
-      "all": "csm:blocks/metal",
-      "particle": "csm:blocks/metal",
-      "0": "csm:blocks/metal"
+      "all": "csm:blocks/trafficsigns/absolutely_nothing_sign",
+      "particle": "csm:blocks/trafficsigns/absolutely_nothing_sign",
+      "0": "csm:blocks/trafficsigns/absolutely_nothing_sign"
     }
   },
   "variants": {

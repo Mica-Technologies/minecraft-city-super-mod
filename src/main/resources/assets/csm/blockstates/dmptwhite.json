@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:dmptwhite"
+    "model": "csm:trafficaccessories/nov_decorative_metal_pole_top_white"
   },
   "variants": {
     "facing": {

@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:creeledwaysmall"
+    "model": "csm:lighting/cree_ledway_small"
   },
   "variants": {
     "facing": {

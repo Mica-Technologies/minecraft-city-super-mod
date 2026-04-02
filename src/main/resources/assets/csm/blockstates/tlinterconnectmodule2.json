@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:tlinterconnectmodule2"
+    "model": "csm:trafficaccessories/traffic_signal_interconnect_antenna_style_2"
   },
   "variants": {
     "facing": {

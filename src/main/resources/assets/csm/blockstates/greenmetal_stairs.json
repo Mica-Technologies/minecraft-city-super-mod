@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:greenmetal_stairs"
+    "model": "csm:buildingmaterials/greenmetal_stairs"
   },
   "variants": {
     "facing": {

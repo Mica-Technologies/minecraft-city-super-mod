@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:blackmetal_slab_double"
+    "model": "csm:buildingmaterials/blackmetal_slab_double"
   },
   "variants": {
     "variant": {

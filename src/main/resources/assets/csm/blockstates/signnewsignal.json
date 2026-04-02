@@ -3,10 +3,10 @@
   "defaults": {
     "model": "csm:metal_signpostback_diamond_sign",
     "textures": {
-      "all": "csm:blocks/mdot_w3-3b.svg",
-      "particle": "csm:blocks/mdot_w3-3b.svg",
-      "0": "csm:blocks/metal",
-      "1": "csm:blocks/mdot_w3-3b.svg"
+      "all": "csm:blocks/trafficsigns/new_signal_ahead",
+      "particle": "csm:blocks/trafficsigns/new_signal_ahead",
+      "0": "csm:blocks/trafficsigns/absolutely_nothing_sign",
+      "1": "csm:blocks/trafficsigns/new_signal_ahead"
     }
   },
   "variants": {

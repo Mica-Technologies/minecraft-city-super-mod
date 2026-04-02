@@ -3,11 +3,11 @@
   "defaults": {
     "model": "csm:metal_signpostback_medium_square_sign",
     "textures": {
-      "all": "csm:blocks/800px-virginia_e5-v1l.svg",
-      "particle": "csm:blocks/800px-virginia_e5-v1l.svg",
-      "0": "csm:blocks/metal",
-      "1": "csm:blocks/800px-virginia_e5-v1l.svg",
-      "missing": "csm:blocks/metal"
+      "all": "csm:blocks/trafficsigns/road_work_left_exit",
+      "particle": "csm:blocks/trafficsigns/road_work_left_exit",
+      "0": "csm:blocks/trafficsigns/absolutely_nothing_sign",
+      "1": "csm:blocks/trafficsigns/road_work_left_exit",
+      "missing": "csm:blocks/trafficsigns/absolutely_nothing_sign"
     }
   },
   "variants": {

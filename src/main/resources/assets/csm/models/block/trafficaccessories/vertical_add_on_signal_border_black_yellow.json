@@ -1,0 +1,8 @@
+{
+  "parent": "csm:block/shared_models/trafficsignals/signal_backplate_vertical_addon_1",
+  "textures": {
+    "all": "csm:blocks/shared_textures/signalbackplateblackyellowblack",
+    "particle": "csm:blocks/shared_textures/signalbackplateblackyellowblack",
+    "0": "csm:blocks/shared_textures/signalbackplateblackyellowblack"
+  }
+}

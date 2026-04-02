@@ -1,11 +1,11 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:controllablerampmeteronsignalrightmount",
+    "model": "csm:trafficsignals/ramp_meter_on_crosswalk_light_single_16_inch_right_mount",
     "textures": {
-      "all": "csm:blocks/crosswalkmeteronoff",
-      "particle": "csm:blocks/crosswalkmeteronoff",
-      "0": "csm:blocks/crosswalkmeteronoff"
+      "all": "csm:blocks/shared_textures/crosswalkmeteronoff",
+      "particle": "csm:blocks/shared_textures/crosswalkmeteronoff",
+      "0": "csm:blocks/shared_textures/crosswalkmeteronoff"
     }
   },
   "variants": {
@@ -24,7 +24,7 @@
     "color": {
       "0": {
         "textures": {
-          "0": "csm:blocks/crosswalkmeteronon"
+          "0": "csm:blocks/shared_textures/crosswalkmeteronon"
         }
       },
       "1": {
@@ -36,23 +36,23 @@
       },
       "2": {
         "textures": {
-          "0": "csm:blocks/crosswalkmeteronon"
+          "0": "csm:blocks/shared_textures/crosswalkmeteronon"
         }
       },
       "3": {
         "textures": {
-          "0": "csm:blocks/crosswalkmeteronoff",
-          "all": "csm:blocks/crosswalkmeteronoff",
-          "particle": "csm:blocks/crosswalkmeteronoff"
+          "0": "csm:blocks/shared_textures/crosswalkmeteronoff",
+          "all": "csm:blocks/shared_textures/crosswalkmeteronoff",
+          "particle": "csm:blocks/shared_textures/crosswalkmeteronoff"
         }
       }
     },
     "inventory": [
       {
         "textures": {
-          "all": "csm:blocks/crosswalkmeteronon",
-          "particle": "csm:blocks/crosswalkmeteronon",
-          "0": "csm:blocks/crosswalkmeteronon"
+          "all": "csm:blocks/shared_textures/crosswalkmeteronon",
+          "particle": "csm:blocks/shared_textures/crosswalkmeteronon",
+          "0": "csm:blocks/shared_textures/crosswalkmeteronon"
         }
       }
     ],

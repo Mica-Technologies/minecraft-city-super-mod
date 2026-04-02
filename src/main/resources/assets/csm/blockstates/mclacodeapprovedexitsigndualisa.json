@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:mclacodeapprovedexitsigndualisa"
+    "model": "csm:lifesafety/edge_lit_isa_exit_sign_bi_double_sided"
   },
   "variants": {
     "facing": {

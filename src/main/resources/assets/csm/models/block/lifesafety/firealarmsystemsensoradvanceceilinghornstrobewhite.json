@@ -1,0 +1,9 @@
+{
+  "parent": "csm:block/shared_models/lifesafety/systemsensor_sa_hornstrobe_white_ceiling",
+  "textures": {
+    "all": "csm:blocks/shared_textures/ssa-hornstrobewhite",
+    "particle": "csm:blocks/shared_textures/ssa-hornstrobewhite",
+    "0": "csm:blocks/shared_textures/ssa-hornstrobewhite",
+    "missing": "csm:blocks/shared_textures/ssa-hornstrobewhite"
+  }
+}

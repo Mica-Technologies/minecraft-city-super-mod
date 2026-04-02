@@ -1,0 +1,9 @@
+{
+  "parent": "csm:block/shared_models/novelties/air_hockey_table",
+  "textures": {
+    "all": "csm:blocks/novelties/air_hockey_table",
+    "particle": "csm:blocks/novelties/air_hockey_table",
+    "0": "csm:blocks/novelties/air_hockey_table",
+    "1": "csm:blocks/novelties/air_hockey_table_paddles"
+  }
+}

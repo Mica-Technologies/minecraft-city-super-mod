@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:lightupair"
+    "model": "csm:trafficsignals/mclaglowair"
   },
   "variants": {
     "facing": {
@@ -24,13 +24,13 @@
     },
     "inventory": [
       {
-        "model": "csm:controllablehorizontalangleuturnsignal",
+        "model": "csm:trafficsignals/horizontal_angle_traffic_signal_u_turn_arrow",
         "textures": {
-          "all": "csm:blocks/solidoff",
-          "particle": "csm:blocks/solidoff",
-          "0": "csm:blocks/greenuturn",
-          "1": "csm:blocks/yellowuturn",
-          "2": "csm:blocks/reduturn"
+          "all": "csm:blocks/shared_textures/solidoff",
+          "particle": "csm:blocks/shared_textures/solidoff",
+          "0": "csm:blocks/shared_textures/greenuturn",
+          "1": "csm:blocks/shared_textures/yellowuturn",
+          "2": "csm:blocks/shared_textures/reduturn"
         }
       }
     ],

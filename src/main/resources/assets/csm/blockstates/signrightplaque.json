@@ -3,10 +3,10 @@
   "defaults": {
     "model": "csm:metal_signpostback_half_sign",
     "textures": {
-      "all": "csm:blocks/right-sign",
-      "particle": "csm:blocks/right-sign",
-      "0": "csm:blocks/metal",
-      "1": "csm:blocks/right-sign"
+      "all": "csm:blocks/trafficsigns/right_plaque",
+      "particle": "csm:blocks/trafficsigns/right_plaque",
+      "0": "csm:blocks/trafficsigns/absolutely_nothing_sign",
+      "1": "csm:blocks/trafficsigns/right_plaque"
     }
   },
   "variants": {

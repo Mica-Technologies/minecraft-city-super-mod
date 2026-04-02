@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:lightupair"
+    "model": "csm:trafficsignals/mclaglowair"
   },
   "variants": {
     "facing": {
@@ -24,11 +24,11 @@
     },
     "inventory": [
       {
-        "model": "csm:controllabledoghousesignalsecondaryright",
+        "model": "csm:trafficsignals/doghouse_signal_secondary_left",
         "textures": {
-          "0": "csm:blocks/redarrowleft",
-          "1": "csm:blocks/yellowarrowleft",
-          "2": "csm:blocks/greenarrowleft"
+          "0": "csm:blocks/shared_textures/redarrowleft",
+          "1": "csm:blocks/shared_textures/yellowarrowleft",
+          "2": "csm:blocks/shared_textures/greenarrowleft"
         }
       }
     ],

@@ -1,0 +1,9 @@
+{
+  "parent": "csm:block/shared_models/trafficaccessories/signal_interconnect_module_2",
+  "textures": {
+    "all": "csm:blocks/trafficsigns/absolutely_nothing_sign",
+    "particle": "csm:blocks/trafficsigns/absolutely_nothing_sign",
+    "0": "csm:blocks/trafficsigns/absolutely_nothing_sign",
+    "1": "csm:blocks/shared_textures/antenna"
+  }
+}

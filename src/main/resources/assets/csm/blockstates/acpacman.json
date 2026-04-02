@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:acpacman"
+    "model": "csm:novelties/arcade_pacman"
   },
   "variants": {
     "facing": {
