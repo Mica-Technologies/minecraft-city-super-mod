@@ -22,16 +22,16 @@
     },
     "shape": {
       "inner_left": {
-        "model": "csm:redmetal_stairs_inner"
+        "model": "csm:buildingmaterials/redmetal_stairs_inner"
       },
       "inner_right": {
-        "model": "csm:redmetal_stairs_inner"
+        "model": "csm:buildingmaterials/redmetal_stairs_inner"
       },
       "outer_left": {
-        "model": "csm:redmetal_stairs_outer"
+        "model": "csm:buildingmaterials/redmetal_stairs_outer"
       },
       "outer_right": {
-        "model": "csm:redmetal_stairs_outer"
+        "model": "csm:buildingmaterials/redmetal_stairs_outer"
       },
       "straight": {}
     },

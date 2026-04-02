@@ -1,10 +1,10 @@
 {
   "parent": "csm:block/shared_models/trafficsignals/trafficlighthorizontalangle",
   "textures": {
-    "all": "csm:blocks/shared_textures/solidoff",
-    "particle": "csm:blocks/shared_textures/solidoff",
-    "2": "csm:blocks/shared_textures/redarrowupleftoff",
-    "1": "csm:blocks/shared_textures/yellowarrowupleftoff",
-    "0": "csm:blocks/shared_textures/greenarrowupleftoff"
+    "all": "csm:blocks/trafficsignals/shared_textures/solidoff",
+    "particle": "csm:blocks/trafficsignals/shared_textures/solidoff",
+    "2": "csm:blocks/trafficsignals/shared_textures/redarrowupleftoff",
+    "1": "csm:blocks/trafficsignals/shared_textures/yellowarrowupleftoff",
+    "0": "csm:blocks/trafficsignals/shared_textures/greenarrowupleftoff"
   }
 }

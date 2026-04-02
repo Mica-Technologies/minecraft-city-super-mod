@@ -1,7 +1,7 @@
 {
   "parent": "csm:block/shared_models/lighting/octagon_concrete_pole_base",
   "textures": {
-    "all": "csm:blocks/shared_textures/concrete_light_pole",
-    "particle": "csm:blocks/shared_textures/concrete_light_pole"
+    "all": "csm:blocks/trafficsignals/shared_textures/concrete_light_pole",
+    "particle": "csm:blocks/trafficsignals/shared_textures/concrete_light_pole"
   }
 }

@@ -1,13 +1,13 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:mini_solar_panel",
+    "model": "csm:lifesafety/mini_solar_panel",
     "textures": {
-      "all": "csm:blocks/shared_textures/metal_white",
-      "particle": "csm:blocks/shared_textures/metal_white",
-      "0": "csm:blocks/shared_textures/metal_white",
-      "1": "csm:blocks/shared_textures/metal_silver",
-      "2": "csm:blocks/shared_textures/solar_panel"
+      "all": "csm:blocks/trafficsignals/shared_textures/metal_white",
+      "particle": "csm:blocks/trafficsignals/shared_textures/metal_white",
+      "0": "csm:blocks/trafficsignals/shared_textures/metal_white",
+      "1": "csm:blocks/trafficsignals/shared_textures/metal_silver",
+      "2": "csm:blocks/trafficaccessories/shared_textures/solar_panel"
     }
   },
   "variants": {

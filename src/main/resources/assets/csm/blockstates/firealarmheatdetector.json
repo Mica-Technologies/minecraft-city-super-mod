@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:adtheatdetector"
+    "model": "csm:lifesafety/fire_alarm_heat_detector_tector"
   },
   "variants": {
     "facing": {

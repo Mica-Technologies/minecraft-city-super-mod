@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:ps1"
+    "model": "csm:lifesafety/generic_pull_station_ps1"
   },
   "variants": {
     "facing": {

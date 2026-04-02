@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:kacsounder"
+    "model": "csm:lifesafety/kac_sounder_red_horn_ounder"
   },
   "variants": {
     "facing": {

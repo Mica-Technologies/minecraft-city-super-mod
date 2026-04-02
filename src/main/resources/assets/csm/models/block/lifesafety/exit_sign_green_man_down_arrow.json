@@ -1,10 +1,10 @@
 {
   "parent": "csm:block/shared_models/lifesafety/greenmanexitsign",
   "textures": {
-    "all": "csm:blocks/shared_textures/greenmanexitsigndownarrow",
-    "particle": "csm:blocks/shared_textures/greenmanexitsigndownarrow",
-    "0": "csm:blocks/shared_textures/metal_silver",
-    "1": "csm:blocks/shared_textures/greenmanexitsigndownarrow",
-    "2": "csm:blocks/shared_textures/greenmanexitsigndownarrow"
+    "all": "csm:blocks/lifesafety/shared_textures/exit_sign_green_man_down_arrow",
+    "particle": "csm:blocks/lifesafety/shared_textures/exit_sign_green_man_down_arrow",
+    "0": "csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "1": "csm:blocks/lifesafety/shared_textures/exit_sign_green_man_down_arrow",
+    "2": "csm:blocks/lifesafety/shared_textures/exit_sign_green_man_down_arrow"
   }
 }

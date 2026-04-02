@@ -1,7 +1,7 @@
 {
   "parent": "csm:block/shared_models/trafficsignals/cube_consistent_texture_facing",
   "textures": {
-    "all": "csm:blocks/shared_textures/below_ground_signal_sensor",
-    "particle": "csm:blocks/shared_textures/below_ground_signal_sensor"
+    "all": "csm:blocks/trafficsignals/shared_textures/below_ground_signal_sensor",
+    "particle": "csm:blocks/trafficsignals/shared_textures/below_ground_signal_sensor"
   }
 }

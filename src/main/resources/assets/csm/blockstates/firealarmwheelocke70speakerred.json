@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:we70sr"
+    "model": "csm:lifesafety/wheelock_e70_red_speaker_we70sr"
   },
   "variants": {
     "facing": {

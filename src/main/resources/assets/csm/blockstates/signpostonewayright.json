@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:metal_signpostback_half_wide_sign",
+    "model": "csm:lifesafety/sign_pole_left_one_way_sign",
     "textures": {
       "all": "csm:blocks/trafficsigns/double_one_way_sign_a_eway",
       "particle": "csm:blocks/trafficsigns/double_one_way_sign_a_eway",
@@ -127,7 +127,7 @@
       "true": {
         "submodel": {
           "extension": {
-            "model": "csm:metal_signpost",
+            "model": "csm:lifesafety/sign_pole",
             "transform": {
               "translation": [
                 0.0,
@@ -142,7 +142,7 @@
     "setback": {
       "false": {},
       "true": {
-        "model": "csm:metal_signpostback_half_wide_sign_setback"
+        "model": "csm:lifesafety/metal_signpostback_half_wide_sign_setback"
       }
     },
     "normal": [

@@ -1,7 +1,7 @@
 {
   "parent": "block/fence_side",
   "textures": {
-    "texture": "csm:blocks/metal_orange",
-    "particle": "csm:blocks/metal_orange"
+    "texture": "csm:blocks/buildingmaterials/shared_textures/metal_orange",
+    "particle": "csm:blocks/buildingmaterials/shared_textures/metal_orange"
   }
 }

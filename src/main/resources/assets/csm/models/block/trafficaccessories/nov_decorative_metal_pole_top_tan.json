@@ -1,8 +1,8 @@
 {
   "parent": "csm:block/shared_models/trafficaccessories/decorative_metal_pole_top",
   "textures": {
-    "all": "csm:blocks/shared_textures/metal_mattetan",
-    "particle": "csm:blocks/shared_textures/metal_mattetan",
-    "1": "csm:blocks/shared_textures/metal_mattetan"
+    "all": "csm:blocks/trafficaccessories/shared_textures/metal_mattetan",
+    "particle": "csm:blocks/trafficaccessories/shared_textures/metal_mattetan",
+    "1": "csm:blocks/trafficaccessories/shared_textures/metal_mattetan"
   }
 }

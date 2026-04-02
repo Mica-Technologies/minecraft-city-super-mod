@@ -1,8 +1,0 @@
-{
-  "parent": "csm:block/shared_models/lifesafety/est_integrity_hornstrobe_white",
-  "textures": {
-    "all": "csm:blocks/shared_textures/est_integrity_hornstrobe_white",
-    "particle": "csm:blocks/shared_textures/est_integrity_hornstrobe_white",
-    "0": "csm:blocks/shared_textures/est_integrity_hornstrobe_white"
-  }
-}

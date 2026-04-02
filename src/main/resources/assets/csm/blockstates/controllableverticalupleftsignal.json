@@ -26,9 +26,9 @@
       {
         "model": "csm:trafficsignals/vertical_traffic_signal_up_left_arrow",
         "textures": {
-          "0": "csm:blocks/shared_textures/redarrowupleft",
-          "1": "csm:blocks/shared_textures/yellowarrowupleft",
-          "2": "csm:blocks/shared_textures/greenarrowupleft"
+          "0": "csm:blocks/trafficsignals/shared_textures/redarrowupleft",
+          "1": "csm:blocks/trafficsignals/shared_textures/yellowarrowupleft",
+          "2": "csm:blocks/trafficsignals/shared_textures/greenarrowupleft"
         }
       }
     ],

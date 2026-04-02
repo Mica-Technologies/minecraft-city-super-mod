@@ -1,0 +1,7 @@
+{
+  "parent": "block/fence_post",
+  "textures": {
+    "texture": "csm:blocks/buildingmaterials/shared_textures/metal_red",
+    "particle": "csm:blocks/buildingmaterials/shared_textures/metal_red"
+  }
+}

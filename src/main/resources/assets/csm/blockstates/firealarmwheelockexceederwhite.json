@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:wew"
+    "model": "csm:lifesafety/wheelock_exceeder_white_horn_strobe_wew"
   },
   "variants": {
     "facing": {

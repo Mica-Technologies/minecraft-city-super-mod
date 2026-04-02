@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:gamewellcenturypull"
+    "model": "csm:lifesafety/gamewell_century_pull_station_rypull"
   },
   "variants": {
     "facing": {

@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:ps2"
+    "model": "csm:lifesafety/edwards_glass_rod_pull_station_ps2"
   },
   "variants": {
     "facing": {

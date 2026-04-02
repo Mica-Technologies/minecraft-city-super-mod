@@ -1,8 +1,8 @@
 {
   "parent": "csm:block/shared_models/trafficsignals/trafficlightsingle_rightangle",
   "textures": {
-    "all": "csm:blocks/shared_textures/solidgreenoff",
-    "particle": "csm:blocks/shared_textures/solidgreenoff",
-    "0": "csm:blocks/shared_textures/solidgreenoff"
+    "all": "csm:blocks/trafficsignals/shared_textures/solidgreenoff",
+    "particle": "csm:blocks/trafficsignals/shared_textures/solidgreenoff",
+    "0": "csm:blocks/trafficsignals/shared_textures/solidgreenoff"
   }
 }

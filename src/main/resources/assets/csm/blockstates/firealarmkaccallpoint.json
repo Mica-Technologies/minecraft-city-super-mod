@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:facallpoint"
+    "model": "csm:lifesafety/kac_call_point_lpoint"
   },
   "variants": {
     "facing": {

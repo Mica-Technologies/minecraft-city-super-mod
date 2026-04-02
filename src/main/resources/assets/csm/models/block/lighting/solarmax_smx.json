@@ -1,8 +1,8 @@
 {
   "parent": "csm:block/shared_models/lighting/solarmax_smx",
   "textures": {
-    "all": "csm:blocks/shared_textures/solarmax_smx",
-    "particle": "csm:blocks/shared_textures/solarmax_smx",
-    "0": "csm:blocks/shared_textures/solarmax_smx"
+    "all": "csm:blocks/lighting/shared_textures/solarmax_smx",
+    "particle": "csm:blocks/lighting/shared_textures/solarmax_smx",
+    "0": "csm:blocks/lighting/shared_textures/solarmax_smx"
   }
 }

@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:estpullmcla"
+    "model": "csm:lifesafety/est_pull_station_llmcla"
   },
   "variants": {
     "facing": {

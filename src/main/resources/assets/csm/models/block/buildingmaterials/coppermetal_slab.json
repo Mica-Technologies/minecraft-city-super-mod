@@ -1,8 +1,8 @@
 {
   "parent": "block/half_slab",
   "textures": {
-    "bottom": "csm:blocks/metal_copper",
-    "top": "csm:blocks/metal_copper",
-    "side": "csm:blocks/metal_copper"
+    "bottom": "csm:blocks/buildingmaterials/shared_textures/metal_copper",
+    "top": "csm:blocks/buildingmaterials/shared_textures/metal_copper",
+    "side": "csm:blocks/buildingmaterials/shared_textures/metal_copper"
   }
 }

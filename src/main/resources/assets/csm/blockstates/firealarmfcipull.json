@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:fcipull"
+    "model": "csm:lifesafety/fci_pull_station_cipull"
   },
   "variants": {
     "facing": {

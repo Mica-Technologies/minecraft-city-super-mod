@@ -26,11 +26,11 @@
       {
         "model": "csm:trafficsignals/vertical_right_angle_traffic_signal_bike_protected",
         "textures": {
-          "all": "csm:blocks/shared_textures/solidoff",
-          "particle": "csm:blocks/shared_textures/solidoff",
-          "0": "csm:blocks/shared_textures/redbike",
-          "1": "csm:blocks/shared_textures/yellowbike",
-          "2": "csm:blocks/shared_textures/greenbike"
+          "all": "csm:blocks/trafficsignals/shared_textures/solidoff",
+          "particle": "csm:blocks/trafficsignals/shared_textures/solidoff",
+          "0": "csm:blocks/trafficsignals/shared_textures/redbike",
+          "1": "csm:blocks/trafficsignals/shared_textures/yellowbike",
+          "2": "csm:blocks/trafficsignals/shared_textures/greenbike"
         }
       }
     ],

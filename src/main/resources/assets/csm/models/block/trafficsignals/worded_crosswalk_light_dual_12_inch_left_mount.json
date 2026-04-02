@@ -1,9 +1,9 @@
 {
   "parent": "csm:block/shared_models/trafficsignals/crosswalklightdouble_left",
   "textures": {
-    "all": "csm:blocks/shared_textures/crosswalktextdontwalkoff",
-    "particle": "csm:blocks/shared_textures/crosswalktextdontwalkoff",
-    "0": "csm:blocks/shared_textures/crosswalktextdontwalkoff",
-    "1": "csm:blocks/shared_textures/crosswalktextwalkoff"
+    "all": "csm:blocks/trafficsignals/shared_textures/crosswalktextdontwalkoff",
+    "particle": "csm:blocks/trafficsignals/shared_textures/crosswalktextdontwalkoff",
+    "0": "csm:blocks/trafficsignals/shared_textures/crosswalktextdontwalkoff",
+    "1": "csm:blocks/trafficsignals/shared_textures/crosswalktextwalkoff"
   }
 }

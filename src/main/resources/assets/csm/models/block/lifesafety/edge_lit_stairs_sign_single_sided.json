@@ -1,10 +1,10 @@
 {
   "parent": "csm:block/shared_models/lifesafety/mclaapprovedexitsignedgelit",
   "textures": {
-    "all": "csm:blocks/shared_textures/mclaapprovedstairssignnoarrow",
-    "particle": "csm:blocks/shared_textures/mclaapprovedstairssignnoarrow",
-    "0": "csm:blocks/shared_textures/metal_silver",
-    "1": "csm:blocks/shared_textures/mclaapprovedstairssignnoarrow",
-    "2": "csm:blocks/shared_textures/mclaapprovedexitsignblank"
+    "all": "csm:blocks/lifesafety/shared_textures/edge_lit_stairs_sign_double_sided",
+    "particle": "csm:blocks/lifesafety/shared_textures/edge_lit_stairs_sign_double_sided",
+    "0": "csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "1": "csm:blocks/lifesafety/shared_textures/edge_lit_stairs_sign_double_sided",
+    "2": "csm:blocks/lifesafety/shared_textures/edge_lit_exit_sign_single_sided"
   }
 }

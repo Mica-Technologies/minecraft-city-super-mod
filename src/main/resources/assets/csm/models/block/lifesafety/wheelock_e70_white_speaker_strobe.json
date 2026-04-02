@@ -1,8 +1,8 @@
 {
   "parent": "csm:block/shared_models/lifesafety/wheelock_e70_speakerstrobe_white",
   "textures": {
-    "all": "csm:blocks/shared_textures/wheelock_e70_speakerstrobe_white",
-    "particle": "csm:blocks/shared_textures/wheelock_e70_speakerstrobe_white",
-    "0": "csm:blocks/shared_textures/wheelock_e70_speakerstrobe_white"
+    "all": "csm:blocks/lifesafety/shared_textures/wheelock_e70_white_chime_strobe",
+    "particle": "csm:blocks/lifesafety/shared_textures/wheelock_e70_white_chime_strobe",
+    "0": "csm:blocks/lifesafety/shared_textures/wheelock_e70_white_chime_strobe"
   }
 }

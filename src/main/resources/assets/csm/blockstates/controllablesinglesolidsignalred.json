@@ -26,9 +26,9 @@
       {
         "model": "csm:trafficsignals/single_traffic_signal_flashing_red",
         "textures": {
-          "0": "csm:blocks/shared_textures/solidred",
-          "all": "csm:blocks/shared_textures/solidred",
-          "particle": "csm:blocks/shared_textures/solidred"
+          "0": "csm:blocks/trafficsignals/shared_textures/solidred",
+          "all": "csm:blocks/trafficsignals/shared_textures/solidred",
+          "particle": "csm:blocks/trafficsignals/shared_textures/solidred"
         }
       }
     ],

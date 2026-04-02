@@ -1,13 +1,13 @@
 {
   "variants": {
     "inventory": {
-      "model": "csm:greenmetal_fence_inventory"
+      "model": "csm:buildingmaterials/greenmetal_fence_inventory"
     }
   },
   "multipart": [
     {
       "apply": {
-        "model": "csm:greenmetal_fence_post"
+        "model": "csm:buildingmaterials/greenmetal_fence_post"
       }
     },
     {

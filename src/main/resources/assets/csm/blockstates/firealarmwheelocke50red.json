@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:we50r"
+    "model": "csm:lifesafety/wheelock_e50_red_speaker_strobe_we50r"
   },
   "variants": {
     "facing": {

@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:metal_signpostback_medium_wide_sign",
+    "model": "csm:lifesafety/end_road_work_sign",
     "textures": {
       "all": "csm:blocks/trafficsigns/right_arrow",
       "particle": "csm:blocks/trafficsigns/right_arrow",
@@ -127,7 +127,7 @@
       "true": {
         "submodel": {
           "extension": {
-            "model": "csm:metal_signpost",
+            "model": "csm:lifesafety/sign_pole",
             "transform": {
               "translation": [
                 0.0,
@@ -142,7 +142,7 @@
     "setback": {
       "false": {},
       "true": {
-        "model": "csm:metal_signpostback_medium_wide_sign_setback"
+        "model": "csm:lifesafety/metal_signpostback_medium_wide_sign_setback"
       }
     },
     "normal": [

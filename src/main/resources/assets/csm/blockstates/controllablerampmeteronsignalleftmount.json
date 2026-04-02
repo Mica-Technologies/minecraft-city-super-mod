@@ -3,9 +3,9 @@
   "defaults": {
     "model": "csm:trafficsignals/ramp_meter_on_crosswalk_light_single_16_inch_left_mount",
     "textures": {
-      "all": "csm:blocks/shared_textures/crosswalkmeteronoff",
-      "particle": "csm:blocks/shared_textures/crosswalkmeteronoff",
-      "0": "csm:blocks/shared_textures/crosswalkmeteronoff"
+      "all": "csm:blocks/trafficsignals/shared_textures/crosswalkmeteronoff",
+      "particle": "csm:blocks/trafficsignals/shared_textures/crosswalkmeteronoff",
+      "0": "csm:blocks/trafficsignals/shared_textures/crosswalkmeteronoff"
     }
   },
   "variants": {
@@ -24,35 +24,35 @@
     "color": {
       "0": {
         "textures": {
-          "0": "csm:blocks/shared_textures/crosswalkmeteronon"
+          "0": "csm:blocks/trafficsignals/shared_textures/crosswalkmeteronon"
         }
       },
       "1": {
         "textures": {
-          "0": "csm:blocks/crosswalkmeteronflash",
-          "all": "csm:blocks/crosswalkmeteronflash",
-          "particle": "csm:blocks/crosswalkmeteronflash"
+          "0": "csm:blocks/trafficsignals/shared_textures/crosswalkmeteronflash",
+          "all": "csm:blocks/trafficsignals/shared_textures/crosswalkmeteronflash",
+          "particle": "csm:blocks/trafficsignals/shared_textures/crosswalkmeteronflash"
         }
       },
       "2": {
         "textures": {
-          "0": "csm:blocks/shared_textures/crosswalkmeteronon"
+          "0": "csm:blocks/trafficsignals/shared_textures/crosswalkmeteronon"
         }
       },
       "3": {
         "textures": {
-          "0": "csm:blocks/shared_textures/crosswalkmeteronoff",
-          "all": "csm:blocks/shared_textures/crosswalkmeteronoff",
-          "particle": "csm:blocks/shared_textures/crosswalkmeteronoff"
+          "0": "csm:blocks/trafficsignals/shared_textures/crosswalkmeteronoff",
+          "all": "csm:blocks/trafficsignals/shared_textures/crosswalkmeteronoff",
+          "particle": "csm:blocks/trafficsignals/shared_textures/crosswalkmeteronoff"
         }
       }
     },
     "inventory": [
       {
         "textures": {
-          "all": "csm:blocks/shared_textures/crosswalkmeteronon",
-          "particle": "csm:blocks/shared_textures/crosswalkmeteronon",
-          "0": "csm:blocks/shared_textures/crosswalkmeteronon"
+          "all": "csm:blocks/trafficsignals/shared_textures/crosswalkmeteronon",
+          "particle": "csm:blocks/trafficsignals/shared_textures/crosswalkmeteronon",
+          "0": "csm:blocks/trafficsignals/shared_textures/crosswalkmeteronon"
         }
       }
     ],

@@ -4,27 +4,27 @@
 
 # East Texture
 newmtl east
-map_Kd csm:blocks/signal_controller_side
+map_Kd csm:blocks/trafficsignals/signal_controller_side
 
 # West Texture
 newmtl west
-map_Kd csm:blocks/signal_controller_side
+map_Kd csm:blocks/trafficsignals/signal_controller_side
 
 # Top Texture
 newmtl top
-map_Kd csm:blocks/signal_controller_front
+map_Kd csm:blocks/trafficsignals/signal_controller_front
 
 # Bottom Texture
 newmtl bottom
-map_Kd csm:blocks/signal_controller_side
+map_Kd csm:blocks/trafficsignals/signal_controller_side
 
 # South Texture
 newmtl south
-map_Kd csm:blocks/signal_controller_side
+map_Kd csm:blocks/trafficsignals/signal_controller_side
 
 # North Texture
 newmtl north
-map_Kd csm:blocks/signal_controller_side
+map_Kd csm:blocks/trafficsignals/signal_controller_side
 
 # None Texture
 newmtl none

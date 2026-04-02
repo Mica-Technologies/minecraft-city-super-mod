@@ -1,8 +1,8 @@
 {
   "parent": "csm:block/shared_models/lifesafety/honeywell_adressable_module",
   "textures": {
-    "all": "csm:blocks/shared_textures/honeywell_adressable_module",
-    "particle": "csm:blocks/shared_textures/honeywell_adressable_module",
-    "0": "csm:blocks/shared_textures/honeywell_adressable_module"
+    "all": "csm:blocks/lifesafety/honeywell_addressable_module",
+    "particle": "csm:blocks/lifesafety/honeywell_addressable_module",
+    "0": "csm:blocks/lifesafety/honeywell_addressable_module"
   }
 }

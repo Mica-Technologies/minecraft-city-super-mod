@@ -1,7 +1,7 @@
 {
 	"credit": "Made with Blockbench",
 	"textures": {
-		"0": "csm:blocks/shared_textures/metal_mattetan",
+		"0": "csm:blocks/trafficaccessories/shared_textures/metal_mattetan",
 		"1": "csm:blocks/trafficsigns/absolutely_nothing_sign"
 	},
 	"elements": [

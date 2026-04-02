@@ -1,13 +1,13 @@
 {
   "variants": {
     "inventory": {
-      "model": "csm:magentametal_fence_inventory"
+      "model": "csm:buildingmaterials/magentametal_fence_inventory"
     }
   },
   "multipart": [
     {
       "apply": {
-        "model": "csm:magentametal_fence_post"
+        "model": "csm:buildingmaterials/magentametal_fence_post"
       }
     },
     {

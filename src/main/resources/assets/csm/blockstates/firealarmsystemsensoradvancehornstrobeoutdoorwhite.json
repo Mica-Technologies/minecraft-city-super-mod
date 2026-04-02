@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:sawpw1"
+    "model": "csm:lifesafety/sawpw1"
   },
   "variants": {
     "facing": {

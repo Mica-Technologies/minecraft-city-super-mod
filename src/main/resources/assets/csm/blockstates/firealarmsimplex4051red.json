@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:simplex4051"
+    "model": "csm:lifesafety/simplex_4051_red_horn_strobe_ex4051"
   },
   "variants": {
     "facing": {

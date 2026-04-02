@@ -1,8 +1,8 @@
 {
   "parent": "csm:block/shared_models/trafficsignals/crosswalklightsingle_left90",
   "textures": {
-    "all": "csm:blocks/shared_textures/crosswalkoff",
-    "particle": "csm:blocks/shared_textures/crosswalkoff",
-    "0": "csm:blocks/shared_textures/crosswalkoff"
+    "all": "csm:blocks/trafficsignals/shared_textures/crosswalkoff",
+    "particle": "csm:blocks/trafficsignals/shared_textures/crosswalkoff",
+    "0": "csm:blocks/trafficsignals/shared_textures/crosswalkoff"
   }
 }

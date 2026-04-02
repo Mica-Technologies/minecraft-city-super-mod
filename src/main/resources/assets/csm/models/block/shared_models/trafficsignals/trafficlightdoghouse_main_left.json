@@ -1,10 +1,10 @@
 {
 	"credit": "Made with Blockbench",
 	"textures": {
-		"0": "csm:blocks/shared_textures/yellowarrowleft",
-		"1": "csm:blocks/shared_textures/yellowuturn",
-		"2": "csm:blocks/shared_textures/yellowarrowupleft",
-		"particle": "csm:blocks/shared_textures/yellowarrowupleft"
+		"0": "csm:blocks/trafficsignals/shared_textures/yellowarrowleft",
+		"1": "csm:blocks/trafficsignals/shared_textures/yellowuturn",
+		"2": "csm:blocks/trafficsignals/shared_textures/yellowarrowupleft",
+		"particle": "csm:blocks/trafficsignals/shared_textures/yellowarrowupleft"
 	},
 	"elements": [
 		{

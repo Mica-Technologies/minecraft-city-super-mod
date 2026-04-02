@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:gt3w"
+    "model": "csm:lifesafety/gentex_commander_3_white_horn_strobe_gt3w"
   },
   "variants": {
     "facing": {

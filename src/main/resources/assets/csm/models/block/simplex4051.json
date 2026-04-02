@@ -1,8 +1,0 @@
-{
-  "parent": "csm:block/shared_models/lifesafety/simplex_4051",
-  "textures": {
-    "all": "csm:blocks/shared_textures/simplex_4051",
-    "particle": "csm:blocks/shared_textures/simplex_4051",
-    "0": "csm:blocks/shared_textures/simplex_4051"
-  }
-}

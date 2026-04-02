@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:mtw"
+    "model": "csm:lifesafety/wheelock_mt_white_horn_strobe_mtw"
   },
   "variants": {
     "facing": {
