@@ -13,7 +13,17 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 public class BlockFireAlarmGentexCommander3White extends AbstractBlockFireAlarmSounder
-    implements ICsmTileEntityProvider {
+    implements ICsmTileEntityProvider, IStrobeBlock {
+
+  @Override
+  public float[] getStrobeLensFrom() {
+    return new float[]{5f, 10.6f, 14f};
+  }
+
+  @Override
+  public float[] getStrobeLensTo() {
+    return new float[]{11f, 14.6f, 15f};
+  }
 
   private static final String[] SOUND_RESOURCE_NAMES = {
       "csm:gentex_gos_code3",

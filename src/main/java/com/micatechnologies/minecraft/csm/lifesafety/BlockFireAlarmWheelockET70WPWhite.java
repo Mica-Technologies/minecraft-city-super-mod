@@ -1,11 +1,40 @@
 package com.micatechnologies.minecraft.csm.lifesafety;
 
+import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.World;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 
-public class BlockFireAlarmWheelockET70WPWhite extends AbstractBlockFireAlarmSounderVoiceEvac {
+public class BlockFireAlarmWheelockET70WPWhite extends AbstractBlockFireAlarmSounderVoiceEvac
+    implements ICsmTileEntityProvider, IStrobeBlock {
+  @Override
+  public Class<? extends TileEntity> getTileEntityClass() {
+    return TileEntityFireAlarmStrobe.class;
+  }
+
+  @Override
+  public String getTileEntityName() {
+    return "tileentityfirealarmstrobe";
+  }
+
+  @Override
+  public TileEntity createNewTileEntity(World worldIn, int meta) {
+    return new TileEntityFireAlarmStrobe();
+  }
+
+  @Override
+  public float[] getStrobeLensFrom() {
+    return new float[]{2.9f, 10.7f, 8f};
+  }
+
+  @Override
+  public float[] getStrobeLensTo() {
+    return new float[]{12.9f, 13.7f, 12f};
+  }
+
 
   @Override
   public String getBlockRegistryName() {
