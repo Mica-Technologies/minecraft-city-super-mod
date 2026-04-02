@@ -74,7 +74,9 @@ public class APSMovingSound extends MovingSound {
     if (minDist > hearingRange) {
       return 0.0f;
     }
-    float ratio = (float) (1.0 - minDist / hearingRange);
+    // Quadratic falloff for realistic distance attenuation (inverse-square-like)
+    float linear = (float) (1.0 - minDist / hearingRange);
+    float ratio = linear * linear;
     return MIN_VOLUME + (MAX_VOLUME - MIN_VOLUME) * ratio;
   }
 

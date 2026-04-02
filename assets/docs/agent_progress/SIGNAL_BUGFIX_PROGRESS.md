@@ -12,8 +12,8 @@ Changed Y offset to -7.9f, added section positions [0, -12].
 Added getEnforcedBulbStyle() mechanism forcing LED_DOTTED on hybrid add-ons.
 Fixed renderer overlap check to render off texture when all sections are unlit.
 
-### Bug 3: Backplate Accessories — DEFERRED
-User prefers renderer integration, tabled for future discussion.
+### Bug 3: Backplate Accessories — CLOSED
+Closed 2026-03-31. Likely resolved by backplate tilt system (BACKPLATE_TILT_PLAN.md).
 
 ### Bug 4: Ped Clearance Timing Consistency — COMPLETE (analysis)
 Consistent in NORMAL mode (always flashDontWalkTime ticks). Re-learn logic handles edge cases.
@@ -59,22 +59,23 @@ FYA variants intentionally stay THROUGH (piggyback on through phase).
 ## Upcoming Work
 
 ### Enhancement 13: APS/Tweeter Audio — MovingSound + Volume Normalization
-**Status:** Planned
-**Current state:** APS buttons and tweeters use `world.playSound()` with fixed volume. No
-distance-based attenuation. Sounds are inconsistent in volume across different schemes.
+**Status:** COMPLETE
 
-**Plan:** Adopt the fire alarm MovingSound architecture:
-1. Create `APSMovingSound` class (like `FireAlarmVoiceEvacSound`) with distance-based volume
-2. Create `APSSoundPacket` / `APSSoundPacketHandler` (packet-based client-side sound management)
-3. Normalize volume levels across all crosswalk button sounds and tweeter sounds
-4. Convert `TileEntityTrafficSignalAPS` and tweeter blocks to use new packet system
-5. No peak syncing needed (unlike fire alarms) — just volume normalization + distance attenuation
+**MovingSound architecture** (completed 2026-03-29):
+- [x] `APSMovingSound.java` — distance-based volume, 10-block hearing range
+- [x] `APSSoundPacket.java` / `APSSoundPacketHandler.java` — packet-based client sound
+- [x] `TileEntityTrafficSignalAPS` converted from `world.playSound()` to packet system
+- [x] `BlockControllableCrosswalkTweeter1/2` converted to packet system
+- [x] Registered in `Csm.java`
 
-**Key files:**
-- Current APS: `TileEntityTrafficSignalAPS.java`, `TrafficSignalAPSSoundScheme.java`
-- Current tweeters: `BlockControllableCrosswalkTweeter1/2.java`
-- Fire alarm reference: `FireAlarmVoiceEvacSound.java`, `FireAlarmSoundPacket.java`,
-  `FireAlarmSoundPacketHandler.java`
+**Volume normalization** (completed 2026-03-31):
+- [x] All 27 APS/crosswalk sound files normalized to -14.0 dB mean via ffmpeg
+- [x] Spread reduced from 8.6 dB to 1.3 dB
+- [x] Tweeter `volume: 0.6` multiplier removed from sounds.json
+- [x] Originals backed up in `sounds/_originals_backup/`
+- [ ] Test in-game: verify volume consistency across all APS schemes
+
+See `agent_progress/APS_SOUND_IMPROVEMENTS.md` for full before/after data.
 
 ## Deferred Issues
-- Backplate accessories tilt/angle (needs design discussion)
+- ~~Backplate accessories tilt/angle~~ — CLOSED (2026-03-31, likely covered by backplate tilt system)
