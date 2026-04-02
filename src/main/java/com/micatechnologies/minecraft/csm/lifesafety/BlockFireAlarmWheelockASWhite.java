@@ -1,5 +1,8 @@
 package com.micatechnologies.minecraft.csm.lifesafety;
 
+import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.World;
 import net.minecraft.block.properties.PropertyInteger;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
@@ -11,7 +14,33 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
-public class BlockFireAlarmWheelockASWhite extends AbstractBlockFireAlarmSounder {
+public class BlockFireAlarmWheelockASWhite extends AbstractBlockFireAlarmSounder
+    implements ICsmTileEntityProvider, IStrobeBlock {
+  @Override
+  public Class<? extends TileEntity> getTileEntityClass() {
+    return TileEntityFireAlarmStrobe.class;
+  }
+
+  @Override
+  public String getTileEntityName() {
+    return "tileentityfirealarmstrobe";
+  }
+
+  @Override
+  public TileEntity createNewTileEntity(World worldIn, int meta) {
+    return new TileEntityFireAlarmStrobe();
+  }
+
+  @Override
+  public float[] getStrobeLensFrom() {
+    return new float[]{3f, 13f, 12f};
+  }
+
+  @Override
+  public float[] getStrobeLensTo() {
+    return new float[]{13f, 15.7f, 14f};
+  }
+
 
   public static final PropertyInteger SOUND = PropertyInteger.create("sound", 0, 1);
   public static final String[] SOUND_NAMES = {"Code 3", "Marchtime"};
