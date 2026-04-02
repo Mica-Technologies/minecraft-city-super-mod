@@ -30,21 +30,21 @@ public class BlockMetalWireOffsetTop extends AbstractBlockRotatableNSEWUD {
     return "metalwireoffsettop";
   }
 
-  /**
-   * Retrieves the bounding box of the block.
-   *
-   * @param state  the block state
-   * @param source the block access
-   * @param pos    the block position
-   *
-   * @return The bounding box of the block.
-   *
-   * @since 1.0
-   */
-  @Override
-  public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-    return SQUARE_BOUNDING_BOX;
-  }
+    /**
+     * Retrieves the bounding box of the block.
+     *
+     * @param state  the block state
+     * @param source the block access
+     * @param pos    the block position
+     *
+     * @return The bounding box of the block.
+     *
+     * @since 1.0
+     */
+    @Override
+    public AxisAlignedBB getBlockBoundingBox( IBlockState state, IBlockAccess source, BlockPos pos ) {
+        return new AxisAlignedBB(0.000000, 0.900000, 0.851563, 1.000000, 1.000000, 0.898438);
+    }
 
   /**
    * Retrieves whether the block is an opaque cube.

@@ -30,21 +30,21 @@ public class BlockImac extends AbstractBlockRotatableNSEWUD {
     return "imac";
   }
 
-  /**
-   * Retrieves the bounding box of the block.
-   *
-   * @param state  the block state
-   * @param source the block access
-   * @param pos    the block position
-   *
-   * @return The bounding box of the block.
-   *
-   * @since 1.0
-   */
-  @Override
-  public AxisAlignedBB getBlockBoundingBox( IBlockState state, IBlockAccess source, BlockPos pos ) {
-    return new AxisAlignedBB(-0.573102, 0.000000, 0.117500, 1.437500, 1.421875, 1.439273);
-  }
+    /**
+     * Retrieves the bounding box of the block.
+     *
+     * @param state  the block state
+     * @param source the block access
+     * @param pos    the block position
+     *
+     * @return The bounding box of the block.
+     *
+     * @since 1.0
+     */
+    @Override
+    public AxisAlignedBB getBlockBoundingBox( IBlockState state, IBlockAccess source, BlockPos pos ) {
+        return new AxisAlignedBB(-0.573102, 0.000000, 0.117500, 1.437500, 1.421875, 1.439273);
+    }
 
   /**
    * Retrieves whether the block is an opaque cube.

@@ -30,21 +30,21 @@ public class BlockDMPTUnpainted extends AbstractBlockRotatableNSEWUD {
     return "dmptunpainted";
   }
 
-  /**
-   * Retrieves the bounding box of the block.
-   *
-   * @param state  the block state
-   * @param source the block access
-   * @param pos    the block position
-   *
-   * @return The bounding box of the block.
-   *
-   * @since 1.0
-   */
-  @Override
-  public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-    return SQUARE_BOUNDING_BOX;
-  }
+    /**
+     * Retrieves the bounding box of the block.
+     *
+     * @param state  the block state
+     * @param source the block access
+     * @param pos    the block position
+     *
+     * @return The bounding box of the block.
+     *
+     * @since 1.0
+     */
+    @Override
+    public AxisAlignedBB getBlockBoundingBox( IBlockState state, IBlockAccess source, BlockPos pos ) {
+        return new AxisAlignedBB(0.125000, 0.125000, -0.062500, 0.875000, 0.875000, 1.000000);
+    }
 
   /**
    * Retrieves whether the block is an opaque cube.

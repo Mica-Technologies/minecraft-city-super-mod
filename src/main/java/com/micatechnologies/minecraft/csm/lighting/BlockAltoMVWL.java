@@ -12,21 +12,21 @@ public class BlockAltoMVWL extends AbstractBrightLight {
     return "altomvwl";
   }
 
-  /**
-   * Retrieves the bounding box of the block.
-   *
-   * @param state  the block state
-   * @param source the block access
-   * @param pos    the block position
-   *
-   * @return The bounding box of the block.
-   *
-   * @since 1.0
-   */
-  @Override
-  public AxisAlignedBB getBlockBoundingBox( IBlockState state, IBlockAccess source, BlockPos pos ) {
-    return new AxisAlignedBB(0.343750, 0.237500, 0.812500, 0.718750, 0.737500, 1.000000);
-  }
+    /**
+     * Retrieves the bounding box of the block.
+     *
+     * @param state  the block state
+     * @param source the block access
+     * @param pos    the block position
+     *
+     * @return The bounding box of the block.
+     *
+     * @since 1.0
+     */
+    @Override
+    public AxisAlignedBB getBlockBoundingBox( IBlockState state, IBlockAccess source, BlockPos pos ) {
+        return new AxisAlignedBB(0.343750, 0.250000, 0.812500, 0.750000, 0.750000, 1.000000);
+    }
 
   @Override
   public int getBrightLightXOffset() {
