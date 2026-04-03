@@ -1,0 +1,23 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:novelties/shared_models/rubix_cube",
+    "textures": {
+      "all": "csm:blocks/novelties/rubix_cube",
+      "particle": "csm:blocks/novelties/rubix_cube",
+      "0": "csm:blocks/novelties/rubix_cube"
+    }
+  },
+  "variants": {
+    "facing": {
+      "down": { "x": 90 },
+      "east": { "y": 90 },
+      "north": {},
+      "south": { "y": 180 },
+      "up": { "x": 270 },
+      "west": { "y": 270 }
+    },
+    "inventory": [{}],
+    "normal": [{}]
+  }
+}

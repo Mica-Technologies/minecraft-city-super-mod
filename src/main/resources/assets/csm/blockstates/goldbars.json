@@ -1,0 +1,23 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:novelties/shared_models/gold_bars",
+    "textures": {
+      "all": "csm:blocks/novelties/gold_bars",
+      "particle": "csm:blocks/novelties/gold_bars",
+      "0": "csm:blocks/novelties/gold_bars"
+    }
+  },
+  "variants": {
+    "facing": {
+      "down": { "x": 90 },
+      "east": { "y": 90 },
+      "north": {},
+      "south": { "y": 180 },
+      "up": { "x": 270 },
+      "west": { "y": 270 }
+    },
+    "inventory": [{}],
+    "normal": [{}]
+  }
+}
