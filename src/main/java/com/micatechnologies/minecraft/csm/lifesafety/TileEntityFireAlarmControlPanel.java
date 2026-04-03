@@ -58,6 +58,7 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
 
   private static final String CHANNEL_VOICE_EVAC = "voiceevac";
   private static final String CHANNEL_STORM = "storm";
+  private static final String CHANNEL_STROBE_ONLY = "strobeonly";
 
   private final ArrayList<BlockPos> connectedAppliances = new ArrayList<>();
   private int soundIndex;
@@ -238,6 +239,7 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
         float voiceEvacHearingRange = VOICE_EVAC_VOLUME * 16.0f;
         List<BlockPos> voiceEvacPositions = new ArrayList<>();
         Map<String, List<BlockPos>> hornGroups = new HashMap<>();
+        List<BlockPos> strobeOnlyPositions = new ArrayList<>();
 
         for (BlockPos bp : connectedAppliances) {
           IBlockState blockStateAtPos = world.getBlockState(bp);
@@ -260,6 +262,8 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
             }
             if (soundName != null) {
               hornGroups.computeIfAbsent(soundName, k -> new ArrayList<>()).add(bp);
+            } else if (blockAtPos instanceof IStrobeBlock) {
+              strobeOnlyPositions.add(bp);
             }
           }
         }
@@ -290,6 +294,14 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
           manageSoundForPlayers(players, hornPositions, hornChannel, hornChannel,
               hornHearingRange);
           currentActiveChannels.add(hornChannel);
+        }
+
+        // Strobe-only devices: send positions with empty sound resource so the client
+        // registers them in ActiveStrobeRegistry without creating a MovingSound
+        if (!strobeOnlyPositions.isEmpty()) {
+          manageSoundForPlayers(players, strobeOnlyPositions, CHANNEL_STROBE_ONLY,
+              "", hornHearingRange);
+          currentActiveChannels.add(CHANNEL_STROBE_ONLY);
         }
 
         // Stop channels that were active last tick but are no longer (horn removed/sound changed)
