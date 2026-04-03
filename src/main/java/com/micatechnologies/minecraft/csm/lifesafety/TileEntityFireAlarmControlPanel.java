@@ -245,6 +245,11 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
           IBlockState blockStateAtPos = world.getBlockState(bp);
           Block blockAtPos = blockStateAtPos.getBlock();
 
+          // Ensure strobe blocks have their TE (migration for blocks placed before TESR)
+          if (blockAtPos instanceof IStrobeBlock && world.getTileEntity(bp) == null) {
+            world.setTileEntity(bp, new TileEntityFireAlarmStrobe());
+          }
+
           if (blockAtPos instanceof AbstractBlockFireAlarmSounderVoiceEvac) {
             voiceEvacPositions.add(bp);
           } else if (blockAtPos instanceof AbstractBlockFireAlarmSounder) {

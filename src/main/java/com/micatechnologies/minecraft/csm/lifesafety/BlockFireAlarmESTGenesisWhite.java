@@ -27,7 +27,7 @@ public class BlockFireAlarmESTGenesisWhite extends AbstractBlockFireAlarmSounder
 
   @Override
   public float[] getStrobeLensFrom() {
-    return new float[]{5f, 7f, 14.5f};
+    return new float[]{5f, 7f, 14.25f};
   }
 
   @Override
