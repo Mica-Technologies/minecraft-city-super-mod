@@ -1,0 +1,23 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:novelties/shared_models/pumpkins",
+    "textures": {
+      "all": "csm:blocks/novelties/pumpkins",
+      "particle": "csm:blocks/novelties/pumpkins",
+      "0": "csm:blocks/novelties/pumpkins"
+    }
+  },
+  "variants": {
+    "facing": {
+      "down": { "x": 90 },
+      "east": { "y": 90 },
+      "north": {},
+      "south": { "y": 180 },
+      "up": { "x": 270 },
+      "west": { "y": 270 }
+    },
+    "inventory": [{}],
+    "normal": [{}]
+  }
+}

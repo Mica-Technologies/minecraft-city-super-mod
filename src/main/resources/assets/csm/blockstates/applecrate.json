@@ -1,0 +1,119 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:apple_crate.obj",
+    "custom": {
+      "flip-v": true
+    }
+  },
+  "variants": {
+    "facing": {
+      "down": {
+        "x": 90
+      },
+      "east": {
+        "y": 90
+      },
+      "north": {},
+      "south": {
+        "y": 180
+      },
+      "up": {
+        "x": 270
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "inventory": [
+      {
+        "transform": {
+          "gui": {
+            "rotation": [
+              30,
+              225,
+              0
+            ],
+            "translation": [
+              -0.4,
+              0,
+              0
+            ],
+            "scale": 0.625
+          },
+          "ground": {
+            "rotation": [
+              0,
+              0,
+              0
+            ],
+            "translation": [
+              0,
+              3,
+              0
+            ],
+            "scale": 0.625
+          },
+          "thirdperson_righthand": {
+            "rotation": [
+              75,
+              45,
+              0
+            ],
+            "translation": [
+              0,
+              2.5,
+              0
+            ],
+            "scale": 0.625
+          },
+          "thirdperson_lefthand": {
+            "rotation": [
+              75,
+              225,
+              0
+            ],
+            "translation": [
+              0,
+              2.5,
+              0
+            ],
+            "scale": 0.625
+          },
+          "firstperson_righthand": {
+            "rotation": [
+              0,
+              45,
+              0
+            ],
+            "translation": [
+              0,
+              0,
+              0
+            ],
+            "scale": 0.625
+          },
+          "firstperson_lefthand": {
+            "rotation": [
+              0,
+              225,
+              0
+            ],
+            "translation": [
+              0,
+              0,
+              0
+            ],
+            "scale": 0.625
+          },
+          "fixed": {
+            "scale": 0.625
+          }
+        }
+      }
+    ],
+    "normal": [
+      {}
+    ]
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:novelties/shared_models/garden_gnome",
+    "textures": {
+      "all": "csm:blocks/novelties/garden_gnome",
+      "particle": "csm:blocks/novelties/garden_gnome",
+      "0": "csm:blocks/novelties/garden_gnome"
+    }
+  },
+  "variants": {
+    "facing": {
+      "down": { "x": 90 },
+      "east": { "y": 90 },
+      "north": {},
+      "south": { "y": 180 },
+      "up": { "x": 270 },
+      "west": { "y": 270 }
+    },
+    "inventory": [{}],
+    "normal": [{}]
+  }
+}
