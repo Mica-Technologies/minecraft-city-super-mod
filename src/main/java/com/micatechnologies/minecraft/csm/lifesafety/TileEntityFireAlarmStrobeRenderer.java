@@ -36,16 +36,24 @@ public class TileEntityFireAlarmStrobeRenderer
     if (te.getWorld() == null) return;
     if (!ActiveStrobeRegistry.isActive(te.getPos())) return;
 
-    long t = System.currentTimeMillis() % STROBE_CYCLE_MS;
-    if (t >= STROBE_FLASH_MS) return;
-
     IBlockState state = te.getWorld().getBlockState(te.getPos());
     Block block = state.getBlock();
     if (!(block instanceof IStrobeBlock)) return;
+
+    IStrobeBlock strobeBlock = (IStrobeBlock) block;
+    boolean redToggle = strobeBlock.isRedSlowToggleStrobe();
+
+    // Timing: modern strobes flash 75ms at 1Hz; older red strobes toggle 500ms on/off
+    if (redToggle) {
+      long t = System.currentTimeMillis() % STROBE_CYCLE_MS;
+      if (t >= 500L) return; // 50% duty cycle
+    } else {
+      long t = System.currentTimeMillis() % STROBE_CYCLE_MS;
+      if (t >= STROBE_FLASH_MS) return; // 75ms burst
+    }
     if (!state.getPropertyKeys().contains(AbstractBlockRotatableNSEWUD.FACING)) return;
 
     EnumFacing facing = state.getValue(AbstractBlockRotatableNSEWUD.FACING);
-    IStrobeBlock strobeBlock = (IStrobeBlock) block;
     float[] from = strobeBlock.getStrobeLensFrom();
     float[] to = strobeBlock.getStrobeLensTo();
 
@@ -81,11 +89,14 @@ public class TileEntityFireAlarmStrobeRenderer
 
     float maxZ = to[2] / 16f - 0.5f;
     float depth = maxZ - minZ;
-    float centerX = (minX + maxX) * 0.5f;
-    float centerY = (minY + maxY) * 0.5f;
+
+    // Color: red for older incandescent-style strobes, white for modern xenon/LED
+    float r = redToggle ? 1.0f : 1.0f;
+    float g = redToggle ? 0.15f : 1.0f;
+    float b = redToggle ? 0.1f : 1.0f;
 
     // Front face — main flash quad covering the strobe lens
-    GL11.glColor4f(1.0f, 1.0f, 1.0f, 0.95f);
+    GL11.glColor4f(r, g, b, 0.95f);
     buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
     buffer.pos(minX, minY, quadZ).endVertex();
     buffer.pos(maxX, minY, quadZ).endVertex();
@@ -94,7 +105,7 @@ public class TileEntityFireAlarmStrobeRenderer
     tessellator.draw();
 
     // Side quads — make the strobe visible from angles (along the lens depth)
-    GL11.glColor4f(1.0f, 1.0f, 1.0f, 0.6f);
+    GL11.glColor4f(r, g, b, 0.6f);
     buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
     // Left side
     buffer.pos(minX, minY, quadZ).endVertex();
@@ -121,7 +132,7 @@ public class TileEntityFireAlarmStrobeRenderer
     // Glow halo — larger semi-transparent front quad for bloom effect
     float padX = (maxX - minX) * 0.35f;
     float padY = (maxY - minY) * 0.35f;
-    GL11.glColor4f(1.0f, 1.0f, 1.0f, 0.2f);
+    GL11.glColor4f(r, g, b, 0.2f);
     buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
     buffer.pos(minX - padX, minY - padY, quadZ - 0.02f).endVertex();
     buffer.pos(maxX + padX, minY - padY, quadZ - 0.02f).endVertex();
