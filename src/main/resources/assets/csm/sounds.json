@@ -692,6 +692,15 @@
       }
     ]
   },
+  "notifier_ucla_voice_evac": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:notifier_ucla_voice_evac",
+        "stream": false
+      }
+    ]
+  },
   "notifier_tornado_voice_evac": {
     "category": "block",
     "sounds": [

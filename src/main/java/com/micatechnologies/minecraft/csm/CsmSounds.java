@@ -112,6 +112,7 @@ public class CsmSounds {
     OLDRECORDPLAYER("oldrecordplayer"),
     AWFUL_NOTIFIER_VE("awful_notifier_ve"),
     NOTIFIER_VOICE_EVAC_ALT2("notifier_voice_evac_alt2"),
+    NOTIFIER_UCLA_VOICE_EVAC("notifier_ucla_voice_evac"),
     NOTIFIER_TORNADO_VOICE_EVAC("notifier_tornado_voice_evac"),
     SONY_DREAM_MACHINE_1980S("sony_dream_machine_1980s"),
     OLDRADIO2("oldradio2"),
