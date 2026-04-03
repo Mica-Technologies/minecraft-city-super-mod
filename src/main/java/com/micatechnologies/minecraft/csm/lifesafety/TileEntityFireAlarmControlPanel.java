@@ -36,6 +36,7 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
       "csm:notifier_voice_evac",
       "csm:notifier_voice_evac_alt",
       "csm:notifier_voice_evac_alt2",
+      "csm:notifier_ucla_voice_evac",
       "csm:awful_notifier_ve",
       "csm:mclalsve",
       "csm:firecom8500"};
@@ -47,6 +48,7 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
       "Notifier Voice Evac 3",
       "Notifier Voice Evac 4",
       "Notifier Voice Evac 5",
+      "Notifier UCLA Voice Evac",
       "Notifier Voice Evac 6",
       "Mica Voice Evac 1",
       "Firecom 8500"};
