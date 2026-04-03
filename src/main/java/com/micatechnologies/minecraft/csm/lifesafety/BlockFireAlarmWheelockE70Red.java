@@ -27,12 +27,12 @@ public class BlockFireAlarmWheelockE70Red extends AbstractBlockFireAlarmSounderV
 
   @Override
   public float[] getStrobeLensFrom() {
-    return new float[]{3f, 9f, 12f};
+    return new float[]{3f, 9f, 13f};
   }
 
   @Override
   public float[] getStrobeLensTo() {
-    return new float[]{13f, 12f, 14f};
+    return new float[]{13f, 12f, 15f};
   }
 
 
