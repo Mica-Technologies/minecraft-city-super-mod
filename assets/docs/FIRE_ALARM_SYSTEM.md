@@ -216,10 +216,44 @@ All Code 3 (Temporal 3) horn sounds follow these targets for consistency:
 March time, Code 4-4, chime, continuous, and California Code sounds have varying lengths
 appropriate to their patterns. Volume is normalized to ~9,900 burst RMS to match horn levels.
 
+### Volume Normalization Reference
+
+RMS values are on the 16-bit PCM scale (0–32,768). Use `ffmpeg -af volumedetect` to measure
+mean volume in dB, then convert: `RMS = 10^(mean_dB / 20) * 32768`.
+
+**Horn target:** ~9,900 RMS (~-10.4 dB mean). **Voice evac target:** ~4,500 RMS (~-17.2 dB mean).
+
+To adjust a file, calculate the needed dB change: `dB = 20 * log10(target_RMS / current_RMS)`,
+then apply with ffmpeg:
+```bash
+ffmpeg -i input.ogg -af "volume=<dB>dB" -c:a libvorbis -q:a 6 output.ogg
+```
+
+**Normalized voice evac files (reference measurements):**
+
+| File | RMS | dB Change |
+|---|---|---|
+| `simplex_voice_evac_new.ogg` | 4,410 | (baseline) |
+| `simplex_voice_evac_old.ogg` | 4,499 | -6.0 dB |
+| `simplex_voice_evac_old_alt.ogg` | 4,503 | -5.0 dB |
+| `mills_firealarm.ogg` | 4,488 | +5.2 dB |
+| `lms_voice_evac.ogg` | 4,453 | +3.0 dB |
+| `notifier_voice_evac.ogg` | 4,418 | -0.6 dB |
+| `notifier_voice_evac_alt.ogg` | 4,533 | +0.4 dB |
+| `notifier_voice_evac_alt2.ogg` | 4,539 | (skip) |
+| `notifier_ucla_voice_evac.ogg` | 4,523 | (skip) |
+| `awful_notifier_ve.ogg` | 4,468 | (skip) |
+| `mclalifesafetyve.ogg` | 4,524 | +1.0 dB |
+| `firecom8500.ogg` | 4,494 | -1.9 dB |
+| `notifier_tornado_voice_evac.ogg` | 4,481 | -0.4 dB |
+
 ### Adding a New Sound File
 1. Add `.ogg` file to `src/main/resources/assets/csm/sounds/`
 2. Add entry to `sounds.json` with matching key
 3. Add enum entry to `CsmSounds.java`
+4. Normalize volume to target RMS (see above)
+5. For voice evac: add to `SOUND_RESOURCE_NAMES` and `SOUND_NAMES` arrays in
+   `TileEntityFireAlarmControlPanel.java` (arrays must stay index-aligned)
 
 See `README.md` "Adding a Sound" section for full details with code examples.
 
@@ -273,6 +307,7 @@ See `README.md` "Adding a Sound" section for full details with code examples.
 | `csm:notifier_voice_evac` | `notifier_voice_evac.ogg` |
 | `csm:notifier_voice_evac_alt` | `notifier_voice_evac_alt.ogg` |
 | `csm:notifier_voice_evac_alt2` | `notifier_voice_evac_alt2.ogg` |
+| `csm:notifier_ucla_voice_evac` | `notifier_ucla_voice_evac.ogg` |
 | `csm:awful_notifier_ve` | `awful_notifier_ve.ogg` |
 | `csm:mclalsve` | `mclalifesafetyve.ogg` |
 | `csm:firecom8500` | `firecom8500.ogg` |
