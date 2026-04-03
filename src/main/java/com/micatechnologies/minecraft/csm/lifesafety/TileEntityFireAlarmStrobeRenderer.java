@@ -168,10 +168,10 @@ public class TileEntityFireAlarmStrobeRenderer
         GlStateManager.rotate(90f, 0f, 1f, 0f);
         break;
       case UP:
-        GlStateManager.rotate(-90f, 1f, 0f, 0f);
+        GlStateManager.rotate(90f, 1f, 0f, 0f);
         break;
       case DOWN:
-        GlStateManager.rotate(90f, 1f, 0f, 0f);
+        GlStateManager.rotate(-90f, 1f, 0f, 0f);
         break;
     }
   }
