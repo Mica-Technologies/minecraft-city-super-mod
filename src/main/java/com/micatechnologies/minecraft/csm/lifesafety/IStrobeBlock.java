@@ -27,4 +27,13 @@ public interface IStrobeBlock {
   default float[] getStrobeLensTo() {
     return new float[]{11.0f, 11.0f, 14.0f};
   }
+
+  /**
+   * Returns whether this strobe uses the older incandescent style: red color with a
+   * slow 50% duty cycle on/off toggle (500ms on, 500ms off) instead of the modern
+   * white NFPA 72 xenon/LED flash (75ms burst at 1Hz).
+   */
+  default boolean isRedSlowToggleStrobe() {
+    return false;
+  }
 }
