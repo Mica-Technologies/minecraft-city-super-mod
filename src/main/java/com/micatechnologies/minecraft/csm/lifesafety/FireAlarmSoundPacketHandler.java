@@ -58,8 +58,14 @@ public class FireAlarmSoundPacketHandler implements
     channelPositions.put(channel, positions);
     ActiveStrobeRegistry.addPositions(positions);
 
+    // Strobe-only channels have an empty sound resource — register positions but skip sound
+    String soundResource = message.getSoundResource();
+    if (soundResource == null || soundResource.isEmpty()) {
+      return;
+    }
+
     FireAlarmVoiceEvacSound sound = new FireAlarmVoiceEvacSound(
-        new ResourceLocation(message.getSoundResource()),
+        new ResourceLocation(soundResource),
         message.getSpeakerPositions(),
         message.getHearingRange());
     activeSounds.put(channel, sound);
