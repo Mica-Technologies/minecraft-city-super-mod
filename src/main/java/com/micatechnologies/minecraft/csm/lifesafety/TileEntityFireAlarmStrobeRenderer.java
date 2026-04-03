@@ -28,6 +28,7 @@ public class TileEntityFireAlarmStrobeRenderer
 
   private static final long STROBE_CYCLE_MS = 1000L;
   private static final long STROBE_FLASH_MS = 75L;
+  private static final long STROBE_FADE_MS = 75L;
 
   @Override
   public void render(AbstractTileEntity te, double x, double y, double z,
@@ -43,13 +44,24 @@ public class TileEntityFireAlarmStrobeRenderer
     IStrobeBlock strobeBlock = (IStrobeBlock) block;
     boolean redToggle = strobeBlock.isRedSlowToggleStrobe();
 
-    // Timing: modern strobes flash 75ms at 1Hz; older red strobes toggle 500ms on/off
+    // Timing: compute intensity factor (1.0 = full flash, 0.0 = off)
+    // Modern strobes: 75ms full brightness + 75ms fade-out (simulates xenon capacitor discharge)
+    // Older red strobes: 500ms on / 500ms off with no fade
+    float intensity;
     if (redToggle) {
       long t = System.currentTimeMillis() % STROBE_CYCLE_MS;
-      if (t >= 500L) return; // 50% duty cycle
+      if (t >= 500L) return;
+      intensity = 1.0f;
     } else {
       long t = System.currentTimeMillis() % STROBE_CYCLE_MS;
-      if (t >= STROBE_FLASH_MS) return; // 75ms burst
+      if (t < STROBE_FLASH_MS) {
+        intensity = 1.0f;
+      } else if (t < STROBE_FLASH_MS + STROBE_FADE_MS) {
+        // Fade-out: linear ramp from 1.0 to 0.0 over STROBE_FADE_MS
+        intensity = 1.0f - (float) (t - STROBE_FLASH_MS) / STROBE_FADE_MS;
+      } else {
+        return;
+      }
     }
     if (!state.getPropertyKeys().contains(AbstractBlockRotatableNSEWUD.FACING)) return;
 
@@ -95,8 +107,8 @@ public class TileEntityFireAlarmStrobeRenderer
     float g = redToggle ? 0.15f : 1.0f;
     float b = redToggle ? 0.1f : 1.0f;
 
-    // Front face — main flash quad covering the strobe lens
-    GL11.glColor4f(r, g, b, 0.95f);
+    // Front face — main flash quad covering the strobe lens (fully opaque core)
+    GL11.glColor4f(r, g, b, 1.0f * intensity);
     buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
     buffer.pos(minX, minY, quadZ).endVertex();
     buffer.pos(maxX, minY, quadZ).endVertex();
@@ -105,7 +117,7 @@ public class TileEntityFireAlarmStrobeRenderer
     tessellator.draw();
 
     // Side quads — make the strobe visible from angles (along the lens depth)
-    GL11.glColor4f(r, g, b, 0.6f);
+    GL11.glColor4f(r, g, b, 0.7f * intensity);
     buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
     // Left side
     buffer.pos(minX, minY, quadZ).endVertex();
@@ -129,16 +141,95 @@ public class TileEntityFireAlarmStrobeRenderer
     buffer.pos(maxX, minY, quadZ + depth).endVertex();
     tessellator.draw();
 
-    // Glow halo — larger semi-transparent front quad for bloom effect
-    float padX = (maxX - minX) * 0.35f;
-    float padY = (maxY - minY) * 0.35f;
-    GL11.glColor4f(r, g, b, 0.2f);
+    // Inner glow halo — close bloom around the lens
+    float pad1X = (maxX - minX) * 0.5f;
+    float pad1Y = (maxY - minY) * 0.5f;
+    GL11.glColor4f(r, g, b, 0.35f * intensity);
     buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
-    buffer.pos(minX - padX, minY - padY, quadZ - 0.02f).endVertex();
-    buffer.pos(maxX + padX, minY - padY, quadZ - 0.02f).endVertex();
-    buffer.pos(maxX + padX, maxY + padY, quadZ - 0.02f).endVertex();
-    buffer.pos(minX - padX, maxY + padY, quadZ - 0.02f).endVertex();
+    buffer.pos(minX - pad1X, minY - pad1Y, quadZ - 0.02f).endVertex();
+    buffer.pos(maxX + pad1X, minY - pad1Y, quadZ - 0.02f).endVertex();
+    buffer.pos(maxX + pad1X, maxY + pad1Y, quadZ - 0.02f).endVertex();
+    buffer.pos(minX - pad1X, maxY + pad1Y, quadZ - 0.02f).endVertex();
     tessellator.draw();
+
+    // Projected light cone — a 3D frustum (truncated pyramid) expanding outward from the
+    // lens. Rendered as multiple nested frustum segments so the cone has graduated alpha
+    // falloff. Each segment has 4 side walls + a front cap, visible from any viewing angle.
+    float lensW = maxX - minX;
+    float lensH = maxY - minY;
+    float cenX = (minX + maxX) * 0.5f;
+    float cenY = (minY + maxY) * 0.5f;
+
+    int segments = 5;
+    float maxProjectionDist = 0.45f;
+    float startPad = 0.6f;
+    float endPad = 2.5f;
+    float startAlpha = 0.16f;
+    float endAlpha = 0.02f;
+
+    // Precompute ring positions: each ring is a rectangle at a given Z depth
+    float[] ringZ = new float[segments + 1];
+    float[] ringHalfW = new float[segments + 1];
+    float[] ringHalfH = new float[segments + 1];
+    float[] ringAlpha = new float[segments + 1];
+    for (int i = 0; i <= segments; i++) {
+      float t = (float) i / segments;
+      ringZ[i] = quadZ - 0.03f - t * maxProjectionDist;
+      float pad = startPad + t * (endPad - startPad);
+      ringHalfW[i] = lensW * (0.5f + pad);
+      ringHalfH[i] = lensH * (0.5f + pad);
+      ringAlpha[i] = (startAlpha + t * (endAlpha - startAlpha)) * intensity;
+    }
+
+    for (int i = 0; i < segments; i++) {
+      // Alpha for this segment is the average of the two ring endpoints
+      float segAlpha = (ringAlpha[i] + ringAlpha[i + 1]) * 0.5f;
+
+      float nearZ = ringZ[i];
+      float farZ = ringZ[i + 1];
+      float nw = ringHalfW[i];
+      float nh = ringHalfH[i];
+      float fw = ringHalfW[i + 1];
+      float fh = ringHalfH[i + 1];
+
+      GL11.glColor4f(r, g, b, segAlpha);
+      buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
+
+      // Left wall
+      buffer.pos(cenX - nw, cenY - nh, nearZ).endVertex();
+      buffer.pos(cenX - fw, cenY - fh, farZ).endVertex();
+      buffer.pos(cenX - fw, cenY + fh, farZ).endVertex();
+      buffer.pos(cenX - nw, cenY + nh, nearZ).endVertex();
+
+      // Right wall
+      buffer.pos(cenX + nw, cenY - nh, nearZ).endVertex();
+      buffer.pos(cenX + nw, cenY + nh, nearZ).endVertex();
+      buffer.pos(cenX + fw, cenY + fh, farZ).endVertex();
+      buffer.pos(cenX + fw, cenY - fh, farZ).endVertex();
+
+      // Top wall
+      buffer.pos(cenX - nw, cenY + nh, nearZ).endVertex();
+      buffer.pos(cenX - fw, cenY + fh, farZ).endVertex();
+      buffer.pos(cenX + fw, cenY + fh, farZ).endVertex();
+      buffer.pos(cenX + nw, cenY + nh, nearZ).endVertex();
+
+      // Bottom wall
+      buffer.pos(cenX - nw, cenY - nh, nearZ).endVertex();
+      buffer.pos(cenX + nw, cenY - nh, nearZ).endVertex();
+      buffer.pos(cenX + fw, cenY - fh, farZ).endVertex();
+      buffer.pos(cenX - fw, cenY - fh, farZ).endVertex();
+
+      tessellator.draw();
+
+      // Front cap on each segment for head-on viewing
+      GL11.glColor4f(r, g, b, ringAlpha[i + 1]);
+      buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
+      buffer.pos(cenX - fw, cenY - fh, farZ).endVertex();
+      buffer.pos(cenX + fw, cenY - fh, farZ).endVertex();
+      buffer.pos(cenX + fw, cenY + fh, farZ).endVertex();
+      buffer.pos(cenX - fw, cenY + fh, farZ).endVertex();
+      tessellator.draw();
+    }
 
     // Restore GL state
     GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
