@@ -49,6 +49,20 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
   private boolean paused = false;
 
   /**
+   * When true, the controller has lost power (and flash fallback is disabled) and is periodically
+   * retrying {@code powerOffAllSignals} to catch signals in chunks that were unloaded during the
+   * initial power-off attempt.
+   *
+   * @since 2.0
+   */
+  private boolean powerLossOff = false;
+
+  /**
+   * Tick rate used while retrying power-off commands (15 seconds = 300 game ticks).
+   */
+  private static final long POWER_OFF_RETRY_TICK_RATE = 300L;
+
+  /**
    * The list of circuits for the traffic signal controller.
    *
    * @since 2.0
@@ -301,10 +315,19 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
       // Turn off all signals if the controller is not powered
       if (shouldPause) {
         circuits.powerOffAllSignals(getWorld());
+        powerLossOff = true;
+      } else {
+        powerLossOff = false;
       }
 
       paused = shouldPause;
       markDirtySync(getWorld(), getPos());
+    }
+
+    // When in power-loss-off state, don't fully pause — allow onTick to keep retrying
+    // power-off commands so signals in previously-unloaded chunks get cleaned up
+    if (powerLossOff) {
+      return false;
     }
 
     return paused;
@@ -319,6 +342,9 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
    */
   @Override
   public long getTickRate() {
+    if (powerLossOff) {
+      return POWER_OFF_RETRY_TICK_RATE;
+    }
     return operatingMode.getTickRate();
   }
 
@@ -329,6 +355,13 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
    */
   @Override
   public void onTick() {
+    // If in power-loss-off state, retry powering off all signals (catches signals in chunks
+    // that were unloaded during the initial power-off attempt) and skip normal tick logic
+    if (powerLossOff) {
+      circuits.powerOffAllSignals(getWorld());
+      return;
+    }
+
     // Place the entire tick event in a try/catch block to catch any exceptions and enter fault
     // state
     try {
