@@ -33,19 +33,19 @@ public enum TrafficSignalControllerMode {
 
   /**
    * Full-time ramp meter. Checks sensors for waiting vehicles and alternates green/red.
-   * Tick rate 20 (1 second): responsive enough for vehicle detection without wasting ticks.
+   * Tick rate 80 (4 second): responsive enough for vehicle detection without wasting ticks.
    *
    * @since 1.0
    */
-  RAMP_METER_FULL_TIME("Ramp Meter (Full Time)", 20),
+  RAMP_METER_FULL_TIME("Ramp Meter (Full Time)", 80),
 
   /**
    * Part-time ramp meter. Same as full-time during the day, disabled/flash/off at night.
-   * Tick rate 20 (1 second): same reasoning as full-time.
+   * Tick rate 80 (4 second): same reasoning as full-time.
    *
    * @since 1.0
    */
-  RAMP_METER_PART_TIME("Ramp Meter (Part Time)", 20),
+  RAMP_METER_PART_TIME("Ramp Meter (Part Time)", 80),
 
   /**
    * Requestable mode. Polls sensors and changes phases on request. Tick rate 10 (0.5 seconds):
