@@ -43,7 +43,7 @@ public class BlockControllableCrosswalk extends AbstractBlockControllableCrosswa
 
   @Override
   public String getReplacementBlockId() {
-    return "controllablecrosswalksinglenew";
+    return "controllablecrosswalksingle";
   }
 
   @Override

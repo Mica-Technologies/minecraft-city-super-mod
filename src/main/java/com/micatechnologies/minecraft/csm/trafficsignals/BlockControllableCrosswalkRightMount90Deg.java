@@ -50,7 +50,7 @@ public class BlockControllableCrosswalkRightMount90Deg
 
   @Override
   public String getReplacementBlockId() {
-    return "controllablecrosswalksinglenew";
+    return "controllablecrosswalksingle";
   }
 
   @Override

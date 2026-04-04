@@ -12,7 +12,7 @@ public class BlockControllableCrosswalkSignalSingle
 
     @Override
     public String getBlockRegistryName() {
-        return "controllablecrosswalksinglenew";
+        return "controllablecrosswalksingle";
     }
 
     @Override

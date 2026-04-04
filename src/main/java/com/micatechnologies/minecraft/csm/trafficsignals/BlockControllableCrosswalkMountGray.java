@@ -54,7 +54,7 @@ public class BlockControllableCrosswalkMountGray extends AbstractBlockControllab
 
   @Override
   public String getReplacementBlockId() {
-    return "controllablecrosswalksinglenew";
+    return "controllablecrosswalksingle";
   }
 
   @Override
