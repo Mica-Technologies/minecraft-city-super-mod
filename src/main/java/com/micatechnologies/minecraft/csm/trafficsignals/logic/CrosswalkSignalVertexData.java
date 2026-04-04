@@ -156,16 +156,16 @@ public class CrosswalkSignalVertexData {
 
     public static final List<Box> SINGLE_VISOR_NONE_VERTEX_DATA = Collections.emptyList();
 
-    // Hood style visor: U-shaped hood wrapping top and sides, open at bottom with ~10% gap.
+    // Hood style visor: U-shaped hood wrapping top and sides, open at bottom with ~20% gap.
     // Thin panels inset within housing bounds, protruding ~5 units forward.
-    // Bottom gap: sides stop at Y=1.6 (10% of 16 = 1.6 units up from bottom)
+    // Bottom gap: sides stop at Y=3.2 (20% of 16 = 3.2 units up from bottom)
     public static final List<Box> SINGLE_VISOR_HOOD_VERTEX_DATA = Arrays.asList(
             // Top panel
             new Box( new float[]{ 0.5f, 15.5f, BODY_FRONT_Z - 5.0f }, new float[]{ 15.5f, 16.0f, BODY_FRONT_Z } ),
-            // Left side panel (stops 10% from bottom)
-            new Box( new float[]{ 0.0f, 1.6f, BODY_FRONT_Z - 5.0f }, new float[]{ 0.5f, 16.0f, BODY_FRONT_Z } ),
-            // Right side panel (stops 10% from bottom)
-            new Box( new float[]{ 15.5f, 1.6f, BODY_FRONT_Z - 5.0f }, new float[]{ 16.0f, 16.0f, BODY_FRONT_Z } )
+            // Left side panel (stops 20% from bottom)
+            new Box( new float[]{ 0.0f, 3.2f, BODY_FRONT_Z - 5.0f }, new float[]{ 0.5f, 16.0f, BODY_FRONT_Z } ),
+            // Right side panel (stops 20% from bottom)
+            new Box( new float[]{ 15.5f, 3.2f, BODY_FRONT_Z - 5.0f }, new float[]{ 16.0f, 16.0f, BODY_FRONT_Z } )
     );
 
     // Crate style visor
@@ -178,25 +178,24 @@ public class CrosswalkSignalVertexData {
 
     public static final List<Box> DOUBLE_VISOR_NONE_VERTEX_DATA = Collections.emptyList();
 
-    // Hood for upper double section — 10% bottom gap (1.2 units of 12), with 0.5 unit gap
-    // between upper and lower hoods so they read as two distinct visors.
+    // Hood for upper double section — 20% bottom gap (2.4 units of 12), with gap above lower.
     public static final List<Box> DOUBLE_UPPER_VISOR_HOOD_VERTEX_DATA = Arrays.asList(
             // Top panel
             new Box( new float[]{ 2.5f, 23.5f, BODY_FRONT_Z - 5.0f }, new float[]{ 13.5f, 24.0f, BODY_FRONT_Z } ),
-            // Left side (stops 10% from section bottom = Y=13.2, with 0.5 gap above lower)
-            new Box( new float[]{ 2.0f, 13.2f, BODY_FRONT_Z - 5.0f }, new float[]{ 2.5f, 24.0f, BODY_FRONT_Z } ),
+            // Left side (stops 20% from section bottom = Y=14.4)
+            new Box( new float[]{ 2.0f, 14.4f, BODY_FRONT_Z - 5.0f }, new float[]{ 2.5f, 24.0f, BODY_FRONT_Z } ),
             // Right side
-            new Box( new float[]{ 13.5f, 13.2f, BODY_FRONT_Z - 5.0f }, new float[]{ 14.0f, 24.0f, BODY_FRONT_Z } )
+            new Box( new float[]{ 13.5f, 14.4f, BODY_FRONT_Z - 5.0f }, new float[]{ 14.0f, 24.0f, BODY_FRONT_Z } )
     );
 
-    // Hood for lower double section — 10% bottom gap (1.2 units of 12)
+    // Hood for lower double section — 20% bottom gap (2.4 units of 12)
     public static final List<Box> DOUBLE_LOWER_VISOR_HOOD_VERTEX_DATA = Arrays.asList(
             // Top panel
             new Box( new float[]{ 2.5f, 11.5f, BODY_FRONT_Z - 5.0f }, new float[]{ 13.5f, 12.0f, BODY_FRONT_Z } ),
-            // Left side (stops at Y=1.2 from section bottom)
-            new Box( new float[]{ 2.0f, 1.2f, BODY_FRONT_Z - 5.0f }, new float[]{ 2.5f, 12.0f, BODY_FRONT_Z } ),
+            // Left side (stops at Y=2.4)
+            new Box( new float[]{ 2.0f, 2.4f, BODY_FRONT_Z - 5.0f }, new float[]{ 2.5f, 12.0f, BODY_FRONT_Z } ),
             // Right side
-            new Box( new float[]{ 13.5f, 1.2f, BODY_FRONT_Z - 5.0f }, new float[]{ 14.0f, 12.0f, BODY_FRONT_Z } )
+            new Box( new float[]{ 13.5f, 2.4f, BODY_FRONT_Z - 5.0f }, new float[]{ 14.0f, 12.0f, BODY_FRONT_Z } )
     );
 
     // Crate for upper double section
@@ -212,9 +211,13 @@ public class CrosswalkSignalVertexData {
     // ========================================================================================
 
     /**
-     * Creates a crate visor pattern using a dense grid of horizontal and vertical bars.
-     * All bars are strictly clamped within [x1,y1] to [x2,y2]. The visor sits flush against
-     * the body front face and protrudes forward.
+     * Creates a diamond lattice crate visor pattern. Uses a staggered grid of small node
+     * boxes at diamond intersection points, connected by thin horizontal and vertical bars
+     * between them. This creates a diamond-like mesh pattern that approximates a real
+     * crosswalk signal crate visor using only axis-aligned boxes.
+     *
+     * <p>The pattern alternates row offsets: even rows have nodes at 0, spacing, 2*spacing...
+     * and odd rows have nodes at spacing/2, 3*spacing/2... creating the diamond layout.
      */
     private static List<Box> createCrateVisor( float x1, float y1, float x2, float y2,
             float barThickness ) {
@@ -222,27 +225,60 @@ public class CrosswalkSignalVertexData {
         float faceZ = BODY_FRONT_Z;
         float frontZ = faceZ - 0.8f;
 
+        // Diamond cell spacing — controls mesh density
         float spacing = 2.0f;
+        float halfSpacing = spacing / 2.0f;
+        float nodeSize = barThickness * 1.2f; // slightly larger than bar for visible nodes
+        float halfNode = nodeSize / 2.0f;
         float halfBar = barThickness / 2.0f;
 
-        // Horizontal bars
-        for ( float yy = y1; yy <= y2 + 0.01f; yy += spacing ) {
-            float barY1 = Math.max( yy - halfBar, y1 );
-            float barY2 = Math.min( yy + halfBar, y2 );
-            if ( barY2 - barY1 < 0.1f ) continue;
-            boxes.add( new Box(
-                    new float[]{ x1, barY1, frontZ },
-                    new float[]{ x2, barY2, faceZ } ) );
-        }
+        // Generate diamond lattice nodes and connecting bars
+        int row = 0;
+        for ( float yy = y1; yy <= y2 + 0.01f; yy += halfSpacing ) {
+            boolean offsetRow = ( row % 2 ) != 0;
+            float startX = offsetRow ? x1 + halfSpacing : x1;
 
-        // Vertical bars
-        for ( float xx = x1; xx <= x2 + 0.01f; xx += spacing ) {
-            float barX1 = Math.max( xx - halfBar, x1 );
-            float barX2 = Math.min( xx + halfBar, x2 );
-            if ( barX2 - barX1 < 0.1f ) continue;
-            boxes.add( new Box(
-                    new float[]{ barX1, y1, frontZ },
-                    new float[]{ barX2, y2, faceZ } ) );
+            for ( float xx = startX; xx <= x2 + 0.01f; xx += spacing ) {
+                // Node box at intersection point
+                float nx1 = Math.max( xx - halfNode, x1 );
+                float ny1 = Math.max( yy - halfNode, y1 );
+                float nx2 = Math.min( xx + halfNode, x2 );
+                float ny2 = Math.min( yy + halfNode, y2 );
+                if ( nx2 - nx1 > 0.1f && ny2 - ny1 > 0.1f ) {
+                    boxes.add( new Box(
+                            new float[]{ nx1, ny1, frontZ },
+                            new float[]{ nx2, ny2, faceZ } ) );
+                }
+
+                // Horizontal bar to next node in this row
+                float nextX = xx + spacing;
+                if ( nextX <= x2 + 0.01f ) {
+                    float bx1 = Math.min( xx + halfNode, x2 );
+                    float bx2 = Math.max( Math.min( nextX - halfNode, x2 ), bx1 );
+                    float by1 = Math.max( yy - halfBar, y1 );
+                    float by2 = Math.min( yy + halfBar, y2 );
+                    if ( bx2 - bx1 > 0.1f && by2 - by1 > 0.1f ) {
+                        boxes.add( new Box(
+                                new float[]{ bx1, by1, frontZ },
+                                new float[]{ bx2, by2, faceZ } ) );
+                    }
+                }
+
+                // Vertical bar down to next row's offset node (diagonal approximation)
+                float nextY = yy + halfSpacing;
+                if ( nextY <= y2 + 0.01f ) {
+                    float vx1 = Math.max( xx - halfBar, x1 );
+                    float vx2 = Math.min( xx + halfBar, x2 );
+                    float vy1 = Math.min( yy + halfNode, y2 );
+                    float vy2 = Math.max( Math.min( nextY - halfNode, y2 ), vy1 );
+                    if ( vx2 - vx1 > 0.1f && vy2 - vy1 > 0.1f ) {
+                        boxes.add( new Box(
+                                new float[]{ vx1, vy1, frontZ },
+                                new float[]{ vx2, vy2, faceZ } ) );
+                    }
+                }
+            }
+            row++;
         }
 
         // Outer frame (slightly thicker)
