@@ -387,11 +387,9 @@ public class TileEntityCrosswalkSignalNewRenderer
         float centerX = numDigits > 1 ? AREA_CENTER_X - 0.03f : AREA_CENTER_X;
         float startX = centerX - totalWidth / 2;
 
-        // The countdown rendering needs to be in block-space coordinates relative to
-        // the signal body center. Since we're already in model units (1/16 block),
-        // we need to convert the block-space countdown coordinates to model units.
-        // The countdown area is in the right half of the display face.
-        // Scale factor: 1 block-space unit = 16 model units
+        // Convert block-space countdown coordinates to model units.
+        // The display face is mirrored in model space (the quad UV mapping flips X),
+        // so we negate the X offset to place the countdown on the viewer's right side.
         float scale = 16.0f;
 
         Tessellator tess = Tessellator.getInstance();
@@ -401,8 +399,8 @@ public class TileEntityCrosswalkSignalNewRenderer
         for ( int i = 0; i < numDigits; i++ ) {
             int digit = text.charAt( i ) - '0';
             float dx = startX + i * ( DIGIT_WIDTH + DIGIT_GAP );
-            // Draw in model units: center of display face
-            float modelDx = 8.0f + dx * scale;
+            // Negate X to un-mirror: places countdown on the right side of the visible face
+            float modelDx = 8.0f - ( dx + DIGIT_WIDTH ) * scale;
             float modelDy = 8.0f - ( DIGIT_HEIGHT / 2 ) * scale;
             float modelW = DIGIT_WIDTH * scale;
             float modelH = DIGIT_HEIGHT * scale;
