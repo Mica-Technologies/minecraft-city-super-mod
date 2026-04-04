@@ -8,6 +8,7 @@ package com.micatechnologies.minecraft.csm.trafficsignals;
  * @version 1.0
  */
 public enum ItemSignalConfigurationToolMode {
+  OPEN_GUI("Open Controller Config GUI"),
   CYCLE_SIGNAL_COLORS("Change Signal Color/State"),
   REORIENT_SENSOR("Reorient Sensor"),
   TOGGLE_CONTROLLER_NIGHTLY_FLASH_SETTING("Toggle Controller Nightly Flash Setting"),
@@ -27,8 +28,7 @@ public enum ItemSignalConfigurationToolMode {
   CYCLE_CONTROLLER_RAMP_METER_NIGHT_MODE("Cycle Controller Ramp Meter Night Mode"),
   CLEAR_CONTROLLER_FAULTS("Clear Controller Faults"),
   CREATE_SIGNAL_OVERLAPS("Create Signal Overlaps"),
-  CHANGE_APS_ARROW_DIRECTION("Change APS Arrow Direction"),
-  OPEN_GUI("Open Controller Config GUI");
+  CHANGE_APS_ARROW_DIRECTION("Change APS Arrow Direction");
 
   /**
    * The friendly name for the {@link ItemSignalConfigurationToolMode} enum value.

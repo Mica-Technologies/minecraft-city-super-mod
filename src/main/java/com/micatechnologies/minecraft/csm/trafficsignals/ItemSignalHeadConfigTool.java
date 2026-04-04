@@ -159,7 +159,7 @@ public class ItemSignalHeadConfigTool extends AbstractItem {
         return values[ordinal];
       }
     }
-    return ItemSignalHeadConfigToolMode.CYCLE_BODY_COLOR;
+    return ItemSignalHeadConfigToolMode.OPEN_GUI;
   }
 
   public static void switchToNextMode(ItemStack stack) {
