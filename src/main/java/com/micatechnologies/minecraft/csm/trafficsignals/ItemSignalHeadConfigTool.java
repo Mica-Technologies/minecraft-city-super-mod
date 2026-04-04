@@ -45,10 +45,15 @@ public class ItemSignalHeadConfigTool extends AbstractItem {
 
     // OPEN_GUI mode must run on client side (GuiScreen has no server Container)
     if (worldIn.isRemote && !player.isSneaking()
-        && getMode(heldStack) == ItemSignalHeadConfigToolMode.OPEN_GUI
-        && worldIn.getBlockState(pos).getBlock() instanceof AbstractBlockControllableSignalHead) {
-      player.openGui(Csm.instance, 1, worldIn, pos.getX(), pos.getY(), pos.getZ());
-      return EnumActionResult.SUCCESS;
+        && getMode(heldStack) == ItemSignalHeadConfigToolMode.OPEN_GUI) {
+      if (worldIn.getBlockState(pos).getBlock() instanceof AbstractBlockControllableCrosswalkSignalNew) {
+        player.openGui(Csm.instance, 4, worldIn, pos.getX(), pos.getY(), pos.getZ());
+        return EnumActionResult.SUCCESS;
+      }
+      if (worldIn.getBlockState(pos).getBlock() instanceof AbstractBlockControllableSignalHead) {
+        player.openGui(Csm.instance, 1, worldIn, pos.getX(), pos.getY(), pos.getZ());
+        return EnumActionResult.SUCCESS;
+      }
     }
     if (!worldIn.isRemote) {
       IBlockState state = worldIn.getBlockState(pos);
@@ -123,8 +128,7 @@ public class ItemSignalHeadConfigTool extends AbstractItem {
             player.sendMessage(new TextComponentString("Not applicable to crosswalk signals."));
             break;
           case OPEN_GUI:
-            // TODO: Add crosswalk config GUI in a future pass
-            player.sendMessage(new TextComponentString("Crosswalk config GUI not yet available. Use cycle modes."));
+            // Handled on client side above
             break;
         }
         return EnumActionResult.SUCCESS;
