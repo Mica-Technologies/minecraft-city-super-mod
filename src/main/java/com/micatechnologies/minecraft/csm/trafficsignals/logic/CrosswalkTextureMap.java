@@ -9,15 +9,14 @@ import net.minecraft.util.ResourceLocation;
  */
 public class CrosswalkTextureMap {
 
-    // Single-face (symbol) textures — these are the existing textures but will need to be
-    // replaced with clean versions (no baked crate pattern) once the crate visor geometry
-    // is working. For initial development, use the existing textures.
+    // Single-face (symbol) textures — clean versions without baked crate visor pattern.
+    // The crate pattern is now rendered as 3D visor geometry.
     private static final ResourceLocation TEX_HAND_LIT = new ResourceLocation( "csm",
-            "textures/blocks/trafficsignals/shared_textures/crosswalkhand.png" );
+            "textures/blocks/trafficsignals/crosswalk/crosswalk_hand_lit.png" );
     private static final ResourceLocation TEX_MAN_LIT = new ResourceLocation( "csm",
-            "textures/blocks/trafficsignals/shared_textures/crosswalkman.png" );
+            "textures/blocks/trafficsignals/crosswalk/crosswalk_man_lit.png" );
     private static final ResourceLocation TEX_OFF = new ResourceLocation( "csm",
-            "textures/blocks/trafficsignals/shared_textures/crosswalkoff.png" );
+            "textures/blocks/trafficsignals/crosswalk/crosswalk_off.png" );
 
     // Double-worded (text) textures
     private static final ResourceLocation TEX_DONTWALK_LIT = new ResourceLocation( "csm",
