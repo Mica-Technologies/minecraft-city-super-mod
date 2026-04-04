@@ -186,7 +186,8 @@ public class TileEntityCrosswalkSignalNewRenderer
         // Display face textures
         renderDisplayFace( displayType, colorState );
 
-        // Countdown overlay (single-face only, during clearance)
+        // 7-segment countdown area (single-face only): dim "88" background always,
+        // lit digits during clearance phase
         if ( displayType == CrosswalkDisplayType.SYMBOL ) {
             renderCountdown( te, colorState );
         }
@@ -372,52 +373,88 @@ public class TileEntityCrosswalkSignalNewRenderer
     // Dynamic: countdown overlay (7-segment display)
     // =====================================================================================
 
-    private void renderCountdown( TileEntityCrosswalkSignalNew te, int colorState ) {
-        int countdown = te.getCurrentCountdown();
-        if ( countdown < 0 || colorState != 1 ) return;
+    // Dim "88" background color — mimics unlit 7-segment display segments
+    private static final int BG_COLOR_R = 50, BG_COLOR_G = 50, BG_COLOR_B = 50;
+    private static final int BG_COLOR_A = 255;
 
+    private void renderCountdown( TileEntityCrosswalkSignalNew te, int colorState ) {
         GlStateManager.disableTexture2D();
         GlStateManager.depthMask( false );
 
-        int displayValue = Math.min( countdown, 99 );
-
-        // Always use the two-digit layout positioning so single digits align with
-        // where the ones digit of a two-digit number would be (right-aligned).
+        // Two-digit layout positioning (always consistent)
         float twoDigitWidth = 2 * DIGIT_WIDTH + DIGIT_GAP;
         float centerX = AREA_CENTER_X - 0.03f;
         float startX = centerX - twoDigitWidth / 2;
-
-        // Convert block-space countdown coordinates to model units.
-        // The display face is mirrored in model space (the quad UV mapping flips X),
-        // so we negate the X offset to place the countdown on the viewer's right side.
         float scale = 16.0f;
+        float faceZ = CrosswalkSignalVertexData.SINGLE_DISPLAY_FACE_Z - Z_EPSILON;
 
         Tessellator tess = Tessellator.getInstance();
         BufferBuilder buf = tess.getBuffer();
+
+        // --- Background layer: dim "88" always visible (unlit segment ghost) ---
         buf.begin( GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR );
-
-        // Render as two-digit layout: tens digit (index 0) and ones digit (index 1)
-        int tens = displayValue / 10;
-        int ones = displayValue % 10;
-
         for ( int i = 0; i < 2; i++ ) {
-            int digit = ( i == 0 ) ? tens : ones;
-            // Skip the tens digit if it's zero (single-digit number)
-            if ( i == 0 && tens == 0 ) continue;
-
             float dx = startX + i * ( DIGIT_WIDTH + DIGIT_GAP );
             float modelDx = 8.0f - ( dx + DIGIT_WIDTH ) * scale;
             float modelDy = 8.0f - ( DIGIT_HEIGHT / 2 ) * scale;
             float modelW = DIGIT_WIDTH * scale;
             float modelH = DIGIT_HEIGHT * scale;
-            drawDigitSegments( buf, digit, modelDx, modelDy, modelW, modelH,
-                    CrosswalkSignalVertexData.SINGLE_DISPLAY_FACE_Z - Z_EPSILON );
+            drawDigitSegmentsBg( buf, 8, modelDx, modelDy, modelW, modelH, faceZ );
         }
-
         tess.draw();
+
+        // --- Foreground layer: lit countdown digits (only during clearance) ---
+        int countdown = te.getCurrentCountdown();
+        if ( countdown >= 0 && colorState == 1 ) {
+            int displayValue = Math.min( countdown, 99 );
+            int tens = displayValue / 10;
+            int ones = displayValue % 10;
+
+            buf.begin( GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR );
+            for ( int i = 0; i < 2; i++ ) {
+                int digit = ( i == 0 ) ? tens : ones;
+                if ( i == 0 && tens == 0 ) continue;
+
+                float dx = startX + i * ( DIGIT_WIDTH + DIGIT_GAP );
+                float modelDx = 8.0f - ( dx + DIGIT_WIDTH ) * scale;
+                float modelDy = 8.0f - ( DIGIT_HEIGHT / 2 ) * scale;
+                float modelW = DIGIT_WIDTH * scale;
+                float modelH = DIGIT_HEIGHT * scale;
+                // Render slightly in front of background to avoid z-fighting
+                drawDigitSegments( buf, digit, modelDx, modelDy, modelW, modelH,
+                        faceZ - Z_EPSILON );
+            }
+            tess.draw();
+        }
 
         GlStateManager.enableTexture2D();
         GlStateManager.depthMask( true );
+    }
+
+    /**
+     * Draws digit segments in the dim background color (unlit segment ghost).
+     */
+    private static void drawDigitSegmentsBg( BufferBuilder buf, int digit, float dx, float dy,
+            float w, float h, float z ) {
+        boolean[] segs = DIGIT_SEGMENTS[digit];
+        for ( int s = 0; s < 7; s++ ) {
+            if ( !segs[s] ) continue;
+            float[] seg = SEGMENTS[s];
+
+            float x1 = dx + ( ( 5f - seg[2] ) / 5f ) * w;
+            float x2 = dx + ( ( 5f - seg[0] ) / 5f ) * w;
+            float y1 = dy + ( 1f - seg[3] / 9f ) * h;
+            float y2 = dy + ( 1f - seg[1] / 9f ) * h;
+
+            buf.pos( x1, y1, z ).color( BG_COLOR_R, BG_COLOR_G, BG_COLOR_B, BG_COLOR_A )
+                    .endVertex();
+            buf.pos( x2, y1, z ).color( BG_COLOR_R, BG_COLOR_G, BG_COLOR_B, BG_COLOR_A )
+                    .endVertex();
+            buf.pos( x2, y2, z ).color( BG_COLOR_R, BG_COLOR_G, BG_COLOR_B, BG_COLOR_A )
+                    .endVertex();
+            buf.pos( x1, y2, z ).color( BG_COLOR_R, BG_COLOR_G, BG_COLOR_B, BG_COLOR_A )
+                    .endVertex();
+        }
     }
 
     private static void drawDigitSegments( BufferBuilder buf, int digit, float dx, float dy,
