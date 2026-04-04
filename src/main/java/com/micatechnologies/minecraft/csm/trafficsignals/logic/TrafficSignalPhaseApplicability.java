@@ -227,7 +227,22 @@ public enum TrafficSignalPhaseApplicability {
    *
    * @since 1.0
    */
-  LEAD_PEDESTRIAN_INTERVAL;
+  LEAD_PEDESTRIAN_INTERVAL,
+
+  /**
+   * Enumeration value for wrong way detection idle (no approach detected) applicability.
+   *
+   * @since 1.0
+   */
+  WRONG_WAY_IDLE,
+
+  /**
+   * Enumeration value for wrong way detection active (approach detected on at least one circuit)
+   * applicability.
+   *
+   * @since 1.0
+   */
+  WRONG_WAY_ACTIVE;
 
   // endregion
 

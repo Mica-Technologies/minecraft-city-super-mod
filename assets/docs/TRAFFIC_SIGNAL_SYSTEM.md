@@ -129,8 +129,31 @@ vehicle detection sensors, and signal overlaps. All traffic signal code lives in
 | `REQUESTABLE` | 10 | Waits for sensor/button requests, then services with configurable timing |
 | `RAMP_METER_FULL_TIME` | 80 | Full-time ramp metering |
 | `RAMP_METER_PART_TIME` | 80 | Part-time ramp metering |
+| `WRONG_WAY_DETECTION` | 10 | Wrong way vehicle detection system (WWVDS) — see below |
 | `MANUAL_OFF` | 300 | All signals off |
 | `FORCED_FAULT` | 10 | All-red flash due to detected fault condition |
+
+### Wrong Way Detection Mode (WWVDS)
+
+Inspired by real-world TAPCO-style wrong way vehicle detection systems. Each circuit operates
+independently:
+
+1. **Sensors** are polled every 0.5s for entities (players/villagers) in the main detection zone.
+2. Entity distance to the sensor block is tracked across ticks. If an entity is **moving closer**
+   to the sensor, that counts as wrong-way approach travel.
+3. An entity must accumulate at least **3 blocks** of approach distance before triggering — this
+   prevents brief pass-throughs (e.g. flying past the zone) from causing false activations.
+4. When triggered, the circuit's **beacon signals** are set to yellow (on). The beacon block's
+   renderer handles the visual flash internally.
+5. Beacons hold active for **30 seconds** after the last confirmed approach, then turn off.
+6. All non-beacon signals (vehicle, pedestrian, etc.) are turned off in this mode.
+
+**Setup:**
+- Link one or more sensors per circuit (multiple sensors support curved roads / layered detection)
+- Set the sensor's main detection zone along the wrong-way approach path
+- Link beacon signals to the same circuit(s)
+- The sensor block position is the reference point — place sensors at the "wrong way end" of the
+  road so approaching entities move toward them
 
 ## Timing Parameters
 

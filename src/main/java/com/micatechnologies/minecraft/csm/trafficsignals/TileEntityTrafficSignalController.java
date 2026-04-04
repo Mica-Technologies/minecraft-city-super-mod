@@ -12,7 +12,9 @@ import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalCont
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalPhase;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalPhaseApplicability;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalPhases;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -169,6 +171,35 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
    * 2 = OFF (signals turned off completely)
    */
   private int rampMeterNightMode = 0;
+
+  /**
+   * Transient tracking state for wrong way detection mode. Maps circuit index to a map of
+   * entity ID to the entity's last known distance to the nearest sensor in that circuit.
+   * Not persisted to NBT — resets on chunk load or mode change.
+   *
+   * @since 2.0
+   */
+  private transient Map<Integer, Map<Integer, Double>> wwvdsEntityDistances = new HashMap<>();
+
+  /**
+   * Transient cumulative approach distance tracking for wrong way detection mode. Maps circuit
+   * index to a map of entity ID to the total distance (in blocks) that entity has moved toward
+   * the sensor. Reset when the entity leaves the zone or moves away.
+   * Not persisted to NBT.
+   *
+   * @since 2.0
+   */
+  private transient Map<Integer, Map<Integer, Double>> wwvdsEntityApproachTotals = new HashMap<>();
+
+  /**
+   * Transient hold timers for wrong way detection mode. Maps circuit index to the world time
+   * (in ticks) of the last wrong-way approach detection on that circuit. Beacons remain active
+   * until {@link TrafficSignalControllerTicker#WWVDS_BEACON_HOLD_TIME} ticks have elapsed since
+   * the last detection. Not persisted to NBT.
+   *
+   * @since 2.0
+   */
+  private transient Map<Integer, Long> wwvdsCircuitHoldTimers = new HashMap<>();
 
   /**
    * The yellow time for the traffic signal controller.
@@ -396,21 +427,30 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
       long tickTime = getWorld().getTotalWorldTime();
       long timeSinceLastPhaseChange = tickTime - lastPhaseChangeTime;
       long timeSinceLastPhaseApplicabilityChange = tickTime - lastPhaseApplicabilityChangeTime;
-      TrafficSignalPhase newPhase =
-          TrafficSignalControllerTicker.tick(getWorld(), mode, operatingMode, circuits,
-              overlaps, cachedPhases, currentPhase,
-              timeSinceLastPhaseApplicabilityChange,
-              timeSinceLastPhaseChange,
-              alternatingFlash,
-              overlapPedestrianSignals, yellowTime,
-              flashDontWalkTime, allRedTime,
-              minRequestableServiceTime,
-              maxRequestableServiceTime, minGreenTime,
-              maxGreenTime, minGreenTimeSecondary,
-              maxGreenTimeSecondary,
-              dedicatedPedSignalTime,
-              leadPedestrianIntervalTime,
-              allRedFlash);
+      TrafficSignalPhase newPhase;
+
+      // WWVDS mode is handled directly because it requires mutable tracking state
+      if (operatingMode == TrafficSignalControllerMode.WRONG_WAY_DETECTION) {
+        newPhase = TrafficSignalControllerTicker.wrongWayDetectionModeTick(
+            getWorld(), circuits,
+            wwvdsEntityDistances, wwvdsEntityApproachTotals,
+            wwvdsCircuitHoldTimers, tickTime);
+      } else {
+        newPhase = TrafficSignalControllerTicker.tick(getWorld(), mode, operatingMode, circuits,
+            overlaps, cachedPhases, currentPhase,
+            timeSinceLastPhaseApplicabilityChange,
+            timeSinceLastPhaseChange,
+            alternatingFlash,
+            overlapPedestrianSignals, yellowTime,
+            flashDontWalkTime, allRedTime,
+            minRequestableServiceTime,
+            maxRequestableServiceTime, minGreenTime,
+            maxGreenTime, minGreenTimeSecondary,
+            maxGreenTimeSecondary,
+            dedicatedPedSignalTime,
+            leadPedestrianIntervalTime,
+            allRedFlash);
+      }
 
       // If the phase index has changed, update the phase
       if (newPhase != null) {
@@ -1438,6 +1478,10 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
   private void resetController(boolean regeneratePhaseCache, boolean forceTick) {
     lastPhaseChangeTime = -1;
     currentPhase = null;
+    // Clear WWVDS transient tracking state on reset (mode change, device link/unlink, etc.)
+    wwvdsEntityDistances.clear();
+    wwvdsEntityApproachTotals.clear();
+    wwvdsCircuitHoldTimers.clear();
     // Prune trailing empty circuits before regenerating phases
     while (circuits.getCircuits().size() > 0
         && circuits.getCircuit(circuits.getCircuits().size() - 1).getSize() == 0) {
