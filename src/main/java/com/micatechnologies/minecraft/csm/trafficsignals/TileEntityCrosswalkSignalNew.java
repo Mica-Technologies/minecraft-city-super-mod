@@ -28,6 +28,7 @@ public class TileEntityCrosswalkSignalNew extends AbstractTickableTileEntity {
     private TrafficSignalBodyTilt bodyTilt = TrafficSignalBodyTilt.NONE;
     private CrosswalkBulbType bulbType = CrosswalkBulbType.WORDED;
     private boolean dirty = true;
+    private boolean powerLossOff = false;
 
     // endregion
 
@@ -271,6 +272,14 @@ public class TileEntityCrosswalkSignalNew extends AbstractTickableTileEntity {
 
     public boolean isStateDirty() {
         return dirty;
+    }
+
+    public boolean isPowerLossOff() {
+        return powerLossOff;
+    }
+
+    public void setPowerLossOff( boolean powerLossOff ) {
+        this.powerLossOff = powerLossOff;
     }
 
     public void clearDirtyFlag() {

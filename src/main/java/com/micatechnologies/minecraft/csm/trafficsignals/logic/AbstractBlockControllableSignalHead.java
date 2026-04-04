@@ -256,6 +256,16 @@ public abstract class AbstractBlockControllableSignalHead extends AbstractBlockC
     return null;
   }
 
+  @Override
+  public int getLightValue(IBlockState state, IBlockAccess world, BlockPos pos) {
+    TileEntity te = world.getTileEntity(pos);
+    if (te instanceof TileEntityTrafficSignalHead
+        && ((TileEntityTrafficSignalHead) te).isPowerLossOff()) {
+      return 0;
+    }
+    return 15;
+  }
+
   /**
    * Ensures a tile entity exists for this block. Handles migration of blocks that existed
    * in the world before being converted to custom rendering (they were saved without a TE).

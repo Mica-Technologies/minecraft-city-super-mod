@@ -81,6 +81,16 @@ public abstract class AbstractBlockControllableCrosswalkSignalNew
 
     // region Bounding Box
 
+    @Override
+    public int getLightValue( IBlockState state, IBlockAccess world, BlockPos pos ) {
+        TileEntity te = world.getTileEntity( pos );
+        if ( te instanceof TileEntityCrosswalkSignalNew
+                && ( (TileEntityCrosswalkSignalNew) te ).isPowerLossOff() ) {
+            return 0;
+        }
+        return 15;
+    }
+
     /**
      * Default bounding box. Subclasses may override with a static bounding box, or this could
      * be made dynamic based on the TE's mount type in the future.

@@ -70,6 +70,7 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
   private boolean alternateFlash = false;
 
   private boolean dirty = true;
+  private boolean powerLossOff = false;
 
   /**
    * Constructs a new TileEntityTrafficSignalHead instance.
@@ -418,6 +419,14 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
 
   public void clearDirtyFlag() {
     dirty = false;
+  }
+
+  public boolean isPowerLossOff() {
+    return powerLossOff;
+  }
+
+  public void setPowerLossOff( boolean powerLossOff ) {
+    this.powerLossOff = powerLossOff;
   }
 
   // Call dirty = true; in methods that change state (e.g., set color, lit)
