@@ -421,8 +421,9 @@ public class TileEntityCrosswalkSignalNewRenderer
             if ( !segs[s] ) continue;
             float[] seg = SEGMENTS[s];
 
-            float x1 = dx + ( seg[0] / 5f ) * w;
-            float x2 = dx + ( seg[2] / 5f ) * w;
+            // Mirror X: model space is flipped relative to viewer, so invert segment X
+            float x1 = dx + ( ( 5f - seg[2] ) / 5f ) * w;
+            float x2 = dx + ( ( 5f - seg[0] ) / 5f ) * w;
             float y1 = dy + ( 1f - seg[3] / 9f ) * h;
             float y2 = dy + ( 1f - seg[1] / 9f ) * h;
 
