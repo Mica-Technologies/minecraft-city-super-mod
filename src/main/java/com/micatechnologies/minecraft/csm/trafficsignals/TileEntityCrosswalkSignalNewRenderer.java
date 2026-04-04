@@ -359,24 +359,22 @@ public class TileEntityCrosswalkSignalNewRenderer
             tessellator.draw();
         }
         else {
-            // Double 12-inch WORDED: individual textures (not in atlas)
-            ResourceLocation upperTex = CrosswalkTextureMap.getWordedUpperTexture(
+            // Double 12-inch WORDED: atlas-based
+            Minecraft.getMinecraft().getTextureManager().bindTexture(
+                    CrosswalkTextureMap.ATLAS_TEXTURE );
+
+            int upperIdx = CrosswalkTextureMap.getWordedUpperAtlasIndex(
                     colorState, flashOn );
-            Minecraft.getMinecraft().getTextureManager().bindTexture( upperTex );
             buffer.begin( GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX );
-            addFullQuad( buffer,
+            addAtlasQuad( buffer, upperIdx,
                     CrosswalkSignalVertexData.DOUBLE_DISPLAY_X1,
                     CrosswalkSignalVertexData.DOUBLE_UPPER_DISPLAY_Y1,
                     CrosswalkSignalVertexData.DOUBLE_DISPLAY_X2,
                     CrosswalkSignalVertexData.DOUBLE_UPPER_DISPLAY_Y2,
                     CrosswalkSignalVertexData.DOUBLE_DISPLAY_FACE_Z );
-            tessellator.draw();
-
-            ResourceLocation lowerTex = CrosswalkTextureMap.getWordedLowerTexture(
+            int lowerIdx = CrosswalkTextureMap.getWordedLowerAtlasIndex(
                     colorState, flashOn );
-            Minecraft.getMinecraft().getTextureManager().bindTexture( lowerTex );
-            buffer.begin( GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX );
-            addFullQuad( buffer,
+            addAtlasQuad( buffer, lowerIdx,
                     CrosswalkSignalVertexData.DOUBLE_DISPLAY_X1,
                     CrosswalkSignalVertexData.DOUBLE_LOWER_DISPLAY_Y1,
                     CrosswalkSignalVertexData.DOUBLE_DISPLAY_X2,
@@ -400,17 +398,6 @@ public class TileEntityCrosswalkSignalNewRenderer
         buffer.pos( x2, y2, z ).tex( u1, v1 ).endVertex();
     }
 
-    /**
-     * Adds a textured quad using full texture UV (0,0)-(1,1). Used for worded textures
-     * that are not part of the atlas.
-     */
-    private void addFullQuad( BufferBuilder buffer, float x1, float y1, float x2, float y2,
-            float z ) {
-        buffer.pos( x2, y1, z ).tex( 0.0, 1.0 ).endVertex();
-        buffer.pos( x1, y1, z ).tex( 1.0, 1.0 ).endVertex();
-        buffer.pos( x1, y2, z ).tex( 1.0, 0.0 ).endVertex();
-        buffer.pos( x2, y2, z ).tex( 0.0, 0.0 ).endVertex();
-    }
 
     // =====================================================================================
     // Dynamic: countdown overlay (7-segment display)

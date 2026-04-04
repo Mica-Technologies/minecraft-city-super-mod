@@ -40,15 +40,11 @@ public class CrosswalkTextureMap {
     private static final int IDX_OFF_12IN = 5;
     private static final int IDX_BASE_12IN = 6;
 
-    // --- Double-worded (text) textures — still individual files (not in atlas) ---
-    private static final ResourceLocation TEX_DONTWALK_LIT = new ResourceLocation( "csm",
-            "textures/blocks/trafficsignals/shared_textures/crosswalktextdontwalkon.png" );
-    private static final ResourceLocation TEX_DONTWALK_OFF = new ResourceLocation( "csm",
-            "textures/blocks/trafficsignals/shared_textures/crosswalktextdontwalkoff.png" );
-    private static final ResourceLocation TEX_WALK_LIT = new ResourceLocation( "csm",
-            "textures/blocks/trafficsignals/shared_textures/crosswalktextwalkon.png" );
-    private static final ResourceLocation TEX_WALK_OFF = new ResourceLocation( "csm",
-            "textures/blocks/trafficsignals/shared_textures/crosswalktextwalkoff.png" );
+    // 12-inch stacked — worded/text
+    private static final int IDX_DONTWALK_LIT = 7;
+    private static final int IDX_DONTWALK_OFF = 8;
+    private static final int IDX_WALK_LIT = 9;
+    private static final int IDX_WALK_OFF = 10;
 
     // =========================================================================
     // UV coordinate helpers
@@ -98,26 +94,26 @@ public class CrosswalkTextureMap {
     }
 
     // =========================================================================
-    // 12-inch stacked — WORDED (individual textures, not atlas)
+    // 12-inch stacked — WORDED atlas indices
     // =========================================================================
 
-    public static ResourceLocation getWordedUpperTexture( int colorState, boolean flashOn ) {
+    public static int getWordedUpperAtlasIndex( int colorState, boolean flashOn ) {
         switch ( colorState ) {
-            case 0: return TEX_DONTWALK_LIT;
-            case 1: return flashOn ? TEX_DONTWALK_LIT : TEX_DONTWALK_OFF;
-            case 2: return TEX_DONTWALK_OFF;
+            case 0: return IDX_DONTWALK_LIT;
+            case 1: return flashOn ? IDX_DONTWALK_LIT : IDX_DONTWALK_OFF;
+            case 2: return IDX_DONTWALK_OFF;
             case 3:
-            default: return TEX_DONTWALK_OFF;
+            default: return IDX_DONTWALK_OFF;
         }
     }
 
-    public static ResourceLocation getWordedLowerTexture( int colorState, boolean flashOn ) {
+    public static int getWordedLowerAtlasIndex( int colorState, boolean flashOn ) {
         switch ( colorState ) {
-            case 0: return TEX_WALK_OFF;
-            case 1: return TEX_WALK_OFF;
-            case 2: return TEX_WALK_LIT;
+            case 0: return IDX_WALK_OFF;
+            case 1: return IDX_WALK_OFF;
+            case 2: return IDX_WALK_LIT;
             case 3:
-            default: return TEX_WALK_OFF;
+            default: return IDX_WALK_OFF;
         }
     }
 }
