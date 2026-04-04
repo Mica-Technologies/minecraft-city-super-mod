@@ -71,6 +71,7 @@ The new system has 2 blocks with mount type as a TE property:
 | Visor Type | CrosswalkVisorType | NONE, CRATE, HOOD | Crosswalk-specific |
 | Mount Type | CrosswalkMountType | BASE, REAR, LEFT, RIGHT | Replaces separate blocks |
 | Body Tilt | TrafficSignalBodyTilt | 5 values | Replaces 90° angle blocks |
+| Bulb Type | CrosswalkBulbType | WORDED, HAND_MAN_COUNTDOWN | Double 12-inch only |
 
 ### Rendering Pipeline
 
@@ -95,23 +96,59 @@ The renderer uses three separate GL matrix contexts to handle tilt correctly:
 
 ### Display Face Textures
 
-Clean hand-painted textures at `textures/blocks/trafficsignals/crosswalk/`:
-- `crosswalk_hand_lit.png` — Orange hand (don't walk), 128x128
-- `crosswalk_man_lit.png` — White walking figure (walk), 128x128
-- `crosswalk_off.png` — Ghosted hand+man blend (off state), 128x128
+All custom crosswalk textures live at `textures/blocks/trafficsignals/crosswalk/`.
+Worded (text) textures are the existing shared textures from the old crosswalk blocks.
 
-Textures are created at 144x128 (18:16 ratio matching the signal proportions) then squashed
-to 128x128. The UV stretch on the wider signal face restores the correct aspect ratio.
+#### 16-Inch Single Signal Textures
+
+Created at 144x128 (18:16 ratio matching signal proportions), squashed to 128x128.
+The UV stretch on the wider 18-unit signal face restores the correct aspect ratio.
+
+| File | Content | Used By | Atlas Index (future) |
+|------|---------|---------|---------------------|
+| `crosswalk_hand_lit.png` | Orange hand (don't walk) | Single 16" — color 0,1 | TBD |
+| `crosswalk_man_lit.png` | White walking man (walk) | Single 16" — color 2 | TBD |
+| `crosswalk_off.png` | Ghosted hand+man blend (off) | Single 16" — color 3, flash-off | TBD |
+
+#### 12-Inch Stacked Signal Textures — Hand/Man with Countdown
+
+Square 128x128, used for the HAND_MAN_COUNTDOWN bulb type on the double signal.
+
+| File | Content | Used By | Atlas Index (future) |
+|------|---------|---------|---------------------|
+| `crosswalk_hand_lit_12in.png` | Orange hand (don't walk) | Double upper — color 0,1 | TBD |
+| `crosswalk_man_lit_12in.png` | White walking man (walk) | Double upper — color 2 | TBD |
+| `crosswalk_off_12in.png` | Ghosted hand+man (off) | Double upper — color 3, flash-off | TBD |
+| `crosswalk_base_texture_12in.png` | Dark base (countdown bg) | Double lower — always | TBD |
+
+#### 12-Inch Stacked Signal Textures — Worded (existing shared textures)
+
+| File (in `shared_textures/`) | Content | Used By |
+|------------------------------|---------|---------|
+| `crosswalktextdontwalkon.png` | "DON'T WALK" lit | Double upper — color 0,1 |
+| `crosswalktextdontwalkoff.png` | "DON'T WALK" off | Double upper — color 2,3 |
+| `crosswalktextwalkon.png` | "WALK" lit | Double lower — color 2 |
+| `crosswalktextwalkoff.png` | "WALK" off | Double lower — color 0,1,3 |
 
 ### Single-Face Signal Proportions
 
 The single crosswalk signal uses 16x18" proportions (taller x wider), matching real-world
 16-inch crosswalk signals. In model units: 16 tall (Y=0-16), 18 wide (X=-1 to 17).
 
-### Double-Worded Signal Structure
+### Double 12-Inch Stacked Signal Structure
 
-Two stacked 12-inch sections, each with its own independent visor. The upper section shows
-DON'T WALK, the lower shows WALK. Each section has tapered backs. Body is narrower (X=2-14).
+Two stacked 12-inch sections, each with its own independent visor. Body is narrower (X=2-14),
+each section is 12 units tall with tapered backs.
+
+**Bulb types** (configurable via `CrosswalkBulbType` enum):
+- `WORDED` (default): Upper = "DON'T WALK" text, Lower = "WALK" text
+- `HAND_MAN_COUNTDOWN`: Upper = bimodal hand/man icons, Lower = countdown module
+  (base texture + dim "88" background + lit digits during clearance)
+
+### Hood Visor Bottom Gap
+
+- **16-inch single**: hood sides extend all the way to the bottom (no gap)
+- **12-inch stacked**: hood sides have 20% bottom gap on each section
 
 ### Mount Bracket Architecture
 
@@ -148,8 +185,9 @@ built as stepped boxes via `addAngledArm2D()` for any X-Z diagonal needed.
 - [x] Create `CrosswalkTextureMap.java` for display face texture selection
 - [x] Create new clean display face textures (hand-cleaned from reference images)
 - [x] Crate visor with staggered diamond lattice node pattern
-- [x] Hood visor with 20% bottom gap, thin inset panels
+- [x] Hood visor: no bottom gap on 16-inch, 20% gap on 12-inch sections
 - [x] Single body widened to 16x18" proportions (18 model units wide)
+- [x] 12-inch textures for HAND_MAN_COUNTDOWN bulb type (hand, man, off, base)
 
 ### Phase 4: Renderer
 - [x] Create `TileEntityCrosswalkSignalNewRenderer.java` (full TESR)
@@ -162,12 +200,16 @@ built as stepped boxes via `addAngledArm2D()` for any X-Z diagonal needed.
 - [x] 7-segment countdown with dim "88" background (always visible)
 - [x] Countdown mirroring fixed (segments + position)
 - [x] Right-aligned single-digit countdown
+- [x] CrosswalkBulbType enum (WORDED, HAND_MAN_COUNTDOWN) for double signal
+- [x] Bimodal hand/man upper section + countdown lower section rendering
+- [x] Countdown scaled/centered for 12-inch lower section
 - [x] In-game tested and working
 
 ### Phase 5: Config Tool Integration
 - [x] Add `CYCLE_MOUNT_TYPE` to `ItemSignalHeadConfigToolMode`
 - [x] Extend `ItemSignalHeadConfigTool` for crosswalk signal handling
-- [x] Handle N/A modes gracefully (door color, bulb style/type, alternate flash)
+- [x] Handle N/A modes gracefully (door color, bulb style, alternate flash)
+- [x] CYCLE_BULB_TYPE support for double crosswalk signal (cycles CrosswalkBulbType)
 - [ ] Add crosswalk config GUI (future — currently cycle-only)
 
 ### Phase 6: Migration & Retirement
@@ -179,8 +221,8 @@ built as stepped boxes via `addAngledArm2D()` for any X-Z diagonal needed.
 
 ### Future Work
 - [ ] Config GUI for crosswalk signals
-- [ ] Bi-modal hand/man + countdown configuration for double-worded signals
-- [ ] Additional crosswalk signal accessories (bi-modal countdown module)
+- [ ] Texture atlas optimization (composite all crosswalk textures into single atlas)
+- [ ] Additional crosswalk signal accessories
 
 ---
 
@@ -191,6 +233,7 @@ built as stepped boxes via `addAngledArm2D()` for any X-Z diagonal needed.
 | `logic/CrosswalkMountType.java` | Mount direction enum (BASE/REAR/LEFT/RIGHT) |
 | `logic/CrosswalkVisorType.java` | Visor style enum (NONE/CRATE/HOOD) |
 | `logic/CrosswalkDisplayType.java` | Display content enum (SYMBOL/TEXT) |
+| `logic/CrosswalkBulbType.java` | Bulb type enum (WORDED/HAND_MAN_COUNTDOWN) |
 | `logic/CrosswalkSignalVertexData.java` | All Box geometry + dynamic bracket generation |
 | `logic/CrosswalkTextureMap.java` | Display face texture selection |
 | `logic/AbstractBlockControllableCrosswalkSignalNew.java` | Base block class |
@@ -200,9 +243,13 @@ built as stepped boxes via `addAngledArm2D()` for any X-Z diagonal needed.
 | `BlockControllableCrosswalkSignalDouble.java` | Double-worded (text) block |
 | `blockstates/controllablecrosswalksinglenew.json` | Blockstate for single |
 | `blockstates/controllablecrosswalkdoublenew.json` | Blockstate for double |
-| `textures/.../crosswalk/crosswalk_hand_lit.png` | Hand (don't walk) display texture |
-| `textures/.../crosswalk/crosswalk_man_lit.png` | Walking man (walk) display texture |
-| `textures/.../crosswalk/crosswalk_off.png` | Off state (ghosted hand+man blend) |
+| `textures/.../crosswalk/crosswalk_hand_lit.png` | 16" hand (don't walk) — 144→128 squashed |
+| `textures/.../crosswalk/crosswalk_man_lit.png` | 16" walking man (walk) — 144→128 squashed |
+| `textures/.../crosswalk/crosswalk_off.png` | 16" off state (ghosted hand+man) |
+| `textures/.../crosswalk/crosswalk_hand_lit_12in.png` | 12" hand (don't walk) |
+| `textures/.../crosswalk/crosswalk_man_lit_12in.png` | 12" walking man (walk) |
+| `textures/.../crosswalk/crosswalk_off_12in.png` | 12" off state (ghosted hand+man) |
+| `textures/.../crosswalk/crosswalk_base_texture_12in.png` | 12" countdown module dark base |
 
 ## Files Modified
 
@@ -253,3 +300,5 @@ built as stepped boxes via `addAngledArm2D()` for any X-Z diagonal needed.
 | Single body ratio | 18x16 model units | Matches real 16"H x 18"W crosswalk signals |
 | Bracket split | Stubs tilted, arms base | Pole stays stationary, housing-side follows tilt |
 | Countdown bg | Dim "88" always visible | Realistic unlit LED segment appearance |
+| Bulb type enum | CrosswalkBulbType | Extensible for future display modes |
+| Hood gap | No gap on 16", 20% gap on 12" | Proportional to section size |
