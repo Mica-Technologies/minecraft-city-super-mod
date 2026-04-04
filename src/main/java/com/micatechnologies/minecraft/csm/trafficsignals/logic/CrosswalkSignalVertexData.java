@@ -374,38 +374,48 @@ public class CrosswalkSignalVertexData {
      * (endX1..endX2, endZ) in the X-Z plane, stepping diagonally. Handles any combination
      * of X and Z shifts.
      */
+    /**
+     * Minimum arm cross-section half-width. Ensures arms always have visible thickness
+     * in both X and Z, even when the arm runs primarily along one axis.
+     */
+    private static final float ARM_HALF_THICKNESS = 1.0f;
+
     private static void addAngledArm2D( java.util.ArrayList<Box> boxes,
             float startX1, float startX2, float startZ,
             float endX1, float endX2, float endZ,
             float y1, float y2 ) {
-        float xShift = ( endX1 + endX2 ) / 2 - ( startX1 + startX2 ) / 2;
+        float startCX = ( startX1 + startX2 ) / 2;
+        float endCX = ( endX1 + endX2 ) / 2;
+        float xShift = endCX - startCX;
         float zShift = endZ - startZ;
         float totalDist = (float) Math.sqrt( xShift * xShift + zShift * zShift );
 
         if ( totalDist < 0.5f ) {
-            // Too short, just one box
             boxes.add( new Box(
-                    new float[]{ Math.min( startX1, endX1 ), y1, Math.min( startZ, endZ ) },
-                    new float[]{ Math.max( startX2, endX2 ), y2, Math.max( startZ, endZ ) + 1.0f } ) );
+                    new float[]{ Math.min( startX1, endX1 ) - ARM_HALF_THICKNESS, y1,
+                            Math.min( startZ, endZ ) - ARM_HALF_THICKNESS },
+                    new float[]{ Math.max( startX2, endX2 ) + ARM_HALF_THICKNESS, y2,
+                            Math.max( startZ, endZ ) + ARM_HALF_THICKNESS } ) );
             return;
         }
 
         int steps = Math.max( 2, Math.round( totalDist / 2.0f ) );
-        float halfW = ( startX2 - startX1 ) / 2;
-        if ( halfW < 0.5f ) halfW = 0.5f;
 
         for ( int i = 0; i < steps; i++ ) {
             float t0 = (float) i / steps;
             float t1 = (float) ( i + 1 ) / steps;
 
-            float cx0 = startX1 + halfW + xShift * t0;
+            float cx0 = startCX + xShift * t0;
             float cz0 = startZ + zShift * t0;
-            float cx1 = startX1 + halfW + xShift * t1;
+            float cx1 = startCX + xShift * t1;
             float cz1 = startZ + zShift * t1;
 
+            // Each step box has minimum ARM_HALF_THICKNESS in both X and Z
             boxes.add( new Box(
-                    new float[]{ Math.min( cx0, cx1 ) - halfW, y1, Math.min( cz0, cz1 ) },
-                    new float[]{ Math.max( cx0, cx1 ) + halfW, y2, Math.max( cz0, cz1 ) } ) );
+                    new float[]{ Math.min( cx0, cx1 ) - ARM_HALF_THICKNESS, y1,
+                            Math.min( cz0, cz1 ) - ARM_HALF_THICKNESS },
+                    new float[]{ Math.max( cx0, cx1 ) + ARM_HALF_THICKNESS, y2,
+                            Math.max( cz0, cz1 ) + ARM_HALF_THICKNESS } ) );
         }
     }
 }
