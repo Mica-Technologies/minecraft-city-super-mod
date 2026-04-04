@@ -100,9 +100,12 @@ public class TileEntityCrosswalkSignalNewRenderer
         CrosswalkMountType mountType = te.getMountType();
         TrafficSignalBodyTilt bodyTilt = te.getBodyTilt();
 
-        // Compute tilted facing direction
+        // Compute facing directions
         DirectionSixteen bodyDirection =
                 AbstractBlockControllableSignalHead.getTiltedFacing( bodyTilt, facing );
+        DirectionSixteen baseDirection =
+                AbstractBlockControllableSignalHead.getTiltedFacing(
+                        TrafficSignalBodyTilt.NONE, facing );
 
         // GL state setup
         GlStateManager.disableLighting();
@@ -115,13 +118,30 @@ public class TileEntityCrosswalkSignalNewRenderer
         int prevBY = (int) OpenGlHelper.lastBrightnessY;
         OpenGlHelper.setLightmapTextureCoords( OpenGlHelper.lightmapTexUnit, 240f, 240f );
 
-        // Push matrix and set up coordinate system
+        // Common base transform (block position + model unit scale)
         GL11.glPushMatrix();
         GL11.glTranslated( x, y, z );
         GL11.glScaled( 0.0625, 0.0625, 0.0625 );
-        GL11.glTranslated( 8, 8, 8 );
 
-        // Rotation for facing + tilt
+        // =============================================
+        // Bracket: rendered with BASE facing only (no tilt) so mount point stays stationary
+        // =============================================
+        if ( mountType != CrosswalkMountType.BASE ) {
+            GL11.glPushMatrix();
+            GL11.glTranslated( 8, 8, 8 );
+            GL11.glRotatef( baseDirection.getRotation(), 0, 1, 0 );
+            GL11.glTranslated( -8, -8, -8 );
+
+            boolean isDouble = displayType == CrosswalkDisplayType.TEXT;
+            renderBracket( bodyColor, mountType, isDouble );
+
+            GL11.glPopMatrix();
+        }
+
+        // =============================================
+        // Body + visor: rendered with TILTED facing
+        // =============================================
+        GL11.glTranslated( 8, 8, 8 );
         float rotationAngle = bodyDirection.getRotation();
         GL11.glRotatef( rotationAngle, 0, 1, 0 );
         GL11.glTranslated( -8, -8, -8 );
@@ -136,9 +156,7 @@ public class TileEntityCrosswalkSignalNewRenderer
             GL11.glTranslated( tiltOffset, 0, 0 );
         }
 
-        // =============================================
-        // Display list: static body + visor + bracket
-        // =============================================
+        // Display list: body + visor only (no bracket)
         BlockPos pos = te.getPos();
         Integer displayList = displayListCache.get( pos );
         if ( displayList == null || te.isStateDirty() ) {
@@ -148,20 +166,16 @@ public class TileEntityCrosswalkSignalNewRenderer
             displayList = GL11.glGenLists( 1 );
             displayListCache.put( pos, displayList );
             GL11.glNewList( displayList, GL11.GL_COMPILE );
-            renderStaticParts( bodyColor, visorColor, visorType, mountType, displayType );
+            renderStaticParts( bodyColor, visorColor, visorType, displayType );
             GL11.glEndList();
             te.clearDirtyFlag();
         }
         GL11.glCallList( displayList );
 
-        // =============================================
-        // Dynamic: display face texture(s)
-        // =============================================
+        // Display face textures
         renderDisplayFace( displayType, colorState );
 
-        // =============================================
-        // Dynamic: countdown overlay (single-face only, during clearance)
-        // =============================================
+        // Countdown overlay (single-face only, during clearance)
         if ( displayType == CrosswalkDisplayType.SYMBOL ) {
             renderCountdown( te, colorState );
         }
@@ -181,9 +195,12 @@ public class TileEntityCrosswalkSignalNewRenderer
     // Static parts: body, visor, bracket (compiled into display list)
     // =====================================================================================
 
+    /**
+     * Renders the body and visor geometry (no bracket). Compiled into a display list.
+     */
     private void renderStaticParts( TrafficSignalBodyColor bodyColor,
             TrafficSignalBodyColor visorColor, CrosswalkVisorType visorType,
-            CrosswalkMountType mountType, CrosswalkDisplayType displayType ) {
+            CrosswalkDisplayType displayType ) {
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.getBuffer();
 
@@ -194,32 +211,41 @@ public class TileEntityCrosswalkSignalNewRenderer
         float vr = visorColor.getRed(), vg = visorColor.getGreen(), vb = visorColor.getBlue();
 
         if ( displayType == CrosswalkDisplayType.SYMBOL ) {
-            // Single-face body
             RenderHelper.addBoxesToBuffer( CrosswalkSignalVertexData.SINGLE_BODY_VERTEX_DATA,
                     buffer, br, bg, bb, 1.0f, 0, 0, 0 );
-
-            // Visor
             List<RenderHelper.Box> visorData = getSingleVisorData( visorType );
             RenderHelper.addBoxesToBuffer( visorData, buffer, vr, vg, vb, 1.0f, 0, 0, 0 );
         }
         else {
-            // Double-worded: two stacked section bodies
             RenderHelper.addBoxesToBuffer(
                     CrosswalkSignalVertexData.DOUBLE_UPPER_BODY_VERTEX_DATA,
                     buffer, br, bg, bb, 1.0f, 0, 0, 0 );
             RenderHelper.addBoxesToBuffer(
                     CrosswalkSignalVertexData.DOUBLE_LOWER_BODY_VERTEX_DATA,
                     buffer, br, bg, bb, 1.0f, 0, 0, 0 );
-
-            // Visors for each section
             List<RenderHelper.Box> upperVisor = getDoubleUpperVisorData( visorType );
             List<RenderHelper.Box> lowerVisor = getDoubleLowerVisorData( visorType );
             RenderHelper.addBoxesToBuffer( upperVisor, buffer, vr, vg, vb, 1.0f, 0, 0, 0 );
             RenderHelper.addBoxesToBuffer( lowerVisor, buffer, vr, vg, vb, 1.0f, 0, 0, 0 );
         }
 
-        // Mount bracket (same color as body)
-        boolean isDouble = displayType == CrosswalkDisplayType.TEXT;
+        tessellator.draw();
+        GlStateManager.enableTexture2D();
+    }
+
+    /**
+     * Renders the mount bracket separately from the body. This is called in the BASE facing
+     * rotation context (no tilt) so the mount point stays stationary when the body tilts.
+     */
+    private void renderBracket( TrafficSignalBodyColor bodyColor, CrosswalkMountType mountType,
+            boolean isDouble ) {
+        Tessellator tessellator = Tessellator.getInstance();
+        BufferBuilder buffer = tessellator.getBuffer();
+
+        GlStateManager.disableTexture2D();
+        buffer.begin( GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR );
+
+        float br = bodyColor.getRed(), bg = bodyColor.getGreen(), bb = bodyColor.getBlue();
         List<RenderHelper.Box> bracketData =
                 CrosswalkSignalVertexData.getBracketData( mountType, isDouble );
         RenderHelper.addBoxesToBuffer( bracketData, buffer, br, bg, bb, 1.0f, 0, 0, 0 );
