@@ -28,6 +28,7 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
   private static final String alarmStormKey = "alarmStorm";
   private static final String connectedAppliancesKey = "connectedAppliances";
   private static final String alarmAnnouncedKey = "alarmAnnounced";
+  private static final String audibleSilenceKey = "audibleSilence";
   private static final String[] SOUND_RESOURCE_NAMES = {"csm:svenew",
       "csm:sveold",
       "csm:simplex_voice_evac_old_alt",
@@ -67,6 +68,7 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
   private boolean alarm;
   private boolean alarmStorm;
   private boolean alarmAnnounced;
+  private boolean audibleSilence;
   private boolean alarmWasActive = false;
   private int pruneTickCounter = 0;
 
@@ -101,6 +103,12 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
       alarmAnnounced = false;
     }
 
+    try {
+      audibleSilence = compound.getBoolean(audibleSilenceKey);
+    } catch (Exception e) {
+      audibleSilence = false;
+    }
+
     connectedAppliances.clear();
     if (compound.hasKey(connectedAppliancesKey)) {
       String[] positions = compound.getString(connectedAppliancesKey).split("\n");
@@ -121,6 +129,7 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
     compound.setBoolean(alarmKey, alarm);
     compound.setBoolean(alarmStormKey, alarmStorm);
     compound.setBoolean(alarmAnnouncedKey, alarmAnnounced);
+    compound.setBoolean(audibleSilenceKey, audibleSilence);
 
     StringBuilder connectedAppliancesString = new StringBuilder();
     for (BlockPos bp : connectedAppliances) {
@@ -161,6 +170,14 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
   }
 
   public void setAlarmState(boolean alarmState) {
+    // New alarm activation while silenced cancels audible silence (re-enables sound)
+    if (alarmState && audibleSilence) {
+      audibleSilence = false;
+    }
+    // Reset clears audible silence
+    if (!alarmState) {
+      audibleSilence = false;
+    }
     alarm = alarmState;
     markDirty();
   }
@@ -173,6 +190,32 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
   public void setAlarmAnnouncedState(boolean alarmAnnouncedState) {
     alarmAnnounced = alarmAnnouncedState;
     markDirty();
+  }
+
+  public boolean getAudibleSilence() {
+    return audibleSilence;
+  }
+
+  public void setAudibleSilence(boolean audibleSilenceState) {
+    audibleSilence = audibleSilenceState;
+    markDirty();
+  }
+
+  public String getStatusString() {
+    if (alarm && audibleSilence) {
+      return "Audible Silence";
+    } else if (alarm) {
+      return "Alarm Active";
+    }
+    return "Normal";
+  }
+
+  public int getSoundIndex() {
+    return soundIndex;
+  }
+
+  public static String[] getSoundNames() {
+    return SOUND_NAMES;
   }
 
   public String getCurrentSoundName() {
@@ -244,6 +287,12 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
         List<BlockPos> strobeOnlyPositions = new ArrayList<>();
 
         for (BlockPos bp : connectedAppliances) {
+          // Skip appliances in unloaded chunks to avoid false-negative categorization
+          // that would cause sound channels to be stopped and restarted
+          if (!world.isBlockLoaded(bp)) {
+            continue;
+          }
+
           IBlockState blockStateAtPos = world.getBlockState(bp);
           Block blockAtPos = blockStateAtPos.getBlock();
 
@@ -278,37 +327,70 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
         // Track which channels are active this tick
         Set<String> currentActiveChannels = new HashSet<>();
 
-        // Voice evac: manage client-side MovingSound via packets
-        if (!voiceEvacPositions.isEmpty()) {
-          // If the sound changed (user switched voice evac), restart on all active clients
-          boolean soundChanged = lastVoiceEvacSoundSent != null &&
-              !lastVoiceEvacSoundSent.equals(voiceEvacSoundName);
-          if (soundChanged) {
-            stopChannel(players, CHANNEL_VOICE_EVAC);
+        if (audibleSilence) {
+          // Audible silence: stop all horn and voice evac sounds, keep strobes active
+          stopChannel(players, CHANNEL_VOICE_EVAC);
+          float hornHearingRange = SOUNDER_VOLUME * 16.0f;
+          for (String hornChannel : hornGroups.keySet()) {
+            stopChannel(players, hornChannel);
           }
 
-          manageSoundForPlayers(players, voiceEvacPositions, CHANNEL_VOICE_EVAC,
-              voiceEvacSoundName, voiceEvacHearingRange);
-          lastVoiceEvacSoundSent = voiceEvacSoundName;
-          currentActiveChannels.add(CHANNEL_VOICE_EVAC);
-        }
+          // Collect all strobe positions (from strobe-only devices and from horn/voice evac
+          // devices that have strobes) so strobes remain active during audible silence
+          List<BlockPos> allStrobePositions = new ArrayList<>(strobeOnlyPositions);
+          for (BlockPos bp : voiceEvacPositions) {
+            if (world.getBlockState(bp).getBlock() instanceof IStrobeBlock) {
+              allStrobePositions.add(bp);
+            }
+          }
+          for (List<BlockPos> hornPositions : hornGroups.values()) {
+            for (BlockPos bp : hornPositions) {
+              if (world.getBlockState(bp).getBlock() instanceof IStrobeBlock) {
+                allStrobePositions.add(bp);
+              }
+            }
+          }
 
-        // Horns: one MovingSound channel per unique horn sound
-        float hornHearingRange = SOUNDER_VOLUME * 16.0f;
-        for (Map.Entry<String, List<BlockPos>> entry : hornGroups.entrySet()) {
-          String hornChannel = entry.getKey();
-          List<BlockPos> hornPositions = entry.getValue();
-          manageSoundForPlayers(players, hornPositions, hornChannel, hornChannel,
-              hornHearingRange);
-          currentActiveChannels.add(hornChannel);
-        }
+          if (!allStrobePositions.isEmpty()) {
+            manageSoundForPlayers(players, allStrobePositions, CHANNEL_STROBE_ONLY,
+                "", hornHearingRange);
+            currentActiveChannels.add(CHANNEL_STROBE_ONLY);
+          }
+        } else {
+          // Normal alarm: manage all sounds
 
-        // Strobe-only devices: send positions with empty sound resource so the client
-        // registers them in ActiveStrobeRegistry without creating a MovingSound
-        if (!strobeOnlyPositions.isEmpty()) {
-          manageSoundForPlayers(players, strobeOnlyPositions, CHANNEL_STROBE_ONLY,
-              "", hornHearingRange);
-          currentActiveChannels.add(CHANNEL_STROBE_ONLY);
+          // Voice evac: manage client-side MovingSound via packets
+          if (!voiceEvacPositions.isEmpty()) {
+            // If the sound changed (user switched voice evac), restart on all active clients
+            boolean soundChanged = lastVoiceEvacSoundSent != null &&
+                !lastVoiceEvacSoundSent.equals(voiceEvacSoundName);
+            if (soundChanged) {
+              stopChannel(players, CHANNEL_VOICE_EVAC);
+            }
+
+            manageSoundForPlayers(players, voiceEvacPositions, CHANNEL_VOICE_EVAC,
+                voiceEvacSoundName, voiceEvacHearingRange);
+            lastVoiceEvacSoundSent = voiceEvacSoundName;
+            currentActiveChannels.add(CHANNEL_VOICE_EVAC);
+          }
+
+          // Horns: one MovingSound channel per unique horn sound
+          float hornHearingRange = SOUNDER_VOLUME * 16.0f;
+          for (Map.Entry<String, List<BlockPos>> entry : hornGroups.entrySet()) {
+            String hornChannel = entry.getKey();
+            List<BlockPos> hornPositions = entry.getValue();
+            manageSoundForPlayers(players, hornPositions, hornChannel, hornChannel,
+                hornHearingRange);
+            currentActiveChannels.add(hornChannel);
+          }
+
+          // Strobe-only devices: send positions with empty sound resource so the client
+          // registers them in ActiveStrobeRegistry without creating a MovingSound
+          if (!strobeOnlyPositions.isEmpty()) {
+            manageSoundForPlayers(players, strobeOnlyPositions, CHANNEL_STROBE_ONLY,
+                "", hornHearingRange);
+            currentActiveChannels.add(CHANNEL_STROBE_ONLY);
+          }
         }
 
         // Stop channels that were active last tick but are no longer (horn removed/sound changed)
@@ -347,6 +429,9 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
           List<BlockPos> stormVoiceEvacPositions = new ArrayList<>();
 
           for (BlockPos bp : connectedAppliances) {
+            if (!world.isBlockLoaded(bp)) {
+              continue;
+            }
             IBlockState blockStateAtPos = world.getBlockState(bp);
             Block blockAtPos = blockStateAtPos.getBlock();
             if (blockAtPos instanceof AbstractBlockFireAlarmSounderVoiceEvac) {

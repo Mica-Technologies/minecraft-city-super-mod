@@ -548,7 +548,7 @@ public class ItemSignalConfigurationTool extends AbstractItem {
         return values[ordinal];
       }
     }
-    return ItemSignalConfigurationToolMode.CYCLE_SIGNAL_COLORS;
+    return ItemSignalConfigurationToolMode.OPEN_GUI;
   }
 
   public static void switchToNextMode(ItemStack stack) {

@@ -56,7 +56,9 @@ public class BlockFireAlarmControlPanel extends AbstractBlockRotatableNSEW imple
       float p_onBlockActivated_9_) {
     if (p_onBlockActivated_4_.inventory.getCurrentItem() != null &&
         (p_onBlockActivated_4_.inventory.getCurrentItem()
-            .getItem() instanceof ItemFireAlarmLinker)) {
+            .getItem() instanceof ItemFireAlarmLinker
+            || p_onBlockActivated_4_.inventory.getCurrentItem()
+            .getItem() instanceof ItemFireAlarmConfigTool)) {
       return super.onBlockActivated(p_onBlockActivated_1_, p_onBlockActivated_2_,
           p_onBlockActivated_3_,
           p_onBlockActivated_4_, p_onBlockActivated_5_, p_onBlockActivated_6_,

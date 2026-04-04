@@ -1,5 +1,7 @@
 package com.micatechnologies.minecraft.csm;
 
+import com.micatechnologies.minecraft.csm.lifesafety.FireAlarmPanelConfigGui;
+import com.micatechnologies.minecraft.csm.lifesafety.TileEntityFireAlarmControlPanel;
 import com.micatechnologies.minecraft.csm.technology.BlockRedstoneTTSGui;
 import com.micatechnologies.minecraft.csm.technology.TileEntityRedstoneTTS;
 import com.micatechnologies.minecraft.csm.trafficsignals.SignalControllerConfigGui;
@@ -66,6 +68,8 @@ public class CsmGuiHandler implements IGuiHandler {
       returnValue = new SignalHeadConfigGui((TileEntityTrafficSignalHead) tileEntity);
     } else if (id == 2 && tileEntity instanceof TileEntityTrafficSignalController) {
       returnValue = new SignalControllerConfigGui((TileEntityTrafficSignalController) tileEntity);
+    } else if (id == 3 && tileEntity instanceof TileEntityFireAlarmControlPanel) {
+      returnValue = new FireAlarmPanelConfigGui((TileEntityFireAlarmControlPanel) tileEntity);
     }
     return returnValue;
   }

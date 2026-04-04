@@ -12,6 +12,7 @@ item.directvremote.name=DIRECTV Remote
 item.dishremote.name=Dish Remote
 item.ewsignallinker.name=Sensor Zone Tool
 item.fiosremote.name=Frontier Fiber/Verizon Fios Remote
+item.firealarmconfigtool.name=Fire Alarm Config Tool
 item.firealarmlinker.name=Fire Alarm Appliance Linker
 item.nssignallinker.name=Signal Link Tool
 item.signalconfigurationtool.name=Traffic Signal Configuration Tool

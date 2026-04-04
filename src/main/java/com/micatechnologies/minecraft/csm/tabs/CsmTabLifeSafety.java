@@ -129,6 +129,7 @@ import com.micatechnologies.minecraft.csm.lifesafety.BlockOldFireSprinkler5;
 import com.micatechnologies.minecraft.csm.lifesafety.BlockOldFireSprinkler6;
 import com.micatechnologies.minecraft.csm.lifesafety.BlockSslstrobe;
 import com.micatechnologies.minecraft.csm.lifesafety.BlockStairsSignOneSided;
+import com.micatechnologies.minecraft.csm.lifesafety.ItemFireAlarmConfigTool;
 import com.micatechnologies.minecraft.csm.lifesafety.ItemFireAlarmLinker;
 import net.minecraft.block.Block;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -437,5 +438,6 @@ public class CsmTabLifeSafety extends CsmTab {
     initTabBlock(BlockSslstrobe.class, fmlPreInitializationEvent); // Sslstrobe
     initTabBlock(BlockStairsSignOneSided.class, fmlPreInitializationEvent); // StairsSignOneSided
     initTabItem(ItemFireAlarmLinker.class, fmlPreInitializationEvent); // FireAlarmLinker
+    initTabItem(ItemFireAlarmConfigTool.class, fmlPreInitializationEvent); // FireAlarmConfigTool
   }
 }
