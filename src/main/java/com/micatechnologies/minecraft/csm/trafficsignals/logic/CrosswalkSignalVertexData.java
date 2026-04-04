@@ -23,19 +23,25 @@ public class CrosswalkSignalVertexData {
     private static final float BODY_BACK_Z = 12.0f;
 
     // ========================================================================================
-    // SINGLE-FACE BODY (16-inch crosswalk signal)
-    // Squared-off rectangular housing, Z=4-12 (8 units deep)
+    // SINGLE-FACE BODY (16x18 inch crosswalk signal — wider than tall)
+    // Real crosswalk signals are 16" tall x 18" wide. In model units: 16 tall, 18 wide.
+    // Centered in the block: X = -1 to 17 (18 units), Y = 0 to 16 (16 units)
     // ========================================================================================
 
+    public static final float SINGLE_WIDTH = 18.0f;
+    public static final float SINGLE_X_MIN = -1.0f;
+    public static final float SINGLE_X_MAX = 17.0f;
+
     public static final List<Box> SINGLE_BODY_VERTEX_DATA = Arrays.asList(
-            new Box( new float[]{ 0.0f, 0.0f, BODY_FRONT_Z }, new float[]{ 16.0f, 16.0f, BODY_BACK_Z } )
+            new Box( new float[]{ SINGLE_X_MIN, 0.0f, BODY_FRONT_Z },
+                    new float[]{ SINGLE_X_MAX, 16.0f, BODY_BACK_Z } )
     );
 
     // Display face position (just in front of body face)
     public static final float SINGLE_DISPLAY_FACE_Z = BODY_FRONT_Z - 0.05f;
-    public static final float SINGLE_DISPLAY_X1 = 0.5f;
+    public static final float SINGLE_DISPLAY_X1 = SINGLE_X_MIN + 0.5f;
     public static final float SINGLE_DISPLAY_Y1 = 0.5f;
-    public static final float SINGLE_DISPLAY_X2 = 15.5f;
+    public static final float SINGLE_DISPLAY_X2 = SINGLE_X_MAX - 0.5f;
     public static final float SINGLE_DISPLAY_Y2 = 15.5f;
 
     // ========================================================================================
@@ -97,20 +103,22 @@ public class CrosswalkSignalVertexData {
     public static final List<Box> SINGLE_VISOR_NONE_VERTEX_DATA = Collections.emptyList();
 
     // Hood style visor: U-shaped hood wrapping top and sides, open at bottom with ~20% gap.
-    // Thin panels inset within housing bounds, protruding ~5 units forward.
-    // Bottom gap: sides stop at Y=3.2 (20% of 16 = 3.2 units up from bottom)
+    // Matches wider 18-unit body. Bottom gap: 20% of 16 = 3.2 units.
     public static final List<Box> SINGLE_VISOR_HOOD_VERTEX_DATA = Arrays.asList(
             // Top panel
-            new Box( new float[]{ 0.5f, 15.5f, BODY_FRONT_Z - 5.0f }, new float[]{ 15.5f, 16.0f, BODY_FRONT_Z } ),
+            new Box( new float[]{ SINGLE_X_MIN + 0.5f, 15.5f, BODY_FRONT_Z - 5.0f },
+                    new float[]{ SINGLE_X_MAX - 0.5f, 16.0f, BODY_FRONT_Z } ),
             // Left side panel (stops 20% from bottom)
-            new Box( new float[]{ 0.0f, 3.2f, BODY_FRONT_Z - 5.0f }, new float[]{ 0.5f, 16.0f, BODY_FRONT_Z } ),
+            new Box( new float[]{ SINGLE_X_MIN, 3.2f, BODY_FRONT_Z - 5.0f },
+                    new float[]{ SINGLE_X_MIN + 0.5f, 16.0f, BODY_FRONT_Z } ),
             // Right side panel (stops 20% from bottom)
-            new Box( new float[]{ 15.5f, 3.2f, BODY_FRONT_Z - 5.0f }, new float[]{ 16.0f, 16.0f, BODY_FRONT_Z } )
+            new Box( new float[]{ SINGLE_X_MAX - 0.5f, 3.2f, BODY_FRONT_Z - 5.0f },
+                    new float[]{ SINGLE_X_MAX, 16.0f, BODY_FRONT_Z } )
     );
 
-    // Crate style visor
+    // Crate style visor (matches wider 18-unit body)
     public static final List<Box> SINGLE_VISOR_CRATE_VERTEX_DATA = createCrateVisor(
-            0.0f, 0.0f, 16.0f, 16.0f, 0.5f );
+            SINGLE_X_MIN, 0.0f, SINGLE_X_MAX, 16.0f, 0.5f );
 
     // ========================================================================================
     // VISORS — DOUBLE SECTIONS
