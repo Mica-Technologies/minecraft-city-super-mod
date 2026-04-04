@@ -219,8 +219,9 @@ public class TileEntityCrosswalkSignalNewRenderer
         }
 
         // Mount bracket (same color as body)
+        boolean isDouble = displayType == CrosswalkDisplayType.TEXT;
         List<RenderHelper.Box> bracketData =
-                CrosswalkSignalVertexData.getBracketData( mountType );
+                CrosswalkSignalVertexData.getBracketData( mountType, isDouble );
         RenderHelper.addBoxesToBuffer( bracketData, buffer, br, bg, bb, 1.0f, 0, 0, 0 );
 
         tessellator.draw();

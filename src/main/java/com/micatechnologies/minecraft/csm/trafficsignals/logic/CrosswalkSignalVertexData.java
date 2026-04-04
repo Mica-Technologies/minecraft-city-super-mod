@@ -12,139 +12,173 @@ import java.util.List;
  *
  * <p>Coordinate system: X=0-16 (left-right), Y=0-16 (bottom-top), Z=0-16 (back-front).
  * The display face is on the front (low Z side), and the back is at high Z.
+ *
+ * <p>Body is positioned at Z=4-12 so that left/right mount brackets (at Z=7-9) are centered
+ * within the housing depth, matching the original JSON crosswalk signal models.
  */
 public class CrosswalkSignalVertexData {
 
+    // Body Z range — pushed back so mounts are centered within housing depth
+    private static final float BODY_FRONT_Z = 4.0f;
+    private static final float BODY_BACK_Z = 12.0f;
+
     // ========================================================================================
     // SINGLE-FACE BODY (16-inch crosswalk signal)
-    // Based on crosswalklightsingle_base.json: single element [0,1,1] to [16,17,9]
-    // In TESR model space (centered at 8,8,8): body from X=0-16, Y=1-17, Z=1-9
-    // We use the same tapered-back pattern as signal heads for visual consistency.
-    // Front face (display) is at Z=1, back tapers from Z=9.
+    // Squared-off rectangular housing, Z=4-12 (8 units deep)
     // ========================================================================================
 
     public static final List<Box> SINGLE_BODY_VERTEX_DATA = Arrays.asList(
-            // Squared-off rectangular housing (no taper — clean boxy look for 16-inch signal)
-            new Box( new float[]{ 0.0f, 0.0f, 1.0f }, new float[]{ 16.0f, 16.0f, 9.0f } )
+            new Box( new float[]{ 0.0f, 0.0f, BODY_FRONT_Z }, new float[]{ 16.0f, 16.0f, BODY_BACK_Z } )
     );
 
-    // Display face Z position for the single body (front face)
-    public static final float SINGLE_DISPLAY_FACE_Z = 0.95f;
-    // Display face extends from [0,0] to [16,16] in X,Y within the body
+    // Display face position (just in front of body face)
+    public static final float SINGLE_DISPLAY_FACE_Z = BODY_FRONT_Z - 0.05f;
     public static final float SINGLE_DISPLAY_X1 = 0.5f;
     public static final float SINGLE_DISPLAY_Y1 = 0.5f;
     public static final float SINGLE_DISPLAY_X2 = 15.5f;
     public static final float SINGLE_DISPLAY_Y2 = 15.5f;
 
     // ========================================================================================
-    // DOUBLE-WORDED BODY (two stacked 12-inch sections)
-    // Based on crosswalklightdouble_base.json: two sections, each ~12 units tall
-    // Upper section (DON'T WALK): Y=13-25, Lower section (WALK): Y=1-13
-    // Both sections have tapered backs, narrower than single (X=2-14)
-    // In TESR space we shift so the assembly is centered. Upper section body + lower section body.
+    // DOUBLE-WORDED BODY (two stacked 12-inch sections with tapered backs)
+    // Upper section (DON'T WALK): Y=12-24, Lower section (WALK): Y=0-12
+    // Narrower (X=2-14), tapered back for visual style
     // ========================================================================================
 
-    // Upper section body (DON'T WALK) — Y offset from 12 to 24 in model space
     public static final List<Box> DOUBLE_UPPER_BODY_VERTEX_DATA = Arrays.asList(
-            new Box( new float[]{ 2.0f, 12.0f, 1.0f }, new float[]{ 14.0f, 24.0f, 2.0f } ),
-            new Box( new float[]{ 2.2f, 12.0f, 2.0f }, new float[]{ 13.8f, 24.0f, 3.0f } ),
-            new Box( new float[]{ 2.4f, 12.0f, 3.0f }, new float[]{ 13.6f, 24.0f, 4.0f } ),
-            new Box( new float[]{ 2.6f, 12.0f, 4.0f }, new float[]{ 13.4f, 24.0f, 5.0f } ),
-            new Box( new float[]{ 2.8f, 12.0f, 5.0f }, new float[]{ 13.2f, 24.0f, 6.0f } ),
-            new Box( new float[]{ 3.0f, 12.0f, 6.0f }, new float[]{ 13.0f, 24.0f, 7.0f } )
+            new Box( new float[]{ 2.0f, 12.0f, BODY_FRONT_Z }, new float[]{ 14.0f, 24.0f, BODY_FRONT_Z + 1.0f } ),
+            new Box( new float[]{ 2.2f, 12.0f, BODY_FRONT_Z + 1.0f }, new float[]{ 13.8f, 24.0f, BODY_FRONT_Z + 2.0f } ),
+            new Box( new float[]{ 2.4f, 12.0f, BODY_FRONT_Z + 2.0f }, new float[]{ 13.6f, 24.0f, BODY_FRONT_Z + 3.0f } ),
+            new Box( new float[]{ 2.6f, 12.0f, BODY_FRONT_Z + 3.0f }, new float[]{ 13.4f, 24.0f, BODY_FRONT_Z + 4.0f } ),
+            new Box( new float[]{ 2.8f, 12.0f, BODY_FRONT_Z + 4.0f }, new float[]{ 13.2f, 24.0f, BODY_FRONT_Z + 5.0f } ),
+            new Box( new float[]{ 3.0f, 12.0f, BODY_FRONT_Z + 5.0f }, new float[]{ 13.0f, 24.0f, BODY_FRONT_Z + 6.0f } )
     );
 
-    // Lower section body (WALK) — Y offset from 0 to 12 in model space
     public static final List<Box> DOUBLE_LOWER_BODY_VERTEX_DATA = Arrays.asList(
-            new Box( new float[]{ 2.0f, 0.0f, 1.0f }, new float[]{ 14.0f, 12.0f, 2.0f } ),
-            new Box( new float[]{ 2.2f, 0.0f, 2.0f }, new float[]{ 13.8f, 12.0f, 3.0f } ),
-            new Box( new float[]{ 2.4f, 0.0f, 3.0f }, new float[]{ 13.6f, 12.0f, 4.0f } ),
-            new Box( new float[]{ 2.6f, 0.0f, 4.0f }, new float[]{ 13.4f, 12.0f, 5.0f } ),
-            new Box( new float[]{ 2.8f, 0.0f, 5.0f }, new float[]{ 13.2f, 12.0f, 6.0f } ),
-            new Box( new float[]{ 3.0f, 0.0f, 6.0f }, new float[]{ 13.0f, 12.0f, 7.0f } )
+            new Box( new float[]{ 2.0f, 0.0f, BODY_FRONT_Z }, new float[]{ 14.0f, 12.0f, BODY_FRONT_Z + 1.0f } ),
+            new Box( new float[]{ 2.2f, 0.0f, BODY_FRONT_Z + 1.0f }, new float[]{ 13.8f, 12.0f, BODY_FRONT_Z + 2.0f } ),
+            new Box( new float[]{ 2.4f, 0.0f, BODY_FRONT_Z + 2.0f }, new float[]{ 13.6f, 12.0f, BODY_FRONT_Z + 3.0f } ),
+            new Box( new float[]{ 2.6f, 0.0f, BODY_FRONT_Z + 3.0f }, new float[]{ 13.4f, 12.0f, BODY_FRONT_Z + 4.0f } ),
+            new Box( new float[]{ 2.8f, 0.0f, BODY_FRONT_Z + 4.0f }, new float[]{ 13.2f, 12.0f, BODY_FRONT_Z + 5.0f } ),
+            new Box( new float[]{ 3.0f, 0.0f, BODY_FRONT_Z + 5.0f }, new float[]{ 13.0f, 12.0f, BODY_FRONT_Z + 6.0f } )
     );
 
     // Display face positions for double sections
-    public static final float DOUBLE_DISPLAY_FACE_Z = 0.95f;
+    public static final float DOUBLE_DISPLAY_FACE_Z = BODY_FRONT_Z - 0.05f;
     public static final float DOUBLE_DISPLAY_X1 = 2.5f;
     public static final float DOUBLE_DISPLAY_X2 = 13.5f;
-    // Upper section display Y range
     public static final float DOUBLE_UPPER_DISPLAY_Y1 = 12.5f;
     public static final float DOUBLE_UPPER_DISPLAY_Y2 = 23.5f;
-    // Lower section display Y range
     public static final float DOUBLE_LOWER_DISPLAY_Y1 = 0.5f;
     public static final float DOUBLE_LOWER_DISPLAY_Y2 = 11.5f;
 
     // ========================================================================================
-    // MOUNT BRACKETS
-    // Extracted from the JSON mount models. Brackets are pairs of thin connector arms.
+    // MOUNT BRACKETS — SINGLE (16-inch, Y=0-16)
+    // Pattern from original JSON models: vertical stub connectors above/below body,
+    // then horizontal arm extending in mount direction.
+    // Mount center at X=7-9, Z=7-9 (centered within body depth Z=4-12)
     // ========================================================================================
 
-    // Rear mount: two arms extending backward along +Z axis
-    public static final List<Box> BRACKET_REAR_VERTEX_DATA = Arrays.asList(
-            new Box( new float[]{ 7.0f, 0.0f, 9.0f }, new float[]{ 9.0f, 1.0f, 22.0f } ),
-            new Box( new float[]{ 7.0f, 15.0f, 9.0f }, new float[]{ 9.0f, 16.0f, 22.0f } )
+    private static final float MOUNT_Z1 = 7.0f;  // mount pipe Z range
+    private static final float MOUNT_Z2 = 9.0f;
+    private static final float MOUNT_X1 = 7.0f;  // mount pipe X range (centered)
+    private static final float MOUNT_X2 = 9.0f;
+
+    // Rear mount — single: stub connectors + arm extending along +Z
+    public static final List<Box> BRACKET_SINGLE_REAR_VERTEX_DATA = Arrays.asList(
+            // Lower vertical stub (below body)
+            new Box( new float[]{ MOUNT_X1, -1.0f, MOUNT_Z1 }, new float[]{ MOUNT_X2, 0.0f, MOUNT_Z2 } ),
+            // Upper vertical stub (above body)
+            new Box( new float[]{ MOUNT_X1, 16.0f, MOUNT_Z1 }, new float[]{ MOUNT_X2, 17.0f, MOUNT_Z2 } ),
+            // Lower horizontal arm extending back
+            new Box( new float[]{ MOUNT_X1, -1.0f, MOUNT_Z2 }, new float[]{ MOUNT_X2, 0.0f, 22.0f } ),
+            // Upper horizontal arm extending back
+            new Box( new float[]{ MOUNT_X1, 16.0f, MOUNT_Z2 }, new float[]{ MOUNT_X2, 17.0f, 22.0f } )
     );
 
-    // Left mount: two arms extending to the left (+X direction past block)
-    public static final List<Box> BRACKET_LEFT_VERTEX_DATA = Arrays.asList(
-            new Box( new float[]{ 16.0f, 0.0f, 7.0f }, new float[]{ 20.0f, 1.0f, 9.0f } ),
-            new Box( new float[]{ 16.0f, 15.0f, 7.0f }, new float[]{ 20.0f, 16.0f, 9.0f } )
+    // Left mount — single: stub connectors + arm extending to +X
+    public static final List<Box> BRACKET_SINGLE_LEFT_VERTEX_DATA = Arrays.asList(
+            new Box( new float[]{ MOUNT_X1, -1.0f, MOUNT_Z1 }, new float[]{ MOUNT_X2, 0.0f, MOUNT_Z2 } ),
+            new Box( new float[]{ MOUNT_X1, 16.0f, MOUNT_Z1 }, new float[]{ MOUNT_X2, 17.0f, MOUNT_Z2 } ),
+            new Box( new float[]{ MOUNT_X2, -1.0f, MOUNT_Z1 }, new float[]{ 20.0f, 0.0f, MOUNT_Z2 } ),
+            new Box( new float[]{ MOUNT_X2, 16.0f, MOUNT_Z1 }, new float[]{ 20.0f, 17.0f, MOUNT_Z2 } )
     );
 
-    // Right mount: two arms extending to the right (-X direction past block)
-    public static final List<Box> BRACKET_RIGHT_VERTEX_DATA = Arrays.asList(
-            new Box( new float[]{ -4.0f, 0.0f, 7.0f }, new float[]{ 0.0f, 1.0f, 9.0f } ),
-            new Box( new float[]{ -4.0f, 15.0f, 7.0f }, new float[]{ 0.0f, 16.0f, 9.0f } )
+    // Right mount — single: stub connectors + arm extending to -X
+    public static final List<Box> BRACKET_SINGLE_RIGHT_VERTEX_DATA = Arrays.asList(
+            new Box( new float[]{ MOUNT_X1, -1.0f, MOUNT_Z1 }, new float[]{ MOUNT_X2, 0.0f, MOUNT_Z2 } ),
+            new Box( new float[]{ MOUNT_X1, 16.0f, MOUNT_Z1 }, new float[]{ MOUNT_X2, 17.0f, MOUNT_Z2 } ),
+            new Box( new float[]{ -4.0f, -1.0f, MOUNT_Z1 }, new float[]{ MOUNT_X1, 0.0f, MOUNT_Z2 } ),
+            new Box( new float[]{ -4.0f, 16.0f, MOUNT_Z1 }, new float[]{ MOUNT_X1, 17.0f, MOUNT_Z2 } )
     );
 
-    // Base mount: no bracket (signal is flush-mounted)
+    // Base mount: no bracket
     public static final List<Box> BRACKET_BASE_VERTEX_DATA = Collections.emptyList();
 
     // ========================================================================================
-    // VISORS — SINGLE FACE (16x16 signal)
+    // MOUNT BRACKETS — DOUBLE (Y=0-24, upper mount at top of upper section)
     // ========================================================================================
 
-    // No visor
+    // Rear mount — double
+    public static final List<Box> BRACKET_DOUBLE_REAR_VERTEX_DATA = Arrays.asList(
+            new Box( new float[]{ MOUNT_X1, -1.0f, MOUNT_Z1 }, new float[]{ MOUNT_X2, 0.0f, MOUNT_Z2 } ),
+            new Box( new float[]{ MOUNT_X1, 24.0f, MOUNT_Z1 }, new float[]{ MOUNT_X2, 25.0f, MOUNT_Z2 } ),
+            new Box( new float[]{ MOUNT_X1, -1.0f, MOUNT_Z2 }, new float[]{ MOUNT_X2, 0.0f, 22.0f } ),
+            new Box( new float[]{ MOUNT_X1, 24.0f, MOUNT_Z2 }, new float[]{ MOUNT_X2, 25.0f, 22.0f } )
+    );
+
+    // Left mount — double
+    public static final List<Box> BRACKET_DOUBLE_LEFT_VERTEX_DATA = Arrays.asList(
+            new Box( new float[]{ MOUNT_X1, -1.0f, MOUNT_Z1 }, new float[]{ MOUNT_X2, 0.0f, MOUNT_Z2 } ),
+            new Box( new float[]{ MOUNT_X1, 24.0f, MOUNT_Z1 }, new float[]{ MOUNT_X2, 25.0f, MOUNT_Z2 } ),
+            new Box( new float[]{ MOUNT_X2, -1.0f, MOUNT_Z1 }, new float[]{ 20.0f, 0.0f, MOUNT_Z2 } ),
+            new Box( new float[]{ MOUNT_X2, 24.0f, MOUNT_Z1 }, new float[]{ 20.0f, 25.0f, MOUNT_Z2 } )
+    );
+
+    // Right mount — double
+    public static final List<Box> BRACKET_DOUBLE_RIGHT_VERTEX_DATA = Arrays.asList(
+            new Box( new float[]{ MOUNT_X1, -1.0f, MOUNT_Z1 }, new float[]{ MOUNT_X2, 0.0f, MOUNT_Z2 } ),
+            new Box( new float[]{ MOUNT_X1, 24.0f, MOUNT_Z1 }, new float[]{ MOUNT_X2, 25.0f, MOUNT_Z2 } ),
+            new Box( new float[]{ -4.0f, -1.0f, MOUNT_Z1 }, new float[]{ MOUNT_X1, 0.0f, MOUNT_Z2 } ),
+            new Box( new float[]{ -4.0f, 24.0f, MOUNT_Z1 }, new float[]{ MOUNT_X1, 25.0f, MOUNT_Z2 } )
+    );
+
+    // ========================================================================================
+    // VISORS — SINGLE FACE (16x16 signal)
+    // Visor sits flush against body front face (Z=BODY_FRONT_Z) and protrudes forward.
+    // ========================================================================================
+
     public static final List<Box> SINGLE_VISOR_NONE_VERTEX_DATA = Collections.emptyList();
 
     // Hood style visor: U-shaped hood wrapping top and sides, open at bottom.
-    // Sits within the housing bounds, protruding ~5 units forward from the face (Z=1.0).
-    // Panels are thin (0.5 units) and inset slightly from housing edges.
+    // Thin panels inset within housing bounds, protruding ~5 units forward.
     public static final List<Box> SINGLE_VISOR_HOOD_VERTEX_DATA = Arrays.asList(
-            // Top panel
-            new Box( new float[]{ 0.5f, 15.5f, -4.0f }, new float[]{ 15.5f, 16.0f, 1.0f } ),
-            // Left side panel
-            new Box( new float[]{ 0.0f, 0.0f, -4.0f }, new float[]{ 0.5f, 16.0f, 1.0f } ),
-            // Right side panel
-            new Box( new float[]{ 15.5f, 0.0f, -4.0f }, new float[]{ 16.0f, 16.0f, 1.0f } )
+            new Box( new float[]{ 0.5f, 15.5f, BODY_FRONT_Z - 5.0f }, new float[]{ 15.5f, 16.0f, BODY_FRONT_Z } ),
+            new Box( new float[]{ 0.0f, 0.0f, BODY_FRONT_Z - 5.0f }, new float[]{ 0.5f, 16.0f, BODY_FRONT_Z } ),
+            new Box( new float[]{ 15.5f, 0.0f, BODY_FRONT_Z - 5.0f }, new float[]{ 16.0f, 16.0f, BODY_FRONT_Z } )
     );
 
-    // Crate style visor: diamond/cross-hatch grid covering the display face.
-    // Thin diagonal bars forming a lattice pattern, protruding ~1 unit forward.
-    // Modeled as a grid of thin vertical and horizontal bars creating the diamond pattern.
+    // Crate style visor
     public static final List<Box> SINGLE_VISOR_CRATE_VERTEX_DATA = createCrateVisor(
             0.0f, 0.0f, 16.0f, 16.0f, 0.5f );
 
     // ========================================================================================
-    // VISORS — DOUBLE SECTIONS (12-unit wide, for each section independently)
-    // These are rendered at each section's Y position.
+    // VISORS — DOUBLE SECTIONS
     // ========================================================================================
 
     public static final List<Box> DOUBLE_VISOR_NONE_VERTEX_DATA = Collections.emptyList();
 
-    // Hood for upper double section (inset within section bounds)
+    // Hood for upper double section
     public static final List<Box> DOUBLE_UPPER_VISOR_HOOD_VERTEX_DATA = Arrays.asList(
-            new Box( new float[]{ 2.5f, 23.5f, -4.0f }, new float[]{ 13.5f, 24.0f, 1.0f } ),
-            new Box( new float[]{ 2.0f, 12.0f, -4.0f }, new float[]{ 2.5f, 24.0f, 1.0f } ),
-            new Box( new float[]{ 13.5f, 12.0f, -4.0f }, new float[]{ 14.0f, 24.0f, 1.0f } )
+            new Box( new float[]{ 2.5f, 23.5f, BODY_FRONT_Z - 5.0f }, new float[]{ 13.5f, 24.0f, BODY_FRONT_Z } ),
+            new Box( new float[]{ 2.0f, 12.0f, BODY_FRONT_Z - 5.0f }, new float[]{ 2.5f, 24.0f, BODY_FRONT_Z } ),
+            new Box( new float[]{ 13.5f, 12.0f, BODY_FRONT_Z - 5.0f }, new float[]{ 14.0f, 24.0f, BODY_FRONT_Z } )
     );
 
-    // Hood for lower double section (inset within section bounds)
+    // Hood for lower double section
     public static final List<Box> DOUBLE_LOWER_VISOR_HOOD_VERTEX_DATA = Arrays.asList(
-            new Box( new float[]{ 2.5f, 11.5f, -4.0f }, new float[]{ 13.5f, 12.0f, 1.0f } ),
-            new Box( new float[]{ 2.0f, 0.0f, -4.0f }, new float[]{ 2.5f, 12.0f, 1.0f } ),
-            new Box( new float[]{ 13.5f, 0.0f, -4.0f }, new float[]{ 14.0f, 12.0f, 1.0f } )
+            new Box( new float[]{ 2.5f, 11.5f, BODY_FRONT_Z - 5.0f }, new float[]{ 13.5f, 12.0f, BODY_FRONT_Z } ),
+            new Box( new float[]{ 2.0f, 0.0f, BODY_FRONT_Z - 5.0f }, new float[]{ 2.5f, 12.0f, BODY_FRONT_Z } ),
+            new Box( new float[]{ 13.5f, 0.0f, BODY_FRONT_Z - 5.0f }, new float[]{ 14.0f, 12.0f, BODY_FRONT_Z } )
     );
 
     // Crate for upper double section
@@ -156,24 +190,20 @@ public class CrosswalkSignalVertexData {
             2.0f, 0.0f, 14.0f, 12.0f, 0.4f );
 
     // ========================================================================================
-    // HELPER: Generate crate-style diamond grid visor
+    // HELPER: Generate crate-style visor
     // ========================================================================================
 
     /**
-     * Creates a diamond/cross-hatch crate visor pattern using a dense grid of horizontal and
-     * vertical bars. Real crate visors have diagonal diamond mesh, but since we're limited to
-     * axis-aligned boxes, a tight grid produces a similar visual effect — especially at
-     * Minecraft's pixel scale. All bars are strictly clamped within [x1,y1] to [x2,y2].
-     * The visor sits flush against the body front face (Z=1.0) and protrudes forward.
+     * Creates a crate visor pattern using a dense grid of horizontal and vertical bars.
+     * All bars are strictly clamped within [x1,y1] to [x2,y2]. The visor sits flush against
+     * the body front face and protrudes forward.
      */
     private static List<Box> createCrateVisor( float x1, float y1, float x2, float y2,
             float barThickness ) {
         java.util.ArrayList<Box> boxes = new java.util.ArrayList<>();
-        // Visor sits flush against the body front face and protrudes forward
-        float faceZ = 1.0f;
-        float frontZ = faceZ - 0.8f; // protrude 0.8 units forward
+        float faceZ = BODY_FRONT_Z;
+        float frontZ = faceZ - 0.8f;
 
-        // Diamond cell spacing
         float spacing = 2.0f;
         float halfBar = barThickness / 2.0f;
 
@@ -212,19 +242,37 @@ public class CrosswalkSignalVertexData {
     }
 
     /**
-     * Returns the bracket vertex data for the given mount type.
+     * Returns the bracket vertex data for the given mount type and signal type.
+     *
+     * @param mountType the mount direction
+     * @param isDouble  true for double-worded (taller) signal, false for single
      */
-    public static List<Box> getBracketData( CrosswalkMountType mountType ) {
-        switch ( mountType ) {
-            case REAR:
-                return BRACKET_REAR_VERTEX_DATA;
-            case LEFT:
-                return BRACKET_LEFT_VERTEX_DATA;
-            case RIGHT:
-                return BRACKET_RIGHT_VERTEX_DATA;
-            case BASE:
-            default:
-                return BRACKET_BASE_VERTEX_DATA;
+    public static List<Box> getBracketData( CrosswalkMountType mountType, boolean isDouble ) {
+        if ( isDouble ) {
+            switch ( mountType ) {
+                case REAR:
+                    return BRACKET_DOUBLE_REAR_VERTEX_DATA;
+                case LEFT:
+                    return BRACKET_DOUBLE_LEFT_VERTEX_DATA;
+                case RIGHT:
+                    return BRACKET_DOUBLE_RIGHT_VERTEX_DATA;
+                case BASE:
+                default:
+                    return BRACKET_BASE_VERTEX_DATA;
+            }
+        }
+        else {
+            switch ( mountType ) {
+                case REAR:
+                    return BRACKET_SINGLE_REAR_VERTEX_DATA;
+                case LEFT:
+                    return BRACKET_SINGLE_LEFT_VERTEX_DATA;
+                case RIGHT:
+                    return BRACKET_SINGLE_RIGHT_VERTEX_DATA;
+                case BASE:
+                default:
+                    return BRACKET_BASE_VERTEX_DATA;
+            }
         }
     }
 }
