@@ -43,7 +43,7 @@ public class BlockTLHMountKit extends AbstractBlockRotatableNSEWUD {
      */
     @Override
     public AxisAlignedBB getBlockBoundingBox( IBlockState state, IBlockAccess source, BlockPos pos ) {
-        return new AxisAlignedBB(-0.687500, 0.312500, -0.250000, 1.687500, 0.437500, 1.000000);
+        return new AxisAlignedBB(-0.687500, 0.312500, 0.000000, 1.687500, 0.437500, 1.000000);
     }
 
   /**
