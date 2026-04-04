@@ -380,12 +380,12 @@ public class TileEntityCrosswalkSignalNewRenderer
         GlStateManager.depthMask( false );
 
         int displayValue = Math.min( countdown, 99 );
-        String text = String.valueOf( displayValue );
-        int numDigits = text.length();
 
-        float totalWidth = numDigits * DIGIT_WIDTH + ( numDigits - 1 ) * DIGIT_GAP;
-        float centerX = numDigits > 1 ? AREA_CENTER_X - 0.03f : AREA_CENTER_X;
-        float startX = centerX - totalWidth / 2;
+        // Always use the two-digit layout positioning so single digits align with
+        // where the ones digit of a two-digit number would be (right-aligned).
+        float twoDigitWidth = 2 * DIGIT_WIDTH + DIGIT_GAP;
+        float centerX = AREA_CENTER_X - 0.03f;
+        float startX = centerX - twoDigitWidth / 2;
 
         // Convert block-space countdown coordinates to model units.
         // The display face is mirrored in model space (the quad UV mapping flips X),
@@ -396,10 +396,16 @@ public class TileEntityCrosswalkSignalNewRenderer
         BufferBuilder buf = tess.getBuffer();
         buf.begin( GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR );
 
-        for ( int i = 0; i < numDigits; i++ ) {
-            int digit = text.charAt( i ) - '0';
+        // Render as two-digit layout: tens digit (index 0) and ones digit (index 1)
+        int tens = displayValue / 10;
+        int ones = displayValue % 10;
+
+        for ( int i = 0; i < 2; i++ ) {
+            int digit = ( i == 0 ) ? tens : ones;
+            // Skip the tens digit if it's zero (single-digit number)
+            if ( i == 0 && tens == 0 ) continue;
+
             float dx = startX + i * ( DIGIT_WIDTH + DIGIT_GAP );
-            // Negate X to un-mirror: places countdown on the right side of the visible face
             float modelDx = 8.0f - ( dx + DIGIT_WIDTH ) * scale;
             float modelDy = 8.0f - ( DIGIT_HEIGHT / 2 ) * scale;
             float modelW = DIGIT_WIDTH * scale;
