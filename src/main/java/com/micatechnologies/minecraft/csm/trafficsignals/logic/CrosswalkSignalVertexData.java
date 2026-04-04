@@ -236,14 +236,16 @@ public class CrosswalkSignalVertexData {
     }
 
     /**
-     * Generates bracket vertex data dynamically to account for body tilt. The bracket bridges
-     * between the stationary pole-side mount point (rendered in base facing context) and the
-     * tilted housing position. The horizontal arms and their connection points stay fixed, but
-     * the vertical stubs lean/step toward the tilted housing position using the tilt X offset.
-     *
-     * <p>When there is no tilt, the stubs are straight vertical. When tilted, the stubs are
-     * built as a series of stepped boxes that bridge from the arm Y position to the housing
-     * edge, shifted by the tilt offset in X.
+     * Generates bracket vertex data dynamically to account for body tilt. The bracket has
+     * three parts:
+     * <ol>
+     *   <li>Vertical stubs — straight pipes above/below the housing, positioned at the
+     *       tilted housing location (shifted by tiltOffset in X)</li>
+     *   <li>Horizontal arms — angled/extended from the stub ends to the stationary pole
+     *       mount point. The pole end stays fixed; the housing end follows the tilt. For
+     *       rear mounts this creates a diagonal arm in the X-Z plane. For left/right mounts
+     *       the arm simply gets longer or shorter.</li>
+     * </ol>
      *
      * @param mountType  the mount direction
      * @param isDouble   true for double-worded (taller) signal, false for single
@@ -262,48 +264,50 @@ public class CrosswalkSignalVertexData {
         float bodyBottom = 0.0f;
         float bodyTop = isDouble ? 24.0f : 16.0f;
 
-        // The housing-side of the stubs needs to be shifted by tiltOffset in X
-        // relative to the pole-side position. We build stepped stubs to bridge the gap.
-        float stubX1 = MOUNT_X1;
-        float stubX2 = MOUNT_X2;
         // Housing-side X positions (shifted by tilt)
-        float housingX1 = MOUNT_X1 + tiltOffset;
-        float housingX2 = MOUNT_X2 + tiltOffset;
+        float hx1 = MOUNT_X1 + tiltOffset;
+        float hx2 = MOUNT_X2 + tiltOffset;
 
-        // --- Lower stub: from armY up to bodyBottom, leaning by tiltOffset ---
-        addLeaningStub( boxes, stubX1, stubX2, housingX1, housingX2,
-                lowerArmY, bodyBottom, MOUNT_Z1, MOUNT_Z2 );
+        // --- Vertical stubs: straight, at the housing position ---
+        // Lower stub (below housing down to arm Y)
+        boxes.add( new Box(
+                new float[]{ hx1, lowerArmY, MOUNT_Z1 },
+                new float[]{ hx2, bodyBottom, MOUNT_Z2 } ) );
+        // Upper stub (above housing up to arm Y)
+        boxes.add( new Box(
+                new float[]{ hx1, bodyTop, MOUNT_Z1 },
+                new float[]{ hx2, upperArmY, MOUNT_Z2 } ) );
 
-        // --- Upper stub: from bodyTop up to armY, leaning by tiltOffset ---
-        // Note: housing is at bottom of this stub, arm is at top
-        addLeaningStub( boxes, housingX1, housingX2, stubX1, stubX2,
-                bodyTop, upperArmY, MOUNT_Z1, MOUNT_Z2 );
-
-        // --- Horizontal arms (stationary, no tilt offset) ---
+        // --- Horizontal arms: pivot from pole end, angle to meet housing stubs ---
+        // Pole-side X stays at MOUNT_X1/X2 (stationary). Housing-side X is hx1/hx2.
         switch ( mountType ) {
             case REAR:
-                boxes.add( new Box(
-                        new float[]{ stubX1, lowerArmY, MOUNT_Z2 },
-                        new float[]{ stubX2, lowerArmY + 1.0f, 22.0f } ) );
-                boxes.add( new Box(
-                        new float[]{ stubX1, upperArmY - 1.0f, MOUNT_Z2 },
-                        new float[]{ stubX2, upperArmY, 22.0f } ) );
+                // Arm extends along Z from housing (Z=MOUNT_Z2) to pole (Z=22).
+                // When tilted, arm diagonals in X from hx1..hx2 at Z=MOUNT_Z2 to
+                // MOUNT_X1..X2 at Z=22. Build as stepped boxes.
+                addAngledArm( boxes, hx1, hx2, MOUNT_X1, MOUNT_X2,
+                        lowerArmY, lowerArmY + 1.0f, MOUNT_Z2, 22.0f );
+                addAngledArm( boxes, hx1, hx2, MOUNT_X1, MOUNT_X2,
+                        upperArmY - 1.0f, upperArmY, MOUNT_Z2, 22.0f );
                 break;
             case LEFT:
+                // Arm extends along X from housing (X=hx2) to pole (X=20).
+                // Just a straight arm from the shifted position to the pole.
                 boxes.add( new Box(
-                        new float[]{ stubX2, lowerArmY, MOUNT_Z1 },
+                        new float[]{ hx2, lowerArmY, MOUNT_Z1 },
                         new float[]{ 20.0f, lowerArmY + 1.0f, MOUNT_Z2 } ) );
                 boxes.add( new Box(
-                        new float[]{ stubX2, upperArmY - 1.0f, MOUNT_Z1 },
+                        new float[]{ hx2, upperArmY - 1.0f, MOUNT_Z1 },
                         new float[]{ 20.0f, upperArmY, MOUNT_Z2 } ) );
                 break;
             case RIGHT:
+                // Arm extends along X from pole (X=-4) to housing (X=hx1).
                 boxes.add( new Box(
                         new float[]{ -4.0f, lowerArmY, MOUNT_Z1 },
-                        new float[]{ stubX1, lowerArmY + 1.0f, MOUNT_Z2 } ) );
+                        new float[]{ hx1, lowerArmY + 1.0f, MOUNT_Z2 } ) );
                 boxes.add( new Box(
                         new float[]{ -4.0f, upperArmY - 1.0f, MOUNT_Z1 },
-                        new float[]{ stubX1, upperArmY, MOUNT_Z2 } ) );
+                        new float[]{ hx1, upperArmY, MOUNT_Z2 } ) );
                 break;
         }
 
@@ -311,48 +315,40 @@ public class CrosswalkSignalVertexData {
     }
 
     /**
-     * Adds a leaning/stepped vertical stub that bridges from (bottomX1,bottomX2) at bottomY
-     * to (topX1,topX2) at topY. When bottom and top X positions differ (due to tilt), the
-     * stub is built as a series of small stepped boxes to create a lean effect.
+     * Builds an angled horizontal arm as stepped boxes. The arm goes from
+     * (startX1..startX2, startZ) to (endX1..endX2, endZ), stepping in X proportionally
+     * across the Z distance. Used for rear mount arms that need to diagonal when tilted.
      */
-    private static void addLeaningStub( java.util.ArrayList<Box> boxes,
-            float bottomX1, float bottomX2, float topX1, float topX2,
-            float bottomY, float topY, float z1, float z2 ) {
-        float height = topY - bottomY;
-        if ( height < 0.1f ) return;
-
-        float xShift = topX1 - bottomX1; // total X shift from bottom to top
+    private static void addAngledArm( java.util.ArrayList<Box> boxes,
+            float startX1, float startX2, float endX1, float endX2,
+            float y1, float y2, float startZ, float endZ ) {
+        float xShift = endX1 - startX1;
 
         if ( Math.abs( xShift ) < 0.1f ) {
-            // No lean needed — straight vertical stub
-            float minX = Math.min( bottomX1, topX1 );
-            float maxX = Math.max( bottomX2, topX2 );
+            // No angle needed — straight arm
             boxes.add( new Box(
-                    new float[]{ minX, bottomY, z1 },
-                    new float[]{ maxX, topY, z2 } ) );
+                    new float[]{ Math.min( startX1, endX1 ), y1, startZ },
+                    new float[]{ Math.max( startX2, endX2 ), y2, endZ } ) );
             return;
         }
 
-        // Build stepped boxes to approximate the lean. Each step covers ~1 model unit of
-        // height and shifts proportionally in X.
-        int steps = Math.max( 2, Math.round( height / 1.5f ) );
-        float stepHeight = height / steps;
-        float stepShift = xShift / steps;
+        // Step along Z, shifting X proportionally
+        float zLength = endZ - startZ;
+        int steps = Math.max( 2, Math.round( Math.abs( xShift ) / 1.0f ) );
+        float stepZ = zLength / steps;
+        float stepX = xShift / steps;
 
         for ( int i = 0; i < steps; i++ ) {
-            float sy = bottomY + i * stepHeight;
-            float sx1 = bottomX1 + i * stepShift;
-            float sx2 = bottomX2 + i * stepShift;
-            float ey = sy + stepHeight;
-            float ex1 = bottomX1 + ( i + 1 ) * stepShift;
-            float ex2 = bottomX2 + ( i + 1 ) * stepShift;
+            float sz = startZ + i * stepZ;
+            float ez = startZ + ( i + 1 ) * stepZ;
+            float sx1 = startX1 + i * stepX;
+            float sx2 = startX2 + i * stepX;
+            float ex1 = startX1 + ( i + 1 ) * stepX;
+            float ex2 = startX2 + ( i + 1 ) * stepX;
 
-            // Each step box spans from the current X to the next X
-            float minX = Math.min( sx1, ex1 );
-            float maxX = Math.max( sx2, ex2 );
             boxes.add( new Box(
-                    new float[]{ minX, sy, z1 },
-                    new float[]{ maxX, ey, z2 } ) );
+                    new float[]{ Math.min( sx1, ex1 ), y1, sz },
+                    new float[]{ Math.max( sx2, ex2 ), y2, ez } ) );
         }
     }
 }
