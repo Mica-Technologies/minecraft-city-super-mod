@@ -123,8 +123,17 @@ public class TileEntityCrosswalkSignalNewRenderer
         GL11.glTranslated( x, y, z );
         GL11.glScaled( 0.0625, 0.0625, 0.0625 );
 
+        // Compute tilt offset for compensation
+        int tiltOffset = 0;
+        if ( bodyTilt == TrafficSignalBodyTilt.RIGHT_ANGLE ) tiltOffset = -4;
+        else if ( bodyTilt == TrafficSignalBodyTilt.RIGHT_TILT ) tiltOffset = -2;
+        else if ( bodyTilt == TrafficSignalBodyTilt.LEFT_TILT ) tiltOffset = 2;
+        else if ( bodyTilt == TrafficSignalBodyTilt.LEFT_ANGLE ) tiltOffset = 4;
+
         // =============================================
-        // Bracket: rendered with BASE facing only (no tilt) so mount point stays stationary
+        // Bracket: rendered with BASE facing only (no tilt) so pole-side mount stays
+        // stationary. The housing-side of the stubs leans by tiltOffset to meet the
+        // tilted body position.
         // =============================================
         if ( mountType != CrosswalkMountType.BASE ) {
             GL11.glPushMatrix();
@@ -133,7 +142,7 @@ public class TileEntityCrosswalkSignalNewRenderer
             GL11.glTranslated( -8, -8, -8 );
 
             boolean isDouble = displayType == CrosswalkDisplayType.TEXT;
-            renderBracket( bodyColor, mountType, isDouble );
+            renderBracket( bodyColor, mountType, isDouble, tiltOffset );
 
             GL11.glPopMatrix();
         }
@@ -145,13 +154,6 @@ public class TileEntityCrosswalkSignalNewRenderer
         float rotationAngle = bodyDirection.getRotation();
         GL11.glRotatef( rotationAngle, 0, 1, 0 );
         GL11.glTranslated( -8, -8, -8 );
-
-        // Tilt compensation offset
-        int tiltOffset = 0;
-        if ( bodyTilt == TrafficSignalBodyTilt.RIGHT_ANGLE ) tiltOffset = -4;
-        else if ( bodyTilt == TrafficSignalBodyTilt.RIGHT_TILT ) tiltOffset = -2;
-        else if ( bodyTilt == TrafficSignalBodyTilt.LEFT_TILT ) tiltOffset = 2;
-        else if ( bodyTilt == TrafficSignalBodyTilt.LEFT_ANGLE ) tiltOffset = 4;
         if ( tiltOffset != 0 ) {
             GL11.glTranslated( tiltOffset, 0, 0 );
         }
@@ -235,10 +237,11 @@ public class TileEntityCrosswalkSignalNewRenderer
 
     /**
      * Renders the mount bracket separately from the body. This is called in the BASE facing
-     * rotation context (no tilt) so the mount point stays stationary when the body tilts.
+     * rotation context (no tilt) so the pole-side mount stays stationary. The housing-side
+     * stubs lean by tiltOffset to connect to the tilted body.
      */
     private void renderBracket( TrafficSignalBodyColor bodyColor, CrosswalkMountType mountType,
-            boolean isDouble ) {
+            boolean isDouble, int tiltOffset ) {
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.getBuffer();
 
@@ -247,7 +250,7 @@ public class TileEntityCrosswalkSignalNewRenderer
 
         float br = bodyColor.getRed(), bg = bodyColor.getGreen(), bb = bodyColor.getBlue();
         List<RenderHelper.Box> bracketData =
-                CrosswalkSignalVertexData.getBracketData( mountType, isDouble );
+                CrosswalkSignalVertexData.getBracketData( mountType, isDouble, tiltOffset );
         RenderHelper.addBoxesToBuffer( bracketData, buffer, br, bg, bb, 1.0f, 0, 0, 0 );
 
         tessellator.draw();

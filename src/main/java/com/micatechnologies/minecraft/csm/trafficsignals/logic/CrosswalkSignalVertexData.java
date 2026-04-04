@@ -83,71 +83,11 @@ public class CrosswalkSignalVertexData {
     private static final float MOUNT_X1 = 7.0f;  // mount pipe X range (centered)
     private static final float MOUNT_X2 = 9.0f;
 
-    // Mount arm Y positions — extended vertical shafts for more visible pole stubs.
-    // Lower arm drops further below body, upper arm rises further above.
+    // Mount arm Y positions — extended vertical shafts for visible pole stubs.
     private static final float SINGLE_LOWER_ARM_Y = -3.0f;
     private static final float SINGLE_UPPER_ARM_Y = 18.0f;
     private static final float DOUBLE_LOWER_ARM_Y = -3.0f;
     private static final float DOUBLE_UPPER_ARM_Y = 27.0f;
-
-    // Rear mount — single: vertical shafts + horizontal arms
-    public static final List<Box> BRACKET_SINGLE_REAR_VERTEX_DATA = Arrays.asList(
-            // Lower vertical shaft (extends below body)
-            new Box( new float[]{ MOUNT_X1, SINGLE_LOWER_ARM_Y, MOUNT_Z1 }, new float[]{ MOUNT_X2, 0.0f, MOUNT_Z2 } ),
-            // Upper vertical shaft (extends above body)
-            new Box( new float[]{ MOUNT_X1, 16.0f, MOUNT_Z1 }, new float[]{ MOUNT_X2, SINGLE_UPPER_ARM_Y, MOUNT_Z2 } ),
-            // Lower horizontal arm extending back
-            new Box( new float[]{ MOUNT_X1, SINGLE_LOWER_ARM_Y, MOUNT_Z2 }, new float[]{ MOUNT_X2, SINGLE_LOWER_ARM_Y + 1.0f, 22.0f } ),
-            // Upper horizontal arm extending back
-            new Box( new float[]{ MOUNT_X1, SINGLE_UPPER_ARM_Y - 1.0f, MOUNT_Z2 }, new float[]{ MOUNT_X2, SINGLE_UPPER_ARM_Y, 22.0f } )
-    );
-
-    // Left mount — single
-    public static final List<Box> BRACKET_SINGLE_LEFT_VERTEX_DATA = Arrays.asList(
-            new Box( new float[]{ MOUNT_X1, SINGLE_LOWER_ARM_Y, MOUNT_Z1 }, new float[]{ MOUNT_X2, 0.0f, MOUNT_Z2 } ),
-            new Box( new float[]{ MOUNT_X1, 16.0f, MOUNT_Z1 }, new float[]{ MOUNT_X2, SINGLE_UPPER_ARM_Y, MOUNT_Z2 } ),
-            new Box( new float[]{ MOUNT_X2, SINGLE_LOWER_ARM_Y, MOUNT_Z1 }, new float[]{ 20.0f, SINGLE_LOWER_ARM_Y + 1.0f, MOUNT_Z2 } ),
-            new Box( new float[]{ MOUNT_X2, SINGLE_UPPER_ARM_Y - 1.0f, MOUNT_Z1 }, new float[]{ 20.0f, SINGLE_UPPER_ARM_Y, MOUNT_Z2 } )
-    );
-
-    // Right mount — single
-    public static final List<Box> BRACKET_SINGLE_RIGHT_VERTEX_DATA = Arrays.asList(
-            new Box( new float[]{ MOUNT_X1, SINGLE_LOWER_ARM_Y, MOUNT_Z1 }, new float[]{ MOUNT_X2, 0.0f, MOUNT_Z2 } ),
-            new Box( new float[]{ MOUNT_X1, 16.0f, MOUNT_Z1 }, new float[]{ MOUNT_X2, SINGLE_UPPER_ARM_Y, MOUNT_Z2 } ),
-            new Box( new float[]{ -4.0f, SINGLE_LOWER_ARM_Y, MOUNT_Z1 }, new float[]{ MOUNT_X1, SINGLE_LOWER_ARM_Y + 1.0f, MOUNT_Z2 } ),
-            new Box( new float[]{ -4.0f, SINGLE_UPPER_ARM_Y - 1.0f, MOUNT_Z1 }, new float[]{ MOUNT_X1, SINGLE_UPPER_ARM_Y, MOUNT_Z2 } )
-    );
-
-    // Base mount: no bracket
-    public static final List<Box> BRACKET_BASE_VERTEX_DATA = Collections.emptyList();
-
-    // ========================================================================================
-    // MOUNT BRACKETS — DOUBLE (Y=0-24, extended shafts above/below)
-    // ========================================================================================
-
-    // Rear mount — double
-    public static final List<Box> BRACKET_DOUBLE_REAR_VERTEX_DATA = Arrays.asList(
-            new Box( new float[]{ MOUNT_X1, DOUBLE_LOWER_ARM_Y, MOUNT_Z1 }, new float[]{ MOUNT_X2, 0.0f, MOUNT_Z2 } ),
-            new Box( new float[]{ MOUNT_X1, 24.0f, MOUNT_Z1 }, new float[]{ MOUNT_X2, DOUBLE_UPPER_ARM_Y, MOUNT_Z2 } ),
-            new Box( new float[]{ MOUNT_X1, DOUBLE_LOWER_ARM_Y, MOUNT_Z2 }, new float[]{ MOUNT_X2, DOUBLE_LOWER_ARM_Y + 1.0f, 22.0f } ),
-            new Box( new float[]{ MOUNT_X1, DOUBLE_UPPER_ARM_Y - 1.0f, MOUNT_Z2 }, new float[]{ MOUNT_X2, DOUBLE_UPPER_ARM_Y, 22.0f } )
-    );
-
-    // Left mount — double
-    public static final List<Box> BRACKET_DOUBLE_LEFT_VERTEX_DATA = Arrays.asList(
-            new Box( new float[]{ MOUNT_X1, DOUBLE_LOWER_ARM_Y, MOUNT_Z1 }, new float[]{ MOUNT_X2, 0.0f, MOUNT_Z2 } ),
-            new Box( new float[]{ MOUNT_X1, 24.0f, MOUNT_Z1 }, new float[]{ MOUNT_X2, DOUBLE_UPPER_ARM_Y, MOUNT_Z2 } ),
-            new Box( new float[]{ MOUNT_X2, DOUBLE_LOWER_ARM_Y, MOUNT_Z1 }, new float[]{ 20.0f, DOUBLE_LOWER_ARM_Y + 1.0f, MOUNT_Z2 } ),
-            new Box( new float[]{ MOUNT_X2, DOUBLE_UPPER_ARM_Y - 1.0f, MOUNT_Z1 }, new float[]{ 20.0f, DOUBLE_UPPER_ARM_Y, MOUNT_Z2 } )
-    );
-
-    // Right mount — double
-    public static final List<Box> BRACKET_DOUBLE_RIGHT_VERTEX_DATA = Arrays.asList(
-            new Box( new float[]{ MOUNT_X1, DOUBLE_LOWER_ARM_Y, MOUNT_Z1 }, new float[]{ MOUNT_X2, 0.0f, MOUNT_Z2 } ),
-            new Box( new float[]{ MOUNT_X1, 24.0f, MOUNT_Z1 }, new float[]{ MOUNT_X2, DOUBLE_UPPER_ARM_Y, MOUNT_Z2 } ),
-            new Box( new float[]{ -4.0f, DOUBLE_LOWER_ARM_Y, MOUNT_Z1 }, new float[]{ MOUNT_X1, DOUBLE_LOWER_ARM_Y + 1.0f, MOUNT_Z2 } ),
-            new Box( new float[]{ -4.0f, DOUBLE_UPPER_ARM_Y - 1.0f, MOUNT_Z1 }, new float[]{ MOUNT_X1, DOUBLE_UPPER_ARM_Y, MOUNT_Z2 } )
-    );
 
     // ========================================================================================
     // VISORS — SINGLE FACE (16x16 signal)
@@ -296,37 +236,123 @@ public class CrosswalkSignalVertexData {
     }
 
     /**
-     * Returns the bracket vertex data for the given mount type and signal type.
+     * Generates bracket vertex data dynamically to account for body tilt. The bracket bridges
+     * between the stationary pole-side mount point (rendered in base facing context) and the
+     * tilted housing position. The horizontal arms and their connection points stay fixed, but
+     * the vertical stubs lean/step toward the tilted housing position using the tilt X offset.
      *
-     * @param mountType the mount direction
-     * @param isDouble  true for double-worded (taller) signal, false for single
+     * <p>When there is no tilt, the stubs are straight vertical. When tilted, the stubs are
+     * built as a series of stepped boxes that bridge from the arm Y position to the housing
+     * edge, shifted by the tilt offset in X.
+     *
+     * @param mountType  the mount direction
+     * @param isDouble   true for double-worded (taller) signal, false for single
+     * @param tiltOffset the X offset applied by the tilt (0, ±2, ±4 model units)
      */
-    public static List<Box> getBracketData( CrosswalkMountType mountType, boolean isDouble ) {
-        if ( isDouble ) {
-            switch ( mountType ) {
-                case REAR:
-                    return BRACKET_DOUBLE_REAR_VERTEX_DATA;
-                case LEFT:
-                    return BRACKET_DOUBLE_LEFT_VERTEX_DATA;
-                case RIGHT:
-                    return BRACKET_DOUBLE_RIGHT_VERTEX_DATA;
-                case BASE:
-                default:
-                    return BRACKET_BASE_VERTEX_DATA;
-            }
+    public static List<Box> getBracketData( CrosswalkMountType mountType, boolean isDouble,
+            int tiltOffset ) {
+        if ( mountType == CrosswalkMountType.BASE ) {
+            return Collections.emptyList();
         }
-        else {
-            switch ( mountType ) {
-                case REAR:
-                    return BRACKET_SINGLE_REAR_VERTEX_DATA;
-                case LEFT:
-                    return BRACKET_SINGLE_LEFT_VERTEX_DATA;
-                case RIGHT:
-                    return BRACKET_SINGLE_RIGHT_VERTEX_DATA;
-                case BASE:
-                default:
-                    return BRACKET_BASE_VERTEX_DATA;
-            }
+
+        java.util.ArrayList<Box> boxes = new java.util.ArrayList<>();
+
+        float lowerArmY = isDouble ? DOUBLE_LOWER_ARM_Y : SINGLE_LOWER_ARM_Y;
+        float upperArmY = isDouble ? DOUBLE_UPPER_ARM_Y : SINGLE_UPPER_ARM_Y;
+        float bodyBottom = 0.0f;
+        float bodyTop = isDouble ? 24.0f : 16.0f;
+
+        // The housing-side of the stubs needs to be shifted by tiltOffset in X
+        // relative to the pole-side position. We build stepped stubs to bridge the gap.
+        float stubX1 = MOUNT_X1;
+        float stubX2 = MOUNT_X2;
+        // Housing-side X positions (shifted by tilt)
+        float housingX1 = MOUNT_X1 + tiltOffset;
+        float housingX2 = MOUNT_X2 + tiltOffset;
+
+        // --- Lower stub: from armY up to bodyBottom, leaning by tiltOffset ---
+        addLeaningStub( boxes, stubX1, stubX2, housingX1, housingX2,
+                lowerArmY, bodyBottom, MOUNT_Z1, MOUNT_Z2 );
+
+        // --- Upper stub: from bodyTop up to armY, leaning by tiltOffset ---
+        // Note: housing is at bottom of this stub, arm is at top
+        addLeaningStub( boxes, housingX1, housingX2, stubX1, stubX2,
+                bodyTop, upperArmY, MOUNT_Z1, MOUNT_Z2 );
+
+        // --- Horizontal arms (stationary, no tilt offset) ---
+        switch ( mountType ) {
+            case REAR:
+                boxes.add( new Box(
+                        new float[]{ stubX1, lowerArmY, MOUNT_Z2 },
+                        new float[]{ stubX2, lowerArmY + 1.0f, 22.0f } ) );
+                boxes.add( new Box(
+                        new float[]{ stubX1, upperArmY - 1.0f, MOUNT_Z2 },
+                        new float[]{ stubX2, upperArmY, 22.0f } ) );
+                break;
+            case LEFT:
+                boxes.add( new Box(
+                        new float[]{ stubX2, lowerArmY, MOUNT_Z1 },
+                        new float[]{ 20.0f, lowerArmY + 1.0f, MOUNT_Z2 } ) );
+                boxes.add( new Box(
+                        new float[]{ stubX2, upperArmY - 1.0f, MOUNT_Z1 },
+                        new float[]{ 20.0f, upperArmY, MOUNT_Z2 } ) );
+                break;
+            case RIGHT:
+                boxes.add( new Box(
+                        new float[]{ -4.0f, lowerArmY, MOUNT_Z1 },
+                        new float[]{ stubX1, lowerArmY + 1.0f, MOUNT_Z2 } ) );
+                boxes.add( new Box(
+                        new float[]{ -4.0f, upperArmY - 1.0f, MOUNT_Z1 },
+                        new float[]{ stubX1, upperArmY, MOUNT_Z2 } ) );
+                break;
+        }
+
+        return boxes;
+    }
+
+    /**
+     * Adds a leaning/stepped vertical stub that bridges from (bottomX1,bottomX2) at bottomY
+     * to (topX1,topX2) at topY. When bottom and top X positions differ (due to tilt), the
+     * stub is built as a series of small stepped boxes to create a lean effect.
+     */
+    private static void addLeaningStub( java.util.ArrayList<Box> boxes,
+            float bottomX1, float bottomX2, float topX1, float topX2,
+            float bottomY, float topY, float z1, float z2 ) {
+        float height = topY - bottomY;
+        if ( height < 0.1f ) return;
+
+        float xShift = topX1 - bottomX1; // total X shift from bottom to top
+
+        if ( Math.abs( xShift ) < 0.1f ) {
+            // No lean needed — straight vertical stub
+            float minX = Math.min( bottomX1, topX1 );
+            float maxX = Math.max( bottomX2, topX2 );
+            boxes.add( new Box(
+                    new float[]{ minX, bottomY, z1 },
+                    new float[]{ maxX, topY, z2 } ) );
+            return;
+        }
+
+        // Build stepped boxes to approximate the lean. Each step covers ~1 model unit of
+        // height and shifts proportionally in X.
+        int steps = Math.max( 2, Math.round( height / 1.5f ) );
+        float stepHeight = height / steps;
+        float stepShift = xShift / steps;
+
+        for ( int i = 0; i < steps; i++ ) {
+            float sy = bottomY + i * stepHeight;
+            float sx1 = bottomX1 + i * stepShift;
+            float sx2 = bottomX2 + i * stepShift;
+            float ey = sy + stepHeight;
+            float ex1 = bottomX1 + ( i + 1 ) * stepShift;
+            float ex2 = bottomX2 + ( i + 1 ) * stepShift;
+
+            // Each step box spans from the current X to the next X
+            float minX = Math.min( sx1, ex1 );
+            float maxX = Math.max( sx2, ex2 );
+            boxes.add( new Box(
+                    new float[]{ minX, sy, z1 },
+                    new float[]{ maxX, ey, z2 } ) );
         }
     }
 }
