@@ -49,7 +49,7 @@ public class BlockControllableCrosswalkDoubleWordedRearMount
 
   @Override
   public String getReplacementBlockId() {
-    return "controllablecrosswalkdoublenew";
+    return "controllablecrosswalkdouble";
   }
 
   @Override

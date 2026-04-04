@@ -49,7 +49,7 @@ public class BlockControllableCrosswalkMount90Deg extends AbstractBlockControlla
 
   @Override
   public String getReplacementBlockId() {
-    return "controllablecrosswalksinglenew";
+    return "controllablecrosswalksingle";
   }
 
   @Override

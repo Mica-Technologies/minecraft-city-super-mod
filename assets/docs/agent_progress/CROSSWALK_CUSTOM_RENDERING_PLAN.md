@@ -15,8 +15,8 @@ ICsmRetiringBlock, 2 new custom-rendered blocks live and working in-game.
 > The progress document is at `assets/docs/agent_progress/CROSSWALK_CUSTOM_RENDERING_PLAN.md`.
 >
 > **All phases complete and in-game tested as of 2026-04-04.** The crosswalk custom rendering
-> system is fully functional. 2 new blocks (`controllablecrosswalksinglenew`,
-> `controllablecrosswalkdoublenew`) replace all 12 existing crosswalk signal blocks via
+> system is fully functional. 2 new blocks (`controllablecrosswalksingle`,
+> `controllablecrosswalkdouble`) replace all 12 existing crosswalk signal blocks via
 > ICsmRetiringBlock auto-migration.
 >
 > **Everything working:**
@@ -59,8 +59,8 @@ The old system had 12 separate blocks for different mounting styles and variants
 - 4 double-worded blocks (base, left, rear, right)
 
 The new system has 2 blocks with mount type as a TE property:
-- `BlockControllableCrosswalkSignalSingle` (registry: `controllablecrosswalksinglenew`)
-- `BlockControllableCrosswalkSignalDouble` (registry: `controllablecrosswalkdoublenew`)
+- `BlockControllableCrosswalkSignalSingle` (registry: `controllablecrosswalksingle`)
+- `BlockControllableCrosswalkSignalDouble` (registry: `controllablecrosswalkdouble`)
 
 ### Customization Properties
 
@@ -235,8 +235,8 @@ built as stepped boxes via `addAngledArm2D()` for any X-Z diagonal needed.
 | `TileEntityCrosswalkSignalNewRenderer.java` | Full TESR renderer |
 | `BlockControllableCrosswalkSignalSingle.java` | Single-face (symbol) block |
 | `BlockControllableCrosswalkSignalDouble.java` | Double-worded (text) block |
-| `blockstates/controllablecrosswalksinglenew.json` | Blockstate for single |
-| `blockstates/controllablecrosswalkdoublenew.json` | Blockstate for double |
+| `blockstates/controllablecrosswalksingle.json` | Blockstate for single |
+| `blockstates/controllablecrosswalkdouble.json` | Blockstate for double |
 | `textures/.../crosswalk/crosswalk_atlas.png` | 512x512 atlas (11 tiles, see atlas table) |
 | `textures/.../crosswalk/*.png` (11 files) | Individual source tiles for the atlas |
 | `dev-env-utils/.../CrosswalkAtlasTool.java` | Atlas generator tool |
