@@ -24,15 +24,8 @@ public class CrosswalkSignalVertexData {
     // ========================================================================================
 
     public static final List<Box> SINGLE_BODY_VERTEX_DATA = Arrays.asList(
-            // Main body shell (front to back, slight taper)
-            new Box( new float[]{ 0.0f, 0.0f, 1.0f }, new float[]{ 16.0f, 16.0f, 2.0f } ),
-            new Box( new float[]{ 0.2f, 0.0f, 2.0f }, new float[]{ 15.8f, 16.0f, 3.0f } ),
-            new Box( new float[]{ 0.4f, 0.0f, 3.0f }, new float[]{ 15.6f, 16.0f, 4.0f } ),
-            new Box( new float[]{ 0.6f, 0.0f, 4.0f }, new float[]{ 15.4f, 16.0f, 5.0f } ),
-            new Box( new float[]{ 0.8f, 0.0f, 5.0f }, new float[]{ 15.2f, 16.0f, 6.0f } ),
-            new Box( new float[]{ 1.0f, 0.0f, 6.0f }, new float[]{ 15.0f, 16.0f, 7.0f } ),
-            new Box( new float[]{ 1.2f, 0.0f, 7.0f }, new float[]{ 14.8f, 16.0f, 8.0f } ),
-            new Box( new float[]{ 1.4f, 0.0f, 8.0f }, new float[]{ 14.6f, 16.0f, 9.0f } )
+            // Squared-off rectangular housing (no taper — clean boxy look for 16-inch signal)
+            new Box( new float[]{ 0.0f, 0.0f, 1.0f }, new float[]{ 16.0f, 16.0f, 9.0f } )
     );
 
     // Display face Z position for the single body (front face)
@@ -116,14 +109,14 @@ public class CrosswalkSignalVertexData {
     public static final List<Box> SINGLE_VISOR_NONE_VERTEX_DATA = Collections.emptyList();
 
     // Hood style visor: U-shaped hood wrapping top and sides, open at bottom.
-    // Protruding ~5 model units forward from the display face.
+    // Matches housing dimensions (0-16 X, 0-16 Y), protruding ~5 units forward.
     public static final List<Box> SINGLE_VISOR_HOOD_VERTEX_DATA = Arrays.asList(
-            // Top panel
-            new Box( new float[]{ -0.5f, 16.0f, -4.0f }, new float[]{ 16.5f, 17.0f, 1.0f } ),
-            // Left side panel
-            new Box( new float[]{ -0.5f, -1.0f, -4.0f }, new float[]{ 0.0f, 17.0f, 1.0f } ),
-            // Right side panel
-            new Box( new float[]{ 16.0f, -1.0f, -4.0f }, new float[]{ 16.5f, 17.0f, 1.0f } )
+            // Top panel (flush with housing width)
+            new Box( new float[]{ 0.0f, 16.0f, -4.0f }, new float[]{ 16.0f, 17.0f, 1.0f } ),
+            // Left side panel (flush with housing edge)
+            new Box( new float[]{ -1.0f, 0.0f, -4.0f }, new float[]{ 0.0f, 17.0f, 1.0f } ),
+            // Right side panel (flush with housing edge)
+            new Box( new float[]{ 16.0f, 0.0f, -4.0f }, new float[]{ 17.0f, 17.0f, 1.0f } )
     );
 
     // Crate style visor: diamond/cross-hatch grid covering the display face.
@@ -166,10 +159,10 @@ public class CrosswalkSignalVertexData {
     // ========================================================================================
 
     /**
-     * Creates a diamond/cross-hatch visor pattern as a grid of thin bars at 45-degree angles.
-     * The real-world crate visor has diagonal bars forming a diamond mesh over the signal face.
-     * We approximate this with horizontal and vertical bars forming a regular grid, plus
-     * diagonal reinforcements at the edges.
+     * Creates a diamond/cross-hatch crate visor pattern. Real-world crate visors have diagonal
+     * bars forming a diamond mesh over the signal face. We approximate this with small tilted
+     * box segments along diagonal lines, creating the characteristic diamond lattice pattern.
+     * The bars are spaced at ~2-3 model unit intervals to create visible diamond cells.
      */
     private static List<Box> createCrateVisor( float x1, float y1, float x2, float y2,
             float barThickness ) {
@@ -180,36 +173,62 @@ public class CrosswalkSignalVertexData {
         float width = x2 - x1;
         float height = y2 - y1;
 
-        // Horizontal bars
-        int hBars = 5;
-        for ( int i = 0; i <= hBars; i++ ) {
-            float yPos = y1 + ( height * i / hBars ) - barThickness / 2;
-            boxes.add( new Box(
-                    new float[]{ x1, yPos, faceZ - depth },
-                    new float[]{ x2, yPos + barThickness, faceZ } ) );
+        // Diamond spacing — controls the size of each diamond cell
+        float spacing = 2.5f;
+
+        // Diagonal bars going from lower-left to upper-right ( / direction)
+        // Each diagonal line is y = x + offset. We step the offset to get parallel lines.
+        for ( float offset = -height; offset <= width + height; offset += spacing ) {
+            // Walk along this diagonal in small steps, placing small box segments
+            for ( float t = 0; t < width + height; t += spacing * 0.5f ) {
+                float px = x1 + t;
+                float py = y1 + t - offset + ( width - height ) / 2;
+                // Clamp to face bounds
+                if ( px < x1 || px + barThickness > x2 || py < y1 ||
+                        py + barThickness > y2 ) {
+                    continue;
+                }
+                // Small segment along the diagonal
+                float segLen = Math.min( spacing * 0.5f, Math.min( x2 - px, y2 - py ) );
+                if ( segLen < barThickness ) continue;
+                boxes.add( new Box(
+                        new float[]{ px, py, faceZ - depth },
+                        new float[]{ px + barThickness, py + segLen, faceZ } ) );
+                boxes.add( new Box(
+                        new float[]{ px, py, faceZ - depth },
+                        new float[]{ px + segLen, py + barThickness, faceZ } ) );
+            }
         }
 
-        // Vertical bars
-        int vBars = 5;
-        for ( int i = 0; i <= vBars; i++ ) {
-            float xPos = x1 + ( width * i / vBars ) - barThickness / 2;
-            boxes.add( new Box(
-                    new float[]{ xPos, y1, faceZ - depth },
-                    new float[]{ xPos + barThickness, y2, faceZ } ) );
+        // Diagonal bars going from upper-left to lower-right ( \ direction)
+        for ( float offset = -height; offset <= width + height; offset += spacing ) {
+            for ( float t = 0; t < width + height; t += spacing * 0.5f ) {
+                float px = x1 + t;
+                float py = y2 - t + offset - ( width - height ) / 2;
+                if ( px < x1 || px + barThickness > x2 || py < y1 ||
+                        py - barThickness < y1 ) {
+                    continue;
+                }
+                float segLen = Math.min( spacing * 0.5f,
+                        Math.min( x2 - px, py - y1 ) );
+                if ( segLen < barThickness ) continue;
+                boxes.add( new Box(
+                        new float[]{ px, py - segLen, faceZ - depth },
+                        new float[]{ px + barThickness, py, faceZ } ) );
+                boxes.add( new Box(
+                        new float[]{ px, py - barThickness, faceZ - depth },
+                        new float[]{ px + segLen, py, faceZ } ) );
+            }
         }
 
-        // Frame border (thicker edge)
+        // Frame border
         float frameThick = barThickness * 1.5f;
-        // Top frame
         boxes.add( new Box( new float[]{ x1, y2 - frameThick, faceZ - depth },
                 new float[]{ x2, y2, faceZ } ) );
-        // Bottom frame
         boxes.add( new Box( new float[]{ x1, y1, faceZ - depth },
                 new float[]{ x2, y1 + frameThick, faceZ } ) );
-        // Left frame
         boxes.add( new Box( new float[]{ x1, y1, faceZ - depth },
                 new float[]{ x1 + frameThick, y2, faceZ } ) );
-        // Right frame
         boxes.add( new Box( new float[]{ x2 - frameThick, y1, faceZ - depth },
                 new float[]{ x2, y2, faceZ } ) );
 
