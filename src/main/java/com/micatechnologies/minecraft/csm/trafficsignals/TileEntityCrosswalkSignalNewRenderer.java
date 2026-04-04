@@ -321,12 +321,12 @@ public class TileEntityCrosswalkSignalNewRenderer
         BufferBuilder buffer = tessellator.getBuffer();
 
         if ( displayType == CrosswalkDisplayType.SYMBOL ) {
-            // Single 16-inch: one face with hand/man
-            ResourceLocation tex = CrosswalkTextureMap.getSingleFaceTexture(
-                    colorState, flashOn );
-            Minecraft.getMinecraft().getTextureManager().bindTexture( tex );
+            // Single 16-inch: atlas-based rendering
+            int atlasIdx = CrosswalkTextureMap.getSingleFaceAtlasIndex( colorState, flashOn );
+            Minecraft.getMinecraft().getTextureManager().bindTexture(
+                    CrosswalkTextureMap.ATLAS_TEXTURE );
             buffer.begin( GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX );
-            addTexturedQuad( buffer,
+            addAtlasQuad( buffer, atlasIdx,
                     CrosswalkSignalVertexData.SINGLE_DISPLAY_X1,
                     CrosswalkSignalVertexData.SINGLE_DISPLAY_Y1,
                     CrosswalkSignalVertexData.SINGLE_DISPLAY_X2,
@@ -335,24 +335,22 @@ public class TileEntityCrosswalkSignalNewRenderer
             tessellator.draw();
         }
         else if ( bulbType == CrosswalkBulbType.HAND_MAN_COUNTDOWN ) {
-            // Double 12-inch: upper = bimodal hand/man, lower = countdown base
-            ResourceLocation upperTex = CrosswalkTextureMap.getHandManUpperTexture(
+            // Double 12-inch: atlas-based — upper = bimodal hand/man, lower = countdown base
+            Minecraft.getMinecraft().getTextureManager().bindTexture(
+                    CrosswalkTextureMap.ATLAS_TEXTURE );
+
+            int upperIdx = CrosswalkTextureMap.getHandManUpperAtlasIndex(
                     colorState, flashOn );
-            Minecraft.getMinecraft().getTextureManager().bindTexture( upperTex );
             buffer.begin( GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX );
-            addTexturedQuad( buffer,
+            addAtlasQuad( buffer, upperIdx,
                     CrosswalkSignalVertexData.DOUBLE_DISPLAY_X1,
                     CrosswalkSignalVertexData.DOUBLE_UPPER_DISPLAY_Y1,
                     CrosswalkSignalVertexData.DOUBLE_DISPLAY_X2,
                     CrosswalkSignalVertexData.DOUBLE_UPPER_DISPLAY_Y2,
                     CrosswalkSignalVertexData.DOUBLE_DISPLAY_FACE_Z );
-            tessellator.draw();
-
-            // Lower section: countdown base texture (digits rendered on top by renderCountdown)
-            ResourceLocation lowerTex = CrosswalkTextureMap.getHandManLowerTexture();
-            Minecraft.getMinecraft().getTextureManager().bindTexture( lowerTex );
-            buffer.begin( GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX );
-            addTexturedQuad( buffer,
+            // Lower section in same draw call (same atlas texture bound)
+            int lowerIdx = CrosswalkTextureMap.getHandManLowerAtlasIndex();
+            addAtlasQuad( buffer, lowerIdx,
                     CrosswalkSignalVertexData.DOUBLE_DISPLAY_X1,
                     CrosswalkSignalVertexData.DOUBLE_LOWER_DISPLAY_Y1,
                     CrosswalkSignalVertexData.DOUBLE_DISPLAY_X2,
@@ -361,12 +359,12 @@ public class TileEntityCrosswalkSignalNewRenderer
             tessellator.draw();
         }
         else {
-            // Double 12-inch WORDED: upper = DON'T WALK text, lower = WALK text
+            // Double 12-inch WORDED: individual textures (not in atlas)
             ResourceLocation upperTex = CrosswalkTextureMap.getWordedUpperTexture(
                     colorState, flashOn );
             Minecraft.getMinecraft().getTextureManager().bindTexture( upperTex );
             buffer.begin( GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX );
-            addTexturedQuad( buffer,
+            addFullQuad( buffer,
                     CrosswalkSignalVertexData.DOUBLE_DISPLAY_X1,
                     CrosswalkSignalVertexData.DOUBLE_UPPER_DISPLAY_Y1,
                     CrosswalkSignalVertexData.DOUBLE_DISPLAY_X2,
@@ -374,12 +372,11 @@ public class TileEntityCrosswalkSignalNewRenderer
                     CrosswalkSignalVertexData.DOUBLE_DISPLAY_FACE_Z );
             tessellator.draw();
 
-            // Lower section (WALK text)
             ResourceLocation lowerTex = CrosswalkTextureMap.getWordedLowerTexture(
                     colorState, flashOn );
             Minecraft.getMinecraft().getTextureManager().bindTexture( lowerTex );
             buffer.begin( GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX );
-            addTexturedQuad( buffer,
+            addFullQuad( buffer,
                     CrosswalkSignalVertexData.DOUBLE_DISPLAY_X1,
                     CrosswalkSignalVertexData.DOUBLE_LOWER_DISPLAY_Y1,
                     CrosswalkSignalVertexData.DOUBLE_DISPLAY_X2,
@@ -390,12 +387,25 @@ public class TileEntityCrosswalkSignalNewRenderer
     }
 
     /**
-     * Adds a textured quad facing toward the viewer (toward -Z / north face).
-     * UV maps the full texture (0,0)-(1,1) onto the quad.
+     * Adds a textured quad using atlas UV coordinates for the given tile index.
      */
-    private void addTexturedQuad( BufferBuilder buffer, float x1, float y1, float x2, float y2,
+    private void addAtlasQuad( BufferBuilder buffer, int atlasIndex,
+            float x1, float y1, float x2, float y2, float z ) {
+        float[] uv = CrosswalkTextureMap.getAtlasUV( atlasIndex );
+        float u1 = uv[0], v1 = uv[1], u2 = uv[2], v2 = uv[3];
+        // CCW winding, facing -Z (north). X is mirrored in model space.
+        buffer.pos( x2, y1, z ).tex( u1, v2 ).endVertex();
+        buffer.pos( x1, y1, z ).tex( u2, v2 ).endVertex();
+        buffer.pos( x1, y2, z ).tex( u2, v1 ).endVertex();
+        buffer.pos( x2, y2, z ).tex( u1, v1 ).endVertex();
+    }
+
+    /**
+     * Adds a textured quad using full texture UV (0,0)-(1,1). Used for worded textures
+     * that are not part of the atlas.
+     */
+    private void addFullQuad( BufferBuilder buffer, float x1, float y1, float x2, float y2,
             float z ) {
-        // CCW winding, facing -Z (north)
         buffer.pos( x2, y1, z ).tex( 0.0, 1.0 ).endVertex();
         buffer.pos( x1, y1, z ).tex( 1.0, 1.0 ).endVertex();
         buffer.pos( x1, y2, z ).tex( 1.0, 0.0 ).endVertex();
