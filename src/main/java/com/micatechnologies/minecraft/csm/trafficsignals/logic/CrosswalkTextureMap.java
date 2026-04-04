@@ -3,19 +3,44 @@ package com.micatechnologies.minecraft.csm.trafficsignals.logic;
 import net.minecraft.util.ResourceLocation;
 
 /**
- * Maps crosswalk signal display type, bulb type, and color state to texture ResourceLocations.
+ * Maps crosswalk signal display type, bulb type, and color state to texture atlas UV coordinates.
+ * Uses a single atlas texture ({@link #ATLAS_TEXTURE}) with tiles indexed by position.
+ *
+ * <p>Atlas layout (4x4 grid of 128x128 tiles in 512x512 atlas):
+ * <pre>
+ * Index  Texture                      Row  Col  Signal    Section   State
+ * -----  ---------------------------  ---  ---  --------  --------  ----------------
+ *   0    crosswalk_hand_lit           0    0    16-inch   face      don't walk (lit)
+ *   1    crosswalk_man_lit            0    1    16-inch   face      walk (lit)
+ *   2    crosswalk_off                0    2    16-inch   face      off (ghosted)
+ *   3    crosswalk_hand_lit_12in      0    3    12-inch   upper     don't walk (lit)
+ *   4    crosswalk_man_lit_12in       1    0    12-inch   upper     walk (lit)
+ *   5    crosswalk_off_12in           1    1    12-inch   upper     off (ghosted)
+ *   6    crosswalk_base_texture_12in  1    2    12-inch   lower     countdown base
+ * </pre>
  */
 public class CrosswalkTextureMap {
 
-    // --- Single 16-inch (symbol) textures ---
-    private static final ResourceLocation TEX_HAND_LIT = new ResourceLocation( "csm",
-            "textures/blocks/trafficsignals/crosswalk/crosswalk_hand_lit.png" );
-    private static final ResourceLocation TEX_MAN_LIT = new ResourceLocation( "csm",
-            "textures/blocks/trafficsignals/crosswalk/crosswalk_man_lit.png" );
-    private static final ResourceLocation TEX_OFF = new ResourceLocation( "csm",
-            "textures/blocks/trafficsignals/crosswalk/crosswalk_off.png" );
+    public static final ResourceLocation ATLAS_TEXTURE = new ResourceLocation( "csm",
+            "textures/blocks/trafficsignals/crosswalk/crosswalk_atlas.png" );
 
-    // --- Double 12-inch worded (text) textures ---
+    // Atlas grid: 4 tiles per row, 4 rows
+    private static final int TILES_PER_ROW = 4;
+    private static final float TILE_UV = 1.0f / TILES_PER_ROW;
+
+    // --- Atlas tile indices ---
+    // 16-inch single signal
+    private static final int IDX_HAND_LIT = 0;
+    private static final int IDX_MAN_LIT = 1;
+    private static final int IDX_OFF = 2;
+
+    // 12-inch stacked — hand/man + countdown
+    private static final int IDX_HAND_LIT_12IN = 3;
+    private static final int IDX_MAN_LIT_12IN = 4;
+    private static final int IDX_OFF_12IN = 5;
+    private static final int IDX_BASE_12IN = 6;
+
+    // --- Double-worded (text) textures — still individual files (not in atlas) ---
     private static final ResourceLocation TEX_DONTWALK_LIT = new ResourceLocation( "csm",
             "textures/blocks/trafficsignals/shared_textures/crosswalktextdontwalkon.png" );
     private static final ResourceLocation TEX_DONTWALK_OFF = new ResourceLocation( "csm",
@@ -25,32 +50,55 @@ public class CrosswalkTextureMap {
     private static final ResourceLocation TEX_WALK_OFF = new ResourceLocation( "csm",
             "textures/blocks/trafficsignals/shared_textures/crosswalktextwalkoff.png" );
 
-    // --- Double 12-inch hand/man with countdown textures ---
-    private static final ResourceLocation TEX_HAND_LIT_12IN = new ResourceLocation( "csm",
-            "textures/blocks/trafficsignals/crosswalk/crosswalk_hand_lit_12in.png" );
-    private static final ResourceLocation TEX_MAN_LIT_12IN = new ResourceLocation( "csm",
-            "textures/blocks/trafficsignals/crosswalk/crosswalk_man_lit_12in.png" );
-    private static final ResourceLocation TEX_OFF_12IN = new ResourceLocation( "csm",
-            "textures/blocks/trafficsignals/crosswalk/crosswalk_off_12in.png" );
-    private static final ResourceLocation TEX_BASE_12IN = new ResourceLocation( "csm",
-            "textures/blocks/trafficsignals/crosswalk/crosswalk_base_texture_12in.png" );
-
     // =========================================================================
-    // Single 16-inch signal (always SYMBOL display type)
+    // UV coordinate helpers
     // =========================================================================
 
-    public static ResourceLocation getSingleFaceTexture( int colorState, boolean flashOn ) {
+    /** Returns [u1, v1, u2, v2] for the given atlas tile index. */
+    public static float[] getAtlasUV( int index ) {
+        int col = index % TILES_PER_ROW;
+        int row = index / TILES_PER_ROW;
+        float u1 = col * TILE_UV;
+        float v1 = row * TILE_UV;
+        float u2 = u1 + TILE_UV;
+        float v2 = v1 + TILE_UV;
+        return new float[]{ u1, v1, u2, v2 };
+    }
+
+    // =========================================================================
+    // 16-inch single signal — atlas indices
+    // =========================================================================
+
+    public static int getSingleFaceAtlasIndex( int colorState, boolean flashOn ) {
         switch ( colorState ) {
-            case 0: return TEX_HAND_LIT;
-            case 1: return flashOn ? TEX_HAND_LIT : TEX_OFF;
-            case 2: return TEX_MAN_LIT;
+            case 0: return IDX_HAND_LIT;
+            case 1: return flashOn ? IDX_HAND_LIT : IDX_OFF;
+            case 2: return IDX_MAN_LIT;
             case 3:
-            default: return TEX_OFF;
+            default: return IDX_OFF;
         }
     }
 
     // =========================================================================
-    // Double 12-inch stacked — WORDED bulb type
+    // 12-inch stacked — HAND_MAN_COUNTDOWN atlas indices
+    // =========================================================================
+
+    public static int getHandManUpperAtlasIndex( int colorState, boolean flashOn ) {
+        switch ( colorState ) {
+            case 0: return IDX_HAND_LIT_12IN;
+            case 1: return flashOn ? IDX_HAND_LIT_12IN : IDX_OFF_12IN;
+            case 2: return IDX_MAN_LIT_12IN;
+            case 3:
+            default: return IDX_OFF_12IN;
+        }
+    }
+
+    public static int getHandManLowerAtlasIndex() {
+        return IDX_BASE_12IN;
+    }
+
+    // =========================================================================
+    // 12-inch stacked — WORDED (individual textures, not atlas)
     // =========================================================================
 
     public static ResourceLocation getWordedUpperTexture( int colorState, boolean flashOn ) {
@@ -71,32 +119,5 @@ public class CrosswalkTextureMap {
             case 3:
             default: return TEX_WALK_OFF;
         }
-    }
-
-    // =========================================================================
-    // Double 12-inch stacked — HAND_MAN_COUNTDOWN bulb type
-    // Upper section: bimodal hand/man. Lower section: countdown module base.
-    // =========================================================================
-
-    /**
-     * Upper section texture for hand/man countdown mode. Shows hand or man bimodally.
-     */
-    public static ResourceLocation getHandManUpperTexture( int colorState, boolean flashOn ) {
-        switch ( colorState ) {
-            case 0: return TEX_HAND_LIT_12IN;
-            case 1: return flashOn ? TEX_HAND_LIT_12IN : TEX_OFF_12IN;
-            case 2: return TEX_MAN_LIT_12IN;
-            case 3:
-            default: return TEX_OFF_12IN;
-        }
-    }
-
-    /**
-     * Lower section texture for the countdown module. This is the dark base that sits behind
-     * the 7-segment countdown overlay. Always shows the base texture (the countdown digits
-     * are rendered on top by the renderer).
-     */
-    public static ResourceLocation getHandManLowerTexture() {
-        return TEX_BASE_12IN;
     }
 }
