@@ -72,13 +72,15 @@ public class ItemSignalLinkTool extends AbstractItem {
         return EnumActionResult.SUCCESS;
       } else if (signalControllerPos == null &&
           (state.getBlock() instanceof AbstractBlockControllableSignal ||
-              state.getBlock() instanceof AbstractBlockTrafficSignalSensor)) {
+              state.getBlock() instanceof AbstractBlockTrafficSignalSensor ||
+              state.getBlock() instanceof BlockOverheightDetectionSensor)) {
 
         player.sendMessage(new TextComponentString("No signal controller has been selected."));
 
         return EnumActionResult.SUCCESS;
       } else if (signalControllerPos != null &&
-          state.getBlock() instanceof AbstractBlockTrafficSignalSensor &&
+          (state.getBlock() instanceof AbstractBlockTrafficSignalSensor ||
+              state.getBlock() instanceof BlockOverheightDetectionSensor) &&
           !player.isSneaking()) {
 
         TileEntity tileEntity = worldIn.getTileEntity(signalControllerPos);
@@ -109,7 +111,8 @@ public class ItemSignalLinkTool extends AbstractItem {
 
         return EnumActionResult.SUCCESS;
       } else if (signalControllerPos != null &&
-          state.getBlock() instanceof AbstractBlockTrafficSignalSensor &&
+          (state.getBlock() instanceof AbstractBlockTrafficSignalSensor ||
+              state.getBlock() instanceof BlockOverheightDetectionSensor) &&
           player.isSneaking()) {
 
         TileEntity tileEntity = worldIn.getTileEntity(signalControllerPos);

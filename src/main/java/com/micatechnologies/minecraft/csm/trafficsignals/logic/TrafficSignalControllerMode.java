@@ -74,6 +74,16 @@ public enum TrafficSignalControllerMode {
   WRONG_WAY_DETECTION("Wrong Way Detection", 10),
 
   /**
+   * Overheight detection mode. Polls linked overheight detection sensors for entities whose
+   * bounding box intersects the detection barrier. Each circuit operates independently.
+   * Beacons hold active for 30 seconds after the last detection.
+   * Tick rate 10 (0.5 seconds): fast polling for responsive overheight detection.
+   *
+   * @since 1.0
+   */
+  OVERHEIGHT_DETECTION("Overheight Detection", 10),
+
+  /**
    * Forced fault (all-red flash). Alternates all-red phases via tick-based toggle.
    * Tick rate 10 (0.5 seconds per phase = 1 second full cycle).
    *

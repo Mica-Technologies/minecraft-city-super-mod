@@ -202,6 +202,16 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
   private transient Map<Integer, Long> wwvdsCircuitHoldTimers = new HashMap<>();
 
   /**
+   * Transient hold timers for overheight detection mode. Maps circuit index to the world time
+   * (in ticks) of the last overheight detection on that circuit. Beacons remain active until
+   * {@link TrafficSignalControllerTicker#OVERHEIGHT_BEACON_HOLD_TIME} ticks have elapsed since
+   * the last detection. Not persisted to NBT.
+   *
+   * @since 2.0
+   */
+  private transient Map<Integer, Long> overheightCircuitHoldTimers = new HashMap<>();
+
+  /**
    * The yellow time for the traffic signal controller.
    *
    * @since 2.0
@@ -429,12 +439,15 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
       long timeSinceLastPhaseApplicabilityChange = tickTime - lastPhaseApplicabilityChangeTime;
       TrafficSignalPhase newPhase;
 
-      // WWVDS mode is handled directly because it requires mutable tracking state
+      // WWVDS and overheight modes are handled directly because they require mutable tracking state
       if (operatingMode == TrafficSignalControllerMode.WRONG_WAY_DETECTION) {
         newPhase = TrafficSignalControllerTicker.wrongWayDetectionModeTick(
             getWorld(), circuits,
             wwvdsEntityDistances, wwvdsEntityApproachTotals,
             wwvdsCircuitHoldTimers, tickTime);
+      } else if (operatingMode == TrafficSignalControllerMode.OVERHEIGHT_DETECTION) {
+        newPhase = TrafficSignalControllerTicker.overheightDetectionModeTick(
+            getWorld(), circuits, overheightCircuitHoldTimers, tickTime);
       } else {
         newPhase = TrafficSignalControllerTicker.tick(getWorld(), mode, operatingMode, circuits,
             overlaps, cachedPhases, currentPhase,
@@ -1478,10 +1491,11 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
   private void resetController(boolean regeneratePhaseCache, boolean forceTick) {
     lastPhaseChangeTime = -1;
     currentPhase = null;
-    // Clear WWVDS transient tracking state on reset (mode change, device link/unlink, etc.)
+    // Clear transient tracking state on reset (mode change, device link/unlink, etc.)
     wwvdsEntityDistances.clear();
     wwvdsEntityApproachTotals.clear();
     wwvdsCircuitHoldTimers.clear();
+    overheightCircuitHoldTimers.clear();
     // Prune trailing empty circuits before regenerating phases
     while (circuits.getCircuits().size() > 0
         && circuits.getCircuit(circuits.getCircuits().size() - 1).getSize() == 0) {
