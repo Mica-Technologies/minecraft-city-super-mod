@@ -56,6 +56,11 @@ public class BlockTLBorderYellowBlack extends AbstractBlockSignalBackplate {
    * @since 1.0
    */
   @Override
+  public int getLightValue( IBlockState state ) {
+    return 3;
+  }
+
+  @Override
   public boolean getBlockIsOpaqueCube(IBlockState state) {
     return false;
   }
