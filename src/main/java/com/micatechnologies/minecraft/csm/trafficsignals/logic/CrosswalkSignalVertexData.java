@@ -262,15 +262,21 @@ public class CrosswalkSignalVertexData {
 
     /**
      * Returns the horizontal arm geometry. Arms extend from the stub ends to the pole mount
-     * point. These are rendered in the BASE facing context (no tilt) so the pole-side
-     * connection stays stationary. The housing-side X is shifted by tiltOffset to meet where
-     * the tilted stubs end up in world space.
+     * point. Rendered in the BASE facing context so the pole-side stays stationary.
      *
-     * <p>For rear mounts with tilt, the arm diagonals in the X-Z plane via stepped boxes.
-     * For left/right mounts, the arm simply extends/shortens in X.
+     * <p>The housing-side endpoint is computed by transforming the stub's model-space position
+     * through the tilted context's rotation, then inverse-transforming through the base
+     * context's rotation, to get the correct (X,Z) in base model space where the arm must
+     * connect.
+     *
+     * @param mountType     the mount direction
+     * @param isDouble      true for double-worded signal
+     * @param tiltOffset    the X offset applied by the tilt (0, ±2, ±4)
+     * @param tiltedAngleDeg the full rotation angle of the tilted context (degrees)
+     * @param baseAngleDeg  the rotation angle of the base context (degrees)
      */
     public static List<Box> getArmData( CrosswalkMountType mountType, boolean isDouble,
-            int tiltOffset ) {
+            int tiltOffset, float tiltedAngleDeg, float baseAngleDeg ) {
         if ( mountType == CrosswalkMountType.BASE ) {
             return Collections.emptyList();
         }
@@ -280,35 +286,43 @@ public class CrosswalkSignalVertexData {
         float lowerArmY = isDouble ? DOUBLE_LOWER_ARM_Y : SINGLE_LOWER_ARM_Y;
         float upperArmY = isDouble ? DOUBLE_UPPER_ARM_Y : SINGLE_UPPER_ARM_Y;
 
-        // Housing-side X (where the tilted stubs end up in base context)
-        float hx1 = MOUNT_X1 + tiltOffset;
-        float hx2 = MOUNT_X2 + tiltOffset;
+        // Compute where the stub center (8, 8 in model space) ends up in base-context
+        // model space after the tilted transform.
+        float[] stubBasePos = transformTiltedToBase(
+                MOUNT_X1 + 1.0f, MOUNT_Z1 + 1.0f, // stub center (8, 8) in model space
+                tiltOffset, tiltedAngleDeg, baseAngleDeg );
+        float hCenterX = stubBasePos[0];
+        float hCenterZ = stubBasePos[1];
+        float hx1 = hCenterX - 1.0f;
+        float hx2 = hCenterX + 1.0f;
+        float hz1 = hCenterZ - 1.0f;
+        float hz2 = hCenterZ + 1.0f;
 
         switch ( mountType ) {
             case REAR:
-                // Arm from housing stub (Z=MOUNT_Z2, X=hx) to pole (Z=22, X=MOUNT_X)
-                addAngledArm( boxes, hx1, hx2, MOUNT_X1, MOUNT_X2,
-                        lowerArmY, lowerArmY + 1.0f, MOUNT_Z2, 22.0f );
-                addAngledArm( boxes, hx1, hx2, MOUNT_X1, MOUNT_X2,
-                        upperArmY - 1.0f, upperArmY, MOUNT_Z2, 22.0f );
+                // Arm from stub (hx, hz) to pole (MOUNT_X, Z=22)
+                addAngledArm2D( boxes, hx1, hx2, hz2, MOUNT_X1, MOUNT_X2, 22.0f,
+                        lowerArmY, lowerArmY + 1.0f );
+                addAngledArm2D( boxes, hx1, hx2, hz2, MOUNT_X1, MOUNT_X2, 22.0f,
+                        upperArmY - 1.0f, upperArmY );
                 break;
             case LEFT:
-                // Arm from housing stub (X=hx2) to pole (X=20)
-                boxes.add( new Box(
-                        new float[]{ hx2, lowerArmY, MOUNT_Z1 },
-                        new float[]{ 20.0f, lowerArmY + 1.0f, MOUNT_Z2 } ) );
-                boxes.add( new Box(
-                        new float[]{ hx2, upperArmY - 1.0f, MOUNT_Z1 },
-                        new float[]{ 20.0f, upperArmY, MOUNT_Z2 } ) );
+                // Arm from stub (hx2, hz) to pole (X=20, MOUNT_Z center)
+                addAngledArm2D( boxes, hx2, hx2 + 0.01f, hz1,
+                        19.0f, 20.0f, MOUNT_Z1 + 1.0f,
+                        lowerArmY, lowerArmY + 1.0f );
+                addAngledArm2D( boxes, hx2, hx2 + 0.01f, hz1,
+                        19.0f, 20.0f, MOUNT_Z1 + 1.0f,
+                        upperArmY - 1.0f, upperArmY );
                 break;
             case RIGHT:
-                // Arm from pole (X=-4) to housing stub (X=hx1)
-                boxes.add( new Box(
-                        new float[]{ -4.0f, lowerArmY, MOUNT_Z1 },
-                        new float[]{ hx1, lowerArmY + 1.0f, MOUNT_Z2 } ) );
-                boxes.add( new Box(
-                        new float[]{ -4.0f, upperArmY - 1.0f, MOUNT_Z1 },
-                        new float[]{ hx1, upperArmY, MOUNT_Z2 } ) );
+                // Arm from pole (X=-4, MOUNT_Z center) to stub (hx1, hz)
+                addAngledArm2D( boxes, -4.0f, -3.0f, MOUNT_Z1 + 1.0f,
+                        hx1 - 0.01f, hx1, hz1,
+                        lowerArmY, lowerArmY + 1.0f );
+                addAngledArm2D( boxes, -4.0f, -3.0f, MOUNT_Z1 + 1.0f,
+                        hx1 - 0.01f, hx1, hz1,
+                        upperArmY - 1.0f, upperArmY );
                 break;
         }
 
@@ -316,36 +330,82 @@ public class CrosswalkSignalVertexData {
     }
 
     /**
-     * Builds an angled horizontal arm as stepped boxes for rear mounts with tilt.
+     * Transforms a point from tilted-context model space to base-context model space.
+     * Both contexts share the same world space but apply different rotations around (8,8).
+     *
+     * <p>Tilted context: translate(tiltOffset,0) → translate(-8,-8) → rotate(tiltAngle) → translate(8,8)
+     * <p>Base context: translate(-8,-8) → rotate(baseAngle) → translate(8,8)
+     *
+     * <p>Returns the [x, z] position in base-context model space.
      */
-    private static void addAngledArm( java.util.ArrayList<Box> boxes,
-            float startX1, float startX2, float endX1, float endX2,
-            float y1, float y2, float startZ, float endZ ) {
-        float xShift = endX1 - startX1;
+    private static float[] transformTiltedToBase( float modelX, float modelZ,
+            int tiltOffset, float tiltedAngleDeg, float baseAngleDeg ) {
+        double tiltRad = Math.toRadians( tiltedAngleDeg );
+        double baseRad = Math.toRadians( baseAngleDeg );
 
-        if ( Math.abs( xShift ) < 0.1f ) {
+        // Apply tilted context transform to get world position
+        // Step 1: apply tiltOffset
+        float px = modelX + tiltOffset;
+        float pz = modelZ;
+        // Step 2: translate to pivot (-8, -8)
+        px -= 8.0f;
+        pz -= 8.0f;
+        // Step 3: rotate by tiltedAngle
+        float wx = (float) ( px * Math.cos( tiltRad ) + pz * Math.sin( tiltRad ) );
+        float wz = (float) ( -px * Math.sin( tiltRad ) + pz * Math.cos( tiltRad ) );
+        // Step 4: translate back (+8, +8)
+        wx += 8.0f;
+        wz += 8.0f;
+
+        // Now inverse-transform from world to base-context model space
+        // Inverse of base context: translate(-8,-8) → rotate(-baseAngle) → translate(8,8)
+        wx -= 8.0f;
+        wz -= 8.0f;
+        float bx = (float) ( wx * Math.cos( -baseRad ) + wz * Math.sin( -baseRad ) );
+        float bz = (float) ( -wx * Math.sin( -baseRad ) + wz * Math.cos( -baseRad ) );
+        bx += 8.0f;
+        bz += 8.0f;
+
+        return new float[]{ bx, bz };
+    }
+
+    /**
+     * Builds an arm as stepped boxes that goes from (startX1..startX2, startZ) to
+     * (endX1..endX2, endZ) in the X-Z plane, stepping diagonally. Handles any combination
+     * of X and Z shifts.
+     */
+    private static void addAngledArm2D( java.util.ArrayList<Box> boxes,
+            float startX1, float startX2, float startZ,
+            float endX1, float endX2, float endZ,
+            float y1, float y2 ) {
+        float xShift = ( endX1 + endX2 ) / 2 - ( startX1 + startX2 ) / 2;
+        float zShift = endZ - startZ;
+        float totalDist = (float) Math.sqrt( xShift * xShift + zShift * zShift );
+
+        if ( totalDist < 0.5f ) {
+            // Too short, just one box
             boxes.add( new Box(
-                    new float[]{ Math.min( startX1, endX1 ), y1, startZ },
-                    new float[]{ Math.max( startX2, endX2 ), y2, endZ } ) );
+                    new float[]{ Math.min( startX1, endX1 ), y1, Math.min( startZ, endZ ) },
+                    new float[]{ Math.max( startX2, endX2 ), y2, Math.max( startZ, endZ ) + 1.0f } ) );
             return;
         }
 
-        float zLength = endZ - startZ;
-        int steps = Math.max( 2, Math.round( Math.abs( xShift ) / 1.0f ) );
-        float stepZ = zLength / steps;
-        float stepX = xShift / steps;
+        int steps = Math.max( 2, Math.round( totalDist / 2.0f ) );
+        float halfW = ( startX2 - startX1 ) / 2;
+        if ( halfW < 0.5f ) halfW = 0.5f;
 
         for ( int i = 0; i < steps; i++ ) {
-            float sz = startZ + i * stepZ;
-            float ez = startZ + ( i + 1 ) * stepZ;
-            float sx1 = startX1 + i * stepX;
-            float sx2 = startX2 + i * stepX;
-            float ex1 = startX1 + ( i + 1 ) * stepX;
-            float ex2 = startX2 + ( i + 1 ) * stepX;
+            float t0 = (float) i / steps;
+            float t1 = (float) ( i + 1 ) / steps;
+
+            float cx0 = startX1 + halfW + xShift * t0;
+            float cz0 = startZ + zShift * t0;
+            float cx1 = startX1 + halfW + xShift * t1;
+            float cz1 = startZ + zShift * t1;
 
             boxes.add( new Box(
-                    new float[]{ Math.min( sx1, ex1 ), y1, sz },
-                    new float[]{ Math.max( sx2, ex2 ), y2, ez } ) );
+                    new float[]{ Math.min( cx0, cx1 ) - halfW, y1, Math.min( cz0, cz1 ) },
+                    new float[]{ Math.max( cx0, cx1 ) + halfW, y2, Math.max( cz0, cz1 ) } ) );
         }
     }
 }
