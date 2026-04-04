@@ -3,6 +3,7 @@ package com.micatechnologies.minecraft.csm.trafficsignals;
 import com.micatechnologies.minecraft.csm.Csm;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractItem;
 import com.micatechnologies.minecraft.csm.trafficaccessories.AbstractBlockSignalBackplate;
+import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkSignalDouble;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableCrosswalkSignalNew;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignal;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignalHead;
@@ -105,8 +106,17 @@ public class ItemSignalHeadConfigTool extends AbstractItem {
           case CYCLE_DOOR_COLOR:
             player.sendMessage(new TextComponentString("Crosswalk signals do not have a door."));
             break;
+          case CYCLE_BULB_TYPE: {
+            // Only applicable to double (12-inch stacked) crosswalk signals
+            if (clickedBlock instanceof BlockControllableCrosswalkSignalDouble) {
+              var next = cwTe.getNextBulbType();
+              player.sendMessage(new TextComponentString("Bulb type: " + next.getFriendlyName()));
+            } else {
+              player.sendMessage(new TextComponentString("Bulb type is fixed for this signal."));
+            }
+            break;
+          }
           case CYCLE_BULB_STYLE:
-          case CYCLE_BULB_TYPE:
             player.sendMessage(new TextComponentString("Not applicable to crosswalk signals."));
             break;
           case TOGGLE_ALTERNATE_FLASH:
