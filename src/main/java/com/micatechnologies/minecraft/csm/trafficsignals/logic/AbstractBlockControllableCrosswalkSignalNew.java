@@ -149,14 +149,14 @@ public abstract class AbstractBlockControllableCrosswalkSignalNew
             return CrosswalkMountType.REAR;
         }
 
-        // "Left" = rotate facing 90° CCW (from viewer's perspective looking at the signal face)
-        EnumFacing left = facing.rotateYCCW();
+        // "Left" = CW rotation of facing (viewer's left when looking at the signal face)
+        EnumFacing left = facing.rotateY();
         if ( isAttachableBlock( worldIn, pos.offset( left ) ) ) {
             return CrosswalkMountType.LEFT;
         }
 
-        // "Right" = rotate facing 90° CW
-        EnumFacing right = facing.rotateY();
+        // "Right" = CCW rotation of facing (viewer's right)
+        EnumFacing right = facing.rotateYCCW();
         if ( isAttachableBlock( worldIn, pos.offset( right ) ) ) {
             return CrosswalkMountType.RIGHT;
         }
