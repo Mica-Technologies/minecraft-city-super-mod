@@ -4,8 +4,10 @@ import com.micatechnologies.minecraft.csm.lifesafety.FireAlarmPanelConfigGui;
 import com.micatechnologies.minecraft.csm.lifesafety.TileEntityFireAlarmControlPanel;
 import com.micatechnologies.minecraft.csm.technology.BlockRedstoneTTSGui;
 import com.micatechnologies.minecraft.csm.technology.TileEntityRedstoneTTS;
+import com.micatechnologies.minecraft.csm.trafficsignals.CrosswalkConfigGui;
 import com.micatechnologies.minecraft.csm.trafficsignals.SignalControllerConfigGui;
 import com.micatechnologies.minecraft.csm.trafficsignals.SignalHeadConfigGui;
+import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityCrosswalkSignalNew;
 import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalController;
 import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalHead;
 import javax.annotation.Nullable;
@@ -70,6 +72,11 @@ public class CsmGuiHandler implements IGuiHandler {
       returnValue = new SignalControllerConfigGui((TileEntityTrafficSignalController) tileEntity);
     } else if (id == 3 && tileEntity instanceof TileEntityFireAlarmControlPanel) {
       returnValue = new FireAlarmPanelConfigGui((TileEntityFireAlarmControlPanel) tileEntity);
+    } else if (id == 4 && tileEntity instanceof TileEntityCrosswalkSignalNew) {
+      // The extra data bit (encoded in the GUI ID) tells us if it's the double signal
+      boolean isDouble = world.getBlockState(pos).getBlock()
+          instanceof com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkSignalDouble;
+      returnValue = new CrosswalkConfigGui((TileEntityCrosswalkSignalNew) tileEntity, isDouble);
     }
     return returnValue;
   }
