@@ -504,8 +504,22 @@ public class TrafficSignalControllerCircuit {
    * @param world The {@link World} in which the signal devices are located.
    */
   public void powerOffAllSignals(World world) {
-    forAllSignals(signal -> AbstractBlockControllableSignal.changeSignalColor(world, signal,
-        AbstractBlockControllableSignal.SIGNAL_OFF));
+    forAllSignals(signal -> {
+      AbstractBlockControllableSignal.changeSignalColor(world, signal,
+          AbstractBlockControllableSignal.SIGNAL_OFF);
+      // Mark signal TEs as power-loss-off so they can drop their light level
+      if (world.isBlockLoaded(signal)) {
+        net.minecraft.tileentity.TileEntity te = world.getTileEntity(signal);
+        if (te instanceof com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalHead) {
+          ((com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalHead) te)
+              .setPowerLossOff(true);
+        }
+        if (te instanceof com.micatechnologies.minecraft.csm.trafficsignals.TileEntityCrosswalkSignalNew) {
+          ((com.micatechnologies.minecraft.csm.trafficsignals.TileEntityCrosswalkSignalNew) te)
+              .setPowerLossOff(true);
+        }
+      }
+    });
   }
 
   /**

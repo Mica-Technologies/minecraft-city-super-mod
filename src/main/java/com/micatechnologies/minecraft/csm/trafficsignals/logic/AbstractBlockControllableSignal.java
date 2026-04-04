@@ -44,6 +44,19 @@ public abstract class AbstractBlockControllableSignal extends AbstractBlockRotat
         return true;
       }
       world.setBlockState(blockPos, blockState.withProperty(COLOR, signalColor));
+
+      // Clear power loss flag when the controller actively sets a color (it's running)
+      if (signalColor != SIGNAL_OFF) {
+        net.minecraft.tileentity.TileEntity te = world.getTileEntity(blockPos);
+        if (te instanceof com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalHead) {
+          ((com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalHead) te)
+              .setPowerLossOff(false);
+        }
+        if (te instanceof com.micatechnologies.minecraft.csm.trafficsignals.TileEntityCrosswalkSignalNew) {
+          ((com.micatechnologies.minecraft.csm.trafficsignals.TileEntityCrosswalkSignalNew) te)
+              .setPowerLossOff(false);
+        }
+      }
     } else {
       return false;
     }
