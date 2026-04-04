@@ -143,7 +143,8 @@ public class TileEntityCrosswalkSignalNewRenderer
             GL11.glTranslated( -8, -8, -8 );
 
             renderBoxes( bodyColor, CrosswalkSignalVertexData.getArmData(
-                    mountType, isDouble, tiltOffset ) );
+                    mountType, isDouble, tiltOffset,
+                    bodyDirection.getRotation(), baseDirection.getRotation() ) );
 
             GL11.glPopMatrix();
         }
