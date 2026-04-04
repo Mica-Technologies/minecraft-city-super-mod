@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.codeutils;
 
 import javax.annotation.Nonnull;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockDirectional;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
@@ -88,31 +89,68 @@ public abstract class AbstractBlockTrafficPoleDiagonal extends AbstractBlockTraf
           blockIgnoreBlock.length);
     }
 
-    // Check for blocks in each direction relative to the block's facing direction
-    boolean isBlockToEast = BlockUtils.getIsBlockToSide(worldIn,
-        pos.offset(BlockUtils.getRelativeFacing(facing, EnumFacing.EAST).getOpposite()),
-        ignoreBlock);
-    boolean isBlockToWest = BlockUtils.getIsBlockToSide(worldIn,
-        pos.offset(BlockUtils.getRelativeFacing(facing, EnumFacing.WEST).getOpposite()),
-        ignoreBlock);
-    boolean isBlockAbove = BlockUtils.getIsBlockToSide(worldIn,
-        pos.offset(BlockUtils.getRelativeFacing(facing, EnumFacing.UP).getOpposite()), ignoreBlock);
-    boolean isBlockBelow = BlockUtils.getIsBlockToSide(worldIn,
-        pos.offset(BlockUtils.getRelativeFacing(facing, EnumFacing.DOWN).getOpposite()),
-        ignoreBlock);
-    boolean isBlockToNorth = BlockUtils.getIsBlockToSide(worldIn,
-        pos.offset(BlockUtils.getRelativeFacing(facing, EnumFacing.NORTH).getOpposite()),
-        ignoreBlock);
-    boolean isBlockToSouth = BlockUtils.getIsBlockToSide(worldIn,
-        pos.offset(BlockUtils.getRelativeFacing(facing, EnumFacing.SOUTH).getOpposite()),
-        ignoreBlock);
+    // Check for blocks in each direction relative to the block's facing direction.
+    // For each direction, also verify that NSEWUD-rotatable blocks (like mount kits) are
+    // actually facing toward this pole block — prevents false connectors on adjacent
+    // diagonal poles that happen to be geometrically adjacent but not the mount target.
+    EnumFacing dirEast = BlockUtils.getRelativeFacing(facing, EnumFacing.EAST).getOpposite();
+    EnumFacing dirWest = BlockUtils.getRelativeFacing(facing, EnumFacing.WEST).getOpposite();
+    EnumFacing dirUp = BlockUtils.getRelativeFacing(facing, EnumFacing.UP).getOpposite();
+    EnumFacing dirDown = BlockUtils.getRelativeFacing(facing, EnumFacing.DOWN).getOpposite();
+    EnumFacing dirNorth = BlockUtils.getRelativeFacing(facing, EnumFacing.NORTH).getOpposite();
+    EnumFacing dirSouth = BlockUtils.getRelativeFacing(facing, EnumFacing.SOUTH).getOpposite();
 
-    // Update the block state with the presence of blocks in each direction
+    boolean isBlockToEast = checkConnectable(worldIn, pos, dirEast, ignoreBlock);
+    boolean isBlockToWest = checkConnectable(worldIn, pos, dirWest, ignoreBlock);
+    boolean isBlockAbove = checkConnectable(worldIn, pos, dirUp, ignoreBlock);
+    boolean isBlockBelow = checkConnectable(worldIn, pos, dirDown, ignoreBlock);
+    boolean isBlockToNorth = checkConnectable(worldIn, pos, dirNorth, ignoreBlock);
+    boolean isBlockToSouth = checkConnectable(worldIn, pos, dirSouth, ignoreBlock);
+
     return state.withProperty(MOUNT_EAST, isBlockToEast)
         .withProperty(MOUNT_WEST, isBlockToWest)
         .withProperty(MOUNT_UP, isBlockAbove)
         .withProperty(MOUNT_DOWN, isBlockBelow)
         .withProperty(MOUNT_NORTH, isBlockToNorth)
         .withProperty(MOUNT_SOUTH, isBlockToSouth);
+  }
+
+  /**
+   * Checks if a block in the given direction is connectable, with special handling for
+   * NSEWUD-rotatable blocks (like traffic signal mount kits). For rotatable blocks, this
+   * verifies that the block's facing direction actually points its back/mount side toward
+   * this pole position. This prevents false connectors on adjacent diagonal poles that are
+   * geometrically adjacent to the mount but not the pole the mount is attached to.
+   */
+  private static boolean checkConnectable( IBlockAccess worldIn, BlockPos polePos,
+      EnumFacing direction, Class<?>[] ignoreBlock ) {
+    BlockPos adjPos = polePos.offset( direction );
+    boolean isBlock = BlockUtils.getIsBlockToSide( worldIn, adjPos, ignoreBlock );
+    if ( !isBlock ) {
+      return false;
+    }
+
+    // If the adjacent block is a NSEWUD-rotatable block, check that it faces toward this pole.
+    // A mount kit's "back" (attachment side) is the opposite of its FACING property.
+    // Only show the connector if the mount's back faces this pole.
+    IBlockState adjState = worldIn.getBlockState( adjPos );
+    Block adjBlock = adjState.getBlock();
+    if ( adjBlock instanceof AbstractBlockRotatableNSEWUD ) {
+      try {
+        EnumFacing adjFacing = adjState.getValue( BlockDirectional.FACING );
+        // The mount's attachment side is opposite its facing
+        EnumFacing mountBackDir = adjFacing.getOpposite();
+        // Check if the mount's back faces toward this pole position
+        BlockPos expectedPolePos = adjPos.offset( mountBackDir );
+        if ( !expectedPolePos.equals( polePos ) ) {
+          return false; // Mount is not attached to this pole
+        }
+      }
+      catch ( IllegalArgumentException e ) {
+        // Block doesn't have FACING property — treat as normal connectable block
+      }
+    }
+
+    return true;
   }
 }
