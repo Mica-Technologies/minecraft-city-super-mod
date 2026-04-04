@@ -4,6 +4,7 @@ import com.micatechnologies.minecraft.csm.codeutils.DirectionSixteen;
 import com.micatechnologies.minecraft.csm.codeutils.RenderHelper;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableCrosswalkSignalNew;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignalHead;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.CrosswalkBulbType;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.CrosswalkDisplayType;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.CrosswalkMountType;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.CrosswalkSignalVertexData;
@@ -99,6 +100,7 @@ public class TileEntityCrosswalkSignalNewRenderer
         CrosswalkVisorType visorType = te.getVisorType();
         CrosswalkMountType mountType = te.getMountType();
         TrafficSignalBodyTilt bodyTilt = te.getBodyTilt();
+        CrosswalkBulbType bulbType = te.getBulbType();
 
         // Compute facing directions
         DirectionSixteen bodyDirection =
@@ -184,12 +186,16 @@ public class TileEntityCrosswalkSignalNewRenderer
         GL11.glCallList( displayList );
 
         // Display face textures
-        renderDisplayFace( displayType, colorState );
+        renderDisplayFace( displayType, bulbType, colorState );
 
-        // 7-segment countdown area (single-face only): dim "88" background always,
-        // lit digits during clearance phase
+        // 7-segment countdown area:
+        // - Single 16-inch: always renders on the signal face
+        // - Double 12-inch HAND_MAN_COUNTDOWN: renders on the lower section
         if ( displayType == CrosswalkDisplayType.SYMBOL ) {
-            renderCountdown( te, colorState );
+            renderCountdown( te, colorState, false );
+        }
+        else if ( bulbType == CrosswalkBulbType.HAND_MAN_COUNTDOWN ) {
+            renderCountdown( te, colorState, true );
         }
 
         GL11.glPopMatrix();
@@ -303,7 +309,8 @@ public class TileEntityCrosswalkSignalNewRenderer
     // Dynamic: display face rendering
     // =====================================================================================
 
-    private void renderDisplayFace( CrosswalkDisplayType displayType, int colorState ) {
+    private void renderDisplayFace( CrosswalkDisplayType displayType,
+            CrosswalkBulbType bulbType, int colorState ) {
         // Reset GL color after display list (which may leave stale color)
         GL11.glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
 
@@ -314,10 +321,10 @@ public class TileEntityCrosswalkSignalNewRenderer
         BufferBuilder buffer = tessellator.getBuffer();
 
         if ( displayType == CrosswalkDisplayType.SYMBOL ) {
+            // Single 16-inch: one face with hand/man
             ResourceLocation tex = CrosswalkTextureMap.getSingleFaceTexture(
                     colorState, flashOn );
             Minecraft.getMinecraft().getTextureManager().bindTexture( tex );
-
             buffer.begin( GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX );
             addTexturedQuad( buffer,
                     CrosswalkSignalVertexData.SINGLE_DISPLAY_X1,
@@ -327,9 +334,9 @@ public class TileEntityCrosswalkSignalNewRenderer
                     CrosswalkSignalVertexData.SINGLE_DISPLAY_FACE_Z );
             tessellator.draw();
         }
-        else {
-            // Upper section (DON'T WALK)
-            ResourceLocation upperTex = CrosswalkTextureMap.getDoubleUpperTexture(
+        else if ( bulbType == CrosswalkBulbType.HAND_MAN_COUNTDOWN ) {
+            // Double 12-inch: upper = bimodal hand/man, lower = countdown base
+            ResourceLocation upperTex = CrosswalkTextureMap.getHandManUpperTexture(
                     colorState, flashOn );
             Minecraft.getMinecraft().getTextureManager().bindTexture( upperTex );
             buffer.begin( GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX );
@@ -341,8 +348,34 @@ public class TileEntityCrosswalkSignalNewRenderer
                     CrosswalkSignalVertexData.DOUBLE_DISPLAY_FACE_Z );
             tessellator.draw();
 
-            // Lower section (WALK)
-            ResourceLocation lowerTex = CrosswalkTextureMap.getDoubleLowerTexture(
+            // Lower section: countdown base texture (digits rendered on top by renderCountdown)
+            ResourceLocation lowerTex = CrosswalkTextureMap.getHandManLowerTexture();
+            Minecraft.getMinecraft().getTextureManager().bindTexture( lowerTex );
+            buffer.begin( GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX );
+            addTexturedQuad( buffer,
+                    CrosswalkSignalVertexData.DOUBLE_DISPLAY_X1,
+                    CrosswalkSignalVertexData.DOUBLE_LOWER_DISPLAY_Y1,
+                    CrosswalkSignalVertexData.DOUBLE_DISPLAY_X2,
+                    CrosswalkSignalVertexData.DOUBLE_LOWER_DISPLAY_Y2,
+                    CrosswalkSignalVertexData.DOUBLE_DISPLAY_FACE_Z );
+            tessellator.draw();
+        }
+        else {
+            // Double 12-inch WORDED: upper = DON'T WALK text, lower = WALK text
+            ResourceLocation upperTex = CrosswalkTextureMap.getWordedUpperTexture(
+                    colorState, flashOn );
+            Minecraft.getMinecraft().getTextureManager().bindTexture( upperTex );
+            buffer.begin( GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX );
+            addTexturedQuad( buffer,
+                    CrosswalkSignalVertexData.DOUBLE_DISPLAY_X1,
+                    CrosswalkSignalVertexData.DOUBLE_UPPER_DISPLAY_Y1,
+                    CrosswalkSignalVertexData.DOUBLE_DISPLAY_X2,
+                    CrosswalkSignalVertexData.DOUBLE_UPPER_DISPLAY_Y2,
+                    CrosswalkSignalVertexData.DOUBLE_DISPLAY_FACE_Z );
+            tessellator.draw();
+
+            // Lower section (WALK text)
+            ResourceLocation lowerTex = CrosswalkTextureMap.getWordedLowerTexture(
                     colorState, flashOn );
             Minecraft.getMinecraft().getTextureManager().bindTexture( lowerTex );
             buffer.begin( GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX );
@@ -377,26 +410,55 @@ public class TileEntityCrosswalkSignalNewRenderer
     private static final int BG_COLOR_R = 50, BG_COLOR_G = 50, BG_COLOR_B = 50;
     private static final int BG_COLOR_A = 255;
 
-    private void renderCountdown( TileEntityCrosswalkSignalNew te, int colorState ) {
+    /**
+     * Renders the 7-segment countdown display (dim "88" background + lit digits).
+     *
+     * @param te           the tile entity
+     * @param colorState   the current signal color state
+     * @param isLowerSection true if rendering on the double signal's lower 12-inch section
+     *                       (centered at Y=6, scaled to fit 12-unit section)
+     */
+    private void renderCountdown( TileEntityCrosswalkSignalNew te, int colorState,
+            boolean isLowerSection ) {
         GlStateManager.disableTexture2D();
         GlStateManager.depthMask( false );
 
-        // Two-digit layout positioning (always consistent)
+        // Positioning: on single 16-inch face, digits are in the right half.
+        // On double 12-inch lower section, digits are centered on the section.
+        float scale;
+        float centerModelX;
+        float centerModelY;
+        float faceZ;
+
+        if ( isLowerSection ) {
+            // Double 12-inch lower section: centered, scaled to fit 12-unit section
+            scale = 12.0f;
+            centerModelX = 8.0f;  // center of block
+            centerModelY = 6.0f;  // center of lower section (Y=0-12)
+            faceZ = CrosswalkSignalVertexData.DOUBLE_DISPLAY_FACE_Z - Z_EPSILON;
+        }
+        else {
+            // Single 16-inch: countdown in the right half
+            scale = 16.0f;
+            centerModelX = 8.0f;
+            centerModelY = 8.0f;
+            faceZ = CrosswalkSignalVertexData.SINGLE_DISPLAY_FACE_Z - Z_EPSILON;
+        }
+
+        // Two-digit layout
         float twoDigitWidth = 2 * DIGIT_WIDTH + DIGIT_GAP;
-        float centerX = AREA_CENTER_X - 0.03f;
+        float centerX = isLowerSection ? 0.0f : ( AREA_CENTER_X - 0.03f );
         float startX = centerX - twoDigitWidth / 2;
-        float scale = 16.0f;
-        float faceZ = CrosswalkSignalVertexData.SINGLE_DISPLAY_FACE_Z - Z_EPSILON;
 
         Tessellator tess = Tessellator.getInstance();
         BufferBuilder buf = tess.getBuffer();
 
-        // --- Background layer: dim "88" always visible (unlit segment ghost) ---
+        // --- Background layer: dim "88" always visible ---
         buf.begin( GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR );
         for ( int i = 0; i < 2; i++ ) {
             float dx = startX + i * ( DIGIT_WIDTH + DIGIT_GAP );
-            float modelDx = 8.0f - ( dx + DIGIT_WIDTH ) * scale;
-            float modelDy = 8.0f - ( DIGIT_HEIGHT / 2 ) * scale;
+            float modelDx = centerModelX - ( dx + DIGIT_WIDTH ) * scale;
+            float modelDy = centerModelY - ( DIGIT_HEIGHT / 2 ) * scale;
             float modelW = DIGIT_WIDTH * scale;
             float modelH = DIGIT_HEIGHT * scale;
             drawDigitSegmentsBg( buf, 8, modelDx, modelDy, modelW, modelH, faceZ );
@@ -416,11 +478,10 @@ public class TileEntityCrosswalkSignalNewRenderer
                 if ( i == 0 && tens == 0 ) continue;
 
                 float dx = startX + i * ( DIGIT_WIDTH + DIGIT_GAP );
-                float modelDx = 8.0f - ( dx + DIGIT_WIDTH ) * scale;
-                float modelDy = 8.0f - ( DIGIT_HEIGHT / 2 ) * scale;
+                float modelDx = centerModelX - ( dx + DIGIT_WIDTH ) * scale;
+                float modelDy = centerModelY - ( DIGIT_HEIGHT / 2 ) * scale;
                 float modelW = DIGIT_WIDTH * scale;
                 float modelH = DIGIT_HEIGHT * scale;
-                // Render slightly in front of background to avoid z-fighting
                 drawDigitSegments( buf, digit, modelDx, modelDy, modelW, modelH,
                         faceZ - Z_EPSILON );
             }

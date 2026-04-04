@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.trafficsignals;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractTickableTileEntity;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignal;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.CrosswalkBulbType;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.CrosswalkMountType;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.CrosswalkVisorType;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyColor;
@@ -25,6 +26,7 @@ public class TileEntityCrosswalkSignalNew extends AbstractTickableTileEntity {
     private CrosswalkVisorType visorType = CrosswalkVisorType.NONE;
     private CrosswalkMountType mountType = CrosswalkMountType.BASE;
     private TrafficSignalBodyTilt bodyTilt = TrafficSignalBodyTilt.NONE;
+    private CrosswalkBulbType bulbType = CrosswalkBulbType.WORDED;
     private boolean dirty = true;
 
     // endregion
@@ -50,6 +52,7 @@ public class TileEntityCrosswalkSignalNew extends AbstractTickableTileEntity {
     private static final String NBT_VISOR_TYPE = "visorType";
     private static final String NBT_MOUNT_TYPE = "mountType";
     private static final String NBT_BODY_TILT = "bodyTilt";
+    private static final String NBT_BULB_TYPE = "bulbType";
     private static final String NBT_LEARNED_CLEARANCE_TICKS = "learnedClearanceTicks";
     private static final String NBT_CURRENT_COUNTDOWN = "currentCountdown";
     private static final String NBT_LAST_COLOR_STATE = "lastColorState";
@@ -69,6 +72,7 @@ public class TileEntityCrosswalkSignalNew extends AbstractTickableTileEntity {
         visorType = CrosswalkVisorType.fromNBT( compound.getInteger( NBT_VISOR_TYPE ) );
         mountType = CrosswalkMountType.fromNBT( compound.getInteger( NBT_MOUNT_TYPE ) );
         bodyTilt = TrafficSignalBodyTilt.fromNBT( compound.getInteger( NBT_BODY_TILT ) );
+        bulbType = CrosswalkBulbType.fromNBT( compound.getInteger( NBT_BULB_TYPE ) );
         learnedClearanceTicks = compound.getInteger( NBT_LEARNED_CLEARANCE_TICKS );
         currentCountdown = compound.getInteger( NBT_CURRENT_COUNTDOWN );
         lastColorState = compound.getInteger( NBT_LAST_COLOR_STATE );
@@ -86,6 +90,7 @@ public class TileEntityCrosswalkSignalNew extends AbstractTickableTileEntity {
         compound.setInteger( NBT_VISOR_TYPE, visorType.toNBT() );
         compound.setInteger( NBT_MOUNT_TYPE, mountType.toNBT() );
         compound.setInteger( NBT_BODY_TILT, bodyTilt.toNBT() );
+        compound.setInteger( NBT_BULB_TYPE, bulbType.toNBT() );
         compound.setInteger( NBT_LEARNED_CLEARANCE_TICKS, learnedClearanceTicks );
         compound.setInteger( NBT_CURRENT_COUNTDOWN, currentCountdown );
         compound.setInteger( NBT_LAST_COLOR_STATE, lastColorState );
@@ -139,6 +144,10 @@ public class TileEntityCrosswalkSignalNew extends AbstractTickableTileEntity {
         return bodyTilt;
     }
 
+    public CrosswalkBulbType getBulbType() {
+        return bulbType;
+    }
+
     // endregion
 
     // region Customization Setters (for migration)
@@ -177,6 +186,14 @@ public class TileEntityCrosswalkSignalNew extends AbstractTickableTileEntity {
 
     public void setBodyTilt( TrafficSignalBodyTilt tilt ) {
         this.bodyTilt = tilt;
+        dirty = true;
+        if ( world != null && !world.isRemote ) {
+            markDirtySync( world, pos, true );
+        }
+    }
+
+    public void setBulbType( CrosswalkBulbType type ) {
+        this.bulbType = type;
         dirty = true;
         if ( world != null && !world.isRemote ) {
             markDirtySync( world, pos, true );
@@ -237,6 +254,15 @@ public class TileEntityCrosswalkSignalNew extends AbstractTickableTileEntity {
             markDirtySync( world, pos, true );
         }
         return bodyTilt;
+    }
+
+    public CrosswalkBulbType getNextBulbType() {
+        bulbType = bulbType.getNextBulbType();
+        dirty = true;
+        if ( world != null && !world.isRemote ) {
+            markDirtySync( world, pos, true );
+        }
+        return bulbType;
     }
 
     // endregion

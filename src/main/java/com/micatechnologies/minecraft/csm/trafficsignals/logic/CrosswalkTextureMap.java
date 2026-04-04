@@ -3,14 +3,11 @@ package com.micatechnologies.minecraft.csm.trafficsignals.logic;
 import net.minecraft.util.ResourceLocation;
 
 /**
- * Maps crosswalk signal display type and color state to texture ResourceLocations. Uses the
- * existing individual crosswalk textures for now; a future optimization could composite these
- * into a single atlas like the traffic signal bulb textures.
+ * Maps crosswalk signal display type, bulb type, and color state to texture ResourceLocations.
  */
 public class CrosswalkTextureMap {
 
-    // Single-face (symbol) textures — clean versions without baked crate visor pattern.
-    // The crate pattern is now rendered as 3D visor geometry.
+    // --- Single 16-inch (symbol) textures ---
     private static final ResourceLocation TEX_HAND_LIT = new ResourceLocation( "csm",
             "textures/blocks/trafficsignals/crosswalk/crosswalk_hand_lit.png" );
     private static final ResourceLocation TEX_MAN_LIT = new ResourceLocation( "csm",
@@ -18,7 +15,7 @@ public class CrosswalkTextureMap {
     private static final ResourceLocation TEX_OFF = new ResourceLocation( "csm",
             "textures/blocks/trafficsignals/crosswalk/crosswalk_off.png" );
 
-    // Double-worded (text) textures
+    // --- Double 12-inch worded (text) textures ---
     private static final ResourceLocation TEX_DONTWALK_LIT = new ResourceLocation( "csm",
             "textures/blocks/trafficsignals/shared_textures/crosswalktextdontwalkon.png" );
     private static final ResourceLocation TEX_DONTWALK_OFF = new ResourceLocation( "csm",
@@ -28,60 +25,78 @@ public class CrosswalkTextureMap {
     private static final ResourceLocation TEX_WALK_OFF = new ResourceLocation( "csm",
             "textures/blocks/trafficsignals/shared_textures/crosswalktextwalkoff.png" );
 
-    /**
-     * Gets the texture for a single-face crosswalk signal based on color state and flash timing.
-     *
-     * @param colorState 0=don't walk, 1=clearance (flashing), 2=walk, 3=off
-     * @param flashOn    whether the flash is currently in the "on" phase (only relevant for
-     *                   color=1)
-     *
-     * @return the ResourceLocation of the texture to bind
-     */
+    // --- Double 12-inch hand/man with countdown textures ---
+    private static final ResourceLocation TEX_HAND_LIT_12IN = new ResourceLocation( "csm",
+            "textures/blocks/trafficsignals/crosswalk/crosswalk_hand_lit_12in.png" );
+    private static final ResourceLocation TEX_MAN_LIT_12IN = new ResourceLocation( "csm",
+            "textures/blocks/trafficsignals/crosswalk/crosswalk_man_lit_12in.png" );
+    private static final ResourceLocation TEX_OFF_12IN = new ResourceLocation( "csm",
+            "textures/blocks/trafficsignals/crosswalk/crosswalk_off_12in.png" );
+    private static final ResourceLocation TEX_BASE_12IN = new ResourceLocation( "csm",
+            "textures/blocks/trafficsignals/crosswalk/crosswalk_base_texture_12in.png" );
+
+    // =========================================================================
+    // Single 16-inch signal (always SYMBOL display type)
+    // =========================================================================
+
     public static ResourceLocation getSingleFaceTexture( int colorState, boolean flashOn ) {
         switch ( colorState ) {
-            case 0: // DON'T WALK
-                return TEX_HAND_LIT;
-            case 1: // CLEARANCE (flashing hand)
-                return flashOn ? TEX_HAND_LIT : TEX_OFF;
-            case 2: // WALK
-                return TEX_MAN_LIT;
-            case 3: // OFF
-            default:
-                return TEX_OFF;
+            case 0: return TEX_HAND_LIT;
+            case 1: return flashOn ? TEX_HAND_LIT : TEX_OFF;
+            case 2: return TEX_MAN_LIT;
+            case 3:
+            default: return TEX_OFF;
+        }
+    }
+
+    // =========================================================================
+    // Double 12-inch stacked — WORDED bulb type
+    // =========================================================================
+
+    public static ResourceLocation getWordedUpperTexture( int colorState, boolean flashOn ) {
+        switch ( colorState ) {
+            case 0: return TEX_DONTWALK_LIT;
+            case 1: return flashOn ? TEX_DONTWALK_LIT : TEX_DONTWALK_OFF;
+            case 2: return TEX_DONTWALK_OFF;
+            case 3:
+            default: return TEX_DONTWALK_OFF;
+        }
+    }
+
+    public static ResourceLocation getWordedLowerTexture( int colorState, boolean flashOn ) {
+        switch ( colorState ) {
+            case 0: return TEX_WALK_OFF;
+            case 1: return TEX_WALK_OFF;
+            case 2: return TEX_WALK_LIT;
+            case 3:
+            default: return TEX_WALK_OFF;
+        }
+    }
+
+    // =========================================================================
+    // Double 12-inch stacked — HAND_MAN_COUNTDOWN bulb type
+    // Upper section: bimodal hand/man. Lower section: countdown module base.
+    // =========================================================================
+
+    /**
+     * Upper section texture for hand/man countdown mode. Shows hand or man bimodally.
+     */
+    public static ResourceLocation getHandManUpperTexture( int colorState, boolean flashOn ) {
+        switch ( colorState ) {
+            case 0: return TEX_HAND_LIT_12IN;
+            case 1: return flashOn ? TEX_HAND_LIT_12IN : TEX_OFF_12IN;
+            case 2: return TEX_MAN_LIT_12IN;
+            case 3:
+            default: return TEX_OFF_12IN;
         }
     }
 
     /**
-     * Gets the texture for the upper section of a double-worded crosswalk signal (DON'T WALK).
+     * Lower section texture for the countdown module. This is the dark base that sits behind
+     * the 7-segment countdown overlay. Always shows the base texture (the countdown digits
+     * are rendered on top by the renderer).
      */
-    public static ResourceLocation getDoubleUpperTexture( int colorState, boolean flashOn ) {
-        switch ( colorState ) {
-            case 0: // DON'T WALK
-                return TEX_DONTWALK_LIT;
-            case 1: // CLEARANCE (flashing DON'T WALK)
-                return flashOn ? TEX_DONTWALK_LIT : TEX_DONTWALK_OFF;
-            case 2: // WALK
-                return TEX_DONTWALK_OFF;
-            case 3: // OFF
-            default:
-                return TEX_DONTWALK_OFF;
-        }
-    }
-
-    /**
-     * Gets the texture for the lower section of a double-worded crosswalk signal (WALK).
-     */
-    public static ResourceLocation getDoubleLowerTexture( int colorState, boolean flashOn ) {
-        switch ( colorState ) {
-            case 0: // DON'T WALK
-                return TEX_WALK_OFF;
-            case 1: // CLEARANCE
-                return TEX_WALK_OFF;
-            case 2: // WALK
-                return TEX_WALK_LIT;
-            case 3: // OFF
-            default:
-                return TEX_WALK_OFF;
-        }
+    public static ResourceLocation getHandManLowerTexture() {
+        return TEX_BASE_12IN;
     }
 }
