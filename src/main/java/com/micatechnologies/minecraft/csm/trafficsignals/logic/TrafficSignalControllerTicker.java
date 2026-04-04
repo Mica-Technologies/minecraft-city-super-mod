@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.trafficsignals.logic;
 
+import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityOverheightDetectionSensor;
 import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalSensor;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -125,6 +126,10 @@ public class TrafficSignalControllerTicker {
       case WRONG_WAY_DETECTION:
         // WWVDS is handled directly by the controller via wrongWayDetectionModeTick()
         // because it requires mutable tracking state not available in this parameter list.
+        return null;
+      case OVERHEIGHT_DETECTION:
+        // Overheight detection is handled directly by the controller via
+        // overheightDetectionModeTick() because it requires mutable hold timer state.
         return null;
       case NORMAL:
         return normalModeTick(world, circuits, overlaps, cachedPhases, originalPhase,
@@ -1061,6 +1066,110 @@ public class TrafficSignalControllerTicker {
       }
 
       // All non-beacon signals are turned off in WWVDS mode
+      nextPhase.addOffSignals(circuit.getThroughSignals());
+      nextPhase.addOffSignals(circuit.getLeftSignals());
+      nextPhase.addOffSignals(circuit.getRightSignals());
+      nextPhase.addOffSignals(circuit.getFlashingLeftSignals());
+      nextPhase.addOffSignals(circuit.getFlashingRightSignals());
+      nextPhase.addOffSignals(circuit.getProtectedSignals());
+      nextPhase.addOffSignals(circuit.getPedestrianSignals());
+      nextPhase.addOffSignals(circuit.getPedestrianBeaconSignals());
+      nextPhase.addOffSignals(circuit.getPedestrianAccessorySignals());
+    }
+
+    return nextPhase;
+  }
+
+  /**
+   * The hold time in ticks for overheight detection beacons after the last detection.
+   * 30 seconds = 600 ticks.
+   *
+   * @since 1.0
+   */
+  public static final long OVERHEIGHT_BEACON_HOLD_TIME = 600L;
+
+  /**
+   * Handles the tick event for the traffic signal controller in
+   * {@link TrafficSignalControllerMode#OVERHEIGHT_DETECTION} mode. This mode polls linked
+   * overheight detection sensors and activates beacons on circuits where an overheight entity is
+   * detected in the sensor pair's detection zone. Each circuit operates independently. Multiple
+   * sensor pairs per circuit are supported. Beacons stay on (yellow) for
+   * {@link #OVERHEIGHT_BEACON_HOLD_TIME} ticks after the last detection. Entity detection is
+   * mod-agnostic — any entity with a bounding box height exceeding
+   * {@link TileEntityOverheightDetectionSensor#MIN_ENTITY_HEIGHT} is detected, including modded
+   * vehicles from Immersive Vehicles/MTS.
+   *
+   * @param world             The world in which the traffic signal controller is located.
+   * @param circuits          The configured/connected circuits of the traffic signal controller.
+   * @param circuitHoldTimers Mutable map of circuit index to the world time of the last overheight
+   *                          detection. Updated in place when a detection occurs.
+   * @param worldTime         The current total world time in ticks.
+   *
+   * @return The next phase to apply. Always returns a non-null phase.
+   *
+   * @since 1.0
+   */
+  public static TrafficSignalPhase overheightDetectionModeTick(
+      World world,
+      TrafficSignalControllerCircuits circuits,
+      Map<Integer, Long> circuitHoldTimers,
+      long worldTime) {
+
+    // First pass: scan all circuits for overheight detections
+    boolean anyCircuitActive = false;
+    boolean[] circuitActive = new boolean[circuits.getCircuitCount()];
+
+    for (int i = 0; i < circuits.getCircuitCount(); i++) {
+      TrafficSignalControllerCircuit circuit = circuits.getCircuit(i);
+      boolean detected = false;
+
+      // Scan ALL sensors in this circuit (supports multiple sensor pairs per circuit)
+      for (BlockPos sensorPos : circuit.getSensors()) {
+        TileEntity te = world.getTileEntity(sensorPos);
+        if (te instanceof TileEntityOverheightDetectionSensor) {
+          TileEntityOverheightDetectionSensor sensor =
+              (TileEntityOverheightDetectionSensor) te;
+          if (sensor.isPaired() && sensor.scanForOverheightEntities() > 0) {
+            detected = true;
+            break;
+          }
+        }
+      }
+
+      // Update hold timer if detection occurred
+      if (detected) {
+        circuitHoldTimers.put(i, worldTime);
+      }
+
+      // Check if this circuit is still within the hold period
+      Long lastDetectionTime = circuitHoldTimers.get(i);
+      circuitActive[i] =
+          lastDetectionTime != null && (worldTime - lastDetectionTime) < OVERHEIGHT_BEACON_HOLD_TIME;
+      if (circuitActive[i]) {
+        anyCircuitActive = true;
+      }
+    }
+
+    // Second pass: build the phase based on detection results
+    TrafficSignalPhaseApplicability applicability = anyCircuitActive
+        ? TrafficSignalPhaseApplicability.OVERHEIGHT_ACTIVE
+        : TrafficSignalPhaseApplicability.OVERHEIGHT_IDLE;
+
+    TrafficSignalPhase nextPhase = new TrafficSignalPhase(
+        TrafficSignalPhase.CIRCUIT_NOT_APPLICABLE, null, applicability);
+
+    for (int i = 0; i < circuits.getCircuitCount(); i++) {
+      TrafficSignalControllerCircuit circuit = circuits.getCircuit(i);
+
+      if (circuitActive[i]) {
+        // Beacons stay on (yellow) — the beacon renderer handles flash logic internally
+        nextPhase.addYellowSignals(circuit.getBeaconSignals());
+      } else {
+        // Beacons off when no active detection on this circuit
+        nextPhase.addOffSignals(circuit.getBeaconSignals());
+      }
+
+      // All non-beacon signals are turned off in overheight detection mode
       nextPhase.addOffSignals(circuit.getThroughSignals());
       nextPhase.addOffSignals(circuit.getLeftSignals());
       nextPhase.addOffSignals(circuit.getRightSignals());

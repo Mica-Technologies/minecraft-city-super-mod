@@ -242,7 +242,22 @@ public enum TrafficSignalPhaseApplicability {
    *
    * @since 1.0
    */
-  WRONG_WAY_ACTIVE;
+  WRONG_WAY_ACTIVE,
+
+  /**
+   * Enumeration value for overheight detection idle (no overheight entity detected) applicability.
+   *
+   * @since 1.0
+   */
+  OVERHEIGHT_IDLE,
+
+  /**
+   * Enumeration value for overheight detection active (overheight entity detected on at least one
+   * circuit) applicability.
+   *
+   * @since 1.0
+   */
+  OVERHEIGHT_ACTIVE;
 
   // endregion
 

@@ -1,0 +1,40 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:trafficsignals/shared_models/trafficpolecamera_modern",
+    "textures": {
+      "all": "csm:blocks/trafficsignals/shared_textures/metal_black",
+      "particle": "csm:blocks/trafficsignals/shared_textures/metal_black",
+      "0": "csm:blocks/trafficsignals/shared_textures/metal_black",
+      "1": "csm:blocks/trafficsignals/shared_textures/metal_black",
+      "2": "csm:blocks/trafficsignals/shared_textures/solidoff",
+      "missing": "csm:blocks/trafficsignals/shared_textures/metal_black"
+    }
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      },
+      "up": {
+        "x": 270
+      },
+      "down": {
+        "x": 90
+      }
+    },
+    "inventory": [
+      {}
+    ],
+    "normal": [
+      {}
+    ]
+  }
+}

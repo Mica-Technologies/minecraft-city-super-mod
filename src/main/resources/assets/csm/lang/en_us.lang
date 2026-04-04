@@ -1268,6 +1268,7 @@ tile.trafficlightsensorbox.name=Traffic Light Sensor (Generic)
 tile.trafficlightsensormodern.name=Traffic Light Sensor (GridSmart AC3)
 tile.trafficlightsensorshort.name=Traffic Light Sensor  (Econolite Autoscope Solo Terra, Short)
 tile.trafficlightsensortinycam.name=Traffic Light Sensor (Tiny Cam)
+tile.overheight_detection_sensor.name=Overheight Detection Sensor
 tile.trafficpolebaseblack.name=Traffic Pole Base (Black)
 tile.trafficpolebasesilver.name=Traffic Pole Base (Silver)
 tile.trafficpolebasetan.name=Traffic Pole Base (Tan)
