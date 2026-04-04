@@ -102,17 +102,17 @@ public class CrosswalkSignalVertexData {
 
     public static final List<Box> SINGLE_VISOR_NONE_VERTEX_DATA = Collections.emptyList();
 
-    // Hood style visor: U-shaped hood wrapping top and sides, open at bottom with ~20% gap.
-    // Matches wider 18-unit body. Bottom gap: 20% of 16 = 3.2 units.
+    // Hood style visor: U-shaped hood wrapping top and sides, extending to bottom.
+    // Matches wider 18-unit body. No bottom gap on the 16-inch single signal.
     public static final List<Box> SINGLE_VISOR_HOOD_VERTEX_DATA = Arrays.asList(
             // Top panel
             new Box( new float[]{ SINGLE_X_MIN + 0.5f, 15.5f, BODY_FRONT_Z - 5.0f },
                     new float[]{ SINGLE_X_MAX - 0.5f, 16.0f, BODY_FRONT_Z } ),
-            // Left side panel (stops 20% from bottom)
-            new Box( new float[]{ SINGLE_X_MIN, 3.2f, BODY_FRONT_Z - 5.0f },
+            // Left side panel (extends to bottom)
+            new Box( new float[]{ SINGLE_X_MIN, 0.0f, BODY_FRONT_Z - 5.0f },
                     new float[]{ SINGLE_X_MIN + 0.5f, 16.0f, BODY_FRONT_Z } ),
-            // Right side panel (stops 20% from bottom)
-            new Box( new float[]{ SINGLE_X_MAX - 0.5f, 3.2f, BODY_FRONT_Z - 5.0f },
+            // Right side panel (extends to bottom)
+            new Box( new float[]{ SINGLE_X_MAX - 0.5f, 0.0f, BODY_FRONT_Z - 5.0f },
                     new float[]{ SINGLE_X_MAX, 16.0f, BODY_FRONT_Z } )
     );
 
