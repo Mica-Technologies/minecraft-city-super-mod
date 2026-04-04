@@ -9,7 +9,9 @@ import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
@@ -120,6 +122,60 @@ public abstract class AbstractBlockControllableCrosswalkSignalNew
     // endregion
 
     // region Block Events
+
+    @Override
+    public void onBlockPlacedBy( World worldIn, BlockPos pos, IBlockState state,
+            EntityLivingBase placer, ItemStack stack ) {
+        super.onBlockPlacedBy( worldIn, pos, state, placer, stack );
+        if ( !worldIn.isRemote ) {
+            TileEntity te = worldIn.getTileEntity( pos );
+            if ( te instanceof TileEntityCrosswalkSignalNew ) {
+                CrosswalkMountType detected = detectMountType( worldIn, pos, state );
+                ( (TileEntityCrosswalkSignalNew) te ).setMountType( detected );
+            }
+        }
+    }
+
+    /**
+     * Detects the appropriate mount type based on adjacent solid blocks. Checks behind, left,
+     * and right relative to the signal's facing direction. Priority: REAR > LEFT > RIGHT > BASE.
+     */
+    private CrosswalkMountType detectMountType( World worldIn, BlockPos pos, IBlockState state ) {
+        EnumFacing facing = state.getValue( FACING );
+
+        // "Behind" = opposite of facing (the back of the signal housing)
+        EnumFacing behind = facing.getOpposite();
+        if ( isAttachableBlock( worldIn, pos.offset( behind ) ) ) {
+            return CrosswalkMountType.REAR;
+        }
+
+        // "Left" = rotate facing 90° CCW (from viewer's perspective looking at the signal face)
+        EnumFacing left = facing.rotateYCCW();
+        if ( isAttachableBlock( worldIn, pos.offset( left ) ) ) {
+            return CrosswalkMountType.LEFT;
+        }
+
+        // "Right" = rotate facing 90° CW
+        EnumFacing right = facing.rotateY();
+        if ( isAttachableBlock( worldIn, pos.offset( right ) ) ) {
+            return CrosswalkMountType.RIGHT;
+        }
+
+        return CrosswalkMountType.BASE;
+    }
+
+    /**
+     * Checks whether a block at the given position is suitable for mounting (solid, opaque,
+     * or a traffic pole).
+     */
+    private boolean isAttachableBlock( World worldIn, BlockPos pos ) {
+        IBlockState adjState = worldIn.getBlockState( pos );
+        return adjState.isFullCube() || adjState.isOpaqueCube()
+                || adjState.getBlock() instanceof
+                com.micatechnologies.minecraft.csm.codeutils.AbstractBlockTrafficPole
+                || adjState.getBlock() instanceof
+                com.micatechnologies.minecraft.csm.codeutils.AbstractBlockTrafficPoleDiagonal;
+    }
 
     @Override
     public void neighborChanged( IBlockState state, World worldIn, BlockPos pos,
