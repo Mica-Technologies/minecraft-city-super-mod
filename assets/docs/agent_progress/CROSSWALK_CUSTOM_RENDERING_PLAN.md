@@ -20,32 +20,21 @@ ICsmRetiringBlock, 2 new custom-rendered blocks live and working in-game.
 > ICsmRetiringBlock auto-migration.
 >
 > **Everything working:**
-> - Foundation: 3 new enums (CrosswalkMountType, CrosswalkVisorType, CrosswalkDisplayType)
-> - TileEntityCrosswalkSignalNew with customization + countdown logic merged
-> - AbstractBlockControllableCrosswalkSignalNew base class with TESR integration
-> - Two concrete blocks (single-face symbol + double-worded text)
-> - TileEntityCrosswalkSignalNewRenderer with:
->   - Display list caching for body + visor (tilted context)
->   - Mount bracket stubs in tilted context, arms in base context (stationary pole point)
->   - Tilt-compensated arm geometry using proper coordinate transforms
->   - Clean display face textures (hand-cleaned, no baked crate visor)
->   - 1Hz flash timing during clearance
->   - 7-segment countdown with dim "88" background layer (always visible)
->   - Right-aligned single-digit countdown matching two-digit layout
-> - CrosswalkSignalVertexData with:
->   - 16x18" proportioned single body (wider than tall, like real signals)
->   - Two-section tapered double body
->   - Crate visor (staggered diamond lattice node pattern)
->   - Hood visor (U-shaped, 20% bottom gap, thin inset panels)
->   - Dynamic bracket generation with tilt-compensated arms
-> - ItemSignalHeadConfigTool extended with crosswalk support + CYCLE_MOUNT_TYPE mode
-> - All 12 old blocks implement ICsmRetiringBlock with proper configureReplacement
-> - Old blocks moved from CsmTabTrafficSignals to CsmTabNone
-> - New blocks added to AbstractBlockTrafficPole.IGNORE_BLOCK
+> - 4 enums: CrosswalkMountType, CrosswalkVisorType, CrosswalkDisplayType, CrosswalkBulbType
+> - TileEntityCrosswalkSignalNew with customization + countdown + bulb type
+> - AbstractBlockControllableCrosswalkSignalNew with TESR integration + auto-mount detection
+> - Two concrete blocks: `controllablecrosswalksingle` (16") + `controllablecrosswalkdouble` (12" stacked)
+> - Full TESR renderer with display list caching, split bracket rendering, texture atlas
+> - CrosswalkBulbType: WORDED (text) and HAND_MAN_COUNTDOWN (bimodal + countdown module)
+> - 512x512 texture atlas (11 tiles) with CrosswalkAtlasTool for regeneration
+> - Auto-detect mount type on placement (checks behind, left, right for adjacent blocks)
+> - Config tool: CYCLE_MOUNT_TYPE, CYCLE_BULB_TYPE, all color/visor/tilt modes
+> - All 12 old blocks auto-migrate via ICsmRetiringBlock
+> - Mount kit bounding boxes clamped for front-placement
+> - Diagonal pole connector fix (direction-aware mount kit detection)
 >
 > **Future work (not blocking):**
 > - Config GUI for crosswalk signals (currently cycle-only via tool modes)
-> - Bi-modal hand/man + countdown for double-worded signals
 > - Additional crosswalk signal accessories
 
 ---
@@ -144,6 +133,25 @@ each section is 12 units tall with tapered backs.
 - **16-inch single**: hood sides extend all the way to the bottom (no gap)
 - **12-inch stacked**: hood sides have 20% bottom gap on each section
 
+### Auto-Detect Mount Type on Placement
+
+When a crosswalk signal is placed, `onBlockPlacedBy` checks adjacent blocks to auto-select
+the mount type. Priority: REAR > LEFT > RIGHT > BASE. Checks for solid blocks, opaque cubes,
+`AbstractBlockTrafficPole`, and `AbstractBlockTrafficPoleDiagonal`. Can be overridden manually
+with the config tool afterward.
+
+### Mount Kit Bounding Box Fix
+
+All 7 traffic light mount kit blocks had their front Z clamped to 0.0 so signals can be
+placed directly in front of them (previously the bounding box extended into negative Z).
+
+### Diagonal Pole Connector Fix
+
+`AbstractBlockTrafficPoleDiagonal.checkConnectable()` adds direction-aware detection for
+NSEWUD-rotatable blocks (mount kits). When a diagonal pole detects an adjacent mount kit,
+it checks the mount's FACING property to verify the mount's back actually faces toward this
+specific pole block. Prevents false connector stubs on adjacent diagonal poles.
+
 ### Mount Bracket Architecture
 
 The bracket is split into two separately-rendered parts for correct tilt behavior:
@@ -213,9 +221,17 @@ built as stepped boxes via `addAngledArm2D()` for any X-Z diagonal needed.
 - [x] Move 12 old blocks from `CsmTabTrafficSignals` to `CsmTabNone`
 - [x] Update `AbstractBlockTrafficPole.IGNORE_BLOCK` for new blocks
 
+### Phase 7: QoL & Polish
+- [x] Rename block IDs: dropped "new" suffix (controllablecrosswalksingle/double)
+- [x] Lang: "Crosswalk Signal 16-Inch" / "Crosswalk Signal 12-Inch Stacked"
+- [x] Auto-detect mount type on placement (checks behind, left, right)
+- [x] Mount kit bounding box front Z clamped to 0.0 (7 blocks)
+- [x] Diagonal pole connector fix (direction-aware mount kit detection)
+- [x] Texture atlas (all 11 textures in single 512x512 atlas, single bind per frame)
+- [x] CrosswalkAtlasTool dev-env-util for atlas regeneration
+
 ### Future Work
 - [ ] Config GUI for crosswalk signals
-- [x] Texture atlas (all 11 textures in single 512x512 atlas, single bind per frame)
 - [ ] Additional crosswalk signal accessories
 
 ---
@@ -251,7 +267,9 @@ built as stepped boxes via `addAngledArm2D()` for any X-Z diagonal needed.
 | `CsmTabTrafficSignals.java` | Added new blocks, removed 12 retiring blocks |
 | `CsmTabNone.java` | Added 12 retiring crosswalk blocks |
 | `AbstractBlockTrafficPole.java` | Added new blocks to IGNORE_BLOCK |
-| `en_us.lang` | Added lang entries for new blocks |
+| `AbstractBlockTrafficPoleDiagonal.java` | Direction-aware mount kit connector detection |
+| `en_us.lang` | Lang entries (16-Inch / 12-Inch Stacked) |
+| 7 mount kit blocks (`BlockTL*MountKit.java`) | Clamped front Z bounding box to 0.0 |
 | 12 crosswalk block classes | Added ICsmRetiringBlock with configureReplacement |
 
 ---
@@ -260,18 +278,18 @@ built as stepped boxes via `addAngledArm2D()` for any X-Z diagonal needed.
 
 | Old Block | → New Block | Mount | Tilt | Color |
 |-----------|------------|-------|------|-------|
-| controllablecrosswalk | singlenew | BASE | NONE | default |
-| controllablecrosswalkmount | singlenew | REAR | NONE | default |
-| controllablecrosswalkleftmount | singlenew | LEFT | NONE | default |
-| controllablecrosswalkrightmount | singlenew | RIGHT | NONE | default |
-| controllablecrosswalkmountgray | singlenew | REAR | NONE | BATTLESHIP_GRAY |
-| controllablecrosswalkmount90deg | singlenew | REAR | LEFT_ANGLE | default |
-| controllablecrosswalkleftmount90deg | singlenew | LEFT | LEFT_ANGLE | default |
-| controllablecrosswalkrightmount90deg | singlenew | RIGHT | RIGHT_ANGLE | default |
-| controllablecrosswalkdoublewordedbasemount | doublenew | BASE | NONE | default |
-| controllablecrosswalkdoublewordedleftmount | doublenew | LEFT | NONE | default |
-| controllablecrosswalkdoublewordedrearmount | doublenew | REAR | NONE | default |
-| controllablecrosswalkdoublewordedrightmount | doublenew | RIGHT | NONE | default |
+| controllablecrosswalk | single | BASE | NONE | default |
+| controllablecrosswalkmount | single | REAR | NONE | default |
+| controllablecrosswalkleftmount | single | LEFT | NONE | default |
+| controllablecrosswalkrightmount | single | RIGHT | NONE | default |
+| controllablecrosswalkmountgray | single | REAR | NONE | BATTLESHIP_GRAY |
+| controllablecrosswalkmount90deg | single | REAR | LEFT_ANGLE | default |
+| controllablecrosswalkleftmount90deg | single | LEFT | LEFT_ANGLE | default |
+| controllablecrosswalkrightmount90deg | single | RIGHT | RIGHT_ANGLE | default |
+| controllablecrosswalkdoublewordedbasemount | double | BASE | NONE | default |
+| controllablecrosswalkdoublewordedleftmount | double | LEFT | NONE | default |
+| controllablecrosswalkdoublewordedrearmount | double | REAR | NONE | default |
+| controllablecrosswalkdoublewordedrightmount | double | RIGHT | NONE | default |
 
 ---
 
@@ -292,3 +310,6 @@ built as stepped boxes via `addAngledArm2D()` for any X-Z diagonal needed.
 | Countdown bg | Dim "88" always visible | Realistic unlit LED segment appearance |
 | Bulb type enum | CrosswalkBulbType | Extensible for future display modes |
 | Hood gap | No gap on 16", 20% gap on 12" | Proportional to section size |
+| Auto-mount | Detect adjacent blocks on placement | Natural UX, manual override still available |
+| Mount kit BB | Clamp front Z to 0.0 | Allows signal placement in front of mounts |
+| Diagonal connectors | Direction-aware for NSEWUD blocks | Only connect if mount faces this pole |
