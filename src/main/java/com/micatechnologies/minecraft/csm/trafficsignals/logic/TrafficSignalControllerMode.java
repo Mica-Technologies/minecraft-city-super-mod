@@ -64,6 +64,16 @@ public enum TrafficSignalControllerMode {
   MANUAL_OFF("Manual Off", 300),
 
   /**
+   * Wrong way detection mode. Polls linked sensors rapidly and activates beacons on circuits
+   * where an entity is detected approaching the sensor (decreasing distance). Each circuit
+   * operates independently. Beacons hold active for 30 seconds after the last detection.
+   * Tick rate 10 (0.5 seconds): fast polling for responsive wrong-way approach detection.
+   *
+   * @since 1.0
+   */
+  WRONG_WAY_DETECTION("Wrong Way Detection", 10),
+
+  /**
    * Forced fault (all-red flash). Alternates all-red phases via tick-based toggle.
    * Tick rate 10 (0.5 seconds per phase = 1 second full cycle).
    *

@@ -1,8 +1,14 @@
 package com.micatechnologies.minecraft.csm.trafficsignals.logic;
 
+import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalSensor;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Tuple;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 /**
@@ -116,6 +122,10 @@ public class TrafficSignalControllerTicker {
         return rampMeterFullTimeModeTick(world, circuits, cachedPhases, originalPhase);
       case RAMP_METER_PART_TIME:
         return rampMeterPartTimeModeTick(world, circuits, cachedPhases, originalPhase);
+      case WRONG_WAY_DETECTION:
+        // WWVDS is handled directly by the controller via wrongWayDetectionModeTick()
+        // because it requires mutable tracking state not available in this parameter list.
+        return null;
       case NORMAL:
         return normalModeTick(world, circuits, overlaps, cachedPhases, originalPhase,
             timeSinceLastPhaseChange,
@@ -896,6 +906,173 @@ public class TrafficSignalControllerTicker {
     }
 
     return flashPhase;
+  }
+
+  /**
+   * The hold time in ticks for wrong way detection beacons after the last approach detection.
+   * 30 seconds = 600 ticks.
+   *
+   * @since 1.0
+   */
+  public static final long WWVDS_BEACON_HOLD_TIME = 600L;
+
+  /**
+   * The minimum cumulative approach distance (in blocks) an entity must travel toward a sensor
+   * before it is considered a confirmed wrong-way approach. This prevents brief pass-throughs
+   * (e.g. flying past the zone) from triggering the beacons.
+   *
+   * @since 1.0
+   */
+  public static final double WWVDS_APPROACH_THRESHOLD = 3.0;
+
+  /**
+   * Handles the tick event for the traffic signal controller in
+   * {@link TrafficSignalControllerMode#WRONG_WAY_DETECTION} mode. This mode polls linked sensors
+   * rapidly and tracks entity movement to detect wrong-way approaches. When an entity in a sensor's
+   * main detection zone is moving closer to the sensor block, it is considered a wrong-way
+   * approach. Each circuit operates independently — beacons on a circuit are activated only when
+   * that circuit's sensors detect an approach. Multiple sensors per circuit are supported (e.g. for
+   * curved roads with multiple detection layers), and a detection on any sensor in the circuit
+   * triggers that circuit's beacons. Beacons flash yellow for {@link #WWVDS_BEACON_HOLD_TIME}
+   * ticks after the last detection before turning off.
+   *
+   * @param world                    The world in which the traffic signal controller is located.
+   * @param circuits                 The configured/connected circuits of the traffic signal
+   *                                 controller.
+   * @param entityDistances          Mutable map of circuit index to (entity ID to last known
+   *                                 distance to nearest sensor). Updated in place each tick.
+   * @param entityApproachTotals     Mutable map of circuit index to (entity ID to cumulative
+   *                                 approach distance in blocks). An entity must accumulate at
+   *                                 least {@link #WWVDS_APPROACH_THRESHOLD} blocks of approach
+   *                                 before triggering. Cleared for an entity when it leaves the
+   *                                 zone or moves away.
+   * @param circuitHoldTimers        Mutable map of circuit index to the world time of the last
+   *                                 wrong-way detection. Updated in place when an approach is
+   *                                 detected.
+   * @param worldTime                The current total world time in ticks.
+   *
+   * @return The next phase to apply. Always returns a non-null phase.
+   *
+   * @since 1.0
+   */
+  public static TrafficSignalPhase wrongWayDetectionModeTick(
+      World world,
+      TrafficSignalControllerCircuits circuits,
+      Map<Integer, Map<Integer, Double>> entityDistances,
+      Map<Integer, Map<Integer, Double>> entityApproachTotals,
+      Map<Integer, Long> circuitHoldTimers,
+      long worldTime) {
+
+    // First pass: scan all circuits, track entity distances, determine which circuits are active
+    boolean anyCircuitActive = false;
+    boolean[] circuitActive = new boolean[circuits.getCircuitCount()];
+
+    for (int i = 0; i < circuits.getCircuitCount(); i++) {
+      TrafficSignalControllerCircuit circuit = circuits.getCircuit(i);
+      boolean approachDetected = false;
+
+      // Get the previous distance tracking map and cumulative approach totals for this circuit
+      Map<Integer, Double> prevDistances =
+          entityDistances.computeIfAbsent(i, k -> new HashMap<>());
+      Map<Integer, Double> prevApproachTotals =
+          entityApproachTotals.computeIfAbsent(i, k -> new HashMap<>());
+      Map<Integer, Double> newDistances = new HashMap<>();
+      Map<Integer, Double> newApproachTotals = new HashMap<>();
+
+      // Scan ALL sensors in this circuit (supports multiple sensors for curved roads, etc.)
+      for (BlockPos sensorPos : circuit.getSensors()) {
+        TileEntity te = world.getTileEntity(sensorPos);
+        if (te instanceof TileEntityTrafficSignalSensor) {
+          TileEntityTrafficSignalSensor sensor = (TileEntityTrafficSignalSensor) te;
+          List<Tuple<Integer, Vec3d>> entities = sensor.scanEntitiesWithPositions();
+
+          Vec3d sensorVec = new Vec3d(
+              sensorPos.getX() + 0.5, sensorPos.getY() + 0.5, sensorPos.getZ() + 0.5);
+
+          for (Tuple<Integer, Vec3d> entityData : entities) {
+            int entityId = entityData.getFirst();
+            Vec3d entityPos = entityData.getSecond();
+            double currentDistance = entityPos.distanceTo(sensorVec);
+
+            // For entities seen by multiple sensors, keep the minimum distance
+            // (closest sensor is the most relevant reference point)
+            Double existingNew = newDistances.get(entityId);
+            if (existingNew == null || currentDistance < existingNew) {
+              newDistances.put(entityId, currentDistance);
+            }
+
+            // Track cumulative approach distance per entity
+            Double previousDistance = prevDistances.get(entityId);
+            if (previousDistance != null) {
+              double delta = previousDistance - currentDistance;
+              if (delta > 0) {
+                // Entity moved closer — accumulate approach distance
+                double prevTotal = prevApproachTotals.getOrDefault(entityId, 0.0);
+                double newTotal = prevTotal + delta;
+                newApproachTotals.put(entityId, newTotal);
+
+                // Only trigger once cumulative approach exceeds threshold
+                if (newTotal >= WWVDS_APPROACH_THRESHOLD) {
+                  approachDetected = true;
+                }
+              }
+              // Entity moved away or stayed — reset its cumulative approach
+            }
+          }
+        }
+      }
+
+      // Update the distance and approach total maps for next tick
+      // (entities that left the zone or moved away are naturally pruned by not being in newMaps)
+      entityDistances.put(i, newDistances);
+      entityApproachTotals.put(i, newApproachTotals);
+
+      // Update hold timer if approach was detected
+      if (approachDetected) {
+        circuitHoldTimers.put(i, worldTime);
+      }
+
+      // Check if this circuit is still within the hold period
+      Long lastDetectionTime = circuitHoldTimers.get(i);
+      circuitActive[i] =
+          lastDetectionTime != null && (worldTime - lastDetectionTime) < WWVDS_BEACON_HOLD_TIME;
+      if (circuitActive[i]) {
+        anyCircuitActive = true;
+      }
+    }
+
+    // Second pass: build the phase based on detection results
+    TrafficSignalPhaseApplicability applicability = anyCircuitActive
+        ? TrafficSignalPhaseApplicability.WRONG_WAY_ACTIVE
+        : TrafficSignalPhaseApplicability.WRONG_WAY_IDLE;
+
+    TrafficSignalPhase nextPhase = new TrafficSignalPhase(
+        TrafficSignalPhase.CIRCUIT_NOT_APPLICABLE, null, applicability);
+
+    for (int i = 0; i < circuits.getCircuitCount(); i++) {
+      TrafficSignalControllerCircuit circuit = circuits.getCircuit(i);
+
+      if (circuitActive[i]) {
+        // Beacons stay on (yellow) — the beacon renderer handles flash logic internally
+        nextPhase.addYellowSignals(circuit.getBeaconSignals());
+      } else {
+        // Beacons off when no active detection on this circuit
+        nextPhase.addOffSignals(circuit.getBeaconSignals());
+      }
+
+      // All non-beacon signals are turned off in WWVDS mode
+      nextPhase.addOffSignals(circuit.getThroughSignals());
+      nextPhase.addOffSignals(circuit.getLeftSignals());
+      nextPhase.addOffSignals(circuit.getRightSignals());
+      nextPhase.addOffSignals(circuit.getFlashingLeftSignals());
+      nextPhase.addOffSignals(circuit.getFlashingRightSignals());
+      nextPhase.addOffSignals(circuit.getProtectedSignals());
+      nextPhase.addOffSignals(circuit.getPedestrianSignals());
+      nextPhase.addOffSignals(circuit.getPedestrianBeaconSignals());
+      nextPhase.addOffSignals(circuit.getPedestrianAccessorySignals());
+    }
+
+    return nextPhase;
   }
 
   /**

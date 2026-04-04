@@ -3,14 +3,17 @@ package com.micatechnologies.minecraft.csm.trafficsignals;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractTileEntity;
 import com.micatechnologies.minecraft.csm.codeutils.SerializationUtils;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockTrafficSignalSensor;
+import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.Tuple;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 
 /**
  * The {@link TileEntityTrafficSignalSensor} is a {@link TileEntity} which is paired with an
@@ -399,5 +402,49 @@ public class TileEntityTrafficSignalSensor extends AbstractTileEntity {
    */
   public int scanRightEntities() {
     return scanCornersForEntities(rightScanCorner1, rightScanCorner2);
+  }
+
+  /**
+   * Scans for eligible entities within the {@link TileEntityTrafficSignalSensor}'s main scan region
+   * and returns a list of tuples containing each entity's ID and current position. This method is
+   * used by the wrong way detection system to track entity movement across ticks.
+   *
+   * @return a list of {@link Tuple}s where the first element is the entity ID ({@link Integer}) and
+   *     the second element is the entity's current position ({@link Vec3d}), or an empty list if no
+   *     eligible entities are found or scan corners are not configured
+   *
+   * @since 1.0
+   */
+  public List<Tuple<Integer, Vec3d>> scanEntitiesWithPositions() {
+    return scanCornersForEntitiesWithPositions(scanCorner1, scanCorner2);
+  }
+
+  /**
+   * Scans for eligible entities within the scan region defined by the specified corners, and returns
+   * a list of tuples containing each entity's ID and current position. Eligible entities are
+   * {@link EntityVillager} and {@link EntityPlayer}.
+   *
+   * @param corner1 the first corner of the scan region
+   * @param corner2 the second corner of the scan region
+   *
+   * @return a list of {@link Tuple}s where the first element is the entity ID and the second
+   *     element is the entity's current position
+   *
+   * @since 1.0
+   */
+  private List<Tuple<Integer, Vec3d>> scanCornersForEntitiesWithPositions(BlockPos corner1,
+      BlockPos corner2) {
+    List<Tuple<Integer, Vec3d>> results = new ArrayList<>();
+    if (world != null && corner1 != null && corner2 != null) {
+      AxisAlignedBB scanRange = new AxisAlignedBB(corner1, corner2);
+      List<Entity> entitiesWithinAABBExcludingEntity =
+          world.getEntitiesWithinAABBExcludingEntity(null, scanRange);
+      for (Entity entity : entitiesWithinAABBExcludingEntity) {
+        if (entity instanceof EntityVillager || entity instanceof EntityPlayer) {
+          results.add(new Tuple<>(entity.getEntityId(), entity.getPositionVector()));
+        }
+      }
+    }
+    return results;
   }
 }
