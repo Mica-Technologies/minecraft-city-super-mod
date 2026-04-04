@@ -55,6 +55,10 @@ public class CrosswalkAtlasTool {
    *   4    crosswalk_man_lit_12in           12-inch   upper     walk (lit)
    *   5    crosswalk_off_12in              12-inch   upper     off (ghosted)
    *   6    crosswalk_base_texture_12in     12-inch   lower     countdown base
+   *   7    crosswalktextdontwalkon         12-inch   upper     DON'T WALK text lit
+   *   8    crosswalktextdontwalkoff        12-inch   upper     DON'T WALK text off
+   *   9    crosswalktextwalkon             12-inch   lower     WALK text lit
+   *  10    crosswalktextwalkoff            12-inch   lower     WALK text off
    * </pre>
    */
   private static final String[] INPUT_IMAGE_NAMES = {
@@ -68,6 +72,12 @@ public class CrosswalkAtlasTool {
       "crosswalk_man_lit_12in",       // 4: walk (upper section)
       "crosswalk_off_12in",           // 5: off (upper section)
       "crosswalk_base_texture_12in",  // 6: countdown module base (lower section)
+
+      // 12-inch stacked signal — worded/text textures (indices 7-10)
+      "crosswalktextdontwalkon",      // 7: DON'T WALK text lit
+      "crosswalktextdontwalkoff",     // 8: DON'T WALK text off
+      "crosswalktextwalkon",          // 9: WALK text lit
+      "crosswalktextwalkoff",         // 10: WALK text off
   };
 
   public static void main(String[] args) {
