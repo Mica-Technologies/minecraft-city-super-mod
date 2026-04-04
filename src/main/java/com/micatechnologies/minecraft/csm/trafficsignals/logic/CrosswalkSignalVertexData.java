@@ -236,22 +236,40 @@ public class CrosswalkSignalVertexData {
     }
 
     /**
-     * Generates bracket vertex data dynamically to account for body tilt. The bracket has
-     * three parts:
-     * <ol>
-     *   <li>Vertical stubs — straight pipes above/below the housing, positioned at the
-     *       tilted housing location (shifted by tiltOffset in X)</li>
-     *   <li>Horizontal arms — angled/extended from the stub ends to the stationary pole
-     *       mount point. The pole end stays fixed; the housing end follows the tilt. For
-     *       rear mounts this creates a diagonal arm in the X-Z plane. For left/right mounts
-     *       the arm simply gets longer or shorter.</li>
-     * </ol>
-     *
-     * @param mountType  the mount direction
-     * @param isDouble   true for double-worded (taller) signal, false for single
-     * @param tiltOffset the X offset applied by the tilt (0, ±2, ±4 model units)
+     * Returns the vertical stub geometry. Stubs are straight vertical pipes above/below the
+     * housing at the standard mount pipe position (X=7-9, Z=7-9). These are rendered in the
+     * TILTED context so they rotate with the housing and always line up perfectly.
      */
-    public static List<Box> getBracketData( CrosswalkMountType mountType, boolean isDouble,
+    public static List<Box> getStubData( CrosswalkMountType mountType, boolean isDouble ) {
+        if ( mountType == CrosswalkMountType.BASE ) {
+            return Collections.emptyList();
+        }
+
+        float lowerArmY = isDouble ? DOUBLE_LOWER_ARM_Y : SINGLE_LOWER_ARM_Y;
+        float upperArmY = isDouble ? DOUBLE_UPPER_ARM_Y : SINGLE_UPPER_ARM_Y;
+        float bodyBottom = 0.0f;
+        float bodyTop = isDouble ? 24.0f : 16.0f;
+
+        return Arrays.asList(
+                // Lower stub (below housing down to arm Y)
+                new Box( new float[]{ MOUNT_X1, lowerArmY, MOUNT_Z1 },
+                        new float[]{ MOUNT_X2, bodyBottom, MOUNT_Z2 } ),
+                // Upper stub (above housing up to arm Y)
+                new Box( new float[]{ MOUNT_X1, bodyTop, MOUNT_Z1 },
+                        new float[]{ MOUNT_X2, upperArmY, MOUNT_Z2 } )
+        );
+    }
+
+    /**
+     * Returns the horizontal arm geometry. Arms extend from the stub ends to the pole mount
+     * point. These are rendered in the BASE facing context (no tilt) so the pole-side
+     * connection stays stationary. The housing-side X is shifted by tiltOffset to meet where
+     * the tilted stubs end up in world space.
+     *
+     * <p>For rear mounts with tilt, the arm diagonals in the X-Z plane via stepped boxes.
+     * For left/right mounts, the arm simply extends/shortens in X.
+     */
+    public static List<Box> getArmData( CrosswalkMountType mountType, boolean isDouble,
             int tiltOffset ) {
         if ( mountType == CrosswalkMountType.BASE ) {
             return Collections.emptyList();
@@ -261,38 +279,21 @@ public class CrosswalkSignalVertexData {
 
         float lowerArmY = isDouble ? DOUBLE_LOWER_ARM_Y : SINGLE_LOWER_ARM_Y;
         float upperArmY = isDouble ? DOUBLE_UPPER_ARM_Y : SINGLE_UPPER_ARM_Y;
-        float bodyBottom = 0.0f;
-        float bodyTop = isDouble ? 24.0f : 16.0f;
 
-        // Housing-side X positions (shifted by tilt)
+        // Housing-side X (where the tilted stubs end up in base context)
         float hx1 = MOUNT_X1 + tiltOffset;
         float hx2 = MOUNT_X2 + tiltOffset;
 
-        // --- Vertical stubs: straight, at the housing position ---
-        // Lower stub (below housing down to arm Y)
-        boxes.add( new Box(
-                new float[]{ hx1, lowerArmY, MOUNT_Z1 },
-                new float[]{ hx2, bodyBottom, MOUNT_Z2 } ) );
-        // Upper stub (above housing up to arm Y)
-        boxes.add( new Box(
-                new float[]{ hx1, bodyTop, MOUNT_Z1 },
-                new float[]{ hx2, upperArmY, MOUNT_Z2 } ) );
-
-        // --- Horizontal arms: pivot from pole end, angle to meet housing stubs ---
-        // Pole-side X stays at MOUNT_X1/X2 (stationary). Housing-side X is hx1/hx2.
         switch ( mountType ) {
             case REAR:
-                // Arm extends along Z from housing (Z=MOUNT_Z2) to pole (Z=22).
-                // When tilted, arm diagonals in X from hx1..hx2 at Z=MOUNT_Z2 to
-                // MOUNT_X1..X2 at Z=22. Build as stepped boxes.
+                // Arm from housing stub (Z=MOUNT_Z2, X=hx) to pole (Z=22, X=MOUNT_X)
                 addAngledArm( boxes, hx1, hx2, MOUNT_X1, MOUNT_X2,
                         lowerArmY, lowerArmY + 1.0f, MOUNT_Z2, 22.0f );
                 addAngledArm( boxes, hx1, hx2, MOUNT_X1, MOUNT_X2,
                         upperArmY - 1.0f, upperArmY, MOUNT_Z2, 22.0f );
                 break;
             case LEFT:
-                // Arm extends along X from housing (X=hx2) to pole (X=20).
-                // Just a straight arm from the shifted position to the pole.
+                // Arm from housing stub (X=hx2) to pole (X=20)
                 boxes.add( new Box(
                         new float[]{ hx2, lowerArmY, MOUNT_Z1 },
                         new float[]{ 20.0f, lowerArmY + 1.0f, MOUNT_Z2 } ) );
@@ -301,7 +302,7 @@ public class CrosswalkSignalVertexData {
                         new float[]{ 20.0f, upperArmY, MOUNT_Z2 } ) );
                 break;
             case RIGHT:
-                // Arm extends along X from pole (X=-4) to housing (X=hx1).
+                // Arm from pole (X=-4) to housing stub (X=hx1)
                 boxes.add( new Box(
                         new float[]{ -4.0f, lowerArmY, MOUNT_Z1 },
                         new float[]{ hx1, lowerArmY + 1.0f, MOUNT_Z2 } ) );
@@ -315,9 +316,7 @@ public class CrosswalkSignalVertexData {
     }
 
     /**
-     * Builds an angled horizontal arm as stepped boxes. The arm goes from
-     * (startX1..startX2, startZ) to (endX1..endX2, endZ), stepping in X proportionally
-     * across the Z distance. Used for rear mount arms that need to diagonal when tilted.
+     * Builds an angled horizontal arm as stepped boxes for rear mounts with tilt.
      */
     private static void addAngledArm( java.util.ArrayList<Box> boxes,
             float startX1, float startX2, float endX1, float endX2,
@@ -325,14 +324,12 @@ public class CrosswalkSignalVertexData {
         float xShift = endX1 - startX1;
 
         if ( Math.abs( xShift ) < 0.1f ) {
-            // No angle needed — straight arm
             boxes.add( new Box(
                     new float[]{ Math.min( startX1, endX1 ), y1, startZ },
                     new float[]{ Math.max( startX2, endX2 ), y2, endZ } ) );
             return;
         }
 
-        // Step along Z, shifting X proportionally
         float zLength = endZ - startZ;
         int steps = Math.max( 2, Math.round( Math.abs( xShift ) / 1.0f ) );
         float stepZ = zLength / steps;
