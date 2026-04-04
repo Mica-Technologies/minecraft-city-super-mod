@@ -130,10 +130,11 @@ public class TileEntityCrosswalkSignalNewRenderer
         else if ( bodyTilt == TrafficSignalBodyTilt.LEFT_TILT ) tiltOffset = 2;
         else if ( bodyTilt == TrafficSignalBodyTilt.LEFT_ANGLE ) tiltOffset = 4;
 
+        boolean isDouble = displayType == CrosswalkDisplayType.TEXT;
+
         // =============================================
-        // Bracket: rendered with BASE facing only (no tilt) so pole-side mount stays
-        // stationary. The housing-side of the stubs leans by tiltOffset to meet the
-        // tilted body position.
+        // Horizontal arms: rendered with BASE facing only (no tilt) so pole-side
+        // mount point stays stationary. Arms angle to meet the tilted stubs.
         // =============================================
         if ( mountType != CrosswalkMountType.BASE ) {
             GL11.glPushMatrix();
@@ -141,14 +142,15 @@ public class TileEntityCrosswalkSignalNewRenderer
             GL11.glRotatef( baseDirection.getRotation(), 0, 1, 0 );
             GL11.glTranslated( -8, -8, -8 );
 
-            boolean isDouble = displayType == CrosswalkDisplayType.TEXT;
-            renderBracket( bodyColor, mountType, isDouble, tiltOffset );
+            renderBoxes( bodyColor, CrosswalkSignalVertexData.getArmData(
+                    mountType, isDouble, tiltOffset ) );
 
             GL11.glPopMatrix();
         }
 
         // =============================================
-        // Body + visor: rendered with TILTED facing
+        // Body + visor + stubs: rendered with TILTED facing so stubs line up
+        // perfectly with the housing at any tilt angle.
         // =============================================
         GL11.glTranslated( 8, 8, 8 );
         float rotationAngle = bodyDirection.getRotation();
@@ -156,6 +158,12 @@ public class TileEntityCrosswalkSignalNewRenderer
         GL11.glTranslated( -8, -8, -8 );
         if ( tiltOffset != 0 ) {
             GL11.glTranslated( tiltOffset, 0, 0 );
+        }
+
+        // Render stubs in the tilted context (before display list)
+        if ( mountType != CrosswalkMountType.BASE ) {
+            renderBoxes( bodyColor, CrosswalkSignalVertexData.getStubData(
+                    mountType, isDouble ) );
         }
 
         // Display list: body + visor only (no bracket)
@@ -236,23 +244,19 @@ public class TileEntityCrosswalkSignalNewRenderer
     }
 
     /**
-     * Renders the mount bracket separately from the body. This is called in the BASE facing
-     * rotation context (no tilt) so the pole-side mount stays stationary. The housing-side
-     * stubs lean by tiltOffset to connect to the tilted body.
+     * Renders a list of colored boxes. Used for bracket stubs and arms which are rendered
+     * in different GL matrix contexts.
      */
-    private void renderBracket( TrafficSignalBodyColor bodyColor, CrosswalkMountType mountType,
-            boolean isDouble, int tiltOffset ) {
+    private void renderBoxes( TrafficSignalBodyColor color, List<RenderHelper.Box> boxes ) {
+        if ( boxes.isEmpty() ) return;
+
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.getBuffer();
 
         GlStateManager.disableTexture2D();
         buffer.begin( GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR );
-
-        float br = bodyColor.getRed(), bg = bodyColor.getGreen(), bb = bodyColor.getBlue();
-        List<RenderHelper.Box> bracketData =
-                CrosswalkSignalVertexData.getBracketData( mountType, isDouble, tiltOffset );
-        RenderHelper.addBoxesToBuffer( bracketData, buffer, br, bg, bb, 1.0f, 0, 0, 0 );
-
+        RenderHelper.addBoxesToBuffer( boxes, buffer,
+                color.getRed(), color.getGreen(), color.getBlue(), 1.0f, 0, 0, 0 );
         tessellator.draw();
         GlStateManager.enableTexture2D();
     }
