@@ -1,12 +1,19 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
+import com.micatechnologies.minecraft.csm.codeutils.ICsmRetiringBlock;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.CrosswalkMountType;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyTilt;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.World;
 
 public class BlockControllableCrosswalkLeftMount90Deg
-    extends AbstractBlockControllableCrosswalkSignal {
+    extends AbstractBlockControllableCrosswalkSignal
+    implements ICsmRetiringBlock {
 
   /**
    * Retrieves the registry name of the block.
@@ -40,4 +47,22 @@ public class BlockControllableCrosswalkLeftMount90Deg
     public AxisAlignedBB getBlockBoundingBox( IBlockState state, IBlockAccess source, BlockPos pos ) {
         return new AxisAlignedBB(0.000000, 0.000000, 0.250000, 1.812500, 1.250000, 0.750000);
     }
+
+  @Override
+  public String getReplacementBlockId() {
+    return "controllablecrosswalksinglenew";
+  }
+
+  @Override
+  public void configureReplacement(World world, BlockPos pos, NBTTagCompound oldTileEntityNBT) {
+    TileEntity te = world.getTileEntity(pos);
+    if (te instanceof TileEntityCrosswalkSignalNew) {
+      TileEntityCrosswalkSignalNew newTe = (TileEntityCrosswalkSignalNew) te;
+      newTe.setMountType(CrosswalkMountType.LEFT);
+      newTe.setBodyTilt(TrafficSignalBodyTilt.LEFT_ANGLE);
+      if (oldTileEntityNBT != null && oldTileEntityNBT.hasKey("learnedClearanceTicks")) {
+        newTe.setLearnedClearanceTicks(oldTileEntityNBT.getInteger("learnedClearanceTicks"));
+      }
+    }
+  }
 }

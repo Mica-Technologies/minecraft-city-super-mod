@@ -3,6 +3,8 @@ package com.micatechnologies.minecraft.csm;
 import com.micatechnologies.minecraft.csm.codeutils.CsmVersionChecker;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmProxy;
 import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityCrosswalkSignal;
+import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityCrosswalkSignalNew;
+import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityCrosswalkSignalNewRenderer;
 import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityCrosswalkSignalRenderer;
 import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalHead;
 import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalHeadRenderer;
@@ -57,6 +59,7 @@ public class CsmClientProxy implements ICsmProxy {
     // Bind the TESR to the TileEntity
     ClientRegistry.bindTileEntitySpecialRenderer(TileEntityTrafficSignalHead.class, new TileEntityTrafficSignalHeadRenderer());
     ClientRegistry.bindTileEntitySpecialRenderer(TileEntityCrosswalkSignal.class, new TileEntityCrosswalkSignalRenderer());
+    ClientRegistry.bindTileEntitySpecialRenderer(TileEntityCrosswalkSignalNew.class, new TileEntityCrosswalkSignalNewRenderer());
     ClientRegistry.bindTileEntitySpecialRenderer(
         com.micatechnologies.minecraft.csm.lifesafety.TileEntityFireAlarmStrobe.class,
         new com.micatechnologies.minecraft.csm.lifesafety.TileEntityFireAlarmStrobeRenderer());

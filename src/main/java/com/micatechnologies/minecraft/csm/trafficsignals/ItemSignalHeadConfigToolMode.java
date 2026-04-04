@@ -10,7 +10,8 @@ public enum ItemSignalHeadConfigToolMode {
   CYCLE_BULB_STYLE("Cycle Bulb Style"),
   CYCLE_BULB_TYPE("Cycle Bulb Type"),
   CYCLE_SIGNAL_COLOR("Cycle Signal Color"),
-  TOGGLE_ALTERNATE_FLASH("Toggle Alternate Flash");
+  TOGGLE_ALTERNATE_FLASH("Toggle Alternate Flash"),
+  CYCLE_MOUNT_TYPE("Cycle Mount Type");
 
   private final String friendlyName;
 

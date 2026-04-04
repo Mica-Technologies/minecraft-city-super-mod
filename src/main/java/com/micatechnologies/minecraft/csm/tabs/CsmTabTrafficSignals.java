@@ -3,6 +3,8 @@ package com.micatechnologies.minecraft.csm.tabs;
 import com.micatechnologies.minecraft.csm.CsmRegistry;
 import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalk;
+import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkSignalDouble;
+import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkSignalSingle;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkButtonAudible;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkButtonAutomated;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkButtonFemale;
@@ -167,8 +169,10 @@ public class CsmTabTrafficSignals extends CsmTab {
    */
   @Override
   public void initTabElements(FMLPreInitializationEvent fmlPreInitializationEvent) {
-    initTabBlock(BlockControllableCrosswalk.class,
-        fmlPreInitializationEvent); // ControllableCrosswalk
+    initTabBlock(BlockControllableCrosswalkSignalSingle.class,
+        fmlPreInitializationEvent); // New custom-rendered crosswalk signal (symbol)
+    initTabBlock(BlockControllableCrosswalkSignalDouble.class,
+        fmlPreInitializationEvent); // New custom-rendered crosswalk signal (text)
     initTabBlock(BlockControllableCrosswalkButtonAudible.class,
         fmlPreInitializationEvent); // ControllableCrosswalkButtonAudible
     initTabBlock(BlockControllableCrosswalkButtonAutomated.class,
@@ -177,26 +181,6 @@ public class CsmTabTrafficSignals extends CsmTab {
         fmlPreInitializationEvent); // ControllableCrosswalkButtonFemale
     initTabBlock(BlockControllableCrosswalkButtonMale.class,
         fmlPreInitializationEvent); // ControllableCrosswalkButtonMale
-    initTabBlock(BlockControllableCrosswalkDoubleWordedBaseMount.class,
-        fmlPreInitializationEvent); // ControllableCrosswalkDoubleWordedBaseMount
-    initTabBlock(BlockControllableCrosswalkDoubleWordedLeftMount.class,
-        fmlPreInitializationEvent); // ControllableCrosswalkDoubleWordedLeftMount
-    initTabBlock(BlockControllableCrosswalkDoubleWordedRearMount.class,
-        fmlPreInitializationEvent); // ControllableCrosswalkDoubleWordedRearMount
-    initTabBlock(BlockControllableCrosswalkDoubleWordedRightMount.class,
-        fmlPreInitializationEvent); // ControllableCrosswalkDoubleWordedRightMount
-    initTabBlock(BlockControllableCrosswalkLeftMount.class,
-        fmlPreInitializationEvent); // ControllableCrosswalkLeftMount
-    initTabBlock(BlockControllableCrosswalkLeftMount90Deg.class,
-        fmlPreInitializationEvent); // ControllableCrosswalkLeftMount90Deg
-    initTabBlock(BlockControllableCrosswalkMount.class,
-        fmlPreInitializationEvent); // ControllableCrosswalkMount
-    initTabBlock(BlockControllableCrosswalkMount90Deg.class,
-        fmlPreInitializationEvent); // ControllableCrosswalkMount90Deg
-    initTabBlock(BlockControllableCrosswalkRightMount.class,
-        fmlPreInitializationEvent); // ControllableCrosswalkRightMount
-    initTabBlock(BlockControllableCrosswalkRightMount90Deg.class,
-        fmlPreInitializationEvent); // ControllableCrosswalkRightMount90Deg
     initTabBlock(BlockControllableCrosswalkTweeter1.class,
         fmlPreInitializationEvent); // ControllableCrosswalkTweeter1
     initTabBlock(BlockControllableCrosswalkTweeter2.class,
@@ -335,7 +319,6 @@ public class CsmTabTrafficSignals extends CsmTab {
         fmlPreInitializationEvent); // ControllableVerticalUpLeftSignal
     initTabBlock(BlockControllableVerticalUturnSignal.class,
         fmlPreInitializationEvent); // ControllableVerticalUturnSignal
-    initTabBlock(BlockControllableCrosswalkMountGray.class, fmlPreInitializationEvent); // ControllableCrosswalkMountGray
     initTabBlock(BlockControllableCrosswalkButtonPsGray.class, fmlPreInitializationEvent); // ControllableCrosswalkButtonPsGray
     initTabBlock(BlockTrafficLightSensor.class, fmlPreInitializationEvent); // TrafficLightSensor
     initTabBlock(BlockTrafficLightSensorBell.class,

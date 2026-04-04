@@ -195,5 +195,19 @@ public class CsmTabNone extends CsmTab {
 
     // Deprecated Barlo strobe signal (now a visor type option on any signal)
     initTabBlock(BlockControllableVerticalSolidSignalBarlo.class, fmlPreInitializationEvent);
+
+    // Deprecated crosswalk signal blocks (auto-convert to new custom-rendered equivalents)
+    initTabBlock(com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalk.class, fmlPreInitializationEvent);
+    initTabBlock(com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkMount.class, fmlPreInitializationEvent);
+    initTabBlock(com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkLeftMount.class, fmlPreInitializationEvent);
+    initTabBlock(com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkRightMount.class, fmlPreInitializationEvent);
+    initTabBlock(com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkMountGray.class, fmlPreInitializationEvent);
+    initTabBlock(com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkMount90Deg.class, fmlPreInitializationEvent);
+    initTabBlock(com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkLeftMount90Deg.class, fmlPreInitializationEvent);
+    initTabBlock(com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkRightMount90Deg.class, fmlPreInitializationEvent);
+    initTabBlock(com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkDoubleWordedBaseMount.class, fmlPreInitializationEvent);
+    initTabBlock(com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkDoubleWordedLeftMount.class, fmlPreInitializationEvent);
+    initTabBlock(com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkDoubleWordedRearMount.class, fmlPreInitializationEvent);
+    initTabBlock(com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkDoubleWordedRightMount.class, fmlPreInitializationEvent);
   }
 }

@@ -3,6 +3,7 @@ package com.micatechnologies.minecraft.csm.trafficsignals;
 import com.micatechnologies.minecraft.csm.Csm;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractItem;
 import com.micatechnologies.minecraft.csm.trafficaccessories.AbstractBlockSignalBackplate;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableCrosswalkSignalNew;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignal;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignalHead;
 import java.util.List;
@@ -58,6 +59,64 @@ public class ItemSignalHeadConfigTool extends AbstractItem {
         switchToNextMode(heldStack);
         player.sendMessage(
             new TextComponentString("Signal Head Config Mode: " + getMode(heldStack).getFriendlyName()));
+        return EnumActionResult.SUCCESS;
+      }
+
+      // Handle crosswalk signal blocks
+      if (clickedBlock instanceof AbstractBlockControllableCrosswalkSignalNew) {
+        TileEntity rawCwTE = worldIn.getTileEntity(pos);
+        if (!(rawCwTE instanceof TileEntityCrosswalkSignalNew)) {
+          player.sendMessage(new TextComponentString("Crosswalk signal tile entity missing."));
+          return EnumActionResult.FAIL;
+        }
+        TileEntityCrosswalkSignalNew cwTe = (TileEntityCrosswalkSignalNew) rawCwTE;
+        switch (mode) {
+          case CYCLE_BODY_COLOR: {
+            var next = cwTe.getNextBodyPaintColor();
+            player.sendMessage(new TextComponentString("Body color: " + next.getFriendlyName()));
+            break;
+          }
+          case CYCLE_VISOR_COLOR: {
+            var next = cwTe.getNextVisorPaintColor();
+            player.sendMessage(new TextComponentString("Visor color: " + next.getFriendlyName()));
+            break;
+          }
+          case CYCLE_VISOR_TYPE: {
+            var next = cwTe.getNextVisorType();
+            player.sendMessage(new TextComponentString("Visor type: " + next.getFriendlyName()));
+            break;
+          }
+          case CYCLE_BODY_TILT: {
+            var next = cwTe.getNextBodyTilt();
+            player.sendMessage(new TextComponentString("Body tilt: " + next.getFriendlyName()));
+            break;
+          }
+          case CYCLE_MOUNT_TYPE: {
+            var next = cwTe.getNextMountType();
+            player.sendMessage(new TextComponentString("Mount type: " + next.getFriendlyName()));
+            break;
+          }
+          case CYCLE_SIGNAL_COLOR: {
+            worldIn.setBlockState(pos, state.cycleProperty(AbstractBlockControllableSignal.COLOR));
+            int newColor = worldIn.getBlockState(pos).getValue(AbstractBlockControllableSignal.COLOR);
+            player.sendMessage(new TextComponentString("Signal color set to " + colorName(newColor)));
+            break;
+          }
+          case CYCLE_DOOR_COLOR:
+            player.sendMessage(new TextComponentString("Crosswalk signals do not have a door."));
+            break;
+          case CYCLE_BULB_STYLE:
+          case CYCLE_BULB_TYPE:
+            player.sendMessage(new TextComponentString("Not applicable to crosswalk signals."));
+            break;
+          case TOGGLE_ALTERNATE_FLASH:
+            player.sendMessage(new TextComponentString("Not applicable to crosswalk signals."));
+            break;
+          case OPEN_GUI:
+            // TODO: Add crosswalk config GUI in a future pass
+            player.sendMessage(new TextComponentString("Crosswalk config GUI not yet available. Use cycle modes."));
+            break;
+        }
         return EnumActionResult.SUCCESS;
       }
 
