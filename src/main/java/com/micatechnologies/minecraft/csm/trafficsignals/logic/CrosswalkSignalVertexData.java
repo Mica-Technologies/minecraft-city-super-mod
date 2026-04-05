@@ -176,10 +176,10 @@ public class CrosswalkSignalVertexData {
         float width = x2 - x1;
         float height = y2 - y1;
 
-        // Diagonal line spacing — controls diamond cell size
-        float diagSpacing = 3.0f;
-        // Step size for each box along the diagonal
-        float step = 0.8f;
+        // Diagonal line spacing — tighter for denser diamond mesh
+        float diagSpacing = 1.8f;
+        // Step size for each box along the diagonal — smaller = smoother lines
+        float step = 0.5f;
         float halfBar = barThickness / 2.0f;
 
         // Generate / diagonals (lower-left to upper-right)
