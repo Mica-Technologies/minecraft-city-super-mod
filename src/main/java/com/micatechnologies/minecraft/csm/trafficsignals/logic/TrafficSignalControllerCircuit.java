@@ -518,6 +518,8 @@ public class TrafficSignalControllerCircuit {
           ((com.micatechnologies.minecraft.csm.trafficsignals.TileEntityCrosswalkSignalNew) te)
               .setPowerLossOff(true);
         }
+        // Force light update so getLightValue is re-queried
+        world.checkLight(signal);
       }
     });
   }

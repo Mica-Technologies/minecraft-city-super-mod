@@ -48,13 +48,20 @@ public abstract class AbstractBlockControllableSignal extends AbstractBlockRotat
       // Clear power loss flag when the controller actively sets a color (it's running)
       if (signalColor != SIGNAL_OFF) {
         net.minecraft.tileentity.TileEntity te = world.getTileEntity(blockPos);
+        boolean wasPowerLossOff = false;
         if (te instanceof com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalHead) {
-          ((com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalHead) te)
-              .setPowerLossOff(false);
+          var signalTe = (com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalHead) te;
+          wasPowerLossOff = signalTe.isPowerLossOff();
+          signalTe.setPowerLossOff(false);
         }
         if (te instanceof com.micatechnologies.minecraft.csm.trafficsignals.TileEntityCrosswalkSignalNew) {
-          ((com.micatechnologies.minecraft.csm.trafficsignals.TileEntityCrosswalkSignalNew) te)
-              .setPowerLossOff(false);
+          var cwTe = (com.micatechnologies.minecraft.csm.trafficsignals.TileEntityCrosswalkSignalNew) te;
+          wasPowerLossOff = cwTe.isPowerLossOff();
+          cwTe.setPowerLossOff(false);
+        }
+        // Force light update if transitioning from power-loss-off to powered
+        if (wasPowerLossOff) {
+          world.checkLight(blockPos);
         }
       }
     } else {
