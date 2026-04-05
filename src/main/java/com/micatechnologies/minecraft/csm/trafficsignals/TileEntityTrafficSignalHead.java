@@ -70,7 +70,7 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
   private boolean alternateFlash = false;
 
   private boolean dirty = true;
-  private boolean powerLossOff = false;
+  private boolean powerLossOff = true;
 
   /**
    * Constructs a new TileEntityTrafficSignalHead instance.
