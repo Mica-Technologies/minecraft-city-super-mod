@@ -159,13 +159,13 @@ public class CrosswalkSignalVertexData {
     // ========================================================================================
 
     /**
-     * Creates a diamond lattice crate visor pattern. Uses a staggered grid of small node
-     * boxes at diamond intersection points, connected by thin horizontal and vertical bars
-     * between them. This creates a diamond-like mesh pattern that approximates a real
-     * crosswalk signal crate visor using only axis-aligned boxes.
+     * Creates a diamond lattice crate visor using diagonal lines approximated by small
+     * stepped boxes. Two sets of parallel diagonal lines (/ and \) cross to form a diamond
+     * mesh, matching the real-world crate visor pattern visible in reference images.
      *
-     * <p>The pattern alternates row offsets: even rows have nodes at 0, spacing, 2*spacing...
-     * and odd rows have nodes at spacing/2, 3*spacing/2... creating the diamond layout.
+     * <p>Each diagonal "line" is a series of small square boxes placed along the diagonal
+     * path in a staircase pattern. At Minecraft's scale, the steps blend into a convincing
+     * diagonal line.
      */
     private static List<Box> createCrateVisor( float x1, float y1, float x2, float y2,
             float barThickness ) {
@@ -173,60 +173,56 @@ public class CrosswalkSignalVertexData {
         float faceZ = BODY_FRONT_Z;
         float frontZ = faceZ - 0.8f;
 
-        // Diamond cell spacing — controls mesh density
-        float spacing = 2.0f;
-        float halfSpacing = spacing / 2.0f;
-        float nodeSize = barThickness * 1.2f; // slightly larger than bar for visible nodes
-        float halfNode = nodeSize / 2.0f;
+        float width = x2 - x1;
+        float height = y2 - y1;
+
+        // Diagonal line spacing — controls diamond cell size
+        float diagSpacing = 3.0f;
+        // Step size for each box along the diagonal
+        float step = 0.8f;
         float halfBar = barThickness / 2.0f;
 
-        // Generate diamond lattice nodes and connecting bars
-        int row = 0;
-        for ( float yy = y1; yy <= y2 + 0.01f; yy += halfSpacing ) {
-            boolean offsetRow = ( row % 2 ) != 0;
-            float startX = offsetRow ? x1 + halfSpacing : x1;
+        // Generate / diagonals (lower-left to upper-right)
+        // Each line: y = x + c, where c is the y-intercept offset
+        float maxOffset = width + height;
+        for ( float c = -maxOffset; c <= maxOffset; c += diagSpacing ) {
+            // Walk along this diagonal
+            for ( float t = 0; t <= maxOffset; t += step ) {
+                float px = x1 + t;
+                float py = y1 + t + c;
+                // Clamp to face bounds
+                if ( px - halfBar >= x2 || px + halfBar <= x1 ) continue;
+                if ( py - halfBar >= y2 || py + halfBar <= y1 ) continue;
 
-            for ( float xx = startX; xx <= x2 + 0.01f; xx += spacing ) {
-                // Node box at intersection point
-                float nx1 = Math.max( xx - halfNode, x1 );
-                float ny1 = Math.max( yy - halfNode, y1 );
-                float nx2 = Math.min( xx + halfNode, x2 );
-                float ny2 = Math.min( yy + halfNode, y2 );
-                if ( nx2 - nx1 > 0.1f && ny2 - ny1 > 0.1f ) {
-                    boxes.add( new Box(
-                            new float[]{ nx1, ny1, frontZ },
-                            new float[]{ nx2, ny2, faceZ } ) );
-                }
+                float bx1 = Math.max( px - halfBar, x1 );
+                float by1 = Math.max( py - halfBar, y1 );
+                float bx2 = Math.min( px + halfBar, x2 );
+                float by2 = Math.min( py + halfBar, y2 );
 
-                // Horizontal bar to next node in this row
-                float nextX = xx + spacing;
-                if ( nextX <= x2 + 0.01f ) {
-                    float bx1 = Math.min( xx + halfNode, x2 );
-                    float bx2 = Math.max( Math.min( nextX - halfNode, x2 ), bx1 );
-                    float by1 = Math.max( yy - halfBar, y1 );
-                    float by2 = Math.min( yy + halfBar, y2 );
-                    if ( bx2 - bx1 > 0.1f && by2 - by1 > 0.1f ) {
-                        boxes.add( new Box(
-                                new float[]{ bx1, by1, frontZ },
-                                new float[]{ bx2, by2, faceZ } ) );
-                    }
-                }
-
-                // Vertical bar down to next row's offset node (diagonal approximation)
-                float nextY = yy + halfSpacing;
-                if ( nextY <= y2 + 0.01f ) {
-                    float vx1 = Math.max( xx - halfBar, x1 );
-                    float vx2 = Math.min( xx + halfBar, x2 );
-                    float vy1 = Math.min( yy + halfNode, y2 );
-                    float vy2 = Math.max( Math.min( nextY - halfNode, y2 ), vy1 );
-                    if ( vx2 - vx1 > 0.1f && vy2 - vy1 > 0.1f ) {
-                        boxes.add( new Box(
-                                new float[]{ vx1, vy1, frontZ },
-                                new float[]{ vx2, vy2, faceZ } ) );
-                    }
-                }
+                boxes.add( new Box(
+                        new float[]{ bx1, by1, frontZ },
+                        new float[]{ bx2, by2, faceZ } ) );
             }
-            row++;
+        }
+
+        // Generate \ diagonals (upper-left to lower-right)
+        // Each line: y = -x + c
+        for ( float c = -maxOffset; c <= maxOffset; c += diagSpacing ) {
+            for ( float t = 0; t <= maxOffset; t += step ) {
+                float px = x1 + t;
+                float py = y2 - t + c;
+                if ( px - halfBar >= x2 || px + halfBar <= x1 ) continue;
+                if ( py - halfBar >= y2 || py + halfBar <= y1 ) continue;
+
+                float bx1 = Math.max( px - halfBar, x1 );
+                float by1 = Math.max( py - halfBar, y1 );
+                float bx2 = Math.min( px + halfBar, x2 );
+                float by2 = Math.min( py + halfBar, y2 );
+
+                boxes.add( new Box(
+                        new float[]{ bx1, by1, frontZ },
+                        new float[]{ bx2, by2, faceZ } ) );
+            }
         }
 
         // Outer frame (slightly thicker)
