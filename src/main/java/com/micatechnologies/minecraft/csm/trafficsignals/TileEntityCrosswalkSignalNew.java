@@ -28,7 +28,7 @@ public class TileEntityCrosswalkSignalNew extends AbstractTickableTileEntity {
     private TrafficSignalBodyTilt bodyTilt = TrafficSignalBodyTilt.NONE;
     private CrosswalkBulbType bulbType = CrosswalkBulbType.WORDED;
     private boolean dirty = true;
-    private boolean powerLossOff = false;
+    private boolean powerLossOff = true;
 
     // endregion
 
