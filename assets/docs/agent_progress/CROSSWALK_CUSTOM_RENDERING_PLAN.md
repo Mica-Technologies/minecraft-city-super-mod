@@ -230,8 +230,18 @@ built as stepped boxes via `addAngledArm2D()` for any X-Z diagonal needed.
 - [x] Texture atlas (all 11 textures in single 512x512 atlas, single bind per frame)
 - [x] CrosswalkAtlasTool dev-env-util for atlas regeneration
 
+### Phase 8: Config GUI & Signal Improvements
+- [x] CrosswalkConfigGui with 6 cycle buttons (body/visor color, visor/mount/bulb type, tilt)
+- [x] CrosswalkConfigPacket + handler for client→server communication
+- [x] Bulb Type button disabled on 16-inch (fixed display type)
+- [x] Registered as GUI ID 4, opened via config tool OPEN_GUI mode
+- [x] Power loss light level: signals emit 0 light when controller loses power
+- [x] Default powerLossOff=true so unlinked signals start dark
+- [x] world.checkLight() calls to force lighting engine updates
+- [x] OptiFine emissive textures (_e.png) for all 8 colored border backplates
+- [x] Crate visor rewritten with true diagonal lines (/ and \) for realistic diamond mesh
+
 ### Future Work
-- [ ] Config GUI for crosswalk signals
 - [ ] Additional crosswalk signal accessories
 
 ---
