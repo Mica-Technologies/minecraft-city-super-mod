@@ -501,14 +501,14 @@ The plan is organized into 8 phases, ordered so that earlier phases unblock or d
   - Replaced 4-direction loop with direct 2-direction checks (forward/backward along facing axis)
   - Checks opposite direction first (most likely signal position)
 
-- [x] **6.5 — Frustum culling / GL state safety for TESRs** *(done 2026-04-06)*
-  - Confirmed Forge already handles frustum culling for non-global TESRs
-  - Added glPushAttrib/glPopAttrib for guaranteed state restore on all 3 signal TESRs
+- [ ] **6.5 — Add frustum culling to TESR** *(skipped — Forge already handles this)*
+  - Forge 1.12.2 TESRs already cull via distance check for non-global renderers
+  - No explicit frustum check needed
 
-- [x] **6.6 — Batch GL state changes in signal head renderer** *(done 2026-04-06)*
-  - Added glPushAttrib/glPopAttrib to TileEntityTrafficSignalHeadRenderer,
-    TileEntityCrosswalkSignalRenderer, TileEntityCrosswalkSignalNewRenderer
-  - GlStateManager cache re-synced after glPopAttrib restores state
+- [ ] **6.6 — Batch GL state changes** *(skipped — glPushAttrib/glPopAttrib caused rendering artifacts)*
+  - Attempted glPushAttrib/glPopAttrib but it desynchronized GlStateManager's cache,
+    causing signals to render as semi-transparent white wireframes. Reverted.
+  - The existing manual enable/disable pairs are the correct approach for 1.12.2
 
 - [x] **6.7 — Optimize controller sensor polling** *(done 2026-04-05)*
   - Added per-tick cache in `TrafficSignalControllerCircuit.getSensorsWaitingSummary()`
