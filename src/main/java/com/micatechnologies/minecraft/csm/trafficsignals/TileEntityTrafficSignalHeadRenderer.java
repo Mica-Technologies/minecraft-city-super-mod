@@ -84,16 +84,50 @@ public class TileEntityTrafficSignalHeadRenderer extends
     int prevBrightnessY = (int) OpenGlHelper.lastBrightnessY;
     OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240f, 240f);
 
+    // Get tilt pivot offset for add-on signals that need to rotate in sync with
+    // their parent signal (offset is in block units from this block to the main signal)
+    int[] tiltPivotOffset = new int[]{0, 0, 0};
+    if (blockState.getBlock() instanceof AbstractBlockControllableSignalHead) {
+      tiltPivotOffset = ((AbstractBlockControllableSignalHead) blockState.getBlock())
+          .getTiltPivotOffset(te.getWorld(), te.getPos());
+    }
+
+    boolean hasTiltPivot = (tiltPivotOffset[0] != 0 || tiltPivotOffset[2] != 0)
+        && bodyTilt != TrafficSignalBodyTilt.NONE;
+
     // Push matrix once
     GL11.glPushMatrix();
     GL11.glTranslated(x, y, z);
     GL11.glScaled(0.0625, 0.0625, 0.0625);
-    GL11.glTranslated(8, 8, 8);
 
-    // Apply rotation once
-    float rotationAngle = bodyDirection.getRotation();
-    GL11.glRotatef(rotationAngle, 0, 1, 0);
-    GL11.glTranslated(-8, -8, -8);
+    if (hasTiltPivot) {
+      // For add-on signals with a tilt pivot offset, decompose into two rotations:
+      // 1. Apply the tilt component around the MAIN signal's center
+      // 2. Apply the base facing around this block's own center
+      // (GL matrices apply in reverse order, so tilt goes first in code)
+      float baseFacingAngle = getBaseFacingAngle(facing);
+      float tiltAngle = bodyDirection.getRotation() - baseFacingAngle;
+
+      // Main signal center in this block's model space
+      float pivotX = 8 + tiltPivotOffset[0] * 16.0f;
+      float pivotZ = 8 + tiltPivotOffset[2] * 16.0f;
+
+      // Step 1: Tilt rotation around main signal center
+      GL11.glTranslated(pivotX, 8, pivotZ);
+      GL11.glRotatef(tiltAngle, 0, 1, 0);
+      GL11.glTranslated(-pivotX, -8, -pivotZ);
+
+      // Step 2: Base facing rotation around own block center
+      GL11.glTranslated(8, 8, 8);
+      GL11.glRotatef(baseFacingAngle, 0, 1, 0);
+      GL11.glTranslated(-8, -8, -8);
+    } else {
+      // Standard rotation: single rotation around own block center
+      GL11.glTranslated(8, 8, 8);
+      float rotationAngle = bodyDirection.getRotation();
+      GL11.glRotatef(rotationAngle, 0, 1, 0);
+      GL11.glTranslated(-8, -8, -8);
+    }
 
     // --- Compensation for tilt: shift slightly left/right for visual alignment ---
     // 1 model unit = 1/16 block, so shift by ±2 for tilt, ±4 for angle
@@ -334,6 +368,19 @@ public class TileEntityTrafficSignalHeadRenderer extends
       RenderHelper.addBoxesToBufferDualColor(visorData, buffer,
           red, green, blue, VISOR_INNER_R, VISOR_INNER_G, VISOR_INNER_B, alpha,
           xOffset, yOffset, zPushBack, VISOR_CENTER_X, VISOR_CENTER_Y);
+    }
+  }
+
+  /**
+   * Returns the base facing rotation angle (without tilt) for the given EnumFacing.
+   */
+  private static float getBaseFacingAngle(EnumFacing facing) {
+    switch (facing) {
+      case SOUTH: return 180.0f;
+      case WEST:  return 90.0f;
+      case NORTH: return 0.0f;
+      case EAST:  return 270.0f;
+      default:    return 0.0f;
     }
   }
 
