@@ -1,14 +1,10 @@
 package com.micatechnologies.minecraft.csm.codeutils;
 
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficAccessoryNSEWUD;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficSignalFatigueMitigator1;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficSignalFatigueMitigator2;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficSignalFatigueMitigator3;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficSignalFatigueMitigator4;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficSignalHangMount;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficSignalInterconnectModule1;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficSignalInterconnectModule2;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficSignalPreemptionBeacon;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficSignalSnowBeacon;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficStreetNameSignMount;
 import com.micatechnologies.minecraft.csm.trafficsignals.AbstractBlockControllableCrosswalkSignal;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkDoubleWordedBaseMount;
@@ -114,9 +110,7 @@ public abstract class AbstractBlockTrafficPole extends AbstractBlockRotatableNSE
           BlockTrafficSignalFatigueMitigator1.class, BlockTrafficSignalFatigueMitigator2.class,
           BlockTrafficSignalFatigueMitigator3.class, BlockTrafficSignalFatigueMitigator4.class,
           BlockTrafficLightSensorBox.class, BlockTrafficStreetNameSignMount.class,
-          BlockTrafficSignalHangMount.class, BlockTrafficSignalSnowBeacon.class,
-          BlockTrafficSignalPreemptionBeacon.class, BlockTrafficSignalInterconnectModule1.class,
-          BlockTrafficSignalInterconnectModule2.class, BlockControllableCrosswalkMountGray.class,
+          BlockTrafficAccessoryNSEWUD.class, BlockControllableCrosswalkMountGray.class,
           BlockControllableCrosswalkSignalSingle.class, BlockControllableCrosswalkSignalDouble.class};
 
 

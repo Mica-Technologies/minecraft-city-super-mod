@@ -2,159 +2,15 @@ package com.micatechnologies.minecraft.csm.tabs;
 
 import com.micatechnologies.minecraft.csm.CsmRegistry;
 import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockControlBoxLarge;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockControlBoxLargeBlack;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockControlBoxLargeMatteWhite;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockControlBoxLargeSilver;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockControlBoxLargeTan;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockControlBoxLargeWhite;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockControlBoxSmallBlack;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockControlBoxSmallMatteWhite;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockControlBoxSmallMetal;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockControlBoxSmallSilver;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockControlBoxSmallTan;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockControlBoxSmallWhite;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockDMPTBlack;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockDMPTSilver;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockDMPTTan;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockDMPTUnpainted;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockDMPTWhite;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockFreewayCallBox;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockMetalWireCenter;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockMetalWireCenterTop;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockMetalWireOffset;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockMetalWireOffsetTop;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockSignalPoleMount2;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorder5AddOnBlackBlack;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorder5AddOnBlackBlue;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorder5AddOnBlackPink;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorder5AddOnBlackWhite;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorder5AddOnBlackYellow;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorder5AddOnBlueBlack;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorder5AddOnGrayGray;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorder5AddOnPinkBlack;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorder5AddOnWhiteBlack;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorder5AddOnYellowBlack;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorderAddOnBlackBlack;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorderAddOnBlackBlue;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorderAddOnBlackPink;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorderAddOnBlackWhite;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorderAddOnBlackYellow;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorderAddOnBlueBlack;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorderAddOnGrayGray;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorderAddOnPinkBlack;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorderAddOnWhiteBlack;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorderAddOnYellowBlack;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorderBlackBlack;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorderBlackBlack8812Inch;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorderBlackBlack8Inch;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorderBlackBlue;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorderBlackPink;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorderBlackWhite;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorderBlackYellow;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorderBlueBlack;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorderBlueBlack8812Inch;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorderBlueBlack8Inch;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorderGrayGray;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorderGrayGray8812Inch;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorderGrayGray8Inch;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorderPinkBlack;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorderPinkBlack8812Inch;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorderPinkBlack8Inch;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorderSingleBlackBlack;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorderSingleBlackBlue;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorderSingleBlackPink;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorderSingleBlackWhite;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorderSingleBlackYellow;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorderSingleBlueBlack;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorderSingleGrayGray;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorderSinglePinkBlack;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorderSingleWhiteBlack;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorderSingleYellowBlack;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorderWhiteBlack;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorderWhiteBlack8812Inch;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorderWhiteBlack8Inch;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorderYellowBlack;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorderYellowBlack8812Inch;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLBorderYellowBlack8Inch;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLController;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLControllerBlack;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLControllerMatteWhite;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLControllerSilver;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLControllerTan;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLControllerWhite;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLDCover;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLDoghouseBorderBlackBlack;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLDoghouseBorderBlackBlue;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLDoghouseBorderBlackPink;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLDoghouseBorderBlackWhite;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLDoghouseBorderBlackYellow;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLDoghouseBorderBlueBlack;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLDoghouseBorderGrayGray;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLDoghouseBorderPinkBlack;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLDoghouseBorderWhiteBlack;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLDoghouseBorderYellowBlack;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLHBorderBlack;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLHBorderTan;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLHBorderWhite;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLHBorderYellow;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLHCover;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLHMountKit;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLHawkBorderBlackBlack;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLHawkBorderBlackBlue;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLHawkBorderBlackPink;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLHawkBorderBlackWhite;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLHawkBorderBlackYellow;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLHawkBorderBlueBlack;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLHawkBorderGrayGray;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLHawkBorderPinkBlack;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLHawkBorderWhiteBlack;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLHawkBorderYellowBlack;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLPMblack;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLPMsilver;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLPMtan;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLPMwhite;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLVCover;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLVMountKit;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLVMountKit8812Inch;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLVMountKit8Inch;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLVTall90LMountKit;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLVTall90RMountKit;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLVTallMountKit;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLiteHorzWireMount;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTLiteVertWireMount;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTlpmunpainted;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleBaseBlack;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleBaseSilver;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleBaseTan;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleBaseUnpainted;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleBaseWhite;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleHorizSignMountBlack;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleHorizSignMountSilver;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleHorizSignMountTan;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleHorizSignMountWhite;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleSmallGray;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockMiniSolarPanel;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficAccessoryBackplate;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficAccessoryBackplateFitted;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficAccessoryNSEWUD;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleHorizontalAngleBlack;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleHorizontalAngleMount1Black;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleHorizontalAngleMount1Silver;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleHorizontalAngleMount1Tan;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleHorizontalAngleMount1Unpainted;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleHorizontalAngleMount1White;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleHorizontalAngleMount2Black;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleHorizontalAngleMount2Silver;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleHorizontalAngleMount2Tan;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleHorizontalAngleMount2Unpainted;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleHorizontalAngleMount2White;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleHorizontalAngleMount3Black;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleHorizontalAngleMount3Silver;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleHorizontalAngleMount3Tan;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleHorizontalAngleMount3Unpainted;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleHorizontalAngleMount3White;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleHorizontalAngleSilver;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleHorizontalAngleTan;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleHorizontalAngleUnpainted;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleHorizontalAngleWhite;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleSmallBlack;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleHorizontalMountDouble;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleHorizontalMountDoubleBlack;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleHorizontalMountDoubleTan;
@@ -163,592 +19,473 @@ import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleHor
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleHorizontalSingleMountBlack;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleHorizontalSingleMountTan;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleHorizontalSingleMountWhite;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleSmallTan;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleSmallWhite;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleLargeGray;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleLargeBlack;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockMiniSolarPanel;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleVerticalConnector;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleVerticalConnectorAngledBlack;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleVerticalConnectorAngledSilver;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleVerticalConnectorAngledTan;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleVerticalConnectorAngledUnpainted;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleVerticalConnectorAngledWhite;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleVerticalConnectorBlack;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleVerticalConnectorDoubleBlack;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleVerticalConnectorDoubleSilver;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleVerticalConnectorDoubleTan;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleVerticalConnectorDoubleUnpainted;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleVerticalConnectorDoubleWhite;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleVerticalConnectorTan;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleVerticalConnectorWhite;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleVerticalCurveConnector;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleVerticalCurveConnectorBlack;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleVerticalCurveConnectorDoubleGuyBlack;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleVerticalCurveConnectorDoubleGuySilver;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleVerticalCurveConnectorDoubleGuyTan;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleVerticalCurveConnectorDoubleGuyUnpainted;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleVerticalCurveConnectorDoubleGuyWhite;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleVerticalCurveConnectorTan;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleVerticalCurveConnectorWhite;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleVerticalDoubleGuyMountBlack;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleVerticalDoubleGuyMountSilver;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleVerticalDoubleGuyMountTan;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleVerticalDoubleGuyMountUnpainted;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleVerticalDoubleGuyMountWhite;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleVerticalLightMount;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleVerticalLightMountBlack;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleVerticalLightMountTan;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleVerticalLightMountUnpainted;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleVerticalLightMountWhite;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleVerticalQuadMount;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleVerticalQuadMountBlack;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleVerticalQuadMountTan;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleVerticalQuadMountWhite;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleVerticalSignalMount;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleVerticalSignalMountBlack;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleVerticalSignalMountTan;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleVerticalSignalMountWhite;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleLargeGray;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleLargeTan;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleLargeUnpainted;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleLargeWhite;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleSmallBlack;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleSmallGray;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleSmallTan;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleSmallUnpainted;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleSmallWhite;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficSignalFatigueMitigator1;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficSignalFatigueMitigator2;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficSignalFatigueMitigator3;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficSignalFatigueMitigator4;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficSignalHangMount;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficSignalInterconnectModule1;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficSignalInterconnectModule2;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficSignalPreemptionBeacon;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficSignalSnowBeacon;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficStreetNameSign;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficStreetNameSignDouble;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficStreetNameSignMount;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficpolehorzdblblack;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficpolehorzdblconcrete;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficpolehorzdblsilver;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficpolehorzdbltan;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficpolehorzdblunpainted;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficpolehorzdblwhite;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficpolehorzdoublemountunpainted;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficpolehorzsignmountunpainted;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficpolehorzsinglemountunpainted;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleSmallUnpainted;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficpolevertdblblack;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficpolevertdblconcrete;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficpolevertdblsilver;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficpolevertdbltan;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficpolevertdblunpainted;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficpolevertdblwhite;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficpoleverticalconnectorconcrete;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficpoleverticalconnectorunpainted;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficpoleverticalcurveconnectorunpainted;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficpoleverticalquadmountconcrete;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficpoleverticalquadmountunpainted;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficpoleverticalsignalmountconcrete;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficpoleverticalsignalmountunpainted;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleLargeUnpainted;
 import net.minecraft.block.Block;
+import net.minecraft.util.BlockRenderLayer;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 /**
  * The tab for traffic accessory blocks.
  *
- * @version 1.0
+ * @version 2.0
  */
 @CsmTab.Load(order = 9)
 public class CsmTabTrafficAccessories extends CsmTab {
 
-  /**
-   * Gets the ID (unique identifier) of the tab.
-   *
-   * @return the ID of the tab
-   *
-   * @since 1.0
-   */
   @Override
   public String getTabId() {
     return "tabtrafficaccessories";
   }
 
-  /**
-   * Gets the block to use as the icon of the tab
-   *
-   * @return the block to use as the icon of the tab
-   *
-   * @since 1.0
-   */
   @Override
   public Block getTabIcon() {
     return CsmRegistry.getBlock("tlborderyellowblack");
   }
 
-  /**
-   * Gets a boolean indicating if the tab is searchable (has its own search bar).
-   *
-   * @return {@code true} if the tab is searchable, otherwise {@code false}
-   *
-   * @since 1.0
-   */
   @Override
   public boolean getTabSearchable() {
     return false;
   }
 
-  /**
-   * Gets a boolean indicating if the tab is hidden (not displayed in the inventory).
-   *
-   * @return {@code true} if the tab is hidden, otherwise {@code false}
-   *
-   * @since 1.0
-   */
   @Override
   public boolean getTabHidden() {
     return false;
   }
 
-  /**
-   * Initializes all the items belonging to the tab.
-   *
-   * @since 1.0
-   */
+  // Shared bounding boxes for NSEWUD factory blocks
+  private static final AxisAlignedBB BB_CONTROL_BOX_LARGE =
+      new AxisAlignedBB(-0.312500, -0.562500, 0.312500, 1.312500, 1.625000, 1.375000);
+  private static final AxisAlignedBB BB_CONTROL_BOX_SMALL =
+      new AxisAlignedBB(0.125000, -0.437500, 0.437500, 0.875000, 1.375000, 1.375000);
+  private static final AxisAlignedBB BB_DMPT =
+      new AxisAlignedBB(0.125000, 0.125000, -0.062500, 0.875000, 0.875000, 1.000000);
+  private static final AxisAlignedBB BB_FREEWAY_CALL_BOX =
+      new AxisAlignedBB(0.125000, 0.062500, 0.937500, 0.875000, 0.937500, 1.000000);
+  private static final AxisAlignedBB BB_METAL_WIRE_CENTER =
+      new AxisAlignedBB(0.000000, 0.000000, 0.500000, 1.000000, 0.100000, 0.600000);
+  private static final AxisAlignedBB BB_METAL_WIRE_CENTER_TOP =
+      new AxisAlignedBB(0.000000, 0.900000, 0.500000, 1.000000, 1.000000, 0.600000);
+  private static final AxisAlignedBB BB_METAL_WIRE_OFFSET =
+      new AxisAlignedBB(0.000000, 0.000000, 0.851563, 1.000000, 0.100000, 0.898438);
+  private static final AxisAlignedBB BB_METAL_WIRE_OFFSET_TOP =
+      new AxisAlignedBB(0.000000, 0.900000, 0.851563, 1.000000, 1.000000, 0.898438);
+  private static final AxisAlignedBB BB_SIGNAL_POLE_MOUNT2 =
+      new AxisAlignedBB(0.437500, -1.000000, -0.250000, 0.562500, 1.562500, 0.750000);
+  private static final AxisAlignedBB BB_TL_CONTROLLER =
+      new AxisAlignedBB(-0.984375, -1.000000, -0.484375, 1.984375, 2.000000, 1.343750);
+  private static final AxisAlignedBB BB_TL_D_COVER =
+      new AxisAlignedBB(-0.312500, -0.875000, 0.875000, 1.312500, 1.625000, 1.750000);
+  private static final AxisAlignedBB BB_TL_H_COVER =
+      new AxisAlignedBB(-0.687500, 0.000000, 1.062500, 1.687500, 0.875000, 1.875000);
+  private static final AxisAlignedBB BB_TL_H_MOUNT_KIT =
+      new AxisAlignedBB(-0.687500, 0.312500, 0.000000, 1.687500, 0.437500, 1.000000);
+  private static final AxisAlignedBB BB_TL_PM =
+      new AxisAlignedBB(0.062500, -0.356250, 0.062500, 0.937500, 0.581250, 0.937500);
+  private static final AxisAlignedBB BB_TL_V_COVER =
+      new AxisAlignedBB(0.062500, -0.812500, 0.937500, 0.937500, 1.562500, 1.750000);
+  private static final AxisAlignedBB BB_TL_V_MOUNT_KIT =
+      new AxisAlignedBB(0.437500, -0.812500, 0.000000, 0.562500, 1.562500, 1.000000);
+  private static final AxisAlignedBB BB_TL_V_MOUNT_KIT_8_INCH =
+      new AxisAlignedBB(0.437500, -0.812500, 0.000000, 0.562500, 0.812500, 1.000000);
+  private static final AxisAlignedBB BB_TL_V_MOUNT_KIT_8812_INCH =
+      new AxisAlignedBB(0.437500, -0.812500, 0.000000, 0.562500, 1.062500, 1.000000);
+  private static final AxisAlignedBB BB_TL_V_TALL_MOUNT_KIT =
+      new AxisAlignedBB(0.437500, -0.812500, 0.000000, 0.562500, 2.000000, 1.000000);
+  private static final AxisAlignedBB BB_TL_V_TALL_90R_MOUNT_KIT =
+      new AxisAlignedBB(-0.218750, -0.812500, 0.000000, 0.562500, 2.000000, 1.000000);
+  private static final AxisAlignedBB BB_TL_V_TALL_90L_MOUNT_KIT =
+      new AxisAlignedBB(0.437500, -0.812500, 0.000000, 1.218750, 2.000000, 1.000000);
+  private static final AxisAlignedBB BB_TLITE_HORZ_WIRE_MOUNT =
+      new AxisAlignedBB(1.437500, -0.250000, 0.500000, 1.562500, 0.000000, 0.875000);
+  private static final AxisAlignedBB BB_TLITE_VERT_WIRE_MOUNT =
+      new AxisAlignedBB(0.437500, 0.500000, 0.437500, 0.562500, 1.000000, 0.937500);
+  private static final AxisAlignedBB BB_TRAFFIC_POLE_BASE =
+      new AxisAlignedBB(0.000000, 0.000000, 0.000000, 1.000000, 1.000000, 1.000000);
+  private static final AxisAlignedBB BB_TRAFFIC_POLE_HORIZ_SIGN_MOUNT =
+      new AxisAlignedBB(0.000000, 0.000000, 0.000000, 0.750000, 1.000000, 1.000000);
+  private static final AxisAlignedBB BB_TRAFFIC_POLE_HORIZ_ANGLE_MOUNT_1 =
+      new AxisAlignedBB(0.250000, 0.250000, -0.212500, 0.750000, 0.750000, 1.212500);
+  private static final AxisAlignedBB BB_TRAFFIC_POLE_HORIZ_ANGLE_MOUNT_2 =
+      new AxisAlignedBB(0.250000, 0.250000, -0.212500, 0.750000, 0.750000, 1.212500);
+  private static final AxisAlignedBB BB_TRAFFIC_POLE_HORIZ_ANGLE_MOUNT_3 =
+      new AxisAlignedBB(0.000000, 0.250000, -0.212500, 1.000000, 0.750000, 1.212500);
+  private static final AxisAlignedBB BB_TRAFFIC_POLE_VERT_CONNECTOR =
+      new AxisAlignedBB(0.125000, 0.000000, 0.000000, 0.875000, 1.000000, 0.875000);
+  private static final AxisAlignedBB BB_TRAFFIC_POLE_VERT_CONNECTOR_ANGLED =
+      new AxisAlignedBB(0.125000, 0.000000, -0.625000, 0.875000, 1.000000, 0.875000);
+  private static final AxisAlignedBB BB_TRAFFIC_POLE_VERT_CONNECTOR_DOUBLE =
+      new AxisAlignedBB(-0.062649, 0.000000, -0.062649, 1.062649, 1.000000, 1.062649);
+  private static final AxisAlignedBB BB_TRAFFIC_POLE_VERT_CURVE_CONNECTOR =
+      new AxisAlignedBB(0.250000, -0.750000, -1.000000, 0.750000, 0.750000, 2.000000);
+  private static final AxisAlignedBB BB_TRAFFIC_POLE_VERT_DOUBLE_GUY_MOUNT =
+      new AxisAlignedBB(-0.437500, 0.000000, 0.000000, 1.437500, 1.000000, 0.875000);
+  private static final AxisAlignedBB BB_TRAFFIC_POLE_VERT_LIGHT_MOUNT =
+      new AxisAlignedBB(0.312500, 0.187500, -1.000000, 0.687500, 1.187500, 1.187500);
+  private static final AxisAlignedBB BB_TRAFFIC_POLE_VERT_QUAD_MOUNT =
+      new AxisAlignedBB(0.000000, 0.000000, 0.000000, 1.000000, 1.000000, 1.000000);
+  private static final AxisAlignedBB BB_TRAFFIC_POLE_VERT_SIGNAL_MOUNT =
+      new AxisAlignedBB(0.125000, -1.000000, 0.125000, 1.562500, 2.000000, 0.875000);
+  private static final AxisAlignedBB BB_TRAFFIC_POLE_HORZ_DBL =
+      new AxisAlignedBB(0.250000, 0.250000, -1.000000, 0.750000, 0.750000, 1.000000);
+  private static final AxisAlignedBB BB_TRAFFIC_POLE_VERT_DBL =
+      new AxisAlignedBB(0.125000, 0.125000, -1.000000, 0.875000, 0.875000, 1.000000);
+  private static final AxisAlignedBB BB_TL_SNOW_BEACON =
+      new AxisAlignedBB(-0.500000, -1.000000, 0.250000, 1.375000, 0.631250, 0.750000);
+  private static final AxisAlignedBB BB_TL_PREEMPT_BEACON =
+      new AxisAlignedBB(0.000000, -0.421875, 0.406250, 0.562500, 0.156250, 0.593750);
+  private static final AxisAlignedBB BB_TL_INTERCONNECT_MODULE_1 =
+      new AxisAlignedBB(0.325000, 0.125000, 1.100000, 0.700000, 0.500000, 1.515625);
+  private static final AxisAlignedBB BB_TL_INTERCONNECT_MODULE_2 =
+      new AxisAlignedBB(0.250000, -0.375000, 0.100000, 0.656250, 1.328125, 0.587500);
+  private static final AxisAlignedBB BB_TL_HANG_MOUNT =
+      new AxisAlignedBB(0.500000, -0.750000, 0.750000, 0.600000, 1.609375, 0.850000);
+  private static final AxisAlignedBB BB_TRAFFIC_POLE_HORIZ_SINGLE_MOUNT =
+      new AxisAlignedBB(0.000000, 0.250000, 0.000000, 0.750000, 0.750000, 1.000000);
+  private static final AxisAlignedBB BB_TRAFFIC_POLE_HORIZ_MOUNT_DOUBLE =
+      new AxisAlignedBB(0.000000, 0.250000, 0.000000, 1.000000, 0.750000, 1.000000);
+
   @Override
   public void initTabElements(FMLPreInitializationEvent fmlPreInitializationEvent) {
-    initTabBlock(BlockControlBoxLarge.class, fmlPreInitializationEvent); // ControlBoxLarge
-    initTabBlock(BlockControlBoxLargeBlack.class,
-        fmlPreInitializationEvent); // ControlBoxLargeBlack
-    initTabBlock(BlockControlBoxLargeMatteWhite.class,
-        fmlPreInitializationEvent); // ControlBoxLargeMatteWhite
-    initTabBlock(BlockControlBoxLargeSilver.class,
-        fmlPreInitializationEvent); // ControlBoxLargeSilver
-    initTabBlock(BlockControlBoxLargeTan.class, fmlPreInitializationEvent); // ControlBoxLargeTan
-    initTabBlock(BlockControlBoxLargeWhite.class,
-        fmlPreInitializationEvent); // ControlBoxLargeWhite
-    initTabBlock(BlockControlBoxSmallBlack.class,
-        fmlPreInitializationEvent); // ControlBoxSmallBlack
-    initTabBlock(BlockControlBoxSmallMatteWhite.class,
-        fmlPreInitializationEvent); // ControlBoxSmallMatteWhite
-    initTabBlock(BlockControlBoxSmallMetal.class,
-        fmlPreInitializationEvent); // ControlBoxSmallMetal
-    initTabBlock(BlockControlBoxSmallSilver.class,
-        fmlPreInitializationEvent); // ControlBoxSmallSilver
-    initTabBlock(BlockControlBoxSmallTan.class, fmlPreInitializationEvent); // ControlBoxSmallTan
-    initTabBlock(BlockControlBoxSmallWhite.class,
-        fmlPreInitializationEvent); // ControlBoxSmallWhite
-    initTabBlock(BlockDMPTBlack.class, fmlPreInitializationEvent); // DMPTBlack
-    initTabBlock(BlockDMPTSilver.class, fmlPreInitializationEvent); // DMPTSilver
-    initTabBlock(BlockDMPTTan.class, fmlPreInitializationEvent); // DMPTTan
-    initTabBlock(BlockDMPTUnpainted.class, fmlPreInitializationEvent); // DMPTUnpainted
-    initTabBlock(BlockDMPTWhite.class, fmlPreInitializationEvent); // DMPTWhite
-    initTabBlock(BlockFreewayCallBox.class, fmlPreInitializationEvent); // FreewayCallBox
-    initTabBlock(BlockMetalWireCenter.class, fmlPreInitializationEvent); // MetalWireCenter
-    initTabBlock(BlockMetalWireCenterTop.class, fmlPreInitializationEvent); // MetalWireCenterTop
-    initTabBlock(BlockMetalWireOffset.class, fmlPreInitializationEvent); // MetalWireOffset
-    initTabBlock(BlockMetalWireOffsetTop.class, fmlPreInitializationEvent); // MetalWireOffsetTop
-    initTabBlock(BlockSignalPoleMount2.class, fmlPreInitializationEvent); // SignalPoleMount2
-    initTabBlock(BlockTLBorder5AddOnBlackBlack.class,
-        fmlPreInitializationEvent); // TLBorder5AddOnBlackBlack
-    initTabBlock(BlockTLBorder5AddOnBlackWhite.class,
-        fmlPreInitializationEvent); // TLBorder5AddOnBlackWhite
-    initTabBlock(BlockTLBorder5AddOnBlackYellow.class,
-        fmlPreInitializationEvent); // TLBorder5AddOnBlackYellow
-    initTabBlock(BlockTLBorder5AddOnGrayGray.class,
-        fmlPreInitializationEvent); // TLBorder5AddOnGrayGray
-    initTabBlock(BlockTLBorder5AddOnBlueBlack.class,
-        fmlPreInitializationEvent); // TLBorder5AddOnBlueBlack
-    initTabBlock(BlockTLBorder5AddOnPinkBlack.class,
-        fmlPreInitializationEvent); // TLBorder5AddOnPinkBlack
-    initTabBlock(BlockTLBorder5AddOnBlackBlue.class,
-        fmlPreInitializationEvent); // TLBorder5AddOnBlackBlue
-    initTabBlock(BlockTLBorder5AddOnBlackPink.class,
-        fmlPreInitializationEvent); // TLBorder5AddOnBlackPink
-    initTabBlock(BlockTLBorder5AddOnWhiteBlack.class,
-        fmlPreInitializationEvent); // TLBorder5AddOnWhiteBlack
-    initTabBlock(BlockTLBorder5AddOnYellowBlack.class,
-        fmlPreInitializationEvent); // TLBorder5AddOnYellowBlack
-    initTabBlock(BlockTLBorderAddOnBlackBlack.class,
-        fmlPreInitializationEvent); // TLBorderAddOnBlackBlack
-    initTabBlock(BlockTLBorderAddOnBlackWhite.class,
-        fmlPreInitializationEvent); // TLBorderAddOnBlackWhite
-    initTabBlock(BlockTLBorderAddOnBlackYellow.class,
-        fmlPreInitializationEvent); // TLBorderAddOnBlackYellow
-    initTabBlock(BlockTLBorderAddOnGrayGray.class,
-        fmlPreInitializationEvent); // TLBorderAddOnGrayGray
-    initTabBlock(BlockTLBorderAddOnBlueBlack.class,
-        fmlPreInitializationEvent); // TLBorderAddOnBlueBlack
-    initTabBlock(BlockTLBorderAddOnPinkBlack.class,
-        fmlPreInitializationEvent); // TLBorderAddOnPinkBlack
-    initTabBlock(BlockTLBorderAddOnBlackBlue.class,
-        fmlPreInitializationEvent); // TLBorderAddOnBlackBlue
-    initTabBlock(BlockTLBorderAddOnBlackPink.class,
-        fmlPreInitializationEvent); // TLBorderAddOnBlackPink
-    initTabBlock(BlockTLBorderAddOnWhiteBlack.class,
-        fmlPreInitializationEvent); // TLBorderAddOnWhiteBlack
-    initTabBlock(BlockTLBorderAddOnYellowBlack.class,
-        fmlPreInitializationEvent); // TLBorderAddOnYellowBlack
-    initTabBlock(BlockTLBorderBlackBlack.class, fmlPreInitializationEvent); // TLBorderBlackBlack
-    initTabBlock(BlockTLBorderBlackBlack8812Inch.class,
-        fmlPreInitializationEvent); // TLBorderBlackBlack8812Inch
-    initTabBlock(BlockTLBorderBlackBlack8Inch.class,
-        fmlPreInitializationEvent); // TLBorderBlackBlack8Inch
-    initTabBlock(BlockTLBorderBlackWhite.class, fmlPreInitializationEvent); // TLBorderBlackWhite
-    initTabBlock(BlockTLBorderBlackYellow.class, fmlPreInitializationEvent); // TLBorderBlackYellow
-    initTabBlock(BlockTLBorderGrayGray.class, fmlPreInitializationEvent); // TLBorderGrayGray
-    initTabBlock(BlockTLBorderBlueBlack.class, fmlPreInitializationEvent); // TLBorderBlueBlack
-    initTabBlock(BlockTLBorderPinkBlack.class, fmlPreInitializationEvent); // TLBorderPinkBlack
-    initTabBlock(BlockTLBorderBlackBlue.class, fmlPreInitializationEvent); // TLBorderBlackBlue
-    initTabBlock(BlockTLBorderBlackPink.class, fmlPreInitializationEvent); // TLBorderBlackPink
-    initTabBlock(BlockTLBorderSingleBlackBlack.class,
-        fmlPreInitializationEvent); // TLBorderSingleBlackBlack
-    initTabBlock(BlockTLBorderSingleBlackWhite.class,
-        fmlPreInitializationEvent); // TLBorderSingleBlackWhite
-    initTabBlock(BlockTLBorderSingleBlackYellow.class,
-        fmlPreInitializationEvent); // TLBorderSingleBlackYellow
-    initTabBlock(BlockTLBorderSingleGrayGray.class,
-        fmlPreInitializationEvent); // TLBorderSingleGrayGray
-    initTabBlock(BlockTLBorderSingleWhiteBlack.class,
-        fmlPreInitializationEvent); // TLBorderSingleWhiteBlack
-    initTabBlock(BlockTLBorderSingleYellowBlack.class,
-        fmlPreInitializationEvent); // TLBorderSingleYellowBlack
-    initTabBlock(BlockTLBorderSingleBlackBlue.class,
-        fmlPreInitializationEvent); // TLBorderSingleBlackBlue
-    initTabBlock(BlockTLBorderSingleBlackPink.class,
-        fmlPreInitializationEvent); // TLBorderSingleBlackPink
-    initTabBlock(BlockTLBorderSingleBlueBlack.class,
-        fmlPreInitializationEvent); // TLBorderSingleBlueBlack
-    initTabBlock(BlockTLBorderSinglePinkBlack.class,
-        fmlPreInitializationEvent); // TLBorderSinglePinkBlack
-    initTabBlock(BlockTLBorderWhiteBlack.class, fmlPreInitializationEvent); // TLBorderWhiteBlack
-    initTabBlock(BlockTLBorderWhiteBlack8812Inch.class,
-        fmlPreInitializationEvent); // TLBorderWhiteBlack8812Inch
-    initTabBlock(BlockTLBorderWhiteBlack8Inch.class,
-        fmlPreInitializationEvent); // TLBorderWhiteBlack8Inch
-    initTabBlock(BlockTLBorderYellowBlack.class, fmlPreInitializationEvent); // TLBorderYellowBlack
-    initTabBlock(BlockTLBorderYellowBlack8812Inch.class,
-        fmlPreInitializationEvent); // TLBorderYellowBlack8812Inch
-    initTabBlock(BlockTLBorderYellowBlack8Inch.class,
-        fmlPreInitializationEvent); // TLBorderYellowBlack8Inch
-    initTabBlock(BlockTLBorderBlueBlack8Inch.class,
-        fmlPreInitializationEvent); // TLBorderBlueBlack8Inch
-    initTabBlock(BlockTLBorderPinkBlack8Inch.class,
-        fmlPreInitializationEvent); // TLBorderPinkBlack8Inch
-    initTabBlock(BlockTLBorderGrayGray8Inch.class,
-        fmlPreInitializationEvent); // TLBorderGrayGray8Inch
-    initTabBlock(BlockTLBorderBlueBlack8812Inch.class,
-        fmlPreInitializationEvent); // TLBorderBlueBlack8812Inch
-    initTabBlock(BlockTLBorderPinkBlack8812Inch.class,
-        fmlPreInitializationEvent); // TLBorderPinkBlack8812Inch
-    initTabBlock(BlockTLBorderGrayGray8812Inch.class,
-        fmlPreInitializationEvent); // TLBorderGrayGray1288Inch
-    initTabBlock(BlockTLController.class, fmlPreInitializationEvent); // TLController
-    initTabBlock(BlockTLControllerBlack.class, fmlPreInitializationEvent); // TLControllerBlack
-    initTabBlock(BlockTLControllerMatteWhite.class,
-        fmlPreInitializationEvent); // TLControllerMatteWhite
-    initTabBlock(BlockTLControllerSilver.class, fmlPreInitializationEvent); // TLControllerSilver
-    initTabBlock(BlockTLControllerTan.class, fmlPreInitializationEvent); // TLControllerTan
-    initTabBlock(BlockTLControllerWhite.class, fmlPreInitializationEvent); // TLControllerWhite
-    initTabBlock(BlockTLDCover.class, fmlPreInitializationEvent); // TLDCover
-    initTabBlock(BlockTLDoghouseBorderBlackBlack.class,
-        fmlPreInitializationEvent); // TLDoghouseBorderBlackBlack
-    initTabBlock(BlockTLDoghouseBorderBlackWhite.class,
-        fmlPreInitializationEvent); // TLDoghouseBorderBlackWhite
-    initTabBlock(BlockTLDoghouseBorderBlackYellow.class,
-        fmlPreInitializationEvent); // TLDoghouseBorderBlackYellow
-    initTabBlock(BlockTLDoghouseBorderGrayGray.class,
-        fmlPreInitializationEvent); // TLDoghouseBorderGrayGray
-    initTabBlock(BlockTLDoghouseBorderBlueBlack.class,
-        fmlPreInitializationEvent); // TLDoghouseBorderBlueBlack
-    initTabBlock(BlockTLDoghouseBorderPinkBlack.class,
-        fmlPreInitializationEvent); // TLDoghouseBorderPinkBlack
-    initTabBlock(BlockTLDoghouseBorderBlackBlue.class,
-        fmlPreInitializationEvent); // TLDoghouseBorderBlackBlue
-    initTabBlock(BlockTLDoghouseBorderBlackPink.class,
-        fmlPreInitializationEvent); // TLDoghouseBorderBlackPink
-    initTabBlock(BlockTLDoghouseBorderWhiteBlack.class,
-        fmlPreInitializationEvent); // TLDoghouseBorderWhiteBlack
-    initTabBlock(BlockTLDoghouseBorderYellowBlack.class,
-        fmlPreInitializationEvent); // TLDoghouseBorderYellowBlack
-    initTabBlock(BlockTLHawkBorderBlackBlack.class,
-        fmlPreInitializationEvent); // TLHawkBorderBlackBlack
-    initTabBlock(BlockTLHawkBorderBlackWhite.class,
-        fmlPreInitializationEvent); // TLHawkBorderBlackWhite
-    initTabBlock(BlockTLHawkBorderBlackYellow.class,
-        fmlPreInitializationEvent); // TLHawkBorderBlackYellow
-    initTabBlock(BlockTLHawkBorderGrayGray.class,
-        fmlPreInitializationEvent); // TLHawkBorderGrayGray
-    initTabBlock(BlockTLHawkBorderBlueBlack.class,
-        fmlPreInitializationEvent); // TLHawkBorderBlueBlack
-    initTabBlock(BlockTLHawkBorderPinkBlack.class,
-        fmlPreInitializationEvent); // TLHawkBorderPinkBlack
-    initTabBlock(BlockTLHawkBorderBlackBlue.class,
-        fmlPreInitializationEvent); // TLHawkBorderBlackBlue
-    initTabBlock(BlockTLHawkBorderBlackPink.class,
-        fmlPreInitializationEvent); // TLHawkBorderBlackPink
-    initTabBlock(BlockTLHawkBorderWhiteBlack.class,
-        fmlPreInitializationEvent); // TLHawkBorderWhiteBlack
-    initTabBlock(BlockTLHawkBorderYellowBlack.class,
-        fmlPreInitializationEvent); // TLHawkBorderYellowBlack
-    initTabBlock(BlockTLHBorderBlack.class, fmlPreInitializationEvent); // TLHBorderBlack
-    initTabBlock(BlockTLHBorderTan.class, fmlPreInitializationEvent); // TLHBorderTan
-    initTabBlock(BlockTLHBorderWhite.class, fmlPreInitializationEvent); // TLHBorderWhite
-    initTabBlock(BlockTLHBorderYellow.class, fmlPreInitializationEvent); // TLHBorderYellow
-    initTabBlock(BlockTLHCover.class, fmlPreInitializationEvent); // TLHCover
-    initTabBlock(BlockTLHMountKit.class, fmlPreInitializationEvent); // TLHMountKit
-    initTabBlock(BlockTLPMblack.class, fmlPreInitializationEvent); // TLPMblack
-    initTabBlock(BlockTLPMsilver.class, fmlPreInitializationEvent); // TLPMsilver
-    initTabBlock(BlockTLPMtan.class, fmlPreInitializationEvent); // TLPMtan
-    initTabBlock(BlockTLPMwhite.class, fmlPreInitializationEvent); // TLPMwhite
-    initTabBlock(BlockTLVCover.class, fmlPreInitializationEvent); // TLVCover
-    initTabBlock(BlockTLVMountKit.class, fmlPreInitializationEvent); // TLVMountKit
-    initTabBlock(BlockTLVMountKit8812Inch.class, fmlPreInitializationEvent); // TLVMountKit8812Inch
-    initTabBlock(BlockTLVMountKit8Inch.class, fmlPreInitializationEvent); // TLVMountKit8Inch
-    initTabBlock(BlockTLVTall90LMountKit.class, fmlPreInitializationEvent); // TLVTall90LMountKit
-    initTabBlock(BlockTLVTall90RMountKit.class, fmlPreInitializationEvent); // TLVTall90RMountKit
-    initTabBlock(BlockTLVTallMountKit.class, fmlPreInitializationEvent); // TLVTallMountKit
-    initTabBlock(BlockTLiteHorzWireMount.class, fmlPreInitializationEvent); // TLiteHorzWireMount
-    initTabBlock(BlockTLiteVertWireMount.class, fmlPreInitializationEvent); // TLiteVertWireMount
-    initTabBlock(BlockTlpmunpainted.class, fmlPreInitializationEvent); // Tlpmunpainted
-    initTabBlock(BlockTrafficPoleBaseBlack.class,
-        fmlPreInitializationEvent); // TrafficPoleBaseBlack
-    initTabBlock(BlockTrafficPoleBaseSilver.class,
-        fmlPreInitializationEvent); // TrafficPoleBaseSilver
-    initTabBlock(BlockTrafficPoleBaseTan.class, fmlPreInitializationEvent); // TrafficPoleBaseTan
-    initTabBlock(BlockTrafficPoleBaseUnpainted.class,
-        fmlPreInitializationEvent); // TrafficPoleBaseUnpainted
-    initTabBlock(BlockTrafficPoleBaseWhite.class,
-        fmlPreInitializationEvent); // TrafficPoleBaseWhite
-    initTabBlock(BlockTrafficPoleHorizSignMountBlack.class,
-        fmlPreInitializationEvent); // TrafficPoleHorizSignMountBlack
-    initTabBlock(BlockTrafficPoleHorizSignMountSilver.class,
-        fmlPreInitializationEvent); // TrafficPoleHorizSignMountSilver
-    initTabBlock(BlockTrafficPoleHorizSignMountTan.class,
-        fmlPreInitializationEvent); // TrafficPoleHorizSignMountTan
-    initTabBlock(BlockTrafficPoleHorizSignMountWhite.class,
-        fmlPreInitializationEvent); // TrafficPoleHorizSignMountWhite
-    initTabBlock(BlockTrafficPoleSmallGray.class,
-        fmlPreInitializationEvent); // TrafficPoleHorizontal
-    initTabBlock(BlockTrafficPoleHorizontalAngleBlack.class,
-        fmlPreInitializationEvent); // TrafficPoleHorizontalAngleBlack
-    initTabBlock(BlockTrafficPoleHorizontalAngleMount1Black.class,
-        fmlPreInitializationEvent); // TrafficPoleHorizontalAngleMount1Black
-    initTabBlock(BlockTrafficPoleHorizontalAngleMount1Silver.class,
-        fmlPreInitializationEvent); // TrafficPoleHorizontalAngleMount1Silver
-    initTabBlock(BlockTrafficPoleHorizontalAngleMount1Tan.class,
-        fmlPreInitializationEvent); // TrafficPoleHorizontalAngleMount1Tan
-    initTabBlock(BlockTrafficPoleHorizontalAngleMount1Unpainted.class,
-        fmlPreInitializationEvent); // TrafficPoleHorizontalAngleMount1Unpainted
-    initTabBlock(BlockTrafficPoleHorizontalAngleMount1White.class,
-        fmlPreInitializationEvent); // TrafficPoleHorizontalAngleMount1White
-    initTabBlock(BlockTrafficPoleHorizontalAngleMount2Black.class,
-        fmlPreInitializationEvent); // TrafficPoleHorizontalAngleMount2Black
-    initTabBlock(BlockTrafficPoleHorizontalAngleMount2Silver.class,
-        fmlPreInitializationEvent); // TrafficPoleHorizontalAngleMount2Silver
-    initTabBlock(BlockTrafficPoleHorizontalAngleMount2Tan.class,
-        fmlPreInitializationEvent); // TrafficPoleHorizontalAngleMount2Tan
-    initTabBlock(BlockTrafficPoleHorizontalAngleMount2Unpainted.class,
-        fmlPreInitializationEvent); // TrafficPoleHorizontalAngleMount2Unpainted
-    initTabBlock(BlockTrafficPoleHorizontalAngleMount2White.class,
-        fmlPreInitializationEvent); // TrafficPoleHorizontalAngleMount2White
-    initTabBlock(BlockTrafficPoleHorizontalAngleMount3Black.class,
-        fmlPreInitializationEvent); // TrafficPoleHorizontalAngleMount3Black
-    initTabBlock(BlockTrafficPoleHorizontalAngleMount3Silver.class,
-        fmlPreInitializationEvent); // TrafficPoleHorizontalAngleMount3Silver
-    initTabBlock(BlockTrafficPoleHorizontalAngleMount3Tan.class,
-        fmlPreInitializationEvent); // TrafficPoleHorizontalAngleMount3Tan
-    initTabBlock(BlockTrafficPoleHorizontalAngleMount3Unpainted.class,
-        fmlPreInitializationEvent); // TrafficPoleHorizontalAngleMount3Unpainted
-    initTabBlock(BlockTrafficPoleHorizontalAngleMount3White.class,
-        fmlPreInitializationEvent); // TrafficPoleHorizontalAngleMount3White
-    initTabBlock(BlockTrafficPoleHorizontalAngleSilver.class,
-        fmlPreInitializationEvent); // TrafficPoleHorizontalAngleSilver
-    initTabBlock(BlockTrafficPoleHorizontalAngleTan.class,
-        fmlPreInitializationEvent); // TrafficPoleHorizontalAngleTan
-    initTabBlock(BlockTrafficPoleHorizontalAngleUnpainted.class,
-        fmlPreInitializationEvent); // TrafficPoleHorizontalAngleUnpainted
-    initTabBlock(BlockTrafficPoleHorizontalAngleWhite.class,
-        fmlPreInitializationEvent); // TrafficPoleHorizontalAngleWhite
-    initTabBlock(BlockTrafficPoleSmallBlack.class,
-        fmlPreInitializationEvent); // TrafficPoleHorizontalBlack
-    initTabBlock(BlockTrafficPoleHorizontalMountDouble.class,
-        fmlPreInitializationEvent); // TrafficPoleHorizontalMountDouble
-    initTabBlock(BlockTrafficPoleHorizontalMountDoubleBlack.class,
-        fmlPreInitializationEvent); // TrafficPoleHorizontalMountDoubleBlack
-    initTabBlock(BlockTrafficPoleHorizontalMountDoubleTan.class,
-        fmlPreInitializationEvent); // TrafficPoleHorizontalMountDoubleTan
-    initTabBlock(BlockTrafficPoleHorizontalMountDoubleWhite.class,
-        fmlPreInitializationEvent); // TrafficPoleHorizontalMountDoubleWhite
-    initTabBlock(BlockTrafficPoleHorizontalSingleMount.class,
-        fmlPreInitializationEvent); // TrafficPoleHorizontalSingleMount
-    initTabBlock(BlockTrafficPoleHorizontalSingleMountBlack.class,
-        fmlPreInitializationEvent); // TrafficPoleHorizontalSingleMountBlack
-    initTabBlock(BlockTrafficPoleHorizontalSingleMountTan.class,
-        fmlPreInitializationEvent); // TrafficPoleHorizontalSingleMountTan
-    initTabBlock(BlockTrafficPoleHorizontalSingleMountWhite.class,
-        fmlPreInitializationEvent); // TrafficPoleHorizontalSingleMountWhite
-    initTabBlock(BlockTrafficPoleSmallTan.class,
-        fmlPreInitializationEvent); // TrafficPoleHorizontalTan
-    initTabBlock(BlockTrafficPoleSmallWhite.class,
-        fmlPreInitializationEvent); // TrafficPoleHorizontalWhite
-    initTabBlock(BlockTrafficPoleLargeGray.class, fmlPreInitializationEvent); // TrafficPoleVertical
-    initTabBlock(BlockTrafficPoleLargeBlack.class,
-        fmlPreInitializationEvent); // TrafficPoleVerticalBlack
-    initTabBlock(BlockTrafficPoleVerticalConnector.class,
-        fmlPreInitializationEvent); // TrafficPoleVerticalConnector
-    initTabBlock(BlockTrafficPoleVerticalConnectorAngledBlack.class,
-        fmlPreInitializationEvent); // TrafficPoleVerticalConnectorAngledBlack
-    initTabBlock(BlockTrafficPoleVerticalConnectorAngledSilver.class,
-        fmlPreInitializationEvent); // TrafficPoleVerticalConnectorAngledSilver
-    initTabBlock(BlockTrafficPoleVerticalConnectorAngledTan.class,
-        fmlPreInitializationEvent); // TrafficPoleVerticalConnectorAngledTan
-    initTabBlock(BlockTrafficPoleVerticalConnectorAngledUnpainted.class,
-        fmlPreInitializationEvent); // TrafficPoleVerticalConnectorAngledUnpainted
-    initTabBlock(BlockTrafficPoleVerticalConnectorAngledWhite.class,
-        fmlPreInitializationEvent); // TrafficPoleVerticalConnectorAngledWhite
-    initTabBlock(BlockTrafficPoleVerticalConnectorBlack.class,
-        fmlPreInitializationEvent); // TrafficPoleVerticalConnectorBlack
-    initTabBlock(BlockTrafficPoleVerticalConnectorDoubleBlack.class,
-        fmlPreInitializationEvent); // TrafficPoleVerticalConnectorDoubleBlack
-    initTabBlock(BlockTrafficPoleVerticalConnectorDoubleSilver.class,
-        fmlPreInitializationEvent); // TrafficPoleVerticalConnectorDoubleSilver
-    initTabBlock(BlockTrafficPoleVerticalConnectorDoubleTan.class,
-        fmlPreInitializationEvent); // TrafficPoleVerticalConnectorDoubleTan
-    initTabBlock(BlockTrafficPoleVerticalConnectorDoubleUnpainted.class,
-        fmlPreInitializationEvent); // TrafficPoleVerticalConnectorDoubleUnpainted
-    initTabBlock(BlockTrafficPoleVerticalConnectorDoubleWhite.class,
-        fmlPreInitializationEvent); // TrafficPoleVerticalConnectorDoubleWhite
-    initTabBlock(BlockTrafficPoleVerticalConnectorTan.class,
-        fmlPreInitializationEvent); // TrafficPoleVerticalConnectorTan
-    initTabBlock(BlockTrafficPoleVerticalConnectorWhite.class,
-        fmlPreInitializationEvent); // TrafficPoleVerticalConnectorWhite
-    initTabBlock(BlockTrafficPoleVerticalCurveConnector.class,
-        fmlPreInitializationEvent); // TrafficPoleVerticalCurveConnector
-    initTabBlock(BlockTrafficPoleVerticalCurveConnectorBlack.class,
-        fmlPreInitializationEvent); // TrafficPoleVerticalCurveConnectorBlack
-    initTabBlock(BlockTrafficPoleVerticalCurveConnectorDoubleGuyBlack.class,
-        fmlPreInitializationEvent); // TrafficPoleVerticalCurveConnectorDoubleGuyBlack
-    initTabBlock(BlockTrafficPoleVerticalCurveConnectorDoubleGuySilver.class,
-        fmlPreInitializationEvent); // TrafficPoleVerticalCurveConnectorDoubleGuySilver
-    initTabBlock(BlockTrafficPoleVerticalCurveConnectorDoubleGuyTan.class,
-        fmlPreInitializationEvent); // TrafficPoleVerticalCurveConnectorDoubleGuyTan
-    initTabBlock(BlockTrafficPoleVerticalCurveConnectorDoubleGuyUnpainted.class,
-        fmlPreInitializationEvent); // TrafficPoleVerticalCurveConnectorDoubleGuyUnpainted
-    initTabBlock(BlockTrafficPoleVerticalCurveConnectorDoubleGuyWhite.class,
-        fmlPreInitializationEvent); // TrafficPoleVerticalCurveConnectorDoubleGuyWhite
-    initTabBlock(BlockTrafficPoleVerticalCurveConnectorTan.class,
-        fmlPreInitializationEvent); // TrafficPoleVerticalCurveConnectorTan
-    initTabBlock(BlockTrafficPoleVerticalCurveConnectorWhite.class,
-        fmlPreInitializationEvent); // TrafficPoleVerticalCurveConnectorWhite
-    initTabBlock(BlockTrafficPoleVerticalDoubleGuyMountBlack.class,
-        fmlPreInitializationEvent); // TrafficPoleVerticalDoubleGuyMountBlack
-    initTabBlock(BlockTrafficPoleVerticalDoubleGuyMountSilver.class,
-        fmlPreInitializationEvent); // TrafficPoleVerticalDoubleGuyMountSilver
-    initTabBlock(BlockTrafficPoleVerticalDoubleGuyMountTan.class,
-        fmlPreInitializationEvent); // TrafficPoleVerticalDoubleGuyMountTan
-    initTabBlock(BlockTrafficPoleVerticalDoubleGuyMountUnpainted.class,
-        fmlPreInitializationEvent); // TrafficPoleVerticalDoubleGuyMountUnpainted
-    initTabBlock(BlockTrafficPoleVerticalDoubleGuyMountWhite.class,
-        fmlPreInitializationEvent); // TrafficPoleVerticalDoubleGuyMountWhite
-    initTabBlock(BlockTrafficPoleVerticalLightMount.class,
-        fmlPreInitializationEvent); // TrafficPoleVerticalLightMount
-    initTabBlock(BlockTrafficPoleVerticalLightMountBlack.class,
-        fmlPreInitializationEvent); // TrafficPoleVerticalLightMountBlack
-    initTabBlock(BlockTrafficPoleVerticalLightMountTan.class,
-        fmlPreInitializationEvent); // TrafficPoleVerticalLightMountTan
-    initTabBlock(BlockTrafficPoleVerticalLightMountUnpainted.class,
-        fmlPreInitializationEvent); // TrafficPoleVerticalLightMountUnpainted
-    initTabBlock(BlockTrafficPoleVerticalLightMountWhite.class,
-        fmlPreInitializationEvent); // TrafficPoleVerticalLightMountWhite
-    initTabBlock(BlockTrafficPoleVerticalQuadMount.class,
-        fmlPreInitializationEvent); // TrafficPoleVerticalQuadMount
-    initTabBlock(BlockTrafficPoleVerticalQuadMountBlack.class,
-        fmlPreInitializationEvent); // TrafficPoleVerticalQuadMountBlack
-    initTabBlock(BlockTrafficPoleVerticalQuadMountTan.class,
-        fmlPreInitializationEvent); // TrafficPoleVerticalQuadMountTan
-    initTabBlock(BlockTrafficPoleVerticalQuadMountWhite.class,
-        fmlPreInitializationEvent); // TrafficPoleVerticalQuadMountWhite
-    initTabBlock(BlockTrafficPoleVerticalSignalMount.class,
-        fmlPreInitializationEvent); // TrafficPoleVerticalSignalMount
-    initTabBlock(BlockTrafficPoleVerticalSignalMountBlack.class,
-        fmlPreInitializationEvent); // TrafficPoleVerticalSignalMountBlack
-    initTabBlock(BlockTrafficPoleVerticalSignalMountTan.class,
-        fmlPreInitializationEvent); // TrafficPoleVerticalSignalMountTan
-    initTabBlock(BlockTrafficPoleVerticalSignalMountWhite.class,
-        fmlPreInitializationEvent); // TrafficPoleVerticalSignalMountWhite
-    initTabBlock(BlockTrafficPoleLargeTan.class,
-        fmlPreInitializationEvent); // TrafficPoleVerticalTan
-    initTabBlock(BlockTrafficPoleLargeWhite.class,
-        fmlPreInitializationEvent); // TrafficPoleVerticalWhite
-    initTabBlock(BlockTrafficSignalFatigueMitigator1.class,
-        fmlPreInitializationEvent); // TrafficSignalFatigueMitigator1
-    initTabBlock(BlockTrafficSignalFatigueMitigator2.class,
-        fmlPreInitializationEvent); // TrafficSignalFatigueMitigator2
-    initTabBlock(BlockTrafficSignalFatigueMitigator3.class,
-        fmlPreInitializationEvent); // TrafficSignalFatigueMitigator3
-    initTabBlock(BlockTrafficSignalFatigueMitigator4.class,
-        fmlPreInitializationEvent); // TrafficSignalFatigueMitigator4
-    initTabBlock(BlockTrafficSignalHangMount.class,
-        fmlPreInitializationEvent); // TrafficSignalHangMount
-    initTabBlock(BlockTrafficSignalInterconnectModule1.class,
-        fmlPreInitializationEvent); // TrafficSignalInterconnectModule1
-    initTabBlock(BlockTrafficSignalInterconnectModule2.class,
-        fmlPreInitializationEvent); // TrafficSignalInterconnectModule2
-    initTabBlock(BlockTrafficSignalPreemptionBeacon.class,
-        fmlPreInitializationEvent); // TrafficSignalPreemptionBeacon
-    initTabBlock(BlockTrafficSignalSnowBeacon.class,
-        fmlPreInitializationEvent); // TrafficSignalSnowBeacon
-    initTabBlock(BlockTrafficStreetNameSign.class,
-        fmlPreInitializationEvent); // TrafficStreetNameSign
-    initTabBlock(BlockTrafficStreetNameSignDouble.class,
-        fmlPreInitializationEvent); // TrafficStreetNameSignDouble
-    initTabBlock(BlockTrafficStreetNameSignMount.class,
-        fmlPreInitializationEvent); // TrafficStreetNameSignMount
-    initTabBlock(BlockTrafficpolehorzdblblack.class,
-        fmlPreInitializationEvent); // Trafficpolehorzdblblack
-    initTabBlock(BlockTrafficpolehorzdblconcrete.class,
-        fmlPreInitializationEvent); // Trafficpolehorzdblconcrete
-    initTabBlock(BlockTrafficpolehorzdblsilver.class,
-        fmlPreInitializationEvent); // Trafficpolehorzdblsilver
-    initTabBlock(BlockTrafficpolehorzdbltan.class,
-        fmlPreInitializationEvent); // Trafficpolehorzdbltan
-    initTabBlock(BlockTrafficpolehorzdblunpainted.class,
-        fmlPreInitializationEvent); // Trafficpolehorzdblunpainted
-    initTabBlock(BlockTrafficpolehorzdblwhite.class,
-        fmlPreInitializationEvent); // Trafficpolehorzdblwhite
-    initTabBlock(BlockTrafficpolehorzdoublemountunpainted.class,
-        fmlPreInitializationEvent); // Trafficpolehorzdoublemountunpainted
-    initTabBlock(BlockTrafficpolehorzsignmountunpainted.class,
-        fmlPreInitializationEvent); // Trafficpolehorzsignmountunpainted
-    initTabBlock(BlockTrafficpolehorzsinglemountunpainted.class,
-        fmlPreInitializationEvent); // Trafficpolehorzsinglemountunpainted
-    initTabBlock(BlockTrafficPoleSmallUnpainted.class,
-        fmlPreInitializationEvent); // Trafficpolehorzunpainted
-    initTabBlock(BlockTrafficpolevertdblblack.class,
-        fmlPreInitializationEvent); // Trafficpolevertdblblack
-    initTabBlock(BlockTrafficpolevertdblconcrete.class,
-        fmlPreInitializationEvent); // Trafficpolevertdblconcrete
-    initTabBlock(BlockTrafficpolevertdblsilver.class,
-        fmlPreInitializationEvent); // Trafficpolevertdblsilver
-    initTabBlock(BlockTrafficpolevertdbltan.class,
-        fmlPreInitializationEvent); // Trafficpolevertdbltan
-    initTabBlock(BlockTrafficpolevertdblunpainted.class,
-        fmlPreInitializationEvent); // Trafficpolevertdblunpainted
-    initTabBlock(BlockTrafficpolevertdblwhite.class,
-        fmlPreInitializationEvent); // Trafficpolevertdblwhite
-    initTabBlock(BlockTrafficpoleverticalconnectorconcrete.class,
-        fmlPreInitializationEvent); // Trafficpoleverticalconnectorconcrete
-    initTabBlock(BlockTrafficpoleverticalconnectorunpainted.class,
-        fmlPreInitializationEvent); // Trafficpoleverticalconnectorunpainted
-    initTabBlock(BlockTrafficpoleverticalcurveconnectorunpainted.class,
-        fmlPreInitializationEvent); // Trafficpoleverticalcurveconnectorunpainted
-    initTabBlock(BlockTrafficpoleverticalquadmountconcrete.class,
-        fmlPreInitializationEvent); // Trafficpoleverticalquadmountconcrete
-    initTabBlock(BlockTrafficpoleverticalquadmountunpainted.class,
-        fmlPreInitializationEvent); // Trafficpoleverticalquadmountunpainted
-    initTabBlock(BlockTrafficpoleverticalsignalmountconcrete.class,
-        fmlPreInitializationEvent); // Trafficpoleverticalsignalmountconcrete
-    initTabBlock(BlockTrafficpoleverticalsignalmountunpainted.class,
-        fmlPreInitializationEvent); // Trafficpoleverticalsignalmountunpainted
-    initTabBlock(BlockTrafficPoleLargeUnpainted.class,
-        fmlPreInitializationEvent); // Trafficpoleverticalunpainted
-    initTabBlock(BlockMiniSolarPanel.class, fmlPreInitializationEvent); // Minisolarpanel
+    // --- NSEWUD factory blocks: Control Boxes ---
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("controlboxlarge", BB_CONTROL_BOX_LARGE, BlockRenderLayer.CUTOUT_MIPPED, 2F, false));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("controlboxlargeblack", BB_CONTROL_BOX_LARGE, BlockRenderLayer.CUTOUT_MIPPED, 2F, false));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("controlboxlargemattewhite", BB_CONTROL_BOX_LARGE, BlockRenderLayer.CUTOUT_MIPPED, 2F, false));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("controlboxlargesilver", BB_CONTROL_BOX_LARGE, BlockRenderLayer.CUTOUT_MIPPED, 2F, false));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("controlboxlargetan", BB_CONTROL_BOX_LARGE, BlockRenderLayer.CUTOUT_MIPPED, 2F, false));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("controlboxlargewhite", BB_CONTROL_BOX_LARGE, BlockRenderLayer.CUTOUT_MIPPED, 2F, false));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("controlboxsmallblack", BB_CONTROL_BOX_SMALL, BlockRenderLayer.CUTOUT_MIPPED, 2F, false));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("controlboxsmallmattewhite", BB_CONTROL_BOX_SMALL, BlockRenderLayer.CUTOUT_MIPPED, 2F, false));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("controlboxsmallmetal", BB_CONTROL_BOX_SMALL, BlockRenderLayer.CUTOUT_MIPPED, 2F, false));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("controlboxsmallsilver", BB_CONTROL_BOX_SMALL, BlockRenderLayer.CUTOUT_MIPPED, 2F, false));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("controlboxsmalltan", BB_CONTROL_BOX_SMALL, BlockRenderLayer.CUTOUT_MIPPED, 2F, false));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("controlboxsmallwhite", BB_CONTROL_BOX_SMALL, BlockRenderLayer.CUTOUT_MIPPED, 2F, false));
+
+    // --- NSEWUD factory blocks: DMPT ---
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("dmptblack", BB_DMPT, BlockRenderLayer.SOLID, 1F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("dmpt", BB_DMPT, BlockRenderLayer.SOLID, 1F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("dmpttan", BB_DMPT, BlockRenderLayer.SOLID, 1F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("dmptunpainted", BB_DMPT, BlockRenderLayer.SOLID, 1F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("dmptwhite", BB_DMPT, BlockRenderLayer.SOLID, 1F, true));
+
+    // --- NSEWUD factory blocks: Misc ---
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("freewaycallbox", BB_FREEWAY_CALL_BOX, BlockRenderLayer.SOLID, 2F, false));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("metalwirecenter", BB_METAL_WIRE_CENTER, BlockRenderLayer.SOLID, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("metalwirecentertop", BB_METAL_WIRE_CENTER_TOP, BlockRenderLayer.SOLID, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("metalwireoffset", BB_METAL_WIRE_OFFSET, BlockRenderLayer.SOLID, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("metalwireoffsettop", BB_METAL_WIRE_OFFSET_TOP, BlockRenderLayer.SOLID, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("signalpolemount2", BB_SIGNAL_POLE_MOUNT2, BlockRenderLayer.CUTOUT_MIPPED, 2F, false));
+
+    // --- Backplate factory blocks: TLBorder5AddOn ---
+    initTabBlock(new BlockTrafficAccessoryBackplate("tlborder5addonblackblack"));
+    initTabBlock(new BlockTrafficAccessoryBackplate("tlborder5addonblackwhite"));
+    initTabBlock(new BlockTrafficAccessoryBackplate("tlborder5addonblackyellow"));
+    initTabBlock(new BlockTrafficAccessoryBackplate("tlborder5addonlargegray"));
+    initTabBlock(new BlockTrafficAccessoryBackplate("tlborder5addonblueblack"));
+    initTabBlock(new BlockTrafficAccessoryBackplate("tlborder5addonpinkblack"));
+    initTabBlock(new BlockTrafficAccessoryBackplate("tlborder5addonblackblue"));
+    initTabBlock(new BlockTrafficAccessoryBackplate("tlborder5addonblackpink"));
+    initTabBlock(new BlockTrafficAccessoryBackplate("tlborder5addonwhiteblack"));
+    initTabBlock(new BlockTrafficAccessoryBackplate("tlborder5addonyellowblack"));
+
+    // --- Backplate factory blocks: TLBorderAddOn ---
+    initTabBlock(new BlockTrafficAccessoryBackplate("tlborderaddonblackblack"));
+    initTabBlock(new BlockTrafficAccessoryBackplate("tlborderaddonblackwhite"));
+    initTabBlock(new BlockTrafficAccessoryBackplate("tlborderaddonblackyellow"));
+    initTabBlock(new BlockTrafficAccessoryBackplate("tlborderaddonlargegray"));
+    initTabBlock(new BlockTrafficAccessoryBackplate("tlborderaddonblueblack"));
+    initTabBlock(new BlockTrafficAccessoryBackplate("tlborderaddonpinkblack"));
+    initTabBlock(new BlockTrafficAccessoryBackplate("tlborderaddonblackblue"));
+    initTabBlock(new BlockTrafficAccessoryBackplate("tlborderaddonblackpink"));
+    initTabBlock(new BlockTrafficAccessoryBackplate("tlborderaddonwhiteblack"));
+    initTabBlock(new BlockTrafficAccessoryBackplate("tlborderaddonyellowblack"));
+
+    // --- Backplate factory blocks: TLBorder (standard 3-section) ---
+    initTabBlock(new BlockTrafficAccessoryBackplate("tlborderblackblack"));
+    initTabBlock(new BlockTrafficAccessoryBackplate("tlborderblackblack8812inch"));
+    initTabBlock(new BlockTrafficAccessoryBackplate("tlborderblackblack8inch"));
+    initTabBlock(new BlockTrafficAccessoryBackplate("tlborderblackwhite"));
+    initTabBlock(new BlockTrafficAccessoryBackplate("tlborderblackyellow"));
+    initTabBlock(new BlockTrafficAccessoryBackplate("tlborderlargegray"));
+    initTabBlock(new BlockTrafficAccessoryBackplate("tlborderblueblack"));
+    initTabBlock(new BlockTrafficAccessoryBackplate("tlborderpinkblack"));
+    initTabBlock(new BlockTrafficAccessoryBackplate("tlborderblackblue"));
+    initTabBlock(new BlockTrafficAccessoryBackplate("tlborderblackpink"));
+
+    // --- Backplate factory blocks: TLBorderSingle ---
+    initTabBlock(new BlockTrafficAccessoryBackplate("tlbordersingleblackblack"));
+    initTabBlock(new BlockTrafficAccessoryBackplate("tlbordersingleblackwhite"));
+    initTabBlock(new BlockTrafficAccessoryBackplate("tlbordersingleblackyellow"));
+    initTabBlock(new BlockTrafficAccessoryBackplate("tlbordersinglelargegray"));
+    initTabBlock(new BlockTrafficAccessoryBackplate("tlbordersinglewhiteblack"));
+    initTabBlock(new BlockTrafficAccessoryBackplate("tlbordersingleyellowblack"));
+    initTabBlock(new BlockTrafficAccessoryBackplate("tlbordersingleblackblue"));
+    initTabBlock(new BlockTrafficAccessoryBackplate("tlbordersingleblackpink"));
+    initTabBlock(new BlockTrafficAccessoryBackplate("tlbordersingleblueblack"));
+    initTabBlock(new BlockTrafficAccessoryBackplate("tlbordersinglepinkblack"));
+
+    // --- Backplate factory blocks: TLBorder remaining color combos ---
+    initTabBlock(new BlockTrafficAccessoryBackplate("tlborderwhiteblack"));
+    initTabBlock(new BlockTrafficAccessoryBackplate("tlborderwhiteblack8812inch"));
+    initTabBlock(new BlockTrafficAccessoryBackplate("tlborderwhiteblack8inch"));
+    initTabBlock(new BlockTrafficAccessoryBackplate("tlborderyellowblack"));
+    initTabBlock(new BlockTrafficAccessoryBackplate("tlborderyellowblack8812inch"));
+    initTabBlock(new BlockTrafficAccessoryBackplate("tlborderyellowblack8inch"));
+    initTabBlock(new BlockTrafficAccessoryBackplate("tlborderblueblack8inch"));
+    initTabBlock(new BlockTrafficAccessoryBackplate("tlborderpinkblack8inch"));
+    initTabBlock(new BlockTrafficAccessoryBackplate("tlbordergraygray8inch"));
+    initTabBlock(new BlockTrafficAccessoryBackplate("tlborderblueblack8812inch"));
+    initTabBlock(new BlockTrafficAccessoryBackplate("tlborderpinkblack8812inch"));
+    initTabBlock(new BlockTrafficAccessoryBackplate("tlbordergraygray8812inch"));
+
+    // --- NSEWUD factory blocks: TL Controllers ---
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("tlcontroller", BB_TL_CONTROLLER, BlockRenderLayer.CUTOUT_MIPPED, 2F, false));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("tlcontrollerblack", BB_TL_CONTROLLER, BlockRenderLayer.CUTOUT_MIPPED, 2F, false));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("tlcontrollermattewhite", BB_TL_CONTROLLER, BlockRenderLayer.CUTOUT_MIPPED, 2F, false));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("tlcontrollersilver", BB_TL_CONTROLLER, BlockRenderLayer.CUTOUT_MIPPED, 2F, false));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("tlcontrollertan", BB_TL_CONTROLLER, BlockRenderLayer.CUTOUT_MIPPED, 2F, false));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("tlcontrollerwhite", BB_TL_CONTROLLER, BlockRenderLayer.CUTOUT_MIPPED, 2F, false));
+
+    // --- NSEWUD factory blocks: TL Covers ---
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("tldcover", BB_TL_D_COVER, BlockRenderLayer.SOLID, 2F, true));
+
+    // --- Backplate fitted factory blocks: Doghouse ---
+    initTabBlock(new BlockTrafficAccessoryBackplateFitted("tldoghouseborderblackblack"));
+    initTabBlock(new BlockTrafficAccessoryBackplateFitted("tldoghouseborderblackwhite"));
+    initTabBlock(new BlockTrafficAccessoryBackplateFitted("tldoghouseborderblackyellow"));
+    initTabBlock(new BlockTrafficAccessoryBackplateFitted("tldoghousebordergraygray"));
+    initTabBlock(new BlockTrafficAccessoryBackplateFitted("tldoghouseborderblueblack"));
+    initTabBlock(new BlockTrafficAccessoryBackplateFitted("tldoghouseborderpinkblack"));
+    initTabBlock(new BlockTrafficAccessoryBackplateFitted("tldoghouseborderblackblue"));
+    initTabBlock(new BlockTrafficAccessoryBackplateFitted("tldoghouseborderblackpink"));
+    initTabBlock(new BlockTrafficAccessoryBackplateFitted("tldoghouseborderwhiteblack"));
+    initTabBlock(new BlockTrafficAccessoryBackplateFitted("tldoghouseborderyellowblack"));
+
+    // --- Backplate fitted factory blocks: Hawk ---
+    initTabBlock(new BlockTrafficAccessoryBackplateFitted("tlhawkborderblackblack"));
+    initTabBlock(new BlockTrafficAccessoryBackplateFitted("tlhawkborderblackwhite"));
+    initTabBlock(new BlockTrafficAccessoryBackplateFitted("tlhawkborderblackyellow"));
+    initTabBlock(new BlockTrafficAccessoryBackplateFitted("tlhawkbordergraygray"));
+    initTabBlock(new BlockTrafficAccessoryBackplateFitted("tlhawkborderblueblack"));
+    initTabBlock(new BlockTrafficAccessoryBackplateFitted("tlhawkborderpinkblack"));
+    initTabBlock(new BlockTrafficAccessoryBackplateFitted("tlhawkborderblackblue"));
+    initTabBlock(new BlockTrafficAccessoryBackplateFitted("tlhawkborderblackpink"));
+    initTabBlock(new BlockTrafficAccessoryBackplateFitted("tlhawkborderwhiteblack"));
+    initTabBlock(new BlockTrafficAccessoryBackplateFitted("tlhawkborderyellowblack"));
+
+    // --- Backplate factory blocks: TLHBorder ---
+    initTabBlock(new BlockTrafficAccessoryBackplate("tlhborderblack"));
+    initTabBlock(new BlockTrafficAccessoryBackplate("tlhbordertan"));
+    initTabBlock(new BlockTrafficAccessoryBackplate("tlhborderwhite"));
+    initTabBlock(new BlockTrafficAccessoryBackplate("tlhborderyellow"));
+
+    // --- NSEWUD factory blocks: TL Covers and Mount Kits ---
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("tlhcover", BB_TL_H_COVER, BlockRenderLayer.SOLID, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("tlhmountkit", BB_TL_H_MOUNT_KIT, BlockRenderLayer.CUTOUT_MIPPED, 2F, false));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("tlpmblack", BB_TL_PM, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("tlpmsilver", BB_TL_PM, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("tlpmtan", BB_TL_PM, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("tlpmwhite", BB_TL_PM, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("tlvcover", BB_TL_V_COVER, BlockRenderLayer.SOLID, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("tlvmountkit", BB_TL_V_MOUNT_KIT, BlockRenderLayer.CUTOUT_MIPPED, 2F, false));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("tlvmountkit8812inch", BB_TL_V_MOUNT_KIT_8812_INCH, BlockRenderLayer.CUTOUT_MIPPED, 2F, false));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("tlvmountkit8inch", BB_TL_V_MOUNT_KIT_8_INCH, BlockRenderLayer.CUTOUT_MIPPED, 2F, false));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("tlvtall90lmountkit", BB_TL_V_TALL_90L_MOUNT_KIT, BlockRenderLayer.CUTOUT_MIPPED, 2F, false));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("tlvtall90rmountkit", BB_TL_V_TALL_90R_MOUNT_KIT, BlockRenderLayer.CUTOUT_MIPPED, 2F, false));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("tlvtallmountkit", BB_TL_V_TALL_MOUNT_KIT, BlockRenderLayer.CUTOUT_MIPPED, 2F, false));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("tlitehorzwiremount", BB_TLITE_HORZ_WIRE_MOUNT, BlockRenderLayer.SOLID, 1F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("tlitevertwiremount", BB_TLITE_VERT_WIRE_MOUNT, BlockRenderLayer.SOLID, 1F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("tlpmunpainted", BB_TL_PM, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+
+    // --- NSEWUD factory blocks: Traffic Pole Bases ---
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpolebaseblack", BB_TRAFFIC_POLE_BASE, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpolebasesilver", BB_TRAFFIC_POLE_BASE, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpolebasetan", BB_TRAFFIC_POLE_BASE, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpolebaseunpainted", BB_TRAFFIC_POLE_BASE, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpolebasewhite", BB_TRAFFIC_POLE_BASE, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+
+    // --- NSEWUD factory blocks: Horizontal Sign Mounts ---
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpolehorizsignmountblack", BB_TRAFFIC_POLE_HORIZ_SIGN_MOUNT, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpolehorizsignmountsilver", BB_TRAFFIC_POLE_HORIZ_SIGN_MOUNT, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpolehorizsignmounttan", BB_TRAFFIC_POLE_HORIZ_SIGN_MOUNT, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpolehorizsignmountwhite", BB_TRAFFIC_POLE_HORIZ_SIGN_MOUNT, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+
+    // --- Class-based: Traffic Poles (TrafficPole/Diagonal/HZEight) ---
+    initTabBlock(BlockTrafficPoleSmallGray.class, fmlPreInitializationEvent);
+    initTabBlock(BlockTrafficPoleHorizontalAngleBlack.class, fmlPreInitializationEvent);
+
+    // --- NSEWUD factory blocks: Horizontal Angle Mounts ---
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpolehorizontalanglemount1black", BB_TRAFFIC_POLE_HORIZ_ANGLE_MOUNT_1, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpolehorizontalanglemount1silver", BB_TRAFFIC_POLE_HORIZ_ANGLE_MOUNT_1, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpolehorizontalanglemount1tan", BB_TRAFFIC_POLE_HORIZ_ANGLE_MOUNT_1, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpolehorizontalanglemount1unpainted", BB_TRAFFIC_POLE_HORIZ_ANGLE_MOUNT_1, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpolehorizontalanglemount1white", BB_TRAFFIC_POLE_HORIZ_ANGLE_MOUNT_1, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpolehorizontalanglemount2black", BB_TRAFFIC_POLE_HORIZ_ANGLE_MOUNT_2, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpolehorizontalanglemount2silver", BB_TRAFFIC_POLE_HORIZ_ANGLE_MOUNT_2, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpolehorizontalanglemount2tan", BB_TRAFFIC_POLE_HORIZ_ANGLE_MOUNT_2, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpolehorizontalanglemount2unpainted", BB_TRAFFIC_POLE_HORIZ_ANGLE_MOUNT_2, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpolehorizontalanglemount2white", BB_TRAFFIC_POLE_HORIZ_ANGLE_MOUNT_2, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpolehorizontalanglemount3black", BB_TRAFFIC_POLE_HORIZ_ANGLE_MOUNT_3, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpolehorizontalanglemount3silver", BB_TRAFFIC_POLE_HORIZ_ANGLE_MOUNT_3, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpolehorizontalanglemount3tan", BB_TRAFFIC_POLE_HORIZ_ANGLE_MOUNT_3, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpolehorizontalanglemount3unpainted", BB_TRAFFIC_POLE_HORIZ_ANGLE_MOUNT_3, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpolehorizontalanglemount3white", BB_TRAFFIC_POLE_HORIZ_ANGLE_MOUNT_3, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+
+    // --- Class-based: Traffic Pole Angles (HZEight) ---
+    initTabBlock(BlockTrafficPoleHorizontalAngleSilver.class, fmlPreInitializationEvent);
+    initTabBlock(BlockTrafficPoleHorizontalAngleTan.class, fmlPreInitializationEvent);
+    initTabBlock(BlockTrafficPoleHorizontalAngleUnpainted.class, fmlPreInitializationEvent);
+    initTabBlock(BlockTrafficPoleHorizontalAngleWhite.class, fmlPreInitializationEvent);
+    initTabBlock(BlockTrafficPoleSmallBlack.class, fmlPreInitializationEvent);
+
+    // --- Class-based: ICsmRetiringBlock (7 overrides) ---
+    initTabBlock(BlockTrafficPoleHorizontalMountDouble.class, fmlPreInitializationEvent);
+    initTabBlock(BlockTrafficPoleHorizontalMountDoubleBlack.class, fmlPreInitializationEvent);
+    initTabBlock(BlockTrafficPoleHorizontalMountDoubleTan.class, fmlPreInitializationEvent);
+    initTabBlock(BlockTrafficPoleHorizontalMountDoubleWhite.class, fmlPreInitializationEvent);
+    initTabBlock(BlockTrafficPoleHorizontalSingleMount.class, fmlPreInitializationEvent);
+    initTabBlock(BlockTrafficPoleHorizontalSingleMountBlack.class, fmlPreInitializationEvent);
+    initTabBlock(BlockTrafficPoleHorizontalSingleMountTan.class, fmlPreInitializationEvent);
+    initTabBlock(BlockTrafficPoleHorizontalSingleMountWhite.class, fmlPreInitializationEvent);
+
+    // --- Class-based: Traffic Poles (SmallTan, SmallWhite) ---
+    initTabBlock(BlockTrafficPoleSmallTan.class, fmlPreInitializationEvent);
+    initTabBlock(BlockTrafficPoleSmallWhite.class, fmlPreInitializationEvent);
+
+    // --- Class-based: Traffic Pole Large (vertical) ---
+    initTabBlock(BlockTrafficPoleLargeGray.class, fmlPreInitializationEvent);
+    initTabBlock(BlockTrafficPoleLargeBlack.class, fmlPreInitializationEvent);
+
+    // --- NSEWUD factory blocks: Vertical Connectors ---
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpoleverticalconnector", BB_TRAFFIC_POLE_VERT_CONNECTOR, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpoleverticalconnectorangledblack", BB_TRAFFIC_POLE_VERT_CONNECTOR_ANGLED, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpoleverticalconnectorangledsilver", BB_TRAFFIC_POLE_VERT_CONNECTOR_ANGLED, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpoleverticalconnectorangledtan", BB_TRAFFIC_POLE_VERT_CONNECTOR_ANGLED, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpoleverticalconnectorangledunpainted", BB_TRAFFIC_POLE_VERT_CONNECTOR_ANGLED, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpoleverticalconnectorangledwhite", BB_TRAFFIC_POLE_VERT_CONNECTOR_ANGLED, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpoleverticalconnectorblack", BB_TRAFFIC_POLE_VERT_CONNECTOR, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpoleverticalconnectordoubleblack", BB_TRAFFIC_POLE_VERT_CONNECTOR_DOUBLE, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpoleverticalconnectordoublesilver", BB_TRAFFIC_POLE_VERT_CONNECTOR_DOUBLE, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpoleverticalconnectordoubletan", BB_TRAFFIC_POLE_VERT_CONNECTOR_DOUBLE, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpoleverticalconnectordoubleunpainted", BB_TRAFFIC_POLE_VERT_CONNECTOR_DOUBLE, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpoleverticalconnectordoublewhite", BB_TRAFFIC_POLE_VERT_CONNECTOR_DOUBLE, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpoleverticalconnectortan", BB_TRAFFIC_POLE_VERT_CONNECTOR, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpoleverticalconnectorwhite", BB_TRAFFIC_POLE_VERT_CONNECTOR, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+
+    // --- NSEWUD factory blocks: Vertical Curve Connectors ---
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpoleverticalcurveconnector", BB_TRAFFIC_POLE_VERT_CURVE_CONNECTOR, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpoleverticalcurveconnectorblack", BB_TRAFFIC_POLE_VERT_CURVE_CONNECTOR, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpoleverticalcurveconnectordoubleguyblack", BB_TRAFFIC_POLE_VERT_CURVE_CONNECTOR, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpoleverticalcurveconnectordoubleguysilver", BB_TRAFFIC_POLE_VERT_CURVE_CONNECTOR, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpoleverticalcurveconnectordoubleguytan", BB_TRAFFIC_POLE_VERT_CURVE_CONNECTOR, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpoleverticalcurveconnectordoubleguyunpainted", BB_TRAFFIC_POLE_VERT_CURVE_CONNECTOR, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpoleverticalcurveconnectordoubleguywhite", BB_TRAFFIC_POLE_VERT_CURVE_CONNECTOR, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpoleverticalcurveconnectortan", BB_TRAFFIC_POLE_VERT_CURVE_CONNECTOR, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpoleverticalcurveconnectorwhite", BB_TRAFFIC_POLE_VERT_CURVE_CONNECTOR, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+
+    // --- NSEWUD factory blocks: Vertical Double Guy Mounts ---
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpoleverticaldoubleguymountblack", BB_TRAFFIC_POLE_VERT_DOUBLE_GUY_MOUNT, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpoleverticaldoubleguymountsilver", BB_TRAFFIC_POLE_VERT_DOUBLE_GUY_MOUNT, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpoleverticaldoubleguymounttan", BB_TRAFFIC_POLE_VERT_DOUBLE_GUY_MOUNT, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpoleverticaldoubleguymountunpainted", BB_TRAFFIC_POLE_VERT_DOUBLE_GUY_MOUNT, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpoleverticaldoubleguymountwhite", BB_TRAFFIC_POLE_VERT_DOUBLE_GUY_MOUNT, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+
+    // --- NSEWUD factory blocks: Vertical Light Mounts ---
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpoleverticallightmount", BB_TRAFFIC_POLE_VERT_LIGHT_MOUNT, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpoleverticallightmountblack", BB_TRAFFIC_POLE_VERT_LIGHT_MOUNT, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpoleverticallightmounttan", BB_TRAFFIC_POLE_VERT_LIGHT_MOUNT, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpoleverticallightmountunpainted", BB_TRAFFIC_POLE_VERT_LIGHT_MOUNT, BlockRenderLayer.CUTOUT_MIPPED, 2F, false));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpoleverticallightmountwhite", BB_TRAFFIC_POLE_VERT_LIGHT_MOUNT, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+
+    // --- NSEWUD factory blocks: Vertical Quad Mounts ---
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpoleverticalquadmount", BB_TRAFFIC_POLE_VERT_QUAD_MOUNT, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpoleverticalquadmountblack", BB_TRAFFIC_POLE_VERT_QUAD_MOUNT, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpoleverticalquadmounttan", BB_TRAFFIC_POLE_VERT_QUAD_MOUNT, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpoleverticalquadmountwhite", BB_TRAFFIC_POLE_VERT_QUAD_MOUNT, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+
+    // --- NSEWUD factory blocks: Vertical Signal Mounts ---
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpoleverticalsignalmount", BB_TRAFFIC_POLE_VERT_SIGNAL_MOUNT, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpoleverticalsignalmountblack", BB_TRAFFIC_POLE_VERT_SIGNAL_MOUNT, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpoleverticalsignalmounttan", BB_TRAFFIC_POLE_VERT_SIGNAL_MOUNT, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpoleverticalsignalmountwhite", BB_TRAFFIC_POLE_VERT_SIGNAL_MOUNT, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+
+    // --- Class-based: Traffic Pole Large (Tan, White) ---
+    initTabBlock(BlockTrafficPoleLargeTan.class, fmlPreInitializationEvent);
+    initTabBlock(BlockTrafficPoleLargeWhite.class, fmlPreInitializationEvent);
+
+    // --- Class-based: Fatigue Mitigators ---
+    initTabBlock(BlockTrafficSignalFatigueMitigator1.class, fmlPreInitializationEvent);
+    initTabBlock(BlockTrafficSignalFatigueMitigator2.class, fmlPreInitializationEvent);
+    initTabBlock(BlockTrafficSignalFatigueMitigator3.class, fmlPreInitializationEvent);
+    initTabBlock(BlockTrafficSignalFatigueMitigator4.class, fmlPreInitializationEvent);
+
+    // --- NSEWUD factory blocks: Signal Accessories ---
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("tlhangmount", BB_TL_HANG_MOUNT, BlockRenderLayer.CUTOUT_MIPPED, 2F, false));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("tlinterconnectmodule1", BB_TL_INTERCONNECT_MODULE_1, BlockRenderLayer.CUTOUT_MIPPED, 2F, false));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("tlinterconnectmodule2", BB_TL_INTERCONNECT_MODULE_2, BlockRenderLayer.CUTOUT_MIPPED, 2F, false));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("tlpreemptbeacon", BB_TL_PREEMPT_BEACON, BlockRenderLayer.CUTOUT_MIPPED, 2F, false));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("tlsnowbeacon", BB_TL_SNOW_BEACON, BlockRenderLayer.CUTOUT_MIPPED, 2F, false));
+
+    // --- Class-based: Street Name Signs (NSEW, not NSEWUD) ---
+    initTabBlock(BlockTrafficStreetNameSign.class, fmlPreInitializationEvent);
+    initTabBlock(BlockTrafficStreetNameSignDouble.class, fmlPreInitializationEvent);
+    initTabBlock(BlockTrafficStreetNameSignMount.class, fmlPreInitializationEvent);
+
+    // --- NSEWUD factory blocks: Horizontal Double Poles ---
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpolehorzdblblack", BB_TRAFFIC_POLE_HORZ_DBL, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpolehorzdblconcrete", BB_TRAFFIC_POLE_HORZ_DBL, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpolehorzdblsilver", BB_TRAFFIC_POLE_HORZ_DBL, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpolehorzdbltan", BB_TRAFFIC_POLE_HORZ_DBL, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpolehorzdblunpainted", BB_TRAFFIC_POLE_HORZ_DBL, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpolehorzdblwhite", BB_TRAFFIC_POLE_HORZ_DBL, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+
+    // --- Class-based: ICsmRetiringBlock (7 overrides, unpainted variants) ---
+    initTabBlock(BlockTrafficpolehorzdoublemountunpainted.class, fmlPreInitializationEvent);
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpolehorzsignmountunpainted", BB_TRAFFIC_POLE_HORIZ_SIGN_MOUNT, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(BlockTrafficpolehorzsinglemountunpainted.class, fmlPreInitializationEvent);
+
+    // --- Class-based: Traffic Pole Small (Unpainted) ---
+    initTabBlock(BlockTrafficPoleSmallUnpainted.class, fmlPreInitializationEvent);
+
+    // --- NSEWUD factory blocks: Vertical Double Poles ---
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpolevertdblblack", BB_TRAFFIC_POLE_VERT_DBL, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpolevertdblconcrete", BB_TRAFFIC_POLE_VERT_DBL, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpolevertdblsilver", BB_TRAFFIC_POLE_VERT_DBL, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpolevertdbltan", BB_TRAFFIC_POLE_VERT_DBL, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpolevertdblunpainted", BB_TRAFFIC_POLE_VERT_DBL, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpolevertdblwhite", BB_TRAFFIC_POLE_VERT_DBL, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+
+    // --- NSEWUD factory blocks: Legacy lowercase connectors/mounts ---
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpoleverticalconnectorconcrete", BB_TRAFFIC_POLE_VERT_CONNECTOR, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpoleverticalconnectorunpainted", BB_TRAFFIC_POLE_VERT_CONNECTOR, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpoleverticalcurveconnectorunpainted", BB_TRAFFIC_POLE_VERT_CURVE_CONNECTOR, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpoleverticalquadmountconcrete", BB_TRAFFIC_POLE_VERT_QUAD_MOUNT, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpoleverticalquadmountunpainted", BB_TRAFFIC_POLE_VERT_QUAD_MOUNT, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpoleverticalsignalmountconcrete", BB_TRAFFIC_POLE_VERT_SIGNAL_MOUNT, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpoleverticalsignalmountunpainted", BB_TRAFFIC_POLE_VERT_SIGNAL_MOUNT, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+
+    // --- Class-based: Traffic Pole Large (Unpainted) ---
+    initTabBlock(BlockTrafficPoleLargeUnpainted.class, fmlPreInitializationEvent);
+
+    // --- Class-based: Mini Solar Panel ---
+    initTabBlock(BlockMiniSolarPanel.class, fmlPreInitializationEvent);
   }
 }
