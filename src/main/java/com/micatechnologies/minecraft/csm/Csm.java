@@ -51,6 +51,7 @@ import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
@@ -88,7 +89,7 @@ public class Csm {
    *
    * @since 2.0.0
    */
-  private static Logger logger;
+  private static Logger logger = LogManager.getLogger(CsmConstants.MOD_NAMESPACE);
 
   static {
     System.setProperty("freetts.voices",

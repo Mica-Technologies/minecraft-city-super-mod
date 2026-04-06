@@ -1,10 +1,8 @@
 package com.micatechnologies.minecraft.csm;
 
 import com.micatechnologies.minecraft.csm.codeutils.ICsmRetiringBlock;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
@@ -26,11 +24,11 @@ public class CsmRegistry {
   private static final Map<String, Block> BLOCKS = new HashMap<>();
 
   /**
-   * The list of items registered with the mod.
+   * The map of items registered with the mod, keyed by registry name.
    *
    * @since 1.0
    */
-  private static final List<Item> ITEMS = new ArrayList<>();
+  private static final Map<String, Item> ITEMS = new HashMap<>();
 
 
   /**
@@ -65,11 +63,12 @@ public class CsmRegistry {
    * @since 1.0
    */
   public static Block getBlock(String blockId) {
-    Block block = BLOCKS.get(CsmConstants.MOD_NAMESPACE + ":" + blockId);
-    if (block == null) {
-      block = BLOCKS.get(blockId);
+    // Keys are always stored in namespaced format ("csm:blockname"). If the caller already
+    // provides a namespaced key, use it directly; otherwise prepend the mod namespace.
+    if (blockId.contains(":")) {
+      return BLOCKS.get(blockId);
     }
-    return block;
+    return BLOCKS.get(CsmConstants.MOD_NAMESPACE + ":" + blockId);
   }
 
   /**
@@ -80,7 +79,7 @@ public class CsmRegistry {
    * @since 1.0
    */
   public static Collection<Item> getItems() {
-    return ITEMS;
+    return ITEMS.values();
   }
 
   /**
@@ -118,11 +117,15 @@ public class CsmRegistry {
    * @since 1.0
    */
   public static void registerItem(Item item) {
+    String key = item.getRegistryName() != null
+        ? item.getRegistryName().toString()
+        : item.getTranslationKey();
+
     // Check if the item is already registered.
-    if (ITEMS.contains(item)) {
-      throw new IllegalArgumentException("Item " + item.getRegistryName() + " already registered.");
+    if (ITEMS.containsKey(key)) {
+      throw new IllegalArgumentException("Item with registry name " + key + " already registered.");
     }
 
-    ITEMS.add(item);
+    ITEMS.put(key, item);
   }
 }
