@@ -42,6 +42,12 @@
         "model": "csm:trafficsignals/shared_models/signal_backplate_vertical_addon_1_right_angle"
       }
     },
+    "horizontal": {
+      "false": {},
+      "true": {
+        "model": "csm:trafficsignals/shared_models/signal_backplate_horizontal_addon_1"
+      }
+    },
     "inventory": [
       {}
     ]

@@ -2,10 +2,12 @@ package com.micatechnologies.minecraft.csm.trafficaccessories;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEWUD;
 import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalHead;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignalHead;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyTilt;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
@@ -31,6 +33,13 @@ public abstract class AbstractBlockSignalBackplate extends AbstractBlockRotatabl
   public static final PropertyEnum<TrafficSignalBodyTilt> TILT =
       PropertyEnum.create("tilt", TrafficSignalBodyTilt.class);
 
+  /**
+   * Whether the adjacent signal is horizontal. Computed in {@link #getActualState} —
+   * not stored in block metadata. When true, the blockstate selects a horizontal model
+   * variant so the backplate matches the signal orientation.
+   */
+  public static final PropertyBool HORIZONTAL = PropertyBool.create("horizontal");
+
   public AbstractBlockSignalBackplate(Material material, SoundType soundType,
       String harvestToolClass, int harvestLevel, float hardness, float resistance,
       float lightLevel, int lightOpacity) {
@@ -38,12 +47,13 @@ public abstract class AbstractBlockSignalBackplate extends AbstractBlockRotatabl
         lightLevel, lightOpacity, false);
     this.setDefaultState(this.blockState.getBaseState()
         .withProperty(FACING, EnumFacing.NORTH)
-        .withProperty(TILT, TrafficSignalBodyTilt.NONE));
+        .withProperty(TILT, TrafficSignalBodyTilt.NONE)
+        .withProperty(HORIZONTAL, false));
   }
 
   @Override
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, TILT);
+    return new BlockStateContainer(this, FACING, TILT, HORIZONTAL);
   }
 
   /**
@@ -56,20 +66,37 @@ public abstract class AbstractBlockSignalBackplate extends AbstractBlockRotatabl
   @Override
   public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos) {
     EnumFacing facing = state.getValue(FACING);
+    TrafficSignalBodyTilt tilt = TrafficSignalBodyTilt.NONE;
+    boolean horizontal = false;
 
     // Only two positions matter: forward and backward along the facing axis.
     // Check opposite direction first (behind the backplate) since that's the most
     // common mounting position for the signal head.
+    BlockPos signalPos = null;
     TileEntity te = worldIn.getTileEntity(pos.offset(facing.getOpposite()));
     if (te instanceof TileEntityTrafficSignalHead) {
-      return state.withProperty(TILT, ((TileEntityTrafficSignalHead) te).getBodyTilt());
-    }
-    te = worldIn.getTileEntity(pos.offset(facing));
-    if (te instanceof TileEntityTrafficSignalHead) {
-      return state.withProperty(TILT, ((TileEntityTrafficSignalHead) te).getBodyTilt());
+      signalPos = pos.offset(facing.getOpposite());
+      tilt = ((TileEntityTrafficSignalHead) te).getBodyTilt();
+    } else {
+      te = worldIn.getTileEntity(pos.offset(facing));
+      if (te instanceof TileEntityTrafficSignalHead) {
+        signalPos = pos.offset(facing);
+        tilt = ((TileEntityTrafficSignalHead) te).getBodyTilt();
+      }
     }
 
-    return state.withProperty(TILT, TrafficSignalBodyTilt.NONE);
+    // Detect horizontal orientation from the adjacent signal block.
+    // Uses the world-aware isHorizontal(world, pos) so add-on signals that
+    // dynamically detect horizontal from their neighbors are handled correctly.
+    if (signalPos != null) {
+      IBlockState signalState = worldIn.getBlockState(signalPos);
+      if (signalState.getBlock() instanceof AbstractBlockControllableSignalHead) {
+        horizontal = ((AbstractBlockControllableSignalHead) signalState.getBlock())
+            .isHorizontal(worldIn, signalPos);
+      }
+    }
+
+    return state.withProperty(TILT, tilt).withProperty(HORIZONTAL, horizontal);
   }
 
   /**

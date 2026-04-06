@@ -33,13 +33,14 @@ public abstract class AbstractBlockSignalBackplateFitted extends AbstractBlockSi
     this.setDefaultState(this.blockState.getBaseState()
         .withProperty(FACING, EnumFacing.NORTH)
         .withProperty(TILT, TrafficSignalBodyTilt.NONE)
+        .withProperty(HORIZONTAL, false)
         .withProperty(FITTED, false));
   }
 
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, TILT, FITTED);
+    return new BlockStateContainer(this, FACING, TILT, HORIZONTAL, FITTED);
   }
 
   @Override
