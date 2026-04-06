@@ -109,8 +109,7 @@ public class TileEntityCrosswalkSignalNewRenderer
                 AbstractBlockControllableSignalHead.getTiltedFacing(
                         TrafficSignalBodyTilt.NONE, facing );
 
-        // Save and set GL state in one batch for clean restore
-        GL11.glPushAttrib(GL11.GL_LIGHTING_BIT | GL11.GL_ENABLE_BIT | GL11.GL_COLOR_BUFFER_BIT);
+        // GL state setup
         GlStateManager.disableLighting();
         GlStateManager.disableCull();
         GlStateManager.enableBlend();
@@ -201,13 +200,10 @@ public class TileEntityCrosswalkSignalNewRenderer
 
         GL11.glPopMatrix();
 
-        // Reset GL color and sync GlStateManager cache (display list replays bypass cache)
+        // Reset GL state
         GL11.glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
         GlStateManager.resetColor();
         OpenGlHelper.setLightmapTextureCoords( OpenGlHelper.lightmapTexUnit, prevBX, prevBY );
-        // Restore all GL state saved by glPushAttrib
-        GL11.glPopAttrib();
-        // Re-sync GlStateManager's cache with actual GL state
         GlStateManager.disableBlend();
         GlStateManager.enableCull();
         GlStateManager.enableLighting();

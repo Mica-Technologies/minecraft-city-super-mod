@@ -99,9 +99,6 @@ public class TileEntityCrosswalkSignalRenderer extends
     int prevBY = (int) OpenGlHelper.lastBrightnessY;
     OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240f, 240f);
 
-    // Save GL state in one batch for clean restore
-    GL11.glPushAttrib(GL11.GL_LIGHTING_BIT | GL11.GL_ENABLE_BIT | GL11.GL_COLOR_BUFFER_BIT
-        | GL11.GL_DEPTH_BUFFER_BIT);
     GlStateManager.disableLighting();
     GlStateManager.depthMask(false);
     GlStateManager.enableBlend();
@@ -130,15 +127,12 @@ public class TileEntityCrosswalkSignalRenderer extends
 
     tess.draw();
 
-    OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, prevBX, prevBY);
-
-    // Restore all GL state saved by glPushAttrib
-    GL11.glPopAttrib();
-    // Re-sync GlStateManager's cache with actual GL state after glPopAttrib
     GlStateManager.enableTexture2D();
     GlStateManager.enableLighting();
     GlStateManager.depthMask(true);
     GlStateManager.disableBlend();
+
+    OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, prevBX, prevBY);
 
     GlStateManager.popMatrix();
   }
