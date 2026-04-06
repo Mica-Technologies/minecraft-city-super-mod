@@ -13,6 +13,36 @@ import net.minecraft.util.ITickable;
 public abstract class AbstractTickableTileEntity extends AbstractTileEntity implements ITickable {
 
   /**
+   * Cached tick rate value, lazily initialized from {@link #getTickRate()} on first use.
+   * A value of {@code -1} indicates the cache is not yet populated.
+   * Subclasses that dynamically change their tick rate should call
+   * {@link #invalidateTickRateCache()} to force a refresh.
+   */
+  private transient long cachedTickRate = -1;
+
+  /**
+   * Returns the tick rate, using a cached value when available. The cache is populated lazily
+   * on first access and can be invalidated via {@link #invalidateTickRateCache()}.
+   *
+   * @return the cached tick rate
+   */
+  private long getCachedTickRate() {
+    if (cachedTickRate == -1) {
+      cachedTickRate = getTickRate();
+    }
+    return cachedTickRate;
+  }
+
+  /**
+   * Invalidates the cached tick rate so that the next tick will re-read the value from
+   * {@link #getTickRate()}. Subclasses should call this method whenever they modify the
+   * value that {@link #getTickRate()} returns.
+   */
+  protected void invalidateTickRateCache() {
+    cachedTickRate = -1;
+  }
+
+  /**
    * Handler for when the tile entity ticks. This method is called every tick, and a comparison is
    * made to see if the tile entity's tick rate has been reached. If so, the onTick() method is
    * called. The tick rate is determined by the value returned by the {@link #getTickRate()}
@@ -24,7 +54,7 @@ public abstract class AbstractTickableTileEntity extends AbstractTileEntity impl
       return;
     }
     if (doClientTick() || !getWorld().isRemote) {
-      if (!pauseTicking() && getWorld().getTotalWorldTime() % getTickRate() == 0L) {
+      if (!pauseTicking() && getWorld().getTotalWorldTime() % getCachedTickRate() == 0L) {
         try {
           onTick();
         } catch (Exception e) {

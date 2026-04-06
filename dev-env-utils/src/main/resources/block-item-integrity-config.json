@@ -1,0 +1,62 @@
+{
+  "sourceFileExcludes": [
+    "src/main/java/com/micatechnologies/minecraft/csm/codeutils/AbstractBlockRotatableHZEight.java",
+    "src/main/java/com/micatechnologies/minecraft/csm/codeutils/AbstractBlockRotatableNSEWUD.java",
+    "src/main/java/com/micatechnologies/minecraft/csm/codeutils/AbstractBlockRotatableNSEW.java",
+    "src/main/java/com/micatechnologies/minecraft/csm/codeutils/AbstractBlockSetBasic.java",
+    "src/main/java/com/micatechnologies/minecraft/csm/codeutils/AbstractBlockSlab.java",
+    "src/main/java/com/micatechnologies/minecraft/csm/lifesafety/AbstractBlockFireAlarmActivator.java",
+    "src/main/java/com/micatechnologies/minecraft/csm/lifesafety/AbstractBlockFireAlarmDetector.java",
+    "src/main/java/com/micatechnologies/minecraft/csm/lifesafety/AbstractBlockFireAlarmSounder.java",
+    "src/main/java/com/micatechnologies/minecraft/csm/lifesafety/AbstractBlockFireAlarmSounderVoiceEvac.java",
+    "src/main/java/com/micatechnologies/minecraft/csm/lighting/AbstractBrightLight.java",
+    "src/main/java/com/micatechnologies/minecraft/csm/codeutils/AbstractPoweredBlockRotatableNSEWUD.java",
+    "src/main/java/com/micatechnologies/minecraft/csm/trafficsignals/logic/AbstractBlockControllableCrosswalkAccessory.java",
+    "src/main/java/com/micatechnologies/minecraft/csm/trafficsignals/logic/AbstractBlockControllableSignal.java",
+    "src/main/java/com/micatechnologies/minecraft/csm/trafficsignals/logic/AbstractBlockTrafficSignalRequester.java",
+    "src/main/java/com/micatechnologies/minecraft/csm/trafficsignals/logic/AbstractBlockTrafficSignalSensor.java",
+    "src/main/java/com/micatechnologies/minecraft/csm/trafficsignals/logic/AbstractBlockTrafficSignalTickableRequester.java",
+    "src/main/java/com/micatechnologies/minecraft/csm/trafficsignals/logic/AbstractBlockTrafficSignalAPS.java",
+    "src/main/java/com/micatechnologies/minecraft/csm/trafficsigns/AbstractBlockSign.java",
+    "src/main/java/com/micatechnologies/minecraft/csm/codeutils/AbstractBlockTrafficPole.java",
+    "src/main/java/com/micatechnologies/minecraft/csm/codeutils/AbstractBlockTrafficPoleDiagonal.java",
+    "src/main/java/com/micatechnologies/minecraft/csm/lighting/AbstractBrightLightPoleColored.java",
+    "src/main/java/com/micatechnologies/minecraft/csm/trafficsignals/AbstractBlockControllableCrosswalkSignal.java",
+    "src/main/java/com/micatechnologies/minecraft/csm/trafficsignals/logic/AbstractBlockTrafficSignalAPSCampbell.java",
+    "src/main/java/com/micatechnologies/minecraft/csm/trafficsignals/logic/AbstractBlockTrafficSignalAPSPolara.java",
+    "src/main/java/com/micatechnologies/minecraft/csm/codeutils/AbstractBlockRotatableHZSixteen.java",
+    "src/main/java/com/micatechnologies/minecraft/csm/trafficsignals/logic/AbstractBlockControllableSignalHead.java",
+    "src/main/java/com/micatechnologies/minecraft/csm/trafficaccessories/AbstractBlockSignalBackplate.java",
+    "src/main/java/com/micatechnologies/minecraft/csm/trafficaccessories/AbstractBlockSignalBackplateFitted.java",
+    "src/main/java/com/micatechnologies/minecraft/csm/tabs/CsmTabNone.java"
+  ],
+  "eligibleExtendsBlocks": [
+    "AbstractBlock",
+    "AbstractBlockRotatableNSEW",
+    "AbstractBlockRotatableNSEWUD",
+    "AbstractPoweredBlockRotatableNSEWUD",
+    "AbstractBrightLight",
+    "AbstractBlockSetBasic",
+    "AbstractBlockFireAlarmSounderVoiceEvac",
+    "AbstractBlockFireAlarmSounder",
+    "AbstractBlockFireAlarmDetector",
+    "AbstractBlockFireAlarmActivator",
+    "AbstractBlockControllableCrosswalkAccessory",
+    "AbstractBlockControllableSignal",
+    "AbstractBlockTrafficSignalRequester",
+    "AbstractBlockTrafficSignalSensor",
+    "AbstractBlockTrafficSignalTickableRequester",
+    "AbstractBlockTrafficSignalAPS",
+    "AbstractBlockSign",
+    "AbstractBlockControllableSignalHead",
+    "AbstractBlockSignalBackplate",
+    "AbstractBlockSignalBackplateFitted",
+    "AbstractBlockRotatableHZSixteen"
+  ],
+  "eligibleExtendsItems": [
+    "AbstractItem"
+  ],
+  "eligibleExtendsTab": [
+    "CsmTab"
+  ]
+}

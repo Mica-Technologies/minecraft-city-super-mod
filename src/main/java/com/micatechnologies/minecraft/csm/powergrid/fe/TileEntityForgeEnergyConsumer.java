@@ -15,10 +15,16 @@ import net.minecraftforge.energy.IEnergyStorage;
 public class TileEntityForgeEnergyConsumer extends AbstractTickableTileEntity implements
     IEnergyStorage {
 
-  private static final int energyConsume = 6;
-  private static final int tickRate = 40;
+  private static final int DEFAULT_ENERGY_CONSUME = 6;
+  private static final int DEFAULT_TICK_RATE = 40;
+  private static final int DEFAULT_STORED_ENERGY_MAX = 24;
   private static final String NBT_ENERGY_KEY = "energy";
-  private static final int storedEnergyMax = 24;
+  private static final String NBT_ENERGY_CONSUME_KEY = "energyConsume";
+  private static final String NBT_TICK_RATE_KEY = "tickRate";
+  private static final String NBT_STORED_ENERGY_MAX_KEY = "storedEnergyMax";
+  private int energyConsume = DEFAULT_ENERGY_CONSUME;
+  private int configuredTickRate = DEFAULT_TICK_RATE;
+  private int storedEnergyMax = DEFAULT_STORED_ENERGY_MAX;
   private int storedEnergy;
 
   /**
@@ -30,6 +36,15 @@ public class TileEntityForgeEnergyConsumer extends AbstractTickableTileEntity im
   @Override
   public void readNBT(NBTTagCompound compound) {
     this.storedEnergy = compound.getInteger(NBT_ENERGY_KEY);
+    if (compound.hasKey(NBT_ENERGY_CONSUME_KEY)) {
+      this.energyConsume = compound.getInteger(NBT_ENERGY_CONSUME_KEY);
+    }
+    if (compound.hasKey(NBT_TICK_RATE_KEY)) {
+      this.configuredTickRate = compound.getInteger(NBT_TICK_RATE_KEY);
+    }
+    if (compound.hasKey(NBT_STORED_ENERGY_MAX_KEY)) {
+      this.storedEnergyMax = compound.getInteger(NBT_STORED_ENERGY_MAX_KEY);
+    }
   }
 
   /**
@@ -43,6 +58,9 @@ public class TileEntityForgeEnergyConsumer extends AbstractTickableTileEntity im
   @Override
   public NBTTagCompound writeNBT(NBTTagCompound compound) {
     compound.setInteger(NBT_ENERGY_KEY, storedEnergy);
+    compound.setInteger(NBT_ENERGY_CONSUME_KEY, energyConsume);
+    compound.setInteger(NBT_TICK_RATE_KEY, configuredTickRate);
+    compound.setInteger(NBT_STORED_ENERGY_MAX_KEY, storedEnergyMax);
     return compound;
   }
 
@@ -127,7 +145,7 @@ public class TileEntityForgeEnergyConsumer extends AbstractTickableTileEntity im
    */
   @Override
   public long getTickRate() {
-    return tickRate;
+    return configuredTickRate;
   }
 
   /**

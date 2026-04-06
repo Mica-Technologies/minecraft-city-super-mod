@@ -305,9 +305,28 @@ public class AssetDependencyTracerTool {
 
   // ---- Model chain tracing ----
 
+  /**
+   * Maximum depth for model parent chain tracing. Prevents infinite loops from
+   * circular references and limits stack depth for deeply nested chains.
+   */
+  private static final int MAX_MODEL_CHAIN_DEPTH = 16;
+
   private static void traceModelChain(File modelsBlockDir, String modelRef,
       Set<String> modelFiles, Set<String> textureRefs, Set<String> visited) {
-    if (visited.contains(modelRef)) return;
+    traceModelChain(modelsBlockDir, modelRef, modelFiles, textureRefs, visited, 0);
+  }
+
+  private static void traceModelChain(File modelsBlockDir, String modelRef,
+      Set<String> modelFiles, Set<String> textureRefs, Set<String> visited, int depth) {
+    if (visited.contains(modelRef)) {
+      log("  WARNING: Circular model reference detected: " + modelRef);
+      return;
+    }
+    if (depth >= MAX_MODEL_CHAIN_DEPTH) {
+      log("  WARNING: Model parent chain depth limit (" + MAX_MODEL_CHAIN_DEPTH
+          + ") reached at: " + modelRef);
+      return;
+    }
     visited.add(modelRef);
 
     String cleanRef = modelRef.replace("csm:", "");
@@ -342,7 +361,7 @@ public class AssetDependencyTracerTool {
           if (parentFile.exists()) {
             modelFiles.add(relativePath(modelsBlockDir.getParentFile().getParentFile()
                 .getParentFile().getParentFile().getParentFile(), parentFile));
-            traceModelChain(modelsBlockDir, parent, modelFiles, textureRefs, visited);
+            traceModelChain(modelsBlockDir, parent, modelFiles, textureRefs, visited, depth + 1);
           }
         }
       }

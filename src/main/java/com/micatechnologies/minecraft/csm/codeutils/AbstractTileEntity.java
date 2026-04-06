@@ -51,12 +51,15 @@ public abstract class AbstractTileEntity extends TileEntity {
   }
 
   /**
-   * Abstract method which must be implemented to process the reading of the tile entity's NBT data
-   * from the supplied NBT tag compound.
+   * Processes the reading of the tile entity's NBT data from the supplied NBT tag compound.
+   * Subclasses may override this method to read custom NBT data. The default implementation does
+   * nothing.
    *
    * @param compound the NBT tag compound to read the tile entity's NBT data from
    */
-  public abstract void readNBT(NBTTagCompound compound);
+  public void readNBT(NBTTagCompound compound) {
+    // Default: no custom NBT data to read
+  }
 
   /**
    * Helper method which sends a data packet to the client to update the tile entity's NBT data.
@@ -93,14 +96,16 @@ public abstract class AbstractTileEntity extends TileEntity {
   }
 
   /**
-   * Abstract method which must be implemented to return the NBT tag compound with the tile entity's
-   * NBT data.
+   * Returns the NBT tag compound with the tile entity's NBT data. Subclasses may override this
+   * method to write custom NBT data. The default implementation returns the compound unchanged.
    *
    * @param compound the NBT tag compound to write the tile entity's NBT data to
    *
    * @return the NBT tag compound with the tile entity's NBT data
    */
-  public abstract NBTTagCompound writeNBT(NBTTagCompound compound);
+  public NBTTagCompound writeNBT(NBTTagCompound compound) {
+    return compound;
+  }
 
   /**
    * Method which processes the writing of the tile entity's NBT data to the supplied NBT tag

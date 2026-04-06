@@ -117,6 +117,7 @@ public class TileEntityForgeEnergyProducer extends AbstractTickableTileEntity im
     if (tickRate > 200) {
       tickRate = 1;
     }
+    invalidateTickRateCache();
     markDirty();
     return tickRate;
   }

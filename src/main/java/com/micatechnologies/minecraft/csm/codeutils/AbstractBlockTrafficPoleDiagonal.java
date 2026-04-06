@@ -78,16 +78,7 @@ public abstract class AbstractBlockTrafficPoleDiagonal extends AbstractBlockTraf
       BlockPos pos) {
     EnumFacing facing = state.getValue(FACING);
 
-    Class<?>[] blockIgnoreBlock = getIgnoreBlock();
-    Class<?>[] ignoreBlock;
-    if (blockIgnoreBlock == null) {
-      ignoreBlock = IGNORE_BLOCK;
-    } else {
-      ignoreBlock = new Class<?>[IGNORE_BLOCK.length + blockIgnoreBlock.length];
-      System.arraycopy(IGNORE_BLOCK, 0, ignoreBlock, 0, IGNORE_BLOCK.length);
-      System.arraycopy(blockIgnoreBlock, 0, ignoreBlock, IGNORE_BLOCK.length,
-          blockIgnoreBlock.length);
-    }
+    Class<?>[] ignoreBlock = buildCombinedIgnoreBlock(getIgnoreBlock());
 
     // Check for blocks in each direction relative to the block's facing direction.
     // For each direction, also verify that NSEWUD-rotatable blocks (like mount kits) are
