@@ -1,15 +1,41 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractTileEntity;
+import javax.annotation.Nullable;
 import net.minecraft.util.math.AxisAlignedBB;
 
 /**
- * Minimal marker tile entity for the dynamic signal mount kit. Stores no data — exists solely
- * to allow a TESR to be bound to the block. Overrides the render bounding box so the TESR
- * is not prematurely frustum-culled when the bracket extends well beyond the block position
- * (e.g., downward for add-on signals).
+ * Tile entity for the dynamic signal mount kit. Stores no persistent data — exists to
+ * allow a TESR to be bound and to cache the computed bounding box for the block.
+ * The BB cache is invalidated when a neighbor changes (via {@link #invalidateCachedBB()}).
  */
 public class TileEntityTrafficLightMountKit extends AbstractTileEntity {
+
+  @Nullable
+  private AxisAlignedBB cachedBoundingBox;
+
+  /**
+   * Returns the cached bounding box, or null if it needs to be recomputed.
+   */
+  @Nullable
+  public AxisAlignedBB getCachedBoundingBox() {
+    return cachedBoundingBox;
+  }
+
+  /**
+   * Stores a computed bounding box for reuse until invalidated.
+   */
+  public void setCachedBoundingBox(AxisAlignedBB bb) {
+    this.cachedBoundingBox = bb;
+  }
+
+  /**
+   * Clears the cached bounding box so it will be recomputed on next access.
+   * Called from {@link BlockTrafficLightMountKit#neighborChanged} when adjacent blocks change.
+   */
+  public void invalidateCachedBB() {
+    this.cachedBoundingBox = null;
+  }
 
   /**
    * Returns an expanded render bounding box so Minecraft's frustum culling doesn't hide
