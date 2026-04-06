@@ -52,37 +52,37 @@ The plan is organized into 8 phases, ordered so that earlier phases unblock or d
 
 ### Checklist
 
-- [ ] **1.1 — Fix `@Nonnull` + null returns in block base classes**
+- [x] **1.1 — Fix `@Nonnull` + null returns in block base classes**
   - Files: `AbstractBlockFence.java:179`, `AbstractBlockStairs.java:161`, `AbstractBlockSlab.java:411`
   - Issue: `getBlockRenderLayer()` is annotated `@Nonnull` but returns `null`
   - Fix: Return `BlockRenderLayer.CUTOUT_MIPPED` (or whichever layer the subclass needs), or remove `@Nonnull`
 
-- [ ] **1.2 — Add POWERED property to default state in AbstractPoweredBlockRotatableNSEWUD**
+- [x] **1.2 — Add POWERED property to default state in AbstractPoweredBlockRotatableNSEWUD**
   - File: `AbstractPoweredBlockRotatableNSEWUD.java:95`
   - Issue: Constructor sets default state with FACING only; POWERED is uninitialized
   - Fix: `.withProperty(POWERED, false)` in default state chain
 
-- [ ] **1.3 — Fix memory leak in fire alarm sound system (static maps)**
+- [x] **1.3 — Fix memory leak in fire alarm sound system (static maps)**
   - Files: `FireAlarmSoundPacketHandler.java:57-72`, `FireAlarmVoiceEvacSound.java:26`
   - Issue: `activeSounds` and `channelPositions` are static maps that hold `BlockPos` lists permanently; `FireAlarmVoiceEvacSound` holds direct reference to packet's speaker list
   - Fix: (a) Copy speaker positions in `FireAlarmVoiceEvacSound` constructor, (b) null-out references on `stopPlaying()`, (c) clear stale entries when world unloads
 
-- [ ] **1.4 — Fix race condition in power grid energy consumer**
+- [x] **1.4 — Fix race condition in power grid energy consumer**
   - File: `TileEntityForgeEnergyConsumer.java`
   - Issue: `receiveEnergy()` and `consumeEnergy()` are `synchronized` but `onTick()` is not; `storedEnergy` field accessed without lock in tick
   - Fix: Synchronize `onTick()` or use `AtomicInteger` for `storedEnergy`
 
-- [ ] **1.5 — Fix Integer.MAX_VALUE overflow risk in energy producer**
+- [x] **1.5 — Fix Integer.MAX_VALUE overflow risk in energy producer**
   - File: `TileEntityForgeEnergyProducer.java:78,83,158`
   - Issue: `getEnergyStored()` and `getMaxEnergyStored()` return `Integer.MAX_VALUE`; `receiveEnergy(Integer.MAX_VALUE)` sent to adjacent blocks
   - Fix: Use a sane constant (e.g., 10,000 FE) or make configurable
 
-- [ ] **1.6 — Add null safety to tab icon loading**
+- [x] **1.6 — Add null safety to tab icon loading**
   - File: `CsmTab.java:113`
   - Issue: `getTabIcon()` can return null if registry block not found, causing NPE in `createIcon()`
   - Fix: Add null check with descriptive `IllegalStateException`
 
-- [ ] **1.7 — Validate fire alarm channel packets**
+- [x] **1.7 — Validate fire alarm channel packets**
   - File: `FireAlarmSoundPacketHandler.java:36-46`
   - Issue: No null/empty validation on `channel` before using as map key
   - Fix: Early return on null/empty channel for start packets
@@ -97,17 +97,17 @@ The plan is organized into 8 phases, ordered so that earlier phases unblock or d
 
 ### Checklist
 
-- [ ] **2.1 — Remove duplicate FreeTTS initialization**
+- [x] **2.1 — Remove duplicate FreeTTS initialization**
   - Files: `Csm.java:94-95` (static initializer), `CsmCommonProxy.java:46-47` (init method)
   - Issue: FreeTTS voice property set in two places
   - Fix: Remove from `CsmCommonProxy.init()`; static initializer is sufficient
 
-- [ ] **2.2 — Standardize registry key format**
+- [x] **2.2 — Standardize registry key format**
   - File: `CsmRegistry.java:67-73`
   - Issue: `getBlock()` tries two key formats (namespaced and bare)
   - Fix: Always use `"csm:" + blockId` format; remove fallback
 
-- [ ] **2.3 — Change item registry from List to Map**
+- [x] **2.3 — Change item registry from List to Map**
   - File: `CsmRegistry.java:33`
   - Issue: `ITEMS` is an `ArrayList`, can't detect duplicate registry names
   - Fix: Change to `Map<String, Item>` keyed by registry name, matching block pattern
@@ -118,7 +118,7 @@ The plan is organized into 8 phases, ordered so that earlier phases unblock or d
   - Fix: Add `@Mod.EventBusSubscriber(modid = CsmConstants.MOD_NAMESPACE)` and make handlers `static`
   - Note: Evaluate carefully — this changes initialization timing
 
-- [ ] **2.5 — Fix logger null-initialization**
+- [x] **2.5 — Fix logger null-initialization**
   - File: `Csm.java:91,122`
   - Issue: Logger is static null, assigned in `preInit()`; any early log call throws NPE
   - Fix: Initialize immediately: `private static final Logger LOG = LogManager.getLogger(CsmConstants.MOD_NAMESPACE);`
@@ -133,7 +133,7 @@ The plan is organized into 8 phases, ordered so that earlier phases unblock or d
   - Issue: Tab `@CsmTab.Load(order = N)` values are sparse (1, 4, 10) with no central documentation
   - Fix: Add constants or enum for order values; add startup validation for uniqueness
 
-- [ ] **2.8 — Replace deprecated `newInstance()` in tab scanning**
+- [x] **2.8 — Replace deprecated `newInstance()` in tab scanning**
   - File: `CsmTab.java:135-161`
   - Issue: Uses `Class.forName().newInstance()` (deprecated since Java 9)
   - Fix: Use `clazz.getDeclaredConstructor().newInstance()` with proper error handling
@@ -149,7 +149,7 @@ The plan is organized into 8 phases, ordered so that earlier phases unblock or d
 
 ### Checklist
 
-- [ ] **3.1 — Cache ignore-block array in AbstractBlockTrafficPole**
+- [x] **3.1 — Cache ignore-block array in AbstractBlockTrafficPole**
   - File: `AbstractBlockTrafficPole.java:249-258`
   - Issue: `getActualState()` creates a new combined array on every call (rendering hot path)
   - Fix: Compute combined array once in constructor or on first call; store as field
@@ -169,12 +169,12 @@ The plan is organized into 8 phases, ordered so that earlier phases unblock or d
   - Issue: Hardcoded angle thresholds with 8+ if/else branches
   - Fix: Use array lookup: `DIRECTIONS[Math.round(yaw / 45) % 8]`
 
-- [ ] **3.5 — Replace exception printing with logging in AbstractTickableTileEntity**
+- [x] **3.5 — Replace exception printing with logging in AbstractTickableTileEntity**
   - File: `AbstractTickableTileEntity.java:24-35`
   - Issue: `System.err.println()` + `e.printStackTrace()` on every tick error
   - Fix: Use `LOGGER.error()` with rate limiting or once-per-type logging
 
-- [ ] **3.6 — Add world null-check in AbstractTickableTileEntity**
+- [x] **3.6 — Add world null-check in AbstractTickableTileEntity**
   - File: `AbstractTickableTileEntity.java:22`
   - Issue: `getWorld()` called without null check; can NPE before world loads
   - Fix: Early return if `getWorld() == null`
@@ -184,7 +184,7 @@ The plan is organized into 8 phases, ordered so that earlier phases unblock or d
   - Issue: Abstract methods force all subclasses to implement even if they have no custom NBT
   - Fix: Change from `abstract` to empty default methods
 
-- [ ] **3.8 — Cache block state lookups in BlockUtils**
+- [x] **3.8 — Cache block state lookups in BlockUtils**
   - File: `BlockUtils.java:40-55`
   - Issue: `getBlockState()` called multiple times for same position
   - Fix: Call once, store in local variable
@@ -213,28 +213,28 @@ The plan is organized into 8 phases, ordered so that earlier phases unblock or d
 
 **Current state:** 472 Java files in `trafficsigns/`, each ~10 lines, only overriding `getBlockRegistryName()`. All extend `AbstractBlockSign`.
 
-- [ ] **4A.1 — Design traffic sign registry format**
+- [x] **4A.1 — Design traffic sign registry format**
   - Decide: JSON config file, Java enum, or annotation-based discovery
   - Must preserve: registry name, texture association, blockstate/model references
   - Consider: backward compatibility with existing world saves (registry names must NOT change)
 
-- [ ] **4A.2 — Create `TrafficSignFactory` class**
+- [x] **4A.2 — Create `TrafficSignFactory` class**
   - Single class extending `AbstractBlockSign`
   - Constructor takes registry name (and optionally texture key)
   - All instances share identical behavior
 
-- [ ] **4A.3 — Create sign registry data file**
+- [x] **4A.3 — Create sign registry data file**
   - List all 472 sign registry names with any per-sign metadata
   - Reference: existing `en_us.lang` entries for display names
 
-- [ ] **4A.4 — Update tab registration**
+- [x] **4A.4 — Update tab registration**
   - Modify `CsmTabTrafficSigns.initTabElements()` to iterate registry instead of listing 472 classes
 
-- [ ] **4A.5 — Verify world save compatibility**
+- [x] **4A.5 — Verify world save compatibility**
   - Test: place signs in a world with old code, load with new code
   - Registry names must match exactly
 
-- [ ] **4A.6 — Delete 471 redundant class files**
+- [x] **4A.6 — Delete 471 redundant class files**
   - Keep `AbstractBlockSign.java`; delete all `BlockSign*.java` concrete classes
 
 **Impact estimate:** -471 Java files, -~4,700 lines of code
@@ -243,29 +243,29 @@ The plan is organized into 8 phases, ordered so that earlier phases unblock or d
 
 **Current state:** 247 Java files in `trafficaccessories/`, each ~110 lines. Categories: traffic light borders (~80), control boxes (~12), pole variants (~120), special hardware (~35).
 
-- [ ] **4B.1 — Categorize all 247 blocks by base class and behavior**
+- [x] **4B.1 — Categorize all 247 blocks by base class and behavior**
   - Group by: parent class, properties used, bounding box patterns
   - Identify which can share a factory vs. which need unique behavior
 
-- [ ] **4B.2 — Create border block factory**
+- [x] **4B.2 — Create border block factory**
   - Parameterize: `color1`, `color2`, `size` (8", 8.812", standard)
   - One class replaces ~80 border block classes
 
-- [ ] **4B.3 — Create control box factory**
+- [x] **4B.3 — Create control box factory**
   - Parameterize: `size` (large/small), `color`
   - One class replaces ~12 control box classes
 
-- [ ] **4B.4 — Create pole variant factory**
+- [x] **4B.4 — Create pole variant factory**
   - Parameterize: `material`, `orientation`, `mount_type`
   - One class replaces ~120 pole variant classes
 
-- [ ] **4B.5 — Create special hardware factory (if applicable)**
+- [x] **4B.5 — Create special hardware factory (if applicable)**
   - Some blocks (signal backplates) have unique `getActualState()` logic — may need to stay as separate classes
   - Assess each of the ~35 remaining blocks
 
-- [ ] **4B.6 — Update tab registration and verify world saves**
+- [x] **4B.6 — Update tab registration and verify world saves**
 
-- [ ] **4B.7 — Delete redundant class files**
+- [x] **4B.7 — Delete redundant class files**
 
 **Impact estimate:** -230+ Java files, -~23,000 lines of code
 
@@ -273,27 +273,27 @@ The plan is organized into 8 phases, ordered so that earlier phases unblock or d
 
 **Current state:** 98 signal block classes (`BlockControllableVertical*.java`, `BlockControllableHorizontal*.java`), each ~25-66 lines overriding `getSignalSide()`, `doesFlash()`, `getBlockRegistryName()`, `getDefaultTrafficSignalSectionInfo()`.
 
-- [ ] **4C.1 — Design signal configuration schema**
+- [x] **4C.1 — Design signal configuration schema**
   - Must capture: signal side (THROUGH/LEFT/RIGHT/PROTECTED_LEFT/UTURN), flash behavior, section info array, 8" vs standard size
   - Consider: enum-based or JSON-based configuration
 
-- [ ] **4C.2 — Create vertical signal factory**
+- [x] **4C.2 — Create vertical signal factory**
   - Parameterized by: signal side, flash, section info, size
   - One class replaces ~80 vertical signal classes
 
-- [ ] **4C.3 — Create horizontal signal factory**
+- [x] **4C.3 — Create horizontal signal factory**
   - Same parameters as vertical
   - One class replaces ~18 horizontal signal classes
 
-- [ ] **4C.4 — Consolidate crosswalk button classes**
+- [x] **4C.4 — Consolidate crosswalk button classes**
   - 5 nearly-identical button classes → 1 parameterized class
 
-- [ ] **4C.5 — Consolidate APS tile entity wrappers**
+- [x] **4C.5 — Consolidate APS tile entity wrappers**
   - 2 constructor-only TE classes → factory method on parent
 
-- [ ] **4C.6 — Update tab registration and verify world saves**
+- [x] **4C.6 — Update tab registration and verify world saves**
 
-- [ ] **4C.7 — Delete redundant class files**
+- [x] **4C.7 — Delete redundant class files**
 
 **Impact estimate:** -90+ Java files, -~4,500 lines of code
 
@@ -301,28 +301,28 @@ The plan is organized into 8 phases, ordered so that earlier phases unblock or d
 
 **Current state:** 95 block files in `lifesafety/BlockFireAlarm*.java`. Categories: strobe blocks (~60), dual-sound blocks (~30), multi-sound TE blocks (2), other (3).
 
-- [ ] **4D.1 — Categorize fire alarm blocks by behavior pattern**
+- [x] **4D.1 — Categorize fire alarm blocks by behavior pattern**
   - Pattern A: Strobe blocks (same TE, different strobe lens coordinates)
   - Pattern B: Dual-sound blocks (SOUND meta property, 2 sound resources)
   - Pattern C: Multi-sound TE blocks (TileEntityFireAlarmSoundIndex)
   - Pattern D: Unique behavior blocks
 
-- [ ] **4D.2 — Create strobe block factory**
+- [x] **4D.2 — Create strobe block factory**
   - Parameters: registry name, strobe lens from/to coordinates, sound resource
   - One class replaces ~60 strobe blocks
 
-- [ ] **4D.3 — Create dual-sound block factory**
+- [x] **4D.3 — Create dual-sound block factory**
   - Parameters: registry name, sound resource A, sound resource B, strobe coordinates
   - One class replaces ~30 dual-sound blocks
 
-- [ ] **4D.4 — Replace hardcoded instanceof checks with interface**
+- [x] **4D.4 — Replace hardcoded instanceof checks with interface**
   - File: `TileEntityFireAlarmControlPanel.java:308-318`
   - Create `IMultiSoundBlock` interface with `getSoundResourceName(World, BlockPos, IBlockState)`
   - Control panel checks interface instead of specific class names
 
-- [ ] **4D.5 — Update tab registration and verify world saves**
+- [x] **4D.5 — Update tab registration and verify world saves**
 
-- [ ] **4D.6 — Delete redundant class files**
+- [x] **4D.6 — Delete redundant class files**
 
 **Impact estimate:** -85+ Java files, -~3,000 lines of code
 
@@ -330,17 +330,17 @@ The plan is organized into 8 phases, ordered so that earlier phases unblock or d
 
 **Current state:** ~95 light fixture classes in `lighting/`, each ~35 lines overriding `getBlockRegistryName()`, `getBlockBoundingBox()`, `getBrightLightXOffset()`.
 
-- [ ] **4E.1 — Create light fixture factory**
+- [x] **4E.1 — Create light fixture factory**
   - Parameters: registry name, bounding box, X offset
   - One class replaces ~85 simple fixtures
 
-- [ ] **4E.2 — Keep unique fixtures as separate classes**
+- [x] **4E.2 — Keep unique fixtures as separate classes**
   - Some fixtures (e.g., `BlockAltoLLM` extending `AbstractBlockRotatableNSEW`) have non-standard base classes
   - ~10 fixtures need individual treatment
 
-- [ ] **4E.3 — Update tab registration and verify world saves**
+- [x] **4E.3 — Update tab registration and verify world saves**
 
-- [ ] **4E.4 — Delete redundant class files**
+- [x] **4E.4 — Delete redundant class files**
 
 **Impact estimate:** -80+ Java files, -~3,000 lines of code
 
@@ -348,33 +348,33 @@ The plan is organized into 8 phases, ordered so that earlier phases unblock or d
 
 **Current state:** ~30 structural pole/cross-arm blocks in `powergrid/`, each ~110 lines with identical structure.
 
-- [ ] **4F.1 — Create structural block factory**
+- [x] **4F.1 — Create structural block factory**
   - Parameters: registry name, bounding box, material, sound, opacity, render layer
   - One class replaces ~25 identical blocks
 
-- [ ] **4F.2 — Update tab registration and verify world saves**
+- [x] **4F.2 — Update tab registration and verify world saves**
 
-- [ ] **4F.3 — Delete redundant class files**
+- [x] **4F.3 — Delete redundant class files**
 
 **Impact estimate:** -25+ Java files, -~2,500 lines of code
 
 ### 4G — HVAC Blocks (30 classes, moderate dedup)
 
-- [ ] **4G.1 — Merge damper variants using blockstate property**
+- [x] **4G.1 — Merge damper variants using blockstate property**
   - 10 damper blocks (suffix `D`) are copies of base blocks
   - Add `DAMPER` boolean property to base blocks instead
 
-- [ ] **4G.2 — Factory for remaining identical-structure blocks**
+- [x] **4G.2 — Factory for remaining identical-structure blocks**
   - ~15 blocks share identical code structure
 
 **Impact estimate:** -15+ Java files, -~1,500 lines of code
 
 ### 4H — Technology Blocks (47 classes, moderate dedup)
 
-- [ ] **4H.1 — Consolidate speaker variants (VCS1-9, ATLS1-5, etc.)**
+- [x] **4H.1 — Consolidate speaker variants (VCS1-9, ATLS1-5, etc.)**
   - ~18 speaker variants → 1 parameterized class
 
-- [ ] **4H.2 — Consolidate remote control items**
+- [x] **4H.2 — Consolidate remote control items**
   - ~8 remote items → 1 parameterized class
 
 **Impact estimate:** -20+ Java files, -~1,800 lines of code
