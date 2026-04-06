@@ -63,9 +63,30 @@ public class FireAlarmVoiceEvacSound extends MovingSound {
    * Uses squared distances for comparison, only computing sqrt for the final nearest speaker.
    */
   private float calculateVolume(EntityPlayer player) {
+    return calculateVolume(player.posX, player.posY, player.posZ, speakerPositions, hearingRange);
+  }
+
+  /**
+   * Calculates the volume based on the listener's distance to the nearest speaker. Extracted as a
+   * package-private static method to enable unit testing without requiring a running Minecraft
+   * client.
+   *
+   * @param playerX          the listener's X position
+   * @param playerY          the listener's Y position
+   * @param playerZ          the listener's Z position
+   * @param speakerPositions the positions of all linked speakers
+   * @param hearingRange     the maximum distance from a speaker at which the sound is audible
+   *
+   * @return the calculated volume between {@link #MIN_VOLUME} and {@link #MAX_VOLUME}
+   */
+  static float calculateVolume(double playerX, double playerY, double playerZ,
+      List<BlockPos> speakerPositions, float hearingRange) {
     double minDistSq = Double.MAX_VALUE;
     for (BlockPos sp : speakerPositions) {
-      double distSq = player.getDistanceSq(sp);
+      double dx = playerX - (sp.getX() + 0.5);
+      double dy = playerY - (sp.getY() + 0.5);
+      double dz = playerZ - (sp.getZ() + 0.5);
+      double distSq = dx * dx + dy * dy + dz * dz;
       if (distSq < minDistSq) {
         minDistSq = distSq;
       }
