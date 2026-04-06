@@ -1,53 +1,16 @@
 package com.micatechnologies.minecraft.csm.tabs;
 
 import com.micatechnologies.minecraft.csm.CsmRegistry;
+import com.micatechnologies.minecraft.csm.codeutils.BlockRotatableNSEWUDFactory;
 import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
-import com.micatechnologies.minecraft.csm.technology.BlockATLS1;
-import com.micatechnologies.minecraft.csm.technology.BlockATLS2;
-import com.micatechnologies.minecraft.csm.technology.BlockATLS3;
-import com.micatechnologies.minecraft.csm.technology.BlockATLS4;
-import com.micatechnologies.minecraft.csm.technology.BlockATLS5;
-import com.micatechnologies.minecraft.csm.technology.BlockAppleTV;
-import com.micatechnologies.minecraft.csm.technology.BlockBose1;
-import com.micatechnologies.minecraft.csm.technology.BlockBose2;
-import com.micatechnologies.minecraft.csm.technology.BlockFJS1;
-import com.micatechnologies.minecraft.csm.technology.BlockFJS2;
-import com.micatechnologies.minecraft.csm.technology.BlockFarevend;
-import com.micatechnologies.minecraft.csm.technology.BlockImac;
-import com.micatechnologies.minecraft.csm.technology.BlockImacpro;
-import com.micatechnologies.minecraft.csm.technology.BlockJBLC1;
-import com.micatechnologies.minecraft.csm.technology.BlockJBLC2;
-import com.micatechnologies.minecraft.csm.technology.BlockMbp;
+import com.micatechnologies.minecraft.csm.codeutils.ItemDecorativeFactory;
 import com.micatechnologies.minecraft.csm.technology.BlockRedstoneTTS;
-import com.micatechnologies.minecraft.csm.technology.BlockStbox;
-import com.micatechnologies.minecraft.csm.technology.BlockTvdish;
-import com.micatechnologies.minecraft.csm.technology.BlockTvdishside;
-import com.micatechnologies.minecraft.csm.technology.BlockVCS1;
-import com.micatechnologies.minecraft.csm.technology.BlockVCS2;
-import com.micatechnologies.minecraft.csm.technology.BlockVCS3;
-import com.micatechnologies.minecraft.csm.technology.BlockVCS4;
-import com.micatechnologies.minecraft.csm.technology.BlockVCS5;
-import com.micatechnologies.minecraft.csm.technology.BlockVCS6;
-import com.micatechnologies.minecraft.csm.technology.BlockVCS7;
-import com.micatechnologies.minecraft.csm.technology.BlockVCS8;
-import com.micatechnologies.minecraft.csm.technology.BlockVCS9;
-import com.micatechnologies.minecraft.csm.technology.BlockVf915;
-import com.micatechnologies.minecraft.csm.technology.BlockWAPTPL225;
-import com.micatechnologies.minecraft.csm.technology.BlockWapac;
-import com.micatechnologies.minecraft.csm.technology.BlockWapn;
-import com.micatechnologies.minecraft.csm.technology.BlockWg;
-import com.micatechnologies.minecraft.csm.technology.ItemAppleIpadPro;
-import com.micatechnologies.minecraft.csm.technology.ItemAppleIphoneSE2020;
-import com.micatechnologies.minecraft.csm.technology.ItemAppleIphoneXR;
-import com.micatechnologies.minecraft.csm.technology.ItemAppleIphoneXS;
 import com.micatechnologies.minecraft.csm.technology.ItemApplePencil;
-import com.micatechnologies.minecraft.csm.technology.ItemAppleTVRemote;
-import com.micatechnologies.minecraft.csm.technology.ItemAppleWatch;
-import com.micatechnologies.minecraft.csm.technology.ItemDirecTVRemote;
-import com.micatechnologies.minecraft.csm.technology.ItemDishRemote;
-import com.micatechnologies.minecraft.csm.technology.ItemFiosRemote;
-import com.micatechnologies.minecraft.csm.technology.ItemSpectrumRemote;
 import net.minecraft.block.Block;
+import net.minecraft.block.SoundType;
+import net.minecraft.block.material.Material;
+import net.minecraft.util.BlockRenderLayer;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 /**
@@ -107,56 +70,58 @@ public class CsmTabTechnology extends CsmTab {
   }
 
   /**
-   * Initializes all the items belonging to the tab.
+   * Initializes all the elements belonging to the tab.
+   *
+   * @param fmlPreInitializationEvent the {@link FMLPreInitializationEvent} that is being processed
    *
    * @since 1.0
    */
   @Override
   public void initTabElements(FMLPreInitializationEvent fmlPreInitializationEvent) {
-    initTabBlock(BlockATLS1.class, fmlPreInitializationEvent); // ATLS1
-    initTabBlock(BlockATLS2.class, fmlPreInitializationEvent); // ATLS2
-    initTabBlock(BlockATLS3.class, fmlPreInitializationEvent); // ATLS3
-    initTabBlock(BlockATLS4.class, fmlPreInitializationEvent); // ATLS4
-    initTabBlock(BlockATLS5.class, fmlPreInitializationEvent); // ATLS5
-    initTabBlock(BlockAppleTV.class, fmlPreInitializationEvent); // AppleTV
-    initTabBlock(BlockBose1.class, fmlPreInitializationEvent); // Bose1
-    initTabBlock(BlockBose2.class, fmlPreInitializationEvent); // Bose2
-    initTabBlock(BlockFJS1.class, fmlPreInitializationEvent); // FJS1
-    initTabBlock(BlockFJS2.class, fmlPreInitializationEvent); // FJS2
-    initTabBlock(BlockFarevend.class, fmlPreInitializationEvent); // Farevend
-    initTabBlock(BlockImac.class, fmlPreInitializationEvent); // Imac
-    initTabBlock(BlockImacpro.class, fmlPreInitializationEvent); // Imacpro
-    initTabBlock(BlockJBLC1.class, fmlPreInitializationEvent); // JBLC1
-    initTabBlock(BlockJBLC2.class, fmlPreInitializationEvent); // JBLC2
-    initTabBlock(BlockMbp.class, fmlPreInitializationEvent); // Mbp
-    initTabBlock(BlockRedstoneTTS.class, fmlPreInitializationEvent); // RedstoneTTS
-    initTabBlock(BlockStbox.class, fmlPreInitializationEvent); // Stbox
-    initTabBlock(BlockTvdish.class, fmlPreInitializationEvent); // Tvdish
-    initTabBlock(BlockTvdishside.class, fmlPreInitializationEvent); // Tvdishside
-    initTabBlock(BlockVCS1.class, fmlPreInitializationEvent); // VCS1
-    initTabBlock(BlockVCS2.class, fmlPreInitializationEvent); // VCS2
-    initTabBlock(BlockVCS3.class, fmlPreInitializationEvent); // VCS3
-    initTabBlock(BlockVCS4.class, fmlPreInitializationEvent); // VCS4
-    initTabBlock(BlockVCS5.class, fmlPreInitializationEvent); // VCS5
-    initTabBlock(BlockVCS6.class, fmlPreInitializationEvent); // VCS6
-    initTabBlock(BlockVCS7.class, fmlPreInitializationEvent); // VCS7
-    initTabBlock(BlockVCS8.class, fmlPreInitializationEvent); // VCS8
-    initTabBlock(BlockVCS9.class, fmlPreInitializationEvent); // VCS9
-    initTabBlock(BlockVf915.class, fmlPreInitializationEvent); // Vf915
-    initTabBlock(BlockWAPTPL225.class, fmlPreInitializationEvent); // WAPTPL225
-    initTabBlock(BlockWapac.class, fmlPreInitializationEvent); // Wapac
-    initTabBlock(BlockWapn.class, fmlPreInitializationEvent); // Wapn
-    initTabBlock(BlockWg.class, fmlPreInitializationEvent); // Wg
-    initTabItem(ItemAppleIpadPro.class, fmlPreInitializationEvent); // AppleIpadPro
-    initTabItem(ItemAppleIphoneSE2020.class, fmlPreInitializationEvent); // AppleIphoneSE2020
-    initTabItem(ItemAppleIphoneXR.class, fmlPreInitializationEvent); // AppleIphoneXR
-    initTabItem(ItemAppleIphoneXS.class, fmlPreInitializationEvent); // AppleIphoneXS
-    initTabItem(ItemApplePencil.class, fmlPreInitializationEvent); // ApplePencil
-    initTabItem(ItemAppleTVRemote.class, fmlPreInitializationEvent); // AppleTVRemote
-    initTabItem(ItemAppleWatch.class, fmlPreInitializationEvent); // AppleWatch
-    initTabItem(ItemDirecTVRemote.class, fmlPreInitializationEvent); // DirecTVRemote
-    initTabItem(ItemDishRemote.class, fmlPreInitializationEvent); // DishRemote
-    initTabItem(ItemFiosRemote.class, fmlPreInitializationEvent); // FiosRemote
-    initTabItem(ItemSpectrumRemote.class, fmlPreInitializationEvent); // SpectrumRemote
+    initTabBlock(new BlockRotatableNSEWUDFactory("atls1", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0, new AxisAlignedBB(0.000000, 0.000000, 0.900000, 1.000000, 1.000000, 1.000000), false, false, false, BlockRenderLayer.CUTOUT_MIPPED, false, false));
+    initTabBlock(new BlockRotatableNSEWUDFactory("atls2", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0, new AxisAlignedBB(0.000000, 0.000000, 0.900000, 1.000000, 1.000000, 1.000000), false, false, false, BlockRenderLayer.CUTOUT_MIPPED, false, false));
+    initTabBlock(new BlockRotatableNSEWUDFactory("atls3", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0, new AxisAlignedBB(0.000000, 0.000000, 0.900000, 1.000000, 1.000000, 1.000000), false, false, false, BlockRenderLayer.CUTOUT_MIPPED, false, false));
+    initTabBlock(new BlockRotatableNSEWUDFactory("atls4", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0, new AxisAlignedBB(0.000000, 0.000000, 0.900000, 1.000000, 1.000000, 1.000000), false, false, false, BlockRenderLayer.CUTOUT_MIPPED, false, false));
+    initTabBlock(new BlockRotatableNSEWUDFactory("atls5", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0, new AxisAlignedBB(0.000000, 0.000000, 0.900000, 1.000000, 1.000000, 1.000000), false, false, false, BlockRenderLayer.CUTOUT_MIPPED, false, false));
+    initTabBlock(new BlockRotatableNSEWUDFactory("appletv", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0, new AxisAlignedBB(0.312500, 0.000000, 0.312500, 0.687500, 0.125000, 0.687500), false, false, false, BlockRenderLayer.CUTOUT_MIPPED, false, false));
+    initTabBlock(new BlockRotatableNSEWUDFactory("bose1", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0, new AxisAlignedBB(0.000000, 0.000000, 0.900000, 1.000000, 1.000000, 1.000000), false, false, false, BlockRenderLayer.CUTOUT_MIPPED, true, true));
+    initTabBlock(new BlockRotatableNSEWUDFactory("bose2", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0, new AxisAlignedBB(0.000000, 0.000000, 0.900000, 1.000000, 1.000000, 1.000000), false, false, false, BlockRenderLayer.CUTOUT_MIPPED, true, true));
+    initTabBlock(new BlockRotatableNSEWUDFactory("fjs1", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0, new AxisAlignedBB(0.000000, 0.000000, 0.900000, 1.000000, 1.000000, 1.000000), false, false, false, BlockRenderLayer.CUTOUT_MIPPED, true, true));
+    initTabBlock(new BlockRotatableNSEWUDFactory("fjs2", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0, new AxisAlignedBB(0.000000, 0.000000, 0.900000, 1.000000, 1.000000, 1.000000), false, false, false, BlockRenderLayer.CUTOUT_MIPPED, true, true));
+    initTabBlock(new BlockRotatableNSEWUDFactory("farevend", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0, new AxisAlignedBB(0.000000, 0.000000, 0.937500, 1.000000, 2.000000, 1.000000), false, false, false, BlockRenderLayer.SOLID, false, false));
+    initTabBlock(new BlockRotatableNSEWUDFactory("imac", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0.6F, 0, new AxisAlignedBB(-0.573102, 0.000000, 0.117500, 1.437500, 1.421875, 1.439273), false, false, false, BlockRenderLayer.CUTOUT_MIPPED, false, false));
+    initTabBlock(new BlockRotatableNSEWUDFactory("imacpro", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0.6F, 0, new AxisAlignedBB(-0.573102, 0.000000, 0.117500, 1.437500, 1.421875, 1.439273), false, false, false, BlockRenderLayer.CUTOUT_MIPPED, false, false));
+    initTabBlock(new BlockRotatableNSEWUDFactory("jblc1", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0, new AxisAlignedBB(0.000000, 0.000000, 0.900000, 1.000000, 1.000000, 1.000000), false, false, false, BlockRenderLayer.CUTOUT_MIPPED, true, true));
+    initTabBlock(new BlockRotatableNSEWUDFactory("jblc2", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0, new AxisAlignedBB(0.000000, 0.000000, 0.900000, 1.000000, 1.000000, 1.000000), false, false, false, BlockRenderLayer.CUTOUT_MIPPED, true, true));
+    initTabBlock(new BlockRotatableNSEWUDFactory("mbp", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0.6F, 0, new AxisAlignedBB(0.125000, 0.000000, 0.312500, 0.875000, 0.437500, 0.750000), false, false, false, BlockRenderLayer.CUTOUT_MIPPED, false, false));
+    initTabBlock(new BlockRotatableNSEWUDFactory("stbox", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0, new AxisAlignedBB(0.000000, 0.000000, 0.250000, 1.000000, 0.187500, 0.750000), false, false, false, BlockRenderLayer.CUTOUT_MIPPED, false, false));
+    initTabBlock(new BlockRotatableNSEWUDFactory("tvdish", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0, new AxisAlignedBB(0.187500, 0.000000, 0.250000, 0.812500, 1.000000, 0.812500), false, true, false, BlockRenderLayer.CUTOUT_MIPPED, false, false));
+    initTabBlock(new BlockRotatableNSEWUDFactory("tvdishside", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0, new AxisAlignedBB(0.187500, 0.375000, 0.125000, 0.812500, 1.000000, 1.000000), false, true, false, BlockRenderLayer.CUTOUT_MIPPED, false, false));
+    initTabBlock(new BlockRotatableNSEWUDFactory("vcs1", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0, new AxisAlignedBB(0.000000, 0.000000, 0.900000, 1.000000, 1.000000, 1.000000), false, false, false, BlockRenderLayer.CUTOUT_MIPPED, true, true));
+    initTabBlock(new BlockRotatableNSEWUDFactory("vcs2", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0, new AxisAlignedBB(0.000000, 0.000000, 0.900000, 1.000000, 1.000000, 1.000000), false, false, false, BlockRenderLayer.CUTOUT_MIPPED, true, true));
+    initTabBlock(new BlockRotatableNSEWUDFactory("vcs3", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0, new AxisAlignedBB(0.000000, 0.000000, 0.900000, 1.000000, 1.000000, 1.000000), false, false, false, BlockRenderLayer.CUTOUT_MIPPED, true, true));
+    initTabBlock(new BlockRotatableNSEWUDFactory("vcs4", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0, new AxisAlignedBB(0.000000, 0.000000, 0.900000, 1.000000, 1.000000, 1.000000), false, false, false, BlockRenderLayer.CUTOUT_MIPPED, true, true));
+    initTabBlock(new BlockRotatableNSEWUDFactory("vcs5", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0, new AxisAlignedBB(0.000000, 0.000000, 0.900000, 1.000000, 1.000000, 1.000000), false, false, false, BlockRenderLayer.CUTOUT_MIPPED, true, true));
+    initTabBlock(new BlockRotatableNSEWUDFactory("vcs6", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0, new AxisAlignedBB(0.000000, 0.000000, 0.900000, 1.000000, 1.000000, 1.000000), false, false, false, BlockRenderLayer.CUTOUT_MIPPED, true, true));
+    initTabBlock(new BlockRotatableNSEWUDFactory("vcs7", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0, new AxisAlignedBB(0.000000, 0.000000, 0.900000, 1.000000, 1.000000, 1.000000), false, false, false, BlockRenderLayer.CUTOUT_MIPPED, true, true));
+    initTabBlock(new BlockRotatableNSEWUDFactory("vcs8", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0, new AxisAlignedBB(0.000000, 0.000000, 0.900000, 1.000000, 1.000000, 1.000000), false, false, false, BlockRenderLayer.CUTOUT_MIPPED, true, true));
+    initTabBlock(new BlockRotatableNSEWUDFactory("vcs9", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0, new AxisAlignedBB(0.000000, 0.000000, 0.900000, 1.000000, 1.000000, 1.000000), false, false, false, BlockRenderLayer.CUTOUT_MIPPED, true, true));
+    initTabBlock(new BlockRotatableNSEWUDFactory("vf915", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0.6F, 0, new AxisAlignedBB(0.312500, 0.000000, 0.312500, 0.687500, 0.062500, 0.687500), false, false, false, BlockRenderLayer.CUTOUT_MIPPED, false, false));
+    initTabBlock(new BlockRotatableNSEWUDFactory("waptpl225", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0, new AxisAlignedBB(0.250000, 0.250000, 0.937500, 0.750000, 0.750000, 1.000000), false, false, false, BlockRenderLayer.SOLID, false, false));
+    initTabBlock(new BlockRotatableNSEWUDFactory("wapac", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0, new AxisAlignedBB(0.250000, 0.250000, 0.937500, 0.750000, 0.750000, 1.000000), false, false, false, BlockRenderLayer.CUTOUT_MIPPED, false, false));
+    initTabBlock(new BlockRotatableNSEWUDFactory("wapn", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0, new AxisAlignedBB(0.250000, 0.250000, 0.937500, 0.750000, 0.750000, 1.000000), false, false, false, BlockRenderLayer.SOLID, false, false));
+    initTabBlock(new BlockRotatableNSEWUDFactory("wg", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0, new AxisAlignedBB(0.312500, 0.000000, 0.187500, 0.687500, 0.562500, 0.812500), false, false, false, BlockRenderLayer.CUTOUT_MIPPED, false, false));
+    initTabBlock(BlockRedstoneTTS.class, fmlPreInitializationEvent);
+    initTabItem(new ItemDecorativeFactory("appleipadpro", "This iPad does nothing and is only for looks!"));
+    initTabItem(new ItemDecorativeFactory("appleiphonese2020", "This iPhone does nothing and is only for looks!"));
+    initTabItem(new ItemDecorativeFactory("appleiphonexr", "This iPhone does nothing and is only for looks!"));
+    initTabItem(new ItemDecorativeFactory("appleiphonexs", "This iPhone does nothing and is only for looks!"));
+    initTabItem(new ItemDecorativeFactory("appletvremote", "This remote does nothing and is only for looks!"));
+    initTabItem(new ItemDecorativeFactory("applewatch", "This Apple Watch does nothing and is only for looks!"));
+    initTabItem(new ItemDecorativeFactory("directvremote", "This remote does nothing and is only for looks!"));
+    initTabItem(new ItemDecorativeFactory("dishremote", "This remote does nothing and is only for looks!"));
+    initTabItem(new ItemDecorativeFactory("fiosremote", "This remote does nothing and is only for looks!"));
+    initTabItem(new ItemDecorativeFactory("spectrumremote", "This remote does nothing and is only for looks!"));
+    initTabItem(ItemApplePencil.class, fmlPreInitializationEvent);
   }
 }

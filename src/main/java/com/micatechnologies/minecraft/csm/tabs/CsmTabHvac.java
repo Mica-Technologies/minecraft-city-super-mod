@@ -1,38 +1,13 @@
 package com.micatechnologies.minecraft.csm.tabs;
 
 import com.micatechnologies.minecraft.csm.CsmRegistry;
+import com.micatechnologies.minecraft.csm.codeutils.BlockRotatableNSEWUDFactory;
 import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
-import com.micatechnologies.minecraft.csm.hvac.BlockART1;
-import com.micatechnologies.minecraft.csm.hvac.BlockART2;
-import com.micatechnologies.minecraft.csm.hvac.BlockARTD1;
-import com.micatechnologies.minecraft.csm.hvac.BlockARTD2;
-import com.micatechnologies.minecraft.csm.hvac.BlockDFV1;
-import com.micatechnologies.minecraft.csm.hvac.BlockDFV2;
-import com.micatechnologies.minecraft.csm.hvac.BlockDFVD1;
-import com.micatechnologies.minecraft.csm.hvac.BlockDFVD2;
-import com.micatechnologies.minecraft.csm.hvac.BlockLCV;
-import com.micatechnologies.minecraft.csm.hvac.BlockMV1;
-import com.micatechnologies.minecraft.csm.hvac.BlockMV2;
-import com.micatechnologies.minecraft.csm.hvac.BlockMV3;
-import com.micatechnologies.minecraft.csm.hvac.BlockMVD1;
-import com.micatechnologies.minecraft.csm.hvac.BlockMVD2;
-import com.micatechnologies.minecraft.csm.hvac.BlockPBF;
-import com.micatechnologies.minecraft.csm.hvac.BlockPV;
-import com.micatechnologies.minecraft.csm.hvac.BlockPVD;
-import com.micatechnologies.minecraft.csm.hvac.BlockRV1;
-import com.micatechnologies.minecraft.csm.hvac.BlockRV2;
-import com.micatechnologies.minecraft.csm.hvac.BlockSCV;
-import com.micatechnologies.minecraft.csm.hvac.BlockSV1;
-import com.micatechnologies.minecraft.csm.hvac.BlockSV2;
-import com.micatechnologies.minecraft.csm.hvac.BlockSV3;
-import com.micatechnologies.minecraft.csm.hvac.BlockSV4;
-import com.micatechnologies.minecraft.csm.hvac.BlockSV5;
-import com.micatechnologies.minecraft.csm.hvac.BlockSVD1;
-import com.micatechnologies.minecraft.csm.hvac.BlockSVD2;
-import com.micatechnologies.minecraft.csm.hvac.BlockSVD3;
-import com.micatechnologies.minecraft.csm.hvac.BlockSVD4;
-import com.micatechnologies.minecraft.csm.hvac.BlockSVD5;
 import net.minecraft.block.Block;
+import net.minecraft.block.SoundType;
+import net.minecraft.block.material.Material;
+import net.minecraft.util.BlockRenderLayer;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 /**
@@ -92,41 +67,43 @@ public class CsmTabHvac extends CsmTab {
   }
 
   /**
-   * Initializes all the items belonging to the tab.
+   * Initializes all the elements belonging to the tab.
+   *
+   * @param fmlPreInitializationEvent the {@link FMLPreInitializationEvent} that is being processed
    *
    * @since 1.0
    */
   @Override
   public void initTabElements(FMLPreInitializationEvent fmlPreInitializationEvent) {
-    initTabBlock(BlockART1.class, fmlPreInitializationEvent); // ART1
-    initTabBlock(BlockART2.class, fmlPreInitializationEvent); // ART2
-    initTabBlock(BlockARTD1.class, fmlPreInitializationEvent); // ARTD1
-    initTabBlock(BlockARTD2.class, fmlPreInitializationEvent); // ARTD2
-    initTabBlock(BlockDFV1.class, fmlPreInitializationEvent); // DFV1
-    initTabBlock(BlockDFV2.class, fmlPreInitializationEvent); // DFV2
-    initTabBlock(BlockDFVD1.class, fmlPreInitializationEvent); // DFVD1
-    initTabBlock(BlockDFVD2.class, fmlPreInitializationEvent); // DFVD2
-    initTabBlock(BlockLCV.class, fmlPreInitializationEvent); // LCV
-    initTabBlock(BlockMV1.class, fmlPreInitializationEvent); // MV1
-    initTabBlock(BlockMV2.class, fmlPreInitializationEvent); // MV2
-    initTabBlock(BlockMV3.class, fmlPreInitializationEvent); // MV3
-    initTabBlock(BlockMVD1.class, fmlPreInitializationEvent); // MVD1
-    initTabBlock(BlockMVD2.class, fmlPreInitializationEvent); // MVD2
-    initTabBlock(BlockPBF.class, fmlPreInitializationEvent); // PBF
-    initTabBlock(BlockPV.class, fmlPreInitializationEvent); // PV
-    initTabBlock(BlockPVD.class, fmlPreInitializationEvent); // PVD
-    initTabBlock(BlockRV1.class, fmlPreInitializationEvent); // RV1
-    initTabBlock(BlockRV2.class, fmlPreInitializationEvent); // RV2
-    initTabBlock(BlockSCV.class, fmlPreInitializationEvent); // SCV
-    initTabBlock(BlockSV1.class, fmlPreInitializationEvent); // SV1
-    initTabBlock(BlockSV2.class, fmlPreInitializationEvent); // SV2
-    initTabBlock(BlockSV3.class, fmlPreInitializationEvent); // SV3
-    initTabBlock(BlockSV4.class, fmlPreInitializationEvent); // SV4
-    initTabBlock(BlockSV5.class, fmlPreInitializationEvent); // SV5
-    initTabBlock(BlockSVD1.class, fmlPreInitializationEvent); // SVD1
-    initTabBlock(BlockSVD2.class, fmlPreInitializationEvent); // SVD2
-    initTabBlock(BlockSVD3.class, fmlPreInitializationEvent); // SVD3
-    initTabBlock(BlockSVD4.class, fmlPreInitializationEvent); // SVD4
-    initTabBlock(BlockSVD5.class, fmlPreInitializationEvent); // SVD5
+    initTabBlock(new BlockRotatableNSEWUDFactory("art1", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 255, new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 1.0, 1.0), true, true, false, BlockRenderLayer.SOLID, false, false));
+    initTabBlock(new BlockRotatableNSEWUDFactory("art2", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 255, new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 1.0, 1.0), true, true, false, BlockRenderLayer.SOLID, false, false));
+    initTabBlock(new BlockRotatableNSEWUDFactory("artd1", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 255, new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 1.0, 1.0), true, true, false, BlockRenderLayer.SOLID, false, false));
+    initTabBlock(new BlockRotatableNSEWUDFactory("artd2", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 255, new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 1.0, 1.0), true, true, false, BlockRenderLayer.SOLID, false, false));
+    initTabBlock(new BlockRotatableNSEWUDFactory("dfv1", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 255, new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 1.0, 1.0), true, true, false, BlockRenderLayer.SOLID, false, false));
+    initTabBlock(new BlockRotatableNSEWUDFactory("dfv2", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 255, new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 1.0, 1.0), true, true, false, BlockRenderLayer.SOLID, false, false));
+    initTabBlock(new BlockRotatableNSEWUDFactory("dfvd1", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 255, new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 1.0, 1.0), true, true, false, BlockRenderLayer.SOLID, false, false));
+    initTabBlock(new BlockRotatableNSEWUDFactory("dfvd2", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 255, new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 1.0, 1.0), true, true, false, BlockRenderLayer.SOLID, false, false));
+    initTabBlock(new BlockRotatableNSEWUDFactory("lcv", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0, new AxisAlignedBB(0.000000, 0.900000, 0.000000, 1.000000, 1.000000, 1.000000), false, false, false, BlockRenderLayer.CUTOUT_MIPPED, false, true));
+    initTabBlock(new BlockRotatableNSEWUDFactory("mv1", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 255, new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 1.0, 1.0), true, true, false, BlockRenderLayer.SOLID, false, false));
+    initTabBlock(new BlockRotatableNSEWUDFactory("mv2", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 255, new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 1.0, 1.0), true, true, false, BlockRenderLayer.SOLID, false, false));
+    initTabBlock(new BlockRotatableNSEWUDFactory("mv3", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0, new AxisAlignedBB(0.000000, 0.874375, 0.000000, 1.000000, 1.000000, 1.000000), false, false, false, BlockRenderLayer.SOLID, false, false));
+    initTabBlock(new BlockRotatableNSEWUDFactory("mvd1", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 255, new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 1.0, 1.0), true, true, false, BlockRenderLayer.SOLID, false, false));
+    initTabBlock(new BlockRotatableNSEWUDFactory("mvd2", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 255, new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 1.0, 1.0), true, true, false, BlockRenderLayer.SOLID, false, false));
+    initTabBlock(new BlockRotatableNSEWUDFactory("pbf", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 255, new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 1.0, 1.0), true, true, false, BlockRenderLayer.SOLID, false, false));
+    initTabBlock(new BlockRotatableNSEWUDFactory("pv", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 255, new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 1.0, 1.0), true, true, false, BlockRenderLayer.SOLID, false, false));
+    initTabBlock(new BlockRotatableNSEWUDFactory("pvd", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 255, new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 1.0, 1.0), true, true, false, BlockRenderLayer.SOLID, false, false));
+    initTabBlock(new BlockRotatableNSEWUDFactory("rv1", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0, new AxisAlignedBB(0.000000, 0.900000, 0.000000, 1.000000, 1.000000, 1.000000), false, false, false, BlockRenderLayer.CUTOUT_MIPPED, false, true));
+    initTabBlock(new BlockRotatableNSEWUDFactory("rv2", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0, new AxisAlignedBB(0.000000, 0.900000, 0.000000, 1.000000, 1.000000, 1.000000), false, false, false, BlockRenderLayer.CUTOUT_MIPPED, false, true));
+    initTabBlock(new BlockRotatableNSEWUDFactory("scv", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0, new AxisAlignedBB(0.000000, 0.900000, 0.000000, 1.000000, 1.000000, 1.000000), false, false, false, BlockRenderLayer.CUTOUT_MIPPED, false, true));
+    initTabBlock(new BlockRotatableNSEWUDFactory("sv1", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 255, new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 1.0, 1.0), true, true, false, BlockRenderLayer.SOLID, false, false));
+    initTabBlock(new BlockRotatableNSEWUDFactory("sv2", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 255, new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 1.0, 1.0), true, true, false, BlockRenderLayer.SOLID, false, false));
+    initTabBlock(new BlockRotatableNSEWUDFactory("sv3", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 255, new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 1.0, 1.0), true, true, false, BlockRenderLayer.SOLID, false, false));
+    initTabBlock(new BlockRotatableNSEWUDFactory("sv4", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 255, new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 1.0, 1.0), true, true, false, BlockRenderLayer.SOLID, false, false));
+    initTabBlock(new BlockRotatableNSEWUDFactory("sv5", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 255, new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 1.0, 1.0), true, true, false, BlockRenderLayer.SOLID, false, false));
+    initTabBlock(new BlockRotatableNSEWUDFactory("svd1", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 255, new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 1.0, 1.0), true, true, false, BlockRenderLayer.SOLID, false, false));
+    initTabBlock(new BlockRotatableNSEWUDFactory("svd2", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 255, new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 1.0, 1.0), true, true, false, BlockRenderLayer.SOLID, false, false));
+    initTabBlock(new BlockRotatableNSEWUDFactory("svd3", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 255, new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 1.0, 1.0), true, true, false, BlockRenderLayer.SOLID, false, false));
+    initTabBlock(new BlockRotatableNSEWUDFactory("svd4", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 255, new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 1.0, 1.0), true, true, false, BlockRenderLayer.SOLID, false, false));
+    initTabBlock(new BlockRotatableNSEWUDFactory("svd5", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 255, new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 1.0, 1.0), true, true, false, BlockRenderLayer.SOLID, false, false));
   }
 }

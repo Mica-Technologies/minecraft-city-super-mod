@@ -2,73 +2,14 @@ package com.micatechnologies.minecraft.csm.tabs;
 
 import com.micatechnologies.minecraft.csm.CsmRegistry;
 import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
-import com.micatechnologies.minecraft.csm.lighting.BlockAE115;
-import com.micatechnologies.minecraft.csm.lighting.BlockAE115CU;
-import com.micatechnologies.minecraft.csm.lighting.BlockAEATB0;
-import com.micatechnologies.minecraft.csm.lighting.BlockAEATB2;
+import com.micatechnologies.minecraft.csm.lighting.BlockBrightLightFactory;
+import com.micatechnologies.minecraft.csm.lighting.BlockBrightLightPoleColoredFactory;
 import com.micatechnologies.minecraft.csm.lighting.BlockAltoLLM;
-import com.micatechnologies.minecraft.csm.lighting.BlockAltoMVUL;
-import com.micatechnologies.minecraft.csm.lighting.BlockAltoMVWL;
-import com.micatechnologies.minecraft.csm.lighting.BlockAltoMVWLSlim;
-import com.micatechnologies.minecraft.csm.lighting.BlockAltoRLL;
-import com.micatechnologies.minecraft.csm.lighting.BlockAltoReLL;
-import com.micatechnologies.minecraft.csm.lighting.BlockAltoSQLL;
-import com.micatechnologies.minecraft.csm.lighting.BlockCEHalo;
-import com.micatechnologies.minecraft.csm.lighting.BlockCESquare;
-import com.micatechnologies.minecraft.csm.lighting.BlockCINavion;
-import com.micatechnologies.minecraft.csm.lighting.BlockCINavionAlt;
-import com.micatechnologies.minecraft.csm.lighting.BlockCreeLEDway;
-import com.micatechnologies.minecraft.csm.lighting.BlockCreeStylusFull;
-import com.micatechnologies.minecraft.csm.lighting.BlockCreeStylusHalf;
-import com.micatechnologies.minecraft.csm.lighting.BlockCreeXSP;
-import com.micatechnologies.minecraft.csm.lighting.BlockCreeledwaysmall;
-import com.micatechnologies.minecraft.csm.lighting.BlockDSLF;
-import com.micatechnologies.minecraft.csm.lighting.BlockDSLFR;
-import com.micatechnologies.minecraft.csm.lighting.BlockDSLH;
-import com.micatechnologies.minecraft.csm.lighting.BlockDSLHR;
 import com.micatechnologies.minecraft.csm.lighting.BlockFBM;
 import com.micatechnologies.minecraft.csm.lighting.BlockFBM2;
-import com.micatechnologies.minecraft.csm.lighting.BlockGEEL;
-import com.micatechnologies.minecraft.csm.lighting.BlockGEELPO;
-import com.micatechnologies.minecraft.csm.lighting.BlockGEELSN;
-import com.micatechnologies.minecraft.csm.lighting.BlockGEES;
-import com.micatechnologies.minecraft.csm.lighting.BlockGEESPO;
-import com.micatechnologies.minecraft.csm.lighting.BlockGEESSN;
-import com.micatechnologies.minecraft.csm.lighting.BlockGEForm109;
-import com.micatechnologies.minecraft.csm.lighting.BlockGEForm109TD;
-import com.micatechnologies.minecraft.csm.lighting.BlockGEM400r3;
-import com.micatechnologies.minecraft.csm.lighting.BlockGEM400r3cu;
-import com.micatechnologies.minecraft.csm.lighting.BlockGEM400r3cunp;
-import com.micatechnologies.minecraft.csm.lighting.BlockGEPB;
-import com.micatechnologies.minecraft.csm.lighting.BlockGEm240r1;
-import com.micatechnologies.minecraft.csm.lighting.BlockGEm240r1np;
-import com.micatechnologies.minecraft.csm.lighting.BlockGEm240r2;
-import com.micatechnologies.minecraft.csm.lighting.BlockGEm240r2cu;
-import com.micatechnologies.minecraft.csm.lighting.BlockHB1;
-import com.micatechnologies.minecraft.csm.lighting.BlockHB2;
 import com.micatechnologies.minecraft.csm.lighting.BlockHBM;
 import com.micatechnologies.minecraft.csm.lighting.BlockHBM2;
 import com.micatechnologies.minecraft.csm.lighting.BlockHighbayMount;
-import com.micatechnologies.minecraft.csm.lighting.BlockL2ESL2;
-import com.micatechnologies.minecraft.csm.lighting.BlockL2ESL4;
-import com.micatechnologies.minecraft.csm.lighting.BlockLGTLF;
-import com.micatechnologies.minecraft.csm.lighting.BlockLGTLH;
-import com.micatechnologies.minecraft.csm.lighting.BlockLRTLF;
-import com.micatechnologies.minecraft.csm.lighting.BlockLRTLH;
-import com.micatechnologies.minecraft.csm.lighting.BlockLTECDTD;
-import com.micatechnologies.minecraft.csm.lighting.BlockLTGC1v1np;
-import com.micatechnologies.minecraft.csm.lighting.BlockLTGCJ;
-import com.micatechnologies.minecraft.csm.lighting.BlockLTGCJSN;
-import com.micatechnologies.minecraft.csm.lighting.BlockLTGCL;
-import com.micatechnologies.minecraft.csm.lighting.BlockLTGCMSN;
-import com.micatechnologies.minecraft.csm.lighting.BlockLTGCMv2;
-import com.micatechnologies.minecraft.csm.lighting.BlockLTGCMv2np;
-import com.micatechnologies.minecraft.csm.lighting.BlockLtec;
-import com.micatechnologies.minecraft.csm.lighting.BlockLtgc1v1;
-import com.micatechnologies.minecraft.csm.lighting.BlockLtgc1v2;
-import com.micatechnologies.minecraft.csm.lighting.BlockLtgcm;
-import com.micatechnologies.minecraft.csm.lighting.BlockMCLAClassicPostLight;
-import com.micatechnologies.minecraft.csm.lighting.BlockMCLAParkLight;
 import com.micatechnologies.minecraft.csm.lighting.BlockNOVTM;
 import com.micatechnologies.minecraft.csm.lighting.BlockNOVTM2;
 import com.micatechnologies.minecraft.csm.lighting.BlockNOVTM3;
@@ -78,35 +19,13 @@ import com.micatechnologies.minecraft.csm.lighting.BlockOCPB;
 import com.micatechnologies.minecraft.csm.lighting.BlockOCPM;
 import com.micatechnologies.minecraft.csm.lighting.BlockOCPT;
 import com.micatechnologies.minecraft.csm.lighting.BlockPCRM;
-import com.micatechnologies.minecraft.csm.lighting.BlockPostLight1;
-import com.micatechnologies.minecraft.csm.lighting.BlockPostLight2;
-import com.micatechnologies.minecraft.csm.lighting.BlockPostLight3;
 import com.micatechnologies.minecraft.csm.lighting.BlockRBM;
 import com.micatechnologies.minecraft.csm.lighting.BlockRCPB;
 import com.micatechnologies.minecraft.csm.lighting.BlockRCPB2;
 import com.micatechnologies.minecraft.csm.lighting.BlockRCPM;
 import com.micatechnologies.minecraft.csm.lighting.BlockRCPT;
-import com.micatechnologies.minecraft.csm.lighting.BlockSLF;
-import com.micatechnologies.minecraft.csm.lighting.BlockSLH;
-import com.micatechnologies.minecraft.csm.lighting.BlockSMSMX;
-import com.micatechnologies.minecraft.csm.lighting.BlockSSLF;
-import com.micatechnologies.minecraft.csm.lighting.BlockSSLFR;
-import com.micatechnologies.minecraft.csm.lighting.BlockSSLH;
-import com.micatechnologies.minecraft.csm.lighting.BlockSSLHR;
-import com.micatechnologies.minecraft.csm.lighting.BlockSearsLF;
-import com.micatechnologies.minecraft.csm.lighting.BlockSearsLF2;
-import com.micatechnologies.minecraft.csm.lighting.BlockSearsLF3;
-import com.micatechnologies.minecraft.csm.lighting.BlockSearsLF4;
-import com.micatechnologies.minecraft.csm.lighting.BlockULEDF;
-import com.micatechnologies.minecraft.csm.lighting.BlockULEDH;
-import com.micatechnologies.minecraft.csm.lighting.BlockWHOV20;
-import com.micatechnologies.minecraft.csm.lighting.BlockWHOV50;
-import com.micatechnologies.minecraft.csm.lighting.BlockWHOV50Finned;
-import com.micatechnologies.minecraft.csm.lighting.BlockWHOV50NP;
-import com.micatechnologies.minecraft.csm.lighting.BlockWHOV50Shaded;
-import com.micatechnologies.minecraft.csm.lighting.BlockWHOV50ShadedNP;
-import com.micatechnologies.minecraft.csm.lighting.BlockWSL;
 import net.minecraft.block.Block;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 /**
@@ -166,116 +85,117 @@ public class CsmTabLighting extends CsmTab {
   }
 
   /**
-   * Initializes all the items belonging to the tab.
+   * Initializes all the elements belonging to the tab.
+   *
+   * @param fmlPreInitializationEvent the {@link FMLPreInitializationEvent} that is being processed
    *
    * @since 1.0
    */
   @Override
   public void initTabElements(FMLPreInitializationEvent fmlPreInitializationEvent) {
-    initTabBlock(BlockAE115.class, fmlPreInitializationEvent); // AE115
-    initTabBlock(BlockAE115CU.class, fmlPreInitializationEvent); // AE115CU
-    initTabBlock(BlockAEATB0.class, fmlPreInitializationEvent); // AEATB0
-    initTabBlock(BlockAEATB2.class, fmlPreInitializationEvent); // AEATB2
-    initTabBlock(BlockAltoLLM.class, fmlPreInitializationEvent); // AltoLLM
-    initTabBlock(BlockAltoMVUL.class, fmlPreInitializationEvent); // AltoMVUL
-    initTabBlock(BlockAltoMVWL.class, fmlPreInitializationEvent); // AltoMVWL
-    initTabBlock(BlockAltoMVWLSlim.class, fmlPreInitializationEvent); // AltoMVWLSlim
-    initTabBlock(BlockAltoRLL.class, fmlPreInitializationEvent); // AltoRLL
-    initTabBlock(BlockAltoReLL.class, fmlPreInitializationEvent); // AltoReLL
-    initTabBlock(BlockAltoSQLL.class, fmlPreInitializationEvent); // AltoSQLL
-    initTabBlock(BlockCEHalo.class, fmlPreInitializationEvent); // CEHalo
-    initTabBlock(BlockCESquare.class, fmlPreInitializationEvent); // CESquare
-    initTabBlock(BlockCINavion.class, fmlPreInitializationEvent); // CINavion
-    initTabBlock(BlockCINavionAlt.class, fmlPreInitializationEvent); // CINavionAlt
-    initTabBlock(BlockCreeLEDway.class, fmlPreInitializationEvent); // CreeLEDway
-    initTabBlock(BlockCreeStylusFull.class, fmlPreInitializationEvent); // CreeStylusFull
-    initTabBlock(BlockCreeStylusHalf.class, fmlPreInitializationEvent); // CreeStylusHalf
-    initTabBlock(BlockCreeXSP.class, fmlPreInitializationEvent); // CreeXSP
-    initTabBlock(BlockCreeledwaysmall.class, fmlPreInitializationEvent); // Creeledwaysmall
-    initTabBlock(BlockDSLF.class, fmlPreInitializationEvent); // DSLF
-    initTabBlock(BlockDSLFR.class, fmlPreInitializationEvent); // DSLFR
-    initTabBlock(BlockDSLH.class, fmlPreInitializationEvent); // DSLH
-    initTabBlock(BlockDSLHR.class, fmlPreInitializationEvent); // DSLHR
-    initTabBlock(BlockFBM.class, fmlPreInitializationEvent); // FBM
-    initTabBlock(BlockFBM2.class, fmlPreInitializationEvent); // FBM2
-    initTabBlock(BlockGEEL.class, fmlPreInitializationEvent); // GEEL
-    initTabBlock(BlockGEELPO.class, fmlPreInitializationEvent); // GEELPO
-    initTabBlock(BlockGEELSN.class, fmlPreInitializationEvent); // GEELSN
-    initTabBlock(BlockGEES.class, fmlPreInitializationEvent); // GEES
-    initTabBlock(BlockGEESPO.class, fmlPreInitializationEvent); // GEESPO
-    initTabBlock(BlockGEESSN.class, fmlPreInitializationEvent); // GEESSN
-    initTabBlock(BlockGEForm109.class, fmlPreInitializationEvent); // GEForm109
-    initTabBlock(BlockGEForm109TD.class, fmlPreInitializationEvent); // GEForm109TD
-    initTabBlock(BlockGEM400r3.class, fmlPreInitializationEvent); // GEM400r3
-    initTabBlock(BlockGEM400r3cu.class, fmlPreInitializationEvent); // GEM400r3cu
-    initTabBlock(BlockGEM400r3cunp.class, fmlPreInitializationEvent); // GEM400r3cunp
-    initTabBlock(BlockGEPB.class, fmlPreInitializationEvent); // GEPB
-    initTabBlock(BlockGEm240r1.class, fmlPreInitializationEvent); // GEm240r1
-    initTabBlock(BlockGEm240r1np.class, fmlPreInitializationEvent); // GEm240r1np
-    initTabBlock(BlockGEm240r2.class, fmlPreInitializationEvent); // GEm240r2
-    initTabBlock(BlockGEm240r2cu.class, fmlPreInitializationEvent); // GEm240r2cu
-    initTabBlock(BlockHB1.class, fmlPreInitializationEvent); // HB1
-    initTabBlock(BlockHB2.class, fmlPreInitializationEvent); // HB2
-    initTabBlock(BlockHBM.class, fmlPreInitializationEvent); // HBM
-    initTabBlock(BlockHBM2.class, fmlPreInitializationEvent); // HBM2
-    initTabBlock(BlockHighbayMount.class, fmlPreInitializationEvent); // HighbayMount
-    initTabBlock(BlockL2ESL2.class, fmlPreInitializationEvent); // L2ESL2
-    initTabBlock(BlockL2ESL4.class, fmlPreInitializationEvent); // L2ESL4
-    initTabBlock(BlockLGTLF.class, fmlPreInitializationEvent); // LGTLF
-    initTabBlock(BlockLGTLH.class, fmlPreInitializationEvent); // LGTLH
-    initTabBlock(BlockLRTLF.class, fmlPreInitializationEvent); // LRTLF
-    initTabBlock(BlockLRTLH.class, fmlPreInitializationEvent); // LRTLH
-    initTabBlock(BlockLTECDTD.class, fmlPreInitializationEvent); // LTECDTD
-    initTabBlock(BlockLTGC1v1np.class, fmlPreInitializationEvent); // LTGC1v1np
-    initTabBlock(BlockLTGCJ.class, fmlPreInitializationEvent); // LTGCJ
-    initTabBlock(BlockLTGCJSN.class, fmlPreInitializationEvent); // LTGCJSN
-    initTabBlock(BlockLTGCL.class, fmlPreInitializationEvent); // LTGCL
-    initTabBlock(BlockLTGCMSN.class, fmlPreInitializationEvent); // LTGCMSN
-    initTabBlock(BlockLTGCMv2.class, fmlPreInitializationEvent); // LTGCMv2
-    initTabBlock(BlockLTGCMv2np.class, fmlPreInitializationEvent); // LTGCMv2np
-    initTabBlock(BlockLtec.class, fmlPreInitializationEvent); // Ltec
-    initTabBlock(BlockLtgc1v1.class, fmlPreInitializationEvent); // Ltgc1v1
-    initTabBlock(BlockLtgc1v2.class, fmlPreInitializationEvent); // Ltgc1v2
-    initTabBlock(BlockLtgcm.class, fmlPreInitializationEvent); // Ltgcm
-    initTabBlock(BlockMCLAClassicPostLight.class,
-        fmlPreInitializationEvent); // MCLAClassicPostLight
-    initTabBlock(BlockMCLAParkLight.class, fmlPreInitializationEvent); // MCLAParkLight
-    initTabBlock(BlockNOVTM.class, fmlPreInitializationEvent); // NOVTM
-    initTabBlock(BlockNOVTM2.class, fmlPreInitializationEvent); // NOVTM2
-    initTabBlock(BlockNOVTM3.class, fmlPreInitializationEvent); // NOVTM3
-    initTabBlock(BlockNOVTM4.class, fmlPreInitializationEvent); // NOVTM4
-    initTabBlock(BlockNOVTM5.class, fmlPreInitializationEvent); // NOVTM5
-    initTabBlock(BlockOCPB.class, fmlPreInitializationEvent); // OCPB
-    initTabBlock(BlockOCPM.class, fmlPreInitializationEvent); // OCPM
-    initTabBlock(BlockOCPT.class, fmlPreInitializationEvent); // OCPT
-    initTabBlock(BlockPCRM.class, fmlPreInitializationEvent); // PCRM
-    initTabBlock(BlockRBM.class, fmlPreInitializationEvent); // RBM
-    initTabBlock(BlockRCPB.class, fmlPreInitializationEvent); // RCPB
-    initTabBlock(BlockRCPB2.class, fmlPreInitializationEvent); // RCPB2
-    initTabBlock(BlockRCPM.class, fmlPreInitializationEvent); // RCPM
-    initTabBlock(BlockRCPT.class, fmlPreInitializationEvent); // RCPT
-    initTabBlock(BlockSLF.class, fmlPreInitializationEvent); // SLF
-    initTabBlock(BlockSLH.class, fmlPreInitializationEvent); // SLH
-    initTabBlock(BlockSMSMX.class, fmlPreInitializationEvent); // SMSMX
-    initTabBlock(BlockSSLF.class, fmlPreInitializationEvent); // SSLF
-    initTabBlock(BlockSSLFR.class, fmlPreInitializationEvent); // SSLFR
-    initTabBlock(BlockSSLH.class, fmlPreInitializationEvent); // SSLH
-    initTabBlock(BlockSSLHR.class, fmlPreInitializationEvent); // SSLHR
-    initTabBlock(BlockSearsLF.class, fmlPreInitializationEvent); // SearsLF
-    initTabBlock(BlockSearsLF2.class, fmlPreInitializationEvent); // SearsLF2
-    initTabBlock(BlockSearsLF3.class, fmlPreInitializationEvent); // SearsLF3
-    initTabBlock(BlockSearsLF4.class, fmlPreInitializationEvent); // SearsLF4
-    initTabBlock(BlockULEDF.class, fmlPreInitializationEvent); // ULEDF
-    initTabBlock(BlockULEDH.class, fmlPreInitializationEvent); // ULEDH
-    initTabBlock(BlockWHOV20.class, fmlPreInitializationEvent); // WHOV20
-    initTabBlock(BlockWHOV50.class, fmlPreInitializationEvent); // WHOV50
-    initTabBlock(BlockWHOV50Finned.class, fmlPreInitializationEvent); // WHOV50Finned
-    initTabBlock(BlockWHOV50NP.class, fmlPreInitializationEvent); // WHOV50NP
-    initTabBlock(BlockWHOV50Shaded.class, fmlPreInitializationEvent); // WHOV50Shaded
-    initTabBlock(BlockWHOV50ShadedNP.class, fmlPreInitializationEvent); // WHOV50ShadedNP
-    initTabBlock(BlockWSL.class, fmlPreInitializationEvent); // WSL
-    initTabBlock(BlockPostLight1.class, fmlPreInitializationEvent); // PostLight1
-    initTabBlock(BlockPostLight2.class, fmlPreInitializationEvent); // PostLight2
-    initTabBlock(BlockPostLight3.class, fmlPreInitializationEvent); // PostLight3
+    initTabBlock(new BlockBrightLightFactory("ae115", new AxisAlignedBB(0.312500, -0.187500, 0.312500, 0.687500, 0.390625, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("ae115cu", new AxisAlignedBB(0.312500, 0.000000, 0.312500, 0.687500, 0.390625, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("aeatb0", new AxisAlignedBB(0.250000, 0.000000, 0.000000, 0.750000, 0.375000, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("aeatb2", new AxisAlignedBB(0.187500, 0.000000, 0.000000, 0.812500, 0.250000, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("altomvul", new AxisAlignedBB(0.187500, 0.612500, 0.187500, 0.812500, 1.000000, 0.812500), 0));
+    initTabBlock(new BlockBrightLightFactory("altomvwl", new AxisAlignedBB(0.343750, 0.250000, 0.812500, 0.750000, 0.750000, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("altomvwlslim", new AxisAlignedBB(0.406250, 0.250000, 0.812500, 0.656250, 0.750000, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("altorll", new AxisAlignedBB(0.312500, 0.000000, 0.187500, 0.687500, 0.250000, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("altorell", new AxisAlignedBB(0.312500, 0.000000, 0.187500, 0.687500, 0.250000, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("altosqll", new AxisAlignedBB(0.312500, 0.000000, 0.375000, 0.687500, 0.250000, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("cehalo", new AxisAlignedBB(0.375000, 1.000000, 0.375000, 0.625000, 1.100000, 0.625000), 0));
+    initTabBlock(new BlockBrightLightFactory("cesquare", new AxisAlignedBB(0.312500, 1.000000, 0.312500, 0.687500, 1.100000, 0.687500), 0));
+    initTabBlock(new BlockBrightLightFactory("cinavion", new AxisAlignedBB(0.312500, 0.000000, 0.000000, 0.687500, 0.375000, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("cinavionalt", new AxisAlignedBB(0.312500, 0.000000, -0.250000, 0.687500, 0.375000, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("creeledway", new AxisAlignedBB(0.250000, 0.000000, 0.000000, 0.750000, 0.500000, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("creestylusfull", new AxisAlignedBB(0.312500, 0.687500, -1.000000, 0.687500, 1.000000, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("creestylushalf", new AxisAlignedBB(0.312500, 0.687500, 0.000000, 0.687500, 1.000000, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("creexsp", new AxisAlignedBB(0.250000, 0.000000, 0.125000, 0.750000, 0.312500, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("creeledwaysmall", new AxisAlignedBB(0.250000, 0.000000, 0.312500, 0.750000, 0.437500, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("dslf", new AxisAlignedBB(0.312500, 0.812500, 0.000000, 0.687500, 1.000000, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("dslfr", new AxisAlignedBB(-0.062500, 0.437500, -1.000000, 1.062500, 1.000000, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("dslh", new AxisAlignedBB(0.312500, 0.812500, -1.000000, 0.687500, 1.000000, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("dslhr", new AxisAlignedBB(-0.062500, 0.437500, 0.000000, 1.062500, 1.000000, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("geel", new AxisAlignedBB(0.312500, 0.000000, 0.375000, 0.687500, 0.250000, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("geelpo", new AxisAlignedBB(0.312500, 0.000000, 0.375000, 0.687500, 0.375000, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("geelsn", new AxisAlignedBB(0.312500, 0.000000, 0.375000, 0.687500, 0.312500, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("gees", new AxisAlignedBB(0.312500, 0.000000, 0.500000, 0.687500, 0.250000, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("geespo", new AxisAlignedBB(0.312500, 0.000000, 0.500000, 0.687500, 0.375000, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("geesn", new AxisAlignedBB(0.312500, 0.000000, 0.500000, 0.687500, 0.312500, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("geform109", new AxisAlignedBB(0.312500, -0.156250, 0.437500, 0.687500, 0.312500, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("geform109td", new AxisAlignedBB(0.187500, -0.468750, 0.250000, 0.812500, 0.390625, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("gem400r3", new AxisAlignedBB(0.312500, -0.156250, 0.062500, 0.687500, 0.406250, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("gem400r3cu", new AxisAlignedBB(0.312500, 0.000000, 0.062500, 0.687500, 0.406250, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("gem400r3cunp", new AxisAlignedBB(0.312500, 0.000000, 0.062500, 0.687500, 0.312500, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("gepb", new AxisAlignedBB(0.125000, 0.000000, -1.000000, 0.875000, 0.750000, 1.125000), 0));
+    initTabBlock(new BlockBrightLightFactory("gem240r1", new AxisAlignedBB(0.312500, -0.125000, 0.062500, 0.687500, 0.390625, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("gem240r1np", new AxisAlignedBB(0.312500, -0.125000, 0.062500, 0.687500, 0.250000, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("gem240r2", new AxisAlignedBB(0.312500, -0.125000, 0.312500, 0.687500, 0.390625, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("gem240r2cu", new AxisAlignedBB(0.312500, 0.000000, 0.312500, 0.687500, 0.390625, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("hb1", new AxisAlignedBB(0.000000, 0.250000, 0.000000, 1.000000, 1.000000, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("hb2", new AxisAlignedBB(0.000000, 0.500000, 0.000000, 1.000000, 1.000000, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("l2esl2", new AxisAlignedBB(0.000000, 0.000000, 0.000000, 1.000000, 0.625000, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("l2esl4", new AxisAlignedBB(0.000000, 0.000000, -1.000000, 1.000000, 0.625000, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("lgtlf", new AxisAlignedBB(0.000000, 0.000000, -1.000000, 1.000000, 0.625000, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("lgtlh", new AxisAlignedBB(0.000000, 0.000000, 0.000000, 1.000000, 0.625000, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("lrtlf", new AxisAlignedBB(-0.078125, 0.000000, -1.000000, 1.078125, 0.625000, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("lrtlh", new AxisAlignedBB(-0.078125, 0.000000, 0.000000, 1.078125, 0.625000, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("ltecdtd", new AxisAlignedBB(0.250000, 0.000000, 0.312500, 0.750000, 0.312500, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("ltgc1v1np", new AxisAlignedBB(0.250000, 0.000000, 0.062500, 0.750000, 0.340625, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("ltgcj", new AxisAlignedBB(0.375000, 0.000000, 0.500000, 0.625000, 0.312500, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("ltgcjsn", new AxisAlignedBB(0.375000, 0.000000, 0.500000, 0.625000, 0.250000, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("ltgcl", new AxisAlignedBB(0.250000, 0.000000, 0.250000, 0.750000, 0.312500, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("ltgcmsn", new AxisAlignedBB(0.312500, 0.000000, 0.250000, 0.687500, 0.250000, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("ltgcmv2", new AxisAlignedBB(0.312500, 0.000000, 0.250000, 0.687500, 0.312500, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("ltgcmv2np", new AxisAlignedBB(0.312500, 0.000000, 0.250000, 0.687500, 0.250000, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("ltec", new AxisAlignedBB(0.250000, 0.000000, 0.000000, 0.750000, 0.312500, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("ltgc1v1", new AxisAlignedBB(0.250000, 0.000000, 0.062500, 0.750000, 0.437500, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("ltgc1v2", new AxisAlignedBB(0.250000, 0.000000, 0.062500, 0.750000, 0.437500, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("ltgcm", new AxisAlignedBB(0.312500, 0.000000, 0.250000, 0.687500, 0.312500, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("mclaclassicpostlight", new AxisAlignedBB(0.117188, 0.000000, 0.117188, 0.882813, 1.250000, 0.882813), 1));
+    initTabBlock(new BlockBrightLightFactory("mclaparklight", new AxisAlignedBB(0.062500, 0.000000, 0.062500, 0.937500, 1.000000, 0.937500), 1));
+    initTabBlock(new BlockBrightLightPoleColoredFactory("postlight1", new AxisAlignedBB(0.062500, 0.000000, 0.062500, 0.937500, 1.437500, 0.937500), 1));
+    initTabBlock(new BlockBrightLightPoleColoredFactory("postlight2", new AxisAlignedBB(0.062500, 0.000000, 0.062500, 0.937500, 1.437500, 0.937500), 1));
+    initTabBlock(new BlockBrightLightPoleColoredFactory("postlight3", new AxisAlignedBB(-0.125000, 0.000000, -0.125000, 1.125000, 1.437500, 1.125000), 1));
+    initTabBlock(new BlockBrightLightFactory("slf", new AxisAlignedBB(0.421875, 0.875000, -1.000000, 0.578125, 1.000000, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("slh", new AxisAlignedBB(0.421875, 0.875000, 0.000000, 0.578125, 1.000000, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("smsmx", new AxisAlignedBB(0.187500, -0.062500, 0.062500, 0.812500, 0.312500, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("sslf", new AxisAlignedBB(0.312500, 0.812500, -1.000000, 0.687500, 1.000000, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("sslfr", new AxisAlignedBB(-0.062500, 0.437500, -1.000000, 1.062500, 1.000000, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("sslh", new AxisAlignedBB(0.312500, 0.812500, 0.000000, 0.687500, 1.000000, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("sslhr", new AxisAlignedBB(-0.062500, 0.437500, 0.000000, 1.062500, 1.000000, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("searslf", new AxisAlignedBB(0.000000, 0.000000, -1.000000, 1.000000, 0.625000, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("searslf2", new AxisAlignedBB(0.000000, 0.000000, 0.000000, 1.000000, 0.625000, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("searslf3", new AxisAlignedBB(-1.000000, 0.000000, -1.000000, 1.000000, 0.625000, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("searslf4", new AxisAlignedBB(0.000000, 0.000000, -1.000000, 1.000000, 0.625000, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("uledf", new AxisAlignedBB(-0.078125, 0.000000, -1.000000, 1.078125, 0.625000, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("uledh", new AxisAlignedBB(-0.078125, 0.000000, 0.000000, 1.078125, 0.625000, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("whov20", new AxisAlignedBB(0.312500, -0.125000, 0.437500, 0.687500, 0.250000, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("whov50", new AxisAlignedBB(0.312500, -0.187500, 0.062500, 0.687500, 0.375000, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("whov50finned", new AxisAlignedBB(0.312500, -0.187500, 0.062500, 0.687500, 0.375000, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("whov50np", new AxisAlignedBB(0.312500, -0.187500, 0.062500, 0.687500, 0.250000, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("whov50shaded", new AxisAlignedBB(0.125000, -0.187500, 0.062500, 0.875000, 0.375000, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("whov50shadednp", new AxisAlignedBB(0.125000, -0.187500, 0.062500, 0.875000, 0.250000, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("wsl", new AxisAlignedBB(0.437500, 0.000000, 0.875000, 0.562500, 1.000000, 1.000000), 0));
+    initTabBlock(BlockAltoLLM.class, fmlPreInitializationEvent);
+    initTabBlock(BlockFBM.class, fmlPreInitializationEvent);
+    initTabBlock(BlockFBM2.class, fmlPreInitializationEvent);
+    initTabBlock(BlockHBM.class, fmlPreInitializationEvent);
+    initTabBlock(BlockHBM2.class, fmlPreInitializationEvent);
+    initTabBlock(BlockHighbayMount.class, fmlPreInitializationEvent);
+    initTabBlock(BlockNOVTM.class, fmlPreInitializationEvent);
+    initTabBlock(BlockNOVTM2.class, fmlPreInitializationEvent);
+    initTabBlock(BlockNOVTM3.class, fmlPreInitializationEvent);
+    initTabBlock(BlockNOVTM4.class, fmlPreInitializationEvent);
+    initTabBlock(BlockNOVTM5.class, fmlPreInitializationEvent);
+    initTabBlock(BlockOCPB.class, fmlPreInitializationEvent);
+    initTabBlock(BlockOCPM.class, fmlPreInitializationEvent);
+    initTabBlock(BlockOCPT.class, fmlPreInitializationEvent);
+    initTabBlock(BlockPCRM.class, fmlPreInitializationEvent);
+    initTabBlock(BlockRBM.class, fmlPreInitializationEvent);
+    initTabBlock(BlockRCPB.class, fmlPreInitializationEvent);
+    initTabBlock(BlockRCPB2.class, fmlPreInitializationEvent);
+    initTabBlock(BlockRCPM.class, fmlPreInitializationEvent);
+    initTabBlock(BlockRCPT.class, fmlPreInitializationEvent);
   }
 }
