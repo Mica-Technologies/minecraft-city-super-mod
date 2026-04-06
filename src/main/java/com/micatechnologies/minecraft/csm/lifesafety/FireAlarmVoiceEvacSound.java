@@ -60,19 +60,23 @@ public class FireAlarmVoiceEvacSound extends MovingSound {
 
   /**
    * Calculates the volume based on the player's distance to the nearest speaker.
+   * Uses squared distances for comparison, only computing sqrt for the final nearest speaker.
    */
   private float calculateVolume(EntityPlayer player) {
-    double minDist = Double.MAX_VALUE;
+    double minDistSq = Double.MAX_VALUE;
     for (BlockPos sp : speakerPositions) {
-      double dist = Math.sqrt(player.getDistanceSq(sp));
-      if (dist < minDist) {
-        minDist = dist;
+      double distSq = player.getDistanceSq(sp);
+      if (distSq < minDistSq) {
+        minDistSq = distSq;
       }
     }
 
-    if (minDist > hearingRange) {
+    double hearingRangeSq = (double) hearingRange * hearingRange;
+    if (minDistSq > hearingRangeSq) {
       return MIN_VOLUME;
     }
+    // Only compute sqrt for the final closest distance (needed for linear falloff calculation)
+    double minDist = Math.sqrt(minDistSq);
     // Quadratic falloff for realistic distance attenuation (inverse-square-like)
     float linear = (float) (1.0 - minDist / hearingRange);
     float ratio = linear * linear;

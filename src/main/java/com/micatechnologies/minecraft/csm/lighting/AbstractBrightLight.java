@@ -26,6 +26,12 @@ public abstract class AbstractBrightLight extends AbstractBlockRotatableNSEW {
   private static final int STATE_MAN_OFF = 2;
   private static final int STATE_MAN_ON = 3;
 
+  /**
+   * Cached reference to the lightupair block, initialized on first use to avoid repeated registry
+   * lookups.
+   */
+  private static Block cachedLightupAirBlock = null;
+
   public AbstractBrightLight() {
     super(Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0, false);
     this.setDefaultState(this.blockState.getBaseState()
@@ -112,6 +118,16 @@ public abstract class AbstractBrightLight extends AbstractBlockRotatableNSEW {
     }
   }
 
+  /**
+   * Returns the cached lightupair block reference, initializing it on first call.
+   */
+  private static Block getLightupAirBlock() {
+    if (cachedLightupAirBlock == null) {
+      cachedLightupAirBlock = getLightupAirBlock();
+    }
+    return cachedLightupAirBlock;
+  }
+
   private void handleAirLightBlock(boolean on, World world, BlockPos pos) {
     // Add light
     if (on) {
@@ -132,7 +148,7 @@ public abstract class AbstractBrightLight extends AbstractBlockRotatableNSEW {
       }
       // add if marked for add
       if (doAddAt != null) {
-        world.setBlockState(doAddAt, Block.getBlockFromName("csm:lightupair").getDefaultState(), 3);
+        world.setBlockState(doAddAt, getLightupAirBlock().getDefaultState(), 3);
       }
     }
     // Remove light
@@ -143,7 +159,7 @@ public abstract class AbstractBrightLight extends AbstractBlockRotatableNSEW {
         BlockPos test = new BlockPos(xWithOffset, yWithOffset, pos.getZ());
         IBlockState bs = world.getBlockState(test);
         // stop removing light once hit block
-        if (bs.getBlock() == Block.getBlockFromName("csm:lightupair")) {
+        if (bs.getBlock() == getLightupAirBlock()) {
           world.setBlockToAir(test);
         }
       }

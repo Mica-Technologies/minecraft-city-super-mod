@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.powergrid.fe;
 
+import com.micatechnologies.minecraft.csm.Csm;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractTickableTileEntity;
 import javax.annotation.Nullable;
 import net.minecraft.block.properties.PropertyBool;
@@ -151,9 +152,8 @@ public class TileEntityForgeEnergyConsumer extends AbstractTickableTileEntity im
         world.setBlockState(blockPos, blockState.withProperty(blockPoweredProperty, isGridPowered),
             3);
       }
-    } catch (Exception e) {
-      System.err.println("An error occurred while ticking a Forge energy to redstone converter: ");
-      e.printStackTrace(System.err);
+    } catch (NullPointerException | ClassCastException e) {
+      Csm.getLogger().error("Error ticking Forge energy consumer at {}", getPos(), e);
     }
   }
 

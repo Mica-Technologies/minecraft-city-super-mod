@@ -8,6 +8,7 @@ import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalCont
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalControllerMode;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalControllerNBTKeys;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalControllerOverlaps;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.ControllerTickContext;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalControllerTicker;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalPhase;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalPhaseApplicability;
@@ -449,7 +450,8 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
         newPhase = TrafficSignalControllerTicker.overheightDetectionModeTick(
             getWorld(), circuits, overheightCircuitHoldTimers, tickTime);
       } else {
-        newPhase = TrafficSignalControllerTicker.tick(getWorld(), mode, operatingMode, circuits,
+        newPhase = TrafficSignalControllerTicker.tick(new ControllerTickContext(
+            getWorld(), mode, operatingMode, circuits,
             overlaps, cachedPhases, currentPhase,
             timeSinceLastPhaseApplicabilityChange,
             timeSinceLastPhaseChange,
@@ -462,7 +464,7 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
             maxGreenTimeSecondary,
             dedicatedPedSignalTime,
             leadPedestrianIntervalTime,
-            allRedFlash);
+            allRedFlash));
       }
 
       // If the phase index has changed, update the phase

@@ -79,35 +79,11 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
 
   @Override
   public void readNBT(NBTTagCompound compound) {
-    try {
-      soundIndex = compound.getInteger(soundIndexKey);
-    } catch (Exception e) {
-      soundIndex = 0;
-    }
-
-    try {
-      alarm = compound.getBoolean(alarmKey);
-    } catch (Exception e) {
-      alarm = false;
-    }
-
-    try {
-      alarmStorm = compound.getBoolean(alarmStormKey);
-    } catch (Exception e) {
-      alarmStorm = false;
-    }
-
-    try {
-      alarmAnnounced = compound.getBoolean(alarmAnnouncedKey);
-    } catch (Exception e) {
-      alarmAnnounced = false;
-    }
-
-    try {
-      audibleSilence = compound.getBoolean(audibleSilenceKey);
-    } catch (Exception e) {
-      audibleSilence = false;
-    }
+    soundIndex = compound.hasKey(soundIndexKey) ? compound.getInteger(soundIndexKey) : 0;
+    alarm = compound.hasKey(alarmKey) && compound.getBoolean(alarmKey);
+    alarmStorm = compound.hasKey(alarmStormKey) && compound.getBoolean(alarmStormKey);
+    alarmAnnounced = compound.hasKey(alarmAnnouncedKey) && compound.getBoolean(alarmAnnouncedKey);
+    audibleSilence = compound.hasKey(audibleSilenceKey) && compound.getBoolean(audibleSilenceKey);
 
     connectedAppliances.clear();
     if (compound.hasKey(connectedAppliancesKey)) {
@@ -449,8 +425,8 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
         }
       }
     } catch (Exception e) {
-      System.err.println("An error occurred while ticking a fire alarm control panel: ");
-      e.printStackTrace(System.err);
+      com.micatechnologies.minecraft.csm.Csm.getLogger()
+          .error("Error ticking fire alarm control panel at {}", getPos(), e);
     }
   }
 
@@ -481,15 +457,12 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
       }
     }
 
-    // Clean up players who disconnected
-    activePlayers.removeIf(id -> {
-      for (EntityPlayerMP p : players) {
-        if (p.getUniqueID().equals(id)) {
-          return false;
-        }
-      }
-      return true;
-    });
+    // Clean up players who disconnected (use HashSet for O(1) lookup)
+    Set<UUID> onlinePlayerIds = new HashSet<>();
+    for (EntityPlayerMP p : players) {
+      onlinePlayerIds.add(p.getUniqueID());
+    }
+    activePlayers.removeIf(id -> !onlinePlayerIds.contains(id));
   }
 
   /**
