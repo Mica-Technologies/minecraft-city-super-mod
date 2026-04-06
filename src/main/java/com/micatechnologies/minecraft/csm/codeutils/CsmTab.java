@@ -218,6 +218,22 @@ public abstract class CsmTab {
   }
 
   /**
+   * Registers a pre-constructed block instance with this tab. Use this instead of
+   * {@link #initTabBlock(Class, FMLPreInitializationEvent)} when the block is created by a
+   * factory with constructor parameters rather than via no-arg reflection.
+   *
+   * @param block the pre-constructed block instance to register
+   *
+   * @return the registered block
+   *
+   * @since 2024.1
+   */
+  public Block initTabBlock(Block block) {
+    block.setCreativeTab(tab);
+    return block;
+  }
+
+  /**
    * Initializes the element with the specified class.
    *
    * @param entryClass                the class of the element to initialize
