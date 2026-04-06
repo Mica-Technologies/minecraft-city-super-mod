@@ -159,7 +159,7 @@ public abstract class CsmTab {
 
     // Initialize the sorted tabs
     for (Class<? extends CsmTab> csmTabClass : tabClasses) {
-      CsmTab tab = csmTabClass.newInstance();
+      CsmTab tab = csmTabClass.getDeclaredConstructor().newInstance();
       TABS.put(csmTabClass, tab);
       tab.initTabElements(fmlPreInitializationEvent);
     }
@@ -230,7 +230,7 @@ public abstract class CsmTab {
   private Object initTabElement(Class<?> entryClass,
       FMLPreInitializationEvent fmlPreInitializationEvent) {
     try {
-      return entryClass.newInstance();
+      return entryClass.getDeclaredConstructor().newInstance();
     } catch (Exception e) {
       fmlPreInitializationEvent.getModLog()
           .error("Error initializing tab element: " + entryClass.getName(), e);
