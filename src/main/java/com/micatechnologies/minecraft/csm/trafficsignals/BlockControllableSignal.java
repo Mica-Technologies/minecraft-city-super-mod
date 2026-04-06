@@ -43,8 +43,15 @@ public class BlockControllableSignal extends AbstractBlockControllableSignalHead
   final boolean lightAllOnRedYellow;
   @Nullable final TrafficSignalBulbStyle enforcedBulbStyle;
 
+  /**
+   * ThreadLocal used to pass the registry name to the superclass constructor. The AbstractBlock
+   * constructor calls getBlockRegistryName() before subclass fields are initialized, so we
+   * store the name here before calling super() and read it in getBlockRegistryName().
+   */
+  private static final ThreadLocal<String> PENDING_REGISTRY_NAME = new ThreadLocal<>();
+
   BlockControllableSignal(Builder builder) {
-    super(Material.ROCK);
+    super(initRegistryName(builder));
     this.registryName = builder.registryName;
     this.signalSide = builder.signalSide;
     this.flash = builder.flash;
@@ -59,9 +66,18 @@ public class BlockControllableSignal extends AbstractBlockControllableSignalHead
     this.enforcedBulbStyle = builder.enforcedBulbStyle;
   }
 
+  private static Material initRegistryName(Builder builder) {
+    PENDING_REGISTRY_NAME.set(builder.registryName);
+    return Material.ROCK;
+  }
+
   @Override
   public String getBlockRegistryName() {
-    return registryName;
+    // During super() construction, registryName is still null — read from ThreadLocal
+    if (registryName != null) {
+      return registryName;
+    }
+    return PENDING_REGISTRY_NAME.get();
   }
 
   @Override

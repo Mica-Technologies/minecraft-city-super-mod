@@ -17,6 +17,13 @@ import net.minecraft.world.World;
 public class BlockFireAlarmSounderStrobeFactory extends AbstractBlockFireAlarmSounder
     implements ICsmTileEntityProvider, IStrobeBlock {
 
+  /**
+   * ThreadLocal used to pass the registry name to the superclass constructor. The AbstractBlock
+   * constructor calls getBlockRegistryName() before subclass fields are initialized, so we
+   * store the name here before calling super() and read it in getBlockRegistryName().
+   */
+  private static final ThreadLocal<String> PENDING_REGISTRY_NAME = new ThreadLocal<>();
+
   private final String registryName;
   private final String soundResource;
   private final AxisAlignedBB boundingBox;
@@ -25,6 +32,13 @@ public class BlockFireAlarmSounderStrobeFactory extends AbstractBlockFireAlarmSo
 
   public BlockFireAlarmSounderStrobeFactory(String registryName, String soundResource,
       AxisAlignedBB boundingBox, float[] strobeLensFrom, float[] strobeLensTo) {
+    this(initRegistryName(registryName), registryName, soundResource, boundingBox,
+        strobeLensFrom, strobeLensTo);
+  }
+
+  private BlockFireAlarmSounderStrobeFactory(Void ignored, String registryName,
+      String soundResource, AxisAlignedBB boundingBox, float[] strobeLensFrom,
+      float[] strobeLensTo) {
     this.registryName = registryName;
     this.soundResource = soundResource;
     this.boundingBox = boundingBox;
@@ -32,9 +46,17 @@ public class BlockFireAlarmSounderStrobeFactory extends AbstractBlockFireAlarmSo
     this.strobeLensTo = strobeLensTo;
   }
 
+  private static Void initRegistryName(String name) {
+    PENDING_REGISTRY_NAME.set(name);
+    return null;
+  }
+
   @Override
   public String getBlockRegistryName() {
-    return registryName;
+    if (registryName != null) {
+      return registryName;
+    }
+    return PENDING_REGISTRY_NAME.get();
   }
 
   @Override

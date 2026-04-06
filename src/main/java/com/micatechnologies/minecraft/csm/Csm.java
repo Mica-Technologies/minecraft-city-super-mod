@@ -196,8 +196,13 @@ public class Csm {
       progressBar.step("Pre-Initialization Complete");
     } catch (Exception e) {
       logger.error("Error during pre-initialization", e);
+      throw new RuntimeException("CSM pre-initialization failed", e);
     } finally {
-      ProgressManager.pop(progressBar);
+      try {
+        ProgressManager.pop(progressBar);
+      } catch (Exception ignored) {
+        // Progress bar may be incomplete if an error occurred above
+      }
     }
   }
 
