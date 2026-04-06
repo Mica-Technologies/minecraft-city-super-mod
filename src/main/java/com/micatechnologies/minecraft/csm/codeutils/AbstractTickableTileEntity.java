@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.codeutils;
 
+import com.micatechnologies.minecraft.csm.Csm;
 import net.minecraft.util.ITickable;
 
 /**
@@ -19,19 +20,16 @@ public abstract class AbstractTickableTileEntity extends AbstractTileEntity impl
    */
   @Override
   public void update() {
+    if (getWorld() == null) {
+      return;
+    }
     if (doClientTick() || !getWorld().isRemote) {
       if (!pauseTicking() && getWorld().getTotalWorldTime() % getTickRate() == 0L) {
         try {
           onTick();
         } catch (Exception e) {
-          System.err.println("An error occurred while ticking [remote: " +
-              world.isRemote +
-              "] a tile entity [" +
-              this.getClass().getCanonicalName() +
-              ", " +
-              getPos() +
-              "]: ");
-          e.printStackTrace(System.err);
+          Csm.getLogger().error("Error ticking tile entity [remote: {}, class: {}, pos: {}]",
+              world.isRemote, this.getClass().getCanonicalName(), getPos(), e);
         }
       }
     }

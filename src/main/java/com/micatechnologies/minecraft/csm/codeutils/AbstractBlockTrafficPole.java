@@ -121,6 +121,12 @@ public abstract class AbstractBlockTrafficPole extends AbstractBlockRotatableNSE
 
 
   /**
+   * Cached combined ignore-block array (global + subclass-specific), computed lazily on first use
+   * to avoid array allocation on every getActualState() call.
+   */
+  private Class<?>[] cachedCombinedIgnoreBlock;
+
+  /**
    * Constructs an {@link AbstractBlockTrafficPole} instance.
    *
    * @since 1.0
@@ -246,16 +252,18 @@ public abstract class AbstractBlockTrafficPole extends AbstractBlockRotatableNSE
       BlockPos pos) {
     EnumFacing facing = state.getValue(FACING);
 
-    Class<?>[] blockIgnoreBlock = getIgnoreBlock();
-    Class<?>[] ignoreBlock;
-    if (blockIgnoreBlock == null) {
-      ignoreBlock = IGNORE_BLOCK;
-    } else {
-      ignoreBlock = new Class<?>[IGNORE_BLOCK.length + blockIgnoreBlock.length];
-      System.arraycopy(IGNORE_BLOCK, 0, ignoreBlock, 0, IGNORE_BLOCK.length);
-      System.arraycopy(blockIgnoreBlock, 0, ignoreBlock, IGNORE_BLOCK.length,
-          blockIgnoreBlock.length);
+    if (cachedCombinedIgnoreBlock == null) {
+      Class<?>[] blockIgnoreBlock = getIgnoreBlock();
+      if (blockIgnoreBlock == null) {
+        cachedCombinedIgnoreBlock = IGNORE_BLOCK;
+      } else {
+        cachedCombinedIgnoreBlock = new Class<?>[IGNORE_BLOCK.length + blockIgnoreBlock.length];
+        System.arraycopy(IGNORE_BLOCK, 0, cachedCombinedIgnoreBlock, 0, IGNORE_BLOCK.length);
+        System.arraycopy(blockIgnoreBlock, 0, cachedCombinedIgnoreBlock, IGNORE_BLOCK.length,
+            blockIgnoreBlock.length);
+      }
     }
+    Class<?>[] ignoreBlock = cachedCombinedIgnoreBlock;
 
     // Check for blocks in each direction relative to the block's facing direction
     boolean isBlockToEast = BlockUtils.getIsBlockToSide(worldIn,

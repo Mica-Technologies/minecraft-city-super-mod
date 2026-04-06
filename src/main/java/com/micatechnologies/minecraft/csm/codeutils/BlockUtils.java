@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.codeutils;
 
+import net.minecraft.block.Block;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
@@ -39,13 +40,14 @@ public class BlockUtils {
    */
   public static boolean getIsBlockToSide(IBlockAccess worldIn, BlockPos pos,
       Class<?>... ignoreBlock) {
-    boolean defaultMethod = !worldIn.getBlockState(pos).getBlock().isReplaceable(worldIn, pos);
+    Block blockAtPos = worldIn.getBlockState(pos).getBlock();
+    boolean defaultMethod = !blockAtPos.isReplaceable(worldIn, pos);
 
     // Check if the block is in the ignore list
     if (ignoreBlock != null) {
-      for (Class<?> block : ignoreBlock) {
-        Class<?> blockClass = worldIn.getBlockState(pos).getBlock().getClass();
-        if (blockClass.equals(block) || block.isAssignableFrom(blockClass)) {
+      Class<?> blockClass = blockAtPos.getClass();
+      for (Class<?> ignored : ignoreBlock) {
+        if (blockClass.equals(ignored) || ignored.isAssignableFrom(blockClass)) {
           return false;
         }
       }
