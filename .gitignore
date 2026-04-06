@@ -85,3 +85,5 @@ run/config/*
 
 logs/
 .claude/settings.local.json
+.claude/worktrees/
+dev-env-utils/target/
