@@ -61,10 +61,11 @@ public class TileEntityTrafficSignalHeadRenderer extends
     EnumFacing facing = blockState.getValue(AbstractBlockControllableSignalHead.FACING);
     int signalColorState = blockState.getValue(AbstractBlockControllableSignalHead.COLOR);
 
-    // Get per-block-type Y offset for signal positioning
+    // Get per-block-type Y offset for signal positioning (world-aware for add-on detection)
     float signalYOffset = 0.0f;
     if (blockState.getBlock() instanceof AbstractBlockControllableSignalHead) {
-      signalYOffset = ((AbstractBlockControllableSignalHead) blockState.getBlock()).getSignalYOffset();
+      signalYOffset = ((AbstractBlockControllableSignalHead) blockState.getBlock())
+          .getSignalYOffset(te.getWorld(), te.getPos());
     }
 
     // Gather tile entity information
@@ -125,10 +126,10 @@ public class TileEntityTrafficSignalHeadRenderer extends
     if (blockState.getBlock() instanceof AbstractBlockControllableSignalHead) {
       AbstractBlockControllableSignalHead signalBlock =
           (AbstractBlockControllableSignalHead) blockState.getBlock();
-      sectionYPositions = signalBlock.getSectionYPositions(sectionCount);
-      sectionXPositions = signalBlock.getSectionXPositions(sectionCount);
+      sectionYPositions = signalBlock.getSectionYPositions(sectionCount, te.getWorld(), te.getPos());
+      sectionXPositions = signalBlock.getSectionXPositions(sectionCount, te.getWorld(), te.getPos());
       sectionSizes = signalBlock.getSectionSizes(sectionCount);
-      horizontal = signalBlock.isHorizontal();
+      horizontal = signalBlock.isHorizontal(te.getWorld(), te.getPos());
       // Safety: if TE has more sections than the block expects (e.g., world migration from
       // old 3-section defaults), pad the position arrays to avoid ArrayIndexOutOfBoundsException
       if (sectionYPositions.length < sectionCount) {

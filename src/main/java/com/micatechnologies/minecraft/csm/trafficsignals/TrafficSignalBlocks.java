@@ -1392,6 +1392,7 @@ public final class TrafficSignalBlocks {
           })
           .signalYOffset(-7.9f)
           .enforcedBulbStyle(TrafficSignalBulbStyle.LED_DOTTED)
+          .addon(true)
           .build();
 
   public static final BlockControllableSignal VERTICAL_HYBRID_LEFT_ADD_ON_SIGNAL_GRAY =
@@ -1408,6 +1409,7 @@ public final class TrafficSignalBlocks {
           })
           .signalYOffset(-7.9f)
           .enforcedBulbStyle(TrafficSignalBulbStyle.LED_DOTTED)
+          .addon(true)
           .retiring("controllableverticalhybridleftaddonsignal")
           .build();
 
@@ -1467,6 +1469,7 @@ public final class TrafficSignalBlocks {
             };
           })
           .signalYOffset(-7.9f)
+          .addon(true)
           .build();
 
   public static final BlockControllableSignal VERTICAL_LEFT_ADD_ON_FYA_SIGNAL_GRAY =
@@ -1482,6 +1485,7 @@ public final class TrafficSignalBlocks {
             };
           })
           .signalYOffset(-7.9f)
+          .addon(true)
           .retiring("controllableverticalleftaddonfyasignal")
           .build();
 
@@ -1502,6 +1506,7 @@ public final class TrafficSignalBlocks {
           })
           .sectionYPositions(0, 0)
           .signalYOffset(-7.9f)
+          .addon(true)
           .build();
 
   public static final BlockControllableSignal VERTICAL_LEFT_ADD_ON_SIGNAL_GRAY =
@@ -1521,6 +1526,7 @@ public final class TrafficSignalBlocks {
           })
           .sectionYPositions(0, 0)
           .signalYOffset(-7.9f)
+          .addon(true)
           .retiring("controllableverticalleftaddonsignal")
           .build();
 
@@ -1541,6 +1547,7 @@ public final class TrafficSignalBlocks {
           })
           .sectionYPositions(0, -12)
           .signalYOffset(8.1f)
+          .addon(true)
           .build();
 
   public static final BlockControllableSignal VERTICAL_LEFT_DOUBLE_ADD_ON_SIGNAL_GRAY =
@@ -1560,6 +1567,7 @@ public final class TrafficSignalBlocks {
           })
           .sectionYPositions(0, -12)
           .signalYOffset(8.1f)
+          .addon(true)
           .retiring("controllableverticalleftdoubleaddonsignal")
           .build();
 
@@ -1742,6 +1750,7 @@ public final class TrafficSignalBlocks {
             };
           })
           .signalYOffset(-7.9f)
+          .addon(true)
           .build();
 
   public static final BlockControllableSignal VERTICAL_RIGHT_ADD_ON_FYA_SIGNAL_GRAY =
@@ -1757,6 +1766,7 @@ public final class TrafficSignalBlocks {
             };
           })
           .signalYOffset(-7.9f)
+          .addon(true)
           .retiring("controllableverticalrightaddonfyasignal")
           .build();
 
@@ -1777,6 +1787,7 @@ public final class TrafficSignalBlocks {
           })
           .sectionYPositions(0, 0)
           .signalYOffset(-7.9f)
+          .addon(true)
           .build();
 
   public static final BlockControllableSignal VERTICAL_RIGHT_ADD_ON_SIGNAL_GRAY =
@@ -1796,6 +1807,7 @@ public final class TrafficSignalBlocks {
           })
           .sectionYPositions(0, 0)
           .signalYOffset(-7.9f)
+          .addon(true)
           .retiring("controllableverticalrightaddonsignal")
           .build();
 
@@ -1816,6 +1828,7 @@ public final class TrafficSignalBlocks {
           })
           .sectionYPositions(0, -12)
           .signalYOffset(8.1f)
+          .addon(true)
           .build();
 
   public static final BlockControllableSignal VERTICAL_RIGHT_DOUBLE_ADD_ON_SIGNAL_GRAY =
@@ -1835,6 +1848,7 @@ public final class TrafficSignalBlocks {
           })
           .sectionYPositions(0, -12)
           .signalYOffset(8.1f)
+          .addon(true)
           .retiring("controllableverticalrightdoubleaddonsignal")
           .build();
 
@@ -1851,6 +1865,7 @@ public final class TrafficSignalBlocks {
             };
           })
           .signalYOffset(-7.9f)
+          .addon(true)
           .build();
 
   public static final BlockControllableSignal VERTICAL_RIGHT_FLASH_YELLOW_SR_SIGNAL =
@@ -2378,6 +2393,7 @@ public final class TrafficSignalBlocks {
           })
           .sectionYPositions(0, 0)
           .signalYOffset(-7.9f)
+          .addon(true)
           .build();
 
   public static final BlockControllableSignal VERTICAL_UP_LEFT_ADD_ON_SIGNAL_GRAY =
@@ -2397,6 +2413,7 @@ public final class TrafficSignalBlocks {
           })
           .sectionYPositions(0, 0)
           .signalYOffset(-7.9f)
+          .addon(true)
           .retiring("controllableverticalupleftaddonsignal")
           .build();
 

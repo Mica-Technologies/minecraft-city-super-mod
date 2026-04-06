@@ -481,10 +481,10 @@ public class TileEntityTrafficLightMountKitRenderer
 
     return computeEnvelope(sectionCount,
         signalBlock.getSectionSizes(sectionCount),
-        signalBlock.getSectionYPositions(sectionCount),
-        signalBlock.getSectionXPositions(sectionCount),
-        signalBlock.getSignalYOffset(),
-        signalBlock.isHorizontal());
+        signalBlock.getSectionYPositions(sectionCount, te.getWorld(), pos),
+        signalBlock.getSectionXPositions(sectionCount, te.getWorld(), pos),
+        signalBlock.getSignalYOffset(te.getWorld(), pos),
+        signalBlock.isHorizontal(te.getWorld(), pos));
   }
 
   /**
