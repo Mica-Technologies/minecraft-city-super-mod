@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.powergrid.fe;
 
+import com.micatechnologies.minecraft.csm.Csm;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractTickableTileEntity;
 import javax.annotation.Nullable;
 import net.minecraft.nbt.NBTTagCompound;
@@ -20,7 +21,15 @@ public class TileEntityForgeEnergyProducer extends AbstractTickableTileEntity im
   private static final int ENERGY_OUTPUT_PER_TRANSFER = 10000;
 
   private static final String NBT_TICK_RATE_KEY = "tickRate";
+  private static final int NEIGHBOR_CACHE_REFRESH_TICKS = 100;
   private int tickRate = 1;
+
+  /**
+   * Cached array of adjacent IEnergyStorage capabilities (one per EnumFacing, null if absent).
+   * Refreshed periodically to avoid 6-face capability probes every tick.
+   */
+  private transient IEnergyStorage[] cachedAdjacentStorage = null;
+  private transient int neighborCacheAge = 0;
 
   /**
    * Abstract method which must be implemented to process the reading of the tile entity's NBT data
@@ -146,6 +155,31 @@ public class TileEntityForgeEnergyProducer extends AbstractTickableTileEntity im
   }
 
   /**
+   * Refreshes the cached adjacent energy storage references by probing all 6 faces.
+   */
+  private void refreshNeighborCache() {
+    cachedAdjacentStorage = new IEnergyStorage[EnumFacing.values().length];
+    for (EnumFacing facing : EnumFacing.values()) {
+      BlockPos offset = pos.offset(facing);
+      TileEntity tileEntity = world.getTileEntity(offset);
+      if (tileEntity != null &&
+          tileEntity.hasCapability(CapabilityEnergy.ENERGY, facing.getOpposite())) {
+        cachedAdjacentStorage[facing.ordinal()] =
+            tileEntity.getCapability(CapabilityEnergy.ENERGY, facing.getOpposite());
+      }
+    }
+    neighborCacheAge = 0;
+  }
+
+  /**
+   * Invalidates the cached adjacent energy storage references, forcing a refresh on the next tick.
+   */
+  public void invalidateNeighborCache() {
+    cachedAdjacentStorage = null;
+    neighborCacheAge = 0;
+  }
+
+  /**
    * Abstract method which must be implemented to handle the tick event of the tile entity.
    */
   @Override
@@ -153,23 +187,21 @@ public class TileEntityForgeEnergyProducer extends AbstractTickableTileEntity im
     try {
       // Only provide power if redstone enabled
       if (getWorld().isBlockPowered(pos)) {
-        for (EnumFacing facing : EnumFacing.values()) {
-          BlockPos offset = pos.offset(facing);
-          TileEntity tileEntity = world.getTileEntity(offset);
-          if (tileEntity != null) {
-            if (tileEntity.hasCapability(CapabilityEnergy.ENERGY, facing.getOpposite())) {
-              IEnergyStorage energyStorage = tileEntity.getCapability(CapabilityEnergy.ENERGY,
-                  facing.getOpposite());
-              if (energyStorage != null) {
-                energyStorage.receiveEnergy(ENERGY_OUTPUT_PER_TRANSFER, false);
-              }
-            }
+        // Refresh neighbor cache periodically or on first tick
+        neighborCacheAge++;
+        if (cachedAdjacentStorage == null || neighborCacheAge >= NEIGHBOR_CACHE_REFRESH_TICKS) {
+          refreshNeighborCache();
+        }
+        for (IEnergyStorage storage : cachedAdjacentStorage) {
+          if (storage != null) {
+            storage.receiveEnergy(ENERGY_OUTPUT_PER_TRANSFER, false);
           }
         }
       }
-    } catch (Exception e) {
-      System.err.println("An error occurred while ticking a Forge energy infinite producer: ");
-      e.printStackTrace(System.err);
+    } catch (NullPointerException | ClassCastException e) {
+      Csm.getLogger().error("Error ticking Forge energy producer at {}", pos, e);
+      // Invalidate cache on error in case a neighbor TE was removed
+      cachedAdjacentStorage = null;
     }
   }
 }

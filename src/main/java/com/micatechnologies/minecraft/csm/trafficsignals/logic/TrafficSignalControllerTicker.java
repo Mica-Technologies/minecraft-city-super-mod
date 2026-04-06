@@ -24,6 +24,33 @@ import net.minecraft.world.World;
 public class TrafficSignalControllerTicker {
 
   /**
+   * Handles the tick event for the traffic signal controller using a
+   * {@link ControllerTickContext} to encapsulate all parameters. This delegates to the
+   * multi-parameter {@link #tick(World, TrafficSignalControllerMode, TrafficSignalControllerMode,
+   * TrafficSignalControllerCircuits, TrafficSignalControllerOverlaps, TrafficSignalPhases,
+   * TrafficSignalPhase, long, long, boolean, boolean, long, long, long, long, long, long, long,
+   * long, long, long, long, boolean)} method.
+   *
+   * @param ctx the {@link ControllerTickContext} containing all tick parameters
+   *
+   * @return The next phase to use for the traffic signal controller. If null is returned, then the
+   *     phase is not changed.
+   *
+   * @since 1.0
+   */
+  public static TrafficSignalPhase tick(ControllerTickContext ctx) {
+    return tick(ctx.getWorld(), ctx.getConfiguredMode(), ctx.getOperatingMode(),
+        ctx.getCircuits(), ctx.getOverlaps(), ctx.getCachedPhases(), ctx.getOriginalPhase(),
+        ctx.getTimeSinceLastPhaseApplicabilityChange(), ctx.getTimeSinceLastPhaseChange(),
+        ctx.isAlternatingFlash(), ctx.isOverlapPedestrianSignals(), ctx.getYellowTime(),
+        ctx.getFlashDontWalkTime(), ctx.getAllRedTime(), ctx.getMinRequestableServiceTime(),
+        ctx.getMaxRequestableServiceTime(), ctx.getMinGreenTime(), ctx.getMaxGreenTime(),
+        ctx.getMinGreenTimeSecondary(), ctx.getMaxGreenTimeSecondary(),
+        ctx.getDedicatedPedSignalTime(), ctx.getLeadPedestrianIntervalTime(),
+        ctx.isAllRedFlash());
+  }
+
+  /**
    * Handles the tick event for the traffic signal controller and passes the event to the
    * appropriate tick method based on the mode of the traffic signal controller.
    *

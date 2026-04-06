@@ -406,21 +406,21 @@ The plan is organized into 8 phases, ordered so that earlier phases unblock or d
   - Issue: Full speaker position list sent every 20 ticks per channel per player
   - Fix: Send positions only on first start; use lightweight keep-alive for ongoing
 
-- [ ] **5A.2 — Fix O(n×m) player cleanup**
+- [x] **5A.2 — Fix O(n×m) player cleanup** *(done 2026-04-05)*
   - File: `TileEntityFireAlarmControlPanel.java:484-492`
   - Fix: Convert online player UUIDs to `HashSet` for O(1) lookup
 
-- [ ] **5A.3 — Replace silent NBT exception catching**
+- [x] **5A.3 — Replace silent NBT exception catching** *(done 2026-04-05)*
   - File: `TileEntityFireAlarmControlPanel.java:82-110`
   - Fix: Use `compound.hasKey()` checks; log failures properly
 
-- [ ] **5A.4 — Add sound resource validation**
+- [x] **5A.4 — Add sound resource validation** *(done 2026-04-05)*
   - File: `FireAlarmSoundPacketHandler.java:68`
   - Fix: Validate `ResourceLocation` resolves to a registered `SoundEvent`
 
 ### 5B — Traffic Signal System
 
-- [ ] **5B.1 — Encapsulate controller tick parameters**
+- [x] **5B.1 — Encapsulate controller tick parameters** *(done 2026-04-05)*
   - File: `TrafficSignalControllerTicker.tick()` — 26 parameters
   - Fix: Create `ControllerTickContext` data class
 
@@ -429,7 +429,7 @@ The plan is organized into 8 phases, ordered so that earlier phases unblock or d
   - Issue: 8 sequential for-loops over signal lists
   - Fix: Single loop with color→signal mapping
 
-- [ ] **5B.3 — Add entity type filtering to sensors**
+- [x] **5B.3 — Add entity type filtering to sensors** *(done 2026-04-05)*
   - File: `TileEntityTrafficSignalSensor.java:333,441`
   - Issue: `getEntitiesWithinAABBExcludingEntity(null, ...)` returns ALL entities
   - Fix: Use `getEntitiesWithinAABB(EntityPlayer.class, ...)` (or villager union)
@@ -441,7 +441,7 @@ The plan is organized into 8 phases, ordered so that earlier phases unblock or d
 
 ### 5C — Lighting System
 
-- [ ] **5C.1 — Cache BlockLightupAir reference**
+- [x] **5C.1 — Cache BlockLightupAir reference** *(done 2026-04-05)*
   - File: `AbstractBrightLight.java:135,146`
   - Issue: `Block.getBlockFromName("csm:lightupair")` called on every state change
   - Fix: Static field initialized once
@@ -458,7 +458,7 @@ The plan is organized into 8 phases, ordered so that earlier phases unblock or d
 
 ### 5D — Power Grid System
 
-- [ ] **5D.1 — Replace broad exception catches with specific types**
+- [x] **5D.1 — Replace broad exception catches with specific types** *(done 2026-04-05)*
   - Files: `TileEntityForgeEnergyProducer.java:164`, `TileEntityForgeEnergyConsumer.java:154`
   - Fix: Catch `NullPointerException | ClassCastException`, use LOGGER
 
@@ -481,12 +481,12 @@ The plan is organized into 8 phases, ordered so that earlier phases unblock or d
 
 ### Checklist
 
-- [ ] **6.1 — Cache adjacent TE references in energy producer**
+- [x] **6.1 — Cache adjacent TE references in energy producer** *(done 2026-04-05)*
   - File: `TileEntityForgeEnergyProducer.java:150-162`
   - Issue: 6-face capability probe every tick (6 block lookups + 6 capability checks × 20/sec)
-  - Fix: Cache on `neighborChanged()`; invalidate on TE removal
+  - Fix: Cache with periodic refresh (every 100 ticks); invalidate on error
 
-- [ ] **6.2 — Optimize fire alarm distance calculation**
+- [x] **6.2 — Optimize fire alarm distance calculation** *(done 2026-04-05)*
   - File: `FireAlarmVoiceEvacSound.java:62-78`
   - Issue: `Math.sqrt()` called per speaker per frame
   - Fix: Compare squared distances; sqrt only for the final closest speaker
@@ -544,7 +544,7 @@ The plan is organized into 8 phases, ordered so that earlier phases unblock or d
   - Current: 101 sound events, 108 OGG files
   - Check: Are all OGG files referenced? Are all events used in code?
 
-- [ ] **7.5 — Sort and clean en_us.lang**
+- [x] **7.5 — Sort and clean en_us.lang** *(done 2026-04-05)*
   - Run: `LangFileSortTool`
   - Verify: All 1,433 entries match registered blocks/items
 

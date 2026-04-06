@@ -5,7 +5,6 @@ import com.micatechnologies.minecraft.csm.codeutils.SerializationUtils;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockTrafficSignalSensor;
 import java.util.ArrayList;
 import java.util.List;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -329,14 +328,9 @@ public class TileEntityTrafficSignalSensor extends AbstractTileEntity {
     int count = 0;
     if (world != null && corner1 != null && corner2 != null) {
       AxisAlignedBB scanRange = new AxisAlignedBB(corner1, corner2);
-      List<Entity> entitiesWithinAABBExcludingEntity =
-          world.getEntitiesWithinAABBExcludingEntity(null,
-              scanRange);
-      for (Entity entity : entitiesWithinAABBExcludingEntity) {
-        if (entity instanceof EntityVillager || entity instanceof EntityPlayer) {
-          count++;
-        }
-      }
+      // Use type-filtered queries instead of scanning all entities
+      count += world.getEntitiesWithinAABB(EntityPlayer.class, scanRange).size();
+      count += world.getEntitiesWithinAABB(EntityVillager.class, scanRange).size();
     }
     return count;
   }
@@ -437,12 +431,12 @@ public class TileEntityTrafficSignalSensor extends AbstractTileEntity {
     List<Tuple<Integer, Vec3d>> results = new ArrayList<>();
     if (world != null && corner1 != null && corner2 != null) {
       AxisAlignedBB scanRange = new AxisAlignedBB(corner1, corner2);
-      List<Entity> entitiesWithinAABBExcludingEntity =
-          world.getEntitiesWithinAABBExcludingEntity(null, scanRange);
-      for (Entity entity : entitiesWithinAABBExcludingEntity) {
-        if (entity instanceof EntityVillager || entity instanceof EntityPlayer) {
-          results.add(new Tuple<>(entity.getEntityId(), entity.getPositionVector()));
-        }
+      // Use type-filtered queries instead of scanning all entities
+      for (EntityPlayer entity : world.getEntitiesWithinAABB(EntityPlayer.class, scanRange)) {
+        results.add(new Tuple<>(entity.getEntityId(), entity.getPositionVector()));
+      }
+      for (EntityVillager entity : world.getEntitiesWithinAABB(EntityVillager.class, scanRange)) {
+        results.add(new Tuple<>(entity.getEntityId(), entity.getPositionVector()));
       }
     }
     return results;
