@@ -2,7 +2,8 @@
 
 **Created:** 2026-04-05  
 **Status:** Complete. 85 items done `[x]`, 11 intentionally skipped `[~]`, 0 remaining `[ ]`.  
-**Scope:** Full mod review — architecture, performance, code quality, resources, tooling
+**Scope:** Full mod review — architecture, performance, code quality, resources, tooling  
+**Unit Tests:** 36 test files, 1,018 tests (from 0). Covers traffic signal state machine, enums, data classes, core utilities, fire alarm system, and mod constants.
 
 **Legend:** `[x]` = completed, `[~]` = reviewed and intentionally skipped (with reason), `[ ]` = todo
 
@@ -10,7 +11,7 @@
 
 ## Resume Prompt
 
-> The mega improvement plan is fully complete. All feasible items across Phases 1-8 have been implemented, audited, or assessed. 6 items were intentionally skipped: 2.4 (init order risk), 3.3 (bounding box risk), 3.4 (facing logic risk), 3.9 (facing logic risk), 3.10 (large scope, low urgency), 5A.1 (cross-version packet risk), 5D.3 (massive new feature), 6.5 (already has culling), 6.6 (too invasive). Items 8.5 and 8.6 are deferred pending user agreement on formatting config. All builds and tests pass.
+> The mega improvement plan is fully complete. All feasible items across Phases 1-8 have been implemented, audited, or assessed. 11 items were intentionally skipped with documented reasons (world safety, scope, rendering artifacts, config agreement needed). A comprehensive unit test suite was added: 36 test files with 1,018 tests covering the traffic signal controller state machine, all signal/crosswalk enums, data class NBT serialization, core utilities, fire alarm packet/volume logic, and mod constants. An IntelliJ run configuration was added for running tests. All builds and tests pass.
 
 ---
 
@@ -598,10 +599,23 @@ The plan is organized into 8 phases, ordered so that earlier phases unblock or d
   - Fix: Enable with agreed-upon style rules
   - Note: Will touch many files on first run — do in a dedicated commit
 
-- [x] **8.7 — Write initial unit tests for critical systems**
-  - JUnit 5 is enabled but no tests exist
-  - Targets: Registry logic, phase transition logic, energy calculations, direction mapping
-  - Start small; even 10-20 tests for core logic add value
+- [x] **8.7 — Write comprehensive unit test suite** *(done 2026-04-05 through 2026-04-06)*
+  - Started from 0 tests, built to **36 test files, 1,018 tests**
+  - **Traffic signal controller** (2 files, 70 tests): faultModeTick, manualOffModeTick, flashModeTick,
+    overrideBeaconsToYellow, phase transition generation (FDW, yellow, red, LPI), overlap application,
+    isThroughTypeApplicability, isSamePhaseCategory, adjustForFya, addCircuitToPhaseAllRed
+  - **Traffic signal enums** (12 files, ~100 tests): All 12 enums — NBT round-trips, bounds safety,
+    getNext cycling, friendlyName, RGB validation, tick rate validation
+  - **Traffic signal data classes** (9 files, 94 tests): Circuit/Circuits/Overlaps NBT & mutation,
+    SensorSummary aggregation, APS sound schemes, crosswalk display/mount/visor/bulb type enums
+  - **Signal geometry & textures** (4 files, ~40 tests): BoundingBoxHelper, TextureMap UVs,
+    SectionInfo constructors, VertexData coordinate validity
+  - **Core utilities** (6 files, ~55 tests): DirectionEight/Sixteen, RotationUtils, BlockUtils facing,
+    SerializationUtils NBT, TickTimeConverter, CsmConstants
+  - **Fire alarm system** (2 files, ~20 tests): SoundPacket ByteBuf serialization, volume distance
+    calculation with quadratic falloff (extracted to static method for testability)
+  - **Mod-level** (2 files, ~640 tests): CsmSounds parameterized across 110 sounds, CsmConstants
+  - Added IntelliJ "Run Unit Tests" run configuration
 
 ---
 
