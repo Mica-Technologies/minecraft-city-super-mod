@@ -1,10 +1,10 @@
 # City Super Mod — Mega Improvement Plan
 
 **Created:** 2026-04-05  
-**Status:** Implementation complete (all feasible items). 6 items remain — world-safety skips and formatting config.  
+**Status:** Complete. 85 items done `[x]`, 11 intentionally skipped `[~]`, 0 remaining `[ ]`.  
 **Scope:** Full mod review — architecture, performance, code quality, resources, tooling
 
-**Impact:** Thousands of files changed across all 8 phases — major deduplication, bug fixes, performance, and tooling.
+**Legend:** `[x]` = completed, `[~]` = reviewed and intentionally skipped (with reason), `[ ]` = todo
 
 ---
 
@@ -112,7 +112,7 @@ The plan is organized into 8 phases, ordered so that earlier phases unblock or d
   - Issue: `ITEMS` is an `ArrayList`, can't detect duplicate registry names
   - Fix: Change to `Map<String, Item>` keyed by registry name, matching block pattern
 
-- [ ] **2.4 — Add @Mod.EventBusSubscriber pattern** *(skipped — risky init order change)*
+- [~] **2.4 — Add @Mod.EventBusSubscriber pattern** *(skipped — risky init order change)*
   - File: `Csm.java:343-398`
   - Issue: Registry event handlers are instance methods registered via `MinecraftForge.EVENT_BUS.register(this)`
   - Fix: Add `@Mod.EventBusSubscriber(modid = CsmConstants.MOD_NAMESPACE)` and make handlers `static`
@@ -159,12 +159,12 @@ The plan is organized into 8 phases, ordered so that earlier phases unblock or d
   - Issue: Near-identical logic with different property sets
   - Fix: Extract shared `computeConnections()` helper; call from both classes
 
-- [ ] **3.3 — Optimize bounding box rotation** *(skipped — could break existing BBs)*
+- [~] **3.3 — Optimize bounding box rotation** *(skipped — could break existing BBs)*
   - Files: All `AbstractBlockRotatable*.java` classes (4 files)
   - Issue: `getBoundingBox()` calls `getBlockBoundingBox()` twice and `getActualState()` redundantly
   - Fix: Single state lookup, null-check-then-rotate in one pass
 
-- [ ] **3.4 — Simplify direction angle mapping** *(skipped — could break existing block facing)*
+- [~] **3.4 — Simplify direction angle mapping** *(skipped — could break existing block facing)*
   - Files: `AbstractBlockRotatableHZEight.java:198-223`, `AbstractBlockRotatableHZSixteen.java`
   - Issue: Hardcoded angle thresholds with 8+ if/else branches
   - Fix: Use array lookup: `DIRECTIONS[Math.round(yaw / 45) % 8]`
@@ -189,12 +189,12 @@ The plan is organized into 8 phases, ordered so that earlier phases unblock or d
   - Issue: `getBlockState()` called multiple times for same position
   - Fix: Call once, store in local variable
 
-- [ ] **3.9 — Replace switch-based facing logic** *(skipped — could break existing facing)*
+- [~] **3.9 — Replace switch-based facing logic** *(skipped — could break existing facing)*
   - Files: `BlockUtils.java:136-301`, `RotationUtils.java:125-176`
   - Issue: 70+ line switch statements for relative/opposite facing
   - Fix: Precomputed `EnumFacing[][]` lookup tables
 
-- [ ] **3.10 — Consolidate block constructors** *(skipped — very large scope)*
+- [~] **3.10 — Consolidate block constructors** *(skipped — very large scope)*
   - Files: All `AbstractBlock*.java` classes
   - Issue: 4-5 constructor overloads per class with duplicated logic
   - Fix: Builder pattern or single constructor with defaults
@@ -403,7 +403,7 @@ The plan is organized into 8 phases, ordered so that earlier phases unblock or d
 
 ### 5A — Fire Alarm System
 
-- [ ] **5A.1 — Optimize packet serialization** *(skipped — cross-version risk)*
+- [~] **5A.1 — Optimize packet serialization** *(skipped — cross-version risk)*
   - File: `FireAlarmSoundPacket.java:81-95`
   - Issue: Full speaker position list sent every 20 ticks per channel per player
   - Fix: Send positions only on first start; use lightweight keep-alive for ongoing
@@ -469,7 +469,7 @@ The plan is organized into 8 phases, ordered so that earlier phases unblock or d
   - Issue: Hardcoded 6 FE / 40 ticks
   - Fix: Add block properties or config values
 
-- [ ] **5D.3 — Design wire/cable system** *(skipped — major new feature)*
+- [~] **5D.3 — Design wire/cable system** *(skipped — major new feature)*
   - Current: Wire mounts are decorative only
   - This is a feature addition, not a fix — defer if scope is too large
 
@@ -501,11 +501,11 @@ The plan is organized into 8 phases, ordered so that earlier phases unblock or d
   - Replaced 4-direction loop with direct 2-direction checks (forward/backward along facing axis)
   - Checks opposite direction first (most likely signal position)
 
-- [ ] **6.5 — Add frustum culling to TESR** *(skipped — Forge already handles this)*
+- [~] **6.5 — Add frustum culling to TESR** *(skipped — Forge already handles this)*
   - Forge 1.12.2 TESRs already cull via distance check for non-global renderers
   - No explicit frustum check needed
 
-- [ ] **6.6 — Batch GL state changes** *(skipped — glPushAttrib/glPopAttrib caused rendering artifacts)*
+- [~] **6.6 — Batch GL state changes** *(skipped — glPushAttrib/glPopAttrib caused rendering artifacts)*
   - Attempted glPushAttrib/glPopAttrib but it desynchronized GlStateManager's cache,
     causing signals to render as semi-transparent white wireframes. Reverted.
   - The existing manual enable/disable pairs are the correct approach for 1.12.2
@@ -588,12 +588,12 @@ The plan is organized into 8 phases, ordered so that earlier phases unblock or d
   - Fix: Move to config file for easier maintenance
   - Result: Created `dev-env-utils/src/main/resources/block-item-integrity-config.json`; `BlockItemIntegrityTool` loads from config with hardcoded fallback
 
-- [ ] **8.5 — Add pre-commit hook** *(skipped — needs user config agreement)*
+- [~] **8.5 — Add pre-commit hook** *(skipped — needs user config agreement)*
   - Run: `ForgeBlockstateValidator` + `BlockItemIntegrityTool` on changed files
   - Fail: If new errors introduced
   - Note: May slow commits — make optional or only for CI
 
-- [ ] **8.6 — Enable Spotless** *(skipped — needs user formatting rules)*
+- [~] **8.6 — Enable Spotless** *(skipped — needs user formatting rules)*
   - File: `buildscript.properties:180` — currently `enableSpotless = false`
   - Fix: Enable with agreed-upon style rules
   - Note: Will touch many files on first run — do in a dedicated commit
