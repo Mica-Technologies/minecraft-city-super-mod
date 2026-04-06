@@ -96,6 +96,10 @@ public class CsmClientProxy implements ICsmProxy {
         com.micatechnologies.minecraft.csm.lifesafety.TileEntityFireAlarmSoundIndex.class,
         new com.micatechnologies.minecraft.csm.lifesafety.TileEntityFireAlarmStrobeRenderer());
 
+    ClientRegistry.bindTileEntitySpecialRenderer(
+        com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityTrafficLightMountKit.class,
+        new com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityTrafficLightMountKitRenderer());
+
     // Note: event bus registration moved to preInit() so ModelRegistryEvent is received.
     // The version check handler (onEntityJoinWorld) also benefits from that registration.
   }

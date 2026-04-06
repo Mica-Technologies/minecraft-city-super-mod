@@ -6,6 +6,7 @@ import com.micatechnologies.minecraft.csm.trafficaccessories.BlockMiniSolarPanel
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficAccessoryBackplate;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficAccessoryBackplateFitted;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficAccessoryNSEWUD;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficLightMountKit;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleHorizontalAngleBlack;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleHorizontalAngleSilver;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleHorizontalAngleTan;
@@ -346,6 +347,7 @@ public class CsmTabTrafficAccessories extends CsmTab {
     initTabBlock(new BlockTrafficAccessoryNSEWUD("tlvtall90lmountkit", BB_TL_V_TALL_90L_MOUNT_KIT, BlockRenderLayer.CUTOUT_MIPPED, 2F, false));
     initTabBlock(new BlockTrafficAccessoryNSEWUD("tlvtall90rmountkit", BB_TL_V_TALL_90R_MOUNT_KIT, BlockRenderLayer.CUTOUT_MIPPED, 2F, false));
     initTabBlock(new BlockTrafficAccessoryNSEWUD("tlvtallmountkit", BB_TL_V_TALL_MOUNT_KIT, BlockRenderLayer.CUTOUT_MIPPED, 2F, false));
+    initTabBlock(new BlockTrafficLightMountKit());
     initTabBlock(new BlockTrafficAccessoryNSEWUD("tlitehorzwiremount", BB_TLITE_HORZ_WIRE_MOUNT, BlockRenderLayer.SOLID, 1F, true));
     initTabBlock(new BlockTrafficAccessoryNSEWUD("tlitevertwiremount", BB_TLITE_VERT_WIRE_MOUNT, BlockRenderLayer.SOLID, 1F, true));
     initTabBlock(new BlockTrafficAccessoryNSEWUD("tlpmunpainted", BB_TL_PM, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
