@@ -39,22 +39,55 @@ import org.lwjgl.opengl.GL11;
 public class TileEntityTrafficLightMountKitRenderer
     extends TileEntitySpecialRenderer<TileEntityTrafficLightMountKit> {
 
-  // Aluminum alloy gray — matches real Pelco Astro-brac cast aluminum finish
-  private static final float COLOR_R = 0.62f;
-  private static final float COLOR_G = 0.63f;
-  private static final float COLOR_B = 0.64f;
+  // --- Color palette ---
+  // Main aluminum body — cast aluminum alloy
+  private static final float ALU_R = 0.64f, ALU_G = 0.65f, ALU_B = 0.66f;
+  // Slightly darker for recessed/inner surfaces of the C-channel
+  private static final float ALU_DARK_R = 0.55f, ALU_DARK_G = 0.56f, ALU_DARK_B = 0.57f;
+  // Knuckle clamps — heavier cast hardware, darker
+  private static final float KNUCKLE_R = 0.48f, KNUCKLE_G = 0.49f, KNUCKLE_B = 0.50f;
+  // Pivot joint hubs — even darker to suggest heavy cast pieces
+  private static final float PIVOT_R = 0.44f, PIVOT_G = 0.45f, PIVOT_B = 0.46f;
 
-  // Model-space constants (16 units = 1 block)
+  // --- Model-space constants (16 units = 1 block) ---
   private static final float CENTER_X = 8.0f;
   private static final float CENTER_Y = 6.0f;
 
-  // Bar dimensions (from existing static mount models)
-  private static final float BAR_THICKNESS_THIN = 1.0f;  // thin axis (1 unit)
-  private static final float BAR_THICKNESS_WIDE = 2.0f;  // wide axis (2 units)
-  private static final float BAR_FRONT_Z = -4.0f;        // front extent of bars
-  private static final float BAR_BACK_Z = 16.0f;         // back extent of bars
-  private static final float SPINE_FRONT_Z = 15.0f;      // spine sits at back face
+  // --- C-channel arm cross-section ---
+  // Real Astro-brac arms are aluminum C-channel (U-shape when viewed end-on).
+  // We build this from 3 boxes: top flange, bottom flange, and web (back plate).
+  private static final float CHANNEL_OUTER = 2.5f;   // total width/height of the C-channel
+  private static final float FLANGE_THICK = 0.5f;    // thickness of each flange
+  private static final float WEB_THICK = 0.5f;       // thickness of the web (back wall)
+  private static final float CHANNEL_DEPTH = 2.0f;   // how deep the channel is (front to back of flanges)
+
+  // Arm Z positioning — arms sit forward of the spine
+  private static final float ARM_FRONT_Z = -2.0f;
+  private static final float ARM_BACK_Z = ARM_FRONT_Z + CHANNEL_DEPTH;  // flanges only go this deep
+  private static final float WEB_FRONT_Z = ARM_BACK_Z;                  // web starts where flanges end
+  private static final float WEB_BACK_Z = 16.0f;                        // web runs to back of block
+
+  // --- Spine (round tube, approximated as box) ---
+  private static final float SPINE_SIZE = 1.8f;      // width=height of spine tube
+  private static final float SPINE_FRONT_Z = 14.0f;  // spine sits at back, behind the arms
   private static final float SPINE_BACK_Z = 16.0f;
+
+  // --- Pivot joint hubs (where arms meet spine) ---
+  private static final float PIVOT_SIZE = 3.5f;      // larger than both arm and spine
+  private static final float PIVOT_DEPTH = 2.5f;     // depth along Z
+
+  // --- Knuckle clamps (signal housing grip at arm tips) ---
+  // Multi-part: a main clamp body + a smaller bolt plate on top
+  private static final float KNUCKLE_MAIN_WIDE = 4.0f;
+  private static final float KNUCKLE_MAIN_THIN = 2.0f;
+  private static final float KNUCKLE_MAIN_DEPTH = 3.5f;
+  private static final float BOLT_PLATE_WIDE = 2.5f;
+  private static final float BOLT_PLATE_THIN = 0.5f;
+  private static final float BOLT_PLATE_DEPTH = 2.0f;
+
+  // --- Mounting collar (top of spine, mast arm attachment) ---
+  private static final float COLLAR_SIZE = 2.5f;
+  private static final float COLLAR_HEIGHT = 1.5f;
 
   // How many blocks to scan in each direction for signal heads (handles add-on signals)
   private static final int MAX_SCAN_DISTANCE = 3;
@@ -98,53 +131,28 @@ public class TileEntityTrafficLightMountKitRenderer
     GlStateManager.enableLighting();
   }
 
+  /**
+   * Renders the Astro-brac bracket with detailed geometry:
+   * <ul>
+   *   <li>C-channel arms (top flange, bottom flange, web) at top/bottom or left/right</li>
+   *   <li>Pivot joint hubs where each arm meets the spine</li>
+   *   <li>Knuckle clamps with bolt plates at each arm tip</li>
+   *   <li>Spine tube connecting the pivot joints at the back</li>
+   *   <li>Mounting collar at the top/right end of the spine</li>
+   * </ul>
+   */
   private void renderBracket(TileEntityTrafficLightMountKit te, EnumFacing facing) {
     SignalInfo info = detectSignals(te, facing);
 
-    List<RenderHelper.Box> boxes = new ArrayList<>(3);
+    List<RenderHelper.Box> aluBoxes = new ArrayList<>();
+    List<RenderHelper.Box> aluDarkBoxes = new ArrayList<>();
+    List<RenderHelper.Box> knuckleBoxes = new ArrayList<>();
+    List<RenderHelper.Box> pivotBoxes = new ArrayList<>();
 
     if (info.horizontal) {
-      // Horizontal signal: vertical end bars on left/right, horizontal rail at back
-      float barMinY = CENTER_Y - BAR_THICKNESS_WIDE / 2f;
-      float barMaxY = CENTER_Y + BAR_THICKNESS_WIDE / 2f;
-
-      // Left bar — flush with signal left edge, extends outward
-      float leftBarX = info.minX - BAR_THICKNESS_THIN;
-      boxes.add(new RenderHelper.Box(
-          new float[]{leftBarX, barMinY, BAR_FRONT_Z},
-          new float[]{leftBarX + BAR_THICKNESS_THIN, barMaxY, BAR_BACK_Z}));
-
-      // Right bar — flush with signal right edge, extends outward
-      float rightBarX = info.maxX;
-      boxes.add(new RenderHelper.Box(
-          new float[]{rightBarX, barMinY, BAR_FRONT_Z},
-          new float[]{rightBarX + BAR_THICKNESS_THIN, barMaxY, BAR_BACK_Z}));
-
-      // Horizontal rail connecting the two bars at the back
-      boxes.add(new RenderHelper.Box(
-          new float[]{leftBarX + BAR_THICKNESS_THIN, barMinY, SPINE_FRONT_Z},
-          new float[]{rightBarX, barMaxY, SPINE_BACK_Z}));
+      buildHorizontalBracket(info, aluBoxes, aluDarkBoxes, knuckleBoxes, pivotBoxes);
     } else {
-      // Vertical signal: horizontal end bars on top/bottom, vertical spine at back
-      float barMinX = CENTER_X - BAR_THICKNESS_WIDE / 2f;
-      float barMaxX = CENTER_X + BAR_THICKNESS_WIDE / 2f;
-
-      // Top bar — flush with signal top edge, extends upward
-      float topBarY = info.maxY;
-      boxes.add(new RenderHelper.Box(
-          new float[]{barMinX, topBarY, BAR_FRONT_Z},
-          new float[]{barMaxX, topBarY + BAR_THICKNESS_THIN, BAR_BACK_Z}));
-
-      // Bottom bar — flush with signal bottom edge, extends downward
-      float bottomBarY = info.minY - BAR_THICKNESS_THIN;
-      boxes.add(new RenderHelper.Box(
-          new float[]{barMinX, bottomBarY, BAR_FRONT_Z},
-          new float[]{barMaxX, bottomBarY + BAR_THICKNESS_THIN, BAR_BACK_Z}));
-
-      // Vertical spine connecting the two bars at the back
-      boxes.add(new RenderHelper.Box(
-          new float[]{barMinX, bottomBarY + BAR_THICKNESS_THIN, SPINE_FRONT_Z},
-          new float[]{barMaxX, topBarY, SPINE_BACK_Z}));
+      buildVerticalBracket(info, aluBoxes, aluDarkBoxes, knuckleBoxes, pivotBoxes);
     }
 
     Tessellator tessellator = Tessellator.getInstance();
@@ -152,9 +160,249 @@ public class TileEntityTrafficLightMountKitRenderer
 
     GlStateManager.disableTexture2D();
     buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
-    RenderHelper.addBoxesToBuffer(boxes, buffer, COLOR_R, COLOR_G, COLOR_B, 1.0f, 0, 0, 0);
+
+    RenderHelper.addBoxesToBuffer(aluBoxes, buffer, ALU_R, ALU_G, ALU_B, 1.0f, 0, 0, 0);
+    RenderHelper.addBoxesToBuffer(aluDarkBoxes, buffer, ALU_DARK_R, ALU_DARK_G, ALU_DARK_B, 1.0f, 0, 0, 0);
+    RenderHelper.addBoxesToBuffer(knuckleBoxes, buffer, KNUCKLE_R, KNUCKLE_G, KNUCKLE_B, 1.0f, 0, 0, 0);
+    RenderHelper.addBoxesToBuffer(pivotBoxes, buffer, PIVOT_R, PIVOT_G, PIVOT_B, 1.0f, 0, 0, 0);
+
     tessellator.draw();
     GlStateManager.enableTexture2D();
+  }
+
+  // ==================== Vertical bracket (for vertical signals) ====================
+
+  private void buildVerticalBracket(SignalInfo info,
+      List<RenderHelper.Box> alu, List<RenderHelper.Box> aluDark,
+      List<RenderHelper.Box> knuckle, List<RenderHelper.Box> pivot) {
+
+    float topEdge = info.maxY;
+    float bottomEdge = info.minY;
+
+    // --- Top C-channel arm (horizontal, extending outward from top of signal) ---
+    buildVerticalArm(topEdge, true, alu, aluDark);
+    // --- Bottom C-channel arm ---
+    buildVerticalArm(bottomEdge, false, alu, aluDark);
+
+    // --- Top knuckle clamp ---
+    buildVerticalKnuckle(topEdge, true, knuckle);
+    // --- Bottom knuckle clamp ---
+    buildVerticalKnuckle(bottomEdge, false, knuckle);
+
+    // --- Pivot joint hubs (where arms meet spine) ---
+    float topPivotCenter = topEdge + CHANNEL_OUTER / 2f;
+    float bottomPivotCenter = bottomEdge - CHANNEL_OUTER / 2f;
+    buildPivotHub(CENTER_X, topPivotCenter, pivot);
+    buildPivotHub(CENTER_X, bottomPivotCenter, pivot);
+
+    // --- Vertical spine connecting the two pivots ---
+    float spineMinX = CENTER_X - SPINE_SIZE / 2f;
+    float spineMaxX = CENTER_X + SPINE_SIZE / 2f;
+    alu.add(new RenderHelper.Box(
+        new float[]{spineMinX, bottomPivotCenter + PIVOT_SIZE / 2f, SPINE_FRONT_Z},
+        new float[]{spineMaxX, topPivotCenter - PIVOT_SIZE / 2f, SPINE_BACK_Z}));
+
+    // --- Mounting collar at top of spine ---
+    float collarMin = CENTER_X - COLLAR_SIZE / 2f;
+    float collarMax = CENTER_X + COLLAR_SIZE / 2f;
+    float collarY = topPivotCenter + PIVOT_SIZE / 2f;
+    pivot.add(new RenderHelper.Box(
+        new float[]{collarMin, collarY, SPINE_FRONT_Z},
+        new float[]{collarMax, collarY + COLLAR_HEIGHT, SPINE_BACK_Z}));
+  }
+
+  /**
+   * Builds one horizontal C-channel arm for a vertical bracket.
+   * The C-channel has: top flange, bottom flange (outer surfaces), and a web (back wall).
+   *
+   * @param signalEdge the Y coordinate of the signal envelope edge
+   * @param isTop      true for top arm (extends upward), false for bottom (extends downward)
+   */
+  private void buildVerticalArm(float signalEdge, boolean isTop,
+      List<RenderHelper.Box> alu, List<RenderHelper.Box> aluDark) {
+    float armMinX = CENTER_X - CHANNEL_OUTER / 2f;
+    float armMaxX = CENTER_X + CHANNEL_OUTER / 2f;
+
+    // Arm Y range: extends outward from signal edge by CHANNEL_OUTER
+    float armOuterY, armInnerY;
+    if (isTop) {
+      armInnerY = signalEdge;
+      armOuterY = signalEdge + CHANNEL_OUTER;
+    } else {
+      armOuterY = signalEdge - CHANNEL_OUTER;
+      armInnerY = signalEdge;
+    }
+    float yMin = Math.min(armOuterY, armInnerY);
+    float yMax = Math.max(armOuterY, armInnerY);
+
+    // Top flange (outer edge of channel)
+    alu.add(new RenderHelper.Box(
+        new float[]{armMinX, yMax - FLANGE_THICK, ARM_FRONT_Z},
+        new float[]{armMaxX, yMax, WEB_BACK_Z}));
+
+    // Bottom flange (inner edge of channel, toward signal)
+    alu.add(new RenderHelper.Box(
+        new float[]{armMinX, yMin, ARM_FRONT_Z},
+        new float[]{armMaxX, yMin + FLANGE_THICK, WEB_BACK_Z}));
+
+    // Web (back wall of the C-channel, connecting flanges)
+    aluDark.add(new RenderHelper.Box(
+        new float[]{armMinX, yMin + FLANGE_THICK, WEB_FRONT_Z},
+        new float[]{armMaxX, yMax - FLANGE_THICK, WEB_BACK_Z}));
+  }
+
+  /**
+   * Builds knuckle clamp where the arm meets the signal housing.
+   * The clamp grips the signal body at the inner end of the arm (near the signal edge),
+   * not at the outer tip. Consists of a main clamp body and a smaller bolt plate.
+   */
+  private void buildVerticalKnuckle(float signalEdge, boolean isTop,
+      List<RenderHelper.Box> knuckle) {
+    float cx = CENTER_X;
+
+    // Knuckle spans from 0.01 inside the signal housing to 0.01 past the outer
+    // edge of the C-channel arm, so no face is coplanar with either the housing
+    // or the arm flanges.
+    float knuckleHeight = CHANNEL_OUTER + 0.02f; // full arm height + anti-flicker margin
+    float knuckleY;
+    if (isTop) {
+      knuckleY = signalEdge - 0.01f;             // 0.01 into signal housing
+    } else {
+      knuckleY = signalEdge - knuckleHeight + 0.01f;
+    }
+
+    // Main clamp body
+    knuckle.add(new RenderHelper.Box(
+        new float[]{cx - KNUCKLE_MAIN_WIDE / 2f - 0.01f, knuckleY, ARM_FRONT_Z - 0.01f},
+        new float[]{cx + KNUCKLE_MAIN_WIDE / 2f + 0.01f, knuckleY + knuckleHeight,
+            ARM_FRONT_Z + KNUCKLE_MAIN_DEPTH}));
+
+    // Bolt plate (smaller, on the outward-facing side of the clamp)
+    float boltY = isTop ? knuckleY + knuckleHeight : knuckleY - BOLT_PLATE_THIN;
+    knuckle.add(new RenderHelper.Box(
+        new float[]{cx - BOLT_PLATE_WIDE / 2f, boltY, ARM_FRONT_Z + 0.5f},
+        new float[]{cx + BOLT_PLATE_WIDE / 2f, boltY + BOLT_PLATE_THIN,
+            ARM_FRONT_Z + 0.5f + BOLT_PLATE_DEPTH}));
+  }
+
+  // ==================== Horizontal bracket (for horizontal signals) ====================
+
+  private void buildHorizontalBracket(SignalInfo info,
+      List<RenderHelper.Box> alu, List<RenderHelper.Box> aluDark,
+      List<RenderHelper.Box> knuckle, List<RenderHelper.Box> pivot) {
+
+    float leftEdge = info.minX;
+    float rightEdge = info.maxX;
+
+    // --- Left C-channel arm (vertical, extending outward from left of signal) ---
+    buildHorizontalArm(leftEdge, true, alu, aluDark);
+    // --- Right C-channel arm ---
+    buildHorizontalArm(rightEdge, false, alu, aluDark);
+
+    // --- Left knuckle clamp ---
+    buildHorizontalKnuckle(leftEdge, true, knuckle);
+    // --- Right knuckle clamp ---
+    buildHorizontalKnuckle(rightEdge, false, knuckle);
+
+    // --- Pivot joint hubs ---
+    float leftPivotCenter = leftEdge - CHANNEL_OUTER / 2f;
+    float rightPivotCenter = rightEdge + CHANNEL_OUTER / 2f;
+    buildPivotHub(leftPivotCenter, CENTER_Y, pivot);
+    buildPivotHub(rightPivotCenter, CENTER_Y, pivot);
+
+    // --- Horizontal spine connecting the two pivots ---
+    float spineMinY = CENTER_Y - SPINE_SIZE / 2f;
+    float spineMaxY = CENTER_Y + SPINE_SIZE / 2f;
+    alu.add(new RenderHelper.Box(
+        new float[]{leftPivotCenter + PIVOT_SIZE / 2f, spineMinY, SPINE_FRONT_Z},
+        new float[]{rightPivotCenter - PIVOT_SIZE / 2f, spineMaxY, SPINE_BACK_Z}));
+
+    // --- Mounting collar at right end of spine ---
+    float collarMin = CENTER_Y - COLLAR_SIZE / 2f;
+    float collarMax = CENTER_Y + COLLAR_SIZE / 2f;
+    float collarX = rightPivotCenter + PIVOT_SIZE / 2f;
+    pivot.add(new RenderHelper.Box(
+        new float[]{collarX, collarMin, SPINE_FRONT_Z},
+        new float[]{collarX + COLLAR_HEIGHT, collarMax, SPINE_BACK_Z}));
+  }
+
+  /**
+   * Builds one vertical C-channel arm for a horizontal bracket.
+   */
+  private void buildHorizontalArm(float signalEdge, boolean isLeft,
+      List<RenderHelper.Box> alu, List<RenderHelper.Box> aluDark) {
+    float armMinY = CENTER_Y - CHANNEL_OUTER / 2f;
+    float armMaxY = CENTER_Y + CHANNEL_OUTER / 2f;
+
+    float armOuterX, armInnerX;
+    if (isLeft) {
+      armOuterX = signalEdge - CHANNEL_OUTER;
+      armInnerX = signalEdge;
+    } else {
+      armInnerX = signalEdge;
+      armOuterX = signalEdge + CHANNEL_OUTER;
+    }
+    float xMin = Math.min(armOuterX, armInnerX);
+    float xMax = Math.max(armOuterX, armInnerX);
+
+    // Left flange (outer edge)
+    alu.add(new RenderHelper.Box(
+        new float[]{xMin, armMinY, ARM_FRONT_Z},
+        new float[]{xMin + FLANGE_THICK, armMaxY, WEB_BACK_Z}));
+
+    // Right flange (inner edge, toward signal)
+    alu.add(new RenderHelper.Box(
+        new float[]{xMax - FLANGE_THICK, armMinY, ARM_FRONT_Z},
+        new float[]{xMax, armMaxY, WEB_BACK_Z}));
+
+    // Web (back wall)
+    aluDark.add(new RenderHelper.Box(
+        new float[]{xMin + FLANGE_THICK, armMinY, WEB_FRONT_Z},
+        new float[]{xMax - FLANGE_THICK, armMaxY, WEB_BACK_Z}));
+  }
+
+  /**
+   * Builds knuckle clamp where the arm meets the signal housing (horizontal variant).
+   */
+  private void buildHorizontalKnuckle(float signalEdge, boolean isLeft,
+      List<RenderHelper.Box> knuckle) {
+    float cy = CENTER_Y;
+
+    // Knuckle spans from 0.01 inside signal housing to 0.01 past outer arm edge
+    float knuckleWidth = CHANNEL_OUTER + 0.02f;
+    float knuckleX;
+    if (isLeft) {
+      knuckleX = signalEdge - knuckleWidth + 0.01f;
+    } else {
+      knuckleX = signalEdge - 0.01f;
+    }
+
+    // Main clamp body
+    knuckle.add(new RenderHelper.Box(
+        new float[]{knuckleX, cy - KNUCKLE_MAIN_WIDE / 2f - 0.01f, ARM_FRONT_Z - 0.01f},
+        new float[]{knuckleX + knuckleWidth, cy + KNUCKLE_MAIN_WIDE / 2f + 0.01f,
+            ARM_FRONT_Z + KNUCKLE_MAIN_DEPTH}));
+
+    // Bolt plate (on the outward-facing side)
+    float boltX = isLeft ? knuckleX - BOLT_PLATE_THIN : knuckleX + knuckleWidth;
+    knuckle.add(new RenderHelper.Box(
+        new float[]{boltX, cy - BOLT_PLATE_WIDE / 2f, ARM_FRONT_Z + 0.5f},
+        new float[]{boltX + BOLT_PLATE_THIN, cy + BOLT_PLATE_WIDE / 2f,
+            ARM_FRONT_Z + 0.5f + BOLT_PLATE_DEPTH}));
+  }
+
+  // ==================== Shared geometry helpers ====================
+
+  /**
+   * Builds a pivot joint hub — a thick block at the point where an arm meets the spine.
+   * Sits slightly forward and larger than the spine to fully enclose it without Z-fighting.
+   */
+  private void buildPivotHub(float centerX, float centerY, List<RenderHelper.Box> pivot) {
+    pivot.add(new RenderHelper.Box(
+        new float[]{centerX - PIVOT_SIZE / 2f, centerY - PIVOT_SIZE / 2f,
+            SPINE_FRONT_Z - PIVOT_DEPTH / 2f},
+        new float[]{centerX + PIVOT_SIZE / 2f, centerY + PIVOT_SIZE / 2f,
+            SPINE_BACK_Z + 0.01f}));
   }
 
   /**
