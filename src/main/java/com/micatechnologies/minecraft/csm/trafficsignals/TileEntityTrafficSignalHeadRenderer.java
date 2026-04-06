@@ -258,6 +258,17 @@ public class TileEntityTrafficSignalHeadRenderer extends
   private static final float VISOR_TILT_DEGREES = 6.5f;
   private static final float VISOR_PIVOT_Z = 11.0f;
 
+  // Visor center in model space (X=8, Y=6). All visor sizes scale relative to this point,
+  // so it remains correct for 12-inch, 8-inch, and 4-inch sections.
+  private static final float VISOR_CENTER_X = 8.0f;
+  private static final float VISOR_CENTER_Y = 6.0f;
+
+  // Interior color for all visors — flat black, matching real-world construction where
+  // the inside is kept black so bulbs reflect consistently regardless of exterior paint.
+  private static final float VISOR_INNER_R = TrafficSignalBodyColor.FLAT_BLACK.getRed();
+  private static final float VISOR_INNER_G = TrafficSignalBodyColor.FLAT_BLACK.getGreen();
+  private static final float VISOR_INNER_B = TrafficSignalBodyColor.FLAT_BLACK.getBlue();
+
   private void addVisorQuadsToBuffer(TrafficSignalVisorType visorType, BufferBuilder buffer,
       float red, float green, float blue, float alpha, float xOffset, float yOffset,
       int sectionSize, float zPushBack) {
@@ -314,11 +325,14 @@ public class TileEntityTrafficSignalHeadRenderer extends
         return;
     }
     if (applyTilt) {
-      RenderHelper.addTiltedBoxesToBuffer(visorData, buffer, red, green, blue, alpha,
-          xOffset, yOffset, zPushBack, VISOR_PIVOT_Z + zPushBack, VISOR_TILT_DEGREES);
+      RenderHelper.addTiltedBoxesToBufferDualColor(visorData, buffer,
+          red, green, blue, VISOR_INNER_R, VISOR_INNER_G, VISOR_INNER_B, alpha,
+          xOffset, yOffset, zPushBack, VISOR_PIVOT_Z + zPushBack, VISOR_TILT_DEGREES,
+          VISOR_CENTER_X, VISOR_CENTER_Y);
     } else {
-      RenderHelper.addBoxesToBuffer(visorData, buffer, red, green, blue, alpha,
-          xOffset, yOffset, zPushBack);
+      RenderHelper.addBoxesToBufferDualColor(visorData, buffer,
+          red, green, blue, VISOR_INNER_R, VISOR_INNER_G, VISOR_INNER_B, alpha,
+          xOffset, yOffset, zPushBack, VISOR_CENTER_X, VISOR_CENTER_Y);
     }
   }
 

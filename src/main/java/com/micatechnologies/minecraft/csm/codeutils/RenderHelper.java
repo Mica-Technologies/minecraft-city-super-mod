@@ -157,6 +157,163 @@ public class RenderHelper {
     }
   }
 
+  /**
+   * Adds boxes to the buffer with dual coloring: outside faces use the outer color, inside faces
+   * (those facing toward the visor center) use the inner color. Front/back faces (Z axis) always
+   * use the outer color since they are the visible rim and attachment edges.
+   *
+   * @param centerX X coordinate of the visor center (used to determine inside vs outside)
+   * @param centerY Y coordinate of the visor center (used to determine inside vs outside)
+   */
+  public static void addBoxesToBufferDualColor(List<Box> boxes, BufferBuilder buffer,
+      float outerR, float outerG, float outerB,
+      float innerR, float innerG, float innerB,
+      float alpha, float xOffset, float yOffset, float zOffset,
+      float centerX, float centerY) {
+    for (Box box : boxes) {
+      float x1 = box.from[0] + xOffset, y1 = box.from[1] + yOffset, z1 = box.from[2] + zOffset;
+      float x2 = box.to[0] + xOffset, y2 = box.to[1] + yOffset, z2 = box.to[2] + zOffset;
+      float midX = (box.from[0] + box.to[0]) / 2f + xOffset;
+      float midY = (box.from[1] + box.to[1]) / 2f + yOffset;
+
+      addCuboidVerticesDualColor(buffer, x1, y1, z1, x2, y2, z2,
+          outerR, outerG, outerB, innerR, innerG, innerB, alpha,
+          midX, midY, centerX + xOffset, centerY + yOffset);
+    }
+  }
+
+  /**
+   * Adds tilted boxes to the buffer with dual coloring. Same inside/outside logic as
+   * {@link #addBoxesToBufferDualColor} but with the visor downward tilt applied.
+   */
+  public static void addTiltedBoxesToBufferDualColor(List<Box> boxes, BufferBuilder buffer,
+      float outerR, float outerG, float outerB,
+      float innerR, float innerG, float innerB,
+      float alpha, float xOffset, float yOffset, float zOffset,
+      float pivotZ, float tiltAngleDeg,
+      float centerX, float centerY) {
+    float tiltSlope = (float) Math.tan(Math.toRadians(tiltAngleDeg));
+    for (Box box : boxes) {
+      float x1 = box.from[0] + xOffset, y1 = box.from[1] + yOffset, z1 = box.from[2] + zOffset;
+      float x2 = box.to[0] + xOffset, y2 = box.to[1] + yOffset, z2 = box.to[2] + zOffset;
+      float midX = (box.from[0] + box.to[0]) / 2f + xOffset;
+      float midY = (box.from[1] + box.to[1]) / 2f + yOffset;
+
+      float yShift1 = -(pivotZ - z1) * tiltSlope;
+      float yShift2 = -(pivotZ - z2) * tiltSlope;
+
+      // Determine inside/outside per face based on box center vs visor center
+      float cx = centerX + xOffset;
+      float cy = centerY + yOffset;
+      // Left face (x1): inside if box center is right of visor center
+      boolean leftInside = midX > cx;
+      // Right face (x2): inside if box center is left of visor center
+      boolean rightInside = midX < cx;
+      // Bottom face (y1): inside if box center is above visor center
+      boolean bottomInside = midY > cy;
+      // Top face (y2): inside if box center is below visor center
+      boolean topInside = midY < cy;
+
+      float lr, lg, lb, rr, rg, rb, br, bg, bb, tr, tg, tb;
+      lr = leftInside ? innerR : outerR; lg = leftInside ? innerG : outerG; lb = leftInside ? innerB : outerB;
+      rr = rightInside ? innerR : outerR; rg = rightInside ? innerG : outerG; rb = rightInside ? innerB : outerB;
+      br = bottomInside ? innerR : outerR; bg = bottomInside ? innerG : outerG; bb = bottomInside ? innerB : outerB;
+      tr = topInside ? innerR : outerR; tg = topInside ? innerG : outerG; tb = topInside ? innerB : outerB;
+
+      // Front face (z2) — outer color (visible rim)
+      buffer.pos(x1, y1 + yShift2, z2).color(outerR, outerG, outerB, alpha).endVertex();
+      buffer.pos(x2, y1 + yShift2, z2).color(outerR, outerG, outerB, alpha).endVertex();
+      buffer.pos(x2, y2 + yShift2, z2).color(outerR, outerG, outerB, alpha).endVertex();
+      buffer.pos(x1, y2 + yShift2, z2).color(outerR, outerG, outerB, alpha).endVertex();
+
+      // Back face (z1) — outer color (attachment edge)
+      buffer.pos(x2, y1 + yShift1, z1).color(outerR, outerG, outerB, alpha).endVertex();
+      buffer.pos(x1, y1 + yShift1, z1).color(outerR, outerG, outerB, alpha).endVertex();
+      buffer.pos(x1, y2 + yShift1, z1).color(outerR, outerG, outerB, alpha).endVertex();
+      buffer.pos(x2, y2 + yShift1, z1).color(outerR, outerG, outerB, alpha).endVertex();
+
+      // Left face (x1)
+      buffer.pos(x1, y1 + yShift1, z1).color(lr, lg, lb, alpha).endVertex();
+      buffer.pos(x1, y1 + yShift2, z2).color(lr, lg, lb, alpha).endVertex();
+      buffer.pos(x1, y2 + yShift2, z2).color(lr, lg, lb, alpha).endVertex();
+      buffer.pos(x1, y2 + yShift1, z1).color(lr, lg, lb, alpha).endVertex();
+
+      // Right face (x2)
+      buffer.pos(x2, y1 + yShift2, z2).color(rr, rg, rb, alpha).endVertex();
+      buffer.pos(x2, y1 + yShift1, z1).color(rr, rg, rb, alpha).endVertex();
+      buffer.pos(x2, y2 + yShift1, z1).color(rr, rg, rb, alpha).endVertex();
+      buffer.pos(x2, y2 + yShift2, z2).color(rr, rg, rb, alpha).endVertex();
+
+      // Top face (y2)
+      buffer.pos(x1, y2 + yShift2, z2).color(tr, tg, tb, alpha).endVertex();
+      buffer.pos(x2, y2 + yShift2, z2).color(tr, tg, tb, alpha).endVertex();
+      buffer.pos(x2, y2 + yShift1, z1).color(tr, tg, tb, alpha).endVertex();
+      buffer.pos(x1, y2 + yShift1, z1).color(tr, tg, tb, alpha).endVertex();
+
+      // Bottom face (y1)
+      buffer.pos(x1, y1 + yShift1, z1).color(br, bg, bb, alpha).endVertex();
+      buffer.pos(x2, y1 + yShift1, z1).color(br, bg, bb, alpha).endVertex();
+      buffer.pos(x2, y1 + yShift2, z2).color(br, bg, bb, alpha).endVertex();
+      buffer.pos(x1, y1 + yShift2, z2).color(br, bg, bb, alpha).endVertex();
+    }
+  }
+
+  /**
+   * Adds cuboid vertices with dual coloring based on face orientation relative to visor center.
+   */
+  private static void addCuboidVerticesDualColor(BufferBuilder buffer,
+      double x1, double y1, double z1, double x2, double y2, double z2,
+      float outerR, float outerG, float outerB,
+      float innerR, float innerG, float innerB, float alpha,
+      float midX, float midY, float centerX, float centerY) {
+    boolean leftInside = midX > centerX;
+    boolean rightInside = midX < centerX;
+    boolean bottomInside = midY > centerY;
+    boolean topInside = midY < centerY;
+
+    float lr, lg, lb, rr, rg, rb, br, bg, bb, tr, tg, tb;
+    lr = leftInside ? innerR : outerR; lg = leftInside ? innerG : outerG; lb = leftInside ? innerB : outerB;
+    rr = rightInside ? innerR : outerR; rg = rightInside ? innerG : outerG; rb = rightInside ? innerB : outerB;
+    br = bottomInside ? innerR : outerR; bg = bottomInside ? innerG : outerG; bb = bottomInside ? innerB : outerB;
+    tr = topInside ? innerR : outerR; tg = topInside ? innerG : outerG; tb = topInside ? innerB : outerB;
+
+    // Front — outer
+    buffer.pos(x1, y1, z2).color(outerR, outerG, outerB, alpha).endVertex();
+    buffer.pos(x2, y1, z2).color(outerR, outerG, outerB, alpha).endVertex();
+    buffer.pos(x2, y2, z2).color(outerR, outerG, outerB, alpha).endVertex();
+    buffer.pos(x1, y2, z2).color(outerR, outerG, outerB, alpha).endVertex();
+
+    // Back — outer
+    buffer.pos(x2, y1, z1).color(outerR, outerG, outerB, alpha).endVertex();
+    buffer.pos(x1, y1, z1).color(outerR, outerG, outerB, alpha).endVertex();
+    buffer.pos(x1, y2, z1).color(outerR, outerG, outerB, alpha).endVertex();
+    buffer.pos(x2, y2, z1).color(outerR, outerG, outerB, alpha).endVertex();
+
+    // Left
+    buffer.pos(x1, y1, z1).color(lr, lg, lb, alpha).endVertex();
+    buffer.pos(x1, y1, z2).color(lr, lg, lb, alpha).endVertex();
+    buffer.pos(x1, y2, z2).color(lr, lg, lb, alpha).endVertex();
+    buffer.pos(x1, y2, z1).color(lr, lg, lb, alpha).endVertex();
+
+    // Right
+    buffer.pos(x2, y1, z2).color(rr, rg, rb, alpha).endVertex();
+    buffer.pos(x2, y1, z1).color(rr, rg, rb, alpha).endVertex();
+    buffer.pos(x2, y2, z1).color(rr, rg, rb, alpha).endVertex();
+    buffer.pos(x2, y2, z2).color(rr, rg, rb, alpha).endVertex();
+
+    // Top
+    buffer.pos(x1, y2, z2).color(tr, tg, tb, alpha).endVertex();
+    buffer.pos(x2, y2, z2).color(tr, tg, tb, alpha).endVertex();
+    buffer.pos(x2, y2, z1).color(tr, tg, tb, alpha).endVertex();
+    buffer.pos(x1, y2, z1).color(tr, tg, tb, alpha).endVertex();
+
+    // Bottom
+    buffer.pos(x1, y1, z1).color(br, bg, bb, alpha).endVertex();
+    buffer.pos(x2, y1, z1).color(br, bg, bb, alpha).endVertex();
+    buffer.pos(x2, y1, z2).color(br, bg, bb, alpha).endVertex();
+    buffer.pos(x1, y1, z2).color(br, bg, bb, alpha).endVertex();
+  }
+
   public static class Box {
     public final float[] from;
     public final float[] to;
