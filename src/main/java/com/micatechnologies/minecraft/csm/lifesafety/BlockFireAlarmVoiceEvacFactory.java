@@ -13,17 +13,37 @@ import net.minecraft.world.IBlockAccess;
  */
 public class BlockFireAlarmVoiceEvacFactory extends AbstractBlockFireAlarmSounderVoiceEvac {
 
+  /**
+   * ThreadLocal used to pass the registry name to the superclass constructor. The AbstractBlock
+   * constructor calls getBlockRegistryName() before subclass fields are initialized, so we
+   * store the name here before calling super() and read it in getBlockRegistryName().
+   */
+  private static final ThreadLocal<String> PENDING_REGISTRY_NAME = new ThreadLocal<>();
+
   private final String registryName;
   private final AxisAlignedBB boundingBox;
 
   public BlockFireAlarmVoiceEvacFactory(String registryName, AxisAlignedBB boundingBox) {
+    this(initRegistryName(registryName), registryName, boundingBox);
+  }
+
+  private BlockFireAlarmVoiceEvacFactory(Void ignored, String registryName,
+      AxisAlignedBB boundingBox) {
     this.registryName = registryName;
     this.boundingBox = boundingBox;
   }
 
+  private static Void initRegistryName(String name) {
+    PENDING_REGISTRY_NAME.set(name);
+    return null;
+  }
+
   @Override
   public String getBlockRegistryName() {
-    return registryName;
+    if (registryName != null) {
+      return registryName;
+    }
+    return PENDING_REGISTRY_NAME.get();
   }
 
   @Override

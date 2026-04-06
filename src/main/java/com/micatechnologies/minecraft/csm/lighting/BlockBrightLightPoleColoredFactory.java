@@ -13,20 +13,40 @@ import net.minecraft.world.IBlockAccess;
  */
 public class BlockBrightLightPoleColoredFactory extends AbstractBrightLightPoleColored {
 
+  /**
+   * ThreadLocal used to pass the registry name to the superclass constructor. The AbstractBlock
+   * constructor calls getBlockRegistryName() before subclass fields are initialized, so we
+   * store the name here before calling super() and read it in getBlockRegistryName().
+   */
+  private static final ThreadLocal<String> PENDING_REGISTRY_NAME = new ThreadLocal<>();
+
   private final String registryName;
   private final AxisAlignedBB boundingBox;
   private final int brightLightXOffset;
 
   public BlockBrightLightPoleColoredFactory(String registryName, AxisAlignedBB boundingBox,
       int brightLightXOffset) {
+    this(initRegistryName(registryName), registryName, boundingBox, brightLightXOffset);
+  }
+
+  private BlockBrightLightPoleColoredFactory(Void ignored, String registryName,
+      AxisAlignedBB boundingBox, int brightLightXOffset) {
     this.registryName = registryName;
     this.boundingBox = boundingBox;
     this.brightLightXOffset = brightLightXOffset;
   }
 
+  private static Void initRegistryName(String name) {
+    PENDING_REGISTRY_NAME.set(name);
+    return null;
+  }
+
   @Override
   public String getBlockRegistryName() {
-    return registryName;
+    if (registryName != null) {
+      return registryName;
+    }
+    return PENDING_REGISTRY_NAME.get();
   }
 
   @Override

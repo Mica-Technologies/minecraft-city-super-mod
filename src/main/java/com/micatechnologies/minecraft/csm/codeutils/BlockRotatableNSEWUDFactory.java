@@ -20,6 +20,13 @@ import net.minecraft.world.IBlockAccess;
  */
 public class BlockRotatableNSEWUDFactory extends AbstractBlockRotatableNSEWUD {
 
+  /**
+   * ThreadLocal used to pass the registry name to the superclass constructor. The AbstractBlock
+   * constructor calls getBlockRegistryName() before subclass fields are initialized, so we
+   * store the name here before calling super() and read it in getBlockRegistryName().
+   */
+  private static final ThreadLocal<String> PENDING_REGISTRY_NAME = new ThreadLocal<>();
+
   private final String registryName;
   private final AxisAlignedBB boundingBox;
   private final boolean opaqueCube;
@@ -37,8 +44,8 @@ public class BlockRotatableNSEWUDFactory extends AbstractBlockRotatableNSEWUD {
       float lightLevel, int lightOpacity, AxisAlignedBB boundingBox,
       boolean opaqueCube, boolean fullCube, boolean connectsRedstone,
       BlockRenderLayer renderLayer, boolean passable, boolean nullCollision) {
-    super(material, soundType, harvestToolClass, harvestLevel, hardness, resistance,
-        lightLevel, lightOpacity);
+    super(initRegistryName(registryName, material), soundType, harvestToolClass, harvestLevel,
+        hardness, resistance, lightLevel, lightOpacity);
     this.registryName = registryName;
     this.boundingBox = boundingBox;
     this.opaqueCube = opaqueCube;
@@ -58,9 +65,17 @@ public class BlockRotatableNSEWUDFactory extends AbstractBlockRotatableNSEWUD {
         boundingBox, false, false, false, BlockRenderLayer.CUTOUT_MIPPED, false, false);
   }
 
+  private static Material initRegistryName(String name, Material material) {
+    PENDING_REGISTRY_NAME.set(name);
+    return material;
+  }
+
   @Override
   public String getBlockRegistryName() {
-    return registryName;
+    if (registryName != null) {
+      return registryName;
+    }
+    return PENDING_REGISTRY_NAME.get();
   }
 
   @Override

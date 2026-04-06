@@ -14,6 +14,13 @@ import net.minecraft.world.IBlockAccess;
 
 public class BlockTrafficAccessoryNSEWUD extends AbstractBlockRotatableNSEWUD {
 
+  /**
+   * ThreadLocal used to pass the registry name to the superclass constructor. The AbstractBlock
+   * constructor calls getBlockRegistryName() before subclass fields are initialized, so we
+   * store the name here before calling super() and read it in getBlockRegistryName().
+   */
+  private static final ThreadLocal<String> PENDING_REGISTRY_NAME = new ThreadLocal<>();
+
   private final String registryName;
   private final AxisAlignedBB boundingBox;
   private final BlockRenderLayer renderLayer;
@@ -21,16 +28,24 @@ public class BlockTrafficAccessoryNSEWUD extends AbstractBlockRotatableNSEWUD {
 
   public BlockTrafficAccessoryNSEWUD(String registryName, AxisAlignedBB boundingBox,
       BlockRenderLayer renderLayer, float hardness, boolean fullCube) {
-    super(Material.ROCK, SoundType.STONE, "pickaxe", 1, hardness, 10F, 0F, 0);
+    super(initRegistryName(registryName), SoundType.STONE, "pickaxe", 1, hardness, 10F, 0F, 0);
     this.registryName = registryName;
     this.boundingBox = boundingBox;
     this.renderLayer = renderLayer;
     this.fullCube = fullCube;
   }
 
+  private static Material initRegistryName(String name) {
+    PENDING_REGISTRY_NAME.set(name);
+    return Material.ROCK;
+  }
+
   @Override
   public String getBlockRegistryName() {
-    return registryName;
+    if (registryName != null) {
+      return registryName;
+    }
+    return PENDING_REGISTRY_NAME.get();
   }
 
   @Override
