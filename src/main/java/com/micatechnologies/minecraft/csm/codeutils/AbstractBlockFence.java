@@ -171,12 +171,13 @@ public abstract class AbstractBlockFence extends BlockFence implements IHasModel
    * This method is overridden to prevent the need to implement the
    * {@link ICsmBlock#getBlockRenderLayer()} method in subclasses.
    *
-   * @return {@code null}
+   * @return {@code null} — this class does not override the vanilla render layer
    *
-   * @implNote The value returned by this method implementation is ignored.
+   * @implNote The value returned by this method implementation is ignored. The vanilla
+   *     {@link BlockFence#getRenderLayer()} is used instead, since this class does not override it.
    * @since 1.0
    */
-  @Nonnull
+  @Nullable
   @Override
   public BlockRenderLayer getBlockRenderLayer() {
     return null;

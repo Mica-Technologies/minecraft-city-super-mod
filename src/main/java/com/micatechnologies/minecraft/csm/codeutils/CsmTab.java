@@ -66,7 +66,12 @@ public abstract class CsmTab {
         @Override
         @Nonnull
         public ItemStack createIcon() {
-          return new ItemStack(getTabIcon(), TAB_ICON_STACK_ITEM_COUNT);
+          Block icon = getTabIcon();
+          if (icon == null) {
+            throw new IllegalStateException(
+                "Tab icon block not found for tab: " + getTabId());
+          }
+          return new ItemStack(icon, TAB_ICON_STACK_ITEM_COUNT);
         }
 
         /**
