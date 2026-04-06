@@ -63,7 +63,9 @@ public class CsmTabNone extends CsmTab {
   }
 
   /**
-   * Initializes all the items belonging to the tab.
+   * Initializes all the elements belonging to the tab.
+   *
+   * @param fmlPreInitializationEvent the {@link FMLPreInitializationEvent} that is being processed
    *
    * @since 1.0
    */

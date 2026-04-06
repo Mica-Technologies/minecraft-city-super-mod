@@ -229,8 +229,28 @@ public abstract class CsmTab {
    * @since 2024.1
    */
   public Block initTabBlock(Block block) {
-    block.setCreativeTab(tab);
+    if (block != null) {
+      block.setCreativeTab(tab);
+    }
     return block;
+  }
+
+  /**
+   * Registers a pre-constructed item instance with this tab. Use this instead of
+   * {@link #initTabItem(Class, FMLPreInitializationEvent)} when the item is created by a
+   * factory with constructor parameters rather than via no-arg reflection.
+   *
+   * @param item the pre-constructed item instance to register
+   *
+   * @return the registered item
+   *
+   * @since 2024.1
+   */
+  public Item initTabItem(Item item) {
+    if (item != null) {
+      item.setCreativeTab(tab);
+    }
+    return item;
   }
 
   /**

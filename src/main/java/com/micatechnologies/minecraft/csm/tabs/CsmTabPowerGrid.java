@@ -1,54 +1,15 @@
 package com.micatechnologies.minecraft.csm.tabs;
 
 import com.micatechnologies.minecraft.csm.CsmRegistry;
+import com.micatechnologies.minecraft.csm.codeutils.BlockRotatableNSEWUDFactory;
 import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
-import com.micatechnologies.minecraft.csm.powergrid.BlockAFEI;
-import com.micatechnologies.minecraft.csm.powergrid.BlockAFEIS;
-import com.micatechnologies.minecraft.csm.powergrid.BlockFGPHVSign;
-import com.micatechnologies.minecraft.csm.powergrid.BlockFGPoleBottom;
-import com.micatechnologies.minecraft.csm.powergrid.BlockFGPoleMiddle;
-import com.micatechnologies.minecraft.csm.powergrid.BlockFGPoleTop;
-import com.micatechnologies.minecraft.csm.powergrid.BlockMLUVMB1;
-import com.micatechnologies.minecraft.csm.powergrid.BlockMLUVMB2;
-import com.micatechnologies.minecraft.csm.powergrid.BlockMLUVMB3;
-import com.micatechnologies.minecraft.csm.powergrid.BlockMLUVMB4;
-import com.micatechnologies.minecraft.csm.powergrid.BlockMLUVMB5;
-import com.micatechnologies.minecraft.csm.powergrid.BlockMPHVSign;
-import com.micatechnologies.minecraft.csm.powergrid.BlockNewBrooksXArm1;
-import com.micatechnologies.minecraft.csm.powergrid.BlockNewBrooksXArm2;
-import com.micatechnologies.minecraft.csm.powergrid.BlockNewBrooksXArm3;
-import com.micatechnologies.minecraft.csm.powergrid.BlockNewBrooksXArm4;
-import com.micatechnologies.minecraft.csm.powergrid.BlockNewESBrooksXArm1;
-import com.micatechnologies.minecraft.csm.powergrid.BlockNewESBrooksXArm2;
-import com.micatechnologies.minecraft.csm.powergrid.BlockNewESBrooksXArm3;
-import com.micatechnologies.minecraft.csm.powergrid.BlockOldBrooksXArm1;
-import com.micatechnologies.minecraft.csm.powergrid.BlockOldBrooksXArm2;
-import com.micatechnologies.minecraft.csm.powergrid.BlockOldBrooksXArm3;
-import com.micatechnologies.minecraft.csm.powergrid.BlockOldBrooksXArm4;
-import com.micatechnologies.minecraft.csm.powergrid.BlockOldBrooksXArm5;
-import com.micatechnologies.minecraft.csm.powergrid.BlockOldBrooksXArm6;
-import com.micatechnologies.minecraft.csm.powergrid.BlockOldBrooksXArm7;
-import com.micatechnologies.minecraft.csm.powergrid.BlockOldESBrooksXArm;
-import com.micatechnologies.minecraft.csm.powergrid.BlockPCAB1;
-import com.micatechnologies.minecraft.csm.powergrid.BlockPCAB2;
-import com.micatechnologies.minecraft.csm.powergrid.BlockPCAB3;
-import com.micatechnologies.minecraft.csm.powergrid.BlockPCAW1;
-import com.micatechnologies.minecraft.csm.powergrid.BlockPCAW2;
-import com.micatechnologies.minecraft.csm.powergrid.BlockPCAW3;
-import com.micatechnologies.minecraft.csm.powergrid.BlockPoleHVSign;
-import com.micatechnologies.minecraft.csm.powergrid.BlockPoleVisStrips;
-import com.micatechnologies.minecraft.csm.powergrid.BlockPoleWireMount;
-import com.micatechnologies.minecraft.csm.powergrid.BlockPullyMount;
-import com.micatechnologies.minecraft.csm.powergrid.BlockSCELightMount;
-import com.micatechnologies.minecraft.csm.powergrid.BlockSCELightMountSmall;
-import com.micatechnologies.minecraft.csm.powergrid.BlockTEInsulatorCover;
-import com.micatechnologies.minecraft.csm.powergrid.BlockTEInsulatorCoverDE;
-import com.micatechnologies.minecraft.csm.powergrid.BlockTEPerchGuard;
-import com.micatechnologies.minecraft.csm.powergrid.BlockTSC;
-import com.micatechnologies.minecraft.csm.powergrid.BlockTransformerMount;
 import com.micatechnologies.minecraft.csm.powergrid.fe.BlockForgeEnergyProducer;
 import com.micatechnologies.minecraft.csm.powergrid.fe.BlockForgeEnergyToRedstone;
 import net.minecraft.block.Block;
+import net.minecraft.block.SoundType;
+import net.minecraft.block.material.Material;
+import net.minecraft.util.BlockRenderLayer;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 /**
@@ -108,59 +69,59 @@ public class CsmTabPowerGrid extends CsmTab {
   }
 
   /**
-   * Initializes all the items belonging to the tab.
+   * Initializes all the elements belonging to the tab.
+   *
+   * @param fmlPreInitializationEvent the {@link FMLPreInitializationEvent} that is being processed
    *
    * @since 1.0
    */
   @Override
   public void initTabElements(FMLPreInitializationEvent fmlPreInitializationEvent) {
-    initTabBlock(BlockAFEI.class, fmlPreInitializationEvent); // AFEI
-    initTabBlock(BlockAFEIS.class, fmlPreInitializationEvent); // AFEIS
-    initTabBlock(BlockFGPHVSign.class, fmlPreInitializationEvent); // FGPHVSign
-    initTabBlock(BlockFGPoleBottom.class, fmlPreInitializationEvent); // FGPoleBottom
-    initTabBlock(BlockFGPoleMiddle.class, fmlPreInitializationEvent); // FGPPoleMiddle
-    initTabBlock(BlockFGPoleTop.class, fmlPreInitializationEvent); // FGPoleTop
-    initTabBlock(BlockMLUVMB1.class, fmlPreInitializationEvent); // MLUVMB1
-    initTabBlock(BlockMLUVMB2.class, fmlPreInitializationEvent); // MLUVMB2
-    initTabBlock(BlockMLUVMB3.class, fmlPreInitializationEvent); // MLUVMB3
-    initTabBlock(BlockMLUVMB4.class, fmlPreInitializationEvent); // MLUVMB4
-    initTabBlock(BlockMLUVMB5.class, fmlPreInitializationEvent); // MLUVMB5
-    initTabBlock(BlockMPHVSign.class, fmlPreInitializationEvent); // MPHVSign
-    initTabBlock(BlockNewBrooksXArm1.class, fmlPreInitializationEvent); // NewBrooksXArm1
-    initTabBlock(BlockNewBrooksXArm2.class, fmlPreInitializationEvent); // NewBrooksXArm2
-    initTabBlock(BlockNewBrooksXArm3.class, fmlPreInitializationEvent); // NewBrooksXArm3
-    initTabBlock(BlockNewBrooksXArm4.class, fmlPreInitializationEvent); // NewBrooksXArm4
-    initTabBlock(BlockNewESBrooksXArm1.class, fmlPreInitializationEvent); // NewESBrooksXArm1
-    initTabBlock(BlockNewESBrooksXArm2.class, fmlPreInitializationEvent); // NewESBrooksXArm2
-    initTabBlock(BlockNewESBrooksXArm3.class, fmlPreInitializationEvent); // NewESBrooksXArm3
-    initTabBlock(BlockOldBrooksXArm1.class, fmlPreInitializationEvent); // OldBrooksXArm1
-    initTabBlock(BlockOldBrooksXArm2.class, fmlPreInitializationEvent); // OldBrooksXArm2
-    initTabBlock(BlockOldBrooksXArm3.class, fmlPreInitializationEvent); // OldBrooksXArm3
-    initTabBlock(BlockOldBrooksXArm4.class, fmlPreInitializationEvent); // OldBrooksXArm4
-    initTabBlock(BlockOldBrooksXArm5.class, fmlPreInitializationEvent); // OldBrooksXArm5
-    initTabBlock(BlockOldBrooksXArm6.class, fmlPreInitializationEvent); // OldBrooksXArm6
-    initTabBlock(BlockOldBrooksXArm7.class, fmlPreInitializationEvent); // OldBrooksXArm7
-    initTabBlock(BlockOldESBrooksXArm.class, fmlPreInitializationEvent); // OldESBrooksXArm
-    initTabBlock(BlockPCAB1.class, fmlPreInitializationEvent); // PCAB1
-    initTabBlock(BlockPCAB2.class, fmlPreInitializationEvent); // PCAB2
-    initTabBlock(BlockPCAB3.class, fmlPreInitializationEvent); // PCAB3
-    initTabBlock(BlockPCAW1.class, fmlPreInitializationEvent); // PCAW1
-    initTabBlock(BlockPCAW2.class, fmlPreInitializationEvent); // PCAW2
-    initTabBlock(BlockPCAW3.class, fmlPreInitializationEvent); // PCAW3
-    initTabBlock(BlockPoleHVSign.class, fmlPreInitializationEvent); // PoleHVSign
-    initTabBlock(BlockPoleVisStrips.class, fmlPreInitializationEvent); // PoleVisStrips
-    initTabBlock(BlockPoleWireMount.class, fmlPreInitializationEvent); // PoleWireMount
-    initTabBlock(BlockPullyMount.class, fmlPreInitializationEvent); // PullyMount
-    initTabBlock(BlockSCELightMount.class, fmlPreInitializationEvent); // SCELightMount
-    initTabBlock(BlockSCELightMountSmall.class, fmlPreInitializationEvent); // SCELightMountSmall
-    initTabBlock(BlockTEInsulatorCover.class, fmlPreInitializationEvent); // TEInsulatorCover
-    initTabBlock(BlockTEInsulatorCoverDE.class, fmlPreInitializationEvent); // TEInsulatorCoverDE
-    initTabBlock(BlockTEPerchGuard.class, fmlPreInitializationEvent); // TEPerchGuard
-    initTabBlock(BlockTransformerMount.class, fmlPreInitializationEvent); // TransformerMount
-    initTabBlock(BlockTSC.class, fmlPreInitializationEvent); // TSC
-    initTabBlock(BlockForgeEnergyProducer.class,
-        fmlPreInitializationEvent); // Forge Energy Producer
-    initTabBlock(BlockForgeEnergyToRedstone.class,
-        fmlPreInitializationEvent); // Forge Energy to Redstone
+    initTabBlock(new BlockRotatableNSEWUDFactory("afei", Material.GLASS, SoundType.GLASS, "pickaxe", 1, 1F, 10F, 0F, 0, new AxisAlignedBB(0.312500, 0.000000, 0.312500, 0.687500, 2.000000, 0.687500), false, true, false, BlockRenderLayer.TRANSLUCENT, false, false));
+    initTabBlock(new BlockRotatableNSEWUDFactory("afeis", Material.GLASS, SoundType.GLASS, "pickaxe", 1, 1F, 10F, 0F, 0, new AxisAlignedBB(0.312500, 0.312500, 0.000000, 0.687500, 0.687500, 2.000000), false, true, false, BlockRenderLayer.TRANSLUCENT, false, false));
+    initTabBlock(new BlockRotatableNSEWUDFactory("fgphvsign", Material.ROCK, SoundType.STONE, "pickaxe", 1, 1F, 10F, 0F, 0, new AxisAlignedBB(0.000000, 0.000000, 0.900000, 1.000000, 1.000000, 1.000000), false, true, false, BlockRenderLayer.TRANSLUCENT, false, false));
+    initTabBlock(new BlockRotatableNSEWUDFactory("fgpolebottom", Material.ROCK, SoundType.STONE, "pickaxe", 1, 1F, 10F, 0F, 0, new AxisAlignedBB(0.000000, 0.000000, 0.000000, 1.000000, 1.000000, 1.000000), false, true, false, BlockRenderLayer.SOLID, false, false));
+    initTabBlock(new BlockRotatableNSEWUDFactory("fgpolemiddle", Material.ROCK, SoundType.STONE, "pickaxe", 1, 1F, 10F, 0F, 0, new AxisAlignedBB(0.000000, 0.000000, -0.312500, 1.000000, 1.000000, 1.312500), false, true, false, BlockRenderLayer.SOLID, false, false));
+    initTabBlock(new BlockRotatableNSEWUDFactory("fgpoletop", Material.ROCK, SoundType.STONE, "pickaxe", 1, 1F, 10F, 0F, 0, new AxisAlignedBB(0.000000, 0.000000, 0.000000, 1.000000, 1.437500, 1.000000), false, true, false, BlockRenderLayer.SOLID, false, false));
+    initTabBlock(new BlockRotatableNSEWUDFactory("mluvmb1", Material.ROCK, SoundType.STONE, "pickaxe", 1, 1F, 10F, 0F, 0, new AxisAlignedBB(0.187500, 0.312500, 0.000000, 0.812500, 1.000000, 1.000000), false, true, false, BlockRenderLayer.SOLID, false, false));
+    initTabBlock(new BlockRotatableNSEWUDFactory("mluvmb2", Material.ROCK, SoundType.STONE, "pickaxe", 1, 1F, 10F, 0F, 0, new AxisAlignedBB(0.250000, 0.500000, 0.000000, 0.750000, 1.000000, 1.000000), false, true, false, BlockRenderLayer.SOLID, false, false));
+    initTabBlock(new BlockRotatableNSEWUDFactory("mluvmb3", Material.ROCK, SoundType.STONE, "pickaxe", 1, 1F, 10F, 0F, 0, new AxisAlignedBB(0.000000, 0.000000, 0.000000, 1.000000, 1.000000, 1.000000), false, true, false, BlockRenderLayer.SOLID, false, false));
+    initTabBlock(new BlockRotatableNSEWUDFactory("mluvmb4", Material.ROCK, SoundType.STONE, "pickaxe", 1, 1F, 10F, 0F, 0, new AxisAlignedBB(0.250000, 0.500000, 0.000000, 0.750000, 1.000000, 1.000000), false, true, false, BlockRenderLayer.SOLID, false, false));
+    initTabBlock(new BlockRotatableNSEWUDFactory("mluvmb5", Material.ROCK, SoundType.STONE, "pickaxe", 1, 1F, 10F, 0F, 0, new AxisAlignedBB(0.250000, 0.500000, 0.000000, 0.750000, 1.000000, 1.062500), false, true, false, BlockRenderLayer.SOLID, false, false));
+    initTabBlock(new BlockRotatableNSEWUDFactory("mphvsign", Material.ROCK, SoundType.STONE, "pickaxe", 1, 1F, 10F, 0F, 0, new AxisAlignedBB(0.000000, 0.000000, 0.900000, 1.000000, 1.000000, 1.000000), false, true, false, BlockRenderLayer.TRANSLUCENT, false, false));
+    initTabBlock(new BlockRotatableNSEWUDFactory("newbrooksxarm1", Material.ROCK, SoundType.STONE, "pickaxe", 1, 1F, 10F, 0F, 0, new AxisAlignedBB(0.250000, 0.062500, 0.000000, 0.750000, 1.000000, 1.000000), false, true, false, BlockRenderLayer.SOLID, false, false));
+    initTabBlock(new BlockRotatableNSEWUDFactory("newbrooksxarm2", Material.ROCK, SoundType.STONE, "pickaxe", 1, 1F, 10F, 0F, 0, new AxisAlignedBB(0.250000, 0.500000, 0.000000, 0.750000, 1.000000, 1.000000), false, true, false, BlockRenderLayer.SOLID, false, false));
+    initTabBlock(new BlockRotatableNSEWUDFactory("newbrooksxarm3", Material.ROCK, SoundType.STONE, "pickaxe", 1, 1F, 10F, 0F, 0, new AxisAlignedBB(0.000000, 0.000000, 0.000000, 1.000000, 1.000000, 1.000000), false, true, false, BlockRenderLayer.SOLID, false, false));
+    initTabBlock(new BlockRotatableNSEWUDFactory("newbrooksxarm4", Material.ROCK, SoundType.STONE, "pickaxe", 1, 1F, 10F, 0F, 0, new AxisAlignedBB(0.250000, 0.000000, 0.000000, 0.750000, 1.000000, 1.000000), false, true, false, BlockRenderLayer.SOLID, false, false));
+    initTabBlock(new BlockRotatableNSEWUDFactory("newesbrooksxarm1", Material.ROCK, SoundType.STONE, "pickaxe", 1, 1F, 10F, 0F, 0, new AxisAlignedBB(0.250000, 0.062500, 0.000000, 0.750000, 1.000000, 1.000000), false, true, false, BlockRenderLayer.SOLID, false, false));
+    initTabBlock(new BlockRotatableNSEWUDFactory("newesbrooksxarm2", Material.ROCK, SoundType.STONE, "pickaxe", 1, 1F, 10F, 0F, 0, new AxisAlignedBB(0.000000, 0.000000, 0.000000, 1.000000, 1.000000, 1.000000), false, true, false, BlockRenderLayer.SOLID, false, false));
+    initTabBlock(new BlockRotatableNSEWUDFactory("newesbrooksxarm3", Material.ROCK, SoundType.STONE, "pickaxe", 1, 1F, 10F, 0F, 0, new AxisAlignedBB(0.250000, 0.500000, 0.000000, 0.750000, 1.000000, 1.000000), false, true, false, BlockRenderLayer.SOLID, false, false));
+    initTabBlock(new BlockRotatableNSEWUDFactory("oldbrooksxarm1", Material.ROCK, SoundType.STONE, "pickaxe", 1, 1F, 10F, 0F, 0, new AxisAlignedBB(0.250000, 0.062500, 0.000000, 0.750000, 1.000000, 1.000000), false, true, false, BlockRenderLayer.SOLID, false, false));
+    initTabBlock(new BlockRotatableNSEWUDFactory("oldbrooksxarm2", Material.ROCK, SoundType.STONE, "pickaxe", 1, 1F, 10F, 0F, 0, new AxisAlignedBB(0.250000, 0.500000, 0.000000, 0.750000, 1.000000, 1.000000), false, true, false, BlockRenderLayer.SOLID, false, false));
+    initTabBlock(new BlockRotatableNSEWUDFactory("oldbrooksxarm3", Material.ROCK, SoundType.STONE, "pickaxe", 1, 1F, 10F, 0F, 0, new AxisAlignedBB(0.000000, 0.000000, 0.000000, 1.000000, 1.000000, 1.000000), false, true, false, BlockRenderLayer.SOLID, false, false));
+    initTabBlock(new BlockRotatableNSEWUDFactory("oldbrooksxarm4", Material.ROCK, SoundType.STONE, "pickaxe", 1, 1F, 10F, 0F, 0, new AxisAlignedBB(0.250000, 0.062500, 0.000000, 0.750000, 1.000000, 1.000000), false, true, false, BlockRenderLayer.SOLID, false, false));
+    initTabBlock(new BlockRotatableNSEWUDFactory("oldbrooksxarm5", Material.ROCK, SoundType.STONE, "pickaxe", 1, 1F, 10F, 0F, 0, new AxisAlignedBB(0.250000, 0.500000, 0.000000, 0.750000, 1.000000, 1.000000), false, true, false, BlockRenderLayer.SOLID, false, false));
+    initTabBlock(new BlockRotatableNSEWUDFactory("oldbrooksxarm6", Material.ROCK, SoundType.STONE, "pickaxe", 1, 1F, 10F, 0F, 0, new AxisAlignedBB(0.250000, 0.000000, 0.000000, 0.750000, 1.000000, 1.000000), false, true, false, BlockRenderLayer.SOLID, false, false));
+    initTabBlock(new BlockRotatableNSEWUDFactory("oldbrooksxarm7", Material.ROCK, SoundType.STONE, "pickaxe", 1, 1F, 10F, 0F, 0, new AxisAlignedBB(0.250000, 0.000000, 0.000000, 0.750000, 1.000000, 1.000000), false, true, false, BlockRenderLayer.SOLID, false, false));
+    initTabBlock(new BlockRotatableNSEWUDFactory("oldesbrooksxarm", Material.ROCK, SoundType.STONE, "pickaxe", 1, 1F, 10F, 0F, 0, new AxisAlignedBB(0.250000, 0.062500, 0.000000, 0.750000, 1.000000, 1.000000), false, true, false, BlockRenderLayer.SOLID, false, false));
+    initTabBlock(new BlockRotatableNSEWUDFactory("pcab1", Material.ROCK, SoundType.STONE, "pickaxe", 1, 1F, 10F, 0F, 0, new AxisAlignedBB(0.187500, 0.312500, 0.000000, 0.812500, 1.000000, 1.000000), false, true, false, BlockRenderLayer.SOLID, false, false));
+    initTabBlock(new BlockRotatableNSEWUDFactory("pcab2", Material.ROCK, SoundType.STONE, "pickaxe", 1, 1F, 10F, 0F, 0, new AxisAlignedBB(0.250000, 0.500000, 0.000000, 0.750000, 1.000000, 1.000000), false, true, false, BlockRenderLayer.SOLID, false, false));
+    initTabBlock(new BlockRotatableNSEWUDFactory("pcab3", Material.ROCK, SoundType.STONE, "pickaxe", 1, 1F, 10F, 0F, 0, new AxisAlignedBB(0.000000, 0.000000, 0.000000, 1.000000, 1.000000, 1.000000), false, true, false, BlockRenderLayer.SOLID, false, false));
+    initTabBlock(new BlockRotatableNSEWUDFactory("pcaw1", Material.ROCK, SoundType.STONE, "pickaxe", 1, 1F, 10F, 0F, 0, new AxisAlignedBB(0.187500, 0.312500, 0.000000, 0.812500, 1.000000, 1.000000), false, true, false, BlockRenderLayer.SOLID, false, false));
+    initTabBlock(new BlockRotatableNSEWUDFactory("pcaw2", Material.ROCK, SoundType.STONE, "pickaxe", 1, 1F, 10F, 0F, 0, new AxisAlignedBB(0.250000, 0.500000, 0.000000, 0.750000, 1.000000, 1.000000), false, true, false, BlockRenderLayer.SOLID, false, false));
+    initTabBlock(new BlockRotatableNSEWUDFactory("pcaw3", Material.ROCK, SoundType.STONE, "pickaxe", 1, 1F, 10F, 0F, 0, new AxisAlignedBB(0.000000, 0.000000, 0.000000, 1.000000, 1.000000, 1.000000), false, true, false, BlockRenderLayer.SOLID, false, false));
+    initTabBlock(new BlockRotatableNSEWUDFactory("polehvsign", Material.ROCK, SoundType.STONE, "pickaxe", 1, 1F, 10F, 0F, 0, new AxisAlignedBB(0.000000, 0.000000, 0.900000, 1.000000, 1.000000, 1.000000), false, true, false, BlockRenderLayer.TRANSLUCENT, false, false));
+    initTabBlock(new BlockRotatableNSEWUDFactory("polevisstrips", Material.ROCK, SoundType.STONE, "pickaxe", 1, 1F, 10F, 0F, 0, new AxisAlignedBB(0.000000, 0.000000, 0.900000, 1.000000, 1.000000, 1.000000), false, true, false, BlockRenderLayer.TRANSLUCENT, false, false));
+    initTabBlock(new BlockRotatableNSEWUDFactory("polewiremount", Material.ROCK, SoundType.STONE, "pickaxe", 1, 1F, 10F, 0F, 0, new AxisAlignedBB(-0.750000, 0.000000, 0.000000, -0.250000, 0.687500, 1.000000), false, true, false, BlockRenderLayer.SOLID, false, false));
+    initTabBlock(new BlockRotatableNSEWUDFactory("pullymount", Material.ROCK, SoundType.STONE, "pickaxe", 1, 1F, 10F, 0F, 0, new AxisAlignedBB(0.250000, 0.000000, 0.000000, 0.750000, 0.687500, 1.000000), false, true, false, BlockRenderLayer.SOLID, false, false));
+    initTabBlock(new BlockRotatableNSEWUDFactory("scelightmount", Material.ROCK, SoundType.STONE, "pickaxe", 1, 1F, 10F, 0F, 0, new AxisAlignedBB(0.312500, 0.187500, -1.000000, 0.687500, 1.187500, 1.187500), false, true, false, BlockRenderLayer.SOLID, false, false));
+    initTabBlock(new BlockRotatableNSEWUDFactory("scelightmountsmall", Material.ROCK, SoundType.STONE, "pickaxe", 1, 1F, 10F, 0F, 0, new AxisAlignedBB(0.312500, 0.187500, 0.000000, 0.687500, 1.187500, 1.187500), false, true, false, BlockRenderLayer.SOLID, false, false));
+    initTabBlock(new BlockRotatableNSEWUDFactory("teic", Material.ROCK, SoundType.STONE, "pickaxe", 1, 1F, 10F, 0F, 0, new AxisAlignedBB(0.125000, 0.000000, -1.000000, 0.875000, 0.750000, 0.000000), false, true, false, BlockRenderLayer.SOLID, false, false));
+    initTabBlock(new BlockRotatableNSEWUDFactory("teicde", Material.ROCK, SoundType.STONE, "pickaxe", 1, 1F, 10F, 0F, 0, new AxisAlignedBB(0.125000, 0.000000, -1.000000, 0.875000, 1.062500, 0.000000), false, true, false, BlockRenderLayer.SOLID, false, false));
+    initTabBlock(new BlockRotatableNSEWUDFactory("tepg", Material.ROCK, SoundType.STONE, "pickaxe", 1, 1F, 10F, 0F, 0, new AxisAlignedBB(0.125000, -0.312500, 0.375000, 0.812500, 1.000000, 0.500000), false, true, false, BlockRenderLayer.SOLID, false, false));
+    initTabBlock(new BlockRotatableNSEWUDFactory("tsc", Material.ROCK, SoundType.STONE, "pickaxe", 1, 1F, 10F, 0F, 0, new AxisAlignedBB(0.312500, 0.187500, 0.750000, 0.687500, 1.812500, 1.000000), false, true, false, BlockRenderLayer.SOLID, false, false));
+    initTabBlock(new BlockRotatableNSEWUDFactory("transformermount", Material.ROCK, SoundType.STONE, "pickaxe", 1, 1F, 10F, 0F, 0, new AxisAlignedBB(0.250000, 0.000000, 0.000000, 0.750000, 0.500000, 1.000000), false, true, false, BlockRenderLayer.SOLID, false, false));
+    initTabBlock(BlockForgeEnergyProducer.class, fmlPreInitializationEvent);
+    initTabBlock(BlockForgeEnergyToRedstone.class, fmlPreInitializationEvent);
   }
 }

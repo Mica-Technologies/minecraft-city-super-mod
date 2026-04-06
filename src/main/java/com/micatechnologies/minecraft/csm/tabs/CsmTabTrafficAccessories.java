@@ -51,21 +51,49 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 @CsmTab.Load(order = 9)
 public class CsmTabTrafficAccessories extends CsmTab {
 
+  /**
+   * Gets the ID (unique identifier) of the tab.
+   *
+   * @return the ID of the tab
+   *
+   * @since 1.0
+   */
   @Override
   public String getTabId() {
     return "tabtrafficaccessories";
   }
 
+  /**
+   * Gets the block to use as the icon of the tab
+   *
+   * @return the block to use as the icon of the tab
+   *
+   * @since 1.0
+   */
   @Override
   public Block getTabIcon() {
     return CsmRegistry.getBlock("tlborderyellowblack");
   }
 
+  /**
+   * Gets a boolean indicating if the tab is searchable (has its own search bar).
+   *
+   * @return {@code true} if the tab is searchable, otherwise {@code false}
+   *
+   * @since 1.0
+   */
   @Override
   public boolean getTabSearchable() {
     return false;
   }
 
+  /**
+   * Gets a boolean indicating if the tab is hidden (not displayed in the inventory).
+   *
+   * @return {@code true} if the tab is hidden, otherwise {@code false}
+   *
+   * @since 1.0
+   */
   @Override
   public boolean getTabHidden() {
     return false;
@@ -163,6 +191,13 @@ public class CsmTabTrafficAccessories extends CsmTab {
   private static final AxisAlignedBB BB_TRAFFIC_POLE_HORIZ_MOUNT_DOUBLE =
       new AxisAlignedBB(0.000000, 0.250000, 0.000000, 1.000000, 0.750000, 1.000000);
 
+  /**
+   * Initializes all the elements belonging to the tab.
+   *
+   * @param fmlPreInitializationEvent the {@link FMLPreInitializationEvent} that is being processed
+   *
+   * @since 1.0
+   */
   @Override
   public void initTabElements(FMLPreInitializationEvent fmlPreInitializationEvent) {
     // --- NSEWUD factory blocks: Control Boxes ---
