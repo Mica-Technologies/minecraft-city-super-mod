@@ -73,9 +73,6 @@ public class TileEntityTrafficSignalHeadRenderer extends
     DirectionSixteen bodyDirection =
         AbstractBlockControllableSignalHead.getTiltedFacing(bodyTilt, facing);
 
-    // Save GL state in one batch instead of individual enable/disable calls.
-    // This also handles restore automatically via glPopAttrib at the end.
-    GL11.glPushAttrib(GL11.GL_LIGHTING_BIT | GL11.GL_ENABLE_BIT | GL11.GL_COLOR_BUFFER_BIT);
     GlStateManager.disableLighting();
     GlStateManager.disableCull();
     GlStateManager.enableBlend();
@@ -200,15 +197,9 @@ public class TileEntityTrafficSignalHeadRenderer extends
 
     // Restore previous lightmap brightness
     OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, prevBrightnessX, prevBrightnessY);
-
-    // Restore all GL state saved by glPushAttrib (lighting, culling, blend) in one call
-    GL11.glPopAttrib();
-
-    // Force GlStateManager to re-sync with actual GL state after glPopAttrib restores it
-    // behind GlStateManager's back. Without this, GlStateManager's cache is stale.
-    GlStateManager.enableLighting();
-    GlStateManager.enableCull();
     GlStateManager.disableBlend();
+    GlStateManager.enableCull();
+    GlStateManager.enableLighting();
   }
 
   private void renderStaticParts(TrafficSignalSectionInfo[] sectionInfos,
