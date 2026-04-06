@@ -42,6 +42,10 @@
         "model": "csm:trafficaccessories/shared_models/borderhorizontal_right_angle"
       }
     },
+    "horizontal": {
+      "false": {},
+      "true": {}
+    },
     "inventory": [
       {}
     ]
