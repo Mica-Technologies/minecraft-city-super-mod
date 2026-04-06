@@ -10,86 +10,15 @@ import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrossw
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkButtonFemale;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkButtonMale;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkButtonPsGray;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkDoubleWordedBaseMount;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkDoubleWordedLeftMount;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkDoubleWordedRearMount;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkDoubleWordedRightMount;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkLeftMount;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkLeftMount90Deg;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkMount;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkMount90Deg;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkMountGray;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkRightMount;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkRightMount90Deg;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkTweeter1;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkTweeter2;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableDoghouseMainLeftSignal;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableDoghouseMainRightSignal;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableDoghouseSecondaryLeftFYASignal;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableDoghouseSecondaryLeftSignal;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableDoghouseSecondaryRightFYASignal;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableDoghouseSecondaryRightSignal;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableHawkSignal;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableHorizontalAheadSignal;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableHorizontalBikeSignal;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableHorizontalLeftSignal;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableHorizontalRailSignal;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableHorizontalRight2Signal;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableHorizontalRightSignal;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableHorizontalSolidSignal;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableHorizontalUTurnSignal;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableHorizontalUpLeftSignal;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableRampMeterOnSignalLeftMount;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableRampMeterOnSignalMount;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableRampMeterOnSignalRightMount;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableSingleSolidSignalGreen;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableSingleSolidSignalRed;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableSingleSolidSignalYellow;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableSingleSolidSignalYellowAdvanceFlash;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableTattleTaleBeacon;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableTrafficSignalTrainController;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalAheadSignal;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalAheadSignal8812Inch;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalBikeSignal;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalBikeSignal4Inch;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalBikeSignal8Inch;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalBikeSignal8InchBlack;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalHybridLeftAddOnSignal;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalHybridLeftSignal;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalLeftAddOnFYASignal;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalLeftAddOnSignal;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalLeftDoubleAddOnSignal;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalLeftSignal;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalLeftSignal8812Inch;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalLeftSignalLED;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalLeftSignalSolidRed;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalRailSignal;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalRight2Signal;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalRightAddOnFYASignal;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalRightAddOnSignal;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalRightDoubleAddOnSignal;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalRightFlashYellowAddOnSignal;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalRightFlashYellowSRSignal;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalRightFlashYellowSignal;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalRightSignal;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalRightSignal8812Inch;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalSolidFlashGreenSignal;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalSolidFlashRedSignal;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalSolidFlashYellowSignal;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalSolidSignal;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalSolidSignal1288Inch;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalSolidSignal8812Inch;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalSolidSignal8Inch;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalSolidSignalLED;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalSolidSignalLED1288Inch;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalSolidSignalLED8812Inch;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalSolidSignalLED8Inch;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalSolidSignalNoRedVisor;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalSolidSignalNoVisors;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalSolidSignalReversed;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalUpLeftAddOnSignal;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalUpLeftSignal;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableVerticalUturnSignal;
+import com.micatechnologies.minecraft.csm.trafficsignals.BlockOverheightDetectionSensor;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockTrafficLightSensor;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockTrafficLightSensorBell;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockTrafficLightSensorBelowGround;
@@ -97,12 +26,12 @@ import com.micatechnologies.minecraft.csm.trafficsignals.BlockTrafficLightSensor
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockTrafficLightSensorModern;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockTrafficLightSensorShort;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockTrafficLightSensorTinyCam;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockOverheightDetectionSensor;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockTrafficSignalController;
 import com.micatechnologies.minecraft.csm.trafficsignals.ItemSensorZoneTool;
-import com.micatechnologies.minecraft.csm.trafficsignals.ItemSignalLinkTool;
 import com.micatechnologies.minecraft.csm.trafficsignals.ItemSignalConfigurationTool;
 import com.micatechnologies.minecraft.csm.trafficsignals.ItemSignalHeadConfigTool;
+import com.micatechnologies.minecraft.csm.trafficsignals.ItemSignalLinkTool;
+import com.micatechnologies.minecraft.csm.trafficsignals.TrafficSignalBlocks;
 import net.minecraft.block.Block;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
@@ -185,140 +114,80 @@ public class CsmTabTrafficSignals extends CsmTab {
         fmlPreInitializationEvent); // ControllableCrosswalkTweeter1
     initTabBlock(BlockControllableCrosswalkTweeter2.class,
         fmlPreInitializationEvent); // ControllableCrosswalkTweeter2
-    initTabBlock(BlockControllableDoghouseMainLeftSignal.class,
-        fmlPreInitializationEvent); // ControllableDoghouseMainLeftSignal
-    initTabBlock(BlockControllableDoghouseMainRightSignal.class,
-        fmlPreInitializationEvent); // ControllableDoghouseMainRightSignal
-    initTabBlock(BlockControllableDoghouseSecondaryLeftFYASignal.class,
-        fmlPreInitializationEvent); // ControllableDoghouseSecondaryLeftFYASignal
-    initTabBlock(BlockControllableDoghouseSecondaryLeftSignal.class,
-        fmlPreInitializationEvent); // ControllableDoghouseSecondaryLeftSignal
-    initTabBlock(BlockControllableDoghouseSecondaryRightFYASignal.class,
-        fmlPreInitializationEvent); // ControllableDoghouseSecondaryRightFYASignal
-    initTabBlock(BlockControllableDoghouseSecondaryRightSignal.class,
-        fmlPreInitializationEvent); // ControllableDoghouseSecondaryRightSignal
+    // Factory-created signal head blocks (from TrafficSignalBlocks)
+    initTabBlock(TrafficSignalBlocks.DOGHOUSE_MAIN_LEFT_SIGNAL);
+    initTabBlock(TrafficSignalBlocks.DOGHOUSE_MAIN_RIGHT_SIGNAL);
+    initTabBlock(TrafficSignalBlocks.DOGHOUSE_SECONDARY_LEFT_FYA_SIGNAL);
+    initTabBlock(TrafficSignalBlocks.DOGHOUSE_SECONDARY_LEFT_SIGNAL);
+    initTabBlock(TrafficSignalBlocks.DOGHOUSE_SECONDARY_RIGHT_FYA_SIGNAL);
+    initTabBlock(TrafficSignalBlocks.DOGHOUSE_SECONDARY_RIGHT_SIGNAL);
     initTabBlock(BlockControllableHawkSignal.class,
         fmlPreInitializationEvent); // ControllableHawkSignal
-    initTabBlock(BlockControllableHorizontalAheadSignal.class,
-        fmlPreInitializationEvent); // ControllableHorizontalAheadSignal
-    initTabBlock(BlockControllableHorizontalBikeSignal.class,
-        fmlPreInitializationEvent); // ControllableHorizontalBikeSignal
-    initTabBlock(BlockControllableHorizontalLeftSignal.class,
-        fmlPreInitializationEvent); // ControllableHorizontalLeftSignal
-    initTabBlock(BlockControllableHorizontalRailSignal.class,
-        fmlPreInitializationEvent); // ControllableHorizontalRailSignal
-    initTabBlock(BlockControllableHorizontalRight2Signal.class,
-        fmlPreInitializationEvent); // ControllableHorizontalRight2Signal
-    initTabBlock(BlockControllableHorizontalRightSignal.class,
-        fmlPreInitializationEvent); // ControllableHorizontalRightSignal
-    initTabBlock(BlockControllableHorizontalSolidSignal.class,
-        fmlPreInitializationEvent); // ControllableHorizontalSolidSignal
-    initTabBlock(BlockControllableHorizontalUTurnSignal.class,
-        fmlPreInitializationEvent); // ControllableHorizontalUTurnSignal
-    initTabBlock(BlockControllableHorizontalUpLeftSignal.class,
-        fmlPreInitializationEvent); // ControllableHorizontalUpLeftSignal
+    initTabBlock(TrafficSignalBlocks.HORIZONTAL_AHEAD_SIGNAL);
+    initTabBlock(TrafficSignalBlocks.HORIZONTAL_BIKE_SIGNAL);
+    initTabBlock(TrafficSignalBlocks.HORIZONTAL_LEFT_SIGNAL);
+    initTabBlock(TrafficSignalBlocks.HORIZONTAL_RAIL_SIGNAL);
+    initTabBlock(TrafficSignalBlocks.HORIZONTAL_RIGHT2_SIGNAL);
+    initTabBlock(TrafficSignalBlocks.HORIZONTAL_RIGHT_SIGNAL);
+    initTabBlock(TrafficSignalBlocks.HORIZONTAL_SOLID_SIGNAL);
+    initTabBlock(TrafficSignalBlocks.HORIZONTAL_U_TURN_SIGNAL);
+    initTabBlock(TrafficSignalBlocks.HORIZONTAL_UP_LEFT_SIGNAL);
     initTabBlock(BlockControllableRampMeterOnSignalLeftMount.class,
         fmlPreInitializationEvent); // ControllableRampMeterOnSignalLeftMount
     initTabBlock(BlockControllableRampMeterOnSignalMount.class,
         fmlPreInitializationEvent); // ControllableRampMeterOnSignalMount
     initTabBlock(BlockControllableRampMeterOnSignalRightMount.class,
         fmlPreInitializationEvent); // ControllableRampMeterOnSignalRightMount
-    initTabBlock(BlockControllableSingleSolidSignalGreen.class,
-        fmlPreInitializationEvent); // ControllableSingleSolidSignalGreen
-    initTabBlock(BlockControllableSingleSolidSignalRed.class,
-        fmlPreInitializationEvent); // ControllableSingleSolidSignalRed
-    initTabBlock(BlockControllableSingleSolidSignalYellow.class,
-        fmlPreInitializationEvent); // ControllableSingleSolidSignalYellow
-    initTabBlock(BlockControllableSingleSolidSignalYellowAdvanceFlash.class,
-        fmlPreInitializationEvent); // ControllableSingleSolidSignalYellowAdvanceFlash
+    initTabBlock(TrafficSignalBlocks.SINGLE_SOLID_SIGNAL_GREEN);
+    initTabBlock(TrafficSignalBlocks.SINGLE_SOLID_SIGNAL_RED);
+    initTabBlock(TrafficSignalBlocks.SINGLE_SOLID_SIGNAL_YELLOW);
+    initTabBlock(TrafficSignalBlocks.SINGLE_SOLID_SIGNAL_YELLOW_ADVANCE_FLASH);
     initTabBlock(BlockControllableTattleTaleBeacon.class,
         fmlPreInitializationEvent); // ControllableTattleTaleBeacon
     initTabBlock(BlockControllableTrafficSignalTrainController.class,
         fmlPreInitializationEvent); // ControllableTrafficSignalTrainController
-    initTabBlock(BlockControllableVerticalAheadSignal.class,
-        fmlPreInitializationEvent); // ControllableVerticalAheadSignal
-    initTabBlock(BlockControllableVerticalAheadSignal8812Inch.class,
-        fmlPreInitializationEvent); // ControllableVerticalAheadSignal8812Inch
-    initTabBlock(BlockControllableVerticalBikeSignal.class,
-        fmlPreInitializationEvent); // ControllableVerticalBikeSignal
-    initTabBlock(BlockControllableVerticalBikeSignal8Inch.class,
-        fmlPreInitializationEvent); // ControllableVerticalBikeSignal8Inch
-    initTabBlock(BlockControllableVerticalBikeSignal8InchBlack.class,
-        fmlPreInitializationEvent); // ControllableVerticalBikeSignal8InchBlack
-    initTabBlock(BlockControllableVerticalBikeSignal4Inch.class,
-        fmlPreInitializationEvent); // ControllableVerticalBikeSignal4Inch
-    initTabBlock(BlockControllableVerticalHybridLeftAddOnSignal.class,
-        fmlPreInitializationEvent); // ControllableVerticalHybridLeftAddOnSignal
-    initTabBlock(BlockControllableVerticalHybridLeftSignal.class,
-        fmlPreInitializationEvent); // ControllableVerticalHybridLeftSignal
-    initTabBlock(BlockControllableVerticalLeftAddOnFYASignal.class,
-        fmlPreInitializationEvent); // ControllableVerticalLeftAddOnFYASignal
-    initTabBlock(BlockControllableVerticalLeftAddOnSignal.class,
-        fmlPreInitializationEvent); // ControllableVerticalLeftAddOnSignal
-    initTabBlock(BlockControllableVerticalLeftDoubleAddOnSignal.class,
-        fmlPreInitializationEvent); // ControllableVerticalLeftDoubleAddOnSignal
-    initTabBlock(BlockControllableVerticalLeftSignal.class,
-        fmlPreInitializationEvent); // ControllableVerticalLeftSignal
-    initTabBlock(BlockControllableVerticalLeftSignal8812Inch.class,
-        fmlPreInitializationEvent); // ControllableVerticalLeftSignal8812Inch
-    initTabBlock(BlockControllableVerticalLeftSignalLED.class,
-        fmlPreInitializationEvent); // ControllableVerticalLeftSignalLED
-    initTabBlock(BlockControllableVerticalLeftSignalSolidRed.class,
-        fmlPreInitializationEvent); // ControllableVerticalLeftSignalSolidRed
-    initTabBlock(BlockControllableVerticalRailSignal.class,
-        fmlPreInitializationEvent); // ControllableVerticalRailSignal
-    initTabBlock(BlockControllableVerticalRight2Signal.class,
-        fmlPreInitializationEvent); // ControllableVerticalRight2Signal
-    initTabBlock(BlockControllableVerticalRightAddOnFYASignal.class,
-        fmlPreInitializationEvent); // ControllableVerticalRightAddOnFYASignal
-    initTabBlock(BlockControllableVerticalRightAddOnSignal.class,
-        fmlPreInitializationEvent); // ControllableVerticalRightAddOnSignal
-    initTabBlock(BlockControllableVerticalRightDoubleAddOnSignal.class,
-        fmlPreInitializationEvent); // ControllableVerticalRightDoubleAddOnSignal
-    initTabBlock(BlockControllableVerticalRightFlashYellowAddOnSignal.class,
-        fmlPreInitializationEvent); // ControllableVerticalRightFlashYellowAddOnSignal
-    initTabBlock(BlockControllableVerticalRightFlashYellowSRSignal.class,
-        fmlPreInitializationEvent); // ControllableVerticalRightFlashYellowSRSignal
-    initTabBlock(BlockControllableVerticalRightFlashYellowSignal.class,
-        fmlPreInitializationEvent); // ControllableVerticalRightFlashYellowSignal
-    initTabBlock(BlockControllableVerticalRightSignal.class,
-        fmlPreInitializationEvent); // ControllableVerticalRightSignal
-    initTabBlock(BlockControllableVerticalRightSignal8812Inch.class,
-        fmlPreInitializationEvent); // ControllableVerticalRightSignal8812Inch
-    initTabBlock(BlockControllableVerticalSolidFlashGreenSignal.class,
-        fmlPreInitializationEvent); // ControllableVerticalSolidFlashGreenSignal
-    initTabBlock(BlockControllableVerticalSolidFlashRedSignal.class,
-        fmlPreInitializationEvent); // ControllableVerticalSolidFlashRedSignal
-    initTabBlock(BlockControllableVerticalSolidFlashYellowSignal.class,
-        fmlPreInitializationEvent); // ControllableVerticalSolidFlashYellowSignal
-    initTabBlock(BlockControllableVerticalSolidSignal.class,
-        fmlPreInitializationEvent); // ControllableVerticalSolidSignal
-    initTabBlock(BlockControllableVerticalSolidSignal1288Inch.class,
-        fmlPreInitializationEvent); // ControllableVerticalSolidSignal1288Inch
-    initTabBlock(BlockControllableVerticalSolidSignal8812Inch.class,
-        fmlPreInitializationEvent); // ControllableVerticalSolidSignal8812Inch
-    initTabBlock(BlockControllableVerticalSolidSignal8Inch.class,
-        fmlPreInitializationEvent); // ControllableVerticalSolidSignal8Inch
-    initTabBlock(BlockControllableVerticalSolidSignalLED.class,
-        fmlPreInitializationEvent); // ControllableVerticalSolidSignalLED
-    initTabBlock(BlockControllableVerticalSolidSignalLED1288Inch.class,
-        fmlPreInitializationEvent); // ControllableVerticalSolidSignalLED1288Inch
-    initTabBlock(BlockControllableVerticalSolidSignalLED8812Inch.class,
-        fmlPreInitializationEvent); // ControllableVerticalSolidSignalLED8812Inch
-    initTabBlock(BlockControllableVerticalSolidSignalLED8Inch.class,
-        fmlPreInitializationEvent); // ControllableVerticalSolidSignalLED8Inch
-    initTabBlock(BlockControllableVerticalSolidSignalNoRedVisor.class,
-        fmlPreInitializationEvent); // ControllableVerticalSolidSignalNoRedVisor
-    initTabBlock(BlockControllableVerticalSolidSignalNoVisors.class,
-        fmlPreInitializationEvent); // ControllableVerticalSolidSignalNoVisors
-    initTabBlock(BlockControllableVerticalSolidSignalReversed.class,
-        fmlPreInitializationEvent); // ControllableVerticalSolidSignalReversed
-    initTabBlock(BlockControllableVerticalUpLeftAddOnSignal.class,
-        fmlPreInitializationEvent); // ControllableVerticalUpLeftAddOnSignal
-    initTabBlock(BlockControllableVerticalUpLeftSignal.class,
-        fmlPreInitializationEvent); // ControllableVerticalUpLeftSignal
-    initTabBlock(BlockControllableVerticalUturnSignal.class,
-        fmlPreInitializationEvent); // ControllableVerticalUturnSignal
+    initTabBlock(TrafficSignalBlocks.VERTICAL_AHEAD_SIGNAL);
+    initTabBlock(TrafficSignalBlocks.VERTICAL_AHEAD_SIGNAL8812_INCH);
+    initTabBlock(TrafficSignalBlocks.VERTICAL_BIKE_SIGNAL);
+    initTabBlock(TrafficSignalBlocks.VERTICAL_BIKE_SIGNAL8_INCH);
+    initTabBlock(TrafficSignalBlocks.VERTICAL_BIKE_SIGNAL8_INCH_BLACK);
+    initTabBlock(TrafficSignalBlocks.VERTICAL_BIKE_SIGNAL4_INCH);
+    initTabBlock(TrafficSignalBlocks.VERTICAL_HYBRID_LEFT_ADD_ON_SIGNAL);
+    initTabBlock(TrafficSignalBlocks.VERTICAL_HYBRID_LEFT_SIGNAL);
+    initTabBlock(TrafficSignalBlocks.VERTICAL_LEFT_ADD_ON_FYA_SIGNAL);
+    initTabBlock(TrafficSignalBlocks.VERTICAL_LEFT_ADD_ON_SIGNAL);
+    initTabBlock(TrafficSignalBlocks.VERTICAL_LEFT_DOUBLE_ADD_ON_SIGNAL);
+    initTabBlock(TrafficSignalBlocks.VERTICAL_LEFT_SIGNAL);
+    initTabBlock(TrafficSignalBlocks.VERTICAL_LEFT_SIGNAL8812_INCH);
+    initTabBlock(TrafficSignalBlocks.VERTICAL_LEFT_SIGNAL_LED);
+    initTabBlock(TrafficSignalBlocks.VERTICAL_LEFT_SIGNAL_SOLID_RED);
+    initTabBlock(TrafficSignalBlocks.VERTICAL_RAIL_SIGNAL);
+    initTabBlock(TrafficSignalBlocks.VERTICAL_RIGHT2_SIGNAL);
+    initTabBlock(TrafficSignalBlocks.VERTICAL_RIGHT_ADD_ON_FYA_SIGNAL);
+    initTabBlock(TrafficSignalBlocks.VERTICAL_RIGHT_ADD_ON_SIGNAL);
+    initTabBlock(TrafficSignalBlocks.VERTICAL_RIGHT_DOUBLE_ADD_ON_SIGNAL);
+    initTabBlock(TrafficSignalBlocks.VERTICAL_RIGHT_FLASH_YELLOW_ADD_ON_SIGNAL);
+    initTabBlock(TrafficSignalBlocks.VERTICAL_RIGHT_FLASH_YELLOW_SR_SIGNAL);
+    initTabBlock(TrafficSignalBlocks.VERTICAL_RIGHT_FLASH_YELLOW_SIGNAL);
+    initTabBlock(TrafficSignalBlocks.VERTICAL_RIGHT_SIGNAL);
+    initTabBlock(TrafficSignalBlocks.VERTICAL_RIGHT_SIGNAL8812_INCH);
+    initTabBlock(TrafficSignalBlocks.VERTICAL_SOLID_FLASH_GREEN_SIGNAL);
+    initTabBlock(TrafficSignalBlocks.VERTICAL_SOLID_FLASH_RED_SIGNAL);
+    initTabBlock(TrafficSignalBlocks.VERTICAL_SOLID_FLASH_YELLOW_SIGNAL);
+    initTabBlock(TrafficSignalBlocks.VERTICAL_SOLID_SIGNAL);
+    initTabBlock(TrafficSignalBlocks.VERTICAL_SOLID_SIGNAL1288_INCH);
+    initTabBlock(TrafficSignalBlocks.VERTICAL_SOLID_SIGNAL8812_INCH);
+    initTabBlock(TrafficSignalBlocks.VERTICAL_SOLID_SIGNAL8_INCH);
+    initTabBlock(TrafficSignalBlocks.VERTICAL_SOLID_SIGNAL_LED);
+    initTabBlock(TrafficSignalBlocks.VERTICAL_SOLID_SIGNAL_LED1288_INCH);
+    initTabBlock(TrafficSignalBlocks.VERTICAL_SOLID_SIGNAL_LED8812_INCH);
+    initTabBlock(TrafficSignalBlocks.VERTICAL_SOLID_SIGNAL_LED8_INCH);
+    initTabBlock(TrafficSignalBlocks.VERTICAL_SOLID_SIGNAL_NO_RED_VISOR);
+    initTabBlock(TrafficSignalBlocks.VERTICAL_SOLID_SIGNAL_NO_VISORS);
+    initTabBlock(TrafficSignalBlocks.VERTICAL_SOLID_SIGNAL_REVERSED);
+    initTabBlock(TrafficSignalBlocks.VERTICAL_UP_LEFT_ADD_ON_SIGNAL);
+    initTabBlock(TrafficSignalBlocks.VERTICAL_UP_LEFT_SIGNAL);
+    initTabBlock(TrafficSignalBlocks.VERTICAL_UTURN_SIGNAL);
     initTabBlock(BlockControllableCrosswalkButtonPsGray.class, fmlPreInitializationEvent); // ControllableCrosswalkButtonPsGray
     initTabBlock(BlockTrafficLightSensor.class, fmlPreInitializationEvent); // TrafficLightSensor
     initTabBlock(BlockTrafficLightSensorBell.class,
