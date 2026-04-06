@@ -804,51 +804,41 @@ public class TrafficSignalPhase {
    */
   public BlockPos apply(World world) {
     BlockPos firstMissing = null;
-    for (BlockPos pos : greenSignals) {
-      if (!AbstractBlockControllableSignal.changeSignalColor(world, pos,
-          AbstractBlockControllableSignal.SIGNAL_GREEN) && firstMissing == null) {
-        firstMissing = pos;
+    firstMissing = applyColorToSignals(world, greenSignals, AbstractBlockControllableSignal.SIGNAL_GREEN, firstMissing);
+    firstMissing = applyColorToSignals(world, yellowSignals, AbstractBlockControllableSignal.SIGNAL_YELLOW, firstMissing);
+    firstMissing = applyColorToSignals(world, redSignals, AbstractBlockControllableSignal.SIGNAL_RED, firstMissing);
+    firstMissing = applyColorToSignals(world, offSignals, AbstractBlockControllableSignal.SIGNAL_OFF, firstMissing);
+    firstMissing = applyColorToSignals(world, fyaSignals, AbstractBlockControllableSignal.SIGNAL_GREEN, firstMissing);
+    firstMissing = applyColorToSignals(world, walkSignals, AbstractBlockControllableSignal.SIGNAL_GREEN, firstMissing);
+    firstMissing = applyColorToSignals(world, flashDontWalkSignals, AbstractBlockControllableSignal.SIGNAL_YELLOW, firstMissing);
+    firstMissing = applyColorToSignals(world, dontWalkSignals, AbstractBlockControllableSignal.SIGNAL_RED, firstMissing);
+    return firstMissing;
+  }
+
+  /**
+   * Helper method that applies a signal color to all positions in the given list, skipping signals
+   * in unloaded chunks. Returns the first missing signal position encountered, or the previously
+   * recorded first missing position if one was already found.
+   *
+   * @param world        The {@link World} to apply the signal color in.
+   * @param signals      The list of {@link BlockPos} positions to apply the color to.
+   * @param color        The signal color to apply.
+   * @param firstMissing The previously recorded first missing signal position, or null.
+   *
+   * @return The first missing signal position, or null if all signals were set successfully.
+   *
+   * @since 1.0
+   */
+  private static BlockPos applyColorToSignals(World world, List<BlockPos> signals, int color,
+      BlockPos firstMissing) {
+    for (BlockPos pos : signals) {
+      if (!world.isBlockLoaded(pos)) {
+        System.out.println("[TrafficSignalPhase] Skipping signal at " + pos +
+            " (chunk not loaded)");
+        continue;
       }
-    }
-    for (BlockPos pos : yellowSignals) {
-      if (!AbstractBlockControllableSignal.changeSignalColor(world, pos,
-          AbstractBlockControllableSignal.SIGNAL_YELLOW) && firstMissing == null) {
-        firstMissing = pos;
-      }
-    }
-    for (BlockPos pos : redSignals) {
-      if (!AbstractBlockControllableSignal.changeSignalColor(world, pos,
-          AbstractBlockControllableSignal.SIGNAL_RED) && firstMissing == null) {
-        firstMissing = pos;
-      }
-    }
-    for (BlockPos pos : offSignals) {
-      if (!AbstractBlockControllableSignal.changeSignalColor(world, pos,
-          AbstractBlockControllableSignal.SIGNAL_OFF) && firstMissing == null) {
-        firstMissing = pos;
-      }
-    }
-    for (BlockPos pos : fyaSignals) {
-      if (!AbstractBlockControllableSignal.changeSignalColor(world, pos,
-          AbstractBlockControllableSignal.SIGNAL_GREEN) && firstMissing == null) {
-        firstMissing = pos;
-      }
-    }
-    for (BlockPos pos : walkSignals) {
-      if (!AbstractBlockControllableSignal.changeSignalColor(world, pos,
-          AbstractBlockControllableSignal.SIGNAL_GREEN) && firstMissing == null) {
-        firstMissing = pos;
-      }
-    }
-    for (BlockPos pos : flashDontWalkSignals) {
-      if (!AbstractBlockControllableSignal.changeSignalColor(world, pos,
-          AbstractBlockControllableSignal.SIGNAL_YELLOW) && firstMissing == null) {
-        firstMissing = pos;
-      }
-    }
-    for (BlockPos pos : dontWalkSignals) {
-      if (!AbstractBlockControllableSignal.changeSignalColor(world, pos,
-          AbstractBlockControllableSignal.SIGNAL_RED) && firstMissing == null) {
+      if (!AbstractBlockControllableSignal.changeSignalColor(world, pos, color)
+          && firstMissing == null) {
         firstMissing = pos;
       }
     }

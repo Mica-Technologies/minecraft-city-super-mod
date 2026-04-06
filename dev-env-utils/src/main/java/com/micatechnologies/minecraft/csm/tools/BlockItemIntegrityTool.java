@@ -9,6 +9,9 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -29,7 +32,16 @@ public class BlockItemIntegrityTool {
       "src/main/java/com/micatechnologies/minecraft/csm";
   private static final String SOURCE_FILE_EXTENSION = ".java";
 
-  private static final String[] SOURCE_FILE_EXCLUDES =
+  /**
+   * Name of the JSON config resource containing exclusion and eligibility lists.
+   * If this file is found on the classpath, it overrides the hardcoded defaults below.
+   *
+   * @see #loadConfig()
+   */
+  private static final String CONFIG_RESOURCE_NAME = "block-item-integrity-config.json";
+
+  // Hardcoded defaults (used as fallback when config file is not on classpath)
+  private static final String[] DEFAULT_SOURCE_FILE_EXCLUDES =
       {"src/main/java/com/micatechnologies/minecraft/csm/codeutils/AbstractBlockRotatableHZEight"
           + ".java",
           "src/main/java/com/micatechnologies/minecraft/csm/codeutils/AbstractBlockRotatableNSEWUD"
@@ -72,7 +84,7 @@ public class BlockItemIntegrityTool {
           "src/main/java/com/micatechnologies/minecraft/csm/trafficaccessories/AbstractBlockSignalBackplate.java",
           "src/main/java/com/micatechnologies/minecraft/csm/trafficaccessories/AbstractBlockSignalBackplateFitted.java",
           "src/main/java/com/micatechnologies/minecraft/csm/tabs/CsmTabNone.java"};
-  private static final String[] SOURCE_FILE_ELIGIBLE_EXTENDS_BLOCKS =
+  private static final String[] DEFAULT_SOURCE_FILE_ELIGIBLE_EXTENDS_BLOCKS =
       {"AbstractBlock", "AbstractBlockRotatableNSEW", "AbstractBlockRotatableNSEWUD",
           "AbstractPoweredBlockRotatableNSEWUD", "AbstractBrightLight", "AbstractBlockSetBasic",
           "AbstractBlockFireAlarmSounderVoiceEvac", "AbstractBlockFireAlarmSounder",
@@ -83,9 +95,14 @@ public class BlockItemIntegrityTool {
           "AbstractBlockSign", "AbstractBlockControllableSignalHead",
           "AbstractBlockSignalBackplate", "AbstractBlockSignalBackplateFitted",
           "AbstractBlockRotatableHZSixteen"};
-  private static final String[] SOURCE_FILE_ELIGIBLE_EXTENDS_ITEMS = {"AbstractItem"};
+  private static final String[] DEFAULT_SOURCE_FILE_ELIGIBLE_EXTENDS_ITEMS = {"AbstractItem"};
+  private static final String[] DEFAULT_SOURCE_FILE_ELIGIBLE_EXTENDS_TAB = {"CsmTab"};
 
-  private static final String[] SOURCE_FILE_ELIGIBLE_EXTENDS_TAB = {"CsmTab"};
+  // Active configuration (loaded from config file or defaults)
+  private static String[] SOURCE_FILE_EXCLUDES = DEFAULT_SOURCE_FILE_EXCLUDES;
+  private static String[] SOURCE_FILE_ELIGIBLE_EXTENDS_BLOCKS = DEFAULT_SOURCE_FILE_ELIGIBLE_EXTENDS_BLOCKS;
+  private static String[] SOURCE_FILE_ELIGIBLE_EXTENDS_ITEMS = DEFAULT_SOURCE_FILE_ELIGIBLE_EXTENDS_ITEMS;
+  private static String[] SOURCE_FILE_ELIGIBLE_EXTENDS_TAB = DEFAULT_SOURCE_FILE_ELIGIBLE_EXTENDS_TAB;
 
   private static final String BLOCKSTATE_FILE_FOLDER_PATH_RELATIVE =
       "src/main/resources/assets/csm/blockstates";
@@ -146,7 +163,65 @@ public class BlockItemIntegrityTool {
 
   private static final List<String> loggedErrorMessages = new ArrayList<String>();
 
+  /**
+   * Loads configuration from the JSON config resource file on the classpath.
+   * If the file is not found or cannot be parsed, the hardcoded defaults are retained.
+   */
+  private static void loadConfig() {
+    try (InputStream is = BlockItemIntegrityTool.class.getClassLoader()
+        .getResourceAsStream(CONFIG_RESOURCE_NAME)) {
+      if (is == null) {
+        System.out.println("Config file '" + CONFIG_RESOURCE_NAME
+            + "' not found on classpath; using hardcoded defaults.");
+        return;
+      }
+      String content;
+      try (InputStreamReader reader = new InputStreamReader(is, StandardCharsets.UTF_8)) {
+        StringBuilder sb = new StringBuilder();
+        char[] buf = new char[4096];
+        int read;
+        while ((read = reader.read(buf)) != -1) {
+          sb.append(buf, 0, read);
+        }
+        content = sb.toString();
+      }
+      JsonObject config = JsonParser.parseString(content).getAsJsonObject();
+
+      if (config.has("sourceFileExcludes")) {
+        SOURCE_FILE_EXCLUDES = jsonArrayToStringArray(config.getAsJsonArray("sourceFileExcludes"));
+      }
+      if (config.has("eligibleExtendsBlocks")) {
+        SOURCE_FILE_ELIGIBLE_EXTENDS_BLOCKS =
+            jsonArrayToStringArray(config.getAsJsonArray("eligibleExtendsBlocks"));
+      }
+      if (config.has("eligibleExtendsItems")) {
+        SOURCE_FILE_ELIGIBLE_EXTENDS_ITEMS =
+            jsonArrayToStringArray(config.getAsJsonArray("eligibleExtendsItems"));
+      }
+      if (config.has("eligibleExtendsTab")) {
+        SOURCE_FILE_ELIGIBLE_EXTENDS_TAB =
+            jsonArrayToStringArray(config.getAsJsonArray("eligibleExtendsTab"));
+      }
+      System.out.println("Loaded configuration from '" + CONFIG_RESOURCE_NAME + "'.");
+    } catch (Exception e) {
+      System.err.println("Error loading config file '" + CONFIG_RESOURCE_NAME
+          + "'; using hardcoded defaults: " + e.getMessage());
+    }
+  }
+
+  /**
+   * Converts a Gson {@link JsonArray} of strings to a Java {@code String[]}.
+   */
+  private static String[] jsonArrayToStringArray(JsonArray array) {
+    String[] result = new String[array.size()];
+    for (int i = 0; i < array.size(); i++) {
+      result[i] = array.get(i).getAsString();
+    }
+    return result;
+  }
+
   public static void main(String[] args) {
+    loadConfig();
 
     CsmToolUtility.doToolExecuteWrapped("CSM Block/Item Integrity Verification Tool", args,
         (devEnvironmentPath) -> {

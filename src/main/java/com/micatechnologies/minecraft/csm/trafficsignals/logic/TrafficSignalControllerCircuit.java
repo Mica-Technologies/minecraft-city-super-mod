@@ -193,6 +193,19 @@ public class TrafficSignalControllerCircuit {
    */
   private final ArrayList<BlockPos> sensors = new ArrayList<>();
 
+  /**
+   * Cached sensor summary from the most recent tick. The summary is expensive to compute
+   * because it performs entity scans at each sensor position, and multiple callers within
+   * the same controller tick may request it. The cache is keyed by world time so that it
+   * automatically expires after one tick.
+   */
+  private transient TrafficSignalSensorSummary cachedSensorSummary = null;
+
+  /**
+   * The world time at which {@link #cachedSensorSummary} was last computed.
+   */
+  private transient long cachedSensorSummaryTick = -1;
+
   // endregion
 
   // region: Instance Methods
@@ -405,6 +418,12 @@ public class TrafficSignalControllerCircuit {
    * @since 1.0
    */
   public TrafficSignalSensorSummary getSensorsWaitingSummary(World world) {
+    // Return cached summary if it was computed during this same world tick
+    long currentTick = world.getTotalWorldTime();
+    if (cachedSensorSummary != null && cachedSensorSummaryTick == currentTick) {
+      return cachedSensorSummary;
+    }
+
     // Create variables to track counts
     int standardAll = 0, leftAll = 0, protectedAll = 0, rightAll = 0;
     int standardEast = 0, leftEast = 0, protectedEast = 0, rightEast = 0;
@@ -454,12 +473,14 @@ public class TrafficSignalControllerCircuit {
       }
     }
 
-    // Return new summary object
-    return new TrafficSignalSensorSummary(standardAll, standardEast, standardWest, standardNorth,
-        standardSouth,
+    // Cache and return new summary object
+    cachedSensorSummary = new TrafficSignalSensorSummary(standardAll, standardEast, standardWest,
+        standardNorth, standardSouth,
         leftAll, leftEast, leftWest, leftNorth, leftSouth, protectedAll,
         protectedEast, protectedWest, protectedNorth, protectedSouth,
         rightAll, rightEast, rightWest, rightNorth, rightSouth);
+    cachedSensorSummaryTick = currentTick;
+    return cachedSensorSummary;
   }
 
   /**

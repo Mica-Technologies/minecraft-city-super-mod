@@ -486,7 +486,8 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
         }
 
         // Change to the indicated phase (if valid), fault if a signal is missing
-        // (but don't re-fault when already in fault mode — let fault flash work)
+        // (but don't re-fault when already in fault mode — let fault flash work).
+        // Note: apply() skips signals in unloaded chunks (they are not considered missing).
         BlockPos missingSignal = currentPhase.apply(getWorld());
         if (missingSignal != null && !isInFaultState()) {
           enterFaultState("Linked signal missing at " + missingSignal);

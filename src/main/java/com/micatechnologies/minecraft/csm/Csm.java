@@ -20,7 +20,6 @@ package com.micatechnologies.minecraft.csm;
 import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmProxy;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
-import com.micatechnologies.minecraft.csm.codeutils.IHasModel;
 import com.micatechnologies.minecraft.csm.codeutils.packets.TileEntityRedstoneTTSInvokeHandler;
 import com.micatechnologies.minecraft.csm.codeutils.packets.TileEntityRedstoneTTSInvokePacket;
 import com.micatechnologies.minecraft.csm.codeutils.packets.TileEntityRedstoneTTSUpdateHandler;
@@ -34,7 +33,6 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.world.storage.WorldSavedData;
-import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fluids.FluidRegistry;
@@ -50,7 +48,6 @@ import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -377,30 +374,6 @@ public class Csm {
   @SubscribeEvent
   public void registerSounds(RegistryEvent.Register<SoundEvent> event) {
     CsmSounds.registerSounds(event);
-  }
-
-  /**
-   * Registers the mod's models with the game during the model registry event.
-   *
-   * @param event the model registry event
-   *
-   * @see ModelRegistryEvent
-   * @see Mod.EventBusSubscriber
-   * @since 1.0.0
-   */
-  @SubscribeEvent
-  @SideOnly(Side.CLIENT)
-  public void registerModels(ModelRegistryEvent event) {
-    CsmRegistry.getBlocks().forEach(block -> {
-      if (block instanceof IHasModel) {
-        ((IHasModel) block).registerModels();
-      }
-    });
-    CsmRegistry.getItems().forEach(item -> {
-      if (item instanceof IHasModel) {
-        ((IHasModel) item).registerModels();
-      }
-    });
   }
 
   /**

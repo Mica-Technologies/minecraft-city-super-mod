@@ -6,8 +6,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import javax.annotation.Nonnull;
 import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
@@ -17,9 +19,31 @@ import net.minecraftforge.fml.common.discovery.ASMDataTable;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Abstract class providing a clean, friendly interface for the creation of {@link CreativeTabs}.
+ *
+ * <h3>Tab Load Order Reference</h3>
+ * <p>Each {@link CsmTab} subclass is annotated with {@code @CsmTab.Load(order = N)}. The complete
+ * order list is:</p>
+ * <pre>
+ *   Order  0 = CsmTabNone              (hidden catch-all tab)
+ *   Order  1 = CsmTabBuildingMaterials
+ *   Order  2 = CsmTabHvac
+ *   Order  3 = CsmTabLifeSafety
+ *   Order  4 = CsmTabLighting
+ *   Order  5 = CsmTabNovelties
+ *   Order  6 = CsmTabPowerGrid
+ *   Order  7 = CsmTabRoadSigns
+ *   Order  8 = CsmTabTechnology
+ *   Order  9 = CsmTabTrafficAccessories
+ *   Order 10 = CsmTabTrafficSignals
+ *   Order 11 = CsmTabFurniture
+ *   Order 12 = CsmTabGaming
+ * </pre>
+ * <p>When adding a new tab, choose the next available order value and update this list.</p>
  *
  * @author Mica Technologies
  * @version 1.0
@@ -147,6 +171,19 @@ public abstract class CsmTab {
       if (clazz.getSuperclass() == CsmTab.class) {
         Class<? extends CsmTab> csmTabClass = clazz.asSubclass(CsmTab.class);
         tabClasses.add(csmTabClass);
+      }
+    }
+
+    // Validate that no two tabs share the same order value
+    Logger logger = LogManager.getLogger(CsmTab.class);
+    Map<Integer, String> seenOrders = new HashMap<>();
+    for (Class<? extends CsmTab> clazz : tabClasses) {
+      int order = clazz.getAnnotation(Load.class).order();
+      String previousClass = seenOrders.put(order, clazz.getSimpleName());
+      if (previousClass != null) {
+        logger.warn("Duplicate @CsmTab.Load order value {} found on {} and {}. "
+            + "Tab initialization order may be non-deterministic.",
+            order, previousClass, clazz.getSimpleName());
       }
     }
 

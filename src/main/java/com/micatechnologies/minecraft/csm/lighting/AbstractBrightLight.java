@@ -129,13 +129,14 @@ public abstract class AbstractBrightLight extends AbstractBlockRotatableNSEW {
   }
 
   private void handleAirLightBlock(boolean on, World world, BlockPos pos) {
+    final int xWithOffset = pos.getX() + getBrightLightXOffset();
+    final int zWithOffset = pos.getZ() + getBrightLightZOffset();
     // Add light
     if (on) {
       BlockPos doAddAt = null;
       for (int findy = -1; findy >= -16; findy--) {
-        final int xWithOffset = pos.getX() + getBrightLightXOffset();
         final int yWithOffset = pos.getY() + findy;
-        BlockPos test = new BlockPos(xWithOffset, yWithOffset, pos.getZ());
+        BlockPos test = new BlockPos(xWithOffset, yWithOffset, zWithOffset);
         // found block that is not air
         if (world.isAirBlock(test)) {
           // dont add light if block is right below street light
@@ -154,9 +155,12 @@ public abstract class AbstractBrightLight extends AbstractBlockRotatableNSEW {
     // Remove light
     else {
       for (int findy = -1; findy >= -16; findy--) {
-        final int xWithOffset = pos.getX() + getBrightLightXOffset();
         final int yWithOffset = pos.getY() + findy;
-        BlockPos test = new BlockPos(xWithOffset, yWithOffset, pos.getZ());
+        BlockPos test = new BlockPos(xWithOffset, yWithOffset, zWithOffset);
+        // Verify the position is in a loaded chunk before accessing block state
+        if (!world.isBlockLoaded(test)) {
+          continue;
+        }
         IBlockState bs = world.getBlockState(test);
         // stop removing light once hit block
         if (bs.getBlock() == getLightupAirBlock()) {
@@ -167,6 +171,19 @@ public abstract class AbstractBrightLight extends AbstractBlockRotatableNSEW {
   }
 
   abstract public int getBrightLightXOffset();
+
+  /**
+   * Returns the Z-axis offset for the bright light's lightupair block placement. Subclasses may
+   * override this to shift the projected light along the Z axis. The default implementation returns
+   * 0, maintaining backward compatibility with existing lights.
+   *
+   * @return the Z-axis offset for lightupair placement
+   *
+   * @since 1.0
+   */
+  public int getBrightLightZOffset() {
+    return 0;
+  }
 
   @Override
   public void onBlockAdded(World p_onBlockAdded_1_, BlockPos p_onBlockAdded_2_,

@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm;
 
 import com.micatechnologies.minecraft.csm.codeutils.CsmVersionChecker;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmProxy;
+import com.micatechnologies.minecraft.csm.codeutils.IHasModel;
 import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityCrosswalkSignal;
 import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityCrosswalkSignalNew;
 import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityCrosswalkSignalNewRenderer;
@@ -13,6 +14,7 @@ import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.obj.OBJLoader;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
@@ -45,6 +47,31 @@ public class CsmClientProxy implements ICsmProxy {
   @Override
   public void preInit(FMLPreInitializationEvent event) {
     OBJLoader.INSTANCE.addDomain("csm");
+
+    // Register on the event bus early so we receive ModelRegistryEvent (fires during preInit)
+    MinecraftForge.EVENT_BUS.register(this);
+  }
+
+  /**
+   * Registers the mod's models with the game during the model registry event.
+   *
+   * @param event the model registry event
+   *
+   * @see ModelRegistryEvent
+   * @since 1.0.0
+   */
+  @SubscribeEvent
+  public void registerModels(ModelRegistryEvent event) {
+    CsmRegistry.getBlocks().forEach(block -> {
+      if (block instanceof IHasModel) {
+        ((IHasModel) block).registerModels();
+      }
+    });
+    CsmRegistry.getItems().forEach(item -> {
+      if (item instanceof IHasModel) {
+        ((IHasModel) item).registerModels();
+      }
+    });
   }
 
   /**
@@ -69,8 +96,8 @@ public class CsmClientProxy implements ICsmProxy {
         com.micatechnologies.minecraft.csm.lifesafety.TileEntityFireAlarmSoundIndex.class,
         new com.micatechnologies.minecraft.csm.lifesafety.TileEntityFireAlarmStrobeRenderer());
 
-    // Register client-side event handler for version check on world join
-    MinecraftForge.EVENT_BUS.register(this);
+    // Note: event bus registration moved to preInit() so ModelRegistryEvent is received.
+    // The version check handler (onEntityJoinWorld) also benefits from that registration.
   }
 
   @SubscribeEvent

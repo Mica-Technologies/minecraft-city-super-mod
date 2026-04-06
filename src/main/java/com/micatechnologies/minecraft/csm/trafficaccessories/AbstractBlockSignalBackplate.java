@@ -50,26 +50,23 @@ public abstract class AbstractBlockSignalBackplate extends AbstractBlockRotatabl
    * Computes the actual tilt state by reading the signal head behind this backplate.
    * "Behind" is determined by the backplate's facing: the signal is one block in the
    * opposite direction of FACING (since the backplate faces the viewer, the signal is
-   * behind it).
+   * behind it). Only checks the two positions along the facing axis (forward and back),
+   * avoiding unnecessary tile entity lookups in the perpendicular directions.
    */
   @Override
   public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos) {
     EnumFacing facing = state.getValue(FACING);
 
-    // Search all 4 horizontal neighbors for an adjacent signal head.
-    // Filter: only accept signals on the same facing axis (behind or in front).
-    // This prevents picking up unrelated signals to the sides.
-    EnumFacing[] horizontalDirs = {EnumFacing.NORTH, EnumFacing.SOUTH, EnumFacing.EAST, EnumFacing.WEST};
-    for (EnumFacing checkDir : horizontalDirs) {
-      // Only check positions along the backplate's facing axis
-      if (checkDir.getAxis() != facing.getAxis()) continue;
-
-      BlockPos signalPos = pos.offset(checkDir);
-      TileEntity te = worldIn.getTileEntity(signalPos);
-      if (te instanceof TileEntityTrafficSignalHead) {
-        TrafficSignalBodyTilt tilt = ((TileEntityTrafficSignalHead) te).getBodyTilt();
-        return state.withProperty(TILT, tilt);
-      }
+    // Only two positions matter: forward and backward along the facing axis.
+    // Check opposite direction first (behind the backplate) since that's the most
+    // common mounting position for the signal head.
+    TileEntity te = worldIn.getTileEntity(pos.offset(facing.getOpposite()));
+    if (te instanceof TileEntityTrafficSignalHead) {
+      return state.withProperty(TILT, ((TileEntityTrafficSignalHead) te).getBodyTilt());
+    }
+    te = worldIn.getTileEntity(pos.offset(facing));
+    if (te instanceof TileEntityTrafficSignalHead) {
+      return state.withProperty(TILT, ((TileEntityTrafficSignalHead) te).getBodyTilt());
     }
 
     return state.withProperty(TILT, TrafficSignalBodyTilt.NONE);

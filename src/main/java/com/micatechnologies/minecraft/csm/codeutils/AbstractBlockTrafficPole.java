@@ -247,15 +247,7 @@ public abstract class AbstractBlockTrafficPole extends AbstractBlockRotatableNSE
     EnumFacing facing = state.getValue(FACING);
 
     if (cachedCombinedIgnoreBlock == null) {
-      Class<?>[] blockIgnoreBlock = getIgnoreBlock();
-      if (blockIgnoreBlock == null) {
-        cachedCombinedIgnoreBlock = IGNORE_BLOCK;
-      } else {
-        cachedCombinedIgnoreBlock = new Class<?>[IGNORE_BLOCK.length + blockIgnoreBlock.length];
-        System.arraycopy(IGNORE_BLOCK, 0, cachedCombinedIgnoreBlock, 0, IGNORE_BLOCK.length);
-        System.arraycopy(blockIgnoreBlock, 0, cachedCombinedIgnoreBlock, IGNORE_BLOCK.length,
-            blockIgnoreBlock.length);
-      }
+      cachedCombinedIgnoreBlock = buildCombinedIgnoreBlock(getIgnoreBlock());
     }
     Class<?>[] ignoreBlock = cachedCombinedIgnoreBlock;
 
@@ -275,6 +267,27 @@ public abstract class AbstractBlockTrafficPole extends AbstractBlockRotatableNSE
     // Update the block state with the presence of blocks in each direction
     return state.withProperty(MOUNT_EAST, isBlockToEast).withProperty(MOUNT_WEST, isBlockToWest)
         .withProperty(MOUNT_UP, isBlockAbove).withProperty(MOUNT_DOWN, isBlockBelow);
+  }
+
+  /**
+   * Builds a combined ignore-block array by merging the global {@link #IGNORE_BLOCK} list with
+   * the subclass-specific list returned by {@link #getIgnoreBlock()}. This is used by both
+   * {@link AbstractBlockTrafficPole} and {@link AbstractBlockTrafficPoleDiagonal} to avoid
+   * duplicating the merge logic.
+   *
+   * @param blockSpecificIgnore the subclass-specific ignore list (may be {@code null})
+   *
+   * @return the combined ignore-block array
+   */
+  protected static Class<?>[] buildCombinedIgnoreBlock(Class<?>[] blockSpecificIgnore) {
+    if (blockSpecificIgnore == null) {
+      return IGNORE_BLOCK;
+    }
+    Class<?>[] combined = new Class<?>[IGNORE_BLOCK.length + blockSpecificIgnore.length];
+    System.arraycopy(IGNORE_BLOCK, 0, combined, 0, IGNORE_BLOCK.length);
+    System.arraycopy(blockSpecificIgnore, 0, combined, IGNORE_BLOCK.length,
+        blockSpecificIgnore.length);
+    return combined;
   }
 
   /**
