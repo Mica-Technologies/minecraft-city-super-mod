@@ -281,6 +281,18 @@ public abstract class AbstractBlockControllableSignalHead extends AbstractBlockC
   }
 
   /**
+   * Returns the block-space offset from this signal to the main signal that this add-on
+   * should align its tilt rotation with. Default is (0,0,0) — no pivot compensation needed.
+   * Horizontal add-on signals override this to return the offset to the main signal so
+   * the renderer can apply a post-rotation correction to keep them aligned when tilted.
+   *
+   * @return int[3] array {dx, dy, dz} in block units from this block to the main signal
+   */
+  public int[] getTiltPivotOffset(IBlockAccess world, BlockPos pos) {
+    return new int[]{0, 0, 0};
+  }
+
+  /**
    * Returns an enforced bulb style for this signal head, or null if the user may freely
    * choose any style. Override in subclasses that only work correctly with a specific
    * bulb style (e.g., bi-modal/hybrid arrows that require LED_DOTTED for a proper

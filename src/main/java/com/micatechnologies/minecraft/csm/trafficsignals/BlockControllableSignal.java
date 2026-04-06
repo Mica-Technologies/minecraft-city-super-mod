@@ -172,15 +172,18 @@ public class BlockControllableSignal extends AbstractBlockControllableSignalHead
       }
     }
 
-    // Also check left/right (horizontal add-ons are placed beside the main signal)
+    // Check left/right (horizontal add-ons are placed beside the main signal,
+    // up to 3 blocks away for double add-ons with gaps)
     IBlockState myState = world.getBlockState(pos);
     if (myState.getProperties().containsKey(FACING)) {
       EnumFacing myFacing = myState.getValue(FACING);
       for (EnumFacing side : new EnumFacing[]{myFacing.rotateY(), myFacing.rotateYCCW()}) {
-        BlockPos checkPos = pos.offset(side);
-        IBlockState checkState = world.getBlockState(checkPos);
-        if (checkState.getBlock() instanceof AbstractBlockControllableSignalHead) {
-          return ((AbstractBlockControllableSignalHead) checkState.getBlock()).isHorizontal();
+        for (int dist = 1; dist <= 3; dist++) {
+          BlockPos checkPos = pos.offset(side, dist);
+          IBlockState checkState = world.getBlockState(checkPos);
+          if (checkState.getBlock() instanceof AbstractBlockControllableSignalHead) {
+            return ((AbstractBlockControllableSignalHead) checkState.getBlock()).isHorizontal();
+          }
         }
       }
     }
@@ -227,6 +230,61 @@ public class BlockControllableSignal extends AbstractBlockControllableSignalHead
       return 0.0f;
     }
     return getSignalYOffset();
+  }
+
+  @Override
+  public int[] getTiltPivotOffset(IBlockAccess world, BlockPos pos) {
+    if (!addon || !detectAdjacentHorizontal(world, pos)) {
+      return super.getTiltPivotOffset(world, pos);
+    }
+    return findMainSignalOffset(world, pos);
+  }
+
+  /**
+   * Finds the main (non-addon) horizontal signal near this add-on and returns the
+   * block offset from this position to that signal. Scans laterally up to 3 blocks
+   * (for double add-ons with gaps) and along the facing axis.
+   */
+  private int[] findMainSignalOffset(IBlockAccess world, BlockPos pos) {
+    IBlockState state = world.getBlockState(pos);
+    if (!state.getProperties().containsKey(FACING)) return new int[]{0, 0, 0};
+    EnumFacing facing = state.getValue(FACING);
+
+    // Check left/right (perpendicular to facing), up to 3 blocks
+    for (EnumFacing side : new EnumFacing[]{facing.rotateY(), facing.rotateYCCW()}) {
+      for (int dist = 1; dist <= 3; dist++) {
+        BlockPos checkPos = pos.offset(side, dist);
+        if (isMainHorizontalSignal(world, checkPos)) {
+          return new int[]{
+              checkPos.getX() - pos.getX(),
+              checkPos.getY() - pos.getY(),
+              checkPos.getZ() - pos.getZ()};
+        }
+      }
+    }
+
+    // Check along facing axis
+    for (EnumFacing dir : new EnumFacing[]{facing, facing.getOpposite()}) {
+      BlockPos checkPos = pos.offset(dir);
+      if (isMainHorizontalSignal(world, checkPos)) {
+        return new int[]{
+            checkPos.getX() - pos.getX(),
+            checkPos.getY() - pos.getY(),
+            checkPos.getZ() - pos.getZ()};
+      }
+    }
+
+    return new int[]{0, 0, 0};
+  }
+
+  private boolean isMainHorizontalSignal(IBlockAccess world, BlockPos pos) {
+    IBlockState state = world.getBlockState(pos);
+    if (!(state.getBlock() instanceof AbstractBlockControllableSignalHead)) return false;
+    AbstractBlockControllableSignalHead block =
+        (AbstractBlockControllableSignalHead) state.getBlock();
+    // Must be horizontal and NOT an addon itself
+    return block.isHorizontal()
+        && !(block instanceof BlockControllableSignal && ((BlockControllableSignal) block).addon);
   }
 
   // -- Package-private retiring subclass --
