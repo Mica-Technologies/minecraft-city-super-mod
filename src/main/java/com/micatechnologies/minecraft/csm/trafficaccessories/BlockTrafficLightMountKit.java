@@ -242,9 +242,9 @@ public class BlockTrafficLightMountKit extends AbstractBlockRotatableNSEWUD
     if (sectionCount == 0) return null;
 
     int[] sizes = signalBlock.getSectionSizes(sectionCount);
-    float[] yPos = signalBlock.getSectionYPositions(sectionCount);
-    float[] xPos = signalBlock.getSectionXPositions(sectionCount);
-    float yOffset = signalBlock.getSignalYOffset();
+    float[] yPos = signalBlock.getSectionYPositions(sectionCount, world, pos);
+    float[] xPos = signalBlock.getSectionXPositions(sectionCount, world, pos);
+    float yOffset = signalBlock.getSignalYOffset(world, pos);
 
     float minX = Float.MAX_VALUE, maxX = -Float.MAX_VALUE;
     float minY = Float.MAX_VALUE, maxY = -Float.MAX_VALUE;
@@ -260,6 +260,6 @@ public class BlockTrafficLightMountKit extends AbstractBlockRotatableNSEWUD
     }
     minY += yOffset; maxY += yOffset;
 
-    return new float[]{minX, maxX, minY, maxY, signalBlock.isHorizontal() ? 1f : 0f};
+    return new float[]{minX, maxX, minY, maxY, signalBlock.isHorizontal(world, pos) ? 1f : 0f};
   }
 }

@@ -246,6 +246,40 @@ public abstract class AbstractBlockControllableSignalHead extends AbstractBlockC
     return new float[sectionCount]; // all zeros
   }
 
+  // --- World-aware layout overloads ---
+  // These allow add-on signals to detect adjacent horizontal signals and adapt their
+  // layout at render time. Default implementations delegate to the static methods.
+  // The renderer calls these instead of the static versions.
+
+  /**
+   * World-aware version of {@link #isHorizontal()}. Override to detect adjacent signal
+   * orientation dynamically.
+   */
+  public boolean isHorizontal(IBlockAccess world, BlockPos pos) {
+    return isHorizontal();
+  }
+
+  /**
+   * World-aware version of {@link #getSectionYPositions(int)}.
+   */
+  public float[] getSectionYPositions(int sectionCount, IBlockAccess world, BlockPos pos) {
+    return getSectionYPositions(sectionCount);
+  }
+
+  /**
+   * World-aware version of {@link #getSectionXPositions(int)}.
+   */
+  public float[] getSectionXPositions(int sectionCount, IBlockAccess world, BlockPos pos) {
+    return getSectionXPositions(sectionCount);
+  }
+
+  /**
+   * World-aware version of {@link #getSignalYOffset()}.
+   */
+  public float getSignalYOffset(IBlockAccess world, BlockPos pos) {
+    return getSignalYOffset();
+  }
+
   /**
    * Returns an enforced bulb style for this signal head, or null if the user may freely
    * choose any style. Override in subclasses that only work correctly with a specific
