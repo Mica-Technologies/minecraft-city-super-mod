@@ -12,6 +12,7 @@ import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalSect
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalVisorType;
 import net.minecraft.block.Block;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.math.AxisAlignedBB;
 
 /**
  * Tile entity utility class for traffic signal heads. This class assists in tracking and managing
@@ -22,6 +23,18 @@ import net.minecraft.nbt.NBTTagCompound;
  * @since 2024.8.19
  */
 public class TileEntityTrafficSignalHead extends AbstractTileEntity {
+
+  /**
+   * Returns an expanded render bounding box so Minecraft's frustum culling doesn't hide
+   * the signal TESR when sections extend beyond the block position (e.g., 3-section
+   * vertical signals extend ~1.5 blocks above and below center, plus visors).
+   */
+  @Override
+  public AxisAlignedBB getRenderBoundingBox() {
+    return new AxisAlignedBB(
+        pos.getX() - 1.0, pos.getY() - 1.0, pos.getZ() - 1.0,
+        pos.getX() + 2.0, pos.getY() + 2.0, pos.getZ() + 2.0);
+  }
 
   /**
    * The key used to store the body paint color in NBT data.
