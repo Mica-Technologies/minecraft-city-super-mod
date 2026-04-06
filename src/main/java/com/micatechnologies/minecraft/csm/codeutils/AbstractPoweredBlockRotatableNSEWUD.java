@@ -64,7 +64,9 @@ public abstract class AbstractPoweredBlockRotatableNSEWUD extends AbstractBlock 
   public AbstractPoweredBlockRotatableNSEWUD(Material material, boolean setDefaultState) {
     super(material);
     if (setDefaultState) {
-      this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH));
+      this.setDefaultState(this.blockState.getBaseState()
+          .withProperty(FACING, EnumFacing.NORTH)
+          .withProperty(POWERED, false));
     }
   }
 
@@ -92,7 +94,9 @@ public abstract class AbstractPoweredBlockRotatableNSEWUD extends AbstractBlock 
       int lightOpacity) {
     super(material, soundType, harvestToolClass, harvestLevel, hardness, resistance, lightLevel,
         lightOpacity);
-    this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH));
+    this.setDefaultState(this.blockState.getBaseState()
+        .withProperty(FACING, EnumFacing.NORTH)
+        .withProperty(POWERED, false));
   }
 
   /**
@@ -122,7 +126,9 @@ public abstract class AbstractPoweredBlockRotatableNSEWUD extends AbstractBlock 
     super(material, soundType, harvestToolClass, harvestLevel, hardness, resistance, lightLevel,
         lightOpacity);
     if (setDefaultState) {
-      this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH));
+      this.setDefaultState(this.blockState.getBaseState()
+          .withProperty(FACING, EnumFacing.NORTH)
+          .withProperty(POWERED, false));
     }
   }
 

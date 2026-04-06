@@ -46,6 +46,11 @@ public class FireAlarmSoundPacketHandler implements
       return;
     }
 
+    // Ignore malformed start packets with null/empty channel
+    if (channel == null || channel.isEmpty()) {
+      return;
+    }
+
     // Start: stop existing sound on this channel, then create a new one
     if (message.getSpeakerPositions().isEmpty()) {
       return;

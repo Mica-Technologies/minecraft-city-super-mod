@@ -133,7 +133,7 @@ public class TileEntityForgeEnergyConsumer extends AbstractTickableTileEntity im
    * Abstract method which must be implemented to handle the tick event of the tile entity.
    */
   @Override
-  public void onTick() {
+  public synchronized void onTick() {
     try {
       // Get block and world information
       BlockPos blockPos = getPos();

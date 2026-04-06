@@ -13,6 +13,12 @@ import net.minecraftforge.energy.IEnergyStorage;
 public class TileEntityForgeEnergyProducer extends AbstractTickableTileEntity implements
     IEnergyStorage {
 
+  /**
+   * Maximum energy output per transfer. Large enough to satisfy any reasonable consumer without
+   * risking integer overflow when adjacent blocks add this to their stored energy.
+   */
+  private static final int ENERGY_OUTPUT_PER_TRANSFER = 10000;
+
   private static final String NBT_TICK_RATE_KEY = "tickRate";
   private int tickRate = 1;
 
@@ -75,12 +81,12 @@ public class TileEntityForgeEnergyProducer extends AbstractTickableTileEntity im
 
   @Override
   public int getEnergyStored() {
-    return Integer.MAX_VALUE;
+    return ENERGY_OUTPUT_PER_TRANSFER;
   }
 
   @Override
   public int getMaxEnergyStored() {
-    return Integer.MAX_VALUE;
+    return ENERGY_OUTPUT_PER_TRANSFER;
   }
 
   @Override
@@ -155,7 +161,7 @@ public class TileEntityForgeEnergyProducer extends AbstractTickableTileEntity im
               IEnergyStorage energyStorage = tileEntity.getCapability(CapabilityEnergy.ENERGY,
                   facing.getOpposite());
               if (energyStorage != null) {
-                energyStorage.receiveEnergy(Integer.MAX_VALUE, false);
+                energyStorage.receiveEnergy(ENERGY_OUTPUT_PER_TRANSFER, false);
               }
             }
           }

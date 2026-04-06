@@ -1,5 +1,7 @@
 package com.micatechnologies.minecraft.csm.lifesafety;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.MovingSound;
@@ -23,7 +25,7 @@ public class FireAlarmVoiceEvacSound extends MovingSound {
   private static final float MAX_VOLUME = 1.0f;
   private static final float MIN_VOLUME = 0.05f;
 
-  private final List<BlockPos> speakerPositions;
+  private List<BlockPos> speakerPositions;
   private final float hearingRange;
 
   /**
@@ -36,7 +38,7 @@ public class FireAlarmVoiceEvacSound extends MovingSound {
   public FireAlarmVoiceEvacSound(ResourceLocation soundResource, List<BlockPos> speakerPositions,
       float hearingRange) {
     super(SoundEvent.REGISTRY.getObject(soundResource), SoundCategory.AMBIENT);
-    this.speakerPositions = speakerPositions;
+    this.speakerPositions = new ArrayList<>(speakerPositions);
     this.hearingRange = hearingRange;
     this.repeat = true;
     this.repeatDelay = 0;
@@ -100,5 +102,6 @@ public class FireAlarmVoiceEvacSound extends MovingSound {
    */
   public void stopPlaying() {
     donePlaying = true;
+    speakerPositions = Collections.emptyList();
   }
 }
