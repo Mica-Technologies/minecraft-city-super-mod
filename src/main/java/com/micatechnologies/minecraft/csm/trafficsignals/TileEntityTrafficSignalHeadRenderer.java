@@ -293,7 +293,7 @@ public class TileEntityTrafficSignalHeadRenderer extends
 
   // Downward tilt angle for visors (degrees). Makes bulbs visible from below, as real
   // traffic signals are mounted high on mast arms. Pivot is at the body face (z=11).
-  private static final float VISOR_TILT_DEGREES = 6.5f;
+  private static final float VISOR_TILT_DEGREES = 9.0f;
   private static final float VISOR_PIVOT_Z = 11.0f;
 
   // Visor center in model space (X=8, Y=6). All visor sizes scale relative to this point,
