@@ -6,6 +6,12 @@ import java.util.Arrays;
 import java.util.List;
 
 public class TrafficSignalVertexData {
+
+  // Extra downward tilt (degrees) applied to horizontal louver slats on top of the visor tilt.
+  // Combined with the 9° visor tilt and the ~6° gap/depth ratio, this yields a visibility
+  // cutoff around 23° from horizontal — blocking signals beyond ~20 blocks when mounted
+  // 10 blocks above road level.
+  private static final float HORIZONTAL_LOUVER_EXTRA_TILT = 15.0f;
   // New: Generate optimized circle visor (segmented ring)
   public static List<Box> getOptimizedCircleVisor() {
     List<Box> boxes = new ArrayList<>();
@@ -170,16 +176,16 @@ public class TrafficSignalVertexData {
       new Box(new float[]{3.10f, 8.50f, 2.00f}, new float[]{3.50f, 8.90f, 11.00f}),
       new Box(new float[]{3.10f, 3.30f, 2.00f}, new float[]{3.50f, 3.70f, 11.00f}),
       new Box(new float[]{12.50f, 8.50f, 2.00f}, new float[]{12.90f, 8.90f, 11.00f}),
-      new Box(new float[]{3.15f, 4.10f, 2.00f}, new float[]{3.20f, 8.10f, 11.00f}),
-      new Box(new float[]{12.80f, 4.10f, 2.00f}, new float[]{12.85f, 8.10f, 11.00f}),
-      new Box(new float[]{11.80f, 2.50f, 2.00f}, new float[]{11.85f, 9.70f, 11.00f}),
-      new Box(new float[]{10.80f, 1.90f, 2.00f}, new float[]{10.85f, 10.30f, 11.00f}),
-      new Box(new float[]{9.80f, 1.30f, 2.00f}, new float[]{9.85f, 10.90f, 11.00f}),
-      new Box(new float[]{8.70f, 0.90f, 2.00f}, new float[]{8.75f, 11.30f, 11.00f}),
-      new Box(new float[]{7.25f, 0.90f, 2.00f}, new float[]{7.30f, 11.30f, 11.00f}),
-      new Box(new float[]{6.15f, 1.30f, 2.00f}, new float[]{6.20f, 10.90f, 11.00f}),
-      new Box(new float[]{5.15f, 1.90f, 2.00f}, new float[]{5.20f, 10.30f, 11.00f}),
-      new Box(new float[]{4.15f, 2.50f, 2.00f}, new float[]{4.20f, 9.70f, 11.00f}),
+      new Box(new float[]{3.15f, 4.10f, 2.00f}, new float[]{3.20f, 8.10f, 11.00f}, true),
+      new Box(new float[]{12.80f, 4.10f, 2.00f}, new float[]{12.85f, 8.10f, 11.00f}, true),
+      new Box(new float[]{11.80f, 2.50f, 2.00f}, new float[]{11.85f, 9.70f, 11.00f}, true),
+      new Box(new float[]{10.80f, 1.90f, 2.00f}, new float[]{10.85f, 10.30f, 11.00f}, true),
+      new Box(new float[]{9.80f, 1.30f, 2.00f}, new float[]{9.85f, 10.90f, 11.00f}, true),
+      new Box(new float[]{8.70f, 0.90f, 2.00f}, new float[]{8.75f, 11.30f, 11.00f}, true),
+      new Box(new float[]{7.25f, 0.90f, 2.00f}, new float[]{7.30f, 11.30f, 11.00f}, true),
+      new Box(new float[]{6.15f, 1.30f, 2.00f}, new float[]{6.20f, 10.90f, 11.00f}, true),
+      new Box(new float[]{5.15f, 1.90f, 2.00f}, new float[]{5.20f, 10.30f, 11.00f}, true),
+      new Box(new float[]{4.15f, 2.50f, 2.00f}, new float[]{4.20f, 9.70f, 11.00f}, true),
       new Box(new float[]{12.50f, 3.30f, 2.00f}, new float[]{12.90f, 3.70f, 11.00f}),
       new Box(new float[]{3.30f, 8.90f, 2.00f}, new float[]{3.70f, 9.30f, 11.00f}),
       new Box(new float[]{3.30f, 2.90f, 2.00f}, new float[]{3.70f, 3.30f, 11.00f}),
@@ -249,16 +255,16 @@ public class TrafficSignalVertexData {
       new Box(new float[]{3.10f, 8.50f, 2.00f}, new float[]{3.50f, 8.90f, 11.00f}),
       new Box(new float[]{3.10f, 3.30f, 2.00f}, new float[]{3.50f, 3.70f, 11.00f}),
       new Box(new float[]{12.50f, 8.50f, 2.00f}, new float[]{12.90f, 8.90f, 11.00f}),
-      new Box(new float[]{6.00f, 10.80f, 2.00f}, new float[]{10.00f, 10.85f, 11.00f}),
-      new Box(new float[]{4.30f, 9.80f, 2.00f}, new float[]{11.70f, 9.85f, 11.00f}),
-      new Box(new float[]{3.50f, 8.80f, 2.00f}, new float[]{12.50f, 8.85f, 11.00f}),
-      new Box(new float[]{3.10f, 7.80f, 2.00f}, new float[]{12.90f, 7.85f, 11.00f}),
-      new Box(new float[]{2.80f, 6.80f, 2.00f}, new float[]{13.20f, 6.85f, 11.00f}),
-      new Box(new float[]{2.80f, 5.80f, 2.00f}, new float[]{13.20f, 5.85f, 11.00f}),
-      new Box(new float[]{2.90f, 4.80f, 2.00f}, new float[]{13.10f, 4.85f, 11.00f}),
-      new Box(new float[]{3.30f, 3.80f, 2.00f}, new float[]{12.70f, 3.85f, 11.00f}),
-      new Box(new float[]{4.00f, 2.80f, 2.00f}, new float[]{12.00f, 2.85f, 11.00f}),
-      new Box(new float[]{5.20f, 1.80f, 2.00f}, new float[]{10.80f, 1.85f, 11.00f}),
+      new Box(new float[]{6.00f, 10.80f, 2.00f}, new float[]{10.00f, 10.85f, 11.00f}, true, HORIZONTAL_LOUVER_EXTRA_TILT),
+      new Box(new float[]{4.30f, 9.80f, 2.00f}, new float[]{11.70f, 9.85f, 11.00f}, true, HORIZONTAL_LOUVER_EXTRA_TILT),
+      new Box(new float[]{3.50f, 8.80f, 2.00f}, new float[]{12.50f, 8.85f, 11.00f}, true, HORIZONTAL_LOUVER_EXTRA_TILT),
+      new Box(new float[]{3.10f, 7.80f, 2.00f}, new float[]{12.90f, 7.85f, 11.00f}, true, HORIZONTAL_LOUVER_EXTRA_TILT),
+      new Box(new float[]{2.80f, 6.80f, 2.00f}, new float[]{13.20f, 6.85f, 11.00f}, true, HORIZONTAL_LOUVER_EXTRA_TILT),
+      new Box(new float[]{2.80f, 5.80f, 2.00f}, new float[]{13.20f, 5.85f, 11.00f}, true, HORIZONTAL_LOUVER_EXTRA_TILT),
+      new Box(new float[]{2.90f, 4.80f, 2.00f}, new float[]{13.10f, 4.85f, 11.00f}, true, HORIZONTAL_LOUVER_EXTRA_TILT),
+      new Box(new float[]{3.30f, 3.80f, 2.00f}, new float[]{12.70f, 3.85f, 11.00f}, true, HORIZONTAL_LOUVER_EXTRA_TILT),
+      new Box(new float[]{4.00f, 2.80f, 2.00f}, new float[]{12.00f, 2.85f, 11.00f}, true, HORIZONTAL_LOUVER_EXTRA_TILT),
+      new Box(new float[]{5.20f, 1.80f, 2.00f}, new float[]{10.80f, 1.85f, 11.00f}, true, HORIZONTAL_LOUVER_EXTRA_TILT),
       new Box(new float[]{12.50f, 3.30f, 2.00f}, new float[]{12.90f, 3.70f, 11.00f}),
       new Box(new float[]{3.30f, 8.90f, 2.00f}, new float[]{3.70f, 9.30f, 11.00f}),
       new Box(new float[]{3.30f, 2.90f, 2.00f}, new float[]{3.70f, 3.30f, 11.00f}),
@@ -328,26 +334,26 @@ public class TrafficSignalVertexData {
       new Box(new float[]{3.10f, 8.50f, 2.00f}, new float[]{3.50f, 8.90f, 11.00f}),
       new Box(new float[]{3.10f, 3.30f, 2.00f}, new float[]{3.50f, 3.70f, 11.00f}),
       new Box(new float[]{12.50f, 8.50f, 2.00f}, new float[]{12.90f, 8.90f, 11.00f}),
-      new Box(new float[]{6.00f, 10.80f, 2.00f}, new float[]{10.00f, 10.85f, 11.00f}),
-      new Box(new float[]{4.30f, 9.80f, 2.00f}, new float[]{11.70f, 9.85f, 11.00f}),
-      new Box(new float[]{3.50f, 8.80f, 2.00f}, new float[]{12.50f, 8.85f, 11.00f}),
-      new Box(new float[]{3.10f, 7.80f, 2.00f}, new float[]{12.90f, 7.85f, 11.00f}),
-      new Box(new float[]{2.80f, 6.80f, 2.00f}, new float[]{13.20f, 6.85f, 11.00f}),
-      new Box(new float[]{2.80f, 5.80f, 2.00f}, new float[]{13.20f, 5.85f, 11.00f}),
-      new Box(new float[]{2.90f, 4.80f, 2.00f}, new float[]{13.10f, 4.85f, 11.00f}),
-      new Box(new float[]{3.30f, 3.80f, 2.00f}, new float[]{12.70f, 3.85f, 11.00f}),
-      new Box(new float[]{4.00f, 2.80f, 2.00f}, new float[]{12.00f, 2.85f, 11.00f}),
-      new Box(new float[]{5.20f, 1.80f, 2.00f}, new float[]{10.80f, 1.85f, 11.00f}),
-      new Box(new float[]{3.15f, 4.10f, 2.00f}, new float[]{3.20f, 8.10f, 11.00f}),
-      new Box(new float[]{4.15f, 2.50f, 2.00f}, new float[]{4.20f, 9.70f, 11.00f}),
-      new Box(new float[]{5.15f, 1.90f, 2.00f}, new float[]{5.20f, 10.30f, 11.00f}),
-      new Box(new float[]{6.15f, 1.30f, 2.00f}, new float[]{6.20f, 10.90f, 11.00f}),
-      new Box(new float[]{7.25f, 0.90f, 2.00f}, new float[]{7.30f, 11.30f, 11.00f}),
-      new Box(new float[]{8.70f, 0.90f, 2.00f}, new float[]{8.75f, 11.30f, 11.00f}),
-      new Box(new float[]{9.80f, 1.30f, 2.00f}, new float[]{9.85f, 10.90f, 11.00f}),
-      new Box(new float[]{10.80f, 1.90f, 2.00f}, new float[]{10.85f, 10.30f, 11.00f}),
-      new Box(new float[]{11.80f, 2.50f, 2.00f}, new float[]{11.85f, 9.70f, 11.00f}),
-      new Box(new float[]{12.80f, 4.10f, 2.00f}, new float[]{12.85f, 8.10f, 11.00f}),
+      new Box(new float[]{6.00f, 10.80f, 2.00f}, new float[]{10.00f, 10.85f, 11.00f}, true, HORIZONTAL_LOUVER_EXTRA_TILT),
+      new Box(new float[]{4.30f, 9.80f, 2.00f}, new float[]{11.70f, 9.85f, 11.00f}, true, HORIZONTAL_LOUVER_EXTRA_TILT),
+      new Box(new float[]{3.50f, 8.80f, 2.00f}, new float[]{12.50f, 8.85f, 11.00f}, true, HORIZONTAL_LOUVER_EXTRA_TILT),
+      new Box(new float[]{3.10f, 7.80f, 2.00f}, new float[]{12.90f, 7.85f, 11.00f}, true, HORIZONTAL_LOUVER_EXTRA_TILT),
+      new Box(new float[]{2.80f, 6.80f, 2.00f}, new float[]{13.20f, 6.85f, 11.00f}, true, HORIZONTAL_LOUVER_EXTRA_TILT),
+      new Box(new float[]{2.80f, 5.80f, 2.00f}, new float[]{13.20f, 5.85f, 11.00f}, true, HORIZONTAL_LOUVER_EXTRA_TILT),
+      new Box(new float[]{2.90f, 4.80f, 2.00f}, new float[]{13.10f, 4.85f, 11.00f}, true, HORIZONTAL_LOUVER_EXTRA_TILT),
+      new Box(new float[]{3.30f, 3.80f, 2.00f}, new float[]{12.70f, 3.85f, 11.00f}, true, HORIZONTAL_LOUVER_EXTRA_TILT),
+      new Box(new float[]{4.00f, 2.80f, 2.00f}, new float[]{12.00f, 2.85f, 11.00f}, true, HORIZONTAL_LOUVER_EXTRA_TILT),
+      new Box(new float[]{5.20f, 1.80f, 2.00f}, new float[]{10.80f, 1.85f, 11.00f}, true, HORIZONTAL_LOUVER_EXTRA_TILT),
+      new Box(new float[]{3.15f, 4.10f, 2.00f}, new float[]{3.20f, 8.10f, 11.00f}, true),
+      new Box(new float[]{4.15f, 2.50f, 2.00f}, new float[]{4.20f, 9.70f, 11.00f}, true),
+      new Box(new float[]{5.15f, 1.90f, 2.00f}, new float[]{5.20f, 10.30f, 11.00f}, true),
+      new Box(new float[]{6.15f, 1.30f, 2.00f}, new float[]{6.20f, 10.90f, 11.00f}, true),
+      new Box(new float[]{7.25f, 0.90f, 2.00f}, new float[]{7.30f, 11.30f, 11.00f}, true),
+      new Box(new float[]{8.70f, 0.90f, 2.00f}, new float[]{8.75f, 11.30f, 11.00f}, true),
+      new Box(new float[]{9.80f, 1.30f, 2.00f}, new float[]{9.85f, 10.90f, 11.00f}, true),
+      new Box(new float[]{10.80f, 1.90f, 2.00f}, new float[]{10.85f, 10.30f, 11.00f}, true),
+      new Box(new float[]{11.80f, 2.50f, 2.00f}, new float[]{11.85f, 9.70f, 11.00f}, true),
+      new Box(new float[]{12.80f, 4.10f, 2.00f}, new float[]{12.85f, 8.10f, 11.00f}, true),
       new Box(new float[]{12.50f, 3.30f, 2.00f}, new float[]{12.90f, 3.70f, 11.00f}),
       new Box(new float[]{3.30f, 8.90f, 2.00f}, new float[]{3.70f, 9.30f, 11.00f}),
       new Box(new float[]{3.30f, 2.90f, 2.00f}, new float[]{3.70f, 3.30f, 11.00f}),
@@ -592,7 +598,7 @@ public class TrafficSignalVertexData {
       float y2 = CENTER_Y + (box.to[1] - CENTER_Y) * scale;
       float z1 = scaleZ ? CENTER_Z_VISOR + (box.from[2] - CENTER_Z_VISOR) * scale : box.from[2];
       float z2 = scaleZ ? CENTER_Z_VISOR + (box.to[2] - CENTER_Z_VISOR) * scale : box.to[2];
-      result.add(new Box(new float[]{x1, y1, z1}, new float[]{x2, y2, z2}));
+      result.add(new Box(new float[]{x1, y1, z1}, new float[]{x2, y2, z2}, box.innerOnly, box.extraTiltDegrees));
     }
     return result;
   }

@@ -176,8 +176,11 @@ public class RenderHelper {
       float midX = (box.from[0] + box.to[0]) / 2f + xOffset;
       float midY = (box.from[1] + box.to[1]) / 2f + yOffset;
 
+      float effOuterR = box.innerOnly ? innerR : outerR;
+      float effOuterG = box.innerOnly ? innerG : outerG;
+      float effOuterB = box.innerOnly ? innerB : outerB;
       addCuboidVerticesDualColor(buffer, x1, y1, z1, x2, y2, z2,
-          outerR, outerG, outerB, innerR, innerG, innerB, alpha,
+          effOuterR, effOuterG, effOuterB, innerR, innerG, innerB, alpha,
           midX, midY, centerX + xOffset, centerY + yOffset);
     }
   }
@@ -202,6 +205,18 @@ public class RenderHelper {
       float yShift1 = -(pivotZ - z1) * tiltSlope;
       float yShift2 = -(pivotZ - z2) * tiltSlope;
 
+      // Apply per-box extra tilt (e.g., horizontal louver slats tilted more than the visor)
+      if (box.extraTiltDegrees != 0f) {
+        float extraSlope = (float) Math.tan(Math.toRadians(box.extraTiltDegrees));
+        yShift1 += -(pivotZ - z1) * extraSlope;
+        yShift2 += -(pivotZ - z2) * extraSlope;
+      }
+
+      // For innerOnly boxes (louver slats), use inner color on all faces
+      float effOuterR = box.innerOnly ? innerR : outerR;
+      float effOuterG = box.innerOnly ? innerG : outerG;
+      float effOuterB = box.innerOnly ? innerB : outerB;
+
       // Determine inside/outside per face based on box center vs visor center.
       // Left/right faces always use dual coloring.
       // Top/bottom faces only use dual coloring when the box is clearly in the
@@ -217,22 +232,22 @@ public class RenderHelper {
       boolean topInside = midY < cy - tbMargin;
 
       float lr, lg, lb, rr, rg, rb, br, bg, bb, tr, tg, tb;
-      lr = leftInside ? innerR : outerR; lg = leftInside ? innerG : outerG; lb = leftInside ? innerB : outerB;
-      rr = rightInside ? innerR : outerR; rg = rightInside ? innerG : outerG; rb = rightInside ? innerB : outerB;
-      br = bottomInside ? innerR : outerR; bg = bottomInside ? innerG : outerG; bb = bottomInside ? innerB : outerB;
-      tr = topInside ? innerR : outerR; tg = topInside ? innerG : outerG; tb = topInside ? innerB : outerB;
+      lr = leftInside ? innerR : effOuterR; lg = leftInside ? innerG : effOuterG; lb = leftInside ? innerB : effOuterB;
+      rr = rightInside ? innerR : effOuterR; rg = rightInside ? innerG : effOuterG; rb = rightInside ? innerB : effOuterB;
+      br = bottomInside ? innerR : effOuterR; bg = bottomInside ? innerG : effOuterG; bb = bottomInside ? innerB : effOuterB;
+      tr = topInside ? innerR : effOuterR; tg = topInside ? innerG : effOuterG; tb = topInside ? innerB : effOuterB;
 
       // Front face (z2) — outer color (visible rim)
-      buffer.pos(x1, y1 + yShift2, z2).color(outerR, outerG, outerB, alpha).endVertex();
-      buffer.pos(x2, y1 + yShift2, z2).color(outerR, outerG, outerB, alpha).endVertex();
-      buffer.pos(x2, y2 + yShift2, z2).color(outerR, outerG, outerB, alpha).endVertex();
-      buffer.pos(x1, y2 + yShift2, z2).color(outerR, outerG, outerB, alpha).endVertex();
+      buffer.pos(x1, y1 + yShift2, z2).color(effOuterR, effOuterG, effOuterB, alpha).endVertex();
+      buffer.pos(x2, y1 + yShift2, z2).color(effOuterR, effOuterG, effOuterB, alpha).endVertex();
+      buffer.pos(x2, y2 + yShift2, z2).color(effOuterR, effOuterG, effOuterB, alpha).endVertex();
+      buffer.pos(x1, y2 + yShift2, z2).color(effOuterR, effOuterG, effOuterB, alpha).endVertex();
 
       // Back face (z1) — outer color (attachment edge)
-      buffer.pos(x2, y1 + yShift1, z1).color(outerR, outerG, outerB, alpha).endVertex();
-      buffer.pos(x1, y1 + yShift1, z1).color(outerR, outerG, outerB, alpha).endVertex();
-      buffer.pos(x1, y2 + yShift1, z1).color(outerR, outerG, outerB, alpha).endVertex();
-      buffer.pos(x2, y2 + yShift1, z1).color(outerR, outerG, outerB, alpha).endVertex();
+      buffer.pos(x2, y1 + yShift1, z1).color(effOuterR, effOuterG, effOuterB, alpha).endVertex();
+      buffer.pos(x1, y1 + yShift1, z1).color(effOuterR, effOuterG, effOuterB, alpha).endVertex();
+      buffer.pos(x1, y2 + yShift1, z1).color(effOuterR, effOuterG, effOuterB, alpha).endVertex();
+      buffer.pos(x2, y2 + yShift1, z1).color(effOuterR, effOuterG, effOuterB, alpha).endVertex();
 
       // Left face (x1)
       buffer.pos(x1, y1 + yShift1, z1).color(lr, lg, lb, alpha).endVertex();
@@ -319,10 +334,28 @@ public class RenderHelper {
   public static class Box {
     public final float[] from;
     public final float[] to;
+    public final boolean innerOnly;
+    public final float extraTiltDegrees;
 
     public Box(float[] from, float[] to) {
       this.from = from;
       this.to = to;
+      this.innerOnly = false;
+      this.extraTiltDegrees = 0f;
+    }
+
+    public Box(float[] from, float[] to, boolean innerOnly) {
+      this.from = from;
+      this.to = to;
+      this.innerOnly = innerOnly;
+      this.extraTiltDegrees = 0f;
+    }
+
+    public Box(float[] from, float[] to, boolean innerOnly, float extraTiltDegrees) {
+      this.from = from;
+      this.to = to;
+      this.innerOnly = innerOnly;
+      this.extraTiltDegrees = extraTiltDegrees;
     }
   }
 
