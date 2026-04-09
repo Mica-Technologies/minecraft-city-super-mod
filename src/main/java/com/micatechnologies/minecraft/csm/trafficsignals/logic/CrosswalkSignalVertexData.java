@@ -161,7 +161,7 @@ public class CrosswalkSignalVertexData {
 
     // Crate style visor (matches wider 18-unit body)
     public static final List<Box> SINGLE_VISOR_CRATE_VERTEX_DATA = createCrateVisor(
-            SINGLE_X_MIN, 0.0f, SINGLE_X_MAX, 16.0f, 0.5f );
+            SINGLE_X_MIN, 0.0f, SINGLE_X_MAX, 16.0f, 0.2f );
 
     // ========================================================================================
     // VISORS — DOUBLE SECTIONS
@@ -224,11 +224,11 @@ public class CrosswalkSignalVertexData {
 
     // Crate for upper double section
     public static final List<Box> DOUBLE_UPPER_VISOR_CRATE_VERTEX_DATA = createCrateVisor(
-            2.0f, 12.0f, 14.0f, 24.0f, 0.4f );
+            2.0f, 12.0f, 14.0f, 24.0f, 0.15f );
 
     // Crate for lower double section
     public static final List<Box> DOUBLE_LOWER_VISOR_CRATE_VERTEX_DATA = createCrateVisor(
-            2.0f, 0.0f, 14.0f, 12.0f, 0.4f );
+            2.0f, 0.0f, 14.0f, 12.0f, 0.15f );
 
     // ========================================================================================
     // VISORS — SINGLE 12-INCH (same geometry as double lower section visors)
@@ -265,7 +265,7 @@ public class CrosswalkSignalVertexData {
 
     // Crate for single 12-inch
     public static final List<Box> SINGLE_12INCH_VISOR_CRATE_VERTEX_DATA = createCrateVisor(
-            2.0f, 0.0f, 14.0f, 12.0f, 0.4f );
+            2.0f, 0.0f, 14.0f, 12.0f, 0.15f );
 
     // ========================================================================================
     // HELPER: Generate crate-style visor
@@ -289,10 +289,11 @@ public class CrosswalkSignalVertexData {
         float width = x2 - x1;
         float height = y2 - y1;
 
-        // Diagonal line spacing — tighter for denser diamond mesh
-        float diagSpacing = 1.8f;
-        // Step size for each box along the diagonal — smaller = smoother lines
-        float step = 0.5f;
+        // Diagonal line spacing — tight for dense diamond mesh matching real crate visors
+        float diagSpacing = 1.0f;
+        // Step size for each box along the diagonal — must not exceed barThickness so
+        // consecutive boxes touch/overlap, preventing visible gaps in the lattice lines.
+        float step = barThickness;
         float halfBar = barThickness / 2.0f;
 
         // Generate / diagonals (lower-left to upper-right)
@@ -338,8 +339,8 @@ public class CrosswalkSignalVertexData {
             }
         }
 
-        // Outer frame (slightly thicker)
-        float frameThick = barThickness * 1.5f;
+        // Outer frame — solid border to prevent body color bleeding through at edges
+        float frameThick = 0.6f;
         boxes.add( new Box( new float[]{ x1, y2 - frameThick, frontZ },
                 new float[]{ x2, y2, faceZ } ) );
         boxes.add( new Box( new float[]{ x1, y1, frontZ },
