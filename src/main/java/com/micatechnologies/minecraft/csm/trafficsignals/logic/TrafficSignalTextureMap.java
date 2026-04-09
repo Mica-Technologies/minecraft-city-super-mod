@@ -111,11 +111,15 @@ public class TrafficSignalTextureMap {
     // 46:    eled off                 47-49: eled on (G/Y/R)          [LED_DOTTED ball]
     // 50:    gtx off                  51-53: gtx on (G/Y/R)           [GE GTX ball]
     // 54:    wled_red_x                                               [unused/future]
+    // 55:    dr6 off                  56-58: dr6 on (G/Y/R)           [GE DR6 ball]
     if (!isLit) {
       switch (type) {
         case BIKE:
           return colorIdx; // 0, 1, 2: biled off (G/Y/R)
         case BALL:
+          if (style == TrafficSignalBulbStyle.DR6) {
+            return 55; // dr6 off (single untinted off texture)
+          }
           if (style == TrafficSignalBulbStyle.GTX) {
             return 50; // gtx off (single untinted off texture)
           }
@@ -143,8 +147,9 @@ public class TrafficSignalTextureMap {
           if (style == TrafficSignalBulbStyle.LED_DOTTED) {
             return 6; // led arrow off
           }
-          if (style == TrafficSignalBulbStyle.LED || style == TrafficSignalBulbStyle.GTX) {
-            return 10 + colorIdx; // 10-12: arrow off (G/Y/R) — GTX falls back to LED arrows
+          if (style == TrafficSignalBulbStyle.LED || style == TrafficSignalBulbStyle.GTX
+              || style == TrafficSignalBulbStyle.DR6) {
+            return 10 + colorIdx; // 10-12: arrow off (G/Y/R) — GTX/DR6 fall back to LED arrows
           }
           if (style == TrafficSignalBulbStyle.INCANDESCENT) {
             return 40 + colorIdx; // 40-42: inca arrow off (G/Y/R)
@@ -156,6 +161,9 @@ public class TrafficSignalTextureMap {
         case BIKE:
           return 3 + colorIdx; // 3-5: biled on (G/Y/R)
         case BALL:
+          if (style == TrafficSignalBulbStyle.DR6) {
+            return 56 + colorIdx; // 56-58: dr6 on (G/Y/R)
+          }
           if (style == TrafficSignalBulbStyle.GTX) {
             return 51 + colorIdx; // 51-53: gtx on (G/Y/R)
           }
@@ -183,8 +191,9 @@ public class TrafficSignalTextureMap {
           if (style == TrafficSignalBulbStyle.LED_DOTTED) {
             return 7 + colorIdx; // 7-9: led dotted arrow (G/Y/R)
           }
-          if (style == TrafficSignalBulbStyle.LED || style == TrafficSignalBulbStyle.GTX) {
-            return 13 + colorIdx; // 13-15: arrow on (G/Y/R) — GTX falls back to LED arrows
+          if (style == TrafficSignalBulbStyle.LED || style == TrafficSignalBulbStyle.GTX
+              || style == TrafficSignalBulbStyle.DR6) {
+            return 13 + colorIdx; // 13-15: arrow on (G/Y/R) — GTX/DR6 fall back to LED arrows
           }
           if (style == TrafficSignalBulbStyle.INCANDESCENT) {
             return 43 + colorIdx; // 43-45: inca arrow on (G/Y/R)

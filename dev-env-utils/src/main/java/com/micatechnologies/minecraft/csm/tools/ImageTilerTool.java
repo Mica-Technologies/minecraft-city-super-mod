@@ -73,7 +73,11 @@ public class ImageTilerTool {
       "gtx_green_on",
       "gtx_yellow_on",
       "gtx_red_on",
-      "wled_red_x"
+      "wled_red_x",
+      "dr6_off",
+      "dr6_green_on",
+      "dr6_yellow_on",
+      "dr6_red_on"
   };
 
   public static void main(String[] args) {
