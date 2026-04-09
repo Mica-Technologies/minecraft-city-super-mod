@@ -202,17 +202,19 @@ public class RenderHelper {
       float yShift1 = -(pivotZ - z1) * tiltSlope;
       float yShift2 = -(pivotZ - z2) * tiltSlope;
 
-      // Determine inside/outside per face based on box center vs visor center
+      // Determine inside/outside per face based on box center vs visor center.
+      // Left/right faces always use dual coloring.
+      // Top/bottom faces only use dual coloring when the box is clearly in the
+      // top or bottom arc of the visor curve (1.5+ units from center Y). Near the
+      // center, the visor's stepped-box geometry has partial-depth gaps where
+      // inner-colored top/bottom faces would peek through the exterior.
       float cx = centerX + xOffset;
       float cy = centerY + yOffset;
-      // Left face (x1): inside if box center is right of visor center
       boolean leftInside = midX > cx;
-      // Right face (x2): inside if box center is left of visor center
       boolean rightInside = midX < cx;
-      // Bottom face (y1): inside if box center is above visor center
-      boolean bottomInside = midY > cy;
-      // Top face (y2): inside if box center is below visor center
-      boolean topInside = midY < cy;
+      float tbMargin = 0.5f;
+      boolean bottomInside = midY > cy + tbMargin;
+      boolean topInside = midY < cy - tbMargin;
 
       float lr, lg, lb, rr, rg, rb, br, bg, bb, tr, tg, tb;
       lr = leftInside ? innerR : outerR; lg = leftInside ? innerG : outerG; lb = leftInside ? innerB : outerB;
