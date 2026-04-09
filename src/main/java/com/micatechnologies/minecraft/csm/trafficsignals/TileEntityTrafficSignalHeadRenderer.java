@@ -312,6 +312,12 @@ public class TileEntityTrafficSignalHeadRenderer extends
   private static final float VISOR_TINT_SCALE = 1.04f;
   private static final float VISOR_TINT_BASE = 0.01f;
 
+  // Per-section louver tilt compensation (degrees per model unit of Y offset).
+  // In a multi-section signal, lower sections are closer to the viewer's eye level and
+  // need steeper louver tilt to maintain the same visibility cutoff. Each 12-unit section
+  // offset changes the viewing angle by ~1.8° at 20 blocks distance (10 blocks height).
+  private static final float LOUVER_TILT_COMPENSATION_PER_UNIT = 0.05f;
+
   private void addVisorQuadsToBuffer(TrafficSignalVisorType visorType, BufferBuilder buffer,
       float red, float green, float blue, float alpha, float xOffset, float yOffset,
       int sectionSize, float zPushBack) {
@@ -368,10 +374,13 @@ public class TileEntityTrafficSignalHeadRenderer extends
         return;
     }
     if (applyTilt) {
+      // Compute per-section louver tilt adjustment: lower sections (negative yOffset)
+      // get more tilt, upper sections (positive yOffset) get less.
+      float louverTiltAdjust = -yOffset * LOUVER_TILT_COMPENSATION_PER_UNIT;
       RenderHelper.addTiltedBoxesToBufferDualColor(visorData, buffer,
           red, green, blue, VISOR_INNER_R, VISOR_INNER_G, VISOR_INNER_B, alpha,
           xOffset, yOffset, zPushBack, VISOR_PIVOT_Z + zPushBack, VISOR_TILT_DEGREES,
-          VISOR_CENTER_X, VISOR_CENTER_Y);
+          VISOR_CENTER_X, VISOR_CENTER_Y, louverTiltAdjust);
     } else {
       RenderHelper.addBoxesToBufferDualColor(visorData, buffer,
           red, green, blue, VISOR_INNER_R, VISOR_INNER_G, VISOR_INNER_B, alpha,

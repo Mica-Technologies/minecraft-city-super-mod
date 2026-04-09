@@ -188,13 +188,16 @@ public class RenderHelper {
   /**
    * Adds tilted boxes to the buffer with dual coloring. Same inside/outside logic as
    * {@link #addBoxesToBufferDualColor} but with the visor downward tilt applied.
+   *
+   * @param extraTiltAdjust additional degrees added to each box's extraTiltDegrees, used
+   *                        for per-section compensation (lower sections need more tilt)
    */
   public static void addTiltedBoxesToBufferDualColor(List<Box> boxes, BufferBuilder buffer,
       float outerR, float outerG, float outerB,
       float innerR, float innerG, float innerB,
       float alpha, float xOffset, float yOffset, float zOffset,
       float pivotZ, float tiltAngleDeg,
-      float centerX, float centerY) {
+      float centerX, float centerY, float extraTiltAdjust) {
     float tiltSlope = (float) Math.tan(Math.toRadians(tiltAngleDeg));
     for (Box box : boxes) {
       float x1 = box.from[0] + xOffset, y1 = box.from[1] + yOffset, z1 = box.from[2] + zOffset;
@@ -205,9 +208,12 @@ public class RenderHelper {
       float yShift1 = -(pivotZ - z1) * tiltSlope;
       float yShift2 = -(pivotZ - z2) * tiltSlope;
 
-      // Apply per-box extra tilt (e.g., horizontal louver slats tilted more than the visor)
-      if (box.extraTiltDegrees != 0f) {
-        float extraSlope = (float) Math.tan(Math.toRadians(box.extraTiltDegrees));
+      // Apply per-box extra tilt (e.g., horizontal louver slats tilted more than the visor),
+      // plus per-section compensation so each section of a multi-section signal has an
+      // appropriate viewing angle cutoff.
+      float totalExtraTilt = box.extraTiltDegrees + extraTiltAdjust;
+      if (totalExtraTilt != 0f) {
+        float extraSlope = (float) Math.tan(Math.toRadians(totalExtraTilt));
         yShift1 += -(pivotZ - z1) * extraSlope;
         yShift2 += -(pivotZ - z2) * extraSlope;
       }

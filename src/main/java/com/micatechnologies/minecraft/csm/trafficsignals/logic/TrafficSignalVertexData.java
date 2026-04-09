@@ -255,20 +255,41 @@ public class TrafficSignalVertexData {
       new Box(new float[]{3.10f, 8.50f, 2.00f}, new float[]{3.50f, 8.90f, 11.00f}),
       new Box(new float[]{3.10f, 3.30f, 2.00f}, new float[]{3.50f, 3.70f, 11.00f}),
       new Box(new float[]{12.50f, 8.50f, 2.00f}, new float[]{12.90f, 8.90f, 11.00f}),
-      // Horizontal louver slats — upper slats (Y>=6.8) keep full Z depth since their
-      // tilted front edges stay within the visor circle. Lower slats are progressively
-      // shortened in Z and narrowed in X to prevent clipping through the visor shell
-      // at their dropped positions (15° extra tilt drops front edge 2.41 units at Z=2).
-      new Box(new float[]{6.00f, 10.80f, 2.00f}, new float[]{10.00f, 10.85f, 11.00f}, true, HORIZONTAL_LOUVER_EXTRA_TILT),
-      new Box(new float[]{4.30f, 9.80f, 2.00f}, new float[]{11.70f, 9.85f, 11.00f}, true, HORIZONTAL_LOUVER_EXTRA_TILT),
-      new Box(new float[]{3.50f, 8.80f, 2.00f}, new float[]{12.50f, 8.85f, 11.00f}, true, HORIZONTAL_LOUVER_EXTRA_TILT),
-      new Box(new float[]{3.10f, 7.80f, 2.00f}, new float[]{12.90f, 7.85f, 11.00f}, true, HORIZONTAL_LOUVER_EXTRA_TILT),
+      // Horizontal louver slats — each slat is split into Z segments with X width matched
+      // to the visor circle at the tilted Y position at that depth. Upper slats widen toward
+      // the front (tilt drops them toward wider visor center). Lower slats narrow toward the
+      // front (tilt drops them toward narrower visor bottom). Back segments clip into the
+      // opaque visor walls (invisible); front segments fit the visor profile at dropped Y.
+      // Y=10.8: back (narrow, top of visor) → mid → front (wide, drops to Y≈8.4)
+      // X ranges matched to visor shell inner wall at tilted Y for each Z segment.
+      new Box(new float[]{6.00f, 10.80f, 9.00f}, new float[]{10.00f, 10.85f, 11.00f}, true, HORIZONTAL_LOUVER_EXTRA_TILT),
+      new Box(new float[]{4.30f, 10.80f, 5.00f}, new float[]{11.70f, 10.85f, 9.00f}, true, HORIZONTAL_LOUVER_EXTRA_TILT),
+      new Box(new float[]{3.50f, 10.80f, 2.00f}, new float[]{12.50f, 10.85f, 5.00f}, true, HORIZONTAL_LOUVER_EXTRA_TILT),
+      // Y=9.8: back → front (drops to Y≈7.4)
+      new Box(new float[]{4.30f, 9.80f, 7.00f}, new float[]{11.70f, 9.85f, 11.00f}, true, HORIZONTAL_LOUVER_EXTRA_TILT),
+      new Box(new float[]{3.10f, 9.80f, 2.00f}, new float[]{12.90f, 9.85f, 7.00f}, true, HORIZONTAL_LOUVER_EXTRA_TILT),
+      // Y=8.8: back → front (drops to Y≈6.4)
+      new Box(new float[]{3.50f, 8.80f, 7.00f}, new float[]{12.50f, 8.85f, 11.00f}, true, HORIZONTAL_LOUVER_EXTRA_TILT),
+      new Box(new float[]{2.80f, 8.80f, 2.00f}, new float[]{13.20f, 8.85f, 7.00f}, true, HORIZONTAL_LOUVER_EXTRA_TILT),
+      // Y=7.8: back → front (drops to Y≈5.4)
+      new Box(new float[]{3.10f, 7.80f, 7.00f}, new float[]{12.90f, 7.85f, 11.00f}, true, HORIZONTAL_LOUVER_EXTRA_TILT),
+      new Box(new float[]{2.80f, 7.80f, 2.00f}, new float[]{13.20f, 7.85f, 7.00f}, true, HORIZONTAL_LOUVER_EXTRA_TILT),
+      // Y=6.8: single segment (near center, visor widest here)
       new Box(new float[]{2.80f, 6.80f, 2.00f}, new float[]{13.20f, 6.85f, 11.00f}, true, HORIZONTAL_LOUVER_EXTRA_TILT),
-      new Box(new float[]{3.00f, 5.80f, 5.00f}, new float[]{13.00f, 5.85f, 11.00f}, true, HORIZONTAL_LOUVER_EXTRA_TILT),
-      new Box(new float[]{3.50f, 4.80f, 5.00f}, new float[]{12.50f, 4.85f, 11.00f}, true, HORIZONTAL_LOUVER_EXTRA_TILT),
-      new Box(new float[]{4.20f, 3.80f, 5.00f}, new float[]{11.80f, 3.85f, 11.00f}, true, HORIZONTAL_LOUVER_EXTRA_TILT),
-      new Box(new float[]{5.00f, 2.80f, 7.00f}, new float[]{11.00f, 2.85f, 11.00f}, true, HORIZONTAL_LOUVER_EXTRA_TILT),
-      new Box(new float[]{5.50f, 1.80f, 9.00f}, new float[]{10.50f, 1.85f, 11.00f}, true, HORIZONTAL_LOUVER_EXTRA_TILT),
+      // Y=5.8: back (connects to wall) + front (narrowed for dropped Y≈4.2)
+      new Box(new float[]{2.80f, 5.80f, 8.00f}, new float[]{13.20f, 5.85f, 11.00f}, true, HORIZONTAL_LOUVER_EXTRA_TILT),
+      new Box(new float[]{3.30f, 5.80f, 5.00f}, new float[]{12.70f, 5.85f, 8.00f}, true, HORIZONTAL_LOUVER_EXTRA_TILT),
+      // Y=4.8: back + front
+      new Box(new float[]{2.90f, 4.80f, 8.00f}, new float[]{13.10f, 4.85f, 11.00f}, true, HORIZONTAL_LOUVER_EXTRA_TILT),
+      new Box(new float[]{3.50f, 4.80f, 5.00f}, new float[]{12.50f, 4.85f, 8.00f}, true, HORIZONTAL_LOUVER_EXTRA_TILT),
+      // Y=3.8: back + front
+      new Box(new float[]{3.30f, 3.80f, 8.00f}, new float[]{12.70f, 3.85f, 11.00f}, true, HORIZONTAL_LOUVER_EXTRA_TILT),
+      new Box(new float[]{4.20f, 3.80f, 5.00f}, new float[]{11.80f, 3.85f, 8.00f}, true, HORIZONTAL_LOUVER_EXTRA_TILT),
+      // Y=2.8: back + front
+      new Box(new float[]{4.00f, 2.80f, 9.00f}, new float[]{12.00f, 2.85f, 11.00f}, true, HORIZONTAL_LOUVER_EXTRA_TILT),
+      new Box(new float[]{4.80f, 2.80f, 7.00f}, new float[]{11.20f, 2.85f, 9.00f}, true, HORIZONTAL_LOUVER_EXTRA_TILT),
+      // Y=1.8: single short segment
+      new Box(new float[]{5.20f, 1.80f, 9.00f}, new float[]{10.80f, 1.85f, 11.00f}, true, HORIZONTAL_LOUVER_EXTRA_TILT),
       new Box(new float[]{12.50f, 3.30f, 2.00f}, new float[]{12.90f, 3.70f, 11.00f}),
       new Box(new float[]{3.30f, 8.90f, 2.00f}, new float[]{3.70f, 9.30f, 11.00f}),
       new Box(new float[]{3.30f, 2.90f, 2.00f}, new float[]{3.70f, 3.30f, 11.00f}),
@@ -338,17 +359,26 @@ public class TrafficSignalVertexData {
       new Box(new float[]{3.10f, 8.50f, 2.00f}, new float[]{3.50f, 8.90f, 11.00f}),
       new Box(new float[]{3.10f, 3.30f, 2.00f}, new float[]{3.50f, 3.70f, 11.00f}),
       new Box(new float[]{12.50f, 8.50f, 2.00f}, new float[]{12.90f, 8.90f, 11.00f}),
-      // Horizontal louver slats — same progressive trim as HORIZONTAL_LOUVERED list
-      new Box(new float[]{6.00f, 10.80f, 2.00f}, new float[]{10.00f, 10.85f, 11.00f}, true, HORIZONTAL_LOUVER_EXTRA_TILT),
-      new Box(new float[]{4.30f, 9.80f, 2.00f}, new float[]{11.70f, 9.85f, 11.00f}, true, HORIZONTAL_LOUVER_EXTRA_TILT),
-      new Box(new float[]{3.50f, 8.80f, 2.00f}, new float[]{12.50f, 8.85f, 11.00f}, true, HORIZONTAL_LOUVER_EXTRA_TILT),
-      new Box(new float[]{3.10f, 7.80f, 2.00f}, new float[]{12.90f, 7.85f, 11.00f}, true, HORIZONTAL_LOUVER_EXTRA_TILT),
+      // Horizontal louver slats — same Z-segmented layout as HORIZONTAL_LOUVERED list
+      new Box(new float[]{6.00f, 10.80f, 9.00f}, new float[]{10.00f, 10.85f, 11.00f}, true, HORIZONTAL_LOUVER_EXTRA_TILT),
+      new Box(new float[]{4.30f, 10.80f, 5.00f}, new float[]{11.70f, 10.85f, 9.00f}, true, HORIZONTAL_LOUVER_EXTRA_TILT),
+      new Box(new float[]{3.50f, 10.80f, 2.00f}, new float[]{12.50f, 10.85f, 5.00f}, true, HORIZONTAL_LOUVER_EXTRA_TILT),
+      new Box(new float[]{4.30f, 9.80f, 7.00f}, new float[]{11.70f, 9.85f, 11.00f}, true, HORIZONTAL_LOUVER_EXTRA_TILT),
+      new Box(new float[]{3.10f, 9.80f, 2.00f}, new float[]{12.90f, 9.85f, 7.00f}, true, HORIZONTAL_LOUVER_EXTRA_TILT),
+      new Box(new float[]{3.50f, 8.80f, 7.00f}, new float[]{12.50f, 8.85f, 11.00f}, true, HORIZONTAL_LOUVER_EXTRA_TILT),
+      new Box(new float[]{2.80f, 8.80f, 2.00f}, new float[]{13.20f, 8.85f, 7.00f}, true, HORIZONTAL_LOUVER_EXTRA_TILT),
+      new Box(new float[]{3.10f, 7.80f, 7.00f}, new float[]{12.90f, 7.85f, 11.00f}, true, HORIZONTAL_LOUVER_EXTRA_TILT),
+      new Box(new float[]{2.80f, 7.80f, 2.00f}, new float[]{13.20f, 7.85f, 7.00f}, true, HORIZONTAL_LOUVER_EXTRA_TILT),
       new Box(new float[]{2.80f, 6.80f, 2.00f}, new float[]{13.20f, 6.85f, 11.00f}, true, HORIZONTAL_LOUVER_EXTRA_TILT),
-      new Box(new float[]{3.00f, 5.80f, 5.00f}, new float[]{13.00f, 5.85f, 11.00f}, true, HORIZONTAL_LOUVER_EXTRA_TILT),
-      new Box(new float[]{3.50f, 4.80f, 5.00f}, new float[]{12.50f, 4.85f, 11.00f}, true, HORIZONTAL_LOUVER_EXTRA_TILT),
-      new Box(new float[]{4.20f, 3.80f, 5.00f}, new float[]{11.80f, 3.85f, 11.00f}, true, HORIZONTAL_LOUVER_EXTRA_TILT),
-      new Box(new float[]{5.00f, 2.80f, 7.00f}, new float[]{11.00f, 2.85f, 11.00f}, true, HORIZONTAL_LOUVER_EXTRA_TILT),
-      new Box(new float[]{5.50f, 1.80f, 9.00f}, new float[]{10.50f, 1.85f, 11.00f}, true, HORIZONTAL_LOUVER_EXTRA_TILT),
+      new Box(new float[]{2.80f, 5.80f, 8.00f}, new float[]{13.20f, 5.85f, 11.00f}, true, HORIZONTAL_LOUVER_EXTRA_TILT),
+      new Box(new float[]{3.30f, 5.80f, 5.00f}, new float[]{12.70f, 5.85f, 8.00f}, true, HORIZONTAL_LOUVER_EXTRA_TILT),
+      new Box(new float[]{2.90f, 4.80f, 8.00f}, new float[]{13.10f, 4.85f, 11.00f}, true, HORIZONTAL_LOUVER_EXTRA_TILT),
+      new Box(new float[]{3.50f, 4.80f, 5.00f}, new float[]{12.50f, 4.85f, 8.00f}, true, HORIZONTAL_LOUVER_EXTRA_TILT),
+      new Box(new float[]{3.30f, 3.80f, 8.00f}, new float[]{12.70f, 3.85f, 11.00f}, true, HORIZONTAL_LOUVER_EXTRA_TILT),
+      new Box(new float[]{4.20f, 3.80f, 5.00f}, new float[]{11.80f, 3.85f, 8.00f}, true, HORIZONTAL_LOUVER_EXTRA_TILT),
+      new Box(new float[]{4.00f, 2.80f, 9.00f}, new float[]{12.00f, 2.85f, 11.00f}, true, HORIZONTAL_LOUVER_EXTRA_TILT),
+      new Box(new float[]{4.80f, 2.80f, 7.00f}, new float[]{11.20f, 2.85f, 9.00f}, true, HORIZONTAL_LOUVER_EXTRA_TILT),
+      new Box(new float[]{5.20f, 1.80f, 9.00f}, new float[]{10.80f, 1.85f, 11.00f}, true, HORIZONTAL_LOUVER_EXTRA_TILT),
       new Box(new float[]{3.15f, 4.10f, 2.00f}, new float[]{3.20f, 8.10f, 11.00f}, true),
       new Box(new float[]{4.15f, 2.50f, 2.00f}, new float[]{4.20f, 9.70f, 11.00f}, true),
       new Box(new float[]{5.15f, 1.90f, 2.00f}, new float[]{5.20f, 10.30f, 11.00f}, true),
