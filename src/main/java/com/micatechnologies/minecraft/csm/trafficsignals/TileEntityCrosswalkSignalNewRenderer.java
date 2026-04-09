@@ -216,9 +216,10 @@ public class TileEntityCrosswalkSignalNewRenderer
     private static final float VISOR_INNER_G = TrafficSignalBodyColor.FLAT_BLACK.getGreen();
     private static final float VISOR_INNER_B = TrafficSignalBodyColor.FLAT_BLACK.getBlue();
 
-    // Slight visor tint offset — just enough to visually distinguish the visor from the body
-    // when both are configured to the same color.
-    private static final float VISOR_TINT_OFFSET = 0.025f;
+    // Visor tint parameters — proportional shift so dark colors get a gentler nudge while
+    // lighter colors still have enough distinction.  Result: min(1, channel * SCALE + BASE).
+    private static final float VISOR_TINT_SCALE = 1.04f;
+    private static final float VISOR_TINT_BASE = 0.01f;
 
     // Visor center points for inside/outside face determination
     private static final float SINGLE_VISOR_CENTER_X = 8.0f;
@@ -245,9 +246,9 @@ public class TileEntityCrosswalkSignalNewRenderer
         buffer.begin( GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR );
 
         float br = bodyColor.getRed(), bg = bodyColor.getGreen(), bb = bodyColor.getBlue();
-        float vr = Math.min( 1.0f, visorColor.getRed() + VISOR_TINT_OFFSET );
-        float vg = Math.min( 1.0f, visorColor.getGreen() + VISOR_TINT_OFFSET );
-        float vb = Math.min( 1.0f, visorColor.getBlue() + VISOR_TINT_OFFSET );
+        float vr = Math.min( 1.0f, visorColor.getRed() * VISOR_TINT_SCALE + VISOR_TINT_BASE );
+        float vg = Math.min( 1.0f, visorColor.getGreen() * VISOR_TINT_SCALE + VISOR_TINT_BASE );
+        float vb = Math.min( 1.0f, visorColor.getBlue() * VISOR_TINT_SCALE + VISOR_TINT_BASE );
         boolean isHood = visorType == CrosswalkVisorType.HOOD
                 || visorType == CrosswalkVisorType.DEEP_HOOD;
 

@@ -281,9 +281,9 @@ public class TileEntityTrafficSignalHeadRenderer extends
           doorColor.getRed(), doorColor.getGreen(), doorColor.getBlue(), 1.0f, xOffset, yOffset, zPushBack);
 
       addVisorQuadsToBuffer(visorType, buffer,
-          Math.min(1.0f, visorColor.getRed() + VISOR_TINT_OFFSET),
-          Math.min(1.0f, visorColor.getGreen() + VISOR_TINT_OFFSET),
-          Math.min(1.0f, visorColor.getBlue() + VISOR_TINT_OFFSET),
+          Math.min(1.0f, visorColor.getRed() * VISOR_TINT_SCALE + VISOR_TINT_BASE),
+          Math.min(1.0f, visorColor.getGreen() * VISOR_TINT_SCALE + VISOR_TINT_BASE),
+          Math.min(1.0f, visorColor.getBlue() * VISOR_TINT_SCALE + VISOR_TINT_BASE),
           1.0f, xOffset, yOffset, sectionSizes[i], zPushBack);
     }
     tessellator.draw();
@@ -307,9 +307,10 @@ public class TileEntityTrafficSignalHeadRenderer extends
   private static final float VISOR_INNER_G = TrafficSignalBodyColor.FLAT_BLACK.getGreen();
   private static final float VISOR_INNER_B = TrafficSignalBodyColor.FLAT_BLACK.getBlue();
 
-  // Slight visor tint offset — just enough to visually distinguish the visor from the body
-  // when both are configured to the same color.
-  private static final float VISOR_TINT_OFFSET = 0.025f;
+  // Visor tint parameters — proportional shift so dark colors get a gentler nudge while
+  // lighter colors still have enough distinction.  Result: min(1, channel * SCALE + BASE).
+  private static final float VISOR_TINT_SCALE = 1.04f;
+  private static final float VISOR_TINT_BASE = 0.01f;
 
   private void addVisorQuadsToBuffer(TrafficSignalVisorType visorType, BufferBuilder buffer,
       float red, float green, float blue, float alpha, float xOffset, float yOffset,
