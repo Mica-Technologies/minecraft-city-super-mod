@@ -242,7 +242,8 @@ public class TileEntityCrosswalkSignalNewRenderer
 
         float br = bodyColor.getRed(), bg = bodyColor.getGreen(), bb = bodyColor.getBlue();
         float vr = visorColor.getRed(), vg = visorColor.getGreen(), vb = visorColor.getBlue();
-        boolean isHood = visorType == CrosswalkVisorType.HOOD;
+        boolean isHood = visorType == CrosswalkVisorType.HOOD
+                || visorType == CrosswalkVisorType.DEEP_HOOD;
 
         if ( displayType == CrosswalkDisplayType.SYMBOL ) {
             RenderHelper.addBoxesToBuffer( CrosswalkSignalVertexData.SINGLE_BODY_VERTEX_DATA,
@@ -325,6 +326,8 @@ public class TileEntityCrosswalkSignalNewRenderer
                 return CrosswalkSignalVertexData.SINGLE_VISOR_CRATE_VERTEX_DATA;
             case HOOD:
                 return CrosswalkSignalVertexData.SINGLE_VISOR_HOOD_VERTEX_DATA;
+            case DEEP_HOOD:
+                return CrosswalkSignalVertexData.SINGLE_VISOR_DEEP_HOOD_VERTEX_DATA;
             case NONE:
             default:
                 return CrosswalkSignalVertexData.SINGLE_VISOR_NONE_VERTEX_DATA;
@@ -337,6 +340,8 @@ public class TileEntityCrosswalkSignalNewRenderer
                 return CrosswalkSignalVertexData.SINGLE_12INCH_VISOR_CRATE_VERTEX_DATA;
             case HOOD:
                 return CrosswalkSignalVertexData.SINGLE_12INCH_VISOR_HOOD_VERTEX_DATA;
+            case DEEP_HOOD:
+                return CrosswalkSignalVertexData.SINGLE_12INCH_VISOR_DEEP_HOOD_VERTEX_DATA;
             case NONE:
             default:
                 return CrosswalkSignalVertexData.SINGLE_12INCH_VISOR_NONE_VERTEX_DATA;
@@ -349,6 +354,8 @@ public class TileEntityCrosswalkSignalNewRenderer
                 return CrosswalkSignalVertexData.DOUBLE_UPPER_VISOR_CRATE_VERTEX_DATA;
             case HOOD:
                 return CrosswalkSignalVertexData.DOUBLE_UPPER_VISOR_HOOD_VERTEX_DATA;
+            case DEEP_HOOD:
+                return CrosswalkSignalVertexData.DOUBLE_UPPER_VISOR_DEEP_HOOD_VERTEX_DATA;
             case NONE:
             default:
                 return CrosswalkSignalVertexData.DOUBLE_VISOR_NONE_VERTEX_DATA;
@@ -361,6 +368,8 @@ public class TileEntityCrosswalkSignalNewRenderer
                 return CrosswalkSignalVertexData.DOUBLE_LOWER_VISOR_CRATE_VERTEX_DATA;
             case HOOD:
                 return CrosswalkSignalVertexData.DOUBLE_LOWER_VISOR_HOOD_VERTEX_DATA;
+            case DEEP_HOOD:
+                return CrosswalkSignalVertexData.DOUBLE_LOWER_VISOR_DEEP_HOOD_VERTEX_DATA;
             case NONE:
             default:
                 return CrosswalkSignalVertexData.DOUBLE_VISOR_NONE_VERTEX_DATA;

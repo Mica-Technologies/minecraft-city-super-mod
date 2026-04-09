@@ -11,7 +11,8 @@ public enum CrosswalkVisorType implements IStringSerializable
 {
     NONE( "none", "None" ),
     CRATE( "crate", "Crate Style" ),
-    HOOD( "hood", "Hood Style" );
+    HOOD( "hood", "Hood Style" ),
+    DEEP_HOOD( "deep_hood", "Deep Hood Style" );
 
     private final String name;
     private final String friendlyName;

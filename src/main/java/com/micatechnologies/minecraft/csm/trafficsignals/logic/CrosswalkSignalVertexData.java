@@ -139,6 +139,21 @@ public class CrosswalkSignalVertexData {
                     new float[]{ SINGLE_X_MAX, 16.0f, BODY_FRONT_Z } )
     );
 
+    // Deep hood style visor: same shape as hood but extends further forward.
+    private static final float DEEP_HOOD_DEPTH = 8.0f;
+
+    public static final List<Box> SINGLE_VISOR_DEEP_HOOD_VERTEX_DATA = Arrays.asList(
+            // Top panel
+            new Box( new float[]{ SINGLE_X_MIN + 0.5f, 15.5f, BODY_FRONT_Z - DEEP_HOOD_DEPTH },
+                    new float[]{ SINGLE_X_MAX - 0.5f, 16.0f, BODY_FRONT_Z } ),
+            // Left side panel (extends to bottom)
+            new Box( new float[]{ SINGLE_X_MIN, 0.0f, BODY_FRONT_Z - DEEP_HOOD_DEPTH },
+                    new float[]{ SINGLE_X_MIN + 0.5f, 16.0f, BODY_FRONT_Z } ),
+            // Right side panel (extends to bottom)
+            new Box( new float[]{ SINGLE_X_MAX - 0.5f, 0.0f, BODY_FRONT_Z - DEEP_HOOD_DEPTH },
+                    new float[]{ SINGLE_X_MAX, 16.0f, BODY_FRONT_Z } )
+    );
+
     // Crate style visor (matches wider 18-unit body)
     public static final List<Box> SINGLE_VISOR_CRATE_VERTEX_DATA = createCrateVisor(
             SINGLE_X_MIN, 0.0f, SINGLE_X_MAX, 16.0f, 0.5f );
@@ -169,6 +184,26 @@ public class CrosswalkSignalVertexData {
             new Box( new float[]{ 13.5f, 2.4f, BODY_FRONT_Z - 5.0f }, new float[]{ 14.0f, 12.0f, BODY_FRONT_Z } )
     );
 
+    // Deep hood for upper double section — 20% bottom gap, deeper protrusion
+    public static final List<Box> DOUBLE_UPPER_VISOR_DEEP_HOOD_VERTEX_DATA = Arrays.asList(
+            // Top panel
+            new Box( new float[]{ 2.5f, 23.5f, BODY_FRONT_Z - DEEP_HOOD_DEPTH }, new float[]{ 13.5f, 24.0f, BODY_FRONT_Z } ),
+            // Left side (stops 20% from section bottom = Y=14.4)
+            new Box( new float[]{ 2.0f, 14.4f, BODY_FRONT_Z - DEEP_HOOD_DEPTH }, new float[]{ 2.5f, 24.0f, BODY_FRONT_Z } ),
+            // Right side
+            new Box( new float[]{ 13.5f, 14.4f, BODY_FRONT_Z - DEEP_HOOD_DEPTH }, new float[]{ 14.0f, 24.0f, BODY_FRONT_Z } )
+    );
+
+    // Deep hood for lower double section — 20% bottom gap, deeper protrusion
+    public static final List<Box> DOUBLE_LOWER_VISOR_DEEP_HOOD_VERTEX_DATA = Arrays.asList(
+            // Top panel
+            new Box( new float[]{ 2.5f, 11.5f, BODY_FRONT_Z - DEEP_HOOD_DEPTH }, new float[]{ 13.5f, 12.0f, BODY_FRONT_Z } ),
+            // Left side (stops at Y=2.4)
+            new Box( new float[]{ 2.0f, 2.4f, BODY_FRONT_Z - DEEP_HOOD_DEPTH }, new float[]{ 2.5f, 12.0f, BODY_FRONT_Z } ),
+            // Right side
+            new Box( new float[]{ 13.5f, 2.4f, BODY_FRONT_Z - DEEP_HOOD_DEPTH }, new float[]{ 14.0f, 12.0f, BODY_FRONT_Z } )
+    );
+
     // Crate for upper double section
     public static final List<Box> DOUBLE_UPPER_VISOR_CRATE_VERTEX_DATA = createCrateVisor(
             2.0f, 12.0f, 14.0f, 24.0f, 0.4f );
@@ -191,6 +226,16 @@ public class CrosswalkSignalVertexData {
             new Box( new float[]{ 2.0f, 0.0f, BODY_FRONT_Z - 5.0f }, new float[]{ 2.5f, 12.0f, BODY_FRONT_Z } ),
             // Right side (extends to bottom)
             new Box( new float[]{ 13.5f, 0.0f, BODY_FRONT_Z - 5.0f }, new float[]{ 14.0f, 12.0f, BODY_FRONT_Z } )
+    );
+
+    // Deep hood for single 12-inch — no bottom gap, deeper protrusion
+    public static final List<Box> SINGLE_12INCH_VISOR_DEEP_HOOD_VERTEX_DATA = Arrays.asList(
+            // Top panel
+            new Box( new float[]{ 2.5f, 11.5f, BODY_FRONT_Z - DEEP_HOOD_DEPTH }, new float[]{ 13.5f, 12.0f, BODY_FRONT_Z } ),
+            // Left side (extends to bottom)
+            new Box( new float[]{ 2.0f, 0.0f, BODY_FRONT_Z - DEEP_HOOD_DEPTH }, new float[]{ 2.5f, 12.0f, BODY_FRONT_Z } ),
+            // Right side (extends to bottom)
+            new Box( new float[]{ 13.5f, 0.0f, BODY_FRONT_Z - DEEP_HOOD_DEPTH }, new float[]{ 14.0f, 12.0f, BODY_FRONT_Z } )
     );
 
     // Crate for single 12-inch

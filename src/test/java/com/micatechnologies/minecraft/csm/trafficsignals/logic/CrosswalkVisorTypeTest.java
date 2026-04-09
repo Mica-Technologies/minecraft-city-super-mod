@@ -51,7 +51,8 @@ class CrosswalkVisorTypeTest {
   void getNextVisorTypeReturnsCorrectSequence() {
     assertEquals(CrosswalkVisorType.CRATE, CrosswalkVisorType.NONE.getNextVisorType());
     assertEquals(CrosswalkVisorType.HOOD, CrosswalkVisorType.CRATE.getNextVisorType());
-    assertEquals(CrosswalkVisorType.NONE, CrosswalkVisorType.HOOD.getNextVisorType());
+    assertEquals(CrosswalkVisorType.DEEP_HOOD, CrosswalkVisorType.HOOD.getNextVisorType());
+    assertEquals(CrosswalkVisorType.NONE, CrosswalkVisorType.DEEP_HOOD.getNextVisorType());
   }
 
   @Test
@@ -72,9 +73,10 @@ class CrosswalkVisorTypeTest {
 
   @Test
   void expectedValues() {
-    assertEquals(3, CrosswalkVisorType.values().length);
+    assertEquals(4, CrosswalkVisorType.values().length);
     assertEquals("none", CrosswalkVisorType.NONE.getName());
     assertEquals("crate", CrosswalkVisorType.CRATE.getName());
     assertEquals("hood", CrosswalkVisorType.HOOD.getName());
+    assertEquals("deep_hood", CrosswalkVisorType.DEEP_HOOD.getName());
   }
 }
