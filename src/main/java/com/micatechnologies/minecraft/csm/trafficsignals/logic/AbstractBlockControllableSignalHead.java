@@ -304,12 +304,7 @@ public abstract class AbstractBlockControllableSignalHead extends AbstractBlockC
 
   @Override
   public int getLightValue(IBlockState state, IBlockAccess world, BlockPos pos) {
-    TileEntity te = world.getTileEntity(pos);
-    if (te instanceof TileEntityTrafficSignalHead
-        && ((TileEntityTrafficSignalHead) te).isPowerLossOff()) {
-      return 0;
-    }
-    return 15;
+    return 0;
   }
 
   /**
