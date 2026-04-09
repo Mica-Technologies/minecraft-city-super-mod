@@ -132,8 +132,6 @@ public class TileEntityCrosswalkSignalNewRenderer
         else if ( bodyTilt == TrafficSignalBodyTilt.LEFT_TILT ) tiltOffset = 2;
         else if ( bodyTilt == TrafficSignalBodyTilt.LEFT_ANGLE ) tiltOffset = 4;
 
-        boolean isDouble = displayType == CrosswalkDisplayType.TEXT;
-
         // =============================================
         // Horizontal arms: rendered with BASE facing only (no tilt) so pole-side
         // mount point stays stationary. Arms angle to meet the tilted stubs.
@@ -145,7 +143,7 @@ public class TileEntityCrosswalkSignalNewRenderer
             GL11.glTranslated( -8, -8, -8 );
 
             renderBoxes( bodyColor, CrosswalkSignalVertexData.getArmData(
-                    mountType, isDouble, tiltOffset,
+                    mountType, displayType, tiltOffset,
                     bodyDirection.getRotation(), baseDirection.getRotation() ) );
 
             GL11.glPopMatrix();
@@ -166,7 +164,7 @@ public class TileEntityCrosswalkSignalNewRenderer
         // Render stubs in the tilted context (before display list)
         if ( mountType != CrosswalkMountType.BASE ) {
             renderBoxes( bodyColor, CrosswalkSignalVertexData.getStubData(
-                    mountType, isDouble ) );
+                    mountType, displayType ) );
         }
 
         // Display list: body + visor only (no bracket)
@@ -234,6 +232,13 @@ public class TileEntityCrosswalkSignalNewRenderer
             List<RenderHelper.Box> visorData = getSingleVisorData( visorType );
             RenderHelper.addBoxesToBuffer( visorData, buffer, vr, vg, vb, 1.0f, 0, 0, 0 );
         }
+        else if ( displayType == CrosswalkDisplayType.SYMBOL_12INCH ) {
+            RenderHelper.addBoxesToBuffer(
+                    CrosswalkSignalVertexData.SINGLE_12INCH_BODY_VERTEX_DATA,
+                    buffer, br, bg, bb, 1.0f, 0, 0, 0 );
+            List<RenderHelper.Box> visorData = getSingle12InchVisorData( visorType );
+            RenderHelper.addBoxesToBuffer( visorData, buffer, vr, vg, vb, 1.0f, 0, 0, 0 );
+        }
         else {
             RenderHelper.addBoxesToBuffer(
                     CrosswalkSignalVertexData.DOUBLE_UPPER_BODY_VERTEX_DATA,
@@ -278,6 +283,18 @@ public class TileEntityCrosswalkSignalNewRenderer
             case NONE:
             default:
                 return CrosswalkSignalVertexData.SINGLE_VISOR_NONE_VERTEX_DATA;
+        }
+    }
+
+    private List<RenderHelper.Box> getSingle12InchVisorData( CrosswalkVisorType visorType ) {
+        switch ( visorType ) {
+            case CRATE:
+                return CrosswalkSignalVertexData.SINGLE_12INCH_VISOR_CRATE_VERTEX_DATA;
+            case HOOD:
+                return CrosswalkSignalVertexData.SINGLE_12INCH_VISOR_HOOD_VERTEX_DATA;
+            case NONE:
+            default:
+                return CrosswalkSignalVertexData.SINGLE_12INCH_VISOR_NONE_VERTEX_DATA;
         }
     }
 
@@ -332,6 +349,21 @@ public class TileEntityCrosswalkSignalNewRenderer
                     CrosswalkSignalVertexData.SINGLE_DISPLAY_X2,
                     CrosswalkSignalVertexData.SINGLE_DISPLAY_Y2,
                     CrosswalkSignalVertexData.SINGLE_DISPLAY_FACE_Z );
+            tessellator.draw();
+        }
+        else if ( displayType == CrosswalkDisplayType.SYMBOL_12INCH ) {
+            // Single 12-inch: atlas-based rendering with 12-inch bimodal textures
+            int atlasIdx = CrosswalkTextureMap.getSingle12InchFaceAtlasIndex(
+                    colorState, flashOn );
+            Minecraft.getMinecraft().getTextureManager().bindTexture(
+                    CrosswalkTextureMap.ATLAS_TEXTURE );
+            buffer.begin( GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX );
+            addAtlasQuad( buffer, atlasIdx,
+                    CrosswalkSignalVertexData.SINGLE_12INCH_DISPLAY_X1,
+                    CrosswalkSignalVertexData.SINGLE_12INCH_DISPLAY_Y1,
+                    CrosswalkSignalVertexData.SINGLE_12INCH_DISPLAY_X2,
+                    CrosswalkSignalVertexData.SINGLE_12INCH_DISPLAY_Y2,
+                    CrosswalkSignalVertexData.SINGLE_12INCH_DISPLAY_FACE_Z );
             tessellator.draw();
         }
         else if ( bulbType == CrosswalkBulbType.HAND_MAN_COUNTDOWN ) {

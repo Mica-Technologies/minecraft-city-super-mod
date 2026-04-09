@@ -76,6 +76,20 @@ public class CrosswalkTextureMap {
     }
 
     // =========================================================================
+    // 12-inch single signal — atlas indices (uses same 12-inch hand/man textures)
+    // =========================================================================
+
+    public static int getSingle12InchFaceAtlasIndex( int colorState, boolean flashOn ) {
+        switch ( colorState ) {
+            case 0: return IDX_HAND_LIT_12IN;
+            case 1: return flashOn ? IDX_HAND_LIT_12IN : IDX_OFF_12IN;
+            case 2: return IDX_MAN_LIT_12IN;
+            case 3:
+            default: return IDX_OFF_12IN;
+        }
+    }
+
+    // =========================================================================
     // 12-inch stacked — HAND_MAN_COUNTDOWN atlas indices
     // =========================================================================
 
