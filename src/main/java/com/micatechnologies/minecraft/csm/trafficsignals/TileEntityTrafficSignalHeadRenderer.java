@@ -301,11 +301,11 @@ public class TileEntityTrafficSignalHeadRenderer extends
   private static final float VISOR_CENTER_X = 8.0f;
   private static final float VISOR_CENTER_Y = 6.0f;
 
-  // Interior color for all visors — flat black, matching real-world construction where
-  // the inside is kept black so bulbs reflect consistently regardless of exterior paint.
-  private static final float VISOR_INNER_R = TrafficSignalBodyColor.FLAT_BLACK.getRed();
-  private static final float VISOR_INNER_G = TrafficSignalBodyColor.FLAT_BLACK.getGreen();
-  private static final float VISOR_INNER_B = TrafficSignalBodyColor.FLAT_BLACK.getBlue();
+  // Interior color for all visors — true black so it is always darker than any visor
+  // exterior color (including glossy black with tint applied).
+  private static final float VISOR_INNER_R = 0.0f;
+  private static final float VISOR_INNER_G = 0.0f;
+  private static final float VISOR_INNER_B = 0.0f;
 
   // Visor tint parameters — proportional shift so dark colors get a gentler nudge while
   // lighter colors still have enough distinction.  Result: min(1, channel * SCALE + BASE).
