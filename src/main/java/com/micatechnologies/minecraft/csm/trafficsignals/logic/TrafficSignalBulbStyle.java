@@ -7,7 +7,8 @@ public enum TrafficSignalBulbStyle implements IStringSerializable {
   INCANDESCENT("incandescent", "Incandescent"),
   LED("led", "LED"),
   LED_DOTTED("led_dotted", "LED Dotted"),
-  GTX("gtx", "GE GTX");
+  GTX("gtx", "GE GTX"),
+  DR6("dr6", "GE DR6");
 
   // Instance fields
   private final String name;          // The identifier used for serialization
