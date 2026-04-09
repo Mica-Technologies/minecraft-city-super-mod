@@ -8,6 +8,7 @@ import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficSignalF
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficStreetNameSignMount;
 import com.micatechnologies.minecraft.csm.trafficsignals.AbstractBlockControllableCrosswalkSignal;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkDoubleWordedBaseMount;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableCrosswalkSignalNew;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkDoubleWordedLeftMount;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkDoubleWordedRearMount;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkDoubleWordedRightMount;
@@ -111,7 +112,8 @@ public abstract class AbstractBlockTrafficPole extends AbstractBlockRotatableNSE
           BlockTrafficSignalFatigueMitigator3.class, BlockTrafficSignalFatigueMitigator4.class,
           BlockTrafficLightSensorBox.class, BlockTrafficStreetNameSignMount.class,
           BlockTrafficAccessoryNSEWUD.class, BlockControllableCrosswalkMountGray.class,
-          BlockControllableCrosswalkSignalSingle.class, BlockControllableCrosswalkSignalDouble.class};
+          BlockControllableCrosswalkSignalSingle.class, BlockControllableCrosswalkSignalDouble.class,
+          AbstractBlockControllableCrosswalkSignalNew.class};
 
 
   /**
