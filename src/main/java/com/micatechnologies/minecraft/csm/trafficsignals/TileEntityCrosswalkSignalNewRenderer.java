@@ -211,8 +211,25 @@ public class TileEntityCrosswalkSignalNewRenderer
     // Static parts: body, visor, bracket (compiled into display list)
     // =====================================================================================
 
+    // Visor interior is always flat black, matching the vehicle signal visor convention
+    private static final float VISOR_INNER_R = TrafficSignalBodyColor.FLAT_BLACK.getRed();
+    private static final float VISOR_INNER_G = TrafficSignalBodyColor.FLAT_BLACK.getGreen();
+    private static final float VISOR_INNER_B = TrafficSignalBodyColor.FLAT_BLACK.getBlue();
+
+    // Visor center points for inside/outside face determination
+    private static final float SINGLE_VISOR_CENTER_X = 8.0f;
+    private static final float SINGLE_VISOR_CENTER_Y = 8.0f;
+    private static final float SINGLE_12INCH_VISOR_CENTER_X = 8.0f;
+    private static final float SINGLE_12INCH_VISOR_CENTER_Y = 6.0f;
+    private static final float DOUBLE_UPPER_VISOR_CENTER_X = 8.0f;
+    private static final float DOUBLE_UPPER_VISOR_CENTER_Y = 18.0f;
+    private static final float DOUBLE_LOWER_VISOR_CENTER_X = 8.0f;
+    private static final float DOUBLE_LOWER_VISOR_CENTER_Y = 6.0f;
+
     /**
      * Renders the body and visor geometry (no bracket). Compiled into a display list.
+     * Hood visors use dual-color rendering: configured visor color on the outside,
+     * flat black on the inside.
      */
     private void renderStaticParts( TrafficSignalBodyColor bodyColor,
             TrafficSignalBodyColor visorColor, CrosswalkVisorType visorType,
@@ -225,19 +242,35 @@ public class TileEntityCrosswalkSignalNewRenderer
 
         float br = bodyColor.getRed(), bg = bodyColor.getGreen(), bb = bodyColor.getBlue();
         float vr = visorColor.getRed(), vg = visorColor.getGreen(), vb = visorColor.getBlue();
+        boolean isHood = visorType == CrosswalkVisorType.HOOD;
 
         if ( displayType == CrosswalkDisplayType.SYMBOL ) {
             RenderHelper.addBoxesToBuffer( CrosswalkSignalVertexData.SINGLE_BODY_VERTEX_DATA,
                     buffer, br, bg, bb, 1.0f, 0, 0, 0 );
             List<RenderHelper.Box> visorData = getSingleVisorData( visorType );
-            RenderHelper.addBoxesToBuffer( visorData, buffer, vr, vg, vb, 1.0f, 0, 0, 0 );
+            if ( isHood ) {
+                RenderHelper.addBoxesToBufferDualColor( visorData, buffer,
+                        vr, vg, vb, VISOR_INNER_R, VISOR_INNER_G, VISOR_INNER_B,
+                        1.0f, 0, 0, 0, SINGLE_VISOR_CENTER_X, SINGLE_VISOR_CENTER_Y );
+            }
+            else {
+                RenderHelper.addBoxesToBuffer( visorData, buffer, vr, vg, vb, 1.0f, 0, 0, 0 );
+            }
         }
         else if ( displayType == CrosswalkDisplayType.SYMBOL_12INCH ) {
             RenderHelper.addBoxesToBuffer(
                     CrosswalkSignalVertexData.SINGLE_12INCH_BODY_VERTEX_DATA,
                     buffer, br, bg, bb, 1.0f, 0, 0, 0 );
             List<RenderHelper.Box> visorData = getSingle12InchVisorData( visorType );
-            RenderHelper.addBoxesToBuffer( visorData, buffer, vr, vg, vb, 1.0f, 0, 0, 0 );
+            if ( isHood ) {
+                RenderHelper.addBoxesToBufferDualColor( visorData, buffer,
+                        vr, vg, vb, VISOR_INNER_R, VISOR_INNER_G, VISOR_INNER_B,
+                        1.0f, 0, 0, 0,
+                        SINGLE_12INCH_VISOR_CENTER_X, SINGLE_12INCH_VISOR_CENTER_Y );
+            }
+            else {
+                RenderHelper.addBoxesToBuffer( visorData, buffer, vr, vg, vb, 1.0f, 0, 0, 0 );
+            }
         }
         else {
             RenderHelper.addBoxesToBuffer(
@@ -248,8 +281,20 @@ public class TileEntityCrosswalkSignalNewRenderer
                     buffer, br, bg, bb, 1.0f, 0, 0, 0 );
             List<RenderHelper.Box> upperVisor = getDoubleUpperVisorData( visorType );
             List<RenderHelper.Box> lowerVisor = getDoubleLowerVisorData( visorType );
-            RenderHelper.addBoxesToBuffer( upperVisor, buffer, vr, vg, vb, 1.0f, 0, 0, 0 );
-            RenderHelper.addBoxesToBuffer( lowerVisor, buffer, vr, vg, vb, 1.0f, 0, 0, 0 );
+            if ( isHood ) {
+                RenderHelper.addBoxesToBufferDualColor( upperVisor, buffer,
+                        vr, vg, vb, VISOR_INNER_R, VISOR_INNER_G, VISOR_INNER_B,
+                        1.0f, 0, 0, 0,
+                        DOUBLE_UPPER_VISOR_CENTER_X, DOUBLE_UPPER_VISOR_CENTER_Y );
+                RenderHelper.addBoxesToBufferDualColor( lowerVisor, buffer,
+                        vr, vg, vb, VISOR_INNER_R, VISOR_INNER_G, VISOR_INNER_B,
+                        1.0f, 0, 0, 0,
+                        DOUBLE_LOWER_VISOR_CENTER_X, DOUBLE_LOWER_VISOR_CENTER_Y );
+            }
+            else {
+                RenderHelper.addBoxesToBuffer( upperVisor, buffer, vr, vg, vb, 1.0f, 0, 0, 0 );
+                RenderHelper.addBoxesToBuffer( lowerVisor, buffer, vr, vg, vb, 1.0f, 0, 0, 0 );
+            }
         }
 
         tessellator.draw();
