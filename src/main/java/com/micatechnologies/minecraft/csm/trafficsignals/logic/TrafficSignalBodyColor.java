@@ -8,7 +8,18 @@ public enum TrafficSignalBodyColor implements IStringSerializable {
   DARK_OLIVE_GREEN("dark_olive_green", "Dark Olive Green", 0.169F, 0.200F, 0.169F),
   BATTLESHIP_GRAY("battleship_gray", "Battleship Gray", 0.482F, 0.514F, 0.494F),
   YELLOW("yellow", "Yellow", 0.957F, 0.667F, 0.0F),
-  GLOSSY_BLACK("glossy_black", "Glossy Black", 0.0F, 0.0F, 0.0F);
+  GLOSSY_BLACK("glossy_black", "Glossy Black", 0.0F, 0.0F, 0.0F),
+  SCHOOL_BUS_YELLOW("school_bus_yellow", "School Bus Yellow", 1.0F, 0.820F, 0.129F),
+  GOLDENROD("goldenrod", "Goldenrod", 0.855F, 0.647F, 0.125F),
+  PORTLAND_BLUE("portland_blue", "Portland Blue", 0.0F, 0.247F, 0.373F),
+  NAVY_BLUE("navy_blue", "Navy Blue", 0.098F, 0.137F, 0.294F),
+  CHOCOLATE_BROWN("chocolate_brown", "Chocolate Brown", 0.361F, 0.251F, 0.200F),
+  DARK_BRONZE("dark_bronze", "Dark Bronze", 0.290F, 0.220F, 0.165F),
+  BARE_ALUMINUM("bare_aluminum", "Bare Aluminum", 0.729F, 0.745F, 0.753F),
+  CHARCOAL_GRAY("charcoal_gray", "Charcoal Gray", 0.251F, 0.251F, 0.251F),
+  OFF_WHITE("off_white", "Off-White", 0.922F, 0.922F, 0.902F),
+  MAROON("maroon", "Maroon", 0.392F, 0.110F, 0.149F),
+  FOREST_GREEN("forest_green", "Forest Green", 0.133F, 0.267F, 0.180F);
 
   // Instance fields
   private final String name;          // The identifier used for serialization
