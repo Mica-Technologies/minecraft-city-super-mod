@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 
 public enum TrafficSignalBodyColor implements IStringSerializable {
   FLAT_BLACK("flat_black", "Flat Black", 0.094F, 0.094F, 0.094F),
-  DARK_OLIVE_GREEN("dark_olive_green", "Dark Olive Green", 0.0F, 0.141F, 0.0F),
+  DARK_OLIVE_GREEN("dark_olive_green", "Dark Olive Green", 0.169F, 0.200F, 0.169F),
   BATTLESHIP_GRAY("battleship_gray", "Battleship Gray", 0.482F, 0.514F, 0.494F),
   YELLOW("yellow", "Yellow", 0.969F, 0.710F, 0.0F),
   GLOSSY_BLACK("glossy_black", "Glossy Black", 0.0F, 0.0F, 0.0F);
