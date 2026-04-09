@@ -119,16 +119,21 @@ public abstract class AbstractBrightLight extends AbstractBlockRotatableNSEW {
   }
 
   /**
-   * Returns the cached lightupair block reference, initializing it on first call.
+   * Returns the cached lightupair block reference, initializing it on first call via the block
+   * registry. Returns null if the block is not yet registered (e.g., during early init).
    */
   private static Block getLightupAirBlock() {
     if (cachedLightupAirBlock == null) {
-      cachedLightupAirBlock = getLightupAirBlock();
+      cachedLightupAirBlock = Block.getBlockFromName("csm:lightupair");
     }
     return cachedLightupAirBlock;
   }
 
   private void handleAirLightBlock(boolean on, World world, BlockPos pos) {
+    Block lightupAir = getLightupAirBlock();
+    if (lightupAir == null) {
+      return;
+    }
     final int xWithOffset = pos.getX() + getBrightLightXOffset();
     final int zWithOffset = pos.getZ() + getBrightLightZOffset();
     // Add light
@@ -149,7 +154,7 @@ public abstract class AbstractBrightLight extends AbstractBlockRotatableNSEW {
       }
       // add if marked for add
       if (doAddAt != null) {
-        world.setBlockState(doAddAt, getLightupAirBlock().getDefaultState(), 3);
+        world.setBlockState(doAddAt, lightupAir.getDefaultState(), 3);
       }
     }
     // Remove light
@@ -163,7 +168,7 @@ public abstract class AbstractBrightLight extends AbstractBlockRotatableNSEW {
         }
         IBlockState bs = world.getBlockState(test);
         // stop removing light once hit block
-        if (bs.getBlock() == getLightupAirBlock()) {
+        if (bs.getBlock() == lightupAir) {
           world.setBlockToAir(test);
         }
       }
