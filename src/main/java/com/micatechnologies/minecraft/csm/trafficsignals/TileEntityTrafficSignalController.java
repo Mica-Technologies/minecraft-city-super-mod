@@ -358,8 +358,10 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
       if (shouldPause) {
         circuits.powerOffAllSignals(getWorld());
         powerLossOff = true;
-      } else {
+        invalidateTickRateCache();
+      } else if (powerLossOff) {
         powerLossOff = false;
+        invalidateTickRateCache();
       }
 
       paused = shouldPause;
@@ -427,6 +429,7 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
         } catch (Exception e) {
           currentFaultMessage = "Failed to import previous NBT data format!";
           operatingMode = TrafficSignalControllerMode.FORCED_FAULT;
+          invalidateTickRateCache();
         }
       }
 
@@ -543,6 +546,7 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
     } else {
       operatingMode = mode;
     }
+    invalidateTickRateCache();
 
     // Load the traffic signal controller circuits
     if (compound.hasKey(TrafficSignalControllerNBTKeys.CIRCUITS)) {
@@ -1492,6 +1496,7 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
    * @since 2.0
    */
   private void resetController(boolean regeneratePhaseCache, boolean forceTick) {
+    invalidateTickRateCache();
     lastPhaseChangeTime = -1;
     currentPhase = null;
     // Clear transient tracking state on reset (mode change, device link/unlink, etc.)
@@ -1530,6 +1535,7 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
     // Set the mode to off
     mode = TrafficSignalControllerMode.MANUAL_OFF;
     operatingMode = TrafficSignalControllerMode.MANUAL_OFF;
+    invalidateTickRateCache();
   }
 
   /**
