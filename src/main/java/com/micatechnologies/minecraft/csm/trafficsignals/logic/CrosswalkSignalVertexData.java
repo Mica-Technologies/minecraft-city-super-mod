@@ -78,6 +78,27 @@ public class CrosswalkSignalVertexData {
     public static final float DOUBLE_LOWER_DISPLAY_Y2 = 11.5f;
 
     // ========================================================================================
+    // SINGLE 12-INCH BODY (single section, same 12-inch housing as double but at Y=0-12)
+    // Uses the same tapered body style and narrower X range (2-14) as the double sections.
+    // ========================================================================================
+
+    public static final List<Box> SINGLE_12INCH_BODY_VERTEX_DATA = Arrays.asList(
+            new Box( new float[]{ 2.0f, 0.0f, BODY_FRONT_Z }, new float[]{ 14.0f, 12.0f, BODY_FRONT_Z + 1.0f } ),
+            new Box( new float[]{ 2.2f, 0.0f, BODY_FRONT_Z + 1.0f }, new float[]{ 13.8f, 12.0f, BODY_FRONT_Z + 2.0f } ),
+            new Box( new float[]{ 2.4f, 0.0f, BODY_FRONT_Z + 2.0f }, new float[]{ 13.6f, 12.0f, BODY_FRONT_Z + 3.0f } ),
+            new Box( new float[]{ 2.6f, 0.0f, BODY_FRONT_Z + 3.0f }, new float[]{ 13.4f, 12.0f, BODY_FRONT_Z + 4.0f } ),
+            new Box( new float[]{ 2.8f, 0.0f, BODY_FRONT_Z + 4.0f }, new float[]{ 13.2f, 12.0f, BODY_FRONT_Z + 5.0f } ),
+            new Box( new float[]{ 3.0f, 0.0f, BODY_FRONT_Z + 5.0f }, new float[]{ 13.0f, 12.0f, BODY_FRONT_Z + 6.0f } )
+    );
+
+    // Display face position for single 12-inch
+    public static final float SINGLE_12INCH_DISPLAY_FACE_Z = BODY_FRONT_Z - 0.05f;
+    public static final float SINGLE_12INCH_DISPLAY_X1 = 2.5f;
+    public static final float SINGLE_12INCH_DISPLAY_Y1 = 0.5f;
+    public static final float SINGLE_12INCH_DISPLAY_X2 = 13.5f;
+    public static final float SINGLE_12INCH_DISPLAY_Y2 = 11.5f;
+
+    // ========================================================================================
     // MOUNT BRACKETS — SINGLE (16-inch, Y=0-16)
     // Pattern from original JSON models: vertical stub connectors above/below body,
     // then horizontal arm extending in mount direction.
@@ -92,6 +113,8 @@ public class CrosswalkSignalVertexData {
     // Mount arm Y positions — extended vertical shafts for visible pole stubs.
     private static final float SINGLE_LOWER_ARM_Y = -3.0f;
     private static final float SINGLE_UPPER_ARM_Y = 18.0f;
+    private static final float SINGLE_12INCH_LOWER_ARM_Y = -3.0f;
+    private static final float SINGLE_12INCH_UPPER_ARM_Y = 15.0f;
     private static final float DOUBLE_LOWER_ARM_Y = -3.0f;
     private static final float DOUBLE_UPPER_ARM_Y = 27.0f;
 
@@ -152,6 +175,26 @@ public class CrosswalkSignalVertexData {
 
     // Crate for lower double section
     public static final List<Box> DOUBLE_LOWER_VISOR_CRATE_VERTEX_DATA = createCrateVisor(
+            2.0f, 0.0f, 14.0f, 12.0f, 0.4f );
+
+    // ========================================================================================
+    // VISORS — SINGLE 12-INCH (same geometry as double lower section visors)
+    // ========================================================================================
+
+    public static final List<Box> SINGLE_12INCH_VISOR_NONE_VERTEX_DATA = Collections.emptyList();
+
+    // Hood for single 12-inch — no bottom gap (standalone section, extends to bottom)
+    public static final List<Box> SINGLE_12INCH_VISOR_HOOD_VERTEX_DATA = Arrays.asList(
+            // Top panel
+            new Box( new float[]{ 2.5f, 11.5f, BODY_FRONT_Z - 5.0f }, new float[]{ 13.5f, 12.0f, BODY_FRONT_Z } ),
+            // Left side (extends to bottom)
+            new Box( new float[]{ 2.0f, 0.0f, BODY_FRONT_Z - 5.0f }, new float[]{ 2.5f, 12.0f, BODY_FRONT_Z } ),
+            // Right side (extends to bottom)
+            new Box( new float[]{ 13.5f, 0.0f, BODY_FRONT_Z - 5.0f }, new float[]{ 14.0f, 12.0f, BODY_FRONT_Z } )
+    );
+
+    // Crate for single 12-inch
+    public static final List<Box> SINGLE_12INCH_VISOR_CRATE_VERTEX_DATA = createCrateVisor(
             2.0f, 0.0f, 14.0f, 12.0f, 0.4f );
 
     // ========================================================================================
@@ -245,14 +288,39 @@ public class CrosswalkSignalVertexData {
      * TILTED context so they rotate with the housing and always line up perfectly.
      */
     public static List<Box> getStubData( CrosswalkMountType mountType, boolean isDouble ) {
+        return getStubData( mountType, isDouble ? CrosswalkDisplayType.TEXT
+                : CrosswalkDisplayType.SYMBOL );
+    }
+
+    /**
+     * Returns the vertical stub geometry for a given display type.
+     */
+    public static List<Box> getStubData( CrosswalkMountType mountType,
+            CrosswalkDisplayType displayType ) {
         if ( mountType == CrosswalkMountType.BASE ) {
             return Collections.emptyList();
         }
 
-        float lowerArmY = isDouble ? DOUBLE_LOWER_ARM_Y : SINGLE_LOWER_ARM_Y;
-        float upperArmY = isDouble ? DOUBLE_UPPER_ARM_Y : SINGLE_UPPER_ARM_Y;
+        float lowerArmY, upperArmY, bodyTop;
+        switch ( displayType ) {
+            case TEXT:
+                lowerArmY = DOUBLE_LOWER_ARM_Y;
+                upperArmY = DOUBLE_UPPER_ARM_Y;
+                bodyTop = 24.0f;
+                break;
+            case SYMBOL_12INCH:
+                lowerArmY = SINGLE_12INCH_LOWER_ARM_Y;
+                upperArmY = SINGLE_12INCH_UPPER_ARM_Y;
+                bodyTop = 12.0f;
+                break;
+            case SYMBOL:
+            default:
+                lowerArmY = SINGLE_LOWER_ARM_Y;
+                upperArmY = SINGLE_UPPER_ARM_Y;
+                bodyTop = 16.0f;
+                break;
+        }
         float bodyBottom = 0.0f;
-        float bodyTop = isDouble ? 24.0f : 16.0f;
 
         return Arrays.asList(
                 // Lower stub (below housing down to arm Y)
@@ -281,14 +349,39 @@ public class CrosswalkSignalVertexData {
      */
     public static List<Box> getArmData( CrosswalkMountType mountType, boolean isDouble,
             int tiltOffset, float tiltedAngleDeg, float baseAngleDeg ) {
+        return getArmData( mountType,
+                isDouble ? CrosswalkDisplayType.TEXT : CrosswalkDisplayType.SYMBOL,
+                tiltOffset, tiltedAngleDeg, baseAngleDeg );
+    }
+
+    /**
+     * Returns the horizontal arm geometry for a given display type.
+     */
+    public static List<Box> getArmData( CrosswalkMountType mountType,
+            CrosswalkDisplayType displayType, int tiltOffset,
+            float tiltedAngleDeg, float baseAngleDeg ) {
         if ( mountType == CrosswalkMountType.BASE ) {
             return Collections.emptyList();
         }
 
         java.util.ArrayList<Box> boxes = new java.util.ArrayList<>();
 
-        float lowerArmY = isDouble ? DOUBLE_LOWER_ARM_Y : SINGLE_LOWER_ARM_Y;
-        float upperArmY = isDouble ? DOUBLE_UPPER_ARM_Y : SINGLE_UPPER_ARM_Y;
+        float lowerArmY, upperArmY;
+        switch ( displayType ) {
+            case TEXT:
+                lowerArmY = DOUBLE_LOWER_ARM_Y;
+                upperArmY = DOUBLE_UPPER_ARM_Y;
+                break;
+            case SYMBOL_12INCH:
+                lowerArmY = SINGLE_12INCH_LOWER_ARM_Y;
+                upperArmY = SINGLE_12INCH_UPPER_ARM_Y;
+                break;
+            case SYMBOL:
+            default:
+                lowerArmY = SINGLE_LOWER_ARM_Y;
+                upperArmY = SINGLE_UPPER_ARM_Y;
+                break;
+        }
 
         // Compute where the stub center (8, 8 in model space) ends up in base-context
         // model space after the tilted transform.

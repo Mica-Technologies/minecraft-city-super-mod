@@ -55,8 +55,9 @@ class CrosswalkDisplayTypeTest {
 
   @Test
   void expectedValues() {
-    assertEquals(2, CrosswalkDisplayType.values().length);
+    assertEquals(3, CrosswalkDisplayType.values().length);
     assertEquals("symbol", CrosswalkDisplayType.SYMBOL.getName());
     assertEquals("text", CrosswalkDisplayType.TEXT.getName());
+    assertEquals("symbol_12inch", CrosswalkDisplayType.SYMBOL_12INCH.getName());
   }
 }

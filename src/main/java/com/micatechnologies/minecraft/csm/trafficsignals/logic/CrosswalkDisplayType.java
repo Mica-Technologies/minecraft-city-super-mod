@@ -9,7 +9,8 @@ import net.minecraft.util.IStringSerializable;
 public enum CrosswalkDisplayType implements IStringSerializable
 {
     SYMBOL( "symbol", "Symbol (Hand/Man)" ),
-    TEXT( "text", "Text (DON'T WALK/WALK)" );
+    TEXT( "text", "Text (DON'T WALK/WALK)" ),
+    SYMBOL_12INCH( "symbol_12inch", "Symbol 12-Inch (Hand/Man)" );
 
     private final String name;
     private final String friendlyName;

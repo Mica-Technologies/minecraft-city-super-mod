@@ -5,6 +5,7 @@ import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalk;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkSignalDouble;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkSignalSingle;
+import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkSignalSingle12Inch;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkButtonAudible;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkButtonAutomated;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkButtonFemale;
@@ -104,6 +105,8 @@ public class CsmTabTrafficSignals extends CsmTab {
         fmlPreInitializationEvent); // New custom-rendered crosswalk signal (symbol)
     initTabBlock(BlockControllableCrosswalkSignalDouble.class,
         fmlPreInitializationEvent); // New custom-rendered crosswalk signal (text)
+    initTabBlock(BlockControllableCrosswalkSignalSingle12Inch.class,
+        fmlPreInitializationEvent); // New custom-rendered crosswalk signal (12-inch single)
     initTabBlock(BlockControllableCrosswalkButtonAudible.class,
         fmlPreInitializationEvent); // ControllableCrosswalkButtonAudible
     initTabBlock(BlockControllableCrosswalkButtonAutomated.class,
