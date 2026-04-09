@@ -10,6 +10,7 @@ import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBulb
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBulbType;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalSectionInfo;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalVisorType;
+import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -85,6 +86,23 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
   private boolean dirty = true;
   private boolean powerLossOff = true;
 
+  // Bulb aging fields
+  private static final String AGING_ENABLED_KEY = "agingEnabled";
+  private static final String AGING_LAST_DAY_KEY = "lastAgingDay";
+  private static final String AGING_STATES_KEY = "bulbAgingStates";
+  private static final String AGING_SEED_KEY = "agingSeed";
+  private static final int AGING_HEALTHY = 0;
+  private static final int AGING_FAILING = 1;
+  private static final int AGING_DEAD = 2;
+  private static final double CHANCE_HEALTHY_TO_FAILING = 0.00025; // 0.025% per day
+  private static final double CHANCE_FAILING_TO_DEAD = 0.005;     // 0.5% per day
+  private static final int MAX_CATCHUP_DAYS = 365;
+
+  private boolean agingEnabled = false;
+  private long lastAgingDay = -1L;
+  private int[] bulbAgingStates = new int[0];
+  private long agingSeed = 0L;
+
   /**
    * Constructs a new TileEntityTrafficSignalHead instance.
    *
@@ -124,6 +142,20 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
     // Get the alternate flash setting
     if (compound.hasKey(ALTERNATE_FLASH_KEY)) {
       alternateFlash = compound.getBoolean(ALTERNATE_FLASH_KEY);
+    }
+
+    // Get aging settings
+    if (compound.hasKey(AGING_ENABLED_KEY)) {
+      agingEnabled = compound.getBoolean(AGING_ENABLED_KEY);
+    }
+    if (compound.hasKey(AGING_LAST_DAY_KEY)) {
+      lastAgingDay = compound.getLong(AGING_LAST_DAY_KEY);
+    }
+    if (compound.hasKey(AGING_STATES_KEY)) {
+      bulbAgingStates = compound.getIntArray(AGING_STATES_KEY);
+    }
+    if (compound.hasKey(AGING_SEED_KEY)) {
+      agingSeed = compound.getLong(AGING_SEED_KEY);
     }
 
     // Mark as dirty so the renderer recompiles the display list with updated state
@@ -171,6 +203,12 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
     // Set the alternate flash setting
     compound.setBoolean(ALTERNATE_FLASH_KEY, alternateFlash);
 
+    // Set aging settings
+    compound.setBoolean(AGING_ENABLED_KEY, agingEnabled);
+    compound.setLong(AGING_LAST_DAY_KEY, lastAgingDay);
+    compound.setIntArray(AGING_STATES_KEY, bulbAgingStates);
+    compound.setLong(AGING_SEED_KEY, agingSeed);
+
     // Return the compound
     return compound;
   }
@@ -195,6 +233,9 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
    * @since 1.0
    */
   public TrafficSignalSectionInfo[] getSectionInfos(int currentBulbColor) {
+    // Evaluate aging progression (server-side, lazy — only when a new day has passed)
+    tickAging();
+
     // Determine lighting using the block's shouldLightBulb/shouldLightAllSections methods
     // which allows per-block-type color mapping (e.g., single flashers light on both 0 and 1)
     Block block = world != null ? world.getBlockState(pos).getBlock() : null;
@@ -247,6 +288,9 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
         sectionInfo.setBulbLit(false);
       }
     }
+
+    // Apply aging effects (failing flicker and dead bulbs)
+    applyAgingEffects();
 
     return sectionInfos;
   }
@@ -440,6 +484,114 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
 
   public void setPowerLossOff( boolean powerLossOff ) {
     this.powerLossOff = powerLossOff;
+  }
+
+  // --- Bulb Aging ---
+
+  public boolean isAgingEnabled() {
+    return agingEnabled;
+  }
+
+  public boolean toggleAging() {
+    agingEnabled = !agingEnabled;
+    if (agingEnabled) {
+      if (bulbAgingStates.length != sectionInfos.length) {
+        bulbAgingStates = new int[sectionInfos.length];
+      }
+      if (agingSeed == 0L && world != null) {
+        agingSeed = pos.toLong() ^ world.getSeed();
+      }
+      if (lastAgingDay < 0 && world != null) {
+        lastAgingDay = world.getTotalWorldTime() / 24000L;
+      }
+    } else {
+      // Turning aging off resets all bulbs to healthy ("replacing" broken bulbs)
+      bulbAgingStates = new int[sectionInfos.length];
+      lastAgingDay = -1L;
+      agingSeed = 0L;
+    }
+    markDirtySync(world, pos, true);
+    return agingEnabled;
+  }
+
+  private void tickAging() {
+    if (world == null || !agingEnabled) return;
+    long currentDay = world.getTotalWorldTime() / 24000L;
+    if (currentDay <= lastAgingDay) return;
+
+    // Ensure state array matches section count
+    if (bulbAgingStates.length != sectionInfos.length) {
+      int[] resized = new int[sectionInfos.length];
+      System.arraycopy(bulbAgingStates, 0, resized, 0,
+          Math.min(bulbAgingStates.length, sectionInfos.length));
+      bulbAgingStates = resized;
+    }
+
+    // Cap catch-up to avoid long loops for signals unloaded for a very long time
+    long startDay = Math.max(lastAgingDay + 1, currentDay - MAX_CATCHUP_DAYS);
+    Random rng = new Random();
+    boolean stateChanged = false;
+    for (long day = startDay; day <= currentDay; day++) {
+      rng.setSeed(agingSeed ^ day);
+      for (int i = 0; i < bulbAgingStates.length; i++) {
+        if (bulbAgingStates[i] == AGING_HEALTHY) {
+          if (rng.nextDouble() < CHANCE_HEALTHY_TO_FAILING) {
+            bulbAgingStates[i] = AGING_FAILING;
+            stateChanged = true;
+          }
+        } else if (bulbAgingStates[i] == AGING_FAILING) {
+          if (rng.nextDouble() < CHANCE_FAILING_TO_DEAD) {
+            bulbAgingStates[i] = AGING_DEAD;
+            stateChanged = true;
+          }
+        }
+      }
+    }
+    lastAgingDay = currentDay;
+    // Only persist on server side; client computes the same result via deterministic seed
+    if (!world.isRemote && stateChanged) {
+      markDirtySync(world, pos, true);
+    }
+  }
+
+  private void applyAgingEffects() {
+    if (!agingEnabled || bulbAgingStates.length == 0) return;
+
+    long now = System.currentTimeMillis();
+    for (int i = 0; i < sectionInfos.length && i < bulbAgingStates.length; i++) {
+      if (bulbAgingStates[i] == AGING_DEAD) {
+        sectionInfos[i].setBulbLit(false);
+      } else if (bulbAgingStates[i] == AGING_FAILING && sectionInfos[i].isBulbLit()) {
+        long seed = pos.toLong() + i;
+
+        // Determine which failure mode is active using a slow-cycling wave seeded
+        // per bulb. This produces irregular stretches of each mode:
+        //   mode < 0.3  → rapid strobe burst (2-3 seconds)
+        //   mode >= 0.3 → organic sine-wave flicker (majority of the time)
+        double mode = (Math.sin((now + seed * 79) * 0.0004) + 1.0) / 2.0; // 0..1
+
+        if (mode < 0.3) {
+          // Rapid strobe with varying speed — a secondary wave picks the frequency
+          // so the strobe accelerates and decelerates organically.
+          double speedWave = (Math.sin((now + seed * 173) * 0.0011) + 1.0) / 2.0; // 0..1
+          // Cycle period ranges from 16ms (~60 Hz, very fast) to 50ms (~20 Hz)
+          long period = 16L + (long) (speedWave * 34L);
+          boolean strobeOff = ((now / period) + seed) % 3L != 0L;
+          if (strobeOff) {
+            sectionInfos[i].setBulbLit(false);
+          }
+        } else {
+          // Organic flicker using overlapping sine waves
+          double phase1 = Math.sin((now + seed * 137) * 0.013);
+          double phase2 = Math.sin((now + seed * 251) * 0.007);
+          double phase3 = Math.sin((now + seed * 397) * 0.031);
+          double combined = phase1 + phase2 * 0.5 + phase3 * 0.3;
+          if (combined < -0.2) {
+            sectionInfos[i].setBulbLit(false);
+          }
+        }
+      }
+    }
   }
 
   // Call dirty = true; in methods that change state (e.g., set color, lit)

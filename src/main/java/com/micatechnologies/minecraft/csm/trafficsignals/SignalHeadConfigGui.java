@@ -32,7 +32,8 @@ public class SignalHeadConfigGui extends GuiScreen {
       "Body Tilt",
       "Bulb Style",
       "Bulb Type",
-      "Alternate Flash"
+      "Alternate Flash",
+      "Bulb Aging"
   };
 
   private final TileEntityTrafficSignalHead tileEntity;
@@ -105,6 +106,8 @@ public class SignalHeadConfigGui extends GuiScreen {
         return infos[0].getBulbType().getFriendlyName();
       case TOGGLE_ALTERNATE_FLASH:
         return tileEntity.isAlternateFlash() ? "ON (wig-wag B)" : "OFF (normal)";
+      case TOGGLE_AGING:
+        return tileEntity.isAgingEnabled() ? "ON" : "OFF";
       default:
         return "N/A";
     }

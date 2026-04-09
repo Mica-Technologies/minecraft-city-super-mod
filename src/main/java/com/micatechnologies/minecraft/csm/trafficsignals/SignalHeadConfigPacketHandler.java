@@ -53,6 +53,9 @@ public class SignalHeadConfigPacketHandler implements
         case TOGGLE_ALTERNATE_FLASH:
           signalHead.toggleAlternateFlash();
           break;
+        case TOGGLE_AGING:
+          signalHead.toggleAging();
+          break;
       }
     });
     return null;
