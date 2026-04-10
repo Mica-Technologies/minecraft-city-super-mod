@@ -1,8 +1,12 @@
 package com.micatechnologies.minecraft.csm.lifesafety;
 
 import com.micatechnologies.minecraft.csm.CsmNetwork;
+import com.micatechnologies.minecraft.csm.api.firealarm.CsmFireAlarmQuery;
+import com.micatechnologies.minecraft.csm.api.firealarm.FireAlarmEvent;
+import com.micatechnologies.minecraft.csm.api.firealarm.FireAlarmPanelRegistry;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractTickableTileEntity;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -17,6 +21,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 
 public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity {
@@ -97,6 +102,17 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
         }
       }
     }
+
+    // Re-register with the API registry if this panel was saved with an active alarm
+    if (world != null && !world.isRemote) {
+      int dim = world.provider.getDimension();
+      if (alarm) {
+        FireAlarmPanelRegistry.registerFireAlarm(dim, getPos());
+      }
+      if (alarmStorm) {
+        FireAlarmPanelRegistry.registerStormAlarm(dim, getPos());
+      }
+    }
   }
 
   @Override
@@ -137,6 +153,14 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
     return false;
   }
 
+  /**
+   * Returns a read-only copy of the connected appliance positions (sounders, strobes, etc.).
+   * This is part of the public API for cross-mod integration.
+   */
+  public List<BlockPos> getConnectedAppliances() {
+    return Collections.unmodifiableList(new ArrayList<>(connectedAppliances));
+  }
+
   public boolean getAlarmState() {
     return alarm;
   }
@@ -146,6 +170,8 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
   }
 
   public void setAlarmState(boolean alarmState) {
+    boolean wasActive = this.alarm;
+
     // New alarm activation while silenced cancels audible silence (re-enables sound)
     if (alarmState && audibleSilence) {
       audibleSilence = false;
@@ -156,11 +182,35 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
     }
     alarm = alarmState;
     markDirty();
+
+    // Post API events and update registry on state transitions
+    if (world != null && !world.isRemote) {
+      int dim = world.provider.getDimension();
+      if (!wasActive && alarmState) {
+        FireAlarmPanelRegistry.registerFireAlarm(dim, getPos());
+        MinecraftForge.EVENT_BUS.post(new FireAlarmEvent.Activated(world, getPos()));
+      } else if (wasActive && !alarmState) {
+        FireAlarmPanelRegistry.unregisterFireAlarm(dim, getPos());
+        MinecraftForge.EVENT_BUS.post(new FireAlarmEvent.Deactivated(world, getPos()));
+      }
+    }
   }
 
   public void setAlarmStormState(boolean alarmStormState) {
+    boolean wasActive = this.alarmStorm;
     alarmStorm = alarmStormState;
     markDirty();
+
+    if (world != null && !world.isRemote) {
+      int dim = world.provider.getDimension();
+      if (!wasActive && alarmStormState) {
+        FireAlarmPanelRegistry.registerStormAlarm(dim, getPos());
+        MinecraftForge.EVENT_BUS.post(new FireAlarmEvent.StormActivated(world, getPos()));
+      } else if (wasActive && !alarmStormState) {
+        FireAlarmPanelRegistry.unregisterStormAlarm(dim, getPos());
+        MinecraftForge.EVENT_BUS.post(new FireAlarmEvent.StormDeactivated(world, getPos()));
+      }
+    }
   }
 
   public void setAlarmAnnouncedState(boolean alarmAnnouncedState) {
@@ -175,6 +225,10 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
   public void setAudibleSilence(boolean audibleSilenceState) {
     audibleSilence = audibleSilenceState;
     markDirty();
+
+    if (world != null && !world.isRemote && audibleSilenceState) {
+      MinecraftForge.EVENT_BUS.post(new FireAlarmEvent.AudibleSilenced(world, getPos()));
+    }
   }
 
   public String getStatusString() {
@@ -196,6 +250,22 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
 
   public String getCurrentSoundName() {
     return SOUND_NAMES[soundIndex];
+  }
+
+  @Override
+  public void invalidate() {
+    if (world != null && !world.isRemote) {
+      FireAlarmPanelRegistry.unregisterAll(world.provider.getDimension(), getPos());
+    }
+    super.invalidate();
+  }
+
+  @Override
+  public void onChunkUnload() {
+    if (world != null && !world.isRemote) {
+      FireAlarmPanelRegistry.unregisterAll(world.provider.getDimension(), getPos());
+    }
+    super.onChunkUnload();
   }
 
   @Override
