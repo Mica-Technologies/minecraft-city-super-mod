@@ -97,6 +97,10 @@ public class CsmClientProxy implements ICsmProxy {
         new com.micatechnologies.minecraft.csm.lifesafety.TileEntityFireAlarmStrobeRenderer());
 
     ClientRegistry.bindTileEntitySpecialRenderer(
+        com.micatechnologies.minecraft.csm.lifesafety.TileEntityEmergencyLight.class,
+        new com.micatechnologies.minecraft.csm.lifesafety.TileEntityEmergencyLightRenderer());
+
+    ClientRegistry.bindTileEntitySpecialRenderer(
         com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityTrafficLightMountKit.class,
         new com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityTrafficLightMountKitRenderer());
 
