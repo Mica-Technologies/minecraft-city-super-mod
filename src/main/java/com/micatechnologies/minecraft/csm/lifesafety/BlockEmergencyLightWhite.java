@@ -1,18 +1,37 @@
 package com.micatechnologies.minecraft.csm.lifesafety;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractPoweredBlockRotatableNSEWUD;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.World;
 
-public class BlockEmergencyLightWhite extends AbstractPoweredBlockRotatableNSEWUD {
+public class BlockEmergencyLightWhite extends AbstractPoweredBlockRotatableNSEWUD
+    implements ICsmTileEntityProvider, IEmergencyLightBlock {
+
+  @Override
+  public Class<? extends TileEntity> getTileEntityClass() {
+    return TileEntityEmergencyLight.class;
+  }
+
+  @Override
+  public String getTileEntityName() {
+    return "tileentityemergencylight";
+  }
+
+  @Override
+  public TileEntity createNewTileEntity(World worldIn, int meta) {
+    return new TileEntityEmergencyLight();
+  }
 
   public BlockEmergencyLightWhite() {
     super(Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0, false);
