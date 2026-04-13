@@ -136,6 +136,10 @@ public abstract class AbstractBlock extends Block implements IHasModel, ICsmBloc
     if (bb == null) {
       return NULL_AABB;
     }
+    if (bb.minX >= 0.0 && bb.minY >= 0.0 && bb.minZ >= 0.0
+        && bb.maxX <= 1.0 && bb.maxY <= 1.0 && bb.maxZ <= 1.0) {
+      return bb;
+    }
     return new AxisAlignedBB(
         Math.max(0.0, bb.minX), Math.max(0.0, bb.minY), Math.max(0.0, bb.minZ),
         Math.min(1.0, bb.maxX), Math.min(1.0, bb.maxY), Math.min(1.0, bb.maxZ));
