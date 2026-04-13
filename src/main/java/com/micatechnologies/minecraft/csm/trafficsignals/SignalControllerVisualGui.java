@@ -67,7 +67,7 @@ public class SignalControllerVisualGui extends GuiScreen {
   private int guiLeft;
   private int guiTop;
   private static final int GUI_WIDTH = 370;
-  private static final int GUI_HEIGHT = 235;
+  private static final int GUI_HEIGHT = 250;
 
   public SignalControllerVisualGui(TileEntityTrafficSignalController controller) {
     this.controller = controller;
@@ -80,22 +80,22 @@ public class SignalControllerVisualGui extends GuiScreen {
     guiLeft = (width - GUI_WIDTH) / 2;
     guiTop = (height - GUI_HEIGHT) / 2;
 
-    int y = guiTop + 4;
+    int y = guiTop + 6;
 
     // Top row: mode selector, simple view, copy/paste
-    buttonList.add(new GuiButton(BTN_MODE_PREV, guiLeft + 4, y, 20, 14, "<"));
+    buttonList.add(new GuiButton(BTN_MODE_PREV, guiLeft + 6, y, 20, 14, "<"));
     buttonList.add(new GuiButton(BTN_MODE_NEXT, guiLeft + 190, y, 20, 14, ">"));
-    buttonList.add(new GuiButton(BTN_SIMPLE_VIEW, guiLeft + 216, y, 60, 14, "Simple"));
-    buttonList.add(new GuiButton(BTN_COPY, guiLeft + 280, y, 28, 14, "Copy"));
-    buttonList.add(new GuiButton(BTN_PASTE, guiLeft + 310, y, 28, 14, "Paste"));
+    buttonList.add(new GuiButton(BTN_SIMPLE_VIEW, guiLeft + 220, y, 56, 14, "Simple"));
+    buttonList.add(new GuiButton(BTN_COPY, guiLeft + 280, y, 40, 14, "Copy"));
+    buttonList.add(new GuiButton(BTN_PASTE, guiLeft + 324, y, 40, 14, "Paste"));
 
     // Create text fields for timing values
     int fieldW = 36;
     int fieldH = 12;
-    int col1X = guiLeft + 80;
-    int col2X = guiLeft + 210;
+    int col1X = guiLeft + 70;
+    int col2X = guiLeft + 196;
     int col3X = guiLeft + 290;
-    int fieldY = guiTop + 128;
+    int fieldY = guiTop + 142;
     int rowH = 16;
 
     fieldYellow = createField(col1X, fieldY, fieldW, fieldH, controller.getYellowTime());
@@ -115,16 +115,18 @@ public class SignalControllerVisualGui extends GuiScreen {
     fieldPedSignal = createField(col2X, fieldY, fieldW, fieldH, controller.getDedicatedPedSignalTime());
 
     // Toggle buttons row
-    int toggleY = guiTop + 196;
-    int toggleW = 62;
-    buttonList.add(new GuiButton(BTN_NIGHTLY, guiLeft + 4, toggleY, toggleW, 14, ""));
-    buttonList.add(new GuiButton(BTN_POWER_LOSS, guiLeft + 70, toggleY, toggleW, 14, ""));
-    buttonList.add(new GuiButton(BTN_OVERLAP_PED, guiLeft + 136, toggleY, toggleW, 14, ""));
-    buttonList.add(new GuiButton(BTN_ALL_RED_FLASH, guiLeft + 202, toggleY, toggleW, 14, ""));
-    buttonList.add(new GuiButton(BTN_CLEAR_FAULTS, guiLeft + 268, toggleY, toggleW, 14, ""));
+    int toggleY = guiTop + 212;
+    int toggleW = 66;
+    int toggleGap = 4;
+    int toggleStart = guiLeft + 6;
+    buttonList.add(new GuiButton(BTN_NIGHTLY, toggleStart, toggleY, toggleW, 14, ""));
+    buttonList.add(new GuiButton(BTN_POWER_LOSS, toggleStart + (toggleW + toggleGap), toggleY, toggleW, 14, ""));
+    buttonList.add(new GuiButton(BTN_OVERLAP_PED, toggleStart + (toggleW + toggleGap) * 2, toggleY, toggleW, 14, ""));
+    buttonList.add(new GuiButton(BTN_ALL_RED_FLASH, toggleStart + (toggleW + toggleGap) * 3, toggleY, toggleW, 14, ""));
+    buttonList.add(new GuiButton(BTN_CLEAR_FAULTS, toggleStart + (toggleW + toggleGap) * 4, toggleY, toggleW + 8, 14, ""));
 
     // Close button
-    buttonList.add(new GuiButton(BTN_CLOSE, guiLeft + GUI_WIDTH / 2 - 40, guiTop + GUI_HEIGHT - 18, 80, 14, "Close"));
+    buttonList.add(new GuiButton(BTN_CLOSE, guiLeft + GUI_WIDTH / 2 - 40, guiTop + GUI_HEIGHT - 20, 80, 14, "Close"));
   }
 
   private GuiTextField createField(int x, int y, int w, int h, long tickValue) {
@@ -165,14 +167,14 @@ public class SignalControllerVisualGui extends GuiScreen {
 
     // Mode display
     String modeName = controller.getModeName();
-    drawCenteredString(fontRenderer, modeName, guiLeft + 115, guiTop + 7, COLOR_HEADER);
+    drawCenteredString(fontRenderer, modeName, guiLeft + 115, guiTop + 9, COLOR_HEADER);
 
     // === Phase Timeline ===
     int barLeft = guiLeft + 10;
     int barRight = guiLeft + GUI_WIDTH - 10;
     int barWidth = barRight - barLeft;
     int barHeight = 14;
-    int barY = guiTop + 24;
+    int barY = guiTop + 26;
 
     // Calculate total cycle time for proportional bars
     long greenTime = controller.getMaxGreenTime();
@@ -187,8 +189,8 @@ public class SignalControllerVisualGui extends GuiScreen {
     if (totalCycle <= 0) totalCycle = 1;
 
     // Circuit 1 signal bar
-    drawString(fontRenderer, "Circuit 1", barLeft, barY + 3, COLOR_LABEL);
-    barY += 14;
+    drawString(fontRenderer, "Circuit 1", barLeft, barY + 2, COLOR_LABEL);
+    barY += 12;
     drawRect(barLeft, barY, barRight, barY + barHeight, COLOR_BAR_BG);
     int x = barLeft;
     x = drawPhaseBar(x, barY, barWidth, barHeight, greenTime, totalCycle, COLOR_GREEN, "Green");
@@ -199,9 +201,9 @@ public class SignalControllerVisualGui extends GuiScreen {
     drawPhaseBar(x, barY, barWidth, barHeight, allRedTime, totalCycle, COLOR_RED, "");
 
     // Circuit 2 signal bar
-    barY += barHeight + 4;
-    drawString(fontRenderer, "Circuit 2", barLeft, barY + 3, COLOR_LABEL);
-    barY += 14;
+    barY += barHeight + 6;
+    drawString(fontRenderer, "Circuit 2", barLeft, barY + 2, COLOR_LABEL);
+    barY += 12;
     drawRect(barLeft, barY, barRight, barY + barHeight, COLOR_BAR_BG);
     x = barLeft;
     x = drawPhaseBar(x, barY, barWidth, barHeight, greenTime, totalCycle, COLOR_RED, "");
@@ -212,9 +214,9 @@ public class SignalControllerVisualGui extends GuiScreen {
     drawPhaseBar(x, barY, barWidth, barHeight, allRedTime, totalCycle, COLOR_ALL_RED, "");
 
     // Pedestrian bar
-    barY += barHeight + 4;
-    drawString(fontRenderer, "Pedestrian", barLeft, barY + 3, COLOR_LABEL);
-    barY += 14;
+    barY += barHeight + 6;
+    drawString(fontRenderer, "Pedestrian", barLeft, barY + 2, COLOR_LABEL);
+    barY += 12;
     drawRect(barLeft, barY, barRight, barY + barHeight, COLOR_BAR_BG);
     long pedWalk = pedSignal;
     long pedFlash = pedClear;
@@ -230,10 +232,10 @@ public class SignalControllerVisualGui extends GuiScreen {
     drawPhaseBar(x, barY, barWidth, barHeight, pedDontWalk, totalCycle, COLOR_DONT_WALK, "Don't Walk");
 
     // === Timing Value Fields ===
-    int fieldY = guiTop + 128;
+    int fieldY = guiTop + 142;
     int rowH = 16;
     int col1L = guiLeft + 8;
-    int col2L = guiLeft + 138;
+    int col2L = guiLeft + 128;
     int col3L = guiLeft + 248;
 
     drawString(fontRenderer, "Yellow:", col1L, fieldY + 2, COLOR_LABEL);
@@ -261,9 +263,6 @@ public class SignalControllerVisualGui extends GuiScreen {
     fieldPedClear.drawTextBox();
     fieldPedSignal.drawTextBox();
 
-    // "(sec)" hint on the bottom-right of the field area
-    drawString(fontRenderer, "(sec)", guiLeft + GUI_WIDTH - 34, fieldY + 2, 0xFF666666);
-
     // Toggle button labels (short form)
     updateToggleButtonShort(BTN_NIGHTLY, "NF", controller.getNightlyFallbackToFlashMode(), "FLSH", "NORM");
     updateToggleButtonShort(BTN_POWER_LOSS, "PL", controller.getPowerLossFallbackToFlashMode(), "FLSH", "NORM");
@@ -277,10 +276,10 @@ public class SignalControllerVisualGui extends GuiScreen {
 
     super.drawScreen(mouseX, mouseY, partialTicks);
 
-    // Total cycle time display
+    // Total cycle time display (between timeline and fields)
     drawCenteredString(fontRenderer,
-        "Cycle: " + ticksToSeconds(totalCycle) + "s",
-        guiLeft + GUI_WIDTH / 2, guiTop + 116, 0xFFAAAAAA);
+        "Cycle: " + ticksToSeconds(totalCycle) + "s  (all values in seconds)",
+        guiLeft + GUI_WIDTH / 2, guiTop + 130, 0xFF999999);
 
     // Draw tooltips for toggle buttons on hover (after super so they render on top)
     drawToggleTooltip(mouseX, mouseY, BTN_NIGHTLY, "Nightly Flash");
