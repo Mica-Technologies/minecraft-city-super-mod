@@ -222,21 +222,43 @@ public class SignalControllerVisualGui extends GuiScreen {
 
     // Pedestrian bar
     barY += barHeight + 6;
-    drawString(fontRenderer, "Pedestrian", barLeft, barY + 2, COLOR_LABEL);
+    boolean overlapPed = controller.getOverlapPedestrianSignals();
+    drawString(fontRenderer, "Pedestrian" + (overlapPed ? " (overlap)" : ""),
+        barLeft, barY + 2, COLOR_LABEL);
     barY += 12;
     drawRect(barLeft, barY, barRight, barY + barHeight, COLOR_BAR_BG);
-    long pedWalk = pedSignal;
-    long pedFlash = pedClear;
-    long pedDontWalk = totalCycle - pedWalk - pedFlash;
-    if (pedDontWalk < 0) pedDontWalk = 0;
     x = barLeft;
-    if (lpiTime > 0) {
-      x = drawPhaseBar(x, barY, barWidth, barHeight, lpiTime, totalCycle, COLOR_LPI, "LPI");
-      pedWalk = Math.max(0, pedWalk - lpiTime);
+    if (overlapPed) {
+      // Overlap mode: non-active circuit peds walk during active circuit's green.
+      // C1 green -> C2 peds walk; C2 green -> C1 peds walk.
+      // Walk overlaps with the opposing circuit's green phase, then flash don't walk
+      // during yellow+allred, then don't walk during own circuit's green.
+      long c2PedWalk = greenTime;   // Walk during C1's green
+      long c2PedFlash = pedClear;   // Flash during transition
+      long c2PedDontWalk = totalCycle - c2PedWalk - c2PedFlash;
+      if (c2PedDontWalk < 0) c2PedDontWalk = 0;
+      if (lpiTime > 0) {
+        x = drawPhaseBar(x, barY, barWidth, barHeight, lpiTime, totalCycle, COLOR_LPI, "LPI");
+        c2PedWalk = Math.max(0, c2PedWalk - lpiTime);
+      }
+      x = drawPhaseBar(x, barY, barWidth, barHeight, c2PedWalk, totalCycle, COLOR_WALK, "Walk");
+      x = drawPhaseBar(x, barY, barWidth, barHeight, c2PedFlash, totalCycle, COLOR_FLASH_DW, "Flash");
+      drawPhaseBar(x, barY, barWidth, barHeight, c2PedDontWalk, totalCycle, COLOR_DONT_WALK, "Don't Walk");
+    } else {
+      // Non-overlap mode: peds get a dedicated walk phase (ped signal time),
+      // then flash don't walk (ped clearance), then don't walk for the rest.
+      long pedWalk = pedSignal;
+      long pedFlash = pedClear;
+      long pedDontWalk = totalCycle - pedWalk - pedFlash;
+      if (pedDontWalk < 0) pedDontWalk = 0;
+      if (lpiTime > 0) {
+        x = drawPhaseBar(x, barY, barWidth, barHeight, lpiTime, totalCycle, COLOR_LPI, "LPI");
+        pedWalk = Math.max(0, pedWalk - lpiTime);
+      }
+      x = drawPhaseBar(x, barY, barWidth, barHeight, pedWalk, totalCycle, COLOR_WALK, "Walk");
+      x = drawPhaseBar(x, barY, barWidth, barHeight, pedFlash, totalCycle, COLOR_FLASH_DW, "Flash");
+      drawPhaseBar(x, barY, barWidth, barHeight, pedDontWalk, totalCycle, COLOR_DONT_WALK, "Don't Walk");
     }
-    x = drawPhaseBar(x, barY, barWidth, barHeight, pedWalk, totalCycle, COLOR_WALK, "Walk");
-    x = drawPhaseBar(x, barY, barWidth, barHeight, pedFlash, totalCycle, COLOR_FLASH_DW, "Flash");
-    drawPhaseBar(x, barY, barWidth, barHeight, pedDontWalk, totalCycle, COLOR_DONT_WALK, "Don't Walk");
 
     // === Timing Value Fields ===
     int fieldY = guiTop + 142;
