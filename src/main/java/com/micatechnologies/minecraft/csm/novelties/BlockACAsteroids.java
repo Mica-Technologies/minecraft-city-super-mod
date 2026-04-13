@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.novelties;
 
+import com.micatechnologies.minecraft.csm.CsmSounds;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEWUD;
 import java.util.List;
 import javax.annotation.Nonnull;
@@ -8,8 +9,12 @@ import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
@@ -109,5 +114,17 @@ public class BlockACAsteroids extends AbstractBlockRotatableNSEWUD {
   @Override
   public BlockRenderLayer getBlockRenderLayer() {
     return BlockRenderLayer.SOLID;
+  }
+
+  @Override
+  public boolean onBlockActivated(World world, BlockPos pos, IBlockState state,
+      EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+    if (!world.isRemote) {
+      SoundEvent sound = CsmSounds.SOUND.ASTEROIDS_CABINET.getSoundEvent();
+      if (sound != null) {
+        world.playSound(null, pos, sound, SoundCategory.BLOCKS, 1.0F, 1.0F);
+      }
+    }
+    return true;
   }
 }
