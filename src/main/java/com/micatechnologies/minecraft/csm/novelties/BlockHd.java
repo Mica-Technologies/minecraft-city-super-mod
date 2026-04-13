@@ -2,6 +2,10 @@ package com.micatechnologies.minecraft.csm.novelties;
 
 import com.micatechnologies.minecraft.csm.CsmSounds;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEWUD;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Random;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.block.SoundType;
@@ -18,8 +22,23 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class BlockHd extends AbstractBlockRotatableNSEWUD {
+
+  private static final long DRYER_DURATION_MS = 20000;
+
+  @SideOnly(Side.CLIENT)
+  private static Map<BlockPos, Long> activeDryers;
+
+  @SideOnly(Side.CLIENT)
+  private static Map<BlockPos, Long> getActiveDryers() {
+    if (activeDryers == null) {
+      activeDryers = new HashMap<>();
+    }
+    return activeDryers;
+  }
 
   public BlockHd() {
     super(Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0);
@@ -125,14 +144,32 @@ public class BlockHd extends AbstractBlockRotatableNSEWUD {
       }
     }
     if (world.isRemote) {
-      for (int i = 0; i < 8; i++) {
-        double offsetX = pos.getX() + 0.3 + world.rand.nextDouble() * 0.4;
-        double offsetY = pos.getY() + 0.2 + world.rand.nextDouble() * 0.2;
-        double offsetZ = pos.getZ() + 0.3 + world.rand.nextDouble() * 0.4;
-        world.spawnParticle(EnumParticleTypes.CLOUD, offsetX, offsetY, offsetZ,
-            0.0, -0.05, 0.0);
-      }
+      getActiveDryers().put(pos.toImmutable(), System.currentTimeMillis());
     }
     return true;
+  }
+
+  @Override
+  @SideOnly(Side.CLIENT)
+  public void randomDisplayTick(IBlockState state, World world, BlockPos pos, Random rand) {
+    Map<BlockPos, Long> dryers = getActiveDryers();
+    Long activatedAt = dryers.get(pos);
+    if (activatedAt != null) {
+      long elapsed = System.currentTimeMillis() - activatedAt;
+      if (elapsed < DRYER_DURATION_MS) {
+        double offsetX = pos.getX() + 0.3 + rand.nextDouble() * 0.4;
+        double offsetY = pos.getY() + 0.15 + rand.nextDouble() * 0.15;
+        double offsetZ = pos.getZ() + 0.3 + rand.nextDouble() * 0.4;
+        world.spawnParticle(EnumParticleTypes.CLOUD, offsetX, offsetY, offsetZ,
+            0.0, -0.03, 0.0);
+      } else {
+        dryers.remove(pos);
+      }
+    }
+    // Periodically clean up stale entries from broken/unloaded dryers
+    if (rand.nextInt(100) == 0) {
+      long now = System.currentTimeMillis();
+      dryers.values().removeIf(t -> now - t > DRYER_DURATION_MS + 5000);
+    }
   }
 }
