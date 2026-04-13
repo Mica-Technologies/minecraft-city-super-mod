@@ -1556,6 +1556,20 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
   }
 
   /**
+   * Sets the controller mode by ordinal value. Used by the visual timing editor for direct
+   * mode selection (as opposed to cycling via switchMode).
+   *
+   * @param ordinal the ordinal value of the mode to set
+   */
+  public void setModeByOrdinal(int ordinal) {
+    if (!isInFaultState()) {
+      mode = TrafficSignalControllerMode.fromNBT(ordinal);
+      operatingMode = mode;
+      resetController(false, true);
+    }
+  }
+
+  /**
    * Returns the configured mode name for display purposes.
    *
    * @return the configured mode name
@@ -1564,6 +1578,10 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
    */
   public String getModeName() {
     return mode.getName();
+  }
+
+  public int getModeOrdinal() {
+    return mode.toNBT();
   }
 
   /**
