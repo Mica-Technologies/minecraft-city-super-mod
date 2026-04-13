@@ -23,6 +23,11 @@ import org.jetbrains.annotations.NotNull;
 public abstract class AbstractBlockTrafficPoleDiagonal extends AbstractBlockTrafficPole {
 
   /**
+   * Cached combined ignore-block array for diagonal poles, computed lazily on first use.
+   */
+  private volatile Class<?>[] cachedCombinedIgnoreBlockDiag;
+
+  /**
    * The east mounting property.
    *
    * @since 1.0
@@ -78,7 +83,10 @@ public abstract class AbstractBlockTrafficPoleDiagonal extends AbstractBlockTraf
       BlockPos pos) {
     EnumFacing facing = state.getValue(FACING);
 
-    Class<?>[] ignoreBlock = buildCombinedIgnoreBlock(getIgnoreBlock());
+    if (cachedCombinedIgnoreBlockDiag == null) {
+      cachedCombinedIgnoreBlockDiag = buildCombinedIgnoreBlock(getIgnoreBlock());
+    }
+    Class<?>[] ignoreBlock = cachedCombinedIgnoreBlockDiag;
 
     // Check for blocks in each direction relative to the block's facing direction.
     // For each direction, also verify that NSEWUD-rotatable blocks (like mount kits) are
