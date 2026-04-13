@@ -229,21 +229,22 @@ public class SignalControllerVisualGui extends GuiScreen {
     drawRect(barLeft, barY, barRight, barY + barHeight, COLOR_BAR_BG);
     x = barLeft;
     if (overlapPed) {
-      // Overlap mode: non-active circuit peds walk during active circuit's green.
-      // C1 green -> C2 peds walk; C2 green -> C1 peds walk.
-      // Walk overlaps with the opposing circuit's green phase, then flash don't walk
-      // during yellow+allred, then don't walk during own circuit's green.
-      long c2PedWalk = greenTime;   // Walk during C1's green
-      long c2PedFlash = pedClear;   // Flash during transition
-      long c2PedDontWalk = totalCycle - c2PedWalk - c2PedFlash;
-      if (c2PedDontWalk < 0) c2PedDontWalk = 0;
-      if (lpiTime > 0) {
-        x = drawPhaseBar(x, barY, barWidth, barHeight, lpiTime, totalCycle, COLOR_LPI, "LPI");
-        c2PedWalk = Math.max(0, c2PedWalk - lpiTime);
+      // Overlap mode: non-active circuit peds walk during the opposing circuit's green.
+      // Walk + flash don't walk must fit WITHIN C1's green so flash ends before yellow.
+      //
+      // C1 Green: [LPI | Walk | Flash DW]  C1 Yel/Red/C2 Green/Yel/Red: [Don't Walk]
+      long lpiDraw = Math.min(lpiTime, greenTime);
+      long availableForWalkAndFlash = greenTime - lpiDraw;
+      long flashDraw = Math.min(pedClear, availableForWalkAndFlash);
+      long walkDraw = Math.max(0, availableForWalkAndFlash - flashDraw);
+      long dontWalkDraw = totalCycle - lpiDraw - walkDraw - flashDraw;
+      if (dontWalkDraw < 0) dontWalkDraw = 0;
+      if (lpiDraw > 0) {
+        x = drawPhaseBar(x, barY, barWidth, barHeight, lpiDraw, totalCycle, COLOR_LPI, "LPI");
       }
-      x = drawPhaseBar(x, barY, barWidth, barHeight, c2PedWalk, totalCycle, COLOR_WALK, "Walk");
-      x = drawPhaseBar(x, barY, barWidth, barHeight, c2PedFlash, totalCycle, COLOR_FLASH_DW, "Flash");
-      drawPhaseBar(x, barY, barWidth, barHeight, c2PedDontWalk, totalCycle, COLOR_DONT_WALK, "Don't Walk");
+      x = drawPhaseBar(x, barY, barWidth, barHeight, walkDraw, totalCycle, COLOR_WALK, "Walk");
+      x = drawPhaseBar(x, barY, barWidth, barHeight, flashDraw, totalCycle, COLOR_FLASH_DW, "Flash");
+      drawPhaseBar(x, barY, barWidth, barHeight, dontWalkDraw, totalCycle, COLOR_DONT_WALK, "Don't Walk");
     } else {
       // Non-overlap mode: peds get a dedicated walk phase (ped signal time),
       // then flash don't walk (ped clearance), then don't walk for the rest.
