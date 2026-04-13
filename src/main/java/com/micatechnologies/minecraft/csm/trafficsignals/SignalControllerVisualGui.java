@@ -261,8 +261,8 @@ public class SignalControllerVisualGui extends GuiScreen {
     fieldPedClear.drawTextBox();
     fieldPedSignal.drawTextBox();
 
-    // Units hint
-    drawString(fontRenderer, "(seconds)", guiLeft + GUI_WIDTH - 60, guiTop + 128 + 2, 0xFF888888);
+    // Units hint — placed below the cycle time label to avoid overlapping fields
+    drawString(fontRenderer, "(all values in seconds)", guiLeft + GUI_WIDTH / 2 - 55, guiTop + 128 - 10, 0xFF666666);
 
     // Toggle button labels
     updateToggleButton(BTN_NIGHTLY, "Night: ", controller.getNightlyFallbackToFlashMode());
