@@ -15,10 +15,11 @@ public class TileEntityForgeEnergyProducer extends AbstractTickableTileEntity im
     IEnergyStorage {
 
   /**
-   * Maximum energy output per transfer. Large enough to satisfy any reasonable consumer without
-   * risking integer overflow when adjacent blocks add this to their stored energy.
+   * Maximum energy per transfer. Used as both the per-tick output amount and the reported
+   * storage capacity. Large enough to satisfy any reasonable consumer without risking integer
+   * overflow when adjacent blocks add this to their stored energy.
    */
-  private static final int ENERGY_OUTPUT_PER_TRANSFER = 10000;
+  private static final int MAX_ENERGY_TRANSFER = 10000;
 
   private static final String NBT_TICK_RATE_KEY = "tickRate";
   private static final int NEIGHBOR_CACHE_REFRESH_TICKS = 100;
@@ -90,12 +91,12 @@ public class TileEntityForgeEnergyProducer extends AbstractTickableTileEntity im
 
   @Override
   public int getEnergyStored() {
-    return ENERGY_OUTPUT_PER_TRANSFER;
+    return MAX_ENERGY_TRANSFER;
   }
 
   @Override
   public int getMaxEnergyStored() {
-    return ENERGY_OUTPUT_PER_TRANSFER;
+    return MAX_ENERGY_TRANSFER;
   }
 
   @Override
@@ -118,6 +119,7 @@ public class TileEntityForgeEnergyProducer extends AbstractTickableTileEntity im
       tickRate = 1;
     }
     invalidateTickRateCache();
+    invalidateNeighborCache();
     markDirty();
     return tickRate;
   }
@@ -195,7 +197,7 @@ public class TileEntityForgeEnergyProducer extends AbstractTickableTileEntity im
         }
         for (IEnergyStorage storage : cachedAdjacentStorage) {
           if (storage != null) {
-            storage.receiveEnergy(ENERGY_OUTPUT_PER_TRANSFER, false);
+            storage.receiveEnergy(MAX_ENERGY_TRANSFER, false);
           }
         }
       }
