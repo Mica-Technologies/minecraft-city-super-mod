@@ -6,11 +6,20 @@ import javax.annotation.Nullable;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
+import net.minecraft.init.PotionTypes;
+import net.minecraft.init.SoundEvents;
+import net.minecraft.item.ItemStack;
+import net.minecraft.potion.PotionUtils;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.World;
 
 public class BlockWbt extends AbstractBlockRotatableNSEWUD {
 
@@ -106,5 +115,25 @@ public class BlockWbt extends AbstractBlockRotatableNSEWUD {
   @Override
   public BlockRenderLayer getBlockRenderLayer() {
     return BlockRenderLayer.CUTOUT_MIPPED;
+  }
+
+  @Override
+  public boolean onBlockActivated(World world, BlockPos pos, IBlockState state,
+      EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+    if (!world.isRemote) {
+      ItemStack held = player.getHeldItem(hand);
+      if (held.getItem() == Items.GLASS_BOTTLE) {
+        held.shrink(1);
+        ItemStack waterBottle = PotionUtils.addPotionToItemStack(
+            new ItemStack(Items.POTIONITEM), PotionTypes.WATER);
+        if (!player.addItemStackToInventory(waterBottle)) {
+          player.dropItem(waterBottle, false);
+        }
+        world.playSound(null, pos, SoundEvents.ITEM_BOTTLE_FILL, SoundCategory.BLOCKS, 1.0F, 1.0F);
+      } else {
+        world.playSound(null, pos, SoundEvents.ITEM_BOTTLE_FILL, SoundCategory.BLOCKS, 0.5F, 1.2F);
+      }
+    }
+    return true;
   }
 }
