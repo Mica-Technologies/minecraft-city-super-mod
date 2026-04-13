@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:lifesafety/shared_models/wheelock_mt_horn_red",
+    "model": "csm:lifesafety/shared_models/wheelock_mt_horn",
     "textures": {
       "all": "csm:blocks/lifesafety/wheelock_mt_red_horn",
       "particle": "csm:blocks/lifesafety/wheelock_mt_red_horn",
