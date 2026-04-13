@@ -240,10 +240,13 @@ public abstract class AbstractBlockRotatableHZEight extends AbstractBlock {
 
     // Rotate the bounding box based on the facing direction
     if (state.getBlock() instanceof AbstractBlockRotatableHZEight) {
-      IBlockState actualState = source.getBlockState(pos).getActualState(source, pos);
-      return RotationUtils.rotateBoundingBoxByFacing(
-          getBlockBoundingBox(actualState, source, pos),
-          actualState.getValue(FACING));
+      IBlockState liveState = source.getBlockState(pos);
+      if (liveState.getBlock() instanceof AbstractBlockRotatableHZEight) {
+        IBlockState actualState = liveState.getActualState(source, pos);
+        return RotationUtils.rotateBoundingBoxByFacing(
+            getBlockBoundingBox(actualState, source, pos),
+            actualState.getValue(FACING));
+      }
     }
 
     // Default to a square bounding box
