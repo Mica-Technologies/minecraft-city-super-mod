@@ -20,6 +20,7 @@ public class SignalControllerConfigGui extends GuiScreen {
   private static final int BUTTON_HEIGHT = 15;
   private static final int ROW_SPACING = 17;
   private static final int CLOSE_BUTTON_ID = SignalControllerConfigAction.values().length;
+  private static final int VISUAL_VIEW_BUTTON_ID = CLOSE_BUTTON_ID + 1;
 
   private static final String[] LABELS = {
       "Mode",                         // 0  - left col
@@ -87,10 +88,13 @@ public class SignalControllerConfigGui extends GuiScreen {
           COL_WIDTH, BUTTON_HEIGHT, ""));
     }
 
-    // Close button centered below both columns
+    // Close and visual view buttons below both columns
     int closeY = topY + LEFT_COL_COUNT * ROW_SPACING + 4;
+    int halfW = (COL_WIDTH - 4) / 2;
     buttonList.add(new GuiButton(CLOSE_BUTTON_ID, width / 2 - COL_WIDTH / 2, closeY,
-        COL_WIDTH, BUTTON_HEIGHT, "Close"));
+        halfW, BUTTON_HEIGHT, "Close"));
+    buttonList.add(new GuiButton(VISUAL_VIEW_BUTTON_ID, width / 2 - COL_WIDTH / 2 + halfW + 4, closeY,
+        halfW, BUTTON_HEIGHT, "Visual Editor"));
   }
 
   @Override
@@ -163,6 +167,8 @@ public class SignalControllerConfigGui extends GuiScreen {
   protected void actionPerformed(GuiButton button) throws IOException {
     if (button.id == CLOSE_BUTTON_ID) {
       mc.displayGuiScreen(null);
+    } else if (button.id == VISUAL_VIEW_BUTTON_ID) {
+      mc.displayGuiScreen(new SignalControllerVisualGui(controller));
     } else if (button.id >= 0 && button.id < SignalControllerConfigAction.values().length) {
       CsmNetwork.sendToServer(new SignalControllerConfigPacket(blockPos, button.id));
     }

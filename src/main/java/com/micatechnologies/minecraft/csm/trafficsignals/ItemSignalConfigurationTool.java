@@ -58,7 +58,8 @@ public class ItemSignalConfigurationTool extends AbstractItem {
     if (worldIn.isRemote && !player.isSneaking()
         && getMode(heldStack) == ItemSignalConfigurationToolMode.OPEN_GUI
         && worldIn.getBlockState(pos).getBlock() instanceof BlockTrafficSignalController) {
-      player.openGui(Csm.instance, 2, worldIn, pos.getX(), pos.getY(), pos.getZ());
+      // Open visual timeline editor (GUI ID 5)
+      player.openGui(Csm.instance, 5, worldIn, pos.getX(), pos.getY(), pos.getZ());
       return EnumActionResult.SUCCESS;
     }
     if (!worldIn.isRemote) {
