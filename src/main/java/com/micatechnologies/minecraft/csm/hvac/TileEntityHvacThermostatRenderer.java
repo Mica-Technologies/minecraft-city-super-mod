@@ -7,6 +7,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
@@ -17,12 +18,15 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  * room temperature, and outside (biome) temperature. Styled to look like an
  * LCD thermostat display with consistent coloring. Enabled via CsmConfig.
  *
+ * <p>Supports both {@link TileEntityHvacThermostat} and {@link TileEntityHvacZoneThermostat}
+ * via the {@link IHvacThermostatDisplay} interface.</p>
+ *
  * @author Mica Technologies
  * @since 2026.4
  */
 @SideOnly(Side.CLIENT)
 public class TileEntityHvacThermostatRenderer
-    extends TileEntitySpecialRenderer<TileEntityHvacThermostat> {
+    extends TileEntitySpecialRenderer<TileEntity> {
 
   /** Scale factor for text rendered on the thermostat face. */
   private static final float TEXT_SCALE = 0.006f;
@@ -35,19 +39,24 @@ public class TileEntityHvacThermostatRenderer
   private static final int COLOR_GLOW = 0x1A402A;
 
   @Override
-  public void render(TileEntityHvacThermostat te, double x, double y, double z,
+  public void render(TileEntity tileEntity, double x, double y, double z,
       float partialTicks, int destroyStage, float alpha) {
     if (!CsmConfig.isThermostatDisplayEnabled()) {
       return;
     }
-    if (te.getWorld() == null) {
+    if (!(tileEntity instanceof IHvacThermostatDisplay)) {
+      return;
+    }
+    if (tileEntity.getWorld() == null) {
       return;
     }
 
-    World world = te.getWorld();
-    IBlockState state = world.getBlockState(te.getPos());
+    IHvacThermostatDisplay te = (IHvacThermostatDisplay) tileEntity;
+    World world = tileEntity.getWorld();
+    IBlockState state = world.getBlockState(tileEntity.getPos());
 
-    if (!(state.getBlock() instanceof BlockHvacThermostat)) {
+    if (!(state.getBlock() instanceof BlockHvacThermostat)
+        && !(state.getBlock() instanceof BlockHvacZoneThermostat)) {
       return;
     }
 
@@ -59,7 +68,7 @@ public class TileEntityHvacThermostatRenderer
     int targetHigh = te.getTargetTempHigh();
     boolean calling = te.isCalling();
 
-    float biomeTemp = world.getBiome(te.getPos()).getTemperature(te.getPos());
+    float biomeTemp = world.getBiome(tileEntity.getPos()).getTemperature(tileEntity.getPos());
     float outsideTempF = biomeTemp * 90.0f - 4.0f;
 
     long worldTime = world.getWorldTime() % 24000;
@@ -75,9 +84,9 @@ public class TileEntityHvacThermostatRenderer
     String statusSymbol = "";
     if (calling) {
       if (roomTemp < targetLow) {
-        statusSymbol = "\u25B2 "; // ▲ heating
+        statusSymbol = "\u25B2 "; // triangle up = heating
       } else if (roomTemp > targetHigh) {
-        statusSymbol = "\u25BC "; // ▼ cooling
+        statusSymbol = "\u25BC "; // triangle down = cooling
       }
     }
     String roomTempStr = statusSymbol + roundedRoom + "\u00B0F";
@@ -106,7 +115,7 @@ public class TileEntityHvacThermostatRenderer
         break;
     }
 
-    // Flip 180° so text faces outward (toward the player) instead of into the wall
+    // Flip 180 so text faces outward (toward the player) instead of into the wall
     GlStateManager.rotate(180, 0, 1, 0);
 
     // Position on the front face of the thermostat model

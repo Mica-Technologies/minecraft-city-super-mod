@@ -17,6 +17,7 @@ import com.micatechnologies.minecraft.csm.hvac.BlockHvacRtuHeaterBlack;
 import com.micatechnologies.minecraft.csm.hvac.BlockHvacRtuHeaterSilver;
 import com.micatechnologies.minecraft.csm.hvac.BlockHvacThermostat;
 import com.micatechnologies.minecraft.csm.hvac.BlockHvacVentRelay;
+import com.micatechnologies.minecraft.csm.hvac.BlockHvacZoneThermostat;
 import com.micatechnologies.minecraft.csm.hvac.ItemHvacLinker;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
@@ -139,6 +140,7 @@ public class CsmTabHvac extends CsmTab {
 
     // Functional HVAC blocks — Controls and distribution
     initTabBlock(BlockHvacThermostat.class, fmlPreInitializationEvent);
+    initTabBlock(BlockHvacZoneThermostat.class, fmlPreInitializationEvent);
     initTabBlock(BlockHvacVentRelay.class, fmlPreInitializationEvent);
     initTabItem(ItemHvacLinker.class, fmlPreInitializationEvent);
   }

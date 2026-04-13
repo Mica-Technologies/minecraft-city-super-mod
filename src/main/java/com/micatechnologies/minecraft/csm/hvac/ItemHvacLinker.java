@@ -19,7 +19,8 @@ import net.minecraft.world.World;
  *   <li><b>Click thermostat</b> — Select it as the linking source</li>
  *   <li><b>Then click heater/cooler</b> — Links the unit to the thermostat for auto control</li>
  *   <li><b>Then click vent relay</b> — Links the vent to the thermostat for distribution</li>
- *   <li><b>Sneak+click</b> thermostat or vent — Clear all links</li>
+ *   <li><b>Click zone thermostat</b> — If primary selected, link zone to primary. Otherwise, select zone as source (for vent linking).</li>
+ *   <li><b>Sneak+click</b> thermostat, zone, or vent — Clear all links</li>
  * </ul>
  *
  * @author Mica Technologies
@@ -53,37 +54,101 @@ public class ItemHvacLinker extends AbstractItem {
         }
         return EnumActionResult.SUCCESS;
       }
+      if (te instanceof TileEntityHvacZoneThermostat) {
+        TileEntityHvacZoneThermostat zone = (TileEntityHvacZoneThermostat) te;
+        int ventCount = zone.getLinkedVentCount();
+        for (BlockPos ventPos : new java.util.ArrayList<>(zone.getLinkedVents())) {
+          zone.unlinkVent(ventPos);
+        }
+        // Unlink from primary
+        BlockPos primaryPos = zone.getLinkedPrimaryPos();
+        if (primaryPos != null) {
+          TileEntity primaryTe = worldIn.getTileEntity(primaryPos);
+          if (primaryTe instanceof TileEntityHvacThermostat) {
+            ((TileEntityHvacThermostat) primaryTe).unlinkZone(pos);
+          }
+          zone.setLinkedPrimaryPos(null);
+        }
+        if (!worldIn.isRemote) {
+          player.sendMessage(new TextComponentString(
+              "\u00A7aCleared " + ventCount + " vent(s) and unlinked from primary"));
+        }
+        return EnumActionResult.SUCCESS;
+      }
       if (te instanceof TileEntityHvacThermostat) {
         TileEntityHvacThermostat thermostat = (TileEntityHvacThermostat) te;
         int unitCount = thermostat.getLinkedUnitCount();
         int ventCount = thermostat.getLinkedVentCount();
+        int zoneCount = thermostat.getLinkedZoneCount();
         for (BlockPos unitPos : new java.util.ArrayList<>(thermostat.getLinkedUnits())) {
           thermostat.unlinkUnit(unitPos);
         }
         for (BlockPos ventPos : new java.util.ArrayList<>(thermostat.getLinkedVents())) {
           thermostat.unlinkVent(ventPos);
         }
+        for (BlockPos zonePos : new java.util.ArrayList<>(thermostat.getLinkedZones())) {
+          thermostat.unlinkZone(zonePos);
+        }
         if (!worldIn.isRemote) {
           player.sendMessage(new TextComponentString(
-              "\u00A7aCleared " + unitCount + " unit(s) and " + ventCount + " vent(s)"));
+              "\u00A7aCleared " + unitCount + " unit(s), " + ventCount + " vent(s), and "
+                  + zoneCount + " zone(s)"));
         }
         return EnumActionResult.SUCCESS;
       }
     }
 
-    // === Click thermostat: select as linking source ===
+    // === Click primary thermostat: select as linking source ===
     if (te instanceof TileEntityHvacThermostat) {
       thermostatPos = pos;
       if (!worldIn.isRemote) {
         TileEntityHvacThermostat t = (TileEntityHvacThermostat) te;
         player.sendMessage(new TextComponentString(
             "\u00A7bSelected thermostat (" + t.getLinkedUnitCount() + " units, "
-                + t.getLinkedVentCount() + " vents). Click a heater/cooler or vent relay."));
+                + t.getLinkedVentCount() + " vents, " + t.getLinkedZoneCount()
+                + " zones). Click a heater/cooler, vent relay, or zone thermostat."));
       }
       return EnumActionResult.SUCCESS;
     }
 
-    // === Click heater/cooler: link to thermostat ===
+    // === Click zone thermostat ===
+    if (te instanceof TileEntityHvacZoneThermostat) {
+      TileEntityHvacZoneThermostat zone = (TileEntityHvacZoneThermostat) te;
+
+      // If we have a primary thermostat selected, link the zone to it
+      if (thermostatPos != null) {
+        TileEntity selectedTe = worldIn.getTileEntity(thermostatPos);
+        if (selectedTe instanceof TileEntityHvacThermostat) {
+          TileEntityHvacThermostat primary = (TileEntityHvacThermostat) selectedTe;
+          boolean success = primary.linkZone(pos);
+          if (success) {
+            zone.setLinkedPrimaryPos(thermostatPos);
+            if (!worldIn.isRemote) {
+              player.sendMessage(new TextComponentString(
+                  "\u00A7aLinked zone to primary thermostat ("
+                      + primary.getLinkedZoneCount() + " total zones)"));
+            }
+          } else {
+            if (!worldIn.isRemote) {
+              player.sendMessage(new TextComponentString(
+                  "\u00A7cZone already linked to this thermostat"));
+            }
+          }
+          return EnumActionResult.SUCCESS;
+        }
+      }
+
+      // Otherwise, select the zone thermostat as the linking source (for vent linking)
+      thermostatPos = pos;
+      if (!worldIn.isRemote) {
+        player.sendMessage(new TextComponentString(
+            "\u00A7bSelected zone thermostat (" + zone.getLinkedVentCount()
+                + " vents). Click a vent relay to link."));
+      }
+      return EnumActionResult.SUCCESS;
+    }
+
+    // === Click heater/cooler: link to primary thermostat ===
     if (te instanceof TileEntityHvacHeater) {
       if (thermostatPos == null) {
         if (!worldIn.isRemote) {
@@ -95,8 +160,13 @@ public class ItemHvacLinker extends AbstractItem {
       TileEntity thermostatTe = worldIn.getTileEntity(thermostatPos);
       if (!(thermostatTe instanceof TileEntityHvacThermostat)) {
         if (!worldIn.isRemote) {
-          player.sendMessage(new TextComponentString(
-              "\u00A7cThermostat no longer exists. Click a thermostat first."));
+          if (thermostatTe instanceof TileEntityHvacZoneThermostat) {
+            player.sendMessage(new TextComponentString(
+                "\u00A7cZone thermostats cannot link directly to units. Select a primary thermostat."));
+          } else {
+            player.sendMessage(new TextComponentString(
+                "\u00A7cThermostat no longer exists. Click a thermostat first."));
+          }
         }
         thermostatPos = null;
         return EnumActionResult.FAIL;
@@ -116,7 +186,7 @@ public class ItemHvacLinker extends AbstractItem {
       return EnumActionResult.SUCCESS;
     }
 
-    // === Click vent relay: link to thermostat ===
+    // === Click vent relay: link to thermostat (primary or zone) ===
     if (te instanceof TileEntityHvacVentRelay) {
       if (thermostatPos == null) {
         if (!worldIn.isRemote) {
@@ -126,35 +196,56 @@ public class ItemHvacLinker extends AbstractItem {
         return EnumActionResult.FAIL;
       }
       TileEntity thermostatTe = worldIn.getTileEntity(thermostatPos);
-      if (!(thermostatTe instanceof TileEntityHvacThermostat)) {
+
+      // Link to primary thermostat
+      if (thermostatTe instanceof TileEntityHvacThermostat) {
+        TileEntityHvacThermostat thermostat = (TileEntityHvacThermostat) thermostatTe;
+        int maxDist = thermostat.getMaxVentLinkDistance();
+        boolean success = thermostat.linkVent(pos, maxDist);
         if (!worldIn.isRemote) {
-          player.sendMessage(new TextComponentString(
-              "\u00A7cThermostat no longer exists. Click a thermostat first."));
+          if (success) {
+            player.sendMessage(new TextComponentString(
+                "\u00A7aLinked vent to thermostat (" + thermostat.getLinkedVentCount()
+                    + " total vents)"));
+          } else {
+            player.sendMessage(new TextComponentString(
+                "\u00A7cVent too far or already linked (max " + maxDist + " blocks)"));
+          }
         }
-        thermostatPos = null;
-        return EnumActionResult.FAIL;
+        return EnumActionResult.SUCCESS;
       }
-      TileEntityHvacThermostat thermostat = (TileEntityHvacThermostat) thermostatTe;
-      int maxDist = thermostat.getMaxVentLinkDistance();
-      boolean success = thermostat.linkVent(pos, maxDist);
+
+      // Link to zone thermostat
+      if (thermostatTe instanceof TileEntityHvacZoneThermostat) {
+        TileEntityHvacZoneThermostat zone = (TileEntityHvacZoneThermostat) thermostatTe;
+        int maxDist = zone.getMaxVentLinkDistance();
+        boolean success = zone.linkVent(pos, maxDist);
+        if (!worldIn.isRemote) {
+          if (success) {
+            player.sendMessage(new TextComponentString(
+                "\u00A7aLinked vent to zone thermostat (" + zone.getLinkedVentCount()
+                    + " total vents)"));
+          } else {
+            player.sendMessage(new TextComponentString(
+                "\u00A7cVent too far or already linked (max " + maxDist + " blocks)"));
+          }
+        }
+        return EnumActionResult.SUCCESS;
+      }
+
       if (!worldIn.isRemote) {
-        if (success) {
-          player.sendMessage(new TextComponentString(
-              "\u00A7aLinked vent to thermostat (" + thermostat.getLinkedVentCount()
-                  + " total vents)"));
-        } else {
-          player.sendMessage(new TextComponentString(
-              "\u00A7cVent too far or already linked (max " + maxDist + " blocks)"));
-        }
+        player.sendMessage(new TextComponentString(
+            "\u00A7cThermostat no longer exists. Click a thermostat first."));
       }
-      return EnumActionResult.SUCCESS;
+      thermostatPos = null;
+      return EnumActionResult.FAIL;
     }
 
     // === Clicked something else ===
     if (!worldIn.isRemote) {
       if (thermostatPos != null) {
         player.sendMessage(new TextComponentString(
-            "\u00A7eClick a heater/cooler or vent relay to link to the thermostat."));
+            "\u00A7eClick a heater/cooler, vent relay, or zone thermostat to link."));
       } else {
         player.sendMessage(new TextComponentString(
             "\u00A7eClick a thermostat to start linking."));
@@ -170,6 +261,8 @@ public class ItemHvacLinker extends AbstractItem {
     list.add("Link HVAC components to a thermostat");
     list.add("\u00A77Click thermostat \u2192 heater/cooler (auto control)");
     list.add("\u00A77Click thermostat \u2192 vent relay (distribute temp)");
+    list.add("\u00A77Click thermostat \u2192 zone thermostat (link zone)");
+    list.add("\u00A77Click zone thermostat \u2192 vent relay (zone vents)");
     list.add("\u00A77Sneak+click to clear links");
   }
 
