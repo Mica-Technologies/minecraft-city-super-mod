@@ -27,7 +27,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class BlockHd extends AbstractBlockRotatableNSEWUD {
 
-  private static final long DRYER_DURATION_MS = 20000;
+  private static final long DRYER_DURATION_MS = 16000;
 
   @SideOnly(Side.CLIENT)
   private static Map<BlockPos, Long> activeDryers;
