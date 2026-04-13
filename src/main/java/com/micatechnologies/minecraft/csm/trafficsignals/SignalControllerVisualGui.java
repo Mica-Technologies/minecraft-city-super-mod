@@ -46,6 +46,7 @@ public class SignalControllerVisualGui extends GuiScreen {
   private static final int BTN_OVERLAP_PED = 108;
   private static final int BTN_ALL_RED_FLASH = 109;
   private static final int BTN_CLEAR_FAULTS = 110;
+  private static final int BTN_CIRCUITS = 111;
 
   private final TileEntityTrafficSignalController controller;
   private final BlockPos blockPos;
@@ -125,8 +126,9 @@ public class SignalControllerVisualGui extends GuiScreen {
     buttonList.add(new GuiButton(BTN_ALL_RED_FLASH, toggleStart + (toggleW + toggleGap) * 3, toggleY, toggleW, 14, ""));
     buttonList.add(new GuiButton(BTN_CLEAR_FAULTS, toggleStart + (toggleW + toggleGap) * 4, toggleY, toggleW + 8, 14, ""));
 
-    // Close button
-    buttonList.add(new GuiButton(BTN_CLOSE, guiLeft + GUI_WIDTH / 2 - 40, guiTop + GUI_HEIGHT - 20, 80, 14, "Close"));
+    // Close and Circuits buttons
+    buttonList.add(new GuiButton(BTN_CIRCUITS, guiLeft + GUI_WIDTH / 2 - 82, guiTop + GUI_HEIGHT - 20, 80, 14, "Circuits"));
+    buttonList.add(new GuiButton(BTN_CLOSE, guiLeft + GUI_WIDTH / 2 + 2, guiTop + GUI_HEIGHT - 20, 80, 14, "Close"));
   }
 
   private GuiTextField createField(int x, int y, int w, int h, long tickValue) {
@@ -188,9 +190,9 @@ public class SignalControllerVisualGui extends GuiScreen {
     long totalCycle = greenTime + yellowTime + allRedTime + greenSec + yellowTime + allRedTime;
     if (totalCycle <= 0) totalCycle = 1;
 
-    // Circuit count info
+    // Circuit count info (right-aligned)
     int circuitCount = controller.getSignalCircuitCount();
-    String circuitInfo = circuitCount + " circuit" + (circuitCount != 1 ? "s" : "") + " linked";
+    String circuitInfo = circuitCount + " circuit" + (circuitCount != 1 ? "s" : "");
     drawString(fontRenderer, circuitInfo, barRight - fontRenderer.getStringWidth(circuitInfo), barY + 2, 0xFF888888);
 
     // C1 (Primary) signal bar
@@ -417,6 +419,9 @@ public class SignalControllerVisualGui extends GuiScreen {
     switch (button.id) {
       case BTN_CLOSE:
         mc.displayGuiScreen(null);
+        break;
+      case BTN_CIRCUITS:
+        mc.displayGuiScreen(new SignalControllerCircuitsGui(controller));
         break;
       case BTN_SIMPLE_VIEW:
         mc.displayGuiScreen(new SignalControllerConfigGui(controller));

@@ -1648,6 +1648,53 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
    *
    * @since 2.0
    */
+  /**
+   * Returns the circuits container for read access by GUIs.
+   */
+  public TrafficSignalControllerCircuits getCircuits() {
+    return circuits;
+  }
+
+  /**
+   * Clears all devices from the circuit at the specified index (0-based). The circuit remains
+   * in the list but is emptied. Trailing empty circuits are pruned automatically.
+   *
+   * @param circuitIndex the 0-based circuit index to clear
+   */
+  public void clearCircuit(int circuitIndex) {
+    if (circuitIndex >= 0 && circuitIndex < circuits.getCircuitCount()) {
+      TrafficSignalControllerCircuit circuit = circuits.getCircuit(circuitIndex);
+      // Unlink all devices in this circuit by collecting positions first
+      java.util.List<net.minecraft.util.math.BlockPos> allPositions = new java.util.ArrayList<>();
+      allPositions.addAll(circuit.getThroughSignals());
+      allPositions.addAll(circuit.getLeftSignals());
+      allPositions.addAll(circuit.getRightSignals());
+      allPositions.addAll(circuit.getFlashingLeftSignals());
+      allPositions.addAll(circuit.getFlashingRightSignals());
+      allPositions.addAll(circuit.getPedestrianSignals());
+      allPositions.addAll(circuit.getPedestrianBeaconSignals());
+      allPositions.addAll(circuit.getPedestrianAccessorySignals());
+      allPositions.addAll(circuit.getProtectedSignals());
+      allPositions.addAll(circuit.getBeaconSignals());
+      allPositions.addAll(circuit.getSensors());
+      for (net.minecraft.util.math.BlockPos devicePos : allPositions) {
+        circuit.unlinkDevice(devicePos);
+        overlaps.removeOverlaps(devicePos);
+      }
+      // Prune trailing empty circuits
+      while (circuits.getCircuits().size() > 0) {
+        TrafficSignalControllerCircuit lastCircuit =
+            circuits.getCircuit(circuits.getCircuits().size() - 1);
+        if (lastCircuit.getSize() == 0) {
+          circuits.removeCircuit(lastCircuit);
+        } else {
+          break;
+        }
+      }
+      resetController(true, true);
+    }
+  }
+
   public boolean unlinkDevice(BlockPos pos) {
     // Return true if device it was unlinked
     boolean unlinked = circuits.unlinkDevice(pos);
