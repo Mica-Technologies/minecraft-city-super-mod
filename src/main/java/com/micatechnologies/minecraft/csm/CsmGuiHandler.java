@@ -1,7 +1,9 @@
 package com.micatechnologies.minecraft.csm;
 
 import com.micatechnologies.minecraft.csm.hvac.HvacThermostatGui;
+import com.micatechnologies.minecraft.csm.hvac.HvacZoneThermostatGui;
 import com.micatechnologies.minecraft.csm.hvac.TileEntityHvacThermostat;
+import com.micatechnologies.minecraft.csm.hvac.TileEntityHvacZoneThermostat;
 import com.micatechnologies.minecraft.csm.lifesafety.FireAlarmPanelConfigGui;
 import com.micatechnologies.minecraft.csm.lifesafety.TileEntityFireAlarmControlPanel;
 import com.micatechnologies.minecraft.csm.technology.BlockRedstoneTTSGui;
@@ -84,6 +86,8 @@ public class CsmGuiHandler implements IGuiHandler {
       returnValue = new CrosswalkConfigGui((TileEntityCrosswalkSignalNew) tileEntity, isDouble);
     } else if (id == 6 && tileEntity instanceof TileEntityHvacThermostat) {
       returnValue = new HvacThermostatGui((TileEntityHvacThermostat) tileEntity);
+    } else if (id == 7 && tileEntity instanceof TileEntityHvacZoneThermostat) {
+      returnValue = new HvacZoneThermostatGui((TileEntityHvacZoneThermostat) tileEntity);
     }
     return returnValue;
   }

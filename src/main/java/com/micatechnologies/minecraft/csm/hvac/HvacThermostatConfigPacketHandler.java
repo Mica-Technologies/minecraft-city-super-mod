@@ -8,7 +8,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 /**
  * Server-side handler for HVAC thermostat configuration packets. Validates the tile entity and
- * applies the requested target temperature range.
+ * applies the requested target temperature range. Supports both primary and zone thermostats.
  */
 public class HvacThermostatConfigPacketHandler implements
     IMessageHandler<HvacThermostatConfigPacket, IMessage> {
@@ -18,14 +18,18 @@ public class HvacThermostatConfigPacketHandler implements
     ctx.getServerHandler().player.server.addScheduledTask(() -> {
       World world = ctx.getServerHandler().player.world;
       TileEntity te = world.getTileEntity(message.getPos());
-      if (!(te instanceof TileEntityHvacThermostat)) {
-        return;
-      }
 
-      TileEntityHvacThermostat thermostat = (TileEntityHvacThermostat) te;
-      thermostat.setTargetTempLow(message.getTargetTempLow());
-      thermostat.setTargetTempHigh(message.getTargetTempHigh());
-      thermostat.syncServerToClient(world);
+      if (te instanceof TileEntityHvacThermostat) {
+        TileEntityHvacThermostat thermostat = (TileEntityHvacThermostat) te;
+        thermostat.setTargetTempLow(message.getTargetTempLow());
+        thermostat.setTargetTempHigh(message.getTargetTempHigh());
+        thermostat.syncServerToClient(world);
+      } else if (te instanceof TileEntityHvacZoneThermostat) {
+        TileEntityHvacZoneThermostat zone = (TileEntityHvacZoneThermostat) te;
+        zone.setTargetTempLow(message.getTargetTempLow());
+        zone.setTargetTempHigh(message.getTargetTempHigh());
+        zone.syncServerToClient(world);
+      }
     });
     return null;
   }

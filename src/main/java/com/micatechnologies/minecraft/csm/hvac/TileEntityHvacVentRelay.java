@@ -88,10 +88,11 @@ public class TileEntityHvacVentRelay extends AbstractTickableTileEntity implemen
       return;
     }
 
-    // Validate thermostat link
+    // Validate thermostat link (can be linked to primary or zone thermostat)
     if (linkedThermostatPos != null && world.isBlockLoaded(linkedThermostatPos)) {
       TileEntity te = world.getTileEntity(linkedThermostatPos);
-      if (!(te instanceof TileEntityHvacThermostat)) {
+      if (!(te instanceof TileEntityHvacThermostat)
+          && !(te instanceof TileEntityHvacZoneThermostat)) {
         clearLink();
       }
     }

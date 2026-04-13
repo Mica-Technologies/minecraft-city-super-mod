@@ -27,7 +27,8 @@ import net.minecraftforge.common.util.Constants;
  * @author Mica Technologies
  * @since 2026.4
  */
-public class TileEntityHvacThermostat extends AbstractTickableTileEntity {
+public class TileEntityHvacThermostat extends AbstractTickableTileEntity
+    implements IHvacThermostatDisplay {
 
   private static final String NBT_TARGET_TEMP_LOW = "targetTempLow";
   private static final String NBT_TARGET_TEMP_HIGH = "targetTempHigh";
@@ -82,6 +83,9 @@ public class TileEntityHvacThermostat extends AbstractTickableTileEntity {
 
   /** Positions of linked vent relays. Persisted in NBT. */
   private final List<BlockPos> linkedVents = new ArrayList<>();
+
+  /** Positions of linked zone thermostats. Persisted in NBT. */
+  private final List<BlockPos> linkedZones = new ArrayList<>();
 
   /** Timestamp when the system started calling. Transient — not persisted to disk. */
   private long rampStartMs = 0L;
@@ -265,6 +269,30 @@ public class TileEntityHvacThermostat extends AbstractTickableTileEntity {
     boolean needsHeating = isCalling && currentTemperature < targetTempLow;
     boolean needsCooling = isCalling && currentTemperature > targetTempHigh;
 
+    // Also check linked zones for heating/cooling demand
+    Iterator<BlockPos> zoneIt = linkedZones.iterator();
+    while (zoneIt.hasNext()) {
+      BlockPos zonePos = zoneIt.next();
+      if (!world.isBlockLoaded(zonePos)) {
+        continue;
+      }
+      TileEntity zoneTe = world.getTileEntity(zonePos);
+      if (zoneTe instanceof TileEntityHvacZoneThermostat) {
+        TileEntityHvacZoneThermostat zone = (TileEntityHvacZoneThermostat) zoneTe;
+        if (zone.isCalling()) {
+          float zoneTemp = zone.getCurrentTemperature();
+          if (zoneTemp < zone.getTargetTempLow()) {
+            needsHeating = true;
+          }
+          if (zoneTemp > zone.getTargetTempHigh()) {
+            needsCooling = true;
+          }
+        }
+      } else {
+        zoneIt.remove();
+      }
+    }
+
     Iterator<BlockPos> it = linkedUnits.iterator();
     while (it.hasNext()) {
       BlockPos unitPos = it.next();
@@ -447,6 +475,49 @@ public class TileEntityHvacThermostat extends AbstractTickableTileEntity {
 
   // endregion
 
+  // region Linked Zone Management
+
+  public boolean linkZone(BlockPos zonePos) {
+    if (linkedZones.contains(zonePos)) {
+      return false;
+    }
+    if (world != null) {
+      TileEntity te = world.getTileEntity(zonePos);
+      if (!(te instanceof TileEntityHvacZoneThermostat)) {
+        return false;
+      }
+    }
+    linkedZones.add(zonePos.toImmutable());
+    if (world != null && !world.isRemote) {
+      markDirtySync(world, pos, true);
+    }
+    return true;
+  }
+
+  public boolean unlinkZone(BlockPos zonePos) {
+    boolean removed = linkedZones.remove(zonePos);
+    if (removed && world != null && !world.isRemote) {
+      if (world.isBlockLoaded(zonePos)) {
+        TileEntity te = world.getTileEntity(zonePos);
+        if (te instanceof TileEntityHvacZoneThermostat) {
+          ((TileEntityHvacZoneThermostat) te).setLinkedPrimaryPos(null);
+        }
+      }
+      markDirtySync(world, pos, true);
+    }
+    return removed;
+  }
+
+  public List<BlockPos> getLinkedZones() {
+    return linkedZones;
+  }
+
+  public int getLinkedZoneCount() {
+    return linkedZones.size();
+  }
+
+  // endregion
+
   // region NBT
 
   @Override
@@ -483,6 +554,15 @@ public class TileEntityHvacThermostat extends AbstractTickableTileEntity {
             tag.getInteger("z")));
       }
     }
+    linkedZones.clear();
+    if (compound.hasKey("linkedZones")) {
+      NBTTagList list = compound.getTagList("linkedZones", Constants.NBT.TAG_COMPOUND);
+      for (int i = 0; i < list.tagCount(); i++) {
+        NBTTagCompound tag = list.getCompoundTagAt(i);
+        linkedZones.add(new BlockPos(tag.getInteger("x"), tag.getInteger("y"),
+            tag.getInteger("z")));
+      }
+    }
   }
 
   @Override
@@ -510,6 +590,15 @@ public class TileEntityHvacThermostat extends AbstractTickableTileEntity {
       ventList.appendTag(tag);
     }
     compound.setTag(NBT_LINKED_VENTS, ventList);
+    NBTTagList zoneList = new NBTTagList();
+    for (BlockPos zonePos : linkedZones) {
+      NBTTagCompound tag = new NBTTagCompound();
+      tag.setInteger("x", zonePos.getX());
+      tag.setInteger("y", zonePos.getY());
+      tag.setInteger("z", zonePos.getZ());
+      zoneList.appendTag(tag);
+    }
+    compound.setTag("linkedZones", zoneList);
     return compound;
   }
 
