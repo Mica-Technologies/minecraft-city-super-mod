@@ -120,7 +120,7 @@ public abstract class AbstractBlockTrafficPole extends AbstractBlockRotatableNSE
    * Cached combined ignore-block array (global + subclass-specific), computed lazily on first use
    * to avoid array allocation on every getActualState() call.
    */
-  private Class<?>[] cachedCombinedIgnoreBlock;
+  private volatile Class<?>[] cachedCombinedIgnoreBlock;
 
   /**
    * Constructs an {@link AbstractBlockTrafficPole} instance.
