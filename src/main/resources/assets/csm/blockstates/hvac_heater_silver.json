@@ -1,0 +1,34 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:hvac/shared_models/hvac_heater_silver",
+    "textures": {
+      "all": "csm:blocks/hvac/hvac_heater_silver",
+      "particle": "csm:blocks/hvac/hvac_heater_silver",
+      "0": "csm:blocks/hvac/hvac_heater_silver"
+    }
+  },
+  "variants": {
+    "facing": {
+      "down": {
+        "x": 90
+      },
+      "east": {
+        "y": 90
+      },
+      "north": {},
+      "south": {
+        "y": 180
+      },
+      "up": {
+        "x": 270
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "inventory": [
+      {}
+    ]
+  }
+}
