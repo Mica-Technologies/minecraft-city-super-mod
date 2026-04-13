@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:lifesafety/shared_models/systemsensor_sa_hornstrobewp_white",
+    "model": "csm:lifesafety/shared_models/systemsensor_sa_hornstrobewp",
     "textures": {
       "all": "csm:blocks/lifesafety/systemsensor_sa_hornstrobewp_white",
       "particle": "csm:blocks/lifesafety/systemsensor_sa_hornstrobewp_white",

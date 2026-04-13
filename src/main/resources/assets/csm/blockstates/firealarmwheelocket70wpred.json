@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:lifesafety/shared_models/wheelock_et70wp_speakerstrobe_red",
+    "model": "csm:lifesafety/shared_models/wheelock_et70wp_speakerstrobe",
     "textures": {
       "all": "csm:blocks/lifesafety/wheelock_et70_red_weatherproof_speaker_strobe",
       "particle": "csm:blocks/lifesafety/wheelock_et70_red_weatherproof_speaker_strobe",
