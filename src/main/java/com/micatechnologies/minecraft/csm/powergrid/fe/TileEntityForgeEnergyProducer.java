@@ -79,7 +79,7 @@ public class TileEntityForgeEnergyProducer extends AbstractTickableTileEntity im
   }
 
   @Override
-  public synchronized int receiveEnergy(int i, boolean b) {
+  public int receiveEnergy(int i, boolean b) {
     return 0;
   }
 
