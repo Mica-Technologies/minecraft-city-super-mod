@@ -66,8 +66,8 @@ public class SignalControllerVisualGui extends GuiScreen {
   // Layout constants
   private int guiLeft;
   private int guiTop;
-  private static final int GUI_WIDTH = 340;
-  private static final int GUI_HEIGHT = 230;
+  private static final int GUI_WIDTH = 370;
+  private static final int GUI_HEIGHT = 235;
 
   public SignalControllerVisualGui(TileEntityTrafficSignalController controller) {
     this.controller = controller;
@@ -94,7 +94,7 @@ public class SignalControllerVisualGui extends GuiScreen {
     int fieldH = 12;
     int col1X = guiLeft + 80;
     int col2X = guiLeft + 210;
-    int col3X = guiLeft + 310;
+    int col3X = guiLeft + 290;
     int fieldY = guiTop + 128;
     int rowH = 16;
 
@@ -186,8 +186,8 @@ public class SignalControllerVisualGui extends GuiScreen {
     long totalCycle = greenTime + yellowTime + allRedTime + greenSec + yellowTime + allRedTime;
     if (totalCycle <= 0) totalCycle = 1;
 
-    // Primary signal bar
-    drawString(fontRenderer, "Primary", barLeft, barY + 3, COLOR_LABEL);
+    // Circuit 1 signal bar
+    drawString(fontRenderer, "Circuit 1", barLeft, barY + 3, COLOR_LABEL);
     barY += 14;
     drawRect(barLeft, barY, barRight, barY + barHeight, COLOR_BAR_BG);
     int x = barLeft;
@@ -198,9 +198,9 @@ public class SignalControllerVisualGui extends GuiScreen {
     x = drawPhaseBar(x, barY, barWidth, barHeight, yellowTime, totalCycle, COLOR_RED, "");
     drawPhaseBar(x, barY, barWidth, barHeight, allRedTime, totalCycle, COLOR_RED, "");
 
-    // Secondary signal bar
+    // Circuit 2 signal bar
     barY += barHeight + 4;
-    drawString(fontRenderer, "Secondary", barLeft, barY + 3, COLOR_LABEL);
+    drawString(fontRenderer, "Circuit 2", barLeft, barY + 3, COLOR_LABEL);
     barY += 14;
     drawRect(barLeft, barY, barRight, barY + barHeight, COLOR_BAR_BG);
     x = barLeft;
@@ -234,7 +234,7 @@ public class SignalControllerVisualGui extends GuiScreen {
     int rowH = 16;
     int col1L = guiLeft + 8;
     int col2L = guiLeft + 138;
-    int col3L = guiLeft + 260;
+    int col3L = guiLeft + 248;
 
     drawString(fontRenderer, "Yellow:", col1L, fieldY + 2, COLOR_LABEL);
     drawString(fontRenderer, "All Red:", col2L, fieldY + 2, COLOR_LABEL);
@@ -250,8 +250,8 @@ public class SignalControllerVisualGui extends GuiScreen {
     fieldMaxGreen.drawTextBox();
 
     fieldY += rowH;
-    drawString(fontRenderer, "Min Sec:", col1L, fieldY + 2, COLOR_LABEL);
-    drawString(fontRenderer, "Max Sec:", col2L, fieldY + 2, COLOR_LABEL);
+    drawString(fontRenderer, "C2 Min:", col1L, fieldY + 2, COLOR_LABEL);
+    drawString(fontRenderer, "C2 Max:", col2L, fieldY + 2, COLOR_LABEL);
     fieldMinGreenSec.drawTextBox();
     fieldMaxGreenSec.drawTextBox();
 
@@ -261,8 +261,8 @@ public class SignalControllerVisualGui extends GuiScreen {
     fieldPedClear.drawTextBox();
     fieldPedSignal.drawTextBox();
 
-    // Units hint — placed below the cycle time label to avoid overlapping fields
-    drawString(fontRenderer, "(all values in seconds)", guiLeft + GUI_WIDTH / 2 - 55, guiTop + 128 - 10, 0xFF666666);
+    // "(sec)" hint on the bottom-right of the field area
+    drawString(fontRenderer, "(sec)", guiLeft + GUI_WIDTH - 34, fieldY + 2, 0xFF666666);
 
     // Toggle button labels
     updateToggleButton(BTN_NIGHTLY, "Night: ", controller.getNightlyFallbackToFlashMode());
