@@ -95,6 +95,9 @@ public class SignalControllerSetValuePacketHandler implements
         case "rampMeterNight":
           controller.setRampMeterNightMode((int) (tickValue % 3));
           break;
+        case "clearCircuit":
+          controller.clearCircuit((int) tickValue);
+          break;
         default:
           System.out.println(
               "[CSM] SignalControllerSetValuePacketHandler: unrecognized param key '" + paramKey
