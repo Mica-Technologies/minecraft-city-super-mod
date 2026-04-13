@@ -87,3 +87,4 @@ logs/
 .claude/settings.local.json
 .claude/worktrees/
 dev-env-utils/target/
+assets/docs/agent_progress/

@@ -79,12 +79,19 @@ public class CsmConfig {
       "Set to false to disable automatic update checking on world join.";
   private static final boolean FIELD_DEFAULT_ENABLE_UPDATE_CHECK = true;
 
+  private static final String FIELD_KEY_ENABLE_THERMOSTAT_DISPLAY = "enableThermostatDisplay";
+  private static final String FIELD_DESCRIPTION_ENABLE_THERMOSTAT_DISPLAY =
+      "Set to true to enable the dynamic in-world display on HVAC thermostats showing time, "
+          + "room temperature, and outside temperature.";
+  private static final boolean FIELD_DEFAULT_ENABLE_THERMOSTAT_DISPLAY = true;
+
   /**
    * The configuration field value for the enableUpdateCheck option.
    */
   private static boolean enableStrobeEffect;
 
   private static boolean enableUpdateCheck;
+  private static boolean enableThermostatDisplay;
 
   /**
    * The configuration field value for the generateWikiFiles option.
@@ -132,6 +139,9 @@ public class CsmConfig {
         FIELD_DEFAULT_ENABLE_STROBE_EFFECT, FIELD_DESCRIPTION_ENABLE_STROBE_EFFECT);
     enableUpdateCheck = config.getBoolean(FIELD_KEY_ENABLE_UPDATE_CHECK, CATEGORY_GENERAL,
         FIELD_DEFAULT_ENABLE_UPDATE_CHECK, FIELD_DESCRIPTION_ENABLE_UPDATE_CHECK);
+    enableThermostatDisplay = config.getBoolean(FIELD_KEY_ENABLE_THERMOSTAT_DISPLAY,
+        CATEGORY_GENERAL, FIELD_DEFAULT_ENABLE_THERMOSTAT_DISPLAY,
+        FIELD_DESCRIPTION_ENABLE_THERMOSTAT_DISPLAY);
     generateWikiFiles = config.getBoolean(FIELD_KEY_GENERATE_WIKI_FILES, CATEGORY_WIKI,
         FIELD_DEFAULT_GENERATE_WIKI_FILES, FIELD_DESCRIPTION_GENERATE_WIKI_FILES);
     wikiFilesFolder = config.getString(FIELD_KEY_WIKI_FILES_FOLDER, CATEGORY_WIKI,
@@ -180,5 +190,14 @@ public class CsmConfig {
    */
   public static boolean isStrobeEffectEnabled() {
     return enableStrobeEffect;
+  }
+
+  /**
+   * Retrieves whether the in-world thermostat display (TESR) is enabled.
+   *
+   * @return {@code true} if the thermostat display is enabled, {@code false} otherwise.
+   */
+  public static boolean isThermostatDisplayEnabled() {
+    return enableThermostatDisplay;
   }
 }
