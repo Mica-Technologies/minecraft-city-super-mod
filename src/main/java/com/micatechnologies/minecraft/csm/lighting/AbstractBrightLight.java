@@ -170,6 +170,7 @@ public abstract class AbstractBrightLight extends AbstractBlockRotatableNSEW {
         // stop removing light once hit block
         if (bs.getBlock() == lightupAir) {
           world.setBlockToAir(test);
+          break;
         }
       }
     }

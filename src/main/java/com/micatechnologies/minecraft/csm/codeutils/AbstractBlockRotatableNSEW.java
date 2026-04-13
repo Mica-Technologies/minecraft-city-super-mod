@@ -222,17 +222,12 @@ public abstract class AbstractBlockRotatableNSEW extends AbstractBlock {
   @Nonnull
   public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
 
-    // Rotate the bounding box based on the facing direction if FACING property is present
+    // Rotate the bounding box based on the facing direction
     if (state.getBlock() instanceof AbstractBlockRotatableNSEW) {
-      // Retrieve the actual state
       IBlockState actualState = source.getBlockState(pos).getActualState(source, pos);
-
-      // Rotate the bounding box based on the facing direction if FACING property is present
-      if (actualState.getProperties().containsKey(FACING)) {
-        return RotationUtils.rotateBoundingBoxByFacing(
-            getBlockBoundingBox(actualState, source, pos),
-            actualState.getValue(FACING));
-      }
+      return RotationUtils.rotateBoundingBoxByFacing(
+          getBlockBoundingBox(actualState, source, pos),
+          actualState.getValue(FACING));
     }
 
     // Default to a square bounding box
