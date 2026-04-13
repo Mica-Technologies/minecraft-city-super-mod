@@ -264,11 +264,11 @@ public class SignalControllerVisualGui extends GuiScreen {
     // "(sec)" hint on the bottom-right of the field area
     drawString(fontRenderer, "(sec)", guiLeft + GUI_WIDTH - 34, fieldY + 2, 0xFF666666);
 
-    // Toggle button labels
-    updateToggleButton(BTN_NIGHTLY, "Night: ", controller.getNightlyFallbackToFlashMode());
-    updateToggleButton(BTN_POWER_LOSS, "PwrLoss: ", controller.getPowerLossFallbackToFlashMode());
-    updateToggleButton(BTN_OVERLAP_PED, "OvlpPed: ", controller.getOverlapPedestrianSignals());
-    updateToggleButton(BTN_ALL_RED_FLASH, "AllRed: ", controller.getAllRedFlash());
+    // Toggle button labels (short form)
+    updateToggleButtonShort(BTN_NIGHTLY, "NF", controller.getNightlyFallbackToFlashMode(), "FLSH", "NORM");
+    updateToggleButtonShort(BTN_POWER_LOSS, "PL", controller.getPowerLossFallbackToFlashMode(), "FLSH", "NORM");
+    updateToggleButtonShort(BTN_OVERLAP_PED, "OP", controller.getOverlapPedestrianSignals(), "Yes", "No");
+    updateToggleButtonShort(BTN_ALL_RED_FLASH, "AR", controller.getAllRedFlash(), "Yes", "No");
     for (GuiButton btn : buttonList) {
       if (btn.id == BTN_CLEAR_FAULTS) {
         btn.displayString = controller.isInFaultState() ? "FAULT!" : "No Faults";
@@ -281,6 +281,13 @@ public class SignalControllerVisualGui extends GuiScreen {
     drawCenteredString(fontRenderer,
         "Cycle: " + ticksToSeconds(totalCycle) + "s",
         guiLeft + GUI_WIDTH / 2, guiTop + 116, 0xFFAAAAAA);
+
+    // Draw tooltips for toggle buttons on hover (after super so they render on top)
+    drawToggleTooltip(mouseX, mouseY, BTN_NIGHTLY, "Nightly Flash");
+    drawToggleTooltip(mouseX, mouseY, BTN_POWER_LOSS, "Power Loss Flash");
+    drawToggleTooltip(mouseX, mouseY, BTN_OVERLAP_PED, "Overlap Ped Signals");
+    drawToggleTooltip(mouseX, mouseY, BTN_ALL_RED_FLASH, "All Red Flash");
+    drawToggleTooltip(mouseX, mouseY, BTN_CLEAR_FAULTS, "Clear Faults");
   }
 
   private int drawPhaseBar(int x, int y, int totalWidth, int height,
@@ -299,10 +306,28 @@ public class SignalControllerVisualGui extends GuiScreen {
     return x + phaseWidth;
   }
 
-  private void updateToggleButton(int id, String prefix, boolean value) {
+  private void updateToggleButtonShort(int id, String prefix, boolean value,
+      String onText, String offText) {
     for (GuiButton btn : buttonList) {
       if (btn.id == id) {
-        btn.displayString = prefix + (value ? "ON" : "OFF");
+        btn.displayString = prefix + ": " + (value ? onText : offText);
+      }
+    }
+  }
+
+  private void drawToggleTooltip(int mouseX, int mouseY, int buttonId, String tooltip) {
+    for (GuiButton btn : buttonList) {
+      if (btn.id == buttonId && btn.isMouseOver()) {
+        int tipWidth = fontRenderer.getStringWidth(tooltip) + 6;
+        int tipX = mouseX + 8;
+        int tipY = mouseY - 12;
+        drawRect(tipX - 2, tipY - 2, tipX + tipWidth, tipY + 10, 0xEE000000);
+        drawRect(tipX - 2, tipY - 2, tipX + tipWidth, tipY - 1, 0xFF555555);
+        drawRect(tipX - 2, tipY + 9, tipX + tipWidth, tipY + 10, 0xFF555555);
+        drawRect(tipX - 2, tipY - 2, tipX - 1, tipY + 10, 0xFF555555);
+        drawRect(tipX + tipWidth - 1, tipY - 2, tipX + tipWidth, tipY + 10, 0xFF555555);
+        fontRenderer.drawString(tooltip, tipX + 2, tipY, 0xFFFFFF);
+        break;
       }
     }
   }
