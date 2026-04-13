@@ -1,17 +1,22 @@
 package com.micatechnologies.minecraft.csm.novelties;
 
+import com.micatechnologies.minecraft.csm.CsmSounds;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEWUD;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import net.minecraft.block.BlockDirectional;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.World;
 
 public class BlockOldRecordPlayer extends AbstractBlockRotatableNSEWUD {
 
@@ -107,5 +112,19 @@ public class BlockOldRecordPlayer extends AbstractBlockRotatableNSEWUD {
   @Override
   public BlockRenderLayer getBlockRenderLayer() {
     return BlockRenderLayer.CUTOUT_MIPPED;
+  }
+
+  @Override
+  public boolean onBlockActivated(World world, BlockPos pos, IBlockState state,
+      EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+    if (!world.isRemote) {
+      SoundEvent sound = player.isSneaking()
+          ? CsmSounds.SOUND.OLDRECORDPLAYER2.getSoundEvent()
+          : CsmSounds.SOUND.OLDRECORDPLAYER.getSoundEvent();
+      if (sound != null) {
+        world.playSound(null, pos, sound, SoundCategory.BLOCKS, 1.0F, 1.0F);
+      }
+    }
+    return true;
   }
 }
