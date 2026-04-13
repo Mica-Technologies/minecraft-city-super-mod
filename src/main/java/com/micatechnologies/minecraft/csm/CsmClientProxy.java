@@ -104,6 +104,14 @@ public class CsmClientProxy implements ICsmProxy {
         com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityTrafficLightMountKit.class,
         new com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityTrafficLightMountKitRenderer());
 
+    // Register HVAC thermostat TESR
+    ClientRegistry.bindTileEntitySpecialRenderer(
+        com.micatechnologies.minecraft.csm.hvac.TileEntityHvacThermostat.class,
+        new com.micatechnologies.minecraft.csm.hvac.TileEntityHvacThermostatRenderer());
+
+    // Register HVAC temperature HUD overlay
+    com.micatechnologies.minecraft.csm.hvac.HvacHudOverlay.register();
+
     // Note: event bus registration moved to preInit() so ModelRegistryEvent is received.
     // The version check handler (onEntityJoinWorld) also benefits from that registration.
   }
