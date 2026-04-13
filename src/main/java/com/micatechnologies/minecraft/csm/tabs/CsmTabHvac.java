@@ -3,6 +3,21 @@ package com.micatechnologies.minecraft.csm.tabs;
 import com.micatechnologies.minecraft.csm.CsmRegistry;
 import com.micatechnologies.minecraft.csm.codeutils.BlockRotatableNSEWUDFactory;
 import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
+import com.micatechnologies.minecraft.csm.hvac.BlockHvacCooler;
+import com.micatechnologies.minecraft.csm.hvac.BlockHvacCoolerBlack;
+import com.micatechnologies.minecraft.csm.hvac.BlockHvacCoolerSilver;
+import com.micatechnologies.minecraft.csm.hvac.BlockHvacHeater;
+import com.micatechnologies.minecraft.csm.hvac.BlockHvacHeaterBlack;
+import com.micatechnologies.minecraft.csm.hvac.BlockHvacHeaterSilver;
+import com.micatechnologies.minecraft.csm.hvac.BlockHvacRtuCooler;
+import com.micatechnologies.minecraft.csm.hvac.BlockHvacRtuCoolerBlack;
+import com.micatechnologies.minecraft.csm.hvac.BlockHvacRtuCoolerSilver;
+import com.micatechnologies.minecraft.csm.hvac.BlockHvacRtuHeater;
+import com.micatechnologies.minecraft.csm.hvac.BlockHvacRtuHeaterBlack;
+import com.micatechnologies.minecraft.csm.hvac.BlockHvacRtuHeaterSilver;
+import com.micatechnologies.minecraft.csm.hvac.BlockHvacThermostat;
+import com.micatechnologies.minecraft.csm.hvac.BlockHvacVentRelay;
+import com.micatechnologies.minecraft.csm.hvac.ItemHvacLinker;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
@@ -105,5 +120,26 @@ public class CsmTabHvac extends CsmTab {
     initTabBlock(new BlockRotatableNSEWUDFactory("svd3", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 255, new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 1.0, 1.0), true, true, false, BlockRenderLayer.SOLID, false, false));
     initTabBlock(new BlockRotatableNSEWUDFactory("svd4", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 255, new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 1.0, 1.0), true, true, false, BlockRenderLayer.SOLID, false, false));
     initTabBlock(new BlockRotatableNSEWUDFactory("svd5", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 255, new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 1.0, 1.0), true, true, false, BlockRenderLayer.SOLID, false, false));
+
+    // Functional HVAC blocks — Standard units
+    initTabBlock(BlockHvacHeater.class, fmlPreInitializationEvent);
+    initTabBlock(BlockHvacHeaterBlack.class, fmlPreInitializationEvent);
+    initTabBlock(BlockHvacHeaterSilver.class, fmlPreInitializationEvent);
+    initTabBlock(BlockHvacCooler.class, fmlPreInitializationEvent);
+    initTabBlock(BlockHvacCoolerBlack.class, fmlPreInitializationEvent);
+    initTabBlock(BlockHvacCoolerSilver.class, fmlPreInitializationEvent);
+
+    // Functional HVAC blocks — Rooftop units
+    initTabBlock(BlockHvacRtuHeater.class, fmlPreInitializationEvent);
+    initTabBlock(BlockHvacRtuHeaterBlack.class, fmlPreInitializationEvent);
+    initTabBlock(BlockHvacRtuHeaterSilver.class, fmlPreInitializationEvent);
+    initTabBlock(BlockHvacRtuCooler.class, fmlPreInitializationEvent);
+    initTabBlock(BlockHvacRtuCoolerBlack.class, fmlPreInitializationEvent);
+    initTabBlock(BlockHvacRtuCoolerSilver.class, fmlPreInitializationEvent);
+
+    // Functional HVAC blocks — Controls and distribution
+    initTabBlock(BlockHvacThermostat.class, fmlPreInitializationEvent);
+    initTabBlock(BlockHvacVentRelay.class, fmlPreInitializationEvent);
+    initTabItem(ItemHvacLinker.class, fmlPreInitializationEvent);
   }
 }
