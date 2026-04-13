@@ -129,7 +129,7 @@ public class BlockLightupAir extends AbstractBlockRotatableNSEWUD {
   @Nonnull
   @Override
   public BlockRenderLayer getBlockRenderLayer() {
-    return BlockRenderLayer.TRANSLUCENT;
+    return BlockRenderLayer.SOLID;
   }
 }
 

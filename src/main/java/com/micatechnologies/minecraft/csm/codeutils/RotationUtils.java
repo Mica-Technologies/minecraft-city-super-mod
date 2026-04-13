@@ -190,16 +190,21 @@ public class RotationUtils {
    *
    * @since 1.1
    */
+  private static final EnumFacing[] DIAGONAL_NE = {EnumFacing.NORTH, EnumFacing.EAST};
+  private static final EnumFacing[] DIAGONAL_SE = {EnumFacing.SOUTH, EnumFacing.EAST};
+  private static final EnumFacing[] DIAGONAL_SW = {EnumFacing.SOUTH, EnumFacing.WEST};
+  private static final EnumFacing[] DIAGONAL_NW = {EnumFacing.NORTH, EnumFacing.WEST};
+
   private static EnumFacing[] getAssociatedCardinalDirections(DirectionEight facing) {
     switch (facing) {
       case NE:
-        return new EnumFacing[]{EnumFacing.NORTH, EnumFacing.EAST};
+        return DIAGONAL_NE;
       case SE:
-        return new EnumFacing[]{EnumFacing.SOUTH, EnumFacing.EAST};
+        return DIAGONAL_SE;
       case SW:
-        return new EnumFacing[]{EnumFacing.SOUTH, EnumFacing.WEST};
+        return DIAGONAL_SW;
       case NW:
-        return new EnumFacing[]{EnumFacing.NORTH, EnumFacing.WEST};
+        return DIAGONAL_NW;
       default:
         throw new IllegalArgumentException("Expected a diagonal direction.");
     }
