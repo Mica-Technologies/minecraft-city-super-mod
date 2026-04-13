@@ -174,6 +174,9 @@ public class Csm {
       CsmNetwork.registerNetworkMessage(
           com.micatechnologies.minecraft.csm.lifesafety.FireAlarmPanelConfigPacketHandler.class,
           com.micatechnologies.minecraft.csm.lifesafety.FireAlarmPanelConfigPacket.class, Side.SERVER);
+      CsmNetwork.registerNetworkMessage(
+          com.micatechnologies.minecraft.csm.hvac.HvacThermostatConfigPacketHandler.class,
+          com.micatechnologies.minecraft.csm.hvac.HvacThermostatConfigPacket.class, Side.SERVER);
       logger.info("Finished registering network message(s)");
       progressBar.step("Network Messages Registration");
 
