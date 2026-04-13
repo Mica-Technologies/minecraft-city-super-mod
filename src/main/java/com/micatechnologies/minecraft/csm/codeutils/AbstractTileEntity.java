@@ -179,7 +179,7 @@ public abstract class AbstractTileEntity extends TileEntity {
   @Nullable
   public SPacketUpdateTileEntity getUpdatePacket() {
     // Create a new update packet with the new NBT tag compound
-    return new SPacketUpdateTileEntity(getPos(), getBlockMetadata(), getUpdateTag());
+    return new SPacketUpdateTileEntity(getPos(), 0, getUpdateTag());
   }
 
   /**
