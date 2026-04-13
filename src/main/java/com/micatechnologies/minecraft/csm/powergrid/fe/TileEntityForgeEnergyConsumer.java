@@ -83,7 +83,7 @@ public class TileEntityForgeEnergyConsumer extends AbstractTickableTileEntity im
   }
 
   @Override
-  public synchronized int receiveEnergy(int i, boolean b) {
+  public int receiveEnergy(int i, boolean b) {
     // Receive energy from the grid (up to max capacity)
     int energyReceived = Math.min(storedEnergyMax - storedEnergy, i);
     storedEnergy += energyReceived;
@@ -152,7 +152,7 @@ public class TileEntityForgeEnergyConsumer extends AbstractTickableTileEntity im
    * Abstract method which must be implemented to handle the tick event of the tile entity.
    */
   @Override
-  public synchronized void onTick() {
+  public void onTick() {
     try {
       // Get block and world information
       BlockPos blockPos = getPos();
@@ -175,7 +175,7 @@ public class TileEntityForgeEnergyConsumer extends AbstractTickableTileEntity im
     }
   }
 
-  public synchronized boolean consumeEnergy(int i) {
+  public boolean consumeEnergy(int i) {
     boolean consumed = false;
     if (storedEnergy >= i) {
       storedEnergy -= i;
