@@ -188,8 +188,13 @@ public class SignalControllerVisualGui extends GuiScreen {
     long totalCycle = greenTime + yellowTime + allRedTime + greenSec + yellowTime + allRedTime;
     if (totalCycle <= 0) totalCycle = 1;
 
-    // Circuit 1 signal bar
-    drawString(fontRenderer, "Circuit 1", barLeft, barY + 2, COLOR_LABEL);
+    // Circuit count info
+    int circuitCount = controller.getSignalCircuitCount();
+    String circuitInfo = circuitCount + " circuit" + (circuitCount != 1 ? "s" : "") + " linked";
+    drawString(fontRenderer, circuitInfo, barRight - fontRenderer.getStringWidth(circuitInfo), barY + 2, 0xFF888888);
+
+    // C1 (Primary) signal bar
+    drawString(fontRenderer, "C1 (Primary)", barLeft, barY + 2, COLOR_LABEL);
     barY += 12;
     drawRect(barLeft, barY, barRight, barY + barHeight, COLOR_BAR_BG);
     int x = barLeft;
@@ -200,9 +205,9 @@ public class SignalControllerVisualGui extends GuiScreen {
     x = drawPhaseBar(x, barY, barWidth, barHeight, yellowTime, totalCycle, COLOR_RED, "");
     drawPhaseBar(x, barY, barWidth, barHeight, allRedTime, totalCycle, COLOR_RED, "");
 
-    // Circuit 2 signal bar
+    // C2+ (Secondary) signal bar
     barY += barHeight + 6;
-    drawString(fontRenderer, "Circuit 2", barLeft, barY + 2, COLOR_LABEL);
+    drawString(fontRenderer, "C2+ (Secondary)", barLeft, barY + 2, COLOR_LABEL);
     barY += 12;
     drawRect(barLeft, barY, barRight, barY + barHeight, COLOR_BAR_BG);
     x = barLeft;
