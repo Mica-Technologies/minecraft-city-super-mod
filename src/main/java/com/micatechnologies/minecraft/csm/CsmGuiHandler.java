@@ -6,6 +6,7 @@ import com.micatechnologies.minecraft.csm.technology.BlockRedstoneTTSGui;
 import com.micatechnologies.minecraft.csm.technology.TileEntityRedstoneTTS;
 import com.micatechnologies.minecraft.csm.trafficsignals.CrosswalkConfigGui;
 import com.micatechnologies.minecraft.csm.trafficsignals.SignalControllerConfigGui;
+import com.micatechnologies.minecraft.csm.trafficsignals.SignalControllerVisualGui;
 import com.micatechnologies.minecraft.csm.trafficsignals.SignalHeadConfigGui;
 import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityCrosswalkSignalNew;
 import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalController;
@@ -70,6 +71,8 @@ public class CsmGuiHandler implements IGuiHandler {
       returnValue = new SignalHeadConfigGui((TileEntityTrafficSignalHead) tileEntity);
     } else if (id == 2 && tileEntity instanceof TileEntityTrafficSignalController) {
       returnValue = new SignalControllerConfigGui((TileEntityTrafficSignalController) tileEntity);
+    } else if (id == 5 && tileEntity instanceof TileEntityTrafficSignalController) {
+      returnValue = new SignalControllerVisualGui((TileEntityTrafficSignalController) tileEntity);
     } else if (id == 3 && tileEntity instanceof TileEntityFireAlarmControlPanel) {
       returnValue = new FireAlarmPanelConfigGui((TileEntityFireAlarmControlPanel) tileEntity);
     } else if (id == 4 && tileEntity instanceof TileEntityCrosswalkSignalNew) {
