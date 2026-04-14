@@ -42,6 +42,8 @@ public class HvacTemperatureManager {
   private static long lastDebugLogMs = 0L;
   /** Set to true for the current calculation pass when the throttle allows logging. */
   private static boolean debugThisPass = false;
+  /** Throttle for thermostat debug logs (separate from HUD throttle). */
+  private static long lastThermostatDebugMs = 0L;
 
   /**
    * Number of ticks between cache recalculations. At 20 TPS this equals 2 seconds. Kept short
@@ -85,43 +87,24 @@ public class HvacTemperatureManager {
   private static final int CHUNK_SCAN_RADIUS = 2;
 
   /**
-   * Rate of thermal accumulation per degree of HVAC power, per HUD update (~500ms).
-   * The accumulated offset increases by {@code hvacPower * THERMAL_RAMP_RATE} each update.
-   * With max hvacPower of 15°F, this gives 15 * 0.004 = 0.06°F/update = 0.12°F/s.
+   * Blending factor for HUD display smoothing (exponential moving average). Each update,
+   * the displayed offset moves this fraction of the way toward the instantaneous offset.
+   * At 0.08 per call with the HUD's 500ms update interval:
    * <ul>
-   *   <li>Plains (need +14°F): ~2 minutes to reach setpoint</li>
-   *   <li>Taiga (need +61°F): ~8.5 minutes</li>
-   *   <li>Ice Plains (need +84°F): ~12 minutes</li>
+   *   <li>~5s (10 calls): 57% converged</li>
+   *   <li>~10s (20 calls): 81% converged</li>
+   *   <li>~20s (40 calls): 96% converged</li>
    * </ul>
-   * More vents/units increase hvacPower (up to the cap), making the room heat faster —
-   * not hotter. This matches real HVAC behavior where a bigger system reaches the setpoint
-   * faster, not at a higher temperature.
+   * This smooths temperature changes for comfortable viewing while staying responsive
+   * enough to track the instantaneous offset (keeping HUD and thermostat in agreement).
    */
-  private static final float THERMAL_RAMP_RATE = 0.004f;
+  private static final float HUD_SMOOTHING_FACTOR = 0.08f;
 
   /**
-   * Rate of passive thermal decay per HUD update when no HVAC is active, in °F.
-   * 0.008°F/update = 0.016°F/s ≈ 1°F/min. This gives realistic heat retention:
-   * <ul>
-   *   <li>30 seconds after shutoff: ~96% of accumulated heat retained</li>
-   *   <li>5 minutes: ~66% retained</li>
-   *   <li>15 minutes: most heat dissipated</li>
-   * </ul>
+   * The last smoothed HVAC offset returned by the EMA. Blends toward the current
+   * calculated offset each call. Transient — resets on restart.
    */
-  private static final float THERMAL_DECAY_RATE = 0.008f;
-
-  /**
-   * Maximum accumulated thermal offset in either direction, in °F. Must be high enough
-   * for extreme biomes: Ice Plains (baseline -4°F) needs +84°F to reach a 80°F setpoint.
-   * 90°F provides headroom for slight thermostat overshoot.
-   */
-  private static final float MAX_THERMAL_OFFSET = 90.0f;
-
-  /**
-   * The accumulated thermal offset at the player's position, in °F. Builds up while HVAC
-   * is active and decays slowly when HVAC is off. Transient — resets on restart.
-   */
-  private static float accumulatedThermalOffset = 0.0f;
+  private static float lastSmoothedOffset = Float.NaN;
 
 
   /**
@@ -190,18 +173,19 @@ public class HvacTemperatureManager {
 
     // Biome baseline is cached per-chunk (doesn't vary within a chunk)
     float baseline = getCachedBaseline(world, pos);
-    // HVAC offset is the instantaneous capacity (capped at ±MAX_HVAC_OFFSET)
+    // HVAC offset is the instantaneous contribution (capped at ±MAX_HVAC_OFFSET)
     float currentOffset = calculateHvacOffset(world, pos);
-    // Thermal accumulation: builds up gradually when HVAC is active, decays when off
-    float accumulatedOffset = applyThermalAccumulation(currentOffset);
+    // EMA smoothing for comfortable display — responsive enough to track the
+    // instantaneous offset, keeping the HUD in agreement with the thermostat
+    float smoothedOffset = applySmoothing(currentOffset);
 
     if (debugThisPass) {
-      LOGGER.info(String.format("[HVAC-DEBUG] pos=%s baseline=%.1f hvacPower=%.1f accumulated=%.1f final=%.1f",
-          pos, baseline, currentOffset, accumulatedOffset, baseline + accumulatedOffset));
+      LOGGER.info(String.format("[HVAC-DEBUG] pos=%s baseline=%.1f rawOffset=%.1f smoothed=%.1f final=%.1f",
+          pos, baseline, currentOffset, smoothedOffset, baseline + smoothedOffset));
       debugThisPass = false;
     }
 
-    return baseline + accumulatedOffset;
+    return baseline + smoothedOffset;
   }
 
   /**
@@ -217,6 +201,15 @@ public class HvacTemperatureManager {
   public static float getRawTemperatureAt(World world, BlockPos pos) {
     float baseline = getCachedBaseline(world, pos);
     float currentOffset = calculateHvacOffset(world, pos);
+    if (DEBUG_LOGGING) {
+      long now = System.currentTimeMillis();
+      // Throttle thermostat logs to every 2 seconds (they tick every 40 game ticks)
+      if (now - lastThermostatDebugMs >= 2000L) {
+        lastThermostatDebugMs = now;
+        LOGGER.info(String.format("[HVAC-THERMOSTAT] pos=%s baseline=%.1f rawOffset=%.1f rawTemp=%.1f",
+            pos, baseline, currentOffset, baseline + currentOffset));
+      }
+    }
     return baseline + currentOffset;
   }
 
@@ -336,45 +329,23 @@ public class HvacTemperatureManager {
   }
 
   /**
-   * Applies thermal accumulation to the HVAC offset for HUD display. Instead of showing
-   * the instantaneous HVAC capacity, this simulates gradual heating/cooling over time:
-   * <ul>
-   *   <li><b>Active HVAC:</b> the accumulated offset increases proportionally to the current
-   *   HVAC power ({@code hvacPower * THERMAL_RAMP_RATE}). More units/vents = faster ramp,
-   *   not higher temperature.</li>
-   *   <li><b>HVAC off:</b> the accumulated offset decays toward zero at a slow constant rate
-   *   ({@link #THERMAL_DECAY_RATE}), simulating passive heat/cold loss through walls.</li>
-   * </ul>
+   * Applies exponential moving average (EMA) smoothing to the HVAC offset for HUD display.
+   * Each call blends the previously displayed offset toward the freshly calculated offset
+   * by {@link #HUD_SMOOTHING_FACTOR}. This provides smooth transitions while staying
+   * responsive enough to track the instantaneous offset, keeping the HUD temperature
+   * in agreement with what the thermostat sees.
    *
-   * <p>This produces realistic behavior: a heater in Ice Plains takes minutes to warm a room
-   * to 80°F, while a heater in Plains reaches the same setpoint in under 2 minutes. When the
-   * heater turns off, the room holds temperature for several minutes before cooling.</p>
+   * @param currentOffset the freshly calculated HVAC offset
    *
-   * @param hvacPower the instantaneous HVAC offset at the player's position (capped at
-   *                  ±{@link #MAX_HVAC_OFFSET}), representing the available heating/cooling
-   *                  power. Positive = heating, negative = cooling.
-   *
-   * @return the accumulated thermal offset to apply to the baseline temperature
+   * @return the smoothed offset value
    */
-  private static float applyThermalAccumulation(float hvacPower) {
-    if (Math.abs(hvacPower) > 0.1f) {
-      // Active HVAC: accumulate proportionally to available power.
-      // Higher hvacPower (more/closer vents) = faster ramp, same cap.
-      accumulatedThermalOffset += hvacPower * THERMAL_RAMP_RATE;
-      accumulatedThermalOffset = Math.max(-MAX_THERMAL_OFFSET,
-          Math.min(MAX_THERMAL_OFFSET, accumulatedThermalOffset));
-    } else {
-      // HVAC off: passive thermal decay toward baseline at a slow constant rate.
-      // Room holds temperature realistically — 96% after 30s, 66% after 5 min.
-      if (accumulatedThermalOffset > THERMAL_DECAY_RATE) {
-        accumulatedThermalOffset -= THERMAL_DECAY_RATE;
-      } else if (accumulatedThermalOffset < -THERMAL_DECAY_RATE) {
-        accumulatedThermalOffset += THERMAL_DECAY_RATE;
-      } else {
-        accumulatedThermalOffset = 0.0f;
-      }
+  private static float applySmoothing(float currentOffset) {
+    if (Float.isNaN(lastSmoothedOffset)) {
+      lastSmoothedOffset = currentOffset;
+      return currentOffset;
     }
-    return accumulatedThermalOffset;
+    lastSmoothedOffset += (currentOffset - lastSmoothedOffset) * HUD_SMOOTHING_FACTOR;
+    return lastSmoothedOffset;
   }
 
   // Biome baseline mapping: tempF = biomeTemp * 90 - 4
