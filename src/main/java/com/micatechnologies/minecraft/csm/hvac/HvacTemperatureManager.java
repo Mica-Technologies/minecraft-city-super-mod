@@ -87,22 +87,29 @@ public class HvacTemperatureManager {
   private static final int CHUNK_SCAN_RADIUS = 2;
 
   /**
-   * Blending factor for HUD display smoothing (exponential moving average). Each update,
-   * the displayed offset moves this fraction of the way toward the instantaneous offset.
-   * At 0.08 per call with the HUD's 500ms update interval:
-   * <ul>
-   *   <li>~5s (10 calls): 57% converged</li>
-   *   <li>~10s (20 calls): 81% converged</li>
-   *   <li>~20s (40 calls): 96% converged</li>
-   * </ul>
-   * This smooths temperature changes for comfortable viewing while staying responsive
-   * enough to track the instantaneous offset (keeping HUD and thermostat in agreement).
+   * EMA blending factor when HVAC is actively pushing the temperature away from baseline
+   * (ramping up). Fast enough to track the instantaneous offset in ~10-15 seconds, keeping
+   * the HUD responsive and in agreement with the thermostat.
    */
-  private static final float HUD_SMOOTHING_FACTOR = 0.08f;
+  private static final float HUD_RAMP_FACTOR = 0.08f;
 
   /**
-   * The last smoothed HVAC offset returned by the EMA. Blends toward the current
-   * calculated offset each call. Transient — resets on restart.
+   * EMA blending factor when the temperature is returning toward baseline (HVAC off or
+   * reduced). Much slower than the ramp factor to simulate realistic thermal retention —
+   * a room that was heated/cooled holds its temperature for minutes, not seconds.
+   * <ul>
+   *   <li>30 seconds after shutoff: ~83% of offset retained</li>
+   *   <li>1 minute: ~70% retained</li>
+   *   <li>2 minutes: ~49% retained</li>
+   *   <li>5 minutes: ~16% retained (most heat/cold dissipated)</li>
+   * </ul>
+   */
+  private static final float HUD_DECAY_FACTOR = 0.003f;
+
+  /**
+   * The last smoothed HVAC offset returned by the asymmetric EMA. Ramps quickly toward
+   * the instantaneous offset when HVAC is active, decays slowly when HVAC turns off.
+   * Transient — resets on restart.
    */
   private static float lastSmoothedOffset = Float.NaN;
 
@@ -329,11 +336,14 @@ public class HvacTemperatureManager {
   }
 
   /**
-   * Applies exponential moving average (EMA) smoothing to the HVAC offset for HUD display.
-   * Each call blends the previously displayed offset toward the freshly calculated offset
-   * by {@link #HUD_SMOOTHING_FACTOR}. This provides smooth transitions while staying
-   * responsive enough to track the instantaneous offset, keeping the HUD temperature
-   * in agreement with what the thermostat sees.
+   * Applies asymmetric EMA smoothing to the HVAC offset for HUD display. Uses a fast
+   * blending factor ({@link #HUD_RAMP_FACTOR}) when HVAC is actively pushing the
+   * temperature away from baseline, and a slow factor ({@link #HUD_DECAY_FACTOR}) when
+   * the temperature is returning toward baseline (HVAC off or reduced power).
+   *
+   * <p>This produces realistic behavior: walking into an air-conditioned room, you feel
+   * the temperature drop within 10-15 seconds. When the AC turns off, the room holds
+   * its temperature for minutes — not snapping back instantly.</p>
    *
    * @param currentOffset the freshly calculated HVAC offset
    *
@@ -344,7 +354,27 @@ public class HvacTemperatureManager {
       lastSmoothedOffset = currentOffset;
       return currentOffset;
     }
-    lastSmoothedOffset += (currentOffset - lastSmoothedOffset) * HUD_SMOOTHING_FACTOR;
+
+    // Determine whether the offset is ramping (HVAC pushing further from baseline)
+    // or decaying (returning toward baseline because HVAC is off or weaker).
+    boolean directionChanged =
+        (currentOffset > 0.5f && lastSmoothedOffset < -0.5f)
+            || (currentOffset < -0.5f && lastSmoothedOffset > 0.5f);
+
+    float factor;
+    if (directionChanged) {
+      // Crossed from heating to cooling or vice versa — track quickly
+      factor = HUD_RAMP_FACTOR;
+    } else if (Math.abs(currentOffset) + 0.5f < Math.abs(lastSmoothedOffset)) {
+      // Current offset is smaller than smoothed — temperature returning toward
+      // baseline (HVAC off or player moved away from vent). Decay slowly.
+      factor = HUD_DECAY_FACTOR;
+    } else {
+      // HVAC active and pushing — track quickly
+      factor = HUD_RAMP_FACTOR;
+    }
+
+    lastSmoothedOffset += (currentOffset - lastSmoothedOffset) * factor;
     return lastSmoothedOffset;
   }
 
