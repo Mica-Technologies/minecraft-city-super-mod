@@ -101,6 +101,25 @@ public class HvacTemperatureManager {
   private static long activeTransitionGridKey = Long.MIN_VALUE;
 
   /**
+   * How often (in ticks) to sweep stale entries from the chunk temperature cache. At 20 TPS
+   * this equals 30 seconds — frequent enough to prevent unbounded growth during exploration,
+   * infrequent enough to be negligible cost.
+   */
+  private static final long EVICTION_INTERVAL_TICKS = 600L;
+
+  /**
+   * Maximum age (in ticks) for a cache entry before it becomes eligible for eviction. Entries
+   * older than this are removed during the next sweep. At 20 TPS this equals 60 seconds.
+   */
+  private static final long EVICTION_MAX_AGE_TICKS = 1200L;
+
+  /**
+   * World tick at which the last eviction sweep was performed. Used to throttle sweeps to
+   * once per {@link #EVICTION_INTERVAL_TICKS}.
+   */
+  private static long lastEvictionTick = 0L;
+
+  /**
    * Multiplier applied to the HVAC contribution for each solid block between the unit and the
    * query position. A value of 0.3 means each wall reduces the effect to 30% of what it was,
    * so one wall = 30%, two walls = 9%, three walls = 2.7% (effectively zero).
@@ -161,6 +180,12 @@ public class HvacTemperatureManager {
     Map<Long, ChunkTempData> cache = getOrCreateCache(world);
     long chunkKey = chunkKey(pos);
     long currentTick = world.getTotalWorldTime();
+
+    // Periodic eviction of stale entries to prevent unbounded cache growth
+    if (currentTick - lastEvictionTick >= EVICTION_INTERVAL_TICKS) {
+      lastEvictionTick = currentTick;
+      cache.values().removeIf(d -> (currentTick - d.timestamp) >= EVICTION_MAX_AGE_TICKS);
+    }
 
     ChunkTempData data = cache.get(chunkKey);
     if (data != null && (currentTick - data.timestamp) < CACHE_LIFETIME_TICKS) {
