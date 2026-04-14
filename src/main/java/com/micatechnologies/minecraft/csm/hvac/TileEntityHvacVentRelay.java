@@ -29,10 +29,11 @@ public class TileEntityHvacVentRelay extends AbstractTickableTileEntity implemen
   /**
    * Residual decay factor applied when the thermostat stops calling. Instead of snapping
    * to zero, the vent contribution decays by this factor each thermostat tick (every 2s).
-   * At 0.97: retains 74% after 20s, 55% after 40s, 30% after 1 min, ~0 after 2 min.
-   * Simulates lingering conditioned air in the room after the system shuts off.
+   * At 0.99: retains 91% after 20s, 74% after 1 min, 55% after 2 min, 22% after 5 min,
+   * and reaches the zero threshold after ~6-7 minutes. Simulates lingering conditioned
+   * air in the room after the system shuts off.
    */
-  private static final float RESIDUAL_DECAY_FACTOR = 0.97f;
+  private static final float RESIDUAL_DECAY_FACTOR = 0.99f;
 
   /**
    * Threshold below which the residual contribution is zeroed out entirely.
