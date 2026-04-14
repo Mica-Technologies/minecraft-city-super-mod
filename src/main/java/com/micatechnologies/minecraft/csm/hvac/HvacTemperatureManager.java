@@ -8,6 +8,8 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Server-side temperature calculation engine that tracks per-chunk temperature data. Temperature is
@@ -29,6 +31,17 @@ import net.minecraft.world.chunk.Chunk;
  * @since 2026.4
  */
 public class HvacTemperatureManager {
+
+  /** Set to true to enable detailed temperature debug logging to the game log. */
+  private static final boolean DEBUG_LOGGING = false;
+
+  private static final Logger LOGGER = LogManager.getLogger("CSM-HVAC");
+
+  /** Throttle debug logs to at most once per this many milliseconds. */
+  private static final long DEBUG_LOG_INTERVAL_MS = 1000L;
+  private static long lastDebugLogMs = 0L;
+  /** Set to true for the current calculation pass when the throttle allows logging. */
+  private static boolean debugThisPass = false;
 
   /**
    * Number of ticks between cache recalculations. At 20 TPS this equals 2 seconds. Kept short
@@ -77,28 +90,26 @@ public class HvacTemperatureManager {
   private static final int CHUNK_SCAN_RADIUS = 2;
 
   /**
-   * Duration in milliseconds over which the HUD temperature transitions gradually when HVAC
-   * offset changes (e.g. walking toward/away from a vent). 30 seconds provides a smooth
-   * visual transition without stacking sluggishly on top of the thermostat's own thermal
-   * smoothing (~76s for 90% convergence). Only used by the HUD, not by thermostats.
+   * Blending factor for the HUD's exponential moving average (EMA) smoothing. Each time
+   * {@link #getTemperatureAt} is called, the displayed offset moves this fraction of the
+   * way toward the freshly calculated offset. At 0.15 per call with the HUD's 500ms update
+   * interval:
+   * <ul>
+   *   <li>~2.5s (5 calls): 56% converged</li>
+   *   <li>~5s (10 calls): 80% converged</li>
+   *   <li>~10s (20 calls): 96% converged</li>
+   * </ul>
+   * This smooths both player movement and HVAC state changes (on/off) naturally, without
+   * the position-grid tracking that caused snapping at grid boundaries.
    */
-  private static final long TRANSITION_DURATION_MS = 30_000L;
+  private static final float HUD_SMOOTHING_FACTOR = 0.15f;
 
   /**
-   * Single transition tracker for the most recently queried position. Since the HUD typically
-   * queries one position (the player's), a single tracker is sufficient. When the player moves,
-   * the tracker detects the position change and fast-forwards to the current offset to avoid
-   * stale transitions from a previous location. Transient — not saved to disk.
+   * The last smoothed HVAC offset returned by the EMA. Blends toward the current calculated
+   * offset each call. Transient — resets on restart.
    */
-  /**
-   * Grid size for position rounding in the transition tracker. The player must move at least
-   * this many blocks before the transition resets. Prevents micro-movement from constantly
-   * resetting the gradual transition.
-   */
-  private static final int TRANSITION_GRID_SIZE = 4;
+  private static float lastSmoothedOffset = Float.NaN;
 
-  private static TransitionData activeTransition = null;
-  private static long activeTransitionGridKey = Long.MIN_VALUE;
 
   /**
    * How often (in ticks) to sweep stale entries from the chunk temperature cache. At 20 TPS
@@ -155,12 +166,28 @@ public class HvacTemperatureManager {
    * @return the temperature in degrees Fahrenheit at the given position
    */
   public static float getTemperatureAt(World world, BlockPos pos) {
+    // Check if this call should produce debug output (throttled to once per second)
+    if (DEBUG_LOGGING) {
+      long now = System.currentTimeMillis();
+      debugThisPass = (now - lastDebugLogMs >= DEBUG_LOG_INTERVAL_MS);
+      if (debugThisPass) {
+        lastDebugLogMs = now;
+      }
+    }
+
     // Biome baseline is cached per-chunk (doesn't vary within a chunk)
     float baseline = getCachedBaseline(world, pos);
     // HVAC offset is calculated per-position using distance weighting (cheap)
     float currentOffset = calculateHvacOffset(world, pos);
-    // Apply gradual transition when offset changes (unit on/off)
-    float smoothedOffset = applyTransition(world, pos, currentOffset);
+    // EMA smoothing prevents jarring snaps when walking or when units toggle
+    float smoothedOffset = applySmoothing(currentOffset);
+
+    if (debugThisPass) {
+      LOGGER.info(String.format("[HVAC-DEBUG] pos=%s baseline=%.1f rawOffset=%.1f smoothed=%.1f final=%.1f",
+          pos, baseline, currentOffset, smoothedOffset, baseline + smoothedOffset));
+      debugThisPass = false;
+    }
+
     return baseline + smoothedOffset;
   }
 
@@ -296,73 +323,23 @@ public class HvacTemperatureManager {
   }
 
   /**
-   * Applies a gradual transition when the HVAC offset at a position changes. Instead of
-   * snapping instantly from the old temperature to the new one, this lerps over
-   * {@link #TRANSITION_DURATION_MS} using system clock timestamps. Zero computation cost
-   * beyond a map lookup and a single lerp. Not persisted — resets on restart.
+   * Applies exponential moving average (EMA) smoothing to the HVAC offset for HUD display.
+   * Each call blends the previously displayed offset toward the freshly calculated offset
+   * by {@link #HUD_SMOOTHING_FACTOR}. This smooths both player movement and HVAC state
+   * changes (on/off) naturally, without position tracking.
    *
-   * @param world         the world instance
-   * @param pos           the query position
    * @param currentOffset the freshly calculated HVAC offset
    *
-   * @return the smoothed offset value, transitioning from the previous offset
+   * @return the smoothed offset value
    */
-  private static float applyTransition(World world, BlockPos pos, float currentOffset) {
-    long now = System.currentTimeMillis();
-
-    // Round position to a coarse grid so subtle player movement doesn't reset the transition.
-    // Only reset when the player moves to a clearly different area (4+ blocks).
-    int gridX = Math.floorDiv(pos.getX(), TRANSITION_GRID_SIZE);
-    int gridZ = Math.floorDiv(pos.getZ(), TRANSITION_GRID_SIZE);
-    int gridY = Math.floorDiv(pos.getY(), TRANSITION_GRID_SIZE);
-    long gridKey = ((long) gridX) ^ (((long) gridZ) << 21) ^ (((long) gridY) << 42);
-
-    if (activeTransitionGridKey != gridKey) {
-      activeTransitionGridKey = gridKey;
-      activeTransition = new TransitionData(currentOffset, currentOffset, now);
+  private static float applySmoothing(float currentOffset) {
+    if (Float.isNaN(lastSmoothedOffset)) {
+      // First call — snap to current value
+      lastSmoothedOffset = currentOffset;
       return currentOffset;
     }
-
-    // Check if the target offset has changed significantly (> 0.5°F)
-    if (Math.abs(currentOffset - activeTransition.targetOffset) > 0.5f) {
-      // Offset changed — start a new transition from wherever we currently are
-      float currentSmoothed = activeTransition.getSmoothedOffset(now);
-      activeTransition.previousOffset = currentSmoothed;
-      activeTransition.targetOffset = currentOffset;
-      activeTransition.transitionStartMs = now;
-    }
-
-    return activeTransition.getSmoothedOffset(now);
-  }
-
-  /**
-   * Transient data for smooth temperature transitions. Stores the previous and target HVAC
-   * offsets plus the transition start time. Not persisted in NBT — resets on server/client
-   * restart, which is acceptable for a cosmetic feature.
-   */
-  private static class TransitionData {
-
-    float previousOffset;
-    float targetOffset;
-    long transitionStartMs;
-
-    TransitionData(float previousOffset, float targetOffset, long transitionStartMs) {
-      this.previousOffset = previousOffset;
-      this.targetOffset = targetOffset;
-      this.transitionStartMs = transitionStartMs;
-    }
-
-    /**
-     * Returns the smoothed offset by lerping between previous and target based on elapsed time.
-     */
-    float getSmoothedOffset(long nowMs) {
-      long elapsed = nowMs - transitionStartMs;
-      if (elapsed >= TRANSITION_DURATION_MS) {
-        return targetOffset;
-      }
-      float progress = (float) elapsed / (float) TRANSITION_DURATION_MS;
-      return previousOffset + (targetOffset - previousOffset) * progress;
-    }
+    lastSmoothedOffset += (currentOffset - lastSmoothedOffset) * HUD_SMOOTHING_FACTOR;
+    return lastSmoothedOffset;
   }
 
   // Biome baseline mapping: tempF = biomeTemp * 90 - 4
@@ -446,6 +423,12 @@ public class HvacTemperatureManager {
           float contribution = unit.getTemperatureContribution();
           float weightedOffset = Math.abs(contribution) * weight;
 
+          if (debugThisPass) {
+            String type = isVent ? "VENT" : (contribution > 0 ? "HEATER" : "COOLER");
+            LOGGER.info(String.format("[HVAC-DEBUG]   %s at %s dist=%.1f distW=%.2f wallW=%.2f contrib=%.1f weighted=%.1f",
+                type, te.getPos(), dist, distWeight, wallWeight, contribution, weightedOffset));
+          }
+
           if (contribution > 0) {
             heatingOffset += weightedOffset;
           } else if (contribution < 0) {
@@ -462,8 +445,14 @@ public class HvacTemperatureManager {
 
     // Outdoor attenuation: conditioned air dissipates quickly without a roof
     float totalOffset = heatingOffset - coolingOffset;
-    if (totalOffset != 0.0f && world.canSeeSky(pos)) {
+    boolean isOutdoors = totalOffset != 0.0f && world.canSeeSky(pos);
+    if (isOutdoors) {
       totalOffset *= OUTDOOR_ATTENUATION_FACTOR;
+    }
+
+    if (debugThisPass) {
+      LOGGER.info(String.format("[HVAC-DEBUG]   totals: heating=%.1f cooling=%.1f outdoor=%s finalOffset=%.1f",
+          heatingOffset, coolingOffset, isOutdoors, totalOffset));
     }
 
     return totalOffset;
