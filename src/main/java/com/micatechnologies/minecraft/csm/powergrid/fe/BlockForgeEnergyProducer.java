@@ -23,6 +23,13 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
+/**
+ * Forge Energy producer block. Generates and pushes Forge Energy (FE) to adjacent energy consumers
+ * at a configurable tick rate, serving as a creative-mode power source for testing energy systems.
+ *
+ * @author Mica Technologies
+ * @since 1.0
+ */
 public class BlockForgeEnergyProducer extends AbstractBlock implements ICsmTileEntityProvider {
 
   public BlockForgeEnergyProducer() {

@@ -14,6 +14,14 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 
+/**
+ * Hand-held item used to link fire alarm devices (pull stations, detectors, sounders) to a
+ * fire alarm control panel. Click the panel first, then click each device to establish the link.
+ *
+ * @author Mica Technologies
+ * @since 2026.4
+ */
+
 public class ItemFireAlarmLinker extends AbstractItem {
 
   private BlockPos alarmPanelPos = null;

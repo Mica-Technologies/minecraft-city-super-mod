@@ -4,6 +4,13 @@ import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockTraf
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockTrafficSignalAPSPolara;
 import net.minecraft.block.material.Material;
 
+/**
+ * Male-voice crosswalk push-button block using the Polara APS (accessible pedestrian signal) style.
+ * Plays a male voice announcement during the walk phase.
+ *
+ * @author Mica Technologies
+ * @since 1.0
+ */
 public class BlockControllableCrosswalkButtonMale extends AbstractBlockTrafficSignalAPSPolara {
 
   public BlockControllableCrosswalkButtonMale() {

@@ -14,6 +14,13 @@ import net.minecraft.world.World;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.IBlockAccess;
 
+/**
+ * Tattle-tale beacon block for traffic signal confirmation. Provides a small indicator light that
+ * mirrors the state of a linked traffic signal phase, allowing officers to verify signal status.
+ *
+ * @author Mica Technologies
+ * @since 1.0
+ */
 public class BlockControllableTattleTaleBeacon extends AbstractBlockControllableSignal
     implements ICsmTileEntityProvider {
 

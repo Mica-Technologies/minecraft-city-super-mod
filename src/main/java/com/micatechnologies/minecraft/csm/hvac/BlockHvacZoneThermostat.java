@@ -18,6 +18,14 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
+/**
+ * HVAC zone thermostat block. Links to a primary thermostat and manages its own set of vent
+ * relays for independent temperature control in a separate room or zone. Emits redstone power
+ * when calling for heating or cooling, and opens a zone-specific GUI on right-click.
+ *
+ * @author Mica Technologies
+ * @since 2026.4
+ */
 public class BlockHvacZoneThermostat extends AbstractBlockRotatableNSEWUD
     implements ICsmTileEntityProvider {
 

@@ -8,6 +8,14 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+/**
+ * Client-side GUI screen for configuring a fire alarm control panel. Displays buttons
+ * for each {@link FireAlarmPanelConfigAction} and sends configuration packets to the server.
+ *
+ * @author Mica Technologies
+ * @since 2026.4
+ */
+
 @SideOnly(Side.CLIENT)
 public class FireAlarmPanelConfigGui extends GuiScreen {
 

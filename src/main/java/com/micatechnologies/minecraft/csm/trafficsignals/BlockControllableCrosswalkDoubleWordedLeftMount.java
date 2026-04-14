@@ -10,6 +10,13 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
+/**
+ * Double-worded crosswalk signal block with a left-side mount. Displays the walk/do-not-walk text
+ * in a two-line format. Countdown overlay is not supported for this variant.
+ *
+ * @author Mica Technologies
+ * @since 1.0
+ */
 public class BlockControllableCrosswalkDoubleWordedLeftMount
     extends AbstractBlockControllableCrosswalkSignal
     implements ICsmRetiringBlock {

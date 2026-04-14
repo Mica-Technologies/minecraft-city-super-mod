@@ -11,6 +11,13 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
 
+/**
+ * Tile entity for the Forge Energy producer block. Pushes energy to adjacent IEnergyStorage
+ * capabilities at a configurable tick rate, with cached neighbor lookups for performance.
+ *
+ * @author Mica Technologies
+ * @since 1.0
+ */
 public class TileEntityForgeEnergyProducer extends AbstractTickableTileEntity implements
     IEnergyStorage {
 

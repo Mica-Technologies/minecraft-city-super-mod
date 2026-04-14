@@ -3,6 +3,13 @@ package com.micatechnologies.minecraft.csm.codeutils;
 import net.minecraft.util.IStringSerializable;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Enum representing sixteen compass directions for use as a block state property. Each direction
+ * carries an index, a serializable name, and a Y-axis rotation angle. Used by
+ * {@link AbstractBlockRotatableHZSixteen} to support fine-grained horizontal rotation of blocks.
+ *
+ * @author Mica Technologies
+ */
 public enum DirectionSixteen implements IStringSerializable {
   S(0, "s", 180.0F),
   W(1, "w", 90.0F),

@@ -15,6 +15,14 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
+/**
+ * Black color variant of the rooftop HVAC heater block. Extends
+ * {@link AbstractBlockRotatableNSEWUD} and uses {@link TileEntityHvacRtuHeater} for
+ * extended-range vent heating.
+ *
+ * @author Mica Technologies
+ * @since 2026.4
+ */
 public class BlockHvacRtuHeaterBlack extends AbstractBlockRotatableNSEWUD
     implements ICsmTileEntityProvider {
 

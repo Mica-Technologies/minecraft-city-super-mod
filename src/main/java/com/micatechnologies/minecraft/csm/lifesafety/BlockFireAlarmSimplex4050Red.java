@@ -11,6 +11,14 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
+/**
+ * Red Simplex 4050 fire alarm horn block that plays a Temporal Code 3 alarm tone
+ * when activated by the fire alarm control panel.
+ *
+ * @author Mica Technologies
+ * @since 2026.4
+ */
+
 public class BlockFireAlarmSimplex4050Red extends AbstractBlockFireAlarmSounder {
 
   public static final PropertyInteger SOUND = PropertyInteger.create("sound", 0, 1);

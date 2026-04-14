@@ -21,6 +21,13 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
+/**
+ * Interactive water bubbler (short variant) block. Right-clicking with a glass bottle fills it
+ * with water; otherwise plays a dispensing sound.
+ *
+ * @author Mica Technologies
+ * @since 2026.4
+ */
 public class BlockWbs extends AbstractBlockRotatableNSEWUD {
 
   public BlockWbs() {

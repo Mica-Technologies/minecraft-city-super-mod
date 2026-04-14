@@ -9,6 +9,13 @@ import net.minecraft.client.gui.ScaledResolution;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
+/**
+ * Client-side GUI screen for configuring the redstone TTS block. Provides a multi-line text field
+ * for entering the spoken message and buttons for saving or canceling changes.
+ *
+ * @author Mica Technologies
+ * @since 1.0
+ */
 public class BlockRedstoneTTSGui extends GuiScreen {
 
   private final TileEntityRedstoneTTS tileEntityRedstoneTTS;

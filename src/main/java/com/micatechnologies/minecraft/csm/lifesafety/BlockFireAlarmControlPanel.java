@@ -24,6 +24,14 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
+/**
+ * Fire alarm control panel block that serves as the central hub for a fire alarm system.
+ * Manages alarm state, linked devices, sound dispatch, and responds to redstone input.
+ *
+ * @author Mica Technologies
+ * @since 2026.4
+ */
+
 public class BlockFireAlarmControlPanel extends AbstractBlockRotatableNSEW implements
     ICsmTileEntityProvider {
 

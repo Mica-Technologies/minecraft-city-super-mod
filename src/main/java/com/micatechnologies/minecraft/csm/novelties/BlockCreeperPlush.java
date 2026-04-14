@@ -12,6 +12,12 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 
+/**
+ * Decorative creeper plush toy block with full rotation support.
+ *
+ * @author Mica Technologies
+ * @since 2026.4
+ */
 public class BlockCreeperPlush extends AbstractBlockRotatableNSEWUD {
 
   public BlockCreeperPlush() {

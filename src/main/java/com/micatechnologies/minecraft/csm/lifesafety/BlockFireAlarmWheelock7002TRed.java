@@ -14,6 +14,14 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
+/**
+ * Red Wheelock 7002T fire alarm horn/strobe block that plays a medium-speed alarm tone
+ * and provides strobe flash capability when activated by the fire alarm control panel.
+ *
+ * @author Mica Technologies
+ * @since 2026.4
+ */
+
 public class BlockFireAlarmWheelock7002TRed extends AbstractBlockFireAlarmSounder
     implements ICsmTileEntityProvider, IStrobeBlock {
   @Override

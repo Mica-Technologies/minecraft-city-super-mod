@@ -18,6 +18,13 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 
+/**
+ * Sensor zone configuration tool item. Allows players to define the 3D detection zone for a
+ * traffic light sensor by selecting the sensor block and two opposing corners of the zone.
+ *
+ * @author Mica Technologies
+ * @since 1.0
+ */
 public class ItemSensorZoneTool extends AbstractItem {
 
   private final Map<UUID, BlockPos> sensorPosMap = new HashMap<>();

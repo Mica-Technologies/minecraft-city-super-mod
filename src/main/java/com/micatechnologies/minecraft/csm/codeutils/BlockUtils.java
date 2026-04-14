@@ -5,6 +5,12 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 
+/**
+ * Utility class providing helper methods for querying block adjacency, computing relative facing
+ * directions, and other common block-related operations used throughout the mod.
+ *
+ * @author Mica Technologies
+ */
 public class BlockUtils {
 
   /**

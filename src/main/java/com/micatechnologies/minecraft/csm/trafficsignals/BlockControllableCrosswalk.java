@@ -10,6 +10,13 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
+/**
+ * Legacy crosswalk signal block (retiring). Replaced by mount-specific crosswalk signal variants
+ * that support proper bounding boxes and TESR countdown rendering.
+ *
+ * @author Mica Technologies
+ * @since 1.0
+ */
 public class BlockControllableCrosswalk extends AbstractBlockControllableCrosswalkSignal
     implements ICsmRetiringBlock {
 

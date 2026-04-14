@@ -12,6 +12,14 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
 
+/**
+ * Tile entity for blocks that consume Forge Energy. Accepts energy from adjacent producers via
+ * the Forge Energy capability, tracks stored energy, and outputs a redstone signal when the
+ * energy threshold is met.
+ *
+ * @author Mica Technologies
+ * @since 1.0
+ */
 public class TileEntityForgeEnergyConsumer extends AbstractTickableTileEntity implements
     IEnergyStorage {
 

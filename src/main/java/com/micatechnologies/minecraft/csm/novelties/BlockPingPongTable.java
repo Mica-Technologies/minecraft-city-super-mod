@@ -12,6 +12,12 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 
+/**
+ * Decorative ping pong table block. This is a non-rotatable static block.
+ *
+ * @author Mica Technologies
+ * @since 2026.4
+ */
 public class BlockPingPongTable extends AbstractBlock {
 
   public BlockPingPongTable() {

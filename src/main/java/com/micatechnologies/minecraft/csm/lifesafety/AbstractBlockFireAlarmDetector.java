@@ -10,6 +10,14 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 
+/**
+ * Abstract base class for fire alarm detector blocks that automatically scan a surrounding
+ * area for fire and lava, triggering the linked control panel when a hazard is found.
+ *
+ * @author Mica Technologies
+ * @since 2026.4
+ */
+
 public abstract class AbstractBlockFireAlarmDetector extends AbstractBlockFireAlarmActivator {
 
   public static final int VERT_BELOW_BLOCKS_CHECK = 30;

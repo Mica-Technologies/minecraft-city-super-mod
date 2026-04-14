@@ -22,6 +22,13 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+/**
+ * Redstone-activated text-to-speech block. When powered by a redstone signal, this block speaks
+ * a user-configured text string using the system TTS engine within a configurable radius.
+ *
+ * @author Mica Technologies
+ * @since 1.0
+ */
 public class BlockRedstoneTTS extends AbstractBlock implements ICsmTileEntityProvider {
 
   public BlockRedstoneTTS() {

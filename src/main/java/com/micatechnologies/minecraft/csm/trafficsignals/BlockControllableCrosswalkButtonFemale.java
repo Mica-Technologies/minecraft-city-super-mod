@@ -4,6 +4,13 @@ import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockTraf
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockTrafficSignalAPSCampbell;
 import net.minecraft.block.material.Material;
 
+/**
+ * Female-voice crosswalk push-button block using the Campbell APS (accessible pedestrian signal)
+ * style. Plays a female voice announcement during the walk phase.
+ *
+ * @author Mica Technologies
+ * @since 1.0
+ */
 public class BlockControllableCrosswalkButtonFemale extends AbstractBlockTrafficSignalAPSCampbell {
 
   public BlockControllableCrosswalkButtonFemale() {

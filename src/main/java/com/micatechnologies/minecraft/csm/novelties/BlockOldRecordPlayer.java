@@ -18,6 +18,13 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
+/**
+ * Interactive old record player block that plays a sound when right-clicked. Sneaking while
+ * activating plays an alternate track.
+ *
+ * @author Mica Technologies
+ * @since 2026.4
+ */
 public class BlockOldRecordPlayer extends AbstractBlockRotatableNSEWUD {
 
   public BlockOldRecordPlayer() {

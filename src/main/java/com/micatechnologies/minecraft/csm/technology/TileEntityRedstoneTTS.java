@@ -8,6 +8,13 @@ import java.util.concurrent.atomic.AtomicLong;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 
+/**
+ * Tile entity for the redstone TTS block. Stores the configured text string and hearing radius,
+ * and invokes text-to-speech playback via network packets when triggered by redstone.
+ *
+ * @author Mica Technologies
+ * @since 1.0
+ */
 public class TileEntityRedstoneTTS extends AbstractTileEntity {
 
   private static final String TTS_STRING_KEY = "ttsString";

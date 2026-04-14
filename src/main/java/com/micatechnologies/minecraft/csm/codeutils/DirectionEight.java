@@ -2,6 +2,13 @@ package com.micatechnologies.minecraft.csm.codeutils;
 
 import net.minecraft.util.IStringSerializable;
 
+/**
+ * Enum representing eight compass directions (N, NE, E, SE, S, SW, W, NW) for use as a block
+ * state property. Used by {@link AbstractBlockRotatableHZEight} to support 8-direction horizontal
+ * rotation of blocks.
+ *
+ * @author Mica Technologies
+ */
 public enum DirectionEight implements IStringSerializable {
   S(0, "s"),
   W(1, "w"),

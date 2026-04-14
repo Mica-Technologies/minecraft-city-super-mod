@@ -5,6 +5,13 @@ import net.minecraft.block.material.Material;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
+/**
+ * Train preemption controller signal block. Provides a protected-phase signal that activates
+ * during railroad crossing preemption sequences.
+ *
+ * @author Mica Technologies
+ * @since 1.0
+ */
 public class BlockControllableTrafficSignalTrainController extends AbstractBlockControllableSignal {
 
   public BlockControllableTrafficSignalTrainController() {

@@ -12,6 +12,12 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 
+/**
+ * Decorative Golden Fur Awards trophy block with full rotation support.
+ *
+ * @author Mica Technologies
+ * @since 2026.4
+ */
 public class BlockGoldenFurAwardsTrophy extends AbstractBlockRotatableNSEWUD {
 
   public BlockGoldenFurAwardsTrophy() {

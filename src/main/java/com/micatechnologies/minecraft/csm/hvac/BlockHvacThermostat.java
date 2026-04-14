@@ -18,6 +18,14 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
+/**
+ * Primary HVAC thermostat block. Right-clicking opens a configuration GUI to set the comfort
+ * temperature range. Emits redstone power when calling for heating or cooling. Acts as the
+ * central controller for linked heaters, coolers, vents, and zone thermostats.
+ *
+ * @author Mica Technologies
+ * @since 2026.4
+ */
 public class BlockHvacThermostat extends AbstractBlockRotatableNSEWUD
     implements ICsmTileEntityProvider {
 

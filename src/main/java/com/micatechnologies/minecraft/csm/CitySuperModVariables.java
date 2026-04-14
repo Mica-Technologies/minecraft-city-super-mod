@@ -10,6 +10,13 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.relauncher.Side;
 
+/**
+ * Container for world-saved and global mod variables. Provides persistent map-level and
+ * world-level data storage with automatic client-server synchronization via network packets.
+ *
+ * @author Mica Technologies
+ * @since 1.0
+ */
 public class CitySuperModVariables {
 
   public static class MapVariables extends WorldSavedData {

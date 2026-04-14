@@ -6,6 +6,14 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
+/**
+ * Server-side handler for {@link FireAlarmPanelConfigPacket} messages. Dispatches the
+ * requested configuration action to the target fire alarm control panel tile entity.
+ *
+ * @author Mica Technologies
+ * @since 2026.4
+ */
+
 public class FireAlarmPanelConfigPacketHandler implements
     IMessageHandler<FireAlarmPanelConfigPacket, IMessage> {
 

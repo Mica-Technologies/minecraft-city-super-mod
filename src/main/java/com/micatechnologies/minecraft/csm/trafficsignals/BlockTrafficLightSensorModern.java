@@ -7,6 +7,13 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.util.math.BlockPos;
 
+/**
+ * Modern-style traffic light sensor block. A visual variant of the standard traffic sensor with a
+ * contemporary housing design that detects vehicles or entities in a configurable zone.
+ *
+ * @author Mica Technologies
+ * @since 1.0
+ */
 public class BlockTrafficLightSensorModern extends AbstractBlockTrafficSignalSensor {
 
   public BlockTrafficLightSensorModern() {

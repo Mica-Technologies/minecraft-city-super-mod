@@ -12,6 +12,12 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 
+/**
+ * Decorative pet store sign block representing the Papa Gino's brand.
+ *
+ * @author Mica Technologies
+ * @since 2026.4
+ */
 public class BlockPSPapaGinos extends AbstractBlockRotatableNSEWUD {
 
   public BlockPSPapaGinos() {

@@ -9,6 +9,14 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 
+/**
+ * Tile entity for the tattle-tale beacon block. Stores the configurable signal side (left, ahead,
+ * right, protected/adjacent, or hybrid left) that determines which traffic signal phase the
+ * beacon mirrors.
+ *
+ * @author Mica Technologies
+ * @since 1.0
+ */
 public class TileEntityTattleTaleBeacon extends TileEntity {
 
   private static final int LEFT_VAL = 0;

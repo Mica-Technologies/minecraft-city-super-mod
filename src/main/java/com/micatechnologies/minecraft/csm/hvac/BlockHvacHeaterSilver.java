@@ -15,6 +15,13 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
+/**
+ * Silver color variant of the HVAC heater block. Extends {@link AbstractBlockRotatableNSEWUD}
+ * and uses {@link TileEntityHvacHeater} for heating behavior.
+ *
+ * @author Mica Technologies
+ * @since 2026.4
+ */
 public class BlockHvacHeaterSilver extends AbstractBlockRotatableNSEWUD
     implements ICsmTileEntityProvider {
 

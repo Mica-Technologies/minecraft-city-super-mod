@@ -16,6 +16,14 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 
+/**
+ * Hand-held item used to configure fire alarm control panels. Supports multiple modes
+ * including opening the config GUI, audible silence, panel reset, and voice evac sound cycling.
+ *
+ * @author Mica Technologies
+ * @since 2026.4
+ */
+
 public class ItemFireAlarmConfigTool extends AbstractItem {
 
   private static final String NBT_MODE_KEY = "csm_tool_mode";

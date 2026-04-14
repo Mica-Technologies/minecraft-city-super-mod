@@ -15,6 +15,14 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
+/**
+ * White-housing emergency light block that illuminates when it loses redstone power,
+ * simulating battery-backed emergency lighting behavior.
+ *
+ * @author Mica Technologies
+ * @since 2026.4
+ */
+
 public class BlockEmergencyLightWhite extends AbstractPoweredBlockRotatableNSEWUD
     implements ICsmTileEntityProvider, IEmergencyLightBlock {
 

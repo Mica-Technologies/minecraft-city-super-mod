@@ -11,6 +11,13 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
+/**
+ * Crosswalk signal block with a rear pole mount angled at 90 degrees. The angled geometry means
+ * countdown overlay rendering is not supported for this variant.
+ *
+ * @author Mica Technologies
+ * @since 1.0
+ */
 public class BlockControllableCrosswalkMount90Deg extends AbstractBlockControllableCrosswalkSignal
     implements ICsmRetiringBlock {
 
