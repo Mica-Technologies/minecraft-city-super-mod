@@ -95,14 +95,21 @@ public class HvacTemperatureManager {
   private static final float HUD_RAMP_FACTOR = 0.08f;
 
   /**
-   * EMA blending factor when the temperature is returning toward baseline (HVAC off or
-   * reduced). Much slower than the ramp factor to simulate realistic thermal retention —
-   * a room that was heated/cooled holds its temperature for minutes, not seconds.
+   * EMA blending factor when the player leaves an HVAC zone entirely (raw offset is zero
+   * but the smoothed value is still significant). Converges to baseline in ~20-30 seconds,
+   * simulating the transition from a conditioned space to the outdoors.
+   */
+  private static final float HUD_TRANSITION_FACTOR = 0.04f;
+
+  /**
+   * EMA blending factor when HVAC is still present but reduced (residual decay in progress).
+   * Much slower than the transition factor to simulate the room holding its temperature
+   * while the conditioned air lingers.
    * <ul>
-   *   <li>30 seconds after shutoff: ~83% of offset retained</li>
+   *   <li>30 seconds: ~83% of offset retained</li>
    *   <li>1 minute: ~70% retained</li>
    *   <li>2 minutes: ~49% retained</li>
-   *   <li>5 minutes: ~16% retained (most heat/cold dissipated)</li>
+   *   <li>5 minutes: ~16% retained</li>
    * </ul>
    */
   private static final float HUD_DECAY_FACTOR = 0.003f;
@@ -356,8 +363,10 @@ public class HvacTemperatureManager {
       return currentOffset;
     }
 
-    // Determine whether the offset is ramping (HVAC pushing further from baseline)
-    // or decaying (returning toward baseline because HVAC is off or weaker).
+    // Three-rate smoothing:
+    // 1. RAMP: HVAC actively pushing temp away from baseline — track quickly
+    // 2. TRANSITION: player left HVAC zone (raw ≈ 0, smoothed significant) — moderate
+    // 3. DECAY: HVAC still present but reduced/residual — hold temperature slowly
     boolean directionChanged =
         (currentOffset > 0.5f && lastSmoothedOffset < -0.5f)
             || (currentOffset < -0.5f && lastSmoothedOffset > 0.5f);
@@ -366,9 +375,14 @@ public class HvacTemperatureManager {
     if (directionChanged) {
       // Crossed from heating to cooling or vice versa — track quickly
       factor = HUD_RAMP_FACTOR;
+    } else if (Math.abs(currentOffset) < 0.5f && Math.abs(lastSmoothedOffset) > 1.0f) {
+      // Raw offset is zero but smoothed is significant — player left the HVAC zone
+      // entirely (walked outside, moved to an unconditioned area). Transition to
+      // baseline at a moderate rate (~20-30 seconds to converge).
+      factor = HUD_TRANSITION_FACTOR;
     } else if (Math.abs(currentOffset) + 0.5f < Math.abs(lastSmoothedOffset)) {
-      // Current offset is smaller than smoothed — temperature returning toward
-      // baseline (HVAC off or player moved away from vent). Decay slowly.
+      // HVAC still contributing but less than before (residual decay in progress,
+      // or player moved slightly farther from vent). Hold temperature slowly.
       factor = HUD_DECAY_FACTOR;
     } else {
       // HVAC active and pushing — track quickly
