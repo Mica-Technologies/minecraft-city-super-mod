@@ -545,6 +545,7 @@ public class TileEntityHvacThermostat extends AbstractTickableTileEntity
     this.targetTempLow = compound.getInteger(NBT_TARGET_TEMP_LOW);
     this.targetTempHigh = compound.getInteger(NBT_TARGET_TEMP_HIGH);
     this.isCalling = compound.getBoolean(NBT_IS_CALLING);
+    this.callingMode = compound.getInteger("callingMode");
     this.cachedEfficiencyPercent = compound.getInteger("efficiency");
     this.currentTemperature = compound.getFloat("currentTemp");
     // If we loaded a saved temperature, mark as initialized so thermal smoothing
@@ -590,6 +591,7 @@ public class TileEntityHvacThermostat extends AbstractTickableTileEntity
     compound.setInteger(NBT_TARGET_TEMP_LOW, targetTempLow);
     compound.setInteger(NBT_TARGET_TEMP_HIGH, targetTempHigh);
     compound.setBoolean(NBT_IS_CALLING, isCalling);
+    compound.setInteger("callingMode", callingMode);
     compound.setInteger("efficiency", cachedEfficiencyPercent);
     compound.setFloat("currentTemp", currentTemperature);
     NBTTagList unitList = new NBTTagList();
@@ -643,6 +645,8 @@ public class TileEntityHvacThermostat extends AbstractTickableTileEntity
   public float getCurrentTemperature() { return currentTemperature; }
 
   public boolean isCalling() { return isCalling; }
+
+  public int getCallingMode() { return callingMode; }
 
   /**
    * Returns true if at least one linked unit has power (redstone or FE). The thermostat

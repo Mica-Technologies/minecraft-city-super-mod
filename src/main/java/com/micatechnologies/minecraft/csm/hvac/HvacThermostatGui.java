@@ -159,7 +159,8 @@ public class HvacThermostatGui extends GuiScreen {
       drawCenteredString(fontRenderer, "\u00A7c\u26A0 NO POWER", cx, statusY, 0xFFFF4444);
     } else if (calling) {
       int efficiency = thermostat.getSystemEfficiencyPercent();
-      if (currentTemp < lowTarget) {
+      int mode = thermostat.getCallingMode();
+      if (mode == 1) {
         drawCenteredString(fontRenderer, "\u25CF Heating (" + efficiency + "%)", cx, statusY, COLOR_HOT);
       } else {
         drawCenteredString(fontRenderer, "\u25CF Cooling (" + efficiency + "%)", cx, statusY, COLOR_COLD);

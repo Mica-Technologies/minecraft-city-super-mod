@@ -29,4 +29,10 @@ public interface IHvacThermostatDisplay {
    * Returns whether the thermostat is currently calling for heating or cooling.
    */
   boolean isCalling();
+
+  /**
+   * Returns the current calling mode: 0 = idle, 1 = heating, 2 = cooling.
+   * Synced to client via NBT so the GUI and TESR can display the correct status.
+   */
+  int getCallingMode();
 }
