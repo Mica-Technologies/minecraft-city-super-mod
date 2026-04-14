@@ -46,7 +46,7 @@ public class HvacHudOverlay {
   private static final int COLOR_HOT = 0xFFFF3333;
 
   /** Detection range in blocks for nearby HVAC equipment. */
-  private static final int HVAC_DETECTION_RANGE = 16;
+  private static final int HVAC_DETECTION_RANGE = 24;
 
   private static final long RECHECK_INTERVAL_MS = 500L;
   private static final int ALTITUDE_THRESHOLD = 64;
