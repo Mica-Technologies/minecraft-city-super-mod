@@ -10,6 +10,13 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
+/**
+ * Crosswalk signal block with a rear pole mount. Supports TESR-rendered countdown overlay on its
+ * north face.
+ *
+ * @author Mica Technologies
+ * @since 1.0
+ */
 public class BlockControllableCrosswalkMount extends AbstractBlockControllableCrosswalkSignal
     implements ICsmRetiringBlock {
 

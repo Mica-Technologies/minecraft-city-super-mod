@@ -8,6 +8,13 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.util.EnumHelper;
 
+/**
+ * Apple Pencil novelty item. Functions as a spade-class tool with custom attack speed and
+ * durability, themed as a stylus.
+ *
+ * @author Mica Technologies
+ * @since 1.0
+ */
 public class ItemApplePencil extends AbstractItemSpade {
 
   public ItemApplePencil() {

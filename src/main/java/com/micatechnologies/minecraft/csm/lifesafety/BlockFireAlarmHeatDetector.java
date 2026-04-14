@@ -6,6 +6,14 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
+/**
+ * Fire alarm heat detector block that scans the area below for fire and lava sources.
+ * Triggers the linked fire alarm control panel when a hazard is detected.
+ *
+ * @author Mica Technologies
+ * @since 2026.4
+ */
+
 public class BlockFireAlarmHeatDetector extends AbstractBlockFireAlarmDetector {
 
   @Override

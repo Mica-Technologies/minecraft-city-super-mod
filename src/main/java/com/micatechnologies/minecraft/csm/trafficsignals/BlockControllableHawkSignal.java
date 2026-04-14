@@ -11,6 +11,13 @@ import net.minecraft.block.material.Material;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
+/**
+ * HAWK (High-intensity Activated crossWalK) beacon signal block. A pedestrian-activated beacon
+ * used at unsignalized crossings that displays flashing and steady signals to approaching traffic.
+ *
+ * @author Mica Technologies
+ * @since 1.0
+ */
 public class BlockControllableHawkSignal extends AbstractBlockControllableSignalHead {
 
   public BlockControllableHawkSignal() {

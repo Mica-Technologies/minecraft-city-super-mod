@@ -12,6 +12,14 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+/**
+ * Generic fire alarm pull station block with a non-branded design.
+ * Activates the linked fire alarm control panel when used by a player.
+ *
+ * @author Mica Technologies
+ * @since 2026.4
+ */
+
 public class BlockFireAlarmGenericPullStation extends AbstractBlockFireAlarmActivator {
 
   @Override

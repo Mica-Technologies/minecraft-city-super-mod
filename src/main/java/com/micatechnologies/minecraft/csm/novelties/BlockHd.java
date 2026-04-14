@@ -25,6 +25,13 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+/**
+ * Interactive hand dryer block that plays a drying sound and spawns cloud particles for a timed
+ * duration when right-clicked.
+ *
+ * @author Mica Technologies
+ * @since 2026.4
+ */
 public class BlockHd extends AbstractBlockRotatableNSEWUD {
 
   private static final long DRYER_DURATION_MS = 16000;

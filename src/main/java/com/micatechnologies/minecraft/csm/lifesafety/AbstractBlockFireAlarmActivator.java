@@ -19,6 +19,15 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
+/**
+ * Abstract base class for fire alarm activator blocks (pull stations, detectors) that can
+ * be linked to a fire alarm control panel. Provides ticking, redstone output, and panel
+ * activation logic.
+ *
+ * @author Mica Technologies
+ * @since 2026.4
+ */
+
 public abstract class AbstractBlockFireAlarmActivator extends AbstractBlockRotatableNSEWUD
     implements ICsmTileEntityProvider {
 

@@ -11,6 +11,14 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.EnumFacing;
 import org.lwjgl.opengl.GL11;
 
+/**
+ * TESR (TileEntitySpecialRenderer) for crosswalk signal blocks. Renders the countdown timer
+ * overlay using 7-segment digit geometry on the signal face, with color and visibility driven
+ * by the crosswalk signal state.
+ *
+ * @author Mica Technologies
+ * @since 1.0
+ */
 public class TileEntityCrosswalkSignalRenderer extends
     TileEntitySpecialRenderer<TileEntityCrosswalkSignal> {
 

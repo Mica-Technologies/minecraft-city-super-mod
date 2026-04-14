@@ -24,6 +24,13 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 
+/**
+ * Signal configuration tool item. Allows players to link and unlink traffic signal heads,
+ * crosswalk signals, sensors, and APS buttons to a traffic signal controller.
+ *
+ * @author Mica Technologies
+ * @since 1.0
+ */
 public class ItemSignalConfigurationTool extends AbstractItem {
 
   private static final String NBT_MODE_KEY = "csm_tool_mode";

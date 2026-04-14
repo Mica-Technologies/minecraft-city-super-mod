@@ -12,6 +12,12 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 
+/**
+ * Decorative group of pumpkins block with full rotation support.
+ *
+ * @author Mica Technologies
+ * @since 2026.4
+ */
 public class BlockPumpkins extends AbstractBlockRotatableNSEWUD {
 
   public BlockPumpkins() {

@@ -8,6 +8,13 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.world.IBlockAccess;
 
+/**
+ * Ramp meter signal-on indicator block with a rear mount. Displays a two-section signal used
+ * to indicate metered ramp status to approaching drivers.
+ *
+ * @author Mica Technologies
+ * @since 1.0
+ */
 public class BlockControllableRampMeterOnSignalMount extends AbstractBlockControllableSignal {
 
   public BlockControllableRampMeterOnSignalMount() {

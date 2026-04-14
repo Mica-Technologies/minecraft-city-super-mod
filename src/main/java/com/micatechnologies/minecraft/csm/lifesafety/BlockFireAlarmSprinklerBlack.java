@@ -7,6 +7,14 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
+/**
+ * Black fire sprinkler head block that detects fire and lava in the area below,
+ * triggering the linked fire alarm control panel when a hazard is found.
+ *
+ * @author Mica Technologies
+ * @since 2026.4
+ */
+
 public class BlockFireAlarmSprinklerBlack extends AbstractBlockFireAlarmDetector {
 
   @Override

@@ -18,6 +18,13 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
+/**
+ * Interactive xylophone block that plays pitched notes when right-clicked. The note played depends
+ * on where the player clicks along the block's surface.
+ *
+ * @author Mica Technologies
+ * @since 2026.4
+ */
 public class BlockXylophone extends AbstractBlockRotatableNSEWUD {
 
   public BlockXylophone() {

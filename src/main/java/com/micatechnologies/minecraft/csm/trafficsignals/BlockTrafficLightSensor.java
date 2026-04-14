@@ -7,6 +7,13 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.util.math.BlockPos;
 
+/**
+ * Standard traffic light sensor block. Detects vehicles or entities in a configurable zone and
+ * sends demand requests to a linked traffic signal controller.
+ *
+ * @author Mica Technologies
+ * @since 1.0
+ */
 public class BlockTrafficLightSensor extends AbstractBlockTrafficSignalSensor {
 
   public BlockTrafficLightSensor() {

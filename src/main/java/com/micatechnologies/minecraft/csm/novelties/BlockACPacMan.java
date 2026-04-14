@@ -18,6 +18,13 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
+/**
+ * Arcade cabinet block representing the classic Pac-Man arcade game. Plays cabinet sounds when
+ * right-clicked and emits light.
+ *
+ * @author Mica Technologies
+ * @since 2026.4
+ */
 public class BlockACPacMan extends AbstractBlockRotatableNSEWUD {
 
   public BlockACPacMan() {

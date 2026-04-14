@@ -12,6 +12,14 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
+/**
+ * White Gentex Commander 3 fire alarm horn/strobe block with tile-entity-based sound selection.
+ * Supports multiple selectable alarm sounds via {@link TileEntityFireAlarmSoundIndex}.
+ *
+ * @author Mica Technologies
+ * @since 2026.4
+ */
+
 public class BlockFireAlarmGentexCommander3White extends AbstractBlockFireAlarmSounder
     implements ICsmTileEntityProvider, IStrobeBlock {
 

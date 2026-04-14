@@ -15,6 +15,13 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
+/**
+ * HVAC heater block (white variant). A rotatable, redstone-connectable heating unit that
+ * uses a {@link TileEntityHvacHeater} to contribute positive temperature offset when active.
+ *
+ * @author Mica Technologies
+ * @since 2026.4
+ */
 public class BlockHvacHeater extends AbstractBlockRotatableNSEWUD
     implements ICsmTileEntityProvider {
 

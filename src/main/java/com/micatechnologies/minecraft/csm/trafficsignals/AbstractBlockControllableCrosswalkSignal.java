@@ -9,6 +9,13 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
+/**
+ * Abstract base class for controllable crosswalk signal blocks. Provides pedestrian signal-side
+ * defaults, flashing behavior, and a shared tile entity for crosswalk signal state management.
+ *
+ * @author Mica Technologies
+ * @since 1.0
+ */
 public abstract class AbstractBlockControllableCrosswalkSignal extends AbstractBlockControllableSignal
     implements ICsmTileEntityProvider {
 

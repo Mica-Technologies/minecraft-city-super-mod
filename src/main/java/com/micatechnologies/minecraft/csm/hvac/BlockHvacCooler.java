@@ -15,6 +15,13 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
+/**
+ * HVAC cooler block (white variant). A rotatable, redstone-connectable cooling unit that
+ * uses a {@link TileEntityHvacCooler} to contribute negative temperature offset when active.
+ *
+ * @author Mica Technologies
+ * @since 2026.4
+ */
 public class BlockHvacCooler extends AbstractBlockRotatableNSEWUD
     implements ICsmTileEntityProvider {
 

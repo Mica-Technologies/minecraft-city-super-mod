@@ -3,6 +3,12 @@ package com.micatechnologies.minecraft.csm.codeutils;
 import com.mojang.text2speech.Narrator;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+/**
+ * Wrapper around Mojang's text-to-speech {@link Narrator} API. Provides a thread-safe, lazily
+ * initialized narrator that speaks messages asynchronously without overlapping playback.
+ *
+ * @author Mica Technologies
+ */
 public class CsmNarrator {
 
   private static Narrator NARRATOR = null;

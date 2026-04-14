@@ -10,6 +10,13 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
+/**
+ * Crosswalk tweeter speaker block (variant 2). Emits an audible cuckoo tone when the crosswalk
+ * signal is in the walk phase, using the APS sound packet system.
+ *
+ * @author Mica Technologies
+ * @since 1.0
+ */
 public class BlockControllableCrosswalkTweeter2
     extends AbstractBlockControllableCrosswalkAccessory {
 

@@ -7,6 +7,13 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.util.math.BlockPos;
 
+/**
+ * Below-ground traffic light sensor block. An in-pavement sensor variant that detects vehicles
+ * or entities in a configurable zone from a flush-mounted position.
+ *
+ * @author Mica Technologies
+ * @since 1.0
+ */
 public class BlockTrafficLightSensorBelowGround extends AbstractBlockTrafficSignalSensor {
 
   public BlockTrafficLightSensorBelowGround() {

@@ -6,6 +6,13 @@ import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 
+/**
+ * Interface defining the client/server proxy contract for the mod. Implementations handle
+ * side-specific initialization logic during the Forge mod lifecycle (pre-init, init, post-init,
+ * and server starting events).
+ *
+ * @author Mica Technologies
+ */
 public interface ICsmProxy {
 
   /**

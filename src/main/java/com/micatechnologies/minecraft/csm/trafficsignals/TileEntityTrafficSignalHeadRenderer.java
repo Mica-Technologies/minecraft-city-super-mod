@@ -31,6 +31,14 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.BufferBuilder;
 
 
+/**
+ * TESR (TileEntitySpecialRenderer) for configurable traffic signal head blocks. Renders signal
+ * head geometry using cached OpenGL display lists built from OGL vertex data, with dynamic
+ * texture atlas lookups based on the current signal configuration.
+ *
+ * @author Mica Technologies
+ * @since 1.0
+ */
 public class TileEntityTrafficSignalHeadRenderer extends
     TileEntitySpecialRenderer<TileEntityTrafficSignalHead> {
 

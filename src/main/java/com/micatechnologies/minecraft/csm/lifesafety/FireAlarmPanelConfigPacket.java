@@ -4,6 +4,14 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 
+/**
+ * Network packet that carries a fire alarm panel configuration action from client to server.
+ * Encodes the target panel position and the {@link FireAlarmPanelConfigAction} ordinal.
+ *
+ * @author Mica Technologies
+ * @since 2026.4
+ */
+
 public class FireAlarmPanelConfigPacket implements IMessage {
 
   private BlockPos pos;

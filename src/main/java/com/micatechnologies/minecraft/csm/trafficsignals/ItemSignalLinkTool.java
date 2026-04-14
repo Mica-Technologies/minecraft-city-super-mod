@@ -23,6 +23,13 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 
+/**
+ * Signal link tool item. Allows players to link traffic signal components (signal heads,
+ * crosswalk signals, sensors, APS buttons) to a specific circuit on a traffic signal controller.
+ *
+ * @author Mica Technologies
+ * @since 1.0
+ */
 public class ItemSignalLinkTool extends AbstractItem {
 
   private final Map<UUID, BlockPos> signalControllerPosMap = new HashMap<>();

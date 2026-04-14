@@ -6,6 +6,14 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
+/**
+ * Tile entity for fire alarm activator blocks (pull stations, detectors) that stores the
+ * linked fire alarm control panel position for alarm activation.
+ *
+ * @author Mica Technologies
+ * @since 2026.4
+ */
+
 public class TileEntityFireAlarmSensor extends AbstractTileEntity {
 
   private static final String linkedPanelPosXKey = "lpX";

@@ -7,6 +7,13 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 
+/**
+ * Box-style traffic light sensor block. A visual variant of the standard traffic sensor with a
+ * rectangular box housing that detects vehicles or entities in a configurable zone.
+ *
+ * @author Mica Technologies
+ * @since 1.0
+ */
 public class BlockTrafficLightSensorBox extends AbstractBlockTrafficSignalSensor {
 
   public BlockTrafficLightSensorBox() {

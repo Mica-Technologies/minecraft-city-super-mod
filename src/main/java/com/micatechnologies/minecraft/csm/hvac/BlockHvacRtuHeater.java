@@ -15,6 +15,13 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
+/**
+ * Rooftop HVAC heater block (white variant). A large industrial heating unit with a 2-block
+ * tall bounding box that uses {@link TileEntityHvacRtuHeater} for extended-range vent heating.
+ *
+ * @author Mica Technologies
+ * @since 2026.4
+ */
 public class BlockHvacRtuHeater extends AbstractBlockRotatableNSEWUD
     implements ICsmTileEntityProvider {
 

@@ -7,6 +7,13 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 
+/**
+ * Tiny camera traffic light sensor block. A miniature camera-style visual variant of the standard
+ * traffic sensor that detects vehicles or entities in a configurable zone.
+ *
+ * @author Mica Technologies
+ * @since 1.0
+ */
 public class BlockTrafficLightSensorTinyCam extends AbstractBlockTrafficSignalSensor {
 
   public BlockTrafficLightSensorTinyCam() {

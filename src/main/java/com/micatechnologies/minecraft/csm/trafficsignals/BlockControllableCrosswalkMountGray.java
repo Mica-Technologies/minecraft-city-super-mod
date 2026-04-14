@@ -11,6 +11,13 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
+/**
+ * Gray-colored crosswalk signal block with a rear pole mount. Supports TESR-rendered countdown
+ * overlay on its north face. A cosmetic variant with a gray housing color.
+ *
+ * @author Mica Technologies
+ * @since 1.0
+ */
 public class BlockControllableCrosswalkMountGray extends AbstractBlockControllableCrosswalkSignal
     implements ICsmRetiringBlock {
 

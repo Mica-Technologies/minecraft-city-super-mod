@@ -22,6 +22,13 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
+/**
+ * Forge Energy to redstone converter block. Outputs a redstone signal when it has received
+ * sufficient Forge Energy from adjacent producers, bridging the FE and redstone power systems.
+ *
+ * @author Mica Technologies
+ * @since 1.0
+ */
 public class BlockForgeEnergyToRedstone extends AbstractBlock implements ICsmTileEntityProvider {
 
   public static final PropertyBool POWERED = PropertyBool.create("powered");

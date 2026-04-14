@@ -13,6 +13,14 @@ import net.minecraft.world.World;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import net.minecraft.tileentity.TileEntity;
 
+/**
+ * White Wheelock MT fire alarm horn/strobe block with blue strobe lens that plays a Code 3
+ * alarm tone and provides strobe flash capability when activated by the fire alarm control panel.
+ *
+ * @author Mica Technologies
+ * @since 2026.4
+ */
+
 public class BlockFireAlarmWheelockMTHornStrobeWhiteBlue extends AbstractBlockFireAlarmSounder
     implements ICsmTileEntityProvider, IStrobeBlock {
 

@@ -24,6 +24,14 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 
+/**
+ * Tile entity for the fire alarm control panel block. Manages alarm state, device scanning,
+ * sound dispatching to linked sounder/speaker blocks, and synchronization with clients.
+ *
+ * @author Mica Technologies
+ * @since 2026.4
+ */
+
 public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity {
 
   private static final int tickRate = 20;

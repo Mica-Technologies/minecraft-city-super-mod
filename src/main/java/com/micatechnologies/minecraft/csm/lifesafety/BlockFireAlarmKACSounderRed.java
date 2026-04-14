@@ -11,6 +11,14 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
+/**
+ * Red KAC fire alarm sounder block that plays a continuous alarm tone when activated
+ * by the fire alarm control panel.
+ *
+ * @author Mica Technologies
+ * @since 2026.4
+ */
+
 public class BlockFireAlarmKACSounderRed extends AbstractBlockFireAlarmSounder {
 
   public static final PropertyInteger SOUND = PropertyInteger.create("sound", 0, 1);

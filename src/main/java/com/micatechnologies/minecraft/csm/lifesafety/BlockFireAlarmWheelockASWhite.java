@@ -14,6 +14,14 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
+/**
+ * White Wheelock AS fire alarm horn/strobe block that plays the Wheelock AS alarm tone
+ * and provides strobe flash capability when activated by the fire alarm control panel.
+ *
+ * @author Mica Technologies
+ * @since 2026.4
+ */
+
 public class BlockFireAlarmWheelockASWhite extends AbstractBlockFireAlarmSounder
     implements ICsmTileEntityProvider, IStrobeBlock {
   @Override

@@ -7,6 +7,13 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.util.math.BlockPos;
 
+/**
+ * Bell-style traffic light sensor block. A visual variant of the standard traffic sensor with a
+ * bell-shaped housing that detects vehicles or entities in a configurable zone.
+ *
+ * @author Mica Technologies
+ * @since 1.0
+ */
 public class BlockTrafficLightSensorBell extends AbstractBlockTrafficSignalSensor {
 
   public BlockTrafficLightSensorBell() {

@@ -20,6 +20,13 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
+/**
+ * Arcade cabinet block representing the classic Asteroids arcade game. Plays cabinet sounds when
+ * right-clicked and emits light.
+ *
+ * @author Mica Technologies
+ * @since 2026.4
+ */
 public class BlockACAsteroids extends AbstractBlockRotatableNSEWUD {
 
   public BlockACAsteroids() {

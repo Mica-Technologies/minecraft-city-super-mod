@@ -26,6 +26,13 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
+/**
+ * Traffic signal controller block. The central control unit that manages signal phasing, timing,
+ * and coordination for linked traffic signal heads, crosswalk signals, and sensors.
+ *
+ * @author Mica Technologies
+ * @since 1.0
+ */
 public class BlockTrafficSignalController extends AbstractBlock implements ICsmTileEntityProvider {
 
   public static final PropertyBool POWERED = PropertyBool.create("powered");

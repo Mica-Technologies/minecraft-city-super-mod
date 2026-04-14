@@ -1,5 +1,12 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
+/**
+ * Enum defining the available modes for the signal head configuration tool. Each mode corresponds
+ * to a configurable property of a traffic signal head block.
+ *
+ * @author Mica Technologies
+ * @since 1.0
+ */
 public enum ItemSignalHeadConfigToolMode {
   OPEN_GUI("Open Config GUI"),
   CYCLE_BODY_COLOR("Cycle Body Color"),

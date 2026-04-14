@@ -10,6 +10,14 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
+/**
+ * Fire alarm pull station block modeled after an Edwards glass rod pull station.
+ * Activates the linked fire alarm control panel when used by a player.
+ *
+ * @author Mica Technologies
+ * @since 2026.4
+ */
+
 public class BlockFireAlarmEdwardsGlassRodPullStation extends AbstractBlockFireAlarmActivator {
 
   @Override

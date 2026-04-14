@@ -14,6 +14,14 @@ import net.minecraft.world.World;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import net.minecraft.tileentity.TileEntity;
 
+/**
+ * Red Simplex 4903 fire alarm horn/strobe block that plays a Code 4-4 alarm tone
+ * and provides strobe flash capability when activated by the fire alarm control panel.
+ *
+ * @author Mica Technologies
+ * @since 2026.4
+ */
+
 public class BlockFireAlarmSimplex4903HornStrobeRed extends AbstractBlockFireAlarmSounder
     implements ICsmTileEntityProvider, IStrobeBlock {
 

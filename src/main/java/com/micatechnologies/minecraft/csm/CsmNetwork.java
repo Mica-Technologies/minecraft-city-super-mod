@@ -7,6 +7,13 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.relauncher.Side;
 
+/**
+ * Network handler for the City Super Mod. Manages the SimpleNetworkWrapper channel and provides
+ * utility methods for registering and sending network packets between client and server.
+ *
+ * @author Mica Technologies
+ * @since 1.0
+ */
 public class CsmNetwork {
 
   /**

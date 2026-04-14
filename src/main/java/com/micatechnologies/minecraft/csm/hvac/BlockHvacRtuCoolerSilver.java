@@ -15,6 +15,14 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
+/**
+ * Silver color variant of the rooftop HVAC cooler block. Extends
+ * {@link AbstractBlockRotatableNSEWUD} and uses {@link TileEntityHvacRtuCooler} for
+ * extended-range vent cooling.
+ *
+ * @author Mica Technologies
+ * @since 2026.4
+ */
 public class BlockHvacRtuCoolerSilver extends AbstractBlockRotatableNSEWUD
     implements ICsmTileEntityProvider {
 

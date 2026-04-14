@@ -14,6 +14,14 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
+/**
+ * Abstract base class for fire alarm notification appliance (sounder/horn) blocks.
+ * Subclasses provide a sound resource name and optional strobe capability.
+ *
+ * @author Mica Technologies
+ * @since 2026.4
+ */
+
 public abstract class AbstractBlockFireAlarmSounder extends AbstractBlockRotatableNSEWUD {
 
   public AbstractBlockFireAlarmSounder() {

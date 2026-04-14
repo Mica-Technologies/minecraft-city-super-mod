@@ -12,6 +12,14 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+/**
+ * Fire alarm pull station block modeled after the Fire-Lite BG-12 pull station.
+ * Activates the linked fire alarm control panel when used by a player.
+ *
+ * @author Mica Technologies
+ * @since 2026.4
+ */
+
 public class BlockFireAlarmFireLiteBG12 extends AbstractBlockFireAlarmActivator {
 
   @Override

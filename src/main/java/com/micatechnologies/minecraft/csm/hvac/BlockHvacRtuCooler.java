@@ -15,6 +15,13 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
+/**
+ * Rooftop HVAC cooler block (white variant). A large industrial cooling unit with a 2-block
+ * tall bounding box that uses {@link TileEntityHvacRtuCooler} for extended-range vent cooling.
+ *
+ * @author Mica Technologies
+ * @since 2026.4
+ */
 public class BlockHvacRtuCooler extends AbstractBlockRotatableNSEWUD
     implements ICsmTileEntityProvider {
 

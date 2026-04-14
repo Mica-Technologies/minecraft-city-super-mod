@@ -5,6 +5,13 @@ import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockTraf
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockTrafficSignalAPSPolara;
 import net.minecraft.block.material.Material;
 
+/**
+ * Automated crosswalk push-button block using the Polara APS (accessible pedestrian signal) style.
+ * Provides automated audible and tactile pedestrian crossing indications.
+ *
+ * @author Mica Technologies
+ * @since 1.0
+ */
 public class BlockControllableCrosswalkButtonAutomated extends
     AbstractBlockTrafficSignalAPSPolara {
 
