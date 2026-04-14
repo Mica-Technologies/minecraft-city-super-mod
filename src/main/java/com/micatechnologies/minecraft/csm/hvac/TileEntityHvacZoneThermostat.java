@@ -140,6 +140,16 @@ public class TileEntityHvacZoneThermostat extends AbstractTickableTileEntity
         break;
     }
 
+    // Debug: log zone thermostat state after mode evaluation
+    if (HvacTemperatureManager.isDebugLogging()) {
+      String modeStr = callingMode == MODE_HEATING ? "HEATING"
+          : callingMode == MODE_COOLING ? "COOLING" : "IDLE";
+      org.apache.logging.log4j.LogManager.getLogger("CSM-HVAC").info(
+          String.format("[HVAC-ZONE-TICK] pos=%s raw=%.1f smoothed=%.1f mode=%s calling=%s low=%d high=%d ramp=%d%%",
+              pos, rawTemp, currentTemperature, modeStr, isCalling,
+              targetTempLow, targetTempHigh, Math.round(getSystemRampFactor() * 100)));
+    }
+
     // Track zone's own ramp-up timing
     if (isCalling && !wasCalling) {
       rampStartMs = System.currentTimeMillis();

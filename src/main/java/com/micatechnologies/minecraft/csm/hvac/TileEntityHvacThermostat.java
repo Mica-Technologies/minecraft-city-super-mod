@@ -166,6 +166,16 @@ public class TileEntityHvacThermostat extends AbstractTickableTileEntity
         break;
     }
 
+    // Debug: log thermostat state after mode evaluation
+    if (HvacTemperatureManager.isDebugLogging()) {
+      String modeStr = callingMode == MODE_HEATING ? "HEATING"
+          : callingMode == MODE_COOLING ? "COOLING" : "IDLE";
+      org.apache.logging.log4j.LogManager.getLogger("CSM-HVAC").info(
+          String.format("[HVAC-TSTAT-TICK] pos=%s raw=%.1f smoothed=%.1f mode=%s calling=%s low=%d high=%d ramp=%d%%",
+              pos, rawTemp, currentTemperature, modeStr, isCalling,
+              targetTempLow, targetTempHigh, Math.round(getSystemRampFactor() * 100)));
+    }
+
     // Track ramp-up timing based on the whole system (primary + zones)
     boolean systemNowCalling = isSystemCalling();
     if (systemNowCalling && !wasCalling) {
@@ -289,12 +299,15 @@ public class TileEntityHvacThermostat extends AbstractTickableTileEntity
   }
 
   private void updateLinkedUnits() {
-    // Use callingMode (not temperature comparison) to determine demand — temperature
-    // comparisons break during the deadband zone after the setpoint has been crossed
+    // Determine which direct units (heaters/coolers) should run based on the PRIMARY
+    // thermostat's own calling mode only. Zone demand is NOT aggregated here — zones
+    // handle heating/cooling through their own vent contributions independently. If zone
+    // demand activated the cooler while the primary is heating (or vice versa), the heater
+    // and cooler would cancel each other out at nearby positions, producing zero net offset.
     boolean needsHeating = callingMode == MODE_HEATING;
     boolean needsCooling = callingMode == MODE_COOLING;
 
-    // Also check linked zones for heating/cooling demand
+    // Validate zone links (remove broken ones) but don't aggregate their demand for units
     Iterator<BlockPos> zoneIt = linkedZones.iterator();
     while (zoneIt.hasNext()) {
       BlockPos zonePos = zoneIt.next();
@@ -302,17 +315,7 @@ public class TileEntityHvacThermostat extends AbstractTickableTileEntity
         continue;
       }
       TileEntity zoneTe = world.getTileEntity(zonePos);
-      if (zoneTe instanceof TileEntityHvacZoneThermostat) {
-        TileEntityHvacZoneThermostat zone = (TileEntityHvacZoneThermostat) zoneTe;
-        if (zone.isCalling()) {
-          int zoneMode = zone.getCallingMode();
-          if (zoneMode == MODE_HEATING) {
-            needsHeating = true;
-          } else if (zoneMode == MODE_COOLING) {
-            needsCooling = true;
-          }
-        }
-      } else {
+      if (!(zoneTe instanceof TileEntityHvacZoneThermostat)) {
         zoneIt.remove();
       }
     }
