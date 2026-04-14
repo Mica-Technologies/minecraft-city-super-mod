@@ -29,9 +29,11 @@ public class TileEntityHvacHeater extends AbstractTickableTileEntity
 
   /**
    * Residual decay factor for the direct heater/cooler contribution after the thermostat
-   * stops calling. Matches the vent relay's residual decay rate.
+   * stops calling. At 0.993 per 1s tick: retains 87% after 20s, 66% after 1 min,
+   * 35% after 2.5 min, ~5% (cutoff) after ~7 minutes. Tuned to match the vent relay's
+   * ~7-minute full decay timeline despite the heater's faster tick rate (1s vs 2s).
    */
-  private static final float RESIDUAL_DECAY_FACTOR = 0.97f;
+  private static final float RESIDUAL_DECAY_FACTOR = 0.993f;
 
   /**
    * Set to true when a linked thermostat is calling for this specific unit type to activate.
