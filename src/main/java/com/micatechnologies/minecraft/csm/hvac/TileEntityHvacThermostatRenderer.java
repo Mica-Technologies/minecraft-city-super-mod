@@ -81,11 +81,12 @@ public class TileEntityHvacThermostatRenderer
 
     // Room temperature with status indicator
     int roundedRoom = Math.round(roomTemp);
+    int callingMode = te.getCallingMode();
     String statusSymbol = "";
     if (calling) {
-      if (roomTemp < targetLow) {
+      if (callingMode == 1) {
         statusSymbol = "\u25B2 "; // triangle up = heating
-      } else if (roomTemp > targetHigh) {
+      } else if (callingMode == 2) {
         statusSymbol = "\u25BC "; // triangle down = cooling
       }
     }

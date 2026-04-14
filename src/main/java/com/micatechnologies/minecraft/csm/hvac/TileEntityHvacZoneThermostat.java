@@ -399,6 +399,7 @@ public class TileEntityHvacZoneThermostat extends AbstractTickableTileEntity
     this.targetTempLow = compound.getInteger(NBT_TARGET_TEMP_LOW);
     this.targetTempHigh = compound.getInteger(NBT_TARGET_TEMP_HIGH);
     this.isCalling = compound.getBoolean(NBT_IS_CALLING);
+    this.callingMode = compound.getInteger("callingMode");
     this.cachedEfficiencyPercent = compound.getInteger("efficiency");
     this.currentTemperature = compound.getFloat("currentTemp");
     if (compound.hasKey("currentTemp")) {
@@ -437,6 +438,7 @@ public class TileEntityHvacZoneThermostat extends AbstractTickableTileEntity
     compound.setInteger(NBT_TARGET_TEMP_LOW, targetTempLow);
     compound.setInteger(NBT_TARGET_TEMP_HIGH, targetTempHigh);
     compound.setBoolean(NBT_IS_CALLING, isCalling);
+    compound.setInteger("callingMode", callingMode);
     compound.setInteger("efficiency", cachedEfficiencyPercent);
     compound.setFloat("currentTemp", currentTemperature);
 
