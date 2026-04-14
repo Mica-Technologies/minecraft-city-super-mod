@@ -14,7 +14,7 @@ import org.apache.logging.log4j.Logger;
 /**
  * Server-side temperature calculation engine that tracks per-chunk temperature data. Temperature is
  * computed from the biome baseline, modified by active HVAC tile entities ({@link IHvacUnit}) in the
- * chunk. Results are cached per chunk and recalculated every {@link #CACHE_LIFETIME_TICKS} ticks (5
+ * chunk. Results are cached per chunk and recalculated every {@link #CACHE_LIFETIME_TICKS} ticks (2
  * seconds) to avoid expensive per-tick recomputation.
  *
  * <p><b>Granularity:</b> The biome baseline is cached per-chunk, but HVAC influence is calculated
@@ -45,8 +45,6 @@ public class HvacTemperatureManager {
   private static long lastDebugLogMs = 0L;
   /** Set to true for the current calculation pass when the throttle allows logging. */
   private static boolean debugThisPass = false;
-  /** Throttle for thermostat debug logs (separate from HUD throttle). */
-  private static long lastThermostatDebugMs = 0L;
 
   /**
    * Number of ticks between cache recalculations. At 20 TPS this equals 2 seconds. Kept short
@@ -113,6 +111,11 @@ public class HvacTemperatureManager {
    * The last smoothed HVAC offset returned by the asymmetric EMA. Ramps quickly toward
    * the instantaneous offset when HVAC is active, decays slowly when HVAC turns off.
    * Transient — resets on restart.
+   *
+   * <p><b>Client-only:</b> This field is read/written exclusively by {@link #getTemperatureAt},
+   * which is called from the client render thread (HUD overlay). Server-side code must use
+   * {@link #getRawTemperatureAt} instead, which bypasses smoothing. Calling
+   * {@code getTemperatureAt} from the server thread would corrupt this state.</p>
    */
   private static float lastSmoothedOffset = Float.NaN;
 
@@ -211,7 +214,7 @@ public class HvacTemperatureManager {
   public static float getRawTemperatureAt(World world, BlockPos pos) {
     float baseline = getCachedBaseline(world, pos);
     float currentOffset = calculateHvacOffset(world, pos);
-    if (DEBUG_LOGGING) {
+    if (debugThisPass) {
       LOGGER.info(String.format("[HVAC-THERMOSTAT] pos=%s baseline=%.1f rawOffset=%.1f rawTemp=%.1f",
           pos, baseline, currentOffset, baseline + currentOffset));
     }
@@ -390,13 +393,8 @@ public class HvacTemperatureManager {
    * Scans nearby chunks (3x3 grid) for active {@link IHvacUnit} tile entities and calculates a
    * distance-weighted temperature offset at the given position.
    *
-   * <p>Each active unit's contribution is scaled by distance:</p>
-   * <ul>
-   *   <li>0–{@link #FULL_EFFECT_DISTANCE} blocks: 100% of the unit's contribution</li>
-   *   <li>{@link #FULL_EFFECT_DISTANCE}–{@link #MAX_EFFECT_DISTANCE} blocks: linear falloff
-   *   from 100% to 0%</li>
-   *   <li>Beyond {@link #MAX_EFFECT_DISTANCE} blocks: no effect</li>
-   * </ul>
+   * <p>Each active unit's contribution is scaled by distance (full effect within 4-6 blocks
+   * depending on type, linear falloff to zero at 12-24 blocks).</p>
    *
    * <p>This provides per-position granularity without per-block temperature tracking. A heater
    * and cooler in the same chunk will each dominate their nearby area: standing next to the
@@ -582,11 +580,11 @@ public class HvacTemperatureManager {
 
   /**
    * Returns whether the given block state represents a solid (non-air, non-replaceable) block
-   * suitable for roof or wall detection in the indoor check algorithm.
+   * that counts as a wall for the attenuation raycast.
    *
    * @param state the block state to check
    *
-   * @return {@code true} if the block is solid enough to count as a roof or wall
+   * @return {@code true} if the block is solid enough to attenuate HVAC airflow
    */
   private static boolean isSolidBlock(IBlockState state) {
     Material material = state.getMaterial();
