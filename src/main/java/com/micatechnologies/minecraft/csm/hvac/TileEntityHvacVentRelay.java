@@ -58,11 +58,6 @@ public class TileEntityHvacVentRelay extends AbstractTickableTileEntity implemen
     return Math.abs(currentContribution) > 0.1f;
   }
 
-  @Override
-  public int getEffectiveRadius() {
-    return 3;
-  }
-
   // endregion
 
   // region AbstractTickableTileEntity

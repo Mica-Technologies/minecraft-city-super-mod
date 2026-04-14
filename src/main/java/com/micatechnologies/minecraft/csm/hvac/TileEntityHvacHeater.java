@@ -89,11 +89,6 @@ public class TileEntityHvacHeater extends AbstractTickableTileEntity
     return world.isBlockPowered(pos) || storedEnergy > 0;
   }
 
-  @Override
-  public int getEffectiveRadius() {
-    return 3;
-  }
-
   // endregion
 
   // region AbstractTickableTileEntity
