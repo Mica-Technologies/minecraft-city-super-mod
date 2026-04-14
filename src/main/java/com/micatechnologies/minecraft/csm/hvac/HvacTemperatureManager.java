@@ -108,18 +108,6 @@ public class HvacTemperatureManager {
   private static final float WALL_ATTENUATION_FACTOR = 0.3f;
 
   /**
-   * Maximum number of blocks to scan upward when checking for a roof in the indoor detection
-   * algorithm.
-   */
-  private static final int INDOOR_SCAN_HEIGHT = 8;
-
-  /**
-   * Maximum number of blocks to scan in each cardinal direction when checking for walls in the
-   * indoor detection algorithm.
-   */
-  private static final int INDOOR_SCAN_HORIZONTAL = 8;
-
-  /**
    * Per-dimension cache of chunk temperature data, keyed by the dimension ID of the world.
    */
   private static final Map<Integer, Map<Long, ChunkTempData>> dimensionCaches = new ConcurrentHashMap<>();
@@ -181,8 +169,7 @@ public class HvacTemperatureManager {
 
     float biomeTemp = world.getBiome(pos).getTemperature(pos);
     float baselineTempF = biomeTemp * 90.0f - 4.0f;
-    cache.put(chunkKey, new ChunkTempData(baselineTempF, currentTick,
-        isIndoors(world, pos)));
+    cache.put(chunkKey, new ChunkTempData(baselineTempF, currentTick));
     return baselineTempF;
   }
 
@@ -343,62 +330,6 @@ public class HvacTemperatureManager {
       float progress = (float) elapsed / (float) TRANSITION_DURATION_MS;
       return previousOffset + (targetOffset - previousOffset) * progress;
     }
-  }
-
-  /**
-   * Determines whether the given position is considered "indoors" by checking for a roof overhead
-   * and walls in the cardinal directions.
-   *
-   * <p>The algorithm works as follows:</p>
-   * <ol>
-   *   <li>Scan upward from the position for up to {@link #INDOOR_SCAN_HEIGHT} blocks looking for
-   *   a solid (non-air, non-replaceable) block as a roof.</li>
-   *   <li>If a roof is found, scan in each of the 4 cardinal directions (north, south, east,
-   *   west) at the player's Y level for up to {@link #INDOOR_SCAN_HORIZONTAL} blocks looking for
-   *   solid blocks as walls.</li>
-   *   <li>The position is considered indoors if a roof was found and at least 3 of the 4 cardinal
-   *   directions have a wall within range.</li>
-   * </ol>
-   *
-   * <p>This method is called per-chunk (not per-tick) and its result is cached along with the
-   * chunk temperature data.</p>
-   *
-   * @param world the world instance
-   * @param pos   the position to check
-   *
-   * @return {@code true} if the position is considered indoors, {@code false} otherwise
-   */
-  public static boolean isIndoors(World world, BlockPos pos) {
-    // Roof check: scan upward for a solid block
-    boolean hasRoof = false;
-    for (int dy = 1; dy <= INDOOR_SCAN_HEIGHT; dy++) {
-      BlockPos above = pos.up(dy);
-      IBlockState state = world.getBlockState(above);
-      if (isSolidBlock(state)) {
-        hasRoof = true;
-        break;
-      }
-    }
-
-    if (!hasRoof) {
-      return false;
-    }
-
-    // Wall check: scan 4 cardinal directions at player Y level
-    int wallCount = 0;
-    int[][] directions = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
-    for (int[] dir : directions) {
-      for (int dist = 1; dist <= INDOOR_SCAN_HORIZONTAL; dist++) {
-        BlockPos wallPos = pos.add(dir[0] * dist, 0, dir[1] * dist);
-        IBlockState state = world.getBlockState(wallPos);
-        if (isSolidBlock(state)) {
-          wallCount++;
-          break;
-        }
-      }
-    }
-
-    return wallCount >= 3;
   }
 
   // Biome baseline mapping: tempF = biomeTemp * 90 - 4
@@ -637,8 +568,7 @@ public class HvacTemperatureManager {
 
   /**
    * Internal data class that holds cached temperature information for a single chunk. Stores the
-   * calculated temperature, the world tick at which it was computed, and whether the sampled
-   * position was considered indoors.
+   * calculated temperature and the world tick at which it was computed.
    */
   private static class ChunkTempData {
 
@@ -653,22 +583,14 @@ public class HvacTemperatureManager {
     final long timestamp;
 
     /**
-     * Whether the sampled position in this chunk was considered indoors at the time of
-     * computation.
-     */
-    final boolean indoors;
-
-    /**
      * Constructs a new chunk temperature data entry.
      *
      * @param temperature the temperature in degrees Fahrenheit
      * @param timestamp   the world tick time of computation
-     * @param indoors     whether the sampled position was indoors
      */
-    ChunkTempData(float temperature, long timestamp, boolean indoors) {
+    ChunkTempData(float temperature, long timestamp) {
       this.temperature = temperature;
       this.timestamp = timestamp;
-      this.indoors = indoors;
     }
   }
 }
