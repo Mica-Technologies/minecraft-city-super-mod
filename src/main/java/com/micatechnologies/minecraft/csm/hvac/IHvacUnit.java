@@ -27,14 +27,6 @@ public interface IHvacUnit {
   boolean isHvacActive();
 
   /**
-   * Returns the effective radius of this unit in blocks. The unit will only influence temperature
-   * calculations within this radius of its position.
-   *
-   * @return the effective radius in blocks
-   */
-  int getEffectiveRadius();
-
-  /**
    * Returns the maximum distance in blocks at which a vent relay can be linked to this unit.
    *
    * @return the maximum vent link distance in blocks
