@@ -36,11 +36,18 @@ public class TileEntityHvacThermostat extends AbstractTickableTileEntity
   private static final String NBT_LINKED_UNITS = "linkedUnits";
   private static final String NBT_LINKED_VENTS = "linkedVents";
 
-  /** Time in milliseconds for the system to ramp from min to full effectiveness. */
-  private static final long RAMP_DURATION_MS = 300_000L; // 5 minutes
+  /** Phase 1 ramp duration in game ticks (5 minutes = 6000 ticks at 20 TPS). */
+  private static final long PHASE1_RAMP_TICKS = 6000L;
+
+  /** Phase 2 (extended) ramp duration in game ticks (10 more minutes = 12000 ticks). */
+  private static final long PHASE2_RAMP_TICKS = 12000L;
 
   /** Minimum effectiveness factor when the system first starts calling (20%). */
   private static final float RAMP_MIN_FACTOR = 0.2f;
+
+  /** Maximum extended ramp factor at the end of phase 2. Vent contributions are multiplied
+   *  by this, so 1.6 × 15°F base = 24°F max vent output after 15 minutes of operation. */
+  private static final float MAX_EXTENDED_RAMP = 1.6f;
 
   /** Bonus temperature per additional vent beyond the first in the same area. */
   private static final float VENT_DENSITY_BONUS_PER_VENT = 2.0f;
@@ -87,11 +94,12 @@ public class TileEntityHvacThermostat extends AbstractTickableTileEntity
   /** Positions of linked zone thermostats. Persisted in NBT. */
   private final List<BlockPos> linkedZones = new ArrayList<>();
 
-  /** Timestamp when the system started calling. Transient — not persisted to disk. */
-  private long rampStartMs = 0L;
-
-  /** Whether the system was calling on the previous tick. */
-  private boolean wasCalling = false;
+  /**
+   * Accumulated ramp ticks. Increases by {@link #getTickRate()} each tick while the system
+   * is calling, decreases at the same rate when idle. Persisted in NBT so the ramp survives
+   * chunk unload/reload. The ramp factor is derived from this value.
+   */
+  private long accumulatedRampTicks = 0L;
 
   /** Cached efficiency percent for client sync. Updated server-side, read by GUI. */
   private int cachedEfficiencyPercent = 0;
@@ -176,16 +184,13 @@ public class TileEntityHvacThermostat extends AbstractTickableTileEntity
               targetTempLow, targetTempHigh, Math.round(getSystemRampFactor() * 100)));
     }
 
-    // Track ramp-up timing based on the whole system (primary + zones)
-    boolean systemNowCalling = isSystemCalling();
-    if (systemNowCalling && !wasCalling) {
-      // System just started calling — begin ramp from minimum
-      rampStartMs = System.currentTimeMillis();
-      wasCalling = true;
-    } else if (!systemNowCalling && wasCalling) {
-      // System stopped calling — reset ramp
-      wasCalling = false;
-      rampStartMs = 0L;
+    // Track ramp-up: accumulate ticks while calling, decay while idle.
+    // Decay at 1:1 rate preserves ramp progress across short thermostat cycles
+    // so the system can gradually build to extended ramp levels over many cycles.
+    if (isSystemCalling()) {
+      accumulatedRampTicks += getTickRate();
+    } else if (accumulatedRampTicks > 0) {
+      accumulatedRampTicks = Math.max(0L, accumulatedRampTicks - getTickRate());
     }
 
     if (isCalling != wasPreviouslyCalling) {
@@ -233,22 +238,33 @@ public class TileEntityHvacThermostat extends AbstractTickableTileEntity
   }
 
   /**
-   * Returns the current system effectiveness factor (0.2 to 1.0). Uses a square-root curve
-   * so the system ramps quickly in the early phase (reaches ~50% in the first quarter of
-   * the ramp duration) then tapers off gradually — like a real HVAC system that moves a
-   * room most of the way to temperature quickly, then fine-tunes.
+   * Returns the current system effectiveness factor, in two phases:
+   * <ul>
+   *   <li><b>Phase 1</b> (0–5 min): 0.2 → 1.0 using a sqrt curve. The system ramps quickly
+   *   in the early phase then tapers — like a real HVAC system that moves a room most of the
+   *   way to temperature quickly, then fine-tunes.</li>
+   *   <li><b>Phase 2</b> (5–15 min): 1.0 → {@link #MAX_EXTENDED_RAMP} linear. Extended
+   *   operation pushes vent contributions beyond their base value, allowing the system to
+   *   reach higher/lower temperatures over time.</li>
+   * </ul>
+   * <p>Persisted via {@link #accumulatedRampTicks} so it survives chunk unload/reload.</p>
    */
   public float getSystemRampFactor() {
-    if (!isSystemCalling() || rampStartMs == 0L) {
+    if (accumulatedRampTicks <= 0L) {
       return 0.0f;
     }
-    long elapsed = System.currentTimeMillis() - rampStartMs;
-    if (elapsed >= RAMP_DURATION_MS) {
-      return 1.0f;
+
+    // Phase 1: sqrt curve from RAMP_MIN_FACTOR to 1.0
+    if (accumulatedRampTicks <= PHASE1_RAMP_TICKS) {
+      float progress = (float) accumulatedRampTicks / (float) PHASE1_RAMP_TICKS;
+      float curved = (float) Math.sqrt(progress);
+      return RAMP_MIN_FACTOR + (1.0f - RAMP_MIN_FACTOR) * curved;
     }
-    float progress = (float) elapsed / (float) RAMP_DURATION_MS;
-    float curved = (float) Math.sqrt(progress);
-    return RAMP_MIN_FACTOR + (1.0f - RAMP_MIN_FACTOR) * curved;
+
+    // Phase 2: linear from 1.0 to MAX_EXTENDED_RAMP
+    long phase2Elapsed = accumulatedRampTicks - PHASE1_RAMP_TICKS;
+    float phase2Progress = Math.min(1.0f, (float) phase2Elapsed / (float) PHASE2_RAMP_TICKS);
+    return 1.0f + (MAX_EXTENDED_RAMP - 1.0f) * phase2Progress;
   }
 
   /**
@@ -545,6 +561,7 @@ public class TileEntityHvacThermostat extends AbstractTickableTileEntity
     this.isCalling = compound.getBoolean(NBT_IS_CALLING);
     this.callingMode = compound.getInteger("callingMode");
     this.cachedEfficiencyPercent = compound.getInteger("efficiency");
+    this.accumulatedRampTicks = compound.getLong("rampTicks");
     this.currentTemperature = compound.getFloat("currentTemp");
     // If we loaded a saved temperature, mark as initialized so thermal smoothing
     // blends from this value rather than snapping to the first raw reading
@@ -591,6 +608,7 @@ public class TileEntityHvacThermostat extends AbstractTickableTileEntity
     compound.setBoolean(NBT_IS_CALLING, isCalling);
     compound.setInteger("callingMode", callingMode);
     compound.setInteger("efficiency", cachedEfficiencyPercent);
+    compound.setLong("rampTicks", accumulatedRampTicks);
     compound.setFloat("currentTemp", currentTemperature);
     NBTTagList unitList = new NBTTagList();
     for (BlockPos unitPos : linkedUnits) {

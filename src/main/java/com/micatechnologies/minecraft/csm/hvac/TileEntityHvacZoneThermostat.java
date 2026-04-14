@@ -67,11 +67,11 @@ public class TileEntityHvacZoneThermostat extends AbstractTickableTileEntity
   /** Position of the linked primary thermostat, or null if not linked. */
   private BlockPos linkedPrimaryPos = null;
 
-  /** Timestamp when the zone started calling. Transient — not persisted. */
-  private long rampStartMs = 0L;
-
-  /** Whether the zone was calling on the previous tick (for ramp tracking). */
-  private boolean wasCalling = false;
+  /**
+   * Accumulated ramp ticks. Increases while calling, decreases while idle.
+   * Persisted in NBT so the ramp survives chunk unload/reload.
+   */
+  private long accumulatedRampTicks = 0L;
 
   /** Cached efficiency percent for client sync. */
   private int cachedEfficiencyPercent = 0;
@@ -150,13 +150,11 @@ public class TileEntityHvacZoneThermostat extends AbstractTickableTileEntity
               targetTempLow, targetTempHigh, Math.round(getSystemRampFactor() * 100)));
     }
 
-    // Track zone's own ramp-up timing
-    if (isCalling && !wasCalling) {
-      rampStartMs = System.currentTimeMillis();
-      wasCalling = true;
-    } else if (!isCalling && wasCalling) {
-      wasCalling = false;
-      rampStartMs = 0L;
+    // Track ramp-up: accumulate ticks while calling, decay while idle
+    if (isCalling) {
+      accumulatedRampTicks += getTickRate();
+    } else if (accumulatedRampTicks > 0) {
+      accumulatedRampTicks = Math.max(0L, accumulatedRampTicks - getTickRate());
     }
 
     if (isCalling != wasPreviouslyCalling) {
@@ -197,24 +195,27 @@ public class TileEntityHvacZoneThermostat extends AbstractTickableTileEntity
   }
 
   /** Ramp constants — match primary thermostat. */
-  private static final long RAMP_DURATION_MS = 300_000L;
+  private static final long PHASE1_RAMP_TICKS = 6000L;
+  private static final long PHASE2_RAMP_TICKS = 12000L;
   private static final float RAMP_MIN_FACTOR = 0.2f;
+  private static final float MAX_EXTENDED_RAMP = 1.6f;
 
   /**
-   * Returns the zone's own ramp factor (0.2 to 1.0). Each zone ramps independently
-   * so that a newly-calling zone doesn't depend on the primary's ramp state.
+   * Returns the zone's own ramp factor. Phase 1 (0–5 min): 0.2→1.0 sqrt curve.
+   * Phase 2 (5–15 min): 1.0→1.6 linear. Persisted via accumulatedRampTicks.
    */
   public float getSystemRampFactor() {
-    if (!isCalling || rampStartMs == 0L) {
+    if (accumulatedRampTicks <= 0L) {
       return 0.0f;
     }
-    long elapsed = System.currentTimeMillis() - rampStartMs;
-    if (elapsed >= RAMP_DURATION_MS) {
-      return 1.0f;
+    if (accumulatedRampTicks <= PHASE1_RAMP_TICKS) {
+      float progress = (float) accumulatedRampTicks / (float) PHASE1_RAMP_TICKS;
+      float curved = (float) Math.sqrt(progress);
+      return RAMP_MIN_FACTOR + (1.0f - RAMP_MIN_FACTOR) * curved;
     }
-    float progress = (float) elapsed / (float) RAMP_DURATION_MS;
-    float curved = (float) Math.sqrt(progress);
-    return RAMP_MIN_FACTOR + (1.0f - RAMP_MIN_FACTOR) * curved;
+    long phase2Elapsed = accumulatedRampTicks - PHASE1_RAMP_TICKS;
+    float phase2Progress = Math.min(1.0f, (float) phase2Elapsed / (float) PHASE2_RAMP_TICKS);
+    return 1.0f + (MAX_EXTENDED_RAMP - 1.0f) * phase2Progress;
   }
 
   /**
@@ -406,6 +407,7 @@ public class TileEntityHvacZoneThermostat extends AbstractTickableTileEntity
     this.isCalling = compound.getBoolean(NBT_IS_CALLING);
     this.callingMode = compound.getInteger("callingMode");
     this.cachedEfficiencyPercent = compound.getInteger("efficiency");
+    this.accumulatedRampTicks = compound.getLong("rampTicks");
     this.currentTemperature = compound.getFloat("currentTemp");
     if (compound.hasKey("currentTemp")) {
       this.temperatureInitialized = true;
@@ -445,6 +447,7 @@ public class TileEntityHvacZoneThermostat extends AbstractTickableTileEntity
     compound.setBoolean(NBT_IS_CALLING, isCalling);
     compound.setInteger("callingMode", callingMode);
     compound.setInteger("efficiency", cachedEfficiencyPercent);
+    compound.setLong("rampTicks", accumulatedRampTicks);
     compound.setFloat("currentTemp", currentTemperature);
 
     // Write linked primary

@@ -58,7 +58,7 @@ public class HvacTemperatureManager {
    * Maximum total HVAC offset (positive or negative) that can be applied to a position's
    * temperature, in degrees Fahrenheit.
    */
-  private static final float MAX_HVAC_OFFSET = 15.0f;
+  private static final float MAX_HVAC_OFFSET = 24.0f;
 
   /**
    * Distance in blocks within which a direct HVAC unit (heater/cooler) has full effect.
