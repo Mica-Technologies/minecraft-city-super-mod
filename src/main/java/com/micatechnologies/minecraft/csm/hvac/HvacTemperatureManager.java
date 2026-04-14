@@ -37,6 +37,9 @@ public class HvacTemperatureManager {
 
   private static final Logger LOGGER = LogManager.getLogger("CSM-HVAC");
 
+  /** Returns whether debug logging is enabled. Used by thermostat TEs to add their own logs. */
+  public static boolean isDebugLogging() { return DEBUG_LOGGING; }
+
   /** Throttle debug logs to at most once per this many milliseconds. */
   private static final long DEBUG_LOG_INTERVAL_MS = 1000L;
   private static long lastDebugLogMs = 0L;
@@ -209,13 +212,8 @@ public class HvacTemperatureManager {
     float baseline = getCachedBaseline(world, pos);
     float currentOffset = calculateHvacOffset(world, pos);
     if (DEBUG_LOGGING) {
-      long now = System.currentTimeMillis();
-      // Throttle thermostat logs to every 2 seconds (they tick every 40 game ticks)
-      if (now - lastThermostatDebugMs >= 2000L) {
-        lastThermostatDebugMs = now;
-        LOGGER.info(String.format("[HVAC-THERMOSTAT] pos=%s baseline=%.1f rawOffset=%.1f rawTemp=%.1f",
-            pos, baseline, currentOffset, baseline + currentOffset));
-      }
+      LOGGER.info(String.format("[HVAC-THERMOSTAT] pos=%s baseline=%.1f rawOffset=%.1f rawTemp=%.1f",
+          pos, baseline, currentOffset, baseline + currentOffset));
     }
     return baseline + currentOffset;
   }
