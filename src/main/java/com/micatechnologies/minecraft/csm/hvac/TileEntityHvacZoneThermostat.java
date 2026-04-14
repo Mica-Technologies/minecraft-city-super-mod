@@ -334,8 +334,8 @@ public class TileEntityHvacZoneThermostat extends AbstractTickableTileEntity
       contribution = 0.0f;
     }
 
-    // Calculate vent density bonus
-    int ventCount = 0;
+    // Single pass: validate links, count vents, and collect references
+    List<TileEntityHvacVentRelay> validVents = new ArrayList<>();
     Iterator<BlockPos> it = linkedVents.iterator();
     while (it.hasNext()) {
       BlockPos ventPos = it.next();
@@ -344,30 +344,25 @@ public class TileEntityHvacZoneThermostat extends AbstractTickableTileEntity
       }
       TileEntity te = world.getTileEntity(ventPos);
       if (te instanceof TileEntityHvacVentRelay) {
-        ventCount++;
+        validVents.add((TileEntityHvacVentRelay) te);
       } else {
         it.remove();
       }
     }
 
+    // Calculate vent density bonus and push to all vents
     float densityBonus = 0.0f;
-    if (ventCount > 1 && contribution != 0.0f) {
-      densityBonus = Math.min((ventCount - 1) * VENT_DENSITY_BONUS_PER_VENT,
+    if (validVents.size() > 1 && contribution != 0.0f) {
+      densityBonus = Math.min((validVents.size() - 1) * VENT_DENSITY_BONUS_PER_VENT,
           VENT_DENSITY_BONUS_CAP);
       if (contribution < 0) {
         densityBonus = -densityBonus;
       }
     }
 
-    // Push contribution + density bonus to each vent
-    for (BlockPos ventPos : linkedVents) {
-      if (!world.isBlockLoaded(ventPos)) {
-        continue;
-      }
-      TileEntity te = world.getTileEntity(ventPos);
-      if (te instanceof TileEntityHvacVentRelay) {
-        ((TileEntityHvacVentRelay) te).setContribution(contribution + densityBonus);
-      }
+    float finalContribution = contribution + densityBonus;
+    for (TileEntityHvacVentRelay vent : validVents) {
+      vent.setContribution(finalContribution);
     }
   }
 
