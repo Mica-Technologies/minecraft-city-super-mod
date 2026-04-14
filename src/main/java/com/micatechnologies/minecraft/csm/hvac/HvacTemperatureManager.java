@@ -127,6 +127,14 @@ public class HvacTemperatureManager {
   private static final float WALL_ATTENUATION_FACTOR = 0.3f;
 
   /**
+   * Multiplier applied to the total HVAC offset when the query position can see the sky
+   * (i.e. has no roof overhead). Conditioned air dissipates rapidly outdoors, so heaters
+   * and coolers are only 30% as effective. Uses the O(1) heightmap check
+   * {@code World.canSeeSky()}, so there is no performance cost.
+   */
+  private static final float OUTDOOR_ATTENUATION_FACTOR = 0.3f;
+
+  /**
    * Per-dimension cache of chunk temperature data, keyed by the dimension ID of the world.
    */
   private static final Map<Integer, Map<Long, ChunkTempData>> dimensionCaches = new ConcurrentHashMap<>();
@@ -452,7 +460,13 @@ public class HvacTemperatureManager {
     heatingOffset = Math.min(heatingOffset, MAX_HVAC_OFFSET);
     coolingOffset = Math.min(coolingOffset, MAX_HVAC_OFFSET);
 
-    return heatingOffset - coolingOffset;
+    // Outdoor attenuation: conditioned air dissipates quickly without a roof
+    float totalOffset = heatingOffset - coolingOffset;
+    if (totalOffset != 0.0f && world.canSeeSky(pos)) {
+      totalOffset *= OUTDOOR_ATTENUATION_FACTOR;
+    }
+
+    return totalOffset;
   }
 
   /**
