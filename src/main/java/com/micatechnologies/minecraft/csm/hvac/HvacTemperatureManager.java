@@ -1,7 +1,7 @@
 package com.micatechnologies.minecraft.csm.hvac;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.tileentity.TileEntity;
@@ -20,9 +20,9 @@ import net.minecraft.world.chunk.Chunk;
  * different temperatures if they are different distances from HVAC equipment. A heater and cooler
  * in the same chunk will each dominate their local area rather than canceling out.</p>
  *
- * <p><b>Thread safety:</b> This class uses a per-dimension cache map. All access is expected to
- * occur on the server thread. If accessed from multiple threads, external synchronization is
- * required.</p>
+ * <p><b>Thread safety:</b> This class uses {@code ConcurrentHashMap} for its per-dimension cache
+ * to allow safe concurrent access from the server tick thread (thermostat updates) and the
+ * client render thread (HUD overlay) in single-player (integrated server).</p>
  *
  * @author Mica Technologies
  * @see IHvacUnit
@@ -122,7 +122,7 @@ public class HvacTemperatureManager {
   /**
    * Per-dimension cache of chunk temperature data, keyed by the dimension ID of the world.
    */
-  private static final Map<Integer, Map<Long, ChunkTempData>> dimensionCaches = new HashMap<>();
+  private static final Map<Integer, Map<Long, ChunkTempData>> dimensionCaches = new ConcurrentHashMap<>();
 
   /**
    * Retrieves the temperature in degrees Fahrenheit at the given position in the world. This is
@@ -609,7 +609,7 @@ public class HvacTemperatureManager {
    */
   private static Map<Long, ChunkTempData> getOrCreateCache(World world) {
     int dimensionId = world.provider.getDimension();
-    return dimensionCaches.computeIfAbsent(dimensionId, k -> new HashMap<>());
+    return dimensionCaches.computeIfAbsent(dimensionId, k -> new ConcurrentHashMap<>());
   }
 
   /**
