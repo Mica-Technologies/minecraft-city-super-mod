@@ -36,7 +36,7 @@ public class TileEntityHvacZoneThermostat extends AbstractTickableTileEntity
   /**
    * Blending factor per tick for thermal smoothing. Matches the primary thermostat.
    */
-  private static final float THERMAL_BLEND_FACTOR = 0.03f;
+  private static final float THERMAL_BLEND_FACTOR = 0.06f;
 
   /**
    * Hysteresis deadband in degrees F. Matches the primary thermostat.
@@ -66,6 +66,12 @@ public class TileEntityHvacZoneThermostat extends AbstractTickableTileEntity
 
   /** Position of the linked primary thermostat, or null if not linked. */
   private BlockPos linkedPrimaryPos = null;
+
+  /** Timestamp when the zone started calling. Transient — not persisted. */
+  private long rampStartMs = 0L;
+
+  /** Whether the zone was calling on the previous tick (for ramp tracking). */
+  private boolean wasCalling = false;
 
   /** Cached efficiency percent for client sync. */
   private int cachedEfficiencyPercent = 0;
@@ -134,11 +140,20 @@ public class TileEntityHvacZoneThermostat extends AbstractTickableTileEntity
         break;
     }
 
+    // Track zone's own ramp-up timing
+    if (isCalling && !wasCalling) {
+      rampStartMs = System.currentTimeMillis();
+      wasCalling = true;
+    } else if (!isCalling && wasCalling) {
+      wasCalling = false;
+      rampStartMs = 0L;
+    }
+
     if (isCalling != wasPreviouslyCalling) {
       world.notifyNeighborsOfStateChange(pos, getBlockType(), false);
     }
 
-    // Update efficiency from primary thermostat
+    // Update efficiency from zone's own ramp
     int newEfficiency = Math.round(getSystemRampFactor() * 100);
     boolean efficiencyChanged = newEfficiency != cachedEfficiencyPercent;
     cachedEfficiencyPercent = newEfficiency;
@@ -171,15 +186,25 @@ public class TileEntityHvacZoneThermostat extends AbstractTickableTileEntity
     return null;
   }
 
+  /** Ramp constants — match primary thermostat. */
+  private static final long RAMP_DURATION_MS = 300_000L;
+  private static final float RAMP_MIN_FACTOR = 0.2f;
+
   /**
-   * Returns the system ramp factor from the primary thermostat, or 0.0 if not linked.
+   * Returns the zone's own ramp factor (0.2 to 1.0). Each zone ramps independently
+   * so that a newly-calling zone doesn't depend on the primary's ramp state.
    */
   public float getSystemRampFactor() {
-    TileEntityHvacThermostat primary = getPrimaryThermostat();
-    if (primary != null) {
-      return primary.getSystemRampFactor();
+    if (!isCalling || rampStartMs == 0L) {
+      return 0.0f;
     }
-    return 0.0f;
+    long elapsed = System.currentTimeMillis() - rampStartMs;
+    if (elapsed >= RAMP_DURATION_MS) {
+      return 1.0f;
+    }
+    float progress = (float) elapsed / (float) RAMP_DURATION_MS;
+    float curved = (float) Math.sqrt(progress);
+    return RAMP_MIN_FACTOR + (1.0f - RAMP_MIN_FACTOR) * curved;
   }
 
   /**
@@ -299,15 +324,14 @@ public class TileEntityHvacZoneThermostat extends AbstractTickableTileEntity
     float baseContribution = getBaseVentContribution();
     float contribution = baseContribution * rampFactor;
 
-    if (!isCalling) {
-      contribution = 0.0f;
-    }
-
-    // Determine sign based on calling mode
-    if (isCalling && currentTemperature > targetTempHigh) {
+    // Determine sign from callingMode (not temperature comparison, which breaks
+    // during the deadband zone where temp has crossed the threshold but we're still calling)
+    if (callingMode == MODE_COOLING) {
       contribution = -Math.abs(contribution);
-    } else if (isCalling && currentTemperature < targetTempLow) {
+    } else if (callingMode == MODE_HEATING) {
       contribution = Math.abs(contribution);
+    } else {
+      contribution = 0.0f;
     }
 
     // Calculate vent density bonus
@@ -327,7 +351,7 @@ public class TileEntityHvacZoneThermostat extends AbstractTickableTileEntity
     }
 
     float densityBonus = 0.0f;
-    if (ventCount > 1) {
+    if (ventCount > 1 && contribution != 0.0f) {
       densityBonus = Math.min((ventCount - 1) * VENT_DENSITY_BONUS_PER_VENT,
           VENT_DENSITY_BONUS_CAP);
       if (contribution < 0) {

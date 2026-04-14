@@ -51,10 +51,10 @@ public class TileEntityHvacThermostat extends AbstractTickableTileEntity
   /**
    * Blending factor per tick for thermal smoothing. Each thermostat tick (40 game ticks = 2s),
    * the displayed temperature moves this fraction of the way toward the raw calculated value.
-   * At 0.03 and a 40-tick (2s) interval, it takes ~75 ticks (~2.5 min) to cover 90% of a
-   * temperature change — roughly simulating a small room's thermal mass.
+   * At 0.06 and a 40-tick (2s) interval, it takes ~38 ticks (~76s) to cover 90% of a
+   * temperature change — realistic room thermal mass without feeling unresponsive.
    */
-  private static final float THERMAL_BLEND_FACTOR = 0.03f;
+  private static final float THERMAL_BLEND_FACTOR = 0.06f;
 
   /**
    * Hysteresis deadband in °F. Once the system starts heating, it won't stop until the
@@ -166,13 +166,14 @@ public class TileEntityHvacThermostat extends AbstractTickableTileEntity
         break;
     }
 
-    // Track ramp-up timing
-    if (isCalling && !wasCalling) {
-      // Just started calling — begin ramp from minimum
+    // Track ramp-up timing based on the whole system (primary + zones)
+    boolean systemNowCalling = isSystemCalling();
+    if (systemNowCalling && !wasCalling) {
+      // System just started calling — begin ramp from minimum
       rampStartMs = System.currentTimeMillis();
       wasCalling = true;
-    } else if (!isCalling && wasCalling) {
-      // Stopped calling — reset ramp
+    } else if (!systemNowCalling && wasCalling) {
+      // System stopped calling — reset ramp
       wasCalling = false;
       rampStartMs = 0L;
     }
@@ -202,12 +203,33 @@ public class TileEntityHvacThermostat extends AbstractTickableTileEntity
   // region System Ramp-Up
 
   /**
-   * Returns the current system effectiveness factor (0.2 to 1.0). Ramps linearly from
-   * {@link #RAMP_MIN_FACTOR} to 1.0 over {@link #RAMP_DURATION_MS} while calling.
-   * Returns 0.0 when not calling.
+   * Returns true if ANY part of the system is calling — the primary thermostat itself
+   * OR any linked zone thermostat. Used for ramp factor and unit activation.
+   */
+  public boolean isSystemCalling() {
+    if (isCalling) {
+      return true;
+    }
+    for (BlockPos zonePos : linkedZones) {
+      if (world != null && world.isBlockLoaded(zonePos)) {
+        TileEntity te = world.getTileEntity(zonePos);
+        if (te instanceof TileEntityHvacZoneThermostat
+            && ((TileEntityHvacZoneThermostat) te).isCalling()) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Returns the current system effectiveness factor (0.2 to 1.0). Uses a square-root curve
+   * so the system ramps quickly in the early phase (reaches ~50% in the first quarter of
+   * the ramp duration) then tapers off gradually — like a real HVAC system that moves a
+   * room most of the way to temperature quickly, then fine-tunes.
    */
   public float getSystemRampFactor() {
-    if (!isCalling || rampStartMs == 0L) {
+    if (!isSystemCalling() || rampStartMs == 0L) {
       return 0.0f;
     }
     long elapsed = System.currentTimeMillis() - rampStartMs;
@@ -215,7 +237,8 @@ public class TileEntityHvacThermostat extends AbstractTickableTileEntity
       return 1.0f;
     }
     float progress = (float) elapsed / (float) RAMP_DURATION_MS;
-    return RAMP_MIN_FACTOR + (1.0f - RAMP_MIN_FACTOR) * progress;
+    float curved = (float) Math.sqrt(progress);
+    return RAMP_MIN_FACTOR + (1.0f - RAMP_MIN_FACTOR) * curved;
   }
 
   /**
@@ -266,8 +289,10 @@ public class TileEntityHvacThermostat extends AbstractTickableTileEntity
   }
 
   private void updateLinkedUnits() {
-    boolean needsHeating = isCalling && currentTemperature < targetTempLow;
-    boolean needsCooling = isCalling && currentTemperature > targetTempHigh;
+    // Use callingMode (not temperature comparison) to determine demand — temperature
+    // comparisons break during the deadband zone after the setpoint has been crossed
+    boolean needsHeating = callingMode == MODE_HEATING;
+    boolean needsCooling = callingMode == MODE_COOLING;
 
     // Also check linked zones for heating/cooling demand
     Iterator<BlockPos> zoneIt = linkedZones.iterator();
@@ -280,11 +305,10 @@ public class TileEntityHvacThermostat extends AbstractTickableTileEntity
       if (zoneTe instanceof TileEntityHvacZoneThermostat) {
         TileEntityHvacZoneThermostat zone = (TileEntityHvacZoneThermostat) zoneTe;
         if (zone.isCalling()) {
-          float zoneTemp = zone.getCurrentTemperature();
-          if (zoneTemp < zone.getTargetTempLow()) {
+          int zoneMode = zone.getCallingMode();
+          if (zoneMode == MODE_HEATING) {
             needsHeating = true;
-          }
-          if (zoneTemp > zone.getTargetTempHigh()) {
+          } else if (zoneMode == MODE_COOLING) {
             needsCooling = true;
           }
         }
@@ -403,18 +427,14 @@ public class TileEntityHvacThermostat extends AbstractTickableTileEntity
     float baseContribution = getBaseVentContribution();
     float contribution = baseContribution * rampFactor;
 
-    // If not calling, contribution is 0
-    if (!isCalling) {
-      contribution = 0.0f;
-    }
-
-    // Determine sign: if too cold, vents should heat. If too hot, vents should cool.
-    if (isCalling && currentTemperature > targetTempHigh) {
-      // Too hot — make contribution negative (cooling)
+    // Determine sign from callingMode (not temperature comparison, which breaks
+    // during the deadband zone where temp has crossed the threshold but we're still calling)
+    if (callingMode == MODE_COOLING) {
       contribution = -Math.abs(contribution);
-    } else if (isCalling && currentTemperature < targetTempLow) {
-      // Too cold — make contribution positive (heating)
+    } else if (callingMode == MODE_HEATING) {
       contribution = Math.abs(contribution);
+    } else {
+      contribution = 0.0f;
     }
 
     // Calculate vent density bonus
@@ -434,7 +454,7 @@ public class TileEntityHvacThermostat extends AbstractTickableTileEntity
     }
 
     float densityBonus = 0.0f;
-    if (ventCount > 1) {
+    if (ventCount > 1 && contribution != 0.0f) {
       densityBonus = Math.min((ventCount - 1) * VENT_DENSITY_BONUS_PER_VENT,
           VENT_DENSITY_BONUS_CAP);
       if (contribution < 0) {

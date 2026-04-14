@@ -50,6 +50,6 @@ public interface IHvacUnit {
    * @return the vent relay temperature contribution in degrees Fahrenheit
    */
   default float getVentRelayContribution() {
-    return getTemperatureContribution() > 0 ? 8.0f : -8.0f;
+    return getTemperatureContribution() > 0 ? 15.0f : -15.0f;
   }
 }

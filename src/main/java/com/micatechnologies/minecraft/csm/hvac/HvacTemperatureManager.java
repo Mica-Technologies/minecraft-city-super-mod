@@ -48,27 +48,41 @@ public class HvacTemperatureManager {
   private static final float MAX_HVAC_OFFSET = 40.0f;
 
   /**
-   * Distance in blocks within which an HVAC unit has full effect (100% contribution).
+   * Distance in blocks within which a direct HVAC unit (heater/cooler) has full effect.
    */
-  private static final double FULL_EFFECT_DISTANCE = 3.0;
+  private static final double UNIT_FULL_EFFECT_DISTANCE = 4.0;
 
   /**
-   * Distance in blocks beyond which an HVAC unit has no effect (0% contribution).
+   * Distance in blocks beyond which a direct HVAC unit has no effect.
    */
-  private static final double MAX_EFFECT_DISTANCE = 16.0;
+  private static final double UNIT_MAX_EFFECT_DISTANCE = 12.0;
 
   /**
-   * Number of chunks in each direction to scan for HVAC units (1 = 3x3 grid around player).
+   * Distance in blocks within which a vent relay has full effect. Vents distribute
+   * conditioned air through a room, so they have a wider full-effect zone than the
+   * equipment itself.
    */
-  private static final int CHUNK_SCAN_RADIUS = 1;
+  private static final double VENT_FULL_EFFECT_DISTANCE = 6.0;
 
   /**
-   * Duration in milliseconds over which temperature transitions gradually when HVAC units
-   * turn on or off. Configurable constant — default 10 minutes (600,000 ms). Uses
-   * System.currentTimeMillis() timestamps, not world ticks, so transitions are smooth
-   * regardless of TPS. Not persisted in NBT — resets on restart.
+   * Distance in blocks beyond which a vent relay has no effect. Vents cover a room-sized
+   * area (~24 blocks / ~72 feet diameter) which is realistic for a ceiling vent.
    */
-  private static final long TRANSITION_DURATION_MS = 600_000L;
+  private static final double VENT_MAX_EFFECT_DISTANCE = 24.0;
+
+  /**
+   * Number of chunks in each direction to scan for HVAC units (2 = 5x5 grid around player).
+   * Needs to cover VENT_MAX_EFFECT_DISTANCE (24 blocks = 1.5 chunks), so 2 is safe.
+   */
+  private static final int CHUNK_SCAN_RADIUS = 2;
+
+  /**
+   * Duration in milliseconds over which the HUD temperature transitions gradually when HVAC
+   * offset changes (e.g. walking toward/away from a vent). 3 minutes is long enough to avoid
+   * jarring snaps but short enough that the player sees meaningful change within ~30 seconds.
+   * Only used by the HUD (player display), not by thermostats.
+   */
+  private static final long TRANSITION_DURATION_MS = 180_000L;
 
   /**
    * Single transition tracker for the most recently queried position. Since the HUD typically
@@ -428,7 +442,9 @@ public class HvacTemperatureManager {
 
     float heatingOffset = 0.0f;
     float coolingOffset = 0.0f;
-    double maxEffectDistSq = MAX_EFFECT_DISTANCE * MAX_EFFECT_DISTANCE;
+    // Use the larger of the two max distances for the initial distance-squared cull
+    double maxDistForCull = Math.max(UNIT_MAX_EFFECT_DISTANCE, VENT_MAX_EFFECT_DISTANCE);
+    double maxCullDistSq = maxDistForCull * maxDistForCull;
 
     for (int cx = centerCX - CHUNK_SCAN_RADIUS; cx <= centerCX + CHUNK_SCAN_RADIUS; cx++) {
       for (int cz = centerCZ - CHUNK_SCAN_RADIUS; cz <= centerCZ + CHUNK_SCAN_RADIUS; cz++) {
@@ -446,14 +462,23 @@ public class HvacTemperatureManager {
           }
 
           double distSq = te.getPos().distanceSq(pos);
-          if (distSq > maxEffectDistSq) {
+          if (distSq > maxCullDistSq) {
             continue;
           }
 
           double dist = Math.sqrt(distSq);
-          float distWeight = calculateDistanceWeight(dist);
+          boolean isVent = te instanceof TileEntityHvacVentRelay;
+
+          // Use different distance curves for vents vs direct units
+          double fullDist = isVent ? VENT_FULL_EFFECT_DISTANCE : UNIT_FULL_EFFECT_DISTANCE;
+          double maxDist = isVent ? VENT_MAX_EFFECT_DISTANCE : UNIT_MAX_EFFECT_DISTANCE;
+          float distWeight = calculateDistanceWeight(dist, fullDist, maxDist);
+
+          // Both vents and direct units use wall attenuation — walls block airflow
+          // between rooms, which is the basis of zone separation.
           float wallWeight = calculateWallAttenuation(world, te.getPos(), pos);
           float weight = distWeight * wallWeight;
+
           float contribution = unit.getTemperatureContribution();
           float weightedOffset = Math.abs(contribution) * weight;
 
@@ -462,6 +487,7 @@ public class HvacTemperatureManager {
           } else if (contribution < 0) {
             coolingOffset += weightedOffset;
           }
+
         }
       }
     }
@@ -475,21 +501,23 @@ public class HvacTemperatureManager {
 
   /**
    * Calculates the distance weight for an HVAC unit's contribution. Returns 1.0 for distances
-   * within {@link #FULL_EFFECT_DISTANCE}, linearly falls off to 0.0 at
-   * {@link #MAX_EFFECT_DISTANCE}, and returns 0.0 beyond that.
+   * within fullEffectDist, linearly falls off to 0.0 at maxEffectDist, and returns 0.0 beyond.
    *
-   * @param distance the distance in blocks from the unit to the query position
+   * @param distance       the distance in blocks from the unit to the query position
+   * @param fullEffectDist distance within which the unit has 100% effect
+   * @param maxEffectDist  distance beyond which the unit has 0% effect
    *
    * @return the weight factor between 0.0 and 1.0
    */
-  private static float calculateDistanceWeight(double distance) {
-    if (distance <= FULL_EFFECT_DISTANCE) {
+  private static float calculateDistanceWeight(double distance, double fullEffectDist,
+      double maxEffectDist) {
+    if (distance <= fullEffectDist) {
       return 1.0f;
     }
-    if (distance >= MAX_EFFECT_DISTANCE) {
+    if (distance >= maxEffectDist) {
       return 0.0f;
     }
-    return (float) ((MAX_EFFECT_DISTANCE - distance) / (MAX_EFFECT_DISTANCE - FULL_EFFECT_DISTANCE));
+    return (float) ((maxEffectDist - distance) / (maxEffectDist - fullEffectDist));
   }
 
   /**
