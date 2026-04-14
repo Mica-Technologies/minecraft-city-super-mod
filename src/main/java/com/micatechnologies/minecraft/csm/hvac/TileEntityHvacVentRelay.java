@@ -27,19 +27,47 @@ public class TileEntityHvacVentRelay extends AbstractTickableTileEntity implemen
   private boolean wasActive = false;
 
   /**
+   * Residual decay factor applied when the thermostat stops calling. Instead of snapping
+   * to zero, the vent contribution decays by this factor each thermostat tick (every 2s).
+   * At 0.97: retains 74% after 20s, 55% after 40s, 30% after 1 min, ~0 after 2 min.
+   * Simulates lingering conditioned air in the room after the system shuts off.
+   */
+  private static final float RESIDUAL_DECAY_FACTOR = 0.97f;
+
+  /**
+   * Threshold below which the residual contribution is zeroed out entirely.
+   */
+  private static final float RESIDUAL_ZERO_THRESHOLD = 0.5f;
+
+  /**
    * Set by the thermostat when the system is calling. Includes ramp-up factor.
-   * Transient — not persisted. Thermostat re-pushes on its next tick after restart.
+   * When the thermostat stops calling (pushes 0), the contribution decays gradually
+   * via {@link #RESIDUAL_DECAY_FACTOR} instead of snapping to zero.
    */
   private float currentContribution = 0.0f;
 
   /**
    * Called by the thermostat to set this vent's current temperature contribution.
    * The value already accounts for ramp-up factor and vent relay strength.
-   * Syncs to client so the HUD temperature calculation sees the contribution.
+   *
+   * <p>When the thermostat stops calling (new contribution near zero), the vent applies
+   * residual decay instead of zeroing instantly. This simulates conditioned air lingering
+   * in the room and prevents rapid thermostat cycling.</p>
    */
   public void setContribution(float contribution) {
-    if (Math.abs(this.currentContribution - contribution) > 0.1f) {
+    float oldContribution = this.currentContribution;
+
+    if (Math.abs(contribution) < 0.1f && Math.abs(oldContribution) > RESIDUAL_ZERO_THRESHOLD) {
+      // Thermostat stopped calling — apply residual decay instead of zeroing.
+      this.currentContribution *= RESIDUAL_DECAY_FACTOR;
+      if (Math.abs(this.currentContribution) < RESIDUAL_ZERO_THRESHOLD) {
+        this.currentContribution = 0.0f;
+      }
+    } else {
       this.currentContribution = contribution;
+    }
+
+    if (Math.abs(oldContribution - this.currentContribution) > 0.1f) {
       if (world != null && !world.isRemote) {
         markDirtySync(world, pos, true);
       }
