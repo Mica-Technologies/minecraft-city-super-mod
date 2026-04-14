@@ -78,11 +78,11 @@ public class HvacTemperatureManager {
 
   /**
    * Duration in milliseconds over which the HUD temperature transitions gradually when HVAC
-   * offset changes (e.g. walking toward/away from a vent). 3 minutes is long enough to avoid
-   * jarring snaps but short enough that the player sees meaningful change within ~30 seconds.
-   * Only used by the HUD (player display), not by thermostats.
+   * offset changes (e.g. walking toward/away from a vent). 30 seconds provides a smooth
+   * visual transition without stacking sluggishly on top of the thermostat's own thermal
+   * smoothing (~76s for 90% convergence). Only used by the HUD, not by thermostats.
    */
-  private static final long TRANSITION_DURATION_MS = 180_000L;
+  private static final long TRANSITION_DURATION_MS = 30_000L;
 
   /**
    * Single transition tracker for the most recently queried position. Since the HUD typically
