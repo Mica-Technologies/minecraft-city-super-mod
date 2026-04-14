@@ -557,12 +557,17 @@ public class HvacTemperatureManager {
     double cy = from.getY() + 0.5;
     double cz = from.getZ() + 0.5;
 
+    // Reuse a mutable BlockPos to avoid allocating a new object per raycast step.
+    // Typical raycasts are 3-16 steps with 2-4 units — this saves 24-48 allocations
+    // per temperature query.
+    BlockPos.MutableBlockPos checkPos = new BlockPos.MutableBlockPos();
+
     // Skip the first step (source block) and last step (target block)
     for (int i = 1; i < steps; i++) {
       cx += sx;
       cy += sy;
       cz += sz;
-      BlockPos checkPos = new BlockPos(cx, cy, cz);
+      checkPos.setPos(cx, cy, cz);
       // Skip if same as source or target
       if (checkPos.equals(from) || checkPos.equals(to)) {
         continue;
