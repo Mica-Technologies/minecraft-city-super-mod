@@ -375,10 +375,11 @@ public class HvacTemperatureManager {
       return currentOffset;
     }
 
-    // Three-rate smoothing:
-    // 1. RAMP: HVAC actively pushing temp away from baseline — track quickly
-    // 2. TRANSITION: player left HVAC zone (raw ≈ 0, smoothed significant) — moderate
-    // 3. DECAY: HVAC still present but reduced/residual — hold temperature slowly
+    // Four-rate smoothing:
+    // 1. RAMP: direction crossed heating↔cooling, or HVAC actively pushing — track quickly
+    // 2. TRANSITION: raw ≈ 0, smoothed significant — player left zone, moderate decay
+    // 3. TRANSITION: raw < 50% of smoothed — player moved significantly away, moderate decay
+    // 4. DECAY: small reduction within same space — thermal-mass holdover, very slow
     boolean directionChanged =
         (currentOffset > 0.5f && lastSmoothedOffset < -0.5f)
             || (currentOffset < -0.5f && lastSmoothedOffset > 0.5f);
@@ -392,9 +393,15 @@ public class HvacTemperatureManager {
       // entirely (walked outside, moved to an unconditioned area). Transition to
       // baseline at a moderate rate (~20-30 seconds to converge).
       factor = HUD_TRANSITION_FACTOR;
+    } else if (Math.abs(currentOffset) < Math.abs(lastSmoothedOffset) * 0.5f) {
+      // HVAC influence dropped by more than half — player moved significantly away
+      // from the conditioned space (e.g. stepped outside, moved near a cooler after
+      // being near a heater). Use transition rate so the HUD reflects the new
+      // environment promptly rather than lingering for minutes.
+      factor = HUD_TRANSITION_FACTOR;
     } else if (Math.abs(currentOffset) + 0.5f < Math.abs(lastSmoothedOffset)) {
-      // HVAC still contributing but less than before (residual decay in progress,
-      // or player moved slightly farther from vent). Hold temperature slowly.
+      // Minor reduction within the same space (residual decay, small distance shift).
+      // Hold temperature slowly to simulate thermal mass.
       factor = HUD_DECAY_FACTOR;
     } else {
       // HVAC active and pushing — track quickly
