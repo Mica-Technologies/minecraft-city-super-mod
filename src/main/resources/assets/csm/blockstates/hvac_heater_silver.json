@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:hvac/shared_models/hvac_heater_silver",
+    "model": "csm:hvac/shared_models/hvac_unit",
     "textures": {
       "all": "csm:blocks/hvac/hvac_heater_silver",
       "particle": "csm:blocks/hvac/hvac_heater_silver",
