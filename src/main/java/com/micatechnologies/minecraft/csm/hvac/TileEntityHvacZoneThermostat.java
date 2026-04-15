@@ -103,8 +103,9 @@ public class TileEntityHvacZoneThermostat extends AbstractTickableTileEntity
     float rawTemp = HvacTemperatureManager.getRawTemperatureAt(world, pos);
     float previousTemp = currentTemperature;
 
-    // Thermal smoothing
-    if (!temperatureInitialized) {
+    // Thermal smoothing — snap immediately when the saved temp is wildly off from reality
+    // (e.g. moved to a different biome) to avoid a misleadingly stale display.
+    if (!temperatureInitialized || Math.abs(currentTemperature - rawTemp) > 60.0f) {
       currentTemperature = rawTemp;
       temperatureInitialized = true;
     } else {

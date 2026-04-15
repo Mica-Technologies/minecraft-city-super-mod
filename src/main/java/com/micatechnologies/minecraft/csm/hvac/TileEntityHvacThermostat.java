@@ -134,7 +134,10 @@ public class TileEntityHvacThermostat extends AbstractTickableTileEntity
     // Thermal smoothing: blend toward raw temperature gradually to simulate thermal mass.
     // This prevents oscillation where the thermostat's own heater/cooler instantly changes
     // the reading, causing rapid on/off cycling.
-    if (!temperatureInitialized) {
+    // Exception: if the saved temperature differs from reality by more than 60°F (e.g. the
+    // thermostat was moved to a very different biome, or was saved in a warmer world), snap
+    // immediately so the display is not misleadingly stale.
+    if (!temperatureInitialized || Math.abs(currentTemperature - rawTemp) > 60.0f) {
       currentTemperature = rawTemp;
       temperatureInitialized = true;
     } else {
