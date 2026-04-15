@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:hvac/shared_models/hvac_rtu_cooler_silver",
+    "model": "csm:hvac/shared_models/hvac_rtu",
     "textures": {
       "all": "csm:blocks/hvac/hvac_rtu_cooler_silver",
       "particle": "csm:blocks/hvac/hvac_rtu_cooler_silver",
