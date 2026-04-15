@@ -131,8 +131,12 @@ public class ItemHvacLinker extends AbstractItem {
             }
             return EnumActionResult.SUCCESS;
           }
-          // Already linked to this primary — fall through to select the zone as the
-          // vent-linking source. This is the natural next step after linking a zone.
+          // Already linked to this primary. Repair the back-link if the zone was
+          // replaced and its new TE doesn't know its primary yet.
+          if (!thermostatPos.equals(zone.getLinkedPrimaryPos())) {
+            zone.setLinkedPrimaryPos(thermostatPos);
+          }
+          // Fall through to select the zone as the vent-linking source.
         }
       }
 

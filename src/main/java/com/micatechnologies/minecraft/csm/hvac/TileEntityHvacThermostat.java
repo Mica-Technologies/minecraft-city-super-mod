@@ -336,6 +336,13 @@ public class TileEntityHvacThermostat extends AbstractTickableTileEntity
       TileEntity zoneTe = world.getTileEntity(zonePos);
       if (!(zoneTe instanceof TileEntityHvacZoneThermostat)) {
         zoneIt.remove();
+      } else {
+        // Repair back-link: if the zone was replaced and the new TE doesn't know its
+        // primary (or points to a different one), re-establish the link silently.
+        TileEntityHvacZoneThermostat zone = (TileEntityHvacZoneThermostat) zoneTe;
+        if (!pos.equals(zone.getLinkedPrimaryPos())) {
+          zone.setLinkedPrimaryPos(pos);
+        }
       }
     }
 
@@ -469,7 +476,12 @@ public class TileEntityHvacThermostat extends AbstractTickableTileEntity
       }
       TileEntity te = world.getTileEntity(ventPos);
       if (te instanceof TileEntityHvacVentRelay) {
-        validVents.add((TileEntityHvacVentRelay) te);
+        TileEntityHvacVentRelay vent = (TileEntityHvacVentRelay) te;
+        // Repair back-link if the vent was replaced and no longer knows its thermostat.
+        if (!pos.equals(vent.getLinkedThermostatPos())) {
+          vent.setLinkedThermostat(pos, getMaxVentLinkDistance());
+        }
+        validVents.add(vent);
       } else {
         it.remove();
       }

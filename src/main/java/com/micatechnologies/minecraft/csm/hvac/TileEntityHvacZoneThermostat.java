@@ -99,6 +99,16 @@ public class TileEntityHvacZoneThermostat extends AbstractTickableTileEntity
       return;
     }
 
+    // Self-heal: if we think we have a primary but the primary no longer lists us
+    // (e.g. primary was replaced), clear our stale back-link so the display is accurate.
+    if (linkedPrimaryPos != null && world.isBlockLoaded(linkedPrimaryPos)) {
+      TileEntityHvacThermostat primary = getPrimaryThermostat();
+      if (primary != null && !primary.getLinkedZones().contains(pos)) {
+        linkedPrimaryPos = null;
+        markDirtySync(world, pos, true);
+      }
+    }
+
     // Read the instantaneous temperature at this zone's position
     float rawTemp = HvacTemperatureManager.getRawTemperatureAt(world, pos);
     float previousTemp = currentTemperature;
@@ -356,7 +366,12 @@ public class TileEntityHvacZoneThermostat extends AbstractTickableTileEntity
       }
       TileEntity te = world.getTileEntity(ventPos);
       if (te instanceof TileEntityHvacVentRelay) {
-        validVents.add((TileEntityHvacVentRelay) te);
+        TileEntityHvacVentRelay vent = (TileEntityHvacVentRelay) te;
+        // Repair back-link if the vent was replaced and no longer knows its thermostat.
+        if (!pos.equals(vent.getLinkedThermostatPos())) {
+          vent.setLinkedThermostat(pos, getMaxVentLinkDistance());
+        }
+        validVents.add(vent);
       } else {
         it.remove();
       }
