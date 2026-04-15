@@ -19,7 +19,7 @@ import net.minecraft.world.World;
  *   <li><b>Click thermostat</b> — Select it as the linking source</li>
  *   <li><b>Then click heater/cooler</b> — Links the unit to the thermostat for auto control</li>
  *   <li><b>Then click vent relay</b> — Links the vent to the thermostat for distribution</li>
- *   <li><b>Click zone thermostat</b> — If primary selected, link zone to primary. Otherwise, select zone as source (for vent linking).</li>
+ *   <li><b>Click zone thermostat</b> — If primary selected and zone not yet linked, links zone to primary. If already linked (or no primary selected), selects zone as vent-linking source.</li>
  *   <li><b>Sneak+click</b> thermostat, zone, or vent — Clear all links</li>
  * </ul>
  *
@@ -115,7 +115,7 @@ public class ItemHvacLinker extends AbstractItem {
     if (te instanceof TileEntityHvacZoneThermostat) {
       TileEntityHvacZoneThermostat zone = (TileEntityHvacZoneThermostat) te;
 
-      // If we have a primary thermostat selected, link the zone to it
+      // If we have a primary thermostat selected, try to link the zone to it
       if (thermostatPos != null) {
         TileEntity selectedTe = worldIn.getTileEntity(thermostatPos);
         if (selectedTe instanceof TileEntityHvacThermostat) {
@@ -126,24 +126,22 @@ public class ItemHvacLinker extends AbstractItem {
             if (!worldIn.isRemote) {
               player.sendMessage(new TextComponentString(
                   "\u00A7aLinked zone to primary thermostat ("
-                      + primary.getLinkedZoneCount() + " total zones)"));
+                      + primary.getLinkedZoneCount() + " total zones). "
+                      + "Click zone again to link vents to it."));
             }
-          } else {
-            if (!worldIn.isRemote) {
-              player.sendMessage(new TextComponentString(
-                  "\u00A7cZone already linked to this thermostat"));
-            }
+            return EnumActionResult.SUCCESS;
           }
-          return EnumActionResult.SUCCESS;
+          // Already linked to this primary — fall through to select the zone as the
+          // vent-linking source. This is the natural next step after linking a zone.
         }
       }
 
-      // Otherwise, select the zone thermostat as the linking source (for vent linking)
+      // Select the zone thermostat as the linking source (for vent linking)
       thermostatPos = pos;
       if (!worldIn.isRemote) {
         player.sendMessage(new TextComponentString(
             "\u00A7bSelected zone thermostat (" + zone.getLinkedVentCount()
-                + " vents). Click a vent relay to link."));
+                + " vents). Click vent relays to link them to this zone."));
       }
       return EnumActionResult.SUCCESS;
     }
@@ -260,9 +258,9 @@ public class ItemHvacLinker extends AbstractItem {
     super.addInformation(itemstack, world, list, flag);
     list.add("Link HVAC components to a thermostat");
     list.add("\u00A77Click thermostat \u2192 heater/cooler (auto control)");
-    list.add("\u00A77Click thermostat \u2192 vent relay (distribute temp)");
-    list.add("\u00A77Click thermostat \u2192 zone thermostat (link zone)");
-    list.add("\u00A77Click zone thermostat \u2192 vent relay (zone vents)");
+    list.add("\u00A77Click thermostat \u2192 vent relay (primary zone vents)");
+    list.add("\u00A77Click thermostat \u2192 zone thermostat \u2192 zone thermostat \u2192 vent relay");
+    list.add("\u00A77  (links zone, then selects it for vent linking)");
     list.add("\u00A77Sneak+click to clear links");
   }
 
