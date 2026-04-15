@@ -1,7 +1,0 @@
-{
-  "credit": "Placeholder - replace with Blockbench model",
-  "parent": "block/cube_all",
-  "textures": {
-    "all": "csm:blocks/hvac/hvac_cooler_black"
-  }
-}
