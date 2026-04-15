@@ -47,6 +47,20 @@ public class BlockFBM2 extends AbstractBlockRotatableNSEW {
     }
 
   /**
+   * Returns the collision bounding box with the bottom clamped to Y=0. The ballast mount's model
+   * extends 0.375 blocks below the block face; allowing that overhang to participate in collision
+   * makes it unnecessarily difficult to place fixtures in the block below. The selection box
+   * (getBlockBoundingBox) retains the full extent for accurate clicking.
+   */
+  @Nullable
+  @Override
+  public AxisAlignedBB getCollisionBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
+    AxisAlignedBB bb = getBoundingBox(state, source, pos);
+    return new AxisAlignedBB(bb.minX, Math.max(0.0, bb.minY), bb.minZ,
+        bb.maxX, bb.maxY, bb.maxZ);
+  }
+
+  /**
    * Retrieves whether the block is an opaque cube.
    *
    * @param state The block state.
