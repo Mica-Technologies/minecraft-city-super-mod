@@ -53,10 +53,22 @@ public class HvacTemperatureManager {
   private static final long CACHE_LIFETIME_TICKS = 40L;
 
   /**
-   * Maximum total HVAC offset (positive or negative) that can be applied to a position's
-   * temperature, in degrees Fahrenheit.
+   * Base HVAC offset cap per actively-contributing unit, in degrees Fahrenheit. The effective
+   * cap at a query position scales linearly with the number of active units (heaters, coolers,
+   * or vent relays) that have non-zero weighted contribution at that point:
+   *
+   * <pre>effectiveCap = BASE_HVAC_OFFSET_PER_UNIT * max(1, activeContributors)</pre>
+   *
+   * <p>This means a single-unit setup retains the original 24°F ceiling (backward compatible),
+   * while multi-unit systems stack their power proportionally: three active contributors cap at
+   * 72°F, five at 120°F, etc. The distance and wall-attenuation factors still apply per unit,
+   * so stacking only helps when the additional equipment actually reaches the query point.</p>
+   *
+   * <p>This is necessary for extreme-climate biomes (snowy biomes at high altitude can have
+   * baselines below -70°F) where a single heater/vent system cannot realistically bring the
+   * indoor temperature to a comfortable setpoint regardless of ramp level.</p>
    */
-  private static final float MAX_HVAC_OFFSET = 24.0f;
+  private static final float BASE_HVAC_OFFSET_PER_UNIT = 24.0f;
 
   /**
    * Distance in blocks within which a direct HVAC unit (heater/cooler) has full effect.
@@ -193,7 +205,7 @@ public class HvacTemperatureManager {
 
     // Biome baseline is cached per-chunk (doesn't vary within a chunk)
     float baseline = getCachedBaseline(world, pos);
-    // HVAC offset is the instantaneous contribution (capped at ±MAX_HVAC_OFFSET)
+    // HVAC offset is the instantaneous contribution (capped per active contributor)
     float currentOffset = calculateHvacOffset(world, pos);
     // EMA smoothing for comfortable display — responsive enough to track the
     // instantaneous offset, keeping the HUD in agreement with the thermostat
@@ -429,6 +441,8 @@ public class HvacTemperatureManager {
 
     float heatingOffset = 0.0f;
     float coolingOffset = 0.0f;
+    int heatingContributors = 0;
+    int coolingContributors = 0;
     // Use the larger of the two max distances for the initial distance-squared cull
     double maxDistForCull = Math.max(UNIT_MAX_EFFECT_DISTANCE, VENT_MAX_EFFECT_DISTANCE);
     double maxCullDistSq = maxDistForCull * maxDistForCull;
@@ -477,17 +491,26 @@ public class HvacTemperatureManager {
 
           if (contribution > 0) {
             heatingOffset += weightedOffset;
+            if (weightedOffset > 0.0f) {
+              heatingContributors++;
+            }
           } else if (contribution < 0) {
             coolingOffset += weightedOffset;
+            if (weightedOffset > 0.0f) {
+              coolingContributors++;
+            }
           }
 
         }
       }
     }
 
-    // Clamp each direction to the max offset
-    heatingOffset = Math.min(heatingOffset, MAX_HVAC_OFFSET);
-    coolingOffset = Math.min(coolingOffset, MAX_HVAC_OFFSET);
+    // Clamp each direction to the dynamic per-unit cap. More active contributors = higher
+    // ceiling, allowing multi-unit systems to adequately heat/cool extreme-climate spaces.
+    float effectiveHeatingCap = BASE_HVAC_OFFSET_PER_UNIT * Math.max(1, heatingContributors);
+    float effectiveCoolingCap = BASE_HVAC_OFFSET_PER_UNIT * Math.max(1, coolingContributors);
+    heatingOffset = Math.min(heatingOffset, effectiveHeatingCap);
+    coolingOffset = Math.min(coolingOffset, effectiveCoolingCap);
 
     // Outdoor attenuation: conditioned air dissipates quickly without a roof
     float totalOffset = heatingOffset - coolingOffset;
@@ -497,8 +520,8 @@ public class HvacTemperatureManager {
     }
 
     if (debugThisPass) {
-      LOGGER.info(String.format("[HVAC-DEBUG]   totals: heating=%.1f cooling=%.1f outdoor=%s finalOffset=%.1f",
-          heatingOffset, coolingOffset, isOutdoors, totalOffset));
+      LOGGER.info(String.format("[HVAC-DEBUG]   totals: heating=%.1f (cap=%.0f, %d units) cooling=%.1f (cap=%.0f, %d units) outdoor=%s finalOffset=%.1f",
+          heatingOffset, effectiveHeatingCap, heatingContributors, coolingOffset, effectiveCoolingCap, coolingContributors, isOutdoors, totalOffset));
     }
 
     return totalOffset;

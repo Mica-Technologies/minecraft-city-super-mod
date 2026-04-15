@@ -158,10 +158,14 @@ active `IHvacUnit` tile entities. Each unit's contribution is weighted by:
 3. **Outdoor attenuation** -- If the query position can see the sky (`World.canSeeSky()`),
    the total offset is multiplied by 0.3 (30% effectiveness outdoors).
 
-4. **MAX_HVAC_OFFSET cap** -- Heating and cooling offsets are each clamped to +/-24 deg F
-   before combining.
+4. **Dynamic offset cap** -- Heating and cooling offsets are each clamped to
+   `BASE_HVAC_OFFSET_PER_UNIT * activeContributors` before combining, where
+   `BASE_HVAC_OFFSET_PER_UNIT = 24 deg F` and `activeContributors` is the number of HVAC
+   units (heaters, vents, etc.) with non-zero weighted contribution at the query point.
+   A single-unit system still caps at 24 deg F (backward compatible). Multi-unit systems
+   scale proportionally: 3 contributors cap at 72 deg F, 5 at 120 deg F, etc.
 
-Final offset = `min(heatingSum, 24) - min(coolingSum, 24)`, then multiplied by 0.3 if outdoors.
+Final offset = `min(heatingSum, 24*heatingUnits) - min(coolingSum, 24*coolingUnits)`, then multiplied by 0.3 if outdoors.
 
 ## HUD Display
 
@@ -543,11 +547,13 @@ AbstractItem
 
 ## Known Limitations / Future Work
 
-- **Extreme biome thermostat accumulation:** In very hot biomes (desert, mesa), the baseline
-  temperature is so high (131-176 deg F) that the cooler's maximum offset (-24 deg F cap) may
-  not bring the temperature into the comfort range even at full extended ramp. The thermostat
-  will accumulate ramp ticks indefinitely in these scenarios since it never reaches the setpoint.
-  A larger building with many vents and the density bonus can partially mitigate this.
+- **Extreme biome scaling:** In very hot biomes (desert, mesa, 131-176 deg F baseline) or very
+  cold high-altitude locations (snowy biomes at Y=240 can reach -75 deg F), a single-unit HVAC
+  system cannot bring the space to a comfortable setpoint. Multiple units are required. The
+  dynamic per-unit cap (24 deg F per active contributor) means 5 well-placed vents/heaters can
+  provide up to 120 deg F of conditioning, which is sufficient for most extreme climates.
+  Design guideline: for every 24 deg F of gap between biome baseline and target setpoint, add
+  one additional contributing unit (heater or vent) in range of the thermostat and living area.
 
 - **Celsius display:** The HUD and thermostat display are Fahrenheit-only. A toggle for Celsius
   display has not been implemented. The internal temperature engine operates in Fahrenheit.
