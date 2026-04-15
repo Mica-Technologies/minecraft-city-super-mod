@@ -93,6 +93,8 @@ public class FireAlarmPanelConfigGui extends GuiScreen {
         return panel.getAudibleSilence() ? "Audible Silence: ON" : "Audible Silence: OFF";
       case RESET_PANEL:
         return panel.getAlarmState() ? "Reset Panel (alarm active)" : "Reset Panel";
+      case TOGGLE_GLITCHY:
+        return panel.getGlitchy() ? "Glitchy Mode: ON" : "Glitchy Mode: OFF";
       default:
         return "N/A";
     }

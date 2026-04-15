@@ -19,6 +19,7 @@ public class FireAlarmSoundPacket implements IMessage {
   private String soundResource;
   private float hearingRange;
   private List<BlockPos> speakerPositions;
+  private boolean glitchy;
 
   public FireAlarmSoundPacket() {
     // Required by Forge
@@ -45,16 +46,27 @@ public class FireAlarmSoundPacket implements IMessage {
   }
 
   /**
-   * Creates a start packet with the given channel, sound, range, and speaker positions.
+   * Creates a start packet with the given channel, sound, range, and speaker positions. Glitchy
+   * mode defaults to false.
    */
   public static FireAlarmSoundPacket start(String channel, String soundResource,
       float hearingRange, List<BlockPos> speakerPositions) {
+    return start(channel, soundResource, hearingRange, speakerPositions, false);
+  }
+
+  /**
+   * Creates a start packet with the given channel, sound, range, speaker positions, and glitchy
+   * flag.
+   */
+  public static FireAlarmSoundPacket start(String channel, String soundResource,
+      float hearingRange, List<BlockPos> speakerPositions, boolean glitchy) {
     FireAlarmSoundPacket pkt = new FireAlarmSoundPacket();
     pkt.start = true;
     pkt.channel = channel;
     pkt.soundResource = soundResource;
     pkt.hearingRange = hearingRange;
     pkt.speakerPositions = speakerPositions;
+    pkt.glitchy = glitchy;
     return pkt;
   }
 
@@ -75,6 +87,7 @@ public class FireAlarmSoundPacket implements IMessage {
     for (int i = 0; i < count; i++) {
       speakerPositions.add(new BlockPos(buf.readInt(), buf.readInt(), buf.readInt()));
     }
+    glitchy = buf.readBoolean();
   }
 
   @Override
@@ -93,6 +106,7 @@ public class FireAlarmSoundPacket implements IMessage {
       buf.writeInt(pos.getY());
       buf.writeInt(pos.getZ());
     }
+    buf.writeBoolean(glitchy);
   }
 
   public boolean isStart() {
@@ -113,5 +127,9 @@ public class FireAlarmSoundPacket implements IMessage {
 
   public List<BlockPos> getSpeakerPositions() {
     return speakerPositions;
+  }
+
+  public boolean isGlitchy() {
+    return glitchy;
   }
 }
