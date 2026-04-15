@@ -42,6 +42,7 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
   private static final String connectedAppliancesKey = "connectedAppliances";
   private static final String alarmAnnouncedKey = "alarmAnnounced";
   private static final String audibleSilenceKey = "audibleSilence";
+  private static final String glitchyKey = "glitchy";
   private static final String[] SOUND_RESOURCE_NAMES = {"csm:svenew",
       "csm:sveold",
       "csm:simplex_voice_evac_old_alt",
@@ -82,6 +83,7 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
   private boolean alarmStorm;
   private boolean alarmAnnounced;
   private boolean audibleSilence;
+  private boolean glitchy;
   private boolean alarmWasActive = false;
   private int pruneTickCounter = 0;
 
@@ -89,6 +91,7 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
   private final Map<String, HashSet<UUID>> channelActivePlayers = new HashMap<>();
   private final Set<String> lastActiveChannels = new HashSet<>();
   private String lastVoiceEvacSoundSent = null;
+  private boolean lastGlitchySent = false;
 
   @Override
   public void readNBT(NBTTagCompound compound) {
@@ -97,6 +100,7 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
     alarmStorm = compound.hasKey(alarmStormKey) && compound.getBoolean(alarmStormKey);
     alarmAnnounced = compound.hasKey(alarmAnnouncedKey) && compound.getBoolean(alarmAnnouncedKey);
     audibleSilence = compound.hasKey(audibleSilenceKey) && compound.getBoolean(audibleSilenceKey);
+    glitchy = compound.hasKey(glitchyKey) && compound.getBoolean(glitchyKey);
 
     connectedAppliances.clear();
     if (compound.hasKey(connectedAppliancesKey)) {
@@ -130,6 +134,7 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
     compound.setBoolean(alarmStormKey, alarmStorm);
     compound.setBoolean(alarmAnnouncedKey, alarmAnnounced);
     compound.setBoolean(audibleSilenceKey, audibleSilence);
+    compound.setBoolean(glitchyKey, glitchy);
 
     StringBuilder connectedAppliancesString = new StringBuilder();
     for (BlockPos bp : connectedAppliances) {
@@ -237,6 +242,17 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
     if (world != null && !world.isRemote && audibleSilenceState) {
       MinecraftForge.EVENT_BUS.post(new FireAlarmEvent.AudibleSilenced(world, getPos()));
     }
+  }
+
+  public boolean getGlitchy() {
+    return glitchy;
+  }
+
+  public void toggleGlitchy() {
+    glitchy = !glitchy;
+    // Force the voice evac channel to restart so clients pick up the new glitchy setting
+    lastVoiceEvacSoundSent = null;
+    markDirty();
   }
 
   public String getStatusString() {
@@ -415,16 +431,18 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
 
           // Voice evac: manage client-side MovingSound via packets
           if (!voiceEvacPositions.isEmpty()) {
-            // If the sound changed (user switched voice evac), restart on all active clients
+            // If the sound or glitchy setting changed, restart on all active clients
             boolean soundChanged = lastVoiceEvacSoundSent != null &&
                 !lastVoiceEvacSoundSent.equals(voiceEvacSoundName);
-            if (soundChanged) {
+            boolean glitchyChanged = lastGlitchySent != glitchy;
+            if (soundChanged || glitchyChanged) {
               stopChannel(players, CHANNEL_VOICE_EVAC);
             }
 
             manageSoundForPlayers(players, voiceEvacPositions, CHANNEL_VOICE_EVAC,
-                voiceEvacSoundName, voiceEvacHearingRange);
+                voiceEvacSoundName, voiceEvacHearingRange, glitchy);
             lastVoiceEvacSoundSent = voiceEvacSoundName;
+            lastGlitchySent = glitchy;
             currentActiveChannels.add(CHANNEL_VOICE_EVAC);
           }
 
@@ -515,6 +533,19 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
    */
   private void manageSoundForPlayers(List<EntityPlayerMP> players,
       List<BlockPos> positions, String channel, String soundName, float hearingRange) {
+    manageSoundForPlayers(players, positions, channel, soundName, hearingRange, false);
+  }
+
+  /**
+   * Manages the client-side MovingSound for a specific channel for all players. Sends start
+   * packets to players who are in range but don't have the sound playing yet. Sends stop
+   * packets to players who have moved out of range of all speakers/horns.
+   *
+   * @param glitchy if true, the client-side sound will play with occasional stutters/dropouts
+   */
+  private void manageSoundForPlayers(List<EntityPlayerMP> players,
+      List<BlockPos> positions, String channel, String soundName, float hearingRange,
+      boolean glitchy) {
     double hearingRangeSq = hearingRange * (double) hearingRange;
     HashSet<UUID> activePlayers =
         channelActivePlayers.computeIfAbsent(channel, k -> new HashSet<>());
@@ -526,7 +557,8 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
       if (inRange && !activePlayers.contains(playerId)) {
         // Player entered range - start their client-side MovingSound
         CsmNetwork.sendTo(
-            FireAlarmSoundPacket.start(channel, soundName, hearingRange, positions), player);
+            FireAlarmSoundPacket.start(channel, soundName, hearingRange, positions, glitchy),
+            player);
         activePlayers.add(playerId);
       } else if (!inRange && activePlayers.contains(playerId)) {
         // Player left range - stop their client-side MovingSound for this channel

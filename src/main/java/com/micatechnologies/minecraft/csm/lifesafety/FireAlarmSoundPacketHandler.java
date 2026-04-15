@@ -81,7 +81,8 @@ public class FireAlarmSoundPacketHandler implements
     FireAlarmVoiceEvacSound sound = new FireAlarmVoiceEvacSound(
         soundLocation,
         message.getSpeakerPositions(),
-        message.getHearingRange());
+        message.getHearingRange(),
+        message.isGlitchy());
     activeSounds.put(channel, sound);
     Minecraft.getMinecraft().getSoundHandler().playSound(sound);
   }

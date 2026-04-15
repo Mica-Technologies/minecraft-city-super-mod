@@ -44,6 +44,9 @@ public class FireAlarmPanelConfigPacketHandler implements
         case RESET_PANEL:
           panel.setAlarmState(false);
           break;
+        case TOGGLE_GLITCHY:
+          panel.toggleGlitchy();
+          break;
       }
       panel.syncServerToClient(world);
     });
