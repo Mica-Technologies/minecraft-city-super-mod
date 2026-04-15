@@ -37,7 +37,7 @@ public class BlockHvacRtuHeaterSilver extends AbstractBlockRotatableNSEWUD
 
   @Override
   public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-    return new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 2.0, 1.0);
+    return new AxisAlignedBB(-0.5625, 0.0, -1.0, 1.5625, 2.0, 2.0);
   }
 
   @Override
