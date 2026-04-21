@@ -150,6 +150,20 @@ public class CsmTabNone extends CsmTab {
     initTabBlock(TrafficSignalBlocks.HORIZONTAL_ANGLE_U_TURN_SIGNAL);
     initTabBlock(TrafficSignalBlocks.HORIZONTAL_ANGLE_UP_LEFT_SIGNAL);
 
+    // Deprecated static horizontal signal blocks — horizontal is now a per-TE toggle on any
+    // vertical signal (see SignalHeadConfigAction.TOGGLE_HORIZONTAL), so the dedicated
+    // horizontal variants are redundant. Each retires to its vertical counterpart with the
+    // horizontalFlip flag forced on so the visual is preserved.
+    initTabBlock(TrafficSignalBlocks.HORIZONTAL_AHEAD_SIGNAL);
+    initTabBlock(TrafficSignalBlocks.HORIZONTAL_BIKE_SIGNAL);
+    initTabBlock(TrafficSignalBlocks.HORIZONTAL_LEFT_SIGNAL);
+    initTabBlock(TrafficSignalBlocks.HORIZONTAL_RAIL_SIGNAL);
+    initTabBlock(TrafficSignalBlocks.HORIZONTAL_RIGHT2_SIGNAL);
+    initTabBlock(TrafficSignalBlocks.HORIZONTAL_RIGHT_SIGNAL);
+    initTabBlock(TrafficSignalBlocks.HORIZONTAL_SOLID_SIGNAL);
+    initTabBlock(TrafficSignalBlocks.HORIZONTAL_U_TURN_SIGNAL);
+    initTabBlock(TrafficSignalBlocks.HORIZONTAL_UP_LEFT_SIGNAL);
+
     // Deprecated Barlo strobe signal (now a visor type option on any signal)
     initTabBlock(TrafficSignalBlocks.VERTICAL_SOLID_SIGNAL_BARLO);
 

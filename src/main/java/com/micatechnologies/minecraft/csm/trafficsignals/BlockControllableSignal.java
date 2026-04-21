@@ -348,11 +348,13 @@ public class BlockControllableSignal extends AbstractBlockControllableSignalHead
 
     private final String replacementBlockId;
     @Nullable private final TrafficSignalBodyTilt replacementBodyTilt;
+    private final boolean replaceAsHorizontal;
 
     Retiring(Builder builder) {
       super(builder);
       this.replacementBlockId = builder.replacementBlockId;
       this.replacementBodyTilt = builder.replacementBodyTilt;
+      this.replaceAsHorizontal = builder.replaceAsHorizontal;
     }
 
     @Override
@@ -363,11 +365,19 @@ public class BlockControllableSignal extends AbstractBlockControllableSignalHead
     @Override
     public void configureReplacement(World world, BlockPos pos, NBTTagCompound oldTileEntityNBT) {
       ICsmRetiringBlock.super.configureReplacement(world, pos, oldTileEntityNBT);
+      TileEntity te = world.getTileEntity(pos);
+      if (!(te instanceof TileEntityTrafficSignalHead)) {
+        return;
+      }
+      TileEntityTrafficSignalHead signalTe = (TileEntityTrafficSignalHead) te;
       if (replacementBodyTilt != null) {
-        TileEntity te = world.getTileEntity(pos);
-        if (te instanceof TileEntityTrafficSignalHead) {
-          ((TileEntityTrafficSignalHead) te).setBodyTilt(replacementBodyTilt);
-        }
+        signalTe.setBodyTilt(replacementBodyTilt);
+      }
+      // For horizontal→vertical retirements, force the TE's horizontal-flip flag on so the
+      // replacement vertical block renders in horizontal layout — preserves the visual the
+      // player placed.
+      if (replaceAsHorizontal && !signalTe.isHorizontalFlip()) {
+        signalTe.toggleHorizontalFlip();
       }
     }
   }
@@ -392,6 +402,7 @@ public class BlockControllableSignal extends AbstractBlockControllableSignalHead
     boolean allowsHorizontalFlip = true;
     String replacementBlockId = null;
     TrafficSignalBodyTilt replacementBodyTilt = null;
+    boolean replaceAsHorizontal = false;
 
     public Builder(String registryName, SIGNAL_SIDE signalSide, boolean flash,
         Supplier<TrafficSignalSectionInfo[]> sectionInfoSupplier) {
@@ -466,6 +477,18 @@ public class BlockControllableSignal extends AbstractBlockControllableSignalHead
     public Builder retiring(String replacementBlockId, TrafficSignalBodyTilt bodyTilt) {
       this.replacementBlockId = replacementBlockId;
       this.replacementBodyTilt = bodyTilt;
+      return this;
+    }
+
+    /**
+     * Retires this block to a vertical equivalent and flips the replacement's TE into
+     * horizontal mode so the visual is preserved. Used to collapse the former
+     * horizontal-specific signal block family into the single vertical-with-flip variant
+     * now that horizontal is a per-TE toggle rather than a per-block-class property.
+     */
+    public Builder retiringAsHorizontal(String replacementBlockId) {
+      this.replacementBlockId = replacementBlockId;
+      this.replaceAsHorizontal = true;
       return this;
     }
 
