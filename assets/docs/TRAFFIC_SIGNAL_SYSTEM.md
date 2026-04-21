@@ -234,6 +234,78 @@ AbstractBlock
                 └── Crosswalk mount variants
 ```
 
+## Signal Head In-Block Configuration
+
+Configurable signal heads (`AbstractBlockControllableSignalHead` subclasses —
+`BlockControllableSignal`, `BlockControllableHawkSignal`, etc.) carry their visual state
+on a `TileEntityTrafficSignalHead` rather than through separate block variants. The
+`SignalHeadConfigGui` lets the player cycle each property in-world, and changes travel
+to the server via `SignalHeadConfigPacket` / `SignalHeadConfigPacketHandler` which looks
+up the TE and calls the corresponding `getNext*()` / `toggle*()` method.
+
+Configurable properties:
+
+| Property | Enum | Notes |
+|---|---|---|
+| Body paint color | `TrafficSignalBodyColor` | All three body pieces share the color enum |
+| Door paint color | `TrafficSignalBodyColor` | |
+| Visor paint color | `TrafficSignalBodyColor` | Tinted at render time so true black stays distinct from glossy black |
+| Visor type | `TrafficSignalVisorType` | Circle / Tunnel / Cutaway / Louvered (H/V/Both) / Barlo / None |
+| Body tilt | `TrafficSignalBodyTilt` | `LEFT_ANGLE` / `LEFT_TILT` / `NONE` / `RIGHT_TILT` / `RIGHT_ANGLE` (±45° / ±22.5°) |
+| Bulb style | `TrafficSignalBulbStyle` | `getEnforcedBulbStyle()` can lock a style for bi-modal signals |
+| Bulb type | `TrafficSignalBulbType` | Ball / Arrow / Other (affects texture lookup + rotation) |
+| Alternate flash | boolean | Whether this head alternates in flash mode |
+| Aging | boolean | Dims / discolors textures |
+| Horizontal orientation | boolean | `allowsHorizontalFlip()` gates whether the toggle is shown |
+| Mount type | `SignalHeadMountType` | `NONE` / `REAR` / `LEFT` / `RIGHT` — see below |
+| Mount color | `TrafficSignalBodyColor` | Reused body-color enum |
+
+Single-section vs. multi-section layout, section sizes (4"/8"/12"), and per-section X/Y
+offsets come from the block class (`getSectionSizes` / `getSectionXPositions` /
+`getSectionYPositions`), not the TE — layout is block-type static, finish/tilt is
+per-instance configurable.
+
+## Signal Head Mount Hardware
+
+Each signal head can render a Pelco-style bracket pair directly on the housing, so the
+head can be placed beside a pole without a separate mount block. Rendered by
+`TileEntityTrafficSignalHeadRenderer.renderMount` each frame (outside the cached display
+list so adjacency changes take effect immediately).
+
+Mount types:
+- `NONE` — no brackets (default).
+- `REAR` — arms extend toward the block behind the signal's base facing direction.
+- `LEFT` / `RIGHT` — arms extend toward the side neighbour. In horizontal mode, `LEFT`
+  maps to the bottom neighbour and `RIGHT` to the top (so the user-facing label stays
+  consistent regardless of body orientation).
+
+Geometry is a three-part shape anchored to the housing back (`BODY_Z_CENTER = 14`):
+stub → 90° elbow → pole-direction arm. The arm's length and rotation are solved per
+bracket so the tip lands at the centre of the neighbouring block — when the body is
+tilted, the bracket's target is inverse-rotated so the tip stays on the world-fixed
+pole. For horizontal-plane mounts (REAR / LEFT / RIGHT), the tube length is further
+shortened by `halfSize * tan(worldTubeAngle)` so the tilted far-face **corners** — not
+the face centre — land at the pole centre; otherwise the corners protrude past on
+LEFT_ANGLE / RIGHT_ANGLE tilts. UP / DOWN mounts (horizontal signals) keep the full
+length since their natural diagonal is hidden inside the mounting surface.
+
+### Mount-Edge Suppression for Add-on Signals
+
+When two signal heads share a mount edge, only one bracket is drawn:
+- **Single-section add-ons** sit directly adjacent to the main signal. The main hides
+  its `LOW` bracket, the add-on hides its `HIGH` bracket (or the corresponding
+  left/right pair in horizontal mode).
+- **Double-arrow add-ons** sit with a one-block air gap between them and the main.
+  `hasPairedSignalAlong` scans one step out and, if the immediate neighbour is air,
+  one more step past the gap, so the same suppression fires.
+
+### Pole Auto-Connect Opt-Out
+
+`AbstractBlockTrafficPole.IGNORE_BLOCK` includes `AbstractBlockControllableSignalHead`,
+so poles never sprout an auto-connect stub toward a configurable signal head. This
+prevents visual competition between the pole's stub and the head's own bracket (or the
+stand-alone `BlockTrafficLightMountKit` Pelco Astro-brac mount if one is used instead).
+
 ## Traffic Accessories
 
 Decorative and structural blocks in `trafficaccessories/` package:

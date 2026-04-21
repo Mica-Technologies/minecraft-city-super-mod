@@ -132,6 +132,24 @@ public interface ICsmRetiringBlock {
 
 On random ticks, the old block is automatically replaced with the new one, preserving facing.
 
+### Snow Accumulation Opt-out (ICsmNoSnowAccumulation)
+
+Vanilla's snow-layer placement gates on the block below reporting a solid UP face via
+`isSideSolid`. Thin-geometry blocks (signs, signal heads, brackets) that still return
+`isFullCube=true` for collision/lighting reasons end up with a hovering 1×1 snow layer
+above them in biomes that snow — visually wrong.
+
+`ICsmNoSnowAccumulation` is an empty marker interface. `AbstractBlock.isSideSolid`
+returns `false` for `EnumFacing.UP` whenever the block implements it, so vanilla's
+`SNOW_LAYER.canPlaceBlockAt` check fails and no snow forms. Other faces keep their
+default behaviour, so torches / redstone on the sides continue to work.
+
+Applied to the traffic signs, all configurable signals (signal heads, crosswalk signals,
+sensors, ramp meters, tattle-tale beacons, train controller), and the non-pole traffic
+accessories (backplates, mount kits, fatigue mitigators, street name signs, horizontal
+pole mounts, mini solar panel). Poles themselves are intentionally **not** marked — snow
+on a pole cap reads as realistic.
+
 ## AbstractBlockRotatableNSEW (4-Direction)
 
 **Extends:** `AbstractBlock`
