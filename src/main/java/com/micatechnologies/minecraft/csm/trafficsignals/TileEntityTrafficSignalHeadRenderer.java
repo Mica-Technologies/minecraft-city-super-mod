@@ -669,16 +669,14 @@ public class TileEntityTrafficSignalHeadRenderer extends
   // visors toward the block's back face; z=14 is about where a mount bracket would
   // realistically bolt onto the housing's rear shell.
   private static final float BODY_Z_CENTER = 14.0f;
-  // Neighbouring block centre (beyond the current block's face) on the tube axis. The
-  // arm's length per bracket is chosen so the tube's far end lands at this coordinate in
-  // the direction the arm extends — matching the crosswalk signal mount convention of
-  // reaching into the pole's block.
+  // Neighbouring block centre (beyond the current block's face) on the tube axis. Used to
+  // aim each bracket's arm — the arm's rotation and length are both computed per bracket
+  // so its tip lands at the centre of the pole's block, matching the crosswalk signal
+  // mount convention of reaching into the pole's block.
   private static final float NEIGHBOUR_CENTRE_POS = 24.0f; // block face at 16 + half block (8)
   private static final float NEIGHBOUR_CENTRE_NEG = -8.0f; // mirror: 0 - 8
-  // Slight tilt applied to the pole-side arm so it reads as angling toward the pole rather
-  // than sticking straight out at a perfect 90°. Positive angle tilts the arm toward the
-  // signal body's midpoint (top arm droops, bottom arm rises, left-mount arm tilts inward).
-  private static final float ARM_TILT_DEGREES = 10.0f;
+  // Block centre on any axis.
+  private static final float BLOCK_CENTRE = 8.0f;
 
   private void renderMount(TileEntityTrafficSignalHead te, int[] sectionSizes,
       float[] sectionYPositions, float[] sectionXPositions, boolean horizontal,
@@ -786,7 +784,7 @@ public class TileEntityTrafficSignalHeadRenderer extends
       // unrotated boxes; for the rotation pivot we need the final world-space elbow Z,
       // which already includes zPushBack.
       GL11.glTranslatef(spec.elbowX, spec.elbowY, spec.elbowZ + zPushBack);
-      GL11.glRotatef(ARM_TILT_DEGREES, spec.tiltAxisX, spec.tiltAxisY, spec.tiltAxisZ);
+      GL11.glRotatef(spec.tiltAngleDegrees, spec.tiltAxisX, spec.tiltAxisY, spec.tiltAxisZ);
       GL11.glTranslatef(-spec.elbowX, -spec.elbowY, -(spec.elbowZ + zPushBack));
 
       List<RenderHelper.Box> armBoxes = new ArrayList<>();
@@ -831,10 +829,12 @@ public class TileEntityTrafficSignalHeadRenderer extends
     // Elbow centre in model space — pivot for the arm's tilt rotation.
     final float elbowX, elbowY, elbowZ;
 
-    // Tilt axis vector, normalised (unit vector along ±X, ±Y, or ±Z). Passed to glRotatef
-    // as the axis arguments; the angle is always +ARM_TILT_DEGREES because the sign is
-    // baked into the axis via the cross product.
+    // Tilt axis vector, normalised. Passed to glRotatef as the axis arguments. Computed
+    // per bracket so the arm rotates from pure pole-axis direction onto the direction from
+    // elbow → neighbour block centre (i.e., aims the arm at the pole's block).
     final float tiltAxisX, tiltAxisY, tiltAxisZ;
+    // Angle in degrees for the tilt rotation.
+    final float tiltAngleDegrees;
 
     BracketSpec(float bodyCenterX, float bodyCenterY, boolean horizontalSignal,
         boolean isHighEnd, PoleLeg poleLeg) {
@@ -873,25 +873,54 @@ public class TileEntityTrafficSignalHeadRenderer extends
       this.elbowY = elbowCoords[1];
       this.elbowZ = elbowCoords[2];
 
-      // Arm length: reach from the elbow on the tube axis to the centre of the adjacent
-      // block in the direction the arm extends. Keeps the bracket's far end in the right
-      // spot for variable elbow positions (REAR's elbow sits closer to the neighbour than
-      // a SIDE mount's elbow does, so the REAR arm needs less length).
-      float elbowOnTubeAxis = elbowCoords[tubeAxisIdx];
-      float neighbourCentre = tubeSign > 0 ? NEIGHBOUR_CENTRE_POS : NEIGHBOUR_CENTRE_NEG;
-      this.tubeLength = Math.abs(neighbourCentre - elbowOnTubeAxis);
+      // Target: centre of the neighbouring block in the pole-leg direction. Arm aims here
+      // so both its length and its rotation are derived together.
+      float targetX = BLOCK_CENTRE + (tubeAxisIdx == 0 ? tubeSign * 16f : 0f);
+      float targetY = BLOCK_CENTRE + (tubeAxisIdx == 1 ? tubeSign * 16f : 0f);
+      float targetZ = BLOCK_CENTRE + (tubeAxisIdx == 2 ? tubeSign * 16f : 0f);
 
-      // Tilt axis = stubDir × poleDir. Rotating the arm by +ARM_TILT_DEGREES around this
-      // axis swings pole direction toward -stubDir (i.e. toward the signal centre).
-      float stubDirX = stubAxisIdx == 0 ? stubSign : 0f;
-      float stubDirY = stubAxisIdx == 1 ? stubSign : 0f;
-      float stubDirZ = stubAxisIdx == 2 ? stubSign : 0f;
-      float poleDirX = tubeAxisIdx == 0 ? tubeSign : 0f;
-      float poleDirY = tubeAxisIdx == 1 ? tubeSign : 0f;
-      float poleDirZ = tubeAxisIdx == 2 ? tubeSign : 0f;
-      this.tiltAxisX = stubDirY * poleDirZ - stubDirZ * poleDirY;
-      this.tiltAxisY = stubDirZ * poleDirX - stubDirX * poleDirZ;
-      this.tiltAxisZ = stubDirX * poleDirY - stubDirY * poleDirX;
+      float dx = targetX - elbowX;
+      float dy = targetY - elbowY;
+      float dz = targetZ - elbowZ;
+      float distance = (float) Math.sqrt(dx * dx + dy * dy + dz * dz);
+      // Arm length: straight-line distance from elbow to neighbour centre. The arm box is
+      // authored axis-aligned along the pole axis, then rotated to point at the target;
+      // using the 3D distance keeps the tip exactly at the target after rotation.
+      this.tubeLength = distance;
+
+      // Pre-tilt pole direction (unit vector along the pole axis).
+      float preDirX = tubeAxisIdx == 0 ? tubeSign : 0f;
+      float preDirY = tubeAxisIdx == 1 ? tubeSign : 0f;
+      float preDirZ = tubeAxisIdx == 2 ? tubeSign : 0f;
+
+      // Desired arm direction: unit vector from elbow toward neighbour-block centre.
+      float desiredX = distance > 0 ? dx / distance : preDirX;
+      float desiredY = distance > 0 ? dy / distance : preDirY;
+      float desiredZ = distance > 0 ? dz / distance : preDirZ;
+
+      // Rotation from pre-tilt onto desired: axis = pre × desired, angle = arccos(pre·desired).
+      float axisX = preDirY * desiredZ - preDirZ * desiredY;
+      float axisY = preDirZ * desiredX - preDirX * desiredZ;
+      float axisZ = preDirX * desiredY - preDirY * desiredX;
+      float axisMag = (float) Math.sqrt(axisX * axisX + axisY * axisY + axisZ * axisZ);
+      float dot = preDirX * desiredX + preDirY * desiredY + preDirZ * desiredZ;
+      // Clamp for numerical safety before acos.
+      if (dot > 1f) dot = 1f;
+      if (dot < -1f) dot = -1f;
+      float angleRad = (float) Math.acos(dot);
+      if (axisMag > 1e-4f) {
+        this.tiltAxisX = axisX / axisMag;
+        this.tiltAxisY = axisY / axisMag;
+        this.tiltAxisZ = axisZ / axisMag;
+        this.tiltAngleDegrees = (float) Math.toDegrees(angleRad);
+      } else {
+        // Pre and desired are parallel (or anti-parallel): no rotation needed (or would
+        // be undefined). Default axis is harmless because angle is 0.
+        this.tiltAxisX = 1f;
+        this.tiltAxisY = 0f;
+        this.tiltAxisZ = 0f;
+        this.tiltAngleDegrees = 0f;
+      }
     }
 
     /** Appends the (non-tilted) stub and elbow boxes. */
