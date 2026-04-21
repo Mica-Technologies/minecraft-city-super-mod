@@ -687,6 +687,25 @@ public class TileEntityTrafficSignalHeadRenderer extends
   // Block centre on any axis.
   private static final float BLOCK_CENTRE = 8.0f;
 
+  /**
+   * Returns true when a signal head sits along {@code dir} from {@code pos} — either
+   * directly adjacent or two blocks out through a single air-block gap. The air-gap path
+   * covers double-arrow add-on signals, which are placed one block away from their main
+   * signal rather than touching it, so the shared mount edge is actually two blocks apart.
+   */
+  private static boolean hasPairedSignalAlong(net.minecraft.world.World world, BlockPos pos,
+      EnumFacing dir) {
+    BlockPos adjacent = pos.offset(dir);
+    if (world.getTileEntity(adjacent) instanceof TileEntityTrafficSignalHead) {
+      return true;
+    }
+    if (world.isAirBlock(adjacent)) {
+      BlockPos farther = pos.offset(dir, 2);
+      return world.getTileEntity(farther) instanceof TileEntityTrafficSignalHead;
+    }
+    return false;
+  }
+
   private void renderMount(TileEntityTrafficSignalHead te, int[] sectionSizes,
       float[] sectionYPositions, float[] sectionXPositions, boolean horizontal,
       float zPushBack, float mountTiltAngle) {
@@ -709,7 +728,8 @@ public class TileEntityTrafficSignalHeadRenderer extends
     // Adjacent-signal detection for mount-edge suppression. If another signal head sits on
     // this signal's attachment axis (above/below for vertical, left/right for horizontal),
     // the pair shares a bracket at that joint and we hide this signal's bracket on that
-    // edge so the hardware doesn't double up.
+    // edge so the hardware doesn't double up. Double-arrow add-ons sit one block away from
+    // the main signal (air gap between), so the scan also peeks two blocks out through air.
     boolean suppressHighEnd = false, suppressLowEnd = false;
     net.minecraft.world.World world = te.getWorld();
     if (world != null) {
@@ -718,14 +738,12 @@ public class TileEntityTrafficSignalHeadRenderer extends
         IBlockState ownState = world.getBlockState(pos);
         if (ownState.getProperties().containsKey(AbstractBlockControllableSignalHead.FACING)) {
           EnumFacing facing = ownState.getValue(AbstractBlockControllableSignalHead.FACING);
-          BlockPos cwPos = pos.offset(facing.rotateY());
-          BlockPos ccwPos = pos.offset(facing.rotateYCCW());
-          suppressLowEnd = world.getTileEntity(ccwPos) instanceof TileEntityTrafficSignalHead;
-          suppressHighEnd = world.getTileEntity(cwPos) instanceof TileEntityTrafficSignalHead;
+          suppressLowEnd = hasPairedSignalAlong(world, pos, facing.rotateYCCW());
+          suppressHighEnd = hasPairedSignalAlong(world, pos, facing.rotateY());
         }
       } else {
-        suppressHighEnd = world.getTileEntity(pos.up()) instanceof TileEntityTrafficSignalHead;
-        suppressLowEnd = world.getTileEntity(pos.down()) instanceof TileEntityTrafficSignalHead;
+        suppressHighEnd = hasPairedSignalAlong(world, pos, EnumFacing.UP);
+        suppressLowEnd = hasPairedSignalAlong(world, pos, EnumFacing.DOWN);
       }
     }
 
@@ -929,10 +947,6 @@ public class TileEntityTrafficSignalHeadRenderer extends
       float dy = targetY - elbowY;
       float dz = targetZ - elbowZ;
       float distance = (float) Math.sqrt(dx * dx + dy * dy + dz * dz);
-      // Arm length: straight-line distance from elbow to neighbour centre. The arm box is
-      // authored axis-aligned along the pole axis, then rotated to point at the target;
-      // using the 3D distance keeps the tip exactly at the target after rotation.
-      this.tubeLength = distance;
 
       // Pre-tilt pole direction (unit vector along the pole axis).
       float preDirX = tubeAxisIdx == 0 ? tubeSign : 0f;
@@ -943,6 +957,44 @@ public class TileEntityTrafficSignalHeadRenderer extends
       float desiredX = distance > 0 ? dx / distance : preDirX;
       float desiredY = distance > 0 ? dy / distance : preDirY;
       float desiredZ = distance > 0 ? dz / distance : preDirZ;
+
+      // Arm length. Default is 3D distance from elbow to neighbour centre, which lands the
+      // arm's far-face *centre* at the pole-block centre. That's fine at body-tilt=0 for a
+      // horizontal-plane mount because the far face is axis-aligned with the pole — no
+      // corners protrude past. At LEFT_ANGLE / RIGHT_ANGLE body tilt (±45°) the elbow
+      // rotates out of the pole axis, so the arm's world direction is tilted relative to
+      // the world pole direction: the far face is still perpendicular to the arm, but its
+      // corners now stick out by halfSize * sin(worldTubeAngle) past the face centre in
+      // the pole's world direction. For REAR mount that protrusion is ~0.42 units —
+      // visible as the arm pushing out the back side of the pole block.
+      //
+      // Fix: shorten the tube by halfSize * tan(worldTubeAngle) so the far-face *corners*
+      // (not centre) land exactly at the neighbour-block centre. Scoped to horizontal-
+      // plane mounts (REAR/LEFT/RIGHT) because UP/DOWN mounts have a naturally diagonal
+      // arm even at no tilt (elbow at Y=6, pole at Y=24/-8), and the user wants that case
+      // to keep driving into the ceiling/floor block past its centre.
+      //
+      // World tube angle without needing baseFacing: world pole dir = preDir rotated by
+      // +baseFacing; world tube dir = localDesiredDir rotated by +(baseFacing + tilt).
+      // Relative angle between them = angle between localDesiredDir and preDir rotated by
+      // -tilt (both rotations share a +baseFacing that cancels out).
+      float unshrunkTubeLength = distance;
+      if (tubeAxisIdx != 1) {
+        double radInvTilt = Math.toRadians(-tiltAngleDeg);
+        float cosInvTilt = (float) Math.cos(radInvTilt);
+        float sinInvTilt = (float) Math.sin(radInvTilt);
+        float rotPreDirX = preDirX * cosInvTilt + preDirZ * sinInvTilt;
+        float rotPreDirZ = -preDirX * sinInvTilt + preDirZ * cosInvTilt;
+        float cosWorldTubeAngle =
+            desiredX * rotPreDirX + desiredY * preDirY + desiredZ * rotPreDirZ;
+        if (cosWorldTubeAngle > 1f) cosWorldTubeAngle = 1f;
+        if (cosWorldTubeAngle < -1f) cosWorldTubeAngle = -1f;
+        float worldTubeAngleRad = (float) Math.acos(cosWorldTubeAngle);
+        float tanWorld = (float) Math.tan(worldTubeAngleRad);
+        if (tanWorld > 3f) tanWorld = 3f;  // cap to avoid degenerate shrinks near 90°
+        unshrunkTubeLength = distance - (TUBE_SIZE / 2f) * tanWorld;
+      }
+      this.tubeLength = Math.max(0.5f, unshrunkTubeLength);
 
       // Rotation from pre-tilt onto desired: axis = pre × desired, angle = arccos(pre·desired).
       float axisX = preDirY * desiredZ - preDirZ * desiredY;
