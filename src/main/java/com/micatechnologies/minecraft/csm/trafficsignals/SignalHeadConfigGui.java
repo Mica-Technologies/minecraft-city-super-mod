@@ -38,6 +38,13 @@ public class SignalHeadConfigGui extends GuiScreen {
   // Per-section action button IDs are offset so they can't collide with whole-head ordinals.
   private static final int PER_SECTION_ID_OFFSET = 200;
 
+  /**
+   * Display labels for the All Sections page. Indexes line up with
+   * {@link SignalHeadConfigAction} ordinals so {@code button.id} can double as the action
+   * ordinal for the outgoing packet. The {@code TOGGLE_HORIZONTAL} entry at the end is
+   * only rendered when the signal block reports {@code allowsHorizontalFlip()} — see
+   * {@link #activeLabels()}.
+   */
   private static final String[] ALL_LABELS = {
       "Body Color",
       "Door Color",
@@ -47,7 +54,8 @@ public class SignalHeadConfigGui extends GuiScreen {
       "Bulb Style",
       "Bulb Type",
       "Alternate Flash",
-      "Bulb Aging"
+      "Bulb Aging",
+      "Horizontal"
   };
 
   private static final String[] SECTION_LABELS = {
@@ -139,7 +147,35 @@ public class SignalHeadConfigGui extends GuiScreen {
   }
 
   private String[] activeLabels() {
-    return mode == Mode.ALL_SECTIONS ? ALL_LABELS : SECTION_LABELS;
+    if (mode == Mode.PER_SECTION) {
+      return SECTION_LABELS;
+    }
+    // All Sections mode — drop the trailing "Horizontal" entry for blocks that don't allow
+    // the flip toggle (doghouse, hawk, static-horizontal, add-ons, etc.). Keeping the
+    // ordinal alignment with SignalHeadConfigAction means button.id still doubles as the
+    // outgoing packet's action ordinal, so the wire protocol stays unchanged.
+    if (!canFlipHorizontal()) {
+      String[] trimmed = new String[ALL_LABELS.length - 1];
+      System.arraycopy(ALL_LABELS, 0, trimmed, 0, trimmed.length);
+      return trimmed;
+    }
+    return ALL_LABELS;
+  }
+
+  /**
+   * Reads the flip capability from the signal block at render time so opening the GUI on
+   * different signal types shows the right affordances without any per-instance config.
+   */
+  private boolean canFlipHorizontal() {
+    if (tileEntity.getWorld() == null) {
+      return false;
+    }
+    net.minecraft.block.Block block = tileEntity.getWorld().getBlockState(blockPos).getBlock();
+    if (block instanceof com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignalHead) {
+      return ((com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignalHead) block)
+          .allowsHorizontalFlip();
+    }
+    return false;
   }
 
   private String sectionSelectorLabel(int sectionCount) {
@@ -216,6 +252,8 @@ public class SignalHeadConfigGui extends GuiScreen {
         return tileEntity.isAlternateFlash() ? "ON (wig-wag B)" : "OFF (normal)";
       case TOGGLE_AGING:
         return tileEntity.isAgingEnabled() ? "ON" : "OFF";
+      case TOGGLE_HORIZONTAL:
+        return tileEntity.isHorizontalFlip() ? "Horizontal" : "Vertical";
       default:
         return "N/A";
     }

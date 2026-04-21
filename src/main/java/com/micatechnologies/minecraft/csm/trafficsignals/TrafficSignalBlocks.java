@@ -43,6 +43,7 @@ public final class TrafficSignalBlocks {
             };
           })
           .sectionXPositions(0, 6, 6)
+          .allowsHorizontalFlip(false)
           .build();
 
   public static final BlockControllableSignal DOGHOUSE_MAIN_RIGHT_SIGNAL =
@@ -64,6 +65,7 @@ public final class TrafficSignalBlocks {
             };
           })
           .sectionXPositions(0, -6, -6)
+          .allowsHorizontalFlip(false)
           .build();
 
   public static final BlockControllableSignal DOGHOUSE_SECONDARY_LEFT_FYA_SIGNAL =
@@ -83,6 +85,7 @@ public final class TrafficSignalBlocks {
           })
           .sectionYPositions(16.0f, 4.0f)
           .sectionXPositions(-6, -6)
+          .allowsHorizontalFlip(false)
           .build();
 
   public static final BlockControllableSignal DOGHOUSE_SECONDARY_LEFT_SIGNAL =
@@ -102,6 +105,7 @@ public final class TrafficSignalBlocks {
           })
           .sectionYPositions(16.0f, 4.0f)
           .sectionXPositions(-6, -6)
+          .allowsHorizontalFlip(false)
           .build();
 
   public static final BlockControllableSignal DOGHOUSE_SECONDARY_RIGHT_FYA_SIGNAL =
@@ -121,6 +125,7 @@ public final class TrafficSignalBlocks {
           })
           .sectionYPositions(16.0f, 4.0f)
           .sectionXPositions(6, 6)
+          .allowsHorizontalFlip(false)
           .build();
 
   public static final BlockControllableSignal DOGHOUSE_SECONDARY_RIGHT_SIGNAL =
@@ -140,6 +145,7 @@ public final class TrafficSignalBlocks {
           })
           .sectionYPositions(16.0f, 4.0f)
           .sectionXPositions(6, 6)
+          .allowsHorizontalFlip(false)
           .build();
 
   public static final BlockControllableSignal HORIZONTAL_AHEAD_SIGNAL =

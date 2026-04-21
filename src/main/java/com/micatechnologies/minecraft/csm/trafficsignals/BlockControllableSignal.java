@@ -46,6 +46,7 @@ public class BlockControllableSignal extends AbstractBlockControllableSignalHead
   final boolean lightAllOnRedYellow;
   @Nullable final TrafficSignalBulbStyle enforcedBulbStyle;
   final boolean addon;
+  final boolean allowsHorizontalFlip;
 
   /**
    * ThreadLocal used to pass the registry name to the superclass constructor. The AbstractBlock
@@ -69,6 +70,11 @@ public class BlockControllableSignal extends AbstractBlockControllableSignalHead
     this.lightAllOnRedYellow = builder.lightAllOnRedYellow;
     this.enforcedBulbStyle = builder.enforcedBulbStyle;
     this.addon = builder.addon;
+    // Static-horizontal and add-on signals don't offer the flip toggle: the former are
+    // already horizontal with nothing to change, and the latter derive horizontal from
+    // their adjacent main signal. Otherwise honor the builder's explicit choice.
+    this.allowsHorizontalFlip = builder.allowsHorizontalFlip && !builder.horizontal
+        && !builder.addon;
   }
 
   private static Material initRegistryName(Builder builder) {
@@ -138,7 +144,37 @@ public class BlockControllableSignal extends AbstractBlockControllableSignalHead
     return enforcedBulbStyle != null ? enforcedBulbStyle : super.getEnforcedBulbStyle();
   }
 
-  // -- World-aware layout overrides for add-on signal horizontal detection --
+  // -- World-aware layout overrides for add-on + TE-flip horizontal detection --
+
+  /**
+   * Returns true when this block's configured horizontal orientation (static-horizontal
+   * flag or player-set TE flip) is active at {@code pos}. This deliberately excludes the
+   * add-on's scan-neighbours-for-horizontal-main path so it can be safely called from
+   * inside that scan without recursing.
+   */
+  private boolean isConfiguredHorizontal(IBlockAccess world, BlockPos pos) {
+    if (horizontal) return true;
+    if (!allowsHorizontalFlip) return false;
+    TileEntity te = world.getTileEntity(pos);
+    return te instanceof TileEntityTrafficSignalHead
+        && ((TileEntityTrafficSignalHead) te).isHorizontalFlip();
+  }
+
+  /**
+   * Checks whether the given block + world position reports horizontal orientation via its
+   * static flag OR via a player-set flip on its TE. Safe to call on any adjacent signal
+   * head — never triggers neighbour-scan recursion.
+   */
+  private static boolean neighbourIsHorizontal(
+      AbstractBlockControllableSignalHead neighbourBlock,
+      IBlockAccess world, BlockPos pos) {
+    if (neighbourBlock.isHorizontal()) return true;
+    if (neighbourBlock instanceof BlockControllableSignal
+        && ((BlockControllableSignal) neighbourBlock).isConfiguredHorizontal(world, pos)) {
+      return true;
+    }
+    return false;
+  }
 
   /**
    * For add-on signals, detects whether an adjacent signal is horizontal by scanning
@@ -155,10 +191,8 @@ public class BlockControllableSignal extends AbstractBlockControllableSignalHead
       BlockPos checkPos = pos.offset(dir);
       IBlockState checkState = world.getBlockState(checkPos);
       if (checkState.getBlock() instanceof AbstractBlockControllableSignalHead) {
-        AbstractBlockControllableSignalHead adjacent =
-            (AbstractBlockControllableSignalHead) checkState.getBlock();
-        // Use the static isHorizontal() to avoid infinite recursion with other add-ons
-        return adjacent.isHorizontal();
+        return neighbourIsHorizontal(
+            (AbstractBlockControllableSignalHead) checkState.getBlock(), world, checkPos);
       }
     }
 
@@ -167,7 +201,8 @@ public class BlockControllableSignal extends AbstractBlockControllableSignalHead
       for (BlockPos checkPos : new BlockPos[]{pos.up(dy), pos.down(dy)}) {
         IBlockState checkState = world.getBlockState(checkPos);
         if (checkState.getBlock() instanceof AbstractBlockControllableSignalHead) {
-          return ((AbstractBlockControllableSignalHead) checkState.getBlock()).isHorizontal();
+          return neighbourIsHorizontal(
+              (AbstractBlockControllableSignalHead) checkState.getBlock(), world, checkPos);
         }
       }
     }
@@ -182,7 +217,8 @@ public class BlockControllableSignal extends AbstractBlockControllableSignalHead
           BlockPos checkPos = pos.offset(side, dist);
           IBlockState checkState = world.getBlockState(checkPos);
           if (checkState.getBlock() instanceof AbstractBlockControllableSignalHead) {
-            return ((AbstractBlockControllableSignalHead) checkState.getBlock()).isHorizontal();
+            return neighbourIsHorizontal(
+                (AbstractBlockControllableSignalHead) checkState.getBlock(), world, checkPos);
           }
         }
       }
@@ -192,16 +228,31 @@ public class BlockControllableSignal extends AbstractBlockControllableSignalHead
   }
 
   @Override
+  public boolean allowsHorizontalFlip() {
+    return allowsHorizontalFlip;
+  }
+
+  @Override
   public boolean isHorizontal(IBlockAccess world, BlockPos pos) {
-    if (addon && detectAdjacentHorizontal(world, pos)) {
-      return true;
-    }
-    return isHorizontal();
+    if (isConfiguredHorizontal(world, pos)) return true;
+    if (addon && detectAdjacentHorizontal(world, pos)) return true;
+    return false;
+  }
+
+  /**
+   * True when this signal needs its vertical-authored positions swapped into horizontal
+   * layout at render time. Statically-horizontal blocks authored their positions in the
+   * horizontal layout already, so they don't need the swap even though {@code isHorizontal}
+   * is true.
+   */
+  private boolean needsLayoutSwap(IBlockAccess world, BlockPos pos) {
+    if (horizontal) return false; // already authored horizontally
+    return isHorizontal(world, pos);
   }
 
   @Override
   public float[] getSectionYPositions(int sectionCount, IBlockAccess world, BlockPos pos) {
-    if (addon && detectAdjacentHorizontal(world, pos)) {
+    if (needsLayoutSwap(world, pos)) {
       // In horizontal mode, all sections are at the same Y (no vertical stacking)
       return new float[sectionCount];
     }
@@ -210,7 +261,7 @@ public class BlockControllableSignal extends AbstractBlockControllableSignalHead
 
   @Override
   public float[] getSectionXPositions(int sectionCount, IBlockAccess world, BlockPos pos) {
-    if (addon && detectAdjacentHorizontal(world, pos)) {
+    if (needsLayoutSwap(world, pos)) {
       // Swap: original Y positions become X positions, with signalYOffset folded in
       float[] origY = getSectionYPositions(sectionCount);
       float yOff = getSignalYOffset();
@@ -225,7 +276,7 @@ public class BlockControllableSignal extends AbstractBlockControllableSignalHead
 
   @Override
   public float getSignalYOffset(IBlockAccess world, BlockPos pos) {
-    if (addon && detectAdjacentHorizontal(world, pos)) {
+    if (needsLayoutSwap(world, pos)) {
       // Y offset folded into X positions in horizontal mode
       return 0.0f;
     }
@@ -338,6 +389,7 @@ public class BlockControllableSignal extends AbstractBlockControllableSignalHead
     boolean lightAllOnRedYellow = false;
     TrafficSignalBulbStyle enforcedBulbStyle = null;
     boolean addon = false;
+    boolean allowsHorizontalFlip = true;
     String replacementBlockId = null;
     TrafficSignalBodyTilt replacementBodyTilt = null;
 
@@ -392,6 +444,17 @@ public class BlockControllableSignal extends AbstractBlockControllableSignalHead
      */
     public Builder addon(boolean addon) {
       this.addon = addon;
+      return this;
+    }
+
+    /**
+     * Opts this signal out of the player-facing horizontal-flip toggle in the signal head
+     * configuration GUI. Default is {@code true} (toggle available). Specialty layouts whose
+     * geometry doesn't round-trip through a 90° rotation cleanly (doghouse, etc.) should
+     * pass {@code false}. Static-horizontal and add-on signals auto-opt-out regardless.
+     */
+    public Builder allowsHorizontalFlip(boolean allowed) {
+      this.allowsHorizontalFlip = allowed;
       return this;
     }
 

@@ -83,6 +83,16 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
   private static final String ALTERNATE_FLASH_KEY = "alternateFlash";
   private boolean alternateFlash = false;
 
+  /**
+   * Player-set horizontal-orientation override. When {@code true}, the signal renders in
+   * horizontal mode even if its block class isn't statically horizontal. The block's
+   * {@code isHorizontal(world, pos)} reads this flag (gated on the block's
+   * {@code allowsHorizontalFlip()}) so the TESR, add-on detection, and mount kit layout
+   * all pick up the change without needing a separate horizontal block variant.
+   */
+  private static final String HORIZONTAL_FLIP_KEY = "horizontalFlip";
+  private boolean horizontalFlip = false;
+
   private boolean dirty = true;
   private boolean powerLossOff = true;
 
@@ -145,6 +155,11 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
       alternateFlash = compound.getBoolean(ALTERNATE_FLASH_KEY);
     }
 
+    // Get the horizontal-flip setting
+    if (compound.hasKey(HORIZONTAL_FLIP_KEY)) {
+      horizontalFlip = compound.getBoolean(HORIZONTAL_FLIP_KEY);
+    }
+
     // Get aging settings
     if (compound.hasKey(AGING_ENABLED_KEY)) {
       agingEnabled = compound.getBoolean(AGING_ENABLED_KEY);
@@ -203,6 +218,7 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
 
     // Set the alternate flash setting
     compound.setBoolean(ALTERNATE_FLASH_KEY, alternateFlash);
+    compound.setBoolean(HORIZONTAL_FLIP_KEY, horizontalFlip);
 
     // Set aging settings
     compound.setBoolean(AGING_ENABLED_KEY, agingEnabled);
@@ -417,6 +433,23 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
     alternateFlash = !alternateFlash;
     markDirtySync(world, pos, true);
     return alternateFlash;
+  }
+
+  /**
+   * Returns the player-set horizontal-orientation override. Only meaningful when the block
+   * claims {@code allowsHorizontalFlip()} — blocks that don't allow it should ignore this value.
+   */
+  public boolean isHorizontalFlip() {
+    return horizontalFlip;
+  }
+
+  /**
+   * Toggles the horizontal-orientation override and returns the new value.
+   */
+  public boolean toggleHorizontalFlip() {
+    horizontalFlip = !horizontalFlip;
+    markDirtySync(world, pos, true);
+    return horizontalFlip;
   }
 
   /**
