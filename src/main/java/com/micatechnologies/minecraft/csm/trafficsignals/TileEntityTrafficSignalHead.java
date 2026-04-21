@@ -3,6 +3,7 @@ package com.micatechnologies.minecraft.csm.trafficsignals;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractTileEntity;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignal.SIGNAL_SIDE;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignalHead;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.SignalHeadMountType;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyColor;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyTilt;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBulbColor;
@@ -93,6 +94,21 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
   private static final String HORIZONTAL_FLIP_KEY = "horizontalFlip";
   private boolean horizontalFlip = false;
 
+  /**
+   * Player-selected bracket hardware style. The TESR renders matching geometry around the
+   * signal body at render time; add-on-aware suppression logic hides the bracket on the
+   * edge touching an adjacent stacked signal so the hardware doesn't double up.
+   */
+  private static final String MOUNT_TYPE_KEY = "mountType";
+  private SignalHeadMountType mountType = SignalHeadMountType.NONE;
+
+  /**
+   * Paint color for the bracket hardware. Shares the {@link TrafficSignalBodyColor} palette
+   * with the body/door/visor for a consistent finish without introducing a new enum.
+   */
+  private static final String MOUNT_COLOR_KEY = "mountColor";
+  private TrafficSignalBodyColor mountColor = TrafficSignalBodyColor.FLAT_BLACK;
+
   private boolean dirty = true;
   private boolean powerLossOff = true;
 
@@ -160,6 +176,14 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
       horizontalFlip = compound.getBoolean(HORIZONTAL_FLIP_KEY);
     }
 
+    // Get the mount type + color
+    if (compound.hasKey(MOUNT_TYPE_KEY)) {
+      mountType = SignalHeadMountType.fromNBT(compound.getInteger(MOUNT_TYPE_KEY));
+    }
+    if (compound.hasKey(MOUNT_COLOR_KEY)) {
+      mountColor = TrafficSignalBodyColor.fromNBT(compound.getInteger(MOUNT_COLOR_KEY));
+    }
+
     // Get aging settings
     if (compound.hasKey(AGING_ENABLED_KEY)) {
       agingEnabled = compound.getBoolean(AGING_ENABLED_KEY);
@@ -219,6 +243,8 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
     // Set the alternate flash setting
     compound.setBoolean(ALTERNATE_FLASH_KEY, alternateFlash);
     compound.setBoolean(HORIZONTAL_FLIP_KEY, horizontalFlip);
+    compound.setInteger(MOUNT_TYPE_KEY, mountType.toNBT());
+    compound.setInteger(MOUNT_COLOR_KEY, mountColor.toNBT());
 
     // Set aging settings
     compound.setBoolean(AGING_ENABLED_KEY, agingEnabled);
@@ -450,6 +476,30 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
     horizontalFlip = !horizontalFlip;
     markDirtySync(world, pos, true);
     return horizontalFlip;
+  }
+
+  /** Returns the currently-selected bracket mount style. Never null. */
+  public SignalHeadMountType getMountType() {
+    return mountType;
+  }
+
+  /** Cycles to the next mount style (NONE → REAR → LEFT → RIGHT → NONE) and returns it. */
+  public SignalHeadMountType getNextMountType() {
+    mountType = mountType.getNext();
+    markDirtySync(world, pos, true);
+    return mountType;
+  }
+
+  /** Returns the currently-selected mount paint color. Never null. */
+  public TrafficSignalBodyColor getMountColor() {
+    return mountColor;
+  }
+
+  /** Cycles to the next mount paint color and returns it. */
+  public TrafficSignalBodyColor getNextMountColor() {
+    mountColor = mountColor.getNextColor();
+    markDirtySync(world, pos, true);
+    return mountColor;
   }
 
   /**

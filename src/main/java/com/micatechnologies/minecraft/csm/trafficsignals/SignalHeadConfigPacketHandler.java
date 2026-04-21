@@ -59,6 +59,12 @@ public class SignalHeadConfigPacketHandler implements
         case TOGGLE_HORIZONTAL:
           signalHead.toggleHorizontalFlip();
           break;
+        case CYCLE_MOUNT_TYPE:
+          signalHead.getNextMountType();
+          break;
+        case CYCLE_MOUNT_COLOR:
+          signalHead.getNextMountColor();
+          break;
       }
     });
     return null;
