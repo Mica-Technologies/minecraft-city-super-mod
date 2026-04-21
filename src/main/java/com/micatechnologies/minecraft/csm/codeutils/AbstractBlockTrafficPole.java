@@ -8,6 +8,7 @@ import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficSignalF
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficSignalFatigueMitigator4;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficStreetNameSignMount;
 import com.micatechnologies.minecraft.csm.trafficsignals.AbstractBlockControllableCrosswalkSignal;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignalHead;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkDoubleWordedBaseMount;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableCrosswalkSignalNew;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkDoubleWordedLeftMount;
@@ -132,6 +133,10 @@ public abstract class AbstractBlockTrafficPole extends AbstractBlockRotatableNSE
           BlockTrafficAccessoryNSEWUD.class, BlockControllableCrosswalkMountGray.class,
           BlockControllableCrosswalkSignalSingle.class, BlockControllableCrosswalkSignalDouble.class,
           AbstractBlockControllableCrosswalkSignalNew.class,
+          // Vehicle-signal heads (BlockControllableSignal, BlockControllableHawkSignal, etc.)
+          // have their own built-in mount hardware plus the Pelco-style standalone mount
+          // blocks, so poles should never auto-sprout a stub into a signal head.
+          AbstractBlockControllableSignalHead.class,
           BlockSnow.class, BlockSnowBlock.class, BlockBush.class, BlockLeaves.class,
           BlockVine.class, BlockCarpet.class, BlockTorch.class, BlockRedstoneWire.class,
           BlockRailBase.class, BlockCactus.class, BlockReed.class, BlockWeb.class};
