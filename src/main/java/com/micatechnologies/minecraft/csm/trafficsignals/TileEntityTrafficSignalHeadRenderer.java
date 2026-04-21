@@ -634,31 +634,37 @@ public class TileEntityTrafficSignalHeadRenderer extends
 
   // ==================== Built-in signal mount hardware ====================
   //
-  // Renders Pelco-style mount bracket geometry around the signal body when the TE reports
-  // a non-NONE SignalHeadMountType. Shape is a flat mount plate against the signal's back
-  // face + a rearward arm + an elbow + a tube running along the pole axis. Paired for REAR
-  // (top and bottom in vertical, or the two outer ends in horizontal), single for LEFT /
-  // RIGHT.
+  // Pelco-style bracket, matching the crosswalk signal mount aesthetic: a short stub
+  // coming out of the signal housing at the attachment end (top and bottom in vertical,
+  // left and right ends in horizontal) → a 90° elbow → a pole-direction arm/shaft
+  // heading toward the pole.
   //
-  // Rendered per-frame rather than into the display list because adjacency changes (add-on
-  // placed/broken beside the signal) don't invalidate the TE's dirty flag, and the geometry
-  // is cheap to rebuild.
+  // No mount plate — the stub reads as joining directly into the signal housing.
+  //
+  // Brackets are always paired — one at each attachment end — regardless of mount type.
+  // The type (REAR / LEFT / RIGHT) only decides which direction the elbow bends toward
+  // the pole:
+  //   REAR   → pole behind the signal (+Z in model space)
+  //   LEFT   → pole to the signal's left (vertical mode: -X; horizontal mode: -Y / below)
+  //   RIGHT  → pole to the signal's right (vertical mode: +X; horizontal mode: +Y / above)
+  //
+  // Rendered per-frame rather than into the display list so adjacency changes (add-on
+  // placed/broken next to the signal) show up immediately without needing a TE dirty flip.
 
-  // Cross-section of the rearward arm + pole-direction tube, in model units.
-  private static final float MOUNT_ARM_THICKNESS = 2.0f;
-  // Flat mount plate (against signal back) dimensions.
-  private static final float MOUNT_PLATE_WIDTH = 8.0f;      // along the signal-parallel axis
-  private static final float MOUNT_PLATE_THICKNESS = 2.0f;  // perpendicular (outward from body)
-  private static final float MOUNT_PLATE_DEPTH_FRONT = 13.0f; // z at the plate's front face
-  private static final float MOUNT_PLATE_DEPTH_BACK = 15.9f;  // z just shy of block back
-  // Rearward arm: extends from the block's back face outward.
-  private static final float MOUNT_ARM_Z_FRONT = 16.0f;
-  private static final float MOUNT_ARM_Z_BACK = 22.0f;
-  // Pole-direction tube: from the end of the arm, running parallel to the pole.
-  private static final float MOUNT_TUBE_Z_FRONT = 22.0f;
-  private static final float MOUNT_TUBE_Z_BACK = 24.0f;
-  // How far the pole-direction tube extends along its axis past the mount plate.
-  private static final float MOUNT_TUBE_LENGTH = 10.0f;
+  /** Direction the pole-side leg of the mount bracket extends from the elbow. */
+  private enum PoleLeg {
+    REAR_POS_Z, LEFT_NEG_X, RIGHT_POS_X, DOWN_NEG_Y, UP_POS_Y
+  }
+
+  // Square stub coming out of the signal housing toward the elbow.
+  private static final float STUB_SIZE = 2.5f;        // cross-section side — thicker than crosswalk
+  private static final float STUB_LENGTH = 3.0f;      // length from housing to elbow centre
+  // Elbow: slightly fatter than stub/tube so the 90° turn reads as a cast fitting.
+  private static final float ELBOW_SIZE = 3.0f;
+  // Pole-direction arm: from elbow, extending toward the pole. Goes into the neighbouring
+  // block so the bracket visually reaches a pole block sitting one block away.
+  private static final float TUBE_SIZE = 2.5f;
+  private static final float TUBE_LENGTH = 10.0f;
 
   private void renderMount(TileEntityTrafficSignalHead te, int[] sectionSizes,
       float[] sectionYPositions, float[] sectionXPositions, boolean horizontal,
@@ -666,89 +672,71 @@ public class TileEntityTrafficSignalHeadRenderer extends
     SignalHeadMountType mountType = te.getMountType();
     if (mountType == SignalHeadMountType.NONE) return;
 
-    // Compute signal body envelope from section placements.
+    // Signal body envelope from section placements.
     float topY = -Float.MAX_VALUE, bottomY = Float.MAX_VALUE;
     float leftX = Float.MAX_VALUE, rightX = -Float.MAX_VALUE;
     for (int i = 0; i < sectionSizes.length; i++) {
       float half = sectionSizes[i] / 2.0f;
-      float yCenter = sectionYPositions[i] + 6.0f; // body center is at Y=6 in model space
-      float xCenter = sectionXPositions[i] + 8.0f; // body center is at X=8
+      float yCenter = sectionYPositions[i] + 6.0f; // body center Y in model space
+      float xCenter = sectionXPositions[i] + 8.0f; // body center X in model space
       topY = Math.max(topY, yCenter + half);
       bottomY = Math.min(bottomY, yCenter - half);
       leftX = Math.min(leftX, xCenter - half);
       rightX = Math.max(rightX, xCenter + half);
     }
 
-    // Adjacent-signal detection for mount-edge suppression. If another signal head is
-    // directly adjacent on the stacking axis, the two share a bracket there — hide this
-    // signal's mount on that edge so the hardware doesn't visually double up.
-    boolean suppressLowEdge = false, suppressHighEdge = false;
+    // Adjacent-signal detection for mount-edge suppression. If another signal head sits on
+    // this signal's attachment axis (above/below for vertical, left/right for horizontal),
+    // the pair shares a bracket at that joint and we hide this signal's bracket on that
+    // edge so the hardware doesn't double up.
+    boolean suppressHighEnd = false, suppressLowEnd = false;
     net.minecraft.world.World world = te.getWorld();
     if (world != null) {
       BlockPos pos = te.getPos();
       if (horizontal) {
-        // Horizontal: stack axis is perpendicular to facing, in the block's horizontal plane.
         IBlockState ownState = world.getBlockState(pos);
         if (ownState.getProperties().containsKey(AbstractBlockControllableSignalHead.FACING)) {
           EnumFacing facing = ownState.getValue(AbstractBlockControllableSignalHead.FACING);
-          // facing.rotateY() is 90° clockwise from facing (viewer's right); the other way
-          // is viewer's left. Which one corresponds to "low X" vs "high X" in model space
-          // depends on the facing rotation applied by the blockstate, so we just check
-          // both sides and correlate to low/high after.
           BlockPos cwPos = pos.offset(facing.rotateY());
           BlockPos ccwPos = pos.offset(facing.rotateYCCW());
-          boolean cwIsSignal = world.getTileEntity(cwPos) instanceof TileEntityTrafficSignalHead;
-          boolean ccwIsSignal = world.getTileEntity(ccwPos) instanceof TileEntityTrafficSignalHead;
-          // For south-facing (default post-rotation), rotateY gives west which lands on
-          // low-X in model space after the 180° blockstate rotation; for other facings
-          // the mapping differs. Rather than hard-wire that, just suppress on whichever
-          // direction has an adjacent signal head and hope it matches — the user can
-          // swap left/right in the GUI if a specific facing reads backwards.
-          suppressLowEdge = ccwIsSignal;
-          suppressHighEdge = cwIsSignal;
+          suppressLowEnd = world.getTileEntity(ccwPos) instanceof TileEntityTrafficSignalHead;
+          suppressHighEnd = world.getTileEntity(cwPos) instanceof TileEntityTrafficSignalHead;
         }
       } else {
-        // Vertical: stack axis is Y.
-        suppressHighEdge = world.getTileEntity(pos.up()) instanceof TileEntityTrafficSignalHead;
-        suppressLowEdge = world.getTileEntity(pos.down()) instanceof TileEntityTrafficSignalHead;
+        suppressHighEnd = world.getTileEntity(pos.up()) instanceof TileEntityTrafficSignalHead;
+        suppressLowEnd = world.getTileEntity(pos.down()) instanceof TileEntityTrafficSignalHead;
       }
     }
 
     TrafficSignalBodyColor color = te.getMountColor();
     List<RenderHelper.Box> boxes = new ArrayList<>();
 
+    // Map mount type + orientation → pole-leg direction. Same pole direction for both
+    // end brackets; user-facing type is a single choice, not per-end.
+    PoleLeg poleLeg;
     if (horizontal) {
-      // Horizontal signal: the "low" end is leftX and the "high" end is rightX in model
-      // space. REAR pairs them; LEFT is just the low end; RIGHT is just the high end.
       switch (mountType) {
-        case REAR:
-          if (!suppressLowEdge)  addSideMountHorizontal(boxes, leftX, true);
-          if (!suppressHighEdge) addSideMountHorizontal(boxes, rightX, false);
-          break;
-        case LEFT:
-          if (!suppressLowEdge)  addSideMountHorizontal(boxes, leftX, true);
-          break;
-        case RIGHT:
-          if (!suppressHighEdge) addSideMountHorizontal(boxes, rightX, false);
-          break;
-        default:
-          break;
+        case REAR:  poleLeg = PoleLeg.REAR_POS_Z; break;
+        case LEFT:  poleLeg = PoleLeg.DOWN_NEG_Y; break; // "left mount" in horizontal = pole below
+        case RIGHT: poleLeg = PoleLeg.UP_POS_Y;   break; // "right mount" in horizontal = pole above
+        default: return;
       }
     } else {
       switch (mountType) {
-        case REAR:
-          if (!suppressHighEdge) addRearMountVertical(boxes, topY, true);
-          if (!suppressLowEdge)  addRearMountVertical(boxes, bottomY, false);
-          break;
-        case LEFT:
-          addSideMountVertical(boxes, leftX, true);
-          break;
-        case RIGHT:
-          addSideMountVertical(boxes, rightX, false);
-          break;
-        default:
-          break;
+        case REAR:  poleLeg = PoleLeg.REAR_POS_Z; break;
+        case LEFT:  poleLeg = PoleLeg.LEFT_NEG_X; break;
+        case RIGHT: poleLeg = PoleLeg.RIGHT_POS_X; break;
+        default: return;
       }
+    }
+
+    // Render bracket at each attachment end unless suppressed by an adjacent signal.
+    if (horizontal) {
+      if (!suppressHighEnd) addBracket(boxes, rightX, 6.0f, /*horizontal attachment*/ true, /*isHighEnd*/ true, poleLeg);
+      if (!suppressLowEnd)  addBracket(boxes, leftX,  6.0f, true, false, poleLeg);
+    } else {
+      if (!suppressHighEnd) addBracket(boxes, 8.0f, topY,    false, true,  poleLeg);
+      if (!suppressLowEnd)  addBracket(boxes, 8.0f, bottomY, false, false, poleLeg);
     }
 
     if (boxes.isEmpty()) return;
@@ -764,67 +752,123 @@ public class TileEntityTrafficSignalHeadRenderer extends
   }
 
   /**
-   * Appends bracket geometry for a REAR mount at one end of a vertical signal. {@code yEdge}
-   * is the Y of the signal body's top or bottom edge; {@code isTop} selects the direction the
-   * bracket extends (up for a top mount, down for a bottom mount).
+   * Emits one mount bracket — stub + elbow + pole-direction arm — attached at the signal
+   * body's top/bottom (vertical) or left-end/right-end (horizontal) edge, with the
+   * pole-direction leg pointed according to {@code poleLeg}.
+   *
+   * @param bodyCenterX model X of the bracket's body-parallel centre (8 in vertical mode,
+   *                    the attachment-end X in horizontal mode)
+   * @param bodyCenterY model Y of the centre (topY/bottomY in vertical, 6 in horizontal)
+   * @param horizontalSignal whether the signal is in horizontal layout
+   * @param isHighEnd    attachment on the high side (top / right-end) versus the low
+   * @param poleLeg      which way the pole-direction tube points from the elbow
    */
-  private static void addRearMountVertical(List<RenderHelper.Box> boxes, float yEdge,
-      boolean isTop) {
-    final float plateY1 = isTop ? yEdge : yEdge - MOUNT_PLATE_THICKNESS;
-    final float plateY2 = isTop ? yEdge + MOUNT_PLATE_THICKNESS : yEdge;
-    // Mount plate — flat box against the signal back, 2 units thick.
-    boxes.add(new RenderHelper.Box(
-        new float[]{8.0f - MOUNT_PLATE_WIDTH / 2f, plateY1, MOUNT_PLATE_DEPTH_FRONT},
-        new float[]{8.0f + MOUNT_PLATE_WIDTH / 2f, plateY2, MOUNT_PLATE_DEPTH_BACK}));
-    // Rearward arm — square tube centered on the plate, extending from block back to
-    // the elbow position.
-    final float armCenterY = (plateY1 + plateY2) / 2f;
-    final float ath = MOUNT_ARM_THICKNESS / 2f;
-    boxes.add(new RenderHelper.Box(
-        new float[]{8.0f - ath, armCenterY - ath, MOUNT_ARM_Z_FRONT},
-        new float[]{8.0f + ath, armCenterY + ath, MOUNT_ARM_Z_BACK}));
-    // Pole-direction tube — runs up (top mount) or down (bottom mount) from the elbow.
-    final float tubeY1 = isTop ? armCenterY - ath : armCenterY - MOUNT_TUBE_LENGTH;
-    final float tubeY2 = isTop ? armCenterY + MOUNT_TUBE_LENGTH : armCenterY + ath;
-    boxes.add(new RenderHelper.Box(
-        new float[]{8.0f - ath, tubeY1, MOUNT_TUBE_Z_FRONT},
-        new float[]{8.0f + ath, tubeY2, MOUNT_TUBE_Z_BACK}));
-  }
+  private static void addBracket(List<RenderHelper.Box> boxes, float bodyCenterX,
+      float bodyCenterY, boolean horizontalSignal, boolean isHighEnd, PoleLeg poleLeg) {
+    // Stub direction: the axis perpendicular to the signal body at the attachment edge.
+    // For a vertical signal with a top attachment, it's +Y; bottom is -Y. For horizontal,
+    // right-end = +X, left-end = -X.
+    float stubSign = isHighEnd ? 1f : -1f;
 
-  /**
-   * Appends bracket geometry for a SIDE mount on a vertical signal (LEFT or RIGHT type).
-   * {@code xEdge} is the signal body's left or right X; {@code isLeft} decides which side
-   * the tube extends toward.
-   */
-  private static void addSideMountVertical(List<RenderHelper.Box> boxes, float xEdge,
-      boolean isLeft) {
-    final float plateX1 = isLeft ? xEdge - MOUNT_PLATE_THICKNESS : xEdge;
-    final float plateX2 = isLeft ? xEdge : xEdge + MOUNT_PLATE_THICKNESS;
-    // Mount plate — against the signal back, rotated 90° from the top/bottom variant.
-    boxes.add(new RenderHelper.Box(
-        new float[]{plateX1, 6.0f - MOUNT_PLATE_WIDTH / 2f, MOUNT_PLATE_DEPTH_FRONT},
-        new float[]{plateX2, 6.0f + MOUNT_PLATE_WIDTH / 2f, MOUNT_PLATE_DEPTH_BACK}));
-    final float armCenterX = (plateX1 + plateX2) / 2f;
-    final float ath = MOUNT_ARM_THICKNESS / 2f;
-    boxes.add(new RenderHelper.Box(
-        new float[]{armCenterX - ath, 6.0f - ath, MOUNT_ARM_Z_FRONT},
-        new float[]{armCenterX + ath, 6.0f + ath, MOUNT_ARM_Z_BACK}));
-    final float tubeX1 = isLeft ? armCenterX - MOUNT_TUBE_LENGTH : armCenterX - ath;
-    final float tubeX2 = isLeft ? armCenterX + ath : armCenterX + MOUNT_TUBE_LENGTH;
-    boxes.add(new RenderHelper.Box(
-        new float[]{tubeX1, 6.0f - ath, MOUNT_TUBE_Z_FRONT},
-        new float[]{tubeX2, 6.0f + ath, MOUNT_TUBE_Z_BACK}));
-  }
+    // Axis layout per orientation. The stub exits the housing along the stub axis; the
+    // other two axes span the bracket's cross-section.
+    int plateAxisIdx1, plateAxisIdx2; // 0=X, 1=Y, 2=Z — the two body-parallel axes
+    int stubAxisIdx;                  // axis the stub runs along
+    if (horizontalSignal) {
+      plateAxisIdx1 = 1;  // Y (body height)
+      plateAxisIdx2 = 2;  // Z (body depth)
+      stubAxisIdx = 0;    // X
+    } else {
+      plateAxisIdx1 = 0;  // X (body width)
+      plateAxisIdx2 = 2;  // Z (body depth)
+      stubAxisIdx = 1;    // Y
+    }
 
-  /**
-   * Appends bracket geometry for a mount on one end of a horizontal signal. Equivalent to
-   * the vertical side-mount math with the X and Y roles swapped: the plate sits at the
-   * signal's X end, the tube extends along the vertical axis to reach a pole above/below.
-   */
-  private static void addSideMountHorizontal(List<RenderHelper.Box> boxes, float xEdge,
-      boolean isLeftEnd) {
-    // In horizontal mode LEFT end maps to "bottom tube direction" (poles below in the
-    // horizontal → pole-above-signal convention), RIGHT end maps to "top tube direction".
-    addSideMountVertical(boxes, xEdge, isLeftEnd);
+    float housingEdge = horizontalSignal ? bodyCenterX : bodyCenterY;
+    // Centre on the body-parallel axes (centered on the body's cross-section).
+    float plateCenter1 = horizontalSignal ? 6.0f : 8.0f; // Y if horizontal, X if vertical
+    float plateCenter2 = 10.0f;                           // Z: centered on body depth
+
+    // Stub: runs directly out of the housing at the attachment edge, square cross-section.
+    float stubStart = housingEdge;
+    float stubEnd = housingEdge + stubSign * STUB_LENGTH;
+    float[] stubFrom = new float[3];
+    float[] stubTo = new float[3];
+    stubFrom[plateAxisIdx1] = plateCenter1 - STUB_SIZE / 2f;
+    stubTo[plateAxisIdx1]   = plateCenter1 + STUB_SIZE / 2f;
+    stubFrom[plateAxisIdx2] = plateCenter2 - STUB_SIZE / 2f;
+    stubTo[plateAxisIdx2]   = plateCenter2 + STUB_SIZE / 2f;
+    stubFrom[stubAxisIdx]   = Math.min(stubStart, stubEnd);
+    stubTo[stubAxisIdx]     = Math.max(stubStart, stubEnd);
+    boxes.add(new RenderHelper.Box(stubFrom, stubTo));
+
+    // Elbow centre: where the stub meets the pole-leg. Slightly chunkier than the arms.
+    float elbowCoordOnStubAxis = stubEnd;
+    float elbowCenter1 = plateCenter1;
+    float elbowCenter2 = plateCenter2;
+    float[] elbowFrom = new float[3];
+    float[] elbowTo = new float[3];
+    elbowFrom[plateAxisIdx1] = elbowCenter1 - ELBOW_SIZE / 2f;
+    elbowTo[plateAxisIdx1]   = elbowCenter1 + ELBOW_SIZE / 2f;
+    elbowFrom[plateAxisIdx2] = elbowCenter2 - ELBOW_SIZE / 2f;
+    elbowTo[plateAxisIdx2]   = elbowCenter2 + ELBOW_SIZE / 2f;
+    elbowFrom[stubAxisIdx]   = elbowCoordOnStubAxis - ELBOW_SIZE / 2f * stubSign;
+    elbowTo[stubAxisIdx]     = elbowCoordOnStubAxis + ELBOW_SIZE / 2f * stubSign;
+    if (elbowFrom[stubAxisIdx] > elbowTo[stubAxisIdx]) {
+      float t = elbowFrom[stubAxisIdx];
+      elbowFrom[stubAxisIdx] = elbowTo[stubAxisIdx];
+      elbowTo[stubAxisIdx] = t;
+    }
+    boxes.add(new RenderHelper.Box(elbowFrom, elbowTo));
+
+    // Pole leg: from the elbow centre, running along the pole-direction axis.
+    int tubeAxisIdx;
+    float tubeSign;
+    switch (poleLeg) {
+      case REAR_POS_Z:  tubeAxisIdx = 2; tubeSign = +1f; break;
+      case LEFT_NEG_X:  tubeAxisIdx = 0; tubeSign = -1f; break;
+      case RIGHT_POS_X: tubeAxisIdx = 0; tubeSign = +1f; break;
+      case UP_POS_Y:    tubeAxisIdx = 1; tubeSign = +1f; break;
+      case DOWN_NEG_Y:  tubeAxisIdx = 1; tubeSign = -1f; break;
+      default: return;
+    }
+
+    // Tube cross-section spans the two non-tube axes. For each axis:
+    //   - if it's the stub axis, centre on the elbow centre (running perpendicular to stub)
+    //   - if it's the body-parallel axis, centre on the body centre
+    float[] tubeFrom = new float[3];
+    float[] tubeTo = new float[3];
+    for (int axis = 0; axis < 3; axis++) {
+      if (axis == tubeAxisIdx) continue;
+      float c;
+      if (axis == stubAxisIdx) {
+        c = elbowCoordOnStubAxis;
+      } else if (axis == plateAxisIdx1) {
+        c = plateCenter1;
+      } else {
+        c = plateCenter2;
+      }
+      tubeFrom[axis] = c - TUBE_SIZE / 2f;
+      tubeTo[axis]   = c + TUBE_SIZE / 2f;
+    }
+    float tubeStart, tubeEnd;
+    if (tubeAxisIdx == stubAxisIdx) {
+      // Degenerate (shouldn't happen with a 90° bend) — skip.
+      return;
+    }
+    // Anchor the tube at the elbow centre on the tube axis, extending in tubeSign direction.
+    float elbowAnchor;
+    if (tubeAxisIdx == plateAxisIdx1) {
+      elbowAnchor = plateCenter1;
+    } else if (tubeAxisIdx == plateAxisIdx2) {
+      elbowAnchor = plateCenter2;
+    } else {
+      elbowAnchor = elbowCoordOnStubAxis;
+    }
+    tubeStart = elbowAnchor;
+    tubeEnd = elbowAnchor + tubeSign * TUBE_LENGTH;
+    tubeFrom[tubeAxisIdx] = Math.min(tubeStart, tubeEnd);
+    tubeTo[tubeAxisIdx]   = Math.max(tubeStart, tubeEnd);
+    boxes.add(new RenderHelper.Box(tubeFrom, tubeTo));
   }
 }
