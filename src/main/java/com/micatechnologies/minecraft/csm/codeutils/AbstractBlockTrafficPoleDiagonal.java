@@ -141,7 +141,7 @@ public abstract class AbstractBlockTrafficPoleDiagonal extends AbstractBlockTraf
   private static boolean checkConnectable( IBlockAccess worldIn, BlockPos polePos,
       EnumFacing direction, Class<?>[] ignoreBlock ) {
     BlockPos adjPos = polePos.offset( direction );
-    boolean isBlock = BlockUtils.getIsBlockToSide( worldIn, adjPos, ignoreBlock );
+    boolean isBlock = isMountableAdjacent( worldIn, adjPos, ignoreBlock );
     if ( !isBlock ) {
       return false;
     }
