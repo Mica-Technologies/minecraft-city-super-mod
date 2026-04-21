@@ -5,6 +5,7 @@ import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockMiniSolarPanel;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficAccessoryBackplate;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficAccessoryBackplateFitted;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficAccessoryNSEW;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficAccessoryNSEWUD;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficLightMountKit;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleHorizontalAngleBlack;
@@ -145,6 +146,8 @@ public class CsmTabTrafficAccessories extends CsmTab {
       new AxisAlignedBB(0.437500, -0.812500, 0.000000, 1.218750, 2.000000, 1.000000);
   private static final AxisAlignedBB BB_TLITE_HORZ_WIRE_MOUNT =
       new AxisAlignedBB(1.437500, -0.250000, 0.500000, 1.562500, 0.000000, 0.875000);
+  private static final AxisAlignedBB BB_PLUMBIZER_SIGNAL_MOUNT =
+      new AxisAlignedBB(0.375000, 0.250000, 0.000000, 0.625000, 0.500000, 1.000000);
   private static final AxisAlignedBB BB_TLITE_VERT_WIRE_MOUNT =
       new AxisAlignedBB(0.437500, 0.500000, 0.437500, 0.562500, 1.000000, 0.937500);
   private static final AxisAlignedBB BB_TRAFFIC_POLE_BASE =
@@ -348,6 +351,8 @@ public class CsmTabTrafficAccessories extends CsmTab {
     initTabBlock(new BlockTrafficAccessoryNSEWUD("tlvtall90rmountkit", BB_TL_V_TALL_90R_MOUNT_KIT, BlockRenderLayer.CUTOUT_MIPPED, 2F, false));
     initTabBlock(new BlockTrafficAccessoryNSEWUD("tlvtallmountkit", BB_TL_V_TALL_MOUNT_KIT, BlockRenderLayer.CUTOUT_MIPPED, 2F, false));
     initTabBlock(new BlockTrafficLightMountKit());
+    initTabBlock(new BlockTrafficAccessoryNSEW("plumbizer_signal_mount", BB_PLUMBIZER_SIGNAL_MOUNT,
+        BlockRenderLayer.CUTOUT_MIPPED, 2F, false));
     initTabBlock(new BlockTrafficAccessoryNSEWUD("tlitehorzwiremount", BB_TLITE_HORZ_WIRE_MOUNT, BlockRenderLayer.SOLID, 1F, true));
     initTabBlock(new BlockTrafficAccessoryNSEWUD("tlitevertwiremount", BB_TLITE_VERT_WIRE_MOUNT, BlockRenderLayer.SOLID, 1F, true));
     initTabBlock(new BlockTrafficAccessoryNSEWUD("tlpmunpainted", BB_TL_PM, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
