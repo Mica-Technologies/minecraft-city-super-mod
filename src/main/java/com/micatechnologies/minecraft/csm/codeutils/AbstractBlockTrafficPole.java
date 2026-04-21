@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.codeutils;
 
+import com.micatechnologies.minecraft.csm.CsmConfig;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficAccessoryNSEWUD;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficSignalFatigueMitigator1;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficSignalFatigueMitigator2;
@@ -47,6 +48,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.IStringSerializable;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
@@ -273,15 +275,15 @@ public abstract class AbstractBlockTrafficPole extends AbstractBlockRotatableNSE
     Class<?>[] ignoreBlock = cachedCombinedIgnoreBlock;
 
     // Check for blocks in each direction relative to the block's facing direction
-    boolean isBlockToEast = BlockUtils.getIsBlockToSide(worldIn,
+    boolean isBlockToEast = isMountableAdjacent(worldIn,
         pos.offset(BlockUtils.getRelativeFacing(facing, EnumFacing.EAST).getOpposite()),
         ignoreBlock);
-    boolean isBlockToWest = BlockUtils.getIsBlockToSide(worldIn,
+    boolean isBlockToWest = isMountableAdjacent(worldIn,
         pos.offset(BlockUtils.getRelativeFacing(facing, EnumFacing.WEST).getOpposite()),
         ignoreBlock);
-    boolean isBlockAbove = BlockUtils.getIsBlockToSide(worldIn,
+    boolean isBlockAbove = isMountableAdjacent(worldIn,
         pos.offset(BlockUtils.getRelativeFacing(facing, EnumFacing.UP).getOpposite()), ignoreBlock);
-    boolean isBlockBelow = BlockUtils.getIsBlockToSide(worldIn,
+    boolean isBlockBelow = isMountableAdjacent(worldIn,
         pos.offset(BlockUtils.getRelativeFacing(facing, EnumFacing.DOWN).getOpposite()),
         ignoreBlock);
 
@@ -309,6 +311,31 @@ public abstract class AbstractBlockTrafficPole extends AbstractBlockRotatableNSE
     System.arraycopy(blockSpecificIgnore, 0, combined, IGNORE_BLOCK.length,
         blockSpecificIgnore.length);
     return combined;
+  }
+
+  /**
+   * Checks whether a pole should render a mount/connector for the block at {@code pos}. This
+   * applies two filters on top of the vanilla "is something solid here" test: the compiled
+   * class-based ignore list ({@link #IGNORE_BLOCK} + subclass additions) and the user-managed,
+   * config-driven registry-name ignore set
+   * ({@link CsmConfig#getTrafficPoleIgnoreBlockIds()}). The config set is read by reference on
+   * every call, so edits made through {@code /csm poleignore} or {@code /csm reloadconfig} take
+   * effect on the next block update with no explicit cache invalidation required here.
+   *
+   * @param worldIn     the world/block access
+   * @param pos         the adjacent position to test
+   * @param ignoreBlock the combined class-based ignore array
+   *
+   * @return {@code true} if the pole should render a connector toward {@code pos}
+   */
+  protected static boolean isMountableAdjacent(IBlockAccess worldIn, BlockPos pos,
+      Class<?>[] ignoreBlock) {
+    ResourceLocation registryName = worldIn.getBlockState(pos).getBlock().getRegistryName();
+    if (registryName != null
+        && CsmConfig.getTrafficPoleIgnoreBlockIds().contains(registryName)) {
+      return false;
+    }
+    return BlockUtils.getIsBlockToSide(worldIn, pos, ignoreBlock);
   }
 
   /**
