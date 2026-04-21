@@ -169,6 +169,7 @@ public final class TrafficSignalBlocks {
           .horizontal(true)
           .sectionYPositions(0.0f, 0.0f, 0.0f)
           .sectionXPositions(12.0f, 0.0f, -12.0f)
+          .retiringAsHorizontal("controllableverticalaheadsignal")
           .build();
 
   public static final BlockControllableSignal HORIZONTAL_ANGLE_AHEAD_SIGNAL =
@@ -217,6 +218,7 @@ public final class TrafficSignalBlocks {
           .sectionYPositions(0.0f, 0.0f, 0.0f)
           .sectionXPositions(12.0f, 0.0f, -12.0f)
           .retiring("controllablehorizontalbikesignal", TrafficSignalBodyTilt.RIGHT_ANGLE)
+          .retiringAsHorizontal("controllableverticalbikesignal")
           .build();
 
   public static final BlockControllableSignal HORIZONTAL_ANGLE_LEFT_SIGNAL =
@@ -241,6 +243,7 @@ public final class TrafficSignalBlocks {
           .sectionYPositions(0.0f, 0.0f, 0.0f)
           .sectionXPositions(12.0f, 0.0f, -12.0f)
           .retiring("controllablehorizontalleftsignal", TrafficSignalBodyTilt.RIGHT_ANGLE)
+          .retiringAsHorizontal("controllableverticalleftsignal")
           .build();
 
   public static final BlockControllableSignal HORIZONTAL_ANGLE_RAIL_SIGNAL =
@@ -265,6 +268,7 @@ public final class TrafficSignalBlocks {
           .sectionYPositions(0.0f, 0.0f, 0.0f)
           .sectionXPositions(12.0f, 0.0f, -12.0f)
           .retiring("controllablehorizontalrailsignal", TrafficSignalBodyTilt.RIGHT_ANGLE)
+          .retiringAsHorizontal("controllableverticalrailsignal")
           .build();
 
   public static final BlockControllableSignal HORIZONTAL_ANGLE_RIGHT2_SIGNAL =
@@ -289,6 +293,7 @@ public final class TrafficSignalBlocks {
           .sectionYPositions(0.0f, 0.0f, 0.0f)
           .sectionXPositions(12.0f, 0.0f, -12.0f)
           .retiring("controllablehorizontalright2signal", TrafficSignalBodyTilt.RIGHT_ANGLE)
+          .retiringAsHorizontal("controllableverticalright2signal")
           .build();
 
   public static final BlockControllableSignal HORIZONTAL_ANGLE_RIGHT_SIGNAL =
@@ -313,6 +318,7 @@ public final class TrafficSignalBlocks {
           .sectionYPositions(0.0f, 0.0f, 0.0f)
           .sectionXPositions(12.0f, 0.0f, -12.0f)
           .retiring("controllablehorizontalrightsignal", TrafficSignalBodyTilt.RIGHT_ANGLE)
+          .retiringAsHorizontal("controllableverticalrightsignal")
           .build();
 
   public static final BlockControllableSignal HORIZONTAL_ANGLE_SOLID_SIGNAL =
@@ -337,6 +343,7 @@ public final class TrafficSignalBlocks {
           .sectionYPositions(0.0f, 0.0f, 0.0f)
           .sectionXPositions(12.0f, 0.0f, -12.0f)
           .retiring("controllablehorizontalsolidsignal", TrafficSignalBodyTilt.RIGHT_ANGLE)
+          .retiringAsHorizontal("controllableverticalsolidsignal")
           .build();
 
   public static final BlockControllableSignal HORIZONTAL_ANGLE_U_TURN_SIGNAL =
@@ -361,6 +368,7 @@ public final class TrafficSignalBlocks {
           .sectionYPositions(0.0f, 0.0f, 0.0f)
           .sectionXPositions(12.0f, 0.0f, -12.0f)
           .retiring("controllablehorizontaluturnsignal", TrafficSignalBodyTilt.RIGHT_ANGLE)
+          .retiringAsHorizontal("controllableverticaluturnsignal")
           .build();
 
   public static final BlockControllableSignal HORIZONTAL_ANGLE_UP_LEFT_SIGNAL =
@@ -385,6 +393,7 @@ public final class TrafficSignalBlocks {
           .sectionYPositions(0.0f, 0.0f, 0.0f)
           .sectionXPositions(12.0f, 0.0f, -12.0f)
           .retiring("controllablehorizontalupleftsignal", TrafficSignalBodyTilt.RIGHT_ANGLE)
+          .retiringAsHorizontal("controllableverticalupleftsignal")
           .build();
 
   public static final BlockControllableSignal HORIZONTAL_BIKE_SIGNAL =

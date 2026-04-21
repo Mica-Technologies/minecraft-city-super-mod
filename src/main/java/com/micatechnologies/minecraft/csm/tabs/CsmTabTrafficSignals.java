@@ -128,15 +128,6 @@ public class CsmTabTrafficSignals extends CsmTab {
     initTabBlock(TrafficSignalBlocks.DOGHOUSE_SECONDARY_RIGHT_SIGNAL);
     initTabBlock(BlockControllableHawkSignal.class,
         fmlPreInitializationEvent); // ControllableHawkSignal
-    initTabBlock(TrafficSignalBlocks.HORIZONTAL_AHEAD_SIGNAL);
-    initTabBlock(TrafficSignalBlocks.HORIZONTAL_BIKE_SIGNAL);
-    initTabBlock(TrafficSignalBlocks.HORIZONTAL_LEFT_SIGNAL);
-    initTabBlock(TrafficSignalBlocks.HORIZONTAL_RAIL_SIGNAL);
-    initTabBlock(TrafficSignalBlocks.HORIZONTAL_RIGHT2_SIGNAL);
-    initTabBlock(TrafficSignalBlocks.HORIZONTAL_RIGHT_SIGNAL);
-    initTabBlock(TrafficSignalBlocks.HORIZONTAL_SOLID_SIGNAL);
-    initTabBlock(TrafficSignalBlocks.HORIZONTAL_U_TURN_SIGNAL);
-    initTabBlock(TrafficSignalBlocks.HORIZONTAL_UP_LEFT_SIGNAL);
     initTabBlock(BlockControllableRampMeterOnSignalLeftMount.class,
         fmlPreInitializationEvent); // ControllableRampMeterOnSignalLeftMount
     initTabBlock(BlockControllableRampMeterOnSignalMount.class,
