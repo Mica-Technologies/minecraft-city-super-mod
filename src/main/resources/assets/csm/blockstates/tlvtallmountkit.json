@@ -10,9 +10,6 @@
   },
   "variants": {
     "facing": {
-      "down": {
-        "x": 90
-      },
       "east": {
         "y": 90
       },
@@ -20,11 +17,34 @@
       "south": {
         "y": 180
       },
-      "up": {
-        "x": 270
-      },
       "west": {
         "y": 270
+      }
+    },
+    "color": {
+      "white": {
+        "textures": {
+          "0": "csm:blocks/trafficsignals/shared_textures/metal_white",
+          "particle": "csm:blocks/trafficsignals/shared_textures/metal_white"
+        }
+      },
+      "silver": {
+        "textures": {
+          "0": "csm:blocks/trafficsignals/shared_textures/metal_silver",
+          "particle": "csm:blocks/trafficsignals/shared_textures/metal_silver"
+        }
+      },
+      "black": {
+        "textures": {
+          "0": "csm:blocks/trafficsignals/shared_textures/metal_black",
+          "particle": "csm:blocks/trafficsignals/shared_textures/metal_black"
+        }
+      },
+      "matte_white": {
+        "textures": {
+          "0": "csm:blocks/trafficsignals/shared_textures/metal_mattewhite",
+          "particle": "csm:blocks/trafficsignals/shared_textures/metal_mattewhite"
+        }
       }
     },
     "inventory": [
