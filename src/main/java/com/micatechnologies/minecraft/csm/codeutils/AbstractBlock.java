@@ -261,6 +261,11 @@ public abstract class AbstractBlock extends Block implements IHasModel, ICsmBloc
     Block block = state.getBlock();
     if (block instanceof ICsmRetiringBlock) {
       String replacementBlockId = ((ICsmRetiringBlock) block).getReplacementBlockId();
+      if (replacementBlockId == null) {
+        // Factory block classes may implement ICsmRetiringBlock unconditionally; a null id
+        // means this particular instance isn't scheduled for retirement, so skip.
+        return;
+      }
       Block replacementBlock = CsmRegistry.getBlock(replacementBlockId);
       if (replacementBlock != null) {
         // Save old tile entity data before replacement

@@ -13,14 +13,6 @@ import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleHor
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleHorizontalAngleTan;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleHorizontalAngleUnpainted;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleHorizontalAngleWhite;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleHorizontalMountDouble;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleHorizontalMountDoubleBlack;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleHorizontalMountDoubleTan;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleHorizontalMountDoubleWhite;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleHorizontalSingleMount;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleHorizontalSingleMountBlack;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleHorizontalSingleMountTan;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleHorizontalSingleMountWhite;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleLargeBlack;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleLargeGray;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleLargeTan;
@@ -331,10 +323,6 @@ public class CsmTabTrafficAccessories extends CsmTab {
     initTabBlock(new BlockTrafficAccessoryBackplateFitted("tlhawkborderyellowblack"));
 
     // --- Backplate factory blocks: TLHBorder ---
-    initTabBlock(new BlockTrafficAccessoryBackplate("tlhborderblack"));
-    initTabBlock(new BlockTrafficAccessoryBackplate("tlhbordertan"));
-    initTabBlock(new BlockTrafficAccessoryBackplate("tlhborderwhite"));
-    initTabBlock(new BlockTrafficAccessoryBackplate("tlhborderyellow"));
 
     // --- NSEWUD factory blocks: TL Covers and Mount Kits ---
     initTabBlock(new BlockTrafficAccessoryNSEWUD("tlhcover", BB_TL_H_COVER, BlockRenderLayer.SOLID, 2F, true));
@@ -375,21 +363,6 @@ public class CsmTabTrafficAccessories extends CsmTab {
     initTabBlock(BlockTrafficPoleHorizontalAngleBlack.class, fmlPreInitializationEvent);
 
     // --- NSEWUD factory blocks: Horizontal Angle Mounts ---
-    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpolehorizontalanglemount1black", BB_TRAFFIC_POLE_HORIZ_ANGLE_MOUNT_1, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
-    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpolehorizontalanglemount1silver", BB_TRAFFIC_POLE_HORIZ_ANGLE_MOUNT_1, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
-    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpolehorizontalanglemount1tan", BB_TRAFFIC_POLE_HORIZ_ANGLE_MOUNT_1, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
-    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpolehorizontalanglemount1unpainted", BB_TRAFFIC_POLE_HORIZ_ANGLE_MOUNT_1, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
-    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpolehorizontalanglemount1white", BB_TRAFFIC_POLE_HORIZ_ANGLE_MOUNT_1, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
-    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpolehorizontalanglemount2black", BB_TRAFFIC_POLE_HORIZ_ANGLE_MOUNT_2, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
-    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpolehorizontalanglemount2silver", BB_TRAFFIC_POLE_HORIZ_ANGLE_MOUNT_2, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
-    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpolehorizontalanglemount2tan", BB_TRAFFIC_POLE_HORIZ_ANGLE_MOUNT_2, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
-    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpolehorizontalanglemount2unpainted", BB_TRAFFIC_POLE_HORIZ_ANGLE_MOUNT_2, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
-    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpolehorizontalanglemount2white", BB_TRAFFIC_POLE_HORIZ_ANGLE_MOUNT_2, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
-    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpolehorizontalanglemount3black", BB_TRAFFIC_POLE_HORIZ_ANGLE_MOUNT_3, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
-    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpolehorizontalanglemount3silver", BB_TRAFFIC_POLE_HORIZ_ANGLE_MOUNT_3, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
-    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpolehorizontalanglemount3tan", BB_TRAFFIC_POLE_HORIZ_ANGLE_MOUNT_3, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
-    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpolehorizontalanglemount3unpainted", BB_TRAFFIC_POLE_HORIZ_ANGLE_MOUNT_3, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
-    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpolehorizontalanglemount3white", BB_TRAFFIC_POLE_HORIZ_ANGLE_MOUNT_3, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
 
     // --- Class-based: Traffic Pole Angles (HZEight) ---
     initTabBlock(BlockTrafficPoleHorizontalAngleSilver.class, fmlPreInitializationEvent);
@@ -398,15 +371,6 @@ public class CsmTabTrafficAccessories extends CsmTab {
     initTabBlock(BlockTrafficPoleHorizontalAngleWhite.class, fmlPreInitializationEvent);
     initTabBlock(BlockTrafficPoleSmallBlack.class, fmlPreInitializationEvent);
 
-    // --- Class-based: ICsmRetiringBlock (7 overrides) ---
-    initTabBlock(BlockTrafficPoleHorizontalMountDouble.class, fmlPreInitializationEvent);
-    initTabBlock(BlockTrafficPoleHorizontalMountDoubleBlack.class, fmlPreInitializationEvent);
-    initTabBlock(BlockTrafficPoleHorizontalMountDoubleTan.class, fmlPreInitializationEvent);
-    initTabBlock(BlockTrafficPoleHorizontalMountDoubleWhite.class, fmlPreInitializationEvent);
-    initTabBlock(BlockTrafficPoleHorizontalSingleMount.class, fmlPreInitializationEvent);
-    initTabBlock(BlockTrafficPoleHorizontalSingleMountBlack.class, fmlPreInitializationEvent);
-    initTabBlock(BlockTrafficPoleHorizontalSingleMountTan.class, fmlPreInitializationEvent);
-    initTabBlock(BlockTrafficPoleHorizontalSingleMountWhite.class, fmlPreInitializationEvent);
 
     // --- Class-based: Traffic Poles (SmallTan, SmallWhite) ---
     initTabBlock(BlockTrafficPoleSmallTan.class, fmlPreInitializationEvent);

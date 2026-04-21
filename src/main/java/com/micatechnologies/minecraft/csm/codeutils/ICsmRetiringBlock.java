@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.codeutils;
 
+import javax.annotation.Nullable;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
@@ -16,10 +17,16 @@ public interface ICsmRetiringBlock {
   /**
    * Retrieves the replacement block ID.
    *
-   * @return The replacement block ID.
+   * <p>May return {@code null} to indicate "no retirement right now" — useful for factory block
+   * classes that implement this interface unconditionally but only retire for a subset of their
+   * instances (the rest pass {@code null} in their constructor). When this returns {@code null},
+   * the retirement randomTick handler skips replacement entirely.
+   *
+   * @return The replacement block ID, or {@code null} if this block instance should not retire.
    *
    * @since 1.0
    */
+  @Nullable
   String getReplacementBlockId();
 
   /**
