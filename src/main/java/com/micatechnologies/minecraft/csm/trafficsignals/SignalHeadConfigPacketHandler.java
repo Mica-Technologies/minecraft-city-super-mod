@@ -56,6 +56,9 @@ public class SignalHeadConfigPacketHandler implements
         case TOGGLE_AGING:
           signalHead.toggleAging();
           break;
+        case TOGGLE_HORIZONTAL:
+          signalHead.toggleHorizontalFlip();
+          break;
       }
     });
     return null;

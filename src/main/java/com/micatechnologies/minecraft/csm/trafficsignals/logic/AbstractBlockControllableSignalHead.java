@@ -228,6 +228,17 @@ public abstract class AbstractBlockControllableSignalHead extends AbstractBlockC
   }
 
   /**
+   * Returns whether this signal's orientation can be toggled between vertical and horizontal
+   * via the signal-head config GUI. Default is {@code true}; specialty signals (doghouse,
+   * hawk, and anything whose geometry doesn't round-trip through a 90° rotation cleanly)
+   * should override to {@code false}. Static-horizontal blocks also return {@code false}
+   * since there's nothing to toggle — they're already horizontal.
+   */
+  public boolean allowsHorizontalFlip() {
+    return !isHorizontal();
+  }
+
+  /**
    * Returns per-section sizes (12 or 8) for the renderer. Default is 12 for all sections.
    * Override for 8-inch signals or mixed-size (8-8-12, 12-8-8) signals.
    */
