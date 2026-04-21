@@ -661,13 +661,20 @@ public class TileEntityTrafficSignalHeadRenderer extends
   private static final float STUB_LENGTH = 3.0f;      // length from housing to elbow centre
   // Elbow: slightly fatter than stub/tube so the 90° turn reads as a cast fitting.
   private static final float ELBOW_SIZE = 3.0f;
-  // Pole-direction arm: from elbow, extending toward the pole. Goes into the neighbouring
-  // block so the bracket visually reaches a pole block sitting one block away.
+  // Pole-direction arm cross-section. Length is computed per-bracket so the arm reaches
+  // roughly the centre of the neighbouring block where the pole sits — see BracketSpec.
   private static final float TUBE_SIZE = 2.5f;
-  private static final float TUBE_LENGTH = 10.0f;
-  // Signal body Z-centre (geometry range ≈ z=2..11, centred at 6.5). Used as the stub's
-  // Z anchor so the bracket plugs into the housing proper instead of the block's back face.
-  private static final float BODY_Z_CENTER = 6.5f;
+  // Signal body back-face anchor. The signal geometry's visible detail centres around
+  // z≈6–7, but that's where the visors are. The housing body itself sits behind the
+  // visors toward the block's back face; z=14 is about where a mount bracket would
+  // realistically bolt onto the housing's rear shell.
+  private static final float BODY_Z_CENTER = 14.0f;
+  // Neighbouring block centre (beyond the current block's face) on the tube axis. The
+  // arm's length per bracket is chosen so the tube's far end lands at this coordinate in
+  // the direction the arm extends — matching the crosswalk signal mount convention of
+  // reaching into the pole's block.
+  private static final float NEIGHBOUR_CENTRE_POS = 24.0f; // block face at 16 + half block (8)
+  private static final float NEIGHBOUR_CENTRE_NEG = -8.0f; // mirror: 0 - 8
   // Slight tilt applied to the pole-side arm so it reads as angling toward the pole rather
   // than sticking straight out at a perfect 90°. Positive angle tilts the arm toward the
   // signal body's midpoint (top arm droops, bottom arm rises, left-mount arm tilts inward).
@@ -817,6 +824,9 @@ public class TileEntityTrafficSignalHeadRenderer extends
 
     private final int tubeAxisIdx;
     private final float tubeSign;
+    // Length of the pole-direction arm from the elbow centre, chosen so the far end
+    // lands near the centre of the neighbouring block in the tube direction.
+    private final float tubeLength;
 
     // Elbow centre in model space — pivot for the arm's tilt rotation.
     final float elbowX, elbowY, elbowZ;
@@ -862,6 +872,14 @@ public class TileEntityTrafficSignalHeadRenderer extends
       this.elbowX = elbowCoords[0];
       this.elbowY = elbowCoords[1];
       this.elbowZ = elbowCoords[2];
+
+      // Arm length: reach from the elbow on the tube axis to the centre of the adjacent
+      // block in the direction the arm extends. Keeps the bracket's far end in the right
+      // spot for variable elbow positions (REAR's elbow sits closer to the neighbour than
+      // a SIDE mount's elbow does, so the REAR arm needs less length).
+      float elbowOnTubeAxis = elbowCoords[tubeAxisIdx];
+      float neighbourCentre = tubeSign > 0 ? NEIGHBOUR_CENTRE_POS : NEIGHBOUR_CENTRE_NEG;
+      this.tubeLength = Math.abs(neighbourCentre - elbowOnTubeAxis);
 
       // Tilt axis = stubDir × poleDir. Rotating the arm by +ARM_TILT_DEGREES around this
       // axis swings pole direction toward -stubDir (i.e. toward the signal centre).
@@ -935,7 +953,7 @@ public class TileEntityTrafficSignalHeadRenderer extends
         tubeAnchor = crossCenter2;
       }
       float tubeStart = tubeAnchor;
-      float tubeEnd = tubeAnchor + tubeSign * TUBE_LENGTH;
+      float tubeEnd = tubeAnchor + tubeSign * tubeLength;
       tubeFrom[tubeAxisIdx] = Math.min(tubeStart, tubeEnd);
       tubeTo[tubeAxisIdx]   = Math.max(tubeStart, tubeEnd);
       boxes.add(new RenderHelper.Box(tubeFrom, tubeTo));
