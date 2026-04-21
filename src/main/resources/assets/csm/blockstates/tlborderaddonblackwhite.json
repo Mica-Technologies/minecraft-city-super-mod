@@ -45,7 +45,8 @@
     "horizontal": {
       "false": {},
       "true": {
-        "model": "csm:trafficsignals/shared_models/signal_backplate_horizontal_addon_1"
+        "model": "csm:trafficsignals/shared_models/signal_backplate_horizontal_addon_1",
+        "y": 180
       }
     },
     "inventory": [
