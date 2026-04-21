@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.trafficsignals.logic;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEW;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmNoSnowAccumulation;
 import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalHead;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -19,7 +20,8 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.property.IExtendedBlockState;
 import org.jetbrains.annotations.NotNull;
 
-public abstract class AbstractBlockControllableSignal extends AbstractBlockRotatableNSEW {
+public abstract class AbstractBlockControllableSignal extends AbstractBlockRotatableNSEW
+    implements ICsmNoSnowAccumulation {
 
   public static final int SIGNAL_RED = 0;
   public static final int SIGNAL_YELLOW = 1;

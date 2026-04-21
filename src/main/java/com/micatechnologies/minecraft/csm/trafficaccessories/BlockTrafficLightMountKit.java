@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEWUD;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmNoSnowAccumulation;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalHead;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignalHead;
@@ -34,7 +35,7 @@ import net.minecraft.world.World;
  * steal clicks from adjacent blocks (same approach as signal head blocks).
  */
 public class BlockTrafficLightMountKit extends AbstractBlockRotatableNSEWUD
-    implements ICsmTileEntityProvider {
+    implements ICsmTileEntityProvider, ICsmNoSnowAccumulation {
 
   // Fallback bounding box when no signal is detected (covers default 3-section vertical bracket).
   // Computed from default signal envelope: Y=-12 to 24 model units, with arms/knuckles adding ~5 units.

@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEW;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmNoSnowAccumulation;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.block.SoundType;
@@ -32,7 +33,8 @@ import net.minecraft.world.World;
  * overrides texture {@code #0} per color variant. This keeps the block fully static, suitable
  * for later backporting to existing mount blocks without adding TE overhead.
  */
-public class BlockTrafficAccessoryNSEW extends AbstractBlockRotatableNSEW {
+public class BlockTrafficAccessoryNSEW extends AbstractBlockRotatableNSEW
+    implements ICsmNoSnowAccumulation {
 
   /**
    * Metal finish applied to the mount's shared texture ({@code #0}). Names must match the

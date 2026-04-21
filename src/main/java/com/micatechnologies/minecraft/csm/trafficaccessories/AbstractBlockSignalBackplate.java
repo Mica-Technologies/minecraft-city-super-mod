@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEWUD;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmNoSnowAccumulation;
 import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalHead;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignalHead;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyTilt;
@@ -24,7 +25,8 @@ import net.minecraft.world.World;
  * {@link TileEntityTrafficSignalHead} in the block behind this backplate; no tile entity or
  * metadata storage is required on the backplate itself.
  */
-public abstract class AbstractBlockSignalBackplate extends AbstractBlockRotatableNSEWUD {
+public abstract class AbstractBlockSignalBackplate extends AbstractBlockRotatableNSEWUD
+    implements ICsmNoSnowAccumulation {
 
   /**
    * The combined tilt + horizontal-orientation property used for model selection. Forge v1

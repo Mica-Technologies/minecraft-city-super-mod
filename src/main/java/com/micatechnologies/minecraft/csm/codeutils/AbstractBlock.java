@@ -153,6 +153,22 @@ public abstract class AbstractBlock extends Block implements IHasModel, ICsmBloc
   }
 
   /**
+   * Blocks implementing {@link ICsmNoSnowAccumulation} report their UP face as non-solid so
+   * vanilla's snow-placement check ({@code Blocks.SNOW_LAYER.canPlaceBlockAt}, which gates
+   * on {@code isSideSolid(...UP)}) skips them. Other sides still delegate to the default
+   * {@link Block#isSideSolid} behaviour, preserving attachment of torches, redstone, etc.
+   * on the block's faces.
+   */
+  @Override
+  public boolean isSideSolid(IBlockState base_state, IBlockAccess world, BlockPos pos,
+      EnumFacing side) {
+    if (side == EnumFacing.UP && this instanceof ICsmNoSnowAccumulation) {
+      return false;
+    }
+    return super.isSideSolid(base_state, world, pos, side);
+  }
+
+  /**
    * Overridden method from {@link Block} which handles the removal of the block. This method
    * removes the tile entity from the world if the block has a tile entity.
    *
