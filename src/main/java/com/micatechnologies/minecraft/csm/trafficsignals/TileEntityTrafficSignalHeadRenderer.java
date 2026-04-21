@@ -233,7 +233,16 @@ public class TileEntityTrafficSignalHeadRenderer extends
     // placed/broken beside this signal) don't invalidate the TE's dirty flag, so rebuilding
     // from source every frame is the simplest way to keep suppression up to date. Geometry
     // is ~4-8 small boxes per frame — cheap compared to the main signal draw.
-    renderMount(te, sectionSizes, sectionYPositions, sectionXPositions, horizontal, zPushBack);
+    //
+    // mountTiltAngle is the net Y rotation the signal body is currently under, relative to
+    // the base facing, because of bodyTilt. The mount itself is drawn inside the same GL
+    // matrix (so it inherits the tilt visually on the signal side of the bracket), but the
+    // arm's target is in world-neighbour coordinates that don't rotate with the tilt — so
+    // BracketSpec uses mountTiltAngle to inverse-rotate the target before solving, cancelling
+    // the GL tilt out and leaving the arm tip at the actual world pole position.
+    float mountTiltAngle = bodyDirection.getRotation() - getBaseFacingAngle(facing);
+    renderMount(te, sectionSizes, sectionYPositions, sectionXPositions, horizontal,
+        zPushBack, mountTiltAngle);
 
     GL11.glPopMatrix();
 
@@ -680,7 +689,7 @@ public class TileEntityTrafficSignalHeadRenderer extends
 
   private void renderMount(TileEntityTrafficSignalHead te, int[] sectionSizes,
       float[] sectionYPositions, float[] sectionXPositions, boolean horizontal,
-      float zPushBack) {
+      float zPushBack, float mountTiltAngle) {
     SignalHeadMountType mountType = te.getMountType();
     if (mountType == SignalHeadMountType.NONE) return;
 
@@ -751,11 +760,11 @@ public class TileEntityTrafficSignalHeadRenderer extends
     // (b) issue one additional draw per bracket with a glRotatef that tilts just the arm.
     List<BracketSpec> brackets = new ArrayList<>();
     if (horizontal) {
-      if (!suppressHighEnd) brackets.add(new BracketSpec(rightX, 6.0f, true,  true,  poleLeg));
-      if (!suppressLowEnd)  brackets.add(new BracketSpec(leftX,  6.0f, true,  false, poleLeg));
+      if (!suppressHighEnd) brackets.add(new BracketSpec(rightX, 6.0f, true,  true,  poleLeg, mountTiltAngle));
+      if (!suppressLowEnd)  brackets.add(new BracketSpec(leftX,  6.0f, true,  false, poleLeg, mountTiltAngle));
     } else {
-      if (!suppressHighEnd) brackets.add(new BracketSpec(8.0f, topY,    false, true,  poleLeg));
-      if (!suppressLowEnd)  brackets.add(new BracketSpec(8.0f, bottomY, false, false, poleLeg));
+      if (!suppressHighEnd) brackets.add(new BracketSpec(8.0f, topY,    false, true,  poleLeg, mountTiltAngle));
+      if (!suppressLowEnd)  brackets.add(new BracketSpec(8.0f, bottomY, false, false, poleLeg, mountTiltAngle));
     }
 
     if (brackets.isEmpty()) return;
@@ -837,7 +846,7 @@ public class TileEntityTrafficSignalHeadRenderer extends
     final float tiltAngleDegrees;
 
     BracketSpec(float bodyCenterX, float bodyCenterY, boolean horizontalSignal,
-        boolean isHighEnd, PoleLeg poleLeg) {
+        boolean isHighEnd, PoleLeg poleLeg, float tiltAngleDeg) {
       this.stubSign = isHighEnd ? 1f : -1f;
       if (horizontalSignal) {
         this.crossAxisIdx1 = 1;  // Y
@@ -873,23 +882,48 @@ public class TileEntityTrafficSignalHeadRenderer extends
       this.elbowY = elbowCoords[1];
       this.elbowZ = elbowCoords[2];
 
-      // Target: X/Z centre of the neighbouring block in the pole-leg direction.
+      // Target is chosen per axis on a uniform rule so the arm always angles in exactly
+      // two axes (tube axis + the third "cross" axis), never three:
+      //   - tube axis   → neighbour block centre in the pole direction
+      //   - stub axis   → held at the elbow's coord (no angle along the attachment axis)
+      //   - cross axis  → block centre (8), i.e. meet the pole at its block's centre
       //
-      // Y is deliberately pinned to the elbow's Y (not the block centre) because the
-      // typical layout has the signal mounted on a VERTICAL pole next to it. A vertical
-      // pole extends through every Y, so we don't need to tilt the arm up or down to
-      // meet it — we only care about meeting the pole's X/Z coordinate. Aiming at the
-      // block's Y centre would produce big spurious up/down tilts for top/bottom
-      // brackets whose elbows sit far from the block's vertical midpoint.
+      // For a vertical signal with REAR mount: tube=Z, stub=Y, cross=X → angle in X+Z.
+      // For a vertical signal with LEFT/RIGHT: tube=X, stub=Y, cross=Z → angle in X+Z.
+      // For a horizontal signal with REAR:     tube=Z, stub=X, cross=Y → angle in Y+Z.
+      // For a horizontal signal with UP/DOWN:  tube=Y, stub=X, cross=Z → angle in Y+Z.
       //
-      // Exception: when the pole direction itself is Y (horizontal UP/DOWN mount types
-      // where the "pole" is a mast arm above or below), the Y axis IS the axis we're
-      // aiming along, so we use the neighbour centre for Y too.
-      float targetX = BLOCK_CENTRE + (tubeAxisIdx == 0 ? tubeSign * 16f : 0f);
-      float targetY = tubeAxisIdx == 1
-          ? BLOCK_CENTRE + tubeSign * 16f  // aiming along Y (mast-arm style)
-          : elbowY;                         // vertical pole — stay at elbow height
-      float targetZ = BLOCK_CENTRE + (tubeAxisIdx == 2 ? tubeSign * 16f : 0f);
+      // In all four cases the stub axis is held constant so the bracket angles in the
+      // bend plane and the perpendicular (cross) plane only. For vertical signals this
+      // matches the typical layout of a vertical pole continuing past the signal's height;
+      // for horizontal signals with UP/DOWN poles we assume a solid ceiling / mast-arm
+      // surface the bracket can reach.
+      float targetX = (stubAxisIdx == 0) ? elbowX
+          : (tubeAxisIdx == 0) ? BLOCK_CENTRE + tubeSign * 16f
+          : BLOCK_CENTRE;
+      float targetY = (stubAxisIdx == 1) ? elbowY
+          : (tubeAxisIdx == 1) ? BLOCK_CENTRE + tubeSign * 16f
+          : BLOCK_CENTRE;
+      float targetZ = (stubAxisIdx == 2) ? elbowZ
+          : (tubeAxisIdx == 2) ? BLOCK_CENTRE + tubeSign * 16f
+          : BLOCK_CENTRE;
+
+      // Tilt compensation. The signal body tilt rotates the whole local frame around Y
+      // at the body's pivot; rendering the arm straight at our un-tilted target would
+      // then get rotated along with everything else and miss the world-fixed pole. To
+      // keep the arm tip landing at the neighbour's world position regardless of tilt,
+      // apply the INVERSE tilt rotation to the target: the rotation from the GL stack
+      // then rotates that back, net-zero against the tilt, and the arm points at the
+      // actual world-neighbour centre.
+      if (Math.abs(tiltAngleDeg) > 0.0001f) {
+        double rad = Math.toRadians(-tiltAngleDeg);
+        float cos = (float) Math.cos(rad);
+        float sin = (float) Math.sin(rad);
+        float relX = targetX - BLOCK_CENTRE;
+        float relZ = targetZ - BLOCK_CENTRE;
+        targetX = relX * cos + relZ * sin + BLOCK_CENTRE;
+        targetZ = -relX * sin + relZ * cos + BLOCK_CENTRE;
+      }
 
       float dx = targetX - elbowX;
       float dy = targetY - elbowY;
