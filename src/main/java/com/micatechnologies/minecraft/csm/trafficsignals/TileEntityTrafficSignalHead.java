@@ -91,9 +91,10 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
   private static final String AGING_LAST_DAY_KEY = "lastAgingDay";
   private static final String AGING_STATES_KEY = "bulbAgingStates";
   private static final String AGING_SEED_KEY = "agingSeed";
-  private static final int AGING_HEALTHY = 0;
-  private static final int AGING_FAILING = 1;
-  private static final int AGING_DEAD = 2;
+  public static final int AGING_HEALTHY = 0;
+  public static final int AGING_FAILING = 1;
+  public static final int AGING_DEAD = 2;
+  public static final int AGING_STATE_COUNT = 3;
   private static final double CHANCE_HEALTHY_TO_FAILING = 0.00025; // 0.025% per day
   private static final double CHANCE_FAILING_TO_DEAD = 0.005;     // 0.5% per day
   private static final int MAX_CATCHUP_DAYS = 365;
@@ -470,6 +471,89 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
     return next;
   }
 
+  // --- Per-section property cyclers ---
+  //
+  // These mirror the whole-head getNext* methods above, but advance only the section at the
+  // given index. The per-section config GUI dispatches through these so individual sections can
+  // be customized ("frankenstein" signal heads). The whole-head variants remain the source of
+  // truth for the simple config GUI and for the item tool's sneak-click cycle shortcuts.
+
+  private boolean isValidSectionIndex(int idx) {
+    return idx >= 0 && idx < sectionInfos.length;
+  }
+
+  public TrafficSignalBodyColor getNextBodyPaintColor(int sectionIndex) {
+    if (!isValidSectionIndex(sectionIndex)) {
+      return TrafficSignalBodyColor.FLAT_BLACK;
+    }
+    TrafficSignalBodyColor next = sectionInfos[sectionIndex].getBodyColor().getNextColor();
+    sectionInfos[sectionIndex].setBodyColor(next);
+    markDirtySync(world, pos, true);
+    return next;
+  }
+
+  public TrafficSignalBodyColor getNextDoorPaintColor(int sectionIndex) {
+    if (!isValidSectionIndex(sectionIndex)) {
+      return TrafficSignalBodyColor.FLAT_BLACK;
+    }
+    TrafficSignalBodyColor next = sectionInfos[sectionIndex].getDoorColor().getNextColor();
+    sectionInfos[sectionIndex].setDoorColor(next);
+    markDirtySync(world, pos, true);
+    return next;
+  }
+
+  public TrafficSignalBodyColor getNextVisorPaintColor(int sectionIndex) {
+    if (!isValidSectionIndex(sectionIndex)) {
+      return TrafficSignalBodyColor.FLAT_BLACK;
+    }
+    TrafficSignalBodyColor next = sectionInfos[sectionIndex].getVisorColor().getNextColor();
+    sectionInfos[sectionIndex].setVisorColor(next);
+    markDirtySync(world, pos, true);
+    return next;
+  }
+
+  public TrafficSignalVisorType getNextVisorType(int sectionIndex) {
+    if (!isValidSectionIndex(sectionIndex)) {
+      return TrafficSignalVisorType.TUNNEL;
+    }
+    TrafficSignalVisorType next = sectionInfos[sectionIndex].getVisorType().getNextVisorType();
+    sectionInfos[sectionIndex].setVisorType(next);
+    markDirtySync(world, pos, true);
+    return next;
+  }
+
+  public TrafficSignalBulbStyle getNextBulbStyle(int sectionIndex) {
+    if (!isValidSectionIndex(sectionIndex)) {
+      return TrafficSignalBulbStyle.INCANDESCENT;
+    }
+    // Block-level enforcement wins over per-section customization: a head that hard-locks its
+    // bulb style (e.g. modern LED-only housings) must remain consistent across all sections.
+    if (world != null) {
+      Block block = world.getBlockState(pos).getBlock();
+      if (block instanceof AbstractBlockControllableSignalHead) {
+        TrafficSignalBulbStyle enforced =
+            ((AbstractBlockControllableSignalHead) block).getEnforcedBulbStyle();
+        if (enforced != null) {
+          return enforced;
+        }
+      }
+    }
+    TrafficSignalBulbStyle next = sectionInfos[sectionIndex].getBulbStyle().getNextBulbStyle();
+    sectionInfos[sectionIndex].setBulbStyle(next);
+    markDirtySync(world, pos, true);
+    return next;
+  }
+
+  public TrafficSignalBulbType getNextBulbType(int sectionIndex) {
+    if (!isValidSectionIndex(sectionIndex)) {
+      return TrafficSignalBulbType.BALL;
+    }
+    TrafficSignalBulbType next = sectionInfos[sectionIndex].getBulbType().getNextBulbType();
+    sectionInfos[sectionIndex].setBulbType(next);
+    markDirtySync(world, pos, true);
+    return next;
+  }
+
   public boolean isStateDirty() {
     return dirty;
   }
@@ -505,13 +589,74 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
         lastAgingDay = world.getTotalWorldTime() / 24000L;
       }
     } else {
-      // Turning aging off resets all bulbs to healthy ("replacing" broken bulbs)
+      // Turning aging off resets all bulbs to healthy ("replacing" broken bulbs). This also
+      // wipes any manual per-section overrides by design — treat the toggle as a maintenance
+      // crew that has visited every head in the system.
       bulbAgingStates = new int[sectionInfos.length];
       lastAgingDay = -1L;
       agingSeed = 0L;
     }
     markDirtySync(world, pos, true);
     return agingEnabled;
+  }
+
+  /**
+   * Ensures {@link #bulbAgingStates} is sized to the current section count so callers can index
+   * into it directly. Used by manual-override setters, which need a valid slot even when aging
+   * has never been toggled on. Existing values are preserved on resize.
+   */
+  private void ensureBulbAgingStatesSize() {
+    if (bulbAgingStates.length == sectionInfos.length) {
+      return;
+    }
+    int[] resized = new int[sectionInfos.length];
+    System.arraycopy(bulbAgingStates, 0, resized, 0,
+        Math.min(bulbAgingStates.length, sectionInfos.length));
+    bulbAgingStates = resized;
+  }
+
+  /**
+   * Returns the current aging state for the given section ({@link #AGING_HEALTHY},
+   * {@link #AGING_FAILING}, or {@link #AGING_DEAD}). Returns {@code AGING_HEALTHY} for
+   * out-of-range indices so callers never have to null-check.
+   */
+  public int getBulbAgingState(int sectionIndex) {
+    if (sectionIndex < 0 || sectionIndex >= bulbAgingStates.length) {
+      return AGING_HEALTHY;
+    }
+    return bulbAgingStates[sectionIndex];
+  }
+
+  /**
+   * Directly sets a section's aging state. Works regardless of whether the global aging
+   * simulation is enabled — this is how the per-section config GUI lets players force a bulb
+   * to fail or die for aesthetic purposes. Out-of-range states are clamped to healthy.
+   */
+  public void setBulbAgingState(int sectionIndex, int state) {
+    if (sectionIndex < 0 || sectionIndex >= sectionInfos.length) {
+      return;
+    }
+    int clamped = (state < AGING_HEALTHY || state > AGING_DEAD) ? AGING_HEALTHY : state;
+    ensureBulbAgingStatesSize();
+    if (bulbAgingStates[sectionIndex] == clamped) {
+      return;
+    }
+    bulbAgingStates[sectionIndex] = clamped;
+    markDirtySync(world, pos, true);
+  }
+
+  /**
+   * Cycles a section's aging state forward (healthy → failing → dead → healthy) and returns
+   * the new value. Invoked by the per-section config GUI's bulb-state button.
+   */
+  public int getNextBulbAgingState(int sectionIndex) {
+    if (sectionIndex < 0 || sectionIndex >= sectionInfos.length) {
+      return AGING_HEALTHY;
+    }
+    ensureBulbAgingStatesSize();
+    int next = (bulbAgingStates[sectionIndex] + 1) % AGING_STATE_COUNT;
+    setBulbAgingState(sectionIndex, next);
+    return next;
   }
 
   private void tickAging() {
@@ -555,7 +700,12 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
   }
 
   private void applyAgingEffects() {
-    if (!agingEnabled || bulbAgingStates.length == 0) return;
+    // Intentionally no !agingEnabled gate: bulbAgingStates[] is the single source of truth for
+    // what a bulb looks like, so manual state overrides (set via the per-section config GUI)
+    // must still render as failing/dead even when the natural aging simulation is turned off.
+    // Toggling aging off zeros the array (see toggleAging), which keeps the prior behavior of
+    // "turning off aging resets all bulbs to healthy."
+    if (bulbAgingStates.length == 0) return;
 
     long now = System.currentTimeMillis();
     for (int i = 0; i < sectionInfos.length && i < bulbAgingStates.length; i++) {
