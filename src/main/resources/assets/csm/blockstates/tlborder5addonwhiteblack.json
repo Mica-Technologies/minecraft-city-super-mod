@@ -27,25 +27,34 @@
         "y": 270
       }
     },
-    "tilt": {
-      "none": {},
-      "left_tilt": {
+    "modelvariant": {
+      "v_none": {},
+      "v_left_tilt": {
         "model": "csm:trafficsignals/shared_models/signal_backplate_vertical_addon_2_left_tilt"
       },
-      "right_tilt": {
+      "v_right_tilt": {
         "model": "csm:trafficsignals/shared_models/signal_backplate_vertical_addon_2_right_tilt"
       },
-      "left_angle": {
+      "v_left_angle": {
         "model": "csm:trafficsignals/shared_models/signal_backplate_vertical_addon_2_left_angle"
       },
-      "right_angle": {
+      "v_right_angle": {
         "model": "csm:trafficsignals/shared_models/signal_backplate_vertical_addon_2_right_angle"
-      }
-    },
-    "horizontal": {
-      "false": {},
-      "true": {
+      },
+      "h_none": {
         "model": "csm:trafficsignals/shared_models/signal_backplate_horizontal_addon_2"
+      },
+      "h_left_tilt": {
+        "model": "csm:trafficsignals/shared_models/signal_backplate_horizontal_addon_2_left_tilt"
+      },
+      "h_right_tilt": {
+        "model": "csm:trafficsignals/shared_models/signal_backplate_horizontal_addon_2_right_tilt"
+      },
+      "h_left_angle": {
+        "model": "csm:trafficsignals/shared_models/signal_backplate_horizontal_addon_2_left_angle"
+      },
+      "h_right_angle": {
+        "model": "csm:trafficsignals/shared_models/signal_backplate_horizontal_addon_2_right_angle"
       }
     },
     "inventory": [
