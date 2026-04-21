@@ -2,8 +2,20 @@ package com.micatechnologies.minecraft.csm.tabs;
 
 import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
 import com.micatechnologies.minecraft.csm.lighting.BlockLightupAir;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficAccessoryBackplate;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficAccessoryNSEWUD;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleHorizontalMountDouble;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleHorizontalMountDoubleBlack;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleHorizontalMountDoubleTan;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleHorizontalMountDoubleWhite;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleHorizontalSingleMount;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleHorizontalSingleMountBlack;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleHorizontalSingleMountTan;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleHorizontalSingleMountWhite;
 import com.micatechnologies.minecraft.csm.trafficsignals.TrafficSignalBlocks;
 import net.minecraft.block.Block;
+import net.minecraft.util.BlockRenderLayer;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 /**
@@ -154,5 +166,53 @@ public class CsmTabNone extends CsmTab {
     initTabBlock(com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkDoubleWordedLeftMount.class, fmlPreInitializationEvent);
     initTabBlock(com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkDoubleWordedRearMount.class, fmlPreInitializationEvent);
     initTabBlock(com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkDoubleWordedRightMount.class, fmlPreInitializationEvent);
+
+    // Deprecated static horizontal backplates — the vertical tlborder*/tlborderaddon* blocks
+    // now auto-adjust to horizontal mode when placed next to a horizontal signal, so these
+    // fixed-horizontal variants are redundant. Retire each to its closest vertical analog.
+    initTabBlock(new BlockTrafficAccessoryBackplate("tlhborderblack", "tlborderblackblack"));
+    initTabBlock(new BlockTrafficAccessoryBackplate("tlhbordertan", "tlborderlargegray"));
+    initTabBlock(new BlockTrafficAccessoryBackplate("tlhborderwhite", "tlborderwhiteblack"));
+    initTabBlock(new BlockTrafficAccessoryBackplate("tlhborderyellow", "tlborderyellowblack"));
+
+    // Deprecated horizontal angle pole + pre-attached mount variants. The base
+    // trafficpolehorizontalangle{color} blocks auto-connect to adjacent mount kits now, so
+    // the ..mount1/2/3 variants are redundant. Retire each color family back to its base.
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpolehorizontalanglemount1black", BB_DEPRECATED, BlockRenderLayer.CUTOUT_MIPPED, 2F, true, "trafficpolehorizontalangleblack"));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpolehorizontalanglemount1silver", BB_DEPRECATED, BlockRenderLayer.CUTOUT_MIPPED, 2F, true, "trafficpolehorizontalanglesilver"));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpolehorizontalanglemount1tan", BB_DEPRECATED, BlockRenderLayer.CUTOUT_MIPPED, 2F, true, "trafficpolehorizontalangletan"));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpolehorizontalanglemount1unpainted", BB_DEPRECATED, BlockRenderLayer.CUTOUT_MIPPED, 2F, true, "trafficpolehorizontalangleunpainted"));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpolehorizontalanglemount1white", BB_DEPRECATED, BlockRenderLayer.CUTOUT_MIPPED, 2F, true, "trafficpolehorizontalanglewhite"));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpolehorizontalanglemount2black", BB_DEPRECATED, BlockRenderLayer.CUTOUT_MIPPED, 2F, true, "trafficpolehorizontalangleblack"));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpolehorizontalanglemount2silver", BB_DEPRECATED, BlockRenderLayer.CUTOUT_MIPPED, 2F, true, "trafficpolehorizontalanglesilver"));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpolehorizontalanglemount2tan", BB_DEPRECATED, BlockRenderLayer.CUTOUT_MIPPED, 2F, true, "trafficpolehorizontalangletan"));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpolehorizontalanglemount2unpainted", BB_DEPRECATED, BlockRenderLayer.CUTOUT_MIPPED, 2F, true, "trafficpolehorizontalangleunpainted"));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpolehorizontalanglemount2white", BB_DEPRECATED, BlockRenderLayer.CUTOUT_MIPPED, 2F, true, "trafficpolehorizontalanglewhite"));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpolehorizontalanglemount3black", BB_DEPRECATED, BlockRenderLayer.CUTOUT_MIPPED, 2F, true, "trafficpolehorizontalangleblack"));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpolehorizontalanglemount3silver", BB_DEPRECATED, BlockRenderLayer.CUTOUT_MIPPED, 2F, true, "trafficpolehorizontalanglesilver"));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpolehorizontalanglemount3tan", BB_DEPRECATED, BlockRenderLayer.CUTOUT_MIPPED, 2F, true, "trafficpolehorizontalangletan"));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpolehorizontalanglemount3unpainted", BB_DEPRECATED, BlockRenderLayer.CUTOUT_MIPPED, 2F, true, "trafficpolehorizontalangleunpainted"));
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpolehorizontalanglemount3white", BB_DEPRECATED, BlockRenderLayer.CUTOUT_MIPPED, 2F, true, "trafficpolehorizontalanglewhite"));
+
+    // Deprecated straight horizontal pole w/ pre-attached single/double mount variants.
+    // These classes were already ICsmRetiringBlock; just relocating them out of the visible
+    // traffic accessories tab so the creative inventory isn't cluttered with redundancies.
+    initTabBlock(BlockTrafficPoleHorizontalMountDouble.class, fmlPreInitializationEvent);
+    initTabBlock(BlockTrafficPoleHorizontalMountDoubleBlack.class, fmlPreInitializationEvent);
+    initTabBlock(BlockTrafficPoleHorizontalMountDoubleTan.class, fmlPreInitializationEvent);
+    initTabBlock(BlockTrafficPoleHorizontalMountDoubleWhite.class, fmlPreInitializationEvent);
+    initTabBlock(BlockTrafficPoleHorizontalSingleMount.class, fmlPreInitializationEvent);
+    initTabBlock(BlockTrafficPoleHorizontalSingleMountBlack.class, fmlPreInitializationEvent);
+    initTabBlock(BlockTrafficPoleHorizontalSingleMountTan.class, fmlPreInitializationEvent);
+    initTabBlock(BlockTrafficPoleHorizontalSingleMountWhite.class, fmlPreInitializationEvent);
   }
+
+  /**
+   * Shared placeholder bounding box for deprecated NSEWUD factory-registered blocks in this
+   * hidden tab. These blocks exist only to satisfy world-load of legacy placements; they auto-
+   * retire on random tick to their live replacements, so their collision shape is only ever
+   * seen briefly (if at all). Full-cube keeps selection/hit-testing sane in the meantime.
+   */
+  private static final AxisAlignedBB BB_DEPRECATED =
+      new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 1.0, 1.0);
 }

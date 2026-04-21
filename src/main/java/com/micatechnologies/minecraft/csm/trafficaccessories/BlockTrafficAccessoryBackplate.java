@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories;
 
+import com.micatechnologies.minecraft.csm.codeutils.ICsmRetiringBlock;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.block.SoundType;
@@ -11,7 +12,8 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 
-public class BlockTrafficAccessoryBackplate extends AbstractBlockSignalBackplate {
+public class BlockTrafficAccessoryBackplate extends AbstractBlockSignalBackplate
+    implements ICsmRetiringBlock {
 
   /**
    * ThreadLocal used to pass the registry name to the superclass constructor. The AbstractBlock
@@ -21,10 +23,29 @@ public class BlockTrafficAccessoryBackplate extends AbstractBlockSignalBackplate
   private static final ThreadLocal<String> PENDING_REGISTRY_NAME = new ThreadLocal<>();
 
   private final String registryName;
+  /**
+   * Optional registry id this block retires into when randomTick'd. Non-null means the block
+   * is deprecated and will auto-replace itself with the named block (see
+   * {@link ICsmRetiringBlock}). Null means this is a live block and retirement is skipped.
+   */
+  @Nullable
+  private final String replacementBlockId;
 
   public BlockTrafficAccessoryBackplate(String registryName) {
+    this(registryName, null);
+  }
+
+  public BlockTrafficAccessoryBackplate(String registryName,
+      @Nullable String replacementBlockId) {
     super(initRegistryName(registryName), SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0);
     this.registryName = registryName;
+    this.replacementBlockId = replacementBlockId;
+  }
+
+  @Nullable
+  @Override
+  public String getReplacementBlockId() {
+    return replacementBlockId;
   }
 
   private static Material initRegistryName(String name) {
