@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.trafficsignals.logic;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEW;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmNoSnowAccumulation;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalSensor;
 import javax.annotation.Nonnull;
@@ -16,7 +17,7 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 public abstract class AbstractBlockTrafficSignalSensor extends AbstractBlockRotatableNSEW
-    implements ICsmTileEntityProvider {
+    implements ICsmTileEntityProvider, ICsmNoSnowAccumulation {
 
   public AbstractBlockTrafficSignalSensor(Material materialIn) {
     super(materialIn);

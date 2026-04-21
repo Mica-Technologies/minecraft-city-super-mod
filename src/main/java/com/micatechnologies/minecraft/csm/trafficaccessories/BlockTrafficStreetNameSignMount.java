@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEW;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmNoSnowAccumulation;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockHorizontal;
@@ -13,7 +14,8 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 
-public class BlockTrafficStreetNameSignMount extends AbstractBlockRotatableNSEW {
+public class BlockTrafficStreetNameSignMount extends AbstractBlockRotatableNSEW
+    implements ICsmNoSnowAccumulation {
 
   public BlockTrafficStreetNameSignMount() {
     super(Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0);

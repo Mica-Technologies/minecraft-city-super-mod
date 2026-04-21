@@ -4,6 +4,7 @@ import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableHZEigh
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockTrafficPole;
 import com.micatechnologies.minecraft.csm.codeutils.BlockUtils;
 import com.micatechnologies.minecraft.csm.codeutils.DirectionEight;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmNoSnowAccumulation;
 import com.micatechnologies.minecraft.csm.codeutils.RotationUtils;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -23,7 +24,8 @@ import net.minecraft.world.IBlockAccess;
 import org.jetbrains.annotations.NotNull;
 
 @MethodsReturnNonnullByDefault
-public abstract class AbstractBlockSign extends AbstractBlockRotatableHZEight {
+public abstract class AbstractBlockSign extends AbstractBlockRotatableHZEight
+    implements ICsmNoSnowAccumulation {
 
   public static final PropertyBool DOWNWARD = PropertyBool.create("downward");
   public static final PropertyBool SETBACK = PropertyBool.create("setback");
