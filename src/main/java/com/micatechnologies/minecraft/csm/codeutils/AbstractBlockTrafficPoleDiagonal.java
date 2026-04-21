@@ -147,22 +147,25 @@ public abstract class AbstractBlockTrafficPoleDiagonal extends AbstractBlockTraf
       return false;
     }
 
-    // If the adjacent block is a rotatable block with a facing property (mount kit etc.),
-    // check that it actually faces toward this pole. A mount's "back" (attachment side) is
-    // the opposite of its FACING property. Only show the connector if the mount's back
-    // faces this pole — prevents false connectors on diagonal poles that are geometrically
-    // adjacent to the mount but not the pole the mount is clamped to.
+    // If the adjacent block is a rotatable block with a facing property (mount kit, sign,
+    // etc.), check that it actually faces toward this pole. A mount or sign's "back"
+    // (attachment side) is the opposite of its FACING property. Only show the connector if
+    // the back faces this pole — prevents false connectors on diagonal poles that are
+    // geometrically adjacent to the block but not the pole the block is clamped to.
     //
-    // Two property references to probe because AbstractBlockRotatableNSEWUD uses
-    // BlockDirectional.FACING (all 6 directions) while AbstractBlockRotatableNSEW uses
-    // BlockHorizontal.FACING (horizontal only) — different PropertyDirection instances,
-    // so a single getValue(...) call only works for one hierarchy.
+    // Each rotation abstract uses a different facing property type, so each branch reads
+    // the one that applies:
+    //   AbstractBlockRotatableNSEWUD   → BlockDirectional.FACING        (EnumFacing, 6 dirs)
+    //   AbstractBlockRotatableNSEW     → BlockHorizontal.FACING          (EnumFacing, 4 dirs)
+    //   AbstractBlockRotatableHZEight  → AbstractBlockRotatableHZEight.FACING
+    //                                                                   (DirectionEight, 8 dirs)
     IBlockState adjState = worldIn.getBlockState( adjPos );
     Block adjBlock = adjState.getBlock();
-    EnumFacing adjFacing = null;
+    BlockPos expectedPolePos = null;
     if ( adjBlock instanceof AbstractBlockRotatableNSEWUD ) {
       try {
-        adjFacing = adjState.getValue( BlockDirectional.FACING );
+        EnumFacing adjFacing = adjState.getValue( BlockDirectional.FACING );
+        expectedPolePos = adjPos.offset( adjFacing.getOpposite() );
       }
       catch ( IllegalArgumentException ignored ) {
         // Fall through — treat as a non-directional connectable block.
@@ -170,17 +173,26 @@ public abstract class AbstractBlockTrafficPoleDiagonal extends AbstractBlockTraf
     }
     else if ( adjBlock instanceof AbstractBlockRotatableNSEW ) {
       try {
-        adjFacing = adjState.getValue( BlockHorizontal.FACING );
+        EnumFacing adjFacing = adjState.getValue( BlockHorizontal.FACING );
+        expectedPolePos = adjPos.offset( adjFacing.getOpposite() );
       }
       catch ( IllegalArgumentException ignored ) {
         // Fall through — treat as a non-directional connectable block.
       }
     }
-    if ( adjFacing != null ) {
-      BlockPos expectedPolePos = adjPos.offset( adjFacing.getOpposite() );
-      if ( !expectedPolePos.equals( polePos ) ) {
-        return false; // Mount is not attached to this pole.
+    else if ( adjBlock instanceof AbstractBlockRotatableHZEight ) {
+      try {
+        DirectionEight adjFacing8 = adjState.getValue( AbstractBlockRotatableHZEight.FACING );
+        DirectionEight backDir = adjFacing8.getOpposite();
+        // DirectionEight is horizontal-only, so Y stays the same as the adjacent block's Y.
+        expectedPolePos = adjPos.add( backDir.getOffsetX(), 0, backDir.getOffsetZ() );
       }
+      catch ( IllegalArgumentException ignored ) {
+        // Fall through — treat as a non-directional connectable block.
+      }
+    }
+    if ( expectedPolePos != null && !expectedPolePos.equals( polePos ) ) {
+      return false; // Block is not attached to this pole.
     }
 
     return true;
