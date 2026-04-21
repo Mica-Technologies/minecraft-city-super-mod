@@ -10,13 +10,17 @@ import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
@@ -164,6 +168,36 @@ public class BlockTrafficLightMountKit extends AbstractBlockRotatableNSEWUD
     if (te instanceof TileEntityTrafficLightMountKit) {
       ((TileEntityTrafficLightMountKit) te).invalidateCachedBB();
     }
+  }
+
+  /**
+   * Sneak + right-click cycles the bracket's color scheme. Plain right-click is a no-op so
+   * players can still open other blocks or place items near the kit without accidentally
+   * repainting it. Handled server-side only; the TE syncs the new state down to the client
+   * for re-rendering.
+   */
+  @Override
+  public boolean onBlockActivated(World world, BlockPos pos, IBlockState state,
+      EntityPlayer player, EnumHand hand, EnumFacing side,
+      float hitX, float hitY, float hitZ) {
+    if (!player.isSneaking()) {
+      return false;
+    }
+    if (world.isRemote) {
+      // Let the server authoritatively cycle; still return true so the client doesn't also
+      // trigger an item-use action in the same tick.
+      return true;
+    }
+    TileEntity te = world.getTileEntity(pos);
+    if (!(te instanceof TileEntityTrafficLightMountKit)) {
+      return false;
+    }
+    TileEntityTrafficLightMountKit mountKit = (TileEntityTrafficLightMountKit) te;
+    MountKitColorScheme next = mountKit.cycleColorScheme();
+    mountKit.markDirtySync(world, pos, true);
+    player.sendMessage(new TextComponentString(
+        TextFormatting.GRAY + "Mount kit color: " + TextFormatting.WHITE + next.getFriendlyName()));
+    return true;
   }
 
   @Nullable

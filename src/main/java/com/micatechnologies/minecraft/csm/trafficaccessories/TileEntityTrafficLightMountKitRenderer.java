@@ -39,15 +39,8 @@ import org.lwjgl.opengl.GL11;
 public class TileEntityTrafficLightMountKitRenderer
     extends TileEntitySpecialRenderer<TileEntityTrafficLightMountKit> {
 
-  // --- Color palette ---
-  // Main aluminum body — cast aluminum alloy
-  private static final float ALU_R = 0.64f, ALU_G = 0.65f, ALU_B = 0.66f;
-  // Slightly darker for recessed/inner surfaces of the C-channel
-  private static final float ALU_DARK_R = 0.55f, ALU_DARK_G = 0.56f, ALU_DARK_B = 0.57f;
-  // Knuckle clamps — heavier cast hardware, darker
-  private static final float KNUCKLE_R = 0.48f, KNUCKLE_G = 0.49f, KNUCKLE_B = 0.50f;
-  // Pivot joint hubs — even darker to suggest heavy cast pieces
-  private static final float PIVOT_R = 0.44f, PIVOT_G = 0.45f, PIVOT_B = 0.46f;
+  // Color palette lives on MountKitColorScheme — the scheme is read off the tile entity
+  // each render so sneak+click re-coloring takes effect immediately.
 
   // --- Model-space constants (16 units = 1 block) ---
   private static final float CENTER_X = 8.0f;
@@ -143,6 +136,7 @@ public class TileEntityTrafficLightMountKitRenderer
    */
   private void renderBracket(TileEntityTrafficLightMountKit te, EnumFacing facing) {
     SignalInfo info = detectSignals(te, facing);
+    MountKitColorScheme scheme = te.getColorScheme();
 
     List<RenderHelper.Box> aluBoxes = new ArrayList<>();
     List<RenderHelper.Box> aluDarkBoxes = new ArrayList<>();
@@ -161,10 +155,14 @@ public class TileEntityTrafficLightMountKitRenderer
     GlStateManager.disableTexture2D();
     buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
 
-    RenderHelper.addBoxesToBuffer(aluBoxes, buffer, ALU_R, ALU_G, ALU_B, 1.0f, 0, 0, 0);
-    RenderHelper.addBoxesToBuffer(aluDarkBoxes, buffer, ALU_DARK_R, ALU_DARK_G, ALU_DARK_B, 1.0f, 0, 0, 0);
-    RenderHelper.addBoxesToBuffer(knuckleBoxes, buffer, KNUCKLE_R, KNUCKLE_G, KNUCKLE_B, 1.0f, 0, 0, 0);
-    RenderHelper.addBoxesToBuffer(pivotBoxes, buffer, PIVOT_R, PIVOT_G, PIVOT_B, 1.0f, 0, 0, 0);
+    RenderHelper.addBoxesToBuffer(aluBoxes, buffer,
+        scheme.aluR, scheme.aluG, scheme.aluB, 1.0f, 0, 0, 0);
+    RenderHelper.addBoxesToBuffer(aluDarkBoxes, buffer,
+        scheme.aluDarkR, scheme.aluDarkG, scheme.aluDarkB, 1.0f, 0, 0, 0);
+    RenderHelper.addBoxesToBuffer(knuckleBoxes, buffer,
+        scheme.knuckleR, scheme.knuckleG, scheme.knuckleB, 1.0f, 0, 0, 0);
+    RenderHelper.addBoxesToBuffer(pivotBoxes, buffer,
+        scheme.pivotR, scheme.pivotG, scheme.pivotB, 1.0f, 0, 0, 0);
 
     tessellator.draw();
     GlStateManager.enableTexture2D();
