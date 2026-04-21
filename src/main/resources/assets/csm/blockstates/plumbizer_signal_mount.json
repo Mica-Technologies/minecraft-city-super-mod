@@ -1,0 +1,45 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:trafficaccessories/shared_models/plumbizer_signal_mount",
+    "textures": {
+      "0": "csm:blocks/trafficsignals/shared_textures/metal_white",
+      "particle": "csm:blocks/trafficsignals/shared_textures/metal_white"
+    }
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": { "y": 90 },
+      "south": { "y": 180 },
+      "west": { "y": 270 }
+    },
+    "color": {
+      "white": {
+        "textures": {
+          "0": "csm:blocks/trafficsignals/shared_textures/metal_white",
+          "particle": "csm:blocks/trafficsignals/shared_textures/metal_white"
+        }
+      },
+      "silver": {
+        "textures": {
+          "0": "csm:blocks/trafficsignals/shared_textures/metal_silver",
+          "particle": "csm:blocks/trafficsignals/shared_textures/metal_silver"
+        }
+      },
+      "black": {
+        "textures": {
+          "0": "csm:blocks/trafficsignals/shared_textures/metal_black",
+          "particle": "csm:blocks/trafficsignals/shared_textures/metal_black"
+        }
+      },
+      "matte_white": {
+        "textures": {
+          "0": "csm:blocks/trafficsignals/shared_textures/metal_mattewhite",
+          "particle": "csm:blocks/trafficsignals/shared_textures/metal_mattewhite"
+        }
+      }
+    },
+    "inventory": [{}]
+  }
+}
