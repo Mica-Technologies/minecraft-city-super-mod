@@ -27,6 +27,18 @@ import com.micatechnologies.minecraft.csm.trafficsignals.BlockTrafficLightSensor
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockBush;
+import net.minecraft.block.BlockCactus;
+import net.minecraft.block.BlockCarpet;
+import net.minecraft.block.BlockLeaves;
+import net.minecraft.block.BlockRailBase;
+import net.minecraft.block.BlockRedstoneWire;
+import net.minecraft.block.BlockReed;
+import net.minecraft.block.BlockSnow;
+import net.minecraft.block.BlockSnowBlock;
+import net.minecraft.block.BlockTorch;
+import net.minecraft.block.BlockVine;
+import net.minecraft.block.BlockWeb;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
@@ -96,7 +108,11 @@ public abstract class AbstractBlockTrafficPole extends AbstractBlockRotatableNSE
   public static final PropertyBool MOUNT_DOWN = PropertyBool.create("mountdown");
 
   /**
-   * The list of global ignore blocks.
+   * The list of global ignore blocks. Includes CSM accessory mount blocks that should never cause
+   * a pole to mount, plus vanilla natural/decorative blocks whose geometry would not align with a
+   * pole's mounting visuals (snow layers, plants, rails, wires, torches, carpets, etc.). Subclass
+   * relationships are honored: for example, {@link BlockBush} covers flowers, saplings, tall
+   * grass, dead bushes, mushrooms, lily pads, double plants, and crops.
    */
   public static final Class<?>[] IGNORE_BLOCK =
       {BlockControllableCrosswalkDoubleWordedBaseMount.class,
@@ -113,7 +129,10 @@ public abstract class AbstractBlockTrafficPole extends AbstractBlockRotatableNSE
           BlockTrafficLightSensorBox.class, BlockTrafficStreetNameSignMount.class,
           BlockTrafficAccessoryNSEWUD.class, BlockControllableCrosswalkMountGray.class,
           BlockControllableCrosswalkSignalSingle.class, BlockControllableCrosswalkSignalDouble.class,
-          AbstractBlockControllableCrosswalkSignalNew.class};
+          AbstractBlockControllableCrosswalkSignalNew.class,
+          BlockSnow.class, BlockSnowBlock.class, BlockBush.class, BlockLeaves.class,
+          BlockVine.class, BlockCarpet.class, BlockTorch.class, BlockRedstoneWire.class,
+          BlockRailBase.class, BlockCactus.class, BlockReed.class, BlockWeb.class};
 
 
   /**
