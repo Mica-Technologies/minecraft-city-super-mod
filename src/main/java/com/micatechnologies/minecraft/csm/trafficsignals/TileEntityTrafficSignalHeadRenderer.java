@@ -665,6 +665,13 @@ public class TileEntityTrafficSignalHeadRenderer extends
   // block so the bracket visually reaches a pole block sitting one block away.
   private static final float TUBE_SIZE = 2.5f;
   private static final float TUBE_LENGTH = 10.0f;
+  // Signal body Z-centre (geometry range ≈ z=2..11, centred at 6.5). Used as the stub's
+  // Z anchor so the bracket plugs into the housing proper instead of the block's back face.
+  private static final float BODY_Z_CENTER = 6.5f;
+  // Slight tilt applied to the pole-side arm so it reads as angling toward the pole rather
+  // than sticking straight out at a perfect 90°. Positive angle tilts the arm toward the
+  // signal body's midpoint (top arm droops, bottom arm rises, left-mount arm tilts inward).
+  private static final float ARM_TILT_DEGREES = 10.0f;
 
   private void renderMount(TileEntityTrafficSignalHead te, int[] sectionSizes,
       float[] sectionYPositions, float[] sectionXPositions, boolean horizontal,
@@ -709,10 +716,15 @@ public class TileEntityTrafficSignalHeadRenderer extends
     }
 
     TrafficSignalBodyColor color = te.getMountColor();
-    List<RenderHelper.Box> boxes = new ArrayList<>();
 
     // Map mount type + orientation → pole-leg direction. Same pole direction for both
     // end brackets; user-facing type is a single choice, not per-end.
+    //
+    // For vertical mode the viewer-perspective left/right need to account for the facing
+    // rotation the TESR already applies: after the blockstate's y-rotation, a bracket leg
+    // extending in model +X always ends up on the viewer's LEFT regardless of which
+    // cardinal direction the signal faces (checked via cross product for N/E/S/W). So the
+    // user-facing "LEFT mount type" maps to model +X, and "RIGHT mount type" maps to -X.
     PoleLeg poleLeg;
     if (horizontal) {
       switch (mountType) {
@@ -723,152 +735,210 @@ public class TileEntityTrafficSignalHeadRenderer extends
       }
     } else {
       switch (mountType) {
-        case REAR:  poleLeg = PoleLeg.REAR_POS_Z; break;
-        case LEFT:  poleLeg = PoleLeg.LEFT_NEG_X; break;
-        case RIGHT: poleLeg = PoleLeg.RIGHT_POS_X; break;
+        case REAR:  poleLeg = PoleLeg.REAR_POS_Z;  break;
+        case LEFT:  poleLeg = PoleLeg.RIGHT_POS_X; break; // model +X → viewer's LEFT after facing rotation
+        case RIGHT: poleLeg = PoleLeg.LEFT_NEG_X;  break; // model -X → viewer's RIGHT
         default: return;
       }
     }
 
-    // Render bracket at each attachment end unless suppressed by an adjacent signal.
+    // Collect bracket specs so we can (a) batch all stub + elbow boxes into one draw, and
+    // (b) issue one additional draw per bracket with a glRotatef that tilts just the arm.
+    List<BracketSpec> brackets = new ArrayList<>();
     if (horizontal) {
-      if (!suppressHighEnd) addBracket(boxes, rightX, 6.0f, /*horizontal attachment*/ true, /*isHighEnd*/ true, poleLeg);
-      if (!suppressLowEnd)  addBracket(boxes, leftX,  6.0f, true, false, poleLeg);
+      if (!suppressHighEnd) brackets.add(new BracketSpec(rightX, 6.0f, true,  true,  poleLeg));
+      if (!suppressLowEnd)  brackets.add(new BracketSpec(leftX,  6.0f, true,  false, poleLeg));
     } else {
-      if (!suppressHighEnd) addBracket(boxes, 8.0f, topY,    false, true,  poleLeg);
-      if (!suppressLowEnd)  addBracket(boxes, 8.0f, bottomY, false, false, poleLeg);
+      if (!suppressHighEnd) brackets.add(new BracketSpec(8.0f, topY,    false, true,  poleLeg));
+      if (!suppressLowEnd)  brackets.add(new BracketSpec(8.0f, bottomY, false, false, poleLeg));
     }
 
-    if (boxes.isEmpty()) return;
+    if (brackets.isEmpty()) return;
 
     Tessellator tessellator = Tessellator.getInstance();
     BufferBuilder buffer = tessellator.getBuffer();
     GlStateManager.disableTexture2D();
+
+    // Pass 1: batched stubs + elbows (no tilt).
+    List<RenderHelper.Box> stubElbowBoxes = new ArrayList<>();
+    for (BracketSpec spec : brackets) {
+      spec.addStubAndElbow(stubElbowBoxes);
+    }
     buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
-    RenderHelper.addBoxesToBuffer(boxes, buffer,
+    RenderHelper.addBoxesToBuffer(stubElbowBoxes, buffer,
         color.getRed(), color.getGreen(), color.getBlue(), 1.0f, 0, 0, zPushBack);
     tessellator.draw();
+
+    // Pass 2: per-bracket arm drawn with a glRotatef pivoted at the elbow. Each bracket
+    // tilts around its own axis (cross product of stub direction and pole-leg direction)
+    // so the arm angles toward the signal body's midpoint rather than sticking straight
+    // out at a perfect 90°.
+    for (BracketSpec spec : brackets) {
+      GL11.glPushMatrix();
+      // The zPushBack shift is applied via addBoxesToBuffer's offset parameter for the
+      // unrotated boxes; for the rotation pivot we need the final world-space elbow Z,
+      // which already includes zPushBack.
+      GL11.glTranslatef(spec.elbowX, spec.elbowY, spec.elbowZ + zPushBack);
+      GL11.glRotatef(ARM_TILT_DEGREES, spec.tiltAxisX, spec.tiltAxisY, spec.tiltAxisZ);
+      GL11.glTranslatef(-spec.elbowX, -spec.elbowY, -(spec.elbowZ + zPushBack));
+
+      List<RenderHelper.Box> armBoxes = new ArrayList<>();
+      spec.addArm(armBoxes);
+      buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
+      RenderHelper.addBoxesToBuffer(armBoxes, buffer,
+          color.getRed(), color.getGreen(), color.getBlue(), 1.0f, 0, 0, zPushBack);
+      tessellator.draw();
+      GL11.glPopMatrix();
+    }
+
     GlStateManager.enableTexture2D();
   }
 
   /**
-   * Emits one mount bracket — stub + elbow + pole-direction arm — attached at the signal
-   * body's top/bottom (vertical) or left-end/right-end (horizontal) edge, with the
-   * pole-direction leg pointed according to {@code poleLeg}.
+   * One built-in mount bracket. Precomputes the stub / elbow / arm geometry plus the pivot
+   * point and tilt-axis needed to draw the arm with a slight angle toward the signal's
+   * midpoint — letting {@link #renderMount} issue a batched stub+elbow pass followed by a
+   * per-bracket rotated arm pass.
    *
-   * @param bodyCenterX model X of the bracket's body-parallel centre (8 in vertical mode,
-   *                    the attachment-end X in horizontal mode)
-   * @param bodyCenterY model Y of the centre (topY/bottomY in vertical, 6 in horizontal)
-   * @param horizontalSignal whether the signal is in horizontal layout
-   * @param isHighEnd    attachment on the high side (top / right-end) versus the low
-   * @param poleLeg      which way the pole-direction tube points from the elbow
+   * <p>Pole-leg direction and stub direction are resolved to axis vectors at construction,
+   * and the tilt axis is their cross product (so it's always perpendicular to both, with
+   * the sign that rotates the arm toward -stubDir i.e. back toward the signal centre).
    */
-  private static void addBracket(List<RenderHelper.Box> boxes, float bodyCenterX,
-      float bodyCenterY, boolean horizontalSignal, boolean isHighEnd, PoleLeg poleLeg) {
-    // Stub direction: the axis perpendicular to the signal body at the attachment edge.
-    // For a vertical signal with a top attachment, it's +Y; bottom is -Y. For horizontal,
-    // right-end = +X, left-end = -X.
-    float stubSign = isHighEnd ? 1f : -1f;
+  private static final class BracketSpec {
+    // Geometry helpers for addStubAndElbow / addArm.
+    private final int stubAxisIdx;    // axis the stub runs along (0=X, 1=Y, 2=Z)
+    private final float stubSign;     // +1 if attaching at the high end, -1 at the low end
+    private final int crossAxisIdx1;  // body-parallel axis 1
+    private final int crossAxisIdx2;  // body-parallel axis 2
+    private final float crossCenter1;
+    private final float crossCenter2;
+    private final float housingEdge;  // start of the stub on stubAxisIdx
+    private final float stubEnd;      // end of the stub (= elbow centre on stubAxisIdx)
 
-    // Axis layout per orientation. The stub exits the housing along the stub axis; the
-    // other two axes span the bracket's cross-section.
-    int plateAxisIdx1, plateAxisIdx2; // 0=X, 1=Y, 2=Z — the two body-parallel axes
-    int stubAxisIdx;                  // axis the stub runs along
-    if (horizontalSignal) {
-      plateAxisIdx1 = 1;  // Y (body height)
-      plateAxisIdx2 = 2;  // Z (body depth)
-      stubAxisIdx = 0;    // X
-    } else {
-      plateAxisIdx1 = 0;  // X (body width)
-      plateAxisIdx2 = 2;  // Z (body depth)
-      stubAxisIdx = 1;    // Y
-    }
+    private final int tubeAxisIdx;
+    private final float tubeSign;
 
-    float housingEdge = horizontalSignal ? bodyCenterX : bodyCenterY;
-    // Centre on the body-parallel axes (centered on the body's cross-section).
-    float plateCenter1 = horizontalSignal ? 6.0f : 8.0f; // Y if horizontal, X if vertical
-    float plateCenter2 = 10.0f;                           // Z: centered on body depth
+    // Elbow centre in model space — pivot for the arm's tilt rotation.
+    final float elbowX, elbowY, elbowZ;
 
-    // Stub: runs directly out of the housing at the attachment edge, square cross-section.
-    float stubStart = housingEdge;
-    float stubEnd = housingEdge + stubSign * STUB_LENGTH;
-    float[] stubFrom = new float[3];
-    float[] stubTo = new float[3];
-    stubFrom[plateAxisIdx1] = plateCenter1 - STUB_SIZE / 2f;
-    stubTo[plateAxisIdx1]   = plateCenter1 + STUB_SIZE / 2f;
-    stubFrom[plateAxisIdx2] = plateCenter2 - STUB_SIZE / 2f;
-    stubTo[plateAxisIdx2]   = plateCenter2 + STUB_SIZE / 2f;
-    stubFrom[stubAxisIdx]   = Math.min(stubStart, stubEnd);
-    stubTo[stubAxisIdx]     = Math.max(stubStart, stubEnd);
-    boxes.add(new RenderHelper.Box(stubFrom, stubTo));
+    // Tilt axis vector, normalised (unit vector along ±X, ±Y, or ±Z). Passed to glRotatef
+    // as the axis arguments; the angle is always +ARM_TILT_DEGREES because the sign is
+    // baked into the axis via the cross product.
+    final float tiltAxisX, tiltAxisY, tiltAxisZ;
 
-    // Elbow centre: where the stub meets the pole-leg. Slightly chunkier than the arms.
-    float elbowCoordOnStubAxis = stubEnd;
-    float elbowCenter1 = plateCenter1;
-    float elbowCenter2 = plateCenter2;
-    float[] elbowFrom = new float[3];
-    float[] elbowTo = new float[3];
-    elbowFrom[plateAxisIdx1] = elbowCenter1 - ELBOW_SIZE / 2f;
-    elbowTo[plateAxisIdx1]   = elbowCenter1 + ELBOW_SIZE / 2f;
-    elbowFrom[plateAxisIdx2] = elbowCenter2 - ELBOW_SIZE / 2f;
-    elbowTo[plateAxisIdx2]   = elbowCenter2 + ELBOW_SIZE / 2f;
-    elbowFrom[stubAxisIdx]   = elbowCoordOnStubAxis - ELBOW_SIZE / 2f * stubSign;
-    elbowTo[stubAxisIdx]     = elbowCoordOnStubAxis + ELBOW_SIZE / 2f * stubSign;
-    if (elbowFrom[stubAxisIdx] > elbowTo[stubAxisIdx]) {
-      float t = elbowFrom[stubAxisIdx];
-      elbowFrom[stubAxisIdx] = elbowTo[stubAxisIdx];
-      elbowTo[stubAxisIdx] = t;
-    }
-    boxes.add(new RenderHelper.Box(elbowFrom, elbowTo));
-
-    // Pole leg: from the elbow centre, running along the pole-direction axis.
-    int tubeAxisIdx;
-    float tubeSign;
-    switch (poleLeg) {
-      case REAR_POS_Z:  tubeAxisIdx = 2; tubeSign = +1f; break;
-      case LEFT_NEG_X:  tubeAxisIdx = 0; tubeSign = -1f; break;
-      case RIGHT_POS_X: tubeAxisIdx = 0; tubeSign = +1f; break;
-      case UP_POS_Y:    tubeAxisIdx = 1; tubeSign = +1f; break;
-      case DOWN_NEG_Y:  tubeAxisIdx = 1; tubeSign = -1f; break;
-      default: return;
-    }
-
-    // Tube cross-section spans the two non-tube axes. For each axis:
-    //   - if it's the stub axis, centre on the elbow centre (running perpendicular to stub)
-    //   - if it's the body-parallel axis, centre on the body centre
-    float[] tubeFrom = new float[3];
-    float[] tubeTo = new float[3];
-    for (int axis = 0; axis < 3; axis++) {
-      if (axis == tubeAxisIdx) continue;
-      float c;
-      if (axis == stubAxisIdx) {
-        c = elbowCoordOnStubAxis;
-      } else if (axis == plateAxisIdx1) {
-        c = plateCenter1;
+    BracketSpec(float bodyCenterX, float bodyCenterY, boolean horizontalSignal,
+        boolean isHighEnd, PoleLeg poleLeg) {
+      this.stubSign = isHighEnd ? 1f : -1f;
+      if (horizontalSignal) {
+        this.crossAxisIdx1 = 1;  // Y
+        this.crossAxisIdx2 = 2;  // Z
+        this.stubAxisIdx = 0;    // X
       } else {
-        c = plateCenter2;
+        this.crossAxisIdx1 = 0;  // X
+        this.crossAxisIdx2 = 2;  // Z
+        this.stubAxisIdx = 1;    // Y
       }
-      tubeFrom[axis] = c - TUBE_SIZE / 2f;
-      tubeTo[axis]   = c + TUBE_SIZE / 2f;
+      this.housingEdge = horizontalSignal ? bodyCenterX : bodyCenterY;
+      this.crossCenter1 = horizontalSignal ? 6.0f : 8.0f;
+      this.crossCenter2 = BODY_Z_CENTER;
+      this.stubEnd = housingEdge + stubSign * STUB_LENGTH;
+
+      // Pole-leg direction → axis + sign.
+      switch (poleLeg) {
+        case REAR_POS_Z:  this.tubeAxisIdx = 2; this.tubeSign = +1f; break;
+        case LEFT_NEG_X:  this.tubeAxisIdx = 0; this.tubeSign = -1f; break;
+        case RIGHT_POS_X: this.tubeAxisIdx = 0; this.tubeSign = +1f; break;
+        case UP_POS_Y:    this.tubeAxisIdx = 1; this.tubeSign = +1f; break;
+        case DOWN_NEG_Y:  this.tubeAxisIdx = 1; this.tubeSign = -1f; break;
+        default:          this.tubeAxisIdx = 2; this.tubeSign = +1f; break;
+      }
+
+      // Elbow centre in model coords. On the stub axis, the elbow sits at stubEnd; on
+      // the two cross axes it sits at the centre of the body's cross-section.
+      float[] elbowCoords = new float[3];
+      elbowCoords[stubAxisIdx] = stubEnd;
+      elbowCoords[crossAxisIdx1] = crossCenter1;
+      elbowCoords[crossAxisIdx2] = crossCenter2;
+      this.elbowX = elbowCoords[0];
+      this.elbowY = elbowCoords[1];
+      this.elbowZ = elbowCoords[2];
+
+      // Tilt axis = stubDir × poleDir. Rotating the arm by +ARM_TILT_DEGREES around this
+      // axis swings pole direction toward -stubDir (i.e. toward the signal centre).
+      float stubDirX = stubAxisIdx == 0 ? stubSign : 0f;
+      float stubDirY = stubAxisIdx == 1 ? stubSign : 0f;
+      float stubDirZ = stubAxisIdx == 2 ? stubSign : 0f;
+      float poleDirX = tubeAxisIdx == 0 ? tubeSign : 0f;
+      float poleDirY = tubeAxisIdx == 1 ? tubeSign : 0f;
+      float poleDirZ = tubeAxisIdx == 2 ? tubeSign : 0f;
+      this.tiltAxisX = stubDirY * poleDirZ - stubDirZ * poleDirY;
+      this.tiltAxisY = stubDirZ * poleDirX - stubDirX * poleDirZ;
+      this.tiltAxisZ = stubDirX * poleDirY - stubDirY * poleDirX;
     }
-    float tubeStart, tubeEnd;
-    if (tubeAxisIdx == stubAxisIdx) {
-      // Degenerate (shouldn't happen with a 90° bend) — skip.
-      return;
+
+    /** Appends the (non-tilted) stub and elbow boxes. */
+    void addStubAndElbow(List<RenderHelper.Box> boxes) {
+      // Stub — square cross-section running from housingEdge to stubEnd.
+      float[] stubFrom = new float[3];
+      float[] stubTo = new float[3];
+      stubFrom[crossAxisIdx1] = crossCenter1 - STUB_SIZE / 2f;
+      stubTo[crossAxisIdx1]   = crossCenter1 + STUB_SIZE / 2f;
+      stubFrom[crossAxisIdx2] = crossCenter2 - STUB_SIZE / 2f;
+      stubTo[crossAxisIdx2]   = crossCenter2 + STUB_SIZE / 2f;
+      stubFrom[stubAxisIdx]   = Math.min(housingEdge, stubEnd);
+      stubTo[stubAxisIdx]     = Math.max(housingEdge, stubEnd);
+      boxes.add(new RenderHelper.Box(stubFrom, stubTo));
+
+      // Elbow — chunkier cube centred on the joint.
+      float[] elbowFrom = new float[3];
+      float[] elbowTo = new float[3];
+      elbowFrom[crossAxisIdx1] = crossCenter1 - ELBOW_SIZE / 2f;
+      elbowTo[crossAxisIdx1]   = crossCenter1 + ELBOW_SIZE / 2f;
+      elbowFrom[crossAxisIdx2] = crossCenter2 - ELBOW_SIZE / 2f;
+      elbowTo[crossAxisIdx2]   = crossCenter2 + ELBOW_SIZE / 2f;
+      float elbowCoord = stubEnd;
+      elbowFrom[stubAxisIdx] = elbowCoord - ELBOW_SIZE / 2f;
+      elbowTo[stubAxisIdx]   = elbowCoord + ELBOW_SIZE / 2f;
+      boxes.add(new RenderHelper.Box(elbowFrom, elbowTo));
     }
-    // Anchor the tube at the elbow centre on the tube axis, extending in tubeSign direction.
-    float elbowAnchor;
-    if (tubeAxisIdx == plateAxisIdx1) {
-      elbowAnchor = plateCenter1;
-    } else if (tubeAxisIdx == plateAxisIdx2) {
-      elbowAnchor = plateCenter2;
-    } else {
-      elbowAnchor = elbowCoordOnStubAxis;
+
+    /**
+     * Appends the arm box. Rendered under a glPushMatrix/glRotatef(ARM_TILT_DEGREES,
+     * tiltAxis*, ...)/glPopMatrix wrapper anchored at the elbow centre, so the box is
+     * authored axis-aligned but ends up angled in world space.
+     */
+    void addArm(List<RenderHelper.Box> boxes) {
+      float[] tubeFrom = new float[3];
+      float[] tubeTo = new float[3];
+      // Cross-section on the two non-tube axes. For the stub axis: centre on the elbow.
+      // For whichever body-parallel axis the tube doesn't run along: centre on the body.
+      for (int axis = 0; axis < 3; axis++) {
+        if (axis == tubeAxisIdx) continue;
+        float c;
+        if (axis == stubAxisIdx) {
+          c = stubEnd;
+        } else if (axis == crossAxisIdx1) {
+          c = crossCenter1;
+        } else {
+          c = crossCenter2;
+        }
+        tubeFrom[axis] = c - TUBE_SIZE / 2f;
+        tubeTo[axis]   = c + TUBE_SIZE / 2f;
+      }
+      // Anchor on the tube axis at the elbow and extend in tubeSign direction.
+      float tubeAnchor;
+      if (tubeAxisIdx == stubAxisIdx) {
+        tubeAnchor = stubEnd;
+      } else if (tubeAxisIdx == crossAxisIdx1) {
+        tubeAnchor = crossCenter1;
+      } else {
+        tubeAnchor = crossCenter2;
+      }
+      float tubeStart = tubeAnchor;
+      float tubeEnd = tubeAnchor + tubeSign * TUBE_LENGTH;
+      tubeFrom[tubeAxisIdx] = Math.min(tubeStart, tubeEnd);
+      tubeTo[tubeAxisIdx]   = Math.max(tubeStart, tubeEnd);
+      boxes.add(new RenderHelper.Box(tubeFrom, tubeTo));
     }
-    tubeStart = elbowAnchor;
-    tubeEnd = elbowAnchor + tubeSign * TUBE_LENGTH;
-    tubeFrom[tubeAxisIdx] = Math.min(tubeStart, tubeEnd);
-    tubeTo[tubeAxisIdx]   = Math.max(tubeStart, tubeEnd);
-    boxes.add(new RenderHelper.Box(tubeFrom, tubeTo));
   }
 }
