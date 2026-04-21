@@ -873,10 +873,22 @@ public class TileEntityTrafficSignalHeadRenderer extends
       this.elbowY = elbowCoords[1];
       this.elbowZ = elbowCoords[2];
 
-      // Target: centre of the neighbouring block in the pole-leg direction. Arm aims here
-      // so both its length and its rotation are derived together.
+      // Target: X/Z centre of the neighbouring block in the pole-leg direction.
+      //
+      // Y is deliberately pinned to the elbow's Y (not the block centre) because the
+      // typical layout has the signal mounted on a VERTICAL pole next to it. A vertical
+      // pole extends through every Y, so we don't need to tilt the arm up or down to
+      // meet it — we only care about meeting the pole's X/Z coordinate. Aiming at the
+      // block's Y centre would produce big spurious up/down tilts for top/bottom
+      // brackets whose elbows sit far from the block's vertical midpoint.
+      //
+      // Exception: when the pole direction itself is Y (horizontal UP/DOWN mount types
+      // where the "pole" is a mast arm above or below), the Y axis IS the axis we're
+      // aiming along, so we use the neighbour centre for Y too.
       float targetX = BLOCK_CENTRE + (tubeAxisIdx == 0 ? tubeSign * 16f : 0f);
-      float targetY = BLOCK_CENTRE + (tubeAxisIdx == 1 ? tubeSign * 16f : 0f);
+      float targetY = tubeAxisIdx == 1
+          ? BLOCK_CENTRE + tubeSign * 16f  // aiming along Y (mast-arm style)
+          : elbowY;                         // vertical pole — stay at elbow height
       float targetZ = BLOCK_CENTRE + (tubeAxisIdx == 2 ? tubeSign * 16f : 0f);
 
       float dx = targetX - elbowX;
