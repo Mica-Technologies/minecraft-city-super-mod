@@ -253,7 +253,7 @@ public class SignalHeadConfigGui extends GuiScreen {
       case TOGGLE_AGING:
         return tileEntity.isAgingEnabled() ? "ON" : "OFF";
       case TOGGLE_HORIZONTAL:
-        return tileEntity.isHorizontalFlip() ? "Horizontal" : "Vertical";
+        return tileEntity.isHorizontalFlip() ? "true" : "false";
       default:
         return "N/A";
     }
