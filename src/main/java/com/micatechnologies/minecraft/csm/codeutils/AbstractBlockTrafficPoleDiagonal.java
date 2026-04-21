@@ -3,6 +3,7 @@ package com.micatechnologies.minecraft.csm.codeutils;
 import javax.annotation.Nonnull;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDirectional;
+import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
@@ -146,24 +147,39 @@ public abstract class AbstractBlockTrafficPoleDiagonal extends AbstractBlockTraf
       return false;
     }
 
-    // If the adjacent block is a NSEWUD-rotatable block, check that it faces toward this pole.
-    // A mount kit's "back" (attachment side) is the opposite of its FACING property.
-    // Only show the connector if the mount's back faces this pole.
+    // If the adjacent block is a rotatable block with a facing property (mount kit etc.),
+    // check that it actually faces toward this pole. A mount's "back" (attachment side) is
+    // the opposite of its FACING property. Only show the connector if the mount's back
+    // faces this pole — prevents false connectors on diagonal poles that are geometrically
+    // adjacent to the mount but not the pole the mount is clamped to.
+    //
+    // Two property references to probe because AbstractBlockRotatableNSEWUD uses
+    // BlockDirectional.FACING (all 6 directions) while AbstractBlockRotatableNSEW uses
+    // BlockHorizontal.FACING (horizontal only) — different PropertyDirection instances,
+    // so a single getValue(...) call only works for one hierarchy.
     IBlockState adjState = worldIn.getBlockState( adjPos );
     Block adjBlock = adjState.getBlock();
+    EnumFacing adjFacing = null;
     if ( adjBlock instanceof AbstractBlockRotatableNSEWUD ) {
       try {
-        EnumFacing adjFacing = adjState.getValue( BlockDirectional.FACING );
-        // The mount's attachment side is opposite its facing
-        EnumFacing mountBackDir = adjFacing.getOpposite();
-        // Check if the mount's back faces toward this pole position
-        BlockPos expectedPolePos = adjPos.offset( mountBackDir );
-        if ( !expectedPolePos.equals( polePos ) ) {
-          return false; // Mount is not attached to this pole
-        }
+        adjFacing = adjState.getValue( BlockDirectional.FACING );
       }
-      catch ( IllegalArgumentException e ) {
-        // Block doesn't have FACING property — treat as normal connectable block
+      catch ( IllegalArgumentException ignored ) {
+        // Fall through — treat as a non-directional connectable block.
+      }
+    }
+    else if ( adjBlock instanceof AbstractBlockRotatableNSEW ) {
+      try {
+        adjFacing = adjState.getValue( BlockHorizontal.FACING );
+      }
+      catch ( IllegalArgumentException ignored ) {
+        // Fall through — treat as a non-directional connectable block.
+      }
+    }
+    if ( adjFacing != null ) {
+      BlockPos expectedPolePos = adjPos.offset( adjFacing.getOpposite() );
+      if ( !expectedPolePos.equals( polePos ) ) {
+        return false; // Mount is not attached to this pole.
       }
     }
 
