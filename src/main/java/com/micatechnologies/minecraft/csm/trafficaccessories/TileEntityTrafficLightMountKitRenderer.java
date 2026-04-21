@@ -558,9 +558,9 @@ public class TileEntityTrafficLightMountKitRenderer
 
   private static float getRotationAngle(EnumFacing facing) {
     switch (facing) {
-      case SOUTH: return 0f;
+      case NORTH: return 0f;
       case WEST:  return 90f;
-      case NORTH: return 180f;
+      case SOUTH: return 180f;
       case EAST:  return 270f;
       default:    return 0f;
     }
