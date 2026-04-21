@@ -11,9 +11,11 @@ import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBulb
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBulbType;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalSectionInfo;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalTextureMap;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.SignalHeadMountType;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalTextureMap.TextureInfo;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalVertexData;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalVisorType;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -226,6 +228,12 @@ public class TileEntityTrafficSignalHeadRenderer extends
     GL11.glCallList(displayList);
 
     renderBulbs(sectionInfos, sectionYPositions, sectionXPositions, sectionSizes, zPushBack);
+
+    // Mount hardware renders outside the cached display list: adjacency changes (add-on
+    // placed/broken beside this signal) don't invalidate the TE's dirty flag, so rebuilding
+    // from source every frame is the simplest way to keep suppression up to date. Geometry
+    // is ~4-8 small boxes per frame — cheap compared to the main signal draw.
+    renderMount(te, sectionSizes, sectionYPositions, sectionXPositions, horizontal, zPushBack);
 
     GL11.glPopMatrix();
 
@@ -622,5 +630,201 @@ public class TileEntityTrafficSignalHeadRenderer extends
     buffer.pos(x2, y1, z).endVertex();
     buffer.pos(x2, y2, z).endVertex();
     buffer.pos(x1, y2, z).endVertex();
+  }
+
+  // ==================== Built-in signal mount hardware ====================
+  //
+  // Renders Pelco-style mount bracket geometry around the signal body when the TE reports
+  // a non-NONE SignalHeadMountType. Shape is a flat mount plate against the signal's back
+  // face + a rearward arm + an elbow + a tube running along the pole axis. Paired for REAR
+  // (top and bottom in vertical, or the two outer ends in horizontal), single for LEFT /
+  // RIGHT.
+  //
+  // Rendered per-frame rather than into the display list because adjacency changes (add-on
+  // placed/broken beside the signal) don't invalidate the TE's dirty flag, and the geometry
+  // is cheap to rebuild.
+
+  // Cross-section of the rearward arm + pole-direction tube, in model units.
+  private static final float MOUNT_ARM_THICKNESS = 2.0f;
+  // Flat mount plate (against signal back) dimensions.
+  private static final float MOUNT_PLATE_WIDTH = 8.0f;      // along the signal-parallel axis
+  private static final float MOUNT_PLATE_THICKNESS = 2.0f;  // perpendicular (outward from body)
+  private static final float MOUNT_PLATE_DEPTH_FRONT = 13.0f; // z at the plate's front face
+  private static final float MOUNT_PLATE_DEPTH_BACK = 15.9f;  // z just shy of block back
+  // Rearward arm: extends from the block's back face outward.
+  private static final float MOUNT_ARM_Z_FRONT = 16.0f;
+  private static final float MOUNT_ARM_Z_BACK = 22.0f;
+  // Pole-direction tube: from the end of the arm, running parallel to the pole.
+  private static final float MOUNT_TUBE_Z_FRONT = 22.0f;
+  private static final float MOUNT_TUBE_Z_BACK = 24.0f;
+  // How far the pole-direction tube extends along its axis past the mount plate.
+  private static final float MOUNT_TUBE_LENGTH = 10.0f;
+
+  private void renderMount(TileEntityTrafficSignalHead te, int[] sectionSizes,
+      float[] sectionYPositions, float[] sectionXPositions, boolean horizontal,
+      float zPushBack) {
+    SignalHeadMountType mountType = te.getMountType();
+    if (mountType == SignalHeadMountType.NONE) return;
+
+    // Compute signal body envelope from section placements.
+    float topY = -Float.MAX_VALUE, bottomY = Float.MAX_VALUE;
+    float leftX = Float.MAX_VALUE, rightX = -Float.MAX_VALUE;
+    for (int i = 0; i < sectionSizes.length; i++) {
+      float half = sectionSizes[i] / 2.0f;
+      float yCenter = sectionYPositions[i] + 6.0f; // body center is at Y=6 in model space
+      float xCenter = sectionXPositions[i] + 8.0f; // body center is at X=8
+      topY = Math.max(topY, yCenter + half);
+      bottomY = Math.min(bottomY, yCenter - half);
+      leftX = Math.min(leftX, xCenter - half);
+      rightX = Math.max(rightX, xCenter + half);
+    }
+
+    // Adjacent-signal detection for mount-edge suppression. If another signal head is
+    // directly adjacent on the stacking axis, the two share a bracket there — hide this
+    // signal's mount on that edge so the hardware doesn't visually double up.
+    boolean suppressLowEdge = false, suppressHighEdge = false;
+    net.minecraft.world.World world = te.getWorld();
+    if (world != null) {
+      BlockPos pos = te.getPos();
+      if (horizontal) {
+        // Horizontal: stack axis is perpendicular to facing, in the block's horizontal plane.
+        IBlockState ownState = world.getBlockState(pos);
+        if (ownState.getProperties().containsKey(AbstractBlockControllableSignalHead.FACING)) {
+          EnumFacing facing = ownState.getValue(AbstractBlockControllableSignalHead.FACING);
+          // facing.rotateY() is 90° clockwise from facing (viewer's right); the other way
+          // is viewer's left. Which one corresponds to "low X" vs "high X" in model space
+          // depends on the facing rotation applied by the blockstate, so we just check
+          // both sides and correlate to low/high after.
+          BlockPos cwPos = pos.offset(facing.rotateY());
+          BlockPos ccwPos = pos.offset(facing.rotateYCCW());
+          boolean cwIsSignal = world.getTileEntity(cwPos) instanceof TileEntityTrafficSignalHead;
+          boolean ccwIsSignal = world.getTileEntity(ccwPos) instanceof TileEntityTrafficSignalHead;
+          // For south-facing (default post-rotation), rotateY gives west which lands on
+          // low-X in model space after the 180° blockstate rotation; for other facings
+          // the mapping differs. Rather than hard-wire that, just suppress on whichever
+          // direction has an adjacent signal head and hope it matches — the user can
+          // swap left/right in the GUI if a specific facing reads backwards.
+          suppressLowEdge = ccwIsSignal;
+          suppressHighEdge = cwIsSignal;
+        }
+      } else {
+        // Vertical: stack axis is Y.
+        suppressHighEdge = world.getTileEntity(pos.up()) instanceof TileEntityTrafficSignalHead;
+        suppressLowEdge = world.getTileEntity(pos.down()) instanceof TileEntityTrafficSignalHead;
+      }
+    }
+
+    TrafficSignalBodyColor color = te.getMountColor();
+    List<RenderHelper.Box> boxes = new ArrayList<>();
+
+    if (horizontal) {
+      // Horizontal signal: the "low" end is leftX and the "high" end is rightX in model
+      // space. REAR pairs them; LEFT is just the low end; RIGHT is just the high end.
+      switch (mountType) {
+        case REAR:
+          if (!suppressLowEdge)  addSideMountHorizontal(boxes, leftX, true);
+          if (!suppressHighEdge) addSideMountHorizontal(boxes, rightX, false);
+          break;
+        case LEFT:
+          if (!suppressLowEdge)  addSideMountHorizontal(boxes, leftX, true);
+          break;
+        case RIGHT:
+          if (!suppressHighEdge) addSideMountHorizontal(boxes, rightX, false);
+          break;
+        default:
+          break;
+      }
+    } else {
+      switch (mountType) {
+        case REAR:
+          if (!suppressHighEdge) addRearMountVertical(boxes, topY, true);
+          if (!suppressLowEdge)  addRearMountVertical(boxes, bottomY, false);
+          break;
+        case LEFT:
+          addSideMountVertical(boxes, leftX, true);
+          break;
+        case RIGHT:
+          addSideMountVertical(boxes, rightX, false);
+          break;
+        default:
+          break;
+      }
+    }
+
+    if (boxes.isEmpty()) return;
+
+    Tessellator tessellator = Tessellator.getInstance();
+    BufferBuilder buffer = tessellator.getBuffer();
+    GlStateManager.disableTexture2D();
+    buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
+    RenderHelper.addBoxesToBuffer(boxes, buffer,
+        color.getRed(), color.getGreen(), color.getBlue(), 1.0f, 0, 0, zPushBack);
+    tessellator.draw();
+    GlStateManager.enableTexture2D();
+  }
+
+  /**
+   * Appends bracket geometry for a REAR mount at one end of a vertical signal. {@code yEdge}
+   * is the Y of the signal body's top or bottom edge; {@code isTop} selects the direction the
+   * bracket extends (up for a top mount, down for a bottom mount).
+   */
+  private static void addRearMountVertical(List<RenderHelper.Box> boxes, float yEdge,
+      boolean isTop) {
+    final float plateY1 = isTop ? yEdge : yEdge - MOUNT_PLATE_THICKNESS;
+    final float plateY2 = isTop ? yEdge + MOUNT_PLATE_THICKNESS : yEdge;
+    // Mount plate — flat box against the signal back, 2 units thick.
+    boxes.add(new RenderHelper.Box(
+        new float[]{8.0f - MOUNT_PLATE_WIDTH / 2f, plateY1, MOUNT_PLATE_DEPTH_FRONT},
+        new float[]{8.0f + MOUNT_PLATE_WIDTH / 2f, plateY2, MOUNT_PLATE_DEPTH_BACK}));
+    // Rearward arm — square tube centered on the plate, extending from block back to
+    // the elbow position.
+    final float armCenterY = (plateY1 + plateY2) / 2f;
+    final float ath = MOUNT_ARM_THICKNESS / 2f;
+    boxes.add(new RenderHelper.Box(
+        new float[]{8.0f - ath, armCenterY - ath, MOUNT_ARM_Z_FRONT},
+        new float[]{8.0f + ath, armCenterY + ath, MOUNT_ARM_Z_BACK}));
+    // Pole-direction tube — runs up (top mount) or down (bottom mount) from the elbow.
+    final float tubeY1 = isTop ? armCenterY - ath : armCenterY - MOUNT_TUBE_LENGTH;
+    final float tubeY2 = isTop ? armCenterY + MOUNT_TUBE_LENGTH : armCenterY + ath;
+    boxes.add(new RenderHelper.Box(
+        new float[]{8.0f - ath, tubeY1, MOUNT_TUBE_Z_FRONT},
+        new float[]{8.0f + ath, tubeY2, MOUNT_TUBE_Z_BACK}));
+  }
+
+  /**
+   * Appends bracket geometry for a SIDE mount on a vertical signal (LEFT or RIGHT type).
+   * {@code xEdge} is the signal body's left or right X; {@code isLeft} decides which side
+   * the tube extends toward.
+   */
+  private static void addSideMountVertical(List<RenderHelper.Box> boxes, float xEdge,
+      boolean isLeft) {
+    final float plateX1 = isLeft ? xEdge - MOUNT_PLATE_THICKNESS : xEdge;
+    final float plateX2 = isLeft ? xEdge : xEdge + MOUNT_PLATE_THICKNESS;
+    // Mount plate — against the signal back, rotated 90° from the top/bottom variant.
+    boxes.add(new RenderHelper.Box(
+        new float[]{plateX1, 6.0f - MOUNT_PLATE_WIDTH / 2f, MOUNT_PLATE_DEPTH_FRONT},
+        new float[]{plateX2, 6.0f + MOUNT_PLATE_WIDTH / 2f, MOUNT_PLATE_DEPTH_BACK}));
+    final float armCenterX = (plateX1 + plateX2) / 2f;
+    final float ath = MOUNT_ARM_THICKNESS / 2f;
+    boxes.add(new RenderHelper.Box(
+        new float[]{armCenterX - ath, 6.0f - ath, MOUNT_ARM_Z_FRONT},
+        new float[]{armCenterX + ath, 6.0f + ath, MOUNT_ARM_Z_BACK}));
+    final float tubeX1 = isLeft ? armCenterX - MOUNT_TUBE_LENGTH : armCenterX - ath;
+    final float tubeX2 = isLeft ? armCenterX + ath : armCenterX + MOUNT_TUBE_LENGTH;
+    boxes.add(new RenderHelper.Box(
+        new float[]{tubeX1, 6.0f - ath, MOUNT_TUBE_Z_FRONT},
+        new float[]{tubeX2, 6.0f + ath, MOUNT_TUBE_Z_BACK}));
+  }
+
+  /**
+   * Appends bracket geometry for a mount on one end of a horizontal signal. Equivalent to
+   * the vertical side-mount math with the X and Y roles swapped: the plate sits at the
+   * signal's X end, the tube extends along the vertical axis to reach a pole above/below.
+   */
+  private static void addSideMountHorizontal(List<RenderHelper.Box> boxes, float xEdge,
+      boolean isLeftEnd) {
+    // In horizontal mode LEFT end maps to "bottom tube direction" (poles below in the
+    // horizontal → pole-above-signal convention), RIGHT end maps to "top tube direction".
+    addSideMountVertical(boxes, xEdge, isLeftEnd);
   }
 }
