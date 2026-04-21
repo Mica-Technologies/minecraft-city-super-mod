@@ -1,6 +1,5 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories;
 
-import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyTilt;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
@@ -19,7 +18,8 @@ import javax.annotation.Nonnull;
  * Used by doghouse and hawk signal backplates which have both properties.
  *
  * <p>Meta encoding: bits 0-2 = facing (6 values), bit 3 = fitted (boolean).
- * TILT is computed via {@link #getActualState} (inherited from {@link AbstractBlockSignalBackplate}).
+ * The combined tilt + horizontal state is computed via {@link #getActualState} (inherited from
+ * {@link AbstractBlockSignalBackplate}) into {@link AbstractBlockSignalBackplate#MODEL_VARIANT}.
  */
 public abstract class AbstractBlockSignalBackplateFitted extends AbstractBlockSignalBackplate {
 
@@ -32,15 +32,14 @@ public abstract class AbstractBlockSignalBackplateFitted extends AbstractBlockSi
         lightLevel, lightOpacity);
     this.setDefaultState(this.blockState.getBaseState()
         .withProperty(FACING, EnumFacing.NORTH)
-        .withProperty(TILT, TrafficSignalBodyTilt.NONE)
-        .withProperty(HORIZONTAL, false)
+        .withProperty(MODEL_VARIANT, BackplateModelVariant.V_NONE)
         .withProperty(FITTED, false));
   }
 
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, TILT, HORIZONTAL, FITTED);
+    return new BlockStateContainer(this, FACING, MODEL_VARIANT, FITTED);
   }
 
   @Override

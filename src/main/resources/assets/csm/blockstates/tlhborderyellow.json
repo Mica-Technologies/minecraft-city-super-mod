@@ -27,24 +27,35 @@
         "y": 270
       }
     },
-    "tilt": {
-      "none": {},
-      "left_tilt": {
+    "modelvariant": {
+      "v_none": {},
+      "v_left_tilt": {
         "model": "csm:trafficaccessories/shared_models/borderhorizontal_left_tilt"
       },
-      "right_tilt": {
+      "v_right_tilt": {
         "model": "csm:trafficaccessories/shared_models/borderhorizontal_right_tilt"
       },
-      "left_angle": {
+      "v_left_angle": {
         "model": "csm:trafficaccessories/shared_models/borderhorizontal_left_angle"
       },
-      "right_angle": {
+      "v_right_angle": {
+        "model": "csm:trafficaccessories/shared_models/borderhorizontal_right_angle"
+      },
+      "h_none": {
+        "model": "csm:trafficaccessories/shared_models/borderhorizontal"
+      },
+      "h_left_tilt": {
+        "model": "csm:trafficaccessories/shared_models/borderhorizontal_left_tilt"
+      },
+      "h_right_tilt": {
+        "model": "csm:trafficaccessories/shared_models/borderhorizontal_right_tilt"
+      },
+      "h_left_angle": {
+        "model": "csm:trafficaccessories/shared_models/borderhorizontal_left_angle"
+      },
+      "h_right_angle": {
         "model": "csm:trafficaccessories/shared_models/borderhorizontal_right_angle"
       }
-    },
-    "horizontal": {
-      "false": {},
-      "true": {}
     },
     "inventory": [
       {}
