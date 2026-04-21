@@ -19,12 +19,32 @@
       },
       "west": {
         "y": 270
+      }
+    },
+    "color": {
+      "white": {
+        "textures": {
+          "0": "csm:blocks/trafficsignals/shared_textures/metal_white",
+          "particle": "csm:blocks/trafficsignals/shared_textures/metal_white"
+        }
       },
-      "up": {
-        "x": 270
+      "silver": {
+        "textures": {
+          "0": "csm:blocks/trafficsignals/shared_textures/metal_silver",
+          "particle": "csm:blocks/trafficsignals/shared_textures/metal_silver"
+        }
       },
-      "down": {
-        "x": 90
+      "black": {
+        "textures": {
+          "0": "csm:blocks/trafficsignals/shared_textures/metal_black",
+          "particle": "csm:blocks/trafficsignals/shared_textures/metal_black"
+        }
+      },
+      "matte_white": {
+        "textures": {
+          "0": "csm:blocks/trafficsignals/shared_textures/metal_mattewhite",
+          "particle": "csm:blocks/trafficsignals/shared_textures/metal_mattewhite"
+        }
       }
     },
     "inventory": [

@@ -231,7 +231,7 @@ public class CsmTabTrafficAccessories extends CsmTab {
     initTabBlock(new BlockTrafficAccessoryNSEWUD("metalwirecentertop", BB_METAL_WIRE_CENTER_TOP, BlockRenderLayer.SOLID, 2F, true));
     initTabBlock(new BlockTrafficAccessoryNSEWUD("metalwireoffset", BB_METAL_WIRE_OFFSET, BlockRenderLayer.SOLID, 2F, true));
     initTabBlock(new BlockTrafficAccessoryNSEWUD("metalwireoffsettop", BB_METAL_WIRE_OFFSET_TOP, BlockRenderLayer.SOLID, 2F, true));
-    initTabBlock(new BlockTrafficAccessoryNSEWUD("signalpolemount2", BB_SIGNAL_POLE_MOUNT2, BlockRenderLayer.CUTOUT_MIPPED, 2F, false));
+    initTabBlock(new BlockTrafficAccessoryNSEW("signalpolemount2", BB_SIGNAL_POLE_MOUNT2, BlockRenderLayer.CUTOUT_MIPPED, 2F, false));
 
     // --- Backplate factory blocks: TLBorder5AddOn ---
     initTabBlock(new BlockTrafficAccessoryBackplate("tlborder5addonblackblack"));
