@@ -56,7 +56,7 @@ public class TileEntityTrafficLightMountKitRenderer
   // --- C-channel arm cross-section ---
   // Real Astro-brac arms are aluminum C-channel (U-shape when viewed end-on).
   // We build this from 3 boxes: top flange, bottom flange, and web (back plate).
-  private static final float CHANNEL_OUTER = 2.5f;   // total width/height of the C-channel
+  private static final float CHANNEL_OUTER = 2.0f;   // total width/height of the C-channel
   private static final float FLANGE_THICK = 0.5f;    // thickness of each flange
   private static final float WEB_THICK = 0.5f;       // thickness of the web (back wall)
   private static final float CHANNEL_DEPTH = 2.0f;   // how deep the channel is (front to back of flanges)
@@ -68,7 +68,7 @@ public class TileEntityTrafficLightMountKitRenderer
   private static final float WEB_BACK_Z = 16.0f;                        // web runs to back of block
 
   // --- Spine (round tube, approximated as box) ---
-  private static final float SPINE_SIZE = 1.8f;      // width=height of spine tube
+  private static final float SPINE_SIZE = 1.4f;      // width=height of spine tube
   private static final float SPINE_FRONT_Z = 14.0f;  // spine sits at back, behind the arms
   private static final float SPINE_BACK_Z = 16.0f;
 
