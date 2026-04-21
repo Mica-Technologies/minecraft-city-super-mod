@@ -41,9 +41,8 @@ public class SignalHeadConfigGui extends GuiScreen {
   /**
    * Display labels for the All Sections page. Indexes line up with
    * {@link SignalHeadConfigAction} ordinals so {@code button.id} can double as the action
-   * ordinal for the outgoing packet. The {@code TOGGLE_HORIZONTAL} entry at the end is
-   * only rendered when the signal block reports {@code allowsHorizontalFlip()} — see
-   * {@link #activeLabels()}.
+   * ordinal for the outgoing packet. The {@code TOGGLE_HORIZONTAL} slot is hidden when the
+   * signal block reports {@code !allowsHorizontalFlip()} — see {@link #activeAllModeOrdinals()}.
    */
   private static final String[] ALL_LABELS = {
       "Body Color",
@@ -55,7 +54,9 @@ public class SignalHeadConfigGui extends GuiScreen {
       "Bulb Type",
       "Alternate Flash",
       "Bulb Aging",
-      "Horizontal"
+      "Horizontal",
+      "Mount Type",
+      "Mount Color"
   };
 
   private static final String[] SECTION_LABELS = {
@@ -99,11 +100,12 @@ public class SignalHeadConfigGui extends GuiScreen {
       selectedSection = 0;
     }
 
-    String[] labels = activeLabels();
+    int[] allOrdinals = mode == Mode.ALL_SECTIONS ? activeAllModeOrdinals() : null;
+    int buttonCount = activeButtonCount();
     int totalWidth = BUTTON_WIDTH * 2 + COLUMN_GAP;
     int leftX = width / 2 - totalWidth / 2;
     int rightX = leftX + BUTTON_WIDTH + COLUMN_GAP;
-    int rows = (labels.length + 1) / 2;
+    int rows = (buttonCount + 1) / 2;
     // Reserve one row above the property buttons for the mode toggle and (in per-section mode)
     // the section selector, plus one below for the close button.
     int headerRows = mode == Mode.PER_SECTION ? 2 : 1;
@@ -132,13 +134,15 @@ public class SignalHeadConfigGui extends GuiScreen {
       propertyStartY += ROW_SPACING;
     }
 
-    // Property grid.
-    for (int i = 0; i < labels.length; i++) {
+    // Property grid. In All Sections mode, button.id equals the action ordinal so the
+    // layout order can skip individual actions (e.g. Horizontal for doghouse signals)
+    // without renumbering anything or breaking the outgoing packet protocol.
+    for (int i = 0; i < buttonCount; i++) {
       int col = i % 2;
       int row = i / 2;
       int x = col == 0 ? leftX : rightX;
       int y = propertyStartY + row * ROW_SPACING;
-      int id = mode == Mode.ALL_SECTIONS ? i : PER_SECTION_ID_OFFSET + i;
+      int id = mode == Mode.ALL_SECTIONS ? allOrdinals[i] : PER_SECTION_ID_OFFSET + i;
       buttonList.add(new GuiButton(id, x, y, BUTTON_WIDTH, BUTTON_HEIGHT, ""));
     }
 
@@ -146,20 +150,28 @@ public class SignalHeadConfigGui extends GuiScreen {
         propertyStartY + rows * ROW_SPACING + 4, BUTTON_WIDTH, BUTTON_HEIGHT, "Close"));
   }
 
-  private String[] activeLabels() {
-    if (mode == Mode.PER_SECTION) {
-      return SECTION_LABELS;
+  /**
+   * Returns the action ordinals to render on the All Sections page, in display order.
+   * Trims the {@link SignalHeadConfigAction#TOGGLE_HORIZONTAL} slot for blocks that don't
+   * allow the flip toggle, while keeping the Mount Type / Mount Color entries that follow
+   * it in the ordinal sequence. button.id still doubles as the outgoing packet's action
+   * ordinal — we just skip the slot in the layout rather than renumbering.
+   */
+  private int[] activeAllModeOrdinals() {
+    int skipHorizontal = canFlipHorizontal() ? 0 : 1;
+    int[] out = new int[ALL_LABELS.length - skipHorizontal];
+    int n = 0;
+    for (int i = 0; i < ALL_LABELS.length; i++) {
+      if (i == SignalHeadConfigAction.TOGGLE_HORIZONTAL.ordinal() && !canFlipHorizontal()) {
+        continue;
+      }
+      out[n++] = i;
     }
-    // All Sections mode — drop the trailing "Horizontal" entry for blocks that don't allow
-    // the flip toggle (doghouse, hawk, static-horizontal, add-ons, etc.). Keeping the
-    // ordinal alignment with SignalHeadConfigAction means button.id still doubles as the
-    // outgoing packet's action ordinal, so the wire protocol stays unchanged.
-    if (!canFlipHorizontal()) {
-      String[] trimmed = new String[ALL_LABELS.length - 1];
-      System.arraycopy(ALL_LABELS, 0, trimmed, 0, trimmed.length);
-      return trimmed;
-    }
-    return ALL_LABELS;
+    return out;
+  }
+
+  private int activeButtonCount() {
+    return mode == Mode.PER_SECTION ? SECTION_LABELS.length : activeAllModeOrdinals().length;
   }
 
   /**
@@ -219,8 +231,7 @@ public class SignalHeadConfigGui extends GuiScreen {
       }
     }
 
-    String[] labels = activeLabels();
-    int rows = (labels.length + 1) / 2;
+    int rows = (activeButtonCount() + 1) / 2;
     int headerRows = mode == Mode.PER_SECTION ? 2 : 1;
     int topY = height / 2 - (rows * ROW_SPACING + ROW_SPACING * (headerRows + 1)) / 2;
     drawCenteredString(fontRenderer, "Signal Head Configuration",
@@ -254,6 +265,10 @@ public class SignalHeadConfigGui extends GuiScreen {
         return tileEntity.isAgingEnabled() ? "ON" : "OFF";
       case TOGGLE_HORIZONTAL:
         return tileEntity.isHorizontalFlip() ? "true" : "false";
+      case CYCLE_MOUNT_TYPE:
+        return tileEntity.getMountType().getFriendlyName();
+      case CYCLE_MOUNT_COLOR:
+        return tileEntity.getMountColor().getFriendlyName();
       default:
         return "N/A";
     }
