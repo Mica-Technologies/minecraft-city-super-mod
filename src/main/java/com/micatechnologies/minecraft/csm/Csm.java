@@ -329,6 +329,11 @@ public class Csm {
     logger.info(
         "Handling server load for " + CsmConstants.MOD_NAME + " v" + CsmConstants.MOD_VERSION);
 
+    // Register administrative commands
+    logger.info("Registering server commands");
+    event.registerServerCommand(new CommandCsm());
+    logger.info("Finished registering server commands");
+
     // Call server load of the proxy (client or server/common)
     String side = event.getSide().isClient() ? "client" : "server";
     logger.info("Calling server-load initialization of proxy (" + side + ")");
