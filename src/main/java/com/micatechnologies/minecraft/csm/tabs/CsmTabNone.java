@@ -164,6 +164,16 @@ public class CsmTabNone extends CsmTab {
     initTabBlock(TrafficSignalBlocks.HORIZONTAL_U_TURN_SIGNAL);
     initTabBlock(TrafficSignalBlocks.HORIZONTAL_UP_LEFT_SIGNAL);
 
+    // Deprecated dotted-LED three-section signal variants. Bulb style is now a per-section
+    // configurable property on any signal head via the config GUI, so dedicated blocks that
+    // hardcode LED_DOTTED in their default section infos are redundant. Each retires to its
+    // non-LED base (same section sizes); the TE NBT copy preserves the existing dotted
+    // section infos so the visual stays intact, and the user can cycle bulb style later.
+    initTabBlock(TrafficSignalBlocks.VERTICAL_SOLID_SIGNAL_LED);
+    initTabBlock(TrafficSignalBlocks.VERTICAL_SOLID_SIGNAL_LED1288_INCH);
+    initTabBlock(TrafficSignalBlocks.VERTICAL_SOLID_SIGNAL_LED8812_INCH);
+    initTabBlock(TrafficSignalBlocks.VERTICAL_SOLID_SIGNAL_LED8_INCH);
+
     // Deprecated Barlo strobe signal (now a visor type option on any signal)
     initTabBlock(TrafficSignalBlocks.VERTICAL_SOLID_SIGNAL_BARLO);
 

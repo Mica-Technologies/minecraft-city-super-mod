@@ -2263,6 +2263,7 @@ public final class TrafficSignalBlocks {
             TrafficSignalBulbColor.GREEN,false)
             };
           })
+          .retiring("controllableverticalsolidsignal")
           .build();
 
   public static final BlockControllableSignal VERTICAL_SOLID_SIGNAL_LED1288_INCH =
@@ -2285,6 +2286,7 @@ public final class TrafficSignalBlocks {
           })
           .sectionYPositions(4.0f, -6.0f, -14.0f)
           .sectionSizes(12, 8, 8)
+          .retiring("controllableverticalsolidsignal1288inch")
           .build();
 
   public static final BlockControllableSignal VERTICAL_SOLID_SIGNAL_LED8812_INCH =
@@ -2307,6 +2309,7 @@ public final class TrafficSignalBlocks {
           })
           .sectionYPositions(6.0f, -2.0f, -12.0f)
           .sectionSizes(8, 8, 12)
+          .retiring("controllableverticalsolidsignal8812inch")
           .build();
 
   public static final BlockControllableSignal VERTICAL_SOLID_SIGNAL_LED8_INCH =
@@ -2329,6 +2332,7 @@ public final class TrafficSignalBlocks {
           })
           .sectionYPositions(2.0f, -6.0f, -14.0f)
           .sectionSizes(8, 8, 8)
+          .retiring("controllableverticalsolidsignal8inch")
           .build();
 
   public static final BlockControllableSignal VERTICAL_SOLID_SIGNAL_NO_RED_VISOR =
