@@ -10,25 +10,54 @@ import net.minecraft.util.IStringSerializable;
  * @author Mica Technologies
  */
 public enum DirectionEight implements IStringSerializable {
-  S(0, "s"),
-  W(1, "w"),
-  N(2, "n"),
-  E(3, "e"),
-  SE(4, "se"),
-  SW(5, "sw"),
-  NW(6, "nw"),
-  NE(7, "ne");
+  S(0, "s", 0, 1),
+  W(1, "w", -1, 0),
+  N(2, "n", 0, -1),
+  E(3, "e", 1, 0),
+  SE(4, "se", 1, 1),
+  SW(5, "sw", -1, 1),
+  NW(6, "nw", -1, -1),
+  NE(7, "ne", 1, -1);
 
   private final int index;
   private final String name;
+  private final int offsetX;
+  private final int offsetZ;
 
-  DirectionEight(int index, String name) {
+  DirectionEight(int index, String name, int offsetX, int offsetZ) {
     this.index = index;
     this.name = name;
+    this.offsetX = offsetX;
+    this.offsetZ = offsetZ;
   }
 
   public int getIndex() {
     return index;
+  }
+
+  /** X component of a one-block step in this direction. */
+  public int getOffsetX() {
+    return offsetX;
+  }
+
+  /** Z component of a one-block step in this direction. */
+  public int getOffsetZ() {
+    return offsetZ;
+  }
+
+  /** Returns the 180° opposite direction (S↔N, E↔W, NE↔SW, SE↔NW). */
+  public DirectionEight getOpposite() {
+    switch (this) {
+      case N:  return S;
+      case S:  return N;
+      case E:  return W;
+      case W:  return E;
+      case NE: return SW;
+      case SW: return NE;
+      case NW: return SE;
+      case SE: return NW;
+      default: return this;
+    }
   }
 
   @Override
