@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractTileEntity;
+import com.micatechnologies.minecraft.csm.codeutils.CsmRenderUtils;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignal.SIGNAL_SIDE;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignalHead;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.SignalHeadMountType;
@@ -363,8 +364,9 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
     // alternating pattern. This is handled in the block class via shouldLightWigwagSection.
     if (currentBulbColor == 2 && block instanceof BlockControllableHawkSignal) {
       BlockControllableHawkSignal hawkBlock = (BlockControllableHawkSignal) block;
+      long wigwagGameMillis = world != null ? CsmRenderUtils.gameMillis(world) : 0L;
       for (int i = 0; i < sectionInfos.length; i++) {
-        sectionInfos[i].setBulbLit(hawkBlock.shouldLightWigwagSection(i));
+        sectionInfos[i].setBulbLit(hawkBlock.shouldLightWigwagSection(i, wigwagGameMillis));
       }
     }
 
@@ -380,9 +382,12 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
     }
 
     // Loop again, and if the bulb is lit and set to flashing, handle the flashing logic.
-    // alternateFlash inverts the flash phase for wig-wag beacon pairs.
+    // alternateFlash inverts the flash phase for wig-wag beacon pairs. Uses the pause-aware
+    // game clock so flashes freeze when the game is paused and we avoid a per-frame JNI
+    // call to System.currentTimeMillis().
     long blinkInterval = 500; // ms
-    boolean firstHalfOfSecond = (System.currentTimeMillis() % (blinkInterval * 2)) < blinkInterval;
+    boolean firstHalfOfSecond = world != null
+        && (CsmRenderUtils.gameMillis(world) % (blinkInterval * 2)) < blinkInterval;
     if (alternateFlash) firstHalfOfSecond = !firstHalfOfSecond;
     for (TrafficSignalSectionInfo sectionInfo : sectionInfos) {
       if (sectionInfo.isBulbLit() && sectionInfo.isBulbFlashing() && firstHalfOfSecond) {
@@ -848,7 +853,10 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
     // "turning off aging resets all bulbs to healthy."
     if (bulbAgingStates.length == 0) return;
 
-    long now = System.currentTimeMillis();
+    // Pause-aware game clock. Aging visuals (failing-bulb flicker wave, strobe bursts)
+    // use this as the phase input to a slow Math.sin — quantizing to tick boundaries is
+    // fine for a 0.0004 Hz wave and avoids a per-frame JNI call.
+    long now = world != null ? CsmRenderUtils.gameMillis(world) : 0L;
     for (int i = 0; i < sectionInfos.length && i < bulbAgingStates.length; i++) {
       if (bulbAgingStates[i] == AGING_DEAD) {
         sectionInfos[i].setBulbLit(false);

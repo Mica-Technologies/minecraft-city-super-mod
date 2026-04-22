@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmRenderUtils;
 import com.micatechnologies.minecraft.csm.codeutils.DirectionSixteen;
 import com.micatechnologies.minecraft.csm.codeutils.RenderHelper;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableCrosswalkSignalNew;
@@ -183,8 +184,10 @@ public class TileEntityCrosswalkSignalNewRenderer
         }
         GL11.glCallList( displayList );
 
-        // Display face textures
-        renderDisplayFace( displayType, bulbType, colorState );
+        // Display face textures — compute flash state here so we can use the renderer's
+        // partialTicks instead of doing a JNI System.currentTimeMillis() call per frame
+        boolean flashOn = (CsmRenderUtils.gameMillis(te.getWorld(), partialTicks) % 1000L) < 500L;
+        renderDisplayFace( displayType, bulbType, colorState, flashOn );
 
         // 7-segment countdown area:
         // - Single 16-inch: always renders on the signal face
@@ -389,12 +392,12 @@ public class TileEntityCrosswalkSignalNewRenderer
     // =====================================================================================
 
     private void renderDisplayFace( CrosswalkDisplayType displayType,
-            CrosswalkBulbType bulbType, int colorState ) {
+            CrosswalkBulbType bulbType, int colorState, boolean flashOn ) {
         // Reset GL color after display list (which may leave stale color)
         GL11.glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
 
-        // Flash timing: 1Hz on/off cycle during clearance (color=1)
-        boolean flashOn = ( System.currentTimeMillis() % 1000 ) < 500;
+        // Flash timing (computed in render() from the pause-aware game clock): 1Hz on/off
+        // cycle during clearance (color=1)
 
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.getBuffer();

@@ -67,7 +67,7 @@ public class BlockControllableHawkSignal extends AbstractBlockControllableSignal
    * color=2: Reds WIGWAG (alternating flash — left and right alternate at 500ms)
    * color=3: All OFF
    *
-   * Wigwag is implemented by using System.currentTimeMillis() to alternate which
+   * Wigwag is implemented by using the pause-aware game clock to alternate which
    * red section is lit. This avoids changes to the SectionInfo flash system.
    */
   @Override
@@ -92,9 +92,15 @@ public class BlockControllableHawkSignal extends AbstractBlockControllableSignal
    * Returns whether a specific section index should be lit for the HAWK wigwag
    * state (color=2). Left red (section 0) and right red (section 1) alternate
    * at 500ms intervals. Yellow (section 2) stays off.
+   *
+   * @param sectionIndex the section to check
+   * @param gameMillis   a pause-aware game clock in milliseconds (see
+   *                     {@code CsmRenderUtils.gameMillis}); threaded from the TE's
+   *                     getSectionInfos so we avoid a per-frame JNI
+   *                     {@code System.currentTimeMillis} call
    */
-  public boolean shouldLightWigwagSection(int sectionIndex) {
-    boolean firstHalf = (System.currentTimeMillis() % 1000) < 500;
+  public boolean shouldLightWigwagSection(int sectionIndex, long gameMillis) {
+    boolean firstHalf = (gameMillis % 1000L) < 500L;
     if (sectionIndex == 0) return firstHalf;
     if (sectionIndex == 1) return !firstHalf;
     return false; // yellow stays off during wigwag
