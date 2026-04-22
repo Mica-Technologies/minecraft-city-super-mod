@@ -657,14 +657,22 @@ public class TrafficSignalControllerTicker {
             originalPhase, rebuiltPhase)) {
           nextPhase = rebuiltPhase;
         } else {
+          // Vehicle signals changed (e.g., green arrow ↔ FYA flip). Transition to the
+          // rebuilt phase for the SAME circuit so through signals that are green in both
+          // phases stay green — only the signals that actually changed get clearance.
+          nextPhase = TrafficSignalControllerTickerUtilities.getYellowTransitionPhaseForUpcoming(
+              originalPhase, rebuiltPhase);
           recycleToGreen = false;
         }
       }
       if (!recycleToGreen) {
-        // Demand still present on another circuit — proceed to yellow transition
-        nextPhase = TrafficSignalControllerTickerUtilities.getYellowTransitionPhaseForUpcoming(
-            originalPhase,
-            originalPhase.getUpcomingPhase());
+        // Demand still present on another circuit — proceed to yellow transition.
+        // Only build the transition if the conflict path above didn't already set it.
+        if (nextPhase == null) {
+          nextPhase = TrafficSignalControllerTickerUtilities.getYellowTransitionPhaseForUpcoming(
+              originalPhase,
+              originalPhase.getUpcomingPhase());
+        }
       }
     }
     // If original phase is yellow transitioning to red, and yellow time is up, change to red
