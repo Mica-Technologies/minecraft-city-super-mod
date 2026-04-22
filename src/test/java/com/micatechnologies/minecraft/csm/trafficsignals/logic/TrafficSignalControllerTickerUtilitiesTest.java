@@ -245,8 +245,8 @@ class TrafficSignalControllerTickerUtilitiesTest {
     }
 
     @Test
-    @DisplayName("OFF signals going to GREEN become YELLOW")
-    void offToGreen_becomesYellow() {
+    @DisplayName("OFF signals stay OFF during yellow transition (no spurious yellow)")
+    void offToGreen_staysOff() {
       BlockPos offPos = new BlockPos(10, 64, 20);
 
       TrafficSignalPhase current = new TrafficSignalPhase(1, null,
@@ -261,8 +261,10 @@ class TrafficSignalControllerTickerUtilitiesTest {
           TrafficSignalControllerTickerUtilities.getYellowTransitionPhaseForUpcoming(
               current, upcoming);
 
-      assertTrue(result.getYellowSignals().contains(offPos),
-          "Off signal going to green should become yellow in transition");
+      assertTrue(result.getOffSignals().contains(offPos),
+          "Off signal should stay off during yellow transition");
+      assertFalse(result.getYellowSignals().contains(offPos),
+          "Off signal should not get yellow clearance");
     }
 
     @Test
@@ -315,23 +317,46 @@ class TrafficSignalControllerTickerUtilitiesTest {
     }
 
     @Test
-    @DisplayName("GREEN signals are preserved")
-    void greenPreserved() {
+    @DisplayName("GREEN signals staying GREEN in upcoming are preserved")
+    void greenPreservedWhenStayingGreen() {
       BlockPos greenPos = new BlockPos(10, 64, 20);
-
-      TrafficSignalPhase current = new TrafficSignalPhase(1, null,
-          TrafficSignalPhaseApplicability.YELLOW_TRANSITIONING);
-      current.addGreenSignal(greenPos);
 
       TrafficSignalPhase upcoming = new TrafficSignalPhase(2, null,
           TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS);
+      upcoming.addGreenSignal(greenPos);
+
+      TrafficSignalPhase current = new TrafficSignalPhase(1, upcoming,
+          TrafficSignalPhaseApplicability.YELLOW_TRANSITIONING);
+      current.addGreenSignal(greenPos);
 
       TrafficSignalPhase result =
           TrafficSignalControllerTickerUtilities.getRedTransitionPhaseForUpcoming(
               current, upcoming);
 
       assertTrue(result.getGreenSignals().contains(greenPos),
-          "Green signal should be preserved");
+          "Green signal staying green in upcoming should be preserved");
+    }
+
+    @Test
+    @DisplayName("GREEN signals NOT in upcoming become RED")
+    void greenBecomesRedWhenNotInUpcoming() {
+      BlockPos greenPos = new BlockPos(10, 64, 20);
+
+      TrafficSignalPhase upcoming = new TrafficSignalPhase(2, null,
+          TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS);
+
+      TrafficSignalPhase current = new TrafficSignalPhase(1, upcoming,
+          TrafficSignalPhaseApplicability.YELLOW_TRANSITIONING);
+      current.addGreenSignal(greenPos);
+
+      TrafficSignalPhase result =
+          TrafficSignalControllerTickerUtilities.getRedTransitionPhaseForUpcoming(
+              current, upcoming);
+
+      assertTrue(result.getRedSignals().contains(greenPos),
+          "Green signal not in upcoming should become red");
+      assertFalse(result.getGreenSignals().contains(greenPos),
+          "Green signal not in upcoming should not stay green");
     }
 
     @Test

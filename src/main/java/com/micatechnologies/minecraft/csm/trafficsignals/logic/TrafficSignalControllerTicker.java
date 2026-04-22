@@ -644,13 +644,23 @@ public class TrafficSignalControllerTicker {
       }
 
       if (recycleToGreen) {
-        // Recycle: return to the active circuit's default phase (restores walk signals)
-        // Vehicle signals stay green since they were never transitioned
+        // Recycle: return to the active circuit's default phase (restores walk signals).
+        // But first verify the rebuilt phase doesn't change any vehicle signals — if the
+        // FYA/green-arrow decision has changed (e.g., left-turn vehicles cleared during
+        // FDW), we must proceed to yellow transition to provide proper clearance.
         int activeCircuit = originalPhase.getCircuit();
-        nextPhase = TrafficSignalControllerTickerUtilities.getDefaultPhaseForCircuitNumber(
-            circuits, overlaps, activeCircuit > 0 ? activeCircuit : 1,
-            overlapPedestrianSignals, world);
-      } else {
+        TrafficSignalPhase rebuiltPhase =
+            TrafficSignalControllerTickerUtilities.getDefaultPhaseForCircuitNumber(
+                circuits, overlaps, activeCircuit > 0 ? activeCircuit : 1,
+                overlapPedestrianSignals, world);
+        if (!TrafficSignalControllerTickerUtilities.hasVehicleSignalConflict(
+            originalPhase, rebuiltPhase)) {
+          nextPhase = rebuiltPhase;
+        } else {
+          recycleToGreen = false;
+        }
+      }
+      if (!recycleToGreen) {
         // Demand still present on another circuit — proceed to yellow transition
         nextPhase = TrafficSignalControllerTickerUtilities.getYellowTransitionPhaseForUpcoming(
             originalPhase,
@@ -831,6 +841,16 @@ public class TrafficSignalControllerTicker {
         }
 
       }
+    }
+
+    // Apply overlaps to transition phases so overlap targets get yellow/red clearance
+    // matching their source signals (green phases already have overlaps applied)
+    if (nextPhase != null && (
+        nextPhase.getApplicability() == TrafficSignalPhaseApplicability.FLASH_DONT_WALK_TRANSITIONING
+            || nextPhase.getApplicability() == TrafficSignalPhaseApplicability.YELLOW_TRANSITIONING
+            || nextPhase.getApplicability() == TrafficSignalPhaseApplicability.RED_TRANSITIONING)) {
+      TrafficSignalControllerTickerUtilities.getTransitionPhaseWithOverlapsApplied(
+          nextPhase, overlaps);
     }
 
     // Beacon advance warning: override per-circuit beacons based on whether their

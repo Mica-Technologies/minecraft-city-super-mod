@@ -776,6 +776,44 @@ public class TrafficSignalPhase {
   }
 
   /**
+   * Moves the given {@link BlockPos} of an overlap signal to the 'yellow' state.
+   */
+  public boolean moveOverlapSignalToYellow(BlockPos pos) {
+    boolean moved = false;
+    if (!yellowSignals.contains(pos)) {
+      if (greenSignals.remove(pos)) {
+        moved = yellowSignals.add(pos);
+      } else if (redSignals.remove(pos)) {
+        moved = yellowSignals.add(pos);
+      } else if (fyaSignals.remove(pos)) {
+        moved = yellowSignals.add(pos);
+      } else if (offSignals.remove(pos)) {
+        moved = yellowSignals.add(pos);
+      }
+    }
+    return moved;
+  }
+
+  /**
+   * Moves the given {@link BlockPos} of an overlap signal to the 'red' state.
+   */
+  public boolean moveOverlapSignalToRed(BlockPos pos) {
+    boolean moved = false;
+    if (!redSignals.contains(pos)) {
+      if (greenSignals.remove(pos)) {
+        moved = redSignals.add(pos);
+      } else if (yellowSignals.remove(pos)) {
+        moved = redSignals.add(pos);
+      } else if (fyaSignals.remove(pos)) {
+        moved = redSignals.add(pos);
+      } else if (offSignals.remove(pos)) {
+        moved = redSignals.add(pos);
+      }
+    }
+    return moved;
+  }
+
+  /**
    * Applies the {@link TrafficSignalPhase} to the given {@link World}. Sets all signals to their
    * designated colors, skipping any that are missing. Returns the position of the first missing
    * signal encountered, or null if all signals were set successfully.
