@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmRenderUtils;
 import com.micatechnologies.minecraft.csm.codeutils.DirectionSixteen;
 import com.micatechnologies.minecraft.csm.codeutils.RenderHelper;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignalHead;
@@ -227,7 +228,12 @@ public class TileEntityTrafficSignalHeadRenderer extends
     }
     GL11.glCallList(displayList);
 
-    renderBulbs(sectionInfos, sectionYPositions, sectionXPositions, sectionSizes, zPushBack);
+    // Pause-aware game clock — threaded into the bulb/Barlo paths so they can do 1300 ms /
+    // 1000 ms modulo timing without each calling System.currentTimeMillis() (which is a JNI
+    // call and adds up with many visible signals).
+    long gameMillis = CsmRenderUtils.gameMillis(te.getWorld(), partialTicks);
+    renderBulbs(sectionInfos, sectionYPositions, sectionXPositions, sectionSizes, zPushBack,
+        gameMillis);
 
     // Mount hardware renders outside the cached display list: adjacency changes (add-on
     // placed/broken beside this signal) don't invalidate the TE's dirty flag, so rebuilding
@@ -438,7 +444,7 @@ public class TileEntityTrafficSignalHeadRenderer extends
    * positions in Java to avoid per-section GL matrix push/pop and separate draw calls.
    */
   private void renderBulbs(TrafficSignalSectionInfo[] sectionInfos, float[] sectionYPositions,
-      float[] sectionXPositions, int[] sectionSizes, float zPushBack) {
+      float[] sectionXPositions, int[] sectionSizes, float zPushBack, long gameMillis) {
     // Reset GL color to white so textures are not tinted by leftover static part colors.
     // Must use GL11.glColor4f directly because GlStateManager caches state and the display
     // list replay changes GL color behind GlStateManager's back, making it skip the reset.
@@ -534,7 +540,8 @@ public class TileEntityTrafficSignalHeadRenderer extends
     tessellator.draw();
 
     // Render Barlo strobe bars (dynamic, untextured white quads)
-    renderBarloStrobeBars(sectionInfos, sectionYPositions, sectionXPositions, sectionSizes, zPushBack);
+    renderBarloStrobeBars(sectionInfos, sectionYPositions, sectionXPositions, sectionSizes,
+        zPushBack, gameMillis);
   }
 
   private static boolean isBarloVisor(TrafficSignalVisorType type) {
@@ -549,7 +556,8 @@ public class TileEntityTrafficSignalHeadRenderer extends
    * Only renders on red sections.
    */
   private void renderBarloStrobeBars(TrafficSignalSectionInfo[] sectionInfos,
-      float[] sectionYPositions, float[] sectionXPositions, int[] sectionSizes, float zPushBack) {
+      float[] sectionYPositions, float[] sectionXPositions, int[] sectionSizes, float zPushBack,
+      long gameMillis) {
     // Quick check: any Barlo red sections?
     boolean hasBarlo = false;
     for (int i = 0; i < sectionInfos.length; i++) {
@@ -582,8 +590,10 @@ public class TileEntityTrafficSignalHeadRenderer extends
     }
     tessellator.draw();
 
-    // Conditionally render the white strobe flash on top of the mounting bar
-    long t = System.currentTimeMillis() % 1300L;
+    // Conditionally render the white strobe flash on top of the mounting bar. gameMillis is
+    // the pause-aware game clock (threaded from render() so we don't pay the JNI
+    // System.currentTimeMillis() cost per-frame on every signal head with a Barlo visor).
+    long t = gameMillis % 1300L;
     boolean strobeOn = t < 500L && (t / 50L) % 2L == 1L;
 
     if (strobeOn) {

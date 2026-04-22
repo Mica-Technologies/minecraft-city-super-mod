@@ -3,6 +3,7 @@ package com.micatechnologies.minecraft.csm.lifesafety;
 import com.micatechnologies.minecraft.csm.CsmConfig;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEWUD;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractTileEntity;
+import com.micatechnologies.minecraft.csm.codeutils.CsmRenderUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -48,12 +49,13 @@ public class TileEntityFireAlarmStrobeRenderer
     // Modern strobes: 75ms full brightness + 75ms fade-out (simulates xenon capacitor discharge)
     // Older red strobes: 500ms on / 500ms off with no fade
     float intensity;
+    long gameMillis = CsmRenderUtils.gameMillis(te.getWorld(), partialTicks);
     if (redToggle) {
-      long t = System.currentTimeMillis() % STROBE_CYCLE_MS;
+      long t = gameMillis % STROBE_CYCLE_MS;
       if (t >= 500L) return;
       intensity = 1.0f;
     } else {
-      long t = System.currentTimeMillis() % STROBE_CYCLE_MS;
+      long t = gameMillis % STROBE_CYCLE_MS;
       if (t < STROBE_FLASH_MS) {
         intensity = 1.0f;
       } else if (t < STROBE_FLASH_MS + STROBE_FADE_MS) {
