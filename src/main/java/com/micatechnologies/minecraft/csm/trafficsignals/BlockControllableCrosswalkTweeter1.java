@@ -9,6 +9,7 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
 
 /**
  * Crosswalk tweeter speaker block (variant 1). Emits an audible cuckoo tone when the crosswalk
@@ -38,8 +39,11 @@ public class BlockControllableCrosswalkTweeter1
     int color = state.getValue(COLOR);
     if (color == 2 && !world.isRemote) {
       String channel = "tweeter_" + pos.getX() + "_" + pos.getY() + "_" + pos.getZ();
-      CsmNetwork.sendToAll(APSSoundPacket.start(
-          channel, "csm:crosswalk_cookoo_1", TWEETER_HEARING_RANGE, false, pos));
+      CsmNetwork.sendToAllAround(APSSoundPacket.start(
+          channel, "csm:crosswalk_cookoo_1", TWEETER_HEARING_RANGE, false, pos),
+          new NetworkRegistry.TargetPoint(
+              world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(),
+              TWEETER_HEARING_RANGE));
     }
     world.scheduleUpdate(pos, this, this.tickRate(world));
   }
