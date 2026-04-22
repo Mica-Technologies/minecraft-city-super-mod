@@ -13,13 +13,23 @@ import net.minecraft.nbt.NBTTagCompound;
  */
 public class TileEntityCrosswalkSignal extends AbstractTickableTileEntity {
 
-  private static final String NBT_KEY_LEARNED_CLEARANCE = "learnedClearanceTicks";
-  private static final String NBT_KEY_COUNTDOWN = "currentCountdown";
-  private static final String NBT_KEY_LAST_COLOR = "lastColorState";
-  private static final String NBT_KEY_MEASURING = "measuring";
-  private static final String NBT_KEY_MEASURE_TICKS = "measureTicks";
-  private static final String NBT_KEY_VERIFYING = "verifying";
-  private static final String NBT_KEY_VERIFY_TICKS = "verifyTicks";
+  // Short-form NBT keys. LEGACY_* counterparts are retained only so readNBT can still
+  // load worlds saved before the short-key optimization; writeNBT only ever emits the
+  // short form.
+  private static final String NBT_KEY_LEARNED_CLEARANCE = "lCT";
+  private static final String LEGACY_NBT_KEY_LEARNED_CLEARANCE = "learnedClearanceTicks";
+  private static final String NBT_KEY_COUNTDOWN = "cCd";
+  private static final String LEGACY_NBT_KEY_COUNTDOWN = "currentCountdown";
+  private static final String NBT_KEY_LAST_COLOR = "lCS";
+  private static final String LEGACY_NBT_KEY_LAST_COLOR = "lastColorState";
+  private static final String NBT_KEY_MEASURING = "ms";
+  private static final String LEGACY_NBT_KEY_MEASURING = "measuring";
+  private static final String NBT_KEY_MEASURE_TICKS = "mTk";
+  private static final String LEGACY_NBT_KEY_MEASURE_TICKS = "measureTicks";
+  private static final String NBT_KEY_VERIFYING = "vf";
+  private static final String LEGACY_NBT_KEY_VERIFYING = "verifying";
+  private static final String NBT_KEY_VERIFY_TICKS = "vTk";
+  private static final String LEGACY_NBT_KEY_VERIFY_TICKS = "verifyTicks";
 
   private int learnedClearanceTicks = 0;
   private int currentCountdown = -1;
@@ -31,13 +41,34 @@ public class TileEntityCrosswalkSignal extends AbstractTickableTileEntity {
 
   @Override
   public void readNBT(NBTTagCompound compound) {
-    learnedClearanceTicks = compound.getInteger(NBT_KEY_LEARNED_CLEARANCE);
-    currentCountdown = compound.getInteger(NBT_KEY_COUNTDOWN);
-    lastColorState = compound.getInteger(NBT_KEY_LAST_COLOR);
-    measuring = compound.getBoolean(NBT_KEY_MEASURING);
-    measureTicks = compound.getInteger(NBT_KEY_MEASURE_TICKS);
-    verifying = compound.getBoolean(NBT_KEY_VERIFYING);
-    verifyTicks = compound.getInteger(NBT_KEY_VERIFY_TICKS);
+    learnedClearanceTicks = readInt(compound, NBT_KEY_LEARNED_CLEARANCE,
+        LEGACY_NBT_KEY_LEARNED_CLEARANCE);
+    currentCountdown = readInt(compound, NBT_KEY_COUNTDOWN, LEGACY_NBT_KEY_COUNTDOWN);
+    lastColorState = readInt(compound, NBT_KEY_LAST_COLOR, LEGACY_NBT_KEY_LAST_COLOR);
+    measuring = readBool(compound, NBT_KEY_MEASURING, LEGACY_NBT_KEY_MEASURING);
+    measureTicks = readInt(compound, NBT_KEY_MEASURE_TICKS, LEGACY_NBT_KEY_MEASURE_TICKS);
+    verifying = readBool(compound, NBT_KEY_VERIFYING, LEGACY_NBT_KEY_VERIFYING);
+    verifyTicks = readInt(compound, NBT_KEY_VERIFY_TICKS, LEGACY_NBT_KEY_VERIFY_TICKS);
+
+    // Strip legacy long-form keys so the next save produces only short-form output
+    compound.removeTag(LEGACY_NBT_KEY_LEARNED_CLEARANCE);
+    compound.removeTag(LEGACY_NBT_KEY_COUNTDOWN);
+    compound.removeTag(LEGACY_NBT_KEY_LAST_COLOR);
+    compound.removeTag(LEGACY_NBT_KEY_MEASURING);
+    compound.removeTag(LEGACY_NBT_KEY_MEASURE_TICKS);
+    compound.removeTag(LEGACY_NBT_KEY_VERIFYING);
+    compound.removeTag(LEGACY_NBT_KEY_VERIFY_TICKS);
+  }
+
+  private static int readInt(NBTTagCompound compound, String key, String legacyKey) {
+    if (compound.hasKey(key)) return compound.getInteger(key);
+    if (compound.hasKey(legacyKey)) return compound.getInteger(legacyKey);
+    return 0;
+  }
+
+  private static boolean readBool(NBTTagCompound compound, String key, String legacyKey) {
+    if (compound.hasKey(key)) return compound.getBoolean(key);
+    return compound.hasKey(legacyKey) && compound.getBoolean(legacyKey);
   }
 
   @Override

@@ -71,8 +71,9 @@ public class BlockControllableCrosswalkMountGray extends AbstractBlockControllab
       TileEntityCrosswalkSignalNew newTe = (TileEntityCrosswalkSignalNew) te;
       newTe.setMountType(CrosswalkMountType.REAR);
       newTe.setBodyColor(TrafficSignalBodyColor.BATTLESHIP_GRAY);
-      if (oldTileEntityNBT != null && oldTileEntityNBT.hasKey("learnedClearanceTicks")) {
-        newTe.setLearnedClearanceTicks(oldTileEntityNBT.getInteger("learnedClearanceTicks"));
+      int ticks = TileEntityCrosswalkSignalNew.readLearnedClearanceTicksFromNbt(oldTileEntityNBT);
+      if (ticks >= 0) {
+        newTe.setLearnedClearanceTicks(ticks);
       }
     }
   }

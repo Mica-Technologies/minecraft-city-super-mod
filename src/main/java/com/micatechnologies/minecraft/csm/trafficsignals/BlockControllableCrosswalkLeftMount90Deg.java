@@ -67,8 +67,9 @@ public class BlockControllableCrosswalkLeftMount90Deg
       TileEntityCrosswalkSignalNew newTe = (TileEntityCrosswalkSignalNew) te;
       newTe.setMountType(CrosswalkMountType.LEFT);
       newTe.setBodyTilt(TrafficSignalBodyTilt.LEFT_ANGLE);
-      if (oldTileEntityNBT != null && oldTileEntityNBT.hasKey("learnedClearanceTicks")) {
-        newTe.setLearnedClearanceTicks(oldTileEntityNBT.getInteger("learnedClearanceTicks"));
+      int ticks = TileEntityCrosswalkSignalNew.readLearnedClearanceTicksFromNbt(oldTileEntityNBT);
+      if (ticks >= 0) {
+        newTe.setLearnedClearanceTicks(ticks);
       }
     }
   }

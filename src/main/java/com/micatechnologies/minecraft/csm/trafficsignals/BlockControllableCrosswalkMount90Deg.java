@@ -66,8 +66,9 @@ public class BlockControllableCrosswalkMount90Deg extends AbstractBlockControlla
       TileEntityCrosswalkSignalNew newTe = (TileEntityCrosswalkSignalNew) te;
       newTe.setMountType(CrosswalkMountType.REAR);
       newTe.setBodyTilt(TrafficSignalBodyTilt.LEFT_ANGLE);
-      if (oldTileEntityNBT != null && oldTileEntityNBT.hasKey("learnedClearanceTicks")) {
-        newTe.setLearnedClearanceTicks(oldTileEntityNBT.getInteger("learnedClearanceTicks"));
+      int ticks = TileEntityCrosswalkSignalNew.readLearnedClearanceTicksFromNbt(oldTileEntityNBT);
+      if (ticks >= 0) {
+        newTe.setLearnedClearanceTicks(ticks);
       }
     }
   }
