@@ -901,8 +901,8 @@ public class TrafficSignalPhase {
    */
   @Override
   public int hashCode() {
-    return Objects.hash(offSignals, fyaSignals, yellowSignals, redSignals, walkSignals,
-        flashDontWalkSignals,
+    return Objects.hash(offSignals, greenSignals, fyaSignals, yellowSignals, redSignals,
+        walkSignals, flashDontWalkSignals,
         dontWalkSignals, circuit, upcomingPhase, applicability);
   }
 

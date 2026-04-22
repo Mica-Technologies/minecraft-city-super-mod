@@ -312,7 +312,8 @@ public class TrafficSignalControllerTickerUtilities {
       int activeCircuitNumber,
       boolean overlapPedestrianSignals,
       World world) {
-    if (!overlapPedestrianSignals) {
+    if (!overlapPedestrianSignals || activeCircuitNumber < 1
+        || activeCircuitNumber > circuits.getCircuitCount()) {
       return false;
     }
 
@@ -360,7 +361,8 @@ public class TrafficSignalControllerTickerUtilities {
       int activeCircuitNumber,
       boolean overlapPedestrianSignals,
       World world) {
-    if (!overlapPedestrianSignals) {
+    if (!overlapPedestrianSignals || activeCircuitNumber < 1
+        || activeCircuitNumber > circuits.getCircuitCount()) {
       return false;
     }
 
@@ -412,7 +414,9 @@ public class TrafficSignalControllerTickerUtilities {
       int circuitNumber,
       boolean overlapPedestrianSignals,World world) {
     // Only create a default phase if there are circuits
-    TrafficSignalPhase defaultPhase = null;
+    TrafficSignalPhase defaultPhase = new TrafficSignalPhase(
+        TrafficSignalPhase.CIRCUIT_NOT_APPLICABLE, null,
+        TrafficSignalPhaseApplicability.ALL_RED);
     if (circuits.getCircuitCount() > 0) {
       // Check if circuit has protected signals
       boolean hasProtectedSignals =

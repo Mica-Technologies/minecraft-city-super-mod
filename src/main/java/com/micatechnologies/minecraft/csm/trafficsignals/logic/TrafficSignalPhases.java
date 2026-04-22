@@ -487,7 +487,7 @@ public class TrafficSignalPhases {
     // Create a new TrafficSignalPhase object for all red phase
     TrafficSignalPhase allRedPhase = new TrafficSignalPhase(
         TrafficSignalPhase.CIRCUIT_NOT_APPLICABLE, null,
-        TrafficSignalPhaseApplicability.NONE);
+        TrafficSignalPhaseApplicability.ALL_RED);
     for (TrafficSignalControllerCircuit circuit : trafficSignalControllerCircuits.getCircuits()) {
       allRedPhase.addRedSignals(circuit.getFlashingLeftSignals());
       allRedPhase.addRedSignals(circuit.getFlashingRightSignals());
