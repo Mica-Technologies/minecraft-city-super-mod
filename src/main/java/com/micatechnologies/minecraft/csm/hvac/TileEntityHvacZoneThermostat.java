@@ -26,12 +26,27 @@ import net.minecraftforge.common.util.Constants;
 public class TileEntityHvacZoneThermostat extends AbstractTickableTileEntity
     implements IHvacThermostatDisplay {
 
-  private static final String NBT_TARGET_TEMP_LOW = "targetTempLow";
-  private static final String NBT_TARGET_TEMP_HIGH = "targetTempHigh";
-  private static final String NBT_IS_CALLING = "isCalling";
-  private static final String NBT_LINKED_VENTS = "linkedVents";
-  private static final String NBT_LINKED_PRIMARY = "linkedPrimary";
-  private static final String NBT_HAS_PRIMARY = "hasPrimary";
+  // Short-form NBT keys. LEGACY_* counterparts only read for back-compat.
+  private static final String NBT_TARGET_TEMP_LOW = "tLo";
+  private static final String LEGACY_NBT_TARGET_TEMP_LOW = "targetTempLow";
+  private static final String NBT_TARGET_TEMP_HIGH = "tHi";
+  private static final String LEGACY_NBT_TARGET_TEMP_HIGH = "targetTempHigh";
+  private static final String NBT_IS_CALLING = "cL";
+  private static final String LEGACY_NBT_IS_CALLING = "isCalling";
+  private static final String NBT_CALLING_MODE = "cM";
+  private static final String LEGACY_NBT_CALLING_MODE = "callingMode";
+  private static final String NBT_EFFICIENCY = "eff";
+  private static final String LEGACY_NBT_EFFICIENCY = "efficiency";
+  private static final String NBT_RAMP_TICKS = "rT";
+  private static final String LEGACY_NBT_RAMP_TICKS = "rampTicks";
+  private static final String NBT_CURRENT_TEMP = "cT";
+  private static final String LEGACY_NBT_CURRENT_TEMP = "currentTemp";
+  private static final String NBT_LINKED_VENTS = "lV";
+  private static final String LEGACY_NBT_LINKED_VENTS = "linkedVents";
+  private static final String NBT_LINKED_PRIMARY = "lP";
+  private static final String LEGACY_NBT_LINKED_PRIMARY = "linkedPrimary";
+  private static final String NBT_HAS_PRIMARY = "hP";
+  private static final String LEGACY_NBT_HAS_PRIMARY = "hasPrimary";
 
   /**
    * Blending factor per tick for thermal smoothing. Matches the primary thermostat.
@@ -418,14 +433,20 @@ public class TileEntityHvacZoneThermostat extends AbstractTickableTileEntity
 
   @Override
   public void readNBT(NBTTagCompound compound) {
-    this.targetTempLow = compound.getInteger(NBT_TARGET_TEMP_LOW);
-    this.targetTempHigh = compound.getInteger(NBT_TARGET_TEMP_HIGH);
-    this.isCalling = compound.getBoolean(NBT_IS_CALLING);
-    this.callingMode = compound.getInteger("callingMode");
-    this.cachedEfficiencyPercent = compound.getInteger("efficiency");
-    this.accumulatedRampTicks = compound.getLong("rampTicks");
-    this.currentTemperature = compound.getFloat("currentTemp");
-    if (compound.hasKey("currentTemp")) {
+    this.targetTempLow = readInt(compound, NBT_TARGET_TEMP_LOW, LEGACY_NBT_TARGET_TEMP_LOW);
+    this.targetTempHigh = readInt(compound, NBT_TARGET_TEMP_HIGH, LEGACY_NBT_TARGET_TEMP_HIGH);
+    this.isCalling = readBool(compound, NBT_IS_CALLING, LEGACY_NBT_IS_CALLING);
+    this.callingMode = readInt(compound, NBT_CALLING_MODE, LEGACY_NBT_CALLING_MODE);
+    this.cachedEfficiencyPercent = readInt(compound, NBT_EFFICIENCY, LEGACY_NBT_EFFICIENCY);
+    this.accumulatedRampTicks = readLong(compound, NBT_RAMP_TICKS, LEGACY_NBT_RAMP_TICKS);
+    boolean hasCurrentTemp = compound.hasKey(NBT_CURRENT_TEMP)
+        || compound.hasKey(LEGACY_NBT_CURRENT_TEMP);
+    if (compound.hasKey(NBT_CURRENT_TEMP)) {
+      this.currentTemperature = compound.getFloat(NBT_CURRENT_TEMP);
+    } else if (compound.hasKey(LEGACY_NBT_CURRENT_TEMP)) {
+      this.currentTemperature = compound.getFloat(LEGACY_NBT_CURRENT_TEMP);
+    }
+    if (hasCurrentTemp) {
       this.temperatureInitialized = true;
     }
     if (targetTempLow == 0 && targetTempHigh == 0) {
@@ -434,8 +455,11 @@ public class TileEntityHvacZoneThermostat extends AbstractTickableTileEntity
     }
 
     // Read linked primary
-    if (compound.getBoolean(NBT_HAS_PRIMARY)) {
-      NBTTagCompound primaryTag = compound.getCompoundTag(NBT_LINKED_PRIMARY);
+    boolean hasPrimary = readBool(compound, NBT_HAS_PRIMARY, LEGACY_NBT_HAS_PRIMARY);
+    if (hasPrimary) {
+      String primaryKey = compound.hasKey(NBT_LINKED_PRIMARY)
+          ? NBT_LINKED_PRIMARY : LEGACY_NBT_LINKED_PRIMARY;
+      NBTTagCompound primaryTag = compound.getCompoundTag(primaryKey);
       linkedPrimaryPos = new BlockPos(
           primaryTag.getInteger("x"),
           primaryTag.getInteger("y"),
@@ -446,14 +470,49 @@ public class TileEntityHvacZoneThermostat extends AbstractTickableTileEntity
 
     // Read linked vents
     linkedVents.clear();
+    String ventsKey = null;
     if (compound.hasKey(NBT_LINKED_VENTS)) {
-      NBTTagList list = compound.getTagList(NBT_LINKED_VENTS, Constants.NBT.TAG_COMPOUND);
+      ventsKey = NBT_LINKED_VENTS;
+    } else if (compound.hasKey(LEGACY_NBT_LINKED_VENTS)) {
+      ventsKey = LEGACY_NBT_LINKED_VENTS;
+    }
+    if (ventsKey != null) {
+      NBTTagList list = compound.getTagList(ventsKey, Constants.NBT.TAG_COMPOUND);
       for (int i = 0; i < list.tagCount(); i++) {
         NBTTagCompound tag = list.getCompoundTagAt(i);
         linkedVents.add(new BlockPos(tag.getInteger("x"), tag.getInteger("y"),
             tag.getInteger("z")));
       }
     }
+
+    // Strip legacy long-form keys so the next save produces only short-form output
+    compound.removeTag(LEGACY_NBT_TARGET_TEMP_LOW);
+    compound.removeTag(LEGACY_NBT_TARGET_TEMP_HIGH);
+    compound.removeTag(LEGACY_NBT_IS_CALLING);
+    compound.removeTag(LEGACY_NBT_CALLING_MODE);
+    compound.removeTag(LEGACY_NBT_EFFICIENCY);
+    compound.removeTag(LEGACY_NBT_RAMP_TICKS);
+    compound.removeTag(LEGACY_NBT_CURRENT_TEMP);
+    compound.removeTag(LEGACY_NBT_LINKED_VENTS);
+    compound.removeTag(LEGACY_NBT_LINKED_PRIMARY);
+    compound.removeTag(LEGACY_NBT_HAS_PRIMARY);
+  }
+
+  private static int readInt(NBTTagCompound compound, String key, String legacyKey) {
+    if (compound.hasKey(key)) return compound.getInteger(key);
+    if (compound.hasKey(legacyKey)) return compound.getInteger(legacyKey);
+    return 0;
+  }
+
+  private static boolean readBool(NBTTagCompound compound, String key, String legacyKey) {
+    if (compound.hasKey(key)) return compound.getBoolean(key);
+    return compound.hasKey(legacyKey) && compound.getBoolean(legacyKey);
+  }
+
+  private static long readLong(NBTTagCompound compound, String key, String legacyKey) {
+    if (compound.hasKey(key)) return compound.getLong(key);
+    if (compound.hasKey(legacyKey)) return compound.getLong(legacyKey);
+    return 0L;
   }
 
   @Override
@@ -461,10 +520,10 @@ public class TileEntityHvacZoneThermostat extends AbstractTickableTileEntity
     compound.setInteger(NBT_TARGET_TEMP_LOW, targetTempLow);
     compound.setInteger(NBT_TARGET_TEMP_HIGH, targetTempHigh);
     compound.setBoolean(NBT_IS_CALLING, isCalling);
-    compound.setInteger("callingMode", callingMode);
-    compound.setInteger("efficiency", cachedEfficiencyPercent);
-    compound.setLong("rampTicks", accumulatedRampTicks);
-    compound.setFloat("currentTemp", currentTemperature);
+    compound.setInteger(NBT_CALLING_MODE, callingMode);
+    compound.setInteger(NBT_EFFICIENCY, cachedEfficiencyPercent);
+    compound.setLong(NBT_RAMP_TICKS, accumulatedRampTicks);
+    compound.setFloat(NBT_CURRENT_TEMP, currentTemperature);
 
     // Write linked primary
     if (linkedPrimaryPos != null) {
