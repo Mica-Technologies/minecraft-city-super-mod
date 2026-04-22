@@ -338,67 +338,121 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
     // Evaluate aging progression (server-side, lazy — only when a new day has passed)
     tickAging();
 
-    // Determine lighting using the block's shouldLightBulb/shouldLightAllSections methods
-    // which allows per-block-type color mapping (e.g., single flashers light on both 0 and 1)
+    // Hoist every per-frame decision that doesn't vary per-section to local constants so
+    // the section loop below can stay a single pass. Before this consolidation the method
+    // made four to five linear passes over sectionInfos (initial lighting -> HAWK wigwag
+    // override -> bulb-style enforcement -> flash-flip -> aging) which added up quickly
+    // on the client side of a signal-dense city.
     Block block = world != null ? world.getBlockState(pos).getBlock() : null;
     boolean useBlockMapping = block instanceof AbstractBlockControllableSignalHead;
+    AbstractBlockControllableSignalHead signalBlock =
+        useBlockMapping ? (AbstractBlockControllableSignalHead) block : null;
+    boolean lightAllSections = useBlockMapping && signalBlock.shouldLightAllSections(currentBulbColor);
+    TrafficSignalBulbStyle enforcedStyle = useBlockMapping ? signalBlock.getEnforcedBulbStyle() : null;
 
-    for (TrafficSignalSectionInfo sectionInfo : sectionInfos) {
-      if (currentBulbColor == 3) {
-        sectionInfo.setBulbLit(false);
+    boolean hawkWigwag = currentBulbColor == 2 && block instanceof BlockControllableHawkSignal;
+    BlockControllableHawkSignal hawkBlock = hawkWigwag ? (BlockControllableHawkSignal) block : null;
+
+    // Flash flip — alternateFlash inverts the flash phase for wig-wag beacon pairs. Uses
+    // the pause-aware game clock so flashes freeze when paused.
+    long blinkInterval = 500L; // ms
+    long gameMillis = world != null ? CsmRenderUtils.gameMillis(world) : 0L;
+    boolean firstHalfOfSecond = world != null
+        && (gameMillis % (blinkInterval * 2L)) < blinkInterval;
+    if (alternateFlash) firstHalfOfSecond = !firstHalfOfSecond;
+
+    // Aging-effect pre-checks — skipping these per-section entirely when no bulb has an
+    // aging state keeps the happy path branch-free.
+    boolean anyAging = bulbAgingStates.length > 0;
+
+    for (int i = 0; i < sectionInfos.length; i++) {
+      TrafficSignalSectionInfo sectionInfo = sectionInfos[i];
+
+      // Pass 1/2 fused: determine initial lit state. HAWK wigwag (color=2 on HAWK signals)
+      // overrides the normal mapping with a per-section alternating pattern; otherwise
+      // fall through to the block's color mapping or the default mapping.
+      boolean lit;
+      if (hawkWigwag) {
+        lit = hawkBlock.shouldLightWigwagSection(i, gameMillis);
+      } else if (currentBulbColor == 3) {
+        lit = false;
       } else if (useBlockMapping) {
-        AbstractBlockControllableSignalHead signalBlock = (AbstractBlockControllableSignalHead) block;
-        sectionInfo.setBulbLit(
-            signalBlock.shouldLightAllSections(currentBulbColor)
-            || signalBlock.shouldLightBulb(currentBulbColor, sectionInfo.getBulbColor()));
+        lit = lightAllSections
+            || signalBlock.shouldLightBulb(currentBulbColor, sectionInfo.getBulbColor());
       } else {
         // Fallback: default color mapping
-        boolean lit = (currentBulbColor == 0 && sectionInfo.getBulbColor() == TrafficSignalBulbColor.RED)
-            || (currentBulbColor == 1 && sectionInfo.getBulbColor() == TrafficSignalBulbColor.YELLOW)
-            || (currentBulbColor == 2 && sectionInfo.getBulbColor() == TrafficSignalBulbColor.GREEN);
-        sectionInfo.setBulbLit(lit);
+        TrafficSignalBulbColor bulbColor = sectionInfo.getBulbColor();
+        lit = (currentBulbColor == 0 && bulbColor == TrafficSignalBulbColor.RED)
+            || (currentBulbColor == 1 && bulbColor == TrafficSignalBulbColor.YELLOW)
+            || (currentBulbColor == 2 && bulbColor == TrafficSignalBulbColor.GREEN);
       }
-    }
 
-    // HAWK wigwag: for color=2 on HAWK signals, override per-section lighting with
-    // alternating pattern. This is handled in the block class via shouldLightWigwagSection.
-    if (currentBulbColor == 2 && block instanceof BlockControllableHawkSignal) {
-      BlockControllableHawkSignal hawkBlock = (BlockControllableHawkSignal) block;
-      long wigwagGameMillis = world != null ? CsmRenderUtils.gameMillis(world) : 0L;
-      for (int i = 0; i < sectionInfos.length; i++) {
-        sectionInfos[i].setBulbLit(hawkBlock.shouldLightWigwagSection(i, wigwagGameMillis));
+      // Pass 3 fused: bulb style enforcement (e.g., bi-modal arrows).
+      if (enforcedStyle != null) {
+        sectionInfo.setBulbStyle(enforcedStyle);
       }
-    }
 
-    // Enforce bulb style if the block requires a specific style (e.g., bi-modal arrows)
-    if (useBlockMapping) {
-      TrafficSignalBulbStyle enforced =
-          ((AbstractBlockControllableSignalHead) block).getEnforcedBulbStyle();
-      if (enforced != null) {
-        for (TrafficSignalSectionInfo sectionInfo : sectionInfos) {
-          sectionInfo.setBulbStyle(enforced);
+      // Pass 4 fused: flash flip — if the bulb is lit and set to flashing, blink it off
+      // during the first half of the cycle.
+      if (lit && firstHalfOfSecond && sectionInfo.isBulbFlashing()) {
+        lit = false;
+      }
+
+      // Pass 5 fused: aging effects. Dead bulbs always render dark; failing bulbs get a
+      // sin-wave flicker / strobe-burst modulation that can drop them dark this frame.
+      if (anyAging && i < bulbAgingStates.length) {
+        int agingState = bulbAgingStates[i];
+        if (agingState == AGING_DEAD) {
+          lit = false;
+        } else if (agingState == AGING_FAILING && lit) {
+          lit = applyFailingBulbModulation(i, gameMillis);
         }
       }
-    }
 
-    // Loop again, and if the bulb is lit and set to flashing, handle the flashing logic.
-    // alternateFlash inverts the flash phase for wig-wag beacon pairs. Uses the pause-aware
-    // game clock so flashes freeze when the game is paused and we avoid a per-frame JNI
-    // call to System.currentTimeMillis().
-    long blinkInterval = 500; // ms
-    boolean firstHalfOfSecond = world != null
-        && (CsmRenderUtils.gameMillis(world) % (blinkInterval * 2)) < blinkInterval;
-    if (alternateFlash) firstHalfOfSecond = !firstHalfOfSecond;
-    for (TrafficSignalSectionInfo sectionInfo : sectionInfos) {
-      if (sectionInfo.isBulbLit() && sectionInfo.isBulbFlashing() && firstHalfOfSecond) {
-        sectionInfo.setBulbLit(false);
-      }
+      sectionInfo.setBulbLit(lit);
     }
-
-    // Apply aging effects (failing flicker and dead bulbs)
-    applyAgingEffects();
 
     return sectionInfos;
+  }
+
+  /**
+   * Returns whether a failing bulb should be lit this frame. Extracted from the former
+   * {@code applyAgingEffects} loop so the per-section branch in the fused
+   * {@link #getSectionInfos(int)} pass can short-circuit to {@code lit=false} without an
+   * extra method call when aging isn't in play.
+   *
+   * <p>Uses a slow-cycling sine wave to switch between two failure modes: rapid strobe
+   * bursts (~30% of the time) vs. organic flicker from overlapping sine waves (majority).
+   *
+   * @param sectionIndex the section that's in AGING_FAILING state
+   * @param now          the pause-aware game clock, used as the phase input to the flicker
+   *                     waves
+   * @return {@code true} if the bulb should be lit this frame, {@code false} if the
+   *     failure mode blanks it
+   */
+  private boolean applyFailingBulbModulation(int sectionIndex, long now) {
+    long seed = pos.toLong() + sectionIndex;
+
+    // Determine which failure mode is active using a slow-cycling wave seeded per bulb.
+    //   mode < 0.3  → rapid strobe burst
+    //   mode >= 0.3 → organic sine-wave flicker (majority of the time)
+    double mode = (Math.sin((now + seed * 79) * 0.0004) + 1.0) / 2.0; // 0..1
+
+    if (mode < 0.3) {
+      // Rapid strobe with varying speed — a secondary wave picks the frequency so the
+      // strobe accelerates and decelerates organically.
+      double speedWave = (Math.sin((now + seed * 173) * 0.0011) + 1.0) / 2.0; // 0..1
+      long period = 16L + (long) (speedWave * 34L); // 16-50 ms → 60-20 Hz
+      boolean strobeOff = ((now / period) + seed) % 3L != 0L;
+      return !strobeOff;
+    }
+
+    // Organic flicker using overlapping sine waves
+    double phase1 = Math.sin((now + seed * 137) * 0.013);
+    double phase2 = Math.sin((now + seed * 251) * 0.007);
+    double phase3 = Math.sin((now + seed * 397) * 0.031);
+    double combined = phase1 + phase2 * 0.5 + phase3 * 0.3;
+    return combined >= -0.2;
   }
 
   /**
@@ -842,54 +896,6 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
     // Only persist on server side; client computes the same result via deterministic seed
     if (!world.isRemote && stateChanged) {
       markDirtySync(world, pos, true);
-    }
-  }
-
-  private void applyAgingEffects() {
-    // Intentionally no !agingEnabled gate: bulbAgingStates[] is the single source of truth for
-    // what a bulb looks like, so manual state overrides (set via the per-section config GUI)
-    // must still render as failing/dead even when the natural aging simulation is turned off.
-    // Toggling aging off zeros the array (see toggleAging), which keeps the prior behavior of
-    // "turning off aging resets all bulbs to healthy."
-    if (bulbAgingStates.length == 0) return;
-
-    // Pause-aware game clock. Aging visuals (failing-bulb flicker wave, strobe bursts)
-    // use this as the phase input to a slow Math.sin — quantizing to tick boundaries is
-    // fine for a 0.0004 Hz wave and avoids a per-frame JNI call.
-    long now = world != null ? CsmRenderUtils.gameMillis(world) : 0L;
-    for (int i = 0; i < sectionInfos.length && i < bulbAgingStates.length; i++) {
-      if (bulbAgingStates[i] == AGING_DEAD) {
-        sectionInfos[i].setBulbLit(false);
-      } else if (bulbAgingStates[i] == AGING_FAILING && sectionInfos[i].isBulbLit()) {
-        long seed = pos.toLong() + i;
-
-        // Determine which failure mode is active using a slow-cycling wave seeded
-        // per bulb. This produces irregular stretches of each mode:
-        //   mode < 0.3  → rapid strobe burst (2-3 seconds)
-        //   mode >= 0.3 → organic sine-wave flicker (majority of the time)
-        double mode = (Math.sin((now + seed * 79) * 0.0004) + 1.0) / 2.0; // 0..1
-
-        if (mode < 0.3) {
-          // Rapid strobe with varying speed — a secondary wave picks the frequency
-          // so the strobe accelerates and decelerates organically.
-          double speedWave = (Math.sin((now + seed * 173) * 0.0011) + 1.0) / 2.0; // 0..1
-          // Cycle period ranges from 16ms (~60 Hz, very fast) to 50ms (~20 Hz)
-          long period = 16L + (long) (speedWave * 34L);
-          boolean strobeOff = ((now / period) + seed) % 3L != 0L;
-          if (strobeOff) {
-            sectionInfos[i].setBulbLit(false);
-          }
-        } else {
-          // Organic flicker using overlapping sine waves
-          double phase1 = Math.sin((now + seed * 137) * 0.013);
-          double phase2 = Math.sin((now + seed * 251) * 0.007);
-          double phase3 = Math.sin((now + seed * 397) * 0.031);
-          double combined = phase1 + phase2 * 0.5 + phase3 * 0.3;
-          if (combined < -0.2) {
-            sectionInfos[i].setBulbLit(false);
-          }
-        }
-      }
     }
   }
 
