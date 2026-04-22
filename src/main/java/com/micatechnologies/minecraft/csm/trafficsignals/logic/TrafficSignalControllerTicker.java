@@ -635,11 +635,14 @@ public class TrafficSignalControllerTicker {
           // No demand anywhere — recycle peds to walk, stay green
           recycleToGreen = true;
         } else if (activeCircuit > 0 && currentDemand.getFirst() == activeCircuit) {
-          // Demand is for the same circuit — only recycle if it's through-type demand.
+          // Demand is for the same circuit — only recycle if it's omnidirectional
+          // through-type demand. Directional demand (ALL_EAST etc.) serves a different
+          // signal arrangement than the default phase and must not be recycled.
           // Left turn or pedestrian demand on the same circuit requires its own phase,
           // so we must proceed to yellow transition for those.
-          recycleToGreen = TrafficSignalControllerTickerUtilities.isThroughTypeApplicability(
-              currentDemand.getSecond());
+          recycleToGreen =
+              TrafficSignalControllerTickerUtilities.isOmnidirectionalThroughType(
+                  currentDemand.getSecond());
         }
       }
 
@@ -711,9 +714,11 @@ public class TrafficSignalControllerTicker {
                   activeCircuit > 0 ? activeCircuit : 1, overlapPedestrianSignals, world);
         } else if (activeCircuit > 0 && currentDemand.getFirst() == activeCircuit) {
           // Demand is for the original circuit — only redirect to default if it's
-          // through-type demand. Left turn demand on the same circuit should proceed
-          // to the stored upcoming phase (which is the left turn phase).
-          if (TrafficSignalControllerTickerUtilities.isThroughTypeApplicability(
+          // omnidirectional through-type demand. Directional demand (ALL_EAST etc.)
+          // requires its own phase and should not be redirected to the default.
+          // Left turn demand on the same circuit should proceed to the stored
+          // upcoming phase (which is the left turn phase).
+          if (TrafficSignalControllerTickerUtilities.isOmnidirectionalThroughType(
               currentDemand.getSecond())) {
             upcomingGreenPhase = TrafficSignalControllerTickerUtilities
                 .getDefaultPhaseForCircuitNumber(circuits, overlaps, activeCircuit,

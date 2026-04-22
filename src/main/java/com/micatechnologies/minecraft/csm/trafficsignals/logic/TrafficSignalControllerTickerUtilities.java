@@ -709,15 +709,15 @@ public class TrafficSignalControllerTickerUtilities {
       }
 
       // Check circuit directional detection counts for highest priority.
-      // Uses getNonProtectedTotal*() which includes both standard and left turn counts,
-      // enabling split phasing and lead-lag scenarios where one approach has more total
-      // demand. Like through-type checks, directional phases cannot override ALL_LEFTS
-      // at equal count — they need strictly more demand to justify a directional phase
-      // over a dedicated left turn phase.
+      // Uses FYA-adjusted directional demand so that a single left turn detection
+      // on a direction with FYA doesn't inflate that direction's count. This prevents
+      // a single permissive-clearable left detection from triggering a directional
+      // phase (ALL_EAST etc.) that stops opposing traffic unnecessarily.
       boolean leftsWasBest =
           highestPriorityPhaseApplicability == TrafficSignalPhaseApplicability.ALL_LEFTS;
 
-      int eastFacingDetectionCount = sensorSummary.getNonProtectedTotalEast();
+      int eastFacingDetectionCount = getEffectiveDirectionalDemand(world, circuit,
+          sensorSummary, EnumFacing.EAST);
       if (leftsWasBest
           ? eastFacingDetectionCount > highestPriorityWaitingCount
           : eastFacingDetectionCount >= highestPriorityWaitingCount) {
@@ -727,7 +727,8 @@ public class TrafficSignalControllerTickerUtilities {
         leftsWasBest = false;
       }
 
-      int westFacingDetectionCount = sensorSummary.getNonProtectedTotalWest();
+      int westFacingDetectionCount = getEffectiveDirectionalDemand(world, circuit,
+          sensorSummary, EnumFacing.WEST);
       if (leftsWasBest
           ? westFacingDetectionCount > highestPriorityWaitingCount
           : westFacingDetectionCount >= highestPriorityWaitingCount) {
@@ -737,7 +738,8 @@ public class TrafficSignalControllerTickerUtilities {
         leftsWasBest = false;
       }
 
-      int northFacingDetectionCount = sensorSummary.getNonProtectedTotalNorth();
+      int northFacingDetectionCount = getEffectiveDirectionalDemand(world, circuit,
+          sensorSummary, EnumFacing.NORTH);
       if (leftsWasBest
           ? northFacingDetectionCount > highestPriorityWaitingCount
           : northFacingDetectionCount >= highestPriorityWaitingCount) {
@@ -747,7 +749,8 @@ public class TrafficSignalControllerTickerUtilities {
         leftsWasBest = false;
       }
 
-      int southFacingDetectionCount = sensorSummary.getNonProtectedTotalSouth();
+      int southFacingDetectionCount = getEffectiveDirectionalDemand(world, circuit,
+          sensorSummary, EnumFacing.SOUTH);
       if (leftsWasBest
           ? southFacingDetectionCount > highestPriorityWaitingCount
           : southFacingDetectionCount >= highestPriorityWaitingCount) {
@@ -1212,10 +1215,18 @@ public class TrafficSignalControllerTickerUtilities {
    * @since 1.0
    */
   public static boolean isThroughTypeApplicability(TrafficSignalPhaseApplicability applicability) {
+    return isOmnidirectionalThroughType(applicability) || isDirectionalPhase(applicability);
+  }
+
+  public static boolean isOmnidirectionalThroughType(
+      TrafficSignalPhaseApplicability applicability) {
     return applicability == TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS ||
         applicability == TrafficSignalPhaseApplicability.ALL_THROUGHS_PROTECTED_RIGHTS ||
-        applicability == TrafficSignalPhaseApplicability.ALL_THROUGHS_PROTECTEDS ||
-        applicability == TrafficSignalPhaseApplicability.ALL_EAST ||
+        applicability == TrafficSignalPhaseApplicability.ALL_THROUGHS_PROTECTEDS;
+  }
+
+  public static boolean isDirectionalPhase(TrafficSignalPhaseApplicability applicability) {
+    return applicability == TrafficSignalPhaseApplicability.ALL_EAST ||
         applicability == TrafficSignalPhaseApplicability.ALL_WEST ||
         applicability == TrafficSignalPhaseApplicability.ALL_NORTH ||
         applicability == TrafficSignalPhaseApplicability.ALL_SOUTH;
@@ -1223,11 +1234,10 @@ public class TrafficSignalControllerTickerUtilities {
 
   /**
    * Returns whether two phase applicabilities are in the same movement category and thus
-   * compatible for phase recall. Through-type variants (ALL_THROUGHS_*, directional) are
-   * all compatible with each other. ALL_LEFTS is only compatible with ALL_LEFTS. This
-   * allows phase recall to hold green for any phase type when the demand matches, while
-   * ensuring mismatched demand (e.g., left turn demand during a through phase) triggers
-   * a proper phase change.
+   * compatible for phase recall. Omnidirectional through-type variants (ALL_THROUGHS_*)
+   * are compatible with each other. Directional phases (ALL_EAST etc.) are NOT compatible
+   * with omnidirectional phases because they serve fundamentally different signal
+   * arrangements. All other types must match exactly (ALL_LEFTS↔ALL_LEFTS, etc.).
    *
    * @param a The first phase applicability.
    * @param b The second phase applicability.
@@ -1238,10 +1248,9 @@ public class TrafficSignalControllerTickerUtilities {
    */
   public static boolean isSamePhaseCategory(TrafficSignalPhaseApplicability a,
       TrafficSignalPhaseApplicability b) {
-    if (isThroughTypeApplicability(a) && isThroughTypeApplicability(b)) {
+    if (isOmnidirectionalThroughType(a) && isOmnidirectionalThroughType(b)) {
       return true;
     }
-    // Non-through types must match exactly (ALL_LEFTS↔ALL_LEFTS, PEDESTRIAN↔PEDESTRIAN)
     return a == b;
   }
 
@@ -1267,6 +1276,13 @@ public class TrafficSignalControllerTickerUtilities {
       TrafficSignalSensorSummary summary) {
     // If no left demand at all, return 0 immediately
     if (summary.getLeftTotal() == 0) {
+      return 0;
+    }
+
+    // ALL_LEFTS is only safe when all signals on the circuit face the same direction.
+    // On a multi-direction circuit, opposing left turns conflict with each other —
+    // left demand must be served permissively via FYA, never as a protected phase.
+    if (world != null && !circuit.areSignalsFacingSameDirection(world)) {
       return 0;
     }
 
@@ -1301,6 +1317,32 @@ public class TrafficSignalControllerTickerUtilities {
       return 0; // Single detection with FYA available — assume permissive turn
     }
     return leftCount;
+  }
+
+  public static int getEffectiveDirectionalDemand(World world,
+      TrafficSignalControllerCircuit circuit,
+      TrafficSignalSensorSummary summary,
+      EnumFacing direction) {
+    int standard;
+    int left;
+    switch (direction) {
+      case EAST:  standard = summary.getStandardEast();  left = summary.getLeftEast();  break;
+      case WEST:  standard = summary.getStandardWest();  left = summary.getLeftWest();  break;
+      case NORTH: standard = summary.getStandardNorth(); left = summary.getLeftNorth(); break;
+      case SOUTH: standard = summary.getStandardSouth(); left = summary.getLeftSouth(); break;
+      default: return 0;
+    }
+    boolean hasFya = false;
+    for (BlockPos signalPos : circuit.getFlashingLeftSignals()) {
+      IBlockState blockState = world.getBlockState(signalPos);
+      if (blockState.getBlock() instanceof AbstractBlockControllableSignal) {
+        if (blockState.getValue(BlockHorizontal.FACING) == direction) {
+          hasFya = true;
+          break;
+        }
+      }
+    }
+    return standard + adjustForFya(left, hasFya);
   }
 
   public static boolean allCircuitsHaveSensors(TrafficSignalControllerCircuits circuits) {

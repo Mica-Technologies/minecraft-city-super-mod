@@ -432,9 +432,17 @@ class TrafficSignalControllerTickerTest {
   class IsSamePhaseCategoryTest {
 
     @Test
-    @DisplayName("two through-types are same category")
-    void twoThroughTypes_sameCategory() {
+    @DisplayName("two omnidirectional through-types are same category")
+    void twoOmniThroughTypes_sameCategory() {
       assertTrue(TrafficSignalControllerTickerUtilities.isSamePhaseCategory(
+          TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS,
+          TrafficSignalPhaseApplicability.ALL_THROUGHS_PROTECTEDS));
+    }
+
+    @Test
+    @DisplayName("directional NOT same category as omnidirectional through")
+    void directionalNotSameAsOmni() {
+      assertFalse(TrafficSignalControllerTickerUtilities.isSamePhaseCategory(
           TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS,
           TrafficSignalPhaseApplicability.ALL_EAST));
     }
@@ -464,11 +472,19 @@ class TrafficSignalControllerTickerTest {
     }
 
     @Test
-    @DisplayName("two directional throughs are same category")
-    void twoDirectionals_sameCategory() {
-      assertTrue(TrafficSignalControllerTickerUtilities.isSamePhaseCategory(
+    @DisplayName("two different directional phases are different category")
+    void twoDirectionals_differentCategory() {
+      assertFalse(TrafficSignalControllerTickerUtilities.isSamePhaseCategory(
           TrafficSignalPhaseApplicability.ALL_NORTH,
           TrafficSignalPhaseApplicability.ALL_SOUTH));
+    }
+
+    @Test
+    @DisplayName("same directional phase is same category")
+    void sameDirectional_sameCategory() {
+      assertTrue(TrafficSignalControllerTickerUtilities.isSamePhaseCategory(
+          TrafficSignalPhaseApplicability.ALL_EAST,
+          TrafficSignalPhaseApplicability.ALL_EAST));
     }
   }
 
