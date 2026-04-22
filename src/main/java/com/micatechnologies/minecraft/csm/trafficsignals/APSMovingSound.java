@@ -26,6 +26,7 @@ public class APSMovingSound extends MovingSound {
 
   private final List<BlockPos> sourcePositions;
   private final float hearingRange;
+  private final double hearingRangeSq;
 
   /**
    * Creates a new APS sound that follows the local player with distance-based volume.
@@ -39,6 +40,7 @@ public class APSMovingSound extends MovingSound {
     super(SoundEvent.REGISTRY.getObject(soundResource), SoundCategory.NEUTRAL);
     this.sourcePositions = sourcePositions;
     this.hearingRange = hearingRange;
+    this.hearingRangeSq = (double) hearingRange * hearingRange;
     this.repeat = repeat;
     this.repeatDelay = 0;
     this.attenuationType = AttenuationType.NONE;
@@ -63,19 +65,18 @@ public class APSMovingSound extends MovingSound {
   }
 
   private float calculateVolume(EntityPlayer player) {
-    double minDist = Double.MAX_VALUE;
+    double minDistSq = Double.MAX_VALUE;
     for (BlockPos sp : sourcePositions) {
-      double dist = Math.sqrt(player.getDistanceSq(sp));
-      if (dist < minDist) {
-        minDist = dist;
+      double distSq = player.getDistanceSq(sp);
+      if (distSq < minDistSq) {
+        minDistSq = distSq;
       }
     }
 
-    if (minDist > hearingRange) {
+    if (minDistSq > hearingRangeSq) {
       return 0.0f;
     }
-    // Quadratic falloff for realistic distance attenuation (inverse-square-like)
-    float linear = (float) (1.0 - minDist / hearingRange);
+    float linear = (float) (1.0 - Math.sqrt(minDistSq) / hearingRange);
     float ratio = linear * linear;
     return MIN_VOLUME + (MAX_VOLUME - MIN_VOLUME) * ratio;
   }

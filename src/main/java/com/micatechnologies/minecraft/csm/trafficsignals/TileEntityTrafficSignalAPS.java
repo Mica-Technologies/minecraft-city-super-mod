@@ -4,6 +4,7 @@ import com.micatechnologies.minecraft.csm.CsmNetwork;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalAPSSoundScheme;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
 
 /**
  * Tile entity class for an APS (accessible pedestrian signal) button. This class assists in
@@ -378,8 +379,11 @@ public class TileEntityTrafficSignalAPS extends TileEntityTrafficSignalTickableR
    */
   private void playSoundOnChannel(String channel, String soundResource, boolean repeat) {
     if (world != null && !world.isRemote && soundResource != null) {
-      CsmNetwork.sendToAll(APSSoundPacket.start(
-          channel, soundResource, APS_HEARING_RANGE, repeat, pos));
+      CsmNetwork.sendToAllAround(APSSoundPacket.start(
+          channel, soundResource, APS_HEARING_RANGE, repeat, pos),
+          new NetworkRegistry.TargetPoint(
+              world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(),
+              APS_HEARING_RANGE));
     }
   }
 
@@ -388,7 +392,10 @@ public class TileEntityTrafficSignalAPS extends TileEntityTrafficSignalTickableR
    */
   private void stopSoundViaPacket() {
     if (world != null && !world.isRemote) {
-      CsmNetwork.sendToAll(APSSoundPacket.stop(getChannel()));
+      CsmNetwork.sendToAllAround(APSSoundPacket.stop(getChannel()),
+          new NetworkRegistry.TargetPoint(
+              world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(),
+              APS_HEARING_RANGE));
     }
   }
 
