@@ -741,4 +741,287 @@ class TrafficSignalControllerTickerUtilitiesTest {
       assertSame(phase, result, "With null overlaps, should return same phase instance");
     }
   }
+
+  // ========================================================================
+  // getTransitionPhaseWithOverlapsApplied
+  // ========================================================================
+  @Nested
+  @DisplayName("getTransitionPhaseWithOverlapsApplied")
+  class GetTransitionPhaseWithOverlapsAppliedTest {
+
+    @Test
+    @DisplayName("yellow source propagates yellow to overlap targets")
+    void yellowSourcePropagatesYellow() {
+      BlockPos source = new BlockPos(10, 64, 20);
+      BlockPos target = new BlockPos(11, 64, 21);
+
+      TrafficSignalPhase phase = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.YELLOW_TRANSITIONING);
+      phase.addYellowSignal(source);
+      phase.addRedSignal(target);
+
+      TrafficSignalControllerOverlaps overlaps = new TrafficSignalControllerOverlaps();
+      overlaps.addOverlap(source, target);
+
+      TrafficSignalControllerTickerUtilities.getTransitionPhaseWithOverlapsApplied(
+          phase, overlaps);
+
+      assertTrue(phase.getYellowSignals().contains(target),
+          "Overlap target should be yellow when source is yellow");
+      assertFalse(phase.getRedSignals().contains(target),
+          "Overlap target should no longer be red");
+    }
+
+    @Test
+    @DisplayName("red source propagates red to overlap targets")
+    void redSourcePropagatesRed() {
+      BlockPos source = new BlockPos(10, 64, 20);
+      BlockPos target = new BlockPos(11, 64, 21);
+
+      TrafficSignalPhase phase = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.RED_TRANSITIONING);
+      phase.addRedSignal(source);
+      phase.addOffSignal(target);
+
+      TrafficSignalControllerOverlaps overlaps = new TrafficSignalControllerOverlaps();
+      overlaps.addOverlap(source, target);
+
+      TrafficSignalControllerTickerUtilities.getTransitionPhaseWithOverlapsApplied(
+          phase, overlaps);
+
+      assertTrue(phase.getRedSignals().contains(target),
+          "Overlap target should be red when source is red");
+      assertFalse(phase.getOffSignals().contains(target),
+          "Overlap target should no longer be off");
+    }
+
+    @Test
+    @DisplayName("green source still propagates green in transition phases")
+    void greenSourcePropagatesGreen() {
+      BlockPos source = new BlockPos(10, 64, 20);
+      BlockPos target = new BlockPos(11, 64, 21);
+
+      TrafficSignalPhase phase = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.YELLOW_TRANSITIONING);
+      phase.addGreenSignal(source);
+      phase.addRedSignal(target);
+
+      TrafficSignalControllerOverlaps overlaps = new TrafficSignalControllerOverlaps();
+      overlaps.addOverlap(source, target);
+
+      TrafficSignalControllerTickerUtilities.getTransitionPhaseWithOverlapsApplied(
+          phase, overlaps);
+
+      assertTrue(phase.getGreenSignals().contains(target),
+          "Overlap target should be green when source is green");
+    }
+  }
+
+  // ========================================================================
+  // hasVehicleSignalConflict
+  // ========================================================================
+  @Nested
+  @DisplayName("hasVehicleSignalConflict")
+  class HasVehicleSignalConflictTest {
+
+    @Test
+    @DisplayName("identical vehicle signals have no conflict")
+    void identicalPhasesNoConflict() {
+      BlockPos pos = new BlockPos(10, 64, 20);
+
+      TrafficSignalPhase a = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS);
+      a.addGreenSignal(pos);
+
+      TrafficSignalPhase b = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS);
+      b.addGreenSignal(pos);
+
+      assertFalse(TrafficSignalControllerTickerUtilities.hasVehicleSignalConflict(a, b));
+    }
+
+    @Test
+    @DisplayName("signal moved from green to FYA is a conflict")
+    void greenToFyaIsConflict() {
+      BlockPos pos = new BlockPos(10, 64, 20);
+
+      TrafficSignalPhase a = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS);
+      a.addGreenSignal(pos);
+
+      TrafficSignalPhase b = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS);
+      b.addFyaSignal(pos);
+
+      assertTrue(TrafficSignalControllerTickerUtilities.hasVehicleSignalConflict(a, b));
+    }
+
+    @Test
+    @DisplayName("signal moved from off to FYA is a conflict")
+    void offToFyaIsConflict() {
+      BlockPos pos = new BlockPos(10, 64, 20);
+
+      TrafficSignalPhase a = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS);
+      a.addOffSignal(pos);
+
+      TrafficSignalPhase b = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS);
+      b.addFyaSignal(pos);
+
+      assertTrue(TrafficSignalControllerTickerUtilities.hasVehicleSignalConflict(a, b));
+    }
+
+    @Test
+    @DisplayName("ped signal differences are not vehicle conflicts")
+    void pedSignalDifferencesNotConflict() {
+      BlockPos walkPos = new BlockPos(10, 64, 20);
+
+      TrafficSignalPhase a = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS);
+      a.addWalkSignal(walkPos);
+
+      TrafficSignalPhase b = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS);
+      b.addDontWalkSignal(walkPos);
+
+      assertFalse(TrafficSignalControllerTickerUtilities.hasVehicleSignalConflict(a, b));
+    }
+  }
+
+  // ========================================================================
+  // Red transition: FYA signals become RED
+  // ========================================================================
+  @Nested
+  @DisplayName("getRedTransitionPhaseForUpcoming - FYA handling")
+  class GetRedTransitionFyaTest {
+
+    @Test
+    @DisplayName("FYA signals become RED during all-red clearance")
+    void fyaBecomesRed() {
+      BlockPos fyaPos = new BlockPos(10, 64, 20);
+
+      TrafficSignalPhase current = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.YELLOW_TRANSITIONING);
+      current.addFyaSignal(fyaPos);
+
+      TrafficSignalPhase upcoming = new TrafficSignalPhase(2, null,
+          TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS);
+
+      TrafficSignalPhase result =
+          TrafficSignalControllerTickerUtilities.getRedTransitionPhaseForUpcoming(
+              current, upcoming);
+
+      assertTrue(result.getRedSignals().contains(fyaPos),
+          "FYA signal should become red during all-red clearance");
+      assertFalse(result.getFyaSignals().contains(fyaPos),
+          "FYA signal should not remain FYA during all-red clearance");
+    }
+  }
+
+  // ========================================================================
+  // computeGreenLeftTurn / computeGreenRightTurn bounds safety
+  // ========================================================================
+  @Nested
+  @DisplayName("computeGreenLeftTurn / computeGreenRightTurn bounds")
+  class ComputeGreenTurnBoundsTest {
+
+    @Test
+    @DisplayName("circuit number -1 returns false without crash")
+    void negativeCircuitReturnsFalse() {
+      TrafficSignalControllerCircuits circuits = new TrafficSignalControllerCircuits();
+      circuits.addCircuit(emptyCircuit());
+
+      assertFalse(TrafficSignalControllerTickerUtilities.computeGreenLeftTurn(
+          circuits, -1, true, null));
+      assertFalse(TrafficSignalControllerTickerUtilities.computeGreenRightTurn(
+          circuits, -1, true, null));
+    }
+
+    @Test
+    @DisplayName("circuit number 0 returns false without crash")
+    void zeroCircuitReturnsFalse() {
+      TrafficSignalControllerCircuits circuits = new TrafficSignalControllerCircuits();
+      circuits.addCircuit(emptyCircuit());
+
+      assertFalse(TrafficSignalControllerTickerUtilities.computeGreenLeftTurn(
+          circuits, 0, true, null));
+      assertFalse(TrafficSignalControllerTickerUtilities.computeGreenRightTurn(
+          circuits, 0, true, null));
+    }
+
+    @Test
+    @DisplayName("circuit number beyond count returns false without crash")
+    void beyondCountReturnsFalse() {
+      TrafficSignalControllerCircuits circuits = new TrafficSignalControllerCircuits();
+      circuits.addCircuit(emptyCircuit());
+
+      assertFalse(TrafficSignalControllerTickerUtilities.computeGreenLeftTurn(
+          circuits, 5, true, null));
+      assertFalse(TrafficSignalControllerTickerUtilities.computeGreenRightTurn(
+          circuits, 5, true, null));
+    }
+  }
+
+  // ========================================================================
+  // TrafficSignalPhase hashCode/equals consistency
+  // ========================================================================
+  @Nested
+  @DisplayName("TrafficSignalPhase hashCode/equals")
+  class PhaseHashCodeEqualsTest {
+
+    @Test
+    @DisplayName("phases differing only in greenSignals have different hashCodes")
+    void greenSignalsDifferentHashCodes() {
+      TrafficSignalPhase a = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS);
+      a.addGreenSignal(new BlockPos(10, 64, 20));
+
+      TrafficSignalPhase b = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS);
+      b.addGreenSignal(new BlockPos(99, 64, 99));
+
+      assertNotEquals(a, b, "Phases with different green signals should not be equal");
+      assertNotEquals(a.hashCode(), b.hashCode(),
+          "Phases with different green signals should have different hash codes");
+    }
+
+    @Test
+    @DisplayName("equal phases have equal hashCodes")
+    void equalPhasesEqualHashCodes() {
+      TrafficSignalPhase a = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS);
+      a.addGreenSignal(new BlockPos(10, 64, 20));
+      a.addRedSignal(new BlockPos(11, 64, 21));
+
+      TrafficSignalPhase b = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS);
+      b.addGreenSignal(new BlockPos(10, 64, 20));
+      b.addRedSignal(new BlockPos(11, 64, 21));
+
+      assertEquals(a, b);
+      assertEquals(a.hashCode(), b.hashCode());
+    }
+  }
+
+  // ========================================================================
+  // TrafficSignalPhases ALL_RED applicability
+  // ========================================================================
+  @Nested
+  @DisplayName("TrafficSignalPhases cached ALL_RED")
+  class CachedAllRedTest {
+
+    @Test
+    @DisplayName("cached all-red phase has ALL_RED applicability")
+    void allRedHasCorrectApplicability() {
+      TrafficSignalControllerCircuits circuits = new TrafficSignalControllerCircuits();
+      circuits.addCircuit(emptyCircuit());
+
+      TrafficSignalPhases phases = new TrafficSignalPhases(null, circuits);
+      TrafficSignalPhase allRed = phases.getPhase(TrafficSignalPhases.PHASE_INDEX_ALL_RED);
+
+      assertEquals(TrafficSignalPhaseApplicability.ALL_RED, allRed.getApplicability(),
+          "Cached ALL_RED phase must have ALL_RED applicability");
+    }
+  }
 }
