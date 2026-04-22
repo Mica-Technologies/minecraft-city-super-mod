@@ -39,28 +39,37 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
   }
 
   /**
-   * The key used to store the body paint color in NBT data.
+   * The key used to store the section info compound in NBT data. Shortened from the historical
+   * {@code sectionInfos} literal; reads fall back to {@link #LEGACY_SECTION_INFOS_KEY} for
+   * worlds saved before this optimization.
    *
-   * @since 1.0
+   * @since 1.1
    */
-  private static final String SECTION_INFOS_KEY = "sectionInfos";
+  private static final String SECTION_INFOS_KEY = "sInfs";
+
+  /** Legacy long-form counterpart of {@link #SECTION_INFOS_KEY}. Read-only. */
+  private static final String LEGACY_SECTION_INFOS_KEY = "sectionInfos";
 
   /**
    * The key used to store the body tilt in NBT data.
    *
-   * @since 1.0
+   * @since 1.1
    */
-  private static final String BODY_TILT_KEY = "bodyTilt";
+  private static final String BODY_TILT_KEY = "tlt";
+
+  /** Legacy long-form counterpart of {@link #BODY_TILT_KEY}. Read-only. */
+  private static final String LEGACY_BODY_TILT_KEY = "bodyTilt";
 
   /**
-   * The key used to store the section count in the section info NBT data.
+   * The key used to store the section count inside the section info NBT data. Nested key — kept
+   * short; not migrated because it only appears as a child of {@link #SECTION_INFOS_KEY}.
    *
    * @since 1.0
    */
   private static final String SECTION_INFO_COMPOUND_COUNT_KEY = "count";
 
   /**
-   * The key prefix used to store each section info in the section info NBT data.
+   * The key prefix used to store each section info in the section info NBT data. Nested — kept.
    *
    * @since 1.0
    */
@@ -81,7 +90,9 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
    */
   private TrafficSignalBodyTilt bodyTilt = TrafficSignalBodyTilt.NONE;
 
-  private static final String ALTERNATE_FLASH_KEY = "alternateFlash";
+  private static final String ALTERNATE_FLASH_KEY = "altF";
+  /** Legacy long-form counterpart of {@link #ALTERNATE_FLASH_KEY}. Read-only. */
+  private static final String LEGACY_ALTERNATE_FLASH_KEY = "alternateFlash";
   private boolean alternateFlash = false;
 
   /**
@@ -91,7 +102,9 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
    * {@code allowsHorizontalFlip()}) so the TESR, add-on detection, and mount kit layout
    * all pick up the change without needing a separate horizontal block variant.
    */
-  private static final String HORIZONTAL_FLIP_KEY = "horizontalFlip";
+  private static final String HORIZONTAL_FLIP_KEY = "hF";
+  /** Legacy long-form counterpart of {@link #HORIZONTAL_FLIP_KEY}. Read-only. */
+  private static final String LEGACY_HORIZONTAL_FLIP_KEY = "horizontalFlip";
   private boolean horizontalFlip = false;
 
   /**
@@ -99,24 +112,32 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
    * signal body at render time; add-on-aware suppression logic hides the bracket on the
    * edge touching an adjacent stacked signal so the hardware doesn't double up.
    */
-  private static final String MOUNT_TYPE_KEY = "mountType";
+  private static final String MOUNT_TYPE_KEY = "mT";
+  /** Legacy long-form counterpart of {@link #MOUNT_TYPE_KEY}. Read-only. */
+  private static final String LEGACY_MOUNT_TYPE_KEY = "mountType";
   private SignalHeadMountType mountType = SignalHeadMountType.NONE;
 
   /**
    * Paint color for the bracket hardware. Shares the {@link TrafficSignalBodyColor} palette
    * with the body/door/visor for a consistent finish without introducing a new enum.
    */
-  private static final String MOUNT_COLOR_KEY = "mountColor";
+  private static final String MOUNT_COLOR_KEY = "mC";
+  /** Legacy long-form counterpart of {@link #MOUNT_COLOR_KEY}. Read-only. */
+  private static final String LEGACY_MOUNT_COLOR_KEY = "mountColor";
   private TrafficSignalBodyColor mountColor = TrafficSignalBodyColor.FLAT_BLACK;
 
   private boolean dirty = true;
   private boolean powerLossOff = true;
 
-  // Bulb aging fields
-  private static final String AGING_ENABLED_KEY = "agingEnabled";
-  private static final String AGING_LAST_DAY_KEY = "lastAgingDay";
-  private static final String AGING_STATES_KEY = "bulbAgingStates";
-  private static final String AGING_SEED_KEY = "agingSeed";
+  // Bulb aging fields (short-form keys; LEGACY_* variants retained for back-compat reads)
+  private static final String AGING_ENABLED_KEY = "agE";
+  private static final String LEGACY_AGING_ENABLED_KEY = "agingEnabled";
+  private static final String AGING_LAST_DAY_KEY = "agD";
+  private static final String LEGACY_AGING_LAST_DAY_KEY = "lastAgingDay";
+  private static final String AGING_STATES_KEY = "agS";
+  private static final String LEGACY_AGING_STATES_KEY = "bulbAgingStates";
+  private static final String AGING_SEED_KEY = "agSd";
+  private static final String LEGACY_AGING_SEED_KEY = "agingSeed";
   public static final int AGING_HEALTHY = 0;
   public static final int AGING_FAILING = 1;
   public static final int AGING_DEAD = 2;
@@ -164,39 +185,69 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
     // Get the body tilt
     if (compound.hasKey(BODY_TILT_KEY)) {
       bodyTilt = TrafficSignalBodyTilt.fromNBT(compound.getInteger(BODY_TILT_KEY));
+    } else if (compound.hasKey(LEGACY_BODY_TILT_KEY)) {
+      bodyTilt = TrafficSignalBodyTilt.fromNBT(compound.getInteger(LEGACY_BODY_TILT_KEY));
     }
 
     // Get the alternate flash setting
     if (compound.hasKey(ALTERNATE_FLASH_KEY)) {
       alternateFlash = compound.getBoolean(ALTERNATE_FLASH_KEY);
+    } else if (compound.hasKey(LEGACY_ALTERNATE_FLASH_KEY)) {
+      alternateFlash = compound.getBoolean(LEGACY_ALTERNATE_FLASH_KEY);
     }
 
     // Get the horizontal-flip setting
     if (compound.hasKey(HORIZONTAL_FLIP_KEY)) {
       horizontalFlip = compound.getBoolean(HORIZONTAL_FLIP_KEY);
+    } else if (compound.hasKey(LEGACY_HORIZONTAL_FLIP_KEY)) {
+      horizontalFlip = compound.getBoolean(LEGACY_HORIZONTAL_FLIP_KEY);
     }
 
     // Get the mount type + color
     if (compound.hasKey(MOUNT_TYPE_KEY)) {
       mountType = SignalHeadMountType.fromNBT(compound.getInteger(MOUNT_TYPE_KEY));
+    } else if (compound.hasKey(LEGACY_MOUNT_TYPE_KEY)) {
+      mountType = SignalHeadMountType.fromNBT(compound.getInteger(LEGACY_MOUNT_TYPE_KEY));
     }
     if (compound.hasKey(MOUNT_COLOR_KEY)) {
       mountColor = TrafficSignalBodyColor.fromNBT(compound.getInteger(MOUNT_COLOR_KEY));
+    } else if (compound.hasKey(LEGACY_MOUNT_COLOR_KEY)) {
+      mountColor = TrafficSignalBodyColor.fromNBT(compound.getInteger(LEGACY_MOUNT_COLOR_KEY));
     }
 
     // Get aging settings
     if (compound.hasKey(AGING_ENABLED_KEY)) {
       agingEnabled = compound.getBoolean(AGING_ENABLED_KEY);
+    } else if (compound.hasKey(LEGACY_AGING_ENABLED_KEY)) {
+      agingEnabled = compound.getBoolean(LEGACY_AGING_ENABLED_KEY);
     }
     if (compound.hasKey(AGING_LAST_DAY_KEY)) {
       lastAgingDay = compound.getLong(AGING_LAST_DAY_KEY);
+    } else if (compound.hasKey(LEGACY_AGING_LAST_DAY_KEY)) {
+      lastAgingDay = compound.getLong(LEGACY_AGING_LAST_DAY_KEY);
     }
     if (compound.hasKey(AGING_STATES_KEY)) {
       bulbAgingStates = compound.getIntArray(AGING_STATES_KEY);
+    } else if (compound.hasKey(LEGACY_AGING_STATES_KEY)) {
+      bulbAgingStates = compound.getIntArray(LEGACY_AGING_STATES_KEY);
     }
     if (compound.hasKey(AGING_SEED_KEY)) {
       agingSeed = compound.getLong(AGING_SEED_KEY);
+    } else if (compound.hasKey(LEGACY_AGING_SEED_KEY)) {
+      agingSeed = compound.getLong(LEGACY_AGING_SEED_KEY);
     }
+
+    // Strip legacy long-form keys after successful migration so the next save is short-only
+    compound.removeTag(LEGACY_SECTION_INFOS_KEY);
+    compound.removeTag(LEGACY_BODY_TILT_KEY);
+    compound.removeTag(LEGACY_ALTERNATE_FLASH_KEY);
+    compound.removeTag(LEGACY_HORIZONTAL_FLIP_KEY);
+    compound.removeTag(LEGACY_MOUNT_TYPE_KEY);
+    compound.removeTag(LEGACY_MOUNT_COLOR_KEY);
+    compound.removeTag(LEGACY_AGING_ENABLED_KEY);
+    compound.removeTag(LEGACY_AGING_LAST_DAY_KEY);
+    compound.removeTag(LEGACY_AGING_STATES_KEY);
+    compound.removeTag(LEGACY_AGING_SEED_KEY);
 
     // Mark as dirty so the renderer recompiles the display list with updated state
     dirty = true;
@@ -204,9 +255,16 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
 
 
   private void readSectionInfo(NBTTagCompound compound) {
+    String keyToUse = null;
     if (compound.hasKey(SECTION_INFOS_KEY)) {
-      NBTTagCompound sectionInfoCompound = compound.getCompoundTag(SECTION_INFOS_KEY);
-      sectionInfos = new TrafficSignalSectionInfo[sectionInfoCompound.getInteger(SECTION_INFO_COMPOUND_COUNT_KEY)];
+      keyToUse = SECTION_INFOS_KEY;
+    } else if (compound.hasKey(LEGACY_SECTION_INFOS_KEY)) {
+      keyToUse = LEGACY_SECTION_INFOS_KEY;
+    }
+    if (keyToUse != null) {
+      NBTTagCompound sectionInfoCompound = compound.getCompoundTag(keyToUse);
+      sectionInfos = new TrafficSignalSectionInfo[sectionInfoCompound.getInteger(
+          SECTION_INFO_COMPOUND_COUNT_KEY)];
       for (int i = 0; i < sectionInfos.length; i++) {
         int[] sectionData = sectionInfoCompound.getIntArray(SECTION_INFO_COMPOUND_KEY_PREFIX + i);
         sectionInfos[i] = TrafficSignalSectionInfo.fromNBTArray(sectionData);
