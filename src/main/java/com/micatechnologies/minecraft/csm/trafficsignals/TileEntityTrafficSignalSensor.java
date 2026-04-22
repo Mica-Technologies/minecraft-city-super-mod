@@ -29,69 +29,33 @@ import net.minecraft.util.math.Vec3d;
  */
 public class TileEntityTrafficSignalSensor extends AbstractTileEntity {
 
-  /**
-   * The key for storing and retrieving the {@link TileEntityTrafficSignalSensor}'s first scan
-   * corner from NBT data.
-   *
-   * @since 1.0
-   */
-  private static final String SCAN_CORNER_1_KEY = "blockPos1";
+  // Short-form NBT keys for the sensor's eight scan corner positions. LEGACY_* constants are
+  // retained for back-compat reads only.
 
-  /**
-   * The key for storing and retrieving the {@link TileEntityTrafficSignalSensor}'s second scan
-   * corner from NBT data.
-   *
-   * @since 1.0
-   */
-  private static final String SCAN_CORNER_2_KEY = "blockPos2";
-
-  /**
-   * The key for storing and retrieving the {@link TileEntityTrafficSignalSensor}'s first left turn
-   * lane scan corner from NBT data.
-   *
-   * @since 1.0
-   */
-  private static final String LEFT_SCAN_CORNER_1_KEY = "leftBlockPos1";
-
-  /**
-   * The key for storing and retrieving the {@link TileEntityTrafficSignalSensor}'s second left turn
-   * lane scan corner from NBT data.
-   *
-   * @since 1.0
-   */
-  private static final String LEFT_SCAN_CORNER_2_KEY = "leftBlockPos2";
-
-  /**
-   * The key for storing and retrieving the {@link TileEntityTrafficSignalSensor}'s first protected
-   * lane scan corner from NBT data.
-   *
-   * @since 1.0
-   */
-  private static final String PROTECTED_SCAN_CORNER_1_KEY = "protectedBlockPos1";
-
-  /**
-   * The key for storing and retrieving the {@link TileEntityTrafficSignalSensor}'s second protected
-   * lane scan corner from NBT data.
-   *
-   * @since 1.0
-   */
-  private static final String PROTECTED_SCAN_CORNER_2_KEY = "protectedBlockPos2";
-
-  /**
-   * The key for storing and retrieving the {@link TileEntityTrafficSignalSensor}'s first right turn
-   * lane scan corner from NBT data.
-   *
-   * @since 1.0
-   */
-  private static final String RIGHT_SCAN_CORNER_1_KEY = "rightBlockPos1";
-
-  /**
-   * The key for storing and retrieving the {@link TileEntityTrafficSignalSensor}'s second right
-   * turn lane scan corner from NBT data.
-   *
-   * @since 1.0
-   */
-  private static final String RIGHT_SCAN_CORNER_2_KEY = "rightBlockPos2";
+  /** @since 1.0 */
+  private static final String SCAN_CORNER_1_KEY = "m1";
+  private static final String LEGACY_SCAN_CORNER_1_KEY = "blockPos1";
+  /** @since 1.0 */
+  private static final String SCAN_CORNER_2_KEY = "m2";
+  private static final String LEGACY_SCAN_CORNER_2_KEY = "blockPos2";
+  /** @since 1.0 */
+  private static final String LEFT_SCAN_CORNER_1_KEY = "l1";
+  private static final String LEGACY_LEFT_SCAN_CORNER_1_KEY = "leftBlockPos1";
+  /** @since 1.0 */
+  private static final String LEFT_SCAN_CORNER_2_KEY = "l2";
+  private static final String LEGACY_LEFT_SCAN_CORNER_2_KEY = "leftBlockPos2";
+  /** @since 1.0 */
+  private static final String PROTECTED_SCAN_CORNER_1_KEY = "p1";
+  private static final String LEGACY_PROTECTED_SCAN_CORNER_1_KEY = "protectedBlockPos1";
+  /** @since 1.0 */
+  private static final String PROTECTED_SCAN_CORNER_2_KEY = "p2";
+  private static final String LEGACY_PROTECTED_SCAN_CORNER_2_KEY = "protectedBlockPos2";
+  /** @since 1.0 */
+  private static final String RIGHT_SCAN_CORNER_1_KEY = "r1";
+  private static final String LEGACY_RIGHT_SCAN_CORNER_1_KEY = "rightBlockPos1";
+  /** @since 1.0 */
+  private static final String RIGHT_SCAN_CORNER_2_KEY = "r2";
+  private static final String LEGACY_RIGHT_SCAN_CORNER_2_KEY = "rightBlockPos2";
 
   /**
    * The {@link TileEntityTrafficSignalSensor}'s first scan corner.
@@ -160,34 +124,33 @@ public class TileEntityTrafficSignalSensor extends AbstractTileEntity {
    */
   @Override
   public void readNBT(NBTTagCompound compound) {
+    scanCorner1 = readPos(compound, SCAN_CORNER_1_KEY, LEGACY_SCAN_CORNER_1_KEY);
+    scanCorner2 = readPos(compound, SCAN_CORNER_2_KEY, LEGACY_SCAN_CORNER_2_KEY);
+    leftScanCorner1 = readPos(compound, LEFT_SCAN_CORNER_1_KEY, LEGACY_LEFT_SCAN_CORNER_1_KEY);
+    leftScanCorner2 = readPos(compound, LEFT_SCAN_CORNER_2_KEY, LEGACY_LEFT_SCAN_CORNER_2_KEY);
+    protectedScanCorner1 = readPos(compound, PROTECTED_SCAN_CORNER_1_KEY,
+        LEGACY_PROTECTED_SCAN_CORNER_1_KEY);
+    protectedScanCorner2 = readPos(compound, PROTECTED_SCAN_CORNER_2_KEY,
+        LEGACY_PROTECTED_SCAN_CORNER_2_KEY);
+    rightScanCorner1 = readPos(compound, RIGHT_SCAN_CORNER_1_KEY, LEGACY_RIGHT_SCAN_CORNER_1_KEY);
+    rightScanCorner2 = readPos(compound, RIGHT_SCAN_CORNER_2_KEY, LEGACY_RIGHT_SCAN_CORNER_2_KEY);
 
-    // Read the first corner from NBT
-    scanCorner1 = SerializationUtils.getBlockPosFromNBTOrNull(compound, SCAN_CORNER_1_KEY);
+    // Strip legacy long-form keys so the next save produces only short-form output
+    compound.removeTag(LEGACY_SCAN_CORNER_1_KEY);
+    compound.removeTag(LEGACY_SCAN_CORNER_2_KEY);
+    compound.removeTag(LEGACY_LEFT_SCAN_CORNER_1_KEY);
+    compound.removeTag(LEGACY_LEFT_SCAN_CORNER_2_KEY);
+    compound.removeTag(LEGACY_PROTECTED_SCAN_CORNER_1_KEY);
+    compound.removeTag(LEGACY_PROTECTED_SCAN_CORNER_2_KEY);
+    compound.removeTag(LEGACY_RIGHT_SCAN_CORNER_1_KEY);
+    compound.removeTag(LEGACY_RIGHT_SCAN_CORNER_2_KEY);
+  }
 
-    // Read the second corner from NBT
-    scanCorner2 = SerializationUtils.getBlockPosFromNBTOrNull(compound, SCAN_CORNER_2_KEY);
-
-    // Read the first left turn corner from NBT
-    leftScanCorner1 = SerializationUtils.getBlockPosFromNBTOrNull(compound, LEFT_SCAN_CORNER_1_KEY);
-
-    // Read the second left turn corner from NBT
-    leftScanCorner2 = SerializationUtils.getBlockPosFromNBTOrNull(compound, LEFT_SCAN_CORNER_2_KEY);
-
-    // Read the first protected lane corner from NBT
-    protectedScanCorner1 =
-        SerializationUtils.getBlockPosFromNBTOrNull(compound, PROTECTED_SCAN_CORNER_1_KEY);
-
-    // Read the second protected lane corner from NBT
-    protectedScanCorner2 =
-        SerializationUtils.getBlockPosFromNBTOrNull(compound, PROTECTED_SCAN_CORNER_2_KEY);
-
-    // Read the first right turn lane corner from NBT
-    rightScanCorner1 =
-        SerializationUtils.getBlockPosFromNBTOrNull(compound, RIGHT_SCAN_CORNER_1_KEY);
-
-    // Read the second right turn lane corner from NBT
-    rightScanCorner2 =
-        SerializationUtils.getBlockPosFromNBTOrNull(compound, RIGHT_SCAN_CORNER_2_KEY);
+  private static BlockPos readPos(NBTTagCompound compound, String key, String legacyKey) {
+    if (compound.hasKey(key)) {
+      return SerializationUtils.getBlockPosFromNBTOrNull(compound, key);
+    }
+    return SerializationUtils.getBlockPosFromNBTOrNull(compound, legacyKey);
   }
 
   /**

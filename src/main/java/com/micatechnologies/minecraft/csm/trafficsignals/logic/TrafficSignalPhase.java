@@ -29,83 +29,52 @@ public class TrafficSignalPhase {
    */
   public static final int CIRCUIT_NOT_APPLICABLE = -1;
 
-  /**
-   * The key used to store the list of off signal {@link BlockPos}es in NBT data.
-   *
-   * @since 1.0
-   */
-  private static final String NBT_KEY_OFF_SIGNAL_LIST = "offSignalList";
+  // Short-form NBT keys used by this phase's toNBT / fromNBT. LEGACY_* constants preserve the
+  // historical long key names for back-compat reads only.
 
-  /**
-   * The key used to store the list of FYA (flashing yellow arrow) signal {@link BlockPos}es in NBT
-   * data.
-   *
-   * @since 1.0
-   */
-  private static final String NBT_KEY_FYA_SIGNAL_LIST = "fyaSignalList";
+  /** @since 1.0 */
+  private static final String NBT_KEY_OFF_SIGNAL_LIST = "oS";
+  private static final String LEGACY_NBT_KEY_OFF_SIGNAL_LIST = "offSignalList";
 
-  /**
-   * The key used to store the list of green signal {@link BlockPos}es in NBT data.
-   *
-   * @since 1.0
-   */
-  private static final String NBT_KEY_GREEN_SIGNAL_LIST = "greenSignalList";
+  /** @since 1.0 */
+  private static final String NBT_KEY_FYA_SIGNAL_LIST = "fyS";
+  private static final String LEGACY_NBT_KEY_FYA_SIGNAL_LIST = "fyaSignalList";
 
-  /**
-   * The key used to store the list of yellow signal {@link BlockPos}es in NBT data.
-   *
-   * @since 1.0
-   */
-  private static final String NBT_KEY_YELLOW_SIGNAL_LIST = "yellowSignalList";
+  /** @since 1.0 */
+  private static final String NBT_KEY_GREEN_SIGNAL_LIST = "gS";
+  private static final String LEGACY_NBT_KEY_GREEN_SIGNAL_LIST = "greenSignalList";
 
-  /**
-   * The key used to store the list of red signal {@link BlockPos}es in NBT data.
-   *
-   * @since 1.0
-   */
-  private static final String NBT_KEY_RED_SIGNAL_LIST = "redSignalList";
+  /** @since 1.0 */
+  private static final String NBT_KEY_YELLOW_SIGNAL_LIST = "yS";
+  private static final String LEGACY_NBT_KEY_YELLOW_SIGNAL_LIST = "yellowSignalList";
 
-  /**
-   * The key used to store the list of walk signal {@link BlockPos}es in NBT data.
-   *
-   * @since 1.0
-   */
-  private static final String NBT_KEY_WALK_SIGNAL_LIST = "walkSignalList";
+  /** @since 1.0 */
+  private static final String NBT_KEY_RED_SIGNAL_LIST = "rS";
+  private static final String LEGACY_NBT_KEY_RED_SIGNAL_LIST = "redSignalList";
 
-  /**
-   * The key used to store the list of flashing don't walk signal {@link BlockPos}es in NBT data.
-   *
-   * @since 1.0
-   */
-  private static final String NBT_KEY_FLASH_DONT_WALK_SIGNAL_LIST = "flashDontWalkSignalList";
+  /** @since 1.0 */
+  private static final String NBT_KEY_WALK_SIGNAL_LIST = "wS";
+  private static final String LEGACY_NBT_KEY_WALK_SIGNAL_LIST = "walkSignalList";
 
-  /**
-   * The key used to store the list of don't walk signal {@link BlockPos}es in NBT data.
-   *
-   * @since 1.0
-   */
-  private static final String NBT_KEY_DONT_WALK_SIGNAL_LIST = "dontWalkSignalList";
+  /** @since 1.0 */
+  private static final String NBT_KEY_FLASH_DONT_WALK_SIGNAL_LIST = "fdw";
+  private static final String LEGACY_NBT_KEY_FLASH_DONT_WALK_SIGNAL_LIST = "flashDontWalkSignalList";
 
-  /**
-   * The key used to store the circuit which is being serviced by this phase in NBT data.
-   *
-   * @since 1.0
-   */
-  private static final String NBT_KEY_CIRCUIT = "circuit";
+  /** @since 1.0 */
+  private static final String NBT_KEY_DONT_WALK_SIGNAL_LIST = "dw";
+  private static final String LEGACY_NBT_KEY_DONT_WALK_SIGNAL_LIST = "dontWalkSignalList";
 
-  /**
-   * The key used to store the upcoming phase in NBT data.
-   *
-   * @since 1.0
-   */
-  private static final String NBT_KEY_UPCOMING_PHASE = "upcomingPhase";
+  /** @since 1.0 */
+  private static final String NBT_KEY_CIRCUIT = "c";
+  private static final String LEGACY_NBT_KEY_CIRCUIT = "circuit";
 
-  /**
-   * The key used to store the applicability of this phase in NBT data.
-   *
-   * @since 1.0
-   */
-  private static final String NBT_KEY_APPLICABILITY = "applicability";
+  /** @since 1.0 */
+  private static final String NBT_KEY_UPCOMING_PHASE = "uP";
+  private static final String LEGACY_NBT_KEY_UPCOMING_PHASE = "upcomingPhase";
+
+  /** @since 1.0 */
+  private static final String NBT_KEY_APPLICABILITY = "ap";
+  private static final String LEGACY_NBT_KEY_APPLICABILITY = "applicability";
 
   // endregion
 
@@ -259,61 +228,76 @@ public class TrafficSignalPhase {
 
     // Get the upcoming phase
     TrafficSignalPhase upcomingPhase = null;
+    String upcomingKey = null;
     if (nbt.hasKey(NBT_KEY_UPCOMING_PHASE)) {
+      upcomingKey = NBT_KEY_UPCOMING_PHASE;
+    } else if (nbt.hasKey(LEGACY_NBT_KEY_UPCOMING_PHASE)) {
+      upcomingKey = LEGACY_NBT_KEY_UPCOMING_PHASE;
+    }
+    if (upcomingKey != null) {
       if (isUpcomingPhase) {
         throw new IllegalArgumentException(
             "The NBT cannot contain an upcoming phase with another nested upcoming phase.");
       } else {
-        upcomingPhase = fromNBT(nbt.getCompoundTag(NBT_KEY_UPCOMING_PHASE), true);
+        upcomingPhase = fromNBT(nbt.getCompoundTag(upcomingKey), true);
       }
     }
     // Create the phase
-    TrafficSignalPhase phase = new TrafficSignalPhase(nbt.getInteger(NBT_KEY_CIRCUIT),
-        upcomingPhase,
+    TrafficSignalPhase phase = new TrafficSignalPhase(readInt(nbt, NBT_KEY_CIRCUIT,
+        LEGACY_NBT_KEY_CIRCUIT), upcomingPhase,
         TrafficSignalPhaseApplicability.fromNBT(
-            nbt.getInteger(NBT_KEY_APPLICABILITY)));
+            readInt(nbt, NBT_KEY_APPLICABILITY, LEGACY_NBT_KEY_APPLICABILITY)));
 
-    // Deserialize off signals
-    phase.offSignals.addAll(
-        SerializationUtils.getBlockPosListFromBlockPosNBTArray(
-            nbt.getTag(NBT_KEY_OFF_SIGNAL_LIST)));
+    // Deserialize each signal list (short-key preferred, legacy fallback)
+    phase.offSignals.addAll(readPosList(nbt, NBT_KEY_OFF_SIGNAL_LIST,
+        LEGACY_NBT_KEY_OFF_SIGNAL_LIST));
+    phase.fyaSignals.addAll(readPosList(nbt, NBT_KEY_FYA_SIGNAL_LIST,
+        LEGACY_NBT_KEY_FYA_SIGNAL_LIST));
+    phase.greenSignals.addAll(readPosList(nbt, NBT_KEY_GREEN_SIGNAL_LIST,
+        LEGACY_NBT_KEY_GREEN_SIGNAL_LIST));
+    phase.yellowSignals.addAll(readPosList(nbt, NBT_KEY_YELLOW_SIGNAL_LIST,
+        LEGACY_NBT_KEY_YELLOW_SIGNAL_LIST));
+    phase.redSignals.addAll(readPosList(nbt, NBT_KEY_RED_SIGNAL_LIST,
+        LEGACY_NBT_KEY_RED_SIGNAL_LIST));
+    phase.walkSignals.addAll(readPosList(nbt, NBT_KEY_WALK_SIGNAL_LIST,
+        LEGACY_NBT_KEY_WALK_SIGNAL_LIST));
+    phase.flashDontWalkSignals.addAll(readPosList(nbt, NBT_KEY_FLASH_DONT_WALK_SIGNAL_LIST,
+        LEGACY_NBT_KEY_FLASH_DONT_WALK_SIGNAL_LIST));
+    phase.dontWalkSignals.addAll(readPosList(nbt, NBT_KEY_DONT_WALK_SIGNAL_LIST,
+        LEGACY_NBT_KEY_DONT_WALK_SIGNAL_LIST));
 
-    // Deserialize flashing yellow arrow signals
-    phase.fyaSignals.addAll(
-        SerializationUtils.getBlockPosListFromBlockPosNBTArray(
-            nbt.getTag(NBT_KEY_FYA_SIGNAL_LIST)));
-
-    // Deserialize green signals
-    phase.greenSignals.addAll(
-        SerializationUtils.getBlockPosListFromBlockPosNBTArray(
-            nbt.getTag(NBT_KEY_GREEN_SIGNAL_LIST)));
-
-    // Deserialize yellow signals
-    phase.yellowSignals.addAll(
-        SerializationUtils.getBlockPosListFromBlockPosNBTArray(
-            nbt.getTag(NBT_KEY_YELLOW_SIGNAL_LIST)));
-
-    // Deserialize red signals
-    phase.redSignals.addAll(
-        SerializationUtils.getBlockPosListFromBlockPosNBTArray(
-            nbt.getTag(NBT_KEY_RED_SIGNAL_LIST)));
-
-    // Deserialize walk signals
-    phase.walkSignals.addAll(
-        SerializationUtils.getBlockPosListFromBlockPosNBTArray(
-            nbt.getTag(NBT_KEY_WALK_SIGNAL_LIST)));
-
-    // Deserialize flash don't walk signals
-    phase.flashDontWalkSignals.addAll(SerializationUtils.getBlockPosListFromBlockPosNBTArray(
-        nbt.getTag(NBT_KEY_FLASH_DONT_WALK_SIGNAL_LIST)));
-
-    // Deserialize don't walk signals
-    phase.dontWalkSignals.addAll(
-        SerializationUtils.getBlockPosListFromBlockPosNBTArray(
-            nbt.getTag(NBT_KEY_DONT_WALK_SIGNAL_LIST)));
+    // Strip legacy long-form keys so subsequent writes emit only short-form output
+    nbt.removeTag(LEGACY_NBT_KEY_OFF_SIGNAL_LIST);
+    nbt.removeTag(LEGACY_NBT_KEY_FYA_SIGNAL_LIST);
+    nbt.removeTag(LEGACY_NBT_KEY_GREEN_SIGNAL_LIST);
+    nbt.removeTag(LEGACY_NBT_KEY_YELLOW_SIGNAL_LIST);
+    nbt.removeTag(LEGACY_NBT_KEY_RED_SIGNAL_LIST);
+    nbt.removeTag(LEGACY_NBT_KEY_WALK_SIGNAL_LIST);
+    nbt.removeTag(LEGACY_NBT_KEY_FLASH_DONT_WALK_SIGNAL_LIST);
+    nbt.removeTag(LEGACY_NBT_KEY_DONT_WALK_SIGNAL_LIST);
+    nbt.removeTag(LEGACY_NBT_KEY_CIRCUIT);
+    nbt.removeTag(LEGACY_NBT_KEY_UPCOMING_PHASE);
+    nbt.removeTag(LEGACY_NBT_KEY_APPLICABILITY);
 
     // Return the phase
     return phase;
+  }
+
+  private static int readInt(NBTTagCompound nbt, String key, String legacyKey) {
+    if (nbt.hasKey(key)) return nbt.getInteger(key);
+    if (nbt.hasKey(legacyKey)) return nbt.getInteger(legacyKey);
+    return 0;
+  }
+
+  private static List<BlockPos> readPosList(NBTTagCompound nbt, String shortKey,
+      String legacyKey) {
+    if (nbt.hasKey(shortKey)) {
+      return SerializationUtils.getBlockPosListFromBlockPosNBTArray(nbt.getTag(shortKey));
+    }
+    if (nbt.hasKey(legacyKey)) {
+      return SerializationUtils.getBlockPosListFromBlockPosNBTArray(nbt.getTag(legacyKey));
+    }
+    return new ArrayList<>();
   }
 
   /**

@@ -17,9 +17,11 @@ import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
  */
 public class TileEntityRedstoneTTS extends AbstractTileEntity {
 
-  private static final String TTS_STRING_KEY = "ttsString";
+  private static final String TTS_STRING_KEY = "tts";
+  private static final String LEGACY_TTS_STRING_KEY = "ttsString";
   private static final String TTS_STRING_DEFAULT = "Setup is Required!";
-  private static final String TTS_RADIUS_KEY = "ttsRadius";
+  private static final String TTS_RADIUS_KEY = "ttR";
+  private static final String LEGACY_TTS_RADIUS_KEY = "ttsRadius";
   private static final long COOLDOWN_DURATION = 2000; // Cooldown duration in milliseconds
   private AtomicLong lastTtsInvocationTime = new AtomicLong(0);
   private String ttsString = TTS_STRING_DEFAULT;
@@ -34,11 +36,18 @@ public class TileEntityRedstoneTTS extends AbstractTileEntity {
   public void readNBT(NBTTagCompound compound) {
     if (compound.hasKey(TTS_STRING_KEY)) {
       ttsString = compound.getString(TTS_STRING_KEY);
+    } else if (compound.hasKey(LEGACY_TTS_STRING_KEY)) {
+      ttsString = compound.getString(LEGACY_TTS_STRING_KEY);
     }
 
     if (compound.hasKey(TTS_RADIUS_KEY)) {
       ttsRadius = compound.getDouble(TTS_RADIUS_KEY);
+    } else if (compound.hasKey(LEGACY_TTS_RADIUS_KEY)) {
+      ttsRadius = compound.getDouble(LEGACY_TTS_RADIUS_KEY);
     }
+
+    compound.removeTag(LEGACY_TTS_STRING_KEY);
+    compound.removeTag(LEGACY_TTS_RADIUS_KEY);
   }
 
   /**
