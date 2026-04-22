@@ -761,12 +761,6 @@ public class TrafficSignalPhase {
         moved = greenSignals.add(pos);
       } else if (fyaSignals.remove(pos)) {
         moved = greenSignals.add(pos);
-      } else if (walkSignals.remove(pos)) {
-        moved = greenSignals.add(pos);
-      } else if (flashDontWalkSignals.remove(pos)) {
-        moved = greenSignals.add(pos);
-      } else if (dontWalkSignals.remove(pos)) {
-        moved = greenSignals.add(pos);
       } else if (offSignals.remove(pos)) {
         moved = greenSignals.add(pos);
       }

@@ -306,32 +306,17 @@ public class TrafficSignalControllerTickerUtilities {
    * @since 1.0
    */
   public static boolean hasVehicleSignalConflict(TrafficSignalPhase a, TrafficSignalPhase b) {
-    // Check all vehicle signal BlockPos in phase A — if any appear in a different list in B
+    // A signal leaving GREEN needs yellow clearance before any other state
     for (BlockPos pos : a.getGreenSignals()) {
       if (!b.getGreenSignals().contains(pos)) return true;
     }
+    // A signal leaving FYA to RED needs clearance (permissive ending restrictively).
+    // FYA→OFF is safe (compound hybrid going to protected green via add-on block).
+    // FYA→GREEN doesn't occur in practice (GREEN on 3-section block IS FYA).
     for (BlockPos pos : a.getFyaSignals()) {
-      if (!b.getFyaSignals().contains(pos)) return true;
+      if (b.getRedSignals().contains(pos)) return true;
     }
-    for (BlockPos pos : a.getRedSignals()) {
-      if (!b.getRedSignals().contains(pos)) return true;
-    }
-    for (BlockPos pos : a.getOffSignals()) {
-      if (!b.getOffSignals().contains(pos)) return true;
-    }
-    // Also check B→A in case B has signals not in A
-    for (BlockPos pos : b.getGreenSignals()) {
-      if (!a.getGreenSignals().contains(pos)) return true;
-    }
-    for (BlockPos pos : b.getFyaSignals()) {
-      if (!a.getFyaSignals().contains(pos)) return true;
-    }
-    for (BlockPos pos : b.getRedSignals()) {
-      if (!a.getRedSignals().contains(pos)) return true;
-    }
-    for (BlockPos pos : b.getOffSignals()) {
-      if (!a.getOffSignals().contains(pos)) return true;
-    }
+    // RED→anything and OFF→anything are safe (signal was already restrictive/dark)
     return false;
   }
 
