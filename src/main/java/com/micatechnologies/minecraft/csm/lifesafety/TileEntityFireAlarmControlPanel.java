@@ -102,6 +102,13 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
   private String lastVoiceEvacSoundSent = null;
   private boolean lastGlitchySent = false;
 
+  // Cached appliance categorization — avoids getBlockState on every appliance every tick.
+  // Rebuilt when connectedAppliances changes or periodically to catch manual sound changes.
+  private transient List<BlockPos> cachedVoiceEvacPositions;
+  private transient Map<String, List<BlockPos>> cachedHornGroups;
+  private transient List<BlockPos> cachedStrobeOnlyPositions;
+  private transient List<BlockPos> cachedAllStrobePositions;
+
   @Override
   public void readNBT(NBTTagCompound compound) {
     soundIndex = readInt(compound, soundIndexKey, legacySoundIndexKey, 0);
@@ -129,6 +136,8 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
         }
       }
     }
+
+    cachedVoiceEvacPositions = null;
 
     // Strip legacy long-form keys so subsequent writes produce only short-form output
     compound.removeTag(legacySoundIndexKey);
@@ -201,6 +210,7 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
   public synchronized boolean addLinkedAlarm(BlockPos blockPos) {
     if (!connectedAppliances.contains(blockPos)) {
       connectedAppliances.add(blockPos);
+      cachedVoiceEvacPositions = null;
       markDirty();
       return true;
     }
@@ -360,6 +370,11 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
       if (pruneTickCounter >= PRUNE_INTERVAL_TICKS) {
         pruneTickCounter = 0;
         pruneInvalidAppliances();
+        cachedVoiceEvacPositions = null;
+      }
+
+      if (cachedVoiceEvacPositions == null) {
+        rebuildApplianceCache();
       }
 
       MinecraftServer mcserv = FMLCommonHandler.instance().getMinecraftServerInstance();
@@ -390,50 +405,11 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
           }
         }
 
-        // Collect voice evac speaker positions and group horn positions by sound
         String voiceEvacSoundName = getCurrentSoundResourceName();
         float voiceEvacHearingRange = VOICE_EVAC_VOLUME * 16.0f;
-        List<BlockPos> voiceEvacPositions = new ArrayList<>();
-        Map<String, List<BlockPos>> hornGroups = new HashMap<>();
-        List<BlockPos> strobeOnlyPositions = new ArrayList<>();
-
-        for (BlockPos bp : connectedAppliances) {
-          // Skip appliances in unloaded chunks to avoid false-negative categorization
-          // that would cause sound channels to be stopped and restarted
-          if (!world.isBlockLoaded(bp)) {
-            continue;
-          }
-
-          IBlockState blockStateAtPos = world.getBlockState(bp);
-          Block blockAtPos = blockStateAtPos.getBlock();
-
-          // Ensure strobe blocks have their TE (migration for blocks placed before TESR)
-          if (blockAtPos instanceof IStrobeBlock && world.getTileEntity(bp) == null) {
-            world.setTileEntity(bp, new TileEntityFireAlarmStrobe());
-          }
-
-          if (blockAtPos instanceof AbstractBlockFireAlarmSounderVoiceEvac) {
-            voiceEvacPositions.add(bp);
-          } else if (blockAtPos instanceof AbstractBlockFireAlarmSounder) {
-            AbstractBlockFireAlarmSounder sounder = (AbstractBlockFireAlarmSounder) blockAtPos;
-            String soundName;
-            // Check for tile entity-based sound selection (e.g., Gentex Commander 3)
-            if (blockAtPos instanceof BlockFireAlarmGentexCommander3Red) {
-              soundName = ((BlockFireAlarmGentexCommander3Red) blockAtPos)
-                  .getSoundResourceName(world, bp, blockStateAtPos);
-            } else if (blockAtPos instanceof BlockFireAlarmGentexCommander3White) {
-              soundName = ((BlockFireAlarmGentexCommander3White) blockAtPos)
-                  .getSoundResourceName(world, bp, blockStateAtPos);
-            } else {
-              soundName = sounder.getSoundResourceName(blockStateAtPos);
-            }
-            if (soundName != null) {
-              hornGroups.computeIfAbsent(soundName, k -> new ArrayList<>()).add(bp);
-            } else if (blockAtPos instanceof IStrobeBlock) {
-              strobeOnlyPositions.add(bp);
-            }
-          }
-        }
+        List<BlockPos> voiceEvacPositions = cachedVoiceEvacPositions;
+        Map<String, List<BlockPos>> hornGroups = cachedHornGroups;
+        List<BlockPos> strobeOnlyPositions = cachedStrobeOnlyPositions;
 
         // Track which channels are active this tick
         Set<String> currentActiveChannels = new HashSet<>();
@@ -446,23 +422,8 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
             stopChannel(players, hornChannel);
           }
 
-          // Collect all strobe positions (from strobe-only devices and from horn/voice evac
-          // devices that have strobes) so strobes remain active during audible silence
-          List<BlockPos> allStrobePositions = new ArrayList<>(strobeOnlyPositions);
-          for (BlockPos bp : voiceEvacPositions) {
-            if (world.getBlockState(bp).getBlock() instanceof IStrobeBlock) {
-              allStrobePositions.add(bp);
-            }
-          }
-          for (List<BlockPos> hornPositions : hornGroups.values()) {
-            for (BlockPos bp : hornPositions) {
-              if (world.getBlockState(bp).getBlock() instanceof IStrobeBlock) {
-                allStrobePositions.add(bp);
-              }
-            }
-          }
-
-          if (!allStrobePositions.isEmpty()) {
+          if (!cachedAllStrobePositions.isEmpty()) {
+            List<BlockPos> allStrobePositions = cachedAllStrobePositions;
             manageSoundForPlayers(players, allStrobePositions, CHANNEL_STROBE_ONLY,
                 "", hornHearingRange);
             currentActiveChannels.add(CHANNEL_STROBE_ONLY);
@@ -536,24 +497,11 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
           lastVoiceEvacSoundSent = null;
         }
 
-        // Handle storm alarm
+        // Handle storm alarm (reuses cached voice evac positions — same speakers)
         if (alarmStorm) {
           float stormHearingRange = STORM_VOICE_EVAC_VOLUME * 16.0f;
-          List<BlockPos> stormVoiceEvacPositions = new ArrayList<>();
-
-          for (BlockPos bp : connectedAppliances) {
-            if (!world.isBlockLoaded(bp)) {
-              continue;
-            }
-            IBlockState blockStateAtPos = world.getBlockState(bp);
-            Block blockAtPos = blockStateAtPos.getBlock();
-            if (blockAtPos instanceof AbstractBlockFireAlarmSounderVoiceEvac) {
-              stormVoiceEvacPositions.add(bp);
-            }
-          }
-
-          if (!stormVoiceEvacPositions.isEmpty()) {
-            manageSoundForPlayers(players, stormVoiceEvacPositions, CHANNEL_STORM,
+          if (!cachedVoiceEvacPositions.isEmpty()) {
+            manageSoundForPlayers(players, cachedVoiceEvacPositions, CHANNEL_STORM,
                 STORM_SOUND_NAME, stormHearingRange);
           }
         } else {
@@ -687,7 +635,52 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
       }
     }
     if (pruned) {
+      cachedVoiceEvacPositions = null;
       markDirty();
+    }
+  }
+
+  private void rebuildApplianceCache() {
+    cachedVoiceEvacPositions = new ArrayList<>();
+    cachedHornGroups = new HashMap<>();
+    cachedStrobeOnlyPositions = new ArrayList<>();
+    cachedAllStrobePositions = new ArrayList<>();
+
+    for (BlockPos bp : connectedAppliances) {
+      if (!world.isBlockLoaded(bp)) continue;
+
+      IBlockState blockStateAtPos = world.getBlockState(bp);
+      Block blockAtPos = blockStateAtPos.getBlock();
+
+      if (blockAtPos instanceof IStrobeBlock && world.getTileEntity(bp) == null) {
+        world.setTileEntity(bp, new TileEntityFireAlarmStrobe());
+      }
+
+      boolean hasStrobe = blockAtPos instanceof IStrobeBlock;
+
+      if (blockAtPos instanceof AbstractBlockFireAlarmSounderVoiceEvac) {
+        cachedVoiceEvacPositions.add(bp);
+        if (hasStrobe) cachedAllStrobePositions.add(bp);
+      } else if (blockAtPos instanceof AbstractBlockFireAlarmSounder) {
+        AbstractBlockFireAlarmSounder sounder = (AbstractBlockFireAlarmSounder) blockAtPos;
+        String soundName;
+        if (blockAtPos instanceof BlockFireAlarmGentexCommander3Red) {
+          soundName = ((BlockFireAlarmGentexCommander3Red) blockAtPos)
+              .getSoundResourceName(world, bp, blockStateAtPos);
+        } else if (blockAtPos instanceof BlockFireAlarmGentexCommander3White) {
+          soundName = ((BlockFireAlarmGentexCommander3White) blockAtPos)
+              .getSoundResourceName(world, bp, blockStateAtPos);
+        } else {
+          soundName = sounder.getSoundResourceName(blockStateAtPos);
+        }
+        if (soundName != null) {
+          cachedHornGroups.computeIfAbsent(soundName, k -> new ArrayList<>()).add(bp);
+          if (hasStrobe) cachedAllStrobePositions.add(bp);
+        } else if (hasStrobe) {
+          cachedStrobeOnlyPositions.add(bp);
+          cachedAllStrobePositions.add(bp);
+        }
+      }
     }
   }
 
