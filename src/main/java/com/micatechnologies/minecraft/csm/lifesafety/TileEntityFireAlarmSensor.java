@@ -16,9 +16,12 @@ import net.minecraft.world.World;
 
 public class TileEntityFireAlarmSensor extends AbstractTileEntity {
 
-  private static final String linkedPanelPosXKey = "lpX";
-  private static final String linkedPanelPosYKey = "lpY";
-  private static final String linkedPanelPosZKey = "lpZ";
+  // Short-form key holds the linked panel position as a single 3-int IntArray {x, y, z}.
+  // The legacy triple of per-axis ints is still accepted on read for backwards compat.
+  private static final String linkedPanelKey = "lp";
+  private static final String legacyLinkedPanelPosXKey = "lpX";
+  private static final String legacyLinkedPanelPosYKey = "lpY";
+  private static final String legacyLinkedPanelPosZKey = "lpZ";
   private int linkedPanelX;
   private int linkedPanelY = -500;
   private int linkedPanelZ;
@@ -30,15 +33,31 @@ public class TileEntityFireAlarmSensor extends AbstractTileEntity {
    */
   @Override
   public void readNBT(NBTTagCompound compound) {
-    if (compound.hasKey(linkedPanelPosXKey) &&
-        compound.hasKey(linkedPanelPosYKey) &&
-        compound.hasKey(linkedPanelPosZKey)) {
-      linkedPanelX = compound.getInteger(linkedPanelPosXKey);
-      linkedPanelY = compound.getInteger(linkedPanelPosYKey);
-      linkedPanelZ = compound.getInteger(linkedPanelPosZKey);
-    } else {
+    boolean loaded = false;
+    if (compound.hasKey(linkedPanelKey)) {
+      int[] pos = compound.getIntArray(linkedPanelKey);
+      if (pos.length == 3) {
+        linkedPanelX = pos[0];
+        linkedPanelY = pos[1];
+        linkedPanelZ = pos[2];
+        loaded = true;
+      }
+    } else if (compound.hasKey(legacyLinkedPanelPosXKey) &&
+        compound.hasKey(legacyLinkedPanelPosYKey) &&
+        compound.hasKey(legacyLinkedPanelPosZKey)) {
+      linkedPanelX = compound.getInteger(legacyLinkedPanelPosXKey);
+      linkedPanelY = compound.getInteger(legacyLinkedPanelPosYKey);
+      linkedPanelZ = compound.getInteger(legacyLinkedPanelPosZKey);
+      loaded = true;
+    }
+    if (!loaded) {
       linkedPanelY = -500;
     }
+
+    // Strip legacy long-form keys so the next save produces only short-form output
+    compound.removeTag(legacyLinkedPanelPosXKey);
+    compound.removeTag(legacyLinkedPanelPosYKey);
+    compound.removeTag(legacyLinkedPanelPosZKey);
   }
 
   /**
@@ -50,10 +69,8 @@ public class TileEntityFireAlarmSensor extends AbstractTileEntity {
    */
   @Override
   public NBTTagCompound writeNBT(NBTTagCompound compound) {
-    compound.setInteger(linkedPanelPosXKey, linkedPanelX);
-    compound.setInteger(linkedPanelPosYKey, linkedPanelY);
-    compound.setInteger(linkedPanelPosZKey, linkedPanelZ);
-
+    compound.setIntArray(linkedPanelKey,
+        new int[] {linkedPanelX, linkedPanelY, linkedPanelZ});
     return compound;
   }
 
