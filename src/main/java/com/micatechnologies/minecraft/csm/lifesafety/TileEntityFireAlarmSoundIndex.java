@@ -10,14 +10,18 @@ import net.minecraft.nbt.NBTTagCompound;
  */
 public class TileEntityFireAlarmSoundIndex extends AbstractTileEntity {
 
-  private static final String SOUND_INDEX_KEY = "soundIndex";
+  private static final String SOUND_INDEX_KEY = "sIx";
+  private static final String LEGACY_SOUND_INDEX_KEY = "soundIndex";
   private int soundIndex = 0;
 
   @Override
   public void readNBT(NBTTagCompound compound) {
     if (compound.hasKey(SOUND_INDEX_KEY)) {
       soundIndex = compound.getInteger(SOUND_INDEX_KEY);
+    } else if (compound.hasKey(LEGACY_SOUND_INDEX_KEY)) {
+      soundIndex = compound.getInteger(LEGACY_SOUND_INDEX_KEY);
     }
+    compound.removeTag(LEGACY_SOUND_INDEX_KEY);
   }
 
   @Override

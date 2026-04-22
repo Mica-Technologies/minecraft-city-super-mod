@@ -40,78 +40,54 @@ import net.minecraft.world.World;
 public class TrafficSignalControllerCircuit {
   // region: Static/Constant Fields
 
-  /**
-   * The key used to store the list of flashing left signal {@link BlockPos}es in NBT data.
-   *
-   * @since 1.0
-   */
-  private static final String NBT_KEY_FLASHING_LEFT_SIGNAL_LIST = "flashingLeftSignalList";
+  // Short-form NBT keys used by this circuit's toNBT / fromNBT. LEGACY_* constants hold the
+  // historical long-form names so worlds saved before the short-key optimization still load.
+  // Writes only emit the short form; fromNBT drops the legacy entries once read.
 
-  /**
-   * The key used to store the list of flashing right signal {@link BlockPos}es in NBT data.
-   *
-   * @since 1.0
-   */
-  private static final String NBT_KEY_FLASHING_RIGHT_SIGNAL_LIST = "flashingRightSignalList";
+  /** @since 1.0 */
+  private static final String NBT_KEY_FLASHING_LEFT_SIGNAL_LIST = "fL";
+  private static final String LEGACY_NBT_KEY_FLASHING_LEFT_SIGNAL_LIST = "flashingLeftSignalList";
 
-  /**
-   * The key used to store the list of standard left signal {@link BlockPos}es in NBT data.
-   *
-   * @since 1.0
-   */
-  private static final String NBT_KEY_STANDARD_LEFT_SIGNAL_LIST = "standardLeftSignalList";
+  /** @since 1.0 */
+  private static final String NBT_KEY_FLASHING_RIGHT_SIGNAL_LIST = "fR";
+  private static final String LEGACY_NBT_KEY_FLASHING_RIGHT_SIGNAL_LIST = "flashingRightSignalList";
 
-  /**
-   * The key used to store the list of standard right signal {@link BlockPos}es in NBT data.
-   *
-   * @since 1.0
-   */
-  private static final String NBT_KEY_STANDARD_RIGHT_SIGNAL_LIST = "standardRightSignalList";
+  /** @since 1.0 */
+  private static final String NBT_KEY_STANDARD_LEFT_SIGNAL_LIST = "sL";
+  private static final String LEGACY_NBT_KEY_STANDARD_LEFT_SIGNAL_LIST = "standardLeftSignalList";
 
-  /**
-   * The key used to store the list of through signal {@link BlockPos}es in NBT data.
-   *
-   * @since 1.0
-   */
-  private static final String NBT_KEY_THROUGH_SIGNAL_LIST = "throughSignalList";
+  /** @since 1.0 */
+  private static final String NBT_KEY_STANDARD_RIGHT_SIGNAL_LIST = "sR";
+  private static final String LEGACY_NBT_KEY_STANDARD_RIGHT_SIGNAL_LIST = "standardRightSignalList";
 
-  /**
-   * The key used to store the list of pedestrian signal {@link BlockPos}es in NBT data.
-   *
-   * @since 1.0
-   */
-  private static final String NBT_KEY_PEDESTRIAN_SIGNAL_LIST = "pedestrianSignalList";
+  /** @since 1.0 */
+  private static final String NBT_KEY_THROUGH_SIGNAL_LIST = "th";
+  private static final String LEGACY_NBT_KEY_THROUGH_SIGNAL_LIST = "throughSignalList";
 
-  /**
-   * The key used to store the list of pedestrian beacon signal {@link BlockPos}es in NBT data.
-   *
-   * @since 1.0
-   */
-  private static final String NBT_KEY_PEDESTRIAN_BEACON_SIGNAL_LIST = "pedestrianBeaconSignalList";
+  /** @since 1.0 */
+  private static final String NBT_KEY_PEDESTRIAN_SIGNAL_LIST = "pS";
+  private static final String LEGACY_NBT_KEY_PEDESTRIAN_SIGNAL_LIST = "pedestrianSignalList";
 
-  /**
-   * The key used to store the list of pedestrian accessory signal {@link BlockPos}es in NBT data.
-   *
-   * @since 1.0
-   */
-  private static final String NBT_KEY_PEDESTRIAN_ACCESSORY_SIGNAL_LIST =
+  /** @since 1.0 */
+  private static final String NBT_KEY_PEDESTRIAN_BEACON_SIGNAL_LIST = "pB";
+  private static final String LEGACY_NBT_KEY_PEDESTRIAN_BEACON_SIGNAL_LIST =
+      "pedestrianBeaconSignalList";
+
+  /** @since 1.0 */
+  private static final String NBT_KEY_PEDESTRIAN_ACCESSORY_SIGNAL_LIST = "pA";
+  private static final String LEGACY_NBT_KEY_PEDESTRIAN_ACCESSORY_SIGNAL_LIST =
       "pedestrianAccessorySignalList";
 
-  /**
-   * The key used to store the list of protected signal {@link BlockPos}es in NBT data.
-   *
-   * @since 1.0
-   */
-  private static final String NBT_KEY_PROTECTED_SIGNAL_LIST = "protectedSignalList";
+  /** @since 1.0 */
+  private static final String NBT_KEY_PROTECTED_SIGNAL_LIST = "pP";
+  private static final String LEGACY_NBT_KEY_PROTECTED_SIGNAL_LIST = "protectedSignalList";
 
-  /**
-   * The key used to store the list of sensor {@link BlockPos}es in NBT data.
-   *
-   * @since 1.0
-   */
-  private static final String NBT_KEY_BEACON_SIGNAL_LIST = "beaconSignalList";
+  /** @since 1.0 */
+  private static final String NBT_KEY_BEACON_SIGNAL_LIST = "bS";
+  private static final String LEGACY_NBT_KEY_BEACON_SIGNAL_LIST = "beaconSignalList";
 
-  private static final String NBT_KEY_SENSOR_LIST = "sensorList";
+  private static final String NBT_KEY_SENSOR_LIST = "se";
+  private static final String LEGACY_NBT_KEY_SENSOR_LIST = "sensorList";
 
   // endregion
 
@@ -233,57 +209,83 @@ public class TrafficSignalControllerCircuit {
     TrafficSignalControllerCircuit circuit = new TrafficSignalControllerCircuit();
 
     // Deserialize flashing left signals
-    circuit.flashingLeftSignals.addAll(SerializationUtils.getBlockPosListFromBlockPosNBTArray(
-        nbt.getTag(NBT_KEY_FLASHING_LEFT_SIGNAL_LIST)));
+    circuit.flashingLeftSignals.addAll(readPosList(nbt, NBT_KEY_FLASHING_LEFT_SIGNAL_LIST,
+        LEGACY_NBT_KEY_FLASHING_LEFT_SIGNAL_LIST));
 
     // Deserialize flashing right signals
-    circuit.flashingRightSignals.addAll(SerializationUtils.getBlockPosListFromBlockPosNBTArray(
-        nbt.getTag(NBT_KEY_FLASHING_RIGHT_SIGNAL_LIST)));
+    circuit.flashingRightSignals.addAll(readPosList(nbt, NBT_KEY_FLASHING_RIGHT_SIGNAL_LIST,
+        LEGACY_NBT_KEY_FLASHING_RIGHT_SIGNAL_LIST));
 
     // Deserialize standard left signals
-    circuit.leftSignals.addAll(SerializationUtils.getBlockPosListFromBlockPosNBTArray(
-        nbt.getTag(NBT_KEY_STANDARD_LEFT_SIGNAL_LIST)));
+    circuit.leftSignals.addAll(readPosList(nbt, NBT_KEY_STANDARD_LEFT_SIGNAL_LIST,
+        LEGACY_NBT_KEY_STANDARD_LEFT_SIGNAL_LIST));
 
     // Deserialize standard right signals
-    circuit.rightSignals.addAll(SerializationUtils.getBlockPosListFromBlockPosNBTArray(
-        nbt.getTag(NBT_KEY_STANDARD_RIGHT_SIGNAL_LIST)));
+    circuit.rightSignals.addAll(readPosList(nbt, NBT_KEY_STANDARD_RIGHT_SIGNAL_LIST,
+        LEGACY_NBT_KEY_STANDARD_RIGHT_SIGNAL_LIST));
 
     // Deserialize through/solid/ball signals
-    circuit.throughSignals.addAll(
-        SerializationUtils.getBlockPosListFromBlockPosNBTArray(
-            nbt.getTag(NBT_KEY_THROUGH_SIGNAL_LIST)));
+    circuit.throughSignals.addAll(readPosList(nbt, NBT_KEY_THROUGH_SIGNAL_LIST,
+        LEGACY_NBT_KEY_THROUGH_SIGNAL_LIST));
 
     // Deserialize pedestrian signals
-    circuit.pedestrianSignals.addAll(SerializationUtils.getBlockPosListFromBlockPosNBTArray(
-        nbt.getTag(NBT_KEY_PEDESTRIAN_SIGNAL_LIST)));
+    circuit.pedestrianSignals.addAll(readPosList(nbt, NBT_KEY_PEDESTRIAN_SIGNAL_LIST,
+        LEGACY_NBT_KEY_PEDESTRIAN_SIGNAL_LIST));
 
     // Deserialize pedestrian beacon signals
-    circuit.pedestrianBeaconSignals.addAll(SerializationUtils.getBlockPosListFromBlockPosNBTArray(
-        nbt.getTag(NBT_KEY_PEDESTRIAN_BEACON_SIGNAL_LIST)));
+    circuit.pedestrianBeaconSignals.addAll(readPosList(nbt, NBT_KEY_PEDESTRIAN_BEACON_SIGNAL_LIST,
+        LEGACY_NBT_KEY_PEDESTRIAN_BEACON_SIGNAL_LIST));
 
     // Deserialize pedestrian accessory signals
-    circuit.pedestrianAccessorySignals.addAll(
-        SerializationUtils.getBlockPosListFromBlockPosNBTArray(
-            nbt.getTag(NBT_KEY_PEDESTRIAN_ACCESSORY_SIGNAL_LIST)));
+    circuit.pedestrianAccessorySignals.addAll(readPosList(nbt,
+        NBT_KEY_PEDESTRIAN_ACCESSORY_SIGNAL_LIST, LEGACY_NBT_KEY_PEDESTRIAN_ACCESSORY_SIGNAL_LIST));
 
     // Deserialize protected signals
-    circuit.protectedSignals.addAll(
-        SerializationUtils.getBlockPosListFromBlockPosNBTArray(
-            nbt.getTag(NBT_KEY_PROTECTED_SIGNAL_LIST)));
+    circuit.protectedSignals.addAll(readPosList(nbt, NBT_KEY_PROTECTED_SIGNAL_LIST,
+        LEGACY_NBT_KEY_PROTECTED_SIGNAL_LIST));
 
     // Deserialize beacon signals (new field — absent in old NBT data is handled gracefully)
-    if (nbt.hasKey(NBT_KEY_BEACON_SIGNAL_LIST)) {
-      circuit.beaconSignals.addAll(
-          SerializationUtils.getBlockPosListFromBlockPosNBTArray(
-              nbt.getTag(NBT_KEY_BEACON_SIGNAL_LIST)));
+    if (nbt.hasKey(NBT_KEY_BEACON_SIGNAL_LIST) || nbt.hasKey(LEGACY_NBT_KEY_BEACON_SIGNAL_LIST)) {
+      circuit.beaconSignals.addAll(readPosList(nbt, NBT_KEY_BEACON_SIGNAL_LIST,
+          LEGACY_NBT_KEY_BEACON_SIGNAL_LIST));
     }
 
     // Deserialize sensors
-    circuit.sensors.addAll(
-        SerializationUtils.getBlockPosListFromBlockPosNBTArray(nbt.getTag(NBT_KEY_SENSOR_LIST)));
+    circuit.sensors.addAll(readPosList(nbt, NBT_KEY_SENSOR_LIST, LEGACY_NBT_KEY_SENSOR_LIST));
+
+    // Strip legacy long-form keys so the owning controller's next save produces short-form
+    // output. fromNBT receives the controller's subtag directly, so modifications persist to
+    // the controller's cached compound and through the next writeNBT.
+    nbt.removeTag(LEGACY_NBT_KEY_FLASHING_LEFT_SIGNAL_LIST);
+    nbt.removeTag(LEGACY_NBT_KEY_FLASHING_RIGHT_SIGNAL_LIST);
+    nbt.removeTag(LEGACY_NBT_KEY_STANDARD_LEFT_SIGNAL_LIST);
+    nbt.removeTag(LEGACY_NBT_KEY_STANDARD_RIGHT_SIGNAL_LIST);
+    nbt.removeTag(LEGACY_NBT_KEY_THROUGH_SIGNAL_LIST);
+    nbt.removeTag(LEGACY_NBT_KEY_PEDESTRIAN_SIGNAL_LIST);
+    nbt.removeTag(LEGACY_NBT_KEY_PEDESTRIAN_BEACON_SIGNAL_LIST);
+    nbt.removeTag(LEGACY_NBT_KEY_PEDESTRIAN_ACCESSORY_SIGNAL_LIST);
+    nbt.removeTag(LEGACY_NBT_KEY_PROTECTED_SIGNAL_LIST);
+    nbt.removeTag(LEGACY_NBT_KEY_BEACON_SIGNAL_LIST);
+    nbt.removeTag(LEGACY_NBT_KEY_SENSOR_LIST);
 
     // Return the circuit
     return circuit;
+  }
+
+  /**
+   * Deserializes a BlockPos list from the supplied NBT compound, preferring the short key but
+   * falling back to the legacy long key for worlds saved before the short-key optimization.
+   * Returns an empty list if neither key is present.
+   */
+  private static List<BlockPos> readPosList(NBTTagCompound nbt, String shortKey,
+      String legacyKey) {
+    if (nbt.hasKey(shortKey)) {
+      return SerializationUtils.getBlockPosListFromBlockPosNBTArray(nbt.getTag(shortKey));
+    }
+    if (nbt.hasKey(legacyKey)) {
+      return SerializationUtils.getBlockPosListFromBlockPosNBTArray(nbt.getTag(legacyKey));
+    }
+    return new ArrayList<>();
   }
 
   /**
