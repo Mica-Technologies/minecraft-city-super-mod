@@ -247,7 +247,7 @@ public class TileEntityTrafficSignalHeadRenderer extends
     // BracketSpec uses mountTiltAngle to inverse-rotate the target before solving, cancelling
     // the GL tilt out and leaving the arm tip at the actual world pole position.
     float mountTiltAngle = bodyDirection.getRotation() - getBaseFacingAngle(facing);
-    renderMount(te, sectionSizes, sectionYPositions, sectionXPositions, horizontal,
+    renderMount(te, blockState, sectionSizes, sectionYPositions, sectionXPositions, horizontal,
         zPushBack, mountTiltAngle);
 
     GL11.glPopMatrix();
@@ -716,7 +716,8 @@ public class TileEntityTrafficSignalHeadRenderer extends
     return false;
   }
 
-  private void renderMount(TileEntityTrafficSignalHead te, int[] sectionSizes,
+  private void renderMount(TileEntityTrafficSignalHead te, IBlockState blockState,
+      int[] sectionSizes,
       float[] sectionYPositions, float[] sectionXPositions, boolean horizontal,
       float zPushBack, float mountTiltAngle) {
     SignalHeadMountType mountType = te.getMountType();
@@ -740,14 +741,15 @@ public class TileEntityTrafficSignalHeadRenderer extends
     // the pair shares a bracket at that joint and we hide this signal's bracket on that
     // edge so the hardware doesn't double up. Double-arrow add-ons sit one block away from
     // the main signal (air gap between), so the scan also peeks two blocks out through air.
+    // Adjacent-signal detection — uses the blockState threaded from render() instead of
+    // calling world.getBlockState(pos) again; the caller already has it in hand.
     boolean suppressHighEnd = false, suppressLowEnd = false;
     net.minecraft.world.World world = te.getWorld();
     if (world != null) {
       BlockPos pos = te.getPos();
       if (horizontal) {
-        IBlockState ownState = world.getBlockState(pos);
-        if (ownState.getProperties().containsKey(AbstractBlockControllableSignalHead.FACING)) {
-          EnumFacing facing = ownState.getValue(AbstractBlockControllableSignalHead.FACING);
+        if (blockState.getProperties().containsKey(AbstractBlockControllableSignalHead.FACING)) {
+          EnumFacing facing = blockState.getValue(AbstractBlockControllableSignalHead.FACING);
           suppressLowEnd = hasPairedSignalAlong(world, pos, facing.rotateYCCW());
           suppressHighEnd = hasPairedSignalAlong(world, pos, facing.rotateY());
         }
