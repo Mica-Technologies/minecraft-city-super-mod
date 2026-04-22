@@ -533,7 +533,7 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
    */
   @Override
   public void readNBT(NBTTagCompound compound) {
-    // Load the traffic signal controller mode
+    // Load the traffic signal controller mode (key unchanged — "tcMode")
     if (compound.hasKey(TrafficSignalControllerNBTKeys.MODE)) {
       mode = TrafficSignalControllerMode.fromNBT(
           compound.getInteger(TrafficSignalControllerNBTKeys.MODE));
@@ -543,6 +543,9 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
     if (compound.hasKey(TrafficSignalControllerNBTKeys.OPERATING_MODE)) {
       operatingMode = TrafficSignalControllerMode.fromNBT(
           compound.getInteger(TrafficSignalControllerNBTKeys.OPERATING_MODE));
+    } else if (compound.hasKey(TrafficSignalControllerNBTKeys.LEGACY_OPERATING_MODE)) {
+      operatingMode = TrafficSignalControllerMode.fromNBT(
+          compound.getInteger(TrafficSignalControllerNBTKeys.LEGACY_OPERATING_MODE));
     } else {
       operatingMode = mode;
     }
@@ -552,152 +555,251 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
     if (compound.hasKey(TrafficSignalControllerNBTKeys.CIRCUITS)) {
       circuits = TrafficSignalControllerCircuits.fromNBT(
           compound.getCompoundTag(TrafficSignalControllerNBTKeys.CIRCUITS));
+    } else if (compound.hasKey(TrafficSignalControllerNBTKeys.LEGACY_CIRCUITS)) {
+      circuits = TrafficSignalControllerCircuits.fromNBT(
+          compound.getCompoundTag(TrafficSignalControllerNBTKeys.LEGACY_CIRCUITS));
     }
 
     // Load the traffic signal controller overlaps
     if (compound.hasKey(TrafficSignalControllerNBTKeys.OVERLAPS)) {
       overlaps = TrafficSignalControllerOverlaps.fromNBT(
           compound.getCompoundTag(TrafficSignalControllerNBTKeys.OVERLAPS));
+    } else if (compound.hasKey(TrafficSignalControllerNBTKeys.LEGACY_OVERLAPS)) {
+      overlaps = TrafficSignalControllerOverlaps.fromNBT(
+          compound.getCompoundTag(TrafficSignalControllerNBTKeys.LEGACY_OVERLAPS));
     }
 
     // Load the traffic signal controller paused state
     if (compound.hasKey(TrafficSignalControllerNBTKeys.PAUSED)) {
       paused = compound.getBoolean(TrafficSignalControllerNBTKeys.PAUSED);
+    } else if (compound.hasKey(TrafficSignalControllerNBTKeys.LEGACY_PAUSED)) {
+      paused = compound.getBoolean(TrafficSignalControllerNBTKeys.LEGACY_PAUSED);
     }
 
     // Load the traffic signal controller cached phases
     if (compound.hasKey(TrafficSignalControllerNBTKeys.CACHED_PHASES)) {
       cachedPhases = TrafficSignalPhases.fromNBT(
           compound.getCompoundTag(TrafficSignalControllerNBTKeys.CACHED_PHASES));
+    } else if (compound.hasKey(TrafficSignalControllerNBTKeys.LEGACY_CACHED_PHASES)) {
+      cachedPhases = TrafficSignalPhases.fromNBT(
+          compound.getCompoundTag(TrafficSignalControllerNBTKeys.LEGACY_CACHED_PHASES));
     }
 
     // Load the traffic signal controller last phase change time
     if (compound.hasKey(TrafficSignalControllerNBTKeys.LAST_PHASE_CHANGE_TIME)) {
       lastPhaseChangeTime = compound.getLong(TrafficSignalControllerNBTKeys.LAST_PHASE_CHANGE_TIME);
+    } else if (compound.hasKey(TrafficSignalControllerNBTKeys.LEGACY_LAST_PHASE_CHANGE_TIME)) {
+      lastPhaseChangeTime =
+          compound.getLong(TrafficSignalControllerNBTKeys.LEGACY_LAST_PHASE_CHANGE_TIME);
     }
 
     // Load the traffic signal controller last phase applicability change time
     if (compound.hasKey(TrafficSignalControllerNBTKeys.LAST_PHASE_APPLICABILITY_CHANGE_TIME)) {
       lastPhaseApplicabilityChangeTime = compound.getLong(
           TrafficSignalControllerNBTKeys.LAST_PHASE_APPLICABILITY_CHANGE_TIME);
+    } else if (compound.hasKey(
+        TrafficSignalControllerNBTKeys.LEGACY_LAST_PHASE_APPLICABILITY_CHANGE_TIME)) {
+      lastPhaseApplicabilityChangeTime = compound.getLong(
+          TrafficSignalControllerNBTKeys.LEGACY_LAST_PHASE_APPLICABILITY_CHANGE_TIME);
     }
 
     // Load the traffic signal controller last pedestrian phase time
     if (compound.hasKey(TrafficSignalControllerNBTKeys.LAST_PEDESTRIAN_PHASE_TIME)) {
       lastPedPhaseTime =
           compound.getLong(TrafficSignalControllerNBTKeys.LAST_PEDESTRIAN_PHASE_TIME);
+    } else if (compound.hasKey(TrafficSignalControllerNBTKeys.LEGACY_LAST_PEDESTRIAN_PHASE_TIME)) {
+      lastPedPhaseTime =
+          compound.getLong(TrafficSignalControllerNBTKeys.LEGACY_LAST_PEDESTRIAN_PHASE_TIME);
     }
 
     // Load the traffic signal controller current phase
     if (compound.hasKey(TrafficSignalControllerNBTKeys.CURRENT_PHASE)) {
       currentPhase = TrafficSignalPhase.fromNBT(
           compound.getCompoundTag(TrafficSignalControllerNBTKeys.CURRENT_PHASE));
+    } else if (compound.hasKey(TrafficSignalControllerNBTKeys.LEGACY_CURRENT_PHASE)) {
+      currentPhase = TrafficSignalPhase.fromNBT(
+          compound.getCompoundTag(TrafficSignalControllerNBTKeys.LEGACY_CURRENT_PHASE));
     }
 
     // Load the traffic signal controller current fault message
     if (compound.hasKey(TrafficSignalControllerNBTKeys.CURRENT_FAULT_MESSAGE)) {
       currentFaultMessage =
           compound.getString(TrafficSignalControllerNBTKeys.CURRENT_FAULT_MESSAGE);
+    } else if (compound.hasKey(TrafficSignalControllerNBTKeys.LEGACY_CURRENT_FAULT_MESSAGE)) {
+      currentFaultMessage =
+          compound.getString(TrafficSignalControllerNBTKeys.LEGACY_CURRENT_FAULT_MESSAGE);
     }
 
     // Load the traffic signal controller nightly fallback to flash mode setting
     if (compound.hasKey(TrafficSignalControllerNBTKeys.NIGHTLY_FALLBACK_FLASH_MODE)) {
       nightlyFallbackToFlashMode = compound.getBoolean(
           TrafficSignalControllerNBTKeys.NIGHTLY_FALLBACK_FLASH_MODE);
+    } else if (compound.hasKey(TrafficSignalControllerNBTKeys.LEGACY_NIGHTLY_FALLBACK_FLASH_MODE)) {
+      nightlyFallbackToFlashMode = compound.getBoolean(
+          TrafficSignalControllerNBTKeys.LEGACY_NIGHTLY_FALLBACK_FLASH_MODE);
     }
 
     // Load the traffic signal controller power loss fallback to flash mode setting
     if (compound.hasKey(TrafficSignalControllerNBTKeys.POWER_LOSS_FALLBACK_FLASH_MODE)) {
       powerLossFallbackToFlashMode = compound.getBoolean(
           TrafficSignalControllerNBTKeys.POWER_LOSS_FALLBACK_FLASH_MODE);
+    } else if (compound.hasKey(
+        TrafficSignalControllerNBTKeys.LEGACY_POWER_LOSS_FALLBACK_FLASH_MODE)) {
+      powerLossFallbackToFlashMode = compound.getBoolean(
+          TrafficSignalControllerNBTKeys.LEGACY_POWER_LOSS_FALLBACK_FLASH_MODE);
     }
 
     // Load the traffic signal controller overlap pedestrian signals setting
     if (compound.hasKey(TrafficSignalControllerNBTKeys.OVERLAP_PEDESTRIAN_SIGNALS)) {
       overlapPedestrianSignals =
           compound.getBoolean(TrafficSignalControllerNBTKeys.OVERLAP_PEDESTRIAN_SIGNALS);
+    } else if (compound.hasKey(TrafficSignalControllerNBTKeys.LEGACY_OVERLAP_PEDESTRIAN_SIGNALS)) {
+      overlapPedestrianSignals =
+          compound.getBoolean(TrafficSignalControllerNBTKeys.LEGACY_OVERLAP_PEDESTRIAN_SIGNALS);
     }
 
     // Load the traffic signal controller lead pedestrian interval time
     if (compound.hasKey(TrafficSignalControllerNBTKeys.LEAD_PEDESTRIAN_INTERVAL_TIME)) {
       leadPedestrianIntervalTime =
           compound.getLong(TrafficSignalControllerNBTKeys.LEAD_PEDESTRIAN_INTERVAL_TIME);
+    } else if (compound.hasKey(
+        TrafficSignalControllerNBTKeys.LEGACY_LEAD_PEDESTRIAN_INTERVAL_TIME)) {
+      leadPedestrianIntervalTime = compound.getLong(
+          TrafficSignalControllerNBTKeys.LEGACY_LEAD_PEDESTRIAN_INTERVAL_TIME);
     }
 
     // Load the traffic signal controller all red flash setting
     if (compound.hasKey(TrafficSignalControllerNBTKeys.ALL_RED_FLASH)) {
       allRedFlash = compound.getBoolean(TrafficSignalControllerNBTKeys.ALL_RED_FLASH);
+    } else if (compound.hasKey(TrafficSignalControllerNBTKeys.LEGACY_ALL_RED_FLASH)) {
+      allRedFlash = compound.getBoolean(TrafficSignalControllerNBTKeys.LEGACY_ALL_RED_FLASH);
     }
 
     // Load the traffic signal controller ramp meter night mode
     if (compound.hasKey(TrafficSignalControllerNBTKeys.RAMP_METER_NIGHT_MODE)) {
       rampMeterNightMode = compound.getInteger(TrafficSignalControllerNBTKeys.RAMP_METER_NIGHT_MODE);
+    } else if (compound.hasKey(TrafficSignalControllerNBTKeys.LEGACY_RAMP_METER_NIGHT_MODE)) {
+      rampMeterNightMode =
+          compound.getInteger(TrafficSignalControllerNBTKeys.LEGACY_RAMP_METER_NIGHT_MODE);
     }
 
     // Load the traffic signal controller yellow time
     if (compound.hasKey(TrafficSignalControllerNBTKeys.YELLOW_TIME)) {
       yellowTime = compound.getLong(TrafficSignalControllerNBTKeys.YELLOW_TIME);
+    } else if (compound.hasKey(TrafficSignalControllerNBTKeys.LEGACY_YELLOW_TIME)) {
+      yellowTime = compound.getLong(TrafficSignalControllerNBTKeys.LEGACY_YELLOW_TIME);
     }
 
     // Load the traffic signal controller flashing don't walk time
     if (compound.hasKey(TrafficSignalControllerNBTKeys.FLASH_DONT_WALK_TIME)) {
       flashDontWalkTime = compound.getLong(TrafficSignalControllerNBTKeys.FLASH_DONT_WALK_TIME);
+    } else if (compound.hasKey(TrafficSignalControllerNBTKeys.LEGACY_FLASH_DONT_WALK_TIME)) {
+      flashDontWalkTime =
+          compound.getLong(TrafficSignalControllerNBTKeys.LEGACY_FLASH_DONT_WALK_TIME);
     }
 
     // Load the traffic signal controller all red time
     if (compound.hasKey(TrafficSignalControllerNBTKeys.ALL_RED_TIME)) {
       allRedTime = compound.getLong(TrafficSignalControllerNBTKeys.ALL_RED_TIME);
+    } else if (compound.hasKey(TrafficSignalControllerNBTKeys.LEGACY_ALL_RED_TIME)) {
+      allRedTime = compound.getLong(TrafficSignalControllerNBTKeys.LEGACY_ALL_RED_TIME);
     }
 
     // Load the traffic signal controller minimum requestable service time
     if (compound.hasKey(TrafficSignalControllerNBTKeys.MIN_REQUESTABLE_SERVICE_TIME)) {
       minRequestableServiceTime =
           compound.getLong(TrafficSignalControllerNBTKeys.MIN_REQUESTABLE_SERVICE_TIME);
+    } else if (compound.hasKey(
+        TrafficSignalControllerNBTKeys.LEGACY_MIN_REQUESTABLE_SERVICE_TIME)) {
+      minRequestableServiceTime = compound.getLong(
+          TrafficSignalControllerNBTKeys.LEGACY_MIN_REQUESTABLE_SERVICE_TIME);
     }
 
     // Load the traffic signal controller maximum requestable service time
     if (compound.hasKey(TrafficSignalControllerNBTKeys.MAX_REQUESTABLE_SERVICE_TIME)) {
       maxRequestableServiceTime =
           compound.getLong(TrafficSignalControllerNBTKeys.MAX_REQUESTABLE_SERVICE_TIME);
+    } else if (compound.hasKey(
+        TrafficSignalControllerNBTKeys.LEGACY_MAX_REQUESTABLE_SERVICE_TIME)) {
+      maxRequestableServiceTime = compound.getLong(
+          TrafficSignalControllerNBTKeys.LEGACY_MAX_REQUESTABLE_SERVICE_TIME);
     }
 
     // Load the traffic signal controller minimum green time
     if (compound.hasKey(TrafficSignalControllerNBTKeys.MIN_GREEN_TIME)) {
       minGreenTime = compound.getLong(TrafficSignalControllerNBTKeys.MIN_GREEN_TIME);
+    } else if (compound.hasKey(TrafficSignalControllerNBTKeys.LEGACY_MIN_GREEN_TIME)) {
+      minGreenTime = compound.getLong(TrafficSignalControllerNBTKeys.LEGACY_MIN_GREEN_TIME);
     }
 
     // Load the traffic signal controller maximum green time
     if (compound.hasKey(TrafficSignalControllerNBTKeys.MAX_GREEN_TIME)) {
       maxGreenTime = compound.getLong(TrafficSignalControllerNBTKeys.MAX_GREEN_TIME);
+    } else if (compound.hasKey(TrafficSignalControllerNBTKeys.LEGACY_MAX_GREEN_TIME)) {
+      maxGreenTime = compound.getLong(TrafficSignalControllerNBTKeys.LEGACY_MAX_GREEN_TIME);
     }
 
     // Load the traffic signal controller secondary minimum green time
     if (compound.hasKey(TrafficSignalControllerNBTKeys.MIN_GREEN_TIME_SECONDARY)) {
       minGreenTimeSecondary =
           compound.getLong(TrafficSignalControllerNBTKeys.MIN_GREEN_TIME_SECONDARY);
+    } else if (compound.hasKey(TrafficSignalControllerNBTKeys.LEGACY_MIN_GREEN_TIME_SECONDARY)) {
+      minGreenTimeSecondary =
+          compound.getLong(TrafficSignalControllerNBTKeys.LEGACY_MIN_GREEN_TIME_SECONDARY);
     }
 
     // Load the traffic signal controller secondary maximum green time
     if (compound.hasKey(TrafficSignalControllerNBTKeys.MAX_GREEN_TIME_SECONDARY)) {
       maxGreenTimeSecondary =
           compound.getLong(TrafficSignalControllerNBTKeys.MAX_GREEN_TIME_SECONDARY);
+    } else if (compound.hasKey(TrafficSignalControllerNBTKeys.LEGACY_MAX_GREEN_TIME_SECONDARY)) {
+      maxGreenTimeSecondary =
+          compound.getLong(TrafficSignalControllerNBTKeys.LEGACY_MAX_GREEN_TIME_SECONDARY);
     }
 
     // Load the traffic signal controller dedicated pedestrian signal time
     if (compound.hasKey(TrafficSignalControllerNBTKeys.DEDICATED_PED_SIGNAL_TIME)) {
       dedicatedPedSignalTime =
           compound.getLong(TrafficSignalControllerNBTKeys.DEDICATED_PED_SIGNAL_TIME);
+    } else if (compound.hasKey(TrafficSignalControllerNBTKeys.LEGACY_DEDICATED_PED_SIGNAL_TIME)) {
+      dedicatedPedSignalTime =
+          compound.getLong(TrafficSignalControllerNBTKeys.LEGACY_DEDICATED_PED_SIGNAL_TIME);
     }
 
     // Load the traffic signal controller upgrade previous NBT data format flag
     if (compound.hasKey(TrafficSignalControllerNBTKeys.UPGRADED_PREVIOUS_NBT_FORMAT)) {
       upgradedPreviousNBTFormat = compound.getBoolean(
           TrafficSignalControllerNBTKeys.UPGRADED_PREVIOUS_NBT_FORMAT);
+    } else if (compound.hasKey(TrafficSignalControllerNBTKeys.LEGACY_UPGRADED_PREVIOUS_NBT_FORMAT)) {
+      upgradedPreviousNBTFormat = compound.getBoolean(
+          TrafficSignalControllerNBTKeys.LEGACY_UPGRADED_PREVIOUS_NBT_FORMAT);
     }
+
+    // Strip any legacy long-form v2.0 keys we just migrated so the next write produces only
+    // short-form output. Safe on receive-side update tags (the mutation is local); required on
+    // save-side reads so the old tags don't linger in the chunk file forever.
+    removeLegacyV2LongFormKeys(compound);
 
     // Check for any previous NBT data format keys
     if (!upgradedPreviousNBTFormat && hasPreviousNBTDataFormat(compound)) {
       previousNbt = compound;
+    }
+  }
+
+  /**
+   * Removes every legacy v2.0 long-form NBT key from the supplied compound. Called at the end of
+   * {@link #readNBT(NBTTagCompound)} once all fields have been migrated to their short-form
+   * equivalents.
+   *
+   * @param compound the NBT compound to scrub
+   *
+   * @since 1.1 (short-key optimization)
+   */
+  private static void removeLegacyV2LongFormKeys(NBTTagCompound compound) {
+    for (String legacyKey : TrafficSignalControllerNBTKeys.LEGACY_V2_KEY_LIST) {
+      if (compound.hasKey(legacyKey)) {
+        compound.removeTag(legacyKey);
+      }
     }
   }
 

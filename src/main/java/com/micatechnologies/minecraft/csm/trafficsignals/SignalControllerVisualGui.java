@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.trafficsignals;
 
 import com.micatechnologies.minecraft.csm.CsmNetwork;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalControllerMode;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalControllerNBTKeys;
 import java.io.IOException;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
@@ -504,26 +505,45 @@ public class SignalControllerVisualGui extends GuiScreen {
   }
 
   private void pasteConfig(NBTTagCompound source) {
-    // Send each timing value from the clipboard
-    sendIfPresent(source, "tcYellowTime", "yellowTime");
-    sendIfPresent(source, "tcAllRedTime", "allRedTime");
-    sendIfPresent(source, "tcMinGreenTime", "minGreenTime");
-    sendIfPresent(source, "tcMaxGreenTime", "maxGreenTime");
-    sendIfPresent(source, "tcMinGreenSecondaryTime", "minGreenSecondary");
-    sendIfPresent(source, "tcMaxGreenSecondaryTime", "maxGreenSecondary");
-    sendIfPresent(source, "tcFlashDontWalkTime", "flashDontWalk");
-    sendIfPresent(source, "tcDedicatedPedSignalTime", "pedSignal");
-    sendIfPresent(source, "tcLeadPedestrianIntervalTime", "lpi");
-    if (source.hasKey("tcMode")) {
+    // Send each timing value from the clipboard. The clipboard is always populated from a live
+    // controller.getUpdateTag() call, which uses the current (short) NBT keys; the LEGACY_* pair
+    // is kept so that an out-of-band clipboard source (e.g. a controller still running pre-
+    // migration code on another side of a mixed session) still works.
+    sendIfPresent(source, TrafficSignalControllerNBTKeys.YELLOW_TIME,
+        TrafficSignalControllerNBTKeys.LEGACY_YELLOW_TIME, "yellowTime");
+    sendIfPresent(source, TrafficSignalControllerNBTKeys.ALL_RED_TIME,
+        TrafficSignalControllerNBTKeys.LEGACY_ALL_RED_TIME, "allRedTime");
+    sendIfPresent(source, TrafficSignalControllerNBTKeys.MIN_GREEN_TIME,
+        TrafficSignalControllerNBTKeys.LEGACY_MIN_GREEN_TIME, "minGreenTime");
+    sendIfPresent(source, TrafficSignalControllerNBTKeys.MAX_GREEN_TIME,
+        TrafficSignalControllerNBTKeys.LEGACY_MAX_GREEN_TIME, "maxGreenTime");
+    sendIfPresent(source, TrafficSignalControllerNBTKeys.MIN_GREEN_TIME_SECONDARY,
+        TrafficSignalControllerNBTKeys.LEGACY_MIN_GREEN_TIME_SECONDARY, "minGreenSecondary");
+    sendIfPresent(source, TrafficSignalControllerNBTKeys.MAX_GREEN_TIME_SECONDARY,
+        TrafficSignalControllerNBTKeys.LEGACY_MAX_GREEN_TIME_SECONDARY, "maxGreenSecondary");
+    sendIfPresent(source, TrafficSignalControllerNBTKeys.FLASH_DONT_WALK_TIME,
+        TrafficSignalControllerNBTKeys.LEGACY_FLASH_DONT_WALK_TIME, "flashDontWalk");
+    sendIfPresent(source, TrafficSignalControllerNBTKeys.DEDICATED_PED_SIGNAL_TIME,
+        TrafficSignalControllerNBTKeys.LEGACY_DEDICATED_PED_SIGNAL_TIME, "pedSignal");
+    sendIfPresent(source, TrafficSignalControllerNBTKeys.LEAD_PEDESTRIAN_INTERVAL_TIME,
+        TrafficSignalControllerNBTKeys.LEGACY_LEAD_PEDESTRIAN_INTERVAL_TIME, "lpi");
+    if (source.hasKey(TrafficSignalControllerNBTKeys.MODE)) {
       CsmNetwork.sendToServer(new SignalControllerSetValuePacket(blockPos, "mode",
-          source.getInteger("tcMode")));
+          source.getInteger(TrafficSignalControllerNBTKeys.MODE)));
     }
   }
 
-  private void sendIfPresent(NBTTagCompound source, String nbtKey, String paramKey) {
+  private void sendIfPresent(NBTTagCompound source, String nbtKey, String legacyKey,
+      String paramKey) {
+    String keyToUse = null;
     if (source.hasKey(nbtKey)) {
+      keyToUse = nbtKey;
+    } else if (source.hasKey(legacyKey)) {
+      keyToUse = legacyKey;
+    }
+    if (keyToUse != null) {
       CsmNetwork.sendToServer(new SignalControllerSetValuePacket(blockPos, paramKey,
-          source.getLong(nbtKey)));
+          source.getLong(keyToUse)));
     }
   }
 
