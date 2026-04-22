@@ -34,6 +34,33 @@ public class TileEntityEmergencyLightRenderer
   private static final float COLOR_G = 0.95f;
   private static final float COLOR_B = 0.85f;
 
+  // Precomputed cone segment constants. Same optimization as in the strobe renderer — the
+  // per-segment interpolation factors are class-constant, so we hoist their computation out
+  // of the per-frame render loop. At render time the z-offset array is added to the bulb z,
+  // and the half-dim factor is multiplied by the bulb width/height.
+  private static final int CONE_SEGMENTS = 10;
+  private static final float CONE_MAX_PROJECTION_DIST = 1.6f;
+  private static final float CONE_START_PAD = 0.5f;
+  private static final float CONE_END_PAD = 3.5f;
+  private static final float CONE_START_ALPHA = 0.15f;
+  private static final float CONE_END_ALPHA = 0.005f;
+  private static final float[] CONE_Z_OFFSET;
+  private static final float[] CONE_HALF_DIM_FACTOR;
+  private static final float[] CONE_ALPHA;
+
+  static {
+    CONE_Z_OFFSET = new float[CONE_SEGMENTS + 1];
+    CONE_HALF_DIM_FACTOR = new float[CONE_SEGMENTS + 1];
+    CONE_ALPHA = new float[CONE_SEGMENTS + 1];
+    for (int i = 0; i <= CONE_SEGMENTS; i++) {
+      float t = (float) i / CONE_SEGMENTS;
+      CONE_Z_OFFSET[i] = -0.03f - t * CONE_MAX_PROJECTION_DIST;
+      float pad = CONE_START_PAD + t * (CONE_END_PAD - CONE_START_PAD);
+      CONE_HALF_DIM_FACTOR[i] = 0.5f + pad;
+      CONE_ALPHA[i] = CONE_START_ALPHA + t * (CONE_END_ALPHA - CONE_START_ALPHA);
+    }
+  }
+
   @Override
   public void render(AbstractTileEntity te, double x, double y, double z,
       float partialTicks, int destroyStage, float alpha) {
@@ -176,35 +203,14 @@ public class TileEntityEmergencyLightRenderer
     float cenX = (minX + maxX) * 0.5f;
     float cenY = (minY + maxY) * 0.5f;
 
-    int segments = 10;
-    float maxProjectionDist = 1.6f;
-    float startPad = 0.5f;
-    float endPad = 3.5f;
-    float startAlpha = 0.15f;
-    float endAlpha = 0.005f;
-
-    float[] ringZ = new float[segments + 1];
-    float[] ringHalfW = new float[segments + 1];
-    float[] ringHalfH = new float[segments + 1];
-    float[] ringAlpha = new float[segments + 1];
-    for (int i = 0; i <= segments; i++) {
-      float t = (float) i / segments;
-      ringZ[i] = quadZ - 0.03f - t * maxProjectionDist;
-      float pad = startPad + t * (endPad - startPad);
-      ringHalfW[i] = lensW * (0.5f + pad);
-      ringHalfH[i] = lensH * (0.5f + pad);
-      ringAlpha[i] = startAlpha + t * (endAlpha - startAlpha);
-    }
-
-    for (int i = 0; i < segments; i++) {
-      float segAlpha = (ringAlpha[i] + ringAlpha[i + 1]) * 0.5f;
-
-      float nearZ = ringZ[i];
-      float farZ = ringZ[i + 1];
-      float nw = ringHalfW[i];
-      float nh = ringHalfH[i];
-      float fw = ringHalfW[i + 1];
-      float fh = ringHalfH[i + 1];
+    for (int i = 0; i < CONE_SEGMENTS; i++) {
+      float nearZ = quadZ + CONE_Z_OFFSET[i];
+      float farZ = quadZ + CONE_Z_OFFSET[i + 1];
+      float nw = lensW * CONE_HALF_DIM_FACTOR[i];
+      float nh = lensH * CONE_HALF_DIM_FACTOR[i];
+      float fw = lensW * CONE_HALF_DIM_FACTOR[i + 1];
+      float fh = lensH * CONE_HALF_DIM_FACTOR[i + 1];
+      float segAlpha = (CONE_ALPHA[i] + CONE_ALPHA[i + 1]) * 0.5f;
 
       GL11.glColor4f(COLOR_R, COLOR_G, COLOR_B, segAlpha);
       buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
@@ -236,7 +242,7 @@ public class TileEntityEmergencyLightRenderer
       tessellator.draw();
 
       // Front cap
-      GL11.glColor4f(COLOR_R, COLOR_G, COLOR_B, ringAlpha[i + 1]);
+      GL11.glColor4f(COLOR_R, COLOR_G, COLOR_B, CONE_ALPHA[i + 1]);
       buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
       buffer.pos(cenX - fw, cenY - fh, farZ).endVertex();
       buffer.pos(cenX + fw, cenY - fh, farZ).endVertex();
