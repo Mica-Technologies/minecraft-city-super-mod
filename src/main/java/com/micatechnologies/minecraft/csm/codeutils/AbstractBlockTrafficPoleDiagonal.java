@@ -24,22 +24,6 @@ import org.jetbrains.annotations.NotNull;
 public abstract class AbstractBlockTrafficPoleDiagonal extends AbstractBlockTrafficPole {
 
   /**
-   * Precomputed lookup table for relative facing directions (with getOpposite applied).
-   * Index by [baseFacing.ordinal()][direction.ordinal()] to get the offset direction.
-   * Avoids 6 method calls + 6 getOpposite() calls per getActualState() invocation.
-   */
-  private static final EnumFacing[][] RELATIVE_FACING_OPPOSITE;
-  static {
-    RELATIVE_FACING_OPPOSITE = new EnumFacing[6][6];
-    for (EnumFacing base : EnumFacing.values()) {
-      for (EnumFacing dir : EnumFacing.values()) {
-        RELATIVE_FACING_OPPOSITE[base.ordinal()][dir.ordinal()] =
-            BlockUtils.getRelativeFacing(base, dir).getOpposite();
-      }
-    }
-  }
-
-  /**
    * Cached combined ignore-block array for diagonal poles, computed lazily on first use.
    */
   private volatile Class<?>[] cachedCombinedIgnoreBlockDiag;
@@ -109,13 +93,15 @@ public abstract class AbstractBlockTrafficPoleDiagonal extends AbstractBlockTraf
     // For each direction, also verify that NSEWUD-rotatable blocks (like mount kits) are
     // actually facing toward this pole block — prevents false connectors on adjacent
     // diagonal poles that happen to be geometrically adjacent but not the mount target.
-    EnumFacing[] dirs = RELATIVE_FACING_OPPOSITE[facing.ordinal()];
-    EnumFacing dirEast = dirs[EnumFacing.EAST.ordinal()];
-    EnumFacing dirWest = dirs[EnumFacing.WEST.ordinal()];
-    EnumFacing dirUp = dirs[EnumFacing.UP.ordinal()];
-    EnumFacing dirDown = dirs[EnumFacing.DOWN.ordinal()];
-    EnumFacing dirNorth = dirs[EnumFacing.NORTH.ordinal()];
-    EnumFacing dirSouth = dirs[EnumFacing.SOUTH.ordinal()];
+    //
+    // Offset directions come from the shared precomputed lookup table in BlockUtils — hoisted
+    // out of this class so the regular (non-diagonal) pole variant can share it too.
+    EnumFacing dirEast = BlockUtils.getRelativeFacingOpposite(facing, EnumFacing.EAST);
+    EnumFacing dirWest = BlockUtils.getRelativeFacingOpposite(facing, EnumFacing.WEST);
+    EnumFacing dirUp = BlockUtils.getRelativeFacingOpposite(facing, EnumFacing.UP);
+    EnumFacing dirDown = BlockUtils.getRelativeFacingOpposite(facing, EnumFacing.DOWN);
+    EnumFacing dirNorth = BlockUtils.getRelativeFacingOpposite(facing, EnumFacing.NORTH);
+    EnumFacing dirSouth = BlockUtils.getRelativeFacingOpposite(facing, EnumFacing.SOUTH);
 
     boolean isBlockToEast = checkConnectable(worldIn, pos, dirEast, ignoreBlock);
     boolean isBlockToWest = checkConnectable(worldIn, pos, dirWest, ignoreBlock);
