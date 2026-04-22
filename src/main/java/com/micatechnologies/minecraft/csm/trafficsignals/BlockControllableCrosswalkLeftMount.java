@@ -69,8 +69,9 @@ public class BlockControllableCrosswalkLeftMount extends AbstractBlockControllab
     if (te instanceof TileEntityCrosswalkSignalNew) {
       TileEntityCrosswalkSignalNew newTe = (TileEntityCrosswalkSignalNew) te;
       newTe.setMountType(CrosswalkMountType.LEFT);
-      if (oldTileEntityNBT != null && oldTileEntityNBT.hasKey("learnedClearanceTicks")) {
-        newTe.setLearnedClearanceTicks(oldTileEntityNBT.getInteger("learnedClearanceTicks"));
+      int ticks = TileEntityCrosswalkSignalNew.readLearnedClearanceTicksFromNbt(oldTileEntityNBT);
+      if (ticks >= 0) {
+        newTe.setLearnedClearanceTicks(ticks);
       }
     }
   }
