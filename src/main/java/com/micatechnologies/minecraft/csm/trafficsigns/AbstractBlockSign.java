@@ -6,6 +6,7 @@ import com.micatechnologies.minecraft.csm.codeutils.BlockUtils;
 import com.micatechnologies.minecraft.csm.codeutils.DirectionEight;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmNoSnowAccumulation;
 import com.micatechnologies.minecraft.csm.codeutils.RotationUtils;
+import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import mcp.MethodsReturnNonnullByDefault;
@@ -30,6 +31,8 @@ public abstract class AbstractBlockSign extends AbstractBlockRotatableHZEight
 
   public static final PropertyBool DOWNWARD = PropertyBool.create("downward");
   public static final PropertyBool SETBACK = PropertyBool.create("setback");
+
+  private static final ConcurrentHashMap<Long, Boolean> SETBACK_CACHE = new ConcurrentHashMap<>();
 
   public AbstractBlockSign() {
     super(Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0);
@@ -221,32 +224,28 @@ public abstract class AbstractBlockSign extends AbstractBlockRotatableHZEight
     return new BlockStateContainer(this, FACING, DOWNWARD, SETBACK);
   }
 
-  /**
-   * Called when a block is placed. Pre-compute SETBACK so getActualState can skip the lookup.
-   */
   @Override
   @SuppressWarnings("deprecation")
-  public IBlockState onBlockPlacedBy(World world, BlockPos pos, IBlockState state,
-      @Nonnull EntityLivingBase placer, @Nonnull ItemStack stack) {
-    IBlockState baseState = super.onBlockPlacedBy(world, pos, state, placer, stack);
-    boolean isSetback = getShouldSetback(world, pos);
-    return baseState.withProperty(SETBACK, isSetback);
+  public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn,
+      BlockPos fromPos) {
+    SETBACK_CACHE.remove(pos.toLong());
+    SETBACK_CACHE.remove(pos.up().toLong());
+    SETBACK_CACHE.remove(pos.down().toLong());
   }
 
-  /**
-   * Recalculate setback whenever neighbors change (e.g., a signal arm pole placed/removed).
-   */
   @Override
-  @SuppressWarnings("deprecation")
-  public void onNeighborChange(@Nonnull IBlockAccess world, @Nonnull BlockPos pos,
-      @Nonnull BlockPos neighborPos) {
-    super.onNeighborChange(world, pos, neighborPos);
-    IBlockState state = world.getBlockState(pos);
-    boolean current = state.getValue(SETBACK);
-    boolean shouldBeSetback = getShouldSetback(world, pos);
-    if (current != shouldBeSetback) {
-      world.setBlockstateWithNoVersion(pos, state.withProperty(SETBACK, shouldBeSetback), 0);
-    }
+  public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
+    SETBACK_CACHE.remove(pos.toLong());
+    super.breakBlock(worldIn, pos, state);
+  }
+
+  private boolean getSetbackCached(IBlockAccess source, BlockPos pos) {
+    Long key = pos.toLong();
+    Boolean cached = SETBACK_CACHE.get(key);
+    if (cached != null) return cached;
+    boolean result = getShouldSetback(source, pos);
+    SETBACK_CACHE.put(key, result);
+    return result;
   }
 
   @Override
@@ -256,8 +255,7 @@ public abstract class AbstractBlockSign extends AbstractBlockRotatableHZEight
       IBlockAccess worldIn,
       @NotNull
       BlockPos pos) {
-    // DOWNWARD is set here; SETBACK is cached by onBlockPlacedBy / onNeighborChange.
     return state.withProperty(DOWNWARD, getBlockBelowIsSlab(worldIn, pos))
-        .withProperty(SETBACK, state.getValue(SETBACK));
+        .withProperty(SETBACK, getSetbackCached(worldIn, pos));
   }
 }
