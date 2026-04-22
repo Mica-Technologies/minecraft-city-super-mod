@@ -16,32 +16,48 @@ import net.minecraft.nbt.NBTTagCompound;
 public class TileEntityTrafficSignalAPS extends TileEntityTrafficSignalTickableRequester {
 
   /**
-   * The NBT key used to store the current crosswalk sound index.
+   * The NBT key used to store the current crosswalk sound index. Reads fall back to
+   * {@link #LEGACY_CROSSWALK_SOUND_INDEX_NBT_KEY} for worlds saved before the short-key
+   * optimization.
    *
    * @since 1.0
    */
-  private static final String CROSSWALK_SOUND_INDEX_NBT_KEY = "CrosswalkSoundIndex";
+  private static final String CROSSWALK_SOUND_INDEX_NBT_KEY = "cwSi";
+
+  /** Legacy long-form counterpart of {@link #CROSSWALK_SOUND_INDEX_NBT_KEY}. Read-only. */
+  private static final String LEGACY_CROSSWALK_SOUND_INDEX_NBT_KEY = "CrosswalkSoundIndex";
 
   /**
    * The NBT key used to store the current crosswalk sound last played time.
    *
    * @since 1.0
    */
-  private static final String CROSSWALK_SOUND_LAST_PLAY_TIME_NBT_KEY = "CrosswalkSoundLastPlayTime";
+  private static final String CROSSWALK_SOUND_LAST_PLAY_TIME_NBT_KEY = "cwSL";
+
+  /** Legacy long-form counterpart of {@link #CROSSWALK_SOUND_LAST_PLAY_TIME_NBT_KEY}. Read-only. */
+  private static final String LEGACY_CROSSWALK_SOUND_LAST_PLAY_TIME_NBT_KEY =
+      "CrosswalkSoundLastPlayTime";
 
   /**
    * The NBT key used to store the current crosswalk last pressed time.
    *
    * @since 1.0
    */
-  private static final String CROSSWALK_LAST_PRESS_TIME_NBT_KEY = "CrosswalkLastPressTime";
+  private static final String CROSSWALK_LAST_PRESS_TIME_NBT_KEY = "cwPr";
+
+  /** Legacy long-form counterpart of {@link #CROSSWALK_LAST_PRESS_TIME_NBT_KEY}. Read-only. */
+  private static final String LEGACY_CROSSWALK_LAST_PRESS_TIME_NBT_KEY = "CrosswalkLastPressTime";
 
   /**
    * The NBT key used to store the current crosswalk arrow orientation.
    *
    * @since 1.1
    */
-  private static final String CROSSWALK_ARROW_ORIENTATION_NBT_KEY = "CrosswalkArrowOrientation";
+  private static final String CROSSWALK_ARROW_ORIENTATION_NBT_KEY = "cwAo";
+
+  /** Legacy long-form counterpart of {@link #CROSSWALK_ARROW_ORIENTATION_NBT_KEY}. Read-only. */
+  private static final String LEGACY_CROSSWALK_ARROW_ORIENTATION_NBT_KEY =
+      "CrosswalkArrowOrientation";
 
   /**
    * The minimum value for the crosswalk arrow orientation.
@@ -163,8 +179,10 @@ public class TileEntityTrafficSignalAPS extends TileEntityTrafficSignalTickableR
   @Override
   public void readNBT(NBTTagCompound compound) {
     // Read crosswalk sound from NBT and check validity
-    if (compound.hasKey(CROSSWALK_SOUND_INDEX_NBT_KEY)) {
-      int storedCrosswalkSoundIndex = compound.getInteger(CROSSWALK_SOUND_INDEX_NBT_KEY);
+    String soundIndexKey = pickKey(compound, CROSSWALK_SOUND_INDEX_NBT_KEY,
+        LEGACY_CROSSWALK_SOUND_INDEX_NBT_KEY);
+    if (soundIndexKey != null) {
+      int storedCrosswalkSoundIndex = compound.getInteger(soundIndexKey);
       if (storedCrosswalkSoundIndex >= 0 && storedCrosswalkSoundIndex < soundSchemes.length) {
         crosswalkSoundIndex = storedCrosswalkSoundIndex;
       } else {
@@ -176,9 +194,10 @@ public class TileEntityTrafficSignalAPS extends TileEntityTrafficSignalTickableR
     }
 
     // Read crosswalk sound last played time from NBT and check validity
-    if (compound.hasKey(CROSSWALK_SOUND_LAST_PLAY_TIME_NBT_KEY)) {
-      long storedCrosswalkSoundLastPlayedTime =
-          compound.getLong(CROSSWALK_SOUND_LAST_PLAY_TIME_NBT_KEY);
+    String lastPlayKey = pickKey(compound, CROSSWALK_SOUND_LAST_PLAY_TIME_NBT_KEY,
+        LEGACY_CROSSWALK_SOUND_LAST_PLAY_TIME_NBT_KEY);
+    if (lastPlayKey != null) {
+      long storedCrosswalkSoundLastPlayedTime = compound.getLong(lastPlayKey);
       if (storedCrosswalkSoundLastPlayedTime >= 0) {
         crosswalkSoundLastPlayedTime = storedCrosswalkSoundLastPlayedTime;
       } else {
@@ -191,8 +210,10 @@ public class TileEntityTrafficSignalAPS extends TileEntityTrafficSignalTickableR
     }
 
     // Read crosswalk last pressed time from NBT and check validity
-    if (compound.hasKey(CROSSWALK_LAST_PRESS_TIME_NBT_KEY)) {
-      long storedCrosswalkLastPressTime = compound.getLong(CROSSWALK_LAST_PRESS_TIME_NBT_KEY);
+    String lastPressKey = pickKey(compound, CROSSWALK_LAST_PRESS_TIME_NBT_KEY,
+        LEGACY_CROSSWALK_LAST_PRESS_TIME_NBT_KEY);
+    if (lastPressKey != null) {
+      long storedCrosswalkLastPressTime = compound.getLong(lastPressKey);
       if (storedCrosswalkLastPressTime >= 0) {
         crosswalkLastPressTime = storedCrosswalkLastPressTime;
       } else {
@@ -204,9 +225,10 @@ public class TileEntityTrafficSignalAPS extends TileEntityTrafficSignalTickableR
     }
 
     // Read crosswalk arrow orientation from NBT and check validity
-    if (compound.hasKey(CROSSWALK_ARROW_ORIENTATION_NBT_KEY)) {
-      int storedCrosswalkArrowOrientation =
-          compound.getInteger(CROSSWALK_ARROW_ORIENTATION_NBT_KEY);
+    String arrowKey = pickKey(compound, CROSSWALK_ARROW_ORIENTATION_NBT_KEY,
+        LEGACY_CROSSWALK_ARROW_ORIENTATION_NBT_KEY);
+    if (arrowKey != null) {
+      int storedCrosswalkArrowOrientation = compound.getInteger(arrowKey);
       if (storedCrosswalkArrowOrientation >= CROSSWALK_ARROW_ORIENTATION_MIN
           && storedCrosswalkArrowOrientation <= CROSSWALK_ARROW_ORIENTATION_MAX) {
         crosswalkArrowOrientation = storedCrosswalkArrowOrientation;
@@ -217,6 +239,27 @@ public class TileEntityTrafficSignalAPS extends TileEntityTrafficSignalTickableR
         crosswalkArrowOrientation = 0;
       }
     }
+
+    // Strip legacy long-form keys so the next save produces only short-form output
+    compound.removeTag(LEGACY_CROSSWALK_SOUND_INDEX_NBT_KEY);
+    compound.removeTag(LEGACY_CROSSWALK_SOUND_LAST_PLAY_TIME_NBT_KEY);
+    compound.removeTag(LEGACY_CROSSWALK_LAST_PRESS_TIME_NBT_KEY);
+    compound.removeTag(LEGACY_CROSSWALK_ARROW_ORIENTATION_NBT_KEY);
+  }
+
+  /**
+   * Returns the short key if present in the compound, else the legacy key if present, else
+   * {@code null}. Used by {@link #readNBT(NBTTagCompound)} to migrate worlds saved before the
+   * APS NBT key shortening pass.
+   */
+  private static String pickKey(NBTTagCompound compound, String shortKey, String legacyKey) {
+    if (compound.hasKey(shortKey)) {
+      return shortKey;
+    }
+    if (compound.hasKey(legacyKey)) {
+      return legacyKey;
+    }
+    return null;
   }
 
   /**
