@@ -403,10 +403,17 @@ public class TrafficSignalControllerTickerUtilities {
       return false;
     }
 
+    TrafficSignalControllerCircuit circuit = circuits.getCircuit(activeCircuitNumber - 1);
+
+    // Protected left is only safe when all signals on the circuit face the same
+    // direction. A multi-direction circuit has opposing through traffic that conflicts
+    // with a protected left arrow — use FYA (permissive) instead.
+    if (world != null && !circuit.areSignalsFacingSameDirection(world)) {
+      return false;
+    }
+
     // Get left turn waiting count for the active circuit
-    int leftCount = circuits.getCircuit(activeCircuitNumber - 1)
-        .getSensorsWaitingSummary(world)
-        .getLeftTotal();
+    int leftCount = circuit.getSensorsWaitingSummary(world).getLeftTotal();
 
     // No left turn detection zone configured (or no vehicles) → FYA, peds may walk
     if (leftCount == 0) {
