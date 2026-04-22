@@ -144,19 +144,10 @@ public class TrafficSignalControllerTickerUtilities {
       }
     }
 
-    // Add the current phase off signals to the yellow transition phase
-    for (BlockPos offSignal : currentPhase.getOffSignals()) {
-      // Check if off signal is still in off state in the upcoming phase (stay in off state)
-      if (upcomingPhase.getOffSignals().contains(offSignal)) {
-        yellowTransitionPhase.addOffSignal(offSignal);
-      }
-      // Otherwise, off signal is not in off state in the upcoming phase (transition to yellow
-      // state)
-      else {
-        // Add off signal to yellow transition phase (transition to yellow state)
-        yellowTransitionPhase.addYellowSignal(offSignal);
-      }
-    }
+    // Off signals stay off during yellow transition — a previously-dark signal should not
+    // display yellow clearance. It will turn on in its destination state when the upcoming
+    // phase is applied after the red clearance interval.
+    yellowTransitionPhase.addOffSignals(currentPhase.getOffSignals());
 
     // Return resulting yellow transition phase
     return yellowTransitionPhase;
@@ -181,17 +172,28 @@ public class TrafficSignalControllerTickerUtilities {
         new TrafficSignalPhase(currentPhase.getCircuit(), upcomingPhase,
             TrafficSignalPhaseApplicability.RED_TRANSITIONING);
 
-    // Copy the previous phase signals to the red transition phase (except for yellow signals)
+    // Copy non-vehicle signals
     redTransitionPhase.addOffSignals(currentPhase.getOffSignals());
-    redTransitionPhase.addFyaSignals(currentPhase.getFyaSignals());
-    redTransitionPhase.addRedSignals(currentPhase.getRedSignals());
-    redTransitionPhase.addGreenSignals(currentPhase.getGreenSignals());
     redTransitionPhase.addWalkSignals(currentPhase.getWalkSignals());
     redTransitionPhase.addFlashDontWalkSignals(currentPhase.getFlashDontWalkSignals());
     redTransitionPhase.addDontWalkSignals(currentPhase.getDontWalkSignals());
+    redTransitionPhase.addRedSignals(currentPhase.getRedSignals());
 
-    // Add the current phase yellow signals to the red transition phase
+    // Yellow signals become red
     redTransitionPhase.addRedSignals(currentPhase.getYellowSignals());
+
+    // FYA signals become red (flashing yellow must not display during all-red clearance)
+    redTransitionPhase.addRedSignals(currentPhase.getFyaSignals());
+
+    // Green signals that stay green in the upcoming phase remain green (no unnecessary
+    // red blip); all others become red
+    for (BlockPos greenSignal : currentPhase.getGreenSignals()) {
+      if (upcomingPhase.getGreenSignals().contains(greenSignal)) {
+        redTransitionPhase.addGreenSignal(greenSignal);
+      } else {
+        redTransitionPhase.addRedSignal(greenSignal);
+      }
+    }
 
     // Return resulting red transition phase
     return redTransitionPhase;
@@ -281,6 +283,49 @@ public class TrafficSignalControllerTickerUtilities {
     lpiPhase.addRedSignals(upcomingGreenPhase.getOffSignals());
 
     return lpiPhase;
+  }
+
+  /**
+   * Checks whether two phases have conflicting vehicle signal assignments. Returns {@code true} if
+   * any BlockPos appears in a different vehicle signal list (green, FYA, yellow, red, off) between
+   * the two phases — meaning a direct transition from one to the other would change a vehicle
+   * signal without clearance.
+   *
+   * @param a The first phase.
+   * @param b The second phase.
+   *
+   * @return {@code true} if any vehicle signal would change state between the two phases.
+   *
+   * @since 1.0
+   */
+  public static boolean hasVehicleSignalConflict(TrafficSignalPhase a, TrafficSignalPhase b) {
+    // Check all vehicle signal BlockPos in phase A — if any appear in a different list in B
+    for (BlockPos pos : a.getGreenSignals()) {
+      if (!b.getGreenSignals().contains(pos)) return true;
+    }
+    for (BlockPos pos : a.getFyaSignals()) {
+      if (!b.getFyaSignals().contains(pos)) return true;
+    }
+    for (BlockPos pos : a.getRedSignals()) {
+      if (!b.getRedSignals().contains(pos)) return true;
+    }
+    for (BlockPos pos : a.getOffSignals()) {
+      if (!b.getOffSignals().contains(pos)) return true;
+    }
+    // Also check B→A in case B has signals not in A
+    for (BlockPos pos : b.getGreenSignals()) {
+      if (!a.getGreenSignals().contains(pos)) return true;
+    }
+    for (BlockPos pos : b.getFyaSignals()) {
+      if (!a.getFyaSignals().contains(pos)) return true;
+    }
+    for (BlockPos pos : b.getRedSignals()) {
+      if (!a.getRedSignals().contains(pos)) return true;
+    }
+    for (BlockPos pos : b.getOffSignals()) {
+      if (!a.getOffSignals().contains(pos)) return true;
+    }
+    return false;
   }
 
   /**
@@ -553,6 +598,54 @@ public class TrafficSignalControllerTickerUtilities {
     }
 
     // Return the updated phase
+    return phase;
+  }
+
+  /**
+   * Applies overlaps to a transition phase. For each overlap source that is in a transition state
+   * (yellow or red), the corresponding overlap targets are moved to the same state. This ensures
+   * overlap signals get proper clearance during phase transitions.
+   *
+   * @param phase    The transition phase to apply overlaps to.
+   * @param overlaps The configured overlaps.
+   *
+   * @return The phase with overlaps applied.
+   *
+   * @since 1.0
+   */
+  public static TrafficSignalPhase getTransitionPhaseWithOverlapsApplied(
+      TrafficSignalPhase phase, TrafficSignalControllerOverlaps overlaps) {
+    if (overlaps == null || overlaps.getOverlapCount() == 0) {
+      return phase;
+    }
+
+    // Green overlaps: source is green → targets go green
+    List<BlockPos> greenSignals = Lists.newArrayList(phase.getGreenSignals());
+    for (BlockPos greenSignal : greenSignals) {
+      List<BlockPos> overlapSignals = overlaps.getOverlapsForSource(greenSignal);
+      if (overlapSignals != null) {
+        overlapSignals.forEach(phase::moveOverlapSignalToGreen);
+      }
+    }
+
+    // Yellow overlaps: source is yellow → targets go yellow
+    List<BlockPos> yellowSignals = Lists.newArrayList(phase.getYellowSignals());
+    for (BlockPos yellowSignal : yellowSignals) {
+      List<BlockPos> overlapSignals = overlaps.getOverlapsForSource(yellowSignal);
+      if (overlapSignals != null) {
+        overlapSignals.forEach(phase::moveOverlapSignalToYellow);
+      }
+    }
+
+    // Red overlaps: source is red → targets go red
+    List<BlockPos> redSignals = Lists.newArrayList(phase.getRedSignals());
+    for (BlockPos redSignal : redSignals) {
+      List<BlockPos> overlapSignals = overlaps.getOverlapsForSource(redSignal);
+      if (overlapSignals != null) {
+        overlapSignals.forEach(phase::moveOverlapSignalToRed);
+      }
+    }
+
     return phase;
   }
 
