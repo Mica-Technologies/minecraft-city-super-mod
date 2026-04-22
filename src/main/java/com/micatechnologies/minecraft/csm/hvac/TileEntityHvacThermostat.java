@@ -205,17 +205,22 @@ public class TileEntityHvacThermostat extends AbstractTickableTileEntity
               targetTempLow, targetTempHigh, Math.round(getSystemRampFactor() * 100)));
     }
 
+    if (isCalling != wasPreviouslyCalling) {
+      world.notifyNeighborsOfStateChange(pos, getBlockType(), false);
+    }
+
+    // Resolve all linked TEs once per tick, then pass to consumers.
+    // Previously each method re-resolved the same positions — e.g. linkedUnits was iterated
+    // in updateLinkedUnits, getBaseVentContribution, AND getMaxVentLinkDistance every tick.
+    ResolvedLinks resolved = resolveAllLinks();
+
     // Track ramp-up: accumulate ticks while calling, decay while idle.
     // Decay at 1:1 rate preserves ramp progress across short thermostat cycles
     // so the system can gradually build to extended ramp levels over many cycles.
-    if (isSystemCalling()) {
+    if (isSystemCalling(resolved.zones)) {
       accumulatedRampTicks += getTickRate();
     } else if (accumulatedRampTicks > 0) {
       accumulatedRampTicks = Math.max(0L, accumulatedRampTicks - getTickRate());
-    }
-
-    if (isCalling != wasPreviouslyCalling) {
-      world.notifyNeighborsOfStateChange(pos, getBlockType(), false);
     }
 
     // Update efficiency and sync to client
@@ -223,15 +228,58 @@ public class TileEntityHvacThermostat extends AbstractTickableTileEntity
     boolean efficiencyChanged = newEfficiency != cachedEfficiencyPercent;
     cachedEfficiencyPercent = newEfficiency;
 
-    // Always update linked units and vents (handles ramp-up changes)
-    updateLinkedUnits();
-    updateLinkedVents();
+    updateLinkedUnits(resolved);
+    updateLinkedVents(resolved);
 
     // Sync to client when calling/efficiency changes OR temperature shifts by >= 1°F
     boolean tempChanged = Math.abs(currentTemperature - previousTemp) >= 0.5f;
     if (isCalling != wasPreviouslyCalling || efficiencyChanged || tempChanged) {
       markDirtySync(world, pos, true);
     }
+  }
+
+  // endregion
+
+  // region Per-tick TE resolution
+
+  private static class ResolvedLinks {
+    final List<TileEntityHvacHeater> units;
+    final List<TileEntityHvacZoneThermostat> zones;
+
+    ResolvedLinks(List<TileEntityHvacHeater> units, List<TileEntityHvacZoneThermostat> zones) {
+      this.units = units;
+      this.zones = zones;
+    }
+  }
+
+  private ResolvedLinks resolveAllLinks() {
+    List<TileEntityHvacHeater> units = new ArrayList<>();
+    Iterator<BlockPos> unitIt = linkedUnits.iterator();
+    while (unitIt.hasNext()) {
+      BlockPos unitPos = unitIt.next();
+      if (!world.isBlockLoaded(unitPos)) continue;
+      TileEntity te = world.getTileEntity(unitPos);
+      if (te instanceof TileEntityHvacHeater) {
+        units.add((TileEntityHvacHeater) te);
+      } else {
+        unitIt.remove();
+      }
+    }
+
+    List<TileEntityHvacZoneThermostat> zones = new ArrayList<>();
+    Iterator<BlockPos> zoneIt = linkedZones.iterator();
+    while (zoneIt.hasNext()) {
+      BlockPos zonePos = zoneIt.next();
+      if (!world.isBlockLoaded(zonePos)) continue;
+      TileEntity te = world.getTileEntity(zonePos);
+      if (te instanceof TileEntityHvacZoneThermostat) {
+        zones.add((TileEntityHvacZoneThermostat) te);
+      } else {
+        zoneIt.remove();
+      }
+    }
+
+    return new ResolvedLinks(units, zones);
   }
 
   // endregion
@@ -254,6 +302,14 @@ public class TileEntityHvacThermostat extends AbstractTickableTileEntity
           return true;
         }
       }
+    }
+    return false;
+  }
+
+  private boolean isSystemCalling(List<TileEntityHvacZoneThermostat> resolvedZones) {
+    if (isCalling) return true;
+    for (TileEntityHvacZoneThermostat zone : resolvedZones) {
+      if (zone.isCalling()) return true;
     }
     return false;
   }
@@ -335,56 +391,25 @@ public class TileEntityHvacThermostat extends AbstractTickableTileEntity
     return linkedUnits.size();
   }
 
-  private void updateLinkedUnits() {
-    // Determine which direct units (heaters/coolers) should run based on the PRIMARY
-    // thermostat's own calling mode only. Zone demand is NOT aggregated here — zones
-    // handle heating/cooling through their own vent contributions independently. If zone
-    // demand activated the cooler while the primary is heating (or vice versa), the heater
-    // and cooler would cancel each other out at nearby positions, producing zero net offset.
+  private void updateLinkedUnits(ResolvedLinks resolved) {
     boolean needsHeating = callingMode == MODE_HEATING;
     boolean needsCooling = callingMode == MODE_COOLING;
 
-    // Validate zone links (remove broken ones) but don't aggregate their demand for units
-    Iterator<BlockPos> zoneIt = linkedZones.iterator();
-    while (zoneIt.hasNext()) {
-      BlockPos zonePos = zoneIt.next();
-      if (!world.isBlockLoaded(zonePos)) {
-        continue;
-      }
-      TileEntity zoneTe = world.getTileEntity(zonePos);
-      if (!(zoneTe instanceof TileEntityHvacZoneThermostat)) {
-        zoneIt.remove();
-      } else {
-        // Repair back-link: if the zone was replaced and the new TE doesn't know its
-        // primary (or points to a different one), re-establish the link silently.
-        TileEntityHvacZoneThermostat zone = (TileEntityHvacZoneThermostat) zoneTe;
-        if (!pos.equals(zone.getLinkedPrimaryPos())) {
-          zone.setLinkedPrimaryPos(pos);
-        }
+    for (TileEntityHvacZoneThermostat zone : resolved.zones) {
+      if (!pos.equals(zone.getLinkedPrimaryPos())) {
+        zone.setLinkedPrimaryPos(pos);
       }
     }
 
-    Iterator<BlockPos> it = linkedUnits.iterator();
-    while (it.hasNext()) {
-      BlockPos unitPos = it.next();
-      if (!world.isBlockLoaded(unitPos)) {
-        continue;
-      }
-      TileEntity te = world.getTileEntity(unitPos);
-      if (te instanceof TileEntityHvacHeater) {
-        TileEntityHvacHeater unit = (TileEntityHvacHeater) te;
-        unit.setLinkedToThermostat(true);
-        // Only call heaters when heating is needed, coolers when cooling is needed
-        boolean shouldCall;
-        if (unit instanceof TileEntityHvacCooler) {
-          shouldCall = needsCooling;
-        } else {
-          shouldCall = needsHeating;
-        }
-        unit.setThermostatCalling(shouldCall);
+    for (TileEntityHvacHeater unit : resolved.units) {
+      unit.setLinkedToThermostat(true);
+      boolean shouldCall;
+      if (unit instanceof TileEntityHvacCooler) {
+        shouldCall = needsCooling;
       } else {
-        it.remove();
+        shouldCall = needsHeating;
       }
+      unit.setThermostatCalling(shouldCall);
     }
   }
 
@@ -463,19 +488,21 @@ public class TileEntityHvacThermostat extends AbstractTickableTileEntity
     return max;
   }
 
-  /**
-   * Pushes contribution values to all linked vents. The contribution accounts for:
-   * - The strongest linked unit's vent relay base contribution
-   * - The system ramp-up factor
-   * - The sign (heating vs cooling) based on what the thermostat is calling for
-   */
-  private void updateLinkedVents() {
+  private int getMaxVentLinkDistance(List<TileEntityHvacHeater> resolvedUnits) {
+    int max = 30;
+    for (TileEntityHvacHeater unit : resolvedUnits) {
+      if (unit instanceof IHvacUnit) {
+        max = Math.max(max, ((IHvacUnit) unit).getMaxVentLinkDistance());
+      }
+    }
+    return max;
+  }
+
+  private void updateLinkedVents(ResolvedLinks resolved) {
     float rampFactor = getSystemRampFactor();
-    float baseContribution = getBaseVentContribution();
+    float baseContribution = getBaseVentContribution(resolved.units);
     float contribution = baseContribution * rampFactor;
 
-    // Determine sign from callingMode (not temperature comparison, which breaks
-    // during the deadband zone where temp has crossed the threshold but we're still calling)
     if (callingMode == MODE_COOLING) {
       contribution = -Math.abs(contribution);
     } else if (callingMode == MODE_HEATING) {
@@ -484,7 +511,8 @@ public class TileEntityHvacThermostat extends AbstractTickableTileEntity
       contribution = 0.0f;
     }
 
-    // Single pass: validate links, count vents, and collect references
+    int maxVentDist = getMaxVentLinkDistance(resolved.units);
+
     List<TileEntityHvacVentRelay> validVents = new ArrayList<>();
     Iterator<BlockPos> it = linkedVents.iterator();
     while (it.hasNext()) {
@@ -495,9 +523,8 @@ public class TileEntityHvacThermostat extends AbstractTickableTileEntity
       TileEntity te = world.getTileEntity(ventPos);
       if (te instanceof TileEntityHvacVentRelay) {
         TileEntityHvacVentRelay vent = (TileEntityHvacVentRelay) te;
-        // Repair back-link if the vent was replaced and no longer knows its thermostat.
         if (!pos.equals(vent.getLinkedThermostatPos())) {
-          vent.setLinkedThermostat(pos, getMaxVentLinkDistance());
+          vent.setLinkedThermostat(pos, maxVentDist);
         }
         validVents.add(vent);
       } else {
@@ -505,7 +532,6 @@ public class TileEntityHvacThermostat extends AbstractTickableTileEntity
       }
     }
 
-    // Calculate vent density bonus and push to all vents
     float densityBonus = 0.0f;
     if (validVents.size() > 1 && contribution != 0.0f) {
       densityBonus = Math.min((validVents.size() - 1) * VENT_DENSITY_BONUS_PER_VENT,
@@ -521,19 +547,13 @@ public class TileEntityHvacThermostat extends AbstractTickableTileEntity
     }
   }
 
-  /**
-   * Returns the base vent relay contribution from the strongest linked unit.
-   */
-  private float getBaseVentContribution() {
+  private float getBaseVentContribution(List<TileEntityHvacHeater> resolvedUnits) {
     float best = 0.0f;
-    for (BlockPos unitPos : linkedUnits) {
-      if (world != null && world.isBlockLoaded(unitPos)) {
-        TileEntity te = world.getTileEntity(unitPos);
-        if (te instanceof IHvacUnit) {
-          float abs = Math.abs(((IHvacUnit) te).getVentRelayContribution());
-          if (abs > best) {
-            best = abs;
-          }
+    for (TileEntityHvacHeater unit : resolvedUnits) {
+      if (unit instanceof IHvacUnit) {
+        float abs = Math.abs(((IHvacUnit) unit).getVentRelayContribution());
+        if (abs > best) {
+          best = abs;
         }
       }
     }
