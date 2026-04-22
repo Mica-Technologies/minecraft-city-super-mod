@@ -36,13 +36,22 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
 
   private static final int tickRate = 20;
 
-  private static final String soundIndexKey = "soundIndex";
-  private static final String alarmKey = "alarm";
-  private static final String alarmStormKey = "alarmStorm";
-  private static final String connectedAppliancesKey = "connectedAppliances";
-  private static final String alarmAnnouncedKey = "alarmAnnounced";
-  private static final String audibleSilenceKey = "audibleSilence";
-  private static final String glitchyKey = "glitchy";
+  // NBT keys — shortened for save/sync size. LEGACY_* variants are only read for worlds saved
+  // before the optimization; new writes only emit the short form.
+  private static final String soundIndexKey = "sIx";
+  private static final String legacySoundIndexKey = "soundIndex";
+  private static final String alarmKey = "a";
+  private static final String legacyAlarmKey = "alarm";
+  private static final String alarmStormKey = "aSm";
+  private static final String legacyAlarmStormKey = "alarmStorm";
+  private static final String connectedAppliancesKey = "apps";
+  private static final String legacyConnectedAppliancesKey = "connectedAppliances";
+  private static final String alarmAnnouncedKey = "aAn";
+  private static final String legacyAlarmAnnouncedKey = "alarmAnnounced";
+  private static final String audibleSilenceKey = "aSi";
+  private static final String legacyAudibleSilenceKey = "audibleSilence";
+  private static final String glitchyKey = "gl";
+  private static final String legacyGlitchyKey = "glitchy";
   private static final String[] SOUND_RESOURCE_NAMES = {"csm:svenew",
       "csm:sveold",
       "csm:simplex_voice_evac_old_alt",
@@ -95,16 +104,22 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
 
   @Override
   public void readNBT(NBTTagCompound compound) {
-    soundIndex = compound.hasKey(soundIndexKey) ? compound.getInteger(soundIndexKey) : 0;
-    alarm = compound.hasKey(alarmKey) && compound.getBoolean(alarmKey);
-    alarmStorm = compound.hasKey(alarmStormKey) && compound.getBoolean(alarmStormKey);
-    alarmAnnounced = compound.hasKey(alarmAnnouncedKey) && compound.getBoolean(alarmAnnouncedKey);
-    audibleSilence = compound.hasKey(audibleSilenceKey) && compound.getBoolean(audibleSilenceKey);
-    glitchy = compound.hasKey(glitchyKey) && compound.getBoolean(glitchyKey);
+    soundIndex = readInt(compound, soundIndexKey, legacySoundIndexKey, 0);
+    alarm = readBool(compound, alarmKey, legacyAlarmKey);
+    alarmStorm = readBool(compound, alarmStormKey, legacyAlarmStormKey);
+    alarmAnnounced = readBool(compound, alarmAnnouncedKey, legacyAlarmAnnouncedKey);
+    audibleSilence = readBool(compound, audibleSilenceKey, legacyAudibleSilenceKey);
+    glitchy = readBool(compound, glitchyKey, legacyGlitchyKey);
 
     connectedAppliances.clear();
+    String appliancesBlob = null;
     if (compound.hasKey(connectedAppliancesKey)) {
-      String[] positions = compound.getString(connectedAppliancesKey).split("\n");
+      appliancesBlob = compound.getString(connectedAppliancesKey);
+    } else if (compound.hasKey(legacyConnectedAppliancesKey)) {
+      appliancesBlob = compound.getString(legacyConnectedAppliancesKey);
+    }
+    if (appliancesBlob != null && !appliancesBlob.isEmpty()) {
+      String[] positions = appliancesBlob.split("\n");
       for (String position : positions) {
         String[] coordinates = position.split(" ");
         if (coordinates.length == 3) {
@@ -114,6 +129,15 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
         }
       }
     }
+
+    // Strip legacy long-form keys so subsequent writes produce only short-form output
+    compound.removeTag(legacySoundIndexKey);
+    compound.removeTag(legacyAlarmKey);
+    compound.removeTag(legacyAlarmStormKey);
+    compound.removeTag(legacyAlarmAnnouncedKey);
+    compound.removeTag(legacyAudibleSilenceKey);
+    compound.removeTag(legacyGlitchyKey);
+    compound.removeTag(legacyConnectedAppliancesKey);
 
     // Re-register with the API registry if this panel was saved with an active alarm
     if (world != null && !world.isRemote) {
@@ -125,6 +149,23 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
         FireAlarmPanelRegistry.registerStormAlarm(dim, getPos());
       }
     }
+  }
+
+  private static int readInt(NBTTagCompound compound, String key, String legacyKey, int def) {
+    if (compound.hasKey(key)) {
+      return compound.getInteger(key);
+    }
+    if (compound.hasKey(legacyKey)) {
+      return compound.getInteger(legacyKey);
+    }
+    return def;
+  }
+
+  private static boolean readBool(NBTTagCompound compound, String key, String legacyKey) {
+    if (compound.hasKey(key)) {
+      return compound.getBoolean(key);
+    }
+    return compound.hasKey(legacyKey) && compound.getBoolean(legacyKey);
   }
 
   @Override
