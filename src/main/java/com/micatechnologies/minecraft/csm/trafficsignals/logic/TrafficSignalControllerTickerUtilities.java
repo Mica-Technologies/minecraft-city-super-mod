@@ -130,24 +130,31 @@ public class TrafficSignalControllerTickerUtilities {
       }
     }
 
-    // Add the current phase FYA signals to the yellow transition phase.
-    // Per MUTCD, FYA→GREEN is allowed without a yellow clearance interval, so FYA signals
-    // that are going to GREEN, FYA, or OFF in the upcoming phase stay as FYA during the
-    // transition. FYA signals going to RED need a solid yellow clearance first.
+    // FYA signals: only stay FYA when the upcoming phase also has them as FYA (no state
+    // change). All other transitions (FYA→RED, FYA→OFF, FYA→GREEN) require solid yellow
+    // clearance. In the compound hybrid left/right layout, the 3-section block
+    // (flashingLeftSignals / flashingRightSignals) uses its YELLOW section for clearance
+    // regardless of whether the upcoming state is RED, OFF, or GREEN.
     for (BlockPos fyaSignal : currentPhase.getFyaSignals()) {
-      if (upcomingPhase.getFyaSignals().contains(fyaSignal) ||
-          upcomingPhase.getOffSignals().contains(fyaSignal) ||
-          upcomingPhase.getGreenSignals().contains(fyaSignal)) {
+      if (upcomingPhase.getFyaSignals().contains(fyaSignal)) {
         yellowTransitionPhase.addFyaSignal(fyaSignal);
       } else {
         yellowTransitionPhase.addYellowSignal(fyaSignal);
       }
     }
 
-    // Off signals stay off during yellow transition — a previously-dark signal should not
-    // display yellow clearance. It will turn on in its destination state when the upcoming
-    // phase is applied after the red clearance interval.
-    yellowTransitionPhase.addOffSignals(currentPhase.getOffSignals());
+    // Off signals going to a non-off state get yellow clearance. In the compound hybrid
+    // left/right layout, the 3-section block (flashingLeftSignals / flashingRightSignals)
+    // is OFF during protected green (the add-on block shows the green arrow instead).
+    // When transitioning away, the 3-section block must display its solid yellow arrow
+    // section as clearance. Signals staying off are preserved as off.
+    for (BlockPos offSignal : currentPhase.getOffSignals()) {
+      if (upcomingPhase.getOffSignals().contains(offSignal)) {
+        yellowTransitionPhase.addOffSignal(offSignal);
+      } else {
+        yellowTransitionPhase.addYellowSignal(offSignal);
+      }
+    }
 
     // Return resulting yellow transition phase
     return yellowTransitionPhase;

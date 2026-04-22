@@ -245,8 +245,8 @@ class TrafficSignalControllerTickerUtilitiesTest {
     }
 
     @Test
-    @DisplayName("OFF signals stay OFF during yellow transition (no spurious yellow)")
-    void offToGreen_staysOff() {
+    @DisplayName("OFF signals going to non-OFF get YELLOW (hybrid left/right 3-section clearance)")
+    void offToNonOff_becomesYellow() {
       BlockPos offPos = new BlockPos(10, 64, 20);
 
       TrafficSignalPhase current = new TrafficSignalPhase(1, null,
@@ -255,16 +255,35 @@ class TrafficSignalControllerTickerUtilitiesTest {
 
       TrafficSignalPhase upcoming = new TrafficSignalPhase(2, null,
           TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS);
-      upcoming.addGreenSignal(offPos);
+      upcoming.addRedSignal(offPos);
+
+      TrafficSignalPhase result =
+          TrafficSignalControllerTickerUtilities.getYellowTransitionPhaseForUpcoming(
+              current, upcoming);
+
+      assertTrue(result.getYellowSignals().contains(offPos),
+          "Off signal going to non-off should get yellow clearance");
+    }
+
+    @Test
+    @DisplayName("OFF signals staying OFF remain OFF")
+    void offStayingOff_staysOff() {
+      BlockPos offPos = new BlockPos(10, 64, 20);
+
+      TrafficSignalPhase current = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS);
+      current.addOffSignal(offPos);
+
+      TrafficSignalPhase upcoming = new TrafficSignalPhase(2, null,
+          TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS);
+      upcoming.addOffSignal(offPos);
 
       TrafficSignalPhase result =
           TrafficSignalControllerTickerUtilities.getYellowTransitionPhaseForUpcoming(
               current, upcoming);
 
       assertTrue(result.getOffSignals().contains(offPos),
-          "Off signal should stay off during yellow transition");
-      assertFalse(result.getYellowSignals().contains(offPos),
-          "Off signal should not get yellow clearance");
+          "Off signal staying off should remain off");
     }
 
     @Test
@@ -916,6 +935,79 @@ class TrafficSignalControllerTickerUtilitiesTest {
           "FYA signal should become red during all-red clearance");
       assertFalse(result.getFyaSignals().contains(fyaPos),
           "FYA signal should not remain FYA during all-red clearance");
+    }
+  }
+
+  // ========================================================================
+  // Yellow transition: FYA→OFF gets yellow clearance (hybrid left/right)
+  // ========================================================================
+  @Nested
+  @DisplayName("getYellowTransitionPhaseForUpcoming - FYA handling")
+  class GetYellowTransitionFyaTest {
+
+    @Test
+    @DisplayName("FYA→OFF gets solid yellow clearance (permissive→protected transition)")
+    void fyaToOff_getsYellow() {
+      BlockPos fyaPos = new BlockPos(10, 64, 20);
+
+      TrafficSignalPhase current = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS);
+      current.addFyaSignal(fyaPos);
+
+      TrafficSignalPhase upcoming = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS);
+      upcoming.addOffSignal(fyaPos);
+
+      TrafficSignalPhase result =
+          TrafficSignalControllerTickerUtilities.getYellowTransitionPhaseForUpcoming(
+              current, upcoming);
+
+      assertTrue(result.getYellowSignals().contains(fyaPos),
+          "FYA going to OFF should get solid yellow clearance");
+      assertFalse(result.getFyaSignals().contains(fyaPos),
+          "FYA going to OFF should not stay as FYA");
+    }
+
+    @Test
+    @DisplayName("FYA→FYA stays FYA (no clearance needed)")
+    void fyaToFya_staysFya() {
+      BlockPos fyaPos = new BlockPos(10, 64, 20);
+
+      TrafficSignalPhase current = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS);
+      current.addFyaSignal(fyaPos);
+
+      TrafficSignalPhase upcoming = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS);
+      upcoming.addFyaSignal(fyaPos);
+
+      TrafficSignalPhase result =
+          TrafficSignalControllerTickerUtilities.getYellowTransitionPhaseForUpcoming(
+              current, upcoming);
+
+      assertTrue(result.getFyaSignals().contains(fyaPos),
+          "FYA staying FYA should remain as FYA");
+    }
+
+    @Test
+    @DisplayName("FYA→RED gets solid yellow clearance")
+    void fyaToRed_getsYellow() {
+      BlockPos fyaPos = new BlockPos(10, 64, 20);
+
+      TrafficSignalPhase current = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS);
+      current.addFyaSignal(fyaPos);
+
+      TrafficSignalPhase upcoming = new TrafficSignalPhase(2, null,
+          TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS);
+      upcoming.addRedSignal(fyaPos);
+
+      TrafficSignalPhase result =
+          TrafficSignalControllerTickerUtilities.getYellowTransitionPhaseForUpcoming(
+              current, upcoming);
+
+      assertTrue(result.getYellowSignals().contains(fyaPos),
+          "FYA going to RED should get solid yellow clearance");
     }
   }
 

@@ -98,6 +98,48 @@ vehicle detection sensors, and signal overlaps. All traffic signal code lives in
 | `PEDESTRIAN_ACCESSORY` | Crosswalk button or APS block |
 | `NA_SENSOR` | Vehicle detection sensor |
 
+### Compound Hybrid Left/Right (FYA) Signals
+
+Hybrid left and right turn signals are built from **two cooperating block types** that
+together form one compound indication:
+
+1. **3-section hybrid block** (`FLASHING_LEFT` / `FLASHING_RIGHT` side, linked as
+   `flashingLeftSignals` or `flashingRightSignals`): Contains red arrow (top), solid yellow
+   arrow (middle), and flashing yellow arrow (bottom). The FYA section uses `bulbColor=GREEN`
+   with `bulbCustomColor=YELLOW` and `bulbFlashing=true`, so the controller sets this block to
+   signal state `GREEN` (color=2) to display a flashing yellow arrow.
+
+2. **1-section add-on block** (`LEFT` / `RIGHT` side, linked as `leftSignals` or
+   `rightSignals`): Contains only a green arrow. Displays green on color=2, dark/off on all
+   other color states (0, 1, 3). Physically mounts below the 3-section block.
+
+**Signal state mappings for the compound indication:**
+
+| Desired indication | 3-section block state | Add-on block state | Visual result |
+|---|---|---|---|
+| Protected green arrow | OFF (color=3) | GREEN (color=2) | 3-section dark, add-on shows green arrow |
+| Solid yellow arrow | YELLOW (color=1) | RED (color=0) | 3-section shows yellow arrow, add-on dark |
+| Red arrow | RED (color=0) | RED (color=0) | 3-section shows red arrow, add-on dark |
+| Flashing yellow arrow (FYA) | GREEN (color=2) | RED (color=0) | 3-section flashes yellow arrow, add-on dark |
+| All off | OFF (color=3) | OFF (color=3) | Both dark |
+
+**Phase transition clearance rules for compound signals:**
+
+- **Protected green → any other state**: The 3-section block transitions from OFF to YELLOW
+  during the yellow clearance interval (lights the solid yellow arrow section). The add-on
+  block transitions from GREEN to YELLOW (which renders as dark, since it only displays green).
+- **FYA → any other state (except FYA)**: The 3-section block transitions from GREEN/FYA to
+  YELLOW (solid yellow arrow replaces flashing yellow arrow). Requires full yellow + red
+  clearance before the next indication.
+- **FYA → FYA (no state change)**: No clearance needed; FYA continues uninterrupted.
+- **Any state → FYA**: Must go through yellow + red clearance first, then FYA activates.
+
+The controller's `getDefaultPhaseForCircuitNumber()` decides between protected green
+(`greenLeftTurn=true`: flashingLeftSignals=OFF, leftSignals=GREEN) and permissive FYA
+(`greenLeftTurn=false`: flashingLeftSignals=FYA, leftSignals=RED) based on
+`computeGreenLeftTurn()` / `computeGreenRightTurn()`, which compare turn-lane vehicle sensor
+counts against pedestrian request counts.
+
 ### Sensor Blocks
 
 - **`AbstractBlockTrafficSignalSensor`** -- Base class. Small wall-mounted block with
