@@ -14,6 +14,52 @@ import net.minecraft.world.IBlockAccess;
 public class BlockUtils {
 
   /**
+   * Precomputed lookup table for {@link #getRelativeFacing(EnumFacing, EnumFacing)}. Index by
+   * {@code [baseFacing.ordinal()][direction.ordinal()]} to skip the nested-switch evaluation on
+   * every call. Populated once at class load.
+   *
+   * <p>Hoisted into {@link BlockUtils} so both {@link AbstractBlockTrafficPole} (regular) and
+   * {@link AbstractBlockTrafficPoleDiagonal} share a single cache — the diagonal variant had
+   * its own local copy prior to this refactor.
+   */
+  private static final EnumFacing[][] RELATIVE_FACING_TABLE;
+
+  /**
+   * Precomputed lookup table mirroring {@link #RELATIVE_FACING_TABLE} but with
+   * {@link EnumFacing#getOpposite()} already applied. Used by pole {@code getActualState}
+   * implementations that walk outward from the pole body along its rotated axes.
+   */
+  private static final EnumFacing[][] RELATIVE_FACING_OPPOSITE_TABLE;
+
+  static {
+    EnumFacing[] values = EnumFacing.values();
+    RELATIVE_FACING_TABLE = new EnumFacing[values.length][values.length];
+    RELATIVE_FACING_OPPOSITE_TABLE = new EnumFacing[values.length][values.length];
+    for (EnumFacing base : values) {
+      for (EnumFacing dir : values) {
+        EnumFacing relative = computeRelativeFacing(base, dir);
+        RELATIVE_FACING_TABLE[base.ordinal()][dir.ordinal()] = relative;
+        RELATIVE_FACING_OPPOSITE_TABLE[base.ordinal()][dir.ordinal()] = relative.getOpposite();
+      }
+    }
+  }
+
+  /**
+   * Returns the rotation-adjusted facing that was stored for
+   * {@code (baseFacing, direction)} when the lookup table was built.
+   * Equivalent to {@link #getRelativeFacing(EnumFacing, EnumFacing)}.{@code getOpposite()}
+   * but without the per-call method invocations — this is hot in pole {@code getActualState}
+   * paths that run per-render.
+   *
+   * @param baseFacing the block's facing direction
+   * @param direction  the direction relative to the block to translate + invert
+   * @return the translated direction, flipped to its opposite
+   */
+  public static EnumFacing getRelativeFacingOpposite(EnumFacing baseFacing, EnumFacing direction) {
+    return RELATIVE_FACING_OPPOSITE_TABLE[baseFacing.ordinal()][direction.ordinal()];
+  }
+
+  /**
    * Retrieves whether there is a block (full or not) to the north of the given block.
    *
    * @param worldIn The world.
@@ -142,6 +188,15 @@ public class BlockUtils {
    * @return The actual direction adjusted for the block's facing direction.
    */
   public static EnumFacing getRelativeFacing(EnumFacing baseFacing, EnumFacing direction) {
+    return RELATIVE_FACING_TABLE[baseFacing.ordinal()][direction.ordinal()];
+  }
+
+  /**
+   * Computes (without caching) the rotation-adjusted facing. This is the original switch-based
+   * implementation, now invoked only once per (base, direction) pair at class-load time to
+   * populate {@link #RELATIVE_FACING_TABLE}.
+   */
+  private static EnumFacing computeRelativeFacing(EnumFacing baseFacing, EnumFacing direction) {
     switch (baseFacing) {
       case EAST:
         switch (direction) {

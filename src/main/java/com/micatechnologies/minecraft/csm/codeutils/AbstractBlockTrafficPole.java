@@ -279,17 +279,19 @@ public abstract class AbstractBlockTrafficPole extends AbstractBlockRotatableNSE
     }
     Class<?>[] ignoreBlock = cachedCombinedIgnoreBlock;
 
-    // Check for blocks in each direction relative to the block's facing direction
+    // Check for blocks in each direction relative to the block's facing direction.
+    // Uses the precomputed rotation lookup table (BlockUtils.getRelativeFacingOpposite) so
+    // the 4 per-frame switch evaluations + 4 getOpposite() calls collapse to 4 array reads.
     boolean isBlockToEast = isMountableAdjacent(worldIn,
-        pos.offset(BlockUtils.getRelativeFacing(facing, EnumFacing.EAST).getOpposite()),
+        pos.offset(BlockUtils.getRelativeFacingOpposite(facing, EnumFacing.EAST)),
         ignoreBlock);
     boolean isBlockToWest = isMountableAdjacent(worldIn,
-        pos.offset(BlockUtils.getRelativeFacing(facing, EnumFacing.WEST).getOpposite()),
+        pos.offset(BlockUtils.getRelativeFacingOpposite(facing, EnumFacing.WEST)),
         ignoreBlock);
     boolean isBlockAbove = isMountableAdjacent(worldIn,
-        pos.offset(BlockUtils.getRelativeFacing(facing, EnumFacing.UP).getOpposite()), ignoreBlock);
+        pos.offset(BlockUtils.getRelativeFacingOpposite(facing, EnumFacing.UP)), ignoreBlock);
     boolean isBlockBelow = isMountableAdjacent(worldIn,
-        pos.offset(BlockUtils.getRelativeFacing(facing, EnumFacing.DOWN).getOpposite()),
+        pos.offset(BlockUtils.getRelativeFacingOpposite(facing, EnumFacing.DOWN)),
         ignoreBlock);
 
     // Update the block state with the presence of blocks in each direction
