@@ -1,8 +1,12 @@
 package com.micatechnologies.minecraft.csm;
 
 import com.micatechnologies.minecraft.csm.codeutils.ICsmRetiringBlock;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
@@ -29,6 +33,8 @@ public class CsmRegistry {
    * @since 1.0
    */
   private static final Map<String, Item> ITEMS = new HashMap<>();
+
+  private static final List<ICsmTileEntityProvider> TILE_ENTITY_PROVIDERS = new ArrayList<>();
 
 
   /**
@@ -82,6 +88,10 @@ public class CsmRegistry {
     return ITEMS.values();
   }
 
+  public static List<ICsmTileEntityProvider> getTileEntityProviders() {
+    return Collections.unmodifiableList(TILE_ENTITY_PROVIDERS);
+  }
+
   /**
    * Registers a block with the mod.
    *
@@ -104,6 +114,10 @@ public class CsmRegistry {
     // Set block tick randomly if it is a retiring block
     if (block instanceof ICsmRetiringBlock) {
       block.setTickRandomly(true);
+    }
+
+    if (block instanceof ICsmTileEntityProvider) {
+      TILE_ENTITY_PROVIDERS.add((ICsmTileEntityProvider) block);
     }
 
     BLOCKS.put(key, block);

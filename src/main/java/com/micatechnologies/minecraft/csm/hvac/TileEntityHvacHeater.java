@@ -174,15 +174,11 @@ public class TileEntityHvacHeater extends AbstractTickableTileEntity
   @Override
   public void readNBT(NBTTagCompound compound) {
     this.storedEnergy = compound.getInteger(NBT_ENERGY_KEY);
-    this.thermostatCalling = compound.getBoolean("thermostatCalling");
-    this.linkedToThermostat = compound.getBoolean("linkedToThermostat");
   }
 
   @Override
   public NBTTagCompound writeNBT(NBTTagCompound compound) {
     compound.setInteger(NBT_ENERGY_KEY, storedEnergy);
-    compound.setBoolean("thermostatCalling", thermostatCalling);
-    compound.setBoolean("linkedToThermostat", linkedToThermostat);
     return compound;
   }
 

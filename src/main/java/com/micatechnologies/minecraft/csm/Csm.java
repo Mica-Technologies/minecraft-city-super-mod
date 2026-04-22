@@ -19,7 +19,6 @@ package com.micatechnologies.minecraft.csm;
 
 import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmProxy;
-import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import com.micatechnologies.minecraft.csm.codeutils.packets.TileEntityRedstoneTTSInvokeHandler;
 import com.micatechnologies.minecraft.csm.codeutils.packets.TileEntityRedstoneTTSInvokePacket;
 import com.micatechnologies.minecraft.csm.codeutils.packets.TileEntityRedstoneTTSUpdateHandler;
@@ -232,28 +231,24 @@ public class Csm {
       logger.info("Registering tile entities");
       Set<String> registeredTileEntities = new HashSet<>();
       Set<String> warnedTileEntities = new HashSet<>();
-      CsmRegistry.getBlocks().forEach(block -> {
+      CsmRegistry.getTileEntityProviders().forEach(tileEntityProvider -> {
         try {
-          if (block instanceof ICsmTileEntityProvider) {
-            ICsmTileEntityProvider tileEntityProvider = (ICsmTileEntityProvider) block;
-            String tileEntityName = CsmConstants.MOD_NAMESPACE +
-                ":" +
-                tileEntityProvider.getTileEntityName();
+          String tileEntityName = CsmConstants.MOD_NAMESPACE +
+              ":" +
+              tileEntityProvider.getTileEntityName();
 
-            // Check if tileEntityName is already registered
-            if (!registeredTileEntities.contains(tileEntityName)) {
-              GameRegistry.registerTileEntity(tileEntityProvider.getTileEntityClass(),
-                  tileEntityName);
-              registeredTileEntities.add(tileEntityName); // Add the name to the set
-            } else if (!warnedTileEntities.contains(tileEntityName)) {
-              logger.warn("Attempted to register tile entity with name: " +
-                  tileEntityName +
-                  " more than once.");
-              warnedTileEntities.add(tileEntityName);
-            }
+          if (!registeredTileEntities.contains(tileEntityName)) {
+            GameRegistry.registerTileEntity(tileEntityProvider.getTileEntityClass(),
+                tileEntityName);
+            registeredTileEntities.add(tileEntityName);
+          } else if (!warnedTileEntities.contains(tileEntityName)) {
+            logger.warn("Attempted to register tile entity with name: " +
+                tileEntityName +
+                " more than once.");
+            warnedTileEntities.add(tileEntityName);
           }
         } catch (Exception e) {
-          logger.error("Failed to register tile entity for block: " + block.getRegistryName(), e);
+          logger.error("Failed to register tile entity for block: " + tileEntityProvider, e);
         }
       });
       logger.info("Finished registering tile entities");
