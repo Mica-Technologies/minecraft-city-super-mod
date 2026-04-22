@@ -876,8 +876,8 @@ class TrafficSignalControllerTickerUtilitiesTest {
     }
 
     @Test
-    @DisplayName("signal moved from off to FYA is a conflict")
-    void offToFyaIsConflict() {
+    @DisplayName("signal moved from off to FYA is safe (turning on)")
+    void offToFyaIsSafe() {
       BlockPos pos = new BlockPos(10, 64, 20);
 
       TrafficSignalPhase a = new TrafficSignalPhase(1, null,
@@ -887,6 +887,70 @@ class TrafficSignalControllerTickerUtilitiesTest {
       TrafficSignalPhase b = new TrafficSignalPhase(1, null,
           TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS);
       b.addFyaSignal(pos);
+
+      assertFalse(TrafficSignalControllerTickerUtilities.hasVehicleSignalConflict(a, b));
+    }
+
+    @Test
+    @DisplayName("FYA to OFF is safe (permissive→protected compound hybrid)")
+    void fyaToOffIsSafe() {
+      BlockPos fyaPos = new BlockPos(10, 64, 20);
+
+      TrafficSignalPhase a = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS);
+      a.addFyaSignal(fyaPos);
+
+      TrafficSignalPhase b = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS);
+      b.addOffSignal(fyaPos);
+
+      assertFalse(TrafficSignalControllerTickerUtilities.hasVehicleSignalConflict(a, b));
+    }
+
+    @Test
+    @DisplayName("FYA to RED is a conflict (permissive ending restrictively)")
+    void fyaToRedIsConflict() {
+      BlockPos fyaPos = new BlockPos(10, 64, 20);
+
+      TrafficSignalPhase a = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS);
+      a.addFyaSignal(fyaPos);
+
+      TrafficSignalPhase b = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS);
+      b.addRedSignal(fyaPos);
+
+      assertTrue(TrafficSignalControllerTickerUtilities.hasVehicleSignalConflict(a, b));
+    }
+
+    @Test
+    @DisplayName("RED to GREEN is safe (signal was restrictive, now serving)")
+    void redToGreenIsSafe() {
+      BlockPos pos = new BlockPos(10, 64, 20);
+
+      TrafficSignalPhase a = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS);
+      a.addRedSignal(pos);
+
+      TrafficSignalPhase b = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS);
+      b.addGreenSignal(pos);
+
+      assertFalse(TrafficSignalControllerTickerUtilities.hasVehicleSignalConflict(a, b));
+    }
+
+    @Test
+    @DisplayName("GREEN to RED is a conflict")
+    void greenToRedIsConflict() {
+      BlockPos pos = new BlockPos(10, 64, 20);
+
+      TrafficSignalPhase a = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS);
+      a.addGreenSignal(pos);
+
+      TrafficSignalPhase b = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS);
+      b.addRedSignal(pos);
 
       assertTrue(TrafficSignalControllerTickerUtilities.hasVehicleSignalConflict(a, b));
     }
