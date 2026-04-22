@@ -4,6 +4,7 @@ import com.micatechnologies.minecraft.csm.codeutils.AbstractTickableTileEntity;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignal;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.math.AxisAlignedBB;
 
 /**
  * Tile entity for crosswalk signals that implements countdown functionality.
@@ -233,5 +234,18 @@ public class TileEntityCrosswalkSignal extends AbstractTickableTileEntity {
    */
   public boolean hasLearnedTiming() {
     return learnedClearanceTicks > 0;
+  }
+
+  /**
+   * Returns a render bounding box covering the block plus a 1-block margin on all sides.
+   * Without this override the TE inherits {@code INFINITE_EXTENT_AABB}, which disables
+   * vanilla's frustum culling and forces the TESR to run every frame even when the signal
+   * is offscreen.
+   */
+  @Override
+  public AxisAlignedBB getRenderBoundingBox() {
+    return new AxisAlignedBB(
+        pos.getX() - 1.0, pos.getY() - 1.0, pos.getZ() - 1.0,
+        pos.getX() + 2.0, pos.getY() + 2.0, pos.getZ() + 2.0);
   }
 }

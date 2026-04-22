@@ -11,6 +11,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
+import net.minecraft.util.math.AxisAlignedBB;
 
 /**
  * Tile entity for the new custom-rendered crosswalk signals. Combines customization fields (body
@@ -186,6 +187,20 @@ public class TileEntityCrosswalkSignalNew extends AbstractTickableTileEntity {
     @Override
     public double getMaxRenderDistanceSquared() {
         return 128.0 * 128.0;
+    }
+
+    /**
+     * Returns a render bounding box covering the crosswalk body plus a 1-block margin on
+     * every side (the signal geometry extends beyond the block cell for the visor and
+     * body-tilt overhangs). This enables vanilla frustum culling — without it the TE falls
+     * back to {@code INFINITE_EXTENT_AABB} and the TESR runs every frame regardless of
+     * view direction.
+     */
+    @Override
+    public AxisAlignedBB getRenderBoundingBox() {
+        return new AxisAlignedBB(
+            pos.getX() - 1.0, pos.getY() - 1.0, pos.getZ() - 1.0,
+            pos.getX() + 2.0, pos.getY() + 2.0, pos.getZ() + 2.0);
     }
 
     // endregion

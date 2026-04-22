@@ -7,6 +7,7 @@ import java.util.List;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.util.Constants;
 
@@ -742,6 +743,18 @@ public class TileEntityHvacThermostat extends AbstractTickableTileEntity
       }
     }
     return count;
+  }
+
+  /**
+   * Returns a render bounding box covering just the thermostat block itself. The TESR
+   * draws the LCD panel on the block's face and does not project beyond the cell, so a
+   * single-block AABB is enough for vanilla frustum culling to skip offscreen thermostats.
+   */
+  @Override
+  public AxisAlignedBB getRenderBoundingBox() {
+    return new AxisAlignedBB(
+        pos.getX(), pos.getY(), pos.getZ(),
+        pos.getX() + 1.0, pos.getY() + 1.0, pos.getZ() + 1.0);
   }
 
   // endregion

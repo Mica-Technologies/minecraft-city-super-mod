@@ -7,6 +7,7 @@ import java.util.List;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.util.Constants;
 
@@ -577,6 +578,18 @@ public class TileEntityHvacZoneThermostat extends AbstractTickableTileEntity
   public boolean isCalling() { return isCalling; }
 
   public int getCallingMode() { return callingMode; }
+
+  /**
+   * Returns a render bounding box covering just the zone-thermostat block itself. Mirrors
+   * {@link TileEntityHvacThermostat#getRenderBoundingBox()} — same TESR, same culling
+   * footprint.
+   */
+  @Override
+  public AxisAlignedBB getRenderBoundingBox() {
+    return new AxisAlignedBB(
+        pos.getX(), pos.getY(), pos.getZ(),
+        pos.getX() + 1.0, pos.getY() + 1.0, pos.getZ() + 1.0);
+  }
 
   // endregion
 }
