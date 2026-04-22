@@ -31,6 +31,34 @@ public class TileEntityFireAlarmStrobeRenderer
   private static final long STROBE_FLASH_MS = 75L;
   private static final long STROBE_FADE_MS = 75L;
 
+  // Precomputed cone segment constants. These are unitless factors — at render time the
+  // z-offset array is added to the lens z-coordinate, and the half-dim array is multiplied
+  // by the lens width/height to get each ring's size. This avoids allocating four
+  // segments+1 float arrays (and populating them via the i/SEGMENTS linear interpolation)
+  // on every frame per strobe.
+  private static final int CONE_SEGMENTS = 5;
+  private static final float CONE_MAX_PROJECTION_DIST = 0.45f;
+  private static final float CONE_START_PAD = 0.6f;
+  private static final float CONE_END_PAD = 2.5f;
+  private static final float CONE_START_ALPHA = 0.16f;
+  private static final float CONE_END_ALPHA = 0.02f;
+  private static final float[] CONE_Z_OFFSET;
+  private static final float[] CONE_HALF_DIM_FACTOR;
+  private static final float[] CONE_ALPHA_BASE;
+
+  static {
+    CONE_Z_OFFSET = new float[CONE_SEGMENTS + 1];
+    CONE_HALF_DIM_FACTOR = new float[CONE_SEGMENTS + 1];
+    CONE_ALPHA_BASE = new float[CONE_SEGMENTS + 1];
+    for (int i = 0; i <= CONE_SEGMENTS; i++) {
+      float t = (float) i / CONE_SEGMENTS;
+      CONE_Z_OFFSET[i] = -0.03f - t * CONE_MAX_PROJECTION_DIST;
+      float pad = CONE_START_PAD + t * (CONE_END_PAD - CONE_START_PAD);
+      CONE_HALF_DIM_FACTOR[i] = 0.5f + pad;
+      CONE_ALPHA_BASE[i] = CONE_START_ALPHA + t * (CONE_END_ALPHA - CONE_START_ALPHA);
+    }
+  }
+
   @Override
   public void render(AbstractTileEntity te, double x, double y, double z,
       float partialTicks, int destroyStage, float alpha) {
@@ -162,37 +190,18 @@ public class TileEntityFireAlarmStrobeRenderer
     float cenX = (minX + maxX) * 0.5f;
     float cenY = (minY + maxY) * 0.5f;
 
-    int segments = 5;
-    float maxProjectionDist = 0.45f;
-    float startPad = 0.6f;
-    float endPad = 2.5f;
-    float startAlpha = 0.16f;
-    float endAlpha = 0.02f;
-
-    // Precompute ring positions: each ring is a rectangle at a given Z depth
-    float[] ringZ = new float[segments + 1];
-    float[] ringHalfW = new float[segments + 1];
-    float[] ringHalfH = new float[segments + 1];
-    float[] ringAlpha = new float[segments + 1];
-    for (int i = 0; i <= segments; i++) {
-      float t = (float) i / segments;
-      ringZ[i] = quadZ - 0.03f - t * maxProjectionDist;
-      float pad = startPad + t * (endPad - startPad);
-      ringHalfW[i] = lensW * (0.5f + pad);
-      ringHalfH[i] = lensH * (0.5f + pad);
-      ringAlpha[i] = (startAlpha + t * (endAlpha - startAlpha)) * intensity;
-    }
-
-    for (int i = 0; i < segments; i++) {
+    for (int i = 0; i < CONE_SEGMENTS; i++) {
+      // Apply per-frame, per-block values to the precomputed segment factors
+      float nearZ = quadZ + CONE_Z_OFFSET[i];
+      float farZ = quadZ + CONE_Z_OFFSET[i + 1];
+      float nw = lensW * CONE_HALF_DIM_FACTOR[i];
+      float nh = lensH * CONE_HALF_DIM_FACTOR[i];
+      float fw = lensW * CONE_HALF_DIM_FACTOR[i + 1];
+      float fh = lensH * CONE_HALF_DIM_FACTOR[i + 1];
+      float nearAlpha = CONE_ALPHA_BASE[i] * intensity;
+      float farAlpha = CONE_ALPHA_BASE[i + 1] * intensity;
       // Alpha for this segment is the average of the two ring endpoints
-      float segAlpha = (ringAlpha[i] + ringAlpha[i + 1]) * 0.5f;
-
-      float nearZ = ringZ[i];
-      float farZ = ringZ[i + 1];
-      float nw = ringHalfW[i];
-      float nh = ringHalfH[i];
-      float fw = ringHalfW[i + 1];
-      float fh = ringHalfH[i + 1];
+      float segAlpha = (nearAlpha + farAlpha) * 0.5f;
 
       GL11.glColor4f(r, g, b, segAlpha);
       buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
@@ -224,7 +233,7 @@ public class TileEntityFireAlarmStrobeRenderer
       tessellator.draw();
 
       // Front cap on each segment for head-on viewing
-      GL11.glColor4f(r, g, b, ringAlpha[i + 1]);
+      GL11.glColor4f(r, g, b, farAlpha);
       buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
       buffer.pos(cenX - fw, cenY - fh, farZ).endVertex();
       buffer.pos(cenX + fw, cenY - fh, farZ).endVertex();
