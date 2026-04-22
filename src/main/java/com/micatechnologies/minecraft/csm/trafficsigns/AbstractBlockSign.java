@@ -21,6 +21,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 
 @MethodsReturnNonnullByDefault
@@ -220,6 +221,34 @@ public abstract class AbstractBlockSign extends AbstractBlockRotatableHZEight
     return new BlockStateContainer(this, FACING, DOWNWARD, SETBACK);
   }
 
+  /**
+   * Called when a block is placed. Pre-compute SETBACK so getActualState can skip the lookup.
+   */
+  @Override
+  @SuppressWarnings("deprecation")
+  public IBlockState onBlockPlacedBy(World world, BlockPos pos, IBlockState state,
+      @Nonnull EntityLivingBase placer, @Nonnull ItemStack stack) {
+    IBlockState baseState = super.onBlockPlacedBy(world, pos, state, placer, stack);
+    boolean isSetback = getShouldSetback(world, pos);
+    return baseState.withProperty(SETBACK, isSetback);
+  }
+
+  /**
+   * Recalculate setback whenever neighbors change (e.g., a signal arm pole placed/removed).
+   */
+  @Override
+  @SuppressWarnings("deprecation")
+  public void onNeighborChange(@Nonnull IBlockAccess world, @Nonnull BlockPos pos,
+      @Nonnull BlockPos neighborPos) {
+    super.onNeighborChange(world, pos, neighborPos);
+    IBlockState state = world.getBlockState(pos);
+    boolean current = state.getValue(SETBACK);
+    boolean shouldBeSetback = getShouldSetback(world, pos);
+    if (current != shouldBeSetback) {
+      world.setBlockstateWithNoVersion(pos, state.withProperty(SETBACK, shouldBeSetback), 0);
+    }
+  }
+
   @Override
   @SuppressWarnings("deprecation")
   public @NotNull IBlockState getActualState(IBlockState state,
@@ -227,7 +256,8 @@ public abstract class AbstractBlockSign extends AbstractBlockRotatableHZEight
       IBlockAccess worldIn,
       @NotNull
       BlockPos pos) {
+    // DOWNWARD is set here; SETBACK is cached by onBlockPlacedBy / onNeighborChange.
     return state.withProperty(DOWNWARD, getBlockBelowIsSlab(worldIn, pos))
-        .withProperty(SETBACK, getShouldSetback(worldIn, pos));
+        .withProperty(SETBACK, state.getValue(SETBACK));
   }
 }
