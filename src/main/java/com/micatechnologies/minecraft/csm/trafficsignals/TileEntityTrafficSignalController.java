@@ -793,7 +793,7 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
    *
    * @param compound the NBT compound to scrub
    *
-   * @since 1.1 (short-key optimization)
+   * @since 2026.4.22
    */
   private static void removeLegacyV2LongFormKeys(NBTTagCompound compound) {
     for (String legacyKey : TrafficSignalControllerNBTKeys.LEGACY_V2_KEY_LIST) {

@@ -43,7 +43,7 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
    * {@code sectionInfos} literal; reads fall back to {@link #LEGACY_SECTION_INFOS_KEY} for
    * worlds saved before this optimization.
    *
-   * @since 1.1
+   * @since 1.0
    */
   private static final String SECTION_INFOS_KEY = "sInfs";
 
@@ -53,7 +53,7 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
   /**
    * The key used to store the body tilt in NBT data.
    *
-   * @since 1.1
+   * @since 1.0
    */
   private static final String BODY_TILT_KEY = "tlt";
 

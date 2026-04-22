@@ -255,68 +255,68 @@ public class TrafficSignalControllerNBTKeys {
   // emit them. Once loaded, the controller's next save will write only the short-form key
   // and these tags will be removed from the compound.
 
-  /** @since 1.1 (short-key optimization) */
+  /** @since 2026.4.22 */
   public static final String LEGACY_OPERATING_MODE = "tcOperatingMode";
-  /** @since 1.1 */
+  /** @since 2026.4.22 */
   public static final String LEGACY_PAUSED = "tcPaused";
-  /** @since 1.1 */
+  /** @since 2026.4.22 */
   public static final String LEGACY_CIRCUITS = "tcCircuits";
-  /** @since 1.1 */
+  /** @since 2026.4.22 */
   public static final String LEGACY_OVERLAPS = "tcOverlaps";
-  /** @since 1.1 */
+  /** @since 2026.4.22 */
   public static final String LEGACY_CACHED_PHASES = "tcCachedPhases";
-  /** @since 1.1 */
+  /** @since 2026.4.22 */
   public static final String LEGACY_LAST_PHASE_CHANGE_TIME = "tcLastPhaseChangeTime";
-  /** @since 1.1 */
+  /** @since 2026.4.22 */
   public static final String LEGACY_LAST_PHASE_APPLICABILITY_CHANGE_TIME =
       "tcLastPhaseApplicabilityChangeTime";
-  /** @since 1.1 */
+  /** @since 2026.4.22 */
   public static final String LEGACY_LAST_PEDESTRIAN_PHASE_TIME = "tcLastPedPhaseTime";
-  /** @since 1.1 */
+  /** @since 2026.4.22 */
   public static final String LEGACY_CURRENT_PHASE = "tcCurrentPhase";
-  /** @since 1.1 */
+  /** @since 2026.4.22 */
   public static final String LEGACY_CURRENT_FAULT_MESSAGE = "tcCurrentFaultMessage";
-  /** @since 1.1 */
+  /** @since 2026.4.22 */
   public static final String LEGACY_NIGHTLY_FALLBACK_FLASH_MODE = "tcNightlyFallbackToFlashMode";
-  /** @since 1.1 */
+  /** @since 2026.4.22 */
   public static final String LEGACY_POWER_LOSS_FALLBACK_FLASH_MODE =
       "tcPowerLossFallbackToFlashMode";
-  /** @since 1.1 */
+  /** @since 2026.4.22 */
   public static final String LEGACY_OVERLAP_PEDESTRIAN_SIGNALS = "tcOverlapPedestrianSignals";
-  /** @since 1.1 */
+  /** @since 2026.4.22 */
   public static final String LEGACY_YELLOW_TIME = "tcYellowTime";
-  /** @since 1.1 */
+  /** @since 2026.4.22 */
   public static final String LEGACY_FLASH_DONT_WALK_TIME = "tcFlashDontWalkTime";
-  /** @since 1.1 */
+  /** @since 2026.4.22 */
   public static final String LEGACY_ALL_RED_TIME = "tcAllRedTime";
-  /** @since 1.1 */
+  /** @since 2026.4.22 */
   public static final String LEGACY_MIN_REQUESTABLE_SERVICE_TIME = "tcMinRequestableServiceTime";
-  /** @since 1.1 */
+  /** @since 2026.4.22 */
   public static final String LEGACY_MAX_REQUESTABLE_SERVICE_TIME = "tcMaxRequestableServiceTime";
-  /** @since 1.1 */
+  /** @since 2026.4.22 */
   public static final String LEGACY_MIN_GREEN_TIME = "tcMinGreenTime";
-  /** @since 1.1 */
+  /** @since 2026.4.22 */
   public static final String LEGACY_MAX_GREEN_TIME = "tcMaxGreenTime";
-  /** @since 1.1 */
+  /** @since 2026.4.22 */
   public static final String LEGACY_MIN_GREEN_TIME_SECONDARY = "tcMinGreenSecondaryTime";
-  /** @since 1.1 */
+  /** @since 2026.4.22 */
   public static final String LEGACY_MAX_GREEN_TIME_SECONDARY = "tcMaxGreenSecondaryTime";
-  /** @since 1.1 */
+  /** @since 2026.4.22 */
   public static final String LEGACY_DEDICATED_PED_SIGNAL_TIME = "tcDedicatedPedSignalTime";
-  /** @since 1.1 */
+  /** @since 2026.4.22 */
   public static final String LEGACY_UPGRADED_PREVIOUS_NBT_FORMAT = "tcUpgradedPreviousNbtFormat";
-  /** @since 1.1 */
+  /** @since 2026.4.22 */
   public static final String LEGACY_LEAD_PEDESTRIAN_INTERVAL_TIME = "tcLeadPedestrianIntervalTime";
-  /** @since 1.1 */
+  /** @since 2026.4.22 */
   public static final String LEGACY_ALL_RED_FLASH = "tcAllRedFlash";
-  /** @since 1.1 */
+  /** @since 2026.4.22 */
   public static final String LEGACY_RAMP_METER_NIGHT_MODE = "tcRampMeterNightMode";
 
   /**
    * List of every legacy long-form v2.0 key. {@code readNBT} strips any that are still present
    * once it has migrated them to the short form, so subsequent writes produce only short keys.
    *
-   * @since 1.1
+   * @since 2026.4.22
    */
   public static final List<String> LEGACY_V2_KEY_LIST = Arrays.asList(
       LEGACY_OPERATING_MODE,
