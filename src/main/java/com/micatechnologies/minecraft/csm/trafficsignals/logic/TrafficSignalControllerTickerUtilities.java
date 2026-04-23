@@ -1104,10 +1104,15 @@ public class TrafficSignalControllerTickerUtilities {
             circuit.getPedestrianBeaconSignals(),
             enumFacing);
 
-    // Add signals to phase
-    destinationPhase.addOffSignals(flashingLeftSignals.getFirst());
-    destinationPhase.addGreenSignals(leftSignals.getFirst());
-    destinationPhase.addFyaSignals(flashingLeftSignals.getSecond());
+    // Matching direction left turn: protected green if green arrow exists, FYA if not
+    if (!leftSignals.getFirst().isEmpty()) {
+      destinationPhase.addOffSignals(flashingLeftSignals.getFirst());
+      destinationPhase.addGreenSignals(leftSignals.getFirst());
+    } else {
+      destinationPhase.addFyaSignals(flashingLeftSignals.getFirst());
+    }
+    // Non-matching direction: fully stopped, FYA and left both RED
+    destinationPhase.addRedSignals(flashingLeftSignals.getSecond());
     destinationPhase.addRedSignals(leftSignals.getSecond());
     destinationPhase.addOffSignals(flashingRightSignals.getFirst());
     destinationPhase.addGreenSignals(rightSignals.getFirst());
