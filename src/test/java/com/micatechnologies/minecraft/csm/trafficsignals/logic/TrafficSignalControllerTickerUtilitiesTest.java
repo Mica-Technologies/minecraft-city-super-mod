@@ -973,15 +973,15 @@ class TrafficSignalControllerTickerUtilitiesTest {
   }
 
   // ========================================================================
-  // Red transition: FYA signals become RED
+  // Red transition: FYA signal handling
   // ========================================================================
   @Nested
   @DisplayName("getRedTransitionPhaseForUpcoming - FYA handling")
   class GetRedTransitionFyaTest {
 
     @Test
-    @DisplayName("FYA signals become RED during all-red clearance")
-    void fyaBecomesRed() {
+    @DisplayName("FYA signals NOT in upcoming FYA become RED")
+    void fyaNotInUpcoming_becomesRed() {
       BlockPos fyaPos = new BlockPos(10, 64, 20);
 
       TrafficSignalPhase current = new TrafficSignalPhase(1, null,
@@ -996,9 +996,58 @@ class TrafficSignalControllerTickerUtilitiesTest {
               current, upcoming);
 
       assertTrue(result.getRedSignals().contains(fyaPos),
-          "FYA signal should become red during all-red clearance");
+          "FYA signal not in upcoming should become red");
       assertFalse(result.getFyaSignals().contains(fyaPos),
-          "FYA signal should not remain FYA during all-red clearance");
+          "FYA signal not in upcoming should not remain FYA");
+    }
+
+    @Test
+    @DisplayName("FYA signals staying FYA in upcoming are preserved (no red blip)")
+    void fyaStayingFya_preserved() {
+      BlockPos fyaPos = new BlockPos(10, 64, 20);
+
+      TrafficSignalPhase current = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.YELLOW_TRANSITIONING);
+      current.addFyaSignal(fyaPos);
+
+      TrafficSignalPhase upcoming = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.ALL_EAST);
+      upcoming.addFyaSignal(fyaPos);
+
+      TrafficSignalPhase result =
+          TrafficSignalControllerTickerUtilities.getRedTransitionPhaseForUpcoming(
+              current, upcoming);
+
+      assertTrue(result.getFyaSignals().contains(fyaPos),
+          "FYA staying FYA in upcoming should be preserved");
+      assertFalse(result.getRedSignals().contains(fyaPos),
+          "FYA staying FYA should not become red");
+    }
+
+    @Test
+    @DisplayName("mixed FYA: one stays, one goes to red")
+    void mixedFya_oneStaysOneGoes() {
+      BlockPos stays = new BlockPos(10, 64, 20);
+      BlockPos goes = new BlockPos(20, 64, 30);
+
+      TrafficSignalPhase current = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.YELLOW_TRANSITIONING);
+      current.addFyaSignal(stays);
+      current.addFyaSignal(goes);
+
+      TrafficSignalPhase upcoming = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.ALL_EAST);
+      upcoming.addFyaSignal(stays);
+      upcoming.addRedSignal(goes);
+
+      TrafficSignalPhase result =
+          TrafficSignalControllerTickerUtilities.getRedTransitionPhaseForUpcoming(
+              current, upcoming);
+
+      assertTrue(result.getFyaSignals().contains(stays),
+          "FYA staying FYA should be preserved");
+      assertTrue(result.getRedSignals().contains(goes),
+          "FYA going to red should become red");
     }
   }
 
