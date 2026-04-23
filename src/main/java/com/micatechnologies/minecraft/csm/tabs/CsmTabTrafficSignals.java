@@ -19,6 +19,7 @@ import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableRampMe
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableRampMeterOnSignalRightMount;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableTattleTaleBeacon;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableTrafficSignalTrainController;
+import com.micatechnologies.minecraft.csm.trafficsignals.BlockBlankoutBox;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockOverheightDetectionSensor;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockTrafficLightSensor;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockTrafficLightSensorBell;
@@ -194,6 +195,7 @@ public class CsmTabTrafficSignals extends CsmTab {
         fmlPreInitializationEvent); // TrafficLightSensorShort
     initTabBlock(BlockTrafficLightSensorTinyCam.class,
         fmlPreInitializationEvent); // TrafficLightSensorTinyCam
+    initTabBlock(BlockBlankoutBox.class, fmlPreInitializationEvent); // BlankoutBox
     initTabBlock(BlockOverheightDetectionSensor.class,
         fmlPreInitializationEvent); // OverheightDetectionSensor
     initTabBlock(BlockTrafficSignalController.class,

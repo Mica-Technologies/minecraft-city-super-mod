@@ -168,6 +168,9 @@ public class Csm {
           com.micatechnologies.minecraft.csm.trafficsignals.CrosswalkConfigPacketHandler.class,
           com.micatechnologies.minecraft.csm.trafficsignals.CrosswalkConfigPacket.class, Side.SERVER);
       CsmNetwork.registerNetworkMessage(
+          com.micatechnologies.minecraft.csm.trafficsignals.BlankoutBoxConfigPacketHandler.class,
+          com.micatechnologies.minecraft.csm.trafficsignals.BlankoutBoxConfigPacket.class, Side.SERVER);
+      CsmNetwork.registerNetworkMessage(
           com.micatechnologies.minecraft.csm.trafficsignals.SignalControllerConfigPacketHandler.class,
           com.micatechnologies.minecraft.csm.trafficsignals.SignalControllerConfigPacket.class, Side.SERVER);
       CsmNetwork.registerNetworkMessage(
