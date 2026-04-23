@@ -30,9 +30,9 @@
       {
         "model": "csm:trafficsignals/shared_models/crosswalklightsingle_base",
         "textures": {
-          "all": "csm:blocks/trafficsignals/shared_textures/crosswalkman",
-          "particle": "csm:blocks/trafficsignals/shared_textures/crosswalkman",
-          "0": "csm:blocks/trafficsignals/shared_textures/crosswalkhand"
+          "all": "csm:blocks/trafficsignals/crosswalk/crosswalk_16_inch_inventory",
+          "particle": "csm:blocks/trafficsignals/crosswalk/crosswalk_16_inch_inventory",
+          "0": "csm:blocks/trafficsignals/crosswalk/crosswalk_16_inch_inventory"
         }
       }
     ],
