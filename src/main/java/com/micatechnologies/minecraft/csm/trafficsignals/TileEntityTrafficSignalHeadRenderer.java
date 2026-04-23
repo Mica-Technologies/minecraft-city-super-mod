@@ -689,7 +689,7 @@ public class TileEntityTrafficSignalHeadRenderer extends
 
   // Square stub coming out of the signal housing toward the elbow.
   private static final float STUB_SIZE = 2.5f;        // cross-section side — thicker than crosswalk
-  private static final float STUB_LENGTH = 3.0f;      // length from housing to elbow centre
+  private static final float STUB_LENGTH = 5.5f;      // length from housing to elbow centre
   // Elbow: slightly fatter than stub/tube so the 90° turn reads as a cast fitting.
   private static final float ELBOW_SIZE = 3.0f;
   // Pole-direction arm cross-section. Length is computed per-bracket so the arm reaches
