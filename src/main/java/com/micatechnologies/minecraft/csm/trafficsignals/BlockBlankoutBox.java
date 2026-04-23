@@ -1,14 +1,13 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
-import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEW;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignal;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.BlankoutBoxType;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.CrosswalkMountType;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.PropertyInteger;
-import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
@@ -26,19 +25,18 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
-public class BlockBlankoutBox extends AbstractBlockRotatableNSEW
+public class BlockBlankoutBox extends AbstractBlockControllableSignal
         implements ICsmTileEntityProvider {
 
-    public static final PropertyInteger STATE = PropertyInteger.create( "state", 0, 2 );
-    public static final int STATE_ON = 0;
-    public static final int STATE_OFF = 1;
-    public static final int STATE_FLASH = 2;
-
     public BlockBlankoutBox() {
-        super( Material.ROCK, SoundType.METAL, "pickaxe", 1, 2F, 10F, 0F, 0, false );
+        super( Material.ROCK );
+        this.setSoundType( SoundType.METAL );
+        this.setHarvestLevel( "pickaxe", 1 );
+        this.setHardness( 2F );
+        this.setResistance( 10F );
         this.setDefaultState( this.blockState.getBaseState()
                 .withProperty( FACING, EnumFacing.NORTH )
-                .withProperty( STATE, STATE_OFF ) );
+                .withProperty( COLOR, SIGNAL_OFF ) );
     }
 
     @Override
@@ -46,37 +44,23 @@ public class BlockBlankoutBox extends AbstractBlockRotatableNSEW
         return "blankout_box";
     }
 
-    // region Block State
+    // region Signal Properties
 
     @Override
-    @Nonnull
-    protected BlockStateContainer createBlockState() {
-        return new BlockStateContainer( this, FACING, STATE );
+    public SIGNAL_SIDE getSignalSide( World world, BlockPos blockPos ) {
+        TileEntity te = world.getTileEntity( blockPos );
+        if ( te instanceof TileEntityBlankoutBox ) {
+            BlankoutBoxType type = ( (TileEntityBlankoutBox) te ).getBlankoutType();
+            if ( type == BlankoutBoxType.NO_LEFT_TURN || type == BlankoutBoxType.NO_RIGHT_TURN ) {
+                return SIGNAL_SIDE.NO_TURN_BLANKOUT;
+            }
+        }
+        return SIGNAL_SIDE.PEDESTRIAN;
     }
 
     @Override
-    @Nonnull
-    public IBlockState getStateFromMeta( int meta ) {
-        int stateVal = meta % 3;
-        int facingVal = ( meta - stateVal ) / 3;
-        if ( facingVal < 0 || facingVal > 3 ) facingVal = 0;
-        return getDefaultState()
-                .withProperty( FACING, EnumFacing.byHorizontalIndex( facingVal ) )
-                .withProperty( STATE, stateVal );
-    }
-
-    @Override
-    public int getMetaFromState( IBlockState state ) {
-        return state.getValue( FACING ).getHorizontalIndex() * 3 + state.getValue( STATE );
-    }
-
-    @Override
-    @Nonnull
-    public IBlockState getStateForPlacement( World worldIn, BlockPos pos, EnumFacing facing,
-            float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer ) {
-        return this.getDefaultState()
-                .withProperty( FACING, placer.getHorizontalFacing().getOpposite() )
-                .withProperty( STATE, STATE_OFF );
+    public boolean doesFlash() {
+        return true;
     }
 
     // endregion
@@ -129,18 +113,7 @@ public class BlockBlankoutBox extends AbstractBlockRotatableNSEW
     }
 
     @Override
-    public boolean getBlockIsOpaqueCube( IBlockState state ) {
-        return false;
-    }
-
-    @Override
     public boolean getBlockIsFullCube( IBlockState state ) {
-        return false;
-    }
-
-    @Override
-    public boolean getBlockConnectsRedstone( IBlockState state, IBlockAccess access,
-            BlockPos pos, @Nullable EnumFacing facing ) {
         return false;
     }
 

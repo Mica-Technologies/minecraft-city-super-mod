@@ -96,6 +96,8 @@ vehicle detection sensors, and signal overlaps. All traffic signal code lives in
 | `PEDESTRIAN` | Walk/don't walk signal |
 | `PEDESTRIAN_BEACON` | Beacon-style pedestrian signal |
 | `PEDESTRIAN_ACCESSORY` | Crosswalk button or APS block |
+| `BEACON` | Yellow beacon signal (flashes in flash/ramp modes) |
+| `NO_TURN_BLANKOUT` | No-left/no-right-turn blankout box (ON during ped/protected phases) |
 | `NA_SENSOR` | Vehicle detection sensor |
 
 ### Compound Hybrid Left/Right (FYA) Signals
