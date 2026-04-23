@@ -4,6 +4,8 @@ import com.micatechnologies.minecraft.csm.codeutils.CsmVersionChecker;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmProxy;
 import com.micatechnologies.minecraft.csm.codeutils.IHasModel;
 import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityCrosswalkSignal;
+import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityBlankoutBox;
+import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityBlankoutBoxRenderer;
 import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityCrosswalkSignalNew;
 import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityCrosswalkSignalNewRenderer;
 import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityCrosswalkSignalRenderer;
@@ -87,6 +89,7 @@ public class CsmClientProxy implements ICsmProxy {
     ClientRegistry.bindTileEntitySpecialRenderer(TileEntityTrafficSignalHead.class, new TileEntityTrafficSignalHeadRenderer());
     ClientRegistry.bindTileEntitySpecialRenderer(TileEntityCrosswalkSignal.class, new TileEntityCrosswalkSignalRenderer());
     ClientRegistry.bindTileEntitySpecialRenderer(TileEntityCrosswalkSignalNew.class, new TileEntityCrosswalkSignalNewRenderer());
+    ClientRegistry.bindTileEntitySpecialRenderer(TileEntityBlankoutBox.class, new TileEntityBlankoutBoxRenderer());
     ClientRegistry.bindTileEntitySpecialRenderer(
         com.micatechnologies.minecraft.csm.lifesafety.TileEntityFireAlarmStrobe.class,
         new com.micatechnologies.minecraft.csm.lifesafety.TileEntityFireAlarmStrobeRenderer());

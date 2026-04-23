@@ -88,6 +88,9 @@ public class CsmGuiHandler implements IGuiHandler {
       returnValue = new HvacThermostatGui((TileEntityHvacThermostat) tileEntity);
     } else if (id == 7 && tileEntity instanceof TileEntityHvacZoneThermostat) {
       returnValue = new HvacZoneThermostatGui((TileEntityHvacZoneThermostat) tileEntity);
+    } else if (id == 8 && tileEntity instanceof com.micatechnologies.minecraft.csm.trafficsignals.TileEntityBlankoutBox) {
+      returnValue = new com.micatechnologies.minecraft.csm.trafficsignals.BlankoutBoxConfigGui(
+          (com.micatechnologies.minecraft.csm.trafficsignals.TileEntityBlankoutBox) tileEntity);
     }
     return returnValue;
   }

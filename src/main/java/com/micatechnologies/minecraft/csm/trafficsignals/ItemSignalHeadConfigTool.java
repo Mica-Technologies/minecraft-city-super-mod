@@ -54,6 +54,10 @@ public class ItemSignalHeadConfigTool extends AbstractItem {
     // OPEN_GUI mode must run on client side (GuiScreen has no server Container)
     if (worldIn.isRemote && !player.isSneaking()
         && getMode(heldStack) == ItemSignalHeadConfigToolMode.OPEN_GUI) {
+      if (worldIn.getBlockState(pos).getBlock() instanceof BlockBlankoutBox) {
+        player.openGui(Csm.instance, 8, worldIn, pos.getX(), pos.getY(), pos.getZ());
+        return EnumActionResult.SUCCESS;
+      }
       if (worldIn.getBlockState(pos).getBlock() instanceof AbstractBlockControllableCrosswalkSignalNew) {
         player.openGui(Csm.instance, 4, worldIn, pos.getX(), pos.getY(), pos.getZ());
         return EnumActionResult.SUCCESS;
@@ -73,6 +77,63 @@ public class ItemSignalHeadConfigTool extends AbstractItem {
         switchToNextMode(heldStack);
         player.sendMessage(
             new TextComponentString("Signal Head Config Mode: " + getMode(heldStack).getFriendlyName()));
+        return EnumActionResult.SUCCESS;
+      }
+
+      // Handle blankout box blocks
+      if (clickedBlock instanceof BlockBlankoutBox) {
+        TileEntity rawBoTE = worldIn.getTileEntity(pos);
+        if (!(rawBoTE instanceof TileEntityBlankoutBox)) {
+          player.sendMessage(new TextComponentString("Blankout box tile entity missing."));
+          return EnumActionResult.FAIL;
+        }
+        TileEntityBlankoutBox boTe = (TileEntityBlankoutBox) rawBoTE;
+        switch (mode) {
+          case CYCLE_BODY_COLOR: {
+            var next = boTe.getNextBodyPaintColor();
+            player.sendMessage(new TextComponentString("Body color: " + next.getFriendlyName()));
+            break;
+          }
+          case CYCLE_VISOR_COLOR: {
+            var next = boTe.getNextVisorPaintColor();
+            player.sendMessage(new TextComponentString("Visor color: " + next.getFriendlyName()));
+            break;
+          }
+          case CYCLE_VISOR_TYPE: {
+            var next = boTe.getNextVisorType();
+            player.sendMessage(new TextComponentString("Visor type: " + next.getFriendlyName()));
+            break;
+          }
+          case CYCLE_BODY_TILT: {
+            var next = boTe.getNextBodyTilt();
+            player.sendMessage(new TextComponentString("Body tilt: " + next.getFriendlyName()));
+            break;
+          }
+          case CYCLE_MOUNT_TYPE: {
+            var next = boTe.getNextMountType();
+            player.sendMessage(new TextComponentString("Mount type: " + next.getFriendlyName()));
+            break;
+          }
+          case CYCLE_SIGNAL_COLOR: {
+            worldIn.setBlockState(pos, state.cycleProperty(BlockBlankoutBox.STATE));
+            int newState = worldIn.getBlockState(pos).getValue(BlockBlankoutBox.STATE);
+            String stateName = newState == 0 ? "On" : newState == 1 ? "Off" : "Flash";
+            player.sendMessage(new TextComponentString("State set to " + stateName));
+            break;
+          }
+          case CYCLE_BULB_TYPE: {
+            var next = boTe.getNextBlankoutType();
+            player.sendMessage(new TextComponentString("Sign type: " + next.getFriendlyName()));
+            break;
+          }
+          case CYCLE_DOOR_COLOR:
+          case CYCLE_BULB_STYLE:
+          case TOGGLE_ALTERNATE_FLASH:
+            player.sendMessage(new TextComponentString("Not applicable to blankout boxes."));
+            break;
+          case OPEN_GUI:
+            break;
+        }
         return EnumActionResult.SUCCESS;
       }
 
