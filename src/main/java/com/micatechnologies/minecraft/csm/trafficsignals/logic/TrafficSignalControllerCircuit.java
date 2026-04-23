@@ -86,6 +86,8 @@ public class TrafficSignalControllerCircuit {
   private static final String NBT_KEY_BEACON_SIGNAL_LIST = "bS";
   private static final String LEGACY_NBT_KEY_BEACON_SIGNAL_LIST = "beaconSignalList";
 
+  private static final String NBT_KEY_NO_TURN_BLANKOUT_SIGNAL_LIST = "ntb";
+
   private static final String NBT_KEY_SENSOR_LIST = "se";
   private static final String LEGACY_NBT_KEY_SENSOR_LIST = "sensorList";
 
@@ -161,6 +163,8 @@ public class TrafficSignalControllerCircuit {
    * yellow in both flash mode and ramp meter active mode.
    */
   private final List<BlockPos> beaconSignals = new ArrayList<>();
+
+  private final List<BlockPos> noTurnBlankoutSignals = new ArrayList<>();
 
   /**
    * The list of {@link BlockPos}es of sensors in the circuit.
@@ -248,6 +252,12 @@ public class TrafficSignalControllerCircuit {
     if (nbt.hasKey(NBT_KEY_BEACON_SIGNAL_LIST) || nbt.hasKey(LEGACY_NBT_KEY_BEACON_SIGNAL_LIST)) {
       circuit.beaconSignals.addAll(readPosList(nbt, NBT_KEY_BEACON_SIGNAL_LIST,
           LEGACY_NBT_KEY_BEACON_SIGNAL_LIST));
+    }
+
+    if (nbt.hasKey(NBT_KEY_NO_TURN_BLANKOUT_SIGNAL_LIST)) {
+      circuit.noTurnBlankoutSignals.addAll(
+          SerializationUtils.getBlockPosListFromBlockPosNBTArray(
+              nbt.getTag(NBT_KEY_NO_TURN_BLANKOUT_SIGNAL_LIST)));
     }
 
     // Deserialize sensors
@@ -398,6 +408,10 @@ public class TrafficSignalControllerCircuit {
 
   public List<BlockPos> getBeaconSignals() {
     return beaconSignals;
+  }
+
+  public List<BlockPos> getNoTurnBlankoutSignals() {
+    return noTurnBlankoutSignals;
   }
 
   /**
@@ -567,6 +581,7 @@ public class TrafficSignalControllerCircuit {
     pedestrianAccessorySignals.forEach(action);
     protectedSignals.forEach(action);
     beaconSignals.forEach(action);
+    noTurnBlankoutSignals.forEach(action);
   }
 
   /**
@@ -591,6 +606,7 @@ public class TrafficSignalControllerCircuit {
         pedestrianAccessorySignals.contains(devicePos) ||
         protectedSignals.contains(devicePos) ||
         beaconSignals.contains(devicePos) ||
+        noTurnBlankoutSignals.contains(devicePos) ||
         sensors.contains(devicePos);
   }
 
@@ -808,6 +824,8 @@ public class TrafficSignalControllerCircuit {
       return linkFlashingRightSignal(devicePos);
     } else if (side == SIGNAL_SIDE.BEACON) {
       return linkBeaconSignal(devicePos);
+    } else if (side == SIGNAL_SIDE.NO_TURN_BLANKOUT) {
+      return linkNoTurnBlankoutSignal(devicePos);
     } else if (side == SIGNAL_SIDE.NA_SENSOR) {
       return linkSensor(devicePos);
     }
@@ -895,6 +913,10 @@ public class TrafficSignalControllerCircuit {
     return beaconSignals.add(signalPos);
   }
 
+  public boolean linkNoTurnBlankoutSignal(BlockPos signalPos) {
+    return noTurnBlankoutSignals.add(signalPos);
+  }
+
   /**
    * Links the specified signal {@link BlockPos} to this circuit as a flashing left signal
    *
@@ -939,6 +961,7 @@ public class TrafficSignalControllerCircuit {
       removed |= pedestrianAccessorySignals.remove(blockPos);
       removed |= protectedSignals.remove(blockPos);
       removed |= beaconSignals.remove(blockPos);
+      removed |= noTurnBlankoutSignals.remove(blockPos);
       removed |= sensors.remove(blockPos);
     }
     return removed;
@@ -962,6 +985,7 @@ public class TrafficSignalControllerCircuit {
         pedestrianAccessorySignals.size() +
         protectedSignals.size() +
         beaconSignals.size() +
+        noTurnBlankoutSignals.size() +
         sensors.size();
   }
 
@@ -1133,6 +1157,9 @@ public class TrafficSignalControllerCircuit {
     // Serialize beacon signals
     compound.setTag(NBT_KEY_BEACON_SIGNAL_LIST,
         SerializationUtils.getBlockPosNBTArrayFromBlockPosList(beaconSignals));
+
+    compound.setTag(NBT_KEY_NO_TURN_BLANKOUT_SIGNAL_LIST,
+        SerializationUtils.getBlockPosNBTArrayFromBlockPosList(noTurnBlankoutSignals));
 
     // Serialize sensors
     compound.setTag(NBT_KEY_SENSOR_LIST,

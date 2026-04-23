@@ -57,7 +57,8 @@ public class TileEntityBlankoutBoxRenderer
         }
 
         EnumFacing facing = blockState.getValue( BlockBlankoutBox.FACING );
-        int stateValue = blockState.getValue( BlockBlankoutBox.STATE );
+        int colorValue = blockState.getValue(
+                com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignal.COLOR );
 
         TrafficSignalBodyColor bodyColor = te.getBodyColor();
         TrafficSignalBodyColor visorColor = te.getVisorColor();
@@ -147,7 +148,7 @@ public class TileEntityBlankoutBoxRenderer
         // Display face texture
         boolean flashOn = ( CsmRenderUtils.gameMillis( te.getWorld(), partialTicks )
                 % 1000L ) < 500L;
-        renderDisplayFace( blankoutType, stateValue, flashOn );
+        renderDisplayFace( blankoutType, colorValue, flashOn );
 
         GL11.glPopMatrix();
 
@@ -219,22 +220,38 @@ public class TileEntityBlankoutBoxRenderer
         }
     }
 
-    private void renderDisplayFace( BlankoutBoxType blankoutType, int stateValue,
+    private void renderDisplayFace( BlankoutBoxType blankoutType, int colorValue,
             boolean flashOn ) {
         GL11.glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
 
         boolean showOn;
-        switch ( stateValue ) {
-            case BlockBlankoutBox.STATE_ON:
-                showOn = true;
-                break;
-            case BlockBlankoutBox.STATE_FLASH:
-                showOn = flashOn;
-                break;
-            case BlockBlankoutBox.STATE_OFF:
-            default:
-                showOn = false;
-                break;
+        if ( blankoutType == BlankoutBoxType.NO_LEFT_TURN
+                || blankoutType == BlankoutBoxType.NO_RIGHT_TURN ) {
+            // No-turn blankouts: ON during ped/protected phases (GREEN), OFF otherwise
+            switch ( colorValue ) {
+                case AbstractBlockControllableSignalHead.SIGNAL_GREEN:
+                    showOn = true;
+                    break;
+                case AbstractBlockControllableSignalHead.SIGNAL_YELLOW:
+                    showOn = true;
+                    break;
+                default:
+                    showOn = false;
+                    break;
+            }
+        } else {
+            // Dont-walk / Do-not-enter: inverted pedestrian mapping
+            switch ( colorValue ) {
+                case AbstractBlockControllableSignalHead.SIGNAL_RED:
+                    showOn = true;
+                    break;
+                case AbstractBlockControllableSignalHead.SIGNAL_YELLOW:
+                    showOn = flashOn;
+                    break;
+                default:
+                    showOn = false;
+                    break;
+            }
         }
 
         int atlasIdx = BlankoutBoxTextureMap.getAtlasIndex( blankoutType, showOn );

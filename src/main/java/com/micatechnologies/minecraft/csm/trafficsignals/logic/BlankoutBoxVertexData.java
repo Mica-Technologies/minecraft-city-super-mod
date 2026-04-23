@@ -150,17 +150,17 @@ public class BlankoutBoxVertexData {
                 break;
             case LEFT:
                 addAngledArm2D( boxes, hx2, hx2 + 0.01f, hz1,
-                        BODY_X_MAX - 1.0f, BODY_X_MAX, MOUNT_Z1 + 1.0f,
+                        31.0f, 32.0f, MOUNT_Z1 + 1.0f,
                         LOWER_ARM_Y, LOWER_ARM_Y + 1.0f );
                 addAngledArm2D( boxes, hx2, hx2 + 0.01f, hz1,
-                        BODY_X_MAX - 1.0f, BODY_X_MAX, MOUNT_Z1 + 1.0f,
+                        31.0f, 32.0f, MOUNT_Z1 + 1.0f,
                         UPPER_ARM_Y - 1.0f, UPPER_ARM_Y );
                 break;
             case RIGHT:
-                addAngledArm2D( boxes, BODY_X_MIN, BODY_X_MIN + 1.0f, MOUNT_Z1 + 1.0f,
+                addAngledArm2D( boxes, -16.0f, -15.0f, MOUNT_Z1 + 1.0f,
                         hx1 - 0.01f, hx1, hz1,
                         LOWER_ARM_Y, LOWER_ARM_Y + 1.0f );
-                addAngledArm2D( boxes, BODY_X_MIN, BODY_X_MIN + 1.0f, MOUNT_Z1 + 1.0f,
+                addAngledArm2D( boxes, -16.0f, -15.0f, MOUNT_Z1 + 1.0f,
                         hx1 - 0.01f, hx1, hz1,
                         UPPER_ARM_Y - 1.0f, UPPER_ARM_Y );
                 break;

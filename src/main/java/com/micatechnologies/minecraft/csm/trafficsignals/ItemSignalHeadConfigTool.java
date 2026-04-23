@@ -115,10 +115,9 @@ public class ItemSignalHeadConfigTool extends AbstractItem {
             break;
           }
           case CYCLE_SIGNAL_COLOR: {
-            worldIn.setBlockState(pos, state.cycleProperty(BlockBlankoutBox.STATE));
-            int newState = worldIn.getBlockState(pos).getValue(BlockBlankoutBox.STATE);
-            String stateName = newState == 0 ? "On" : newState == 1 ? "Off" : "Flash";
-            player.sendMessage(new TextComponentString("State set to " + stateName));
+            worldIn.setBlockState(pos, state.cycleProperty(AbstractBlockControllableSignal.COLOR));
+            int newColor = worldIn.getBlockState(pos).getValue(AbstractBlockControllableSignal.COLOR);
+            player.sendMessage(new TextComponentString("Signal color set to " + colorName(newColor)));
             break;
           }
           case CYCLE_BULB_TYPE: {

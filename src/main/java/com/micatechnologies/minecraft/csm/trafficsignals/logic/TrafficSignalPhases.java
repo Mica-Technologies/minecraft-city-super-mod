@@ -224,6 +224,7 @@ public class TrafficSignalPhases {
       offPhase.addOffSignals(circuit.getBeaconSignals());
       offPhase.addOffSignals(circuit.getPedestrianBeaconSignals());
       offPhase.addOffSignals(circuit.getPedestrianAccessorySignals());
+      offPhase.addOffSignals(circuit.getNoTurnBlankoutSignals());
     }
     phases[PHASE_INDEX_OFF] = offPhase;
 
@@ -276,6 +277,7 @@ public class TrafficSignalPhases {
         flashPhase1.addOffSignals(beaconSignals.getSecond());
         flashPhase1.addOffSignals(circuit.getPedestrianSignals());
         flashPhase1.addOffSignals(circuit.getPedestrianAccessorySignals());
+        flashPhase1.addOffSignals(circuit.getNoTurnBlankoutSignals());
         if (hasProtectedSignals) {
           flashPhase1.addRedSignals(flashingRightSignals.getFirst());
           flashPhase1.addOffSignals(flashingRightSignals.getSecond());
@@ -303,6 +305,7 @@ public class TrafficSignalPhases {
         flashPhase1.addOffSignals(circuit.getPedestrianSignals());
         flashPhase1.addOffSignals(circuit.getPedestrianBeaconSignals());
         flashPhase1.addOffSignals(circuit.getPedestrianAccessorySignals());
+        flashPhase1.addOffSignals(circuit.getNoTurnBlankoutSignals());
       } else {
         // Get should flash filtered signal lists
         Tuple<List<BlockPos>, List<BlockPos>> flashingLeftSignals
@@ -346,6 +349,7 @@ public class TrafficSignalPhases {
         flashPhase1.addYellowSignals(circuit.getBeaconSignals());
         flashPhase1.addOffSignals(circuit.getPedestrianSignals());
         flashPhase1.addOffSignals(circuit.getPedestrianAccessorySignals());
+        flashPhase1.addOffSignals(circuit.getNoTurnBlankoutSignals());
       }
       circuitIndex++;
     }
@@ -399,6 +403,7 @@ public class TrafficSignalPhases {
         flashPhase2.addYellowSignals(circuit.getBeaconSignals());
         flashPhase2.addOffSignals(circuit.getPedestrianSignals());
         flashPhase2.addOffSignals(circuit.getPedestrianAccessorySignals());
+        flashPhase2.addOffSignals(circuit.getNoTurnBlankoutSignals());
       } else {
         flashPhase2.addOffSignals(circuit.getFlashingLeftSignals());
         flashPhase2.addOffSignals(circuit.getFlashingRightSignals());
@@ -411,6 +416,7 @@ public class TrafficSignalPhases {
         flashPhase2.addOffSignals(circuit.getPedestrianBeaconSignals());
         flashPhase2.addOffSignals(circuit.getPedestrianSignals());
         flashPhase2.addOffSignals(circuit.getPedestrianAccessorySignals());
+        flashPhase2.addOffSignals(circuit.getNoTurnBlankoutSignals());
       }
       circuitIndex++;
     }
@@ -434,6 +440,7 @@ public class TrafficSignalPhases {
         faultPhase1.addOffSignals(circuit.getPedestrianBeaconSignals());
         faultPhase1.addOffSignals(circuit.getPedestrianSignals());
         faultPhase1.addOffSignals(circuit.getPedestrianAccessorySignals());
+        faultPhase1.addOffSignals(circuit.getNoTurnBlankoutSignals());
       } else {
         faultPhase1.addRedSignals(circuit.getFlashingLeftSignals());
         faultPhase1.addRedSignals(circuit.getFlashingRightSignals());
@@ -445,6 +452,7 @@ public class TrafficSignalPhases {
         faultPhase1.addRedSignals(circuit.getPedestrianBeaconSignals());
         faultPhase1.addOffSignals(circuit.getPedestrianSignals());
         faultPhase1.addOffSignals(circuit.getPedestrianAccessorySignals());
+        faultPhase1.addOffSignals(circuit.getNoTurnBlankoutSignals());
       }
       circuitIndex++;
     }
@@ -468,6 +476,7 @@ public class TrafficSignalPhases {
         faultPhase2.addRedSignals(circuit.getPedestrianBeaconSignals());
         faultPhase2.addOffSignals(circuit.getPedestrianSignals());
         faultPhase2.addOffSignals(circuit.getPedestrianAccessorySignals());
+        faultPhase2.addOffSignals(circuit.getNoTurnBlankoutSignals());
       } else {
         faultPhase2.addOffSignals(circuit.getFlashingLeftSignals());
         faultPhase2.addOffSignals(circuit.getFlashingRightSignals());
@@ -479,6 +488,7 @@ public class TrafficSignalPhases {
         faultPhase2.addOffSignals(circuit.getPedestrianBeaconSignals());
         faultPhase2.addOffSignals(circuit.getPedestrianSignals());
         faultPhase2.addOffSignals(circuit.getPedestrianAccessorySignals());
+        faultPhase2.addOffSignals(circuit.getNoTurnBlankoutSignals());
       }
       circuitIndex++;
     }
@@ -499,6 +509,7 @@ public class TrafficSignalPhases {
       allRedPhase.addRedSignals(circuit.getPedestrianBeaconSignals());
       allRedPhase.addDontWalkSignals(circuit.getPedestrianSignals());
       allRedPhase.addDontWalkSignals(circuit.getPedestrianAccessorySignals());
+      allRedPhase.addOffSignals(circuit.getNoTurnBlankoutSignals());
     }
     phases[PHASE_INDEX_ALL_RED] = allRedPhase;
 
@@ -518,6 +529,7 @@ public class TrafficSignalPhases {
       rampMeterDisabledPhase.addOffSignals(circuit.getPedestrianBeaconSignals());
       rampMeterDisabledPhase.addOffSignals(circuit.getPedestrianSignals());
       rampMeterDisabledPhase.addOffSignals(circuit.getPedestrianAccessorySignals());
+      rampMeterDisabledPhase.addOffSignals(circuit.getNoTurnBlankoutSignals());
     }
     phases[PHASE_INDEX_RAMP_METER_DISABLED] = rampMeterDisabledPhase;
 
@@ -537,6 +549,7 @@ public class TrafficSignalPhases {
       rampMeterStartingPhase.addOffSignals(circuit.getPedestrianBeaconSignals());
       rampMeterStartingPhase.addOffSignals(circuit.getPedestrianSignals());
       rampMeterStartingPhase.addOffSignals(circuit.getPedestrianAccessorySignals());
+      rampMeterStartingPhase.addOffSignals(circuit.getNoTurnBlankoutSignals());
     }
     phases[PHASE_INDEX_RAMP_METER_STARTING] = rampMeterStartingPhase;
 
@@ -557,6 +570,7 @@ public class TrafficSignalPhases {
       rampMeterFlash1Phase.addOffSignals(circuit.getPedestrianBeaconSignals());
       rampMeterFlash1Phase.addFlashDontWalkSignals(circuit.getPedestrianSignals());
       rampMeterFlash1Phase.addOffSignals(circuit.getPedestrianAccessorySignals());
+      rampMeterFlash1Phase.addGreenSignals(circuit.getNoTurnBlankoutSignals());
     }
     phases[PHASE_INDEX_RAMP_METER_FLASH_1] = rampMeterFlash1Phase;
 
@@ -575,6 +589,7 @@ public class TrafficSignalPhases {
       rampMeterFlash2Phase.addOffSignals(circuit.getPedestrianBeaconSignals());
       rampMeterFlash2Phase.addFlashDontWalkSignals(circuit.getPedestrianSignals());
       rampMeterFlash2Phase.addOffSignals(circuit.getPedestrianAccessorySignals());
+      rampMeterFlash2Phase.addGreenSignals(circuit.getNoTurnBlankoutSignals());
     }
     phases[PHASE_INDEX_RAMP_METER_FLASH_2] = rampMeterFlash2Phase;
 
@@ -596,6 +611,7 @@ public class TrafficSignalPhases {
         requestableDefaultGreenPhase.addOffSignals(circuit.getBeaconSignals());
         requestableDefaultGreenPhase.addWalkSignals(circuit.getPedestrianSignals());
         requestableDefaultGreenPhase.addWalkSignals(circuit.getPedestrianAccessorySignals());
+        requestableDefaultGreenPhase.addGreenSignals(circuit.getNoTurnBlankoutSignals());
       }
       // Handle second + higher circuits
       else {
@@ -609,6 +625,7 @@ public class TrafficSignalPhases {
         requestableDefaultGreenPhase.addRedSignals(circuit.getPedestrianBeaconSignals());
         requestableDefaultGreenPhase.addDontWalkSignals(circuit.getPedestrianSignals());
         requestableDefaultGreenPhase.addDontWalkSignals(circuit.getPedestrianAccessorySignals());
+        requestableDefaultGreenPhase.addOffSignals(circuit.getNoTurnBlankoutSignals());
       }
       circuitIndex++;
     }
@@ -634,6 +651,7 @@ public class TrafficSignalPhases {
         requestableDefaultGreenFlashDwPhase.addFlashDontWalkSignals(circuit.getPedestrianSignals());
         requestableDefaultGreenFlashDwPhase.addFlashDontWalkSignals(
             circuit.getPedestrianAccessorySignals());
+        requestableDefaultGreenFlashDwPhase.addGreenSignals(circuit.getNoTurnBlankoutSignals());
       }
       // Handle second + higher circuits
       else {
@@ -648,6 +666,7 @@ public class TrafficSignalPhases {
         requestableDefaultGreenFlashDwPhase.addDontWalkSignals(circuit.getPedestrianSignals());
         requestableDefaultGreenFlashDwPhase.addDontWalkSignals(
             circuit.getPedestrianAccessorySignals());
+        requestableDefaultGreenFlashDwPhase.addOffSignals(circuit.getNoTurnBlankoutSignals());
       }
       circuitIndex++;
     }
@@ -676,6 +695,8 @@ public class TrafficSignalPhases {
             circuit.getPedestrianSignals());
         requestableDefaultGreenFlashDwHawkPhase1.addFlashDontWalkSignals(
             circuit.getPedestrianAccessorySignals());
+        requestableDefaultGreenFlashDwHawkPhase1.addGreenSignals(
+            circuit.getNoTurnBlankoutSignals());
       }
       // Handle second + higher circuits
       else {
@@ -691,6 +712,8 @@ public class TrafficSignalPhases {
         requestableDefaultGreenFlashDwHawkPhase1.addDontWalkSignals(circuit.getPedestrianSignals());
         requestableDefaultGreenFlashDwHawkPhase1.addDontWalkSignals(
             circuit.getPedestrianAccessorySignals());
+        requestableDefaultGreenFlashDwHawkPhase1.addOffSignals(
+            circuit.getNoTurnBlankoutSignals());
       }
       circuitIndex++;
     }
@@ -720,6 +743,8 @@ public class TrafficSignalPhases {
             circuit.getPedestrianSignals());
         requestableDefaultGreenFlashDwHawkPhase2.addFlashDontWalkSignals(
             circuit.getPedestrianAccessorySignals());
+        requestableDefaultGreenFlashDwHawkPhase2.addGreenSignals(
+            circuit.getNoTurnBlankoutSignals());
       }
       // Handle second + higher circuits
       else {
@@ -735,6 +760,8 @@ public class TrafficSignalPhases {
         requestableDefaultGreenFlashDwHawkPhase2.addDontWalkSignals(circuit.getPedestrianSignals());
         requestableDefaultGreenFlashDwHawkPhase2.addDontWalkSignals(
             circuit.getPedestrianAccessorySignals());
+        requestableDefaultGreenFlashDwHawkPhase2.addOffSignals(
+            circuit.getNoTurnBlankoutSignals());
       }
       circuitIndex++;
     }
@@ -759,6 +786,7 @@ public class TrafficSignalPhases {
         requestableDefaultYellowPhase.addYellowSignals(circuit.getPedestrianBeaconSignals());
         requestableDefaultYellowPhase.addDontWalkSignals(circuit.getPedestrianSignals());
         requestableDefaultYellowPhase.addDontWalkSignals(circuit.getPedestrianAccessorySignals());
+        requestableDefaultYellowPhase.addOffSignals(circuit.getNoTurnBlankoutSignals());
       }
       // Handle second + higher circuits
       else {
@@ -772,6 +800,7 @@ public class TrafficSignalPhases {
         requestableDefaultYellowPhase.addGreenSignals(circuit.getPedestrianBeaconSignals());
         requestableDefaultYellowPhase.addDontWalkSignals(circuit.getPedestrianSignals());
         requestableDefaultYellowPhase.addDontWalkSignals(circuit.getPedestrianAccessorySignals());
+        requestableDefaultYellowPhase.addOffSignals(circuit.getNoTurnBlankoutSignals());
       }
       circuitIndex++;
     }
@@ -795,6 +824,7 @@ public class TrafficSignalPhases {
         requestableDefaultRedPhase.addRedSignals(circuit.getPedestrianBeaconSignals());
         requestableDefaultRedPhase.addDontWalkSignals(circuit.getPedestrianSignals());
         requestableDefaultRedPhase.addDontWalkSignals(circuit.getPedestrianAccessorySignals());
+        requestableDefaultRedPhase.addOffSignals(circuit.getNoTurnBlankoutSignals());
       }
       // Handle second + higher circuits
       else {
@@ -808,6 +838,7 @@ public class TrafficSignalPhases {
         requestableDefaultRedPhase.addGreenSignals(circuit.getPedestrianBeaconSignals());
         requestableDefaultRedPhase.addDontWalkSignals(circuit.getPedestrianSignals());
         requestableDefaultRedPhase.addDontWalkSignals(circuit.getPedestrianAccessorySignals());
+        requestableDefaultRedPhase.addOffSignals(circuit.getNoTurnBlankoutSignals());
       }
       circuitIndex++;
     }
@@ -831,6 +862,7 @@ public class TrafficSignalPhases {
         requestableServiceGreenPhase.addRedSignals(circuit.getPedestrianBeaconSignals());
         requestableServiceGreenPhase.addDontWalkSignals(circuit.getPedestrianSignals());
         requestableServiceGreenPhase.addDontWalkSignals(circuit.getPedestrianAccessorySignals());
+        requestableServiceGreenPhase.addOffSignals(circuit.getNoTurnBlankoutSignals());
       }
       // Handle second + higher circuits
       else {
@@ -844,6 +876,7 @@ public class TrafficSignalPhases {
         requestableServiceGreenPhase.addOffSignals(circuit.getPedestrianBeaconSignals());
         requestableServiceGreenPhase.addWalkSignals(circuit.getPedestrianSignals());
         requestableServiceGreenPhase.addWalkSignals(circuit.getPedestrianAccessorySignals());
+        requestableServiceGreenPhase.addGreenSignals(circuit.getNoTurnBlankoutSignals());
       }
       circuitIndex++;
     }
@@ -869,6 +902,7 @@ public class TrafficSignalPhases {
         requestableServiceGreenFlashDwPhase.addDontWalkSignals(circuit.getPedestrianSignals());
         requestableServiceGreenFlashDwPhase.addDontWalkSignals(
             circuit.getPedestrianAccessorySignals());
+        requestableServiceGreenFlashDwPhase.addOffSignals(circuit.getNoTurnBlankoutSignals());
       }
       // Handle second + higher circuits
       else {
@@ -883,6 +917,7 @@ public class TrafficSignalPhases {
         requestableServiceGreenFlashDwPhase.addFlashDontWalkSignals(circuit.getPedestrianSignals());
         requestableServiceGreenFlashDwPhase.addFlashDontWalkSignals(
             circuit.getPedestrianAccessorySignals());
+        requestableServiceGreenFlashDwPhase.addGreenSignals(circuit.getNoTurnBlankoutSignals());
       }
       circuitIndex++;
     }
@@ -910,6 +945,8 @@ public class TrafficSignalPhases {
         requestableServiceGreenFlashDwHawkPhase1.addDontWalkSignals(circuit.getPedestrianSignals());
         requestableServiceGreenFlashDwHawkPhase1.addDontWalkSignals(
             circuit.getPedestrianAccessorySignals());
+        requestableServiceGreenFlashDwHawkPhase1.addOffSignals(
+            circuit.getNoTurnBlankoutSignals());
       }
       // Handle second + higher circuits
       else {
@@ -926,6 +963,8 @@ public class TrafficSignalPhases {
             circuit.getPedestrianSignals());
         requestableServiceGreenFlashDwHawkPhase1.addFlashDontWalkSignals(
             circuit.getPedestrianAccessorySignals());
+        requestableServiceGreenFlashDwHawkPhase1.addGreenSignals(
+            circuit.getNoTurnBlankoutSignals());
       }
       circuitIndex++;
     }
@@ -954,6 +993,8 @@ public class TrafficSignalPhases {
         requestableServiceGreenFlashDwHawkPhase2.addDontWalkSignals(circuit.getPedestrianSignals());
         requestableServiceGreenFlashDwHawkPhase2.addDontWalkSignals(
             circuit.getPedestrianAccessorySignals());
+        requestableServiceGreenFlashDwHawkPhase2.addOffSignals(
+            circuit.getNoTurnBlankoutSignals());
       }
       // Handle second + higher circuits
       else {
@@ -970,6 +1011,8 @@ public class TrafficSignalPhases {
             circuit.getPedestrianSignals());
         requestableServiceGreenFlashDwHawkPhase2.addFlashDontWalkSignals(
             circuit.getPedestrianAccessorySignals());
+        requestableServiceGreenFlashDwHawkPhase2.addGreenSignals(
+            circuit.getNoTurnBlankoutSignals());
       }
       circuitIndex++;
     }
@@ -994,6 +1037,7 @@ public class TrafficSignalPhases {
         requestableServiceYellowPhase.addGreenSignals(circuit.getPedestrianBeaconSignals());
         requestableServiceYellowPhase.addDontWalkSignals(circuit.getPedestrianSignals());
         requestableServiceYellowPhase.addDontWalkSignals(circuit.getPedestrianAccessorySignals());
+        requestableServiceYellowPhase.addOffSignals(circuit.getNoTurnBlankoutSignals());
       }
       // Handle second + higher circuits
       else {
@@ -1007,6 +1051,7 @@ public class TrafficSignalPhases {
         requestableServiceYellowPhase.addYellowSignals(circuit.getPedestrianBeaconSignals());
         requestableServiceYellowPhase.addDontWalkSignals(circuit.getPedestrianSignals());
         requestableServiceYellowPhase.addDontWalkSignals(circuit.getPedestrianAccessorySignals());
+        requestableServiceYellowPhase.addOffSignals(circuit.getNoTurnBlankoutSignals());
       }
       circuitIndex++;
     }
@@ -1030,6 +1075,7 @@ public class TrafficSignalPhases {
         requestableServiceRedPhase.addGreenSignals(circuit.getPedestrianBeaconSignals());
         requestableServiceRedPhase.addDontWalkSignals(circuit.getPedestrianSignals());
         requestableServiceRedPhase.addDontWalkSignals(circuit.getPedestrianAccessorySignals());
+        requestableServiceRedPhase.addOffSignals(circuit.getNoTurnBlankoutSignals());
       }
       // Handle second + higher circuits
       else {
@@ -1043,6 +1089,7 @@ public class TrafficSignalPhases {
         requestableServiceRedPhase.addRedSignals(circuit.getPedestrianBeaconSignals());
         requestableServiceRedPhase.addDontWalkSignals(circuit.getPedestrianSignals());
         requestableServiceRedPhase.addDontWalkSignals(circuit.getPedestrianAccessorySignals());
+        requestableServiceRedPhase.addOffSignals(circuit.getNoTurnBlankoutSignals());
       }
       circuitIndex++;
     }
