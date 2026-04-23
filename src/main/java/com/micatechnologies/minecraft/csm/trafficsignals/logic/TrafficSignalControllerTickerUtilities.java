@@ -494,8 +494,9 @@ public class TrafficSignalControllerTickerUtilities {
           // Check if all facing same direction
           boolean allFacingSameDir = circuit.areSignalsFacingSameDirection(world);
 
-          if (greenLeftTurn ||
-              (allFacingSameDir && !hasProtectedSignals && !overlapPedestrianSignals)) {
+          boolean hasLeftSignals = !circuit.getLeftSignals().isEmpty();
+          if (hasLeftSignals && (greenLeftTurn ||
+              (allFacingSameDir && !hasProtectedSignals && !overlapPedestrianSignals))) {
             defaultPhase.addOffSignals(circuit.getFlashingLeftSignals());
             defaultPhase.addGreenSignals(circuit.getLeftSignals());
           } else {
@@ -1286,6 +1287,13 @@ public class TrafficSignalControllerTickerUtilities {
       return 0;
     }
 
+    // If the circuit has no regular left signals, ALL_LEFTS cannot be served — there is
+    // no signal to display a protected green arrow. Left turns are handled permissively
+    // via FYA during through phases instead.
+    if (circuit.getLeftSignals().isEmpty()) {
+      return 0;
+    }
+
     // ALL_LEFTS is only safe when all signals on the circuit face the same direction.
     // On a multi-direction circuit, opposing left turns conflict with each other —
     // left demand must be served permissively via FYA, never as a protected phase.
@@ -1295,7 +1303,7 @@ public class TrafficSignalControllerTickerUtilities {
 
     // Determine which directions have flashing left signals (FYA)
     boolean fyaEast = false, fyaWest = false, fyaNorth = false, fyaSouth = false;
-    for (BlockPos signalPos : circuit.getFlashingLeftSignals()) {
+    if (world != null) for (BlockPos signalPos : circuit.getFlashingLeftSignals()) {
       IBlockState blockState = world.getBlockState(signalPos);
       if (blockState.getBlock() instanceof AbstractBlockControllableSignal) {
         EnumFacing facing = blockState.getValue(BlockHorizontal.FACING);
