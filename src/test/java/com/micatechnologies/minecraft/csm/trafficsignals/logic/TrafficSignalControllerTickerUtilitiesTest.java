@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import org.junit.jupiter.api.DisplayName;
@@ -2640,6 +2641,791 @@ class TrafficSignalControllerTickerUtilitiesTest {
 
       assertEquals(TrafficSignalPhaseApplicability.ALL_RED, allRed.getApplicability(),
           "Cached ALL_RED phase must have ALL_RED applicability");
+    }
+  }
+
+  // ========================================================================
+  // TrafficSignalControllerOverlaps
+  // ========================================================================
+  @Nested
+  @DisplayName("TrafficSignalControllerOverlaps")
+  class OverlapsTest {
+
+    @Test
+    @DisplayName("addOverlap returns true on first add")
+    void addOverlap_returnsTrue() {
+      TrafficSignalControllerOverlaps overlaps = new TrafficSignalControllerOverlaps();
+      assertTrue(overlaps.addOverlap(new BlockPos(1, 0, 0), new BlockPos(2, 0, 0)));
+    }
+
+    @Test
+    @DisplayName("addOverlap returns false on duplicate")
+    void addOverlap_duplicate_returnsFalse() {
+      TrafficSignalControllerOverlaps overlaps = new TrafficSignalControllerOverlaps();
+      overlaps.addOverlap(new BlockPos(1, 0, 0), new BlockPos(2, 0, 0));
+      assertFalse(overlaps.addOverlap(new BlockPos(1, 0, 0), new BlockPos(2, 0, 0)));
+    }
+
+    @Test
+    @DisplayName("getOverlapCount reflects added entries")
+    void getOverlapCount() {
+      TrafficSignalControllerOverlaps overlaps = new TrafficSignalControllerOverlaps();
+      assertEquals(0, overlaps.getOverlapCount());
+      overlaps.addOverlap(new BlockPos(1, 0, 0), new BlockPos(2, 0, 0));
+      assertEquals(1, overlaps.getOverlapCount());
+      overlaps.addOverlap(new BlockPos(3, 0, 0), new BlockPos(4, 0, 0));
+      assertEquals(2, overlaps.getOverlapCount());
+    }
+
+    @Test
+    @DisplayName("multiple targets for same source")
+    void multipleTargetsSameSource() {
+      TrafficSignalControllerOverlaps overlaps = new TrafficSignalControllerOverlaps();
+      BlockPos source = new BlockPos(1, 0, 0);
+      overlaps.addOverlap(source, new BlockPos(2, 0, 0));
+      overlaps.addOverlap(source, new BlockPos(3, 0, 0));
+      assertEquals(1, overlaps.getOverlapCount());
+      List<BlockPos> targets = overlaps.getOverlapsForSource(source);
+      assertNotNull(targets);
+      assertEquals(2, targets.size());
+    }
+
+    @Test
+    @DisplayName("getOverlapsForSource returns null for unknown source")
+    void getOverlapsForSource_unknown() {
+      TrafficSignalControllerOverlaps overlaps = new TrafficSignalControllerOverlaps();
+      assertNull(overlaps.getOverlapsForSource(new BlockPos(99, 0, 0)));
+    }
+
+    @Test
+    @DisplayName("removeOverlap removes a specific target")
+    void removeOverlap_specifictTarget() {
+      TrafficSignalControllerOverlaps overlaps = new TrafficSignalControllerOverlaps();
+      BlockPos source = new BlockPos(1, 0, 0);
+      BlockPos target1 = new BlockPos(2, 0, 0);
+      BlockPos target2 = new BlockPos(3, 0, 0);
+      overlaps.addOverlap(source, target1);
+      overlaps.addOverlap(source, target2);
+
+      assertTrue(overlaps.removeOverlap(source, target1));
+      List<BlockPos> remaining = overlaps.getOverlapsForSource(source);
+      assertNotNull(remaining);
+      assertEquals(1, remaining.size());
+      assertTrue(remaining.contains(target2));
+    }
+
+    @Test
+    @DisplayName("removeOverlap returns false for nonexistent")
+    void removeOverlap_nonexistent() {
+      TrafficSignalControllerOverlaps overlaps = new TrafficSignalControllerOverlaps();
+      assertFalse(overlaps.removeOverlap(new BlockPos(1, 0, 0), new BlockPos(2, 0, 0)));
+    }
+
+    @Test
+    @DisplayName("removeOverlap cleans up source key when last target removed")
+    void removeOverlap_cleansUpSourceKey() {
+      TrafficSignalControllerOverlaps overlaps = new TrafficSignalControllerOverlaps();
+      BlockPos source = new BlockPos(1, 0, 0);
+      BlockPos target = new BlockPos(2, 0, 0);
+      overlaps.addOverlap(source, target);
+      overlaps.removeOverlap(source, target);
+      assertEquals(0, overlaps.getOverlapCount());
+      assertNull(overlaps.getOverlapsForSource(source));
+    }
+
+    @Test
+    @DisplayName("removeOverlaps removes all targets for a source")
+    void removeOverlaps_allTargets() {
+      TrafficSignalControllerOverlaps overlaps = new TrafficSignalControllerOverlaps();
+      BlockPos source = new BlockPos(1, 0, 0);
+      overlaps.addOverlap(source, new BlockPos(2, 0, 0));
+      overlaps.addOverlap(source, new BlockPos(3, 0, 0));
+
+      assertTrue(overlaps.removeOverlaps(source));
+      assertEquals(0, overlaps.getOverlapCount());
+    }
+
+    @Test
+    @DisplayName("removeOverlaps returns false for unknown source")
+    void removeOverlaps_unknown() {
+      TrafficSignalControllerOverlaps overlaps = new TrafficSignalControllerOverlaps();
+      assertFalse(overlaps.removeOverlaps(new BlockPos(99, 0, 0)));
+    }
+
+    @Test
+    @DisplayName("NBT round-trip preserves data")
+    void nbtRoundTrip() {
+      TrafficSignalControllerOverlaps original = new TrafficSignalControllerOverlaps();
+      BlockPos source = new BlockPos(10, 64, 20);
+      BlockPos target1 = new BlockPos(11, 64, 21);
+      BlockPos target2 = new BlockPos(12, 64, 22);
+      original.addOverlap(source, target1);
+      original.addOverlap(source, target2);
+
+      NBTTagCompound nbt = original.toNBT();
+      TrafficSignalControllerOverlaps restored = TrafficSignalControllerOverlaps.fromNBT(nbt);
+
+      assertEquals(original, restored);
+    }
+
+    @Test
+    @DisplayName("equals and hashCode contract")
+    void equalsAndHashCode() {
+      TrafficSignalControllerOverlaps a = new TrafficSignalControllerOverlaps();
+      TrafficSignalControllerOverlaps b = new TrafficSignalControllerOverlaps();
+      assertEquals(a, b);
+      assertEquals(a.hashCode(), b.hashCode());
+
+      a.addOverlap(new BlockPos(1, 0, 0), new BlockPos(2, 0, 0));
+      assertNotEquals(a, b);
+    }
+  }
+
+  // ========================================================================
+  // TrafficSignalSensorSummary computed totals
+  // ========================================================================
+  @Nested
+  @DisplayName("TrafficSignalSensorSummary")
+  class SensorSummaryTest {
+
+    @Test
+    @DisplayName("all-zero constructor produces zero totals")
+    void allZero() {
+      TrafficSignalSensorSummary s = new TrafficSignalSensorSummary(
+          0, 0, 0, 0, 0,
+          0, 0, 0, 0, 0,
+          0, 0, 0, 0, 0,
+          0, 0, 0, 0, 0);
+      assertEquals(0, s.getTotalAll());
+      assertEquals(0, s.getNonProtectedTotalAll());
+    }
+
+    @Test
+    @DisplayName("totalAll sums standard + left + protected + right totals")
+    void totalAll() {
+      TrafficSignalSensorSummary s = new TrafficSignalSensorSummary(
+          10, 0, 0, 0, 0,
+          5, 0, 0, 0, 0,
+          3, 0, 0, 0, 0,
+          2, 0, 0, 0, 0);
+      assertEquals(20, s.getTotalAll());
+    }
+
+    @Test
+    @DisplayName("nonProtectedTotalAll excludes protected and right")
+    void nonProtectedTotalAll() {
+      TrafficSignalSensorSummary s = new TrafficSignalSensorSummary(
+          10, 0, 0, 0, 0,
+          5, 0, 0, 0, 0,
+          3, 0, 0, 0, 0,
+          2, 0, 0, 0, 0);
+      assertEquals(15, s.getNonProtectedTotalAll());
+    }
+
+    @Test
+    @DisplayName("directional totals sum all movement types per direction")
+    void directionalTotals() {
+      TrafficSignalSensorSummary s = new TrafficSignalSensorSummary(
+          0, 2, 3, 4, 5,
+          0, 1, 1, 1, 1,
+          0, 10, 20, 30, 40,
+          0, 100, 200, 300, 400);
+      assertEquals(113, s.getTotalEast());
+      assertEquals(224, s.getTotalWest());
+      assertEquals(335, s.getTotalNorth());
+      assertEquals(446, s.getTotalSouth());
+    }
+
+    @Test
+    @DisplayName("nonProtected directional totals exclude protected and right")
+    void nonProtectedDirectional() {
+      TrafficSignalSensorSummary s = new TrafficSignalSensorSummary(
+          0, 2, 3, 4, 5,
+          0, 1, 1, 1, 1,
+          0, 10, 20, 30, 40,
+          0, 100, 200, 300, 400);
+      assertEquals(3, s.getNonProtectedTotalEast());
+      assertEquals(4, s.getNonProtectedTotalWest());
+      assertEquals(5, s.getNonProtectedTotalNorth());
+      assertEquals(6, s.getNonProtectedTotalSouth());
+    }
+
+    @Test
+    @DisplayName("individual getters return constructor values")
+    void individualGetters() {
+      TrafficSignalSensorSummary s = new TrafficSignalSensorSummary(
+          100, 10, 20, 30, 40,
+          50, 5, 10, 15, 20,
+          25, 3, 6, 9, 7,
+          12, 1, 2, 4, 5);
+
+      assertEquals(100, s.getStandardTotal());
+      assertEquals(10, s.getStandardEast());
+      assertEquals(20, s.getStandardWest());
+      assertEquals(30, s.getStandardNorth());
+      assertEquals(40, s.getStandardSouth());
+
+      assertEquals(50, s.getLeftTotal());
+      assertEquals(5, s.getLeftEast());
+      assertEquals(10, s.getLeftWest());
+      assertEquals(15, s.getLeftNorth());
+      assertEquals(20, s.getLeftSouth());
+
+      assertEquals(25, s.getProtectedTotal());
+      assertEquals(3, s.getProtectedEast());
+      assertEquals(6, s.getProtectedWest());
+      assertEquals(9, s.getProtectedNorth());
+      assertEquals(7, s.getProtectedSouth());
+
+      assertEquals(12, s.getRightTotal());
+      assertEquals(1, s.getRightEast());
+      assertEquals(2, s.getRightWest());
+      assertEquals(4, s.getRightNorth());
+      assertEquals(5, s.getRightSouth());
+    }
+  }
+
+  // ========================================================================
+  // TrafficSignalPhase: moveOverlapSignalToYellow
+  // ========================================================================
+  @Nested
+  @DisplayName("moveOverlapSignalToYellow")
+  class MoveOverlapToYellowTest {
+
+    @Test
+    @DisplayName("GREEN moved to YELLOW")
+    void greenToYellow() {
+      BlockPos pos = new BlockPos(1, 0, 0);
+      TrafficSignalPhase phase = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS);
+      phase.addGreenSignal(pos);
+
+      assertTrue(phase.moveOverlapSignalToYellow(pos));
+      assertTrue(phase.getYellowSignals().contains(pos));
+      assertFalse(phase.getGreenSignals().contains(pos));
+    }
+
+    @Test
+    @DisplayName("RED moved to YELLOW")
+    void redToYellow() {
+      BlockPos pos = new BlockPos(1, 0, 0);
+      TrafficSignalPhase phase = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS);
+      phase.addRedSignal(pos);
+
+      assertTrue(phase.moveOverlapSignalToYellow(pos));
+      assertTrue(phase.getYellowSignals().contains(pos));
+      assertFalse(phase.getRedSignals().contains(pos));
+    }
+
+    @Test
+    @DisplayName("FYA moved to YELLOW")
+    void fyaToYellow() {
+      BlockPos pos = new BlockPos(1, 0, 0);
+      TrafficSignalPhase phase = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS);
+      phase.addFyaSignal(pos);
+
+      assertTrue(phase.moveOverlapSignalToYellow(pos));
+      assertTrue(phase.getYellowSignals().contains(pos));
+      assertFalse(phase.getFyaSignals().contains(pos));
+    }
+
+    @Test
+    @DisplayName("OFF moved to YELLOW")
+    void offToYellow() {
+      BlockPos pos = new BlockPos(1, 0, 0);
+      TrafficSignalPhase phase = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS);
+      phase.addOffSignal(pos);
+
+      assertTrue(phase.moveOverlapSignalToYellow(pos));
+      assertTrue(phase.getYellowSignals().contains(pos));
+      assertFalse(phase.getOffSignals().contains(pos));
+    }
+
+    @Test
+    @DisplayName("already YELLOW returns false")
+    void alreadyYellow() {
+      BlockPos pos = new BlockPos(1, 0, 0);
+      TrafficSignalPhase phase = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS);
+      phase.addYellowSignal(pos);
+
+      assertFalse(phase.moveOverlapSignalToYellow(pos));
+      assertTrue(phase.getYellowSignals().contains(pos));
+    }
+  }
+
+  // ========================================================================
+  // TrafficSignalPhase: moveOverlapSignalToRed
+  // ========================================================================
+  @Nested
+  @DisplayName("moveOverlapSignalToRed")
+  class MoveOverlapToRedTest {
+
+    @Test
+    @DisplayName("GREEN moved to RED")
+    void greenToRed() {
+      BlockPos pos = new BlockPos(1, 0, 0);
+      TrafficSignalPhase phase = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS);
+      phase.addGreenSignal(pos);
+
+      assertTrue(phase.moveOverlapSignalToRed(pos));
+      assertTrue(phase.getRedSignals().contains(pos));
+      assertFalse(phase.getGreenSignals().contains(pos));
+    }
+
+    @Test
+    @DisplayName("YELLOW moved to RED")
+    void yellowToRed() {
+      BlockPos pos = new BlockPos(1, 0, 0);
+      TrafficSignalPhase phase = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS);
+      phase.addYellowSignal(pos);
+
+      assertTrue(phase.moveOverlapSignalToRed(pos));
+      assertTrue(phase.getRedSignals().contains(pos));
+      assertFalse(phase.getYellowSignals().contains(pos));
+    }
+
+    @Test
+    @DisplayName("FYA moved to RED")
+    void fyaToRed() {
+      BlockPos pos = new BlockPos(1, 0, 0);
+      TrafficSignalPhase phase = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS);
+      phase.addFyaSignal(pos);
+
+      assertTrue(phase.moveOverlapSignalToRed(pos));
+      assertTrue(phase.getRedSignals().contains(pos));
+      assertFalse(phase.getFyaSignals().contains(pos));
+    }
+
+    @Test
+    @DisplayName("OFF moved to RED")
+    void offToRed() {
+      BlockPos pos = new BlockPos(1, 0, 0);
+      TrafficSignalPhase phase = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS);
+      phase.addOffSignal(pos);
+
+      assertTrue(phase.moveOverlapSignalToRed(pos));
+      assertTrue(phase.getRedSignals().contains(pos));
+      assertFalse(phase.getOffSignals().contains(pos));
+    }
+
+    @Test
+    @DisplayName("already RED returns false")
+    void alreadyRed() {
+      BlockPos pos = new BlockPos(1, 0, 0);
+      TrafficSignalPhase phase = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS);
+      phase.addRedSignal(pos);
+
+      assertFalse(phase.moveOverlapSignalToRed(pos));
+      assertTrue(phase.getRedSignals().contains(pos));
+    }
+  }
+
+  // ========================================================================
+  // TrafficSignalPhase: removeSignals
+  // ========================================================================
+  @Nested
+  @DisplayName("removeSignals")
+  class RemoveSignalsTest {
+
+    @Test
+    @DisplayName("removes from all signal lists")
+    void removesFromAllLists() {
+      BlockPos pos = new BlockPos(1, 0, 0);
+      TrafficSignalPhase phase = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS);
+      phase.addGreenSignal(pos);
+      phase.addRedSignal(pos);
+      phase.addYellowSignal(pos);
+      phase.addFyaSignal(pos);
+      phase.addOffSignal(pos);
+      phase.addWalkSignal(pos);
+      phase.addDontWalkSignal(pos);
+      phase.addFlashDontWalkSignal(pos);
+
+      phase.removeSignals(Collections.singletonList(pos));
+
+      assertFalse(phase.getGreenSignals().contains(pos));
+      assertFalse(phase.getRedSignals().contains(pos));
+      assertFalse(phase.getYellowSignals().contains(pos));
+      assertFalse(phase.getFyaSignals().contains(pos));
+      assertFalse(phase.getOffSignals().contains(pos));
+      assertFalse(phase.getWalkSignals().contains(pos));
+      assertFalse(phase.getDontWalkSignals().contains(pos));
+      assertFalse(phase.getFlashDontWalkSignals().contains(pos));
+    }
+
+    @Test
+    @DisplayName("removes multiple positions at once")
+    void removesMultiple() {
+      BlockPos a = new BlockPos(1, 0, 0);
+      BlockPos b = new BlockPos(2, 0, 0);
+      BlockPos c = new BlockPos(3, 0, 0);
+
+      TrafficSignalPhase phase = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS);
+      phase.addGreenSignal(a);
+      phase.addRedSignal(b);
+      phase.addYellowSignal(c);
+
+      phase.removeSignals(Arrays.asList(a, b));
+
+      assertFalse(phase.getGreenSignals().contains(a));
+      assertFalse(phase.getRedSignals().contains(b));
+      assertTrue(phase.getYellowSignals().contains(c));
+    }
+
+    @Test
+    @DisplayName("empty list is a no-op")
+    void emptyListNoOp() {
+      BlockPos pos = new BlockPos(1, 0, 0);
+      TrafficSignalPhase phase = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS);
+      phase.addGreenSignal(pos);
+
+      phase.removeSignals(Collections.emptyList());
+
+      assertTrue(phase.getGreenSignals().contains(pos));
+    }
+  }
+
+  // ========================================================================
+  // Multi-target overlap application
+  // ========================================================================
+  @Nested
+  @DisplayName("Overlap application: multi-target scenarios")
+  class OverlapMultiTargetTest {
+
+    @Test
+    @DisplayName("green source with two targets moves both to green")
+    void greenSourceMultipleTargets() {
+      BlockPos source = new BlockPos(10, 64, 20);
+      BlockPos target1 = new BlockPos(11, 64, 21);
+      BlockPos target2 = new BlockPos(12, 64, 22);
+
+      TrafficSignalPhase phase = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS);
+      phase.addGreenSignal(source);
+      phase.addRedSignal(target1);
+      phase.addRedSignal(target2);
+
+      TrafficSignalControllerOverlaps overlaps = new TrafficSignalControllerOverlaps();
+      overlaps.addOverlap(source, target1);
+      overlaps.addOverlap(source, target2);
+
+      TrafficSignalPhase result =
+          TrafficSignalControllerTickerUtilities.getPhaseWithOverlapsApplied(phase, overlaps);
+
+      assertTrue(result.getGreenSignals().contains(target1));
+      assertTrue(result.getGreenSignals().contains(target2));
+      assertFalse(result.getRedSignals().contains(target1));
+      assertFalse(result.getRedSignals().contains(target2));
+    }
+
+    @Test
+    @DisplayName("two different green sources each with one target")
+    void twoGreenSources() {
+      BlockPos source1 = new BlockPos(10, 64, 20);
+      BlockPos source2 = new BlockPos(20, 64, 30);
+      BlockPos target1 = new BlockPos(11, 64, 21);
+      BlockPos target2 = new BlockPos(21, 64, 31);
+
+      TrafficSignalPhase phase = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS);
+      phase.addGreenSignal(source1);
+      phase.addGreenSignal(source2);
+      phase.addRedSignal(target1);
+      phase.addRedSignal(target2);
+
+      TrafficSignalControllerOverlaps overlaps = new TrafficSignalControllerOverlaps();
+      overlaps.addOverlap(source1, target1);
+      overlaps.addOverlap(source2, target2);
+
+      TrafficSignalPhase result =
+          TrafficSignalControllerTickerUtilities.getPhaseWithOverlapsApplied(phase, overlaps);
+
+      assertTrue(result.getGreenSignals().contains(target1));
+      assertTrue(result.getGreenSignals().contains(target2));
+    }
+
+    @Test
+    @DisplayName("mixed: one source green, one red — only green source fires overlap")
+    void mixedSourceStates() {
+      BlockPos greenSource = new BlockPos(10, 64, 20);
+      BlockPos redSource = new BlockPos(20, 64, 30);
+      BlockPos target1 = new BlockPos(11, 64, 21);
+      BlockPos target2 = new BlockPos(21, 64, 31);
+
+      TrafficSignalPhase phase = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS);
+      phase.addGreenSignal(greenSource);
+      phase.addRedSignal(redSource);
+      phase.addRedSignal(target1);
+      phase.addRedSignal(target2);
+
+      TrafficSignalControllerOverlaps overlaps = new TrafficSignalControllerOverlaps();
+      overlaps.addOverlap(greenSource, target1);
+      overlaps.addOverlap(redSource, target2);
+
+      TrafficSignalPhase result =
+          TrafficSignalControllerTickerUtilities.getPhaseWithOverlapsApplied(phase, overlaps);
+
+      assertTrue(result.getGreenSignals().contains(target1),
+          "Target of green source should be green");
+      assertTrue(result.getRedSignals().contains(target2),
+          "Target of red source should stay red");
+    }
+  }
+
+  // ========================================================================
+  // Full FDW → yellow → red chain with ped signals
+  // ========================================================================
+  @Nested
+  @DisplayName("Full FDW → yellow → red chain with pedestrian signals")
+  class FullFdwYellowRedChainTest {
+
+    @Test
+    @DisplayName("complete chain: walk→fdw, green→yellow→red")
+    void fullChainWithPeds() {
+      BlockPos greenPos = new BlockPos(10, 64, 20);
+      BlockPos walkPos = new BlockPos(20, 64, 30);
+
+      TrafficSignalPhase current = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS);
+      current.addGreenSignal(greenPos);
+      current.addWalkSignal(walkPos);
+
+      TrafficSignalPhase upcoming = new TrafficSignalPhase(2, null,
+          TrafficSignalPhaseApplicability.ALL_LEFTS);
+      upcoming.addRedSignal(greenPos);
+      upcoming.addDontWalkSignal(walkPos);
+
+      TrafficSignalPhase fdw =
+          TrafficSignalControllerTickerUtilities.getFlashDontWalkTransitionPhaseForUpcoming(
+              current, upcoming);
+      assertNotNull(fdw);
+      assertTrue(fdw.getFlashDontWalkSignals().contains(walkPos));
+      assertTrue(fdw.getGreenSignals().contains(greenPos));
+
+      TrafficSignalPhase yellow =
+          TrafficSignalControllerTickerUtilities.getYellowTransitionPhaseForUpcoming(
+              fdw, upcoming);
+      assertTrue(yellow.getYellowSignals().contains(greenPos));
+      assertTrue(yellow.getDontWalkSignals().contains(walkPos));
+
+      TrafficSignalPhase red =
+          TrafficSignalControllerTickerUtilities.getRedTransitionPhaseForUpcoming(
+              yellow, upcoming);
+      assertTrue(red.getRedSignals().contains(greenPos));
+      assertTrue(red.getDontWalkSignals().contains(walkPos));
+    }
+
+    @Test
+    @DisplayName("chain preserves green+walk signals that carry into upcoming phase")
+    void chainPreservesCarriedSignals() {
+      BlockPos staysGreen = new BlockPos(10, 64, 20);
+      BlockPos goesRed = new BlockPos(11, 64, 21);
+      BlockPos walkStays = new BlockPos(20, 64, 30);
+      BlockPos walkGoes = new BlockPos(21, 64, 31);
+
+      TrafficSignalPhase current = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS);
+      current.addGreenSignal(staysGreen);
+      current.addGreenSignal(goesRed);
+      current.addWalkSignal(walkStays);
+      current.addWalkSignal(walkGoes);
+
+      TrafficSignalPhase upcoming = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS);
+      upcoming.addGreenSignal(staysGreen);
+      upcoming.addRedSignal(goesRed);
+      upcoming.addWalkSignal(walkStays);
+      upcoming.addDontWalkSignal(walkGoes);
+
+      TrafficSignalPhase fdw =
+          TrafficSignalControllerTickerUtilities.getFlashDontWalkTransitionPhaseForUpcoming(
+              current, upcoming);
+      assertNotNull(fdw);
+      assertTrue(fdw.getWalkSignals().contains(walkStays));
+      assertTrue(fdw.getFlashDontWalkSignals().contains(walkGoes));
+      assertTrue(fdw.getGreenSignals().contains(staysGreen));
+      assertTrue(fdw.getGreenSignals().contains(goesRed));
+
+      TrafficSignalPhase yellow =
+          TrafficSignalControllerTickerUtilities.getYellowTransitionPhaseForUpcoming(
+              fdw, upcoming);
+      assertTrue(yellow.getGreenSignals().contains(staysGreen));
+      assertTrue(yellow.getYellowSignals().contains(goesRed));
+
+      TrafficSignalPhase red =
+          TrafficSignalControllerTickerUtilities.getRedTransitionPhaseForUpcoming(
+              yellow, upcoming);
+      assertTrue(red.getGreenSignals().contains(staysGreen));
+      assertTrue(red.getRedSignals().contains(goesRed));
+    }
+  }
+
+  // ========================================================================
+  // TrafficSignalPhase: bulk add methods
+  // ========================================================================
+  @Nested
+  @DisplayName("TrafficSignalPhase bulk add methods")
+  class BulkAddTest {
+
+    @Test
+    @DisplayName("addGreenSignals adds all positions")
+    void addGreenSignals() {
+      TrafficSignalPhase phase = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS);
+      phase.addGreenSignals(Arrays.asList(new BlockPos(1, 0, 0), new BlockPos(2, 0, 0)));
+      assertEquals(2, phase.getGreenSignals().size());
+    }
+
+    @Test
+    @DisplayName("addRedSignals adds all positions")
+    void addRedSignals() {
+      TrafficSignalPhase phase = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS);
+      phase.addRedSignals(Arrays.asList(new BlockPos(1, 0, 0), new BlockPos(2, 0, 0)));
+      assertEquals(2, phase.getRedSignals().size());
+    }
+
+    @Test
+    @DisplayName("addFyaSignals adds all positions")
+    void addFyaSignals() {
+      TrafficSignalPhase phase = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS);
+      phase.addFyaSignals(Arrays.asList(new BlockPos(1, 0, 0), new BlockPos(2, 0, 0)));
+      assertEquals(2, phase.getFyaSignals().size());
+    }
+
+    @Test
+    @DisplayName("addWalkSignals adds all positions")
+    void addWalkSignals() {
+      TrafficSignalPhase phase = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS);
+      phase.addWalkSignals(Arrays.asList(new BlockPos(1, 0, 0), new BlockPos(2, 0, 0)));
+      assertEquals(2, phase.getWalkSignals().size());
+    }
+
+    @Test
+    @DisplayName("addDontWalkSignals adds all positions")
+    void addDontWalkSignals() {
+      TrafficSignalPhase phase = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS);
+      phase.addDontWalkSignals(Arrays.asList(new BlockPos(1, 0, 0), new BlockPos(2, 0, 0)));
+      assertEquals(2, phase.getDontWalkSignals().size());
+    }
+  }
+
+  // ========================================================================
+  // Transition overlap application (yellow/red with overlaps)
+  // ========================================================================
+  @Nested
+  @DisplayName("getTransitionPhaseWithOverlapsApplied: edge cases")
+  class TransitionOverlapEdgeCasesTest {
+
+    @Test
+    @DisplayName("no overlaps returns same phase (identity)")
+    void noOverlaps_identity() {
+      TrafficSignalPhase phase = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.YELLOW_TRANSITIONING);
+      phase.addYellowSignal(new BlockPos(1, 0, 0));
+
+      TrafficSignalControllerOverlaps overlaps = new TrafficSignalControllerOverlaps();
+      TrafficSignalControllerTickerUtilities.getTransitionPhaseWithOverlapsApplied(
+          phase, overlaps);
+
+      assertTrue(phase.getYellowSignals().contains(new BlockPos(1, 0, 0)));
+    }
+
+    @Test
+    @DisplayName("null overlaps does not throw")
+    void nullOverlaps_noThrow() {
+      TrafficSignalPhase phase = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.YELLOW_TRANSITIONING);
+      phase.addYellowSignal(new BlockPos(1, 0, 0));
+
+      assertDoesNotThrow(() ->
+          TrafficSignalControllerTickerUtilities.getTransitionPhaseWithOverlapsApplied(
+              phase, null));
+    }
+
+    @Test
+    @DisplayName("overlap target already in correct state is not duplicated")
+    void targetAlreadyCorrectState() {
+      BlockPos source = new BlockPos(10, 64, 20);
+      BlockPos target = new BlockPos(11, 64, 21);
+
+      TrafficSignalPhase phase = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.YELLOW_TRANSITIONING);
+      phase.addYellowSignal(source);
+      phase.addYellowSignal(target);
+
+      TrafficSignalControllerOverlaps overlaps = new TrafficSignalControllerOverlaps();
+      overlaps.addOverlap(source, target);
+
+      TrafficSignalControllerTickerUtilities.getTransitionPhaseWithOverlapsApplied(
+          phase, overlaps);
+
+      long yellowCount = phase.getYellowSignals().stream()
+          .filter(p -> p.equals(target)).count();
+      assertEquals(1, yellowCount, "Target should not be duplicated");
+    }
+  }
+
+  // ========================================================================
+  // TrafficSignalPhaseApplicability enum coverage
+  // ========================================================================
+  @Nested
+  @DisplayName("TrafficSignalPhaseApplicability enum")
+  class PhaseApplicabilityEnumTest {
+
+    @Test
+    @DisplayName("NO_POWER is not a through type or directional phase")
+    void noPower() {
+      assertFalse(TrafficSignalControllerTickerUtilities.isThroughTypeApplicability(
+          TrafficSignalPhaseApplicability.NO_POWER));
+      assertFalse(TrafficSignalControllerTickerUtilities.isOmnidirectionalThroughType(
+          TrafficSignalPhaseApplicability.NO_POWER));
+      assertFalse(TrafficSignalControllerTickerUtilities.isDirectionalPhase(
+          TrafficSignalPhaseApplicability.NO_POWER));
+    }
+
+    @Test
+    @DisplayName("FLASH_DONT_WALK_TRANSITIONING is not a through type")
+    void fdwTransitioning() {
+      assertFalse(TrafficSignalControllerTickerUtilities.isThroughTypeApplicability(
+          TrafficSignalPhaseApplicability.FLASH_DONT_WALK_TRANSITIONING));
+    }
+
+    @Test
+    @DisplayName("YELLOW_TRANSITIONING is not a through type")
+    void yellowTransitioning() {
+      assertFalse(TrafficSignalControllerTickerUtilities.isThroughTypeApplicability(
+          TrafficSignalPhaseApplicability.YELLOW_TRANSITIONING));
+    }
+
+    @Test
+    @DisplayName("RED_TRANSITIONING is not a through type")
+    void redTransitioning() {
+      assertFalse(TrafficSignalControllerTickerUtilities.isThroughTypeApplicability(
+          TrafficSignalPhaseApplicability.RED_TRANSITIONING));
+    }
+
+    @Test
+    @DisplayName("LEAD_PEDESTRIAN_INTERVAL is not a through type")
+    void lpi() {
+      assertFalse(TrafficSignalControllerTickerUtilities.isThroughTypeApplicability(
+          TrafficSignalPhaseApplicability.LEAD_PEDESTRIAN_INTERVAL));
     }
   }
 }
