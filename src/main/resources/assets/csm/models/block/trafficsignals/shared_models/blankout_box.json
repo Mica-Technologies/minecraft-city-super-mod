@@ -2,7 +2,7 @@
 	"format_version": "1.21.11",
 	"credit": "Made with Blockbench",
 	"textures": {
-		"0": "csm:blocks/trafficsignals/blankout_boxes/blankout_box_atlas"
+		"0": "csm:blocks/trafficsignals/blankout_boxes/NLT_BO"
 	},
 	"elements": [
 		{

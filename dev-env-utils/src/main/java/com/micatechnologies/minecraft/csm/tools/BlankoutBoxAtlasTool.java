@@ -56,16 +56,16 @@ public class BlankoutBoxAtlasTool {
    */
   private static final String[] INPUT_IMAGE_NAMES = {
       // Row 0: ON textures (indices 0-3)
-      "DW_BO",      // 0: Don't Walk ON
-      "NLT_BO",     // 1: No Left Turn ON
-      "NRT_BO",     // 2: No Right Turn ON
-      "DNE_BO",     // 3: Do Not Enter ON
+      "dw_bo",      // 0: Don't Walk ON
+      "nlt_bo",     // 1: No Left Turn ON
+      "nrt_bo",     // 2: No Right Turn ON
+      "dne_bo",     // 3: Do Not Enter ON
 
       // Row 1: OFF textures (indices 4-7)
-      "DW_BO_OFF",  // 4: Don't Walk OFF
-      "NLT_BO_OFF", // 5: No Left Turn OFF
-      "NRT_BO_OFF",  // 6: No Right Turn OFF
-      "DNE_BO_OFF",  // 7: Do Not Enter OFF
+      "dw_bo_off",  // 4: Don't Walk OFF
+      "nlt_bo_off", // 5: No Left Turn OFF
+      "nrt_bo_off",  // 6: No Right Turn OFF
+      "dne_bo_off",  // 7: Do Not Enter OFF
   };
 
   public static void main(String[] args) {
