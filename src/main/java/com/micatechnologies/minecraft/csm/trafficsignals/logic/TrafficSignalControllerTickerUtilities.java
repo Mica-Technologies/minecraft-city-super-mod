@@ -189,8 +189,15 @@ public class TrafficSignalControllerTickerUtilities {
     // Yellow signals become red
     redTransitionPhase.addRedSignals(currentPhase.getYellowSignals());
 
-    // FYA signals become red (flashing yellow must not display during all-red clearance)
-    redTransitionPhase.addRedSignals(currentPhase.getFyaSignals());
+    // FYA signals staying FYA in the upcoming phase are preserved (no red blip for a
+    // permissive signal that continues as permissive). All others become red.
+    for (BlockPos fyaSignal : currentPhase.getFyaSignals()) {
+      if (upcomingPhase.getFyaSignals().contains(fyaSignal)) {
+        redTransitionPhase.addFyaSignal(fyaSignal);
+      } else {
+        redTransitionPhase.addRedSignal(fyaSignal);
+      }
+    }
 
     // Green signals that stay green in the upcoming phase remain green (no unnecessary
     // red blip); all others become red
