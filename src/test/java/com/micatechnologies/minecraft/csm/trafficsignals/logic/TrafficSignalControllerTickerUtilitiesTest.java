@@ -2490,6 +2490,65 @@ class TrafficSignalControllerTickerUtilitiesTest {
   }
 
   // ========================================================================
+  // REGRESSION: FYA-only left signal (no regular left signal on circuit)
+  // ========================================================================
+  @Nested
+  @DisplayName("Regression: FYA-only left signal (permissive-only)")
+  class FyaOnlyLeftSignalTest {
+
+    @Test
+    @DisplayName("getEffectiveLeftDemand returns 0 when leftSignals is empty")
+    void effectiveLeftDemand_noLeftSignals_returnsZero() {
+      TrafficSignalControllerCircuit circuit = emptyCircuit();
+      circuit.getFlashingLeftSignals().add(new BlockPos(10, 64, 20));
+
+      TrafficSignalSensorSummary summary = new TrafficSignalSensorSummary(
+          0, 0, 0, 0, 0,
+          5, 5, 0, 0, 0,
+          0, 0, 0, 0, 0,
+          0, 0, 0, 0, 0);
+
+      assertEquals(0,
+          TrafficSignalControllerTickerUtilities.getEffectiveLeftDemand(null, circuit, summary),
+          "Should return 0 when circuit has no regular left signals");
+    }
+
+    @Test
+    @DisplayName("getEffectiveLeftDemand returns nonzero when leftSignals exists")
+    void effectiveLeftDemand_withLeftSignals_returnsNonzero() {
+      TrafficSignalControllerCircuit circuit = emptyCircuit();
+      circuit.getFlashingLeftSignals().add(new BlockPos(10, 64, 20));
+      circuit.getLeftSignals().add(new BlockPos(11, 64, 21));
+
+      TrafficSignalSensorSummary summary = new TrafficSignalSensorSummary(
+          0, 0, 0, 0, 0,
+          3, 3, 0, 0, 0,
+          0, 0, 0, 0, 0,
+          0, 0, 0, 0, 0);
+
+      assertTrue(
+          TrafficSignalControllerTickerUtilities.getEffectiveLeftDemand(null, circuit, summary) > 0,
+          "Should return nonzero when circuit has regular left signals and demand >= 2");
+    }
+
+    @Test
+    @DisplayName("getEffectiveLeftDemand still returns 0 when no sensor demand")
+    void effectiveLeftDemand_noDemand_returnsZero() {
+      TrafficSignalControllerCircuit circuit = emptyCircuit();
+      circuit.getLeftSignals().add(new BlockPos(11, 64, 21));
+
+      TrafficSignalSensorSummary summary = new TrafficSignalSensorSummary(
+          0, 0, 0, 0, 0,
+          0, 0, 0, 0, 0,
+          0, 0, 0, 0, 0,
+          0, 0, 0, 0, 0);
+
+      assertEquals(0,
+          TrafficSignalControllerTickerUtilities.getEffectiveLeftDemand(null, circuit, summary));
+    }
+  }
+
+  // ========================================================================
   // Overlap: source NOT green, target not moved
   // ========================================================================
   @Nested
