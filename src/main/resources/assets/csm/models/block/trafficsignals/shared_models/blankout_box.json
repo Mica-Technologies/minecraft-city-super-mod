@@ -2,7 +2,7 @@
 	"format_version": "1.21.11",
 	"credit": "Made with Blockbench",
 	"textures": {
-		"0": "csm:blocks/trafficsignals/shared_textures/crosswalkflashinghand"
+		"0": "csm:blocks/trafficsignals/blankout_boxes/blankout_box_atlas"
 	},
 	"elements": [
 		{
@@ -74,31 +74,46 @@
 	"display": {
 		"thirdperson_righthand": {
 			"rotation": [0, -180, 0],
+			"translation": [0, 4.25, 0],
 			"scale": [0.5, 0.5, 0.5]
 		},
 		"thirdperson_lefthand": {
 			"rotation": [0, -180, 0],
+			"translation": [0, 4.25, 0],
 			"scale": [0.5, 0.5, 0.5]
 		},
 		"firstperson_righthand": {
 			"rotation": [0, -180, 0],
+			"translation": [0, 4.25, 0],
 			"scale": [0.5, 0.5, 0.5]
 		},
 		"firstperson_lefthand": {
 			"rotation": [0, -180, 0],
+			"translation": [0, 4.25, 0],
+			"scale": [0.5, 0.5, 0.5]
+		},
+		"ground": {
+			"rotation": [0, -180, 0],
+			"translation": [0, 4.25, 0],
 			"scale": [0.5, 0.5, 0.5]
 		},
 		"gui": {
 			"rotation": [0, -180, 0],
-			"translation": [0, -1.5, 0],
-			"scale": [0.75, 0.75, 0.75]
+			"translation": [0, 4.25, 0],
+			"scale": [0.5, 0.5, 0.5]
 		},
 		"head": {
-			"translation": [0, -1.5, -6.25],
-			"scale": [0.85, 0.85, 0.85]
+			"translation": [0, 4.25, -6.75],
+			"scale": [0.5, 0.5, 0.5]
 		},
 		"fixed": {
-			"translation": [0, -2, -0.75]
+			"translation": [0, 4.25, 0],
+			"scale": [0.5, 0.5, 0.5]
+		},
+		"on_shelf": {
+			"rotation": [0, -180, 0],
+			"translation": [0, 4.25, 0],
+			"scale": [0.5, 0.5, 0.5]
 		}
 	}
 }
