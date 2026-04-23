@@ -90,10 +90,15 @@ public class TileEntityTrafficSignalHeadRenderer extends
     GlStateManager.enableBlend();
     GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 
-    // Set fullbright lightmap so signal textures aren't dimmed by world lighting
     int prevBrightnessX = (int) OpenGlHelper.lastBrightnessX;
     int prevBrightnessY = (int) OpenGlHelper.lastBrightnessY;
-    OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240f, 240f);
+
+    // Compute world lightmap for this block so housing/door/visor/mount use realistic
+    // lighting while lit bulbs and strobe flashes stay fullbright.
+    int combinedLight = te.getWorld().getCombinedLight(te.getPos(), 0);
+    int worldLightX = combinedLight % 65536;
+    int worldLightY = combinedLight / 65536;
+    OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, worldLightX, worldLightY);
 
     // Get tilt pivot offset for add-on signals that need to rotate in sync with
     // their parent signal (offset is in block units from this block to the main signal)
@@ -228,12 +233,19 @@ public class TileEntityTrafficSignalHeadRenderer extends
     }
     GL11.glCallList(displayList);
 
+    // Fullbright for lit bulbs and strobe flashes — housing/door/visor already rendered
+    // above with world lightmap via the display list.
+    OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240f, 240f);
+
     // Pause-aware game clock — threaded into the bulb/Barlo paths so they can do 1300 ms /
     // 1000 ms modulo timing without each calling System.currentTimeMillis() (which is a JNI
     // call and adds up with many visible signals).
     long gameMillis = CsmRenderUtils.gameMillis(te.getWorld(), partialTicks);
     renderBulbs(sectionInfos, sectionYPositions, sectionXPositions, sectionSizes, zPushBack,
         gameMillis);
+
+    // Restore world lightmap for mount hardware so brackets match world lighting.
+    OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, worldLightX, worldLightY);
 
     // Mount hardware renders outside the cached display list: adjacency changes (add-on
     // placed/broken beside this signal) don't invalidate the TE's dirty flag, so rebuilding

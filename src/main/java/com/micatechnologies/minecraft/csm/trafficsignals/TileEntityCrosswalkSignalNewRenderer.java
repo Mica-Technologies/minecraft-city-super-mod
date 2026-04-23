@@ -116,10 +116,15 @@ public class TileEntityCrosswalkSignalNewRenderer
         GlStateManager.enableBlend();
         GlStateManager.blendFunc( GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA );
 
-        // Fullbright
         int prevBX = (int) OpenGlHelper.lastBrightnessX;
         int prevBY = (int) OpenGlHelper.lastBrightnessY;
-        OpenGlHelper.setLightmapTextureCoords( OpenGlHelper.lightmapTexUnit, 240f, 240f );
+
+        // World lightmap for housing/visor/mount — display face and countdown switch to
+        // fullbright later so only the lit elements glow regardless of ambient light.
+        int combinedLight = te.getWorld().getCombinedLight( te.getPos(), 0 );
+        int worldLightX = combinedLight % 65536;
+        int worldLightY = combinedLight / 65536;
+        OpenGlHelper.setLightmapTextureCoords( OpenGlHelper.lightmapTexUnit, worldLightX, worldLightY );
 
         // Common base transform (block position + model unit scale)
         GL11.glPushMatrix();
@@ -183,6 +188,9 @@ public class TileEntityCrosswalkSignalNewRenderer
             te.clearDirtyFlag();
         }
         GL11.glCallList( displayList );
+
+        // Fullbright for display face and countdown — lit elements should glow.
+        OpenGlHelper.setLightmapTextureCoords( OpenGlHelper.lightmapTexUnit, 240f, 240f );
 
         // Display face textures — compute flash state here so we can use the renderer's
         // partialTicks instead of doing a JNI System.currentTimeMillis() call per frame
