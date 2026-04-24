@@ -12,15 +12,15 @@ public class TileEntityRedstoneTTSUpdateHandler implements
 
   @Override
   public IMessage onMessage(TileEntityRedstoneTTSUpdatePacket message, MessageContext ctx) {
-    // Ensure execution on the main server thread
     ctx.getServerHandler().player.server.addScheduledTask(() -> {
       World serverWorld = ctx.getServerHandler().player.world;
       TileEntity tileEntity = serverWorld.getTileEntity(message.getPos());
       if (tileEntity instanceof TileEntityRedstoneTTS) {
-        ((TileEntityRedstoneTTS) tileEntity).setTtsString(message.getTtsString());
+        TileEntityRedstoneTTS te = (TileEntityRedstoneTTS) tileEntity;
+        te.setTtsString(message.getTtsString());
+        te.setTtsVoice(message.getTtsVoice());
       }
     });
-    return null; // No response packet needed
+    return null;
   }
 }
-

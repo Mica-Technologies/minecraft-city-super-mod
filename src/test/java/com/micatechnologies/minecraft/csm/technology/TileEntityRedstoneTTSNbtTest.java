@@ -30,6 +30,7 @@ class TileEntityRedstoneTTSNbtTest {
     NBTTagCompound input = new NBTTagCompound();
     input.setString("tts", "Test message");
     input.setDouble("ttR", 16.5);
+    input.setString("ttV", "cmu-rms-hsmm");
 
     TileEntityRedstoneTTS te = new TileEntityRedstoneTTS();
     te.readNBT(input);
@@ -38,6 +39,7 @@ class TileEntityRedstoneTTSNbtTest {
 
     assertEquals("Test message", output.getString("tts"));
     assertEquals(16.5, output.getDouble("ttR"), 0.01);
+    assertEquals("cmu-rms-hsmm", output.getString("ttV"));
   }
 
   @Test
@@ -49,5 +51,6 @@ class TileEntityRedstoneTTSNbtTest {
 
     assertTrue(output.hasKey("tts"));
     assertTrue(output.hasKey("ttR"));
+    assertEquals("cmu-slt-hsmm", output.getString("ttV"));
   }
 }

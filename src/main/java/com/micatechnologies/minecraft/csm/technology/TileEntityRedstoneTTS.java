@@ -8,13 +8,6 @@ import java.util.concurrent.atomic.AtomicLong;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 
-/**
- * Tile entity for the redstone TTS block. Stores the configured text string and hearing radius,
- * and invokes text-to-speech playback via network packets when triggered by redstone.
- *
- * @author Mica Technologies
- * @since 1.0
- */
 public class TileEntityRedstoneTTS extends AbstractTileEntity {
 
   private static final String TTS_STRING_KEY = "tts";
@@ -22,16 +15,15 @@ public class TileEntityRedstoneTTS extends AbstractTileEntity {
   private static final String TTS_STRING_DEFAULT = "Setup is Required!";
   private static final String TTS_RADIUS_KEY = "ttR";
   private static final String LEGACY_TTS_RADIUS_KEY = "ttsRadius";
-  private static final long COOLDOWN_DURATION = 2000; // Cooldown duration in milliseconds
+  private static final String TTS_VOICE_KEY = "ttV";
+  private static final String TTS_VOICE_DEFAULT = "cmu-slt-hsmm";
+  private static final long COOLDOWN_DURATION = 2000;
+
   private AtomicLong lastTtsInvocationTime = new AtomicLong(0);
   private String ttsString = TTS_STRING_DEFAULT;
   private double ttsRadius = 32.0;
+  private String ttsVoice = TTS_VOICE_DEFAULT;
 
-  /**
-   * Processes the reading of the tile entity's NBT data from the supplied NBT tag compound.
-   *
-   * @param compound the NBT tag compound to read the tile entity's NBT data from
-   */
   @Override
   public void readNBT(NBTTagCompound compound) {
     if (compound.hasKey(TTS_STRING_KEY)) {
@@ -46,21 +38,19 @@ public class TileEntityRedstoneTTS extends AbstractTileEntity {
       ttsRadius = compound.getDouble(LEGACY_TTS_RADIUS_KEY);
     }
 
+    if (compound.hasKey(TTS_VOICE_KEY)) {
+      ttsVoice = compound.getString(TTS_VOICE_KEY);
+    }
+
     compound.removeTag(LEGACY_TTS_STRING_KEY);
     compound.removeTag(LEGACY_TTS_RADIUS_KEY);
   }
 
-  /**
-   * Returns the NBT tag compound with the tile entity's NBT data.
-   *
-   * @param compound the NBT tag compound to write the tile entity's NBT data to
-   *
-   * @return the NBT tag compound with the tile entity's NBT data
-   */
   @Override
   public NBTTagCompound writeNBT(NBTTagCompound compound) {
     compound.setString(TTS_STRING_KEY, ttsString);
     compound.setDouble(TTS_RADIUS_KEY, ttsRadius);
+    compound.setString(TTS_VOICE_KEY, ttsVoice);
     return compound;
   }
 
@@ -72,27 +62,30 @@ public class TileEntityRedstoneTTS extends AbstractTileEntity {
 
     long currentTime = System.currentTimeMillis();
     if (currentTime - lastTtsInvocationTime.get() < COOLDOWN_DURATION) {
-      // Method was called within the cooldown period, ignore this invocation
       return;
     }
-    lastTtsInvocationTime.set(currentTime); // Update last invocation time
+    lastTtsInvocationTime.set(currentTime);
 
-    // Send packet to trigger TTS reading on nearby clients
-    CsmNetwork.sendToAllAround(new TileEntityRedstoneTTSInvokePacket(ttsString), new TargetPoint(
-        world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), ttsRadius));
+    CsmNetwork.sendToAllAround(new TileEntityRedstoneTTSInvokePacket(ttsString, ttsVoice),
+        new TargetPoint(
+            world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), ttsRadius));
   }
 
   public String getTtsString() {
     return ttsString;
   }
 
-  public void setTtsStringFromGui(String newTtsString) {
-    if (world.isRemote) { // Check if we're on the client side
-      // Send packet to server with the new TTS string and tile entity position
-      CsmNetwork.sendToServer(new TileEntityRedstoneTTSUpdatePacket(this.pos, newTtsString));
+  public String getTtsVoice() {
+    return ttsVoice;
+  }
+
+  public void setTtsConfigFromGui(String newTtsString, String newTtsVoice) {
+    if (world.isRemote) {
+      CsmNetwork.sendToServer(
+          new TileEntityRedstoneTTSUpdatePacket(this.pos, newTtsString, newTtsVoice));
     } else {
-      // Update the TTS string on the server side
       setTtsString(newTtsString);
+      setTtsVoice(newTtsVoice);
     }
   }
 
@@ -103,5 +96,12 @@ public class TileEntityRedstoneTTS extends AbstractTileEntity {
     this.ttsString = ttsString;
     markDirtySync(getWorld(), getPos(), true);
   }
-}
 
+  public void setTtsVoice(String ttsVoice) {
+    if (world.isRemote) {
+      System.err.println("Attempted to set TTS voice on client side! This is a bug!");
+    }
+    this.ttsVoice = ttsVoice;
+    markDirtySync(getWorld(), getPos(), true);
+  }
+}

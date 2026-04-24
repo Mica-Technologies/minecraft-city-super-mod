@@ -1,5 +1,19 @@
 // Add any additional repositories for your dependencies here
 
 repositories {
-
+    // MaryTTS transitive deps not on Maven Central (were only on defunct JCenter/Bintray).
+    // Scoped with content filters so only the specific missing artifacts hit these repos.
+    maven {
+        name 'XNat JFrog'
+        url 'https://nrgxnat.jfrog.io/artifactory/libs-release'
+        content { includeGroup 'com.twmacinta' }
+    }
+    maven {
+        name 'Terrestris Nexus'
+        url 'https://nexus.terrestris.de/repository/public'
+        content {
+            includeGroup 'gov.nist.math'
+            includeGroupByRegex 'de\\.dfki\\..*'
+        }
+    }
 }
