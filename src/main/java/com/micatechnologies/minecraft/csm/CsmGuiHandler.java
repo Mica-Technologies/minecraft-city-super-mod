@@ -91,6 +91,9 @@ public class CsmGuiHandler implements IGuiHandler {
     } else if (id == 8 && tileEntity instanceof com.micatechnologies.minecraft.csm.trafficsignals.TileEntityBlankoutBox) {
       returnValue = new com.micatechnologies.minecraft.csm.trafficsignals.BlankoutBoxConfigGui(
           (com.micatechnologies.minecraft.csm.trafficsignals.TileEntityBlankoutBox) tileEntity);
+    } else if (id == 9 && tileEntity instanceof com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityPortableMessageSign) {
+      returnValue = new com.micatechnologies.minecraft.csm.trafficaccessories.BlockPortableMessageSignGui(
+          (com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityPortableMessageSign) tileEntity);
     }
     return returnValue;
   }
