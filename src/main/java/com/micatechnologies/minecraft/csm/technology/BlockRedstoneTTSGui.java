@@ -1,7 +1,9 @@
 package com.micatechnologies.minecraft.csm.technology;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmTts;
 import com.micatechnologies.minecraft.csm.codeutils.GuiMultiLineTextField;
 import java.io.IOException;
+import java.util.List;
 import javax.annotation.ParametersAreNonnullByDefault;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
@@ -9,22 +11,23 @@ import net.minecraft.client.gui.ScaledResolution;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
-/**
- * Client-side GUI screen for configuring the redstone TTS block. Provides a multi-line text field
- * for entering the spoken message and buttons for saving or canceling changes.
- *
- * @author Mica Technologies
- * @since 1.0
- */
 public class BlockRedstoneTTSGui extends GuiScreen {
+
+  private static final int BUTTON_ID_CLOSE = 0;
+  private static final int BUTTON_ID_CANCEL = 1;
+  private static final int BUTTON_ID_VOICE = 2;
 
   private final TileEntityRedstoneTTS tileEntityRedstoneTTS;
   private GuiMultiLineTextField ttsStringField;
   private GuiButton closeButton;
   private GuiButton cancelButton;
+  private GuiButton voiceButton;
+  private String selectedVoice;
 
   public BlockRedstoneTTSGui(TileEntityRedstoneTTS tileEntityRedstoneTTS) {
     this.tileEntityRedstoneTTS = tileEntityRedstoneTTS;
+    this.selectedVoice = tileEntityRedstoneTTS.getTtsVoice();
+    CsmTts.startInit();
   }
 
   @Override
@@ -53,8 +56,6 @@ public class BlockRedstoneTTSGui extends GuiScreen {
     int mouseX = Mouse.getEventX() * this.width / this.mc.displayWidth;
     int mouseY = this.height - Mouse.getEventY() * this.height / this.mc.displayHeight - 1;
     int scrollDelta = Mouse.getEventDWheel();
-
-    // Call handleMouseInput method of GuiMultiLineTextField instance
     this.ttsStringField.handleMouseInput(mouseX, mouseY, scrollDelta);
   }
 
@@ -62,16 +63,29 @@ public class BlockRedstoneTTSGui extends GuiScreen {
   @Override
   @ParametersAreNonnullByDefault
   protected void actionPerformed(GuiButton button) {
-    if (button == closeButton) {
+    if (button.id == BUTTON_ID_CLOSE) {
       try {
-        tileEntityRedstoneTTS.setTtsStringFromGui(ttsStringField.getText());
+        tileEntityRedstoneTTS.setTtsConfigFromGui(ttsStringField.getText(), selectedVoice);
       } catch (Exception e) {
         e.printStackTrace();
       }
       this.mc.displayGuiScreen(null);
-    } else if (button == cancelButton) {
+    } else if (button.id == BUTTON_ID_CANCEL) {
       this.mc.displayGuiScreen(null);
+    } else if (button.id == BUTTON_ID_VOICE) {
+      cycleVoice();
     }
+  }
+
+  private void cycleVoice() {
+    List<String> voices = CsmTts.getAvailableVoiceIds();
+    if (voices.isEmpty()) {
+      return;
+    }
+    int idx = voices.indexOf(selectedVoice);
+    idx = (idx + 1) % voices.size();
+    selectedVoice = voices.get(idx);
+    voiceButton.displayString = "Voice: " + CsmTts.getDisplayName(selectedVoice);
   }
 
   @Override
@@ -79,18 +93,23 @@ public class BlockRedstoneTTSGui extends GuiScreen {
     Keyboard.enableRepeatEvents(true);
     super.initGui();
     ScaledResolution sr = new ScaledResolution(this.mc);
-    this.ttsStringField = new GuiMultiLineTextField(0, fontRenderer, sr.getScaledWidth() / 2 - 100,
-        5, 200, 150);
-    this.buttonList.add(
-        closeButton = new GuiButton(0, sr.getScaledWidth() / 2 - 100, sr.getScaledHeight() - 50,
-            200, 20,
-            "Close"));
-    this.buttonList.add(
-        cancelButton = new GuiButton(1, sr.getScaledWidth() / 2 - 100, sr.getScaledHeight() - 25,
-            200, 20,
-            "Cancel"));
+    int centerX = sr.getScaledWidth() / 2 - 100;
+
+    this.voiceButton = new GuiButton(BUTTON_ID_VOICE, centerX, 5, 200, 20,
+        "Voice: " + CsmTts.getDisplayName(selectedVoice));
+    this.buttonList.add(voiceButton);
+
+    this.ttsStringField = new GuiMultiLineTextField(0, fontRenderer, centerX, 30, 200, 150);
     this.ttsStringField.setText(tileEntityRedstoneTTS.getTtsString());
     this.ttsStringField.setFocused(true);
+
+    this.closeButton = new GuiButton(BUTTON_ID_CLOSE, centerX, sr.getScaledHeight() - 50, 200, 20,
+        "Close");
+    this.buttonList.add(closeButton);
+
+    this.cancelButton = new GuiButton(BUTTON_ID_CANCEL, centerX, sr.getScaledHeight() - 25, 200,
+        20, "Cancel");
+    this.buttonList.add(cancelButton);
   }
 
   @Override

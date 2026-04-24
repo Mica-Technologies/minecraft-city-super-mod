@@ -9,32 +9,30 @@ public class TileEntityRedstoneTTSUpdatePacket implements IMessage {
 
   private BlockPos pos;
   private String ttsString;
+  private String ttsVoice;
 
   public TileEntityRedstoneTTSUpdatePacket() {
     // Required by Forge
   }
 
-  public TileEntityRedstoneTTSUpdatePacket(BlockPos pos, String ttsString) {
+  public TileEntityRedstoneTTSUpdatePacket(BlockPos pos, String ttsString, String ttsVoice) {
     this.pos = pos;
     this.ttsString = ttsString;
+    this.ttsVoice = ttsVoice;
   }
 
   @Override
   public void fromBytes(ByteBuf buf) {
-    // Read the position of the tile entity
     this.pos = BlockPos.fromLong(buf.readLong());
-
-    // Read the TTS string
     this.ttsString = ByteBufUtils.readUTF8String(buf);
+    this.ttsVoice = ByteBufUtils.readUTF8String(buf);
   }
 
   @Override
   public void toBytes(ByteBuf buf) {
-    // Write the position of the tile entity
     buf.writeLong(this.pos.toLong());
-
-    // Write the TTS string
     ByteBufUtils.writeUTF8String(buf, this.ttsString);
+    ByteBufUtils.writeUTF8String(buf, this.ttsVoice);
   }
 
   public BlockPos getPos() {
@@ -43,5 +41,9 @@ public class TileEntityRedstoneTTSUpdatePacket implements IMessage {
 
   public String getTtsString() {
     return ttsString;
+  }
+
+  public String getTtsVoice() {
+    return ttsVoice;
   }
 }

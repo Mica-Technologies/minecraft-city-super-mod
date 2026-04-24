@@ -1,5 +1,18 @@
 // Add any additional Gradle commands or configuration here
 
+// MaryTTS uses Java ServiceLoader for module/voice discovery. The shadow plugin must
+// merge META-INF/services files from all JARs so every module is found at runtime.
+if (project.hasProperty('usesShadowedDependencies') && usesShadowedDependencies.toBoolean()) {
+    tasks.named('shadowJar').configure {
+        mergeServiceFiles()
+        // Minecraft bundles a stripped ICU4J fork (icu4j-core-mojang:51.2) on the system
+        // classloader. Forge's parent-first delegation means that copy always wins, but it's
+        // missing locale data MaryTTS needs (causing StackOverflowError). Relocating our
+        // full ICU4J gives MaryTTS its own complete copy without conflicting.
+        relocate 'com.ibm.icu', 'com.micatechnologies.minecraft.csm.shadow.com.ibm.icu'
+    }
+}
+
 // TOOLS FOR GITHUB ACTIONS
 task printModVersion {
     doLast {

@@ -21,5 +21,29 @@
  *
  * For more details, see https://docs.gradle.org/8.0.1/userguide/java_library_plugin.html#sec:java_library_configurations_graph
  */
+
+// Closure that excludes libraries already provided by Forge / Minecraft.
+// Applied per-dependency (not per-configuration) so the main compile classpath is unaffected.
+def excludeForgeProvided = {
+    exclude group: 'com.google.guava'
+    exclude group: 'com.google.code.gson'
+    exclude group: 'org.apache.logging.log4j'
+    exclude group: 'log4j'
+    exclude group: 'org.apache.httpcomponents'
+    exclude group: 'commons-logging'
+    exclude group: 'commons-io', module: 'commons-io'
+    exclude group: 'commons-codec', module: 'commons-codec'
+    exclude group: 'net.sf.trove4j'
+    exclude group: 'org.apache.commons', module: 'commons-lang3'
+}
+
 dependencies {
+    // MaryTTS 5.2 — embedded text-to-speech engine (client-side only at runtime)
+    shadowImplementation('de.dfki.mary:marytts-runtime:5.2.1', excludeForgeProvided)
+    shadowImplementation('de.dfki.mary:marytts-lang-en:5.2.1', excludeForgeProvided)
+    shadowImplementation('de.dfki.mary:voice-cmu-slt-hsmm:5.2.1', excludeForgeProvided)
+
+    // Log4j 1.x → 2.x bridge: MaryTTS uses the old org.apache.log4j API internally.
+    // Forge bundles Log4j 2 but not the 1.x compatibility shim, so we need this.
+    shadowImplementation('org.apache.logging.log4j:log4j-1.2-api:2.17.1') { transitive = false }
 }

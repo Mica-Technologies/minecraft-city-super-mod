@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmTts;
 import com.micatechnologies.minecraft.csm.codeutils.CsmVersionChecker;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmProxy;
 import com.micatechnologies.minecraft.csm.codeutils.IHasModel;
@@ -142,7 +143,7 @@ public class CsmClientProxy implements ICsmProxy {
    */
   @Override
   public void postInit(FMLPostInitializationEvent event) {
-    // Not implemented (yet)
+    CsmTts.startInit();
   }
 
   /**

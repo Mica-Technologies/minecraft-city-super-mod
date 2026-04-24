@@ -1,6 +1,6 @@
 package com.micatechnologies.minecraft.csm.codeutils.packets;
 
-import com.micatechnologies.minecraft.csm.codeutils.CsmNarrator;
+import com.micatechnologies.minecraft.csm.codeutils.CsmTts;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
@@ -12,9 +12,8 @@ public class TileEntityRedstoneTTSInvokeHandler implements
   @Override
   public IMessage onMessage(TileEntityRedstoneTTSInvokePacket message, MessageContext ctx) {
     Minecraft.getMinecraft().addScheduledTask(() -> {
-      CsmNarrator.say(message.getTtsString());
+      CsmTts.say(message.getTtsString(), message.getTtsVoice());
     });
     return null;
   }
 }
-

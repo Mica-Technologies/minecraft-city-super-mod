@@ -88,8 +88,6 @@ public class Csm {
   private static Logger logger = LogManager.getLogger(CsmConstants.MOD_NAMESPACE);
 
   static {
-    System.setProperty("freetts.voices",
-        "com.sun.speech.freetts.en.us.cmu_us_kal.KevinVoiceDirectory");
     FluidRegistry.enableUniversalBucket(); // Enables the required universal bucket
   }
 
