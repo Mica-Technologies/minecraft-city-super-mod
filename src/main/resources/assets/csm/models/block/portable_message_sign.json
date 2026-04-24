@@ -1,0 +1,20 @@
+{
+  "parent": "block/cube_all",
+  "textures": {
+    "all": "csm:blocks/trafficaccessories/portable_message_sign"
+  },
+  "elements": [
+    {
+      "from": [1, 0, 3],
+      "to": [15, 7, 13],
+      "faces": {
+        "down": { "texture": "#all" },
+        "up": { "texture": "#all" },
+        "north": { "texture": "#all" },
+        "south": { "texture": "#all" },
+        "west": { "texture": "#all" },
+        "east": { "texture": "#all" }
+      }
+    }
+  ]
+}

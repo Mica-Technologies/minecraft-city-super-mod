@@ -180,6 +180,10 @@ public class Csm {
       CsmNetwork.registerNetworkMessage(
           com.micatechnologies.minecraft.csm.hvac.HvacThermostatConfigPacketHandler.class,
           com.micatechnologies.minecraft.csm.hvac.HvacThermostatConfigPacket.class, Side.SERVER);
+      CsmNetwork.registerNetworkMessage(
+          com.micatechnologies.minecraft.csm.codeutils.packets.TileEntityPortableMessageSignUpdateHandler.class,
+          com.micatechnologies.minecraft.csm.codeutils.packets.TileEntityPortableMessageSignUpdatePacket.class,
+          Side.SERVER);
       logger.info("Finished registering network message(s)");
       progressBar.step("Network Messages Registration");
 

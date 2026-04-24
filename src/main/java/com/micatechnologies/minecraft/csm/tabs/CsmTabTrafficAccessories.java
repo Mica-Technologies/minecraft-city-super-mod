@@ -493,5 +493,9 @@ public class CsmTabTrafficAccessories extends CsmTab {
 
     // --- Class-based: Mini Solar Panel ---
     initTabBlock(BlockMiniSolarPanel.class, fmlPreInitializationEvent);
+
+    // --- Class-based: Portable Message Sign ---
+    initTabBlock(com.micatechnologies.minecraft.csm.trafficaccessories.BlockPortableMessageSign.class,
+        fmlPreInitializationEvent);
   }
 }
