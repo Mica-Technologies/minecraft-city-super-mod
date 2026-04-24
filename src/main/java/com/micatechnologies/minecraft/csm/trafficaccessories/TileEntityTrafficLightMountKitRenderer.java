@@ -2,8 +2,10 @@ package com.micatechnologies.minecraft.csm.trafficaccessories;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEWUD;
 import com.micatechnologies.minecraft.csm.codeutils.RenderHelper;
+import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityBlankoutBox;
 import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalHead;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignalHead;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.BlankoutBoxVertexData;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nullable;
@@ -101,7 +103,10 @@ public class TileEntityTrafficLightMountKitRenderer
 
     int prevBrightnessX = (int) OpenGlHelper.lastBrightnessX;
     int prevBrightnessY = (int) OpenGlHelper.lastBrightnessY;
-    OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240f, 240f);
+    int combinedLight = te.getWorld().getCombinedLight(te.getPos(), 0);
+    int worldLightX = combinedLight % 65536;
+    int worldLightY = combinedLight / 65536;
+    OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, worldLightX, worldLightY);
 
     GL11.glPushMatrix();
     GL11.glTranslated(x, y, z);
@@ -455,7 +460,9 @@ public class TileEntityTrafficLightMountKitRenderer
   }
 
   private boolean isSignalHead(TileEntityTrafficLightMountKit te, BlockPos pos) {
-    return te.getWorld().getTileEntity(pos) instanceof TileEntityTrafficSignalHead;
+    TileEntity check = te.getWorld().getTileEntity(pos);
+    return check instanceof TileEntityTrafficSignalHead
+        || check instanceof TileEntityBlankoutBox;
   }
 
   /**
@@ -465,6 +472,17 @@ public class TileEntityTrafficLightMountKitRenderer
   @Nullable
   private SignalInfo readSignalAt(TileEntityTrafficLightMountKit te, BlockPos pos) {
     TileEntity checkTe = te.getWorld().getTileEntity(pos);
+
+    if (checkTe instanceof TileEntityBlankoutBox) {
+      SignalInfo info = new SignalInfo();
+      info.minX = BlankoutBoxVertexData.BODY_X_MIN;
+      info.maxX = BlankoutBoxVertexData.BODY_X_MAX;
+      info.minY = BlankoutBoxVertexData.BODY_Y_MIN;
+      info.maxY = BlankoutBoxVertexData.BODY_Y_MAX;
+      info.horizontal = false;
+      return info;
+    }
+
     if (!(checkTe instanceof TileEntityTrafficSignalHead)) return null;
 
     TileEntityTrafficSignalHead signalHead = (TileEntityTrafficSignalHead) checkTe;
