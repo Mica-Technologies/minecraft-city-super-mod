@@ -94,6 +94,15 @@ public class CsmGuiHandler implements IGuiHandler {
     } else if (id == 9 && tileEntity instanceof com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityPortableMessageSign) {
       returnValue = new com.micatechnologies.minecraft.csm.trafficaccessories.BlockPortableMessageSignGui(
           (com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityPortableMessageSign) tileEntity);
+    } else if (id == 10 && tileEntity instanceof com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityOverheadMessageSign) {
+      returnValue = new com.micatechnologies.minecraft.csm.trafficaccessories.BlockOverheadMessageSignGui(
+          (com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityOverheadMessageSign) tileEntity);
+    } else if (id == 11 && tileEntity instanceof com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityVariableSpeedLimit) {
+      returnValue = new com.micatechnologies.minecraft.csm.trafficaccessories.BlockPortableSpeedLimitGui(
+          (com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityVariableSpeedLimit) tileEntity);
+    } else if (id == 12 && tileEntity instanceof com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityOverheadSpeedLimit) {
+      returnValue = new com.micatechnologies.minecraft.csm.trafficaccessories.BlockOverheadSpeedLimitGui(
+          (com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityOverheadSpeedLimit) tileEntity);
     }
     return returnValue;
   }
