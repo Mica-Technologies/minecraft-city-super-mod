@@ -25,6 +25,7 @@ import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrossw
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkRightMount90Deg;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkTweeter1;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkTweeter2;
+import com.micatechnologies.minecraft.csm.trafficsignals.BlockBlankoutBox;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockTrafficLightSensorBox;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -139,7 +140,8 @@ public abstract class AbstractBlockTrafficPole extends AbstractBlockRotatableNSE
           AbstractBlockControllableSignalHead.class,
           BlockSnow.class, BlockSnowBlock.class, BlockBush.class, BlockLeaves.class,
           BlockVine.class, BlockCarpet.class, BlockTorch.class, BlockRedstoneWire.class,
-          BlockRailBase.class, BlockCactus.class, BlockReed.class, BlockWeb.class};
+          BlockRailBase.class, BlockCactus.class, BlockReed.class, BlockWeb.class,
+          BlockBlankoutBox.class};
 
 
   /**
