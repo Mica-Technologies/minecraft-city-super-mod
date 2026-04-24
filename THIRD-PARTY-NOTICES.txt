@@ -1,0 +1,116 @@
+This file contains the licenses and notices for third-party software bundled
+with the City Super Mod. These components are embedded in the mod JAR via the
+Gradle shadow plugin.
+
+
+===========================================================================
+MaryTTS — Text-to-Speech Engine
+===========================================================================
+
+  Source:  https://github.com/marytts/marytts
+  Version: 5.2.1
+  License: GNU Lesser General Public License v3.0 (LGPL-3.0)
+
+  Copyright (C) 2000-2016 DFKI GmbH
+  All rights reserved.
+
+  MaryTTS is free software: you can redistribute it and/or modify it under
+  the terms of the GNU Lesser General Public License as published by the
+  Free Software Foundation, version 3 of the License.
+
+  MaryTTS is distributed in the hope that it will be useful, but WITHOUT
+  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public
+  License for more details.
+
+  The full text of the LGPL-3.0 is available at:
+  https://www.gnu.org/licenses/lgpl-3.0.html
+
+  The complete source code for MaryTTS is available at:
+  https://github.com/marytts/marytts
+
+
+===========================================================================
+CMU SLT HSMM Voice — Female US English
+===========================================================================
+
+  Source:  https://github.com/marytts/voice-cmu-slt-hsmm
+  Version: 5.2.1
+  License: CMU Arctic License (BSD-like)
+
+  Copyright (c) 2003 Carnegie Mellon University
+
+  Permission is hereby granted, free of charge, to use and distribute this
+  software and its documentation without restriction, including without
+  limitation the rights to use, copy, modify, merge, publish, distribute,
+  sublicense, and/or sell copies of this work, and to permit persons to
+  whom this work is furnished to do so, subject to the following
+  conditions:
+
+   1. The code must retain the above copyright notice, this list of
+      conditions and the following disclaimer.
+   2. Any modifications must be clearly marked as such.
+   3. Original authors' names are not deleted.
+   4. The authors' names are not used to endorse or promote products
+      derived from this software without specific prior written permission.
+
+  CARNEGIE MELLON UNIVERSITY AND THE CONTRIBUTORS TO THIS WORK DISCLAIM
+  ALL WARRANTIES WITH REGARD TO THIS SOFTWARE, INCLUDING ALL IMPLIED
+  WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL CARNEGIE
+  MELLON UNIVERSITY NOR THE CONTRIBUTORS BE LIABLE FOR ANY SPECIAL,
+  INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
+  FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+  NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+  WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+
+
+===========================================================================
+CMU RMS HSMM Voice — Male US English
+===========================================================================
+
+  Source:  https://github.com/marytts/voice-cmu-rms-hsmm
+  Version: 5.2
+  License: CMU Arctic License (BSD-like)
+
+  Copyright (c) 2003 Carnegie Mellon University
+
+  (Same terms as CMU SLT above.)
+
+
+===========================================================================
+DFKI Spike HSMM Voice — Male British English
+===========================================================================
+
+  Source:  https://github.com/marytts/voice-dfki-spike-hsmm
+  Version: 5.2
+  License: Creative Commons Attribution-NoDerivs 3.0 Unported (CC-BY-ND 3.0)
+
+  Copyright (C) DFKI GmbH
+
+  This voice is distributed unmodified under the terms of the Creative
+  Commons Attribution-NoDerivs 3.0 Unported license. You are free to
+  share (copy, distribute, and transmit) the work under the following
+  conditions:
+
+   - Attribution: You must attribute the work to DFKI GmbH.
+   - No Derivative Works: You may not alter, transform, or build upon
+     this work.
+
+  Bundling this voice unmodified inside a larger work (such as this mod
+  JAR) constitutes a "Collection" under the license and is permitted.
+
+  The full text of the CC-BY-ND 3.0 license is available at:
+  https://creativecommons.org/licenses/by-nd/3.0/legalcode
+
+
+===========================================================================
+DFKI Prudence HSMM Voice — Female British English
+===========================================================================
+
+  Source:  https://github.com/marytts/voice-dfki-prudence-hsmm
+  Version: 5.2
+  License: Creative Commons Attribution-NoDerivs 3.0 Unported (CC-BY-ND 3.0)
+
+  Copyright (C) DFKI GmbH
+
+  (Same terms as DFKI Spike above.)
