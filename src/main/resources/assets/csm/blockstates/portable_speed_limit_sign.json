@@ -1,7 +1,11 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:portable_speed_limit_sign"
+    "model": "cube_all",
+    "textures": {
+      "all": "csm:blocks/trafficsignals/shared_textures/transparent",
+      "particle": "csm:blocks/trafficsignals/shared_textures/transparent"
+    }
   },
   "variants": {
     "facing": {
@@ -10,6 +14,12 @@
       "west": { "y": 270 },
       "east": { "y": 90 }
     },
-    "inventory": [{}]
+    "inventory": [{
+      "model": "csm:portable_speed_limit_sign",
+      "textures": {
+        "all": "csm:blocks/trafficaccessories/portable_speed_limit_sign",
+        "particle": "csm:blocks/trafficaccessories/portable_speed_limit_sign"
+      }
+    }]
   }
 }

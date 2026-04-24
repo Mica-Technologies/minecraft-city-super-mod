@@ -14,7 +14,7 @@ public class TileEntityOverheadMessageSign extends TileEntityPortableMessageSign
   @SideOnly(Side.CLIENT)
   public AxisAlignedBB getRenderBoundingBox() {
     return new AxisAlignedBB(
-        pos.getX() - 4, pos.getY() - 4, pos.getZ() - 4,
-        pos.getX() + 5, pos.getY() + 1, pos.getZ() + 5);
+        pos.getX() - 4, pos.getY() - 2, pos.getZ() - 2,
+        pos.getX() + 5, pos.getY() + 3, pos.getZ() + 3);
   }
 }
