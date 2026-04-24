@@ -3,6 +3,7 @@ package com.micatechnologies.minecraft.csm.trafficsignals;
 import com.micatechnologies.minecraft.csm.codeutils.CsmRenderUtils;
 import com.micatechnologies.minecraft.csm.codeutils.DirectionSixteen;
 import com.micatechnologies.minecraft.csm.codeutils.RenderHelper;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficLightMountKit;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignalHead;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.BlankoutBoxTextureMap;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.BlankoutBoxType;
@@ -119,6 +120,15 @@ public class TileEntityBlankoutBoxRenderer
         GL11.glTranslated( -8, -8, -8 );
         if ( tiltOffset != 0 ) {
             GL11.glTranslated( tiltOffset, 0, 0 );
+        }
+
+        // Push body back toward mount kit when placed in front of one with no side/rear mount
+        if ( mountType == CrosswalkMountType.BASE ) {
+            BlockPos behind = te.getPos().offset( facing.getOpposite() );
+            if ( te.getWorld().getBlockState( behind ).getBlock()
+                    instanceof BlockTrafficLightMountKit ) {
+                GL11.glTranslated( 0, 0, 8 );
+            }
         }
 
         // Stubs

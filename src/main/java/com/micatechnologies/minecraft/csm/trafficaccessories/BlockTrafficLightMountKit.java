@@ -3,8 +3,10 @@ package com.micatechnologies.minecraft.csm.trafficaccessories;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEWUD;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmNoSnowAccumulation;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
+import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityBlankoutBox;
 import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalHead;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignalHead;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.BlankoutBoxVertexData;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
@@ -254,7 +256,9 @@ public class BlockTrafficLightMountKit extends AbstractBlockRotatableNSEWUD
   // --- Signal detection helpers (shared logic with renderer) ---
 
   private static boolean isSignalHead(IBlockAccess world, BlockPos pos) {
-    return world.getTileEntity(pos) instanceof TileEntityTrafficSignalHead;
+    TileEntity te = world.getTileEntity(pos);
+    return te instanceof TileEntityTrafficSignalHead
+        || te instanceof TileEntityBlankoutBox;
   }
 
   /**
@@ -264,6 +268,13 @@ public class BlockTrafficLightMountKit extends AbstractBlockRotatableNSEWUD
   @Nullable
   private static float[] readSignalEnvelope(IBlockAccess world, BlockPos pos) {
     TileEntity te = world.getTileEntity(pos);
+
+    if (te instanceof TileEntityBlankoutBox) {
+      return new float[]{
+          BlankoutBoxVertexData.BODY_X_MIN, BlankoutBoxVertexData.BODY_X_MAX,
+          BlankoutBoxVertexData.BODY_Y_MIN, BlankoutBoxVertexData.BODY_Y_MAX, 0f};
+    }
+
     if (!(te instanceof TileEntityTrafficSignalHead)) return null;
 
     TileEntityTrafficSignalHead signalHead = (TileEntityTrafficSignalHead) te;
