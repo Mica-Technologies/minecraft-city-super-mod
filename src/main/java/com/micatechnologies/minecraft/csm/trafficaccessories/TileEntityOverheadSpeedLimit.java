@@ -14,7 +14,7 @@ public class TileEntityOverheadSpeedLimit extends TileEntityVariableSpeedLimit {
   @SideOnly(Side.CLIENT)
   public AxisAlignedBB getRenderBoundingBox() {
     return new AxisAlignedBB(
-        pos.getX() - 3, pos.getY() - 6, pos.getZ() - 3,
-        pos.getX() + 4, pos.getY() + 1, pos.getZ() + 4);
+        pos.getX() - 2, pos.getY() - 3, pos.getZ() - 2,
+        pos.getX() + 3, pos.getY() + 4, pos.getZ() + 3);
   }
 }

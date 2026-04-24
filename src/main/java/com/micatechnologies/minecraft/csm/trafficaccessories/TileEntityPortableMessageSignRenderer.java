@@ -102,10 +102,10 @@ public class TileEntityPortableMessageSignRenderer
   // Angle rotation offsets (degrees, indexed by tile entity signAngle value)
   private static final float[] ANGLE_ROTATIONS = {
       0f,    // 0: Normal
-      15f,   // 1: Left Tilt
-      -15f,  // 2: Right Tilt
-      45f,   // 3: Left Angle
-      -45f,  // 4: Right Angle
+      -15f,  // 1: Left Tilt
+      15f,   // 2: Right Tilt
+      -45f,  // 3: Left Angle
+      45f,   // 4: Right Angle
   };
 
   // =====================================================================
@@ -193,6 +193,8 @@ public class TileEntityPortableMessageSignRenderer
 
     renderText(te);
 
+    GlStateManager.enableTexture2D();
+    GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
     GlStateManager.enableLighting();
     GlStateManager.enableCull();
     GlStateManager.disableBlend();
@@ -437,7 +439,7 @@ public class TileEntityPortableMessageSignRenderer
     OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240f, 240f);
 
     GlStateManager.enableTexture2D();
-    GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+    GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
     Minecraft.getMinecraft().getTextureManager().bindTexture(SIGNAL_ATLAS);
 
     buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);

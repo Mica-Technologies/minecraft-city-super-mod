@@ -18,39 +18,37 @@ import org.lwjgl.opengl.GL11;
 public class TileEntityOverheadSpeedLimitRenderer
     extends TileEntitySpecialRenderer<TileEntityOverheadSpeedLimit> {
 
-  // Sign dimensions: 3 blocks wide × 5 blocks tall (48 × 80 model units)
+  // Sign dimensions: proportions matched to portable speed limit sign (3:4 aspect)
   private static final float SIGN_WIDTH = 48.0f;
-  private static final float SIGN_HEIGHT = 80.0f;
+  private static final float SIGN_HEIGHT = 64.0f;
   private static final float SIGN_DEPTH = 12.0f;
   private static final float SIGN_FRAME = 2.0f;
 
-  // Mounting bracket
-  private static final float BRACKET_WIDTH = 10.0f;
-  private static final float BRACKET_HEIGHT = 4.0f;
-  private static final float BRACKET_DEPTH = 10.0f;
-
   // Center of block
   private static final float CX = 8.0f;
-  private static final float CZ = 8.0f;
+  private static final float CY = 8.0f;
 
-  // Vertical positioning: sign hangs below block
-  private static final float SIGN_TOP = 0.0f;
-  private static final float SIGN_BOTTOM = SIGN_TOP - SIGN_HEIGHT;
+  // Vertical positioning: centered on block
+  private static final float SIGN_TOP = CY + SIGN_HEIGHT / 2.0f;
+  private static final float SIGN_BOTTOM = CY - SIGN_HEIGHT / 2.0f;
 
-  // Sign face zones: upper "SPEED LIMIT" area, lower speed number area
-  private static final float SIGN_DIVIDER_Y = SIGN_TOP - SIGN_HEIGHT * 0.38f;
+  // Z positioning: housing extends from front to back edge of block (Z=16)
+  private static final float BACK_Z = 16.0f;
+  private static final float FACE_Z = BACK_Z - SIGN_DEPTH;
 
-  // Text
-  private static final float SPEED_TEXT_SCALE = 5.0f;
-  private static final float LABEL_TEXT_SCALE = 1.2f;
-  private static final int TEXT_COLOR_AMBER = 0xFFAA00;
+  // Sign face zones: upper "SPEED LIMIT" area, lower speed number area (same 42% split as portable)
+  private static final float SIGN_DIVIDER_Y = SIGN_BOTTOM + SIGN_HEIGHT * 0.42f;
+
+  // Text (scaled from portable: 1.35 * 1.778, 0.71 * 1.778)
+  private static final float SPEED_TEXT_SCALE = 2.4f;
+  private static final float LABEL_TEXT_SCALE = 1.26f;
+  private static final int TEXT_COLOR_BLACK = 0x111111;
 
   // Colors
   private static final float[] COL_HOUSING = {0.18f, 0.18f, 0.18f, 1.0f};
-  private static final float[] COL_SIGN_WHITE = {0.92f, 0.92f, 0.92f, 1.0f};
-  private static final float[] COL_SIGN_BLACK = {0.06f, 0.06f, 0.06f, 1.0f};
+  private static final float[] COL_SIGN_BG = {0.85f, 0.85f, 0.85f, 1.0f};
+  private static final float[] COL_SCREEN_WHITE = {0.95f, 0.95f, 0.95f, 1.0f};
   private static final float[] COL_FRAME = {0.45f, 0.45f, 0.47f, 1.0f};
-  private static final float[] COL_BRACKET = {0.35f, 0.35f, 0.37f, 1.0f};
   private static final float[] COL_BORDER = {0.05f, 0.05f, 0.05f, 1.0f};
 
   @Override
@@ -95,7 +93,6 @@ public class TileEntityOverheadSpeedLimitRenderer
     GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
     GlStateManager.disableTexture2D();
 
-    renderBrackets();
     renderHousing();
     renderSignFace();
 
@@ -104,29 +101,13 @@ public class TileEntityOverheadSpeedLimitRenderer
     renderSpeedText(te);
     renderLabelText();
 
+    GlStateManager.enableTexture2D();
+    GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
     GlStateManager.enableLighting();
     GlStateManager.enableCull();
     GlStateManager.disableBlend();
 
     GlStateManager.popMatrix();
-  }
-
-  private void renderBrackets() {
-    Tessellator tess = Tessellator.getInstance();
-    BufferBuilder buf = tess.getBuffer();
-    List<RenderHelper.Box> boxes = new ArrayList<>();
-
-    float bracketY = SIGN_TOP;
-
-    boxes.add(new RenderHelper.Box(
-        new float[]{CX - BRACKET_WIDTH / 2, bracketY, CZ - BRACKET_DEPTH / 2},
-        new float[]{CX + BRACKET_WIDTH / 2, bracketY + BRACKET_HEIGHT,
-            CZ + BRACKET_DEPTH / 2}));
-
-    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
-    RenderHelper.addBoxesToBuffer(boxes, buf,
-        COL_BRACKET[0], COL_BRACKET[1], COL_BRACKET[2], COL_BRACKET[3], 0, 0, 0);
-    tess.draw();
   }
 
   private void renderHousing() {
@@ -137,9 +118,9 @@ public class TileEntityOverheadSpeedLimitRenderer
     List<RenderHelper.Box> border = new ArrayList<>();
     border.add(new RenderHelper.Box(
         new float[]{CX - SIGN_WIDTH / 2 - SIGN_FRAME, SIGN_BOTTOM - SIGN_FRAME,
-            CZ - SIGN_DEPTH / 2 - SIGN_FRAME},
+            FACE_Z - SIGN_FRAME},
         new float[]{CX + SIGN_WIDTH / 2 + SIGN_FRAME, SIGN_TOP + SIGN_FRAME,
-            CZ + SIGN_DEPTH / 2 + SIGN_FRAME}));
+            BACK_Z + SIGN_FRAME}));
 
     buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
     RenderHelper.addBoxesToBuffer(border, buf,
@@ -149,10 +130,8 @@ public class TileEntityOverheadSpeedLimitRenderer
     // Frame
     List<RenderHelper.Box> frame = new ArrayList<>();
     frame.add(new RenderHelper.Box(
-        new float[]{CX - SIGN_WIDTH / 2 - 0.5f, SIGN_BOTTOM - 0.5f,
-            CZ - SIGN_DEPTH / 2 - 0.5f},
-        new float[]{CX + SIGN_WIDTH / 2 + 0.5f, SIGN_TOP + 0.5f,
-            CZ + SIGN_DEPTH / 2 + 0.5f}));
+        new float[]{CX - SIGN_WIDTH / 2 - 0.5f, SIGN_BOTTOM - 0.5f, FACE_Z - 0.5f},
+        new float[]{CX + SIGN_WIDTH / 2 + 0.5f, SIGN_TOP + 0.5f, BACK_Z + 0.5f}));
 
     buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
     RenderHelper.addBoxesToBuffer(frame, buf,
@@ -162,8 +141,8 @@ public class TileEntityOverheadSpeedLimitRenderer
     // Housing body
     List<RenderHelper.Box> housing = new ArrayList<>();
     housing.add(new RenderHelper.Box(
-        new float[]{CX - SIGN_WIDTH / 2, SIGN_BOTTOM, CZ - SIGN_DEPTH / 2},
-        new float[]{CX + SIGN_WIDTH / 2, SIGN_TOP, CZ + SIGN_DEPTH / 2}));
+        new float[]{CX - SIGN_WIDTH / 2, SIGN_BOTTOM, FACE_Z},
+        new float[]{CX + SIGN_WIDTH / 2, SIGN_TOP, BACK_Z}));
 
     buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
     RenderHelper.addBoxesToBuffer(housing, buf,
@@ -175,45 +154,48 @@ public class TileEntityOverheadSpeedLimitRenderer
     Tessellator tess = Tessellator.getInstance();
     BufferBuilder buf = tess.getBuffer();
 
-    // White upper portion
-    List<RenderHelper.Box> upperFace = new ArrayList<>();
-    upperFace.add(new RenderHelper.Box(
-        new float[]{CX - SIGN_WIDTH / 2 + 1.0f, SIGN_DIVIDER_Y,
-            CZ - SIGN_DEPTH / 2 - 0.1f},
-        new float[]{CX + SIGN_WIDTH / 2 - 1.0f, SIGN_TOP - 1.0f,
-            CZ - SIGN_DEPTH / 2 + 0.3f}));
+    // Subtle gray sign background (full face) — placed in front of frame
+    float faceFront = FACE_Z - SIGN_FRAME - 0.1f;
+    List<RenderHelper.Box> bgFace = new ArrayList<>();
+    bgFace.add(new RenderHelper.Box(
+        new float[]{CX - SIGN_WIDTH / 2 + 1.0f, SIGN_BOTTOM + 1.0f, faceFront - 0.3f},
+        new float[]{CX + SIGN_WIDTH / 2 - 1.0f, SIGN_TOP - 1.0f, faceFront}));
 
     buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
-    RenderHelper.addBoxesToBuffer(upperFace, buf,
-        COL_SIGN_WHITE[0], COL_SIGN_WHITE[1], COL_SIGN_WHITE[2], COL_SIGN_WHITE[3], 0, 0, 0);
+    RenderHelper.addBoxesToBuffer(bgFace, buf,
+        COL_SIGN_BG[0], COL_SIGN_BG[1], COL_SIGN_BG[2], COL_SIGN_BG[3], 0, 0, 0);
     tess.draw();
 
-    // Black LED lower portion
-    List<RenderHelper.Box> lowerFace = new ArrayList<>();
-    lowerFace.add(new RenderHelper.Box(
-        new float[]{CX - SIGN_WIDTH / 2 + 1.0f, SIGN_BOTTOM + 1.0f,
-            CZ - SIGN_DEPTH / 2 - 0.1f},
-        new float[]{CX + SIGN_WIDTH / 2 - 1.0f, SIGN_DIVIDER_Y,
-            CZ - SIGN_DEPTH / 2 + 0.3f}));
+    // Bright white LED screen (inset, lower portion) — fullbright
+    float prevBX = OpenGlHelper.lastBrightnessX;
+    float prevBY = OpenGlHelper.lastBrightnessY;
+    OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240f, 240f);
+
+    float screenInset = 4.0f;
+    List<RenderHelper.Box> screenFace = new ArrayList<>();
+    screenFace.add(new RenderHelper.Box(
+        new float[]{CX - SIGN_WIDTH / 2 + screenInset, SIGN_BOTTOM + screenInset,
+            faceFront - 0.4f},
+        new float[]{CX + SIGN_WIDTH / 2 - screenInset, SIGN_DIVIDER_Y - 1.0f,
+            faceFront - 0.1f}));
 
     buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
-    RenderHelper.addBoxesToBuffer(lowerFace, buf,
-        COL_SIGN_BLACK[0], COL_SIGN_BLACK[1], COL_SIGN_BLACK[2], COL_SIGN_BLACK[3], 0, 0, 0);
+    RenderHelper.addBoxesToBuffer(screenFace, buf,
+        COL_SCREEN_WHITE[0], COL_SCREEN_WHITE[1], COL_SCREEN_WHITE[2], COL_SCREEN_WHITE[3],
+        0, 0, 0);
     tess.draw();
+
+    OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, prevBX, prevBY);
   }
 
   private void renderLabelText() {
     FontRenderer fr = Minecraft.getMinecraft().fontRenderer;
 
-    float prevBX = OpenGlHelper.lastBrightnessX;
-    float prevBY = OpenGlHelper.lastBrightnessY;
-    OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240f, 240f);
-
     GlStateManager.pushMatrix();
 
-    float faceZ = CZ - SIGN_DEPTH / 2 - 0.15f;
+    float textZ = FACE_Z - SIGN_FRAME - 0.5f;
     float upperCenterY = (SIGN_DIVIDER_Y + SIGN_TOP - 1.0f) / 2.0f;
-    GlStateManager.translate(CX, upperCenterY, faceZ);
+    GlStateManager.translate(CX, upperCenterY, textZ);
     GlStateManager.rotate(180, 0, 1, 0);
     GlStateManager.scale(LABEL_TEXT_SCALE, -LABEL_TEXT_SCALE, LABEL_TEXT_SCALE);
 
@@ -232,8 +214,6 @@ public class TileEntityOverheadSpeedLimitRenderer
     GlStateManager.depthMask(true);
 
     GlStateManager.popMatrix();
-
-    OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, prevBX, prevBY);
   }
 
   private void renderSpeedText(TileEntityOverheadSpeedLimit te) {
@@ -248,9 +228,9 @@ public class TileEntityOverheadSpeedLimitRenderer
 
     GlStateManager.pushMatrix();
 
-    float faceZ = CZ - SIGN_DEPTH / 2 - 0.15f;
+    float textZ = FACE_Z - SIGN_FRAME - 0.6f;
     float lowerCenterY = (SIGN_BOTTOM + 1.0f + SIGN_DIVIDER_Y) / 2.0f;
-    GlStateManager.translate(CX, lowerCenterY, faceZ);
+    GlStateManager.translate(CX, lowerCenterY, textZ);
     GlStateManager.rotate(180, 0, 1, 0);
     GlStateManager.scale(SPEED_TEXT_SCALE, -SPEED_TEXT_SCALE, SPEED_TEXT_SCALE);
 
@@ -258,7 +238,7 @@ public class TileEntityOverheadSpeedLimitRenderer
     GlStateManager.enableTexture2D();
 
     int textWidth = fr.getStringWidth(speedStr);
-    fr.drawString(speedStr, -textWidth / 2, -fr.FONT_HEIGHT / 2, TEXT_COLOR_AMBER);
+    fr.drawString(speedStr, -textWidth / 2, -fr.FONT_HEIGHT / 2, TEXT_COLOR_BLACK);
 
     GlStateManager.disableTexture2D();
     GlStateManager.depthMask(true);

@@ -26,8 +26,8 @@ public class TileEntityPortableSpeedLimitRenderer
     extends TileEntitySpecialRenderer<TileEntityVariableSpeedLimit> {
 
   // Sign panel — narrower and taller than the DMS for a speed limit sign shape
-  private static final float SIGN_WIDTH = 36.0f;
-  private static final float SIGN_HEIGHT = 48.0f;
+  private static final float SIGN_WIDTH = 27.0f;
+  private static final float SIGN_HEIGHT = 36.0f;
   private static final float SIGN_DEPTH = 3.0f;
   private static final float SIGN_FRAME = 1.5f;
 
@@ -51,7 +51,7 @@ public class TileEntityPortableSpeedLimitRenderer
   private static final float OUTRIGGER_FOOT_SIZE = 3.75f;
 
   // Speed number text — black digits on white LED screen
-  private static final float SPEED_TEXT_SCALE = 1.8f;
+  private static final float SPEED_TEXT_SCALE = 1.35f;
   private static final int TEXT_COLOR_BLACK = 0x111111;
 
   // Derived positions
@@ -88,7 +88,7 @@ public class TileEntityPortableSpeedLimitRenderer
 
   // Angle rotations
   private static final float[] ANGLE_ROTATIONS = {
-      0f, 15f, -15f, 45f, -45f
+      0f, -15f, 15f, -45f, 45f
   };
 
   // Flasher constants (reuses traffic signal 8-inch geometry)
@@ -175,6 +175,8 @@ public class TileEntityPortableSpeedLimitRenderer
     renderSpeedText(te);
     renderLabelText();
 
+    GlStateManager.enableTexture2D();
+    GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
     GlStateManager.enableLighting();
     GlStateManager.enableCull();
     GlStateManager.disableBlend();
@@ -327,7 +329,7 @@ public class TileEntityPortableSpeedLimitRenderer
     float prevBY = OpenGlHelper.lastBrightnessY;
     OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240f, 240f);
 
-    float screenInset = 3.0f;
+    float screenInset = 2.25f;
     List<RenderHelper.Box> screenFace = new ArrayList<>();
     screenFace.add(new RenderHelper.Box(
         new float[]{CX - SIGN_WIDTH / 2 + screenInset, SIGN_BOTTOM + screenInset,
@@ -396,7 +398,7 @@ public class TileEntityPortableSpeedLimitRenderer
     OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240f, 240f);
 
     GlStateManager.enableTexture2D();
-    GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+    GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
     Minecraft.getMinecraft().getTextureManager().bindTexture(SIGNAL_ATLAS);
 
     buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
@@ -463,7 +465,7 @@ public class TileEntityPortableSpeedLimitRenderer
     GlStateManager.translate(CX, upperCenterY, faceZ);
     GlStateManager.rotate(180, 0, 1, 0);
 
-    float labelScale = 0.95f;
+    float labelScale = 0.71f;
     GlStateManager.scale(labelScale, -labelScale, labelScale);
 
     GlStateManager.depthMask(false);

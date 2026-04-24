@@ -24,30 +24,27 @@ public class TileEntityOverheadMessageSignRenderer
   private static final float SIGN_DEPTH = 20.0f;
   private static final float SIGN_FRAME = 2.0f;
 
-  // Mounting bracket at top
-  private static final float BRACKET_WIDTH = 12.0f;
-  private static final float BRACKET_HEIGHT = 4.0f;
-  private static final float BRACKET_DEPTH = 12.0f;
-
   // Text rendering
   private static final float TEXT_SCALE = 0.975f;
   private static final int TEXT_COLOR_AMBER = 0xFFAA00;
 
   // Center of block
   private static final float CX = 8.0f;
-  private static final float CZ = 8.0f;
+  private static final float CY = 8.0f;
 
-  // Vertical positioning: block is at top, sign hangs below
-  // Block occupies Y=0..16; sign starts at Y=0 and goes down
-  private static final float SIGN_TOP = 0.0f;
-  private static final float SIGN_BOTTOM = SIGN_TOP - SIGN_HEIGHT;
-  private static final float SIGN_CENTER_Y = (SIGN_TOP + SIGN_BOTTOM) / 2.0f;
+  // Vertical positioning: centered on block
+  private static final float SIGN_TOP = CY + SIGN_HEIGHT / 2.0f;
+  private static final float SIGN_BOTTOM = CY - SIGN_HEIGHT / 2.0f;
+  private static final float SIGN_CENTER_Y = CY;
+
+  // Z positioning: housing extends from front to back edge of block (Z=16)
+  private static final float BACK_Z = 16.0f;
+  private static final float FACE_Z = BACK_Z - SIGN_DEPTH;
 
   // Colors
   private static final float[] COL_HOUSING = {0.18f, 0.18f, 0.18f, 1.0f};
   private static final float[] COL_SIGN_FACE = {0.06f, 0.06f, 0.06f, 1.0f};
   private static final float[] COL_FRAME = {0.45f, 0.45f, 0.47f, 1.0f};
-  private static final float[] COL_BRACKET = {0.35f, 0.35f, 0.37f, 1.0f};
 
   @Override
   public void render(TileEntityOverheadMessageSign te, double x, double y, double z,
@@ -91,7 +88,6 @@ public class TileEntityOverheadMessageSignRenderer
     GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
     GlStateManager.disableTexture2D();
 
-    renderBrackets();
     renderHousing();
     renderSignFace();
 
@@ -99,38 +95,13 @@ public class TileEntityOverheadMessageSignRenderer
 
     renderText(te);
 
+    GlStateManager.enableTexture2D();
+    GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
     GlStateManager.enableLighting();
     GlStateManager.enableCull();
     GlStateManager.disableBlend();
 
     GlStateManager.popMatrix();
-  }
-
-  private void renderBrackets() {
-    Tessellator tess = Tessellator.getInstance();
-    BufferBuilder buf = tess.getBuffer();
-    List<RenderHelper.Box> boxes = new ArrayList<>();
-
-    // Two mounting brackets at top, connecting block to housing
-    float bracketY = SIGN_TOP;
-    float spacing = SIGN_WIDTH * 0.3f;
-
-    boxes.add(new RenderHelper.Box(
-        new float[]{CX - spacing - BRACKET_WIDTH / 2, bracketY,
-            CZ - BRACKET_DEPTH / 2},
-        new float[]{CX - spacing + BRACKET_WIDTH / 2, bracketY + BRACKET_HEIGHT,
-            CZ + BRACKET_DEPTH / 2}));
-
-    boxes.add(new RenderHelper.Box(
-        new float[]{CX + spacing - BRACKET_WIDTH / 2, bracketY,
-            CZ - BRACKET_DEPTH / 2},
-        new float[]{CX + spacing + BRACKET_WIDTH / 2, bracketY + BRACKET_HEIGHT,
-            CZ + BRACKET_DEPTH / 2}));
-
-    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
-    RenderHelper.addBoxesToBuffer(boxes, buf,
-        COL_BRACKET[0], COL_BRACKET[1], COL_BRACKET[2], COL_BRACKET[3], 0, 0, 0);
-    tess.draw();
   }
 
   private void renderHousing() {
@@ -141,9 +112,9 @@ public class TileEntityOverheadMessageSignRenderer
     List<RenderHelper.Box> frame = new ArrayList<>();
     frame.add(new RenderHelper.Box(
         new float[]{CX - SIGN_WIDTH / 2 - SIGN_FRAME, SIGN_BOTTOM - SIGN_FRAME,
-            CZ - SIGN_DEPTH / 2 - SIGN_FRAME},
+            FACE_Z - SIGN_FRAME},
         new float[]{CX + SIGN_WIDTH / 2 + SIGN_FRAME, SIGN_TOP + SIGN_FRAME,
-            CZ + SIGN_DEPTH / 2 + SIGN_FRAME}));
+            BACK_Z + SIGN_FRAME}));
 
     buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
     RenderHelper.addBoxesToBuffer(frame, buf,
@@ -153,8 +124,8 @@ public class TileEntityOverheadMessageSignRenderer
     // Main housing body
     List<RenderHelper.Box> housing = new ArrayList<>();
     housing.add(new RenderHelper.Box(
-        new float[]{CX - SIGN_WIDTH / 2, SIGN_BOTTOM, CZ - SIGN_DEPTH / 2},
-        new float[]{CX + SIGN_WIDTH / 2, SIGN_TOP, CZ + SIGN_DEPTH / 2}));
+        new float[]{CX - SIGN_WIDTH / 2, SIGN_BOTTOM, FACE_Z},
+        new float[]{CX + SIGN_WIDTH / 2, SIGN_TOP, BACK_Z}));
 
     buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
     RenderHelper.addBoxesToBuffer(housing, buf,
@@ -167,11 +138,10 @@ public class TileEntityOverheadMessageSignRenderer
     BufferBuilder buf = tess.getBuffer();
 
     List<RenderHelper.Box> face = new ArrayList<>();
+    float faceFront = FACE_Z - SIGN_FRAME - 0.1f;
     face.add(new RenderHelper.Box(
-        new float[]{CX - SIGN_WIDTH / 2 + 1.0f, SIGN_BOTTOM + 1.0f,
-            CZ - SIGN_DEPTH / 2 - 0.1f},
-        new float[]{CX + SIGN_WIDTH / 2 - 1.0f, SIGN_TOP - 1.0f,
-            CZ - SIGN_DEPTH / 2 + 0.3f}));
+        new float[]{CX - SIGN_WIDTH / 2 + 1.0f, SIGN_BOTTOM + 1.0f, faceFront - 0.3f},
+        new float[]{CX + SIGN_WIDTH / 2 - 1.0f, SIGN_TOP - 1.0f, faceFront}));
 
     buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
     RenderHelper.addBoxesToBuffer(face, buf,
@@ -198,8 +168,8 @@ public class TileEntityOverheadMessageSignRenderer
 
     GlStateManager.pushMatrix();
 
-    float faceZ = CZ - SIGN_DEPTH / 2 - 0.15f;
-    GlStateManager.translate(CX, SIGN_CENTER_Y, faceZ);
+    float textZ = FACE_Z - SIGN_FRAME - 0.5f;
+    GlStateManager.translate(CX, SIGN_CENTER_Y, textZ);
     GlStateManager.rotate(180, 0, 1, 0);
     GlStateManager.scale(TEXT_SCALE, -TEXT_SCALE, TEXT_SCALE);
 
