@@ -43,6 +43,11 @@ dependencies {
     shadowImplementation('de.dfki.mary:marytts-lang-en:5.2.1', excludeForgeProvided)
     shadowImplementation('de.dfki.mary:voice-cmu-slt-hsmm:5.2.1', excludeForgeProvided)
 
+    // Additional MaryTTS voices (not on Maven Central — loaded from libs/ via flatDir)
+    shadowImplementation name: 'voice-cmu-rms-hsmm-5.2'
+    shadowImplementation name: 'voice-dfki-spike-hsmm-5.2'
+    shadowImplementation name: 'voice-dfki-prudence-hsmm-5.2'
+
     // Log4j 1.x → 2.x bridge: MaryTTS uses the old org.apache.log4j API internally.
     // Forge bundles Log4j 2 but not the 1.x compatibility shim, so we need this.
     shadowImplementation('org.apache.logging.log4j:log4j-1.2-api:2.17.1') { transitive = false }
