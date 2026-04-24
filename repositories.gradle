@@ -1,6 +1,9 @@
 // Add any additional repositories for your dependencies here
 
 repositories {
+    // MaryTTS voice JARs not published to Maven Central (only released as GitHub ZIPs).
+    flatDir { dirs 'libs' }
+
     // MaryTTS transitive deps not on Maven Central (were only on defunct JCenter/Bintray).
     // Scoped with content filters so only the specific missing artifacts hit these repos.
     maven {

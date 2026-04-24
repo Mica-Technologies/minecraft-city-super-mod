@@ -21,7 +21,10 @@ public class CsmTts {
   private static final Logger LOGGER = LogManager.getLogger("CSM-TTS");
   private static final String DEFAULT_VOICE = "cmu-slt-hsmm";
   private static final String[][] KNOWN_VOICES = {
-      {"cmu-slt-hsmm", "CMU SLT (Female, US)"}
+      {"cmu-slt-hsmm", "CMU SLT (Female, US)"},
+      {"cmu-rms-hsmm", "CMU RMS (Male, US)"},
+      {"dfki-spike-hsmm", "DFKI Spike (Male, GB)"},
+      {"dfki-prudence-hsmm", "DFKI Prudence (Female, GB)"}
   };
   private static final int AUDIO_BUFFER_SIZE = 4096;
 
