@@ -433,6 +433,23 @@ resume prompts for continuing work across sessions.
 After making changes, you can push your modifications to GitHub on a new branch. To protect the
 working code, modification of the `main` branch is not permitted except through pull request.
 
+## Third-Party Attributions
+
+This mod bundles the following third-party libraries. See
+[THIRD-PARTY-NOTICES.txt](THIRD-PARTY-NOTICES.txt) for full license texts.
+
+| Component | License | Source |
+|---|---|---|
+| [MaryTTS](https://github.com/marytts/marytts) 5.2.1 — Text-to-speech engine | LGPL-3.0 | [marytts/marytts](https://github.com/marytts/marytts) |
+| [CMU SLT HSMM](https://github.com/marytts/voice-cmu-slt-hsmm) — Female US English voice | CMU Arctic (BSD-like) | [marytts/voice-cmu-slt-hsmm](https://github.com/marytts/voice-cmu-slt-hsmm) |
+| [CMU RMS HSMM](https://github.com/marytts/voice-cmu-rms-hsmm) — Male US English voice | CMU Arctic (BSD-like) | [marytts/voice-cmu-rms-hsmm](https://github.com/marytts/voice-cmu-rms-hsmm) |
+| [DFKI Spike HSMM](https://github.com/marytts/voice-dfki-spike-hsmm) — Male British English voice | CC-BY-ND 3.0 | [marytts/voice-dfki-spike-hsmm](https://github.com/marytts/voice-dfki-spike-hsmm) |
+| [DFKI Prudence HSMM](https://github.com/marytts/voice-dfki-prudence-hsmm) — Female British English voice | CC-BY-ND 3.0 | [marytts/voice-dfki-prudence-hsmm](https://github.com/marytts/voice-dfki-prudence-hsmm) |
+
+The DFKI voices are bundled unmodified and attributed to [DFKI GmbH](https://www.dfki.de/).
+The CMU voices are from the [CMU Arctic](http://www.festvox.org/cmu_arctic/) speech corpus,
+Copyright (c) 2003 Carnegie Mellon University.
+
 ## Credits
 
 ### Active Developers
