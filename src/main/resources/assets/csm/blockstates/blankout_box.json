@@ -30,9 +30,9 @@
       {
         "model": "csm:trafficsignals/shared_models/blankout_box",
         "textures": {
-          "all": "csm:blocks/trafficsignals/blankout_boxes/DW_BO",
-          "particle": "csm:blocks/trafficsignals/blankout_boxes/DW_BO",
-          "0": "csm:blocks/trafficsignals/blankout_boxes/DW_BO"
+          "all": "csm:blocks/trafficsignals/blankout_boxes/dw_bo",
+          "particle": "csm:blocks/trafficsignals/blankout_boxes/dw_bo",
+          "0": "csm:blocks/trafficsignals/blankout_boxes/dw_bo"
         }
       }
     ],
