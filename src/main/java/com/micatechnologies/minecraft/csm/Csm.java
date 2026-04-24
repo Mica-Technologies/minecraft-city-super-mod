@@ -184,6 +184,10 @@ public class Csm {
           com.micatechnologies.minecraft.csm.codeutils.packets.TileEntityPortableMessageSignUpdateHandler.class,
           com.micatechnologies.minecraft.csm.codeutils.packets.TileEntityPortableMessageSignUpdatePacket.class,
           Side.SERVER);
+      CsmNetwork.registerNetworkMessage(
+          com.micatechnologies.minecraft.csm.codeutils.packets.TileEntityVariableSpeedLimitUpdateHandler.class,
+          com.micatechnologies.minecraft.csm.codeutils.packets.TileEntityVariableSpeedLimitUpdatePacket.class,
+          Side.SERVER);
       logger.info("Finished registering network message(s)");
       progressBar.step("Network Messages Registration");
 

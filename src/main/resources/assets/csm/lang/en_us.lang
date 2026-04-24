@@ -1467,3 +1467,6 @@ tile.yellowmetal_slab.name=Yellow Metal Slab
 tile.yellowmetal_slab_double.name=Yellow Metal Double Slab
 tile.yellowmetal_stairs.name=Yellow Metal Stairs
 tile.portable_message_sign.name=Portable Changeable Message Sign
+tile.overhead_message_sign.name=Overhead Message Sign
+tile.portable_speed_limit_sign.name=Portable Variable Speed Limit Sign
+tile.overhead_speed_limit_sign.name=Overhead Variable Speed Limit Sign

@@ -497,5 +497,17 @@ public class CsmTabTrafficAccessories extends CsmTab {
     // --- Class-based: Portable Message Sign ---
     initTabBlock(com.micatechnologies.minecraft.csm.trafficaccessories.BlockPortableMessageSign.class,
         fmlPreInitializationEvent);
+
+    // --- Class-based: Overhead Message Sign ---
+    initTabBlock(com.micatechnologies.minecraft.csm.trafficaccessories.BlockOverheadMessageSign.class,
+        fmlPreInitializationEvent);
+
+    // --- Class-based: Portable Speed Limit Sign ---
+    initTabBlock(com.micatechnologies.minecraft.csm.trafficaccessories.BlockPortableSpeedLimitSign.class,
+        fmlPreInitializationEvent);
+
+    // --- Class-based: Overhead Speed Limit Sign ---
+    initTabBlock(com.micatechnologies.minecraft.csm.trafficaccessories.BlockOverheadSpeedLimitSign.class,
+        fmlPreInitializationEvent);
   }
 }
