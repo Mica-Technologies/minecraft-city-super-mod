@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractTileEntity;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyColor;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.fml.relauncher.Side;
@@ -25,6 +26,7 @@ public class TileEntityVariableSpeedLimit extends AbstractTileEntity {
   private int flasherMode = FLASHER_ON;
   private int trailerColor = 0;
   private int signAngle = 0;
+  private TrafficSignalBodyColor housingColor = TrafficSignalBodyColor.FLAT_BLACK;
 
   @Override
   public void readNBT(NBTTagCompound compound) {
@@ -39,6 +41,7 @@ public class TileEntityVariableSpeedLimit extends AbstractTileEntity {
 
     trailerColor = Math.max(0, Math.min(COLOR_COUNT - 1, compound.getInteger("color")));
     signAngle = Math.max(0, Math.min(ANGLE_COUNT - 1, compound.getInteger("angle")));
+    housingColor = TrafficSignalBodyColor.fromNBT(compound.getInteger("hColor"));
   }
 
   @Override
@@ -47,6 +50,7 @@ public class TileEntityVariableSpeedLimit extends AbstractTileEntity {
     compound.setInteger("flashMode", flasherMode);
     compound.setInteger("color", trailerColor);
     compound.setInteger("angle", signAngle);
+    compound.setInteger("hColor", housingColor.toNBT());
     return compound;
   }
 
@@ -66,11 +70,24 @@ public class TileEntityVariableSpeedLimit extends AbstractTileEntity {
     return signAngle;
   }
 
+  public TrafficSignalBodyColor getHousingColor() {
+    return housingColor;
+  }
+
   public void setData(int speed, int flashMode, int color, int angle) {
     this.speedValue = Math.max(20, Math.min(95, speed));
     this.flasherMode = Math.max(0, Math.min(FLASHER_MODE_COUNT - 1, flashMode));
     this.trailerColor = Math.max(0, Math.min(COLOR_COUNT - 1, color));
     this.signAngle = Math.max(0, Math.min(ANGLE_COUNT - 1, angle));
+    markDirtySync(getWorld(), getPos(), true);
+  }
+
+  public void setData(int speed, int flashMode, int color, int angle, int hColor) {
+    this.speedValue = Math.max(20, Math.min(95, speed));
+    this.flasherMode = Math.max(0, Math.min(FLASHER_MODE_COUNT - 1, flashMode));
+    this.trailerColor = Math.max(0, Math.min(COLOR_COUNT - 1, color));
+    this.signAngle = Math.max(0, Math.min(ANGLE_COUNT - 1, angle));
+    this.housingColor = TrafficSignalBodyColor.fromNBT(hColor);
     markDirtySync(getWorld(), getPos(), true);
   }
 

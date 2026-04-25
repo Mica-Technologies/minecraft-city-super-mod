@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.trafficaccessories;
 
 import com.micatechnologies.minecraft.csm.CsmNetwork;
 import com.micatechnologies.minecraft.csm.codeutils.packets.TileEntityPortableMessageSignUpdatePacket;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyColor;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +23,7 @@ public class BlockOverheadMessageSignGui extends GuiScreen {
   private static final int BTN_REMOVE_PAGE = 5;
   private static final int BTN_SPEED_DOWN = 7;
   private static final int BTN_SPEED_UP = 8;
+  private static final int BTN_HOUSING_COLOR = 9;
 
   private static final int FIELD_WIDTH = 200;
   private static final int FIELD_HEIGHT = 20;
@@ -32,6 +34,7 @@ public class BlockOverheadMessageSignGui extends GuiScreen {
   private final List<String[]> pages = new ArrayList<>();
   private int currentPage = 0;
   private int cycleSpeed;
+  private TrafficSignalBodyColor housingColor;
 
   private GuiTextField line1Field;
   private GuiTextField line2Field;
@@ -49,6 +52,7 @@ public class BlockOverheadMessageSignGui extends GuiScreen {
       pages.add(new String[]{src[0], src[1], src[2]});
     }
     this.cycleSpeed = tileEntity.getCycleSpeed();
+    this.housingColor = tileEntity.getHousingColor();
   }
 
   @Override
@@ -60,7 +64,8 @@ public class BlockOverheadMessageSignGui extends GuiScreen {
     ScaledResolution sr = new ScaledResolution(this.mc);
     int centerX = sr.getScaledWidth() / 2;
     int fieldLeft = centerX - FIELD_WIDTH / 2;
-    int startY = sr.getScaledHeight() / 2 - 80;
+    int halfWidth = (FIELD_WIDTH - 4) / 2;
+    int startY = sr.getScaledHeight() / 2 - 75;
 
     int row = startY;
 
@@ -69,37 +74,41 @@ public class BlockOverheadMessageSignGui extends GuiScreen {
         "Next >");
     buttonList.add(prevPageBtn);
     buttonList.add(nextPageBtn);
-    row += 25;
+    row += 22;
 
     line1Field = new GuiTextField(10, fontRenderer, fieldLeft, row, FIELD_WIDTH, FIELD_HEIGHT);
     line1Field.setMaxStringLength(MAX_LINE_LENGTH);
     line1Field.setFocused(true);
-    row += 25;
+    row += 22;
 
     line2Field = new GuiTextField(11, fontRenderer, fieldLeft, row, FIELD_WIDTH, FIELD_HEIGHT);
     line2Field.setMaxStringLength(MAX_LINE_LENGTH);
-    row += 25;
+    row += 22;
 
     line3Field = new GuiTextField(12, fontRenderer, fieldLeft, row, FIELD_WIDTH, FIELD_HEIGHT);
     line3Field.setMaxStringLength(MAX_LINE_LENGTH);
-    row += 25;
+    row += 22;
 
-    addPageBtn = new GuiButton(BTN_ADD_PAGE, fieldLeft, row, 97, 20, "+ Add Page");
-    removePageBtn = new GuiButton(BTN_REMOVE_PAGE, fieldLeft + 103, row, 97, 20, "- Remove Page");
+    addPageBtn = new GuiButton(BTN_ADD_PAGE, fieldLeft, row, halfWidth, 20, "+ Add Page");
+    removePageBtn = new GuiButton(BTN_REMOVE_PAGE, fieldLeft + halfWidth + 4, row, halfWidth, 20,
+        "- Remove Page");
     buttonList.add(addPageBtn);
     buttonList.add(removePageBtn);
-    row += 25;
+    row += 22;
 
+    // Speed and housing color on same row
     GuiButton speedDownBtn = new GuiButton(BTN_SPEED_DOWN, fieldLeft, row, 20, 20, "-");
-    GuiButton speedUpBtn = new GuiButton(BTN_SPEED_UP, fieldLeft + FIELD_WIDTH - 20, row, 20, 20,
+    GuiButton speedUpBtn = new GuiButton(BTN_SPEED_UP, fieldLeft + halfWidth - 20, row, 20, 20,
         "+");
     buttonList.add(speedDownBtn);
     buttonList.add(speedUpBtn);
-    row += 25;
+    buttonList.add(
+        new GuiButton(BTN_HOUSING_COLOR, fieldLeft + halfWidth + 4, row, halfWidth, 20, ""));
+    row += 22;
 
-    buttonList.add(new GuiButton(BTN_SAVE, fieldLeft, row, FIELD_WIDTH, 20, "Save"));
-    row += 25;
-    buttonList.add(new GuiButton(BTN_CANCEL, fieldLeft, row, FIELD_WIDTH, 20, "Cancel"));
+    buttonList.add(new GuiButton(BTN_SAVE, fieldLeft, row, halfWidth, 20, "Save"));
+    buttonList.add(
+        new GuiButton(BTN_CANCEL, fieldLeft + halfWidth + 4, row, halfWidth, 20, "Cancel"));
 
     loadPageFields();
     updateButtonStates();
@@ -131,15 +140,25 @@ public class BlockOverheadMessageSignGui extends GuiScreen {
 
     ScaledResolution sr = new ScaledResolution(this.mc);
     int centerX = sr.getScaledWidth() / 2;
-    int startY = sr.getScaledHeight() / 2 - 80;
+    int fieldLeft = centerX - FIELD_WIDTH / 2;
+    int halfWidth = (FIELD_WIDTH - 4) / 2;
+    int startY = sr.getScaledHeight() / 2 - 75;
 
     drawCenteredString(fontRenderer, "Overhead Message Sign", centerX, startY - 15, 0xFFAA00);
 
     String pageLabel = "Page " + (currentPage + 1) + " of " + pages.size();
     drawCenteredString(fontRenderer, pageLabel, centerX, startY + 6, 0xFFFFFF);
 
-    int speedLabelY = startY + 125 + 6;
-    drawCenteredString(fontRenderer, "Speed: " + cycleSpeed + "s", centerX, speedLabelY, 0xFFFFFF);
+    int speedRowY = startY + 5 * 22;
+    int speedCenterX = fieldLeft + halfWidth / 2;
+    drawCenteredString(fontRenderer, "Speed: " + cycleSpeed + "s", speedCenterX,
+        speedRowY + 6, 0xFFFFFF);
+
+    for (GuiButton btn : buttonList) {
+      if (btn.id == BTN_HOUSING_COLOR) {
+        btn.displayString = "Housing: " + housingColor.getFriendlyName();
+      }
+    }
 
     line1Field.drawTextBox();
     line2Field.drawTextBox();
@@ -200,7 +219,8 @@ public class BlockOverheadMessageSignGui extends GuiScreen {
         }
         CsmNetwork.sendToServer(new TileEntityPortableMessageSignUpdatePacket(
             tileEntity.getPos(), toSend,
-            TileEntityPortableMessageSign.FLASHER_NONE, cycleSpeed, 0, 0));
+            TileEntityPortableMessageSign.FLASHER_NONE, cycleSpeed, 0, 0,
+            housingColor.toNBT()));
         this.mc.displayGuiScreen(null);
         break;
 
@@ -258,6 +278,10 @@ public class BlockOverheadMessageSignGui extends GuiScreen {
         if (cycleSpeed < 10) {
           cycleSpeed++;
         }
+        break;
+
+      case BTN_HOUSING_COLOR:
+        housingColor = housingColor.getNextColor();
         break;
     }
   }

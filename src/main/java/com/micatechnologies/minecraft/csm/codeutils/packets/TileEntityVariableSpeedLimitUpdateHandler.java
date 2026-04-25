@@ -18,7 +18,8 @@ public class TileEntityVariableSpeedLimitUpdateHandler implements
       if (tileEntity instanceof TileEntityVariableSpeedLimit) {
         ((TileEntityVariableSpeedLimit) tileEntity).setData(
             message.getSpeedValue(), message.getFlasherMode(),
-            message.getTrailerColor(), message.getSignAngle());
+            message.getTrailerColor(), message.getSignAngle(),
+            message.getHousingColor());
       }
     });
     return null;

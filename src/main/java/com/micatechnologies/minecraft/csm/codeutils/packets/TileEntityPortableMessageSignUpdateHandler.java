@@ -18,7 +18,8 @@ public class TileEntityPortableMessageSignUpdateHandler implements
       if (tileEntity instanceof TileEntityPortableMessageSign) {
         ((TileEntityPortableMessageSign) tileEntity).setData(
             message.getPages(), message.getFlasherMode(), message.getCycleSpeed(),
-            message.getTrailerColor(), message.getSignAngle());
+            message.getTrailerColor(), message.getSignAngle(),
+            message.getHousingColor());
       }
     });
     return null;

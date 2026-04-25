@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.trafficaccessories;
 
 import com.micatechnologies.minecraft.csm.CsmNetwork;
 import com.micatechnologies.minecraft.csm.codeutils.packets.TileEntityVariableSpeedLimitUpdatePacket;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyColor;
 import javax.annotation.ParametersAreNonnullByDefault;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
@@ -14,15 +15,18 @@ public class BlockOverheadSpeedLimitGui extends GuiScreen {
   private static final int BTN_CANCEL = 1;
   private static final int BTN_SPEED_DOWN = 2;
   private static final int BTN_SPEED_UP = 3;
+  private static final int BTN_HOUSING_COLOR = 4;
 
   private static final int FIELD_WIDTH = 200;
 
   private final TileEntityOverheadSpeedLimit tileEntity;
   private int speedValue;
+  private TrafficSignalBodyColor housingColor;
 
   public BlockOverheadSpeedLimitGui(TileEntityOverheadSpeedLimit tileEntity) {
     this.tileEntity = tileEntity;
     this.speedValue = tileEntity.getSpeedValue();
+    this.housingColor = tileEntity.getHousingColor();
   }
 
   @Override
@@ -36,15 +40,19 @@ public class BlockOverheadSpeedLimitGui extends GuiScreen {
     int fieldLeft = centerX - FIELD_WIDTH / 2;
     int startY = sr.getScaledHeight() / 2 - 40;
 
+    int halfWidth = (FIELD_WIDTH - 4) / 2;
     int row = startY;
 
     buttonList.add(new GuiButton(BTN_SPEED_DOWN, fieldLeft, row, 40, 20, "- 5"));
     buttonList.add(new GuiButton(BTN_SPEED_UP, fieldLeft + FIELD_WIDTH - 40, row, 40, 20, "+ 5"));
-    row += 30;
-
-    buttonList.add(new GuiButton(BTN_SAVE, fieldLeft, row, FIELD_WIDTH, 20, "Save"));
     row += 25;
-    buttonList.add(new GuiButton(BTN_CANCEL, fieldLeft, row, FIELD_WIDTH, 20, "Cancel"));
+
+    buttonList.add(new GuiButton(BTN_HOUSING_COLOR, fieldLeft, row, FIELD_WIDTH, 20, ""));
+    row += 25;
+
+    buttonList.add(new GuiButton(BTN_SAVE, fieldLeft, row, halfWidth, 20, "Save"));
+    buttonList.add(
+        new GuiButton(BTN_CANCEL, fieldLeft + halfWidth + 4, row, halfWidth, 20, "Cancel"));
   }
 
   @Override
@@ -61,6 +69,12 @@ public class BlockOverheadSpeedLimitGui extends GuiScreen {
     drawCenteredString(fontRenderer, "Speed Limit: " + speedValue + " MPH", centerX,
         startY + 6, 0xFFFFFF);
 
+    for (GuiButton btn : buttonList) {
+      if (btn.id == BTN_HOUSING_COLOR) {
+        btn.displayString = "Housing: " + housingColor.getFriendlyName();
+      }
+    }
+
     super.drawScreen(mouseX, mouseY, partialTicks);
   }
 
@@ -71,7 +85,7 @@ public class BlockOverheadSpeedLimitGui extends GuiScreen {
       case BTN_SAVE:
         CsmNetwork.sendToServer(new TileEntityVariableSpeedLimitUpdatePacket(
             tileEntity.getPos(), speedValue,
-            TileEntityVariableSpeedLimit.FLASHER_NONE, 0, 0));
+            TileEntityVariableSpeedLimit.FLASHER_NONE, 0, 0, housingColor.toNBT()));
         this.mc.displayGuiScreen(null);
         break;
 
@@ -89,6 +103,10 @@ public class BlockOverheadSpeedLimitGui extends GuiScreen {
         if (speedValue < 95) {
           speedValue += 5;
         }
+        break;
+
+      case BTN_HOUSING_COLOR:
+        housingColor = housingColor.getNextColor();
         break;
     }
   }

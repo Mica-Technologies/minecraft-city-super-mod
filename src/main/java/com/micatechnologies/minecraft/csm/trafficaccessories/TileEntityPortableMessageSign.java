@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractTileEntity;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyColor;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.nbt.NBTTagCompound;
@@ -31,6 +32,7 @@ public class TileEntityPortableMessageSign extends AbstractTileEntity {
   private int cycleSpeed = 3;
   private int trailerColor = 0;
   private int signAngle = 0;
+  private TrafficSignalBodyColor housingColor = TrafficSignalBodyColor.FLAT_BLACK;
 
   public TileEntityPortableMessageSign() {
     pages.add(new String[]{"", "", ""});
@@ -52,6 +54,7 @@ public class TileEntityPortableMessageSign extends AbstractTileEntity {
     if (cycleSpeed > 10) cycleSpeed = 10;
     trailerColor = Math.max(0, Math.min(COLOR_COUNT - 1, compound.getInteger("color")));
     signAngle = Math.max(0, Math.min(ANGLE_COUNT - 1, compound.getInteger("angle")));
+    housingColor = TrafficSignalBodyColor.fromNBT(compound.getInteger("hColor"));
 
     if (compound.hasKey("pages")) {
       NBTTagList list = compound.getTagList("pages", Constants.NBT.TAG_COMPOUND);
@@ -84,6 +87,7 @@ public class TileEntityPortableMessageSign extends AbstractTileEntity {
     compound.setInteger("speed", cycleSpeed);
     compound.setInteger("color", trailerColor);
     compound.setInteger("angle", signAngle);
+    compound.setInteger("hColor", housingColor.toNBT());
 
     NBTTagList list = new NBTTagList();
     for (String[] page : pages) {
@@ -136,6 +140,10 @@ public class TileEntityPortableMessageSign extends AbstractTileEntity {
     return signAngle;
   }
 
+  public TrafficSignalBodyColor getHousingColor() {
+    return housingColor;
+  }
+
   public void setData(List<String[]> newPages, int flashMode, int speed, int color, int angle) {
     pages.clear();
     for (String[] p : newPages) {
@@ -153,6 +161,28 @@ public class TileEntityPortableMessageSign extends AbstractTileEntity {
     this.cycleSpeed = Math.max(1, Math.min(10, speed));
     this.trailerColor = Math.max(0, Math.min(COLOR_COUNT - 1, color));
     this.signAngle = Math.max(0, Math.min(ANGLE_COUNT - 1, angle));
+    markDirtySync(getWorld(), getPos(), true);
+  }
+
+  public void setData(List<String[]> newPages, int flashMode, int speed, int color, int angle,
+      int hColor) {
+    pages.clear();
+    for (String[] p : newPages) {
+      if (pages.size() >= MAX_PAGES) break;
+      pages.add(new String[]{
+          p.length > 0 && p[0] != null ? p[0] : "",
+          p.length > 1 && p[1] != null ? p[1] : "",
+          p.length > 2 && p[2] != null ? p[2] : ""
+      });
+    }
+    if (pages.isEmpty()) {
+      pages.add(new String[]{"", "", ""});
+    }
+    this.flasherMode = Math.max(0, Math.min(FLASHER_MODE_COUNT - 1, flashMode));
+    this.cycleSpeed = Math.max(1, Math.min(10, speed));
+    this.trailerColor = Math.max(0, Math.min(COLOR_COUNT - 1, color));
+    this.signAngle = Math.max(0, Math.min(ANGLE_COUNT - 1, angle));
+    this.housingColor = TrafficSignalBodyColor.fromNBT(hColor);
     markDirtySync(getWorld(), getPos(), true);
   }
 
