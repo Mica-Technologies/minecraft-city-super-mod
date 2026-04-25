@@ -4,27 +4,36 @@ import com.micatechnologies.minecraft.csm.tools.tool_framework.CsmToolUtility;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.Polygon;
 import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.Area;
-import java.awt.geom.Ellipse2D;
 import java.awt.geom.GeneralPath;
-import java.awt.geom.Path2D;
 import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.InputStream;
 import javax.imageio.ImageIO;
+import org.apache.batik.transcoder.TranscoderInput;
+import org.apache.batik.transcoder.TranscoderOutput;
+import org.apache.batik.transcoder.image.ImageTranscoder;
 
 /**
- * Generates the combined guide sign atlas texture. Draws MUTCD-style highway
- * shields and directional arrows programmatically into a 256x256 atlas with
- * 32x32 cells.
+ * Generates the combined guide sign atlas texture. Renders MUTCD highway shields
+ * from Wikimedia Commons SVGs via Apache Batik, and draws directional arrows
+ * programmatically.
  *
- * <p>Atlas layout (matches {@code GuideSignAtlas.java} in main mod):
+ * <p>Atlas layout (512x512, 64x64 cells, matches {@code GuideSignAtlas.java}):
  * <ul>
  *   <li>Row 0, cols 0-7: Shield backgrounds (no text baked in)</li>
  *   <li>Rows 4-5, cols 0-4: Directional arrows (white on transparent)</li>
+ * </ul>
+ *
+ * <p>Shield SVG sources (public domain MUTCD designs from Wikimedia Commons):
+ * <ul>
+ *   <li>Interstate: I-blank.svg</li>
+ *   <li>Interstate Business: Business_Loop_blank.svg</li>
+ *   <li>US Route: US_blank.svg</li>
+ *   <li>State Circle: Circle_sign_blank.svg</li>
+ *   <li>County Route: County_Blank.svg</li>
  * </ul>
  *
  * <p>Run via IntelliJ run configuration or:
@@ -35,18 +44,14 @@ public class GuideSignAtlasTool {
   private static final String OUTPUT_FILE =
       "src/main/resources/assets/csm/textures/blocks/trafficaccessories/guidesign/sign_atlas.png";
 
+  private static final String SHIELD_RESOURCE_DIR = "/guidesign/shields/";
+
   private static final int ATLAS_SIZE = 512;
   private static final int CELL_SIZE = 64;
-  private static final int COLS = ATLAS_SIZE / CELL_SIZE;
 
   private static final int ARROW_ROW_OFFSET = 4;
 
-  private static final Color INTERSTATE_BLUE = new Color(0, 63, 135);
-  private static final Color INTERSTATE_RED = new Color(175, 30, 45);
-  private static final Color US_ROUTE_BLACK = new Color(20, 20, 20);
-  private static final Color STATE_WHITE = new Color(255, 255, 255);
-  private static final Color COUNTY_BLUE = new Color(0, 80, 160);
-  private static final Color TOLL_PURPLE = new Color(100, 50, 120);
+  private static final int SHIELD_PADDING = 2;
 
   public static void main(String[] args) {
     CsmToolUtility.doToolExecuteWrapped("CSM Guide Sign Atlas Generator", args,
@@ -72,15 +77,111 @@ public class GuideSignAtlasTool {
   }
 
   private static void drawShields(Graphics2D g) {
-    drawInterstate(g, 0, 0);
-    drawInterstateBusiness(g, 1, 0);
-    drawUsRoute(g, 2, 0);
+    drawSvgShield(g, 0, 0, "interstate.svg");
+    drawSvgShield(g, 1, 0, "interstate_business.svg");
+    drawSvgShield(g, 2, 0, "us_route.svg");
     drawStateSquare(g, 3, 0);
-    drawStateCircle(g, 4, 0);
-    drawCountyRoute(g, 5, 0);
+    drawSvgShield(g, 4, 0, "state_circle.svg");
+    drawSvgShield(g, 5, 0, "county_route.svg");
     drawToll(g, 6, 0);
     drawBlankCustom(g, 7, 0);
   }
+
+  private static void drawSvgShield(Graphics2D g, int col, int row, String svgFile) {
+    try {
+      String resourcePath = SHIELD_RESOURCE_DIR + svgFile;
+      InputStream svgStream = GuideSignAtlasTool.class.getResourceAsStream(resourcePath);
+      if (svgStream == null) {
+        System.err.println("SVG not found: " + resourcePath + " — falling back to placeholder");
+        drawPlaceholder(g, col, row);
+        return;
+      }
+
+      int targetSize = CELL_SIZE - SHIELD_PADDING * 2;
+      BufferedImageTranscoder transcoder = new BufferedImageTranscoder();
+      transcoder.addTranscodingHint(ImageTranscoder.KEY_WIDTH, (float) targetSize);
+      transcoder.addTranscodingHint(ImageTranscoder.KEY_HEIGHT, (float) targetSize);
+
+      TranscoderInput input = new TranscoderInput(svgStream);
+      transcoder.transcode(input, null);
+      BufferedImage shieldImg = transcoder.getImage();
+      svgStream.close();
+
+      if (shieldImg != null) {
+        int cellX = col * CELL_SIZE;
+        int cellY = row * CELL_SIZE;
+        int imgW = shieldImg.getWidth();
+        int imgH = shieldImg.getHeight();
+        int drawX = cellX + (CELL_SIZE - imgW) / 2;
+        int drawY = cellY + (CELL_SIZE - imgH) / 2;
+        g.drawImage(shieldImg, drawX, drawY, null);
+        System.out.println("  Rendered SVG: " + svgFile + " (" + imgW + "x" + imgH + ")");
+      }
+    } catch (Exception e) {
+      System.err.println("Failed to render SVG " + svgFile + ": " + e.getMessage());
+      drawPlaceholder(g, col, row);
+    }
+  }
+
+  private static void drawPlaceholder(Graphics2D g, int col, int row) {
+    int x = col * CELL_SIZE;
+    int y = row * CELL_SIZE;
+    int m = 6;
+    g.setColor(new Color(200, 200, 200));
+    g.fillRect(x + m, y + m, CELL_SIZE - m * 2, CELL_SIZE - m * 2);
+    g.setColor(new Color(120, 120, 120));
+    g.setStroke(new BasicStroke(1.0f));
+    g.drawRect(x + m, y + m, CELL_SIZE - m * 2, CELL_SIZE - m * 2);
+  }
+
+  // ---- Programmatic shields (no SVG source available) ----
+
+  private static void drawStateSquare(Graphics2D g, int col, int row) {
+    int x = col * CELL_SIZE;
+    int y = row * CELL_SIZE;
+    int s = CELL_SIZE;
+    int m = 6;
+
+    RoundRectangle2D outer = new RoundRectangle2D.Float(
+        x + m, y + m, s - m * 2, s - m * 2, 6, 6);
+    g.setColor(Color.WHITE);
+    g.fill(outer);
+    g.setColor(new Color(20, 20, 20));
+    g.setStroke(new BasicStroke(2.5f));
+    g.draw(outer);
+  }
+
+  private static void drawToll(Graphics2D g, int col, int row) {
+    int x = col * CELL_SIZE;
+    int y = row * CELL_SIZE;
+    int s = CELL_SIZE;
+    int m = 6;
+
+    RoundRectangle2D outer = new RoundRectangle2D.Float(
+        x + m, y + m + 3, s - m * 2, s - m * 2 - 6, 10, 10);
+    g.setColor(new Color(100, 50, 120));
+    g.fill(outer);
+    g.setColor(Color.WHITE);
+    g.setStroke(new BasicStroke(2.0f));
+    g.draw(outer);
+  }
+
+  private static void drawBlankCustom(Graphics2D g, int col, int row) {
+    int x = col * CELL_SIZE;
+    int y = row * CELL_SIZE;
+    int s = CELL_SIZE;
+    int m = 8;
+
+    RoundRectangle2D rect = new RoundRectangle2D.Float(
+        x + m, y + m, s - m * 2, s - m * 2, 5, 5);
+    g.setColor(new Color(180, 180, 180));
+    g.fill(rect);
+    g.setColor(new Color(100, 100, 100));
+    g.setStroke(new BasicStroke(1.5f));
+    g.draw(rect);
+  }
+
+  // ---- Arrow drawing ----
 
   private static void drawArrows(Graphics2D g) {
     int r0 = ARROW_ROW_OFFSET;
@@ -95,200 +196,6 @@ public class GuideSignAtlasTool {
     drawArrow(g, 3, r0 + 1, ArrowDir.UP_LEFT_RIGHT);
     drawArrow(g, 4, r0 + 1, ArrowDir.LEFT_RIGHT);
   }
-
-  // ---- Shield drawing methods ----
-
-  private static void drawInterstate(Graphics2D g, int col, int row) {
-    int x = col * CELL_SIZE;
-    int y = row * CELL_SIZE;
-    int s = CELL_SIZE;
-    int m = 2;
-
-    GeneralPath shield = new GeneralPath();
-    float cx = x + s / 2f;
-    float top = y + m;
-    float bot = y + s - m;
-    float left = x + m;
-    float right = x + s - m;
-    float midY = y + s * 0.42f;
-    float notchY = y + s * 0.30f;
-    float notchInset = s * 0.12f;
-
-    shield.moveTo(cx, top);
-    shield.lineTo(right, notchY);
-    shield.lineTo(right, midY);
-    shield.lineTo(right - 1, bot);
-    shield.lineTo(left + 1, bot);
-    shield.lineTo(left, midY);
-    shield.lineTo(left, notchY);
-    shield.closePath();
-
-    g.setColor(INTERSTATE_BLUE);
-    g.fill(shield);
-    g.setColor(INTERSTATE_RED);
-    GeneralPath topPart = new GeneralPath();
-    topPart.moveTo(cx, top);
-    topPart.lineTo(right, notchY);
-    topPart.lineTo(right, midY);
-    topPart.lineTo(left, midY);
-    topPart.lineTo(left, notchY);
-    topPart.closePath();
-    g.fill(topPart);
-    g.setColor(Color.WHITE);
-    g.setStroke(new BasicStroke(1.2f));
-    g.draw(shield);
-    g.setStroke(new BasicStroke(0.5f));
-    g.drawLine((int) left + 1, (int) midY, (int) right - 1, (int) midY);
-  }
-
-  private static void drawInterstateBusiness(Graphics2D g, int col, int row) {
-    int x = col * CELL_SIZE;
-    int y = row * CELL_SIZE;
-    int s = CELL_SIZE;
-    int m = 2;
-
-    GeneralPath shield = new GeneralPath();
-    float cx = x + s / 2f;
-    float top = y + m;
-    float bot = y + s - m;
-    float left = x + m;
-    float right = x + s - m;
-    float midY = y + s * 0.42f;
-    float notchY = y + s * 0.30f;
-
-    shield.moveTo(cx, top);
-    shield.lineTo(right, notchY);
-    shield.lineTo(right, midY);
-    shield.lineTo(right - 1, bot);
-    shield.lineTo(left + 1, bot);
-    shield.lineTo(left, midY);
-    shield.lineTo(left, notchY);
-    shield.closePath();
-
-    g.setColor(Color.WHITE);
-    g.fill(shield);
-    g.setColor(new Color(0, 120, 60));
-    GeneralPath topPart = new GeneralPath();
-    topPart.moveTo(cx, top);
-    topPart.lineTo(right, notchY);
-    topPart.lineTo(right, midY);
-    topPart.lineTo(left, midY);
-    topPart.lineTo(left, notchY);
-    topPart.closePath();
-    g.fill(topPart);
-    g.setColor(new Color(0, 120, 60));
-    g.setStroke(new BasicStroke(1.2f));
-    g.draw(shield);
-  }
-
-  private static void drawUsRoute(Graphics2D g, int col, int row) {
-    int x = col * CELL_SIZE;
-    int y = row * CELL_SIZE;
-    int s = CELL_SIZE;
-    int m = 3;
-
-    RoundRectangle2D outer = new RoundRectangle2D.Float(
-        x + m, y + m, s - m * 2, s - m * 2, 4, 4);
-    RoundRectangle2D inner = new RoundRectangle2D.Float(
-        x + m + 2, y + m + 2, s - m * 2 - 4, s - m * 2 - 4, 3, 3);
-
-    g.setColor(US_ROUTE_BLACK);
-    g.fill(outer);
-    g.setColor(Color.WHITE);
-    g.fill(inner);
-    g.setColor(US_ROUTE_BLACK);
-    g.setStroke(new BasicStroke(0.8f));
-    g.draw(outer);
-  }
-
-  private static void drawStateSquare(Graphics2D g, int col, int row) {
-    int x = col * CELL_SIZE;
-    int y = row * CELL_SIZE;
-    int s = CELL_SIZE;
-    int m = 3;
-
-    RoundRectangle2D outer = new RoundRectangle2D.Float(
-        x + m, y + m, s - m * 2, s - m * 2, 3, 3);
-    g.setColor(Color.WHITE);
-    g.fill(outer);
-    g.setColor(US_ROUTE_BLACK);
-    g.setStroke(new BasicStroke(1.5f));
-    g.draw(outer);
-  }
-
-  private static void drawStateCircle(Graphics2D g, int col, int row) {
-    int x = col * CELL_SIZE;
-    int y = row * CELL_SIZE;
-    int s = CELL_SIZE;
-    int m = 3;
-
-    Ellipse2D outer = new Ellipse2D.Float(x + m, y + m, s - m * 2, s - m * 2);
-    g.setColor(Color.WHITE);
-    g.fill(outer);
-    g.setColor(US_ROUTE_BLACK);
-    g.setStroke(new BasicStroke(1.5f));
-    g.draw(outer);
-  }
-
-  private static void drawCountyRoute(Graphics2D g, int col, int row) {
-    int x = col * CELL_SIZE;
-    int y = row * CELL_SIZE;
-    int s = CELL_SIZE;
-    int m = 3;
-
-    GeneralPath pentagon = new GeneralPath();
-    float cx = x + s / 2f;
-    float top = y + m;
-    float bot = y + s - m;
-    float left = x + m;
-    float right = x + s - m;
-    float midH = y + s * 0.55f;
-
-    pentagon.moveTo(cx, top);
-    pentagon.lineTo(right, y + s * 0.35f);
-    pentagon.lineTo(right - 1, bot);
-    pentagon.lineTo(left + 1, bot);
-    pentagon.lineTo(left, y + s * 0.35f);
-    pentagon.closePath();
-
-    g.setColor(COUNTY_BLUE);
-    g.fill(pentagon);
-    g.setColor(Color.WHITE);
-    g.setStroke(new BasicStroke(1.2f));
-    g.draw(pentagon);
-  }
-
-  private static void drawToll(Graphics2D g, int col, int row) {
-    int x = col * CELL_SIZE;
-    int y = row * CELL_SIZE;
-    int s = CELL_SIZE;
-    int m = 3;
-
-    RoundRectangle2D outer = new RoundRectangle2D.Float(
-        x + m, y + m + 2, s - m * 2, s - m * 2 - 4, 6, 6);
-    g.setColor(TOLL_PURPLE);
-    g.fill(outer);
-    g.setColor(Color.WHITE);
-    g.setStroke(new BasicStroke(1.2f));
-    g.draw(outer);
-  }
-
-  private static void drawBlankCustom(Graphics2D g, int col, int row) {
-    int x = col * CELL_SIZE;
-    int y = row * CELL_SIZE;
-    int s = CELL_SIZE;
-    int m = 4;
-
-    RoundRectangle2D rect = new RoundRectangle2D.Float(
-        x + m, y + m, s - m * 2, s - m * 2, 3, 3);
-    g.setColor(new Color(180, 180, 180));
-    g.fill(rect);
-    g.setColor(new Color(100, 100, 100));
-    g.setStroke(new BasicStroke(1.0f));
-    g.draw(rect);
-  }
-
-  // ---- Arrow drawing ----
 
   private enum ArrowDir {
     UP, DOWN, LEFT, RIGHT,
@@ -305,9 +212,6 @@ public class GuideSignAtlasTool {
     g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
         RenderingHints.VALUE_ANTIALIAS_ON);
     g2.setColor(Color.WHITE);
-
-    float cx = s / 2f;
-    float cy = s / 2f;
 
     switch (dir) {
       case UP:
@@ -350,13 +254,13 @@ public class GuideSignAtlasTool {
     float cy = s / 2f;
 
     GeneralPath arrow = new GeneralPath();
-    float headW = s * 0.4f;
+    float headW = s * 0.45f;
     float headH = s * 0.3f;
-    float shaftW = s * 0.14f;
+    float shaftW = s * 0.16f;
     float shaftTop = -cy + headH;
-    float shaftBot = cy - 2;
+    float shaftBot = cy - 3;
 
-    arrow.moveTo(0, -cy + 2);
+    arrow.moveTo(0, -cy + 3);
     arrow.lineTo(-headW / 2, shaftTop);
     arrow.lineTo(-shaftW / 2, shaftTop);
     arrow.lineTo(-shaftW / 2, shaftBot);
@@ -375,10 +279,10 @@ public class GuideSignAtlasTool {
 
   private static void drawBentArrow(Graphics2D g, int s, boolean mirrorRight) {
     float cx = s / 2f;
-    float m = 3;
-    float shaftW = s * 0.13f;
-    float headW = s * 0.35f;
-    float headH = s * 0.25f;
+    float m = 4;
+    float shaftW = s * 0.15f;
+    float headW = s * 0.4f;
+    float headH = s * 0.28f;
 
     GeneralPath arrow = new GeneralPath();
     float shaftBot = s - m;
@@ -406,10 +310,10 @@ public class GuideSignAtlasTool {
 
   private static void drawSplitArrow(Graphics2D g, int s) {
     float cx = s / 2f;
-    float m = 3;
-    float shaftW = s * 0.13f;
-    float headW = s * 0.3f;
-    float headH = s * 0.22f;
+    float m = 4;
+    float shaftW = s * 0.14f;
+    float headW = s * 0.32f;
+    float headH = s * 0.24f;
 
     float shaftBot = s - m;
     float splitY = s * 0.55f;
@@ -454,5 +358,25 @@ public class GuideSignAtlasTool {
   private static void drawDoubleArrow(Graphics2D g, int s) {
     drawStraightArrow(g, s, -90);
     drawStraightArrow(g, s, 90);
+  }
+
+  // ---- Batik SVG to BufferedImage transcoder ----
+
+  private static class BufferedImageTranscoder extends ImageTranscoder {
+    private BufferedImage image;
+
+    @Override
+    public BufferedImage createImage(int w, int h) {
+      return new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+    }
+
+    @Override
+    public void writeImage(BufferedImage img, TranscoderOutput output) {
+      this.image = img;
+    }
+
+    public BufferedImage getImage() {
+      return image;
+    }
   }
 }
