@@ -72,6 +72,22 @@ public class TileEntityDynamicGuideSign extends AbstractTileEntity {
   }
 
   @Override
+  public void invalidate() {
+    super.invalidate();
+    if (world != null && world.isRemote) {
+      TileEntityDynamicGuideSignRenderer.cleanupDisplayList(pos);
+    }
+  }
+
+  @Override
+  public void onChunkUnload() {
+    super.onChunkUnload();
+    if (world != null && world.isRemote) {
+      TileEntityDynamicGuideSignRenderer.cleanupDisplayList(pos);
+    }
+  }
+
+  @Override
   @SideOnly(Side.CLIENT)
   public AxisAlignedBB getRenderBoundingBox() {
     return new AxisAlignedBB(
