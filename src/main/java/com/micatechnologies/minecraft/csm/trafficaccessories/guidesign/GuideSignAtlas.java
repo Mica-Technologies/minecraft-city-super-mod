@@ -7,8 +7,8 @@ public class GuideSignAtlas {
   public static final ResourceLocation ATLAS_TEXTURE =
       new ResourceLocation("csm", "textures/blocks/trafficaccessories/guidesign/sign_atlas.png");
 
-  private static final int ATLAS_SIZE = 256;
-  private static final int CELL_SIZE = 32;
+  private static final int ATLAS_SIZE = 512;
+  private static final int CELL_SIZE = 64;
   private static final int COLS = ATLAS_SIZE / CELL_SIZE;
 
   private static final int ARROW_ROW_OFFSET = 4;
