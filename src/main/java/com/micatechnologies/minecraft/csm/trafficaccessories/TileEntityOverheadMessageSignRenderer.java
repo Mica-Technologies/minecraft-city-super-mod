@@ -19,13 +19,13 @@ public class TileEntityOverheadMessageSignRenderer
     extends TileEntitySpecialRenderer<TileEntityOverheadMessageSign> {
 
   // Sign housing dimensions (model units, 16 = 1 block)
-  private static final float SIGN_WIDTH = 96.0f;
-  private static final float SIGN_HEIGHT = 40.0f;
+  private static final float SIGN_WIDTH = 144.0f;
+  private static final float SIGN_HEIGHT = 64.02f;
   private static final float SIGN_DEPTH = 20.0f;
   private static final float SIGN_FRAME = 2.0f;
 
   // Text rendering
-  private static final float TEXT_SCALE = 0.975f;
+  private static final float TEXT_SCALE = 1.55f;
   private static final int TEXT_COLOR_AMBER = 0xFFAA00;
 
   // Center of block

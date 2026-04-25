@@ -92,6 +92,9 @@ public class CsmClientProxy implements ICsmProxy {
     ClientRegistry.bindTileEntitySpecialRenderer(TileEntityCrosswalkSignalNew.class, new TileEntityCrosswalkSignalNewRenderer());
     ClientRegistry.bindTileEntitySpecialRenderer(TileEntityBlankoutBox.class, new TileEntityBlankoutBoxRenderer());
     ClientRegistry.bindTileEntitySpecialRenderer(
+        com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityLaneControlSignal.class,
+        new com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityLaneControlSignalRenderer());
+    ClientRegistry.bindTileEntitySpecialRenderer(
         com.micatechnologies.minecraft.csm.lifesafety.TileEntityFireAlarmStrobe.class,
         new com.micatechnologies.minecraft.csm.lifesafety.TileEntityFireAlarmStrobeRenderer());
     // Also bind to TileEntityFireAlarmSoundIndex so Gentex Commander 3 (which uses that TE
