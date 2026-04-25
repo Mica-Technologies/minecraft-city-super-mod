@@ -171,22 +171,25 @@ public class TileEntityDynamicGuideSignRenderer
     Tessellator tess = Tessellator.getInstance();
     BufferBuilder buf = tess.getBuffer();
 
+    float frontZ = faceZ + SIGN_DEPTH;
+
     if (borderWidth > 0) {
       float bw = borderWidth * BORDER_INSET;
       List<RenderHelper.Box> border = new ArrayList<>();
       border.add(new RenderHelper.Box(
-          new float[]{left - bw, bottom - bw, faceZ - 0.1f},
-          new float[]{left + width + bw, bottom + height + bw, faceZ + SIGN_DEPTH + 0.1f}));
+          new float[]{left - bw, bottom - bw, faceZ},
+          new float[]{left + width + bw, bottom + height + bw, frontZ}));
 
       buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
       RenderHelper.addBoxesToBuffer(border, buf, 0.92f, 0.92f, 0.90f, 1.0f, 0, 0, 0);
       tess.draw();
     }
 
+    float inset = borderWidth > 0 ? borderWidth * BORDER_INSET : 0;
     List<RenderHelper.Box> face = new ArrayList<>();
     face.add(new RenderHelper.Box(
-        new float[]{left, bottom, faceZ},
-        new float[]{left + width, bottom + height, faceZ + SIGN_DEPTH}));
+        new float[]{left + inset, bottom + inset, faceZ + 0.1f},
+        new float[]{left + width - inset, bottom + height - inset, frontZ + 0.1f}));
 
     buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
     RenderHelper.addBoxesToBuffer(face, buf,
@@ -226,11 +229,13 @@ public class TileEntityDynamicGuideSignRenderer
     Tessellator tess = Tessellator.getInstance();
     BufferBuilder buf = tess.getBuffer();
 
+    float frontZ = faceZ + SIGN_DEPTH;
+
     if (borderWidth > 0) {
       List<RenderHelper.Box> tabBorder = new ArrayList<>();
       tabBorder.add(new RenderHelper.Box(
-          new float[]{tabX - bw, tabBottom - 0.5f, faceZ - 0.1f},
-          new float[]{tabX + tabWidth + bw, tabTop + bw, faceZ + SIGN_DEPTH + 0.1f}));
+          new float[]{tabX - bw, tabBottom - 0.5f, faceZ},
+          new float[]{tabX + tabWidth + bw, tabTop + bw, frontZ}));
       buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
       RenderHelper.addBoxesToBuffer(tabBorder, buf, 0.92f, 0.92f, 0.90f, 1.0f, 0, 0, 0);
       tess.draw();
@@ -239,8 +244,8 @@ public class TileEntityDynamicGuideSignRenderer
     GuideSignColor tabColor = tab.getGuideSignColor();
     List<RenderHelper.Box> tabBg = new ArrayList<>();
     tabBg.add(new RenderHelper.Box(
-        new float[]{tabX, tabBottom, faceZ},
-        new float[]{tabX + tabWidth, tabTop, faceZ + SIGN_DEPTH}));
+        new float[]{tabX, tabBottom, faceZ + 0.1f},
+        new float[]{tabX + tabWidth, tabTop, frontZ + 0.1f}));
     buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
     RenderHelper.addBoxesToBuffer(tabBg, buf,
         tabColor.getRed(), tabColor.getGreen(), tabColor.getBlue(), 1.0f, 0, 0, 0);
