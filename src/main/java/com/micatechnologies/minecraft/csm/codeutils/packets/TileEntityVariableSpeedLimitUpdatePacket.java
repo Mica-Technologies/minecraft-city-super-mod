@@ -12,6 +12,7 @@ public class TileEntityVariableSpeedLimitUpdatePacket implements IMessage {
   private int trailerColor;
   private int signAngle;
   private int housingColor;
+  private boolean fullScreen;
 
   public TileEntityVariableSpeedLimitUpdatePacket() {
   }
@@ -27,13 +28,15 @@ public class TileEntityVariableSpeedLimitUpdatePacket implements IMessage {
   }
 
   public TileEntityVariableSpeedLimitUpdatePacket(BlockPos pos, int speedValue,
-      int flasherMode, int trailerColor, int signAngle, int housingColor) {
+      int flasherMode, int trailerColor, int signAngle, int housingColor,
+      boolean fullScreen) {
     this.pos = pos;
     this.speedValue = speedValue;
     this.flasherMode = flasherMode;
     this.trailerColor = trailerColor;
     this.signAngle = signAngle;
     this.housingColor = housingColor;
+    this.fullScreen = fullScreen;
   }
 
   @Override
@@ -46,6 +49,9 @@ public class TileEntityVariableSpeedLimitUpdatePacket implements IMessage {
     if (buf.isReadable()) {
       this.housingColor = buf.readInt();
     }
+    if (buf.isReadable()) {
+      this.fullScreen = buf.readBoolean();
+    }
   }
 
   @Override
@@ -56,6 +62,7 @@ public class TileEntityVariableSpeedLimitUpdatePacket implements IMessage {
     buf.writeInt(this.trailerColor);
     buf.writeInt(this.signAngle);
     buf.writeInt(this.housingColor);
+    buf.writeBoolean(this.fullScreen);
   }
 
   public BlockPos getPos() {
@@ -80,5 +87,9 @@ public class TileEntityVariableSpeedLimitUpdatePacket implements IMessage {
 
   public int getHousingColor() {
     return housingColor;
+  }
+
+  public boolean isFullScreen() {
+    return fullScreen;
   }
 }
