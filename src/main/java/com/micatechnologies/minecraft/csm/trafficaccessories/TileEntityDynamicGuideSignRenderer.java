@@ -30,27 +30,29 @@ import org.lwjgl.opengl.GL11;
 public class TileEntityDynamicGuideSignRenderer
     extends TileEntitySpecialRenderer<TileEntityDynamicGuideSign> {
 
-  private static final float SIGN_DEPTH = 2.0f;
-  private static final float BORDER_INSET = 1.5f;
+  private static final float SIGN_DEPTH = 1.5f;
+  private static final float BORDER_INSET = 0.4f;
   private static final float CX = 8.0f;
   private static final float CY = 8.0f;
 
-  private static final float PANEL_PADDING_TOP = 4.0f;
-  private static final float PANEL_PADDING_BOTTOM = 4.0f;
-  private static final float PANEL_PADDING_SIDE = 6.0f;
-  private static final float ROW_HEIGHT = 12.0f;
-  private static final float ROW_SPACING = 2.0f;
-  private static final float ELEMENT_SPACING = 3.0f;
+  private static final float PANEL_PADDING_TOP = 2.5f;
+  private static final float PANEL_PADDING_BOTTOM = 2.5f;
+  private static final float PANEL_PADDING_SIDE = 3.0f;
+  private static final float ROW_HEIGHT = 10.0f;
+  private static final float ROW_SPACING = 1.5f;
+  private static final float ELEMENT_SPACING = 2.0f;
   private static final float SHIELD_SIZE = 10.0f;
   private static final float ARROW_SIZE = 10.0f;
-  private static final float EXIT_TAB_HEIGHT = 10.0f;
-  private static final float EXIT_TAB_PADDING = 2.0f;
+  private static final float EXIT_TAB_HEIGHT = 8.0f;
+  private static final float EXIT_TAB_PADDING = 3.0f;
+  private static final float EXIT_TAB_GAP = 0.5f;
   private static final float PANEL_GAP = 1.0f;
 
-  private static final float POST_WIDTH = 3.0f;
-  private static final float POST_DEPTH = 2.0f;
+  private static final float POST_WIDTH = 2.5f;
+  private static final float POST_DEPTH = 1.5f;
 
   private static final float TEXT_BASE_SCALE = 0.8f;
+  private static final float EXIT_TAB_TEXT_SCALE = 0.65f;
 
   @Override
   public void render(TileEntityDynamicGuideSign te, double x, double y, double z,
@@ -205,7 +207,7 @@ public class TileEntityDynamicGuideSignRenderer
       tabText = "EXIT";
     }
 
-    float tabWidth = fr.getStringWidth(tabText) * TEXT_BASE_SCALE * 0.7f + EXIT_TAB_PADDING * 2;
+    float tabWidth = fr.getStringWidth(tabText) * EXIT_TAB_TEXT_SCALE + EXIT_TAB_PADDING * 2;
     float tabHeight = EXIT_TAB_HEIGHT;
 
     float tabX;
@@ -222,20 +224,21 @@ public class TileEntityDynamicGuideSignRenderer
         break;
     }
 
-    float tabBottom = panelTopY;
+    float tabBottom = panelTopY + EXIT_TAB_GAP;
     float tabTop = tabBottom + tabHeight;
     float bw = borderWidth > 0 ? borderWidth * BORDER_INSET : 0;
 
     Tessellator tess = Tessellator.getInstance();
     BufferBuilder buf = tess.getBuffer();
 
-    float frontZ = faceZ + SIGN_DEPTH;
+    float tabFaceZ = faceZ - 0.2f;
+    float tabFrontZ = faceZ + SIGN_DEPTH - 0.2f;
 
     if (borderWidth > 0) {
       List<RenderHelper.Box> tabBorder = new ArrayList<>();
       tabBorder.add(new RenderHelper.Box(
-          new float[]{tabX - bw, tabBottom - 0.5f, faceZ},
-          new float[]{tabX + tabWidth + bw, tabTop + bw, frontZ}));
+          new float[]{tabX - bw, tabBottom - bw, tabFaceZ + 0.1f},
+          new float[]{tabX + tabWidth + bw, tabTop + bw, tabFrontZ + 0.1f}));
       buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
       RenderHelper.addBoxesToBuffer(tabBorder, buf, 0.92f, 0.92f, 0.90f, 1.0f, 0, 0, 0);
       tess.draw();
@@ -244,8 +247,8 @@ public class TileEntityDynamicGuideSignRenderer
     GuideSignColor tabColor = tab.getGuideSignColor();
     List<RenderHelper.Box> tabBg = new ArrayList<>();
     tabBg.add(new RenderHelper.Box(
-        new float[]{tabX, tabBottom, faceZ - 0.1f},
-        new float[]{tabX + tabWidth, tabTop, frontZ - 0.1f}));
+        new float[]{tabX, tabBottom, tabFaceZ},
+        new float[]{tabX + tabWidth, tabTop, tabFrontZ}));
     buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
     RenderHelper.addBoxesToBuffer(tabBg, buf,
         tabColor.getRed(), tabColor.getGreen(), tabColor.getBlue(), 1.0f, 0, 0, 0);
@@ -259,10 +262,9 @@ public class TileEntityDynamicGuideSignRenderer
     GlStateManager.pushMatrix();
     float textCenterX = tabX + tabWidth / 2.0f;
     float textCenterY = tabBottom + tabHeight / 2.0f;
-    GlStateManager.translate(textCenterX, textCenterY, faceZ - 0.2f);
+    GlStateManager.translate(textCenterX, textCenterY, tabFaceZ - 0.1f);
     GlStateManager.rotate(180, 0, 1, 0);
-    float tabTextScale = TEXT_BASE_SCALE * 0.7f;
-    GlStateManager.scale(tabTextScale, -tabTextScale, tabTextScale);
+    GlStateManager.scale(EXIT_TAB_TEXT_SCALE, -EXIT_TAB_TEXT_SCALE, EXIT_TAB_TEXT_SCALE);
     GlStateManager.depthMask(false);
 
     int textW = fr.getStringWidth(tabText);
@@ -525,7 +527,7 @@ public class TileEntityDynamicGuideSignRenderer
         FontRenderer fr = Minecraft.getMinecraft().fontRenderer;
         String tabText = panel.getExitTab().getText();
         if (tabText == null || tabText.isEmpty()) tabText = "EXIT";
-        float tabW = fr.getStringWidth(tabText) * TEXT_BASE_SCALE * 0.7f + EXIT_TAB_PADDING * 2;
+        float tabW = fr.getStringWidth(tabText) * EXIT_TAB_TEXT_SCALE + EXIT_TAB_PADDING * 2;
         if (tabW + PANEL_PADDING_SIDE * 2 > maxRowW) {
           maxRowW = tabW + PANEL_PADDING_SIDE * 2;
         }
