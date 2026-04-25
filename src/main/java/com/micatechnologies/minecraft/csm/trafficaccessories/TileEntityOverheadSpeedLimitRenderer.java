@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories;
 
 import com.micatechnologies.minecraft.csm.codeutils.RenderHelper;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyColor;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.block.BlockHorizontal;
@@ -93,7 +94,7 @@ public class TileEntityOverheadSpeedLimitRenderer
     GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
     GlStateManager.disableTexture2D();
 
-    renderHousing();
+    renderHousing(te);
     renderSignFace();
 
     GlStateManager.enableTexture2D();
@@ -110,7 +111,8 @@ public class TileEntityOverheadSpeedLimitRenderer
     GlStateManager.popMatrix();
   }
 
-  private void renderHousing() {
+  private void renderHousing(TileEntityOverheadSpeedLimit te) {
+    TrafficSignalBodyColor color = te.getHousingColor();
     Tessellator tess = Tessellator.getInstance();
     BufferBuilder buf = tess.getBuffer();
 
@@ -124,7 +126,8 @@ public class TileEntityOverheadSpeedLimitRenderer
 
     buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
     RenderHelper.addBoxesToBuffer(border, buf,
-        COL_BORDER[0], COL_BORDER[1], COL_BORDER[2], COL_BORDER[3], 0, 0, 0);
+        color.getRed() * 0.7f, color.getGreen() * 0.7f, color.getBlue() * 0.7f, 1.0f,
+        0, 0, 0);
     tess.draw();
 
     // Frame
@@ -135,7 +138,8 @@ public class TileEntityOverheadSpeedLimitRenderer
 
     buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
     RenderHelper.addBoxesToBuffer(frame, buf,
-        COL_FRAME[0], COL_FRAME[1], COL_FRAME[2], COL_FRAME[3], 0, 0, 0);
+        color.getRed() * 0.85f, color.getGreen() * 0.85f, color.getBlue() * 0.85f, 1.0f,
+        0, 0, 0);
     tess.draw();
 
     // Housing body
@@ -146,7 +150,7 @@ public class TileEntityOverheadSpeedLimitRenderer
 
     buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
     RenderHelper.addBoxesToBuffer(housing, buf,
-        COL_HOUSING[0], COL_HOUSING[1], COL_HOUSING[2], COL_HOUSING[3], 0, 0, 0);
+        color.getRed(), color.getGreen(), color.getBlue(), 1.0f, 0, 0, 0);
     tess.draw();
   }
 

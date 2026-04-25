@@ -15,6 +15,7 @@ public class TileEntityPortableMessageSignUpdatePacket implements IMessage {
   private int cycleSpeed;
   private int trailerColor;
   private int signAngle;
+  private int housingColor;
 
   public TileEntityPortableMessageSignUpdatePacket() {
   }
@@ -27,6 +28,18 @@ public class TileEntityPortableMessageSignUpdatePacket implements IMessage {
     this.cycleSpeed = cycleSpeed;
     this.trailerColor = trailerColor;
     this.signAngle = signAngle;
+    this.housingColor = 0;
+  }
+
+  public TileEntityPortableMessageSignUpdatePacket(BlockPos pos, List<String[]> pages,
+      int flasherMode, int cycleSpeed, int trailerColor, int signAngle, int housingColor) {
+    this.pos = pos;
+    this.pages = pages;
+    this.flasherMode = flasherMode;
+    this.cycleSpeed = cycleSpeed;
+    this.trailerColor = trailerColor;
+    this.signAngle = signAngle;
+    this.housingColor = housingColor;
   }
 
   @Override
@@ -45,6 +58,9 @@ public class TileEntityPortableMessageSignUpdatePacket implements IMessage {
           ByteBufUtils.readUTF8String(buf)
       });
     }
+    if (buf.isReadable()) {
+      this.housingColor = buf.readInt();
+    }
   }
 
   @Override
@@ -60,6 +76,7 @@ public class TileEntityPortableMessageSignUpdatePacket implements IMessage {
       ByteBufUtils.writeUTF8String(buf, page[1]);
       ByteBufUtils.writeUTF8String(buf, page[2]);
     }
+    buf.writeInt(this.housingColor);
   }
 
   public BlockPos getPos() {
@@ -84,5 +101,9 @@ public class TileEntityPortableMessageSignUpdatePacket implements IMessage {
 
   public int getSignAngle() {
     return signAngle;
+  }
+
+  public int getHousingColor() {
+    return housingColor;
   }
 }

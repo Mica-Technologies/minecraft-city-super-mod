@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories;
 
 import com.micatechnologies.minecraft.csm.codeutils.RenderHelper;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyColor;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.block.BlockHorizontal;
@@ -88,7 +89,7 @@ public class TileEntityOverheadMessageSignRenderer
     GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
     GlStateManager.disableTexture2D();
 
-    renderHousing();
+    renderHousing(te);
     renderSignFace();
 
     GlStateManager.enableTexture2D();
@@ -104,7 +105,8 @@ public class TileEntityOverheadMessageSignRenderer
     GlStateManager.popMatrix();
   }
 
-  private void renderHousing() {
+  private void renderHousing(TileEntityOverheadMessageSign te) {
+    TrafficSignalBodyColor color = te.getHousingColor();
     Tessellator tess = Tessellator.getInstance();
     BufferBuilder buf = tess.getBuffer();
 
@@ -118,7 +120,8 @@ public class TileEntityOverheadMessageSignRenderer
 
     buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
     RenderHelper.addBoxesToBuffer(frame, buf,
-        COL_FRAME[0], COL_FRAME[1], COL_FRAME[2], COL_FRAME[3], 0, 0, 0);
+        color.getRed() * 0.85f, color.getGreen() * 0.85f, color.getBlue() * 0.85f, 1.0f,
+        0, 0, 0);
     tess.draw();
 
     // Main housing body
@@ -129,7 +132,7 @@ public class TileEntityOverheadMessageSignRenderer
 
     buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
     RenderHelper.addBoxesToBuffer(housing, buf,
-        COL_HOUSING[0], COL_HOUSING[1], COL_HOUSING[2], COL_HOUSING[3], 0, 0, 0);
+        color.getRed(), color.getGreen(), color.getBlue(), 1.0f, 0, 0, 0);
     tess.draw();
   }
 
