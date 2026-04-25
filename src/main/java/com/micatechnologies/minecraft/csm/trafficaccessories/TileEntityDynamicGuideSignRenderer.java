@@ -111,10 +111,14 @@ public class TileEntityDynamicGuideSignRenderer
     float faceZ = 16.0f - SIGN_DEPTH;
 
     GlStateManager.disableLighting();
+    GL11.glDisable(GL11.GL_LIGHTING);
     GlStateManager.disableCull();
     GlStateManager.enableBlend();
     GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
     GlStateManager.disableTexture2D();
+    GL11.glDisable(GL11.GL_TEXTURE_2D);
+    GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
+    GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 
     renderSignBackground(signLeft, signBottom, totalSignWidth, totalSignHeight,
         faceZ, signColor, borderWidth);
@@ -153,8 +157,11 @@ public class TileEntityDynamicGuideSignRenderer
     renderPost(data.getPostType(), signLeft, signBottom, totalSignWidth, faceZ);
 
     GlStateManager.enableTexture2D();
+    GL11.glEnable(GL11.GL_TEXTURE_2D);
     GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
+    GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
     GlStateManager.enableLighting();
+    GL11.glEnable(GL11.GL_LIGHTING);
     GlStateManager.enableCull();
     GlStateManager.disableBlend();
   }
@@ -261,6 +268,7 @@ public class TileEntityDynamicGuideSignRenderer
 
     OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, prevBX, prevBY);
     GlStateManager.disableTexture2D();
+    GL11.glDisable(GL11.GL_TEXTURE_2D);
   }
 
   private void renderRow(GuideSignRow row, float startX, float topY,
@@ -321,6 +329,7 @@ public class TileEntityDynamicGuideSignRenderer
     GlStateManager.depthMask(true);
     GlStateManager.popMatrix();
     GlStateManager.disableTexture2D();
+    GL11.glDisable(GL11.GL_TEXTURE_2D);
   }
 
   private void renderShieldElement(FontRenderer fr, GuideSignElement elem,
@@ -389,6 +398,7 @@ public class TileEntityDynamicGuideSignRenderer
     }
 
     GlStateManager.disableTexture2D();
+    GL11.glDisable(GL11.GL_TEXTURE_2D);
   }
 
   private void renderArrowElement(GuideSignElement elem, float x, float topY, float faceZ) {
@@ -414,6 +424,7 @@ public class TileEntityDynamicGuideSignRenderer
 
     tess.draw();
     GlStateManager.disableTexture2D();
+    GL11.glDisable(GL11.GL_TEXTURE_2D);
   }
 
   private void renderPanelDivider(float signLeft, float y, float signWidth,
