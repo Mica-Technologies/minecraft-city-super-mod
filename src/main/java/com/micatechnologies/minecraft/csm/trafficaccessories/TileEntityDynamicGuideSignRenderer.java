@@ -134,7 +134,7 @@ public class TileEntityDynamicGuideSignRenderer
       GuideSignPanel panel = panels.get(pi);
 
       if (panel.hasExitTab()) {
-        renderExitTab(panel.getExitTab(), signLeft, panelY, totalSignWidth,
+        renderExitTab(panel.getExitTab(), signLeft, signTop, totalSignWidth,
             faceZ, signColor, borderWidth);
       }
 
@@ -390,10 +390,10 @@ public class TileEntityDynamicGuideSignRenderer
     String bannerText = elem.getGuideSignBannerType().getBannerText();
     if (!bannerText.isEmpty()) {
       GlStateManager.pushMatrix();
-      float bannerY = shieldCenterY + halfSize + 3.0f;
+      float bannerY = shieldCenterY + halfSize + 0.5f;
       GlStateManager.translate(shieldCenterX, bannerY, faceZ - 0.4f);
       GlStateManager.rotate(180, 0, 1, 0);
-      float bannerScale = TEXT_BASE_SCALE * 0.45f;
+      float bannerScale = TEXT_BASE_SCALE * 0.35f;
       GlStateManager.scale(bannerScale, -bannerScale, bannerScale);
       GlStateManager.depthMask(false);
 
