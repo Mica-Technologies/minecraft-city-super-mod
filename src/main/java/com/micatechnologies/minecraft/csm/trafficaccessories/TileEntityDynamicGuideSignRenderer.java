@@ -13,9 +13,7 @@ import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.GuideSign
 import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.GuideSignShieldType;
 import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.PostType;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -53,8 +51,6 @@ public class TileEntityDynamicGuideSignRenderer
   private static final float POST_DEPTH = 2.0f;
 
   private static final float TEXT_BASE_SCALE = 0.8f;
-
-  private static final Map<BlockPos, Integer> displayListCache = new HashMap<>();
 
   @Override
   public void render(TileEntityDynamicGuideSign te, double x, double y, double z,
@@ -96,24 +92,7 @@ public class TileEntityDynamicGuideSignRenderer
     GlStateManager.translate(-0.5, 0.0, -0.5);
     GlStateManager.scale(0.0625, 0.0625, 0.0625);
 
-    boolean needsRebuild = te.isStateDirty() || !displayListCache.containsKey(te.getPos());
-
-    if (needsRebuild) {
-      int listId = displayListCache.getOrDefault(te.getPos(), 0);
-      if (listId == 0) {
-        listId = GL11.glGenLists(1);
-        displayListCache.put(te.getPos(), listId);
-      }
-      GL11.glNewList(listId, GL11.GL_COMPILE);
-      renderSign(data);
-      GL11.glEndList();
-      te.clearStateDirty();
-    }
-
-    Integer listId = displayListCache.get(te.getPos());
-    if (listId != null && listId != 0) {
-      GL11.glCallList(listId);
-    }
+    renderSign(data);
 
     GlStateManager.popMatrix();
   }
@@ -465,14 +444,6 @@ public class TileEntityDynamicGuideSignRenderer
 
     switch (postType) {
       case OVERHEAD:
-        float oLeft = signLeft + 4.0f;
-        float oRight = signLeft + signWidth - 4.0f - POST_WIDTH;
-        posts.add(new RenderHelper.Box(
-            new float[]{oLeft, postBottom, postFrontZ},
-            new float[]{oLeft + POST_WIDTH, postTop, postBackZ}));
-        posts.add(new RenderHelper.Box(
-            new float[]{oRight, postBottom, postFrontZ},
-            new float[]{oRight + POST_WIDTH, postTop, postBackZ}));
         break;
       case LEFT:
         posts.add(new RenderHelper.Box(
@@ -591,9 +562,6 @@ public class TileEntityDynamicGuideSignRenderer
   }
 
   public static void cleanupDisplayList(BlockPos pos) {
-    Integer listId = displayListCache.remove(pos);
-    if (listId != null && listId != 0) {
-      GL11.glDeleteLists(listId, 1);
-    }
+    // Reserved for future display list caching optimization
   }
 }
