@@ -1,0 +1,25 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "cube_all",
+    "textures": {
+      "all": "csm:blocks/trafficsignals/shared_textures/transparent",
+      "particle": "csm:blocks/trafficsignals/shared_textures/transparent"
+    }
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "south": { "y": 180 },
+      "west": { "y": 270 },
+      "east": { "y": 90 }
+    },
+    "inventory": [{
+      "model": "csm:dynamic_guide_sign",
+      "textures": {
+        "all": "csm:blocks/trafficaccessories/dynamic_guide_sign",
+        "particle": "csm:blocks/trafficaccessories/dynamic_guide_sign"
+      }
+    }]
+  }
+}

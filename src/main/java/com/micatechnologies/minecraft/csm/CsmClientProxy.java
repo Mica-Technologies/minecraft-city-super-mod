@@ -135,6 +135,10 @@ public class CsmClientProxy implements ICsmProxy {
         com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityOverheadSpeedLimit.class,
         new com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityOverheadSpeedLimitRenderer());
 
+    ClientRegistry.bindTileEntitySpecialRenderer(
+        com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityDynamicGuideSign.class,
+        new com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityDynamicGuideSignRenderer());
+
     // Register HVAC temperature HUD overlay
     com.micatechnologies.minecraft.csm.hvac.HvacHudOverlay.register();
 
