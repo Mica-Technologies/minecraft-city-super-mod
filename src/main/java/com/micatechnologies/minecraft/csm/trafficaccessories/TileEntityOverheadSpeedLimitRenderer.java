@@ -94,13 +94,25 @@ public class TileEntityOverheadSpeedLimitRenderer
     GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
     GlStateManager.disableTexture2D();
 
+    boolean fullScreen = te.isFullScreen();
+    float prevBX = OpenGlHelper.lastBrightnessX;
+    float prevBY = OpenGlHelper.lastBrightnessY;
+
+    if (fullScreen) {
+      OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240f, 240f);
+    }
+
     renderHousing(te);
-    renderSignFace();
+    renderSignFace(fullScreen);
 
     GlStateManager.enableTexture2D();
 
     renderSpeedText(te);
     renderLabelText();
+
+    if (fullScreen) {
+      OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, prevBX, prevBY);
+    }
 
     GlStateManager.enableTexture2D();
     GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
@@ -154,12 +166,13 @@ public class TileEntityOverheadSpeedLimitRenderer
     tess.draw();
   }
 
-  private void renderSignFace() {
+  private void renderSignFace(boolean fullScreen) {
     Tessellator tess = Tessellator.getInstance();
     BufferBuilder buf = tess.getBuffer();
 
-    // Subtle gray sign background (full face) — placed in front of frame
     float faceFront = FACE_Z - SIGN_FRAME - 0.1f;
+    float[] bgColor = fullScreen ? COL_SCREEN_WHITE : COL_SIGN_BG;
+
     List<RenderHelper.Box> bgFace = new ArrayList<>();
     bgFace.add(new RenderHelper.Box(
         new float[]{CX - SIGN_WIDTH / 2 + 1.0f, SIGN_BOTTOM + 1.0f, faceFront - 0.3f},
@@ -167,29 +180,30 @@ public class TileEntityOverheadSpeedLimitRenderer
 
     buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
     RenderHelper.addBoxesToBuffer(bgFace, buf,
-        COL_SIGN_BG[0], COL_SIGN_BG[1], COL_SIGN_BG[2], COL_SIGN_BG[3], 0, 0, 0);
+        bgColor[0], bgColor[1], bgColor[2], bgColor[3], 0, 0, 0);
     tess.draw();
 
-    // Bright white LED screen (inset, lower portion) — fullbright
-    float prevBX = OpenGlHelper.lastBrightnessX;
-    float prevBY = OpenGlHelper.lastBrightnessY;
-    OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240f, 240f);
+    if (!fullScreen) {
+      float prevBX = OpenGlHelper.lastBrightnessX;
+      float prevBY = OpenGlHelper.lastBrightnessY;
+      OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240f, 240f);
 
-    float screenInset = 4.0f;
-    List<RenderHelper.Box> screenFace = new ArrayList<>();
-    screenFace.add(new RenderHelper.Box(
-        new float[]{CX - SIGN_WIDTH / 2 + screenInset, SIGN_BOTTOM + screenInset,
-            faceFront - 0.4f},
-        new float[]{CX + SIGN_WIDTH / 2 - screenInset, SIGN_DIVIDER_Y - 1.0f,
-            faceFront - 0.1f}));
+      float screenInset = 4.0f;
+      List<RenderHelper.Box> screenFace = new ArrayList<>();
+      screenFace.add(new RenderHelper.Box(
+          new float[]{CX - SIGN_WIDTH / 2 + screenInset, SIGN_BOTTOM + screenInset,
+              faceFront - 0.4f},
+          new float[]{CX + SIGN_WIDTH / 2 - screenInset, SIGN_DIVIDER_Y - 1.0f,
+              faceFront - 0.1f}));
 
-    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
-    RenderHelper.addBoxesToBuffer(screenFace, buf,
-        COL_SCREEN_WHITE[0], COL_SCREEN_WHITE[1], COL_SCREEN_WHITE[2], COL_SCREEN_WHITE[3],
-        0, 0, 0);
-    tess.draw();
+      buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
+      RenderHelper.addBoxesToBuffer(screenFace, buf,
+          COL_SCREEN_WHITE[0], COL_SCREEN_WHITE[1], COL_SCREEN_WHITE[2], COL_SCREEN_WHITE[3],
+          0, 0, 0);
+      tess.draw();
 
-    OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, prevBX, prevBY);
+      OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, prevBX, prevBY);
+    }
   }
 
   private void renderLabelText() {

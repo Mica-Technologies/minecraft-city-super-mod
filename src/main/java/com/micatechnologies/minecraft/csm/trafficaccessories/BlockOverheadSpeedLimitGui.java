@@ -16,17 +16,20 @@ public class BlockOverheadSpeedLimitGui extends GuiScreen {
   private static final int BTN_SPEED_DOWN = 2;
   private static final int BTN_SPEED_UP = 3;
   private static final int BTN_HOUSING_COLOR = 4;
+  private static final int BTN_FULL_SCREEN = 5;
 
   private static final int FIELD_WIDTH = 200;
 
   private final TileEntityOverheadSpeedLimit tileEntity;
   private int speedValue;
   private TrafficSignalBodyColor housingColor;
+  private boolean fullScreen;
 
   public BlockOverheadSpeedLimitGui(TileEntityOverheadSpeedLimit tileEntity) {
     this.tileEntity = tileEntity;
     this.speedValue = tileEntity.getSpeedValue();
     this.housingColor = tileEntity.getHousingColor();
+    this.fullScreen = tileEntity.isFullScreen();
   }
 
   @Override
@@ -38,9 +41,9 @@ public class BlockOverheadSpeedLimitGui extends GuiScreen {
     ScaledResolution sr = new ScaledResolution(this.mc);
     int centerX = sr.getScaledWidth() / 2;
     int fieldLeft = centerX - FIELD_WIDTH / 2;
-    int startY = sr.getScaledHeight() / 2 - 40;
-
     int halfWidth = (FIELD_WIDTH - 4) / 2;
+    int startY = sr.getScaledHeight() / 2 - 50;
+
     int row = startY;
 
     buttonList.add(new GuiButton(BTN_SPEED_DOWN, fieldLeft, row, 40, 20, "- 5"));
@@ -48,6 +51,9 @@ public class BlockOverheadSpeedLimitGui extends GuiScreen {
     row += 25;
 
     buttonList.add(new GuiButton(BTN_HOUSING_COLOR, fieldLeft, row, FIELD_WIDTH, 20, ""));
+    row += 25;
+
+    buttonList.add(new GuiButton(BTN_FULL_SCREEN, fieldLeft, row, FIELD_WIDTH, 20, ""));
     row += 25;
 
     buttonList.add(new GuiButton(BTN_SAVE, fieldLeft, row, halfWidth, 20, "Save"));
@@ -61,7 +67,7 @@ public class BlockOverheadSpeedLimitGui extends GuiScreen {
 
     ScaledResolution sr = new ScaledResolution(this.mc);
     int centerX = sr.getScaledWidth() / 2;
-    int startY = sr.getScaledHeight() / 2 - 40;
+    int startY = sr.getScaledHeight() / 2 - 50;
 
     drawCenteredString(fontRenderer, "Overhead Speed Limit Sign", centerX, startY - 15,
         0xFFAA00);
@@ -72,6 +78,8 @@ public class BlockOverheadSpeedLimitGui extends GuiScreen {
     for (GuiButton btn : buttonList) {
       if (btn.id == BTN_HOUSING_COLOR) {
         btn.displayString = "Housing: " + housingColor.getFriendlyName();
+      } else if (btn.id == BTN_FULL_SCREEN) {
+        btn.displayString = "Full Screen: " + (fullScreen ? "Yes" : "No");
       }
     }
 
@@ -85,7 +93,8 @@ public class BlockOverheadSpeedLimitGui extends GuiScreen {
       case BTN_SAVE:
         CsmNetwork.sendToServer(new TileEntityVariableSpeedLimitUpdatePacket(
             tileEntity.getPos(), speedValue,
-            TileEntityVariableSpeedLimit.FLASHER_NONE, 0, 0, housingColor.toNBT()));
+            TileEntityVariableSpeedLimit.FLASHER_NONE, 0, 0, housingColor.toNBT(),
+            fullScreen));
         this.mc.displayGuiScreen(null);
         break;
 
@@ -107,6 +116,10 @@ public class BlockOverheadSpeedLimitGui extends GuiScreen {
 
       case BTN_HOUSING_COLOR:
         housingColor = housingColor.getNextColor();
+        break;
+
+      case BTN_FULL_SCREEN:
+        fullScreen = !fullScreen;
         break;
     }
   }
