@@ -462,7 +462,8 @@ public class TileEntityTrafficLightMountKitRenderer
   private boolean isSignalHead(TileEntityTrafficLightMountKit te, BlockPos pos) {
     TileEntity check = te.getWorld().getTileEntity(pos);
     return check instanceof TileEntityTrafficSignalHead
-        || check instanceof TileEntityBlankoutBox;
+        || check instanceof TileEntityBlankoutBox
+        || check instanceof TileEntityLaneControlSignal;
   }
 
   /**
@@ -473,7 +474,8 @@ public class TileEntityTrafficLightMountKitRenderer
   private SignalInfo readSignalAt(TileEntityTrafficLightMountKit te, BlockPos pos) {
     TileEntity checkTe = te.getWorld().getTileEntity(pos);
 
-    if (checkTe instanceof TileEntityBlankoutBox) {
+    if (checkTe instanceof TileEntityBlankoutBox
+            || checkTe instanceof TileEntityLaneControlSignal) {
       SignalInfo info = new SignalInfo();
       info.minX = BlankoutBoxVertexData.BODY_X_MIN;
       info.maxX = BlankoutBoxVertexData.BODY_X_MAX;

@@ -141,7 +141,8 @@ public abstract class AbstractBlockTrafficPole extends AbstractBlockRotatableNSE
           BlockSnow.class, BlockSnowBlock.class, BlockBush.class, BlockLeaves.class,
           BlockVine.class, BlockCarpet.class, BlockTorch.class, BlockRedstoneWire.class,
           BlockRailBase.class, BlockCactus.class, BlockReed.class, BlockWeb.class,
-          BlockBlankoutBox.class};
+          BlockBlankoutBox.class,
+          com.micatechnologies.minecraft.csm.trafficaccessories.BlockLaneControlSignal.class};
 
 
   /**

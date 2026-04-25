@@ -5,6 +5,7 @@ import com.micatechnologies.minecraft.csm.codeutils.ICsmNoSnowAccumulation;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityBlankoutBox;
 import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalHead;
+import com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityLaneControlSignal;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignalHead;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.BlankoutBoxVertexData;
 import javax.annotation.Nonnull;
@@ -258,7 +259,8 @@ public class BlockTrafficLightMountKit extends AbstractBlockRotatableNSEWUD
   private static boolean isSignalHead(IBlockAccess world, BlockPos pos) {
     TileEntity te = world.getTileEntity(pos);
     return te instanceof TileEntityTrafficSignalHead
-        || te instanceof TileEntityBlankoutBox;
+        || te instanceof TileEntityBlankoutBox
+        || te instanceof TileEntityLaneControlSignal;
   }
 
   /**
@@ -269,7 +271,7 @@ public class BlockTrafficLightMountKit extends AbstractBlockRotatableNSEWUD
   private static float[] readSignalEnvelope(IBlockAccess world, BlockPos pos) {
     TileEntity te = world.getTileEntity(pos);
 
-    if (te instanceof TileEntityBlankoutBox) {
+    if (te instanceof TileEntityBlankoutBox || te instanceof TileEntityLaneControlSignal) {
       return new float[]{
           BlankoutBoxVertexData.BODY_X_MIN, BlankoutBoxVertexData.BODY_X_MAX,
           BlankoutBoxVertexData.BODY_Y_MIN, BlankoutBoxVertexData.BODY_Y_MAX, 0f};

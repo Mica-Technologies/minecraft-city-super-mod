@@ -1470,3 +1470,4 @@ tile.portable_message_sign.name=Portable Changeable Message Sign
 tile.overhead_message_sign.name=Overhead Message Sign
 tile.portable_speed_limit_sign.name=Portable Variable Speed Limit Sign
 tile.overhead_speed_limit_sign.name=Overhead Variable Speed Limit Sign
+tile.lane_control_signal.name=Lane Control Signal

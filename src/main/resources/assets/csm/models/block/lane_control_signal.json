@@ -1,0 +1,6 @@
+{
+  "parent": "block/cube_all",
+  "textures": {
+    "all": "csm:blocks/trafficaccessories/lane_control_signal/off"
+  }
+}
