@@ -106,6 +106,9 @@ public class CsmGuiHandler implements IGuiHandler {
     } else if (id == 13 && tileEntity instanceof com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityLaneControlSignal) {
       returnValue = new com.micatechnologies.minecraft.csm.trafficaccessories.LaneControlSignalConfigGui(
           (com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityLaneControlSignal) tileEntity);
+    } else if (id == 14 && tileEntity instanceof com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityDynamicGuideSign) {
+      returnValue = new com.micatechnologies.minecraft.csm.trafficaccessories.DynamicGuideSignGui(
+          (com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityDynamicGuideSign) tileEntity);
     }
     return returnValue;
   }
