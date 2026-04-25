@@ -188,8 +188,8 @@ public class TileEntityDynamicGuideSignRenderer
     float inset = borderWidth > 0 ? borderWidth * BORDER_INSET : 0;
     List<RenderHelper.Box> face = new ArrayList<>();
     face.add(new RenderHelper.Box(
-        new float[]{left + inset, bottom + inset, faceZ + 0.1f},
-        new float[]{left + width - inset, bottom + height - inset, frontZ + 0.1f}));
+        new float[]{left + inset, bottom + inset, faceZ - 0.1f},
+        new float[]{left + width - inset, bottom + height - inset, frontZ - 0.1f}));
 
     buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
     RenderHelper.addBoxesToBuffer(face, buf,
@@ -244,8 +244,8 @@ public class TileEntityDynamicGuideSignRenderer
     GuideSignColor tabColor = tab.getGuideSignColor();
     List<RenderHelper.Box> tabBg = new ArrayList<>();
     tabBg.add(new RenderHelper.Box(
-        new float[]{tabX, tabBottom, faceZ + 0.1f},
-        new float[]{tabX + tabWidth, tabTop, frontZ + 0.1f}));
+        new float[]{tabX, tabBottom, faceZ - 0.1f},
+        new float[]{tabX + tabWidth, tabTop, frontZ - 0.1f}));
     buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
     RenderHelper.addBoxesToBuffer(tabBg, buf,
         tabColor.getRed(), tabColor.getGreen(), tabColor.getBlue(), 1.0f, 0, 0, 0);
