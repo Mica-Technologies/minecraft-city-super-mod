@@ -1181,7 +1181,7 @@ public class TrafficSignalControllerCircuit {
     return Objects.hash(flashingLeftSignals, flashingRightSignals, leftSignals, rightSignals,
         throughSignals,
         pedestrianSignals, pedestrianBeaconSignals, pedestrianAccessorySignals, protectedSignals,
-        sensors);
+        beaconSignals, noTurnBlankoutSignals, sensors);
   }
 
   /**
@@ -1213,6 +1213,8 @@ public class TrafficSignalControllerCircuit {
         Objects.equals(pedestrianBeaconSignals, that.pedestrianBeaconSignals) &&
         Objects.equals(pedestrianAccessorySignals, that.pedestrianAccessorySignals) &&
         Objects.equals(protectedSignals, that.protectedSignals) &&
+        Objects.equals(beaconSignals, that.beaconSignals) &&
+        Objects.equals(noTurnBlankoutSignals, that.noTurnBlankoutSignals) &&
         Objects.equals(sensors, that.sensors);
   }
 
