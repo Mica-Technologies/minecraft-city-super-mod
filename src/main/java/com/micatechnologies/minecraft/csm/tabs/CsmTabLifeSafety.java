@@ -170,7 +170,7 @@ public class CsmTabLifeSafety extends CsmTab {
     initTabBlock(new BlockFireAlarmVoiceEvacStrobeFactory("firealarmsimplextruealertspeakerstrobered", new AxisAlignedBB(0.125000, 0.187500, 0.812500, 0.875000, 1.000000, 1.000000), new float[]{2.7f, 5.5f, 13f}, new float[]{13.2f, 9.5f, 15f}));
     initTabBlock(new BlockFireAlarmVoiceEvacStrobeFactory("firealarmsimplextruealertspeakerstrobewhite", new AxisAlignedBB(0.125000, 0.187500, 0.812500, 0.875000, 1.000000, 1.000000), new float[]{2.7f, 5.5f, 13f}, new float[]{13.2f, 9.5f, 15f}));
     initTabBlock(new BlockFireAlarmVoiceEvacFactory("firealarmsimplextruealertspeakerwhite", new AxisAlignedBB(0.187500, 0.375000, 0.900000, 0.812500, 1.000000, 1.000000)));
-    initTabBlock(new BlockFireAlarmSounderStrobeFactory("firealarmspaceageav32red", "csm:sae_marchtime", new AxisAlignedBB(0.125000, 0.062500, 0.875000, 0.875000, 0.937500, 1.000000), new float[]{4.8f, 2.1f, 13.5f}, new float[]{11.4f, 5.4f, 14f}));
+    initTabBlock(new BlockFireAlarmSounderStrobeFactory("firealarmspaceageav32red", "csm:sae_marchtime", new AxisAlignedBB(0.125000, 0.062500, 0.875000, 0.875000, 0.937500, 1.000000), new float[]{4.8f, 2.1f, 13.5f}, new float[]{11.4f, 5.4f, 14f}, true));
     initTabBlock(BlockFireAlarmSprinklerBlack.class, fmlPreInitializationEvent);
     initTabBlock(BlockFireAlarmSprinklerSilver.class, fmlPreInitializationEvent);
     initTabBlock(BlockFireAlarmSprinklerWhite.class, fmlPreInitializationEvent);
