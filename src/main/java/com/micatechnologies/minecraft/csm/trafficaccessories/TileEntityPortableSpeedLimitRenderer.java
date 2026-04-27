@@ -10,8 +10,8 @@ import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalVert
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.block.BlockHorizontal;
+import com.micatechnologies.minecraft.csm.codeutils.CsmFontRenderer;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
@@ -456,7 +456,7 @@ public class TileEntityPortableSpeedLimitRenderer
   }
 
   private void renderLabelText() {
-    FontRenderer fr = Minecraft.getMinecraft().fontRenderer;
+    CsmFontRenderer fr = CsmFontRenderer.highwayGothic();
 
     GlStateManager.pushMatrix();
 
@@ -465,7 +465,7 @@ public class TileEntityPortableSpeedLimitRenderer
     GlStateManager.translate(CX, upperCenterY, faceZ);
     GlStateManager.rotate(180, 0, 1, 0);
 
-    float labelScale = 0.71f;
+    float labelScale = 0.82f;
     GlStateManager.scale(labelScale, -labelScale, labelScale);
 
     GlStateManager.depthMask(false);
@@ -489,7 +489,7 @@ public class TileEntityPortableSpeedLimitRenderer
     int speed = te.getSpeedValue();
     String speedStr = String.valueOf(speed);
 
-    FontRenderer fr = Minecraft.getMinecraft().fontRenderer;
+    CsmFontRenderer fr = CsmFontRenderer.highwayGothic();
 
     float prevBX = OpenGlHelper.lastBrightnessX;
     float prevBY = OpenGlHelper.lastBrightnessY;
