@@ -1778,6 +1778,7 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
       allPositions.addAll(circuit.getPedestrianAccessorySignals());
       allPositions.addAll(circuit.getProtectedSignals());
       allPositions.addAll(circuit.getBeaconSignals());
+      allPositions.addAll(circuit.getNoTurnBlankoutSignals());
       allPositions.addAll(circuit.getSensors());
       for (net.minecraft.util.math.BlockPos devicePos : allPositions) {
         circuit.unlinkDevice(devicePos);

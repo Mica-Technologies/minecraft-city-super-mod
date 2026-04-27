@@ -526,6 +526,7 @@ public class TrafficSignalControllerTickerUtilities {
           defaultPhase.addOffSignals(circuit.getBeaconSignals());
           defaultPhase.addDontWalkSignals(circuit.getPedestrianSignals());
           defaultPhase.addDontWalkSignals(circuit.getPedestrianAccessorySignals());
+          defaultPhase.addWalkSignals(circuit.getNoTurnBlankoutSignals());
         } else {
           addCircuitToPhaseAllRed(circuit, defaultPhase,
               overlapPedestrianSignals && !greenRightTurn && !greenLeftTurn);
@@ -569,6 +570,7 @@ public class TrafficSignalControllerTickerUtilities {
       destinationPhase.addDontWalkSignals(circuit.getPedestrianSignals());
       destinationPhase.addDontWalkSignals(circuit.getPedestrianAccessorySignals());
     }
+    destinationPhase.addDontWalkSignals(circuit.getNoTurnBlankoutSignals());
   }
 
   /**
@@ -902,6 +904,7 @@ public class TrafficSignalControllerTickerUtilities {
           upcomingPhase.addRedSignals(circuit.getPedestrianBeaconSignals());
           upcomingPhase.addDontWalkSignals(circuit.getPedestrianSignals());
           upcomingPhase.addDontWalkSignals(circuit.getPedestrianAccessorySignals());
+          upcomingPhase.addDontWalkSignals(circuit.getNoTurnBlankoutSignals());
         } else {
           boolean pedestrianSignalsWalk = false;
           addCircuitToPhaseAllRed(circuit, upcomingPhase, pedestrianSignalsWalk);
@@ -983,6 +986,7 @@ public class TrafficSignalControllerTickerUtilities {
               upcomingPhase.addRedSignals(circuit.getLeftSignals());
             }
           }
+          upcomingPhase.addWalkSignals(circuit.getNoTurnBlankoutSignals());
         } else {
           addCircuitToPhaseAllRed(circuit, upcomingPhase,
               overlapPedestrianSignals && !greenRightTurn && !greenLeftTurn);
@@ -1016,6 +1020,7 @@ public class TrafficSignalControllerTickerUtilities {
             upcomingPhase.addFyaSignals(circuit.getFlashingLeftSignals());
             upcomingPhase.addRedSignals(circuit.getLeftSignals());
           }
+          upcomingPhase.addWalkSignals(circuit.getNoTurnBlankoutSignals());
         } else {
           addCircuitToPhaseAllRed(circuit, upcomingPhase,
               overlapPedestrianSignals && !greenRightTurn && !greenLeftTurn);
@@ -1044,6 +1049,7 @@ public class TrafficSignalControllerTickerUtilities {
           upcomingPhase.addOffSignals(circuit.getBeaconSignals());
           upcomingPhase.addDontWalkSignals(circuit.getPedestrianSignals());
           upcomingPhase.addDontWalkSignals(circuit.getPedestrianAccessorySignals());
+          upcomingPhase.addWalkSignals(circuit.getNoTurnBlankoutSignals());
         } else {
           addCircuitToPhaseAllRed(circuit, upcomingPhase,
               overlapPedestrianSignals && !greenRightTurn && !greenLeftTurn);
@@ -1126,6 +1132,7 @@ public class TrafficSignalControllerTickerUtilities {
     destinationPhase.addOffSignals(circuit.getBeaconSignals());
     destinationPhase.addDontWalkSignals(circuit.getPedestrianSignals());
     destinationPhase.addDontWalkSignals(circuit.getPedestrianAccessorySignals());
+    destinationPhase.addWalkSignals(circuit.getNoTurnBlankoutSignals());
   }
 
   /**

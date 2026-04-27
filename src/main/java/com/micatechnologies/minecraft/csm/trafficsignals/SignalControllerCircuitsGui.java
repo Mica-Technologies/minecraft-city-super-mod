@@ -133,7 +133,7 @@ public class SignalControllerCircuitsGui extends GuiScreen {
           "Beacons", circuit.getBeaconSignals().size());
       y = drawDeviceRow(y, contentLeft, contentTop, contentBottom,
           "Sensors", circuit.getSensors().size(),
-          null, 0);
+          "Blankouts", circuit.getNoTurnBlankoutSignals().size());
 
       // Separator line
       if (y >= contentTop && y < contentBottom && i < circuitCount - 1) {
