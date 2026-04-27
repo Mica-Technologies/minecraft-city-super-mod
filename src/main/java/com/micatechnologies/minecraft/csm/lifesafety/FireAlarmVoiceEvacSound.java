@@ -50,7 +50,7 @@ public class FireAlarmVoiceEvacSound extends MovingSound {
    */
   public FireAlarmVoiceEvacSound(ResourceLocation soundResource, List<BlockPos> speakerPositions,
       float hearingRange, boolean glitchy) {
-    super(SoundEvent.REGISTRY.getObject(soundResource), SoundCategory.AMBIENT);
+    super(new SoundEvent(soundResource), SoundCategory.AMBIENT);
     this.speakerPositions = new ArrayList<>(speakerPositions);
     this.hearingRange = hearingRange;
     this.glitchy = glitchy;

@@ -29,21 +29,29 @@ public class BlockFireAlarmSounderStrobeFactory extends AbstractBlockFireAlarmSo
   private final AxisAlignedBB boundingBox;
   private final float[] strobeLensFrom;
   private final float[] strobeLensTo;
+  private final boolean redSlowToggle;
 
   public BlockFireAlarmSounderStrobeFactory(String registryName, String soundResource,
       AxisAlignedBB boundingBox, float[] strobeLensFrom, float[] strobeLensTo) {
+    this(registryName, soundResource, boundingBox, strobeLensFrom, strobeLensTo, false);
+  }
+
+  public BlockFireAlarmSounderStrobeFactory(String registryName, String soundResource,
+      AxisAlignedBB boundingBox, float[] strobeLensFrom, float[] strobeLensTo,
+      boolean redSlowToggle) {
     this(initRegistryName(registryName), registryName, soundResource, boundingBox,
-        strobeLensFrom, strobeLensTo);
+        strobeLensFrom, strobeLensTo, redSlowToggle);
   }
 
   private BlockFireAlarmSounderStrobeFactory(Void ignored, String registryName,
       String soundResource, AxisAlignedBB boundingBox, float[] strobeLensFrom,
-      float[] strobeLensTo) {
+      float[] strobeLensTo, boolean redSlowToggle) {
     this.registryName = registryName;
     this.soundResource = soundResource;
     this.boundingBox = boundingBox;
     this.strobeLensFrom = strobeLensFrom;
     this.strobeLensTo = strobeLensTo;
+    this.redSlowToggle = redSlowToggle;
   }
 
   private static Void initRegistryName(String name) {
@@ -77,6 +85,11 @@ public class BlockFireAlarmSounderStrobeFactory extends AbstractBlockFireAlarmSo
   @Override
   public float[] getStrobeLensTo() {
     return strobeLensTo;
+  }
+
+  @Override
+  public boolean isRedSlowToggleStrobe() {
+    return redSlowToggle;
   }
 
   @Override

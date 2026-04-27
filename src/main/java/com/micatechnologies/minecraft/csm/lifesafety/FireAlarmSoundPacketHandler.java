@@ -7,7 +7,6 @@ import java.util.Set;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.SoundEvent;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
@@ -70,16 +69,8 @@ public class FireAlarmSoundPacketHandler implements
       return;
     }
 
-    // Validate that the sound resource resolves to a registered SoundEvent
-    ResourceLocation soundLocation = new ResourceLocation(soundResource);
-    SoundEvent soundEvent = SoundEvent.REGISTRY.getObject(soundLocation);
-    if (soundEvent == null) {
-      System.err.println("[CSM] Fire alarm sound resource not found in registry: " + soundResource);
-      return;
-    }
-
     FireAlarmVoiceEvacSound sound = new FireAlarmVoiceEvacSound(
-        soundLocation,
+        new ResourceLocation(soundResource),
         message.getSpeakerPositions(),
         message.getHearingRange(),
         message.isGlitchy());
