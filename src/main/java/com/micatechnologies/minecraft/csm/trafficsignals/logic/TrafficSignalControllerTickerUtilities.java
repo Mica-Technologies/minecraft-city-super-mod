@@ -1,12 +1,15 @@
 package com.micatechnologies.minecraft.csm.trafficsignals.logic;
 
 import com.google.common.collect.Lists;
+import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityBlankoutBox;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.Tuple;
 import net.minecraft.util.math.BlockPos;
@@ -526,7 +529,7 @@ public class TrafficSignalControllerTickerUtilities {
           defaultPhase.addOffSignals(circuit.getBeaconSignals());
           defaultPhase.addDontWalkSignals(circuit.getPedestrianSignals());
           defaultPhase.addDontWalkSignals(circuit.getPedestrianAccessorySignals());
-          defaultPhase.addWalkSignals(circuit.getNoTurnBlankoutSignals());
+          addBlankoutSignalsToPhase(world, circuit, defaultPhase, greenRightTurn, greenLeftTurn);
         } else {
           addCircuitToPhaseAllRed(circuit, defaultPhase,
               overlapPedestrianSignals && !greenRightTurn && !greenLeftTurn);
@@ -990,7 +993,7 @@ public class TrafficSignalControllerTickerUtilities {
               upcomingPhase.addRedSignals(circuit.getLeftSignals());
             }
           }
-          upcomingPhase.addWalkSignals(circuit.getNoTurnBlankoutSignals());
+          addBlankoutSignalsToPhase(world, circuit, upcomingPhase, greenRightTurn, greenLeftTurn);
         } else {
           addCircuitToPhaseAllRed(circuit, upcomingPhase,
               overlapPedestrianSignals && !greenRightTurn && !greenLeftTurn);
@@ -1024,7 +1027,7 @@ public class TrafficSignalControllerTickerUtilities {
             upcomingPhase.addFyaSignals(circuit.getFlashingLeftSignals());
             upcomingPhase.addRedSignals(circuit.getLeftSignals());
           }
-          upcomingPhase.addWalkSignals(circuit.getNoTurnBlankoutSignals());
+          addBlankoutSignalsToPhase(world, circuit, upcomingPhase, greenRightTurn, greenLeftTurn);
         } else {
           addCircuitToPhaseAllRed(circuit, upcomingPhase,
               overlapPedestrianSignals && !greenRightTurn && !greenLeftTurn);
@@ -1053,7 +1056,7 @@ public class TrafficSignalControllerTickerUtilities {
           upcomingPhase.addOffSignals(circuit.getBeaconSignals());
           upcomingPhase.addDontWalkSignals(circuit.getPedestrianSignals());
           upcomingPhase.addDontWalkSignals(circuit.getPedestrianAccessorySignals());
-          upcomingPhase.addWalkSignals(circuit.getNoTurnBlankoutSignals());
+          addBlankoutSignalsToPhase(world, circuit, upcomingPhase, greenRightTurn, greenLeftTurn);
         } else {
           addCircuitToPhaseAllRed(circuit, upcomingPhase,
               overlapPedestrianSignals && !greenRightTurn && !greenLeftTurn);
@@ -1136,7 +1139,8 @@ public class TrafficSignalControllerTickerUtilities {
     destinationPhase.addOffSignals(circuit.getBeaconSignals());
     destinationPhase.addDontWalkSignals(circuit.getPedestrianSignals());
     destinationPhase.addDontWalkSignals(circuit.getPedestrianAccessorySignals());
-    destinationPhase.addWalkSignals(circuit.getNoTurnBlankoutSignals());
+    addBlankoutSignalsToPhase(world, circuit, destinationPhase,
+        true, !leftSignals.getFirst().isEmpty());
   }
 
   /**
@@ -1413,6 +1417,36 @@ public class TrafficSignalControllerTickerUtilities {
       }
     }
     return standard + adjustForFya(left, hasLeftFya) + adjustForFya(right, hasRightFya);
+  }
+
+  private static void addBlankoutSignalsToPhase(World world,
+      TrafficSignalControllerCircuit circuit,
+      TrafficSignalPhase phase,
+      boolean rightTurnAllowed,
+      boolean leftTurnAllowed) {
+    List<BlockPos> onSignals = new ArrayList<>();
+    List<BlockPos> offSignals = new ArrayList<>();
+    for (BlockPos pos : circuit.getNoTurnBlankoutSignals()) {
+      boolean turnOff = false;
+      if (world != null) {
+        TileEntity te = world.getTileEntity(pos);
+        if (te instanceof TileEntityBlankoutBox) {
+          BlankoutBoxType type = ((TileEntityBlankoutBox) te).getBlankoutType();
+          if (type == BlankoutBoxType.NO_RIGHT_TURN && rightTurnAllowed) {
+            turnOff = true;
+          } else if (type == BlankoutBoxType.NO_LEFT_TURN && leftTurnAllowed) {
+            turnOff = true;
+          }
+        }
+      }
+      if (turnOff) {
+        offSignals.add(pos);
+      } else {
+        onSignals.add(pos);
+      }
+    }
+    phase.addWalkSignals(onSignals);
+    phase.addDontWalkSignals(offSignals);
   }
 
   public static boolean allCircuitsHaveSensors(TrafficSignalControllerCircuits circuits) {
