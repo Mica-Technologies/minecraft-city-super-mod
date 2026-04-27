@@ -712,6 +712,7 @@ public class TrafficSignalControllerTickerUtilities {
       // Directions with FYA left signals require 2+ detections to trigger a protected
       // left phase (single detection is assumed to clear on the permissive turn).
       int allLeftTurnLanesDetectionCount = getEffectiveLeftDemand(world, circuit, sensorSummary);
+      int allRightTurnLanesDetectionCount = getEffectiveRightDemand(world, circuit, sensorSummary);
       if (allLeftTurnLanesDetectionCount >= highestPriorityWaitingCount) {
         highestPriorityCircuitNumber = i;
         highestPriorityPhaseApplicability = TrafficSignalPhaseApplicability.ALL_LEFTS;
@@ -800,6 +801,7 @@ public class TrafficSignalControllerTickerUtilities {
       // Check circuit through/protecteds detection count for highest priority
       int throughsProtectedsDetectionCount = sensorSummary.getStandardTotal() +
           sensorSummary.getProtectedTotal() +
+          allRightTurnLanesDetectionCount +
           pedestrianOverlapRequestCount;
       if (circuit.getProtectedSignals().size() > 0 &&
           (currentBestIsLefts
@@ -812,7 +814,8 @@ public class TrafficSignalControllerTickerUtilities {
       }
 
       // Check circuit through/rights detection count for highest priority
-      int throughsDetectionCount = sensorSummary.getStandardTotal() + pedestrianOverlapRequestCount;
+      int throughsDetectionCount = sensorSummary.getStandardTotal() +
+          allRightTurnLanesDetectionCount + pedestrianOverlapRequestCount;
       if (currentBestIsLefts
           ? throughsDetectionCount > highestPriorityWaitingCount
           : throughsDetectionCount >= highestPriorityWaitingCount) {
@@ -823,7 +826,8 @@ public class TrafficSignalControllerTickerUtilities {
       }
 
       // Check circuit through/protected rights detection count for highest priority
-      int rawThroughsDetectionCount = sensorSummary.getStandardTotal();
+      int rawThroughsDetectionCount = sensorSummary.getStandardTotal() +
+          allRightTurnLanesDetectionCount;
       if (currentBestIsLefts
           ? rawThroughsDetectionCount > highestPriorityWaitingCount
           : rawThroughsDetectionCount >= highestPriorityWaitingCount) {
@@ -1339,6 +1343,34 @@ public class TrafficSignalControllerTickerUtilities {
     return effectiveCount;
   }
 
+  public static int getEffectiveRightDemand(World world, TrafficSignalControllerCircuit circuit,
+      TrafficSignalSensorSummary summary) {
+    if (summary.getRightTotal() == 0) {
+      return 0;
+    }
+
+    boolean fyaEast = false, fyaWest = false, fyaNorth = false, fyaSouth = false;
+    if (world != null) for (BlockPos signalPos : circuit.getFlashingRightSignals()) {
+      IBlockState blockState = world.getBlockState(signalPos);
+      if (blockState.getBlock() instanceof AbstractBlockControllableSignal) {
+        EnumFacing facing = blockState.getValue(BlockHorizontal.FACING);
+        switch (facing) {
+          case EAST:  fyaEast = true;  break;
+          case WEST:  fyaWest = true;  break;
+          case NORTH: fyaNorth = true; break;
+          case SOUTH: fyaSouth = true; break;
+        }
+      }
+    }
+
+    int effectiveCount = 0;
+    effectiveCount += adjustForFya(summary.getRightEast(), fyaEast);
+    effectiveCount += adjustForFya(summary.getRightWest(), fyaWest);
+    effectiveCount += adjustForFya(summary.getRightNorth(), fyaNorth);
+    effectiveCount += adjustForFya(summary.getRightSouth(), fyaSouth);
+    return effectiveCount;
+  }
+
   private static int adjustForFya(int leftCount, boolean hasFya) {
     if (hasFya && leftCount <= 1) {
       return 0; // Single detection with FYA available — assume permissive turn
@@ -1352,24 +1384,35 @@ public class TrafficSignalControllerTickerUtilities {
       EnumFacing direction) {
     int standard;
     int left;
+    int right;
     switch (direction) {
-      case EAST:  standard = summary.getStandardEast();  left = summary.getLeftEast();  break;
-      case WEST:  standard = summary.getStandardWest();  left = summary.getLeftWest();  break;
-      case NORTH: standard = summary.getStandardNorth(); left = summary.getLeftNorth(); break;
-      case SOUTH: standard = summary.getStandardSouth(); left = summary.getLeftSouth(); break;
+      case EAST:  standard = summary.getStandardEast();  left = summary.getLeftEast();  right = summary.getRightEast();  break;
+      case WEST:  standard = summary.getStandardWest();  left = summary.getLeftWest();  right = summary.getRightWest();  break;
+      case NORTH: standard = summary.getStandardNorth(); left = summary.getLeftNorth(); right = summary.getRightNorth(); break;
+      case SOUTH: standard = summary.getStandardSouth(); left = summary.getLeftSouth(); right = summary.getRightSouth(); break;
       default: return 0;
     }
-    boolean hasFya = false;
+    boolean hasLeftFya = false;
     for (BlockPos signalPos : circuit.getFlashingLeftSignals()) {
       IBlockState blockState = world.getBlockState(signalPos);
       if (blockState.getBlock() instanceof AbstractBlockControllableSignal) {
         if (blockState.getValue(BlockHorizontal.FACING) == direction) {
-          hasFya = true;
+          hasLeftFya = true;
           break;
         }
       }
     }
-    return standard + adjustForFya(left, hasFya);
+    boolean hasRightFya = false;
+    for (BlockPos signalPos : circuit.getFlashingRightSignals()) {
+      IBlockState blockState = world.getBlockState(signalPos);
+      if (blockState.getBlock() instanceof AbstractBlockControllableSignal) {
+        if (blockState.getValue(BlockHorizontal.FACING) == direction) {
+          hasRightFya = true;
+          break;
+        }
+      }
+    }
+    return standard + adjustForFya(left, hasLeftFya) + adjustForFya(right, hasRightFya);
   }
 
   public static boolean allCircuitsHaveSensors(TrafficSignalControllerCircuits circuits) {
