@@ -5,8 +5,7 @@ import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBody
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.block.BlockHorizontal;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
+import com.micatechnologies.minecraft.csm.codeutils.CsmFontRenderer;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
@@ -163,7 +162,7 @@ public class TileEntityOverheadMessageSignRenderer
       return;
     }
 
-    FontRenderer fr = Minecraft.getMinecraft().fontRenderer;
+    CsmFontRenderer fr = CsmFontRenderer.electronicSign();
 
     float prevBX = OpenGlHelper.lastBrightnessX;
     float prevBY = OpenGlHelper.lastBrightnessY;
