@@ -805,7 +805,26 @@ public class TrafficSignalControllerTicker {
         // Create variable to store upcoming phase
         TrafficSignalPhase upcomingPhase = null;
 
-        // If phase recall is active, skip the phase change — hold current green
+        // Phase recall is active — same circuit, same category. But the signal
+        // arrangement might have changed (e.g., greenRightTurn flipped because
+        // vehicles entered/left the right turn detection zone). Rebuild the default
+        // phase and check for vehicle signal differences.
+        if (phaseRecall && originalPhase.getCircuit() > 0) {
+          TrafficSignalPhase rebuiltPhase =
+              TrafficSignalControllerTickerUtilities.getDefaultPhaseForCircuitNumber(
+                  circuits, overlaps, originalPhase.getCircuit(),
+                  overlapPedestrianSignals, world);
+          if (TrafficSignalControllerTickerUtilities.hasVehicleSignalConflict(
+              originalPhase, rebuiltPhase)) {
+            upcomingPhase = rebuiltPhase;
+          } else if (!rebuiltPhase.getGreenSignals().equals(originalPhase.getGreenSignals()) ||
+              !rebuiltPhase.getOffSignals().equals(originalPhase.getOffSignals()) ||
+              !rebuiltPhase.getFyaSignals().equals(originalPhase.getFyaSignals())) {
+            nextPhase = rebuiltPhase;
+          }
+        }
+
+        // If phase recall is not active, check for phase change
         if (!phaseRecall) {
           // If the current phase priority indicator is different than the upcoming phase priority
           // indicator, then we need to change phases
