@@ -68,13 +68,13 @@ public class TileEntityOverheadSpeedLimitRenderer
 
     float rotY = 0;
     switch (facing) {
-      case SOUTH:
+      case NORTH:
         rotY = 0;
         break;
       case WEST:
         rotY = 90;
         break;
-      case NORTH:
+      case SOUTH:
         rotY = 180;
         break;
       case EAST:
