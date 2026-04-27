@@ -62,22 +62,22 @@ jobs:
 
       - name: Save Mod Name to GITHUB_ENV
         run: |
-          modName=$(${{github.workspace}}/gradlew -q printModName)
+          modName=$(${{github.workspace}}/gradlew -q printModName | xargs)
           echo "MOD_NAME=$modName" >> $GITHUB_ENV
 
       - name: Save Mod Version to GITHUB_ENV
         run: |
-          modVersion=$(${{github.workspace}}/gradlew -q printModVersion)
+          modVersion=$(${{github.workspace}}/gradlew -q printModVersion | xargs)
           echo "MOD_VERSION=$modVersion" >> $GITHUB_ENV
 
       - name: Save Mod Archive Base Name to GITHUB_ENV
         run: |
-          modArchiveBaseName=$(${{github.workspace}}/gradlew -q printArchivesBaseName)
+          modArchiveBaseName=$(${{github.workspace}}/gradlew -q printArchivesBaseName | xargs)
           echo "MOD_ARCHIVE_BASE_NAME=$modArchiveBaseName" >> $GITHUB_ENV
 
       - name: Save Minecraft Version to GITHUB_ENV
         run: |
-          minecraftVersion=$(${{github.workspace}}/gradlew -q printMinecraftVersion)
+          minecraftVersion=$(${{github.workspace}}/gradlew -q printMinecraftVersion | xargs)
           echo "MINECRAFT_VERSION=$minecraftVersion" >> $GITHUB_ENV
 
       - name: Copy Assembled Mod Jar to GitHub Actions Workspace
