@@ -1,6 +1,8 @@
 package com.micatechnologies.minecraft.csm.codeutils;
 
 import com.micatechnologies.minecraft.csm.CsmConfig;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockPreemptBeacon;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockSnowBeacon;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficAccessoryNSEWUD;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficSignalFatigueMitigator1;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficSignalFatigueMitigator2;
@@ -8,6 +10,7 @@ import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficSignalF
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficSignalFatigueMitigator4;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficStreetNameSignMount;
 import com.micatechnologies.minecraft.csm.trafficsignals.AbstractBlockControllableCrosswalkSignal;
+import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableTattleTaleBeacon;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignalHead;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkDoubleWordedBaseMount;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableCrosswalkSignalNew;
@@ -142,7 +145,9 @@ public abstract class AbstractBlockTrafficPole extends AbstractBlockRotatableNSE
           BlockVine.class, BlockCarpet.class, BlockTorch.class, BlockRedstoneWire.class,
           BlockRailBase.class, BlockCactus.class, BlockReed.class, BlockWeb.class,
           BlockBlankoutBox.class,
-          com.micatechnologies.minecraft.csm.trafficaccessories.BlockLaneControlSignal.class};
+          com.micatechnologies.minecraft.csm.trafficaccessories.BlockLaneControlSignal.class,
+          BlockSnowBeacon.class, BlockPreemptBeacon.class,
+          BlockControllableTattleTaleBeacon.class};
 
 
   /**
