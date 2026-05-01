@@ -1,0 +1,157 @@
+{
+	"credit": "Made with Blockbench",
+	"textures": {
+		"0": "csm:blocks/trafficsigns/absolutely_nothing_sign"
+	},
+	"elements": [
+		{
+			"from": [
+				-16,
+				13,
+				29.75
+			],
+			"to": [
+				22.75,
+				15.5,
+				31.25
+			],
+			"rotation": {
+				"angle": 0,
+				"axis": "y",
+				"origin": [
+					8,
+					0.25,
+					20.5
+				]
+			},
+			"faces": {
+				"north": {
+					"uv": [
+						4,
+						0,
+						0,
+						16
+					],
+					"rotation": 90,
+					"texture": "#0"
+				},
+				"east": {
+					"uv": [
+						4,
+						0,
+						0,
+						16
+					],
+					"rotation": 270,
+					"texture": "#0"
+				},
+				"south": {
+					"uv": [
+						4,
+						0,
+						0,
+						16
+					],
+					"rotation": 270,
+					"texture": "#0"
+				},
+				"west": {
+					"uv": [
+						4,
+						0,
+						0,
+						16
+					],
+					"rotation": 270,
+					"texture": "#0"
+				},
+				"up": {
+					"uv": [
+						4,
+						0,
+						0,
+						16
+					],
+					"rotation": 270,
+					"texture": "#0"
+				},
+				"down": {
+					"uv": [
+						4,
+						0,
+						0,
+						16
+					],
+					"rotation": 270,
+					"texture": "#0"
+				}
+			}
+		}
+	],
+	"display": {
+		"thirdperson_righthand": {
+			"scale": [
+				0.3,
+				0.3,
+				0.3
+			]
+		},
+		"thirdperson_lefthand": {
+			"scale": [
+				0.3,
+				0.3,
+				0.3
+			]
+		},
+		"firstperson_righthand": {
+			"rotation": [
+				0,
+				180,
+				0
+			],
+			"scale": [
+				0.3,
+				0.3,
+				0.3
+			]
+		},
+		"firstperson_lefthand": {
+			"scale": [
+				0.3,
+				0.3,
+				0.3
+			]
+		},
+		"gui": {
+			"translation": [
+				-1.25,
+				0.5,
+				0
+			],
+			"scale": [
+				0.3,
+				0.3,
+				0.3
+			]
+		},
+		"head": {
+			"scale": [
+				0.3,
+				0.3,
+				0.3
+			]
+		},
+		"fixed": {
+			"translation": [
+				4.5,
+				0,
+				0
+			],
+			"scale": [
+				0.3,
+				0.3,
+				0.3
+			]
+		}
+	}
+}
