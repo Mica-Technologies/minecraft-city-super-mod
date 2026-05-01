@@ -29,6 +29,10 @@
         "y": 270
       }
     },
+    "powered": {
+      "true": {},
+      "false": {}
+    },
     "inventory": [
       {}
     ],

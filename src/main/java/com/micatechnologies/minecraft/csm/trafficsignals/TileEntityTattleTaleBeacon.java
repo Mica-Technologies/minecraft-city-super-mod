@@ -5,6 +5,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
@@ -18,6 +19,13 @@ import net.minecraft.world.World;
  * @since 1.0
  */
 public class TileEntityTattleTaleBeacon extends TileEntity {
+
+  @Override
+  public AxisAlignedBB getRenderBoundingBox() {
+    return new AxisAlignedBB(
+        pos.getX() - 1.0, pos.getY() - 1.0, pos.getZ() - 1.0,
+        pos.getX() + 2.0, pos.getY() + 2.0, pos.getZ() + 2.0);
+  }
 
   private static final int LEFT_VAL = 0;
   private static final int AHEAD_VAL = 1;

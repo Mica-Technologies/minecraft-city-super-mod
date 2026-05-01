@@ -3,6 +3,8 @@ package com.micatechnologies.minecraft.csm.tabs;
 import com.micatechnologies.minecraft.csm.CsmRegistry;
 import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockMiniSolarPanel;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockPreemptBeacon;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockSnowBeacon;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficAccessoryBackplate;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficAccessoryBackplateFitted;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficAccessoryNSEW;
@@ -172,10 +174,6 @@ public class CsmTabTrafficAccessories extends CsmTab {
       new AxisAlignedBB(0.250000, 0.250000, -1.000000, 0.750000, 0.750000, 1.000000);
   private static final AxisAlignedBB BB_TRAFFIC_POLE_VERT_DBL =
       new AxisAlignedBB(0.125000, 0.125000, -1.000000, 0.875000, 0.875000, 1.000000);
-  private static final AxisAlignedBB BB_TL_SNOW_BEACON =
-      new AxisAlignedBB(-0.500000, -1.000000, 0.250000, 1.375000, 0.631250, 0.750000);
-  private static final AxisAlignedBB BB_TL_PREEMPT_BEACON =
-      new AxisAlignedBB(0.000000, -0.421875, 0.406250, 0.562500, 0.156250, 0.593750);
   private static final AxisAlignedBB BB_TL_INTERCONNECT_MODULE_1 =
       new AxisAlignedBB(0.325000, 0.125000, 1.100000, 0.700000, 0.500000, 1.515625);
   private static final AxisAlignedBB BB_TL_INTERCONNECT_MODULE_2 =
@@ -447,8 +445,8 @@ public class CsmTabTrafficAccessories extends CsmTab {
     initTabBlock(new BlockTrafficAccessoryNSEWUD("tlhangmount", BB_TL_HANG_MOUNT, BlockRenderLayer.CUTOUT_MIPPED, 2F, false));
     initTabBlock(new BlockTrafficAccessoryNSEWUD("tlinterconnectmodule1", BB_TL_INTERCONNECT_MODULE_1, BlockRenderLayer.CUTOUT_MIPPED, 2F, false));
     initTabBlock(new BlockTrafficAccessoryNSEWUD("tlinterconnectmodule2", BB_TL_INTERCONNECT_MODULE_2, BlockRenderLayer.CUTOUT_MIPPED, 2F, false));
-    initTabBlock(new BlockTrafficAccessoryNSEWUD("tlpreemptbeacon", BB_TL_PREEMPT_BEACON, BlockRenderLayer.CUTOUT_MIPPED, 2F, false));
-    initTabBlock(new BlockTrafficAccessoryNSEWUD("tlsnowbeacon", BB_TL_SNOW_BEACON, BlockRenderLayer.CUTOUT_MIPPED, 2F, false));
+    initTabBlock(BlockPreemptBeacon.class, fmlPreInitializationEvent);
+    initTabBlock(BlockSnowBeacon.class, fmlPreInitializationEvent);
 
     // --- Class-based: Street Name Signs (NSEW, not NSEWUD) ---
     initTabBlock(BlockTrafficStreetNameSign.class, fmlPreInitializationEvent);

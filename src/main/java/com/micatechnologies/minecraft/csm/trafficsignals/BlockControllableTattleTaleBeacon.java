@@ -9,10 +9,10 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.World;
 
 /**
  * Tattle-tale beacon block for traffic signal confirmation. Provides a small indicator light that
@@ -26,6 +26,11 @@ public class BlockControllableTattleTaleBeacon extends AbstractBlockControllable
 
   public BlockControllableTattleTaleBeacon() {
     super(Material.ROCK);
+  }
+
+  @Override
+  public int getLightValue(IBlockState state, IBlockAccess world, BlockPos pos) {
+    return 0;
   }
 
   @Override
