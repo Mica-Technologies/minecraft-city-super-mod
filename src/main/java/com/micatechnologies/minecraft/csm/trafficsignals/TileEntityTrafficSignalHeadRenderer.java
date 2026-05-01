@@ -50,6 +50,8 @@ public class TileEntityTrafficSignalHeadRenderer extends
 
   // Per-tile-entity display list cache (keyed by BlockPos to avoid shared state bug)
   private final Map<BlockPos, Integer> displayListCache = new HashMap<>();
+  private final Map<BlockPos, Integer> lastColorStateCache = new HashMap<>();
+  private final Map<BlockPos, Integer> lastLitMaskCache = new HashMap<>();
 
   /**
    * Cleans up the cached display list for a signal head at the given position.
@@ -61,6 +63,8 @@ public class TileEntityTrafficSignalHeadRenderer extends
     if (displayList != null) {
       GL11.glDeleteLists(displayList, 1);
     }
+    lastColorStateCache.remove(pos);
+    lastLitMaskCache.remove(pos);
   }
 
   @Override
@@ -218,14 +222,25 @@ public class TileEntityTrafficSignalHeadRenderer extends
     // aligned instead (no push-back).
     float zPushBack = TrafficSignalBoundingBoxHelper.computeZPushBack(sectionSizes);
 
+    int litMask = 0;
+    for (int i = 0; i < sectionInfos.length; i++) {
+      if (sectionInfos[i].isBulbLit()) litMask |= (1 << i);
+    }
+
     BlockPos pos = te.getPos();
     Integer displayList = displayListCache.get(pos);
-    if (displayList == null || te.isStateDirty()) {
+    Integer lastColor = lastColorStateCache.get(pos);
+    Integer lastLit = lastLitMaskCache.get(pos);
+    if (displayList == null || te.isStateDirty()
+        || lastColor == null || lastColor != signalColorState
+        || lastLit == null || lastLit != litMask) {
       if (displayList != null) {
         GL11.glDeleteLists(displayList, 1);
       }
       displayList = GL11.glGenLists(1);
       displayListCache.put(pos, displayList);
+      lastColorStateCache.put(pos, signalColorState);
+      lastLitMaskCache.put(pos, litMask);
       GL11.glNewList(displayList, GL11.GL_COMPILE);
       renderStaticParts(sectionInfos, sectionYPositions, sectionXPositions, sectionSizes, horizontal, zPushBack);
       GL11.glEndList();
@@ -243,6 +258,8 @@ public class TileEntityTrafficSignalHeadRenderer extends
     long gameMillis = CsmRenderUtils.gameMillis(te.getWorld(), partialTicks);
     renderBulbs(sectionInfos, sectionYPositions, sectionXPositions, sectionSizes, zPushBack,
         gameMillis);
+
+    // renderVisorGlow(sectionInfos, sectionYPositions, sectionXPositions, sectionSizes, zPushBack);
 
     // Restore world lightmap for mount hardware so brackets match world lighting.
     OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, worldLightX, worldLightY);
@@ -323,10 +340,22 @@ public class TileEntityTrafficSignalHeadRenderer extends
       RenderHelper.addBoxesToBuffer(doorData, buffer,
           doorColor.getRed(), doorColor.getGreen(), doorColor.getBlue(), 1.0f, xOffset, yOffset, zPushBack);
 
+      float innerR = VISOR_INNER_R, innerG = VISOR_INNER_G, innerB = VISOR_INNER_B;
+      if (sectionInfo.isBulbLit()) {
+        TrafficSignalBulbColor bulbColor = sectionInfo.getBulbCustomColor();
+        switch (bulbColor) {
+          case RED:    innerR = 0.50f; innerG = 0.08f; innerB = 0.02f; break;
+          case YELLOW: innerR = 0.60f; innerG = 0.40f; innerB = 0.03f; break;
+          case GREEN:  innerR = 0.12f; innerG = 0.70f; innerB = 0.22f; break;
+          default: break;
+        }
+      }
+
       addVisorQuadsToBuffer(visorType, buffer,
           Math.min(1.0f, visorColor.getRed() * VISOR_TINT_SCALE + VISOR_TINT_BASE),
           Math.min(1.0f, visorColor.getGreen() * VISOR_TINT_SCALE + VISOR_TINT_BASE),
           Math.min(1.0f, visorColor.getBlue() * VISOR_TINT_SCALE + VISOR_TINT_BASE),
+          innerR, innerG, innerB,
           1.0f, xOffset, yOffset, sectionSizes[i], zPushBack);
     }
     tessellator.draw();
@@ -344,8 +373,8 @@ public class TileEntityTrafficSignalHeadRenderer extends
   private static final float VISOR_CENTER_X = 8.0f;
   private static final float VISOR_CENTER_Y = 6.0f;
 
-  // Interior color for all visors — true black so it is always darker than any visor
-  // exterior color (including glossy black with tint applied).
+  // Default interior color for visors (unlit sections). Lit sections override with a
+  // tinted color matching the bulb to simulate reflected light inside the visor.
   private static final float VISOR_INNER_R = 0.0f;
   private static final float VISOR_INNER_G = 0.0f;
   private static final float VISOR_INNER_B = 0.0f;
@@ -362,71 +391,22 @@ public class TileEntityTrafficSignalHeadRenderer extends
   private static final float LOUVER_TILT_COMPENSATION_PER_UNIT = 0.05f;
 
   private void addVisorQuadsToBuffer(TrafficSignalVisorType visorType, BufferBuilder buffer,
-      float red, float green, float blue, float alpha, float xOffset, float yOffset,
+      float red, float green, float blue,
+      float innerR, float innerG, float innerB,
+      float alpha, float xOffset, float yOffset,
       int sectionSize, float zPushBack) {
-    List<RenderHelper.Box> visorData;
-    boolean applyTilt = true;
-    switch (visorType) {
-      case CIRCLE:
-        visorData = selectVisorData(TrafficSignalVertexData.CIRCLE_VISOR_VERTEX_DATA,
-            TrafficSignalVertexData.CIRCLE_VISOR_8INCH_VERTEX_DATA,
-            TrafficSignalVertexData.CIRCLE_VISOR_4INCH_VERTEX_DATA, sectionSize);
-        break;
-      case TUNNEL:
-        visorData = selectVisorData(TrafficSignalVertexData.TUNNEL_VISOR_VERTEX_DATA,
-            TrafficSignalVertexData.TUNNEL_VISOR_8INCH_VERTEX_DATA,
-            TrafficSignalVertexData.TUNNEL_VISOR_4INCH_VERTEX_DATA, sectionSize);
-        break;
-      case CUTAWAY:
-        visorData = selectVisorData(TrafficSignalVertexData.CAP_VISOR_VERTEX_DATA,
-            TrafficSignalVertexData.CAP_VISOR_8INCH_VERTEX_DATA,
-            TrafficSignalVertexData.CAP_VISOR_4INCH_VERTEX_DATA, sectionSize);
-        break;
-      case BOTH_LOUVERED:
-        visorData = selectVisorData(TrafficSignalVertexData.BOTH_LOUVERED_VISOR_VERTEX_DATA,
-            TrafficSignalVertexData.BOTH_LOUVERED_VISOR_8INCH_VERTEX_DATA,
-            TrafficSignalVertexData.BOTH_LOUVERED_VISOR_4INCH_VERTEX_DATA, sectionSize);
-        break;
-      case VERTICAL_LOUVERED:
-        visorData = selectVisorData(TrafficSignalVertexData.VERTICAL_LOUVERED_VISOR_VERTEX_DATA,
-            TrafficSignalVertexData.VERTICAL_LOUVERED_VISOR_8INCH_VERTEX_DATA,
-            TrafficSignalVertexData.VERTICAL_LOUVERED_VISOR_4INCH_VERTEX_DATA, sectionSize);
-        break;
-      case HORIZONTAL_LOUVERED:
-        visorData = selectVisorData(TrafficSignalVertexData.HORIZONTAL_LOUVERED_VISOR_VERTEX_DATA,
-            TrafficSignalVertexData.HORIZONTAL_LOUVERED_VISOR_8INCH_VERTEX_DATA,
-            TrafficSignalVertexData.HORIZONTAL_LOUVERED_VISOR_4INCH_VERTEX_DATA, sectionSize);
-        break;
-      case BARLO:
-        visorData = selectVisorData(TrafficSignalVertexData.TUNNEL_VISOR_VERTEX_DATA,
-            TrafficSignalVertexData.TUNNEL_VISOR_8INCH_VERTEX_DATA,
-            TrafficSignalVertexData.TUNNEL_VISOR_4INCH_VERTEX_DATA, sectionSize);
-        break;
-      case BARLO_VERTICAL:
-        visorData = selectVisorData(TrafficSignalVertexData.CIRCLE_VISOR_VERTEX_DATA,
-            TrafficSignalVertexData.CIRCLE_VISOR_8INCH_VERTEX_DATA,
-            TrafficSignalVertexData.CIRCLE_VISOR_4INCH_VERTEX_DATA, sectionSize);
-        break;
-      case NONE:
-        visorData = selectVisorData(TrafficSignalVertexData.NONE_VISOR_VERTEX_DATA,
-            TrafficSignalVertexData.NONE_VISOR_8INCH_VERTEX_DATA,
-            TrafficSignalVertexData.NONE_VISOR_4INCH_VERTEX_DATA, sectionSize);
-        applyTilt = false;
-        break;
-      default:
-        return;
-    }
+    List<RenderHelper.Box> visorData = resolveVisorData(visorType, sectionSize);
+    if (visorData == null) return;
+    boolean applyTilt = visorType != TrafficSignalVisorType.NONE;
     if (applyTilt) {
-      // Compute per-section louver tilt adjustment: lower sections (negative yOffset)
-      // get more tilt, upper sections (positive yOffset) get less.
       float louverTiltAdjust = -yOffset * LOUVER_TILT_COMPENSATION_PER_UNIT;
       RenderHelper.addTiltedBoxesToBufferDualColor(visorData, buffer,
-          red, green, blue, VISOR_INNER_R, VISOR_INNER_G, VISOR_INNER_B, alpha,
+          red, green, blue, innerR, innerG, innerB, alpha,
           xOffset, yOffset, zPushBack, VISOR_PIVOT_Z + zPushBack, VISOR_TILT_DEGREES,
           VISOR_CENTER_X, VISOR_CENTER_Y, louverTiltAdjust);
     } else {
       RenderHelper.addBoxesToBufferDualColor(visorData, buffer,
-          red, green, blue, VISOR_INNER_R, VISOR_INNER_G, VISOR_INNER_B, alpha,
+          red, green, blue, innerR, innerG, innerB, alpha,
           xOffset, yOffset, zPushBack, VISOR_CENTER_X, VISOR_CENTER_Y);
     }
   }
@@ -449,6 +429,50 @@ public class TileEntityTrafficSignalHeadRenderer extends
     if (sectionSize <= 4) return data4;
     if (sectionSize <= 8) return data8;
     return data12;
+  }
+
+  private static List<RenderHelper.Box> resolveVisorData(TrafficSignalVisorType visorType,
+      int sectionSize) {
+    switch (visorType) {
+      case CIRCLE:
+        return selectVisorData(TrafficSignalVertexData.CIRCLE_VISOR_VERTEX_DATA,
+            TrafficSignalVertexData.CIRCLE_VISOR_8INCH_VERTEX_DATA,
+            TrafficSignalVertexData.CIRCLE_VISOR_4INCH_VERTEX_DATA, sectionSize);
+      case TUNNEL:
+        return selectVisorData(TrafficSignalVertexData.TUNNEL_VISOR_VERTEX_DATA,
+            TrafficSignalVertexData.TUNNEL_VISOR_8INCH_VERTEX_DATA,
+            TrafficSignalVertexData.TUNNEL_VISOR_4INCH_VERTEX_DATA, sectionSize);
+      case CUTAWAY:
+        return selectVisorData(TrafficSignalVertexData.CAP_VISOR_VERTEX_DATA,
+            TrafficSignalVertexData.CAP_VISOR_8INCH_VERTEX_DATA,
+            TrafficSignalVertexData.CAP_VISOR_4INCH_VERTEX_DATA, sectionSize);
+      case BOTH_LOUVERED:
+        return selectVisorData(TrafficSignalVertexData.BOTH_LOUVERED_VISOR_VERTEX_DATA,
+            TrafficSignalVertexData.BOTH_LOUVERED_VISOR_8INCH_VERTEX_DATA,
+            TrafficSignalVertexData.BOTH_LOUVERED_VISOR_4INCH_VERTEX_DATA, sectionSize);
+      case VERTICAL_LOUVERED:
+        return selectVisorData(TrafficSignalVertexData.VERTICAL_LOUVERED_VISOR_VERTEX_DATA,
+            TrafficSignalVertexData.VERTICAL_LOUVERED_VISOR_8INCH_VERTEX_DATA,
+            TrafficSignalVertexData.VERTICAL_LOUVERED_VISOR_4INCH_VERTEX_DATA, sectionSize);
+      case HORIZONTAL_LOUVERED:
+        return selectVisorData(TrafficSignalVertexData.HORIZONTAL_LOUVERED_VISOR_VERTEX_DATA,
+            TrafficSignalVertexData.HORIZONTAL_LOUVERED_VISOR_8INCH_VERTEX_DATA,
+            TrafficSignalVertexData.HORIZONTAL_LOUVERED_VISOR_4INCH_VERTEX_DATA, sectionSize);
+      case BARLO:
+        return selectVisorData(TrafficSignalVertexData.TUNNEL_VISOR_VERTEX_DATA,
+            TrafficSignalVertexData.TUNNEL_VISOR_8INCH_VERTEX_DATA,
+            TrafficSignalVertexData.TUNNEL_VISOR_4INCH_VERTEX_DATA, sectionSize);
+      case BARLO_VERTICAL:
+        return selectVisorData(TrafficSignalVertexData.CIRCLE_VISOR_VERTEX_DATA,
+            TrafficSignalVertexData.CIRCLE_VISOR_8INCH_VERTEX_DATA,
+            TrafficSignalVertexData.CIRCLE_VISOR_4INCH_VERTEX_DATA, sectionSize);
+      case NONE:
+        return selectVisorData(TrafficSignalVertexData.NONE_VISOR_VERTEX_DATA,
+            TrafficSignalVertexData.NONE_VISOR_8INCH_VERTEX_DATA,
+            TrafficSignalVertexData.NONE_VISOR_4INCH_VERTEX_DATA, sectionSize);
+      default:
+        return null;
+    }
   }
 
   /**
@@ -556,6 +580,102 @@ public class TileEntityTrafficSignalHeadRenderer extends
         zPushBack, gameMillis);
   }
 
+  private static final float VISOR_GLOW_CORE_ALPHA = 0.18f;
+  private static final float VISOR_GLOW_HALO_ALPHA = 0.07f;
+  private static final float GLOW_INNER_FRAC = 0.05f;
+
+  private static final int GLOW_SEGMENTS = 16;
+  private static final float[] GLOW_COS = new float[GLOW_SEGMENTS];
+  private static final float[] GLOW_SIN = new float[GLOW_SEGMENTS];
+  static {
+    for (int i = 0; i < GLOW_SEGMENTS; i++) {
+      float angle = (float) (2.0 * Math.PI * i / GLOW_SEGMENTS);
+      GLOW_COS[i] = (float) Math.cos(angle);
+      GLOW_SIN[i] = (float) Math.sin(angle);
+    }
+  }
+
+  private void renderVisorGlow(TrafficSignalSectionInfo[] sectionInfos,
+      float[] sectionYPositions, float[] sectionXPositions, int[] sectionSizes,
+      float zPushBack) {
+    boolean anyLit = false;
+    for (TrafficSignalSectionInfo info : sectionInfos) {
+      if (info.isBulbLit()) { anyLit = true; break; }
+    }
+    if (!anyLit) return;
+
+    GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
+    GlStateManager.disableTexture2D();
+    GlStateManager.depthMask(false);
+
+    float tiltSlope = (float) Math.tan(Math.toRadians(VISOR_TILT_DEGREES));
+    float pivotZ = VISOR_PIVOT_Z + zPushBack;
+
+    Tessellator tessellator = Tessellator.getInstance();
+    BufferBuilder buffer = tessellator.getBuffer();
+    buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
+
+    for (int i = 0; i < sectionInfos.length; i++) {
+      TrafficSignalSectionInfo info = sectionInfos[i];
+      if (!info.isBulbLit()) continue;
+
+      TrafficSignalBulbColor bulbColor = info.getBulbCustomColor();
+      float r, g, b;
+      switch (bulbColor) {
+        case RED:    r = 1.0f;  g = 0.2f;  b = 0.1f;  break;
+        case YELLOW: r = 1.0f;  g = 0.8f;  b = 0.15f; break;
+        case GREEN:  r = 0.15f; g = 1.0f;  b = 0.3f;  break;
+        default:     continue;
+      }
+
+      float fullSize = sectionSizes[i];
+      float sizeScale = fullSize / 12f;
+      float sectionOffset = (12f - fullSize) / 2f;
+      float cx = 2f + sectionXPositions[i] + sectionOffset + fullSize / 2f;
+      float cy = sectionYPositions[i] + sectionOffset + fullSize / 2f;
+
+      float coreRadius = fullSize * 0.42f;
+      float coreZ = VISOR_PIVOT_Z + (1.0f - VISOR_PIVOT_Z) * sizeScale + zPushBack;
+      float coreYShift = -(pivotZ - coreZ) * tiltSlope;
+      emitGlowDisk(buffer, cx, cy + coreYShift, coreZ, coreRadius, r, g, b, VISOR_GLOW_CORE_ALPHA);
+
+      float haloRadius = fullSize * 0.70f;
+      float haloZ = VISOR_PIVOT_Z + (-1.0f - VISOR_PIVOT_Z) * sizeScale + zPushBack;
+      float haloYShift = -(pivotZ - haloZ) * tiltSlope;
+      emitGlowDisk(buffer, cx, cy + haloYShift, haloZ, haloRadius, r, g, b, VISOR_GLOW_HALO_ALPHA);
+    }
+
+    tessellator.draw();
+
+    GlStateManager.depthMask(true);
+    GlStateManager.enableTexture2D();
+    GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+  }
+
+  private static void emitGlowDisk(BufferBuilder buffer, float cx, float cy, float z,
+      float radius, float r, float g, float b, float centerAlpha) {
+    float iR = radius * GLOW_INNER_FRAC;
+
+    // Outer ring: quads from inner edge (bright) to outer edge (transparent)
+    for (int i = 0; i < GLOW_SEGMENTS; i++) {
+      int next = (i + 1) % GLOW_SEGMENTS;
+      buffer.pos(cx + radius * GLOW_COS[i], cy + radius * GLOW_SIN[i], z)
+          .color(r, g, b, 0f).endVertex();
+      buffer.pos(cx + radius * GLOW_COS[next], cy + radius * GLOW_SIN[next], z)
+          .color(r, g, b, 0f).endVertex();
+      buffer.pos(cx + iR * GLOW_COS[next], cy + iR * GLOW_SIN[next], z)
+          .color(r, g, b, centerAlpha).endVertex();
+      buffer.pos(cx + iR * GLOW_COS[i], cy + iR * GLOW_SIN[i], z)
+          .color(r, g, b, centerAlpha).endVertex();
+    }
+
+    // Solid inner disk
+    buffer.pos(cx - iR, cy - iR, z).color(r, g, b, centerAlpha).endVertex();
+    buffer.pos(cx + iR, cy - iR, z).color(r, g, b, centerAlpha).endVertex();
+    buffer.pos(cx + iR, cy + iR, z).color(r, g, b, centerAlpha).endVertex();
+    buffer.pos(cx - iR, cy + iR, z).color(r, g, b, centerAlpha).endVertex();
+  }
+
   private static boolean isBarloVisor(TrafficSignalVisorType type) {
     return type == TrafficSignalVisorType.BARLO || type == TrafficSignalVisorType.BARLO_VERTICAL;
   }
@@ -644,11 +764,13 @@ public class TileEntityTrafficSignalHeadRenderer extends
 
     float x1, y1, x2, y2;
     if (visorType == TrafficSignalVisorType.BARLO_VERTICAL) {
-      // Vertical bar: narrow in X, tall in Y
+      // Vertical bar: narrow in X, tall in Y. Shortened vs horizontal to account for
+      // the 9° downward visor tilt shifting the top edge closer to the body.
+      float vertLong = 9.0f * scale;
       x1 = sectionCenterX - barShort / 2f;
-      y1 = sectionCenterY - barLong / 2f;
+      y1 = sectionCenterY - vertLong / 2f;
       x2 = sectionCenterX + barShort / 2f;
-      y2 = sectionCenterY + barLong / 2f;
+      y2 = sectionCenterY + vertLong / 2f;
     } else {
       // Horizontal bar: wide in X, narrow in Y
       x1 = sectionCenterX - barLong / 2f;
