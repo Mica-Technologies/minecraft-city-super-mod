@@ -6,6 +6,7 @@ import com.micatechnologies.minecraft.csm.codeutils.BlockUtils;
 import com.micatechnologies.minecraft.csm.codeutils.DirectionEight;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmNoSnowAccumulation;
 import com.micatechnologies.minecraft.csm.codeutils.RotationUtils;
+import com.micatechnologies.minecraft.csm.codeutils.SignShift;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -15,6 +16,7 @@ import net.minecraft.block.BlockSlab;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
+import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.BlockRenderLayer;
@@ -30,7 +32,8 @@ public abstract class AbstractBlockSign extends AbstractBlockRotatableHZEight
     implements ICsmNoSnowAccumulation {
 
   public static final PropertyBool DOWNWARD = PropertyBool.create("downward");
-  public static final PropertyBool SETBACK = PropertyBool.create("setback");
+  public static final PropertyEnum<SignShift> SHIFT =
+      PropertyEnum.create("shift", SignShift.class);
 
   private static final ConcurrentHashMap<Long, Boolean> SETBACK_CACHE = new ConcurrentHashMap<>();
 
@@ -51,21 +54,39 @@ public abstract class AbstractBlockSign extends AbstractBlockRotatableHZEight
    */
   @Override
   public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-    AxisAlignedBB bb =
-        new AxisAlignedBB(0.000000, 0.000000, 0.000000, 1.000000, 1.000000, 0.218750);
+    SignShift shift = state.getValue(SHIFT);
+    double minY = state.getValue(DOWNWARD) ? -0.5 : 0.0;
 
-    boolean isDownward = state.getValue(DOWNWARD);
-    boolean isSetback = state.getValue(SETBACK);
-
-    if (isDownward) {
-      bb = new AxisAlignedBB(0.000000, -0.500000, 0.000000, 1.000000, 1.000000, 0.218750);
+    switch (shift) {
+      case SETBACK:
+        // Sign panel at z~12.5 model units; 5-unit deep box centered on sign
+        return new AxisAlignedBB(0, minY, 0.625, 1, 1, 0.9375);
+      case BACKTOBACK:
+        // Sign panel at z~28.5 model units; box extends past block edge to cover sign
+        return new AxisAlignedBB(0, 0, 0.6875, 1, 1, 1.8125);
+      default:
+        return new AxisAlignedBB(0, minY, 0, 1, 1, 0.21875);
     }
+  }
 
-    if (isSetback) {
-      bb = RotationUtils.rotateBoundingBoxByFacing(bb, EnumFacing.SOUTH);
+  @Override
+  @SuppressWarnings("deprecation")
+  @Nullable
+  public AxisAlignedBB getCollisionBoundingBox(IBlockState state, IBlockAccess worldIn,
+      BlockPos pos) {
+    IBlockState actualState = worldIn.getBlockState(pos).getActualState(worldIn, pos);
+    SignShift shift = actualState.getValue(SHIFT);
+
+    switch (shift) {
+      case BACKTOBACK:
+        return NULL_AABB;
+      case SETBACK:
+        double minY = actualState.getValue(DOWNWARD) ? -0.5 : 0.0;
+        AxisAlignedBB bb = new AxisAlignedBB(0, minY, 0.75, 1, 1, 0.8125);
+        return RotationUtils.rotateBoundingBoxByFacing(bb, actualState.getValue(FACING));
+      default:
+        return getBoundingBox(state, worldIn, pos);
     }
-
-    return bb;
   }
 
   /**
@@ -182,29 +203,59 @@ public abstract class AbstractBlockSign extends AbstractBlockRotatableHZEight
     return false;
   }
 
+  /**
+   * Determines the shift mode for this sign. Back-to-back is detected when the block directly
+   * behind this sign (opposite its facing direction) contains another {@link AbstractBlockSign}
+   * facing the opposite direction, and this sign has no structural support below (slab, sign, or
+   * traffic pole). Signs with support below never shift — only the unsupported partner shifts.
+   *
+   * <p>Back-to-back takes priority over signal-arm setback.
+   *
+   * @param source the block access
+   * @param pos    the position of this sign
+   *
+   * @return {@code true} if this sign should render in back-to-back mode
+   */
+  public boolean getShouldBackToBack(IBlockAccess source, BlockPos pos) {
+    IBlockState state = source.getBlockState(pos);
+    if (!(state.getBlock() instanceof AbstractBlockSign)) {
+      return false;
+    }
+    Block blockBelow = source.getBlockState(pos.down()).getBlock();
+    if (blockBelow instanceof BlockSlab || blockBelow instanceof AbstractBlockSign
+        || blockBelow instanceof AbstractBlockTrafficPole) {
+      return false;
+    }
+    DirectionEight facing = state.getValue(FACING);
+    if (facing.isDiagonal()) {
+      return false;
+    }
+    DirectionEight opposite = facing.getOpposite();
+    BlockPos behindPos = pos.add(opposite.getOffsetX(), 0, opposite.getOffsetZ());
+    IBlockState behindState = source.getBlockState(behindPos);
+    if (!(behindState.getBlock() instanceof AbstractBlockSign)) {
+      return false;
+    }
+    return behindState.getValue(FACING) == opposite;
+  }
+
   public boolean getShouldSetback(IBlockAccess source, BlockPos pos) {
-    // Priority 1: Check if the block is in front of a signal arm and should be set back
     if (getBlockIsInFrontOfSignalArm(source, pos)) {
       return true;
     }
 
-    // Priority 2: Check the sign directly above
     if (source.getBlockState(pos.up()).getBlock() instanceof AbstractBlockSign) {
-      // Only inherit setback if the sign above is in front of a signal arm
       if (getBlockIsInFrontOfSignalArm(source, pos.up())) {
         return true;
       }
     }
 
-    // Priority 3: Check the sign directly below
     if (source.getBlockState(pos.down()).getBlock() instanceof AbstractBlockSign) {
-      // Only inherit setback if the sign below is in front of a signal arm
       if (getBlockIsInFrontOfSignalArm(source, pos.down())) {
         return true;
       }
     }
 
-    // No valid reason for setback
     return false;
   }
 
@@ -221,7 +272,7 @@ public abstract class AbstractBlockSign extends AbstractBlockRotatableHZEight
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, DOWNWARD, SETBACK);
+    return new BlockStateContainer(this, FACING, DOWNWARD, SHIFT);
   }
 
   @Override
@@ -255,7 +306,16 @@ public abstract class AbstractBlockSign extends AbstractBlockRotatableHZEight
       IBlockAccess worldIn,
       @NotNull
       BlockPos pos) {
-    return state.withProperty(DOWNWARD, getBlockBelowIsSlab(worldIn, pos))
-        .withProperty(SETBACK, getSetbackCached(worldIn, pos));
+    SignShift shift;
+    if (getShouldBackToBack(worldIn, pos)) {
+      shift = SignShift.BACKTOBACK;
+    } else if (getSetbackCached(worldIn, pos)) {
+      shift = SignShift.SETBACK;
+    } else {
+      shift = SignShift.NONE;
+    }
+    return state.withProperty(DOWNWARD,
+            shift != SignShift.BACKTOBACK && getBlockBelowIsSlab(worldIn, pos))
+        .withProperty(SHIFT, shift);
   }
 }

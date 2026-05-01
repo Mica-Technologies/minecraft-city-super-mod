@@ -45,6 +45,10 @@ public enum DirectionEight implements IStringSerializable {
     return offsetZ;
   }
 
+  public boolean isDiagonal() {
+    return this == NE || this == NW || this == SE || this == SW;
+  }
+
   /** Returns the 180° opposite direction (S↔N, E↔W, NE↔SW, SE↔NW). */
   public DirectionEight getOpposite() {
     switch (this) {

@@ -137,10 +137,13 @@
         }
       }
     },
-    "setback": {
-      "false": {},
-      "true": {
+    "shift": {
+      "none": {},
+      "setback": {
         "model": "csm:trafficsigns/metal_signback_setback"
+      },
+      "backtoback": {
+        "model": "csm:trafficsigns/metal_signback_back_to_back"
       }
     },
     "normal": [
