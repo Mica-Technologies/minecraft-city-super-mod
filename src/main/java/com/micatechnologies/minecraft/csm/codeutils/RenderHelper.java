@@ -337,6 +337,181 @@ public class RenderHelper {
     buffer.pos(x1, y1, z2).color(br, bg, bb, alpha).endVertex();
   }
 
+  /**
+   * Emits ONLY the inner-colored faces of each box (the side faces that face the visor center,
+   * plus all faces of {@code innerOnly} boxes). Used to overlay lit visor interiors at fullbright
+   * over the world-lightmap pass that drew them dim. Vertex positions and per-face inside/outside
+   * decisions exactly match {@link #addBoxesToBufferDualColor} so the second pass overdraws the
+   * first cleanly with depth function GL_LEQUAL.
+   */
+  public static void addBoxesInnerFacesToBuffer(List<Box> boxes, BufferBuilder buffer,
+      float innerR, float innerG, float innerB,
+      float alpha, float xOffset, float yOffset, float zOffset,
+      float centerX, float centerY) {
+    for (Box box : boxes) {
+      float x1 = box.from[0] + xOffset, y1 = box.from[1] + yOffset, z1 = box.from[2] + zOffset;
+      float x2 = box.to[0] + xOffset, y2 = box.to[1] + yOffset, z2 = box.to[2] + zOffset;
+      float midX = (box.from[0] + box.to[0]) / 2f + xOffset;
+      float midY = (box.from[1] + box.to[1]) / 2f + yOffset;
+      float cx = centerX + xOffset;
+      float cy = centerY + yOffset;
+
+      if (box.innerOnly) {
+        // Front
+        buffer.pos(x1, y1, z2).color(innerR, innerG, innerB, alpha).endVertex();
+        buffer.pos(x2, y1, z2).color(innerR, innerG, innerB, alpha).endVertex();
+        buffer.pos(x2, y2, z2).color(innerR, innerG, innerB, alpha).endVertex();
+        buffer.pos(x1, y2, z2).color(innerR, innerG, innerB, alpha).endVertex();
+        // Back
+        buffer.pos(x2, y1, z1).color(innerR, innerG, innerB, alpha).endVertex();
+        buffer.pos(x1, y1, z1).color(innerR, innerG, innerB, alpha).endVertex();
+        buffer.pos(x1, y2, z1).color(innerR, innerG, innerB, alpha).endVertex();
+        buffer.pos(x2, y2, z1).color(innerR, innerG, innerB, alpha).endVertex();
+        // Left
+        buffer.pos(x1, y1, z1).color(innerR, innerG, innerB, alpha).endVertex();
+        buffer.pos(x1, y1, z2).color(innerR, innerG, innerB, alpha).endVertex();
+        buffer.pos(x1, y2, z2).color(innerR, innerG, innerB, alpha).endVertex();
+        buffer.pos(x1, y2, z1).color(innerR, innerG, innerB, alpha).endVertex();
+        // Right
+        buffer.pos(x2, y1, z2).color(innerR, innerG, innerB, alpha).endVertex();
+        buffer.pos(x2, y1, z1).color(innerR, innerG, innerB, alpha).endVertex();
+        buffer.pos(x2, y2, z1).color(innerR, innerG, innerB, alpha).endVertex();
+        buffer.pos(x2, y2, z2).color(innerR, innerG, innerB, alpha).endVertex();
+        // Top
+        buffer.pos(x1, y2, z2).color(innerR, innerG, innerB, alpha).endVertex();
+        buffer.pos(x2, y2, z2).color(innerR, innerG, innerB, alpha).endVertex();
+        buffer.pos(x2, y2, z1).color(innerR, innerG, innerB, alpha).endVertex();
+        buffer.pos(x1, y2, z1).color(innerR, innerG, innerB, alpha).endVertex();
+        // Bottom
+        buffer.pos(x1, y1, z1).color(innerR, innerG, innerB, alpha).endVertex();
+        buffer.pos(x2, y1, z1).color(innerR, innerG, innerB, alpha).endVertex();
+        buffer.pos(x2, y1, z2).color(innerR, innerG, innerB, alpha).endVertex();
+        buffer.pos(x1, y1, z2).color(innerR, innerG, innerB, alpha).endVertex();
+        continue;
+      }
+
+      if (midX > cx) {
+        // Left face faces the center
+        buffer.pos(x1, y1, z1).color(innerR, innerG, innerB, alpha).endVertex();
+        buffer.pos(x1, y1, z2).color(innerR, innerG, innerB, alpha).endVertex();
+        buffer.pos(x1, y2, z2).color(innerR, innerG, innerB, alpha).endVertex();
+        buffer.pos(x1, y2, z1).color(innerR, innerG, innerB, alpha).endVertex();
+      }
+      if (midX < cx) {
+        // Right face faces the center
+        buffer.pos(x2, y1, z2).color(innerR, innerG, innerB, alpha).endVertex();
+        buffer.pos(x2, y1, z1).color(innerR, innerG, innerB, alpha).endVertex();
+        buffer.pos(x2, y2, z1).color(innerR, innerG, innerB, alpha).endVertex();
+        buffer.pos(x2, y2, z2).color(innerR, innerG, innerB, alpha).endVertex();
+      }
+      if (midY < cy) {
+        // Top face faces the center
+        buffer.pos(x1, y2, z2).color(innerR, innerG, innerB, alpha).endVertex();
+        buffer.pos(x2, y2, z2).color(innerR, innerG, innerB, alpha).endVertex();
+        buffer.pos(x2, y2, z1).color(innerR, innerG, innerB, alpha).endVertex();
+        buffer.pos(x1, y2, z1).color(innerR, innerG, innerB, alpha).endVertex();
+      }
+      if (midY > cy) {
+        // Bottom face faces the center
+        buffer.pos(x1, y1, z1).color(innerR, innerG, innerB, alpha).endVertex();
+        buffer.pos(x2, y1, z1).color(innerR, innerG, innerB, alpha).endVertex();
+        buffer.pos(x2, y1, z2).color(innerR, innerG, innerB, alpha).endVertex();
+        buffer.pos(x1, y1, z2).color(innerR, innerG, innerB, alpha).endVertex();
+      }
+    }
+  }
+
+  /**
+   * Tilted variant of {@link #addBoxesInnerFacesToBuffer}. Vertex positions and inside/outside
+   * decisions (including the {@code tbMargin} top/bottom guard) match
+   * {@link #addTiltedBoxesToBufferDualColor} exactly so the fullbright overlay overdraws cleanly.
+   */
+  public static void addTiltedBoxesInnerFacesToBuffer(List<Box> boxes, BufferBuilder buffer,
+      float innerR, float innerG, float innerB,
+      float alpha, float xOffset, float yOffset, float zOffset,
+      float pivotZ, float tiltAngleDeg,
+      float centerX, float centerY, float extraTiltAdjust) {
+    float tiltSlope = (float) Math.tan(Math.toRadians(tiltAngleDeg));
+    for (Box box : boxes) {
+      float x1 = box.from[0] + xOffset, y1 = box.from[1] + yOffset, z1 = box.from[2] + zOffset;
+      float x2 = box.to[0] + xOffset, y2 = box.to[1] + yOffset, z2 = box.to[2] + zOffset;
+      float midX = (box.from[0] + box.to[0]) / 2f + xOffset;
+      float midY = (box.from[1] + box.to[1]) / 2f + yOffset;
+
+      float yShift1 = -(pivotZ - z1) * tiltSlope;
+      float yShift2 = -(pivotZ - z2) * tiltSlope;
+      float totalExtraTilt = box.extraTiltDegrees + extraTiltAdjust;
+      if (totalExtraTilt != 0f) {
+        float extraSlope = (float) Math.tan(Math.toRadians(totalExtraTilt));
+        yShift1 += -(pivotZ - z1) * extraSlope;
+        yShift2 += -(pivotZ - z2) * extraSlope;
+      }
+
+      float cx = centerX + xOffset;
+      float cy = centerY + yOffset;
+      float tbMargin = 0.5f;
+
+      if (box.innerOnly) {
+        // Front (z2)
+        buffer.pos(x1, y1 + yShift2, z2).color(innerR, innerG, innerB, alpha).endVertex();
+        buffer.pos(x2, y1 + yShift2, z2).color(innerR, innerG, innerB, alpha).endVertex();
+        buffer.pos(x2, y2 + yShift2, z2).color(innerR, innerG, innerB, alpha).endVertex();
+        buffer.pos(x1, y2 + yShift2, z2).color(innerR, innerG, innerB, alpha).endVertex();
+        // Back (z1)
+        buffer.pos(x2, y1 + yShift1, z1).color(innerR, innerG, innerB, alpha).endVertex();
+        buffer.pos(x1, y1 + yShift1, z1).color(innerR, innerG, innerB, alpha).endVertex();
+        buffer.pos(x1, y2 + yShift1, z1).color(innerR, innerG, innerB, alpha).endVertex();
+        buffer.pos(x2, y2 + yShift1, z1).color(innerR, innerG, innerB, alpha).endVertex();
+        // Left (x1)
+        buffer.pos(x1, y1 + yShift1, z1).color(innerR, innerG, innerB, alpha).endVertex();
+        buffer.pos(x1, y1 + yShift2, z2).color(innerR, innerG, innerB, alpha).endVertex();
+        buffer.pos(x1, y2 + yShift2, z2).color(innerR, innerG, innerB, alpha).endVertex();
+        buffer.pos(x1, y2 + yShift1, z1).color(innerR, innerG, innerB, alpha).endVertex();
+        // Right (x2)
+        buffer.pos(x2, y1 + yShift2, z2).color(innerR, innerG, innerB, alpha).endVertex();
+        buffer.pos(x2, y1 + yShift1, z1).color(innerR, innerG, innerB, alpha).endVertex();
+        buffer.pos(x2, y2 + yShift1, z1).color(innerR, innerG, innerB, alpha).endVertex();
+        buffer.pos(x2, y2 + yShift2, z2).color(innerR, innerG, innerB, alpha).endVertex();
+        // Top (y2)
+        buffer.pos(x1, y2 + yShift2, z2).color(innerR, innerG, innerB, alpha).endVertex();
+        buffer.pos(x2, y2 + yShift2, z2).color(innerR, innerG, innerB, alpha).endVertex();
+        buffer.pos(x2, y2 + yShift1, z1).color(innerR, innerG, innerB, alpha).endVertex();
+        buffer.pos(x1, y2 + yShift1, z1).color(innerR, innerG, innerB, alpha).endVertex();
+        // Bottom (y1)
+        buffer.pos(x1, y1 + yShift1, z1).color(innerR, innerG, innerB, alpha).endVertex();
+        buffer.pos(x2, y1 + yShift1, z1).color(innerR, innerG, innerB, alpha).endVertex();
+        buffer.pos(x2, y1 + yShift2, z2).color(innerR, innerG, innerB, alpha).endVertex();
+        buffer.pos(x1, y1 + yShift2, z2).color(innerR, innerG, innerB, alpha).endVertex();
+        continue;
+      }
+
+      if (midX > cx) {
+        buffer.pos(x1, y1 + yShift1, z1).color(innerR, innerG, innerB, alpha).endVertex();
+        buffer.pos(x1, y1 + yShift2, z2).color(innerR, innerG, innerB, alpha).endVertex();
+        buffer.pos(x1, y2 + yShift2, z2).color(innerR, innerG, innerB, alpha).endVertex();
+        buffer.pos(x1, y2 + yShift1, z1).color(innerR, innerG, innerB, alpha).endVertex();
+      }
+      if (midX < cx) {
+        buffer.pos(x2, y1 + yShift2, z2).color(innerR, innerG, innerB, alpha).endVertex();
+        buffer.pos(x2, y1 + yShift1, z1).color(innerR, innerG, innerB, alpha).endVertex();
+        buffer.pos(x2, y2 + yShift1, z1).color(innerR, innerG, innerB, alpha).endVertex();
+        buffer.pos(x2, y2 + yShift2, z2).color(innerR, innerG, innerB, alpha).endVertex();
+      }
+      if (midY < cy - tbMargin) {
+        buffer.pos(x1, y2 + yShift2, z2).color(innerR, innerG, innerB, alpha).endVertex();
+        buffer.pos(x2, y2 + yShift2, z2).color(innerR, innerG, innerB, alpha).endVertex();
+        buffer.pos(x2, y2 + yShift1, z1).color(innerR, innerG, innerB, alpha).endVertex();
+        buffer.pos(x1, y2 + yShift1, z1).color(innerR, innerG, innerB, alpha).endVertex();
+      }
+      if (midY > cy + tbMargin) {
+        buffer.pos(x1, y1 + yShift1, z1).color(innerR, innerG, innerB, alpha).endVertex();
+        buffer.pos(x2, y1 + yShift1, z1).color(innerR, innerG, innerB, alpha).endVertex();
+        buffer.pos(x2, y1 + yShift2, z2).color(innerR, innerG, innerB, alpha).endVertex();
+        buffer.pos(x1, y1 + yShift2, z2).color(innerR, innerG, innerB, alpha).endVertex();
+      }
+    }
+  }
+
   public static class Box {
     public final float[] from;
     public final float[] to;

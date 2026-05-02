@@ -252,6 +252,12 @@ public class TileEntityTrafficSignalHeadRenderer extends
     // above with world lightmap via the display list.
     OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240f, 240f);
 
+    // Overlay the inner-colored faces of every lit visor at fullbright. The display list
+    // already drew them with the bulb tint but at world lightmap, so the reflected-light
+    // effect was getting dimmed by ambient lighting (looking dull at night/in shadow).
+    renderLitVisorInteriors(sectionInfos, sectionYPositions, sectionXPositions, sectionSizes,
+        zPushBack);
+
     // Pause-aware game clock — threaded into the bulb/Barlo paths so they can do 1300 ms /
     // 1000 ms modulo timing without each calling System.currentTimeMillis() (which is a JNI
     // call and adds up with many visible signals).
@@ -340,26 +346,97 @@ public class TileEntityTrafficSignalHeadRenderer extends
       RenderHelper.addBoxesToBuffer(doorData, buffer,
           doorColor.getRed(), doorColor.getGreen(), doorColor.getBlue(), 1.0f, xOffset, yOffset, zPushBack);
 
-      float innerR = VISOR_INNER_R, innerG = VISOR_INNER_G, innerB = VISOR_INNER_B;
-      if (sectionInfo.isBulbLit()) {
-        TrafficSignalBulbColor bulbColor = sectionInfo.getBulbCustomColor();
-        switch (bulbColor) {
-          case RED:    innerR = 0.50f; innerG = 0.08f; innerB = 0.02f; break;
-          case YELLOW: innerR = 0.60f; innerG = 0.40f; innerB = 0.03f; break;
-          case GREEN:  innerR = 0.12f; innerG = 0.70f; innerB = 0.22f; break;
-          default: break;
-        }
-      }
+      float[] inner = computeVisorInnerTint(sectionInfo);
 
       addVisorQuadsToBuffer(visorType, buffer,
           Math.min(1.0f, visorColor.getRed() * VISOR_TINT_SCALE + VISOR_TINT_BASE),
           Math.min(1.0f, visorColor.getGreen() * VISOR_TINT_SCALE + VISOR_TINT_BASE),
           Math.min(1.0f, visorColor.getBlue() * VISOR_TINT_SCALE + VISOR_TINT_BASE),
-          innerR, innerG, innerB,
+          inner[0], inner[1], inner[2],
           1.0f, xOffset, yOffset, sectionSizes[i], zPushBack);
     }
     tessellator.draw();
 
+    GlStateManager.enableTexture2D();
+  }
+
+  /**
+   * Computes the visor interior tint for a section. Unlit sections get the dark default;
+   * lit sections get a color matching the bulb (red/yellow/green), with transit yellow/green
+   * mapped to white because those bulb types render as white-LED textures.
+   */
+  private static float[] computeVisorInnerTint(TrafficSignalSectionInfo sectionInfo) {
+    float[] out = new float[]{VISOR_INNER_R, VISOR_INNER_G, VISOR_INNER_B};
+    if (!sectionInfo.isBulbLit()) {
+      return out;
+    }
+    TrafficSignalBulbColor bulbColor = sectionInfo.getBulbCustomColor();
+    TrafficSignalBulbType bulbType = sectionInfo.getBulbType();
+    boolean transitBulb = bulbType == TrafficSignalBulbType.TRANSIT
+        || bulbType == TrafficSignalBulbType.TRANSIT_LEFT
+        || bulbType == TrafficSignalBulbType.TRANSIT_RIGHT;
+    if (transitBulb && bulbColor != TrafficSignalBulbColor.RED) {
+      // Transit yellow/green render as white-LED textures; reflection follows.
+      out[0] = 0.55f; out[1] = 0.55f; out[2] = 0.55f;
+      return out;
+    }
+    switch (bulbColor) {
+      case RED:    out[0] = 0.50f; out[1] = 0.08f; out[2] = 0.02f; break;
+      case YELLOW: out[0] = 0.60f; out[1] = 0.40f; out[2] = 0.03f; break;
+      case GREEN:  out[0] = 0.12f; out[1] = 0.70f; out[2] = 0.22f; break;
+      default: break;
+    }
+    return out;
+  }
+
+  /**
+   * Re-emits the inner-colored faces of every lit section's visor at the current (fullbright)
+   * lightmap. The display-list pass already drew these faces with the bulb tint but at world
+   * lightmap, so they look dim in shadow/at night even though the bulb itself is fullbright.
+   * This second pass overdraws the inner faces with the same vertex positions and colors but
+   * at fullbright, so the reflected-light effect actually looks lit. Outer body faces are
+   * untouched and stay world-lit.
+   */
+  private void renderLitVisorInteriors(TrafficSignalSectionInfo[] sectionInfos,
+      float[] sectionYPositions, float[] sectionXPositions, int[] sectionSizes, float zPushBack) {
+    boolean anyLit = false;
+    for (TrafficSignalSectionInfo info : sectionInfos) {
+      if (info.isBulbLit()) { anyLit = true; break; }
+    }
+    if (!anyLit) return;
+
+    Tessellator tessellator = Tessellator.getInstance();
+    BufferBuilder buffer = tessellator.getBuffer();
+
+    GlStateManager.disableTexture2D();
+    buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
+
+    for (int i = 0; i < sectionInfos.length; i++) {
+      TrafficSignalSectionInfo sectionInfo = sectionInfos[i];
+      if (!sectionInfo.isBulbLit()) continue;
+
+      TrafficSignalVisorType visorType = sectionInfo.getVisorType();
+      List<RenderHelper.Box> visorData = resolveVisorData(visorType, sectionSizes[i]);
+      if (visorData == null) continue;
+
+      float[] inner = computeVisorInnerTint(sectionInfo);
+      float xOffset = sectionXPositions[i];
+      float yOffset = sectionYPositions[i];
+
+      if (visorType != TrafficSignalVisorType.NONE) {
+        float louverTiltAdjust = -yOffset * LOUVER_TILT_COMPENSATION_PER_UNIT;
+        RenderHelper.addTiltedBoxesInnerFacesToBuffer(visorData, buffer,
+            inner[0], inner[1], inner[2], 1.0f,
+            xOffset, yOffset, zPushBack, VISOR_PIVOT_Z + zPushBack, VISOR_TILT_DEGREES,
+            VISOR_CENTER_X, VISOR_CENTER_Y, louverTiltAdjust);
+      } else {
+        RenderHelper.addBoxesInnerFacesToBuffer(visorData, buffer,
+            inner[0], inner[1], inner[2], 1.0f,
+            xOffset, yOffset, zPushBack, VISOR_CENTER_X, VISOR_CENTER_Y);
+      }
+    }
+
+    tessellator.draw();
     GlStateManager.enableTexture2D();
   }
 
