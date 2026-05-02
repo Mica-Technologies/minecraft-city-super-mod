@@ -812,7 +812,7 @@ public class TileEntityTrafficSignalHeadRenderer extends
       // Scale strobe Z position to match visor depth + push-back for flush mounting
       float barZ = VISOR_PIVOT_Z + (7.0f - VISOR_PIVOT_Z) * (sectionSizes[i] / 12f) + zPushBack;
       emitBarloQuad(buffer, sectionInfos[i].getVisorType(), sectionSizes[i],
-          sectionXPositions[i], sectionYPositions[i], barZ);
+          sectionXPositions[i], sectionYPositions[i], barZ, zPushBack);
     }
     tessellator.draw();
 
@@ -834,7 +834,7 @@ public class TileEntityTrafficSignalHeadRenderer extends
         }
         float strobeZ = VISOR_PIVOT_Z + (6.9f - VISOR_PIVOT_Z) * (sectionSizes[i] / 12f) + zPushBack;
         emitBarloQuad(buffer, sectionInfos[i].getVisorType(), sectionSizes[i],
-            sectionXPositions[i], sectionYPositions[i], strobeZ);
+            sectionXPositions[i], sectionYPositions[i], strobeZ, zPushBack);
       }
       tessellator.draw();
     }
@@ -845,26 +845,33 @@ public class TileEntityTrafficSignalHeadRenderer extends
   /**
    * Emits a single Barlo strobe quad into the buffer. Horizontal for BARLO, vertical for
    * BARLO_VERTICAL. Centered in the section.
+   *
+   * <p>The vertical bar's Y center is tilt-shifted to match the visor's 9° downward tilt at
+   * the bar's depth — without it, a symmetric bar centered on the un-tilted section can't
+   * reach both rims at once (poking out the top while floating above the bottom, or vice
+   * versa). Horizontal bars don't need it: the tunnel visor is open at the bottom and the
+   * bar is narrow in Y, so a small Y shift wouldn't be visible against any rim.
    */
   private void emitBarloQuad(BufferBuilder buffer, TrafficSignalVisorType visorType,
-      int fullSize, float xPos, float yPos, float z) {
+      int fullSize, float xPos, float yPos, float z, float zPushBack) {
     float sectionOffset = (12f - fullSize) / 2f;
     float scale = fullSize / 12f;
     float sectionCenterX = 2f + xPos + sectionOffset + fullSize / 2f;
     float sectionCenterY = yPos + sectionOffset + fullSize / 2f;
 
-    float barLong = 10.4f * scale;   // length along the long axis
+    float barLong = 10.4f * scale;   // length along the long axis (matches visor inner height)
     float barShort = 1.0f * scale;   // thickness
 
     float x1, y1, x2, y2;
     if (visorType == TrafficSignalVisorType.BARLO_VERTICAL) {
-      // Vertical bar: narrow in X, tall in Y. Shortened vs horizontal to account for
-      // the 9° downward visor tilt shifting the top edge closer to the body.
-      float vertLong = 9.0f * scale;
+      float pivotZAbs = VISOR_PIVOT_Z + zPushBack;
+      float barYShift = -(pivotZAbs - z)
+          * (float) Math.tan(Math.toRadians(VISOR_TILT_DEGREES));
+      float centerY = sectionCenterY + barYShift;
       x1 = sectionCenterX - barShort / 2f;
-      y1 = sectionCenterY - vertLong / 2f;
+      y1 = centerY - barLong / 2f;
       x2 = sectionCenterX + barShort / 2f;
-      y2 = sectionCenterY + vertLong / 2f;
+      y2 = centerY + barLong / 2f;
     } else {
       // Horizontal bar: wide in X, narrow in Y
       x1 = sectionCenterX - barLong / 2f;
