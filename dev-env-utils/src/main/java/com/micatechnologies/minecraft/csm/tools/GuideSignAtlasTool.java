@@ -5,7 +5,9 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.Shape;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Ellipse2D;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
@@ -23,7 +25,9 @@ import org.apache.batik.transcoder.image.ImageTranscoder;
  *
  * <p>Atlas layout (512x512, 64x64 cells, matches {@code GuideSignAtlas.java}):
  * <ul>
- *   <li>Row 0, cols 0-7: Shield backgrounds (no text baked in)</li>
+ *   <li>Row 0, cols 0-7: Generic shield backgrounds (no text baked in)</li>
+ *   <li>Row 1, cols 0-7: State markers (CA, TX, FL, NY, CT, MA, ME, NH)</li>
+ *   <li>Row 2, cols 0-1: State markers (RI, VT)</li>
  *   <li>Rows 4-5, cols 0-4: Directional arrows (white on transparent)</li>
  * </ul>
  *
@@ -85,6 +89,169 @@ public class GuideSignAtlasTool {
     drawSvgShield(g, 5, 0, "county_route.svg");
     drawToll(g, 6, 0);
     drawBlankCustom(g, 7, 0);
+
+    // State-specific markers — programmatic approximations (no SVG sources).
+    // Each uses a distinct silhouette + state-themed color so it's recognizable
+    // alongside the route number rendered in white by the TESR.
+    drawStateShield(g, 0, 1, makeCaliforniaShape(0, 1), new Color(36, 110, 60));
+    drawStateShield(g, 1, 1, makeTexasShape(1, 1), new Color(170, 40, 40));
+    drawStateShield(g, 2, 1, makeFloridaShape(2, 1), new Color(190, 95, 35));
+    drawStateShield(g, 3, 1, makeNewYorkShape(3, 1), new Color(20, 20, 20));
+    drawStateShield(g, 4, 1, makeWideOval(4, 1), new Color(30, 70, 150));
+    drawStateShield(g, 5, 1, makeRoundedSquare(5, 1), new Color(35, 55, 130));
+    drawStateShield(g, 6, 1, makeMaineShape(6, 1), new Color(165, 40, 50));
+    drawStateShield(g, 7, 1, makePeakShape(7, 1, true), new Color(40, 100, 60));
+    drawStateShield(g, 0, 2, makeRhodeIslandShape(0, 2), new Color(55, 95, 160));
+    drawStateShield(g, 1, 2, makePeakShape(1, 2, false), new Color(55, 120, 70));
+  }
+
+  // ---- State shield helpers ----
+
+  private static void drawStateShield(Graphics2D g, int col, int row, Shape shape, Color color) {
+    g.setColor(color);
+    g.fill(shape);
+    g.setColor(Color.WHITE);
+    g.setStroke(new BasicStroke(2.5f));
+    g.draw(shape);
+  }
+
+  private static Shape makeCaliforniaShape(int col, int row) {
+    // Spade-like outline: rounded top, narrow point at bottom.
+    int x = col * CELL_SIZE;
+    int y = row * CELL_SIZE;
+    int s = CELL_SIZE;
+    int m = 4;
+    GeneralPath p = new GeneralPath();
+    p.moveTo(x + s / 2.0, y + m);
+    p.curveTo(x + s - m, y + s * 0.10, x + s - m, y + s * 0.62, x + s / 2.0, y + s - m);
+    p.curveTo(x + m, y + s * 0.62, x + m, y + s * 0.10, x + s / 2.0, y + m);
+    p.closePath();
+    return p;
+  }
+
+  private static Shape makeTexasShape(int col, int row) {
+    // Polygon hinting at the panhandle on top-left and pointed bottom.
+    int x = col * CELL_SIZE;
+    int y = row * CELL_SIZE;
+    int s = CELL_SIZE;
+    int m = 4;
+    GeneralPath p = new GeneralPath();
+    p.moveTo(x + m, y + m);
+    p.lineTo(x + s * 0.42, y + m);
+    p.lineTo(x + s * 0.42, y + s * 0.22);
+    p.lineTo(x + s - m, y + s * 0.22);
+    p.lineTo(x + s - m, y + s * 0.55);
+    p.lineTo(x + s * 0.78, y + s * 0.62);
+    p.lineTo(x + s * 0.55, y + s - m);
+    p.lineTo(x + s * 0.30, y + s * 0.55);
+    p.lineTo(x + m, y + s * 0.55);
+    p.closePath();
+    return p;
+  }
+
+  private static Shape makeFloridaShape(int col, int row) {
+    // L-ish: panhandle across top-left, peninsula down the right.
+    int x = col * CELL_SIZE;
+    int y = row * CELL_SIZE;
+    int s = CELL_SIZE;
+    int m = 4;
+    GeneralPath p = new GeneralPath();
+    p.moveTo(x + m, y + m);
+    p.lineTo(x + s - m, y + m);
+    p.lineTo(x + s - m, y + s * 0.30);
+    p.lineTo(x + s * 0.62, y + s * 0.30);
+    p.lineTo(x + s * 0.78, y + s - m);
+    p.lineTo(x + s * 0.50, y + s - m);
+    p.lineTo(x + s * 0.30, y + s * 0.30);
+    p.lineTo(x + m, y + s * 0.30);
+    p.closePath();
+    return p;
+  }
+
+  private static Shape makeNewYorkShape(int col, int row) {
+    // Stair-step polygon roughly evoking NY's east-west spread with a Long Island hint.
+    int x = col * CELL_SIZE;
+    int y = row * CELL_SIZE;
+    int s = CELL_SIZE;
+    int m = 4;
+    GeneralPath p = new GeneralPath();
+    p.moveTo(x + s * 0.20, y + m);
+    p.lineTo(x + s - m, y + s * 0.10);
+    p.lineTo(x + s - m, y + s * 0.55);
+    p.lineTo(x + s * 0.80, y + s * 0.65);
+    p.lineTo(x + s * 0.95, y + s * 0.78);
+    p.lineTo(x + s * 0.55, y + s - m);
+    p.lineTo(x + s * 0.30, y + s * 0.80);
+    p.lineTo(x + m, y + s * 0.55);
+    p.lineTo(x + s * 0.05, y + s * 0.18);
+    p.closePath();
+    return p;
+  }
+
+  private static Shape makeWideOval(int col, int row) {
+    int x = col * CELL_SIZE;
+    int y = row * CELL_SIZE;
+    int s = CELL_SIZE;
+    int m = 4;
+    return new Ellipse2D.Float(x + m, y + s / 4f, s - m * 2, s / 2f);
+  }
+
+  private static Shape makeRoundedSquare(int col, int row) {
+    int x = col * CELL_SIZE;
+    int y = row * CELL_SIZE;
+    int s = CELL_SIZE;
+    int m = 6;
+    return new RoundRectangle2D.Float(x + m, y + m, s - m * 2, s - m * 2, 14, 14);
+  }
+
+  private static Shape makeMaineShape(int col, int row) {
+    // Tall blocky shape with a notch on the left for the lakes/coast.
+    int x = col * CELL_SIZE;
+    int y = row * CELL_SIZE;
+    int s = CELL_SIZE;
+    int m = 6;
+    GeneralPath p = new GeneralPath();
+    p.moveTo(x + m, y + m);
+    p.lineTo(x + s - m, y + m);
+    p.lineTo(x + s - m, y + s - m);
+    p.lineTo(x + s * 0.30, y + s - m);
+    p.lineTo(x + s * 0.20, y + s * 0.65);
+    p.lineTo(x + m, y + s * 0.55);
+    p.closePath();
+    return p;
+  }
+
+  private static Shape makePeakShape(int col, int row, boolean apexUp) {
+    // Triangle-with-base; up = NH (mountain), down = VT (inverted, hint at bottom narrowing).
+    int x = col * CELL_SIZE;
+    int y = row * CELL_SIZE;
+    int s = CELL_SIZE;
+    int m = 6;
+    GeneralPath p = new GeneralPath();
+    if (apexUp) {
+      p.moveTo(x + s / 2.0, y + m);
+      p.lineTo(x + s - m, y + s * 0.45);
+      p.lineTo(x + s - m, y + s - m);
+      p.lineTo(x + m, y + s - m);
+      p.lineTo(x + m, y + s * 0.45);
+    } else {
+      p.moveTo(x + m, y + m);
+      p.lineTo(x + s - m, y + m);
+      p.lineTo(x + s - m, y + s * 0.55);
+      p.lineTo(x + s / 2.0, y + s - m);
+      p.lineTo(x + m, y + s * 0.55);
+    }
+    p.closePath();
+    return p;
+  }
+
+  private static Shape makeRhodeIslandShape(int col, int row) {
+    // Compact near-square (RI is the smallest state).
+    int x = col * CELL_SIZE;
+    int y = row * CELL_SIZE;
+    int s = CELL_SIZE;
+    int m = 12;
+    return new RoundRectangle2D.Float(x + m, y + m, s - m * 2, s - m * 2, 8, 8);
   }
 
   private static void drawSvgShield(Graphics2D g, int col, int row, String svgFile) {

@@ -167,14 +167,22 @@ a multi-tab scrollable GUI. Block registry name: `dynamic_guide_sign`, GUI ID: 1
 
 ## Phase 7: Polish & Advanced Features — IN PROGRESS
 
-- [ ] Display list cache optimization (raw GL11 calls, not GlStateManager)
+- [ ] Display list cache optimization — deferred. Previous attempt was abandoned for
+      GlStateManager/Tessellator+VBO desync reasons; benefit is marginal vs. risk.
+      Revisit only if profiling shows it's needed.
 - [x] GUI preview tab (text-based summary — see Phase 4)
 - [x] Template signs (4 cycling presets — see Phase 4)
 - [x] Copy/paste sign data between blocks (process-static clipboard — see Phase 4)
 - [x] Configurable text alignment (left/center/right per row — see Phase 3)
-- [ ] Additional shield types (state-specific for all 50 states)
-- [ ] Dev-env-utils atlas generator for state shields
-- [ ] Sign dimension constraints (user-settable min/max width)
+- [x] **State-specific shields** — 10 added: CA, TX, FL, NY, CT, MA, ME, NH, RI, VT.
+      Programmatic shapes (no SVG sources), each with a distinct silhouette and
+      state-themed color. Atlas row 1 holds 8, row 2 holds RI + VT.
+- [x] **Dev-env-utils atlas generator** — extended with `drawStateShield(...)` plus
+      per-state `Shape`-returning helpers. Run via the existing IntelliJ run config or
+      `mvn -f dev-env-utils/pom.xml exec:java -Dexec.mainClass=...GuideSignAtlasTool`.
+- [x] Sign dimension constraints — user-settable min width via `GuideSignData.minWidth`.
+- [ ] Additional state shields (remaining 40 states) — future content addition. Pattern
+      established; just needs more `make<State>Shape` methods + enum entries.
 
 ---
 

@@ -8,7 +8,19 @@ public enum GuideSignShieldType {
   STATE_CIRCLE(4, 0, "State Route (Circle)"),
   COUNTY_ROUTE(5, 0, "County Route"),
   TOLL(6, 0, "Toll Route"),
-  BLANK_CUSTOM(7, 0, "Blank/Custom");
+  BLANK_CUSTOM(7, 0, "Blank/Custom"),
+
+  // State-specific markers. Atlas row 1 holds 8, row 2 holds the rest.
+  CALIFORNIA(0, 1, "California"),
+  TEXAS(1, 1, "Texas"),
+  FLORIDA(2, 1, "Florida"),
+  NEW_YORK(3, 1, "New York"),
+  CONNECTICUT(4, 1, "Connecticut"),
+  MASSACHUSETTS(5, 1, "Massachusetts"),
+  MAINE(6, 1, "Maine"),
+  NEW_HAMPSHIRE(7, 1, "New Hampshire"),
+  RHODE_ISLAND(0, 2, "Rhode Island"),
+  VERMONT(1, 2, "Vermont");
 
   private final int atlasCol;
   private final int atlasRow;
