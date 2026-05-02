@@ -827,8 +827,11 @@ public class TileEntityTrafficSignalHeadRenderer extends
       buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
 
       for (int i = 0; i < sectionInfos.length; i++) {
+        // Use commanded-lit (pre-aging) so the strobe keeps firing even when the
+        // section's bulb is failing or burned out — the strobe is its own physical
+        // unit on the visor and isn't dependent on bulb health.
         if (!isBarloVisor(sectionInfos[i].getVisorType())
-            || !sectionInfos[i].isBulbLit()
+            || !sectionInfos[i].isBulbCommandedLit()
             || sectionInfos[i].getBulbColor() != TrafficSignalBulbColor.RED) {
           continue;
         }

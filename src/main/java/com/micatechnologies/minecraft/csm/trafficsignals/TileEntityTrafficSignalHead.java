@@ -398,6 +398,12 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
         lit = false;
       }
 
+      // Snapshot the controller-commanded lit state before aging dims/blanks it. The
+      // bulb itself may be failing or burned out, but accessories on the same section
+      // (e.g. the Barlo strobe) are physically separate and should keep working as
+      // long as the controller is energizing this section.
+      sectionInfo.setBulbCommandedLit(lit);
+
       // Pass 5 fused: aging effects. Dead bulbs always render dark; failing bulbs get a
       // sin-wave flicker / strobe-burst modulation that can drop them dark this frame.
       if (anyAging && i < bulbAgingStates.length) {
