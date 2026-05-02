@@ -29,6 +29,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.EnumSkyBlock;
 import org.lwjgl.opengl.GL11;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -255,8 +256,14 @@ public class TileEntityTrafficSignalHeadRenderer extends
     // Overlay the inner-colored faces of every lit visor at fullbright. The display list
     // already drew them with the bulb tint but at world lightmap, so the reflected-light
     // effect was getting dimmed by ambient lighting (looking dull at night/in shadow).
+    // Scale the overlay by daylight (sky exposure × sun brightness) so it eases off in
+    // direct sunlight, mimicking how a real reflected-light effect washes out in daylight.
+    int skyLightLevel = te.getWorld().getLightFor(EnumSkyBlock.SKY, te.getPos());
+    float sunBrightness = te.getWorld().getSunBrightness(partialTicks);
+    float daylightFactor = (skyLightLevel / 15.0f) * sunBrightness;
+    float tintScale = 1.0f - VISOR_DAYLIGHT_DIM_AMOUNT * daylightFactor;
     renderLitVisorInteriors(sectionInfos, sectionYPositions, sectionXPositions, sectionSizes,
-        zPushBack);
+        zPushBack, tintScale);
 
     // Pause-aware game clock — threaded into the bulb/Barlo paths so they can do 1300 ms /
     // 1000 ms modulo timing without each calling System.currentTimeMillis() (which is a JNI
@@ -398,7 +405,8 @@ public class TileEntityTrafficSignalHeadRenderer extends
    * untouched and stay world-lit.
    */
   private void renderLitVisorInteriors(TrafficSignalSectionInfo[] sectionInfos,
-      float[] sectionYPositions, float[] sectionXPositions, int[] sectionSizes, float zPushBack) {
+      float[] sectionYPositions, float[] sectionXPositions, int[] sectionSizes, float zPushBack,
+      float tintScale) {
     boolean anyLit = false;
     for (TrafficSignalSectionInfo info : sectionInfos) {
       if (info.isBulbLit()) { anyLit = true; break; }
@@ -420,18 +428,21 @@ public class TileEntityTrafficSignalHeadRenderer extends
       if (visorData == null) continue;
 
       float[] inner = computeVisorInnerTint(sectionInfo);
+      float r = inner[0] * tintScale;
+      float g = inner[1] * tintScale;
+      float b = inner[2] * tintScale;
       float xOffset = sectionXPositions[i];
       float yOffset = sectionYPositions[i];
 
       if (visorType != TrafficSignalVisorType.NONE) {
         float louverTiltAdjust = -yOffset * LOUVER_TILT_COMPENSATION_PER_UNIT;
         RenderHelper.addTiltedBoxesInnerFacesToBuffer(visorData, buffer,
-            inner[0], inner[1], inner[2], 1.0f,
+            r, g, b, 1.0f,
             xOffset, yOffset, zPushBack, VISOR_PIVOT_Z + zPushBack, VISOR_TILT_DEGREES,
             VISOR_CENTER_X, VISOR_CENTER_Y, louverTiltAdjust);
       } else {
         RenderHelper.addBoxesInnerFacesToBuffer(visorData, buffer,
-            inner[0], inner[1], inner[2], 1.0f,
+            r, g, b, 1.0f,
             xOffset, yOffset, zPushBack, VISOR_CENTER_X, VISOR_CENTER_Y);
       }
     }
@@ -460,6 +471,12 @@ public class TileEntityTrafficSignalHeadRenderer extends
   // lighter colors still have enough distinction.  Result: min(1, channel * SCALE + BASE).
   private static final float VISOR_TINT_SCALE = 1.04f;
   private static final float VISOR_TINT_BASE = 0.01f;
+
+  // Maximum fraction by which the lit-visor inner reflection is dimmed at full daylight
+  // (sky exposure × sun brightness = 1). At night/indoors the inner tint stays at full
+  // strength so the bulb still appears to bounce light off the visor interior. At noon out
+  // in the open the inner tint should be only barely visible — the sun washes most of it out.
+  private static final float VISOR_DAYLIGHT_DIM_AMOUNT = 0.85f;
 
   // Per-section louver tilt compensation (degrees per model unit of Y offset).
   // In a multi-section signal, lower sections are closer to the viewer's eye level and
