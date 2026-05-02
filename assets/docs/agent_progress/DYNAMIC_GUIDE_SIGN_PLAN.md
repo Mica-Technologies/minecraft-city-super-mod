@@ -74,21 +74,32 @@ a multi-tab scrollable GUI. Block registry name: `dynamic_guide_sign`, GUI ID: 1
 - [x] GL state management: raw GL11 calls alongside GlStateManager to prevent cache desync
 - [x] Z-ordering fix: sign face at faceZ-0.1 renders in front of border
 - [x] Exit tab anchored to signTop (not panelY) so it sits above the sign
-- [x] Banner text positioned within row bounds (0.5 offset, 0.35 scale)
 - [x] Proportions overhaul (thin border 0.4, tight padding, realistic dimensions)
+- [x] **Corner style rendering** — ROUND draws border + face as overlapping H/V strips that
+      leave a `CORNER_STEP`-sized notch at each of the 4 outer corners; SHARP unchanged.
+      Applied to sign body and exit tab. Falls back to SHARP for rectangles too small to notch.
+- [x] **Per-row text alignment** — `RowAlignment` enum (LEFT/CENTER/RIGHT) on `GuideSignRow`,
+      defaults to CENTER for back-compat. Renderer computes `rowX` against `contentLeft` /
+      `contentRight` which now correctly account for `borderInset`.
+- [x] **Banner overflow fix** — rows that contain a banner-bearing shield reserve
+      `BANNER_AREA_HEIGHT` (4.5 units) of vertical space above the row's main content;
+      banner text is centered in that zone instead of floating outside the sign.
+- [x] **Sign-dimension border accounting** — `computeTotalSignWidth` and
+      `computeTotalSignHeight` now add `2 * borderInset` so the visible content area sits
+      cleanly inside the border for LEFT/RIGHT alignment.
+- [x] **Text uses block's combined light** — text on the sign face, route numbers, banner
+      text, and exit-tab text all sample `world.getCombinedLight(pos, 0)` instead of
+      hardcoded fullbright. Sign now responds to day/night cycle and nearby light sources.
 
 ### Remaining
-- [ ] **Corner style rendering** — ROUND vs SHARP corners (currently ignored, always sharp)
-- [ ] **Sign width minimum** — signs with very short text may look too narrow; may need a
-      configurable minimum width or auto-sizing that accounts for shield+text combinations
+- [ ] **Sign width minimum for shield+text** — signs with one short word may still feel too
+      narrow; consider auto-padding when row has a shield element.
 - [ ] **Multi-panel layout** — verify panel dividers and multi-panel stacking looks correct
-      with the new proportions
-- [ ] **Text alignment** — currently all rows are centered; real signs may need left-aligned
-      text for destination names
-- [ ] **Further proportions tuning** — may need adjustment after more in-game testing with
-      various sign configurations (different text lengths, multiple shields, etc.)
+      with the new proportions. Needs runClient testing.
+- [ ] **Further proportions tuning** — pending in-game verification of alignment + corner +
+      banner changes. Iterate based on user feedback.
 - [ ] **Display list caching** — currently removed due to GlStateManager desync issues.
-      Phase 5 item: reintroduce using raw GL11 calls (not GlStateManager) for all state
+      Phase 7 item: reintroduce using raw GL11 calls (not GlStateManager) for all state
       changes within the display list compilation. The `stateDirty` flag and
       `cleanupDisplayList()` infrastructure remains in TileEntity.
 
@@ -99,17 +110,25 @@ a multi-tab scrollable GUI. Block registry name: `dynamic_guide_sign`, GUI ID: 1
 - [x] Tab 1 — Sign Properties: sign color cycle, post type cycle, border +/-, corner style, panel count
 - [x] Tab 2 — Panel Editor: panel prev/next, exit tab toggle/position/text/color/toll,
       scrollable row list (4 visible), add/remove row, edit row navigates to tab 3
-- [x] Tab 3 — Row Element Editor: row prev/next, v-spacing +/-, scrollable element list (3 visible),
-      add/remove/up/down element, contextual editor (text field + scale, shield type + route + banner,
-      arrow type, spacing width)
+- [x] Tab 3 — Row Element Editor: row prev/next, v-spacing +/-, **row alignment cycle**,
+      element list (full, no inner cap), add/remove/up/down element, contextual editor
+      (text field + scale, shield type + route + banner, arrow type, spacing width)
 - [x] Save sends DynamicGuideSignUpdatePacket, Cancel closes without sending
 - [x] Text fields: textField (text element), routeField (shield route), exitTextField (exit tab text)
-- [x] Scroll support via Mouse.getEventDWheel()
+- [x] **Outer-tab scrollable content area** — replaces the per-list scroll. Mouse wheel
+      scrolls the entire tab content within the viewport between the tab strip and the
+      Save/Cancel buttons. Vertical scrollbar indicator drawn on the right side when content
+      overflows. Buttons + text fields outside the viewport are hidden via `visible = false`
+      so they don't intercept clicks or render through the fixed top/bottom strips.
 
 ### Remaining GUI Work
-- [ ] **GUI preview tab** (Tab 4) — text-based or mini-render sign preview
-- [ ] **Template signs** — pre-built configs ("Simple Exit", "Overhead Guide", etc.)
-- [ ] **Copy/paste** — copy sign data between blocks
+- [x] **GUI preview tab** (Tab 4) — text-based summary listing color/post/border/corners,
+      then per-panel exit-tab info, then per-row alignment+vsp+elements. Live-regenerated
+      on every tab open.
+- [x] **Template signs** — `SignTemplates.java` with 4 cycling presets (Blank Green,
+      Blank Blue, Brown Recreation, Standard Exit). One-button cycle on Properties tab.
+- [x] **Copy/paste** — process-static `clipboardJson` field. Copy serializes current data;
+      Paste deserializes if non-null. Paste button auto-disabled when clipboard is empty.
 
 ---
 
@@ -142,15 +161,15 @@ a multi-tab scrollable GUI. Block registry name: `dynamic_guide_sign`, GUI ID: 1
 
 ---
 
-## Phase 7: Polish & Advanced Features — NOT STARTED
+## Phase 7: Polish & Advanced Features — IN PROGRESS
 
 - [ ] Display list cache optimization (raw GL11 calls, not GlStateManager)
-- [ ] GUI preview tab (mini sign render or 2D pixel approximation)
-- [ ] Template signs (pre-built configs)
-- [ ] Copy/paste sign data between blocks
+- [x] GUI preview tab (text-based summary — see Phase 4)
+- [x] Template signs (4 cycling presets — see Phase 4)
+- [x] Copy/paste sign data between blocks (process-static clipboard — see Phase 4)
+- [x] Configurable text alignment (left/center/right per row — see Phase 3)
 - [ ] Additional shield types (state-specific for all 50 states)
 - [ ] Dev-env-utils atlas generator for state shields
-- [ ] Configurable text alignment (left/center/right per row)
 - [ ] Sign dimension constraints (user-settable min/max width)
 
 ---
@@ -170,13 +189,14 @@ a multi-tab scrollable GUI. Block registry name: `dynamic_guide_sign`, GUI ID: 1
 
 ## File Inventory
 
-### New Files (27 total)
+### New Files (29 total)
 
-**Data model (12):**
+**Data model (14):**
 `guidesign/GuideSignData.java`, `GuideSignPanel.java`, `GuideSignRow.java`,
 `GuideSignElement.java`, `GuideSignColor.java`, `GuideSignShieldType.java`,
 `GuideSignBannerType.java`, `GuideSignArrowType.java`, `GuideSignAtlas.java`,
-`ExitTabData.java`, `PostType.java`, `CornerStyle.java`
+`ExitTabData.java`, `PostType.java`, `CornerStyle.java`, `RowAlignment.java`,
+`SignTemplates.java`
 
 **Block/TE/TESR (3):**
 `BlockDynamicGuideSign.java`, `TileEntityDynamicGuideSign.java`,

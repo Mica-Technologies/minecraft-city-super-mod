@@ -9,6 +9,7 @@ public class GuideSignRow {
 
   private List<GuideSignElement> elements = new ArrayList<>();
   private int verticalSpacing = 0;
+  private int alignment = RowAlignment.CENTER.ordinal();
 
   public GuideSignRow() {
   }
@@ -27,6 +28,22 @@ public class GuideSignRow {
 
   public void setVerticalSpacing(int verticalSpacing) {
     this.verticalSpacing = Math.max(0, Math.min(16, verticalSpacing));
+  }
+
+  public int getAlignmentOrdinal() {
+    return alignment;
+  }
+
+  public RowAlignment getAlignment() {
+    return RowAlignment.fromOrdinal(alignment);
+  }
+
+  public void setAlignment(int alignment) {
+    this.alignment = alignment;
+  }
+
+  public void cycleAlignment() {
+    this.alignment = getAlignment().next().ordinal();
   }
 
   public boolean canAddElement() {
@@ -72,6 +89,7 @@ public class GuideSignRow {
   public GuideSignRow copy() {
     GuideSignRow r = new GuideSignRow();
     r.verticalSpacing = verticalSpacing;
+    r.alignment = alignment;
     for (GuideSignElement e : elements) {
       r.elements.add(e.copy());
     }
