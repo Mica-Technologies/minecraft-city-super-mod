@@ -12,6 +12,7 @@ import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.GuideSign
 import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.GuideSignRow;
 import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.GuideSignShieldType;
 import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.PostType;
+import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.RowAlignment;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.block.BlockHorizontal;
@@ -53,6 +54,17 @@ public class TileEntityDynamicGuideSignRenderer
 
   private static final float TEXT_BASE_SCALE = 0.8f;
   private static final float EXIT_TAB_TEXT_SCALE = 0.65f;
+  private static final float BANNER_TEXT_SCALE = 0.35f;
+  private static final float BANNER_AREA_HEIGHT = 4.5f;
+
+  // Per-step chamfer for ROUND corners. Two stair steps approximate a small radius.
+  private static final float CORNER_STEP = 0.6f;
+
+  // Cached per-frame lightmap coords from the block's actual combined light, used so
+  // text/shield/banner overlays respect day-night cycle and nearby light sources rather
+  // than rendering at fullbright.
+  private float lightmapX;
+  private float lightmapY;
 
   @Override
   public void render(TileEntityDynamicGuideSign te, double x, double y, double z,
@@ -65,6 +77,10 @@ public class TileEntityDynamicGuideSignRenderer
     if (data == null) {
       return;
     }
+
+    int combinedLight = te.getWorld().getCombinedLight(te.getPos(), 0);
+    lightmapX = combinedLight & 0xFFFF;
+    lightmapY = (combinedLight >> 16) & 0xFFFF;
 
     EnumFacing facing = te.getWorld().getBlockState(te.getPos())
         .getValue(BlockHorizontal.FACING);
@@ -102,9 +118,10 @@ public class TileEntityDynamicGuideSignRenderer
   private void renderSign(GuideSignData data) {
     GuideSignColor signColor = data.getSignColor();
     int borderWidth = data.getBorderWidth();
+    CornerStyle cornerStyle = data.getCornerStyle();
     List<GuideSignPanel> panels = data.getPanels();
 
-    float totalSignHeight = computeTotalSignHeight(panels);
+    float totalSignHeight = computeTotalSignHeight(panels, data);
     float totalSignWidth = computeTotalSignWidth(panels, data);
 
     float signLeft = CX - totalSignWidth / 2.0f;
@@ -123,26 +140,30 @@ public class TileEntityDynamicGuideSignRenderer
     GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 
     renderSignBackground(signLeft, signBottom, totalSignWidth, totalSignHeight,
-        faceZ, signColor, borderWidth);
+        faceZ, signColor, borderWidth, cornerStyle);
 
-    float panelY = signTop - PANEL_PADDING_TOP;
-    if (borderWidth > 0) {
-      panelY -= borderWidth * BORDER_INSET;
-    }
+    float borderInset = borderWidth > 0 ? borderWidth * BORDER_INSET : 0;
+    float contentLeft = signLeft + PANEL_PADDING_SIDE + borderInset;
+    float contentRight = signLeft + totalSignWidth - PANEL_PADDING_SIDE - borderInset;
+
+    float panelY = signTop - PANEL_PADDING_TOP - borderInset;
 
     for (int pi = 0; pi < panels.size(); pi++) {
       GuideSignPanel panel = panels.get(pi);
 
       if (panel.hasExitTab()) {
         renderExitTab(panel.getExitTab(), signLeft, signTop, totalSignWidth,
-            faceZ, signColor, borderWidth);
+            faceZ, signColor, borderWidth, cornerStyle);
       }
 
       for (GuideSignRow row : panel.getRows()) {
         panelY -= row.getVerticalSpacing();
 
+        float bannerExtra = rowHasBanner(row) ? BANNER_AREA_HEIGHT : 0;
+        panelY -= bannerExtra;
+
         float rowWidth = computeRowWidth(row, data);
-        float rowX = CX - rowWidth / 2.0f;
+        float rowX = computeRowX(row, contentLeft, contentRight, rowWidth);
 
         renderRow(row, rowX, panelY, faceZ, data);
 
@@ -169,7 +190,7 @@ public class TileEntityDynamicGuideSignRenderer
   }
 
   private void renderSignBackground(float left, float bottom, float width, float height,
-      float faceZ, GuideSignColor color, int borderWidth) {
+      float faceZ, GuideSignColor color, int borderWidth, CornerStyle cornerStyle) {
     Tessellator tess = Tessellator.getInstance();
     BufferBuilder buf = tess.getBuffer();
 
@@ -178,9 +199,8 @@ public class TileEntityDynamicGuideSignRenderer
     if (borderWidth > 0) {
       float bw = borderWidth * BORDER_INSET;
       List<RenderHelper.Box> border = new ArrayList<>();
-      border.add(new RenderHelper.Box(
-          new float[]{left - bw, bottom - bw, faceZ},
-          new float[]{left + width + bw, bottom + height + bw, frontZ}));
+      addRectBoxes(border, left - bw, bottom - bw, left + width + bw, bottom + height + bw,
+          faceZ, frontZ, cornerStyle);
 
       buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
       RenderHelper.addBoxesToBuffer(border, buf, 0.92f, 0.92f, 0.90f, 1.0f, 0, 0, 0);
@@ -189,9 +209,8 @@ public class TileEntityDynamicGuideSignRenderer
 
     float inset = borderWidth > 0 ? borderWidth * BORDER_INSET : 0;
     List<RenderHelper.Box> face = new ArrayList<>();
-    face.add(new RenderHelper.Box(
-        new float[]{left + inset, bottom + inset, faceZ - 0.1f},
-        new float[]{left + width - inset, bottom + height - inset, frontZ - 0.1f}));
+    addRectBoxes(face, left + inset, bottom + inset, left + width - inset, bottom + height - inset,
+        faceZ - 0.1f, frontZ - 0.1f, cornerStyle);
 
     buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
     RenderHelper.addBoxesToBuffer(face, buf,
@@ -199,8 +218,43 @@ public class TileEntityDynamicGuideSignRenderer
     tess.draw();
   }
 
+  // Voxel-style approximation of a rounded corner: split the rect into a horizontal
+  // and vertical strip that overlap in the middle, leaving a CORNER_STEP square gap
+  // at each of the 4 outer corners. Falls back to a single box if the rect is too
+  // small for the notch or if the style is SHARP.
+  private void addRectBoxes(List<RenderHelper.Box> boxes, float l, float b, float r, float t,
+      float z1, float z2, CornerStyle style) {
+    boolean canNotch = style == CornerStyle.ROUND
+        && (r - l) > 2 * CORNER_STEP
+        && (t - b) > 2 * CORNER_STEP;
+    if (!canNotch) {
+      boxes.add(new RenderHelper.Box(new float[]{l, b, z1}, new float[]{r, t, z2}));
+      return;
+    }
+    float s = CORNER_STEP;
+    boxes.add(new RenderHelper.Box(
+        new float[]{l, b + s, z1}, new float[]{r, t - s, z2}));
+    boxes.add(new RenderHelper.Box(
+        new float[]{l + s, b, z1}, new float[]{r - s, t, z2}));
+  }
+
+  private float computeRowX(GuideSignRow row, float contentLeft, float contentRight,
+      float rowWidth) {
+    RowAlignment align = row.getAlignment();
+    switch (align) {
+      case LEFT:
+        return contentLeft;
+      case RIGHT:
+        return contentRight - rowWidth;
+      case CENTER:
+      default:
+        return (contentLeft + contentRight - rowWidth) / 2.0f;
+    }
+  }
+
   private void renderExitTab(ExitTabData tab, float signLeft, float panelTopY,
-      float signWidth, float faceZ, GuideSignColor signColor, int borderWidth) {
+      float signWidth, float faceZ, GuideSignColor signColor, int borderWidth,
+      CornerStyle cornerStyle) {
     FontRenderer fr = Minecraft.getMinecraft().fontRenderer;
     String tabText = tab.getText();
     if (tabText == null || tabText.isEmpty()) {
@@ -236,9 +290,8 @@ public class TileEntityDynamicGuideSignRenderer
 
     if (borderWidth > 0) {
       List<RenderHelper.Box> tabBorder = new ArrayList<>();
-      tabBorder.add(new RenderHelper.Box(
-          new float[]{tabX - bw, tabBottom - bw, tabFaceZ + 0.1f},
-          new float[]{tabX + tabWidth + bw, tabTop + bw, tabFrontZ + 0.1f}));
+      addRectBoxes(tabBorder, tabX - bw, tabBottom - bw, tabX + tabWidth + bw, tabTop + bw,
+          tabFaceZ + 0.1f, tabFrontZ + 0.1f, cornerStyle);
       buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
       RenderHelper.addBoxesToBuffer(tabBorder, buf, 0.92f, 0.92f, 0.90f, 1.0f, 0, 0, 0);
       tess.draw();
@@ -246,9 +299,8 @@ public class TileEntityDynamicGuideSignRenderer
 
     GuideSignColor tabColor = tab.getGuideSignColor();
     List<RenderHelper.Box> tabBg = new ArrayList<>();
-    tabBg.add(new RenderHelper.Box(
-        new float[]{tabX, tabBottom, tabFaceZ},
-        new float[]{tabX + tabWidth, tabTop, tabFrontZ}));
+    addRectBoxes(tabBg, tabX, tabBottom, tabX + tabWidth, tabTop, tabFaceZ, tabFrontZ,
+        cornerStyle);
     buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
     RenderHelper.addBoxesToBuffer(tabBg, buf,
         tabColor.getRed(), tabColor.getGreen(), tabColor.getBlue(), 1.0f, 0, 0, 0);
@@ -257,7 +309,7 @@ public class TileEntityDynamicGuideSignRenderer
     GlStateManager.enableTexture2D();
     float prevBX = OpenGlHelper.lastBrightnessX;
     float prevBY = OpenGlHelper.lastBrightnessY;
-    OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240f, 240f);
+    OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, lightmapX, lightmapY);
 
     GlStateManager.pushMatrix();
     float textCenterX = tabX + tabWidth / 2.0f;
@@ -285,7 +337,7 @@ public class TileEntityDynamicGuideSignRenderer
 
     float prevBX = OpenGlHelper.lastBrightnessX;
     float prevBY = OpenGlHelper.lastBrightnessY;
-    OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240f, 240f);
+    OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, lightmapX, lightmapY);
 
     for (GuideSignElement elem : row.getElements()) {
       switch (elem.getType()) {
@@ -390,10 +442,12 @@ public class TileEntityDynamicGuideSignRenderer
     String bannerText = elem.getGuideSignBannerType().getBannerText();
     if (!bannerText.isEmpty()) {
       GlStateManager.pushMatrix();
-      float bannerY = shieldCenterY + halfSize + 0.5f;
+      // Banner is centered in the row's reserved banner zone, which sits ABOVE
+      // the shield (between the row content top and the sign body's top).
+      float bannerY = shieldCenterY + halfSize + BANNER_AREA_HEIGHT / 2.0f;
       GlStateManager.translate(shieldCenterX, bannerY, faceZ - 0.4f);
       GlStateManager.rotate(180, 0, 1, 0);
-      float bannerScale = TEXT_BASE_SCALE * 0.35f;
+      float bannerScale = TEXT_BASE_SCALE * BANNER_TEXT_SCALE;
       GlStateManager.scale(bannerScale, -bannerScale, bannerScale);
       GlStateManager.depthMask(false);
 
@@ -499,12 +553,15 @@ public class TileEntityDynamicGuideSignRenderer
     }
   }
 
-  private float computeTotalSignHeight(List<GuideSignPanel> panels) {
+  private float computeTotalSignHeight(List<GuideSignPanel> panels, GuideSignData data) {
     float h = PANEL_PADDING_TOP + PANEL_PADDING_BOTTOM;
     for (int pi = 0; pi < panels.size(); pi++) {
       GuideSignPanel panel = panels.get(pi);
       for (GuideSignRow row : panel.getRows()) {
         h += ROW_HEIGHT + ROW_SPACING + row.getVerticalSpacing();
+        if (rowHasBanner(row)) {
+          h += BANNER_AREA_HEIGHT;
+        }
       }
       if (!panel.getRows().isEmpty()) {
         h -= ROW_SPACING;
@@ -513,7 +570,19 @@ public class TileEntityDynamicGuideSignRenderer
         h += PANEL_GAP;
       }
     }
+    float borderInset = data.getBorderWidth() > 0 ? data.getBorderWidth() * BORDER_INSET : 0;
+    h += 2 * borderInset;
     return Math.max(16.0f, h);
+  }
+
+  private boolean rowHasBanner(GuideSignRow row) {
+    for (GuideSignElement e : row.getElements()) {
+      if (e.getType() == GuideSignElement.TYPE_SHIELD
+          && !e.getGuideSignBannerType().getBannerText().isEmpty()) {
+        return true;
+      }
+    }
+    return false;
   }
 
   private float computeTotalSignWidth(List<GuideSignPanel> panels, GuideSignData data) {
@@ -533,7 +602,8 @@ public class TileEntityDynamicGuideSignRenderer
         }
       }
     }
-    return Math.max(32.0f, maxRowW + PANEL_PADDING_SIDE * 2);
+    float borderInset = data.getBorderWidth() > 0 ? data.getBorderWidth() * BORDER_INSET : 0;
+    return Math.max(32.0f, maxRowW + PANEL_PADDING_SIDE * 2 + 2 * borderInset);
   }
 
   private float computeRowWidth(GuideSignRow row, GuideSignData data) {

@@ -11,13 +11,16 @@ import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.GuideSign
 import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.GuideSignPanel;
 import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.GuideSignRow;
 import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.GuideSignShieldType;
+import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.SignTemplates;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.ParametersAreNonnullByDefault;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.util.text.TextFormatting;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
@@ -26,10 +29,12 @@ public class DynamicGuideSignGui extends GuiScreen {
   private static final int TAB_PROPERTIES = 0;
   private static final int TAB_PANEL = 1;
   private static final int TAB_ROW = 2;
+  private static final int TAB_PREVIEW = 3;
 
   private static final int BTN_TAB_PROPERTIES = 100;
   private static final int BTN_TAB_PANEL = 101;
   private static final int BTN_TAB_ROW = 102;
+  private static final int BTN_TAB_PREVIEW = 103;
   private static final int BTN_SAVE = 200;
   private static final int BTN_CANCEL = 201;
 
@@ -40,6 +45,9 @@ public class DynamicGuideSignGui extends GuiScreen {
   private static final int BTN_CORNER_STYLE = 14;
   private static final int BTN_ADD_PANEL = 15;
   private static final int BTN_REMOVE_PANEL = 16;
+  private static final int BTN_TEMPLATE = 17;
+  private static final int BTN_COPY = 18;
+  private static final int BTN_PASTE = 19;
 
   private static final int BTN_PANEL_PREV = 20;
   private static final int BTN_PANEL_NEXT = 21;
@@ -68,9 +76,12 @@ public class DynamicGuideSignGui extends GuiScreen {
   private static final int BTN_SPACING_UP = 47;
   private static final int BTN_VSPACING_DOWN = 48;
   private static final int BTN_VSPACING_UP = 49;
+  private static final int BTN_ROW_ALIGN = 50;
 
   private static final int FIELD_WIDTH = 240;
   private static final int BTN_HEIGHT = 18;
+  private static final int SCROLL_STEP = 12;
+  private static final int SCROLLBAR_WIDTH = 4;
 
   private final TileEntityDynamicGuideSign tileEntity;
   private GuideSignData data;
@@ -78,12 +89,30 @@ public class DynamicGuideSignGui extends GuiScreen {
   private int selectedPanel = 0;
   private int selectedRow = 0;
   private int selectedElement = 0;
-  private int rowScrollOffset = 0;
-  private int elemScrollOffset = 0;
+
+  private int tabContentScroll = 0;
+  private int tabContentMaxScroll = 0;
+  private int viewportTop = 0;
+  private int viewportBottom = 0;
+  private int contentLeft = 0;
+
+  private final List<GuiButton> contentButtons = new ArrayList<>();
+  private final List<Integer> contentButtonNaturalY = new ArrayList<>();
+  private final List<GuiTextField> contentTextFields = new ArrayList<>();
+  private final List<Integer> contentTextFieldNaturalY = new ArrayList<>();
+  private int customContentBottom = 0;
 
   private GuiTextField textField;
   private GuiTextField routeField;
   private GuiTextField exitTextField;
+
+  // Process-wide clipboard for copy/paste between signs.
+  private static String clipboardJson = null;
+  // Static so the next-template selection is preserved across GUI opens.
+  private static int templateIndex = 0;
+
+  private final List<String> previewLines = new ArrayList<>();
+  private static final int PREVIEW_LINE_HEIGHT = 11;
 
   public DynamicGuideSignGui(TileEntityDynamicGuideSign tileEntity) {
     this.tileEntity = tileEntity;
@@ -95,12 +124,22 @@ public class DynamicGuideSignGui extends GuiScreen {
     Keyboard.enableRepeatEvents(true);
     super.initGui();
     buttonList.clear();
+    contentButtons.clear();
+    contentButtonNaturalY.clear();
+    contentTextFields.clear();
+    contentTextFieldNaturalY.clear();
 
     ScaledResolution sr = new ScaledResolution(this.mc);
     int centerX = sr.getScaledWidth() / 2;
     int left = centerX - FIELD_WIDTH / 2;
-    int tabWidth = FIELD_WIDTH / 3;
+    int tabWidth = FIELD_WIDTH / 4;
     int startY = 25;
+    int bottomY = sr.getScaledHeight() - 30;
+
+    contentLeft = left;
+    viewportTop = startY + BTN_HEIGHT + 6;
+    viewportBottom = bottomY - 4;
+    customContentBottom = 0;
 
     buttonList.add(new GuiButton(BTN_TAB_PROPERTIES, left, startY, tabWidth, BTN_HEIGHT,
         "Properties"));
@@ -108,46 +147,106 @@ public class DynamicGuideSignGui extends GuiScreen {
         "Panels"));
     buttonList.add(new GuiButton(BTN_TAB_ROW, left + tabWidth * 2, startY, tabWidth, BTN_HEIGHT,
         "Elements"));
+    buttonList.add(new GuiButton(BTN_TAB_PREVIEW, left + tabWidth * 3, startY, tabWidth,
+        BTN_HEIGHT, "Preview"));
 
-    int contentY = startY + BTN_HEIGHT + 6;
     int halfW = (FIELD_WIDTH - 4) / 2;
-    int thirdW = (FIELD_WIDTH - 8) / 3;
 
     switch (currentTab) {
       case TAB_PROPERTIES:
-        buildPropertiesTab(left, contentY, halfW);
+        buildPropertiesTab(left, viewportTop, halfW);
         break;
       case TAB_PANEL:
-        buildPanelTab(left, contentY, halfW);
+        buildPanelTab(left, viewportTop, halfW);
         break;
       case TAB_ROW:
-        buildRowTab(left, contentY, halfW);
+        buildRowTab(left, viewportTop, halfW);
+        break;
+      case TAB_PREVIEW:
+        buildPreviewTab(left, viewportTop);
         break;
     }
 
-    int bottomY = sr.getScaledHeight() - 30;
     buttonList.add(new GuiButton(BTN_SAVE, left, bottomY, halfW, BTN_HEIGHT, "Save"));
     buttonList.add(
         new GuiButton(BTN_CANCEL, left + halfW + 4, bottomY, halfW, BTN_HEIGHT, "Cancel"));
 
+    recomputeMaxScroll();
+    applyTabScroll();
     updateTabButtonStates();
   }
 
+  private void addContentBtn(GuiButton btn) {
+    contentButtons.add(btn);
+    contentButtonNaturalY.add(btn.y);
+    buttonList.add(btn);
+  }
+
+  private void addContentField(GuiTextField field) {
+    contentTextFields.add(field);
+    contentTextFieldNaturalY.add(field.y);
+  }
+
+  private void recomputeMaxScroll() {
+    int maxBottom = viewportTop;
+    for (int i = 0; i < contentButtons.size(); i++) {
+      int b = contentButtonNaturalY.get(i) + contentButtons.get(i).height;
+      if (b > maxBottom) maxBottom = b;
+    }
+    for (int i = 0; i < contentTextFields.size(); i++) {
+      int b = contentTextFieldNaturalY.get(i) + contentTextFields.get(i).height;
+      if (b > maxBottom) maxBottom = b;
+    }
+    if (customContentBottom > maxBottom) maxBottom = customContentBottom;
+    int viewportHeight = viewportBottom - viewportTop;
+    int extent = maxBottom - viewportTop;
+    tabContentMaxScroll = Math.max(0, extent - viewportHeight);
+    if (tabContentScroll > tabContentMaxScroll) tabContentScroll = tabContentMaxScroll;
+    if (tabContentScroll < 0) tabContentScroll = 0;
+  }
+
+  private void applyTabScroll() {
+    for (int i = 0; i < contentButtons.size(); i++) {
+      GuiButton btn = contentButtons.get(i);
+      int naturalY = contentButtonNaturalY.get(i);
+      int scrolledY = naturalY - tabContentScroll;
+      btn.y = scrolledY;
+      btn.visible = scrolledY + btn.height > viewportTop && scrolledY < viewportBottom;
+    }
+    for (int i = 0; i < contentTextFields.size(); i++) {
+      GuiTextField field = contentTextFields.get(i);
+      int naturalY = contentTextFieldNaturalY.get(i);
+      int scrolledY = naturalY - tabContentScroll;
+      field.y = scrolledY;
+      field.setVisible(
+          scrolledY + field.height > viewportTop && scrolledY < viewportBottom);
+    }
+  }
+
   private void buildPropertiesTab(int left, int y, int halfW) {
-    buttonList.add(new GuiButton(BTN_SIGN_COLOR, left, y, FIELD_WIDTH, BTN_HEIGHT, ""));
+    addContentBtn(new GuiButton(BTN_SIGN_COLOR, left, y, FIELD_WIDTH, BTN_HEIGHT, ""));
     y += BTN_HEIGHT + 3;
-    buttonList.add(new GuiButton(BTN_POST_TYPE, left, y, FIELD_WIDTH, BTN_HEIGHT, ""));
+    addContentBtn(new GuiButton(BTN_POST_TYPE, left, y, FIELD_WIDTH, BTN_HEIGHT, ""));
     y += BTN_HEIGHT + 3;
-    buttonList.add(new GuiButton(BTN_BORDER_DOWN, left, y, 30, BTN_HEIGHT, "-"));
-    buttonList.add(new GuiButton(BTN_BORDER_UP, left + FIELD_WIDTH - 30, y, 30, BTN_HEIGHT, "+"));
+    addContentBtn(new GuiButton(BTN_BORDER_DOWN, left, y, 30, BTN_HEIGHT, "-"));
+    addContentBtn(new GuiButton(BTN_BORDER_UP, left + FIELD_WIDTH - 30, y, 30, BTN_HEIGHT, "+"));
     y += BTN_HEIGHT + 3;
-    buttonList.add(new GuiButton(BTN_CORNER_STYLE, left, y, FIELD_WIDTH, BTN_HEIGHT, ""));
+    addContentBtn(new GuiButton(BTN_CORNER_STYLE, left, y, FIELD_WIDTH, BTN_HEIGHT, ""));
     y += BTN_HEIGHT + 6;
-    buttonList.add(new GuiButton(BTN_ADD_PANEL, left, y, halfW, BTN_HEIGHT, "+ Add Panel"));
+    addContentBtn(new GuiButton(BTN_ADD_PANEL, left, y, halfW, BTN_HEIGHT, "+ Add Panel"));
     GuiButton removePanel = new GuiButton(BTN_REMOVE_PANEL, left + halfW + 4, y, halfW,
         BTN_HEIGHT, "- Remove Panel");
     removePanel.enabled = data.getPanels().size() > 1;
-    buttonList.add(removePanel);
+    addContentBtn(removePanel);
+    y += BTN_HEIGHT + 6;
+    addContentBtn(new GuiButton(BTN_TEMPLATE, left, y, FIELD_WIDTH, BTN_HEIGHT,
+        "Apply Template (cycle)"));
+    y += BTN_HEIGHT + 3;
+    addContentBtn(new GuiButton(BTN_COPY, left, y, halfW, BTN_HEIGHT, "Copy Sign"));
+    GuiButton pasteBtn = new GuiButton(BTN_PASTE, left + halfW + 4, y, halfW, BTN_HEIGHT,
+        "Paste Sign");
+    pasteBtn.enabled = clipboardJson != null;
+    addContentBtn(pasteBtn);
   }
 
   private void buildPanelTab(int left, int y, int halfW) {
@@ -157,26 +256,26 @@ public class DynamicGuideSignGui extends GuiScreen {
         "Next >");
     prevPnl.enabled = selectedPanel > 0;
     nextPnl.enabled = selectedPanel < data.getPanels().size() - 1;
-    buttonList.add(prevPnl);
-    buttonList.add(nextPnl);
+    addContentBtn(prevPnl);
+    addContentBtn(nextPnl);
     y += BTN_HEIGHT + 4;
 
     GuideSignPanel panel = data.getPanels().get(selectedPanel);
 
-    buttonList.add(
-        new GuiButton(BTN_EXIT_TAB_TOGGLE, left, y, FIELD_WIDTH, BTN_HEIGHT, ""));
+    addContentBtn(new GuiButton(BTN_EXIT_TAB_TOGGLE, left, y, FIELD_WIDTH, BTN_HEIGHT, ""));
     y += BTN_HEIGHT + 2;
 
     if (panel.hasExitTab()) {
       exitTextField = new GuiTextField(60, fontRenderer, left, y, halfW - 2, BTN_HEIGHT);
       exitTextField.setMaxStringLength(10);
       exitTextField.setText(panel.getExitTab().getText());
-      buttonList.add(
+      addContentField(exitTextField);
+      addContentBtn(
           new GuiButton(BTN_EXIT_TAB_POS, left + halfW + 2, y, halfW, BTN_HEIGHT, ""));
       y += BTN_HEIGHT + 2;
-      buttonList.add(
+      addContentBtn(
           new GuiButton(BTN_EXIT_TAB_COLOR, left, y, halfW - 2, BTN_HEIGHT, ""));
-      buttonList.add(
+      addContentBtn(
           new GuiButton(BTN_EXIT_TAB_TOLL, left + halfW + 2, y, halfW, BTN_HEIGHT, ""));
       y += BTN_HEIGHT + 2;
     } else {
@@ -185,28 +284,25 @@ public class DynamicGuideSignGui extends GuiScreen {
 
     y += 4;
 
-    int maxVisibleRows = 4;
     List<GuideSignRow> rows = panel.getRows();
-    for (int i = rowScrollOffset; i < Math.min(rows.size(), rowScrollOffset + maxVisibleRows);
-        i++) {
-      int btnY = y + (i - rowScrollOffset) * (BTN_HEIGHT + 1);
+    for (int i = 0; i < rows.size(); i++) {
+      int btnY = y + i * (BTN_HEIGHT + 1);
       String label = "Row " + (i + 1) + ": " + truncate(rows.get(i).getSummary(), 28);
       boolean isSelected = i == selectedRow;
-      GuiButton rowBtn = new GuiButton(BTN_EDIT_ROW + 1000 + i, left, btnY,
-          FIELD_WIDTH, BTN_HEIGHT, (isSelected ? "> " : "  ") + label);
-      buttonList.add(rowBtn);
+      addContentBtn(new GuiButton(BTN_EDIT_ROW + 1000 + i, left, btnY,
+          FIELD_WIDTH, BTN_HEIGHT, (isSelected ? "> " : "  ") + label));
     }
 
-    y += maxVisibleRows * (BTN_HEIGHT + 1) + 3;
+    y += Math.max(rows.size(), 1) * (BTN_HEIGHT + 1) + 3;
     GuiButton addRow = new GuiButton(BTN_ADD_ROW, left, y, halfW, BTN_HEIGHT, "+ Add Row");
     addRow.enabled = panel.canAddRow();
-    buttonList.add(addRow);
+    addContentBtn(addRow);
     GuiButton removeRow = new GuiButton(BTN_REMOVE_ROW, left + halfW + 4, y, halfW, BTN_HEIGHT,
         "- Remove Row");
     removeRow.enabled = rows.size() > 0;
-    buttonList.add(removeRow);
+    addContentBtn(removeRow);
     y += BTN_HEIGHT + 2;
-    buttonList.add(new GuiButton(BTN_EDIT_ROW, left, y, FIELD_WIDTH, BTN_HEIGHT,
+    addContentBtn(new GuiButton(BTN_EDIT_ROW, left, y, FIELD_WIDTH, BTN_HEIGHT,
         "Edit Selected Row >>"));
   }
 
@@ -224,46 +320,45 @@ public class DynamicGuideSignGui extends GuiScreen {
         "Next >");
     prevRow.enabled = selectedRow > 0;
     nextRow.enabled = selectedRow < panel.getRows().size() - 1;
-    buttonList.add(prevRow);
-    buttonList.add(nextRow);
+    addContentBtn(prevRow);
+    addContentBtn(nextRow);
     y += BTN_HEIGHT + 2;
 
-    buttonList.add(new GuiButton(BTN_VSPACING_DOWN, left, y, 30, BTN_HEIGHT, "-"));
-    buttonList.add(
+    addContentBtn(new GuiButton(BTN_VSPACING_DOWN, left, y, 30, BTN_HEIGHT, "-"));
+    addContentBtn(
         new GuiButton(BTN_VSPACING_UP, left + FIELD_WIDTH - 30, y, 30, BTN_HEIGHT, "+"));
+    y += BTN_HEIGHT + 2;
+    addContentBtn(new GuiButton(BTN_ROW_ALIGN, left, y, FIELD_WIDTH, BTN_HEIGHT, ""));
     y += BTN_HEIGHT + 4;
 
-    int maxVisibleElems = 3;
     List<GuideSignElement> elems = row.getElements();
-    for (int i = elemScrollOffset;
-        i < Math.min(elems.size(), elemScrollOffset + maxVisibleElems); i++) {
-      int btnY = y + (i - elemScrollOffset) * (BTN_HEIGHT + 1);
+    for (int i = 0; i < elems.size(); i++) {
+      int btnY = y + i * (BTN_HEIGHT + 1);
       String label = GuideSignElement.getTypeName(elems.get(i).getType()) + ": "
           + truncate(elems.get(i).getSummary(), 24);
       boolean isSelected = i == selectedElement;
-      GuiButton elemBtn = new GuiButton(BTN_ADD_ELEMENT + 1000 + i, left, btnY,
-          FIELD_WIDTH, BTN_HEIGHT, (isSelected ? "> " : "  ") + label);
-      buttonList.add(elemBtn);
+      addContentBtn(new GuiButton(BTN_ADD_ELEMENT + 1000 + i, left, btnY,
+          FIELD_WIDTH, BTN_HEIGHT, (isSelected ? "> " : "  ") + label));
     }
 
-    y += maxVisibleElems * (BTN_HEIGHT + 1) + 2;
+    y += Math.max(elems.size(), 1) * (BTN_HEIGHT + 1) + 2;
 
     int quarterW = (FIELD_WIDTH - 12) / 4;
     GuiButton addElem = new GuiButton(BTN_ADD_ELEMENT, left, y, quarterW, BTN_HEIGHT, "+ Add");
     addElem.enabled = row.canAddElement();
-    buttonList.add(addElem);
+    addContentBtn(addElem);
     GuiButton removeElem = new GuiButton(BTN_REMOVE_ELEMENT, left + quarterW + 4, y, quarterW,
         BTN_HEIGHT, "- Del");
     removeElem.enabled = !elems.isEmpty();
-    buttonList.add(removeElem);
+    addContentBtn(removeElem);
     GuiButton upElem = new GuiButton(BTN_ELEM_UP, left + (quarterW + 4) * 2, y, quarterW,
         BTN_HEIGHT, "Up");
     upElem.enabled = selectedElement > 0;
-    buttonList.add(upElem);
+    addContentBtn(upElem);
     GuiButton downElem = new GuiButton(BTN_ELEM_DOWN, left + (quarterW + 4) * 3, y, quarterW,
         BTN_HEIGHT, "Down");
     downElem.enabled = selectedElement < elems.size() - 1;
-    buttonList.add(downElem);
+    addContentBtn(downElem);
 
     y += BTN_HEIGHT + 6;
 
@@ -273,7 +368,7 @@ public class DynamicGuideSignGui extends GuiScreen {
   }
 
   private void buildElementEditor(int left, int y, int halfW, GuideSignElement elem) {
-    buttonList.add(new GuiButton(BTN_ELEM_TYPE_CYCLE, left, y, FIELD_WIDTH, BTN_HEIGHT, ""));
+    addContentBtn(new GuiButton(BTN_ELEM_TYPE_CYCLE, left, y, FIELD_WIDTH, BTN_HEIGHT, ""));
     y += BTN_HEIGHT + 3;
 
     switch (elem.getType()) {
@@ -282,34 +377,36 @@ public class DynamicGuideSignGui extends GuiScreen {
         textField.setMaxStringLength(24);
         textField.setText(elem.getText());
         textField.setFocused(true);
+        addContentField(textField);
         y += BTN_HEIGHT + 2;
-        buttonList.add(
+        addContentBtn(
             new GuiButton(BTN_TEXT_SCALE_DOWN, left, y, 30, BTN_HEIGHT, "-"));
-        buttonList.add(
+        addContentBtn(
             new GuiButton(BTN_TEXT_SCALE_UP, left + FIELD_WIDTH - 30, y, 30, BTN_HEIGHT, "+"));
         break;
 
       case GuideSignElement.TYPE_SHIELD:
-        buttonList.add(
+        addContentBtn(
             new GuiButton(BTN_SHIELD_TYPE, left, y, FIELD_WIDTH, BTN_HEIGHT, ""));
         y += BTN_HEIGHT + 2;
         routeField = new GuiTextField(71, fontRenderer, left, y, halfW - 2, BTN_HEIGHT);
         routeField.setMaxStringLength(5);
         routeField.setText(elem.getRouteNumber());
         routeField.setFocused(true);
-        buttonList.add(
+        addContentField(routeField);
+        addContentBtn(
             new GuiButton(BTN_BANNER_TYPE, left + halfW + 2, y, halfW, BTN_HEIGHT, ""));
         break;
 
       case GuideSignElement.TYPE_ARROW:
-        buttonList.add(
+        addContentBtn(
             new GuiButton(BTN_ARROW_TYPE, left, y, FIELD_WIDTH, BTN_HEIGHT, ""));
         break;
 
       case GuideSignElement.TYPE_SPACING:
-        buttonList.add(
+        addContentBtn(
             new GuiButton(BTN_SPACING_DOWN, left, y, 30, BTN_HEIGHT, "-"));
-        buttonList.add(
+        addContentBtn(
             new GuiButton(BTN_SPACING_UP, left + FIELD_WIDTH - 30, y, 30, BTN_HEIGHT, "+"));
         break;
 
@@ -317,6 +414,69 @@ public class DynamicGuideSignGui extends GuiScreen {
         textField = null;
         routeField = null;
         break;
+    }
+  }
+
+  private void buildPreviewTab(int left, int y) {
+    rebuildPreviewLines();
+    int totalHeight = previewLines.size() * PREVIEW_LINE_HEIGHT;
+    customContentBottom = y + totalHeight + 4;
+  }
+
+  private void rebuildPreviewLines() {
+    previewLines.clear();
+    previewLines.add(TextFormatting.GOLD + "=== Sign ===");
+    previewLines.add("Color: " + data.getSignColor().getFriendlyName());
+    previewLines.add("Post: " + data.getPostType().getFriendlyName());
+    previewLines.add("Border: " + data.getBorderWidth());
+    previewLines.add("Corners: " + data.getCornerStyle().getFriendlyName());
+    previewLines.add("");
+
+    List<GuideSignPanel> panels = data.getPanels();
+    for (int p = 0; p < panels.size(); p++) {
+      GuideSignPanel panel = panels.get(p);
+      previewLines.add(TextFormatting.AQUA + "Panel " + (p + 1) + " of " + panels.size());
+      if (panel.hasExitTab()) {
+        ExitTabData et = panel.getExitTab();
+        StringBuilder sb = new StringBuilder("Exit tab: \"");
+        sb.append(et.getText()).append("\" ").append(et.getPositionName());
+        sb.append(", ").append(et.getGuideSignColor().getFriendlyName());
+        if (et.isToll()) sb.append(", toll");
+        previewLines.add(sb.toString());
+      } else {
+        previewLines.add(TextFormatting.GRAY + "(no exit tab)");
+      }
+
+      List<GuideSignRow> rows = panel.getRows();
+      if (rows.isEmpty()) {
+        previewLines.add("  " + TextFormatting.GRAY + "(no rows)");
+      }
+      for (int r = 0; r < rows.size(); r++) {
+        GuideSignRow row = rows.get(r);
+        previewLines.add("  Row " + (r + 1) + " ["
+            + row.getAlignment().getFriendlyName().toLowerCase()
+            + (row.getVerticalSpacing() > 0 ? ", vsp=" + row.getVerticalSpacing() : "")
+            + "]");
+        List<GuideSignElement> elems = row.getElements();
+        if (elems.isEmpty()) {
+          previewLines.add("    " + TextFormatting.GRAY + "(empty)");
+        }
+        for (GuideSignElement e : elems) {
+          previewLines.add("    " + GuideSignElement.getTypeName(e.getType()) + ": "
+              + e.getSummary());
+        }
+      }
+      if (p < panels.size() - 1) {
+        previewLines.add("");
+      }
+    }
+  }
+
+  private void drawPreviewLabels(int left, int y) {
+    int lineY = y;
+    for (String line : previewLines) {
+      drawScrolledString(line, left, lineY, 0xFFFFFF);
+      lineY += PREVIEW_LINE_HEIGHT;
     }
   }
 
@@ -328,6 +488,8 @@ public class DynamicGuideSignGui extends GuiScreen {
         btn.enabled = currentTab != TAB_PANEL;
       } else if (btn.id == BTN_TAB_ROW) {
         btn.enabled = currentTab != TAB_ROW;
+      } else if (btn.id == BTN_TAB_PREVIEW) {
+        btn.enabled = currentTab != TAB_PREVIEW;
       }
     }
   }
@@ -339,34 +501,62 @@ public class DynamicGuideSignGui extends GuiScreen {
     ScaledResolution sr = new ScaledResolution(this.mc);
     int centerX = sr.getScaledWidth() / 2;
     int left = centerX - FIELD_WIDTH / 2;
-    int startY = 25;
 
     drawCenteredString(fontRenderer, "Dynamic Highway Guide Sign", centerX, 10, 0x00CC66);
 
-    int contentY = startY + BTN_HEIGHT + 6;
-
     switch (currentTab) {
       case TAB_PROPERTIES:
-        drawPropertiesLabels(left, contentY, centerX);
+        drawPropertiesLabels(left, viewportTop, centerX);
         break;
       case TAB_PANEL:
-        drawPanelLabels(left, contentY, centerX);
-        if (exitTextField != null) {
+        drawPanelLabels(left, viewportTop, centerX);
+        if (exitTextField != null && exitTextField.getVisible()) {
           exitTextField.drawTextBox();
         }
         break;
       case TAB_ROW:
-        drawRowLabels(left, contentY, centerX);
-        if (textField != null) {
+        drawRowLabels(left, viewportTop, centerX);
+        if (textField != null && textField.getVisible()) {
           textField.drawTextBox();
         }
-        if (routeField != null) {
+        if (routeField != null && routeField.getVisible()) {
           routeField.drawTextBox();
         }
+        break;
+      case TAB_PREVIEW:
+        drawPreviewLabels(left, viewportTop);
         break;
     }
 
     super.drawScreen(mouseX, mouseY, partialTicks);
+
+    if (tabContentMaxScroll > 0) {
+      int trackX = left + FIELD_WIDTH + 4;
+      int trackHeight = viewportBottom - viewportTop;
+      int viewportH = trackHeight;
+      int totalContent = trackHeight + tabContentMaxScroll;
+      int thumbHeight = Math.max(8, (viewportH * trackHeight) / totalContent);
+      int thumbTrack = trackHeight - thumbHeight;
+      int thumbY = viewportTop
+          + (tabContentMaxScroll == 0 ? 0 : thumbTrack * tabContentScroll / tabContentMaxScroll);
+      drawRect(trackX, viewportTop, trackX + SCROLLBAR_WIDTH, viewportTop + trackHeight,
+          0x55000000);
+      drawRect(trackX, thumbY, trackX + SCROLLBAR_WIDTH, thumbY + thumbHeight, 0xCCAAAAAA);
+    }
+  }
+
+  private void drawScrolledCenteredString(String text, int x, int naturalY, int color) {
+    int y = naturalY - tabContentScroll;
+    if (y + fontRenderer.FONT_HEIGHT > viewportTop && y < viewportBottom) {
+      drawCenteredString(fontRenderer, text, x, y, color);
+    }
+  }
+
+  private void drawScrolledString(String text, int x, int naturalY, int color) {
+    int y = naturalY - tabContentScroll;
+    if (y + fontRenderer.FONT_HEIGHT > viewportTop && y < viewportBottom) {
+      drawString(fontRenderer, text, x, y, color);
+    }
   }
 
   private void drawPropertiesLabels(int left, int y, int centerX) {
@@ -377,19 +567,21 @@ public class DynamicGuideSignGui extends GuiScreen {
         btn.displayString = "Post: " + data.getPostType().getFriendlyName();
       } else if (btn.id == BTN_CORNER_STYLE) {
         btn.displayString = "Corners: " + data.getCornerStyle().getFriendlyName();
+      } else if (btn.id == BTN_TEMPLATE) {
+        btn.displayString = "Apply Template: " + SignTemplates.getName(templateIndex);
       }
     }
-    drawCenteredString(fontRenderer, "Border: " + data.getBorderWidth(), centerX,
+    drawScrolledCenteredString("Border: " + data.getBorderWidth(), centerX,
         y + (BTN_HEIGHT + 3) * 2 + 5, 0xFFFFFF);
 
-    drawString(fontRenderer, "Panels: " + data.getPanels().size(), left,
+    drawScrolledString("Panels: " + data.getPanels().size(), left,
         y + (BTN_HEIGHT + 3) * 4 - 8, 0xAAAAAA);
   }
 
   private void drawPanelLabels(int left, int y, int centerX) {
     clampPanelSelection();
     String panelLabel = "Panel " + (selectedPanel + 1) + " of " + data.getPanels().size();
-    drawCenteredString(fontRenderer, panelLabel, centerX, y + 5, 0xFFFFFF);
+    drawScrolledCenteredString(panelLabel, centerX, y + 5, 0xFFFFFF);
 
     GuideSignPanel panel = data.getPanels().get(selectedPanel);
     for (GuiButton btn : buttonList) {
@@ -409,7 +601,7 @@ public class DynamicGuideSignGui extends GuiScreen {
     clampPanelSelection();
     GuideSignPanel panel = data.getPanels().get(selectedPanel);
     if (panel.getRows().isEmpty()) {
-      drawCenteredString(fontRenderer, "No rows - go to Panel tab to add", centerX, y + 20,
+      drawScrolledCenteredString("No rows - go to Panel tab to add", centerX, y + 20,
           0xFF6666);
       return;
     }
@@ -419,17 +611,22 @@ public class DynamicGuideSignGui extends GuiScreen {
     String rowLabel =
         "Panel " + (selectedPanel + 1) + " / Row " + (selectedRow + 1) + " of " + panel.getRows()
             .size();
-    drawCenteredString(fontRenderer, rowLabel, centerX, y + 5, 0xFFFFFF);
+    drawScrolledCenteredString(rowLabel, centerX, y + 5, 0xFFFFFF);
     y += BTN_HEIGHT + 2;
-    drawCenteredString(fontRenderer, "V-Spacing: " + row.getVerticalSpacing(), centerX,
+    drawScrolledCenteredString("V-Spacing: " + row.getVerticalSpacing(), centerX,
         y + 5, 0xFFFFFF);
+    y += BTN_HEIGHT + 2;
+    for (GuiButton btn : buttonList) {
+      if (btn.id == BTN_ROW_ALIGN) {
+        btn.displayString = "Align: " + row.getAlignment().getFriendlyName();
+      }
+    }
     y += BTN_HEIGHT + 4;
 
-    int maxVisibleElems = 3;
-    y += maxVisibleElems * (BTN_HEIGHT + 1) + 2;
+    List<GuideSignElement> elems = row.getElements();
+    y += Math.max(elems.size(), 1) * (BTN_HEIGHT + 1) + 2;
     y += BTN_HEIGHT + 6;
 
-    List<GuideSignElement> elems = row.getElements();
     if (!elems.isEmpty() && selectedElement >= 0 && selectedElement < elems.size()) {
       GuideSignElement elem = elems.get(selectedElement);
       for (GuiButton btn : buttonList) {
@@ -445,11 +642,11 @@ public class DynamicGuideSignGui extends GuiScreen {
       }
 
       if (elem.getType() == GuideSignElement.TYPE_TEXT) {
-        drawCenteredString(fontRenderer, "Scale: " + String.format("%.1f", elem.getTextScale()),
+        drawScrolledCenteredString("Scale: " + String.format("%.1f", elem.getTextScale()),
             left + FIELD_WIDTH / 2,
             y + BTN_HEIGHT + 2 + BTN_HEIGHT + 2 + 5, 0xFFFFFF);
       } else if (elem.getType() == GuideSignElement.TYPE_SPACING) {
-        drawCenteredString(fontRenderer, "Width: " + elem.getSpacingWidth(),
+        drawScrolledCenteredString("Width: " + elem.getSpacingWidth(),
             left + FIELD_WIDTH / 2, y + BTN_HEIGHT + 3 + 5, 0xFFFFFF);
       }
     }
@@ -461,15 +658,15 @@ public class DynamicGuideSignGui extends GuiScreen {
       this.mc.displayGuiScreen(null);
       return;
     }
-    if (textField != null) {
+    if (textField != null && textField.getVisible()) {
       textField.textboxKeyTyped(typedChar, keyCode);
       syncTextFieldToElement();
     }
-    if (routeField != null) {
+    if (routeField != null && routeField.getVisible()) {
       routeField.textboxKeyTyped(typedChar, keyCode);
       syncRouteFieldToElement();
     }
-    if (exitTextField != null) {
+    if (exitTextField != null && exitTextField.getVisible()) {
       exitTextField.textboxKeyTyped(typedChar, keyCode);
       syncExitTextFieldToPanel();
     }
@@ -477,13 +674,13 @@ public class DynamicGuideSignGui extends GuiScreen {
 
   @Override
   protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
-    if (textField != null) {
+    if (textField != null && textField.getVisible()) {
       textField.mouseClicked(mouseX, mouseY, mouseButton);
     }
-    if (routeField != null) {
+    if (routeField != null && routeField.getVisible()) {
       routeField.mouseClicked(mouseX, mouseY, mouseButton);
     }
-    if (exitTextField != null) {
+    if (exitTextField != null && exitTextField.getVisible()) {
       exitTextField.mouseClicked(mouseX, mouseY, mouseButton);
     }
 
@@ -514,28 +711,12 @@ public class DynamicGuideSignGui extends GuiScreen {
   public void handleMouseInput() throws IOException {
     super.handleMouseInput();
     int scroll = Mouse.getEventDWheel();
-    if (scroll != 0) {
-      if (currentTab == TAB_PANEL) {
-        GuideSignPanel panel = data.getPanels().get(selectedPanel);
-        int maxScroll = Math.max(0, panel.getRows().size() - 4);
-        if (scroll > 0 && rowScrollOffset > 0) {
-          rowScrollOffset--;
-        } else if (scroll < 0 && rowScrollOffset < maxScroll) {
-          rowScrollOffset++;
-        }
-      } else if (currentTab == TAB_ROW) {
-        clampPanelSelection();
-        GuideSignPanel panel = data.getPanels().get(selectedPanel);
-        if (!panel.getRows().isEmpty()) {
-          clampRowSelection(panel);
-          GuideSignRow row = panel.getRows().get(selectedRow);
-          int maxScroll = Math.max(0, row.getElements().size() - 3);
-          if (scroll > 0 && elemScrollOffset > 0) {
-            elemScrollOffset--;
-          } else if (scroll < 0 && elemScrollOffset < maxScroll) {
-            elemScrollOffset++;
-          }
-        }
+    if (scroll != 0 && tabContentMaxScroll > 0) {
+      int delta = scroll > 0 ? -SCROLL_STEP : SCROLL_STEP;
+      int prev = tabContentScroll;
+      tabContentScroll = Math.max(0, Math.min(tabContentMaxScroll, tabContentScroll + delta));
+      if (tabContentScroll != prev) {
+        applyTabScroll();
       }
     }
   }
@@ -554,16 +735,25 @@ public class DynamicGuideSignGui extends GuiScreen {
       case BTN_TAB_PROPERTIES:
         syncAllFields();
         currentTab = TAB_PROPERTIES;
+        tabContentScroll = 0;
         initGui();
         break;
       case BTN_TAB_PANEL:
         syncAllFields();
         currentTab = TAB_PANEL;
+        tabContentScroll = 0;
         initGui();
         break;
       case BTN_TAB_ROW:
         syncAllFields();
         currentTab = TAB_ROW;
+        tabContentScroll = 0;
+        initGui();
+        break;
+      case BTN_TAB_PREVIEW:
+        syncAllFields();
+        currentTab = TAB_PREVIEW;
+        tabContentScroll = 0;
         initGui();
         break;
 
@@ -600,18 +790,40 @@ public class DynamicGuideSignGui extends GuiScreen {
         clampPanelSelection();
         initGui();
         break;
+      case BTN_TEMPLATE:
+        data = SignTemplates.get(templateIndex);
+        templateIndex = (templateIndex + 1) % SignTemplates.count();
+        selectedPanel = 0;
+        selectedRow = 0;
+        selectedElement = 0;
+        initGui();
+        break;
+      case BTN_COPY:
+        syncAllFields();
+        clipboardJson = data.toJson();
+        initGui();
+        break;
+      case BTN_PASTE:
+        if (clipboardJson != null) {
+          data = GuideSignData.fromJson(clipboardJson);
+          selectedPanel = 0;
+          selectedRow = 0;
+          selectedElement = 0;
+          initGui();
+        }
+        break;
 
       case BTN_PANEL_PREV:
         if (selectedPanel > 0) {
           selectedPanel--;
-          rowScrollOffset = 0;
+          tabContentScroll = 0;
           initGui();
         }
         break;
       case BTN_PANEL_NEXT:
         if (selectedPanel < data.getPanels().size() - 1) {
           selectedPanel++;
-          rowScrollOffset = 0;
+          tabContentScroll = 0;
           initGui();
         }
         break;
@@ -665,7 +877,7 @@ public class DynamicGuideSignGui extends GuiScreen {
       case BTN_EDIT_ROW:
         syncAllFields();
         currentTab = TAB_ROW;
-        elemScrollOffset = 0;
+        tabContentScroll = 0;
         selectedElement = 0;
         initGui();
         break;
@@ -675,7 +887,7 @@ public class DynamicGuideSignGui extends GuiScreen {
           syncAllFields();
           selectedRow--;
           selectedElement = 0;
-          elemScrollOffset = 0;
+          tabContentScroll = 0;
           initGui();
         }
         break;
@@ -685,7 +897,7 @@ public class DynamicGuideSignGui extends GuiScreen {
           syncAllFields();
           selectedRow++;
           selectedElement = 0;
-          elemScrollOffset = 0;
+          tabContentScroll = 0;
           initGui();
         }
         break;
@@ -705,6 +917,13 @@ public class DynamicGuideSignGui extends GuiScreen {
           clampRowSelection(panel);
           GuideSignRow row = panel.getRows().get(selectedRow);
           row.setVerticalSpacing(row.getVerticalSpacing() + 1);
+        }
+        break;
+      }
+      case BTN_ROW_ALIGN: {
+        GuideSignRow row = getSelectedRow();
+        if (row != null) {
+          row.cycleAlignment();
         }
         break;
       }
