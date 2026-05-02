@@ -39,6 +39,11 @@ public class TrafficSignalSectionInfo {
   private TrafficSignalBulbColor bulbCustomColor;
   private boolean bulbLit;
   private boolean bulbFlashing;
+  // Transient: whether the controller has commanded this section lit on the current
+  // tick, ignoring bulb-aging effects. Used by accessories that are physically separate
+  // from the bulb (e.g. the Barlo strobe) so they keep functioning even when the bulb
+  // itself is failing or burned out. Recomputed every frame; not persisted to NBT.
+  private boolean bulbCommandedLit;
 
   public TrafficSignalSectionInfo() {
     this.bodyColor = DEFAULT_BODY_PAINT_COLOR;
@@ -140,6 +145,10 @@ public class TrafficSignalSectionInfo {
     return bulbLit;
   }
 
+  public boolean isBulbCommandedLit() {
+    return bulbCommandedLit;
+  }
+
   public boolean isBulbFlashing() {
     return bulbFlashing;
   }
@@ -178,6 +187,10 @@ public class TrafficSignalSectionInfo {
 
   public void setBulbLit(boolean bulbLit) {
     this.bulbLit = bulbLit;
+  }
+
+  public void setBulbCommandedLit(boolean bulbCommandedLit) {
+    this.bulbCommandedLit = bulbCommandedLit;
   }
 
   public void setBulbFlashing(boolean bulbFlashing) {
