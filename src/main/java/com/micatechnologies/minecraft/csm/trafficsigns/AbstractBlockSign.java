@@ -74,7 +74,7 @@ public abstract class AbstractBlockSign extends AbstractBlockRotatableHZEight
   @Nullable
   public AxisAlignedBB getCollisionBoundingBox(IBlockState state, IBlockAccess worldIn,
       BlockPos pos) {
-    IBlockState actualState = worldIn.getBlockState(pos).getActualState(worldIn, pos);
+    IBlockState actualState = state.getActualState(worldIn, pos);
     SignShift shift = actualState.getValue(SHIFT);
 
     switch (shift) {
@@ -85,7 +85,8 @@ public abstract class AbstractBlockSign extends AbstractBlockRotatableHZEight
         AxisAlignedBB bb = new AxisAlignedBB(0, minY, 0.75, 1, 1, 0.8125);
         return RotationUtils.rotateBoundingBoxByFacing(bb, actualState.getValue(FACING));
       default:
-        return getBoundingBox(state, worldIn, pos);
+        return RotationUtils.rotateBoundingBoxByFacing(
+            getBlockBoundingBox(actualState, worldIn, pos), actualState.getValue(FACING));
     }
   }
 
