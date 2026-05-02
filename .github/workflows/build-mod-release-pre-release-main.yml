@@ -37,8 +37,26 @@ jobs:
           calculatedSha=$(git rev-parse --short ${{ github.sha }})
           echo "COMMIT_SHORT_SHA=$calculatedSha" >> $GITHUB_ENV
 
-          # Calculate 'final' version number (YYYY.MM.DD)
-          relVersion=$(date -u +'%Y.%m.%d')
+          # Calculate 'final' version number (YYYY.MM.DD).
+          # If a release tag already exists for today, append SemVer 2.0
+          # build metadata (+N) so subsequent same-day releases stay unique
+          # without inventing a non-SemVer 4th segment.
+          baseVersion=$(date -u +'%Y.%m.%d')
+          git fetch --tags --quiet origin || true
+          relVersion="$baseVersion"
+          maxN=-1
+          if git rev-parse -q --verify "refs/tags/$baseVersion" >/dev/null 2>&1; then
+            maxN=0
+          fi
+          for existingTag in $(git tag -l "${baseVersion}+*"); do
+            suffix="${existingTag#${baseVersion}+}"
+            if [[ "$suffix" =~ ^[0-9]+$ ]] && [ "$suffix" -gt "$maxN" ]; then
+              maxN="$suffix"
+            fi
+          done
+          if [ "$maxN" -ge 0 ]; then
+            relVersion="${baseVersion}+$((maxN + 1))"
+          fi
           echo "REL_TAG=$relVersion" >> $GITHUB_ENV
 
           # Calculate 'pre-release' version number (YYYY.MM.DD-pre.hhmm.shorttz+COMMITSHORTSHA)
