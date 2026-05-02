@@ -92,16 +92,20 @@ a multi-tab scrollable GUI. Block registry name: `dynamic_guide_sign`, GUI ID: 1
       hardcoded fullbright. Sign now responds to day/night cycle and nearby light sources.
 
 ### Remaining
-- [ ] **Sign width minimum for shield+text** — signs with one short word may still feel too
-      narrow; consider auto-padding when row has a shield element.
+- [x] **User-settable minimum sign width** — `GuideSignData.minWidth` (default 32, range
+      16-96 in 4-unit steps), exposed on Properties tab between Border and Corner Style.
+      Replaces the hardcoded `Math.max(32.0f, ...)` floor in `computeTotalSignWidth`.
+- [x] **Block bounding box matches the sign panel** — `BlockDynamicGuideSign` now returns
+      a 1.5-pixel-thick AABB on the face determined by FACING, instead of a full 1×1×1
+      cube. Selection outline now traces the actual visible panel.
 - [ ] **Multi-panel layout** — verify panel dividers and multi-panel stacking looks correct
       with the new proportions. Needs runClient testing.
-- [ ] **Further proportions tuning** — pending in-game verification of alignment + corner +
-      banner changes. Iterate based on user feedback.
+- [ ] **Further proportions tuning** — pending in-game verification. Iterate based on user
+      feedback.
 - [ ] **Display list caching** — currently removed due to GlStateManager desync issues.
-      Phase 7 item: reintroduce using raw GL11 calls (not GlStateManager) for all state
-      changes within the display list compilation. The `stateDirty` flag and
-      `cleanupDisplayList()` infrastructure remains in TileEntity.
+      Phase 7 item: reintroduce using raw GL11 calls for state changes within the display
+      list compilation. Risk: Tessellator+VBO interaction and GlStateManager cache desync
+      both need careful handling. Deferred until perf profiling shows the need.
 
 ---
 

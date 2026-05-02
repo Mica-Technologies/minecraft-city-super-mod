@@ -48,6 +48,8 @@ public class DynamicGuideSignGui extends GuiScreen {
   private static final int BTN_TEMPLATE = 17;
   private static final int BTN_COPY = 18;
   private static final int BTN_PASTE = 19;
+  private static final int BTN_MIN_WIDTH_DOWN = 51;
+  private static final int BTN_MIN_WIDTH_UP = 52;
 
   private static final int BTN_PANEL_PREV = 20;
   private static final int BTN_PANEL_NEXT = 21;
@@ -230,6 +232,9 @@ public class DynamicGuideSignGui extends GuiScreen {
     y += BTN_HEIGHT + 3;
     addContentBtn(new GuiButton(BTN_BORDER_DOWN, left, y, 30, BTN_HEIGHT, "-"));
     addContentBtn(new GuiButton(BTN_BORDER_UP, left + FIELD_WIDTH - 30, y, 30, BTN_HEIGHT, "+"));
+    y += BTN_HEIGHT + 3;
+    addContentBtn(new GuiButton(BTN_MIN_WIDTH_DOWN, left, y, 30, BTN_HEIGHT, "-"));
+    addContentBtn(new GuiButton(BTN_MIN_WIDTH_UP, left + FIELD_WIDTH - 30, y, 30, BTN_HEIGHT, "+"));
     y += BTN_HEIGHT + 3;
     addContentBtn(new GuiButton(BTN_CORNER_STYLE, left, y, FIELD_WIDTH, BTN_HEIGHT, ""));
     y += BTN_HEIGHT + 6;
@@ -573,9 +578,11 @@ public class DynamicGuideSignGui extends GuiScreen {
     }
     drawScrolledCenteredString("Border: " + data.getBorderWidth(), centerX,
         y + (BTN_HEIGHT + 3) * 2 + 5, 0xFFFFFF);
+    drawScrolledCenteredString("Min Width: " + data.getMinWidth(), centerX,
+        y + (BTN_HEIGHT + 3) * 3 + 5, 0xFFFFFF);
 
     drawScrolledString("Panels: " + data.getPanels().size(), left,
-        y + (BTN_HEIGHT + 3) * 4 - 8, 0xAAAAAA);
+        y + (BTN_HEIGHT + 3) * 5 - 8, 0xAAAAAA);
   }
 
   private void drawPanelLabels(int left, int y, int centerX) {
@@ -778,6 +785,12 @@ public class DynamicGuideSignGui extends GuiScreen {
         break;
       case BTN_BORDER_UP:
         data.setBorderWidth(data.getBorderWidth() + 1);
+        break;
+      case BTN_MIN_WIDTH_DOWN:
+        data.setMinWidth(data.getMinWidth() - 4);
+        break;
+      case BTN_MIN_WIDTH_UP:
+        data.setMinWidth(data.getMinWidth() + 4);
         break;
       case BTN_CORNER_STYLE:
         data.cycleCornerStyle();

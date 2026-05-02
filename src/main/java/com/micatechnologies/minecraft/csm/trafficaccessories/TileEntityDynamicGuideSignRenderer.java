@@ -603,7 +603,8 @@ public class TileEntityDynamicGuideSignRenderer
       }
     }
     float borderInset = data.getBorderWidth() > 0 ? data.getBorderWidth() * BORDER_INSET : 0;
-    return Math.max(32.0f, maxRowW + PANEL_PADDING_SIDE * 2 + 2 * borderInset);
+    return Math.max((float) data.getMinWidth(),
+        maxRowW + PANEL_PADDING_SIDE * 2 + 2 * borderInset);
   }
 
   private float computeRowWidth(GuideSignRow row, GuideSignData data) {
