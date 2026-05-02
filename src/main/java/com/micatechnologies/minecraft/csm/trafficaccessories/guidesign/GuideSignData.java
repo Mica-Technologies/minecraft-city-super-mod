@@ -16,6 +16,7 @@ public class GuideSignData {
   private int postType = PostType.OVERHEAD.ordinal();
   private int borderWidth = 1;
   private int cornerStyle = CornerStyle.ROUND.ordinal();
+  private int minWidth = 32;
   private List<GuideSignPanel> panels = new ArrayList<>();
 
   public GuideSignData() {
@@ -80,6 +81,14 @@ public class GuideSignData {
 
   public void cycleCornerStyle() {
     this.cornerStyle = getCornerStyle().next().ordinal();
+  }
+
+  public int getMinWidth() {
+    return minWidth;
+  }
+
+  public void setMinWidth(int minWidth) {
+    this.minWidth = Math.max(16, Math.min(96, minWidth));
   }
 
   public List<GuideSignPanel> getPanels() {

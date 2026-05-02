@@ -3,6 +3,7 @@ package com.micatechnologies.minecraft.csm.trafficaccessories;
 import com.micatechnologies.minecraft.csm.Csm;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEW;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
+import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -56,7 +57,23 @@ public class BlockDynamicGuideSign extends AbstractBlockRotatableNSEW
 
   @Override
   public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-    return new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 1.0, 1.0);
+    // The sign panel is rendered as a 1.5-pixel-thick slab against one face of the block,
+    // determined by BlockHorizontal.FACING after the renderer's rotation. Match the bbox to
+    // that slab so the selection outline (and collision) reflects what the player sees.
+    EnumFacing facing = state.getValue(BlockHorizontal.FACING);
+    final double t = 1.5 / 16.0;
+    switch (facing) {
+      case SOUTH:
+        return new AxisAlignedBB(0.0, 0.0, 1.0 - t, 1.0, 1.0, 1.0);
+      case NORTH:
+        return new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 1.0, t);
+      case WEST:
+        return new AxisAlignedBB(1.0 - t, 0.0, 0.0, 1.0, 1.0, 1.0);
+      case EAST:
+        return new AxisAlignedBB(0.0, 0.0, 0.0, t, 1.0, 1.0);
+      default:
+        return new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 1.0, 1.0);
+    }
   }
 
   @Override
