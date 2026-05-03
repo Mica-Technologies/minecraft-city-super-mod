@@ -36,6 +36,7 @@ public class TileEntityHvacZoneThermostat extends AbstractTickableTileEntity
   private static final String LEGACY_NBT_IS_CALLING = "isCalling";
   private static final String NBT_CALLING_MODE = "cM";
   private static final String LEGACY_NBT_CALLING_MODE = "callingMode";
+  private static final String NBT_BLOCKED_MODE = "bM";
   private static final String NBT_EFFICIENCY = "eff";
   private static final String LEGACY_NBT_EFFICIENCY = "efficiency";
   private static final String NBT_RAMP_TICKS = "rT";
@@ -70,12 +71,33 @@ public class TileEntityHvacZoneThermostat extends AbstractTickableTileEntity
   private static final int MODE_HEATING = 1;
   private static final int MODE_COOLING = 2;
 
+  /**
+   * Temperature error (in °F) at which the proportional-control term saturates at full
+   * output. Mirrors {@link TileEntityHvacThermostat#P_TERM_FULL_RANGE}. See that field's
+   * Javadoc for the regulator design.
+   */
+  private static final float P_TERM_FULL_RANGE = 10.0f;
+
   private int targetTempLow = 65;
   private int targetTempHigh = 80;
   private float currentTemperature = 72.0f;
   private boolean isCalling = false;
   private int callingMode = MODE_IDLE;
+  /**
+   * Mode the zone would have entered if equipment was available. Mirrors
+   * {@link TileEntityHvacThermostat#getBlockedMode()} — see that field's Javadoc.
+   * Used by {@link HvacZoneThermostatGui} to display "Need heater" / "Need cooler"
+   * warnings instead of the misleading "Comfortable" status.
+   */
+  private int blockedMode = MODE_IDLE;
   private boolean temperatureInitialized = false;
+
+  /**
+   * Set after readNBT and cleared on the first tick. While set, smoothing snaps to the
+   * raw reading even if it differs wildly. After the first tick we never snap again so
+   * transient HVAC overshoot can't bypass thermal smoothing and cause oscillation.
+   */
+  private transient boolean firstTickAfterLoad = false;
 
   /** Positions of linked vent relays. Persisted in NBT. */
   private final List<BlockPos> linkedVents = new ArrayList<>();
@@ -129,38 +151,73 @@ public class TileEntityHvacZoneThermostat extends AbstractTickableTileEntity
     float rawTemp = HvacTemperatureManager.getRawTemperatureAt(world, pos);
     float previousTemp = currentTemperature;
 
-    // Thermal smoothing — snap immediately when the saved temp is wildly off from reality
-    // (e.g. moved to a different biome) to avoid a misleadingly stale display.
-    if (!temperatureInitialized || Math.abs(currentTemperature - rawTemp) > 60.0f) {
+    // Thermal smoothing. Snap-to-raw only on first tick after load (handles "moved to a
+    // new biome" reload case); subsequent ticks always smooth so HVAC overshoot can't
+    // bypass hysteresis and cause runaway oscillation.
+    if (!temperatureInitialized || firstTickAfterLoad) {
       currentTemperature = rawTemp;
       temperatureInitialized = true;
+      firstTickAfterLoad = false;
     } else {
       currentTemperature += (rawTemp - currentTemperature) * THERMAL_BLEND_FACTOR;
     }
 
     boolean wasPreviouslyCalling = isCalling;
+    int previousBlockedMode = blockedMode;
+
+    // Determine which equipment is reachable through the linked primary. Mirrors the
+    // primary thermostat's logic — a zone served by a heater-only primary must never
+    // enter cooling mode (and vice versa) or vent contributions flip negative and cause
+    // runaway oscillation.
+    boolean hasHeater = false;
+    boolean hasCooler = false;
+    TileEntityHvacThermostat primary = getPrimaryThermostat();
+    if (primary != null) {
+      for (BlockPos unitPos : primary.getLinkedUnits()) {
+        if (!world.isBlockLoaded(unitPos)) continue;
+        TileEntity unitTe = world.getTileEntity(unitPos);
+        if (unitTe instanceof TileEntityHvacCooler) {
+          hasCooler = true;
+        } else if (unitTe instanceof TileEntityHvacHeater) {
+          hasHeater = true;
+        }
+        if (hasHeater && hasCooler) break;
+      }
+    }
+
+    blockedMode = MODE_IDLE;
 
     // Hysteresis deadband logic (same as primary thermostat)
     switch (callingMode) {
       case MODE_HEATING:
-        if (currentTemperature >= targetTempLow + DEADBAND) {
+        if (!hasHeater || currentTemperature >= targetTempLow + DEADBAND) {
           callingMode = MODE_IDLE;
           isCalling = false;
         }
         break;
       case MODE_COOLING:
-        if (currentTemperature <= targetTempHigh - DEADBAND) {
+        if (!hasCooler || currentTemperature <= targetTempHigh - DEADBAND) {
           callingMode = MODE_IDLE;
           isCalling = false;
         }
         break;
       default:
         if (currentTemperature < targetTempLow) {
-          callingMode = MODE_HEATING;
-          isCalling = true;
+          if (hasHeater) {
+            callingMode = MODE_HEATING;
+            isCalling = true;
+          } else {
+            blockedMode = MODE_HEATING;
+            isCalling = false;
+          }
         } else if (currentTemperature > targetTempHigh) {
-          callingMode = MODE_COOLING;
-          isCalling = true;
+          if (hasCooler) {
+            callingMode = MODE_COOLING;
+            isCalling = true;
+          } else {
+            blockedMode = MODE_COOLING;
+            isCalling = false;
+          }
         } else {
           isCalling = false;
         }
@@ -198,7 +255,9 @@ public class TileEntityHvacZoneThermostat extends AbstractTickableTileEntity
 
     // Sync to client when state changes
     boolean tempChanged = Math.abs(currentTemperature - previousTemp) >= 0.5f;
-    if (isCalling != wasPreviouslyCalling || efficiencyChanged || tempChanged) {
+    boolean blockedModeChanged = blockedMode != previousBlockedMode;
+    if (isCalling != wasPreviouslyCalling || efficiencyChanged || tempChanged
+        || blockedModeChanged) {
       markDirtySync(world, pos, true);
     }
   }
@@ -332,6 +391,29 @@ public class TileEntityHvacZoneThermostat extends AbstractTickableTileEntity
   }
 
   /**
+   * Returns the proportional output factor (0..1) for the current calling mode. Mirrors
+   * the primary thermostat's regulator: saturates at full output for large errors,
+   * smoothly throttles down to 0 at setpoint to prevent overshoot.
+   */
+  private float computeProportionalTerm() {
+    float setpoint;
+    float error;
+    if (callingMode == MODE_HEATING) {
+      setpoint = targetTempLow + DEADBAND;
+      error = setpoint - currentTemperature;
+    } else if (callingMode == MODE_COOLING) {
+      setpoint = targetTempHigh - DEADBAND;
+      error = currentTemperature - setpoint;
+    } else {
+      return 0.0f;
+    }
+    float pTerm = error / P_TERM_FULL_RANGE;
+    if (pTerm < 0.0f) return 0.0f;
+    if (pTerm > 1.0f) return 1.0f;
+    return pTerm;
+  }
+
+  /**
    * Returns the base vent contribution from the primary thermostat's strongest linked unit.
    */
   private float getBaseVentContribution() {
@@ -360,7 +442,10 @@ public class TileEntityHvacZoneThermostat extends AbstractTickableTileEntity
   private void updateLinkedVents() {
     float rampFactor = getSystemRampFactor();
     float baseContribution = getBaseVentContribution();
-    float contribution = baseContribution * rampFactor;
+    // Proportional-control scaling (mirrors primary thermostat): full output at large
+    // error, throttles toward 0 as the zone approaches its setpoint, eliminating overshoot.
+    float pTerm = computeProportionalTerm();
+    float contribution = baseContribution * rampFactor * pTerm;
 
     // Determine sign from callingMode (not temperature comparison, which breaks
     // during the deadband zone where temp has crossed the threshold but we're still calling)
@@ -438,6 +523,7 @@ public class TileEntityHvacZoneThermostat extends AbstractTickableTileEntity
     this.targetTempHigh = readInt(compound, NBT_TARGET_TEMP_HIGH, LEGACY_NBT_TARGET_TEMP_HIGH);
     this.isCalling = readBool(compound, NBT_IS_CALLING, LEGACY_NBT_IS_CALLING);
     this.callingMode = readInt(compound, NBT_CALLING_MODE, LEGACY_NBT_CALLING_MODE);
+    this.blockedMode = compound.hasKey(NBT_BLOCKED_MODE) ? compound.getInteger(NBT_BLOCKED_MODE) : MODE_IDLE;
     this.cachedEfficiencyPercent = readInt(compound, NBT_EFFICIENCY, LEGACY_NBT_EFFICIENCY);
     this.accumulatedRampTicks = readLong(compound, NBT_RAMP_TICKS, LEGACY_NBT_RAMP_TICKS);
     boolean hasCurrentTemp = compound.hasKey(NBT_CURRENT_TEMP)
@@ -449,6 +535,7 @@ public class TileEntityHvacZoneThermostat extends AbstractTickableTileEntity
     }
     if (hasCurrentTemp) {
       this.temperatureInitialized = true;
+      this.firstTickAfterLoad = true;
     }
     if (targetTempLow == 0 && targetTempHigh == 0) {
       targetTempLow = 65;
@@ -522,6 +609,7 @@ public class TileEntityHvacZoneThermostat extends AbstractTickableTileEntity
     compound.setInteger(NBT_TARGET_TEMP_HIGH, targetTempHigh);
     compound.setBoolean(NBT_IS_CALLING, isCalling);
     compound.setInteger(NBT_CALLING_MODE, callingMode);
+    compound.setInteger(NBT_BLOCKED_MODE, blockedMode);
     compound.setInteger(NBT_EFFICIENCY, cachedEfficiencyPercent);
     compound.setLong(NBT_RAMP_TICKS, accumulatedRampTicks);
     compound.setFloat(NBT_CURRENT_TEMP, currentTemperature);
@@ -578,6 +666,9 @@ public class TileEntityHvacZoneThermostat extends AbstractTickableTileEntity
   public boolean isCalling() { return isCalling; }
 
   public int getCallingMode() { return callingMode; }
+
+  /** See {@link TileEntityHvacThermostat#getBlockedMode()}. */
+  public int getBlockedMode() { return blockedMode; }
 
   /**
    * Returns a render bounding box covering just the zone-thermostat block itself. Mirrors
