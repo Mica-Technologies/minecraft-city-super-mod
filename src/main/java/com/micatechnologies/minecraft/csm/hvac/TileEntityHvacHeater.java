@@ -28,14 +28,6 @@ public class TileEntityHvacHeater extends AbstractTickableTileEntity
   private boolean wasActive = false;
 
   /**
-   * Residual decay factor for the direct heater/cooler contribution after the thermostat
-   * stops calling. At 0.993 per 1s tick: retains 87% after 20s, 66% after 1 min,
-   * 35% after 2.5 min, ~5% (cutoff) after ~7 minutes. Tuned to match the vent relay's
-   * ~7-minute full decay timeline despite the heater's faster tick rate (1s vs 2s).
-   */
-  private static final float RESIDUAL_DECAY_FACTOR = 0.993f;
-
-  /**
    * Set to true when a linked thermostat is calling for this specific unit type to activate.
    * Transient — not persisted to disk. On restart, the thermostat re-evaluates on its next tick.
    */
@@ -45,22 +37,12 @@ public class TileEntityHvacHeater extends AbstractTickableTileEntity
   private boolean linkedToThermostat = false;
 
   /**
-   * Residual contribution multiplier (0.0 to 1.0). When the thermostat stops calling,
-   * this decays gradually instead of snapping to zero, simulating residual heat/cold
-   * from the unit. Resets to 1.0 when the thermostat starts calling again.
-   */
-  private float residualMultiplier = 0.0f;
-
-  /**
    * Sets whether a linked thermostat is currently calling for this specific unit to activate.
-   * When calling transitions from true to false, the residual multiplier begins decaying
-   * instead of cutting the contribution instantly.
+   * Snaps to the commanded state — the unit either contributes or it doesn't, no residual
+   * decay. The "room cools down slowly after AC stops" effect is simulated via the
+   * thermostat's currentTemperature smoothing (THERMAL_BLEND_FACTOR), not here.
    */
   public void setThermostatCalling(boolean calling) {
-    if (calling && !this.thermostatCalling) {
-      // Just started calling — reset residual to full
-      this.residualMultiplier = 1.0f;
-    }
     if (this.thermostatCalling != calling) {
       this.thermostatCalling = calling;
       if (world != null && !world.isRemote) {
@@ -77,14 +59,44 @@ public class TileEntityHvacHeater extends AbstractTickableTileEntity
     this.linkedToThermostat = linked;
   }
 
+  /** Exposed for subclasses (e.g. {@link TileEntityHvacCooler}) that override the
+   *  contribution method but still need the linked/calling gating. */
+  protected boolean isLinkedToThermostat() {
+    return linkedToThermostat;
+  }
+
+  /** See {@link #isLinkedToThermostat()}. */
+  protected boolean isThermostatCalling() {
+    return thermostatCalling;
+  }
+
   // region IHvacUnit
 
   @Override
-  public float getTemperatureContribution() {
-    // When actively calling: full contribution. When residual is decaying: scaled down.
-    if (linkedToThermostat && !thermostatCalling && residualMultiplier > 0.0f) {
-      return 15.0F * residualMultiplier;
+  public final float getTemperatureContribution() {
+    // Linked-but-not-calling units contribute nothing — no residual lingering. The
+    // "room holds heat after the heater stops" feel is simulated by the thermostat's
+    // currentTemperature smoothing, not by the heater pretending to still be on.
+    //
+    // Subclasses override {@link #getActiveContribution()} to change the value the unit
+    // contributes when it IS running. The linked/calling gating lives here once so every
+    // subclass picks it up automatically — previously, RTU subclasses overrode this
+    // method and forgot to re-apply the gating, causing them to pump heat/cold even
+    // while idle.
+    if (linkedToThermostat && !thermostatCalling) {
+      return 0.0F;
     }
+    return getActiveContribution();
+  }
+
+  /**
+   * Returns the temperature contribution this unit produces when actively running. The
+   * sign indicates whether the unit heats (positive) or cools (negative). Default is the
+   * cabinet heater's +15°F. Subclasses override this — never override
+   * {@link #getTemperatureContribution()} directly, or the linked/calling gating will
+   * be lost.
+   */
+  protected float getActiveContribution() {
     return 15.0F;
   }
 
@@ -95,8 +107,7 @@ public class TileEntityHvacHeater extends AbstractTickableTileEntity
     }
     boolean hasPower = world.isBlockPowered(pos) || storedEnergy > 0;
     if (linkedToThermostat) {
-      // Active when calling AND powered, OR when residual is still decaying
-      return (hasPower && thermostatCalling) || residualMultiplier > 0.05f;
+      return hasPower && thermostatCalling;
     }
     // Standalone mode: power alone activates the unit
     return hasPower;
@@ -145,17 +156,6 @@ public class TileEntityHvacHeater extends AbstractTickableTileEntity
       if (storedEnergy >= ENERGY_PER_TICK) {
         storedEnergy -= ENERGY_PER_TICK;
         markDirty();
-      }
-    }
-
-    // Decay residual contribution when thermostat has stopped calling.
-    // The heater ticks every 20 game ticks (1 second), matching the vent's 2s decay rate
-    // since the vent uses 0.97 per 2s and we use 0.97 per 1s (slightly faster, but the
-    // heater's direct contribution is already wall-attenuated and smaller than vent output).
-    if (linkedToThermostat && !thermostatCalling && residualMultiplier > 0.0f) {
-      residualMultiplier *= RESIDUAL_DECAY_FACTOR;
-      if (residualMultiplier < 0.05f) {
-        residualMultiplier = 0.0f;
       }
     }
 

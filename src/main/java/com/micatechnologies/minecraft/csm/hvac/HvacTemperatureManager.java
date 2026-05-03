@@ -53,22 +53,38 @@ public class HvacTemperatureManager {
   private static final long CACHE_LIFETIME_TICKS = 40L;
 
   /**
-   * Base HVAC offset cap per actively-contributing unit, in degrees Fahrenheit. The effective
-   * cap at a query position scales linearly with the number of active units (heaters, coolers,
-   * or vent relays) that have non-zero weighted contribution at that point:
+   * Base HVAC offset cap per direction (heating / cooling), in degrees Fahrenheit. This is the
+   * ceiling for a system with a single active heater/cooler unit. Caps the total weighted
+   * offset, regardless of how many vent relays are in range — vents are delivery points, not
+   * independent heat sources, so adding more vents alone should not increase the indoor
+   * temperature ceiling.
    *
-   * <pre>effectiveCap = BASE_HVAC_OFFSET_PER_UNIT * max(1, activeContributors)</pre>
-   *
-   * <p>This means a single-unit setup retains the original 24°F ceiling (backward compatible),
-   * while multi-unit systems stack their power proportionally: three active contributors cap at
-   * 72°F, five at 120°F, etc. The distance and wall-attenuation factors still apply per unit,
-   * so stacking only helps when the additional equipment actually reaches the query point.</p>
-   *
-   * <p>This is necessary for extreme-climate biomes (snowy biomes at high altitude can have
-   * baselines below -70°F) where a single heater/vent system cannot realistically bring the
-   * indoor temperature to a comfortable setpoint regardless of ramp level.</p>
+   * <p>Sized so a single heater can plausibly hold a room at room-temperature against a
+   * meaningfully cold biome (e.g. baseline -10°F + 50°F cap → 40°F indoor max).</p>
    */
-  private static final float BASE_HVAC_OFFSET_PER_UNIT = 24.0f;
+  private static final float BASE_HVAC_OFFSET_CAP = 50.0f;
+
+  /**
+   * Additional offset cap headroom (in °F) per <em>extra</em> active heater/cooler unit
+   * (vents do not count). Lets multi-RTU systems handle extreme-climate buildings where one
+   * unit is insufficient — a 5-RTU rooftop on a -30°F mountain biome can push the indoor
+   * temperature comfortably above 70°F, where a single unit could not.
+   *
+   * <p><b>Sample caps:</b></p>
+   * <ul>
+   *   <li>1 unit: 50°F (e.g. -30°F outdoor → +20°F indoor max)</li>
+   *   <li>3 units: 100°F (e.g. -30°F outdoor → +70°F indoor max — comfortable)</li>
+   *   <li>5 units: 150°F (e.g. -30°F outdoor → +120°F — extreme)</li>
+   * </ul>
+   */
+  private static final float HVAC_OFFSET_PER_EXTRA_UNIT = 25.0f;
+
+  /**
+   * Hard absolute ceiling on the per-direction offset, regardless of unit count. Prevents
+   * pathological setups (player griefing, world-edit'd HVAC fields) from producing
+   * thousand-degree temperatures that crash the smoothing logic or display.
+   */
+  private static final float HVAC_OFFSET_HARD_CAP = 250.0f;
 
   /**
    * Distance in blocks within which a direct HVAC unit (heater/cooler) has full effect.
@@ -448,8 +464,11 @@ public class HvacTemperatureManager {
 
     float heatingOffset = 0.0f;
     float coolingOffset = 0.0f;
-    int heatingContributors = 0;
-    int coolingContributors = 0;
+    // Count heater/cooler equipment (not vents) separately for the cap calculation. The cap
+    // is gated on actual energy sources, not on delivery points: 50 vents + 1 heater is one
+    // "unit's worth" of capacity, not 51.
+    int heatingUnits = 0;
+    int coolingUnits = 0;
     // Use the larger of the two max distances for the initial distance-squared cull
     double maxDistForCull = Math.max(UNIT_MAX_EFFECT_DISTANCE, VENT_MAX_EFFECT_DISTANCE);
     double maxCullDistSq = maxDistForCull * maxDistForCull;
@@ -498,13 +517,15 @@ public class HvacTemperatureManager {
 
           if (contribution > 0) {
             heatingOffset += weightedOffset;
-            if (weightedOffset > 0.0f) {
-              heatingContributors++;
+            // Only count actual heater units toward the cap, not vent relays. Vents
+            // distribute heat from a heater; they don't supply additional heat capacity.
+            if (weightedOffset > 0.0f && !isVent) {
+              heatingUnits++;
             }
           } else if (contribution < 0) {
             coolingOffset += weightedOffset;
-            if (weightedOffset > 0.0f) {
-              coolingContributors++;
+            if (weightedOffset > 0.0f && !isVent) {
+              coolingUnits++;
             }
           }
 
@@ -512,10 +533,13 @@ public class HvacTemperatureManager {
       }
     }
 
-    // Clamp each direction to the dynamic per-unit cap. More active contributors = higher
-    // ceiling, allowing multi-unit systems to adequately heat/cool extreme-climate spaces.
-    float effectiveHeatingCap = BASE_HVAC_OFFSET_PER_UNIT * Math.max(1, heatingContributors);
-    float effectiveCoolingCap = BASE_HVAC_OFFSET_PER_UNIT * Math.max(1, coolingContributors);
+    // Clamp each direction. Cap = BASE_CAP + per-extra-unit bonus, hard-clamped at the
+    // absolute ceiling. Single-unit systems sit at BASE_CAP (50°F); multi-unit setups can
+    // push further to handle extreme climates (3 units → 100°F, 5 units → 150°F). Vents do
+    // NOT increase the cap — that prevents the runaway where 50 vents stack to a ~1500°F
+    // raw offset and oscillate the thermostat.
+    float effectiveHeatingCap = computeOffsetCap(heatingUnits);
+    float effectiveCoolingCap = computeOffsetCap(coolingUnits);
     heatingOffset = Math.min(heatingOffset, effectiveHeatingCap);
     coolingOffset = Math.min(coolingOffset, effectiveCoolingCap);
 
@@ -528,10 +552,21 @@ public class HvacTemperatureManager {
 
     if (debugThisPass) {
       LOGGER.info(String.format("[HVAC-DEBUG]   totals: heating=%.1f (cap=%.0f, %d units) cooling=%.1f (cap=%.0f, %d units) outdoor=%s finalOffset=%.1f",
-          heatingOffset, effectiveHeatingCap, heatingContributors, coolingOffset, effectiveCoolingCap, coolingContributors, isOutdoors, totalOffset));
+          heatingOffset, effectiveHeatingCap, heatingUnits, coolingOffset, effectiveCoolingCap, coolingUnits, isOutdoors, totalOffset));
     }
 
     return totalOffset;
+  }
+
+  /**
+   * Computes the per-direction offset cap for the given number of active heater/cooler
+   * units. Returns at least {@link #BASE_HVAC_OFFSET_CAP} (when zero or one unit), grows
+   * linearly with extra units, and is hard-clamped at {@link #HVAC_OFFSET_HARD_CAP}.
+   */
+  private static float computeOffsetCap(int unitCount) {
+    int extra = Math.max(0, unitCount - 1);
+    float cap = BASE_HVAC_OFFSET_CAP + HVAC_OFFSET_PER_EXTRA_UNIT * extra;
+    return Math.min(cap, HVAC_OFFSET_HARD_CAP);
   }
 
   /**
@@ -556,31 +591,62 @@ public class HvacTemperatureManager {
   }
 
   /**
-   * Calculates the wall attenuation factor for an HVAC unit's contribution by raycasting from the
-   * unit to the target position and counting solid blocks in the path. Each solid block multiplies
-   * the contribution by {@link #WALL_ATTENUATION_FACTOR} (0.3), so:
-   * <ul>
-   *   <li>0 walls: 100% contribution</li>
-   *   <li>1 wall: 30% contribution</li>
-   *   <li>2 walls: 9% contribution</li>
-   *   <li>3+ walls: effectively zero</li>
-   * </ul>
+   * Calculates the wall attenuation factor for an HVAC unit's contribution between two
+   * positions. Tries several candidate paths (direct line, plus a few elevated variants)
+   * and returns the BEST attenuation — i.e. the path that finds the fewest walls. This
+   * approximates the way air actually flows: it doesn't punch through walls in a straight
+   * line, it rises and finds openings around obstacles.
    *
-   * <p>Uses a simple step-along-ray approach (Bresenham-like) to check blocks along the line
-   * between the two positions. Skips the source and destination blocks themselves.</p>
+   * <p>Concrete example: a vent under a balcony enclosure with a player to the side.
+   * The direct line from vent to player crosses the balcony's vertical wall plus the
+   * balcony floor (2 walls → 9% contribution). But a path that starts a few blocks
+   * above the vent — simulating air rising out of the enclosure's open top before
+   * heading sideways — finds 0 walls and delivers the full contribution. Taking the
+   * MAX across paths is the cheap stand-in for an actual flood-fill or pathfinding
+   * solution.</p>
    *
-   * <p><b>Performance:</b> Checks ~N block states where N is the distance in blocks. With
-   * typical HVAC distances of 3-16 blocks and 2-4 units, this adds 12-64 block state lookups
-   * per temperature calculation (every 2 seconds). Negligible cost.</p>
+   * <p><b>Performance:</b> ~5 paths × ~N block lookups per path, where N is the distance
+   * in blocks. For 3-16 block distances and 2-4 contributors per query, this adds
+   * 60-320 lookups per temperature calculation (every 2 seconds). Still microseconds.</p>
    *
    * @param world the world instance
    * @param from  the HVAC unit position
    * @param to    the query position
    *
-   * @return the wall attenuation multiplier between 0.0 and 1.0
+   * @return the best wall attenuation multiplier across all candidate paths, between 0 and 1
    */
   private static float calculateWallAttenuation(World world, BlockPos from, BlockPos to) {
-    // Step along the ray from source to target, counting solid blocks
+    // Direct line first — usually fine when nothing's in the way, and lets us early-exit
+    // if it already hits 100% so we don't run extra raycasts for nothing.
+    float best = attenuationForPath(world, from, to);
+    if (best >= 0.999f) {
+      return best;
+    }
+
+    // Elevated start: simulates air rising off the vent before moving sideways. Catches
+    // the "vent enclosed under a balcony / overhang" case where the balcony's floor is
+    // an obstacle on the direct line but disappears once you go a couple blocks above.
+    best = Math.max(best, attenuationForPath(world, from.up(), to));
+    if (best >= 0.999f) return best;
+    best = Math.max(best, attenuationForPath(world, from.up(2), to));
+    if (best >= 0.999f) return best;
+
+    // Elevated end: simulates air arriving at the player from above (e.g. coming over
+    // an interior partition rather than punching through it).
+    best = Math.max(best, attenuationForPath(world, from, to.up()));
+    if (best >= 0.999f) return best;
+
+    // Both elevated — handles symmetric obstructions where neither end alone is enough.
+    best = Math.max(best, attenuationForPath(world, from.up(), to.up()));
+    return best;
+  }
+
+  /**
+   * Computes the wall-count attenuation along a single ray. Returns 1.0 when the path is
+   * unobstructed and {@link #WALL_ATTENUATION_FACTOR}^N when N walls are crossed, with an
+   * early exit when attenuation drops below ~1% (≥ 3 walls).
+   */
+  private static float attenuationForPath(World world, BlockPos from, BlockPos to) {
     double dx = to.getX() - from.getX();
     double dy = to.getY() - from.getY();
     double dz = to.getZ() - from.getZ();
@@ -589,7 +655,6 @@ public class HvacTemperatureManager {
       return 1.0f;
     }
 
-    // Normalize direction and step in 0.9-block increments to catch each block
     double stepSize = 0.9;
     int steps = (int) (length / stepSize);
     double sx = dx / length * stepSize;
@@ -601,18 +666,13 @@ public class HvacTemperatureManager {
     double cy = from.getY() + 0.5;
     double cz = from.getZ() + 0.5;
 
-    // Reuse a mutable BlockPos to avoid allocating a new object per raycast step.
-    // Typical raycasts are 3-16 steps with 2-4 units — this saves 24-48 allocations
-    // per temperature query.
     BlockPos.MutableBlockPos checkPos = new BlockPos.MutableBlockPos();
 
-    // Skip the first step (source block) and last step (target block)
     for (int i = 1; i < steps; i++) {
       cx += sx;
       cy += sy;
       cz += sz;
       checkPos.setPos(cx, cy, cz);
-      // Skip if same as source or target
       if (checkPos.equals(from) || checkPos.equals(to)) {
         continue;
       }
@@ -620,7 +680,7 @@ public class HvacTemperatureManager {
       if (isSolidBlock(state)) {
         attenuation *= WALL_ATTENUATION_FACTOR;
         if (attenuation < 0.01f) {
-          return 0.0f; // Early exit — 3+ walls, effectively zero
+          return 0.0f;
         }
       }
     }

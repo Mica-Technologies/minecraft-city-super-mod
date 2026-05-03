@@ -166,7 +166,18 @@ public class HvacThermostatGui extends GuiScreen {
         drawCenteredString(fontRenderer, "\u25CF Cooling (" + efficiency + "%)", cx, statusY, COLOR_COLD);
       }
     } else {
-      drawCenteredString(fontRenderer, "\u25CF Comfortable", cx, statusY, COLOR_COMFORT);
+      // Show "Need heater" / "Need cooler" warning when the thermostat is out of the
+      // comfort range but lacks the equipment to act on it. Otherwise show "Comfortable".
+      int blocked = thermostat.getBlockedMode();
+      if (blocked == 1) {
+        drawCenteredString(fontRenderer, "\u00A7e\u26A0 Below setpoint, no heater linked",
+            cx, statusY, 0xFFFFAA00);
+      } else if (blocked == 2) {
+        drawCenteredString(fontRenderer, "\u00A7e\u26A0 Above setpoint, no cooler linked",
+            cx, statusY, 0xFFFFAA00);
+      } else {
+        drawCenteredString(fontRenderer, "\u25CF Comfortable", cx, statusY, COLOR_COMFORT);
+      }
     }
 
     // System info line

@@ -41,6 +41,7 @@ public class TileEntityHvacThermostat extends AbstractTickableTileEntity
   private static final String LEGACY_NBT_IS_CALLING = "isCalling";
   private static final String NBT_CALLING_MODE = "cM";
   private static final String LEGACY_NBT_CALLING_MODE = "callingMode";
+  private static final String NBT_BLOCKED_MODE = "bM";
   private static final String NBT_EFFICIENCY = "eff";
   private static final String LEGACY_NBT_EFFICIENCY = "efficiency";
   private static final String NBT_RAMP_TICKS = "rT";
@@ -94,14 +95,49 @@ public class TileEntityHvacThermostat extends AbstractTickableTileEntity
   private static final int MODE_HEATING = 1;
   private static final int MODE_COOLING = 2;
 
+  /**
+   * Temperature error (in °F) at which the proportional-control term saturates at full
+   * output. For errors larger than this the vent contribution stays at 100% of base; as
+   * the smoothed thermostat reading approaches the setpoint, output ramps linearly down
+   * to 0. With this set to 10°F:
+   * <ul>
+   *   <li>10°F+ off setpoint → full vent output (no throttling)</li>
+   *   <li>5°F off → 50% output (gentle approach, less overshoot)</li>
+   *   <li>1°F off → 10% (just enough to overcome heat loss)</li>
+   *   <li>at setpoint → 0% (won't overshoot)</li>
+   * </ul>
+   * This is the proportional ("P") term of a basic regulator. The deadband still drives
+   * the on/off transition; the P-term only modulates output magnitude inside the
+   * "calling" state.
+   */
+  private static final float P_TERM_FULL_RANGE = 10.0f;
+
   private int targetTempLow = 65;
   private int targetTempHigh = 80;
   private float currentTemperature = 72.0F;
   private boolean isCalling = false;
   /** Tracks whether we're heating or cooling for deadband logic. Transient. */
   private int callingMode = MODE_IDLE;
+
+  /**
+   * Records the mode the thermostat would have entered if the appropriate equipment was
+   * linked. {@code MODE_HEATING} means "we're below setpoint but no heater is linked";
+   * {@code MODE_COOLING} means "above setpoint but no cooler"; {@code MODE_IDLE} means
+   * "no problem, equipment matches need". Used purely for GUI feedback so the user knows
+   * why the thermostat is not actively conditioning the room. Transient — re-derived
+   * every tick from current state.
+   */
+  private transient int blockedMode = MODE_IDLE;
   /** Whether the thermal smoothing has been initialized with a real reading. */
   private boolean temperatureInitialized = false;
+
+  /**
+   * Set after readNBT and cleared on the first tick. While set, the smoothing snaps to
+   * the raw reading even if it differs wildly from the saved value — this handles the
+   * "thermostat moved between biomes / extreme reload" case. After the first tick we never
+   * snap again, so transient HVAC overshoot can't bypass thermal smoothing and oscillate.
+   */
+  private transient boolean firstTickAfterLoad = false;
 
   /** Positions of linked heaters/coolers. Persisted in NBT. */
   private final List<BlockPos> linkedUnits = new ArrayList<>();
@@ -152,43 +188,81 @@ public class TileEntityHvacThermostat extends AbstractTickableTileEntity
     // Thermal smoothing: blend toward raw temperature gradually to simulate thermal mass.
     // This prevents oscillation where the thermostat's own heater/cooler instantly changes
     // the reading, causing rapid on/off cycling.
-    // Exception: if the saved temperature differs from reality by more than 60°F (e.g. the
-    // thermostat was moved to a very different biome, or was saved in a warmer world), snap
-    // immediately so the display is not misleadingly stale.
-    if (!temperatureInitialized || Math.abs(currentTemperature - rawTemp) > 60.0f) {
+    //
+    // Snap-to-raw is restricted to the very first tick after world load (or first init).
+    // A previous version snapped any time |current - raw| exceeded 60°F as a "moved to a
+    // new biome" guard, but that path also fires whenever HVAC overshoot makes raw
+    // temperature huge — bypassing hysteresis and causing the thermostat to oscillate
+    // between heating and cooling modes once per tick.
+    if (!temperatureInitialized || firstTickAfterLoad) {
       currentTemperature = rawTemp;
       temperatureInitialized = true;
+      firstTickAfterLoad = false;
     } else {
       currentTemperature += (rawTemp - currentTemperature) * THERMAL_BLEND_FACTOR;
     }
 
     boolean wasPreviouslyCalling = isCalling;
+    int previousBlockedMode = blockedMode;
+
+    // Determine which equipment is actually linked. A heater-only system must never enter
+    // cooling mode (and vice versa) — doing so flips vent contributions negative and creates
+    // a runaway oscillation where the thermostat can't settle, since the very vents that
+    // overheated the space then start "cooling" it without any actual coolers present.
+    boolean hasHeater = false;
+    boolean hasCooler = false;
+    for (BlockPos unitPos : linkedUnits) {
+      if (!world.isBlockLoaded(unitPos)) continue;
+      TileEntity unitTe = world.getTileEntity(unitPos);
+      if (unitTe instanceof TileEntityHvacCooler) {
+        hasCooler = true;
+      } else if (unitTe instanceof TileEntityHvacHeater) {
+        hasHeater = true;
+      }
+      if (hasHeater && hasCooler) break;
+    }
+
+    // Reset blockedMode each tick — it's re-derived below if applicable.
+    blockedMode = MODE_IDLE;
 
     // Hysteresis deadband: once heating/cooling starts, don't stop until the temperature
     // overshoots the setpoint by DEADBAND degrees. This creates natural HVAC cycles.
     switch (callingMode) {
       case MODE_HEATING:
-        // Keep heating until we reach targetLow + deadband
-        if (currentTemperature >= targetTempLow + DEADBAND) {
+        // Keep heating until we reach targetLow + deadband, OR drop heating immediately
+        // if the linked heater was removed (avoids stuck-calling state).
+        if (!hasHeater || currentTemperature >= targetTempLow + DEADBAND) {
           callingMode = MODE_IDLE;
           isCalling = false;
         }
         break;
       case MODE_COOLING:
-        // Keep cooling until we reach targetHigh - deadband
-        if (currentTemperature <= targetTempHigh - DEADBAND) {
+        if (!hasCooler || currentTemperature <= targetTempHigh - DEADBAND) {
           callingMode = MODE_IDLE;
           isCalling = false;
         }
         break;
       default:
-        // Idle — start calling if outside the setpoint range
+        // Idle — start calling only if (a) outside the setpoint range AND (b) we have the
+        // equipment to act. A heater-only system at 100°F sits idle; it does NOT switch
+        // into cooling mode and start blowing "negative" air.
         if (currentTemperature < targetTempLow) {
-          callingMode = MODE_HEATING;
-          isCalling = true;
+          if (hasHeater) {
+            callingMode = MODE_HEATING;
+            isCalling = true;
+          } else {
+            // Want to heat but no heater available — flag for GUI feedback.
+            blockedMode = MODE_HEATING;
+            isCalling = false;
+          }
         } else if (currentTemperature > targetTempHigh) {
-          callingMode = MODE_COOLING;
-          isCalling = true;
+          if (hasCooler) {
+            callingMode = MODE_COOLING;
+            isCalling = true;
+          } else {
+            blockedMode = MODE_COOLING;
+            isCalling = false;
+          }
         } else {
           isCalling = false;
         }
@@ -232,8 +306,12 @@ public class TileEntityHvacThermostat extends AbstractTickableTileEntity
     updateLinkedVents(resolved);
 
     // Sync to client when calling/efficiency changes OR temperature shifts by >= 1°F
+    // OR blockedMode flipped (so the GUI can switch between "Comfortable" and the
+    // "Need heater" / "Need cooler" warning).
     boolean tempChanged = Math.abs(currentTemperature - previousTemp) >= 0.5f;
-    if (isCalling != wasPreviouslyCalling || efficiencyChanged || tempChanged) {
+    boolean blockedModeChanged = blockedMode != previousBlockedMode;
+    if (isCalling != wasPreviouslyCalling || efficiencyChanged || tempChanged
+        || blockedModeChanged) {
       markDirtySync(world, pos, true);
     }
   }
@@ -501,7 +579,11 @@ public class TileEntityHvacThermostat extends AbstractTickableTileEntity
   private void updateLinkedVents(ResolvedLinks resolved) {
     float rampFactor = getSystemRampFactor();
     float baseContribution = getBaseVentContribution(resolved.units);
-    float contribution = baseContribution * rampFactor;
+    // Proportional-control term: scales output by the temperature error so the system
+    // throttles down as it approaches setpoint instead of pumping at full power until
+    // the deadband fires (which previously caused 25-30°F overshoots).
+    float pTerm = computeProportionalTerm();
+    float contribution = baseContribution * rampFactor * pTerm;
 
     if (callingMode == MODE_COOLING) {
       contribution = -Math.abs(contribution);
@@ -545,6 +627,35 @@ public class TileEntityHvacThermostat extends AbstractTickableTileEntity
     for (TileEntityHvacVentRelay vent : validVents) {
       vent.setContribution(finalContribution);
     }
+  }
+
+  /**
+   * Returns the proportional output factor (0..1) for the current heating/cooling mode.
+   * Saturates at 1.0 when the thermostat reading is more than {@link #P_TERM_FULL_RANGE}
+   * degrees from the deadband edge, ramps linearly down to 0 at setpoint. Returns 0 when
+   * idle (no output called for).
+   *
+   * <p>This is the regulator's core: it lets a system at extreme error (-30°F outside,
+   * 70°F target) pump at full power, while a system close to setpoint backs off gracefully
+   * and avoids the 25-30°F overshoot that the old "full output until deadband fires"
+   * approach produced.</p>
+   */
+  private float computeProportionalTerm() {
+    float setpoint;
+    float error;
+    if (callingMode == MODE_HEATING) {
+      setpoint = targetTempLow + DEADBAND;
+      error = setpoint - currentTemperature;
+    } else if (callingMode == MODE_COOLING) {
+      setpoint = targetTempHigh - DEADBAND;
+      error = currentTemperature - setpoint;
+    } else {
+      return 0.0f;
+    }
+    float pTerm = error / P_TERM_FULL_RANGE;
+    if (pTerm < 0.0f) return 0.0f;
+    if (pTerm > 1.0f) return 1.0f;
+    return pTerm;
   }
 
   private float getBaseVentContribution(List<TileEntityHvacHeater> resolvedUnits) {
@@ -613,6 +724,7 @@ public class TileEntityHvacThermostat extends AbstractTickableTileEntity
     this.targetTempHigh = readInt(compound, NBT_TARGET_TEMP_HIGH, LEGACY_NBT_TARGET_TEMP_HIGH);
     this.isCalling = readBool(compound, NBT_IS_CALLING, LEGACY_NBT_IS_CALLING);
     this.callingMode = readInt(compound, NBT_CALLING_MODE, LEGACY_NBT_CALLING_MODE);
+    this.blockedMode = compound.hasKey(NBT_BLOCKED_MODE) ? compound.getInteger(NBT_BLOCKED_MODE) : MODE_IDLE;
     this.cachedEfficiencyPercent = readInt(compound, NBT_EFFICIENCY, LEGACY_NBT_EFFICIENCY);
     this.accumulatedRampTicks = readLong(compound, NBT_RAMP_TICKS, LEGACY_NBT_RAMP_TICKS);
     boolean hasCurrentTemp = compound.hasKey(NBT_CURRENT_TEMP)
@@ -623,9 +735,12 @@ public class TileEntityHvacThermostat extends AbstractTickableTileEntity
       this.currentTemperature = compound.getFloat(LEGACY_NBT_CURRENT_TEMP);
     }
     // If we loaded a saved temperature, mark as initialized so thermal smoothing
-    // blends from this value rather than snapping to the first raw reading
+    // blends from this value rather than snapping to the first raw reading. But also set
+    // firstTickAfterLoad so the very first tick can snap if the saved value is wildly
+    // out of sync with reality (block was moved to a new biome between sessions).
     if (hasCurrentTemp) {
       this.temperatureInitialized = true;
+      this.firstTickAfterLoad = true;
     }
     if (targetTempLow == 0 && targetTempHigh == 0) {
       targetTempLow = 65;
@@ -688,6 +803,7 @@ public class TileEntityHvacThermostat extends AbstractTickableTileEntity
     compound.setInteger(NBT_TARGET_TEMP_HIGH, targetTempHigh);
     compound.setBoolean(NBT_IS_CALLING, isCalling);
     compound.setInteger(NBT_CALLING_MODE, callingMode);
+    compound.setInteger(NBT_BLOCKED_MODE, blockedMode);
     compound.setInteger(NBT_EFFICIENCY, cachedEfficiencyPercent);
     compound.setLong(NBT_RAMP_TICKS, accumulatedRampTicks);
     compound.setFloat(NBT_CURRENT_TEMP, currentTemperature);
@@ -732,6 +848,14 @@ public class TileEntityHvacThermostat extends AbstractTickableTileEntity
   public boolean isCalling() { return isCalling; }
 
   public int getCallingMode() { return callingMode; }
+
+  /**
+   * Returns the mode the thermostat would have entered if the right equipment was linked
+   * but couldn't (no heater while cold, no cooler while warm). Returns {@code MODE_IDLE}
+   * when there's no blockage to report. Used by the GUI to show a "Need heater" /
+   * "Need cooler" warning instead of "Comfortable".
+   */
+  public int getBlockedMode() { return blockedMode; }
 
   /**
    * Returns true if at least one linked unit has power (redstone or FE). The thermostat

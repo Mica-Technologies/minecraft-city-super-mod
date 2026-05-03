@@ -8,7 +8,7 @@ package com.micatechnologies.minecraft.csm.hvac;
 public class TileEntityHvacRtuHeater extends TileEntityHvacHeater {
 
   @Override
-  public float getTemperatureContribution() {
+  protected float getActiveContribution() {
     return 2.0F;
   }
 

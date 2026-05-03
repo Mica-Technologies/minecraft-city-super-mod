@@ -27,39 +27,50 @@ public class TileEntityHvacVentRelay extends AbstractTickableTileEntity implemen
   private boolean wasActive = false;
 
   /**
-   * Residual decay factor applied when the thermostat stops calling. Instead of snapping
-   * to zero, the vent contribution decays by this factor each thermostat tick (every 2s).
-   * At 0.99: retains 91% after 20s, 74% after 1 min, 55% after 2 min, 22% after 5 min,
-   * and reaches the zero threshold after ~6-7 minutes. Simulates lingering conditioned
-   * air in the room after the system shuts off.
+   * Residual decay factor applied when the thermostat stops calling (commands ≈ 0). At 0.93
+   * per 2s tick the contribution decays:
+   * <ul>
+   *   <li>50% in ~20s</li>
+   *   <li>95% in ~80s</li>
+   *   <li>effectively zero by ~2 minutes</li>
+   * </ul>
+   * This simulates room-level thermal mass at a physically reasonable timescale: a player
+   * walking into the room shortly after the system shuts off will still feel some lingering
+   * warmth/coolness, then the room equilibrates back to baseline within a couple minutes.
+   *
+   * <p>Earlier versions used 0.99 (13-minute decay), which caused thermostat oscillation
+   * because the vent kept "blowing" long after the thermostat said stop. The faster factor
+   * here, combined with proportional-control output scaling at the thermostat, eliminates
+   * that runaway without making rooms feel artificially cold.</p>
    */
-  private static final float RESIDUAL_DECAY_FACTOR = 0.99f;
+  private static final float RESIDUAL_DECAY_FACTOR = 0.93f;
 
   /**
-   * Threshold below which the residual contribution is zeroed out entirely.
+   * Threshold below which residual contribution snaps to exactly 0. Avoids leaving
+   * sub-degree noise floating in the calculation indefinitely.
    */
   private static final float RESIDUAL_ZERO_THRESHOLD = 0.5f;
 
   /**
-   * Set by the thermostat when the system is calling. Includes ramp-up factor.
-   * When the thermostat stops calling (pushes 0), the contribution decays gradually
-   * via {@link #RESIDUAL_DECAY_FACTOR} instead of snapping to zero.
+   * Set by the thermostat when the system is calling. Includes ramp-up factor and any
+   * proportional-control modulation. When the thermostat stops calling (pushes 0), this
+   * decays toward zero gradually rather than snapping — the lingering warmth/coolness
+   * gives joining players a believable "the room was just heated" experience.
    */
   private float currentContribution = 0.0f;
 
   /**
-   * Called by the thermostat to set this vent's current temperature contribution.
-   * The value already accounts for ramp-up factor and vent relay strength.
-   *
-   * <p>When the thermostat stops calling (new contribution near zero), the vent applies
-   * residual decay instead of zeroing instantly. This simulates conditioned air lingering
-   * in the room and prevents rapid thermostat cycling.</p>
+   * Called by the thermostat to set this vent's current temperature contribution. The
+   * commanded value already accounts for ramp, proportional control, vent strength, and
+   * density bonus. When the command is ~zero (system idle) and the previous value was
+   * meaningful, apply residual decay instead of snapping to zero. Otherwise overwrite
+   * verbatim.
    */
   public void setContribution(float contribution) {
     float oldContribution = this.currentContribution;
 
     if (Math.abs(contribution) < 0.1f && Math.abs(oldContribution) > RESIDUAL_ZERO_THRESHOLD) {
-      // Thermostat stopped calling — apply residual decay instead of zeroing.
+      // Thermostat stopped calling — apply residual decay so the room cools gradually.
       this.currentContribution *= RESIDUAL_DECAY_FACTOR;
       if (Math.abs(this.currentContribution) < RESIDUAL_ZERO_THRESHOLD) {
         this.currentContribution = 0.0f;

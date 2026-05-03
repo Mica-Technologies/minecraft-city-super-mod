@@ -162,7 +162,18 @@ public class HvacZoneThermostatGui extends GuiScreen {
         drawCenteredString(fontRenderer, "\u25CF Cooling (" + efficiency + "%)", cx, statusY, COLOR_COLD);
       }
     } else {
-      drawCenteredString(fontRenderer, "\u25CF Comfortable", cx, statusY, COLOR_COMFORT);
+      // Surface "Need heater" / "Need cooler" warning when the zone is out of comfort
+      // range but the linked primary lacks the appropriate equipment.
+      int blocked = thermostat.getBlockedMode();
+      if (blocked == 1) {
+        drawCenteredString(fontRenderer, "\u00A7e\u26A0 Below setpoint, no heater in primary",
+            cx, statusY, 0xFFFFAA00);
+      } else if (blocked == 2) {
+        drawCenteredString(fontRenderer, "\u00A7e\u26A0 Above setpoint, no cooler in primary",
+            cx, statusY, 0xFFFFAA00);
+      } else {
+        drawCenteredString(fontRenderer, "\u25CF Comfortable", cx, statusY, COLOR_COMFORT);
+      }
     }
 
     // System info line
