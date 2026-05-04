@@ -6,13 +6,14 @@ import com.micatechnologies.minecraft.csm.codeutils.AbstractPoweredBlockRotatabl
 import com.micatechnologies.minecraft.csm.codeutils.AbstractTileEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
@@ -33,6 +34,11 @@ public class TileEntityEmergencyLightRenderer
   private static final float COLOR_R = 1.0f;
   private static final float COLOR_G = 0.95f;
   private static final float COLOR_B = 0.85f;
+
+  private static final ResourceLocation WHITE_TEXTURE =
+      new ResourceLocation("csm", "textures/blocks/white1px.png");
+  private static final int LIGHTMAP_FULLBRIGHT_SKY = 240;
+  private static final int LIGHTMAP_FULLBRIGHT_BLOCK = 240;
 
   // Precomputed cone segment constants. Same optimization as in the strobe renderer — the
   // per-segment interpolation factors are class-constant, so we hoist their computation out
@@ -80,16 +86,14 @@ public class TileEntityEmergencyLightRenderer
 
     IEmergencyLightBlock lightBlock = (IEmergencyLightBlock) block;
 
-    // Save lightmap and set fullbright
-    int prevBrightnessX = (int) OpenGlHelper.lastBrightnessX;
-    int prevBrightnessY = (int) OpenGlHelper.lastBrightnessY;
-    OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240f, 240f);
-
     GlStateManager.pushMatrix();
     GlStateManager.translate((float) x + 0.5f, (float) y + 0.5f, (float) z + 0.5f);
     applyFacingRotation(facing);
 
-    GlStateManager.disableTexture2D();
+    // Bind a 1x1 white pixel texture instead of disableTexture2D — shaders ignore
+    // disableTexture2D and sample whatever was last bound. Fullbright lightmap is baked
+    // per-vertex via the BLOCK vertex format.
+    Minecraft.getMinecraft().getTextureManager().bindTexture(WHITE_TEXTURE);
     GlStateManager.disableCull();
     GlStateManager.enableBlend();
     GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA,
@@ -101,18 +105,18 @@ public class TileEntityEmergencyLightRenderer
     renderBulbGlow(lightBlock.getLeftBulbFrom(), lightBlock.getLeftBulbTo());
     renderBulbGlow(lightBlock.getRightBulbFrom(), lightBlock.getRightBulbTo());
 
-    // Restore GL state
-    GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-    GlStateManager.resetColor();
     GlStateManager.depthMask(true);
     GlStateManager.enableLighting();
     GlStateManager.enableCull();
     GlStateManager.disableBlend();
-    GlStateManager.enableTexture2D();
     GlStateManager.popMatrix();
+  }
 
-    OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit,
-        prevBrightnessX, prevBrightnessY);
+  /** Emits one BLOCK-format vertex with explicit color and fullbright lightmap. */
+  private static void emit(BufferBuilder buf, double px, double py, double pz,
+      float r, float g, float b, float a) {
+    buf.pos(px, py, pz).color(r, g, b, a).tex(0.5f, 0.5f)
+        .lightmap(LIGHTMAP_FULLBRIGHT_SKY, LIGHTMAP_FULLBRIGHT_BLOCK).endVertex();
   }
 
   /**
@@ -135,65 +139,62 @@ public class TileEntityEmergencyLightRenderer
     float depth = maxZ - minZ;
 
     // --- Front face: bright core covering the bulb face ---
-    GL11.glColor4f(COLOR_R, COLOR_G, COLOR_B, 0.9f);
-    buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
-    buffer.pos(minX, minY, quadZ).endVertex();
-    buffer.pos(maxX, minY, quadZ).endVertex();
-    buffer.pos(maxX, maxY, quadZ).endVertex();
-    buffer.pos(minX, maxY, quadZ).endVertex();
+    buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
+    emit(buffer, minX, minY, quadZ, COLOR_R, COLOR_G, COLOR_B, 0.9f);
+    emit(buffer, maxX, minY, quadZ, COLOR_R, COLOR_G, COLOR_B, 0.9f);
+    emit(buffer, maxX, maxY, quadZ, COLOR_R, COLOR_G, COLOR_B, 0.9f);
+    emit(buffer, minX, maxY, quadZ, COLOR_R, COLOR_G, COLOR_B, 0.9f);
     tessellator.draw();
 
     // --- Side quads along the bulb depth (front edge to back edge) ---
-    GL11.glColor4f(COLOR_R, COLOR_G, COLOR_B, 0.5f);
-    buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
+    buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
     // Left side
-    buffer.pos(minX, minY, quadZ).endVertex();
-    buffer.pos(minX, minY, quadZ + depth).endVertex();
-    buffer.pos(minX, maxY, quadZ + depth).endVertex();
-    buffer.pos(minX, maxY, quadZ).endVertex();
+    emit(buffer, minX, minY, quadZ, COLOR_R, COLOR_G, COLOR_B, 0.5f);
+    emit(buffer, minX, minY, quadZ + depth, COLOR_R, COLOR_G, COLOR_B, 0.5f);
+    emit(buffer, minX, maxY, quadZ + depth, COLOR_R, COLOR_G, COLOR_B, 0.5f);
+    emit(buffer, minX, maxY, quadZ, COLOR_R, COLOR_G, COLOR_B, 0.5f);
     // Right side
-    buffer.pos(maxX, minY, quadZ + depth).endVertex();
-    buffer.pos(maxX, minY, quadZ).endVertex();
-    buffer.pos(maxX, maxY, quadZ).endVertex();
-    buffer.pos(maxX, maxY, quadZ + depth).endVertex();
+    emit(buffer, maxX, minY, quadZ + depth, COLOR_R, COLOR_G, COLOR_B, 0.5f);
+    emit(buffer, maxX, minY, quadZ, COLOR_R, COLOR_G, COLOR_B, 0.5f);
+    emit(buffer, maxX, maxY, quadZ, COLOR_R, COLOR_G, COLOR_B, 0.5f);
+    emit(buffer, maxX, maxY, quadZ + depth, COLOR_R, COLOR_G, COLOR_B, 0.5f);
     // Top side
-    buffer.pos(minX, maxY, quadZ).endVertex();
-    buffer.pos(minX, maxY, quadZ + depth).endVertex();
-    buffer.pos(maxX, maxY, quadZ + depth).endVertex();
-    buffer.pos(maxX, maxY, quadZ).endVertex();
+    emit(buffer, minX, maxY, quadZ, COLOR_R, COLOR_G, COLOR_B, 0.5f);
+    emit(buffer, minX, maxY, quadZ + depth, COLOR_R, COLOR_G, COLOR_B, 0.5f);
+    emit(buffer, maxX, maxY, quadZ + depth, COLOR_R, COLOR_G, COLOR_B, 0.5f);
+    emit(buffer, maxX, maxY, quadZ, COLOR_R, COLOR_G, COLOR_B, 0.5f);
     // Bottom side
-    buffer.pos(minX, minY, quadZ + depth).endVertex();
-    buffer.pos(minX, minY, quadZ).endVertex();
-    buffer.pos(maxX, minY, quadZ).endVertex();
-    buffer.pos(maxX, minY, quadZ + depth).endVertex();
+    emit(buffer, minX, minY, quadZ + depth, COLOR_R, COLOR_G, COLOR_B, 0.5f);
+    emit(buffer, minX, minY, quadZ, COLOR_R, COLOR_G, COLOR_B, 0.5f);
+    emit(buffer, maxX, minY, quadZ, COLOR_R, COLOR_G, COLOR_B, 0.5f);
+    emit(buffer, maxX, minY, quadZ + depth, COLOR_R, COLOR_G, COLOR_B, 0.5f);
     tessellator.draw();
 
     // --- Outer side faces of the bulb (left, right, top, bottom — not back) ---
     // These make the bulb visibly lit from the side. They extend forward to quadZ so
     // they connect seamlessly with the front face, forming a continuous lit shell.
     float sideOffset = 0.01f;
-    GL11.glColor4f(COLOR_R, COLOR_G, COLOR_B, 0.7f);
-    buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
+    buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
     // Left face (facing -X)
-    buffer.pos(minX - sideOffset, minY, quadZ).endVertex();
-    buffer.pos(minX - sideOffset, minY, maxZ).endVertex();
-    buffer.pos(minX - sideOffset, maxY, maxZ).endVertex();
-    buffer.pos(minX - sideOffset, maxY, quadZ).endVertex();
+    emit(buffer, minX - sideOffset, minY, quadZ, COLOR_R, COLOR_G, COLOR_B, 0.7f);
+    emit(buffer, minX - sideOffset, minY, maxZ, COLOR_R, COLOR_G, COLOR_B, 0.7f);
+    emit(buffer, minX - sideOffset, maxY, maxZ, COLOR_R, COLOR_G, COLOR_B, 0.7f);
+    emit(buffer, minX - sideOffset, maxY, quadZ, COLOR_R, COLOR_G, COLOR_B, 0.7f);
     // Right face (facing +X)
-    buffer.pos(maxX + sideOffset, minY, maxZ).endVertex();
-    buffer.pos(maxX + sideOffset, minY, quadZ).endVertex();
-    buffer.pos(maxX + sideOffset, maxY, quadZ).endVertex();
-    buffer.pos(maxX + sideOffset, maxY, maxZ).endVertex();
+    emit(buffer, maxX + sideOffset, minY, maxZ, COLOR_R, COLOR_G, COLOR_B, 0.7f);
+    emit(buffer, maxX + sideOffset, minY, quadZ, COLOR_R, COLOR_G, COLOR_B, 0.7f);
+    emit(buffer, maxX + sideOffset, maxY, quadZ, COLOR_R, COLOR_G, COLOR_B, 0.7f);
+    emit(buffer, maxX + sideOffset, maxY, maxZ, COLOR_R, COLOR_G, COLOR_B, 0.7f);
     // Top face (facing +Y)
-    buffer.pos(minX, maxY + sideOffset, quadZ).endVertex();
-    buffer.pos(minX, maxY + sideOffset, maxZ).endVertex();
-    buffer.pos(maxX, maxY + sideOffset, maxZ).endVertex();
-    buffer.pos(maxX, maxY + sideOffset, quadZ).endVertex();
+    emit(buffer, minX, maxY + sideOffset, quadZ, COLOR_R, COLOR_G, COLOR_B, 0.7f);
+    emit(buffer, minX, maxY + sideOffset, maxZ, COLOR_R, COLOR_G, COLOR_B, 0.7f);
+    emit(buffer, maxX, maxY + sideOffset, maxZ, COLOR_R, COLOR_G, COLOR_B, 0.7f);
+    emit(buffer, maxX, maxY + sideOffset, quadZ, COLOR_R, COLOR_G, COLOR_B, 0.7f);
     // Bottom face (facing -Y)
-    buffer.pos(minX, minY - sideOffset, maxZ).endVertex();
-    buffer.pos(minX, minY - sideOffset, quadZ).endVertex();
-    buffer.pos(maxX, minY - sideOffset, quadZ).endVertex();
-    buffer.pos(maxX, minY - sideOffset, maxZ).endVertex();
+    emit(buffer, minX, minY - sideOffset, maxZ, COLOR_R, COLOR_G, COLOR_B, 0.7f);
+    emit(buffer, minX, minY - sideOffset, quadZ, COLOR_R, COLOR_G, COLOR_B, 0.7f);
+    emit(buffer, maxX, minY - sideOffset, quadZ, COLOR_R, COLOR_G, COLOR_B, 0.7f);
+    emit(buffer, maxX, minY - sideOffset, maxZ, COLOR_R, COLOR_G, COLOR_B, 0.7f);
     tessellator.draw();
 
     // --- Directional light cone projecting forward from the bulb ---
@@ -212,42 +213,41 @@ public class TileEntityEmergencyLightRenderer
       float fh = lensH * CONE_HALF_DIM_FACTOR[i + 1];
       float segAlpha = (CONE_ALPHA[i] + CONE_ALPHA[i + 1]) * 0.5f;
 
-      GL11.glColor4f(COLOR_R, COLOR_G, COLOR_B, segAlpha);
-      buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
+      buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
 
       // Left wall
-      buffer.pos(cenX - nw, cenY - nh, nearZ).endVertex();
-      buffer.pos(cenX - fw, cenY - fh, farZ).endVertex();
-      buffer.pos(cenX - fw, cenY + fh, farZ).endVertex();
-      buffer.pos(cenX - nw, cenY + nh, nearZ).endVertex();
+      emit(buffer, cenX - nw, cenY - nh, nearZ, COLOR_R, COLOR_G, COLOR_B, segAlpha);
+      emit(buffer, cenX - fw, cenY - fh, farZ, COLOR_R, COLOR_G, COLOR_B, segAlpha);
+      emit(buffer, cenX - fw, cenY + fh, farZ, COLOR_R, COLOR_G, COLOR_B, segAlpha);
+      emit(buffer, cenX - nw, cenY + nh, nearZ, COLOR_R, COLOR_G, COLOR_B, segAlpha);
 
       // Right wall
-      buffer.pos(cenX + nw, cenY - nh, nearZ).endVertex();
-      buffer.pos(cenX + nw, cenY + nh, nearZ).endVertex();
-      buffer.pos(cenX + fw, cenY + fh, farZ).endVertex();
-      buffer.pos(cenX + fw, cenY - fh, farZ).endVertex();
+      emit(buffer, cenX + nw, cenY - nh, nearZ, COLOR_R, COLOR_G, COLOR_B, segAlpha);
+      emit(buffer, cenX + nw, cenY + nh, nearZ, COLOR_R, COLOR_G, COLOR_B, segAlpha);
+      emit(buffer, cenX + fw, cenY + fh, farZ, COLOR_R, COLOR_G, COLOR_B, segAlpha);
+      emit(buffer, cenX + fw, cenY - fh, farZ, COLOR_R, COLOR_G, COLOR_B, segAlpha);
 
       // Top wall
-      buffer.pos(cenX - nw, cenY + nh, nearZ).endVertex();
-      buffer.pos(cenX - fw, cenY + fh, farZ).endVertex();
-      buffer.pos(cenX + fw, cenY + fh, farZ).endVertex();
-      buffer.pos(cenX + nw, cenY + nh, nearZ).endVertex();
+      emit(buffer, cenX - nw, cenY + nh, nearZ, COLOR_R, COLOR_G, COLOR_B, segAlpha);
+      emit(buffer, cenX - fw, cenY + fh, farZ, COLOR_R, COLOR_G, COLOR_B, segAlpha);
+      emit(buffer, cenX + fw, cenY + fh, farZ, COLOR_R, COLOR_G, COLOR_B, segAlpha);
+      emit(buffer, cenX + nw, cenY + nh, nearZ, COLOR_R, COLOR_G, COLOR_B, segAlpha);
 
       // Bottom wall
-      buffer.pos(cenX - nw, cenY - nh, nearZ).endVertex();
-      buffer.pos(cenX + nw, cenY - nh, nearZ).endVertex();
-      buffer.pos(cenX + fw, cenY - fh, farZ).endVertex();
-      buffer.pos(cenX - fw, cenY - fh, farZ).endVertex();
+      emit(buffer, cenX - nw, cenY - nh, nearZ, COLOR_R, COLOR_G, COLOR_B, segAlpha);
+      emit(buffer, cenX + nw, cenY - nh, nearZ, COLOR_R, COLOR_G, COLOR_B, segAlpha);
+      emit(buffer, cenX + fw, cenY - fh, farZ, COLOR_R, COLOR_G, COLOR_B, segAlpha);
+      emit(buffer, cenX - fw, cenY - fh, farZ, COLOR_R, COLOR_G, COLOR_B, segAlpha);
 
       tessellator.draw();
 
       // Front cap
-      GL11.glColor4f(COLOR_R, COLOR_G, COLOR_B, CONE_ALPHA[i + 1]);
-      buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
-      buffer.pos(cenX - fw, cenY - fh, farZ).endVertex();
-      buffer.pos(cenX + fw, cenY - fh, farZ).endVertex();
-      buffer.pos(cenX + fw, cenY + fh, farZ).endVertex();
-      buffer.pos(cenX - fw, cenY + fh, farZ).endVertex();
+      float capAlpha = CONE_ALPHA[i + 1];
+      buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
+      emit(buffer, cenX - fw, cenY - fh, farZ, COLOR_R, COLOR_G, COLOR_B, capAlpha);
+      emit(buffer, cenX + fw, cenY - fh, farZ, COLOR_R, COLOR_G, COLOR_B, capAlpha);
+      emit(buffer, cenX + fw, cenY + fh, farZ, COLOR_R, COLOR_G, COLOR_B, capAlpha);
+      emit(buffer, cenX - fw, cenY + fh, farZ, COLOR_R, COLOR_G, COLOR_B, capAlpha);
       tessellator.draw();
     }
   }

@@ -6,13 +6,14 @@ import com.micatechnologies.minecraft.csm.codeutils.AbstractTileEntity;
 import com.micatechnologies.minecraft.csm.codeutils.CsmRenderUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
@@ -30,6 +31,11 @@ public class TileEntityFireAlarmStrobeRenderer
   private static final long STROBE_CYCLE_MS = 1000L;
   private static final long STROBE_FLASH_MS = 75L;
   private static final long STROBE_FADE_MS = 75L;
+
+  private static final ResourceLocation WHITE_TEXTURE =
+      new ResourceLocation("csm", "textures/blocks/white1px.png");
+  private static final int LIGHTMAP_FULLBRIGHT_SKY = 240;
+  private static final int LIGHTMAP_FULLBRIGHT_BLOCK = 240;
 
   // Precomputed cone segment constants. These are unitless factors — at render time the
   // z-offset array is added to the lens z-coordinate, and the half-dim array is multiplied
@@ -109,16 +115,14 @@ public class TileEntityFireAlarmStrobeRenderer
     // Quad sits on the front face of the lens element (minimum Z), offset slightly forward
     float quadZ = minZ - 0.01f;
 
-    // Save lightmap and set fullbright
-    int prevBrightnessX = (int) OpenGlHelper.lastBrightnessX;
-    int prevBrightnessY = (int) OpenGlHelper.lastBrightnessY;
-    OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240f, 240f);
-
     GlStateManager.pushMatrix();
     GlStateManager.translate((float) x + 0.5f, (float) y + 0.5f, (float) z + 0.5f);
     applyFacingRotation(facing);
 
-    GlStateManager.disableTexture2D();
+    // Bind a 1x1 white pixel texture instead of disableTexture2D — shaders ignore
+    // disableTexture2D and sample whatever was last bound. Fullbright lightmap is baked
+    // per-vertex via the BLOCK vertex format.
+    Minecraft.getMinecraft().getTextureManager().bindTexture(WHITE_TEXTURE);
     GlStateManager.disableCull();
     GlStateManager.enableBlend();
     GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA,
@@ -138,48 +142,48 @@ public class TileEntityFireAlarmStrobeRenderer
     float b = redToggle ? 0.1f : 1.0f;
 
     // Front face — main flash quad covering the strobe lens (fully opaque core)
-    GL11.glColor4f(r, g, b, 1.0f * intensity);
-    buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
-    buffer.pos(minX, minY, quadZ).endVertex();
-    buffer.pos(maxX, minY, quadZ).endVertex();
-    buffer.pos(maxX, maxY, quadZ).endVertex();
-    buffer.pos(minX, maxY, quadZ).endVertex();
+    float coreA = 1.0f * intensity;
+    buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
+    emit(buffer, minX, minY, quadZ, r, g, b, coreA);
+    emit(buffer, maxX, minY, quadZ, r, g, b, coreA);
+    emit(buffer, maxX, maxY, quadZ, r, g, b, coreA);
+    emit(buffer, minX, maxY, quadZ, r, g, b, coreA);
     tessellator.draw();
 
     // Side quads — make the strobe visible from angles (along the lens depth)
-    GL11.glColor4f(r, g, b, 0.7f * intensity);
-    buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
+    float sideA = 0.7f * intensity;
+    buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
     // Left side
-    buffer.pos(minX, minY, quadZ).endVertex();
-    buffer.pos(minX, minY, quadZ + depth).endVertex();
-    buffer.pos(minX, maxY, quadZ + depth).endVertex();
-    buffer.pos(minX, maxY, quadZ).endVertex();
+    emit(buffer, minX, minY, quadZ, r, g, b, sideA);
+    emit(buffer, minX, minY, quadZ + depth, r, g, b, sideA);
+    emit(buffer, minX, maxY, quadZ + depth, r, g, b, sideA);
+    emit(buffer, minX, maxY, quadZ, r, g, b, sideA);
     // Right side
-    buffer.pos(maxX, minY, quadZ + depth).endVertex();
-    buffer.pos(maxX, minY, quadZ).endVertex();
-    buffer.pos(maxX, maxY, quadZ).endVertex();
-    buffer.pos(maxX, maxY, quadZ + depth).endVertex();
+    emit(buffer, maxX, minY, quadZ + depth, r, g, b, sideA);
+    emit(buffer, maxX, minY, quadZ, r, g, b, sideA);
+    emit(buffer, maxX, maxY, quadZ, r, g, b, sideA);
+    emit(buffer, maxX, maxY, quadZ + depth, r, g, b, sideA);
     // Top side
-    buffer.pos(minX, maxY, quadZ).endVertex();
-    buffer.pos(minX, maxY, quadZ + depth).endVertex();
-    buffer.pos(maxX, maxY, quadZ + depth).endVertex();
-    buffer.pos(maxX, maxY, quadZ).endVertex();
+    emit(buffer, minX, maxY, quadZ, r, g, b, sideA);
+    emit(buffer, minX, maxY, quadZ + depth, r, g, b, sideA);
+    emit(buffer, maxX, maxY, quadZ + depth, r, g, b, sideA);
+    emit(buffer, maxX, maxY, quadZ, r, g, b, sideA);
     // Bottom side
-    buffer.pos(minX, minY, quadZ + depth).endVertex();
-    buffer.pos(minX, minY, quadZ).endVertex();
-    buffer.pos(maxX, minY, quadZ).endVertex();
-    buffer.pos(maxX, minY, quadZ + depth).endVertex();
+    emit(buffer, minX, minY, quadZ + depth, r, g, b, sideA);
+    emit(buffer, minX, minY, quadZ, r, g, b, sideA);
+    emit(buffer, maxX, minY, quadZ, r, g, b, sideA);
+    emit(buffer, maxX, minY, quadZ + depth, r, g, b, sideA);
     tessellator.draw();
 
     // Inner glow halo — close bloom around the lens
     float pad1X = (maxX - minX) * 0.5f;
     float pad1Y = (maxY - minY) * 0.5f;
-    GL11.glColor4f(r, g, b, 0.35f * intensity);
-    buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
-    buffer.pos(minX - pad1X, minY - pad1Y, quadZ - 0.02f).endVertex();
-    buffer.pos(maxX + pad1X, minY - pad1Y, quadZ - 0.02f).endVertex();
-    buffer.pos(maxX + pad1X, maxY + pad1Y, quadZ - 0.02f).endVertex();
-    buffer.pos(minX - pad1X, maxY + pad1Y, quadZ - 0.02f).endVertex();
+    float haloA = 0.35f * intensity;
+    buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
+    emit(buffer, minX - pad1X, minY - pad1Y, quadZ - 0.02f, r, g, b, haloA);
+    emit(buffer, maxX + pad1X, minY - pad1Y, quadZ - 0.02f, r, g, b, haloA);
+    emit(buffer, maxX + pad1X, maxY + pad1Y, quadZ - 0.02f, r, g, b, haloA);
+    emit(buffer, minX - pad1X, maxY + pad1Y, quadZ - 0.02f, r, g, b, haloA);
     tessellator.draw();
 
     // Projected light cone — a 3D frustum (truncated pyramid) expanding outward from the
@@ -203,57 +207,55 @@ public class TileEntityFireAlarmStrobeRenderer
       // Alpha for this segment is the average of the two ring endpoints
       float segAlpha = (nearAlpha + farAlpha) * 0.5f;
 
-      GL11.glColor4f(r, g, b, segAlpha);
-      buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
+      buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
 
       // Left wall
-      buffer.pos(cenX - nw, cenY - nh, nearZ).endVertex();
-      buffer.pos(cenX - fw, cenY - fh, farZ).endVertex();
-      buffer.pos(cenX - fw, cenY + fh, farZ).endVertex();
-      buffer.pos(cenX - nw, cenY + nh, nearZ).endVertex();
+      emit(buffer, cenX - nw, cenY - nh, nearZ, r, g, b, segAlpha);
+      emit(buffer, cenX - fw, cenY - fh, farZ, r, g, b, segAlpha);
+      emit(buffer, cenX - fw, cenY + fh, farZ, r, g, b, segAlpha);
+      emit(buffer, cenX - nw, cenY + nh, nearZ, r, g, b, segAlpha);
 
       // Right wall
-      buffer.pos(cenX + nw, cenY - nh, nearZ).endVertex();
-      buffer.pos(cenX + nw, cenY + nh, nearZ).endVertex();
-      buffer.pos(cenX + fw, cenY + fh, farZ).endVertex();
-      buffer.pos(cenX + fw, cenY - fh, farZ).endVertex();
+      emit(buffer, cenX + nw, cenY - nh, nearZ, r, g, b, segAlpha);
+      emit(buffer, cenX + nw, cenY + nh, nearZ, r, g, b, segAlpha);
+      emit(buffer, cenX + fw, cenY + fh, farZ, r, g, b, segAlpha);
+      emit(buffer, cenX + fw, cenY - fh, farZ, r, g, b, segAlpha);
 
       // Top wall
-      buffer.pos(cenX - nw, cenY + nh, nearZ).endVertex();
-      buffer.pos(cenX - fw, cenY + fh, farZ).endVertex();
-      buffer.pos(cenX + fw, cenY + fh, farZ).endVertex();
-      buffer.pos(cenX + nw, cenY + nh, nearZ).endVertex();
+      emit(buffer, cenX - nw, cenY + nh, nearZ, r, g, b, segAlpha);
+      emit(buffer, cenX - fw, cenY + fh, farZ, r, g, b, segAlpha);
+      emit(buffer, cenX + fw, cenY + fh, farZ, r, g, b, segAlpha);
+      emit(buffer, cenX + nw, cenY + nh, nearZ, r, g, b, segAlpha);
 
       // Bottom wall
-      buffer.pos(cenX - nw, cenY - nh, nearZ).endVertex();
-      buffer.pos(cenX + nw, cenY - nh, nearZ).endVertex();
-      buffer.pos(cenX + fw, cenY - fh, farZ).endVertex();
-      buffer.pos(cenX - fw, cenY - fh, farZ).endVertex();
+      emit(buffer, cenX - nw, cenY - nh, nearZ, r, g, b, segAlpha);
+      emit(buffer, cenX + nw, cenY - nh, nearZ, r, g, b, segAlpha);
+      emit(buffer, cenX + fw, cenY - fh, farZ, r, g, b, segAlpha);
+      emit(buffer, cenX - fw, cenY - fh, farZ, r, g, b, segAlpha);
 
       tessellator.draw();
 
       // Front cap on each segment for head-on viewing
-      GL11.glColor4f(r, g, b, farAlpha);
-      buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
-      buffer.pos(cenX - fw, cenY - fh, farZ).endVertex();
-      buffer.pos(cenX + fw, cenY - fh, farZ).endVertex();
-      buffer.pos(cenX + fw, cenY + fh, farZ).endVertex();
-      buffer.pos(cenX - fw, cenY + fh, farZ).endVertex();
+      buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
+      emit(buffer, cenX - fw, cenY - fh, farZ, r, g, b, farAlpha);
+      emit(buffer, cenX + fw, cenY - fh, farZ, r, g, b, farAlpha);
+      emit(buffer, cenX + fw, cenY + fh, farZ, r, g, b, farAlpha);
+      emit(buffer, cenX - fw, cenY + fh, farZ, r, g, b, farAlpha);
       tessellator.draw();
     }
 
-    // Restore GL state
-    GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-    GlStateManager.resetColor();
     GlStateManager.depthMask(true);
     GlStateManager.enableLighting();
     GlStateManager.enableCull();
     GlStateManager.disableBlend();
-    GlStateManager.enableTexture2D();
     GlStateManager.popMatrix();
+  }
 
-    OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit,
-        prevBrightnessX, prevBrightnessY);
+  /** Emits one BLOCK-format vertex with explicit color and fullbright lightmap. */
+  private static void emit(BufferBuilder buf, double px, double py, double pz,
+      float r, float g, float b, float a) {
+    buf.pos(px, py, pz).color(r, g, b, a).tex(0.5f, 0.5f)
+        .lightmap(LIGHTMAP_FULLBRIGHT_SKY, LIGHTMAP_FULLBRIGHT_BLOCK).endVertex();
   }
 
   private static void applyFacingRotation(EnumFacing facing) {

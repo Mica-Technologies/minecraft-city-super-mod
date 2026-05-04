@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
+import com.micatechnologies.minecraft.csm.CsmConfig;
 import com.micatechnologies.minecraft.csm.codeutils.CsmRenderUtils;
 import com.micatechnologies.minecraft.csm.codeutils.DirectionSixteen;
 import com.micatechnologies.minecraft.csm.codeutils.RenderHelper;
@@ -19,11 +20,11 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import org.lwjgl.opengl.GL11;
 
@@ -31,6 +32,7 @@ public class TileEntityBlankoutBoxRenderer
         extends TileEntitySpecialRenderer<TileEntityBlankoutBox> {
 
     private final Map<BlockPos, Integer> displayListCache = new HashMap<>();
+    private final Map<BlockPos, Integer> lastCombinedLightCache = new HashMap<>();
 
     // Visor tint parameters (same as crosswalk)
     private static final float VISOR_TINT_SCALE = 1.04f;
@@ -39,11 +41,17 @@ public class TileEntityBlankoutBoxRenderer
     private static final float VISOR_INNER_G = 0.0f;
     private static final float VISOR_INNER_B = 0.0f;
 
+    private static final ResourceLocation WHITE_TEXTURE =
+        new ResourceLocation("csm", "textures/blocks/white1px.png");
+    private static final int LIGHTMAP_FULLBRIGHT_SKY = 240;
+    private static final int LIGHTMAP_FULLBRIGHT_BLOCK = 240;
+
     public void cleanupDisplayList( BlockPos pos ) {
         Integer listId = displayListCache.remove( pos );
         if ( listId != null ) {
             GL11.glDeleteLists( listId, 1 );
         }
+        lastCombinedLightCache.remove( pos );
     }
 
     @Override
@@ -80,15 +88,11 @@ public class TileEntityBlankoutBoxRenderer
         GlStateManager.enableBlend();
         GlStateManager.blendFunc( GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA );
 
-        int prevBX = (int) OpenGlHelper.lastBrightnessX;
-        int prevBY = (int) OpenGlHelper.lastBrightnessY;
-
-        // World lightmap for housing/visor/mount
+        // World lightmap is now baked per-vertex via the BLOCK vertex format (shader pipeline
+        // doesn't honor OpenGlHelper.setLightmapTextureCoords global state).
         int combinedLight = te.getWorld().getCombinedLight( te.getPos(), 0 );
-        int worldLightX = combinedLight % 65536;
-        int worldLightY = combinedLight / 65536;
-        OpenGlHelper.setLightmapTextureCoords( OpenGlHelper.lightmapTexUnit, worldLightX,
-                worldLightY );
+        int worldSkyLight = ( combinedLight >> 16 ) & 0xFFFF;
+        int worldBlockLight = combinedLight & 0xFFFF;
 
         GL11.glPushMatrix();
         GL11.glTranslated( x, y, z );
@@ -109,7 +113,8 @@ public class TileEntityBlankoutBoxRenderer
 
             renderBoxes( bodyColor, BlankoutBoxVertexData.getArmData(
                     mountType, tiltOffset,
-                    bodyDirection.getRotation(), baseDirection.getRotation() ) );
+                    bodyDirection.getRotation(), baseDirection.getRotation() ),
+                    worldSkyLight, worldBlockLight );
 
             GL11.glPopMatrix();
         }
@@ -133,27 +138,34 @@ public class TileEntityBlankoutBoxRenderer
 
         // Stubs
         if ( mountType != CrosswalkMountType.BASE ) {
-            renderBoxes( bodyColor, BlankoutBoxVertexData.getStubData( mountType ) );
+            renderBoxes( bodyColor, BlankoutBoxVertexData.getStubData( mountType ),
+                    worldSkyLight, worldBlockLight );
         }
 
         // Display list: body + visor
         BlockPos pos = te.getPos();
         Integer displayList = displayListCache.get( pos );
-        if ( displayList == null || te.isStateDirty() ) {
+        Integer lastLight = lastCombinedLightCache.get( pos );
+        if ( displayList == null || te.isStateDirty()
+                || lastLight == null || lastLight != combinedLight ) {
             if ( displayList != null ) {
                 GL11.glDeleteLists( displayList, 1 );
             }
             displayList = GL11.glGenLists( 1 );
             displayListCache.put( pos, displayList );
+            lastCombinedLightCache.put( pos, combinedLight );
             GL11.glNewList( displayList, GL11.GL_COMPILE );
-            renderStaticParts( bodyColor, visorColor, visorType );
+            renderStaticParts( bodyColor, visorColor, visorType, worldSkyLight, worldBlockLight );
             GL11.glEndList();
             te.clearDirtyFlag();
         }
+        // Bind WHITE_TEXTURE outside the display list so it's always current at replay time
+        // — see TileEntityTrafficSignalHeadRenderer for the full explanation. Gated on
+        // shaderCompatibilityMode so non-shader users skip the per-frame bind.
+        if ( CsmConfig.isShaderCompatibilityModeEnabled() ) {
+            Minecraft.getMinecraft().getTextureManager().bindTexture( WHITE_TEXTURE );
+        }
         GL11.glCallList( displayList );
-
-        // Fullbright for display face
-        OpenGlHelper.setLightmapTextureCoords( OpenGlHelper.lightmapTexUnit, 240f, 240f );
 
         // Display face texture
         boolean flashOn = ( CsmRenderUtils.gameMillis( te.getWorld(), partialTicks )
@@ -165,23 +177,23 @@ public class TileEntityBlankoutBoxRenderer
         // Reset GL state
         GL11.glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
         GlStateManager.resetColor();
-        OpenGlHelper.setLightmapTextureCoords( OpenGlHelper.lightmapTexUnit, prevBX, prevBY );
         GlStateManager.disableBlend();
         GlStateManager.enableCull();
         GlStateManager.enableLighting();
     }
 
     private void renderStaticParts( TrafficSignalBodyColor bodyColor,
-            TrafficSignalBodyColor visorColor, BlankoutBoxVisorType visorType ) {
+            TrafficSignalBodyColor visorColor, BlankoutBoxVisorType visorType,
+            int skyLight, int blockLight ) {
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.getBuffer();
 
-        GlStateManager.disableTexture2D();
-        buffer.begin( GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR );
+        Minecraft.getMinecraft().getTextureManager().bindTexture( WHITE_TEXTURE );
+        buffer.begin( GL11.GL_QUADS, DefaultVertexFormats.BLOCK );
 
         float br = bodyColor.getRed(), bg = bodyColor.getGreen(), bb = bodyColor.getBlue();
-        RenderHelper.addBoxesToBuffer( BlankoutBoxVertexData.BODY_VERTEX_DATA,
-                buffer, br, bg, bb, 1.0f, 0, 0, 0 );
+        RenderHelper.addBoxesToBufferLit( BlankoutBoxVertexData.BODY_VERTEX_DATA,
+                buffer, br, bg, bb, 1.0f, 0, 0, 0, skyLight, blockLight );
 
         float vr = Math.min( 1.0f, visorColor.getRed() * VISOR_TINT_SCALE + VISOR_TINT_BASE );
         float vg = Math.min( 1.0f, visorColor.getGreen() * VISOR_TINT_SCALE + VISOR_TINT_BASE );
@@ -191,31 +203,33 @@ public class TileEntityBlankoutBoxRenderer
         boolean isHood = visorType == BlankoutBoxVisorType.HOOD
                 || visorType == BlankoutBoxVisorType.DEEP_HOOD;
         if ( isHood ) {
-            RenderHelper.addBoxesToBufferDualColor( visorData, buffer,
+            RenderHelper.addBoxesToBufferDualColorLit( visorData, buffer,
                     vr, vg, vb, VISOR_INNER_R, VISOR_INNER_G, VISOR_INNER_B,
                     1.0f, 0, 0, 0,
-                    BlankoutBoxVertexData.VISOR_CENTER_X, BlankoutBoxVertexData.VISOR_CENTER_Y );
+                    BlankoutBoxVertexData.VISOR_CENTER_X, BlankoutBoxVertexData.VISOR_CENTER_Y,
+                    skyLight, blockLight );
         }
         else if ( !visorData.isEmpty() ) {
-            RenderHelper.addBoxesToBuffer( visorData, buffer, vr, vg, vb, 1.0f, 0, 0, 0 );
+            RenderHelper.addBoxesToBufferLit( visorData, buffer, vr, vg, vb, 1.0f, 0, 0, 0,
+                    skyLight, blockLight );
         }
 
         tessellator.draw();
-        GlStateManager.enableTexture2D();
     }
 
-    private void renderBoxes( TrafficSignalBodyColor color, List<RenderHelper.Box> boxes ) {
+    private void renderBoxes( TrafficSignalBodyColor color, List<RenderHelper.Box> boxes,
+            int skyLight, int blockLight ) {
         if ( boxes.isEmpty() ) return;
 
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.getBuffer();
 
-        GlStateManager.disableTexture2D();
-        buffer.begin( GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR );
-        RenderHelper.addBoxesToBuffer( boxes, buffer,
-                color.getRed(), color.getGreen(), color.getBlue(), 1.0f, 0, 0, 0 );
+        Minecraft.getMinecraft().getTextureManager().bindTexture( WHITE_TEXTURE );
+        buffer.begin( GL11.GL_QUADS, DefaultVertexFormats.BLOCK );
+        RenderHelper.addBoxesToBufferLit( boxes, buffer,
+                color.getRed(), color.getGreen(), color.getBlue(), 1.0f, 0, 0, 0,
+                skyLight, blockLight );
         tessellator.draw();
-        GlStateManager.enableTexture2D();
     }
 
     private List<RenderHelper.Box> getVisorData( BlankoutBoxVisorType visorType ) {
@@ -273,7 +287,9 @@ public class TileEntityBlankoutBoxRenderer
 
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.getBuffer();
-        buffer.begin( GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX );
+        // BLOCK format with fullbright lightmap so the lit display face stays bright under
+        // shaders (and shaders see a known vertex layout).
+        buffer.begin( GL11.GL_QUADS, DefaultVertexFormats.BLOCK );
 
         float x1 = BlankoutBoxVertexData.DISPLAY_X1;
         float y1 = BlankoutBoxVertexData.DISPLAY_Y1;
@@ -282,11 +298,17 @@ public class TileEntityBlankoutBoxRenderer
         float z = BlankoutBoxVertexData.DISPLAY_FACE_Z;
 
         // CCW winding, facing -Z (north). X is mirrored in model space.
-        buffer.pos( x2, y1, z ).tex( u1, v2 ).endVertex();
-        buffer.pos( x1, y1, z ).tex( u2, v2 ).endVertex();
-        buffer.pos( x1, y2, z ).tex( u2, v1 ).endVertex();
-        buffer.pos( x2, y2, z ).tex( u1, v1 ).endVertex();
+        displayVertex( buffer, x2, y1, z, u1, v2 );
+        displayVertex( buffer, x1, y1, z, u2, v2 );
+        displayVertex( buffer, x1, y2, z, u2, v1 );
+        displayVertex( buffer, x2, y2, z, u1, v1 );
 
         tessellator.draw();
+    }
+
+    private static void displayVertex( BufferBuilder buf, float x, float y, float z,
+            float u, float v ) {
+        buf.pos( x, y, z ).color( 1.0f, 1.0f, 1.0f, 1.0f ).tex( u, v )
+                .lightmap( LIGHTMAP_FULLBRIGHT_SKY, LIGHTMAP_FULLBRIGHT_BLOCK ).endVertex();
     }
 }

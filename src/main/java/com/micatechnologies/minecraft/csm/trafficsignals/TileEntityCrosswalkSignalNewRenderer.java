@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
+import com.micatechnologies.minecraft.csm.CsmConfig;
 import com.micatechnologies.minecraft.csm.codeutils.CsmRenderUtils;
 import com.micatechnologies.minecraft.csm.codeutils.DirectionSixteen;
 import com.micatechnologies.minecraft.csm.codeutils.RenderHelper;
@@ -20,7 +21,6 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
@@ -38,6 +38,12 @@ public class TileEntityCrosswalkSignalNewRenderer
         extends TileEntitySpecialRenderer<TileEntityCrosswalkSignalNew> {
 
     private final Map<BlockPos, Integer> displayListCache = new HashMap<>();
+    private final Map<BlockPos, Integer> lastCombinedLightCache = new HashMap<>();
+
+    private static final ResourceLocation WHITE_TEXTURE =
+        new ResourceLocation("csm", "textures/blocks/white1px.png");
+    private static final int LIGHTMAP_FULLBRIGHT_SKY = 240;
+    private static final int LIGHTMAP_FULLBRIGHT_BLOCK = 240;
 
     // Countdown display constants (from TileEntityCrosswalkSignalRenderer)
     private static final float Z_EPSILON = 0.005f;
@@ -73,6 +79,7 @@ public class TileEntityCrosswalkSignalNewRenderer
         if ( listId != null ) {
             GL11.glDeleteLists( listId, 1 );
         }
+        lastCombinedLightCache.remove( pos );
     }
 
     @Override
@@ -116,15 +123,11 @@ public class TileEntityCrosswalkSignalNewRenderer
         GlStateManager.enableBlend();
         GlStateManager.blendFunc( GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA );
 
-        int prevBX = (int) OpenGlHelper.lastBrightnessX;
-        int prevBY = (int) OpenGlHelper.lastBrightnessY;
-
-        // World lightmap for housing/visor/mount — display face and countdown switch to
-        // fullbright later so only the lit elements glow regardless of ambient light.
+        // World lightmap is now baked per-vertex via the BLOCK vertex format. Housing/visor/
+        // mount use world light; display face + countdown digits use fullbright (240, 240).
         int combinedLight = te.getWorld().getCombinedLight( te.getPos(), 0 );
-        int worldLightX = combinedLight % 65536;
-        int worldLightY = combinedLight / 65536;
-        OpenGlHelper.setLightmapTextureCoords( OpenGlHelper.lightmapTexUnit, worldLightX, worldLightY );
+        int worldSkyLight = ( combinedLight >> 16 ) & 0xFFFF;
+        int worldBlockLight = combinedLight & 0xFFFF;
 
         // Common base transform (block position + model unit scale)
         GL11.glPushMatrix();
@@ -150,7 +153,8 @@ public class TileEntityCrosswalkSignalNewRenderer
 
             renderBoxes( bodyColor, CrosswalkSignalVertexData.getArmData(
                     mountType, displayType, tiltOffset,
-                    bodyDirection.getRotation(), baseDirection.getRotation() ) );
+                    bodyDirection.getRotation(), baseDirection.getRotation() ),
+                    worldSkyLight, worldBlockLight );
 
             GL11.glPopMatrix();
         }
@@ -170,27 +174,32 @@ public class TileEntityCrosswalkSignalNewRenderer
         // Render stubs in the tilted context (before display list)
         if ( mountType != CrosswalkMountType.BASE ) {
             renderBoxes( bodyColor, CrosswalkSignalVertexData.getStubData(
-                    mountType, displayType ) );
+                    mountType, displayType ), worldSkyLight, worldBlockLight );
         }
 
         // Display list: body + visor only (no bracket)
         BlockPos pos = te.getPos();
         Integer displayList = displayListCache.get( pos );
-        if ( displayList == null || te.isStateDirty() ) {
+        Integer lastLight = lastCombinedLightCache.get( pos );
+        if ( displayList == null || te.isStateDirty()
+                || lastLight == null || lastLight != combinedLight ) {
             if ( displayList != null ) {
                 GL11.glDeleteLists( displayList, 1 );
             }
             displayList = GL11.glGenLists( 1 );
             displayListCache.put( pos, displayList );
+            lastCombinedLightCache.put( pos, combinedLight );
             GL11.glNewList( displayList, GL11.GL_COMPILE );
-            renderStaticParts( bodyColor, visorColor, visorType, displayType );
+            renderStaticParts( bodyColor, visorColor, visorType, displayType,
+                    worldSkyLight, worldBlockLight );
             GL11.glEndList();
             te.clearDirtyFlag();
         }
+        // See TileEntityTrafficSignalHeadRenderer for the rationale for this gated bind.
+        if ( CsmConfig.isShaderCompatibilityModeEnabled() ) {
+            Minecraft.getMinecraft().getTextureManager().bindTexture( WHITE_TEXTURE );
+        }
         GL11.glCallList( displayList );
-
-        // Fullbright for display face and countdown — lit elements should glow.
-        OpenGlHelper.setLightmapTextureCoords( OpenGlHelper.lightmapTexUnit, 240f, 240f );
 
         // Display face textures — compute flash state here so we can use the renderer's
         // partialTicks instead of doing a JNI System.currentTimeMillis() call per frame
@@ -212,7 +221,6 @@ public class TileEntityCrosswalkSignalNewRenderer
         // Reset GL state
         GL11.glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
         GlStateManager.resetColor();
-        OpenGlHelper.setLightmapTextureCoords( OpenGlHelper.lightmapTexUnit, prevBX, prevBY );
         GlStateManager.disableBlend();
         GlStateManager.enableCull();
         GlStateManager.enableLighting();
@@ -250,12 +258,12 @@ public class TileEntityCrosswalkSignalNewRenderer
      */
     private void renderStaticParts( TrafficSignalBodyColor bodyColor,
             TrafficSignalBodyColor visorColor, CrosswalkVisorType visorType,
-            CrosswalkDisplayType displayType ) {
+            CrosswalkDisplayType displayType, int skyLight, int blockLight ) {
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.getBuffer();
 
-        GlStateManager.disableTexture2D();
-        buffer.begin( GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR );
+        Minecraft.getMinecraft().getTextureManager().bindTexture( WHITE_TEXTURE );
+        buffer.begin( GL11.GL_QUADS, DefaultVertexFormats.BLOCK );
 
         float br = bodyColor.getRed(), bg = bodyColor.getGreen(), bb = bodyColor.getBlue();
         float vr = Math.min( 1.0f, visorColor.getRed() * VISOR_TINT_SCALE + VISOR_TINT_BASE );
@@ -265,78 +273,86 @@ public class TileEntityCrosswalkSignalNewRenderer
                 || visorType == CrosswalkVisorType.DEEP_HOOD;
 
         if ( displayType == CrosswalkDisplayType.SYMBOL ) {
-            RenderHelper.addBoxesToBuffer( CrosswalkSignalVertexData.SINGLE_BODY_VERTEX_DATA,
-                    buffer, br, bg, bb, 1.0f, 0, 0, 0 );
+            RenderHelper.addBoxesToBufferLit( CrosswalkSignalVertexData.SINGLE_BODY_VERTEX_DATA,
+                    buffer, br, bg, bb, 1.0f, 0, 0, 0, skyLight, blockLight );
             List<RenderHelper.Box> visorData = getSingleVisorData( visorType );
             if ( isHood ) {
-                RenderHelper.addBoxesToBufferDualColor( visorData, buffer,
+                RenderHelper.addBoxesToBufferDualColorLit( visorData, buffer,
                         vr, vg, vb, VISOR_INNER_R, VISOR_INNER_G, VISOR_INNER_B,
-                        1.0f, 0, 0, 0, SINGLE_VISOR_CENTER_X, SINGLE_VISOR_CENTER_Y );
+                        1.0f, 0, 0, 0, SINGLE_VISOR_CENTER_X, SINGLE_VISOR_CENTER_Y,
+                        skyLight, blockLight );
             }
             else {
-                RenderHelper.addBoxesToBuffer( visorData, buffer, vr, vg, vb, 1.0f, 0, 0, 0 );
+                RenderHelper.addBoxesToBufferLit( visorData, buffer, vr, vg, vb, 1.0f, 0, 0, 0,
+                        skyLight, blockLight );
             }
         }
         else if ( displayType == CrosswalkDisplayType.SYMBOL_12INCH ) {
-            RenderHelper.addBoxesToBuffer(
+            RenderHelper.addBoxesToBufferLit(
                     CrosswalkSignalVertexData.SINGLE_12INCH_BODY_VERTEX_DATA,
-                    buffer, br, bg, bb, 1.0f, 0, 0, 0 );
+                    buffer, br, bg, bb, 1.0f, 0, 0, 0, skyLight, blockLight );
             List<RenderHelper.Box> visorData = getSingle12InchVisorData( visorType );
             if ( isHood ) {
-                RenderHelper.addBoxesToBufferDualColor( visorData, buffer,
+                RenderHelper.addBoxesToBufferDualColorLit( visorData, buffer,
                         vr, vg, vb, VISOR_INNER_R, VISOR_INNER_G, VISOR_INNER_B,
                         1.0f, 0, 0, 0,
-                        SINGLE_12INCH_VISOR_CENTER_X, SINGLE_12INCH_VISOR_CENTER_Y );
+                        SINGLE_12INCH_VISOR_CENTER_X, SINGLE_12INCH_VISOR_CENTER_Y,
+                        skyLight, blockLight );
             }
             else {
-                RenderHelper.addBoxesToBuffer( visorData, buffer, vr, vg, vb, 1.0f, 0, 0, 0 );
+                RenderHelper.addBoxesToBufferLit( visorData, buffer, vr, vg, vb, 1.0f, 0, 0, 0,
+                        skyLight, blockLight );
             }
         }
         else {
-            RenderHelper.addBoxesToBuffer(
+            RenderHelper.addBoxesToBufferLit(
                     CrosswalkSignalVertexData.DOUBLE_UPPER_BODY_VERTEX_DATA,
-                    buffer, br, bg, bb, 1.0f, 0, 0, 0 );
-            RenderHelper.addBoxesToBuffer(
+                    buffer, br, bg, bb, 1.0f, 0, 0, 0, skyLight, blockLight );
+            RenderHelper.addBoxesToBufferLit(
                     CrosswalkSignalVertexData.DOUBLE_LOWER_BODY_VERTEX_DATA,
-                    buffer, br, bg, bb, 1.0f, 0, 0, 0 );
+                    buffer, br, bg, bb, 1.0f, 0, 0, 0, skyLight, blockLight );
             List<RenderHelper.Box> upperVisor = getDoubleUpperVisorData( visorType );
             List<RenderHelper.Box> lowerVisor = getDoubleLowerVisorData( visorType );
             if ( isHood ) {
-                RenderHelper.addBoxesToBufferDualColor( upperVisor, buffer,
+                RenderHelper.addBoxesToBufferDualColorLit( upperVisor, buffer,
                         vr, vg, vb, VISOR_INNER_R, VISOR_INNER_G, VISOR_INNER_B,
                         1.0f, 0, 0, 0,
-                        DOUBLE_UPPER_VISOR_CENTER_X, DOUBLE_UPPER_VISOR_CENTER_Y );
-                RenderHelper.addBoxesToBufferDualColor( lowerVisor, buffer,
+                        DOUBLE_UPPER_VISOR_CENTER_X, DOUBLE_UPPER_VISOR_CENTER_Y,
+                        skyLight, blockLight );
+                RenderHelper.addBoxesToBufferDualColorLit( lowerVisor, buffer,
                         vr, vg, vb, VISOR_INNER_R, VISOR_INNER_G, VISOR_INNER_B,
                         1.0f, 0, 0, 0,
-                        DOUBLE_LOWER_VISOR_CENTER_X, DOUBLE_LOWER_VISOR_CENTER_Y );
+                        DOUBLE_LOWER_VISOR_CENTER_X, DOUBLE_LOWER_VISOR_CENTER_Y,
+                        skyLight, blockLight );
             }
             else {
-                RenderHelper.addBoxesToBuffer( upperVisor, buffer, vr, vg, vb, 1.0f, 0, 0, 0 );
-                RenderHelper.addBoxesToBuffer( lowerVisor, buffer, vr, vg, vb, 1.0f, 0, 0, 0 );
+                RenderHelper.addBoxesToBufferLit( upperVisor, buffer, vr, vg, vb, 1.0f, 0, 0, 0,
+                        skyLight, blockLight );
+                RenderHelper.addBoxesToBufferLit( lowerVisor, buffer, vr, vg, vb, 1.0f, 0, 0, 0,
+                        skyLight, blockLight );
             }
         }
 
         tessellator.draw();
-        GlStateManager.enableTexture2D();
     }
 
     /**
      * Renders a list of colored boxes. Used for bracket stubs and arms which are rendered
      * in different GL matrix contexts.
      */
-    private void renderBoxes( TrafficSignalBodyColor color, List<RenderHelper.Box> boxes ) {
+    private void renderBoxes( TrafficSignalBodyColor color, List<RenderHelper.Box> boxes,
+            int skyLight, int blockLight ) {
         if ( boxes.isEmpty() ) return;
 
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.getBuffer();
 
-        GlStateManager.disableTexture2D();
-        buffer.begin( GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR );
-        RenderHelper.addBoxesToBuffer( boxes, buffer,
-                color.getRed(), color.getGreen(), color.getBlue(), 1.0f, 0, 0, 0 );
+        Minecraft.getMinecraft().getTextureManager().bindTexture( WHITE_TEXTURE );
+        buffer.begin( GL11.GL_QUADS, DefaultVertexFormats.BLOCK );
+        RenderHelper.addBoxesToBufferLit( boxes, buffer,
+                color.getRed(), color.getGreen(), color.getBlue(), 1.0f, 0, 0, 0,
+                skyLight, blockLight );
         tessellator.draw();
-        GlStateManager.enableTexture2D();
     }
 
     private List<RenderHelper.Box> getSingleVisorData( CrosswalkVisorType visorType ) {
@@ -401,9 +417,6 @@ public class TileEntityCrosswalkSignalNewRenderer
 
     private void renderDisplayFace( CrosswalkDisplayType displayType,
             CrosswalkBulbType bulbType, int colorState, boolean flashOn ) {
-        // Reset GL color after display list (which may leave stale color)
-        GL11.glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
-
         // Flash timing (computed in render() from the pause-aware game clock): 1Hz on/off
         // cycle during clearance (color=1)
 
@@ -415,7 +428,7 @@ public class TileEntityCrosswalkSignalNewRenderer
             int atlasIdx = CrosswalkTextureMap.getSingleFaceAtlasIndex( colorState, flashOn );
             Minecraft.getMinecraft().getTextureManager().bindTexture(
                     CrosswalkTextureMap.ATLAS_TEXTURE );
-            buffer.begin( GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX );
+            buffer.begin( GL11.GL_QUADS, DefaultVertexFormats.BLOCK );
             addAtlasQuad( buffer, atlasIdx,
                     CrosswalkSignalVertexData.SINGLE_DISPLAY_X1,
                     CrosswalkSignalVertexData.SINGLE_DISPLAY_Y1,
@@ -430,7 +443,7 @@ public class TileEntityCrosswalkSignalNewRenderer
                     colorState, flashOn );
             Minecraft.getMinecraft().getTextureManager().bindTexture(
                     CrosswalkTextureMap.ATLAS_TEXTURE );
-            buffer.begin( GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX );
+            buffer.begin( GL11.GL_QUADS, DefaultVertexFormats.BLOCK );
             addAtlasQuad( buffer, atlasIdx,
                     CrosswalkSignalVertexData.SINGLE_12INCH_DISPLAY_X1,
                     CrosswalkSignalVertexData.SINGLE_12INCH_DISPLAY_Y1,
@@ -446,7 +459,7 @@ public class TileEntityCrosswalkSignalNewRenderer
 
             int upperIdx = CrosswalkTextureMap.getHandManUpperAtlasIndex(
                     colorState, flashOn );
-            buffer.begin( GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX );
+            buffer.begin( GL11.GL_QUADS, DefaultVertexFormats.BLOCK );
             addAtlasQuad( buffer, upperIdx,
                     CrosswalkSignalVertexData.DOUBLE_DISPLAY_X1,
                     CrosswalkSignalVertexData.DOUBLE_UPPER_DISPLAY_Y1,
@@ -470,7 +483,7 @@ public class TileEntityCrosswalkSignalNewRenderer
 
             int upperIdx = CrosswalkTextureMap.getWordedUpperAtlasIndex(
                     colorState, flashOn );
-            buffer.begin( GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX );
+            buffer.begin( GL11.GL_QUADS, DefaultVertexFormats.BLOCK );
             addAtlasQuad( buffer, upperIdx,
                     CrosswalkSignalVertexData.DOUBLE_DISPLAY_X1,
                     CrosswalkSignalVertexData.DOUBLE_UPPER_DISPLAY_Y1,
@@ -497,10 +510,16 @@ public class TileEntityCrosswalkSignalNewRenderer
         float[] uv = CrosswalkTextureMap.getAtlasUV( atlasIndex );
         float u1 = uv[0], v1 = uv[1], u2 = uv[2], v2 = uv[3];
         // CCW winding, facing -Z (north). X is mirrored in model space.
-        buffer.pos( x2, y1, z ).tex( u1, v2 ).endVertex();
-        buffer.pos( x1, y1, z ).tex( u2, v2 ).endVertex();
-        buffer.pos( x1, y2, z ).tex( u2, v1 ).endVertex();
-        buffer.pos( x2, y2, z ).tex( u1, v1 ).endVertex();
+        atlasVertex( buffer, x2, y1, z, u1, v2 );
+        atlasVertex( buffer, x1, y1, z, u2, v2 );
+        atlasVertex( buffer, x1, y2, z, u2, v1 );
+        atlasVertex( buffer, x2, y2, z, u1, v1 );
+    }
+
+    private static void atlasVertex( BufferBuilder buf, float x, float y, float z,
+            float u, float v ) {
+        buf.pos( x, y, z ).color( 1.0f, 1.0f, 1.0f, 1.0f ).tex( u, v )
+                .lightmap( LIGHTMAP_FULLBRIGHT_SKY, LIGHTMAP_FULLBRIGHT_BLOCK ).endVertex();
     }
 
 
@@ -522,7 +541,7 @@ public class TileEntityCrosswalkSignalNewRenderer
      */
     private void renderCountdown( TileEntityCrosswalkSignalNew te, int colorState,
             boolean isLowerSection ) {
-        GlStateManager.disableTexture2D();
+        Minecraft.getMinecraft().getTextureManager().bindTexture( WHITE_TEXTURE );
         GlStateManager.depthMask( false );
 
         // Positioning: on single 16-inch face, digits are in the right half.
@@ -556,7 +575,7 @@ public class TileEntityCrosswalkSignalNewRenderer
         BufferBuilder buf = tess.getBuffer();
 
         // --- Background layer: dim "88" always visible ---
-        buf.begin( GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR );
+        buf.begin( GL11.GL_QUADS, DefaultVertexFormats.BLOCK );
         for ( int i = 0; i < 2; i++ ) {
             float dx = startX + i * ( DIGIT_WIDTH + DIGIT_GAP );
             float modelDx = centerModelX - ( dx + DIGIT_WIDTH ) * scale;
@@ -574,7 +593,7 @@ public class TileEntityCrosswalkSignalNewRenderer
             int tens = displayValue / 10;
             int ones = displayValue % 10;
 
-            buf.begin( GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR );
+            buf.begin( GL11.GL_QUADS, DefaultVertexFormats.BLOCK );
             for ( int i = 0; i < 2; i++ ) {
                 int digit = ( i == 0 ) ? tens : ones;
                 if ( i == 0 && tens == 0 ) continue;
@@ -590,7 +609,6 @@ public class TileEntityCrosswalkSignalNewRenderer
             tess.draw();
         }
 
-        GlStateManager.enableTexture2D();
         GlStateManager.depthMask( true );
     }
 
@@ -609,14 +627,10 @@ public class TileEntityCrosswalkSignalNewRenderer
             float y1 = dy + ( 1f - seg[3] / 9f ) * h;
             float y2 = dy + ( 1f - seg[1] / 9f ) * h;
 
-            buf.pos( x1, y1, z ).color( BG_COLOR_R, BG_COLOR_G, BG_COLOR_B, BG_COLOR_A )
-                    .endVertex();
-            buf.pos( x2, y1, z ).color( BG_COLOR_R, BG_COLOR_G, BG_COLOR_B, BG_COLOR_A )
-                    .endVertex();
-            buf.pos( x2, y2, z ).color( BG_COLOR_R, BG_COLOR_G, BG_COLOR_B, BG_COLOR_A )
-                    .endVertex();
-            buf.pos( x1, y2, z ).color( BG_COLOR_R, BG_COLOR_G, BG_COLOR_B, BG_COLOR_A )
-                    .endVertex();
+            digitVertex( buf, x1, y1, z, BG_COLOR_R, BG_COLOR_G, BG_COLOR_B, BG_COLOR_A );
+            digitVertex( buf, x2, y1, z, BG_COLOR_R, BG_COLOR_G, BG_COLOR_B, BG_COLOR_A );
+            digitVertex( buf, x2, y2, z, BG_COLOR_R, BG_COLOR_G, BG_COLOR_B, BG_COLOR_A );
+            digitVertex( buf, x1, y2, z, BG_COLOR_R, BG_COLOR_G, BG_COLOR_B, BG_COLOR_A );
         }
     }
 
@@ -633,14 +647,16 @@ public class TileEntityCrosswalkSignalNewRenderer
             float y1 = dy + ( 1f - seg[3] / 9f ) * h;
             float y2 = dy + ( 1f - seg[1] / 9f ) * h;
 
-            buf.pos( x1, y1, z ).color( CD_COLOR_R, CD_COLOR_G, CD_COLOR_B, CD_COLOR_A )
-                    .endVertex();
-            buf.pos( x2, y1, z ).color( CD_COLOR_R, CD_COLOR_G, CD_COLOR_B, CD_COLOR_A )
-                    .endVertex();
-            buf.pos( x2, y2, z ).color( CD_COLOR_R, CD_COLOR_G, CD_COLOR_B, CD_COLOR_A )
-                    .endVertex();
-            buf.pos( x1, y2, z ).color( CD_COLOR_R, CD_COLOR_G, CD_COLOR_B, CD_COLOR_A )
-                    .endVertex();
+            digitVertex( buf, x1, y1, z, CD_COLOR_R, CD_COLOR_G, CD_COLOR_B, CD_COLOR_A );
+            digitVertex( buf, x2, y1, z, CD_COLOR_R, CD_COLOR_G, CD_COLOR_B, CD_COLOR_A );
+            digitVertex( buf, x2, y2, z, CD_COLOR_R, CD_COLOR_G, CD_COLOR_B, CD_COLOR_A );
+            digitVertex( buf, x1, y2, z, CD_COLOR_R, CD_COLOR_G, CD_COLOR_B, CD_COLOR_A );
         }
+    }
+
+    private static void digitVertex( BufferBuilder buf, float x, float y, float z,
+            int r, int g, int b, int a ) {
+        buf.pos( x, y, z ).color( r, g, b, a ).tex( 0.5f, 0.5f )
+                .lightmap( LIGHTMAP_FULLBRIGHT_SKY, LIGHTMAP_FULLBRIGHT_BLOCK ).endVertex();
     }
 }

@@ -9,6 +9,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -44,6 +45,11 @@ public class TileEntityHvacThermostatRenderer
   private static final float GLOW_R = 0x1A / 255.0f;
   private static final float GLOW_G = 0x40 / 255.0f;
   private static final float GLOW_B = 0x2A / 255.0f;
+
+  private static final ResourceLocation WHITE_TEXTURE =
+      new ResourceLocation("csm", "textures/blocks/white1px.png");
+  private static final int LIGHTMAP_FULLBRIGHT_SKY = 240;
+  private static final int LIGHTMAP_FULLBRIGHT_BLOCK = 240;
 
   // Cached display strings — only recomputed when inputs change
   private long lastWorldTime = -1;
@@ -172,16 +178,22 @@ public class TileEntityHvacThermostatRenderer
     GlStateManager.tryBlendFuncSeparate(
         GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
         GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-    GlStateManager.disableTexture2D();
+    // Bind a 1x1 white pixel texture instead of disableTexture2D — shaders ignore
+    // disableTexture2D and sample whatever was last bound. Fullbright lightmap is baked
+    // per-vertex via the BLOCK vertex format. FontRenderer rebinds its own texture below.
+    Minecraft.getMinecraft().getTextureManager().bindTexture(WHITE_TEXTURE);
     net.minecraft.client.renderer.Tessellator tess = net.minecraft.client.renderer.Tessellator.getInstance();
     net.minecraft.client.renderer.BufferBuilder buf = tess.getBuffer();
-    buf.begin(7, net.minecraft.client.renderer.vertex.DefaultVertexFormats.POSITION_COLOR);
-    buf.pos(-33, -29, -0.1).color(GLOW_R, GLOW_G, GLOW_B, 0.45f).endVertex();
-    buf.pos(-33, 31, -0.1).color(GLOW_R, GLOW_G, GLOW_B, 0.45f).endVertex();
-    buf.pos(32, 31, -0.1).color(GLOW_R, GLOW_G, GLOW_B, 0.45f).endVertex();
-    buf.pos(32, -29, -0.1).color(GLOW_R, GLOW_G, GLOW_B, 0.45f).endVertex();
+    buf.begin(7, net.minecraft.client.renderer.vertex.DefaultVertexFormats.BLOCK);
+    buf.pos(-33, -29, -0.1).color(GLOW_R, GLOW_G, GLOW_B, 0.45f)
+        .tex(0.5f, 0.5f).lightmap(LIGHTMAP_FULLBRIGHT_SKY, LIGHTMAP_FULLBRIGHT_BLOCK).endVertex();
+    buf.pos(-33, 31, -0.1).color(GLOW_R, GLOW_G, GLOW_B, 0.45f)
+        .tex(0.5f, 0.5f).lightmap(LIGHTMAP_FULLBRIGHT_SKY, LIGHTMAP_FULLBRIGHT_BLOCK).endVertex();
+    buf.pos(32, 31, -0.1).color(GLOW_R, GLOW_G, GLOW_B, 0.45f)
+        .tex(0.5f, 0.5f).lightmap(LIGHTMAP_FULLBRIGHT_SKY, LIGHTMAP_FULLBRIGHT_BLOCK).endVertex();
+    buf.pos(32, -29, -0.1).color(GLOW_R, GLOW_G, GLOW_B, 0.45f)
+        .tex(0.5f, 0.5f).lightmap(LIGHTMAP_FULLBRIGHT_SKY, LIGHTMAP_FULLBRIGHT_BLOCK).endVertex();
     tess.draw();
-    GlStateManager.enableTexture2D();
     GlStateManager.disableBlend();
 
     // Draw time (top center)
