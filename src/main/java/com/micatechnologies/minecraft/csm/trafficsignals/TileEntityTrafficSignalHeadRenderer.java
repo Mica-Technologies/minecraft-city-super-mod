@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
+import com.micatechnologies.minecraft.csm.CsmConfig;
 import com.micatechnologies.minecraft.csm.codeutils.CsmRenderUtils;
 import com.micatechnologies.minecraft.csm.codeutils.DirectionSixteen;
 import com.micatechnologies.minecraft.csm.codeutils.RenderHelper;
@@ -27,7 +28,6 @@ import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.EnumSkyBlock;
 import org.lwjgl.opengl.GL11;
@@ -49,10 +49,25 @@ public class TileEntityTrafficSignalHeadRenderer extends
   private static final ResourceLocation ATLAS_TEXTURE =
       new ResourceLocation("csm", "textures/blocks/trafficsignals/lights/atlas.png");
 
+  // 1x1 white texture bound in place of disableTexture2D for untextured-colored geometry —
+  // shaders ignore disableTexture2D and sample whatever was last bound, so we explicitly bind
+  // a known-white pixel and feed UV(0.5, 0.5) through the BLOCK vertex format.
+  private static final ResourceLocation WHITE_TEXTURE =
+      new ResourceLocation("csm", "textures/blocks/white1px.png");
+
+  // Fullbright lightmap coords (light level 15 << 4 = 240). Used for lit bulbs and the
+  // visor-interior overdraw pass.
+  private static final int LIGHTMAP_FULLBRIGHT_SKY = 240;
+  private static final int LIGHTMAP_FULLBRIGHT_BLOCK = 240;
+
   // Per-tile-entity display list cache (keyed by BlockPos to avoid shared state bug)
   private final Map<BlockPos, Integer> displayListCache = new HashMap<>();
   private final Map<BlockPos, Integer> lastColorStateCache = new HashMap<>();
   private final Map<BlockPos, Integer> lastLitMaskCache = new HashMap<>();
+  // Track combined world light for cache invalidation: lightmap is now baked per-vertex into
+  // the BLOCK-format display list (so it survives shader rebinds), so the cache must rebuild
+  // whenever lighting around the signal changes.
+  private final Map<BlockPos, Integer> lastCombinedLightCache = new HashMap<>();
 
   /**
    * Cleans up the cached display list for a signal head at the given position.
@@ -66,6 +81,7 @@ public class TileEntityTrafficSignalHeadRenderer extends
     }
     lastColorStateCache.remove(pos);
     lastLitMaskCache.remove(pos);
+    lastCombinedLightCache.remove(pos);
   }
 
   @Override
@@ -95,15 +111,13 @@ public class TileEntityTrafficSignalHeadRenderer extends
     GlStateManager.enableBlend();
     GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 
-    int prevBrightnessX = (int) OpenGlHelper.lastBrightnessX;
-    int prevBrightnessY = (int) OpenGlHelper.lastBrightnessY;
-
-    // Compute world lightmap for this block so housing/door/visor/mount use realistic
-    // lighting while lit bulbs and strobe flashes stay fullbright.
+    // Compute per-vertex lightmap inputs. The BLOCK vertex format embeds these directly into
+    // each vertex (instead of using OpenGlHelper.setLightmapTextureCoords global state), which
+    // is required for OptiFine shader compatibility — shader gbuffers programs read the
+    // lightmap from a per-vertex attribute, not from fixed-function GL state.
     int combinedLight = te.getWorld().getCombinedLight(te.getPos(), 0);
-    int worldLightX = combinedLight % 65536;
-    int worldLightY = combinedLight / 65536;
-    OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, worldLightX, worldLightY);
+    int worldSkyLight = (combinedLight >> 16) & 0xFFFF;
+    int worldBlockLight = combinedLight & 0xFFFF;
 
     // Get tilt pivot offset for add-on signals that need to rotate in sync with
     // their parent signal (offset is in block units from this block to the main signal)
@@ -232,9 +246,11 @@ public class TileEntityTrafficSignalHeadRenderer extends
     Integer displayList = displayListCache.get(pos);
     Integer lastColor = lastColorStateCache.get(pos);
     Integer lastLit = lastLitMaskCache.get(pos);
+    Integer lastLight = lastCombinedLightCache.get(pos);
     if (displayList == null || te.isStateDirty()
         || lastColor == null || lastColor != signalColorState
-        || lastLit == null || lastLit != litMask) {
+        || lastLit == null || lastLit != litMask
+        || lastLight == null || lastLight != combinedLight) {
       if (displayList != null) {
         GL11.glDeleteLists(displayList, 1);
       }
@@ -242,16 +258,30 @@ public class TileEntityTrafficSignalHeadRenderer extends
       displayListCache.put(pos, displayList);
       lastColorStateCache.put(pos, signalColorState);
       lastLitMaskCache.put(pos, litMask);
+      lastCombinedLightCache.put(pos, combinedLight);
       GL11.glNewList(displayList, GL11.GL_COMPILE);
-      renderStaticParts(sectionInfos, sectionYPositions, sectionXPositions, sectionSizes, horizontal, zPushBack);
+      renderStaticParts(sectionInfos, sectionYPositions, sectionXPositions, sectionSizes,
+          horizontal, zPushBack, worldSkyLight, worldBlockLight);
       GL11.glEndList();
       te.clearDirtyFlag();
     }
+    // Bind the white pixel OUTSIDE the display list, every frame, before replay. The
+    // bindTexture inside renderStaticParts() runs during GL_COMPILE, but MC's TextureManager
+    // skips the actual glBindTexture when the texture is already current — so signals that
+    // happened to compile while white1px was already bound (e.g., from an earlier signal's
+    // renderMount in the same frame) end up with NO glBindTexture recorded in their list.
+    // At replay time the bound texture is then whatever vanilla rendering left bound, which
+    // is usually the block atlas — sampling at UV (0.5, 0.5) reads a near-white atlas pixel
+    // and the body/door/visor render as white-tinted instead of taking the per-vertex color.
+    // Binding here guarantees the texture is correct at replay regardless of compile-time state.
+    //
+    // Gated on CsmConfig.isShaderCompatibilityModeEnabled() (default false). Users running a
+    // shader pack should enable it to avoid the white-tinted-signal bug; non-shader users
+    // skip the extra per-frame bind for free. May auto-detect shaders in a future revision.
+    if (CsmConfig.isShaderCompatibilityModeEnabled()) {
+      Minecraft.getMinecraft().getTextureManager().bindTexture(WHITE_TEXTURE);
+    }
     GL11.glCallList(displayList);
-
-    // Fullbright for lit bulbs and strobe flashes — housing/door/visor already rendered
-    // above with world lightmap via the display list.
-    OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240f, 240f);
 
     // Overlay the inner-colored faces of every lit visor at fullbright. The display list
     // already drew them with the bulb tint but at world lightmap, so the reflected-light
@@ -272,11 +302,6 @@ public class TileEntityTrafficSignalHeadRenderer extends
     renderBulbs(sectionInfos, sectionYPositions, sectionXPositions, sectionSizes, zPushBack,
         gameMillis);
 
-    // renderVisorGlow(sectionInfos, sectionYPositions, sectionXPositions, sectionSizes, zPushBack);
-
-    // Restore world lightmap for mount hardware so brackets match world lighting.
-    OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, worldLightX, worldLightY);
-
     // Mount hardware renders outside the cached display list: adjacency changes (add-on
     // placed/broken beside this signal) don't invalidate the TE's dirty flag, so rebuilding
     // from source every frame is the simplest way to keep suppression up to date. Geometry
@@ -290,21 +315,18 @@ public class TileEntityTrafficSignalHeadRenderer extends
     // the GL tilt out and leaving the arm tip at the actual world pole position.
     float mountTiltAngle = bodyDirection.getRotation() - getBaseFacingAngle(facing);
     renderMount(te, blockState, sectionSizes, sectionYPositions, sectionXPositions, horizontal,
-        zPushBack, mountTiltAngle);
+        zPushBack, mountTiltAngle, worldSkyLight, worldBlockLight);
 
     GL11.glPopMatrix();
 
-    // Reset GL color to white and sync GlStateManager's cached color state.
-    // The Barlo strobe code (and display list replay) sets GL color via GL11.glColor4f()
-    // directly, bypassing GlStateManager's cache. If we don't reset here, the stale color
-    // leaks into subsequent renderers (e.g., vanilla sign TESR) — GlStateManager thinks the
-    // color is already white and skips the actual GL call, causing other blocks to inherit
-    // whatever color the strobe left behind (strobing dark/white on the Barlo cycle).
+    // Reset GL color to white and sync GlStateManager's cached color state. Even though all
+    // BLOCK-format draws above carry their color in the vertex attribute (not via glColor),
+    // the legacy display list replay can still leave GL color in an unexpected state if the
+    // cache was built before this refactor; defensively resetting keeps subsequent vanilla
+    // TESRs from inheriting any leftover color.
     GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
     GlStateManager.resetColor();
 
-    // Restore previous lightmap brightness
-    OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, prevBrightnessX, prevBrightnessY);
     GlStateManager.disableBlend();
     GlStateManager.enableCull();
     GlStateManager.enableLighting();
@@ -312,14 +334,18 @@ public class TileEntityTrafficSignalHeadRenderer extends
 
   private void renderStaticParts(TrafficSignalSectionInfo[] sectionInfos,
       float[] sectionYPositions, float[] sectionXPositions, int[] sectionSizes,
-      boolean horizontal, float zPushBack) {
+      boolean horizontal, float zPushBack, int skyLight, int blockLight) {
     Tessellator tessellator = Tessellator.getInstance();
     BufferBuilder buffer = tessellator.getBuffer();
 
-    GlStateManager.disableTexture2D();
+    // Bind a 1x1 white pixel texture instead of disableTexture2D — OptiFine shaders ignore
+    // disableTexture2D and sample whatever was last bound, so we explicitly bind a known
+    // texture and feed UV(0.5, 0.5) through the BLOCK vertex format below.
+    Minecraft.getMinecraft().getTextureManager().bindTexture(WHITE_TEXTURE);
 
-    // Batch all body, door, and visor quads into a single draw call
-    buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
+    // Batch all body, door, and visor quads into a single draw call. BLOCK format =
+    // POSITION + COLOR + UV + LMAP, which is what shader gbuffers programs expect.
+    buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
     for (int i = 0; i < sectionInfos.length; i++) {
       TrafficSignalSectionInfo sectionInfo = sectionInfos[i];
       TrafficSignalBodyColor bodyColor = sectionInfo.getBodyColor();
@@ -348,23 +374,23 @@ public class TileEntityTrafficSignalHeadRenderer extends
         doorData = TrafficSignalVertexData.SIGNAL_DOOR_VERTEX_DATA;
       }
 
-      RenderHelper.addBoxesToBuffer(bodyData, buffer,
-          bodyColor.getRed(), bodyColor.getGreen(), bodyColor.getBlue(), 1.0f, xOffset, yOffset, zPushBack);
-      RenderHelper.addBoxesToBuffer(doorData, buffer,
-          doorColor.getRed(), doorColor.getGreen(), doorColor.getBlue(), 1.0f, xOffset, yOffset, zPushBack);
+      RenderHelper.addBoxesToBufferLit(bodyData, buffer,
+          bodyColor.getRed(), bodyColor.getGreen(), bodyColor.getBlue(), 1.0f,
+          xOffset, yOffset, zPushBack, skyLight, blockLight);
+      RenderHelper.addBoxesToBufferLit(doorData, buffer,
+          doorColor.getRed(), doorColor.getGreen(), doorColor.getBlue(), 1.0f,
+          xOffset, yOffset, zPushBack, skyLight, blockLight);
 
       float[] inner = computeVisorInnerTint(sectionInfo);
 
-      addVisorQuadsToBuffer(visorType, buffer,
+      addVisorQuadsToBufferLit(visorType, buffer,
           Math.min(1.0f, visorColor.getRed() * VISOR_TINT_SCALE + VISOR_TINT_BASE),
           Math.min(1.0f, visorColor.getGreen() * VISOR_TINT_SCALE + VISOR_TINT_BASE),
           Math.min(1.0f, visorColor.getBlue() * VISOR_TINT_SCALE + VISOR_TINT_BASE),
           inner[0], inner[1], inner[2],
-          1.0f, xOffset, yOffset, sectionSizes[i], zPushBack);
+          1.0f, xOffset, yOffset, sectionSizes[i], zPushBack, skyLight, blockLight);
     }
     tessellator.draw();
-
-    GlStateManager.enableTexture2D();
   }
 
   /**
@@ -416,8 +442,10 @@ public class TileEntityTrafficSignalHeadRenderer extends
     Tessellator tessellator = Tessellator.getInstance();
     BufferBuilder buffer = tessellator.getBuffer();
 
-    GlStateManager.disableTexture2D();
-    buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
+    // Bind white texture (instead of disableTexture2D) and use BLOCK format with fullbright
+    // per-vertex lightmap so shaders see a proper textured + lit draw.
+    Minecraft.getMinecraft().getTextureManager().bindTexture(WHITE_TEXTURE);
+    buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
 
     for (int i = 0; i < sectionInfos.length; i++) {
       TrafficSignalSectionInfo sectionInfo = sectionInfos[i];
@@ -436,19 +464,20 @@ public class TileEntityTrafficSignalHeadRenderer extends
 
       if (visorType != TrafficSignalVisorType.NONE) {
         float louverTiltAdjust = -yOffset * LOUVER_TILT_COMPENSATION_PER_UNIT;
-        RenderHelper.addTiltedBoxesInnerFacesToBuffer(visorData, buffer,
+        RenderHelper.addTiltedBoxesInnerFacesToBufferLit(visorData, buffer,
             r, g, b, 1.0f,
             xOffset, yOffset, zPushBack, VISOR_PIVOT_Z + zPushBack, VISOR_TILT_DEGREES,
-            VISOR_CENTER_X, VISOR_CENTER_Y, louverTiltAdjust);
+            VISOR_CENTER_X, VISOR_CENTER_Y, louverTiltAdjust,
+            LIGHTMAP_FULLBRIGHT_SKY, LIGHTMAP_FULLBRIGHT_BLOCK);
       } else {
-        RenderHelper.addBoxesInnerFacesToBuffer(visorData, buffer,
+        RenderHelper.addBoxesInnerFacesToBufferLit(visorData, buffer,
             r, g, b, 1.0f,
-            xOffset, yOffset, zPushBack, VISOR_CENTER_X, VISOR_CENTER_Y);
+            xOffset, yOffset, zPushBack, VISOR_CENTER_X, VISOR_CENTER_Y,
+            LIGHTMAP_FULLBRIGHT_SKY, LIGHTMAP_FULLBRIGHT_BLOCK);
       }
     }
 
     tessellator.draw();
-    GlStateManager.enableTexture2D();
   }
 
   // Downward tilt angle for visors (degrees). Makes bulbs visible from below, as real
@@ -484,24 +513,24 @@ public class TileEntityTrafficSignalHeadRenderer extends
   // offset changes the viewing angle by ~1.8° at 20 blocks distance (10 blocks height).
   private static final float LOUVER_TILT_COMPENSATION_PER_UNIT = 0.05f;
 
-  private void addVisorQuadsToBuffer(TrafficSignalVisorType visorType, BufferBuilder buffer,
+  private void addVisorQuadsToBufferLit(TrafficSignalVisorType visorType, BufferBuilder buffer,
       float red, float green, float blue,
       float innerR, float innerG, float innerB,
       float alpha, float xOffset, float yOffset,
-      int sectionSize, float zPushBack) {
+      int sectionSize, float zPushBack, int skyLight, int blockLight) {
     List<RenderHelper.Box> visorData = resolveVisorData(visorType, sectionSize);
     if (visorData == null) return;
     boolean applyTilt = visorType != TrafficSignalVisorType.NONE;
     if (applyTilt) {
       float louverTiltAdjust = -yOffset * LOUVER_TILT_COMPENSATION_PER_UNIT;
-      RenderHelper.addTiltedBoxesToBufferDualColor(visorData, buffer,
+      RenderHelper.addTiltedBoxesToBufferDualColorLit(visorData, buffer,
           red, green, blue, innerR, innerG, innerB, alpha,
           xOffset, yOffset, zPushBack, VISOR_PIVOT_Z + zPushBack, VISOR_TILT_DEGREES,
-          VISOR_CENTER_X, VISOR_CENTER_Y, louverTiltAdjust);
+          VISOR_CENTER_X, VISOR_CENTER_Y, louverTiltAdjust, skyLight, blockLight);
     } else {
-      RenderHelper.addBoxesToBufferDualColor(visorData, buffer,
+      RenderHelper.addBoxesToBufferDualColorLit(visorData, buffer,
           red, green, blue, innerR, innerG, innerB, alpha,
-          xOffset, yOffset, zPushBack, VISOR_CENTER_X, VISOR_CENTER_Y);
+          xOffset, yOffset, zPushBack, VISOR_CENTER_X, VISOR_CENTER_Y, skyLight, blockLight);
     }
   }
 
@@ -575,16 +604,14 @@ public class TileEntityTrafficSignalHeadRenderer extends
    */
   private void renderBulbs(TrafficSignalSectionInfo[] sectionInfos, float[] sectionYPositions,
       float[] sectionXPositions, int[] sectionSizes, float zPushBack, long gameMillis) {
-    // Reset GL color to white so textures are not tinted by leftover static part colors.
-    // Must use GL11.glColor4f directly because GlStateManager caches state and the display
-    // list replay changes GL color behind GlStateManager's back, making it skip the reset.
-    GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-
     Minecraft.getMinecraft().getTextureManager().bindTexture(ATLAS_TEXTURE);
 
     Tessellator tessellator = Tessellator.getInstance();
     BufferBuilder buffer = tessellator.getBuffer();
-    buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+    // BLOCK format = POSITION + COLOR + UV + LMAP. Per-vertex fullbright lightmap is what
+    // makes the lit bulb texture appear fullbright under shaders (the old code used
+    // setLightmapTextureCoords global state, which shaders ignore).
+    buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
 
     for (int i = 0; i < sectionInfos.length; i++) {
       TrafficSignalSectionInfo sectionInfo = sectionInfos[i];
@@ -637,10 +664,10 @@ public class TileEntityTrafficSignalHeadRenderer extends
       float rotation = texInfo.getRotation();
       if (rotation == 0f) {
         // No rotation — emit quad directly (fast path, most common for BALL type)
-        buffer.pos(baseX, baseY, z).tex(u2, v2).endVertex();
-        buffer.pos(baseX + size, baseY, z).tex(u1, v2).endVertex();
-        buffer.pos(baseX + size, baseY + size, z).tex(u1, v1).endVertex();
-        buffer.pos(baseX, baseY + size, z).tex(u2, v1).endVertex();
+        bulbVertex(buffer, baseX, baseY, z, u2, v2);
+        bulbVertex(buffer, baseX + size, baseY, z, u1, v2);
+        bulbVertex(buffer, baseX + size, baseY + size, z, u1, v1);
+        bulbVertex(buffer, baseX, baseY + size, z, u2, v1);
       } else {
         // Pre-compute rotated corners in Java to avoid GL matrix push/pop per section
         float cx = baseX + size / 2f;
@@ -660,10 +687,10 @@ public class TileEntityTrafficSignalHeadRenderer extends
         float x3 = cx + (-halfSize * cos - halfSize * sin);
         float y3 = cy + (-halfSize * sin + halfSize * cos);
 
-        buffer.pos(x0, y0, z).tex(u2, v2).endVertex();
-        buffer.pos(x1, y1, z).tex(u1, v2).endVertex();
-        buffer.pos(x2, y2, z).tex(u1, v1).endVertex();
-        buffer.pos(x3, y3, z).tex(u2, v1).endVertex();
+        bulbVertex(buffer, x0, y0, z, u2, v2);
+        bulbVertex(buffer, x1, y1, z, u1, v2);
+        bulbVertex(buffer, x2, y2, z, u1, v1);
+        bulbVertex(buffer, x3, y3, z, u2, v1);
       }
     }
 
@@ -672,6 +699,15 @@ public class TileEntityTrafficSignalHeadRenderer extends
     // Render Barlo strobe bars (dynamic, untextured white quads)
     renderBarloStrobeBars(sectionInfos, sectionYPositions, sectionXPositions, sectionSizes,
         zPushBack, gameMillis);
+  }
+
+  /** Emits one bulb vertex in BLOCK format with white tint and fullbright lightmap. */
+  private static void bulbVertex(BufferBuilder buffer, float x, float y, float z, float u, float v) {
+    buffer.pos(x, y, z)
+        .color(1.0f, 1.0f, 1.0f, 1.0f)
+        .tex(u, v)
+        .lightmap(LIGHTMAP_FULLBRIGHT_SKY, LIGHTMAP_FULLBRIGHT_BLOCK)
+        .endVertex();
   }
 
   private static final float VISOR_GLOW_CORE_ALPHA = 0.18f;
@@ -795,14 +831,14 @@ public class TileEntityTrafficSignalHeadRenderer extends
     }
     if (!hasBarlo) return;
 
-    GlStateManager.disableTexture2D();
+    // Bind white texture and use BLOCK format so the strobe quads play nice with shaders.
+    Minecraft.getMinecraft().getTextureManager().bindTexture(WHITE_TEXTURE);
     Tessellator tessellator = Tessellator.getInstance();
     BufferBuilder buffer = tessellator.getBuffer();
 
     // Always render the dark mounting bar (flat black) for all Barlo red sections
     float fb = TrafficSignalBodyColor.FLAT_BLACK.getRed();
-    GL11.glColor4f(fb, fb, fb, 1f);
-    buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
+    buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
 
     for (int i = 0; i < sectionInfos.length; i++) {
       if (!isBarloVisor(sectionInfos[i].getVisorType())
@@ -811,8 +847,9 @@ public class TileEntityTrafficSignalHeadRenderer extends
       }
       // Scale strobe Z position to match visor depth + push-back for flush mounting
       float barZ = VISOR_PIVOT_Z + (7.0f - VISOR_PIVOT_Z) * (sectionSizes[i] / 12f) + zPushBack;
-      emitBarloQuad(buffer, sectionInfos[i].getVisorType(), sectionSizes[i],
-          sectionXPositions[i], sectionYPositions[i], barZ, zPushBack);
+      emitBarloQuadLit(buffer, sectionInfos[i].getVisorType(), sectionSizes[i],
+          sectionXPositions[i], sectionYPositions[i], barZ, zPushBack,
+          fb, fb, fb, 1f, LIGHTMAP_FULLBRIGHT_SKY, LIGHTMAP_FULLBRIGHT_BLOCK);
     }
     tessellator.draw();
 
@@ -823,8 +860,7 @@ public class TileEntityTrafficSignalHeadRenderer extends
     boolean strobeOn = t < 500L && (t / 50L) % 2L == 1L;
 
     if (strobeOn) {
-      GL11.glColor4f(1f, 1f, 1f, 1f);
-      buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
+      buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
 
       for (int i = 0; i < sectionInfos.length; i++) {
         // Use commanded-lit (pre-aging) so the strobe keeps firing even when the
@@ -836,13 +872,12 @@ public class TileEntityTrafficSignalHeadRenderer extends
           continue;
         }
         float strobeZ = VISOR_PIVOT_Z + (6.9f - VISOR_PIVOT_Z) * (sectionSizes[i] / 12f) + zPushBack;
-        emitBarloQuad(buffer, sectionInfos[i].getVisorType(), sectionSizes[i],
-            sectionXPositions[i], sectionYPositions[i], strobeZ, zPushBack);
+        emitBarloQuadLit(buffer, sectionInfos[i].getVisorType(), sectionSizes[i],
+            sectionXPositions[i], sectionYPositions[i], strobeZ, zPushBack,
+            1f, 1f, 1f, 1f, LIGHTMAP_FULLBRIGHT_SKY, LIGHTMAP_FULLBRIGHT_BLOCK);
       }
       tessellator.draw();
     }
-
-    GlStateManager.enableTexture2D();
   }
 
   /**
@@ -855,8 +890,9 @@ public class TileEntityTrafficSignalHeadRenderer extends
    * versa). Horizontal bars don't need it: the tunnel visor is open at the bottom and the
    * bar is narrow in Y, so a small Y shift wouldn't be visible against any rim.
    */
-  private void emitBarloQuad(BufferBuilder buffer, TrafficSignalVisorType visorType,
-      int fullSize, float xPos, float yPos, float z, float zPushBack) {
+  private void emitBarloQuadLit(BufferBuilder buffer, TrafficSignalVisorType visorType,
+      int fullSize, float xPos, float yPos, float z, float zPushBack,
+      float r, float g, float b, float a, int skyLight, int blockLight) {
     float sectionOffset = (12f - fullSize) / 2f;
     float scale = fullSize / 12f;
     float sectionCenterX = 2f + xPos + sectionOffset + fullSize / 2f;
@@ -883,10 +919,10 @@ public class TileEntityTrafficSignalHeadRenderer extends
       y2 = sectionCenterY + barShort / 2f;
     }
 
-    buffer.pos(x1, y1, z).endVertex();
-    buffer.pos(x2, y1, z).endVertex();
-    buffer.pos(x2, y2, z).endVertex();
-    buffer.pos(x1, y2, z).endVertex();
+    buffer.pos(x1, y1, z).color(r, g, b, a).tex(0.5f, 0.5f).lightmap(skyLight, blockLight).endVertex();
+    buffer.pos(x2, y1, z).color(r, g, b, a).tex(0.5f, 0.5f).lightmap(skyLight, blockLight).endVertex();
+    buffer.pos(x2, y2, z).color(r, g, b, a).tex(0.5f, 0.5f).lightmap(skyLight, blockLight).endVertex();
+    buffer.pos(x1, y2, z).color(r, g, b, a).tex(0.5f, 0.5f).lightmap(skyLight, blockLight).endVertex();
   }
 
   // ==================== Built-in signal mount hardware ====================
@@ -957,7 +993,7 @@ public class TileEntityTrafficSignalHeadRenderer extends
   private void renderMount(TileEntityTrafficSignalHead te, IBlockState blockState,
       int[] sectionSizes,
       float[] sectionYPositions, float[] sectionXPositions, boolean horizontal,
-      float zPushBack, float mountTiltAngle) {
+      float zPushBack, float mountTiltAngle, int skyLight, int blockLight) {
     SignalHeadMountType mountType = te.getMountType();
     if (mountType == SignalHeadMountType.NONE) return;
 
@@ -1039,16 +1075,17 @@ public class TileEntityTrafficSignalHeadRenderer extends
 
     Tessellator tessellator = Tessellator.getInstance();
     BufferBuilder buffer = tessellator.getBuffer();
-    GlStateManager.disableTexture2D();
+    Minecraft.getMinecraft().getTextureManager().bindTexture(WHITE_TEXTURE);
 
     // Pass 1: batched stubs + elbows (no tilt).
     List<RenderHelper.Box> stubElbowBoxes = new ArrayList<>();
     for (BracketSpec spec : brackets) {
       spec.addStubAndElbow(stubElbowBoxes);
     }
-    buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
-    RenderHelper.addBoxesToBuffer(stubElbowBoxes, buffer,
-        color.getRed(), color.getGreen(), color.getBlue(), 1.0f, 0, 0, zPushBack);
+    buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
+    RenderHelper.addBoxesToBufferLit(stubElbowBoxes, buffer,
+        color.getRed(), color.getGreen(), color.getBlue(), 1.0f, 0, 0, zPushBack,
+        skyLight, blockLight);
     tessellator.draw();
 
     // Pass 2: per-bracket arm drawn with a glRotatef pivoted at the elbow. Each bracket
@@ -1066,14 +1103,13 @@ public class TileEntityTrafficSignalHeadRenderer extends
 
       List<RenderHelper.Box> armBoxes = new ArrayList<>();
       spec.addArm(armBoxes);
-      buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
-      RenderHelper.addBoxesToBuffer(armBoxes, buffer,
-          color.getRed(), color.getGreen(), color.getBlue(), 1.0f, 0, 0, zPushBack);
+      buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
+      RenderHelper.addBoxesToBufferLit(armBoxes, buffer,
+          color.getRed(), color.getGreen(), color.getBlue(), 1.0f, 0, 0, zPushBack,
+          skyLight, blockLight);
       tessellator.draw();
       GL11.glPopMatrix();
     }
-
-    GlStateManager.enableTexture2D();
   }
 
   /**

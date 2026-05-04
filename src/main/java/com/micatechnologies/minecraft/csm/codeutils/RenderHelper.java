@@ -512,6 +512,358 @@ public class RenderHelper {
     }
   }
 
+  // ============================================================================================
+  // Shader-compatible variants: emit DefaultVertexFormats.BLOCK vertices
+  // (POSITION + COLOR + TEX + LMAP) so OptiFine shader gbuffers programs receive a known
+  // vertex layout. Caller must:
+  //   1. begin() the buffer with DefaultVertexFormats.BLOCK
+  //   2. bind a real texture (e.g. csm:textures/blocks/white1px.png) before drawing — do NOT
+  //      call disableTexture2D, since shaders ignore it and sample whatever was last bound.
+  //   3. pass packedSky/packedBlock lightmap values (range 0..240, e.g. 240 for fullbright,
+  //      or split from World.getCombinedLight(pos, 0)).
+  // The UV is a fixed (0.5, 0.5) probe so a 1x1 white texture fills cleanly regardless of
+  // the per-vertex value; alpha is folded into the COLOR_4UB attribute.
+  // ============================================================================================
+
+  private static final float WHITE_UV = 0.5f;
+
+  public static void addBoxesToBufferLit(List<Box> boxes, BufferBuilder buffer,
+      float red, float green, float blue, float alpha,
+      float xOffset, float yOffset, float zOffset,
+      int skyLight, int blockLight) {
+    for (Box box : boxes) {
+      float x1 = box.from[0] + xOffset, y1 = box.from[1] + yOffset, z1 = box.from[2] + zOffset;
+      float x2 = box.to[0] + xOffset, y2 = box.to[1] + yOffset, z2 = box.to[2] + zOffset;
+      addCuboidVerticesToBufferLit(buffer, x1, y1, z1, x2, y2, z2,
+          red, green, blue, alpha, skyLight, blockLight);
+    }
+  }
+
+  private static void addCuboidVerticesToBufferLit(BufferBuilder buffer,
+      double x1, double y1, double z1, double x2, double y2, double z2,
+      float r, float g, float b, float a, int sky, int block) {
+    // Front
+    litVertex(buffer, x1, y1, z2, r, g, b, a, sky, block);
+    litVertex(buffer, x2, y1, z2, r, g, b, a, sky, block);
+    litVertex(buffer, x2, y2, z2, r, g, b, a, sky, block);
+    litVertex(buffer, x1, y2, z2, r, g, b, a, sky, block);
+    // Back
+    litVertex(buffer, x2, y1, z1, r, g, b, a, sky, block);
+    litVertex(buffer, x1, y1, z1, r, g, b, a, sky, block);
+    litVertex(buffer, x1, y2, z1, r, g, b, a, sky, block);
+    litVertex(buffer, x2, y2, z1, r, g, b, a, sky, block);
+    // Left
+    litVertex(buffer, x1, y1, z1, r, g, b, a, sky, block);
+    litVertex(buffer, x1, y1, z2, r, g, b, a, sky, block);
+    litVertex(buffer, x1, y2, z2, r, g, b, a, sky, block);
+    litVertex(buffer, x1, y2, z1, r, g, b, a, sky, block);
+    // Right
+    litVertex(buffer, x2, y1, z2, r, g, b, a, sky, block);
+    litVertex(buffer, x2, y1, z1, r, g, b, a, sky, block);
+    litVertex(buffer, x2, y2, z1, r, g, b, a, sky, block);
+    litVertex(buffer, x2, y2, z2, r, g, b, a, sky, block);
+    // Top
+    litVertex(buffer, x1, y2, z2, r, g, b, a, sky, block);
+    litVertex(buffer, x2, y2, z2, r, g, b, a, sky, block);
+    litVertex(buffer, x2, y2, z1, r, g, b, a, sky, block);
+    litVertex(buffer, x1, y2, z1, r, g, b, a, sky, block);
+    // Bottom
+    litVertex(buffer, x1, y1, z1, r, g, b, a, sky, block);
+    litVertex(buffer, x2, y1, z1, r, g, b, a, sky, block);
+    litVertex(buffer, x2, y1, z2, r, g, b, a, sky, block);
+    litVertex(buffer, x1, y1, z2, r, g, b, a, sky, block);
+  }
+
+  private static void litVertex(BufferBuilder buffer, double x, double y, double z,
+      float r, float g, float b, float a, int sky, int block) {
+    buffer.pos(x, y, z).color(r, g, b, a).tex(WHITE_UV, WHITE_UV).lightmap(sky, block).endVertex();
+  }
+
+  public static void addBoxesToBufferDualColorLit(List<Box> boxes, BufferBuilder buffer,
+      float outerR, float outerG, float outerB,
+      float innerR, float innerG, float innerB,
+      float alpha, float xOffset, float yOffset, float zOffset,
+      float centerX, float centerY,
+      int skyLight, int blockLight) {
+    for (Box box : boxes) {
+      float x1 = box.from[0] + xOffset, y1 = box.from[1] + yOffset, z1 = box.from[2] + zOffset;
+      float x2 = box.to[0] + xOffset, y2 = box.to[1] + yOffset, z2 = box.to[2] + zOffset;
+      float midX = (box.from[0] + box.to[0]) / 2f + xOffset;
+      float midY = (box.from[1] + box.to[1]) / 2f + yOffset;
+
+      float effOuterR = box.innerOnly ? innerR : outerR;
+      float effOuterG = box.innerOnly ? innerG : outerG;
+      float effOuterB = box.innerOnly ? innerB : outerB;
+
+      float cx = centerX + xOffset;
+      float cy = centerY + yOffset;
+      boolean leftInside = midX > cx;
+      boolean rightInside = midX < cx;
+      boolean bottomInside = midY > cy;
+      boolean topInside = midY < cy;
+
+      float lr = leftInside ? innerR : effOuterR, lg = leftInside ? innerG : effOuterG, lb = leftInside ? innerB : effOuterB;
+      float rr = rightInside ? innerR : effOuterR, rg = rightInside ? innerG : effOuterG, rb = rightInside ? innerB : effOuterB;
+      float br = bottomInside ? innerR : effOuterR, bg = bottomInside ? innerG : effOuterG, bb = bottomInside ? innerB : effOuterB;
+      float tr = topInside ? innerR : effOuterR, tg = topInside ? innerG : effOuterG, tb = topInside ? innerB : effOuterB;
+
+      // Front (z2) — outer
+      litVertex(buffer, x1, y1, z2, effOuterR, effOuterG, effOuterB, alpha, skyLight, blockLight);
+      litVertex(buffer, x2, y1, z2, effOuterR, effOuterG, effOuterB, alpha, skyLight, blockLight);
+      litVertex(buffer, x2, y2, z2, effOuterR, effOuterG, effOuterB, alpha, skyLight, blockLight);
+      litVertex(buffer, x1, y2, z2, effOuterR, effOuterG, effOuterB, alpha, skyLight, blockLight);
+      // Back (z1) — outer
+      litVertex(buffer, x2, y1, z1, effOuterR, effOuterG, effOuterB, alpha, skyLight, blockLight);
+      litVertex(buffer, x1, y1, z1, effOuterR, effOuterG, effOuterB, alpha, skyLight, blockLight);
+      litVertex(buffer, x1, y2, z1, effOuterR, effOuterG, effOuterB, alpha, skyLight, blockLight);
+      litVertex(buffer, x2, y2, z1, effOuterR, effOuterG, effOuterB, alpha, skyLight, blockLight);
+      // Left (x1)
+      litVertex(buffer, x1, y1, z1, lr, lg, lb, alpha, skyLight, blockLight);
+      litVertex(buffer, x1, y1, z2, lr, lg, lb, alpha, skyLight, blockLight);
+      litVertex(buffer, x1, y2, z2, lr, lg, lb, alpha, skyLight, blockLight);
+      litVertex(buffer, x1, y2, z1, lr, lg, lb, alpha, skyLight, blockLight);
+      // Right (x2)
+      litVertex(buffer, x2, y1, z2, rr, rg, rb, alpha, skyLight, blockLight);
+      litVertex(buffer, x2, y1, z1, rr, rg, rb, alpha, skyLight, blockLight);
+      litVertex(buffer, x2, y2, z1, rr, rg, rb, alpha, skyLight, blockLight);
+      litVertex(buffer, x2, y2, z2, rr, rg, rb, alpha, skyLight, blockLight);
+      // Top (y2)
+      litVertex(buffer, x1, y2, z2, tr, tg, tb, alpha, skyLight, blockLight);
+      litVertex(buffer, x2, y2, z2, tr, tg, tb, alpha, skyLight, blockLight);
+      litVertex(buffer, x2, y2, z1, tr, tg, tb, alpha, skyLight, blockLight);
+      litVertex(buffer, x1, y2, z1, tr, tg, tb, alpha, skyLight, blockLight);
+      // Bottom (y1)
+      litVertex(buffer, x1, y1, z1, br, bg, bb, alpha, skyLight, blockLight);
+      litVertex(buffer, x2, y1, z1, br, bg, bb, alpha, skyLight, blockLight);
+      litVertex(buffer, x2, y1, z2, br, bg, bb, alpha, skyLight, blockLight);
+      litVertex(buffer, x1, y1, z2, br, bg, bb, alpha, skyLight, blockLight);
+    }
+  }
+
+  public static void addTiltedBoxesToBufferDualColorLit(List<Box> boxes, BufferBuilder buffer,
+      float outerR, float outerG, float outerB,
+      float innerR, float innerG, float innerB,
+      float alpha, float xOffset, float yOffset, float zOffset,
+      float pivotZ, float tiltAngleDeg,
+      float centerX, float centerY, float extraTiltAdjust,
+      int skyLight, int blockLight) {
+    float tiltSlope = (float) Math.tan(Math.toRadians(tiltAngleDeg));
+    for (Box box : boxes) {
+      float x1 = box.from[0] + xOffset, y1 = box.from[1] + yOffset, z1 = box.from[2] + zOffset;
+      float x2 = box.to[0] + xOffset, y2 = box.to[1] + yOffset, z2 = box.to[2] + zOffset;
+      float midX = (box.from[0] + box.to[0]) / 2f + xOffset;
+      float midY = (box.from[1] + box.to[1]) / 2f + yOffset;
+
+      float yShift1 = -(pivotZ - z1) * tiltSlope;
+      float yShift2 = -(pivotZ - z2) * tiltSlope;
+
+      float totalExtraTilt = box.extraTiltDegrees + extraTiltAdjust;
+      if (totalExtraTilt != 0f) {
+        float extraSlope = (float) Math.tan(Math.toRadians(totalExtraTilt));
+        yShift1 += -(pivotZ - z1) * extraSlope;
+        yShift2 += -(pivotZ - z2) * extraSlope;
+      }
+
+      float effOuterR = box.innerOnly ? innerR : outerR;
+      float effOuterG = box.innerOnly ? innerG : outerG;
+      float effOuterB = box.innerOnly ? innerB : outerB;
+
+      float cx = centerX + xOffset;
+      float cy = centerY + yOffset;
+      boolean leftInside = midX > cx;
+      boolean rightInside = midX < cx;
+      float tbMargin = 0.5f;
+      boolean bottomInside = midY > cy + tbMargin;
+      boolean topInside = midY < cy - tbMargin;
+
+      float lr = leftInside ? innerR : effOuterR, lg = leftInside ? innerG : effOuterG, lb = leftInside ? innerB : effOuterB;
+      float rr = rightInside ? innerR : effOuterR, rg = rightInside ? innerG : effOuterG, rb = rightInside ? innerB : effOuterB;
+      float br = bottomInside ? innerR : effOuterR, bg = bottomInside ? innerG : effOuterG, bb = bottomInside ? innerB : effOuterB;
+      float tr = topInside ? innerR : effOuterR, tg = topInside ? innerG : effOuterG, tb = topInside ? innerB : effOuterB;
+
+      // Front (z2) — outer
+      litVertex(buffer, x1, y1 + yShift2, z2, effOuterR, effOuterG, effOuterB, alpha, skyLight, blockLight);
+      litVertex(buffer, x2, y1 + yShift2, z2, effOuterR, effOuterG, effOuterB, alpha, skyLight, blockLight);
+      litVertex(buffer, x2, y2 + yShift2, z2, effOuterR, effOuterG, effOuterB, alpha, skyLight, blockLight);
+      litVertex(buffer, x1, y2 + yShift2, z2, effOuterR, effOuterG, effOuterB, alpha, skyLight, blockLight);
+      // Back (z1) — outer
+      litVertex(buffer, x2, y1 + yShift1, z1, effOuterR, effOuterG, effOuterB, alpha, skyLight, blockLight);
+      litVertex(buffer, x1, y1 + yShift1, z1, effOuterR, effOuterG, effOuterB, alpha, skyLight, blockLight);
+      litVertex(buffer, x1, y2 + yShift1, z1, effOuterR, effOuterG, effOuterB, alpha, skyLight, blockLight);
+      litVertex(buffer, x2, y2 + yShift1, z1, effOuterR, effOuterG, effOuterB, alpha, skyLight, blockLight);
+      // Left (x1)
+      litVertex(buffer, x1, y1 + yShift1, z1, lr, lg, lb, alpha, skyLight, blockLight);
+      litVertex(buffer, x1, y1 + yShift2, z2, lr, lg, lb, alpha, skyLight, blockLight);
+      litVertex(buffer, x1, y2 + yShift2, z2, lr, lg, lb, alpha, skyLight, blockLight);
+      litVertex(buffer, x1, y2 + yShift1, z1, lr, lg, lb, alpha, skyLight, blockLight);
+      // Right (x2)
+      litVertex(buffer, x2, y1 + yShift2, z2, rr, rg, rb, alpha, skyLight, blockLight);
+      litVertex(buffer, x2, y1 + yShift1, z1, rr, rg, rb, alpha, skyLight, blockLight);
+      litVertex(buffer, x2, y2 + yShift1, z1, rr, rg, rb, alpha, skyLight, blockLight);
+      litVertex(buffer, x2, y2 + yShift2, z2, rr, rg, rb, alpha, skyLight, blockLight);
+      // Top (y2)
+      litVertex(buffer, x1, y2 + yShift2, z2, tr, tg, tb, alpha, skyLight, blockLight);
+      litVertex(buffer, x2, y2 + yShift2, z2, tr, tg, tb, alpha, skyLight, blockLight);
+      litVertex(buffer, x2, y2 + yShift1, z1, tr, tg, tb, alpha, skyLight, blockLight);
+      litVertex(buffer, x1, y2 + yShift1, z1, tr, tg, tb, alpha, skyLight, blockLight);
+      // Bottom (y1)
+      litVertex(buffer, x1, y1 + yShift1, z1, br, bg, bb, alpha, skyLight, blockLight);
+      litVertex(buffer, x2, y1 + yShift1, z1, br, bg, bb, alpha, skyLight, blockLight);
+      litVertex(buffer, x2, y1 + yShift2, z2, br, bg, bb, alpha, skyLight, blockLight);
+      litVertex(buffer, x1, y1 + yShift2, z2, br, bg, bb, alpha, skyLight, blockLight);
+    }
+  }
+
+  public static void addBoxesInnerFacesToBufferLit(List<Box> boxes, BufferBuilder buffer,
+      float innerR, float innerG, float innerB,
+      float alpha, float xOffset, float yOffset, float zOffset,
+      float centerX, float centerY,
+      int skyLight, int blockLight) {
+    for (Box box : boxes) {
+      float x1 = box.from[0] + xOffset, y1 = box.from[1] + yOffset, z1 = box.from[2] + zOffset;
+      float x2 = box.to[0] + xOffset, y2 = box.to[1] + yOffset, z2 = box.to[2] + zOffset;
+      float midX = (box.from[0] + box.to[0]) / 2f + xOffset;
+      float midY = (box.from[1] + box.to[1]) / 2f + yOffset;
+      float cx = centerX + xOffset;
+      float cy = centerY + yOffset;
+
+      if (box.innerOnly) {
+        // All faces inner-colored
+        litVertex(buffer, x1, y1, z2, innerR, innerG, innerB, alpha, skyLight, blockLight);
+        litVertex(buffer, x2, y1, z2, innerR, innerG, innerB, alpha, skyLight, blockLight);
+        litVertex(buffer, x2, y2, z2, innerR, innerG, innerB, alpha, skyLight, blockLight);
+        litVertex(buffer, x1, y2, z2, innerR, innerG, innerB, alpha, skyLight, blockLight);
+        litVertex(buffer, x2, y1, z1, innerR, innerG, innerB, alpha, skyLight, blockLight);
+        litVertex(buffer, x1, y1, z1, innerR, innerG, innerB, alpha, skyLight, blockLight);
+        litVertex(buffer, x1, y2, z1, innerR, innerG, innerB, alpha, skyLight, blockLight);
+        litVertex(buffer, x2, y2, z1, innerR, innerG, innerB, alpha, skyLight, blockLight);
+        litVertex(buffer, x1, y1, z1, innerR, innerG, innerB, alpha, skyLight, blockLight);
+        litVertex(buffer, x1, y1, z2, innerR, innerG, innerB, alpha, skyLight, blockLight);
+        litVertex(buffer, x1, y2, z2, innerR, innerG, innerB, alpha, skyLight, blockLight);
+        litVertex(buffer, x1, y2, z1, innerR, innerG, innerB, alpha, skyLight, blockLight);
+        litVertex(buffer, x2, y1, z2, innerR, innerG, innerB, alpha, skyLight, blockLight);
+        litVertex(buffer, x2, y1, z1, innerR, innerG, innerB, alpha, skyLight, blockLight);
+        litVertex(buffer, x2, y2, z1, innerR, innerG, innerB, alpha, skyLight, blockLight);
+        litVertex(buffer, x2, y2, z2, innerR, innerG, innerB, alpha, skyLight, blockLight);
+        litVertex(buffer, x1, y2, z2, innerR, innerG, innerB, alpha, skyLight, blockLight);
+        litVertex(buffer, x2, y2, z2, innerR, innerG, innerB, alpha, skyLight, blockLight);
+        litVertex(buffer, x2, y2, z1, innerR, innerG, innerB, alpha, skyLight, blockLight);
+        litVertex(buffer, x1, y2, z1, innerR, innerG, innerB, alpha, skyLight, blockLight);
+        litVertex(buffer, x1, y1, z1, innerR, innerG, innerB, alpha, skyLight, blockLight);
+        litVertex(buffer, x2, y1, z1, innerR, innerG, innerB, alpha, skyLight, blockLight);
+        litVertex(buffer, x2, y1, z2, innerR, innerG, innerB, alpha, skyLight, blockLight);
+        litVertex(buffer, x1, y1, z2, innerR, innerG, innerB, alpha, skyLight, blockLight);
+        continue;
+      }
+
+      if (midX > cx) {
+        litVertex(buffer, x1, y1, z1, innerR, innerG, innerB, alpha, skyLight, blockLight);
+        litVertex(buffer, x1, y1, z2, innerR, innerG, innerB, alpha, skyLight, blockLight);
+        litVertex(buffer, x1, y2, z2, innerR, innerG, innerB, alpha, skyLight, blockLight);
+        litVertex(buffer, x1, y2, z1, innerR, innerG, innerB, alpha, skyLight, blockLight);
+      }
+      if (midX < cx) {
+        litVertex(buffer, x2, y1, z2, innerR, innerG, innerB, alpha, skyLight, blockLight);
+        litVertex(buffer, x2, y1, z1, innerR, innerG, innerB, alpha, skyLight, blockLight);
+        litVertex(buffer, x2, y2, z1, innerR, innerG, innerB, alpha, skyLight, blockLight);
+        litVertex(buffer, x2, y2, z2, innerR, innerG, innerB, alpha, skyLight, blockLight);
+      }
+      if (midY < cy) {
+        litVertex(buffer, x1, y2, z2, innerR, innerG, innerB, alpha, skyLight, blockLight);
+        litVertex(buffer, x2, y2, z2, innerR, innerG, innerB, alpha, skyLight, blockLight);
+        litVertex(buffer, x2, y2, z1, innerR, innerG, innerB, alpha, skyLight, blockLight);
+        litVertex(buffer, x1, y2, z1, innerR, innerG, innerB, alpha, skyLight, blockLight);
+      }
+      if (midY > cy) {
+        litVertex(buffer, x1, y1, z1, innerR, innerG, innerB, alpha, skyLight, blockLight);
+        litVertex(buffer, x2, y1, z1, innerR, innerG, innerB, alpha, skyLight, blockLight);
+        litVertex(buffer, x2, y1, z2, innerR, innerG, innerB, alpha, skyLight, blockLight);
+        litVertex(buffer, x1, y1, z2, innerR, innerG, innerB, alpha, skyLight, blockLight);
+      }
+    }
+  }
+
+  public static void addTiltedBoxesInnerFacesToBufferLit(List<Box> boxes, BufferBuilder buffer,
+      float innerR, float innerG, float innerB,
+      float alpha, float xOffset, float yOffset, float zOffset,
+      float pivotZ, float tiltAngleDeg,
+      float centerX, float centerY, float extraTiltAdjust,
+      int skyLight, int blockLight) {
+    float tiltSlope = (float) Math.tan(Math.toRadians(tiltAngleDeg));
+    for (Box box : boxes) {
+      float x1 = box.from[0] + xOffset, y1 = box.from[1] + yOffset, z1 = box.from[2] + zOffset;
+      float x2 = box.to[0] + xOffset, y2 = box.to[1] + yOffset, z2 = box.to[2] + zOffset;
+      float midX = (box.from[0] + box.to[0]) / 2f + xOffset;
+      float midY = (box.from[1] + box.to[1]) / 2f + yOffset;
+
+      float yShift1 = -(pivotZ - z1) * tiltSlope;
+      float yShift2 = -(pivotZ - z2) * tiltSlope;
+      float totalExtraTilt = box.extraTiltDegrees + extraTiltAdjust;
+      if (totalExtraTilt != 0f) {
+        float extraSlope = (float) Math.tan(Math.toRadians(totalExtraTilt));
+        yShift1 += -(pivotZ - z1) * extraSlope;
+        yShift2 += -(pivotZ - z2) * extraSlope;
+      }
+
+      float cx = centerX + xOffset;
+      float cy = centerY + yOffset;
+      float tbMargin = 0.5f;
+
+      if (box.innerOnly) {
+        litVertex(buffer, x1, y1 + yShift2, z2, innerR, innerG, innerB, alpha, skyLight, blockLight);
+        litVertex(buffer, x2, y1 + yShift2, z2, innerR, innerG, innerB, alpha, skyLight, blockLight);
+        litVertex(buffer, x2, y2 + yShift2, z2, innerR, innerG, innerB, alpha, skyLight, blockLight);
+        litVertex(buffer, x1, y2 + yShift2, z2, innerR, innerG, innerB, alpha, skyLight, blockLight);
+        litVertex(buffer, x2, y1 + yShift1, z1, innerR, innerG, innerB, alpha, skyLight, blockLight);
+        litVertex(buffer, x1, y1 + yShift1, z1, innerR, innerG, innerB, alpha, skyLight, blockLight);
+        litVertex(buffer, x1, y2 + yShift1, z1, innerR, innerG, innerB, alpha, skyLight, blockLight);
+        litVertex(buffer, x2, y2 + yShift1, z1, innerR, innerG, innerB, alpha, skyLight, blockLight);
+        litVertex(buffer, x1, y1 + yShift1, z1, innerR, innerG, innerB, alpha, skyLight, blockLight);
+        litVertex(buffer, x1, y1 + yShift2, z2, innerR, innerG, innerB, alpha, skyLight, blockLight);
+        litVertex(buffer, x1, y2 + yShift2, z2, innerR, innerG, innerB, alpha, skyLight, blockLight);
+        litVertex(buffer, x1, y2 + yShift1, z1, innerR, innerG, innerB, alpha, skyLight, blockLight);
+        litVertex(buffer, x2, y1 + yShift2, z2, innerR, innerG, innerB, alpha, skyLight, blockLight);
+        litVertex(buffer, x2, y1 + yShift1, z1, innerR, innerG, innerB, alpha, skyLight, blockLight);
+        litVertex(buffer, x2, y2 + yShift1, z1, innerR, innerG, innerB, alpha, skyLight, blockLight);
+        litVertex(buffer, x2, y2 + yShift2, z2, innerR, innerG, innerB, alpha, skyLight, blockLight);
+        litVertex(buffer, x1, y2 + yShift2, z2, innerR, innerG, innerB, alpha, skyLight, blockLight);
+        litVertex(buffer, x2, y2 + yShift2, z2, innerR, innerG, innerB, alpha, skyLight, blockLight);
+        litVertex(buffer, x2, y2 + yShift1, z1, innerR, innerG, innerB, alpha, skyLight, blockLight);
+        litVertex(buffer, x1, y2 + yShift1, z1, innerR, innerG, innerB, alpha, skyLight, blockLight);
+        litVertex(buffer, x1, y1 + yShift1, z1, innerR, innerG, innerB, alpha, skyLight, blockLight);
+        litVertex(buffer, x2, y1 + yShift1, z1, innerR, innerG, innerB, alpha, skyLight, blockLight);
+        litVertex(buffer, x2, y1 + yShift2, z2, innerR, innerG, innerB, alpha, skyLight, blockLight);
+        litVertex(buffer, x1, y1 + yShift2, z2, innerR, innerG, innerB, alpha, skyLight, blockLight);
+        continue;
+      }
+
+      if (midX > cx) {
+        litVertex(buffer, x1, y1 + yShift1, z1, innerR, innerG, innerB, alpha, skyLight, blockLight);
+        litVertex(buffer, x1, y1 + yShift2, z2, innerR, innerG, innerB, alpha, skyLight, blockLight);
+        litVertex(buffer, x1, y2 + yShift2, z2, innerR, innerG, innerB, alpha, skyLight, blockLight);
+        litVertex(buffer, x1, y2 + yShift1, z1, innerR, innerG, innerB, alpha, skyLight, blockLight);
+      }
+      if (midX < cx) {
+        litVertex(buffer, x2, y1 + yShift2, z2, innerR, innerG, innerB, alpha, skyLight, blockLight);
+        litVertex(buffer, x2, y1 + yShift1, z1, innerR, innerG, innerB, alpha, skyLight, blockLight);
+        litVertex(buffer, x2, y2 + yShift1, z1, innerR, innerG, innerB, alpha, skyLight, blockLight);
+        litVertex(buffer, x2, y2 + yShift2, z2, innerR, innerG, innerB, alpha, skyLight, blockLight);
+      }
+      if (midY < cy - tbMargin) {
+        litVertex(buffer, x1, y2 + yShift2, z2, innerR, innerG, innerB, alpha, skyLight, blockLight);
+        litVertex(buffer, x2, y2 + yShift2, z2, innerR, innerG, innerB, alpha, skyLight, blockLight);
+        litVertex(buffer, x2, y2 + yShift1, z1, innerR, innerG, innerB, alpha, skyLight, blockLight);
+        litVertex(buffer, x1, y2 + yShift1, z1, innerR, innerG, innerB, alpha, skyLight, blockLight);
+      }
+      if (midY > cy + tbMargin) {
+        litVertex(buffer, x1, y1 + yShift1, z1, innerR, innerG, innerB, alpha, skyLight, blockLight);
+        litVertex(buffer, x2, y1 + yShift1, z1, innerR, innerG, innerB, alpha, skyLight, blockLight);
+        litVertex(buffer, x2, y1 + yShift2, z2, innerR, innerG, innerB, alpha, skyLight, blockLight);
+        litVertex(buffer, x1, y1 + yShift2, z2, innerR, innerG, innerB, alpha, skyLight, blockLight);
+      }
+    }
+  }
+
   public static class Box {
     public final float[] from;
     public final float[] to;
