@@ -14,7 +14,6 @@ import com.micatechnologies.minecraft.csm.codeutils.CsmFontRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
@@ -113,6 +112,11 @@ public class TileEntityPortableSpeedLimitRenderer
   private static final float VISOR_CENTER_X = 8.0f;
   private static final float VISOR_CENTER_Y = 6.0f;
 
+  private static final ResourceLocation WHITE_TEXTURE =
+      new ResourceLocation("csm", "textures/blocks/white1px.png");
+  private static final int LIGHTMAP_FULLBRIGHT_SKY = 240;
+  private static final int LIGHTMAP_FULLBRIGHT_BLOCK = 240;
+
   @Override
   public void render(TileEntityVariableSpeedLimit te, double x, double y, double z,
       float partialTicks, int destroyStage, float alpha) {
@@ -161,21 +165,23 @@ public class TileEntityPortableSpeedLimitRenderer
     GlStateManager.disableCull();
     GlStateManager.enableBlend();
     GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-    GlStateManager.disableTexture2D();
 
-    renderTrailer(trailerCol);
-    renderWheels();
-    renderOutriggers(trailerCol);
-    renderMast();
-    renderSignPanel();
-    renderFlashers(te);
+    int combinedLight = te.getWorld().getCombinedLight(te.getPos(), 0);
+    int sky = (combinedLight >> 16) & 0xFFFF;
+    int block = combinedLight & 0xFFFF;
 
-    GlStateManager.enableTexture2D();
+    Minecraft.getMinecraft().getTextureManager().bindTexture(WHITE_TEXTURE);
+
+    renderTrailer(trailerCol, sky, block);
+    renderWheels(sky, block);
+    renderOutriggers(trailerCol, sky, block);
+    renderMast(sky, block);
+    renderSignPanel(sky, block);
+    renderFlashers(te, sky, block);
 
     renderSpeedText(te);
     renderLabelText();
 
-    GlStateManager.enableTexture2D();
     GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
     GlStateManager.enableLighting();
     GlStateManager.enableCull();
@@ -184,7 +190,7 @@ public class TileEntityPortableSpeedLimitRenderer
     GlStateManager.popMatrix();
   }
 
-  private void renderTrailer(float[] col) {
+  private void renderTrailer(float[] col, int sky, int block) {
     Tessellator tess = Tessellator.getInstance();
     BufferBuilder buf = tess.getBuffer();
     List<RenderHelper.Box> boxes = new ArrayList<>();
@@ -197,12 +203,13 @@ public class TileEntityPortableSpeedLimitRenderer
         new float[]{CX - 1.0f, TRAILER_BOTTOM + 1, CZ + TRAILER_LENGTH / 2 + 4},
         new float[]{CX + 1.0f, TRAILER_BOTTOM + 2.5f, CZ + TRAILER_LENGTH / 2 + 10}));
 
-    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
-    RenderHelper.addBoxesToBuffer(boxes, buf, col[0], col[1], col[2], col[3], 0, 0, 0);
+    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
+    RenderHelper.addBoxesToBufferLit(boxes, buf, col[0], col[1], col[2], col[3], 0, 0, 0,
+        sky, block);
     tess.draw();
   }
 
-  private void renderWheels() {
+  private void renderWheels(int sky, int block) {
     Tessellator tess = Tessellator.getInstance();
     BufferBuilder buf = tess.getBuffer();
     List<RenderHelper.Box> boxes = new ArrayList<>();
@@ -220,9 +227,9 @@ public class TileEntityPortableSpeedLimitRenderer
         new float[]{CX + TRAILER_WIDTH / 2 + WHEEL_WIDTH, wheelY + WHEEL_DIAMETER,
             wheelZ + WHEEL_DIAMETER / 2}));
 
-    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
-    RenderHelper.addBoxesToBuffer(boxes, buf,
-        COL_RUBBER[0], COL_RUBBER[1], COL_RUBBER[2], COL_RUBBER[3], 0, 0, 0);
+    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
+    RenderHelper.addBoxesToBufferLit(boxes, buf,
+        COL_RUBBER[0], COL_RUBBER[1], COL_RUBBER[2], COL_RUBBER[3], 0, 0, 0, sky, block);
     tess.draw();
 
     List<RenderHelper.Box> axle = new ArrayList<>();
@@ -231,13 +238,14 @@ public class TileEntityPortableSpeedLimitRenderer
             wheelZ - 0.5f},
         new float[]{CX + TRAILER_WIDTH / 2 + WHEEL_WIDTH, wheelY + WHEEL_DIAMETER / 2 + 0.5f,
             wheelZ + 0.5f}));
-    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
-    RenderHelper.addBoxesToBuffer(axle, buf,
-        COL_DARK_GRAY[0], COL_DARK_GRAY[1], COL_DARK_GRAY[2], COL_DARK_GRAY[3], 0, 0, 0);
+    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
+    RenderHelper.addBoxesToBufferLit(axle, buf,
+        COL_DARK_GRAY[0], COL_DARK_GRAY[1], COL_DARK_GRAY[2], COL_DARK_GRAY[3], 0, 0, 0,
+        sky, block);
     tess.draw();
   }
 
-  private void renderOutriggers(float[] col) {
+  private void renderOutriggers(float[] col, int sky, int block) {
     Tessellator tess = Tessellator.getInstance();
     BufferBuilder buf = tess.getBuffer();
     List<RenderHelper.Box> legs = new ArrayList<>();
@@ -271,17 +279,18 @@ public class TileEntityPortableSpeedLimitRenderer
               p[1] + OUTRIGGER_LEG_SIZE / 2}));
     }
 
-    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
-    RenderHelper.addBoxesToBuffer(legs, buf, col[0], col[1], col[2], col[3], 0, 0, 0);
+    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
+    RenderHelper.addBoxesToBufferLit(legs, buf, col[0], col[1], col[2], col[3], 0, 0, 0,
+        sky, block);
     tess.draw();
 
-    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
-    RenderHelper.addBoxesToBuffer(feet, buf,
-        COL_SILVER[0], COL_SILVER[1], COL_SILVER[2], COL_SILVER[3], 0, 0, 0);
+    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
+    RenderHelper.addBoxesToBufferLit(feet, buf,
+        COL_SILVER[0], COL_SILVER[1], COL_SILVER[2], COL_SILVER[3], 0, 0, 0, sky, block);
     tess.draw();
   }
 
-  private void renderMast() {
+  private void renderMast(int sky, int block) {
     Tessellator tess = Tessellator.getInstance();
     BufferBuilder buf = tess.getBuffer();
     List<RenderHelper.Box> boxes = new ArrayList<>();
@@ -290,13 +299,14 @@ public class TileEntityPortableSpeedLimitRenderer
         new float[]{CX - MAST_SIZE / 2, MAST_BOTTOM, CZ - MAST_SIZE / 2},
         new float[]{CX + MAST_SIZE / 2, MAST_TOP, CZ + MAST_SIZE / 2}));
 
-    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
-    RenderHelper.addBoxesToBuffer(boxes, buf,
-        COL_DARK_GRAY[0], COL_DARK_GRAY[1], COL_DARK_GRAY[2], COL_DARK_GRAY[3], 0, 0, 0);
+    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
+    RenderHelper.addBoxesToBufferLit(boxes, buf,
+        COL_DARK_GRAY[0], COL_DARK_GRAY[1], COL_DARK_GRAY[2], COL_DARK_GRAY[3], 0, 0, 0,
+        sky, block);
     tess.draw();
   }
 
-  private void renderSignPanel() {
+  private void renderSignPanel(int sky, int block) {
     Tessellator tess = Tessellator.getInstance();
     BufferBuilder buf = tess.getBuffer();
 
@@ -308,9 +318,10 @@ public class TileEntityPortableSpeedLimitRenderer
         new float[]{CX + SIGN_WIDTH / 2 + SIGN_FRAME, SIGN_TOP + SIGN_FRAME,
             CZ + SIGN_DEPTH / 2}));
 
-    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
-    RenderHelper.addBoxesToBuffer(border, buf,
-        COL_SIGN_BORDER[0], COL_SIGN_BORDER[1], COL_SIGN_BORDER[2], COL_SIGN_BORDER[3], 0, 0, 0);
+    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
+    RenderHelper.addBoxesToBufferLit(border, buf,
+        COL_SIGN_BORDER[0], COL_SIGN_BORDER[1], COL_SIGN_BORDER[2], COL_SIGN_BORDER[3],
+        0, 0, 0, sky, block);
     tess.draw();
 
     // Subtle gray sign background (full sign face — "SPEED LIMIT" area + behind screen)
@@ -319,16 +330,13 @@ public class TileEntityPortableSpeedLimitRenderer
         new float[]{CX - SIGN_WIDTH / 2, SIGN_BOTTOM, CZ - SIGN_DEPTH / 2 - 0.05f},
         new float[]{CX + SIGN_WIDTH / 2, SIGN_TOP, CZ - SIGN_DEPTH / 2 + 0.3f}));
 
-    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
-    RenderHelper.addBoxesToBuffer(bgFace, buf,
-        COL_SIGN_BG[0], COL_SIGN_BG[1], COL_SIGN_BG[2], COL_SIGN_BG[3], 0, 0, 0);
+    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
+    RenderHelper.addBoxesToBufferLit(bgFace, buf,
+        COL_SIGN_BG[0], COL_SIGN_BG[1], COL_SIGN_BG[2], COL_SIGN_BG[3], 0, 0, 0,
+        sky, block);
     tess.draw();
 
-    // Bright white LED screen (inset from sign edges) — rendered at fullbright
-    float prevBX = OpenGlHelper.lastBrightnessX;
-    float prevBY = OpenGlHelper.lastBrightnessY;
-    OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240f, 240f);
-
+    // Bright white LED screen (inset from sign edges) — rendered at fullbright per-vertex
     float screenInset = 2.25f;
     List<RenderHelper.Box> screenFace = new ArrayList<>();
     screenFace.add(new RenderHelper.Box(
@@ -337,16 +345,14 @@ public class TileEntityPortableSpeedLimitRenderer
         new float[]{CX + SIGN_WIDTH / 2 - screenInset, SIGN_DIVIDER_Y - 1.0f,
             CZ - SIGN_DEPTH / 2 + 0.25f}));
 
-    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
-    RenderHelper.addBoxesToBuffer(screenFace, buf,
+    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
+    RenderHelper.addBoxesToBufferLit(screenFace, buf,
         COL_SCREEN_WHITE[0], COL_SCREEN_WHITE[1], COL_SCREEN_WHITE[2], COL_SCREEN_WHITE[3],
-        0, 0, 0);
+        0, 0, 0, LIGHTMAP_FULLBRIGHT_SKY, LIGHTMAP_FULLBRIGHT_BLOCK);
     tess.draw();
-
-    OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, prevBX, prevBY);
   }
 
-  private void renderFlashers(TileEntityVariableSpeedLimit te) {
+  private void renderFlashers(TileEntityVariableSpeedLimit te, int sky, int block) {
     int mode = te.getFlasherMode();
     if (mode == TileEntityVariableSpeedLimit.FLASHER_NONE) {
       return;
@@ -372,11 +378,12 @@ public class TileEntityPortableSpeedLimitRenderer
     Tessellator tess = Tessellator.getInstance();
     BufferBuilder buf = tess.getBuffer();
 
-    // Housing + mounting arms
-    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
+    // Housing + mounting arms — white1px bound, BLOCK format with world lightmap
+    Minecraft.getMinecraft().getTextureManager().bindTexture(WHITE_TEXTURE);
+    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
 
-    addFlasherHousing(buf, leftXOff, leftYOff, zOff);
-    addFlasherHousing(buf, rightXOff, rightYOff, zOff);
+    addFlasherHousing(buf, leftXOff, leftYOff, zOff, sky, block);
+    addFlasherHousing(buf, rightXOff, rightYOff, zOff, sky, block);
 
     float armZ1 = CZ - SIGN_DEPTH / 2;
     float armZ2 = armZ1 + 2.0f;
@@ -387,46 +394,39 @@ public class TileEntityPortableSpeedLimitRenderer
     arms.add(new RenderHelper.Box(
         new float[]{signRightEdge, flasherY - 0.5f, armZ1},
         new float[]{signRightEdge + 4.0f, flasherY + 0.5f, armZ2}));
-    RenderHelper.addBoxesToBuffer(arms, buf,
-        COL_FRAME[0], COL_FRAME[1], COL_FRAME[2], COL_FRAME[3], 0, 0, 0);
+    RenderHelper.addBoxesToBufferLit(arms, buf,
+        COL_FRAME[0], COL_FRAME[1], COL_FRAME[2], COL_FRAME[3], 0, 0, 0, sky, block);
 
     tess.draw();
 
-    // Bulb faces
-    float prevBX = OpenGlHelper.lastBrightnessX;
-    float prevBY = OpenGlHelper.lastBrightnessY;
-    OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240f, 240f);
-
-    GlStateManager.enableTexture2D();
+    // Bulb faces — atlas texture with fullbright per-vertex lightmap
     GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
     Minecraft.getMinecraft().getTextureManager().bindTexture(SIGNAL_ATLAS);
 
-    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
 
     addFlasherBulb(buf, leftXOff, leftYOff, zOff, bulbLit);
     addFlasherBulb(buf, rightXOff, rightYOff, zOff, bulbLit);
 
     tess.draw();
-
-    GlStateManager.disableTexture2D();
-    OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, prevBX, prevBY);
   }
 
-  private void addFlasherHousing(BufferBuilder buf, float xOff, float yOff, float zOff) {
-    RenderHelper.addBoxesToBuffer(
+  private void addFlasherHousing(BufferBuilder buf, float xOff, float yOff, float zOff,
+      int sky, int block) {
+    RenderHelper.addBoxesToBufferLit(
         TrafficSignalVertexData.SIGNAL_BODY_8INCH_VERTEX_DATA, buf,
-        FLASHER_BODY_R, FLASHER_BODY_G, FLASHER_BODY_B, 1.0f, xOff, yOff, zOff);
+        FLASHER_BODY_R, FLASHER_BODY_G, FLASHER_BODY_B, 1.0f, xOff, yOff, zOff, sky, block);
 
-    RenderHelper.addBoxesToBuffer(
+    RenderHelper.addBoxesToBufferLit(
         TrafficSignalVertexData.SIGNAL_DOOR_8INCH_VERTEX_DATA, buf,
-        FLASHER_BODY_R, FLASHER_BODY_G, FLASHER_BODY_B, 1.0f, xOff, yOff, zOff);
+        FLASHER_BODY_R, FLASHER_BODY_G, FLASHER_BODY_B, 1.0f, xOff, yOff, zOff, sky, block);
 
-    RenderHelper.addTiltedBoxesToBufferDualColor(
+    RenderHelper.addTiltedBoxesToBufferDualColorLit(
         TrafficSignalVertexData.CIRCLE_VISOR_8INCH_VERTEX_DATA, buf,
         VISOR_OUTER_R, VISOR_OUTER_G, VISOR_OUTER_B,
         0f, 0f, 0f, 1.0f,
         xOff, yOff, zOff, VISOR_PIVOT_Z + zOff, VISOR_TILT_DEGREES,
-        VISOR_CENTER_X, VISOR_CENTER_Y, 0f);
+        VISOR_CENTER_X, VISOR_CENTER_Y, 0f, sky, block);
   }
 
   private void addFlasherBulb(BufferBuilder buf, float xOff, float yOff, float zOff,
@@ -449,10 +449,16 @@ public class TileEntityPortableSpeedLimitRenderer
     float u2 = texInfo.getU2();
     float v2 = texInfo.getV2();
 
-    buf.pos(baseX, baseY, z).tex(u2, v2).endVertex();
-    buf.pos(baseX + size, baseY, z).tex(u1, v2).endVertex();
-    buf.pos(baseX + size, baseY + size, z).tex(u1, v1).endVertex();
-    buf.pos(baseX, baseY + size, z).tex(u2, v1).endVertex();
+    bulbVertex(buf, baseX, baseY, z, u2, v2);
+    bulbVertex(buf, baseX + size, baseY, z, u1, v2);
+    bulbVertex(buf, baseX + size, baseY + size, z, u1, v1);
+    bulbVertex(buf, baseX, baseY + size, z, u2, v1);
+  }
+
+  private static void bulbVertex(BufferBuilder buf, float x, float y, float z,
+      float u, float v) {
+    buf.pos(x, y, z).color(1.0f, 1.0f, 1.0f, 1.0f).tex(u, v)
+        .lightmap(LIGHTMAP_FULLBRIGHT_SKY, LIGHTMAP_FULLBRIGHT_BLOCK).endVertex();
   }
 
   private void renderLabelText() {
@@ -469,7 +475,6 @@ public class TileEntityPortableSpeedLimitRenderer
     GlStateManager.scale(labelScale, -labelScale, labelScale);
 
     GlStateManager.depthMask(false);
-    GlStateManager.enableTexture2D();
 
     String line1 = "SPEED";
     String line2 = "LIMIT";
@@ -479,7 +484,6 @@ public class TileEntityPortableSpeedLimitRenderer
     fr.drawString(line1, -w1 / 2, -fr.FONT_HEIGHT - 1, 0x000000);
     fr.drawString(line2, -w2 / 2, 1, 0x000000);
 
-    GlStateManager.disableTexture2D();
     GlStateManager.depthMask(true);
 
     GlStateManager.popMatrix();
@@ -491,10 +495,6 @@ public class TileEntityPortableSpeedLimitRenderer
 
     CsmFontRenderer fr = CsmFontRenderer.highwayGothic();
 
-    float prevBX = OpenGlHelper.lastBrightnessX;
-    float prevBY = OpenGlHelper.lastBrightnessY;
-    OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240f, 240f);
-
     GlStateManager.pushMatrix();
 
     float faceZ = CZ - SIGN_DEPTH / 2 - 0.2f;
@@ -504,16 +504,12 @@ public class TileEntityPortableSpeedLimitRenderer
     GlStateManager.scale(SPEED_TEXT_SCALE, -SPEED_TEXT_SCALE, SPEED_TEXT_SCALE);
 
     GlStateManager.depthMask(false);
-    GlStateManager.enableTexture2D();
 
     int textWidth = fr.getStringWidth(speedStr);
     fr.drawString(speedStr, -textWidth / 2, -fr.FONT_HEIGHT / 2, TEXT_COLOR_BLACK);
 
-    GlStateManager.disableTexture2D();
     GlStateManager.depthMask(true);
 
     GlStateManager.popMatrix();
-
-    OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, prevBX, prevBY);
   }
 }

@@ -20,11 +20,11 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import org.lwjgl.opengl.GL11;
 
@@ -60,11 +60,17 @@ public class TileEntityDynamicGuideSignRenderer
   // Per-step chamfer for ROUND corners. Two stair steps approximate a small radius.
   private static final float CORNER_STEP = 0.6f;
 
-  // Cached per-frame lightmap coords from the block's actual combined light, used so
+  // Cached per-frame lightmap split from the block's actual combined light, used so
   // text/shield/banner overlays respect day-night cycle and nearby light sources rather
-  // than rendering at fullbright.
-  private float lightmapX;
-  private float lightmapY;
+  // than rendering at fullbright. Baked per-vertex via the BLOCK vertex format for shader
+  // compatibility (shaders ignore OpenGlHelper.setLightmapTextureCoords global state).
+  private int worldSkyLight;
+  private int worldBlockLight;
+
+  private static final ResourceLocation WHITE_TEXTURE =
+      new ResourceLocation("csm", "textures/blocks/white1px.png");
+  private static final int LIGHTMAP_FULLBRIGHT_SKY = 240;
+  private static final int LIGHTMAP_FULLBRIGHT_BLOCK = 240;
 
   @Override
   public void render(TileEntityDynamicGuideSign te, double x, double y, double z,
@@ -79,8 +85,8 @@ public class TileEntityDynamicGuideSignRenderer
     }
 
     int combinedLight = te.getWorld().getCombinedLight(te.getPos(), 0);
-    lightmapX = combinedLight & 0xFFFF;
-    lightmapY = (combinedLight >> 16) & 0xFFFF;
+    worldSkyLight = (combinedLight >> 16) & 0xFFFF;
+    worldBlockLight = combinedLight & 0xFFFF;
 
     EnumFacing facing = te.getWorld().getBlockState(te.getPos())
         .getValue(BlockHorizontal.FACING);
@@ -134,8 +140,8 @@ public class TileEntityDynamicGuideSignRenderer
     GlStateManager.disableCull();
     GlStateManager.enableBlend();
     GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-    GlStateManager.disableTexture2D();
-    GL11.glDisable(GL11.GL_TEXTURE_2D);
+    // Bind 1x1 white texture instead of disableTexture2D — shaders ignore disableTexture2D.
+    Minecraft.getMinecraft().getTextureManager().bindTexture(WHITE_TEXTURE);
     GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
     GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 
@@ -179,8 +185,6 @@ public class TileEntityDynamicGuideSignRenderer
 
     renderPost(data.getPostType(), signLeft, signBottom, totalSignWidth, faceZ);
 
-    GlStateManager.enableTexture2D();
-    GL11.glEnable(GL11.GL_TEXTURE_2D);
     GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
     GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
     GlStateManager.enableLighting();
@@ -202,8 +206,9 @@ public class TileEntityDynamicGuideSignRenderer
       addRectBoxes(border, left - bw, bottom - bw, left + width + bw, bottom + height + bw,
           faceZ, frontZ, cornerStyle);
 
-      buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
-      RenderHelper.addBoxesToBuffer(border, buf, 0.92f, 0.92f, 0.90f, 1.0f, 0, 0, 0);
+      buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
+      RenderHelper.addBoxesToBufferLit(border, buf, 0.92f, 0.92f, 0.90f, 1.0f, 0, 0, 0,
+          worldSkyLight, worldBlockLight);
       tess.draw();
     }
 
@@ -212,9 +217,10 @@ public class TileEntityDynamicGuideSignRenderer
     addRectBoxes(face, left + inset, bottom + inset, left + width - inset, bottom + height - inset,
         faceZ - 0.1f, frontZ - 0.1f, cornerStyle);
 
-    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
-    RenderHelper.addBoxesToBuffer(face, buf,
-        color.getRed(), color.getGreen(), color.getBlue(), 1.0f, 0, 0, 0);
+    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
+    RenderHelper.addBoxesToBufferLit(face, buf,
+        color.getRed(), color.getGreen(), color.getBlue(), 1.0f, 0, 0, 0,
+        worldSkyLight, worldBlockLight);
     tess.draw();
   }
 
@@ -292,8 +298,9 @@ public class TileEntityDynamicGuideSignRenderer
       List<RenderHelper.Box> tabBorder = new ArrayList<>();
       addRectBoxes(tabBorder, tabX - bw, tabBottom - bw, tabX + tabWidth + bw, tabTop + bw,
           tabFaceZ + 0.1f, tabFrontZ + 0.1f, cornerStyle);
-      buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
-      RenderHelper.addBoxesToBuffer(tabBorder, buf, 0.92f, 0.92f, 0.90f, 1.0f, 0, 0, 0);
+      buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
+      RenderHelper.addBoxesToBufferLit(tabBorder, buf, 0.92f, 0.92f, 0.90f, 1.0f, 0, 0, 0,
+          worldSkyLight, worldBlockLight);
       tess.draw();
     }
 
@@ -301,16 +308,13 @@ public class TileEntityDynamicGuideSignRenderer
     List<RenderHelper.Box> tabBg = new ArrayList<>();
     addRectBoxes(tabBg, tabX, tabBottom, tabX + tabWidth, tabTop, tabFaceZ, tabFrontZ,
         cornerStyle);
-    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
-    RenderHelper.addBoxesToBuffer(tabBg, buf,
-        tabColor.getRed(), tabColor.getGreen(), tabColor.getBlue(), 1.0f, 0, 0, 0);
+    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
+    RenderHelper.addBoxesToBufferLit(tabBg, buf,
+        tabColor.getRed(), tabColor.getGreen(), tabColor.getBlue(), 1.0f, 0, 0, 0,
+        worldSkyLight, worldBlockLight);
     tess.draw();
 
-    GlStateManager.enableTexture2D();
-    float prevBX = OpenGlHelper.lastBrightnessX;
-    float prevBY = OpenGlHelper.lastBrightnessY;
-    OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, lightmapX, lightmapY);
-
+    // FontRenderer rebinds its own texture; lightmap is no longer global state.
     GlStateManager.pushMatrix();
     float textCenterX = tabX + tabWidth / 2.0f;
     float textCenterY = tabBottom + tabHeight / 2.0f;
@@ -325,9 +329,8 @@ public class TileEntityDynamicGuideSignRenderer
     GlStateManager.depthMask(true);
     GlStateManager.popMatrix();
 
-    OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, prevBX, prevBY);
-    GlStateManager.disableTexture2D();
-    GL11.glDisable(GL11.GL_TEXTURE_2D);
+    // Restore the white-pixel binding for subsequent untextured geometry passes.
+    Minecraft.getMinecraft().getTextureManager().bindTexture(WHITE_TEXTURE);
   }
 
   private void renderRow(GuideSignRow row, float startX, float topY,
@@ -335,10 +338,7 @@ public class TileEntityDynamicGuideSignRenderer
     FontRenderer fr = Minecraft.getMinecraft().fontRenderer;
     float curX = startX;
 
-    float prevBX = OpenGlHelper.lastBrightnessX;
-    float prevBY = OpenGlHelper.lastBrightnessY;
-    OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, lightmapX, lightmapY);
-
+    // Lightmap is now baked per-vertex; sub-element renderers use worldSkyLight / worldBlockLight.
     for (GuideSignElement elem : row.getElements()) {
       switch (elem.getType()) {
         case GuideSignElement.TYPE_TEXT:
@@ -360,8 +360,6 @@ public class TileEntityDynamicGuideSignRenderer
           break;
       }
     }
-
-    OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, prevBX, prevBY);
   }
 
   private void renderTextElement(FontRenderer fr, GuideSignElement elem,
@@ -369,7 +367,6 @@ public class TileEntityDynamicGuideSignRenderer
     String text = elem.getText();
     if (text == null || text.isEmpty()) return;
 
-    GlStateManager.enableTexture2D();
     GlStateManager.pushMatrix();
 
     float scale = TEXT_BASE_SCALE * elem.getTextScale();
@@ -387,8 +384,9 @@ public class TileEntityDynamicGuideSignRenderer
 
     GlStateManager.depthMask(true);
     GlStateManager.popMatrix();
-    GlStateManager.disableTexture2D();
-    GL11.glDisable(GL11.GL_TEXTURE_2D);
+
+    // Restore white-pixel binding for subsequent untextured geometry passes.
+    Minecraft.getMinecraft().getTextureManager().bindTexture(WHITE_TEXTURE);
   }
 
   private void renderShieldElement(FontRenderer fr, GuideSignElement elem,
@@ -400,12 +398,11 @@ public class TileEntityDynamicGuideSignRenderer
     float shieldCenterY = topY - ROW_HEIGHT / 2.0f;
     float halfSize = SHIELD_SIZE / 2.0f;
 
-    GlStateManager.enableTexture2D();
     Minecraft.getMinecraft().getTextureManager().bindTexture(GuideSignAtlas.ATLAS_TEXTURE);
 
     Tessellator tess = Tessellator.getInstance();
     BufferBuilder buf = tess.getBuffer();
-    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
 
     float qLeft = shieldCenterX - halfSize;
     float qRight = shieldCenterX + halfSize;
@@ -413,10 +410,10 @@ public class TileEntityDynamicGuideSignRenderer
     float qBottom = shieldCenterY - halfSize;
     float qZ = faceZ - 0.3f;
 
-    buf.pos(qRight, qTop, qZ).tex(uv[0], uv[1]).endVertex();
-    buf.pos(qLeft, qTop, qZ).tex(uv[2], uv[1]).endVertex();
-    buf.pos(qLeft, qBottom, qZ).tex(uv[2], uv[3]).endVertex();
-    buf.pos(qRight, qBottom, qZ).tex(uv[0], uv[3]).endVertex();
+    atlasVertex(buf, qRight, qTop, qZ, uv[0], uv[1]);
+    atlasVertex(buf, qLeft, qTop, qZ, uv[2], uv[1]);
+    atlasVertex(buf, qLeft, qBottom, qZ, uv[2], uv[3]);
+    atlasVertex(buf, qRight, qBottom, qZ, uv[0], uv[3]);
 
     tess.draw();
 
@@ -458,8 +455,8 @@ public class TileEntityDynamicGuideSignRenderer
       GlStateManager.popMatrix();
     }
 
-    GlStateManager.disableTexture2D();
-    GL11.glDisable(GL11.GL_TEXTURE_2D);
+    // Restore white-pixel binding for subsequent untextured geometry passes.
+    Minecraft.getMinecraft().getTextureManager().bindTexture(WHITE_TEXTURE);
   }
 
   private void renderArrowElement(GuideSignElement elem, float x, float topY, float faceZ) {
@@ -470,22 +467,26 @@ public class TileEntityDynamicGuideSignRenderer
     float centerY = topY - ROW_HEIGHT / 2.0f;
     float halfSize = ARROW_SIZE / 2.0f;
 
-    GlStateManager.enableTexture2D();
     Minecraft.getMinecraft().getTextureManager().bindTexture(GuideSignAtlas.ATLAS_TEXTURE);
 
     Tessellator tess = Tessellator.getInstance();
     BufferBuilder buf = tess.getBuffer();
-    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
 
     float qZ = faceZ - 0.3f;
-    buf.pos(centerX + halfSize, centerY + halfSize, qZ).tex(uv[0], uv[1]).endVertex();
-    buf.pos(centerX - halfSize, centerY + halfSize, qZ).tex(uv[2], uv[1]).endVertex();
-    buf.pos(centerX - halfSize, centerY - halfSize, qZ).tex(uv[2], uv[3]).endVertex();
-    buf.pos(centerX + halfSize, centerY - halfSize, qZ).tex(uv[0], uv[3]).endVertex();
+    atlasVertex(buf, centerX + halfSize, centerY + halfSize, qZ, uv[0], uv[1]);
+    atlasVertex(buf, centerX - halfSize, centerY + halfSize, qZ, uv[2], uv[1]);
+    atlasVertex(buf, centerX - halfSize, centerY - halfSize, qZ, uv[2], uv[3]);
+    atlasVertex(buf, centerX + halfSize, centerY - halfSize, qZ, uv[0], uv[3]);
 
     tess.draw();
-    GlStateManager.disableTexture2D();
-    GL11.glDisable(GL11.GL_TEXTURE_2D);
+    // Restore white-pixel binding for subsequent untextured geometry passes.
+    Minecraft.getMinecraft().getTextureManager().bindTexture(WHITE_TEXTURE);
+  }
+
+  private void atlasVertex(BufferBuilder buf, float x, float y, float z, float u, float v) {
+    buf.pos(x, y, z).color(1.0f, 1.0f, 1.0f, 1.0f).tex(u, v)
+        .lightmap(worldSkyLight, worldBlockLight).endVertex();
   }
 
   private void renderPanelDivider(float signLeft, float y, float signWidth,
@@ -497,8 +498,9 @@ public class TileEntityDynamicGuideSignRenderer
     divider.add(new RenderHelper.Box(
         new float[]{signLeft + inset, y - 0.3f, faceZ - 0.15f},
         new float[]{signLeft + signWidth - inset, y + 0.3f, faceZ - 0.05f}));
-    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
-    RenderHelper.addBoxesToBuffer(divider, buf, 0.92f, 0.92f, 0.90f, 1.0f, 0, 0, 0);
+    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
+    RenderHelper.addBoxesToBufferLit(divider, buf, 0.92f, 0.92f, 0.90f, 1.0f, 0, 0, 0,
+        worldSkyLight, worldBlockLight);
     tess.draw();
   }
 
@@ -547,8 +549,9 @@ public class TileEntityDynamicGuideSignRenderer
     }
 
     if (!posts.isEmpty()) {
-      buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
-      RenderHelper.addBoxesToBuffer(posts, buf, 0.45f, 0.45f, 0.47f, 1.0f, 0, 0, 0);
+      buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
+      RenderHelper.addBoxesToBufferLit(posts, buf, 0.45f, 0.45f, 0.47f, 1.0f, 0, 0, 0,
+          worldSkyLight, worldBlockLight);
       tess.draw();
     }
   }

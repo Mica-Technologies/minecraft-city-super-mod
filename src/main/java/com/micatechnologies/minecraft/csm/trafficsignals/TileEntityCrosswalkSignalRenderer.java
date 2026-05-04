@@ -2,13 +2,14 @@ package com.micatechnologies.minecraft.csm.trafficsignals;
 
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignal;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
 /**
@@ -23,6 +24,16 @@ public class TileEntityCrosswalkSignalRenderer extends
     TileEntitySpecialRenderer<TileEntityCrosswalkSignal> {
 
   private static final float Z_EPSILON = 0.005f;
+
+  // 1x1 white texture bound in place of disableTexture2D for untextured-colored geometry —
+  // shaders ignore disableTexture2D and sample whatever was last bound, so we explicitly bind
+  // a known-white pixel and feed UV(0.5, 0.5) through the BLOCK vertex format.
+  private static final ResourceLocation WHITE_TEXTURE =
+      new ResourceLocation("csm", "textures/blocks/white1px.png");
+
+  // Fullbright lightmap (light level 15 << 4 = 240). Used for the lit countdown digits.
+  private static final int LIGHTMAP_FULLBRIGHT_SKY = 240;
+  private static final int LIGHTMAP_FULLBRIGHT_BLOCK = 240;
 
   // 7-segment display: segment rectangles in a 5-wide × 9-tall grid.
   // Gaps between horizontal and vertical segments mimic real LED displays.
@@ -102,16 +113,16 @@ public class TileEntityCrosswalkSignalRenderer extends
     // Position at the display face surface with small epsilon to prevent z-fighting
     GlStateManager.translate(0, 0, zOffset + Z_EPSILON);
 
-    // Fullbright lightmap
-    int prevBX = (int) OpenGlHelper.lastBrightnessX;
-    int prevBY = (int) OpenGlHelper.lastBrightnessY;
-    OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240f, 240f);
-
     GlStateManager.disableLighting();
     GlStateManager.depthMask(false);
     GlStateManager.enableBlend();
     GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-    GlStateManager.disableTexture2D();
+    // Bind a 1x1 white pixel texture instead of disableTexture2D — OptiFine shaders ignore
+    // disableTexture2D and sample whatever was last bound, so we explicitly bind a known
+    // texture and feed UV(0.5, 0.5) through the BLOCK vertex format below. The fullbright
+    // lightmap is now baked per-vertex (instead of using OpenGlHelper.setLightmapTextureCoords
+    // global state, which shaders ignore).
+    Minecraft.getMinecraft().getTextureManager().bindTexture(WHITE_TEXTURE);
 
     // Cap at 99 for two-digit display
     int displayValue = Math.min(countdown, 99);
@@ -125,7 +136,7 @@ public class TileEntityCrosswalkSignalRenderer extends
 
     Tessellator tess = Tessellator.getInstance();
     BufferBuilder buf = tess.getBuffer();
-    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
+    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
 
     for (int i = 0; i < numDigits; i++) {
       int digit = text.charAt(i) - '0';
@@ -135,12 +146,9 @@ public class TileEntityCrosswalkSignalRenderer extends
 
     tess.draw();
 
-    GlStateManager.enableTexture2D();
     GlStateManager.enableLighting();
     GlStateManager.depthMask(true);
     GlStateManager.disableBlend();
-
-    OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, prevBX, prevBY);
 
     GlStateManager.popMatrix();
   }
@@ -169,11 +177,20 @@ public class TileEntityCrosswalkSignalRenderer extends
       float y1 = dy + (1f - seg[3] / 9f) * h; // grid bottom → local bottom
       float y2 = dy + (1f - seg[1] / 9f) * h; // grid top → local top
 
-      // Quad vertices (CCW winding, facing +Z toward viewer)
-      buf.pos(x1, y1, 0).color(COLOR_R, COLOR_G, COLOR_B, COLOR_A).endVertex();
-      buf.pos(x2, y1, 0).color(COLOR_R, COLOR_G, COLOR_B, COLOR_A).endVertex();
-      buf.pos(x2, y2, 0).color(COLOR_R, COLOR_G, COLOR_B, COLOR_A).endVertex();
-      buf.pos(x1, y2, 0).color(COLOR_R, COLOR_G, COLOR_B, COLOR_A).endVertex();
+      // Quad vertices (CCW winding, facing +Z toward viewer). BLOCK format = POSITION + COLOR
+      // + UV + LMAP; UV(0.5, 0.5) probes the bound 1x1 white texture, fullbright lightmap.
+      buf.pos(x1, y1, 0).color(COLOR_R, COLOR_G, COLOR_B, COLOR_A)
+          .tex(0.5f, 0.5f).lightmap(LIGHTMAP_FULLBRIGHT_SKY, LIGHTMAP_FULLBRIGHT_BLOCK)
+          .endVertex();
+      buf.pos(x2, y1, 0).color(COLOR_R, COLOR_G, COLOR_B, COLOR_A)
+          .tex(0.5f, 0.5f).lightmap(LIGHTMAP_FULLBRIGHT_SKY, LIGHTMAP_FULLBRIGHT_BLOCK)
+          .endVertex();
+      buf.pos(x2, y2, 0).color(COLOR_R, COLOR_G, COLOR_B, COLOR_A)
+          .tex(0.5f, 0.5f).lightmap(LIGHTMAP_FULLBRIGHT_SKY, LIGHTMAP_FULLBRIGHT_BLOCK)
+          .endVertex();
+      buf.pos(x1, y2, 0).color(COLOR_R, COLOR_G, COLOR_B, COLOR_A)
+          .tex(0.5f, 0.5f).lightmap(LIGHTMAP_FULLBRIGHT_SKY, LIGHTMAP_FULLBRIGHT_BLOCK)
+          .endVertex();
     }
   }
 }

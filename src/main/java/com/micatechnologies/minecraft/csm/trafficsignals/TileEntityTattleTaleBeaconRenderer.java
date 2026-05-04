@@ -4,13 +4,14 @@ import com.micatechnologies.minecraft.csm.CsmConfig;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEW;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignal;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
@@ -33,6 +34,11 @@ public class TileEntityTattleTaleBeaconRenderer
   private static final float HALO_R = 0.2f;
   private static final float HALO_G = 0.4f;
   private static final float HALO_B = 1.0f;
+
+  private static final ResourceLocation WHITE_TEXTURE =
+      new ResourceLocation("csm", "textures/blocks/white1px.png");
+  private static final int LIGHTMAP_FULLBRIGHT_SKY = 240;
+  private static final int LIGHTMAP_FULLBRIGHT_BLOCK = 240;
 
   @Override
   public void render(TileEntityTattleTaleBeacon te, double x, double y, double z,
@@ -57,15 +63,14 @@ public class TileEntityTattleTaleBeaconRenderer
     float maxY = LENS_TO[1] / 16f - 0.5f;
     float maxZ = LENS_TO[2] / 16f - 0.5f;
 
-    int prevBrX = (int) OpenGlHelper.lastBrightnessX;
-    int prevBrY = (int) OpenGlHelper.lastBrightnessY;
-    OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240f, 240f);
-
     GlStateManager.pushMatrix();
     GlStateManager.translate((float) x + 0.5f, (float) y + 0.5f, (float) z + 0.5f);
     applyFacingRotation(facing);
 
-    GlStateManager.disableTexture2D();
+    // Bind a 1x1 white pixel texture instead of disableTexture2D — OptiFine shaders ignore
+    // disableTexture2D and sample whatever was last bound. The fullbright lightmap is now
+    // baked per-vertex through the BLOCK vertex format.
+    Minecraft.getMinecraft().getTextureManager().bindTexture(WHITE_TEXTURE);
     GlStateManager.disableCull();
     GlStateManager.enableBlend();
     GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA,
@@ -77,69 +82,69 @@ public class TileEntityTattleTaleBeaconRenderer
     BufferBuilder buf = tessellator.getBuffer();
 
     float off = 0.01f;
-    GL11.glColor4f(CORE_R, CORE_G, CORE_B, 0.6f);
     drawBox(buf, tessellator, minX - off, minY - off, minZ - off,
-        maxX + off, maxY + off, maxZ + off);
+        maxX + off, maxY + off, maxZ + off, CORE_R, CORE_G, CORE_B, 0.6f);
 
     // Inner halo: blue bloom close to the lens
     float padX = (maxX - minX) * 0.6f;
     float padY = (maxY - minY) * 0.6f;
     float padZ = (maxZ - minZ) * 0.6f;
-    GL11.glColor4f(HALO_R, HALO_G, HALO_B, 0.35f);
     drawBox(buf, tessellator, minX - padX, minY - padY, minZ - padZ,
-        maxX + padX, maxY + padY, maxZ + padZ);
+        maxX + padX, maxY + padY, maxZ + padZ, HALO_R, HALO_G, HALO_B, 0.35f);
 
     // Outer halo: wider subtle glow
-    GL11.glColor4f(HALO_R, HALO_G, HALO_B, 0.12f);
     drawBox(buf, tessellator, minX - padX * 2f, minY - padY * 2f, minZ - padZ * 2f,
-        maxX + padX * 2f, maxY + padY * 2f, maxZ + padZ * 2f);
+        maxX + padX * 2f, maxY + padY * 2f, maxZ + padZ * 2f,
+        HALO_R, HALO_G, HALO_B, 0.12f);
 
-    GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-    GlStateManager.resetColor();
     GlStateManager.depthMask(true);
     GlStateManager.enableLighting();
     GlStateManager.enableCull();
     GlStateManager.disableBlend();
-    GlStateManager.enableTexture2D();
     GlStateManager.popMatrix();
-
-    OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, prevBrX, prevBrY);
   }
 
   private static void drawBox(BufferBuilder buf, Tessellator tess,
-      float x1, float y1, float z1, float x2, float y2, float z2) {
-    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
+      float x1, float y1, float z1, float x2, float y2, float z2,
+      float r, float g, float b, float a) {
+    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
     // -Z face
-    buf.pos(x1, y1, z1).endVertex();
-    buf.pos(x2, y1, z1).endVertex();
-    buf.pos(x2, y2, z1).endVertex();
-    buf.pos(x1, y2, z1).endVertex();
+    emit(buf, x1, y1, z1, r, g, b, a);
+    emit(buf, x2, y1, z1, r, g, b, a);
+    emit(buf, x2, y2, z1, r, g, b, a);
+    emit(buf, x1, y2, z1, r, g, b, a);
     // +Z face
-    buf.pos(x2, y1, z2).endVertex();
-    buf.pos(x1, y1, z2).endVertex();
-    buf.pos(x1, y2, z2).endVertex();
-    buf.pos(x2, y2, z2).endVertex();
+    emit(buf, x2, y1, z2, r, g, b, a);
+    emit(buf, x1, y1, z2, r, g, b, a);
+    emit(buf, x1, y2, z2, r, g, b, a);
+    emit(buf, x2, y2, z2, r, g, b, a);
     // -X face
-    buf.pos(x1, y1, z2).endVertex();
-    buf.pos(x1, y1, z1).endVertex();
-    buf.pos(x1, y2, z1).endVertex();
-    buf.pos(x1, y2, z2).endVertex();
+    emit(buf, x1, y1, z2, r, g, b, a);
+    emit(buf, x1, y1, z1, r, g, b, a);
+    emit(buf, x1, y2, z1, r, g, b, a);
+    emit(buf, x1, y2, z2, r, g, b, a);
     // +X face
-    buf.pos(x2, y1, z1).endVertex();
-    buf.pos(x2, y1, z2).endVertex();
-    buf.pos(x2, y2, z2).endVertex();
-    buf.pos(x2, y2, z1).endVertex();
+    emit(buf, x2, y1, z1, r, g, b, a);
+    emit(buf, x2, y1, z2, r, g, b, a);
+    emit(buf, x2, y2, z2, r, g, b, a);
+    emit(buf, x2, y2, z1, r, g, b, a);
     // -Y face
-    buf.pos(x1, y1, z2).endVertex();
-    buf.pos(x2, y1, z2).endVertex();
-    buf.pos(x2, y1, z1).endVertex();
-    buf.pos(x1, y1, z1).endVertex();
+    emit(buf, x1, y1, z2, r, g, b, a);
+    emit(buf, x2, y1, z2, r, g, b, a);
+    emit(buf, x2, y1, z1, r, g, b, a);
+    emit(buf, x1, y1, z1, r, g, b, a);
     // +Y face
-    buf.pos(x1, y2, z1).endVertex();
-    buf.pos(x2, y2, z1).endVertex();
-    buf.pos(x2, y2, z2).endVertex();
-    buf.pos(x1, y2, z2).endVertex();
+    emit(buf, x1, y2, z1, r, g, b, a);
+    emit(buf, x2, y2, z1, r, g, b, a);
+    emit(buf, x2, y2, z2, r, g, b, a);
+    emit(buf, x1, y2, z2, r, g, b, a);
     tess.draw();
+  }
+
+  private static void emit(BufferBuilder buf, float x, float y, float z,
+      float r, float g, float b, float a) {
+    buf.pos(x, y, z).color(r, g, b, a).tex(0.5f, 0.5f)
+        .lightmap(LIGHTMAP_FULLBRIGHT_SKY, LIGHTMAP_FULLBRIGHT_BLOCK).endVertex();
   }
 
   private static void applyFacingRotation(EnumFacing facing) {

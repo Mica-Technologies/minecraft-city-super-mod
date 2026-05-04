@@ -6,13 +6,14 @@ import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.block.BlockHorizontal;
 import com.micatechnologies.minecraft.csm.codeutils.CsmFontRenderer;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
 public class TileEntityOverheadSpeedLimitRenderer
@@ -50,6 +51,11 @@ public class TileEntityOverheadSpeedLimitRenderer
   private static final float[] COL_SCREEN_WHITE = {0.95f, 0.95f, 0.95f, 1.0f};
   private static final float[] COL_FRAME = {0.45f, 0.45f, 0.47f, 1.0f};
   private static final float[] COL_BORDER = {0.05f, 0.05f, 0.05f, 1.0f};
+
+  private static final ResourceLocation WHITE_TEXTURE =
+      new ResourceLocation("csm", "textures/blocks/white1px.png");
+  private static final int LIGHTMAP_FULLBRIGHT_SKY = 240;
+  private static final int LIGHTMAP_FULLBRIGHT_BLOCK = 240;
 
   @Override
   public void render(TileEntityOverheadSpeedLimit te, double x, double y, double z,
@@ -91,29 +97,25 @@ public class TileEntityOverheadSpeedLimitRenderer
     GlStateManager.disableCull();
     GlStateManager.enableBlend();
     GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-    GlStateManager.disableTexture2D();
+    // Bind 1x1 white texture instead of disableTexture2D — shaders ignore disableTexture2D.
+    Minecraft.getMinecraft().getTextureManager().bindTexture(WHITE_TEXTURE);
 
     boolean fullScreen = te.isFullScreen();
-    float prevBX = OpenGlHelper.lastBrightnessX;
-    float prevBY = OpenGlHelper.lastBrightnessY;
 
-    if (fullScreen) {
-      OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240f, 240f);
-    }
+    int combinedLight = te.getWorld().getCombinedLight(te.getPos(), 0);
+    int worldSkyLight = (combinedLight >> 16) & 0xFFFF;
+    int worldBlockLight = combinedLight & 0xFFFF;
+    // Full-screen mode lights the entire face fullbright; otherwise the housing/border
+    // takes world ambient light and only the inset screen panel is fullbright.
+    int faceSkyLight = fullScreen ? LIGHTMAP_FULLBRIGHT_SKY : worldSkyLight;
+    int faceBlockLight = fullScreen ? LIGHTMAP_FULLBRIGHT_BLOCK : worldBlockLight;
 
-    renderHousing(te);
-    renderSignFace(fullScreen);
-
-    GlStateManager.enableTexture2D();
+    renderHousing(te, worldSkyLight, worldBlockLight);
+    renderSignFace(fullScreen, faceSkyLight, faceBlockLight);
 
     renderSpeedText(te);
     renderLabelText();
 
-    if (fullScreen) {
-      OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, prevBX, prevBY);
-    }
-
-    GlStateManager.enableTexture2D();
     GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
     GlStateManager.enableLighting();
     GlStateManager.enableCull();
@@ -122,7 +124,7 @@ public class TileEntityOverheadSpeedLimitRenderer
     GlStateManager.popMatrix();
   }
 
-  private void renderHousing(TileEntityOverheadSpeedLimit te) {
+  private void renderHousing(TileEntityOverheadSpeedLimit te, int skyLight, int blockLight) {
     TrafficSignalBodyColor color = te.getHousingColor();
     Tessellator tess = Tessellator.getInstance();
     BufferBuilder buf = tess.getBuffer();
@@ -135,10 +137,10 @@ public class TileEntityOverheadSpeedLimitRenderer
         new float[]{CX + SIGN_WIDTH / 2 + SIGN_FRAME, SIGN_TOP + SIGN_FRAME,
             BACK_Z + SIGN_FRAME}));
 
-    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
-    RenderHelper.addBoxesToBuffer(border, buf,
+    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
+    RenderHelper.addBoxesToBufferLit(border, buf,
         color.getRed() * 0.7f, color.getGreen() * 0.7f, color.getBlue() * 0.7f, 1.0f,
-        0, 0, 0);
+        0, 0, 0, skyLight, blockLight);
     tess.draw();
 
     // Frame
@@ -147,10 +149,10 @@ public class TileEntityOverheadSpeedLimitRenderer
         new float[]{CX - SIGN_WIDTH / 2 - 0.5f, SIGN_BOTTOM - 0.5f, FACE_Z - 0.5f},
         new float[]{CX + SIGN_WIDTH / 2 + 0.5f, SIGN_TOP + 0.5f, BACK_Z + 0.5f}));
 
-    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
-    RenderHelper.addBoxesToBuffer(frame, buf,
+    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
+    RenderHelper.addBoxesToBufferLit(frame, buf,
         color.getRed() * 0.85f, color.getGreen() * 0.85f, color.getBlue() * 0.85f, 1.0f,
-        0, 0, 0);
+        0, 0, 0, skyLight, blockLight);
     tess.draw();
 
     // Housing body
@@ -159,13 +161,14 @@ public class TileEntityOverheadSpeedLimitRenderer
         new float[]{CX - SIGN_WIDTH / 2, SIGN_BOTTOM, FACE_Z},
         new float[]{CX + SIGN_WIDTH / 2, SIGN_TOP, BACK_Z}));
 
-    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
-    RenderHelper.addBoxesToBuffer(housing, buf,
-        color.getRed(), color.getGreen(), color.getBlue(), 1.0f, 0, 0, 0);
+    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
+    RenderHelper.addBoxesToBufferLit(housing, buf,
+        color.getRed(), color.getGreen(), color.getBlue(), 1.0f, 0, 0, 0,
+        skyLight, blockLight);
     tess.draw();
   }
 
-  private void renderSignFace(boolean fullScreen) {
+  private void renderSignFace(boolean fullScreen, int skyLight, int blockLight) {
     Tessellator tess = Tessellator.getInstance();
     BufferBuilder buf = tess.getBuffer();
 
@@ -177,16 +180,13 @@ public class TileEntityOverheadSpeedLimitRenderer
         new float[]{CX - SIGN_WIDTH / 2 + 1.0f, SIGN_BOTTOM + 1.0f, faceFront - 0.3f},
         new float[]{CX + SIGN_WIDTH / 2 - 1.0f, SIGN_TOP - 1.0f, faceFront}));
 
-    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
-    RenderHelper.addBoxesToBuffer(bgFace, buf,
-        bgColor[0], bgColor[1], bgColor[2], bgColor[3], 0, 0, 0);
+    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
+    RenderHelper.addBoxesToBufferLit(bgFace, buf,
+        bgColor[0], bgColor[1], bgColor[2], bgColor[3], 0, 0, 0,
+        skyLight, blockLight);
     tess.draw();
 
     if (!fullScreen) {
-      float prevBX = OpenGlHelper.lastBrightnessX;
-      float prevBY = OpenGlHelper.lastBrightnessY;
-      OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240f, 240f);
-
       float screenInset = 4.0f;
       List<RenderHelper.Box> screenFace = new ArrayList<>();
       screenFace.add(new RenderHelper.Box(
@@ -195,13 +195,11 @@ public class TileEntityOverheadSpeedLimitRenderer
           new float[]{CX + SIGN_WIDTH / 2 - screenInset, SIGN_DIVIDER_Y - 1.0f,
               faceFront - 0.1f}));
 
-      buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
-      RenderHelper.addBoxesToBuffer(screenFace, buf,
+      buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
+      RenderHelper.addBoxesToBufferLit(screenFace, buf,
           COL_SCREEN_WHITE[0], COL_SCREEN_WHITE[1], COL_SCREEN_WHITE[2], COL_SCREEN_WHITE[3],
-          0, 0, 0);
+          0, 0, 0, LIGHTMAP_FULLBRIGHT_SKY, LIGHTMAP_FULLBRIGHT_BLOCK);
       tess.draw();
-
-      OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, prevBX, prevBY);
     }
   }
 
@@ -217,7 +215,6 @@ public class TileEntityOverheadSpeedLimitRenderer
     GlStateManager.scale(LABEL_TEXT_SCALE, -LABEL_TEXT_SCALE, LABEL_TEXT_SCALE);
 
     GlStateManager.depthMask(false);
-    GlStateManager.enableTexture2D();
 
     String line1 = "SPEED";
     String line2 = "LIMIT";
@@ -227,7 +224,6 @@ public class TileEntityOverheadSpeedLimitRenderer
     fr.drawString(line1, -w1 / 2, -fr.FONT_HEIGHT - 1, 0x000000);
     fr.drawString(line2, -w2 / 2, 1, 0x000000);
 
-    GlStateManager.disableTexture2D();
     GlStateManager.depthMask(true);
 
     GlStateManager.popMatrix();
@@ -239,10 +235,6 @@ public class TileEntityOverheadSpeedLimitRenderer
 
     CsmFontRenderer fr = CsmFontRenderer.highwayGothic();
 
-    float prevBX = OpenGlHelper.lastBrightnessX;
-    float prevBY = OpenGlHelper.lastBrightnessY;
-    OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240f, 240f);
-
     GlStateManager.pushMatrix();
 
     float textZ = FACE_Z - SIGN_FRAME - 0.6f;
@@ -252,16 +244,12 @@ public class TileEntityOverheadSpeedLimitRenderer
     GlStateManager.scale(SPEED_TEXT_SCALE, -SPEED_TEXT_SCALE, SPEED_TEXT_SCALE);
 
     GlStateManager.depthMask(false);
-    GlStateManager.enableTexture2D();
 
     int textWidth = fr.getStringWidth(speedStr);
     fr.drawString(speedStr, -textWidth / 2, -fr.FONT_HEIGHT / 2, TEXT_COLOR_BLACK);
 
-    GlStateManager.disableTexture2D();
     GlStateManager.depthMask(true);
 
     GlStateManager.popMatrix();
-
-    OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, prevBX, prevBY);
   }
 }

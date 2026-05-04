@@ -10,14 +10,15 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nullable;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import org.lwjgl.opengl.GL11;
 
@@ -87,6 +88,9 @@ public class TileEntityTrafficLightMountKitRenderer
   // How many blocks to scan in each direction for signal heads (handles add-on signals)
   private static final int MAX_SCAN_DISTANCE = 3;
 
+  private static final ResourceLocation WHITE_TEXTURE =
+      new ResourceLocation("csm", "textures/blocks/white1px.png");
+
   @Override
   public void render(TileEntityTrafficLightMountKit te, double x, double y, double z,
       float partialTicks, int destroyStage, float alpha) {
@@ -101,12 +105,9 @@ public class TileEntityTrafficLightMountKitRenderer
     GlStateManager.enableBlend();
     GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 
-    int prevBrightnessX = (int) OpenGlHelper.lastBrightnessX;
-    int prevBrightnessY = (int) OpenGlHelper.lastBrightnessY;
     int combinedLight = te.getWorld().getCombinedLight(te.getPos(), 0);
-    int worldLightX = combinedLight % 65536;
-    int worldLightY = combinedLight / 65536;
-    OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, worldLightX, worldLightY);
+    int worldSkyLight = (combinedLight >> 16) & 0xFFFF;
+    int worldBlockLight = combinedLight & 0xFFFF;
 
     GL11.glPushMatrix();
     GL11.glTranslated(x, y, z);
@@ -117,13 +118,12 @@ public class TileEntityTrafficLightMountKitRenderer
     GL11.glRotatef(rotationAngle, 0, 1, 0);
     GL11.glTranslated(-8, -8, -8);
 
-    renderBracket(te, facing);
+    renderBracket(te, facing, worldSkyLight, worldBlockLight);
 
     GL11.glPopMatrix();
 
     GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
     GlStateManager.resetColor();
-    OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, prevBrightnessX, prevBrightnessY);
     GlStateManager.disableBlend();
     GlStateManager.enableCull();
     GlStateManager.enableLighting();
@@ -139,7 +139,8 @@ public class TileEntityTrafficLightMountKitRenderer
    *   <li>Mounting collar at the top/right end of the spine</li>
    * </ul>
    */
-  private void renderBracket(TileEntityTrafficLightMountKit te, EnumFacing facing) {
+  private void renderBracket(TileEntityTrafficLightMountKit te, EnumFacing facing,
+      int skyLight, int blockLight) {
     SignalInfo info = detectSignals(te, facing);
     MountKitColorScheme scheme = te.getColorScheme();
 
@@ -157,20 +158,19 @@ public class TileEntityTrafficLightMountKitRenderer
     Tessellator tessellator = Tessellator.getInstance();
     BufferBuilder buffer = tessellator.getBuffer();
 
-    GlStateManager.disableTexture2D();
-    buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
+    Minecraft.getMinecraft().getTextureManager().bindTexture(WHITE_TEXTURE);
+    buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
 
-    RenderHelper.addBoxesToBuffer(aluBoxes, buffer,
-        scheme.aluR, scheme.aluG, scheme.aluB, 1.0f, 0, 0, 0);
-    RenderHelper.addBoxesToBuffer(aluDarkBoxes, buffer,
-        scheme.aluDarkR, scheme.aluDarkG, scheme.aluDarkB, 1.0f, 0, 0, 0);
-    RenderHelper.addBoxesToBuffer(knuckleBoxes, buffer,
-        scheme.knuckleR, scheme.knuckleG, scheme.knuckleB, 1.0f, 0, 0, 0);
-    RenderHelper.addBoxesToBuffer(pivotBoxes, buffer,
-        scheme.pivotR, scheme.pivotG, scheme.pivotB, 1.0f, 0, 0, 0);
+    RenderHelper.addBoxesToBufferLit(aluBoxes, buffer,
+        scheme.aluR, scheme.aluG, scheme.aluB, 1.0f, 0, 0, 0, skyLight, blockLight);
+    RenderHelper.addBoxesToBufferLit(aluDarkBoxes, buffer,
+        scheme.aluDarkR, scheme.aluDarkG, scheme.aluDarkB, 1.0f, 0, 0, 0, skyLight, blockLight);
+    RenderHelper.addBoxesToBufferLit(knuckleBoxes, buffer,
+        scheme.knuckleR, scheme.knuckleG, scheme.knuckleB, 1.0f, 0, 0, 0, skyLight, blockLight);
+    RenderHelper.addBoxesToBufferLit(pivotBoxes, buffer,
+        scheme.pivotR, scheme.pivotG, scheme.pivotB, 1.0f, 0, 0, 0, skyLight, blockLight);
 
     tessellator.draw();
-    GlStateManager.enableTexture2D();
   }
 
   // ==================== Vertical bracket (for vertical signals) ====================

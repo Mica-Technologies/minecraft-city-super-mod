@@ -6,13 +6,14 @@ import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.block.BlockHorizontal;
 import com.micatechnologies.minecraft.csm.codeutils.CsmFontRenderer;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
 public class TileEntityOverheadMessageSignRenderer
@@ -45,6 +46,11 @@ public class TileEntityOverheadMessageSignRenderer
   private static final float[] COL_HOUSING = {0.18f, 0.18f, 0.18f, 1.0f};
   private static final float[] COL_SIGN_FACE = {0.06f, 0.06f, 0.06f, 1.0f};
   private static final float[] COL_FRAME = {0.45f, 0.45f, 0.47f, 1.0f};
+
+  private static final ResourceLocation WHITE_TEXTURE =
+      new ResourceLocation("csm", "textures/blocks/white1px.png");
+  private static final int LIGHTMAP_FULLBRIGHT_SKY = 240;
+  private static final int LIGHTMAP_FULLBRIGHT_BLOCK = 240;
 
   @Override
   public void render(TileEntityOverheadMessageSign te, double x, double y, double z,
@@ -86,16 +92,18 @@ public class TileEntityOverheadMessageSignRenderer
     GlStateManager.disableCull();
     GlStateManager.enableBlend();
     GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-    GlStateManager.disableTexture2D();
+    // Bind 1x1 white texture instead of disableTexture2D — shaders ignore disableTexture2D.
+    Minecraft.getMinecraft().getTextureManager().bindTexture(WHITE_TEXTURE);
 
-    renderHousing(te);
-    renderSignFace();
+    int combinedLight = te.getWorld().getCombinedLight(te.getPos(), 0);
+    int worldSkyLight = (combinedLight >> 16) & 0xFFFF;
+    int worldBlockLight = combinedLight & 0xFFFF;
 
-    GlStateManager.enableTexture2D();
+    renderHousing(te, worldSkyLight, worldBlockLight);
+    renderSignFace(worldSkyLight, worldBlockLight);
 
     renderText(te);
 
-    GlStateManager.enableTexture2D();
     GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
     GlStateManager.enableLighting();
     GlStateManager.enableCull();
@@ -104,7 +112,7 @@ public class TileEntityOverheadMessageSignRenderer
     GlStateManager.popMatrix();
   }
 
-  private void renderHousing(TileEntityOverheadMessageSign te) {
+  private void renderHousing(TileEntityOverheadMessageSign te, int skyLight, int blockLight) {
     TrafficSignalBodyColor color = te.getHousingColor();
     Tessellator tess = Tessellator.getInstance();
     BufferBuilder buf = tess.getBuffer();
@@ -117,10 +125,10 @@ public class TileEntityOverheadMessageSignRenderer
         new float[]{CX + SIGN_WIDTH / 2 + SIGN_FRAME, SIGN_TOP + SIGN_FRAME,
             BACK_Z + SIGN_FRAME}));
 
-    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
-    RenderHelper.addBoxesToBuffer(frame, buf,
+    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
+    RenderHelper.addBoxesToBufferLit(frame, buf,
         color.getRed() * 0.85f, color.getGreen() * 0.85f, color.getBlue() * 0.85f, 1.0f,
-        0, 0, 0);
+        0, 0, 0, skyLight, blockLight);
     tess.draw();
 
     // Main housing body
@@ -129,13 +137,14 @@ public class TileEntityOverheadMessageSignRenderer
         new float[]{CX - SIGN_WIDTH / 2, SIGN_BOTTOM, FACE_Z},
         new float[]{CX + SIGN_WIDTH / 2, SIGN_TOP, BACK_Z}));
 
-    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
-    RenderHelper.addBoxesToBuffer(housing, buf,
-        color.getRed(), color.getGreen(), color.getBlue(), 1.0f, 0, 0, 0);
+    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
+    RenderHelper.addBoxesToBufferLit(housing, buf,
+        color.getRed(), color.getGreen(), color.getBlue(), 1.0f, 0, 0, 0,
+        skyLight, blockLight);
     tess.draw();
   }
 
-  private void renderSignFace() {
+  private void renderSignFace(int skyLight, int blockLight) {
     Tessellator tess = Tessellator.getInstance();
     BufferBuilder buf = tess.getBuffer();
 
@@ -145,9 +154,10 @@ public class TileEntityOverheadMessageSignRenderer
         new float[]{CX - SIGN_WIDTH / 2 + 1.0f, SIGN_BOTTOM + 1.0f, faceFront - 0.3f},
         new float[]{CX + SIGN_WIDTH / 2 - 1.0f, SIGN_TOP - 1.0f, faceFront}));
 
-    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
-    RenderHelper.addBoxesToBuffer(face, buf,
-        COL_SIGN_FACE[0], COL_SIGN_FACE[1], COL_SIGN_FACE[2], COL_SIGN_FACE[3], 0, 0, 0);
+    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
+    RenderHelper.addBoxesToBufferLit(face, buf,
+        COL_SIGN_FACE[0], COL_SIGN_FACE[1], COL_SIGN_FACE[2], COL_SIGN_FACE[3], 0, 0, 0,
+        skyLight, blockLight);
     tess.draw();
   }
 
@@ -164,10 +174,6 @@ public class TileEntityOverheadMessageSignRenderer
 
     CsmFontRenderer fr = CsmFontRenderer.electronicSign();
 
-    float prevBX = OpenGlHelper.lastBrightnessX;
-    float prevBY = OpenGlHelper.lastBrightnessY;
-    OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240f, 240f);
-
     GlStateManager.pushMatrix();
 
     float textZ = FACE_Z - SIGN_FRAME - 0.5f;
@@ -176,7 +182,6 @@ public class TileEntityOverheadMessageSignRenderer
     GlStateManager.scale(TEXT_SCALE, -TEXT_SCALE, TEXT_SCALE);
 
     GlStateManager.depthMask(false);
-    GlStateManager.enableTexture2D();
 
     float lineSpacing = fr.FONT_HEIGHT + 2;
     float totalHeight = 3 * lineSpacing;
@@ -192,11 +197,8 @@ public class TileEntityOverheadMessageSignRenderer
       }
     }
 
-    GlStateManager.disableTexture2D();
     GlStateManager.depthMask(true);
 
     GlStateManager.popMatrix();
-
-    OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, prevBX, prevBY);
   }
 }
