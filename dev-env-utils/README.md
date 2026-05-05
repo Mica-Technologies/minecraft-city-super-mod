@@ -40,6 +40,7 @@ All tools are in `src/main/java/com/micatechnologies/minecraft/csm/tools/`.
 | [BatchRenameTool](docs/BatchRenameTool.md) | Batch rename files and their contents using configurable replacement rules | `Process Batch Rename` |
 | LangFileSortTool | Alphabetically sorts all `.lang` files | `Sort Lang File(s)` |
 | SignModTool | Updates traffic sign blockstate files with 8-directional rotation variants | — |
+| [DynmapRenderdataTool](docs/DynmapRenderdataTool.md) | Generates Dynmap renderdata files (`csm-models.txt`, `csm-texture.txt`) for the Dynmap web map plugin | `Generate Dynmap Renderdata` |
 
 ### Tool Framework
 
