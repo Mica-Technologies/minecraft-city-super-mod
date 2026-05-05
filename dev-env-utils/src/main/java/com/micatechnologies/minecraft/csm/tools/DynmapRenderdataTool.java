@@ -17,6 +17,7 @@ import com.micatechnologies.minecraft.csm.tools.dynmap.DynmapTypes.Transparency;
 import com.micatechnologies.minecraft.csm.tools.dynmap.ModelResolver;
 import com.micatechnologies.minecraft.csm.tools.dynmap.ModelResolver.ResolvedModel;
 import com.micatechnologies.minecraft.csm.tools.dynmap.PatchValidator;
+import com.micatechnologies.minecraft.csm.tools.dynmap.TesrGeometry;
 import com.micatechnologies.minecraft.csm.tools.dynmap.TextureResolver;
 import com.micatechnologies.minecraft.csm.tools.tool_framework.CsmToolUtility;
 
@@ -53,6 +54,7 @@ public class DynmapRenderdataTool {
         private final File devEnvironmentPath;
         private final TextureResolver textureResolver;
         private final ModelResolver modelResolver;
+        private final TesrGeometry tesrGeometry;
 
         // Output records.
         private final List<ModelListRecord> modelLines = new ArrayList<>();
@@ -71,14 +73,19 @@ public class DynmapRenderdataTool {
         private int blocksFallbackParentOnly;
         private int blocksFailed;
         private int missingTextureFiles;
+        private int blocksUsedTesrGeometry;
 
         Run(File devEnvironmentPath) {
             this.devEnvironmentPath = devEnvironmentPath;
             this.textureResolver = new TextureResolver(devEnvironmentPath);
             this.modelResolver = new ModelResolver(devEnvironmentPath);
+            this.tesrGeometry = new TesrGeometry(devEnvironmentPath);
         }
 
         void execute() throws Exception {
+            tesrGeometry.load();
+            System.out.println("Loaded " + tesrGeometry.parsedArrayCount()
+                    + " VertexData arrays for TESR geometry");
             Map<String, BlockMetadata> blocks = BlockDiscovery.discover(devEnvironmentPath);
             System.out.println("Discovered " + blocks.size() + " blockstates");
 
@@ -127,12 +134,23 @@ public class DynmapRenderdataTool {
             if (expanded.kind == Kind.VANILLA) blocksFallbackVanilla++;
             if (expanded.kind == Kind.OBJ) blocksFallbackObj++;
 
+            // TESR-rendered blocks: try the VertexData-derived silhouette first. If we get a
+            // recipe match, use that for every variant of this block (geometry doesn't change
+            // by colour/state on the map — the TESR draws the same body shape).
+            ResolvedModel tesrSilhouette = tesrGeometry.forBlock(bm.registryName, bm.javaClassName);
+            if (tesrSilhouette != null) blocksUsedTesrGeometry++;
+
             boolean any = false;
             for (ResolvedVariant rv : expanded.variants) {
-                if (rv.model == null) continue;
-                ResolvedModel resolved = modelResolver.resolve(rv.model, rv.textures);
-                if (resolved.boxes.isEmpty()) continue;
-                if (resolved.isFallback) blocksFallbackParentOnly++;
+                ResolvedModel resolved;
+                if (tesrSilhouette != null) {
+                    resolved = tesrSilhouette;
+                } else {
+                    if (rv.model == null) continue;
+                    resolved = modelResolver.resolve(rv.model, rv.textures);
+                    if (resolved.boxes.isEmpty()) continue;
+                    if (resolved.isFallback) blocksFallbackParentOnly++;
+                }
 
                 // Apply degenerate-face filter; replace any out-of-range box with AABB cube.
                 List<Box> sanitisedBoxes = new ArrayList<>();
@@ -223,6 +241,7 @@ public class DynmapRenderdataTool {
             System.out.println();
             System.out.println("Faces skipped (degenerate): " + facesSkippedDegenerate);
             System.out.println("Boxes replaced (AABB):      " + boxesReplacedAabb);
+            System.out.println("Blocks via TESR geometry:   " + blocksUsedTesrGeometry);
             System.out.println();
             System.out.println("Blockstate fallbacks:");
             System.out.println("  vanilla format:           " + blocksFallbackVanilla);
