@@ -69,26 +69,46 @@ The complete on-disk format (with parser line numbers in Dynmap's source) is doc
 That document is the only definitive reference — the format is otherwise undocumented outside
 Dynmap's source code.
 
-## Current Limitations (Checkpoint A scope)
+## TESR Geometry (Checkpoint B)
 
-These are tracked as Phases 6, 9, 10, 11 in the planning document and will be addressed in later
-checkpoints:
+Blocks rendered by a TileEntitySpecialRenderer have no geometry in their JSON model — the renderer
+draws everything in code from `*VertexData.java` constants. The tool parses these Java sources and
+synthesises the corresponding `modellist:` boxes, applying a default `metal_black` texture to all
+faces.
 
-1. **TESR-rendered blocks** (traffic signal heads, dynamic guide signs, fire alarm strobes,
-   beacons, message signs — ~17 distinct renderers covering several dozen registry names) render
-   only their static blockstate-defined geometry, which is typically a placeholder cube. Phase 9
-   will parse the `.ogldata` vertex files used by these TESRs to emit accurate geometry.
-2. **Multipart fences** (15 `*metal_fence` blocks) collapse to a single post cuboid. Phase 10
-   will emit the full post + connection-arm combinations (16 states per fence).
-3. **`.obj`-model blocks** (86 blockstates referencing `csm:<name>.obj`) fall back to an
-   AABB-cube placeholder. Phase 11 will write a basic Wavefront OBJ parser.
-4. **Variant rotation** (`x` / `y` from blockstate variants) is emitted as a trailing `R/x/y/0`
+Currently covered:
+
+| Recipe | Source | Block count |
+|---|---|---:|
+| Vehicle traffic signals (`controllable*signal*`) | `TrafficSignalVertexData.SIGNAL_BODY_VERTEX_DATA` + `SIGNAL_DOOR_VERTEX_DATA` + `NONE_VISOR_VERTEX_DATA` | ~85 |
+| Crosswalk signals (`controllable*crosswalk*`) | `CrosswalkSignalVertexData.SINGLE_BODY_VERTEX_DATA` + `SINGLE_VISOR_HOOD_VERTEX_DATA` | ~30 |
+| Blankout boxes (`blankout*`) | `BlankoutBoxVertexData.BODY_VERTEX_DATA` + `VISOR_HOOD_VERTEX_DATA` | ~3 |
+| Crosswalk button/tweeter accessories | (intentionally falls through to JSON model) | — |
+
+The remaining TESR-rendered block families (lane control signal, fire alarm strobe, emergency
+light, HVAC thermostat, message signs, speed limit signs, traffic beacons, dynamic guide sign,
+mount kit, tattle-tale beacon) draw their geometry inline in the renderer rather than from a
+shared `*VertexData` class. They continue to fall back to the static blockstate model
+(typically an AABB cube) until per-renderer adapters are written.
+
+## Current Limitations
+
+These are tracked as later checkpoints in the planning document:
+
+1. **Multipart fences** (15 `*metal_fence` blocks) collapse to a single post cuboid (Checkpoint C
+   will emit the full post + connection-arm combinations).
+2. **`.obj`-model blocks** (86 blockstates referencing `csm:<name>.obj`) fall back to an
+   AABB-cube placeholder (Checkpoint D will write a basic Wavefront OBJ parser).
+3. **Variant rotation** (`x` / `y` from blockstate variants) is emitted as a trailing `R/x/y/0`
    token but its rotation contribution is not currently counted toward the over-extent simulation
    for non-90-degree-multiple values.
-5. **Submodels** (e.g. sign poles attached via `submodel.extension`) are not emitted; only the
+4. **Submodels** (e.g. sign poles attached via `submodel.extension`) are not emitted; only the
    base model contributes to geometry.
-6. **Transparency** is hard-coded to `TRANSPARENT` for all blocks (matches the previous tool's
+5. **Transparency** is hard-coded to `TRANSPARENT` for all blocks (matches the previous tool's
    behaviour). Future enhancement: derive from each block's `getRenderBlockLayer()` Java method.
+6. **TESR placeholder texture** — all TESR-derived geometry uses `metal_black`. Refining this to
+   per-block textures (e.g. yellow signal bodies for school-zone signals) would require a
+   per-recipe texture override table.
 
 ## Statistics (current CSM state, May 2026)
 
@@ -97,10 +117,11 @@ checkpoints:
 | Blocks discovered | 1,440 |
 | Blocks processed | 1,339 |
 | Variants emitted | 34,788 |
-| Boxes emitted | 226,819 |
-| Textures registered | 805 |
+| Boxes emitted | 371,459 |
+| Textures registered | 801 |
 | Faces skipped (degenerate filter) | 2,728 |
 | Boxes replaced (AABB fallback) | 18,628 |
+| Blocks via TESR geometry | 124 |
 | Multipart fallbacks | 15 |
 | `.obj` fallbacks | 86 |
 | Missing texture files | 0 |
