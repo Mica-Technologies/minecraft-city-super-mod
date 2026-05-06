@@ -28,16 +28,21 @@ import java.util.regex.Pattern;
  *   <li>Scans {@link #VERTEXDATA_FILES} (relative to repo root) and parses each Java source for
  *       {@code public static final List<Box> NAME = Arrays.asList(...)} constants, returning the
  *       AABB cuboids encoded as {@code new Box(new float[]{x,y,z}, new float[]{x,y,z})}.</li>
- *   <li>Combines named arrays per the {@link #BLOCK_CLASS_RECIPES} table to produce a canonical
- *       silhouette for each TESR-rendered block class.</li>
+ *   <li>Combines named arrays — or applies hard-coded box silhouettes — per the {@link #RECIPES}
+ *       table to produce a canonical shape for each TESR-rendered block class.</li>
  * </ol>
  *
- * <p>Note: this only handles the TESRs that actually have a corresponding {@code *VertexData}
- * class — vehicle/pedestrian signals and the blankout box. Other TESR-rendered blocks (lane
- * control signal, fire alarm strobe, emergency light, HVAC thermostat, message signs, speed
- * limit signs, traffic beacons, dynamic guide sign, mount kit, tattle-tale beacon) have inline
- * geometry in the renderer itself; they continue to fall back to the static blockstate model
- * (typically an AABB cube) until per-renderer adapters are written.
+ * <p>Coverage:
+ * <ul>
+ *   <li>Vehicle / pedestrian signals + blankout boxes + lane control signal: vertex-data parsed.</li>
+ *   <li>Portable / overhead message signs, portable / overhead speed limit signs, dynamic guide
+ *       sign: hard-coded silhouettes (the rendered geometry extends well beyond Dynmap's [-1, 2]
+ *       window so we silhouette the in-range portion only).</li>
+ * </ul>
+ *
+ * <p>The remaining TESR-rendered blocks (fire alarm strobe, emergency light, HVAC thermostat,
+ * traffic beacons, mount kit, tattle-tale beacon) already have correct static JSON geometry —
+ * their TESRs only paint glow/text effects on top, which Dynmap can't represent regardless.
  */
 public final class TesrGeometry {
 
@@ -73,6 +78,31 @@ public final class TesrGeometry {
     private static final List<String> BLANKOUT_PARTS = Arrays.asList(
             "BODY_VERTEX_DATA", "VISOR_HOOD_VERTEX_DATA");
 
+    /**
+     * Hard-coded box silhouettes for blocks whose visible geometry is drawn inline in their
+     * TESR rather than from a {@code *VertexData} class. Each entry is six floats:
+     * {@code {fromX, fromY, fromZ, toX, toY, toZ}} in 0..16 model units.
+     */
+    private static final List<double[]> PORTABLE_SIGN_BOXES = Arrays.asList(
+            // Trailer base (matches the renderer's TRAILER_LENGTH=36 / WIDTH=19.5 envelope,
+            // clamped to within-block extents so the silhouette fits Dynmap's [-1, 2] window).
+            new double[]{0.5, 4.5, 0.5, 15.5, 10.5, 15.5},
+            // Lower portion of the mast — full mast extends beyond range, so cap at y=15.
+            new double[]{6.0, 10.5, 6.0, 10.0, 15.0, 10.0}
+    );
+
+    private static final List<double[]> OVERHEAD_SIGN_BOXES = Arrays.asList(
+            // Mounting bracket / housing visible at the block — full sign panel hangs above the
+            // playable block out of Dynmap's render range, so we silhouette only the in-block bits.
+            new double[]{1.0, 11.0, 12.0, 15.0, 15.0, 16.0}
+    );
+
+    private static final List<double[]> DYNAMIC_GUIDE_SIGN_BOXES = Arrays.asList(
+            // Thin vertical sign panel at the block face. The full multi-block panel can't fit
+            // Dynmap's range; this approximates the in-block portion as a flat 14×14×2 panel.
+            new double[]{1.0, 1.0, 13.0, 15.0, 15.0, 15.0}
+    );
+
     private static final List<RecipeEntry> RECIPES = Arrays.asList(
             // Crosswalk button/tweeter blocks — keep these as JSON models (small accessories);
             // skip them with an empty recipe (matched only to suppress fallthrough).
@@ -82,6 +112,20 @@ public final class TesrGeometry {
             RecipeEntry.byRegistryContains(Arrays.asList("crosswalk"), CROSSWALK_PARTS),
             // Blankout boxes.
             RecipeEntry.byRegistryContains(Arrays.asList("blankout"), BLANKOUT_PARTS),
+            // Lane control signal — same body+visor shape as a blankout box.
+            RecipeEntry.byRegistryContains(Arrays.asList("lane_control_signal"), BLANKOUT_PARTS),
+            // Portable message / speed limit signs (trailer-mounted): silhouette the trailer.
+            RecipeEntry.hardCoded("portable_message_or_speed_sign",
+                    n -> n != null && (n.equals("portable_message_sign") || n.equals("portable_speed_limit_sign")),
+                    PORTABLE_SIGN_BOXES),
+            // Overhead message / speed limit signs: silhouette the mounting bracket.
+            RecipeEntry.hardCoded("overhead_message_or_speed_sign",
+                    n -> n != null && (n.equals("overhead_message_sign") || n.equals("overhead_speed_limit_sign")),
+                    OVERHEAD_SIGN_BOXES),
+            // Dynamic guide sign: silhouette a flat panel at the block face.
+            RecipeEntry.hardCoded("dynamic_guide_sign",
+                    n -> "dynamic_guide_sign".equals(n),
+                    DYNAMIC_GUIDE_SIGN_BOXES),
             // Everything else "controllable*signal*" gets the standard signal body. Includes:
             //   controllablesignal, controllablehawksignal, controllabledoghousesignal*,
             //   controllablehorizontal*signal, controllablevertical*signal, *bikesignal,
@@ -100,12 +144,20 @@ public final class TesrGeometry {
             "public\\s+static\\s+final\\s+List<Box>\\s+(\\w+)\\s*=\\s*Arrays\\.asList\\s*\\(([\\s\\S]*?)\\)\\s*;",
             Pattern.MULTILINE);
 
-    /** Pattern matching one {@code new Box(new float[]{x, y, z}, new float[]{x, y, z})} entry. */
+    /**
+     * Pattern matching one {@code new Box(new float[]{x, y, z}, new float[]{x, y, z})} entry.
+     * Each captured component may be a literal float, a named float constant, or a simple
+     * {@code +}/{@code -} expression of either — resolved later via {@link #parseFloatConstants}.
+     */
     private static final Pattern BOX_ENTRY_PATTERN = Pattern.compile(
             "new\\s+Box\\s*\\(\\s*new\\s+float\\s*\\[\\s*\\]\\s*\\{\\s*"
-                    + "([-\\d.f]+)\\s*,\\s*([-\\d.f]+)\\s*,\\s*([-\\d.f]+)\\s*\\}\\s*,\\s*"
+                    + "([^,}]+?)\\s*,\\s*([^,}]+?)\\s*,\\s*([^,}]+?)\\s*\\}\\s*,\\s*"
                     + "new\\s+float\\s*\\[\\s*\\]\\s*\\{\\s*"
-                    + "([-\\d.f]+)\\s*,\\s*([-\\d.f]+)\\s*,\\s*([-\\d.f]+)\\s*\\}\\s*\\)");
+                    + "([^,}]+?)\\s*,\\s*([^,}]+?)\\s*,\\s*([^,}]+?)\\s*\\}\\s*\\)");
+
+    /** Pattern matching {@code static final float NAME = expr;} declarations. */
+    private static final Pattern FLOAT_CONST_PATTERN = Pattern.compile(
+            "(?:public|private|protected)?\\s*static\\s+final\\s+float\\s+(\\w+)\\s*=\\s*([^;]+);");
 
     private final File devEnvironmentPath;
     private final Map<String, List<double[]>> vertexDataArrays = new HashMap<>();
@@ -123,6 +175,7 @@ public final class TesrGeometry {
                 continue;
             }
             String content = Files.readString(f.toPath());
+            Map<String, Double> floatConsts = parseFloatConstants(content);
             Matcher m = LIST_BOX_PATTERN.matcher(content);
             while (m.find()) {
                 String name = m.group(1);
@@ -131,14 +184,84 @@ public final class TesrGeometry {
                 Matcher bm = BOX_ENTRY_PATTERN.matcher(body);
                 while (bm.find()) {
                     double[] raw = new double[]{
-                            parseFloatLit(bm.group(1)), parseFloatLit(bm.group(2)), parseFloatLit(bm.group(3)),
-                            parseFloatLit(bm.group(4)), parseFloatLit(bm.group(5)), parseFloatLit(bm.group(6))
+                            evalExpr(bm.group(1), floatConsts), evalExpr(bm.group(2), floatConsts),
+                            evalExpr(bm.group(3), floatConsts), evalExpr(bm.group(4), floatConsts),
+                            evalExpr(bm.group(5), floatConsts), evalExpr(bm.group(6), floatConsts)
                     };
                     entries.add(raw);
                 }
                 vertexDataArrays.put(name, entries);
             }
         }
+    }
+
+    /**
+     * Parses {@code static final float NAME = expr;} declarations in declaration order, evaluating
+     * each {@code expr} as a sum/difference of literals and previously-declared constants. This
+     * lets the box-array regex resolve named references like {@code BODY_X_MIN + BEZEL_INSET}.
+     */
+    private static Map<String, Double> parseFloatConstants(String content) {
+        Map<String, Double> consts = new LinkedHashMap<>();
+        Matcher m = FLOAT_CONST_PATTERN.matcher(content);
+        while (m.find()) {
+            String name = m.group(1);
+            String expr = m.group(2);
+            try {
+                consts.put(name, evalExpr(expr, consts));
+            } catch (RuntimeException ignored) {
+                // Skip declarations we can't evaluate (e.g. function calls). They can't contribute
+                // to a Box literal anyway.
+            }
+        }
+        return consts;
+    }
+
+    /**
+     * Evaluates a {@code +}/{@code -} expression of literal floats and named constants. Returns
+     * 0 for unrecognised tokens (e.g. references to constants we haven't parsed) — the caller
+     * should treat this as a soft failure.
+     */
+    private static double evalExpr(String expr, Map<String, Double> consts) {
+        String s = expr.replaceAll("\\s+", "");
+        if (s.isEmpty()) return 0;
+        double sum = 0;
+        char sign = '+';
+        StringBuilder term = new StringBuilder();
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            if ((c == '+' || c == '-')) {
+                if (term.length() == 0 && i == 0) {
+                    // Leading sign on the first term.
+                    sign = c;
+                    continue;
+                }
+                if (term.length() > 0) {
+                    sum = applySign(sum, sign, evalTerm(term.toString(), consts));
+                    sign = c;
+                    term.setLength(0);
+                    continue;
+                }
+            }
+            term.append(c);
+        }
+        if (term.length() > 0) {
+            sum = applySign(sum, sign, evalTerm(term.toString(), consts));
+        }
+        return sum;
+    }
+
+    private static double applySign(double sum, char sign, double v) {
+        return sign == '-' ? sum - v : sum + v;
+    }
+
+    private static double evalTerm(String t, Map<String, Double> consts) {
+        // Strip a trailing 'f' or 'F' suffix on float literals.
+        if (t.endsWith("f") || t.endsWith("F")) t = t.substring(0, t.length() - 1);
+        try {
+            return Double.parseDouble(t);
+        } catch (NumberFormatException ignored) {}
+        Double v = consts.get(t);
+        return v != null ? v : 0;
     }
 
     /**
@@ -149,29 +272,35 @@ public final class TesrGeometry {
      * @param blockClassSimpleName the block's Java class simple name; may be null
      */
     public ResolvedModel forBlock(String registryName, String blockClassSimpleName) {
-        List<String> recipe = null;
+        RecipeEntry recipe = null;
         for (RecipeEntry e : RECIPES) {
             if (e.matches(registryName, blockClassSimpleName)) {
-                recipe = e.vertexDataNames;
+                recipe = e;
                 break;
             }
         }
         if (recipe == null) return null;
 
-        // Union all referenced vertex-data arrays into a single Box list with the default texture.
-        List<Box> outBoxes = new ArrayList<>();
-        for (String name : recipe) {
-            List<double[]> entries = vertexDataArrays.get(name);
-            if (entries == null) continue;
-            for (double[] r : entries) {
-                double[] from = {r[0], r[1], r[2]};
-                double[] to   = {r[3], r[4], r[5]};
-                List<Face> faces = new ArrayList<>();
-                for (Side s : Side.values()) {
-                    faces.add(new Face(s, 0, 0, deriveUv(s, from, to)));
-                }
-                outBoxes.add(new Box(from, to, true, null, null, faces));
+        // Resolve box list: hard-coded boxes if provided, else the union of named vertex-data arrays.
+        List<double[]> boxData = new ArrayList<>();
+        if (recipe.hardCodedBoxes != null) {
+            boxData.addAll(recipe.hardCodedBoxes);
+        } else if (recipe.vertexDataNames != null) {
+            for (String name : recipe.vertexDataNames) {
+                List<double[]> entries = vertexDataArrays.get(name);
+                if (entries != null) boxData.addAll(entries);
             }
+        }
+
+        List<Box> outBoxes = new ArrayList<>();
+        for (double[] r : boxData) {
+            double[] from = {r[0], r[1], r[2]};
+            double[] to   = {r[3], r[4], r[5]};
+            List<Face> faces = new ArrayList<>();
+            for (Side s : Side.values()) {
+                faces.add(new Face(s, 0, 0, deriveUv(s, from, to)));
+            }
+            outBoxes.add(new Box(from, to, true, null, null, faces));
         }
         if (outBoxes.isEmpty()) return null;
         List<String> patches = new ArrayList<>();
@@ -192,11 +321,6 @@ public final class TesrGeometry {
         return out;
     }
 
-    private static double parseFloatLit(String lit) {
-        String s = lit.endsWith("f") || lit.endsWith("F") ? lit.substring(0, lit.length() - 1) : lit;
-        return Double.parseDouble(s);
-    }
-
     private static double[] deriveUv(Side side, double[] from, double[] to) {
         switch (side) {
             case DOWN:  return new double[]{from[0], 16 - to[2],   to[0], 16 - from[2]};
@@ -212,19 +336,24 @@ public final class TesrGeometry {
     private static final class RecipeEntry {
         final String matchKey;
         final java.util.function.Predicate<String> registryNameMatcher;
+        /** Names of {@code List<Box>} arrays in {@link #vertexDataArrays} to union. Mutually exclusive with {@link #hardCodedBoxes}. */
         final List<String> vertexDataNames;
+        /** Hard-coded box silhouettes (six floats: fromX/Y/Z toX/Y/Z) when no VertexData class applies. */
+        final List<double[]> hardCodedBoxes;
 
         private RecipeEntry(String matchKey,
                             java.util.function.Predicate<String> registryNameMatcher,
-                            List<String> vertexDataNames) {
+                            List<String> vertexDataNames,
+                            List<double[]> hardCodedBoxes) {
             this.matchKey = matchKey;
             this.registryNameMatcher = registryNameMatcher;
             this.vertexDataNames = vertexDataNames;
+            this.hardCodedBoxes = hardCodedBoxes;
         }
 
         static RecipeEntry byRegistryPrefix(String prefix, List<String> vertexDataNames) {
             return new RecipeEntry("prefix:" + prefix, n -> n != null && n.startsWith(prefix),
-                    vertexDataNames);
+                    vertexDataNames, null);
         }
 
         static RecipeEntry byRegistryContains(List<String> substrings, List<String> vertexDataNames) {
@@ -232,12 +361,17 @@ public final class TesrGeometry {
                 if (n == null) return false;
                 for (String s : substrings) if (n.contains(s)) return true;
                 return false;
-            }, vertexDataNames);
+            }, vertexDataNames, null);
         }
 
         static RecipeEntry byPredicate(String label, java.util.function.Predicate<String> p,
                                        List<String> vertexDataNames) {
-            return new RecipeEntry(label, p, vertexDataNames);
+            return new RecipeEntry(label, p, vertexDataNames, null);
+        }
+
+        static RecipeEntry hardCoded(String label, java.util.function.Predicate<String> p,
+                                     List<double[]> boxes) {
+            return new RecipeEntry(label, p, null, boxes);
         }
 
         boolean matches(String registryName, String classSimpleName) {
