@@ -18,8 +18,10 @@ Two files written to `dev-env-utils/dynmapRenderdataOutput/`:
    each registry name against Java sources in `src/main/java/.../csm/`.
 2. **Expands blockstate variants** — for Forge-format blockstates (`forge_marker: 1`), enumerates
    the cartesian product of all variant properties (excluding `inventory` and `normal`, which are
-   render-context selectors, not block properties). Multipart, vanilla, and `.obj` blockstates
-   currently produce a single fallback variant.
+   render-context selectors, not block properties). Vanilla-format blockstates fall back to a
+   single variant. Multipart blockstates (the 15 metal fences) enumerate the cartesian product of
+   all properties referenced by `when` clauses, attaching the matching applies to each variant.
+   `.obj`-referencing blockstates dispatch to the `.obj` parser (see Checkpoint D below).
 3. **Resolves models** — walks the parent chain, merges textures from root → leaf, and converts
    each model element's `from`/`to`/`rotation`/`faces` into a Dynmap `box=…` segment. Parent-only
    models that resolve to a known vanilla terminal (`cube_all`, `fence_post`, `half_slab`, etc.)
@@ -91,39 +93,73 @@ mount kit, tattle-tale beacon) draw their geometry inline in the renderer rather
 shared `*VertexData` class. They continue to fall back to the static blockstate model
 (typically an AABB cube) until per-renderer adapters are written.
 
+## Multipart Fences (Checkpoint C)
+
+The 15 `*metal_fence` blocks use the vanilla multipart blockstate format. The tool now properly
+expands these: it enumerates the cartesian product of `(north, south, east, west) ∈ {true, false}^4`
+(16 combinations) and, for each combination, evaluates which multipart entries match (including
+nested `OR` arrays and pipe-separated alt values). The matched applies are resolved as separate
+sub-models (post + connection arms), with each apply's `y` rotation folded into per-box element
+rotation around `(8, 8, 8)`. Result: 15 fences × 16 states = 240 modellist rows, with each row
+emitting the post cuboid plus 0–4 arm cuboids matching the connection state.
+
+The `fence_side` fallback geometry is the half-block north-arm cuboid `(7, 6, 0) → (9, 15, 9)`
+(merged from the two thin rails of vanilla MC's `block/fence_side`).
+
+## `.obj` Model Blocks (Checkpoint D)
+
+The 86 novelty blocks that reference `csm:<name>.obj` now go through `ObjModelParser`. It reads
+just the vertex AABB and the companion `.mtl` file's `map_Kd` material texture, then fits the
+AABB to Dynmap's `[0, 16]^3` model space by:
+
+- Centering the horizontal extents on `(x=8, z=8)` (block centre).
+- Anchoring the vertical extent to `y_min → 0` (sitting on the ground).
+- Clamping all coordinates to `[0, 16]`.
+
+This is a deliberately lossy "silhouette" representation — Dynmap supports only axis-aligned
+cuboids, so curved/sloped `.obj` geometry (apple crates, jukeboxes, the barber pole's helix) cannot
+round-trip faithfully. The output is recognisable on the web map without rejecting any geometry.
+
+Result: 86 modellist rows per facing variant (typically 6 for blocks with a `facing` property),
+each a single AABB cuboid with the .obj's first material's texture.
+
 ## Current Limitations
 
-These are tracked as later checkpoints in the planning document:
+These remain on the roadmap:
 
-1. **Multipart fences** (15 `*metal_fence` blocks) collapse to a single post cuboid (Checkpoint C
-   will emit the full post + connection-arm combinations).
-2. **`.obj`-model blocks** (86 blockstates referencing `csm:<name>.obj`) fall back to an
-   AABB-cube placeholder (Checkpoint D will write a basic Wavefront OBJ parser).
-3. **Variant rotation** (`x` / `y` from blockstate variants) is emitted as a trailing `R/x/y/0`
+1. **TESR families without a `*VertexData` class** continue to fall back to a static blockstate
+   model (typically AABB cube). This affects ~13 renderers: lane control signal, fire alarm
+   strobe, emergency light, HVAC thermostat, message signs, speed limit signs, traffic beacons,
+   dynamic guide sign, mount kit, tattle-tale beacon. Per-renderer adapters would extract the
+   inline geometry from each TESR's `render` method.
+2. **Variant rotation** (`x` / `y` from blockstate variants) is emitted as a trailing `R/x/y/0`
    token but its rotation contribution is not currently counted toward the over-extent simulation
    for non-90-degree-multiple values.
-4. **Submodels** (e.g. sign poles attached via `submodel.extension`) are not emitted; only the
+3. **Submodels** (e.g. sign poles attached via `submodel.extension`) are not emitted; only the
    base model contributes to geometry.
-5. **Transparency** is hard-coded to `TRANSPARENT` for all blocks (matches the previous tool's
+4. **Transparency** is hard-coded to `TRANSPARENT` for all blocks (matches the previous tool's
    behaviour). Future enhancement: derive from each block's `getRenderBlockLayer()` Java method.
-6. **TESR placeholder texture** — all TESR-derived geometry uses `metal_black`. Refining this to
+5. **TESR placeholder texture** — all TESR-derived geometry uses `metal_black`. Refining this to
    per-block textures (e.g. yellow signal bodies for school-zone signals) would require a
    per-recipe texture override table.
+6. **`.obj` decomposition** — currently single AABB silhouette per .obj. A smarter approach would
+   cluster axis-aligned coplanar face groups into separate cuboids for blocks like `apple_crate`
+   that are largely cuboidal in shape.
 
 ## Statistics (current CSM state, May 2026)
 
 | Metric | Value |
 |---|---:|
 | Blocks discovered | 1,440 |
-| Blocks processed | 1,339 |
-| Variants emitted | 34,788 |
-| Boxes emitted | 371,459 |
-| Textures registered | 801 |
+| Blocks processed | 1,440 |
+| Variants emitted | 35,540 |
+| Boxes emitted | 372,691 |
+| Textures registered | 887 |
 | Faces skipped (degenerate filter) | 2,728 |
 | Boxes replaced (AABB fallback) | 18,628 |
 | Blocks via TESR geometry | 124 |
-| Multipart fallbacks | 15 |
-| `.obj` fallbacks | 86 |
+| Blocks via `.obj` geometry | 86 |
+| Multipart blocks (handled) | 15 |
 | Missing texture files | 0 |
 
 The `Faces skipped (degenerate)` and `Missing texture files: 0` lines are the two key indicators

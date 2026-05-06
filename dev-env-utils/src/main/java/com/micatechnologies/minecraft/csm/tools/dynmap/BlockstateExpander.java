@@ -9,24 +9,46 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
- * Parses Forge-format ({@code "forge_marker": 1}) blockstate JSONs and expands them into a list of
- * resolved variants (one per cartesian product point of the variant properties).
+ * Parses Forge-format ({@code "forge_marker": 1}) and vanilla-format blockstate JSONs and expands
+ * them into a list of resolved variants (one per cartesian product point of the variant properties).
+ *
+ * <p>Multipart blockstates (as used by the 15 fence blocks) are properly expanded to one resolved
+ * variant per applicable boolean-property combination, with each variant carrying the list of
+ * matching {@link Apply} clauses (Phase 10).
  *
  * <p>Vanilla-format and {@code .obj}-referencing blockstates are detected and reported as a single
  * "fallback" resolved variant carrying just the inferred top-level model + textures, signalling the
- * caller to fall back to AABB-cube geometry. Multipart blockstates are similarly handled until
- * Phase 10 replaces this with proper connection-state expansion.
+ * caller to dispatch to the appropriate handler.
  */
 public final class BlockstateExpander {
 
     private BlockstateExpander() {}
 
     public enum Kind { FORGE, VANILLA, MULTIPART, OBJ, EMPTY }
+
+    /** One {@code apply} clause referenced by a multipart entry. */
+    public static final class Apply {
+        public final String model;
+        public final int xRotation;
+        public final int yRotation;
+        public final boolean uvlock;
+
+        public Apply(String model, int xRotation, int yRotation, boolean uvlock) {
+            this.model = model;
+            this.xRotation = xRotation;
+            this.yRotation = yRotation;
+            this.uvlock = uvlock;
+        }
+    }
 
     /** One resolved (block, state) combo produced by expanding a blockstate JSON. */
     public static final class ResolvedVariant {
@@ -36,16 +58,25 @@ public final class BlockstateExpander {
         public final int xRotation;
         public final int yRotation;
         public final boolean uvlock;
+        /** Multipart-only: list of applies whose {@code when} clause matched this state. Null otherwise. */
+        public final List<Apply> multipartApplies;
 
         public ResolvedVariant(Map<String, String> stateMap, String model,
                                Map<String, String> textures, int xRotation, int yRotation,
                                boolean uvlock) {
+            this(stateMap, model, textures, xRotation, yRotation, uvlock, null);
+        }
+
+        public ResolvedVariant(Map<String, String> stateMap, String model,
+                               Map<String, String> textures, int xRotation, int yRotation,
+                               boolean uvlock, List<Apply> multipartApplies) {
             this.stateMap = stateMap;
             this.model = model;
             this.textures = textures;
             this.xRotation = xRotation;
             this.yRotation = yRotation;
             this.uvlock = uvlock;
+            this.multipartApplies = multipartApplies;
         }
     }
 
@@ -69,13 +100,12 @@ public final class BlockstateExpander {
         }
 
         if (root.has("multipart")) {
-            // Phase 10 will handle these properly. For now: emit one fallback variant.
-            return new ExpandedBlockstate(Kind.MULTIPART, fallbackSingle(root, blockstateFile));
+            return expandMultipart(root);
         }
 
         boolean isForge = root.has("forge_marker") && root.get("forge_marker").getAsInt() == 1;
         if (!isForge) {
-            return new ExpandedBlockstate(Kind.VANILLA, fallbackSingle(root, blockstateFile));
+            return new ExpandedBlockstate(Kind.VANILLA, fallbackSingle(root));
         }
 
         JsonObject defaults = root.has("defaults") ? root.getAsJsonObject("defaults") : new JsonObject();
@@ -86,9 +116,7 @@ public final class BlockstateExpander {
 
         // Detect .obj reference in the defaults model.
         String defaultModel = defaults.has("model") ? defaults.get("model").getAsString() : null;
-        if (defaultModel != null && defaultModel.endsWith(".obj")) {
-            return new ExpandedBlockstate(Kind.OBJ, fallbackSingle(root, blockstateFile));
-        }
+        boolean isObj = defaultModel != null && defaultModel.endsWith(".obj");
 
         // Collect variant property keys (excluding inventory/normal — those are render-context selectors,
         // not real block properties).
@@ -112,7 +140,7 @@ public final class BlockstateExpander {
             ResolvedVariant rv = mergeChain(defaults, normalOverride, new LinkedHashMap<>(),
                     new LinkedHashMap<>(), variants);
             resolved.add(rv);
-            return new ExpandedBlockstate(Kind.FORGE, resolved);
+            return new ExpandedBlockstate(isObj ? Kind.OBJ : Kind.FORGE, resolved);
         }
 
         // Cartesian product over propertyValues.
@@ -121,14 +149,131 @@ public final class BlockstateExpander {
             ResolvedVariant rv = mergeChain(defaults, normalOverride, combo, propertyValues, variants);
             resolved.add(rv);
         }
-        return new ExpandedBlockstate(Kind.FORGE, resolved);
+        return new ExpandedBlockstate(isObj ? Kind.OBJ : Kind.FORGE, resolved);
     }
 
     /**
-     * Builds a single fallback resolved variant from the top-level defaults — used for vanilla,
-     * multipart, .obj, or other formats we don't expand fully in Phase 3.
+     * Expands a multipart blockstate. Discovers all property names that appear in {@code when}
+     * clauses (assuming boolean-valued — the standard fence pattern), enumerates the
+     * cartesian product of {@code {true, false}} for each, and emits one resolved variant per
+     * combination with the matching applies attached.
      */
-    private static List<ResolvedVariant> fallbackSingle(JsonObject root, File blockstateFile) {
+    private static ExpandedBlockstate expandMultipart(JsonObject root) {
+        JsonArray multipart = root.getAsJsonArray("multipart");
+
+        // Collect the set of property names referenced by any when clause.
+        Set<String> propNames = new LinkedHashSet<>();
+        for (JsonElement me : multipart) {
+            JsonObject mp = me.getAsJsonObject();
+            if (!mp.has("when")) continue;
+            collectWhenProperties(mp.getAsJsonObject("when"), propNames);
+        }
+
+        // For each property name, enumerate {false, true}. (Fences are the only multipart case in
+        // CSM and they use boolean connection properties.)
+        Map<String, List<String>> propValues = new LinkedHashMap<>();
+        for (String p : propNames) {
+            propValues.put(p, Arrays.asList("false", "true"));
+        }
+
+        List<ResolvedVariant> resolved = new ArrayList<>();
+        if (propValues.isEmpty()) {
+            // No when clauses → single state with all unconditional applies.
+            List<Apply> applies = new ArrayList<>();
+            for (JsonElement me : multipart) {
+                JsonObject mp = me.getAsJsonObject();
+                applies.addAll(readApplies(mp.get("apply")));
+            }
+            resolved.add(new ResolvedVariant(new LinkedHashMap<>(), null, new LinkedHashMap<>(),
+                    0, 0, false, applies));
+            return new ExpandedBlockstate(Kind.MULTIPART, resolved);
+        }
+
+        List<Map<String, String>> combos = cartesian(propValues);
+        for (Map<String, String> combo : combos) {
+            List<Apply> applies = new ArrayList<>();
+            for (JsonElement me : multipart) {
+                JsonObject mp = me.getAsJsonObject();
+                if (matchesWhen(mp, combo)) {
+                    applies.addAll(readApplies(mp.get("apply")));
+                }
+            }
+            resolved.add(new ResolvedVariant(combo, null, new LinkedHashMap<>(),
+                    0, 0, false, applies));
+        }
+        return new ExpandedBlockstate(Kind.MULTIPART, resolved);
+    }
+
+    private static void collectWhenProperties(JsonObject when, Set<String> out) {
+        for (Map.Entry<String, JsonElement> e : when.entrySet()) {
+            if ("OR".equals(e.getKey())) {
+                for (JsonElement orEl : e.getValue().getAsJsonArray()) {
+                    collectWhenProperties(orEl.getAsJsonObject(), out);
+                }
+            } else {
+                out.add(e.getKey());
+            }
+        }
+    }
+
+    private static boolean matchesWhen(JsonObject mp, Map<String, String> combo) {
+        if (!mp.has("when")) return true;
+        return matchesClause(mp.getAsJsonObject("when"), combo);
+    }
+
+    private static boolean matchesClause(JsonObject when, Map<String, String> combo) {
+        for (Map.Entry<String, JsonElement> e : when.entrySet()) {
+            if ("OR".equals(e.getKey())) {
+                boolean any = false;
+                for (JsonElement sub : e.getValue().getAsJsonArray()) {
+                    if (matchesClause(sub.getAsJsonObject(), combo)) {
+                        any = true;
+                        break;
+                    }
+                }
+                if (!any) return false;
+            } else {
+                String required = e.getValue().getAsString();
+                String actual = combo.getOrDefault(e.getKey(), "");
+                boolean ok = false;
+                for (String alt : required.split("\\|")) {
+                    if (alt.equals(actual)) {
+                        ok = true;
+                        break;
+                    }
+                }
+                if (!ok) return false;
+            }
+        }
+        return true;
+    }
+
+    private static List<Apply> readApplies(JsonElement applyEl) {
+        if (applyEl == null) return Collections.emptyList();
+        List<Apply> out = new ArrayList<>();
+        if (applyEl.isJsonArray()) {
+            // Random-selection list — for renderdata, the first variant is sufficient.
+            JsonArray arr = applyEl.getAsJsonArray();
+            if (arr.size() > 0) out.add(readApply(arr.get(0).getAsJsonObject()));
+        } else if (applyEl.isJsonObject()) {
+            out.add(readApply(applyEl.getAsJsonObject()));
+        }
+        return out;
+    }
+
+    private static Apply readApply(JsonObject ap) {
+        String model = ap.has("model") ? ap.get("model").getAsString() : null;
+        int x = ap.has("x") ? ap.get("x").getAsInt() : 0;
+        int y = ap.has("y") ? ap.get("y").getAsInt() : 0;
+        boolean uvlock = ap.has("uvlock") && ap.get("uvlock").getAsBoolean();
+        return new Apply(model, x, y, uvlock);
+    }
+
+    /**
+     * Builds a single fallback resolved variant from the top-level defaults — used for vanilla and
+     * other formats we don't expand fully.
+     */
+    private static List<ResolvedVariant> fallbackSingle(JsonObject root) {
         List<ResolvedVariant> out = new ArrayList<>();
         JsonObject defaults = root.has("defaults") ? root.getAsJsonObject("defaults") : new JsonObject();
         String model = defaults.has("model") ? defaults.get("model").getAsString() : null;

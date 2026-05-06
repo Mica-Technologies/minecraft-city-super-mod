@@ -57,7 +57,12 @@ public final class ModelResolver {
     public ResolvedModel resolve(String modelRef, Map<String, String> variantTextures) {
         // Build merged texture map from parent chain (child wins).
         Map<String, String> mergedTextures = new LinkedHashMap<>();
-        JsonObject elementsHolder = walkChainAndMerge(modelRef, mergedTextures, new HashSet<>());
+        // Tracks the deepest parent ref that couldn't be loaded — typically a vanilla terminal
+        // like "block/fence_post" that lives only in the Minecraft jar. Used to pick the correct
+        // fallback geometry when no JSON in the chain has an {@code elements} array.
+        String[] deepestUnresolved = new String[]{null};
+        JsonObject elementsHolder = walkChainAndMerge(modelRef, mergedTextures, new HashSet<>(),
+                deepestUnresolved);
 
         // Variant textures take final precedence over model textures.
         if (variantTextures != null) {
@@ -69,24 +74,32 @@ public final class ModelResolver {
             return convertElements(elementsHolder.getAsJsonArray("elements"), mergedTextures);
         }
 
-        // Otherwise, attempt vanilla terminal fallback.
-        return fallbackVanillaTerminal(modelRef, mergedTextures);
+        // Otherwise, attempt vanilla terminal fallback using the deepest unresolved parent
+        // (e.g. "block/fence_post") rather than the original child ref.
+        String fallbackRef = deepestUnresolved[0] != null ? deepestUnresolved[0] : modelRef;
+        return fallbackVanillaTerminal(fallbackRef, mergedTextures);
     }
 
     /**
      * Walks the parent chain and merges textures from root → leaf (leaf wins). Returns the deepest
-     * model JSON that contains an {@code elements} array, or null if none found.
+     * model JSON that contains an {@code elements} array, or null if none found. Records the
+     * deepest parent ref that couldn't be loaded into {@code deepestUnresolved[0]} so the caller
+     * can pick the correct vanilla-terminal fallback (e.g. {@code "block/fence_post"} for chains
+     * that resolve to vanilla MC models we don't have JSON for).
      */
     private JsonObject walkChainAndMerge(String modelRef, Map<String, String> mergedTextures,
-                                         Set<String> visited) {
+                                         Set<String> visited, String[] deepestUnresolved) {
         if (modelRef == null || !visited.add(modelRef)) return null;
         JsonObject obj = loadModel(modelRef);
-        if (obj == null) return null;
+        if (obj == null) {
+            deepestUnresolved[0] = modelRef;
+            return null;
+        }
 
         JsonObject parentTexturesHolder = null;
         if (obj.has("parent")) {
             parentTexturesHolder = walkChainAndMerge(obj.get("parent").getAsString(),
-                    mergedTextures, visited);
+                    mergedTextures, visited, deepestUnresolved);
         }
 
         // Merge this model's textures *over* the parent's.
@@ -246,9 +259,11 @@ public final class ModelResolver {
             case "fence_inventory":
                 return cuboid(6, 0, 6, 10, 16, 10, textures, "texture", "particle", "all");
             case "fence_side":
-                // Skipped here; multipart-aware Phase 10 will emit proper connections. For now,
-                // collapse to the post.
-                return cuboid(6, 6, 0, 10, 15, 16, textures, "texture", "particle", "all");
+                // Half-block "north" arm of a fence_post + fence_side multipart construction.
+                // Vanilla geometry: two thin rails at y=6..9 and y=12..15, both x=7..9, z=0..9.
+                // Collapsed to a single Dynmap silhouette box. The multipart expander rotates this
+                // around (8,8,8) for the south/east/west connections.
+                return cuboid(7, 6, 0, 9, 15, 9, textures, "texture", "particle", "all");
             case "half_slab":
             case "slab":
                 return cuboid(0, 0, 0, 16, 8, 16, textures, "side", "all", "particle");
