@@ -3,6 +3,7 @@ package com.micatechnologies.minecraft.csm.tools;
 import com.micatechnologies.minecraft.csm.tools.dynmap.BlockDiscovery;
 import com.micatechnologies.minecraft.csm.tools.dynmap.BlockDiscovery.BlockMetadata;
 import com.micatechnologies.minecraft.csm.tools.dynmap.BlockstateExpander;
+import com.micatechnologies.minecraft.csm.tools.dynmap.BlockstateExpander.Apply;
 import com.micatechnologies.minecraft.csm.tools.dynmap.BlockstateExpander.ExpandedBlockstate;
 import com.micatechnologies.minecraft.csm.tools.dynmap.BlockstateExpander.Kind;
 import com.micatechnologies.minecraft.csm.tools.dynmap.BlockstateExpander.ResolvedVariant;
@@ -16,6 +17,7 @@ import com.micatechnologies.minecraft.csm.tools.dynmap.DynmapTypes.TextureRecord
 import com.micatechnologies.minecraft.csm.tools.dynmap.DynmapTypes.Transparency;
 import com.micatechnologies.minecraft.csm.tools.dynmap.ModelResolver;
 import com.micatechnologies.minecraft.csm.tools.dynmap.ModelResolver.ResolvedModel;
+import com.micatechnologies.minecraft.csm.tools.dynmap.ObjModelParser;
 import com.micatechnologies.minecraft.csm.tools.dynmap.PatchValidator;
 import com.micatechnologies.minecraft.csm.tools.dynmap.TesrGeometry;
 import com.micatechnologies.minecraft.csm.tools.dynmap.TextureResolver;
@@ -24,6 +26,7 @@ import com.micatechnologies.minecraft.csm.tools.tool_framework.CsmToolUtility;
 import java.io.File;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,6 +57,7 @@ public class DynmapRenderdataTool {
         private final File devEnvironmentPath;
         private final TextureResolver textureResolver;
         private final ModelResolver modelResolver;
+        private final ObjModelParser objModelParser;
         private final TesrGeometry tesrGeometry;
 
         // Output records.
@@ -67,18 +71,20 @@ public class DynmapRenderdataTool {
         private int facesSkippedDegenerate;
         private int boxesReplacedAabb;
         private int blocksFallbackVanilla;
-        private int blocksFallbackMultipart;
+        private int blocksHandledMultipart;
         private int blocksFallbackObj;
         private int blocksFallbackEmpty;
         private int blocksFallbackParentOnly;
         private int blocksFailed;
         private int missingTextureFiles;
         private int blocksUsedTesrGeometry;
+        private int blocksUsedObjGeometry;
 
         Run(File devEnvironmentPath) {
             this.devEnvironmentPath = devEnvironmentPath;
             this.textureResolver = new TextureResolver(devEnvironmentPath);
             this.modelResolver = new ModelResolver(devEnvironmentPath);
+            this.objModelParser = new ObjModelParser(devEnvironmentPath);
             this.tesrGeometry = new TesrGeometry(devEnvironmentPath);
         }
 
@@ -130,7 +136,7 @@ public class DynmapRenderdataTool {
                 blocksFallbackEmpty++;
                 return;
             }
-            if (expanded.kind == Kind.MULTIPART) blocksFallbackMultipart++;
+            if (expanded.kind == Kind.MULTIPART) blocksHandledMultipart++;
             if (expanded.kind == Kind.VANILLA) blocksFallbackVanilla++;
             if (expanded.kind == Kind.OBJ) blocksFallbackObj++;
 
@@ -140,21 +146,41 @@ public class DynmapRenderdataTool {
             ResolvedModel tesrSilhouette = tesrGeometry.forBlock(bm.registryName, bm.javaClassName);
             if (tesrSilhouette != null) blocksUsedTesrGeometry++;
 
+            // .obj-referencing blocks: parse once per block since variants only differ by rotation.
+            ResolvedModel objSilhouette = null;
+            if (tesrSilhouette == null && expanded.kind == Kind.OBJ) {
+                ResolvedVariant first = expanded.variants.isEmpty() ? null : expanded.variants.get(0);
+                if (first != null && first.model != null && first.model.endsWith(".obj")) {
+                    objSilhouette = objModelParser.resolve(first.model, first.textures);
+                    if (objSilhouette != null) blocksUsedObjGeometry++;
+                }
+            }
+
             boolean any = false;
             for (ResolvedVariant rv : expanded.variants) {
                 ResolvedModel resolved;
+                double[] modelRot;
                 if (tesrSilhouette != null) {
                     resolved = tesrSilhouette;
+                    modelRot = new double[]{rv.xRotation, rv.yRotation, 0};
+                } else if (rv.multipartApplies != null && !rv.multipartApplies.isEmpty()) {
+                    resolved = resolveMultipart(rv.multipartApplies);
+                    if (resolved.boxes.isEmpty()) continue;
+                    // Per-apply rotation is folded into per-box rotation, so no model-level rotation.
+                    modelRot = new double[]{0, 0, 0};
+                } else if (objSilhouette != null) {
+                    resolved = objSilhouette;
+                    modelRot = new double[]{rv.xRotation, rv.yRotation, 0};
                 } else {
                     if (rv.model == null) continue;
                     resolved = modelResolver.resolve(rv.model, rv.textures);
                     if (resolved.boxes.isEmpty()) continue;
                     if (resolved.isFallback) blocksFallbackParentOnly++;
+                    modelRot = new double[]{rv.xRotation, rv.yRotation, 0};
                 }
 
                 // Apply degenerate-face filter; replace any out-of-range box with AABB cube.
                 List<Box> sanitisedBoxes = new ArrayList<>();
-                double[] modelRot = new double[]{rv.xRotation, rv.yRotation, 0};
                 boolean anyOutOfRange = false;
                 for (Box b : resolved.boxes) {
                     if (PatchValidator.isOutOfRange(b, modelRot)) {
@@ -193,6 +219,59 @@ public class DynmapRenderdataTool {
                 any = true;
             }
             if (any) blocksProcessed++;
+        }
+
+        /**
+         * Resolves a list of multipart {@link Apply} clauses into a combined {@link ResolvedModel}.
+         * Each apply's model is resolved independently; per-apply rotation is folded into each box's
+         * element rotation around (8, 8, 8). Patch lists are merged with deduplication by texture ref.
+         */
+        private ResolvedModel resolveMultipart(List<Apply> applies) {
+            List<Box> combinedBoxes = new ArrayList<>();
+            List<String> combinedPatches = new ArrayList<>();
+            Map<String, Integer> patchIdx = new LinkedHashMap<>();
+
+            for (Apply ap : applies) {
+                if (ap.model == null) continue;
+                ResolvedModel sub = modelResolver.resolve(ap.model, Collections.emptyMap());
+                for (Box b : sub.boxes) {
+                    // Remap each face's texture index into the combined patch list.
+                    List<Face> remappedFaces = new ArrayList<>(b.faces.size());
+                    for (Face f : b.faces) {
+                        String texRef = sub.patchTextureRefs.get(f.textureIndex);
+                        Integer idx = patchIdx.get(texRef);
+                        if (idx == null) {
+                            idx = combinedPatches.size();
+                            combinedPatches.add(texRef);
+                            patchIdx.put(texRef, idx);
+                        }
+                        remappedFaces.add(new Face(f.side, idx, f.textureRotation, f.uv));
+                    }
+                    // Fold apply rotation into the per-box rotation around (8, 8, 8).
+                    double[] newRotation;
+                    double[] newRotOrigin;
+                    if (b.rotation == null) {
+                        if (ap.xRotation == 0 && ap.yRotation == 0) {
+                            newRotation = null;
+                            newRotOrigin = null;
+                        } else {
+                            newRotation = new double[]{ap.xRotation, ap.yRotation, 0};
+                            newRotOrigin = new double[]{8, 8, 8};
+                        }
+                    } else {
+                        // Existing element rotation; combine additively (only safe when both are
+                        // single-axis or zero — which is the case for the fence multiparts in CSM).
+                        newRotation = new double[]{
+                                b.rotation[0] + ap.xRotation,
+                                b.rotation[1] + ap.yRotation,
+                                b.rotation[2]
+                        };
+                        newRotOrigin = b.rotOrigin != null ? b.rotOrigin : new double[]{8, 8, 8};
+                    }
+                    combinedBoxes.add(new Box(b.from, b.to, b.shade, newRotation, newRotOrigin, remappedFaces));
+                }
+            }
+            return new ResolvedModel(combinedBoxes, combinedPatches, false);
         }
 
         /** Build a single-cube replacement using the model's overall AABB and the same texture set. */
@@ -242,10 +321,11 @@ public class DynmapRenderdataTool {
             System.out.println("Faces skipped (degenerate): " + facesSkippedDegenerate);
             System.out.println("Boxes replaced (AABB):      " + boxesReplacedAabb);
             System.out.println("Blocks via TESR geometry:   " + blocksUsedTesrGeometry);
+            System.out.println("Blocks via .obj geometry:   " + blocksUsedObjGeometry);
             System.out.println();
-            System.out.println("Blockstate fallbacks:");
-            System.out.println("  vanilla format:           " + blocksFallbackVanilla);
-            System.out.println("  multipart format:         " + blocksFallbackMultipart);
+            System.out.println("Blockstate kinds:");
+            System.out.println("  vanilla format (fallback):" + blocksFallbackVanilla);
+            System.out.println("  multipart (handled):      " + blocksHandledMultipart);
             System.out.println("  .obj reference:           " + blocksFallbackObj);
             System.out.println("  empty/unparseable:        " + blocksFallbackEmpty);
             System.out.println("  parent-only model:        " + blocksFallbackParentOnly);
