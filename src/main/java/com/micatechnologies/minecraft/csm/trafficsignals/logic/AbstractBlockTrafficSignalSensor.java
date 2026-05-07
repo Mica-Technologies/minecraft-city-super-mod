@@ -16,6 +16,29 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
+/**
+ * Base class for traffic signal sensor blocks. Sensors detect vehicle proxies (players and
+ * villagers) within configurable scan regions and report counts to the linked
+ * {@link com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalController}
+ * for sensor-actuated signal control.
+ *
+ * <p><b>Facing convention:</b> sensors inherit {@code FACING = placer.getHorizontalFacing()
+ * .getOpposite()} from {@link AbstractBlockRotatableNSEW}. Sensors <i>must</i> be placed with
+ * the same facing convention as the signal heads serving the same approach: stand where the
+ * signal head's viewing audience would stand (i.e., on the approach, looking the same
+ * direction the controlled vehicle travels) so that placer-opposite gives the sensor a
+ * facing that matches the signal head's facing.</p>
+ *
+ * <p>The per-direction FYA-vs-protected demand arbitration in
+ * {@link com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalControllerTickerUtilities#getEffectiveLeftDemand}
+ * and {@link com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalControllerTickerUtilities#getEffectiveRightDemand}
+ * correlates each sensor's directional zone count with FYA signals of matching {@code FACING}.
+ * A facing mismatch silently breaks the single-vehicle FYA-clearance assumption and inflates
+ * phase priority for left/right turn phases. Omnidirectional totals are unaffected.</p>
+ *
+ * <p>See {@code assets/docs/TRAFFIC_SIGNAL_SYSTEM.md} ("Sensor Facing Convention") for the
+ * full discussion.</p>
+ */
 public abstract class AbstractBlockTrafficSignalSensor extends AbstractBlockRotatableNSEW
     implements ICsmTileEntityProvider, ICsmNoSnowAccumulation {
 

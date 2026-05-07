@@ -3,6 +3,7 @@ package com.micatechnologies.minecraft.csm.trafficsignals.logic;
 import com.google.common.collect.Lists;
 import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityBlankoutBox;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
@@ -320,6 +321,14 @@ public class TrafficSignalControllerTickerUtilities {
     for (BlockPos pos : a.getGreenSignals()) {
       if (!b.getGreenSignals().contains(pos)) return true;
     }
+    // A signal leaving YELLOW must drop to RED before going anywhere else — going to
+    // GREEN, FYA, or OFF without an all-red interval skips the standard
+    // yellow → red → next-state clearance sequence.
+    for (BlockPos pos : a.getYellowSignals()) {
+      if (!b.getYellowSignals().contains(pos) && !b.getRedSignals().contains(pos)) {
+        return true;
+      }
+    }
     // A signal leaving FYA to RED needs clearance (permissive ending restrictively).
     // FYA→OFF is safe (compound hybrid going to protected green via add-on block).
     // FYA→GREEN doesn't occur in practice (GREEN on 3-section block IS FYA).
@@ -342,6 +351,24 @@ public class TrafficSignalControllerTickerUtilities {
    * right turn arrow is warranted and {@code true} is returned. If the right turn detection zone
    * is not configured (count == 0) or the pedestrian demand is equal to or greater, a flashing
    * yellow arrow is used and {@code false} is returned.</p>
+   *
+   * <p><b>Asymmetry with {@link #computeGreenLeftTurn}:</b> the left-turn variant refuses
+   * protected green on a multi-direction circuit (via {@code !areSignalsFacingSameDirection})
+   * because opposing protected lefts intersect each other. Right turns on a multi-direction
+   * circuit do <i>not</i> intersect (NB→E and SB→W use disjoint paths), so the same-direction
+   * guard is intentionally omitted here. Pedestrian conflicts are still arbitrated by the
+   * vehicle-count vs. ped-request comparison, and the protected-vs-right conflict against
+   * transit/bike signals is handled by the caller.</p>
+   *
+   * <p><b>Demand semantic vs. {@link #getEffectiveRightDemand}:</b> this method uses the raw
+   * {@code getRightTotal()} count without FYA-clearance adjustment. {@code getEffectiveRightDemand}
+   * by contrast subtracts the single-vehicle "clears permissively on FYA" assumption per
+   * direction. The split is intentional: phase priority (which decides whether to <i>switch</i>
+   * to a turn-specific phase) should not be triggered by a single car that can clear on the
+   * concurrent FYA, while the through-phase indication arbitration done here should serve a
+   * waiting car a protected arrow whenever it can without giving up nothing — the car is
+   * already at the line, so a brief protected green is cheaper than waiting for it to clear
+   * permissively.</p>
    *
    * @param circuits                 The configured/connected circuits of the traffic signal
    *                                 controller.
@@ -390,7 +417,14 @@ public class TrafficSignalControllerTickerUtilities {
    * Determines whether the active circuit's left turn signals should display a green arrow
    * (protected left, suppressing concurrent pedestrian walk) or a flashing yellow arrow (permissive
    * left, allowing concurrent pedestrian walk). This method mirrors {@link #computeGreenRightTurn}
-   * but uses the left turn scan zone count.
+   * but uses the left turn scan zone count, and additionally refuses protected green on a
+   * multi-direction circuit because opposing protected lefts intersect each other.
+   *
+   * <p><b>Demand semantic vs. {@link #getEffectiveLeftDemand}:</b> uses the raw
+   * {@code getLeftTotal()} count, not the FYA-adjusted directional count. See
+   * {@link #computeGreenRightTurn} for the rationale — the through-phase indication should
+   * serve a waiting car a protected arrow whenever it can, while phase priority should not
+   * promote a single car that can clear permissively to its own ALL_LEFTS phase.</p>
    *
    * @param circuits                 The configured/connected circuits of the traffic signal
    *                                 controller.
@@ -529,7 +563,7 @@ public class TrafficSignalControllerTickerUtilities {
           defaultPhase.addOffSignals(circuit.getBeaconSignals());
           defaultPhase.addDontWalkSignals(circuit.getPedestrianSignals());
           defaultPhase.addDontWalkSignals(circuit.getPedestrianAccessorySignals());
-          addBlankoutSignalsToPhase(world, circuit, defaultPhase, greenRightTurn, greenLeftTurn);
+          addBlankoutSignalsToPhase(world, circuit, defaultPhase);
         } else {
           addCircuitToPhaseAllRed(circuit, defaultPhase,
               overlapPedestrianSignals && !greenRightTurn && !greenLeftTurn);
@@ -574,6 +608,60 @@ public class TrafficSignalControllerTickerUtilities {
       destinationPhase.addDontWalkSignals(circuit.getPedestrianAccessorySignals());
     }
     destinationPhase.addDontWalkSignals(circuit.getNoTurnBlankoutSignals());
+  }
+
+  /**
+   * Builds the active-circuit signal assignments for an
+   * {@link TrafficSignalPhaseApplicability#ALL_THROUGHS_PROTECTEDS} phase. The active circuit's
+   * through and protected signals are served concurrently with FYA-vs-protected-green arbitration
+   * for left and right turns.
+   *
+   * <p>When the right turn shows solid green ({@code greenRightTurn=true}), it conflicts with
+   * concurrent transit/bike protected signals, so {@code protectedSignals} are forced red. When
+   * the right turn shows FYA (permissive), there is no conflict and protected signals stay
+   * green.</p>
+   *
+   * @param world           The world (used by {@link #addBlankoutSignalsToPhase}; may be
+   *                        {@code null} in tests when no blankout signals are configured).
+   * @param circuit         The active circuit being served.
+   * @param upcomingPhase   The phase being built; this method appends to it.
+   * @param greenLeftTurn   Whether the active circuit's left turn should show solid green
+   *                        (protected) instead of flashing yellow (permissive).
+   * @param greenRightTurn  Whether the active circuit's right turn should show solid green
+   *                        (suppressing concurrent peds and transit/bike protected) instead of
+   *                        flashing yellow (permissive).
+   *
+   * @since 1.0
+   */
+  static void buildAllThroughsProtectedsActivePhase(World world,
+      TrafficSignalControllerCircuit circuit,
+      TrafficSignalPhase upcomingPhase,
+      boolean greenLeftTurn,
+      boolean greenRightTurn) {
+    if (greenLeftTurn) {
+      upcomingPhase.addOffSignals(circuit.getFlashingLeftSignals());
+      upcomingPhase.addGreenSignals(circuit.getLeftSignals());
+    } else {
+      upcomingPhase.addFyaSignals(circuit.getFlashingLeftSignals());
+      upcomingPhase.addRedSignals(circuit.getLeftSignals());
+    }
+    if (greenRightTurn) {
+      upcomingPhase.addOffSignals(circuit.getFlashingRightSignals());
+      upcomingPhase.addGreenSignals(circuit.getRightSignals());
+      // Solid green right turn conflicts with transit/bike protected signals
+      upcomingPhase.addRedSignals(circuit.getProtectedSignals());
+    } else {
+      upcomingPhase.addFyaSignals(circuit.getFlashingRightSignals());
+      upcomingPhase.addRedSignals(circuit.getRightSignals());
+      // FYA right turn (permissive) — no conflict with transit/bike
+      upcomingPhase.addGreenSignals(circuit.getProtectedSignals());
+    }
+    upcomingPhase.addGreenSignals(circuit.getThroughSignals());
+    upcomingPhase.addOffSignals(circuit.getPedestrianBeaconSignals());
+    upcomingPhase.addOffSignals(circuit.getBeaconSignals());
+    upcomingPhase.addDontWalkSignals(circuit.getPedestrianSignals());
+    upcomingPhase.addDontWalkSignals(circuit.getPedestrianAccessorySignals());
+    addBlankoutSignalsToPhase(world, circuit, upcomingPhase);
   }
 
   /**
@@ -993,7 +1081,7 @@ public class TrafficSignalControllerTickerUtilities {
               upcomingPhase.addRedSignals(circuit.getLeftSignals());
             }
           }
-          addBlankoutSignalsToPhase(world, circuit, upcomingPhase, greenRightTurn, greenLeftTurn);
+          addBlankoutSignalsToPhase(world, circuit, upcomingPhase);
         } else {
           addCircuitToPhaseAllRed(circuit, upcomingPhase,
               overlapPedestrianSignals && !greenRightTurn && !greenLeftTurn);
@@ -1027,7 +1115,7 @@ public class TrafficSignalControllerTickerUtilities {
             upcomingPhase.addFyaSignals(circuit.getFlashingLeftSignals());
             upcomingPhase.addRedSignals(circuit.getLeftSignals());
           }
-          addBlankoutSignalsToPhase(world, circuit, upcomingPhase, greenRightTurn, greenLeftTurn);
+          addBlankoutSignalsToPhase(world, circuit, upcomingPhase);
         } else {
           addCircuitToPhaseAllRed(circuit, upcomingPhase,
               overlapPedestrianSignals && !greenRightTurn && !greenLeftTurn);
@@ -1036,27 +1124,8 @@ public class TrafficSignalControllerTickerUtilities {
       // Handle all throughs and protecteds phase applicability
       else if (phaseApplicability == TrafficSignalPhaseApplicability.ALL_THROUGHS_PROTECTEDS) {
         if (i == circuitNumber) {
-          if (greenLeftTurn) {
-            upcomingPhase.addOffSignals(circuit.getFlashingLeftSignals());
-            upcomingPhase.addGreenSignals(circuit.getLeftSignals());
-          } else {
-            upcomingPhase.addFyaSignals(circuit.getFlashingLeftSignals());
-            upcomingPhase.addRedSignals(circuit.getLeftSignals());
-          }
-          if (greenRightTurn) {
-            upcomingPhase.addOffSignals(circuit.getFlashingRightSignals());
-            upcomingPhase.addGreenSignals(circuit.getRightSignals());
-          } else {
-            upcomingPhase.addFyaSignals(circuit.getFlashingRightSignals());
-            upcomingPhase.addRedSignals(circuit.getRightSignals());
-          }
-          upcomingPhase.addGreenSignals(circuit.getThroughSignals());
-          upcomingPhase.addGreenSignals(circuit.getProtectedSignals());
-          upcomingPhase.addOffSignals(circuit.getPedestrianBeaconSignals());
-          upcomingPhase.addOffSignals(circuit.getBeaconSignals());
-          upcomingPhase.addDontWalkSignals(circuit.getPedestrianSignals());
-          upcomingPhase.addDontWalkSignals(circuit.getPedestrianAccessorySignals());
-          addBlankoutSignalsToPhase(world, circuit, upcomingPhase, greenRightTurn, greenLeftTurn);
+          buildAllThroughsProtectedsActivePhase(world, circuit, upcomingPhase,
+              greenLeftTurn, greenRightTurn);
         } else {
           addCircuitToPhaseAllRed(circuit, upcomingPhase,
               overlapPedestrianSignals && !greenRightTurn && !greenLeftTurn);
@@ -1116,7 +1185,43 @@ public class TrafficSignalControllerTickerUtilities {
         filterSignalsByFacingDirection(world,
             circuit.getPedestrianBeaconSignals(),
             enumFacing);
+    Tuple<List<BlockPos>, List<BlockPos>> protectedSignals = filterSignalsByFacingDirection(world,
+        circuit.getProtectedSignals(),
+        enumFacing);
 
+    applyDirectionalGreenSignalAssignments(circuit, destinationPhase,
+        flashingLeftSignals, flashingRightSignals, leftSignals, rightSignals,
+        throughSignals, pedestrianBeaconSignals, protectedSignals);
+    addBlankoutSignalsToPhase(world, circuit, destinationPhase);
+  }
+
+  /**
+   * Applies the per-direction signal-state assignments for a directional green phase
+   * (ALL_EAST/WEST/NORTH/SOUTH) given pre-filtered signal tuples. Each tuple's
+   * {@link Tuple#getFirst()} is the matching-direction subset and {@link Tuple#getSecond()} is
+   * the opposite-direction subset.
+   *
+   * <p>Matching-direction lefts become protected green when an add-on left arrow exists, FYA
+   * permissive otherwise. Matching-direction right turns keep their solid green unless a
+   * matching-direction protected (transit/bike) signal exists on the same approach, in which
+   * case the right turn is held at FYA so the protected can serve concurrently without
+   * conflict. Opposite-direction signals all go red.</p>
+   *
+   * <p>Extracted from {@link #addActiveCircuitToDirectionalGreenPhase} so the world-free phase
+   * logic can be unit-tested without a Minecraft world.</p>
+   *
+   * @since 1.0
+   */
+  static void applyDirectionalGreenSignalAssignments(
+      TrafficSignalControllerCircuit circuit,
+      TrafficSignalPhase destinationPhase,
+      Tuple<List<BlockPos>, List<BlockPos>> flashingLeftSignals,
+      Tuple<List<BlockPos>, List<BlockPos>> flashingRightSignals,
+      Tuple<List<BlockPos>, List<BlockPos>> leftSignals,
+      Tuple<List<BlockPos>, List<BlockPos>> rightSignals,
+      Tuple<List<BlockPos>, List<BlockPos>> throughSignals,
+      Tuple<List<BlockPos>, List<BlockPos>> pedestrianBeaconSignals,
+      Tuple<List<BlockPos>, List<BlockPos>> protectedSignals) {
     // Matching direction left turn: protected green if green arrow exists, FYA if not
     if (!leftSignals.getFirst().isEmpty()) {
       destinationPhase.addOffSignals(flashingLeftSignals.getFirst());
@@ -1127,20 +1232,30 @@ public class TrafficSignalControllerTickerUtilities {
     // Non-matching direction: fully stopped, FYA and left both RED
     destinationPhase.addRedSignals(flashingLeftSignals.getSecond());
     destinationPhase.addRedSignals(leftSignals.getSecond());
-    destinationPhase.addOffSignals(flashingRightSignals.getFirst());
-    destinationPhase.addGreenSignals(rightSignals.getFirst());
+    // Matching direction right vs. matching direction protected (transit/bike): solid
+    // green right would conflict with a same-direction protected indication, so when a
+    // matching protected exists, hold the right turn at FYA (permissive) and serve the
+    // protected green concurrently. When no matching protected is configured, the right
+    // turn keeps its solid green as before.
+    boolean hasMatchingProtected = !protectedSignals.getFirst().isEmpty();
+    if (hasMatchingProtected) {
+      destinationPhase.addFyaSignals(flashingRightSignals.getFirst());
+      destinationPhase.addRedSignals(rightSignals.getFirst());
+      destinationPhase.addGreenSignals(protectedSignals.getFirst());
+    } else {
+      destinationPhase.addOffSignals(flashingRightSignals.getFirst());
+      destinationPhase.addGreenSignals(rightSignals.getFirst());
+    }
     destinationPhase.addRedSignals(flashingRightSignals.getSecond());
     destinationPhase.addRedSignals(rightSignals.getSecond());
     destinationPhase.addGreenSignals(throughSignals.getFirst());
     destinationPhase.addRedSignals(throughSignals.getSecond());
     destinationPhase.addOffSignals(pedestrianBeaconSignals.getFirst());
     destinationPhase.addRedSignals(pedestrianBeaconSignals.getSecond());
-    destinationPhase.addRedSignals(circuit.getProtectedSignals());
+    destinationPhase.addRedSignals(protectedSignals.getSecond());
     destinationPhase.addOffSignals(circuit.getBeaconSignals());
     destinationPhase.addDontWalkSignals(circuit.getPedestrianSignals());
     destinationPhase.addDontWalkSignals(circuit.getPedestrianAccessorySignals());
-    addBlankoutSignalsToPhase(world, circuit, destinationPhase,
-        true, !leftSignals.getFirst().isEmpty());
   }
 
   /**
@@ -1292,6 +1407,14 @@ public class TrafficSignalControllerTickerUtilities {
    * <p>This handles mixed installations where one approach has FYA and another has a
    * standard protected-only left turn signal.</p>
    *
+   * <p><b>Demand semantic vs. {@link #computeGreenLeftTurn}:</b> this returns FYA-adjusted
+   * directional counts and is used by phase <i>priority</i> selection — i.e., should the
+   * controller switch to ALL_LEFTS to serve waiting left turners? A single car on a FYA
+   * direction is not enough; it can clear permissively. {@code computeGreenLeftTurn} uses
+   * raw counts and decides whether the left turn shows protected green vs. FYA <i>during
+   * the through phase that's already running</i>, where serving a single waiting car a
+   * protected arrow costs nothing. The two semantics are intentionally different.</p>
+   *
    * @param world   The world where the controller is located.
    * @param circuit The circuit to compute effective left demand for.
    * @param summary The sensor summary for the circuit.
@@ -1347,6 +1470,24 @@ public class TrafficSignalControllerTickerUtilities {
     return effectiveCount;
   }
 
+  /**
+   * Computes the effective right turn demand for a circuit, mirroring
+   * {@link #getEffectiveLeftDemand} but for right-turn detection zones. Per-direction counts
+   * are FYA-adjusted: a single vehicle on a FYA-equipped direction is assumed to clear on the
+   * permissive turn and contributes 0 to the demand total.
+   *
+   * <p><b>Demand semantic vs. {@link #computeGreenRightTurn}:</b> see
+   * {@link #getEffectiveLeftDemand} — phase priority uses FYA-adjusted demand here, while the
+   * through-phase indication arbitration in {@code computeGreenRightTurn} uses raw counts.</p>
+   *
+   * @param world   The world where the controller is located.
+   * @param circuit The circuit to compute effective right demand for.
+   * @param summary The sensor summary for the circuit.
+   *
+   * @return The effective right turn demand count, adjusted for FYA permissive turns.
+   *
+   * @since 1.0
+   */
   public static int getEffectiveRightDemand(World world, TrafficSignalControllerCircuit circuit,
       TrafficSignalSensorSummary summary) {
     if (summary.getRightTotal() == 0) {
@@ -1419,11 +1560,37 @@ public class TrafficSignalControllerTickerUtilities {
     return standard + adjustForFya(left, hasLeftFya) + adjustForFya(right, hasRightFya);
   }
 
+  /**
+   * Sets the on/off state of every "no turn" blankout sign in the circuit based on whether
+   * the corresponding turn is permitted by this phase's signal state.
+   *
+   * <p>A turn is permitted when any of the circuit's signals on that side is in either
+   * {@code GREEN} (protected) or {@code FYA} (permissive flashing yellow) within this phase.
+   * Both indications legally allow a driver to make the turn, so a "NO TURN" blankout sign
+   * would directly contradict the active signal indication. When neither protected nor
+   * permissive is shown, the turn is forbidden and the blankout sign is lit.</p>
+   *
+   * <p>Must be called <i>after</i> the phase's vehicle-signal lists are populated for the
+   * circuit, since the helper inspects {@link TrafficSignalPhase#getGreenSignals()} and
+   * {@link TrafficSignalPhase#getFyaSignals()} to determine turn allowance.</p>
+   *
+   * @param world   The world containing the blankout box tile entities.
+   * @param circuit The circuit whose blankout signals to update.
+   * @param phase   The phase being built; the helper reads its green/FYA assignments and
+   *                writes the blankout signals into the walk/don't-walk lists.
+   *
+   * @since 1.0
+   */
   private static void addBlankoutSignalsToPhase(World world,
       TrafficSignalControllerCircuit circuit,
-      TrafficSignalPhase phase,
-      boolean rightTurnAllowed,
-      boolean leftTurnAllowed) {
+      TrafficSignalPhase phase) {
+    boolean leftTurnAllowed =
+        !Collections.disjoint(circuit.getLeftSignals(), phase.getGreenSignals())
+            || !Collections.disjoint(circuit.getFlashingLeftSignals(), phase.getFyaSignals());
+    boolean rightTurnAllowed =
+        !Collections.disjoint(circuit.getRightSignals(), phase.getGreenSignals())
+            || !Collections.disjoint(circuit.getFlashingRightSignals(), phase.getFyaSignals());
+
     List<BlockPos> onSignals = new ArrayList<>();
     List<BlockPos> offSignals = new ArrayList<>();
     for (BlockPos pos : circuit.getNoTurnBlankoutSignals()) {
