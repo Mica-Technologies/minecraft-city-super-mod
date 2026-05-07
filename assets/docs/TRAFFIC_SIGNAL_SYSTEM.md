@@ -154,6 +154,35 @@ counts against pedestrian request counts.
   `BlockTrafficLightSensorBelowGround`, `BlockTrafficLightSensorModern`,
   `BlockTrafficLightSensorShort`.
 
+#### Sensor Facing Convention
+
+**Sensors must be oriented the same way as the signal heads serving the same approach.**
+Both inherit `getStateForPlacement` from `AbstractBlockRotatableNSEW`, which sets
+`FACING = placer.getHorizontalFacing().getOpposite()` — i.e., the block "faces" the player
+who placed it. A signal head placed by a player standing on the road and looking south at
+oncoming southbound traffic is `FACING=NORTH`; the sensor monitoring that same approach
+should also be placed `FACING=NORTH` (placer also looking south).
+
+This matters because the FYA-vs-protected demand arbitration in
+`getEffectiveLeftDemand` / `getEffectiveRightDemand` correlates a sensor's per-direction
+left-zone count with the FYA signal of the same `FACING`:
+
+```
+fyaNorth (any flashing-left signal facing NORTH)
+  ↔ summary.getLeftNorth() (sum of left-lane counts from sensors facing NORTH)
+```
+
+If a sensor is placed with the opposite facing convention (e.g., player standing where the
+vehicle would be and looking the same direction the vehicle travels), the sensor's
+`FACING` flips and the per-direction match silently fails. Single-car FYA-clearance
+suppression no longer applies — every detection counts as protected demand, which
+inflates phase priority for ALL_LEFTS / ALL_RIGHTS.
+
+The omnidirectional fields (`getLeftTotal()`, `getRightTotal()`, etc.) are facing-agnostic
+and are used by `computeGreenLeftTurn` / `computeGreenRightTurn`, so the through-phase
+arrow arbitration is robust to facing mismatches; only the priority-selection path is
+affected.
+
 ### Pedestrian / APS Blocks
 
 - **`AbstractBlockTrafficSignalRequester`** -- Base for blocks that request signal service
