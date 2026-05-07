@@ -4006,5 +4006,611 @@ class TrafficSignalControllerTickerUtilitiesTest {
       assertNull(TrafficSignalControllerTickerUtilities.findCircuitSensorFacingMismatch(
           1, java.util.EnumSet.of(net.minecraft.util.EnumFacing.NORTH), null));
     }
+
+    @Test
+    @DisplayName("empty sensor list returns null")
+    void emptySensorList_returnsNull() {
+      String result = TrafficSignalControllerTickerUtilities.findCircuitSensorFacingMismatch(
+          1,
+          java.util.EnumSet.of(net.minecraft.util.EnumFacing.NORTH),
+          sensors());
+      assertNull(result, "No sensors means nothing to validate");
+    }
+
+    @Test
+    @DisplayName("all four cardinal facings present accept any sensor facing")
+    void allFourCardinals_accept() {
+      String result = TrafficSignalControllerTickerUtilities.findCircuitSensorFacingMismatch(
+          1,
+          java.util.EnumSet.of(net.minecraft.util.EnumFacing.NORTH,
+              net.minecraft.util.EnumFacing.SOUTH,
+              net.minecraft.util.EnumFacing.EAST,
+              net.minecraft.util.EnumFacing.WEST),
+          sensors(sensor(SENSOR_A, net.minecraft.util.EnumFacing.NORTH),
+              sensor(SENSOR_B, net.minecraft.util.EnumFacing.SOUTH)));
+      assertNull(result);
+    }
+
+    @Test
+    @DisplayName("fault message includes 'no matching signal facing' on the same circuit")
+    void faultMessage_includesPhrase() {
+      String result = TrafficSignalControllerTickerUtilities.findCircuitSensorFacingMismatch(
+          7,
+          java.util.EnumSet.of(net.minecraft.util.EnumFacing.NORTH),
+          sensors(sensor(SENSOR_A, net.minecraft.util.EnumFacing.SOUTH)));
+      assertNotNull(result);
+      assertTrue(result.contains("no matching signal facing"),
+          "Fault message should explain the mismatch");
+    }
   }
+
+  // ========================================================================
+  // partitionSignalsByFacingSet (per-direction phase building primitive)
+  // ========================================================================
+  @Nested
+  @DisplayName("partitionSignalsByFacingSet")
+  class PartitionSignalsByFacingSetTest {
+
+    private static final BlockPos POS_A = new BlockPos(1, 0, 0);
+    private static final BlockPos POS_B = new BlockPos(2, 0, 0);
+    private static final BlockPos POS_C = new BlockPos(3, 0, 0);
+
+    @Test
+    @DisplayName("empty signal list → both partitions empty")
+    void emptySignals_emptyPartitions() {
+      Tuple<List<BlockPos>, List<BlockPos>> result =
+          TrafficSignalControllerTickerUtilities.partitionSignalsByFacingSet(
+              null, java.util.Collections.emptyList(),
+              java.util.EnumSet.of(net.minecraft.util.EnumFacing.NORTH));
+      assertNotNull(result);
+      assertTrue(result.getFirst().isEmpty());
+      assertTrue(result.getSecond().isEmpty());
+    }
+
+    @Test
+    @DisplayName("null signal list → both partitions empty (defensive)")
+    void nullSignals_emptyPartitions() {
+      Tuple<List<BlockPos>, List<BlockPos>> result =
+          TrafficSignalControllerTickerUtilities.partitionSignalsByFacingSet(
+              null, null,
+              java.util.EnumSet.of(net.minecraft.util.EnumFacing.NORTH));
+      assertNotNull(result);
+      assertTrue(result.getFirst().isEmpty());
+      assertTrue(result.getSecond().isEmpty());
+    }
+
+    @Test
+    @DisplayName("null world → all signals partitioned to non-matching")
+    void nullWorld_allNonMatching() {
+      Tuple<List<BlockPos>, List<BlockPos>> result =
+          TrafficSignalControllerTickerUtilities.partitionSignalsByFacingSet(
+              null, Arrays.asList(POS_A, POS_B, POS_C),
+              java.util.EnumSet.of(net.minecraft.util.EnumFacing.NORTH));
+      assertTrue(result.getFirst().isEmpty(),
+          "Without a world, we can't resolve facings — all go non-matching");
+      assertEquals(3, result.getSecond().size());
+      assertTrue(result.getSecond().contains(POS_A));
+      assertTrue(result.getSecond().contains(POS_B));
+      assertTrue(result.getSecond().contains(POS_C));
+    }
+
+    @Test
+    @DisplayName("null world + empty matching set → all non-matching (no facings to match against)")
+    void nullWorld_emptyMatching() {
+      Tuple<List<BlockPos>, List<BlockPos>> result =
+          TrafficSignalControllerTickerUtilities.partitionSignalsByFacingSet(
+              null, Arrays.asList(POS_A, POS_B),
+              java.util.EnumSet.noneOf(net.minecraft.util.EnumFacing.class));
+      assertTrue(result.getFirst().isEmpty());
+      assertEquals(2, result.getSecond().size());
+    }
+
+    @Test
+    @DisplayName("partitions are independent ArrayLists, safe to mutate")
+    void partitionsAreMutable() {
+      Tuple<List<BlockPos>, List<BlockPos>> result =
+          TrafficSignalControllerTickerUtilities.partitionSignalsByFacingSet(
+              null, Arrays.asList(POS_A),
+              java.util.EnumSet.noneOf(net.minecraft.util.EnumFacing.class));
+      // Both lists should be mutable so callers can pass them to phase methods that may
+      // append to / iterate over them.
+      assertDoesNotThrow(() -> result.getFirst().add(POS_B));
+      assertDoesNotThrow(() -> result.getSecond().add(POS_C));
+    }
+
+    @Test
+    @DisplayName("preserves input order in non-matching partition")
+    void preservesOrder() {
+      Tuple<List<BlockPos>, List<BlockPos>> result =
+          TrafficSignalControllerTickerUtilities.partitionSignalsByFacingSet(
+              null, Arrays.asList(POS_C, POS_A, POS_B),
+              java.util.EnumSet.noneOf(net.minecraft.util.EnumFacing.class));
+      assertEquals(POS_C, result.getSecond().get(0));
+      assertEquals(POS_A, result.getSecond().get(1));
+      assertEquals(POS_B, result.getSecond().get(2));
+    }
+  }
+
+  // ========================================================================
+  // Per-direction phase building: extra multi-direction scenarios
+  // ========================================================================
+  @Nested
+  @DisplayName("applyAllThroughsProtectedsSignalStates: multi-direction edge cases")
+  class ApplyAllThroughsProtectedsSignalStatesEdgeCasesTest {
+
+    private TrafficSignalControllerCircuit circuitWithThrough(BlockPos throughPos) {
+      TrafficSignalControllerCircuit circuit = emptyCircuit();
+      circuit.getThroughSignals().add(throughPos);
+      return circuit;
+    }
+
+    private TrafficSignalPhase newPhase() {
+      return new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.ALL_THROUGHS_PROTECTEDS);
+    }
+
+    private Tuple<List<BlockPos>, List<BlockPos>> empty() {
+      return new Tuple<>(new java.util.ArrayList<>(), new java.util.ArrayList<>());
+    }
+
+    @Test
+    @DisplayName("all-empty partitions: through-only phase (no left/right/protected work)")
+    void allEmpty_throughOnly() {
+      BlockPos through = new BlockPos(99, 0, 0);
+      TrafficSignalControllerCircuit circuit = circuitWithThrough(through);
+      TrafficSignalPhase phase = newPhase();
+
+      TrafficSignalControllerTickerUtilities.applyAllThroughsProtectedsSignalStates(
+          circuit, phase, empty(), empty(), empty(), empty(), empty());
+
+      assertTrue(phase.getGreenSignals().contains(through),
+          "Through is GREEN even when no turn signals exist");
+      assertTrue(phase.getRedSignals().isEmpty(), "No reds when no left/right/protected");
+      assertTrue(phase.getFyaSignals().isEmpty());
+      assertTrue(phase.getOffSignals().isEmpty());
+    }
+
+    @Test
+    @DisplayName("4-direction circuit: 2 directions matching, 2 non-matching")
+    void fourDirection_partialMatching() {
+      // Setup 4 directions, NB+EB matching (solid green right), SB+WB FYA permissive
+      BlockPos through = new BlockPos(99, 0, 0);
+      BlockPos nbRight = new BlockPos(1, 0, 0);
+      BlockPos ebRight = new BlockPos(2, 0, 0);
+      BlockPos sbRight = new BlockPos(3, 0, 0);
+      BlockPos wbRight = new BlockPos(4, 0, 0);
+      BlockPos nbProt = new BlockPos(11, 0, 0);
+      BlockPos ebProt = new BlockPos(12, 0, 0);
+      BlockPos sbProt = new BlockPos(13, 0, 0);
+      BlockPos wbProt = new BlockPos(14, 0, 0);
+
+      TrafficSignalControllerCircuit circuit = circuitWithThrough(through);
+      TrafficSignalPhase phase = newPhase();
+
+      TrafficSignalControllerTickerUtilities.applyAllThroughsProtectedsSignalStates(
+          circuit, phase,
+          empty(), empty(),
+          empty(),  // no flashing rights
+          new Tuple<>(Arrays.asList(nbRight, ebRight),
+              Arrays.asList(sbRight, wbRight)),
+          new Tuple<>(Arrays.asList(nbProt, ebProt),
+              Arrays.asList(sbProt, wbProt)));
+
+      // Matching direction rights → green; non-matching → red companion
+      assertTrue(phase.getGreenSignals().contains(nbRight));
+      assertTrue(phase.getGreenSignals().contains(ebRight));
+      assertTrue(phase.getRedSignals().contains(sbRight));
+      assertTrue(phase.getRedSignals().contains(wbRight));
+      // Matching protected → red (conflict with solid green right at same direction)
+      assertTrue(phase.getRedSignals().contains(nbProt));
+      assertTrue(phase.getRedSignals().contains(ebProt));
+      // Non-matching protected → green (no conflict with FYA right)
+      assertTrue(phase.getGreenSignals().contains(sbProt));
+      assertTrue(phase.getGreenSignals().contains(wbProt));
+    }
+
+    @Test
+    @DisplayName("multiple signals at same direction all share the same state")
+    void multipleSignalsPerDirection() {
+      // 3 NB right signals, all matching → all green
+      BlockPos through = new BlockPos(99, 0, 0);
+      BlockPos r1 = new BlockPos(1, 0, 0);
+      BlockPos r2 = new BlockPos(2, 0, 0);
+      BlockPos r3 = new BlockPos(3, 0, 0);
+
+      TrafficSignalControllerCircuit circuit = circuitWithThrough(through);
+      TrafficSignalPhase phase = newPhase();
+
+      TrafficSignalControllerTickerUtilities.applyAllThroughsProtectedsSignalStates(
+          circuit, phase,
+          empty(), empty(), empty(),
+          new Tuple<>(Arrays.asList(r1, r2, r3), java.util.Collections.emptyList()),
+          empty());
+
+      assertTrue(phase.getGreenSignals().contains(r1));
+      assertTrue(phase.getGreenSignals().contains(r2));
+      assertTrue(phase.getGreenSignals().contains(r3));
+    }
+
+    @Test
+    @DisplayName("pedestrian signals always go DONT_WALK regardless of turn state")
+    void pedestrianSignals_alwaysDontWalk() {
+      BlockPos pedSignal = new BlockPos(50, 0, 0);
+      BlockPos pedAccessory = new BlockPos(51, 0, 0);
+
+      TrafficSignalControllerCircuit circuit = emptyCircuit();
+      circuit.getPedestrianSignals().add(pedSignal);
+      circuit.getPedestrianAccessorySignals().add(pedAccessory);
+
+      TrafficSignalPhase phase = newPhase();
+      TrafficSignalControllerTickerUtilities.applyAllThroughsProtectedsSignalStates(
+          circuit, phase, empty(), empty(), empty(), empty(), empty());
+
+      assertTrue(phase.getDontWalkSignals().contains(pedSignal));
+      assertTrue(phase.getDontWalkSignals().contains(pedAccessory));
+      assertFalse(phase.getWalkSignals().contains(pedSignal));
+    }
+
+    @Test
+    @DisplayName("beacon signals go OFF (not yellow as in all-red phase)")
+    void beaconSignals_off() {
+      BlockPos beacon = new BlockPos(60, 0, 0);
+      BlockPos pedBeacon = new BlockPos(61, 0, 0);
+
+      TrafficSignalControllerCircuit circuit = emptyCircuit();
+      circuit.getBeaconSignals().add(beacon);
+      circuit.getPedestrianBeaconSignals().add(pedBeacon);
+
+      TrafficSignalPhase phase = newPhase();
+      TrafficSignalControllerTickerUtilities.applyAllThroughsProtectedsSignalStates(
+          circuit, phase, empty(), empty(), empty(), empty(), empty());
+
+      assertTrue(phase.getOffSignals().contains(beacon),
+          "During through-protecteds active phase, beacons go OFF (not flashing)");
+      assertTrue(phase.getOffSignals().contains(pedBeacon),
+          "Ped beacons also go OFF");
+    }
+  }
+
+  // ========================================================================
+  // Per-direction directional phase: extra multi-direction scenarios
+  // ========================================================================
+  @Nested
+  @DisplayName("applyDirectionalGreenSignalAssignments: edge cases")
+  class ApplyDirectionalGreenSignalAssignmentsEdgeCasesTest {
+
+    private Tuple<List<BlockPos>, List<BlockPos>> empty() {
+      return new Tuple<>(new java.util.ArrayList<>(), new java.util.ArrayList<>());
+    }
+
+    @Test
+    @DisplayName("all-empty partitions: phase has no vehicle assignments at all")
+    void allEmpty_emptyPhase() {
+      TrafficSignalControllerCircuit circuit = emptyCircuit();
+      TrafficSignalPhase phase = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.ALL_EAST);
+
+      TrafficSignalControllerTickerUtilities.applyDirectionalGreenSignalAssignments(
+          circuit, phase,
+          empty(), empty(), empty(), empty(), empty(), empty(), empty());
+
+      assertTrue(phase.getGreenSignals().isEmpty());
+      assertTrue(phase.getRedSignals().isEmpty());
+      assertTrue(phase.getFyaSignals().isEmpty());
+      assertTrue(phase.getOffSignals().isEmpty());
+    }
+
+    @Test
+    @DisplayName("only FYA-only left exists in matching direction → flashes yellow")
+    void onlyFyaLeft_flashes() {
+      BlockPos fyaLeft = new BlockPos(10, 0, 0);
+      TrafficSignalControllerCircuit circuit = emptyCircuit();
+      TrafficSignalPhase phase = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.ALL_EAST);
+
+      TrafficSignalControllerTickerUtilities.applyDirectionalGreenSignalAssignments(
+          circuit, phase,
+          new Tuple<>(Arrays.asList(fyaLeft), java.util.Collections.emptyList()),
+          empty(),
+          empty(),  // no protected-green left arrow
+          empty(), empty(), empty(), empty());
+
+      assertTrue(phase.getFyaSignals().contains(fyaLeft),
+          "FYA-only left in matching direction permits permissive turn");
+      assertFalse(phase.getOffSignals().contains(fyaLeft),
+          "FYA-only left without paired left arrow stays as FYA, not OFF");
+    }
+
+    @Test
+    @DisplayName("matching protected with no matching right → matching protected GREEN, no right action")
+    void matchingProtected_noRight_protectedGreen() {
+      BlockPos prot = new BlockPos(20, 0, 0);
+      TrafficSignalControllerCircuit circuit = emptyCircuit();
+      TrafficSignalPhase phase = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.ALL_EAST);
+
+      TrafficSignalControllerTickerUtilities.applyDirectionalGreenSignalAssignments(
+          circuit, phase,
+          empty(), empty(), empty(), empty(), empty(), empty(),
+          new Tuple<>(Arrays.asList(prot), java.util.Collections.emptyList()));
+
+      assertTrue(phase.getGreenSignals().contains(prot),
+          "Matching-direction protected runs green when no matching right exists");
+    }
+
+    @Test
+    @DisplayName("non-matching protected always red regardless of right state")
+    void nonMatchingProtected_alwaysRed() {
+      BlockPos prot = new BlockPos(30, 0, 0);
+      TrafficSignalControllerCircuit circuit = emptyCircuit();
+      TrafficSignalPhase phase = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.ALL_EAST);
+
+      TrafficSignalControllerTickerUtilities.applyDirectionalGreenSignalAssignments(
+          circuit, phase,
+          empty(), empty(), empty(), empty(), empty(), empty(),
+          new Tuple<>(java.util.Collections.emptyList(), Arrays.asList(prot)));
+
+      assertTrue(phase.getRedSignals().contains(prot),
+          "Opposite-direction protected always goes red in directional phase");
+    }
+
+    @Test
+    @DisplayName("multiple positions per partition all share the same state")
+    void multiplePositionsPerPartition() {
+      BlockPos t1 = new BlockPos(1, 0, 0);
+      BlockPos t2 = new BlockPos(2, 0, 0);
+      BlockPos t3 = new BlockPos(3, 0, 0);
+      BlockPos t4 = new BlockPos(4, 0, 0);
+
+      TrafficSignalControllerCircuit circuit = emptyCircuit();
+      TrafficSignalPhase phase = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.ALL_EAST);
+
+      TrafficSignalControllerTickerUtilities.applyDirectionalGreenSignalAssignments(
+          circuit, phase,
+          empty(), empty(), empty(), empty(),
+          new Tuple<>(Arrays.asList(t1, t2), Arrays.asList(t3, t4)),
+          empty(), empty());
+
+      assertTrue(phase.getGreenSignals().contains(t1));
+      assertTrue(phase.getGreenSignals().contains(t2));
+      assertTrue(phase.getRedSignals().contains(t3));
+      assertTrue(phase.getRedSignals().contains(t4));
+    }
+  }
+
+  // ========================================================================
+  // buildAllThroughsProtectedsActivePhase integration (null-world fallback)
+  // ========================================================================
+  @Nested
+  @DisplayName("buildAllThroughsProtectedsActivePhase integration")
+  class BuildAllThroughsProtectedsActivePhaseIntegrationTest {
+
+    @Test
+    @DisplayName("null world: blankouts stay on walk list (visible) since world lookups skip")
+    void nullWorld_blankoutsVisible() {
+      BlockPos blankout1 = new BlockPos(100, 0, 0);
+      BlockPos blankout2 = new BlockPos(101, 0, 0);
+
+      TrafficSignalControllerCircuit circuit = emptyCircuit();
+      circuit.getThroughSignals().add(new BlockPos(1, 0, 0));
+      circuit.getNoTurnBlankoutSignals().add(blankout1);
+      circuit.getNoTurnBlankoutSignals().add(blankout2);
+
+      TrafficSignalPhase phase = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.ALL_THROUGHS_PROTECTEDS);
+
+      TrafficSignalControllerTickerUtilities.buildAllThroughsProtectedsActivePhase(
+          /* world */ null, circuit, phase,
+          /* greenLeftFacings */ java.util.EnumSet.noneOf(net.minecraft.util.EnumFacing.class),
+          /* greenRightFacings */ java.util.EnumSet.noneOf(net.minecraft.util.EnumFacing.class));
+
+      // Without a world, the blankout TE/facing lookups are skipped, so every blankout
+      // ends up on the walk list as a defensive default (sign visible) — better than
+      // hiding signs based on incomplete information.
+      assertTrue(phase.getWalkSignals().contains(blankout1));
+      assertTrue(phase.getWalkSignals().contains(blankout2));
+    }
+
+    @Test
+    @DisplayName("null world + empty facings: all left/right/protected go to FYA / red / green")
+    void nullWorld_emptyFacings_fyaPath() {
+      BlockPos flashLeft = new BlockPos(1, 0, 0);
+      BlockPos left = new BlockPos(2, 0, 0);
+      BlockPos flashRight = new BlockPos(3, 0, 0);
+      BlockPos right = new BlockPos(4, 0, 0);
+      BlockPos prot = new BlockPos(5, 0, 0);
+      BlockPos through = new BlockPos(6, 0, 0);
+
+      TrafficSignalControllerCircuit circuit = emptyCircuit();
+      circuit.getFlashingLeftSignals().add(flashLeft);
+      circuit.getLeftSignals().add(left);
+      circuit.getFlashingRightSignals().add(flashRight);
+      circuit.getRightSignals().add(right);
+      circuit.getProtectedSignals().add(prot);
+      circuit.getThroughSignals().add(through);
+
+      TrafficSignalPhase phase = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.ALL_THROUGHS_PROTECTEDS);
+
+      TrafficSignalControllerTickerUtilities.buildAllThroughsProtectedsActivePhase(
+          null, circuit, phase,
+          java.util.EnumSet.noneOf(net.minecraft.util.EnumFacing.class),
+          java.util.EnumSet.noneOf(net.minecraft.util.EnumFacing.class));
+
+      // All signals go to non-matching partition → FYA permissive path
+      assertTrue(phase.getFyaSignals().contains(flashLeft));
+      assertTrue(phase.getRedSignals().contains(left));
+      assertTrue(phase.getFyaSignals().contains(flashRight));
+      assertTrue(phase.getRedSignals().contains(right));
+      assertTrue(phase.getGreenSignals().contains(prot),
+          "Protected stays GREEN when right is FYA permissive");
+      assertTrue(phase.getGreenSignals().contains(through));
+    }
+  }
+
+  // ========================================================================
+  // TrafficSignalControllerCircuits + TrafficSignalControllerCircuit interactions
+  // ========================================================================
+  @Nested
+  @DisplayName("Circuit + Circuits interactions")
+  class CircuitInteractionsTest {
+
+    @Test
+    @DisplayName("a single position appearing in multiple signal lists is queried by both")
+    void positionInMultipleLists() {
+      BlockPos shared = new BlockPos(1, 0, 0);
+      TrafficSignalControllerCircuit circuit = emptyCircuit();
+      circuit.getLeftSignals().add(shared);
+      circuit.getRightSignals().add(shared);
+
+      assertTrue(circuit.getLeftSignals().contains(shared));
+      assertTrue(circuit.getRightSignals().contains(shared));
+      assertTrue(circuit.isDeviceLinked(shared));
+    }
+
+    @Test
+    @DisplayName("getSize counts each list independently (duplicate positions count twice)")
+    void getSize_doubleCountsDuplicates() {
+      BlockPos shared = new BlockPos(1, 0, 0);
+      TrafficSignalControllerCircuit circuit = emptyCircuit();
+      circuit.getLeftSignals().add(shared);
+      circuit.getRightSignals().add(shared);
+
+      assertEquals(2, circuit.getSize(),
+          "getSize sums all lists; the same position can be linked twice");
+    }
+
+    @Test
+    @DisplayName("unlinkDevice removes a position from every list it appears in")
+    void unlinkDevice_removesFromAllLists() {
+      BlockPos shared = new BlockPos(1, 0, 0);
+      TrafficSignalControllerCircuit circuit = emptyCircuit();
+      circuit.getLeftSignals().add(shared);
+      circuit.getRightSignals().add(shared);
+      circuit.getThroughSignals().add(shared);
+
+      assertTrue(circuit.unlinkDevice(shared));
+
+      assertFalse(circuit.getLeftSignals().contains(shared));
+      assertFalse(circuit.getRightSignals().contains(shared));
+      assertFalse(circuit.getThroughSignals().contains(shared));
+    }
+
+    @Test
+    @DisplayName("forAllSignals visits each list, including duplicates")
+    void forAllSignals_visitsDuplicates() {
+      BlockPos shared = new BlockPos(1, 0, 0);
+      TrafficSignalControllerCircuit circuit = emptyCircuit();
+      circuit.getLeftSignals().add(shared);
+      circuit.getRightSignals().add(shared);
+
+      java.util.concurrent.atomic.AtomicInteger count =
+          new java.util.concurrent.atomic.AtomicInteger();
+      circuit.forAllSignals(pos -> count.incrementAndGet());
+
+      assertEquals(2, count.get(),
+          "forAllSignals visits each list even when positions repeat");
+    }
+
+    @Test
+    @DisplayName("empty circuit has size 0 and isDeviceLinked returns false")
+    void emptyCircuit_invariants() {
+      TrafficSignalControllerCircuit circuit = emptyCircuit();
+      assertEquals(0, circuit.getSize());
+      assertFalse(circuit.isDeviceLinked(new BlockPos(0, 0, 0)));
+    }
+
+    @Test
+    @DisplayName("noTurnBlankoutSignals participates in linking and lookups")
+    void noTurnBlankoutSignals_linking() {
+      BlockPos blankout = new BlockPos(50, 0, 0);
+      TrafficSignalControllerCircuit circuit = emptyCircuit();
+      assertTrue(circuit.linkNoTurnBlankoutSignal(blankout));
+      assertTrue(circuit.isDeviceLinked(blankout));
+      assertEquals(1, circuit.getSize());
+
+      assertTrue(circuit.unlinkDevice(blankout));
+      assertFalse(circuit.isDeviceLinked(blankout));
+      assertEquals(0, circuit.getSize());
+    }
+  }
+
+  // ========================================================================
+  // getEffectiveLeftDemand / getEffectiveRightDemand: phase-priority demand
+  // ========================================================================
+  @Nested
+  @DisplayName("getEffectiveLeftDemand / getEffectiveRightDemand")
+  class GetEffectiveTurnDemandTest {
+
+    private TrafficSignalSensorSummary summary(int leftE, int leftW, int leftN, int leftS,
+        int rightE, int rightW, int rightN, int rightS) {
+      int leftTotal = leftE + leftW + leftN + leftS;
+      int rightTotal = rightE + rightW + rightN + rightS;
+      return new TrafficSignalSensorSummary(
+          /* standard total/E/W/N/S */ 0, 0, 0, 0, 0,
+          leftTotal, leftE, leftW, leftN, leftS,
+          /* protected */ 0, 0, 0, 0, 0,
+          rightTotal, rightE, rightW, rightN, rightS);
+    }
+
+    @Test
+    @DisplayName("getEffectiveLeftDemand: leftTotal=0 → 0 (early-out)")
+    void leftDemand_zeroTotal() {
+      TrafficSignalControllerCircuit circuit = emptyCircuit();
+      circuit.getLeftSignals().add(new BlockPos(1, 0, 0));
+      int demand = TrafficSignalControllerTickerUtilities.getEffectiveLeftDemand(
+          null, circuit, summary(0, 0, 0, 0, 0, 0, 0, 0));
+      assertEquals(0, demand);
+    }
+
+    @Test
+    @DisplayName("getEffectiveLeftDemand: no leftSignals → 0 (no green arrow to display)")
+    void leftDemand_noLeftSignals() {
+      TrafficSignalControllerCircuit circuit = emptyCircuit();
+      // Circuit has no leftSignals → ALL_LEFTS can't be served
+      int demand = TrafficSignalControllerTickerUtilities.getEffectiveLeftDemand(
+          null, circuit, summary(5, 5, 5, 5, 0, 0, 0, 0));
+      assertEquals(0, demand);
+    }
+
+    @Test
+    @DisplayName("getEffectiveLeftDemand: null world + no FYA → directional sum unchanged")
+    void leftDemand_nullWorld_noFya() {
+      TrafficSignalControllerCircuit circuit = emptyCircuit();
+      circuit.getLeftSignals().add(new BlockPos(1, 0, 0));
+      // No flashingLeft signals → no FYA-direction lookups → no adjustment
+      int demand = TrafficSignalControllerTickerUtilities.getEffectiveLeftDemand(
+          null, circuit, summary(2, 1, 0, 3, 0, 0, 0, 0));
+      assertEquals(6, demand, "Sum of directional left counts when no FYA adjustment");
+    }
+
+    @Test
+    @DisplayName("getEffectiveRightDemand: rightTotal=0 → 0 (early-out)")
+    void rightDemand_zeroTotal() {
+      TrafficSignalControllerCircuit circuit = emptyCircuit();
+      int demand = TrafficSignalControllerTickerUtilities.getEffectiveRightDemand(
+          null, circuit, summary(0, 0, 0, 0, 0, 0, 0, 0));
+      assertEquals(0, demand);
+    }
+
+    @Test
+    @DisplayName("getEffectiveRightDemand: null world + no FYA → directional sum unchanged")
+    void rightDemand_nullWorld_noFya() {
+      TrafficSignalControllerCircuit circuit = emptyCircuit();
+      // No flashingRight signals → no FYA-direction lookups → no adjustment
+      int demand = TrafficSignalControllerTickerUtilities.getEffectiveRightDemand(
+          null, circuit, summary(0, 0, 0, 0, 4, 0, 2, 0));
+      assertEquals(6, demand);
+    }
+  }
+
+  // ========================================================================
+  // collectFacingsFromSignals (helper for non-overlap fallback paths)
+  // ========================================================================
+  // collectFacingsFromSignals is private; we exercise it indirectly through the
+  // buildAllThroughsProtectedsActivePhase null-world path above (returns empty set
+  // since null world produces no facings, and the partitioning logic falls back to
+  // "all signals non-matching" which feeds through to the per-direction state assigner).
 }
