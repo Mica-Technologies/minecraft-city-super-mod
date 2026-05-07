@@ -136,11 +136,30 @@ together form one compound indication:
 - **FYA → FYA (no state change)**: No clearance needed; FYA continues uninterrupted.
 - **Any state → FYA**: Must go through yellow + red clearance first, then FYA activates.
 
-The controller's `getDefaultPhaseForCircuitNumber()` decides between protected green
-(`greenLeftTurn=true`: flashingLeftSignals=OFF, leftSignals=GREEN) and permissive FYA
-(`greenLeftTurn=false`: flashingLeftSignals=FYA, leftSignals=RED) based on
-`computeGreenLeftTurn()` / `computeGreenRightTurn()`, which compare turn-lane vehicle sensor
-counts against pedestrian request counts.
+**Per-direction protected-vs-FYA arbitration:** the controller decides protected-green
+vs. permissive-FYA on a **per-facing** basis, not per-circuit.
+`computeGreenLeftTurnFacings()` / `computeGreenRightTurnFacings()` return an
+`EnumSet<EnumFacing>` of directions where solid green is warranted; each direction is
+compared independently against cross-circuit pedestrian request counts. Phase builders then
+partition signal lists by `FACING` against the returned set: signals at "protected-green
+facings" go solid green (FYA companion off), signals at other facings go FYA permissive (or
+red companion).
+
+This matters most for multi-direction circuits — a single car waiting in one direction's
+turn lane no longer forces solid green at every other direction's turn signal. The boolean
+helpers `computeGreenLeftTurn()` / `computeGreenRightTurn()` are kept as `!isEmpty()`
+wrappers for callers that only need a circuit-wide "any direction qualifies" check.
+
+The same-direction guard for protected left (`!areSignalsFacingSameDirection → empty
+facings set`) still applies: opposing protected lefts intersect, so multi-direction
+circuits never get solid green left. Right turns on multi-direction circuits don't
+intersect (NB→E vs SB→W use disjoint paths), so the right-turn variant has no
+same-direction guard — but per-facing arbitration ensures only the directions with their
+own demand get solid green.
+
+The transit/bike protected-vs-right-turn conflict is also resolved per-facing: a protected
+signal at a facing where right is solid green goes red; at a facing where right is FYA
+permissive, the protected stays green.
 
 ### Sensor Blocks
 
@@ -178,10 +197,12 @@ vehicle would be and looking the same direction the vehicle travels), the sensor
 suppression no longer applies — every detection counts as protected demand, which
 inflates phase priority for ALL_LEFTS / ALL_RIGHTS.
 
-The omnidirectional fields (`getLeftTotal()`, `getRightTotal()`, etc.) are facing-agnostic
-and are used by `computeGreenLeftTurn` / `computeGreenRightTurn`, so the through-phase
-arrow arbitration is robust to facing mismatches; only the priority-selection path is
-affected.
+**Validator:** in `NORMAL` mode, the controller validates each tick that every sensor on
+every circuit has its `FACING` matching at least one signal head on the same circuit. Any
+mismatch enters fault state with a per-sensor message, surfacing the misconfiguration
+instead of letting it degrade silently. Other operating modes (FLASH, MANUAL_OFF, etc.)
+are exempt because they don't use sensor data the same way. See
+`TrafficSignalControllerTickerUtilities.validateSensorFacings`.
 
 ### Pedestrian / APS Blocks
 
