@@ -85,13 +85,23 @@ Currently covered:
 | Vehicle traffic signals (`controllable*signal*`) | `TrafficSignalVertexData.SIGNAL_BODY_VERTEX_DATA` + `SIGNAL_DOOR_VERTEX_DATA` + `NONE_VISOR_VERTEX_DATA` | ~85 |
 | Crosswalk signals (`controllable*crosswalk*`) | `CrosswalkSignalVertexData.SINGLE_BODY_VERTEX_DATA` + `SINGLE_VISOR_HOOD_VERTEX_DATA` | ~30 |
 | Blankout boxes (`blankout*`) | `BlankoutBoxVertexData.BODY_VERTEX_DATA` + `VISOR_HOOD_VERTEX_DATA` | ~3 |
+| Lane control signal | Shares `BlankoutBoxVertexData` body + visor | 1 |
+| `portable_message_sign`, `portable_speed_limit_sign` | Hard-coded silhouette: trailer (19.5×6×36) + lower portion of mast (clamped to y≤32). Sign panel sits above mast at y=40+, out of Dynmap range. | 2 |
+| `overhead_message_sign` | Hard-coded silhouette of the 144×64×20 sign panel, clamped to Dynmap's [-16, 32] window — emits as a 3-block-wide × 3-tall silhouette of the panel face. | 1 |
+| `overhead_speed_limit_sign` | Hard-coded silhouette of the 48×64×12 sign panel, clamped to Dynmap's window. | 1 |
+| `dynamic_guide_sign` | Hard-coded silhouette: representative 3-wide × 2-tall back-of-block panel, since per-sign panel size is data-driven and varies per block. | 1 |
 | Crosswalk button/tweeter accessories | (intentionally falls through to JSON model) | — |
 
-The remaining TESR-rendered block families (lane control signal, fire alarm strobe, emergency
-light, HVAC thermostat, message signs, speed limit signs, traffic beacons, dynamic guide sign,
-mount kit, tattle-tale beacon) draw their geometry inline in the renderer rather than from a
-shared `*VertexData` class. They continue to fall back to the static blockstate model
-(typically an AABB cube) until per-renderer adapters are written.
+Hard-coded silhouettes for the four sign families come from each renderer's own `SIGN_*` /
+`TRAILER_*` / `MAST_*` constants (see `TileEntity*Renderer.java`), translated into the block's
+default-facing local frame. Variant rotation (`facing` property) is then applied via the standard
+`R/x/y/z` token in the `modellist:` line.
+
+The remaining TESR-rendered block families (fire alarm strobe, emergency light, HVAC thermostat,
+traffic beacon halo, mount kit bracket, tattle-tale beacon halo) all have correct **static JSON
+geometry** already — their TESRs only paint glow/text overlays on top of that geometry, and
+Dynmap's renderdata format has no way to represent overlays. These go through the JSON pipeline
+unchanged.
 
 ## Multipart Fences (Checkpoint C)
 
