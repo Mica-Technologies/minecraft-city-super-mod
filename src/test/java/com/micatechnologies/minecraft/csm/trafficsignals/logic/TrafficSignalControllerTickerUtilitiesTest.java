@@ -3804,4 +3804,103 @@ class TrafficSignalControllerTickerUtilitiesTest {
           "Matching FYA-left with no protected add-on should flash yellow");
     }
   }
+
+  // ========================================================================
+  // findCircuitSensorFacingMismatch (sensor-facing validator pure helper)
+  // ========================================================================
+  @Nested
+  @DisplayName("findCircuitSensorFacingMismatch")
+  class FindCircuitSensorFacingMismatchTest {
+
+    private static final BlockPos SENSOR_A = new BlockPos(1, 0, 0);
+    private static final BlockPos SENSOR_B = new BlockPos(2, 0, 0);
+
+    private List<Tuple<BlockPos, net.minecraft.util.EnumFacing>> sensors(
+        Tuple<BlockPos, net.minecraft.util.EnumFacing>... entries) {
+      return Arrays.asList(entries);
+    }
+
+    private Tuple<BlockPos, net.minecraft.util.EnumFacing> sensor(BlockPos pos,
+        net.minecraft.util.EnumFacing facing) {
+      return new Tuple<>(pos, facing);
+    }
+
+    @Test
+    @DisplayName("empty signal facings = no constraint, returns null")
+    void emptySignalFacings_returnsNull() {
+      String result = TrafficSignalControllerTickerUtilities.findCircuitSensorFacingMismatch(
+          1,
+          java.util.EnumSet.noneOf(net.minecraft.util.EnumFacing.class),
+          sensors(sensor(SENSOR_A, net.minecraft.util.EnumFacing.NORTH)));
+      assertNull(result, "No signal facings means no constraint to enforce");
+    }
+
+    @Test
+    @DisplayName("sensor facing matches a signal facing → null (no fault)")
+    void matchingFacing_returnsNull() {
+      String result = TrafficSignalControllerTickerUtilities.findCircuitSensorFacingMismatch(
+          1,
+          java.util.EnumSet.of(net.minecraft.util.EnumFacing.NORTH,
+              net.minecraft.util.EnumFacing.SOUTH),
+          sensors(sensor(SENSOR_A, net.minecraft.util.EnumFacing.NORTH)));
+      assertNull(result);
+    }
+
+    @Test
+    @DisplayName("sensor facing not in signal set → fault message references circuit number")
+    void mismatch_returnsMessage() {
+      String result = TrafficSignalControllerTickerUtilities.findCircuitSensorFacingMismatch(
+          3,
+          java.util.EnumSet.of(net.minecraft.util.EnumFacing.NORTH,
+              net.minecraft.util.EnumFacing.SOUTH),
+          sensors(sensor(SENSOR_A, net.minecraft.util.EnumFacing.EAST)));
+      assertNotNull(result);
+      assertTrue(result.contains("circuit 3"), "Message should reference circuit number 3");
+      assertTrue(result.contains("east"), "Message should reference sensor's facing direction");
+    }
+
+    @Test
+    @DisplayName("sensor with null facing is skipped (unloaded chunk / malformed state)")
+    void nullSensorFacing_skipped() {
+      String result = TrafficSignalControllerTickerUtilities.findCircuitSensorFacingMismatch(
+          1,
+          java.util.EnumSet.of(net.minecraft.util.EnumFacing.NORTH),
+          sensors(sensor(SENSOR_A, null)));
+      assertNull(result, "Null sensor facing should not trigger a mismatch");
+    }
+
+    @Test
+    @DisplayName("multiple sensors: first mismatch reported, subsequent ignored")
+    void multipleSensors_firstMismatchWins() {
+      String result = TrafficSignalControllerTickerUtilities.findCircuitSensorFacingMismatch(
+          2,
+          java.util.EnumSet.of(net.minecraft.util.EnumFacing.NORTH),
+          sensors(sensor(SENSOR_A, net.minecraft.util.EnumFacing.EAST),
+              sensor(SENSOR_B, net.minecraft.util.EnumFacing.WEST)));
+      assertNotNull(result);
+      assertTrue(result.contains(SENSOR_A.toString()),
+          "Should report the first mismatch, sensor A");
+    }
+
+    @Test
+    @DisplayName("all sensors aligned → null (no fault)")
+    void allAligned_returnsNull() {
+      String result = TrafficSignalControllerTickerUtilities.findCircuitSensorFacingMismatch(
+          1,
+          java.util.EnumSet.of(net.minecraft.util.EnumFacing.NORTH,
+              net.minecraft.util.EnumFacing.EAST),
+          sensors(sensor(SENSOR_A, net.minecraft.util.EnumFacing.NORTH),
+              sensor(SENSOR_B, net.minecraft.util.EnumFacing.EAST)));
+      assertNull(result);
+    }
+
+    @Test
+    @DisplayName("null inputs are handled defensively → null (no fault)")
+    void nullInputs_returnNull() {
+      assertNull(TrafficSignalControllerTickerUtilities.findCircuitSensorFacingMismatch(
+          1, null, sensors(sensor(SENSOR_A, net.minecraft.util.EnumFacing.NORTH))));
+      assertNull(TrafficSignalControllerTickerUtilities.findCircuitSensorFacingMismatch(
+          1, java.util.EnumSet.of(net.minecraft.util.EnumFacing.NORTH), null));
+    }
+  }
 }
