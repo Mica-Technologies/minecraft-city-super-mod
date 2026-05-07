@@ -3,7 +3,7 @@ package com.micatechnologies.minecraft.csm.trafficsignals.logic;
 import com.google.common.collect.Lists;
 import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityBlankoutBox;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
@@ -999,7 +999,10 @@ public class TrafficSignalControllerTickerUtilities {
           upcomingPhase.addRedSignals(circuit.getPedestrianBeaconSignals());
           upcomingPhase.addDontWalkSignals(circuit.getPedestrianSignals());
           upcomingPhase.addDontWalkSignals(circuit.getPedestrianAccessorySignals());
-          upcomingPhase.addDontWalkSignals(circuit.getNoTurnBlankoutSignals());
+          // Drive blankout signs from the phase's GREEN/FYA assignments so a "NO RIGHT
+          // TURN" sign stays lit when the right turn is red (and a "NO LEFT TURN" sign
+          // hides while leftSignals are green).
+          addBlankoutSignalsToPhase(world, circuit, upcomingPhase);
         } else {
           boolean pedestrianSignalsWalk = false;
           addCircuitToPhaseAllRed(circuit, upcomingPhase, pedestrianSignalsWalk);
@@ -1562,19 +1565,29 @@ public class TrafficSignalControllerTickerUtilities {
 
   /**
    * Sets the on/off state of every "no turn" blankout sign in the circuit based on whether
-   * the corresponding turn is permitted by this phase's signal state.
+   * the corresponding turn is permitted at the sign's facing direction in this phase.
    *
-   * <p>A turn is permitted when any of the circuit's signals on that side is in either
-   * {@code GREEN} (protected) or {@code FYA} (permissive flashing yellow) within this phase.
-   * Both indications legally allow a driver to make the turn, so a "NO TURN" blankout sign
-   * would directly contradict the active signal indication. When neither protected nor
-   * permissive is shown, the turn is forbidden and the blankout sign is lit.</p>
+   * <p>A turn is permitted at a given direction when any of the circuit's signals on that
+   * side at that facing is in either {@code GREEN} (protected) or {@code FYA} (permissive
+   * flashing yellow) within this phase. Both indications legally allow a driver to make the
+   * turn, so a "NO TURN" blankout sign at the same facing would directly contradict the
+   * active signal indication. When neither protected nor permissive is shown for the
+   * blankout's facing, the turn is forbidden and the sign is lit.</p>
+   *
+   * <p>The per-facing match matters in directional phases (ALL_EAST/WEST/NORTH/SOUTH) where
+   * only matching-direction signals get green/FYA — a west-facing blankout must remain lit
+   * during ALL_EAST even though east-facing left turns are green. In omnidirectional phases
+   * (ALL_THROUGHS_*), all directions of a turn type share the same state, so per-facing and
+   * facing-agnostic matching produce identical results.</p>
    *
    * <p>Must be called <i>after</i> the phase's vehicle-signal lists are populated for the
    * circuit, since the helper inspects {@link TrafficSignalPhase#getGreenSignals()} and
-   * {@link TrafficSignalPhase#getFyaSignals()} to determine turn allowance.</p>
+   * {@link TrafficSignalPhase#getFyaSignals()} to determine turn allowance. When
+   * {@code world} is {@code null} (test path with no blankouts), all blankouts are emitted
+   * to the walk list (sign visible) since no facing lookup is possible.</p>
    *
-   * @param world   The world containing the blankout box tile entities.
+   * @param world   The world containing the blankout box tile entities (may be {@code null}
+   *                in tests with no blankout signals configured).
    * @param circuit The circuit whose blankout signals to update.
    * @param phase   The phase being built; the helper reads its green/FYA assignments and
    *                writes the blankout signals into the walk/don't-walk lists.
@@ -1584,12 +1597,12 @@ public class TrafficSignalControllerTickerUtilities {
   private static void addBlankoutSignalsToPhase(World world,
       TrafficSignalControllerCircuit circuit,
       TrafficSignalPhase phase) {
-    boolean leftTurnAllowed =
-        !Collections.disjoint(circuit.getLeftSignals(), phase.getGreenSignals())
-            || !Collections.disjoint(circuit.getFlashingLeftSignals(), phase.getFyaSignals());
-    boolean rightTurnAllowed =
-        !Collections.disjoint(circuit.getRightSignals(), phase.getGreenSignals())
-            || !Collections.disjoint(circuit.getFlashingRightSignals(), phase.getFyaSignals());
+    EnumSet<EnumFacing> leftAllowedFacings =
+        collectAllowedFacings(world, circuit.getLeftSignals(), phase.getGreenSignals(),
+            circuit.getFlashingLeftSignals(), phase.getFyaSignals());
+    EnumSet<EnumFacing> rightAllowedFacings =
+        collectAllowedFacings(world, circuit.getRightSignals(), phase.getGreenSignals(),
+            circuit.getFlashingRightSignals(), phase.getFyaSignals());
 
     List<BlockPos> onSignals = new ArrayList<>();
     List<BlockPos> offSignals = new ArrayList<>();
@@ -1599,10 +1612,15 @@ public class TrafficSignalControllerTickerUtilities {
         TileEntity te = world.getTileEntity(pos);
         if (te instanceof TileEntityBlankoutBox) {
           BlankoutBoxType type = ((TileEntityBlankoutBox) te).getBlankoutType();
-          if (type == BlankoutBoxType.NO_RIGHT_TURN && rightTurnAllowed) {
-            turnOff = true;
-          } else if (type == BlankoutBoxType.NO_LEFT_TURN && leftTurnAllowed) {
-            turnOff = true;
+          EnumFacing boxFacing = signalFacingOrNull(world, pos);
+          if (boxFacing != null) {
+            if (type == BlankoutBoxType.NO_RIGHT_TURN
+                && rightAllowedFacings.contains(boxFacing)) {
+              turnOff = true;
+            } else if (type == BlankoutBoxType.NO_LEFT_TURN
+                && leftAllowedFacings.contains(boxFacing)) {
+              turnOff = true;
+            }
           }
         }
       }
@@ -1614,6 +1632,60 @@ public class TrafficSignalControllerTickerUtilities {
     }
     phase.addWalkSignals(onSignals);
     phase.addDontWalkSignals(offSignals);
+  }
+
+  /**
+   * Builds the set of {@link EnumFacing} directions at which a turn is "allowed" — i.e.,
+   * has either a protected-green signal or a permissive-FYA signal active in the phase.
+   * Used by {@link #addBlankoutSignalsToPhase} to match each blankout sign to the same-
+   * direction turn state.
+   *
+   * @param world             The world for facing lookups; if {@code null}, returns an
+   *                          empty set (callers fall back accordingly).
+   * @param protectedSignals  The circuit's protected-green-arrow signals (e.g., leftSignals).
+   * @param greenSignals      The phase's green-state signals.
+   * @param permissiveSignals The circuit's flashing-arrow signals (e.g., flashingLeftSignals).
+   * @param fyaSignals        The phase's FYA-state signals.
+   *
+   * @return The directions where the turn is allowed.
+   *
+   * @since 1.0
+   */
+  private static EnumSet<EnumFacing> collectAllowedFacings(World world,
+      List<BlockPos> protectedSignals,
+      List<BlockPos> greenSignals,
+      List<BlockPos> permissiveSignals,
+      List<BlockPos> fyaSignals) {
+    EnumSet<EnumFacing> allowed = EnumSet.noneOf(EnumFacing.class);
+    if (world == null) {
+      return allowed;
+    }
+    for (BlockPos pos : protectedSignals) {
+      if (greenSignals.contains(pos)) {
+        EnumFacing facing = signalFacingOrNull(world, pos);
+        if (facing != null) allowed.add(facing);
+      }
+    }
+    for (BlockPos pos : permissiveSignals) {
+      if (fyaSignals.contains(pos)) {
+        EnumFacing facing = signalFacingOrNull(world, pos);
+        if (facing != null) allowed.add(facing);
+      }
+    }
+    return allowed;
+  }
+
+  /**
+   * Reads the {@link BlockHorizontal#FACING} property from the block at {@code pos}, or
+   * {@code null} if the block does not carry that property (defensive against malformed
+   * states from chunk-edge or unloaded-block conditions).
+   */
+  private static EnumFacing signalFacingOrNull(World world, BlockPos pos) {
+    IBlockState state = world.getBlockState(pos);
+    if (state.getProperties().containsKey(BlockHorizontal.FACING)) {
+      return state.getValue(BlockHorizontal.FACING);
+    }
+    return null;
   }
 
   public static boolean allCircuitsHaveSensors(TrafficSignalControllerCircuits circuits) {
