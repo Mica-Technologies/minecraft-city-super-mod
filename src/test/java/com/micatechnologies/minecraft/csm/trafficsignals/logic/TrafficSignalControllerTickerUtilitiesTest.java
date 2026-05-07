@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.Tuple;
 import net.minecraft.util.math.BlockPos;
@@ -4613,4 +4614,207 @@ class TrafficSignalControllerTickerUtilitiesTest {
   // buildAllThroughsProtectedsActivePhase null-world path above (returns empty set
   // since null world produces no facings, and the partitioning logic falls back to
   // "all signals non-matching" which feeds through to the per-direction state assigner).
+
+  // ========================================================================
+  // validateSensorFacings (function-based overload, Map-backed lookups)
+  // ========================================================================
+  @Nested
+  @DisplayName("validateSensorFacings (function-based)")
+  class ValidateSensorFacingsFunctionBasedTest {
+
+    private static final BlockPos SIG_NB = new BlockPos(10, 0, 0);
+    private static final BlockPos SIG_SB = new BlockPos(11, 0, 0);
+    private static final BlockPos SENSOR_NB = new BlockPos(20, 0, 0);
+    private static final BlockPos SENSOR_BAD = new BlockPos(21, 0, 0);
+
+    private TrafficSignalControllerCircuits circuits(TrafficSignalControllerCircuit... cs) {
+      TrafficSignalControllerCircuits result = new TrafficSignalControllerCircuits();
+      for (TrafficSignalControllerCircuit c : cs) {
+        result.addCircuit(c);
+      }
+      return result;
+    }
+
+    @Test
+    @DisplayName("aligned single-direction circuit → no fault")
+    void singleDirection_aligned_noFault() {
+      java.util.Map<BlockPos, net.minecraft.util.EnumFacing> facings = new java.util.HashMap<>();
+      facings.put(SIG_NB, net.minecraft.util.EnumFacing.NORTH);
+      facings.put(SENSOR_NB, net.minecraft.util.EnumFacing.NORTH);
+
+      TrafficSignalControllerCircuit c = emptyCircuit();
+      c.getThroughSignals().add(SIG_NB);
+      c.getSensors().add(SENSOR_NB);
+
+      String result = TrafficSignalControllerTickerUtilities.validateSensorFacings(
+          facings::get, circuits(c));
+
+      assertNull(result, "Sensor facing matches signal facing — no fault");
+    }
+
+    @Test
+    @DisplayName("misaligned sensor → fault message references the sensor and circuit")
+    void misalignedSensor_returnsFault() {
+      java.util.Map<BlockPos, net.minecraft.util.EnumFacing> facings = new java.util.HashMap<>();
+      facings.put(SIG_NB, net.minecraft.util.EnumFacing.NORTH);
+      facings.put(SENSOR_BAD, net.minecraft.util.EnumFacing.EAST);
+
+      TrafficSignalControllerCircuit c = emptyCircuit();
+      c.getThroughSignals().add(SIG_NB);
+      c.getSensors().add(SENSOR_BAD);
+
+      String result = TrafficSignalControllerTickerUtilities.validateSensorFacings(
+          facings::get, circuits(c));
+
+      assertNotNull(result);
+      assertTrue(result.contains("circuit 1"));
+      assertTrue(result.contains(SENSOR_BAD.toString()));
+      assertTrue(result.contains("east"));
+    }
+
+    @Test
+    @DisplayName("multi-direction circuit aligned → no fault")
+    void multiDirection_aligned_noFault() {
+      java.util.Map<BlockPos, net.minecraft.util.EnumFacing> facings = new java.util.HashMap<>();
+      facings.put(SIG_NB, net.minecraft.util.EnumFacing.NORTH);
+      facings.put(SIG_SB, net.minecraft.util.EnumFacing.SOUTH);
+      BlockPos sensorN = new BlockPos(30, 0, 0);
+      BlockPos sensorS = new BlockPos(31, 0, 0);
+      facings.put(sensorN, net.minecraft.util.EnumFacing.NORTH);
+      facings.put(sensorS, net.minecraft.util.EnumFacing.SOUTH);
+
+      TrafficSignalControllerCircuit c = emptyCircuit();
+      c.getThroughSignals().add(SIG_NB);
+      c.getThroughSignals().add(SIG_SB);
+      c.getSensors().add(sensorN);
+      c.getSensors().add(sensorS);
+
+      String result = TrafficSignalControllerTickerUtilities.validateSensorFacings(
+          facings::get, circuits(c));
+
+      assertNull(result);
+    }
+
+    @Test
+    @DisplayName("multi-circuit: only the misaligned circuit reports a fault")
+    void multiCircuit_isolatesFault() {
+      java.util.Map<BlockPos, net.minecraft.util.EnumFacing> facings = new java.util.HashMap<>();
+      // Circuit 1 aligned
+      BlockPos sigC1 = new BlockPos(40, 0, 0);
+      BlockPos sensorC1 = new BlockPos(41, 0, 0);
+      facings.put(sigC1, net.minecraft.util.EnumFacing.NORTH);
+      facings.put(sensorC1, net.minecraft.util.EnumFacing.NORTH);
+
+      // Circuit 2 misaligned
+      BlockPos sigC2 = new BlockPos(50, 0, 0);
+      BlockPos sensorC2 = new BlockPos(51, 0, 0);
+      facings.put(sigC2, net.minecraft.util.EnumFacing.EAST);
+      facings.put(sensorC2, net.minecraft.util.EnumFacing.WEST);
+
+      TrafficSignalControllerCircuit c1 = emptyCircuit();
+      c1.getThroughSignals().add(sigC1);
+      c1.getSensors().add(sensorC1);
+      TrafficSignalControllerCircuit c2 = emptyCircuit();
+      c2.getThroughSignals().add(sigC2);
+      c2.getSensors().add(sensorC2);
+
+      String result = TrafficSignalControllerTickerUtilities.validateSensorFacings(
+          facings::get, circuits(c1, c2));
+
+      assertNotNull(result);
+      assertTrue(result.contains("circuit 2"), "Should pinpoint the offending circuit");
+      assertFalse(result.contains("circuit 1"));
+    }
+
+    @Test
+    @DisplayName("circuit with no sensors → no fault (nothing to validate)")
+    void noSensors_skipped() {
+      java.util.Map<BlockPos, net.minecraft.util.EnumFacing> facings = new java.util.HashMap<>();
+      facings.put(SIG_NB, net.minecraft.util.EnumFacing.NORTH);
+
+      TrafficSignalControllerCircuit c = emptyCircuit();
+      c.getThroughSignals().add(SIG_NB);
+      // no sensors
+
+      assertNull(TrafficSignalControllerTickerUtilities.validateSensorFacings(
+          facings::get, circuits(c)));
+    }
+
+    @Test
+    @DisplayName("circuit with sensors but no signal facings (resolver returns null) → no fault")
+    void allFacingsNull_skipped() {
+      // Resolver returns null for everything (e.g. signals removed but sensors still linked)
+      TrafficSignalControllerCircuit c = emptyCircuit();
+      c.getThroughSignals().add(SIG_NB);
+      c.getSensors().add(SENSOR_NB);
+
+      assertNull(TrafficSignalControllerTickerUtilities.validateSensorFacings(
+          pos -> null, circuits(c)),
+          "When no signal has a resolvable facing, there's no constraint to validate against");
+    }
+
+    @Test
+    @DisplayName("sensor with null facing is skipped, others still validated")
+    void sensorNullFacing_skipped() {
+      java.util.Map<BlockPos, net.minecraft.util.EnumFacing> facings = new java.util.HashMap<>();
+      facings.put(SIG_NB, net.minecraft.util.EnumFacing.NORTH);
+      facings.put(SENSOR_NB, net.minecraft.util.EnumFacing.NORTH);
+      // SENSOR_BAD intentionally not in map → resolver returns null
+      BlockPos sensorUnloaded = SENSOR_BAD;
+
+      TrafficSignalControllerCircuit c = emptyCircuit();
+      c.getThroughSignals().add(SIG_NB);
+      c.getSensors().add(sensorUnloaded);  // first — null facing, skipped
+      c.getSensors().add(SENSOR_NB);       // second — aligned
+
+      String result = TrafficSignalControllerTickerUtilities.validateSensorFacings(
+          facings::get, circuits(c));
+
+      assertNull(result, "Null-facing sensor is skipped (unloaded chunk); other sensors validate");
+    }
+
+    @Test
+    @DisplayName("flashing-left signal facing counts toward the circuit's allowed set")
+    void flashingLeftFacing_counts() {
+      java.util.Map<BlockPos, net.minecraft.util.EnumFacing> facings = new java.util.HashMap<>();
+      BlockPos flashLeft = new BlockPos(60, 0, 0);
+      facings.put(flashLeft, net.minecraft.util.EnumFacing.NORTH);
+      facings.put(SENSOR_NB, net.minecraft.util.EnumFacing.NORTH);
+
+      TrafficSignalControllerCircuit c = emptyCircuit();
+      // Only a flashing-left signal — no through. Sensor still validates against its facing.
+      c.getFlashingLeftSignals().add(flashLeft);
+      c.getSensors().add(SENSOR_NB);
+
+      assertNull(TrafficSignalControllerTickerUtilities.validateSensorFacings(
+          facings::get, circuits(c)));
+    }
+
+    @Test
+    @DisplayName("null facingResolver → null result (defensive)")
+    void nullResolver_nullResult() {
+      TrafficSignalControllerCircuit c = emptyCircuit();
+      c.getThroughSignals().add(SIG_NB);
+      c.getSensors().add(SENSOR_NB);
+      assertNull(TrafficSignalControllerTickerUtilities.validateSensorFacings(
+          (Function<BlockPos, net.minecraft.util.EnumFacing>) null, circuits(c)));
+    }
+
+    @Test
+    @DisplayName("null circuits → null result (defensive)")
+    void nullCircuits_nullResult() {
+      assertNull(TrafficSignalControllerTickerUtilities.validateSensorFacings(
+          pos -> net.minecraft.util.EnumFacing.NORTH, null));
+    }
+
+    @Test
+    @DisplayName("World overload with null world → null result (delegates safely)")
+    void worldOverload_nullWorld() {
+      TrafficSignalControllerCircuit c = emptyCircuit();
+      c.getThroughSignals().add(SIG_NB);
+      c.getSensors().add(SENSOR_NB);
+      assertNull(TrafficSignalControllerTickerUtilities.validateSensorFacings(
+          (net.minecraft.world.World) null, circuits(c)));
+    }
+  }
 }
