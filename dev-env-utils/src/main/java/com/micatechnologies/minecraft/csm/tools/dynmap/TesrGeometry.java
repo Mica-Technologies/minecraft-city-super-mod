@@ -81,26 +81,50 @@ public final class TesrGeometry {
     /**
      * Hard-coded box silhouettes for blocks whose visible geometry is drawn inline in their
      * TESR rather than from a {@code *VertexData} class. Each entry is six floats:
-     * {@code {fromX, fromY, fromZ, toX, toY, toZ}} in 0..16 model units.
+     * {@code {fromX, fromY, fromZ, toX, toY, toZ}} in 0..16 model units. Boxes may extend
+     * to {@code [-16, 32]} (one block past each face) — Dynmap's {@code [-1, 2]} unit-space
+     * window — to silhouette TESR geometry that hangs outside the host block.
+     *
+     * <p>Coordinates are in the block's <b>default-facing</b> local frame (the renderer's
+     * {@code rotY=0} branch). Variant rotation from the blockstate is applied later in the
+     * {@code modellist:} pipeline via the trailing {@code R/x/y/z} token.
      */
-    private static final List<double[]> PORTABLE_SIGN_BOXES = Arrays.asList(
-            // Trailer base (matches the renderer's TRAILER_LENGTH=36 / WIDTH=19.5 envelope,
-            // clamped to within-block extents so the silhouette fits Dynmap's [-1, 2] window).
-            new double[]{0.5, 4.5, 0.5, 15.5, 10.5, 15.5},
-            // Lower portion of the mast — full mast extends beyond range, so cap at y=15.
-            new double[]{6.0, 10.5, 6.0, 10.0, 15.0, 10.0}
+    private static final List<double[]> PORTABLE_MESSAGE_SIGN_BOXES = Arrays.asList(
+            // Trailer (TileEntityPortableMessageSignRenderer TRAILER_*: 19.5 × 6 × 36, offset +4 in z).
+            new double[]{-1.75, 4.5, -6.0, 17.75, 10.5, 30.0},
+            // Lower portion of the mast (MAST_SIZE=4.5, extends to y=40.5, clamped to y=32).
+            new double[]{5.75, 10.5, 5.75, 10.25, 32.0, 10.25}
     );
 
-    private static final List<double[]> OVERHEAD_SIGN_BOXES = Arrays.asList(
-            // Mounting bracket / housing visible at the block — full sign panel hangs above the
-            // playable block out of Dynmap's render range, so we silhouette only the in-block bits.
-            new double[]{1.0, 11.0, 12.0, 15.0, 15.0, 16.0}
+    private static final List<double[]> PORTABLE_SPEED_LIMIT_SIGN_BOXES = Arrays.asList(
+            // Same trailer as the message sign (TileEntityPortableSpeedLimitRenderer TRAILER_*).
+            new double[]{-1.75, 4.5, -6.0, 17.75, 10.5, 30.0},
+            // Lower portion of the mast (MAST_HEIGHT=24, extends to y=34.5, clamped to y=32).
+            new double[]{5.75, 10.5, 5.75, 10.25, 32.0, 10.25}
+    );
+
+    private static final List<double[]> OVERHEAD_MESSAGE_SIGN_BOXES = Arrays.asList(
+            // Sign panel: 144W × 64.02H × 20D centered on the host block (CX=8, CY=8) with
+            // FACE_Z=-4 and BACK_Z=16 (TileEntityOverheadMessageSignRenderer SIGN_*). The
+            // panel extends well beyond the host so we clamp to Dynmap's [-16, 32] window.
+            new double[]{-16.0, -16.0, -4.0, 32.0, 32.0, 16.0}
+    );
+
+    private static final List<double[]> OVERHEAD_SPEED_LIMIT_SIGN_BOXES = Arrays.asList(
+            // Sign panel: 48W × 64H × 12D centered on the host block (CX=8, CY=8) with
+            // FACE_Z=4 and BACK_Z=16 (TileEntityOverheadSpeedLimitRenderer SIGN_*). Wider
+            // and shorter than the message sign; clamp the same way.
+            new double[]{-16.0, -16.0, 4.0, 32.0, 32.0, 16.0}
     );
 
     private static final List<double[]> DYNAMIC_GUIDE_SIGN_BOXES = Arrays.asList(
-            // Thin vertical sign panel at the block face. The full multi-block panel can't fit
-            // Dynmap's range; this approximates the in-block portion as a flat 14×14×2 panel.
-            new double[]{1.0, 1.0, 13.0, 15.0, 15.0, 15.0}
+            // The panel is variable per-sign (computeTotalSignWidth/Height in the renderer);
+            // the minimum height is 16 (one block) and typical exit signs are 2–3 blocks wide.
+            // We silhouette a representative 3-wide × 2-tall back-of-block panel: (faceZ=14.5,
+            // BACK_Z=16). Users with large signs see roughly the right footprint; users with
+            // single-block signs see a slight overshoot, which is preferable to silhouetting
+            // only the host block on a multi-block sign.
+            new double[]{-16.0, -8.0, 13.0, 32.0, 24.0, 15.0}
     );
 
     private static final List<RecipeEntry> RECIPES = Arrays.asList(
@@ -114,15 +138,23 @@ public final class TesrGeometry {
             RecipeEntry.byRegistryContains(Arrays.asList("blankout"), BLANKOUT_PARTS),
             // Lane control signal — same body+visor shape as a blankout box.
             RecipeEntry.byRegistryContains(Arrays.asList("lane_control_signal"), BLANKOUT_PARTS),
-            // Portable message / speed limit signs (trailer-mounted): silhouette the trailer.
-            RecipeEntry.hardCoded("portable_message_or_speed_sign",
-                    n -> n != null && (n.equals("portable_message_sign") || n.equals("portable_speed_limit_sign")),
-                    PORTABLE_SIGN_BOXES),
-            // Overhead message / speed limit signs: silhouette the mounting bracket.
-            RecipeEntry.hardCoded("overhead_message_or_speed_sign",
-                    n -> n != null && (n.equals("overhead_message_sign") || n.equals("overhead_speed_limit_sign")),
-                    OVERHEAD_SIGN_BOXES),
-            // Dynamic guide sign: silhouette a flat panel at the block face.
+            // Portable message sign: trailer + lower mast.
+            RecipeEntry.hardCoded("portable_message_sign",
+                    n -> "portable_message_sign".equals(n),
+                    PORTABLE_MESSAGE_SIGN_BOXES),
+            // Portable speed limit sign: same trailer footprint, shorter mast.
+            RecipeEntry.hardCoded("portable_speed_limit_sign",
+                    n -> "portable_speed_limit_sign".equals(n),
+                    PORTABLE_SPEED_LIMIT_SIGN_BOXES),
+            // Overhead message sign: full panel clamped to Dynmap's window.
+            RecipeEntry.hardCoded("overhead_message_sign",
+                    n -> "overhead_message_sign".equals(n),
+                    OVERHEAD_MESSAGE_SIGN_BOXES),
+            // Overhead speed limit sign: shorter, narrower panel.
+            RecipeEntry.hardCoded("overhead_speed_limit_sign",
+                    n -> "overhead_speed_limit_sign".equals(n),
+                    OVERHEAD_SPEED_LIMIT_SIGN_BOXES),
+            // Dynamic guide sign: representative multi-block exit sign panel.
             RecipeEntry.hardCoded("dynamic_guide_sign",
                     n -> "dynamic_guide_sign".equals(n),
                     DYNAMIC_GUIDE_SIGN_BOXES),
