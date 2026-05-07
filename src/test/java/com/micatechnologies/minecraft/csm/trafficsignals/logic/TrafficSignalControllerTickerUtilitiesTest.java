@@ -5222,4 +5222,437 @@ class TrafficSignalControllerTickerUtilitiesTest {
           "pedestrianBeaconSignals must be checked too — mismatch should propagate");
     }
   }
+
+  // ========================================================================
+  // filterSignalsByFacingDirection (function-based overload)
+  // ========================================================================
+  @Nested
+  @DisplayName("filterSignalsByFacingDirection (function-based)")
+  class FilterSignalsByFacingDirectionFunctionBasedTest {
+
+    private static final BlockPos POS_N = new BlockPos(1, 0, 0);
+    private static final BlockPos POS_S = new BlockPos(2, 0, 0);
+    private static final BlockPos POS_E = new BlockPos(3, 0, 0);
+
+    @Test
+    @DisplayName("matching direction in first list, others in second")
+    void matchingDirection() {
+      java.util.Map<BlockPos, net.minecraft.util.EnumFacing> facings = new java.util.HashMap<>();
+      facings.put(POS_N, net.minecraft.util.EnumFacing.NORTH);
+      facings.put(POS_S, net.minecraft.util.EnumFacing.SOUTH);
+      facings.put(POS_E, net.minecraft.util.EnumFacing.EAST);
+
+      Tuple<List<BlockPos>, List<BlockPos>> result =
+          TrafficSignalControllerTickerUtilities.filterSignalsByFacingDirection(
+              (Function<BlockPos, net.minecraft.util.EnumFacing>) facings::get,
+              Arrays.asList(POS_N, POS_S, POS_E),
+              net.minecraft.util.EnumFacing.NORTH);
+
+      assertEquals(1, result.getFirst().size());
+      assertTrue(result.getFirst().contains(POS_N));
+      assertEquals(2, result.getSecond().size());
+      assertTrue(result.getSecond().contains(POS_S));
+      assertTrue(result.getSecond().contains(POS_E));
+    }
+
+    @Test
+    @DisplayName("null facing → non-matching")
+    void nullFacing_nonMatching() {
+      Tuple<List<BlockPos>, List<BlockPos>> result =
+          TrafficSignalControllerTickerUtilities.filterSignalsByFacingDirection(
+              (Function<BlockPos, net.minecraft.util.EnumFacing>) (pos -> null),
+              Arrays.asList(POS_N),
+              net.minecraft.util.EnumFacing.NORTH);
+      assertTrue(result.getFirst().isEmpty(),
+          "Null facing must NOT be treated as matching even if enumFacing is also null");
+      assertEquals(1, result.getSecond().size());
+    }
+
+    @Test
+    @DisplayName("null resolver → all non-matching")
+    void nullResolver_allNonMatching() {
+      Tuple<List<BlockPos>, List<BlockPos>> result =
+          TrafficSignalControllerTickerUtilities.filterSignalsByFacingDirection(
+              (Function<BlockPos, net.minecraft.util.EnumFacing>) null,
+              Arrays.asList(POS_N, POS_S),
+              net.minecraft.util.EnumFacing.NORTH);
+      assertTrue(result.getFirst().isEmpty());
+      assertEquals(2, result.getSecond().size());
+    }
+  }
+
+  // ========================================================================
+  // addActiveCircuitToDirectionalGreenPhase (function-based overload)
+  // ========================================================================
+  @Nested
+  @DisplayName("addActiveCircuitToDirectionalGreenPhase (function-based, end-to-end)")
+  class AddActiveCircuitToDirectionalGreenPhaseFunctionBasedTest {
+
+    @Test
+    @DisplayName("ALL_EAST: east-facing through goes green, west-facing goes red")
+    void eastDirection_partitionsByFacing() {
+      BlockPos throughE = new BlockPos(1, 0, 0);
+      BlockPos throughW = new BlockPos(2, 0, 0);
+
+      TrafficSignalControllerCircuit circuit = emptyCircuit();
+      circuit.getThroughSignals().add(throughE);
+      circuit.getThroughSignals().add(throughW);
+
+      java.util.Map<BlockPos, net.minecraft.util.EnumFacing> facings = new java.util.HashMap<>();
+      facings.put(throughE, net.minecraft.util.EnumFacing.EAST);
+      facings.put(throughW, net.minecraft.util.EnumFacing.WEST);
+
+      TrafficSignalPhase phase = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.ALL_EAST);
+      TrafficSignalControllerTickerUtilities.addActiveCircuitToDirectionalGreenPhase(
+          (Function<BlockPos, net.minecraft.util.EnumFacing>) facings::get,
+          circuit, phase, net.minecraft.util.EnumFacing.EAST);
+
+      assertTrue(phase.getGreenSignals().contains(throughE),
+          "East-facing through gets green during ALL_EAST");
+      assertTrue(phase.getRedSignals().contains(throughW),
+          "West-facing through goes red during ALL_EAST");
+    }
+
+    @Test
+    @DisplayName("ALL_NORTH with FYA-only left: matching FYA flashes, non-matching goes red")
+    void northDirection_fyaOnlyLeft() {
+      BlockPos fyaLeftN = new BlockPos(1, 0, 0);
+      BlockPos fyaLeftS = new BlockPos(2, 0, 0);
+
+      TrafficSignalControllerCircuit circuit = emptyCircuit();
+      circuit.getFlashingLeftSignals().add(fyaLeftN);
+      circuit.getFlashingLeftSignals().add(fyaLeftS);
+
+      java.util.Map<BlockPos, net.minecraft.util.EnumFacing> facings = new java.util.HashMap<>();
+      facings.put(fyaLeftN, net.minecraft.util.EnumFacing.NORTH);
+      facings.put(fyaLeftS, net.minecraft.util.EnumFacing.SOUTH);
+
+      TrafficSignalPhase phase = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.ALL_NORTH);
+      TrafficSignalControllerTickerUtilities.addActiveCircuitToDirectionalGreenPhase(
+          (Function<BlockPos, net.minecraft.util.EnumFacing>) facings::get,
+          circuit, phase, net.minecraft.util.EnumFacing.NORTH);
+
+      assertTrue(phase.getFyaSignals().contains(fyaLeftN),
+          "Matching-direction FYA-only left flashes yellow permissively");
+      assertTrue(phase.getRedSignals().contains(fyaLeftS),
+          "Opposite-direction FYA-left companion goes red");
+    }
+
+    @Test
+    @DisplayName("ALL_EAST with matching protected: right turn becomes FYA permissive")
+    void eastDirection_matchingProtected_rightFya() {
+      BlockPos rightE = new BlockPos(1, 0, 0);
+      BlockPos flashRightE = new BlockPos(2, 0, 0);
+      BlockPos protE = new BlockPos(3, 0, 0);
+
+      TrafficSignalControllerCircuit circuit = emptyCircuit();
+      circuit.getRightSignals().add(rightE);
+      circuit.getFlashingRightSignals().add(flashRightE);
+      circuit.getProtectedSignals().add(protE);
+
+      java.util.Map<BlockPos, net.minecraft.util.EnumFacing> facings = new java.util.HashMap<>();
+      facings.put(rightE, net.minecraft.util.EnumFacing.EAST);
+      facings.put(flashRightE, net.minecraft.util.EnumFacing.EAST);
+      facings.put(protE, net.minecraft.util.EnumFacing.EAST);
+
+      TrafficSignalPhase phase = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.ALL_EAST);
+      TrafficSignalControllerTickerUtilities.addActiveCircuitToDirectionalGreenPhase(
+          (Function<BlockPos, net.minecraft.util.EnumFacing>) facings::get,
+          circuit, phase, net.minecraft.util.EnumFacing.EAST);
+
+      // Matching protected exists → right goes FYA, protected stays green
+      assertTrue(phase.getFyaSignals().contains(flashRightE));
+      assertTrue(phase.getRedSignals().contains(rightE));
+      assertTrue(phase.getGreenSignals().contains(protE));
+    }
+
+    @Test
+    @DisplayName("ALL_EAST with no matching protected: right stays solid green")
+    void eastDirection_noMatchingProtected_rightSolidGreen() {
+      BlockPos rightE = new BlockPos(1, 0, 0);
+      BlockPos flashRightE = new BlockPos(2, 0, 0);
+      BlockPos protW = new BlockPos(3, 0, 0);  // West-facing protected — not matching
+
+      TrafficSignalControllerCircuit circuit = emptyCircuit();
+      circuit.getRightSignals().add(rightE);
+      circuit.getFlashingRightSignals().add(flashRightE);
+      circuit.getProtectedSignals().add(protW);
+
+      java.util.Map<BlockPos, net.minecraft.util.EnumFacing> facings = new java.util.HashMap<>();
+      facings.put(rightE, net.minecraft.util.EnumFacing.EAST);
+      facings.put(flashRightE, net.minecraft.util.EnumFacing.EAST);
+      facings.put(protW, net.minecraft.util.EnumFacing.WEST);
+
+      TrafficSignalPhase phase = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.ALL_EAST);
+      TrafficSignalControllerTickerUtilities.addActiveCircuitToDirectionalGreenPhase(
+          (Function<BlockPos, net.minecraft.util.EnumFacing>) facings::get,
+          circuit, phase, net.minecraft.util.EnumFacing.EAST);
+
+      // No matching protected → right is solid green
+      assertTrue(phase.getOffSignals().contains(flashRightE));
+      assertTrue(phase.getGreenSignals().contains(rightE));
+      // Opposite-direction protected → red
+      assertTrue(phase.getRedSignals().contains(protW));
+    }
+
+    @Test
+    @DisplayName("matching left arrow → solid green, FYA-left companion off")
+    void matchingLeftArrow_solidGreen() {
+      BlockPos leftN = new BlockPos(1, 0, 0);
+      BlockPos flashLeftN = new BlockPos(2, 0, 0);
+
+      TrafficSignalControllerCircuit circuit = emptyCircuit();
+      circuit.getLeftSignals().add(leftN);
+      circuit.getFlashingLeftSignals().add(flashLeftN);
+
+      java.util.Map<BlockPos, net.minecraft.util.EnumFacing> facings = new java.util.HashMap<>();
+      facings.put(leftN, net.minecraft.util.EnumFacing.NORTH);
+      facings.put(flashLeftN, net.minecraft.util.EnumFacing.NORTH);
+
+      TrafficSignalPhase phase = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.ALL_NORTH);
+      TrafficSignalControllerTickerUtilities.addActiveCircuitToDirectionalGreenPhase(
+          (Function<BlockPos, net.minecraft.util.EnumFacing>) facings::get,
+          circuit, phase, net.minecraft.util.EnumFacing.NORTH);
+
+      assertTrue(phase.getGreenSignals().contains(leftN));
+      assertTrue(phase.getOffSignals().contains(flashLeftN));
+    }
+  }
+
+  // ========================================================================
+  // addBlankoutSignalsToPhase (function-based, full per-direction matching)
+  // ========================================================================
+  @Nested
+  @DisplayName("addBlankoutSignalsToPhase (function-based)")
+  class AddBlankoutSignalsToPhaseFunctionBasedTest {
+
+    @Test
+    @DisplayName("NO_LEFT_TURN at facing where left is GREEN → sign hidden (off)")
+    void noLeftTurn_leftGreen_signHidden() {
+      BlockPos leftSig = new BlockPos(1, 0, 0);
+      BlockPos blankout = new BlockPos(2, 0, 0);
+
+      TrafficSignalControllerCircuit circuit = emptyCircuit();
+      circuit.getLeftSignals().add(leftSig);
+      circuit.getNoTurnBlankoutSignals().add(blankout);
+
+      TrafficSignalPhase phase = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.ALL_THROUGHS_PROTECTEDS);
+      phase.addGreenSignal(leftSig);
+
+      java.util.Map<BlockPos, net.minecraft.util.EnumFacing> facings = new java.util.HashMap<>();
+      facings.put(leftSig, net.minecraft.util.EnumFacing.NORTH);
+      facings.put(blankout, net.minecraft.util.EnumFacing.NORTH);
+
+      java.util.Map<BlockPos, BlankoutBoxType> types = new java.util.HashMap<>();
+      types.put(blankout, BlankoutBoxType.NO_LEFT_TURN);
+
+      TrafficSignalControllerTickerUtilities.addBlankoutSignalsToPhase(
+          (Function<BlockPos, net.minecraft.util.EnumFacing>) facings::get,
+          (Function<BlockPos, BlankoutBoxType>) types::get,
+          circuit, phase);
+
+      assertTrue(phase.getDontWalkSignals().contains(blankout),
+          "Sign should be hidden (dontWalk) when same-facing left is solid green");
+      assertFalse(phase.getWalkSignals().contains(blankout));
+    }
+
+    @Test
+    @DisplayName("NO_LEFT_TURN at facing where left FYA flashes → sign hidden (FYA permits turn)")
+    void noLeftTurn_fyaPermissive_signHidden() {
+      BlockPos flashLeft = new BlockPos(1, 0, 0);
+      BlockPos blankout = new BlockPos(2, 0, 0);
+
+      TrafficSignalControllerCircuit circuit = emptyCircuit();
+      circuit.getFlashingLeftSignals().add(flashLeft);
+      circuit.getNoTurnBlankoutSignals().add(blankout);
+
+      TrafficSignalPhase phase = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.ALL_THROUGHS_PROTECTEDS);
+      phase.addFyaSignal(flashLeft);
+
+      java.util.Map<BlockPos, net.minecraft.util.EnumFacing> facings = new java.util.HashMap<>();
+      facings.put(flashLeft, net.minecraft.util.EnumFacing.NORTH);
+      facings.put(blankout, net.minecraft.util.EnumFacing.NORTH);
+
+      java.util.Map<BlockPos, BlankoutBoxType> types = new java.util.HashMap<>();
+      types.put(blankout, BlankoutBoxType.NO_LEFT_TURN);
+
+      TrafficSignalControllerTickerUtilities.addBlankoutSignalsToPhase(
+          (Function<BlockPos, net.minecraft.util.EnumFacing>) facings::get,
+          (Function<BlockPos, BlankoutBoxType>) types::get,
+          circuit, phase);
+
+      assertTrue(phase.getDontWalkSignals().contains(blankout),
+          "Sign should be hidden when FYA permissively allows the turn");
+    }
+
+    @Test
+    @DisplayName("NO_LEFT_TURN at facing where left is RED → sign visible (on)")
+    void noLeftTurn_leftRed_signVisible() {
+      BlockPos leftSig = new BlockPos(1, 0, 0);
+      BlockPos blankout = new BlockPos(2, 0, 0);
+
+      TrafficSignalControllerCircuit circuit = emptyCircuit();
+      circuit.getLeftSignals().add(leftSig);
+      circuit.getNoTurnBlankoutSignals().add(blankout);
+
+      TrafficSignalPhase phase = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS);
+      phase.addRedSignal(leftSig);
+
+      java.util.Map<BlockPos, net.minecraft.util.EnumFacing> facings = new java.util.HashMap<>();
+      facings.put(leftSig, net.minecraft.util.EnumFacing.NORTH);
+      facings.put(blankout, net.minecraft.util.EnumFacing.NORTH);
+
+      java.util.Map<BlockPos, BlankoutBoxType> types = new java.util.HashMap<>();
+      types.put(blankout, BlankoutBoxType.NO_LEFT_TURN);
+
+      TrafficSignalControllerTickerUtilities.addBlankoutSignalsToPhase(
+          (Function<BlockPos, net.minecraft.util.EnumFacing>) facings::get,
+          (Function<BlockPos, BlankoutBoxType>) types::get,
+          circuit, phase);
+
+      assertTrue(phase.getWalkSignals().contains(blankout),
+          "Sign should be visible (walk) when left is red");
+      assertFalse(phase.getDontWalkSignals().contains(blankout));
+    }
+
+    @Test
+    @DisplayName("NO_RIGHT_TURN at facing where left is GREEN (but not right) → sign visible")
+    void noRightTurn_leftGreen_rightRed_signVisible() {
+      BlockPos leftSig = new BlockPos(1, 0, 0);
+      BlockPos blankout = new BlockPos(2, 0, 0);
+
+      TrafficSignalControllerCircuit circuit = emptyCircuit();
+      circuit.getLeftSignals().add(leftSig);
+      circuit.getNoTurnBlankoutSignals().add(blankout);
+
+      TrafficSignalPhase phase = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.ALL_LEFTS);
+      phase.addGreenSignal(leftSig);
+
+      java.util.Map<BlockPos, net.minecraft.util.EnumFacing> facings = new java.util.HashMap<>();
+      facings.put(leftSig, net.minecraft.util.EnumFacing.NORTH);
+      facings.put(blankout, net.minecraft.util.EnumFacing.NORTH);
+
+      java.util.Map<BlockPos, BlankoutBoxType> types = new java.util.HashMap<>();
+      types.put(blankout, BlankoutBoxType.NO_RIGHT_TURN);
+
+      TrafficSignalControllerTickerUtilities.addBlankoutSignalsToPhase(
+          (Function<BlockPos, net.minecraft.util.EnumFacing>) facings::get,
+          (Function<BlockPos, BlankoutBoxType>) types::get,
+          circuit, phase);
+
+      assertTrue(phase.getWalkSignals().contains(blankout),
+          "NO_RIGHT_TURN sign should remain visible during ALL_LEFTS — right is red");
+    }
+
+    @Test
+    @DisplayName("blankout at non-matching facing keeps sign visible even when other-direction left is GREEN")
+    void blankoutPerFacing_oppositeDirection() {
+      BlockPos leftN = new BlockPos(1, 0, 0);
+      BlockPos blankoutS = new BlockPos(2, 0, 0);
+
+      TrafficSignalControllerCircuit circuit = emptyCircuit();
+      circuit.getLeftSignals().add(leftN);
+      circuit.getNoTurnBlankoutSignals().add(blankoutS);
+
+      TrafficSignalPhase phase = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.ALL_THROUGHS_PROTECTEDS);
+      phase.addGreenSignal(leftN);
+
+      java.util.Map<BlockPos, net.minecraft.util.EnumFacing> facings = new java.util.HashMap<>();
+      facings.put(leftN, net.minecraft.util.EnumFacing.NORTH);
+      facings.put(blankoutS, net.minecraft.util.EnumFacing.SOUTH);  // South-facing blankout
+
+      java.util.Map<BlockPos, BlankoutBoxType> types = new java.util.HashMap<>();
+      types.put(blankoutS, BlankoutBoxType.NO_LEFT_TURN);
+
+      TrafficSignalControllerTickerUtilities.addBlankoutSignalsToPhase(
+          (Function<BlockPos, net.minecraft.util.EnumFacing>) facings::get,
+          (Function<BlockPos, BlankoutBoxType>) types::get,
+          circuit, phase);
+
+      assertTrue(phase.getWalkSignals().contains(blankoutS),
+          "South-facing blankout should stay visible — only NB left is green, SB left is not");
+    }
+
+    @Test
+    @DisplayName("null type resolver → all blankouts visible (defensive fallback)")
+    void nullTypeResolver_allVisible() {
+      BlockPos blankout = new BlockPos(1, 0, 0);
+
+      TrafficSignalControllerCircuit circuit = emptyCircuit();
+      circuit.getNoTurnBlankoutSignals().add(blankout);
+
+      TrafficSignalPhase phase = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.ALL_THROUGHS_PROTECTEDS);
+
+      java.util.Map<BlockPos, net.minecraft.util.EnumFacing> facings = new java.util.HashMap<>();
+      facings.put(blankout, net.minecraft.util.EnumFacing.NORTH);
+
+      TrafficSignalControllerTickerUtilities.addBlankoutSignalsToPhase(
+          (Function<BlockPos, net.minecraft.util.EnumFacing>) facings::get,
+          (Function<BlockPos, BlankoutBoxType>) null,
+          circuit, phase);
+
+      assertTrue(phase.getWalkSignals().contains(blankout));
+    }
+
+    @Test
+    @DisplayName("null facing resolver → all blankouts visible (defensive fallback)")
+    void nullFacingResolver_allVisible() {
+      BlockPos blankout = new BlockPos(1, 0, 0);
+
+      TrafficSignalControllerCircuit circuit = emptyCircuit();
+      circuit.getNoTurnBlankoutSignals().add(blankout);
+
+      TrafficSignalPhase phase = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.ALL_THROUGHS_PROTECTEDS);
+
+      java.util.Map<BlockPos, BlankoutBoxType> types = new java.util.HashMap<>();
+      types.put(blankout, BlankoutBoxType.NO_LEFT_TURN);
+
+      TrafficSignalControllerTickerUtilities.addBlankoutSignalsToPhase(
+          (Function<BlockPos, net.minecraft.util.EnumFacing>) null,
+          (Function<BlockPos, BlankoutBoxType>) types::get,
+          circuit, phase);
+
+      assertTrue(phase.getWalkSignals().contains(blankout));
+    }
+
+    @Test
+    @DisplayName("position not a blankout box (typeResolver returns null) → sign visible")
+    void notABlankoutBox_signVisible() {
+      BlockPos notABlankout = new BlockPos(1, 0, 0);
+      BlockPos leftSig = new BlockPos(2, 0, 0);
+
+      TrafficSignalControllerCircuit circuit = emptyCircuit();
+      circuit.getLeftSignals().add(leftSig);
+      circuit.getNoTurnBlankoutSignals().add(notABlankout);
+
+      TrafficSignalPhase phase = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.ALL_THROUGHS_PROTECTEDS);
+      phase.addGreenSignal(leftSig);
+
+      java.util.Map<BlockPos, net.minecraft.util.EnumFacing> facings = new java.util.HashMap<>();
+      facings.put(leftSig, net.minecraft.util.EnumFacing.NORTH);
+      facings.put(notABlankout, net.minecraft.util.EnumFacing.NORTH);
+
+      // typeResolver returns null for the position — not a blankout box
+      TrafficSignalControllerTickerUtilities.addBlankoutSignalsToPhase(
+          (Function<BlockPos, net.minecraft.util.EnumFacing>) facings::get,
+          (Function<BlockPos, BlankoutBoxType>) (pos -> null),
+          circuit, phase);
+
+      // Conservatively visible since type lookup failed
+      assertTrue(phase.getWalkSignals().contains(notABlankout));
+    }
+  }
 }

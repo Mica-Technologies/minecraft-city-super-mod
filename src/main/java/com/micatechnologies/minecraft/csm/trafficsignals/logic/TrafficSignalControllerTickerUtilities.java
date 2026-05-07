@@ -1331,36 +1331,51 @@ public class TrafficSignalControllerTickerUtilities {
       TrafficSignalControllerCircuit circuit,
       TrafficSignalPhase destinationPhase,
       EnumFacing enumFacing) {
-    // Get directionally filtered signal lists
-    Tuple<List<BlockPos>, List<BlockPos>> flashingLeftSignals =
-        filterSignalsByFacingDirection(world,
-            circuit.getFlashingLeftSignals(),
-            enumFacing);
-    Tuple<List<BlockPos>, List<BlockPos>> flashingRightSignals =
-        filterSignalsByFacingDirection(world,
-            circuit.getFlashingRightSignals(),
-            enumFacing);
-    Tuple<List<BlockPos>, List<BlockPos>> leftSignals = filterSignalsByFacingDirection(world,
-        circuit.getLeftSignals(),
-        enumFacing);
-    Tuple<List<BlockPos>, List<BlockPos>> rightSignals = filterSignalsByFacingDirection(world,
-        circuit.getRightSignals(),
-        enumFacing);
-    Tuple<List<BlockPos>, List<BlockPos>> throughSignals = filterSignalsByFacingDirection(world,
-        circuit.getThroughSignals(),
-        enumFacing);
-    Tuple<List<BlockPos>, List<BlockPos>> pedestrianBeaconSignals =
-        filterSignalsByFacingDirection(world,
-            circuit.getPedestrianBeaconSignals(),
-            enumFacing);
-    Tuple<List<BlockPos>, List<BlockPos>> protectedSignals = filterSignalsByFacingDirection(world,
-        circuit.getProtectedSignals(),
-        enumFacing);
+    // World-based delegate: build the partitions via the World facing resolver, then defer to
+    // the function-based overload for the rest of the work. The blankout helper still uses
+    // the World overload (it needs World-based TileEntity lookup for blankout types).
+    Function<BlockPos, EnumFacing> resolver =
+        world == null ? null : pos -> signalFacingOrNull(world, pos);
+    addActiveCircuitToDirectionalGreenPhase(resolver, circuit, destinationPhase, enumFacing);
+    addBlankoutSignalsToPhase(world, circuit, destinationPhase);
+  }
+
+  /**
+   * Function-based overload of
+   * {@link #addActiveCircuitToDirectionalGreenPhase(World, TrafficSignalControllerCircuit, TrafficSignalPhase, EnumFacing)}
+   * that does the directional partitioning + per-state assignment. Skips the blankout pass
+   * (which needs both facing and TileEntity lookups) — call
+   * {@link #addBlankoutSignalsToPhase(World, TrafficSignalControllerCircuit, TrafficSignalPhase)}
+   * separately if blankouts need updating, or use the {@code World} overload, which calls both.
+   *
+   * <p>Unit tests use this overload with a Map-backed facing resolver to exercise the
+   * directional partitioning end-to-end without a Minecraft world.</p>
+   *
+   * @since 1.0
+   */
+  public static void addActiveCircuitToDirectionalGreenPhase(
+      Function<BlockPos, EnumFacing> facingResolver,
+      TrafficSignalControllerCircuit circuit,
+      TrafficSignalPhase destinationPhase,
+      EnumFacing enumFacing) {
+    Tuple<List<BlockPos>, List<BlockPos>> flashingLeftSignals = filterSignalsByFacingDirection(
+        facingResolver, circuit.getFlashingLeftSignals(), enumFacing);
+    Tuple<List<BlockPos>, List<BlockPos>> flashingRightSignals = filterSignalsByFacingDirection(
+        facingResolver, circuit.getFlashingRightSignals(), enumFacing);
+    Tuple<List<BlockPos>, List<BlockPos>> leftSignals = filterSignalsByFacingDirection(
+        facingResolver, circuit.getLeftSignals(), enumFacing);
+    Tuple<List<BlockPos>, List<BlockPos>> rightSignals = filterSignalsByFacingDirection(
+        facingResolver, circuit.getRightSignals(), enumFacing);
+    Tuple<List<BlockPos>, List<BlockPos>> throughSignals = filterSignalsByFacingDirection(
+        facingResolver, circuit.getThroughSignals(), enumFacing);
+    Tuple<List<BlockPos>, List<BlockPos>> pedestrianBeaconSignals = filterSignalsByFacingDirection(
+        facingResolver, circuit.getPedestrianBeaconSignals(), enumFacing);
+    Tuple<List<BlockPos>, List<BlockPos>> protectedSignals = filterSignalsByFacingDirection(
+        facingResolver, circuit.getProtectedSignals(), enumFacing);
 
     applyDirectionalGreenSignalAssignments(circuit, destinationPhase,
         flashingLeftSignals, flashingRightSignals, leftSignals, rightSignals,
         throughSignals, pedestrianBeaconSignals, protectedSignals);
-    addBlankoutSignalsToPhase(world, circuit, destinationPhase);
   }
 
   /**
@@ -1445,19 +1460,30 @@ public class TrafficSignalControllerTickerUtilities {
   public static Tuple<List<BlockPos>, List<BlockPos>> filterSignalsByFacingDirection(World world,
       List<BlockPos> signalBlockPoses,
       EnumFacing enumFacing) {
-    // Create facing direction stream collector predicate
-    Predicate<BlockPos> facingDirectionPredicate = signalPos -> {
-      IBlockState blockState = world.getBlockState(signalPos);
-      EnumFacing sensorFacingDirection = blockState.getValue(BlockHorizontal.FACING);
-      return sensorFacingDirection == enumFacing;
+    Function<BlockPos, EnumFacing> resolver =
+        world == null ? null : pos -> signalFacingOrNull(world, pos);
+    return filterSignalsByFacingDirection(resolver, signalBlockPoses, enumFacing);
+  }
+
+  /**
+   * Function-based overload of {@link #filterSignalsByFacingDirection(World, List, EnumFacing)}.
+   * The {@code facingResolver} supplies the facing for each signal position; the first list of
+   * the returned tuple holds positions where the resolved facing equals {@code enumFacing}, the
+   * second holds the rest. Positions with a {@code null} resolved facing land in the second
+   * list.
+   *
+   * @since 1.0
+   */
+  public static Tuple<List<BlockPos>, List<BlockPos>> filterSignalsByFacingDirection(
+      Function<BlockPos, EnumFacing> facingResolver,
+      List<BlockPos> signalBlockPoses,
+      EnumFacing enumFacing) {
+    Predicate<BlockPos> facingMatches = signalPos -> {
+      EnumFacing facing = facingResolver == null ? null : facingResolver.apply(signalPos);
+      return facing == enumFacing && facing != null;
     };
-
-    // Partition the signal list by the facing direction predicate
     Map<Boolean, List<BlockPos>> filteredSignalLists = signalBlockPoses.stream()
-        .collect((Collectors.partitioningBy(
-            facingDirectionPredicate)));
-
-    // Return the filtered signal lists
+        .collect(Collectors.partitioningBy(facingMatches));
     return new Tuple<>(filteredSignalLists.get(true), filteredSignalLists.get(false));
   }
 
@@ -1868,22 +1894,64 @@ public class TrafficSignalControllerTickerUtilities {
   private static void addBlankoutSignalsToPhase(World world,
       TrafficSignalControllerCircuit circuit,
       TrafficSignalPhase phase) {
+    if (world == null) {
+      // Match historical null-world behavior: every blankout goes to walk list (sign visible)
+      // because we can't look up TE types or facings without a World.
+      addBlankoutSignalsToPhase((Function<BlockPos, EnumFacing>) null,
+          (Function<BlockPos, BlankoutBoxType>) null, circuit, phase);
+      return;
+    }
+    Function<BlockPos, EnumFacing> facingResolver = pos -> signalFacingOrNull(world, pos);
+    Function<BlockPos, BlankoutBoxType> typeResolver = pos -> {
+      TileEntity te = world.getTileEntity(pos);
+      return te instanceof TileEntityBlankoutBox
+          ? ((TileEntityBlankoutBox) te).getBlankoutType() : null;
+    };
+    addBlankoutSignalsToPhase(facingResolver, typeResolver, circuit, phase);
+  }
+
+  /**
+   * Function-based overload of
+   * {@link #addBlankoutSignalsToPhase(World, TrafficSignalControllerCircuit, TrafficSignalPhase)}.
+   * Decouples the helper from {@link World} by accepting two resolvers: one for block-facing
+   * lookups (used to determine each blankout sign's facing and to collect the per-direction
+   * "turn allowed" set) and one for resolving each blankout's {@link BlankoutBoxType} (so the
+   * helper can distinguish NO_LEFT_TURN from NO_RIGHT_TURN signs without instantiating a
+   * {@link TileEntity}).
+   *
+   * <p>If either resolver is {@code null}, the helper conservatively keeps every blankout
+   * visible (sign on / walk list) — matching the historical null-world fallback.</p>
+   *
+   * @param facingResolver Position-to-facing lookup for signal heads and the blankout signs
+   *                       themselves; {@code null} disables per-facing matching.
+   * @param typeResolver   Position-to-{@link BlankoutBoxType} lookup for blankout signs;
+   *                       returns {@code null} for positions that aren't blankout boxes
+   *                       (skipped). A {@code null} resolver disables type matching.
+   * @param circuit        The circuit whose blankout signals to update.
+   * @param phase          The phase being built; the helper reads its green/FYA assignments
+   *                       and writes the blankout signals into the walk/don't-walk lists.
+   *
+   * @since 1.0
+   */
+  static void addBlankoutSignalsToPhase(Function<BlockPos, EnumFacing> facingResolver,
+      Function<BlockPos, BlankoutBoxType> typeResolver,
+      TrafficSignalControllerCircuit circuit,
+      TrafficSignalPhase phase) {
     EnumSet<EnumFacing> leftAllowedFacings =
-        collectAllowedFacings(world, circuit.getLeftSignals(), phase.getGreenSignals(),
+        collectAllowedFacings(facingResolver, circuit.getLeftSignals(), phase.getGreenSignals(),
             circuit.getFlashingLeftSignals(), phase.getFyaSignals());
     EnumSet<EnumFacing> rightAllowedFacings =
-        collectAllowedFacings(world, circuit.getRightSignals(), phase.getGreenSignals(),
+        collectAllowedFacings(facingResolver, circuit.getRightSignals(), phase.getGreenSignals(),
             circuit.getFlashingRightSignals(), phase.getFyaSignals());
 
     List<BlockPos> onSignals = new ArrayList<>();
     List<BlockPos> offSignals = new ArrayList<>();
     for (BlockPos pos : circuit.getNoTurnBlankoutSignals()) {
       boolean turnOff = false;
-      if (world != null) {
-        TileEntity te = world.getTileEntity(pos);
-        if (te instanceof TileEntityBlankoutBox) {
-          BlankoutBoxType type = ((TileEntityBlankoutBox) te).getBlankoutType();
-          EnumFacing boxFacing = signalFacingOrNull(world, pos);
+      if (typeResolver != null && facingResolver != null) {
+        BlankoutBoxType type = typeResolver.apply(pos);
+        if (type != null) {
+          EnumFacing boxFacing = facingResolver.apply(pos);
           if (boxFacing != null) {
             if (type == BlankoutBoxType.NO_RIGHT_TURN
                 && rightAllowedFacings.contains(boxFacing)) {
@@ -1906,40 +1974,29 @@ public class TrafficSignalControllerTickerUtilities {
   }
 
   /**
-   * Builds the set of {@link EnumFacing} directions at which a turn is "allowed" — i.e.,
-   * has either a protected-green signal or a permissive-FYA signal active in the phase.
-   * Used by {@link #addBlankoutSignalsToPhase} to match each blankout sign to the same-
-   * direction turn state.
-   *
-   * @param world             The world for facing lookups; if {@code null}, returns an
-   *                          empty set (callers fall back accordingly).
-   * @param protectedSignals  The circuit's protected-green-arrow signals (e.g., leftSignals).
-   * @param greenSignals      The phase's green-state signals.
-   * @param permissiveSignals The circuit's flashing-arrow signals (e.g., flashingLeftSignals).
-   * @param fyaSignals        The phase's FYA-state signals.
-   *
-   * @return The directions where the turn is allowed.
-   *
-   * @since 1.0
+   * Function-based variant of {@code collectAllowedFacings}: builds the set of facings where a
+   * turn is "allowed" using a position-to-facing resolver instead of a {@link World}. Returns
+   * an empty set when the resolver is {@code null}.
    */
-  private static EnumSet<EnumFacing> collectAllowedFacings(World world,
+  private static EnumSet<EnumFacing> collectAllowedFacings(
+      Function<BlockPos, EnumFacing> facingResolver,
       List<BlockPos> protectedSignals,
       List<BlockPos> greenSignals,
       List<BlockPos> permissiveSignals,
       List<BlockPos> fyaSignals) {
     EnumSet<EnumFacing> allowed = EnumSet.noneOf(EnumFacing.class);
-    if (world == null) {
+    if (facingResolver == null) {
       return allowed;
     }
     for (BlockPos pos : protectedSignals) {
       if (greenSignals.contains(pos)) {
-        EnumFacing facing = signalFacingOrNull(world, pos);
+        EnumFacing facing = facingResolver.apply(pos);
         if (facing != null) allowed.add(facing);
       }
     }
     for (BlockPos pos : permissiveSignals) {
       if (fyaSignals.contains(pos)) {
-        EnumFacing facing = signalFacingOrNull(world, pos);
+        EnumFacing facing = facingResolver.apply(pos);
         if (facing != null) allowed.add(facing);
       }
     }
