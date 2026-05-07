@@ -607,6 +607,12 @@ public class TrafficSignalControllerTickerUtilities {
       destinationPhase.addDontWalkSignals(circuit.getPedestrianSignals());
       destinationPhase.addDontWalkSignals(circuit.getPedestrianAccessorySignals());
     }
+    // All vehicle signals on this circuit are red, so the main indication already tells
+    // drivers no turns are permitted. A "NO LEFT/RIGHT TURN" sign would just clutter, so
+    // the convention is to keep blankouts dark during all-red rather than route them
+    // through addBlankoutSignalsToPhase. Phases where some signals are green/FYA on this
+    // circuit (the active ALL_LEFTS / ALL_THROUGHS_* / directional branches) do call the
+    // helper instead, so the sign lights only when contradicting indication exists.
     destinationPhase.addDontWalkSignals(circuit.getNoTurnBlankoutSignals());
   }
 
@@ -1698,6 +1704,119 @@ public class TrafficSignalControllerTickerUtilities {
       }
     }
     return true;
+  }
+
+  /**
+   * Validates that every sensor on every circuit faces the same direction as at least one signal
+   * head linked to the same circuit. Returns a human-readable fault message describing the first
+   * mismatch found, or {@code null} when all sensors align with their circuit's signal facings.
+   *
+   * <p>The per-direction FYA-vs-protected demand arbitration (see {@link #getEffectiveLeftDemand}
+   * and {@link #getEffectiveRightDemand}) correlates each sensor's directional zone count with
+   * FYA signals of matching {@code FACING}. A facing mismatch silently breaks that correlation —
+   * single-vehicle FYA-clearance suppression no longer applies and every detection counts as
+   * protected demand. This validator surfaces the misconfiguration as a controller fault so the
+   * setup error gets attention instead of degrading silently.</p>
+   *
+   * <p>This check is intended for {@link TrafficSignalControllerMode#NORMAL} where the
+   * facing-correlation invariant is load-bearing. Other modes (FLASH, MANUAL_OFF, etc.) don't
+   * use sensor data the same way and should not be subject to this check.</p>
+   *
+   * <p>Circuits with no sensors or no signal facings are skipped — there's nothing to validate.
+   * Sensors in unloaded chunks or with malformed states (no FACING property) are also skipped
+   * defensively, since {@link World#getBlockState} returns air for unloaded positions.</p>
+   *
+   * @param world    The world containing the controller and devices.
+   * @param circuits The configured circuits to validate.
+   *
+   * @return A fault message describing the first mismatch found, or {@code null} if every sensor
+   *     facing matches a signal facing on the same circuit.
+   *
+   * @since 1.0
+   */
+  public static String validateSensorFacings(World world,
+      TrafficSignalControllerCircuits circuits) {
+    if (world == null || circuits == null) {
+      return null;
+    }
+    for (int i = 0; i < circuits.getCircuitCount(); i++) {
+      TrafficSignalControllerCircuit circuit = circuits.getCircuit(i);
+      if (circuit.getSensors().isEmpty()) {
+        continue;
+      }
+
+      EnumSet<EnumFacing> signalFacings = EnumSet.noneOf(EnumFacing.class);
+      addSignalFacingsTo(world, circuit.getThroughSignals(), signalFacings);
+      addSignalFacingsTo(world, circuit.getLeftSignals(), signalFacings);
+      addSignalFacingsTo(world, circuit.getRightSignals(), signalFacings);
+      addSignalFacingsTo(world, circuit.getFlashingLeftSignals(), signalFacings);
+      addSignalFacingsTo(world, circuit.getFlashingRightSignals(), signalFacings);
+      addSignalFacingsTo(world, circuit.getProtectedSignals(), signalFacings);
+      addSignalFacingsTo(world, circuit.getPedestrianBeaconSignals(), signalFacings);
+
+      if (signalFacings.isEmpty()) {
+        continue;
+      }
+
+      List<Tuple<BlockPos, EnumFacing>> sensorFacings = new ArrayList<>();
+      for (BlockPos sensorPos : circuit.getSensors()) {
+        sensorFacings.add(new Tuple<>(sensorPos, signalFacingOrNull(world, sensorPos)));
+      }
+
+      String mismatch = findCircuitSensorFacingMismatch(i + 1, signalFacings, sensorFacings);
+      if (mismatch != null) {
+        return mismatch;
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Pure helper for {@link #validateSensorFacings}: given a circuit's signal facings and the
+   * facing of each sensor on that circuit, returns a fault message for the first sensor whose
+   * facing isn't present in the signal set, or {@code null} if all sensors align.
+   *
+   * <p>Sensors with a {@code null} facing (unloaded chunk, malformed state) are skipped — the
+   * validator can't make a determination without the sensor's actual facing. An empty
+   * {@code signalFacings} set yields {@code null}; a circuit with no signals has no facing
+   * constraint to enforce.</p>
+   *
+   * @param circuitNumber The 1-based circuit number to include in the fault message.
+   * @param signalFacings The set of facings present on signal heads linked to this circuit.
+   * @param sensorFacings The (position, facing) pairs for each sensor on this circuit.
+   *
+   * @return A fault message for the first mismatch, or {@code null} if none.
+   *
+   * @since 1.0
+   */
+  static String findCircuitSensorFacingMismatch(int circuitNumber,
+      EnumSet<EnumFacing> signalFacings,
+      List<Tuple<BlockPos, EnumFacing>> sensorFacings) {
+    if (signalFacings == null || signalFacings.isEmpty() || sensorFacings == null) {
+      return null;
+    }
+    for (Tuple<BlockPos, EnumFacing> sensor : sensorFacings) {
+      EnumFacing sensorFacing = sensor.getSecond();
+      if (sensorFacing == null) {
+        continue;
+      }
+      if (!signalFacings.contains(sensorFacing)) {
+        return "Sensor at " + sensor.getFirst() + " (facing " + sensorFacing.getName()
+            + ") on circuit " + circuitNumber
+            + " has no matching signal facing on the same circuit";
+      }
+    }
+    return null;
+  }
+
+  private static void addSignalFacingsTo(World world, List<BlockPos> signals,
+      EnumSet<EnumFacing> out) {
+    for (BlockPos pos : signals) {
+      EnumFacing facing = signalFacingOrNull(world, pos);
+      if (facing != null) {
+        out.add(facing);
+      }
+    }
   }
 
 }

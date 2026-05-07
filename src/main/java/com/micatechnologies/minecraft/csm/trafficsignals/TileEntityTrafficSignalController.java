@@ -10,6 +10,7 @@ import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalCont
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalControllerOverlaps;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.ControllerTickContext;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalControllerTicker;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalControllerTickerUtilities;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalPhase;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalPhaseApplicability;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalPhases;
@@ -436,6 +437,24 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
       // Update the operating mode before ticking to avoid a one-tick race condition
       // (e.g. brief green flash before nightly flash starts)
       updateOperatingMode();
+
+      // In NORMAL mode, every sensor must face the same direction as at least one signal
+      // head on the same circuit, since the per-direction FYA demand correlation depends on
+      // matching facings. A mismatch silently breaks single-vehicle FYA-clearance suppression
+      // and inflates phase priority — fault here so the broken setup gets visible attention
+      // instead of degrading silently. Other modes don't use sensor facing the same way and
+      // are not subject to this check.
+      if (mode == TrafficSignalControllerMode.NORMAL
+          && operatingMode == TrafficSignalControllerMode.NORMAL
+          && !isInFaultState()) {
+        String mismatch = TrafficSignalControllerTickerUtilities.validateSensorFacings(
+            getWorld(), circuits);
+        if (mismatch != null) {
+          enterFaultState(mismatch);
+          invalidateTickRateCache();
+          return;
+        }
+      }
 
       // Pass tick event to traffic signal controller ticker
       long tickTime = getWorld().getTotalWorldTime();
