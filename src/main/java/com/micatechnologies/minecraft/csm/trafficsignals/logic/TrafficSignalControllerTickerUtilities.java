@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import net.minecraft.block.BlockHorizontal;
@@ -1921,6 +1922,11 @@ public class TrafficSignalControllerTickerUtilities {
    * Sensors in unloaded chunks or with malformed states (no FACING property) are also skipped
    * defensively, since {@link World#getBlockState} returns air for unloaded positions.</p>
    *
+   * <p>Convenience overload of {@link #validateSensorFacings(Function, TrafficSignalControllerCircuits)}
+   * — wraps the {@code World} as a position-to-facing resolver. Production callers use this form
+   * for ergonomic call-site syntax; tests use the function-based overload with a Map-backed
+   * resolver to drive the validator without a Minecraft world.</p>
+   *
    * @param world    The world containing the controller and devices.
    * @param circuits The configured circuits to validate.
    *
@@ -1931,7 +1937,34 @@ public class TrafficSignalControllerTickerUtilities {
    */
   public static String validateSensorFacings(World world,
       TrafficSignalControllerCircuits circuits) {
-    if (world == null || circuits == null) {
+    if (world == null) {
+      return null;
+    }
+    return validateSensorFacings(pos -> signalFacingOrNull(world, pos), circuits);
+  }
+
+  /**
+   * Function-based overload of {@link #validateSensorFacings(World, TrafficSignalControllerCircuits)}.
+   * The {@code facingResolver} returns the {@link EnumFacing} of the block at a given position,
+   * or {@code null} if the position has no facing (unloaded chunk, missing FACING property,
+   * unknown block). This signature decouples the validator from {@link World}, so tests can pass
+   * a Map-backed resolver and exercise the full validation logic without instantiating a
+   * Minecraft world.
+   *
+   * @param facingResolver A function that returns the facing of a block at a given position, or
+   *                       {@code null} if unavailable. Returning {@code null} on missing FACING
+   *                       is required — it tells the validator to skip that position rather than
+   *                       fault on it.
+   * @param circuits       The configured circuits to validate.
+   *
+   * @return A fault message describing the first mismatch found, or {@code null} if every sensor
+   *     facing matches a signal facing on the same circuit (or inputs are null).
+   *
+   * @since 1.0
+   */
+  public static String validateSensorFacings(Function<BlockPos, EnumFacing> facingResolver,
+      TrafficSignalControllerCircuits circuits) {
+    if (facingResolver == null || circuits == null) {
       return null;
     }
     for (int i = 0; i < circuits.getCircuitCount(); i++) {
@@ -1941,13 +1974,13 @@ public class TrafficSignalControllerTickerUtilities {
       }
 
       EnumSet<EnumFacing> signalFacings = EnumSet.noneOf(EnumFacing.class);
-      addSignalFacingsTo(world, circuit.getThroughSignals(), signalFacings);
-      addSignalFacingsTo(world, circuit.getLeftSignals(), signalFacings);
-      addSignalFacingsTo(world, circuit.getRightSignals(), signalFacings);
-      addSignalFacingsTo(world, circuit.getFlashingLeftSignals(), signalFacings);
-      addSignalFacingsTo(world, circuit.getFlashingRightSignals(), signalFacings);
-      addSignalFacingsTo(world, circuit.getProtectedSignals(), signalFacings);
-      addSignalFacingsTo(world, circuit.getPedestrianBeaconSignals(), signalFacings);
+      addSignalFacingsTo(facingResolver, circuit.getThroughSignals(), signalFacings);
+      addSignalFacingsTo(facingResolver, circuit.getLeftSignals(), signalFacings);
+      addSignalFacingsTo(facingResolver, circuit.getRightSignals(), signalFacings);
+      addSignalFacingsTo(facingResolver, circuit.getFlashingLeftSignals(), signalFacings);
+      addSignalFacingsTo(facingResolver, circuit.getFlashingRightSignals(), signalFacings);
+      addSignalFacingsTo(facingResolver, circuit.getProtectedSignals(), signalFacings);
+      addSignalFacingsTo(facingResolver, circuit.getPedestrianBeaconSignals(), signalFacings);
 
       if (signalFacings.isEmpty()) {
         continue;
@@ -1955,7 +1988,7 @@ public class TrafficSignalControllerTickerUtilities {
 
       List<Tuple<BlockPos, EnumFacing>> sensorFacings = new ArrayList<>();
       for (BlockPos sensorPos : circuit.getSensors()) {
-        sensorFacings.add(new Tuple<>(sensorPos, signalFacingOrNull(world, sensorPos)));
+        sensorFacings.add(new Tuple<>(sensorPos, facingResolver.apply(sensorPos)));
       }
 
       String mismatch = findCircuitSensorFacingMismatch(i + 1, signalFacings, sensorFacings);
@@ -2004,10 +2037,10 @@ public class TrafficSignalControllerTickerUtilities {
     return null;
   }
 
-  private static void addSignalFacingsTo(World world, List<BlockPos> signals,
-      EnumSet<EnumFacing> out) {
+  private static void addSignalFacingsTo(Function<BlockPos, EnumFacing> facingResolver,
+      List<BlockPos> signals, EnumSet<EnumFacing> out) {
     for (BlockPos pos : signals) {
-      EnumFacing facing = signalFacingOrNull(world, pos);
+      EnumFacing facing = facingResolver.apply(pos);
       if (facing != null) {
         out.add(facing);
       }
