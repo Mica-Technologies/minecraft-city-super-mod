@@ -1168,6 +1168,34 @@ class TrafficSignalControllerTickerUtilitiesTest {
       assertFalse(TrafficSignalControllerTickerUtilities.computeGreenRightTurn(
           circuits, 5, true, null));
     }
+
+    @Test
+    @DisplayName("Facings variants: out-of-range circuit returns empty set")
+    void facingsVariants_outOfRange() {
+      TrafficSignalControllerCircuits circuits = new TrafficSignalControllerCircuits();
+      circuits.addCircuit(emptyCircuit());
+
+      assertTrue(TrafficSignalControllerTickerUtilities.computeGreenLeftTurnFacings(
+          circuits, -1, true, null).isEmpty());
+      assertTrue(TrafficSignalControllerTickerUtilities.computeGreenRightTurnFacings(
+          circuits, 0, true, null).isEmpty());
+      assertTrue(TrafficSignalControllerTickerUtilities.computeGreenLeftTurnFacings(
+          circuits, 5, true, null).isEmpty());
+      assertTrue(TrafficSignalControllerTickerUtilities.computeGreenRightTurnFacings(
+          circuits, 5, true, null).isEmpty());
+    }
+
+    @Test
+    @DisplayName("Facings variants: overlap=false returns empty set (no arbitration applies)")
+    void facingsVariants_overlapDisabled() {
+      TrafficSignalControllerCircuits circuits = new TrafficSignalControllerCircuits();
+      circuits.addCircuit(emptyCircuit());
+
+      assertTrue(TrafficSignalControllerTickerUtilities.computeGreenLeftTurnFacings(
+          circuits, 1, false, null).isEmpty());
+      assertTrue(TrafficSignalControllerTickerUtilities.computeGreenRightTurnFacings(
+          circuits, 1, false, null).isEmpty());
+    }
   }
 
   // ========================================================================
@@ -3573,8 +3601,8 @@ class TrafficSignalControllerTickerUtilitiesTest {
   // Regression: ALL_THROUGHS_PROTECTEDS protected-vs-right conflict
   // ========================================================================
   @Nested
-  @DisplayName("buildAllThroughsProtectedsActivePhase: protected-vs-right conflict")
-  class BuildAllThroughsProtectedsActivePhaseTest {
+  @DisplayName("applyAllThroughsProtectedsSignalStates: per-direction protected-vs-right")
+  class ApplyAllThroughsProtectedsSignalStatesTest {
 
     private static final BlockPos LEFT = new BlockPos(1, 0, 0);
     private static final BlockPos FLASHING_LEFT = new BlockPos(2, 0, 0);
@@ -3583,14 +3611,9 @@ class TrafficSignalControllerTickerUtilitiesTest {
     private static final BlockPos THROUGH = new BlockPos(5, 0, 0);
     private static final BlockPos PROTECTED = new BlockPos(6, 0, 0);
 
-    private TrafficSignalControllerCircuit populatedCircuit() {
+    private TrafficSignalControllerCircuit circuitWithThrough() {
       TrafficSignalControllerCircuit circuit = emptyCircuit();
-      circuit.getLeftSignals().add(LEFT);
-      circuit.getFlashingLeftSignals().add(FLASHING_LEFT);
-      circuit.getRightSignals().add(RIGHT);
-      circuit.getFlashingRightSignals().add(FLASHING_RIGHT);
       circuit.getThroughSignals().add(THROUGH);
-      circuit.getProtectedSignals().add(PROTECTED);
       return circuit;
     }
 
@@ -3599,58 +3622,92 @@ class TrafficSignalControllerTickerUtilitiesTest {
           TrafficSignalPhaseApplicability.ALL_THROUGHS_PROTECTEDS);
     }
 
+    private Tuple<List<BlockPos>, List<BlockPos>> matching(BlockPos pos) {
+      return new Tuple<>(new java.util.ArrayList<>(Collections.singletonList(pos)),
+          new java.util.ArrayList<>());
+    }
+
+    private Tuple<List<BlockPos>, List<BlockPos>> nonMatching(BlockPos pos) {
+      return new Tuple<>(new java.util.ArrayList<>(),
+          new java.util.ArrayList<>(Collections.singletonList(pos)));
+    }
+
+    private Tuple<List<BlockPos>, List<BlockPos>> emptyTuple() {
+      return new Tuple<>(new java.util.ArrayList<>(), new java.util.ArrayList<>());
+    }
+
     @Test
-    @DisplayName("greenRightTurn=true forces protectedSignals to RED (transit/bike conflict)")
+    @DisplayName("right at protected-green facing forces same-direction protected to RED")
     void greenRight_protectedRed() {
-      TrafficSignalControllerCircuit circuit = populatedCircuit();
+      TrafficSignalControllerCircuit circuit = circuitWithThrough();
       TrafficSignalPhase phase = newPhase();
 
-      TrafficSignalControllerTickerUtilities.buildAllThroughsProtectedsActivePhase(
-          null, circuit, phase, true, true);
+      TrafficSignalControllerTickerUtilities.applyAllThroughsProtectedsSignalStates(
+          circuit, phase,
+          /* flashingLeft */ matching(FLASHING_LEFT),
+          /* left */ matching(LEFT),
+          /* flashingRight */ matching(FLASHING_RIGHT),
+          /* right */ matching(RIGHT),
+          /* protected */ matching(PROTECTED));
 
       assertTrue(phase.getRedSignals().contains(PROTECTED),
-          "Protected signal should go RED when right turn is solid green");
+          "Protected signal at solid-right facing should go RED");
       assertFalse(phase.getGreenSignals().contains(PROTECTED),
-          "Protected signal must not be GREEN concurrent with solid green right");
+          "Protected must not be GREEN concurrent with solid green right at same facing");
       assertTrue(phase.getGreenSignals().contains(RIGHT));
     }
 
     @Test
-    @DisplayName("greenRightTurn=false (FYA permissive) keeps protectedSignals GREEN")
+    @DisplayName("FYA-permissive right (non-matching) keeps protected GREEN")
     void fyaRight_protectedGreen() {
-      TrafficSignalControllerCircuit circuit = populatedCircuit();
+      TrafficSignalControllerCircuit circuit = circuitWithThrough();
       TrafficSignalPhase phase = newPhase();
 
-      TrafficSignalControllerTickerUtilities.buildAllThroughsProtectedsActivePhase(
-          null, circuit, phase, true, false);
+      TrafficSignalControllerTickerUtilities.applyAllThroughsProtectedsSignalStates(
+          circuit, phase,
+          /* flashingLeft */ matching(FLASHING_LEFT),
+          /* left */ matching(LEFT),
+          /* flashingRight */ nonMatching(FLASHING_RIGHT),
+          /* right */ nonMatching(RIGHT),
+          /* protected */ nonMatching(PROTECTED));
 
       assertTrue(phase.getGreenSignals().contains(PROTECTED),
-          "Protected signal should be GREEN when right turn is FYA permissive");
+          "Protected at non-matching facing should be GREEN (no conflict with FYA right)");
       assertTrue(phase.getFyaSignals().contains(FLASHING_RIGHT));
       assertTrue(phase.getRedSignals().contains(RIGHT));
     }
 
     @Test
-    @DisplayName("greenLeftTurn=true sets left protected green and FYA-left off")
+    @DisplayName("matching-facing left = solid green, FYA-left companion = OFF")
     void greenLeft_leftProtectedGreen() {
-      TrafficSignalControllerCircuit circuit = populatedCircuit();
+      TrafficSignalControllerCircuit circuit = circuitWithThrough();
       TrafficSignalPhase phase = newPhase();
 
-      TrafficSignalControllerTickerUtilities.buildAllThroughsProtectedsActivePhase(
-          null, circuit, phase, true, false);
+      TrafficSignalControllerTickerUtilities.applyAllThroughsProtectedsSignalStates(
+          circuit, phase,
+          /* flashingLeft */ matching(FLASHING_LEFT),
+          /* left */ matching(LEFT),
+          /* flashingRight */ nonMatching(FLASHING_RIGHT),
+          /* right */ nonMatching(RIGHT),
+          /* protected */ nonMatching(PROTECTED));
 
       assertTrue(phase.getGreenSignals().contains(LEFT));
       assertTrue(phase.getOffSignals().contains(FLASHING_LEFT));
     }
 
     @Test
-    @DisplayName("greenLeftTurn=false sets left to FYA permissive")
+    @DisplayName("non-matching left = FYA permissive, leftSignals = RED")
     void fyaLeft_leftFyaPermissive() {
-      TrafficSignalControllerCircuit circuit = populatedCircuit();
+      TrafficSignalControllerCircuit circuit = circuitWithThrough();
       TrafficSignalPhase phase = newPhase();
 
-      TrafficSignalControllerTickerUtilities.buildAllThroughsProtectedsActivePhase(
-          null, circuit, phase, false, false);
+      TrafficSignalControllerTickerUtilities.applyAllThroughsProtectedsSignalStates(
+          circuit, phase,
+          /* flashingLeft */ nonMatching(FLASHING_LEFT),
+          /* left */ nonMatching(LEFT),
+          /* flashingRight */ nonMatching(FLASHING_RIGHT),
+          /* right */ nonMatching(RIGHT),
+          /* protected */ nonMatching(PROTECTED));
 
       assertTrue(phase.getFyaSignals().contains(FLASHING_LEFT));
       assertTrue(phase.getRedSignals().contains(LEFT));
@@ -3659,18 +3716,65 @@ class TrafficSignalControllerTickerUtilitiesTest {
     @Test
     @DisplayName("through signal is GREEN regardless of turn arbitration")
     void through_alwaysGreen() {
-      TrafficSignalControllerCircuit circuit = populatedCircuit();
+      TrafficSignalControllerCircuit circuit = circuitWithThrough();
 
-      for (boolean greenLeft : new boolean[]{false, true}) {
-        for (boolean greenRight : new boolean[]{false, true}) {
+      // Iterate every left/right combination of matching vs non-matching
+      Tuple<List<BlockPos>, List<BlockPos>>[][] cases = new Tuple[][] {
+          { matching(FLASHING_LEFT), matching(LEFT) },
+          { nonMatching(FLASHING_LEFT), nonMatching(LEFT) }
+      };
+      Tuple<List<BlockPos>, List<BlockPos>>[][] rightCases = new Tuple[][] {
+          { matching(FLASHING_RIGHT), matching(RIGHT), matching(PROTECTED) },
+          { nonMatching(FLASHING_RIGHT), nonMatching(RIGHT), nonMatching(PROTECTED) }
+      };
+      for (Tuple<List<BlockPos>, List<BlockPos>>[] leftPair : cases) {
+        for (Tuple<List<BlockPos>, List<BlockPos>>[] rightTriple : rightCases) {
           TrafficSignalPhase phase = newPhase();
-          TrafficSignalControllerTickerUtilities.buildAllThroughsProtectedsActivePhase(
-              null, circuit, phase, greenLeft, greenRight);
+          TrafficSignalControllerTickerUtilities.applyAllThroughsProtectedsSignalStates(
+              circuit, phase, leftPair[0], leftPair[1],
+              rightTriple[0], rightTriple[1], rightTriple[2]);
           assertTrue(phase.getGreenSignals().contains(THROUGH),
-              "Through should be GREEN for greenLeft=" + greenLeft
-                  + ", greenRight=" + greenRight);
+              "Through should be GREEN regardless of turn partitioning");
         }
       }
+    }
+
+    @Test
+    @DisplayName("multi-direction circuit: only matching facings get solid green right")
+    void multiDirection_perDirectionRight() {
+      // Simulate two directions: NB-right at MATCHING, SB-right at NON-MATCHING
+      BlockPos nbRight = new BlockPos(10, 0, 0);
+      BlockPos sbRight = new BlockPos(11, 0, 0);
+      BlockPos nbFlashRight = new BlockPos(12, 0, 0);
+      BlockPos sbFlashRight = new BlockPos(13, 0, 0);
+      BlockPos nbProtected = new BlockPos(14, 0, 0);
+      BlockPos sbProtected = new BlockPos(15, 0, 0);
+
+      TrafficSignalControllerCircuit circuit = circuitWithThrough();
+      TrafficSignalPhase phase = newPhase();
+
+      TrafficSignalControllerTickerUtilities.applyAllThroughsProtectedsSignalStates(
+          circuit, phase,
+          emptyTuple(),
+          emptyTuple(),
+          new Tuple<>(java.util.Arrays.asList(nbFlashRight),
+              java.util.Arrays.asList(sbFlashRight)),
+          new Tuple<>(java.util.Arrays.asList(nbRight), java.util.Arrays.asList(sbRight)),
+          new Tuple<>(java.util.Arrays.asList(nbProtected),
+              java.util.Arrays.asList(sbProtected)));
+
+      assertTrue(phase.getGreenSignals().contains(nbRight),
+          "NB right (matching) should be solid green");
+      assertTrue(phase.getRedSignals().contains(sbRight),
+          "SB right (non-matching) should be red companion of FYA");
+      assertTrue(phase.getOffSignals().contains(nbFlashRight),
+          "NB flashing-right (matching) should be OFF (protected showing)");
+      assertTrue(phase.getFyaSignals().contains(sbFlashRight),
+          "SB flashing-right (non-matching) should flash yellow permissively");
+      assertTrue(phase.getRedSignals().contains(nbProtected),
+          "NB protected (matching) should be RED — conflicts with NB solid green right");
+      assertTrue(phase.getGreenSignals().contains(sbProtected),
+          "SB protected (non-matching) should be GREEN — no conflict with SB FYA right");
     }
   }
 
