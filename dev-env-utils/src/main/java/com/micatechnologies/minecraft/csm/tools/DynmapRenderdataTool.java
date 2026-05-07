@@ -19,6 +19,7 @@ import com.micatechnologies.minecraft.csm.tools.dynmap.ModelResolver;
 import com.micatechnologies.minecraft.csm.tools.dynmap.ModelResolver.ResolvedModel;
 import com.micatechnologies.minecraft.csm.tools.dynmap.ObjModelParser;
 import com.micatechnologies.minecraft.csm.tools.dynmap.PatchValidator;
+import com.micatechnologies.minecraft.csm.tools.dynmap.RenderLayerResolver;
 import com.micatechnologies.minecraft.csm.tools.dynmap.TesrGeometry;
 import com.micatechnologies.minecraft.csm.tools.dynmap.TextureResolver;
 import com.micatechnologies.minecraft.csm.tools.tool_framework.CsmToolUtility;
@@ -59,6 +60,7 @@ public class DynmapRenderdataTool {
         private final ModelResolver modelResolver;
         private final ObjModelParser objModelParser;
         private final TesrGeometry tesrGeometry;
+        private final RenderLayerResolver renderLayerResolver;
 
         // Output records.
         private final List<ModelListRecord> modelLines = new ArrayList<>();
@@ -79,6 +81,8 @@ public class DynmapRenderdataTool {
         private int missingTextureFiles;
         private int blocksUsedTesrGeometry;
         private int blocksUsedObjGeometry;
+        private final java.util.EnumMap<Transparency, Integer> transparencyCounts =
+                new java.util.EnumMap<>(Transparency.class);
 
         Run(File devEnvironmentPath) {
             this.devEnvironmentPath = devEnvironmentPath;
@@ -86,6 +90,7 @@ public class DynmapRenderdataTool {
             this.modelResolver = new ModelResolver(devEnvironmentPath);
             this.objModelParser = new ObjModelParser(devEnvironmentPath);
             this.tesrGeometry = new TesrGeometry(devEnvironmentPath);
+            this.renderLayerResolver = new RenderLayerResolver(devEnvironmentPath);
         }
 
         void execute() throws Exception {
@@ -139,6 +144,8 @@ public class DynmapRenderdataTool {
             if (expanded.kind == Kind.MULTIPART) blocksHandledMultipart++;
             if (expanded.kind == Kind.VANILLA) blocksFallbackVanilla++;
             if (expanded.kind == Kind.OBJ) blocksFallbackObj++;
+
+            Transparency transparency = renderLayerResolver.forBlock(bm);
 
             // TESR-rendered blocks: try the VertexData-derived silhouette first. If we get a
             // recipe match, use that for every variant of this block (geometry doesn't change
@@ -213,7 +220,8 @@ public class DynmapRenderdataTool {
 
                 Map<String, String> stateMap = new LinkedHashMap<>(rv.stateMap);
                 modelLines.add(new ModelListRecord(bm.registryName, stateMap, sanitisedBoxes, modelRot));
-                blockLines.add(new BlockRecord(bm.registryName, stateMap, patchIds, Transparency.TRANSPARENT));
+                blockLines.add(new BlockRecord(bm.registryName, stateMap, patchIds, transparency));
+                transparencyCounts.merge(transparency, 1, Integer::sum);
                 variantsEmitted++;
                 boxesEmitted += sanitisedBoxes.size();
                 any = true;
@@ -322,6 +330,12 @@ public class DynmapRenderdataTool {
             System.out.println("Boxes replaced (AABB):      " + boxesReplacedAabb);
             System.out.println("Blocks via TESR geometry:   " + blocksUsedTesrGeometry);
             System.out.println("Blocks via .obj geometry:   " + blocksUsedObjGeometry);
+            System.out.println();
+            System.out.println("Variants by transparency:");
+            for (Transparency t : Transparency.values()) {
+                System.out.println("  " + String.format("%-25s", t.name() + ":")
+                        + " " + transparencyCounts.getOrDefault(t, 0));
+            }
             System.out.println();
             System.out.println("Blockstate kinds:");
             System.out.println("  vanilla format (fallback):" + blocksFallbackVanilla);
