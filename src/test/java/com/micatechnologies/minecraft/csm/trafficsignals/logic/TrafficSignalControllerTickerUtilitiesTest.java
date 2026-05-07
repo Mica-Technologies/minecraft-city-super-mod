@@ -2619,7 +2619,8 @@ class TrafficSignalControllerTickerUtilitiesTest {
           0, 0, 0, 0, 0);
 
       assertEquals(0,
-          TrafficSignalControllerTickerUtilities.getEffectiveLeftDemand(null, circuit, summary),
+          TrafficSignalControllerTickerUtilities.getEffectiveLeftDemand(
+              (net.minecraft.world.World) null, circuit, summary),
           "Should return 0 when circuit has no regular left signals");
     }
 
@@ -2637,7 +2638,8 @@ class TrafficSignalControllerTickerUtilitiesTest {
           0, 0, 0, 0, 0);
 
       assertTrue(
-          TrafficSignalControllerTickerUtilities.getEffectiveLeftDemand(null, circuit, summary) > 0,
+          TrafficSignalControllerTickerUtilities.getEffectiveLeftDemand(
+              (net.minecraft.world.World) null, circuit, summary) > 0,
           "Should return nonzero when circuit has regular left signals and demand >= 2");
     }
 
@@ -2654,7 +2656,8 @@ class TrafficSignalControllerTickerUtilitiesTest {
           0, 0, 0, 0, 0);
 
       assertEquals(0,
-          TrafficSignalControllerTickerUtilities.getEffectiveLeftDemand(null, circuit, summary));
+          TrafficSignalControllerTickerUtilities.getEffectiveLeftDemand(
+              (net.minecraft.world.World) null, circuit, summary));
     }
   }
 
@@ -4061,7 +4064,7 @@ class TrafficSignalControllerTickerUtilitiesTest {
     void emptySignals_emptyPartitions() {
       Tuple<List<BlockPos>, List<BlockPos>> result =
           TrafficSignalControllerTickerUtilities.partitionSignalsByFacingSet(
-              null, java.util.Collections.emptyList(),
+              (net.minecraft.world.World) null, java.util.Collections.emptyList(),
               java.util.EnumSet.of(net.minecraft.util.EnumFacing.NORTH));
       assertNotNull(result);
       assertTrue(result.getFirst().isEmpty());
@@ -4073,7 +4076,7 @@ class TrafficSignalControllerTickerUtilitiesTest {
     void nullSignals_emptyPartitions() {
       Tuple<List<BlockPos>, List<BlockPos>> result =
           TrafficSignalControllerTickerUtilities.partitionSignalsByFacingSet(
-              null, null,
+              (net.minecraft.world.World) null, null,
               java.util.EnumSet.of(net.minecraft.util.EnumFacing.NORTH));
       assertNotNull(result);
       assertTrue(result.getFirst().isEmpty());
@@ -4085,7 +4088,7 @@ class TrafficSignalControllerTickerUtilitiesTest {
     void nullWorld_allNonMatching() {
       Tuple<List<BlockPos>, List<BlockPos>> result =
           TrafficSignalControllerTickerUtilities.partitionSignalsByFacingSet(
-              null, Arrays.asList(POS_A, POS_B, POS_C),
+              (net.minecraft.world.World) null, Arrays.asList(POS_A, POS_B, POS_C),
               java.util.EnumSet.of(net.minecraft.util.EnumFacing.NORTH));
       assertTrue(result.getFirst().isEmpty(),
           "Without a world, we can't resolve facings — all go non-matching");
@@ -4100,7 +4103,7 @@ class TrafficSignalControllerTickerUtilitiesTest {
     void nullWorld_emptyMatching() {
       Tuple<List<BlockPos>, List<BlockPos>> result =
           TrafficSignalControllerTickerUtilities.partitionSignalsByFacingSet(
-              null, Arrays.asList(POS_A, POS_B),
+              (net.minecraft.world.World) null, Arrays.asList(POS_A, POS_B),
               java.util.EnumSet.noneOf(net.minecraft.util.EnumFacing.class));
       assertTrue(result.getFirst().isEmpty());
       assertEquals(2, result.getSecond().size());
@@ -4111,7 +4114,7 @@ class TrafficSignalControllerTickerUtilitiesTest {
     void partitionsAreMutable() {
       Tuple<List<BlockPos>, List<BlockPos>> result =
           TrafficSignalControllerTickerUtilities.partitionSignalsByFacingSet(
-              null, Arrays.asList(POS_A),
+              (net.minecraft.world.World) null, Arrays.asList(POS_A),
               java.util.EnumSet.noneOf(net.minecraft.util.EnumFacing.class));
       // Both lists should be mutable so callers can pass them to phase methods that may
       // append to / iterate over them.
@@ -4124,7 +4127,7 @@ class TrafficSignalControllerTickerUtilitiesTest {
     void preservesOrder() {
       Tuple<List<BlockPos>, List<BlockPos>> result =
           TrafficSignalControllerTickerUtilities.partitionSignalsByFacingSet(
-              null, Arrays.asList(POS_C, POS_A, POS_B),
+              (net.minecraft.world.World) null, Arrays.asList(POS_C, POS_A, POS_B),
               java.util.EnumSet.noneOf(net.minecraft.util.EnumFacing.class));
       assertEquals(POS_C, result.getSecond().get(0));
       assertEquals(POS_A, result.getSecond().get(1));
@@ -4562,7 +4565,7 @@ class TrafficSignalControllerTickerUtilitiesTest {
       TrafficSignalControllerCircuit circuit = emptyCircuit();
       circuit.getLeftSignals().add(new BlockPos(1, 0, 0));
       int demand = TrafficSignalControllerTickerUtilities.getEffectiveLeftDemand(
-          null, circuit, summary(0, 0, 0, 0, 0, 0, 0, 0));
+          (net.minecraft.world.World) null, circuit, summary(0, 0, 0, 0, 0, 0, 0, 0));
       assertEquals(0, demand);
     }
 
@@ -4572,7 +4575,7 @@ class TrafficSignalControllerTickerUtilitiesTest {
       TrafficSignalControllerCircuit circuit = emptyCircuit();
       // Circuit has no leftSignals → ALL_LEFTS can't be served
       int demand = TrafficSignalControllerTickerUtilities.getEffectiveLeftDemand(
-          null, circuit, summary(5, 5, 5, 5, 0, 0, 0, 0));
+          (net.minecraft.world.World) null, circuit, summary(5, 5, 5, 5, 0, 0, 0, 0));
       assertEquals(0, demand);
     }
 
@@ -4583,7 +4586,7 @@ class TrafficSignalControllerTickerUtilitiesTest {
       circuit.getLeftSignals().add(new BlockPos(1, 0, 0));
       // No flashingLeft signals → no FYA-direction lookups → no adjustment
       int demand = TrafficSignalControllerTickerUtilities.getEffectiveLeftDemand(
-          null, circuit, summary(2, 1, 0, 3, 0, 0, 0, 0));
+          (net.minecraft.world.World) null, circuit, summary(2, 1, 0, 3, 0, 0, 0, 0));
       assertEquals(6, demand, "Sum of directional left counts when no FYA adjustment");
     }
 
@@ -4592,7 +4595,7 @@ class TrafficSignalControllerTickerUtilitiesTest {
     void rightDemand_zeroTotal() {
       TrafficSignalControllerCircuit circuit = emptyCircuit();
       int demand = TrafficSignalControllerTickerUtilities.getEffectiveRightDemand(
-          null, circuit, summary(0, 0, 0, 0, 0, 0, 0, 0));
+          (net.minecraft.world.World) null, circuit, summary(0, 0, 0, 0, 0, 0, 0, 0));
       assertEquals(0, demand);
     }
 
@@ -4602,7 +4605,7 @@ class TrafficSignalControllerTickerUtilitiesTest {
       TrafficSignalControllerCircuit circuit = emptyCircuit();
       // No flashingRight signals → no FYA-direction lookups → no adjustment
       int demand = TrafficSignalControllerTickerUtilities.getEffectiveRightDemand(
-          null, circuit, summary(0, 0, 0, 0, 4, 0, 2, 0));
+          (net.minecraft.world.World) null, circuit, summary(0, 0, 0, 0, 4, 0, 2, 0));
       assertEquals(6, demand);
     }
   }
@@ -4815,6 +4818,408 @@ class TrafficSignalControllerTickerUtilitiesTest {
       c.getSensors().add(SENSOR_NB);
       assertNull(TrafficSignalControllerTickerUtilities.validateSensorFacings(
           (net.minecraft.world.World) null, circuits(c)));
+    }
+  }
+
+  // ========================================================================
+  // getEffective{Left,Right}Demand: function-based overloads (FYA adjustment)
+  // ========================================================================
+  @Nested
+  @DisplayName("getEffective{Left,Right}Demand (function-based, with FYA adjustment)")
+  class GetEffectiveDemandFunctionBasedTest {
+
+    private TrafficSignalSensorSummary mkSummary(int leftE, int leftW, int leftN, int leftS,
+        int rightE, int rightW, int rightN, int rightS) {
+      int leftTotal = leftE + leftW + leftN + leftS;
+      int rightTotal = rightE + rightW + rightN + rightS;
+      return new TrafficSignalSensorSummary(
+          0, 0, 0, 0, 0,
+          leftTotal, leftE, leftW, leftN, leftS,
+          0, 0, 0, 0, 0,
+          rightTotal, rightE, rightW, rightN, rightS);
+    }
+
+    @Test
+    @DisplayName("getEffectiveLeftDemand: single car on FYA-equipped direction is suppressed")
+    void leftDemand_fya_singleCarSuppressed() {
+      // Circuit has a flashing-left signal facing NORTH and a paired left arrow.
+      // 1 car detected on the NB left lane → permissive turn assumed → effective demand 0.
+      BlockPos flashLeft = new BlockPos(1, 0, 0);
+      BlockPos leftArrow = new BlockPos(2, 0, 0);
+      TrafficSignalControllerCircuit circuit = emptyCircuit();
+      circuit.getFlashingLeftSignals().add(flashLeft);
+      circuit.getLeftSignals().add(leftArrow);
+
+      java.util.Map<BlockPos, net.minecraft.util.EnumFacing> facings = new java.util.HashMap<>();
+      facings.put(flashLeft, net.minecraft.util.EnumFacing.NORTH);
+      facings.put(leftArrow, net.minecraft.util.EnumFacing.NORTH);
+
+      int demand = TrafficSignalControllerTickerUtilities.getEffectiveLeftDemand(
+          (Function<BlockPos, net.minecraft.util.EnumFacing>) facings::get,
+          circuit, mkSummary(0, 0, 1, 0, 0, 0, 0, 0));
+      assertEquals(0, demand, "Single car on FYA-equipped direction → assumed clears permissively");
+    }
+
+    @Test
+    @DisplayName("getEffectiveLeftDemand: 2+ cars on FYA-equipped direction count fully")
+    void leftDemand_fya_multipleCarsCount() {
+      BlockPos flashLeft = new BlockPos(1, 0, 0);
+      BlockPos leftArrow = new BlockPos(2, 0, 0);
+      TrafficSignalControllerCircuit circuit = emptyCircuit();
+      circuit.getFlashingLeftSignals().add(flashLeft);
+      circuit.getLeftSignals().add(leftArrow);
+
+      java.util.Map<BlockPos, net.minecraft.util.EnumFacing> facings = new java.util.HashMap<>();
+      facings.put(flashLeft, net.minecraft.util.EnumFacing.NORTH);
+      facings.put(leftArrow, net.minecraft.util.EnumFacing.NORTH);
+
+      int demand = TrafficSignalControllerTickerUtilities.getEffectiveLeftDemand(
+          (Function<BlockPos, net.minecraft.util.EnumFacing>) facings::get,
+          circuit, mkSummary(0, 0, 3, 0, 0, 0, 0, 0));
+      assertEquals(3, demand,
+          "3 cars on a FYA-equipped direction count as 3 (permissive can't clear queue)");
+    }
+
+    @Test
+    @DisplayName("getEffectiveLeftDemand: direction without FYA counts all cars")
+    void leftDemand_noFya_countsAll() {
+      BlockPos leftArrow = new BlockPos(2, 0, 0);
+      TrafficSignalControllerCircuit circuit = emptyCircuit();
+      // No flashingLeft signal → no FYA on any direction
+      circuit.getLeftSignals().add(leftArrow);
+
+      java.util.Map<BlockPos, net.minecraft.util.EnumFacing> facings = new java.util.HashMap<>();
+      facings.put(leftArrow, net.minecraft.util.EnumFacing.NORTH);
+
+      int demand = TrafficSignalControllerTickerUtilities.getEffectiveLeftDemand(
+          (Function<BlockPos, net.minecraft.util.EnumFacing>) facings::get,
+          circuit, mkSummary(0, 0, 1, 0, 0, 0, 0, 0));
+      assertEquals(1, demand, "Single car without FYA fully counts as protected demand");
+    }
+
+    @Test
+    @DisplayName("getEffectiveLeftDemand: mixed installation — FYA on one direction only")
+    void leftDemand_mixedInstallation() {
+      // NB approach has FYA, SB approach has protected-only left.
+      // 1 car NB (FYA — suppressed) + 1 car SB (protected-only — counts) = 1 effective.
+      BlockPos flashLeftNb = new BlockPos(1, 0, 0);
+      BlockPos leftArrowNb = new BlockPos(2, 0, 0);
+      BlockPos leftArrowSb = new BlockPos(3, 0, 0);
+      TrafficSignalControllerCircuit circuit = emptyCircuit();
+      circuit.getFlashingLeftSignals().add(flashLeftNb);
+      circuit.getLeftSignals().add(leftArrowNb);
+      circuit.getLeftSignals().add(leftArrowSb);
+
+      java.util.Map<BlockPos, net.minecraft.util.EnumFacing> facings = new java.util.HashMap<>();
+      facings.put(flashLeftNb, net.minecraft.util.EnumFacing.NORTH);
+      facings.put(leftArrowNb, net.minecraft.util.EnumFacing.NORTH);
+      facings.put(leftArrowSb, net.minecraft.util.EnumFacing.SOUTH);
+
+      int demand = TrafficSignalControllerTickerUtilities.getEffectiveLeftDemand(
+          (Function<BlockPos, net.minecraft.util.EnumFacing>) facings::get,
+          circuit, mkSummary(0, 0, 1, 1, 0, 0, 0, 0));
+      // Multi-direction circuit with signals on N+S → areSignalsFacingSameDirection=false → returns 0
+      assertEquals(0, demand, "Multi-direction circuit gets 0 (must serve via FYA permissive)");
+    }
+
+    @Test
+    @DisplayName("getEffectiveLeftDemand: same-direction guard — multi-direction → 0")
+    void leftDemand_multiDirectionGuard() {
+      BlockPos leftN = new BlockPos(1, 0, 0);
+      BlockPos leftS = new BlockPos(2, 0, 0);
+      TrafficSignalControllerCircuit circuit = emptyCircuit();
+      circuit.getLeftSignals().add(leftN);
+      circuit.getLeftSignals().add(leftS);
+
+      java.util.Map<BlockPos, net.minecraft.util.EnumFacing> facings = new java.util.HashMap<>();
+      facings.put(leftN, net.minecraft.util.EnumFacing.NORTH);
+      facings.put(leftS, net.minecraft.util.EnumFacing.SOUTH);
+
+      int demand = TrafficSignalControllerTickerUtilities.getEffectiveLeftDemand(
+          (Function<BlockPos, net.minecraft.util.EnumFacing>) facings::get,
+          circuit, mkSummary(0, 0, 5, 5, 0, 0, 0, 0));
+      assertEquals(0, demand, "Multi-direction circuit can't safely serve protected lefts");
+    }
+
+    @Test
+    @DisplayName("getEffectiveRightDemand: single car on FYA direction suppressed")
+    void rightDemand_fya_singleCarSuppressed() {
+      BlockPos flashRight = new BlockPos(1, 0, 0);
+      TrafficSignalControllerCircuit circuit = emptyCircuit();
+      circuit.getFlashingRightSignals().add(flashRight);
+
+      java.util.Map<BlockPos, net.minecraft.util.EnumFacing> facings = new java.util.HashMap<>();
+      facings.put(flashRight, net.minecraft.util.EnumFacing.EAST);
+
+      int demand = TrafficSignalControllerTickerUtilities.getEffectiveRightDemand(
+          (Function<BlockPos, net.minecraft.util.EnumFacing>) facings::get,
+          circuit, mkSummary(0, 0, 0, 0, 1, 0, 0, 0));
+      assertEquals(0, demand);
+    }
+
+    @Test
+    @DisplayName("getEffectiveRightDemand: cars on different directions count independently")
+    void rightDemand_multiDirection_independentCounts() {
+      BlockPos flashRightE = new BlockPos(1, 0, 0);
+      BlockPos flashRightW = new BlockPos(2, 0, 0);
+      TrafficSignalControllerCircuit circuit = emptyCircuit();
+      circuit.getFlashingRightSignals().add(flashRightE);
+      circuit.getFlashingRightSignals().add(flashRightW);
+
+      java.util.Map<BlockPos, net.minecraft.util.EnumFacing> facings = new java.util.HashMap<>();
+      facings.put(flashRightE, net.minecraft.util.EnumFacing.EAST);
+      facings.put(flashRightW, net.minecraft.util.EnumFacing.WEST);
+
+      // 1 car EB (FYA → suppressed) + 3 cars WB (FYA but 2+) = 0 + 3 = 3.
+      int demand = TrafficSignalControllerTickerUtilities.getEffectiveRightDemand(
+          (Function<BlockPos, net.minecraft.util.EnumFacing>) facings::get,
+          circuit, mkSummary(0, 0, 0, 0, 1, 3, 0, 0));
+      assertEquals(3, demand);
+    }
+  }
+
+  // ========================================================================
+  // getEffectiveDirectionalDemand: function-based overload
+  // ========================================================================
+  @Nested
+  @DisplayName("getEffectiveDirectionalDemand (function-based)")
+  class GetEffectiveDirectionalDemandFunctionBasedTest {
+
+    private TrafficSignalSensorSummary mkSummary(int stdE, int leftE, int rightE) {
+      return new TrafficSignalSensorSummary(
+          stdE, stdE, 0, 0, 0,
+          leftE, leftE, 0, 0, 0,
+          0, 0, 0, 0, 0,
+          rightE, rightE, 0, 0, 0);
+    }
+
+    @Test
+    @DisplayName("east direction: standard + left + right (no FYA, no adjustment)")
+    void eastDirection_noFya() {
+      TrafficSignalControllerCircuit circuit = emptyCircuit();
+
+      int demand = TrafficSignalControllerTickerUtilities.getEffectiveDirectionalDemand(
+          (Function<BlockPos, net.minecraft.util.EnumFacing>) (pos -> null),
+          circuit, mkSummary(2, 1, 3), net.minecraft.util.EnumFacing.EAST);
+      assertEquals(6, demand, "Sum: standard 2 + left 1 + right 3");
+    }
+
+    @Test
+    @DisplayName("east with east-facing FYA-left: single left car suppressed")
+    void eastDirection_eastFyaLeft_suppresses() {
+      BlockPos flashLeftE = new BlockPos(1, 0, 0);
+      TrafficSignalControllerCircuit circuit = emptyCircuit();
+      circuit.getFlashingLeftSignals().add(flashLeftE);
+
+      java.util.Map<BlockPos, net.minecraft.util.EnumFacing> facings = new java.util.HashMap<>();
+      facings.put(flashLeftE, net.minecraft.util.EnumFacing.EAST);
+
+      // Standard 2 + left 1 (suppressed by FYA) + right 3 = 5
+      int demand = TrafficSignalControllerTickerUtilities.getEffectiveDirectionalDemand(
+          (Function<BlockPos, net.minecraft.util.EnumFacing>) facings::get,
+          circuit, mkSummary(2, 1, 3), net.minecraft.util.EnumFacing.EAST);
+      assertEquals(5, demand);
+    }
+
+    @Test
+    @DisplayName("east with FYA-left at NORTH (different direction): no adjustment")
+    void eastDirection_northFyaLeft_noAdjust() {
+      BlockPos flashLeftN = new BlockPos(1, 0, 0);
+      TrafficSignalControllerCircuit circuit = emptyCircuit();
+      circuit.getFlashingLeftSignals().add(flashLeftN);
+
+      java.util.Map<BlockPos, net.minecraft.util.EnumFacing> facings = new java.util.HashMap<>();
+      facings.put(flashLeftN, net.minecraft.util.EnumFacing.NORTH);
+
+      // FYA on NB doesn't affect EB demand — east left counts fully.
+      int demand = TrafficSignalControllerTickerUtilities.getEffectiveDirectionalDemand(
+          (Function<BlockPos, net.minecraft.util.EnumFacing>) facings::get,
+          circuit, mkSummary(2, 1, 3), net.minecraft.util.EnumFacing.EAST);
+      assertEquals(6, demand);
+    }
+
+    @Test
+    @DisplayName("east with east-facing FYA-right: single right car suppressed")
+    void eastDirection_eastFyaRight_suppresses() {
+      BlockPos flashRightE = new BlockPos(1, 0, 0);
+      TrafficSignalControllerCircuit circuit = emptyCircuit();
+      circuit.getFlashingRightSignals().add(flashRightE);
+
+      java.util.Map<BlockPos, net.minecraft.util.EnumFacing> facings = new java.util.HashMap<>();
+      facings.put(flashRightE, net.minecraft.util.EnumFacing.EAST);
+
+      // Standard 2 + left 1 + right 1 (suppressed) = 3
+      int demand = TrafficSignalControllerTickerUtilities.getEffectiveDirectionalDemand(
+          (Function<BlockPos, net.minecraft.util.EnumFacing>) facings::get,
+          circuit, mkSummary(2, 1, 1), net.minecraft.util.EnumFacing.EAST);
+      assertEquals(3, demand);
+    }
+
+    @Test
+    @DisplayName("invalid direction (UP/DOWN) returns 0")
+    void invalidDirection_zero() {
+      TrafficSignalControllerCircuit circuit = emptyCircuit();
+      int demand = TrafficSignalControllerTickerUtilities.getEffectiveDirectionalDemand(
+          (Function<BlockPos, net.minecraft.util.EnumFacing>) (pos -> null),
+          circuit, mkSummary(5, 5, 5), net.minecraft.util.EnumFacing.UP);
+      assertEquals(0, demand);
+    }
+  }
+
+  // ========================================================================
+  // partitionSignalsByFacingSet (function-based with non-null resolver)
+  // ========================================================================
+  @Nested
+  @DisplayName("partitionSignalsByFacingSet (function-based)")
+  class PartitionSignalsByFacingSetFunctionBasedTest {
+
+    private static final BlockPos POS_N = new BlockPos(1, 0, 0);
+    private static final BlockPos POS_E = new BlockPos(2, 0, 0);
+    private static final BlockPos POS_S = new BlockPos(3, 0, 0);
+
+    @Test
+    @DisplayName("matching facing → first list; non-matching → second list")
+    void mixedMatching() {
+      java.util.Map<BlockPos, net.minecraft.util.EnumFacing> facings = new java.util.HashMap<>();
+      facings.put(POS_N, net.minecraft.util.EnumFacing.NORTH);
+      facings.put(POS_E, net.minecraft.util.EnumFacing.EAST);
+      facings.put(POS_S, net.minecraft.util.EnumFacing.SOUTH);
+
+      Tuple<List<BlockPos>, List<BlockPos>> result =
+          TrafficSignalControllerTickerUtilities.partitionSignalsByFacingSet(
+              (Function<BlockPos, net.minecraft.util.EnumFacing>) facings::get,
+              Arrays.asList(POS_N, POS_E, POS_S),
+              java.util.EnumSet.of(net.minecraft.util.EnumFacing.NORTH,
+                  net.minecraft.util.EnumFacing.SOUTH));
+
+      assertEquals(2, result.getFirst().size());
+      assertTrue(result.getFirst().contains(POS_N));
+      assertTrue(result.getFirst().contains(POS_S));
+      assertEquals(1, result.getSecond().size());
+      assertTrue(result.getSecond().contains(POS_E));
+    }
+
+    @Test
+    @DisplayName("position with null facing → non-matching")
+    void nullFacingPos_nonMatching() {
+      Tuple<List<BlockPos>, List<BlockPos>> result =
+          TrafficSignalControllerTickerUtilities.partitionSignalsByFacingSet(
+              (Function<BlockPos, net.minecraft.util.EnumFacing>) (pos -> null),
+              Arrays.asList(POS_N),
+              java.util.EnumSet.of(net.minecraft.util.EnumFacing.NORTH));
+      assertTrue(result.getFirst().isEmpty());
+      assertEquals(1, result.getSecond().size());
+    }
+
+    @Test
+    @DisplayName("all matching → first list contains everything in input order")
+    void allMatching_orderPreserved() {
+      java.util.Map<BlockPos, net.minecraft.util.EnumFacing> facings = new java.util.HashMap<>();
+      facings.put(POS_S, net.minecraft.util.EnumFacing.NORTH);
+      facings.put(POS_E, net.minecraft.util.EnumFacing.NORTH);
+      facings.put(POS_N, net.minecraft.util.EnumFacing.NORTH);
+
+      Tuple<List<BlockPos>, List<BlockPos>> result =
+          TrafficSignalControllerTickerUtilities.partitionSignalsByFacingSet(
+              (Function<BlockPos, net.minecraft.util.EnumFacing>) facings::get,
+              Arrays.asList(POS_S, POS_E, POS_N),
+              java.util.EnumSet.of(net.minecraft.util.EnumFacing.NORTH));
+
+      assertEquals(POS_S, result.getFirst().get(0));
+      assertEquals(POS_E, result.getFirst().get(1));
+      assertEquals(POS_N, result.getFirst().get(2));
+      assertTrue(result.getSecond().isEmpty());
+    }
+  }
+
+  // ========================================================================
+  // areSignalsFacingSameDirection (function-based) on TrafficSignalControllerCircuit
+  // ========================================================================
+  @Nested
+  @DisplayName("TrafficSignalControllerCircuit.areSignalsFacingSameDirection (function-based)")
+  class AreSignalsFacingSameDirectionFunctionBasedTest {
+
+    @Test
+    @DisplayName("empty circuit → true (no constraint to violate)")
+    void emptyCircuit_true() {
+      TrafficSignalControllerCircuit c = emptyCircuit();
+      assertTrue(c.areSignalsFacingSameDirection(pos -> null));
+    }
+
+    @Test
+    @DisplayName("all signals facing NORTH → true")
+    void allFacingNorth_true() {
+      TrafficSignalControllerCircuit c = emptyCircuit();
+      BlockPos a = new BlockPos(1, 0, 0);
+      BlockPos b = new BlockPos(2, 0, 0);
+      c.getThroughSignals().add(a);
+      c.getLeftSignals().add(b);
+
+      java.util.Map<BlockPos, net.minecraft.util.EnumFacing> facings = new java.util.HashMap<>();
+      facings.put(a, net.minecraft.util.EnumFacing.NORTH);
+      facings.put(b, net.minecraft.util.EnumFacing.NORTH);
+
+      assertTrue(c.areSignalsFacingSameDirection(facings::get));
+    }
+
+    @Test
+    @DisplayName("signals facing different directions → false")
+    void mixedDirections_false() {
+      TrafficSignalControllerCircuit c = emptyCircuit();
+      BlockPos a = new BlockPos(1, 0, 0);
+      BlockPos b = new BlockPos(2, 0, 0);
+      c.getThroughSignals().add(a);
+      c.getLeftSignals().add(b);
+
+      java.util.Map<BlockPos, net.minecraft.util.EnumFacing> facings = new java.util.HashMap<>();
+      facings.put(a, net.minecraft.util.EnumFacing.NORTH);
+      facings.put(b, net.minecraft.util.EnumFacing.SOUTH);
+
+      assertFalse(c.areSignalsFacingSameDirection(facings::get));
+    }
+
+    @Test
+    @DisplayName("null-facing positions are skipped (don't count as mismatch)")
+    void nullFacings_skipped() {
+      TrafficSignalControllerCircuit c = emptyCircuit();
+      BlockPos a = new BlockPos(1, 0, 0);
+      BlockPos b = new BlockPos(2, 0, 0);  // not in map → null
+      c.getThroughSignals().add(a);
+      c.getLeftSignals().add(b);
+
+      java.util.Map<BlockPos, net.minecraft.util.EnumFacing> facings = new java.util.HashMap<>();
+      facings.put(a, net.minecraft.util.EnumFacing.NORTH);
+
+      assertTrue(c.areSignalsFacingSameDirection(facings::get),
+          "Null-facing position is skipped (unloaded chunk); not a mismatch");
+    }
+
+    @Test
+    @DisplayName("iterates all 7 signal lists (regression — no list missed)")
+    void allListsIterated() {
+      TrafficSignalControllerCircuit c = emptyCircuit();
+      BlockPos[] positions = new BlockPos[7];
+      for (int i = 0; i < 7; i++) {
+        positions[i] = new BlockPos(i + 1, 0, 0);
+      }
+      c.getFlashingLeftSignals().add(positions[0]);
+      c.getFlashingRightSignals().add(positions[1]);
+      c.getLeftSignals().add(positions[2]);
+      c.getRightSignals().add(positions[3]);
+      c.getThroughSignals().add(positions[4]);
+      c.getProtectedSignals().add(positions[5]);
+      c.getPedestrianBeaconSignals().add(positions[6]);
+
+      // Make signal at index 6 face EAST while others face NORTH — last position checked.
+      // If pedestrianBeaconSignals were skipped, this would incorrectly return true.
+      java.util.Map<BlockPos, net.minecraft.util.EnumFacing> facings = new java.util.HashMap<>();
+      for (int i = 0; i < 6; i++) {
+        facings.put(positions[i], net.minecraft.util.EnumFacing.NORTH);
+      }
+      facings.put(positions[6], net.minecraft.util.EnumFacing.EAST);
+
+      assertFalse(c.areSignalsFacingSameDirection(facings::get),
+          "pedestrianBeaconSignals must be checked too — mismatch should propagate");
     }
   }
 }

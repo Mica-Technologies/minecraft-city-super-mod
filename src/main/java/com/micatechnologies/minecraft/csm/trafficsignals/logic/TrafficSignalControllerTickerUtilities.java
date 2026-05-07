@@ -1482,13 +1482,31 @@ public class TrafficSignalControllerTickerUtilities {
   public static Tuple<List<BlockPos>, List<BlockPos>> partitionSignalsByFacingSet(World world,
       List<BlockPos> signalBlockPoses,
       EnumSet<EnumFacing> matchingFacings) {
+    Function<BlockPos, EnumFacing> resolver =
+        world == null ? null : pos -> signalFacingOrNull(world, pos);
+    return partitionSignalsByFacingSet(resolver, signalBlockPoses, matchingFacings);
+  }
+
+  /**
+   * Function-based overload of
+   * {@link #partitionSignalsByFacingSet(World, List, EnumSet)}. The {@code facingResolver}
+   * supplies the facing for each signal position; positions with a {@code null} resolved
+   * facing fall into the non-matching list. A {@code null} resolver puts every signal in the
+   * non-matching list.
+   *
+   * @since 1.0
+   */
+  public static Tuple<List<BlockPos>, List<BlockPos>> partitionSignalsByFacingSet(
+      Function<BlockPos, EnumFacing> facingResolver,
+      List<BlockPos> signalBlockPoses,
+      EnumSet<EnumFacing> matchingFacings) {
     List<BlockPos> matching = new ArrayList<>();
     List<BlockPos> nonMatching = new ArrayList<>();
     if (signalBlockPoses == null || signalBlockPoses.isEmpty()) {
       return new Tuple<>(matching, nonMatching);
     }
     for (BlockPos pos : signalBlockPoses) {
-      EnumFacing facing = world == null ? null : signalFacingOrNull(world, pos);
+      EnumFacing facing = facingResolver == null ? null : facingResolver.apply(pos);
       if (facing != null && matchingFacings != null && matchingFacings.contains(facing)) {
         matching.add(pos);
       } else {
@@ -1630,43 +1648,57 @@ public class TrafficSignalControllerTickerUtilities {
    */
   public static int getEffectiveLeftDemand(World world, TrafficSignalControllerCircuit circuit,
       TrafficSignalSensorSummary summary) {
-    // If no left demand at all, return 0 immediately
+    if (world == null) {
+      // Match the historical null-world semantic: skip the same-direction guard and the
+      // FYA-direction lookup, returning the raw directional sum (no FYA adjustment).
+      return getEffectiveLeftDemand((Function<BlockPos, EnumFacing>) null, circuit, summary);
+    }
+    return getEffectiveLeftDemand(pos -> signalFacingOrNull(world, pos), circuit, summary);
+  }
+
+  /**
+   * Function-based overload of {@link #getEffectiveLeftDemand(World, TrafficSignalControllerCircuit, TrafficSignalSensorSummary)}.
+   * The {@code facingResolver} replaces direct {@link World#getBlockState} lookups so this method
+   * is unit-testable without a Minecraft world. A {@code null} resolver short-circuits the
+   * world-dependent same-direction guard and FYA-direction adjustment, returning the raw
+   * directional left-demand sum.
+   *
+   * @param facingResolver Position-to-facing lookup, or {@code null} to skip world-dependent
+   *                       checks (multi-direction guard + FYA adjustment).
+   * @param circuit        The circuit to compute effective left demand for.
+   * @param summary        The sensor summary for the circuit.
+   *
+   * @return The effective left turn demand count, adjusted for FYA permissive turns.
+   *
+   * @since 1.0
+   */
+  public static int getEffectiveLeftDemand(Function<BlockPos, EnumFacing> facingResolver,
+      TrafficSignalControllerCircuit circuit, TrafficSignalSensorSummary summary) {
     if (summary.getLeftTotal() == 0) {
       return 0;
     }
-
-    // If the circuit has no regular left signals, ALL_LEFTS cannot be served — there is
-    // no signal to display a protected green arrow. Left turns are handled permissively
-    // via FYA during through phases instead.
     if (circuit.getLeftSignals().isEmpty()) {
       return 0;
     }
-
-    // ALL_LEFTS is only safe when all signals on the circuit face the same direction.
-    // On a multi-direction circuit, opposing left turns conflict with each other —
-    // left demand must be served permissively via FYA, never as a protected phase.
-    if (world != null && !circuit.areSignalsFacingSameDirection(world)) {
+    if (facingResolver != null && !circuit.areSignalsFacingSameDirection(facingResolver)) {
       return 0;
     }
 
-    // Determine which directions have flashing left signals (FYA)
     boolean fyaEast = false, fyaWest = false, fyaNorth = false, fyaSouth = false;
-    if (world != null) for (BlockPos signalPos : circuit.getFlashingLeftSignals()) {
-      IBlockState blockState = world.getBlockState(signalPos);
-      if (blockState.getBlock() instanceof AbstractBlockControllableSignal) {
-        EnumFacing facing = blockState.getValue(BlockHorizontal.FACING);
+    if (facingResolver != null) {
+      for (BlockPos signalPos : circuit.getFlashingLeftSignals()) {
+        EnumFacing facing = facingResolver.apply(signalPos);
+        if (facing == null) continue;
         switch (facing) {
           case EAST:  fyaEast = true;  break;
           case WEST:  fyaWest = true;  break;
           case NORTH: fyaNorth = true; break;
           case SOUTH: fyaSouth = true; break;
+          default: break;
         }
       }
     }
 
-    // For each direction, apply the FYA threshold: if that direction has FYA,
-    // a single detection is assumed to clear on the permissive turn (don't count it).
-    // Two or more detections indicate the permissive turn isn't sufficient.
     int effectiveCount = 0;
     effectiveCount += adjustForFya(summary.getLeftEast(), fyaEast);
     effectiveCount += adjustForFya(summary.getLeftWest(), fyaWest);
@@ -1695,20 +1727,37 @@ public class TrafficSignalControllerTickerUtilities {
    */
   public static int getEffectiveRightDemand(World world, TrafficSignalControllerCircuit circuit,
       TrafficSignalSensorSummary summary) {
+    if (world == null) {
+      return getEffectiveRightDemand((Function<BlockPos, EnumFacing>) null, circuit, summary);
+    }
+    return getEffectiveRightDemand(pos -> signalFacingOrNull(world, pos), circuit, summary);
+  }
+
+  /**
+   * Function-based overload of {@link #getEffectiveRightDemand(World, TrafficSignalControllerCircuit, TrafficSignalSensorSummary)}.
+   * The {@code facingResolver} replaces direct {@link World#getBlockState} lookups; a
+   * {@code null} resolver short-circuits the FYA-direction adjustment and returns the raw
+   * directional sum.
+   *
+   * @since 1.0
+   */
+  public static int getEffectiveRightDemand(Function<BlockPos, EnumFacing> facingResolver,
+      TrafficSignalControllerCircuit circuit, TrafficSignalSensorSummary summary) {
     if (summary.getRightTotal() == 0) {
       return 0;
     }
 
     boolean fyaEast = false, fyaWest = false, fyaNorth = false, fyaSouth = false;
-    if (world != null) for (BlockPos signalPos : circuit.getFlashingRightSignals()) {
-      IBlockState blockState = world.getBlockState(signalPos);
-      if (blockState.getBlock() instanceof AbstractBlockControllableSignal) {
-        EnumFacing facing = blockState.getValue(BlockHorizontal.FACING);
+    if (facingResolver != null) {
+      for (BlockPos signalPos : circuit.getFlashingRightSignals()) {
+        EnumFacing facing = facingResolver.apply(signalPos);
+        if (facing == null) continue;
         switch (facing) {
           case EAST:  fyaEast = true;  break;
           case WEST:  fyaWest = true;  break;
           case NORTH: fyaNorth = true; break;
           case SOUTH: fyaSouth = true; break;
+          default: break;
         }
       }
     }
@@ -1732,6 +1781,28 @@ public class TrafficSignalControllerTickerUtilities {
       TrafficSignalControllerCircuit circuit,
       TrafficSignalSensorSummary summary,
       EnumFacing direction) {
+    if (world == null) {
+      return getEffectiveDirectionalDemand((Function<BlockPos, EnumFacing>) null, circuit,
+          summary, direction);
+    }
+    return getEffectiveDirectionalDemand(pos -> signalFacingOrNull(world, pos), circuit,
+        summary, direction);
+  }
+
+  /**
+   * Function-based overload of {@link #getEffectiveDirectionalDemand(World, TrafficSignalControllerCircuit, TrafficSignalSensorSummary, EnumFacing)}.
+   * Computes a single direction's demand as {@code standard + adjustForFya(left,hasLeftFya) +
+   * adjustForFya(right,hasRightFya)} where {@code hasLeftFya} / {@code hasRightFya} ask whether
+   * any flashing-arrow signal on this circuit is at the queried direction. A {@code null}
+   * resolver treats both as {@code false} (no FYA adjustment), returning the raw directional
+   * sum.
+   *
+   * @since 1.0
+   */
+  public static int getEffectiveDirectionalDemand(Function<BlockPos, EnumFacing> facingResolver,
+      TrafficSignalControllerCircuit circuit,
+      TrafficSignalSensorSummary summary,
+      EnumFacing direction) {
     int standard;
     int left;
     int right;
@@ -1743,20 +1814,18 @@ public class TrafficSignalControllerTickerUtilities {
       default: return 0;
     }
     boolean hasLeftFya = false;
-    for (BlockPos signalPos : circuit.getFlashingLeftSignals()) {
-      IBlockState blockState = world.getBlockState(signalPos);
-      if (blockState.getBlock() instanceof AbstractBlockControllableSignal) {
-        if (blockState.getValue(BlockHorizontal.FACING) == direction) {
+    if (facingResolver != null) {
+      for (BlockPos signalPos : circuit.getFlashingLeftSignals()) {
+        if (facingResolver.apply(signalPos) == direction) {
           hasLeftFya = true;
           break;
         }
       }
     }
     boolean hasRightFya = false;
-    for (BlockPos signalPos : circuit.getFlashingRightSignals()) {
-      IBlockState blockState = world.getBlockState(signalPos);
-      if (blockState.getBlock() instanceof AbstractBlockControllableSignal) {
-        if (blockState.getValue(BlockHorizontal.FACING) == direction) {
+    if (facingResolver != null) {
+      for (BlockPos signalPos : circuit.getFlashingRightSignals()) {
+        if (facingResolver.apply(signalPos) == direction) {
           hasRightFya = true;
           break;
         }
