@@ -106,45 +106,67 @@ emitting the post cuboid plus 0–4 arm cuboids matching the connection state.
 The `fence_side` fallback geometry is the half-block north-arm cuboid `(7, 6, 0) → (9, 15, 9)`
 (merged from the two thin rails of vanilla MC's `block/fence_side`).
 
-## `.obj` Model Blocks (Checkpoint D)
+## `.obj` Model Blocks (Checkpoint D + polish pass)
 
-The 86 novelty blocks that reference `csm:<name>.obj` now go through `ObjModelParser`. It reads
-just the vertex AABB and the companion `.mtl` file's `map_Kd` material texture, then fits the
-AABB to Dynmap's `[0, 16]^3` model space by:
+The 86 novelty blocks that reference `csm:<name>.obj` go through `ObjModelParser`. It reads the
+vertex array and `f` (face) directives, tracks the active `o`/`g` group plus `usemtl` material
+per face, then computes one AABB per **(group, material)** pair. The companion `.mtl` file's
+`newmtl` / `map_Kd` records map material names to texture references.
+
+Each per-group AABB is fitted to Dynmap's `[0, 16]^3` model space using the same global transform
+(so the parts retain their relative positions):
 
 - Centering the horizontal extents on `(x=8, z=8)` (block centre).
 - Anchoring the vertical extent to `y_min → 0` (sitting on the ground).
 - Clamping all coordinates to `[0, 16]`.
 
-This is a deliberately lossy "silhouette" representation — Dynmap supports only axis-aligned
-cuboids, so curved/sloped `.obj` geometry (apple crates, jukeboxes, the barber pole's helix) cannot
-round-trip faithfully. The output is recognisable on the web map without rejecting any geometry.
+To prevent absurd box counts (some Blockbench exports have 90+ groups for individual decorations
+like apples in a crate), the result is capped at 24 boxes per block; if exceeded, the smallest
+groups by volume merge into a single residual envelope. Per-cuboid textures use each group's
+material → `map_Kd` mapping when available, falling back to the model's first-material texture.
 
-Result: 86 modellist rows per facing variant (typically 6 for blocks with a `facing` property),
-each a single AABB cuboid with the .obj's first material's texture.
+This is still a lossy representation — Dynmap supports only axis-aligned cuboids, so curved /
+sloped `.obj` geometry (the barber pole's helix, anchor flukes) cannot round-trip faithfully —
+but largely cuboidal models (crates, jukeboxes, anchors) now decompose into a recognisable set of
+parts rather than a single bounding cube.
+
+## Transparency Derivation
+
+The tool reads each block's `getBlockRenderLayer()` return value and maps it into Dynmap's
+transparency keyword. Direct match in the block's own Java file, with a parent-chain walk for
+blocks whose layer comes from an abstract base. For blocks instantiated via
+`new BlockRotatableNSEWUDFactory(...)` in tab files (no per-block Java file), the layer is
+extracted from the constructor argument list.
+
+Mapping:
+
+| `BlockRenderLayer` | Dynmap output |
+|---|---|
+| `SOLID`, or `null` (vanilla-default fences/slabs/stairs) | `OPAQUE` (omitted from output) |
+| `CUTOUT`, `CUTOUT_MIPPED` | `TRANSPARENT` |
+| `TRANSLUCENT` | `SEMITRANSPARENT` |
+| undetectable | `TRANSPARENT` (safe fallback that keeps cutout textures visible) |
 
 ## Current Limitations
 
 These remain on the roadmap:
 
-1. **TESR families without a `*VertexData` class** continue to fall back to a static blockstate
-   model (typically AABB cube). This affects ~13 renderers: lane control signal, fire alarm
-   strobe, emergency light, HVAC thermostat, message signs, speed limit signs, traffic beacons,
-   dynamic guide sign, mount kit, tattle-tale beacon. Per-renderer adapters would extract the
-   inline geometry from each TESR's `render` method.
+1. **TESR families without a `*VertexData` class** fall back to the static JSON model (typically
+   the host block's correct silhouette). This affects ~10 renderers: fire alarm strobe, emergency
+   light, HVAC thermostat, traffic beacon halo, mount kit bracket, tattle-tale beacon halo. Each
+   one's TESR only paints glow/text overlays on top of static geometry — Dynmap's renderdata
+   format has no way to express those overlays regardless, so no per-renderer adapter would help.
 2. **Variant rotation** (`x` / `y` from blockstate variants) is emitted as a trailing `R/x/y/0`
    token but its rotation contribution is not currently counted toward the over-extent simulation
    for non-90-degree-multiple values.
-3. **Submodels** (e.g. sign poles attached via `submodel.extension`) are not emitted; only the
-   base model contributes to geometry.
-4. **Transparency** is hard-coded to `TRANSPARENT` for all blocks (matches the previous tool's
-   behaviour). Future enhancement: derive from each block's `getRenderBlockLayer()` Java method.
-5. **TESR placeholder texture** — all TESR-derived geometry uses `metal_black`. Refining this to
+3. **Submodels** (`submodel.extension` directives, e.g. sign poles attached below sign blocks)
+   are intentionally not emitted. All CSM uses translate `(0, -1, 0)` and would render in the
+   block *below* the host — which Dynmap renders from that block's modellist entry, not this
+   one. Including them would either (a) trip the over-extent check and worsen rendering or
+   (b) silently no-op.
+4. **TESR placeholder texture** — all TESR-derived geometry uses `metal_black`. Refining this to
    per-block textures (e.g. yellow signal bodies for school-zone signals) would require a
    per-recipe texture override table.
-6. **`.obj` decomposition** — currently single AABB silhouette per .obj. A smarter approach would
-   cluster axis-aligned coplanar face groups into separate cuboids for blocks like `apple_crate`
-   that are largely cuboidal in shape.
 
 ## Statistics (current CSM state, May 2026)
 
@@ -153,14 +175,17 @@ These remain on the roadmap:
 | Blocks discovered | 1,440 |
 | Blocks processed | 1,440 |
 | Variants emitted | 35,540 |
-| Boxes emitted | 372,691 |
-| Textures registered | 887 |
+| Boxes emitted | 379,411 |
+| Textures registered | 871 |
 | Faces skipped (degenerate filter) | 2,728 |
 | Boxes replaced (AABB fallback) | 18,628 |
-| Blocks via TESR geometry | 124 |
+| Blocks via TESR geometry | 149 |
 | Blocks via `.obj` geometry | 86 |
 | Multipart blocks (handled) | 15 |
 | Missing texture files | 0 |
+| Variants — `OPAQUE` | 617 |
+| Variants — `TRANSPARENT` | 34,761 |
+| Variants — `SEMITRANSPARENT` | 162 |
 
 The `Faces skipped (degenerate)` and `Missing texture files: 0` lines are the two key indicators
 that this tool's output won't reproduce the previous tool's ~226k server-startup warnings.
