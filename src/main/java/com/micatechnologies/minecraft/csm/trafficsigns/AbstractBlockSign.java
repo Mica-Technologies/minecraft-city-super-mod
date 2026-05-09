@@ -296,7 +296,14 @@ public abstract class AbstractBlockSign extends AbstractBlockRotatableHZEight
     Boolean cached = SETBACK_CACHE.get(key);
     if (cached != null) return cached;
     boolean result = getShouldSetback(source, pos);
-    SETBACK_CACHE.put(key, result);
+    // Only cache when the sign is actually present in the world. World.mayPlace invokes
+    // getCollisionBoundingBox -> getActualState before the sign is placed; at that point
+    // getShouldSetback always returns false (the sign at pos is still air), and caching
+    // that false would survive placement and leave the sign rendered without setback
+    // until a neighbor change cleared the entry.
+    if (source.getBlockState(pos).getBlock() instanceof AbstractBlockSign) {
+      SETBACK_CACHE.put(key, result);
+    }
     return result;
   }
 
