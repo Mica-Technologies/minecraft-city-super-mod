@@ -45,6 +45,9 @@ public class BlockTrafficLightSensor extends AbstractBlockTrafficSignalSensor {
      */
     @Override
     public AxisAlignedBB getBlockBoundingBox( IBlockState state, IBlockAccess source, BlockPos pos ) {
-        return new AxisAlignedBB(-0.851388, -1.000000, 0.750000, 1.851388, 1.859375, 1.187500);
+        // Width derived from the rotated model extents (X 0.375-0.625). The previous box
+        // was computed without applying element rotations, leaving a ~2.7-block-wide
+        // selection that grabbed clicks on neighbouring blocks.
+        return new AxisAlignedBB(0.375, -1.000, 0.738, 0.625, 1.859, 1.188);
     }
 }
