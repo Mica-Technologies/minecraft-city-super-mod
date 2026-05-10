@@ -11,6 +11,7 @@ import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
@@ -153,19 +154,21 @@ public abstract class AbstractBlock extends Block implements IHasModel, ICsmBloc
   }
 
   /**
-   * Blocks implementing {@link ICsmNoSnowAccumulation} report their UP face as non-solid so
-   * vanilla's snow-placement check ({@code Blocks.SNOW_LAYER.canPlaceBlockAt}, which gates
-   * on {@code isSideSolid(...UP)}) skips them. Other sides still delegate to the default
-   * {@link Block#isSideSolid} behaviour, preserving attachment of torches, redstone, etc.
-   * on the block's faces.
+   * Blocks implementing {@link ICsmNoSnowAccumulation} report their UP face shape as
+   * {@link BlockFaceShape#UNDEFINED} so vanilla's snow-placement check
+   * ({@code Blocks.SNOW_LAYER.canPlaceBlockAt}, which gates on
+   * {@code getBlockFaceShape(...UP) == SOLID}) skips them. Other sides still delegate to
+   * the default {@link Block#getBlockFaceShape} behaviour. Default {@code isSideSolid}
+   * derives from this method, so the deprecated {@code isSideSolid(UP)} also returns false
+   * automatically — no separate override needed.
    */
   @Override
-  public boolean isSideSolid(IBlockState base_state, IBlockAccess world, BlockPos pos,
-      EnumFacing side) {
-    if (side == EnumFacing.UP && this instanceof ICsmNoSnowAccumulation) {
-      return false;
+  public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos,
+      EnumFacing face) {
+    if (face == EnumFacing.UP && this instanceof ICsmNoSnowAccumulation) {
+      return BlockFaceShape.UNDEFINED;
     }
-    return super.isSideSolid(base_state, world, pos, side);
+    return super.getBlockFaceShape(worldIn, state, pos, face);
   }
 
   /**
