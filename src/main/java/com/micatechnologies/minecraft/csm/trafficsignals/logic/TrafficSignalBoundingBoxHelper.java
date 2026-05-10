@@ -1,6 +1,9 @@
 package com.micatechnologies.minecraft.csm.trafficsignals.logic;
 
+import javax.annotation.Nullable;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockAccess;
 
 /**
  * Computes accurate bounding boxes for traffic signal head blocks based on the same
@@ -49,20 +52,48 @@ public final class TrafficSignalBoundingBoxHelper {
 
   /**
    * Convenience method that pulls all parameters from a signal head block and computes
-   * its NORTH-facing bounding box.
+   * its NORTH-facing bounding box. Uses the static (vertical-authored) layout — for
+   * signals that may flip to horizontal at runtime, prefer the world-aware overload.
    *
    * @param signalBlock the signal head block to compute the bounding box for
    *
    * @return a NORTH-facing {@link AxisAlignedBB} in block-relative coordinates
    */
   public static AxisAlignedBB computeBoundingBox(AbstractBlockControllableSignalHead signalBlock) {
+    return computeBoundingBox(signalBlock, null, null);
+  }
+
+  /**
+   * World-aware version that pulls per-position layout from {@code signalBlock}, picking
+   * up player-toggled horizontal flips and add-on adjacent-signal detection. When
+   * {@code world} or {@code pos} is null, falls back to the static layout.
+   *
+   * @param signalBlock the signal head block to compute the bounding box for
+   * @param world       the block access (may be null for static fallback)
+   * @param pos         the block position (may be null for static fallback)
+   *
+   * @return a NORTH-facing {@link AxisAlignedBB} in block-relative coordinates
+   */
+  public static AxisAlignedBB computeBoundingBox(
+      AbstractBlockControllableSignalHead signalBlock,
+      @Nullable IBlockAccess world,
+      @Nullable BlockPos pos) {
     int sectionCount = signalBlock.getDefaultTrafficSignalSectionInfo().length;
+    float[] yPositions = (world != null && pos != null)
+        ? signalBlock.getSectionYPositions(sectionCount, world, pos)
+        : signalBlock.getSectionYPositions(sectionCount);
+    float[] xPositions = (world != null && pos != null)
+        ? signalBlock.getSectionXPositions(sectionCount, world, pos)
+        : signalBlock.getSectionXPositions(sectionCount);
+    float yOffset = (world != null && pos != null)
+        ? signalBlock.getSignalYOffset(world, pos)
+        : signalBlock.getSignalYOffset();
     return computeBoundingBox(
         sectionCount,
-        signalBlock.getSectionYPositions(sectionCount),
-        signalBlock.getSectionXPositions(sectionCount),
+        yPositions,
+        xPositions,
         signalBlock.getSectionSizes(sectionCount),
-        signalBlock.getSignalYOffset());
+        yOffset);
   }
 
   /**

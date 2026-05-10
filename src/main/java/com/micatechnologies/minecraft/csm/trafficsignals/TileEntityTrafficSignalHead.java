@@ -593,11 +593,16 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
   }
 
   /**
-   * Toggles the horizontal-orientation override and returns the new value.
+   * Toggles the horizontal-orientation override and returns the new value. Notifies
+   * neighbors so adjacent blocks (e.g. the dynamic mount kit) can invalidate any cached
+   * bounding box that depends on this signal's orientation.
    */
   public boolean toggleHorizontalFlip() {
     horizontalFlip = !horizontalFlip;
     markDirtySync(world, pos, true);
+    if (world != null && !world.isRemote) {
+      world.notifyNeighborsOfStateChange(pos, getBlockType(), false);
+    }
     return horizontalFlip;
   }
 

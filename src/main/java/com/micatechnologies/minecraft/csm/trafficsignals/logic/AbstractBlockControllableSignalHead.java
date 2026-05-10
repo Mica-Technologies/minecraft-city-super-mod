@@ -25,18 +25,15 @@ import org.jetbrains.annotations.NotNull;
 public abstract class AbstractBlockControllableSignalHead extends AbstractBlockControllableSignal
     implements ICsmTileEntityProvider {
 
-  private transient AxisAlignedBB cachedBoundingBox;
-
   public AbstractBlockControllableSignalHead(Material p_i45394_1_) {
     super(p_i45394_1_);
   }
 
   @Override
   public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-    if (cachedBoundingBox == null) {
-      cachedBoundingBox = TrafficSignalBoundingBoxHelper.computeBoundingBox(this);
-    }
-    return cachedBoundingBox;
+    // Recomputed per-call: signals can flip between vertical and horizontal layout via
+    // their TE, and a single per-block-class cache cannot reflect per-position state.
+    return TrafficSignalBoundingBoxHelper.computeBoundingBox(this, source, pos);
   }
 
   /**
