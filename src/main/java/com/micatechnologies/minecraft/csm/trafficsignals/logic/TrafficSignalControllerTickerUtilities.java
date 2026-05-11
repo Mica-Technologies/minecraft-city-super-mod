@@ -970,8 +970,21 @@ public class TrafficSignalControllerTickerUtilities {
       // Check circuit left turn demand, adjusted for permissive FYA turns.
       // Directions with FYA left signals require 2+ detections to trigger a protected
       // left phase (single detection is assumed to clear on the permissive turn).
+      // This FYA-adjusted count is used only for the ALL_LEFTS decision below — it is
+      // intentionally NOT used in the through-phase demand sums, which use raw counts.
       int allLeftTurnLanesDetectionCount = getEffectiveLeftDemand(world, circuit, sensorSummary);
-      int allRightTurnLanesDetectionCount = getEffectiveRightDemand(world, circuit, sensorSummary);
+      // Raw turn-lane counts for through-phase demand. A car sitting in a turn lane is
+      // real demand for the circuit's through phase, which serves both turns:
+      //   - Left turn: FYA permissive, or protected green arrow when
+      //     computeGreenLeftTurn agrees against opposing peds.
+      //   - Right turn: solid green right, or FYA permissive right.
+      // Excluding raw turn-lane counts here causes "single car in a turn lane with FYA
+      // available" to produce zero demand everywhere (the FYA-adjusted counts go to
+      // zero, and standard/protected lane counts are still zero), leaving the
+      // controller stuck on the previous circuit (or cycling FDW→walk recycle
+      // indefinitely).
+      int rawLeftTurnLanesDetectionCount = sensorSummary.getLeftTotal();
+      int rawRightTurnLanesDetectionCount = sensorSummary.getRightTotal();
       if (allLeftTurnLanesDetectionCount >= highestPriorityWaitingCount) {
         highestPriorityCircuitNumber = i;
         highestPriorityPhaseApplicability = TrafficSignalPhaseApplicability.ALL_LEFTS;
@@ -1049,45 +1062,56 @@ public class TrafficSignalControllerTickerUtilities {
       }
 
       // Through-type checks: these use >= to match the baseline threshold, BUT they cannot
-      // override ALL_LEFTS demand at equal count. Left turn demand should only be overridden
-      // by through traffic that genuinely exceeds it, since left turns are a more specific
-      // movement that would otherwise never get served against through-heavy traffic.
-      // Re-check whether ALL_LEFTS is still the best (directional checks above may have
-      // already overridden it with strictly higher demand).
-      boolean currentBestIsLefts =
-          highestPriorityPhaseApplicability == TrafficSignalPhaseApplicability.ALL_LEFTS;
+      // override TURN-SPECIFIC demand at equal count. Turn-specific phases (ALL_LEFTS for
+      // single-direction circuits, ALL_EAST/WEST/NORTH/SOUTH for multi-direction circuits
+      // with directional demand) are the only phases that can serve a protected green left
+      // arrow at the demanding approach — letting through override them at tie would
+      // collapse the protected indication into FYA permissive even when the demand
+      // perfectly justifies protected. Re-check whether a turn-specific phase is still the
+      // best (later checks below may have overridden it with strictly higher demand).
+      boolean currentBestIsTurnSpecific =
+          highestPriorityPhaseApplicability == TrafficSignalPhaseApplicability.ALL_LEFTS
+              || isDirectionalPhase(highestPriorityPhaseApplicability);
 
-      // Check circuit through/protecteds detection count for highest priority
+      // Check circuit through/protecteds detection count for highest priority.
+      // Raw turn-lane counts are used here (not FYA-adjusted) because the through phase
+      // serves left turns (via FYA permissive or the protected green arrow when
+      // computeGreenLeftTurn agrees) and right turns (via solid green or FYA permissive).
+      // A single car in either turn lane is genuine demand for the circuit's through.
       int throughsProtectedsDetectionCount = sensorSummary.getStandardTotal() +
           sensorSummary.getProtectedTotal() +
-          allRightTurnLanesDetectionCount +
+          rawLeftTurnLanesDetectionCount +
+          rawRightTurnLanesDetectionCount +
           pedestrianOverlapRequestCount;
       if (circuit.getProtectedSignals().size() > 0 &&
-          (currentBestIsLefts
+          (currentBestIsTurnSpecific
               ? throughsProtectedsDetectionCount > highestPriorityWaitingCount
               : throughsProtectedsDetectionCount >= highestPriorityWaitingCount)) {
         highestPriorityCircuitNumber = i;
         highestPriorityPhaseApplicability = TrafficSignalPhaseApplicability.ALL_THROUGHS_PROTECTEDS;
         highestPriorityWaitingCount = throughsProtectedsDetectionCount;
-        currentBestIsLefts = false;
+        currentBestIsTurnSpecific = false;
       }
 
       // Check circuit through/rights detection count for highest priority
       int throughsDetectionCount = sensorSummary.getStandardTotal() +
-          allRightTurnLanesDetectionCount + pedestrianOverlapRequestCount;
-      if (currentBestIsLefts
+          rawLeftTurnLanesDetectionCount +
+          rawRightTurnLanesDetectionCount +
+          pedestrianOverlapRequestCount;
+      if (currentBestIsTurnSpecific
           ? throughsDetectionCount > highestPriorityWaitingCount
           : throughsDetectionCount >= highestPriorityWaitingCount) {
         highestPriorityCircuitNumber = i;
         highestPriorityPhaseApplicability = TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS;
         highestPriorityWaitingCount = throughsDetectionCount;
-        currentBestIsLefts = false;
+        currentBestIsTurnSpecific = false;
       }
 
       // Check circuit through/protected rights detection count for highest priority
       int rawThroughsDetectionCount = sensorSummary.getStandardTotal() +
-          allRightTurnLanesDetectionCount;
-      if (currentBestIsLefts
+          rawLeftTurnLanesDetectionCount +
+          rawRightTurnLanesDetectionCount;
+      if (currentBestIsTurnSpecific
           ? rawThroughsDetectionCount > highestPriorityWaitingCount
           : rawThroughsDetectionCount >= highestPriorityWaitingCount) {
         highestPriorityCircuitNumber = i;
