@@ -304,6 +304,53 @@ This is synchronized to all clients automatically by Minecraft's block state sys
 5. **All Red Phase**: `allRedTime` ticks. All signals red for clearance.
 6. **Next Phase**: Advances to next circuit's green phase. Rechecks sensor requests.
 
+### Priority Indicator Demand Composition
+
+`getUpcomingPhasePriorityIndicator` ranks candidate phases by detection counts, with two
+distinct demand semantics applied at different decision points:
+
+- **ALL_LEFTS demand**: uses the **FYA-adjusted** left count (`getEffectiveLeftDemand`).
+  A single car in a left lane where FYA is available contributes `0`, because it can clear
+  on the permissive FYA without needing its own protected left phase. Two or more cars
+  promote ALL_LEFTS.
+- **Directional demand (ALL_EAST/WEST/NORTH/SOUTH)**: uses **FYA-adjusted** per-direction
+  counts (`getEffectiveDirectionalDemand`). Same rationale — single FYA-clearable cars
+  shouldn't trigger a directional override that stops opposing traffic.
+- **Through-phase demand (ALL_THROUGHS_RIGHTS / ALL_THROUGHS_PROTECTEDS /
+  ALL_THROUGHS_PROTECTED_RIGHTS)**: uses **raw** left- and right-lane counts
+  (`sensorSummary.getLeftTotal()` and `getRightTotal()`), NOT FYA-adjusted. The through
+  phase is the phase that *serves* a permissive FYA turn (and the `computeGreenLeftTurn`
+  protected-vs-permissive arbitration only runs *inside* a through phase). A car in a
+  turn lane is genuine demand for that circuit's through phase to start — without the
+  raw count, a single car with FYA available would produce zero demand at every check,
+  and the controller would stay on a different circuit indefinitely or cycle FDW back to
+  walk without ever serving the waiting car.
+
+The split is load-bearing: keeping ALL_LEFTS and directional checks FYA-adjusted prevents
+spurious dedicated-phase promotion, while keeping through-phase checks raw ensures the
+demand still routes the controller to the right circuit.
+
+### Tie-Breaking Between Turn-Specific and Through Phases
+
+`getUpcomingPhasePriorityIndicator` walks candidate phases in this order: ALL_LEFTS,
+directional (EAST/WEST/NORTH/SOUTH), PEDESTRIAN, then the three ALL_THROUGHS_* variants.
+A later check at equal demand will override an earlier one **unless** the current best is
+"turn-specific" — i.e., either ALL_LEFTS or a directional phase. The through-type checks
+then require **strictly greater** demand to override a turn-specific best.
+
+This guard matters for multi-direction circuits (e.g., NB+SB on one circuit) where
+opposing protected lefts intersect: `getEffectiveLeftDemand` returns 0 (the multi-direction
+guard), so ALL_LEFTS is unreachable. The directional phase (ALL_NORTH / ALL_SOUTH /
+ALL_EAST / ALL_WEST) is the only path to a protected green left arrow on that circuit, and
+it triggers when one direction has demand but the opposing direction does not. Without the
+turn-specific tie protection, through demand at equal count would override the directional
+phase and the controller would fall back to FYA permissive even when the demand profile
+perfectly justifies a directional phase with protected green.
+
+Single-direction circuits are unaffected: ALL_LEFTS already takes priority via the same
+guard, and ALL_DIRECTIONAL vs ALL_THROUGHS_* on a single-direction circuit serves the same
+set of cars either way (all signals share one facing).
+
 ## Class Hierarchy
 
 ```
