@@ -107,9 +107,16 @@ public class TileEntityHvacVentRelay extends AbstractTickableTileEntity implemen
     return false;
   }
 
+  /**
+   * Skip ticking entirely when this vent has no thermostat link. Cosmetic-only placements
+   * across the world (decorative ceilings, pure-aesthetic builds) then cost nothing per
+   * game tick beyond the bare {@link #update()} entry. Once a thermostat links to the vent
+   * via {@link #setLinkedThermostat}, ticking resumes so {@link #onTick()} can detect a
+   * thermostat that gets destroyed out from under it.
+   */
   @Override
   public boolean pauseTicking() {
-    return false;
+    return linkedThermostatPos == null;
   }
 
   @Override
