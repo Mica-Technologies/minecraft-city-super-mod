@@ -203,6 +203,10 @@ public class Csm {
           com.micatechnologies.minecraft.csm.technology.SpeakerAmbientPacketHandler.class,
           com.micatechnologies.minecraft.csm.technology.SpeakerAmbientPacket.class,
           Side.CLIENT);
+      CsmNetwork.registerNetworkMessage(
+          com.micatechnologies.minecraft.csm.technology.FareVendingPurchaseHandler.class,
+          com.micatechnologies.minecraft.csm.technology.FareVendingPurchasePacket.class,
+          Side.SERVER);
       logger.info("Finished registering network message(s)");
       progressBar.step("Network Messages Registration");
 
