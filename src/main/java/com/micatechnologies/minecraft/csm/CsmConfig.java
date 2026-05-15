@@ -94,17 +94,6 @@ public class CsmConfig {
           + "room temperature, and outside temperature.";
   private static final boolean FIELD_DEFAULT_ENABLE_THERMOSTAT_DISPLAY = true;
 
-  private static final String FIELD_KEY_SHADER_COMPATIBILITY_MODE = "shaderCompatibilityMode";
-  private static final String FIELD_DESCRIPTION_SHADER_COMPATIBILITY_MODE =
-      "Set to true to enable shader-compatibility rendering for CSM TESR blocks (traffic "
-          + "signals, beacons, message signs, etc.). When enabled, an extra per-frame texture "
-          + "bind ensures the shader pipeline sees a correctly-textured draw — without it, "
-          + "those blocks may render invisible or with wrong colors when a shader pack is "
-          + "loaded. Defaults to false: most users do not run shaders and don't need to pay "
-          + "the (small) extra texture-bind cost. Enable this if you use OptiFine with a "
-          + "shader pack and notice CSM TESR blocks rendering incorrectly.";
-  private static final boolean FIELD_DEFAULT_SHADER_COMPATIBILITY_MODE = false;
-
   private static final String FIELD_KEY_TRAFFIC_POLE_IGNORE_BLOCKS = "trafficPoleIgnoreBlocks";
   private static final String FIELD_DESCRIPTION_TRAFFIC_POLE_IGNORE_BLOCKS =
       "Additional block registry names that traffic poles should NOT visually connect/mount to, "
@@ -121,7 +110,6 @@ public class CsmConfig {
 
   private static boolean enableUpdateCheck;
   private static boolean enableThermostatDisplay;
-  private static boolean shaderCompatibilityMode;
 
   /**
    * The configuration field value for the generateWikiFiles option.
@@ -188,9 +176,6 @@ public class CsmConfig {
     enableThermostatDisplay = config.getBoolean(FIELD_KEY_ENABLE_THERMOSTAT_DISPLAY,
         CATEGORY_GENERAL, FIELD_DEFAULT_ENABLE_THERMOSTAT_DISPLAY,
         FIELD_DESCRIPTION_ENABLE_THERMOSTAT_DISPLAY);
-    shaderCompatibilityMode = config.getBoolean(FIELD_KEY_SHADER_COMPATIBILITY_MODE,
-        CATEGORY_GENERAL, FIELD_DEFAULT_SHADER_COMPATIBILITY_MODE,
-        FIELD_DESCRIPTION_SHADER_COMPATIBILITY_MODE);
     generateWikiFiles = config.getBoolean(FIELD_KEY_GENERATE_WIKI_FILES, CATEGORY_WIKI,
         FIELD_DEFAULT_GENERATE_WIKI_FILES, FIELD_DESCRIPTION_GENERATE_WIKI_FILES);
     wikiFilesFolder = config.getString(FIELD_KEY_WIKI_FILES_FOLDER, CATEGORY_WIKI,
@@ -312,18 +297,6 @@ public class CsmConfig {
    */
   public static boolean isThermostatDisplayEnabled() {
     return enableThermostatDisplay;
-  }
-
-  /**
-   * Retrieves whether shader-compatibility rendering for CSM TESR blocks is enabled. When
-   * true, the renderers issue an extra per-frame texture bind to keep the shader pipeline
-   * happy under OptiFine + a shader pack. When false (default), that bind is skipped, which
-   * is slightly cheaper but can render some TESR blocks incorrectly when shaders are loaded.
-   *
-   * @return {@code true} if shader-compatibility mode is enabled, {@code false} otherwise.
-   */
-  public static boolean isShaderCompatibilityModeEnabled() {
-    return shaderCompatibilityMode;
   }
 
   /**

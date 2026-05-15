@@ -1,6 +1,5 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
-import com.micatechnologies.minecraft.csm.CsmConfig;
 import com.micatechnologies.minecraft.csm.codeutils.CsmRenderUtils;
 import com.micatechnologies.minecraft.csm.codeutils.DirectionSixteen;
 import com.micatechnologies.minecraft.csm.codeutils.RenderHelper;
@@ -273,14 +272,12 @@ public class TileEntityTrafficSignalHeadRenderer extends
     // At replay time the bound texture is then whatever vanilla rendering left bound, which
     // is usually the block atlas — sampling at UV (0.5, 0.5) reads a near-white atlas pixel
     // and the body/door/visor render as white-tinted instead of taking the per-vertex color.
-    // Binding here guarantees the texture is correct at replay regardless of compile-time state.
-    //
-    // Gated on CsmConfig.isShaderCompatibilityModeEnabled() (default false). Users running a
-    // shader pack should enable it to avoid the white-tinted-signal bug; non-shader users
-    // skip the extra per-frame bind for free. May auto-detect shaders in a future revision.
-    if (CsmConfig.isShaderCompatibilityModeEnabled()) {
-      Minecraft.getMinecraft().getTextureManager().bindTexture(WHITE_TEXTURE);
-    }
+    // Binding here guarantees the texture is correct at replay regardless of compile-time
+    // state. The TextureManager call is a no-op at the GL level when WHITE_TEXTURE is already
+    // current, so the per-frame cost is negligible — and this bug occurs without shaders too
+    // (any time display list compile order leaves WHITE_TEXTURE bound), so the bind must be
+    // unconditional, not gated on the legacy shader-compatibility option.
+    Minecraft.getMinecraft().getTextureManager().bindTexture(WHITE_TEXTURE);
     GL11.glCallList(displayList);
 
     // Overlay the inner-colored faces of every lit visor at fullbright. The display list
