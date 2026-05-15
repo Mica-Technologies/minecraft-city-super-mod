@@ -7,6 +7,8 @@ import com.micatechnologies.minecraft.csm.hvac.TileEntityHvacZoneThermostat;
 import com.micatechnologies.minecraft.csm.lifesafety.FireAlarmPanelConfigGui;
 import com.micatechnologies.minecraft.csm.lifesafety.TileEntityFireAlarmControlPanel;
 import com.micatechnologies.minecraft.csm.technology.BlockRedstoneTTSGui;
+import com.micatechnologies.minecraft.csm.technology.ComputerGui;
+import com.micatechnologies.minecraft.csm.technology.TileEntityComputer;
 import com.micatechnologies.minecraft.csm.technology.TileEntityRedstoneTTS;
 import com.micatechnologies.minecraft.csm.trafficsignals.CrosswalkConfigGui;
 import com.micatechnologies.minecraft.csm.trafficsignals.SignalControllerConfigGui;
@@ -109,6 +111,8 @@ public class CsmGuiHandler implements IGuiHandler {
     } else if (id == 14 && tileEntity instanceof com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityDynamicGuideSign) {
       returnValue = new com.micatechnologies.minecraft.csm.trafficaccessories.DynamicGuideSignGui(
           (com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityDynamicGuideSign) tileEntity);
+    } else if (id == 15 && tileEntity instanceof TileEntityComputer) {
+      returnValue = new ComputerGui((TileEntityComputer) tileEntity);
     }
     return returnValue;
   }

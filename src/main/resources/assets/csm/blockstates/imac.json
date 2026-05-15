@@ -3,28 +3,26 @@
   "defaults": {
     "model": "csm:technology/shared_models/imac",
     "textures": {
-      "0": "csm:blocks/technology/imac",
+      "0": "csm:blocks/technology/imac_off",
       "1": "csm:blocks/technology/apple_magic_keyboard",
       "particle": "csm:blocks/technology/apple_magic_keyboard"
     }
   },
   "variants": {
     "facing": {
-      "down": {
-        "x": 90
-      },
-      "east": {
-        "y": 90
-      },
+      "down": { "x": 90 },
+      "east": { "y": 90 },
       "north": {},
-      "south": {
-        "y": 180
-      },
-      "up": {
-        "x": 270
-      },
-      "west": {
-        "y": 270
+      "south": { "y": 180 },
+      "up": { "x": 270 },
+      "west": { "y": 270 }
+    },
+    "powered": {
+      "false": {},
+      "true": {
+        "textures": {
+          "0": "csm:blocks/technology/imac"
+        }
       }
     },
     "inventory": [
