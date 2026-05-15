@@ -92,47 +92,58 @@ def make_glass():
     return img
 
 
-def _draw_band_top(px, height=4):
+# Height of the indicator band at the top of the texture, in pixels. The model UV-samples
+# the top BAND_HEIGHT rows of the texture onto the top-sign element's front face. The
+# top-sign element is 10 units tall, so a 10-row band UV-maps 1:1 with no stretching.
+BAND_HEIGHT = 10
+
+
+def _draw_band_top(px, height=BAND_HEIGHT):
     """Dark indicator background filling the top {height} rows."""
     for y in range(height):
         for x in range(SIZE):
             px[x, y] = BAND_BG
 
 
-def _draw_filler(px, top_band_height=4):
+def _draw_filler(px, top_band_height=BAND_HEIGHT):
     """Dark filler below the indicator band — not UV-sampled by the sign element."""
     for y in range(top_band_height, SIZE):
         for x in range(SIZE):
             px[x, y] = BAND_BG
 
 
-def _draw_arrow_in_band(px, color, band_height=4):
-    """A small right-pointing arrow inside the top band."""
-    cy = band_height // 2  # vertical center of the band
-    # Shaft
-    for x in range(4, 11):
-        px[x, cy] = color
-    # Tip wings
-    for dy in (-1, 1):
-        for dx in (-1, 0):
-            tx = 10 + dx
-            ty = cy + dy
-            if 0 <= tx < SIZE and 0 <= ty < band_height:
-                px[tx, ty] = color
-    # Tip apex
-    if cy < band_height:
-        px[11, cy] = color
+def _draw_arrow_in_band(px, color, band_height=BAND_HEIGHT):
+    """Right-pointing arrow filling most of the indicator band: shaft + triangular tip."""
+    cy = band_height // 2
+    # Shaft: 3 rows tall, columns 1..10
+    for y in range(cy - 1, cy + 2):
+        for x in range(1, 11):
+            if 0 <= y < band_height:
+                px[x, y] = color
+    # Triangular tip: tapers from full thickness at the center to a single pixel at the
+    # vertical extremes, extending the arrow's apex three pixels past the shaft's end.
+    for dy in range(-(cy - 2), (cy - 2) + 1):
+        y = cy + dy
+        x_end = 12 - abs(dy)
+        for x in range(8, x_end + 1):
+            if 0 <= y < band_height and 0 <= x < SIZE:
+                px[x, y] = color
 
 
-def _draw_x_in_band(px, color, band_height=4):
-    """A small X centered in the top band."""
+def _draw_x_in_band(px, color, band_height=BAND_HEIGHT):
+    """Bold X centered in the indicator band — 3-pixel-thick diagonal strokes."""
     cx = SIZE // 2
     cy = band_height // 2
-    for d in range(-1, 2):
-        if 0 <= cx + d < SIZE and 0 <= cy + d < band_height:
-            px[cx + d, cy + d] = color
-        if 0 <= cx + d < SIZE and 0 <= cy - d < band_height:
-            px[cx + d, cy - d] = color
+    half = min(cy - 1, cx - 1, 4)  # half-arm length, clamped to fit the band
+    for d in range(-half, half + 1):
+        for thick in range(-1, 2):
+            x = cx + d
+            y_a = cy + d + thick
+            y_b = cy - d + thick
+            if 0 <= x < SIZE and 0 <= y_a < band_height:
+                px[x, y_a] = color
+            if 0 <= x < SIZE and 0 <= y_b < band_height:
+                px[x, y_b] = color
 
 
 def make_indicator_arrow(color):
