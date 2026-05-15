@@ -480,6 +480,7 @@ item.hvaclinker.name=HVAC Linker Tool
 item.ttslinker.name=TTS Speaker Linker
 item.fareticket.name=Fare Ticket
 item.transitcard.name=Transit Card
+tile.fare_gate.name=Fare Gate
 tile.highbaymount.name=Highbay Light Mount
 tile.honeypot.name=Honey Pot
 tile.hottub.name=Hot Tub
