@@ -9,6 +9,8 @@ import com.micatechnologies.minecraft.csm.technology.BlockImacPro;
 import com.micatechnologies.minecraft.csm.technology.BlockMacBookPro;
 import com.micatechnologies.minecraft.csm.technology.BlockRedstoneTTS;
 import com.micatechnologies.minecraft.csm.technology.BlockFareGate;
+import com.micatechnologies.minecraft.csm.technology.BlockFareGateAda2;
+import com.micatechnologies.minecraft.csm.technology.BlockFareGateAda3;
 import com.micatechnologies.minecraft.csm.technology.BlockFareVendingMachine;
 import com.micatechnologies.minecraft.csm.technology.BlockSpeakerFactory;
 import com.micatechnologies.minecraft.csm.technology.BlockVerifoneMx915;
@@ -100,6 +102,8 @@ public class CsmTabTechnology extends CsmTab {
     initTabBlock(new BlockSpeakerFactory("fjs2", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0, new AxisAlignedBB(0.000000, 0.000000, 0.900000, 1.000000, 1.000000, 1.000000), false, false, false, BlockRenderLayer.CUTOUT_MIPPED, true, true));
     initTabBlock(BlockFareVendingMachine.class, fmlPreInitializationEvent);
     initTabBlock(BlockFareGate.class, fmlPreInitializationEvent);
+    initTabBlock(BlockFareGateAda2.class, fmlPreInitializationEvent);
+    initTabBlock(BlockFareGateAda3.class, fmlPreInitializationEvent);
     initTabBlock(BlockImac.class, fmlPreInitializationEvent);
     initTabBlock(BlockImacPro.class, fmlPreInitializationEvent);
     initTabBlock(new BlockSpeakerFactory("jblc1", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0, new AxisAlignedBB(0.000000, 0.000000, 0.900000, 1.000000, 1.000000, 1.000000), false, false, false, BlockRenderLayer.CUTOUT_MIPPED, true, true));
