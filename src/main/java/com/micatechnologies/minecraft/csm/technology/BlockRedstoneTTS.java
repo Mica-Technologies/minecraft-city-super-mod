@@ -19,8 +19,6 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 /**
  * Redstone-activated text-to-speech block. When powered by a redstone signal, this block speaks
@@ -177,20 +175,19 @@ public class BlockRedstoneTTS extends AbstractBlock implements ICsmTileEntityPro
     }
   }
 
-  @SideOnly(Side.CLIENT)
   @Override
-  public boolean onBlockActivated(World p_onBlockActivated_1_,
-      BlockPos p_onBlockActivated_2_,
-      IBlockState p_onBlockActivated_3_,
-      EntityPlayer p_onBlockActivated_4_,
-      EnumHand p_onBlockActivated_5_,
-      EnumFacing p_onBlockActivated_6_,
-      float p_onBlockActivated_7_,
-      float p_onBlockActivated_8_,
-      float p_onBlockActivated_9_) {
-    p_onBlockActivated_4_.openGui(Csm.instance, 0, p_onBlockActivated_1_,
-        p_onBlockActivated_2_.getX(),
-        p_onBlockActivated_2_.getY(), p_onBlockActivated_2_.getZ());
+  public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state,
+      EntityPlayer player, EnumHand hand, EnumFacing facing,
+      float hitX, float hitY, float hitZ) {
+    // Let the TTS Speaker Linker handle the click instead of opening the GUI; mirrors
+    // how the HVAC thermostat defers to the HVAC linker. Return false so the item's
+    // onItemUse runs after this method.
+    if (player.getHeldItem(hand).getItem() instanceof ItemTtsLinker) {
+      return false;
+    }
+    if (worldIn.isRemote) {
+      player.openGui(Csm.instance, 0, worldIn, pos.getX(), pos.getY(), pos.getZ());
+    }
     return true;
   }
 
