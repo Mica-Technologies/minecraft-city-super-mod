@@ -997,5 +997,14 @@
         "stream": false
       }
     ]
+  },
+  "verifone_mx915": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:verifone_mx915",
+        "stream": false
+      }
+    ]
   }
 }

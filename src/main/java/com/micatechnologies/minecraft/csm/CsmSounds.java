@@ -146,7 +146,8 @@ public class CsmSounds {
     POLARA_WAIT("polara_wait"),
     POLARA_WALK("polara_walk"),
     POLARA_WALK_ALL_CROSSINGS("polara_walk_all_crossings"),
-    MII_CHANNEL_REMIX("mii_channel_remix");
+    MII_CHANNEL_REMIX("mii_channel_remix"),
+    VERIFONE_MX915("verifone_mx915");
 
     /**
      * The name of the sound.
