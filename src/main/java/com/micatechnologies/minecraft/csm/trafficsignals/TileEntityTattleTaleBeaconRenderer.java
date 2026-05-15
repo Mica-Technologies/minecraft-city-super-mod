@@ -100,6 +100,10 @@ public class TileEntityTattleTaleBeaconRenderer
     GlStateManager.depthMask(true);
     GlStateManager.enableLighting();
     GlStateManager.enableCull();
+    // Restore standard alpha blend before disabling so the next TESR doesn't inherit our
+    // additive (SRC_ALPHA, ONE) mode and visually strobe along with us.
+    GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA,
+        GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
     GlStateManager.disableBlend();
     GlStateManager.popMatrix();
   }
