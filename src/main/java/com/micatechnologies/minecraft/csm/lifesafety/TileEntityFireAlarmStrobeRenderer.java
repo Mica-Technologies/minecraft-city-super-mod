@@ -247,6 +247,12 @@ public class TileEntityFireAlarmStrobeRenderer
     GlStateManager.depthMask(true);
     GlStateManager.enableLighting();
     GlStateManager.enableCull();
+    // Restore the standard alpha blend func before disabling blend — otherwise the
+    // (SRC_ALPHA, ONE) additive func we set above remains as the global GL state, and
+    // the next TESR that enables blend without setting its own func inherits additive
+    // blending and visibly "strobes" semi-transparent geometry in step with this one.
+    GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA,
+        GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
     GlStateManager.disableBlend();
     GlStateManager.popMatrix();
   }

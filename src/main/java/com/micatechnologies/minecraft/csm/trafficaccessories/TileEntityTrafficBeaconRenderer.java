@@ -113,6 +113,10 @@ public class TileEntityTrafficBeaconRenderer
     GlStateManager.depthMask(true);
     GlStateManager.enableLighting();
     GlStateManager.enableCull();
+    // Restore standard alpha blend before disabling blend so the next TESR that enables
+    // blend without setting its own func doesn't inherit our additive (SRC_ALPHA, ONE) mode.
+    GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA,
+        GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
     GlStateManager.disableBlend();
     GlStateManager.popMatrix();
   }

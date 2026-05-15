@@ -108,6 +108,10 @@ public class TileEntityEmergencyLightRenderer
     GlStateManager.depthMask(true);
     GlStateManager.enableLighting();
     GlStateManager.enableCull();
+    // Restore standard alpha blend before disabling so the next TESR doesn't inherit our
+    // additive (SRC_ALPHA, ONE) mode and glow in step with this light.
+    GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA,
+        GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
     GlStateManager.disableBlend();
     GlStateManager.popMatrix();
   }
