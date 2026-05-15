@@ -3,28 +3,27 @@
   "defaults": {
     "model": "csm:technology/shared_models/macbook_pro",
     "textures": {
-      "all": "csm:blocks/technology/macbook_pro",
+      "all": "csm:blocks/technology/macbook_pro_off",
       "particle": "csm:blocks/technology/macbook_pro",
-      "0": "csm:blocks/technology/macbook_pro"
+      "0": "csm:blocks/technology/macbook_pro_off"
     }
   },
   "variants": {
     "facing": {
-      "down": {
-        "x": 90
-      },
-      "east": {
-        "y": 90
-      },
+      "down": { "x": 90 },
+      "east": { "y": 90 },
       "north": {},
-      "south": {
-        "y": 180
-      },
-      "up": {
-        "x": 270
-      },
-      "west": {
-        "y": 270
+      "south": { "y": 180 },
+      "up": { "x": 270 },
+      "west": { "y": 270 }
+    },
+    "powered": {
+      "false": {},
+      "true": {
+        "textures": {
+          "all": "csm:blocks/technology/macbook_pro",
+          "0": "csm:blocks/technology/macbook_pro"
+        }
       }
     },
     "inventory": [

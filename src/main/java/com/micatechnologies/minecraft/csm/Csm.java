@@ -195,6 +195,10 @@ public class Csm {
           com.micatechnologies.minecraft.csm.codeutils.packets.DynamicGuideSignUpdateHandler.class,
           com.micatechnologies.minecraft.csm.codeutils.packets.DynamicGuideSignUpdatePacket.class,
           Side.SERVER);
+      CsmNetwork.registerNetworkMessage(
+          com.micatechnologies.minecraft.csm.technology.ComputerNotepadHandler.class,
+          com.micatechnologies.minecraft.csm.technology.ComputerNotepadPacket.class,
+          Side.SERVER);
       logger.info("Finished registering network message(s)");
       progressBar.step("Network Messages Registration");
 
