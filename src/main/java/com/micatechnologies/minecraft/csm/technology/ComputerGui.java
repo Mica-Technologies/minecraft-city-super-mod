@@ -391,22 +391,24 @@ public class ComputerGui extends GuiScreen {
     long totalDays = world.getWorldTime() / 24000L + 1L;
     boolean daytime = worldTime < 12000L;
 
-    drawString(fontRenderer, "☀ Biome:  " + biomeName,
+    // Use fontRenderer.drawString (no shadow) instead of Gui#drawString (with shadow);
+    // shadowed text reads as muddy on the light window background.
+    fontRenderer.drawString("☀ Biome:  " + biomeName,
         x, y, COLOR_INFO_HIGHLIGHT);
     y += lineH;
-    drawString(fontRenderer, "Climate:  " + describeClimate(biomeTempUnits, biomeRainfall),
+    fontRenderer.drawString("Climate:  " + describeClimate(biomeTempUnits, biomeRainfall),
         x, y, COLOR_INFO_TEXT);
     y += lineH;
-    drawString(fontRenderer, String.format("Temperature:  %.1f°F", ambientF),
+    fontRenderer.drawString(String.format("Temperature:  %.1f°F", ambientF),
         x, y, COLOR_INFO_TEXT);
     y += lineH;
-    drawString(fontRenderer, "Sky:  " + sky,
+    fontRenderer.drawString("Sky:  " + sky,
         x, y, COLOR_INFO_TEXT);
     y += lineH;
-    drawString(fontRenderer, "Time:  Day " + totalDays + " — " + (daytime ? "Daytime" : "Night"),
+    fontRenderer.drawString("Time:  Day " + totalDays + " — " + (daytime ? "Daytime" : "Night"),
         x, y, COLOR_INFO_TEXT);
     y += lineH + 4;
-    drawString(fontRenderer, "(Indoor temperature reflects nearby HVAC units.)",
+    fontRenderer.drawString("(Indoor temperature reflects nearby HVAC units.)",
         x, y, 0xFF7B82A0);
   }
 
