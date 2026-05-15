@@ -477,6 +477,7 @@ tile.hvac_thermostat.name=HVAC Thermostat
 tile.hvac_vent_relay.name=HVAC Vent Relay
 tile.hvac_zone_thermostat.name=HVAC Zone Thermostat
 item.hvaclinker.name=HVAC Linker Tool
+item.ttslinker.name=TTS Speaker Linker
 tile.highbaymount.name=Highbay Light Mount
 tile.honeypot.name=Honey Pot
 tile.hottub.name=Hot Tub
