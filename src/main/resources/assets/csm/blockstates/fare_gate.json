@@ -1,0 +1,33 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "cube_all",
+    "textures": {
+      "all": "csm:blocks/technology/fare_gate_closed",
+      "particle": "csm:blocks/technology/fare_gate_closed"
+    }
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": { "y": 90 },
+      "south": { "y": 180 },
+      "west": { "y": 270 }
+    },
+    "open": {
+      "false": {},
+      "true": {
+        "textures": {
+          "all": "csm:blocks/technology/fare_gate_open",
+          "particle": "csm:blocks/technology/fare_gate_open"
+        }
+      }
+    },
+    "inventory": [
+      {}
+    ],
+    "normal": [
+      {}
+    ]
+  }
+}
