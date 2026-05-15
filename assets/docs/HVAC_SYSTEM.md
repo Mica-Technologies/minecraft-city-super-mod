@@ -442,9 +442,29 @@ The thermostat iterates all linked units and returns the maximum `getMaxVentLink
 
 ### Distribution
 
-| Block Class | Registry Name | Tile Entity |
+All vent blocks share the same `TileEntityHvacVentRelay` tile entity and are functionally
+identical from the HVAC engine's point of view. The decorative families exist purely to give
+players the right *visual* fixture for their build (ceiling diffuser, floor return, plaque
+register, etc.). When a vent is not linked to any thermostat, its TE pauses ticking entirely
+(`pauseTicking()` returns `true` while `linkedThermostatPos` is null), so cosmetic-only
+placements have effectively zero per-tick cost.
+
+| Block Class | Registry Name | Notes |
 |---|---|---|
-| `BlockHvacVentRelay` | `hvac_vent_relay` | `TileEntityHvacVentRelay` |
+| `BlockHvacVentRelay` | `hvac_vent_relay` | Default thin-ceiling vent (1/8-block tall) |
+| `BlockHvacVentFactory` | `art1`, `art2`, `artd1`, `artd2` | Air return grilles (4 — white/dark × 2 styles) |
+| `BlockHvacVentFactory` | `dfv1`, `dfv2`, `dfvd1`, `dfvd2` | Diffuser vents (4 — white/black × 2 styles) |
+| `BlockHvacVentFactory` | `lcv` | Large circle ceiling vent |
+| `BlockHvacVentFactory` | `mv1`, `mv2`, `mv3`, `mvd1`, `mvd2` | Modular vents (5) |
+| `BlockHvacVentFactory` | `pbf` | Panasonic-style bath fan |
+| `BlockHvacVentFactory` | `pv`, `pvd` | Plaque vents (white / dark) |
+| `BlockHvacVentFactory` | `rv1`, `rv2` | Residential vents |
+| `BlockHvacVentFactory` | `scv` | Small circle ceiling vent |
+| `BlockHvacVentFactory` | `sv1`–`sv5`, `svd1`–`svd5` | Four-way supply vents (10 — white/black) |
+
+All `BlockHvacVentFactory` instances register under the same TE name
+(`tileentityhvacventrelay`); the `Csm#init` registration loop's duplicate-name guard skips
+the redundant `GameRegistry.registerTileEntity` calls silently.
 
 ### Items
 
@@ -452,13 +472,22 @@ The thermostat iterates all linked units and returns the maximum `getMaxVentLink
 |---|---|---|
 | `ItemHvacLinker` | `hvaclinker` | Links HVAC components to thermostats |
 
-**Totals:** 15 blocks (12 unit variants + 2 thermostats + 1 vent relay) + 1 item.
+**Totals:** 45 blocks (12 unit variants + 2 thermostats + 1 native vent relay + 30
+decorative vents via `BlockHvacVentFactory`) + 1 item.
 
-All blocks extend `AbstractBlockRotatableNSEWUD` (full rotation including up/down) and
-implement `ICsmTileEntityProvider`. All use `Material.IRON`, `SoundType.METAL`, `pickaxe`
-harvest tool, harvest level 1, `BlockRenderLayer.CUTOUT_MIPPED`. RTU blocks have a 2-block
-tall bounding box; the vent relay has a thin ceiling-mounted bounding box
-(Y: 0.875 to 1.0). Thermostats have a small wall-mounted bounding box.
+The native HVAC blocks (heaters, coolers, RTUs, thermostats, `hvac_vent_relay`) extend
+`AbstractBlockRotatableNSEWUD` (full rotation including up/down) and implement
+`ICsmTileEntityProvider`. They use `Material.IRON`, `SoundType.METAL`, `pickaxe` harvest
+tool, harvest level 1, `BlockRenderLayer.CUTOUT_MIPPED`. RTU blocks have a 2-block tall
+bounding box; the vent relay has a thin ceiling-mounted bounding box (Y: 0.875 to 1.0).
+Thermostats have a small wall-mounted bounding box.
+
+The 30 decorative vents go through `BlockHvacVentFactory`, which extends
+`BlockRotatableNSEWUDFactory` and adds `ICsmTileEntityProvider` wiring. Each registry name
+keeps its existing material (`Material.ROCK`), sound type (`STONE`), bounding box, opacity,
+and render layer — only the TE attachment is new. Because their TE pauses when not linked,
+worlds with thousands of decorative vent placements pay only the standard chunk-TE memory
+overhead and no per-tick CPU.
 
 ## Forge Energy Integration
 
@@ -489,7 +518,7 @@ The `CsmConfig` class provides one HVAC-related setting:
 | `TileEntityHvacThermostat` | 40 ticks | 2 seconds |
 | `TileEntityHvacZoneThermostat` | 40 ticks | 2 seconds |
 | `TileEntityHvacHeater` (+ cooler) | 20 ticks | 1 second |
-| `TileEntityHvacVentRelay` | 40 ticks | 2 seconds |
+| `TileEntityHvacVentRelay` | 40 ticks (paused while unlinked) | 2 seconds |
 | Chunk temp cache lifetime | 40 ticks | 2 seconds |
 | Cache eviction sweep | 600 ticks | 30 seconds |
 | Cache entry max age | 1200 ticks | 60 seconds |
@@ -559,6 +588,10 @@ AbstractBlockRotatableNSEWUD (ICsmTileEntityProvider)
 ├── BlockHvacRtuHeater / BlockHvacRtuHeaterBlack / BlockHvacRtuHeaterSilver
 ├── BlockHvacRtuCooler / BlockHvacRtuCoolerBlack / BlockHvacRtuCoolerSilver
 └── BlockHvacVentRelay
+
+BlockRotatableNSEWUDFactory
+└── BlockHvacVentFactory (ICsmTileEntityProvider)
+    └── 30 decorative vent registry names (art*, dfv*, lcv, mv*, pbf, pv/pvd, rv*, scv, sv*/svd*)
 
 AbstractItem
 └── ItemHvacLinker
