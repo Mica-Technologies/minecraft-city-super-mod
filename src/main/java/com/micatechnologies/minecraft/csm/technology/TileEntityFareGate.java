@@ -131,12 +131,12 @@ public class TileEntityFareGate extends AbstractTickableTileEntity {
     }
   }
 
-  /** Proximity polling while closed. Edge-trigger on the interior cell. */
+  /** Proximity polling while closed. Edge-trigger on the interior cell(s). */
   private void tickWhileClosed(IBlockState state) {
-    BlockPos interior = BlockFareGate.interiorCell(pos, state);
-    AxisAlignedBB detectionBox = new AxisAlignedBB(
-        interior.getX(),     interior.getY(),     interior.getZ(),
-        interior.getX() + 1, interior.getY() + 2, interior.getZ() + 1);
+    // Ask the block class for the world-space detection AABB — width-aware (1/2/3 cells
+    // wide depending on subclass), rotation-aware (placed FACING applied).
+    AxisAlignedBB detectionBox =
+        ((BlockFareGate) state.getBlock()).getInteriorDetectionWorldBox(state, pos);
     List<EntityPlayer> players = world.getEntitiesWithinAABB(EntityPlayer.class, detectionBox);
 
     Set<UUID> currentTickPresence = new HashSet<>();

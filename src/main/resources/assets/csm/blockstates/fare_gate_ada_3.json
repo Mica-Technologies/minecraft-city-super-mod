@@ -1,0 +1,43 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:technology/shared_models/fare_gate_ada_3_open",
+    "textures": {
+      "body": "csm:blocks/technology/fare_gate_body",
+      "glass": "csm:blocks/technology/fare_gate_glass",
+      "indicator": "csm:blocks/technology/fare_gate_indicator_red",
+      "particle": "csm:blocks/technology/fare_gate_body"
+    }
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east":  { "y": 90 },
+      "south": { "y": 180 },
+      "west":  { "y": 270 }
+    },
+    "state": {
+      "closed": {
+        "model": "csm:technology/shared_models/fare_gate_ada_3_closed"
+      },
+      "open_entry": {
+        "textures": {
+          "indicator": "csm:blocks/technology/fare_gate_indicator_green"
+        }
+      },
+      "open_exit": {
+        "textures": {
+          "indicator": "csm:blocks/technology/fare_gate_indicator_x"
+        }
+      }
+    },
+    "inventory": [
+      {
+        "model": "csm:technology/shared_models/fare_gate_ada_3_closed"
+      }
+    ],
+    "normal": [
+      {}
+    ]
+  }
+}

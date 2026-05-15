@@ -28,8 +28,12 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 /**
- * Standard 1-block-wide fare gate. The gate is directional:
+ * Base fare gate block. Default footprint is one cell wide, but the class is parameterized
+ * by lane width so the 2-wide and 3-wide ADA subclasses ({@link BlockFareGateAda2},
+ * {@link BlockFareGateAda3}) reuse the same state machine, packet plumbing, and tile-entity
+ * type — they only override {@link #getLaneWidthCells()} (and their registry name / model).
  *
+ * <p><b>Directional behavior:</b></p>
  * <ul>
  *   <li><b>Exterior side</b> (the side the {@link #FACING} property points toward — i.e.
  *   the side the player was standing on when placing) requires fare media. Right-clicking
@@ -38,15 +42,18 @@ import net.minecraft.world.World;
  *   gate in {@link GateState#OPEN_ENTRY}, which renders the arrow indicator green.</li>
  *
  *   <li><b>Interior side</b> auto-opens via proximity detection on
- *   {@link TileEntityFareGate}. When a new player enters the cell directly behind the
- *   gate (interior cell), the gate flips to {@link GateState#OPEN_EXIT}, rendering the
- *   exterior arrow as a red X so anyone approaching from outside knows the gate is being
- *   used for an exit and they shouldn't try to enter.</li>
+ *   {@link TileEntityFareGate}. When a new player enters any cell directly behind the
+ *   gate, the gate flips to {@link GateState#OPEN_EXIT}, rendering the exterior arrow as
+ *   a red X so anyone approaching from outside knows the gate is being used for an exit
+ *   and they shouldn't try to enter.</li>
  * </ul>
  *
- * <p>An open gate has no meaningful collision, so the player can walk through; a closed
- * gate is solid across the cell. After {@link TileEntityFareGate#getAutoCloseTicks} ticks
- * of being open the TE flips state back to {@link GateState#CLOSED}.</p>
+ * <p><b>Multi-cell geometry:</b> the 2- and 3-wide variants don't use multi-block
+ * placement (no door-style upper/lower pairing). The block is placed in one cell and the
+ * model + bbox + interior-detection box extend horizontally past the placed cell — same
+ * trick the iMac uses. {@link #getBaseClosedBboxBlock()} returns the bbox in default-N
+ * orientation; {@link #rotateBboxHorizontal} maps it per FACING so the world-space
+ * collision matches the rendered model.</p>
  *
  * @author Mica Technologies
  * @since 2026.5
@@ -56,15 +63,6 @@ public class BlockFareGate extends AbstractBlock implements ICsmTileEntityProvid
   public static final PropertyDirection FACING = BlockHorizontal.FACING;
   public static final PropertyEnum<GateState> STATE =
       PropertyEnum.create("state", GateState.class);
-
-  /**
-   * Render / selection bbox covering the entire 3-cell-tall visible model. Used regardless
-   * of state so the player can always target the gate for interaction. Block AABBs are
-   * allowed to extend outside the placed cell — vanilla handles offset bbox/collision
-   * correctly (entities collide against the AABB at the block's world pos).
-   */
-  private static final AxisAlignedBB CLOSED_BBOX =
-      new AxisAlignedBB(0.0, -1.0, 0.0, 1.0, 2.0, 1.0);
 
   public BlockFareGate() {
     super(Material.IRON, SoundType.METAL, "pickaxe", 1, 2F, 10F, 0F, 0);
@@ -76,6 +74,42 @@ public class BlockFareGate extends AbstractBlock implements ICsmTileEntityProvid
   @Override
   public String getBlockRegistryName() {
     return "fare_gate";
+  }
+
+  /**
+   * Lane width in cells. Subclasses override to widen the gate. Drives both the closed
+   * bbox shape and the interior-side proximity-detection box.
+   */
+  protected int getLaneWidthCells() {
+    return 1;
+  }
+
+  /**
+   * The closed-state bbox in default-North orientation, in block-local coordinates. The
+   * placed cell is x=0..1. For widths greater than 1, the bbox extends horizontally —
+   * 2-wide extends +X by one cell; 3-wide extends ±X by one cell (centered on placed).
+   * All variants extend one cell down and one cell up so a closed gate truly seals its
+   * lane top-to-bottom.
+   */
+  protected AxisAlignedBB getBaseClosedBboxBlock() {
+    switch (getLaneWidthCells()) {
+      case 2:  return new AxisAlignedBB(0.0, -1.0, 0.0, 2.0, 2.0, 1.0);
+      case 3:  return new AxisAlignedBB(-1.0, -1.0, 0.0, 2.0, 2.0, 1.0);
+      default: return new AxisAlignedBB(0.0, -1.0, 0.0, 1.0, 2.0, 1.0);
+    }
+  }
+
+  /**
+   * The interior proximity-detection bbox in default-North orientation, in block-local
+   * coordinates. Covers the cells directly behind the gate (one per occupied cell), one
+   * cell deep, two cells tall.
+   */
+  protected AxisAlignedBB getBaseInteriorBoxBlock() {
+    switch (getLaneWidthCells()) {
+      case 2:  return new AxisAlignedBB(0.0, 0.0, 1.0, 2.0, 2.0, 2.0);
+      case 3:  return new AxisAlignedBB(-1.0, 0.0, 1.0, 2.0, 2.0, 2.0);
+      default: return new AxisAlignedBB(0.0, 0.0, 1.0, 1.0, 2.0, 2.0);
+    }
   }
 
   // === State ↔ meta ===
@@ -121,7 +155,7 @@ public class BlockFareGate extends AbstractBlock implements ICsmTileEntityProvid
 
   @Override
   public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-    return CLOSED_BBOX;
+    return rotateBboxHorizontal(getBaseClosedBboxBlock(), state.getValue(FACING));
   }
 
   @Override
@@ -130,7 +164,10 @@ public class BlockFareGate extends AbstractBlock implements ICsmTileEntityProvid
       BlockPos pos) {
     // NULL_AABB = no collision at all — same as vanilla air. The player walks through the
     // open gate's lane unobstructed regardless of the visible model geometry.
-    return blockState.getValue(STATE).isOpen() ? Block.NULL_AABB : CLOSED_BBOX;
+    if (blockState.getValue(STATE).isOpen()) {
+      return Block.NULL_AABB;
+    }
+    return rotateBboxHorizontal(getBaseClosedBboxBlock(), blockState.getValue(FACING));
   }
 
   @Override
@@ -228,10 +265,38 @@ public class BlockFareGate extends AbstractBlock implements ICsmTileEntityProvid
     player.sendMessage(new TextComponentString(message));
   }
 
-  /** Returns the cell directly on the interior side of the gate (opposite the exterior). */
-  static BlockPos interiorCell(BlockPos gatePos, IBlockState state) {
-    EnumFacing exterior = state.getValue(FACING);
-    return gatePos.offset(exterior.getOpposite());
+  /**
+   * Returns the world-space AABB the tile entity should scan for newly-arrived players on
+   * the interior side. Computed by rotating {@link #getBaseInteriorBoxBlock()} per FACING
+   * and offsetting by the block position.
+   */
+  AxisAlignedBB getInteriorDetectionWorldBox(IBlockState state, BlockPos pos) {
+    AxisAlignedBB local = rotateBboxHorizontal(getBaseInteriorBoxBlock(),
+        state.getValue(FACING));
+    return local.offset(pos.getX(), pos.getY(), pos.getZ());
+  }
+
+  /**
+   * Horizontal rotation of an AABB around the placed cell's vertical center axis at
+   * (0.5, *, 0.5). Works for multi-cell bboxes (i.e. minX &lt; 0 or maxX &gt; 1).
+   *
+   * <p>Derivation: 90° CW rotation around (0.5, 0.5) in XZ maps (x, z) → (z, 1−x).
+   * Apply to each corner and take min/max.</p>
+   */
+  private static AxisAlignedBB rotateBboxHorizontal(AxisAlignedBB box, EnumFacing facing) {
+    double minX = box.minX, minY = box.minY, minZ = box.minZ;
+    double maxX = box.maxX, maxY = box.maxY, maxZ = box.maxZ;
+    switch (facing) {
+      case EAST:
+        return new AxisAlignedBB(minZ, minY, 1.0 - maxX, maxZ, maxY, 1.0 - minX);
+      case SOUTH:
+        return new AxisAlignedBB(1.0 - maxX, minY, 1.0 - maxZ, 1.0 - minX, maxY, 1.0 - minZ);
+      case WEST:
+        return new AxisAlignedBB(1.0 - maxZ, minY, minX, 1.0 - minZ, maxY, maxX);
+      case NORTH:
+      default:
+        return box;
+    }
   }
 
   // === Tile entity wiring ===
