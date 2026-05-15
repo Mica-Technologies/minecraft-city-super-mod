@@ -7,8 +7,8 @@ import javax.annotation.Nullable;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.properties.PropertyDirection;
+import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
@@ -27,22 +27,25 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 /**
- * Standard 1-block-wide fare gate. Right-clicking validates whatever fare media the player
- * is holding:
+ * Standard 1-block-wide fare gate. The gate is directional:
  *
  * <ul>
- *   <li>{@link ItemFareTicket} — consumed entirely (single-use), gate opens</li>
- *   <li>{@link ItemTransitCard} with balance ≥ 1 — one trip deducted, gate opens</li>
- *   <li>Empty hand or invalid item — chat error, gate stays closed</li>
+ *   <li><b>Exterior side</b> (the side the {@link #FACING} property points toward — i.e.
+ *   the side the player was standing on when placing) requires fare media. Right-clicking
+ *   with an {@link ItemFareTicket} consumes it; right-clicking with an
+ *   {@link ItemTransitCard} deducts one trip from its NBT balance. Either path opens the
+ *   gate in {@link GateState#OPEN_ENTRY}, which renders the arrow indicator green.</li>
+ *
+ *   <li><b>Interior side</b> auto-opens via proximity detection on
+ *   {@link TileEntityFareGate}. When a new player enters the cell directly behind the
+ *   gate (interior cell), the gate flips to {@link GateState#OPEN_EXIT}, rendering the
+ *   exterior arrow as a red X so anyone approaching from outside knows the gate is being
+ *   used for an exit and they shouldn't try to enter.</li>
  * </ul>
  *
- * <p>An open gate has no collision so the player can walk through; a closed gate is solid
- * across the cell. After {@link TileEntityFareGate#getAutoCloseTicks} ticks of being open
- * the TE flips OPEN back to false and the barrier reappears.</p>
- *
- * <p>Visual: a placeholder gray brushed-steel cube with a status-arrow band that turns red
- * when closed, green when open. Iterate the model in Blockbench whenever you're ready —
- * the block class doesn't bake any model assumptions in.</p>
+ * <p>An open gate has no meaningful collision, so the player can walk through; a closed
+ * gate is solid across the cell. After {@link TileEntityFareGate#getAutoCloseTicks} ticks
+ * of being open the TE flips state back to {@link GateState#CLOSED}.</p>
  *
  * @author Mica Technologies
  * @since 2026.5
@@ -50,12 +53,13 @@ import net.minecraft.world.World;
 public class BlockFareGate extends AbstractBlock implements ICsmTileEntityProvider {
 
   public static final PropertyDirection FACING = BlockHorizontal.FACING;
-  public static final PropertyBool OPEN = PropertyBool.create("open");
+  public static final PropertyEnum<GateState> STATE =
+      PropertyEnum.create("state", GateState.class);
 
-  /** A thin horizontal slab in the middle of the cell — the visual "barrier" plane. */
+  /** Solid wall when closed. */
   private static final AxisAlignedBB CLOSED_BBOX =
       new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 1.0, 1.0);
-  /** No collision when open — player can walk through. */
+  /** Thin floor slab so an open gate doesn't physically block the player. */
   private static final AxisAlignedBB OPEN_BBOX =
       new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 0.05, 1.0);
 
@@ -63,7 +67,7 @@ public class BlockFareGate extends AbstractBlock implements ICsmTileEntityProvid
     super(Material.IRON, SoundType.METAL, "pickaxe", 1, 2F, 10F, 0F, 0);
     setDefaultState(blockState.getBaseState()
         .withProperty(FACING, EnumFacing.NORTH)
-        .withProperty(OPEN, false));
+        .withProperty(STATE, GateState.CLOSED));
   }
 
   @Override
@@ -77,29 +81,37 @@ public class BlockFareGate extends AbstractBlock implements ICsmTileEntityProvid
   @Nonnull
   public IBlockState getStateFromMeta(int meta) {
     int facingIdx = meta & 3;
-    EnumFacing facing = EnumFacing.byHorizontalIndex(facingIdx);
-    boolean open = (meta & 4) != 0;
-    return getDefaultState().withProperty(FACING, facing).withProperty(OPEN, open);
+    int stateIdx = (meta >> 2) & 3;
+    GateState[] states = GateState.values();
+    GateState state = (stateIdx >= 0 && stateIdx < states.length)
+        ? states[stateIdx] : GateState.CLOSED;
+    return getDefaultState()
+        .withProperty(FACING, EnumFacing.byHorizontalIndex(facingIdx))
+        .withProperty(STATE, state);
   }
 
   @Override
   public int getMetaFromState(IBlockState state) {
-    return state.getValue(FACING).getHorizontalIndex() | (state.getValue(OPEN) ? 4 : 0);
+    return state.getValue(FACING).getHorizontalIndex()
+        | (state.getValue(STATE).ordinal() << 2);
   }
 
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, OPEN);
+    return new BlockStateContainer(this, FACING, STATE);
   }
 
   @Override
   @Nonnull
   public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing,
       float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
+    // FACING points back at the placer — i.e. toward the cell the placer was standing in.
+    // We treat that side as the "exterior" (where players approach to enter), and the
+    // opposite side as the "interior" (where players exit).
     return getDefaultState()
         .withProperty(FACING, placer.getHorizontalFacing().getOpposite())
-        .withProperty(OPEN, false);
+        .withProperty(STATE, GateState.CLOSED);
   }
 
   // === Visuals / collision ===
@@ -113,9 +125,7 @@ public class BlockFareGate extends AbstractBlock implements ICsmTileEntityProvid
   @Nullable
   public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, IBlockAccess worldIn,
       BlockPos pos) {
-    // Closed gate: solid wall. Open gate: a thin floor slab the player can step over but
-    // doesn't physically block movement, so passage is genuinely free.
-    return blockState.getValue(OPEN) ? OPEN_BBOX : CLOSED_BBOX;
+    return blockState.getValue(STATE).isOpen() ? OPEN_BBOX : CLOSED_BBOX;
   }
 
   @Override
@@ -142,11 +152,11 @@ public class BlockFareGate extends AbstractBlock implements ICsmTileEntityProvid
 
   @Override
   public int getLightValue(IBlockState state, IBlockAccess world, BlockPos pos) {
-    // Soft glow from the lit-green status arrow when open. No emission when closed.
-    return state.getActualState(world, pos).getValue(OPEN) ? 5 : 0;
+    GateState s = state.getActualState(world, pos).getValue(STATE);
+    return s.isOpen() ? 5 : 0;
   }
 
-  // === Interaction ===
+  // === Interaction (exterior side: pay-to-enter) ===
 
   @Override
   public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state,
@@ -158,16 +168,15 @@ public class BlockFareGate extends AbstractBlock implements ICsmTileEntityProvid
     if (worldIn.isRemote) {
       return true;
     }
-
-    // Already open: do nothing — player can just walk through.
-    if (state.getValue(OPEN)) {
+    if (state.getValue(STATE).isOpen()) {
+      // Already open: walk through.
       return true;
     }
 
     ItemStack held = player.getHeldItemMainhand();
     if (held.getItem() instanceof ItemFareTicket) {
       held.shrink(1);
-      openGate(worldIn, pos, state);
+      openGate(worldIn, pos, state, GateState.OPEN_ENTRY);
       sendChat(player, "§aFare validated — single-use ticket consumed");
       return true;
     }
@@ -179,7 +188,7 @@ public class BlockFareGate extends AbstractBlock implements ICsmTileEntityProvid
         return true;
       }
       ItemTransitCard.consumeTrip(held);
-      openGate(worldIn, pos, state);
+      openGate(worldIn, pos, state, GateState.OPEN_ENTRY);
       sendChat(player, "§aFare validated — " + (balance - 1) + " trips remaining");
       return true;
     }
@@ -188,14 +197,21 @@ public class BlockFareGate extends AbstractBlock implements ICsmTileEntityProvid
     return true;
   }
 
-  private void openGate(World world, BlockPos pos, IBlockState state) {
-    world.setBlockState(pos, state.withProperty(OPEN, true), 3);
+  /**
+   * Server-side helper used by both the click-driven entry path and the proximity-driven
+   * exit path on {@link TileEntityFareGate} to flip the block to an open state, mark the
+   * TE so the auto-close timer starts, and play the appropriate chime.
+   */
+  void openGate(World world, BlockPos pos, IBlockState state, GateState newState) {
+    world.setBlockState(pos, state.withProperty(STATE, newState), 3);
     TileEntity te = world.getTileEntity(pos);
     if (te instanceof TileEntityFareGate) {
       ((TileEntityFareGate) te).markOpened();
     }
+    // Slightly different chimes for entry vs exit so the audio reinforces the visual.
+    float pitch = newState == GateState.OPEN_ENTRY ? 1.4F : 1.0F;
     world.playSound(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
-        SoundEvents.BLOCK_NOTE_PLING, SoundCategory.BLOCKS, 0.7F, 1.4F);
+        SoundEvents.BLOCK_NOTE_PLING, SoundCategory.BLOCKS, 0.7F, pitch);
   }
 
   private void playDeniedSound(World world, BlockPos pos) {
@@ -205,6 +221,12 @@ public class BlockFareGate extends AbstractBlock implements ICsmTileEntityProvid
 
   private static void sendChat(EntityPlayer player, String message) {
     player.sendMessage(new TextComponentString(message));
+  }
+
+  /** Returns the cell directly on the interior side of the gate (opposite the exterior). */
+  static BlockPos interiorCell(BlockPos gatePos, IBlockState state) {
+    EnumFacing exterior = state.getValue(FACING);
+    return gatePos.offset(exterior.getOpposite());
   }
 
   // === Tile entity wiring ===
