@@ -246,18 +246,22 @@ public class ComputerGui extends GuiScreen {
     int padding = 10;
     int displayY = contentY + 6;
     int displayH = 18;
+    // GuiButton's textured-modal-rect renderer assumes a 20-pixel-tall widget; making
+    // the buttons taller stretches the texture and exposes the unused/hovered band along
+    // the bottom edge of every cell. Lock height at 20 and lay out with explicit gaps.
+    int btnH = 20;
+    int rowGap = 4;
     int gridY = displayY + displayH + 6;
-    int gridAvailH = contentH - (gridY - contentY) - 4;
     int btnW = (windowW - padding * 2) / 4;
-    int btnH = gridAvailH / 4;
     int gridX = windowX + padding;
 
     for (int row = 0; row < 4; row++) {
       for (int col = 0; col < 4; col++) {
         int id = BUTTON_ID_CALC_BASE + row * 4 + col;
         this.buttonList.add(new GuiButton(id,
-            gridX + col * btnW, gridY + row * btnH,
-            btnW - 2, btnH - 2, CALC_LABELS[row][col]));
+            gridX + col * btnW,
+            gridY + row * (btnH + rowGap),
+            btnW - 2, btnH, CALC_LABELS[row][col]));
       }
     }
   }
