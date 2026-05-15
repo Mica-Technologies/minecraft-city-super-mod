@@ -145,7 +145,8 @@ public class CsmSounds {
     POLARA_TONE1("polara_tone1"),
     POLARA_WAIT("polara_wait"),
     POLARA_WALK("polara_walk"),
-    POLARA_WALK_ALL_CROSSINGS("polara_walk_all_crossings");
+    POLARA_WALK_ALL_CROSSINGS("polara_walk_all_crossings"),
+    MII_CHANNEL_REMIX("mii_channel_remix");
 
     /**
      * The name of the sound.
