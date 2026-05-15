@@ -14,12 +14,18 @@
       "south": { "y": 180 },
       "west": { "y": 270 }
     },
-    "open": {
-      "false": {},
-      "true": {
+    "state": {
+      "closed": {},
+      "open_entry": {
         "textures": {
           "all": "csm:blocks/technology/fare_gate_open",
           "particle": "csm:blocks/technology/fare_gate_open"
+        }
+      },
+      "open_exit": {
+        "textures": {
+          "all": "csm:blocks/technology/fare_gate_exit",
+          "particle": "csm:blocks/technology/fare_gate_exit"
         }
       }
     },
