@@ -1,36 +1,40 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "cube_all",
+    "model": "csm:technology/shared_models/fare_gate_open",
     "textures": {
-      "all": "csm:blocks/technology/fare_gate_closed",
-      "particle": "csm:blocks/technology/fare_gate_closed"
+      "body": "csm:blocks/technology/fare_gate_body",
+      "glass": "csm:blocks/technology/fare_gate_glass",
+      "indicator": "csm:blocks/technology/fare_gate_indicator_red",
+      "particle": "csm:blocks/technology/fare_gate_body"
     }
   },
   "variants": {
     "facing": {
       "north": {},
-      "east": { "y": 90 },
+      "east":  { "y": 90 },
       "south": { "y": 180 },
-      "west": { "y": 270 }
+      "west":  { "y": 270 }
     },
     "state": {
-      "closed": {},
+      "closed": {
+        "model": "csm:technology/shared_models/fare_gate_closed"
+      },
       "open_entry": {
         "textures": {
-          "all": "csm:blocks/technology/fare_gate_open",
-          "particle": "csm:blocks/technology/fare_gate_open"
+          "indicator": "csm:blocks/technology/fare_gate_indicator_green"
         }
       },
       "open_exit": {
         "textures": {
-          "all": "csm:blocks/technology/fare_gate_exit",
-          "particle": "csm:blocks/technology/fare_gate_exit"
+          "indicator": "csm:blocks/technology/fare_gate_indicator_x"
         }
       }
     },
     "inventory": [
-      {}
+      {
+        "model": "csm:technology/shared_models/fare_gate_closed"
+      }
     ],
     "normal": [
       {}
