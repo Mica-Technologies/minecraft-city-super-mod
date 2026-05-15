@@ -87,15 +87,15 @@
     },
     {
       "name": "top_canopy",
-      "from": [0, 24, 0],
+      "from": [0, 28, 0],
       "to": [16, 32, 4],
       "faces": {
         "down":  {"uv": [0, 0, 16, 4], "texture": "#body"},
         "up":    {"uv": [0, 0, 16, 4], "texture": "#body"},
-        "north": {"uv": [0, 0, 16, 8], "texture": "#body"},
-        "south": {"uv": [0, 0, 16, 8], "texture": "#body"},
-        "east":  {"uv": [0, 0, 4, 8],  "texture": "#body"},
-        "west":  {"uv": [0, 0, 4, 8],  "texture": "#body"}
+        "north": {"uv": [0, 0, 16, 4], "texture": "#body"},
+        "south": {"uv": [0, 0, 16, 4], "texture": "#body"},
+        "east":  {"uv": [0, 0, 4, 4],  "texture": "#body"},
+        "west":  {"uv": [0, 0, 4, 4],  "texture": "#body"}
       }
     },
     {

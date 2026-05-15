@@ -4,6 +4,7 @@ import com.micatechnologies.minecraft.csm.codeutils.AbstractBlock;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
@@ -57,16 +58,13 @@ public class BlockFareGate extends AbstractBlock implements ICsmTileEntityProvid
       PropertyEnum.create("state", GateState.class);
 
   /**
-   * Solid wall when closed. Extends one cell down and one cell up from the placed cell so
-   * the player can't crouch underneath or jump over the visible 3-block-tall barrier.
-   * Block AABBs are allowed to extend outside the placed cell — vanilla handles offset
-   * collision boxes correctly (entities collide against the AABB at the block's world pos).
+   * Render / selection bbox covering the entire 3-cell-tall visible model. Used regardless
+   * of state so the player can always target the gate for interaction. Block AABBs are
+   * allowed to extend outside the placed cell — vanilla handles offset bbox/collision
+   * correctly (entities collide against the AABB at the block's world pos).
    */
   private static final AxisAlignedBB CLOSED_BBOX =
       new AxisAlignedBB(0.0, -1.0, 0.0, 1.0, 2.0, 1.0);
-  /** Thin floor slab so an open gate doesn't physically block the player. */
-  private static final AxisAlignedBB OPEN_BBOX =
-      new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 0.05, 1.0);
 
   public BlockFareGate() {
     super(Material.IRON, SoundType.METAL, "pickaxe", 1, 2F, 10F, 0F, 0);
@@ -130,7 +128,9 @@ public class BlockFareGate extends AbstractBlock implements ICsmTileEntityProvid
   @Nullable
   public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, IBlockAccess worldIn,
       BlockPos pos) {
-    return blockState.getValue(STATE).isOpen() ? OPEN_BBOX : CLOSED_BBOX;
+    // NULL_AABB = no collision at all — same as vanilla air. The player walks through the
+    // open gate's lane unobstructed regardless of the visible model geometry.
+    return blockState.getValue(STATE).isOpen() ? Block.NULL_AABB : CLOSED_BBOX;
   }
 
   @Override
