@@ -1,0 +1,66 @@
+{
+  "credit": "Mica Technologies — placeholder geometry, iterate in Blockbench",
+  "textures": {
+    "body": "csm:blocks/technology/fare_gate_body",
+    "indicator": "csm:blocks/technology/fare_gate_indicator_red",
+    "particle": "csm:blocks/technology/fare_gate_body"
+  },
+  "elements": [
+    {
+      "name": "left_pillar",
+      "from": [0, 0, 0],
+      "to": [3, 30, 16],
+      "faces": {
+        "down":  {"uv": [0, 0, 3, 16], "texture": "#body"},
+        "up":    {"uv": [0, 0, 3, 16], "texture": "#body"},
+        "north": {"uv": [0, 0, 3, 16], "texture": "#body"},
+        "south": {"uv": [0, 0, 3, 16], "texture": "#body"},
+        "east":  {"uv": [0, 0, 16, 16], "texture": "#body"},
+        "west":  {"uv": [0, 0, 16, 16], "texture": "#body"}
+      }
+    },
+    {
+      "name": "right_pillar",
+      "from": [13, 0, 0],
+      "to": [16, 30, 16],
+      "faces": {
+        "down":  {"uv": [0, 0, 3, 16], "texture": "#body"},
+        "up":    {"uv": [0, 0, 3, 16], "texture": "#body"},
+        "north": {"uv": [0, 0, 3, 16], "texture": "#body"},
+        "south": {"uv": [0, 0, 3, 16], "texture": "#body"},
+        "east":  {"uv": [0, 0, 16, 16], "texture": "#body"},
+        "west":  {"uv": [0, 0, 16, 16], "texture": "#body"}
+      }
+    },
+    {
+      "name": "top_sign",
+      "from": [0, 28, 0],
+      "to": [16, 32, 4],
+      "faces": {
+        "down":  {"uv": [0, 0, 16, 4], "texture": "#body"},
+        "up":    {"uv": [0, 0, 16, 4], "texture": "#body"},
+        "north": {"uv": [0, 0, 16, 4], "texture": "#indicator"},
+        "south": {"uv": [0, 0, 16, 4], "texture": "#body"},
+        "east":  {"uv": [0, 0, 4, 4], "texture": "#body"},
+        "west":  {"uv": [0, 0, 4, 4], "texture": "#body"}
+      }
+    }
+  ],
+  "display": {
+    "gui": {
+      "rotation": [30, 45, 0],
+      "translation": [0, -1.5, 0],
+      "scale": [0.4, 0.4, 0.4]
+    },
+    "thirdperson_righthand": {
+      "rotation": [75, 45, 0],
+      "translation": [0, 2.5, 0],
+      "scale": [0.375, 0.375, 0.375]
+    },
+    "fixed": {
+      "rotation": [0, 0, 0],
+      "translation": [0, 0, 0],
+      "scale": [0.5, 0.5, 0.5]
+    }
+  }
+}
