@@ -1,12 +1,15 @@
 package com.micatechnologies.minecraft.csm.hvac;
 
+import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEWUD;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractTickableTileEntity;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.util.Constants;
@@ -83,12 +86,20 @@ public class TileEntityHvacThermostat extends AbstractTickableTileEntity
   private static final float THERMAL_BLEND_FACTOR = 0.06f;
 
   /**
-   * Hysteresis deadband in °F. Once the system starts heating, it won't stop until the
-   * temperature rises DEADBAND degrees above targetLow. Once cooling, it won't stop until
-   * the temperature drops DEADBAND degrees below targetHigh. Prevents rapid cycling near
-   * the setpoint boundaries.
+   * Restart hysteresis in °F. Heating stops AT the low setpoint (no overshoot), and
+   * won't restart until the temperature drops more than this many degrees below the
+   * setpoint. Cooling mirrors: stops AT the high setpoint, restarts when temperature
+   * climbs more than this many degrees above. Putting the hysteresis on the restart
+   * side — rather than as an overshoot deadband at the stop side — matches real
+   * residential HVAC and avoids the previous bug where the proportional-control term
+   * throttled output to near zero before the temperature could ever push past the
+   * overshoot threshold, leaving the system stuck calling indefinitely at the setpoint.
+   *
+   * <p>1.5°F is on the tight end of typical real-world residential thermostats (1–3°F).
+   * Tight enough that the user's commanded range still feels accurate, wide enough that
+   * residual vent decay (~80s thermal coast after shutoff) doesn't immediately retrigger.</p>
    */
-  private static final float DEADBAND = 2.0f;
+  private static final float CYCLE_HYSTERESIS = 1.5f;
 
   /** Calling mode: 0 = idle, 1 = heating, 2 = cooling. */
   private static final int MODE_IDLE = 0;
@@ -97,20 +108,40 @@ public class TileEntityHvacThermostat extends AbstractTickableTileEntity
 
   /**
    * Temperature error (in °F) at which the proportional-control term saturates at full
-   * output. For errors larger than this the vent contribution stays at 100% of base; as
-   * the smoothed thermostat reading approaches the setpoint, output ramps linearly down
-   * to 0. With this set to 10°F:
+   * output. The P-term targets the active setpoint directly (low for heating, high for
+   * cooling) and ramps vent output down linearly as the room approaches it, clamped below
+   * by {@link #P_TERM_MIN_OUTPUT} so the system can always finish closing the last degree
+   * or two against ambient heat loss. The calling state exits the moment the setpoint is
+   * reached, at which point output value is irrelevant. With this set to 5°F and a 0.4
+   * floor:
    * <ul>
-   *   <li>10°F+ off setpoint → full vent output (no throttling)</li>
-   *   <li>5°F off → 50% output (gentle approach, less overshoot)</li>
-   *   <li>1°F off → 10% (just enough to overcome heat loss)</li>
-   *   <li>at setpoint → 0% (won't overshoot)</li>
+   *   <li>5°F+ off setpoint → full vent output (no throttling)</li>
+   *   <li>2.5°F off → 50% output</li>
+   *   <li>1°F off → 40% output (floor)</li>
+   *   <li>at setpoint → calling state exits this tick</li>
    * </ul>
-   * This is the proportional ("P") term of a basic regulator. The deadband still drives
-   * the on/off transition; the P-term only modulates output magnitude inside the
-   * "calling" state.
+   * Previously this was 10°F, paired with an above-setpoint overshoot deadband. The
+   * combination throttled output to ~20% by the time the room hit the user's setpoint,
+   * never reached the overshoot threshold needed to stop calling, and the system stalled
+   * indefinitely. Tightening the saturation alone (5°F, no floor) flipped the failure
+   * mode the other way: the smoothed reading asymptotically approached the setpoint from
+   * below — output dropped to near zero faster than the room could close the last degree,
+   * and the system stalled 1–2°F short. The 5°F range plus the 0.4 floor keeps the
+   * approach gentle while guaranteeing enough output near the setpoint to actually reach
+   * it. See {@link #CYCLE_HYSTERESIS} for the restart side.
    */
-  private static final float P_TERM_FULL_RANGE = 10.0f;
+  private static final float P_TERM_FULL_RANGE = 5.0f;
+
+  /**
+   * Minimum proportional-term output applied while a calling state is active. Prevents
+   * the steady-state-error stall described in {@link #P_TERM_FULL_RANGE}: with no floor,
+   * output decays to zero as the smoothed reading nears setpoint, room temperature
+   * asymptotes 1–2°F short, and the smoothed value never crosses the exit threshold.
+   * 0.4 (= 40% of base) is empirically enough to overcome ambient heat loss in
+   * typical-size rooms against a 15–25°F gradient to outdoor temperature while still
+   * leaving meaningful proportional behavior in the upper range.
+   */
+  private static final float P_TERM_MIN_OUTPUT = 0.4f;
 
   private int targetTempLow = 65;
   private int targetTempHigh = 80;
@@ -181,8 +212,15 @@ public class TileEntityHvacThermostat extends AbstractTickableTileEntity
       return;
     }
 
-    // Read the instantaneous temperature at this position (includes active HVAC effects)
-    float rawTemp = HvacTemperatureManager.getRawTemperatureAt(world, pos);
+    // Read the instantaneous ambient temperature for this thermostat. The thermostat
+    // sits flush against the wall it's mounted on, so a single-point read at `pos`
+    // accumulates wall-attenuation against every HVAC source — collapsing the per-direction
+    // cap and freezing the reading well below what the room actually sits at. Sampling
+    // a few blocks forward through the FACING direction lets the device pick up the room's
+    // real temperature; see HvacTemperatureManager#getAmbientTemperatureAt for the full
+    // rationale.
+    EnumFacing facing = getRoomFacing();
+    float rawTemp = HvacTemperatureManager.getAmbientTemperatureAt(world, pos, facing);
     float previousTemp = currentTemperature;
 
     // Thermal smoothing: blend toward raw temperature gradually to simulate thermal mass.
@@ -225,28 +263,35 @@ public class TileEntityHvacThermostat extends AbstractTickableTileEntity
     // Reset blockedMode each tick — it's re-derived below if applicable.
     blockedMode = MODE_IDLE;
 
-    // Hysteresis deadband: once heating/cooling starts, don't stop until the temperature
-    // overshoots the setpoint by DEADBAND degrees. This creates natural HVAC cycles.
+    // Hysteresis on the restart side, not the stop side: heating exits the moment the
+    // temperature reaches the low setpoint, cooling the moment it reaches the high
+    // setpoint. The CYCLE_HYSTERESIS gap is applied to the IDLE→calling transition
+    // below, so the system has to drift past the setpoint by that margin before it
+    // kicks back on. See CYCLE_HYSTERESIS Javadoc for why this beats the old
+    // overshoot-deadband approach.
     switch (callingMode) {
       case MODE_HEATING:
-        // Keep heating until we reach targetLow + deadband, OR drop heating immediately
-        // if the linked heater was removed (avoids stuck-calling state).
-        if (!hasHeater || currentTemperature >= targetTempLow + DEADBAND) {
+        // Keep heating until we reach the low setpoint, OR drop heating immediately if
+        // the linked heater was removed (avoids stuck-calling state).
+        if (!hasHeater || currentTemperature >= targetTempLow) {
           callingMode = MODE_IDLE;
           isCalling = false;
         }
         break;
       case MODE_COOLING:
-        if (!hasCooler || currentTemperature <= targetTempHigh - DEADBAND) {
+        if (!hasCooler || currentTemperature <= targetTempHigh) {
           callingMode = MODE_IDLE;
           isCalling = false;
         }
         break;
       default:
-        // Idle — start calling only if (a) outside the setpoint range AND (b) we have the
-        // equipment to act. A heater-only system at 100°F sits idle; it does NOT switch
-        // into cooling mode and start blowing "negative" air.
-        if (currentTemperature < targetTempLow) {
+        // Idle → calling: require the temperature to be more than CYCLE_HYSTERESIS past
+        // the setpoint before re-engaging. Combined with stop-at-setpoint, this gives
+        // each heating or cooling pass a real off-cycle instead of nibbling at the
+        // setpoint forever. Heater/cooler-only-system guard: a heater-only system at
+        // 100°F sits idle; it does NOT switch into cooling mode and start blowing
+        // "negative" air.
+        if (currentTemperature < targetTempLow - CYCLE_HYSTERESIS) {
           if (hasHeater) {
             callingMode = MODE_HEATING;
             isCalling = true;
@@ -255,7 +300,7 @@ public class TileEntityHvacThermostat extends AbstractTickableTileEntity
             blockedMode = MODE_HEATING;
             isCalling = false;
           }
-        } else if (currentTemperature > targetTempHigh) {
+        } else if (currentTemperature > targetTempHigh + CYCLE_HYSTERESIS) {
           if (hasCooler) {
             callingMode = MODE_COOLING;
             isCalling = true;
@@ -314,6 +359,23 @@ public class TileEntityHvacThermostat extends AbstractTickableTileEntity
         || blockedModeChanged) {
       markDirtySync(world, pos, true);
     }
+  }
+
+  /**
+   * Returns the direction "into the room" from this thermostat, derived from its block's
+   * {@code FACING} property. The thermostat model sits at the back of its block (+Z in the
+   * unrotated state), so the FACING direction points into the room — exactly what
+   * {@link HvacTemperatureManager#getAmbientTemperatureAt} wants for its forward-sample
+   * walk. Returns {@code null} if the block has been replaced out from under the TE, in
+   * which case the manager falls back to sampling only this exact position.
+   */
+  private EnumFacing getRoomFacing() {
+    if (world == null) return null;
+    IBlockState state = world.getBlockState(pos);
+    if (state.getPropertyKeys().contains(AbstractBlockRotatableNSEWUD.FACING)) {
+      return state.getValue(AbstractBlockRotatableNSEWUD.FACING);
+    }
+    return null;
   }
 
   // endregion
@@ -641,19 +703,16 @@ public class TileEntityHvacThermostat extends AbstractTickableTileEntity
    * approach produced.</p>
    */
   private float computeProportionalTerm() {
-    float setpoint;
     float error;
     if (callingMode == MODE_HEATING) {
-      setpoint = targetTempLow + DEADBAND;
-      error = setpoint - currentTemperature;
+      error = targetTempLow - currentTemperature;
     } else if (callingMode == MODE_COOLING) {
-      setpoint = targetTempHigh - DEADBAND;
-      error = currentTemperature - setpoint;
+      error = currentTemperature - targetTempHigh;
     } else {
       return 0.0f;
     }
     float pTerm = error / P_TERM_FULL_RANGE;
-    if (pTerm < 0.0f) return 0.0f;
+    if (pTerm < P_TERM_MIN_OUTPUT) return P_TERM_MIN_OUTPUT;
     if (pTerm > 1.0f) return 1.0f;
     return pTerm;
   }

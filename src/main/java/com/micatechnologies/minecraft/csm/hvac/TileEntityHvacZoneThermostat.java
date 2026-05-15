@@ -1,12 +1,15 @@
 package com.micatechnologies.minecraft.csm.hvac;
 
+import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEWUD;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractTickableTileEntity;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.util.Constants;
@@ -56,9 +59,9 @@ public class TileEntityHvacZoneThermostat extends AbstractTickableTileEntity
   private static final float THERMAL_BLEND_FACTOR = 0.06f;
 
   /**
-   * Hysteresis deadband in degrees F. Matches the primary thermostat.
+   * Restart hysteresis in degrees F. Mirrors {@link TileEntityHvacThermostat#CYCLE_HYSTERESIS}.
    */
-  private static final float DEADBAND = 2.0f;
+  private static final float CYCLE_HYSTERESIS = 1.5f;
 
   /** Bonus temperature per additional vent beyond the first. */
   private static final float VENT_DENSITY_BONUS_PER_VENT = 2.0f;
@@ -76,7 +79,13 @@ public class TileEntityHvacZoneThermostat extends AbstractTickableTileEntity
    * output. Mirrors {@link TileEntityHvacThermostat#P_TERM_FULL_RANGE}. See that field's
    * Javadoc for the regulator design.
    */
-  private static final float P_TERM_FULL_RANGE = 10.0f;
+  private static final float P_TERM_FULL_RANGE = 5.0f;
+
+  /**
+   * Minimum P-term output while calling. Mirrors
+   * {@link TileEntityHvacThermostat#P_TERM_MIN_OUTPUT}.
+   */
+  private static final float P_TERM_MIN_OUTPUT = 0.4f;
 
   private int targetTempLow = 65;
   private int targetTempHigh = 80;
@@ -147,8 +156,12 @@ public class TileEntityHvacZoneThermostat extends AbstractTickableTileEntity
       }
     }
 
-    // Read the instantaneous temperature at this zone's position
-    float rawTemp = HvacTemperatureManager.getRawTemperatureAt(world, pos);
+    // Sample the room ambient instead of just this block's pos — see the matching
+    // comment in TileEntityHvacThermostat.onTick() and the Javadoc on
+    // HvacTemperatureManager#getAmbientTemperatureAt for why a wall-mounted device's
+    // exact pos undersamples the room.
+    EnumFacing facing = getRoomFacing();
+    float rawTemp = HvacTemperatureManager.getAmbientTemperatureAt(world, pos, facing);
     float previousTemp = currentTemperature;
 
     // Thermal smoothing. Snap-to-raw only on first tick after load (handles "moved to a
@@ -187,22 +200,23 @@ public class TileEntityHvacZoneThermostat extends AbstractTickableTileEntity
 
     blockedMode = MODE_IDLE;
 
-    // Hysteresis deadband logic (same as primary thermostat)
+    // Stop-at-setpoint / hysteresis-on-restart logic — mirrors the primary thermostat.
+    // See TileEntityHvacThermostat.onTick() for the rationale.
     switch (callingMode) {
       case MODE_HEATING:
-        if (!hasHeater || currentTemperature >= targetTempLow + DEADBAND) {
+        if (!hasHeater || currentTemperature >= targetTempLow) {
           callingMode = MODE_IDLE;
           isCalling = false;
         }
         break;
       case MODE_COOLING:
-        if (!hasCooler || currentTemperature <= targetTempHigh - DEADBAND) {
+        if (!hasCooler || currentTemperature <= targetTempHigh) {
           callingMode = MODE_IDLE;
           isCalling = false;
         }
         break;
       default:
-        if (currentTemperature < targetTempLow) {
+        if (currentTemperature < targetTempLow - CYCLE_HYSTERESIS) {
           if (hasHeater) {
             callingMode = MODE_HEATING;
             isCalling = true;
@@ -210,7 +224,7 @@ public class TileEntityHvacZoneThermostat extends AbstractTickableTileEntity
             blockedMode = MODE_HEATING;
             isCalling = false;
           }
-        } else if (currentTemperature > targetTempHigh) {
+        } else if (currentTemperature > targetTempHigh + CYCLE_HYSTERESIS) {
           if (hasCooler) {
             callingMode = MODE_COOLING;
             isCalling = true;
@@ -260,6 +274,19 @@ public class TileEntityHvacZoneThermostat extends AbstractTickableTileEntity
         || blockedModeChanged) {
       markDirtySync(world, pos, true);
     }
+  }
+
+  /**
+   * Returns the "into the room" direction for this zone thermostat, derived from the
+   * block's {@code FACING} property. Mirrors {@code TileEntityHvacThermostat#getRoomFacing}.
+   */
+  private EnumFacing getRoomFacing() {
+    if (world == null) return null;
+    IBlockState state = world.getBlockState(pos);
+    if (state.getPropertyKeys().contains(AbstractBlockRotatableNSEWUD.FACING)) {
+      return state.getValue(AbstractBlockRotatableNSEWUD.FACING);
+    }
+    return null;
   }
 
   // endregion
@@ -396,19 +423,16 @@ public class TileEntityHvacZoneThermostat extends AbstractTickableTileEntity
    * smoothly throttles down to 0 at setpoint to prevent overshoot.
    */
   private float computeProportionalTerm() {
-    float setpoint;
     float error;
     if (callingMode == MODE_HEATING) {
-      setpoint = targetTempLow + DEADBAND;
-      error = setpoint - currentTemperature;
+      error = targetTempLow - currentTemperature;
     } else if (callingMode == MODE_COOLING) {
-      setpoint = targetTempHigh - DEADBAND;
-      error = currentTemperature - setpoint;
+      error = currentTemperature - targetTempHigh;
     } else {
       return 0.0f;
     }
     float pTerm = error / P_TERM_FULL_RANGE;
-    if (pTerm < 0.0f) return 0.0f;
+    if (pTerm < P_TERM_MIN_OUTPUT) return P_TERM_MIN_OUTPUT;
     if (pTerm > 1.0f) return 1.0f;
     return pTerm;
   }
