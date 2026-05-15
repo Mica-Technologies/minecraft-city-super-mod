@@ -92,75 +92,71 @@ def make_glass():
     return img
 
 
-# Height of the indicator band at the top of the texture, in pixels. The model UV-samples
-# the top BAND_HEIGHT rows of the texture onto the top-sign element's front face. The
-# top-sign element is 10 units tall, so a 10-row band UV-maps 1:1 with no stretching.
+# Indicator band size at the top-left of the texture, in pixels. The model UV-samples this
+# rectangular region onto the indicator panel embedded in the wider cabinet's facing side.
+# The panel is 6 units wide × 10 units tall, so a matching texture region UV-maps 1:1 with
+# no stretching. Pixels outside this region aren't sampled by the model and act as filler.
+BAND_WIDTH = 6
 BAND_HEIGHT = 10
 
 
-def _draw_band_top(px, height=BAND_HEIGHT):
-    """Dark indicator background filling the top {height} rows."""
-    for y in range(height):
+def _fill_dark_background(px):
+    """Dark background everywhere — outside the panel region this is filler that the model
+    never samples; inside the panel region it's the contrast backdrop for the icon."""
+    for y in range(SIZE):
         for x in range(SIZE):
             px[x, y] = BAND_BG
 
 
-def _draw_filler(px, top_band_height=BAND_HEIGHT):
-    """Dark filler below the indicator band — not UV-sampled by the sign element."""
-    for y in range(top_band_height, SIZE):
-        for x in range(SIZE):
-            px[x, y] = BAND_BG
-
-
-def _draw_arrow_in_band(px, color, band_height=BAND_HEIGHT):
-    """Right-pointing arrow filling most of the indicator band: shaft + triangular tip."""
-    cy = band_height // 2
-    # Shaft: 3 rows tall, columns 1..10
+def _draw_arrow_in_panel(px, color):
+    """Right-pointing arrow in the top-left BAND_WIDTH × BAND_HEIGHT region."""
+    cy = BAND_HEIGHT // 2
+    # Rectangular shaft: 3 rows tall, leftmost 4 columns.
     for y in range(cy - 1, cy + 2):
-        for x in range(1, 11):
-            if 0 <= y < band_height:
+        for x in range(0, 4):
+            if 0 <= y < BAND_HEIGHT:
                 px[x, y] = color
-    # Triangular tip: tapers from full thickness at the center to a single pixel at the
-    # vertical extremes, extending the arrow's apex three pixels past the shaft's end.
-    for dy in range(-(cy - 2), (cy - 2) + 1):
+    # Triangular tip: tapers from full thickness at the vertical center to a single
+    # pixel at the extremes, extending the apex past the shaft to col BAND_WIDTH-1.
+    tip_start_x = 3
+    tip_end_x = BAND_WIDTH - 1
+    for dy in range(-(tip_end_x - tip_start_x), (tip_end_x - tip_start_x) + 1):
         y = cy + dy
-        x_end = 12 - abs(dy)
-        for x in range(8, x_end + 1):
-            if 0 <= y < band_height and 0 <= x < SIZE:
+        x_end = tip_end_x - abs(dy)
+        for x in range(tip_start_x, x_end + 1):
+            if 0 <= y < BAND_HEIGHT and 0 <= x < BAND_WIDTH:
                 px[x, y] = color
 
 
-def _draw_x_in_band(px, color, band_height=BAND_HEIGHT):
-    """Bold X centered in the indicator band — 3-pixel-thick diagonal strokes."""
-    cx = SIZE // 2
-    cy = band_height // 2
-    half = min(cy - 1, cx - 1, 4)  # half-arm length, clamped to fit the band
+def _draw_x_in_panel(px, color):
+    """Bold X centered in the top-left BAND_WIDTH × BAND_HEIGHT region — 2-px-thick arms."""
+    cx = BAND_WIDTH // 2
+    cy = BAND_HEIGHT // 2
+    half = min(cx, BAND_WIDTH - 1 - cx, cy, BAND_HEIGHT - 1 - cy)
     for d in range(-half, half + 1):
-        for thick in range(-1, 2):
+        for thick in (0, 1):
             x = cx + d
-            y_a = cy + d + thick
-            y_b = cy - d + thick
-            if 0 <= x < SIZE and 0 <= y_a < band_height:
+            y_a = cy + d + thick - 1
+            y_b = cy - d + thick - 1
+            if 0 <= x < BAND_WIDTH and 0 <= y_a < BAND_HEIGHT:
                 px[x, y_a] = color
-            if 0 <= x < SIZE and 0 <= y_b < band_height:
+            if 0 <= x < BAND_WIDTH and 0 <= y_b < BAND_HEIGHT:
                 px[x, y_b] = color
 
 
 def make_indicator_arrow(color):
     img = Image.new("RGBA", (SIZE, SIZE), (0, 0, 0, 0))
     px = img.load()
-    _draw_band_top(px)
-    _draw_filler(px)
-    _draw_arrow_in_band(px, color)
+    _fill_dark_background(px)
+    _draw_arrow_in_panel(px, color)
     return img
 
 
 def make_indicator_x():
     img = Image.new("RGBA", (SIZE, SIZE), (0, 0, 0, 0))
     px = img.load()
-    _draw_band_top(px)
-    _draw_filler(px)
-    _draw_x_in_band(px, ARROW_RED)
+    _fill_dark_background(px)
+    _draw_x_in_panel(px, ARROW_RED)
     return img
 
 
