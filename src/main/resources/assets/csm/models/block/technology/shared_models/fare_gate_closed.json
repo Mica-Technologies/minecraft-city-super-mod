@@ -9,8 +9,8 @@
   "elements": [
     {
       "name": "wide_cabinet_lower",
-      "from": [0, 0, 0],
-      "to": [6, 3, 16],
+      "from": [0, -16, 0],
+      "to": [6, -13, 16],
       "faces": {
         "down":  {"uv": [0, 0, 6, 16], "texture": "#body"},
         "up":    {"uv": [0, 0, 6, 16], "texture": "#body"},
@@ -22,8 +22,8 @@
     },
     {
       "name": "wide_cabinet_indicator",
-      "from": [0, 3, 0],
-      "to": [6, 13, 16],
+      "from": [0, -13, 0],
+      "to": [6, -3, 16],
       "faces": {
         "down":  {"uv": [0, 0, 6, 16], "texture": "#body"},
         "up":    {"uv": [0, 0, 6, 16], "texture": "#body"},
@@ -35,8 +35,8 @@
     },
     {
       "name": "wide_cabinet_upper",
-      "from": [0, 13, 0],
-      "to": [6, 16, 16],
+      "from": [0, -3, 0],
+      "to": [6, 0, 16],
       "faces": {
         "down":  {"uv": [0, 0, 6, 16], "texture": "#body"},
         "up":    {"uv": [0, 0, 6, 16], "texture": "#body"},
@@ -48,8 +48,8 @@
     },
     {
       "name": "thin_cabinet",
-      "from": [13, 0, 0],
-      "to": [16, 16, 16],
+      "from": [13, -16, 0],
+      "to": [16, 0, 16],
       "faces": {
         "down":  {"uv": [0, 0, 3, 16], "texture": "#body"},
         "up":    {"uv": [0, 0, 3, 16], "texture": "#body"},
@@ -61,8 +61,8 @@
     },
     {
       "name": "left_pillar",
-      "from": [0, 12, 0],
-      "to": [3, 42, 16],
+      "from": [0, 0, 0],
+      "to": [3, 28, 16],
       "faces": {
         "down":  {"uv": [0, 0, 3, 16], "texture": "#body"},
         "up":    {"uv": [0, 0, 3, 16], "texture": "#body"},
@@ -74,8 +74,8 @@
     },
     {
       "name": "right_pillar",
-      "from": [13, 12, 0],
-      "to": [16, 42, 16],
+      "from": [13, 0, 0],
+      "to": [16, 28, 16],
       "faces": {
         "down":  {"uv": [0, 0, 3, 16], "texture": "#body"},
         "up":    {"uv": [0, 0, 3, 16], "texture": "#body"},
@@ -87,21 +87,21 @@
     },
     {
       "name": "top_canopy",
-      "from": [0, 38, 0],
-      "to": [16, 42, 4],
+      "from": [0, 24, 0],
+      "to": [16, 32, 4],
       "faces": {
         "down":  {"uv": [0, 0, 16, 4], "texture": "#body"},
         "up":    {"uv": [0, 0, 16, 4], "texture": "#body"},
-        "north": {"uv": [0, 0, 16, 4], "texture": "#body"},
-        "south": {"uv": [0, 0, 16, 4], "texture": "#body"},
-        "east":  {"uv": [0, 0, 4, 4],  "texture": "#body"},
-        "west":  {"uv": [0, 0, 4, 4],  "texture": "#body"}
+        "north": {"uv": [0, 0, 16, 8], "texture": "#body"},
+        "south": {"uv": [0, 0, 16, 8], "texture": "#body"},
+        "east":  {"uv": [0, 0, 4, 8],  "texture": "#body"},
+        "west":  {"uv": [0, 0, 4, 8],  "texture": "#body"}
       }
     },
     {
       "name": "glass_barrier",
-      "from": [6, 0, 7],
-      "to": [13, 30, 9],
+      "from": [6, -16, 7],
+      "to": [13, 14, 9],
       "faces": {
         "down":  {"uv": [0, 0, 7, 2], "texture": "#glass"},
         "up":    {"uv": [0, 0, 7, 2], "texture": "#glass"},
@@ -115,18 +115,18 @@
   "display": {
     "gui": {
       "rotation": [30, 45, 0],
-      "translation": [0, -2, 0],
-      "scale": [0.3, 0.3, 0.3]
+      "translation": [0, 0, 0],
+      "scale": [0.25, 0.25, 0.25]
     },
     "thirdperson_righthand": {
       "rotation": [75, 45, 0],
-      "translation": [0, 2.5, 0],
-      "scale": [0.3, 0.3, 0.3]
+      "translation": [0, 1.5, 0],
+      "scale": [0.25, 0.25, 0.25]
     },
     "fixed": {
       "rotation": [0, 0, 0],
       "translation": [0, 0, 0],
-      "scale": [0.4, 0.4, 0.4]
+      "scale": [0.3, 0.3, 0.3]
     }
   }
 }
