@@ -988,5 +988,14 @@
         "stream": false
       }
     ]
+  },
+  "mii_channel_remix": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:mii_channel_remix",
+        "stream": false
+      }
+    ]
   }
 }
