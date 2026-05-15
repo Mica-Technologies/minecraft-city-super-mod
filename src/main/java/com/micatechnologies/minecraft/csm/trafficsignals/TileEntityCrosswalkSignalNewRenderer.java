@@ -1,6 +1,5 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
-import com.micatechnologies.minecraft.csm.CsmConfig;
 import com.micatechnologies.minecraft.csm.codeutils.CsmRenderUtils;
 import com.micatechnologies.minecraft.csm.codeutils.DirectionSixteen;
 import com.micatechnologies.minecraft.csm.codeutils.RenderHelper;
@@ -195,10 +194,11 @@ public class TileEntityCrosswalkSignalNewRenderer
             GL11.glEndList();
             te.clearDirtyFlag();
         }
-        // See TileEntityTrafficSignalHeadRenderer for the rationale for this gated bind.
-        if ( CsmConfig.isShaderCompatibilityModeEnabled() ) {
-            Minecraft.getMinecraft().getTextureManager().bindTexture( WHITE_TEXTURE );
-        }
+        // See TileEntityTrafficSignalHeadRenderer for why this bind must be unconditional —
+        // TextureManager no-ops the bindTexture call inside renderStaticParts() if WHITE_TEXTURE
+        // is already current at GL_COMPILE time, leaving the display list with no recorded
+        // bindTexture and producing a white-tinted body at replay.
+        Minecraft.getMinecraft().getTextureManager().bindTexture( WHITE_TEXTURE );
         GL11.glCallList( displayList );
 
         // Display face textures — compute flash state here so we can use the renderer's

@@ -1,6 +1,5 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
-import com.micatechnologies.minecraft.csm.CsmConfig;
 import com.micatechnologies.minecraft.csm.codeutils.CsmRenderUtils;
 import com.micatechnologies.minecraft.csm.codeutils.DirectionSixteen;
 import com.micatechnologies.minecraft.csm.codeutils.RenderHelper;
@@ -160,11 +159,11 @@ public class TileEntityBlankoutBoxRenderer
             te.clearDirtyFlag();
         }
         // Bind WHITE_TEXTURE outside the display list so it's always current at replay time
-        // — see TileEntityTrafficSignalHeadRenderer for the full explanation. Gated on
-        // shaderCompatibilityMode so non-shader users skip the per-frame bind.
-        if ( CsmConfig.isShaderCompatibilityModeEnabled() ) {
-            Minecraft.getMinecraft().getTextureManager().bindTexture( WHITE_TEXTURE );
-        }
+        // — see TileEntityTrafficSignalHeadRenderer for the full explanation. Must be
+        // unconditional: TextureManager skips bindTexture inside renderStaticParts() when
+        // WHITE_TEXTURE is already current at GL_COMPILE, leaving the list with no recorded
+        // bind and producing white-tinted bodies at replay regardless of shaders.
+        Minecraft.getMinecraft().getTextureManager().bindTexture( WHITE_TEXTURE );
         GL11.glCallList( displayList );
 
         // Display face texture

@@ -1,6 +1,5 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories;
 
-import com.micatechnologies.minecraft.csm.CsmConfig;
 import com.micatechnologies.minecraft.csm.codeutils.DirectionSixteen;
 import com.micatechnologies.minecraft.csm.codeutils.RenderHelper;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignalHead;
@@ -145,10 +144,11 @@ public class TileEntityLaneControlSignalRenderer
             GL11.glEndList();
             te.clearDirtyFlag();
         }
-        // See TileEntityTrafficSignalHeadRenderer for the rationale for this gated bind.
-        if (CsmConfig.isShaderCompatibilityModeEnabled()) {
-            Minecraft.getMinecraft().getTextureManager().bindTexture(WHITE_TEXTURE);
-        }
+        // See TileEntityTrafficSignalHeadRenderer for why this bind must be unconditional —
+        // TextureManager no-ops bindTexture inside renderStaticParts() when WHITE_TEXTURE is
+        // already current at GL_COMPILE, so the display list ends up without a recorded bind
+        // and renders white-tinted at replay (independent of shaders).
+        Minecraft.getMinecraft().getTextureManager().bindTexture(WHITE_TEXTURE);
         GL11.glCallList(displayList);
 
         renderDisplayFace(signalType);
