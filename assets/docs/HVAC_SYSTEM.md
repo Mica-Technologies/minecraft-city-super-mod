@@ -9,7 +9,7 @@ The HVAC system simulates realistic indoor temperature control. It computes a pe
 temperature in degrees Fahrenheit based on the Minecraft biome, modifies it with distance-weighted
 contributions from active heaters, coolers, and vent relays, and displays the result both on an
 in-game HUD overlay and on thermostat TESR displays. A thermostat controller provides automatic
-heating/cooling with hysteresis deadband, a two-phase ramp-up system, and multi-zone support
+heating/cooling with cycle hysteresis on the restart side, a two-phase ramp-up system, and multi-zone support
 via zone thermostats with independent setpoints and vent networks.
 
 All HVAC code lives in `src/main/java/com/micatechnologies/minecraft/csm/hvac/`.
@@ -24,7 +24,7 @@ All HVAC code lives in `src/main/java/com/micatechnologies/minecraft/csm/hvac/`.
           │                              │            │                          │
           │  - Reads temperature via     │            │  HvacThermostatRenderer  │
           │    HvacTemperatureManager    │            │  (TESR: LCD display)     │
-          │  - Hysteresis deadband       │            │                          │
+          │  - Cycle hysteresis          │            │                          │
           │  - Activates heaters/coolers │            │  HvacHudOverlay          │
           │  - Pushes vent contributions │            │  (temperature readout)   │
           │  - Two-phase ramp system     │            │                          │
@@ -52,16 +52,28 @@ All HVAC code lives in `src/main/java/com/micatechnologies/minecraft/csm/hvac/`.
 
 ### Temperature Engine
 
-- **`HvacTemperatureManager`** -- Static server-side temperature calculation engine. Computes
-  per-position temperature from biome baseline plus distance-weighted HVAC offset. Caches biome
-  baselines per chunk (40-tick / 2-second lifetime). Provides two APIs:
-  - `getTemperatureAt(World, BlockPos)` -- With asymmetric EMA smoothing (client HUD use)
-  - `getRawTemperatureAt(World, BlockPos)` -- Without smoothing (thermostat use)
+- **`HvacTemperatureManager`** -- Temperature calculation engine. Computes per-position
+  temperature from biome baseline plus distance-weighted HVAC offset. Caches biome baselines
+  per chunk (40-tick / 2-second lifetime). Public APIs:
+  - `getTemperatureAt(World, BlockPos)` -- Instantaneous raw reading at a single position.
+  - `getAmbientTemperatureAt(World, BlockPos, EnumFacing)` -- Raw reading for a wall-mounted
+    device. Samples the device's pos plus up to 3 blocks forward through the room direction
+    (stopping at the first solid block) and returns whichever sample has the largest offset
+    from baseline. This is the method thermostats use: the device's own `pos` sits flush
+    against the wall it's mounted on, so a single-point read accumulates wall-attenuation
+    against every HVAC source and collapses the per-direction offset cap.
+  - `getBaselineAt(World, BlockPos)` -- The biome baseline alone (no HVAC). Used by consumers
+    that maintain their own smoothing state and need to separate HVAC offset from baseline
+    drift across biome boundaries.
+- **`TemperatureSmoother`** -- Per-consumer asymmetric EMA. The HUD overlay owns one of
+  these; thermostats run their own thermal-mass blend on top of `getAmbientTemperatureAt`
+  instead. Smoothing state is intentionally not held inside the manager so consumers can't
+  silently corrupt each other.
 
 ### Controllers
 
 - **`TileEntityHvacThermostat`** -- Primary controller. Tickable TE (40-tick rate = 2 seconds).
-  Manages linked heaters/coolers, vents, and zone thermostats. Implements hysteresis deadband,
+  Manages linked heaters/coolers, vents, and zone thermostats. Implements cycle hysteresis,
   thermal smoothing, and the two-phase ramp system. Emits redstone signal strength 15 when calling.
 - **`TileEntityHvacZoneThermostat`** -- Zone controller. Same tick rate and control logic as
   primary, but does not own heaters/coolers directly. Links to a primary thermostat for unit
@@ -184,26 +196,28 @@ HVAC unit (active or not) is within 24 blocks.
 
 ### Asymmetric EMA Smoothing
 
-The HUD temperature uses asymmetric exponential moving average smoothing to simulate realistic
-thermal behavior:
+The HUD temperature uses asymmetric exponential moving average smoothing (in
+`TemperatureSmoother`) to simulate realistic thermal behavior:
 
 - **Ramp factor (0.08)** -- Used when HVAC is actively pushing temperature away from baseline,
   or when the direction crosses from heating to cooling. Responsive enough to track offset in
   ~10-15 seconds.
-- **Decay factor (0.003)** -- Used when the temperature is returning toward baseline (HVAC off
-  or reduced). Simulates thermal retention:
+- **Transition factor (0.04)** -- Used when the raw offset has dropped to near zero or by
+  more than half of the smoothed value (player walked out of the conditioned space).
+  Converges to baseline in ~20-30 seconds.
+- **Decay factor (0.003)** -- Used when the raw offset has dropped only slightly within the
+  same space (thermal-mass holdover):
   - 30 seconds after shutoff: ~83% of offset retained
   - 1 minute: ~70% retained
   - 2 minutes: ~49% retained
   - 5 minutes: ~16% retained
 
-Direction change detection: if `currentOffset` and `lastSmoothedOffset` cross from positive to
-negative (or vice versa) beyond a +/-0.5 threshold, the ramp factor is used. If the absolute
-current offset is more than 0.5 less than the absolute smoothed offset, decay factor is used.
+Direction change detection: if the current and smoothed offsets cross from positive to
+negative (or vice versa) beyond a +/-0.5 threshold, the ramp factor is used.
 
-**Client-only constraint:** The `lastSmoothedOffset` state is exclusively read/written by
-`getTemperatureAt()` from the client render thread. Server-side code must use
-`getRawTemperatureAt()` which bypasses smoothing entirely.
+Smoothing state lives on a per-consumer `TemperatureSmoother` instance, not on a shared static
+field — so the HUD's smoothing history can't be silently corrupted by other temperature
+consumers (server-side thermostat reads, future indicators).
 
 ## Thermostat Control Logic
 
@@ -220,23 +234,28 @@ currentTemperature += (rawTemp - currentTemperature) * THERMAL_BLEND_FACTOR
 - ~38 ticks (~76 seconds) to cover 90% of a temperature change
 - On first tick or world load with no saved temperature, initializes directly to raw reading
 
-### Hysteresis Deadband
+### Hysteresis on the Restart Side
 
-The thermostat uses a state machine with a 2 deg F deadband to prevent rapid cycling:
+The thermostat's state machine stops calling the moment the room reaches the user's setpoint
+(no overshoot), and only re-engages after the temperature has drifted past the setpoint by
+`CYCLE_HYSTERESIS`. Putting the gap on the restart side rather than as an overshoot deadband
+above the setpoint matches real residential HVAC, and avoids the failure mode where the
+proportional-control term throttles output to ~20% before the temperature can push past an
+overshoot stop — leaving the system stuck calling forever at the setpoint.
 
 ```
-DEADBAND = 2.0 deg F
+CYCLE_HYSTERESIS = 1.5 deg F
 ```
 
 **State transitions:**
 
 | Current Mode | Condition | New Mode |
 |---|---|---|
-| IDLE | `currentTemp < targetTempLow` | HEATING |
-| IDLE | `currentTemp > targetTempHigh` | COOLING |
-| IDLE | within range | IDLE |
-| HEATING | `currentTemp >= targetTempLow + DEADBAND` | IDLE |
-| COOLING | `currentTemp <= targetTempHigh - DEADBAND` | IDLE |
+| IDLE | `currentTemp < targetTempLow - CYCLE_HYSTERESIS` | HEATING |
+| IDLE | `currentTemp > targetTempHigh + CYCLE_HYSTERESIS` | COOLING |
+| IDLE | within hysteresis-padded range | IDLE |
+| HEATING | `currentTemp >= targetTempLow` | IDLE |
+| COOLING | `currentTemp <= targetTempHigh` | IDLE |
 
 Default setpoints: `targetTempLow = 65`, `targetTempHigh = 80`. Adjustable in the GUI from
 0 to 120 deg F in 5 deg F steps. The low setpoint cannot exceed `high - 5`, and vice versa.
@@ -563,9 +582,10 @@ AbstractItem
   cooler to always cool nearby positions. The cooling effect only reaches indoor spaces via
   linked vent relays.
 
-- **Single-dimension caches:** The temperature cache is per-dimension, but the smoothing state
-  (`lastSmoothedOffset`) is a single static field. Dimension transitions (Nether portals) may
-  cause a brief smoothing artifact.
+- **Single smoother on dimension change:** The HUD overlay holds a single
+  `TemperatureSmoother` instance for the lifetime of the client. Stepping through a
+  dimension portal carries the prior dimension's smoothed offset into the new one; it
+  re-converges over the asymmetric EMA window but produces a brief visual artifact.
 
 - **No vent-to-vent chaining:** Vent relays cannot chain to other vent relays. Each vent must
   link directly to a thermostat.

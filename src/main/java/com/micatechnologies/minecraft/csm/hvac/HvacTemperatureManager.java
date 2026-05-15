@@ -5,6 +5,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
@@ -12,22 +13,27 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * Server-side temperature calculation engine that tracks per-chunk temperature data. Temperature is
- * computed from the biome baseline, modified by active HVAC tile entities ({@link IHvacUnit}) in the
- * chunk. Results are cached per chunk and recalculated every {@link #CACHE_LIFETIME_TICKS} ticks (2
- * seconds) to avoid expensive per-tick recomputation.
+ * Temperature calculation engine for the HVAC system. Combines the per-chunk biome baseline
+ * with a per-position HVAC offset derived from nearby {@link IHvacUnit} tile entities,
+ * weighted by distance and a coarse wall-attenuation raycast. The biome baseline is cached
+ * per chunk for {@link #CACHE_LIFETIME_TICKS} ticks (2 seconds) since it doesn't vary inside
+ * a chunk; the HVAC offset is recomputed every call so two positions in the same chunk get
+ * the right local reading (a heater and cooler in the same chunk each dominate their own
+ * area instead of cancelling out).
  *
- * <p><b>Granularity:</b> The biome baseline is cached per-chunk, but HVAC influence is calculated
- * per-position using distance weighting. This means two positions in the same chunk can have
- * different temperatures if they are different distances from HVAC equipment. A heater and cooler
- * in the same chunk will each dominate their local area rather than canceling out.</p>
+ * <p><b>Smoothing belongs to the consumer.</b> This class returns the instantaneous reading
+ * only. Callers that want a smoothed display value (the HUD overlay, future indicators)
+ * own a {@link TemperatureSmoother} instance. Thermostats run their own thermal-mass
+ * blend on top of {@link #getAmbientTemperatureAt}. Keeping smoothing state out of this
+ * manager is what lets multiple consumers coexist without corrupting each other's history.</p>
  *
- * <p><b>Thread safety:</b> This class uses {@code ConcurrentHashMap} for its per-dimension cache
- * to allow safe concurrent access from the server tick thread (thermostat updates) and the
- * client render thread (HUD overlay) in single-player (integrated server).</p>
+ * <p><b>Thread safety:</b> The per-dimension cache uses {@code ConcurrentHashMap} so the
+ * server tick thread (thermostat reads) and the client render thread (HUD reads in
+ * single-player) can both query without external synchronization.</p>
  *
  * @author Mica Technologies
  * @see IHvacUnit
+ * @see TemperatureSmoother
  * @since 2026.4
  */
 public class HvacTemperatureManager {
@@ -116,44 +122,13 @@ public class HvacTemperatureManager {
   private static final int CHUNK_SCAN_RADIUS = 2;
 
   /**
-   * EMA blending factor when HVAC is actively pushing the temperature away from baseline
-   * (ramping up). Fast enough to track the instantaneous offset in ~10-15 seconds, keeping
-   * the HUD responsive and in agreement with the thermostat.
+   * Maximum distance (in blocks, in the {@code roomDirection}) to step away from a
+   * wall-mounted device when sampling ambient temperature. Stops earlier if a solid
+   * block is encountered. Three steps strikes the balance between picking up the room
+   * temperature past the wall the device is flush against and not reaching into a
+   * neighboring room through a doorway.
    */
-  private static final float HUD_RAMP_FACTOR = 0.08f;
-
-  /**
-   * EMA blending factor when the player leaves an HVAC zone entirely (raw offset is zero
-   * but the smoothed value is still significant). Converges to baseline in ~20-30 seconds,
-   * simulating the transition from a conditioned space to the outdoors.
-   */
-  private static final float HUD_TRANSITION_FACTOR = 0.04f;
-
-  /**
-   * EMA blending factor when HVAC is still present but reduced (residual decay in progress).
-   * Much slower than the transition factor to simulate the room holding its temperature
-   * while the conditioned air lingers.
-   * <ul>
-   *   <li>30 seconds: ~83% of offset retained</li>
-   *   <li>1 minute: ~70% retained</li>
-   *   <li>2 minutes: ~49% retained</li>
-   *   <li>5 minutes: ~16% retained</li>
-   * </ul>
-   */
-  private static final float HUD_DECAY_FACTOR = 0.003f;
-
-  /**
-   * The last smoothed HVAC offset returned by the asymmetric EMA. Ramps quickly toward
-   * the instantaneous offset when HVAC is active, decays slowly when HVAC turns off.
-   * Transient — resets on restart.
-   *
-   * <p><b>Client-only:</b> This field is read/written exclusively by {@link #getTemperatureAt},
-   * which is called from the client render thread (HUD overlay). Server-side code must use
-   * {@link #getRawTemperatureAt} instead, which bypasses smoothing. Calling
-   * {@code getTemperatureAt} from the server thread would corrupt this state.</p>
-   */
-  private static float lastSmoothedOffset = Float.NaN;
-
+  private static final int AMBIENT_SAMPLE_MAX_STEPS = 3;
 
   /**
    * How often (in ticks) to sweep stale entries from the chunk temperature cache. At 20 TPS
@@ -195,22 +170,23 @@ public class HvacTemperatureManager {
   private static final Map<Integer, Map<Long, ChunkTempData>> dimensionCaches = new ConcurrentHashMap<>();
 
   /**
-   * Retrieves the temperature in degrees Fahrenheit at the given position in the world. This is
-   * the primary public API for the temperature system. The result is computed from the biome
-   * baseline temperature, modified by any active HVAC units in the chunk, and cached for
-   * {@link #CACHE_LIFETIME_TICKS} ticks.
+   * Retrieves the temperature in degrees Fahrenheit at the given position. This is the
+   * canonical, instantaneous reading: biome baseline plus capped HVAC offset, no smoothing.
+   * Callers that want a smoothed display value should own a {@link TemperatureSmoother}
+   * instance and feed this reading into it — smoothing state is intentionally not held
+   * inside this manager because it must be per-consumer (the HUD's smoother needs different
+   * dynamics than a thermostat's thermal-mass blend, and sharing one static smoother across
+   * callers / threads corrupts it).
    *
-   * <p>The biome baseline is mapped to Fahrenheit using the formula:
-   * {@code tempF = biomeTemp * 90 - 4}, which yields approximately -4°F at biome temp 0.0,
-   * ~68°F at 0.8 (plains), and ~176°F at 2.0 (desert).</p>
+   * <p>Biome baseline mapping: {@code tempF = biomeTemp * 90 - 4} — approximately -4°F at
+   * biome temp 0.0, ~68°F at 0.8 (plains), and ~176°F at 2.0 (desert).</p>
    *
-   * @param world the world instance (should be server-side)
+   * @param world the world instance (must be server-side or single-player integrated server)
    * @param pos   the block position to query temperature at
    *
-   * @return the temperature in degrees Fahrenheit at the given position
+   * @return the raw temperature in degrees Fahrenheit (baseline + capped HVAC offset)
    */
   public static float getTemperatureAt(World world, BlockPos pos) {
-    // Check if this call should produce debug output (throttled to once per second)
     if (DEBUG_LOGGING) {
       long now = System.currentTimeMillis();
       debugThisPass = (now - lastDebugLogMs >= DEBUG_LOG_INTERVAL_MS);
@@ -219,41 +195,95 @@ public class HvacTemperatureManager {
       }
     }
 
-    // Biome baseline is cached per-chunk (doesn't vary within a chunk)
     float baseline = getCachedBaseline(world, pos);
-    // HVAC offset is the instantaneous contribution (capped per active contributor)
     float currentOffset = calculateHvacOffset(world, pos);
-    // EMA smoothing for comfortable display — responsive enough to track the
-    // instantaneous offset, keeping the HUD in agreement with the thermostat
-    float smoothedOffset = applySmoothing(currentOffset);
 
     if (debugThisPass) {
-      LOGGER.info(String.format("[HVAC-DEBUG] pos=%s baseline=%.1f rawOffset=%.1f smoothed=%.1f final=%.1f",
-          pos, baseline, currentOffset, smoothedOffset, baseline + smoothedOffset));
+      LOGGER.info(String.format("[HVAC-DEBUG] pos=%s baseline=%.1f rawOffset=%.1f final=%.1f",
+          pos, baseline, currentOffset, baseline + currentOffset));
       debugThisPass = false;
     }
 
-    return baseline + smoothedOffset;
+    return baseline + currentOffset;
   }
 
   /**
-   * Returns the temperature at the given position without any transition smoothing.
-   * Use this for fixed sensors (thermostats) that should reflect the actual temperature
-   * at their location rather than a player-relative smoothed value.
+   * Reads the ambient temperature for a wall- or ceiling-mounted device that occupies
+   * {@code devicePos} with its sensor face pointing in {@code roomDirection}.
+   *
+   * <p><b>Why this exists.</b> A wall-mounted thermostat's {@code pos} sits flush against
+   * the wall the device is mounted on. The wall-attenuation raycast in
+   * {@link #calculateHvacOffset} reduces every HVAC source's contribution to that pos by
+   * 0.3× per intervening solid block — and worse, the per-direction offset cap is gated on
+   * the number of heater/cooler units whose final weighted contribution is &gt; 0. Distant
+   * units that the room itself would receive via vents and air mixing get attenuated to
+   * effectively zero when sampled at the wall surface, collapsing the cap to its
+   * single-unit floor (50°F) and freezing the reading well below the room's actual
+   * temperature.</p>
+   *
+   * <p>Sampling forward through {@code roomDirection} (up to {@link #AMBIENT_SAMPLE_MAX_STEPS}
+   * blocks, stopping at the first solid block) lets the device read the temperature of the
+   * air it's exposed to rather than the air right at the wall. The strongest offset across
+   * those sample points is returned, since a heater pumping into one part of the room and
+   * a cooler into another shouldn't average to "comfortable" when neither is — and a wall
+   * sensor would feel whichever flow actually reaches it.</p>
+   *
+   * @param world         the world instance
+   * @param devicePos     position of the wall-mounted device
+   * @param roomDirection direction from the device's pos into the room (usually the device's
+   *                      {@code FACING} property). May be {@code null}, in which case only
+   *                      the device's own pos is sampled.
+   * @return the ambient temperature in degrees Fahrenheit
+   */
+  public static float getAmbientTemperatureAt(World world, BlockPos devicePos,
+      EnumFacing roomDirection) {
+    if (DEBUG_LOGGING) {
+      long now = System.currentTimeMillis();
+      debugThisPass = (now - lastDebugLogMs >= DEBUG_LOG_INTERVAL_MS);
+      if (debugThisPass) {
+        lastDebugLogMs = now;
+      }
+    }
+
+    float baseline = getCachedBaseline(world, devicePos);
+    float bestOffset = calculateHvacOffset(world, devicePos);
+
+    if (roomDirection != null) {
+      for (int step = 1; step <= AMBIENT_SAMPLE_MAX_STEPS; step++) {
+        BlockPos samplePos = devicePos.offset(roomDirection, step);
+        if (isSolidBlock(world.getBlockState(samplePos))) {
+          break;
+        }
+        float offset = calculateHvacOffset(world, samplePos);
+        if (Math.abs(offset) > Math.abs(bestOffset)) {
+          bestOffset = offset;
+        }
+      }
+    }
+
+    if (debugThisPass) {
+      LOGGER.info(String.format(
+          "[HVAC-AMBIENT] pos=%s dir=%s baseline=%.1f bestOffset=%.1f temp=%.1f",
+          devicePos, roomDirection, baseline, bestOffset, baseline + bestOffset));
+      debugThisPass = false;
+    }
+
+    return baseline + bestOffset;
+  }
+
+  /**
+   * Returns the biome baseline temperature at the given position (no HVAC contribution).
+   * Exposed so consumers that maintain their own smoothing state (see
+   * {@link TemperatureSmoother}) can track HVAC offset separately from baseline drift —
+   * needed because a player crossing a biome boundary shifts baseline by tens of degrees
+   * and would otherwise look like a huge HVAC swing to a naive smoother.
    *
    * @param world the world instance
-   * @param pos   the block position to query temperature at
-   *
-   * @return the raw temperature in degrees Fahrenheit (baseline + HVAC offset, no smoothing)
+   * @param pos   the block position to query
+   * @return the biome baseline temperature in degrees Fahrenheit
    */
-  public static float getRawTemperatureAt(World world, BlockPos pos) {
-    float baseline = getCachedBaseline(world, pos);
-    float currentOffset = calculateHvacOffset(world, pos);
-    if (debugThisPass) {
-      LOGGER.info(String.format("[HVAC-THERMOSTAT] pos=%s baseline=%.1f rawOffset=%.1f rawTemp=%.1f",
-          pos, baseline, currentOffset, baseline + currentOffset));
-    }
-    return baseline + currentOffset;
+  public static float getBaselineAt(World world, BlockPos pos) {
+    return getCachedBaseline(world, pos);
   }
 
   /**
@@ -369,63 +399,6 @@ public class HvacTemperatureManager {
     Map<Long, ChunkTempData> cache = getOrCreateCache(world);
     long key = chunkKeyFromCoords(chunkX, chunkZ);
     cache.remove(key);
-  }
-
-  /**
-   * Applies asymmetric EMA smoothing to the HVAC offset for HUD display. Uses a fast
-   * blending factor ({@link #HUD_RAMP_FACTOR}) when HVAC is actively pushing the
-   * temperature away from baseline, and a slow factor ({@link #HUD_DECAY_FACTOR}) when
-   * the temperature is returning toward baseline (HVAC off or reduced power).
-   *
-   * <p>This produces realistic behavior: walking into an air-conditioned room, you feel
-   * the temperature drop within 10-15 seconds. When the AC turns off, the room holds
-   * its temperature for minutes — not snapping back instantly.</p>
-   *
-   * @param currentOffset the freshly calculated HVAC offset
-   *
-   * @return the smoothed offset value
-   */
-  private static float applySmoothing(float currentOffset) {
-    if (Float.isNaN(lastSmoothedOffset)) {
-      lastSmoothedOffset = currentOffset;
-      return currentOffset;
-    }
-
-    // Four-rate smoothing:
-    // 1. RAMP: direction crossed heating↔cooling, or HVAC actively pushing — track quickly
-    // 2. TRANSITION: raw ≈ 0, smoothed significant — player left zone, moderate decay
-    // 3. TRANSITION: raw < 50% of smoothed — player moved significantly away, moderate decay
-    // 4. DECAY: small reduction within same space — thermal-mass holdover, very slow
-    boolean directionChanged =
-        (currentOffset > 0.5f && lastSmoothedOffset < -0.5f)
-            || (currentOffset < -0.5f && lastSmoothedOffset > 0.5f);
-
-    float factor;
-    if (directionChanged) {
-      // Crossed from heating to cooling or vice versa — track quickly
-      factor = HUD_RAMP_FACTOR;
-    } else if (Math.abs(currentOffset) < 0.5f && Math.abs(lastSmoothedOffset) > 1.0f) {
-      // Raw offset is zero but smoothed is significant — player left the HVAC zone
-      // entirely (walked outside, moved to an unconditioned area). Transition to
-      // baseline at a moderate rate (~20-30 seconds to converge).
-      factor = HUD_TRANSITION_FACTOR;
-    } else if (Math.abs(currentOffset) < Math.abs(lastSmoothedOffset) * 0.5f) {
-      // HVAC influence dropped by more than half — player moved significantly away
-      // from the conditioned space (e.g. stepped outside, moved near a cooler after
-      // being near a heater). Use transition rate so the HUD reflects the new
-      // environment promptly rather than lingering for minutes.
-      factor = HUD_TRANSITION_FACTOR;
-    } else if (Math.abs(currentOffset) + 0.5f < Math.abs(lastSmoothedOffset)) {
-      // Minor reduction within the same space (residual decay, small distance shift).
-      // Hold temperature slowly to simulate thermal mass.
-      factor = HUD_DECAY_FACTOR;
-    } else {
-      // HVAC active and pushing — track quickly
-      factor = HUD_RAMP_FACTOR;
-    }
-
-    lastSmoothedOffset += (currentOffset - lastSmoothedOffset) * factor;
-    return lastSmoothedOffset;
   }
 
   // Biome baseline mapping: tempF = biomeTemp * 90 - 4

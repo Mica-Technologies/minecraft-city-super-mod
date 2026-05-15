@@ -72,6 +72,14 @@ public class HvacHudOverlay {
   private long lastCheckTime = 0L;
 
   /**
+   * Per-overlay smoother that adds the asymmetric ramp-fast / decay-slow behavior on top
+   * of the manager's raw reading. Owned here instead of being a static field on the manager
+   * so it can't be corrupted by other temperature consumers (thermostat ticks, future
+   * indicators) silently sharing state.
+   */
+  private final TemperatureSmoother smoother = new TemperatureSmoother();
+
+  /**
    * Sets the HUD position anchor and offset. Can be called from a config system or command.
    *
    * @param anchor  0=top-left, 1=top-right, 2=bottom-left, 3=bottom-right
@@ -110,12 +118,17 @@ public class HvacHudOverlay {
       cachedChunkKey = currentChunkKey;
     }
 
-    // Recheck HVAC proximity and temperature periodically or on chunk change
+    // Recheck HVAC proximity and temperature periodically or on chunk change. Smoothing
+    // runs every refresh tick so the displayed value eases toward the raw reading at the
+    // dynamics defined by TemperatureSmoother (fast ramp when HVAC pushes, slow decay
+    // when it stops).
     long now = System.currentTimeMillis();
     if (chunkChanged || (now - lastCheckTime > RECHECK_INTERVAL_MS)) {
       lastCheckTime = now;
       cachedNearHvac = HvacTemperatureManager.isNearAnyHvac(world, playerPos, HVAC_DETECTION_RANGE);
-      cachedTemperature = HvacTemperatureManager.getTemperatureAt(world, playerPos);
+      float rawTemp = HvacTemperatureManager.getTemperatureAt(world, playerPos);
+      float baseline = HvacTemperatureManager.getBaselineAt(world, playerPos);
+      cachedTemperature = smoother.update(rawTemp, baseline);
     }
 
     if (!cachedNearHvac) {
