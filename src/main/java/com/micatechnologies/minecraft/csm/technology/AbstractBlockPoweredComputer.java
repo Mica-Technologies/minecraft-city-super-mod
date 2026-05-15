@@ -159,10 +159,14 @@ public abstract class AbstractBlockPoweredComputer extends AbstractBlock
   public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state,
       EntityPlayer player, EnumHand hand, EnumFacing facing,
       float hitX, float hitY, float hitZ) {
+    if (hand != EnumHand.MAIN_HAND) {
+      return true;
+    }
     boolean powered = state.getValue(POWERED);
 
     if (player.isSneaking()) {
-      // Sneak toggles power without opening the GUI.
+      // Sneak toggles power without opening the GUI. Server-only mutation; the resulting
+      // block update gets broadcast to clients automatically.
       if (!worldIn.isRemote) {
         worldIn.setBlockState(pos, state.withProperty(POWERED, !powered), 3);
       }
@@ -179,10 +183,13 @@ public abstract class AbstractBlockPoweredComputer extends AbstractBlock
       return true;
     }
 
-    // Powered and not sneaking → open the desktop GUI.
-    if (!worldIn.isRemote) {
-      player.openGui(Csm.instance, GUI_ID, worldIn, pos.getX(), pos.getY(), pos.getZ());
-    }
+    // Powered and not sneaking → open the desktop GUI. Match the HVAC thermostat
+    // pattern: call openGui on both sides without an isRemote guard. On the client
+    // openGui dispatches directly through the GUI handler; on the server it sends an
+    // open-GUI packet to the player. Either path is safe to call from the other side
+    // — Forge dedupes — but going through both ensures the GUI opens promptly even
+    // when block-state sync lags client-side.
+    player.openGui(Csm.instance, GUI_ID, worldIn, pos.getX(), pos.getY(), pos.getZ());
     return true;
   }
 
