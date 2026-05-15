@@ -56,9 +56,14 @@ public class BlockFareGate extends AbstractBlock implements ICsmTileEntityProvid
   public static final PropertyEnum<GateState> STATE =
       PropertyEnum.create("state", GateState.class);
 
-  /** Solid wall when closed. */
+  /**
+   * Solid wall when closed. Extends one cell down and one cell up from the placed cell so
+   * the player can't crouch underneath or jump over the visible 3-block-tall barrier.
+   * Block AABBs are allowed to extend outside the placed cell — vanilla handles offset
+   * collision boxes correctly (entities collide against the AABB at the block's world pos).
+   */
   private static final AxisAlignedBB CLOSED_BBOX =
-      new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 1.0, 1.0);
+      new AxisAlignedBB(0.0, -1.0, 0.0, 1.0, 2.0, 1.0);
   /** Thin floor slab so an open gate doesn't physically block the player. */
   private static final AxisAlignedBB OPEN_BBOX =
       new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 0.05, 1.0);
