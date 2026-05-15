@@ -6,8 +6,10 @@ import com.micatechnologies.minecraft.csm.hvac.TileEntityHvacThermostat;
 import com.micatechnologies.minecraft.csm.hvac.TileEntityHvacZoneThermostat;
 import com.micatechnologies.minecraft.csm.lifesafety.FireAlarmPanelConfigGui;
 import com.micatechnologies.minecraft.csm.lifesafety.TileEntityFireAlarmControlPanel;
+import com.micatechnologies.minecraft.csm.technology.BlockFareVendingMachine;
 import com.micatechnologies.minecraft.csm.technology.BlockRedstoneTTSGui;
 import com.micatechnologies.minecraft.csm.technology.ComputerGui;
+import com.micatechnologies.minecraft.csm.technology.FareVendingGui;
 import com.micatechnologies.minecraft.csm.technology.TileEntityComputer;
 import com.micatechnologies.minecraft.csm.technology.TileEntityRedstoneTTS;
 import com.micatechnologies.minecraft.csm.trafficsignals.CrosswalkConfigGui;
@@ -113,6 +115,9 @@ public class CsmGuiHandler implements IGuiHandler {
           (com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityDynamicGuideSign) tileEntity);
     } else if (id == 15 && tileEntity instanceof TileEntityComputer) {
       returnValue = new ComputerGui((TileEntityComputer) tileEntity);
+    } else if (id == 16
+        && world.getBlockState(pos).getBlock() instanceof BlockFareVendingMachine) {
+      returnValue = new FareVendingGui(pos);
     }
     return returnValue;
   }

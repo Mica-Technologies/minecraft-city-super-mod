@@ -88,6 +88,21 @@ public class CsmRegistry {
     return ITEMS.values();
   }
 
+  /**
+   * Returns the item registered with the mod under the given ID. Accepts either a namespaced
+   * ID ({@code "csm:fareticket"}) or a bare item name ({@code "fareticket"}); bare names are
+   * prefixed with the mod namespace before lookup. Returns {@code null} if no item is
+   * registered under the resolved key.
+   *
+   * @since 2026.5
+   */
+  public static Item getItem(String itemId) {
+    if (itemId.contains(":")) {
+      return ITEMS.get(itemId);
+    }
+    return ITEMS.get(CsmConstants.MOD_NAMESPACE + ":" + itemId);
+  }
+
   public static List<ICsmTileEntityProvider> getTileEntityProviders() {
     return Collections.unmodifiableList(TILE_ENTITY_PROVIDERS);
   }
