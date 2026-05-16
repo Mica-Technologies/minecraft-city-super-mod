@@ -120,6 +120,13 @@ public class ComputerGui extends GuiScreen {
 
   // === Notepad state ===
   private GuiMultiLineTextField notepad;
+  /**
+   * Last known notepad contents. Tracked separately from the widget so that switching
+   * away from the Notepad tab and back doesn't drop typed-but-unsaved text when the
+   * widget is rebuilt. Seeded from {@link #initialNotepadText} and refreshed every
+   * time we send the text to the server.
+   */
+  private String latestNotepadText;
   private String fortuneText = "Welcome to CSM-OS. Click 'Fortune' for a tip.";
   private final Random fortuneRandom = new Random();
   private int lastFortuneIndex = -1;
@@ -145,6 +152,7 @@ public class ComputerGui extends GuiScreen {
   public ComputerGui(TileEntityComputer tile) {
     this.tilePos = tile.getPos();
     this.initialNotepadText = tile.getNotepadText() == null ? "" : tile.getNotepadText();
+    this.latestNotepadText = this.initialNotepadText;
     this.computerName = computerNameFromBlock(tile);
   }
 
@@ -238,7 +246,7 @@ public class ComputerGui extends GuiScreen {
     int reservedForFortune = 18;
     int notepadH = contentH - 6 - reservedForFortune;
     notepad = new GuiMultiLineTextField(0, fontRenderer, notepadX, notepadY, notepadW, notepadH);
-    notepad.setText(initialNotepadText);
+    notepad.setText(latestNotepadText);
     notepad.setFocused(true);
   }
 
@@ -534,9 +542,9 @@ public class ComputerGui extends GuiScreen {
       if (currentApp == App.NOTEPAD) {
         sendNotepad(true);
       } else {
-        // No notepad change to save, but still need to send the shutdown signal.
-        CsmNetwork.sendToServer(new ComputerNotepadPacket(tilePos,
-            initialNotepadText == null ? "" : initialNotepadText, true));
+        // No live widget to read from, but the cache holds whatever the user typed
+        // before they switched tabs — send that so we don't clobber it server-side.
+        CsmNetwork.sendToServer(new ComputerNotepadPacket(tilePos, latestNotepadText, true));
       }
       this.mc.displayGuiScreen(null);
       return;
@@ -568,7 +576,8 @@ public class ComputerGui extends GuiScreen {
   }
 
   private void sendNotepad(boolean shutdown) {
-    String text = notepad == null ? initialNotepadText : notepad.getText();
+    String text = notepad == null ? latestNotepadText : notepad.getText();
+    latestNotepadText = text;
     CsmNetwork.sendToServer(new ComputerNotepadPacket(tilePos, text, shutdown));
   }
 
