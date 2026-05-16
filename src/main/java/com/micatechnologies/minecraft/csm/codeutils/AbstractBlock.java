@@ -50,7 +50,7 @@ public abstract class AbstractBlock extends Block implements IHasModel, ICsmBloc
     setRegistryName(CsmConstants.MOD_NAMESPACE, getBlockRegistryName());
     CsmRegistry.registerBlock(this);
     CsmRegistry.registerItem(
-        new ItemBlock(this).setRegistryName(Objects.requireNonNull(this.getRegistryName())));
+        createItemBlock().setRegistryName(Objects.requireNonNull(this.getRegistryName())));
   }
 
   /**
@@ -86,7 +86,22 @@ public abstract class AbstractBlock extends Block implements IHasModel, ICsmBloc
     setLightOpacity(lightOpacity);
     CsmRegistry.registerBlock(this);
     CsmRegistry.registerItem(
-        new ItemBlock(this).setRegistryName(Objects.requireNonNull(this.getRegistryName())));
+        createItemBlock().setRegistryName(Objects.requireNonNull(this.getRegistryName())));
+  }
+
+  /**
+   * Factory hook for the per-block {@link ItemBlock} registered alongside this block.
+   * Defaults to a stock {@link ItemBlock} pointing at this block; subclasses may override
+   * to return a custom item-block subclass (e.g. one that shifts the placement position
+   * before delegating to the vanilla placement flow).
+   *
+   * <p>This is called from the constructor before subclass fields are initialized — only
+   * use {@code this} in the override and avoid touching subclass state.</p>
+   *
+   * @since 2026.5
+   */
+  protected ItemBlock createItemBlock() {
+    return new ItemBlock(this);
   }
 
   /**
