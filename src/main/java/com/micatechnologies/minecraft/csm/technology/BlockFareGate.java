@@ -15,6 +15,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
@@ -74,6 +75,15 @@ public class BlockFareGate extends AbstractBlock implements ICsmTileEntityProvid
   @Override
   public String getBlockRegistryName() {
     return "fare_gate";
+  }
+
+  /**
+   * Use the placement-shifting item-block so the gate's actual block cell ends up at
+   * chest level instead of floor level — keeps horizontal-aim clicks landing on the gate.
+   */
+  @Override
+  protected ItemBlock createItemBlock() {
+    return new ItemBlockFareGate(this);
   }
 
   /**
@@ -200,6 +210,9 @@ public class BlockFareGate extends AbstractBlock implements ICsmTileEntityProvid
 
   // === Interaction (exterior side: pay-to-enter) ===
 
+  /** GUI handler ID for the operator-config screen. */
+  public static final int OP_CONFIG_GUI_ID = 17;
+
   @Override
   public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state,
       EntityPlayer player, EnumHand hand, EnumFacing facing,
@@ -207,6 +220,15 @@ public class BlockFareGate extends AbstractBlock implements ICsmTileEntityProvid
     if (hand != EnumHand.MAIN_HAND) {
       return true;
     }
+    ItemStack heldEarly = player.getHeldItemMainhand();
+
+    // Sneak + empty-hand right-click → operator override GUI.
+    if (player.isSneaking() && heldEarly.isEmpty()) {
+      player.openGui(com.micatechnologies.minecraft.csm.Csm.instance,
+          OP_CONFIG_GUI_ID, worldIn, pos.getX(), pos.getY(), pos.getZ());
+      return true;
+    }
+
     if (worldIn.isRemote) {
       return true;
     }
@@ -215,7 +237,7 @@ public class BlockFareGate extends AbstractBlock implements ICsmTileEntityProvid
       return true;
     }
 
-    ItemStack held = player.getHeldItemMainhand();
+    ItemStack held = heldEarly;
     if (held.getItem() instanceof ItemFareTicket) {
       held.shrink(1);
       openGate(worldIn, pos, state, GateState.OPEN_ENTRY);
