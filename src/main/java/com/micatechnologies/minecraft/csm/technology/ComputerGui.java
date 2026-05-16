@@ -471,6 +471,17 @@ public class ComputerGui extends GuiScreen {
 
   @Override
   protected void keyTyped(char typedChar, int keyCode) throws IOException {
+    if (keyCode == Keyboard.KEY_ESCAPE) {
+      // ESC is the natural close gesture; silently discarding typed notepad text
+      // would be an easy footgun. Save before closing if we're on the Notepad tab.
+      // Other tabs have already auto-flushed to the server on tab leave, so nothing
+      // extra to do for them.
+      if (currentApp == App.NOTEPAD && notepad != null) {
+        sendNotepad(false);
+      }
+      this.mc.displayGuiScreen(null);
+      return;
+    }
     super.keyTyped(typedChar, keyCode);
     if (currentApp == App.NOTEPAD && notepad != null) {
       notepad.setFocused(true);
