@@ -23,7 +23,16 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class SpeakerAmbientPacketHandler
     implements IMessageHandler<SpeakerAmbientPacket, IMessage> {
 
-  @SideOnly(Side.CLIENT)
+  /**
+   * Active sounds keyed by the speaker block position. Intentionally NOT marked
+   * {@code @SideOnly(Side.CLIENT)} on the field declaration: Forge strips annotated
+   * fields on the wrong side, but the static-initializer bytecode that assigns a fresh
+   * {@code HashMap<>()} is left intact, so server-side class loading (which happens
+   * during network-message registration) would crash with NoSuchFieldError. The map's
+   * generic value type is erased at runtime, so {@code SpeakerAmbientSound} only needs
+   * to resolve at the use sites — and those use sites are already gated by
+   * {@code @SideOnly(Side.CLIENT)} on the methods that touch it.
+   */
   private static final Map<BlockPos, SpeakerAmbientSound> ACTIVE_SOUNDS = new HashMap<>();
 
   @Override
