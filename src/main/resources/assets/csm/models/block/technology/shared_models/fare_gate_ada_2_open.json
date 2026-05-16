@@ -1,118 +1,120 @@
 {
-  "credit": "Mica Technologies — 2-wide ADA variant, extends +X from placed cell",
-  "textures": {
-    "body": "csm:blocks/technology/fare_gate_body",
-    "indicator": "csm:blocks/technology/fare_gate_indicator_red",
-    "particle": "csm:blocks/technology/fare_gate_body"
-  },
-  "elements": [
-    {
-      "name": "wide_cabinet_lower",
-      "from": [0, -16, 0],
-      "to": [6, -13, 16],
-      "faces": {
-        "down":  {"uv": [0, 0, 6, 16], "texture": "#body"},
-        "up":    {"uv": [0, 0, 6, 16], "texture": "#body"},
-        "north": {"uv": [0, 0, 6, 3],  "texture": "#body"},
-        "south": {"uv": [0, 0, 6, 3],  "texture": "#body"},
-        "east":  {"uv": [0, 0, 16, 3], "texture": "#body"},
-        "west":  {"uv": [0, 0, 16, 3], "texture": "#body"}
-      }
-    },
-    {
-      "name": "wide_cabinet_indicator",
-      "from": [0, -13, 0],
-      "to": [6, -3, 16],
-      "faces": {
-        "down":  {"uv": [0, 0, 6, 16], "texture": "#body"},
-        "up":    {"uv": [0, 0, 6, 16], "texture": "#body"},
-        "north": {"uv": [0, 0, 6, 10], "texture": "#indicator"},
-        "south": {"uv": [0, 0, 6, 10], "texture": "#body"},
-        "east":  {"uv": [0, 0, 16, 10], "texture": "#body"},
-        "west":  {"uv": [0, 0, 16, 10], "texture": "#body"}
-      }
-    },
-    {
-      "name": "wide_cabinet_upper",
-      "from": [0, -3, 0],
-      "to": [6, 0, 16],
-      "faces": {
-        "down":  {"uv": [0, 0, 6, 16], "texture": "#body"},
-        "up":    {"uv": [0, 0, 6, 16], "texture": "#body"},
-        "north": {"uv": [0, 0, 6, 3],  "texture": "#body"},
-        "south": {"uv": [0, 0, 6, 3],  "texture": "#body"},
-        "east":  {"uv": [0, 0, 16, 3], "texture": "#body"},
-        "west":  {"uv": [0, 0, 16, 3], "texture": "#body"}
-      }
-    },
-    {
-      "name": "thin_cabinet",
-      "from": [29, -16, 0],
-      "to": [32, 0, 16],
-      "faces": {
-        "down":  {"uv": [0, 0, 3, 16], "texture": "#body"},
-        "up":    {"uv": [0, 0, 3, 16], "texture": "#body"},
-        "north": {"uv": [0, 0, 3, 16], "texture": "#body"},
-        "south": {"uv": [0, 0, 3, 16], "texture": "#body"},
-        "east":  {"uv": [0, 0, 16, 16], "texture": "#body"},
-        "west":  {"uv": [0, 0, 16, 16], "texture": "#body"}
-      }
-    },
-    {
-      "name": "left_pillar",
-      "from": [0, 0, 0],
-      "to": [3, 28, 16],
-      "faces": {
-        "down":  {"uv": [0, 0, 3, 16], "texture": "#body"},
-        "up":    {"uv": [0, 0, 3, 16], "texture": "#body"},
-        "north": {"uv": [0, 0, 3, 16], "texture": "#body"},
-        "south": {"uv": [0, 0, 3, 16], "texture": "#body"},
-        "east":  {"uv": [0, 0, 16, 16], "texture": "#body"},
-        "west":  {"uv": [0, 0, 16, 16], "texture": "#body"}
-      }
-    },
-    {
-      "name": "right_pillar",
-      "from": [29, 0, 0],
-      "to": [32, 28, 16],
-      "faces": {
-        "down":  {"uv": [0, 0, 3, 16], "texture": "#body"},
-        "up":    {"uv": [0, 0, 3, 16], "texture": "#body"},
-        "north": {"uv": [0, 0, 3, 16], "texture": "#body"},
-        "south": {"uv": [0, 0, 3, 16], "texture": "#body"},
-        "east":  {"uv": [0, 0, 16, 16], "texture": "#body"},
-        "west":  {"uv": [0, 0, 16, 16], "texture": "#body"}
-      }
-    },
-    {
-      "name": "top_canopy",
-      "from": [0, 28, 0],
-      "to": [32, 32, 4],
-      "faces": {
-        "down":  {"uv": [0, 0, 16, 4], "texture": "#body"},
-        "up":    {"uv": [0, 0, 16, 4], "texture": "#body"},
-        "north": {"uv": [0, 0, 16, 4], "texture": "#body"},
-        "south": {"uv": [0, 0, 16, 4], "texture": "#body"},
-        "east":  {"uv": [0, 0, 4, 4],  "texture": "#body"},
-        "west":  {"uv": [0, 0, 4, 4],  "texture": "#body"}
-      }
-    }
-  ],
-  "display": {
-    "gui": {
-      "rotation": [30, 45, 0],
-      "translation": [4, 0, 0],
-      "scale": [0.18, 0.18, 0.18]
-    },
-    "thirdperson_righthand": {
-      "rotation": [75, 45, 0],
-      "translation": [4, 1.5, 0],
-      "scale": [0.18, 0.18, 0.18]
-    },
-    "fixed": {
-      "rotation": [0, 0, 0],
-      "translation": [4, 0, 0],
-      "scale": [0.22, 0.22, 0.22]
-    }
-  }
+	"format_version": "1.21.11",
+	"credit": "Mica Technologies — 2-wide ADA variant, extends +X from placed cell",
+	"textures": {
+		"particle": "csm:blocks/technology/fare_gate_body",
+		"body": "csm:blocks/technology/fare_gate_body",
+		"indicator": "csm:blocks/technology/fare_gate_indicator_red"
+	},
+	"elements": [
+		{
+			"name": "wide_cabinet_lower",
+			"from": [0, -16, 0],
+			"to": [6, -13, 16],
+			"faces": {
+				"north": {"uv": [0, 0, 6, 3], "texture": "#body"},
+				"east": {"uv": [0, 0, 16, 3], "texture": "#body"},
+				"south": {"uv": [0, 0, 6, 3], "texture": "#body"},
+				"west": {"uv": [0, 0, 16, 3], "texture": "#body"},
+				"up": {"uv": [0, 0, 6, 16], "texture": "#body"},
+				"down": {"uv": [0, 0, 6, 16], "texture": "#body"}
+			}
+		},
+		{
+			"name": "wide_cabinet_indicator",
+			"from": [0, -13, 0],
+			"to": [6, -3, 16],
+			"faces": {
+				"north": {"uv": [6, 0, 0, 10], "texture": "#indicator"},
+				"east": {"uv": [0, 0, 16, 10], "texture": "#body"},
+				"south": {"uv": [0, 0, 6, 10], "texture": "#body"},
+				"west": {"uv": [0, 0, 16, 10], "texture": "#body"},
+				"up": {"uv": [0, 0, 6, 16], "texture": "#body"},
+				"down": {"uv": [0, 0, 6, 16], "texture": "#body"}
+			}
+		},
+		{
+			"name": "wide_cabinet_upper",
+			"from": [0, -3, 0],
+			"to": [6, 0, 16],
+			"faces": {
+				"north": {"uv": [0, 0, 6, 3], "texture": "#body"},
+				"east": {"uv": [0, 0, 16, 3], "texture": "#body"},
+				"south": {"uv": [0, 0, 6, 3], "texture": "#body"},
+				"west": {"uv": [0, 0, 16, 3], "texture": "#body"},
+				"up": {"uv": [0, 0, 6, 16], "texture": "#body"},
+				"down": {"uv": [0, 0, 6, 16], "texture": "#body"}
+			}
+		},
+		{
+			"name": "thin_cabinet",
+			"from": [29, -16, 0],
+			"to": [32, 0, 16],
+			"faces": {
+				"north": {"uv": [0, 0, 3, 16], "texture": "#body"},
+				"east": {"uv": [0, 0, 16, 16], "texture": "#body"},
+				"south": {"uv": [0, 0, 3, 16], "texture": "#body"},
+				"west": {"uv": [0, 0, 16, 16], "texture": "#body"},
+				"up": {"uv": [0, 0, 3, 16], "texture": "#body"},
+				"down": {"uv": [0, 0, 3, 16], "texture": "#body"}
+			}
+		},
+		{
+			"name": "top_canopy",
+			"from": [0, 28, 7],
+			"to": [32, 32, 11],
+			"rotation": {"angle": 0, "axis": "y", "origin": [0, 0, 7]},
+			"faces": {
+				"north": {"uv": [0, 0, 16, 1], "texture": "#body"},
+				"east": {"uv": [0, 0, 16, 1], "texture": "#body"},
+				"south": {"uv": [0, 0, 16, 1], "texture": "#body"},
+				"west": {"uv": [0, 0, 16, 1], "texture": "#body"},
+				"up": {"uv": [0, 0, 16, 1], "texture": "#body"},
+				"down": {"uv": [0, 0, 16, 1], "texture": "#body"}
+			}
+		},
+		{
+			"name": "left_pillar",
+			"from": [0, 0, 7],
+			"to": [3, 28, 11],
+			"faces": {
+				"north": {"uv": [0, 0, 1, 16], "texture": "#body"},
+				"east": {"uv": [0, 0, 1, 16], "texture": "#body"},
+				"south": {"uv": [0, 0, 1, 16], "texture": "#body"},
+				"west": {"uv": [0, 0, 1, 16], "texture": "#body"},
+				"up": {"uv": [0, 0, 1, 16], "texture": "#body"},
+				"down": {"uv": [0, 0, 1, 16], "texture": "#body"}
+			}
+		},
+		{
+			"name": "right_pillar",
+			"from": [29, 0, 7],
+			"to": [32, 28, 11],
+			"rotation": {"angle": 0, "axis": "y", "origin": [16, 0, 0]},
+			"faces": {
+				"north": {"uv": [0, 0, 1, 16], "texture": "#body"},
+				"east": {"uv": [0, 0, 1, 16], "texture": "#body"},
+				"south": {"uv": [0, 0, 1, 16], "texture": "#body"},
+				"west": {"uv": [0, 0, 1, 16], "texture": "#body"},
+				"up": {"uv": [0, 0, 1, 16], "texture": "#body"},
+				"down": {"uv": [0, 0, 1, 16], "texture": "#body"}
+			}
+		}
+	],
+	"display": {
+		"thirdperson_righthand": {
+			"rotation": [75, 45, 0],
+			"translation": [4, 1.5, 0],
+			"scale": [0.18, 0.18, 0.18]
+		},
+		"gui": {
+			"rotation": [30, 45, 0],
+			"translation": [4, 0, 0],
+			"scale": [0.18, 0.18, 0.18]
+		},
+		"fixed": {
+			"translation": [4, 0, 0],
+			"scale": [0.22, 0.22, 0.22]
+		}
+	}
 }
