@@ -2,9 +2,10 @@
 	"format_version": "1.21.11",
 	"credit": "Mica Technologies — placeholder geometry, iterate in Blockbench",
 	"textures": {
+		"2": "csm:blocks/technology/fare_gate_indicator_red",
+		"3": "csm:blocks/trafficsignals/shared_textures/metal_black",
 		"particle": "csm:blocks/technology/fare_gate_body",
-		"body": "csm:blocks/technology/fare_gate_body",
-		"indicator": "csm:blocks/technology/fare_gate_indicator_red"
+		"body": "csm:blocks/technology/fare_gate_body"
 	},
 	"elements": [
 		{
@@ -25,7 +26,7 @@
 			"from": [0, -13, 0],
 			"to": [6, -3, 16],
 			"faces": {
-				"north": {"uv": [6, 0, 0, 10], "texture": "#indicator"},
+				"north": {"uv": [6, 0, 0, 10], "texture": "#2"},
 				"east": {"uv": [0, 0, 16, 10], "texture": "#body"},
 				"south": {"uv": [0, 0, 6, 10], "texture": "#body"},
 				"west": {"uv": [0, 0, 16, 10], "texture": "#body"},
@@ -97,6 +98,20 @@
 				"west": {"uv": [0, 0, 16, 1], "texture": "#body"},
 				"up": {"uv": [0, 0, 16, 1], "texture": "#body"},
 				"down": {"uv": [0, 0, 16, 1], "texture": "#body"}
+			}
+		},
+		{
+			"name": "card_reader",
+			"from": [3.5, 0, 6.5],
+			"to": [5.5, 0.5, 9.5],
+			"rotation": {"angle": 0, "axis": "y", "origin": [3.5, 0, 7]},
+			"faces": {
+				"north": {"uv": [0, 1.5, 2, 2], "texture": "#3"},
+				"east": {"uv": [0, 1.5, 3, 2], "texture": "#3"},
+				"south": {"uv": [0, 1.5, 2, 2], "texture": "#3"},
+				"west": {"uv": [0, 1.5, 3, 2], "texture": "#3"},
+				"up": {"uv": [0, 0, 2, 3], "texture": "#3"},
+				"down": {"uv": [0, 0, 2, 3], "texture": "#3"}
 			}
 		}
 	],
