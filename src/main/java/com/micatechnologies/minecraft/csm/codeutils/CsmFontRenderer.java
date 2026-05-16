@@ -17,6 +17,8 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL12;
+import org.lwjgl.opengl.GL30;
 
 @SideOnly(Side.CLIENT)
 public final class CsmFontRenderer {
@@ -132,6 +134,23 @@ public final class CsmFontRenderer {
               "csm_font_" + fontResource.getPath().replace('/', '_')
                   + (dotPitch > 0 ? "_dot" + dotPitch : ""),
               dynamicTexture);
+
+      // Generate mipmaps so the atlas reads cleanly at distance. Without this, distant
+      // text "shimmers" — the dot-matrix variant has 1-2-px-wide bright dots that beat
+      // against screen pixels under nearest-filter minification, and even the
+      // anti-aliased gothic variant aliases when minified significantly. Mip levels let
+      // the GPU sample a properly downsampled version instead of the full-resolution
+      // atlas. Keep mag=NEAREST so close-up text retains the hard pixel-art look the
+      // dot-matrix design depends on.
+      int maxLevel = (int) Math.ceil(Math.log(Math.max(atlasW, atlasH)) / Math.log(2.0));
+      GlStateManager.bindTexture(dynamicTexture.getGlTextureId());
+      GlStateManager.glTexParameteri(GL11.GL_TEXTURE_2D, GL12.GL_TEXTURE_MAX_LEVEL,
+          maxLevel);
+      GlStateManager.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER,
+          GL11.GL_LINEAR_MIPMAP_LINEAR);
+      GlStateManager.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER,
+          GL11.GL_NEAREST);
+      GL30.glGenerateMipmap(GL11.GL_TEXTURE_2D);
 
     } catch (Exception e) {
       throw new RuntimeException("Failed to load CSM font: " + fontResource, e);
