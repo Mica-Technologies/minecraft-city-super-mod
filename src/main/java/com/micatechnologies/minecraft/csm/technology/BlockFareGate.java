@@ -302,19 +302,20 @@ public class BlockFareGate extends AbstractBlock implements ICsmTileEntityProvid
    * Horizontal rotation of an AABB around the placed cell's vertical center axis at
    * (0.5, *, 0.5). Works for multi-cell bboxes (i.e. minX &lt; 0 or maxX &gt; 1).
    *
-   * <p>Derivation: 90° CW rotation around (0.5, 0.5) in XZ maps (x, z) → (z, 1−x).
-   * Apply to each corner and take min/max.</p>
+   * <p>Derivation: viewed from above with north up (−Z), a CW yaw maps the unit direction
+   * N→E→S→W→N. Around center (0.5, 0.5) in XZ this is (x, z) → (1−z, x); the inverse
+   * (used for WEST) is (x, z) → (z, 1−x). Apply to each corner and take min/max.</p>
    */
   private static AxisAlignedBB rotateBboxHorizontal(AxisAlignedBB box, EnumFacing facing) {
     double minX = box.minX, minY = box.minY, minZ = box.minZ;
     double maxX = box.maxX, maxY = box.maxY, maxZ = box.maxZ;
     switch (facing) {
       case EAST:
-        return new AxisAlignedBB(minZ, minY, 1.0 - maxX, maxZ, maxY, 1.0 - minX);
+        return new AxisAlignedBB(1.0 - maxZ, minY, minX, 1.0 - minZ, maxY, maxX);
       case SOUTH:
         return new AxisAlignedBB(1.0 - maxX, minY, 1.0 - maxZ, 1.0 - minX, maxY, 1.0 - minZ);
       case WEST:
-        return new AxisAlignedBB(1.0 - maxZ, minY, minX, 1.0 - minZ, maxY, maxX);
+        return new AxisAlignedBB(minZ, minY, 1.0 - maxX, maxZ, maxY, 1.0 - minX);
       case NORTH:
       default:
         return box;
