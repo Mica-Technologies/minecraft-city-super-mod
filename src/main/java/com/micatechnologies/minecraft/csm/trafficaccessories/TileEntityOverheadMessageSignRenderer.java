@@ -9,6 +9,7 @@ import com.micatechnologies.minecraft.csm.codeutils.CsmFontRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
@@ -174,6 +175,15 @@ public class TileEntityOverheadMessageSignRenderer
 
     CsmFontRenderer fr = CsmFontRenderer.electronicSign();
 
+    // Force the lightmap unit to fullbright for the text pass. CsmFontRenderer.drawString
+    // uses POSITION_TEX (no per-vertex lightmap), so it inherits the GL lightmap state set
+    // by the prior BLOCK-format draws — which is the world's combined-light. Without this
+    // override the LED text dims with the surrounding world instead of glowing.
+    float prevBX = OpenGlHelper.lastBrightnessX;
+    float prevBY = OpenGlHelper.lastBrightnessY;
+    OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit,
+        LIGHTMAP_FULLBRIGHT_SKY, LIGHTMAP_FULLBRIGHT_BLOCK);
+
     GlStateManager.pushMatrix();
 
     float textZ = FACE_Z - SIGN_FRAME - 0.5f;
@@ -200,5 +210,7 @@ public class TileEntityOverheadMessageSignRenderer
     GlStateManager.depthMask(true);
 
     GlStateManager.popMatrix();
+
+    OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, prevBX, prevBY);
   }
 }
