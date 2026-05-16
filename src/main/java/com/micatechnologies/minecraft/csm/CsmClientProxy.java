@@ -136,6 +136,10 @@ public class CsmClientProxy implements ICsmProxy {
         new com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityOverheadSpeedLimitRenderer());
 
     ClientRegistry.bindTileEntitySpecialRenderer(
+        com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityPoleMountSpeedLimit.class,
+        new com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityPoleMountSpeedLimitRenderer());
+
+    ClientRegistry.bindTileEntitySpecialRenderer(
         com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityDynamicGuideSign.class,
         new com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityDynamicGuideSignRenderer());
 

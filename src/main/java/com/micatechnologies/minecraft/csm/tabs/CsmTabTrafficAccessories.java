@@ -508,6 +508,10 @@ public class CsmTabTrafficAccessories extends CsmTab {
     initTabBlock(com.micatechnologies.minecraft.csm.trafficaccessories.BlockOverheadSpeedLimitSign.class,
         fmlPreInitializationEvent);
 
+    // --- Class-based: Pole-Mount Speed Limit Sign ---
+    initTabBlock(com.micatechnologies.minecraft.csm.trafficaccessories.BlockPoleMountSpeedLimitSign.class,
+        fmlPreInitializationEvent);
+
     // --- Class-based: Lane Control Signal ---
     initTabBlock(com.micatechnologies.minecraft.csm.trafficaccessories.BlockLaneControlSignal.class,
         fmlPreInitializationEvent);

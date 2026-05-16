@@ -122,6 +122,9 @@ public class CsmGuiHandler implements IGuiHandler {
       returnValue = new FareVendingGui(pos);
     } else if (id == 17 && tileEntity instanceof TileEntityFareGate) {
       returnValue = new FareGateConfigGui((TileEntityFareGate) tileEntity);
+    } else if (id == 18 && tileEntity instanceof com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityPoleMountSpeedLimit) {
+      returnValue = new com.micatechnologies.minecraft.csm.trafficaccessories.BlockPoleMountSpeedLimitGui(
+          (com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityPoleMountSpeedLimit) tileEntity);
     }
     return returnValue;
   }

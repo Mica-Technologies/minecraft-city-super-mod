@@ -15,11 +15,8 @@
       "east": { "y": 90 }
     },
     "inventory": [{
-      "model": "csm:portable_speed_limit_sign",
-      "textures": {
-        "all": "csm:blocks/trafficaccessories/portable_speed_limit_sign",
-        "particle": "csm:blocks/trafficaccessories/portable_speed_limit_sign"
-      }
+      "model": "csm:item/portable_speed_limit_sign",
+      "transform": "forge:default-item"
     }]
   }
 }

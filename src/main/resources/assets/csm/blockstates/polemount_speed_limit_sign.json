@@ -15,7 +15,7 @@
       "east": { "y": 90 }
     },
     "inventory": [{
-      "model": "csm:item/overhead_message_sign",
+      "model": "csm:item/polemount_speed_limit_sign",
       "transform": "forge:default-item"
     }]
   }

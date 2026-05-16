@@ -1,0 +1,6 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "csm:blocks/trafficaccessories/overhead_speed_limit_sign"
+  }
+}

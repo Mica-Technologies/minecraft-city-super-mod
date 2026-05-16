@@ -15,12 +15,8 @@
       "east": { "y": 90 }
     },
     "inventory": [{
-      "model": "csm:portable_message_sign",
-      "textures": {
-        "all": "csm:blocks/trafficaccessories/portable_message_sign",
-        "particle": "csm:blocks/trafficaccessories/portable_message_sign"
-      },
-      "transform": "forge:default-block"
+      "model": "csm:item/portable_message_sign",
+      "transform": "forge:default-item"
     }]
   }
 }

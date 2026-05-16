@@ -15,11 +15,8 @@
       "east": { "y": 90 }
     },
     "inventory": [{
-      "model": "csm:overhead_speed_limit_sign",
-      "textures": {
-        "all": "csm:blocks/trafficaccessories/overhead_speed_limit_sign",
-        "particle": "csm:blocks/trafficaccessories/overhead_speed_limit_sign"
-      }
+      "model": "csm:item/overhead_speed_limit_sign",
+      "transform": "forge:default-item"
     }]
   }
 }
