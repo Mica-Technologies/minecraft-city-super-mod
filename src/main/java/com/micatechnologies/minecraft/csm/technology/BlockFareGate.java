@@ -199,6 +199,12 @@ public class BlockFareGate extends AbstractBlock implements ICsmTileEntityProvid
   @Nonnull
   @Override
   public BlockRenderLayer getBlockRenderLayer() {
+    // CUTOUT_MIPPED, not TRANSLUCENT. The glass barrier achieves its see-through look
+    // via a stippled alpha pattern in fare_gate_glass.png (every-other-pixel opaque,
+    // gaps fully transparent) — that gives ~25% coverage which reads as "frosted
+    // glass" at any distance while keeping the block in a single opaque-pass render
+    // layer. TRANSLUCENT would cause the model's multiple body elements to mis-sort
+    // against each other at close range, making opaque faces appear to vanish.
     return BlockRenderLayer.CUTOUT_MIPPED;
   }
 

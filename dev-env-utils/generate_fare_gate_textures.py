@@ -3,7 +3,7 @@
 Generates placeholder 16x16 textures for the realistic fare gate model:
 
     fare_gate_body.png            — plain brushed-stainless body (pillars, sign back)
-    fare_gate_glass.png           — translucent-looking pane with a steel frame
+    fare_gate_glass.png           — stippled pane (CUTOUT alpha) with an opaque steel frame
     fare_gate_indicator_red.png   — top-of-sign band, arrow icon (closed state)
     fare_gate_indicator_green.png — top-of-sign band, arrow icon (entry-open state)
     fare_gate_indicator_x.png     — top-of-sign band, X icon (exit-open state)
@@ -38,9 +38,11 @@ BAND_BG = (24, 26, 30, 255)
 ARROW_RED = (220, 60, 60, 255)
 ARROW_GREEN = (70, 215, 90, 255)
 
-# Glass — frosted pale blue with darker frame.
+# Glass — pale blue tint, opaque pixels arranged in a stippled pattern so the pane
+# reads as "frosted glass" while staying in the CUTOUT_MIPPED render layer (binary
+# alpha only, but no depth-sort artifacts at close range that TRANSLUCENT would
+# cause with this multi-element model). See make_glass() for the pattern.
 GLASS_FILL = (180, 210, 230, 255)
-GLASS_HIGHLIGHT = (210, 230, 245, 255)
 GLASS_FRAME = (110, 116, 124, 255)
 
 
@@ -69,18 +71,22 @@ def make_body():
 
 
 def make_glass():
-    """Frosted-glass-style pane with a steel frame around the edge."""
+    """Frosted-glass-style pane with a steel frame around the edge.
+
+    The fill uses a stippled alpha pattern (opaque pixels on a fully-transparent
+    background, one in every 2x2 block) to fake semi-transparency under CUTOUT_MIPPED
+    rendering. 25% pixel coverage reads as ~25% opacity from a couple blocks away —
+    close to the look of true alpha blending without the depth-sort artifacts the
+    block would suffer in the TRANSLUCENT layer.
+    """
     img = Image.new("RGBA", (SIZE, SIZE), (0, 0, 0, 0))
     px = img.load()
-    # Body fill.
-    for y in range(SIZE):
-        for x in range(SIZE):
+    # Stippled body fill — keep pixels where both x and y are even. Uniform grid, no
+    # highlight overrides, so the dot spacing reads as consistent at any zoom.
+    for y in range(0, SIZE, 2):
+        for x in range(0, SIZE, 2):
             px[x, y] = GLASS_FILL
-    # A few brighter highlight pixels to suggest reflection.
-    for y in (3, 7, 11):
-        for x in (4, 5):
-            px[x, y] = GLASS_HIGHLIGHT
-    # Steel frame around the edge.
+    # Steel frame around the edge — fully opaque, no stippling.
     _draw_outline(px)
     # Inner thin frame too — sells the "panel held in a metal frame" look.
     for x in range(2, SIZE - 2):
