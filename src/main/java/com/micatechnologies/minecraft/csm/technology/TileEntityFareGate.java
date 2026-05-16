@@ -104,25 +104,33 @@ public class TileEntityFareGate extends AbstractTickableTileEntity {
    * mode change so the player sees the switch take effect before the next tick.
    */
   private void applyOpModeImmediately(IBlockState state) {
+    GateState current = state.getValue(BlockFareGate.STATE);
     switch (opMode) {
       case ALWAYS_OPEN:
-        if (!state.getValue(BlockFareGate.STATE).isOpen()) {
+        if (current != GateState.OPEN_ENTRY) {
           world.setBlockState(pos, state.withProperty(BlockFareGate.STATE,
               GateState.OPEN_ENTRY), 3);
         }
         openedAt = Long.MIN_VALUE; // disable the auto-close timer
         break;
       case ALWAYS_CLOSED:
-        if (state.getValue(BlockFareGate.STATE).isOpen()) {
+        // Use CLOSED_LOCKED rather than CLOSED — both block passage, but CLOSED_LOCKED
+        // renders the red X indicator so people see the gate is out of service.
+        if (current != GateState.CLOSED_LOCKED) {
           world.setBlockState(pos, state.withProperty(BlockFareGate.STATE,
-              GateState.CLOSED), 3);
+              GateState.CLOSED_LOCKED), 3);
         }
         openedAt = Long.MIN_VALUE;
         playersInInteriorCell.clear();
         break;
       case NORMAL:
       default:
-        // Normal mode: nothing to force, the tick loop handles it from here.
+        // Coming OUT of an override: if the block is currently in CLOSED_LOCKED, snap it
+        // back to plain CLOSED so the red-X indicator clears.
+        if (current == GateState.CLOSED_LOCKED) {
+          world.setBlockState(pos, state.withProperty(BlockFareGate.STATE,
+              GateState.CLOSED), 3);
+        }
         break;
     }
   }
@@ -171,9 +179,9 @@ public class TileEntityFareGate extends AbstractTickableTileEntity {
       return;
     }
     if (opMode == FareGateOpMode.ALWAYS_CLOSED) {
-      if (gs.isOpen()) {
+      if (gs != GateState.CLOSED_LOCKED) {
         world.setBlockState(pos, state.withProperty(BlockFareGate.STATE,
-            GateState.CLOSED), 3);
+            GateState.CLOSED_LOCKED), 3);
       }
       openedAt = Long.MIN_VALUE;
       playersInInteriorCell.clear();

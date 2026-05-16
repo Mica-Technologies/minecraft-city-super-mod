@@ -18,7 +18,13 @@ public enum GateState implements IStringSerializable {
   /** Opened by a player presenting valid fare media on the exterior side; arrow shows green. */
   OPEN_ENTRY("open_entry"),
   /** Opened by proximity detection on the interior side (player exiting); arrow shows red X. */
-  OPEN_EXIT("open_exit");
+  OPEN_EXIT("open_exit"),
+  /**
+   * Operator-locked closed (Always Closed override mode). Barrier blocks just like CLOSED,
+   * but renders the red X indicator so anyone approaching sees that the gate is intentionally
+   * out of service rather than just waiting for a fare scan.
+   */
+  CLOSED_LOCKED("closed_locked");
 
   private final String name;
 
@@ -32,6 +38,6 @@ public enum GateState implements IStringSerializable {
   }
 
   public boolean isOpen() {
-    return this != CLOSED;
+    return this == OPEN_ENTRY || this == OPEN_EXIT;
   }
 }
