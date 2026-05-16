@@ -207,6 +207,10 @@ public class Csm {
           com.micatechnologies.minecraft.csm.technology.FareVendingPurchaseHandler.class,
           com.micatechnologies.minecraft.csm.technology.FareVendingPurchasePacket.class,
           Side.SERVER);
+      CsmNetwork.registerNetworkMessage(
+          com.micatechnologies.minecraft.csm.technology.FareGateOpModeHandler.class,
+          com.micatechnologies.minecraft.csm.technology.FareGateOpModePacket.class,
+          Side.SERVER);
       logger.info("Finished registering network message(s)");
       progressBar.step("Network Messages Registration");
 

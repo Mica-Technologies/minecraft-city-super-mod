@@ -40,6 +40,7 @@ import net.minecraft.util.math.BlockPos;
 public class TileEntityFareGate extends AbstractTickableTileEntity {
 
   private static final String NBT_OPENED_AT = "openedAt";
+  private static final String NBT_OP_MODE = "opMode";
 
   /**
    * How long an opened gate stays open before auto-closing, in game ticks. 60 ticks ≈
@@ -53,6 +54,9 @@ public class TileEntityFareGate extends AbstractTickableTileEntity {
 
   /** World tick the gate was opened on, or {@link Long#MIN_VALUE} when closed. */
   private long openedAt = Long.MIN_VALUE;
+
+  /** Operator-controlled override mode (NORMAL / ALWAYS_OPEN / ALWAYS_CLOSED). */
+  private FareGateOpMode opMode = FareGateOpMode.NORMAL;
 
   /**
    * UUIDs of players we believe are currently standing in the interior cell. We only fire
@@ -72,6 +76,55 @@ public class TileEntityFareGate extends AbstractTickableTileEntity {
 
   public long getAutoCloseTicks() {
     return AUTO_CLOSE_TICKS;
+  }
+
+  public FareGateOpMode getOpMode() {
+    return opMode;
+  }
+
+  /** Setter used by the operator-config GUI's server-side packet handler. */
+  public void setOpMode(FareGateOpMode mode) {
+    if (mode == null) mode = FareGateOpMode.NORMAL;
+    if (mode == this.opMode) {
+      return;
+    }
+    this.opMode = mode;
+    if (world != null && !world.isRemote) {
+      // Apply the new mode immediately so the next tick doesn't sit in a stale state.
+      IBlockState state = world.getBlockState(pos);
+      if (state.getBlock() instanceof BlockFareGate) {
+        applyOpModeImmediately(state);
+      }
+      markDirtySync(world, pos, true);
+    }
+  }
+
+  /**
+   * Forces the gate's STATE to match the current opMode on the spot — used right after a
+   * mode change so the player sees the switch take effect before the next tick.
+   */
+  private void applyOpModeImmediately(IBlockState state) {
+    switch (opMode) {
+      case ALWAYS_OPEN:
+        if (!state.getValue(BlockFareGate.STATE).isOpen()) {
+          world.setBlockState(pos, state.withProperty(BlockFareGate.STATE,
+              GateState.OPEN_ENTRY), 3);
+        }
+        openedAt = Long.MIN_VALUE; // disable the auto-close timer
+        break;
+      case ALWAYS_CLOSED:
+        if (state.getValue(BlockFareGate.STATE).isOpen()) {
+          world.setBlockState(pos, state.withProperty(BlockFareGate.STATE,
+              GateState.CLOSED), 3);
+        }
+        openedAt = Long.MIN_VALUE;
+        playersInInteriorCell.clear();
+        break;
+      case NORMAL:
+      default:
+        // Normal mode: nothing to force, the tick loop handles it from here.
+        break;
+    }
   }
 
   // === Tickable plumbing ===
@@ -107,6 +160,27 @@ public class TileEntityFareGate extends AbstractTickableTileEntity {
     }
 
     GateState gs = state.getValue(BlockFareGate.STATE);
+
+    // Operator overrides win — short-circuit the regular state machine.
+    if (opMode == FareGateOpMode.ALWAYS_OPEN) {
+      if (!gs.isOpen()) {
+        world.setBlockState(pos, state.withProperty(BlockFareGate.STATE,
+            GateState.OPEN_ENTRY), 3);
+      }
+      openedAt = Long.MIN_VALUE; // no auto-close while overridden
+      return;
+    }
+    if (opMode == FareGateOpMode.ALWAYS_CLOSED) {
+      if (gs.isOpen()) {
+        world.setBlockState(pos, state.withProperty(BlockFareGate.STATE,
+            GateState.CLOSED), 3);
+      }
+      openedAt = Long.MIN_VALUE;
+      playersInInteriorCell.clear();
+      return;
+    }
+
+    // NORMAL mode: usual auto-close + proximity behavior.
     if (gs.isOpen()) {
       tickWhileOpen(state);
     } else {
@@ -167,6 +241,11 @@ public class TileEntityFareGate extends AbstractTickableTileEntity {
     } else {
       openedAt = Long.MIN_VALUE;
     }
+    if (compound.hasKey(NBT_OP_MODE)) {
+      opMode = FareGateOpMode.fromOrdinal(compound.getInteger(NBT_OP_MODE));
+    } else {
+      opMode = FareGateOpMode.NORMAL;
+    }
     // playersInInteriorCell is intentionally transient — players' presence is re-derived
     // from world state on the next tick.
   }
@@ -175,6 +254,9 @@ public class TileEntityFareGate extends AbstractTickableTileEntity {
   public NBTTagCompound writeNBT(NBTTagCompound compound) {
     if (openedAt != Long.MIN_VALUE) {
       compound.setLong(NBT_OPENED_AT, openedAt);
+    }
+    if (opMode != FareGateOpMode.NORMAL) {
+      compound.setInteger(NBT_OP_MODE, opMode.ordinal());
     }
     return compound;
   }

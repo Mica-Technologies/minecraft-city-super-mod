@@ -9,8 +9,10 @@ import com.micatechnologies.minecraft.csm.lifesafety.TileEntityFireAlarmControlP
 import com.micatechnologies.minecraft.csm.technology.BlockFareVendingMachine;
 import com.micatechnologies.minecraft.csm.technology.BlockRedstoneTTSGui;
 import com.micatechnologies.minecraft.csm.technology.ComputerGui;
+import com.micatechnologies.minecraft.csm.technology.FareGateConfigGui;
 import com.micatechnologies.minecraft.csm.technology.FareVendingGui;
 import com.micatechnologies.minecraft.csm.technology.TileEntityComputer;
+import com.micatechnologies.minecraft.csm.technology.TileEntityFareGate;
 import com.micatechnologies.minecraft.csm.technology.TileEntityRedstoneTTS;
 import com.micatechnologies.minecraft.csm.trafficsignals.CrosswalkConfigGui;
 import com.micatechnologies.minecraft.csm.trafficsignals.SignalControllerConfigGui;
@@ -118,6 +120,8 @@ public class CsmGuiHandler implements IGuiHandler {
     } else if (id == 16
         && world.getBlockState(pos).getBlock() instanceof BlockFareVendingMachine) {
       returnValue = new FareVendingGui(pos);
+    } else if (id == 17 && tileEntity instanceof TileEntityFareGate) {
+      returnValue = new FareGateConfigGui((TileEntityFareGate) tileEntity);
     }
     return returnValue;
   }
