@@ -849,8 +849,6 @@ public class TrafficSignalPhase {
       BlockPos firstMissing) {
     for (BlockPos pos : signals) {
       if (!world.isBlockLoaded(pos)) {
-        System.out.println("[TrafficSignalPhase] Skipping signal at " + pos +
-            " (chunk not loaded)");
         continue;
       }
       if (!AbstractBlockControllableSignal.changeSignalColor(world, pos, color)
