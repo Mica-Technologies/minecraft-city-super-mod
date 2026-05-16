@@ -6,6 +6,7 @@
       "body": "csm:blocks/technology/fare_gate_body",
       "glass": "csm:blocks/technology/fare_gate_glass",
       "indicator": "csm:blocks/technology/fare_gate_indicator_red",
+      "card_reader": "csm:blocks/trafficsignals/shared_textures/metal_black",
       "particle": "csm:blocks/technology/fare_gate_body"
     }
   },

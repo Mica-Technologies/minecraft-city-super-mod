@@ -2,11 +2,11 @@
 	"format_version": "1.21.11",
 	"credit": "Mica Technologies — 2-wide ADA variant, extends +X from placed cell",
 	"textures": {
-		"3": "csm:blocks/trafficsignals/shared_textures/metal_black",
 		"particle": "csm:blocks/technology/fare_gate_body",
 		"body": "csm:blocks/technology/fare_gate_body",
 		"glass": "csm:blocks/technology/fare_gate_glass",
-		"indicator": "csm:blocks/technology/fare_gate_indicator_red"
+		"indicator": "csm:blocks/technology/fare_gate_indicator_red",
+		"card_reader": "csm:blocks/trafficsignals/shared_textures/metal_black"
 	},
 	"elements": [
 		{
@@ -54,12 +54,12 @@
 			"to": [5.5, 0.5, 9.5],
 			"rotation": {"angle": 0, "axis": "y", "origin": [3.5, 0, 7]},
 			"faces": {
-				"north": {"uv": [0, 1.5, 2, 2], "texture": "#3"},
-				"east": {"uv": [0, 1.5, 3, 2], "texture": "#3"},
-				"south": {"uv": [0, 1.5, 2, 2], "texture": "#3"},
-				"west": {"uv": [0, 1.5, 3, 2], "texture": "#3"},
-				"up": {"uv": [0, 0, 2, 3], "texture": "#3"},
-				"down": {"uv": [0, 0, 2, 3], "texture": "#3"}
+				"north": {"uv": [0, 1.5, 2, 2], "texture": "#card_reader"},
+				"east": {"uv": [0, 1.5, 3, 2], "texture": "#card_reader"},
+				"south": {"uv": [0, 1.5, 2, 2], "texture": "#card_reader"},
+				"west": {"uv": [0, 1.5, 3, 2], "texture": "#card_reader"},
+				"up": {"uv": [0, 0, 2, 3], "texture": "#card_reader"},
+				"down": {"uv": [0, 0, 2, 3], "texture": "#card_reader"}
 			}
 		},
 		{
