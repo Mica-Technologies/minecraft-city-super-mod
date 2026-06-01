@@ -26,9 +26,17 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **Requirements:** Java 17 (Azul Zulu Community recommended). The project uses Jabel to allow modern Java syntax while targeting JVM 8. Heap is set to `-Xmx3G` in `gradle.properties` for decompilation.
 
-**JDK Location:** The JDK is managed via IntelliJ and located at `C:\Users\<username>\.jdks\azul-17.0.18`. When running Gradle from the CLI, set `JAVA_HOME` to this path:
+**JDK Location:** The JDK is managed via IntelliJ. When running Gradle from the CLI, set `JAVA_HOME` to the Azul Zulu 17 install. The project's own Gradle wrapper (`./gradlew`, Gradle 8.9) is sufficient — IntelliJ's bundled Gradle is not needed.
+
+Windows:
 ```bash
 JAVA_HOME="C:/Users/<username>/.jdks/azul-17.0.18" ./gradlew build
+```
+
+macOS (IntelliJ-managed JDKs live in `~/Library/Java/JavaVirtualMachines/`):
+```bash
+export JAVA_HOME=~/Library/Java/JavaVirtualMachines/azul-17.0.19/Contents/Home
+./gradlew build
 ```
 
 ## Architecture Overview

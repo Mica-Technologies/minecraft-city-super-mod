@@ -49,3 +49,21 @@ if (project.hasProperty('enableJava17RunTasks') && enableJava17RunTasks.toBoolea
         java17PatchDependencies('ca.weblite:java-objc-bridge:1.1') { transitive = false }
     }
 }
+
+// Fix: wire the Java 17/21 run tasks to shadowJar.
+// When usesShadowedDependencies = true, build.gradle disables the plain `jar` task and makes
+// shadowJar produce the dev jar the run tasks load. build.gradle's own loop only adds
+// `dependsOn('shadowJar')` to the base runClient/runServer tasks, NOT to the
+// runClient17/runServer17/runClient21/runServer21 variants registered when
+// enableJava17RunTasks = true. Under Gradle 8.9 a task consuming another task's output without
+// declaring the dependency is a hard validation error, so runClient17 fails with:
+//   "Task ':runClient17' uses this output of task ':shadowJar' without declaring ... a dependency."
+// Declaring it here is update-safe (build.gradle is "DO NOT CHANGE").
+if (project.hasProperty('enableJava17RunTasks') && enableJava17RunTasks.toBoolean()
+        && project.hasProperty('usesShadowedDependencies') && usesShadowedDependencies.toBoolean()) {
+    for (runTask in ['runClient17', 'runServer17', 'runClient21', 'runServer21']) {
+        tasks.named(runTask).configure {
+            dependsOn('shadowJar')
+        }
+    }
+}
