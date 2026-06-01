@@ -152,32 +152,54 @@ cached per chunk with a 40-tick (2-second) lifetime. Stale cache entries are evi
 
 ### HVAC Offset Calculation
 
-The system scans a 5x5 chunk grid (`CHUNK_SCAN_RADIUS = 2`) around the query position for
-active `IHvacUnit` tile entities. Each unit's contribution is weighted by:
+The system gathers active `IHvacUnit` tile entities from a 7x7 chunk grid
+(`CHUNK_SCAN_RADIUS = 3`) around the query position, then measures each one along the actual
+**air path** from the query point. Each reachable unit's contribution is weighted by:
 
-1. **Distance weight** -- Linear falloff between full-effect and max-effect distances:
-   - Direct units (heaters/coolers): full effect within 4 blocks, zero at 12 blocks
-   - Vent relays: full effect within 6 blocks, zero at 24 blocks
+1. **Air-path propagation (flood fill)** -- A 6-connected breadth-first flood fill expands
+   outward through open (non-solid) air from the query position, recording the shortest number
+   of path steps to every reachable air cell. A unit contributes only if the fill reaches an air
+   cell adjacent to it; its contribution is weighted by that **path-step distance**.
+   - Air bends around corners and through doorways but is stopped by a sealed wall (the basis of
+     zone separation), so a thermostat just around the corner from its vent still feels it.
+   - "Solid" (blocks airflow) = `material.isSolid() && !material.isReplaceable()`.
+   - **Path steps, not straight-line blocks.** Because air routes around obstacles, a path-step
+     count is always ≥ the Euclidean distance — e.g. a ceiling vent 6 blocks away horizontally
+     in an 8-tall room is ~8.5 blocks Euclidean but ~12 path steps (over and down). The
+     thresholds below are tuned for that inflation.
+   - Bounded by `MAX_FLOOD_BLOCKS = 4096` visited cells (a hard per-query cost ceiling), with an
+     early-stop: the fill quits as soon as every candidate source has been located, so the
+     typical cost is far below the ceiling. The full budget is only paid when a source is
+     genuinely unreachable within range. A source beyond the budget reads as unreachable.
 
-2. **Wall attenuation** -- Raycast from unit to query position counting solid blocks:
-   - 0 walls: 100% contribution
-   - 1 wall: 30% contribution (factor: 0.3)
-   - 2 walls: 9% contribution
-   - 3+ walls: effectively zero (early exit at < 1%)
-   - Uses 0.9-block step size to catch each block; skips source and destination blocks
-   - "Solid" = `material.isSolid() && !material.isReplaceable()`
+2. **Distance weight** -- Linear falloff over the **path-step** distance:
+   - Direct units (heaters/coolers): full effect within 6 steps, zero at 20 steps
+   - Vent relays: full effect within 8 steps, zero at 40 steps (wide enough to bend around a
+     corner into a connected adjacent space)
 
 3. **Outdoor attenuation** -- If the query position can see the sky (`World.canSeeSky()`),
    the total offset is multiplied by 0.3 (30% effectiveness outdoors).
 
-4. **Dynamic offset cap** -- Heating and cooling offsets are each clamped to
-   `BASE_HVAC_OFFSET_PER_UNIT * activeContributors` before combining, where
-   `BASE_HVAC_OFFSET_PER_UNIT = 24 deg F` and `activeContributors` is the number of HVAC
-   units (heaters, vents, etc.) with non-zero weighted contribution at the query point.
-   A single-unit system still caps at 24 deg F (backward compatible). Multi-unit systems
-   scale proportionally: 3 contributors cap at 72 deg F, 5 at 120 deg F, etc.
+4. **Dynamic offset cap** -- Heating and cooling offsets are each clamped before combining to
+   `min(BASE_HVAC_OFFSET_CAP + HVAC_OFFSET_PER_EXTRA_UNIT * (contributors - 1), HVAC_OFFSET_HARD_CAP)`,
+   where `BASE_HVAC_OFFSET_CAP = 50 deg F`, `HVAC_OFFSET_PER_EXTRA_UNIT = 25 deg F`,
+   `HVAC_OFFSET_HARD_CAP = 250 deg F`, and `contributors` is the number of reachable active
+   delivery points (heaters, coolers, **and vent relays**) with non-zero weighted contribution.
+   Counting vents lets a stacked rooftop-unit-plus-vents system raise the ceiling enough to
+   condition an extreme biome.
 
-Final offset = `min(heatingSum, 24*heatingUnits) - min(coolingSum, 24*coolingUnits)`, then multiplied by 0.3 if outdoors.
+Final offset = `min(heatingSum, heatingCap) - min(coolingSum, coolingCap)`, then multiplied by
+0.3 if outdoors.
+
+### Worked numbers (8-tall room simulations)
+
+| Scenario | path steps | vent weight | felt at full ramp (×15°F base) |
+|---|---|---|---|
+| Ceiling vent 6 blocks away (Euclidean ~8.5) | 12 | 0.88 | ~13°F |
+| Ceiling vent 14 blocks away | 20 | 0.62 | ~9°F |
+| Floor heater 6 blocks away (direct) | 6 | 1.00 (direct) | 15°F |
+| Vent around a corner | 30 | 0.31 | ~5°F |
+| Vent in a sealed adjacent closet | — | 0 (unreachable) | 0°F |
 
 ## HUD Display
 

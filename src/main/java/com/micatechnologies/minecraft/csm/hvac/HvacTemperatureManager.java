@@ -1,5 +1,9 @@
 package com.micatechnologies.minecraft.csm.hvac;
 
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import net.minecraft.block.material.Material;
@@ -92,43 +96,46 @@ public class HvacTemperatureManager {
    */
   private static final float HVAC_OFFSET_HARD_CAP = 250.0f;
 
-  /**
-   * Distance in blocks within which a direct HVAC unit (heater/cooler) has full effect.
-   */
-  private static final double UNIT_FULL_EFFECT_DISTANCE = 4.0;
+  // NOTE on units: the distance thresholds below are measured in flood-fill PATH STEPS
+  // (6-connected BFS hops through open air), not straight-line blocks. Because air bends
+  // around obstacles, a path-step count is always >= the Euclidean distance — e.g. a ceiling
+  // vent 6 blocks away horizontally in an 8-tall room is ~8.5 blocks Euclidean but ~12 path
+  // steps (over and down). The thresholds are tuned for that inflation: the older straight-line
+  // values (vent 6/24, direct 4/12) made everything read far too weak once propagation switched
+  // to path distance. See the room simulations in the HVAC system docs.
 
   /**
-   * Distance in blocks beyond which a direct HVAC unit has no effect.
+   * Path-step distance within which a direct HVAC unit (heater/cooler) has full effect.
    */
-  private static final double UNIT_MAX_EFFECT_DISTANCE = 12.0;
+  private static final double UNIT_FULL_EFFECT_DISTANCE = 6.0;
 
   /**
-   * Distance in blocks within which a vent relay has full effect. Vents distribute
+   * Path-step distance beyond which a direct HVAC unit has no effect.
+   */
+  private static final double UNIT_MAX_EFFECT_DISTANCE = 20.0;
+
+  /**
+   * Path-step distance within which a vent relay has full effect. Vents distribute
    * conditioned air through a room, so they have a wider full-effect zone than the
    * equipment itself.
    */
-  private static final double VENT_FULL_EFFECT_DISTANCE = 6.0;
+  private static final double VENT_FULL_EFFECT_DISTANCE = 8.0;
 
   /**
-   * Distance in blocks beyond which a vent relay has no effect. Vents cover a room-sized
-   * area (~24 blocks / ~72 feet diameter) which is realistic for a ceiling vent.
+   * Path-step distance beyond which a vent relay has no effect. Wide enough to cover a
+   * room-sized area plus the extra path length of bending around a corner into an adjacent
+   * connected space (~30 steps), so a thermostat just around the corner from its vent still
+   * feels it.
    */
-  private static final double VENT_MAX_EFFECT_DISTANCE = 24.0;
+  private static final double VENT_MAX_EFFECT_DISTANCE = 40.0;
 
   /**
-   * Number of chunks in each direction to scan for HVAC units (2 = 5x5 grid around player).
-   * Needs to cover VENT_MAX_EFFECT_DISTANCE (24 blocks = 1.5 chunks), so 2 is safe.
+   * Number of chunks in each direction to scan for HVAC units. Must cover the straight-line
+   * span of {@link #VENT_MAX_EFFECT_DISTANCE} path steps — air bending around corners means a
+   * vent within 40 path steps can still be a fair number of blocks away in a straight line, so
+   * a 3-chunk (7x7) radius gives headroom over the old 2.
    */
-  private static final int CHUNK_SCAN_RADIUS = 2;
-
-  /**
-   * Maximum distance (in blocks, in the {@code roomDirection}) to step away from a
-   * wall-mounted device when sampling ambient temperature. Stops earlier if a solid
-   * block is encountered. Three steps strikes the balance between picking up the room
-   * temperature past the wall the device is flush against and not reaching into a
-   * neighboring room through a doorway.
-   */
-  private static final int AMBIENT_SAMPLE_MAX_STEPS = 3;
+  private static final int CHUNK_SCAN_RADIUS = 3;
 
   /**
    * How often (in ticks) to sweep stale entries from the chunk temperature cache. At 20 TPS
@@ -150,11 +157,20 @@ public class HvacTemperatureManager {
   private static long lastEvictionTick = 0L;
 
   /**
-   * Multiplier applied to the HVAC contribution for each solid block between the unit and the
-   * query position. A value of 0.3 means each wall reduces the effect to 30% of what it was,
-   * so one wall = 30%, two walls = 9%, three walls = 2.7% (effectively zero).
+   * Maximum number of air cells the flood fill will visit from a single query position before
+   * giving up. This is the hard tick-cost ceiling: every temperature query costs at most this
+   * many block-state lookups regardless of how open the surrounding space is.
+   *
+   * <p>This is a <em>3D</em> flood, so the cell count grows roughly cubically with reach: the
+   * old 512-cell budget was exhausted only ~7 path steps out in an open 8-tall room, which left
+   * a ceiling vent ~12 steps away reading as unreachable (weight 0) — the "vents are too weak /
+   * don't reach me" bug. 4096 covers an open room out past {@link #VENT_MAX_EFFECT_DISTANCE}
+   * including a bend around a corner, while the early-stop in {@link #floodFillAirDistances}
+   * (the fill quits as soon as every candidate source has been located) keeps the typical cost
+   * far below this ceiling. A source whose air path exceeds the budget reads as unreachable
+   * (same as being walled off).</p>
    */
-  private static final float WALL_ATTENUATION_FACTOR = 0.3f;
+  private static final int MAX_FLOOD_BLOCKS = 4096;
 
   /**
    * Multiplier applied to the total HVAC offset when the query position can see the sky
@@ -209,30 +225,21 @@ public class HvacTemperatureManager {
 
   /**
    * Reads the ambient temperature for a wall- or ceiling-mounted device that occupies
-   * {@code devicePos} with its sensor face pointing in {@code roomDirection}.
+   * {@code devicePos}.
    *
-   * <p><b>Why this exists.</b> A wall-mounted thermostat's {@code pos} sits flush against
-   * the wall the device is mounted on. The wall-attenuation raycast in
-   * {@link #calculateHvacOffset} reduces every HVAC source's contribution to that pos by
-   * 0.3× per intervening solid block — and worse, the per-direction offset cap is gated on
-   * the number of heater/cooler units whose final weighted contribution is &gt; 0. Distant
-   * units that the room itself would receive via vents and air mixing get attenuated to
-   * effectively zero when sampled at the wall surface, collapsing the cap to its
-   * single-unit floor (50°F) and freezing the reading well below the room's actual
-   * temperature.</p>
+   * <p><b>Why this exists.</b> A wall-mounted thermostat's {@code pos} sits flush against the
+   * wall the device is mounted on. The air-path flood fill in {@link #calculateHvacOffset}
+   * starts from {@code devicePos} and expands into whatever open air the device is exposed to —
+   * around corners and through doorways — so a single query already reads the room the device
+   * actually serves; no extra forward sampling is needed.</p>
    *
-   * <p>Sampling forward through {@code roomDirection} (up to {@link #AMBIENT_SAMPLE_MAX_STEPS}
-   * blocks, stopping at the first solid block) lets the device read the temperature of the
-   * air it's exposed to rather than the air right at the wall. The strongest offset across
-   * those sample points is returned, since a heater pumping into one part of the room and
-   * a cooler into another shouldn't average to "comfortable" when neither is — and a wall
-   * sensor would feel whichever flow actually reaches it.</p>
+   * <p>The {@code roomDirection} parameter is retained for API/back-compat with callers but is
+   * no longer used now that propagation follows real air paths rather than a straight-line
+   * raycast.</p>
    *
    * @param world         the world instance
    * @param devicePos     position of the wall-mounted device
-   * @param roomDirection direction from the device's pos into the room (usually the device's
-   *                      {@code FACING} property). May be {@code null}, in which case only
-   *                      the device's own pos is sampled.
+   * @param roomDirection unused; retained for API compatibility (may be {@code null})
    * @return the ambient temperature in degrees Fahrenheit
    */
   public static float getAmbientTemperatureAt(World world, BlockPos devicePos,
@@ -246,20 +253,11 @@ public class HvacTemperatureManager {
     }
 
     float baseline = getCachedBaseline(world, devicePos);
+    // The flood fill in calculateHvacOffset already walks the open air around this device —
+    // around corners and through doorways — starting from devicePos, so a single query reads
+    // the air the device is actually exposed to. The legacy forward-sampling walk through
+    // roomDirection is no longer needed now that propagation follows real air paths.
     float bestOffset = calculateHvacOffset(world, devicePos);
-
-    if (roomDirection != null) {
-      for (int step = 1; step <= AMBIENT_SAMPLE_MAX_STEPS; step++) {
-        BlockPos samplePos = devicePos.offset(roomDirection, step);
-        if (isSolidBlock(world.getBlockState(samplePos))) {
-          break;
-        }
-        float offset = calculateHvacOffset(world, samplePos);
-        if (Math.abs(offset) > Math.abs(bestOffset)) {
-          bestOffset = offset;
-        }
-      }
-    }
 
     if (debugThisPass) {
       LOGGER.info(String.format(
@@ -412,40 +410,46 @@ public class HvacTemperatureManager {
   // The high end is intentionally extreme to make coolers meaningful in hot biomes.
 
   /**
-   * Scans nearby chunks (3x3 grid) for active {@link IHvacUnit} tile entities and calculates a
-   * distance-weighted temperature offset at the given position.
+   * Computes the distance-weighted HVAC temperature offset at the given position by following
+   * the actual <em>air path</em> from the query point to each active {@link IHvacUnit}.
    *
-   * <p>Each active unit's contribution is scaled by distance (full effect within 4-6 blocks
-   * depending on type, linear falloff to zero at 12-24 blocks).</p>
+   * <p><b>Why a flood fill.</b> The previous implementation weighted each source by a
+   * straight-line raycast that counted intervening solid blocks. That punched through interior
+   * geometry on the direct line: a vent and a thermostat in the same room but separated by a
+   * corner or a short partition wall read as "1–2 walls apart" (30%/9% of the contribution),
+   * so a thermostat just around the corner from its own vent never felt it. This method instead
+   * flood-fills outward through open air from {@code pos} (see {@link #floodFillAirDistances})
+   * and measures each source by its shortest air-path distance. Air bends around corners and
+   * through doorways but is stopped cold by a sealed wall — which is also exactly what makes a
+   * sealed adjacent room a separate thermal zone.</p>
    *
-   * <p>This provides per-position granularity without per-block temperature tracking. A heater
-   * and cooler in the same chunk will each dominate their nearby area: standing next to the
-   * heater you feel mostly warmth, near the cooler mostly cold, and in between a blend.</p>
+   * <p><b>Stacking / extreme biomes.</b> Each reachable active source — <em>including vent
+   * relays</em>, which are the delivery points for rooftop/remote equipment — counts toward the
+   * per-direction offset cap (see {@link #computeOffsetCap}). This is the fix for "cooling never
+   * keeps up in the desert": a single rooftop cooler feeding three vents now provides three
+   * contributors' worth of capacity instead of being pinned at the single-unit floor, so
+   * stacking units to overcome an extreme biome actually works. The absolute hard cap plus the
+   * thermostat's own proportional throttling keep this from running away.</p>
    *
-   * <p><b>Performance:</b> Scans 9 chunk TE maps (typically 0–20 TEs each), performs a
-   * distance calculation per active HVAC unit found. Total cost: microseconds. World/chunk
+   * <p><b>Performance:</b> one bounded flood fill (≤ {@link #MAX_FLOOD_BLOCKS} block-state
+   * lookups) plus a cheap chunk-TE scan, per query, at the 1–2 second query cadence. World/chunk
    * access must remain on the server thread (not thread-safe).</p>
    *
    * @param world the world instance
    * @param pos   the position to calculate the offset for
    *
-   * @return the distance-weighted HVAC temperature offset in degrees Fahrenheit
+   * @return the air-path-weighted HVAC temperature offset in degrees Fahrenheit
    */
   private static float calculateHvacOffset(World world, BlockPos pos) {
+    // Gather active HVAC sources in the surrounding chunks, culled by straight-line distance.
+    // (Air-path distance is always >= straight-line distance, so anything outside the largest
+    // falloff radius in a straight line can never be in range by air either.)
     int centerCX = pos.getX() >> 4;
     int centerCZ = pos.getZ() >> 4;
-
-    float heatingOffset = 0.0f;
-    float coolingOffset = 0.0f;
-    // Count heater/cooler equipment (not vents) separately for the cap calculation. The cap
-    // is gated on actual energy sources, not on delivery points: 50 vents + 1 heater is one
-    // "unit's worth" of capacity, not 51.
-    int heatingUnits = 0;
-    int coolingUnits = 0;
-    // Use the larger of the two max distances for the initial distance-squared cull
     double maxDistForCull = Math.max(UNIT_MAX_EFFECT_DISTANCE, VENT_MAX_EFFECT_DISTANCE);
     double maxCullDistSq = maxDistForCull * maxDistForCull;
 
+    List<TileEntity> sources = new ArrayList<>();
     for (int cx = centerCX - CHUNK_SCAN_RADIUS; cx <= centerCX + CHUNK_SCAN_RADIUS; cx++) {
       for (int cz = centerCZ - CHUNK_SCAN_RADIUS; cz <= centerCZ + CHUNK_SCAN_RADIUS; cz++) {
         if (!world.isChunkGeneratedAt(cx, cz)) {
@@ -453,66 +457,91 @@ public class HvacTemperatureManager {
         }
         Chunk chunk = world.getChunk(cx, cz);
         for (TileEntity te : chunk.getTileEntityMap().values()) {
-          if (!(te instanceof IHvacUnit)) {
+          if (!(te instanceof IHvacUnit) || !((IHvacUnit) te).isHvacActive()) {
             continue;
           }
-          IHvacUnit unit = (IHvacUnit) te;
-          if (!unit.isHvacActive()) {
-            continue;
+          if (te.getPos().distanceSq(pos) <= maxCullDistSq) {
+            sources.add(te);
           }
+        }
+      }
+    }
+    if (sources.isEmpty()) {
+      return 0.0f;
+    }
 
-          double distSq = te.getPos().distanceSq(pos);
-          if (distSq > maxCullDistSq) {
-            continue;
-          }
+    // Map each candidate air cell (the six neighbours of every source block — the source block
+    // itself is solid and blows into the open cell beside it) to the index of the source that
+    // owns it. The flood uses this to early-stop: a source is "located" the moment BFS first
+    // reaches any of its neighbour cells (BFS visits in increasing-distance order, so the first
+    // hit is already the shortest path). Once every source that CAN be located has been, the
+    // fill returns — so the typical cost is far below the MAX_FLOOD_BLOCKS ceiling. We only pay
+    // the full budget when a source is genuinely unreachable within range.
+    Map<Long, Integer> targetCellToSource = new HashMap<>();
+    for (int i = 0; i < sources.size(); i++) {
+      BlockPos sp = sources.get(i).getPos();
+      for (EnumFacing dir : EnumFacing.values()) {
+        // putIfAbsent: if two sources are adjacent and share a neighbour cell, the first owner
+        // wins — the other is still located via its own remaining neighbours.
+        targetCellToSource.putIfAbsent(sp.offset(dir).toLong(), i);
+      }
+    }
 
-          double dist = Math.sqrt(distSq);
-          boolean isVent = te instanceof TileEntityHvacVentRelay;
+    // Flood-fill open air from the query position so we can measure each source by air path.
+    Map<Long, Integer> reachable =
+        floodFillAirDistances(world, pos, targetCellToSource, sources.size());
 
-          // Use different distance curves for vents vs direct units
-          double fullDist = isVent ? VENT_FULL_EFFECT_DISTANCE : UNIT_FULL_EFFECT_DISTANCE;
-          double maxDist = isVent ? VENT_MAX_EFFECT_DISTANCE : UNIT_MAX_EFFECT_DISTANCE;
-          float distWeight = calculateDistanceWeight(dist, fullDist, maxDist);
+    float heatingOffset = 0.0f;
+    float coolingOffset = 0.0f;
+    // Every reachable delivery point (vent OR direct unit) counts toward the cap — that's what
+    // lets stacked vents/RTUs raise the ceiling enough to condition an extreme biome.
+    int heatingContributors = 0;
+    int coolingContributors = 0;
 
-          // Both vents and direct units use wall attenuation — walls block airflow
-          // between rooms, which is the basis of zone separation.
-          float wallWeight = calculateWallAttenuation(world, te.getPos(), pos);
-          float weight = distWeight * wallWeight;
+    for (TileEntity te : sources) {
+      IHvacUnit unit = (IHvacUnit) te;
+      int pathDist = shortestAirPathTo(reachable, te.getPos());
+      if (pathDist < 0) {
+        continue; // no open-air path within budget — walled off / unreachable
+      }
+      boolean isVent = te instanceof TileEntityHvacVentRelay;
+      double fullDist = isVent ? VENT_FULL_EFFECT_DISTANCE : UNIT_FULL_EFFECT_DISTANCE;
+      double maxDist = isVent ? VENT_MAX_EFFECT_DISTANCE : UNIT_MAX_EFFECT_DISTANCE;
+      float distWeight = calculateDistanceWeight(pathDist, fullDist, maxDist);
+      if (distWeight <= 0.0f) {
+        continue;
+      }
 
-          float contribution = unit.getTemperatureContribution();
-          float weightedOffset = Math.abs(contribution) * weight;
+      float contribution = unit.getTemperatureContribution();
+      float weightedOffset = Math.abs(contribution) * distWeight;
 
-          if (debugThisPass) {
-            String type = isVent ? "VENT" : (contribution > 0 ? "HEATER" : "COOLER");
-            LOGGER.info(String.format("[HVAC-DEBUG]   %s at %s dist=%.1f distW=%.2f wallW=%.2f contrib=%.1f weighted=%.1f",
-                type, te.getPos(), dist, distWeight, wallWeight, contribution, weightedOffset));
-          }
+      if (debugThisPass) {
+        String type = isVent ? "VENT" : (contribution > 0 ? "HEATER" : "COOLER");
+        LOGGER.info(String.format(
+            "[HVAC-DEBUG]   %s at %s airPath=%d distW=%.2f contrib=%.1f weighted=%.1f",
+            type, te.getPos(), pathDist, distWeight, contribution, weightedOffset));
+      }
 
-          if (contribution > 0) {
-            heatingOffset += weightedOffset;
-            // Only count actual heater units toward the cap, not vent relays. Vents
-            // distribute heat from a heater; they don't supply additional heat capacity.
-            if (weightedOffset > 0.0f && !isVent) {
-              heatingUnits++;
-            }
-          } else if (contribution < 0) {
-            coolingOffset += weightedOffset;
-            if (weightedOffset > 0.0f && !isVent) {
-              coolingUnits++;
-            }
-          }
-
+      if (contribution > 0) {
+        heatingOffset += weightedOffset;
+        if (weightedOffset > 0.0f) {
+          heatingContributors++;
+        }
+      } else if (contribution < 0) {
+        coolingOffset += weightedOffset;
+        if (weightedOffset > 0.0f) {
+          coolingContributors++;
         }
       }
     }
 
-    // Clamp each direction. Cap = BASE_CAP + per-extra-unit bonus, hard-clamped at the
-    // absolute ceiling. Single-unit systems sit at BASE_CAP (50°F); multi-unit setups can
-    // push further to handle extreme climates (3 units → 100°F, 5 units → 150°F). Vents do
-    // NOT increase the cap — that prevents the runaway where 50 vents stack to a ~1500°F
-    // raw offset and oscillate the thermostat.
-    float effectiveHeatingCap = computeOffsetCap(heatingUnits);
-    float effectiveCoolingCap = computeOffsetCap(coolingUnits);
+    // Clamp each direction. Cap = BASE_CAP + per-extra-contributor bonus, hard-clamped at the
+    // absolute ceiling. One contributor sits at BASE_CAP (50°F); stacked setups push further
+    // to handle extreme climates. Bounded by the hard cap so a wall of vents can't produce a
+    // thousand-degree offset, and the thermostat's proportional control throttles long before
+    // the cap matters in normal operation.
+    float effectiveHeatingCap = computeOffsetCap(heatingContributors);
+    float effectiveCoolingCap = computeOffsetCap(coolingContributors);
     heatingOffset = Math.min(heatingOffset, effectiveHeatingCap);
     coolingOffset = Math.min(coolingOffset, effectiveCoolingCap);
 
@@ -524,11 +553,100 @@ public class HvacTemperatureManager {
     }
 
     if (debugThisPass) {
-      LOGGER.info(String.format("[HVAC-DEBUG]   totals: heating=%.1f (cap=%.0f, %d units) cooling=%.1f (cap=%.0f, %d units) outdoor=%s finalOffset=%.1f",
-          heatingOffset, effectiveHeatingCap, heatingUnits, coolingOffset, effectiveCoolingCap, coolingUnits, isOutdoors, totalOffset));
+      LOGGER.info(String.format(
+          "[HVAC-DEBUG]   totals: heating=%.1f (cap=%.0f, %d) cooling=%.1f (cap=%.0f, %d) outdoor=%s finalOffset=%.1f",
+          heatingOffset, effectiveHeatingCap, heatingContributors, coolingOffset,
+          effectiveCoolingCap, coolingContributors, isOutdoors, totalOffset));
     }
 
     return totalOffset;
+  }
+
+  /**
+   * Breadth-first flood fill from {@code start} through open (non-solid) air, returning a map
+   * from packed block position ({@link BlockPos#toLong()}) to the shortest step-distance from
+   * the start. Expansion is bounded three ways: it stops as soon as every cell in
+   * {@code targets} has been located (the early-stop — the common case, keeping cost well below
+   * the ceiling), it never visits more than {@link #MAX_FLOOD_BLOCKS} cells, and it never
+   * expands a cell already at the largest falloff radius (no source past that distance could
+   * contribute anyway). The start cell is always seeded at distance 0 even when it is the solid
+   * block a wall-mounted thermostat occupies; only its non-solid neighbours are enqueued, so the
+   * fill represents the air the device is exposed to.
+   *
+   * @param targetCellToSource maps each air cell the caller cares about to the index of the
+   *                           source that owns it; used for the early-stop.
+   * @param sourceCount        total number of sources; the fill returns once every locatable
+   *                           source has been seen. A source that is never reached (sealed off,
+   *                           or beyond the budget/range) leaves its cells absent from the map
+   *                           and simply prevents the early-stop, falling back to the budget cap.
+   */
+  private static Map<Long, Integer> floodFillAirDistances(World world, BlockPos start,
+      Map<Long, Integer> targetCellToSource, int sourceCount) {
+    Map<Long, Integer> visited = new HashMap<>();
+    ArrayDeque<BlockPos> queue = new ArrayDeque<>();
+    visited.put(start.toLong(), 0);
+    queue.add(start);
+
+    boolean[] sourceLocated = new boolean[sourceCount];
+    int remainingSources = sourceCount;
+    // The start cell itself could be a source's neighbour (e.g. a thermostat right beside a vent).
+    Integer startOwner = targetCellToSource.get(start.toLong());
+    if (startOwner != null) {
+      sourceLocated[startOwner] = true;
+      remainingSources--;
+    }
+
+    int maxStep = (int) Math.ceil(VENT_MAX_EFFECT_DISTANCE);
+
+    while (!queue.isEmpty() && visited.size() < MAX_FLOOD_BLOCKS && remainingSources > 0) {
+      BlockPos cur = queue.poll();
+      int curDist = visited.get(cur.toLong());
+      if (curDist >= maxStep) {
+        continue;
+      }
+      for (EnumFacing dir : EnumFacing.values()) {
+        BlockPos next = cur.offset(dir);
+        long key = next.toLong();
+        if (visited.containsKey(key)) {
+          continue;
+        }
+        if (isSolidBlock(world.getBlockState(next))) {
+          continue; // walls stop airflow — this is what separates sealed rooms into zones
+        }
+        visited.put(key, curDist + 1);
+        Integer owner = targetCellToSource.get(key);
+        if (owner != null && !sourceLocated[owner]) {
+          sourceLocated[owner] = true;
+          remainingSources--;
+        }
+        if (visited.size() >= MAX_FLOOD_BLOCKS || remainingSources <= 0) {
+          break;
+        }
+        queue.add(next);
+      }
+    }
+    return visited;
+  }
+
+  /**
+   * Returns the shortest air-path step-distance from the flood-fill origin to the air cell the
+   * given source blows into (the closest visited neighbour of {@code sourcePos}), or {@code -1}
+   * if no air cell adjacent to the source was reached within the flood-fill budget. A source
+   * block is itself solid, so we measure to the open cell next to it rather than to the block.
+   */
+  private static int shortestAirPathTo(Map<Long, Integer> reachable, BlockPos sourcePos) {
+    int best = -1;
+    Integer self = reachable.get(sourcePos.toLong());
+    if (self != null) {
+      best = self;
+    }
+    for (EnumFacing dir : EnumFacing.values()) {
+      Integer d = reachable.get(sourcePos.offset(dir).toLong());
+      if (d != null && (best < 0 || d + 1 < best)) {
+        best = d + 1;
+      }
+    }
+    return best;
   }
 
   /**
@@ -561,103 +679,6 @@ public class HvacTemperatureManager {
       return 0.0f;
     }
     return (float) ((maxEffectDist - distance) / (maxEffectDist - fullEffectDist));
-  }
-
-  /**
-   * Calculates the wall attenuation factor for an HVAC unit's contribution between two
-   * positions. Tries several candidate paths (direct line, plus a few elevated variants)
-   * and returns the BEST attenuation — i.e. the path that finds the fewest walls. This
-   * approximates the way air actually flows: it doesn't punch through walls in a straight
-   * line, it rises and finds openings around obstacles.
-   *
-   * <p>Concrete example: a vent under a balcony enclosure with a player to the side.
-   * The direct line from vent to player crosses the balcony's vertical wall plus the
-   * balcony floor (2 walls → 9% contribution). But a path that starts a few blocks
-   * above the vent — simulating air rising out of the enclosure's open top before
-   * heading sideways — finds 0 walls and delivers the full contribution. Taking the
-   * MAX across paths is the cheap stand-in for an actual flood-fill or pathfinding
-   * solution.</p>
-   *
-   * <p><b>Performance:</b> ~5 paths × ~N block lookups per path, where N is the distance
-   * in blocks. For 3-16 block distances and 2-4 contributors per query, this adds
-   * 60-320 lookups per temperature calculation (every 2 seconds). Still microseconds.</p>
-   *
-   * @param world the world instance
-   * @param from  the HVAC unit position
-   * @param to    the query position
-   *
-   * @return the best wall attenuation multiplier across all candidate paths, between 0 and 1
-   */
-  private static float calculateWallAttenuation(World world, BlockPos from, BlockPos to) {
-    // Direct line first — usually fine when nothing's in the way, and lets us early-exit
-    // if it already hits 100% so we don't run extra raycasts for nothing.
-    float best = attenuationForPath(world, from, to);
-    if (best >= 0.999f) {
-      return best;
-    }
-
-    // Elevated start: simulates air rising off the vent before moving sideways. Catches
-    // the "vent enclosed under a balcony / overhang" case where the balcony's floor is
-    // an obstacle on the direct line but disappears once you go a couple blocks above.
-    best = Math.max(best, attenuationForPath(world, from.up(), to));
-    if (best >= 0.999f) return best;
-    best = Math.max(best, attenuationForPath(world, from.up(2), to));
-    if (best >= 0.999f) return best;
-
-    // Elevated end: simulates air arriving at the player from above (e.g. coming over
-    // an interior partition rather than punching through it).
-    best = Math.max(best, attenuationForPath(world, from, to.up()));
-    if (best >= 0.999f) return best;
-
-    // Both elevated — handles symmetric obstructions where neither end alone is enough.
-    best = Math.max(best, attenuationForPath(world, from.up(), to.up()));
-    return best;
-  }
-
-  /**
-   * Computes the wall-count attenuation along a single ray. Returns 1.0 when the path is
-   * unobstructed and {@link #WALL_ATTENUATION_FACTOR}^N when N walls are crossed, with an
-   * early exit when attenuation drops below ~1% (≥ 3 walls).
-   */
-  private static float attenuationForPath(World world, BlockPos from, BlockPos to) {
-    double dx = to.getX() - from.getX();
-    double dy = to.getY() - from.getY();
-    double dz = to.getZ() - from.getZ();
-    double length = Math.sqrt(dx * dx + dy * dy + dz * dz);
-    if (length < 1.0) {
-      return 1.0f;
-    }
-
-    double stepSize = 0.9;
-    int steps = (int) (length / stepSize);
-    double sx = dx / length * stepSize;
-    double sy = dy / length * stepSize;
-    double sz = dz / length * stepSize;
-
-    float attenuation = 1.0f;
-    double cx = from.getX() + 0.5;
-    double cy = from.getY() + 0.5;
-    double cz = from.getZ() + 0.5;
-
-    BlockPos.MutableBlockPos checkPos = new BlockPos.MutableBlockPos();
-
-    for (int i = 1; i < steps; i++) {
-      cx += sx;
-      cy += sy;
-      cz += sz;
-      checkPos.setPos(cx, cy, cz);
-      if (checkPos.equals(from) || checkPos.equals(to)) {
-        continue;
-      }
-      IBlockState state = world.getBlockState(checkPos);
-      if (isSolidBlock(state)) {
-        attenuation *= WALL_ATTENUATION_FACTOR;
-        if (attenuation < 0.01f) {
-          return 0.0f;
-        }
-      }
-    }
-    return attenuation;
   }
 
   /**
