@@ -15,6 +15,12 @@ import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalPhas
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalPhaseApplicability;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalPhases;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalProgrammedPhasePlan;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalProgrammedPhase;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalPhaseMovement;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalRecallMode;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalPreempt;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalPreemptType;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalCoordinationMode;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.RingBarrierState;
 import java.util.HashMap;
 import java.util.List;
@@ -1548,6 +1554,192 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
       markDirtySync(getWorld(), getPos());
     }
     return programmedPhasePlan;
+  }
+
+  /**
+   * Applies a single edit to the ADVANCED (NEMA) program from the CSM ASC-3 GUI. See
+   * {@link AdvancedSignalControllerConfigPacket} for the action vocabulary. After a recognized edit
+   * the controller resets (rebuilding its ring-and-barrier runtime) and re-syncs to clients.
+   *
+   * @param action the field/operation name
+   * @param index  the phase number or preempt index (where applicable)
+   * @param value  the new value (ticks, enum ordinal, circuit index, phase number, or 0/1)
+   *
+   * @since 2026.6
+   */
+  public void applyAdvancedConfig(String action, int index, long value) {
+    TrafficSignalProgrammedPhasePlan plan = getOrCreateProgrammedPhasePlan();
+    TrafficSignalProgrammedPhase phase = plan.getPhase(index);
+    boolean changed = true;
+    switch (action) {
+      case "loadTemplate":
+        plan.loadStandardEightPhase(circuits, getWorld());
+        break;
+      case "ph.enabled":
+        if (phase != null) {
+          phase.setEnabled(value != 0);
+        }
+        break;
+      case "ph.circuit":
+        if (phase != null) {
+          phase.setCircuitIndex((int) value);
+        }
+        break;
+      case "ph.movement":
+        if (phase != null) {
+          phase.setMovement(TrafficSignalPhaseMovement.fromNBT((int) value));
+        }
+        break;
+      case "ph.recall":
+        if (phase != null) {
+          phase.setRecallMode(TrafficSignalRecallMode.fromNBT((int) value));
+        }
+        break;
+      case "ph.pedRecall":
+        if (phase != null) {
+          phase.setPedRecall(value != 0);
+        }
+        break;
+      case "ph.minGreen":
+        if (phase != null) {
+          phase.setMinGreen(clampTicks(value));
+        }
+        break;
+      case "ph.passage":
+        if (phase != null) {
+          phase.setPassage(clampTicks(value));
+        }
+        break;
+      case "ph.maxGreen":
+        if (phase != null) {
+          phase.setMaxGreen(clampTicks(value));
+        }
+        break;
+      case "ph.yellow":
+        if (phase != null) {
+          phase.setYellow(clampTicks(value));
+        }
+        break;
+      case "ph.redClear":
+        if (phase != null) {
+          phase.setRedClear(clampTicks(value));
+        }
+        break;
+      case "ph.walk":
+        if (phase != null) {
+          phase.setWalk(clampTicks(value));
+        }
+        break;
+      case "ph.pedClear":
+        if (phase != null) {
+          phase.setPedClear(clampTicks(value));
+        }
+        break;
+      case "co.mode":
+        plan.getCoordination().setMode(TrafficSignalCoordinationMode.fromNBT((int) value));
+        break;
+      case "co.cycle":
+        plan.getCoordination().setCycleLength(clampTicks(value));
+        break;
+      case "co.offset":
+        plan.getCoordination().setOffset(clampTicks(value));
+        break;
+      case "co.split":
+        plan.getCoordination().setSplit(index, clampTicks(value));
+        break;
+      case "co.coordToggle":
+        plan.getCoordination().setCoordinatedPhases(
+            toggleInArray(plan.getCoordination().getCoordinatedPhases(), (int) value));
+        break;
+      case "pe.add":
+        plan.getPreempts().add(new TrafficSignalPreempt());
+        break;
+      case "pe.remove":
+        if (index >= 0 && index < plan.getPreempts().size()) {
+          plan.getPreempts().remove(index);
+        }
+        break;
+      case "pe.enabled":
+        if (validPreempt(plan, index)) {
+          plan.getPreempts().get(index).setEnabled(value != 0);
+        }
+        break;
+      case "pe.type":
+        if (validPreempt(plan, index)) {
+          plan.getPreempts().get(index).setType(TrafficSignalPreemptType.fromNBT((int) value));
+        }
+        break;
+      case "pe.trigCircuit":
+        if (validPreempt(plan, index)) {
+          plan.getPreempts().get(index).setTriggerCircuitIndex((int) value);
+        }
+        break;
+      case "pe.trigMovement":
+        if (validPreempt(plan, index)) {
+          plan.getPreempts().get(index)
+              .setTriggerMovement(TrafficSignalPhaseMovement.fromNBT((int) value));
+        }
+        break;
+      case "pe.minDwell":
+        if (validPreempt(plan, index)) {
+          plan.getPreempts().get(index).setMinDwell(clampTicks(value));
+        }
+        break;
+      case "pe.trackToggle":
+        if (validPreempt(plan, index)) {
+          TrafficSignalPreempt pe = plan.getPreempts().get(index);
+          pe.setTrackClearPhases(toggleInArray(pe.getTrackClearPhases(), (int) value));
+        }
+        break;
+      case "pe.dwellToggle":
+        if (validPreempt(plan, index)) {
+          TrafficSignalPreempt pe = plan.getPreempts().get(index);
+          pe.setDwellPhases(toggleInArray(pe.getDwellPhases(), (int) value));
+        }
+        break;
+      case "pe.exitToggle":
+        if (validPreempt(plan, index)) {
+          TrafficSignalPreempt pe = plan.getPreempts().get(index);
+          pe.setExitPhases(toggleInArray(pe.getExitPhases(), (int) value));
+        }
+        break;
+      default:
+        changed = false;
+        break;
+    }
+    if (changed) {
+      // Clearing the fault lets a now-valid plan resume; resetController re-ticks and re-syncs.
+      if (isInFaultState()) {
+        currentFaultMessage = "";
+        operatingMode = mode;
+      }
+      resetController(false, true);
+      syncServerToClient(getWorld());
+    }
+  }
+
+  private static long clampTicks(long value) {
+    return Math.max(0L, Math.min(12000L, value));
+  }
+
+  private static boolean validPreempt(TrafficSignalProgrammedPhasePlan plan, int index) {
+    return index >= 0 && index < plan.getPreempts().size();
+  }
+
+  /** Returns a copy of {@code arr} with {@code value} added if absent or removed if present. */
+  private static int[] toggleInArray(int[] arr, int value) {
+    for (int i = 0; i < arr.length; i++) {
+      if (arr[i] == value) {
+        int[] out = new int[arr.length - 1];
+        System.arraycopy(arr, 0, out, 0, i);
+        System.arraycopy(arr, i + 1, out, i, arr.length - i - 1);
+        return out;
+      }
+    }
+    int[] out = new int[arr.length + 1];
+    System.arraycopy(arr, 0, out, 0, arr.length);
+    out[arr.length] = value;
+    return out;
   }
 
   // endregion

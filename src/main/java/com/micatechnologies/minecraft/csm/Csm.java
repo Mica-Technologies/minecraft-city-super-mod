@@ -178,6 +178,10 @@ public class Csm {
           com.micatechnologies.minecraft.csm.trafficsignals.SignalControllerSetValuePacketHandler.class,
           com.micatechnologies.minecraft.csm.trafficsignals.SignalControllerSetValuePacket.class, Side.SERVER);
       CsmNetwork.registerNetworkMessage(
+          com.micatechnologies.minecraft.csm.trafficsignals.AdvancedSignalControllerConfigPacketHandler.class,
+          com.micatechnologies.minecraft.csm.trafficsignals.AdvancedSignalControllerConfigPacket.class,
+          Side.SERVER);
+      CsmNetwork.registerNetworkMessage(
           com.micatechnologies.minecraft.csm.lifesafety.FireAlarmPanelConfigPacketHandler.class,
           com.micatechnologies.minecraft.csm.lifesafety.FireAlarmPanelConfigPacket.class, Side.SERVER);
       CsmNetwork.registerNetworkMessage(
