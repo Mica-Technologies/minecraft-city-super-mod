@@ -1,9 +1,14 @@
 package com.micatechnologies.minecraft.csm.trafficsignals.logic;
 
+import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEW;
 import java.util.ArrayList;
 import java.util.List;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
 /**
  * The full {@code ADVANCED}-mode program: the 8 NEMA {@link TrafficSignalProgrammedPhase}s, the
@@ -146,6 +151,144 @@ public class TrafficSignalProgrammedPhasePlan {
       }
     }
     return false;
+  }
+
+  // endregion
+
+  // region: Auto-template + validation
+
+  /**
+   * Auto-assigns the standard 8-phase plan onto the controller's circuits by reading each circuit's
+   * through-signal facing. North/South approaches become the major street (through phases 2 &amp; 6
+   * with lefts 1 &amp; 5); East/West become the minor street (through phases 4 &amp; 8 with lefts 3
+   * &amp; 7). A left phase is enabled only when its circuit actually has protected/left signals.
+   *
+   * <p>Assumes one circuit per approach (the recommended ADVANCED-mode setup). Circuits beyond the
+   * first two of each axis are left unassigned.
+   *
+   * @param circuits the controller circuits
+   * @param world    the world (for reading signal facing)
+   */
+  public void loadStandardEightPhase(TrafficSignalControllerCircuits circuits, World world) {
+    List<Integer> major = new ArrayList<>(); // N/S approaches
+    List<Integer> minor = new ArrayList<>(); // E/W approaches
+    for (int i = 0; i < circuits.getCircuitCount(); i++) {
+      TrafficSignalControllerCircuit circuit = circuits.getCircuit(i);
+      if (circuit.getThroughSignals().isEmpty()) {
+        continue;
+      }
+      EnumFacing facing = readFacing(world, circuit.getThroughSignals().get(0));
+      if (facing == null) {
+        continue;
+      }
+      if (facing.getAxis() == EnumFacing.Axis.Z) {
+        major.add(i);
+      } else if (facing.getAxis() == EnumFacing.Axis.X) {
+        minor.add(i);
+      }
+    }
+
+    // Clear all assignments first so re-running the template is idempotent.
+    for (TrafficSignalProgrammedPhase p : phases) {
+      p.setCircuitIndex(-1);
+      p.setEnabled(false);
+    }
+
+    // Major street: through 2/6, lefts 1/5; longer max greens.
+    if (major.size() > 0) {
+      assignApproach(circuits, major.get(0), 2, 1, 1200L);
+    }
+    if (major.size() > 1) {
+      assignApproach(circuits, major.get(1), 6, 5, 1200L);
+    }
+    // Minor street: through 4/8, lefts 3/7; shorter max greens.
+    if (minor.size() > 0) {
+      assignApproach(circuits, minor.get(0), 4, 3, 600L);
+    }
+    if (minor.size() > 1) {
+      assignApproach(circuits, minor.get(1), 8, 7, 600L);
+    }
+  }
+
+  private void assignApproach(TrafficSignalControllerCircuits circuits, int circuitIndex,
+      int throughPhaseNumber, int leftPhaseNumber, long throughMaxGreen) {
+    TrafficSignalControllerCircuit circuit = circuits.getCircuit(circuitIndex);
+    TrafficSignalProgrammedPhase through = getPhase(throughPhaseNumber);
+    if (through != null) {
+      through.setCircuitIndex(circuitIndex);
+      through.setMovement(TrafficSignalPhaseMovement.THROUGH);
+      through.setMaxGreen(throughMaxGreen);
+      through.setEnabled(true);
+    }
+    boolean hasLeft = !circuit.getProtectedSignals().isEmpty()
+        || !circuit.getLeftSignals().isEmpty();
+    TrafficSignalProgrammedPhase left = getPhase(leftPhaseNumber);
+    if (left != null && hasLeft) {
+      left.setCircuitIndex(circuitIndex);
+      left.setMovement(TrafficSignalPhaseMovement.PROTECTED_LEFT);
+      left.setMaxGreen(300L);
+      left.setEnabled(true);
+    }
+  }
+
+  private static EnumFacing readFacing(World world, BlockPos pos) {
+    if (world == null || !world.isBlockLoaded(pos)) {
+      return null;
+    }
+    IBlockState state = world.getBlockState(pos);
+    if (state.getProperties().containsKey(AbstractBlockRotatableNSEW.FACING)) {
+      return state.getValue(AbstractBlockRotatableNSEW.FACING);
+    }
+    return null;
+  }
+
+  /**
+   * Validates the plan against the controller's circuits. Returns a human-readable error message
+   * describing the first problem found, or {@code null} if the plan is usable.
+   *
+   * @param circuits the controller circuits
+   *
+   * @return the first validation error, or {@code null}
+   */
+  public String validate(TrafficSignalControllerCircuits circuits) {
+    if (!isConfigured()) {
+      return "Advanced mode: no phases are enabled/assigned. Map phases to circuits.";
+    }
+    for (TrafficSignalProgrammedPhase p : phases) {
+      if (!p.isEnabled()) {
+        continue;
+      }
+      int ci = p.getCircuitIndex();
+      if (ci < 0 || ci >= circuits.getCircuitCount()) {
+        return "Phase " + p.getPhaseNumber() + " is enabled but not assigned to a valid circuit.";
+      }
+      TrafficSignalControllerCircuit circuit = circuits.getCircuit(ci);
+      boolean hasSignals;
+      switch (p.getMovement()) {
+        case THROUGH:
+          hasSignals = !circuit.getThroughSignals().isEmpty();
+          break;
+        case LEFT:
+        case PROTECTED_LEFT:
+          hasSignals = !circuit.getProtectedSignals().isEmpty()
+              || !circuit.getLeftSignals().isEmpty();
+          break;
+        case RIGHT:
+          hasSignals = !circuit.getRightSignals().isEmpty();
+          break;
+        case PED:
+          hasSignals = !circuit.getPedestrianSignals().isEmpty();
+          break;
+        default:
+          hasSignals = false;
+          break;
+      }
+      if (!hasSignals) {
+        return "Phase " + p.getPhaseNumber() + " (" + p.getMovement().getName()
+            + ") has no matching signals on circuit " + (ci + 1) + ".";
+      }
+    }
+    return null;
   }
 
   // endregion
