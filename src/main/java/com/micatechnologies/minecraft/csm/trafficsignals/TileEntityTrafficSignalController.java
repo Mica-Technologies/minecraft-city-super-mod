@@ -14,6 +14,7 @@ import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalCont
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalPhase;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalPhaseApplicability;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalPhases;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalProgrammedPhasePlan;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -79,6 +80,16 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
    * @since 2.0
    */
   private TrafficSignalControllerOverlaps overlaps = new TrafficSignalControllerOverlaps();
+
+  /**
+   * The ADVANCED (NEMA ring-and-barrier) programmed phase plan, or {@code null} when the controller
+   * has never been configured for advanced operation. Lazily created via
+   * {@link #getOrCreateProgrammedPhasePlan()}; only persisted to NBT when non-null, so ordinary
+   * controllers carry no extra data.
+   *
+   * @since 2026.6
+   */
+  private TrafficSignalProgrammedPhasePlan programmedPhasePlan = null;
 
   /**
    * The list of cached phases for the traffic signal controller.
@@ -785,6 +796,12 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
           compound.getLong(TrafficSignalControllerNBTKeys.LEGACY_DEDICATED_PED_SIGNAL_TIME);
     }
 
+    // Load the ADVANCED-mode programmed phase plan, if present (no legacy fallback — new feature)
+    if (compound.hasKey(TrafficSignalControllerNBTKeys.ADVANCED_PLAN)) {
+      programmedPhasePlan = TrafficSignalProgrammedPhasePlan.fromNBT(
+          compound.getCompoundTag(TrafficSignalControllerNBTKeys.ADVANCED_PLAN));
+    }
+
     // Load the traffic signal controller upgrade previous NBT data format flag
     if (compound.hasKey(TrafficSignalControllerNBTKeys.UPGRADED_PREVIOUS_NBT_FORMAT)) {
       upgradedPreviousNBTFormat = compound.getBoolean(
@@ -929,6 +946,14 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
     // Write the dedicated pedestrian signal time to NBT
     compound.setLong(TrafficSignalControllerNBTKeys.DEDICATED_PED_SIGNAL_TIME,
         dedicatedPedSignalTime);
+
+    // Write the ADVANCED-mode programmed phase plan only when one exists, so ordinary controllers
+    // add no NBT overhead. Remove any stale tag when the plan has been cleared.
+    if (programmedPhasePlan != null) {
+      compound.setTag(TrafficSignalControllerNBTKeys.ADVANCED_PLAN, programmedPhasePlan.toNBT());
+    } else {
+      compound.removeTag(TrafficSignalControllerNBTKeys.ADVANCED_PLAN);
+    }
 
     // Write the upgrade previous NBT data format flag to NBT
     compound.setBoolean(TrafficSignalControllerNBTKeys.UPGRADED_PREVIOUS_NBT_FORMAT,
@@ -1469,6 +1494,35 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
       this.maxGreenTimeSecondary = maxGreenTimeSecondary;
       resetController(false, true);
     }
+  }
+
+  /**
+   * Gets the ADVANCED-mode programmed phase plan, or {@code null} if the controller has never been
+   * configured for advanced operation.
+   *
+   * @return the programmed phase plan, or {@code null}
+   *
+   * @since 2026.6
+   */
+  public TrafficSignalProgrammedPhasePlan getProgrammedPhasePlan() {
+    return programmedPhasePlan;
+  }
+
+  /**
+   * Gets the ADVANCED-mode programmed phase plan, creating a fresh default 8-phase plan if one does
+   * not yet exist. Used by the ADVANCED ticker and the CSM ASC-3 programming GUI, which always need
+   * a plan to operate on.
+   *
+   * @return the (possibly newly created) programmed phase plan
+   *
+   * @since 2026.6
+   */
+  public TrafficSignalProgrammedPhasePlan getOrCreateProgrammedPhasePlan() {
+    if (programmedPhasePlan == null) {
+      programmedPhasePlan = TrafficSignalProgrammedPhasePlan.createDefault();
+      markDirtySync(getWorld(), getPos());
+    }
+    return programmedPhasePlan;
   }
 
   // endregion

@@ -245,6 +245,23 @@ public class TrafficSignalControllerNBTKeys {
    */
   public static final String RAMP_METER_NIGHT_MODE = "tcRmN";
 
+  /**
+   * The key for storing and retrieving the controller's ADVANCED-mode programmed phase plan
+   * (phases, ring sequence, coordination, preemption) from NBT data. Only written when an advanced
+   * plan exists, so non-advanced controllers add no overhead.
+   *
+   * @since 2026.6
+   */
+  public static final String ADVANCED_PLAN = "tcAdv";
+
+  /**
+   * The key for storing and retrieving the controller's ADVANCED-mode runtime snapshot (active ring
+   * phases, interval, elapsed, barrier, cycle position) so a chunk reload doesn't visibly glitch.
+   *
+   * @since 2026.6
+   */
+  public static final String ADVANCED_RUNTIME = "tcAdvRt";
+
   ///endregion
 
   ///region: Legacy v2.0 long-form keys (read fallback only)
