@@ -89,7 +89,19 @@ public enum TrafficSignalControllerMode {
    *
    * @since 1.0
    */
-  FORCED_FAULT("Flash (All Red)", 10);
+  FORCED_FAULT("Flash (All Red)", 10),
+
+  /**
+   * Advanced (NEMA ring-and-barrier) mode. A full phase-based controller with dual rings, barriers,
+   * per-phase actuated timing, coordination, and preemption — configured via the CSM ASC-3
+   * programming GUI. Tick rate 2 (0.1 seconds) for realistic passage/gap timing resolution; the
+   * ticker compares absolute world-tick deltas, so this only sets evaluation granularity.
+   *
+   * <p>Declared last so existing saved-mode ordinals are unaffected.
+   *
+   * @since 2026.6
+   */
+  ADVANCED("Advanced", 2);
 
   // endregion
 
