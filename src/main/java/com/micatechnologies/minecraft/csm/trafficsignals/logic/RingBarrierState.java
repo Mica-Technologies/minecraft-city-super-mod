@@ -481,6 +481,11 @@ public class RingBarrierState {
     if (coordinated && !coordPhase[phase.getPhaseNumber()] && !windowOpen(phase.getPhaseNumber())) {
       return false;
     }
+    // Coordinated phases are served every cycle regardless of their own detection, so the
+    // background cycle holds even under continuous side-street demand.
+    if (coordinated && coordPhase[phase.getPhaseNumber()]) {
+      return true;
+    }
     TrafficSignalRecallMode recall = phase.getRecallMode();
     if (recall == TrafficSignalRecallMode.MINIMUM || recall == TrafficSignalRecallMode.MAXIMUM
         || recall == TrafficSignalRecallMode.PEDESTRIAN) {
