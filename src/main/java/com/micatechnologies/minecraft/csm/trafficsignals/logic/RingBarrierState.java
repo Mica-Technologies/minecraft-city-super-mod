@@ -1,6 +1,8 @@
 package com.micatechnologies.minecraft.csm.trafficsignals.logic;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import net.minecraft.world.World;
 
@@ -68,6 +70,14 @@ public class RingBarrierState {
   private TrafficSignalControllerCircuits tickCircuits;
   private final Map<Integer, TrafficSignalSensorSummary> summaryCache = new HashMap<>();
 
+  // Per-tick coordination state (computed from the plan each tick; all no-ops in FREE mode).
+  private static final int PHASE_SLOTS = TrafficSignalProgrammedPhasePlan.PHASE_COUNT + 1;
+  private boolean coordinated = false;
+  private long localCycle = 0L;
+  private final long[] windowStart = new long[PHASE_SLOTS];
+  private final long[] windowEnd = new long[PHASE_SLOTS];
+  private final boolean[] coordPhase = new boolean[PHASE_SLOTS];
+
   /**
    * Advances the controller one tick and returns the phase to apply, or {@code null} if the
    * displayed indication is unchanged since the last applied phase.
@@ -77,6 +87,9 @@ public class RingBarrierState {
     this.tickWorld = world;
     this.tickCircuits = circuits;
     summaryCache.clear();
+
+    // Compute coordination windows for this tick (no-op in FREE mode).
+    computeCoordination(plan, now);
 
     // Compute which phases are currently calling for service.
     boolean[] called = new boolean[TrafficSignalProgrammedPhasePlan.PHASE_COUNT + 1];
@@ -131,17 +144,22 @@ public class RingBarrierState {
         if (vehicleCount(phase) > 0) {
           ring.lastActuation = now;
         }
+        int phaseNum = ring.activePhase;
+        boolean isCoord = coordinated && coordPhase[phaseNum];
         long greenElapsed = now - ring.greenStart;
         boolean minMet = greenElapsed >= phase.getMinGreen();
-        boolean maxOut = !ring.resting && greenElapsed >= phase.getMaxGreen();
+        // The coordinated phase rests in green (no max-out); it yields only to a called phase.
+        boolean maxOut = !ring.resting && !isCoord && greenElapsed >= phase.getMaxGreen();
         boolean gapOut = (now - ring.lastActuation) >= phase.getPassage();
         boolean pedDone = !ring.pedServing
             || (now - ring.pedStart) >= (phase.getWalk() + phase.getPedClear());
         boolean conflict = conflictingDemand(called);
+        // Coordinated force-off: a non-coordinated phase must end when its split window closes.
+        boolean forceOff = coordinated && !isCoord && localCycle >= windowEnd[phaseNum];
 
-        // Terminate on max-out, or once min green is met, ped clearance is done, the phase has
-        // gapped out, and something else is actually waiting (otherwise rest in green).
-        boolean terminate = maxOut || (minMet && pedDone && gapOut && conflict);
+        // Terminate on max-out or force-off, or once min green is met, ped clearance is done, the
+        // phase has gapped out, and something else is actually waiting (otherwise rest in green).
+        boolean terminate = maxOut || forceOff || (minMet && pedDone && gapOut && conflict);
         if (terminate && minMet) {
           ring.interval = VehInterval.YELLOW;
           ring.intervalStart = now;
@@ -344,12 +362,84 @@ public class RingBarrierState {
 
   // endregion
 
+  // region: Coordination
+
+  /**
+   * Computes, for this tick, the local cycle position and each phase's permissive window from the
+   * plan's {@link TrafficSignalCoordinationPlan}. In FREE mode this clears the state and returns
+   * immediately, so coordination adds nothing to free/actuated operation.
+   */
+  private void computeCoordination(TrafficSignalProgrammedPhasePlan plan, long now) {
+    TrafficSignalCoordinationPlan co = plan.getCoordination();
+    coordinated = co.isCoordinated();
+    for (int i = 0; i < PHASE_SLOTS; i++) {
+      windowStart[i] = 0L;
+      windowEnd[i] = 0L;
+      coordPhase[i] = false;
+    }
+    if (!coordinated) {
+      return;
+    }
+    long cycle = Math.max(1L, co.getCycleLength());
+    localCycle = ((now - co.getOffset()) % cycle + cycle) % cycle;
+
+    for (int ring = 1; ring <= 2; ring++) {
+      int[] seq = plan.getRingSequence(ring);
+      // Active phases in this ring, in sequence order.
+      List<Integer> active = new ArrayList<>();
+      for (int n : seq) {
+        TrafficSignalProgrammedPhase p = plan.getPhase(n);
+        if (p != null && p.isActive()) {
+          active.add(n);
+        }
+      }
+      if (active.isEmpty()) {
+        continue;
+      }
+      // Splits (configured or evenly divided), normalized to tile the cycle exactly.
+      long total = 0L;
+      long[] split = new long[active.size()];
+      for (int i = 0; i < active.size(); i++) {
+        long s = co.getSplit(active.get(i));
+        if (s <= 0L) {
+          s = cycle / active.size();
+        }
+        split[i] = s;
+        total += s;
+      }
+      long cum = 0L;
+      for (int i = 0; i < active.size(); i++) {
+        int n = active.get(i);
+        long w = total > 0L ? split[i] * cycle / total : cycle / active.size();
+        windowStart[n] = cum;
+        cum += w;
+        // Last phase absorbs rounding so windows tile [0, cycle) exactly.
+        windowEnd[n] = (i == active.size() - 1) ? cycle : cum;
+      }
+    }
+    for (int n = 1; n <= TrafficSignalProgrammedPhasePlan.PHASE_COUNT; n++) {
+      coordPhase[n] = co.isCoordinatedPhase(n);
+    }
+  }
+
+  /** Whether a non-coordinated phase's permissive window is currently open. */
+  private boolean windowOpen(int phaseNumber) {
+    return localCycle >= windowStart[phaseNumber] && localCycle < windowEnd[phaseNumber];
+  }
+
+  // endregion
+
   // region: Demand
 
   /** Whether a phase is calling for service (vehicle, pedestrian, or recall). */
   private boolean isCalled(TrafficSignalProgrammedPhase phase) {
     if (phase == null || !phase.isActive()
         || phase.getCircuitIndex() >= tickCircuits.getCircuitCount()) {
+      return false;
+    }
+    // In coordinated operation, a non-coordinated phase only calls within its permissive window;
+    // outside it the time belongs to the coordinated phase, which rests in green.
+    if (coordinated && !coordPhase[phase.getPhaseNumber()] && !windowOpen(phase.getPhaseNumber())) {
       return false;
     }
     TrafficSignalRecallMode recall = phase.getRecallMode();
