@@ -15,6 +15,7 @@ import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalPhas
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalPhaseApplicability;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalPhases;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalProgrammedPhasePlan;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.RingBarrierState;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -90,6 +91,15 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
    * @since 2026.6
    */
   private TrafficSignalProgrammedPhasePlan programmedPhasePlan = null;
+
+  /**
+   * Transient runtime state machine for ADVANCED (NEMA ring-and-barrier) operation. Rebuilt on
+   * demand (and on chunk load / controller reset); not persisted, so the controller re-derives its
+   * indications within one tick after loading.
+   *
+   * @since 2026.6
+   */
+  private transient RingBarrierState advancedRuntime = null;
 
   /**
    * The list of cached phases for the traffic signal controller.
@@ -482,6 +492,21 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
       } else if (operatingMode == TrafficSignalControllerMode.OVERHEIGHT_DETECTION) {
         newPhase = TrafficSignalControllerTicker.overheightDetectionModeTick(
             getWorld(), circuits, overheightCircuitHoldTimers, tickTime);
+      } else if (operatingMode == TrafficSignalControllerMode.ADVANCED) {
+        // ADVANCED (NEMA ring-and-barrier) is handled directly here, like the detection modes,
+        // because it carries its own mutable runtime state machine. A misconfigured plan faults
+        // with a descriptive message rather than running undefined.
+        TrafficSignalProgrammedPhasePlan plan = getOrCreateProgrammedPhasePlan();
+        String validationError = plan.validate(circuits);
+        if (validationError != null) {
+          enterFaultState(validationError);
+          invalidateTickRateCache();
+          return;
+        }
+        if (advancedRuntime == null) {
+          advancedRuntime = new RingBarrierState();
+        }
+        newPhase = advancedRuntime.tick(getWorld(), plan, circuits, overlaps, tickTime);
       } else {
         newPhase = TrafficSignalControllerTicker.tick(new ControllerTickContext(
             getWorld(), mode, operatingMode, circuits,
@@ -1679,6 +1704,8 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
     wwvdsEntityApproachTotals.clear();
     wwvdsCircuitHoldTimers.clear();
     overheightCircuitHoldTimers.clear();
+    // Rebuild the ADVANCED state machine on any reset (mode change, device link/unlink, retiming).
+    advancedRuntime = null;
     // Prune trailing empty circuits before regenerating phases
     while (circuits.getCircuits().size() > 0
         && circuits.getCircuit(circuits.getCircuits().size() - 1).getSize() == 0) {
