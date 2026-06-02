@@ -58,6 +58,28 @@ public class BlockTrafficLightMountKit extends AbstractBlockRotatableNSEWUD
 
   public BlockTrafficLightMountKit() {
     super(Material.ROCK, SoundType.STONE, "pickaxe", 1, 2.0F, 10.0F, 0F, 0);
+    // Enables randomTick so the kit can auto-correct its facing toward an adjacent signal head.
+    // TODO (remove after Dec 2026): transitional migration aid — see SignalMountKitOrientation.
+    setTickRandomly(true);
+  }
+
+  /**
+   * Lightweight self-correction: if the kit isn't facing its signal head, re-point it. Keeps the
+   * dynamic bracket pointed at the signal even if its facing was shifted (e.g. by a metadata
+   * migration) or set wrong. See {@link SignalMountKitOrientation}.
+   */
+  @Override
+  public void randomTick(World worldIn, BlockPos pos, IBlockState state, java.util.Random random) {
+    super.randomTick(worldIn, pos, state, random);
+    if (worldIn.isRemote) {
+      return;
+    }
+    if (SignalMountKitOrientation.correctFacing(worldIn, pos, state, FACING)) {
+      TileEntity te = worldIn.getTileEntity(pos);
+      if (te instanceof TileEntityTrafficLightMountKit) {
+        ((TileEntityTrafficLightMountKit) te).invalidateCachedBB();
+      }
+    }
   }
 
   @Override
@@ -257,10 +279,7 @@ public class BlockTrafficLightMountKit extends AbstractBlockRotatableNSEWUD
   // --- Signal detection helpers (shared logic with renderer) ---
 
   private static boolean isSignalHead(IBlockAccess world, BlockPos pos) {
-    TileEntity te = world.getTileEntity(pos);
-    return te instanceof TileEntityTrafficSignalHead
-        || te instanceof TileEntityBlankoutBox
-        || te instanceof TileEntityLaneControlSignal;
+    return SignalMountKitOrientation.isSignalHead(world, pos);
   }
 
   /**
