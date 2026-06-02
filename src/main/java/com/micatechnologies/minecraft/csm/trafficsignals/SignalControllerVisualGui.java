@@ -48,6 +48,7 @@ public class SignalControllerVisualGui extends GuiScreen {
   private static final int BTN_ALL_RED_FLASH = 109;
   private static final int BTN_CLEAR_FAULTS = 110;
   private static final int BTN_CIRCUITS = 111;
+  private static final int BTN_ADVANCED = 112;
 
   private final TileEntityTrafficSignalController controller;
   private final BlockPos blockPos;
@@ -130,6 +131,9 @@ public class SignalControllerVisualGui extends GuiScreen {
     // Close and Circuits buttons
     buttonList.add(new GuiButton(BTN_CIRCUITS, guiLeft + GUI_WIDTH / 2 - 82, guiTop + GUI_HEIGHT - 20, 80, 14, "Circuits"));
     buttonList.add(new GuiButton(BTN_CLOSE, guiLeft + GUI_WIDTH / 2 + 2, guiTop + GUI_HEIGHT - 20, 80, 14, "Close"));
+    // ASC-3 advanced (NEMA) programming GUI — bottom-left corner.
+    buttonList.add(new GuiButton(BTN_ADVANCED, guiLeft + 6, guiTop + GUI_HEIGHT - 20, 70, 14,
+        "ASC-3"));
   }
 
   private GuiTextField createField(int x, int y, int w, int h, long tickValue) {
@@ -455,6 +459,9 @@ public class SignalControllerVisualGui extends GuiScreen {
         break;
       case BTN_CIRCUITS:
         mc.displayGuiScreen(new SignalControllerCircuitsGui(controller));
+        break;
+      case BTN_ADVANCED:
+        mc.displayGuiScreen(new AdvancedSignalControllerGui(controller));
         break;
       case BTN_SIMPLE_VIEW:
         mc.displayGuiScreen(new SignalControllerConfigGui(controller));

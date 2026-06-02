@@ -132,6 +132,19 @@ public class BlockTrafficSignalController extends AbstractBlock implements ICsmT
     // Process click if controller tile entity is (now) valid
     if (valid) {
 
+      // Plain (non-sneak, empty-hand) click by an operator or creative-mode player opens the
+      // configuration GUI directly off the block — a convenience on top of the config tool. Gated
+      // so survival players can't reconfigure intersections by bumping the cabinet.
+      if (!p_onBlockActivated_4_.isSneaking()
+          && tileEntity instanceof TileEntityTrafficSignalController
+          && (p_onBlockActivated_4_.canUseCommand(2, "") || p_onBlockActivated_4_.isCreative())) {
+        // GUI id 5 = SignalControllerVisualGui (see CsmGuiHandler).
+        p_onBlockActivated_4_.openGui(com.micatechnologies.minecraft.csm.Csm.instance, 5,
+            p_onBlockActivated_1_, p_onBlockActivated_2_.getX(), p_onBlockActivated_2_.getY(),
+            p_onBlockActivated_2_.getZ());
+        return true;
+      }
+
       // Increment cycle index or display fault message if sneaking
       if (p_onBlockActivated_4_.isSneaking()) {
         if (tileEntity instanceof TileEntityTrafficSignalController) {
