@@ -33,6 +33,15 @@ public class RingBarrierState {
   /** Pedestrian indication accompanying a served phase. */
   public enum PedInterval { NONE, WALK, FDW, DONT_WALK }
 
+  /** Stage of an in-progress preemption sequence. */
+  private enum PreemptStage { NONE, ENTER, TRACK_CLEAR, DWELL, EXIT }
+
+  // Fixed preempt interval timing (ticks). Entry clears conflicting movements (yellow then red).
+  private static final long PREEMPT_YELLOW_TICKS = 70L;       // 3.5 s
+  private static final long PREEMPT_REDCLEAR_TICKS = 40L;     // 2 s
+  private static final long PREEMPT_TRACK_CLEAR_TICKS = 100L; // 5 s
+  private static final long PREEMPT_EXIT_TICKS = 40L;         // 2 s
+
   /** Immutable description of what one ring is serving this tick (consumed by the phase builder). */
   public static final class ServedMovement {
     public final int phaseNumber;
@@ -64,6 +73,12 @@ public class RingBarrierState {
   private final RingRuntime ring2 = new RingRuntime();
   private boolean initialized = false;
   private TrafficSignalPhase lastApplied = null;
+
+  // Preemption runtime.
+  private PreemptStage preemptStage = PreemptStage.NONE;
+  private int activePreemptIndex = -1;
+  private long preemptStageStart = 0L;
+  private final java.util.Set<Integer> preemptClearPhases = new java.util.HashSet<>();
 
   // Per-tick context / scratch (set at the top of each tick()).
   private World tickWorld;
@@ -102,6 +117,13 @@ public class RingBarrierState {
       initialized = true;
     }
 
+    // Preemption overrides normal/coordinated operation while active.
+    updatePreempt(plan, now);
+    if (preemptStage != PreemptStage.NONE) {
+      resetRings(); // park normal operation so it resumes cleanly after the preempt clears
+      return changedOrNull(buildPreemptPhase(world, plan, circuits, overlaps, now));
+    }
+
     // 1. Advance each ring's active phase through its intervals (green -> yellow -> red clearance).
     advanceRing(ring1, plan, now, called);
     advanceRing(ring2, plan, now, called);
@@ -116,12 +138,29 @@ public class RingBarrierState {
     // 4. Build and (only if changed) return the displayed phase.
     ServedMovement m1 = describe(ring1, plan, now);
     ServedMovement m2 = describe(ring2, plan, now);
-    TrafficSignalPhase phase = AdvancedPhaseBuilder.build(world, plan, circuits, overlaps, m1, m2);
+    return changedOrNull(AdvancedPhaseBuilder.build(world, plan, circuits, overlaps, m1, m2));
+  }
+
+  /** Returns {@code phase} (and records it) only if it differs from the last applied phase. */
+  private TrafficSignalPhase changedOrNull(TrafficSignalPhase phase) {
     if (lastApplied == null || !phase.equals(lastApplied)) {
       lastApplied = phase;
       return phase;
     }
     return null;
+  }
+
+  private void resetRings() {
+    resetRing(ring1);
+    resetRing(ring2);
+  }
+
+  private void resetRing(RingRuntime ring) {
+    ring.activePhase = 0;
+    ring.sequencePos = -1;
+    ring.interval = VehInterval.RED;
+    ring.resting = false;
+    ring.pedServing = false;
   }
 
   // region: Ring stepping
@@ -464,11 +503,16 @@ public class RingBarrierState {
   }
 
   private int vehicleCount(TrafficSignalProgrammedPhase phase) {
-    TrafficSignalSensorSummary summary = summaryFor(phase);
+    return zoneCount(phase.getCircuitIndex(), phase.getMovement());
+  }
+
+  /** Vehicle count in a circuit's sensor zone for the given movement. */
+  private int zoneCount(int circuitIndex, TrafficSignalPhaseMovement movement) {
+    TrafficSignalSensorSummary summary = summaryForCircuit(circuitIndex);
     if (summary == null) {
       return 0;
     }
-    switch (phase.getMovement()) {
+    switch (movement) {
       case THROUGH:
         return summary.getStandardTotal();
       case LEFT:
@@ -488,8 +532,7 @@ public class RingBarrierState {
         && circuit.getPedestrianAccessoriesRequestCount(tickWorld) > 0;
   }
 
-  private TrafficSignalSensorSummary summaryFor(TrafficSignalProgrammedPhase phase) {
-    int ci = phase.getCircuitIndex();
+  private TrafficSignalSensorSummary summaryForCircuit(int ci) {
     if (tickCircuits == null || tickWorld == null || ci < 0 || ci >= tickCircuits.getCircuitCount()) {
       return null;
     }
@@ -503,6 +546,132 @@ public class RingBarrierState {
       return null;
     }
     return tickCircuits.getCircuit(ci);
+  }
+
+  // endregion
+
+  // region: Preemption
+
+  /**
+   * Advances the preemption state machine: detects calls, picks the highest-priority active
+   * preempt, and steps enter &rarr; track-clear &rarr; dwell &rarr; exit.
+   */
+  private void updatePreempt(TrafficSignalProgrammedPhasePlan plan, long now) {
+    List<TrafficSignalPreempt> preempts = plan.getPreempts();
+
+    // Highest-priority preempt currently calling for service.
+    int calledIdx = -1;
+    int calledPriority = Integer.MIN_VALUE;
+    for (int i = 0; i < preempts.size(); i++) {
+      TrafficSignalPreempt pe = preempts.get(i);
+      if (pe.isActive() && isPreemptCalled(pe) && pe.getType().getPriority() > calledPriority) {
+        calledIdx = i;
+        calledPriority = pe.getType().getPriority();
+      }
+    }
+
+    if (preemptStage == PreemptStage.NONE) {
+      if (calledIdx >= 0) {
+        beginPreempt(calledIdx, now);
+      }
+      return;
+    }
+
+    // Guard against the preempt table changing underneath us.
+    if (activePreemptIndex < 0 || activePreemptIndex >= preempts.size()) {
+      preemptStage = PreemptStage.NONE;
+      activePreemptIndex = -1;
+      return;
+    }
+    TrafficSignalPreempt active = preempts.get(activePreemptIndex);
+
+    // A higher-priority call takes over (re-enters clearance).
+    if (calledIdx >= 0 && calledPriority > active.getType().getPriority()) {
+      beginPreempt(calledIdx, now);
+      return;
+    }
+
+    long elapsed = now - preemptStageStart;
+    switch (preemptStage) {
+      case ENTER:
+        if (elapsed >= PREEMPT_YELLOW_TICKS + PREEMPT_REDCLEAR_TICKS) {
+          preemptStage = active.getTrackClearPhases().length > 0
+              ? PreemptStage.TRACK_CLEAR : PreemptStage.DWELL;
+          preemptStageStart = now;
+        }
+        break;
+      case TRACK_CLEAR:
+        if (elapsed >= PREEMPT_TRACK_CLEAR_TICKS) {
+          preemptStage = PreemptStage.DWELL;
+          preemptStageStart = now;
+        }
+        break;
+      case DWELL:
+        // Hold the dwell phases until the call drops and the minimum dwell has elapsed.
+        if (!isPreemptCalled(active) && elapsed >= active.getMinDwell()) {
+          preemptStage = PreemptStage.EXIT;
+          preemptStageStart = now;
+        }
+        break;
+      case EXIT:
+      default:
+        if (elapsed >= PREEMPT_EXIT_TICKS) {
+          preemptStage = PreemptStage.NONE;
+          activePreemptIndex = -1;
+        }
+        break;
+    }
+  }
+
+  private void beginPreempt(int index, long now) {
+    activePreemptIndex = index;
+    preemptStage = PreemptStage.ENTER;
+    preemptStageStart = now;
+    // Capture whatever is currently green so entry can clear it with a proper yellow.
+    preemptClearPhases.clear();
+    if (ring1.activePhase != 0) {
+      preemptClearPhases.add(ring1.activePhase);
+    }
+    if (ring2.activePhase != 0) {
+      preemptClearPhases.add(ring2.activePhase);
+    }
+  }
+
+  private boolean isPreemptCalled(TrafficSignalPreempt preempt) {
+    return zoneCount(preempt.getTriggerCircuitIndex(), preempt.getTriggerMovement()) > 0;
+  }
+
+  private TrafficSignalPhase buildPreemptPhase(World world, TrafficSignalProgrammedPhasePlan plan,
+      TrafficSignalControllerCircuits circuits, TrafficSignalControllerOverlaps overlaps, long now) {
+    TrafficSignalPreempt active = plan.getPreempts().get(activePreemptIndex);
+    long elapsed = now - preemptStageStart;
+    switch (preemptStage) {
+      case ENTER:
+        if (elapsed < PREEMPT_YELLOW_TICKS) {
+          return AdvancedPhaseBuilder.buildForPhases(world, plan, circuits, overlaps,
+              preemptClearPhases, VehInterval.YELLOW);
+        }
+        return AdvancedPhaseBuilder.buildForPhases(world, plan, circuits, overlaps,
+            java.util.Collections.emptyList(), VehInterval.RED);
+      case TRACK_CLEAR:
+        return AdvancedPhaseBuilder.buildForPhases(world, plan, circuits, overlaps,
+            toPhaseList(active.getTrackClearPhases()), VehInterval.GREEN);
+      case DWELL:
+        return AdvancedPhaseBuilder.buildForPhases(world, plan, circuits, overlaps,
+            toPhaseList(active.getDwellPhases()), VehInterval.GREEN);
+      case EXIT:
+      default:
+        return AdvancedPhaseBuilder.buildForPhases(world, plan, circuits, overlaps,
+            java.util.Collections.emptyList(), VehInterval.RED);
+    }
+  }
+
+  private static List<Integer> toPhaseList(int[] phaseNumbers) {
+    List<Integer> list = new ArrayList<>(phaseNumbers.length);
+    for (int n : phaseNumbers) {
+      list.add(n);
+    }
+    return list;
   }
 
   // endregion
