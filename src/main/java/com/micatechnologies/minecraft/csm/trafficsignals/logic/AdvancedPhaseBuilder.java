@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.trafficsignals.logic;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -45,10 +46,42 @@ public final class AdvancedPhaseBuilder {
       TrafficSignalControllerOverlaps overlaps,
       RingBarrierState.ServedMovement ring1,
       RingBarrierState.ServedMovement ring2) {
+    TrafficSignalPhase phase = redBaseline(circuits);
+    applyServed(phase, plan, circuits, ring1);
+    applyServed(phase, plan, circuits, ring2);
+    applyOverlaps(phase, overlaps);
+    return phase;
+  }
+
+  /**
+   * Builds a phase that lights a given set of NEMA phases at one interval, with everything else red
+   * — used by preemption's track-clear / dwell stages. An empty {@code phaseNumbers} yields an
+   * all-red phase (used for preempt enter/exit clearance).
+   *
+   * @param phaseNumbers the phases to serve
+   * @param interval     the vehicle interval to display them at
+   */
+  public static TrafficSignalPhase buildForPhases(World world,
+      TrafficSignalProgrammedPhasePlan plan,
+      TrafficSignalControllerCircuits circuits,
+      TrafficSignalControllerOverlaps overlaps,
+      Collection<Integer> phaseNumbers,
+      RingBarrierState.VehInterval interval) {
+    TrafficSignalPhase phase = redBaseline(circuits);
+    for (int n : phaseNumbers) {
+      applyServed(phase, plan, circuits,
+          new RingBarrierState.ServedMovement(n, interval, RingBarrierState.PedInterval.NONE));
+    }
+    if (interval == RingBarrierState.VehInterval.GREEN) {
+      applyOverlaps(phase, overlaps);
+    }
+    return phase;
+  }
+
+  /** Creates the all-red / don't-walk baseline across every circuit. */
+  private static TrafficSignalPhase redBaseline(TrafficSignalControllerCircuits circuits) {
     TrafficSignalPhase phase = new TrafficSignalPhase(
         TrafficSignalPhase.CIRCUIT_NOT_APPLICABLE, TrafficSignalPhaseApplicability.NONE);
-
-    // 1. All-red / don't-walk baseline across every circuit.
     for (int i = 0; i < circuits.getCircuitCount(); i++) {
       TrafficSignalControllerCircuit circuit = circuits.getCircuit(i);
       phase.addRedSignals(circuit.getThroughSignals());
@@ -63,12 +96,12 @@ public final class AdvancedPhaseBuilder {
       phase.addOffSignals(circuit.getBeaconSignals());
       phase.addOffSignals(circuit.getNoTurnBlankoutSignals());
     }
+    return phase;
+  }
 
-    // 2. Light the served movements.
-    applyServed(phase, plan, circuits, ring1);
-    applyServed(phase, plan, circuits, ring2);
-
-    // 3. Apply overlaps: any overlap target of a now-green signal follows it to green.
+  /** Applies the overlap map: any overlap target of a now-green signal follows it to green. */
+  private static void applyOverlaps(TrafficSignalPhase phase,
+      TrafficSignalControllerOverlaps overlaps) {
     List<BlockPos> greenSnapshot = new ArrayList<>(phase.getGreenSignals());
     for (BlockPos source : greenSnapshot) {
       List<BlockPos> targets = overlaps.getOverlapsForSource(source);
@@ -78,8 +111,6 @@ public final class AdvancedPhaseBuilder {
         }
       }
     }
-
-    return phase;
   }
 
   /**
