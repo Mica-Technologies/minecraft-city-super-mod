@@ -226,6 +226,7 @@ are exempt because they don't use sensor data the same way. See
 | `WRONG_WAY_DETECTION` | 10 | Wrong way vehicle detection system (WWVDS) — see below |
 | `MANUAL_OFF` | 300 | All signals off |
 | `FORCED_FAULT` | 10 | All-red flash due to detected fault condition |
+| `ADVANCED` | 2 | NEMA dual-ring, dual-barrier phase controller (see below) |
 
 ### Wrong Way Detection Mode (WWVDS)
 
@@ -562,6 +563,86 @@ All controller state is saved to NBT via `TrafficSignalControllerNBTKeys`:
 
 Legacy format upgrade is supported via `importPreviousNBTDataFormat()` for backward
 compatibility with older saved worlds.
+
+## Advanced (Phase-Based / NEMA) Mode
+
+`ADVANCED` mode is a full **NEMA dual-ring, dual-barrier actuated controller** (Econolite ASC-3
+style), layered on top of the existing circuit system without changing `NORMAL` mode. Where `NORMAL`
+services one circuit at a time, `ADVANCED` runs concurrent movements across two rings separated by
+barriers, with per-phase timing, detection, recalls, coordination, and preemption.
+
+### Concept
+
+Standard 8-phase ring diagram:
+
+```
+        BARRIER A          BARRIER B
+ Ring 1 | p1   p2     |   p3   p4
+ Ring 2 | p5   p6     |   p7   p8
+   p2/p6 = opposing through (major)   p1/p5 = their lefts
+   p4/p8 = opposing through (minor)   p3/p7 = their lefts
+```
+
+One active phase per ring; the two active phases must be on the same barrier. Rings advance through
+their sequence in lockstep and cross a barrier only together. With no demand the controller rests in
+green on the coordinated phases.
+
+### Phases overlay the existing circuits
+
+A programmed phase (`TrafficSignalProgrammedPhase`) references an existing **circuit + movement**
+(`TrafficSignalPhaseMovement`: THROUGH / LEFT / PROTECTED_LEFT / RIGHT / PED). That selects both the
+signal heads it drives and the sensor zone that calls it:
+
+- THROUGH → through signals / sensor `standardTotal`
+- LEFT / PROTECTED_LEFT → protected+left signals / sensor `leftTotal`+`protectedTotal`
+- RIGHT → right signals / sensor `rightTotal`
+- PED → pedestrian signals / pedestrian button request count
+
+No new linking or sensor blocks — set circuits up as today (one circuit per approach recommended).
+
+### Per-phase timing (NEMA)
+
+`minGreen`, `passage` (vehicle extension / gap-out), `maxGreen` (max-out), `yellow`, `redClear`,
+`walk`, `pedClear`, plus a `recallMode` (NONE / MINIMUM / MAXIMUM / PEDESTRIAN / SOFT) and a ped
+recall flag. A green ends on max-out, or once min green is met and the phase has gapped out with a
+conflicting call waiting (and ped clearance is done).
+
+### Coordination
+
+`TrafficSignalCoordinationPlan` adds FREE vs COORDINATED. Coordinated operation runs a background
+cycle (cycle length + offset against world time, so multiple intersections sync), tiles each ring's
+cycle into per-phase **permissive windows** from the splits, force-offs non-coordinated phases at
+their window's end, and rests the coordinated phases (default p2/p6) in green.
+
+### Preemption
+
+`TrafficSignalPreempt` table (railroad > emergency-vehicle > transit priority). A preempt is called
+by a circuit sensor zone and overrides normal/coordinated operation: **enter** (clear conflicting
+greens, yellow then all-red) → **track clear** (serve the track-clearance phases) → **dwell** (hold
+the dwell phases until the call drops and min-dwell elapses) → **exit** → resume.
+
+### Programming GUI ("CSM ASC-3")
+
+A front-panel-style GUI (`AdvancedSignalControllerGui`) with an amber LCD, keypad, and status LEDs,
+opened from the **ASC-3** button in the visual editor (or by an op/creative player clicking the
+controller block). Screens: STATUS (overview + ring diagram), TIMING (per-phase intervals), MAP
+(phase→circuit/movement/recall/ped), COORD, and PREEMPT. "Load Std 8-Phase" auto-assigns phases to
+circuits by approach facing. Edits travel via `AdvancedSignalControllerConfigPacket` →
+`TileEntityTrafficSignalController.applyAdvancedConfig()`.
+
+### Implementation
+
+- `RingBarrierState` — the per-tick dual-ring/barrier state machine (transient; rebuilt on load).
+- `AdvancedPhaseBuilder` — turns ring state into a `TrafficSignalPhase` (reusing overlaps + apply).
+- `TrafficSignalProgrammedPhasePlan` — phases + ring sequence + coordination + preempt table; NBT
+  under key `tcAdv`, written only when an advanced plan exists.
+- The controller dispatches `ADVANCED` directly in `onTick` (like the detection modes); a
+  misconfigured plan enters fault state with a descriptive message.
+
+**Current limitation:** left movements display protected-or-red; permissive flashing-yellow (FYA)
+arbitration within ADVANCED mode is a planned refinement. Live runtime status (active phase /
+countdown) is not yet synced to the GUI, so STATUS shows the program overview rather than a live
+countdown.
 
 ## Known Considerations
 
