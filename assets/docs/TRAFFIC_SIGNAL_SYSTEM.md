@@ -458,6 +458,29 @@ Decorative and structural blocks in `trafficaccessories/` package:
 - **Horizontal Mounting**: `BlockTLHBorder*`, `BlockTLHMountKit`, wire mounts
 - **Misc**: `BlockFreewayCallBox`, `BlockTLDCover`
 
+### Dynamic Signal Cover (`tlvcover`)
+
+`BlockTrafficLightCover` (registry name `tlvcover`, kept for world compatibility) is a
+TESR-based rain hood that wraps the adjacent signal head. Like the dynamic mount kit
+(`BlockTrafficLightMountKit`), the renderer re-detects the signal every frame:
+
+- **Placement**: one block in front of the signal, facing the same direction; the shell
+  (face plate + four wrap panels) extends backward over the signal block. A fallback also
+  finds a signal on the cover's facing side and mirrors the shell.
+- **Envelope adaptation**: section count, section sizes, X/Y offsets, and
+  vertical/horizontal orientation are read from the signal block + tile entity
+  (`BlockTrafficLightCover.scanForSignal`, shared by the bounding box and the TESR).
+  Add-on signals up to 3 blocks above/below the primary head expand the shell
+  automatically — no break on one-block air gaps (legacy double add-on placement).
+- **Tilt sync**: replicates the signal head renderer's two-stage transform — body tilt
+  rotation around the *signal's* block center (world-aligned pivot one block away), then
+  facing rotation around the cover's own center, plus the same ±2/±4 model-unit lateral
+  shift — so the cover stays clamped to the housing at every tilt/angle setting.
+- **Color**: sneak + right-click cycles `MountKitColorScheme` (covers default to Black).
+- **Retirement/migration**: the old static `tlhcover` retires into `tlvcover` with its
+  facing preserved (see `CsmTabNone`); legacy `tlvcover` placements saved without a tile
+  entity are migrated by a one-time `randomTick` TE creation + client sync.
+
 ## Resource File Structure
 
 Traffic signal blockstates use **Forge blockstate format** (`forge_marker: 1`) with texture

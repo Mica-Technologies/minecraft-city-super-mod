@@ -199,6 +199,13 @@ public class CsmTabNone extends CsmTab {
     initTabBlock(new BlockTrafficAccessoryBackplate("tlhborderwhite", "tlborderwhiteblack"));
     initTabBlock(new BlockTrafficAccessoryBackplate("tlhborderyellow", "tlborderyellowblack"));
 
+    // Deprecated static horizontal signal cover — tlvcover is now a dynamic TESR-based cover
+    // that auto-adapts to the adjacent signal's orientation (vertical or horizontal), size,
+    // tilt, and add-on signals, so the fixed-horizontal variant is redundant. Retires to
+    // tlvcover with its facing preserved; the dynamic cover then re-detects orientation.
+    initTabBlock(new BlockTrafficAccessoryNSEWUD("tlhcover", BB_TL_H_COVER_DEPRECATED,
+        BlockRenderLayer.SOLID, 2F, true, "tlvcover"));
+
     // Deprecated horizontal angle pole + pre-attached mount variants. The base
     // trafficpolehorizontalangle{color} blocks auto-connect to adjacent mount kits now, so
     // the ..mount1/2/3 variants are redundant. Retire each color family back to its base.
@@ -239,4 +246,12 @@ public class CsmTabNone extends CsmTab {
    */
   private static final AxisAlignedBB BB_DEPRECATED =
       new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 1.0, 1.0);
+
+  /**
+   * Real bounding box for the deprecated tlhcover block. Unlike the BB_DEPRECATED full-cube
+   * placeholder, this keeps the legacy horizontal cover's actual shape so existing placements
+   * look and target correctly until they auto-retire into the dynamic tlvcover.
+   */
+  private static final AxisAlignedBB BB_TL_H_COVER_DEPRECATED =
+      new AxisAlignedBB(-0.687500, 0.000000, 1.062500, 1.687500, 0.875000, 1.875000);
 }
