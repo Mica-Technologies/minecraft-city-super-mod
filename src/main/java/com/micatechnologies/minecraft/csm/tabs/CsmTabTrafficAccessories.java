@@ -10,6 +10,7 @@ import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficAccesso
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficAccessoryNSEW;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockSignalMountKit;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficAccessoryNSEWUD;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficLightCover;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficLightMountKit;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleHorizontalAngleBlack;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleHorizontalAngleSilver;
@@ -119,14 +120,10 @@ public class CsmTabTrafficAccessories extends CsmTab {
       new AxisAlignedBB(-0.984375, -1.000000, -0.484375, 1.984375, 2.000000, 1.343750);
   private static final AxisAlignedBB BB_TL_D_COVER =
       new AxisAlignedBB(-0.312500, -0.875000, 0.875000, 1.312500, 1.625000, 1.750000);
-  private static final AxisAlignedBB BB_TL_H_COVER =
-      new AxisAlignedBB(-0.687500, 0.000000, 1.062500, 1.687500, 0.875000, 1.875000);
   private static final AxisAlignedBB BB_TL_H_MOUNT_KIT =
       new AxisAlignedBB(-0.687500, 0.312500, 0.000000, 1.687500, 0.437500, 1.000000);
   private static final AxisAlignedBB BB_TL_PM =
       new AxisAlignedBB(0.062500, -0.356250, 0.062500, 0.937500, 0.581250, 0.937500);
-  private static final AxisAlignedBB BB_TL_V_COVER =
-      new AxisAlignedBB(0.062500, -0.812500, 0.937500, 0.937500, 1.562500, 1.750000);
   private static final AxisAlignedBB BB_TL_V_MOUNT_KIT =
       new AxisAlignedBB(0.437500, -0.812500, 0.000000, 0.562500, 1.562500, 1.000000);
   private static final AxisAlignedBB BB_TL_V_MOUNT_KIT_8_INCH =
@@ -324,13 +321,15 @@ public class CsmTabTrafficAccessories extends CsmTab {
     // --- Backplate factory blocks: TLHBorder ---
 
     // --- NSEWUD factory blocks: TL Covers and Mount Kits ---
-    initTabBlock(new BlockTrafficAccessoryNSEWUD("tlhcover", BB_TL_H_COVER, BlockRenderLayer.SOLID, 2F, true));
+    // (tlhcover retired to the dynamic tlvcover — see CsmTabNone)
     initTabBlock(new BlockSignalMountKit("tlhmountkit", BB_TL_H_MOUNT_KIT, BlockRenderLayer.CUTOUT_MIPPED, 2F, false));
     initTabBlock(new BlockTrafficAccessoryNSEWUD("tlpmblack", BB_TL_PM, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
     initTabBlock(new BlockTrafficAccessoryNSEWUD("tlpmsilver", BB_TL_PM, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
     initTabBlock(new BlockTrafficAccessoryNSEWUD("tlpmtan", BB_TL_PM, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
     initTabBlock(new BlockTrafficAccessoryNSEWUD("tlpmwhite", BB_TL_PM, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
-    initTabBlock(new BlockTrafficAccessoryNSEWUD("tlvcover", BB_TL_V_COVER, BlockRenderLayer.SOLID, 2F, true));
+    // Dynamic TESR-based cover: adapts to the adjacent signal's orientation, size, tilt,
+    // and add-on signals (keeps the legacy "tlvcover" registry name for world compatibility)
+    initTabBlock(new BlockTrafficLightCover());
     initTabBlock(new BlockSignalMountKit("tlvmountkit", BB_TL_V_MOUNT_KIT, BlockRenderLayer.CUTOUT_MIPPED, 2F, false));
     initTabBlock(new BlockSignalMountKit("tlvmountkit8812inch", BB_TL_V_MOUNT_KIT_8812_INCH, BlockRenderLayer.CUTOUT_MIPPED, 2F, false));
     initTabBlock(new BlockSignalMountKit("tlvmountkit8inch", BB_TL_V_MOUNT_KIT_8_INCH, BlockRenderLayer.CUTOUT_MIPPED, 2F, false));
