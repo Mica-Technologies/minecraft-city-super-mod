@@ -53,6 +53,9 @@ public class CsmClientProxy implements ICsmProxy {
 
     // Register on the event bus early so we receive ModelRegistryEvent (fires during preInit)
     MinecraftForge.EVENT_BUS.register(this);
+    // Clears static sound/strobe/cache state on disconnect (see perf plan §15)
+    MinecraftForge.EVENT_BUS.register(
+        new com.micatechnologies.minecraft.csm.codeutils.CsmClientLifecycleHandler());
   }
 
   /**

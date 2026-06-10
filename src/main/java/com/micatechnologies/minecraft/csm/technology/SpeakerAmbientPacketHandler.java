@@ -73,4 +73,17 @@ public class SpeakerAmbientPacketHandler
       Minecraft.getMinecraft().getSoundHandler().stopSound(existing);
     }
   }
+
+  /**
+   * Stops all active speaker sounds and clears the registry. Called on client disconnect so
+   * per-position entries don't survive into the next world/session.
+   */
+  @SideOnly(Side.CLIENT)
+  public static void stopAllSounds() {
+    for (SpeakerAmbientSound sound : ACTIVE_SOUNDS.values()) {
+      sound.stopPlaying();
+      Minecraft.getMinecraft().getSoundHandler().stopSound(sound);
+    }
+    ACTIVE_SOUNDS.clear();
+  }
 }

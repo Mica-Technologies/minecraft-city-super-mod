@@ -41,6 +41,16 @@ public class BlockOverheightDetectionSensor extends AbstractBlockRotatableNSEW
    */
   private static final Map<UUID, BlockPos> pairingFirstSensor = new HashMap<>();
 
+  /**
+   * Drops any pending pairing selection for the given player. Called on player logout so
+   * abandoned pairings don't accumulate over server uptime.
+   *
+   * @param playerId the UUID of the player whose pending pairing should be cleared
+   */
+  public static void clearPendingPairing(UUID playerId) {
+    pairingFirstSensor.remove(playerId);
+  }
+
   public BlockOverheightDetectionSensor() {
     super(Material.ROCK);
   }

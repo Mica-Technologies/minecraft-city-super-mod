@@ -47,6 +47,17 @@ public class BlockHd extends AbstractBlockRotatableNSEWUD {
     return activeDryers;
   }
 
+  /**
+   * Clears the client-side active dryer cache. Called on client disconnect so entries don't
+   * survive into the next world/session.
+   */
+  @SideOnly(Side.CLIENT)
+  public static void clearClientCaches() {
+    if (activeDryers != null) {
+      activeDryers.clear();
+    }
+  }
+
   public BlockHd() {
     super(Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0);
   }

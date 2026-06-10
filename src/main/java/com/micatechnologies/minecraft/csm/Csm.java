@@ -130,6 +130,8 @@ public class Csm {
       // Register the mod's event bus
       logger.info("Registering event bus");
       MinecraftForge.EVENT_BUS.register(this);
+      MinecraftForge.EVENT_BUS.register(
+          new com.micatechnologies.minecraft.csm.codeutils.CsmCommonLifecycleHandler());
       logger.info("Finished registering event bus");
       progressBar.step("Event Bus Registration");
 
