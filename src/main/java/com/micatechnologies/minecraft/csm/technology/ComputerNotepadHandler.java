@@ -1,6 +1,8 @@
 package com.micatechnologies.minecraft.csm.technology;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmPacketUtils;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
@@ -18,13 +20,24 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 public class ComputerNotepadHandler
     implements IMessageHandler<ComputerNotepadPacket, IMessage> {
 
+  /** Maximum stored notepad length; text rides TE NBT into chunk syncs and world saves. */
+  public static final int MAX_NOTEPAD_LENGTH = 16_000;
+
   @Override
   public IMessage onMessage(ComputerNotepadPacket message, MessageContext ctx) {
-    ctx.getServerHandler().player.server.addScheduledTask(() -> {
-      World world = ctx.getServerHandler().player.world;
+    EntityPlayerMP player = ctx.getServerHandler().player;
+    player.server.addScheduledTask(() -> {
+      if (!CsmPacketUtils.canPlayerReach(player, message.getPos())) {
+        return;
+      }
+      World world = player.world;
       TileEntity te = world.getTileEntity(message.getPos());
       if (te instanceof TileEntityComputer) {
-        ((TileEntityComputer) te).setNotepadText(message.getNotepadText());
+        String text = message.getNotepadText();
+        if (text != null && text.length() > MAX_NOTEPAD_LENGTH) {
+          text = text.substring(0, MAX_NOTEPAD_LENGTH);
+        }
+        ((TileEntityComputer) te).setNotepadText(text);
       }
       if (message.isShutdown()) {
         IBlockState state = world.getBlockState(message.getPos());

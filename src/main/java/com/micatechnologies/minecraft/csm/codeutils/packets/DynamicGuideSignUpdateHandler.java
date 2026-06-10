@@ -1,6 +1,8 @@
 package com.micatechnologies.minecraft.csm.codeutils.packets;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmPacketUtils;
 import com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityDynamicGuideSign;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
@@ -14,12 +16,16 @@ public class DynamicGuideSignUpdateHandler implements
 
   @Override
   public IMessage onMessage(DynamicGuideSignUpdatePacket message, MessageContext ctx) {
-    ctx.getServerHandler().player.server.addScheduledTask(() -> {
+    EntityPlayerMP player = ctx.getServerHandler().player;
+    player.server.addScheduledTask(() -> {
+      if (!CsmPacketUtils.canPlayerReach(player, message.getPos())) {
+        return;
+      }
       String json = message.getSignDataJson();
       if (json != null && json.length() > MAX_JSON_LENGTH) {
         return;
       }
-      World serverWorld = ctx.getServerHandler().player.world;
+      World serverWorld = player.world;
       TileEntity tileEntity = serverWorld.getTileEntity(message.getPos());
       if (tileEntity instanceof TileEntityDynamicGuideSign) {
         ((TileEntityDynamicGuideSign) tileEntity).setSignDataJson(json);
