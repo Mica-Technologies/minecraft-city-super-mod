@@ -1,6 +1,8 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmPacketUtils;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalControllerMode;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
@@ -10,14 +12,20 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 /**
  * Server-side handler for signal controller set-value packets. Validates the tile entity
  * and applies the requested parameter value directly, rather than cycling through presets.
+ * Gated to op/creative senders within reach, matching the block's own GUI gate.
  */
 public class SignalControllerSetValuePacketHandler implements
     IMessageHandler<SignalControllerSetValuePacket, IMessage> {
 
   @Override
   public IMessage onMessage(SignalControllerSetValuePacket message, MessageContext ctx) {
-    ctx.getServerHandler().player.server.addScheduledTask(() -> {
-      World world = ctx.getServerHandler().player.world;
+    EntityPlayerMP player = ctx.getServerHandler().player;
+    player.server.addScheduledTask(() -> {
+      if (!CsmPacketUtils.canPlayerReach(player, message.getPos())
+          || !CsmPacketUtils.isOperatorOrCreative(player)) {
+        return;
+      }
+      World world = player.world;
       TileEntity te = world.getTileEntity(message.getPos());
       if (!(te instanceof TileEntityTrafficSignalController)) {
         return;

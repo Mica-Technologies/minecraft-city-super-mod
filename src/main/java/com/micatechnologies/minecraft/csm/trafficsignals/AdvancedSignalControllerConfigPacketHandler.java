@@ -1,5 +1,7 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmPacketUtils;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
@@ -19,16 +21,17 @@ public class AdvancedSignalControllerConfigPacketHandler implements
 
   @Override
   public IMessage onMessage(AdvancedSignalControllerConfigPacket message, MessageContext ctx) {
-    ctx.getServerHandler().player.server.addScheduledTask(() -> {
-      World world = ctx.getServerHandler().player.world;
-      TileEntity te = world.getTileEntity(message.getPos());
-      if (!(te instanceof TileEntityTrafficSignalController)) {
+    EntityPlayerMP player = ctx.getServerHandler().player;
+    player.server.addScheduledTask(() -> {
+      // Gate advanced programming behind reach + op/creative, consistent with opening the GUI
+      // from the block. The config tool path already restricts who can reach this GUI.
+      if (!CsmPacketUtils.canPlayerReach(player, message.getPos())
+          || !CsmPacketUtils.isOperatorOrCreative(player)) {
         return;
       }
-      // Gate advanced programming behind op/creative, consistent with opening the GUI from the
-      // block. The config tool path already restricts who can reach this GUI.
-      if (!ctx.getServerHandler().player.canUseCommand(2, "")
-          && !ctx.getServerHandler().player.isCreative()) {
+      World world = player.world;
+      TileEntity te = world.getTileEntity(message.getPos());
+      if (!(te instanceof TileEntityTrafficSignalController)) {
         return;
       }
       ((TileEntityTrafficSignalController) te).applyAdvancedConfig(
