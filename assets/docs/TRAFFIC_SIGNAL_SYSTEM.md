@@ -677,3 +677,271 @@ countdown.
   update on all nearby clients. Large intersections with many signals changing simultaneously
   could have minor performance implications.
 - The controller only ticks server-side (`doClientTick()` returns false).
+
+## Shader-Compatible TESR Rendering
+
+Every CSM TESR (traffic signals, beacons, message signs, blankout boxes, lane-control
+signals, crosswalk signals, emergency lights, fire-alarm strobes, thermostats, the dynamic
+mount kit and cover, etc.) draws its untextured colored geometry through a single
+shader-safe pattern so OptiFine/Iris shader packs don't break the fixed-function rendering
+the mod historically relied on. The shared emission helpers live in
+`codeutils/RenderHelper.java`; `trafficsignals/TileEntityTrafficSignalHeadRenderer.java` is
+the reference implementation.
+
+### Why fixed-function TESR rendering breaks under shaders
+
+The old pattern drew geometry with `DefaultVertexFormats.POSITION_COLOR` (no UV, no
+lightmap), called `GlStateManager.disableTexture2D()` to skip texture sampling, set global
+fixed-function lightmap state via `OpenGlHelper.setLightmapTextureCoords(...)`, and
+sometimes used `GL11.glColor4f` instead of per-vertex color. That works in vanilla because
+the fixed-function pipeline honors all of it. A shader pack's `gbuffers_*` programs replace
+fixed-function entirely and instead:
+
+1. **Always sample whatever texture is currently bound** — `disableTexture2D` is ignored.
+   With the block atlas left bound, undefined UVs land on a yellow bulb sprite, producing
+   the characteristic **yellow-rectangle artifact**.
+2. **Read the lightmap from a per-vertex attribute**, not from global state — so geometry
+   submitted without a lightmap attribute reads light `0` and renders pitch-black or gets
+   alpha-discarded (the body/door/visor go **invisible**).
+3. **Expect a known vertex format** — typically `BLOCK` (POSITION + COLOR + UV + LMAP).
+
+Lit bulb sprites survived the bug because that pass bound a real texture (`atlas.png`) and
+emitted valid UVs; only the untextured colored draws failed.
+
+### The fix recipe
+
+Replace every untextured `disableTexture2D` draw with this sequence:
+
+1. **Bind a known-white texture** instead of disabling texturing:
+   `csm:textures/blocks/white1px.png` (a tiny solid-white PNG that ships in the resources
+   tree at `src/main/resources/assets/csm/textures/blocks/white1px.png`).
+2. **Emit `DefaultVertexFormats.BLOCK`** — POSITION + COLOR + UV + LMAP, the layout shader
+   gbuffers programs expect.
+3. **Per-vertex UV of `(0.5, 0.5)`.** On a uniform white texture every UV is equivalent;
+   centering avoids edge-sampling artifacts.
+4. **Per-vertex packed lightmap.** Compute once from `world.getCombinedLight(pos, 0)` and
+   split into sky/block components, then pass through to each vertex:
+
+   ```java
+   int combinedLight = world.getCombinedLight(pos, 0);
+   int skyLight   = (combinedLight >> 16) & 0xFFFF;
+   int blockLight =  combinedLight        & 0xFFFF;
+   // fullbright (lit bulbs / strobes / digit segments): 240, 240
+   ```
+
+5. **Drop** `disableTexture2D` / `enableTexture2D`, `OpenGlHelper.setLightmapTextureCoords`,
+   and direct `GL11.glColor4f` — all of it is now carried in the bound white texture plus
+   the per-vertex COLOR and LMAP attributes.
+
+`RenderHelper` provides a `*Lit` variant of every box-emitting method that bakes this in —
+`addBoxesToBufferLit`, `addBoxesToBufferDualColorLit`, `addTiltedBoxesToBufferDualColorLit`,
+`addBoxesInnerFacesToBufferLit`, `addTiltedBoxesInnerFacesToBufferLit`. Each takes
+`(int skyLight, int blockLight)` and emits BLOCK-format vertices with fixed `(0.5, 0.5)` UV
+through the shared private `litVertex(...)` helper. The original (non-`Lit`) methods are
+left unchanged for any caller that still uses them.
+
+### Display-list × texture-binding gotcha
+
+For TESRs that cache geometry in a GL display list (`glNewList` / `glCallList`), binding the
+white texture *inside* the list is **not** sufficient. Minecraft's
+`TextureManager.bindTexture()` skips the underlying `glBindTexture` when the texture is
+already current — so a signal whose list compiled while `white1px` was already bound (e.g.,
+right after another signal's mount draw left it bound) records **no** bind into its list. At
+replay time, vanilla rendering has since rebound the block atlas, so the cached BLOCK-format
+draws sample the atlas at UV `(0.5, 0.5)` — a near-white pixel — and the body renders
+**white-tinted**. This is compile-order-dependent, which is why only *some* signals were
+affected.
+
+The fix is to **bind `WHITE_TEXTURE` outside the display list, every frame, immediately
+before `GL11.glCallList(displayList)`**. The bind inside the compiled geometry remains as a
+harmless defensive duplicate. New display-list TESRs should follow the same outside-list
+pre-call pattern and add the combined light value to the cache-invalidation key (the lightmap
+is now baked into the vertex data, so the cache must rebuild when world light changes).
+
+Note: the per-frame pre-call bind is now **unconditional** in the shipped renderer. It began
+life behind a `shaderCompatibilityMode` config gate, but the white-tint bug occurs without
+shaders too (any time display-list compile order leaves `white1px` bound), so the bind is no
+longer gated. Any reference to a `shaderCompatibilityMode` option is legacy.
+
+## Horizontal Signal Backplates
+
+The backplate blocks (`trafficaccessories/AbstractBlockSignalBackplate.java`) auto-detect
+whether the signal head behind them is horizontal and switch to horizontal geometry, so a
+single block serves both orientations — there is no separate horizontal backplate block per
+type. Doghouse and hawk backplates are vertical-only.
+
+### `MODEL_VARIANT` enum
+
+Forge v1 blockstates can only branch model selection on **one** property at a time (when
+multiple standalone property blocks each set `model`, the last one processed wins). Tilt and
+horizontal orientation are therefore collapsed into a single computed enum,
+`BackplateModelVariant` (`PropertyEnum` named `modelvariant`), with ten values covering the
+tilt × orientation product:
+
+```
+v_none  v_left_tilt  v_right_tilt  v_left_angle  v_right_angle
+h_none  h_left_tilt  h_right_tilt  h_left_angle  h_right_angle
+```
+
+The `v_` prefix is vertical, `h_` is horizontal. `getActualState` reads the
+`TileEntityTrafficSignalHead` in the block behind the backplate (one step opposite `FACING`,
+with a forward fallback) for its `bodyTilt`, calls the world-aware
+`isHorizontal(IBlockAccess, BlockPos)` on the adjacent `AbstractBlockControllableSignalHead`,
+and maps the pair to a variant via `BackplateModelVariant.of(tilt, horizontal)`. No tile
+entity or metadata is stored on the backplate itself — the variant is recomputed per frame.
+
+### Horizontal model coordinate transform (preserve this math)
+
+The horizontal model geometry is the vertical model rotated **90° counter-clockwise around
+the center (8, 6) in the XY plane**. For each element, given the vertical
+`from = [old_from_x, old_from_y, old_from_z]` and `to = [old_to_x, old_to_y, old_to_z]`:
+
+```
+new_from = [14 - old_to_y,   old_from_x - 2, old_from_z]
+new_to   = [14 - old_from_y, old_to_x   - 2, old_to_z]
+```
+
+(The Z axis is unchanged — rotation is purely in-plane.) The element-level `rotation` block
+that produces a tilt variant is **NOT transformed**: tilt is always a Y-axis rotation with
+the same pivot regardless of backplate orientation, so the rotation params are copied
+verbatim from the vertical tilt model.
+
+**Add-on models** (`addon_1`, `addon_2`) need an extra step. The vertical add-on models are
+offset from block center (they sit below/above the main head); a plain rotation transfers
+that vertical offset onto the X axis and pushes the horizontal model off-center. So add-on
+models get an additional **Y-mirror after rotation and a re-centering translation back to
+(8, 6)**.
+
+### Forge v1 combined-key parser bug (why standalone properties are used)
+
+The reason tilt and horizontal are collapsed into one enum rather than kept as two separate
+properties is a Forge `forge_marker: 1` parser bug. Authoring fully enumerated **combined**
+variant keys (e.g. `"facing=north,horizontal=false,tilt=none": {...}`) for the standard
+backplate blocks throws, during `ModelBakery.loadModelBlockDefinition()`:
+
+```
+java.util.NoSuchElementException
+    at com.google.gson.internal.LinkedTreeMap$LinkedTreeMapIterator.nextNode
+```
+
+inside Forge's `ForgeBlockStateV1` parser as it iterates the Gson `LinkedTreeMap` of variant
+entries. (Doghouse/hawk blocks, authored with combined keys from the start, are unaffected;
+converting standard blocks from standalone to combined keys triggers it.) Dropping
+`forge_marker` to use vanilla format parses but loses per-variant texture overrides. The
+working resolution is the single `MODEL_VARIANT` enum keyed in a standalone property block —
+one property, one model branch, no combined keys.
+
+### Known limitation — horizontal add-on tilt/angle alignment
+
+The `h_left_tilt` / `h_right_tilt` / `h_left_angle` / `h_right_angle` variants of the add-on
+backplate models render slightly misaligned (~¼–½ block) from the add-on head. The signal
+head renderer pivots an add-on's tilt around the *main* signal's center via a two-stage GL
+transform (see below), which a blockstate-driven backplate can only approximate with a single
+element `rotation` of one baked off-center origin. Because the backplate sits one block off
+the signal in the facing direction, the ideal pivot origin differs per facing and Minecraft
+can bake only one; some angles also push geometry past the `[-16, 32]` element bounds. The
+un-tilted horizontal case and all vertical cases align correctly. A structural fix would need
+either a TESR replicating the head's two-stage rotation or a placement-side inversion. See the
+class javadoc on `BackplateModelVariant` for the full reasoning.
+
+## Dynamic Signal Mount Kit & Horizontal Add-on Signals
+
+### Dynamic mount kit (`trafficlightmountkit`)
+
+`BlockTrafficLightMountKit` is a single NSEWUD-rotatable TESR block that replaces the former
+static mount-kit variants (`tlhmountkit`, `tlvmountkit`, `tlvmountkit8inch`,
+`tlvmountkit8812inch`). It detects adjacent signal heads each frame and renders Pelco
+Astro-brac-style bracket geometry sized to fit. Pieces (`TileEntityTrafficLightMountKitRenderer`):
+
+- **C-channel arms** — each arm is three boxes (top flange, bottom flange, recessed web),
+  reproducing the U-shaped Astro-brac cross-section.
+- **Pivot joint hubs** — thick dark blocks where the arms meet the spine.
+- **Knuckle clamps** — two-part (main body + bolt plate), inset 0.01 into the signal housing
+  to avoid z-fighting and spanning the full arm height plus a small margin.
+- **Spine tube** — narrower than the arms, connecting the pivot joints at the back.
+- **Mounting collar** — at the top (vertical) or right (horizontal) end of the spine.
+
+Color comes from `MountKitColorScheme`, a **4-tone palette** (aluminum body, slightly darker
+recessed C-channel shade, knuckle hardware, darkest pivot hubs/collar). Schemes:
+`DEFAULT` (raw cast aluminum, body ~0.64), `WHITE`, `DARK_GRAY`, `BLACK`. Cycled by
+sneak + right-click and persisted on the tile entity.
+
+#### Signal detection algorithm
+
+1. **Primary signal**: probe one block **forward** along `FACING`, then **backward** (the
+   opposite). First signal head found is the primary.
+2. **Vertical add-ons**: scan **up and down to 3 blocks** (`MAX_SCAN_DISTANCE`), with **no
+   break on air gaps**, so a double add-on placed two blocks away with an intervening air gap
+   is still merged. Each detected envelope is shifted by `±dy * 16` model units and merged
+   into the running min/max envelope.
+3. **Lateral** scan (for horizontal double add-ons) is handled signal-side in
+   `BlockControllableSignal.detectAdjacentHorizontal` (see below).
+4. **Fallback**: when no signal is found, the renderer/BB use a default 3-section 12-inch
+   vertical bracket (`DEFAULT_BB`).
+
+#### Bounding box
+
+The collision/selection box is computed from the merged signal envelope and **cached on the
+tile entity** (invalidated on neighbor change). `collisionRayTrace` **clamps** the trace to
+the 0–1 block range so the large fitted bracket can't steal clicks from neighbouring blocks.
+The **render bounding box is expanded to 9×9×9** (4 blocks each direction) so a bracket whose
+arms reach toward a distant pole isn't prematurely frustum-culled. (The signal head TE
+likewise uses a 3×3×3 render box.)
+
+### Horizontal-aware add-on signals
+
+Add-on signals automatically detect when they're placed against a horizontal main signal and
+re-orient to match. The block-type-static layout has **world-aware overrides** on
+`AbstractBlockControllableSignalHead` (each defaults to the static version):
+
+- `isHorizontal(IBlockAccess, BlockPos)`
+- `getSectionYPositions(int, IBlockAccess, BlockPos)`
+- `getSectionXPositions(int, IBlockAccess, BlockPos)`
+- `getSignalYOffset(IBlockAccess, BlockPos)`
+- `getTiltPivotOffset(IBlockAccess, BlockPos)` — returns `{0,0,0}` by default; horizontal
+  add-ons return the block-unit offset `{dx, dy, dz}` to the main signal.
+
+`BlockControllableSignal` marks add-on definitions with a `.addon(true)` builder flag (17
+signal blocks in `TrafficSignalBlocks.java`). `detectAdjacentHorizontal` scans along the
+facing axis, vertically, and **laterally up to 3 blocks** (covering double add-ons placed
+with a gap). When a horizontal main signal is detected, the add-on reports `isHorizontal()`
+true (body rotates 90°), its Y section positions become X positions with `signalYOffset`
+folded in, and `getSignalYOffset` returns 0.
+
+#### Two-step GL rotation decomposition for tilt pivot
+
+A tilted horizontal add-on must rotate around the **main** signal's center, not its own, or
+it swings out of alignment. When `getTiltPivotOffset` is non-zero **and** body tilt is not
+`NONE`, `TileEntityTrafficSignalHeadRenderer` decomposes the single body rotation into two
+stages (emitted in reverse order, since GL matrices compose last-applied-first):
+
+```java
+float baseFacingAngle = getBaseFacingAngle(facing);
+float tiltAngle       = bodyDirection.getRotation() - baseFacingAngle;
+float pivotX = 8 + tiltPivotOffset[0] * 16.0f;   // main signal center in this block's model space
+float pivotZ = 8 + tiltPivotOffset[2] * 16.0f;
+
+// Step 1: tilt around the MAIN signal center
+GL11.glTranslated(pivotX, 8, pivotZ);
+GL11.glRotatef(tiltAngle, 0, 1, 0);
+GL11.glTranslated(-pivotX, -8, -pivotZ);
+
+// Step 2: base facing around this block's own center
+GL11.glTranslated(8, 8, 8);
+GL11.glRotatef(baseFacingAngle, 0, 1, 0);
+GL11.glTranslated(-8, -8, -8);
+```
+
+Non-pivot signals use the standard single rotation around their own center (8,8,8). The
+existing ±2 (tilt) / ±4 (angle) model-unit lateral compensation shift is applied afterward.
+
+### Dual-color visor rendering & RAL yellow
+
+The visor renders with **dual-color** helpers — `RenderHelper.addBoxesToBufferDualColor` /
+`addTiltedBoxesToBufferDualColor` (and their `*Lit` shader-compatible variants) color each
+box face by its position relative to the visor center: **outside** faces take the configured
+visor color, **inside** faces (those facing the visor center) take a flat black, matching
+real visor construction. `addBoxesInnerFacesToBuffer*` overlay only the inner faces at
+fullbright for the lit reflected-light effect. The `addon` body color `YELLOW` ships as
+`(0.957, 0.667, 0.0)` in `TrafficSignalBodyColor` (a traffic-yellow tuned toward RAL 1023;
+earlier iterations used `(0.969, 0.710, 0.0)` and `(0.996, 0.749, 0.008)`).

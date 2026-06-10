@@ -619,6 +619,153 @@ AbstractItem
 └── ItemHvacLinker
 ```
 
+## Thermal Reliability & Stability Model
+
+The temperature engine and thermostat controllers are deliberately layered to stay stable under
+adverse setups: extreme biomes, dense vent fields, sealed-room geometry, and chunk reloads across
+biome boundaries. This section documents the mechanisms that keep the readings bounded and
+non-oscillating, and the design reasoning behind each.
+
+### Per-Unit Offset Cap
+
+The per-direction HVAC offset is clamped before heating and cooling are combined, using a cap that
+scales with the number of active **heater/cooler** units in range — not with vent count.
+
+```
+cap = min(BASE_HVAC_OFFSET_CAP + HVAC_OFFSET_PER_EXTRA_UNIT * (units - 1), HVAC_OFFSET_HARD_CAP)
+```
+
+| Constant | Value | Role |
+|---|---|---|
+| `BASE_HVAC_OFFSET_CAP` | 50 deg F | Ceiling for a single active heater/cooler |
+| `HVAC_OFFSET_PER_EXTRA_UNIT` | 25 deg F | Headroom added per additional active heater/cooler |
+| `HVAC_OFFSET_HARD_CAP` | 250 deg F | Absolute ceiling regardless of unit count |
+
+All three live in `HvacTemperatureManager`; the cap is computed by `computeOffsetCap(unitCount)`,
+which floors the extra-unit count at zero so one unit sits at exactly `BASE_HVAC_OFFSET_CAP`. Sample
+caps: 1 unit = 50 deg F, 3 units = 100 deg F, 5 units = 150 deg F.
+
+The defining rule is that **vent relays do not count toward the cap.** Vents are delivery points for
+conditioned air, not independent heat sources, so a wall of vents fed by one rooftop unit must not
+raise the indoor temperature ceiling. Counting only heater/cooler units means the cap reflects actual
+installed conditioning capacity: a 5-RTU rooftop on a -30 deg F mountain biome can push the indoor
+temperature comfortably above 70 deg F, while a single unit feeding seventy-five vents cannot exceed
+the single-unit floor. The hard cap is the final backstop against pathological or world-edited HVAC
+fields producing thousand-degree offsets that would destabilize the smoothing and display logic.
+
+> Note: this contributor count is distinct from the *delivery-point* contributor count used elsewhere
+> in the offset math for stacking purposes. The cap specifically counts heater/cooler tile entities,
+> scanning the gathered sources and skipping `TileEntityHvacVentRelay` instances.
+
+### Air-Path Distance via Flood Fill
+
+Source-to-query distance is measured along the actual air path rather than by a straight-line
+raycast. `calculateHvacOffset` runs a 6-connected breadth-first flood fill (`floodFillAirDistances`)
+outward through open air from the query position, recording the shortest step-distance to every
+reachable air cell. Each source contributes only if the fill reaches an air cell adjacent to it
+(`shortestAirPathTo`), weighted by that path-step distance.
+
+This is more sophisticated than straight-line attenuation in three ways:
+
+- **Air bends.** A vent around a corner or through a doorway still reaches the thermostat, because
+  the fill routes around obstacles. A straight-line raycast counted the intervening partition wall
+  and pinned the contribution to a few percent, so a thermostat just around the corner from its own
+  vent never felt it.
+- **Sealed walls are hard boundaries.** The fill cannot cross a solid block
+  (`material.isSolid() && !material.isReplaceable()`), so a sealed adjacent room is a genuinely
+  separate thermal zone rather than a partially-attenuated one. This is the basis of multi-zone
+  separation.
+- **Path steps inflate over Euclidean distance.** Because air routes around geometry, a path-step
+  count is always at least the straight-line distance — a ceiling vent ~8.5 blocks away Euclidean in
+  an 8-tall room reads ~12 path steps (over and down). The distance thresholds are tuned for that
+  inflation.
+
+The fill is bounded by `MAX_FLOOD_BLOCKS = 4096` visited cells and early-stops as soon as every
+candidate source has been located, so the typical per-query cost is far below the ceiling; the full
+budget is only paid when a source is genuinely unreachable. A source beyond the budget or behind a
+sealed wall reads as unreachable (weight 0), identical to being walled off.
+
+### Three-Layer Thermal-Mass Model
+
+"The room cools down slowly after the equipment shuts off" is simulated by three independent layers,
+ordered from longest to shortest time constant. Each layer is owned by a different component, and the
+layers compensate for one another so removing any one is safe.
+
+| Layer | Owner | Constant | Time constant | Purpose |
+|---|---|---|---|---|
+| Vent residual decay | `TileEntityHvacVentRelay.setContribution` | `RESIDUAL_DECAY_FACTOR = 0.93f` per 2s tick | ~2 min to full decay (~20s to 50%, ~80s to 95%) | A player walking into a recently-conditioned room still feels lingering warmth/coolness |
+| Thermostat thermal smoothing | `currentTemperature` in both thermostats | `THERMAL_BLEND_FACTOR = 0.06f` per 2s tick | ~76s to cover 90% of a change | The thermostat reading lags air temperature like a real thermostat in a real room |
+| HUD asymmetric EMA | `TemperatureSmoother` (HUD overlay) | ramp/transition/decay factors | ~20-30s on transition | The player HUD smoothly tracks temperature while walking between zones |
+
+When a vent's commanded contribution drops to near zero (system idle) while its previous value was
+meaningful, `setContribution` applies `RESIDUAL_DECAY_FACTOR` instead of snapping to zero, then snaps
+to exactly zero once the magnitude falls below a small threshold. The vent layer simulates
+room-level thermal mass specifically; equipment-coil residual heat is intentionally *not* simulated
+at the heater level (heaters snap on/off via `getActiveContribution`), because that shorter effect is
+already covered by the smoothing layers.
+
+### Proportional Control
+
+Both thermostats throttle vent output as the room approaches setpoint, via
+`computeProportionalTerm()`. The term is the temperature error toward the active setpoint (the low
+setpoint when heating, the high setpoint when cooling) divided by `P_TERM_FULL_RANGE`, clamped to the
+range `[P_TERM_MIN_OUTPUT, 1.0]`.
+
+| Constant | Value | Role |
+|---|---|---|
+| `P_TERM_FULL_RANGE` | 5.0 deg F | Error at which output saturates at 100% |
+| `P_TERM_MIN_OUTPUT` | 0.4 (40%) | Output floor while a calling state is active |
+
+Per-vent output is `baseContribution * rampFactor * pTerm`. At 5 deg F or more off setpoint the term
+is 1.0 (full output); at 2.5 deg F off it is 0.5; near setpoint it is held at the 0.4 floor. This
+prevents overshoot: the old "full output until a deadband fires" approach drove the room 25-30 deg F
+past target before stopping. The floor exists because a pure proportional term decays toward zero as
+the reading nears setpoint, which would let the room asymptote 1-2 deg F short and stall the system;
+the 0.4 floor guarantees enough output to close the last degree against ambient heat loss while the
+calling state still exits the instant the setpoint is reached.
+
+### Snap-to-Raw on First Tick After Load
+
+Each thermostat carries a transient `firstTickAfterLoad` flag, set in `readNBT` (when a saved
+temperature is present) and cleared on the first `onTick`. While the flag is set — or when the
+smoother has no saved reading at all — `currentTemperature` snaps directly to the raw reading instead
+of blending through `THERMAL_BLEND_FACTOR`. On every subsequent tick the thermostat always blends.
+
+The flag exists to handle the "block reloaded into a wildly different temperature" case (for
+example, a thermostat that was moved between biomes between sessions, or a saved value that is far out
+of sync with reality). A single snap on load realigns the smoother immediately rather than crawling
+across a tens-of-degrees gap over minutes. Crucially, snapping is confined to that one tick: a
+previous design snapped whenever the raw and smoothed readings differed by more than 60 deg F, which
+also fired on every tick during transient HVAC overshoot — bypassing hysteresis and oscillating the
+thermostat between heating and cooling modes once per tick. Restricting the snap to the first tick
+after load closes that bypass.
+
+### Why the Design Is the Way It Is
+
+These mechanisms exist to fix three stacked bugs that combined into a runaway in a live modpack
+(snowy biome, ~75 vents per zone across two zones, readings swinging between -20 deg F and -253 deg F
+every few seconds):
+
+1. **Violent oscillation.** Three flaws compounded: vent contribution sign was flipped purely by
+   calling mode with no check that matching equipment was linked (a heater-only system could command
+   phantom cooling); the offset cap scaled with vent count, letting seventy-five vents push a
+   ~1800 deg F ceiling; and a "snap to raw when off by >60 deg F" smoothing branch bypassed
+   hysteresis every tick. The per-unit cap, equipment-aware mode lockout, and the first-tick-only
+   snap each address one leg of this.
+2. **Wall attenuation through openings.** A single straight-line raycast counted walls and gave a
+   vent under a balcony almost no influence on a player standing to the side, even though air would
+   diffuse out through the openings. The flood-fill air path replaces that pessimistic single ray.
+3. **Steady-state overshoot.** A 15x15 room targeting 85 deg F sat at ~110 deg F labeled
+   "comfortable": the thermostat had gone idle, but the old 0.99/tick vent residual decay (~13 min)
+   kept the vents effectively blowing at the cap long after the call stopped, and there was no
+   proportional throttling to prevent the climb in the first place. The tightened residual decay and
+   proportional control resolve this.
+
+Each layer is therefore intentionally bounded and single-purpose: the cap bounds magnitude, the flood
+fill bounds reach to real air paths, the three thermal-mass layers provide realistic lag without any
+one of them running away, proportional control prevents overshoot, and the first-tick snap realigns
+on load without re-opening the hysteresis bypass.
+
 ## Known Limitations / Future Work
 
 - **Extreme biome scaling:** In very hot biomes (desert, mesa, 131-176 deg F baseline) or very
