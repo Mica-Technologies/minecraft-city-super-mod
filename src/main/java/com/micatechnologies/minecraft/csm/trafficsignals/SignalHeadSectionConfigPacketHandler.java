@@ -1,5 +1,7 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmPacketUtils;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
@@ -16,8 +18,12 @@ public class SignalHeadSectionConfigPacketHandler implements
 
   @Override
   public IMessage onMessage(SignalHeadSectionConfigPacket message, MessageContext ctx) {
-    ctx.getServerHandler().player.server.addScheduledTask(() -> {
-      World world = ctx.getServerHandler().player.world;
+    EntityPlayerMP player = ctx.getServerHandler().player;
+    player.server.addScheduledTask(() -> {
+      if (!CsmPacketUtils.canPlayerReach(player, message.getPos())) {
+        return;
+      }
+      World world = player.world;
       TileEntity te = world.getTileEntity(message.getPos());
       if (!(te instanceof TileEntityTrafficSignalHead)) {
         return;
