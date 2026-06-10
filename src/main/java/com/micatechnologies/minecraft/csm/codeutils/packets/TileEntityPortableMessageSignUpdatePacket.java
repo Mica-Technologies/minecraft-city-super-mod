@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.codeutils.packets;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmPacketUtils;
 import io.netty.buffer.ByteBuf;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,7 +50,8 @@ public class TileEntityPortableMessageSignUpdatePacket implements IMessage {
     this.cycleSpeed = buf.readInt();
     this.trailerColor = buf.readInt();
     this.signAngle = buf.readInt();
-    int count = buf.readInt();
+    // 3 varint-prefixed strings per page; minimum 1 byte each on the wire
+    int count = CsmPacketUtils.readBoundedCount(buf, 16, 3);
     pages.clear();
     for (int i = 0; i < count; i++) {
       pages.add(new String[]{

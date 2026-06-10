@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.codeutils.packets;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmPacketUtils;
 import io.netty.buffer.ByteBuf;
 import java.nio.charset.StandardCharsets;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
@@ -20,15 +21,8 @@ public class TileEntityRedstoneTTSInvokePacket implements IMessage {
 
   @Override
   public void fromBytes(ByteBuf buf) {
-    int length = buf.readInt();
-    byte[] bytes = new byte[length];
-    buf.readBytes(bytes);
-    this.ttsString = new String(bytes, StandardCharsets.UTF_8);
-
-    int voiceLength = buf.readInt();
-    byte[] voiceBytes = new byte[voiceLength];
-    buf.readBytes(voiceBytes);
-    this.ttsVoice = new String(voiceBytes, StandardCharsets.UTF_8);
+    this.ttsString = CsmPacketUtils.readBoundedString(buf, 4096);
+    this.ttsVoice = CsmPacketUtils.readBoundedString(buf, 128);
   }
 
   @Override

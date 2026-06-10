@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmPacketUtils;
 import io.netty.buffer.ByteBuf;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -75,17 +76,11 @@ public class APSSoundPacket implements IMessage {
   @Override
   public void fromBytes(ByteBuf buf) {
     start = buf.readBoolean();
-    int channelLen = buf.readInt();
-    byte[] channelBytes = new byte[channelLen];
-    buf.readBytes(channelBytes);
-    channel = new String(channelBytes, StandardCharsets.UTF_8);
-    int strLen = buf.readInt();
-    byte[] bytes = new byte[strLen];
-    buf.readBytes(bytes);
-    soundResource = new String(bytes, StandardCharsets.UTF_8);
+    channel = CsmPacketUtils.readBoundedString(buf, 256);
+    soundResource = CsmPacketUtils.readBoundedString(buf, 256);
     hearingRange = buf.readFloat();
     repeatSound = buf.readBoolean();
-    int count = buf.readInt();
+    int count = CsmPacketUtils.readBoundedCount(buf, 1024, 12);
     sourcePositions = new ArrayList<>(count);
     for (int i = 0; i < count; i++) {
       sourcePositions.add(new BlockPos(buf.readInt(), buf.readInt(), buf.readInt()));
