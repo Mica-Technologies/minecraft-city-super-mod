@@ -41,6 +41,9 @@ public class FareGateOpModeHandler
       return;
     }
     FareGateOpMode mode = FareGateOpMode.fromOrdinal(message.getModeOrdinal());
+    if (mode == null) {
+      return;
+    }
     ((TileEntityFareGate) te).setOpMode(mode);
   }
 }
