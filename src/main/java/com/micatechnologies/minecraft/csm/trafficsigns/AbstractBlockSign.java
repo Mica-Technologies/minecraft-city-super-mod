@@ -37,6 +37,16 @@ public abstract class AbstractBlockSign extends AbstractBlockRotatableHZEight
 
   private static final ConcurrentHashMap<Long, Boolean> SETBACK_CACHE = new ConcurrentHashMap<>();
 
+  /**
+   * Clears the setback cache. Called on world unload (server) and client disconnect so entries
+   * don't accumulate across sessions. The cache is keyed by position only — lookups run with an
+   * IBlockAccess that exposes no dimension — so a sign at identical coordinates in two loaded
+   * dimensions shares an entry; any stale render state self-heals on the next neighbor change.
+   */
+  public static void clearSetbackCache() {
+    SETBACK_CACHE.clear();
+  }
+
   public AbstractBlockSign() {
     super(Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0);
   }
