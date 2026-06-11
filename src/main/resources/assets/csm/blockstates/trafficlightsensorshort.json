@@ -1,14 +1,9 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:trafficsignals/shared_models/trafficpolecamera_short",
-    "textures": {
-      "all": "csm:blocks/trafficsignals/shared_textures/metal_white",
-      "particle": "csm:blocks/trafficsignals/shared_textures/metal_white",
-      "0": "csm:blocks/trafficsignals/shared_textures/metal_silver",
-      "1": "csm:blocks/trafficsignals/shared_textures/metal_white",
-      "2": "csm:blocks/trafficsignals/shared_textures/solidoff",
-      "missing": "csm:blocks/trafficsignals/shared_textures/metal_silver"
+    "model": "csm:trafficsignals/shared_models/trafficpolecamera_short.obj",
+    "custom": {
+      "flip-v": true
     }
   },
   "variants": {
@@ -31,7 +26,30 @@
       }
     },
     "inventory": [
-      {}
+      {
+        "model": "csm:trafficsignals/shared_models/trafficpolecamera_short_inv.obj",
+        "transform": {
+          "gui": {
+            "rotation": [ 30, 225, 0 ],
+            "scale": 0.46
+          },
+          "fixed": {
+            "rotation": [ 0, 90, 0 ],
+            "scale": 0.4
+          },
+          "ground": {
+            "scale": 0.34
+          },
+          "thirdperson_righthand": {
+            "rotation": [ 75, 45, 0 ],
+            "scale": 0.3
+          },
+          "firstperson_righthand": {
+            "rotation": [ 0, 45, 0 ],
+            "scale": 0.3
+          }
+        }
+      }
     ],
     "normal": [
       {}

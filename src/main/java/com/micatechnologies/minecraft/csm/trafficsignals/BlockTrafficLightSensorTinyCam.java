@@ -45,6 +45,6 @@ public class BlockTrafficLightSensorTinyCam extends AbstractBlockTrafficSignalSe
      */
     @Override
     public AxisAlignedBB getBlockBoundingBox( IBlockState state, IBlockAccess source, BlockPos pos ) {
-        return new AxisAlignedBB(0.354956, 0.000000, 0.328125, 0.643017, 0.851563, 0.500000);
+        return new AxisAlignedBB(0.340000, 0.000000, 0.270000, 0.660000, 0.870000, 0.610000);
     }
 }
