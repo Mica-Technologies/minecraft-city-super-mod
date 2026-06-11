@@ -25,6 +25,8 @@ import com.micatechnologies.minecraft.csm.trafficsignals.BlockTrafficLightSensor
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockTrafficLightSensorBell;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockTrafficLightSensorBelowGround;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockTrafficLightSensorBox;
+import com.micatechnologies.minecraft.csm.trafficsignals.BlockTrafficLightSensorMiovision360;
+import com.micatechnologies.minecraft.csm.trafficsignals.BlockTrafficLightSensorMiovision360Tall;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockTrafficLightSensorModern;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockTrafficLightSensorShort;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockTrafficLightSensorTinyCam;
@@ -195,6 +197,10 @@ public class CsmTabTrafficSignals extends CsmTab {
         fmlPreInitializationEvent); // TrafficLightSensorShort
     initTabBlock(BlockTrafficLightSensorTinyCam.class,
         fmlPreInitializationEvent); // TrafficLightSensorTinyCam
+    initTabBlock(BlockTrafficLightSensorMiovision360.class,
+        fmlPreInitializationEvent); // TrafficLightSensorMiovision360 (short)
+    initTabBlock(BlockTrafficLightSensorMiovision360Tall.class,
+        fmlPreInitializationEvent); // TrafficLightSensorMiovision360Tall (mast arm)
     initTabBlock(BlockBlankoutBox.class, fmlPreInitializationEvent); // BlankoutBox
     initTabBlock(BlockOverheightDetectionSensor.class,
         fmlPreInitializationEvent); // OverheightDetectionSensor

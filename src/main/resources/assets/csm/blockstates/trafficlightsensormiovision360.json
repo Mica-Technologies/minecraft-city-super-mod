@@ -1,0 +1,107 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:trafficsignals/shared_models/miovision_360.obj",
+    "custom": {
+      "flip-v": true
+    }
+  },
+  "variants": {
+    "facing": {
+      "n": {},
+      "nw": {
+        "transform": {
+          "rotation": [
+            { "x": 0 },
+            { "y": 45 },
+            { "z": 0 }
+          ]
+        }
+      },
+      "w": {
+        "transform": {
+          "rotation": [
+            { "x": 0 },
+            { "y": 90 },
+            { "z": 0 }
+          ]
+        }
+      },
+      "sw": {
+        "transform": {
+          "rotation": [
+            { "x": 0 },
+            { "y": 135 },
+            { "z": 0 }
+          ]
+        }
+      },
+      "s": {
+        "transform": {
+          "rotation": [
+            { "x": 0 },
+            { "y": 180 },
+            { "z": 0 }
+          ]
+        }
+      },
+      "se": {
+        "transform": {
+          "rotation": [
+            { "x": 0 },
+            { "y": 225 },
+            { "z": 0 }
+          ]
+        }
+      },
+      "e": {
+        "transform": {
+          "rotation": [
+            { "x": 0 },
+            { "y": 270 },
+            { "z": 0 }
+          ]
+        }
+      },
+      "ne": {
+        "transform": {
+          "rotation": [
+            { "x": 0 },
+            { "y": 315 },
+            { "z": 0 }
+          ]
+        }
+      }
+    },
+    "inventory": [
+      {
+        "model": "csm:trafficsignals/shared_models/miovision_360_inv.obj",
+        "transform": {
+          "gui": {
+            "rotation": [ 30, 225, 0 ],
+            "scale": 0.5
+          },
+          "fixed": {
+            "rotation": [ 0, 90, 0 ],
+            "scale": 0.45
+          },
+          "ground": {
+            "scale": 0.4
+          },
+          "thirdperson_righthand": {
+            "rotation": [ 75, 45, 0 ],
+            "translation": [ 0, 2.5, 0 ],
+            "scale": 0.35
+          },
+          "firstperson_righthand": {
+            "rotation": [ 0, 45, 0 ],
+            "scale": 0.35
+          }
+        }
+      }
+    ],
+    "normal": [
+      {}
+    ]
+  }
+}
