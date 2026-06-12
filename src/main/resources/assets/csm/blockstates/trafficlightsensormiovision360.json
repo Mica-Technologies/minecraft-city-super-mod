@@ -9,29 +9,11 @@
   "variants": {
     "facing": {
       "n": {},
-      "nw": {
-        "transform": {
-          "rotation": [
-            { "x": 0 },
-            { "y": 45 },
-            { "z": 0 }
-          ]
-        }
-      },
       "w": {
         "transform": {
           "rotation": [
             { "x": 0 },
             { "y": 90 },
-            { "z": 0 }
-          ]
-        }
-      },
-      "sw": {
-        "transform": {
-          "rotation": [
-            { "x": 0 },
-            { "y": 135 },
             { "z": 0 }
           ]
         }
@@ -45,15 +27,6 @@
           ]
         }
       },
-      "se": {
-        "transform": {
-          "rotation": [
-            { "x": 0 },
-            { "y": 225 },
-            { "z": 0 }
-          ]
-        }
-      },
       "e": {
         "transform": {
           "rotation": [
@@ -63,11 +36,24 @@
           ]
         }
       },
-      "ne": {
+      "ne": { "model": "csm:trafficsignals/shared_models/miovision_360_diagr.obj" },
+      "nw": { "model": "csm:trafficsignals/shared_models/miovision_360_diagl.obj" },
+      "se": {
+        "model": "csm:trafficsignals/shared_models/miovision_360_diagl.obj",
         "transform": {
           "rotation": [
             { "x": 0 },
-            { "y": 315 },
+            { "y": 180 },
+            { "z": 0 }
+          ]
+        }
+      },
+      "sw": {
+        "model": "csm:trafficsignals/shared_models/miovision_360_diagr.obj",
+        "transform": {
+          "rotation": [
+            { "x": 0 },
+            { "y": 180 },
             { "z": 0 }
           ]
         }

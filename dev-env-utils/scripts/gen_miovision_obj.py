@@ -51,6 +51,18 @@ class Mesh:
         return len(self.vt)
     def _n(self, n): self.vn.append(n); return len(self.vn)
 
+    def rotate_y(self, deg, px=0.0, pz=0.0):
+        """Rotate all geometry about the vertical axis through (px, pz) in build space. Positive deg
+        is clockwise viewed from above (matching the compass/facing sense, i.e. north->east). Used to
+        bake the mount-anchored diagonal variants: pivoting about the back mount point (rather than
+        the block centre) keeps the bracket/pole flush against its pole while the camera swings 45deg.
+        Rotates the stored normals too so winding/lighting stay correct after the move."""
+        a = math.radians(deg)
+        ca, sa = math.cos(a), math.sin(a)
+        self.v = [(px + (x - px) * ca - (z - pz) * sa, y, pz + (x - px) * sa + (z - pz) * ca)
+                  for (x, y, z) in self.v]
+        self.vn = [(nx * ca - nz * sa, ny, nx * sa + nz * ca) for (nx, ny, nz) in self.vn]
+
     def tri(self, mat, p1, p2, p3, uv1, uv2, uv3):
         ni = self._n(_nrm(p1, p2, p3))
         self.faces.append((mat, [(self._v(p1), self._t(uv1), ni),
@@ -350,6 +362,20 @@ def main():
     write_mtl(os.path.join(OUT_DIR, mtl_name))
     short = build_short(); short.write(os.path.join(OUT_DIR, "miovision_360.obj"), mtl_name)
     tall = build_tall(); tall.write(os.path.join(OUT_DIR, "miovision_360_tall.obj"), mtl_name)
+
+    # Mount-anchored diagonal variants. The block stores an 8-way DirectionEight facing; the four
+    # diagonals would otherwise rotate the whole model about the block centre, swinging the back
+    # bracket off into an empty corner. Instead the diagonals point at these pre-swung models: the
+    # base mesh pivoted +/-45deg about the BACK MOUNT POINT (build z=0.50, the +Z bracket face), so
+    # the bracket stays flush against its pole and only the camera/arm swings. The blockstate then
+    # places diagr/diagl at a 90deg-step cardinal rotation (see the *.json), landing the bracket on
+    # a real block face for every diagonal. PIVOT_Z must match the bracket's back face.
+    PIVOT_Z = 0.50
+    for build, base in ((build_short, "miovision_360"), (build_tall, "miovision_360_tall")):
+        for sfx, deg in (("diagr", 45.0), ("diagl", -45.0)):
+            dm = build()
+            dm.rotate_y(deg, 0.0, PIVOT_Z)
+            dm.write(os.path.join(OUT_DIR, "%s_%s.obj" % (base, sfx)), mtl_name)
 
     # Inventory-only copies, centred on the ORIGIN (0,0,0). Item-frame/GUI rotation pivots about the
     # model origin (unlike world placement, which pivots about the block centre), so an origin-
