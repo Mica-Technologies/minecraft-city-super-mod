@@ -788,7 +788,17 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
   }
 
   public boolean toggleAging() {
-    agingEnabled = !agingEnabled;
+    return setAgingEnabled(!agingEnabled);
+  }
+
+  /**
+   * Sets the bulb-aging simulation on or off, performing the same bookkeeping as
+   * {@link #toggleAging()}. Enabling sizes/seeds the aging state; disabling resets all bulbs to
+   * healthy ("replacing" broken bulbs), which also wipes any manual per-section overrides by
+   * design — treat it as a maintenance crew that has visited every head. Returns the new value.
+   */
+  public boolean setAgingEnabled(boolean enabled) {
+    agingEnabled = enabled;
     if (agingEnabled) {
       if (bulbAgingStates.length != sectionInfos.length) {
         bulbAgingStates = new int[sectionInfos.length];
@@ -800,15 +810,55 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
         lastAgingDay = world.getTotalWorldTime() / 24000L;
       }
     } else {
-      // Turning aging off resets all bulbs to healthy ("replacing" broken bulbs). This also
-      // wipes any manual per-section overrides by design — treat the toggle as a maintenance
-      // crew that has visited every head in the system.
       bulbAgingStates = new int[sectionInfos.length];
       lastAgingDay = -1L;
       agingSeed = 0L;
     }
     markDirtySync(world, pos, true);
     return agingEnabled;
+  }
+
+  /**
+   * Applies a bundle of appearance settings copied from another signal head via the config tool's
+   * copy/paste feature: body, door and visor colors, visor type and bulb style (applied uniformly
+   * to every section, matching the All Sections page) plus the head-level bulb-aging flag, mount
+   * color and horizontal-flip flag. Block-enforced constraints are respected — a head that enforces
+   * a bulb style keeps it, and the horizontal flip is only applied to heads that allow it.
+   */
+  public void applyCopiedAppearance(TrafficSignalBodyColor bodyColor,
+      TrafficSignalBodyColor doorColor, TrafficSignalBodyColor visorColor,
+      TrafficSignalVisorType visorType, TrafficSignalBulbStyle bulbStyle, boolean agingEnabled,
+      TrafficSignalBodyColor mountColor, boolean horizontalFlip) {
+    TrafficSignalBulbStyle styleToApply = bulbStyle;
+    boolean applyFlip = true;
+    if (world != null) {
+      Block block = world.getBlockState(pos).getBlock();
+      if (block instanceof AbstractBlockControllableSignalHead) {
+        AbstractBlockControllableSignalHead head = (AbstractBlockControllableSignalHead) block;
+        TrafficSignalBulbStyle enforced = head.getEnforcedBulbStyle();
+        if (enforced != null) {
+          styleToApply = enforced;
+        }
+        applyFlip = head.allowsHorizontalFlip();
+      }
+    }
+    for (TrafficSignalSectionInfo info : sectionInfos) {
+      info.setBodyColor(bodyColor);
+      info.setDoorColor(doorColor);
+      info.setVisorColor(visorColor);
+      info.setVisorType(visorType);
+      info.setBulbStyle(styleToApply);
+    }
+    this.mountColor = mountColor;
+    if (applyFlip) {
+      this.horizontalFlip = horizontalFlip;
+    }
+    // Handles bulb-aging state bookkeeping and syncs the TE.
+    setAgingEnabled(agingEnabled);
+    // A flip change affects neighbor-dependent bounding boxes (e.g. the dynamic mount kit).
+    if (applyFlip && world != null && !world.isRemote) {
+      world.notifyNeighborsOfStateChange(pos, getBlockType(), false);
+    }
   }
 
   /**

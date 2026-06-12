@@ -1,7 +1,10 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
 import com.micatechnologies.minecraft.csm.CsmNetwork;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyColor;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBulbStyle;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalSectionInfo;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalVisorType;
 import java.io.IOException;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
@@ -34,6 +37,41 @@ public class SignalHeadConfigGui extends GuiScreen {
   private static final int MODE_TOGGLE_ID = 1001;
   private static final int SECTION_PREV_ID = 1002;
   private static final int SECTION_NEXT_ID = 1003;
+  private static final int COPY_BUTTON_ID = 1004;
+  private static final int PASTE_BUTTON_ID = 1005;
+
+  /**
+   * Client-side appearance clipboard for the Copy/Paste buttons. Static so a configuration copied
+   * from one signal head survives closing the GUI and persists until another copy (or game exit),
+   * letting players stamp the same look onto many heads. {@code null} until the first copy.
+   */
+  private static AppearanceClipboard clipboard = null;
+
+  /** Immutable snapshot of the eight copy/paste-able appearance properties of a signal head. */
+  private static final class AppearanceClipboard {
+    final TrafficSignalBodyColor bodyColor;
+    final TrafficSignalBodyColor doorColor;
+    final TrafficSignalBodyColor visorColor;
+    final TrafficSignalVisorType visorType;
+    final TrafficSignalBulbStyle bulbStyle;
+    final boolean agingEnabled;
+    final TrafficSignalBodyColor mountColor;
+    final boolean horizontalFlip;
+
+    AppearanceClipboard(TrafficSignalBodyColor bodyColor, TrafficSignalBodyColor doorColor,
+        TrafficSignalBodyColor visorColor, TrafficSignalVisorType visorType,
+        TrafficSignalBulbStyle bulbStyle, boolean agingEnabled, TrafficSignalBodyColor mountColor,
+        boolean horizontalFlip) {
+      this.bodyColor = bodyColor;
+      this.doorColor = doorColor;
+      this.visorColor = visorColor;
+      this.visorType = visorType;
+      this.bulbStyle = bulbStyle;
+      this.agingEnabled = agingEnabled;
+      this.mountColor = mountColor;
+      this.horizontalFlip = horizontalFlip;
+    }
+  }
 
   // Per-section action button IDs are offset so they can't collide with whole-head ordinals.
   private static final int PER_SECTION_ID_OFFSET = 200;
@@ -107,9 +145,9 @@ public class SignalHeadConfigGui extends GuiScreen {
     int rightX = leftX + BUTTON_WIDTH + COLUMN_GAP;
     int rows = (buttonCount + 1) / 2;
     // Reserve one row above the property buttons for the mode toggle and (in per-section mode)
-    // the section selector, plus one below for the close button.
+    // the section selector, plus two below for the copy/paste row and the close button.
     int headerRows = mode == Mode.PER_SECTION ? 2 : 1;
-    int topY = height / 2 - (rows * ROW_SPACING + ROW_SPACING * (headerRows + 1)) / 2;
+    int topY = height / 2 - (rows * ROW_SPACING + ROW_SPACING * (headerRows + 2)) / 2;
 
     // Header row 1: mode toggle (always visible), centered.
     buttonList.add(new GuiButton(MODE_TOGGLE_ID, width / 2 - BUTTON_WIDTH / 2, topY,
@@ -146,8 +184,19 @@ public class SignalHeadConfigGui extends GuiScreen {
       buttonList.add(new GuiButton(id, x, y, BUTTON_WIDTH, BUTTON_HEIGHT, ""));
     }
 
+    // Copy / Paste row: two columns matching the property grid. Paste is disabled until something
+    // has been copied. Both copy section 0's per-section look + the head-level properties, and
+    // paste applies them across all sections, so they're useful in either page mode.
+    int copyPasteY = propertyStartY + rows * ROW_SPACING + 4;
+    buttonList.add(new GuiButton(COPY_BUTTON_ID, leftX, copyPasteY, BUTTON_WIDTH, BUTTON_HEIGHT,
+        "Copy Appearance"));
+    GuiButton pasteButton = new GuiButton(PASTE_BUTTON_ID, rightX, copyPasteY, BUTTON_WIDTH,
+        BUTTON_HEIGHT, "Paste Appearance");
+    pasteButton.enabled = clipboard != null;
+    buttonList.add(pasteButton);
+
     buttonList.add(new GuiButton(CLOSE_BUTTON_ID, width / 2 - BUTTON_WIDTH / 2,
-        propertyStartY + rows * ROW_SPACING + 4, BUTTON_WIDTH, BUTTON_HEIGHT, "Close"));
+        copyPasteY + ROW_SPACING, BUTTON_WIDTH, BUTTON_HEIGHT, "Close"));
   }
 
   /**
@@ -208,7 +257,8 @@ public class SignalHeadConfigGui extends GuiScreen {
       if (button.id == MODE_TOGGLE_ID) {
         button.displayString = "Mode: " + mode.label;
       } else if (button.id == CLOSE_BUTTON_ID || button.id == SECTION_PREV_ID
-          || button.id == SECTION_NEXT_ID || button.id < 0) {
+          || button.id == SECTION_NEXT_ID || button.id == COPY_BUTTON_ID
+          || button.id == PASTE_BUTTON_ID || button.id < 0) {
         // Static labels — leave them alone.
         continue;
       } else if (mode == Mode.ALL_SECTIONS && button.id < ALL_LABELS.length) {
@@ -233,7 +283,7 @@ public class SignalHeadConfigGui extends GuiScreen {
 
     int rows = (activeButtonCount() + 1) / 2;
     int headerRows = mode == Mode.PER_SECTION ? 2 : 1;
-    int topY = height / 2 - (rows * ROW_SPACING + ROW_SPACING * (headerRows + 1)) / 2;
+    int topY = height / 2 - (rows * ROW_SPACING + ROW_SPACING * (headerRows + 2)) / 2;
     drawCenteredString(fontRenderer, "Signal Head Configuration",
         width / 2, topY - 14, 0xFFFFFF);
 
@@ -330,6 +380,25 @@ public class SignalHeadConfigGui extends GuiScreen {
     if (button.id == SECTION_NEXT_ID) {
       int count = Math.max(1, tileEntity.getSectionCount());
       selectedSection = (selectedSection + 1) % count;
+      return;
+    }
+    if (button.id == COPY_BUTTON_ID) {
+      TrafficSignalSectionInfo[] infos = tileEntity.getSectionInfos();
+      if (infos != null && infos.length > 0) {
+        clipboard = new AppearanceClipboard(infos[0].getBodyColor(), infos[0].getDoorColor(),
+            infos[0].getVisorColor(), infos[0].getVisorType(), infos[0].getBulbStyle(),
+            tileEntity.isAgingEnabled(), tileEntity.getMountColor(), tileEntity.isHorizontalFlip());
+        initGui(); // rebuild so the Paste button becomes enabled
+      }
+      return;
+    }
+    if (button.id == PASTE_BUTTON_ID) {
+      if (clipboard != null) {
+        CsmNetwork.sendToServer(new SignalHeadAppearancePacket(blockPos,
+            clipboard.bodyColor.toNBT(), clipboard.doorColor.toNBT(), clipboard.visorColor.toNBT(),
+            clipboard.visorType.toNBT(), clipboard.bulbStyle.toNBT(), clipboard.mountColor.toNBT(),
+            clipboard.agingEnabled, clipboard.horizontalFlip));
+      }
       return;
     }
 
