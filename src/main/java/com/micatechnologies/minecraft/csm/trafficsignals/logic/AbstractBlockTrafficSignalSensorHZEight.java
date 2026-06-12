@@ -38,7 +38,7 @@ import net.minecraft.world.World;
  * and {@code assets/docs/TRAFFIC_SIGNAL_SYSTEM.md}.</p>
  */
 public abstract class AbstractBlockTrafficSignalSensorHZEight extends AbstractBlockRotatableHZEight
-    implements ICsmTileEntityProvider, ICsmNoSnowAccumulation {
+    implements ICsmTileEntityProvider, ICsmNoSnowAccumulation, ITrafficSignalSensor {
 
   public AbstractBlockTrafficSignalSensorHZEight(Material materialIn) {
     super(materialIn);
