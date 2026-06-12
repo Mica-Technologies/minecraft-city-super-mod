@@ -1,6 +1,6 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
-import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockTrafficSignalSensorHZEight;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockTrafficSignalSensorAngled;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -12,14 +12,14 @@ import net.minecraft.world.IBlockAccess;
  * omnidirectional camera and hook, but with a clamp/banding saddle at the bottom that sits on a
  * horizontal mast arm and a long straight shaft rising upward off the arm; the hook then curls over
  * the top and the dome hangs down from it (matching real mast-arm installs). Functions as a
- * traffic-signal sensor (see {@link AbstractBlockTrafficSignalSensorHZEight}) with finer 8-way
- * rotation.
+ * traffic-signal sensor with a cardinal facing plus a configurable aim angle (see
+ * {@link AbstractBlockTrafficSignalSensorAngled}).
  *
  * @author Mica Technologies
  * @since 1.0
  */
 public class BlockTrafficLightSensorMiovision360Tall
-    extends AbstractBlockTrafficSignalSensorHZEight {
+    extends AbstractBlockTrafficSignalSensorAngled {
 
   public BlockTrafficLightSensorMiovision360Tall() {
     super(Material.ROCK);

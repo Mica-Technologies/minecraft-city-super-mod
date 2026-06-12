@@ -629,6 +629,14 @@ def main():
         dm.write(os.path.join(OUT_DIR, "gridsmart_ac3_%s.obj" % sfx), "gridsmart_ac3.mtl")
     emit(build_bell(), "trafficpolecamera_bell", {"white": mw, "silver": ms, "lens": cl,
                                                   "wire": mb})
+    # GridSmart FE3 (bell) mount-anchored aim-angle variants. The bell sensor keeps a cardinal
+    # facing plus a configurable aim angle (none/left/right); LEFT/RIGHT render these models, the
+    # bell arm swung +/-45deg about the pole/clamp axis (build z=pole_z=0.55) so the pole stays put.
+    for sfx, deg in (("diagr", 45.0), ("diagl", -45.0)):
+        dm = build_bell()
+        dm.rotate_y(deg, 0.0, 0.55)
+        dm.write(os.path.join(OUT_DIR, "trafficpolecamera_bell_%s.obj" % sfx),
+                 "trafficpolecamera_bell.mtl")
     box_mesh, box_mats = build_box()
     emit(box_mesh, "trafficpolecamera_box", box_mats)
     # overheight detector: AC3 shape, black, facing straight out (level)

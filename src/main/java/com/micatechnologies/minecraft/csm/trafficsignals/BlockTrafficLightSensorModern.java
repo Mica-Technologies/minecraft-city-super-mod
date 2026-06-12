@@ -1,6 +1,6 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
-import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockTrafficSignalSensorHZEight;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockTrafficSignalSensorAngled;
 import net.minecraft.block.material.Material;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.block.state.IBlockState;
@@ -10,15 +10,14 @@ import net.minecraft.util.math.BlockPos;
 /**
  * Modern-style traffic light sensor block (the GridSmart AC3 box camera). A visual variant of the
  * standard traffic sensor with a contemporary housing design that detects vehicles or entities in a
- * configurable zone. Uses eight-direction ({@link AbstractBlockTrafficSignalSensorHZEight}) rotation
- * so it can aim diagonally; the four diagonal facings render mount-anchored model variants (see
- * {@code blockstates/trafficlightsensormodern.json}) so the camera pivots about its pole rather than
- * floating toward a block corner.
+ * configurable zone. Keeps a cardinal facing (so the controller's directional logic applies) plus a
+ * configurable aim angle that swings the camera about its pole (see
+ * {@link AbstractBlockTrafficSignalSensorAngled}).
  *
  * @author Mica Technologies
  * @since 1.0
  */
-public class BlockTrafficLightSensorModern extends AbstractBlockTrafficSignalSensorHZEight {
+public class BlockTrafficLightSensorModern extends AbstractBlockTrafficSignalSensorAngled {
 
   public BlockTrafficLightSensorModern() {
     super(Material.ROCK);

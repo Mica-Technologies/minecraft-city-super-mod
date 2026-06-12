@@ -125,6 +125,9 @@ public class CsmGuiHandler implements IGuiHandler {
     } else if (id == 18 && tileEntity instanceof com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityPoleMountSpeedLimit) {
       returnValue = new com.micatechnologies.minecraft.csm.trafficaccessories.BlockPoleMountSpeedLimitGui(
           (com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityPoleMountSpeedLimit) tileEntity);
+    } else if (id == 19 && tileEntity instanceof com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalSensor) {
+      returnValue = new com.micatechnologies.minecraft.csm.trafficsignals.SensorConfigGui(
+          (com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalSensor) tileEntity);
     }
     return returnValue;
   }

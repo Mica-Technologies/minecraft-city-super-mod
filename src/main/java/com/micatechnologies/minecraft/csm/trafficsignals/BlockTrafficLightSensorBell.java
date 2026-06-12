@@ -1,6 +1,6 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
-import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockTrafficSignalSensor;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockTrafficSignalSensorAngled;
 import net.minecraft.block.material.Material;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.block.state.IBlockState;
@@ -8,13 +8,16 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.util.math.BlockPos;
 
 /**
- * Bell-style traffic light sensor block. A visual variant of the standard traffic sensor with a
- * bell-shaped housing that detects vehicles or entities in a configurable zone.
+ * Bell-style traffic light sensor block (the GridSmart FE3 bell camera). A visual variant of the
+ * standard traffic sensor with a bell-shaped housing that detects vehicles or entities in a
+ * configurable zone. Keeps a cardinal facing (so the controller's directional logic applies) plus a
+ * configurable aim angle that swings the camera about its pole (see
+ * {@link AbstractBlockTrafficSignalSensorAngled}).
  *
  * @author Mica Technologies
  * @since 1.0
  */
-public class BlockTrafficLightSensorBell extends AbstractBlockTrafficSignalSensor {
+public class BlockTrafficLightSensorBell extends AbstractBlockTrafficSignalSensorAngled {
 
   public BlockTrafficLightSensorBell() {
     super(Material.ROCK);
