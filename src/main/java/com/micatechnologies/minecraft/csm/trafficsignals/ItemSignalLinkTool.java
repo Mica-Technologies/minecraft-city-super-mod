@@ -4,7 +4,7 @@ import com.micatechnologies.minecraft.csm.codeutils.AbstractItem;
 import com.micatechnologies.minecraft.csm.trafficaccessories.AbstractBlockSignalBackplate;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableCrosswalkAccessory;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignal;
-import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockTrafficSignalSensor;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.ITrafficSignalSensor;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -79,14 +79,14 @@ public class ItemSignalLinkTool extends AbstractItem {
         return EnumActionResult.SUCCESS;
       } else if (signalControllerPos == null &&
           (state.getBlock() instanceof AbstractBlockControllableSignal ||
-              state.getBlock() instanceof AbstractBlockTrafficSignalSensor ||
+              state.getBlock() instanceof ITrafficSignalSensor ||
               state.getBlock() instanceof BlockOverheightDetectionSensor)) {
 
         player.sendMessage(new TextComponentString("No signal controller has been selected."));
 
         return EnumActionResult.SUCCESS;
       } else if (signalControllerPos != null &&
-          (state.getBlock() instanceof AbstractBlockTrafficSignalSensor ||
+          (state.getBlock() instanceof ITrafficSignalSensor ||
               state.getBlock() instanceof BlockOverheightDetectionSensor) &&
           !player.isSneaking()) {
 
@@ -118,7 +118,7 @@ public class ItemSignalLinkTool extends AbstractItem {
 
         return EnumActionResult.SUCCESS;
       } else if (signalControllerPos != null &&
-          (state.getBlock() instanceof AbstractBlockTrafficSignalSensor ||
+          (state.getBlock() instanceof ITrafficSignalSensor ||
               state.getBlock() instanceof BlockOverheightDetectionSensor) &&
           player.isSneaking()) {
 

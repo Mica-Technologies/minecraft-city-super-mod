@@ -40,7 +40,7 @@ import net.minecraft.world.World;
  * full discussion.</p>
  */
 public abstract class AbstractBlockTrafficSignalSensor extends AbstractBlockRotatableNSEW
-    implements ICsmTileEntityProvider, ICsmNoSnowAccumulation {
+    implements ICsmTileEntityProvider, ICsmNoSnowAccumulation, ITrafficSignalSensor {
 
   public AbstractBlockTrafficSignalSensor(Material materialIn) {
     super(materialIn);

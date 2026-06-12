@@ -1,7 +1,7 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractItem;
-import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockTrafficSignalSensor;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.ITrafficSignalSensor;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,7 +42,7 @@ public class ItemSensorZoneTool extends AbstractItem {
       float hitZ) {
     if (!worldIn.isRemote) {
       IBlockState state = worldIn.getBlockState(pos);
-      if (state.getBlock() instanceof AbstractBlockTrafficSignalSensor) {
+      if (state.getBlock() instanceof ITrafficSignalSensor) {
         modeMap.put(player.getUniqueID(), 1);
         sensorPosMap.put(player.getUniqueID(), pos);
         corner1PosMap.remove(player.getUniqueID());
