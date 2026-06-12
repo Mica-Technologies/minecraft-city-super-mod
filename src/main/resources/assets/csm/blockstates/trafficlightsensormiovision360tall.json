@@ -7,39 +7,88 @@
     }
   },
   "variants": {
-    "angle=none,facing=north":  { },
-    "angle=left,facing=north":  { "model": "csm:trafficsignals/shared_models/miovision_360_tall_diagl.obj" },
-    "angle=right,facing=north": { "model": "csm:trafficsignals/shared_models/miovision_360_tall_diagr.obj" },
-    "angle=none,facing=east":   { "y": 90 },
-    "angle=left,facing=east":   { "model": "csm:trafficsignals/shared_models/miovision_360_tall_diagl.obj", "y": 90 },
-    "angle=right,facing=east":  { "model": "csm:trafficsignals/shared_models/miovision_360_tall_diagr.obj", "y": 90 },
-    "angle=none,facing=south":  { "y": 180 },
-    "angle=left,facing=south":  { "model": "csm:trafficsignals/shared_models/miovision_360_tall_diagl.obj", "y": 180 },
-    "angle=right,facing=south": { "model": "csm:trafficsignals/shared_models/miovision_360_tall_diagr.obj", "y": 180 },
-    "angle=none,facing=west":   { "y": 270 },
-    "angle=left,facing=west":   { "model": "csm:trafficsignals/shared_models/miovision_360_tall_diagl.obj", "y": 270 },
-    "angle=right,facing=west":  { "model": "csm:trafficsignals/shared_models/miovision_360_tall_diagr.obj", "y": 270 },
+    "angle=none,facing=north": {
+      "model": "csm:trafficsignals/shared_models/miovision_360_tall.obj"
+    },
+    "angle=left,facing=north": {
+      "model": "csm:trafficsignals/shared_models/miovision_360_tall_diagl.obj"
+    },
+    "angle=right,facing=north": {
+      "model": "csm:trafficsignals/shared_models/miovision_360_tall_diagr.obj"
+    },
+    "angle=none,facing=east": {
+      "model": "csm:trafficsignals/shared_models/miovision_360_tall.obj",
+      "y": 90
+    },
+    "angle=left,facing=east": {
+      "model": "csm:trafficsignals/shared_models/miovision_360_tall_diagl.obj",
+      "y": 90
+    },
+    "angle=right,facing=east": {
+      "model": "csm:trafficsignals/shared_models/miovision_360_tall_diagr.obj",
+      "y": 90
+    },
+    "angle=none,facing=south": {
+      "model": "csm:trafficsignals/shared_models/miovision_360_tall.obj",
+      "y": 180
+    },
+    "angle=left,facing=south": {
+      "model": "csm:trafficsignals/shared_models/miovision_360_tall_diagl.obj",
+      "y": 180
+    },
+    "angle=right,facing=south": {
+      "model": "csm:trafficsignals/shared_models/miovision_360_tall_diagr.obj",
+      "y": 180
+    },
+    "angle=none,facing=west": {
+      "model": "csm:trafficsignals/shared_models/miovision_360_tall.obj",
+      "y": 270
+    },
+    "angle=left,facing=west": {
+      "model": "csm:trafficsignals/shared_models/miovision_360_tall_diagl.obj",
+      "y": 270
+    },
+    "angle=right,facing=west": {
+      "model": "csm:trafficsignals/shared_models/miovision_360_tall_diagr.obj",
+      "y": 270
+    },
     "inventory": [
       {
         "model": "csm:trafficsignals/shared_models/miovision_360_tall_inv.obj",
         "transform": {
           "gui": {
-            "rotation": [ 30, 225, 0 ],
+            "rotation": [
+              30,
+              225,
+              0
+            ],
             "scale": 0.13
           },
           "fixed": {
-            "rotation": [ 0, 90, 0 ],
+            "rotation": [
+              0,
+              90,
+              0
+            ],
             "scale": 0.12
           },
           "ground": {
             "scale": 0.1
           },
           "thirdperson_righthand": {
-            "rotation": [ 75, 45, 0 ],
+            "rotation": [
+              75,
+              45,
+              0
+            ],
             "scale": 0.09
           },
           "firstperson_righthand": {
-            "rotation": [ 0, 45, 0 ],
+            "rotation": [
+              0,
+              45,
+              0
+            ],
             "scale": 0.09
           }
         }

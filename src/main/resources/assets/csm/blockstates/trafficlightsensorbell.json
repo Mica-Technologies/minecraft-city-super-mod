@@ -7,39 +7,88 @@
     }
   },
   "variants": {
-    "angle=none,facing=north":  { },
-    "angle=left,facing=north":  { "model": "csm:trafficsignals/shared_models/trafficpolecamera_bell_diagl.obj" },
-    "angle=right,facing=north": { "model": "csm:trafficsignals/shared_models/trafficpolecamera_bell_diagr.obj" },
-    "angle=none,facing=east":   { "y": 90 },
-    "angle=left,facing=east":   { "model": "csm:trafficsignals/shared_models/trafficpolecamera_bell_diagl.obj", "y": 90 },
-    "angle=right,facing=east":  { "model": "csm:trafficsignals/shared_models/trafficpolecamera_bell_diagr.obj", "y": 90 },
-    "angle=none,facing=south":  { "y": 180 },
-    "angle=left,facing=south":  { "model": "csm:trafficsignals/shared_models/trafficpolecamera_bell_diagl.obj", "y": 180 },
-    "angle=right,facing=south": { "model": "csm:trafficsignals/shared_models/trafficpolecamera_bell_diagr.obj", "y": 180 },
-    "angle=none,facing=west":   { "y": 270 },
-    "angle=left,facing=west":   { "model": "csm:trafficsignals/shared_models/trafficpolecamera_bell_diagl.obj", "y": 270 },
-    "angle=right,facing=west":  { "model": "csm:trafficsignals/shared_models/trafficpolecamera_bell_diagr.obj", "y": 270 },
+    "angle=none,facing=north": {
+      "model": "csm:trafficsignals/shared_models/trafficpolecamera_bell.obj"
+    },
+    "angle=left,facing=north": {
+      "model": "csm:trafficsignals/shared_models/trafficpolecamera_bell_diagl.obj"
+    },
+    "angle=right,facing=north": {
+      "model": "csm:trafficsignals/shared_models/trafficpolecamera_bell_diagr.obj"
+    },
+    "angle=none,facing=east": {
+      "model": "csm:trafficsignals/shared_models/trafficpolecamera_bell.obj",
+      "y": 90
+    },
+    "angle=left,facing=east": {
+      "model": "csm:trafficsignals/shared_models/trafficpolecamera_bell_diagl.obj",
+      "y": 90
+    },
+    "angle=right,facing=east": {
+      "model": "csm:trafficsignals/shared_models/trafficpolecamera_bell_diagr.obj",
+      "y": 90
+    },
+    "angle=none,facing=south": {
+      "model": "csm:trafficsignals/shared_models/trafficpolecamera_bell.obj",
+      "y": 180
+    },
+    "angle=left,facing=south": {
+      "model": "csm:trafficsignals/shared_models/trafficpolecamera_bell_diagl.obj",
+      "y": 180
+    },
+    "angle=right,facing=south": {
+      "model": "csm:trafficsignals/shared_models/trafficpolecamera_bell_diagr.obj",
+      "y": 180
+    },
+    "angle=none,facing=west": {
+      "model": "csm:trafficsignals/shared_models/trafficpolecamera_bell.obj",
+      "y": 270
+    },
+    "angle=left,facing=west": {
+      "model": "csm:trafficsignals/shared_models/trafficpolecamera_bell_diagl.obj",
+      "y": 270
+    },
+    "angle=right,facing=west": {
+      "model": "csm:trafficsignals/shared_models/trafficpolecamera_bell_diagr.obj",
+      "y": 270
+    },
     "inventory": [
       {
         "model": "csm:trafficsignals/shared_models/trafficpolecamera_bell_inv.obj",
         "transform": {
           "gui": {
-            "rotation": [ 30, 225, 0 ],
+            "rotation": [
+              30,
+              225,
+              0
+            ],
             "scale": 0.4
           },
           "fixed": {
-            "rotation": [ 0, 90, 0 ],
+            "rotation": [
+              0,
+              90,
+              0
+            ],
             "scale": 0.36
           },
           "ground": {
             "scale": 0.3
           },
           "thirdperson_righthand": {
-            "rotation": [ 75, 45, 0 ],
+            "rotation": [
+              75,
+              45,
+              0
+            ],
             "scale": 0.28
           },
           "firstperson_righthand": {
-            "rotation": [ 0, 45, 0 ],
+            "rotation": [
+              0,
+              45,
+              0
+            ],
             "scale": 0.28
           }
         }
