@@ -45,6 +45,6 @@ public class BlockTrafficLightSensorBox extends AbstractBlockTrafficSignalSensor
      */
     @Override
     public AxisAlignedBB getBlockBoundingBox( IBlockState state, IBlockAccess source, BlockPos pos ) {
-        return new AxisAlignedBB(0.375000, -0.116116, -0.164205, 0.625000, 0.250000, 0.500000);
+        return new AxisAlignedBB(0.36, -0.34, -0.16, 0.64, 0.40, 0.66);
     }
 }

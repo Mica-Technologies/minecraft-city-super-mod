@@ -144,7 +144,10 @@ def _cap_ring(mesh, ringpts, center_pt, inside_pt, mat):
             mesh.tri(mat, center_pt, b, a, (0.5, 0.5), (0.5, 0.9), (0.9, 0.5))
 
 
-def sweep_tube(mesh, centerline, radius, mat, ring=RING, cap_ends=True):
+def sweep_tube(mesh, centerline, radius, mat, ring=RING, cap_ends=True, up_seed=(1.0, 0.0, 0.0)):
+    # up_seed is the reference axis for the cross-section frame; it must NOT be (near) parallel to the
+    # tangent anywhere along the path or the frame degenerates and the tube visibly twists. Default
+    # (1,0,0) suits paths in the Z-Y plane; pass (0,0,1) for a loop in the X-Y plane, etc.
     n = len(centerline)
     tangents = []
     for i in range(n):
@@ -154,7 +157,7 @@ def sweep_tube(mesh, centerline, radius, mat, ring=RING, cap_ends=True):
         m = math.sqrt(sum(c*c for c in t)) or 1.0
         tangents.append((t[0]/m, t[1]/m, t[2]/m))
     rings = []
-    up = (1.0, 0.0, 0.0)
+    up = up_seed
     for i in range(n):
         t = tangents[i]
         ux, uy, uz = (up[1]*t[2]-up[2]*t[1], up[2]*t[0]-up[0]*t[2], up[0]*t[1]-up[1]*t[0])

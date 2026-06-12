@@ -3,6 +3,9 @@ newmtl black
 map_Kd csm:blocks/trafficsignals/shared_textures/metal_black
 
 newmtl lens
-map_Kd csm:blocks/trafficsignals/shared_textures/solidoff
+map_Kd csm:blocks/trafficsignals/shared_textures/camera_lens
+
+newmtl wire
+map_Kd csm:blocks/trafficsignals/shared_textures/metal_black
 
 newmtl none
