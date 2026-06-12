@@ -619,6 +619,14 @@ def main():
                                                     "wire": mb})
     emit(build_trafiradar(), "trafiradar", {"black": mb, "silver": ms, "lens": cl, "wire": mb})
     emit(build_ac3(), "gridsmart_ac3", aut)
+    # GridSmart AC3 mount-anchored diagonal variants (the block is now 8-way like the Miovision).
+    # Pivot the camera +/-45deg about the AC3's own pole/clamp axis (build z=0.32) so the diagonals
+    # keep the pole vertical and static while the camera swings, instead of rotating the whole unit
+    # about the block centre. The blockstate places these at 90deg-step rotations (see the *.json).
+    for sfx, deg in (("diagr", 45.0), ("diagl", -45.0)):
+        dm = build_ac3()
+        dm.rotate_y(deg, 0.0, 0.32)
+        dm.write(os.path.join(OUT_DIR, "gridsmart_ac3_%s.obj" % sfx), "gridsmart_ac3.mtl")
     emit(build_bell(), "trafficpolecamera_bell", {"white": mw, "silver": ms, "lens": cl,
                                                   "wire": mb})
     box_mesh, box_mats = build_box()

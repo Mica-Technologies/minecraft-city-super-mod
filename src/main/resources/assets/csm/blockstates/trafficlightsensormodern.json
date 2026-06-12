@@ -8,12 +8,14 @@
   },
   "variants": {
     "facing": {
-      "north": {},
-      "east": { "y": 90 },
-      "south": { "y": 180 },
-      "west": { "y": 270 },
-      "up": { "x": 270 },
-      "down": { "x": 90 }
+      "n": {},
+      "e": { "y": 90 },
+      "s": { "y": 180 },
+      "w": { "y": 270 },
+      "ne": { "model": "csm:trafficsignals/shared_models/gridsmart_ac3_diagr.obj" },
+      "nw": { "model": "csm:trafficsignals/shared_models/gridsmart_ac3_diagl.obj" },
+      "se": { "model": "csm:trafficsignals/shared_models/gridsmart_ac3_diagl.obj", "y": 180 },
+      "sw": { "model": "csm:trafficsignals/shared_models/gridsmart_ac3_diagr.obj", "y": 180 }
     },
     "inventory": [
       {
