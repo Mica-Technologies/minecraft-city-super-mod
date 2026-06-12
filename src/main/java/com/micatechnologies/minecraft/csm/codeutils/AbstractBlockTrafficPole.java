@@ -30,6 +30,9 @@ import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrossw
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkTweeter2;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockBlankoutBox;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockTrafficLightSensorBox;
+import com.micatechnologies.minecraft.csm.trafficsignals.BlockTrafficLightSensorTinyCam;
+import com.micatechnologies.minecraft.csm.trafficsignals.BlockTrafficLightSensorTrafiRadar;
+import com.micatechnologies.minecraft.csm.trafficsignals.BlockTrafficLightSensorVantageVector;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
@@ -133,7 +136,9 @@ public abstract class AbstractBlockTrafficPole extends AbstractBlockRotatableNSE
           BlockControllableCrosswalkTweeter2.class,
           BlockTrafficSignalFatigueMitigator1.class, BlockTrafficSignalFatigueMitigator2.class,
           BlockTrafficSignalFatigueMitigator3.class, BlockTrafficSignalFatigueMitigator4.class,
-          BlockTrafficLightSensorBox.class, BlockTrafficStreetNameSignMount.class,
+          BlockTrafficLightSensorBox.class, BlockTrafficLightSensorVantageVector.class,
+          BlockTrafficLightSensorTinyCam.class, BlockTrafficLightSensorTrafiRadar.class,
+          BlockTrafficStreetNameSignMount.class,
           BlockTrafficAccessoryNSEWUD.class, BlockControllableCrosswalkMountGray.class,
           BlockControllableCrosswalkSignalSingle.class, BlockControllableCrosswalkSignalDouble.class,
           AbstractBlockControllableCrosswalkSignalNew.class,

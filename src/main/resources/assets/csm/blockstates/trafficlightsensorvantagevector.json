@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:trafficsignals/shared_models/trafficpolecamera_tiny_cam.obj",
+    "model": "csm:trafficsignals/shared_models/vantage_vector.obj",
     "custom": {
       "flip-v": true
     }
@@ -9,45 +9,34 @@
   "variants": {
     "facing": {
       "north": {},
-      "east": {
-        "y": 90
-      },
-      "south": {
-        "y": 180
-      },
-      "west": {
-        "y": 270
-      },
-      "up": {
-        "x": 270
-      },
-      "down": {
-        "x": 90
-      }
+      "east": { "y": 90 },
+      "south": { "y": 180 },
+      "west": { "y": 270 },
+      "up": { "x": 270 },
+      "down": { "x": 90 }
     },
     "inventory": [
       {
-        "model": "csm:trafficsignals/shared_models/trafficpolecamera_tiny_cam_inv.obj",
+        "model": "csm:trafficsignals/shared_models/vantage_vector_inv.obj",
         "transform": {
           "gui": {
             "rotation": [ 30, 225, 0 ],
-            "scale": 0.5
+            "scale": 0.42
           },
           "fixed": {
             "rotation": [ 0, 90, 0 ],
-            "scale": 0.55
+            "scale": 0.38
           },
           "ground": {
-            "scale": 0.5
+            "scale": 0.32
           },
           "thirdperson_righthand": {
             "rotation": [ 75, 45, 0 ],
-            "translation": [ 0, 1.5, 0 ],
-            "scale": 0.45
+            "scale": 0.3
           },
           "firstperson_righthand": {
             "rotation": [ 0, 45, 0 ],
-            "scale": 0.45
+            "scale": 0.3
           }
         }
       }
