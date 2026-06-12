@@ -16,6 +16,7 @@ import java.util.function.IntConsumer;
 import java.util.function.Supplier;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.math.BlockPos;
 import org.lwjgl.input.Keyboard;
 
@@ -68,7 +69,22 @@ public class AdvancedSignalControllerGui extends GuiScreen {
   private static final int BTN_PE_NEXT = 230;
 
   private static final int W = 384;
-  private static final int H = 244;
+  private static final int H = 296;
+
+  /**
+   * Uniform render scale applied to the whole panel. The panel is laid out in a fixed
+   * {@code W}&times;{@code H} design space, then drawn (and mouse-picked) at this scale so it fits
+   * comfortably inside smaller GUI resolutions / higher GUI-scale settings instead of overflowing
+   * the screen's right and bottom edges.
+   */
+  private static final float PANEL_SCALE = 0.8f;
+
+  /**
+   * Vertical offset (from the LCD top {@code lcdY}) at which a table's body rows begin. Leaves a
+   * clear row for the screen title ({@code lcdY}) and the column-header row ({@code lcdY + 12}) so
+   * the first phase row does not render on top of the headers.
+   */
+  private static final int TABLE_BODY_DY = 24;
 
   private static final String[] MOVEMENT_ABBR = {"THRU", "LEFT", "PLFT", "RGHT", "PED"};
   private static final String[] RECALL_ABBR = {"NONE", "MIN", "MAX", "PED", "SOFT"};
@@ -157,7 +173,7 @@ public class AdvancedSignalControllerGui extends GuiScreen {
     buttonList.clear();
     // Screen-select row across the top of the keypad.
     int sx = left + 12;
-    int sy = top + H - 78;
+    int sy = top + H - 94;
     String[] names = {"STATUS", "TIMING", "MAP", "COORD", "PREEMPT"};
     for (int i = 0; i < names.length; i++) {
       buttonList.add(new GuiButton(BTN_SCREEN_BASE + i, sx + i * 62, sy, 58, 14, names[i]));
@@ -165,7 +181,7 @@ public class AdvancedSignalControllerGui extends GuiScreen {
 
     // Numeric keypad (left cluster).
     int kx = left + 12;
-    int ky = top + H - 58;
+    int ky = top + H - 76;
     int kw = 24;
     int kh = 16;
     int gap = 2;
@@ -235,7 +251,7 @@ public class AdvancedSignalControllerGui extends GuiScreen {
   private void buildTimingCells() {
     int rowH = 11;
     int colW = (lcdW - 24) / TIMING_HEADERS.length;
-    int y0 = lcdY + 14;
+    int y0 = lcdY + TABLE_BODY_DY;
     for (int pn = 1; pn <= TrafficSignalProgrammedPhasePlan.PHASE_COUNT; pn++) {
       final int n = pn;
       int y = y0 + (pn - 1) * rowH;
@@ -253,7 +269,7 @@ public class AdvancedSignalControllerGui extends GuiScreen {
 
   private void buildMapCells() {
     int rowH = 11;
-    int y0 = lcdY + 14;
+    int y0 = lcdY + TABLE_BODY_DY;
     int circuitCount = controller.getSignalCircuitCount();
     int[] colX = {lcdX + 26, lcdX + 70, lcdX + 130, lcdX + 200, lcdX + 270};
     for (int pn = 1; pn <= TrafficSignalProgrammedPhasePlan.PHASE_COUNT; pn++) {
@@ -313,7 +329,7 @@ public class AdvancedSignalControllerGui extends GuiScreen {
         () -> secs(plan().getCoordination().getOffset()),
         dir -> send("co.offset", 0, plan().getCoordination().getOffset() + dir * 20L),
         sec -> send("co.offset", 0, Math.round(sec * 20))));
-    y += 14;
+    y += 24;
     int rowH = 11;
     for (int pn = 1; pn <= TrafficSignalProgrammedPhasePlan.PHASE_COUNT; pn++) {
       final int n = pn;
@@ -557,11 +573,16 @@ public class AdvancedSignalControllerGui extends GuiScreen {
 
   @Override
   protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
-    super.mouseClicked(mouseX, mouseY, mouseButton);
+    // Map screen-space click to design space (inverse of the PANEL_SCALE applied in drawScreen).
+    final float cx = width / 2f;
+    final float cy = height / 2f;
+    int mx = Math.round((mouseX - cx) / PANEL_SCALE + cx);
+    int my = Math.round((mouseY - cy) / PANEL_SCALE + cy);
+    super.mouseClicked(mx, my, mouseButton);
     // Click a cell to select it.
     for (int i = 0; i < cells.size(); i++) {
       Cell c = cells.get(i);
-      if (mouseX >= c.x - 1 && mouseX <= c.x + c.w && mouseY >= c.y - 1 && mouseY <= c.y + 9) {
+      if (mx >= c.x - 1 && mx <= c.x + c.w && my >= c.y - 1 && my <= c.y + 9) {
         selected = i;
         entry = "";
         break;
@@ -576,6 +597,14 @@ public class AdvancedSignalControllerGui extends GuiScreen {
   @Override
   public void drawScreen(int mouseX, int mouseY, float partialTicks) {
     drawDefaultBackground();
+    // The full-screen dimming above stays unscaled; everything from here down is rendered in the
+    // fixed W x H design space, scaled about the screen centre (== panel centre) so it fits.
+    final float cx = width / 2f;
+    final float cy = height / 2f;
+    GlStateManager.pushMatrix();
+    GlStateManager.translate(cx, cy, 0f);
+    GlStateManager.scale(PANEL_SCALE, PANEL_SCALE, 1f);
+    GlStateManager.translate(-cx, -cy, 0f);
     // Bezel.
     drawRect(left - 2, top - 2, left + W + 2, top + H + 2, COLOR_BODY_EDGE);
     drawRect(left, top, left + W, top + H, COLOR_BODY);
@@ -584,7 +613,7 @@ public class AdvancedSignalControllerGui extends GuiScreen {
         COLOR_AMBER_HEAD);
     drawLeds();
     // LCD.
-    int lcdBottom = top + H - 82;
+    int lcdBottom = top + H - 110;
     drawRect(lcdX - 4, lcdY - 6, lcdX + lcdW + 4, lcdBottom, COLOR_LCD_BG);
 
     switch (screen) {
@@ -609,7 +638,12 @@ public class AdvancedSignalControllerGui extends GuiScreen {
 
     drawCells();
     drawHint();
-    super.drawScreen(mouseX, mouseY, partialTicks);
+    // Buttons are drawn by super in the same design space; feed it design-space mouse coords so
+    // hover highlighting lines up with the scaled rendering.
+    int dmx = Math.round((mouseX - cx) / PANEL_SCALE + cx);
+    int dmy = Math.round((mouseY - cy) / PANEL_SCALE + cy);
+    super.drawScreen(dmx, dmy, partialTicks);
+    GlStateManager.popMatrix();
   }
 
   private void drawLeds() {
@@ -657,8 +691,11 @@ public class AdvancedSignalControllerGui extends GuiScreen {
     y += 11;
     fontRenderer.drawString("Preempts: " + plan.getPreempts().size(), lcdX, y, COLOR_AMBER);
     y += 14;
-    fontRenderer.drawString("Use the keys below to program. Load Std 8-Phase auto-assigns by approach.",
-        lcdX, y, COLOR_AMBER_DIM);
+    for (String line : fontRenderer.listFormattedStringToWidth(
+        "Use the keys below to program. Load Std 8-Phase auto-assigns by approach.", lcdW - 6)) {
+      fontRenderer.drawString(line, lcdX, y, COLOR_AMBER_DIM);
+      y += 10;
+    }
   }
 
   private void drawRingRow(TrafficSignalProgrammedPhasePlan plan, int ring, int x, int y) {
@@ -683,7 +720,7 @@ public class AdvancedSignalControllerGui extends GuiScreen {
     }
     int rowH = 11;
     for (int pn = 1; pn <= TrafficSignalProgrammedPhasePlan.PHASE_COUNT; pn++) {
-      int y = lcdY + 14 + (pn - 1) * rowH;
+      int y = lcdY + TABLE_BODY_DY + (pn - 1) * rowH;
       TrafficSignalProgrammedPhase p = plan().getPhase(pn);
       int color = p != null && p.isActive() ? COLOR_AMBER : COLOR_AMBER_DIM;
       fontRenderer.drawString("φ" + pn, lcdX, y, color);
@@ -699,7 +736,7 @@ public class AdvancedSignalControllerGui extends GuiScreen {
     fontRenderer.drawString("PED", lcdX + 270, lcdY + 12, COLOR_AMBER_DIM);
     int rowH = 11;
     for (int pn = 1; pn <= TrafficSignalProgrammedPhasePlan.PHASE_COUNT; pn++) {
-      int y = lcdY + 14 + (pn - 1) * rowH;
+      int y = lcdY + TABLE_BODY_DY + (pn - 1) * rowH;
       fontRenderer.drawString("φ" + pn, lcdX, y, COLOR_AMBER);
     }
   }
@@ -712,7 +749,7 @@ public class AdvancedSignalControllerGui extends GuiScreen {
     fontRenderer.drawString("Splits / coordinated phases:", lcdX, lcdY + 50, COLOR_AMBER_DIM);
     int rowH = 11;
     for (int pn = 1; pn <= TrafficSignalProgrammedPhasePlan.PHASE_COUNT; pn++) {
-      int y = lcdY + 52 + (pn - 1) * rowH;
+      int y = lcdY + 62 + (pn - 1) * rowH;
       fontRenderer.drawString("φ" + pn, lcdX + 40, y, COLOR_AMBER);
     }
   }
@@ -760,7 +797,7 @@ public class AdvancedSignalControllerGui extends GuiScreen {
 
   private void drawHint() {
     String hint = "Arrows: select   +/-: adjust   digits+ENTER: set time   ENTER: cycle";
-    fontRenderer.drawString(hint, left + 12, top + H - 12, COLOR_AMBER_DIM);
+    fontRenderer.drawString(hint, left + 12, top + H - 106, COLOR_AMBER_DIM);
   }
 
   private String trim(String s, int maxPx) {
