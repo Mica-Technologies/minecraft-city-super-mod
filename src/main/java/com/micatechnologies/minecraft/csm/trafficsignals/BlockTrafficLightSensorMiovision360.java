@@ -1,6 +1,6 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
-import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockTrafficSignalSensorHZEight;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockTrafficSignalSensorAngled;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -10,13 +10,13 @@ import net.minecraft.world.IBlockAccess;
 /**
  * Miovision SmartView 360 detection camera -- short (vertical-shaft) variant. A cream bell-dome
  * omnidirectional camera hanging from a curved "shepherd's-hook" gooseneck arm with a back mount
- * bracket for side-mounting on a vertical pole shaft. Functions as a traffic-signal sensor (see
- * {@link AbstractBlockTrafficSignalSensorHZEight}) with finer 8-way rotation.
+ * bracket for side-mounting on a vertical pole shaft. Functions as a traffic-signal sensor with a
+ * cardinal facing plus a configurable aim angle (see {@link AbstractBlockTrafficSignalSensorAngled}).
  *
  * @author Mica Technologies
  * @since 1.0
  */
-public class BlockTrafficLightSensorMiovision360 extends AbstractBlockTrafficSignalSensorHZEight {
+public class BlockTrafficLightSensorMiovision360 extends AbstractBlockTrafficSignalSensorAngled {
 
   public BlockTrafficLightSensorMiovision360() {
     super(Material.ROCK);

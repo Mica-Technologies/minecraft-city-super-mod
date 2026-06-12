@@ -7,58 +7,18 @@
     }
   },
   "variants": {
-    "facing": {
-      "n": {},
-      "w": {
-        "transform": {
-          "rotation": [
-            { "x": 0 },
-            { "y": 90 },
-            { "z": 0 }
-          ]
-        }
-      },
-      "s": {
-        "transform": {
-          "rotation": [
-            { "x": 0 },
-            { "y": 180 },
-            { "z": 0 }
-          ]
-        }
-      },
-      "e": {
-        "transform": {
-          "rotation": [
-            { "x": 0 },
-            { "y": 270 },
-            { "z": 0 }
-          ]
-        }
-      },
-      "ne": { "model": "csm:trafficsignals/shared_models/miovision_360_tall_diagr.obj" },
-      "nw": { "model": "csm:trafficsignals/shared_models/miovision_360_tall_diagl.obj" },
-      "se": {
-        "model": "csm:trafficsignals/shared_models/miovision_360_tall_diagl.obj",
-        "transform": {
-          "rotation": [
-            { "x": 0 },
-            { "y": 180 },
-            { "z": 0 }
-          ]
-        }
-      },
-      "sw": {
-        "model": "csm:trafficsignals/shared_models/miovision_360_tall_diagr.obj",
-        "transform": {
-          "rotation": [
-            { "x": 0 },
-            { "y": 180 },
-            { "z": 0 }
-          ]
-        }
-      }
-    },
+    "angle=none,facing=north":  { },
+    "angle=left,facing=north":  { "model": "csm:trafficsignals/shared_models/miovision_360_tall_diagl.obj" },
+    "angle=right,facing=north": { "model": "csm:trafficsignals/shared_models/miovision_360_tall_diagr.obj" },
+    "angle=none,facing=east":   { "y": 90 },
+    "angle=left,facing=east":   { "model": "csm:trafficsignals/shared_models/miovision_360_tall_diagl.obj", "y": 90 },
+    "angle=right,facing=east":  { "model": "csm:trafficsignals/shared_models/miovision_360_tall_diagr.obj", "y": 90 },
+    "angle=none,facing=south":  { "y": 180 },
+    "angle=left,facing=south":  { "model": "csm:trafficsignals/shared_models/miovision_360_tall_diagl.obj", "y": 180 },
+    "angle=right,facing=south": { "model": "csm:trafficsignals/shared_models/miovision_360_tall_diagr.obj", "y": 180 },
+    "angle=none,facing=west":   { "y": 270 },
+    "angle=left,facing=west":   { "model": "csm:trafficsignals/shared_models/miovision_360_tall_diagl.obj", "y": 270 },
+    "angle=right,facing=west":  { "model": "csm:trafficsignals/shared_models/miovision_360_tall_diagr.obj", "y": 270 },
     "inventory": [
       {
         "model": "csm:trafficsignals/shared_models/miovision_360_tall_inv.obj",

@@ -347,6 +347,69 @@ public class TileEntityTrafficSignalSensor extends AbstractTileEntity {
     return overwroteExisting;
   }
 
+  // --- Zone status + clearing (used by the sensor configuration GUI) ---
+
+  /** @return {@code true} if the standard (through) scan zone has both corners set. */
+  public boolean hasStandardZone() {
+    return scanCorner1 != null && scanCorner2 != null;
+  }
+
+  /** @return {@code true} if the left-turn scan zone has both corners set. */
+  public boolean hasLeftZone() {
+    return leftScanCorner1 != null && leftScanCorner2 != null;
+  }
+
+  /** @return {@code true} if the right-turn scan zone has both corners set. */
+  public boolean hasRightZone() {
+    return rightScanCorner1 != null && rightScanCorner2 != null;
+  }
+
+  /** @return {@code true} if the protected scan zone has both corners set. */
+  public boolean hasProtectedZone() {
+    return protectedScanCorner1 != null && protectedScanCorner2 != null;
+  }
+
+  /** Clears the standard (through) scan zone. */
+  public void clearStandardZone() {
+    scanCorner1 = null;
+    scanCorner2 = null;
+    markDirtySync(getWorld(), getPos());
+  }
+
+  /** Clears the left-turn scan zone. */
+  public void clearLeftZone() {
+    leftScanCorner1 = null;
+    leftScanCorner2 = null;
+    markDirtySync(getWorld(), getPos());
+  }
+
+  /** Clears the right-turn scan zone. */
+  public void clearRightZone() {
+    rightScanCorner1 = null;
+    rightScanCorner2 = null;
+    markDirtySync(getWorld(), getPos());
+  }
+
+  /** Clears the protected scan zone. */
+  public void clearProtectedZone() {
+    protectedScanCorner1 = null;
+    protectedScanCorner2 = null;
+    markDirtySync(getWorld(), getPos());
+  }
+
+  /** Clears all four scan zones in a single sync. */
+  public void clearAllZones() {
+    scanCorner1 = null;
+    scanCorner2 = null;
+    leftScanCorner1 = null;
+    leftScanCorner2 = null;
+    rightScanCorner1 = null;
+    rightScanCorner2 = null;
+    protectedScanCorner1 = null;
+    protectedScanCorner2 = null;
+    markDirtySync(getWorld(), getPos());
+  }
+
   /**
    * Scans for eligible entities within the {@link TileEntityTrafficSignalSensor}'s right turn lane
    * scan region and returns the number of entities found. Eligible entities are

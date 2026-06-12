@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
+import com.micatechnologies.minecraft.csm.Csm;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractItem;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.ITrafficSignalSensor;
 import java.util.HashMap;
@@ -40,6 +41,17 @@ public class ItemSensorZoneTool extends AbstractItem {
       float hitX,
       float hitY,
       float hitZ) {
+    // Sneak + right-click a sensor opens its configuration GUI (zone status / clear, and aim angle
+    // for angled sensors). Handled before the server-only body below: openGui dispatches the client
+    // GUI, and returning SUCCESS on both sides keeps the normal zone-selection logic from also
+    // firing on a sneak click.
+    if (player.isSneaking()
+        && worldIn.getBlockState(pos).getBlock() instanceof ITrafficSignalSensor) {
+      if (worldIn.isRemote) {
+        player.openGui(Csm.instance, 19, worldIn, pos.getX(), pos.getY(), pos.getZ());
+      }
+      return EnumActionResult.SUCCESS;
+    }
     if (!worldIn.isRemote) {
       IBlockState state = worldIn.getBlockState(pos);
       if (state.getBlock() instanceof ITrafficSignalSensor) {
@@ -176,6 +188,7 @@ public class ItemSensorZoneTool extends AbstractItem {
       ITooltipFlag flag) {
     super.addInformation(itemstack, world, list, flag);
     list.add("Configure detection zones on traffic signal sensors (Standard, Left, Right, Protected).");
+    list.add("Sneak + right-click a sensor to open its configuration GUI.");
   }
 
   /**
