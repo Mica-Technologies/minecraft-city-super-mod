@@ -54,7 +54,16 @@ public abstract class AbstractTickableTileEntity extends AbstractTileEntity impl
       return;
     }
     if (doClientTick() || !getWorld().isRemote) {
-      if (!pauseTicking() && getWorld().getTotalWorldTime() % getCachedTickRate() == 0L) {
+      long tickRate = getCachedTickRate();
+      if (tickRate <= 0L) {
+        // Guard against a misconfigured (zero/negative) tick rate, which would otherwise throw an
+        // ArithmeticException on the modulo below every tick.
+        tickRate = 1L;
+      }
+      // Stagger by block position so the (often many) tile entities that share a tick rate don't all
+      // fire on the same world tick -- unstaggered, they cause periodic TPS spikes ("thundering
+      // herd"). The tick frequency (once every tickRate ticks) is unchanged; only the phase is offset.
+      if (!pauseTicking() && (getWorld().getTotalWorldTime() + tickPhaseOffset()) % tickRate == 0L) {
         try {
           onTick();
         } catch (Exception e) {
@@ -63,6 +72,17 @@ public abstract class AbstractTickableTileEntity extends AbstractTileEntity impl
         }
       }
     }
+  }
+
+  /**
+   * Returns a stable, non-negative per-position phase offset, so neighbouring tile entities with the
+   * same tick rate tick on different world ticks and spread their work across ticks instead of
+   * spiking on the same one.
+   *
+   * @return a stable non-negative tick phase offset derived from this tile entity's position
+   */
+  private long tickPhaseOffset() {
+    return getPos() == null ? 0L : Math.floorMod((long) getPos().hashCode(), Integer.MAX_VALUE);
   }
 
   /**
