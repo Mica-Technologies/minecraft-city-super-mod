@@ -597,6 +597,10 @@ public class HvacTemperatureManager {
     }
 
     int maxStep = (int) Math.ceil(VENT_MAX_EFFECT_DISTANCE);
+    // Reused for neighbour probing so the BFS doesn't allocate a BlockPos for every one of the (up
+    // to ~6 x MAX_FLOOD_BLOCKS) neighbour checks; an immutable copy is taken only when a cell is
+    // actually enqueued. Behaviourally identical to the previous cur.offset(dir) per neighbour.
+    BlockPos.MutableBlockPos probe = new BlockPos.MutableBlockPos();
 
     while (!queue.isEmpty() && visited.size() < MAX_FLOOD_BLOCKS && remainingSources > 0) {
       BlockPos cur = queue.poll();
@@ -605,12 +609,13 @@ public class HvacTemperatureManager {
         continue;
       }
       for (EnumFacing dir : EnumFacing.values()) {
-        BlockPos next = cur.offset(dir);
-        long key = next.toLong();
+        probe.setPos(cur.getX() + dir.getXOffset(), cur.getY() + dir.getYOffset(),
+            cur.getZ() + dir.getZOffset());
+        long key = probe.toLong();
         if (visited.containsKey(key)) {
           continue;
         }
-        if (isSolidBlock(world.getBlockState(next))) {
+        if (isSolidBlock(world.getBlockState(probe))) {
           continue; // walls stop airflow — this is what separates sealed rooms into zones
         }
         visited.put(key, curDist + 1);
@@ -622,7 +627,7 @@ public class HvacTemperatureManager {
         if (visited.size() >= MAX_FLOOD_BLOCKS || remainingSources <= 0) {
           break;
         }
-        queue.add(next);
+        queue.add(probe.toImmutable());
       }
     }
     return visited;
