@@ -37,7 +37,7 @@ public class TileEntityForgeEnergyProducer extends AbstractTickableTileEntity im
    * Refreshed periodically to avoid 6-face capability probes every tick.
    */
   private transient IEnergyStorage[] cachedAdjacentStorage = null;
-  private transient int neighborCacheAge = 0;
+  private transient long lastNeighborRefreshTick = 0L;
 
   /**
    * Abstract method which must be implemented to process the reading of the tile entity's NBT data
@@ -178,7 +178,6 @@ public class TileEntityForgeEnergyProducer extends AbstractTickableTileEntity im
             tileEntity.getCapability(CapabilityEnergy.ENERGY, facing.getOpposite());
       }
     }
-    neighborCacheAge = 0;
   }
 
   /**
@@ -186,7 +185,6 @@ public class TileEntityForgeEnergyProducer extends AbstractTickableTileEntity im
    */
   public void invalidateNeighborCache() {
     cachedAdjacentStorage = null;
-    neighborCacheAge = 0;
   }
 
   /**
@@ -197,10 +195,13 @@ public class TileEntityForgeEnergyProducer extends AbstractTickableTileEntity im
     try {
       // Only provide power if redstone enabled
       if (getWorld().isBlockPowered(pos)) {
-        // Refresh neighbor cache periodically or on first tick
-        neighborCacheAge++;
-        if (cachedAdjacentStorage == null || neighborCacheAge >= NEIGHBOR_CACHE_REFRESH_TICKS) {
+        // Refresh neighbor cache periodically (by world time, so the interval is independent of the
+        // configurable tick rate) or on first tick
+        long now = getWorld().getTotalWorldTime();
+        if (cachedAdjacentStorage == null
+            || now - lastNeighborRefreshTick >= NEIGHBOR_CACHE_REFRESH_TICKS) {
           refreshNeighborCache();
+          lastNeighborRefreshTick = now;
         }
         for (IEnergyStorage storage : cachedAdjacentStorage) {
           if (storage != null) {
