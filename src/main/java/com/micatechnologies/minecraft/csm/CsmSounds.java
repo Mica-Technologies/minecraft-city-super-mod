@@ -147,7 +147,13 @@ public class CsmSounds {
     POLARA_WALK("polara_walk"),
     POLARA_WALK_ALL_CROSSINGS("polara_walk_all_crossings"),
     MII_CHANNEL_REMIX("mii_channel_remix"),
-    VERIFONE_MX915("verifone_mx915");
+    VERIFONE_MX915("verifone_mx915"),
+    BSP_THE_LOFTS_VOIC_EVAC("bsp_the_lofts_voic_evac"),
+    EST_PREINT_VOICE_EVAC("est_preint_voice_evac"),
+    FCI_VOIC_EVAC_FEMALE("fci_voic_evac_female"),
+    FCI_VOIC_EVAC_MALE("fci_voic_evac_male"),
+    SIMPLEX_VOICE_EVAC_OLD_ALT2("simplex_voice_evac_old_alt2"),
+    BROKEN_GENTEX_GOS("broken_gentex_gos");
 
     /**
      * The name of the sound.
