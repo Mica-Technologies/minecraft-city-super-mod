@@ -527,8 +527,9 @@ public class TileEntityCrosswalkSignalNewRenderer
     // Dynamic: countdown overlay (7-segment display)
     // =====================================================================================
 
-    // Dim "88" background color — mimics unlit 7-segment display segments
-    private static final int BG_COLOR_R = 50, BG_COLOR_G = 50, BG_COLOR_B = 50;
+    // Dim "88" background color — mimics unlit 7-segment display segments.
+    // Just slightly brighter than the crosswalk face base color (#0a0a0a) -> #121212.
+    private static final int BG_COLOR_R = 18, BG_COLOR_G = 18, BG_COLOR_B = 18;
     private static final int BG_COLOR_A = 255;
 
     /**
