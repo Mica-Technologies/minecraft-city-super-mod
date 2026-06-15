@@ -37,13 +37,15 @@ public class BlockFireAlarmGentexCommander3White extends AbstractBlockFireAlarmS
       "csm:gentex_gos_code3",
       "csm:gentex_gos_code3_chime",
       "csm:gentex_gos_whoop",
-      "csm:gentex_gos_continuous_chime"
+      "csm:gentex_gos_continuous_chime",
+      "csm:broken_gentex_gos"
   };
   private static final String[] SOUND_DISPLAY_NAMES = {
       "Code 3 Horn",
       "Code 3 Chime",
       "Whoop",
-      "Continuous Chime"
+      "Continuous Chime",
+      "Broken GOS"
   };
 
   @Override

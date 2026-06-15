@@ -1,0 +1,614 @@
+{
+ "1hr_truck_parking_sign": {
+  "sharpness": 8.0,
+  "note": "clear legible text",
+  "grade": "good",
+  "type": "text_only"
+ },
+ "99only_price_sign_new": {
+  "sharpness": 8.0,
+  "note": "clear but slightly pixelated",
+  "grade": "recreate",
+  "type": "has_symbol"
+ },
+ "99only_price_sign_new_2": {
+  "sharpness": 8.0,
+  "note": "clear bold text",
+  "grade": "recreate",
+  "type": "has_symbol"
+ },
+ "99only_price_sign_old": {
+  "sharpness": 8.0,
+  "note": "clear but small text",
+  "grade": "recreate",
+  "type": "has_symbol"
+ },
+ "alt_extreme_heat_danger_sign": {
+  "sharpness": 8.0,
+  "note": "clear legible text",
+  "grade": "recreate",
+  "type": "text_only"
+ },
+ "alto_dwp_hv_danger_sign": {
+  "sharpness": 8.0,
+  "note": "clear warning sign",
+  "grade": "recreate",
+  "type": "composite"
+ },
+ "alto_welcomes_you_sign": {
+  "sharpness": 3.0,
+  "note": "Blurry text",
+  "grade": "recreate",
+  "type": "text_only"
+ },
+ "alwaysroadworksign": {
+  "sharpness": 9.0,
+  "note": "clear and legible",
+  "grade": "good",
+  "type": "text_only"
+ },
+ "base_station_radio_sign": {
+  "sharpness": 3.0,
+  "note": "Blurry text",
+  "grade": "recreate",
+  "type": "composite"
+ },
+ "bearcrossingsign": {
+  "sharpness": 8.0,
+  "note": "clear bear symbols",
+  "grade": "good",
+  "type": "has_symbol"
+ },
+ "begin_fwy_sign": {
+  "sharpness": 9.0,
+  "note": "clear highway sign",
+  "grade": "good",
+  "type": "text_only"
+ },
+ "begin_hwy_sign": {
+  "sharpness": 9.0,
+  "note": "clear highway sign",
+  "grade": "good",
+  "type": "text_only"
+ },
+ "begin_pkwy_sign": {
+  "sharpness": 9.0,
+  "note": "clear legible text",
+  "grade": "good",
+  "type": "text_only"
+ },
+ "buildathon_event_sign": {
+  "sharpness": 8.0,
+  "note": "clear text visible",
+  "grade": "recreate",
+  "type": "text_only"
+ },
+ "bus_lane_sign": {
+  "sharpness": 8.0,
+  "note": "clear but small text",
+  "grade": "recreate",
+  "type": "composite"
+ },
+ "calaneendsignleft": {
+  "sharpness": 8.0,
+  "note": "clear and legible",
+  "grade": "good",
+  "type": "has_symbol"
+ },
+ "calaneendsignright": {
+  "sharpness": 9.0,
+  "note": "clear and legible",
+  "grade": "good",
+  "type": "has_symbol"
+ },
+ "caltrans_dui_checkpoint_ahead_sign": {
+  "sharpness": 8.0,
+  "note": "clear but small text",
+  "grade": "recreate",
+  "type": "text_only"
+ },
+ "campground_crossing_sign": {
+  "sharpness": 9.0,
+  "note": "clear and legible",
+  "grade": "recreate",
+  "type": "text_only"
+ },
+ "careless_person_sign": {
+  "sharpness": 8.0,
+  "note": "clear legible text",
+  "grade": "recreate",
+  "type": "composite"
+ },
+ "castraightdetoursign": {
+  "sharpness": 8.0,
+  "note": "clear detour sign",
+  "grade": "recreate",
+  "type": "has_symbol"
+ },
+ "conezonesign": {
+  "sharpness": 8.0,
+  "note": "clear legible text",
+  "grade": "good",
+  "type": "text_only"
+ },
+ "crosswalk_flasher_sign": {
+  "sharpness": 8.0,
+  "note": "clear but slightly pixelated",
+  "grade": "recreate",
+  "type": "has_symbol"
+ },
+ "danger_bad_water_sign": {
+  "sharpness": 8.0,
+  "note": "clear but weathered",
+  "grade": "recreate",
+  "type": "composite"
+ },
+ "danger_falling_material_sign": {
+  "sharpness": 8.0,
+  "note": "clear but slightly pixelated",
+  "grade": "recreate",
+  "type": "composite"
+ },
+ "dangerous_road_curves": {
+  "sharpness": 9.0,
+  "note": "clear legible text",
+  "grade": "recreate",
+  "type": "text_only"
+ },
+ "dangerous_road_curves_rr": {
+  "sharpness": 9.0,
+  "note": "clear and legible",
+  "grade": "recreate",
+  "type": "text_only"
+ },
+ "deadly_force_sign": {
+  "sharpness": 8.0,
+  "note": "clear warning sign",
+  "grade": "recreate",
+  "type": "composite"
+ },
+ "doorsunlockedbiz": {
+  "sharpness": 3.0,
+  "note": "Blurry text",
+  "grade": "recreate",
+  "type": "text_only"
+ },
+ "ear_protection_sign": {
+  "sharpness": 3.0,
+  "note": "Blurry caution sign",
+  "grade": "recreate",
+  "type": "composite"
+ },
+ "end_county_maintained_road_sign": {
+  "sharpness": 8.0,
+  "note": "clear legible text",
+  "grade": "recreate",
+  "type": "text_only"
+ },
+ "end_land_work_sign": {
+  "sharpness": 9.0,
+  "note": "clear and legible",
+  "grade": "recreate",
+  "type": "text_only"
+ },
+ "extreme_heat_danger_sign": {
+  "sharpness": 8.0,
+  "note": "clear but small text",
+  "grade": "recreate",
+  "type": "composite"
+ },
+ "fall_hazzard_sign": {
+  "sharpness": 8.0,
+  "note": "clear legible text",
+  "grade": "recreate",
+  "type": "composite"
+ },
+ "fawe_incident_sign": {
+  "sharpness": 8.0,
+  "note": "clear text on sign",
+  "grade": "recreate",
+  "type": "text_only"
+ },
+ "forestry_vehicles_only_sign": {
+  "sharpness": 9.0,
+  "note": "clear legible text",
+  "grade": "good",
+  "type": "text_only"
+ },
+ "freeway_detour_sign": {
+  "sharpness": 8.0,
+  "note": "clear but pixelated",
+  "grade": "recreate",
+  "type": "has_symbol"
+ },
+ "fwy_entrance_sign": {
+  "sharpness": 9.0,
+  "note": "clear legible text",
+  "grade": "cleanup",
+  "type": "text_only"
+ },
+ "fwy_intersection_sign": {
+  "sharpness": 8.0,
+  "note": "clear but small text",
+  "grade": "recreate",
+  "type": "text_only"
+ },
+ "generic_hv_danger_sign": {
+  "sharpness": 8.0,
+  "note": "clear warning sign",
+  "grade": "recreate",
+  "type": "composite"
+ },
+ "hear_banjos_sign": {
+  "sharpness": 8.0,
+  "note": "clear but small",
+  "grade": "recreate",
+  "type": "has_symbol"
+ },
+ "hg_blissgreen_hwy_sign": {
+  "sharpness": 8.0,
+  "note": "Vibrant colors clear",
+  "grade": "recreate",
+  "type": "has_symbol"
+ },
+ "hikers_ahead_sign": {
+  "sharpness": 8.0,
+  "note": "clear hiker symbols",
+  "grade": "recreate",
+  "type": "has_symbol"
+ },
+ "hwy_entrance": {
+  "sharpness": 9.0,
+  "note": "clear highway sign",
+  "grade": "cleanup",
+  "type": "text_only"
+ },
+ "kathie_evans_sign": {
+  "sharpness": 7.0,
+  "note": "clear but small text",
+  "grade": "recreate",
+  "type": "composite"
+ },
+ "ladot_anti_gridlock_zone": {
+  "sharpness": 8.0,
+  "note": "clear text on red",
+  "grade": "recreate",
+  "type": "text_only"
+ },
+ "ladot_no_stopping": {
+  "sharpness": 8.0,
+  "note": "Clear but slightly pixelated",
+  "grade": "recreate",
+  "type": "composite"
+ },
+ "ladot_signal_sync": {
+  "sharpness": 8.0,
+  "note": "clear legible text",
+  "grade": "recreate",
+  "type": "has_symbol"
+ },
+ "land_area_study_sign": {
+  "sharpness": 8.0,
+  "note": "clear legible text",
+  "grade": "good",
+  "type": "text_only"
+ },
+ "land_work_ahead_sign": {
+  "sharpness": 9.0,
+  "note": "clear and legible",
+  "grade": "good",
+  "type": "text_only"
+ },
+ "limited_maint_road_sign": {
+  "sharpness": 8.0,
+  "note": "clear legible text",
+  "grade": "recreate",
+  "type": "text_only"
+ },
+ "massdot_heavy_merge_sign": {
+  "sharpness": 9.0,
+  "note": "clear and legible",
+  "grade": "good",
+  "type": "text_only"
+ },
+ "massdot_heavy_merge_sign_rw": {
+  "sharpness": 9.0,
+  "note": "clear and legible",
+  "grade": "good",
+  "type": "text_only"
+ },
+ "massdot_side_street_traffic_sign": {
+  "sharpness": 8.0,
+  "note": "clear legible text",
+  "grade": "recreate",
+  "type": "text_only"
+ },
+ "mi_vehicles_share_center_lane_sign": {
+  "sharpness": 8.0,
+  "note": "clear but slightly pixelated",
+  "grade": "recreate",
+  "type": "has_symbol"
+ },
+ "no_forest_parking_sign": {
+  "sharpness": 8.0,
+  "note": "clear legible text",
+  "grade": "good",
+  "type": "text_only"
+ },
+ "no_fwy_access_sign": {
+  "sharpness": 9.0,
+  "note": "clear and legible",
+  "grade": "good",
+  "type": "text_only"
+ },
+ "no_guardrails_sign": {
+  "sharpness": 9.0,
+  "note": "clear and legible",
+  "grade": "good",
+  "type": "text_only"
+ },
+ "no_guardrails_sign_rr": {
+  "sharpness": 9.0,
+  "note": "clear and legible",
+  "grade": "good",
+  "type": "text_only"
+ },
+ "no_hwy_access_sign": {
+  "sharpness": 9.0,
+  "note": "clear and legible",
+  "grade": "good",
+  "type": "text_only"
+ },
+ "no_overnight_parking_sign": {
+  "sharpness": 8.0,
+  "note": "clear and legible",
+  "grade": "good",
+  "type": "text_only"
+ },
+ "no_parking_eairs_sign": {
+  "sharpness": 9.0,
+  "note": "clear and legible",
+  "grade": "cleanup",
+  "type": "text_only"
+ },
+ "no_parking_on_bridge_sign": {
+  "sharpness": 9.0,
+  "note": "clear and legible",
+  "grade": "good",
+  "type": "text_only"
+ },
+ "no_pkwy_access_sign": {
+  "sharpness": 9.0,
+  "note": "clear and legible",
+  "grade": "good",
+  "type": "text_only"
+ },
+ "noparkinginalleysign": {
+  "sharpness": 9.0,
+  "note": "clear and legible",
+  "grade": "good",
+  "type": "text_only"
+ },
+ "not_maintained_road_sign": {
+  "sharpness": 8.0,
+  "note": "clear but small text",
+  "grade": "recreate",
+  "type": "text_only"
+ },
+ "oneway_tl_sign_left": {
+  "sharpness": 8.0,
+  "note": "clear legible text",
+  "grade": "recreate",
+  "type": "has_symbol"
+ },
+ "oneway_tl_sign_right": {
+  "sharpness": 8.0,
+  "note": "Clear but slightly pixelated",
+  "grade": "recreate",
+  "type": "has_symbol"
+ },
+ "parkway_intersection_sign": {
+  "sharpness": 9.0,
+  "note": "clear and legible",
+  "grade": "good",
+  "type": "text_only"
+ },
+ "pay_to_cross_sign": {
+  "sharpness": 8.0,
+  "note": "clear but small text",
+  "grade": "recreate",
+  "type": "has_symbol"
+ },
+ "pkwy_entrance_sign": {
+  "sharpness": 9.0,
+  "note": "clear legible text",
+  "grade": "good",
+  "type": "text_only"
+ },
+ "plant_entrance_sign": {
+  "sharpness": 8.0,
+  "note": "clear and legible",
+  "grade": "good",
+  "type": "text_only"
+ },
+ "positively_no_smoking_sign": {
+  "sharpness": 8.0,
+  "note": "clear text on sign",
+  "grade": "good",
+  "type": "text_only"
+ },
+ "r10-12_uturn": {
+  "sharpness": 8.0,
+  "note": "clear legible text",
+  "grade": "good",
+  "type": "has_symbol"
+ },
+ "reportdrunkdriversign": {
+  "sharpness": 8.0,
+  "note": "clear legible text",
+  "grade": "good",
+  "type": "text_only"
+ },
+ "respect_uia_nat_parks_sign": {
+  "sharpness": 8.0,
+  "note": "Clear text on sign",
+  "grade": "cleanup",
+  "type": "text_only"
+ },
+ "restricted_area_sign": {
+  "sharpness": 3.0,
+  "note": "Blurry text",
+  "grade": "recreate",
+  "type": "composite"
+ },
+ "rgr_ahead_sign": {
+  "sharpness": 9.0,
+  "note": "clear and legible",
+  "grade": "good",
+  "type": "text_only"
+ },
+ "rgr_baby_sign": {
+  "sharpness": 8.0,
+  "note": "clear text visibility",
+  "grade": "good",
+  "type": "text_only"
+ },
+ "rgr_chicken_sign": {
+  "sharpness": 9.0,
+  "note": "clear and legible",
+  "grade": "good",
+  "type": "text_only"
+ },
+ "right_lane_bus_sign": {
+  "sharpness": 8.0,
+  "note": "Clear but slightly pixelated",
+  "grade": "recreate",
+  "type": "has_symbol"
+ },
+ "rightlanefreewayonlysign": {
+  "sharpness": 8.0,
+  "note": "clear legible text",
+  "grade": "good",
+  "type": "text_only"
+ },
+ "road_ends_in_water_sign": {
+  "sharpness": 9.0,
+  "note": "clear and legible",
+  "grade": "good",
+  "type": "text_only"
+ },
+ "rual_intersection_sign": {
+  "sharpness": 9.0,
+  "note": "clear and legible",
+  "grade": "good",
+  "type": "text_only"
+ },
+ "rural_road_sign": {
+  "sharpness": 9.0,
+  "note": "clear legible text",
+  "grade": "good",
+  "type": "text_only"
+ },
+ "safety_glasses_and_face_shield_sign": {
+  "sharpness": 8.0,
+  "note": "clear caution message",
+  "grade": "recreate",
+  "type": "text_only"
+ },
+ "sheriffstation": {
+  "sharpness": 8.0,
+  "note": "clear legible text",
+  "grade": "recreate",
+  "type": "has_symbol"
+ },
+ "shoulder_travel_on_green_arrow_sign": {
+  "sharpness": 8.0,
+  "note": "clear legible text",
+  "grade": "recreate",
+  "type": "text_only"
+ },
+ "slowtruckssign": {
+  "sharpness": 9.0,
+  "note": "clear and legible",
+  "grade": "good",
+  "type": "text_only"
+ },
+ "snownotremovedsign": {
+  "sharpness": 8.0,
+  "note": "clear legible text",
+  "grade": "cleanup",
+  "type": "text_only"
+ },
+ "specialeventsign": {
+  "sharpness": 8.0,
+  "note": "clear text visibility",
+  "grade": "good",
+  "type": "text_only"
+ },
+ "steep_edge_sign": {
+  "sharpness": 8.0,
+  "note": "clear warning sign",
+  "grade": "recreate",
+  "type": "has_symbol"
+ },
+ "stop_bridge_clearance_sign": {
+  "sharpness": 9.0,
+  "note": "clear and legible",
+  "grade": "good",
+  "type": "text_only"
+ },
+ "switch_equipment_warning_sign": {
+  "sharpness": 8.0,
+  "note": "Caution sign clear",
+  "grade": "recreate",
+  "type": "composite"
+ },
+ "to_cross_street_sign": {
+  "sharpness": 8.0,
+  "note": "clear but small text",
+  "grade": "recreate",
+  "type": "composite"
+ },
+ "tolled_bike_lane_sign": {
+  "sharpness": 8.0,
+  "note": "clear and legible",
+  "grade": "recreate",
+  "type": "composite"
+ },
+ "trailhead_crossings_sign": {
+  "sharpness": 9.0,
+  "note": "clear and legible",
+  "grade": "good",
+  "type": "text_only"
+ },
+ "truck_turnaround_sign": {
+  "sharpness": 9.0,
+  "note": "clear and legible",
+  "grade": "good",
+  "type": "text_only"
+ },
+ "uia_welcomes_you_sign": {
+  "sharpness": 8.0,
+  "note": "Clear but slightly pixelated",
+  "grade": "recreate",
+  "type": "has_symbol"
+ },
+ "utility_vehicles_only_sign": {
+  "sharpness": 8.0,
+  "note": "clear utility text",
+  "grade": "good",
+  "type": "text_only"
+ },
+ "verizon_dig": {
+  "sharpness": 8.0,
+  "note": "clear warning text",
+  "grade": "recreate",
+  "type": "has_symbol"
+ },
+ "watchdownhillspeedsign": {
+  "sharpness": 9.0,
+  "note": "clear legible text",
+  "grade": "good",
+  "type": "text_only"
+ }
+}

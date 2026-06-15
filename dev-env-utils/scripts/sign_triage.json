@@ -1,0 +1,1486 @@
+{
+ "results": [
+  {
+   "tex": "1hr_truck_parking_sign",
+   "quality": "good",
+   "type": "text_only",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [
+    "1 HR",
+    "TRUCK",
+    "PARKING"
+   ],
+   "bg": "white",
+   "fg": "green",
+   "border": "green",
+   "notes": ""
+  },
+  {
+   "tex": "99only_price_sign_new",
+   "quality": "recreate",
+   "type": "has_symbol",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [],
+   "bg": "blue",
+   "fg": "white",
+   "border": "red",
+   "notes": "Stylized starburst price graphic, blurry; manual handling."
+  },
+  {
+   "tex": "99only_price_sign_new_2",
+   "quality": "recreate",
+   "type": "has_symbol",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [],
+   "bg": "blue",
+   "fg": "yellow",
+   "border": "red",
+   "notes": "Decorative slanted text with starburst border; blurry, manual."
+  },
+  {
+   "tex": "99only_price_sign_old",
+   "quality": "recreate",
+   "type": "has_symbol",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [],
+   "bg": "white",
+   "fg": "blue",
+   "border": "pink",
+   "notes": "Stylized price graphic with overlapping numbers; manual."
+  },
+  {
+   "tex": "alt_extreme_heat_danger_sign",
+   "quality": "recreate",
+   "type": "text_only",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [
+    "CAUTION!",
+    "EXTREME",
+    "HEAT",
+    "DANGER"
+   ],
+   "bg": "brown",
+   "fg": "white",
+   "border": "white",
+   "notes": "EXTREME is black text on yellow band; rest white on brown."
+  },
+  {
+   "tex": "alto_dwp_hv_danger_sign",
+   "quality": "recreate",
+   "type": "composite",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [],
+   "bg": "white",
+   "fg": "black",
+   "border": "red",
+   "notes": "ANSI Danger header band + electrocution pictogram + body text; composite, manual."
+  },
+  {
+   "tex": "alto_welcomes_you_sign",
+   "quality": "recreate",
+   "type": "text_only",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [
+    "ALTO",
+    "WELCOMES YOU",
+    "ESTABLISHED IN 2020"
+   ],
+   "bg": "blue",
+   "fg": "white",
+   "border": "blue",
+   "notes": "Decorative cursive script 'Welcomes you'; very blurry. Cursive font may not reproduce exactly."
+  },
+  {
+   "tex": "alwaysroadworksign",
+   "quality": "good",
+   "type": "text_only",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [
+    "ALWAYS",
+    "ROAD WORK",
+    "AHEAD"
+   ],
+   "bg": "orange",
+   "fg": "black",
+   "border": "black",
+   "notes": ""
+  },
+  {
+   "tex": "base_station_radio_sign",
+   "quality": "recreate",
+   "type": "composite",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [],
+   "bg": "yellow",
+   "fg": "black",
+   "border": "black",
+   "notes": "Two stacked message panels (green text + black-on-yellow); blurry. Composite, manual."
+  },
+  {
+   "tex": "bearcrossingsign",
+   "quality": "good",
+   "type": "has_symbol",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [],
+   "bg": "yellow",
+   "fg": "black",
+   "border": "black",
+   "notes": "Bear silhouettes pictogram."
+  },
+  {
+   "tex": "begin_fwy_sign",
+   "quality": "good",
+   "type": "text_only",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [
+    "BEGIN",
+    "FREEWAY"
+   ],
+   "bg": "white",
+   "fg": "black",
+   "border": "black",
+   "notes": ""
+  },
+  {
+   "tex": "begin_hwy_sign",
+   "quality": "good",
+   "type": "text_only",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [
+    "BEGIN",
+    "HIGHWAY"
+   ],
+   "bg": "white",
+   "fg": "black",
+   "border": "black",
+   "notes": ""
+  },
+  {
+   "tex": "begin_pkwy_sign",
+   "quality": "good",
+   "type": "text_only",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [
+    "BEGIN",
+    "PARKWAY"
+   ],
+   "bg": "white",
+   "fg": "black",
+   "border": "black",
+   "notes": "Sharp text and clean border."
+  },
+  {
+   "tex": "buildathon_event_sign",
+   "quality": "recreate",
+   "type": "text_only",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [
+    "HUGE",
+    "BUILDATHON",
+    "EVENT",
+    "AHEAD"
+   ],
+   "bg": "orange",
+   "fg": "black",
+   "border": "black",
+   "notes": "Text is blurry/fuzzy on the orange diamond."
+  },
+  {
+   "tex": "bus_lane_sign",
+   "quality": "recreate",
+   "type": "composite",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [],
+   "bg": "blue",
+   "fg": "white",
+   "border": "white",
+   "notes": "Composite of bus symbol header plus multiple text rows; low-res and blurry, handled manually."
+  },
+  {
+   "tex": "calaneendsignright",
+   "quality": "good",
+   "type": "has_symbol",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [],
+   "bg": "yellow",
+   "fg": "black",
+   "border": "black",
+   "notes": "Diagonal merge arrow symbol, crisp."
+  },
+  {
+   "tex": "calaneendsignleft",
+   "quality": "good",
+   "type": "has_symbol",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [],
+   "bg": "yellow",
+   "fg": "black",
+   "border": "black",
+   "notes": "Diagonal merge arrow symbol, crisp."
+  },
+  {
+   "tex": "caltrans_dui_checkpoint_ahead_sign",
+   "quality": "recreate",
+   "type": "text_only",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [
+    "DUI /",
+    "DRIVER'S LICENSE",
+    "CHECK POINT",
+    "AHEAD"
+   ],
+   "bg": "orange",
+   "fg": "white",
+   "border": "black",
+   "notes": "Blurry text on orange diamond."
+  },
+  {
+   "tex": "campground_crossing_sign",
+   "quality": "recreate",
+   "type": "text_only",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [
+    "CAMPGROUND",
+    "CROSSINGS"
+   ],
+   "bg": "green",
+   "fg": "black",
+   "border": "black",
+   "notes": "Fluorescent yellow-green diamond; text fuzzy/low-res."
+  },
+  {
+   "tex": "careless_person_sign",
+   "quality": "recreate",
+   "type": "composite",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [],
+   "bg": "white",
+   "fg": "black",
+   "border": "black",
+   "notes": "Multicolor word-by-word ransom-style banner; garbled tiny text, handled manually."
+  },
+  {
+   "tex": "castraightdetoursign",
+   "quality": "recreate",
+   "type": "has_symbol",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [],
+   "bg": "orange",
+   "fg": "black",
+   "border": "black",
+   "notes": "DETOUR word plus up arrow symbol; arrow makes it has_symbol."
+  },
+  {
+   "tex": "conezonesign",
+   "quality": "good",
+   "type": "text_only",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [
+    "SLOW FOR",
+    "THE CONE",
+    "ZONE"
+   ],
+   "bg": "orange",
+   "fg": "black",
+   "border": "black",
+   "notes": "Sharp legible text on orange square."
+  },
+  {
+   "tex": "crosswalk_flasher_sign",
+   "quality": "recreate",
+   "type": "has_symbol",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [],
+   "bg": "white",
+   "fg": "black",
+   "border": "black",
+   "notes": "Hand-on-button pictogram plus text; symbol present, blurry."
+  },
+  {
+   "tex": "danger_bad_water_sign",
+   "quality": "recreate",
+   "type": "composite",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [],
+   "bg": "white",
+   "fg": "black",
+   "border": "black",
+   "notes": "Photo-style weathered DANGER banner over text; grungy/low-res, handled manually."
+  },
+  {
+   "tex": "danger_falling_material_sign",
+   "quality": "recreate",
+   "type": "composite",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [],
+   "bg": "white",
+   "fg": "black",
+   "border": "black",
+   "notes": "Composite: red DANGER header banner over black FALLING MATERIAL text on white. Photographic/grungy, blurry. Handle manually."
+  },
+  {
+   "tex": "dangerous_road_curves",
+   "quality": "recreate",
+   "type": "text_only",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [
+    "DANGEROUS",
+    "ROAD CURVES"
+   ],
+   "bg": "yellow",
+   "fg": "black",
+   "border": "black",
+   "notes": "Warning diamond, text slightly soft/blurry."
+  },
+  {
+   "tex": "dangerous_road_curves_rr",
+   "quality": "recreate",
+   "type": "text_only",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [
+    "DANGEROUS",
+    "ROAD CURVES"
+   ],
+   "bg": "orange",
+   "fg": "black",
+   "border": "black",
+   "notes": "Orange roadwork warning diamond, text soft/blurry."
+  },
+  {
+   "tex": "deadly_force_sign",
+   "quality": "recreate",
+   "type": "composite",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [],
+   "bg": "white",
+   "fg": "black",
+   "border": "black",
+   "notes": "Composite WARNING header box plus body text. Blurry. Handle manually."
+  },
+  {
+   "tex": "doorsunlockedbiz",
+   "quality": "recreate",
+   "type": "text_only",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [
+    "THIS DOOR TO REMAIN UNLOCKED DURING BUSINESS HOURS"
+   ],
+   "bg": "white",
+   "fg": "black",
+   "border": "black",
+   "notes": "Long single-line strip, text very small/blurry and barely legible."
+  },
+  {
+   "tex": "ear_protection_sign",
+   "quality": "recreate",
+   "type": "composite",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [],
+   "bg": "yellow",
+   "fg": "black",
+   "border": "black",
+   "notes": "Composite CAUTION header banner over body text, grungy photographic texture, blurry. Handle manually."
+  },
+  {
+   "tex": "end_county_maintained_road_sign",
+   "quality": "recreate",
+   "type": "text_only",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [
+    "END",
+    "COUNTY",
+    "MAINTAINED",
+    "ROAD"
+   ],
+   "bg": "yellow",
+   "fg": "black",
+   "border": "black",
+   "notes": "Warning diamond, text slightly soft."
+  },
+  {
+   "tex": "end_land_work_sign",
+   "quality": "recreate",
+   "type": "text_only",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [
+    "END",
+    "LAND WORK"
+   ],
+   "bg": "orange",
+   "fg": "black",
+   "border": "black",
+   "notes": "Orange roadwork sign, text soft/blurry."
+  },
+  {
+   "tex": "extreme_heat_danger_sign",
+   "quality": "recreate",
+   "type": "composite",
+   "shapeOk": false,
+   "shapeSuggest": "square",
+   "lines": [],
+   "bg": "white",
+   "fg": "red",
+   "border": "red",
+   "notes": "Composite: red STOP octagon graphic at top plus multi-line body text on white background; whole thing is a square sign not an octagon. Blurry. Handle manually."
+  },
+  {
+   "tex": "fall_hazzard_sign",
+   "quality": "recreate",
+   "type": "composite",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [],
+   "bg": "white",
+   "fg": "black",
+   "border": "black",
+   "notes": "Composite WARNING header banner over body text. Blurry. Handle manually."
+  },
+  {
+   "tex": "fawe_incident_sign",
+   "quality": "recreate",
+   "type": "text_only",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [
+    "FAWE",
+    "INCIDENT",
+    "AHEAD"
+   ],
+   "bg": "red",
+   "fg": "black",
+   "border": "black",
+   "notes": "Pink/magenta (fluorescent) incident warning diamond, text soft/blurry. bg closest to red of options."
+  },
+  {
+   "tex": "forestry_vehicles_only_sign",
+   "quality": "good",
+   "type": "text_only",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [
+    "FORESTRY",
+    "VEHICLES",
+    "ONLY"
+   ],
+   "bg": "white",
+   "fg": "black",
+   "border": "black",
+   "notes": "Sharp crisp text and clean black border, regulatory white sign."
+  },
+  {
+   "tex": "freeway_detour_sign",
+   "quality": "recreate",
+   "type": "has_symbol",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [],
+   "bg": "orange",
+   "fg": "black",
+   "border": "black",
+   "notes": "Blurry/photographic detour diamond with up arrow symbol; handled manually."
+  },
+  {
+   "tex": "fwy_entrance_sign",
+   "quality": "cleanup",
+   "type": "text_only",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [
+    "FREEWAY",
+    "ENTRANCE"
+   ],
+   "bg": "green",
+   "fg": "white",
+   "border": "white",
+   "notes": "Mostly clean; minor softness on edges."
+  },
+  {
+   "tex": "fwy_intersection_sign",
+   "quality": "recreate",
+   "type": "text_only",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [
+    "FREEWAY",
+    "INTERSECTION",
+    "AHEAD"
+   ],
+   "bg": "yellow",
+   "fg": "black",
+   "border": "black",
+   "notes": "Text slightly soft/jagged on warning diamond."
+  },
+  {
+   "tex": "generic_hv_danger_sign",
+   "quality": "recreate",
+   "type": "composite",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [],
+   "bg": "white",
+   "fg": "black",
+   "border": "black",
+   "notes": "Composite DANGER header + prohibition symbol + text body; handled manually."
+  },
+  {
+   "tex": "hear_banjos_sign",
+   "quality": "recreate",
+   "type": "has_symbol",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [],
+   "bg": "brown",
+   "fg": "white",
+   "border": "white",
+   "notes": "Blurry novelty sign with hiker figures and musical notes; handled manually."
+  },
+  {
+   "tex": "hg_blissgreen_hwy_sign",
+   "quality": "recreate",
+   "type": "has_symbol",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [],
+   "bg": "brown",
+   "fg": "white",
+   "border": "white",
+   "notes": "Memorial highway sign with cat figure graphic; handled manually."
+  },
+  {
+   "tex": "hikers_ahead_sign",
+   "quality": "recreate",
+   "type": "has_symbol",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [],
+   "bg": "green",
+   "fg": "black",
+   "border": "black",
+   "notes": "Fluorescent yellow-green pedestrian/hiker warning diamond with figures; handled manually."
+  },
+  {
+   "tex": "hwy_entrance",
+   "quality": "cleanup",
+   "type": "text_only",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [
+    "HIGHWAY",
+    "ENTRANCE"
+   ],
+   "bg": "green",
+   "fg": "white",
+   "border": "white",
+   "notes": "Mostly clean; minor edge softness."
+  },
+  {
+   "tex": "kathie_evans_sign",
+   "quality": "recreate",
+   "type": "composite",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [],
+   "bg": "white",
+   "fg": "blue",
+   "border": "white",
+   "notes": "Real-estate billboard composite with logos and phone number; very low quality, handled manually."
+  },
+  {
+   "tex": "ladot_anti_gridlock_zone",
+   "quality": "recreate",
+   "type": "text_only",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [
+    "ANTI-GRIDLOCK",
+    "ZONE",
+    "L.A.M.C. 80.70"
+   ],
+   "bg": "red",
+   "fg": "white",
+   "border": "white",
+   "notes": "Blurry text; bottom code line small. Recreate as text."
+  },
+  {
+   "tex": "ladot_no_stopping",
+   "quality": "recreate",
+   "type": "composite",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [],
+   "bg": "white",
+   "fg": "red",
+   "border": "black",
+   "notes": "Composite: car-tow symbols header + NO STOPPING time-restriction text; handled manually."
+  },
+  {
+   "tex": "ladot_signal_sync",
+   "quality": "recreate",
+   "type": "has_symbol",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [],
+   "bg": "blue",
+   "fg": "yellow",
+   "border": "yellow",
+   "notes": "Vertical SIGNAL SYNC sign with up arrow symbol; rotated text, handled manually."
+  },
+  {
+   "tex": "land_area_study_sign",
+   "quality": "good",
+   "type": "text_only",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [
+    "LAND AREA",
+    "UNDER STUDY"
+   ],
+   "bg": "white",
+   "fg": "black",
+   "border": "black",
+   "notes": ""
+  },
+  {
+   "tex": "land_work_ahead_sign",
+   "quality": "good",
+   "type": "text_only",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [
+    "LAND",
+    "WORK",
+    "AHEAD"
+   ],
+   "bg": "orange",
+   "fg": "black",
+   "border": "black",
+   "notes": ""
+  },
+  {
+   "tex": "limited_maint_road_sign",
+   "quality": "recreate",
+   "type": "text_only",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [
+    "MINIMUM",
+    "MAINTENANCE",
+    "ROAD"
+   ],
+   "bg": "yellow",
+   "fg": "black",
+   "border": "black",
+   "notes": "Blurry smeared text, heavy compression artifacts, jagged edges"
+  },
+  {
+   "tex": "massdot_heavy_merge_sign",
+   "quality": "good",
+   "type": "text_only",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [
+    "HEAVY",
+    "MERGE",
+    "AHEAD"
+   ],
+   "bg": "yellow",
+   "fg": "black",
+   "border": "black",
+   "notes": ""
+  },
+  {
+   "tex": "massdot_heavy_merge_sign_rw",
+   "quality": "good",
+   "type": "text_only",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [
+    "HEAVY",
+    "MERGE",
+    "AHEAD"
+   ],
+   "bg": "orange",
+   "fg": "black",
+   "border": "black",
+   "notes": ""
+  },
+  {
+   "tex": "massdot_side_street_traffic_sign",
+   "quality": "recreate",
+   "type": "text_only",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [
+    "PLEASE",
+    "SHOW",
+    "COURTESY",
+    "TO SIDE",
+    "STREET",
+    "TRAFFIC"
+   ],
+   "bg": "blue",
+   "fg": "white",
+   "border": "white",
+   "notes": "Blurry soft text, fuzzy edges"
+  },
+  {
+   "tex": "mi_vehicles_share_center_lane_sign",
+   "quality": "recreate",
+   "type": "has_symbol",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [],
+   "bg": "white",
+   "fg": "black",
+   "border": "black",
+   "notes": "Contains car/bike pictograms and arrows; recreate handled manually"
+  },
+  {
+   "tex": "no_forest_parking_sign",
+   "quality": "good",
+   "type": "text_only",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [
+    "NO",
+    "FOREST",
+    "PARKING"
+   ],
+   "bg": "white",
+   "fg": "red",
+   "border": "red",
+   "notes": ""
+  },
+  {
+   "tex": "no_fwy_access_sign",
+   "quality": "good",
+   "type": "text_only",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [
+    "NO",
+    "FREEWAY",
+    "ACCESS"
+   ],
+   "bg": "yellow",
+   "fg": "black",
+   "border": "black",
+   "notes": ""
+  },
+  {
+   "tex": "no_guardrails_sign",
+   "quality": "good",
+   "type": "text_only",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [
+    "NO",
+    "GUARDRAILS"
+   ],
+   "bg": "yellow",
+   "fg": "black",
+   "border": "black",
+   "notes": ""
+  },
+  {
+   "tex": "no_guardrails_sign_rr",
+   "quality": "good",
+   "type": "text_only",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [
+    "NO",
+    "GUARDRAILS"
+   ],
+   "bg": "orange",
+   "fg": "black",
+   "border": "black",
+   "notes": ""
+  },
+  {
+   "tex": "no_hwy_access_sign",
+   "quality": "good",
+   "type": "text_only",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [
+    "NO",
+    "HIGHWAY",
+    "ACCESS"
+   ],
+   "bg": "yellow",
+   "fg": "black",
+   "border": "black",
+   "notes": ""
+  },
+  {
+   "tex": "no_overnight_parking_sign",
+   "quality": "good",
+   "type": "text_only",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [
+    "NO",
+    "OVERNIGHT",
+    "PARKING",
+    "AND",
+    "CAMPING"
+   ],
+   "bg": "white",
+   "fg": "red",
+   "border": "red",
+   "notes": ""
+  },
+  {
+   "tex": "no_parking_eairs_sign",
+   "quality": "cleanup",
+   "type": "text_only",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [
+    "NO",
+    "PARKING",
+    "IN THIS AREA",
+    "FOR 1 MILE",
+    "EMERGENCY",
+    "AIRSTRIP"
+   ],
+   "bg": "white",
+   "fg": "red",
+   "border": "red",
+   "notes": "Minor blur on small lines"
+  },
+  {
+   "tex": "no_parking_on_bridge_sign",
+   "quality": "good",
+   "type": "text_only",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [
+    "NO",
+    "PARKING",
+    "ON",
+    "BRIDGE"
+   ],
+   "bg": "white",
+   "fg": "red",
+   "border": "red",
+   "notes": ""
+  },
+  {
+   "tex": "no_pkwy_access_sign",
+   "quality": "good",
+   "type": "text_only",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [
+    "NO",
+    "PARKWAY",
+    "ACCESS"
+   ],
+   "bg": "yellow",
+   "fg": "black",
+   "border": "black",
+   "notes": ""
+  },
+  {
+   "tex": "noparkinginalleysign",
+   "quality": "good",
+   "type": "text_only",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [
+    "NO",
+    "PARKING",
+    "IN",
+    "ALLEY"
+   ],
+   "bg": "white",
+   "fg": "red",
+   "border": "red",
+   "notes": ""
+  },
+  {
+   "tex": "not_maintained_road_sign",
+   "quality": "recreate",
+   "type": "text_only",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [
+    "THIS ROAD IS",
+    "NOT MAINTAINED",
+    "ANY UIA AREA COUNTY IS",
+    "NOT RESPONSIBLE",
+    "FOR ANY LOSS OR",
+    "INJURY SUFFERED BY",
+    "REASON OF ITS USE"
+   ],
+   "bg": "yellow",
+   "fg": "black",
+   "border": "black",
+   "notes": "Blurry, garbled small text; OCR uncertain on county line"
+  },
+  {
+   "tex": "oneway_tl_sign_left",
+   "quality": "recreate",
+   "type": "has_symbol",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [],
+   "bg": "black",
+   "fg": "white",
+   "border": "white",
+   "notes": "Arrow-shaped one-way sign, blurry; symbol handled manually"
+  },
+  {
+   "tex": "oneway_tl_sign_right",
+   "quality": "recreate",
+   "type": "has_symbol",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [],
+   "bg": "black",
+   "fg": "white",
+   "border": "white",
+   "notes": "Arrow-shaped one-way sign, blurry; symbol handled manually"
+  },
+  {
+   "tex": "parkway_intersection_sign",
+   "quality": "good",
+   "type": "text_only",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [
+    "PARKWAY",
+    "INTERSECTION",
+    "AHEAD"
+   ],
+   "bg": "yellow",
+   "fg": "black",
+   "border": "black",
+   "notes": ""
+  },
+  {
+   "tex": "pay_to_cross_sign",
+   "quality": "recreate",
+   "type": "has_symbol",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [],
+   "bg": "white",
+   "fg": "black",
+   "border": "black",
+   "notes": "Contains hand symbol, arrow, and pedestrian pictogram; handled manually"
+  },
+  {
+   "tex": "pkwy_entrance_sign",
+   "quality": "good",
+   "type": "text_only",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [
+    "PARKWAY",
+    "ENTRANCE"
+   ],
+   "bg": "green",
+   "fg": "white",
+   "border": "white",
+   "notes": ""
+  },
+  {
+   "tex": "plant_entrance_sign",
+   "quality": "good",
+   "type": "text_only",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [
+    "PLANT",
+    "ENTRANCE"
+   ],
+   "bg": "yellow",
+   "fg": "black",
+   "border": "black",
+   "notes": ""
+  },
+  {
+   "tex": "positively_no_smoking_sign",
+   "quality": "good",
+   "type": "text_only",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [
+    "POSITIVELY NO",
+    "SMOKING OR OPEN",
+    "LIGHTS PERMITTED"
+   ],
+   "bg": "white",
+   "fg": "black",
+   "border": "black",
+   "notes": ""
+  },
+  {
+   "tex": "r10-12_uturn",
+   "quality": "good",
+   "type": "has_symbol",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [],
+   "bg": "white",
+   "fg": "black",
+   "border": "black",
+   "notes": "Contains U-turn glyph and green ball symbol"
+  },
+  {
+   "tex": "reportdrunkdriversign",
+   "quality": "good",
+   "type": "text_only",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [
+    "REPORT",
+    "DRUNK",
+    "DRIVERS",
+    "CALL 911"
+   ],
+   "bg": "blue",
+   "fg": "white",
+   "border": "white",
+   "notes": ""
+  },
+  {
+   "tex": "respect_uia_nat_parks_sign",
+   "quality": "cleanup",
+   "type": "text_only",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [
+    "Please",
+    "RESPECT",
+    "ALL UIA",
+    "NATIONAL PARKS",
+    "AND PROPERTY",
+    "FOR EVERYONE",
+    "\u00a743 USC",
+    "UIA CODES APPLY"
+   ],
+   "bg": "white",
+   "fg": "green",
+   "border": "green",
+   "notes": "Mostly legible but small text slightly soft; section symbol and script 'Please' may need manual care"
+  },
+  {
+   "tex": "restricted_area_sign",
+   "quality": "recreate",
+   "type": "composite",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [],
+   "bg": "white",
+   "fg": "black",
+   "border": "black",
+   "notes": "Composite of restricted-area/no-trespassing block plus inset WARNING sub-sign; text blurry and garbled, handled manually"
+  },
+  {
+   "tex": "rgr_ahead_sign",
+   "quality": "good",
+   "type": "text_only",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [
+    "RGR",
+    "AHEAD"
+   ],
+   "bg": "orange",
+   "fg": "black",
+   "border": "black",
+   "notes": ""
+  },
+  {
+   "tex": "rgr_baby_sign",
+   "quality": "good",
+   "type": "text_only",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [
+    "RGR",
+    "BABY",
+    "AHEAD"
+   ],
+   "bg": "orange",
+   "fg": "black",
+   "border": "black",
+   "notes": ""
+  },
+  {
+   "tex": "rgr_chicken_sign",
+   "quality": "good",
+   "type": "text_only",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [
+    "RGR",
+    "CHICKEN",
+    "AHEAD"
+   ],
+   "bg": "orange",
+   "fg": "black",
+   "border": "black",
+   "notes": ""
+  },
+  {
+   "tex": "right_lane_bus_sign",
+   "quality": "recreate",
+   "type": "has_symbol",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [],
+   "bg": "white",
+   "fg": "black",
+   "border": "black",
+   "notes": "Contains bus pictogram; text is blurry/compressed (RIGHT LANE / BUS ONLY / 7AM-7PM / MON-FRI). Symbol present so handled manually"
+  },
+  {
+   "tex": "rightlanefreewayonlysign",
+   "quality": "good",
+   "type": "text_only",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [
+    "RIGHT LANE",
+    "FREEWAY",
+    "ONLY"
+   ],
+   "bg": "white",
+   "fg": "black",
+   "border": "black",
+   "notes": ""
+  },
+  {
+   "tex": "road_ends_in_water_sign",
+   "quality": "good",
+   "type": "text_only",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [
+    "ROAD",
+    "ENDS IN",
+    "WATER"
+   ],
+   "bg": "orange",
+   "fg": "black",
+   "border": "black",
+   "notes": ""
+  },
+  {
+   "tex": "rual_intersection_sign",
+   "quality": "good",
+   "type": "text_only",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [
+    "RURAL",
+    "INTERSECTION",
+    "AHEAD"
+   ],
+   "bg": "yellow",
+   "fg": "black",
+   "border": "black",
+   "notes": ""
+  },
+  {
+   "tex": "rural_road_sign",
+   "quality": "good",
+   "type": "text_only",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [
+    "RURAL",
+    "ROAD"
+   ],
+   "bg": "yellow",
+   "fg": "black",
+   "border": "black",
+   "notes": ""
+  },
+  {
+   "tex": "safety_glasses_and_face_shield_sign",
+   "quality": "recreate",
+   "type": "text_only",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [
+    "CAUTION",
+    "USE GLASSES AND",
+    "FACE SHIELD",
+    "WHILE OPERATING",
+    "THIS MACHINE"
+   ],
+   "bg": "orange",
+   "fg": "black",
+   "border": "black",
+   "notes": "Grungy/rusted texture, blurry smeared text and garbled edges; recreate as clean OSHA-style caution sign"
+  },
+  {
+   "tex": "sheriffstation",
+   "quality": "recreate",
+   "type": "has_symbol",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [],
+   "bg": "blue",
+   "fg": "white",
+   "border": "white",
+   "notes": "Seven-point star badge symbol; blurry edges. Symbol handled manually"
+  },
+  {
+   "tex": "shoulder_travel_on_green_arrow_sign",
+   "quality": "recreate",
+   "type": "text_only",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [
+    "TRAVEL ON",
+    "SHOULDER",
+    "ON GREEN",
+    "ARROW",
+    "ONLY"
+   ],
+   "bg": "white",
+   "fg": "black",
+   "border": "black",
+   "notes": "Blurry, low-resolution text; recreate"
+  },
+  {
+   "tex": "slowtruckssign",
+   "quality": "good",
+   "type": "text_only",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [
+    "SLOW",
+    "TRUCKS"
+   ],
+   "bg": "yellow",
+   "fg": "black",
+   "border": "black",
+   "notes": ""
+  },
+  {
+   "tex": "snownotremovedsign",
+   "quality": "cleanup",
+   "type": "text_only",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [
+    "SNOW NOT",
+    "REMOVED",
+    "BEYOND HERE"
+   ],
+   "bg": "white",
+   "fg": "black",
+   "border": "black",
+   "notes": "Mostly legible, minor blur on bottom line"
+  },
+  {
+   "tex": "specialeventsign",
+   "quality": "good",
+   "type": "text_only",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [
+    "SPECIAL",
+    "EVENT",
+    "AHEAD"
+   ],
+   "bg": "orange",
+   "fg": "black",
+   "border": "black",
+   "notes": ""
+  },
+  {
+   "tex": "steep_edge_sign",
+   "quality": "recreate",
+   "type": "has_symbol",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [],
+   "bg": "yellow",
+   "fg": "black",
+   "border": "black",
+   "notes": "Composite caution header plus embankment pictogram; grungy weathered texture, blurry. Symbol handled manually"
+  },
+  {
+   "tex": "stop_bridge_clearance_sign",
+   "quality": "good",
+   "type": "text_only",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [
+    "STOP",
+    "LOW CLEARANCE",
+    "--DO NOT--",
+    "HIT THIS BRIDGE",
+    "PER UIA FEDERAL LAW"
+   ],
+   "bg": "red",
+   "fg": "white",
+   "border": "white",
+   "notes": "Crisp"
+  },
+  {
+   "tex": "switch_equipment_warning_sign",
+   "quality": "recreate",
+   "type": "composite",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [],
+   "bg": "yellow",
+   "fg": "black",
+   "border": "black",
+   "notes": "CAUTION header bar with warning triangle symbol plus body text and logo; blurry. Composite, handled manually"
+  },
+  {
+   "tex": "to_cross_street_sign",
+   "quality": "recreate",
+   "type": "composite",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [],
+   "bg": "black",
+   "fg": "white",
+   "border": "white",
+   "notes": "Pedestrian crossing instruction panel with multiple stacked symbol/text sub-signs (WALK/DONT WALK, push button); blurry. Composite, handled manually"
+  },
+  {
+   "tex": "tolled_bike_lane_sign",
+   "quality": "recreate",
+   "type": "composite",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [],
+   "bg": "white",
+   "fg": "black",
+   "border": "black",
+   "notes": "Bicycle pictogram plus SIGNAL text plus purple Alto MTA toll bar plus $1.00; composite with symbol, handled manually"
+  },
+  {
+   "tex": "trailhead_crossings_sign",
+   "quality": "good",
+   "type": "text_only",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [
+    "TRAILHEAD",
+    "CROSSINGS"
+   ],
+   "bg": "green",
+   "fg": "black",
+   "border": "black",
+   "notes": "Sharp text and clean diamond border on fluorescent green; good."
+  },
+  {
+   "tex": "truck_turnaround_sign",
+   "quality": "good",
+   "type": "text_only",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [
+    "TRUCK",
+    "TURNAROUND",
+    "AHEAD"
+   ],
+   "bg": "yellow",
+   "fg": "black",
+   "border": "black",
+   "notes": "Crisp text, clean diamond; good."
+  },
+  {
+   "tex": "uia_welcomes_you_sign",
+   "quality": "recreate",
+   "type": "has_symbol",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [],
+   "bg": "blue",
+   "fg": "white",
+   "border": "white",
+   "notes": "Blurry textured/marble background with cursive script 'Welcomes you' overlay; decorative styling not a plain text render, so treated as has_symbol. Text is fuzzy/low quality."
+  },
+  {
+   "tex": "utility_vehicles_only_sign",
+   "quality": "good",
+   "type": "text_only",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [
+    "UTILITY",
+    "VEHICLES",
+    "ONLY"
+   ],
+   "bg": "white",
+   "fg": "black",
+   "border": "black",
+   "notes": "Sharp regulatory sign with clean square border; good."
+  },
+  {
+   "tex": "verizon_dig",
+   "quality": "recreate",
+   "type": "has_symbol",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [],
+   "bg": "orange",
+   "fg": "black",
+   "border": "black",
+   "notes": "Composite warning sign with no-dig prohibition symbol and small phone number text; blurry. Has pictogram, handle manually."
+  },
+  {
+   "tex": "watchdownhillspeedsign",
+   "quality": "good",
+   "type": "text_only",
+   "shapeOk": true,
+   "shapeSuggest": "keep",
+   "lines": [
+    "WATCH",
+    "DOWNHILL",
+    "SPEED"
+   ],
+   "bg": "yellow",
+   "fg": "black",
+   "border": "black",
+   "notes": "Crisp text on clean yellow diamond; good."
+  }
+ ]
+}
