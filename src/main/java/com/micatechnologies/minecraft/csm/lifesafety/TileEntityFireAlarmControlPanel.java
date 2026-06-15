@@ -63,7 +63,12 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
       "csm:notifier_ucla_voice_evac",
       "csm:awful_notifier_ve",
       "csm:mclalsve",
-      "csm:firecom8500"};
+      "csm:firecom8500",
+      "csm:simplex_voice_evac_old_alt2",
+      "csm:bsp_the_lofts_voic_evac",
+      "csm:est_preint_voice_evac",
+      "csm:fci_voic_evac_female",
+      "csm:fci_voic_evac_male"};
   private static final String[] SOUND_NAMES = {"Simplex Voice Evac 1",
       "Simplex Voice Evac 2",
       "Simplex Voice Evac 3",
@@ -75,7 +80,12 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
       "Notifier UCLA Voice Evac",
       "Notifier Voice Evac 6",
       "Mica Voice Evac 1",
-      "Firecom 8500"};
+      "Firecom 8500",
+      "Simplex Voice Evac 4",
+      "BSP The Lofts Voice Evac",
+      "EST Preintelligent Voice Evac",
+      "FCI Voice Evac (Female)",
+      "FCI Voice Evac (Male)"};
   private static final String STORM_SOUND_NAME = "csm:notifier_tornado_voice_evac";
   private static final float SOUNDER_VOLUME = 2.0f;
   private static final float VOICE_EVAC_VOLUME = 3.0f;

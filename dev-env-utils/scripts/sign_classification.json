@@ -1,0 +1,760 @@
+{
+ "results": [
+  {
+   "file": "1hr_truck_parking_sign.png",
+   "category": "roadsign",
+   "shape": "square",
+   "humanName": "1 Hr Truck Parking",
+   "special": ""
+  },
+  {
+   "file": "99only_price_sign_new.png",
+   "category": "roadsign",
+   "shape": "square",
+   "humanName": "99 Cents Only Price Sign (New)",
+   "special": "price/advertising sign, ambiguous as roadsign"
+  },
+  {
+   "file": "99only_price_sign_new_2.png",
+   "category": "roadsign",
+   "shape": "square",
+   "humanName": "Lowest Prices Guaranteed",
+   "special": "advertising sign, ambiguous as roadsign"
+  },
+  {
+   "file": "99only_price_sign_old.png",
+   "category": "roadsign",
+   "shape": "square",
+   "humanName": "99 Cents Only Price Sign (Old)",
+   "special": "advertising sign, ambiguous as roadsign"
+  },
+  {
+   "file": "adaptive_no_uturn_sign.png",
+   "category": "roadsign",
+   "shape": "square",
+   "humanName": "Adaptive No U-Turn Sign",
+   "special": "on/off state pair (lit left, dark right)"
+  },
+  {
+   "file": "adaptive_train_sign.png",
+   "category": "roadsign",
+   "shape": "square",
+   "humanName": "Adaptive Train Sign",
+   "special": "on/off state pair (lit left, dark right)"
+  },
+  {
+   "file": "alt_extreme_heat_danger_sign.png",
+   "category": "roadsign",
+   "shape": "portrait_rect",
+   "humanName": "Caution Extreme Heat Danger",
+   "special": ""
+  },
+  {
+   "file": "alto_dwp_hv_danger_sign.png",
+   "category": "roadsign",
+   "shape": "portrait_rect",
+   "humanName": "DWP High Voltage Danger Keep Off",
+   "special": ""
+  },
+  {
+   "file": "alto_welcomes_you_sign.png",
+   "category": "roadsign",
+   "shape": "square",
+   "humanName": "Alto Welcomes You",
+   "special": ""
+  },
+  {
+   "file": "alwaysroadworksign.png",
+   "category": "roadsign",
+   "shape": "diamond",
+   "humanName": "Always Road Work Ahead",
+   "special": ""
+  },
+  {
+   "file": "base_station_radio_sign.png",
+   "category": "roadsign",
+   "shape": "landscape_rect",
+   "humanName": "Base Station Radios Only",
+   "special": ""
+  },
+  {
+   "file": "bearcrossingsign.png",
+   "category": "roadsign",
+   "shape": "diamond",
+   "humanName": "Bear Crossing",
+   "special": ""
+  },
+  {
+   "file": "begin_fwy_sign.png",
+   "category": "roadsign",
+   "shape": "square",
+   "humanName": "Begin Freeway",
+   "special": ""
+  },
+  {
+   "file": "begin_hwy_sign.png",
+   "category": "roadsign",
+   "shape": "square",
+   "humanName": "Begin Highway",
+   "special": ""
+  },
+  {
+   "file": "begin_pkwy_sign.png",
+   "category": "roadsign",
+   "shape": "square",
+   "humanName": "Begin Parkway",
+   "special": ""
+  },
+  {
+   "file": "buildathon_event_sign.png",
+   "category": "roadsign",
+   "shape": "diamond",
+   "humanName": "Huge Buildathon Event Ahead",
+   "special": ""
+  },
+  {
+   "file": "bus_lane_sign.png",
+   "category": "roadsign",
+   "shape": "landscape_rect",
+   "humanName": "Bus Lane Hours Buses Only & Right Turns",
+   "special": ""
+  },
+  {
+   "file": "calaneendsignleft.png",
+   "category": "roadsign",
+   "shape": "diamond",
+   "humanName": "Lane Ends Merge Left",
+   "special": "left/right directional pair with calaneendsignright"
+  },
+  {
+   "file": "calaneendsignright.png",
+   "category": "roadsign",
+   "shape": "diamond",
+   "humanName": "Lane Ends Merge Right",
+   "special": "left/right directional pair with calaneendsignleft"
+  },
+  {
+   "file": "caltrans_dui_checkpoint_ahead_sign.png",
+   "category": "roadsign",
+   "shape": "diamond",
+   "humanName": "DUI Driver's License Check Point Ahead",
+   "special": ""
+  },
+  {
+   "file": "campground_crossing_sign.png",
+   "category": "roadsign",
+   "shape": "diamond",
+   "humanName": "Campground Crossings",
+   "special": ""
+  },
+  {
+   "file": "careless_person_sign.png",
+   "category": "roadsign",
+   "shape": "strip",
+   "humanName": "A Careless Person Is Just An Accident Going Someplace To Happen",
+   "special": "novelty plate"
+  },
+  {
+   "file": "castraightdetoursign.png",
+   "category": "roadsign",
+   "shape": "diamond",
+   "humanName": "Detour Straight Ahead",
+   "special": ""
+  },
+  {
+   "file": "conezonesign.png",
+   "category": "roadsign",
+   "shape": "square",
+   "humanName": "Slow For The Cone Zone",
+   "special": ""
+  },
+  {
+   "file": "crosswalk_flasher_sign.png",
+   "category": "roadsign",
+   "shape": "square",
+   "humanName": "Push Button To Turn On Warning Lights",
+   "special": ""
+  },
+  {
+   "file": "danger_bad_water_sign.png",
+   "category": "roadsign",
+   "shape": "landscape_rect",
+   "humanName": "Danger Do Not Drink This Water",
+   "special": ""
+  },
+  {
+   "file": "danger_falling_material_sign.png",
+   "category": "roadsign",
+   "shape": "landscape_rect",
+   "humanName": "Danger Falling Material",
+   "special": ""
+  },
+  {
+   "file": "dangerous_road_curves.png",
+   "category": "roadsign",
+   "shape": "diamond",
+   "humanName": "Dangerous Road Curves",
+   "special": "yellow/orange diamond pair with _rr variant"
+  },
+  {
+   "file": "dangerous_road_curves_rr.png",
+   "category": "roadsign",
+   "shape": "diamond",
+   "humanName": "Dangerous Road Curves (Orange)",
+   "special": "orange construction variant of dangerous_road_curves"
+  },
+  {
+   "file": "deadly_force_sign.png",
+   "category": "roadsign",
+   "shape": "square",
+   "humanName": "Warning Beyond This Point Deadly Force Is Authorized",
+   "special": ""
+  },
+  {
+   "file": "doorsunlockedbiz.png",
+   "category": "roadsign",
+   "shape": "strip",
+   "humanName": "This Door To Remain Unlocked During Business Hours",
+   "special": ""
+  },
+  {
+   "file": "ear_protection_sign.png",
+   "category": "roadsign",
+   "shape": "landscape_rect",
+   "humanName": "Caution Ear Protection Required Beyond This Point",
+   "special": ""
+  },
+  {
+   "file": "end_county_maintained_road_sign.png",
+   "category": "roadsign",
+   "shape": "diamond",
+   "humanName": "End County Maintained Road",
+   "special": ""
+  },
+  {
+   "file": "end_land_work_sign.png",
+   "category": "roadsign",
+   "shape": "square",
+   "humanName": "End Land Work",
+   "special": ""
+  },
+  {
+   "file": "extreme_heat_danger_sign.png",
+   "category": "roadsign",
+   "shape": "octagon",
+   "humanName": "Stop Extreme Heat Danger",
+   "special": "stop-octagon styled warning"
+  },
+  {
+   "file": "fall_hazzard_sign.png",
+   "category": "roadsign",
+   "shape": "landscape_rect",
+   "humanName": "Warning Fall Hazard Area Do Not Enter",
+   "special": ""
+  },
+  {
+   "file": "fawe_incident_sign.png",
+   "category": "roadsign",
+   "shape": "diamond",
+   "humanName": "FAWE Incident Ahead",
+   "special": "fluorescent pink incident warning"
+  },
+  {
+   "file": "forestry_vehicles_only_sign.png",
+   "category": "roadsign",
+   "shape": "square",
+   "humanName": "Forestry Vehicles Only",
+   "special": ""
+  },
+  {
+   "file": "freeway_detour_sign.png",
+   "category": "roadsign",
+   "shape": "diamond",
+   "humanName": "FWY Detour",
+   "special": "orange roll-up detour"
+  },
+  {
+   "file": "fwy_entrance_sign.png",
+   "category": "roadsign",
+   "shape": "square",
+   "humanName": "Freeway Entrance",
+   "special": ""
+  },
+  {
+   "file": "fwy_intersection_sign.png",
+   "category": "roadsign",
+   "shape": "diamond",
+   "humanName": "Freeway Intersection Ahead",
+   "special": ""
+  },
+  {
+   "file": "generic_hv_danger_sign.png",
+   "category": "roadsign",
+   "shape": "portrait_rect",
+   "humanName": "Danger High Voltage Keep Off",
+   "special": ""
+  },
+  {
+   "file": "hear_banjos_sign.png",
+   "category": "roadsign",
+   "shape": "square",
+   "humanName": "Hear Banjos Walk Faster",
+   "special": "novelty trail sign"
+  },
+  {
+   "file": "hg_blissgreen_hwy_sign.png",
+   "category": "roadsign",
+   "shape": "square",
+   "humanName": "Honary General Blissgreen Memorial HWY",
+   "special": ""
+  },
+  {
+   "file": "hikers_ahead_sign.png",
+   "category": "roadsign",
+   "shape": "diamond",
+   "humanName": "Hikers Ahead",
+   "special": "fluorescent yellow-green"
+  },
+  {
+   "file": "hwy_entrance.png",
+   "category": "roadsign",
+   "shape": "square",
+   "humanName": "Highway Entrance",
+   "special": ""
+  },
+  {
+   "file": "in_case_of_fire_sign.png",
+   "category": "lifesafety",
+   "shape": "none",
+   "humanName": "What To Do In Case Of Fire Placard",
+   "special": "framed fire-alarm instruction placard, not a road sign"
+  },
+  {
+   "file": "kathie_evans_sign.png",
+   "category": "roadsign",
+   "shape": "landscape_rect",
+   "humanName": "Kathie Evans For Sale Sign",
+   "special": "real-estate yard sign"
+  },
+  {
+   "file": "ladot_anti_gridlock_zone.png",
+   "category": "roadsign",
+   "shape": "landscape_rect",
+   "humanName": "LADOT Anti-Gridlock Zone",
+   "special": ""
+  },
+  {
+   "file": "ladot_no_stopping.png",
+   "category": "roadsign",
+   "shape": "square",
+   "humanName": "LADOT No Stopping 7AM-9AM 4PM-6PM",
+   "special": ""
+  },
+  {
+   "file": "ladot_signal_sync.png",
+   "category": "roadsign",
+   "shape": "portrait_rect",
+   "humanName": "LADOT Signal Sync",
+   "special": ""
+  },
+  {
+   "file": "land_area_study_sign.png",
+   "category": "roadsign",
+   "shape": "square",
+   "humanName": "Land Area Under Study",
+   "special": ""
+  },
+  {
+   "file": "land_work_ahead_sign.png",
+   "category": "roadsign",
+   "shape": "diamond",
+   "humanName": "Land Work Ahead",
+   "special": ""
+  },
+  {
+   "file": "lights_out_no_power_sign_off.png",
+   "category": "roadsign",
+   "shape": "square",
+   "humanName": "If Lights Out No Power Signal Not Working",
+   "special": "off state of on/off pair"
+  },
+  {
+   "file": "lights_out_no_power_sign_on.png",
+   "category": "roadsign",
+   "shape": "square",
+   "humanName": "If Lights Out No Power Signal Not Working",
+   "special": "on state (beacons lit) of on/off pair"
+  },
+  {
+   "file": "limited_maint_road_sign.png",
+   "category": "roadsign",
+   "shape": "diamond",
+   "humanName": "Minimum Maintenance Road",
+   "special": ""
+  },
+  {
+   "file": "massdot_heavy_merge_sign.png",
+   "category": "roadsign",
+   "shape": "diamond",
+   "humanName": "MassDOT Heavy Merge Ahead",
+   "special": "yellow variant; pairs with _rw orange version"
+  },
+  {
+   "file": "massdot_heavy_merge_sign_rw.png",
+   "category": "roadsign",
+   "shape": "diamond",
+   "humanName": "MassDOT Heavy Merge Ahead",
+   "special": "_rw orange roadwork variant of heavy merge sign"
+  },
+  {
+   "file": "massdot_side_street_traffic_sign.png",
+   "category": "roadsign",
+   "shape": "diamond",
+   "humanName": "MassDOT Please Show Courtesy To Side Street Traffic",
+   "special": ""
+  },
+  {
+   "file": "mi_vehicles_share_center_lane_sign.png",
+   "category": "roadsign",
+   "shape": "portrait_rect",
+   "humanName": "MI Vehicles Share Center Lane Yield To Bikes",
+   "special": ""
+  },
+  {
+   "file": "no_forest_parking_sign.png",
+   "category": "roadsign",
+   "shape": "square",
+   "humanName": "No Forest Parking",
+   "special": ""
+  },
+  {
+   "file": "no_fwy_access_sign.png",
+   "category": "roadsign",
+   "shape": "diamond",
+   "humanName": "No Freeway Access",
+   "special": ""
+  },
+  {
+   "file": "no_guardrails_sign.png",
+   "category": "roadsign",
+   "shape": "diamond",
+   "humanName": "No Guardrails",
+   "special": "yellow of an on/off-style pair with orange _rr variant"
+  },
+  {
+   "file": "no_guardrails_sign_rr.png",
+   "category": "roadsign",
+   "shape": "diamond",
+   "humanName": "No Guardrails (Orange)",
+   "special": "_rr orange variant of no_guardrails_sign"
+  },
+  {
+   "file": "no_hwy_access_sign.png",
+   "category": "roadsign",
+   "shape": "diamond",
+   "humanName": "No Highway Access",
+   "special": ""
+  },
+  {
+   "file": "no_overnight_parking_sign.png",
+   "category": "roadsign",
+   "shape": "square",
+   "humanName": "No Overnight Parking And Camping",
+   "special": ""
+  },
+  {
+   "file": "no_parking_eairs_sign.png",
+   "category": "roadsign",
+   "shape": "portrait_rect",
+   "humanName": "No Parking Emergency Airstrip",
+   "special": ""
+  },
+  {
+   "file": "no_parking_on_bridge_sign.png",
+   "category": "roadsign",
+   "shape": "square",
+   "humanName": "No Parking On Bridge",
+   "special": ""
+  },
+  {
+   "file": "no_pkwy_access_sign.png",
+   "category": "roadsign",
+   "shape": "diamond",
+   "humanName": "No Parkway Access",
+   "special": ""
+  },
+  {
+   "file": "noparkinginalleysign.png",
+   "category": "roadsign",
+   "shape": "square",
+   "humanName": "No Parking In Alley",
+   "special": ""
+  },
+  {
+   "file": "not_maintained_road_sign.png",
+   "category": "roadsign",
+   "shape": "landscape_rect",
+   "humanName": "Road Not Maintained By UIA County",
+   "special": ""
+  },
+  {
+   "file": "oneway_tl_sign_left.png",
+   "category": "roadsign",
+   "shape": "landscape_rect",
+   "humanName": "One Way Left",
+   "special": "left-pointing directional, likely paired with a right variant"
+  },
+  {
+   "file": "oneway_tl_sign_right.png",
+   "category": "roadsign",
+   "shape": "landscape_rect",
+   "humanName": "One Way (Right Arrow)",
+   "special": "left/right directional pair; arrow points right"
+  },
+  {
+   "file": "parkway_intersection_sign.png",
+   "category": "roadsign",
+   "shape": "diamond",
+   "humanName": "Parkway Intersection Ahead",
+   "special": ""
+  },
+  {
+   "file": "pay_to_cross_sign.png",
+   "category": "roadsign",
+   "shape": "portrait_rect",
+   "humanName": "Pay To Cross Street Wait For Pedestrian",
+   "special": ""
+  },
+  {
+   "file": "pkwy_entrance_sign.png",
+   "category": "roadsign",
+   "shape": "square",
+   "humanName": "Parkway Entrance",
+   "special": ""
+  },
+  {
+   "file": "plant_entrance_sign.png",
+   "category": "roadsign",
+   "shape": "diamond",
+   "humanName": "Plant Entrance",
+   "special": ""
+  },
+  {
+   "file": "positively_no_smoking_sign.png",
+   "category": "roadsign",
+   "shape": "landscape_rect",
+   "humanName": "Positively No Smoking Or Open Lights Permitted",
+   "special": ""
+  },
+  {
+   "file": "r10-12_uturn.png",
+   "category": "roadsign",
+   "shape": "portrait_rect",
+   "humanName": "U-Turn Yield On Green (R10-12)",
+   "special": ""
+  },
+  {
+   "file": "reportdrunkdriversign.png",
+   "category": "roadsign",
+   "shape": "square",
+   "humanName": "Report Drunk Drivers Call 911",
+   "special": ""
+  },
+  {
+   "file": "respect_uia_nat_parks_sign.png",
+   "category": "roadsign",
+   "shape": "portrait_rect",
+   "humanName": "Please Respect All UIA National Parks",
+   "special": ""
+  },
+  {
+   "file": "restricted_area_sign.png",
+   "category": "roadsign",
+   "shape": "landscape_rect",
+   "humanName": "Restricted Area No Trespassing Warning",
+   "special": ""
+  },
+  {
+   "file": "rgr_ahead_sign.png",
+   "category": "roadsign",
+   "shape": "diamond",
+   "humanName": "RGR Ahead",
+   "special": ""
+  },
+  {
+   "file": "rgr_baby_sign.png",
+   "category": "roadsign",
+   "shape": "diamond",
+   "humanName": "RGR Baby Ahead",
+   "special": ""
+  },
+  {
+   "file": "rgr_chicken_sign.png",
+   "category": "roadsign",
+   "shape": "diamond",
+   "humanName": "RGR Chicken Ahead",
+   "special": ""
+  },
+  {
+   "file": "right_lane_bus_sign.png",
+   "category": "roadsign",
+   "shape": "square",
+   "humanName": "Right Lane Bus Only 7AM-7PM Mon-Fri",
+   "special": ""
+  },
+  {
+   "file": "rightlanefreewayonlysign.png",
+   "category": "roadsign",
+   "shape": "square",
+   "humanName": "Right Lane Freeway Only",
+   "special": ""
+  },
+  {
+   "file": "road_ends_in_water_sign.png",
+   "category": "roadsign",
+   "shape": "diamond",
+   "humanName": "Road Ends In Water",
+   "special": ""
+  },
+  {
+   "file": "rss_vertical.png",
+   "category": "technology",
+   "shape": "none",
+   "humanName": "Vertical Light Fixture",
+   "special": "not a sign; appears to be a lamp/light fixture device"
+  },
+  {
+   "file": "rual_intersection_sign.png",
+   "category": "roadsign",
+   "shape": "diamond",
+   "humanName": "Rural Intersection Ahead",
+   "special": ""
+  },
+  {
+   "file": "rural_road_sign.png",
+   "category": "roadsign",
+   "shape": "diamond",
+   "humanName": "Rural Road",
+   "special": ""
+  },
+  {
+   "file": "safety_glasses_and_face_shield_sign.png",
+   "category": "roadsign",
+   "shape": "landscape_rect",
+   "humanName": "Caution: Use Glasses And Face Shield",
+   "special": "workplace safety/caution placard, not a road sign"
+  },
+  {
+   "file": "sheriffstation.png",
+   "category": "roadsign",
+   "shape": "square",
+   "humanName": "Sheriff Station",
+   "special": "seven-point star emblem on square white sign"
+  },
+  {
+   "file": "shoulder_travel_on_green_arrow_sign.png",
+   "category": "roadsign",
+   "shape": "portrait_rect",
+   "humanName": "Travel On Shoulder On Green Arrow Only",
+   "special": ""
+  },
+  {
+   "file": "slowtruckssign.png",
+   "category": "roadsign",
+   "shape": "diamond",
+   "humanName": "Slow Trucks",
+   "special": ""
+  },
+  {
+   "file": "snownotremovedsign.png",
+   "category": "roadsign",
+   "shape": "square",
+   "humanName": "Snow Not Removed Beyond Here",
+   "special": ""
+  },
+  {
+   "file": "specialeventsign.png",
+   "category": "roadsign",
+   "shape": "diamond",
+   "humanName": "Special Event Ahead",
+   "special": ""
+  },
+  {
+   "file": "steep_edge_sign.jpg",
+   "category": "roadsign",
+   "shape": "landscape_rect",
+   "humanName": "Caution Steep Edge Embankment Keep Back 25 Feet",
+   "special": ""
+  },
+  {
+   "file": "stop_bridge_clearance_sign.png",
+   "category": "roadsign",
+   "shape": "square",
+   "humanName": "Stop Low Clearance Do Not Hit This Bridge",
+   "special": ""
+  },
+  {
+   "file": "switch_equipment_warning_sign.png",
+   "category": "roadsign",
+   "shape": "landscape_rect",
+   "humanName": "Caution Remote Controlled Equipment May Operate",
+   "special": ""
+  },
+  {
+   "file": "to_cross_street_sign.png",
+   "category": "roadsign",
+   "shape": "portrait_rect",
+   "humanName": "Pedestrian Push Button To Cross",
+   "special": ""
+  },
+  {
+   "file": "tolled_bike_lane_sign.png",
+   "category": "roadsign",
+   "shape": "square",
+   "humanName": "Bike Signal Alto MTA Tolled Lane",
+   "special": ""
+  },
+  {
+   "file": "trailhead_crossings_sign.png",
+   "category": "roadsign",
+   "shape": "diamond",
+   "humanName": "Trailhead Crossings",
+   "special": ""
+  },
+  {
+   "file": "truck_turnaround_sign.png",
+   "category": "roadsign",
+   "shape": "diamond",
+   "humanName": "Truck Turnaround Ahead",
+   "special": ""
+  },
+  {
+   "file": "uia_welcomes_you_sign.png",
+   "category": "roadsign",
+   "shape": "landscape_rect",
+   "humanName": "United Islands Of Alto Welcomes You",
+   "special": ""
+  },
+  {
+   "file": "utility_vehicles_only_sign.png",
+   "category": "roadsign",
+   "shape": "square",
+   "humanName": "Utility Vehicles Only",
+   "special": ""
+  },
+  {
+   "file": "verizon_dig.png",
+   "category": "roadsign",
+   "shape": "portrait_rect",
+   "humanName": "Warning Underground Fiber Optic Cable Call Before You Dig",
+   "special": ""
+  },
+  {
+   "file": "watchdownhillspeedsign.png",
+   "category": "roadsign",
+   "shape": "diamond",
+   "humanName": "Watch Downhill Speed",
+   "special": ""
+  }
+ ]
+}
