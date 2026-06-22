@@ -97,6 +97,8 @@ public class AdvancedSignalControllerGui extends GuiScreen {
 
   private Screen screen = Screen.STATUS;
   private final List<Cell> cells = new ArrayList<>();
+  /** Hover-help regions, rebuilt each frame as the current screen is drawn. */
+  private final List<Help> helps = new ArrayList<>();
   private int selected = 0;
   private String entry = "";
   private int selectedPreempt = 0;
@@ -129,6 +131,37 @@ public class AdvancedSignalControllerGui extends GuiScreen {
       this.value = value;
       this.adjust = adjust;
       this.commitSeconds = commitSeconds;
+    }
+  }
+
+  /** A hover-help region: design-space bounds plus the lines to show. First line is the title. */
+  private static final class Help {
+    final int x;
+    final int y;
+    final int w;
+    final int h;
+    final String[] lines;
+
+    Help(int x, int y, int w, int h, String[] lines) {
+      this.x = x;
+      this.y = y;
+      this.w = w;
+      this.h = h;
+      this.lines = lines;
+    }
+  }
+
+  private void addHelp(int x, int y, int w, int h, String... lines) {
+    helps.add(new Help(x, y, w, h, lines));
+  }
+
+  /** Registers a help region over the on-screen bounds of the button with the given id. */
+  private void addButtonHelp(int id, String... lines) {
+    for (GuiButton b : buttonList) {
+      if (b.id == id) {
+        addHelp(b.x, b.y, b.width, b.height, lines);
+        return;
+      }
     }
   }
 
@@ -597,6 +630,7 @@ public class AdvancedSignalControllerGui extends GuiScreen {
   @Override
   public void drawScreen(int mouseX, int mouseY, float partialTicks) {
     drawDefaultBackground();
+    helps.clear();
     // The full-screen dimming above stays unscaled; everything from here down is rendered in the
     // fixed W x H design space, scaled about the screen centre (== panel centre) so it fits.
     final float cx = width / 2f;
@@ -638,11 +672,14 @@ public class AdvancedSignalControllerGui extends GuiScreen {
 
     drawCells();
     drawHint();
+    registerButtonHelps();
     // Buttons are drawn by super in the same design space; feed it design-space mouse coords so
     // hover highlighting lines up with the scaled rendering.
     int dmx = Math.round((mouseX - cx) / PANEL_SCALE + cx);
     int dmy = Math.round((mouseY - cy) / PANEL_SCALE + cy);
     super.drawScreen(dmx, dmy, partialTicks);
+    // Tooltips render last so they sit on top of everything, still in the scaled design space.
+    drawTooltips(dmx, dmy);
     GlStateManager.popMatrix();
   }
 
@@ -657,6 +694,12 @@ public class AdvancedSignalControllerGui extends GuiScreen {
     led(x, y, advanced && !fault ? COLOR_LED_GREEN : COLOR_LED_OFF, "RUN");
     led(x + 46, y, coord ? COLOR_LED_GREEN : COLOR_LED_OFF, "COORD");
     led(x + 100, y, fault ? COLOR_LED_RED : COLOR_LED_OFF, "FAULT");
+    addHelp(x, y, 40, 9, "RUN", "Lit green when the controller is in",
+        "ADVANCED mode and running with no fault.");
+    addHelp(x + 46, y, 48, 9, "COORD", "Lit green when running a coordinated",
+        "(fixed-cycle) plan — set on the COORD screen.");
+    addHelp(x + 100, y, 46, 9, "FAULT", "Lit red when a fault is latched. Clear it",
+        "from the main controller GUI (Clear Faults).");
   }
 
   private void led(int x, int y, int color, String label) {
@@ -677,19 +720,31 @@ public class AdvancedSignalControllerGui extends GuiScreen {
       y += 12;
     }
     // Ring diagram.
+    int ringTop = y;
     fontRenderer.drawString("Ring/Barrier:", lcdX, y, COLOR_AMBER_DIM);
     y += 11;
     drawRingRow(plan, 1, lcdX, y);
     y += 11;
     drawRingRow(plan, 2, lcdX, y);
+    addHelp(lcdX, ringTop, lcdW - 6, (y - ringTop) + 9, "Ring & Barrier diagram",
+        "The two rings (R1/R2) time concurrently; a barrier keeps conflicting",
+        "movements apart. Each box is phase:movement — bright = main-street",
+        "barrier, dim = side-street barrier. Configure on MAP and TIMING.");
     y += 14;
+    int coordTop = y;
     String coord = plan.getCoordination().isCoordinated()
         ? ("COORD cycle " + secs(plan.getCoordination().getCycleLength()) + "s offset "
             + secs(plan.getCoordination().getOffset()) + "s")
         : "FREE (fully actuated)";
     fontRenderer.drawString(coord, lcdX, y, COLOR_AMBER);
+    addHelp(lcdX, coordTop, lcdW - 6, 9, "Coordination",
+        "FREE = fully actuated, no fixed cycle. COORD shows the running cycle",
+        "length and offset. Change it on the COORD screen.");
     y += 11;
     fontRenderer.drawString("Preempts: " + plan.getPreempts().size(), lcdX, y, COLOR_AMBER);
+    addHelp(lcdX, y, lcdW - 6, 9, "Preempts",
+        "Number of preemption sequences (railroad / emergency / transit)",
+        "configured. Add and edit them on the PREEMPT screen.");
     y += 14;
     for (String line : fontRenderer.listFormattedStringToWidth(
         "Use the keys below to program. Load Std 8-Phase auto-assigns by approach.", lcdW - 6)) {
@@ -725,6 +780,31 @@ public class AdvancedSignalControllerGui extends GuiScreen {
       int color = p != null && p.isActive() ? COLOR_AMBER : COLOR_AMBER_DIM;
       fontRenderer.drawString("φ" + pn, lcdX, y, color);
     }
+    // Hover help: each column (header + its 8 cells) explains the timing interval it sets.
+    int colHelpH = (TABLE_BODY_DY - 12) + TrafficSignalProgrammedPhasePlan.PHASE_COUNT * rowH;
+    String[][] colHelp = {
+        {"Minimum Green (MnG)", "Shortest time the phase stays green once it starts,",
+            "regardless of demand."},
+        {"Passage / Gap (Pas)", "Green extension added by each vehicle call, up to",
+            "Max Green. Larger = holds green through bigger gaps."},
+        {"Maximum Green (MxG)", "Longest green allowed while a conflicting phase is",
+            "calling; the phase force-offs when this is reached."},
+        {"Yellow Change (Yel)", "Yellow clearance interval shown before the phase",
+            "goes red."},
+        {"Red Clearance (Red)", "All-red time after yellow, before the next phase",
+            "is given green."},
+        {"Walk (Wlk)", "Pedestrian WALK interval for this phase (steady",
+            "WALK before the clearance countdown)."},
+        {"Ped Clearance (PCl)", "Flashing DON'T WALK countdown after WALK ends,",
+            "sized so pedestrians can finish crossing."},
+    };
+    for (int i = 0; i < TIMING_HEADERS.length; i++) {
+      addHelp(lcdX + 24 + i * colW, lcdY + 12, colW, colHelpH, colHelp[i]);
+    }
+    addHelp(lcdX, lcdY + TABLE_BODY_DY, 22,
+        TrafficSignalProgrammedPhasePlan.PHASE_COUNT * rowH, "Phase φ1–φ8",
+        "NEMA phase number. See the STATUS screen for how these",
+        "phases are arranged into rings and barriers.");
   }
 
   private void drawMap() {
@@ -739,6 +819,26 @@ public class AdvancedSignalControllerGui extends GuiScreen {
       int y = lcdY + TABLE_BODY_DY + (pn - 1) * rowH;
       fontRenderer.drawString("φ" + pn, lcdX, y, COLOR_AMBER);
     }
+    int colHelpH = (TABLE_BODY_DY - 12) + TrafficSignalProgrammedPhasePlan.PHASE_COUNT * rowH;
+    int[] hx = {lcdX + 26, lcdX + 70, lcdX + 130, lcdX + 200, lcdX + 270};
+    int[] hw = {40, 56, 66, 66, 50};
+    String[][] colHelp = {
+        {"Enable (EN)", "On = this phase runs. off = the phase is skipped",
+            "entirely and never served."},
+        {"Circuit (CKT)", "Which signal circuit (C1, C2, …) this phase drives.",
+            "'--' = unassigned. Manage circuits in the main GUI."},
+        {"Movement (MOVE)", "THRU through · LEFT left · PLFT protected left ·",
+            "RGHT right · PED walk. Selects both the signals the",
+            "phase drives and the detector zone that calls it."},
+        {"Recall (RECALL)", "NONE actuated (served only on a call) · MIN recall",
+            "to min green · MAX hold to max green · PED recall a",
+            "walk each cycle · SOFT rest here when nothing else calls."},
+        {"Ped Recall (PED)", "PedR = place a pedestrian (Walk) call every cycle",
+            "even with no button press. 'no' = button only."},
+    };
+    for (int i = 0; i < hx.length; i++) {
+      addHelp(hx[i], lcdY + 12, hw[i], colHelpH, colHelp[i]);
+    }
   }
 
   private void drawCoord() {
@@ -747,6 +847,19 @@ public class AdvancedSignalControllerGui extends GuiScreen {
     fontRenderer.drawString("Cycle:", lcdX, lcdY + 26, COLOR_AMBER_DIM);
     fontRenderer.drawString("Offset:", lcdX, lcdY + 38, COLOR_AMBER_DIM);
     fontRenderer.drawString("Splits / coordinated phases:", lcdX, lcdY + 50, COLOR_AMBER_DIM);
+    addHelp(lcdX, lcdY + 14, 64, 9, "Coordination Mode",
+        "FREE = fully actuated (no fixed cycle). COORDINATED = run a",
+        "fixed background cycle with per-phase splits and force-offs.");
+    addHelp(lcdX, lcdY + 26, 64, 9, "Cycle Length",
+        "Total length of one full cycle through all phases.",
+        "Only used in COORDINATED mode.");
+    addHelp(lcdX, lcdY + 38, 64, 9, "Offset",
+        "Cycle-start offset relative to the system master clock —",
+        "stagger offsets along a corridor to build green waves.");
+    addHelp(lcdX, lcdY + 50, lcdW - 6, 9, "Splits & coordinated phases",
+        "Split = the slice of the cycle budgeted to each phase. Toggle",
+        "COORD to mark a phase as a coordinated (synced) phase that",
+        "rests in green between its permissive windows.");
     int rowH = 11;
     for (int pn = 1; pn <= TrafficSignalProgrammedPhasePlan.PHASE_COUNT; pn++) {
       int y = lcdY + 62 + (pn - 1) * rowH;
@@ -766,20 +879,41 @@ public class AdvancedSignalControllerGui extends GuiScreen {
         + "  (Prev/Next)", lcdX, lcdY + 12, COLOR_AMBER_DIM);
     int y = lcdY + 26;
     fontRenderer.drawString("Enabled:", lcdX, y, COLOR_AMBER_DIM);
+    addHelp(lcdX, y, 70, 9, "Enabled", "Turn this preemption sequence on or off.");
     y += 12;
     fontRenderer.drawString("Type:", lcdX, y, COLOR_AMBER_DIM);
+    addHelp(lcdX, y, 70, 9, "Preempt Type",
+        "RAILROAD > EMERGENCY VEHICLE > TRANSIT PRIORITY.",
+        "If several fire at once, the higher type wins.");
     y += 12;
     fontRenderer.drawString("Trig CKT:", lcdX, y, COLOR_AMBER_DIM);
+    addHelp(lcdX, y, 70, 9, "Trigger Circuit",
+        "Which signal circuit's detector input arms this preempt.");
     y += 12;
     fontRenderer.drawString("Trig MOV:", lcdX, y, COLOR_AMBER_DIM);
+    addHelp(lcdX, y, 70, 9, "Trigger Movement",
+        "Which movement on the trigger circuit (e.g. THRU, LEFT)",
+        "is watched as the preempt input.");
     y += 12;
     fontRenderer.drawString("Min Dwell:", lcdX, y, COLOR_AMBER_DIM);
+    addHelp(lcdX, y, 70, 9, "Minimum Dwell",
+        "Shortest time the controller stays in the preempt's dwell",
+        "(hold) state before it is allowed to end.");
     y += 16;
     fontRenderer.drawString("TRACK", lcdX, y, COLOR_AMBER_DIM);
+    addHelp(lcdX, y, 60, 9, "Track Clearance Phases",
+        "Phases served first to clear the conflicting path (e.g. a grade",
+        "crossing) before dwell. [n] = phase included in the set.");
     y += 12;
     fontRenderer.drawString("DWELL", lcdX, y, COLOR_AMBER_DIM);
+    addHelp(lcdX, y, 60, 9, "Dwell Phases",
+        "Phases held green throughout the preempt (e.g. the emergency",
+        "or transit approach). [n] = phase included in the set.");
     y += 12;
     fontRenderer.drawString("EXIT", lcdX, y, COLOR_AMBER_DIM);
+    addHelp(lcdX, y, 60, 9, "Exit Phases",
+        "Phases served on the way out of the preempt before the",
+        "controller returns to normal operation.");
   }
 
   private void drawCells() {
@@ -796,8 +930,89 @@ public class AdvancedSignalControllerGui extends GuiScreen {
   }
 
   private void drawHint() {
-    String hint = "Arrows: select   +/-: adjust   digits+ENTER: set time   ENTER: cycle";
+    String hint = "Hover any label for help   ·   Arrows: select   ·   +/-: adjust   ·   "
+        + "digits+ENTER: set time   ·   ENTER: cycle";
     fontRenderer.drawString(hint, left + 12, top + H - 106, COLOR_AMBER_DIM);
+  }
+
+  /** Registers hover help over the screen-select and keypad buttons (static positions). */
+  private void registerButtonHelps() {
+    addButtonHelp(BTN_SCREEN_BASE, "STATUS",
+        "Live overview: mode, ring/barrier diagram, coordination",
+        "summary and preempt count. Start here.");
+    addButtonHelp(BTN_SCREEN_BASE + 1, "TIMING",
+        "Per-phase intervals: min/max green, passage, yellow,",
+        "red clearance, walk and ped clearance (in seconds).");
+    addButtonHelp(BTN_SCREEN_BASE + 2, "MAP",
+        "Map each phase to a circuit and movement, and set its",
+        "recall / ped-recall behavior.");
+    addButtonHelp(BTN_SCREEN_BASE + 3, "COORD",
+        "Coordination: free vs. fixed cycle, cycle length, offset",
+        "and per-phase splits for green-wave timing.");
+    addButtonHelp(BTN_SCREEN_BASE + 4, "PREEMPT",
+        "Railroad / emergency / transit preemption sequences",
+        "and the phases they clear, hold and exit through.");
+    addButtonHelp(BTN_TEMPLATE, "Load Std 8-Phase",
+        "Overwrites the plan with a standard NEMA 8-phase dual-ring",
+        "layout and auto-assigns phases to your circuits by approach.",
+        "The quickest way to get a working ADVANCED program.");
+    addButtonHelp(BTN_PE_ADD, "Add Preempt", "Add a new preemption sequence to the list.");
+    addButtonHelp(BTN_PE_REMOVE, "Remove Preempt", "Delete the currently selected preempt.");
+    addButtonHelp(BTN_PE_PREV, "Previous Preempt", "Select the previous preempt in the list.");
+    addButtonHelp(BTN_PE_NEXT, "Next Preempt", "Select the next preempt in the list.");
+    addButtonHelp(BTN_ENT, "ENTER",
+        "On a time field: set the typed value. On a list/toggle field:",
+        "advance to the next option.");
+    addButtonHelp(BTN_PLUS, "Increment", "Increase the selected value, or cycle a list forward.");
+    addButtonHelp(BTN_MINUS, "Decrement", "Decrease the selected value, or cycle a list backward.");
+    addButtonHelp(BTN_CLR, "Clear", "Discard the number currently being typed.");
+    addButtonHelp(BTN_UP, "Move Up", "Move the selection to the previous field.");
+    addButtonHelp(BTN_DOWN, "Move Down", "Move the selection to the next field.");
+    addButtonHelp(BTN_LEFT, "Move Left", "Move the selection to the previous field.");
+    addButtonHelp(BTN_RIGHT, "Move Right", "Move the selection to the next field.");
+    addButtonHelp(BTN_CLOSE, "Close", "Close the ASC-3 programmer.");
+  }
+
+  /** Draws the help box for the first region under the (design-space) cursor, if any. */
+  private void drawTooltips(int mx, int my) {
+    for (Help h : helps) {
+      if (mx >= h.x && mx <= h.x + h.w && my >= h.y && my <= h.y + h.h) {
+        drawTip(mx, my, h.lines);
+        return;
+      }
+    }
+  }
+
+  private void drawTip(int mx, int my, String[] lines) {
+    int textW = 0;
+    for (String line : lines) {
+      textW = Math.max(textW, fontRenderer.getStringWidth(line));
+    }
+    int boxW = textW + 8;
+    int boxH = lines.length * 10 + 4;
+    int x = mx + 10;
+    int y = my + 8;
+    if (x + boxW > left + W - 2) {
+      x = mx - 10 - boxW;
+    }
+    if (x < left + 2) {
+      x = left + 2;
+    }
+    if (y + boxH > top + H - 2) {
+      y = (top + H - 2) - boxH;
+    }
+    if (y < top + 2) {
+      y = top + 2;
+    }
+    drawRect(x - 1, y - 1, x + boxW + 1, y + boxH + 1, 0xF00A0F0A);
+    drawRect(x - 1, y - 1, x + boxW + 1, y, COLOR_AMBER_DIM);
+    drawRect(x - 1, y + boxH, x + boxW + 1, y + boxH + 1, COLOR_AMBER_DIM);
+    drawRect(x - 1, y - 1, x, y + boxH + 1, COLOR_AMBER_DIM);
+    drawRect(x + boxW, y - 1, x + boxW + 1, y + boxH + 1, COLOR_AMBER_DIM);
+    for (int i = 0; i < lines.length; i++) {
+      fontRenderer.drawString(lines[i], x + 4, y + 3 + i * 10,
+          i == 0 ? COLOR_AMBER_HEAD : COLOR_AMBER);
+    }
   }
 
   private String trim(String s, int maxPx) {
