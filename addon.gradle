@@ -67,3 +67,37 @@ if (project.hasProperty('enableJava17RunTasks') && enableJava17RunTasks.toBoolea
         }
     }
 }
+
+// Apple-Silicon fallback: run the LWJGL2 client under x86_64 (Rosetta 2).
+//
+// runClient17 (lwjgl3ify/arm64-native) launches but its window is broken on macOS —
+// lwjgl3ify 1.0.1 (RFB 1.0.6) skips the relauncher re-exec in the gradle dev launch, so
+// GLFW never gets macOS's required first-thread handling and Apple's OpenGL-over-Metal
+// driver crashes on a zero-area window (SIGSEGV in AppleMetalOpenGLRenderer on first draw).
+// The reliable dev client on Apple Silicon is the vanilla LWJGL2 path under Rosetta, using
+// Minecraft's bundled x86_64 LWJGL2/JNA natives.
+//
+// Usage:  ./gradlew runClient -Prosetta
+// Requires Rosetta 2 (`softwareupdate --install-rosetta --agree-to-license`) and an
+// x86_64 Java 8 JDK in a Gradle-auto-detected location (e.g.
+// ~/Library/Java/JavaVirtualMachines/). Java 8 + Adoptium uniquely selects the x86_64
+// Temurin here (the arm64 Java 8 is Azul), so the launcher resolves with no ambiguity.
+// RFG extracts LWJGL2 natives matching the gradle JVM's arch (arm64), which the x86_64
+// client can't dlopen, so point LWJGL2 at x86_64 2.9.4 natives via org.lwjgl.librarypath.
+// Populate that dir with:
+//   curl -sSL -o /tmp/n.jar https://libraries.minecraft.net/org/lwjgl/lwjgl/lwjgl-platform/2.9.4-nightly-20150209/lwjgl-platform-2.9.4-nightly-20150209-natives-osx.jar
+//   unzip -o -j /tmp/n.jar '*.dylib' -d .rosetta-natives/lwjgl2
+if (project.hasProperty('rosetta')) {
+    def rosettaLauncher = javaToolchains.launcherFor {
+        languageVersion.set(JavaLanguageVersion.of(8))
+        vendor.set(JvmVendorSpec.ADOPTIUM)
+    }
+    def rosettaNatives = file("${project.rootDir}/.rosetta-natives/lwjgl2")
+    tasks.matching { it.name == 'runClient' }.configureEach {
+        it.javaLauncher.set(rosettaLauncher)
+        it.getExtraJvmArgs().add("-Dorg.lwjgl.librarypath=${rosettaNatives.absolutePath}".toString())
+    }
+    tasks.matching { it.name == 'runServer' }.configureEach {
+        it.javaLauncher.set(rosettaLauncher)
+    }
+}
