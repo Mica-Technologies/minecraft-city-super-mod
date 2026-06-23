@@ -167,15 +167,19 @@ def oriented_slab(mesh, center, uvec, vvec, nvec, hu, hv, hn, top_mat, side_mat)
                   center)
 
 
-def cable(p0, p1, sag, n=14):
+def cable(p0, p1, sag, n=14, bow_z=0.0):
     """A drooping power cable from p0 to p1 that sags `sag` blocks below the straight chord at its
-    midpoint (half-sine), matching the slack loop seen between the solar panel and the camera."""
+    midpoint (half-sine), matching the slack loop seen between the solar panel and the camera.
+    `bow_z` offsets the midpoint in Z (negative = forward, -Z) so the cable bellies gently outward
+    without moving its endpoints -- used to keep the cable just off the pole rather than flat against
+    its front face."""
     pts = []
     for i in range(n + 1):
         t = i / n
+        s = math.sin(math.pi * t)
         pts.append((p0[0] + (p1[0] - p0[0]) * t,
-                    p0[1] + (p1[1] - p0[1]) * t - sag * math.sin(math.pi * t),
-                    p0[2] + (p1[2] - p0[2]) * t))
+                    p0[1] + (p1[1] - p0[1]) * t - sag * s,
+                    p0[2] + (p1[2] - p0[2]) * t + bow_z * s))
     return pts
 
 
@@ -253,7 +257,8 @@ def add_camera(mesh, dy, pitch_deg=CAM_PITCH, yaw_deg=CAM_YAW):
 def add_solar_panel(mesh, center, half_w, half_len, tilt_deg, mount_base):
     """Add a tilted solar panel centred at `center` and a short mast box from `mount_base` up to the
     panel underside. The panel tilts `tilt_deg` from horizontal, rising toward +Z (back) so its face
-    looks up and toward the camera side (-Z). Returns the panel's front-bottom cable anchor."""
+    looks up and toward the camera side (-Z). Returns (front-bottom edge, underside-centre) cable
+    anchors."""
     th = math.radians(tilt_deg)
     uvec = (1.0, 0.0, 0.0)
     vvec = (0.0, math.sin(th), math.cos(th))       # length axis, tilted up toward +Z
@@ -266,7 +271,7 @@ def add_solar_panel(mesh, center, half_w, half_len, tilt_deg, mount_base):
     sweep_tube(mesh, straight(mount_base, under, 3), 0.045, "housing", ring=8, cap_ends=True)
     # cable leaves the panel's front-bottom edge
     front_edge = tuple(center[k] - vvec[k] * half_len - nvec[k] * 0.03 for k in range(3))
-    return front_edge
+    return front_edge, under
 
 
 def add_clamp(mesh, pole_z, y0, y1):
@@ -300,11 +305,18 @@ def build_standalone():
 
     # Solar panel mounted over the top of the pole, tilted toward the camera side.
     panel_center = (0.0, POLE_TOP + 0.22, POLE_Z - 0.10)
-    panel_front = add_solar_panel(m, panel_center, half_w=0.52, half_len=0.46, tilt_deg=20.0,
-                                  mount_base=(0.0, POLE_TOP - 0.02, POLE_Z - 0.02))
+    panel_front, panel_under = add_solar_panel(m, panel_center, half_w=0.52, half_len=0.46,
+                                               tilt_deg=20.0,
+                                               mount_base=(0.0, POLE_TOP - 0.02, POLE_Z - 0.02))
 
-    # Drooping cable from the panel down the front of the pole to the camera.
-    sweep_tube(m, cable(panel_front, cam_anchor, sag=0.28, n=16), WIRE_R, "wire", ring=6)
+    # Drooping cable from the panel down to the camera. Starts at the panel's underside (so it
+    # actually meets the panel) and descends in a vertical plane just off the pole's front face
+    # (close to the pole, not flat against it) with a gentle forward belly -- rather than bowing way
+    # out in front.
+    wire_z = POLE_Z - POLE_R - 0.04   # ~0.17, a small gap in front of the pole's front surface
+    c0 = panel_under                  # on the panel underside, above the pole top
+    c1 = (0.0, cam_anchor[1] + 0.02, wire_z)
+    sweep_tube(m, cable(c0, c1, sag=0.08, n=16, bow_z=-0.09), WIRE_R, "wire", ring=6)
     return m
 
 
@@ -324,10 +336,15 @@ def build_wall():
     # tilted panel's back corner clears the wall behind it (the back face is at z=0.50): the back
     # edge sits at center_z + half_len*cos(tilt) ~= 0.06 + 0.41 = 0.47, just shy of the wall.
     panel_center = (0.0, 1.42, 0.06)
-    panel_front = add_solar_panel(m, panel_center, half_w=0.48, half_len=0.44, tilt_deg=20.0,
-                                  mount_base=(0.0, 1.28, plate_z1 - 0.06))
+    panel_front, panel_under = add_solar_panel(m, panel_center, half_w=0.48, half_len=0.44,
+                                               tilt_deg=20.0,
+                                               mount_base=(0.0, 1.28, plate_z1 - 0.06))
 
-    sweep_tube(m, cable(panel_front, cam_anchor, sag=0.24, n=16), WIRE_R, "wire", ring=6)
+    # Cable from the panel underside (so it meets the panel) down to the camera, tucked back toward
+    # the mount with a gentle forward belly rather than bowing out front.
+    c0 = panel_under
+    c1 = (0.0, cam_anchor[1] + 0.03, 0.13)
+    sweep_tube(m, cable(c0, c1, sag=0.06, n=16, bow_z=-0.08), WIRE_R, "wire", ring=6)
     return m
 
 
