@@ -2,6 +2,8 @@ package com.micatechnologies.minecraft.csm.tabs;
 
 import com.micatechnologies.minecraft.csm.CsmRegistry;
 import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockAlprCameraSolar;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockAlprCameraSolarWall;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockMiniSolarPanel;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockPreemptBeacon;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockSnowBeacon;
@@ -491,6 +493,10 @@ public class CsmTabTrafficAccessories extends CsmTab {
 
     // --- Class-based: Mini Solar Panel ---
     initTabBlock(BlockMiniSolarPanel.class, fmlPreInitializationEvent);
+
+    // --- Class-based: Solar ALPR Cameras (OBJ models) ---
+    initTabBlock(BlockAlprCameraSolar.class, fmlPreInitializationEvent);
+    initTabBlock(BlockAlprCameraSolarWall.class, fmlPreInitializationEvent);
 
     // --- Class-based: Portable Message Sign ---
     initTabBlock(com.micatechnologies.minecraft.csm.trafficaccessories.BlockPortableMessageSign.class,
