@@ -5,6 +5,7 @@
     "net.minecraft.entity.player.EntityPlayer$SleepResult",
     "net.minecraft.world.DimensionType",
     "net.minecraft.block.BlockPressurePlate$Sensitivity",
+    "net.minecraft.tileentity.BannerPattern",
     "net.minecraft.item.Item$ToolMaterial",
     "net.minecraft.util.BlockRenderLayer",
     "net.minecraft.entity.EnumCreatureType",
@@ -17,7 +18,6 @@
     "net.minecraft.entity.EnumCreatureAttribute",
     "net.minecraft.util.math.RayTraceResult$Type",
     "net.minecraft.entity.passive.HorseArmorType",
-    "net.minecraft.util.EnumBlockRenderType",
-    "net.minecraft.tileentity.BannerPattern"
+    "net.minecraft.util.EnumBlockRenderType"
   ]
 }
