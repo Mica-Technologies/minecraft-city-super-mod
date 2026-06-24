@@ -826,30 +826,42 @@ public class TrafficSignalControllerTickerUtilities {
     // bike keeps green.
     boolean anyProtectedTurnGreen =
         !greenLeftTurnFacings.isEmpty() || !greenRightTurnFacings.isEmpty();
+    // Cross-direction right-turn promotion: once any protected turn runs, every bike is red and
+    // concurrent peds are already suppressed (peds only walk when no turn is protected), so a
+    // right turn has no bike/ped left to yield to — promote ALL rights to solid green rather than
+    // holding them FYA. This is what lets a right turn run while its bike is red for, e.g., an
+    // opposing protected left, and what makes a regular (non-FYA) right head show green there.
+    Tuple<List<BlockPos>, List<BlockPos>> flashingRightPartition = anyProtectedTurnGreen
+        ? singleBucketPartition(circuit.getFlashingRightSignals(), true)
+        : partitionSignalsByFacingSet(facingResolver, circuit.getFlashingRightSignals(),
+            greenRightTurnFacings);
+    Tuple<List<BlockPos>, List<BlockPos>> rightPartition = anyProtectedTurnGreen
+        ? singleBucketPartition(circuit.getRightSignals(), true)
+        : partitionSignalsByFacingSet(facingResolver, circuit.getRightSignals(),
+            greenRightTurnFacings);
     applyAllThroughsProtectedsSignalStates(circuit, upcomingPhase,
         partitionSignalsByFacingSet(facingResolver, circuit.getFlashingLeftSignals(),
             greenLeftTurnFacings),
         partitionSignalsByFacingSet(facingResolver, circuit.getLeftSignals(),
             greenLeftTurnFacings),
-        partitionSignalsByFacingSet(facingResolver, circuit.getFlashingRightSignals(),
-            greenRightTurnFacings),
-        partitionSignalsByFacingSet(facingResolver, circuit.getRightSignals(),
-            greenRightTurnFacings),
-        allOrNothingProtectedPartition(circuit.getProtectedSignals(), anyProtectedTurnGreen));
+        flashingRightPartition,
+        rightPartition,
+        singleBucketPartition(circuit.getProtectedSignals(), anyProtectedTurnGreen));
   }
 
   /**
-   * Builds the protected (transit/bike) signal partition for the circuit-wide bike-vs-protected-
-   * turn rule: when any protected turn is solid green ({@code allRed} true) every bike signal is
-   * placed in the "red" bucket; otherwise every bike signal is placed in the "green" bucket. The
-   * lists are fresh, mutable copies so downstream phase methods may append to them.
+   * Places every signal in {@code signals} into a single bucket of the returned tuple: the
+   * "first" (typically the green/active bucket) when {@code inFirst} is true, otherwise the
+   * "second". The lists are fresh, mutable copies so downstream phase methods may append to them.
+   * Used for the all-or-nothing assignments in the circuit-wide bike-vs-protected-turn rule and
+   * the cross-direction right-turn promotion.
    *
    * @since 1.0
    */
-  private static Tuple<List<BlockPos>, List<BlockPos>> allOrNothingProtectedPartition(
-      List<BlockPos> protectedSignals, boolean allRed) {
-    List<BlockPos> copy = new ArrayList<>(protectedSignals);
-    return allRed
+  private static Tuple<List<BlockPos>, List<BlockPos>> singleBucketPartition(
+      List<BlockPos> signals, boolean inFirst) {
+    List<BlockPos> copy = new ArrayList<>(signals);
+    return inFirst
         ? new Tuple<>(copy, new ArrayList<>())
         : new Tuple<>(new ArrayList<>(), copy);
   }
@@ -892,20 +904,22 @@ public class TrafficSignalControllerTickerUtilities {
       TrafficSignalControllerCircuit circuit, TrafficSignalPhase phase,
       EnumSet<EnumFacing> solidGreenRightFacings,
       EnumSet<EnumFacing> solidGreenLeftFacings) {
-    Tuple<List<BlockPos>, List<BlockPos>> flashing = partitionSignalsByFacingSet(world,
-        circuit.getFlashingRightSignals(), solidGreenRightFacings);
-    Tuple<List<BlockPos>, List<BlockPos>> right = partitionSignalsByFacingSet(world,
-        circuit.getRightSignals(), solidGreenRightFacings);
     boolean anyProtectedTurnGreen =
         !solidGreenRightFacings.isEmpty() || !solidGreenLeftFacings.isEmpty();
-    phase.addOffSignals(flashing.getFirst());
-    phase.addFyaSignals(flashing.getSecond());
-    phase.addGreenSignals(right.getFirst());
-    phase.addRedSignals(right.getSecond());
-    // Circuit-wide: any solid green turn reds every bike; otherwise every bike stays green.
     if (anyProtectedTurnGreen) {
+      // Any solid green turn reds every bike circuit-wide, and concurrent peds are already
+      // suppressed whenever a turn is protected — so a right turn has nothing left to yield to
+      // and every right runs solid green (cross-direction right-turn promotion; also what makes a
+      // regular non-FYA right head show green while its bike is red for an opposing protected
+      // left).
+      phase.addOffSignals(circuit.getFlashingRightSignals());
+      phase.addGreenSignals(circuit.getRightSignals());
       phase.addRedSignals(circuit.getProtectedSignals());
     } else {
+      // No protected turn: every right runs FYA permissive (yielding to the green bikes/peds) and
+      // every bike keeps green. (solidGreenRightFacings is necessarily empty in this branch.)
+      phase.addFyaSignals(circuit.getFlashingRightSignals());
+      phase.addRedSignals(circuit.getRightSignals());
       phase.addGreenSignals(circuit.getProtectedSignals());
     }
   }
@@ -1597,17 +1611,20 @@ public class TrafficSignalControllerTickerUtilities {
     // red when it is present — keeping it green here would put a green bike signal concurrent
     // with a protected left arrow (a major conflict).
     boolean matchingLeftSolidGreen = !leftSignals.getFirst().isEmpty();
-    if (hasMatchingProtected) {
+    // The matching right yields to the matching bike (FYA) only while that bike runs green. Once
+    // the bike is forced red by the same-direction protected left, there is no conflict left, so
+    // the right runs solid green — including a regular non-FYA right head, which would otherwise
+    // sit red. With no matching bike at all, the right is solid green as before.
+    boolean bikeHeldGreen = hasMatchingProtected && !matchingLeftSolidGreen;
+    if (bikeHeldGreen) {
       destinationPhase.addFyaSignals(flashingRightSignals.getFirst());
       destinationPhase.addRedSignals(rightSignals.getFirst());
-      if (matchingLeftSolidGreen) {
-        destinationPhase.addRedSignals(protectedSignals.getFirst());
-      } else {
-        destinationPhase.addGreenSignals(protectedSignals.getFirst());
-      }
+      destinationPhase.addGreenSignals(protectedSignals.getFirst());
     } else {
       destinationPhase.addOffSignals(flashingRightSignals.getFirst());
       destinationPhase.addGreenSignals(rightSignals.getFirst());
+      // Empty when there is no matching bike; the protected left (if any) reds the bike here.
+      destinationPhase.addRedSignals(protectedSignals.getFirst());
     }
     destinationPhase.addRedSignals(flashingRightSignals.getSecond());
     destinationPhase.addRedSignals(rightSignals.getSecond());
