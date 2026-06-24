@@ -4,6 +4,7 @@ import com.micatechnologies.minecraft.csm.CsmNetwork;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalCoordinationMode;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalPhaseMovement;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalPreempt;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalProgrammedOverlap;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalPreemptType;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalProgrammedPhase;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalProgrammedPhasePlan;
@@ -35,7 +36,7 @@ import org.lwjgl.input.Keyboard;
  */
 public class AdvancedSignalControllerGui extends GuiScreen {
 
-  private enum Screen { STATUS, TIMING, MAP, COORD, PREEMPT, ACT }
+  private enum Screen { STATUS, TIMING, MAP, COORD, PREEMPT, ACT, OVL }
 
   // Palette — controller front panel.
   private static final int COLOR_BODY = 0xFF23272B;
@@ -111,6 +112,7 @@ public class AdvancedSignalControllerGui extends GuiScreen {
   private int selected = 0;
   private String entry = "";
   private int selectedPreempt = 0;
+  private int selectedOverlap = 0;
 
   private int left;
   private int top;
@@ -216,9 +218,9 @@ public class AdvancedSignalControllerGui extends GuiScreen {
     // Screen-select row across the top of the keypad.
     int sx = left + 12;
     int sy = top + H - 94;
-    String[] names = {"STATUS", "TIMING", "MAP", "COORD", "PREEMPT", "ACT"};
+    String[] names = {"STATUS", "TIMING", "MAP", "COORD", "PREEMPT", "ACT", "OVL"};
     for (int i = 0; i < names.length; i++) {
-      buttonList.add(new GuiButton(BTN_SCREEN_BASE + i, sx + i * 52, sy, 49, 14, names[i]));
+      buttonList.add(new GuiButton(BTN_SCREEN_BASE + i, sx + i * 50, sy, 47, 14, names[i]));
     }
 
     // Numeric keypad (left cluster).
@@ -286,6 +288,9 @@ public class AdvancedSignalControllerGui extends GuiScreen {
         break;
       case ACT:
         buildActCells();
+        break;
+      case OVL:
+        buildOverlapCells();
         break;
       case STATUS:
       default:
@@ -522,6 +527,49 @@ public class AdvancedSignalControllerGui extends GuiScreen {
     return out;
   }
 
+  private void buildOverlapCells() {
+    List<TrafficSignalProgrammedOverlap> ovs = plan().getVehicleOverlaps();
+    if (ovs.isEmpty()) {
+      return;
+    }
+    if (selectedOverlap >= ovs.size()) {
+      selectedOverlap = ovs.size() - 1;
+    }
+    final int oi = selectedOverlap;
+    int circuitCount = controller.getSignalCircuitCount();
+    int y = lcdY + 26;
+    cells.add(new Cell(lcdX + 80, y, 40,
+        () -> ovs.get(oi).isEnabled() ? "On" : "off",
+        dir -> send("ov.enabled", oi, ovs.get(oi).isEnabled() ? 0 : 1), null));
+    y += 12;
+    cells.add(new Cell(lcdX + 80, y, 50,
+        () -> ovs.get(oi).getOutputCircuitIndex() < 0 ? "--"
+            : ("C" + (ovs.get(oi).getOutputCircuitIndex() + 1)),
+        dir -> {
+          int c = ovs.get(oi).getOutputCircuitIndex() + dir;
+          if (c < -1) {
+            c = circuitCount - 1;
+          }
+          if (c >= circuitCount) {
+            c = -1;
+          }
+          send("ov.outCircuit", oi, c);
+        }, null));
+    y += 12;
+    cells.add(new Cell(lcdX + 80, y, 60,
+        () -> MOVEMENT_ABBR[ovs.get(oi).getOutputMovement().ordinal()],
+        dir -> send("ov.outMovement", oi,
+            cyc(ovs.get(oi).getOutputMovement().ordinal(), dir,
+                TrafficSignalPhaseMovement.values().length)), null));
+    y += 16;
+    for (int pn = 1; pn <= TrafficSignalProgrammedPhasePlan.PHASE_COUNT; pn++) {
+      final int n = pn;
+      cells.add(new Cell(lcdX + 70 + (pn - 1) * 22, y, 18,
+          () -> contains(ovs.get(oi).getIncludedPhases())[n] ? ("[" + n + "]") : (" " + n + " "),
+          dir -> send("ov.includedToggle", oi, n), null));
+    }
+  }
+
   /** Combined ped-recall (bit 0) + rest-in-walk (bit 1) state for the MAP "PED" column. */
   private static int pedOptState(TrafficSignalProgrammedPhase p) {
     return (p.isPedRecall() ? 1 : 0) | (p.isRestInWalk() ? 2 : 0);
@@ -576,20 +624,33 @@ public class AdvancedSignalControllerGui extends GuiScreen {
       moveSelection(-1);
     } else if (id == BTN_DOWN || id == BTN_RIGHT) {
       moveSelection(1);
-    } else if (id >= BTN_SCREEN_BASE && id <= BTN_SCREEN_BASE + 5) {
+    } else if (id >= BTN_SCREEN_BASE && id <= BTN_SCREEN_BASE + 6) {
       screen = Screen.values()[id - BTN_SCREEN_BASE];
       rebuildCells();
     } else if (id == BTN_TEMPLATE) {
       send("loadTemplate", 0, 0);
     } else if (id == BTN_PE_ADD) {
-      send("pe.add", 0, 0);
+      // The P+/P-/Prev/Next cluster edits overlaps on the OVL screen, preempts elsewhere.
+      send(screen == Screen.OVL ? "ov.add" : "pe.add", 0, 0);
     } else if (id == BTN_PE_REMOVE) {
-      send("pe.remove", selectedPreempt, 0);
+      if (screen == Screen.OVL) {
+        send("ov.remove", selectedOverlap, 0);
+      } else {
+        send("pe.remove", selectedPreempt, 0);
+      }
     } else if (id == BTN_PE_PREV) {
-      selectedPreempt = Math.max(0, selectedPreempt - 1);
+      if (screen == Screen.OVL) {
+        selectedOverlap = Math.max(0, selectedOverlap - 1);
+      } else {
+        selectedPreempt = Math.max(0, selectedPreempt - 1);
+      }
       rebuildCells();
     } else if (id == BTN_PE_NEXT) {
-      selectedPreempt++;
+      if (screen == Screen.OVL) {
+        selectedOverlap++;
+      } else {
+        selectedPreempt++;
+      }
       rebuildCells();
     } else if (id == BTN_CLOSE) {
       mc.displayGuiScreen(null);
@@ -741,6 +802,9 @@ public class AdvancedSignalControllerGui extends GuiScreen {
         break;
       case ACT:
         drawAct();
+        break;
+      case OVL:
+        drawOverlap();
         break;
       default:
         break;
@@ -1035,6 +1099,35 @@ public class AdvancedSignalControllerGui extends GuiScreen {
         "controller returns to normal operation.");
   }
 
+  private void drawOverlap() {
+    List<TrafficSignalProgrammedOverlap> ovs = plan().getVehicleOverlaps();
+    fontRenderer.drawString("VEHICLE OVERLAPS  (" + ovs.size() + " configured)", lcdX, lcdY,
+        COLOR_AMBER_HEAD);
+    if (ovs.isEmpty()) {
+      fontRenderer.drawString("No overlaps. Press P+ to add one.", lcdX, lcdY + 16, COLOR_AMBER);
+      return;
+    }
+    fontRenderer.drawString("Selected: #" + (selectedOverlap + 1) + " of " + ovs.size()
+        + "  (Prev/Next)", lcdX, lcdY + 12, COLOR_AMBER_DIM);
+    int y = lcdY + 26;
+    fontRenderer.drawString("Enabled:", lcdX, y, COLOR_AMBER_DIM);
+    addHelp(lcdX, y, 76, 9, "Enabled", "Turn this vehicle overlap on or off.");
+    y += 12;
+    fontRenderer.drawString("Out CKT:", lcdX, y, COLOR_AMBER_DIM);
+    addHelp(lcdX, y, 76, 9, "Output Circuit",
+        "Which signal circuit's heads this overlap drives.");
+    y += 12;
+    fontRenderer.drawString("Out MOV:", lcdX, y, COLOR_AMBER_DIM);
+    addHelp(lcdX, y, 76, 9, "Output Movement",
+        "Which heads on the output circuit the overlap drives.",
+        "RGHT = the common right-turn overlap.");
+    y += 16;
+    fontRenderer.drawString("INCL", lcdX, y, COLOR_AMBER_DIM);
+    addHelp(lcdX, y, 60, 9, "Included Phases",
+        "The overlap runs GREEN while any included phase is green,",
+        "YELLOW during their clearance, else red. [n] = included.");
+  }
+
   private void drawCells() {
     for (int i = 0; i < cells.size(); i++) {
       Cell c = cells.get(i);
@@ -1081,6 +1174,9 @@ public class AdvancedSignalControllerGui extends GuiScreen {
     addButtonHelp(BTN_SCREEN_BASE + 5, "ACT",
         "Actuation / volume-density timing: Max 2, bike min green,",
         "added/max initial, and gap reduction (min gap, TB4, TTR).");
+    addButtonHelp(BTN_SCREEN_BASE + 6, "OVL",
+        "Phase-based vehicle overlaps (e.g. right-turn overlaps): a",
+        "circuit+movement that greens with its included phases.");
     addButtonHelp(BTN_TEMPLATE, "Load Std 8-Phase",
         "Overwrites the plan with a standard NEMA 8-phase dual-ring",
         "layout and auto-assigns phases to your circuits by approach.",
