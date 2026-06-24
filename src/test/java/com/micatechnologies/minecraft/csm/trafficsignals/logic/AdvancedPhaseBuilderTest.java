@@ -109,7 +109,9 @@ class AdvancedPhaseBuilderTest {
       p.setMinGap(20L);
       p.setTimeBeforeReduce(100L);
       p.setTimeToReduce(300L);
+      p.setRestInWalk(true);
       TrafficSignalProgrammedPhase r = TrafficSignalProgrammedPhase.fromNBT(p.toNBT());
+      assertTrue(r.isRestInWalk());
       assertEquals(60L, r.getDelayedGreen());
       assertEquals(6, r.getPermissivePhase());
       assertEquals(240L, r.getMax2());

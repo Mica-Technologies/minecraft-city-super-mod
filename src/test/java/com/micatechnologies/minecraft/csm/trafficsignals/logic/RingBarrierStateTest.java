@@ -3,6 +3,7 @@ package com.micatechnologies.minecraft.csm.trafficsignals.logic;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.RingBarrierState.PedInterval;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.RingBarrierState.ServedMovement;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.RingBarrierState.VehInterval;
 import java.util.HashMap;
@@ -118,5 +119,42 @@ class RingBarrierStateTest {
     rb.tick(plan, ckts, NO_OVERLAPS, 210L, gapped); // past the 200-tick bike min green
     assertEquals(VehInterval.YELLOW, rb.getLastServed(1).vehicle,
         "once bike min green is met the gapped-out phase terminates under conflict");
+  }
+
+  @Test
+  @DisplayName("soft recall: controller rests on the soft-recall phase when nothing calls")
+  void softRecallRest() {
+    RingBarrierState rb = new RingBarrierState();
+    TrafficSignalProgrammedPhasePlan plan = TrafficSignalProgrammedPhasePlan.createDefault();
+    // Clear the default coordinated phases (2 & 6) so the soft-recall preference is what selects
+    // the rest phase rather than the coordinated-phase preference that runs first.
+    plan.getCoordination().setCoordinatedPhases(new int[0]);
+    enable(plan, 2, 0);
+    enable(plan, 4, 1);
+    plan.getPhase(4).setRecallMode(TrafficSignalRecallMode.SOFT);
+    TrafficSignalControllerCircuits ckts = circuits(2);
+
+    rb.tick(plan, ckts, NO_OVERLAPS, 0L, new Demand()); // no demand anywhere
+
+    assertEquals(4, rb.getLastServed(1).phaseNumber,
+        "with nothing calling, the ring rests on its soft-recall phase, not the first phase");
+    assertEquals(VehInterval.GREEN, rb.getLastServed(1).vehicle);
+  }
+
+  @Test
+  @DisplayName("rest in walk: WALK is held while resting on a rest-in-walk phase")
+  void restInWalkHoldsWalk() {
+    RingBarrierState rb = new RingBarrierState();
+    TrafficSignalProgrammedPhasePlan plan = TrafficSignalProgrammedPhasePlan.createDefault();
+    enable(plan, 2, 0);
+    plan.getPhase(2).setRestInWalk(true);
+    TrafficSignalControllerCircuits ckts = circuits(1);
+
+    rb.tick(plan, ckts, NO_OVERLAPS, 0L, new Demand());
+    rb.tick(plan, ckts, NO_OVERLAPS, 500L, new Demand()); // well past a normal walk + ped clear
+
+    assertEquals(2, rb.getLastServed(1).phaseNumber);
+    assertEquals(PedInterval.WALK, rb.getLastServed(1).pedestrian,
+        "rest in walk holds WALK indefinitely while resting");
   }
 }

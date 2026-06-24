@@ -58,7 +58,9 @@ roadmap parameters, with their real ASC/3 names:
 | **TIME B4 / TTREDUC / MIN GAP** | **Gap reduction (volume-density)** | **implemented — see §5** |
 | **BK MGRN** | **Bike minimum green** | **implemented — see §5** |
 | WALK 2 / PED CLEAR 2 / PED CARRY OVER | Secondary ped | roadmap |
-| SF RCALL / DUAL ENTRY / REST IN WALK / COND SERVICE | Phase options (MM-2-6) | roadmap (SOFT recall enum exists) |
+| **SF RCALL (Soft Recall)** | **Rest-in-phase** | **implemented — see §5** |
+| **REST IN WALK** | **Hold WALK while resting** | **implemented — see §5** |
+| DUAL ENTRY / COND SERVICE | Phase options (MM-2-6) | roadmap |
 
 ---
 
@@ -165,12 +167,22 @@ green-interval logic:
 The engine snapshots `queueAtStart` and `bikeCall` on the `RingRuntime` at green start. All four
 parameters are edited on the **ACT** GUI screen (Mx2 / BkG / AdI / MxI / Gap / TB4 / TTR).
 
+### Phase options: Soft Recall & Rest in Walk
+
+- **Soft Recall (`SF RCALL`)** — the `SOFT` recall mode (already in `TrafficSignalRecallMode`) is now
+  honored by `restPhaseForRing`: when nothing is calling, the ring rests on a soft-recall phase
+  (preference order: coordinated phase → soft-recall phase → first active phase). A `SOFT` phase does
+  not place a vehicle call, so it never forces a cycle — it only chooses where to rest. Set via the
+  MAP **RECALL** column.
+- **Rest in Walk (`REST IN WALK`)** — a per-phase flag; while the controller rests on the phase, the
+  WALK indication is held (instead of don't-walk). Set via the MAP **PED** column, which now cycles
+  the combined ped options: `no` / `PedR` (ped recall) / `Walk` (rest in walk) / `P+W` (both).
+
 ## 6. Roadmap
 
 In rough priority order (each independently shippable + testable):
 
-1. **Phase options:** Soft Recall / rest-in-phase (the `SOFT` recall enum already exists but is not
-   yet honored by the engine's rest selection), Dual Entry, Rest in Walk, Conditional Service.
+1. **Phase options:** Dual Entry, Conditional Service.
 2. **Typed overlap subsystem:** promote FYA from the per-phase `permissivePhase` shortcut to a real
    MM-2-2-style overlap table (types NORMAL / `-GRN/YEL` / PPLT FYA / OTHER), which also gives
    first-class **right-turn overlaps** (Lead/Lag/Advance-green timers).
