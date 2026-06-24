@@ -152,7 +152,9 @@ stored as a list on the plan (`getVehicleOverlaps()`, NBT-persisted, edited on t
 screen). Each overlap has:
 
 - an **output** = `{circuit index, movement}` selecting the signal heads it drives (typically a
-  circuit's `RIGHT` heads — the classic right-turn overlap; `LEFT`/`THROUGH` are also supported);
+  circuit's `RIGHT` heads — the classic right-turn overlap; `LEFT`/`THROUGH` are also supported, and
+  `PED` drives the circuit's pedestrian heads — a **pedestrian overlap** that walks/clears with its
+  included phases via `overlapPedState`);
 - a set of **included phases**.
 
 `AdvancedPhaseBuilder.applyProgrammedOverlaps` (after the served movements + the controller-wide

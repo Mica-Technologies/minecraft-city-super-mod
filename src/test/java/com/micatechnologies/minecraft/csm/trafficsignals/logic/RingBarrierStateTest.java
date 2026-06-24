@@ -298,4 +298,31 @@ class RingBarrierStateTest {
         "overlap is forced red while its modifier phase (6) is green");
     assertTrue(rb.getLastAppliedPhase().getRedSignals().contains(rightHead));
   }
+
+  @Test
+  @DisplayName("pedestrian overlap walks a ped head with its included phase")
+  void pedestrianOverlap() {
+    RingBarrierState rb = new RingBarrierState();
+    TrafficSignalProgrammedPhasePlan plan = TrafficSignalProgrammedPhasePlan.createDefault();
+    plan.getCoordination().setCoordinatedPhases(new int[0]);
+    enable(plan, 2, 0);
+    plan.getPhase(2).setPedRecall(true); // phase 2 serves a WALK each time it greens
+    net.minecraft.util.math.BlockPos pedHead = new net.minecraft.util.math.BlockPos(70, 0, 0);
+    TrafficSignalControllerCircuit c1 = new TrafficSignalControllerCircuit();
+    c1.getPedestrianSignals().add(pedHead);
+    TrafficSignalControllerCircuits ckts = circuits(1);
+    ckts.addCircuit(c1); // circuit 1 — overlap output
+
+    TrafficSignalProgrammedOverlap ov = new TrafficSignalProgrammedOverlap();
+    ov.setEnabled(true);
+    ov.setOutputCircuitIndex(1);
+    ov.setOutputMovement(TrafficSignalPhaseMovement.PED);
+    ov.setIncludedPhases(new int[] {2});
+    plan.getVehicleOverlaps().add(ov);
+
+    rb.tick(plan, ckts, NO_OVERLAPS, 0L, new Demand().veh(0, 1, 0, 0));
+
+    assertTrue(rb.getLastAppliedPhase().getWalkSignals().contains(pedHead),
+        "ped overlap should WALK while its included phase is walking");
+  }
 }
