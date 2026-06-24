@@ -47,12 +47,28 @@ public final class AdvancedPhaseBuilder {
       TrafficSignalControllerOverlaps overlaps,
       RingBarrierState.ServedMovement ring1,
       RingBarrierState.ServedMovement ring2) {
+    return build(world, plan, circuits, overlaps, ring1, ring2, null);
+  }
+
+  /**
+   * Build overload that takes precomputed effective intervals for the plan's vehicle overlaps (by
+   * overlap index) — used by {@link RingBarrierState} to apply lag (trailing) green, which needs
+   * cross-tick state. A {@code null} entry (or a {@code null}/short list) falls back to the
+   * stateless {@link #overlapState} decision.
+   */
+  public static TrafficSignalPhase build(World world,
+      TrafficSignalProgrammedPhasePlan plan,
+      TrafficSignalControllerCircuits circuits,
+      TrafficSignalControllerOverlaps overlaps,
+      RingBarrierState.ServedMovement ring1,
+      RingBarrierState.ServedMovement ring2,
+      List<RingBarrierState.VehInterval> overlapIntervals) {
     TrafficSignalPhase phase = redBaseline(circuits);
     applyServed(phase, plan, circuits, ring1);
     applyServed(phase, plan, circuits, ring2);
     applyFlashingYellowArrows(phase, plan, circuits, ring1, ring2);
     applyOverlaps(phase, overlaps);
-    applyProgrammedOverlaps(phase, plan, circuits, ring1, ring2);
+    applyProgrammedOverlaps(phase, plan, circuits, ring1, ring2, overlapIntervals);
     return phase;
   }
 
@@ -66,8 +82,11 @@ public final class AdvancedPhaseBuilder {
       TrafficSignalProgrammedPhasePlan plan,
       TrafficSignalControllerCircuits circuits,
       RingBarrierState.ServedMovement ring1,
-      RingBarrierState.ServedMovement ring2) {
-    for (TrafficSignalProgrammedOverlap ov : plan.getVehicleOverlaps()) {
+      RingBarrierState.ServedMovement ring2,
+      List<RingBarrierState.VehInterval> overlapIntervals) {
+    List<TrafficSignalProgrammedOverlap> ovs = plan.getVehicleOverlaps();
+    for (int i = 0; i < ovs.size(); i++) {
+      TrafficSignalProgrammedOverlap ov = ovs.get(i);
       if (!ov.isActive() || ov.getOutputCircuitIndex() >= circuits.getCircuitCount()) {
         continue;
       }
@@ -76,7 +95,10 @@ public final class AdvancedPhaseBuilder {
       if (heads.isEmpty()) {
         continue;
       }
-      RingBarrierState.VehInterval state = overlapState(ov.getIncludedPhases(), ring1, ring2);
+      RingBarrierState.VehInterval precomputed =
+          overlapIntervals != null && i < overlapIntervals.size() ? overlapIntervals.get(i) : null;
+      RingBarrierState.VehInterval state =
+          precomputed != null ? precomputed : overlapState(ov.getIncludedPhases(), ring1, ring2);
       phase.removeSignals(heads);
       switch (state) {
         case GREEN:

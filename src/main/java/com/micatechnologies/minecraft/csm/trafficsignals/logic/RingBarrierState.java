@@ -105,6 +105,8 @@ public class RingBarrierState {
   /** Last movements described this tick (exposed package-private for unit tests). */
   private ServedMovement lastServed1;
   private ServedMovement lastServed2;
+  /** Per-overlap (by plan index) last tick the overlap's included phases were green — for lag green. */
+  private final Map<Integer, Long> overlapLastGreen = new HashMap<>();
 
   // Per-tick coordination state (computed from the plan each tick; all no-ops in FREE mode).
   private static final int PHASE_SLOTS = TrafficSignalProgrammedPhasePlan.PHASE_COUNT + 1;
@@ -158,6 +160,11 @@ public class RingBarrierState {
   /** The movement ring {@code n} (1 or 2) was last described as serving this tick, or null. */
   ServedMovement getLastServed(int ringNumber) {
     return ringNumber == 2 ? lastServed2 : lastServed1;
+  }
+
+  /** The phase last applied to the world (package-private for unit tests inspecting head states). */
+  TrafficSignalPhase getLastAppliedPhase() {
+    return lastApplied;
   }
 
   /**
@@ -227,7 +234,35 @@ public class RingBarrierState {
     ServedMovement m2 = describe(ring2, plan, now);
     this.lastServed1 = m1;
     this.lastServed2 = m2;
-    return changedOrNull(AdvancedPhaseBuilder.build(world, plan, circuits, overlaps, m1, m2));
+    List<VehInterval> overlapIntervals = computeOverlapIntervals(plan, m1, m2, now);
+    return changedOrNull(
+        AdvancedPhaseBuilder.build(world, plan, circuits, overlaps, m1, m2, overlapIntervals));
+  }
+
+  /**
+   * Computes each vehicle overlap's effective interval this tick, applying lag (trailing) green: an
+   * overlap is green while its included phases are green and for {@code trailGreen} ticks after they
+   * leave green; otherwise it follows the stateless base decision (yellow during the included
+   * phases' clearance, else red).
+   */
+  private List<VehInterval> computeOverlapIntervals(TrafficSignalProgrammedPhasePlan plan,
+      ServedMovement m1, ServedMovement m2, long now) {
+    List<TrafficSignalProgrammedOverlap> ovs = plan.getVehicleOverlaps();
+    List<VehInterval> result = new ArrayList<>(ovs.size());
+    for (int i = 0; i < ovs.size(); i++) {
+      TrafficSignalProgrammedOverlap ov = ovs.get(i);
+      VehInterval base = AdvancedPhaseBuilder.overlapState(ov.getIncludedPhases(), m1, m2);
+      if (base == VehInterval.GREEN) {
+        overlapLastGreen.put(i, now);
+        result.add(VehInterval.GREEN);
+      } else {
+        Long last = overlapLastGreen.get(i);
+        boolean trailing = ov.getTrailGreen() > 0L && last != null
+            && (now - last) < ov.getTrailGreen();
+        result.add(trailing ? VehInterval.GREEN : base);
+      }
+    }
+    return result;
   }
 
   /** Returns {@code phase} (and records it) only if it differs from the last applied phase. */

@@ -1,7 +1,9 @@
 package com.micatechnologies.minecraft.csm.trafficsignals.logic;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.RingBarrierState.PedInterval;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.RingBarrierState.ServedMovement;
@@ -217,5 +219,50 @@ class RingBarrierStateTest {
     assertEquals(1, rb.getLastServed(1).phaseNumber,
         "the conditional-service left should be re-served once on its fresh call");
     assertEquals(VehInterval.GREEN, rb.getLastServed(1).vehicle);
+  }
+
+  @Test
+  @DisplayName("overlap lag (trailing) green holds the head green after the included phase ends")
+  void overlapTrailingGreen() {
+    RingBarrierState rb = new RingBarrierState();
+    TrafficSignalProgrammedPhasePlan plan = TrafficSignalProgrammedPhasePlan.createDefault();
+    plan.getCoordination().setCoordinatedPhases(new int[0]);
+    enable(plan, 2, 0); // through, circuit 0 — the overlap's included phase
+    enable(plan, 4, 1); // barrier B — conflicting demand so phase 2 terminates
+    TrafficSignalProgrammedPhase p2 = plan.getPhase(2);
+    p2.setMinGreen(20L);
+    p2.setPassage(10L);
+    p2.setYellow(60L);
+    p2.setRedClear(20L);
+
+    net.minecraft.util.math.BlockPos rightHead = new net.minecraft.util.math.BlockPos(50, 0, 0);
+    TrafficSignalControllerCircuit c1 = new TrafficSignalControllerCircuit();
+    c1.getRightSignals().add(rightHead);
+    TrafficSignalControllerCircuits ckts = new TrafficSignalControllerCircuits();
+    ckts.addCircuit(new TrafficSignalControllerCircuit()); // circuit 0
+    ckts.addCircuit(c1);                                   // circuit 1 (overlap output)
+
+    TrafficSignalProgrammedOverlap ov = new TrafficSignalProgrammedOverlap();
+    ov.setEnabled(true);
+    ov.setOutputCircuitIndex(1);
+    ov.setOutputMovement(TrafficSignalPhaseMovement.RIGHT);
+    ov.setIncludedPhases(new int[] {2});
+    ov.setTrailGreen(40L);
+    plan.getVehicleOverlaps().add(ov);
+
+    Demand go = new Demand().veh(0, 1, 0, 0).veh(1, 1, 0, 0);   // phase 2 green, phase 4 conflict
+    Demand stop = new Demand().veh(0, 0, 0, 0).veh(1, 1, 0, 0); // phase 2 gaps out
+
+    rb.tick(plan, ckts, NO_OVERLAPS, 0L, go);
+    assertTrue(rb.getLastAppliedPhase().getGreenSignals().contains(rightHead),
+        "overlap head is green while its included phase is green");
+
+    rb.tick(plan, ckts, NO_OVERLAPS, 30L, stop); // phase 2 -> yellow; 30 ticks < 40 trail -> green
+    assertTrue(rb.getLastAppliedPhase().getGreenSignals().contains(rightHead),
+        "overlap head holds green (trailing) after the included phase leaves green");
+
+    rb.tick(plan, ckts, NO_OVERLAPS, 50L, stop); // 50 ticks since last green > 40 trail -> not green
+    assertFalse(rb.getLastAppliedPhase().getGreenSignals().contains(rightHead),
+        "overlap head drops out of green once the trailing window expires");
   }
 }
