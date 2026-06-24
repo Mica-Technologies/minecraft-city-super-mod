@@ -34,6 +34,8 @@ public class TrafficSignalProgrammedPhase {
   public static final long DEFAULT_WALK = 140L;
   /** Default pedestrian clearance (flashing don't walk): 10 seconds. */
   public static final long DEFAULT_PED_CLEAR = 200L;
+  /** Default delayed green (ASC/3 DLY GRN / leading ped interval): 0 = off. */
+  public static final long DEFAULT_DLY_GREEN = 0L;
 
   // endregion
 
@@ -54,6 +56,8 @@ public class TrafficSignalProgrammedPhase {
   private static final String K_PED_CLEAR = "pc";
   private static final String K_RECALL = "rm";
   private static final String K_PED_RECALL = "pr";
+  private static final String K_DLY_GREEN = "dg";
+  private static final String K_PERM_PHASE = "pp";
 
   // endregion
 
@@ -73,8 +77,15 @@ public class TrafficSignalProgrammedPhase {
   private long redClear = DEFAULT_RED_CLEAR;
   private long walk = DEFAULT_WALK;
   private long pedClear = DEFAULT_PED_CLEAR;
+  /** ASC/3 DLY GRN: vehicle green delayed from start of walk (leading ped interval). 0 = off. */
+  private long delayedGreen = DEFAULT_DLY_GREEN;
   private TrafficSignalRecallMode recallMode = TrafficSignalRecallMode.NONE;
   private boolean pedRecall = false;
+  /**
+   * ASC/3 PPLT FYA permissive phase: the opposing-through phase number whose green makes this
+   * (left) phase show a flashing yellow arrow. 0 = protected-only (no FYA).
+   */
+  private int permissivePhase = 0;
 
   // endregion
 
@@ -191,6 +202,22 @@ public class TrafficSignalProgrammedPhase {
     this.pedClear = pedClear;
   }
 
+  public long getDelayedGreen() {
+    return delayedGreen;
+  }
+
+  public void setDelayedGreen(long delayedGreen) {
+    this.delayedGreen = delayedGreen;
+  }
+
+  public int getPermissivePhase() {
+    return permissivePhase;
+  }
+
+  public void setPermissivePhase(int permissivePhase) {
+    this.permissivePhase = permissivePhase;
+  }
+
   public TrafficSignalRecallMode getRecallMode() {
     return recallMode;
   }
@@ -226,8 +253,10 @@ public class TrafficSignalProgrammedPhase {
     c.setLong(K_RED_CLEAR, redClear);
     c.setLong(K_WALK, walk);
     c.setLong(K_PED_CLEAR, pedClear);
+    c.setLong(K_DLY_GREEN, delayedGreen);
     c.setInteger(K_RECALL, recallMode.toNBT());
     c.setBoolean(K_PED_RECALL, pedRecall);
+    c.setInteger(K_PERM_PHASE, permissivePhase);
     return c;
   }
 
@@ -244,8 +273,10 @@ public class TrafficSignalProgrammedPhase {
     p.redClear = c.hasKey(K_RED_CLEAR) ? c.getLong(K_RED_CLEAR) : DEFAULT_RED_CLEAR;
     p.walk = c.hasKey(K_WALK) ? c.getLong(K_WALK) : DEFAULT_WALK;
     p.pedClear = c.hasKey(K_PED_CLEAR) ? c.getLong(K_PED_CLEAR) : DEFAULT_PED_CLEAR;
+    p.delayedGreen = c.hasKey(K_DLY_GREEN) ? c.getLong(K_DLY_GREEN) : DEFAULT_DLY_GREEN;
     p.recallMode = TrafficSignalRecallMode.fromNBT(c.getInteger(K_RECALL));
     p.pedRecall = c.getBoolean(K_PED_RECALL);
+    p.permissivePhase = c.hasKey(K_PERM_PHASE) ? c.getInteger(K_PERM_PHASE) : 0;
     return p;
   }
 

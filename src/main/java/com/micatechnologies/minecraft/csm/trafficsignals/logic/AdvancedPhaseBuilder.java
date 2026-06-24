@@ -16,9 +16,10 @@ import net.minecraft.world.World;
  * source). This reuses the existing {@link TrafficSignalPhase} signal-state lists and
  * {@link TrafficSignalPhase#apply(World)} machinery — no new signal-setting code.
  *
- * <p>NOTE (v1 limitation): left movements are shown as protected-or-red. Permissive flashing-yellow
- * (FYA) arbitration in ADVANCED mode is a planned refinement; for now a left phase that isn't being
- * served stays red rather than flashing yellow.
+ * <p>Protected/permissive left turns are supported via the ASC/3 PPLT FYA model: a left phase with a
+ * {@code permissivePhase} (opposing-through phase) shows a flashing yellow arrow while that opposing
+ * through is green, a solid green/yellow arrow during its own protected phase, and red otherwise.
+ * See {@code assets/docs/ADVANCED_MODE_ASC3.md}.
  *
  * @author Mica Technologies
  * @since 2026.6
@@ -49,8 +50,87 @@ public final class AdvancedPhaseBuilder {
     TrafficSignalPhase phase = redBaseline(circuits);
     applyServed(phase, plan, circuits, ring1);
     applyServed(phase, plan, circuits, ring2);
+    applyFlashingYellowArrows(phase, plan, circuits, ring1, ring2);
     applyOverlaps(phase, overlaps);
     return phase;
+  }
+
+  /**
+   * Applies ASC/3 PPLT FYA permissive-left indications. For each active LEFT/PROTECTED_LEFT phase
+   * configured with a {@code permissivePhase} (the opposing-through phase), drives the FYA lens
+   * ({@link TrafficSignalControllerCircuit#getFlashingLeftSignals()}):
+   * <ul>
+   *   <li>the left phase is being served (protected) &rarr; FYA lens off (the solid arrow shows
+   *       green/yellow from {@link #applyServed});</li>
+   *   <li>else the opposing-through phase is green (permissive) &rarr; FYA lens flashing yellow,
+   *       solid green-arrow lens red;</li>
+   *   <li>else &rarr; FYA lens red.</li>
+   * </ul>
+   * This mirrors the normal-mode left-turn convention so both modes render FYA identically.
+   */
+  private static void applyFlashingYellowArrows(TrafficSignalPhase phase,
+      TrafficSignalProgrammedPhasePlan plan,
+      TrafficSignalControllerCircuits circuits,
+      RingBarrierState.ServedMovement ring1,
+      RingBarrierState.ServedMovement ring2) {
+    for (TrafficSignalProgrammedPhase p : plan.getPhases()) {
+      if (!p.isActive() || p.getPermissivePhase() <= 0) {
+        continue;
+      }
+      if (p.getMovement() != TrafficSignalPhaseMovement.LEFT
+          && p.getMovement() != TrafficSignalPhaseMovement.PROTECTED_LEFT) {
+        continue;
+      }
+      if (p.getCircuitIndex() < 0 || p.getCircuitIndex() >= circuits.getCircuitCount()) {
+        continue;
+      }
+      TrafficSignalControllerCircuit circuit = circuits.getCircuit(p.getCircuitIndex());
+      if (circuit.getFlashingLeftSignals().isEmpty()) {
+        continue; // no FYA lens to drive
+      }
+      RingBarrierState.VehInterval servedThis =
+          servedInterval(p.getPhaseNumber(), ring1, ring2);
+      boolean permissiveGreen =
+          servedInterval(p.getPermissivePhase(), ring1, ring2) == RingBarrierState.VehInterval.GREEN;
+      applyFyaLensState(phase, circuit.getFlashingLeftSignals(), circuit.getLeftSignals(),
+          servedThis, permissiveGreen);
+    }
+  }
+
+  /**
+   * Pure FYA-lens assignment (world-free, unit-testable). {@code servedThis} is the interval the
+   * left phase itself is being served at this tick (or {@code null} if it isn't being served);
+   * {@code permissiveGreen} is whether its opposing-through phase is green.
+   */
+  static void applyFyaLensState(TrafficSignalPhase phase, List<BlockPos> fyaLens,
+      List<BlockPos> solidArrowLens, RingBarrierState.VehInterval servedThis,
+      boolean permissiveGreen) {
+    phase.removeSignals(fyaLens);
+    boolean protectedServed = servedThis == RingBarrierState.VehInterval.GREEN
+        || servedThis == RingBarrierState.VehInterval.YELLOW;
+    if (protectedServed) {
+      // Protected: the solid arrow shows green/yellow (set by applyServed); FYA lens stays dark.
+      phase.addOffSignals(fyaLens);
+    } else if (permissiveGreen) {
+      // Permissive: flashing yellow on the FYA lens; the solid green-arrow lens is red.
+      phase.addFyaSignals(fyaLens);
+      phase.removeSignals(solidArrowLens);
+      phase.addRedSignals(solidArrowLens);
+    } else {
+      phase.addRedSignals(fyaLens);
+    }
+  }
+
+  /** The interval the given phase is served at this tick by either ring, or {@code null}. */
+  private static RingBarrierState.VehInterval servedInterval(int phaseNumber,
+      RingBarrierState.ServedMovement ring1, RingBarrierState.ServedMovement ring2) {
+    if (ring1 != null && ring1.phaseNumber == phaseNumber) {
+      return ring1.vehicle;
+    }
+    if (ring2 != null && ring2.phaseNumber == phaseNumber) {
+      return ring2.vehicle;
+    }
+    return null;
   }
 
   /**
