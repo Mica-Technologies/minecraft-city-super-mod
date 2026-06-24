@@ -189,28 +189,34 @@ public final class AdvancedPhaseBuilder {
       }
       RingBarrierState.VehInterval servedThis =
           servedInterval(p.getPhaseNumber(), ring1, ring2);
-      boolean permissiveGreen =
-          servedInterval(p.getPermissivePhase(), ring1, ring2) == RingBarrierState.VehInterval.GREEN;
+      // Permissive flashes while the opposing through is green AND through its yellow clearance
+      // (oncoming traffic is still moving through the intersection, so the left still yields). It
+      // stops only when the opposing through reaches red.
+      RingBarrierState.VehInterval permInterval =
+          servedInterval(p.getPermissivePhase(), ring1, ring2);
+      boolean permissivePermitted = permInterval == RingBarrierState.VehInterval.GREEN
+          || permInterval == RingBarrierState.VehInterval.YELLOW;
       applyFyaLensState(phase, circuit.getFlashingLeftSignals(), circuit.getLeftSignals(),
-          servedThis, permissiveGreen);
+          servedThis, permissivePermitted);
     }
   }
 
   /**
    * Pure FYA-lens assignment (world-free, unit-testable). {@code servedThis} is the interval the
    * left phase itself is being served at this tick (or {@code null} if it isn't being served);
-   * {@code permissiveGreen} is whether its opposing-through phase is green.
+   * {@code permissivePermitted} is whether its opposing-through phase is green or in yellow
+   * clearance (the window during which the permissive flashing yellow is shown).
    */
   static void applyFyaLensState(TrafficSignalPhase phase, List<BlockPos> fyaLens,
       List<BlockPos> solidArrowLens, RingBarrierState.VehInterval servedThis,
-      boolean permissiveGreen) {
+      boolean permissivePermitted) {
     phase.removeSignals(fyaLens);
     boolean protectedServed = servedThis == RingBarrierState.VehInterval.GREEN
         || servedThis == RingBarrierState.VehInterval.YELLOW;
     if (protectedServed) {
       // Protected: the solid arrow shows green/yellow (set by applyServed); FYA lens stays dark.
       phase.addOffSignals(fyaLens);
-    } else if (permissiveGreen) {
+    } else if (permissivePermitted) {
       // Permissive: flashing yellow on the FYA lens; the solid green-arrow lens is red.
       phase.addFyaSignals(fyaLens);
       phase.removeSignals(solidArrowLens);

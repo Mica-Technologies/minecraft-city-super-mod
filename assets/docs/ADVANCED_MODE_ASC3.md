@@ -139,10 +139,11 @@ the legacy behavior). This is functionally a `PPLT FYA` overlap whose *protected
 **GUI:** the MAP screen gains an **`FYA`** column showing the permissive phase (`--` or `P6`),
 `ph.permPhase` action, cycling 0…8.
 
-### Known simplification
-The permissive condition implemented is "opposing through is timing **green**." The ASC/3 also
-flashes when the opposing through is *"timing with the protected left turn as a next phase decision"*
-(i.e., during the opposing through's clearance when the left is next). That refinement is deferred.
+### Permissive window
+The permissive flash is shown while the opposing through is **green or in yellow clearance** —
+oncoming traffic is still moving through the intersection during its yellow, so the left still
+yields. It stops only when the opposing through reaches red. (The ASC/3's exact "timing with the
+protected left turn as a next phase decision" wording is approximated by including the yellow.)
 
 ## 4a. Phase-based vehicle overlaps (right-turn overlaps)
 
@@ -228,8 +229,6 @@ In rough priority order (each independently shippable + testable):
    lead/advance-green timing, and (optionally) migrate the per-phase FYA onto the overlap table.
    The NORMAL right-turn overlap with lag (trailing) green is implemented (§4a).
 2. **Secondary ped:** Walk 2 / Ped Clear 2 / Ped Carryover.
-3. **FYA refinement:** flash permissive during the opposing through's clearance when the protected
-   left is the next phase decision.
 
 ---
 

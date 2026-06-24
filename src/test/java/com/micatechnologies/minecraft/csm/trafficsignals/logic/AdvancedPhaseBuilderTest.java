@@ -91,6 +91,32 @@ class AdvancedPhaseBuilderTest {
       assertTrue(phase.getRedSignals().contains(FYA_A));
       assertFalse(phase.getOffSignals().contains(FYA_A));
     }
+
+    @Test
+    @DisplayName("build: FYA flashes while the opposing through is in YELLOW clearance (not just green)")
+    void fyaFlashesDuringOpposingYellow() {
+      BlockPos fyaLens = new BlockPos(30, 0, 0);
+      TrafficSignalControllerCircuits circuits = new TrafficSignalControllerCircuits();
+      TrafficSignalControllerCircuit c0 = new TrafficSignalControllerCircuit();
+      c0.getFlashingLeftSignals().add(fyaLens);
+      circuits.addCircuit(c0);                                  // circuit 0 (left/FYA output)
+      circuits.addCircuit(new TrafficSignalControllerCircuit()); // circuit 1
+
+      TrafficSignalProgrammedPhasePlan plan = TrafficSignalProgrammedPhasePlan.createDefault();
+      TrafficSignalProgrammedPhase left = plan.getPhase(1);
+      left.setCircuitIndex(0);
+      left.setEnabled(true);
+      left.setMovement(TrafficSignalPhaseMovement.PROTECTED_LEFT);
+      left.setPermissivePhase(6); // opposing through
+
+      // Opposing through (phase 6) is in YELLOW clearance; the left phase (1) is not served.
+      TrafficSignalPhase phase = AdvancedPhaseBuilder.build(null, plan, circuits,
+          new TrafficSignalControllerOverlaps(),
+          new ServedMovementShortcut(6, VehInterval.YELLOW).m, null);
+
+      assertTrue(phase.getFyaSignals().contains(fyaLens),
+          "FYA lens should still flash while the opposing through clears (yellow)");
+    }
   }
 
   @Nested
