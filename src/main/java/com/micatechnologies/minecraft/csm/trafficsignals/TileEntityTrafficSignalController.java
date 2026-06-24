@@ -1802,6 +1802,11 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
           plan.getVehicleOverlaps().get(index).setTrailGreen(clampTicks(value));
         }
         break;
+      case "ov.leadGreen":
+        if (validOverlap(plan, index)) {
+          plan.getVehicleOverlaps().get(index).setLeadGreen(clampTicks(value));
+        }
+        break;
       case "ov.type":
         if (validOverlap(plan, index)) {
           plan.getVehicleOverlaps().get(index)

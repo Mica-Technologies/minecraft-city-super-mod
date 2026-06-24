@@ -171,6 +171,15 @@ trailing applies). Once the trailing window expires, the overlap follows the bas
 included phases' **yellow** then **red**, which provides the overlap's own clearance (size
 `trailGreen` ≤ the included phases' yellow + red clearance to keep that clean).
 
+**Lead (advance) green** (`leadGreen`, ASC/3 Lead Overlap): the overlap goes **green** for a
+configured time *before* an included phase greens, during the preceding **red clearance**. The
+engine detects this by checking whether a ring is in red clearance whose next within-barrier phase
+(`peekNextWithinBarrier`, mirroring `fillIdleRing`) is one of the overlap's included phases, and the
+clearance ends within `leadGreen`. **Scope/safety:** only the *within-barrier* next phase is
+determined (the cross-barrier case isn't, so lead green doesn't apply across a barrier); and as on a
+real ASC/3, the controller does not validate the lead time — the operator is responsible for keeping
+it within the preceding clearance so the overlap doesn't conflict with a movement still clearing.
+
 **Overlap type** (`TrafficSignalOverlapType`, ASC/3 MM-2-2 types):
 - **`NORMAL`** — as above.
 - **`-GRN/YEL` (Minus Green Yellow)** — NORMAL, but additionally forced **red** while any
@@ -230,12 +239,13 @@ Dual Entry and Conditional Service are set via the MAP **OPT** column, a combine
 
 ## 6. Roadmap
 
-In rough priority order (each independently shippable + testable):
+Only niche / poor-fit items remain:
 
-1. **Typed overlap subsystem (extend §4a):** add a `PPLT FYA` overlap type and lead/advance-green
-   timing, and (optionally) migrate the per-phase FYA onto the overlap table. NORMAL + `-GRN/YEL`
-   types with lag (trailing) green are implemented (§4a).
-2. **Secondary ped:** Walk 2 / Ped Clear 2 / Ped Carryover.
+1. **`PPLT FYA` overlap type** — would duplicate the working per-phase FYA mechanism (§4); low value.
+2. **Cross-barrier lead green** — the within-barrier case is implemented (§4a); extending it across a
+   barrier needs speculative barrier-cross resolution.
+3. **Secondary ped:** Walk 2 / Ped Clear 2 / Ped Carryover — built around a `WALK2` detector input
+   this mod doesn't model.
 
 ---
 

@@ -325,4 +325,47 @@ class RingBarrierStateTest {
     assertTrue(rb.getLastAppliedPhase().getWalkSignals().contains(pedHead),
         "ped overlap should WALK while its included phase is walking");
   }
+
+  @Test
+  @DisplayName("overlap lead (advance) green greens the head before its included phase, in clearance")
+  void overlapLeadGreen() {
+    RingBarrierState rb = new RingBarrierState();
+    TrafficSignalProgrammedPhasePlan plan = TrafficSignalProgrammedPhasePlan.createDefault();
+    plan.getCoordination().setCoordinatedPhases(new int[0]);
+    enable(plan, 1, 0); // left, runs first
+    enable(plan, 2, 0); // through (the overlap's included phase), runs right after phase 1
+    TrafficSignalProgrammedPhase p1 = plan.getPhase(1);
+    p1.setMinGreen(20L);
+    p1.setPassage(10L);
+    p1.setYellow(20L);
+    p1.setRedClear(40L);
+
+    net.minecraft.util.math.BlockPos rightHead = new net.minecraft.util.math.BlockPos(80, 0, 0);
+    TrafficSignalControllerCircuit c1 = new TrafficSignalControllerCircuit();
+    c1.getRightSignals().add(rightHead);
+    TrafficSignalControllerCircuits ckts = circuits(1);
+    ckts.addCircuit(c1); // circuit 1 — overlap output
+
+    TrafficSignalProgrammedOverlap ov = new TrafficSignalProgrammedOverlap();
+    ov.setEnabled(true);
+    ov.setOutputCircuitIndex(1);
+    ov.setOutputMovement(TrafficSignalPhaseMovement.RIGHT);
+    ov.setIncludedPhases(new int[] {2});
+    ov.setLeadGreen(20L);
+    plan.getVehicleOverlaps().add(ov);
+
+    Demand start = new Demand().veh(0, 1, 1, 0); // phase 1 (left) served, phase 2 (through) called
+    Demand gapped = new Demand().veh(0, 1, 0, 0); // left cleared; phase 2 still called
+
+    rb.tick(plan, ckts, NO_OVERLAPS, 0L, start);   // phase 1 green
+    rb.tick(plan, ckts, NO_OVERLAPS, 30L, gapped); // phase 1 -> yellow
+    rb.tick(plan, ckts, NO_OVERLAPS, 50L, gapped); // phase 1 -> red clearance (ends at 90)
+    rb.tick(plan, ckts, NO_OVERLAPS, 60L, gapped); // 30 ticks before phase 2 green > 20 lead -> red
+    assertFalse(rb.getLastAppliedPhase().getGreenSignals().contains(rightHead),
+        "overlap is not yet leading green (outside the lead window)");
+
+    rb.tick(plan, ckts, NO_OVERLAPS, 75L, gapped); // 15 ticks before phase 2 green <= 20 lead -> green
+    assertTrue(rb.getLastAppliedPhase().getGreenSignals().contains(rightHead),
+        "overlap leads green during the clearance before its included phase greens");
+  }
 }

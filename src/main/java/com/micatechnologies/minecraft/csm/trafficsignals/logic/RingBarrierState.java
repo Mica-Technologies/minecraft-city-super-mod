@@ -234,19 +234,20 @@ public class RingBarrierState {
     ServedMovement m2 = describe(ring2, plan, now);
     this.lastServed1 = m1;
     this.lastServed2 = m2;
-    List<VehInterval> overlapIntervals = computeOverlapIntervals(plan, m1, m2, now);
+    List<VehInterval> overlapIntervals = computeOverlapIntervals(plan, m1, m2, now, called);
     return changedOrNull(
         AdvancedPhaseBuilder.build(world, plan, circuits, overlaps, m1, m2, overlapIntervals));
   }
 
   /**
-   * Computes each vehicle overlap's effective interval this tick, applying lag (trailing) green: an
-   * overlap is green while its included phases are green and for {@code trailGreen} ticks after they
-   * leave green; otherwise it follows the stateless base decision (yellow during the included
-   * phases' clearance, else red).
+   * Computes each vehicle overlap's effective interval this tick, applying lag (trailing) and lead
+   * (advance) green: an overlap is green while its included phases are green, for {@code trailGreen}
+   * ticks after they leave green, and for {@code leadGreen} ticks before an included phase greens
+   * (during the preceding within-barrier red clearance); otherwise it follows the stateless base
+   * decision (yellow during the included phases' clearance, else red).
    */
   private List<VehInterval> computeOverlapIntervals(TrafficSignalProgrammedPhasePlan plan,
-      ServedMovement m1, ServedMovement m2, long now) {
+      ServedMovement m1, ServedMovement m2, long now, boolean[] called) {
     List<TrafficSignalProgrammedOverlap> ovs = plan.getVehicleOverlaps();
     List<VehInterval> result = new ArrayList<>(ovs.size());
     for (int i = 0; i < ovs.size(); i++) {
@@ -261,6 +262,12 @@ public class RingBarrierState {
         boolean trailing = ov.getTrailGreen() > 0L && last != null
             && (now - last) < ov.getTrailGreen();
         eff = trailing ? VehInterval.GREEN : base;
+        // Lead (advance) green: green early during the red clearance that precedes an included
+        // phase's green (within-barrier).
+        if (eff != VehInterval.GREEN && ov.getLeadGreen() > 0L
+            && leadingIntoIncluded(ov, plan, now, called)) {
+          eff = VehInterval.GREEN;
+        }
       }
       // -GRN/YEL: force red while a modifier phase is green or yellow.
       if (ov.getType() == TrafficSignalOverlapType.MINUS_GREEN_YELLOW
@@ -270,6 +277,66 @@ public class RingBarrierState {
       result.add(eff);
     }
     return result;
+  }
+
+  /** Whether any ring is within the overlap's lead window heading into one of its included phases. */
+  private boolean leadingIntoIncluded(TrafficSignalProgrammedOverlap ov,
+      TrafficSignalProgrammedPhasePlan plan, long now, boolean[] called) {
+    for (int p : ov.getIncludedPhases()) {
+      if (ringLeadsInto(ring1, 1, p, ov.getLeadGreen(), plan, now, called)
+          || ringLeadsInto(ring2, 2, p, ov.getLeadGreen(), plan, now, called)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Whether {@code ring} is in a red clearance whose next within-barrier phase is
+   * {@code includedPhase}, and we are within {@code leadGreen} of that clearance ending (i.e. the
+   * overlap should be leading green into that phase now).
+   */
+  private boolean ringLeadsInto(RingRuntime ring, int ringNum, int includedPhase, long leadGreen,
+      TrafficSignalProgrammedPhasePlan plan, long now, boolean[] called) {
+    if (ring.interval != VehInterval.RED || ring.activePhase == 0) {
+      return false; // lead green is shown only during a red clearance preceding the phase
+    }
+    TrafficSignalProgrammedPhase active = plan.getPhase(ring.activePhase);
+    if (active == null) {
+      return false;
+    }
+    long clearEnd = ring.intervalStart + active.getRedClear();
+    if (now >= clearEnd || (clearEnd - now) > leadGreen) {
+      return false; // clearance already done, or not yet inside the lead window
+    }
+    return peekNextWithinBarrier(ring, ringNum, plan, called) == includedPhase;
+  }
+
+  /**
+   * The next phase {@code ring} will serve on the current barrier (mirrors {@link #fillIdleRing}'s
+   * selection), or 0 if the next slot is across the barrier (the cross-barrier next phase is not
+   * determined here, so lead green doesn't apply across a barrier).
+   */
+  private int peekNextWithinBarrier(RingRuntime ring, int ringNum,
+      TrafficSignalProgrammedPhasePlan plan, boolean[] called) {
+    int[] seq = plan.getRingSequence(ringNum);
+    for (int idx = ring.sequencePos + 1; idx < seq.length; idx++) {
+      int phaseNumber = seq[idx];
+      TrafficSignalProgrammedPhase phase = plan.getPhase(phaseNumber);
+      if (phase == null) {
+        continue;
+      }
+      if (phase.getBarrier() != currentBarrier) {
+        return 0;
+      }
+      if (!phase.isActive()) {
+        continue;
+      }
+      if (phaseNumber >= 1 && phaseNumber < called.length && called[phaseNumber]) {
+        return phaseNumber;
+      }
+    }
+    return 0;
   }
 
   /** Returns {@code phase} (and records it) only if it differs from the last applied phase. */
