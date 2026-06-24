@@ -1635,6 +1635,19 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
           phase.setPedClear(clampTicks(value));
         }
         break;
+      case "ph.dlyGreen":
+        if (phase != null) {
+          phase.setDelayedGreen(clampTicks(value));
+        }
+        break;
+      case "ph.permPhase":
+        if (phase != null) {
+          // 0 = protected-only; otherwise the opposing-through phase number (clamped 0..8).
+          int pp = (int) value;
+          phase.setPermissivePhase(Math.max(0,
+              Math.min(TrafficSignalProgrammedPhasePlan.PHASE_COUNT, pp)));
+        }
+        break;
       case "co.mode":
         plan.getCoordination().setMode(TrafficSignalCoordinationMode.fromNBT((int) value));
         break;

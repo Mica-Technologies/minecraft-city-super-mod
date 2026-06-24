@@ -208,6 +208,19 @@ public class TrafficSignalProgrammedPhasePlan {
     if (minor.size() > 1) {
       assignApproach(circuits, minor.get(1), 8, 7, 600L);
     }
+
+    // PPLT FYA: pair each protected left with its opposing through (standard NEMA layout) so the
+    // left flashes yellow permissively while the opposing through is green. Only enabled when both
+    // the left and its opposing through are actually assigned; otherwise protected-only (0).
+    int[][] fyaPairs = {{1, 6}, {5, 2}, {3, 8}, {7, 4}};
+    for (int[] pair : fyaPairs) {
+      TrafficSignalProgrammedPhase left = getPhase(pair[0]);
+      TrafficSignalProgrammedPhase opposing = getPhase(pair[1]);
+      if (left != null) {
+        boolean both = left.isActive() && opposing != null && opposing.isActive();
+        left.setPermissivePhase(both ? pair[1] : 0);
+      }
+    }
   }
 
   private void assignApproach(TrafficSignalControllerCircuits circuits, int circuitIndex,
