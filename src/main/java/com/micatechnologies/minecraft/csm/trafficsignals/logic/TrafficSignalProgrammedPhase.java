@@ -73,6 +73,8 @@ public class TrafficSignalProgrammedPhase {
   private static final String K_DLY_GREEN = "dg";
   private static final String K_PERM_PHASE = "pp";
   private static final String K_REST_IN_WALK = "rw";
+  private static final String K_DUAL_ENTRY = "de";
+  private static final String K_COND_SERVICE = "cs";
   private static final String K_MAX2 = "x2";
   private static final String K_BIKE_MIN_GREEN = "bk";
   private static final String K_ADDED_INITIAL = "ai";
@@ -119,6 +121,10 @@ public class TrafficSignalProgrammedPhase {
   private boolean pedRecall = false;
   /** ASC/3 REST IN WALK: hold the WALK indication while resting on this phase (vs. don't-walk). */
   private boolean restInWalk = false;
+  /** ASC/3 DUAL ENTRY: serve this phase to companion the other ring when it has no call. */
+  private boolean dualEntry = false;
+  /** ASC/3 conditional service: may be re-served once within the same barrier on a fresh call. */
+  private boolean conditionalService = false;
   /**
    * ASC/3 PPLT FYA permissive phase: the opposing-through phase number whose green makes this
    * (left) phase show a flashing yellow arrow. 0 = protected-only (no FYA).
@@ -336,6 +342,22 @@ public class TrafficSignalProgrammedPhase {
     this.restInWalk = restInWalk;
   }
 
+  public boolean isDualEntry() {
+    return dualEntry;
+  }
+
+  public void setDualEntry(boolean dualEntry) {
+    this.dualEntry = dualEntry;
+  }
+
+  public boolean isConditionalService() {
+    return conditionalService;
+  }
+
+  public void setConditionalService(boolean conditionalService) {
+    this.conditionalService = conditionalService;
+  }
+
   // endregion
 
   // region: NBT
@@ -359,6 +381,8 @@ public class TrafficSignalProgrammedPhase {
     c.setInteger(K_RECALL, recallMode.toNBT());
     c.setBoolean(K_PED_RECALL, pedRecall);
     c.setBoolean(K_REST_IN_WALK, restInWalk);
+    c.setBoolean(K_DUAL_ENTRY, dualEntry);
+    c.setBoolean(K_COND_SERVICE, conditionalService);
     c.setInteger(K_PERM_PHASE, permissivePhase);
     c.setLong(K_MAX2, max2);
     c.setLong(K_BIKE_MIN_GREEN, bikeMinGreen);
@@ -387,6 +411,8 @@ public class TrafficSignalProgrammedPhase {
     p.recallMode = TrafficSignalRecallMode.fromNBT(c.getInteger(K_RECALL));
     p.pedRecall = c.getBoolean(K_PED_RECALL);
     p.restInWalk = c.getBoolean(K_REST_IN_WALK);
+    p.dualEntry = c.getBoolean(K_DUAL_ENTRY);
+    p.conditionalService = c.getBoolean(K_COND_SERVICE);
     p.permissivePhase = c.hasKey(K_PERM_PHASE) ? c.getInteger(K_PERM_PHASE) : 0;
     p.max2 = c.hasKey(K_MAX2) ? c.getLong(K_MAX2) : DEFAULT_MAX2;
     p.bikeMinGreen = c.hasKey(K_BIKE_MIN_GREEN) ? c.getLong(K_BIKE_MIN_GREEN) : DEFAULT_BIKE_MIN_GREEN;

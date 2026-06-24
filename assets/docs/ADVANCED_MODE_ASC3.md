@@ -61,7 +61,8 @@ roadmap parameters, with their real ASC/3 names:
 | **SF RCALL (Soft Recall)** | **Rest-in-phase** | **implemented — see §5** |
 | **REST IN WALK** | **Hold WALK while resting** | **implemented — see §5** |
 | **MM-2-2 NORMAL overlap** | **Phase-based right-turn overlaps** | **implemented — see §4a** |
-| DUAL ENTRY / COND SERVICE | Phase options (MM-2-6) | roadmap |
+| **DUAL ENTRY** | **Companion an uncalled ring** | **implemented — see §5** |
+| **Conditional Service** | **Re-serve a lagging phase** | **implemented — see §5** |
 
 ---
 
@@ -198,17 +199,28 @@ parameters are edited on the **ACT** GUI screen (Mx2 / BkG / AdI / MxI / Gap / T
 - **Rest in Walk (`REST IN WALK`)** — a per-phase flag; while the controller rests on the phase, the
   WALK indication is held (instead of don't-walk). Set via the MAP **PED** column, which now cycles
   the combined ped options: `no` / `PedR` (ped recall) / `Walk` (rest in walk) / `P+W` (both).
+- **Dual Entry (`DUAL ENTRY`)** — a per-phase flag. When one ring is serving a called phase on a
+  barrier and the other ring has no call of its own, the idle ring serves its first active dual-entry
+  phase on that barrier so the intersection isn't left with one direction dark (`fillDualEntry`). A
+  dual-entry-served phase holds green *with* its companion and clears *with* it (rather than gapping
+  out and re-serving on its own, which would flicker).
+- **Conditional Service** — a per-phase flag, typically on a lagging left. When a ring finds no
+  forward phase called on the barrier, it may re-serve (**at most once per barrier visit**, guarded
+  by `condServiceUsed`) an earlier conditional-service phase that has reacquired a call, before the
+  barrier crosses. The classic use is a lead-lag left turn that re-fills after its through.
+
+Dual Entry and Conditional Service are set via the MAP **OPT** column, a combined cycle:
+`-` / `DE` / `CS` / `D+C`.
 
 ## 6. Roadmap
 
 In rough priority order (each independently shippable + testable):
 
-1. **Phase options:** Dual Entry, Conditional Service.
-2. **Typed overlap subsystem (extend §4a):** add `PPLT FYA` / `-GRN/YEL` overlap types and
+1. **Typed overlap subsystem (extend §4a):** add `PPLT FYA` / `-GRN/YEL` overlap types and
    Lead/Lag/Advance-green timers, and (optionally) migrate the per-phase FYA onto the overlap table.
    The NORMAL right-turn overlap is implemented (§4a).
-3. **Secondary ped:** Walk 2 / Ped Clear 2 / Ped Carryover.
-4. **FYA refinement:** flash permissive during the opposing through's clearance when the protected
+2. **Secondary ped:** Walk 2 / Ped Clear 2 / Ped Carryover.
+3. **FYA refinement:** flash permissive during the opposing through's clearance when the protected
    left is the next phase decision.
 
 ---
@@ -220,7 +232,9 @@ through an injectable `DemandSource` (production wraps the world; tests supply c
 `getLastServed(ring)` exposes the served movements. Coverage:
 
 - `RingBarrierStateTest` — drives the engine with canned demand (`Demand` helper): basic actuation,
-  and bike-minimum-green holding a phase green past its short min green under conflict.
+  bike-minimum-green holding a phase under conflict, soft-recall rest selection, rest-in-walk, dual
+  entry (an uncalled ring companions the served barrier), and a timed conditional-service sequence
+  (a lagging left re-serves once on a fresh call before the barrier crosses).
 - `AdvancedActuationTimingTest` — the pure volume-density math (added initial, effective min/max
   green, gap-reduction ramp), tested directly.
 - `AdvancedPhaseBuilderTest` — the pure `applyFyaLensState(...)` FYA decision (all four outcomes),

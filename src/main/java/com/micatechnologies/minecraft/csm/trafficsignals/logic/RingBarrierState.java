@@ -77,6 +77,12 @@ public class RingBarrierState {
     // whether a bike call was present (for bike minimum green).
     long queueAtStart = 0L;
     boolean bikeCall = false;
+    // Dual entry: this ring is serving a dual-entry phase to companion the other ring (no call of
+    // its own). It clears when the companion clears rather than gapping out independently.
+    boolean dualEntry = false;
+    // Conditional service: a conditional-service phase has already been re-served once on the
+    // current barrier (guard against re-serving more than once / looping).
+    boolean condServiceUsed = false;
   }
 
   private int currentBarrier = 0;
@@ -209,6 +215,10 @@ public class RingBarrierState {
     fillIdleRing(ring1, plan, 1, now, called);
     fillIdleRing(ring2, plan, 2, now, called);
 
+    // 2b. Dual entry: a ring with no call companions the other ring's served barrier.
+    fillDualEntry(ring1, ring2, plan, 1, now);
+    fillDualEntry(ring2, ring1, plan, 2, now);
+
     // 3. Barrier handling: if both rings are parked at the barrier, advance or rest.
     handleBarrier(plan, now, called);
 
@@ -241,6 +251,8 @@ public class RingBarrierState {
     ring.resting = false;
     ring.pedServing = false;
     ring.delayActive = false;
+    ring.dualEntry = false;
+    ring.condServiceUsed = false;
   }
 
   // region: Ring stepping
@@ -303,6 +315,14 @@ public class RingBarrierState {
         // Terminate on max-out or force-off, or once min green is met, ped clearance is done, the
         // phase has gapped out, and something else is actually waiting (otherwise rest in green).
         boolean terminate = maxOut || forceOff || (minMet && pedDone && gapOut && conflict);
+        if (ring.dualEntry) {
+          // A dual-entry companion holds green with the called ring and clears when it clears,
+          // rather than gapping out on its own (which would re-serve and flicker).
+          RingRuntime companion = (ring == ring1) ? ring2 : ring1;
+          boolean companionGreen =
+              companion.activePhase != 0 && companion.interval == VehInterval.GREEN;
+          terminate = minMet && !companionGreen;
+        }
         if (terminate && minMet) {
           ring.interval = VehInterval.YELLOW;
           ring.intervalStart = now;
@@ -357,7 +377,53 @@ public class RingBarrierState {
       }
       ring.sequencePos = idx; // not called now — skip its slot this cycle
     }
+    // No forward phase is called on this barrier. Conditional service: re-serve (at most once per
+    // barrier) an earlier conditional-service phase on this barrier that has reacquired a call —
+    // e.g. a lagging left that re-fills before the barrier crosses. sequencePos is left at the
+    // barrier end so the ring parks (and crosses) after the re-served phase terminates.
+    if (!ring.condServiceUsed) {
+      for (int idx = 0; idx < seq.length; idx++) {
+        int phaseNumber = seq[idx];
+        TrafficSignalProgrammedPhase phase = plan.getPhase(phaseNumber);
+        if (phase != null && phase.isActive() && phase.getBarrier() == currentBarrier
+            && phase.isConditionalService()
+            && phaseNumber >= 1 && phaseNumber < called.length && called[phaseNumber]) {
+          startGreen(ring, phase, now);
+          ring.condServiceUsed = true;
+          return;
+        }
+      }
+    }
     // Nothing more to serve on this barrier for this ring: it is parked at the barrier.
+  }
+
+  /**
+   * Dual entry: if {@code idle} has no call but the {@code other} ring is serving a green phase on
+   * the current barrier, serve {@code idle}'s first active dual-entry phase on that barrier so the
+   * intersection isn't left with one direction dark. The served phase is flagged so it holds green
+   * with (and clears with) its companion rather than gapping out independently.
+   */
+  private void fillDualEntry(RingRuntime idle, RingRuntime other,
+      TrafficSignalProgrammedPhasePlan plan, int idleRingNum, long now) {
+    if (idle.activePhase != 0 || other.activePhase == 0) {
+      return;
+    }
+    TrafficSignalProgrammedPhase otherPhase = plan.getPhase(other.activePhase);
+    if (otherPhase == null || otherPhase.getBarrier() != currentBarrier
+        || other.interval != VehInterval.GREEN) {
+      return;
+    }
+    int[] seq = plan.getRingSequence(idleRingNum);
+    for (int idx = 0; idx < seq.length; idx++) {
+      TrafficSignalProgrammedPhase phase = plan.getPhase(seq[idx]);
+      if (phase != null && phase.isActive() && phase.getBarrier() == currentBarrier
+          && phase.isDualEntry()) {
+        startGreen(idle, phase, now);
+        idle.dualEntry = true;
+        idle.sequencePos = idx;
+        return;
+      }
+    }
   }
 
   private void startGreen(RingRuntime ring, TrafficSignalProgrammedPhase phase, long now) {
@@ -382,6 +448,7 @@ public class RingBarrierState {
     ring.queueAtStart = vehicleCount(phase);
     TrafficSignalSensorSummary startSummary = summaryForCircuit(phase.getCircuitIndex());
     ring.bikeCall = startSummary != null && startSummary.getProtectedTotal() > 0;
+    ring.dualEntry = false; // a normally-served (called) phase is not a dual-entry companion
   }
 
   // endregion
@@ -433,6 +500,8 @@ public class RingBarrierState {
     ring2.sequencePos = -1;
     ring1.resting = false;
     ring2.resting = false;
+    ring1.condServiceUsed = false; // new barrier visit: conditional service may re-serve again
+    ring2.condServiceUsed = false;
     fillIdleRing(ring1, plan, 1, now, called);
     fillIdleRing(ring2, plan, 2, now, called);
   }
