@@ -149,12 +149,30 @@ class AdvancedPhaseBuilderTest {
       o.setOutputMovement(TrafficSignalPhaseMovement.RIGHT);
       o.setIncludedPhases(new int[] {2, 7});
       o.setTrailGreen(40L);
+      o.setType(TrafficSignalOverlapType.MINUS_GREEN_YELLOW);
+      o.setModifierPhases(new int[] {6});
       TrafficSignalProgrammedOverlap r = TrafficSignalProgrammedOverlap.fromNBT(o.toNBT());
       assertTrue(r.isEnabled());
       assertEquals(1, r.getOutputCircuitIndex());
       assertEquals(TrafficSignalPhaseMovement.RIGHT, r.getOutputMovement());
       assertArrayEquals(new int[] {2, 7}, r.getIncludedPhases());
       assertEquals(40L, r.getTrailGreen());
+      assertEquals(TrafficSignalOverlapType.MINUS_GREEN_YELLOW, r.getType());
+      assertArrayEquals(new int[] {6}, r.getModifierPhases());
+    }
+
+    @Test
+    @DisplayName("anyServedActive: green or yellow modifier is active; red/absent is not")
+    void anyServedActive() {
+      assertTrue(AdvancedPhaseBuilder.anyServedActive(new int[] {6},
+          served(6, VehInterval.GREEN).m, null));
+      assertTrue(AdvancedPhaseBuilder.anyServedActive(new int[] {6},
+          served(6, VehInterval.YELLOW).m, null));
+      assertFalse(AdvancedPhaseBuilder.anyServedActive(new int[] {6},
+          served(6, VehInterval.RED).m, null));
+      assertFalse(AdvancedPhaseBuilder.anyServedActive(new int[] {6}, null, null));
+      assertFalse(AdvancedPhaseBuilder.anyServedActive(new int[0],
+          served(6, VehInterval.GREEN).m, null));
     }
 
     @Test

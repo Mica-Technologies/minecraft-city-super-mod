@@ -28,8 +28,12 @@ public class TrafficSignalProgrammedOverlap {
   private static final String K_OUT_MOVEMENT = "om";
   private static final String K_INCLUDED = "in";
   private static final String K_TRAIL_GREEN = "tg";
+  private static final String K_TYPE = "ty";
+  private static final String K_MODIFIER = "md";
 
   private boolean enabled = false;
+  /** Overlap type (NORMAL or -GRN/YEL). */
+  private TrafficSignalOverlapType type = TrafficSignalOverlapType.NORMAL;
   /** Circuit whose signal heads this overlap drives, or -1 if unassigned. */
   private int outputCircuitIndex = -1;
   /** Which of the output circuit's signal lists this overlap drives (typically RIGHT). */
@@ -42,8 +46,27 @@ public class TrafficSignalProgrammedOverlap {
    * 0 = no trailing green.
    */
   private long trailGreen = 0L;
+  /** Modifier phases for {@link TrafficSignalOverlapType#MINUS_GREEN_YELLOW}: the overlap is red
+   * while any of these is green or yellow. */
+  private int[] modifierPhases = new int[0];
 
   // region: accessors
+
+  public TrafficSignalOverlapType getType() {
+    return type;
+  }
+
+  public void setType(TrafficSignalOverlapType type) {
+    this.type = type;
+  }
+
+  public int[] getModifierPhases() {
+    return modifierPhases;
+  }
+
+  public void setModifierPhases(int[] modifierPhases) {
+    this.modifierPhases = modifierPhases == null ? new int[0] : modifierPhases;
+  }
 
   public boolean isEnabled() {
     return enabled;
@@ -101,6 +124,8 @@ public class TrafficSignalProgrammedOverlap {
     c.setInteger(K_OUT_MOVEMENT, outputMovement.toNBT());
     c.setIntArray(K_INCLUDED, includedPhases);
     c.setLong(K_TRAIL_GREEN, trailGreen);
+    c.setInteger(K_TYPE, type.toNBT());
+    c.setIntArray(K_MODIFIER, modifierPhases);
     return c;
   }
 
@@ -111,6 +136,8 @@ public class TrafficSignalProgrammedOverlap {
     o.outputMovement = TrafficSignalPhaseMovement.fromNBT(c.getInteger(K_OUT_MOVEMENT));
     o.includedPhases = c.hasKey(K_INCLUDED) ? c.getIntArray(K_INCLUDED) : new int[0];
     o.trailGreen = c.hasKey(K_TRAIL_GREEN) ? c.getLong(K_TRAIL_GREEN) : 0L;
+    o.type = TrafficSignalOverlapType.fromNBT(c.getInteger(K_TYPE));
+    o.modifierPhases = c.hasKey(K_MODIFIER) ? c.getIntArray(K_MODIFIER) : new int[0];
     return o;
   }
 
