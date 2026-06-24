@@ -342,16 +342,23 @@ public class TrafficSignalControllerTickerUtilities {
 
   /**
    * Determines whether the right turn signals for the specified active circuit should display a
-   * green arrow (suppressing concurrent pedestrian walk) or a flashing yellow arrow (permitting
-   * concurrent pedestrian walk). This method is only meaningful when
-   * {@code overlapPedestrianSignals} is {@code true}; it always returns {@code false} otherwise.
+   * solid green arrow (suppressing a concurrent pedestrian walk / redding a same-direction bike)
+   * or a permissive indication (flashing yellow arrow, or red on a non-FYA head). Two independent
+   * concerns can warrant a solid green right; {@code true} is returned if <i>either</i> applies on
+   * any direction.
    *
-   * <p>The decision is based on comparing the right turn vehicle count detected by the active
-   * circuit's right turn scan zone against the total pedestrian accessory request count across all
-   * other circuits. If the right turn count exceeds the combined pedestrian request count, a green
-   * right turn arrow is warranted and {@code true} is returned. If the right turn detection zone
-   * is not configured (count == 0) or the pedestrian demand is equal to or greater, a flashing
-   * yellow arrow is used and {@code false} is returned.</p>
+   * <p><b>Overlap-ped arbitration</b> (only when {@code overlapPedestrianSignals} is {@code true}):
+   * the right turn vehicle count on a direction is compared against the total pedestrian accessory
+   * request count across all other circuits. If the right count exceeds the combined ped request
+   * count a solid green right is warranted (concurrent peds it could turn across are suppressed);
+   * otherwise the right runs permissive.</p>
+   *
+   * <p><b>Right-vs-bike arbitration</b> (any mode): where a same-direction protected (transit/bike)
+   * signal shares the approach, the right turn crosses the bike movement, so the two cannot both
+   * run green. The right runs solid green (redding the bike) when its waiting count is at least the
+   * bike's; otherwise the bike keeps green and the right stays permissive. This is what lets a
+   * regular red/yellow/green right turn signal (no FYA flash to fall back on) ever earn a green
+   * when it shares an approach with a bike signal — see {@link #addBikeArbitrationRightFacings}.</p>
    *
    * <p><b>Asymmetry with {@link #computeGreenLeftTurn}:</b> the left-turn variant refuses
    * protected green on a multi-direction circuit (via {@code !areSignalsFacingSameDirection})
@@ -407,13 +414,20 @@ public class TrafficSignalControllerTickerUtilities {
    * across directions). For single-direction circuits this is identical to the old aggregated
    * comparison.</p>
    *
+   * <p>Independently of overlap mode, a direction also qualifies through the right-vs-bike
+   * arbitration: where a same-direction protected (transit/bike) signal shares the approach and
+   * the right-turn count is at least the bike count, the right runs solid green (redding the
+   * bike). See {@link #addBikeArbitrationRightFacings}. So this set can be non-empty even when
+   * overlap is disabled — but only on directions that actually have a same-direction bike signal.</p>
+   *
    * @param circuits                 The configured/connected circuits of the controller.
    * @param activeCircuitNumber      The 1-based circuit number currently being served.
    * @param overlapPedestrianSignals Whether concurrent pedestrian signals are enabled.
    * @param world                    The world in which the controller is located.
    *
    * @return The set of facings where solid green right is warranted; empty when no direction
-   *     qualifies, when overlap is disabled, or when the circuit number is out of range.
+   *     qualifies (overlap arbitration off/unmet and no right-beats-bike direction) or when the
+   *     circuit number is out of range.
    *
    * @since 1.0
    */
@@ -423,18 +437,86 @@ public class TrafficSignalControllerTickerUtilities {
       boolean overlapPedestrianSignals,
       World world) {
     EnumSet<EnumFacing> result = EnumSet.noneOf(EnumFacing.class);
-    if (!overlapPedestrianSignals || activeCircuitNumber < 1
-        || activeCircuitNumber > circuits.getCircuitCount()) {
+    if (activeCircuitNumber < 1 || activeCircuitNumber > circuits.getCircuitCount()
+        || world == null) {
+      // Without a world we can't read sensor counts or resolve signal facings, so no direction
+      // can be promoted to solid green. (Production always passes a non-null world.)
       return result;
     }
-    TrafficSignalSensorSummary summary = circuits.getCircuit(activeCircuitNumber - 1)
-        .getSensorsWaitingSummary(world);
-    int otherPedCount = sumOtherCircuitPedRequests(circuits, activeCircuitNumber, world);
-    addFacingIfQualifies(result, EnumFacing.EAST, summary.getRightEast(), otherPedCount);
-    addFacingIfQualifies(result, EnumFacing.WEST, summary.getRightWest(), otherPedCount);
-    addFacingIfQualifies(result, EnumFacing.NORTH, summary.getRightNorth(), otherPedCount);
-    addFacingIfQualifies(result, EnumFacing.SOUTH, summary.getRightSouth(), otherPedCount);
+    TrafficSignalControllerCircuit circuit = circuits.getCircuit(activeCircuitNumber - 1);
+    TrafficSignalSensorSummary summary = circuit.getSensorsWaitingSummary(world);
+    // Overlap-ped arbitration (only when concurrent peds are enabled): a solid green right
+    // suppresses the concurrent walk at other circuits' crosswalks it could turn across, so
+    // it is warranted only where the right-turn count beats the cross-circuit ped demand.
+    if (overlapPedestrianSignals) {
+      int otherPedCount = sumOtherCircuitPedRequests(circuits, activeCircuitNumber, world);
+      addFacingIfQualifies(result, EnumFacing.EAST, summary.getRightEast(), otherPedCount);
+      addFacingIfQualifies(result, EnumFacing.WEST, summary.getRightWest(), otherPedCount);
+      addFacingIfQualifies(result, EnumFacing.NORTH, summary.getRightNorth(), otherPedCount);
+      addFacingIfQualifies(result, EnumFacing.SOUTH, summary.getRightSouth(), otherPedCount);
+    }
+    // Right-vs-bike arbitration (any mode): where a same-direction protected (transit/bike)
+    // signal shares the approach, the right turn crosses the bike movement and the two cannot
+    // both run green. Promote the right to solid green (which then reds the bikes circuit-wide
+    // when the served phase is built) when the right-turn waiting count is at least the bike
+    // waiting count; otherwise leave the right permissive so the bike keeps green. Without this a
+    // right turn sharing an approach with a bike signal could never earn a green outside
+    // overlap-ped mode — and a regular (non-FYA) red/yellow/green right head, having no permissive
+    // flash to fall back on, would simply sit dark/red forever.
+    addBikeArbitrationRightFacings(result, circuit, summary, world);
     return result;
+  }
+
+  /**
+   * Adds, to {@code result}, each facing where the active circuit's right turn should run solid
+   * green because it shares the approach with a same-direction protected (transit/bike) signal
+   * and the right-turn demand at least matches the bike demand there. Facings without a
+   * same-direction protected signal are left to the overlap-ped arbitration (they have no bike
+   * to conflict with). This implements the per-approach demand arbitration: ties go to the
+   * right turn (right count {@code >=} bike count) so a waiting right-turn queue is served
+   * rather than starved.
+   *
+   * @since 1.0
+   */
+  private static void addBikeArbitrationRightFacings(EnumSet<EnumFacing> result,
+      TrafficSignalControllerCircuit circuit, TrafficSignalSensorSummary summary, World world) {
+    EnumSet<EnumFacing> bikeFacings =
+        collectFacingsFromSignals(world, circuit.getProtectedSignals());
+    addRightIfBeatsBike(result, bikeFacings, EnumFacing.EAST,
+        summary.getRightEast(), summary.getProtectedEast());
+    addRightIfBeatsBike(result, bikeFacings, EnumFacing.WEST,
+        summary.getRightWest(), summary.getProtectedWest());
+    addRightIfBeatsBike(result, bikeFacings, EnumFacing.NORTH,
+        summary.getRightNorth(), summary.getProtectedNorth());
+    addRightIfBeatsBike(result, bikeFacings, EnumFacing.SOUTH,
+        summary.getRightSouth(), summary.getProtectedSouth());
+  }
+
+  private static void addRightIfBeatsBike(EnumSet<EnumFacing> result,
+      EnumSet<EnumFacing> bikeFacings, EnumFacing facing, int rightCount, int bikeCount) {
+    if (shouldServeRightOverBike(bikeFacings.contains(facing), rightCount, bikeCount)) {
+      result.add(facing);
+    }
+  }
+
+  /**
+   * Pure per-approach right-vs-bike arbitration predicate. Returns {@code true} when the right
+   * turn should run solid green (redding the same-direction bike): there must be a same-direction
+   * bike signal to conflict with, a non-zero right-turn queue, and a right-turn count at least the
+   * bike count. Ties go to the right turn ({@code rightCount >= bikeCount}) so a waiting right-turn
+   * queue is served rather than starved behind a quieter bike movement.
+   *
+   * @param sameDirectionBikePresent Whether a protected (transit/bike) signal faces this approach.
+   * @param rightCount               Right-turn waiting count on this approach.
+   * @param bikeCount                Bike (protected) waiting count on this approach.
+   *
+   * @return {@code true} if the right should run solid green (and the bike go red) here.
+   *
+   * @since 1.0
+   */
+  static boolean shouldServeRightOverBike(boolean sameDirectionBikePresent, int rightCount,
+      int bikeCount) {
+    return sameDirectionBikePresent && rightCount > 0 && rightCount >= bikeCount;
   }
 
   /**
@@ -624,7 +706,7 @@ public class TrafficSignalControllerTickerUtilities {
                 collectFacingsFromSignals(world, circuit.getFlashingRightSignals()));
           }
           applyRightTurnAndProtectedStatesByFacing(world, circuit, defaultPhase,
-              activeRightFacings);
+              activeRightFacings, activeLeftFacings);
 
           defaultPhase.addOffSignals(circuit.getPedestrianBeaconSignals());
           defaultPhase.addOffSignals(circuit.getBeaconSignals());
@@ -690,8 +772,11 @@ public class TrafficSignalControllerTickerUtilities {
    * {@code greenLeftTurnFacings} / {@code greenRightTurnFacings} get protected (solid green)
    * arrows; other directions show FYA permissive.
    *
-   * <p>For directions where right is solid green, same-facing transit/bike protected signals
-   * go red (conflict). Directions where right is FYA permissive let protected stay green.</p>
+   * <p>For directions where a turn is solid green, same-facing transit/bike protected signals
+   * go red (conflict): a solid green right crosses a right-side bike lane and a solid green
+   * left crosses a left-side bike lane, so the protected indication is redded at any facing
+   * present in {@code greenLeftTurnFacings} <i>or</i> {@code greenRightTurnFacings}. Directions
+   * where both same-direction turns are FYA permissive let the protected stay green.</p>
    *
    * @param world                  The world (used for facing lookups and by
    *                               {@link #addBlankoutSignalsToPhase}; may be {@code null}
@@ -712,16 +797,61 @@ public class TrafficSignalControllerTickerUtilities {
       TrafficSignalPhase upcomingPhase,
       EnumSet<EnumFacing> greenLeftTurnFacings,
       EnumSet<EnumFacing> greenRightTurnFacings) {
-    applyAllThroughsProtectedsSignalStates(circuit, upcomingPhase,
-        partitionSignalsByFacingSet(world, circuit.getFlashingLeftSignals(),
-            greenLeftTurnFacings),
-        partitionSignalsByFacingSet(world, circuit.getLeftSignals(), greenLeftTurnFacings),
-        partitionSignalsByFacingSet(world, circuit.getFlashingRightSignals(),
-            greenRightTurnFacings),
-        partitionSignalsByFacingSet(world, circuit.getRightSignals(), greenRightTurnFacings),
-        partitionSignalsByFacingSet(world, circuit.getProtectedSignals(),
-            greenRightTurnFacings));
+    Function<BlockPos, EnumFacing> resolver =
+        world == null ? null : pos -> signalFacingOrNull(world, pos);
+    buildAllThroughsProtectedsActivePhase(resolver, circuit, upcomingPhase,
+        greenLeftTurnFacings, greenRightTurnFacings);
     addBlankoutSignalsToPhase(world, circuit, upcomingPhase);
+  }
+
+  /**
+   * Function-based overload of
+   * {@link #buildAllThroughsProtectedsActivePhase(World, TrafficSignalControllerCircuit, TrafficSignalPhase, EnumSet, EnumSet)}
+   * that does the facing partitioning without a Minecraft world (for unit tests with a
+   * Map-backed facing resolver). Skips the blankout pass, which needs TileEntity lookups — the
+   * {@code World} overload calls {@link #addBlankoutSignalsToPhase} after this.
+   *
+   * @since 1.0
+   */
+  static void buildAllThroughsProtectedsActivePhase(
+      Function<BlockPos, EnumFacing> facingResolver,
+      TrafficSignalControllerCircuit circuit,
+      TrafficSignalPhase upcomingPhase,
+      EnumSet<EnumFacing> greenLeftTurnFacings,
+      EnumSet<EnumFacing> greenRightTurnFacings) {
+    // ALL bikes on the circuit go red when ANY protected (solid green) turn — left or right, on
+    // any approach — runs this phase. A protected turn sweeps across the intersection and
+    // conflicts with bike movements on the other approaches too, so the conflict is circuit-wide,
+    // not per-facing. FYA-permissive turns don't conflict, so when no turn is solid green every
+    // bike keeps green.
+    boolean anyProtectedTurnGreen =
+        !greenLeftTurnFacings.isEmpty() || !greenRightTurnFacings.isEmpty();
+    applyAllThroughsProtectedsSignalStates(circuit, upcomingPhase,
+        partitionSignalsByFacingSet(facingResolver, circuit.getFlashingLeftSignals(),
+            greenLeftTurnFacings),
+        partitionSignalsByFacingSet(facingResolver, circuit.getLeftSignals(),
+            greenLeftTurnFacings),
+        partitionSignalsByFacingSet(facingResolver, circuit.getFlashingRightSignals(),
+            greenRightTurnFacings),
+        partitionSignalsByFacingSet(facingResolver, circuit.getRightSignals(),
+            greenRightTurnFacings),
+        allOrNothingProtectedPartition(circuit.getProtectedSignals(), anyProtectedTurnGreen));
+  }
+
+  /**
+   * Builds the protected (transit/bike) signal partition for the circuit-wide bike-vs-protected-
+   * turn rule: when any protected turn is solid green ({@code allRed} true) every bike signal is
+   * placed in the "red" bucket; otherwise every bike signal is placed in the "green" bucket. The
+   * lists are fresh, mutable copies so downstream phase methods may append to them.
+   *
+   * @since 1.0
+   */
+  private static Tuple<List<BlockPos>, List<BlockPos>> allOrNothingProtectedPartition(
+      List<BlockPos> protectedSignals, boolean allRed) {
+    List<BlockPos> copy = new ArrayList<>(protectedSignals);
+    return allRed
+        ? new Tuple<>(copy, new ArrayList<>())
+        : new Tuple<>(new ArrayList<>(), copy);
   }
 
   /**
@@ -746,29 +876,40 @@ public class TrafficSignalControllerTickerUtilities {
 
   /**
    * Per-direction right turn + transit/bike protected state assignment. At facings present in
-   * {@code solidGreenRightFacings}: right arrow solid green, FYA companion off, same-facing
-   * protected (transit/bike) goes red because solid green right conflicts with it. At other
-   * facings: right arrow red, FYA permissive flashes yellow, same-facing protected stays
-   * green (no conflict with permissive right).
+   * {@code solidGreenRightFacings}: right arrow solid green, FYA companion off. At other
+   * facings: right arrow red, FYA permissive flashes yellow.
+   *
+   * <p><b>Protected (transit/bike) conflict:</b> a protected (solid green) turn — left or right,
+   * on <i>any</i> approach of the circuit — sweeps across the intersection and conflicts with
+   * every bike movement on the circuit, so the conflict is circuit-wide. When any solid green
+   * turn is present ({@code solidGreenLeftFacings} or {@code solidGreenRightFacings} non-empty),
+   * <i>all</i> protected/bike signals on the circuit go red; otherwise (all turns FYA permissive
+   * or absent) every bike keeps green. FYA-permissive turns do not conflict with a green bike.</p>
    *
    * @since 1.0
    */
   private static void applyRightTurnAndProtectedStatesByFacing(World world,
       TrafficSignalControllerCircuit circuit, TrafficSignalPhase phase,
-      EnumSet<EnumFacing> solidGreenRightFacings) {
+      EnumSet<EnumFacing> solidGreenRightFacings,
+      EnumSet<EnumFacing> solidGreenLeftFacings) {
     Tuple<List<BlockPos>, List<BlockPos>> flashing = partitionSignalsByFacingSet(world,
         circuit.getFlashingRightSignals(), solidGreenRightFacings);
     Tuple<List<BlockPos>, List<BlockPos>> right = partitionSignalsByFacingSet(world,
         circuit.getRightSignals(), solidGreenRightFacings);
-    Tuple<List<BlockPos>, List<BlockPos>> prot = partitionSignalsByFacingSet(world,
-        circuit.getProtectedSignals(), solidGreenRightFacings);
+    boolean anyProtectedTurnGreen =
+        !solidGreenRightFacings.isEmpty() || !solidGreenLeftFacings.isEmpty();
     phase.addOffSignals(flashing.getFirst());
     phase.addFyaSignals(flashing.getSecond());
     phase.addGreenSignals(right.getFirst());
     phase.addRedSignals(right.getSecond());
-    phase.addRedSignals(prot.getFirst());     // matching: solid right green → protected red
-    phase.addGreenSignals(prot.getSecond());  // non-matching: FYA right → protected green
+    // Circuit-wide: any solid green turn reds every bike; otherwise every bike stays green.
+    if (anyProtectedTurnGreen) {
+      phase.addRedSignals(circuit.getProtectedSignals());
+    } else {
+      phase.addGreenSignals(circuit.getProtectedSignals());
+    }
   }
+
 
   /**
    * Collects the set of {@link EnumFacing} directions present on the given signal positions.
@@ -820,8 +961,10 @@ public class TrafficSignalControllerTickerUtilities {
     upcomingPhase.addFyaSignals(flashingRightPartition.getSecond());
     upcomingPhase.addGreenSignals(rightPartition.getFirst());
     upcomingPhase.addRedSignals(rightPartition.getSecond());
-    // Protected (transit/bike): per-facing — red where same-direction right is solid green
-    // (conflict), green where same-direction right is FYA permissive (no conflict)
+    // Protected (transit/bike): the "first" bucket goes red, the "second" green. The caller
+    // applies the circuit-wide rule — when any protected (solid green) turn runs this phase it
+    // puts EVERY bike in the red bucket (a protected turn conflicts with all bike movements on
+    // the circuit); otherwise every bike goes in the green bucket. This method just applies it.
     upcomingPhase.addRedSignals(protectedPartition.getFirst());
     upcomingPhase.addGreenSignals(protectedPartition.getSecond());
     // Through, peds, beacons — circuit-wide
@@ -1273,7 +1416,7 @@ public class TrafficSignalControllerTickerUtilities {
             }
           }
           applyRightTurnAndProtectedStatesByFacing(world, circuit, upcomingPhase,
-              activeRightFacings);
+              activeRightFacings, activeLeftFacings);
           applyLeftTurnStatesByFacing(world, circuit, upcomingPhase, activeLeftFacings);
           addBlankoutSignalsToPhase(world, circuit, upcomingPhase);
         } else {
@@ -1285,16 +1428,10 @@ public class TrafficSignalControllerTickerUtilities {
       else if (phaseApplicability
           == TrafficSignalPhaseApplicability.ALL_THROUGHS_PROTECTED_RIGHTS) {
         if (i == circuitNumber) {
-          // Right + protected: demand-derived per-direction arbitration.
-          applyRightTurnAndProtectedStatesByFacing(world, circuit, upcomingPhase,
-              greenRightTurnFacings);
-          upcomingPhase.addGreenSignals(circuit.getThroughSignals());
-          upcomingPhase.addOffSignals(circuit.getPedestrianBeaconSignals());
-          upcomingPhase.addOffSignals(circuit.getBeaconSignals());
-          upcomingPhase.addDontWalkSignals(circuit.getPedestrianSignals());
-          upcomingPhase.addDontWalkSignals(circuit.getPedestrianAccessorySignals());
           // Left: demand-derived in overlap mode; legacy single-direction fallback when no
-          // overlap is configured (all directions present get protected green).
+          // overlap is configured (all directions present get protected green). Resolved
+          // before the right/protected assignment so the protected signals can be redded
+          // wherever a same-direction LEFT runs solid green, too.
           EnumSet<EnumFacing> activeLeftFacings;
           if (greenLeftTurn) {
             activeLeftFacings = greenLeftTurnFacings;
@@ -1306,6 +1443,14 @@ public class TrafficSignalControllerTickerUtilities {
           } else {
             activeLeftFacings = EnumSet.noneOf(EnumFacing.class);
           }
+          // Right + protected: demand-derived per-direction arbitration.
+          applyRightTurnAndProtectedStatesByFacing(world, circuit, upcomingPhase,
+              greenRightTurnFacings, activeLeftFacings);
+          upcomingPhase.addGreenSignals(circuit.getThroughSignals());
+          upcomingPhase.addOffSignals(circuit.getPedestrianBeaconSignals());
+          upcomingPhase.addOffSignals(circuit.getBeaconSignals());
+          upcomingPhase.addDontWalkSignals(circuit.getPedestrianSignals());
+          upcomingPhase.addDontWalkSignals(circuit.getPedestrianAccessorySignals());
           applyLeftTurnStatesByFacing(world, circuit, upcomingPhase, activeLeftFacings);
           addBlankoutSignalsToPhase(world, circuit, upcomingPhase);
         } else {
@@ -1412,7 +1557,9 @@ public class TrafficSignalControllerTickerUtilities {
    * permissive otherwise. Matching-direction right turns keep their solid green unless a
    * matching-direction protected (transit/bike) signal exists on the same approach, in which
    * case the right turn is held at FYA so the protected can serve concurrently without
-   * conflict. Opposite-direction signals all go red.</p>
+   * conflict. The matching protected itself is held green only while no same-direction turn
+   * runs solid green — when the matching add-on left runs protected/solid green it crosses a
+   * left-side bike lane, so the protected is redded. Opposite-direction signals all go red.</p>
    *
    * <p>Extracted from {@link #addActiveCircuitToDirectionalGreenPhase} so the world-free phase
    * logic can be unit-tested without a Minecraft world.</p>
@@ -1445,10 +1592,19 @@ public class TrafficSignalControllerTickerUtilities {
     // protected green concurrently. When no matching protected is configured, the right
     // turn keeps its solid green as before.
     boolean hasMatchingProtected = !protectedSignals.getFirst().isEmpty();
+    // A matching-direction add-on left arrow runs solid green (see the left block above). That
+    // protected left crosses a left-side protected/bike lane, so the matching protected must go
+    // red when it is present — keeping it green here would put a green bike signal concurrent
+    // with a protected left arrow (a major conflict).
+    boolean matchingLeftSolidGreen = !leftSignals.getFirst().isEmpty();
     if (hasMatchingProtected) {
       destinationPhase.addFyaSignals(flashingRightSignals.getFirst());
       destinationPhase.addRedSignals(rightSignals.getFirst());
-      destinationPhase.addGreenSignals(protectedSignals.getFirst());
+      if (matchingLeftSolidGreen) {
+        destinationPhase.addRedSignals(protectedSignals.getFirst());
+      } else {
+        destinationPhase.addGreenSignals(protectedSignals.getFirst());
+      }
     } else {
       destinationPhase.addOffSignals(flashingRightSignals.getFirst());
       destinationPhase.addGreenSignals(rightSignals.getFirst());
