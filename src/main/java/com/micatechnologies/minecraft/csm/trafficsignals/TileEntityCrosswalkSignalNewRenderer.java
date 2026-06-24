@@ -202,8 +202,12 @@ public class TileEntityCrosswalkSignalNewRenderer
         GL11.glCallList( displayList );
 
         // Display face textures — compute flash state here so we can use the renderer's
-        // partialTicks instead of doing a JNI System.currentTimeMillis() call per frame
-        boolean flashOn = (CsmRenderUtils.gameMillis(te.getWorld(), partialTicks) % 1000L) < 500L;
+        // partialTicks instead of doing a JNI System.currentTimeMillis() call per frame.
+        // On during the SECOND half of each second to match the vehicle signal flash phase:
+        // a flashing vehicle bulb is blanked during the first half-second (see
+        // TileEntityTrafficSignalHead's "flash flip" pass), so the ped clearance flash lights
+        // in the same half so the two blink together rather than alternately.
+        boolean flashOn = (CsmRenderUtils.gameMillis(te.getWorld(), partialTicks) % 1000L) >= 500L;
         renderDisplayFace( displayType, bulbType, colorState, flashOn );
 
         // 7-segment countdown area:
