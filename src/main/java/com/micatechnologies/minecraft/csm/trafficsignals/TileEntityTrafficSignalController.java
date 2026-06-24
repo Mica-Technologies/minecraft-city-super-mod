@@ -17,6 +17,7 @@ import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalPhas
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalProgrammedPhasePlan;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalProgrammedPhase;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalProgrammedOverlap;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalOverlapType;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalPhaseMovement;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalRecallMode;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalPreempt;
@@ -1799,6 +1800,18 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
       case "ov.trailGreen":
         if (validOverlap(plan, index)) {
           plan.getVehicleOverlaps().get(index).setTrailGreen(clampTicks(value));
+        }
+        break;
+      case "ov.type":
+        if (validOverlap(plan, index)) {
+          plan.getVehicleOverlaps().get(index)
+              .setType(TrafficSignalOverlapType.fromNBT((int) value));
+        }
+        break;
+      case "ov.modifierToggle":
+        if (validOverlap(plan, index)) {
+          TrafficSignalProgrammedOverlap ov = plan.getVehicleOverlaps().get(index);
+          ov.setModifierPhases(toggleInArray(ov.getModifierPhases(), (int) value));
         }
         break;
       default:

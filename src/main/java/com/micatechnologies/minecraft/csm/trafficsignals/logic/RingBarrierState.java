@@ -252,15 +252,22 @@ public class RingBarrierState {
     for (int i = 0; i < ovs.size(); i++) {
       TrafficSignalProgrammedOverlap ov = ovs.get(i);
       VehInterval base = AdvancedPhaseBuilder.overlapState(ov.getIncludedPhases(), m1, m2);
+      VehInterval eff;
       if (base == VehInterval.GREEN) {
         overlapLastGreen.put(i, now);
-        result.add(VehInterval.GREEN);
+        eff = VehInterval.GREEN;
       } else {
         Long last = overlapLastGreen.get(i);
         boolean trailing = ov.getTrailGreen() > 0L && last != null
             && (now - last) < ov.getTrailGreen();
-        result.add(trailing ? VehInterval.GREEN : base);
+        eff = trailing ? VehInterval.GREEN : base;
       }
+      // -GRN/YEL: force red while a modifier phase is green or yellow.
+      if (ov.getType() == TrafficSignalOverlapType.MINUS_GREEN_YELLOW
+          && AdvancedPhaseBuilder.anyServedActive(ov.getModifierPhases(), m1, m2)) {
+        eff = VehInterval.RED;
+      }
+      result.add(eff);
     }
     return result;
   }
