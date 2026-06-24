@@ -16,6 +16,7 @@ import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalPhas
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalPhases;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalProgrammedPhasePlan;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalProgrammedPhase;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalProgrammedOverlap;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalPhaseMovement;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalRecallMode;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalPreempt;
@@ -1758,6 +1759,36 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
           pe.setExitPhases(toggleInArray(pe.getExitPhases(), (int) value));
         }
         break;
+      case "ov.add":
+        plan.getVehicleOverlaps().add(new TrafficSignalProgrammedOverlap());
+        break;
+      case "ov.remove":
+        if (index >= 0 && index < plan.getVehicleOverlaps().size()) {
+          plan.getVehicleOverlaps().remove(index);
+        }
+        break;
+      case "ov.enabled":
+        if (validOverlap(plan, index)) {
+          plan.getVehicleOverlaps().get(index).setEnabled(value != 0);
+        }
+        break;
+      case "ov.outCircuit":
+        if (validOverlap(plan, index)) {
+          plan.getVehicleOverlaps().get(index).setOutputCircuitIndex((int) value);
+        }
+        break;
+      case "ov.outMovement":
+        if (validOverlap(plan, index)) {
+          plan.getVehicleOverlaps().get(index)
+              .setOutputMovement(TrafficSignalPhaseMovement.fromNBT((int) value));
+        }
+        break;
+      case "ov.includedToggle":
+        if (validOverlap(plan, index)) {
+          TrafficSignalProgrammedOverlap ov = plan.getVehicleOverlaps().get(index);
+          ov.setIncludedPhases(toggleInArray(ov.getIncludedPhases(), (int) value));
+        }
+        break;
       default:
         changed = false;
         break;
@@ -1779,6 +1810,10 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
 
   private static boolean validPreempt(TrafficSignalProgrammedPhasePlan plan, int index) {
     return index >= 0 && index < plan.getPreempts().size();
+  }
+
+  private static boolean validOverlap(TrafficSignalProgrammedPhasePlan plan, int index) {
+    return index >= 0 && index < plan.getVehicleOverlaps().size();
   }
 
   /** Returns a copy of {@code arr} with {@code value} added if absent or removed if present. */

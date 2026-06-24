@@ -60,6 +60,7 @@ roadmap parameters, with their real ASC/3 names:
 | WALK 2 / PED CLEAR 2 / PED CARRY OVER | Secondary ped | roadmap |
 | **SF RCALL (Soft Recall)** | **Rest-in-phase** | **implemented — see §5** |
 | **REST IN WALK** | **Hold WALK while resting** | **implemented — see §5** |
+| **MM-2-2 NORMAL overlap** | **Phase-based right-turn overlaps** | **implemented — see §4a** |
 | DUAL ENTRY / COND SERVICE | Phase options (MM-2-6) | roadmap |
 
 ---
@@ -142,6 +143,26 @@ The permissive condition implemented is "opposing through is timing **green**." 
 flashes when the opposing through is *"timing with the protected left turn as a next phase decision"*
 (i.e., during the opposing through's clearance when the left is next). That refinement is deferred.
 
+## 4a. Phase-based vehicle overlaps (right-turn overlaps)
+
+The ASC/3 `MM-2-2` **NORMAL** overlap type is implemented as `TrafficSignalProgrammedOverlap`,
+stored as a list on the plan (`getVehicleOverlaps()`, NBT-persisted, edited on the **OVL** GUI
+screen). Each overlap has:
+
+- an **output** = `{circuit index, movement}` selecting the signal heads it drives (typically a
+  circuit's `RIGHT` heads — the classic right-turn overlap; `LEFT`/`THROUGH` are also supported);
+- a set of **included phases**.
+
+`AdvancedPhaseBuilder.applyProgrammedOverlaps` (after the served movements + the controller-wide
+signal-map overlaps) drives the output heads from the pure decision `overlapState(included, r1, r2)`:
+**green** while any included phase is green, **yellow** while an included phase is in clearance (and
+none green), else **red**. The classic use: a right turn that runs with both its own through and the
+non-conflicting opposing left — include both phases.
+
+This is the NORMAL overlap type only. FYA stays the per-phase `permissivePhase` mechanism (§4); a
+unified typed-overlap table (with `PPLT FYA` / `-GRN/YEL` types and Lead/Lag/Advance-green timers) is
+still roadmap.
+
 ---
 
 ## 5. Actuation / volume-density timing (MAX 2, BK MGRN, added initial, gap reduction)
@@ -183,9 +204,9 @@ parameters are edited on the **ACT** GUI screen (Mx2 / BkG / AdI / MxI / Gap / T
 In rough priority order (each independently shippable + testable):
 
 1. **Phase options:** Dual Entry, Conditional Service.
-2. **Typed overlap subsystem:** promote FYA from the per-phase `permissivePhase` shortcut to a real
-   MM-2-2-style overlap table (types NORMAL / `-GRN/YEL` / PPLT FYA / OTHER), which also gives
-   first-class **right-turn overlaps** (Lead/Lag/Advance-green timers).
+2. **Typed overlap subsystem (extend §4a):** add `PPLT FYA` / `-GRN/YEL` overlap types and
+   Lead/Lag/Advance-green timers, and (optionally) migrate the per-phase FYA onto the overlap table.
+   The NORMAL right-turn overlap is implemented (§4a).
 3. **Secondary ped:** Walk 2 / Ped Clear 2 / Ped Carryover.
 4. **FYA refinement:** flash permissive during the opposing through's clearance when the protected
    left is the next phase decision.
@@ -203,7 +224,9 @@ through an injectable `DemandSource` (production wraps the world; tests supply c
 - `AdvancedActuationTimingTest` — the pure volume-density math (added initial, effective min/max
   green, gap-reduction ramp), tested directly.
 - `AdvancedPhaseBuilderTest` — the pure `applyFyaLensState(...)` FYA decision (all four outcomes),
-  and `TrafficSignalProgrammedPhase` NBT round-trip / default-fallback for every advanced field.
+  the pure `overlapState(...)` decision plus a builder integration test that an overlap drives a
+  different circuit's heads, `TrafficSignalProgrammedOverlap` NBT round-trip, and
+  `TrafficSignalProgrammedPhase` NBT round-trip / default-fallback for every advanced field.
 
 The **delayed-green interval** sequencing (`startGreen`/`advanceRing`/`describe`) is exercisable via
 the same harness; its math is small. New engine features should add `RingBarrierStateTest` cases
