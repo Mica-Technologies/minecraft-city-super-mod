@@ -169,9 +169,14 @@ trailing applies). Once the trailing window expires, the overlap follows the bas
 included phases' **yellow** then **red**, which provides the overlap's own clearance (size
 `trailGreen` ≤ the included phases' yellow + red clearance to keep that clean).
 
-This is the NORMAL overlap type (with lag green). FYA stays the per-phase `permissivePhase`
-mechanism (§4); the remaining typed-overlap work (`PPLT FYA` / `-GRN/YEL` types and lead/advance-green
-timers) is still roadmap.
+**Overlap type** (`TrafficSignalOverlapType`, ASC/3 MM-2-2 types):
+- **`NORMAL`** — as above.
+- **`-GRN/YEL` (Minus Green Yellow)** — NORMAL, but additionally forced **red** while any
+  **modifier** phase is green or yellow (`anyServedActive`). Use it to drop a right-turn overlap
+  during a specific conflicting phase. The type + modifier phases are edited on the OVL screen.
+
+FYA stays the per-phase `permissivePhase` mechanism (§4); the remaining typed-overlap work (a
+`PPLT FYA` overlap type and lead/advance-green timers) is still roadmap.
 
 ---
 
@@ -225,9 +230,9 @@ Dual Entry and Conditional Service are set via the MAP **OPT** column, a combine
 
 In rough priority order (each independently shippable + testable):
 
-1. **Typed overlap subsystem (extend §4a):** add `PPLT FYA` / `-GRN/YEL` overlap types and
-   lead/advance-green timing, and (optionally) migrate the per-phase FYA onto the overlap table.
-   The NORMAL right-turn overlap with lag (trailing) green is implemented (§4a).
+1. **Typed overlap subsystem (extend §4a):** add a `PPLT FYA` overlap type and lead/advance-green
+   timing, and (optionally) migrate the per-phase FYA onto the overlap table. NORMAL + `-GRN/YEL`
+   types with lag (trailing) green are implemented (§4a).
 2. **Secondary ped:** Walk 2 / Ped Clear 2 / Ped Carryover.
 
 ---

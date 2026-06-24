@@ -265,4 +265,37 @@ class RingBarrierStateTest {
     assertFalse(rb.getLastAppliedPhase().getGreenSignals().contains(rightHead),
         "overlap head drops out of green once the trailing window expires");
   }
+
+  @Test
+  @DisplayName("-GRN/YEL overlap is forced red while a modifier phase is green")
+  void minusGreenYellowOverlap() {
+    RingBarrierState rb = new RingBarrierState();
+    TrafficSignalProgrammedPhasePlan plan = TrafficSignalProgrammedPhasePlan.createDefault();
+    plan.getCoordination().setCoordinatedPhases(new int[0]);
+    enable(plan, 2, 0); // ring 1 — overlap's included phase
+    enable(plan, 6, 1); // ring 2 — the modifier phase (runs concurrently on barrier A)
+    net.minecraft.util.math.BlockPos rightHead = new net.minecraft.util.math.BlockPos(60, 0, 0);
+    TrafficSignalControllerCircuit c2 = new TrafficSignalControllerCircuit();
+    c2.getRightSignals().add(rightHead);
+    TrafficSignalControllerCircuits ckts = circuits(2);
+    ckts.addCircuit(c2); // circuit 2 — overlap output
+
+    TrafficSignalProgrammedOverlap ov = new TrafficSignalProgrammedOverlap();
+    ov.setEnabled(true);
+    ov.setOutputCircuitIndex(2);
+    ov.setOutputMovement(TrafficSignalPhaseMovement.RIGHT);
+    ov.setIncludedPhases(new int[] {2});
+    ov.setType(TrafficSignalOverlapType.MINUS_GREEN_YELLOW);
+    ov.setModifierPhases(new int[] {6});
+    plan.getVehicleOverlaps().add(ov);
+
+    // Phases 2 and 6 both run green concurrently; included phase 2 would green the overlap, but
+    // modifier phase 6 forces it red.
+    Demand d = new Demand().veh(0, 1, 0, 0).veh(1, 1, 0, 0);
+    rb.tick(plan, ckts, NO_OVERLAPS, 0L, d);
+
+    assertFalse(rb.getLastAppliedPhase().getGreenSignals().contains(rightHead),
+        "overlap is forced red while its modifier phase (6) is green");
+    assertTrue(rb.getLastAppliedPhase().getRedSignals().contains(rightHead));
+  }
 }

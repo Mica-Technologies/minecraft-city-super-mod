@@ -3,6 +3,7 @@ package com.micatechnologies.minecraft.csm.trafficsignals;
 import com.micatechnologies.minecraft.csm.CsmNetwork;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalCoordinationMode;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalPhaseMovement;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalOverlapType;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalPreempt;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalProgrammedOverlap;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalPreemptType;
@@ -551,6 +552,12 @@ public class AdvancedSignalControllerGui extends GuiScreen {
         () -> ovs.get(oi).isEnabled() ? "On" : "off",
         dir -> send("ov.enabled", oi, ovs.get(oi).isEnabled() ? 0 : 1), null));
     y += 12;
+    cells.add(new Cell(lcdX + 80, y, 60,
+        () -> ovs.get(oi).getType().getName(),
+        dir -> send("ov.type", oi,
+            cyc(ovs.get(oi).getType().ordinal(), dir,
+                TrafficSignalOverlapType.values().length)), null));
+    y += 12;
     cells.add(new Cell(lcdX + 80, y, 50,
         () -> ovs.get(oi).getOutputCircuitIndex() < 0 ? "--"
             : ("C" + (ovs.get(oi).getOutputCircuitIndex() + 1)),
@@ -581,6 +588,13 @@ public class AdvancedSignalControllerGui extends GuiScreen {
       cells.add(new Cell(lcdX + 70 + (pn - 1) * 22, y, 18,
           () -> contains(ovs.get(oi).getIncludedPhases())[n] ? ("[" + n + "]") : (" " + n + " "),
           dir -> send("ov.includedToggle", oi, n), null));
+    }
+    y += 14;
+    for (int pn = 1; pn <= TrafficSignalProgrammedPhasePlan.PHASE_COUNT; pn++) {
+      final int n = pn;
+      cells.add(new Cell(lcdX + 70 + (pn - 1) * 22, y, 18,
+          () -> contains(ovs.get(oi).getModifierPhases())[n] ? ("[" + n + "]") : (" " + n + " "),
+          dir -> send("ov.modifierToggle", oi, n), null));
     }
   }
 
@@ -1136,6 +1150,11 @@ public class AdvancedSignalControllerGui extends GuiScreen {
     fontRenderer.drawString("Enabled:", lcdX, y, COLOR_AMBER_DIM);
     addHelp(lcdX, y, 76, 9, "Enabled", "Turn this vehicle overlap on or off.");
     y += 12;
+    fontRenderer.drawString("Type:", lcdX, y, COLOR_AMBER_DIM);
+    addHelp(lcdX, y, 76, 9, "Overlap Type",
+        "Normal = green with the included phases. -Grn/Yel = also",
+        "forced red while a MOD (modifier) phase is green/yellow.");
+    y += 12;
     fontRenderer.drawString("Out CKT:", lcdX, y, COLOR_AMBER_DIM);
     addHelp(lcdX, y, 76, 9, "Output Circuit",
         "Which signal circuit's heads this overlap drives.");
@@ -1154,6 +1173,11 @@ public class AdvancedSignalControllerGui extends GuiScreen {
     addHelp(lcdX, y, 60, 9, "Included Phases",
         "The overlap runs GREEN while any included phase is green,",
         "YELLOW during their clearance, else red. [n] = included.");
+    y += 14;
+    fontRenderer.drawString("MOD", lcdX, y, COLOR_AMBER_DIM);
+    addHelp(lcdX, y, 60, 9, "Modifier Phases (-Grn/Yel)",
+        "Only for the -Grn/Yel type: the overlap is forced red while",
+        "any [n] modifier phase is green or yellow. [n] = modifier.");
   }
 
   private void drawCells() {

@@ -226,6 +226,21 @@ public final class AdvancedPhaseBuilder {
     }
   }
 
+  /**
+   * Whether any of {@code phases} is served green or yellow this tick. Used by the
+   * {@code -GRN/YEL} overlap type to drop the overlap to red while a modifier movement runs.
+   */
+  static boolean anyServedActive(int[] phases, RingBarrierState.ServedMovement ring1,
+      RingBarrierState.ServedMovement ring2) {
+    for (int p : phases) {
+      RingBarrierState.VehInterval iv = servedInterval(p, ring1, ring2);
+      if (iv == RingBarrierState.VehInterval.GREEN || iv == RingBarrierState.VehInterval.YELLOW) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   /** The interval the given phase is served at this tick by either ring, or {@code null}. */
   private static RingBarrierState.VehInterval servedInterval(int phaseNumber,
       RingBarrierState.ServedMovement ring1, RingBarrierState.ServedMovement ring2) {
