@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.trafficsignals.logic;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -89,6 +90,80 @@ class AdvancedPhaseBuilderTest {
           VehInterval.RED, false);
       assertTrue(phase.getRedSignals().contains(FYA_A));
       assertFalse(phase.getOffSignals().contains(FYA_A));
+    }
+  }
+
+  @Nested
+  @DisplayName("phase-based vehicle overlaps")
+  class OverlapTest {
+
+    private ServedMovementShortcut served(int phase, VehInterval iv) {
+      return new ServedMovementShortcut(phase, iv);
+    }
+
+    @Test
+    @DisplayName("overlapState: green dominates, then yellow, else red")
+    void overlapState() {
+      assertEquals(VehInterval.GREEN, AdvancedPhaseBuilder.overlapState(new int[] {2, 4},
+          served(2, VehInterval.GREEN).m, served(4, VehInterval.YELLOW).m));
+      assertEquals(VehInterval.YELLOW, AdvancedPhaseBuilder.overlapState(new int[] {2, 4},
+          served(4, VehInterval.YELLOW).m, null));
+      assertEquals(VehInterval.RED, AdvancedPhaseBuilder.overlapState(new int[] {2, 4},
+          served(6, VehInterval.GREEN).m, null));
+      assertEquals(VehInterval.RED, AdvancedPhaseBuilder.overlapState(new int[0],
+          served(2, VehInterval.GREEN).m, null));
+    }
+
+    @Test
+    @DisplayName("NBT round-trip for a programmed overlap")
+    void nbtRoundTrip() {
+      TrafficSignalProgrammedOverlap o = new TrafficSignalProgrammedOverlap();
+      o.setEnabled(true);
+      o.setOutputCircuitIndex(1);
+      o.setOutputMovement(TrafficSignalPhaseMovement.RIGHT);
+      o.setIncludedPhases(new int[] {2, 7});
+      TrafficSignalProgrammedOverlap r = TrafficSignalProgrammedOverlap.fromNBT(o.toNBT());
+      assertTrue(r.isEnabled());
+      assertEquals(1, r.getOutputCircuitIndex());
+      assertEquals(TrafficSignalPhaseMovement.RIGHT, r.getOutputMovement());
+      assertArrayEquals(new int[] {2, 7}, r.getIncludedPhases());
+    }
+
+    @Test
+    @DisplayName("builder: overlap greens a different circuit's right head while an included "
+        + "phase is green")
+    void overlapDrivesHeads() {
+      BlockPos rightHead = new BlockPos(20, 0, 0);
+      TrafficSignalControllerCircuits circuits = new TrafficSignalControllerCircuits();
+      circuits.addCircuit(new TrafficSignalControllerCircuit());       // circuit 0 (served)
+      TrafficSignalControllerCircuit c1 = new TrafficSignalControllerCircuit();
+      c1.getRightSignals().add(rightHead);                              // circuit 1 (overlap output)
+      circuits.addCircuit(c1);
+
+      TrafficSignalProgrammedPhasePlan plan = TrafficSignalProgrammedPhasePlan.createDefault();
+      plan.getPhase(2).setCircuitIndex(0);
+      plan.getPhase(2).setEnabled(true);
+      TrafficSignalProgrammedOverlap ov = new TrafficSignalProgrammedOverlap();
+      ov.setEnabled(true);
+      ov.setOutputCircuitIndex(1);
+      ov.setOutputMovement(TrafficSignalPhaseMovement.RIGHT);
+      ov.setIncludedPhases(new int[] {2});
+      plan.getVehicleOverlaps().add(ov);
+
+      TrafficSignalPhase phase = AdvancedPhaseBuilder.build(null, plan, circuits,
+          new TrafficSignalControllerOverlaps(), served(2, VehInterval.GREEN).m, null);
+
+      assertTrue(phase.getGreenSignals().contains(rightHead),
+          "the overlap drives its output right head green while phase 2 (its included phase) is green");
+    }
+  }
+
+  /** Small holder so tests can build a ServedMovement without repeating the PedInterval. */
+  private static final class ServedMovementShortcut {
+    final RingBarrierState.ServedMovement m;
+
+    ServedMovementShortcut(int phase, VehInterval iv) {
+      this.m = new RingBarrierState.ServedMovement(phase, iv, RingBarrierState.PedInterval.NONE);
     }
   }
 

@@ -52,7 +52,84 @@ public final class AdvancedPhaseBuilder {
     applyServed(phase, plan, circuits, ring2);
     applyFlashingYellowArrows(phase, plan, circuits, ring1, ring2);
     applyOverlaps(phase, overlaps);
+    applyProgrammedOverlaps(phase, plan, circuits, ring1, ring2);
     return phase;
+  }
+
+  /**
+   * Applies the plan's phase-based vehicle overlaps (ASC/3 NORMAL overlap type). Each active overlap
+   * drives its output circuit+movement heads green while any included phase is green, yellow while an
+   * included phase is in yellow clearance (and none green), and red otherwise. The classic use is a
+   * right-turn overlap that runs with both its own through and a non-conflicting opposing left.
+   */
+  private static void applyProgrammedOverlaps(TrafficSignalPhase phase,
+      TrafficSignalProgrammedPhasePlan plan,
+      TrafficSignalControllerCircuits circuits,
+      RingBarrierState.ServedMovement ring1,
+      RingBarrierState.ServedMovement ring2) {
+    for (TrafficSignalProgrammedOverlap ov : plan.getVehicleOverlaps()) {
+      if (!ov.isActive() || ov.getOutputCircuitIndex() >= circuits.getCircuitCount()) {
+        continue;
+      }
+      TrafficSignalControllerCircuit circuit = circuits.getCircuit(ov.getOutputCircuitIndex());
+      List<BlockPos> heads = overlapOutputHeads(circuit, ov.getOutputMovement());
+      if (heads.isEmpty()) {
+        continue;
+      }
+      RingBarrierState.VehInterval state = overlapState(ov.getIncludedPhases(), ring1, ring2);
+      phase.removeSignals(heads);
+      switch (state) {
+        case GREEN:
+          phase.addGreenSignals(heads);
+          break;
+        case YELLOW:
+          phase.addYellowSignals(heads);
+          break;
+        case RED:
+        default:
+          phase.addRedSignals(heads);
+          break;
+      }
+    }
+  }
+
+  /**
+   * Pure overlap-interval decision (world-free, unit-testable): green if any included phase is
+   * green, else yellow if any included phase is in yellow clearance, else red.
+   */
+  static RingBarrierState.VehInterval overlapState(int[] includedPhases,
+      RingBarrierState.ServedMovement ring1, RingBarrierState.ServedMovement ring2) {
+    boolean anyYellow = false;
+    for (int p : includedPhases) {
+      RingBarrierState.VehInterval iv = servedInterval(p, ring1, ring2);
+      if (iv == RingBarrierState.VehInterval.GREEN) {
+        return RingBarrierState.VehInterval.GREEN;
+      }
+      if (iv == RingBarrierState.VehInterval.YELLOW) {
+        anyYellow = true;
+      }
+    }
+    return anyYellow ? RingBarrierState.VehInterval.YELLOW : RingBarrierState.VehInterval.RED;
+  }
+
+  /** Resolves an overlap's output signal heads from its circuit and movement. */
+  private static List<BlockPos> overlapOutputHeads(TrafficSignalControllerCircuit circuit,
+      TrafficSignalPhaseMovement movement) {
+    switch (movement) {
+      case RIGHT:
+        return circuit.getRightSignals();
+      case THROUGH:
+        return circuit.getThroughSignals();
+      case LEFT:
+      case PROTECTED_LEFT: {
+        List<BlockPos> combined = new ArrayList<>(circuit.getLeftSignals());
+        combined.addAll(circuit.getProtectedSignals());
+        return combined;
+      }
+      case PED:
+      default:
+        return new ArrayList<>();
+    }
   }
 
   /**

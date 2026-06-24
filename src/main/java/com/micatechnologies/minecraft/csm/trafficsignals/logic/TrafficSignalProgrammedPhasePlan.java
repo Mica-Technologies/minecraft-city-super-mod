@@ -46,21 +46,24 @@ public class TrafficSignalProgrammedPhasePlan {
   private static final String K_RING_2 = "r2";
   private static final String K_COORDINATION = "co";
   private static final String K_PREEMPTS = "pe";
+  private static final String K_OVERLAPS = "ov";
 
   private final List<TrafficSignalProgrammedPhase> phases;
   private int[] ring1Sequence;
   private int[] ring2Sequence;
   private TrafficSignalCoordinationPlan coordination;
   private final List<TrafficSignalPreempt> preempts;
+  private final List<TrafficSignalProgrammedOverlap> vehicleOverlaps;
 
   private TrafficSignalProgrammedPhasePlan(List<TrafficSignalProgrammedPhase> phases,
       int[] ring1Sequence, int[] ring2Sequence, TrafficSignalCoordinationPlan coordination,
-      List<TrafficSignalPreempt> preempts) {
+      List<TrafficSignalPreempt> preempts, List<TrafficSignalProgrammedOverlap> vehicleOverlaps) {
     this.phases = phases;
     this.ring1Sequence = ring1Sequence;
     this.ring2Sequence = ring2Sequence;
     this.coordination = coordination;
     this.preempts = preempts;
+    this.vehicleOverlaps = vehicleOverlaps;
   }
 
   /**
@@ -84,7 +87,8 @@ public class TrafficSignalProgrammedPhasePlan {
       phases.add(phase);
     }
     return new TrafficSignalProgrammedPhasePlan(phases, DEFAULT_RING_1.clone(),
-        DEFAULT_RING_2.clone(), new TrafficSignalCoordinationPlan(), new ArrayList<>());
+        DEFAULT_RING_2.clone(), new TrafficSignalCoordinationPlan(), new ArrayList<>(),
+        new ArrayList<>());
   }
 
   // region: Accessors
@@ -138,6 +142,10 @@ public class TrafficSignalProgrammedPhasePlan {
 
   public List<TrafficSignalPreempt> getPreempts() {
     return preempts;
+  }
+
+  public List<TrafficSignalProgrammedOverlap> getVehicleOverlaps() {
+    return vehicleOverlaps;
   }
 
   /**
@@ -323,6 +331,11 @@ public class TrafficSignalProgrammedPhasePlan {
       preemptList.appendTag(p.toNBT());
     }
     c.setTag(K_PREEMPTS, preemptList);
+    NBTTagList overlapList = new NBTTagList();
+    for (TrafficSignalProgrammedOverlap o : vehicleOverlaps) {
+      overlapList.appendTag(o.toNBT());
+    }
+    c.setTag(K_OVERLAPS, overlapList);
     return c;
   }
 
@@ -350,7 +363,15 @@ public class TrafficSignalProgrammedPhasePlan {
         preempts.add(TrafficSignalPreempt.fromNBT(preemptList.getCompoundTagAt(i)));
       }
     }
-    return new TrafficSignalProgrammedPhasePlan(phases, ring1, ring2, coordination, preempts);
+    List<TrafficSignalProgrammedOverlap> overlaps = new ArrayList<>();
+    if (c.hasKey(K_OVERLAPS)) {
+      NBTTagList overlapList = c.getTagList(K_OVERLAPS, 10);
+      for (int i = 0; i < overlapList.tagCount(); i++) {
+        overlaps.add(TrafficSignalProgrammedOverlap.fromNBT(overlapList.getCompoundTagAt(i)));
+      }
+    }
+    return new TrafficSignalProgrammedPhasePlan(phases, ring1, ring2, coordination, preempts,
+        overlaps);
   }
 
   // endregion
