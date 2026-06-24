@@ -149,6 +149,7 @@ class AdvancedPhaseBuilderTest {
       o.setOutputMovement(TrafficSignalPhaseMovement.RIGHT);
       o.setIncludedPhases(new int[] {2, 7});
       o.setTrailGreen(40L);
+      o.setLeadGreen(25L);
       o.setType(TrafficSignalOverlapType.MINUS_GREEN_YELLOW);
       o.setModifierPhases(new int[] {6});
       TrafficSignalProgrammedOverlap r = TrafficSignalProgrammedOverlap.fromNBT(o.toNBT());
@@ -157,6 +158,7 @@ class AdvancedPhaseBuilderTest {
       assertEquals(TrafficSignalPhaseMovement.RIGHT, r.getOutputMovement());
       assertArrayEquals(new int[] {2, 7}, r.getIncludedPhases());
       assertEquals(40L, r.getTrailGreen());
+      assertEquals(25L, r.getLeadGreen());
       assertEquals(TrafficSignalOverlapType.MINUS_GREEN_YELLOW, r.getType());
       assertArrayEquals(new int[] {6}, r.getModifierPhases());
     }

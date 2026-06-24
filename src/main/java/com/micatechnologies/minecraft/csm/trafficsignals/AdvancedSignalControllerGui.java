@@ -582,6 +582,11 @@ public class AdvancedSignalControllerGui extends GuiScreen {
         () -> secs(ovs.get(oi).getTrailGreen()),
         dir -> send("ov.trailGreen", oi, ovs.get(oi).getTrailGreen() + dir * 10L),
         sec -> send("ov.trailGreen", oi, Math.round(sec * 20))));
+    y += 12;
+    cells.add(new Cell(lcdX + 80, y, 50,
+        () -> secs(ovs.get(oi).getLeadGreen()),
+        dir -> send("ov.leadGreen", oi, ovs.get(oi).getLeadGreen() + dir * 10L),
+        sec -> send("ov.leadGreen", oi, Math.round(sec * 20))));
     y += 16;
     for (int pn = 1; pn <= TrafficSignalProgrammedPhasePlan.PHASE_COUNT; pn++) {
       final int n = pn;
@@ -1168,6 +1173,11 @@ public class AdvancedSignalControllerGui extends GuiScreen {
     addHelp(lcdX, y, 76, 9, "Lag (Trailing) Green",
         "Seconds the overlap holds green after its included phases",
         "leave green, to clear turning vehicles. 0 = off.");
+    y += 12;
+    fontRenderer.drawString("Lead:", lcdX, y, COLOR_AMBER_DIM);
+    addHelp(lcdX, y, 76, 9, "Lead (Advance) Green",
+        "Seconds the overlap greens BEFORE an included phase greens,",
+        "during the preceding red clearance (within-barrier). 0 = off.");
     y += 16;
     fontRenderer.drawString("INCL", lcdX, y, COLOR_AMBER_DIM);
     addHelp(lcdX, y, 60, 9, "Included Phases",
