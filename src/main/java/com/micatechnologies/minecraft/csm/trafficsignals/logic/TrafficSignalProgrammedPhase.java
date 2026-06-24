@@ -72,6 +72,7 @@ public class TrafficSignalProgrammedPhase {
   private static final String K_PED_RECALL = "pr";
   private static final String K_DLY_GREEN = "dg";
   private static final String K_PERM_PHASE = "pp";
+  private static final String K_REST_IN_WALK = "rw";
   private static final String K_MAX2 = "x2";
   private static final String K_BIKE_MIN_GREEN = "bk";
   private static final String K_ADDED_INITIAL = "ai";
@@ -116,6 +117,8 @@ public class TrafficSignalProgrammedPhase {
   private long timeToReduce = DEFAULT_TIME_TO_REDUCE;
   private TrafficSignalRecallMode recallMode = TrafficSignalRecallMode.NONE;
   private boolean pedRecall = false;
+  /** ASC/3 REST IN WALK: hold the WALK indication while resting on this phase (vs. don't-walk). */
+  private boolean restInWalk = false;
   /**
    * ASC/3 PPLT FYA permissive phase: the opposing-through phase number whose green makes this
    * (left) phase show a flashing yellow arrow. 0 = protected-only (no FYA).
@@ -325,6 +328,14 @@ public class TrafficSignalProgrammedPhase {
     this.pedRecall = pedRecall;
   }
 
+  public boolean isRestInWalk() {
+    return restInWalk;
+  }
+
+  public void setRestInWalk(boolean restInWalk) {
+    this.restInWalk = restInWalk;
+  }
+
   // endregion
 
   // region: NBT
@@ -347,6 +358,7 @@ public class TrafficSignalProgrammedPhase {
     c.setLong(K_DLY_GREEN, delayedGreen);
     c.setInteger(K_RECALL, recallMode.toNBT());
     c.setBoolean(K_PED_RECALL, pedRecall);
+    c.setBoolean(K_REST_IN_WALK, restInWalk);
     c.setInteger(K_PERM_PHASE, permissivePhase);
     c.setLong(K_MAX2, max2);
     c.setLong(K_BIKE_MIN_GREEN, bikeMinGreen);
@@ -374,6 +386,7 @@ public class TrafficSignalProgrammedPhase {
     p.delayedGreen = c.hasKey(K_DLY_GREEN) ? c.getLong(K_DLY_GREEN) : DEFAULT_DLY_GREEN;
     p.recallMode = TrafficSignalRecallMode.fromNBT(c.getInteger(K_RECALL));
     p.pedRecall = c.getBoolean(K_PED_RECALL);
+    p.restInWalk = c.getBoolean(K_REST_IN_WALK);
     p.permissivePhase = c.hasKey(K_PERM_PHASE) ? c.getInteger(K_PERM_PHASE) : 0;
     p.max2 = c.hasKey(K_MAX2) ? c.getLong(K_MAX2) : DEFAULT_MAX2;
     p.bikeMinGreen = c.hasKey(K_BIKE_MIN_GREEN) ? c.getLong(K_BIKE_MIN_GREEN) : DEFAULT_BIKE_MIN_GREEN;

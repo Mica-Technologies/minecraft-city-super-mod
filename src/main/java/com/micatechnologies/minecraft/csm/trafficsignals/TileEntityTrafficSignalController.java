@@ -1600,6 +1600,13 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
           phase.setPedRecall(value != 0);
         }
         break;
+      case "ph.pedOpts":
+        if (phase != null) {
+          // Combined ped-recall (bit 0) + rest-in-walk (bit 1).
+          phase.setPedRecall((value & 1L) != 0L);
+          phase.setRestInWalk((value & 2L) != 0L);
+        }
+        break;
       case "ph.minGreen":
         if (phase != null) {
           phase.setMinGreen(clampTicks(value));
