@@ -185,8 +185,12 @@ class AdvancedPhaseBuilderTest {
       p.setTimeBeforeReduce(100L);
       p.setTimeToReduce(300L);
       p.setRestInWalk(true);
+      p.setDualEntry(true);
+      p.setConditionalService(true);
       TrafficSignalProgrammedPhase r = TrafficSignalProgrammedPhase.fromNBT(p.toNBT());
       assertTrue(r.isRestInWalk());
+      assertTrue(r.isDualEntry());
+      assertTrue(r.isConditionalService());
       assertEquals(60L, r.getDelayedGreen());
       assertEquals(6, r.getPermissivePhase());
       assertEquals(240L, r.getMax2());

@@ -157,4 +157,65 @@ class RingBarrierStateTest {
     assertEquals(PedInterval.WALK, rb.getLastServed(1).pedestrian,
         "rest in walk holds WALK indefinitely while resting");
   }
+
+  @Test
+  @DisplayName("dual entry: an uncalled ring companions the other ring's served barrier")
+  void dualEntry() {
+    RingBarrierState rb = new RingBarrierState();
+    TrafficSignalProgrammedPhasePlan plan = TrafficSignalProgrammedPhasePlan.createDefault();
+    plan.getCoordination().setCoordinatedPhases(new int[0]);
+    enable(plan, 2, 0); // ring 1, barrier A, circuit 0
+    enable(plan, 6, 1); // ring 2, barrier A, circuit 1
+    plan.getPhase(6).setDualEntry(true);
+    TrafficSignalControllerCircuits ckts = circuits(2);
+    // Only circuit 0 calls (phase 2). Phase 6 has no call of its own, so it should dual-enter.
+    Demand d = new Demand().veh(0, 3, 0, 0);
+
+    rb.tick(plan, ckts, NO_OVERLAPS, 0L, d);
+
+    assertEquals(2, rb.getLastServed(1).phaseNumber);
+    assertNotNull(rb.getLastServed(2), "ring 2 should serve a dual-entry companion, not be dark");
+    assertEquals(6, rb.getLastServed(2).phaseNumber);
+    assertEquals(VehInterval.GREEN, rb.getLastServed(2).vehicle);
+  }
+
+  @Test
+  @DisplayName("conditional service: a lagging left re-serves once on a fresh call before crossing")
+  void conditionalService() {
+    RingBarrierState rb = new RingBarrierState();
+    TrafficSignalProgrammedPhasePlan plan = TrafficSignalProgrammedPhasePlan.createDefault();
+    plan.getCoordination().setCoordinatedPhases(new int[0]);
+    enable(plan, 1, 0); // ring 1, barrier A, left, conditional-service
+    enable(plan, 2, 0); // ring 1, barrier A, through
+    enable(plan, 4, 1); // ring 1, barrier B — supplies conflicting demand so phases terminate
+    for (int n : new int[] {1, 2}) {
+      TrafficSignalProgrammedPhase p = plan.getPhase(n);
+      p.setMinGreen(20L);
+      p.setPassage(10L);
+      p.setYellow(20L);
+      p.setRedClear(20L);
+    }
+    plan.getPhase(1).setConditionalService(true);
+    TrafficSignalControllerCircuits ckts = circuits(2);
+
+    // Phase 1 (left) runs first, then gaps out; phase 2 runs; then the left re-acquires a call and
+    // is conditionally re-served before the barrier crosses.
+    Demand left = new Demand().veh(0, 1, 1, 0).veh(1, 1, 0, 0);   // left + through demand, conflict
+    Demand noLeft = new Demand().veh(0, 1, 0, 0).veh(1, 1, 0, 0); // left cleared, phase 2 demand
+    Demand leftBack = new Demand().veh(0, 0, 1, 0).veh(1, 1, 0, 0); // through gone, left returns
+
+    rb.tick(plan, ckts, NO_OVERLAPS, 0L, left);   // serve phase 1
+    assertEquals(1, rb.getLastServed(1).phaseNumber);
+    rb.tick(plan, ckts, NO_OVERLAPS, 40L, noLeft); // phase 1 gaps out -> yellow
+    rb.tick(plan, ckts, NO_OVERLAPS, 70L, noLeft); // yellow -> red
+    rb.tick(plan, ckts, NO_OVERLAPS, 100L, noLeft); // red clears -> phase 2 served
+    assertEquals(2, rb.getLastServed(1).phaseNumber, "phase 2 should run after phase 1 clears");
+    rb.tick(plan, ckts, NO_OVERLAPS, 140L, leftBack); // phase 2 gaps out (left back) -> yellow
+    rb.tick(plan, ckts, NO_OVERLAPS, 170L, leftBack); // yellow -> red
+    rb.tick(plan, ckts, NO_OVERLAPS, 200L, leftBack); // red clears -> conditional re-service of φ1
+
+    assertEquals(1, rb.getLastServed(1).phaseNumber,
+        "the conditional-service left should be re-served once on its fresh call");
+    assertEquals(VehInterval.GREEN, rb.getLastServed(1).vehicle);
+  }
 }

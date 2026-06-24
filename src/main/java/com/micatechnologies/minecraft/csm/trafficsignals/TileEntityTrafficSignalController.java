@@ -1608,6 +1608,13 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
           phase.setRestInWalk((value & 2L) != 0L);
         }
         break;
+      case "ph.phaseOpts":
+        if (phase != null) {
+          // Combined dual-entry (bit 0) + conditional-service (bit 1).
+          phase.setDualEntry((value & 1L) != 0L);
+          phase.setConditionalService((value & 2L) != 0L);
+        }
+        break;
       case "ph.minGreen":
         if (phase != null) {
           phase.setMinGreen(clampTicks(value));
