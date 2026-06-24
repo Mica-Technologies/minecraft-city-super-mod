@@ -155,14 +155,22 @@ screen). Each overlap has:
 - a set of **included phases**.
 
 `AdvancedPhaseBuilder.applyProgrammedOverlaps` (after the served movements + the controller-wide
-signal-map overlaps) drives the output heads from the pure decision `overlapState(included, r1, r2)`:
-**green** while any included phase is green, **yellow** while an included phase is in clearance (and
-none green), else **red**. The classic use: a right turn that runs with both its own through and the
-non-conflicting opposing left — include both phases.
+signal-map overlaps) drives the output heads. The base decision is the pure
+`overlapState(included, r1, r2)`: **green** while any included phase is green, **yellow** while an
+included phase is in clearance (and none green), else **red**. The classic use: a right turn that
+runs with both its own through and the non-conflicting opposing left — include both phases.
 
-This is the NORMAL overlap type only. FYA stays the per-phase `permissivePhase` mechanism (§4); a
-unified typed-overlap table (with `PPLT FYA` / `-GRN/YEL` types and Lead/Lag/Advance-green timers) is
-still roadmap.
+**Lag (trailing) green** (`trailGreen`, ASC/3 Lag Overlap): the overlap holds **green** for a
+configured time after its included phases leave green, to clear turning vehicles. This needs
+cross-tick state, so `RingBarrierState.computeOverlapIntervals` tracks the last-green tick per
+overlap and supplies the effective interval to the builder (the stateless base is used when no
+trailing applies). Once the trailing window expires, the overlap follows the base — typically the
+included phases' **yellow** then **red**, which provides the overlap's own clearance (size
+`trailGreen` ≤ the included phases' yellow + red clearance to keep that clean).
+
+This is the NORMAL overlap type (with lag green). FYA stays the per-phase `permissivePhase`
+mechanism (§4); the remaining typed-overlap work (`PPLT FYA` / `-GRN/YEL` types and lead/advance-green
+timers) is still roadmap.
 
 ---
 
@@ -217,8 +225,8 @@ Dual Entry and Conditional Service are set via the MAP **OPT** column, a combine
 In rough priority order (each independently shippable + testable):
 
 1. **Typed overlap subsystem (extend §4a):** add `PPLT FYA` / `-GRN/YEL` overlap types and
-   Lead/Lag/Advance-green timers, and (optionally) migrate the per-phase FYA onto the overlap table.
-   The NORMAL right-turn overlap is implemented (§4a).
+   lead/advance-green timing, and (optionally) migrate the per-phase FYA onto the overlap table.
+   The NORMAL right-turn overlap with lag (trailing) green is implemented (§4a).
 2. **Secondary ped:** Walk 2 / Ped Clear 2 / Ped Carryover.
 3. **FYA refinement:** flash permissive during the opposing through's clearance when the protected
    left is the next phase decision.
@@ -233,8 +241,9 @@ through an injectable `DemandSource` (production wraps the world; tests supply c
 
 - `RingBarrierStateTest` — drives the engine with canned demand (`Demand` helper): basic actuation,
   bike-minimum-green holding a phase under conflict, soft-recall rest selection, rest-in-walk, dual
-  entry (an uncalled ring companions the served barrier), and a timed conditional-service sequence
-  (a lagging left re-serves once on a fresh call before the barrier crosses).
+  entry (an uncalled ring companions the served barrier), a timed conditional-service sequence
+  (a lagging left re-serves once on a fresh call before the barrier crosses), and overlap lag
+  (trailing) green holding the head green past its included phase (via `getLastAppliedPhase()`).
 - `AdvancedActuationTimingTest` — the pure volume-density math (added initial, effective min/max
   green, gap-reduction ramp), tested directly.
 - `AdvancedPhaseBuilderTest` — the pure `applyFyaLensState(...)` FYA decision (all four outcomes),
