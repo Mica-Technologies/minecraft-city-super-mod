@@ -930,9 +930,16 @@ public class AdvancedSignalControllerGui extends GuiScreen {
   }
 
   private void drawHint() {
-    String hint = "Hover any label for help   ·   Arrows: select   ·   +/-: adjust   ·   "
-        + "digits+ENTER: set time   ·   ENTER: cycle";
-    fontRenderer.drawString(hint, left + 12, top + H - 106, COLOR_AMBER_DIM);
+    // The full hint is too wide for one line, so it's split in two. The first half stays in its
+    // spot just above the keypad's screen-select row (preserving the LCD's full height); the
+    // second half is tucked into the empty band at the bottom of the panel, below the ENTER /
+    // Prev / Next buttons (right of the numeric keypad's bottom row).
+    fontRenderer.drawString(
+        "Hover any label for help   ·   Arrows: select   ·   +/-: adjust",
+        left + 12, top + H - 106, COLOR_AMBER_DIM);
+    fontRenderer.drawString(
+        "digits+ENTER: set time   ·   ENTER: cycle",
+        left + 100, top + H - 14, COLOR_AMBER_DIM);
   }
 
   /** Registers hover help over the screen-select and keypad buttons (static positions). */
