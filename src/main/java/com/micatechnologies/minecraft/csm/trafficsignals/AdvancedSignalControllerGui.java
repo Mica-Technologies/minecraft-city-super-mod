@@ -88,6 +88,8 @@ public class AdvancedSignalControllerGui extends GuiScreen {
 
   private static final String[] MOVEMENT_ABBR = {"THRU", "LEFT", "PLFT", "RGHT", "PED"};
   private static final String[] RECALL_ABBR = {"NONE", "MIN", "MAX", "PED", "SOFT"};
+  // Combined ped-recall (bit 0) + rest-in-walk (bit 1) state labels for the MAP "PED" column.
+  private static final String[] PED_OPT_LABELS = {"no", "PedR", "Walk", "P+W"};
   private static final String[] TIMING_HEADERS =
       {"MnG", "Pas", "MxG", "Yel", "Red", "Wlk", "PCl", "DGn"};
   private static final String[] TIMING_ACTIONS = {"ph.minGreen", "ph.passage", "ph.maxGreen",
@@ -383,10 +385,13 @@ public class AdvancedSignalControllerGui extends GuiScreen {
           dir -> send("ph.recall", n,
               cyc(plan().getPhase(n).getRecallMode().ordinal(), dir,
                   TrafficSignalRecallMode.values().length)), null));
-      // Ped recall
+      // Ped options: combined ped recall + rest-in-walk as a 4-state cycle.
       cells.add(new Cell(colX[4], y, 40,
-          () -> plan().getPhase(n).isPedRecall() ? "PedR" : "no",
-          dir -> send("ph.pedRecall", n, plan().getPhase(n).isPedRecall() ? 0 : 1), null));
+          () -> PED_OPT_LABELS[pedOptState(plan().getPhase(n))],
+          dir -> {
+            int st = (pedOptState(plan().getPhase(n)) + (dir >= 0 ? 1 : 3)) & 3;
+            send("ph.pedOpts", n, st);
+          }, null));
       // FYA permissive phase (opposing through; 0 = protected-only)
       cells.add(new Cell(lcdX + 312, y, 44,
           () -> {
@@ -515,6 +520,11 @@ public class AdvancedSignalControllerGui extends GuiScreen {
       }
     }
     return out;
+  }
+
+  /** Combined ped-recall (bit 0) + rest-in-walk (bit 1) state for the MAP "PED" column. */
+  private static int pedOptState(TrafficSignalProgrammedPhase p) {
+    return (p.isPedRecall() ? 1 : 0) | (p.isRestInWalk() ? 2 : 0);
   }
 
   private static int cyc(int ordinal, int dir, int len) {
@@ -938,8 +948,9 @@ public class AdvancedSignalControllerGui extends GuiScreen {
         {"Recall (RECALL)", "NONE actuated (served only on a call) · MIN recall",
             "to min green · MAX hold to max green · PED recall a",
             "walk each cycle · SOFT rest here when nothing else calls."},
-        {"Ped Recall (PED)", "PedR = place a pedestrian (Walk) call every cycle",
-            "even with no button press. 'no' = button only."},
+        {"Ped Options (PED)", "PedR = recall a Walk every cycle (no button needed).",
+            "Walk = rest in walk (hold WALK while resting here).",
+            "P+W = both. 'no' = button-only, don't-walk at rest."},
         {"Flashing Yellow Arrow (FYA)", "For a left phase: the opposing-through phase whose",
             "green makes this left flash yellow (permissive). PnN =",
             "that phase; '--' = protected-only (no FYA)."},

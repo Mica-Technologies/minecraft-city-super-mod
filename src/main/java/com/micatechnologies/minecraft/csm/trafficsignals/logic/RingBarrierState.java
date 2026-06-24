@@ -459,7 +459,8 @@ public class RingBarrierState {
     currentBarrier = phase.getBarrier();
     startGreen(ring, phase, now);
     ring.resting = true;
-    ring.pedServing = false;
+    // Rest in Walk: hold the WALK indication on this phase while resting; otherwise don't-walk.
+    ring.pedServing = phase.isRestInWalk();
     ring.delayActive = false; // a coordinated rest phase does not run a leading ped interval
     // Align the sequence position with the rest phase so the cycle resumes cleanly on demand.
     int[] seq = plan.getRingSequence(ringNum);
@@ -477,6 +478,14 @@ public class RingBarrierState {
     for (int n : seq) {
       TrafficSignalProgrammedPhase phase = plan.getPhase(n);
       if (phase != null && phase.isActive() && plan.getCoordination().isCoordinatedPhase(n)) {
+        return n;
+      }
+    }
+    // Then a Soft Recall phase: the configured place to rest when nothing else is calling.
+    for (int n : seq) {
+      TrafficSignalProgrammedPhase phase = plan.getPhase(n);
+      if (phase != null && phase.isActive()
+          && phase.getRecallMode() == TrafficSignalRecallMode.SOFT) {
         return n;
       }
     }
@@ -792,13 +801,18 @@ public class RingBarrierState {
     if (ring.pedServing && ring.interval == VehInterval.GREEN) {
       TrafficSignalProgrammedPhase phase = plan.getPhase(ring.activePhase);
       if (phase != null) {
-        long pedElapsed = now - ring.pedStart;
-        if (pedElapsed < ring.walkHold) {
+        if (ring.resting && phase.isRestInWalk()) {
+          // Rest in Walk: the WALK is held for as long as the controller rests here.
           ped = PedInterval.WALK;
-        } else if (pedElapsed < ring.walkHold + phase.getPedClear()) {
-          ped = PedInterval.FDW;
         } else {
-          ped = PedInterval.DONT_WALK;
+          long pedElapsed = now - ring.pedStart;
+          if (pedElapsed < ring.walkHold) {
+            ped = PedInterval.WALK;
+          } else if (pedElapsed < ring.walkHold + phase.getPedClear()) {
+            ped = PedInterval.FDW;
+          } else {
+            ped = PedInterval.DONT_WALK;
+          }
         }
       }
     }
