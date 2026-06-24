@@ -90,7 +90,11 @@ public class RingBarrierState {
   // Per-tick context / scratch (set at the top of each tick()).
   private World tickWorld;
   private TrafficSignalControllerCircuits tickCircuits;
-  private final Map<Integer, TrafficSignalSensorSummary> summaryCache = new HashMap<>();
+  /** Source of detector/ped demand for this tick. World-backed in production, canned in tests. */
+  private DemandSource demand;
+  /** Last movements described this tick (exposed package-private for unit tests). */
+  private ServedMovement lastServed1;
+  private ServedMovement lastServed2;
 
   // Per-tick coordination state (computed from the plan each tick; all no-ops in FREE mode).
   private static final int PHASE_SLOTS = TrafficSignalProgrammedPhasePlan.PHASE_COUNT + 1;
@@ -101,14 +105,76 @@ public class RingBarrierState {
   private final boolean[] coordPhase = new boolean[PHASE_SLOTS];
 
   /**
+   * Source of per-tick detector and pedestrian demand. Production wraps the world; unit tests
+   * supply canned data so the ring-and-barrier engine can be exercised without a Minecraft world.
+   */
+  public interface DemandSource {
+    /** Sensor summary for the given circuit index, or {@code null} if unavailable. */
+    TrafficSignalSensorSummary summaryForCircuit(int circuitIndex);
+
+    /** Whether a pedestrian (button) request is present on the given circuit. */
+    boolean pedestrianRequest(int circuitIndex);
+  }
+
+  /** World-backed {@link DemandSource} used in production (caches summaries per tick). */
+  private static final class WorldDemandSource implements DemandSource {
+    private final World world;
+    private final TrafficSignalControllerCircuits circuits;
+    private final Map<Integer, TrafficSignalSensorSummary> cache = new HashMap<>();
+
+    WorldDemandSource(World world, TrafficSignalControllerCircuits circuits) {
+      this.world = world;
+      this.circuits = circuits;
+    }
+
+    @Override
+    public TrafficSignalSensorSummary summaryForCircuit(int ci) {
+      if (world == null || circuits == null || ci < 0 || ci >= circuits.getCircuitCount()) {
+        return null;
+      }
+      return cache.computeIfAbsent(ci,
+          idx -> circuits.getCircuit(idx).getSensorsWaitingSummary(world));
+    }
+
+    @Override
+    public boolean pedestrianRequest(int ci) {
+      if (world == null || circuits == null || ci < 0 || ci >= circuits.getCircuitCount()) {
+        return false;
+      }
+      return circuits.getCircuit(ci).getPedestrianAccessoriesRequestCount(world) > 0;
+    }
+  }
+
+  /** The movement ring {@code n} (1 or 2) was last described as serving this tick, or null. */
+  ServedMovement getLastServed(int ringNumber) {
+    return ringNumber == 2 ? lastServed2 : lastServed1;
+  }
+
+  /**
    * Advances the controller one tick and returns the phase to apply, or {@code null} if the
    * displayed indication is unchanged since the last applied phase.
    */
   public TrafficSignalPhase tick(World world, TrafficSignalProgrammedPhasePlan plan,
       TrafficSignalControllerCircuits circuits, TrafficSignalControllerOverlaps overlaps, long now) {
+    return tick(plan, circuits, overlaps, now, new WorldDemandSource(world, circuits), world);
+  }
+
+  /**
+   * World-free tick entry point for unit tests: drives the engine with a canned {@link DemandSource}
+   * and no Minecraft world. Inspect the result via {@link #getLastServed(int)}.
+   */
+  TrafficSignalPhase tick(TrafficSignalProgrammedPhasePlan plan,
+      TrafficSignalControllerCircuits circuits, TrafficSignalControllerOverlaps overlaps, long now,
+      DemandSource demandSource) {
+    return tick(plan, circuits, overlaps, now, demandSource, null);
+  }
+
+  private TrafficSignalPhase tick(TrafficSignalProgrammedPhasePlan plan,
+      TrafficSignalControllerCircuits circuits, TrafficSignalControllerOverlaps overlaps, long now,
+      DemandSource demandSource, World world) {
     this.tickWorld = world;
     this.tickCircuits = circuits;
-    summaryCache.clear();
+    this.demand = demandSource;
 
     // Compute coordination windows for this tick (no-op in FREE mode).
     computeCoordination(plan, now);
@@ -145,6 +211,8 @@ public class RingBarrierState {
     // 4. Build and (only if changed) return the displayed phase.
     ServedMovement m1 = describe(ring1, plan, now);
     ServedMovement m2 = describe(ring2, plan, now);
+    this.lastServed1 = m1;
+    this.lastServed2 = m2;
     return changedOrNull(AdvancedPhaseBuilder.build(world, plan, circuits, overlaps, m1, m2));
   }
 
@@ -559,25 +627,11 @@ public class RingBarrierState {
   }
 
   private boolean pedRequestPresent(TrafficSignalProgrammedPhase phase) {
-    TrafficSignalControllerCircuit circuit = circuitFor(phase);
-    return circuit != null && tickWorld != null
-        && circuit.getPedestrianAccessoriesRequestCount(tickWorld) > 0;
+    return demand != null && phase != null && demand.pedestrianRequest(phase.getCircuitIndex());
   }
 
   private TrafficSignalSensorSummary summaryForCircuit(int ci) {
-    if (tickCircuits == null || tickWorld == null || ci < 0 || ci >= tickCircuits.getCircuitCount()) {
-      return null;
-    }
-    return summaryCache.computeIfAbsent(ci,
-        idx -> tickCircuits.getCircuit(idx).getSensorsWaitingSummary(tickWorld));
-  }
-
-  private TrafficSignalControllerCircuit circuitFor(TrafficSignalProgrammedPhase phase) {
-    int ci = phase.getCircuitIndex();
-    if (tickCircuits == null || ci < 0 || ci >= tickCircuits.getCircuitCount()) {
-      return null;
-    }
-    return tickCircuits.getCircuit(ci);
+    return demand == null ? null : demand.summaryForCircuit(ci);
   }
 
   // endregion
