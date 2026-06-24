@@ -3920,6 +3920,12 @@ class TrafficSignalControllerTickerUtilitiesTest {
           "Left-side protected (bike) must be RED concurrent with a protected left arrow");
       assertFalse(phase.getGreenSignals().contains(MATCHING_PROTECTED),
           "Protected must NOT be green concurrent with a solid green left");
+      // Cross-direction promotion: with the matching bike forced red by the protected left, the
+      // matching right has nothing to yield to and runs solid green (not FYA).
+      assertTrue(phase.getGreenSignals().contains(MATCHING_RIGHT),
+          "Matching right should be solid GREEN once its bike is red for the protected left");
+      assertFalse(phase.getFyaSignals().contains(MATCHING_FLASHING_RIGHT),
+          "Matching FYA-right head should be off (solid green right showing), not flashing");
     }
 
     @Test
@@ -4637,6 +4643,48 @@ class TrafficSignalControllerTickerUtilitiesTest {
           "Solid right arrow should be GREEN when the right wins arbitration");
       assertTrue(phase.getRedSignals().contains(prot),
           "Same-facing bike must be RED concurrent with a solid green right");
+    }
+
+    @Test
+    @DisplayName("protected left greens an opposing right and reds all bikes (cross-direction)")
+    void protectedLeft_promotesRight_redsBikes() {
+      BlockPos left = new BlockPos(2, 0, 0);    // north protected left
+      BlockPos right = new BlockPos(4, 0, 0);   // south right turn
+      BlockPos bike = new BlockPos(5, 0, 0);    // south bike (conflicts with the south right)
+      BlockPos through = new BlockPos(6, 0, 0);
+
+      TrafficSignalControllerCircuit circuit = emptyCircuit();
+      circuit.getLeftSignals().add(left);
+      circuit.getRightSignals().add(right);
+      circuit.getProtectedSignals().add(bike);
+      circuit.getThroughSignals().add(through);
+
+      java.util.Map<BlockPos, net.minecraft.util.EnumFacing> facings = new java.util.HashMap<>();
+      facings.put(left, net.minecraft.util.EnumFacing.NORTH);
+      facings.put(right, net.minecraft.util.EnumFacing.SOUTH);
+      facings.put(bike, net.minecraft.util.EnumFacing.SOUTH);
+      facings.put(through, net.minecraft.util.EnumFacing.SOUTH);
+
+      TrafficSignalPhase phase = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.ALL_THROUGHS_PROTECTEDS);
+
+      // North left runs protected (greenLeft={NORTH}); no right won bike arbitration (greenRight
+      // empty). The protected left reds every bike circuit-wide, which clears the south right's
+      // conflict so it is promoted to solid green even though it did not win arbitration itself.
+      TrafficSignalControllerTickerUtilities.buildAllThroughsProtectedsActivePhase(
+          (java.util.function.Function<BlockPos, net.minecraft.util.EnumFacing>) facings::get,
+          circuit, phase,
+          java.util.EnumSet.of(net.minecraft.util.EnumFacing.NORTH),
+          java.util.EnumSet.noneOf(net.minecraft.util.EnumFacing.class));
+
+      assertTrue(phase.getGreenSignals().contains(left),
+          "Protected left arrow should be GREEN");
+      assertTrue(phase.getRedSignals().contains(bike),
+          "Bike must be RED circuit-wide because a protected turn runs");
+      assertTrue(phase.getGreenSignals().contains(right),
+          "South right is promoted to solid GREEN (its bike is red — no conflict left)");
+      assertFalse(phase.getRedSignals().contains(right),
+          "South right should not be red once its bike conflict is cleared");
     }
   }
 
