@@ -27,6 +27,7 @@ public class TrafficSignalProgrammedOverlap {
   private static final String K_OUT_CIRCUIT = "oc";
   private static final String K_OUT_MOVEMENT = "om";
   private static final String K_INCLUDED = "in";
+  private static final String K_TRAIL_GREEN = "tg";
 
   private boolean enabled = false;
   /** Circuit whose signal heads this overlap drives, or -1 if unassigned. */
@@ -35,6 +36,12 @@ public class TrafficSignalProgrammedOverlap {
   private TrafficSignalPhaseMovement outputMovement = TrafficSignalPhaseMovement.RIGHT;
   /** Phases whose green/yellow drives this overlap. */
   private int[] includedPhases = new int[0];
+  /**
+   * ASC/3 lag (trailing) green: the overlap holds green this many ticks after its included phases
+   * leave green, to clear turning vehicles. The included phases' yellow/red then provide clearance.
+   * 0 = no trailing green.
+   */
+  private long trailGreen = 0L;
 
   // region: accessors
 
@@ -75,6 +82,14 @@ public class TrafficSignalProgrammedOverlap {
     this.includedPhases = includedPhases == null ? new int[0] : includedPhases;
   }
 
+  public long getTrailGreen() {
+    return trailGreen;
+  }
+
+  public void setTrailGreen(long trailGreen) {
+    this.trailGreen = trailGreen;
+  }
+
   // endregion
 
   // region: NBT
@@ -85,6 +100,7 @@ public class TrafficSignalProgrammedOverlap {
     c.setInteger(K_OUT_CIRCUIT, outputCircuitIndex);
     c.setInteger(K_OUT_MOVEMENT, outputMovement.toNBT());
     c.setIntArray(K_INCLUDED, includedPhases);
+    c.setLong(K_TRAIL_GREEN, trailGreen);
     return c;
   }
 
@@ -94,6 +110,7 @@ public class TrafficSignalProgrammedOverlap {
     o.outputCircuitIndex = c.hasKey(K_OUT_CIRCUIT) ? c.getInteger(K_OUT_CIRCUIT) : -1;
     o.outputMovement = TrafficSignalPhaseMovement.fromNBT(c.getInteger(K_OUT_MOVEMENT));
     o.includedPhases = c.hasKey(K_INCLUDED) ? c.getIntArray(K_INCLUDED) : new int[0];
+    o.trailGreen = c.hasKey(K_TRAIL_GREEN) ? c.getLong(K_TRAIL_GREEN) : 0L;
     return o;
   }
 
