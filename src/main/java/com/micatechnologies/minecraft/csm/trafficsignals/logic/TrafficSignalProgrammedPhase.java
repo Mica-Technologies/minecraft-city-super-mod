@@ -36,6 +36,20 @@ public class TrafficSignalProgrammedPhase {
   public static final long DEFAULT_PED_CLEAR = 200L;
   /** Default delayed green (ASC/3 DLY GRN / leading ped interval): 0 = off. */
   public static final long DEFAULT_DLY_GREEN = 0L;
+  /** Default secondary max green (ASC/3 MAX 2): 0 = disabled (use Max 1). */
+  public static final long DEFAULT_MAX2 = 0L;
+  /** Default bike minimum green (ASC/3 BK MGRN): 0 = off. */
+  public static final long DEFAULT_BIKE_MIN_GREEN = 0L;
+  /** Default added-initial per waiting vehicle (volume-density): 0 = off. */
+  public static final long DEFAULT_ADDED_INITIAL = 0L;
+  /** Default max initial (volume-density cap on added initial): 0 = no cap contribution. */
+  public static final long DEFAULT_MAX_INITIAL = 0L;
+  /** Default minimum gap (volume-density gap reduction floor): 0 = no reduction. */
+  public static final long DEFAULT_MIN_GAP = 0L;
+  /** Default time-before-reduction (volume-density): 0 = reduce from green start. */
+  public static final long DEFAULT_TIME_B4_REDUCE = 0L;
+  /** Default time-to-reduce (volume-density): 0 = gap reduction disabled. */
+  public static final long DEFAULT_TIME_TO_REDUCE = 0L;
 
   // endregion
 
@@ -58,6 +72,13 @@ public class TrafficSignalProgrammedPhase {
   private static final String K_PED_RECALL = "pr";
   private static final String K_DLY_GREEN = "dg";
   private static final String K_PERM_PHASE = "pp";
+  private static final String K_MAX2 = "x2";
+  private static final String K_BIKE_MIN_GREEN = "bk";
+  private static final String K_ADDED_INITIAL = "ai";
+  private static final String K_MAX_INITIAL = "xi";
+  private static final String K_MIN_GAP = "mn";
+  private static final String K_TIME_B4_REDUCE = "t4";
+  private static final String K_TIME_TO_REDUCE = "tr";
 
   // endregion
 
@@ -79,6 +100,20 @@ public class TrafficSignalProgrammedPhase {
   private long pedClear = DEFAULT_PED_CLEAR;
   /** ASC/3 DLY GRN: vehicle green delayed from start of walk (leading ped interval). 0 = off. */
   private long delayedGreen = DEFAULT_DLY_GREEN;
+  /** ASC/3 MAX 2: secondary maximum green, used in coordinated operation when set. */
+  private long max2 = DEFAULT_MAX2;
+  /** ASC/3 BK MGRN: minimum green guaranteed when a bike call is present at green start. */
+  private long bikeMinGreen = DEFAULT_BIKE_MIN_GREEN;
+  /** Volume-density: extra guaranteed initial green per waiting vehicle at green start. */
+  private long addedInitial = DEFAULT_ADDED_INITIAL;
+  /** Volume-density: cap on the computed added-initial green. */
+  private long maxInitial = DEFAULT_MAX_INITIAL;
+  /** Volume-density: gap-reduction floor (the passage shrinks toward this). */
+  private long minGap = DEFAULT_MIN_GAP;
+  /** Volume-density: green time before gap reduction begins. */
+  private long timeBeforeReduce = DEFAULT_TIME_B4_REDUCE;
+  /** Volume-density: duration over which the passage reduces from its value to the min gap. */
+  private long timeToReduce = DEFAULT_TIME_TO_REDUCE;
   private TrafficSignalRecallMode recallMode = TrafficSignalRecallMode.NONE;
   private boolean pedRecall = false;
   /**
@@ -218,6 +253,62 @@ public class TrafficSignalProgrammedPhase {
     this.permissivePhase = permissivePhase;
   }
 
+  public long getMax2() {
+    return max2;
+  }
+
+  public void setMax2(long max2) {
+    this.max2 = max2;
+  }
+
+  public long getBikeMinGreen() {
+    return bikeMinGreen;
+  }
+
+  public void setBikeMinGreen(long bikeMinGreen) {
+    this.bikeMinGreen = bikeMinGreen;
+  }
+
+  public long getAddedInitial() {
+    return addedInitial;
+  }
+
+  public void setAddedInitial(long addedInitial) {
+    this.addedInitial = addedInitial;
+  }
+
+  public long getMaxInitial() {
+    return maxInitial;
+  }
+
+  public void setMaxInitial(long maxInitial) {
+    this.maxInitial = maxInitial;
+  }
+
+  public long getMinGap() {
+    return minGap;
+  }
+
+  public void setMinGap(long minGap) {
+    this.minGap = minGap;
+  }
+
+  public long getTimeBeforeReduce() {
+    return timeBeforeReduce;
+  }
+
+  public void setTimeBeforeReduce(long timeBeforeReduce) {
+    this.timeBeforeReduce = timeBeforeReduce;
+  }
+
+  public long getTimeToReduce() {
+    return timeToReduce;
+  }
+
+  public void setTimeToReduce(long timeToReduce) {
+    this.timeToReduce = timeToReduce;
+  }
+
   public TrafficSignalRecallMode getRecallMode() {
     return recallMode;
   }
@@ -257,6 +348,13 @@ public class TrafficSignalProgrammedPhase {
     c.setInteger(K_RECALL, recallMode.toNBT());
     c.setBoolean(K_PED_RECALL, pedRecall);
     c.setInteger(K_PERM_PHASE, permissivePhase);
+    c.setLong(K_MAX2, max2);
+    c.setLong(K_BIKE_MIN_GREEN, bikeMinGreen);
+    c.setLong(K_ADDED_INITIAL, addedInitial);
+    c.setLong(K_MAX_INITIAL, maxInitial);
+    c.setLong(K_MIN_GAP, minGap);
+    c.setLong(K_TIME_B4_REDUCE, timeBeforeReduce);
+    c.setLong(K_TIME_TO_REDUCE, timeToReduce);
     return c;
   }
 
@@ -277,6 +375,14 @@ public class TrafficSignalProgrammedPhase {
     p.recallMode = TrafficSignalRecallMode.fromNBT(c.getInteger(K_RECALL));
     p.pedRecall = c.getBoolean(K_PED_RECALL);
     p.permissivePhase = c.hasKey(K_PERM_PHASE) ? c.getInteger(K_PERM_PHASE) : 0;
+    p.max2 = c.hasKey(K_MAX2) ? c.getLong(K_MAX2) : DEFAULT_MAX2;
+    p.bikeMinGreen = c.hasKey(K_BIKE_MIN_GREEN) ? c.getLong(K_BIKE_MIN_GREEN) : DEFAULT_BIKE_MIN_GREEN;
+    p.addedInitial = c.hasKey(K_ADDED_INITIAL) ? c.getLong(K_ADDED_INITIAL) : DEFAULT_ADDED_INITIAL;
+    p.maxInitial = c.hasKey(K_MAX_INITIAL) ? c.getLong(K_MAX_INITIAL) : DEFAULT_MAX_INITIAL;
+    p.minGap = c.hasKey(K_MIN_GAP) ? c.getLong(K_MIN_GAP) : DEFAULT_MIN_GAP;
+    p.timeBeforeReduce =
+        c.hasKey(K_TIME_B4_REDUCE) ? c.getLong(K_TIME_B4_REDUCE) : DEFAULT_TIME_B4_REDUCE;
+    p.timeToReduce = c.hasKey(K_TIME_TO_REDUCE) ? c.getLong(K_TIME_TO_REDUCE) : DEFAULT_TIME_TO_REDUCE;
     return p;
   }
 

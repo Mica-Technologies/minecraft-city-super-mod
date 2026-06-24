@@ -73,6 +73,10 @@ public class RingBarrierState {
     boolean delayActive = false;
     long delayStart = 0L;
     long walkHold = 0L;
+    // Volume-density snapshots captured at green start: the queue length (for added initial) and
+    // whether a bike call was present (for bike minimum green).
+    long queueAtStart = 0L;
+    boolean bikeCall = false;
   }
 
   private int currentBarrier = 0;
@@ -275,10 +279,21 @@ public class RingBarrierState {
         int phaseNum = ring.activePhase;
         boolean isCoord = coordinated && coordPhase[phaseNum];
         long greenElapsed = now - ring.greenStart;
-        boolean minMet = greenElapsed >= phase.getMinGreen();
+        // Volume-density: minimum green is extended by added initial (queue at start) and bike
+        // minimum green; the passage gaps shorter as green runs on; Max 2 replaces Max 1 in
+        // coordinated operation when set.
+        long addedInit = AdvancedActuationTiming.addedInitial(
+            ring.queueAtStart, phase.getAddedInitial(), phase.getMaxInitial());
+        long effMinGreen = AdvancedActuationTiming.effectiveMinGreen(
+            phase.getMinGreen(), addedInit, phase.getBikeMinGreen(), ring.bikeCall);
+        long effMaxGreen = AdvancedActuationTiming.effectiveMaxGreen(
+            phase.getMaxGreen(), phase.getMax2(), coordinated);
+        long effPassage = AdvancedActuationTiming.effectivePassage(phase.getPassage(),
+            phase.getMinGap(), phase.getTimeBeforeReduce(), phase.getTimeToReduce(), greenElapsed);
+        boolean minMet = greenElapsed >= effMinGreen;
         // The coordinated phase rests in green (no max-out); it yields only to a called phase.
-        boolean maxOut = !ring.resting && !isCoord && greenElapsed >= phase.getMaxGreen();
-        boolean gapOut = (now - ring.lastActuation) >= phase.getPassage();
+        boolean maxOut = !ring.resting && !isCoord && greenElapsed >= effMaxGreen;
+        boolean gapOut = (now - ring.lastActuation) >= effPassage;
         boolean pedDone = !ring.pedServing
             || (now - ring.pedStart) >= (ring.walkHold + phase.getPedClear());
         boolean conflict = conflictingDemand(called);
@@ -363,6 +378,10 @@ public class RingBarrierState {
     ring.delayActive = ped && phase.getDelayedGreen() > 0L;
     ring.delayStart = now;
     ring.walkHold = ped ? Math.max(phase.getWalk(), phase.getDelayedGreen()) : phase.getWalk();
+    // Volume-density / bike snapshots at green start.
+    ring.queueAtStart = vehicleCount(phase);
+    TrafficSignalSensorSummary startSummary = summaryForCircuit(phase.getCircuitIndex());
+    ring.bikeCall = startSummary != null && startSummary.getProtectedTotal() > 0;
   }
 
   // endregion

@@ -35,7 +35,7 @@ import org.lwjgl.input.Keyboard;
  */
 public class AdvancedSignalControllerGui extends GuiScreen {
 
-  private enum Screen { STATUS, TIMING, MAP, COORD, PREEMPT }
+  private enum Screen { STATUS, TIMING, MAP, COORD, PREEMPT, ACT }
 
   // Palette — controller front panel.
   private static final int COLOR_BODY = 0xFF23272B;
@@ -60,7 +60,7 @@ public class AdvancedSignalControllerGui extends GuiScreen {
   private static final int BTN_DOWN = 216;
   private static final int BTN_LEFT = 217;
   private static final int BTN_RIGHT = 218;
-  private static final int BTN_SCREEN_BASE = 220; // 220..224 -> STATUS..PREEMPT
+  private static final int BTN_SCREEN_BASE = 220; // 220..225 -> STATUS..PREEMPT, ACT
   private static final int BTN_TEMPLATE = 225;
   private static final int BTN_CLOSE = 226;
   private static final int BTN_PE_ADD = 227;
@@ -92,6 +92,12 @@ public class AdvancedSignalControllerGui extends GuiScreen {
       {"MnG", "Pas", "MxG", "Yel", "Red", "Wlk", "PCl", "DGn"};
   private static final String[] TIMING_ACTIONS = {"ph.minGreen", "ph.passage", "ph.maxGreen",
       "ph.yellow", "ph.redClear", "ph.walk", "ph.pedClear", "ph.dlyGreen"};
+  // ACT (actuation / volume-density) screen: Max 2, Bike Min Green, Added Initial, Max Initial,
+  // Min Gap, Time-Before-Reduce, Time-To-Reduce.
+  private static final String[] ACT_HEADERS =
+      {"Mx2", "BkG", "AdI", "MxI", "Gap", "TB4", "TTR"};
+  private static final String[] ACT_ACTIONS = {"ph.max2", "ph.bikeMinGreen", "ph.addedInitial",
+      "ph.maxInitial", "ph.minGap", "ph.timeB4Reduce", "ph.timeToReduce"};
 
   private final TileEntityTrafficSignalController controller;
   private final BlockPos blockPos;
@@ -208,9 +214,9 @@ public class AdvancedSignalControllerGui extends GuiScreen {
     // Screen-select row across the top of the keypad.
     int sx = left + 12;
     int sy = top + H - 94;
-    String[] names = {"STATUS", "TIMING", "MAP", "COORD", "PREEMPT"};
+    String[] names = {"STATUS", "TIMING", "MAP", "COORD", "PREEMPT", "ACT"};
     for (int i = 0; i < names.length; i++) {
-      buttonList.add(new GuiButton(BTN_SCREEN_BASE + i, sx + i * 62, sy, 58, 14, names[i]));
+      buttonList.add(new GuiButton(BTN_SCREEN_BASE + i, sx + i * 52, sy, 49, 14, names[i]));
     }
 
     // Numeric keypad (left cluster).
@@ -276,6 +282,9 @@ public class AdvancedSignalControllerGui extends GuiScreen {
       case PREEMPT:
         buildPreemptCells();
         break;
+      case ACT:
+        buildActCells();
+        break;
       case STATUS:
       default:
         break;
@@ -298,6 +307,41 @@ public class AdvancedSignalControllerGui extends GuiScreen {
             dir -> send(action, n, timingValue(plan().getPhase(n), fieldIdx) + dir * 10L),
             sec -> send(action, n, Math.round(sec * 20))));
       }
+    }
+  }
+
+  private void buildActCells() {
+    int rowH = 11;
+    int colW = (lcdW - 24) / ACT_HEADERS.length;
+    int y0 = lcdY + TABLE_BODY_DY;
+    for (int pn = 1; pn <= TrafficSignalProgrammedPhasePlan.PHASE_COUNT; pn++) {
+      final int n = pn;
+      int y = y0 + (pn - 1) * rowH;
+      for (int ci = 0; ci < ACT_ACTIONS.length; ci++) {
+        final int fieldIdx = ci;
+        final String action = ACT_ACTIONS[ci];
+        int x = lcdX + 24 + ci * colW;
+        cells.add(new Cell(x, y, colW - 2,
+            () -> secs(actValue(plan().getPhase(n), fieldIdx)),
+            dir -> send(action, n, actValue(plan().getPhase(n), fieldIdx) + dir * 10L),
+            sec -> send(action, n, Math.round(sec * 20))));
+      }
+    }
+  }
+
+  private long actValue(TrafficSignalProgrammedPhase p, int fieldIdx) {
+    if (p == null) {
+      return 0;
+    }
+    switch (fieldIdx) {
+      case 0: return p.getMax2();
+      case 1: return p.getBikeMinGreen();
+      case 2: return p.getAddedInitial();
+      case 3: return p.getMaxInitial();
+      case 4: return p.getMinGap();
+      case 5: return p.getTimeBeforeReduce();
+      case 6: return p.getTimeToReduce();
+      default: return 0;
     }
   }
 
@@ -522,7 +566,7 @@ public class AdvancedSignalControllerGui extends GuiScreen {
       moveSelection(-1);
     } else if (id == BTN_DOWN || id == BTN_RIGHT) {
       moveSelection(1);
-    } else if (id >= BTN_SCREEN_BASE && id <= BTN_SCREEN_BASE + 4) {
+    } else if (id >= BTN_SCREEN_BASE && id <= BTN_SCREEN_BASE + 5) {
       screen = Screen.values()[id - BTN_SCREEN_BASE];
       rebuildCells();
     } else if (id == BTN_TEMPLATE) {
@@ -685,6 +729,9 @@ public class AdvancedSignalControllerGui extends GuiScreen {
       case PREEMPT:
         drawPreempt();
         break;
+      case ACT:
+        drawAct();
+        break;
       default:
         break;
     }
@@ -826,6 +873,42 @@ public class AdvancedSignalControllerGui extends GuiScreen {
         TrafficSignalProgrammedPhasePlan.PHASE_COUNT * rowH, "Phase φ1–φ8",
         "NEMA phase number. See the STATUS screen for how these",
         "phases are arranged into rings and barriers.");
+  }
+
+  private void drawAct() {
+    fontRenderer.drawString("ACTUATION / VOLUME-DENSITY (seconds)", lcdX, lcdY, COLOR_AMBER_HEAD);
+    int colW = (lcdW - 24) / ACT_HEADERS.length;
+    for (int i = 0; i < ACT_HEADERS.length; i++) {
+      fontRenderer.drawString(ACT_HEADERS[i], lcdX + 24 + i * colW, lcdY + 12, COLOR_AMBER_DIM);
+    }
+    int rowH = 11;
+    for (int pn = 1; pn <= TrafficSignalProgrammedPhasePlan.PHASE_COUNT; pn++) {
+      int y = lcdY + TABLE_BODY_DY + (pn - 1) * rowH;
+      TrafficSignalProgrammedPhase p = plan().getPhase(pn);
+      int color = p != null && p.isActive() ? COLOR_AMBER : COLOR_AMBER_DIM;
+      fontRenderer.drawString("φ" + pn, lcdX, y, color);
+    }
+    int colHelpH = (TABLE_BODY_DY - 12) + TrafficSignalProgrammedPhasePlan.PHASE_COUNT * rowH;
+    String[][] colHelp = {
+        {"Max Green 2 (Mx2)", "Secondary max green, used in coordinated operation",
+            "when set. 0 = always use Max Green (the TIMING screen)."},
+        {"Bike Min Green (BkG)", "Minimum green guaranteed when a bicycle is detected",
+            "at green start. 0 = off."},
+        {"Added Initial (AdI)", "Extra guaranteed initial green per vehicle waiting at",
+            "green start (volume-density). 0 = off."},
+        {"Max Initial (MxI)", "Cap on the added-initial green. 0 = uncapped."},
+        {"Min Gap (Gap)", "Floor the passage/gap shrinks toward as the green runs",
+            "on (gap reduction). 0 = no reduction."},
+        {"Time Before Reduce (TB4)", "Green time before gap reduction begins."},
+        {"Time To Reduce (TTR)", "Ramp time from the full passage down to the min gap.",
+            "0 = gap reduction disabled."},
+    };
+    for (int i = 0; i < ACT_HEADERS.length; i++) {
+      addHelp(lcdX + 24 + i * colW, lcdY + 12, colW, colHelpH, colHelp[i]);
+    }
+    addHelp(lcdX, lcdY + TABLE_BODY_DY, 22,
+        TrafficSignalProgrammedPhasePlan.PHASE_COUNT * rowH, "Phase φ1–φ8",
+        "NEMA phase number. Volume-density and Max-2 timing per phase.");
   }
 
   private void drawMap() {
@@ -984,6 +1067,9 @@ public class AdvancedSignalControllerGui extends GuiScreen {
     addButtonHelp(BTN_SCREEN_BASE + 4, "PREEMPT",
         "Railroad / emergency / transit preemption sequences",
         "and the phases they clear, hold and exit through.");
+    addButtonHelp(BTN_SCREEN_BASE + 5, "ACT",
+        "Actuation / volume-density timing: Max 2, bike min green,",
+        "added/max initial, and gap reduction (min gap, TB4, TTR).");
     addButtonHelp(BTN_TEMPLATE, "Load Std 8-Phase",
         "Overwrites the plan with a standard NEMA 8-phase dual-ring",
         "layout and auto-assigns phases to your circuits by approach.",
