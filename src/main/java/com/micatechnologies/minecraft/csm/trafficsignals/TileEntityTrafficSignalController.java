@@ -1648,6 +1648,41 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
               Math.min(TrafficSignalProgrammedPhasePlan.PHASE_COUNT, pp)));
         }
         break;
+      case "ph.max2":
+        if (phase != null) {
+          phase.setMax2(clampTicks(value));
+        }
+        break;
+      case "ph.bikeMinGreen":
+        if (phase != null) {
+          phase.setBikeMinGreen(clampTicks(value));
+        }
+        break;
+      case "ph.addedInitial":
+        if (phase != null) {
+          phase.setAddedInitial(clampTicks(value));
+        }
+        break;
+      case "ph.maxInitial":
+        if (phase != null) {
+          phase.setMaxInitial(clampTicks(value));
+        }
+        break;
+      case "ph.minGap":
+        if (phase != null) {
+          phase.setMinGap(clampTicks(value));
+        }
+        break;
+      case "ph.timeB4Reduce":
+        if (phase != null) {
+          phase.setTimeBeforeReduce(clampTicks(value));
+        }
+        break;
+      case "ph.timeToReduce":
+        if (phase != null) {
+          phase.setTimeToReduce(clampTicks(value));
+        }
+        break;
       case "co.mode":
         plan.getCoordination().setMode(TrafficSignalCoordinationMode.fromNBT((int) value));
         break;
