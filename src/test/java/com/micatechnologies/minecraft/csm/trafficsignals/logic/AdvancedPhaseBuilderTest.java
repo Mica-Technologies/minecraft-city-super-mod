@@ -97,14 +97,28 @@ class AdvancedPhaseBuilderTest {
   class PhaseNbtTest {
 
     @Test
-    @DisplayName("delayedGreen and permissivePhase round-trip through NBT")
+    @DisplayName("all advanced phase fields round-trip through NBT")
     void roundTrip() {
       TrafficSignalProgrammedPhase p = new TrafficSignalProgrammedPhase(1, 1, 0);
       p.setDelayedGreen(60L);
       p.setPermissivePhase(6);
+      p.setMax2(240L);
+      p.setBikeMinGreen(180L);
+      p.setAddedInitial(40L);
+      p.setMaxInitial(200L);
+      p.setMinGap(20L);
+      p.setTimeBeforeReduce(100L);
+      p.setTimeToReduce(300L);
       TrafficSignalProgrammedPhase r = TrafficSignalProgrammedPhase.fromNBT(p.toNBT());
       assertEquals(60L, r.getDelayedGreen());
       assertEquals(6, r.getPermissivePhase());
+      assertEquals(240L, r.getMax2());
+      assertEquals(180L, r.getBikeMinGreen());
+      assertEquals(40L, r.getAddedInitial());
+      assertEquals(200L, r.getMaxInitial());
+      assertEquals(20L, r.getMinGap());
+      assertEquals(100L, r.getTimeBeforeReduce());
+      assertEquals(300L, r.getTimeToReduce());
     }
 
     @Test

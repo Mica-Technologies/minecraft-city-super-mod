@@ -53,12 +53,12 @@ roadmap parameters, with their real ASC/3 names:
 | VEH/MX/SF/PED recall | Recall modes | implemented (`recallMode`, `pedRecall`) |
 | **DLY GRN (Delayed Green)** | **Leading ped interval** | **implemented — see §3** |
 | **PPLT FYA overlap** | **Protected/permissive FYA lefts** | **implemented — see §4** |
-| MAX 2 | Secondary max green | roadmap |
-| ADDED / MAX INITIAL | Volume-density initial | roadmap |
-| TIME B4 / TTREDUC / MIN GAP | Gap reduction (volume-density) | roadmap |
-| BK MGRN | Bike minimum green | roadmap |
+| **MAX 2** | **Secondary max green** | **implemented — see §5** |
+| **ADDED / MAX INITIAL** | **Volume-density initial** | **implemented — see §5** |
+| **TIME B4 / TTREDUC / MIN GAP** | **Gap reduction (volume-density)** | **implemented — see §5** |
+| **BK MGRN** | **Bike minimum green** | **implemented — see §5** |
 | WALK 2 / PED CLEAR 2 / PED CARRY OVER | Secondary ped | roadmap |
-| SF RCALL / DUAL ENTRY / REST IN WALK / COND SERVICE | Phase options (MM-2-6) | roadmap |
+| SF RCALL / DUAL ENTRY / REST IN WALK / COND SERVICE | Phase options (MM-2-6) | roadmap (SOFT recall enum exists) |
 
 ---
 
@@ -142,38 +142,60 @@ flashes when the opposing through is *"timing with the protected left turn as a 
 
 ---
 
-## 5. Roadmap
+## 5. Actuation / volume-density timing (MAX 2, BK MGRN, added initial, gap reduction)
 
-In rough priority order (each independently shippable + testable against `TrafficSignalPhase`):
+These actuated features live as per-phase timers and are computed by the pure, world-free helper
+`AdvancedActuationTiming` (so the math is unit-tested directly), then consumed in `RingBarrierState`'s
+green-interval logic:
 
-1. **`MAX 2`** + Max-2 selection (secondary max green).
-2. **Phase options:** Soft Recall / rest-in-phase, Dual Entry, Rest in Walk, Conditional Service.
-3. **Gap reduction / volume-density:** Added/Max Initial, Time-Before-Reduce, Time-To-Reduce, Min Gap.
-4. **Bike:** `BK MGRN` (bike minimum green) + bike head, reusing the normal-mode circuit-wide
-   bike-vs-protected-turn rule.
-5. **Typed overlap subsystem:** promote FYA from the per-phase `permissivePhase` shortcut to a real
+- **`MAX 2`** — `effectiveMaxGreen(max1, max2, useMax2)`. `max2` (when set) replaces Max 1 **during
+  coordinated operation** (a common ASC/3 pattern); free/actuated operation always uses Max 1. `0`
+  disables it.
+- **Added Initial / Max Initial** — `addedInitial(queueAtStart, perVehicle, maxInitial)`. Adapted to
+  this mod's presence-count detectors: the **queue length at green start** (not actuation pulses
+  during red) earns extra guaranteed initial green, `perVehicle` ticks each, capped at Max Initial.
+  Folds into the effective minimum green.
+- **`BK MGRN`** — folded into `effectiveMinGreen(...)`: when a bike call (protected-zone detection)
+  is present at green start, the phase is guaranteed at least the bike minimum green.
+- **Gap reduction** — `effectivePassage(passage, minGap, timeBeforeReduce, timeToReduce, greenElapsed)`.
+  After `timeBeforeReduce` of green, the passage shrinks linearly from its full value to `minGap`
+  over `timeToReduce`, so the phase gaps out sooner under sparse demand. Disabled when `timeToReduce`
+  or `minGap` is 0.
+
+The engine snapshots `queueAtStart` and `bikeCall` on the `RingRuntime` at green start. All four
+parameters are edited on the **ACT** GUI screen (Mx2 / BkG / AdI / MxI / Gap / TB4 / TTR).
+
+## 6. Roadmap
+
+In rough priority order (each independently shippable + testable):
+
+1. **Phase options:** Soft Recall / rest-in-phase (the `SOFT` recall enum already exists but is not
+   yet honored by the engine's rest selection), Dual Entry, Rest in Walk, Conditional Service.
+2. **Typed overlap subsystem:** promote FYA from the per-phase `permissivePhase` shortcut to a real
    MM-2-2-style overlap table (types NORMAL / `-GRN/YEL` / PPLT FYA / OTHER), which also gives
    first-class **right-turn overlaps** (Lead/Lag/Advance-green timers).
-6. **FYA refinement:** flash permissive during the opposing through's clearance when the protected
+3. **Secondary ped:** Walk 2 / Ped Clear 2 / Ped Carryover.
+4. **FYA refinement:** flash permissive during the opposing through's clearance when the protected
    left is the next phase decision.
 
 ---
 
-## 6. Testing
+## 7. Testing
 
-Pure, world-free logic is unit-tested the same way the normal-mode ticker is. Coverage lives in
-`AdvancedPhaseBuilderTest`:
+The engine is now **world-free under test**: `RingBarrierState` reads all detector/ped demand
+through an injectable `DemandSource` (production wraps the world; tests supply canned demand), and
+`getLastServed(ring)` exposes the served movements. Coverage:
 
-- **FYA** — `AdvancedPhaseBuilder.applyFyaLensState(...)` is a pure helper (no world); all four
-  outcomes (protected green, protected yellow, permissive flashing, red) are tested directly.
-- **Persistence** — `TrafficSignalProgrammedPhase` NBT round-trips `delayedGreen` and
-  `permissivePhase`, and falls back to defaults (0 / off) when the keys are absent (backward
-  compatibility with pre-existing saved plans).
+- `RingBarrierStateTest` — drives the engine with canned demand (`Demand` helper): basic actuation,
+  and bike-minimum-green holding a phase green past its short min green under conflict.
+- `AdvancedActuationTimingTest` — the pure volume-density math (added initial, effective min/max
+  green, gap-reduction ramp), tested directly.
+- `AdvancedPhaseBuilderTest` — the pure `applyFyaLensState(...)` FYA decision (all four outcomes),
+  and `TrafficSignalProgrammedPhase` NBT round-trip / default-fallback for every advanced field.
 
-The **delayed-green interval** logic lives in `RingBarrierState` (`startGreen` / `advanceRing` /
-`describe`), which needs a live world to tick, so it is verified in-world rather than by a unit test
-— there is no world-free `RingBarrierState` harness yet. (Building one is a worthwhile future task;
-the interval math is small and self-contained.)
+The **delayed-green interval** sequencing (`startGreen`/`advanceRing`/`describe`) is exercisable via
+the same harness; its math is small. New engine features should add `RingBarrierStateTest` cases
+rather than relying on in-world checks.
 
 ### Implementation notes / simplifications
 
