@@ -95,6 +95,23 @@ public final class AdvancedPhaseBuilder {
       if (heads.isEmpty()) {
         continue;
       }
+      if (ov.getOutputMovement() == TrafficSignalPhaseMovement.PED) {
+        // Pedestrian overlap: the ped head walks/clears with its included phases' ped intervals.
+        phase.removeSignals(heads);
+        switch (overlapPedState(ov.getIncludedPhases(), ring1, ring2)) {
+          case WALK:
+            phase.addWalkSignals(heads);
+            break;
+          case FDW:
+            phase.addFlashDontWalkSignals(heads);
+            break;
+          case DONT_WALK:
+          default:
+            phase.addDontWalkSignals(heads);
+            break;
+        }
+        continue;
+      }
       RingBarrierState.VehInterval precomputed =
           overlapIntervals != null && i < overlapIntervals.size() ? overlapIntervals.get(i) : null;
       RingBarrierState.VehInterval state =
@@ -113,6 +130,37 @@ public final class AdvancedPhaseBuilder {
           break;
       }
     }
+  }
+
+  /**
+   * Pure pedestrian-overlap decision: WALK if any included phase is serving WALK, else FDW (flashing
+   * don't walk) if any is in ped clearance, else DON'T WALK.
+   */
+  static RingBarrierState.PedInterval overlapPedState(int[] includedPhases,
+      RingBarrierState.ServedMovement ring1, RingBarrierState.ServedMovement ring2) {
+    boolean anyFdw = false;
+    for (int p : includedPhases) {
+      RingBarrierState.PedInterval pi = servedPed(p, ring1, ring2);
+      if (pi == RingBarrierState.PedInterval.WALK) {
+        return RingBarrierState.PedInterval.WALK;
+      }
+      if (pi == RingBarrierState.PedInterval.FDW) {
+        anyFdw = true;
+      }
+    }
+    return anyFdw ? RingBarrierState.PedInterval.FDW : RingBarrierState.PedInterval.DONT_WALK;
+  }
+
+  /** The pedestrian interval the given phase is served with this tick, or NONE. */
+  private static RingBarrierState.PedInterval servedPed(int phaseNumber,
+      RingBarrierState.ServedMovement ring1, RingBarrierState.ServedMovement ring2) {
+    if (ring1 != null && ring1.phaseNumber == phaseNumber) {
+      return ring1.pedestrian;
+    }
+    if (ring2 != null && ring2.phaseNumber == phaseNumber) {
+      return ring2.pedestrian;
+    }
+    return RingBarrierState.PedInterval.NONE;
   }
 
   /**
@@ -148,7 +196,11 @@ public final class AdvancedPhaseBuilder {
         combined.addAll(circuit.getProtectedSignals());
         return combined;
       }
-      case PED:
+      case PED: {
+        List<BlockPos> peds = new ArrayList<>(circuit.getPedestrianSignals());
+        peds.addAll(circuit.getPedestrianAccessorySignals());
+        return peds;
+      }
       default:
         return new ArrayList<>();
     }
