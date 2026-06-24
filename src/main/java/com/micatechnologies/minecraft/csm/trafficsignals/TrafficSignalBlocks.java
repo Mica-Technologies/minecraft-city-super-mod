@@ -1401,12 +1401,12 @@ public final class TrafficSignalBlocks {
           () -> {
             return new TrafficSignalSectionInfo[] {
             new TrafficSignalSectionInfo(TrafficSignalBodyColor.FLAT_BLACK, TrafficSignalBodyColor.FLAT_BLACK, TrafficSignalBodyColor.FLAT_BLACK,
-            TrafficSignalVisorType.CIRCLE, TrafficSignalBulbStyle.LED_DOTTED, TrafficSignalBulbType.LEFT,
+            TrafficSignalVisorType.CIRCLE, TrafficSignalBulbStyle.LED, TrafficSignalBulbType.LEFT,
             TrafficSignalBulbColor.GREEN, false)
             };
           })
           .signalYOffset(-7.9f)
-          .enforcedBulbStyle(TrafficSignalBulbStyle.LED_DOTTED)
+          .enforcedBulbStyle(TrafficSignalBulbStyle.LED)
           .addon(true)
           .build();
 
@@ -1418,12 +1418,12 @@ public final class TrafficSignalBlocks {
           () -> {
             return new TrafficSignalSectionInfo[] {
             new TrafficSignalSectionInfo(TrafficSignalBodyColor.BATTLESHIP_GRAY, TrafficSignalBodyColor.BATTLESHIP_GRAY, TrafficSignalBodyColor.BATTLESHIP_GRAY,
-            TrafficSignalVisorType.CIRCLE, TrafficSignalBulbStyle.LED_DOTTED, TrafficSignalBulbType.LEFT,
+            TrafficSignalVisorType.CIRCLE, TrafficSignalBulbStyle.LED, TrafficSignalBulbType.LEFT,
             TrafficSignalBulbColor.GREEN, false)
             };
           })
           .signalYOffset(-7.9f)
-          .enforcedBulbStyle(TrafficSignalBulbStyle.LED_DOTTED)
+          .enforcedBulbStyle(TrafficSignalBulbStyle.LED)
           .addon(true)
           .retiring("controllableverticalhybridleftaddonsignal")
           .build();
