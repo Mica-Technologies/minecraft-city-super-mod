@@ -91,6 +91,8 @@ public class AdvancedSignalControllerGui extends GuiScreen {
   private static final String[] RECALL_ABBR = {"NONE", "MIN", "MAX", "PED", "SOFT"};
   // Combined ped-recall (bit 0) + rest-in-walk (bit 1) state labels for the MAP "PED" column.
   private static final String[] PED_OPT_LABELS = {"no", "PedR", "Walk", "P+W"};
+  // Combined dual-entry (bit 0) + conditional-service (bit 1) labels for the MAP "OPT" column.
+  private static final String[] PHASE_OPT_LABELS = {"-", "DE", "CS", "D+C"};
   private static final String[] TIMING_HEADERS =
       {"MnG", "Pas", "MxG", "Yel", "Red", "Wlk", "PCl", "DGn"};
   private static final String[] TIMING_ACTIONS = {"ph.minGreen", "ph.passage", "ph.maxGreen",
@@ -356,7 +358,7 @@ public class AdvancedSignalControllerGui extends GuiScreen {
     int rowH = 11;
     int y0 = lcdY + TABLE_BODY_DY;
     int circuitCount = controller.getSignalCircuitCount();
-    int[] colX = {lcdX + 26, lcdX + 70, lcdX + 130, lcdX + 200, lcdX + 270};
+    int[] colX = {lcdX + 26, lcdX + 70, lcdX + 126, lcdX + 174, lcdX + 222};
     for (int pn = 1; pn <= TrafficSignalProgrammedPhasePlan.PHASE_COUNT; pn++) {
       final int n = pn;
       int y = y0 + (pn - 1) * rowH;
@@ -379,26 +381,33 @@ public class AdvancedSignalControllerGui extends GuiScreen {
             send("ph.circuit", n, c);
           }, null));
       // Movement
-      cells.add(new Cell(colX[2], y, 60,
+      cells.add(new Cell(colX[2], y, 44,
           () -> MOVEMENT_ABBR[plan().getPhase(n).getMovement().ordinal()],
           dir -> send("ph.movement", n,
               cyc(plan().getPhase(n).getMovement().ordinal(), dir,
                   TrafficSignalPhaseMovement.values().length)), null));
       // Recall
-      cells.add(new Cell(colX[3], y, 60,
+      cells.add(new Cell(colX[3], y, 44,
           () -> RECALL_ABBR[plan().getPhase(n).getRecallMode().ordinal()],
           dir -> send("ph.recall", n,
               cyc(plan().getPhase(n).getRecallMode().ordinal(), dir,
                   TrafficSignalRecallMode.values().length)), null));
       // Ped options: combined ped recall + rest-in-walk as a 4-state cycle.
-      cells.add(new Cell(colX[4], y, 40,
+      cells.add(new Cell(colX[4], y, 34,
           () -> PED_OPT_LABELS[pedOptState(plan().getPhase(n))],
           dir -> {
             int st = (pedOptState(plan().getPhase(n)) + (dir >= 0 ? 1 : 3)) & 3;
             send("ph.pedOpts", n, st);
           }, null));
+      // Phase options: combined dual entry + conditional service as a 4-state cycle.
+      cells.add(new Cell(lcdX + 304, y, 48,
+          () -> PHASE_OPT_LABELS[phaseOptState(plan().getPhase(n))],
+          dir -> {
+            int st = (phaseOptState(plan().getPhase(n)) + (dir >= 0 ? 1 : 3)) & 3;
+            send("ph.phaseOpts", n, st);
+          }, null));
       // FYA permissive phase (opposing through; 0 = protected-only)
-      cells.add(new Cell(lcdX + 312, y, 44,
+      cells.add(new Cell(lcdX + 260, y, 40,
           () -> {
             int pp = plan().getPhase(n).getPermissivePhase();
             return pp <= 0 ? "--" : ("P" + pp);
@@ -573,6 +582,11 @@ public class AdvancedSignalControllerGui extends GuiScreen {
   /** Combined ped-recall (bit 0) + rest-in-walk (bit 1) state for the MAP "PED" column. */
   private static int pedOptState(TrafficSignalProgrammedPhase p) {
     return (p.isPedRecall() ? 1 : 0) | (p.isRestInWalk() ? 2 : 0);
+  }
+
+  /** Combined dual-entry (bit 0) + conditional-service (bit 1) state for the MAP "OPT" column. */
+  private static int phaseOptState(TrafficSignalProgrammedPhase p) {
+    return (p.isDualEntry() ? 1 : 0) | (p.isConditionalService() ? 2 : 0);
   }
 
   private static int cyc(int ordinal, int dir, int len) {
@@ -989,18 +1003,19 @@ public class AdvancedSignalControllerGui extends GuiScreen {
     fontRenderer.drawString("PHASE MAP", lcdX, lcdY, COLOR_AMBER_HEAD);
     fontRenderer.drawString("EN", lcdX + 26, lcdY + 12, COLOR_AMBER_DIM);
     fontRenderer.drawString("CKT", lcdX + 70, lcdY + 12, COLOR_AMBER_DIM);
-    fontRenderer.drawString("MOVE", lcdX + 130, lcdY + 12, COLOR_AMBER_DIM);
-    fontRenderer.drawString("RECALL", lcdX + 200, lcdY + 12, COLOR_AMBER_DIM);
-    fontRenderer.drawString("PED", lcdX + 270, lcdY + 12, COLOR_AMBER_DIM);
-    fontRenderer.drawString("FYA", lcdX + 312, lcdY + 12, COLOR_AMBER_DIM);
+    fontRenderer.drawString("MOVE", lcdX + 126, lcdY + 12, COLOR_AMBER_DIM);
+    fontRenderer.drawString("RCL", lcdX + 174, lcdY + 12, COLOR_AMBER_DIM);
+    fontRenderer.drawString("PED", lcdX + 222, lcdY + 12, COLOR_AMBER_DIM);
+    fontRenderer.drawString("FYA", lcdX + 260, lcdY + 12, COLOR_AMBER_DIM);
+    fontRenderer.drawString("OPT", lcdX + 304, lcdY + 12, COLOR_AMBER_DIM);
     int rowH = 11;
     for (int pn = 1; pn <= TrafficSignalProgrammedPhasePlan.PHASE_COUNT; pn++) {
       int y = lcdY + TABLE_BODY_DY + (pn - 1) * rowH;
       fontRenderer.drawString("φ" + pn, lcdX, y, COLOR_AMBER);
     }
     int colHelpH = (TABLE_BODY_DY - 12) + TrafficSignalProgrammedPhasePlan.PHASE_COUNT * rowH;
-    int[] hx = {lcdX + 26, lcdX + 70, lcdX + 130, lcdX + 200, lcdX + 270, lcdX + 312};
-    int[] hw = {40, 56, 66, 66, 40, 44};
+    int[] hx = {lcdX + 26, lcdX + 70, lcdX + 126, lcdX + 174, lcdX + 222, lcdX + 260, lcdX + 304};
+    int[] hw = {40, 50, 46, 46, 36, 42, 50};
     String[][] colHelp = {
         {"Enable (EN)", "On = this phase runs. off = the phase is skipped",
             "entirely and never served."},
@@ -1009,7 +1024,7 @@ public class AdvancedSignalControllerGui extends GuiScreen {
         {"Movement (MOVE)", "THRU through · LEFT left · PLFT protected left ·",
             "RGHT right · PED walk. Selects both the signals the",
             "phase drives and the detector zone that calls it."},
-        {"Recall (RECALL)", "NONE actuated (served only on a call) · MIN recall",
+        {"Recall (RCL)", "NONE actuated (served only on a call) · MIN recall",
             "to min green · MAX hold to max green · PED recall a",
             "walk each cycle · SOFT rest here when nothing else calls."},
         {"Ped Options (PED)", "PedR = recall a Walk every cycle (no button needed).",
@@ -1018,6 +1033,9 @@ public class AdvancedSignalControllerGui extends GuiScreen {
         {"Flashing Yellow Arrow (FYA)", "For a left phase: the opposing-through phase whose",
             "green makes this left flash yellow (permissive). PnN =",
             "that phase; '--' = protected-only (no FYA)."},
+        {"Phase Options (OPT)", "DE = dual entry (serve to companion the other ring",
+            "when it has no call). CS = conditional service (re-serve",
+            "once per barrier on a fresh call). D+C = both. - = neither."},
     };
     for (int i = 0; i < hx.length; i++) {
       addHelp(hx[i], lcdY + 12, hw[i], colHelpH, colHelp[i]);
