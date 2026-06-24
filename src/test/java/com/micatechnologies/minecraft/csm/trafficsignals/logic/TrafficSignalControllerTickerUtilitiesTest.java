@@ -1187,7 +1187,7 @@ class TrafficSignalControllerTickerUtilitiesTest {
     }
 
     @Test
-    @DisplayName("Facings variants: overlap=false returns empty set (no arbitration applies)")
+    @DisplayName("Facings variants: overlap=false + no bike signals returns empty set")
     void facingsVariants_overlapDisabled() {
       TrafficSignalControllerCircuits circuits = new TrafficSignalControllerCircuits();
       circuits.addCircuit(emptyCircuit());
@@ -1196,6 +1196,56 @@ class TrafficSignalControllerTickerUtilitiesTest {
           circuits, 1, false, null).isEmpty());
       assertTrue(TrafficSignalControllerTickerUtilities.computeGreenRightTurnFacings(
           circuits, 1, false, null).isEmpty());
+    }
+  }
+
+  // ========================================================================
+  // Right-vs-bike per-approach demand arbitration (bug #2)
+  // ========================================================================
+  @Nested
+  @DisplayName("shouldServeRightOverBike (right-vs-bike per-approach arbitration)")
+  class ShouldServeRightOverBikeTest {
+
+    @Test
+    @DisplayName("no same-direction bike → never overrides (right governed elsewhere)")
+    void noBike_false() {
+      assertFalse(TrafficSignalControllerTickerUtilities.shouldServeRightOverBike(
+          false, 5, 0));
+      assertFalse(TrafficSignalControllerTickerUtilities.shouldServeRightOverBike(
+          false, 5, 3));
+    }
+
+    @Test
+    @DisplayName("bike present, right beats bike → serve right (bike reds)")
+    void rightBeatsBike_true() {
+      assertTrue(TrafficSignalControllerTickerUtilities.shouldServeRightOverBike(
+          true, 5, 3));
+      assertTrue(TrafficSignalControllerTickerUtilities.shouldServeRightOverBike(
+          true, 5, 0),
+          "Right with no bikes waiting still serves (and reds the empty bike)");
+    }
+
+    @Test
+    @DisplayName("bike present, tie → serve right (ties favor the right queue)")
+    void tie_servesRight() {
+      assertTrue(TrafficSignalControllerTickerUtilities.shouldServeRightOverBike(
+          true, 4, 4));
+    }
+
+    @Test
+    @DisplayName("bike present, bike beats right → keep bike green (right stays permissive)")
+    void bikeBeatsRight_false() {
+      assertFalse(TrafficSignalControllerTickerUtilities.shouldServeRightOverBike(
+          true, 2, 5));
+    }
+
+    @Test
+    @DisplayName("bike present, no right demand → keep bike green")
+    void noRightDemand_false() {
+      assertFalse(TrafficSignalControllerTickerUtilities.shouldServeRightOverBike(
+          true, 0, 0));
+      assertFalse(TrafficSignalControllerTickerUtilities.shouldServeRightOverBike(
+          true, 0, 3));
     }
   }
 
@@ -3815,17 +3865,20 @@ class TrafficSignalControllerTickerUtilitiesTest {
     }
 
     @Test
-    @DisplayName("matching protected exists: matching right goes FYA, protected stays GREEN")
+    @DisplayName("matching protected + permissive left: matching right goes FYA, protected GREEN")
     void matchingProtected_rightFya_protectedGreen() {
       TrafficSignalControllerCircuit circuit = emptyCircuit();
       TrafficSignalPhase phase = new TrafficSignalPhase(1, null,
           TrafficSignalPhaseApplicability.ALL_EAST);
 
+      // Matching left is FYA permissive (no solid-green add-on), so the only same-direction
+      // turn that could conflict with the protected is the right — which is held at FYA. The
+      // protected therefore serves green.
       TrafficSignalControllerTickerUtilities.applyDirectionalGreenSignalAssignments(
           circuit, phase,
           tuple(MATCHING_FLASHING_LEFT, OPPOSITE_FLASHING_LEFT),
           tuple(MATCHING_FLASHING_RIGHT, OPPOSITE_FLASHING_RIGHT),
-          tuple(MATCHING_LEFT, OPPOSITE_LEFT),
+          tuple(null, OPPOSITE_LEFT),
           tuple(MATCHING_RIGHT, OPPOSITE_RIGHT),
           tuple(MATCHING_THROUGH, OPPOSITE_THROUGH),
           emptyTuple(),
@@ -3839,6 +3892,34 @@ class TrafficSignalControllerTickerUtilitiesTest {
           "Matching-direction right FYA should flash to avoid protected conflict");
       assertTrue(phase.getRedSignals().contains(MATCHING_RIGHT),
           "Matching-direction solid-right should be RED when running FYA permissive");
+    }
+
+    @Test
+    @DisplayName("matching protected + solid-green left: left-side bike protected goes RED")
+    void matchingProtected_solidGreenLeft_protectedRed() {
+      TrafficSignalControllerCircuit circuit = emptyCircuit();
+      TrafficSignalPhase phase = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.ALL_EAST);
+
+      // Matching add-on left runs solid green (protected left arrow). A left-side bike lane is
+      // crossed by that movement, so the matching protected/bike signal must go RED — never
+      // green concurrent with a protected left arrow.
+      TrafficSignalControllerTickerUtilities.applyDirectionalGreenSignalAssignments(
+          circuit, phase,
+          tuple(MATCHING_FLASHING_LEFT, OPPOSITE_FLASHING_LEFT),
+          tuple(MATCHING_FLASHING_RIGHT, OPPOSITE_FLASHING_RIGHT),
+          tuple(MATCHING_LEFT, OPPOSITE_LEFT),
+          tuple(MATCHING_RIGHT, OPPOSITE_RIGHT),
+          tuple(MATCHING_THROUGH, OPPOSITE_THROUGH),
+          emptyTuple(),
+          tuple(MATCHING_PROTECTED, OPPOSITE_PROTECTED));
+
+      assertTrue(phase.getGreenSignals().contains(MATCHING_LEFT),
+          "Matching solid-green left arrow should be GREEN");
+      assertTrue(phase.getRedSignals().contains(MATCHING_PROTECTED),
+          "Left-side protected (bike) must be RED concurrent with a protected left arrow");
+      assertFalse(phase.getGreenSignals().contains(MATCHING_PROTECTED),
+          "Protected must NOT be green concurrent with a solid green left");
     }
 
     @Test
@@ -4406,7 +4487,7 @@ class TrafficSignalControllerTickerUtilitiesTest {
           TrafficSignalPhaseApplicability.ALL_THROUGHS_PROTECTEDS);
 
       TrafficSignalControllerTickerUtilities.buildAllThroughsProtectedsActivePhase(
-          /* world */ null, circuit, phase,
+          /* world */ (net.minecraft.world.World) null, circuit, phase,
           /* greenLeftFacings */ java.util.EnumSet.noneOf(net.minecraft.util.EnumFacing.class),
           /* greenRightFacings */ java.util.EnumSet.noneOf(net.minecraft.util.EnumFacing.class));
 
@@ -4439,7 +4520,7 @@ class TrafficSignalControllerTickerUtilitiesTest {
           TrafficSignalPhaseApplicability.ALL_THROUGHS_PROTECTEDS);
 
       TrafficSignalControllerTickerUtilities.buildAllThroughsProtectedsActivePhase(
-          null, circuit, phase,
+          (net.minecraft.world.World) null, circuit, phase,
           java.util.EnumSet.noneOf(net.minecraft.util.EnumFacing.class),
           java.util.EnumSet.noneOf(net.minecraft.util.EnumFacing.class));
 
@@ -4451,6 +4532,111 @@ class TrafficSignalControllerTickerUtilitiesTest {
       assertTrue(phase.getGreenSignals().contains(prot),
           "Protected stays GREEN when right is FYA permissive");
       assertTrue(phase.getGreenSignals().contains(through));
+    }
+
+    @Test
+    @DisplayName("solid green left forces same-facing protected (left-side bike) to RED")
+    void solidGreenLeft_protectedRed() {
+      BlockPos left = new BlockPos(2, 0, 0);
+      BlockPos prot = new BlockPos(5, 0, 0);
+      BlockPos through = new BlockPos(6, 0, 0);
+
+      TrafficSignalControllerCircuit circuit = emptyCircuit();
+      circuit.getLeftSignals().add(left);
+      circuit.getProtectedSignals().add(prot);
+      circuit.getThroughSignals().add(through);
+
+      // North-facing left + protected; left runs solid green (NORTH in the left facing set),
+      // no right demand. This is the reported overlap/concurrent-ped scenario: a left-side
+      // bike lane is crossed by the protected left, so the bike signal must go RED.
+      java.util.Map<BlockPos, net.minecraft.util.EnumFacing> facings = new java.util.HashMap<>();
+      facings.put(left, net.minecraft.util.EnumFacing.NORTH);
+      facings.put(prot, net.minecraft.util.EnumFacing.NORTH);
+      facings.put(through, net.minecraft.util.EnumFacing.NORTH);
+
+      TrafficSignalPhase phase = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.ALL_THROUGHS_PROTECTEDS);
+
+      TrafficSignalControllerTickerUtilities.buildAllThroughsProtectedsActivePhase(
+          (java.util.function.Function<BlockPos, net.minecraft.util.EnumFacing>) facings::get,
+          circuit, phase,
+          java.util.EnumSet.of(net.minecraft.util.EnumFacing.NORTH),
+          java.util.EnumSet.noneOf(net.minecraft.util.EnumFacing.class));
+
+      assertTrue(phase.getGreenSignals().contains(left),
+          "Solid green left arrow should be GREEN");
+      assertTrue(phase.getRedSignals().contains(prot),
+          "Left-side protected (bike) must be RED concurrent with a protected left arrow");
+      assertFalse(phase.getGreenSignals().contains(prot),
+          "Protected must NOT be green concurrent with a solid green left");
+    }
+
+    @Test
+    @DisplayName("FYA-permissive left keeps same-facing protected GREEN")
+    void fyaLeft_protectedGreen() {
+      BlockPos left = new BlockPos(2, 0, 0);
+      BlockPos prot = new BlockPos(5, 0, 0);
+      BlockPos through = new BlockPos(6, 0, 0);
+
+      TrafficSignalControllerCircuit circuit = emptyCircuit();
+      circuit.getLeftSignals().add(left);
+      circuit.getProtectedSignals().add(prot);
+      circuit.getThroughSignals().add(through);
+
+      java.util.Map<BlockPos, net.minecraft.util.EnumFacing> facings = new java.util.HashMap<>();
+      facings.put(left, net.minecraft.util.EnumFacing.NORTH);
+      facings.put(prot, net.minecraft.util.EnumFacing.NORTH);
+      facings.put(through, net.minecraft.util.EnumFacing.NORTH);
+
+      TrafficSignalPhase phase = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.ALL_THROUGHS_PROTECTEDS);
+
+      // No solid-green turns (both facing sets empty) → left is FYA permissive, protected green.
+      TrafficSignalControllerTickerUtilities.buildAllThroughsProtectedsActivePhase(
+          (java.util.function.Function<BlockPos, net.minecraft.util.EnumFacing>) facings::get,
+          circuit, phase,
+          java.util.EnumSet.noneOf(net.minecraft.util.EnumFacing.class),
+          java.util.EnumSet.noneOf(net.minecraft.util.EnumFacing.class));
+
+      assertTrue(phase.getRedSignals().contains(left),
+          "Left signal is red companion of FYA when not solid green");
+      assertTrue(phase.getGreenSignals().contains(prot),
+          "Protected stays GREEN when the same-direction left is FYA permissive");
+    }
+
+    @Test
+    @DisplayName("solid green right (bug #2 served right) reds the same-facing bike, greens right")
+    void solidGreenRight_protectedRed() {
+      BlockPos right = new BlockPos(4, 0, 0);
+      BlockPos prot = new BlockPos(5, 0, 0);
+      BlockPos through = new BlockPos(6, 0, 0);
+
+      TrafficSignalControllerCircuit circuit = emptyCircuit();
+      circuit.getRightSignals().add(right);
+      circuit.getProtectedSignals().add(prot);
+      circuit.getThroughSignals().add(through);
+
+      // The right-vs-bike arbitration promoted SOUTH to a solid green right (right demand won).
+      // The same-facing bike must go red and the solid right arrow must go green — the
+      // regular red/yellow/green right turn head finally earns its green.
+      java.util.Map<BlockPos, net.minecraft.util.EnumFacing> facings = new java.util.HashMap<>();
+      facings.put(right, net.minecraft.util.EnumFacing.SOUTH);
+      facings.put(prot, net.minecraft.util.EnumFacing.SOUTH);
+      facings.put(through, net.minecraft.util.EnumFacing.SOUTH);
+
+      TrafficSignalPhase phase = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.ALL_THROUGHS_PROTECTEDS);
+
+      TrafficSignalControllerTickerUtilities.buildAllThroughsProtectedsActivePhase(
+          (java.util.function.Function<BlockPos, net.minecraft.util.EnumFacing>) facings::get,
+          circuit, phase,
+          java.util.EnumSet.noneOf(net.minecraft.util.EnumFacing.class),
+          java.util.EnumSet.of(net.minecraft.util.EnumFacing.SOUTH));
+
+      assertTrue(phase.getGreenSignals().contains(right),
+          "Solid right arrow should be GREEN when the right wins arbitration");
+      assertTrue(phase.getRedSignals().contains(prot),
+          "Same-facing bike must be RED concurrent with a solid green right");
     }
   }
 
