@@ -66,6 +66,13 @@ public class RingBarrierState {
     boolean resting = false;    // serving a coordinated rest phase (no max-out)
     boolean pedServing = false;
     long pedStart = 0L;
+    // ASC/3 DLY GRN (delayed green / leading ped interval): while delayActive, the WALK runs but
+    // the vehicle is held red and the green clocks are deferred. walkHold is the effective walk
+    // length = max(walk, delayedGreen), so the walk extends to the end of the delay when the
+    // delay is longer than the configured walk.
+    boolean delayActive = false;
+    long delayStart = 0L;
+    long walkHold = 0L;
   }
 
   private int currentBarrier = 0;
@@ -161,6 +168,7 @@ public class RingBarrierState {
     ring.interval = VehInterval.RED;
     ring.resting = false;
     ring.pedServing = false;
+    ring.delayActive = false;
   }
 
   // region: Ring stepping
@@ -180,6 +188,19 @@ public class RingBarrierState {
     switch (ring.interval) {
       case GREEN: {
         // A vehicle call holds (extends) the green.
+        // Delayed green (DLY GRN): hold the vehicle red while the leading ped walk runs. The
+        // green/max/passage clocks do not start until the delay ends, so the phase still gets its
+        // full minimum green afterward.
+        if (ring.delayActive) {
+          if (now - ring.delayStart < phase.getDelayedGreen()) {
+            ring.lastActuation = now; // keep the (not-yet-started) green from instantly gapping out
+            break;
+          }
+          ring.delayActive = false;
+          ring.greenStart = now;
+          ring.intervalStart = now;
+          ring.lastActuation = now;
+        }
         if (vehicleCount(phase) > 0) {
           ring.lastActuation = now;
         }
@@ -191,7 +212,7 @@ public class RingBarrierState {
         boolean maxOut = !ring.resting && !isCoord && greenElapsed >= phase.getMaxGreen();
         boolean gapOut = (now - ring.lastActuation) >= phase.getPassage();
         boolean pedDone = !ring.pedServing
-            || (now - ring.pedStart) >= (phase.getWalk() + phase.getPedClear());
+            || (now - ring.pedStart) >= (ring.walkHold + phase.getPedClear());
         boolean conflict = conflictingDemand(called);
         // Coordinated force-off: a non-coordinated phase must end when its split window closes.
         boolean forceOff = coordinated && !isCoord && localCycle >= windowEnd[phaseNum];
@@ -269,6 +290,11 @@ public class RingBarrierState {
         || pedRequestPresent(phase);
     ring.pedServing = ped;
     ring.pedStart = now;
+    // ASC/3 DLY GRN: the delay applies only when this phase starts with a ped service. The walk
+    // is extended to the end of the delay when the delay exceeds the configured walk.
+    ring.delayActive = ped && phase.getDelayedGreen() > 0L;
+    ring.delayStart = now;
+    ring.walkHold = ped ? Math.max(phase.getWalk(), phase.getDelayedGreen()) : phase.getWalk();
   }
 
   // endregion
@@ -347,6 +373,7 @@ public class RingBarrierState {
     startGreen(ring, phase, now);
     ring.resting = true;
     ring.pedServing = false;
+    ring.delayActive = false; // a coordinated rest phase does not run a leading ped interval
     // Align the sequence position with the rest phase so the cycle resumes cleanly on demand.
     int[] seq = plan.getRingSequence(ringNum);
     for (int idx = 0; idx < seq.length; idx++) {
@@ -693,16 +720,19 @@ public class RingBarrierState {
       TrafficSignalProgrammedPhase phase = plan.getPhase(ring.activePhase);
       if (phase != null) {
         long pedElapsed = now - ring.pedStart;
-        if (pedElapsed < phase.getWalk()) {
+        if (pedElapsed < ring.walkHold) {
           ped = PedInterval.WALK;
-        } else if (pedElapsed < phase.getWalk() + phase.getPedClear()) {
+        } else if (pedElapsed < ring.walkHold + phase.getPedClear()) {
           ped = PedInterval.FDW;
         } else {
           ped = PedInterval.DONT_WALK;
         }
       }
     }
-    return new ServedMovement(ring.activePhase, ring.interval, ped);
+    // During delayed green the vehicle is held red even though the ring interval is internally
+    // GREEN; the leading ped walk (computed above as WALK, since walkHold >= the delay) shows.
+    VehInterval veh = ring.delayActive ? VehInterval.RED : ring.interval;
+    return new ServedMovement(ring.activePhase, veh, ped);
   }
 
   // endregion

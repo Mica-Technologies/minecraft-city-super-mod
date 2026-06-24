@@ -88,9 +88,10 @@ public class AdvancedSignalControllerGui extends GuiScreen {
 
   private static final String[] MOVEMENT_ABBR = {"THRU", "LEFT", "PLFT", "RGHT", "PED"};
   private static final String[] RECALL_ABBR = {"NONE", "MIN", "MAX", "PED", "SOFT"};
-  private static final String[] TIMING_HEADERS = {"MnG", "Pas", "MxG", "Yel", "Red", "Wlk", "PCl"};
+  private static final String[] TIMING_HEADERS =
+      {"MnG", "Pas", "MxG", "Yel", "Red", "Wlk", "PCl", "DGn"};
   private static final String[] TIMING_ACTIONS = {"ph.minGreen", "ph.passage", "ph.maxGreen",
-      "ph.yellow", "ph.redClear", "ph.walk", "ph.pedClear"};
+      "ph.yellow", "ph.redClear", "ph.walk", "ph.pedClear", "ph.dlyGreen"};
 
   private final TileEntityTrafficSignalController controller;
   private final BlockPos blockPos;
@@ -342,6 +343,23 @@ public class AdvancedSignalControllerGui extends GuiScreen {
       cells.add(new Cell(colX[4], y, 40,
           () -> plan().getPhase(n).isPedRecall() ? "PedR" : "no",
           dir -> send("ph.pedRecall", n, plan().getPhase(n).isPedRecall() ? 0 : 1), null));
+      // FYA permissive phase (opposing through; 0 = protected-only)
+      cells.add(new Cell(lcdX + 312, y, 44,
+          () -> {
+            int pp = plan().getPhase(n).getPermissivePhase();
+            return pp <= 0 ? "--" : ("P" + pp);
+          },
+          dir -> {
+            int max = TrafficSignalProgrammedPhasePlan.PHASE_COUNT;
+            int pp = plan().getPhase(n).getPermissivePhase() + dir;
+            if (pp < 0) {
+              pp = max;
+            }
+            if (pp > max) {
+              pp = 0;
+            }
+            send("ph.permPhase", n, pp);
+          }, null));
     }
   }
 
@@ -471,6 +489,7 @@ public class AdvancedSignalControllerGui extends GuiScreen {
       case 4: return p.getRedClear();
       case 5: return p.getWalk();
       case 6: return p.getPedClear();
+      case 7: return p.getDelayedGreen();
       default: return 0;
     }
   }
@@ -797,6 +816,8 @@ public class AdvancedSignalControllerGui extends GuiScreen {
             "WALK before the clearance countdown)."},
         {"Ped Clearance (PCl)", "Flashing DON'T WALK countdown after WALK ends,",
             "sized so pedestrians can finish crossing."},
+        {"Delayed Green (DGn)", "Leading ped interval: holds the vehicle green this long",
+            "after WALK starts (peds go first). 0 = off; ignored with no ped call."},
     };
     for (int i = 0; i < TIMING_HEADERS.length; i++) {
       addHelp(lcdX + 24 + i * colW, lcdY + 12, colW, colHelpH, colHelp[i]);
@@ -814,14 +835,15 @@ public class AdvancedSignalControllerGui extends GuiScreen {
     fontRenderer.drawString("MOVE", lcdX + 130, lcdY + 12, COLOR_AMBER_DIM);
     fontRenderer.drawString("RECALL", lcdX + 200, lcdY + 12, COLOR_AMBER_DIM);
     fontRenderer.drawString("PED", lcdX + 270, lcdY + 12, COLOR_AMBER_DIM);
+    fontRenderer.drawString("FYA", lcdX + 312, lcdY + 12, COLOR_AMBER_DIM);
     int rowH = 11;
     for (int pn = 1; pn <= TrafficSignalProgrammedPhasePlan.PHASE_COUNT; pn++) {
       int y = lcdY + TABLE_BODY_DY + (pn - 1) * rowH;
       fontRenderer.drawString("φ" + pn, lcdX, y, COLOR_AMBER);
     }
     int colHelpH = (TABLE_BODY_DY - 12) + TrafficSignalProgrammedPhasePlan.PHASE_COUNT * rowH;
-    int[] hx = {lcdX + 26, lcdX + 70, lcdX + 130, lcdX + 200, lcdX + 270};
-    int[] hw = {40, 56, 66, 66, 50};
+    int[] hx = {lcdX + 26, lcdX + 70, lcdX + 130, lcdX + 200, lcdX + 270, lcdX + 312};
+    int[] hw = {40, 56, 66, 66, 40, 44};
     String[][] colHelp = {
         {"Enable (EN)", "On = this phase runs. off = the phase is skipped",
             "entirely and never served."},
@@ -835,6 +857,9 @@ public class AdvancedSignalControllerGui extends GuiScreen {
             "walk each cycle · SOFT rest here when nothing else calls."},
         {"Ped Recall (PED)", "PedR = place a pedestrian (Walk) call every cycle",
             "even with no button press. 'no' = button only."},
+        {"Flashing Yellow Arrow (FYA)", "For a left phase: the opposing-through phase whose",
+            "green makes this left flash yellow (permissive). PnN =",
+            "that phase; '--' = protected-only (no FYA)."},
     };
     for (int i = 0; i < hx.length; i++) {
       addHelp(hx[i], lcdY + 12, hw[i], colHelpH, colHelp[i]);
