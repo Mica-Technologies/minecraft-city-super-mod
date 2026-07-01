@@ -154,13 +154,17 @@ and then ran its own trailing solid-yellow clearance, which lagged a whole yello
 let the next phase start before the FYA had cleared.) Because the clearance is driven directly by the
 opposing through's interval, the decision stays stateless — no cross-tick timer.
 
-**Exception — flash straight into protected green.** When the left's *own* protected green is
-imminent (the phase is called, on the current barrier, not yet served, and still ahead in its ring's
-sequence this cycle — `RingBarrierState.computeFyaHoldFlash`), the flash **holds** through the
-opposing through's yellow/red clearance and then goes **flash → protected green directly**, with no
-solid-yellow/red on the FYA head. That clearance belongs to the opposing through, not the left, so a
-separate FYA change interval would be redundant. The reverse (**protected green → flash**) still
-runs a solid-yellow + red clearance, carried by the left phase's own served yellow then red.
+**Exception — flash straight into protected green.** When the left is **called and on the current
+barrier but not yet served** (`RingBarrierState.computeFyaHoldFlash`), its own protected green is
+coming — the ring-barrier engine never crosses off a barrier until every called phase on it has been
+served, so a called left on this barrier is guaranteed its protected green. The flash therefore
+**holds** through the opposing through's yellow/red clearance (and any wrap wait) and then goes
+**flash → protected green directly**, with no solid-yellow/red on the FYA head. That clearance
+belongs to the opposing through, not the left, so a separate FYA change interval would be redundant;
+a flashing yellow is always a safe yield, so holding it is safe. The reverse (**protected green →
+flash**) still runs a solid-yellow + red clearance, carried by the left phase's own served yellow
+then red. A left with **no** demand doesn't hold — its flash clears (solid yellow with the opposing
+through, then red) as it hands off to the cross street.
 
 ## 4a. Phase-based vehicle overlaps (right-turn overlaps)
 

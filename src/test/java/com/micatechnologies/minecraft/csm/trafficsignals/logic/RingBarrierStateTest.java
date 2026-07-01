@@ -622,4 +622,42 @@ class RingBarrierStateTest {
     assertEquals(PedInterval.WALK, rb.getLastServed(1).pedestrian,
         "rest-in-walk recalls WALK while the phase holds green, not resting in don't-walk");
   }
+
+  @Test
+  @DisplayName("rest-in-walk: an in-progress ped clearance is not cut off if the conflict drops")
+  void restInWalkDoesNotCutOffClearance() {
+    // Rest-in-walk phase 2 is holding WALK; a conflicting call starts its FDW clearance, then the
+    // conflict drops mid-clearance. The FDW must complete (not snap back to WALK), then recycle.
+    RingBarrierState rb = new RingBarrierState();
+    TrafficSignalProgrammedPhasePlan plan = TrafficSignalProgrammedPhasePlan.createDefault();
+    plan.getCoordination().setCoordinatedPhases(new int[0]);
+    enable(plan, 2, 0);
+    enable(plan, 4, 1); // conflict source (appears, then drops)
+    TrafficSignalProgrammedPhase p2 = plan.getPhase(2);
+    p2.setRestInWalk(true);
+    p2.setPedRecall(true);
+    p2.setWalk(40L);
+    p2.setPedClear(60L);
+    p2.setMinGreen(20L);
+    quickTiming(plan, 4);
+    TrafficSignalControllerCircuits ckts = circuits(2);
+    Demand rest = new Demand();                    // nothing calling -> phase 2 rests in WALK
+    Demand conflict = new Demand().veh(1, 1, 0, 0); // phase 4 calls -> phase 2 starts FDW clearance
+
+    rb.tick(plan, ckts, NO_OVERLAPS, 0L, rest);
+    assertEquals(PedInterval.WALK, rb.getLastServed(1).pedestrian);
+
+    rb.tick(plan, ckts, NO_OVERLAPS, 10L, conflict); // conflict -> FDW clearance begins
+    assertEquals(PedInterval.FDW, rb.getLastServed(1).pedestrian, "clearance starts on the conflict");
+
+    rb.tick(plan, ckts, NO_OVERLAPS, 30L, rest); // conflict drops mid-clearance
+    assertEquals(PedInterval.FDW, rb.getLastServed(1).pedestrian,
+        "an in-progress clearance is NOT cut off when the conflict drops");
+    assertEquals(VehInterval.GREEN, rb.getLastServed(1).vehicle, "vehicle stays green through it");
+
+    rb.tick(plan, ckts, NO_OVERLAPS, 75L, rest); // clearance done (walk 40 + ped clear 60) -> recycle
+    assertEquals(PedInterval.WALK, rb.getLastServed(1).pedestrian,
+        "once the clearance completes with no conflict, the walk recycles");
+    assertEquals(VehInterval.GREEN, rb.getLastServed(1).vehicle);
+  }
 }
