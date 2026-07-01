@@ -197,6 +197,9 @@ public class AdvancedSignalControllerGui extends GuiScreen {
 
   @Override
   public void onGuiClosed() {
+    // Flush a value the operator typed but didn't ENTER before closing (Close button or ESC), so
+    // "type a number, click Close" saves it instead of silently discarding it.
+    commitPendingEntry();
     Keyboard.enableRepeatEvents(false);
   }
 
@@ -757,6 +760,22 @@ public class AdvancedSignalControllerGui extends GuiScreen {
     } else if (cell.adjust != null) {
       cell.adjust.accept(1); // ENTER cycles enums / toggles bools
     }
+  }
+
+  /**
+   * Commits a pending typed numeric entry to the selected cell without the enum-cycle fallback of
+   * {@link #commitOrCycle()}. Used on close so a typed-but-not-ENTERed value is still saved.
+   */
+  private void commitPendingEntry() {
+    Cell cell = selectedCell();
+    if (cell != null && cell.commitSeconds != null && !entry.isEmpty()) {
+      try {
+        cell.commitSeconds.accept(Double.parseDouble(entry));
+      } catch (NumberFormatException ignored) {
+        // ignore malformed entry
+      }
+    }
+    entry = "";
   }
 
   private void adjustSelected(int dir) {
