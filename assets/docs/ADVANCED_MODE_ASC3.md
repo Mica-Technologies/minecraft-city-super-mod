@@ -132,30 +132,27 @@ the legacy behavior). This is functionally a `PPLT FYA` overlap whose *protected
   3-section flashing-left lens and the 1-section green-arrow add-on), matching the normal-mode
   `applyLeftTurnStatesByFacing` mapping so both modes render an FYA head identically:
   - **PROTECTED_GREEN** (left served GREEN) → 3-section **OFF**, add-on **GREEN**;
-  - **SOLID_YELLOW** (left served YELLOW, i.e. protected clearance) → 3-section **YELLOW**, add-on **RED**;
-  - **FLASH** (left not served, opposing through green or in yellow clearance) → 3-section **flashing
-    yellow**, add-on **RED**;
-  - **RED** (left served RED, or not served with the permissive window closed) → both **RED**.
+  - **SOLID_YELLOW** (left served YELLOW = protected clearance, **or** the opposing through is in its
+    yellow = permissive clearance) → 3-section **YELLOW**, add-on **RED**;
+  - **FLASH** (left not served, opposing through **GREEN**) → 3-section **flashing yellow**, add-on **RED**;
+  - **RED** (left served RED, or not served with the opposing through red/absent) → both **RED**.
 
-  The stateless base decision is the pure `baseFyaState(...)` helper. Because it runs for any FYA
+  The whole decision is the pure, stateless `baseFyaState(...)` helper. Because it runs for any FYA
   head (not only `permissivePhase > 0`), a protected-only left can never show red-on-3-section with
   green-on-add-on. Managing both lenses together is what fixes the "red arrow lit with the green
   arrow" compound-head bug.
 
-- **Clearance sequencing (`RingBarrierState.computeFyaResolved`):** a permissive **FLASH** that is
-  ending (opposing through gone to red) must not snap straight to red — it clears through a
-  **solid yellow arrow** for the left phase's `yellow` interval first. This needs cross-tick state
-  (the last lens shown + a clearance deadline), so it lives on the engine and is passed into the
-  builder; `baseFyaState` alone (no history) would jump FLASH→RED.
-
 **GUI:** the MAP screen gains an **`FYA`** column showing the permissive phase (`--` or `P6`),
 `ph.permPhase` action, cycling 0…8.
 
-### Permissive window
-The permissive flash is shown while the opposing through is **green or in yellow clearance** —
-oncoming traffic is still moving through the intersection during its yellow, so the left still
-yields. It stops only when the opposing through reaches red. (The ASC/3's exact "timing with the
-protected left turn as a next phase decision" wording is approximated by including the yellow.)
+### Permissive window and clearance
+The permissive flash is shown while the opposing through is **green**. When that through starts its
+**yellow** change interval, the FYA lens changes to a **steady yellow arrow** at the same time, and
+to **red** when the through goes red — so the FYA clearance runs **concurrently** with the opposing
+through and both reach red together. (An earlier version kept flashing through the through's yellow
+and then ran its own trailing solid-yellow clearance, which lagged a whole yellow interval behind and
+let the next phase start before the FYA had cleared.) Because the clearance is driven directly by the
+opposing through's interval, the decision stays stateless — no cross-tick timer.
 
 ## 4a. Phase-based vehicle overlaps (right-turn overlaps)
 
