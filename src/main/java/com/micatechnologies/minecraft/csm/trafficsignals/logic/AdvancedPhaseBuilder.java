@@ -63,10 +63,28 @@ public final class AdvancedPhaseBuilder {
       RingBarrierState.ServedMovement ring1,
       RingBarrierState.ServedMovement ring2,
       List<RingBarrierState.VehInterval> overlapIntervals) {
+    return build(world, plan, circuits, overlaps, ring1, ring2, overlapIntervals, null);
+  }
+
+  /**
+   * Build overload that also takes the set of FYA left-phase numbers whose permissive flash should
+   * be <em>held</em> (rather than cleared) this tick because their own protected green is imminent —
+   * so the head goes FLASH &rarr; protected green directly instead of running a solid-yellow/red
+   * clearance it doesn't need. Computed by {@link RingBarrierState}; a {@code null} set holds nothing
+   * (the stateless permissive clearance runs).
+   */
+  public static TrafficSignalPhase build(World world,
+      TrafficSignalProgrammedPhasePlan plan,
+      TrafficSignalControllerCircuits circuits,
+      TrafficSignalControllerOverlaps overlaps,
+      RingBarrierState.ServedMovement ring1,
+      RingBarrierState.ServedMovement ring2,
+      List<RingBarrierState.VehInterval> overlapIntervals,
+      java.util.Set<Integer> holdFlash) {
     TrafficSignalPhase phase = redBaseline(circuits);
     applyServed(phase, plan, circuits, ring1);
     applyServed(phase, plan, circuits, ring2);
-    applyFyaLenses(phase, plan, circuits, ring1, ring2);
+    applyFyaLenses(phase, plan, circuits, ring1, ring2, holdFlash);
     applyOverlaps(phase, overlaps);
     applyProgrammedOverlaps(phase, plan, circuits, ring1, ring2, overlapIntervals);
     return phase;
@@ -264,7 +282,8 @@ public final class AdvancedPhaseBuilder {
       TrafficSignalProgrammedPhasePlan plan,
       TrafficSignalControllerCircuits circuits,
       RingBarrierState.ServedMovement ring1,
-      RingBarrierState.ServedMovement ring2) {
+      RingBarrierState.ServedMovement ring2,
+      java.util.Set<Integer> holdFlash) {
     for (TrafficSignalProgrammedPhase p : plan.getPhases()) {
       if (!p.isActive()) {
         continue;
@@ -282,8 +301,17 @@ public final class AdvancedPhaseBuilder {
       if (fyaLens.isEmpty()) {
         continue; // not an FYA compound head
       }
-      FyaLensState state = baseFyaState(servedInterval(p.getPhaseNumber(), ring1, ring2),
+      RingBarrierState.VehInterval served = servedInterval(p.getPhaseNumber(), ring1, ring2);
+      FyaLensState state = baseFyaState(served,
           servedInterval(p.getPermissivePhase(), ring1, ring2), p.getPermissivePhase() > 0);
+      // Hold the permissive flash instead of clearing it when this left's protected green is
+      // imminent (going FLASH → protected green needs no solid-yellow/red — the opposing through's
+      // own clearance suffices). Only overrides the permissive clearance, never the left's own
+      // protected clearance (served != null).
+      if (served == null && holdFlash != null && holdFlash.contains(p.getPhaseNumber())
+          && (state == FyaLensState.SOLID_YELLOW || state == FyaLensState.RED)) {
+        state = FyaLensState.FLASH;
+      }
       List<BlockPos> arrowLens = circuit.getLeftSignals();
       phase.removeSignals(fyaLens);
       phase.removeSignals(arrowLens);

@@ -235,8 +235,46 @@ public class RingBarrierState {
     this.lastServed1 = m1;
     this.lastServed2 = m2;
     List<VehInterval> overlapIntervals = computeOverlapIntervals(plan, m1, m2, now, called);
-    return changedOrNull(
-        AdvancedPhaseBuilder.build(world, plan, circuits, overlaps, m1, m2, overlapIntervals));
+    java.util.Set<Integer> fyaHoldFlash = computeFyaHoldFlash(plan, called);
+    return changedOrNull(AdvancedPhaseBuilder.build(
+        world, plan, circuits, overlaps, m1, m2, overlapIntervals, fyaHoldFlash));
+  }
+
+  /**
+   * The FYA left phases whose permissive flash should be held (not cleared) this tick because their
+   * own protected green is imminent: the phase is called, on the current barrier, not yet being
+   * served, and still ahead in its ring's sequence this cycle — so once the opposing through clears
+   * the engine will serve it protected next. The head then goes flash &rarr; protected green
+   * directly. Left phases not in this set clear their flash normally (solid yellow with the opposing
+   * through, then red).
+   */
+  private java.util.Set<Integer> computeFyaHoldFlash(TrafficSignalProgrammedPhasePlan plan,
+      boolean[] called) {
+    java.util.Set<Integer> hold = new java.util.HashSet<>();
+    for (TrafficSignalProgrammedPhase p : plan.getPhases()) {
+      if (!p.isActive() || p.getPermissivePhase() <= 0
+          || (p.getMovement() != TrafficSignalPhaseMovement.LEFT
+          && p.getMovement() != TrafficSignalPhaseMovement.PROTECTED_LEFT)) {
+        continue;
+      }
+      int ci = p.getCircuitIndex();
+      int pn = p.getPhaseNumber();
+      if (tickCircuits == null || ci < 0 || ci >= tickCircuits.getCircuitCount()
+          || tickCircuits.getCircuit(ci).getFlashingLeftSignals().isEmpty()
+          || pn >= called.length || !called[pn] || p.getBarrier() != currentBarrier
+          || ring1.activePhase == pn || ring2.activePhase == pn) {
+        continue;
+      }
+      RingRuntime ring = (p.getRing() == 2) ? ring2 : ring1;
+      int[] seq = plan.getRingSequence(p.getRing());
+      for (int idx = ring.sequencePos + 1; idx < seq.length; idx++) {
+        if (seq[idx] == pn) {
+          hold.add(pn);
+          break;
+        }
+      }
+    }
+    return hold;
   }
 
   /**
@@ -445,6 +483,13 @@ public class RingBarrierState {
           ring.interval = VehInterval.YELLOW;
           ring.intervalStart = now;
           ring.pedServing = false;
+        } else if (phase.isRestInWalk() && !conflict) {
+          // Rest in Walk: while this phase holds green with nothing else calling, recall the WALK
+          // rather than sitting in don't-walk after the first ped clearance — whether the phase was
+          // entered as the no-demand rest or served by a call. If a conflicting call later appears,
+          // the clearance block above re-arms FDW before the phase yields.
+          ring.resting = true;
+          ring.pedServing = true;
         }
         break;
       }
