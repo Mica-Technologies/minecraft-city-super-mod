@@ -235,23 +235,18 @@ public class RingBarrierState {
     for (int idx = ring.sequencePos + 1; idx < seq.length; idx++) {
       int phaseNumber = seq[idx];
       TrafficSignalProgrammedPhase phase = plan.getPhase(phaseNumber);
-      if (phase == null) {
-        ring.sequencePos = idx;
-        continue;
-      }
-      if (phase.getBarrier() != currentBarrier) {
-        break; // reached the barrier boundary; wait for both rings to cross
-      }
-      if (!phase.isActive()) {
-        ring.sequencePos = idx; // skip unusable phase
+      ring.sequencePos = idx;
+      // Skip unusable phases and phases belonging to another barrier. The shared currentBarrier —
+      // not a sequence break — is what keeps the two rings on the same barrier, so a ring simply
+      // advances past phases that aren't on the barrier being served this crossing.
+      if (phase == null || !phase.isActive() || phase.getBarrier() != currentBarrier) {
         continue;
       }
       if (phaseNumber >= 1 && phaseNumber < called.length && called[phaseNumber]) {
         startGreen(ring, phase, now);
-        ring.sequencePos = idx;
         return;
       }
-      ring.sequencePos = idx; // not called now — skip its slot this cycle
+      // Active phase on this barrier but not called right now — skip its slot this cycle.
     }
     // Nothing more to serve on this barrier for this ring: it is parked at the barrier.
   }
@@ -282,13 +277,9 @@ public class RingBarrierState {
     int[] seq = plan.getRingSequence(ringNum);
     for (int idx = ring.sequencePos + 1; idx < seq.length; idx++) {
       TrafficSignalProgrammedPhase phase = plan.getPhase(seq[idx]);
-      if (phase == null) {
-        continue;
+      if (phase != null && phase.isActive() && phase.getBarrier() == currentBarrier) {
+        return false; // still has an active slot to serve on this barrier ahead in the sequence
       }
-      if (phase.getBarrier() == currentBarrier) {
-        return false; // still has a slot on this barrier
-      }
-      break; // hit a phase on the next barrier
     }
     return true;
   }
@@ -299,23 +290,16 @@ public class RingBarrierState {
       return; // a ring is still working this barrier
     }
 
-    // Both rings parked. If anything is called anywhere, advance to a barrier with demand;
-    // otherwise rest in green on the coordinated phases.
-    boolean anyCall = false;
-    for (int n = 1; n <= TrafficSignalProgrammedPhasePlan.PHASE_COUNT; n++) {
-      if (called[n]) {
-        anyCall = true;
-        break;
-      }
-    }
-
-    if (!anyCall) {
+    // Both rings parked. Rotate to the next barrier (fixed order, skipping empties) that has a
+    // call; if nothing is called anywhere, rest in green on the coordinated phases.
+    int target = nextBarrierWithDemand(plan, called);
+    if (target < 0) {
       restInGreen(plan, now);
       return;
     }
 
-    // Reset both rings to the start of their sequence and select the barrier with demand.
-    currentBarrier = barrierWithDemand(plan, called);
+    // Cross to the selected barrier and restart both ring sequences on it.
+    currentBarrier = target;
     ring1.sequencePos = -1;
     ring2.sequencePos = -1;
     ring1.resting = false;
@@ -376,16 +360,62 @@ public class RingBarrierState {
     return 0;
   }
 
-  private int barrierWithDemand(TrafficSignalProgrammedPhasePlan plan, boolean[] called) {
+  /**
+   * Selects the next barrier to serve, rotating through the plan's barriers in fixed ascending
+   * order starting just after {@link #currentBarrier} (wrapping around) and returning the first one
+   * that has a phase calling for service. Barriers with no demand are skipped so an empty side
+   * street never gets a green. Returns {@code -1} when no barrier has demand at all.
+   */
+  private int nextBarrierWithDemand(TrafficSignalProgrammedPhasePlan plan, boolean[] called) {
+    int[] barriers = distinctBarriers(plan);
+    if (barriers.length == 0) {
+      return -1;
+    }
+    int cur = -1;
+    for (int i = 0; i < barriers.length; i++) {
+      if (barriers[i] == currentBarrier) {
+        cur = i;
+        break;
+      }
+    }
+    for (int step = 1; step <= barriers.length; step++) {
+      int barrier = barriers[((cur + step) % barriers.length + barriers.length) % barriers.length];
+      if (barrierHasDemand(plan, barrier, called)) {
+        return barrier;
+      }
+    }
+    return -1;
+  }
+
+  /** The distinct barriers among active phases, in ascending (fixed rotation) order. */
+  private int[] distinctBarriers(TrafficSignalProgrammedPhasePlan plan) {
+    java.util.TreeSet<Integer> set = new java.util.TreeSet<>();
     for (int n = 1; n <= TrafficSignalProgrammedPhasePlan.PHASE_COUNT; n++) {
-      if (called[n]) {
+      TrafficSignalProgrammedPhase phase = plan.getPhase(n);
+      if (phase != null && phase.isActive()) {
+        set.add(phase.getBarrier());
+      }
+    }
+    int[] out = new int[set.size()];
+    int i = 0;
+    for (int b : set) {
+      out[i++] = b;
+    }
+    return out;
+  }
+
+  /** Whether any active phase on the given barrier is calling for service. */
+  private boolean barrierHasDemand(TrafficSignalProgrammedPhasePlan plan, int barrier,
+      boolean[] called) {
+    for (int n = 1; n <= TrafficSignalProgrammedPhasePlan.PHASE_COUNT; n++) {
+      if (n < called.length && called[n]) {
         TrafficSignalProgrammedPhase phase = plan.getPhase(n);
-        if (phase != null) {
-          return phase.getBarrier();
+        if (phase != null && phase.isActive() && phase.getBarrier() == barrier) {
+          return true;
         }
       }
     }
-    return currentBarrier;
+    return false;
   }
 
   private int firstBarrier(TrafficSignalProgrammedPhasePlan plan) {
