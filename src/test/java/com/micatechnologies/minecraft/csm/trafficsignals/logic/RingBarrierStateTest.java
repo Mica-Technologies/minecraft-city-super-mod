@@ -433,4 +433,54 @@ class RingBarrierStateTest {
           "phase 4 must be served when it is the only demand (tick " + t + ")");
     }
   }
+
+  @Test
+  @DisplayName("rest-in-walk runs pedestrian clearance (FDW) before yielding, not WALK->DONT_WALK")
+  void restInWalkRunsClearanceBeforeYielding() {
+    // Regression: a phase resting on WALK (soft recall + rest-in-walk) used to snap its ped signal
+    // straight from WALK to DON'T WALK when a conflicting call arrived, skipping FDW clearance.
+    RingBarrierState rb = new RingBarrierState();
+    TrafficSignalProgrammedPhasePlan plan = TrafficSignalProgrammedPhasePlan.createDefault();
+    plan.getCoordination().setCoordinatedPhases(new int[0]);
+    enable(plan, 2, 0); // rests here: soft recall + rest-in-walk hold WALK
+    enable(plan, 4, 1); // barrier B: supplies the conflicting call
+    TrafficSignalProgrammedPhase p2 = plan.getPhase(2);
+    p2.setRecallMode(TrafficSignalRecallMode.SOFT);
+    p2.setPedRecall(true);
+    p2.setRestInWalk(true);
+    p2.setWalk(40L);
+    p2.setPedClear(60L);
+    p2.setMinGreen(20L);
+    p2.setPassage(10L);
+    p2.setYellow(20L);
+    p2.setRedClear(20L);
+    quickTiming(plan, 4);
+    TrafficSignalControllerCircuits ckts = circuits(2);
+
+    // Resting on phase 2 with no demand anywhere: WALK is held.
+    rb.tick(plan, ckts, NO_OVERLAPS, 0L, new Demand());
+    assertEquals(2, rb.getLastServed(1).phaseNumber);
+    assertEquals(VehInterval.GREEN, rb.getLastServed(1).vehicle);
+    assertEquals(PedInterval.WALK, rb.getLastServed(1).pedestrian, "rest-in-walk holds WALK");
+
+    Demand ph4 = new Demand().veh(1, 1, 0, 0); // conflicting call on phase 4 (barrier B)
+
+    // As soon as the conflicting call appears the walk must begin clearance (FDW), NOT jump to
+    // don't-walk, and the vehicle must stay green through the clearance.
+    rb.tick(plan, ckts, NO_OVERLAPS, 10L, ph4);
+    assertEquals(VehInterval.GREEN, rb.getLastServed(1).vehicle,
+        "vehicle stays green while pedestrian clearance runs");
+    assertEquals(PedInterval.FDW, rb.getLastServed(1).pedestrian,
+        "WALK enters FDW clearance rather than snapping to don't-walk");
+
+    // Clearance still running partway through (walk 40 + ped clear 60).
+    rb.tick(plan, ckts, NO_OVERLAPS, 65L, ph4);
+    assertEquals(PedInterval.FDW, rb.getLastServed(1).pedestrian, "FDW persists for the full clearance");
+    assertEquals(VehInterval.GREEN, rb.getLastServed(1).vehicle);
+
+    // Only after clearance completes may the phase yield (vehicle leaves green).
+    rb.tick(plan, ckts, NO_OVERLAPS, 75L, ph4);
+    assertEquals(VehInterval.YELLOW, rb.getLastServed(1).vehicle,
+        "vehicle yields only after the pedestrian clearance has finished");
+  }
 }
