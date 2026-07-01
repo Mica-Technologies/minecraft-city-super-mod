@@ -154,6 +154,14 @@ and then ran its own trailing solid-yellow clearance, which lagged a whole yello
 let the next phase start before the FYA had cleared.) Because the clearance is driven directly by the
 opposing through's interval, the decision stays stateless — no cross-tick timer.
 
+**Exception — flash straight into protected green.** When the left's *own* protected green is
+imminent (the phase is called, on the current barrier, not yet served, and still ahead in its ring's
+sequence this cycle — `RingBarrierState.computeFyaHoldFlash`), the flash **holds** through the
+opposing through's yellow/red clearance and then goes **flash → protected green directly**, with no
+solid-yellow/red on the FYA head. That clearance belongs to the opposing through, not the left, so a
+separate FYA change interval would be redundant. The reverse (**protected green → flash**) still
+runs a solid-yellow + red clearance, carried by the left phase's own served yellow then red.
+
 ## 4a. Phase-based vehicle overlaps (right-turn overlaps)
 
 The ASC/3 `MM-2-2` **NORMAL** overlap type is implemented as `TrafficSignalProgrammedOverlap`,
@@ -230,9 +238,14 @@ parameters are edited on the **ACT** GUI screen (Mx2 / BkG / AdI / MxI / Gap / T
   (preference order: coordinated phase → soft-recall phase → first active phase). A `SOFT` phase does
   not place a vehicle call, so it never forces a cycle — it only chooses where to rest. Set via the
   MAP **RECALL** column.
-- **Rest in Walk (`REST IN WALK`)** — a per-phase flag; while the controller rests on the phase, the
-  WALK indication is held (instead of don't-walk). Set via the MAP **PED** column, which now cycles
-  the combined ped options: `no` / `PedR` (ped recall) / `Walk` (rest in walk) / `P+W` (both).
+- **Rest in Walk (`REST IN WALK`)** — a per-phase flag; while the phase holds green with nothing
+  else calling, the WALK indication is recalled (held) instead of don't-walk. This applies whether
+  the phase was entered as the no-demand rest **or** served by a call and then left holding green
+  (`advanceRing` re-flags it resting each tick it holds without conflict) — so it doesn't run its
+  ped clearance once and then sit in don't-walk under a still-green vehicle signal. When a
+  conflicting call arrives, the rest-in-walk clearance re-arms a full flashing-don't-walk before the
+  phase yields. Set via the MAP **PED** column, which cycles the combined ped options: `no` / `PedR`
+  (ped recall) / `Walk` (rest in walk) / `P+W` (both).
 - **Dual Entry (`DUAL ENTRY`)** — a per-phase flag. When one ring is serving a called phase on a
   barrier and the other ring has no call of its own, the idle ring serves its first active dual-entry
   phase on that barrier so the intersection isn't left with one direction dark (`fillDualEntry`). A
