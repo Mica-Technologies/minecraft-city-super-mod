@@ -6,9 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.RingBarrierState.VehInterval;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import org.junit.jupiter.api.DisplayName;
@@ -24,97 +21,89 @@ import org.junit.jupiter.api.Test;
 class AdvancedPhaseBuilderTest {
 
   private static final BlockPos FYA_A = new BlockPos(1, 0, 0);
-  private static final BlockPos FYA_B = new BlockPos(2, 0, 0);
   private static final BlockPos ARROW_A = new BlockPos(3, 0, 0);
 
-  private TrafficSignalPhase emptyPhase() {
-    return new TrafficSignalPhase(1, TrafficSignalPhaseApplicability.NONE);
-  }
-
-  private List<BlockPos> list(BlockPos... p) {
-    return new ArrayList<>(Arrays.asList(p));
-  }
-
   @Nested
-  @DisplayName("applyFyaLensState (PPLT FYA lens decision)")
+  @DisplayName("PPLT FYA compound-head lens mapping")
   class FyaLensTest {
 
-    @Test
-    @DisplayName("protected GREEN: FYA lens off (solid green arrow shows via served movement)")
-    void protectedGreen_lensOff() {
-      TrafficSignalPhase phase = emptyPhase();
-      AdvancedPhaseBuilder.applyFyaLensState(phase, list(FYA_A, FYA_B), list(ARROW_A),
-          VehInterval.GREEN, false);
-      assertTrue(phase.getOffSignals().contains(FYA_A));
-      assertTrue(phase.getOffSignals().contains(FYA_B));
-      assertFalse(phase.getFyaSignals().contains(FYA_A));
-    }
-
-    @Test
-    @DisplayName("protected YELLOW clearance: FYA lens off")
-    void protectedYellow_lensOff() {
-      TrafficSignalPhase phase = emptyPhase();
-      AdvancedPhaseBuilder.applyFyaLensState(phase, list(FYA_A), list(ARROW_A),
-          VehInterval.YELLOW, false);
-      assertTrue(phase.getOffSignals().contains(FYA_A));
-    }
-
-    @Test
-    @DisplayName("not served + opposing through GREEN: flashing yellow, solid arrow red")
-    void permissive_flashesYellow() {
-      TrafficSignalPhase phase = emptyPhase();
-      AdvancedPhaseBuilder.applyFyaLensState(phase, list(FYA_A), list(ARROW_A),
-          null, true);
-      assertTrue(phase.getFyaSignals().contains(FYA_A),
-          "FYA lens should flash yellow (permissive) while the opposing through is green");
-      assertTrue(phase.getRedSignals().contains(ARROW_A),
-          "Solid green-arrow lens should be red during the permissive interval");
-      assertFalse(phase.getOffSignals().contains(FYA_A));
-    }
-
-    @Test
-    @DisplayName("not served + opposing through not green: FYA lens red")
-    void notPermitted_red() {
-      TrafficSignalPhase phase = emptyPhase();
-      AdvancedPhaseBuilder.applyFyaLensState(phase, list(FYA_A), list(ARROW_A),
-          null, false);
-      assertTrue(phase.getRedSignals().contains(FYA_A));
-      assertFalse(phase.getFyaSignals().contains(FYA_A));
-    }
-
-    @Test
-    @DisplayName("own red clearance (served RED) is not 'protected': lens follows permissive/red")
-    void servedRed_notProtected() {
-      TrafficSignalPhase phase = emptyPhase();
-      AdvancedPhaseBuilder.applyFyaLensState(phase, list(FYA_A), list(ARROW_A),
-          VehInterval.RED, false);
-      assertTrue(phase.getRedSignals().contains(FYA_A));
-      assertFalse(phase.getOffSignals().contains(FYA_A));
-    }
-
-    @Test
-    @DisplayName("build: FYA flashes while the opposing through is in YELLOW clearance (not just green)")
-    void fyaFlashesDuringOpposingYellow() {
-      BlockPos fyaLens = new BlockPos(30, 0, 0);
-      TrafficSignalControllerCircuits circuits = new TrafficSignalControllerCircuits();
-      TrafficSignalControllerCircuit c0 = new TrafficSignalControllerCircuit();
-      c0.getFlashingLeftSignals().add(fyaLens);
-      circuits.addCircuit(c0);                                  // circuit 0 (left/FYA output)
-      circuits.addCircuit(new TrafficSignalControllerCircuit()); // circuit 1
-
+    private TrafficSignalProgrammedPhasePlan fyaPlan() {
       TrafficSignalProgrammedPhasePlan plan = TrafficSignalProgrammedPhasePlan.createDefault();
       TrafficSignalProgrammedPhase left = plan.getPhase(1);
       left.setCircuitIndex(0);
       left.setEnabled(true);
       left.setMovement(TrafficSignalPhaseMovement.PROTECTED_LEFT);
       left.setPermissivePhase(6); // opposing through
+      return plan;
+    }
 
-      // Opposing through (phase 6) is in YELLOW clearance; the left phase (1) is not served.
-      TrafficSignalPhase phase = AdvancedPhaseBuilder.build(null, plan, circuits,
-          new TrafficSignalControllerOverlaps(),
-          new ServedMovementShortcut(6, VehInterval.YELLOW).m, null);
+    /** Circuit 0 is an FYA compound head: 3-section lens {@link #FYA_A}, add-on arrow {@link #ARROW_A}. */
+    private TrafficSignalControllerCircuits fyaCircuits() {
+      TrafficSignalControllerCircuits circuits = new TrafficSignalControllerCircuits();
+      TrafficSignalControllerCircuit c0 = new TrafficSignalControllerCircuit();
+      c0.getFlashingLeftSignals().add(FYA_A);
+      c0.getLeftSignals().add(ARROW_A);
+      circuits.addCircuit(c0);
+      circuits.addCircuit(new TrafficSignalControllerCircuit()); // circuit 1
+      return circuits;
+    }
 
-      assertTrue(phase.getFyaSignals().contains(fyaLens),
+    private TrafficSignalPhase build(int servedPhase, VehInterval iv) {
+      return AdvancedPhaseBuilder.build(null, fyaPlan(), fyaCircuits(),
+          new TrafficSignalControllerOverlaps(), new ServedMovementShortcut(servedPhase, iv).m, null);
+    }
+
+    @Test
+    @DisplayName("baseFyaState: served + permissive combinations")
+    void baseStates() {
+      assertEquals(AdvancedPhaseBuilder.FyaLensState.PROTECTED_GREEN,
+          AdvancedPhaseBuilder.baseFyaState(VehInterval.GREEN, null, true));
+      assertEquals(AdvancedPhaseBuilder.FyaLensState.SOLID_YELLOW,
+          AdvancedPhaseBuilder.baseFyaState(VehInterval.YELLOW, null, true));
+      assertEquals(AdvancedPhaseBuilder.FyaLensState.RED,
+          AdvancedPhaseBuilder.baseFyaState(VehInterval.RED, null, true));
+      assertEquals(AdvancedPhaseBuilder.FyaLensState.FLASH,
+          AdvancedPhaseBuilder.baseFyaState(null, VehInterval.GREEN, true));
+      assertEquals(AdvancedPhaseBuilder.FyaLensState.FLASH,
+          AdvancedPhaseBuilder.baseFyaState(null, VehInterval.YELLOW, true));
+      assertEquals(AdvancedPhaseBuilder.FyaLensState.RED,
+          AdvancedPhaseBuilder.baseFyaState(null, VehInterval.RED, true));
+      assertEquals(AdvancedPhaseBuilder.FyaLensState.RED,
+          AdvancedPhaseBuilder.baseFyaState(null, VehInterval.GREEN, false),
+          "no permissive phase configured -> never flashes");
+    }
+
+    @Test
+    @DisplayName("protected green: 3-section OFF + green arrow, never red-with-green")
+    void protectedGreen_noRedWithGreen() {
+      TrafficSignalPhase phase = build(1, VehInterval.GREEN);
+      assertTrue(phase.getOffSignals().contains(FYA_A), "3-section dark during protected green");
+      assertTrue(phase.getGreenSignals().contains(ARROW_A), "green-arrow add-on shows green");
+      assertFalse(phase.getRedSignals().contains(FYA_A),
+          "3-section must NOT be red while the green arrow shows (the reported red+green bug)");
+    }
+
+    @Test
+    @DisplayName("protected clearance (served YELLOW): 3-section solid yellow, add-on red")
+    void protectedYellow_solidYellow() {
+      TrafficSignalPhase phase = build(1, VehInterval.YELLOW);
+      assertTrue(phase.getYellowSignals().contains(FYA_A));
+      assertTrue(phase.getRedSignals().contains(ARROW_A));
+    }
+
+    @Test
+    @DisplayName("permissive: 3-section flashes yellow, green-arrow add-on red")
+    void permissive_flash() {
+      TrafficSignalPhase phase = build(6, VehInterval.GREEN);
+      assertTrue(phase.getFyaSignals().contains(FYA_A));
+      assertTrue(phase.getRedSignals().contains(ARROW_A));
+      assertFalse(phase.getGreenSignals().contains(ARROW_A));
+    }
+
+    @Test
+    @DisplayName("FYA flashes while the opposing through is in YELLOW clearance (not just green)")
+    void fyaFlashesDuringOpposingYellow() {
+      assertTrue(build(6, VehInterval.YELLOW).getFyaSignals().contains(FYA_A),
           "FYA lens should still flash while the opposing through clears (yellow)");
     }
   }

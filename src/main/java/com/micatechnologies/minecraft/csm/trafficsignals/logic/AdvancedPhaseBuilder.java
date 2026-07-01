@@ -63,10 +63,27 @@ public final class AdvancedPhaseBuilder {
       RingBarrierState.ServedMovement ring1,
       RingBarrierState.ServedMovement ring2,
       List<RingBarrierState.VehInterval> overlapIntervals) {
+    return build(world, plan, circuits, overlaps, ring1, ring2, overlapIntervals, null);
+  }
+
+  /**
+   * Build overload that also takes per-phase resolved FYA compound-head states (by left-phase
+   * number) from {@link RingBarrierState}, which carry the stateful FLASH&rarr;solid-yellow&rarr;red
+   * clearance. A {@code null} map (or a phase missing from it) falls back to the stateless
+   * {@link #baseFyaState} decision.
+   */
+  public static TrafficSignalPhase build(World world,
+      TrafficSignalProgrammedPhasePlan plan,
+      TrafficSignalControllerCircuits circuits,
+      TrafficSignalControllerOverlaps overlaps,
+      RingBarrierState.ServedMovement ring1,
+      RingBarrierState.ServedMovement ring2,
+      List<RingBarrierState.VehInterval> overlapIntervals,
+      java.util.Map<Integer, FyaLensState> fyaResolved) {
     TrafficSignalPhase phase = redBaseline(circuits);
     applyServed(phase, plan, circuits, ring1);
     applyServed(phase, plan, circuits, ring2);
-    applyFlashingYellowArrows(phase, plan, circuits, ring1, ring2);
+    applyFyaLenses(phase, plan, circuits, ring1, ring2, fyaResolved);
     applyOverlaps(phase, overlaps);
     applyProgrammedOverlaps(phase, plan, circuits, ring1, ring2, overlapIntervals);
     return phase;
@@ -206,75 +223,105 @@ public final class AdvancedPhaseBuilder {
     }
   }
 
+  /** The four compound FYA-head indications (3-section lens + 1-section green-arrow add-on). */
+  public enum FyaLensState { PROTECTED_GREEN, SOLID_YELLOW, FLASH, RED }
+
   /**
-   * Applies ASC/3 PPLT FYA permissive-left indications. For each active LEFT/PROTECTED_LEFT phase
-   * configured with a {@code permissivePhase} (the opposing-through phase), drives the FYA lens
-   * ({@link TrafficSignalControllerCircuit#getFlashingLeftSignals()}):
+   * The stateless (instantaneous) FYA-head indication for a PPLT left, from the left phase's own
+   * served interval and its opposing-through ("permissive") interval. FLASH&harr;RED clearance
+   * sequencing is layered on statefully by {@link RingBarrierState}; this is the base decision.
+   *
    * <ul>
-   *   <li>the left phase is being served (protected) &rarr; FYA lens off (the solid arrow shows
-   *       green/yellow from {@link #applyServed});</li>
-   *   <li>else the opposing-through phase is green (permissive) &rarr; FYA lens flashing yellow,
-   *       solid green-arrow lens red;</li>
-   *   <li>else &rarr; FYA lens red.</li>
+   *   <li>own phase served GREEN &rarr; protected green arrow;</li>
+   *   <li>own phase served YELLOW &rarr; solid yellow arrow (protected clearance);</li>
+   *   <li>own phase served RED, or not served with permissive closed &rarr; red arrow;</li>
+   *   <li>not served, opposing through green or in yellow clearance &rarr; flashing yellow.</li>
    * </ul>
-   * This mirrors the normal-mode left-turn convention so both modes render FYA identically.
    */
-  private static void applyFlashingYellowArrows(TrafficSignalPhase phase,
+  static FyaLensState baseFyaState(RingBarrierState.VehInterval servedThis,
+      RingBarrierState.VehInterval permInterval, boolean hasPermissive) {
+    if (servedThis == RingBarrierState.VehInterval.GREEN) {
+      return FyaLensState.PROTECTED_GREEN;
+    }
+    if (servedThis == RingBarrierState.VehInterval.YELLOW) {
+      return FyaLensState.SOLID_YELLOW;
+    }
+    if (servedThis == RingBarrierState.VehInterval.RED) {
+      return FyaLensState.RED;
+    }
+    boolean permissive = hasPermissive && (permInterval == RingBarrierState.VehInterval.GREEN
+        || permInterval == RingBarrierState.VehInterval.YELLOW);
+    return permissive ? FyaLensState.FLASH : FyaLensState.RED;
+  }
+
+  /**
+   * Drives every FYA compound head — an active LEFT / PROTECTED_LEFT phase whose circuit has a
+   * non-empty {@link TrafficSignalControllerCircuit#getFlashingLeftSignals() flashing-left lens} —
+   * to a single valid combined indication, authoritative over {@link #applyServed} for its two
+   * lenses. This mirrors the normal-mode {@code applyLeftTurnStatesByFacing} mapping so both modes
+   * render an FYA head identically (never red-on-3-section with green-on-add-on):
+   *
+   * <ul>
+   *   <li>PROTECTED_GREEN &rarr; 3-section OFF, green-arrow add-on GREEN;</li>
+   *   <li>SOLID_YELLOW &rarr; 3-section YELLOW, add-on RED;</li>
+   *   <li>FLASH &rarr; 3-section flashing yellow, add-on RED;</li>
+   *   <li>RED &rarr; 3-section RED, add-on RED.</li>
+   * </ul>
+   *
+   * @param resolved per-phase states from {@link RingBarrierState} (carrying the FLASH&rarr;red
+   *                 solid-yellow clearance); a phase absent from the map, or a {@code null} map,
+   *                 falls back to the stateless {@link #baseFyaState}.
+   */
+  private static void applyFyaLenses(TrafficSignalPhase phase,
       TrafficSignalProgrammedPhasePlan plan,
       TrafficSignalControllerCircuits circuits,
       RingBarrierState.ServedMovement ring1,
-      RingBarrierState.ServedMovement ring2) {
+      RingBarrierState.ServedMovement ring2,
+      java.util.Map<Integer, FyaLensState> resolved) {
     for (TrafficSignalProgrammedPhase p : plan.getPhases()) {
-      if (!p.isActive() || p.getPermissivePhase() <= 0) {
+      if (!p.isActive()) {
         continue;
       }
       if (p.getMovement() != TrafficSignalPhaseMovement.LEFT
           && p.getMovement() != TrafficSignalPhaseMovement.PROTECTED_LEFT) {
         continue;
       }
-      if (p.getCircuitIndex() < 0 || p.getCircuitIndex() >= circuits.getCircuitCount()) {
+      int ci = p.getCircuitIndex();
+      if (ci < 0 || ci >= circuits.getCircuitCount()) {
         continue;
       }
-      TrafficSignalControllerCircuit circuit = circuits.getCircuit(p.getCircuitIndex());
-      if (circuit.getFlashingLeftSignals().isEmpty()) {
-        continue; // no FYA lens to drive
+      TrafficSignalControllerCircuit circuit = circuits.getCircuit(ci);
+      List<BlockPos> fyaLens = circuit.getFlashingLeftSignals();
+      if (fyaLens.isEmpty()) {
+        continue; // not an FYA compound head
       }
-      RingBarrierState.VehInterval servedThis =
-          servedInterval(p.getPhaseNumber(), ring1, ring2);
-      // Permissive flashes while the opposing through is green AND through its yellow clearance
-      // (oncoming traffic is still moving through the intersection, so the left still yields). It
-      // stops only when the opposing through reaches red.
-      RingBarrierState.VehInterval permInterval =
-          servedInterval(p.getPermissivePhase(), ring1, ring2);
-      boolean permissivePermitted = permInterval == RingBarrierState.VehInterval.GREEN
-          || permInterval == RingBarrierState.VehInterval.YELLOW;
-      applyFyaLensState(phase, circuit.getFlashingLeftSignals(), circuit.getLeftSignals(),
-          servedThis, permissivePermitted);
-    }
-  }
-
-  /**
-   * Pure FYA-lens assignment (world-free, unit-testable). {@code servedThis} is the interval the
-   * left phase itself is being served at this tick (or {@code null} if it isn't being served);
-   * {@code permissivePermitted} is whether its opposing-through phase is green or in yellow
-   * clearance (the window during which the permissive flashing yellow is shown).
-   */
-  static void applyFyaLensState(TrafficSignalPhase phase, List<BlockPos> fyaLens,
-      List<BlockPos> solidArrowLens, RingBarrierState.VehInterval servedThis,
-      boolean permissivePermitted) {
-    phase.removeSignals(fyaLens);
-    boolean protectedServed = servedThis == RingBarrierState.VehInterval.GREEN
-        || servedThis == RingBarrierState.VehInterval.YELLOW;
-    if (protectedServed) {
-      // Protected: the solid arrow shows green/yellow (set by applyServed); FYA lens stays dark.
-      phase.addOffSignals(fyaLens);
-    } else if (permissivePermitted) {
-      // Permissive: flashing yellow on the FYA lens; the solid green-arrow lens is red.
-      phase.addFyaSignals(fyaLens);
-      phase.removeSignals(solidArrowLens);
-      phase.addRedSignals(solidArrowLens);
-    } else {
-      phase.addRedSignals(fyaLens);
+      FyaLensState state = resolved != null ? resolved.get(p.getPhaseNumber()) : null;
+      if (state == null) {
+        state = baseFyaState(servedInterval(p.getPhaseNumber(), ring1, ring2),
+            servedInterval(p.getPermissivePhase(), ring1, ring2), p.getPermissivePhase() > 0);
+      }
+      List<BlockPos> arrowLens = circuit.getLeftSignals();
+      phase.removeSignals(fyaLens);
+      phase.removeSignals(arrowLens);
+      switch (state) {
+        case PROTECTED_GREEN:
+          phase.addOffSignals(fyaLens);
+          phase.addGreenSignals(arrowLens);
+          break;
+        case SOLID_YELLOW:
+          phase.addYellowSignals(fyaLens);
+          phase.addRedSignals(arrowLens);
+          break;
+        case FLASH:
+          phase.addFyaSignals(fyaLens);
+          phase.addRedSignals(arrowLens);
+          break;
+        case RED:
+        default:
+          phase.addRedSignals(fyaLens);
+          phase.addRedSignals(arrowLens);
+          break;
+      }
     }
   }
 

@@ -126,15 +126,27 @@ the legacy behavior). This is functionally a `PPLT FYA` overlap whose *protected
   opposing through are actually assigned (otherwise it stays 0 = protected-only).
 - **FYA head:** the left phase's circuit `getFlashingLeftSignals()` (the FYA bimodal lens). The solid
   green arrow lens is `getLeftSignals()`.
-- **Builder post-pass (`AdvancedPhaseBuilder`):** after the served movements are laid down, for each
-  enabled left phase with `permissivePhase > 0` and a non-empty FYA lens:
-  - left phase served **GREEN/YELLOW** (protected) → FYA lens **OFF** (the solid arrow already shows
-    green/yellow via the served movement);
-  - else opposing-through served **GREEN** → FYA lens **FYA (flashing yellow)**, solid arrow red;
-  - else → FYA lens **RED**.
+- **Builder post-pass (`AdvancedPhaseBuilder.applyFyaLenses`):** after the served movements are laid
+  down, **every** active LEFT/PROTECTED_LEFT phase whose circuit has a non-empty FYA lens is driven
+  to one valid compound indication (authoritative over `applyServed` for its two lenses — the
+  3-section flashing-left lens and the 1-section green-arrow add-on), matching the normal-mode
+  `applyLeftTurnStatesByFacing` mapping so both modes render an FYA head identically:
+  - **PROTECTED_GREEN** (left served GREEN) → 3-section **OFF**, add-on **GREEN**;
+  - **SOLID_YELLOW** (left served YELLOW, i.e. protected clearance) → 3-section **YELLOW**, add-on **RED**;
+  - **FLASH** (left not served, opposing through green or in yellow clearance) → 3-section **flashing
+    yellow**, add-on **RED**;
+  - **RED** (left served RED, or not served with the permissive window closed) → both **RED**.
 
-  All states derive from the two `ServedMovement`s + the plan, so the decision is a pure, world-free,
-  unit-testable helper (matching the normal-mode `apply*` test pattern).
+  The stateless base decision is the pure `baseFyaState(...)` helper. Because it runs for any FYA
+  head (not only `permissivePhase > 0`), a protected-only left can never show red-on-3-section with
+  green-on-add-on. Managing both lenses together is what fixes the "red arrow lit with the green
+  arrow" compound-head bug.
+
+- **Clearance sequencing (`RingBarrierState.computeFyaResolved`):** a permissive **FLASH** that is
+  ending (opposing through gone to red) must not snap straight to red — it clears through a
+  **solid yellow arrow** for the left phase's `yellow` interval first. This needs cross-tick state
+  (the last lens shown + a clearance deadline), so it lives on the engine and is passed into the
+  builder; `baseFyaState` alone (no history) would jump FLASH→RED.
 
 **GUI:** the MAP screen gains an **`FYA`** column showing the permissive phase (`--` or `P6`),
 `ph.permPhase` action, cycling 0…8.
@@ -273,9 +285,9 @@ rather than relying on in-world checks.
 
 ### Implementation notes / simplifications
 
-- During a protected left's **yellow clearance**, the FYA lens is dark and the solid arrow lens
-  carries the yellow (set by `applyServed`). A single shared bimodal yellow lens is not modeled
-  separately.
+- During a protected left's **yellow clearance** the 3-section FYA lens shows the **solid yellow
+  arrow** (the add-on green-arrow goes dark), matching the compound-hybrid clearance in
+  `TRAFFIC_SIGNAL_SYSTEM.md`.
 - Delayed green is **per ring** — if one ring's phase has `DLY GRN` and the concurrent ring's does
   not, only the delaying ring holds red while its walk leads; the other ring greens normally. The
   barrier crossing still waits for both rings.
