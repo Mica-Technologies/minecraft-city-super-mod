@@ -62,13 +62,15 @@ public class AdvancedSignalControllerGui extends GuiScreen {
   private static final int BTN_DOWN = 216;
   private static final int BTN_LEFT = 217;
   private static final int BTN_RIGHT = 218;
-  private static final int BTN_SCREEN_BASE = 220; // 220..225 -> STATUS..PREEMPT, ACT
-  private static final int BTN_TEMPLATE = 225;
-  private static final int BTN_CLOSE = 226;
-  private static final int BTN_PE_ADD = 227;
-  private static final int BTN_PE_REMOVE = 228;
-  private static final int BTN_PE_PREV = 229;
-  private static final int BTN_PE_NEXT = 230;
+  // Screen-select tabs occupy BTN_SCREEN_BASE .. BTN_SCREEN_BASE + Screen.values().length - 1.
+  // Reserve a generous block (220..239) so adding a screen never collides with the buttons below.
+  private static final int BTN_SCREEN_BASE = 220;
+  private static final int BTN_TEMPLATE = 240;
+  private static final int BTN_CLOSE = 241;
+  private static final int BTN_PE_ADD = 242;
+  private static final int BTN_PE_REMOVE = 243;
+  private static final int BTN_PE_PREV = 244;
+  private static final int BTN_PE_NEXT = 245;
 
   private static final int W = 384;
   private static final int H = 296;
@@ -662,7 +664,7 @@ public class AdvancedSignalControllerGui extends GuiScreen {
       moveSelection(-1);
     } else if (id == BTN_DOWN || id == BTN_RIGHT) {
       moveSelection(1);
-    } else if (id >= BTN_SCREEN_BASE && id <= BTN_SCREEN_BASE + 6) {
+    } else if (id >= BTN_SCREEN_BASE && id < BTN_SCREEN_BASE + Screen.values().length) {
       screen = Screen.values()[id - BTN_SCREEN_BASE];
       rebuildCells();
     } else if (id == BTN_TEMPLATE) {
