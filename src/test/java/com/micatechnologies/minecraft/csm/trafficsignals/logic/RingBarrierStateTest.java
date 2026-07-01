@@ -537,4 +537,89 @@ class RingBarrierStateTest {
         "FYA is red once the opposing through is red — they cleared together");
     assertFalse(rb.getLastAppliedPhase().getYellowSignals().contains(fyaLens));
   }
+
+  @Test
+  @DisplayName("PPLT FYA: flash holds through the opposing clearance straight into protected green")
+  void fyaHoldsFlashIntoProtectedGreen() {
+    // Lag left: phase 6 (through) leads, phase 5 (FYA left, permissive phase 2) lags. While the
+    // opposing through (2) and the lead through (6) clear, phase 5's protected green is imminent, so
+    // its flash must HOLD (not run its own solid-yellow/red) and go flash -> protected green direct.
+    net.minecraft.util.math.BlockPos fyaLens = new net.minecraft.util.math.BlockPos(210, 0, 0);
+    net.minecraft.util.math.BlockPos arrow = new net.minecraft.util.math.BlockPos(211, 0, 0);
+    RingBarrierState rb = new RingBarrierState();
+    TrafficSignalProgrammedPhasePlan plan = TrafficSignalProgrammedPhasePlan.createDefault();
+    plan.getCoordination().setCoordinatedPhases(new int[0]);
+    plan.setRing2Sequence(new int[] {6, 5, 7, 8}); // through 6 before left 5 (lag left)
+    enable(plan, 5, 0); // FYA left head, circuit 0
+    plan.getPhase(5).setMovement(TrafficSignalPhaseMovement.PROTECTED_LEFT);
+    plan.getPhase(5).setPermissivePhase(2);
+    enable(plan, 2, 1); // opposing/permissive through, circuit 1
+    enable(plan, 6, 2); // lead through, circuit 2 (occupies ring 2 before phase 5)
+    for (int n : new int[] {5, 2, 6}) {
+      TrafficSignalProgrammedPhase p = plan.getPhase(n);
+      p.setMinGreen(20L);
+      p.setPassage(10L);
+      p.setYellow(20L);
+      p.setRedClear(20L);
+    }
+    TrafficSignalControllerCircuits ckts = new TrafficSignalControllerCircuits();
+    TrafficSignalControllerCircuit c0 = new TrafficSignalControllerCircuit();
+    c0.getFlashingLeftSignals().add(fyaLens);
+    c0.getLeftSignals().add(arrow);
+    ckts.addCircuit(c0);
+    ckts.addCircuit(new TrafficSignalControllerCircuit()); // circuit 1 (phase 2)
+    ckts.addCircuit(new TrafficSignalControllerCircuit()); // circuit 2 (phase 6)
+
+    Demand all = new Demand().veh(0, 0, 1, 0).veh(1, 1, 0, 0).veh(2, 1, 0, 0); // φ5 left + φ2 + φ6
+    Demand dropThrus = new Demand().veh(0, 0, 1, 0);                           // φ5 left call only
+
+    rb.tick(plan, ckts, NO_OVERLAPS, 0L, all);
+    assertTrue(rb.getLastAppliedPhase().getFyaSignals().contains(fyaLens),
+        "phase 5 flashes permissively while phase 2 is green");
+
+    rb.tick(plan, ckts, NO_OVERLAPS, 30L, dropThrus); // throughs -> yellow; φ5 protected imminent
+    assertTrue(rb.getLastAppliedPhase().getFyaSignals().contains(fyaLens),
+        "flash HOLDS through the opposing yellow (protected green imminent), no solid yellow");
+    assertFalse(rb.getLastAppliedPhase().getYellowSignals().contains(fyaLens));
+
+    rb.tick(plan, ckts, NO_OVERLAPS, 50L, dropThrus); // throughs -> red; flash still held
+    assertTrue(rb.getLastAppliedPhase().getFyaSignals().contains(fyaLens),
+        "flash holds through the opposing red clearance too");
+
+    rb.tick(plan, ckts, NO_OVERLAPS, 70L, dropThrus); // throughs cleared -> phase 5 protected green
+    assertEquals(5, rb.getLastServed(2).phaseNumber);
+    assertTrue(rb.getLastAppliedPhase().getGreenSignals().contains(arrow),
+        "phase 5 goes flash -> protected green arrow directly");
+    assertTrue(rb.getLastAppliedPhase().getOffSignals().contains(fyaLens),
+        "3-section lens is dark under the protected green");
+  }
+
+  @Test
+  @DisplayName("rest-in-walk recalls WALK while holding green after being called (not don't-walk)")
+  void restInWalkRecyclesWalkWhenHoldingGreen() {
+    // A rest-in-walk phase entered by a call (not the no-demand rest path) used to run WALK -> FDW
+    // -> DON'T WALK once and then sit in don't-walk while the vehicle stayed green. It should recall
+    // WALK while it holds green with nothing else calling.
+    RingBarrierState rb = new RingBarrierState();
+    TrafficSignalProgrammedPhasePlan plan = TrafficSignalProgrammedPhasePlan.createDefault();
+    plan.getCoordination().setCoordinatedPhases(new int[0]);
+    enable(plan, 2, 0);
+    enable(plan, 4, 1); // present but never called -> no conflict, phase 2 rests on green
+    TrafficSignalProgrammedPhase p2 = plan.getPhase(2);
+    p2.setRestInWalk(true);
+    p2.setPedRecall(true);
+    p2.setWalk(40L);
+    p2.setPedClear(60L);
+    p2.setMinGreen(20L);
+    TrafficSignalControllerCircuits ckts = circuits(2);
+    Demand ph2 = new Demand().veh(0, 1, 0, 0); // phase 2 called (served by a call, not the rest path)
+
+    rb.tick(plan, ckts, NO_OVERLAPS, 0L, ph2);
+    assertEquals(2, rb.getLastServed(1).phaseNumber);
+    // Well past walk (40) + ped clear (60): without the rest-in-walk recall this would be DONT_WALK.
+    rb.tick(plan, ckts, NO_OVERLAPS, 200L, ph2);
+    assertEquals(VehInterval.GREEN, rb.getLastServed(1).vehicle, "phase 2 still holding green");
+    assertEquals(PedInterval.WALK, rb.getLastServed(1).pedestrian,
+        "rest-in-walk recalls WALK while the phase holds green, not resting in don't-walk");
+  }
 }
