@@ -63,27 +63,10 @@ public final class AdvancedPhaseBuilder {
       RingBarrierState.ServedMovement ring1,
       RingBarrierState.ServedMovement ring2,
       List<RingBarrierState.VehInterval> overlapIntervals) {
-    return build(world, plan, circuits, overlaps, ring1, ring2, overlapIntervals, null);
-  }
-
-  /**
-   * Build overload that also takes per-phase resolved FYA compound-head states (by left-phase
-   * number) from {@link RingBarrierState}, which carry the stateful FLASH&rarr;solid-yellow&rarr;red
-   * clearance. A {@code null} map (or a phase missing from it) falls back to the stateless
-   * {@link #baseFyaState} decision.
-   */
-  public static TrafficSignalPhase build(World world,
-      TrafficSignalProgrammedPhasePlan plan,
-      TrafficSignalControllerCircuits circuits,
-      TrafficSignalControllerOverlaps overlaps,
-      RingBarrierState.ServedMovement ring1,
-      RingBarrierState.ServedMovement ring2,
-      List<RingBarrierState.VehInterval> overlapIntervals,
-      java.util.Map<Integer, FyaLensState> fyaResolved) {
     TrafficSignalPhase phase = redBaseline(circuits);
     applyServed(phase, plan, circuits, ring1);
     applyServed(phase, plan, circuits, ring2);
-    applyFyaLenses(phase, plan, circuits, ring1, ring2, fyaResolved);
+    applyFyaLenses(phase, plan, circuits, ring1, ring2);
     applyOverlaps(phase, overlaps);
     applyProgrammedOverlaps(phase, plan, circuits, ring1, ring2, overlapIntervals);
     return phase;
@@ -234,8 +217,11 @@ public final class AdvancedPhaseBuilder {
    * <ul>
    *   <li>own phase served GREEN &rarr; protected green arrow;</li>
    *   <li>own phase served YELLOW &rarr; solid yellow arrow (protected clearance);</li>
-   *   <li>own phase served RED, or not served with permissive closed &rarr; red arrow;</li>
-   *   <li>not served, opposing through green or in yellow clearance &rarr; flashing yellow.</li>
+   *   <li>own phase served RED, or not served with the opposing through red &rarr; red arrow;</li>
+   *   <li>not served, opposing through GREEN &rarr; flashing yellow (permissive);</li>
+   *   <li>not served, opposing through YELLOW &rarr; solid yellow arrow — the permissive flash
+   *       clears <em>concurrently</em> with the opposing through's change interval, so both reach
+   *       red together (rather than the flash lingering and clearing a yellow-interval late).</li>
    * </ul>
    */
   static FyaLensState baseFyaState(RingBarrierState.VehInterval servedThis,
@@ -249,9 +235,15 @@ public final class AdvancedPhaseBuilder {
     if (servedThis == RingBarrierState.VehInterval.RED) {
       return FyaLensState.RED;
     }
-    boolean permissive = hasPermissive && (permInterval == RingBarrierState.VehInterval.GREEN
-        || permInterval == RingBarrierState.VehInterval.YELLOW);
-    return permissive ? FyaLensState.FLASH : FyaLensState.RED;
+    if (hasPermissive) {
+      if (permInterval == RingBarrierState.VehInterval.GREEN) {
+        return FyaLensState.FLASH;
+      }
+      if (permInterval == RingBarrierState.VehInterval.YELLOW) {
+        return FyaLensState.SOLID_YELLOW;
+      }
+    }
+    return FyaLensState.RED;
   }
 
   /**
@@ -267,17 +259,12 @@ public final class AdvancedPhaseBuilder {
    *   <li>FLASH &rarr; 3-section flashing yellow, add-on RED;</li>
    *   <li>RED &rarr; 3-section RED, add-on RED.</li>
    * </ul>
-   *
-   * @param resolved per-phase states from {@link RingBarrierState} (carrying the FLASH&rarr;red
-   *                 solid-yellow clearance); a phase absent from the map, or a {@code null} map,
-   *                 falls back to the stateless {@link #baseFyaState}.
    */
   private static void applyFyaLenses(TrafficSignalPhase phase,
       TrafficSignalProgrammedPhasePlan plan,
       TrafficSignalControllerCircuits circuits,
       RingBarrierState.ServedMovement ring1,
-      RingBarrierState.ServedMovement ring2,
-      java.util.Map<Integer, FyaLensState> resolved) {
+      RingBarrierState.ServedMovement ring2) {
     for (TrafficSignalProgrammedPhase p : plan.getPhases()) {
       if (!p.isActive()) {
         continue;
@@ -295,11 +282,8 @@ public final class AdvancedPhaseBuilder {
       if (fyaLens.isEmpty()) {
         continue; // not an FYA compound head
       }
-      FyaLensState state = resolved != null ? resolved.get(p.getPhaseNumber()) : null;
-      if (state == null) {
-        state = baseFyaState(servedInterval(p.getPhaseNumber(), ring1, ring2),
-            servedInterval(p.getPermissivePhase(), ring1, ring2), p.getPermissivePhase() > 0);
-      }
+      FyaLensState state = baseFyaState(servedInterval(p.getPhaseNumber(), ring1, ring2),
+          servedInterval(p.getPermissivePhase(), ring1, ring2), p.getPermissivePhase() > 0);
       List<BlockPos> arrowLens = circuit.getLeftSignals();
       phase.removeSignals(fyaLens);
       phase.removeSignals(arrowLens);

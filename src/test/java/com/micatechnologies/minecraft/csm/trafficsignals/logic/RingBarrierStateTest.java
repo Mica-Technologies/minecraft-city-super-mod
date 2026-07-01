@@ -485,11 +485,12 @@ class RingBarrierStateTest {
   }
 
   @Test
-  @DisplayName("PPLT FYA: permissive flash clears through solid yellow to red, never snaps to red")
-  void fyaFlashClearsThroughSolidYellow() {
+  @DisplayName("PPLT FYA: permissive flash clears concurrently with the opposing through, not late")
+  void fyaClearsConcurrentlyWithOpposingThrough() {
     // Phase 1 is a PPLT FYA left (permissive phase 6); it is never called, so its head is driven
-    // only by the opposing through (phase 6). When phase 6 ends, the flash must clear through a
-    // solid yellow arrow, not jump straight to red.
+    // only by the opposing through (phase 6). The flash must clear WITH phase 6 — flashing yellow
+    // while it is green, solid yellow while it is yellow, red when it is red — so both reach red
+    // together (rather than the flash lingering and clearing a whole yellow interval late).
     net.minecraft.util.math.BlockPos fyaLens = new net.minecraft.util.math.BlockPos(200, 0, 0);
     net.minecraft.util.math.BlockPos arrow = new net.minecraft.util.math.BlockPos(201, 0, 0);
     RingBarrierState rb = new RingBarrierState();
@@ -498,7 +499,6 @@ class RingBarrierStateTest {
     enable(plan, 1, 0); // FYA left head on circuit 0 (never called -> permissive only)
     plan.getPhase(1).setMovement(TrafficSignalPhaseMovement.PROTECTED_LEFT);
     plan.getPhase(1).setPermissivePhase(6);
-    plan.getPhase(1).setYellow(20L); // FYA clearance interval
     enable(plan, 6, 1); // opposing through (drives the permissive flash)
     enable(plan, 4, 2); // barrier B: conflict that ends phase 6
     for (int n : new int[] {6, 4}) {
@@ -523,23 +523,18 @@ class RingBarrierStateTest {
     assertTrue(rb.getLastAppliedPhase().getFyaSignals().contains(fyaLens),
         "FYA flashes while the opposing through is green");
 
-    rb.tick(plan, ckts, NO_OVERLAPS, 30L, drop6); // phase 6 -> yellow; permissive still flashes
-    assertTrue(rb.getLastAppliedPhase().getFyaSignals().contains(fyaLens),
-        "FYA keeps flashing through the opposing through's yellow");
-
-    rb.tick(plan, ckts, NO_OVERLAPS, 50L, drop6); // phase 6 -> red; flash must clear via solid yellow
+    rb.tick(plan, ckts, NO_OVERLAPS, 30L, drop6); // phase 6 -> yellow: FYA clears to solid yellow now
     assertTrue(rb.getLastAppliedPhase().getYellowSignals().contains(fyaLens),
-        "ending flash shows a solid yellow arrow (clearance), not a jump to red");
+        "FYA shows solid yellow WITH the opposing through's yellow, not after it");
     assertFalse(rb.getLastAppliedPhase().getFyaSignals().contains(fyaLens));
     assertFalse(rb.getLastAppliedPhase().getRedSignals().contains(fyaLens));
 
-    rb.tick(plan, ckts, NO_OVERLAPS, 65L, drop6); // still within the 20-tick clearance
-    assertTrue(rb.getLastAppliedPhase().getYellowSignals().contains(fyaLens),
-        "solid yellow persists for the clearance interval");
+    rb.tick(plan, ckts, NO_OVERLAPS, 45L, drop6); // still within phase 6's yellow (30..50)
+    assertTrue(rb.getLastAppliedPhase().getYellowSignals().contains(fyaLens));
 
-    rb.tick(plan, ckts, NO_OVERLAPS, 75L, drop6); // clearance done -> red
+    rb.tick(plan, ckts, NO_OVERLAPS, 55L, drop6); // phase 6 now red (50..70): FYA is red too
     assertTrue(rb.getLastAppliedPhase().getRedSignals().contains(fyaLens),
-        "FYA lens rests at red after the solid-yellow clearance");
+        "FYA is red once the opposing through is red — they cleared together");
     assertFalse(rb.getLastAppliedPhase().getYellowSignals().contains(fyaLens));
   }
 }

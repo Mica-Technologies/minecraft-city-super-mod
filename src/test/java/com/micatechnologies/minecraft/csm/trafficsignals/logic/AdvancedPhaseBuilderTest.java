@@ -64,8 +64,9 @@ class AdvancedPhaseBuilderTest {
           AdvancedPhaseBuilder.baseFyaState(VehInterval.RED, null, true));
       assertEquals(AdvancedPhaseBuilder.FyaLensState.FLASH,
           AdvancedPhaseBuilder.baseFyaState(null, VehInterval.GREEN, true));
-      assertEquals(AdvancedPhaseBuilder.FyaLensState.FLASH,
-          AdvancedPhaseBuilder.baseFyaState(null, VehInterval.YELLOW, true));
+      assertEquals(AdvancedPhaseBuilder.FyaLensState.SOLID_YELLOW,
+          AdvancedPhaseBuilder.baseFyaState(null, VehInterval.YELLOW, true),
+          "opposing through yellow -> FYA clears to solid yellow concurrently, not flashing");
       assertEquals(AdvancedPhaseBuilder.FyaLensState.RED,
           AdvancedPhaseBuilder.baseFyaState(null, VehInterval.RED, true));
       assertEquals(AdvancedPhaseBuilder.FyaLensState.RED,
@@ -101,10 +102,13 @@ class AdvancedPhaseBuilderTest {
     }
 
     @Test
-    @DisplayName("FYA flashes while the opposing through is in YELLOW clearance (not just green)")
-    void fyaFlashesDuringOpposingYellow() {
-      assertTrue(build(6, VehInterval.YELLOW).getFyaSignals().contains(FYA_A),
-          "FYA lens should still flash while the opposing through clears (yellow)");
+    @DisplayName("opposing through YELLOW: FYA clears to solid yellow concurrently, not flashing")
+    void opposingYellow_solidYellowConcurrent() {
+      TrafficSignalPhase phase = build(6, VehInterval.YELLOW);
+      assertTrue(phase.getYellowSignals().contains(FYA_A),
+          "FYA clears to a solid yellow arrow together with the opposing through's yellow");
+      assertFalse(phase.getFyaSignals().contains(FYA_A),
+          "FYA stops flashing once the opposing through begins clearing");
     }
   }
 
