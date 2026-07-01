@@ -143,6 +143,17 @@ public class AdvancedSignalControllerGui extends GuiScreen {
       "Rest-in-Walk holds WALK while the controller rests on a phase; it always runs a full "
           + "flashing-don't-walk clearance before the phase yields.",
       "",
+      "CONCURRENT PHASES (DUAL RING):",
+      "Two compatible phases — one from each ring on the same barrier — run green together. So two "
+          + "phases that are both called (e.g. the two opposing throughs 2 & 6, or the two lefts "
+          + "1 & 5) are served at the same time automatically; no setting needed.",
+      "To also bring up a companion phase that has NO call of its own (e.g. give 6 a green while 2 "
+          + "holds the street, or 2 while 5 turns), set that phase's OPT column to DE (Dual Entry). "
+          + "When one ring is serving and the other ring has no call, the idle ring companions with "
+          + "its first active DE phase on that barrier. A real call always wins over dual entry.",
+      "Note: DE serves the FIRST active DE phase in the ring, so flag only the phase you want as the "
+          + "companion (e.g. DE on 6, not 5, to pair 6 with 2).",
+      "",
       "TIP: hover any on-screen label for a one-line explanation.",
   };
 
