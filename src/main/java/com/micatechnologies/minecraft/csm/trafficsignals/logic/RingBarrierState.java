@@ -242,11 +242,13 @@ public class RingBarrierState {
 
   /**
    * The FYA left phases whose permissive flash should be held (not cleared) this tick because their
-   * own protected green is imminent: the phase is called, on the current barrier, not yet being
-   * served, and still ahead in its ring's sequence this cycle — so once the opposing through clears
-   * the engine will serve it protected next. The head then goes flash &rarr; protected green
-   * directly. Left phases not in this set clear their flash normally (solid yellow with the opposing
-   * through, then red).
+   * own protected green is coming: the phase is called and on the current barrier but not yet being
+   * served. The ring-barrier engine won't cross off the current barrier until every called phase on
+   * it has been served, so a called left on this barrier is guaranteed to get its protected green —
+   * the flash holds through the opposing through's clearance and then goes flash &rarr; protected
+   * green directly, with no solid-yellow/red on the FYA head (a flashing yellow is always a safe
+   * yield, so holding it is safe). Left phases not in this set clear their flash normally (solid
+   * yellow with the opposing through, then red — the flash-to-red case for a left with no demand).
    */
   private java.util.Set<Integer> computeFyaHoldFlash(TrafficSignalProgrammedPhasePlan plan,
       boolean[] called) {
@@ -265,14 +267,7 @@ public class RingBarrierState {
           || ring1.activePhase == pn || ring2.activePhase == pn) {
         continue;
       }
-      RingRuntime ring = (p.getRing() == 2) ? ring2 : ring1;
-      int[] seq = plan.getRingSequence(p.getRing());
-      for (int idx = ring.sequencePos + 1; idx < seq.length; idx++) {
-        if (seq[idx] == pn) {
-          hold.add(pn);
-          break;
-        }
-      }
+      hold.add(pn);
     }
     return hold;
   }
@@ -486,10 +481,16 @@ public class RingBarrierState {
         } else if (phase.isRestInWalk() && !conflict) {
           // Rest in Walk: while this phase holds green with nothing else calling, recall the WALK
           // rather than sitting in don't-walk after the first ped clearance — whether the phase was
-          // entered as the no-demand rest or served by a call. If a conflicting call later appears,
-          // the clearance block above re-arms FDW before the phase yields.
-          ring.resting = true;
-          ring.pedServing = true;
+          // entered as the no-demand rest or served by a call. But never cut off a pedestrian
+          // clearance already in progress (e.g. one the clearance block above started for a
+          // conflict that then dropped): let the FDW finish, then recycle to WALK. A clearance is
+          // in progress once the ped has passed WALK and hasn't reached don't-walk yet.
+          boolean clearanceInProgress = ring.pedServing && !pedDone
+              && (now - ring.pedStart) >= ring.walkHold;
+          if (!clearanceInProgress) {
+            ring.resting = true;
+            ring.pedServing = true;
+          }
         }
         break;
       }
