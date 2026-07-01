@@ -37,7 +37,7 @@ import org.lwjgl.input.Keyboard;
  */
 public class AdvancedSignalControllerGui extends GuiScreen {
 
-  private enum Screen { STATUS, TIMING, MAP, COORD, PREEMPT, ACT, OVL }
+  private enum Screen { STATUS, TIMING, MAP, COORD, PREEMPT, ACT, OVL, HELP }
 
   // Palette — controller front panel.
   private static final int COLOR_BODY = 0xFF23272B;
@@ -107,10 +107,51 @@ public class AdvancedSignalControllerGui extends GuiScreen {
   private static final String[] ACT_ACTIONS = {"ph.max2", "ph.bikeMinGreen", "ph.addedInitial",
       "ph.maxInitial", "ph.minGap", "ph.timeB4Reduce", "ph.timeToReduce"};
 
+  // HELP screen copy. Paragraphs are word-wrapped to the LCD width at draw time; "" is a blank line
+  // and a line ending in ":" (or the title) renders as a heading.
+  private static final String[] HELP_PARAGRAPHS = {
+      "CSM ASC-3 — Quick Help",
+      "",
+      "TABS:",
+      "STATUS: live mode + ring/barrier view.  TIMING: per-phase intervals.  MAP: assign phases to "
+          + "circuits & movements.  COORD: cycle/offset/splits.  PREEMPT: priority/rail preempts.  "
+          + "ACT: volume-density timing.  OVL: right-turn & ped overlaps.",
+      "",
+      "BASIC SETUP:",
+      "1. Link each approach's signal heads to a circuit with the Signal Link Tool (one circuit "
+          + "per approach).",
+      "2. On MAP, press 'Load Std 8-Phase' to auto-assign the standard NEMA phases from the head "
+          + "facings, or set each phase's circuit and movement by hand.",
+      "3. On TIMING, set min/max green, passage, yellow, red clear, walk and ped clear (seconds).",
+      "4. Set a phase's RCL to MIN/MAX/PED to recall it every cycle, or SOFT to rest on it.",
+      "",
+      "EDITING VALUES:",
+      "Click a field (or use the arrows) to select it, type a number and press ENTER to set it in "
+          + "seconds. +/- nudge a value or cycle a list. Closing the panel also saves a typed value.",
+      "",
+      "FYA LEFT TURNS:",
+      "An FYA head is TWO linked blocks: the 3-section flashing-left lens (linked as the "
+          + "flashing-left signal) and the 1-section green-arrow add-on (linked as the left signal) "
+          + "mounted below it.",
+      "To program: on MAP set the left phase's movement to PROT LEFT, assign its circuit, and set "
+          + "the FYA column to the OPPOSING through phase (e.g. left 1 → P6). 0 = protected "
+          + "only, no flash.",
+      "It then shows: green arrow during the protected phase, solid yellow during clearance, "
+          + "flashing yellow while the opposing through is green, and red otherwise.",
+      "",
+      "PEDESTRIANS:",
+      "Rest-in-Walk holds WALK while the controller rests on a phase; it always runs a full "
+          + "flashing-don't-walk clearance before the phase yields.",
+      "",
+      "TIP: hover any on-screen label for a one-line explanation.",
+  };
+
   private final TileEntityTrafficSignalController controller;
   private final BlockPos blockPos;
 
   private Screen screen = Screen.STATUS;
+  /** First visible line on the HELP screen (scroll offset). */
+  private int helpScroll = 0;
   private final List<Cell> cells = new ArrayList<>();
   /** Hover-help regions, rebuilt each frame as the current screen is drawn. */
   private final List<Help> helps = new ArrayList<>();
@@ -226,9 +267,11 @@ public class AdvancedSignalControllerGui extends GuiScreen {
     // Screen-select row across the top of the keypad.
     int sx = left + 12;
     int sy = top + H - 94;
-    String[] names = {"STATUS", "TIMING", "MAP", "COORD", "PREEMPT", "ACT", "OVL"};
+    String[] names = {"STATUS", "TIMING", "MAP", "COORD", "PREEMPT", "ACT", "OVL", "HELP"};
+    // Size the tab row to the panel so all tabs fit regardless of count.
+    int tabW = (W - 24) / names.length;
     for (int i = 0; i < names.length; i++) {
-      buttonList.add(new GuiButton(BTN_SCREEN_BASE + i, sx + i * 50, sy, 47, 14, names[i]));
+      buttonList.add(new GuiButton(BTN_SCREEN_BASE + i, sx + i * tabW, sy, tabW - 3, 14, names[i]));
     }
 
     // Numeric keypad (left cluster).
@@ -299,6 +342,9 @@ public class AdvancedSignalControllerGui extends GuiScreen {
         break;
       case OVL:
         buildOverlapCells();
+        break;
+      case HELP:
+        helpScroll = 0; // no editable cells; the arrow/plus-minus keys scroll instead
         break;
       case STATUS:
       default:
@@ -660,13 +706,29 @@ public class AdvancedSignalControllerGui extends GuiScreen {
     } else if (id == BTN_ENT) {
       commitOrCycle();
     } else if (id == BTN_PLUS) {
-      adjustSelected(1);
+      if (screen == Screen.HELP) {
+        helpScroll += 3;
+      } else {
+        adjustSelected(1);
+      }
     } else if (id == BTN_MINUS) {
-      adjustSelected(-1);
+      if (screen == Screen.HELP) {
+        helpScroll -= 3;
+      } else {
+        adjustSelected(-1);
+      }
     } else if (id == BTN_UP || id == BTN_LEFT) {
-      moveSelection(-1);
+      if (screen == Screen.HELP) {
+        helpScroll--;
+      } else {
+        moveSelection(-1);
+      }
     } else if (id == BTN_DOWN || id == BTN_RIGHT) {
-      moveSelection(1);
+      if (screen == Screen.HELP) {
+        helpScroll++;
+      } else {
+        moveSelection(1);
+      }
     } else if (id >= BTN_SCREEN_BASE && id < BTN_SCREEN_BASE + Screen.values().length) {
       screen = Screen.values()[id - BTN_SCREEN_BASE];
       rebuildCells();
@@ -708,11 +770,19 @@ public class AdvancedSignalControllerGui extends GuiScreen {
         return;
       case Keyboard.KEY_UP:
       case Keyboard.KEY_LEFT:
-        moveSelection(-1);
+        if (screen == Screen.HELP) {
+          helpScroll--;
+        } else {
+          moveSelection(-1);
+        }
         return;
       case Keyboard.KEY_DOWN:
       case Keyboard.KEY_RIGHT:
-        moveSelection(1);
+        if (screen == Screen.HELP) {
+          helpScroll++;
+        } else {
+          moveSelection(1);
+        }
         return;
       case Keyboard.KEY_RETURN:
       case Keyboard.KEY_NUMPADENTER:
@@ -864,6 +934,9 @@ public class AdvancedSignalControllerGui extends GuiScreen {
         break;
       case OVL:
         drawOverlap();
+        break;
+      case HELP:
+        drawHelp();
         break;
       default:
         break;
@@ -1237,6 +1310,43 @@ public class AdvancedSignalControllerGui extends GuiScreen {
         left + 100, top + H - 14, COLOR_AMBER_DIM);
   }
 
+  /** Scrollable, word-wrapped help copy shown on the HELP screen. */
+  private void drawHelp() {
+    int lineH = 10;
+    int areaTop = lcdY;
+    int areaBottom = top + H - 116; // leave the scroll indicator + hint band below
+    int maxLines = Math.max(1, (areaBottom - areaTop) / lineH);
+    java.util.List<String> lines = wrappedHelpLines();
+    int maxScroll = Math.max(0, lines.size() - maxLines);
+    helpScroll = Math.max(0, Math.min(helpScroll, maxScroll));
+    int y = areaTop;
+    for (int i = helpScroll; i < lines.size() && i < helpScroll + maxLines; i++) {
+      String line = lines.get(i);
+      boolean heading = line.endsWith(":") || line.startsWith("CSM ASC-3");
+      fontRenderer.drawString(line, lcdX, y, heading ? COLOR_AMBER_HEAD : COLOR_AMBER);
+      y += lineH;
+    }
+    if (lines.size() > maxLines) {
+      fontRenderer.drawString(
+          "▲▼ / +- scroll   (" + (helpScroll + 1) + "-"
+              + Math.min(lines.size(), helpScroll + maxLines) + " of " + lines.size() + ")",
+          lcdX, areaBottom + 2, COLOR_AMBER_DIM);
+    }
+  }
+
+  /** The help paragraphs word-wrapped to the current LCD width (blank entries stay blank lines). */
+  private java.util.List<String> wrappedHelpLines() {
+    java.util.List<String> out = new java.util.ArrayList<>();
+    for (String para : HELP_PARAGRAPHS) {
+      if (para.isEmpty()) {
+        out.add("");
+      } else {
+        out.addAll(fontRenderer.listFormattedStringToWidth(para, lcdW));
+      }
+    }
+    return out;
+  }
+
   /** Registers hover help over the screen-select and keypad buttons (static positions). */
   private void registerButtonHelps() {
     addButtonHelp(BTN_SCREEN_BASE, "STATUS",
@@ -1260,6 +1370,9 @@ public class AdvancedSignalControllerGui extends GuiScreen {
     addButtonHelp(BTN_SCREEN_BASE + 6, "OVL",
         "Phase-based vehicle overlaps (e.g. right-turn overlaps): a",
         "circuit+movement that greens with its included phases.");
+    addButtonHelp(BTN_SCREEN_BASE + 7, "HELP",
+        "Quick reference: common setups, editing, and how to link",
+        "and program FYA left turns. Arrows / +- scroll.");
     addButtonHelp(BTN_TEMPLATE, "Load Std 8-Phase",
         "Overwrites the plan with a standard NEMA 8-phase dual-ring",
         "layout and auto-assigns phases to your circuits by approach.",
