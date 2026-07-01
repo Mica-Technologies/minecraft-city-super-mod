@@ -483,4 +483,63 @@ class RingBarrierStateTest {
     assertEquals(VehInterval.YELLOW, rb.getLastServed(1).vehicle,
         "vehicle yields only after the pedestrian clearance has finished");
   }
+
+  @Test
+  @DisplayName("PPLT FYA: permissive flash clears through solid yellow to red, never snaps to red")
+  void fyaFlashClearsThroughSolidYellow() {
+    // Phase 1 is a PPLT FYA left (permissive phase 6); it is never called, so its head is driven
+    // only by the opposing through (phase 6). When phase 6 ends, the flash must clear through a
+    // solid yellow arrow, not jump straight to red.
+    net.minecraft.util.math.BlockPos fyaLens = new net.minecraft.util.math.BlockPos(200, 0, 0);
+    net.minecraft.util.math.BlockPos arrow = new net.minecraft.util.math.BlockPos(201, 0, 0);
+    RingBarrierState rb = new RingBarrierState();
+    TrafficSignalProgrammedPhasePlan plan = TrafficSignalProgrammedPhasePlan.createDefault();
+    plan.getCoordination().setCoordinatedPhases(new int[0]);
+    enable(plan, 1, 0); // FYA left head on circuit 0 (never called -> permissive only)
+    plan.getPhase(1).setMovement(TrafficSignalPhaseMovement.PROTECTED_LEFT);
+    plan.getPhase(1).setPermissivePhase(6);
+    plan.getPhase(1).setYellow(20L); // FYA clearance interval
+    enable(plan, 6, 1); // opposing through (drives the permissive flash)
+    enable(plan, 4, 2); // barrier B: conflict that ends phase 6
+    for (int n : new int[] {6, 4}) {
+      TrafficSignalProgrammedPhase p = plan.getPhase(n);
+      p.setMinGreen(20L);
+      p.setPassage(10L);
+      p.setYellow(20L);
+      p.setRedClear(20L);
+    }
+    TrafficSignalControllerCircuits ckts = new TrafficSignalControllerCircuits();
+    TrafficSignalControllerCircuit c0 = new TrafficSignalControllerCircuit();
+    c0.getFlashingLeftSignals().add(fyaLens);
+    c0.getLeftSignals().add(arrow);
+    ckts.addCircuit(c0);
+    ckts.addCircuit(new TrafficSignalControllerCircuit()); // circuit 1 (phase 6)
+    ckts.addCircuit(new TrafficSignalControllerCircuit()); // circuit 2 (phase 4)
+
+    Demand both = new Demand().veh(1, 1, 0, 0).veh(2, 1, 0, 0);  // phase 6 + phase 4 call
+    Demand drop6 = new Demand().veh(2, 1, 0, 0);                 // phase 6 gapped, phase 4 waits
+
+    rb.tick(plan, ckts, NO_OVERLAPS, 0L, both);
+    assertTrue(rb.getLastAppliedPhase().getFyaSignals().contains(fyaLens),
+        "FYA flashes while the opposing through is green");
+
+    rb.tick(plan, ckts, NO_OVERLAPS, 30L, drop6); // phase 6 -> yellow; permissive still flashes
+    assertTrue(rb.getLastAppliedPhase().getFyaSignals().contains(fyaLens),
+        "FYA keeps flashing through the opposing through's yellow");
+
+    rb.tick(plan, ckts, NO_OVERLAPS, 50L, drop6); // phase 6 -> red; flash must clear via solid yellow
+    assertTrue(rb.getLastAppliedPhase().getYellowSignals().contains(fyaLens),
+        "ending flash shows a solid yellow arrow (clearance), not a jump to red");
+    assertFalse(rb.getLastAppliedPhase().getFyaSignals().contains(fyaLens));
+    assertFalse(rb.getLastAppliedPhase().getRedSignals().contains(fyaLens));
+
+    rb.tick(plan, ckts, NO_OVERLAPS, 65L, drop6); // still within the 20-tick clearance
+    assertTrue(rb.getLastAppliedPhase().getYellowSignals().contains(fyaLens),
+        "solid yellow persists for the clearance interval");
+
+    rb.tick(plan, ckts, NO_OVERLAPS, 75L, drop6); // clearance done -> red
+    assertTrue(rb.getLastAppliedPhase().getRedSignals().contains(fyaLens),
+        "FYA lens rests at red after the solid-yellow clearance");
+    assertFalse(rb.getLastAppliedPhase().getYellowSignals().contains(fyaLens));
+  }
 }

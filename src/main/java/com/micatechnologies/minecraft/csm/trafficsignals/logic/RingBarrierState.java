@@ -107,6 +107,10 @@ public class RingBarrierState {
   private ServedMovement lastServed2;
   /** Per-overlap (by plan index) last tick the overlap's included phases were green — for lag green. */
   private final Map<Integer, Long> overlapLastGreen = new HashMap<>();
+  /** Per FYA left phase: the compound-head lens state shown last tick (for FLASH->red clearance). */
+  private final Map<Integer, AdvancedPhaseBuilder.FyaLensState> fyaLast = new HashMap<>();
+  /** Per FYA left phase: world tick the FLASH->red solid-yellow clearance ends (absent if none). */
+  private final Map<Integer, Long> fyaClearEnd = new HashMap<>();
 
   // Per-tick coordination state (computed from the plan each tick; all no-ops in FREE mode).
   private static final int PHASE_SLOTS = TrafficSignalProgrammedPhasePlan.PHASE_COUNT + 1;
@@ -235,8 +239,66 @@ public class RingBarrierState {
     this.lastServed1 = m1;
     this.lastServed2 = m2;
     List<VehInterval> overlapIntervals = computeOverlapIntervals(plan, m1, m2, now, called);
-    return changedOrNull(
-        AdvancedPhaseBuilder.build(world, plan, circuits, overlaps, m1, m2, overlapIntervals));
+    Map<Integer, AdvancedPhaseBuilder.FyaLensState> fyaResolved =
+        computeFyaResolved(plan, m1, m2, now);
+    return changedOrNull(AdvancedPhaseBuilder.build(
+        world, plan, circuits, overlaps, m1, m2, overlapIntervals, fyaResolved));
+  }
+
+  /**
+   * Resolves each FYA compound head's lens state this tick, adding the stateful clearance the
+   * stateless {@link AdvancedPhaseBuilder#baseFyaState} can't: a permissive flash that is ending
+   * (opposing through gone to red) must pass through a solid-yellow clearance rather than snapping
+   * straight to red. Keyed by left-phase number; only phases whose circuit has a flashing-left lens
+   * are included.
+   */
+  private Map<Integer, AdvancedPhaseBuilder.FyaLensState> computeFyaResolved(
+      TrafficSignalProgrammedPhasePlan plan, ServedMovement m1, ServedMovement m2, long now) {
+    Map<Integer, AdvancedPhaseBuilder.FyaLensState> out = new HashMap<>();
+    for (TrafficSignalProgrammedPhase p : plan.getPhases()) {
+      if (!p.isActive() || (p.getMovement() != TrafficSignalPhaseMovement.LEFT
+          && p.getMovement() != TrafficSignalPhaseMovement.PROTECTED_LEFT)) {
+        continue;
+      }
+      int ci = p.getCircuitIndex();
+      if (tickCircuits == null || ci < 0 || ci >= tickCircuits.getCircuitCount()
+          || tickCircuits.getCircuit(ci).getFlashingLeftSignals().isEmpty()) {
+        continue;
+      }
+      int pn = p.getPhaseNumber();
+      AdvancedPhaseBuilder.FyaLensState base = AdvancedPhaseBuilder.baseFyaState(
+          servedIntervalOf(pn, m1, m2), servedIntervalOf(p.getPermissivePhase(), m1, m2),
+          p.getPermissivePhase() > 0);
+      AdvancedPhaseBuilder.FyaLensState resolved = base;
+      if (base == AdvancedPhaseBuilder.FyaLensState.RED) {
+        // A flash that just ended clears through solid yellow for the phase's yellow interval.
+        if (fyaLast.get(pn) == AdvancedPhaseBuilder.FyaLensState.FLASH) {
+          fyaClearEnd.put(pn, now + p.getYellow());
+        }
+        Long end = fyaClearEnd.get(pn);
+        if (end != null && now < end) {
+          resolved = AdvancedPhaseBuilder.FyaLensState.SOLID_YELLOW;
+        } else {
+          fyaClearEnd.remove(pn);
+        }
+      } else {
+        fyaClearEnd.remove(pn);
+      }
+      fyaLast.put(pn, resolved);
+      out.put(pn, resolved);
+    }
+    return out;
+  }
+
+  /** The interval phase {@code phaseNumber} is served at this tick by either ring, or {@code null}. */
+  private static VehInterval servedIntervalOf(int phaseNumber, ServedMovement m1, ServedMovement m2) {
+    if (m1 != null && m1.phaseNumber == phaseNumber) {
+      return m1.vehicle;
+    }
+    if (m2 != null && m2.phaseNumber == phaseNumber) {
+      return m2.vehicle;
+    }
+    return null;
   }
 
   /**
