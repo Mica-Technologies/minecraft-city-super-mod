@@ -368,4 +368,69 @@ class RingBarrierStateTest {
     assertTrue(rb.getLastAppliedPhase().getGreenSignals().contains(rightHead),
         "overlap leads green during the clearance before its included phase greens");
   }
+
+  /** Sets short, uniform interval timing on a phase so crossings happen at predictable ticks. */
+  static void quickTiming(TrafficSignalProgrammedPhasePlan plan, int phase) {
+    TrafficSignalProgrammedPhase p = plan.getPhase(phase);
+    p.setMinGreen(20L);
+    p.setPassage(10L);
+    p.setYellow(20L);
+    p.setRedClear(20L);
+  }
+
+  @Test
+  @DisplayName("barrier crossing: phase 4 (barrier B) is served after phase 2, then wraps back")
+  void crossesBarrierAndWrapsAround() {
+    // Direct regression for the bug where the controller sat on barrier A forever and never
+    // served phase 4. Phases 2 (barrier A) and 4 (barrier B) are both on ring 1.
+    RingBarrierState rb = new RingBarrierState();
+    TrafficSignalProgrammedPhasePlan plan = TrafficSignalProgrammedPhasePlan.createDefault();
+    plan.getCoordination().setCoordinatedPhases(new int[0]);
+    enable(plan, 2, 0); // barrier A, circuit 0
+    enable(plan, 4, 1); // barrier B, circuit 1
+    quickTiming(plan, 2);
+    quickTiming(plan, 4);
+    TrafficSignalControllerCircuits ckts = circuits(2);
+
+    Demand ph2gap = new Demand().veh(0, 0, 0, 0).veh(1, 1, 0, 0); // phase 2 gapped, phase 4 calling
+    Demand ph4gap = new Demand().veh(0, 1, 0, 0).veh(1, 0, 0, 0); // phase 4 gapped, phase 2 calling
+
+    rb.tick(plan, ckts, NO_OVERLAPS, 0L, new Demand().veh(0, 1, 0, 0).veh(1, 1, 0, 0));
+    assertEquals(2, rb.getLastServed(1).phaseNumber, "phase 2 (barrier A) greens first");
+    assertEquals(VehInterval.GREEN, rb.getLastServed(1).vehicle);
+
+    rb.tick(plan, ckts, NO_OVERLAPS, 40L, ph2gap);  // min green + gap met, conflict -> yellow
+    rb.tick(plan, ckts, NO_OVERLAPS, 60L, ph2gap);  // yellow -> red clearance
+    rb.tick(plan, ckts, NO_OVERLAPS, 80L, ph2gap);  // red clears -> CROSS to barrier B
+    assertEquals(4, rb.getLastServed(1).phaseNumber, "phase 4 (barrier B) must be served after crossing");
+    assertEquals(VehInterval.GREEN, rb.getLastServed(1).vehicle);
+
+    rb.tick(plan, ckts, NO_OVERLAPS, 120L, ph4gap); // phase 4 min green + gap, conflict -> yellow
+    rb.tick(plan, ckts, NO_OVERLAPS, 140L, ph4gap); // yellow -> red
+    rb.tick(plan, ckts, NO_OVERLAPS, 160L, ph4gap); // red clears -> WRAP back to barrier A
+    assertEquals(2, rb.getLastServed(1).phaseNumber, "controller wraps back to phase 2 after phase 4");
+    assertEquals(VehInterval.GREEN, rb.getLastServed(1).vehicle);
+  }
+
+  @Test
+  @DisplayName("second-barrier-only demand is served (Bug 1 regression: no stuck all-red)")
+  void servesSecondBarrierWhenOnlyDemand() {
+    // Only phase 4 (barrier B) calls; phase 2 (barrier A) has no demand. The old fillIdleRing broke
+    // at the first barrier-A phase in the sequence and never reached phase 4 -> stuck all-red.
+    RingBarrierState rb = new RingBarrierState();
+    TrafficSignalProgrammedPhasePlan plan = TrafficSignalProgrammedPhasePlan.createDefault();
+    plan.getCoordination().setCoordinatedPhases(new int[0]);
+    enable(plan, 2, 0); // barrier A, circuit 0 — never called
+    enable(plan, 4, 1); // barrier B, circuit 1 — sole demand
+    quickTiming(plan, 2);
+    quickTiming(plan, 4);
+    TrafficSignalControllerCircuits ckts = circuits(2);
+    Demand onlyPh4 = new Demand().veh(1, 1, 0, 0);
+
+    for (long t = 0; t <= 30; t += 10) {
+      rb.tick(plan, ckts, NO_OVERLAPS, t, onlyPh4);
+      assertEquals(4, rb.getLastServed(1).phaseNumber,
+          "phase 4 must be served when it is the only demand (tick " + t + ")");
+    }
+  }
 }
