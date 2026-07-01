@@ -397,6 +397,14 @@ public class RingBarrierState {
         if (vehicleCount(phase) > 0) {
           ring.lastActuation = now;
         }
+        // Rest-in-walk clearance: a phase resting on WALK cannot snap the walk straight to
+        // don't-walk when a conflicting call arrives — it must first run pedestrian clearance
+        // (FDW). End the rest (the vehicle stays green) and re-arm the ped timer to the start of
+        // FDW; the terminate logic below then holds the green until the clearance finishes.
+        if (ring.resting && ring.pedServing && conflictingDemand(called)) {
+          ring.resting = false;
+          ring.pedStart = now - ring.walkHold;
+        }
         int phaseNum = ring.activePhase;
         boolean isCoord = coordinated && coordPhase[phaseNum];
         long greenElapsed = now - ring.greenStart;
@@ -412,11 +420,12 @@ public class RingBarrierState {
         long effPassage = AdvancedActuationTiming.effectivePassage(phase.getPassage(),
             phase.getMinGap(), phase.getTimeBeforeReduce(), phase.getTimeToReduce(), greenElapsed);
         boolean minMet = greenElapsed >= effMinGreen;
-        // The coordinated phase rests in green (no max-out); it yields only to a called phase.
-        boolean maxOut = !ring.resting && !isCoord && greenElapsed >= effMaxGreen;
-        boolean gapOut = (now - ring.lastActuation) >= effPassage;
         boolean pedDone = !ring.pedServing
             || (now - ring.pedStart) >= (ring.walkHold + phase.getPedClear());
+        // The coordinated phase rests in green (no max-out); it yields only to a called phase.
+        // Max-out must not truncate pedestrian clearance — the walk/FDW interval finishes first.
+        boolean maxOut = !ring.resting && !isCoord && greenElapsed >= effMaxGreen && pedDone;
+        boolean gapOut = (now - ring.lastActuation) >= effPassage;
         boolean conflict = conflictingDemand(called);
         // Coordinated force-off: a non-coordinated phase must end when its split window closes.
         boolean forceOff = coordinated && !isCoord && localCycle >= windowEnd[phaseNum];
