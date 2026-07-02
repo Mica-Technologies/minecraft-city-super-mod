@@ -729,8 +729,13 @@ straight to DWELL on the approach route.}
 
 An \textbf{overlap} is an extra signal output that is green whenever any of its
 \emph{included} phases is green — the classic use is a right-turn arrow that runs
-with both its own through phase \emph{and} the compatible cross-street left.
-Managed like preempts (\key{P+}/\key{P−}, \key{Prev}/\key{Next}):
+with both its own through phase \emph{and} the compatible cross-street left (e.g.\
+output \texttt{RGHT} on \ph{6}'s circuit, including \ph{6}+\ph{7}). Rights don't
+consume phases: a through phase drives its circuit's right heads by default, and
+an overlap that outputs to them takes them over. Set the overlap's \field{Call}
+phase so a vehicle waiting in the pocket actually summons service
+(Table~\ref{tab:ovl}). Managed like preempts (\key{P+}/\key{P−},
+\key{Prev}/\key{Next}):
 
 \begin{table}[H]
 \centering\small
@@ -745,6 +750,10 @@ Managed like preempts (\key{P+}/\key{P−}, \key{Prev}/\key{Next}):
                   phases leave green, to flush turning vehicles. \\
 \field{Lead}    & Advance green: seconds it greens \emph{before} an included phase,
                   during the preceding red clearance (within-barrier). \\
+\field{Call}    & Detector-to-phase assignment: the phase called while vehicles wait
+                  in the overlap's output zone. Overlaps are otherwise pure outputs
+                  — without this, a movement served only by an overlap generates no
+                  demand of its own. \texttt{--} = no call. \\
 \field{INCL}    & The included phases: green with any of them, yellow during their
                   clearance, red otherwise. \\
 \field{MOD}     & Modifier phases (\texttt{-Grn/Yel} type only): force the overlap
@@ -1164,6 +1173,9 @@ Side street served instantly with nobody there &
 Left comes up green with no queue &
   It has \field{DE} or a recall; for FYA lefts a single car is expected to clear
   on the flash instead. \\
+A car in a right-turn pocket (overlap output) waits forever &
+  The overlap has no \field{Call} phase, so its detection places no demand — set
+  \field{Call} to an included phase (usually the adjacent through). \\
 Green shorter than its split (coordinated) &
   Normal: it gapped out and returned the rest to the coordinated phase. Also check
   yellow + red clear fit inside the split. \\
