@@ -25,6 +25,7 @@
 \definecolor{amberDim}{RGB}{150,100,30}
 \definecolor{lcd}{RGB}{18,26,18}
 \definecolor{asphalt}{RGB}{90,90,95}
+\definecolor{pedBlue}{RGB}{60,110,190}
 \definecolor{inkhead}{RGB}{40,45,55}
 \definecolor{tipbg}{RGB}{240,247,240}
 \definecolor{warnbg}{RGB}{252,244,230}
@@ -177,7 +178,15 @@ instead of a conflict. A left's flashing-yellow-arrow reference is its
   thru/.style={-{Stealth[length=3mm]},line width=1.3mm},
   turn/.style={-{Stealth[length=2.6mm]},line width=1.0mm},
   lanec/.style={white,line width=0.7pt},
-  lanel/.style={white,dashed,line width=0.5pt}]
+  lanel/.style={white,dashed,line width=0.5pt},
+  pedln/.style={{Stealth[length=2.2mm]}-{Stealth[length=2.2mm]},dashed,pedBlue,
+                line width=0.6pt},
+  ped/.pic={% minimalist walking pedestrian, ~0.42 tall, feet at y=-0.215
+    \fill (0,0.135) circle (0.06);
+    \draw[line width=0.8pt] (0,0.065) -- (0,-0.08)
+        (0,-0.08) -- (-0.075,-0.215) (0,-0.08) -- (0.075,-0.215)
+        (-0.08,0.027) -- (0.08,-0.013);
+  }]
   % roads: main street N-S, side street E-W; two lanes per direction
   \fill[asphalt!30] (-1.6,-3.6) rectangle (1.6,3.6);
   \fill[asphalt!30] (-3.6,-1.6) rectangle (3.6,1.6);
@@ -190,6 +199,22 @@ instead of a conflict. A left's flashing-yellow-arrow reference is its
     \draw[lanel] (1.6*\s,0.8) -- (3.6*\s,0.8);
     \draw[lanel] (1.6*\s,-0.8) -- (3.6*\s,-0.8);
   }
+  % ---- Pedestrian movements (FHWA style): dashed crosswalks ringing the box.
+  % P(n) walks concurrently with through phase n: P2/P6 cross the minor street
+  % beside the main-street greens; P4/P8 cross the major street with the side
+  % street. Drawn first so the vehicle arrows stay on top.
+  \draw[pedln] (-1.55,1.35) -- (1.55,1.35);   % north leg  (P4)
+  \draw[pedln] (-1.55,-1.35) -- (1.55,-1.35); % south leg  (P8)
+  \draw[pedln] (-1.35,-1.55) -- (-1.35,1.55); % west leg   (P2)
+  \draw[pedln] (1.35,-1.55) -- (1.35,1.55);   % east leg   (P6)
+  \node[font=\scriptsize\bfseries,color=pedBlue] at (0.95,1.12) {P4};
+  \node[font=\scriptsize\bfseries,color=pedBlue] at (-0.95,-1.12) {P8};
+  \node[font=\scriptsize\bfseries,color=pedBlue] at (-1.13,-0.6) {P2};
+  \node[font=\scriptsize\bfseries,color=pedBlue] at (1.13,0.6) {P6};
+  \pic[pedBlue] at (-0.7,1.565) {ped};
+  \pic[pedBlue] at (0.7,-1.135) {ped};
+  \pic[pedBlue] at (-1.35,0.95) {ped};
+  \pic[pedBlue] at (1.35,-0.95) {ped};
   % ---- Main street (N-S, green) ----
   % SB: through phi2 (outer lane) + left phi5 (inner lane, hooks east)
   \draw[thru,sigGreen] (-1.2,3.45) -- (-1.2,1.8);
@@ -218,13 +243,20 @@ instead of a conflict. A left's flashing-yellow-arrow reference is its
   \node[font=\scriptsize\itshape,color=inkhead] at (-2.65,1.35) {Minor St};
   \draw[-{Stealth},thick,inkhead] (3.3,2.8) -- (3.3,3.5)
       node[above,font=\scriptsize\bfseries]{N};
+  % legend
+  \draw[thru,inkhead!75,line width=1.0mm] (-3.45,-4.6) -- (-2.7,-4.6);
+  \node[anchor=west,font=\scriptsize,color=inkhead] at (-2.55,-4.6) {Vehicle movements};
+  \draw[pedln] (0.55,-4.6) -- (1.35,-4.6);
+  \node[anchor=west,font=\scriptsize,color=inkhead] at (1.5,-4.6) {Pedestrian movements};
 \end{tikzpicture}
 \caption{NEMA phase numbering as used by \key{Load Std 8-Phase}, per the FHWA
 convention. The main street runs north--south (green): southbound \ph{2} with its
 left \ph{5}, northbound \ph{6} with \ph{1}. The side street runs east--west
 (yellow): westbound \ph{4} with \ph{7}, eastbound \ph{8} with \ph{3}. Even =
 through, odd = protected left, and each left is numbered beside the
-\emph{opposing} through.}
+\emph{opposing} through. Pedestrian movements (dashed blue) carry the number of
+the through phase they walk with: P2/P6 cross the minor street alongside the
+main-street greens, P4/P8 cross the major street with the side-street greens.}
 \label{fig:nema}
 \end{figure}
 
