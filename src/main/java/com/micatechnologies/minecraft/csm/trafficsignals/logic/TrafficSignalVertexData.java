@@ -716,35 +716,54 @@ public class TrafficSignalVertexData {
   // --- Bubbled (Eagle-style) section housing ---
 
   /**
-   * Builds the bubbled (Eagle-style) section housing: a lathe-like stack of slices that swell
-   * past the door frame to a fat mid-belly and taper back to a small rear cap, so stacked
-   * sections pinch at the seams the way the classic Eagle castings do. Each slice is a pair of
-   * crossed boxes (full-width x chamfered-height + chamfered-width x full-height), giving an
-   * octagonal cross-section that reads rounder than plain squares without per-corner geometry.
-   * Shares the door frame plane (z=11) and hinge hardware with the standard housing, so doors,
-   * visors, bulbs, and mounts are untouched.
+   * Builds the bubbled (Eagle-style) section housing: a deep rear lobe that lives strictly
+   * <em>behind</em> the 12x12 face (x 2..14, y 0..12, face plane z=11), so the signal stays a
+   * clean rectangle from the front. The lobe's back depth follows a circular dome along the
+   * section's height — deepest at the belly, pinching to a shallow seam flange at the section's
+   * top/bottom edges, which is what produces the classic Eagle "stacked bubbles" waist where
+   * sections meet — and each height band steps narrower toward the back so the lobe also rounds
+   * off in plan view. Shares the door frame plane and hinge hardware with the standard housing;
+   * doors, visors, bulbs, and mounts are untouched.
    */
   private static List<Box> buildBubbledBody() {
-    // {zFrom, zTo, halfExtent, cornerChamfer} per slice, front (door frame) to rear cap.
-    float[][] profile = {
-        {11.0f, 11.6f, 6.0f, 0.9f},
-        {11.6f, 12.6f, 6.7f, 1.2f},
-        {12.6f, 14.9f, 7.2f, 1.5f},
-        {14.9f, 15.9f, 6.7f, 1.2f},
-        {15.9f, 16.7f, 5.9f, 1.1f},
-        {16.7f, 17.3f, 4.7f, 1.1f},
-        {17.3f, 17.7f, 2.9f, 0.8f},
-    };
+    final float faceZ = 11.0f;       // door frame plane; nothing renders in front of it
+    final float half = 6.0f;         // face half-extent (12x12 section) — never exceeded
+    final float edgeDepth = 1.6f;    // depth remaining at the seam flange (top/bottom edges)
+    final float bellyDepth = 8.6f;   // depth at the section's belly (the bubble apex)
+    // Half-band edges outward from the section centerline (y=6); mirrored below center.
+    final float[] bandEdges = {0.0f, 1.0f, 2.4f, 3.8f, 4.8f, 5.6f, 6.0f};
+    // Rear taper steps per band: {fraction of the band's depth, x half-extent} — the lobe
+    // steps in from full width toward a narrower back so it reads rounded from above too.
+    final float[][] taper = {{0.60f, 6.0f}, {0.88f, 5.1f}, {1.00f, 3.9f}};
+
+    // Assemble the height bands: the center band straddles the centerline once; the rest mirror.
+    List<float[]> bands = new ArrayList<>(); // {y1, y2, outerOffsetFromCenter}
+    for (int i = 0; i < bandEdges.length - 1; i++) {
+      float o1 = bandEdges[i];
+      float o2 = bandEdges[i + 1];
+      if (i == 0) {
+        bands.add(new float[]{CENTER_Y - o2, CENTER_Y + o2, o2});
+      } else {
+        bands.add(new float[]{CENTER_Y + o1, CENTER_Y + o2, o2});
+        bands.add(new float[]{CENTER_Y - o2, CENTER_Y - o1, o2});
+      }
+    }
+
     List<Box> boxes = new ArrayList<>();
-    for (float[] s : profile) {
-      float z1 = s[0];
-      float z2 = s[1];
-      float h = s[2];
-      float c = s[3];
-      boxes.add(new Box(new float[]{CENTER_X - h, CENTER_Y - (h - c), z1},
-          new float[]{CENTER_X + h, CENTER_Y + (h - c), z2}));
-      boxes.add(new Box(new float[]{CENTER_X - (h - c), CENTER_Y - h, z1},
-          new float[]{CENTER_X + (h - c), CENTER_Y + h, z2}));
+    for (float[] band : bands) {
+      float y1 = band[0];
+      float y2 = band[1];
+      // Depth at the band's outer edge, inscribed in the dome curve (circle in the y-z plane).
+      float t = band[2] / half;
+      float depth = edgeDepth
+          + (bellyDepth - edgeDepth) * (float) Math.sqrt(Math.max(0.0f, 1.0f - t * t));
+      float zStart = faceZ;
+      for (float[] step : taper) {
+        float zEnd = faceZ + depth * step[0];
+        boxes.add(new Box(new float[]{CENTER_X - step[1], y1, zStart},
+            new float[]{CENTER_X + step[1], y2, zEnd}));
+        zStart = zEnd;
+      }
     }
     // Same door-hinge hardware as the standard housing so the styles read as siblings.
     boxes.add(new Box(new float[]{1.80f, 1.20f, 10.80f}, new float[]{2.40f, 1.60f, 11.50f}));
