@@ -354,7 +354,8 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
     BlockControllableHawkSignal hawkBlock = hawkWigwag ? (BlockControllableHawkSignal) block : null;
 
     // Flash flip — alternateFlash inverts the flash phase for wig-wag beacon pairs. Uses
-    // the pause-aware game clock so flashes freeze when paused.
+    // the wall-clock flash timer so the flash rate stays visually constant through tick
+    // lag spikes (decoupled from world tick progression).
     long blinkInterval = 500L; // ms
     long gameMillis = world != null ? CsmRenderUtils.gameMillis(world) : 0L;
     boolean firstHalfOfSecond = world != null
@@ -431,8 +432,8 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
    * bursts (~30% of the time) vs. organic flicker from overlapping sine waves (majority).
    *
    * @param sectionIndex the section that's in AGING_FAILING state
-   * @param now          the pause-aware game clock, used as the phase input to the flicker
-   *                     waves
+   * @param now          the wall-clock flash timer (ms), used as the phase input to the
+   *                     flicker waves
    * @return {@code true} if the bulb should be lit this frame, {@code false} if the
    *     failure mode blanks it
    */
