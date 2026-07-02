@@ -179,10 +179,11 @@ public class AdvancedSignalControllerGui extends GuiScreen {
           + "you typed), so total EACH ring to the cycle — and keep concurrent groups matched "
           + "across rings so companion phases open together (e.g. with phases 2,4,5,6,8: "
           + "splits 5+6 should equal 2, and 8 should equal 4).",
-      "Dual entry never adds time: a DE companion comes up WITH the called phase and rests in "
-          + "green until conflicting demand arrives for it too. The called phase's split sets the "
-          + "green; the companion's own split is ignored while it rides along (it only applies "
-          + "when that phase is served on its own call).",
+      "Dual entry never adds time: a DE companion comes up WITH the called phase and clears WITH "
+          + "it when the barrier's work is done — demand waiting on the other barrier (including "
+          + "the coordinated phases' standing calls) never strips it off early. The called "
+          + "phase's split sets the green; the companion's own split is ignored while it rides "
+          + "along (it only applies when that phase is served on its own call).",
       "",
       "TIP: hover any on-screen label for a one-line explanation.",
   };

@@ -266,11 +266,16 @@ parameters are edited on the **ACT** GUI screen (Mx2 / BkG / AdI / MxI / Gap / T
 - **Dual Entry (`DUAL ENTRY`)** — a per-phase flag. When one ring is serving a called phase on a
   barrier and the other ring has no call of its own, the idle ring serves its first active dual-entry
   phase on that barrier so the intersection isn't left with one direction dark (`fillDualEntry`).
-  Once entered, the companion terminates by the same conflict rule as any phase — it rests in green
-  through the other ring's within-barrier transitions (e.g. through → left) and yields only to
-  demand that conflicts with it. To avoid entering a green that would have to clear immediately
-  (flicker), no companion is entered while demand waits on another barrier, and a candidate that
-  pending demand conflicts with is skipped.
+  The entered companion is flagged (`RingRuntime.dualEntry`) and **rides with the other ring's
+  barrier service**: cross-barrier demand alone never ends it — critical under coordination, where
+  the coordinated main-street phases are *always* called and would otherwise strip (or block) the
+  side-street companion entirely. It yields only to within-barrier demand it conflicts with
+  (`withinBarrierConflict`: same ring or FYA permissive pair on the same barrier), or when the
+  companion ring finishes its barrier work (`ringWorkingBarrier`: not green and no further called
+  phase to serve here, forward or via wrap) — so the pair clears *together*. While riding, the
+  companion's own coordinated force-off is exempt (its split applies only when served on its own
+  call), and a companion is never entered off another companion's green (mutual riders would hold
+  each other forever).
 - **Conditional Service** — a per-phase flag, typically on a lagging left. When a ring finds no
   forward phase called on the barrier, it may re-serve (**at most once per barrier visit**, guarded
   by `condServiceUsed`) an earlier conditional-service phase that has reacquired a call, before the
