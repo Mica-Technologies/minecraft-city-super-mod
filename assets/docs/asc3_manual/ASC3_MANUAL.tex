@@ -434,6 +434,46 @@ Only two one-way streets? Enable just \ph{2} and \ph{4}. The ring engine happily
 runs any subset of phases — rings simply skip disabled or uncalled ones.
 \end{tipbox}
 
+\subsection{What ``Load Std 8-Phase'' actually programs}\label{sec:template}
+
+The template classifies each circuit by the facing of its first linked through
+signal: north/south approaches become the \textbf{major street}, east/west the
+\textbf{minor street}. Within each street, circuits are taken in circuit-number
+order and assigned as follows:
+
+\begin{table}[H]
+\centering\small
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+\textbf{Approach circuit} & \textbf{Through} & \textbf{Left$^{\ast}$} &
+\textbf{Left's FYA ref} & \textbf{Max green (thru/left)} \\
+\midrule
+1st N--S circuit & \ph{2} & \ph{5} & \texttt{P6} & 60\,s / 15\,s \\
+2nd N--S circuit & \ph{6} & \ph{1} & \texttt{P2} & 60\,s / 15\,s \\
+1st E--W circuit & \ph{4} & \ph{7} & \texttt{P8} & 30\,s / 15\,s \\
+2nd E--W circuit & \ph{8} & \ph{3} & \texttt{P4} & 30\,s / 15\,s \\
+\bottomrule
+\end{tabular}
+\caption{The standard template's circuit-to-phase mapping. $^{\ast}$The left
+phase (movement \texttt{PROT}) is enabled only when its circuit actually has
+protected/left signal heads, and its FYA reference is set only when the opposing
+through was also assigned.}
+\label{tab:template}
+\end{table}
+
+Fine print worth knowing:
+
+\begin{itemize}[nosep]
+  \item Circuits with no through signals are skipped, and circuits beyond the
+        first two on each street are left unassigned — map extras by hand.
+  \item Re-running the template is safe: it clears every phase assignment first,
+        then reassigns, so it always reflects the current circuit layout.
+  \item It sets only circuit, movement, enablement, the max greens above, and the
+        FYA references. Everything else — min greens, yellows, clearances, walks,
+        recalls, coordination, preempts, overlaps — keeps its current value, so
+        you can re-run it without losing timing work.
+\end{itemize}
+
 % ================================================================ 4
 \section{The Programmer Panel}\label{sec:panel}
 
@@ -754,8 +794,12 @@ phase so a vehicle waiting in the pocket actually summons service
                   in the overlap's output zone. Overlaps are otherwise pure outputs
                   — without this, a movement served only by an overlap generates no
                   demand of its own. \texttt{--} = no call. \\
-\field{INCL}    & The included phases: green with any of them, yellow during their
-                  clearance, red otherwise. \\
+\field{INCL}    & The included (protected) phases: green with any of them, yellow
+                  during their clearance, red otherwise. \\
+\field{PERM}    & FYA permissive phases: while any of these is green (and no
+                  included phase is), the overlap shows a \emph{flashing yellow
+                  arrow}; their clearance shows solid yellow. Empty = classic
+                  green/yellow/red overlap. \\
 \field{MOD}     & Modifier phases (\texttt{-Grn/Yel} type only): force the overlap
                   red while green/yellow — e.g.\ suppress a right-turn arrow during
                   the conflicting pedestrian phase. \\
@@ -764,6 +808,20 @@ phase so a vehicle waiting in the pocket actually summons service
 \caption{\screen{OVL} fields.}
 \label{tab:ovl}
 \end{table}
+
+\paragraph{FYA overlaps (right-turn flashing yellow arrow).} Adding \field{PERM}
+phases turns an overlap into a protected/permissive display, the right-turn
+counterpart of the left-turn FYA: the arrow \emph{flashes yellow} while a
+permissive phase is green (turn on yield — e.g.\ the adjacent through, whose
+concurrent WALK conflicts with the turn) and shows a \emph{protected green arrow}
+while an included phase is green (e.g.\ the compatible cross-street left, when the
+crosswalk is in don't-walk). For the full four-state display, link a 3-section
+flashing-right lens (as the \emph{flashing-right} signal) with the 1-section
+right-arrow add-on below it, like an FYA left head; with no lens linked, the
+output heads themselves flash. Example — right-turn FYA on \ph{6}'s approach:
+\field{Out CKT} = \ph{6}'s circuit, \field{Out MOV} = \texttt{RGHT},
+\field{INCL} = \{7\}, \field{PERM} = \{6\}, \field{Call} = \texttt{P6}. The
+\texttt{-Grn/Yel} modifier still forces red over the flash.
 
 \subsection{HELP}
 
@@ -1142,6 +1200,67 @@ Standard 8-phase: \key{Load Std 8-Phase}, then set each left's \field{FYA} colum
 \field{CS} (conditional service) on lagging lefts that refill late. Single
 left-turner traffic clears on the flash alone; the protected arrow only comes up
 on a real queue.
+
+\subsection{The full build: all 8 phases + right-turn FYAs}\label{sec:fullbuild}
+
+Everything the controller has on one intersection: the 8-phase program above,
+plus FYA right-turn signals on both main-street approaches that \emph{flash}
+during their own through (whose concurrent WALK crosses the turn path) and show a
+\emph{protected green arrow} alongside the compatible side-street left.
+
+Per main-street approach, link a flashing-right lens + right-arrow add-on and a
+right-lane sensor zone, then add one overlap each:
+
+\begin{table}[H]
+\centering\small
+\begin{tabular}{@{}lccccc@{}}
+\toprule
+\textbf{Overlap} & \textbf{Out CKT} & \textbf{Out MOV} & \textbf{INCL} &
+\textbf{PERM} & \textbf{Call} \\
+\midrule
+SB right arrow & \ph{2}'s circuit & \texttt{RGHT} & \{3\} & \{2\} & \texttt{P2} \\
+NB right arrow & \ph{6}'s circuit & \texttt{RGHT} & \{7\} & \{6\} & \texttt{P6} \\
+\bottomrule
+\end{tabular}
+\caption{Right-turn FYA overlaps for the full build. For side-street arrows the
+same pattern continues: \field{INCL} is the phase right after the approach's
+through in ring order (\ph{4}$\to$\{5\}, \ph{8}$\to$\{1\}) — that cross-street
+left discharges beside the right turn without crossing it.}
+\label{tab:fullbuild}
+\end{table}
+
+Each arrow then cycles: flashing yellow while its through runs, solid yellow with
+the through's clearance, protected green through the cross-street left, red
+otherwise — and \field{Call} means a lone car in the pocket still summons
+service.
+
+\subsection{Bicycles on the arterial}
+
+Set \field{BkG} (\screen{ACT}) on the through phases bikes ride with — a bicycle
+standing in the circuit's protected/left detection zone at the moment the green
+starts guarantees that much green regardless of how quickly cars gap out. Size it
+to the crossing (8--12\,s is typical). Pair it with gap reduction
+(\field{Gap}/\field{TB4}/\field{TTR}) so the extra minimum doesn't turn into
+sloppy long greens, and with \field{Mx2} if the corridor is coordinated.
+
+\subsection{An exclusive pedestrian phase (and ped overlaps)}
+
+A phase with \field{MOVE} = \texttt{PED} serves only a crosswalk: give it the
+circuit whose pedestrian heads and buttons are linked, set \field{Wlk} and
+\field{PCl}, and it is called by that circuit's buttons and served as a normal
+ring phase — every vehicle movement waits while it runs. Where a crosswalk should
+instead ride along with several vehicle phases, use a \emph{ped overlap}: an OVL
+entry with \field{Out MOV} = \texttt{PED} walks its heads while any \field{INCL}
+phase serves WALK and runs their clearance countdowns.
+
+\subsection{A railroad crossing}
+
+On \screen{PREEMPT}: \field{Type} = \texttt{RAILROAD}, \field{Trig CKT/MOV} = the
+sensor zone on the approach track, \field{TRACK} = the phase(s) whose green
+flushes queued traffic off the crossing, \field{DWELL} = the street parallel to
+the tracks, \field{EXIT} = the throughs, and \field{Min Dwell} roughly the time
+the gates stay down. A train preempts everything — coordination included — and
+normal service resumes through the exit phases.
 
 \subsection{A coordinated corridor}
 
