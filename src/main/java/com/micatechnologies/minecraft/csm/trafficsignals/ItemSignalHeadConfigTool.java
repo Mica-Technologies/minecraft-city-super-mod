@@ -127,6 +127,7 @@ public class ItemSignalHeadConfigTool extends AbstractItem {
           }
           case CYCLE_DOOR_COLOR:
           case CYCLE_BULB_STYLE:
+          case CYCLE_BODY_STYLE:
           case TOGGLE_ALTERNATE_FLASH:
             player.sendMessage(new TextComponentString("Not applicable to blankout boxes."));
             break;
@@ -190,6 +191,7 @@ public class ItemSignalHeadConfigTool extends AbstractItem {
             break;
           }
           case CYCLE_BULB_STYLE:
+          case CYCLE_BODY_STYLE:
             player.sendMessage(new TextComponentString("Not applicable to crosswalk signals."));
             break;
           case TOGGLE_ALTERNATE_FLASH:
@@ -243,6 +245,11 @@ public class ItemSignalHeadConfigTool extends AbstractItem {
         case CYCLE_VISOR_TYPE: {
           var next = te.getNextVisorType();
           player.sendMessage(new TextComponentString("Visor type: " + next.getFriendlyName()));
+          break;
+        }
+        case CYCLE_BODY_STYLE: {
+          var next = te.getNextBodyStyle();
+          player.sendMessage(new TextComponentString("Body style: " + next.getFriendlyName()));
           break;
         }
         case CYCLE_BODY_TILT: {

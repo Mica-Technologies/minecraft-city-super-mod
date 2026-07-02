@@ -6,6 +6,7 @@ import com.micatechnologies.minecraft.csm.codeutils.RenderHelper;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignalHead;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBoundingBoxHelper;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyColor;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyStyle;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyTilt;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBulbColor;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBulbStyle;
@@ -355,19 +356,26 @@ public class TileEntityTrafficSignalHeadRenderer extends
       boolean is8Inch = sectionSizes[i] == 8;
       boolean is4Inch = sectionSizes[i] == 4;
 
+      // The housing style only swaps the body geometry — doors, visors, bulbs, and mounts are
+      // shared between the standard flat-back and the bubbled Eagle-style castings.
+      boolean bubbled = sectionInfo.getBodyStyle() == TrafficSignalBodyStyle.BUBBLED;
       List<RenderHelper.Box> bodyData;
       List<RenderHelper.Box> doorData;
       if (horizontal) {
-        bodyData = TrafficSignalVertexData.SIGNAL_BODY_HORIZONTAL_VERTEX_DATA;
+        bodyData = bubbled ? TrafficSignalVertexData.SIGNAL_BODY_BUBBLED_HORIZONTAL_VERTEX_DATA
+            : TrafficSignalVertexData.SIGNAL_BODY_HORIZONTAL_VERTEX_DATA;
         doorData = TrafficSignalVertexData.SIGNAL_DOOR_HORIZONTAL_VERTEX_DATA;
       } else if (is4Inch) {
-        bodyData = TrafficSignalVertexData.SIGNAL_BODY_4INCH_VERTEX_DATA;
+        bodyData = bubbled ? TrafficSignalVertexData.SIGNAL_BODY_BUBBLED_4INCH_VERTEX_DATA
+            : TrafficSignalVertexData.SIGNAL_BODY_4INCH_VERTEX_DATA;
         doorData = TrafficSignalVertexData.SIGNAL_DOOR_4INCH_VERTEX_DATA;
       } else if (is8Inch) {
-        bodyData = TrafficSignalVertexData.SIGNAL_BODY_8INCH_VERTEX_DATA;
+        bodyData = bubbled ? TrafficSignalVertexData.SIGNAL_BODY_BUBBLED_8INCH_VERTEX_DATA
+            : TrafficSignalVertexData.SIGNAL_BODY_8INCH_VERTEX_DATA;
         doorData = TrafficSignalVertexData.SIGNAL_DOOR_8INCH_VERTEX_DATA;
       } else {
-        bodyData = TrafficSignalVertexData.SIGNAL_BODY_VERTEX_DATA;
+        bodyData = bubbled ? TrafficSignalVertexData.SIGNAL_BODY_BUBBLED_VERTEX_DATA
+            : TrafficSignalVertexData.SIGNAL_BODY_VERTEX_DATA;
         doorData = TrafficSignalVertexData.SIGNAL_DOOR_VERTEX_DATA;
       }
 

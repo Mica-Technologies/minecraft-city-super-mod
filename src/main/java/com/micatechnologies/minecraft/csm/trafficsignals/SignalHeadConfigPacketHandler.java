@@ -71,6 +71,9 @@ public class SignalHeadConfigPacketHandler implements
         case CYCLE_MOUNT_COLOR:
           signalHead.getNextMountColor();
           break;
+        case CYCLE_BODY_STYLE:
+          signalHead.getNextBodyStyle();
+          break;
       }
     });
     return null;

@@ -62,6 +62,9 @@ public class SignalHeadSectionConfigPacketHandler implements
         case CYCLE_BULB_AGING_STATE:
           signalHead.getNextBulbAgingState(sectionIndex);
           break;
+        case CYCLE_BODY_STYLE:
+          signalHead.getNextBodyStyle(sectionIndex);
+          break;
       }
     });
     return null;

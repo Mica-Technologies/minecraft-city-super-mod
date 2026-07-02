@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.trafficsignals;
 
 import com.micatechnologies.minecraft.csm.codeutils.CsmPacketUtils;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyColor;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyStyle;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBulbStyle;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalVisorType;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -36,6 +37,7 @@ public class SignalHeadAppearancePacketHandler implements
           TrafficSignalBodyColor.fromNBT(message.getDoorColor()),
           TrafficSignalBodyColor.fromNBT(message.getVisorColor()),
           TrafficSignalVisorType.fromNBT(message.getVisorType()),
+          TrafficSignalBodyStyle.fromNBT(message.getBodyStyle()),
           TrafficSignalBulbStyle.fromNBT(message.getBulbStyle()),
           message.isAgingEnabled(),
           TrafficSignalBodyColor.fromNBT(message.getMountColor()),

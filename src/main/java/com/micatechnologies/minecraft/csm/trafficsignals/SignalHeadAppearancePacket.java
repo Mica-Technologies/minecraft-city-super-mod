@@ -7,8 +7,8 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 /**
  * Network packet sent from client to server when a player clicks "Paste Appearance" in the signal
  * head configuration GUI. Carries a bundle of copied appearance settings — body/door/visor colors,
- * visor type, bulb style and mount color (each as its enum's {@code toNBT()} ordinal) plus the
- * bulb-aging and horizontal-flip flags — to apply to the target signal head.
+ * visor type, body style, bulb style and mount color (each as its enum's {@code toNBT()} ordinal)
+ * plus the bulb-aging and horizontal-flip flags — to apply to the target signal head.
  *
  * @see SignalHeadConfigGui
  * @see TileEntityTrafficSignalHead#applyCopiedAppearance
@@ -20,6 +20,7 @@ public class SignalHeadAppearancePacket implements IMessage {
   private int doorColor;
   private int visorColor;
   private int visorType;
+  private int bodyStyle;
   private int bulbStyle;
   private int mountColor;
   private boolean agingEnabled;
@@ -30,12 +31,14 @@ public class SignalHeadAppearancePacket implements IMessage {
   }
 
   public SignalHeadAppearancePacket(BlockPos pos, int bodyColor, int doorColor, int visorColor,
-      int visorType, int bulbStyle, int mountColor, boolean agingEnabled, boolean horizontalFlip) {
+      int visorType, int bodyStyle, int bulbStyle, int mountColor, boolean agingEnabled,
+      boolean horizontalFlip) {
     this.pos = pos;
     this.bodyColor = bodyColor;
     this.doorColor = doorColor;
     this.visorColor = visorColor;
     this.visorType = visorType;
+    this.bodyStyle = bodyStyle;
     this.bulbStyle = bulbStyle;
     this.mountColor = mountColor;
     this.agingEnabled = agingEnabled;
@@ -49,6 +52,7 @@ public class SignalHeadAppearancePacket implements IMessage {
     this.doorColor = buf.readInt();
     this.visorColor = buf.readInt();
     this.visorType = buf.readInt();
+    this.bodyStyle = buf.readInt();
     this.bulbStyle = buf.readInt();
     this.mountColor = buf.readInt();
     this.agingEnabled = buf.readBoolean();
@@ -62,6 +66,7 @@ public class SignalHeadAppearancePacket implements IMessage {
     buf.writeInt(this.doorColor);
     buf.writeInt(this.visorColor);
     buf.writeInt(this.visorType);
+    buf.writeInt(this.bodyStyle);
     buf.writeInt(this.bulbStyle);
     buf.writeInt(this.mountColor);
     buf.writeBoolean(this.agingEnabled);
@@ -86,6 +91,10 @@ public class SignalHeadAppearancePacket implements IMessage {
 
   public int getVisorType() {
     return visorType;
+  }
+
+  public int getBodyStyle() {
+    return bodyStyle;
   }
 
   public int getBulbStyle() {

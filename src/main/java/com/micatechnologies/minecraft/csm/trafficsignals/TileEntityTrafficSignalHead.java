@@ -6,6 +6,7 @@ import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockCont
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignalHead;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.SignalHeadMountType;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyColor;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyStyle;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyTilt;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBulbColor;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBulbStyle;
@@ -648,6 +649,24 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
     return nextVisorType;
   }
 
+  /**
+   * Cycles the housing (body) style for every section — standard flat-back vs. bubbled Eagle —
+   * and returns the new style.
+   *
+   * @return the next body style in the sequence
+   */
+  public TrafficSignalBodyStyle getNextBodyStyle() {
+    if (sectionInfos.length == 0) {
+      return TrafficSignalBodyStyle.STANDARD;
+    }
+    TrafficSignalBodyStyle next = sectionInfos[0].getBodyStyle().getNextBodyStyle();
+    for (TrafficSignalSectionInfo sectionInfo : sectionInfos) {
+      sectionInfo.setBodyStyle(next);
+    }
+    markDirtySync(world, pos, true);
+    return next;
+  }
+
   public TrafficSignalBulbStyle getNextBulbStyle() {
     if (sectionInfos.length == 0) {
       return TrafficSignalBulbStyle.INCANDESCENT;
@@ -730,6 +749,16 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
     }
     TrafficSignalVisorType next = sectionInfos[sectionIndex].getVisorType().getNextVisorType();
     sectionInfos[sectionIndex].setVisorType(next);
+    markDirtySync(world, pos, true);
+    return next;
+  }
+
+  public TrafficSignalBodyStyle getNextBodyStyle(int sectionIndex) {
+    if (!isValidSectionIndex(sectionIndex)) {
+      return TrafficSignalBodyStyle.STANDARD;
+    }
+    TrafficSignalBodyStyle next = sectionInfos[sectionIndex].getBodyStyle().getNextBodyStyle();
+    sectionInfos[sectionIndex].setBodyStyle(next);
     markDirtySync(world, pos, true);
     return next;
   }
@@ -821,14 +850,16 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
 
   /**
    * Applies a bundle of appearance settings copied from another signal head via the config tool's
-   * copy/paste feature: body, door and visor colors, visor type and bulb style (applied uniformly
-   * to every section, matching the All Sections page) plus the head-level bulb-aging flag, mount
-   * color and horizontal-flip flag. Block-enforced constraints are respected — a head that enforces
-   * a bulb style keeps it, and the horizontal flip is only applied to heads that allow it.
+   * copy/paste feature: body, door and visor colors, visor type, body style and bulb style
+   * (applied uniformly to every section, matching the All Sections page) plus the head-level
+   * bulb-aging flag, mount color and horizontal-flip flag. Block-enforced constraints are
+   * respected — a head that enforces a bulb style keeps it, and the horizontal flip is only
+   * applied to heads that allow it.
    */
   public void applyCopiedAppearance(TrafficSignalBodyColor bodyColor,
       TrafficSignalBodyColor doorColor, TrafficSignalBodyColor visorColor,
-      TrafficSignalVisorType visorType, TrafficSignalBulbStyle bulbStyle, boolean agingEnabled,
+      TrafficSignalVisorType visorType, TrafficSignalBodyStyle bodyStyle,
+      TrafficSignalBulbStyle bulbStyle, boolean agingEnabled,
       TrafficSignalBodyColor mountColor, boolean horizontalFlip) {
     TrafficSignalBulbStyle styleToApply = bulbStyle;
     boolean applyFlip = true;
@@ -848,6 +879,7 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
       info.setDoorColor(doorColor);
       info.setVisorColor(visorColor);
       info.setVisorType(visorType);
+      info.setBodyStyle(bodyStyle);
       info.setBulbStyle(styleToApply);
     }
     this.mountColor = mountColor;
