@@ -160,10 +160,15 @@ public class AdvancedSignalControllerGui extends GuiScreen {
           + "throughs 2 & 6. Coordinated phases rest in green and are served every cycle without "
           + "needing a call; every other phase is only called and served inside its split window "
           + "and is forced off when the window closes.",
-      "Splits do NOT have to total the cycle: each ring's splits are scaled so its phases tile the "
-          + "cycle exactly, and a split of 0 means an even share. But scaled splits are hard to "
-          + "predict, so make each ring's splits total the cycle — and keep concurrent groups "
-          + "matched across rings so companion phases open together (e.g. with phases 2,4,5,6,8: "
+      "The two rings time in PARALLEL, so each ring is its own full cycle budget: on a 90s cycle, "
+          + "ring 1's splits total 90 AND ring 2's splits total 90 — all eight together total 180, "
+          + "twice the cycle. That is parallelism, not overbooking: at every moment one ring-1 "
+          + "window and one ring-2 window are open side by side.",
+      "Splits do NOT strictly have to total the cycle: each ring's splits are scaled so its phases "
+          + "tile the cycle exactly, and a split of 0 means an even share. But scaled splits are "
+          + "hard to predict (spreading 90s across all eight phases makes every green run ~2x what "
+          + "you typed), so total EACH ring to the cycle — and keep concurrent groups matched "
+          + "across rings so companion phases open together (e.g. with phases 2,4,5,6,8: "
           + "splits 5+6 should equal 2, and 8 should equal 4).",
       "Dual entry never adds time: a DE companion comes up WITH the called phase and clears when "
           + "it clears. The called phase's split sets the green; the companion's own split is "
@@ -1228,19 +1233,39 @@ public class AdvancedSignalControllerGui extends GuiScreen {
     addHelp(lcdX, lcdY + 50, lcdW - 6, 9, "Splits & coordinated phases",
         "Split = the slice of the cycle budgeted to each phase. Toggle",
         "COORD to mark a phase as a coordinated (synced) phase that",
-        "rests in green between its permissive windows. * = phase is",
-        "enabled (on the TIMING screen); dim rows are disabled.",
-        "Splits don't have to total the cycle: each ring's splits are",
-        "scaled so its phases tile the cycle exactly (0 = even share).",
-        "For predictable times, make each ring total the cycle and",
-        "match concurrent groups across rings. More on the HELP tab.");
+        "rests in green between its permissive windows. R1/R2 + A/B =",
+        "the phase's ring and barrier. * = enabled; dim rows disabled.",
+        "The rings time in PARALLEL, so budget EACH ring to the full",
+        "cycle (all eight splits together total TWICE the cycle). Rings",
+        "that don't total it are rescaled to fit (0 = even share), and",
+        "concurrent groups should match across rings. More on HELP.");
     int rowH = 11;
     for (int pn = 1; pn <= TrafficSignalProgrammedPhasePlan.PHASE_COUNT; pn++) {
       int y = lcdY + 62 + (pn - 1) * rowH;
       boolean enabled = plan().getPhase(pn).isEnabled();
+      fontRenderer.drawString(ringBarrierLabel(pn), lcdX, y, COLOR_AMBER_DIM);
       fontRenderer.drawString("φ" + pn + (enabled ? "*" : ""), lcdX + 40, y,
           enabled ? COLOR_AMBER : COLOR_AMBER_DIM);
     }
+  }
+
+  /**
+   * The ring/barrier tag shown beside a phase on the COORD screen, e.g. {@code "R1/A"} — the ring
+   * is resolved from the plan's ring sequences (the same membership the engine serves by, so a
+   * resequenced phase reports the ring that actually runs it) and the barrier letter from the
+   * phase (A = barrier 0, the main-street barrier). {@code "--"} if the phase is in neither
+   * ring sequence (it can never be served).
+   */
+  private String ringBarrierLabel(int phaseNumber) {
+    TrafficSignalProgrammedPhase p = plan().getPhase(phaseNumber);
+    for (int ring = 1; ring <= 2; ring++) {
+      for (int n : plan().getRingSequence(ring)) {
+        if (n == phaseNumber) {
+          return "R" + ring + "/" + (p != null && p.getBarrier() == 0 ? "A" : "B");
+        }
+      }
+    }
+    return "--";
   }
 
   private void drawPreempt() {
