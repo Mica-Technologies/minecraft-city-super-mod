@@ -167,9 +167,12 @@ public class TrafficSignalProgrammedPhasePlan {
 
   /**
    * Auto-assigns the standard 8-phase plan onto the controller's circuits by reading each circuit's
-   * through-signal facing. North/South approaches become the major street (through phases 2 &amp; 6
-   * with lefts 1 &amp; 5); East/West become the minor street (through phases 4 &amp; 8 with lefts 3
-   * &amp; 7). A left phase is enabled only when its circuit actually has protected/left signals.
+   * through-signal facing. North/South approaches become the major street (through phases 2 &amp; 6)
+   * and East/West the minor street (through phases 4 &amp; 8). Lefts follow the FHWA/NEMA pairing —
+   * each approach's left shares the ring slot beside the OPPOSING through (2&amp;5, 6&amp;1,
+   * 4&amp;7, 8&amp;3 per approach) — so every legal cross-ring combination (e.g. 1+6, 2+5) is a
+   * same-approach or dual-left pair and never a conflicting movement. A left phase is enabled only
+   * when its circuit actually has protected/left signals.
    *
    * <p>Assumes one circuit per approach (the recommended ADVANCED-mode setup). Circuits beyond the
    * first two of each axis are left unassigned.
@@ -202,25 +205,25 @@ public class TrafficSignalProgrammedPhasePlan {
       p.setEnabled(false);
     }
 
-    // Major street: through 2/6, lefts 1/5; longer max greens.
+    // Major street: throughs 2/6 with same-approach lefts 5/1 (FHWA pairing); longer max greens.
     if (major.size() > 0) {
-      assignApproach(circuits, major.get(0), 2, 1, 1200L);
+      assignApproach(circuits, major.get(0), 2, 5, 1200L);
     }
     if (major.size() > 1) {
-      assignApproach(circuits, major.get(1), 6, 5, 1200L);
+      assignApproach(circuits, major.get(1), 6, 1, 1200L);
     }
-    // Minor street: through 4/8, lefts 3/7; shorter max greens.
+    // Minor street: throughs 4/8 with same-approach lefts 7/3; shorter max greens.
     if (minor.size() > 0) {
-      assignApproach(circuits, minor.get(0), 4, 3, 600L);
+      assignApproach(circuits, minor.get(0), 4, 7, 600L);
     }
     if (minor.size() > 1) {
-      assignApproach(circuits, minor.get(1), 8, 7, 600L);
+      assignApproach(circuits, minor.get(1), 8, 3, 600L);
     }
 
     // PPLT FYA: pair each protected left with its opposing through (standard NEMA layout) so the
     // left flashes yellow permissively while the opposing through is green. Only enabled when both
     // the left and its opposing through are actually assigned; otherwise protected-only (0).
-    int[][] fyaPairs = {{1, 6}, {5, 2}, {3, 8}, {7, 4}};
+    int[][] fyaPairs = {{1, 2}, {5, 6}, {3, 4}, {7, 8}};
     for (int[] pair : fyaPairs) {
       TrafficSignalProgrammedPhase left = getPhase(pair[0]);
       TrafficSignalProgrammedPhase opposing = getPhase(pair[1]);
