@@ -712,4 +712,51 @@ public class TrafficSignalVertexData {
       scaleBoxes(HORIZONTAL_LOUVERED_VISOR_VERTEX_DATA, SCALE_4_INCH, true);
   public static final List<Box> NONE_VISOR_4INCH_VERTEX_DATA =
       scaleBoxes(NONE_VISOR_VERTEX_DATA, SCALE_4_INCH, true);
+
+  // --- Bubbled (Eagle-style) section housing ---
+
+  /**
+   * Builds the bubbled (Eagle-style) section housing: a lathe-like stack of slices that swell
+   * past the door frame to a fat mid-belly and taper back to a small rear cap, so stacked
+   * sections pinch at the seams the way the classic Eagle castings do. Each slice is a pair of
+   * crossed boxes (full-width x chamfered-height + chamfered-width x full-height), giving an
+   * octagonal cross-section that reads rounder than plain squares without per-corner geometry.
+   * Shares the door frame plane (z=11) and hinge hardware with the standard housing, so doors,
+   * visors, bulbs, and mounts are untouched.
+   */
+  private static List<Box> buildBubbledBody() {
+    // {zFrom, zTo, halfExtent, cornerChamfer} per slice, front (door frame) to rear cap.
+    float[][] profile = {
+        {11.0f, 11.6f, 6.0f, 0.9f},
+        {11.6f, 12.6f, 6.7f, 1.2f},
+        {12.6f, 14.9f, 7.2f, 1.5f},
+        {14.9f, 15.9f, 6.7f, 1.2f},
+        {15.9f, 16.7f, 5.9f, 1.1f},
+        {16.7f, 17.3f, 4.7f, 1.1f},
+        {17.3f, 17.7f, 2.9f, 0.8f},
+    };
+    List<Box> boxes = new ArrayList<>();
+    for (float[] s : profile) {
+      float z1 = s[0];
+      float z2 = s[1];
+      float h = s[2];
+      float c = s[3];
+      boxes.add(new Box(new float[]{CENTER_X - h, CENTER_Y - (h - c), z1},
+          new float[]{CENTER_X + h, CENTER_Y + (h - c), z2}));
+      boxes.add(new Box(new float[]{CENTER_X - (h - c), CENTER_Y - h, z1},
+          new float[]{CENTER_X + (h - c), CENTER_Y + h, z2}));
+    }
+    // Same door-hinge hardware as the standard housing so the styles read as siblings.
+    boxes.add(new Box(new float[]{1.80f, 1.20f, 10.80f}, new float[]{2.40f, 1.60f, 11.50f}));
+    boxes.add(new Box(new float[]{1.80f, 10.20f, 10.80f}, new float[]{2.40f, 10.60f, 11.50f}));
+    return boxes;
+  }
+
+  public static final List<Box> SIGNAL_BODY_BUBBLED_VERTEX_DATA = buildBubbledBody();
+  public static final List<Box> SIGNAL_BODY_BUBBLED_HORIZONTAL_VERTEX_DATA =
+      rotateBoxes90Z(SIGNAL_BODY_BUBBLED_VERTEX_DATA);
+  public static final List<Box> SIGNAL_BODY_BUBBLED_8INCH_VERTEX_DATA =
+      scaleBoxes(SIGNAL_BODY_BUBBLED_VERTEX_DATA, SCALE_8_INCH, true);
+  public static final List<Box> SIGNAL_BODY_BUBBLED_4INCH_VERTEX_DATA =
+      scaleBoxes(SIGNAL_BODY_BUBBLED_VERTEX_DATA, SCALE_4_INCH, true);
 }

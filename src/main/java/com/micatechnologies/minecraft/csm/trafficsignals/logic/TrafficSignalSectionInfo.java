@@ -11,6 +11,7 @@ public class TrafficSignalSectionInfo {
   private static final TrafficSignalBodyColor DEFAULT_VISOR_PAINT_COLOR =
       TrafficSignalBodyColor.FLAT_BLACK;
   private static final TrafficSignalVisorType DEFAULT_VISOR_TYPE = TrafficSignalVisorType.TUNNEL;
+  private static final TrafficSignalBodyStyle DEFAULT_BODY_STYLE = TrafficSignalBodyStyle.STANDARD;
   private static final TrafficSignalBulbStyle DEFAULT_BULB_STYLE = TrafficSignalBulbStyle.LED;
   private static final TrafficSignalBulbType DEFAULT_BULB_TYPE = TrafficSignalBulbType.BALL;
   private static final TrafficSignalBulbColor DEFAULT_BULB_COLOR = TrafficSignalBulbColor.GREEN;
@@ -28,11 +29,14 @@ public class TrafficSignalSectionInfo {
   private static final String KEY_BULB_CUSTOM_COLOR = "bulbCustomColor";
   private static final String KEY_BULB_LIT = "bulbLit";
   private static final String KEY_BULB_FLASHING = "bulbFlashing";
+  private static final String KEY_BODY_STYLE = "bodyStyle";
 
   private TrafficSignalBodyColor bodyColor;
   private TrafficSignalBodyColor doorColor;
   private TrafficSignalBodyColor visorColor;
   private TrafficSignalVisorType visorType;
+  /** Housing style (standard flat-back vs. bubbled Eagle); cosmetic, defaults to STANDARD. */
+  private TrafficSignalBodyStyle bodyStyle = DEFAULT_BODY_STYLE;
   private TrafficSignalBulbStyle bulbStyle;
   private TrafficSignalBulbType bulbType;
   private TrafficSignalBulbColor bulbColor;
@@ -125,6 +129,10 @@ public class TrafficSignalSectionInfo {
     return visorType;
   }
 
+  public TrafficSignalBodyStyle getBodyStyle() {
+    return bodyStyle;
+  }
+
   public TrafficSignalBulbStyle getBulbStyle() {
     return bulbStyle;
   }
@@ -167,6 +175,10 @@ public class TrafficSignalSectionInfo {
 
   public void setVisorType(TrafficSignalVisorType visorType) {
     this.visorType = visorType;
+  }
+
+  public void setBodyStyle(TrafficSignalBodyStyle bodyStyle) {
+    this.bodyStyle = bodyStyle;
   }
 
   public void setBulbStyle(TrafficSignalBulbStyle bulbStyle) {
@@ -214,6 +226,7 @@ public class TrafficSignalSectionInfo {
     nbt.setInteger(KEY_BULB_CUSTOM_COLOR, bulbCustomColor.toNBT());
     nbt.setBoolean(KEY_BULB_LIT, bulbLit);
     nbt.setBoolean(KEY_BULB_FLASHING, bulbFlashing);
+    nbt.setInteger(KEY_BODY_STYLE, bodyStyle.toNBT());
     return nbt;
   }
 
@@ -233,7 +246,8 @@ public class TrafficSignalSectionInfo {
         bulbColor.toNBT(),
         bulbCustomColor.toNBT(),
         bulbLit ? 1 : 0, // Convert boolean to int (1 for true, 0 for false)
-        bulbFlashing ? 1 : 0 // Convert boolean to int (1 for true, 0 for false)
+        bulbFlashing ? 1 : 0, // Convert boolean to int (1 for true, 0 for false)
+        bodyStyle.toNBT()
     };
   }
 
@@ -255,6 +269,8 @@ public class TrafficSignalSectionInfo {
     info.bulbCustomColor = TrafficSignalBulbColor.fromNBT(nbt.getInteger(KEY_BULB_CUSTOM_COLOR));
     info.bulbLit = nbt.getBoolean(KEY_BULB_LIT);
     info.bulbFlashing = nbt.getBoolean(KEY_BULB_FLASHING);
+    // Absent on pre-body-style NBT — getInteger returns 0 = STANDARD, the old look.
+    info.bodyStyle = TrafficSignalBodyStyle.fromNBT(nbt.getInteger(KEY_BODY_STYLE));
     return info;
   }
 
@@ -268,7 +284,7 @@ public class TrafficSignalSectionInfo {
     if (data == null || data.length < 10) {
       return new TrafficSignalSectionInfo();
     }
-    return new TrafficSignalSectionInfo(
+    TrafficSignalSectionInfo info = new TrafficSignalSectionInfo(
         TrafficSignalBodyColor.fromNBT(data[0]),
         TrafficSignalBodyColor.fromNBT(data[1]),
         TrafficSignalBodyColor.fromNBT(data[2]),
@@ -280,5 +296,10 @@ public class TrafficSignalSectionInfo {
         data[8] == 1, // Convert int to boolean (1 for true, 0 for false)
         data[9] == 1 // Convert int to boolean (1 for true, 0 for false)
     );
+    // Pre-body-style arrays are 10 long; missing = STANDARD (the old look).
+    if (data.length > 10) {
+      info.bodyStyle = TrafficSignalBodyStyle.fromNBT(data[10]);
+    }
+    return info;
   }
 }
