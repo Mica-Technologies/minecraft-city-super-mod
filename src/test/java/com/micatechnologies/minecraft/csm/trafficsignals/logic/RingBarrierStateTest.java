@@ -710,6 +710,68 @@ class RingBarrierStateTest {
   }
 
   @Test
+  @DisplayName("coordination: a dual-entry companion serves the side street despite coord demand")
+  void dualEntryCompanionServesUnderCoordination() {
+    // In-game report: coordinated plan with coord throughs 2/6 (barrier A) and side street 4/8
+    // (barrier B), DE on 4 and 8. A call on 4 opened its window and 4 went green, but 8 never
+    // dual-entered — the coordinated phases are ALWAYS called, and that standing cross-barrier
+    // demand blocked the companion from entering (and would have stripped it right back off).
+    // A DE companion must ride with its companion through cross-barrier demand and clear WITH it.
+    RingBarrierState rb = new RingBarrierState();
+    TrafficSignalProgrammedPhasePlan plan = TrafficSignalProgrammedPhasePlan.createDefault();
+    enable(plan, 2, 0); // coord through, barrier A, ring 1
+    enable(plan, 6, 1); // coord through, barrier A, ring 2
+    enable(plan, 4, 2); // side-street through, barrier B, ring 1
+    enable(plan, 8, 3); // side-street through, barrier B, ring 2 — dual entry
+    plan.getPhase(4).setDualEntry(true);
+    plan.getPhase(8).setDualEntry(true);
+    for (int n : new int[] {2, 4, 6, 8}) {
+      quickTiming(plan, n);
+    }
+    TrafficSignalCoordinationPlan co = plan.getCoordination();
+    co.setMode(TrafficSignalCoordinationMode.COORDINATED); // coord phases default to {2, 6}
+    co.setCycleLength(1800L);
+    co.setSplit(2, 1000L);
+    co.setSplit(6, 1000L);
+    co.setSplit(4, 800L);
+    co.setSplit(8, 800L);
+    TrafficSignalControllerCircuits ckts = circuits(4);
+    Demand carOn4 = new Demand().veh(2, 1, 0, 0); // one car waiting on the side street (phase 4)
+    Demand none = new Demand();
+
+    rb.tick(plan, ckts, NO_OVERLAPS, 0L, carOn4); // window for 4 closed: coord phases serve
+    assertEquals(2, rb.getLastServed(1).phaseNumber);
+    assertEquals(6, rb.getLastServed(2).phaseNumber);
+
+    rb.tick(plan, ckts, NO_OVERLAPS, 1010L, carOn4); // 4's window opens -> coord phases clear
+    assertEquals(VehInterval.YELLOW, rb.getLastServed(1).vehicle);
+    rb.tick(plan, ckts, NO_OVERLAPS, 1030L, carOn4); // yellow -> red
+    rb.tick(plan, ckts, NO_OVERLAPS, 1050L, carOn4); // red clears -> cross -> phase 4 green
+    assertEquals(4, rb.getLastServed(1).phaseNumber);
+    assertEquals(VehInterval.GREEN, rb.getLastServed(1).vehicle);
+
+    rb.tick(plan, ckts, NO_OVERLAPS, 1070L, carOn4); // companion 8 dual-enters alongside 4
+    assertNotNull(rb.getLastServed(2), "phase 8 must dual-enter with 4 (was left dark)");
+    assertEquals(8, rb.getLastServed(2).phaseNumber);
+    assertEquals(VehInterval.GREEN, rb.getLastServed(2).vehicle);
+
+    rb.tick(plan, ckts, NO_OVERLAPS, 1090L, carOn4); // standing coord demand must NOT strip it
+    assertEquals(8, rb.getLastServed(2).phaseNumber);
+    assertEquals(VehInterval.GREEN, rb.getLastServed(2).vehicle,
+        "the DE companion rides through the coordinated phases' standing cross-barrier calls");
+
+    rb.tick(plan, ckts, NO_OVERLAPS, 1120L, none); // side-street car gone: pair clears TOGETHER
+    assertEquals(VehInterval.YELLOW, rb.getLastServed(1).vehicle, "phase 4 gaps out");
+    assertEquals(VehInterval.YELLOW, rb.getLastServed(2).vehicle,
+        "the DE companion clears concurrently with its companion");
+
+    rb.tick(plan, ckts, NO_OVERLAPS, 1140L, none); // red clearance
+    rb.tick(plan, ckts, NO_OVERLAPS, 1160L, none); // cross back -> coordinated phases resume
+    assertEquals(2, rb.getLastServed(1).phaseNumber);
+    assertEquals(6, rb.getLastServed(2).phaseNumber);
+  }
+
+  @Test
   @DisplayName("max green times from the first conflicting call, not from green start")
   void maxGreenTimesFromConflictingCall() {
     // Regression: max-out used to time from green start even with zero conflicting demand, so a
