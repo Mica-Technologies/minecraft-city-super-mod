@@ -154,6 +154,22 @@ public class AdvancedSignalControllerGui extends GuiScreen {
       "Note: DE serves the FIRST active DE phase in the ring, so flag only the phase you want as the "
           + "companion (e.g. DE on 6, not 5, to pair 6 with 2).",
       "",
+      "COORDINATION (COORD):",
+      "To sync with nearby signals, set Mode to COORDINATED, pick a cycle length and offset, enter "
+          + "per-phase splits, and toggle COORD on the main-street phase(s) — usually the arterial "
+          + "throughs 2 & 6. Coordinated phases rest in green and are served every cycle without "
+          + "needing a call; every other phase is only called and served inside its split window "
+          + "and is forced off when the window closes.",
+      "Splits do NOT have to total the cycle: each ring's splits are scaled so its phases tile the "
+          + "cycle exactly, and a split of 0 means an even share. But scaled splits are hard to "
+          + "predict, so make each ring's splits total the cycle — and keep concurrent groups "
+          + "matched across rings so companion phases open together (e.g. with phases 2,4,5,6,8: "
+          + "splits 5+6 should equal 2, and 8 should equal 4).",
+      "Dual entry never adds time: a DE companion comes up WITH the called phase and clears when "
+          + "it clears. The called phase's split sets the green; the companion's own split is "
+          + "ignored while it rides along (it only applies when that phase is served on its own "
+          + "call).",
+      "",
       "TIP: hover any on-screen label for a one-line explanation.",
   };
 
@@ -1182,7 +1198,8 @@ public class AdvancedSignalControllerGui extends GuiScreen {
         "fixed background cycle with per-phase splits and force-offs.");
     addHelp(lcdX, lcdY + 26, 64, 9, "Cycle Length",
         "Total length of one full cycle through all phases.",
-        "Only used in COORDINATED mode.");
+        "Only used in COORDINATED mode. Non-coordinated phases are",
+        "only called and served inside their split windows.");
     addHelp(lcdX, lcdY + 38, 64, 9, "Offset",
         "Cycle-start offset relative to the system master clock —",
         "stagger offsets along a corridor to build green waves.");
@@ -1190,7 +1207,11 @@ public class AdvancedSignalControllerGui extends GuiScreen {
         "Split = the slice of the cycle budgeted to each phase. Toggle",
         "COORD to mark a phase as a coordinated (synced) phase that",
         "rests in green between its permissive windows. * = phase is",
-        "enabled (on the TIMING screen); dim rows are disabled.");
+        "enabled (on the TIMING screen); dim rows are disabled.",
+        "Splits don't have to total the cycle: each ring's splits are",
+        "scaled so its phases tile the cycle exactly (0 = even share).",
+        "For predictable times, make each ring total the cycle and",
+        "match concurrent groups across rings. More on the HELP tab.");
     int rowH = 11;
     for (int pn = 1; pn <= TrafficSignalProgrammedPhasePlan.PHASE_COUNT; pn++) {
       int y = lcdY + 62 + (pn - 1) * rowH;
