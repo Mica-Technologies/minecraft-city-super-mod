@@ -32,6 +32,7 @@ public class TrafficSignalProgrammedOverlap {
   private static final String K_TYPE = "ty";
   private static final String K_MODIFIER = "md";
   private static final String K_CALL_PHASE = "cp";
+  private static final String K_PERMISSIVE = "pm";
 
   private boolean enabled = false;
   /** Overlap type (NORMAL or -GRN/YEL). */
@@ -65,6 +66,14 @@ public class TrafficSignalProgrammedOverlap {
    * lets it summon one of its included phases. 0 = no call.
    */
   private int callPhase = 0;
+  /**
+   * FYA permissive phases: while any of these is green (and no included phase is), the overlap
+   * shows a flashing yellow arrow instead of red — the right-turn FYA (e.g. flash during the
+   * adjacent through whose concurrent WALK conflicts, protected green arrow during the included
+   * compatible cross-street left). Empty = no permissive display (classic green/yellow/red
+   * overlap).
+   */
+  private int[] permissivePhases = new int[0];
 
   // region: accessors
 
@@ -145,6 +154,14 @@ public class TrafficSignalProgrammedOverlap {
     this.callPhase = Math.max(0, callPhase);
   }
 
+  public int[] getPermissivePhases() {
+    return permissivePhases;
+  }
+
+  public void setPermissivePhases(int[] permissivePhases) {
+    this.permissivePhases = permissivePhases == null ? new int[0] : permissivePhases;
+  }
+
   // endregion
 
   // region: NBT
@@ -162,6 +179,7 @@ public class TrafficSignalProgrammedOverlap {
     if (callPhase > 0) {
       c.setInteger(K_CALL_PHASE, callPhase);
     }
+    c.setIntArray(K_PERMISSIVE, permissivePhases);
     return c;
   }
 
@@ -176,6 +194,7 @@ public class TrafficSignalProgrammedOverlap {
     o.type = TrafficSignalOverlapType.fromNBT(c.getInteger(K_TYPE));
     o.modifierPhases = c.hasKey(K_MODIFIER) ? c.getIntArray(K_MODIFIER) : new int[0];
     o.callPhase = c.hasKey(K_CALL_PHASE) ? c.getInteger(K_CALL_PHASE) : 0;
+    o.permissivePhases = c.hasKey(K_PERMISSIVE) ? c.getIntArray(K_PERMISSIVE) : new int[0];
     return o;
   }
 
