@@ -296,8 +296,10 @@ and greens last only as long as the demand does. Each green obeys these interval
   \item[Min Green] the guaranteed floor — the green never ends earlier.
   \item[Passage] the extension timer (``gap''): each detected vehicle restarts it.
         When it expires with no new vehicle, the phase has \emph{gapped out}.
-  \item[Max Green] the ceiling while a conflicting call waits: reaching it is a
-        \emph{max-out} and the green ends even with traffic still flowing.
+  \item[Max Green] the ceiling while a conflicting call waits, timed from the
+        moment that call arrives (and reset if it leaves): reaching it is a
+        \emph{max-out} and the green ends even with traffic still flowing. With no
+        conflicting call the timer never runs — the green simply rests.
   \item[Yellow / Red Clear] the fixed change and clearance intervals that follow
         every green.
 \end{description}
@@ -651,10 +653,12 @@ and behavioral options.
 always run together automatically. DE covers the \emph{uncalled} case: when one
 ring is serving and the other ring has no call on that barrier, the idle ring
 brings up its first active DE phase there so one direction isn't left dark. The
-companion holds green with the called phase and clears when it clears
-(Section~\ref{sec:dualentry} covers the timing). A real call always beats dual
-entry, and DE picks the \emph{first} active DE phase in ring order — flag only the
-phase you want as the companion.
+companion rests in green while compatible work continues on the barrier — it rides
+through the other ring's within-barrier transitions (a through clearing to serve
+its left, say) without clearing itself — and yields only to demand that actually
+conflicts with it (Section~\ref{sec:dualentry} covers the timing). A real call
+always beats dual entry, and DE picks the \emph{first} active DE phase in ring
+order — flag only the phase you want as the companion.
 
 \paragraph{Conditional service (CS).} Once per barrier, an already-passed CS phase
 that reacquires a call may be re-served before the rings cross — the classic
@@ -966,6 +970,20 @@ Two programming rules fall out of the per-ring tiling:
         direction sits dark waiting.
 \end{enumerate}
 
+\begin{tipbox}
+Sanity check: because the two rings time \emph{in parallel}, each ring is its own
+full cycle budget. On a 90\,s cycle, ring 1's splits total 90 \textbf{and} ring
+2's splits total 90 — so all eight splits together total \textbf{180\,s, twice
+the cycle}. That is parallelism, not overbooking: at every moment of the cycle
+one ring-1 window and one ring-2 window are open side by side (in
+Figure~\ref{fig:ringsplit}, while \ph{2} owns 0--50 in ring 1, \ph{5} and \ph{6}
+split that same 0--50 in ring 2). The split column on the COORD screen is
+therefore best read one ring at a time — the R1/R2 tag beside each phase shows
+which ring (and A/B which barrier) it belongs to. If you instead spread the 90\,s
+across all eight phases, each ring totals only ${\sim}45$, and the engine's
+normalization scales every green to about \emph{twice} what you typed.
+\end{tipbox}
+
 \begin{warnbox}
 A split must cover the whole slice — green \textbf{plus} yellow \textbf{plus} red
 clearance — and any WALK + pedestrian clearance served in it. A 10\,s split with a
@@ -975,7 +993,8 @@ clearance — and any WALK + pedestrian clearance served in it. A 10\,s split wi
 \subsection{Dual entry under coordination}\label{sec:dualentry}
 
 Splits \textbf{never add} across a dual-entry pair. The companion comes up at the
-same moment as the called phase, holds green with it, and clears with it; while
+same moment as the called phase and holds green with it (clearing only when
+conflicting demand — such as the cross street's call — arrives for it too); while
 riding along, the companion's own split and force-off are ignored — they apply only
 when that phase is served on its own call.
 
@@ -1345,7 +1364,8 @@ pedestrian buttons).
   \item[Cycle length] Duration of one complete rotation through the phases; shared
     by every signal on a coordinated corridor.
   \item[Dual entry (DE)] Serving an uncalled companion phase so both rings show
-    green on the active barrier; the companion clears with the called phase.
+    green on the active barrier; the companion rests in green until demand that
+    conflicts with it arrives.
   \item[Conditional service (CS)] Re-serving an earlier phase on the same barrier
     (once per barrier) when it reacquires a call before the rings cross.
   \item[Force-off] The hard end-of-green a coordinated plan imposes on a
