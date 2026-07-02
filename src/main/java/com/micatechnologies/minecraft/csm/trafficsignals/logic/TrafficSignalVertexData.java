@@ -729,7 +729,7 @@ public class TrafficSignalVertexData {
     final float faceZ = 11.0f;       // door frame plane; nothing renders in front of it
     final float half = 6.0f;         // face half-extent (12x12 section) — never exceeded
     final float edgeDepth = 1.6f;    // depth remaining at the seam flange (top/bottom edges)
-    final float bellyDepth = 8.6f;   // depth at the section's belly (the bubble apex)
+    final float bellyDepth = 7.6f;   // depth at the section's belly (the bubble apex)
     // Half-band edges outward from the section centerline (y=6); mirrored below center.
     final float[] bandEdges = {0.0f, 1.0f, 2.4f, 3.8f, 4.8f, 5.6f, 6.0f};
     // Rear taper steps per band: {fraction of the band's depth, x half-extent} — the lobe
