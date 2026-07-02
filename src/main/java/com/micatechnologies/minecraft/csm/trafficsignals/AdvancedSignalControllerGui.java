@@ -680,12 +680,19 @@ public class AdvancedSignalControllerGui extends GuiScreen {
           }
           send("ov.callPhase", oi, cp);
         }, null));
-    y += 16;
+    y += 14;
     for (int pn = 1; pn <= TrafficSignalProgrammedPhasePlan.PHASE_COUNT; pn++) {
       final int n = pn;
       cells.add(new Cell(lcdX + 70 + (pn - 1) * 22, y, 18,
           () -> contains(ovs.get(oi).getIncludedPhases())[n] ? ("[" + n + "]") : (" " + n + " "),
           dir -> send("ov.includedToggle", oi, n), null));
+    }
+    y += 14;
+    for (int pn = 1; pn <= TrafficSignalProgrammedPhasePlan.PHASE_COUNT; pn++) {
+      final int n = pn;
+      cells.add(new Cell(lcdX + 70 + (pn - 1) * 22, y, 18,
+          () -> contains(ovs.get(oi).getPermissivePhases())[n] ? ("[" + n + "]") : (" " + n + " "),
+          dir -> send("ov.permToggle", oi, n), null));
     }
     y += 14;
     for (int pn = 1; pn <= TrafficSignalProgrammedPhasePlan.PHASE_COUNT; pn++) {
@@ -1328,11 +1335,18 @@ public class AdvancedSignalControllerGui extends GuiScreen {
         "Phase called while vehicles wait in the overlap's output zone,",
         "so a movement served only by this overlap can summon a green",
         "(e.g. a right-turn pocket calls its through). -- = no call.");
-    y += 16;
+    y += 14;
     fontRenderer.drawString("INCL", lcdX, y, COLOR_AMBER_DIM);
-    addHelp(lcdX, y, 60, 9, "Included Phases",
+    addHelp(lcdX, y, 60, 9, "Included (Protected) Phases",
         "The overlap runs GREEN while any included phase is green,",
         "YELLOW during their clearance, else red. [n] = included.");
+    y += 14;
+    fontRenderer.drawString("PERM", lcdX, y, COLOR_AMBER_DIM);
+    addHelp(lcdX, y, 60, 9, "FYA Permissive Phases",
+        "FYA display: flash a yellow arrow while any [n] phase is green",
+        "(and no INCL phase is) — e.g. flash during the through whose",
+        "concurrent WALK conflicts, green arrow during the INCL left.",
+        "Link a flashing-right lens for the compound head. Empty = off.");
     y += 14;
     fontRenderer.drawString("MOD", lcdX, y, COLOR_AMBER_DIM);
     addHelp(lcdX, y, 60, 9, "Modifier Phases (-Grn/Yel)",

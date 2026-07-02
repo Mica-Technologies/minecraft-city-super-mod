@@ -134,6 +134,10 @@ public final class AdvancedPhaseBuilder {
           overlapIntervals != null && i < overlapIntervals.size() ? overlapIntervals.get(i) : null;
       RingBarrierState.VehInterval state =
           precomputed != null ? precomputed : overlapState(ov.getIncludedPhases(), ring1, ring2);
+      if (ov.getPermissivePhases().length > 0) {
+        applyFyaOverlap(phase, ov, circuit, heads, state, ring1, ring2);
+        continue;
+      }
       phase.removeSignals(heads);
       switch (state) {
         case GREEN:
@@ -147,6 +151,104 @@ public final class AdvancedPhaseBuilder {
           phase.addRedSignals(heads);
           break;
       }
+    }
+  }
+
+  /**
+   * FYA overlap display (e.g. a right-turn FYA): included phases are the <i>protected</i> sources
+   * and {@link TrafficSignalProgrammedOverlap#getPermissivePhases() permissive} phases drive a
+   * flashing yellow arrow, layered under the (trail/lead-aware) protected interval:
+   *
+   * <ul>
+   *   <li>protected interval GREEN &rarr; protected green arrow;</li>
+   *   <li>protected interval YELLOW &rarr; solid yellow clearance;</li>
+   *   <li>otherwise: permissive phase GREEN &rarr; flashing yellow, YELLOW &rarr; solid yellow
+   *       clearance, else red. The {@code -GRN/YEL} modifier still forces red over the flash.</li>
+   * </ul>
+   *
+   * <p>Rendered on the compound head when the output circuit has a flashing lens linked for the
+   * output movement (3-section lens + arrow add-on, mirroring {@code applyFyaLenses}); otherwise
+   * the output heads themselves flash.
+   */
+  private static void applyFyaOverlap(TrafficSignalPhase phase,
+      TrafficSignalProgrammedOverlap ov, TrafficSignalControllerCircuit circuit,
+      List<BlockPos> heads, RingBarrierState.VehInterval protectedInterval,
+      RingBarrierState.ServedMovement ring1, RingBarrierState.ServedMovement ring2) {
+    FyaLensState state;
+    switch (protectedInterval) {
+      case GREEN:
+        state = FyaLensState.PROTECTED_GREEN;
+        break;
+      case YELLOW:
+        state = FyaLensState.SOLID_YELLOW;
+        break;
+      case RED:
+      default: {
+        // The precomputed protected interval is already -GRN/YEL-aware, but its forced RED must
+        // not be overridden by the permissive flash — re-check the modifier here.
+        boolean modRed = ov.getType() == TrafficSignalOverlapType.MINUS_GREEN_YELLOW
+            && anyServedActive(ov.getModifierPhases(), ring1, ring2);
+        RingBarrierState.VehInterval perm =
+            modRed ? RingBarrierState.VehInterval.RED
+                : overlapState(ov.getPermissivePhases(), ring1, ring2);
+        state = perm == RingBarrierState.VehInterval.GREEN ? FyaLensState.FLASH
+            : perm == RingBarrierState.VehInterval.YELLOW ? FyaLensState.SOLID_YELLOW
+                : FyaLensState.RED;
+        break;
+      }
+    }
+    List<BlockPos> lens;
+    switch (ov.getOutputMovement()) {
+      case RIGHT:
+        lens = circuit.getFlashingRightSignals();
+        break;
+      case LEFT:
+      case PROTECTED_LEFT:
+        lens = circuit.getFlashingLeftSignals();
+        break;
+      default:
+        lens = java.util.Collections.emptyList();
+        break;
+    }
+    phase.removeSignals(heads);
+    if (!lens.isEmpty()) {
+      // Compound head: 3-section flashing lens + arrow add-on, one valid indication at a time.
+      phase.removeSignals(lens);
+      switch (state) {
+        case PROTECTED_GREEN:
+          phase.addOffSignals(lens);
+          phase.addGreenSignals(heads);
+          break;
+        case SOLID_YELLOW:
+          phase.addYellowSignals(lens);
+          phase.addRedSignals(heads);
+          break;
+        case FLASH:
+          phase.addFyaSignals(lens);
+          phase.addRedSignals(heads);
+          break;
+        case RED:
+        default:
+          phase.addRedSignals(lens);
+          phase.addRedSignals(heads);
+          break;
+      }
+      return;
+    }
+    switch (state) {
+      case PROTECTED_GREEN:
+        phase.addGreenSignals(heads);
+        break;
+      case SOLID_YELLOW:
+        phase.addYellowSignals(heads);
+        break;
+      case FLASH:
+        phase.addFyaSignals(heads);
+        break;
+      case RED:
+      default:
+        phase.addRedSignals(heads);
+        break;
     }
   }
 

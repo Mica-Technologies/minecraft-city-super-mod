@@ -1826,6 +1826,12 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
           ov.setModifierPhases(toggleInArray(ov.getModifierPhases(), (int) value));
         }
         break;
+      case "ov.permToggle":
+        if (validOverlap(plan, index)) {
+          TrafficSignalProgrammedOverlap ov = plan.getVehicleOverlaps().get(index);
+          ov.setPermissivePhases(toggleInArray(ov.getPermissivePhases(), (int) value));
+        }
+        break;
       default:
         changed = false;
         break;
