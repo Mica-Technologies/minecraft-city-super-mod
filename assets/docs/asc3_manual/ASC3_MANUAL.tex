@@ -328,6 +328,8 @@ rests in green on the last served (or SOFT-recalled) phases.}
 \begin{tipbox}
 In-game, sensors detect players and villagers as vehicle proxies. ``A vehicle call''
 means an entity inside the sensor zone mapped to the phase's circuit + movement.
+Calls are presence-based — gone as soon as the entity leaves the zone — unless the
+phase's \field{LOCK} option (Section~\ref{sec:map}) latches them until served.
 \end{tipbox}
 
 \subsection{Recalls and resting}\label{sec:recall}
@@ -643,6 +645,9 @@ and behavioral options.
                           \texttt{--} = protected-only. Section~\ref{sec:fya}. \\
 \field{OPT}  & Options  & \texttt{-} / \texttt{DE} (dual entry) / \texttt{CS}
                           (conditional service) / \texttt{D+C} (both). \\
+\field{LOCK} & Call memory & \texttt{Lock} = latch vehicle calls until served;
+                          \texttt{-} = presence (call lasts only while the zone
+                          sees a vehicle). \\
 \bottomrule
 \end{tabular}
 \caption{\screen{MAP} columns.}
@@ -663,6 +668,20 @@ order — flag only the phase you want as the companion.
 \paragraph{Conditional service (CS).} Once per barrier, an already-passed CS phase
 that reacquires a call may be re-served before the rings cross — the classic
 re-served lagging left. After it terminates, the rings park and cross normally.
+
+\paragraph{Locking detector memory (LOCK).} By default calls are
+\emph{presence}-based: a phase calls only while a vehicle is actually inside its
+detector zone, so a car that clears on a permissive FYA flash — or wanders out of
+the zone — drops its call, exactly like a stop-bar presence loop. Setting
+\field{LOCK} switches the phase to \emph{locking} call memory (the classic
+pulse-detector behavior): a call registered while the phase is not green is
+latched and held until the phase is next served, even after the vehicle leaves.
+Locking guarantees service once anything ever touched the zone, at the cost of
+occasionally serving a green to a lane the car has already left. Real practice
+maps directly: leave presence (non-lock) on stop-bar zones — especially FYA
+lefts — and use LOCK where a missed call is worse than a wasted green. Under
+coordination a latched call still waits for the phase's permissive window; the
+latch persists, it doesn't jump the cycle.
 
 \subsection{ACT — actuation / volume-density}\label{sec:act}
 
@@ -707,7 +726,9 @@ Advanced extension timing, per phase, for busy intersections:
   \draw[{Stealth}-{Stealth},thin] (10,-0.85) -- node[below,font=\scriptsize]{\field{TTR}} (30,-0.85);
 \end{tikzpicture}
 \caption{Gap reduction: the longer a green runs, the smaller the vehicle gap that
-keeps it alive — heavy approaches gap out sooner instead of running to max-out.}
+keeps it alive — heavy approaches gap out sooner instead of running to max-out.
+The ramp starts at the phase's Passage time (\field{Pas}, set on \screen{TIMING},
+Table~\ref{tab:timing}) and shrinks to this screen's \field{Gap} floor.}
 \label{fig:gapred}
 \end{figure}
 
@@ -1374,6 +1395,9 @@ pedestrian buttons).
     opposing through is green.
   \item[Gap-out] A green ending because the passage timer expired with no new
     vehicle.
+  \item[Locking memory (LOCK)] Per-phase call memory: a call registered while the
+    phase is not green is latched until served, even after the vehicle leaves the
+    zone. Off = presence (the call lasts only while the vehicle is detected).
   \item[Max-out] A green ending because it reached Max Green with a conflicting
     call waiting.
   \item[Offset] The start of an intersection's cycle relative to the shared master

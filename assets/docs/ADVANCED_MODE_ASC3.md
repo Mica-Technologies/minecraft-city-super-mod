@@ -63,6 +63,7 @@ roadmap parameters, with their real ASC/3 names:
 | **MM-2-2 NORMAL overlap** | **Phase-based right-turn overlaps** | **implemented — see §4a** |
 | **DUAL ENTRY** | **Companion an uncalled ring** | **implemented — see §5** |
 | **Conditional Service** | **Re-serve a lagging phase** | **implemented — see §5** |
+| **VEH CALL MEMORY (LOCK)** | **Locking detector memory** | **implemented — see §5** |
 
 ---
 
@@ -274,6 +275,15 @@ parameters are edited on the **ACT** GUI screen (Mx2 / BkG / AdI / MxI / Gap / T
   forward phase called on the barrier, it may re-serve (**at most once per barrier visit**, guarded
   by `condServiceUsed`) an earlier conditional-service phase that has reacquired a call, before the
   barrier crosses. The classic use is a lead-lag left turn that re-fills after its through.
+- **Locking detector memory (`LOCK` / ASC-3 vehicle call memory)** — a per-phase flag
+  (`TrafficSignalProgrammedPhase.lockCall`, MAP **LOCK** column). Default (non-lock) is presence
+  detection: a call exists only while the sensor zone sees a vehicle — right for stop-bar zones,
+  where a car that clears on a permissive FYA flash should drop its call. With LOCK set,
+  `RingBarrierState.updateLockedCalls` latches a vehicle call registered while the phase is not
+  being served green (`lockedCalls[]`, transient like the rest of the runtime), `isCalled` treats
+  the latch as demand, and `startGreen` discharges it — pulse-detector behavior: service is
+  guaranteed once anything touched the zone, even if the vehicle leaves. The latch check sits
+  *after* the coordination gating, so a latched call still waits for its permissive window.
 
 Dual Entry and Conditional Service are set via the MAP **OPT** column, a combined cycle:
 `-` / `DE` / `CS` / `D+C`.
@@ -302,8 +312,9 @@ through an injectable `DemandSource` (production wraps the world; tests supply c
   (a lagging left re-serves once on a fresh call before the barrier crosses), overlap lag
   (trailing) green holding the head green past its included phase (via `getLastAppliedPhase()`),
   compatible-green holding (a left-turn call clears only its opposing through — the adjacent
-  through, recall-served or dual-entered, holds green through the left's whole service), and
-  max-green timing from the first conflicting call.
+  through, recall-served or dual-entered, holds green through the left's whole service),
+  max-green timing from the first conflicting call, and locking detector memory (a latched call
+  survives the vehicle leaving the zone and is discharged by service; presence phases drop it).
 - `AdvancedActuationTimingTest` — the pure volume-density math (added initial, effective min/max
   green, gap-reduction ramp), tested directly.
 - `AdvancedPhaseBuilderTest` — the pure `applyFyaLensState(...)` FYA decision (all four outcomes),

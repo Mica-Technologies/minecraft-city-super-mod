@@ -143,6 +143,15 @@ public class AdvancedSignalControllerGui extends GuiScreen {
       "Rest-in-Walk holds WALK while the controller rests on a phase; it always runs a full "
           + "flashing-don't-walk clearance before the phase yields.",
       "",
+      "DETECTION & CALLS (LOCK):",
+      "Calls are presence-based by default: a phase calls only while a vehicle is actually in its "
+          + "detector zone, so a car that clears on a permissive FYA flash (or drives off) drops "
+          + "its call — like a stop-bar presence loop.",
+      "Set a phase's LOCK column (MAP screen) to latch instead: a call registered while the phase "
+          + "is not green is remembered until the phase is next served, even after the car leaves "
+          + "the zone — like a pulse detector. Guarantees service once anything touched the zone, "
+          + "at the cost of occasionally serving a lane the car already left.",
+      "",
       "CONCURRENT PHASES (DUAL RING):",
       "Two compatible phases — one from each ring on the same barrier — run green together. So two "
           + "phases that are both called (e.g. the two opposing throughs 2 & 6, or the two lefts "
@@ -170,10 +179,10 @@ public class AdvancedSignalControllerGui extends GuiScreen {
           + "you typed), so total EACH ring to the cycle — and keep concurrent groups matched "
           + "across rings so companion phases open together (e.g. with phases 2,4,5,6,8: "
           + "splits 5+6 should equal 2, and 8 should equal 4).",
-      "Dual entry never adds time: a DE companion comes up WITH the called phase and clears when "
-          + "it clears. The called phase's split sets the green; the companion's own split is "
-          + "ignored while it rides along (it only applies when that phase is served on its own "
-          + "call).",
+      "Dual entry never adds time: a DE companion comes up WITH the called phase and rests in "
+          + "green until conflicting demand arrives for it too. The called phase's split sets the "
+          + "green; the companion's own split is ignored while it rides along (it only applies "
+          + "when that phase is served on its own call).",
       "",
       "TIP: hover any on-screen label for a one-line explanation.",
   };
@@ -484,14 +493,18 @@ public class AdvancedSignalControllerGui extends GuiScreen {
             send("ph.pedOpts", n, st);
           }, null));
       // Phase options: combined dual entry + conditional service as a 4-state cycle.
-      cells.add(new Cell(lcdX + 304, y, 48,
+      cells.add(new Cell(lcdX + 288, y, 30,
           () -> PHASE_OPT_LABELS[phaseOptState(plan().getPhase(n))],
           dir -> {
             int st = (phaseOptState(plan().getPhase(n)) + (dir >= 0 ? 1 : 3)) & 3;
             send("ph.phaseOpts", n, st);
           }, null));
+      // Locking detector memory (ASC/3 vehicle call memory): latch calls until served.
+      cells.add(new Cell(lcdX + 320, y, 32,
+          () -> plan().getPhase(n).isLockCall() ? "Lock" : "-",
+          dir -> send("ph.lockCall", n, plan().getPhase(n).isLockCall() ? 0 : 1), null));
       // FYA permissive phase (opposing through; 0 = protected-only)
-      cells.add(new Cell(lcdX + 260, y, 40,
+      cells.add(new Cell(lcdX + 256, y, 30,
           () -> {
             int pp = plan().getPhase(n).getPermissivePhase();
             return pp <= 0 ? "--" : ("P" + pp);
@@ -1178,16 +1191,18 @@ public class AdvancedSignalControllerGui extends GuiScreen {
     fontRenderer.drawString("MOVE", lcdX + 126, lcdY + 12, COLOR_AMBER_DIM);
     fontRenderer.drawString("RCL", lcdX + 174, lcdY + 12, COLOR_AMBER_DIM);
     fontRenderer.drawString("PED", lcdX + 222, lcdY + 12, COLOR_AMBER_DIM);
-    fontRenderer.drawString("FYA", lcdX + 260, lcdY + 12, COLOR_AMBER_DIM);
-    fontRenderer.drawString("OPT", lcdX + 304, lcdY + 12, COLOR_AMBER_DIM);
+    fontRenderer.drawString("FYA", lcdX + 256, lcdY + 12, COLOR_AMBER_DIM);
+    fontRenderer.drawString("OPT", lcdX + 288, lcdY + 12, COLOR_AMBER_DIM);
+    fontRenderer.drawString("LOCK", lcdX + 320, lcdY + 12, COLOR_AMBER_DIM);
     int rowH = 11;
     for (int pn = 1; pn <= TrafficSignalProgrammedPhasePlan.PHASE_COUNT; pn++) {
       int y = lcdY + TABLE_BODY_DY + (pn - 1) * rowH;
       fontRenderer.drawString("φ" + pn, lcdX, y, COLOR_AMBER);
     }
     int colHelpH = (TABLE_BODY_DY - 12) + TrafficSignalProgrammedPhasePlan.PHASE_COUNT * rowH;
-    int[] hx = {lcdX + 26, lcdX + 70, lcdX + 126, lcdX + 174, lcdX + 222, lcdX + 260, lcdX + 304};
-    int[] hw = {40, 50, 46, 46, 36, 42, 50};
+    int[] hx = {lcdX + 26, lcdX + 70, lcdX + 126, lcdX + 174, lcdX + 222, lcdX + 256,
+        lcdX + 288, lcdX + 320};
+    int[] hw = {40, 50, 46, 46, 32, 30, 30, 34};
     String[][] colHelp = {
         {"Enable (EN)", "On = this phase runs. off = the phase is skipped",
             "entirely and never served."},
@@ -1208,6 +1223,11 @@ public class AdvancedSignalControllerGui extends GuiScreen {
         {"Phase Options (OPT)", "DE = dual entry (serve to companion the other ring",
             "when it has no call). CS = conditional service (re-serve",
             "once per barrier on a fresh call). D+C = both. - = neither."},
+        {"Locking Detector Memory (LOCK)", "Lock = a vehicle call registered while this phase is",
+            "not green is latched until the phase is next served, even",
+            "if the car leaves the zone (pulse-detector behavior).",
+            "'-' = presence: the call lasts only while the zone sees a",
+            "vehicle — a car clearing on an FYA flash drops its call."},
     };
     for (int i = 0; i < hx.length; i++) {
       addHelp(hx[i], lcdY + 12, hw[i], colHelpH, colHelp[i]);

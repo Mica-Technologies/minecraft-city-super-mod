@@ -1616,6 +1616,11 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
           phase.setConditionalService((value & 2L) != 0L);
         }
         break;
+      case "ph.lockCall":
+        if (phase != null) {
+          phase.setLockCall(value != 0);
+        }
+        break;
       case "ph.minGreen":
         if (phase != null) {
           phase.setMinGreen(clampTicks(value));
