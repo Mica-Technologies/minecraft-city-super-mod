@@ -240,7 +240,8 @@ cross the barrier \emph{together}, which is what keeps conflicting movements apa
 \centering
 \begin{tikzpicture}[
   pbox/.style={draw=inkhead,rounded corners=2pt,minimum width=17mm,minimum height=9mm,
-               font=\bfseries,fill=#1}]
+               font=\bfseries,fill=#1},
+  compat/.style={{Stealth[length=2.2mm]}-{Stealth[length=2.2mm]},sigRed,line width=0.9pt}]
   \node[font=\small\bfseries,anchor=east] at (-0.3,1.5) {Ring 1};
   \node[font=\small\bfseries,anchor=east] at (-0.3,0.0) {Ring 2};
   \node[pbox=sigGreen!22] (p1) at (1.0,1.5) {\ph{1}};
@@ -261,11 +262,22 @@ cross the barrier \emph{together}, which is what keeps conflicting movements apa
   \draw[-{Stealth},thick,amber] (p3) -- (p4);
   \draw[-{Stealth},thick,amber] (p5) -- (p6);
   \draw[-{Stealth},thick,amber] (p7) -- (p8);
+  % cross-ring compatibility: verticals + the X within each barrier group
+  \draw[compat] (p1) -- (p5);
+  \draw[compat] (p2) -- (p6);
+  \draw[compat] (p3) -- (p7);
+  \draw[compat] (p4) -- (p8);
+  \draw[compat] (p1) -- (p6);
+  \draw[compat] (p2) -- (p5);
+  \draw[compat] (p3) -- (p8);
+  \draw[compat] (p4) -- (p7);
 \end{tikzpicture}
-\caption{The dual-ring, dual-barrier structure. One green per ring; any ring-1
-phase may run beside any ring-2 phase \emph{in the same group} (\ph{1}+\ph{5},
-\ph{1}+\ph{6}, \ph{2}+\ph{5}, \ph{2}+\ph{6}, \ldots). Rings cross a barrier only
-together.}
+\caption{The dual-ring, dual-barrier structure. One green per ring, advancing left
+to right (amber arrows). The red double-headed arrows mark the compatible
+cross-ring pairs that may be green together: \ph{1}+\ph{5}, \ph{1}+\ph{6},
+\ph{2}+\ph{5}, \ph{2}+\ph{6} on the main street and \ph{3}+\ph{7}, \ph{3}+\ph{8},
+\ph{4}+\ph{7}, \ph{4}+\ph{8} on the side street — never a pair across a barrier.
+Rings cross a barrier only together.}
 \label{fig:ringbarrier}
 \end{figure}
 
