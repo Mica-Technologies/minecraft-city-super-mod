@@ -665,6 +665,21 @@ public class AdvancedSignalControllerGui extends GuiScreen {
         () -> secs(ovs.get(oi).getLeadGreen()),
         dir -> send("ov.leadGreen", oi, ovs.get(oi).getLeadGreen() + dir * 10L),
         sec -> send("ov.leadGreen", oi, Math.round(sec * 20))));
+    y += 12;
+    // Detector-to-phase assignment: output-zone detection calls this phase (0 = no call).
+    cells.add(new Cell(lcdX + 80, y, 50,
+        () -> ovs.get(oi).getCallPhase() <= 0 ? "--" : ("P" + ovs.get(oi).getCallPhase()),
+        dir -> {
+          int max = TrafficSignalProgrammedPhasePlan.PHASE_COUNT;
+          int cp = ovs.get(oi).getCallPhase() + dir;
+          if (cp < 0) {
+            cp = max;
+          }
+          if (cp > max) {
+            cp = 0;
+          }
+          send("ov.callPhase", oi, cp);
+        }, null));
     y += 16;
     for (int pn = 1; pn <= TrafficSignalProgrammedPhasePlan.PHASE_COUNT; pn++) {
       final int n = pn;
@@ -1307,6 +1322,12 @@ public class AdvancedSignalControllerGui extends GuiScreen {
     addHelp(lcdX, y, 76, 9, "Lead (Advance) Green",
         "Seconds the overlap greens BEFORE an included phase greens,",
         "during the preceding red clearance (within-barrier). 0 = off.");
+    y += 12;
+    fontRenderer.drawString("Call:", lcdX, y, COLOR_AMBER_DIM);
+    addHelp(lcdX, y, 76, 9, "Call Phase (detector assignment)",
+        "Phase called while vehicles wait in the overlap's output zone,",
+        "so a movement served only by this overlap can summon a green",
+        "(e.g. a right-turn pocket calls its through). -- = no call.");
     y += 16;
     fontRenderer.drawString("INCL", lcdX, y, COLOR_AMBER_DIM);
     addHelp(lcdX, y, 60, 9, "Included Phases",

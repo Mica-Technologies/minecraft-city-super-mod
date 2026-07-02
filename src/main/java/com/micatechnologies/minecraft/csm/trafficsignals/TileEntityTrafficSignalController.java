@@ -1775,6 +1775,13 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
           plan.getVehicleOverlaps().remove(index);
         }
         break;
+      case "ov.callPhase":
+        if (validOverlap(plan, index)) {
+          // 0 = no call; otherwise the phase number called by output-zone detection (clamped 0..8).
+          plan.getVehicleOverlaps().get(index).setCallPhase(Math.max(0,
+              Math.min(TrafficSignalProgrammedPhasePlan.PHASE_COUNT, (int) value)));
+        }
+        break;
       case "ov.enabled":
         if (validOverlap(plan, index)) {
           plan.getVehicleOverlaps().get(index).setEnabled(value != 0);

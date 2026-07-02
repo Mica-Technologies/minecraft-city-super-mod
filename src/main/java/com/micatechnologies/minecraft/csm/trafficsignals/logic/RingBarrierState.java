@@ -201,6 +201,7 @@ public class RingBarrierState {
     for (int n = 1; n <= TrafficSignalProgrammedPhasePlan.PHASE_COUNT; n++) {
       called[n] = isCalled(plan.getPhase(n));
     }
+    applyOverlapDemand(plan, called);
 
     if (!initialized) {
       currentBarrier = firstBarrier(plan);
@@ -881,6 +882,34 @@ public class RingBarrierState {
       return true;
     }
     return pedRequestPresent(phase);
+  }
+
+  /**
+   * Places calls from overlap detection (detector-to-phase assignment). An active overlap with a
+   * configured call phase calls that phase while vehicles are present in its output circuit's
+   * output-movement sensor zone. Overlaps are otherwise pure outputs, so without this a movement
+   * served only by an overlap (e.g. a right-turn pocket) could wait forever with nothing calling
+   * the phases that light it.
+   */
+  private void applyOverlapDemand(TrafficSignalProgrammedPhasePlan plan, boolean[] called) {
+    for (TrafficSignalProgrammedOverlap ov : plan.getVehicleOverlaps()) {
+      int cp = ov.getCallPhase();
+      if (!ov.isActive() || cp < 1 || cp >= called.length || called[cp]) {
+        continue;
+      }
+      TrafficSignalProgrammedPhase phase = plan.getPhase(cp);
+      if (phase == null || !phase.isActive()) {
+        continue;
+      }
+      // Same coordination gating as a direct call: outside its permissive window a
+      // non-coordinated phase cannot be called.
+      if (coordinated && !coordPhase[cp] && !windowOpen(cp)) {
+        continue;
+      }
+      if (zoneCount(ov.getOutputCircuitIndex(), ov.getOutputMovement()) > 0) {
+        called[cp] = true;
+      }
+    }
   }
 
   /** True if any other phase wants service but isn't one of the two currently being served. */
