@@ -56,6 +56,10 @@ public class CsmClientProxy implements ICsmProxy {
     // Clears static sound/strobe/cache state on disconnect (see perf plan §15)
     MinecraftForge.EVENT_BUS.register(
         new com.micatechnologies.minecraft.csm.codeutils.CsmClientLifecycleHandler());
+    // Samples the wall clock once per render frame to drive signal/strobe flash timing
+    // (see CsmRenderUtils) — one JNI call per frame rather than one per visible signal.
+    MinecraftForge.EVENT_BUS.register(
+        new com.micatechnologies.minecraft.csm.codeutils.CsmRenderUtils.FrameClock());
   }
 
   /**

@@ -201,8 +201,8 @@ public class TileEntityCrosswalkSignalNewRenderer
         Minecraft.getMinecraft().getTextureManager().bindTexture( WHITE_TEXTURE );
         GL11.glCallList( displayList );
 
-        // Display face textures — compute flash state here so we can use the renderer's
-        // partialTicks instead of doing a JNI System.currentTimeMillis() call per frame.
+        // Display face textures — compute flash state here from the once-per-frame cached
+        // wall-clock flash timer rather than a JNI System.currentTimeMillis() call per signal.
         // On during the SECOND half of each second to match the vehicle signal flash phase:
         // a flashing vehicle bulb is blanked during the first half-second (see
         // TileEntityTrafficSignalHead's "flash flip" pass), so the ped clearance flash lights
@@ -421,7 +421,7 @@ public class TileEntityCrosswalkSignalNewRenderer
 
     private void renderDisplayFace( CrosswalkDisplayType displayType,
             CrosswalkBulbType bulbType, int colorState, boolean flashOn ) {
-        // Flash timing (computed in render() from the pause-aware game clock): 1Hz on/off
+        // Flash timing (computed in render() from the wall-clock flash timer): 1Hz on/off
         // cycle during clearance (color=1)
 
         Tessellator tessellator = Tessellator.getInstance();
