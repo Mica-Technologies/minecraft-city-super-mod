@@ -45,7 +45,7 @@ roadmap parameters, with their real ASC/3 names:
 |---|---|---|
 | MIN GREEN | Minimum green | implemented (`minGreen`) |
 | VEH EXT (Passage) | Per-call green extension (gap) | implemented (`passage`) |
-| MAX 1 (Max Green) | Max green under conflicting demand | implemented (`maxGreen`) |
+| MAX 1 (Max Green) | Max green, timed from the first conflicting call | implemented (`maxGreen`; see §5 *Compatibility-aware termination*) |
 | YELLOW CHANGE | Yellow clearance | implemented (`yellow`) |
 | RED CLEAR | All-red clearance | implemented (`redClear`) |
 | WALK | Steady walk interval | implemented (`walk`) |
@@ -250,11 +250,26 @@ parameters are edited on the **ACT** GUI screen (Mx2 / BkG / AdI / MxI / Gap / T
   conflicting call arrives, the rest-in-walk clearance re-arms a full flashing-don't-walk before the
   phase yields. Set via the MAP **PED** column, which cycles the combined ped options: `no` / `PedR`
   (ped recall) / `Walk` (rest in walk) / `P+W` (both).
+- **Compatibility-aware termination + within-barrier wrap** — a green yields only to demand that
+  actually *conflicts* with it (`demandConflictsWith`/`conflicts`): a call conflicts when it is on
+  a different barrier, in the same ring, or is the phase's FYA permissive partner (a left and its
+  opposing through are a crossing pair even under a nonstandard cross-ring sequence). A call on the
+  same barrier in the *other* ring — e.g. a left beside its adjacent through — clears only the
+  phases it crosses; the compatible green keeps running. When the ring that cleared has no forward
+  phase left and every calling phase is on the current barrier, it **wraps within the barrier**
+  (`fillIdleRing` wrap fallback) and serves the called phase directly instead of parking — parking
+  would force a full both-ring re-cross, needlessly cycling the compatible green through
+  green→yellow→red→green. **MAX 1** follows NEMA semantics: the max-green timer starts at the first
+  conflicting call's registration (`RingRuntime.maxStart`) and resets if the call drops, so an
+  unopposed recall/rest green rests indefinitely instead of maxing out for nobody.
 - **Dual Entry (`DUAL ENTRY`)** — a per-phase flag. When one ring is serving a called phase on a
   barrier and the other ring has no call of its own, the idle ring serves its first active dual-entry
-  phase on that barrier so the intersection isn't left with one direction dark (`fillDualEntry`). A
-  dual-entry-served phase holds green *with* its companion and clears *with* it (rather than gapping
-  out and re-serving on its own, which would flicker).
+  phase on that barrier so the intersection isn't left with one direction dark (`fillDualEntry`).
+  Once entered, the companion terminates by the same conflict rule as any phase — it rests in green
+  through the other ring's within-barrier transitions (e.g. through → left) and yields only to
+  demand that conflicts with it. To avoid entering a green that would have to clear immediately
+  (flicker), no companion is entered while demand waits on another barrier, and a candidate that
+  pending demand conflicts with is skipped.
 - **Conditional Service** — a per-phase flag, typically on a lagging left. When a ring finds no
   forward phase called on the barrier, it may re-serve (**at most once per barrier visit**, guarded
   by `condServiceUsed`) an earlier conditional-service phase that has reacquired a call, before the
@@ -284,8 +299,11 @@ through an injectable `DemandSource` (production wraps the world; tests supply c
 - `RingBarrierStateTest` — drives the engine with canned demand (`Demand` helper): basic actuation,
   bike-minimum-green holding a phase under conflict, soft-recall rest selection, rest-in-walk, dual
   entry (an uncalled ring companions the served barrier), a timed conditional-service sequence
-  (a lagging left re-serves once on a fresh call before the barrier crosses), and overlap lag
-  (trailing) green holding the head green past its included phase (via `getLastAppliedPhase()`).
+  (a lagging left re-serves once on a fresh call before the barrier crosses), overlap lag
+  (trailing) green holding the head green past its included phase (via `getLastAppliedPhase()`),
+  compatible-green holding (a left-turn call clears only its opposing through — the adjacent
+  through, recall-served or dual-entered, holds green through the left's whole service), and
+  max-green timing from the first conflicting call.
 - `AdvancedActuationTimingTest` — the pure volume-density math (added initial, effective min/max
   green, gap-reduction ramp), tested directly.
 - `AdvancedPhaseBuilderTest` — the pure `applyFyaLensState(...)` FYA decision (all four outcomes),

@@ -594,6 +594,158 @@ class RingBarrierStateTest {
         "3-section lens is dark under the protected green");
   }
 
+  /**
+   * Shared skeleton for the compatible-green regressions: phases 1 (FYA left, circuit 0,
+   * permissive 2), 2 (through, circuit 1, min recall) and 6 (through, circuit 2) on barrier A.
+   * Asserts that a left-turn call clears ONLY the conflicting through (2), the compatible
+   * adjacent through (6) holds green the whole way through the left's service and back, and the
+   * left actually reaches its protected green (no dropped service).
+   */
+  private void assertCompanionHoldsThroughLeftService(TrafficSignalProgrammedPhasePlan plan,
+      TrafficSignalControllerCircuits ckts,
+      net.minecraft.util.math.BlockPos fyaLens, net.minecraft.util.math.BlockPos arrow) {
+    RingBarrierState rb = new RingBarrierState();
+    Demand noCall = new Demand();
+    Demand leftCall = new Demand().veh(0, 0, 1, 0); // car in the left-turn lane (phase 1)
+
+    rb.tick(plan, ckts, NO_OVERLAPS, 0L, noCall); // recalls serve the through(s)
+    assertEquals(2, rb.getLastServed(1).phaseNumber);
+    assertEquals(6, rb.getLastServed(2).phaseNumber);
+    assertEquals(VehInterval.GREEN, rb.getLastServed(2).vehicle);
+
+    rb.tick(plan, ckts, NO_OVERLAPS, 20L, leftCall); // conflicting through 2 -> yellow
+    assertEquals(VehInterval.YELLOW, rb.getLastServed(1).vehicle,
+        "the opposing through (2) clears for the left-turn call");
+    assertEquals(VehInterval.GREEN, rb.getLastServed(2).vehicle,
+        "the compatible adjacent through (6) must NOT clear for the left-turn call");
+    assertTrue(rb.getLastAppliedPhase().getFyaSignals().contains(fyaLens),
+        "FYA flash holds through the opposing through's clearance (protected green imminent)");
+
+    rb.tick(plan, ckts, NO_OVERLAPS, 40L, leftCall); // through 2 -> red clearance
+    assertEquals(VehInterval.RED, rb.getLastServed(1).vehicle);
+    assertEquals(VehInterval.GREEN, rb.getLastServed(2).vehicle,
+        "phase 6 holds green through the opposing through's red clearance");
+
+    rb.tick(plan, ckts, NO_OVERLAPS, 60L, leftCall); // ring 1 wraps within the barrier -> left green
+    assertEquals(1, rb.getLastServed(1).phaseNumber,
+        "the called left must be served (not dropped at the barrier decision)");
+    assertEquals(VehInterval.GREEN, rb.getLastServed(1).vehicle);
+    assertEquals(VehInterval.GREEN, rb.getLastServed(2).vehicle,
+        "phase 6 holds green alongside the protected left (compatible pair)");
+    assertTrue(rb.getLastAppliedPhase().getGreenSignals().contains(arrow),
+        "protected green arrow is shown for the left");
+    assertTrue(rb.getLastAppliedPhase().getOffSignals().contains(fyaLens));
+
+    rb.tick(plan, ckts, NO_OVERLAPS, 80L, noCall); // left gapped out -> its own clearance
+    assertEquals(VehInterval.YELLOW, rb.getLastServed(1).vehicle);
+    assertEquals(VehInterval.GREEN, rb.getLastServed(2).vehicle);
+
+    rb.tick(plan, ckts, NO_OVERLAPS, 100L, noCall); // left red clearance
+    rb.tick(plan, ckts, NO_OVERLAPS, 120L, noCall); // through 2 re-serves
+    assertEquals(2, rb.getLastServed(1).phaseNumber, "through 2 resumes after the left");
+    assertEquals(VehInterval.GREEN, rb.getLastServed(1).vehicle);
+    assertEquals(6, rb.getLastServed(2).phaseNumber,
+        "phase 6 was never cleared/re-served around the left-turn service");
+    assertEquals(VehInterval.GREEN, rb.getLastServed(2).vehicle);
+    assertTrue(rb.getLastAppliedPhase().getFyaSignals().contains(fyaLens),
+        "permissive flash resumes once the opposing through is green again");
+  }
+
+  /** Builds the circuits for the compatible-green regressions (FYA head on circuit 0). */
+  private static TrafficSignalControllerCircuits fyaCircuits(
+      net.minecraft.util.math.BlockPos fyaLens, net.minecraft.util.math.BlockPos arrow) {
+    TrafficSignalControllerCircuits ckts = new TrafficSignalControllerCircuits();
+    TrafficSignalControllerCircuit c0 = new TrafficSignalControllerCircuit();
+    c0.getFlashingLeftSignals().add(fyaLens);
+    c0.getLeftSignals().add(arrow);
+    ckts.addCircuit(c0);
+    ckts.addCircuit(new TrafficSignalControllerCircuit()); // circuit 1 (phase 2)
+    ckts.addCircuit(new TrafficSignalControllerCircuit()); // circuit 2 (phase 6)
+    return ckts;
+  }
+
+  @Test
+  @DisplayName("a compatible through holds green while a left-turn call is served in the other ring")
+  void companionThroughHoldsGreenThroughLeftService() {
+    // Regression: a left call used to terminate EVERY green (global conflicting demand), forcing
+    // the compatible adjacent through (6) to run green -> yellow -> red -> green around the left.
+    TrafficSignalProgrammedPhasePlan plan = TrafficSignalProgrammedPhasePlan.createDefault();
+    plan.getCoordination().setCoordinatedPhases(new int[0]);
+    enable(plan, 1, 0);
+    plan.getPhase(1).setMovement(TrafficSignalPhaseMovement.PROTECTED_LEFT);
+    plan.getPhase(1).setPermissivePhase(2);
+    enable(plan, 2, 1);
+    plan.getPhase(2).setRecallMode(TrafficSignalRecallMode.MINIMUM);
+    enable(plan, 6, 2);
+    plan.getPhase(6).setRecallMode(TrafficSignalRecallMode.MINIMUM);
+    quickTiming(plan, 1);
+    quickTiming(plan, 2);
+
+    net.minecraft.util.math.BlockPos fyaLens = new net.minecraft.util.math.BlockPos(220, 0, 0);
+    net.minecraft.util.math.BlockPos arrow = new net.minecraft.util.math.BlockPos(221, 0, 0);
+    assertCompanionHoldsThroughLeftService(plan, fyaCircuits(fyaLens, arrow), fyaLens, arrow);
+  }
+
+  @Test
+  @DisplayName("a dual-entry companion holds green while a left-turn call is served in the other ring")
+  void dualEntryCompanionHoldsGreenThroughLeftService() {
+    // Regression (in-game report): phase 6 was dual-entered alongside through 2; a call on the FYA
+    // left (1) made 6 run green -> yellow -> red -> immediately green again. A dual-entry companion
+    // now terminates by the same conflict rule as any phase, so it simply holds green.
+    TrafficSignalProgrammedPhasePlan plan = TrafficSignalProgrammedPhasePlan.createDefault();
+    plan.getCoordination().setCoordinatedPhases(new int[0]);
+    enable(plan, 1, 0);
+    plan.getPhase(1).setMovement(TrafficSignalPhaseMovement.PROTECTED_LEFT);
+    plan.getPhase(1).setPermissivePhase(2);
+    enable(plan, 2, 1);
+    plan.getPhase(2).setRecallMode(TrafficSignalRecallMode.MINIMUM);
+    enable(plan, 6, 2);
+    plan.getPhase(6).setDualEntry(true); // no recall/call of its own — companions the barrier
+    quickTiming(plan, 1);
+    quickTiming(plan, 2);
+
+    net.minecraft.util.math.BlockPos fyaLens = new net.minecraft.util.math.BlockPos(230, 0, 0);
+    net.minecraft.util.math.BlockPos arrow = new net.minecraft.util.math.BlockPos(231, 0, 0);
+    assertCompanionHoldsThroughLeftService(plan, fyaCircuits(fyaLens, arrow), fyaLens, arrow);
+  }
+
+  @Test
+  @DisplayName("max green times from the first conflicting call, not from green start")
+  void maxGreenTimesFromConflictingCall() {
+    // Regression: max-out used to time from green start even with zero conflicting demand, so a
+    // recall/rest phase cycled green -> yellow -> red -> green every max-green interval for nobody.
+    RingBarrierState rb = new RingBarrierState();
+    TrafficSignalProgrammedPhasePlan plan = TrafficSignalProgrammedPhasePlan.createDefault();
+    plan.getCoordination().setCoordinatedPhases(new int[0]);
+    enable(plan, 2, 0); // continuously actuated through
+    enable(plan, 4, 1); // barrier B — supplies the conflicting call later
+    TrafficSignalProgrammedPhase p2 = plan.getPhase(2);
+    p2.setMinGreen(20L);
+    p2.setPassage(10L);
+    p2.setMaxGreen(50L);
+    TrafficSignalControllerCircuits ckts = circuits(2);
+    Demand unopposed = new Demand().veh(0, 1, 0, 0);               // phase 2 demand only
+    Demand opposed = new Demand().veh(0, 1, 0, 0).veh(1, 1, 0, 0); // + conflicting phase 4 call
+
+    rb.tick(plan, ckts, NO_OVERLAPS, 0L, unopposed);
+    assertEquals(2, rb.getLastServed(1).phaseNumber);
+
+    rb.tick(plan, ckts, NO_OVERLAPS, 60L, unopposed); // 60 > max 50, but nothing conflicts
+    assertEquals(VehInterval.GREEN, rb.getLastServed(1).vehicle,
+        "an unopposed green must rest, not max out for nobody");
+
+    rb.tick(plan, ckts, NO_OVERLAPS, 100L, opposed); // conflicting call registers -> max starts now
+    assertEquals(VehInterval.GREEN, rb.getLastServed(1).vehicle);
+
+    rb.tick(plan, ckts, NO_OVERLAPS, 149L, opposed); // 49 < 50 since the call — still green
+    assertEquals(VehInterval.GREEN, rb.getLastServed(1).vehicle,
+        "max green is measured from the conflicting call's registration");
+
+    rb.tick(plan, ckts, NO_OVERLAPS, 150L, opposed); // 50 ticks since the call -> max out
+    assertEquals(VehInterval.YELLOW, rb.getLastServed(1).vehicle,
+        "the phase maxes out one max-green after the conflicting call arrived");
+  }
+
   @Test
   @DisplayName("rest-in-walk recalls WALK while holding green after being called (not don't-walk)")
   void restInWalkRecyclesWalkWhenHoldingGreen() {
