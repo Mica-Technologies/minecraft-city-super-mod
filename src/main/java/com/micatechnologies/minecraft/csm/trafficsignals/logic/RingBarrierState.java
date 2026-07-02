@@ -111,6 +111,14 @@ public class RingBarrierState {
   private ServedMovement lastServed2;
   /** Per-overlap (by plan index) last tick the overlap's included phases were green — for lag green. */
   private final Map<Integer, Long> overlapLastGreen = new HashMap<>();
+  /**
+   * Locking detector memory (per-phase LOCK): latched vehicle calls, by phase number. A latch is
+   * set when a LOCK phase's zone sees a vehicle while the phase is not being served green, and is
+   * discharged by the phase's next green — so the call survives the vehicle leaving the zone.
+   * Transient like the rest of this state machine (a chunk reload drops pending latched calls).
+   */
+  private final boolean[] lockedCalls =
+      new boolean[TrafficSignalProgrammedPhasePlan.PHASE_COUNT + 1];
 
   // Per-tick coordination state (computed from the plan each tick; all no-ops in FREE mode).
   private static final int PHASE_SLOTS = TrafficSignalProgrammedPhasePlan.PHASE_COUNT + 1;
@@ -199,6 +207,9 @@ public class RingBarrierState {
 
     // Compute coordination windows for this tick (no-op in FREE mode).
     computeCoordination(plan, now);
+
+    // Locking detector memory: latch/discharge LOCK phases' vehicle calls before demand is read.
+    updateLockedCalls(plan);
 
     // Compute which phases are currently calling for service.
     boolean[] called = new boolean[TrafficSignalProgrammedPhasePlan.PHASE_COUNT + 1];
@@ -623,6 +634,9 @@ public class RingBarrierState {
   }
 
   private void startGreen(RingRuntime ring, TrafficSignalProgrammedPhase phase, long now) {
+    if (phase.getPhaseNumber() >= 1 && phase.getPhaseNumber() < lockedCalls.length) {
+      lockedCalls[phase.getPhaseNumber()] = false; // LOCK: service discharges the latched call
+    }
     ring.activePhase = phase.getPhaseNumber();
     ring.interval = VehInterval.GREEN;
     ring.intervalStart = now;
@@ -893,6 +907,33 @@ public class RingBarrierState {
 
   // region: Demand
 
+  /**
+   * Advances the locking-detector-memory latches (ASC/3 vehicle call memory). For each active
+   * LOCK phase: while it is being served green the latch is discharged; otherwise a vehicle in
+   * its zone sets the latch, which then persists after the vehicle leaves (pulse-detector
+   * behavior — the call is remembered until served). Non-LOCK phases have their latch kept clear
+   * so toggling the option off also drops any pending latched call.
+   */
+  private void updateLockedCalls(TrafficSignalProgrammedPhasePlan plan) {
+    for (TrafficSignalProgrammedPhase p : plan.getPhases()) {
+      int n = p.getPhaseNumber();
+      if (n < 1 || n >= lockedCalls.length) {
+        continue;
+      }
+      if (!p.isActive() || !p.isLockCall()) {
+        lockedCalls[n] = false;
+        continue;
+      }
+      boolean servedGreen = (ring1.activePhase == n && ring1.interval == VehInterval.GREEN)
+          || (ring2.activePhase == n && ring2.interval == VehInterval.GREEN);
+      if (servedGreen) {
+        lockedCalls[n] = false;
+      } else if (vehicleCount(p) > 0) {
+        lockedCalls[n] = true;
+      }
+    }
+  }
+
   /** Whether a phase is calling for service (vehicle, pedestrian, or recall). */
   private boolean isCalled(TrafficSignalProgrammedPhase phase) {
     if (phase == null || !phase.isActive()
@@ -912,6 +953,12 @@ public class RingBarrierState {
     TrafficSignalRecallMode recall = phase.getRecallMode();
     if (recall == TrafficSignalRecallMode.MINIMUM || recall == TrafficSignalRecallMode.MAXIMUM
         || recall == TrafficSignalRecallMode.PEDESTRIAN) {
+      return true;
+    }
+    // Locking detector memory: a latched call counts as demand until the phase is served, even
+    // after the vehicle has left the zone. (Placed after the coordination gating above, so a
+    // latched call still waits for the phase's permissive window — it persists, it doesn't jump.)
+    if (phase.isLockCall() && lockedCalls[phase.getPhaseNumber()]) {
       return true;
     }
     if (vehicleCount(phase) > 0) {

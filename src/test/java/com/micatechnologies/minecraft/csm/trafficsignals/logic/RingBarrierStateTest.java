@@ -747,6 +747,74 @@ class RingBarrierStateTest {
   }
 
   @Test
+  @DisplayName("LOCK: a latched call survives the vehicle leaving and is discharged by service")
+  void lockedCallSurvivesDetectionDrop() {
+    // Phase 2 (barrier A) has LOCK set. While phase 4 (barrier B) is being served, a car touches
+    // phase 2's zone and leaves. The latched call must still terminate phase 4 and bring up
+    // phase 2; serving phase 2 must discharge the latch (no phantom re-service afterward).
+    RingBarrierState rb = new RingBarrierState();
+    TrafficSignalProgrammedPhasePlan plan = TrafficSignalProgrammedPhasePlan.createDefault();
+    plan.getCoordination().setCoordinatedPhases(new int[0]);
+    enable(plan, 2, 0);
+    plan.getPhase(2).setLockCall(true);
+    enable(plan, 4, 1);
+    quickTiming(plan, 2);
+    quickTiming(plan, 4);
+    TrafficSignalControllerCircuits ckts = circuits(2);
+    Demand onlyPh4 = new Demand().veh(1, 1, 0, 0);
+    Demand blip = new Demand().veh(0, 1, 0, 0).veh(1, 1, 0, 0); // car touches phase 2's zone
+    Demand nothing = new Demand();                              // ...and leaves again
+
+    rb.tick(plan, ckts, NO_OVERLAPS, 0L, onlyPh4);  // phase 4 (barrier B) served
+    assertEquals(4, rb.getLastServed(1).phaseNumber);
+    rb.tick(plan, ckts, NO_OVERLAPS, 10L, blip);    // momentary detection on phase 2 -> latched
+    rb.tick(plan, ckts, NO_OVERLAPS, 30L, nothing); // car gone; latch must keep the call alive
+    assertEquals(VehInterval.YELLOW, rb.getLastServed(1).vehicle,
+        "phase 4 must terminate for the LATCHED phase-2 call even though the car left");
+    rb.tick(plan, ckts, NO_OVERLAPS, 50L, nothing); // yellow -> red
+    rb.tick(plan, ckts, NO_OVERLAPS, 70L, nothing); // red clears -> cross -> serve phase 2
+    assertEquals(2, rb.getLastServed(1).phaseNumber,
+        "the latched call is served with no live detection at all");
+    assertEquals(VehInterval.GREEN, rb.getLastServed(1).vehicle);
+
+    // Service discharged the latch: a later phase-4 call must not find a phantom phase-2 call.
+    rb.tick(plan, ckts, NO_OVERLAPS, 100L, onlyPh4); // phase 2 terminates for the real ph4 call
+    rb.tick(plan, ckts, NO_OVERLAPS, 120L, onlyPh4);
+    rb.tick(plan, ckts, NO_OVERLAPS, 140L, onlyPh4); // phase 4 green again
+    assertEquals(4, rb.getLastServed(1).phaseNumber);
+    rb.tick(plan, ckts, NO_OVERLAPS, 200L, onlyPh4); // no conflict: rests in green on 4
+    assertEquals(4, rb.getLastServed(1).phaseNumber);
+    assertEquals(VehInterval.GREEN, rb.getLastServed(1).vehicle,
+        "no phantom latched call remains after phase 2 was served");
+  }
+
+  @Test
+  @DisplayName("non-lock (presence): a dropped call is forgotten and the phase is not served")
+  void presenceCallDropsWhenVehicleLeaves() {
+    // Identical to the LOCK test but without the flag: the blip on phase 2's zone leaves no
+    // latch, so phase 4 simply rests in green and phase 2 is never served.
+    RingBarrierState rb = new RingBarrierState();
+    TrafficSignalProgrammedPhasePlan plan = TrafficSignalProgrammedPhasePlan.createDefault();
+    plan.getCoordination().setCoordinatedPhases(new int[0]);
+    enable(plan, 2, 0); // no LOCK
+    enable(plan, 4, 1);
+    quickTiming(plan, 2);
+    quickTiming(plan, 4);
+    TrafficSignalControllerCircuits ckts = circuits(2);
+    Demand onlyPh4 = new Demand().veh(1, 1, 0, 0);
+    Demand blip = new Demand().veh(0, 1, 0, 0).veh(1, 1, 0, 0);
+    Demand nothing = new Demand();
+
+    rb.tick(plan, ckts, NO_OVERLAPS, 0L, onlyPh4);
+    rb.tick(plan, ckts, NO_OVERLAPS, 10L, blip);
+    rb.tick(plan, ckts, NO_OVERLAPS, 30L, nothing);
+    rb.tick(plan, ckts, NO_OVERLAPS, 70L, nothing);
+    assertEquals(4, rb.getLastServed(1).phaseNumber,
+        "a presence call that dropped is forgotten — phase 4 keeps the green");
+    assertEquals(VehInterval.GREEN, rb.getLastServed(1).vehicle);
+  }
+
+  @Test
   @DisplayName("rest-in-walk recalls WALK while holding green after being called (not don't-walk)")
   void restInWalkRecyclesWalkWhenHoldingGreen() {
     // A rest-in-walk phase entered by a call (not the no-demand rest path) used to run WALK -> FDW
