@@ -292,9 +292,9 @@ public class TileEntityTrafficSignalHeadRenderer extends
     renderLitVisorInteriors(sectionInfos, sectionYPositions, sectionXPositions, sectionSizes,
         zPushBack, tintScale);
 
-    // Pause-aware game clock — threaded into the bulb/Barlo paths so they can do 1300 ms /
-    // 1000 ms modulo timing without each calling System.currentTimeMillis() (which is a JNI
-    // call and adds up with many visible signals).
+    // Wall-clock flash timer — threaded into the bulb/Barlo paths so they can do 1300 ms /
+    // 1000 ms modulo timing by reading the once-per-frame cached value instead of each
+    // calling System.currentTimeMillis() (a JNI call that adds up with many visible signals).
     long gameMillis = CsmRenderUtils.gameMillis(te.getWorld(), partialTicks);
     renderBulbs(sectionInfos, sectionYPositions, sectionXPositions, sectionSizes, zPushBack,
         gameMillis);
@@ -851,8 +851,9 @@ public class TileEntityTrafficSignalHeadRenderer extends
     tessellator.draw();
 
     // Conditionally render the white strobe flash on top of the mounting bar. gameMillis is
-    // the pause-aware game clock (threaded from render() so we don't pay the JNI
-    // System.currentTimeMillis() cost per-frame on every signal head with a Barlo visor).
+    // the wall-clock flash timer (threaded from render() so we read the frame-cached value
+    // rather than paying the System.currentTimeMillis() JNI cost on every signal head with a
+    // Barlo visor).
     long t = gameMillis % 1300L;
     boolean strobeOn = t < 500L && (t / 50L) % 2L == 1L;
 
