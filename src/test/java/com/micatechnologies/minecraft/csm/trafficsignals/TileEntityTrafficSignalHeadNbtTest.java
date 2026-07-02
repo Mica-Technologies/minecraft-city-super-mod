@@ -52,12 +52,13 @@ class TileEntityTrafficSignalHeadNbtTest {
     assertArrayEquals(new int[]{0, 1, 2}, output.getIntArray("agS"));
     assertEquals(99999L, output.getLong("agSd"));
 
-    // Section infos structure preserved
+    // Section infos structure preserved. Legacy 10-slot arrays are rewritten with the
+    // appended body-style slot (0 = STANDARD, the pre-body-style look).
     NBTTagCompound infos = output.getCompoundTag("sInfs");
     assertEquals(3, infos.getInteger("count"));
-    assertArrayEquals(sections[0], infos.getIntArray("s_0"));
-    assertArrayEquals(sections[1], infos.getIntArray("s_1"));
-    assertArrayEquals(sections[2], infos.getIntArray("s_2"));
+    assertArrayEquals(withStandardBodyStyle(sections[0]), infos.getIntArray("s_0"));
+    assertArrayEquals(withStandardBodyStyle(sections[1]), infos.getIntArray("s_1"));
+    assertArrayEquals(withStandardBodyStyle(sections[2]), infos.getIntArray("s_2"));
 
     // Legacy keys absent
     assertFalse(output.hasKey("sectionInfos"));
@@ -70,6 +71,13 @@ class TileEntityTrafficSignalHeadNbtTest {
     assertFalse(output.hasKey("lastAgingDay"));
     assertFalse(output.hasKey("bulbAgingStates"));
     assertFalse(output.hasKey("agingSeed"));
+  }
+
+  /** The expected rewrite of a legacy 10-slot section array: body-style slot appended as 0. */
+  private static int[] withStandardBodyStyle(int[] legacy) {
+    int[] out = new int[legacy.length + 1];
+    System.arraycopy(legacy, 0, out, 0, legacy.length);
+    return out;
   }
 
   @Test

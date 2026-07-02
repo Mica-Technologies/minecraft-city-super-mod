@@ -134,8 +134,10 @@ class TrafficSignalSectionInfoTest {
         true
     );
 
+    original.setBodyStyle(TrafficSignalBodyStyle.BUBBLED);
+
     int[] array = original.toNBTArray();
-    assertEquals(10, array.length);
+    assertEquals(11, array.length);
 
     var restored = TrafficSignalSectionInfo.fromNBTArray(array);
     assertEquals(original.getBodyColor(), restored.getBodyColor());
@@ -148,6 +150,14 @@ class TrafficSignalSectionInfoTest {
     assertEquals(original.getBulbCustomColor(), restored.getBulbCustomColor());
     assertEquals(original.isBulbLit(), restored.isBulbLit());
     assertEquals(original.isBulbFlashing(), restored.isBulbFlashing());
+    assertEquals(original.getBodyStyle(), restored.getBodyStyle());
+  }
+
+  @Test
+  void legacyTenSlotArrayDefaultsToStandardBodyStyle() {
+    // Pre-body-style saves wrote 10-int arrays; they must load with the old (standard) look.
+    var restored = TrafficSignalSectionInfo.fromNBTArray(new int[]{1, 0, 0, 0, 0, 6, 0, 0, 0, 0});
+    assertEquals(TrafficSignalBodyStyle.STANDARD, restored.getBodyStyle());
   }
 
   @Test

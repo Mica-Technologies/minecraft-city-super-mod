@@ -16,5 +16,7 @@ public enum SignalHeadConfigAction {
   TOGGLE_AGING,
   TOGGLE_HORIZONTAL,
   CYCLE_MOUNT_TYPE,
-  CYCLE_MOUNT_COLOR
+  CYCLE_MOUNT_COLOR,
+  // Appended (not inserted) so existing button-id/packet ordinals stay stable.
+  CYCLE_BODY_STYLE
 }

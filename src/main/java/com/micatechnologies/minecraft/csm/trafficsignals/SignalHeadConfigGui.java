@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.trafficsignals;
 
 import com.micatechnologies.minecraft.csm.CsmNetwork;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyColor;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyStyle;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBulbStyle;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalSectionInfo;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalVisorType;
@@ -47,12 +48,13 @@ public class SignalHeadConfigGui extends GuiScreen {
    */
   private static AppearanceClipboard clipboard = null;
 
-  /** Immutable snapshot of the eight copy/paste-able appearance properties of a signal head. */
+  /** Immutable snapshot of the copy/paste-able appearance properties of a signal head. */
   private static final class AppearanceClipboard {
     final TrafficSignalBodyColor bodyColor;
     final TrafficSignalBodyColor doorColor;
     final TrafficSignalBodyColor visorColor;
     final TrafficSignalVisorType visorType;
+    final TrafficSignalBodyStyle bodyStyle;
     final TrafficSignalBulbStyle bulbStyle;
     final boolean agingEnabled;
     final TrafficSignalBodyColor mountColor;
@@ -60,12 +62,13 @@ public class SignalHeadConfigGui extends GuiScreen {
 
     AppearanceClipboard(TrafficSignalBodyColor bodyColor, TrafficSignalBodyColor doorColor,
         TrafficSignalBodyColor visorColor, TrafficSignalVisorType visorType,
-        TrafficSignalBulbStyle bulbStyle, boolean agingEnabled, TrafficSignalBodyColor mountColor,
-        boolean horizontalFlip) {
+        TrafficSignalBodyStyle bodyStyle, TrafficSignalBulbStyle bulbStyle, boolean agingEnabled,
+        TrafficSignalBodyColor mountColor, boolean horizontalFlip) {
       this.bodyColor = bodyColor;
       this.doorColor = doorColor;
       this.visorColor = visorColor;
       this.visorType = visorType;
+      this.bodyStyle = bodyStyle;
       this.bulbStyle = bulbStyle;
       this.agingEnabled = agingEnabled;
       this.mountColor = mountColor;
@@ -94,7 +97,8 @@ public class SignalHeadConfigGui extends GuiScreen {
       "Bulb Aging",
       "Horizontal",
       "Mount Type",
-      "Mount Color"
+      "Mount Color",
+      "Body Style"
   };
 
   private static final String[] SECTION_LABELS = {
@@ -104,7 +108,8 @@ public class SignalHeadConfigGui extends GuiScreen {
       "Visor Type",
       "Bulb Style",
       "Bulb Type",
-      "Bulb State"
+      "Bulb State",
+      "Body Style"
   };
 
   private enum Mode {
@@ -319,6 +324,8 @@ public class SignalHeadConfigGui extends GuiScreen {
         return tileEntity.getMountType().getFriendlyName();
       case CYCLE_MOUNT_COLOR:
         return tileEntity.getMountColor().getFriendlyName();
+      case CYCLE_BODY_STYLE:
+        return infos[0].getBodyStyle().getFriendlyName();
       default:
         return "N/A";
     }
@@ -344,6 +351,8 @@ public class SignalHeadConfigGui extends GuiScreen {
         return info.getBulbType().getFriendlyName();
       case CYCLE_BULB_AGING_STATE:
         return formatAgingState(tileEntity.getBulbAgingState(selectedSection));
+      case CYCLE_BODY_STYLE:
+        return info.getBodyStyle().getFriendlyName();
       default:
         return "N/A";
     }
@@ -386,8 +395,9 @@ public class SignalHeadConfigGui extends GuiScreen {
       TrafficSignalSectionInfo[] infos = tileEntity.getSectionInfos();
       if (infos != null && infos.length > 0) {
         clipboard = new AppearanceClipboard(infos[0].getBodyColor(), infos[0].getDoorColor(),
-            infos[0].getVisorColor(), infos[0].getVisorType(), infos[0].getBulbStyle(),
-            tileEntity.isAgingEnabled(), tileEntity.getMountColor(), tileEntity.isHorizontalFlip());
+            infos[0].getVisorColor(), infos[0].getVisorType(), infos[0].getBodyStyle(),
+            infos[0].getBulbStyle(), tileEntity.isAgingEnabled(), tileEntity.getMountColor(),
+            tileEntity.isHorizontalFlip());
         initGui(); // rebuild so the Paste button becomes enabled
       }
       return;
@@ -396,8 +406,8 @@ public class SignalHeadConfigGui extends GuiScreen {
       if (clipboard != null) {
         CsmNetwork.sendToServer(new SignalHeadAppearancePacket(blockPos,
             clipboard.bodyColor.toNBT(), clipboard.doorColor.toNBT(), clipboard.visorColor.toNBT(),
-            clipboard.visorType.toNBT(), clipboard.bulbStyle.toNBT(), clipboard.mountColor.toNBT(),
-            clipboard.agingEnabled, clipboard.horizontalFlip));
+            clipboard.visorType.toNBT(), clipboard.bodyStyle.toNBT(), clipboard.bulbStyle.toNBT(),
+            clipboard.mountColor.toNBT(), clipboard.agingEnabled, clipboard.horizontalFlip));
       }
       return;
     }
