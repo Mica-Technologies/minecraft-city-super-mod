@@ -134,7 +134,7 @@ public class AdvancedSignalControllerGui extends GuiScreen {
           + "flashing-left signal) and the 1-section green-arrow add-on (linked as the left signal) "
           + "mounted below it.",
       "To program: on MAP set the left phase's movement to PROT LEFT, assign its circuit, and set "
-          + "the FYA column to the OPPOSING through phase (e.g. left 1 → P6). 0 = protected "
+          + "the FYA column to the OPPOSING through phase (e.g. left 1 → P2). 0 = protected "
           + "only, no flash.",
       "It then shows: green arrow during the protected phase, solid yellow during clearance, "
           + "flashing yellow while the opposing through is green, and red otherwise.",
