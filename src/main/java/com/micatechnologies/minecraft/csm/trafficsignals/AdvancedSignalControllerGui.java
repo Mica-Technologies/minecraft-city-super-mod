@@ -493,9 +493,9 @@ public class AdvancedSignalControllerGui extends GuiScreen {
     int y = lcdY + 14;
     cells.add(new Cell(lcdX + 70, y, 80,
         () -> plan().getCoordination().getMode().getName(),
-        dir -> send("co.mode",
+        dir -> send("co.mode", 0,
             cyc(plan().getCoordination().getMode().ordinal(), dir,
-                TrafficSignalCoordinationMode.values().length), 0), null));
+                TrafficSignalCoordinationMode.values().length)), null));
     y += 12;
     cells.add(new Cell(lcdX + 70, y, 50,
         () -> secs(plan().getCoordination().getCycleLength()),
@@ -1189,11 +1189,14 @@ public class AdvancedSignalControllerGui extends GuiScreen {
     addHelp(lcdX, lcdY + 50, lcdW - 6, 9, "Splits & coordinated phases",
         "Split = the slice of the cycle budgeted to each phase. Toggle",
         "COORD to mark a phase as a coordinated (synced) phase that",
-        "rests in green between its permissive windows.");
+        "rests in green between its permissive windows. * = phase is",
+        "enabled (on the TIMING screen); dim rows are disabled.");
     int rowH = 11;
     for (int pn = 1; pn <= TrafficSignalProgrammedPhasePlan.PHASE_COUNT; pn++) {
       int y = lcdY + 62 + (pn - 1) * rowH;
-      fontRenderer.drawString("φ" + pn, lcdX + 40, y, COLOR_AMBER);
+      boolean enabled = plan().getPhase(pn).isEnabled();
+      fontRenderer.drawString("φ" + pn + (enabled ? "*" : ""), lcdX + 40, y,
+          enabled ? COLOR_AMBER : COLOR_AMBER_DIM);
     }
   }
 
