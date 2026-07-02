@@ -31,6 +31,7 @@ public class TrafficSignalProgrammedOverlap {
   private static final String K_LEAD_GREEN = "lg";
   private static final String K_TYPE = "ty";
   private static final String K_MODIFIER = "md";
+  private static final String K_CALL_PHASE = "cp";
 
   private boolean enabled = false;
   /** Overlap type (NORMAL or -GRN/YEL). */
@@ -57,6 +58,13 @@ public class TrafficSignalProgrammedOverlap {
   /** Modifier phases for {@link TrafficSignalOverlapType#MINUS_GREEN_YELLOW}: the overlap is red
    * while any of these is green or yellow. */
   private int[] modifierPhases = new int[0];
+  /**
+   * Detector-to-phase assignment: the phase called while vehicles are detected in the output
+   * circuit's output-movement sensor zone. Overlaps are otherwise pure outputs, so a movement
+   * served only by an overlap (e.g. a right-turn pocket) generates no demand of its own — this
+   * lets it summon one of its included phases. 0 = no call.
+   */
+  private int callPhase = 0;
 
   // region: accessors
 
@@ -129,6 +137,14 @@ public class TrafficSignalProgrammedOverlap {
     this.leadGreen = leadGreen;
   }
 
+  public int getCallPhase() {
+    return callPhase;
+  }
+
+  public void setCallPhase(int callPhase) {
+    this.callPhase = Math.max(0, callPhase);
+  }
+
   // endregion
 
   // region: NBT
@@ -143,6 +159,9 @@ public class TrafficSignalProgrammedOverlap {
     c.setLong(K_LEAD_GREEN, leadGreen);
     c.setInteger(K_TYPE, type.toNBT());
     c.setIntArray(K_MODIFIER, modifierPhases);
+    if (callPhase > 0) {
+      c.setInteger(K_CALL_PHASE, callPhase);
+    }
     return c;
   }
 
@@ -156,6 +175,7 @@ public class TrafficSignalProgrammedOverlap {
     o.leadGreen = c.hasKey(K_LEAD_GREEN) ? c.getLong(K_LEAD_GREEN) : 0L;
     o.type = TrafficSignalOverlapType.fromNBT(c.getInteger(K_TYPE));
     o.modifierPhases = c.hasKey(K_MODIFIER) ? c.getIntArray(K_MODIFIER) : new int[0];
+    o.callPhase = c.hasKey(K_CALL_PHASE) ? c.getInteger(K_CALL_PHASE) : 0;
     return o;
   }
 
