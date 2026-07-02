@@ -658,12 +658,16 @@ and behavioral options.
 always run together automatically. DE covers the \emph{uncalled} case: when one
 ring is serving and the other ring has no call on that barrier, the idle ring
 brings up its first active DE phase there so one direction isn't left dark. The
-companion rests in green while compatible work continues on the barrier — it rides
+companion \emph{rides} with the other ring's barrier service: it holds green
 through the other ring's within-barrier transitions (a through clearing to serve
-its left, say) without clearing itself — and yields only to demand that actually
-conflicts with it (Section~\ref{sec:dualentry} covers the timing). A real call
-always beats dual entry, and DE picks the \emph{first} active DE phase in ring
-order — flag only the phase you want as the companion.
+its left, say), and demand waiting on \emph{another} barrier never strips it off
+early — under coordination the main-street phases are always calling, and the
+side-street companion rides through that and clears \emph{with} its companion
+when the barrier's work is done. Only same-barrier demand it conflicts with (a
+call in its own ring, or its FYA partner) ends it sooner
+(Section~\ref{sec:dualentry} covers the timing). A real call always beats dual
+entry, and DE picks the \emph{first} active DE phase in ring order — flag only
+the phase you want as the companion.
 
 \paragraph{Conditional service (CS).} Once per barrier, an already-passed CS phase
 that reacquires a call may be re-served before the rings cross — the classic
@@ -1014,10 +1018,11 @@ clearance — and any WALK + pedestrian clearance served in it. A 10\,s split wi
 \subsection{Dual entry under coordination}\label{sec:dualentry}
 
 Splits \textbf{never add} across a dual-entry pair. The companion comes up at the
-same moment as the called phase and holds green with it (clearing only when
-conflicting demand — such as the cross street's call — arrives for it too); while
-riding along, the companion's own split and force-off are ignored — they apply only
-when that phase is served on its own call.
+same moment as the called phase, holds green with it — the coordinated phases'
+standing calls on the other barrier never strip it off early — and clears
+\emph{with} it when the barrier's work is done; while riding along, the
+companion's own split and force-off are ignored — they apply only when that phase
+is served on its own call.
 
 \begin{figure}[H]
 \centering
@@ -1385,8 +1390,8 @@ pedestrian buttons).
   \item[Cycle length] Duration of one complete rotation through the phases; shared
     by every signal on a coordinated corridor.
   \item[Dual entry (DE)] Serving an uncalled companion phase so both rings show
-    green on the active barrier; the companion rests in green until demand that
-    conflicts with it arrives.
+    green on the active barrier; the companion rides with the called phase and
+    clears with it (cross-barrier demand never strips it off early).
   \item[Conditional service (CS)] Re-serving an earlier phase on the same barrier
     (once per barrier) when it reacquires a call before the rings cross.
   \item[Force-off] The hard end-of-green a coordinated plan imposes on a

@@ -84,6 +84,10 @@ public class RingBarrierState {
     // during green, cleared when the conflict drops. -1 = not timing; max green never expires
     // without conflicting demand (the phase rests in green instead of pointlessly cycling).
     long maxStart = -1L;
+    // Dual entry: this ring is riding as an uncalled companion to the other ring's same-barrier
+    // service. Cross-barrier demand (e.g. a coordinated plan's always-called main-street phases)
+    // must not end it early — it clears WITH its companion when the barrier's work is done.
+    boolean dualEntry = false;
     // Conditional service: a conditional-service phase has already been re-served once on the
     // current barrier (guard against re-serving more than once / looping).
     boolean condServiceUsed = false;
@@ -410,6 +414,7 @@ public class RingBarrierState {
     ring.pedServing = false;
     ring.delayActive = false;
     ring.maxStart = -1L;
+    ring.dualEntry = false;
     ring.condServiceUsed = false;
   }
 
@@ -450,6 +455,17 @@ public class RingBarrierState {
         // barrier in the other ring (e.g. a left turn beside its adjacent through) is compatible
         // and must not clear this green — the other ring handles it while this one keeps running.
         boolean conflict = demandConflictsWith(phase, ringNum, plan, called);
+        if (ring.dualEntry) {
+          // A dual-entry companion rides with the other ring's same-barrier service. Cross-barrier
+          // demand alone must NOT end it early — under coordination the main-street phases are
+          // always called, which would otherwise strip the companion right back off the side
+          // street. It yields only to within-barrier demand it conflicts with, or when the
+          // companion ring finishes its barrier work (so the pair clears together).
+          RingRuntime companion = (ring == ring1) ? ring2 : ring1;
+          int companionRingNum = (ring == ring1) ? 2 : 1;
+          conflict = withinBarrierConflict(phase, ringNum, plan, called)
+              || !ringWorkingBarrier(companion, companionRingNum, plan, called);
+        }
         // Rest-in-walk clearance: a phase resting on WALK cannot snap the walk straight to
         // don't-walk when a conflicting call arrives — it must first run pedestrian clearance
         // (FDW). End the rest (the vehicle stays green) and re-arm the ped timer to the start of
@@ -491,7 +507,10 @@ public class RingBarrierState {
             && (now - ring.maxStart) >= effMaxGreen && pedDone;
         boolean gapOut = (now - ring.lastActuation) >= effPassage;
         // Coordinated force-off: a non-coordinated phase must end when its split window closes.
-        boolean forceOff = coordinated && !isCoord && localCycle >= windowEnd[phaseNum];
+        // A dual-entry companion is exempt while riding — its own split/force-off apply only when
+        // it is served on its own call; the pair ends via the companion's termination instead.
+        boolean forceOff = coordinated && !isCoord && !ring.dualEntry
+            && localCycle >= windowEnd[phaseNum];
 
         // Terminate on max-out or force-off, or once min green is met, ped clearance is done, the
         // phase has gapped out, and something conflicting is actually waiting (otherwise rest in
@@ -601,15 +620,17 @@ public class RingBarrierState {
   /**
    * Dual entry: if {@code idle} has no call but the {@code other} ring is serving a green phase on
    * the current barrier, serve {@code idle}'s first active dual-entry phase on that barrier so the
-   * intersection isn't left with one direction dark. Once entered, the companion terminates by the
-   * same conflict-based rule as any phase — it rests in green through the other ring's
-   * within-barrier transitions and yields only to demand that conflicts with it. To avoid entering
-   * a green that would have to clear immediately (flicker), no companion is entered while demand is
-   * waiting on another barrier, and a candidate that pending demand conflicts with is skipped.
+   * intersection isn't left with one direction dark. The entered companion is flagged
+   * ({@link RingRuntime#dualEntry}) to ride with the other ring's barrier service: cross-barrier
+   * demand — including a coordinated plan's always-called main-street phases — doesn't strip it
+   * off early; it clears with its companion (see the dual-entry conflict override in
+   * {@link #advanceRing}). A candidate that pending <em>within-barrier</em> demand conflicts with
+   * is skipped (it would have to clear immediately — flicker), and a companion is never entered
+   * off another companion's green (mutual riders would hold each other's green forever).
    */
   private void fillDualEntry(RingRuntime idle, RingRuntime other,
       TrafficSignalProgrammedPhasePlan plan, int idleRingNum, long now, boolean[] called) {
-    if (idle.activePhase != 0 || other.activePhase == 0) {
+    if (idle.activePhase != 0 || other.activePhase == 0 || other.dualEntry) {
       return;
     }
     TrafficSignalProgrammedPhase otherPhase = plan.getPhase(other.activePhase);
@@ -617,16 +638,13 @@ public class RingBarrierState {
         || other.interval != VehInterval.GREEN) {
       return;
     }
-    int target = nextBarrierWithDemand(plan, called);
-    if (target >= 0 && target != currentBarrier) {
-      return; // the intersection is about to cross; don't enter a green that must clear right away
-    }
     int[] seq = plan.getRingSequence(idleRingNum);
     for (int idx = 0; idx < seq.length; idx++) {
       TrafficSignalProgrammedPhase phase = plan.getPhase(seq[idx]);
       if (phase != null && phase.isActive() && phase.getBarrier() == currentBarrier
-          && phase.isDualEntry() && !demandConflictsWith(phase, idleRingNum, plan, called)) {
+          && phase.isDualEntry() && !withinBarrierConflict(phase, idleRingNum, plan, called)) {
         startGreen(idle, phase, now);
+        idle.dualEntry = true;
         idle.sequencePos = idx;
         return;
       }
@@ -659,6 +677,43 @@ public class RingBarrierState {
     TrafficSignalSensorSummary startSummary = summaryForCircuit(phase.getCircuitIndex());
     ring.bikeCall = startSummary != null && startSummary.getProtectedTotal() > 0;
     ring.maxStart = -1L; // NEMA MAX: (re)starts timing at the first conflicting call, not at green
+    ring.dualEntry = false; // normal service; fillDualEntry re-flags its own entries afterward
+  }
+
+  /**
+   * Whether {@code ring} is still working the current barrier: serving a green phase on it, or —
+   * mid-clearance or idle — about to serve another called phase on it, via the forward sequence
+   * ({@link #peekNextWithinBarrier}) or the within-barrier wrap (which, mirroring
+   * {@link #fillIdleRing}, applies only when every calling phase is on this barrier). A dual-entry
+   * companion in the other ring keeps riding while this is true and clears when it turns false.
+   */
+  private boolean ringWorkingBarrier(RingRuntime ring, int ringNum,
+      TrafficSignalProgrammedPhasePlan plan, boolean[] called) {
+    if (ring.activePhase != 0) {
+      TrafficSignalProgrammedPhase active = plan.getPhase(ring.activePhase);
+      if (active == null || active.getBarrier() != currentBarrier) {
+        return false;
+      }
+      if (ring.interval == VehInterval.GREEN) {
+        return true;
+      }
+    }
+    if (peekNextWithinBarrier(ring, ringNum, plan, called) != 0) {
+      return true;
+    }
+    if (nextBarrierWithDemand(plan, called) == currentBarrier) {
+      int[] seq = plan.getRingSequence(ringNum);
+      for (int idx = 0; idx < seq.length; idx++) {
+        int phaseNumber = seq[idx];
+        TrafficSignalProgrammedPhase phase = plan.getPhase(phaseNumber);
+        if (phase != null && phase.isActive() && phase.getBarrier() == currentBarrier
+            && phaseNumber >= 1 && phaseNumber < called.length && called[phaseNumber]
+            && phaseNumber != ring1.activePhase && phaseNumber != ring2.activePhase) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   // endregion
@@ -1037,6 +1092,35 @@ public class RingBarrierState {
     }
     return other.getPermissivePhase() == active.getPhaseNumber()
         || active.getPermissivePhase() == n;
+  }
+
+  /**
+   * Whether any called-but-unserved phase on the SAME barrier as {@code phase} conflicts with it
+   * (same ring, or an FYA permissive pair). This is the demand that same-barrier operation must
+   * yield to; cross-barrier demand is deliberately excluded — a dual-entry companion rides
+   * through it and clears with its companion rather than being stripped off early (under
+   * coordination the main-street phases are always called, so including cross-barrier demand
+   * would disable dual entry on the side street entirely).
+   */
+  private boolean withinBarrierConflict(TrafficSignalProgrammedPhase phase, int ringNum,
+      TrafficSignalProgrammedPhasePlan plan, boolean[] called) {
+    if (phase == null) {
+      return true;
+    }
+    for (int n = 1; n <= TrafficSignalProgrammedPhasePlan.PHASE_COUNT; n++) {
+      if (!called[n] || n == ring1.activePhase || n == ring2.activePhase
+          || n == phase.getPhaseNumber()) {
+        continue;
+      }
+      TrafficSignalProgrammedPhase other = plan.getPhase(n);
+      if (other == null || other.getBarrier() != phase.getBarrier()) {
+        continue;
+      }
+      if (conflicts(phase, ringNum, plan, n)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   /** The ring (1 or 2) whose sequence contains {@code phaseNumber}, or 0 if in neither. */
