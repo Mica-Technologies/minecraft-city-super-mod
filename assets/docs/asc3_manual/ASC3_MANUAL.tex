@@ -173,40 +173,58 @@ instead of a conflict. A left's flashing-yellow-arrow reference is its
 
 \begin{figure}[H]
 \centering
-\begin{tikzpicture}[line cap=round,
-  thru/.style={-{Stealth[length=3mm]},line width=1.4mm},
-  turn/.style={-{Stealth[length=2.6mm]},line width=1.0mm}]
-  % roads
-  \fill[asphalt!30] (-4.6,-1.1) rectangle (4.6,1.1);
-  \fill[asphalt!30] (-1.1,-3.4) rectangle (1.1,3.4);
-  \draw[white,dashed,line width=0.5pt] (-4.6,0) -- (-1.1,0);
-  \draw[white,dashed,line width=0.5pt] (1.1,0) -- (4.6,0);
-  \draw[white,dashed,line width=0.5pt] (0,-3.4) -- (0,-1.1);
-  \draw[white,dashed,line width=0.5pt] (0,1.1) -- (0,3.4);
-  % EB through phi2 + EB left phi1
-  \draw[thru,sigGreen] (-4.2,-0.55) -- (-1.6,-0.55);
-  \node[below,font=\small\bfseries,color=sigGreen!80!black] at (-2.9,-0.72) {\ph{2} EB through};
-  \draw[turn,sigGreen!75!black] (-2.4,-0.3) to[out=0,in=-90] (-0.55,1.6);
-  \node[font=\small\bfseries,color=sigGreen!60!black] at (-2.35,0.62) {\ph{5}};
-  % WB through phi6 + WB left phi5
-  \draw[thru,sigGreen] (4.2,0.55) -- (1.6,0.55);
-  \node[above,font=\small\bfseries,color=sigGreen!80!black] at (2.9,0.72) {\ph{6} WB through};
-  \draw[turn,sigGreen!75!black] (2.4,0.3) to[out=180,in=90] (0.55,-1.6);
-  \node[font=\small\bfseries,color=sigGreen!60!black] at (2.35,-0.62) {\ph{1}};
-  % NB through phi4 + NB left phi3
-  \draw[thru,sigYellow!80!black] (0.55,-3.1) -- (0.55,-1.5);
-  \node[right,font=\small\bfseries,color=sigYellow!60!black] at (0.72,-2.4) {\ph{4}};
-  \draw[turn,sigYellow!65!black] (0.3,-2.0) to[out=90,in=0] (-1.5,-0.55);
-  \node[font=\small\bfseries,color=sigYellow!50!black] at (-0.8,-1.7) {\ph{7}};
-  % SB through phi8 + SB left phi7
-  \draw[thru,sigYellow!80!black] (-0.55,3.1) -- (-0.55,1.5);
-  \node[left,font=\small\bfseries,color=sigYellow!60!black] at (-0.72,2.4) {\ph{8}};
-  \draw[turn,sigYellow!65!black] (-0.3,2.0) to[out=-90,in=180] (1.5,0.55);
-  \node[font=\small\bfseries,color=sigYellow!50!black] at (0.8,1.7) {\ph{3}};
+\begin{tikzpicture}[line cap=round,scale=0.92,
+  thru/.style={-{Stealth[length=3mm]},line width=1.3mm},
+  turn/.style={-{Stealth[length=2.6mm]},line width=1.0mm},
+  lanec/.style={white,line width=0.7pt},
+  lanel/.style={white,dashed,line width=0.5pt}]
+  % roads: main street N-S, side street E-W; two lanes per direction
+  \fill[asphalt!30] (-1.6,-3.6) rectangle (1.6,3.6);
+  \fill[asphalt!30] (-3.6,-1.6) rectangle (3.6,1.6);
+  % centerlines (solid) and lane dividers (dashed) on the approaches
+  \foreach \s in {1,-1} {
+    \draw[lanec] (0,1.6*\s) -- (0,3.6*\s);
+    \draw[lanel] (0.8,1.6*\s) -- (0.8,3.6*\s);
+    \draw[lanel] (-0.8,1.6*\s) -- (-0.8,3.6*\s);
+    \draw[lanec] (1.6*\s,0) -- (3.6*\s,0);
+    \draw[lanel] (1.6*\s,0.8) -- (3.6*\s,0.8);
+    \draw[lanel] (1.6*\s,-0.8) -- (3.6*\s,-0.8);
+  }
+  % ---- Main street (N-S, green) ----
+  % SB: through phi2 (outer lane) + left phi5 (inner lane, hooks east)
+  \draw[thru,sigGreen] (-1.2,3.45) -- (-1.2,1.8);
+  \draw[turn,sigGreen!75!black] (-0.4,3.45) -- (-0.4,1.95) to[out=-90,in=180] (0.55,1.05);
+  % NB: through phi6 + left phi1 (hooks west)
+  \draw[thru,sigGreen] (1.2,-3.45) -- (1.2,-1.8);
+  \draw[turn,sigGreen!75!black] (0.4,-3.45) -- (0.4,-1.95) to[out=90,in=0] (-0.55,-1.05);
+  % ---- Side street (E-W, yellow) ----
+  % WB: through phi4 + left phi7 (hooks south)
+  \draw[thru,sigYellow!80!black] (3.45,1.2) -- (1.8,1.2);
+  \draw[turn,sigYellow!65!black] (3.45,0.4) -- (1.95,0.4) to[out=180,in=90] (1.05,-0.55);
+  % EB: through phi8 + left phi3 (hooks north)
+  \draw[thru,sigYellow!80!black] (-3.45,-1.2) -- (-1.8,-1.2);
+  \draw[turn,sigYellow!65!black] (-3.45,-0.4) -- (-1.95,-0.4) to[out=0,in=-90] (-1.05,0.55);
+  % phase labels at each arrow's tail, aligned with its lane
+  \node[font=\small\bfseries,color=sigGreen!80!black,anchor=south] at (-1.2,3.7) {\ph{2}};
+  \node[font=\small\bfseries,color=sigGreen!60!black,anchor=south] at (-0.4,3.7) {\ph{5}};
+  \node[font=\small\bfseries,color=sigGreen!80!black,anchor=north] at (1.2,-3.7) {\ph{6}};
+  \node[font=\small\bfseries,color=sigGreen!60!black,anchor=north] at (0.4,-3.7) {\ph{1}};
+  \node[font=\small\bfseries,color=sigYellow!60!black,anchor=west] at (3.7,1.2) {\ph{4}};
+  \node[font=\small\bfseries,color=sigYellow!50!black,anchor=west] at (3.7,0.4) {\ph{7}};
+  \node[font=\small\bfseries,color=sigYellow!60!black,anchor=east] at (-3.7,-1.2) {\ph{8}};
+  \node[font=\small\bfseries,color=sigYellow!50!black,anchor=east] at (-3.7,-0.4) {\ph{3}};
+  % street names + compass
+  \node[font=\scriptsize\itshape,rotate=90,color=inkhead] at (1.35,2.65) {Major St};
+  \node[font=\scriptsize\itshape,color=inkhead] at (-2.65,1.35) {Minor St};
+  \draw[-{Stealth},thick,inkhead] (3.3,2.8) -- (3.3,3.5)
+      node[above,font=\scriptsize\bfseries]{N};
 \end{tikzpicture}
-\caption{NEMA phase numbering as used by \key{Load Std 8-Phase}. Green = main
-street (\ph{1},\ph{2},\ph{5},\ph{6}); yellow = side street
-(\ph{3},\ph{4},\ph{7},\ph{8}). Even = through, odd = the paired protected left.}
+\caption{NEMA phase numbering as used by \key{Load Std 8-Phase}, per the FHWA
+convention. The main street runs north--south (green): southbound \ph{2} with its
+left \ph{5}, northbound \ph{6} with \ph{1}. The side street runs east--west
+(yellow): westbound \ph{4} with \ph{7}, eastbound \ph{8} with \ph{3}. Even =
+through, odd = protected left, and each left is numbered beside the
+\emph{opposing} through.}
 \label{fig:nema}
 \end{figure}
 
@@ -999,10 +1017,10 @@ coordinated — the plan drawn in Figures \ref{fig:clock} and \ref{fig:ringsplit
 \toprule
 \textbf{Phase} & \textbf{Movement} & \textbf{Ring} & \textbf{Split} & \textbf{COORD} \\
 \midrule
-\ph{2} & Main through (EB) & 1 & 50 & \checkmark \\
+\ph{2} & Main through (SB) & 1 & 50 & \checkmark \\
 \ph{4} & Cross through     & 1 & 40 &  \\
-\ph{5} & Main left (EB)    & 2 & 15 &  \\
-\ph{6} & Main through (WB) & 2 & 35 & \checkmark \\
+\ph{5} & Main left (SB)    & 2 & 15 &  \\
+\ph{6} & Main through (NB) & 2 & 35 & \checkmark \\
 \ph{8} & Cross through     & 2 & 40 &  \\
 \bottomrule
 \end{tabular}
