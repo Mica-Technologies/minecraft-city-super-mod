@@ -635,8 +635,14 @@ conflicting call waiting (and ped clearance is done).
 
 `TrafficSignalCoordinationPlan` adds FREE vs COORDINATED. Coordinated operation runs a background
 cycle (cycle length + offset against world time, so multiple intersections sync), tiles each ring's
-cycle into per-phase **permissive windows** from the splits, force-offs non-coordinated phases at
-their window's end, and rests the coordinated phases (default p2/p6) in green.
+cycle into per-phase **permissive windows** from the splits, force-offs non-coordinated phases
+running outside their window (never truncating an in-progress ped clearance), and rests the
+coordinated phases (default p2/p6) in green. A call **registers** only while its phase's window is
+open, but once accepted it **sticks** (`RingBarrierState.windowAccepted`) until the phase is served
+or the demand drops — serving it takes real time (the mains' rest-in-walk ped clearance alone can
+outlast a tight window), so re-gating each tick would erase the call mid-sequence and the side
+street would never be served. A phase that starts late on a stuck accepted call gets its min green,
+then the force-off clips it back to the coordinated phases.
 
 ### Preemption
 
