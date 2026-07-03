@@ -123,6 +123,17 @@ public class RingBarrierState {
    */
   private final boolean[] lockedCalls =
       new boolean[TrafficSignalProgrammedPhasePlan.PHASE_COUNT + 1];
+  /**
+   * Coordination permissive-window acceptance, by phase number: set when a phase's demand
+   * registers while its permissive window is open, and held until the phase is served or its
+   * demand drops. Serving an accepted call takes real time (the coordinated phases' rest-in-walk
+   * pedestrian clearance alone can outlast a tight window), so acceptance must survive the window
+   * closing — re-gating on the open window each tick would erase the call mid-sequence and the
+   * side street would never be served (the mains would recycle WALK &rarr; FDW &rarr; WALK every
+   * cycle instead).
+   */
+  private final boolean[] windowAccepted =
+      new boolean[TrafficSignalProgrammedPhasePlan.PHASE_COUNT + 1];
 
   // Per-tick coordination state (computed from the plan each tick; all no-ops in FREE mode).
   private static final int PHASE_SLOTS = TrafficSignalProgrammedPhasePlan.PHASE_COUNT + 1;
@@ -218,9 +229,8 @@ public class RingBarrierState {
     // Compute which phases are currently calling for service.
     boolean[] called = new boolean[TrafficSignalProgrammedPhasePlan.PHASE_COUNT + 1];
     for (int n = 1; n <= TrafficSignalProgrammedPhasePlan.PHASE_COUNT; n++) {
-      called[n] = isCalled(plan.getPhase(n));
+      called[n] = isCalled(plan, plan.getPhase(n));
     }
-    applyOverlapDemand(plan, called);
 
     if (!initialized) {
       currentBarrier = firstBarrier(plan);
@@ -506,11 +516,16 @@ public class RingBarrierState {
         boolean maxOut = !ring.resting && !isCoord && ring.maxStart >= 0L
             && (now - ring.maxStart) >= effMaxGreen && pedDone;
         boolean gapOut = (now - ring.lastActuation) >= effPassage;
-        // Coordinated force-off: a non-coordinated phase must end when its split window closes.
-        // A dual-entry companion is exempt while riding — its own split/force-off apply only when
-        // it is served on its own call; the pair ends via the companion's termination instead.
-        boolean forceOff = coordinated && !isCoord && !ring.dualEntry
-            && localCycle >= windowEnd[phaseNum];
+        // Coordinated force-off: a non-coordinated phase must end when its permissive window
+        // closes. Tested via windowOpen — not a windowEnd comparison, which the last window in
+        // each ring (ending exactly at the cycle wrap) could never satisfy — so a phase running
+        // past the wrap, or one served late on a sticky accepted call, is forced off too. Like
+        // max-out, force-off never truncates pedestrian clearance (the walk/FDW finishes first),
+        // and a resting phase is exempt (with no demand anywhere there is nothing to return the
+        // time to). A dual-entry companion is exempt while riding — its own split/force-off apply
+        // only when it is served on its own call; the pair ends via the companion's termination.
+        boolean forceOff = coordinated && !isCoord && !ring.resting && !ring.dualEntry
+            && !windowOpen(phaseNum) && pedDone;
 
         // Terminate on max-out or force-off, or once min green is met, ped clearance is done, the
         // phase has gapped out, and something conflicting is actually waiting (otherwise rest in
@@ -654,6 +669,7 @@ public class RingBarrierState {
   private void startGreen(RingRuntime ring, TrafficSignalProgrammedPhase phase, long now) {
     if (phase.getPhaseNumber() >= 1 && phase.getPhaseNumber() < lockedCalls.length) {
       lockedCalls[phase.getPhaseNumber()] = false; // LOCK: service discharges the latched call
+      windowAccepted[phase.getPhaseNumber()] = false; // service consumes the window acceptance
     }
     ring.activePhase = phase.getPhaseNumber();
     ring.interval = VehInterval.GREEN;
@@ -990,64 +1006,87 @@ public class RingBarrierState {
   }
 
   /** Whether a phase is calling for service (vehicle, pedestrian, or recall). */
-  private boolean isCalled(TrafficSignalProgrammedPhase phase) {
+  private boolean isCalled(TrafficSignalProgrammedPhasePlan plan,
+      TrafficSignalProgrammedPhase phase) {
     if (phase == null || !phase.isActive()
         || phase.getCircuitIndex() >= tickCircuits.getCircuitCount()) {
       return false;
     }
-    // In coordinated operation, a non-coordinated phase only calls within its permissive window;
-    // outside it the time belongs to the coordinated phase, which rests in green.
-    if (coordinated && !coordPhase[phase.getPhaseNumber()] && !windowOpen(phase.getPhaseNumber())) {
-      return false;
-    }
+    int n = phase.getPhaseNumber();
     // Coordinated phases are served every cycle regardless of their own detection, so the
     // background cycle holds even under continuous side-street demand.
-    if (coordinated && coordPhase[phase.getPhaseNumber()]) {
+    if (coordinated && coordPhase[n]) {
       return true;
     }
+    boolean demand = hasDemand(plan, phase);
+    if (!coordinated) {
+      return demand;
+    }
+    // In coordinated operation, a non-coordinated phase's call registers only within its
+    // permissive window; outside it the time belongs to the coordinated phase, which rests in
+    // green. But once accepted inside the window, the call sticks (see windowAccepted) until the
+    // phase is served or the demand itself drops — the mains' clearance may legitimately outlast
+    // the window, and the accepted phase must still get its (min) green on the far side of it.
+    if (!demand) {
+      windowAccepted[n] = false;
+      return false;
+    }
+    if (windowOpen(n)) {
+      windowAccepted[n] = true;
+    }
+    return windowAccepted[n];
+  }
+
+  /**
+   * Whether the phase has demand of its own this tick, ignoring coordination gating: a recall, a
+   * latched (LOCK) call, a vehicle in its zone, a pedestrian request, or overlap detection
+   * assigned to it ({@link #overlapDemand}).
+   */
+  private boolean hasDemand(TrafficSignalProgrammedPhasePlan plan,
+      TrafficSignalProgrammedPhase phase) {
     TrafficSignalRecallMode recall = phase.getRecallMode();
     if (recall == TrafficSignalRecallMode.MINIMUM || recall == TrafficSignalRecallMode.MAXIMUM
         || recall == TrafficSignalRecallMode.PEDESTRIAN) {
       return true;
     }
     // Locking detector memory: a latched call counts as demand until the phase is served, even
-    // after the vehicle has left the zone. (Placed after the coordination gating above, so a
-    // latched call still waits for the phase's permissive window — it persists, it doesn't jump.)
+    // after the vehicle has left the zone. (The coordination gating in isCalled still applies, so
+    // a latched call placed outside the phase's permissive window waits for it to open — it
+    // persists, it doesn't jump.)
     if (phase.isLockCall() && lockedCalls[phase.getPhaseNumber()]) {
       return true;
     }
     if (vehicleCount(phase) > 0) {
       return true;
     }
-    return pedRequestPresent(phase);
+    if (pedRequestPresent(phase)) {
+      return true;
+    }
+    return overlapDemand(plan, phase.getPhaseNumber());
   }
 
   /**
-   * Places calls from overlap detection (detector-to-phase assignment). An active overlap with a
-   * configured call phase calls that phase while vehicles are present in its output circuit's
+   * Demand from overlap detection (detector-to-phase assignment): an active overlap with this
+   * call phase counts as phase demand while vehicles are present in its output circuit's
    * output-movement sensor zone. Overlaps are otherwise pure outputs, so without this a movement
    * served only by an overlap (e.g. a right-turn pocket) could wait forever with nothing calling
    * the phases that light it.
    */
-  private void applyOverlapDemand(TrafficSignalProgrammedPhasePlan plan, boolean[] called) {
+  private boolean overlapDemand(TrafficSignalProgrammedPhasePlan plan, int phaseNumber) {
     for (TrafficSignalProgrammedOverlap ov : plan.getVehicleOverlaps()) {
-      int cp = ov.getCallPhase();
-      if (!ov.isActive() || cp < 1 || cp >= called.length || called[cp]) {
+      if (!ov.isActive() || ov.getCallPhase() != phaseNumber) {
         continue;
       }
-      TrafficSignalProgrammedPhase phase = plan.getPhase(cp);
-      if (phase == null || !phase.isActive()) {
-        continue;
-      }
-      // Same coordination gating as a direct call: outside its permissive window a
-      // non-coordinated phase cannot be called.
-      if (coordinated && !coordPhase[cp] && !windowOpen(cp)) {
-        continue;
-      }
-      if (zoneCount(ov.getOutputCircuitIndex(), ov.getOutputMovement()) > 0) {
-        called[cp] = true;
+      // A pedestrian-output overlap is called by its output circuit's button requests — there is
+      // no vehicle sensor zone for PED, so zoneCount would silently report 0 forever.
+      boolean present = ov.getOutputMovement() == TrafficSignalPhaseMovement.PED
+          ? demand != null && demand.pedestrianRequest(ov.getOutputCircuitIndex())
+          : zoneCount(ov.getOutputCircuitIndex(), ov.getOutputMovement()) > 0;
+      if (present) {
+        return true;
       }
     }
+    return false;
   }
 
   /**
