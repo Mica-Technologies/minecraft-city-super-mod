@@ -84,9 +84,17 @@ public final class AdvancedPhaseBuilder {
     TrafficSignalPhase phase = redBaseline(circuits);
     applyServed(phase, plan, circuits, ring1);
     applyServed(phase, plan, circuits, ring2);
-    applyFyaLenses(phase, plan, circuits, ring1, ring2, holdFlash);
+    List<RingBarrierState.ServedMovement> served = new ArrayList<>(2);
+    if (ring1 != null) {
+      served.add(ring1);
+    }
+    if (ring2 != null) {
+      served.add(ring2);
+    }
+    applyFyaLenses(phase, plan, circuits, served, holdFlash);
     applyOverlaps(phase, overlaps);
     applyProgrammedOverlaps(phase, plan, circuits, ring1, ring2, overlapIntervals);
+    applyAccessoryStates(world, phase, circuits);
     return phase;
   }
 
@@ -383,8 +391,7 @@ public final class AdvancedPhaseBuilder {
   private static void applyFyaLenses(TrafficSignalPhase phase,
       TrafficSignalProgrammedPhasePlan plan,
       TrafficSignalControllerCircuits circuits,
-      RingBarrierState.ServedMovement ring1,
-      RingBarrierState.ServedMovement ring2,
+      List<RingBarrierState.ServedMovement> served,
       java.util.Set<Integer> holdFlash) {
     for (TrafficSignalProgrammedPhase p : plan.getPhases()) {
       if (!p.isActive()) {
@@ -403,14 +410,14 @@ public final class AdvancedPhaseBuilder {
       if (fyaLens.isEmpty()) {
         continue; // not an FYA compound head
       }
-      RingBarrierState.VehInterval served = servedInterval(p.getPhaseNumber(), ring1, ring2);
-      FyaLensState state = baseFyaState(served,
-          servedInterval(p.getPermissivePhase(), ring1, ring2), p.getPermissivePhase() > 0);
+      RingBarrierState.VehInterval servedThis = servedInterval(p.getPhaseNumber(), served);
+      FyaLensState state = baseFyaState(servedThis,
+          servedInterval(p.getPermissivePhase(), served), p.getPermissivePhase() > 0);
       // Hold the permissive flash instead of clearing it when this left's protected green is
       // imminent (going FLASH → protected green needs no solid-yellow/red — the opposing through's
       // own clearance suffices). Only overrides the permissive clearance, never the left's own
-      // protected clearance (served != null).
-      if (served == null && holdFlash != null && holdFlash.contains(p.getPhaseNumber())
+      // protected clearance (servedThis != null).
+      if (servedThis == null && holdFlash != null && holdFlash.contains(p.getPhaseNumber())
           && (state == FyaLensState.SOLID_YELLOW || state == FyaLensState.RED)) {
         state = FyaLensState.FLASH;
       }
@@ -467,6 +474,22 @@ public final class AdvancedPhaseBuilder {
   }
 
   /**
+   * The interval the given phase is served at this tick among {@code served} movements, or
+   * {@code null}. List form of {@link #servedInterval(int, RingBarrierState.ServedMovement,
+   * RingBarrierState.ServedMovement)} for callers that serve more than two movements at once
+   * (preemption's track-clear/dwell phase sets).
+   */
+  private static RingBarrierState.VehInterval servedInterval(int phaseNumber,
+      List<RingBarrierState.ServedMovement> served) {
+    for (RingBarrierState.ServedMovement m : served) {
+      if (m != null && m.phaseNumber == phaseNumber) {
+        return m.vehicle;
+      }
+    }
+    return null;
+  }
+
+  /**
    * Builds a phase that lights a given set of NEMA phases at one interval, with everything else red
    * — used by preemption's track-clear / dwell stages. An empty {@code phaseNumbers} yields an
    * all-red phase (used for preempt enter/exit clearance).
@@ -481,14 +504,54 @@ public final class AdvancedPhaseBuilder {
       Collection<Integer> phaseNumbers,
       RingBarrierState.VehInterval interval) {
     TrafficSignalPhase phase = redBaseline(circuits);
+    List<RingBarrierState.ServedMovement> served = new ArrayList<>(phaseNumbers.size());
     for (int n : phaseNumbers) {
-      applyServed(phase, plan, circuits,
-          new RingBarrierState.ServedMovement(n, interval, RingBarrierState.PedInterval.NONE));
+      RingBarrierState.ServedMovement movement =
+          new RingBarrierState.ServedMovement(n, interval, RingBarrierState.PedInterval.NONE);
+      served.add(movement);
+      applyServed(phase, plan, circuits, movement);
     }
+    // FYA compound heads must be driven as one combined indication here too, or a preempt
+    // dwell/track-clear serving a left phase shows a red 3-section lens under a lit green arrow.
+    applyFyaLenses(phase, plan, circuits, served, null);
     if (interval == RingBarrierState.VehInterval.GREEN) {
       applyOverlaps(phase, overlaps);
     }
+    applyAccessoryStates(world, phase, circuits);
     return phase;
+  }
+
+  /**
+   * Drives the per-circuit accessory devices from the finished phase, mirroring NORMAL mode:
+   * advance-warning beacons flash yellow whenever their circuit's through signals are not green
+   * (off otherwise), and NO-TURN blankout signs light per-facing wherever the corresponding turn
+   * is neither protected (green) nor permissive (FYA). Must run after every vehicle state is
+   * final — both decisions read the phase's green/FYA lists.
+   */
+  private static void applyAccessoryStates(World world, TrafficSignalPhase phase,
+      TrafficSignalControllerCircuits circuits) {
+    for (int i = 0; i < circuits.getCircuitCount(); i++) {
+      TrafficSignalControllerCircuit circuit = circuits.getCircuit(i);
+      if (!circuit.getBeaconSignals().isEmpty()) {
+        boolean throughGreen = false;
+        for (BlockPos throughPos : circuit.getThroughSignals()) {
+          if (phase.getGreenSignals().contains(throughPos)) {
+            throughGreen = true;
+            break;
+          }
+        }
+        phase.removeSignals(circuit.getBeaconSignals());
+        if (throughGreen) {
+          phase.addOffSignals(circuit.getBeaconSignals());
+        } else {
+          phase.addYellowSignals(circuit.getBeaconSignals());
+        }
+      }
+      if (!circuit.getNoTurnBlankoutSignals().isEmpty()) {
+        phase.removeSignals(circuit.getNoTurnBlankoutSignals());
+        TrafficSignalControllerTickerUtilities.addBlankoutSignalsToPhase(world, circuit, phase);
+      }
+    }
   }
 
   /** Creates the all-red / don't-walk baseline across every circuit. */

@@ -287,8 +287,13 @@ parameters are edited on the **ACT** GUI screen (Mx2 / BkG / AdI / MxI / Gap / T
   `RingBarrierState.updateLockedCalls` latches a vehicle call registered while the phase is not
   being served green (`lockedCalls[]`, transient like the rest of the runtime), `isCalled` treats
   the latch as demand, and `startGreen` discharges it — pulse-detector behavior: service is
-  guaranteed once anything touched the zone, even if the vehicle leaves. The latch check sits
-  *after* the coordination gating, so a latched call still waits for its permissive window.
+  guaranteed once anything touched the zone, even if the vehicle leaves. Under coordination a
+  latched call still waits for its permissive window to open before it registers — but once it
+  registers inside the window it is **accepted** (`windowAccepted[]`) and survives the window
+  closing, until served or the demand drops. Without that acceptance latch, the coordinated
+  phases' rest-in-walk ped clearance could outlast a tight window and the re-gated call would be
+  erased mid-sequence — the mains would recycle WALK → FDW → WALK every cycle and the locked side
+  street would never be served.
 
 Dual Entry and Conditional Service are set via the MAP **OPT** column, a combined cycle:
 `-` / `DE` / `CS` / `D+C`.
@@ -336,6 +341,24 @@ rather than relying on in-world checks.
 - During a protected left's **yellow clearance** the 3-section FYA lens shows the **solid yellow
   arrow** (the add-on green-arrow goes dark), matching the compound-hybrid clearance in
   `TRAFFIC_SIGNAL_SYSTEM.md`.
+- **Preemption phases drive FYA compound heads too** — `buildForPhases` (preempt enter /
+  track-clear / dwell / exit) runs the same `applyFyaLenses` post-pass as the normal build, so a
+  dwell serving a left phase shows lens-OFF + green arrow (never red-lens-under-green-arrow), and
+  an unserved left flashes permissive while its opposing through dwells green.
+- **Advance-warning beacons and NO-TURN blankouts are driven in ADVANCED mode**
+  (`AdvancedPhaseBuilder.applyAccessoryStates`, mirroring NORMAL mode): beacons flash yellow
+  whenever their circuit's through is not green, and blankout signs light per-facing wherever the
+  corresponding turn is neither protected (green) nor permissive (FYA).
+- **Pedestrian-output overlaps place calls from button requests** — an overlap whose output
+  movement is PED calls its `callPhase` from the output circuit's pedestrian request count (there
+  is no vehicle zone for PED, so `zoneCount` would silently report zero forever).
+- **A preempt cannot trigger on the PED movement** — a latched button request only clears when the
+  accessory shows walk, which a preempt dwell never does, so the dwell could never exit. The GUI
+  cycle skips PED for the trigger movement, the server clamps stale values to THROUGH, and
+  `validate` faults descriptively on a saved plan that still has one.
+- **Preempt/overlap circuit references are validated** — `validate` faults loudly (like phases) on
+  an active preempt trigger circuit or overlap output circuit that no longer exists (e.g. after an
+  empty trailing circuit was pruned), instead of leaving the entry silently dead.
 - Delayed green is **per ring** — if one ring's phase has `DLY GRN` and the concurrent ring's does
   not, only the delaying ring holds red while its walk leads; the other ring greens normally. The
   barrier crossing still waits for both rings.

@@ -2088,7 +2088,7 @@ public class TrafficSignalControllerTickerUtilities {
    *
    * @since 1.0
    */
-  private static void addBlankoutSignalsToPhase(World world,
+  static void addBlankoutSignalsToPhase(World world,
       TrafficSignalControllerCircuit circuit,
       TrafficSignalPhase phase) {
     if (world == null) {

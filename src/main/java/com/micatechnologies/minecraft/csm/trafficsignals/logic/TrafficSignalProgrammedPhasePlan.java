@@ -312,6 +312,33 @@ public class TrafficSignalProgrammedPhasePlan {
             + ") has no matching signals on circuit " + (ci + 1) + ".";
       }
     }
+    // Preempt and overlap circuit references must stay valid too — unlike phases, their demand
+    // reads are null-guarded downstream, so a stale index (e.g. after an empty trailing circuit
+    // was pruned) would otherwise leave them silently dead instead of faulting loudly.
+    for (int i = 0; i < preempts.size(); i++) {
+      TrafficSignalPreempt pe = preempts.get(i);
+      if (!pe.isActive()) {
+        continue;
+      }
+      int tc = pe.getTriggerCircuitIndex();
+      if (tc < 0 || tc >= circuits.getCircuitCount()) {
+        return "Preempt " + (i + 1) + " trigger circuit " + (tc + 1) + " is not a valid circuit.";
+      }
+      if (pe.getTriggerMovement() == TrafficSignalPhaseMovement.PED) {
+        return "Preempt " + (i + 1) + " cannot trigger on the pedestrian movement."
+            + " Use a vehicle movement.";
+      }
+    }
+    for (int i = 0; i < vehicleOverlaps.size(); i++) {
+      TrafficSignalProgrammedOverlap ov = vehicleOverlaps.get(i);
+      if (!ov.isActive()) {
+        continue;
+      }
+      int oc = ov.getOutputCircuitIndex();
+      if (oc < 0 || oc >= circuits.getCircuitCount()) {
+        return "Overlap " + (i + 1) + " output circuit " + (oc + 1) + " is not a valid circuit.";
+      }
+    }
     return null;
   }
 
