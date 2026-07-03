@@ -593,9 +593,11 @@ public class AdvancedSignalControllerGui extends GuiScreen {
     y += 12;
     cells.add(new Cell(lcdX + 80, y, 60,
         () -> MOVEMENT_ABBR[preempts.get(pi).getTriggerMovement().ordinal()],
+        // PED (the last movement) is excluded: a preempt cannot trigger on the pedestrian
+        // movement (a latched button request would never drop, so the dwell could never exit).
         dir -> send("pe.trigMovement", pi,
             cyc(preempts.get(pi).getTriggerMovement().ordinal(), dir,
-                TrafficSignalPhaseMovement.values().length)), null));
+                TrafficSignalPhaseMovement.values().length - 1)), null));
     y += 12;
     cells.add(new Cell(lcdX + 80, y, 50,
         () -> secs(preempts.get(pi).getMinDwell()),

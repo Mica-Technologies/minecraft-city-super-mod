@@ -1745,8 +1745,14 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
         break;
       case "pe.trigMovement":
         if (validPreempt(plan, index)) {
-          plan.getPreempts().get(index)
-              .setTriggerMovement(TrafficSignalPhaseMovement.fromNBT((int) value));
+          // PED is not a valid preempt trigger (a latched button request would never drop, so the
+          // dwell stage could never exit — see plan validation); clamp it to THROUGH. The GUI
+          // cycle skips PED, so this only defends against stale clients/values.
+          TrafficSignalPhaseMovement trigMovement = TrafficSignalPhaseMovement.fromNBT((int) value);
+          if (trigMovement == TrafficSignalPhaseMovement.PED) {
+            trigMovement = TrafficSignalPhaseMovement.THROUGH;
+          }
+          plan.getPreempts().get(index).setTriggerMovement(trigMovement);
         }
         break;
       case "pe.minDwell":
@@ -1842,8 +1848,10 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
         break;
     }
     if (changed) {
-      // Clearing the fault lets a now-valid plan resume; resetController re-ticks and re-syncs.
-      if (isInFaultState()) {
+      // Clearing the fault lets a now-valid ADVANCED plan resume (the next tick re-validates and
+      // re-faults if it is still broken). A controller in any other mode is faulted for reasons
+      // this GUI's edits cannot fix, so its fault must stay until its own cause is resolved.
+      if (isInFaultState() && mode == TrafficSignalControllerMode.ADVANCED) {
         currentFaultMessage = "";
         operatingMode = mode;
       }
