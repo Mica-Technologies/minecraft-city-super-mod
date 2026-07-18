@@ -1,6 +1,10 @@
 csm.firealarmcontrolpanel.note=Right Click to Stop Alarm, Sneak+Right Click to Change Sound
 csm.highvoltage=High Voltage!
 csm.signalcontroller=McCain Model MC2000
+csm.signalcontroller.timing.allred=  All-red: %ss
+csm.signalcontroller.timing.green=  Green: %s–%ss
+csm.signalcontroller.timing.header=Default timing:
+csm.signalcontroller.timing.yellow=  Yellow: %ss
 item.appleipadpro.name=Apple iPad Pro
 item.appleiphonese2020.name=Apple iPhone SE (2020)
 item.appleiphonexr.name=Apple iPhone XR
