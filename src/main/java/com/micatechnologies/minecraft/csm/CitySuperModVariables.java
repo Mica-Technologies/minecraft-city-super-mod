@@ -50,6 +50,15 @@ public class CitySuperModVariables {
       return nbt;
     }
 
+    /**
+     * Persists and broadcasts this data. On a server this serializes the <em>entire</em>
+     * {@link #writeToNBT} payload and sends it to <em>every</em> connected player (globally, not
+     * dimension-scoped) on each change. That is cheap only while this class stays small — keep the
+     * persisted fields to a handful of scalars/short strings. If this ever needs to hold bulk or
+     * per-player data, switch to a delta/targeted sync instead of growing this broadcast. See the
+     * network-hardening review (§10.5) in
+     * {@code assets/docs/agent_progress/PERFORMANCE_IMPROVEMENT_PLAN.md}.
+     */
     public void syncData(World world) {
       this.markDirty();
       if (world.isRemote) {
@@ -103,6 +112,15 @@ public class CitySuperModVariables {
       return nbt;
     }
 
+    /**
+     * Persists and broadcasts this data. On a server this serializes the <em>entire</em>
+     * {@link #writeToNBT} payload and sends it to every player in the dimension on each change.
+     * That is cheap only while this class stays small — keep the persisted fields to a handful of
+     * scalars/short strings (currently the panel coordinates + map name). If this ever needs to
+     * hold bulk or per-player data, switch to a delta/targeted sync instead of growing this
+     * broadcast. See the network-hardening review (§10.5) in
+     * {@code assets/docs/agent_progress/PERFORMANCE_IMPROVEMENT_PLAN.md}.
+     */
     public void syncData(World world) {
       this.markDirty();
       if (world.isRemote) {

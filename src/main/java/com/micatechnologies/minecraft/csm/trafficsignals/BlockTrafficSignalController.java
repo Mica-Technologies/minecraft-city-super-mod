@@ -209,6 +209,33 @@ public class BlockTrafficSignalController extends AbstractBlock implements ICsmT
     super.addInformation(p_addInformation_1_, p_addInformation_2_, p_addInformation_3_,
         p_addInformation_4_);
     p_addInformation_3_.add(I18n.format("csm.signalcontroller"));
+
+    // Default phase timings (per-controller values are configurable via the signal configuration
+    // tool GUI; these are the out-of-the-box defaults a freshly placed controller starts with).
+    p_addInformation_3_.add(I18n.format("csm.signalcontroller.timing.header"));
+    p_addInformation_3_.add(I18n.format("csm.signalcontroller.timing.green",
+        formatSeconds(TileEntityTrafficSignalController.DEFAULT_MIN_GREEN_TIME),
+        formatSeconds(TileEntityTrafficSignalController.DEFAULT_MAX_GREEN_TIME)));
+    p_addInformation_3_.add(I18n.format("csm.signalcontroller.timing.yellow",
+        formatSeconds(TileEntityTrafficSignalController.DEFAULT_YELLOW_TIME)));
+    p_addInformation_3_.add(I18n.format("csm.signalcontroller.timing.allred",
+        formatSeconds(TileEntityTrafficSignalController.DEFAULT_ALL_RED_TIME)));
+  }
+
+  /**
+   * Formats a duration in game ticks (20 ticks = 1 second) as a compact seconds string, dropping a
+   * trailing {@code .0} so whole-second values read as e.g. {@code "15"} rather than {@code "15.0"}.
+   *
+   * @param ticks the duration in ticks
+   *
+   * @return the duration in seconds as a display string
+   */
+  private static String formatSeconds(long ticks) {
+    double seconds = ticks / 20.0;
+    if (seconds == Math.rint(seconds)) {
+      return Long.toString((long) seconds);
+    }
+    return String.format(java.util.Locale.ROOT, "%.1f", seconds);
   }
 
   @Override

@@ -386,6 +386,9 @@ public class ComputerGui extends GuiScreen {
     int reservedForFortune = 18;
     int notepadH = contentH - 6 - reservedForFortune;
     notepad = new GuiMultiLineTextField(0, fontRenderer, notepadX, notepadY, notepadW, notepadH);
+    // Cap client input to the same length the server will store, so the user never types past
+    // what ComputerNotepadHandler would silently truncate.
+    notepad.setMaxLength(ComputerNotepadHandler.MAX_NOTEPAD_LENGTH);
     notepad.setText(latestNotepadText);
     notepad.setFocused(true);
   }
