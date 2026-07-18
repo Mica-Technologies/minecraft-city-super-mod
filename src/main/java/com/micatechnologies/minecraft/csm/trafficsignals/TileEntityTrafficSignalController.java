@@ -243,11 +243,43 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
   private transient Map<Integer, Long> overheightCircuitHoldTimers = new HashMap<>();
 
   /**
+   * Default yellow clearance time, in ticks (20 ticks = 1 second). Also surfaced in the
+   * controller block's inventory tooltip.
+   *
+   * @since 2026.7
+   */
+  public static final long DEFAULT_YELLOW_TIME = 80;
+
+  /**
+   * Default all-red clearance time, in ticks. Also surfaced in the controller block's inventory
+   * tooltip.
+   *
+   * @since 2026.7
+   */
+  public static final long DEFAULT_ALL_RED_TIME = 60;
+
+  /**
+   * Default minimum green time, in ticks. Also surfaced in the controller block's inventory
+   * tooltip.
+   *
+   * @since 2026.7
+   */
+  public static final long DEFAULT_MIN_GREEN_TIME = 300;
+
+  /**
+   * Default maximum green time, in ticks. Also surfaced in the controller block's inventory
+   * tooltip.
+   *
+   * @since 2026.7
+   */
+  public static final long DEFAULT_MAX_GREEN_TIME = 1400;
+
+  /**
    * The yellow time for the traffic signal controller.
    *
    * @since 2.0
    */
-  private long yellowTime = 80;
+  private long yellowTime = DEFAULT_YELLOW_TIME;
 
   /**
    * The flashing don't walk time for the traffic signal controller.
@@ -261,7 +293,7 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
    *
    * @since 2.0
    */
-  private long allRedTime = 60;
+  private long allRedTime = DEFAULT_ALL_RED_TIME;
 
   /**
    * The minimum service time when servicing requests to the traffic signal controller in
@@ -285,7 +317,7 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
    *
    * @since 2.0
    */
-  private long minGreenTime = 300;
+  private long minGreenTime = DEFAULT_MIN_GREEN_TIME;
 
   /**
    * The maximum green time when servicing circuits configured to the traffic signal controller in
@@ -293,7 +325,7 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
    *
    * @since 2.0
    */
-  private long maxGreenTime = 1400;
+  private long maxGreenTime = DEFAULT_MAX_GREEN_TIME;
 
   /**
    * The secondary minimum green time when servicing circuits configured to the traffic signal

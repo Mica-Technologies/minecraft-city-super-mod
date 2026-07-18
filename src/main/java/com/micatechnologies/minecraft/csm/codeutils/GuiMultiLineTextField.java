@@ -23,6 +23,13 @@ public class GuiMultiLineTextField extends Gui {
   private final List<String> lines = new ArrayList<>();
   private final int x, y, width, height;
   private boolean isFocused = false;
+  /**
+   * Maximum number of characters the field will accept. Defaults to no practical limit;
+   * callers that persist the text (e.g. the computer notepad, whose contents ride tile-entity
+   * NBT into chunk syncs and world saves) should set this to match their server-side cap so the
+   * client never lets the user type past what the server will store.
+   */
+  private int maxLength = Integer.MAX_VALUE;
   // private int cursorPos = 0; // Overall cursor position in the text
   private int cursorLine = 0; // Line index of the cursor
   private int cursorColumn = 0; // Column index of the cursor within the line
@@ -273,6 +280,17 @@ public class GuiMultiLineTextField extends Gui {
   }
 
   private void insertTextAtCursor(String text) {
+    // Enforce the character cap by truncating the incoming text to the remaining room. When a
+    // selection exists it is deleted first, freeing room, so only clamp the no-selection case.
+    if (!isTextSelected) {
+      int room = maxLength - getText().length();
+      if (room <= 0) {
+        return;
+      }
+      if (text.length() > room) {
+        text = text.substring(0, room);
+      }
+    }
     if (isTextSelected) {
       deleteSelectedText();
     }
@@ -381,6 +399,11 @@ public class GuiMultiLineTextField extends Gui {
   }
 
   private void insertNewLineAtCursor() {
+    // Enforce the character cap. A newline counts as one character; when a selection exists it
+    // is deleted first, freeing room, so only guard the no-selection case here.
+    if (!isTextSelected && getText().length() >= maxLength) {
+      return;
+    }
     if (isTextSelected) {
       deleteSelectedText();
     }
@@ -475,6 +498,11 @@ public class GuiMultiLineTextField extends Gui {
 
 
   private void insertCharacterAtCursor(char character) {
+    // Enforce the character cap. When a selection exists it is deleted first, freeing room, so
+    // only guard the no-selection case here.
+    if (!isTextSelected && getText().length() >= maxLength) {
+      return;
+    }
     if (isTextSelected) {
       deleteSelectedText();
     }
@@ -874,6 +902,16 @@ public class GuiMultiLineTextField extends Gui {
     // Adjust viewOffset based on new content, if necessary.
     // Placeholder for logic to ensure the newly set text is properly viewable.
     viewOffset = Math.max(0, lines.size() - (height / fontRenderer.FONT_HEIGHT));
+  }
+
+  /**
+   * Sets the maximum number of characters this field will accept via typing, newlines, or paste.
+   * Existing content set through {@link #setText(String)} is not truncated.
+   *
+   * @param maxLength the character cap; values &le; 0 are treated as no limit
+   */
+  public void setMaxLength(int maxLength) {
+    this.maxLength = maxLength <= 0 ? Integer.MAX_VALUE : maxLength;
   }
 
   public void setFocused(boolean isFocused) {
