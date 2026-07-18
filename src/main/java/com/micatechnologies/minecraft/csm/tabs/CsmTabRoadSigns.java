@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.tabs;
 
 import com.micatechnologies.minecraft.csm.CsmRegistry;
 import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
+import com.micatechnologies.minecraft.csm.trafficsigns.BlockPoweredTrafficSign;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignpost;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockSignpostmount;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockTrafficSign;
@@ -648,5 +649,11 @@ public class CsmTabRoadSigns extends CsmTab {
     initTabBlock(new BlockTrafficSign("thicklysettledsign"));
     initTabBlock(new BlockTrafficSign("thicklysettledspeedlimit25mphsign"));
     initTabBlock(new BlockTrafficSign("yieldsign"));
+
+    // Redstone-powered two-state electronic signs (energized face vs. blank/dark face). These
+    // use BlockPoweredTrafficSign; the on/off texture swap is driven by the POWERED blockstate.
+    initTabBlock(new BlockPoweredTrafficSign("adaptivenouturnsign"));
+    initTabBlock(new BlockPoweredTrafficSign("adaptivetrainsign"));
+    initTabBlock(new BlockPoweredTrafficSign("lightsoutnopowersign"));
   }
 }
