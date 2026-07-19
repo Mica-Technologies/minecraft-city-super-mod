@@ -206,6 +206,29 @@ public class TrafficSignalPhases {
    */
   public TrafficSignalPhases(World world,
       TrafficSignalControllerCircuits trafficSignalControllerCircuits) {
+    this(world, trafficSignalControllerCircuits, null);
+  }
+
+  /**
+   * Creates a new {@link TrafficSignalPhases} object as {@link #TrafficSignalPhases(World,
+   * TrafficSignalControllerCircuits)} does, but with the flash phases built from the given
+   * {@code ADVANCED} (ASC-3) program when it carries per-phase flash overrides (the MAP screen's
+   * {@code FLSH} column). Without overrides — or without a plan at all — the flash phases are the
+   * legacy circuit-ordinal ones, unchanged.
+   *
+   * @param world                           The {@link World} that the traffic signal controller is
+   *                                        in.
+   * @param trafficSignalControllerCircuits The {@link TrafficSignalControllerCircuits} of the
+   *                                        traffic signal controller.
+   * @param programmedPhasePlan             The controller's advanced program, or {@code null} if it
+   *                                        has none.
+   *
+   * @see AdvancedFlashProgram
+   * @since 2026.7
+   */
+  public TrafficSignalPhases(World world,
+      TrafficSignalControllerCircuits trafficSignalControllerCircuits,
+      TrafficSignalProgrammedPhasePlan programmedPhasePlan) {
     // Create a new TrafficSignalPhase array
     phases = new TrafficSignalPhase[PHASE_INDEX_COUNT];
 
@@ -421,6 +444,16 @@ public class TrafficSignalPhases {
       circuitIndex++;
     }
     phases[PHASE_INDEX_FLASH_2] = flashPhase2;
+
+    // ADVANCED (ASC-3) programmed flash: when the phase map carries FLSH overrides, they replace
+    // the circuit-ordinal flash phases built above. The phase indices are unchanged, so the ticker
+    // and every other consumer are unaffected.
+    if (programmedPhasePlan != null && programmedPhasePlan.hasFlashOverrides()) {
+      TrafficSignalPhase[] programmedFlash = AdvancedFlashProgram.build(world,
+          trafficSignalControllerCircuits, programmedPhasePlan);
+      phases[PHASE_INDEX_FLASH_1] = programmedFlash[0];
+      phases[PHASE_INDEX_FLASH_2] = programmedFlash[1];
+    }
 
     // Create a new TrafficSignalPhase object for first fault phase
     TrafficSignalPhase faultPhase1 = new TrafficSignalPhase(

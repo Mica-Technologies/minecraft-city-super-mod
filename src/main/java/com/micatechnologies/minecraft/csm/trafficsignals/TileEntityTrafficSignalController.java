@@ -19,6 +19,7 @@ import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalProg
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalProgrammedOverlap;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalOverlapType;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalPhaseMovement;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalFlashOverride;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalRecallMode;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalPreempt;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalPreemptType;
@@ -1624,6 +1625,11 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
           phase.setMovement(TrafficSignalPhaseMovement.fromNBT((int) value));
         }
         break;
+      case "ph.flash":
+        if (phase != null) {
+          phase.setFlashOverride(TrafficSignalFlashOverride.fromNBT((int) value));
+        }
+        break;
       case "ph.recall":
         if (phase != null) {
           phase.setRecallMode(TrafficSignalRecallMode.fromNBT((int) value));
@@ -1887,9 +1893,27 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
         currentFaultMessage = "";
         operatingMode = mode;
       }
-      resetController(false, true);
+      // The flash phases are precomputed from the circuits AND the program's FLSH overrides, so any
+      // edit that can change the programmed flash has to regenerate the phase cache.
+      resetController(affectsProgrammedFlash(action), true);
       syncServerToClient(getWorld());
     }
+  }
+
+  /**
+   * @param action the advanced-config action name
+   *
+   * @return whether the action can change the {@code ADVANCED} programmed flash phases, and so
+   *     requires the cached {@link TrafficSignalPhases} to be regenerated.
+   *
+   * @since 2026.7
+   */
+  private static boolean affectsProgrammedFlash(String action) {
+    return "ph.flash".equals(action)
+        || "ph.circuit".equals(action)
+        || "ph.movement".equals(action)
+        || "ph.enabled".equals(action)
+        || "loadTemplate".equals(action);
   }
 
   private static long clampTicks(long value) {
@@ -2082,7 +2106,7 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
       circuits.removeCircuit(circuits.getCircuit(circuits.getCircuits().size() - 1));
     }
     if (regeneratePhaseCache) {
-      cachedPhases = new TrafficSignalPhases(getWorld(), circuits);
+      cachedPhases = new TrafficSignalPhases(getWorld(), circuits, programmedPhasePlan);
     }
     if (forceTick) {
       onTick();
