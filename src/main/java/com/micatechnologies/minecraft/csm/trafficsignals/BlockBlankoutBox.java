@@ -51,7 +51,11 @@ public class BlockBlankoutBox extends AbstractBlockControllableSignal
         TileEntity te = world.getTileEntity( blockPos );
         if ( te instanceof TileEntityBlankoutBox ) {
             BlankoutBoxType type = ( (TileEntityBlankoutBox) te ).getBlankoutType();
-            if ( type == BlankoutBoxType.NO_LEFT_TURN || type == BlankoutBoxType.NO_RIGHT_TURN ) {
+            // Every legend the controller drives links as a blankout: the no-turn pair from the
+            // phase's permitted turns, the No-U-Turn and Train legends from preempts. Don't Walk
+            // and Do Not Enter link as ordinary pedestrian heads instead.
+            if ( type == BlankoutBoxType.NO_LEFT_TURN || type == BlankoutBoxType.NO_RIGHT_TURN
+                    || type == BlankoutBoxType.NO_U_TURN || type == BlankoutBoxType.TRAIN ) {
                 return SIGNAL_SIDE.NO_TURN_BLANKOUT;
             }
         }

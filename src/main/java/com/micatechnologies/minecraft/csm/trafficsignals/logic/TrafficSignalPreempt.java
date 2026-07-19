@@ -38,6 +38,7 @@ public class TrafficSignalPreempt {
   private static final String K_EXIT = "ex";
   private static final String K_MIN_DWELL = "md";
   private static final String K_MIN_GREEN_BEFORE = "mb";
+  private static final String K_SIGN_CIRCUITS = "sc";
 
   private boolean enabled = false;
   private TrafficSignalPreemptType type = TrafficSignalPreemptType.EMERGENCY;
@@ -49,6 +50,11 @@ public class TrafficSignalPreempt {
   private int[] exitPhases = new int[0];
   private long minDwell = DEFAULT_MIN_DWELL;
   private long minGreenBeforePreempt = DEFAULT_MIN_GREEN_BEFORE;
+  /**
+   * Circuit indices whose preempt-driven blankout boxes (No-U-Turn / Train legends) illuminate for
+   * the whole time this preempt runs. Empty = none.
+   */
+  private int[] signCircuits = new int[0];
 
   public boolean isEnabled() {
     return enabled;
@@ -111,6 +117,24 @@ public class TrafficSignalPreempt {
     this.exitPhases = exitPhases == null ? new int[0] : exitPhases;
   }
 
+  public int[] getSignCircuits() {
+    return signCircuits;
+  }
+
+  public void setSignCircuits(int[] signCircuits) {
+    this.signCircuits = signCircuits == null ? new int[0] : signCircuits;
+  }
+
+  /** @return whether the given circuit's preempt-driven blankout signs run with this preempt. */
+  public boolean lightsSignsOnCircuit(int circuitIndex) {
+    for (int c : signCircuits) {
+      if (c == circuitIndex) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   public long getMinDwell() {
     return minDwell;
   }
@@ -140,6 +164,7 @@ public class TrafficSignalPreempt {
     c.setIntArray(K_EXIT, exitPhases);
     c.setLong(K_MIN_DWELL, minDwell);
     c.setLong(K_MIN_GREEN_BEFORE, minGreenBeforePreempt);
+    c.setIntArray(K_SIGN_CIRCUITS, signCircuits);
     return c;
   }
 
@@ -155,6 +180,7 @@ public class TrafficSignalPreempt {
     p.minDwell = c.hasKey(K_MIN_DWELL) ? c.getLong(K_MIN_DWELL) : DEFAULT_MIN_DWELL;
     p.minGreenBeforePreempt =
         c.hasKey(K_MIN_GREEN_BEFORE) ? c.getLong(K_MIN_GREEN_BEFORE) : DEFAULT_MIN_GREEN_BEFORE;
+    p.signCircuits = c.getIntArray(K_SIGN_CIRCUITS);
     return p;
   }
 
