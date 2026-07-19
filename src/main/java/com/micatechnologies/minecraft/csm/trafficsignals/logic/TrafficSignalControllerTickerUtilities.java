@@ -2091,11 +2091,28 @@ public class TrafficSignalControllerTickerUtilities {
   static void addBlankoutSignalsToPhase(World world,
       TrafficSignalControllerCircuit circuit,
       TrafficSignalPhase phase) {
+    addBlankoutSignalsToPhase(world, circuit, phase, false);
+  }
+
+  /**
+   * As {@link #addBlankoutSignalsToPhase(World, TrafficSignalControllerCircuit,
+   * TrafficSignalPhase)}, but able to illuminate the preempt-driven legends.
+   *
+   * @param preemptSignsLit whether an active preempt lights this circuit's No-U-Turn / Train
+   *                        blankout signs. Those legends have no phase logic of their own: they are
+   *                        dark unless a running preempt names their circuit.
+   *
+   * @since 2026.7
+   */
+  static void addBlankoutSignalsToPhase(World world,
+      TrafficSignalControllerCircuit circuit,
+      TrafficSignalPhase phase,
+      boolean preemptSignsLit) {
     if (world == null) {
       // Match historical null-world behavior: every blankout goes to walk list (sign visible)
       // because we can't look up TE types or facings without a World.
       addBlankoutSignalsToPhase((Function<BlockPos, EnumFacing>) null,
-          (Function<BlockPos, BlankoutBoxType>) null, circuit, phase);
+          (Function<BlockPos, BlankoutBoxType>) null, circuit, phase, preemptSignsLit);
       return;
     }
     Function<BlockPos, EnumFacing> facingResolver = pos -> signalFacingOrNull(world, pos);
@@ -2104,7 +2121,7 @@ public class TrafficSignalControllerTickerUtilities {
       return te instanceof TileEntityBlankoutBox
           ? ((TileEntityBlankoutBox) te).getBlankoutType() : null;
     };
-    addBlankoutSignalsToPhase(facingResolver, typeResolver, circuit, phase);
+    addBlankoutSignalsToPhase(facingResolver, typeResolver, circuit, phase, preemptSignsLit);
   }
 
   /**
@@ -2134,6 +2151,24 @@ public class TrafficSignalControllerTickerUtilities {
       Function<BlockPos, BlankoutBoxType> typeResolver,
       TrafficSignalControllerCircuit circuit,
       TrafficSignalPhase phase) {
+    addBlankoutSignalsToPhase(facingResolver, typeResolver, circuit, phase, false);
+  }
+
+  /**
+   * As {@link #addBlankoutSignalsToPhase(Function, Function, TrafficSignalControllerCircuit,
+   * TrafficSignalPhase)}, with the preempt-driven legends' state.
+   *
+   * @param preemptSignsLit whether an active preempt lights this circuit's No-U-Turn / Train
+   *                        signs; see {@link #addBlankoutSignalsToPhase(World,
+   *                        TrafficSignalControllerCircuit, TrafficSignalPhase, boolean)}.
+   *
+   * @since 2026.7
+   */
+  static void addBlankoutSignalsToPhase(Function<BlockPos, EnumFacing> facingResolver,
+      Function<BlockPos, BlankoutBoxType> typeResolver,
+      TrafficSignalControllerCircuit circuit,
+      TrafficSignalPhase phase,
+      boolean preemptSignsLit) {
     EnumSet<EnumFacing> leftAllowedFacings =
         collectAllowedFacings(facingResolver, circuit.getLeftSignals(), phase.getGreenSignals(),
             circuit.getFlashingLeftSignals(), phase.getFyaSignals());
@@ -2143,20 +2178,34 @@ public class TrafficSignalControllerTickerUtilities {
 
     List<BlockPos> onSignals = new ArrayList<>();
     List<BlockPos> offSignals = new ArrayList<>();
+    List<BlockPos> flashSignals = new ArrayList<>();
     for (BlockPos pos : circuit.getNoTurnBlankoutSignals()) {
+      BlankoutBoxType type =
+          typeResolver != null && facingResolver != null ? typeResolver.apply(pos) : null;
+
+      // Preempt-driven legends: no phase logic of their own, so they are dark unless a running
+      // preempt lights this circuit's signs. The train legend flashes; No-U-Turn burns steady.
+      if (type == BlankoutBoxType.TRAIN || type == BlankoutBoxType.NO_U_TURN) {
+        if (!preemptSignsLit) {
+          offSignals.add(pos);
+        } else if (type == BlankoutBoxType.TRAIN) {
+          flashSignals.add(pos);
+        } else {
+          onSignals.add(pos);
+        }
+        continue;
+      }
+
       boolean turnOff = false;
-      if (typeResolver != null && facingResolver != null) {
-        BlankoutBoxType type = typeResolver.apply(pos);
-        if (type != null) {
-          EnumFacing boxFacing = facingResolver.apply(pos);
-          if (boxFacing != null) {
-            if (type == BlankoutBoxType.NO_RIGHT_TURN
-                && rightAllowedFacings.contains(boxFacing)) {
-              turnOff = true;
-            } else if (type == BlankoutBoxType.NO_LEFT_TURN
-                && leftAllowedFacings.contains(boxFacing)) {
-              turnOff = true;
-            }
+      if (type != null) {
+        EnumFacing boxFacing = facingResolver.apply(pos);
+        if (boxFacing != null) {
+          if (type == BlankoutBoxType.NO_RIGHT_TURN
+              && rightAllowedFacings.contains(boxFacing)) {
+            turnOff = true;
+          } else if (type == BlankoutBoxType.NO_LEFT_TURN
+              && leftAllowedFacings.contains(boxFacing)) {
+            turnOff = true;
           }
         }
       }
@@ -2168,6 +2217,7 @@ public class TrafficSignalControllerTickerUtilities {
     }
     phase.addWalkSignals(onSignals);
     phase.addDontWalkSignals(offSignals);
+    phase.addYellowSignals(flashSignals);
   }
 
   /**

@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.trafficsignals.logic;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -9,6 +10,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.RingBarrierState.VehInterval;
 import java.util.Arrays;
 import java.util.Collections;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -147,6 +150,78 @@ class AdvancedModeAccessoryAndPreemptTest {
       assertTrue(phase.getWalkSignals().contains(blankout),
           "blankout must be handed to the blankout drive logic (was pinned OFF forever)");
       assertFalse(phase.getOffSignals().contains(blankout));
+    }
+  }
+
+  @Nested
+  @DisplayName("preempt-driven blankout legends (No-U-Turn / Train)")
+  class PreemptBlankoutTest {
+
+    private final BlockPos trainBox = new BlockPos(30, 0, 0);
+    private final BlockPos uTurnBox = new BlockPos(31, 0, 0);
+    private final BlockPos noLeftBox = new BlockPos(32, 0, 0);
+
+    private TrafficSignalControllerCircuit circuit() {
+      TrafficSignalControllerCircuit c0 = new TrafficSignalControllerCircuit();
+      c0.getNoTurnBlankoutSignals().add(trainBox);
+      c0.getNoTurnBlankoutSignals().add(uTurnBox);
+      c0.getNoTurnBlankoutSignals().add(noLeftBox);
+      return c0;
+    }
+
+    private TrafficSignalPhase drive(boolean preemptSignsLit) {
+      TrafficSignalPhase phase = new TrafficSignalPhase(TrafficSignalPhase.CIRCUIT_NOT_APPLICABLE,
+          null, TrafficSignalPhaseApplicability.NONE);
+      TrafficSignalControllerTickerUtilities.addBlankoutSignalsToPhase(
+          pos -> EnumFacing.NORTH,
+          pos -> {
+            if (pos.equals(trainBox)) {
+              return BlankoutBoxType.TRAIN;
+            }
+            return pos.equals(uTurnBox) ? BlankoutBoxType.NO_U_TURN
+                : BlankoutBoxType.NO_LEFT_TURN;
+          },
+          circuit(), phase, preemptSignsLit);
+      return phase;
+    }
+
+    @Test
+    @DisplayName("dark whenever no preempt names their circuit")
+    void darkWithoutPreempt() {
+      TrafficSignalPhase phase = drive(false);
+      assertTrue(phase.getDontWalkSignals().contains(trainBox));
+      assertTrue(phase.getDontWalkSignals().contains(uTurnBox));
+      assertFalse(phase.getYellowSignals().contains(trainBox));
+      // The no-turn legend keeps its own phase-driven behavior (no left green here, so lit).
+      assertTrue(phase.getWalkSignals().contains(noLeftBox));
+    }
+
+    @Test
+    @DisplayName("preempt lights them: Train flashes, No-U-Turn burns steady")
+    void litDuringPreempt() {
+      TrafficSignalPhase phase = drive(true);
+      assertTrue(phase.getYellowSignals().contains(trainBox),
+          "the train legend flashes (yellow) while the preempt runs");
+      assertTrue(phase.getWalkSignals().contains(uTurnBox),
+          "No-U-Turn burns steady while the preempt runs");
+      assertFalse(phase.getDontWalkSignals().contains(trainBox));
+      assertTrue(phase.getWalkSignals().contains(noLeftBox),
+          "the no-turn legend is unaffected by the preempt sign selection");
+    }
+
+    @Test
+    @DisplayName("sign circuits round-trip through NBT and answer lightsSignsOnCircuit")
+    void signCircuitsPersist() {
+      TrafficSignalPreempt pe = new TrafficSignalPreempt();
+      pe.setSignCircuits(new int[] {0, 2});
+      assertTrue(pe.lightsSignsOnCircuit(0));
+      assertFalse(pe.lightsSignsOnCircuit(1));
+      assertTrue(pe.lightsSignsOnCircuit(2));
+      TrafficSignalPreempt loaded = TrafficSignalPreempt.fromNBT(pe.toNBT());
+      assertArrayEquals(new int[] {0, 2}, loaded.getSignCircuits());
+      // A preempt saved before this field existed must load as "no signs", not crash.
+      TrafficSignalPreempt legacy = TrafficSignalPreempt.fromNBT(new NBTTagCompound());
+      assertEquals(0, legacy.getSignCircuits().length);
     }
   }
 

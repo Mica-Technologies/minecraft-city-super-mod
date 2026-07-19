@@ -1816,6 +1816,14 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
           pe.setExitPhases(toggleInArray(pe.getExitPhases(), (int) value));
         }
         break;
+      case "pe.signToggle":
+        // Toggles a CIRCUIT (0-based), not a phase: the preempt-driven blankout legends on that
+        // circuit light for the whole sequence.
+        if (validPreempt(plan, index) && value >= 0 && value < circuits.getCircuitCount()) {
+          TrafficSignalPreempt pe = plan.getPreempts().get(index);
+          pe.setSignCircuits(toggleInArray(pe.getSignCircuits(), (int) value));
+        }
+        break;
       case "ov.add":
         plan.getVehicleOverlaps().add(new TrafficSignalProgrammedOverlap());
         break;

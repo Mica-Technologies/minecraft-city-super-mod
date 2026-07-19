@@ -637,6 +637,16 @@ public class AdvancedSignalControllerGui extends GuiScreen {
     addPhaseToggleRow(preempts, pi, y, "pe.dwellToggle", p -> contains(p.getDwellPhases()));
     y += 12;
     addPhaseToggleRow(preempts, pi, y, "pe.exitToggle", p -> contains(p.getExitPhases()));
+    // Blankout signs: circuits, not phases — the preempt-driven legends (No-U-Turn / Train) on
+    // these circuits illuminate for the whole sequence.
+    y += 12;
+    for (int ci = 0; ci < circuitCount; ci++) {
+      final int c = ci;
+      cells.add(new Cell(lcdX + 70 + ci * 22, y, 18,
+          () -> preempts.get(pi).lightsSignsOnCircuit(c) ? ("[" + (c + 1) + "]")
+              : (" " + (c + 1) + " "),
+          dir -> send("pe.signToggle", pi, c), null));
+    }
   }
 
   private interface PhaseSet {
@@ -1364,6 +1374,14 @@ public class AdvancedSignalControllerGui extends GuiScreen {
     addHelp(lcdX, y, 60, 9, "Exit Phases",
         "Phases served on the way out of the preempt before the",
         "controller returns to normal operation.");
+    y += 12;
+    fontRenderer.drawString("SIGNS", lcdX, y, COLOR_AMBER_DIM);
+    addHelp(lcdX, y, 60, 9, "Blankout Sign Circuits",
+        "Circuits whose preempt-driven blankout boxes light for the",
+        "whole sequence: the Train legend flashes, No-U-Turn burns",
+        "steady. [n] = circuit included. Those legends are dark",
+        "whenever no preempt names their circuit. Set a box's legend",
+        "with the signal head config tool.");
   }
 
   private void drawOverlap() {
