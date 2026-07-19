@@ -97,7 +97,7 @@ vehicle detection sensors, and signal overlaps. All traffic signal code lives in
 | `PEDESTRIAN_BEACON` | Beacon-style pedestrian signal |
 | `PEDESTRIAN_ACCESSORY` | Crosswalk button or APS block |
 | `BEACON` | Yellow beacon signal (flashes in flash/ramp modes) |
-| `NO_TURN_BLANKOUT` | No-left/no-right-turn blankout box (ON during ped/protected phases) |
+| `NO_TURN_BLANKOUT` | No-left/no-right-turn blankout box (ON during ped/protected phases) — see [Blankout Box](#blankout-box-blankout_box) |
 | `NA_SENSOR` | Vehicle detection sensor |
 
 ### Compound Hybrid Left/Right (FYA) Signals
@@ -407,6 +407,45 @@ Single-section vs. multi-section layout, section sizes (4"/8"/12"), and per-sect
 offsets come from the block class (`getSectionSizes` / `getSectionXPositions` /
 `getSectionYPositions`), not the TE — layout is block-type static, finish/tilt is
 per-instance configurable.
+
+## Blankout Box (`blankout_box`)
+
+One block (`BlockBlankoutBox` + `TileEntityBlankoutBox` + `TileEntityBlankoutBoxRenderer`)
+covers every blankout legend; the legend is a per-instance TE property (`BlankoutBoxType`,
+NBT key `boT`), cycled with the signal head config tool (`CYCLE_BULB_TYPE`) or the
+`BlankoutBoxConfigGui` "Sign Type" button. Body/visor color, visor type, mount and tilt are
+configured the same way as a signal head.
+
+| Legend | Texture prefix | Lit when |
+|---|---|---|
+| Don't Walk | `DW_BO` | Signal color RED (flashes on YELLOW) |
+| No Left Turn | `NLT_BO` | Signal color GREEN or YELLOW |
+| No Right Turn | `NRT_BO` | Signal color GREEN or YELLOW |
+| Do Not Enter | `DNE_BO` | Signal color RED (flashes on YELLOW) |
+| No U-Turn | `NUT_BO` | Signal color GREEN (flashes on YELLOW) |
+| Train | `TRAIN_BO` | Signal color GREEN (flashes on YELLOW) |
+
+`getSignalSide()` reports `NO_TURN_BLANKOUT` only for the No Left/Right Turn legends, which
+is what makes `TrafficSignalControllerTickerUtilities.addBlankoutSignalsToPhase` drive them
+from the phase's permitted turns. The other legends report `PEDESTRIAN`.
+
+**No-U-Turn and Train have no controller logic** — they are driven by the block's ordinary
+`COLOR` signal-state property, which is also what a linked controller would set. Cycle it by
+hand with the config tool's *Signal Color* mode or the config GUI's **Signal State** button:
+GREEN lit, YELLOW flashing, RED/OFF dark. No extra per-instance state exists for this.
+
+### Display face atlas
+
+All legends render from one atlas, `textures/blocks/trafficsignals/blankout_boxes/blankout_box_atlas.png`
+— an 8x2 grid of 256x256 tiles (2048x512). Row 0 is the lit faces in `BlankoutBoxType`
+ordinal order, row 1 the unlit ones, so a type's off tile is always its on tile + 8
+(`BlankoutBoxTextureMap`). Two columns are spare.
+
+Source tiles live beside the atlas as individual PNGs. `dev-env-utils/scripts/render_blankout_faces.py`
+renders the `nut_bo` / `train_bo` pairs in the family's dot-matrix style (~4 px dots on a
+5.15 px pitch; the No-U-Turn ring is lifted from `nlt_bo.png` so it registers exactly).
+After changing any tile, regenerate the atlas with the `BlankoutBoxAtlasTool`
+("Generate Blankout Box Atlas" run configuration).
 
 ## Signal Head Mount Hardware
 

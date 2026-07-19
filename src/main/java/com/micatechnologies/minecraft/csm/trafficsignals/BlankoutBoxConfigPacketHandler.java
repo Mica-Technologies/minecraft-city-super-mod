@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
 import com.micatechnologies.minecraft.csm.codeutils.CsmPacketUtils;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignal;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
@@ -48,6 +49,10 @@ public class BlankoutBoxConfigPacketHandler
                     break;
                 case CYCLE_SIGN_TYPE:
                     boTe.getNextBlankoutType();
+                    break;
+                case CYCLE_SIGNAL_COLOR:
+                    world.setBlockState( message.getPos(), world.getBlockState( message.getPos() )
+                            .cycleProperty( AbstractBlockControllableSignal.COLOR ) );
                     break;
             }
         } );

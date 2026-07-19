@@ -6,7 +6,9 @@ public enum BlankoutBoxType implements IStringSerializable {
     DONT_WALK( "dont_walk", "Don't Walk", "DW_BO" ),
     NO_LEFT_TURN( "no_left_turn", "No Left Turn", "NLT_BO" ),
     NO_RIGHT_TURN( "no_right_turn", "No Right Turn", "NRT_BO" ),
-    DO_NOT_ENTER( "do_not_enter", "Do Not Enter", "DNE_BO" );
+    DO_NOT_ENTER( "do_not_enter", "Do Not Enter", "DNE_BO" ),
+    NO_U_TURN( "no_u_turn", "No U-Turn", "NUT_BO" ),
+    TRAIN( "train", "Train", "TRAIN_BO" );
 
     private final String name;
     private final String friendlyName;
