@@ -64,6 +64,7 @@ roadmap parameters, with their real ASC/3 names:
 | **DUAL ENTRY** | **Companion an uncalled ring** | **implemented — see §5** |
 | **Conditional Service** | **Re-serve a lagging phase** | **implemented — see §5** |
 | **VEH CALL MEMORY (LOCK)** | **Locking detector memory** | **implemented — see §5** |
+| **Flash program (FLSH)** | **Per-phase yellow/red flash assignment** | **implemented — see §5a** |
 
 ---
 
@@ -297,6 +298,54 @@ parameters are edited on the **ACT** GUI screen (Mx2 / BkG / AdI / MxI / Gap / T
 
 Dual Entry and Conditional Service are set via the MAP **OPT** column, a combined cycle:
 `-` / `DE` / `CS` / `D+C`.
+
+## 5a. Flash program (MAP `FLSH` column)
+
+### The problem
+Flash mode is built from `TrafficSignalPhases`' precomputed `FLASH_1` / `FLASH_2` phases, whose
+yellow-vs-red decision comes purely from a circuit's **ordinal** position: circuit 1 flashes yellow,
+the remaining odd circuits flash red on the first half-cycle, even circuits on the second. That
+works when circuits happen to have been linked in street order — the NORMAL-mode assumption. An
+ADVANCED intersection generally violates it: circuits are linked in whatever order the operator
+wired them, the main street may be C3, and one circuit can carry several movements. Switching such a
+controller to flash lit the wrong approaches yellow.
+
+### Our model
+A per-phase `TrafficSignalFlashOverride` (`AUTO` / `YELLOW` / `RED` / `DARK`, NBT key `fo`) on
+`TrafficSignalProgrammedPhase`, edited from the MAP **FLSH** column (`--` / `YEL` / `RED` / `off`).
+
+As long as every phase is `AUTO`, nothing changes — the legacy flash phases are used verbatim. As
+soon as **any** phase carries an override (`TrafficSignalProgrammedPhasePlan.hasFlashOverrides()`),
+`AdvancedFlashProgram.build(...)` replaces `FLASH_1` / `FLASH_2` with a programmed pair:
+
+- **Alternating by barrier.** A phase lights on the half-cycle its barrier owns — barrier A
+  (`φ1, φ2, φ5, φ6`: the main street and its lefts) on the first, barrier B (`φ3, φ4, φ7, φ8`: the
+  side street) on the second — and is explicitly dark on the other. This keeps the familiar
+  main-versus-cross wig-wag of the legacy flash, but derives it from the phase map instead of the
+  order the circuits happened to be linked in.
+- **Fail-safe.** Any vehicle head not claimed by an overridden phase flashes **red**, on barrier A's
+  half-cycle.
+- **Movement-scoped.** A phase's heads are resolved from its `(circuit, movement)` pair with the
+  same mapping `AdvancedPhaseBuilder.applyServed` uses, so a through phase carries its concurrent
+  right turn and a left phase carries both its protected and permissive lenses. Two phases on one
+  circuit can therefore flash yellow (through) and red (left) independently. If two enabled phases
+  claim the same heads, the higher phase number wins.
+- **Ped facilities are dark**; beacons stay solid yellow in both halves (the TESR flashes them, so
+  alternating here would double-flash); `doesFlash()` block-type filtering still forces
+  non-flashing head types off.
+- A `PED`-movement phase has no vehicle movement, so its FLSH cell reads `n/a`.
+
+Because the program lives in the precomputed phases rather than in the ADVANCED tick path, it
+applies to **every** way the controller reaches flash: operator-selected `FLASH`, nightly fallback,
+and power-loss fallback. `allRedFlash` still wins (it routes to the all-red FAULT phases), and the
+fault flash is unchanged.
+
+`Load Std 8-Phase` prefills the standard program: major-street throughs (φ2/φ6) `YEL`, minor-street
+throughs (φ4/φ8) `RED`, every left `RED`.
+
+Any edit that can change the programmed flash — `ph.flash`, `ph.circuit`, `ph.movement`,
+`ph.enabled`, `loadTemplate` — regenerates the cached phases
+(`TileEntityTrafficSignalController.affectsProgrammedFlash`).
 
 ## 6. Roadmap
 

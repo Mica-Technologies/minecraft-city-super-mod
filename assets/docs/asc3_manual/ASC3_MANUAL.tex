@@ -133,7 +133,8 @@ last one. The others are documented in \texttt{assets/docs/TRAFFIC\_SIGNAL\_SYST
 \textbf{Mode} & & \textbf{Behavior} \\
 \midrule
 \texttt{NORMAL}       & & Classic circuit-at-a-time coordinated operation. \\
-\texttt{FLASH}        & & Alternating yellow/red flash. \\
+\texttt{FLASH}        & & Yellow/red flash; program which movement gets which
+                          on \screen{MAP} (Section~\ref{sec:flashprog}). \\
 \texttt{REQUESTABLE}  & & Serves only on sensor/button request. \\
 \texttt{RAMP\_METER\_*} & & Freeway ramp metering (full/part time). \\
 \texttt{WRONG\_WAY\_DETECTION} & & TAPCO-style wrong-way beacon system. \\
@@ -479,21 +480,22 @@ order and assigned as follows:
 
 \begin{table}[H]
 \centering\small
-\begin{tabular}{@{}lcccc@{}}
+\begin{tabular}{@{}lccccc@{}}
 \toprule
 \textbf{Approach circuit} & \textbf{Through} & \textbf{Left$^{\ast}$} &
-\textbf{Left's FYA ref} & \textbf{Max green (thru/left)} \\
+\textbf{Left's FYA ref} & \textbf{Max green (thru/left)} & \textbf{Flash} \\
 \midrule
-1st N--S circuit & \ph{2} & \ph{5} & \texttt{P6} & 60\,s / 15\,s \\
-2nd N--S circuit & \ph{6} & \ph{1} & \texttt{P2} & 60\,s / 15\,s \\
-1st E--W circuit & \ph{4} & \ph{7} & \texttt{P8} & 30\,s / 15\,s \\
-2nd E--W circuit & \ph{8} & \ph{3} & \texttt{P4} & 30\,s / 15\,s \\
+1st N--S circuit & \ph{2} & \ph{5} & \texttt{P6} & 60\,s / 15\,s & \texttt{YEL}/\texttt{RED} \\
+2nd N--S circuit & \ph{6} & \ph{1} & \texttt{P2} & 60\,s / 15\,s & \texttt{YEL}/\texttt{RED} \\
+1st E--W circuit & \ph{4} & \ph{7} & \texttt{P8} & 30\,s / 15\,s & \texttt{RED}/\texttt{RED} \\
+2nd E--W circuit & \ph{8} & \ph{3} & \texttt{P4} & 30\,s / 15\,s & \texttt{RED}/\texttt{RED} \\
 \bottomrule
 \end{tabular}
 \caption{The standard template's circuit-to-phase mapping. $^{\ast}$The left
 phase (movement \texttt{PROT}) is enabled only when its circuit actually has
 protected/left signal heads, and its FYA reference is set only when the opposing
-through was also assigned.}
+through was also assigned. The \textbf{Flash} column is the \field{FLSH} program
+written for the through and the left (Section~\ref{sec:flashprog}).}
 \label{tab:template}
 \end{table}
 
@@ -680,6 +682,10 @@ and behavioral options.
 \field{LOCK} & Call memory & \texttt{Lock} = latch vehicle calls until served;
                           \texttt{-} = presence (call lasts only while the zone
                           sees a vehicle). \\
+\field{FLSH} & Flash program & What this phase's movement does in flash:
+                          \texttt{--} automatic / \texttt{YEL} / \texttt{RED} /
+                          \texttt{off}. \texttt{n/a} on a \texttt{PED} phase.
+                          Section~\ref{sec:flashprog}. \\
 \bottomrule
 \end{tabular}
 \caption{\screen{MAP} columns.}
@@ -718,6 +724,39 @@ maps directly: leave presence (non-lock) on stop-bar zones — especially FYA
 lefts — and use LOCK where a missed call is worse than a wasted green. Under
 coordination a latched call still waits for the phase's permissive window; the
 latch persists, it doesn't jump the cycle.
+
+\paragraph{Flash program (FLSH).}\label{sec:flashprog}
+Left alone (\texttt{--} on every phase), flash mode uses the controller's
+automatic rule, which decides yellow-versus-red from the \emph{order the circuits
+were linked in}: the first circuit flashes yellow and the rest flash red on
+alternating half-cycles. That lines up at a simple intersection wired in street
+order, but rarely at one programmed here — the main street may well be C3, and a
+single circuit often carries both a through and a left.
+
+Setting \field{FLSH} on any phase switches the controller to a \emph{programmed}
+flash built from this screen:
+
+\begin{itemize}
+  \item Each programmed phase drives its own movement's heads — so a through can
+        flash \texttt{YEL} while the left on the same circuit flashes \texttt{RED}.
+        A through carries its concurrent right turn; a left carries both its
+        protected and permissive lenses.
+  \item Approaches alternate \emph{by barrier}: barrier~A (\ph{1}, \ph{2},
+        \ph{5}, \ph{6} — the main street and its lefts) lights on one half-cycle,
+        barrier~B (\ph{3}, \ph{4}, \ph{7}, \ph{8} — the side street) on the
+        other. That's the familiar main-versus-cross wig-wag, taken from the
+        phase map rather than from the order you linked the circuits in.
+  \item Anything you don't program flashes \textbf{red}, on barrier~A's beat.
+        Pedestrian heads are dark and beacons flash as they always do.
+\end{itemize}
+
+The program applies however the controller reaches flash — the \texttt{FLASH}
+mode, nightly fallback, or power-loss fallback. It does not affect the all-red
+flash or the fault flash, which stay all-red by design.
+
+\key{Load Std 8-Phase} fills it in for you: main-street throughs \texttt{YEL},
+side-street throughs \texttt{RED}, every left \texttt{RED} --- the standard
+program at a typical four-way.
 
 \subsection{ACT — actuation / volume-density}\label{sec:act}
 

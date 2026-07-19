@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.trafficsignals;
 
 import com.micatechnologies.minecraft.csm.CsmNetwork;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalCoordinationMode;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalFlashOverride;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalPhaseMovement;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalOverlapType;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalPreempt;
@@ -96,6 +97,14 @@ public class AdvancedSignalControllerGui extends GuiScreen {
   private static final String[] PED_OPT_LABELS = {"no", "PedR", "Walk", "P+W"};
   // Combined dual-entry (bit 0) + conditional-service (bit 1) labels for the MAP "OPT" column.
   private static final String[] PHASE_OPT_LABELS = {"-", "DE", "CS", "D+C"};
+  // Flash-mode override labels for the MAP "FLSH" column (TrafficSignalFlashOverride ordinals).
+  private static final String[] FLASH_LABELS = {"--", "YEL", "RED", "off"};
+  // MAP screen columns, in visual (and arrow-key) order. Offsets are from the LCD's left edge and
+  // are shared by the cells, the header row and the hover-help regions so they cannot drift apart.
+  private static final String[] MAP_HEADERS =
+      {"EN", "CKT", "MOVE", "RCL", "PED", "FYA", "OPT", "LOCK", "FLSH"};
+  private static final int[] MAP_COL_DX = {22, 56, 96, 140, 182, 214, 244, 274, 308};
+  private static final int[] MAP_COL_W = {30, 36, 40, 38, 28, 26, 26, 30, 30};
   private static final String[] TIMING_HEADERS =
       {"MnG", "Pas", "MxG", "Yel", "Red", "Wlk", "PCl", "DGn"};
   private static final String[] TIMING_ACTIONS = {"ph.minGreen", "ph.passage", "ph.maxGreen",
@@ -452,16 +461,16 @@ public class AdvancedSignalControllerGui extends GuiScreen {
     int rowH = 11;
     int y0 = lcdY + TABLE_BODY_DY;
     int circuitCount = controller.getSignalCircuitCount();
-    int[] colX = {lcdX + 26, lcdX + 70, lcdX + 126, lcdX + 174, lcdX + 222};
     for (int pn = 1; pn <= TrafficSignalProgrammedPhasePlan.PHASE_COUNT; pn++) {
       final int n = pn;
       int y = y0 + (pn - 1) * rowH;
+      // Columns are added in MAP_HEADERS order so the arrow keys walk the row left to right.
       // EN
-      cells.add(new Cell(colX[0], y, 32,
+      cells.add(new Cell(lcdX + MAP_COL_DX[0], y, MAP_COL_W[0],
           () -> plan().getPhase(n).isEnabled() ? "On" : "off",
           dir -> send("ph.enabled", n, plan().getPhase(n).isEnabled() ? 0 : 1), null));
       // Circuit
-      cells.add(new Cell(colX[1], y, 50,
+      cells.add(new Cell(lcdX + MAP_COL_DX[1], y, MAP_COL_W[1],
           () -> plan().getPhase(n).getCircuitIndex() < 0 ? "--"
               : ("C" + (plan().getPhase(n).getCircuitIndex() + 1)),
           dir -> {
@@ -475,37 +484,26 @@ public class AdvancedSignalControllerGui extends GuiScreen {
             send("ph.circuit", n, c);
           }, null));
       // Movement
-      cells.add(new Cell(colX[2], y, 44,
+      cells.add(new Cell(lcdX + MAP_COL_DX[2], y, MAP_COL_W[2],
           () -> MOVEMENT_ABBR[plan().getPhase(n).getMovement().ordinal()],
           dir -> send("ph.movement", n,
               cyc(plan().getPhase(n).getMovement().ordinal(), dir,
                   TrafficSignalPhaseMovement.values().length)), null));
       // Recall
-      cells.add(new Cell(colX[3], y, 44,
+      cells.add(new Cell(lcdX + MAP_COL_DX[3], y, MAP_COL_W[3],
           () -> RECALL_ABBR[plan().getPhase(n).getRecallMode().ordinal()],
           dir -> send("ph.recall", n,
               cyc(plan().getPhase(n).getRecallMode().ordinal(), dir,
                   TrafficSignalRecallMode.values().length)), null));
       // Ped options: combined ped recall + rest-in-walk as a 4-state cycle.
-      cells.add(new Cell(colX[4], y, 34,
+      cells.add(new Cell(lcdX + MAP_COL_DX[4], y, MAP_COL_W[4],
           () -> PED_OPT_LABELS[pedOptState(plan().getPhase(n))],
           dir -> {
             int st = (pedOptState(plan().getPhase(n)) + (dir >= 0 ? 1 : 3)) & 3;
             send("ph.pedOpts", n, st);
           }, null));
-      // Phase options: combined dual entry + conditional service as a 4-state cycle.
-      cells.add(new Cell(lcdX + 288, y, 30,
-          () -> PHASE_OPT_LABELS[phaseOptState(plan().getPhase(n))],
-          dir -> {
-            int st = (phaseOptState(plan().getPhase(n)) + (dir >= 0 ? 1 : 3)) & 3;
-            send("ph.phaseOpts", n, st);
-          }, null));
-      // Locking detector memory (ASC/3 vehicle call memory): latch calls until served.
-      cells.add(new Cell(lcdX + 320, y, 32,
-          () -> plan().getPhase(n).isLockCall() ? "Lock" : "-",
-          dir -> send("ph.lockCall", n, plan().getPhase(n).isLockCall() ? 0 : 1), null));
       // FYA permissive phase (opposing through; 0 = protected-only)
-      cells.add(new Cell(lcdX + 256, y, 30,
+      cells.add(new Cell(lcdX + MAP_COL_DX[5], y, MAP_COL_W[5],
           () -> {
             int pp = plan().getPhase(n).getPermissivePhase();
             return pp <= 0 ? "--" : ("P" + pp);
@@ -521,7 +519,36 @@ public class AdvancedSignalControllerGui extends GuiScreen {
             }
             send("ph.permPhase", n, pp);
           }, null));
+      // Phase options: combined dual entry + conditional service as a 4-state cycle.
+      cells.add(new Cell(lcdX + MAP_COL_DX[6], y, MAP_COL_W[6],
+          () -> PHASE_OPT_LABELS[phaseOptState(plan().getPhase(n))],
+          dir -> {
+            int st = (phaseOptState(plan().getPhase(n)) + (dir >= 0 ? 1 : 3)) & 3;
+            send("ph.phaseOpts", n, st);
+          }, null));
+      // Locking detector memory (ASC/3 vehicle call memory): latch calls until served.
+      cells.add(new Cell(lcdX + MAP_COL_DX[7], y, MAP_COL_W[7],
+          () -> plan().getPhase(n).isLockCall() ? "Lock" : "-",
+          dir -> send("ph.lockCall", n, plan().getPhase(n).isLockCall() ? 0 : 1), null));
+      // Flash override: what this phase's movement does in flash mode. A pedestrian phase has no
+      // vehicle movement of its own and ped heads are dark in flash, so the column is inert there
+      // (checked live, so it tracks MOVE edits without a cell rebuild).
+      cells.add(new Cell(lcdX + MAP_COL_DX[8], y, MAP_COL_W[8],
+          () -> isFlashProgrammable(plan().getPhase(n))
+              ? FLASH_LABELS[plan().getPhase(n).getFlashOverride().ordinal()] : "n/a",
+          dir -> {
+            if (!isFlashProgrammable(plan().getPhase(n))) {
+              return;
+            }
+            send("ph.flash", n, cyc(plan().getPhase(n).getFlashOverride().ordinal(), dir,
+                TrafficSignalFlashOverride.values().length));
+          }, null));
     }
+  }
+
+  /** @return whether the phase drives vehicle heads, i.e. whether FLSH means anything for it. */
+  private static boolean isFlashProgrammable(TrafficSignalProgrammedPhase phase) {
+    return phase != null && phase.getMovement() != TrafficSignalPhaseMovement.PED;
   }
 
   private void buildCoordCells() {
@@ -1189,23 +1216,15 @@ public class AdvancedSignalControllerGui extends GuiScreen {
 
   private void drawMap() {
     fontRenderer.drawString("PHASE MAP", lcdX, lcdY, COLOR_AMBER_HEAD);
-    fontRenderer.drawString("EN", lcdX + 26, lcdY + 12, COLOR_AMBER_DIM);
-    fontRenderer.drawString("CKT", lcdX + 70, lcdY + 12, COLOR_AMBER_DIM);
-    fontRenderer.drawString("MOVE", lcdX + 126, lcdY + 12, COLOR_AMBER_DIM);
-    fontRenderer.drawString("RCL", lcdX + 174, lcdY + 12, COLOR_AMBER_DIM);
-    fontRenderer.drawString("PED", lcdX + 222, lcdY + 12, COLOR_AMBER_DIM);
-    fontRenderer.drawString("FYA", lcdX + 256, lcdY + 12, COLOR_AMBER_DIM);
-    fontRenderer.drawString("OPT", lcdX + 288, lcdY + 12, COLOR_AMBER_DIM);
-    fontRenderer.drawString("LOCK", lcdX + 320, lcdY + 12, COLOR_AMBER_DIM);
+    for (int i = 0; i < MAP_HEADERS.length; i++) {
+      fontRenderer.drawString(MAP_HEADERS[i], lcdX + MAP_COL_DX[i], lcdY + 12, COLOR_AMBER_DIM);
+    }
     int rowH = 11;
     for (int pn = 1; pn <= TrafficSignalProgrammedPhasePlan.PHASE_COUNT; pn++) {
       int y = lcdY + TABLE_BODY_DY + (pn - 1) * rowH;
       fontRenderer.drawString("φ" + pn, lcdX, y, COLOR_AMBER);
     }
     int colHelpH = (TABLE_BODY_DY - 12) + TrafficSignalProgrammedPhasePlan.PHASE_COUNT * rowH;
-    int[] hx = {lcdX + 26, lcdX + 70, lcdX + 126, lcdX + 174, lcdX + 222, lcdX + 256,
-        lcdX + 288, lcdX + 320};
-    int[] hw = {40, 50, 46, 46, 32, 30, 30, 34};
     String[][] colHelp = {
         {"Enable (EN)", "On = this phase runs. off = the phase is skipped",
             "entirely and never served."},
@@ -1231,9 +1250,16 @@ public class AdvancedSignalControllerGui extends GuiScreen {
             "if the car leaves the zone (pulse-detector behavior).",
             "'-' = presence: the call lasts only while the zone sees a",
             "vehicle — a car clearing on an FYA flash drops its call."},
+        {"Flash Program (FLSH)", "What this phase's movement does in flash mode. '--' =",
+            "automatic (the legacy circuit-order rule: first circuit",
+            "yellow, the rest red). YEL / RED / off program it instead.",
+            "Approaches alternate by barrier — φ1/φ2/φ5/φ6 flash on one",
+            "beat, φ3/φ4/φ7/φ8 on the other — and anything you don't",
+            "program flashes red. 'n/a' = a PED phase, which has no",
+            "vehicle movement (ped heads are dark in flash)."},
     };
-    for (int i = 0; i < hx.length; i++) {
-      addHelp(hx[i], lcdY + 12, hw[i], colHelpH, colHelp[i]);
+    for (int i = 0; i < MAP_COL_DX.length; i++) {
+      addHelp(lcdX + MAP_COL_DX[i], lcdY + 12, MAP_COL_W[i], colHelpH, colHelp[i]);
     }
   }
 
