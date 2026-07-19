@@ -1,7 +1,9 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
 import com.micatechnologies.minecraft.csm.CsmNetwork;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignal;
 import java.io.IOException;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.util.math.BlockPos;
@@ -23,8 +25,11 @@ public class BlankoutBoxConfigGui extends GuiScreen {
             "Visor Type",
             "Mount Type",
             "Body Tilt",
-            "Sign Type"
+            "Sign Type",
+            "Signal State"
     };
+
+    private static final String[] SIGNAL_COLOR_NAMES = { "Red", "Yellow", "Green", "Off" };
 
     private final TileEntityBlankoutBox tileEntity;
     private final BlockPos blockPos;
@@ -88,6 +93,15 @@ public class BlankoutBoxConfigGui extends GuiScreen {
                 return tileEntity.getBodyTilt().getFriendlyName();
             case CYCLE_SIGN_TYPE:
                 return tileEntity.getBlankoutType().getFriendlyName();
+            case CYCLE_SIGNAL_COLOR: {
+                IBlockState state = tileEntity.getWorld().getBlockState( blockPos );
+                if ( !state.getProperties()
+                        .containsKey( AbstractBlockControllableSignal.COLOR ) ) {
+                    return "N/A";
+                }
+                return SIGNAL_COLOR_NAMES[ state.getValue(
+                        AbstractBlockControllableSignal.COLOR ) ];
+            }
             default:
                 return "N/A";
         }

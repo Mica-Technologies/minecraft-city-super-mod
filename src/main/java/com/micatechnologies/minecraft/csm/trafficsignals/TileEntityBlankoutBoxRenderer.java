@@ -262,6 +262,22 @@ public class TileEntityBlankoutBoxRenderer
                     showOn = false;
                     break;
             }
+        } else if ( blankoutType == BlankoutBoxType.NO_U_TURN
+                || blankoutType == BlankoutBoxType.TRAIN ) {
+            // These legends have no controller logic of their own — the signal color, set by hand
+            // with the config tool or the GUI, is what drives them: GREEN lit, YELLOW flashing
+            // (the usual look for an active train warning), RED / OFF dark.
+            switch ( colorValue ) {
+                case AbstractBlockControllableSignalHead.SIGNAL_GREEN:
+                    showOn = true;
+                    break;
+                case AbstractBlockControllableSignalHead.SIGNAL_YELLOW:
+                    showOn = flashOn;
+                    break;
+                default:
+                    showOn = false;
+                    break;
+            }
         } else {
             // Dont-walk / Do-not-enter: inverted pedestrian mapping
             switch ( colorValue ) {
