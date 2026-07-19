@@ -1307,20 +1307,20 @@ public class RingBarrierState {
       case ENTER:
         if (elapsed < PREEMPT_YELLOW_TICKS) {
           return AdvancedPhaseBuilder.buildForPhases(world, plan, circuits, overlaps,
-              preemptClearPhases, VehInterval.YELLOW);
+              preemptClearPhases, VehInterval.YELLOW, active);
         }
         return AdvancedPhaseBuilder.buildForPhases(world, plan, circuits, overlaps,
-            java.util.Collections.emptyList(), VehInterval.RED);
+            java.util.Collections.emptyList(), VehInterval.RED, active);
       case TRACK_CLEAR:
         return AdvancedPhaseBuilder.buildForPhases(world, plan, circuits, overlaps,
-            toPhaseList(active.getTrackClearPhases()), VehInterval.GREEN);
+            toPhaseList(active.getTrackClearPhases()), VehInterval.GREEN, active);
       case DWELL:
         return AdvancedPhaseBuilder.buildForPhases(world, plan, circuits, overlaps,
-            toPhaseList(active.getDwellPhases()), VehInterval.GREEN);
+            toPhaseList(active.getDwellPhases()), VehInterval.GREEN, active);
       case EXIT:
       default:
         return AdvancedPhaseBuilder.buildForPhases(world, plan, circuits, overlaps,
-            java.util.Collections.emptyList(), VehInterval.RED);
+            java.util.Collections.emptyList(), VehInterval.RED, active);
     }
   }
 

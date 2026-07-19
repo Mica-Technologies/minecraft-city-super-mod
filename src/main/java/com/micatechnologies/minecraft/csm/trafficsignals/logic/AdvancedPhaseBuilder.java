@@ -94,7 +94,8 @@ public final class AdvancedPhaseBuilder {
     applyFyaLenses(phase, plan, circuits, served, holdFlash);
     applyOverlaps(phase, overlaps);
     applyProgrammedOverlaps(phase, plan, circuits, ring1, ring2, overlapIntervals);
-    applyAccessoryStates(world, phase, circuits);
+    // No preempt is running on this path — preempt-driven blankout legends stay dark.
+    applyAccessoryStates(world, phase, circuits, null);
     return phase;
   }
 
@@ -503,6 +504,27 @@ public final class AdvancedPhaseBuilder {
       TrafficSignalControllerOverlaps overlaps,
       Collection<Integer> phaseNumbers,
       RingBarrierState.VehInterval interval) {
+    return buildForPhases(world, plan, circuits, overlaps, phaseNumbers, interval, null);
+  }
+
+  /**
+   * As {@link #buildForPhases(World, TrafficSignalProgrammedPhasePlan,
+   * TrafficSignalControllerCircuits, TrafficSignalControllerOverlaps, Collection,
+   * RingBarrierState.VehInterval)}, for a phase built while a preempt is running.
+   *
+   * @param activePreempt the preempt currently running, whose {@code signCircuits} illuminate their
+   *                      No-U-Turn / Train blankout signs for the whole sequence; {@code null} when
+   *                      no preempt is running.
+   *
+   * @since 2026.7
+   */
+  public static TrafficSignalPhase buildForPhases(World world,
+      TrafficSignalProgrammedPhasePlan plan,
+      TrafficSignalControllerCircuits circuits,
+      TrafficSignalControllerOverlaps overlaps,
+      Collection<Integer> phaseNumbers,
+      RingBarrierState.VehInterval interval,
+      TrafficSignalPreempt activePreempt) {
     TrafficSignalPhase phase = redBaseline(circuits);
     List<RingBarrierState.ServedMovement> served = new ArrayList<>(phaseNumbers.size());
     for (int n : phaseNumbers) {
@@ -517,7 +539,7 @@ public final class AdvancedPhaseBuilder {
     if (interval == RingBarrierState.VehInterval.GREEN) {
       applyOverlaps(phase, overlaps);
     }
-    applyAccessoryStates(world, phase, circuits);
+    applyAccessoryStates(world, phase, circuits, activePreempt);
     return phase;
   }
 
@@ -529,7 +551,7 @@ public final class AdvancedPhaseBuilder {
    * final — both decisions read the phase's green/FYA lists.
    */
   private static void applyAccessoryStates(World world, TrafficSignalPhase phase,
-      TrafficSignalControllerCircuits circuits) {
+      TrafficSignalControllerCircuits circuits, TrafficSignalPreempt activePreempt) {
     for (int i = 0; i < circuits.getCircuitCount(); i++) {
       TrafficSignalControllerCircuit circuit = circuits.getCircuit(i);
       if (!circuit.getBeaconSignals().isEmpty()) {
@@ -549,7 +571,9 @@ public final class AdvancedPhaseBuilder {
       }
       if (!circuit.getNoTurnBlankoutSignals().isEmpty()) {
         phase.removeSignals(circuit.getNoTurnBlankoutSignals());
-        TrafficSignalControllerTickerUtilities.addBlankoutSignalsToPhase(world, circuit, phase);
+        boolean preemptSignsLit = activePreempt != null && activePreempt.lightsSignsOnCircuit(i);
+        TrafficSignalControllerTickerUtilities.addBlankoutSignalsToPhase(world, circuit, phase,
+            preemptSignsLit);
       }
     }
   }

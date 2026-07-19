@@ -398,6 +398,14 @@ rather than relying on in-world checks.
   (`AdvancedPhaseBuilder.applyAccessoryStates`, mirroring NORMAL mode): beacons flash yellow
   whenever their circuit's through is not green, and blankout signs light per-facing wherever the
   corresponding turn is neither protected (green) nor permissive (FYA).
+- **Preempts drive the No-U-Turn / Train blankout legends** — each preempt carries a set of
+  circuits (`TrafficSignalPreempt.signCircuits`, NBT `sc`, the PREEMPT screen's **SIGNS** row).
+  While that preempt runs — every stage, enter through exit — the preempt-driven blankout boxes on
+  those circuits illuminate: Train flashes, No-U-Turn burns steady. The active preempt is threaded
+  from `RingBarrierState.buildPreemptPhase` into `buildForPhases` → `applyAccessoryStates` →
+  `addBlankoutSignalsToPhase`; with no preempt running (or in NORMAL mode) those legends are dark.
+  A rail preempt with the crossing approaches selected therefore lights their TRAIN signs for the
+  whole sequence without any extra wiring. See `TRAFFIC_SIGNAL_SYSTEM.md` for the box itself.
 - **Pedestrian-output overlaps place calls from button requests** — an overlap whose output
   movement is PED calls its `callPhase` from the output circuit's pedestrian request count (there
   is no vehicle zone for PED, so `zoneCount` would silently report zero forever).

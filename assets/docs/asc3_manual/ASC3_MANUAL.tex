@@ -834,10 +834,13 @@ Preemption suspends normal (or coordinated) operation for a higher authority.
 \field{DWELL}   & Phases held green for the duration (the train's parallel street,
                   the fire route). \\
 \field{EXIT}    & Phases served on the way out, before normal service resumes. \\
+\field{SIGNS}   & \emph{Circuits} (not phases) whose blankout boxes light for the
+                  whole sequence — see \emph{Blankout signs} below. \\
 \bottomrule
 \end{tabular}
 \caption{\screen{PREEMPT} fields. Toggle a phase in/out of a set by selecting the
-row and pressing \key{ENTER}/\key{+} on the phase number ([$n$] = included).}
+row and pressing \key{ENTER}/\key{+} on the phase number ([$n$] = included).
+\field{SIGNS} works the same way but lists circuits.}
 \label{tab:preempt}
 \end{table}
 
@@ -864,6 +867,24 @@ crossing, then DWELL on the parallel street; emergency preempts usually skip
 straight to DWELL on the approach route.}
 \label{fig:preempt}
 \end{figure}
+
+\paragraph{Blankout signs (SIGNS).}\label{sec:preemptsigns}
+A blankout box set to the 	exttt{Train} or 	exttt{No U-Turn} legend has no phase
+logic of its own — it is dark until a preempt lights it. Select the circuits its
+boxes are linked to in \field{SIGNS}, and every such box on those circuits comes up
+for the entire sequence, from the first yellow of ENTER through the end of EXIT: the
+	exttt{Train} legend flashes, 	exttt{No U-Turn} burns steady. Both go dark again as
+normal service resumes.
+
+That is the whole rail-crossing package in one place: \field{TRACK} flushes the
+crossing, \field{DWELL} holds the parallel street, and \field{SIGNS} lights the TRAIN
+signs on the approaches for as long as the gates are down.
+
+The other two legends are unaffected: 	exttt{No Left Turn} / 	exttt{No Right Turn}
+boxes always follow the turns the current phase permits, and 	exttt{Don't Walk} /
+	exttt{Do Not Enter} boxes link as ordinary pedestrian heads. A box that isn't linked
+to the controller at all stays fully manual — set its state with the signal head
+config tool or the box's own configuration screen.
 
 \subsection{OVL — vehicle overlaps}\label{sec:ovl}
 
@@ -1377,6 +1398,11 @@ flushes queued traffic off the crossing, \field{DWELL} = the street parallel to
 the tracks, \field{EXIT} = the throughs, and \field{Min Dwell} roughly the time
 the gates stay down. A train preempts everything — coordination included — and
 normal service resumes through the exit phases.
+
+Put a blankout box set to the \texttt{Train} legend on each approach to the
+crossing, link it to that approach's circuit, and tick those circuits in
+\field{SIGNS} (Section~\ref{sec:preemptsigns}): the signs flash for exactly as long
+as the preempt runs, and are dark the rest of the time.
 
 \subsection{A coordinated corridor}
 

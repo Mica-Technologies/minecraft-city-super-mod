@@ -425,14 +425,34 @@ configured the same way as a signal head.
 | No U-Turn | `NUT_BO` | Signal color GREEN (flashes on YELLOW) |
 | Train | `TRAIN_BO` | Signal color GREEN (flashes on YELLOW) |
 
-`getSignalSide()` reports `NO_TURN_BLANKOUT` only for the No Left/Right Turn legends, which
-is what makes `TrafficSignalControllerTickerUtilities.addBlankoutSignalsToPhase` drive them
-from the phase's permitted turns. The other legends report `PEDESTRIAN`.
+`getSignalSide()` reports `NO_TURN_BLANKOUT` for every legend the controller drives — the No
+Left/Right Turn pair (driven from the phase's permitted turns by
+`TrafficSignalControllerTickerUtilities.addBlankoutSignalsToPhase`) plus No-U-Turn and Train
+(driven by preempts, below). Don't Walk and Do Not Enter report `PEDESTRIAN`.
 
-**No-U-Turn and Train have no controller logic** — they are driven by the block's ordinary
-`COLOR` signal-state property, which is also what a linked controller would set. Cycle it by
-hand with the config tool's *Signal Color* mode or the config GUI's **Signal State** button:
-GREEN lit, YELLOW flashing, RED/OFF dark. No extra per-instance state exists for this.
+**Unlinked boxes are manual.** Nothing drives the `COLOR` property of a box that isn't linked
+to a controller, so any legend can be run by hand: cycle it with the config tool's *Signal
+Color* mode or the config GUI's **Signal State** button — GREEN lit, YELLOW flashing, RED/OFF
+dark. There is no separate per-instance on/off state; the signal-state property *is* the switch.
+
+### Preempt-driven legends (No-U-Turn / Train)
+
+These two have no phase logic of their own. When linked to a controller they are **dark**
+unless a running ADVANCED-mode preempt names their circuit in its `signCircuits` set (the
+PREEMPT screen's **SIGNS** row, NBT key `sc` on `TrafficSignalPreempt`). While such a preempt
+runs — through every stage, enter to exit — the Train legend **flashes** (driven yellow) and
+No-U-Turn **burns steady** (driven walk/green):
+
+```
+RingBarrierState.buildPreemptPhase(...)          // passes the active TrafficSignalPreempt
+  -> AdvancedPhaseBuilder.buildForPhases(..., activePreempt)
+    -> applyAccessoryStates(world, phase, circuits, activePreempt)
+      -> addBlankoutSignalsToPhase(world, circuit, phase, preemptSignsLit)
+```
+
+`preemptSignsLit` is `activePreempt.lightsSignsOnCircuit(circuitIndex)`. Normal (non-preempt)
+advanced phases pass `null` for the preempt, and NORMAL mode has no preempts at all, so in
+both cases these legends stay dark.
 
 ### Display face atlas
 
