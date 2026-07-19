@@ -83,6 +83,7 @@ public class TrafficSignalProgrammedPhase {
   private static final String K_MIN_GAP = "mn";
   private static final String K_TIME_B4_REDUCE = "t4";
   private static final String K_TIME_TO_REDUCE = "tr";
+  private static final String K_FLASH_OVERRIDE = "fo";
 
   // endregion
 
@@ -94,6 +95,11 @@ public class TrafficSignalProgrammedPhase {
   /** Index into the controller's circuit list, or -1 if unassigned. */
   private int circuitIndex = -1;
   private TrafficSignalPhaseMovement movement = TrafficSignalPhaseMovement.THROUGH;
+  /**
+   * What this phase's movement does in flash mode. {@link TrafficSignalFlashOverride#AUTO} (the
+   * default) leaves the controller on its legacy circuit-ordinal flash rule.
+   */
+  private TrafficSignalFlashOverride flashOverride = TrafficSignalFlashOverride.AUTO;
   private boolean enabled = false;
   private long minGreen = DEFAULT_MIN_GREEN;
   private long passage = DEFAULT_PASSAGE;
@@ -185,6 +191,14 @@ public class TrafficSignalProgrammedPhase {
 
   public void setMovement(TrafficSignalPhaseMovement movement) {
     this.movement = movement;
+  }
+
+  public TrafficSignalFlashOverride getFlashOverride() {
+    return flashOverride;
+  }
+
+  public void setFlashOverride(TrafficSignalFlashOverride flashOverride) {
+    this.flashOverride = flashOverride;
   }
 
   public boolean isEnabled() {
@@ -387,6 +401,7 @@ public class TrafficSignalProgrammedPhase {
     c.setInteger(K_BARRIER, barrier);
     c.setInteger(K_CIRCUIT, circuitIndex);
     c.setInteger(K_MOVEMENT, movement.toNBT());
+    c.setInteger(K_FLASH_OVERRIDE, flashOverride.toNBT());
     c.setBoolean(K_ENABLED, enabled);
     c.setLong(K_MIN_GREEN, minGreen);
     c.setLong(K_PASSAGE, passage);
@@ -418,6 +433,7 @@ public class TrafficSignalProgrammedPhase {
         c.getInteger(K_NUMBER), c.getInteger(K_RING), c.getInteger(K_BARRIER));
     p.circuitIndex = c.hasKey(K_CIRCUIT) ? c.getInteger(K_CIRCUIT) : -1;
     p.movement = TrafficSignalPhaseMovement.fromNBT(c.getInteger(K_MOVEMENT));
+    p.flashOverride = TrafficSignalFlashOverride.fromNBT(c.getInteger(K_FLASH_OVERRIDE));
     p.enabled = c.getBoolean(K_ENABLED);
     p.minGreen = c.hasKey(K_MIN_GREEN) ? c.getLong(K_MIN_GREEN) : DEFAULT_MIN_GREEN;
     p.passage = c.hasKey(K_PASSAGE) ? c.getLong(K_PASSAGE) : DEFAULT_PASSAGE;

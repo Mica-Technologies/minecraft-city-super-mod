@@ -161,6 +161,20 @@ public class TrafficSignalProgrammedPhasePlan {
     return false;
   }
 
+  /**
+   * @return {@code true} if at least one phase carries a {@link TrafficSignalFlashOverride} other
+   *     than {@link TrafficSignalFlashOverride#AUTO}, i.e. the controller should build its flash
+   *     phases from this plan instead of the legacy circuit-ordinal rule.
+   */
+  public boolean hasFlashOverrides() {
+    for (TrafficSignalProgrammedPhase p : phases) {
+      if (p.getFlashOverride().isOverride()) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   // endregion
 
   // region: Auto-template + validation
@@ -203,21 +217,24 @@ public class TrafficSignalProgrammedPhasePlan {
     for (TrafficSignalProgrammedPhase p : phases) {
       p.setCircuitIndex(-1);
       p.setEnabled(false);
+      p.setFlashOverride(TrafficSignalFlashOverride.AUTO);
     }
 
     // Major street: throughs 2/6 with same-approach lefts 5/1 (FHWA pairing); longer max greens.
+    // Flash program follows standard practice: major street flashes yellow, minor street red, and
+    // every left-turn movement red.
     if (major.size() > 0) {
-      assignApproach(circuits, major.get(0), 2, 5, 1200L);
+      assignApproach(circuits, major.get(0), 2, 5, 1200L, TrafficSignalFlashOverride.YELLOW);
     }
     if (major.size() > 1) {
-      assignApproach(circuits, major.get(1), 6, 1, 1200L);
+      assignApproach(circuits, major.get(1), 6, 1, 1200L, TrafficSignalFlashOverride.YELLOW);
     }
     // Minor street: throughs 4/8 with same-approach lefts 7/3; shorter max greens.
     if (minor.size() > 0) {
-      assignApproach(circuits, minor.get(0), 4, 7, 600L);
+      assignApproach(circuits, minor.get(0), 4, 7, 600L, TrafficSignalFlashOverride.RED);
     }
     if (minor.size() > 1) {
-      assignApproach(circuits, minor.get(1), 8, 3, 600L);
+      assignApproach(circuits, minor.get(1), 8, 3, 600L, TrafficSignalFlashOverride.RED);
     }
 
     // PPLT FYA: pair each protected left with its opposing through (standard NEMA layout) so the
@@ -235,13 +252,15 @@ public class TrafficSignalProgrammedPhasePlan {
   }
 
   private void assignApproach(TrafficSignalControllerCircuits circuits, int circuitIndex,
-      int throughPhaseNumber, int leftPhaseNumber, long throughMaxGreen) {
+      int throughPhaseNumber, int leftPhaseNumber, long throughMaxGreen,
+      TrafficSignalFlashOverride throughFlash) {
     TrafficSignalControllerCircuit circuit = circuits.getCircuit(circuitIndex);
     TrafficSignalProgrammedPhase through = getPhase(throughPhaseNumber);
     if (through != null) {
       through.setCircuitIndex(circuitIndex);
       through.setMovement(TrafficSignalPhaseMovement.THROUGH);
       through.setMaxGreen(throughMaxGreen);
+      through.setFlashOverride(throughFlash);
       through.setEnabled(true);
     }
     boolean hasLeft = !circuit.getProtectedSignals().isEmpty()
@@ -251,6 +270,7 @@ public class TrafficSignalProgrammedPhasePlan {
       left.setCircuitIndex(circuitIndex);
       left.setMovement(TrafficSignalPhaseMovement.PROTECTED_LEFT);
       left.setMaxGreen(300L);
+      left.setFlashOverride(TrafficSignalFlashOverride.RED);
       left.setEnabled(true);
     }
   }
