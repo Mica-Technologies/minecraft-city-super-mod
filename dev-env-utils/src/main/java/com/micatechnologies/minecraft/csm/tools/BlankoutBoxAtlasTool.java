@@ -15,8 +15,10 @@ import javax.imageio.ImageIO;
  * and update the corresponding atlas index constants in
  * {@code BlankoutBoxTextureMap.java} in the main mod source.
  *
- * <p>Atlas layout: 4x2 grid of 256x256 tiles = 1024x512 atlas. Tiles are numbered left-to-right,
- * top-to-bottom starting at index 0.
+ * <p>Atlas layout: 8x2 grid of 256x256 tiles = 2048x512 atlas. Tiles are numbered left-to-right,
+ * top-to-bottom starting at index 0: row 0 is the lit faces in {@code BlankoutBoxType} order, row 1
+ * the unlit ones, so the off tile of a type is always its on tile plus 8. An empty string leaves a
+ * slot blank (spare capacity for future legends).
  *
  * <p>Run via IntelliJ run configuration "Generate Blankout Box Atlas" or:
  * {@code mvn exec:java -Dexec.mainClass="...BlankoutBoxAtlasTool" -Dexec.args="<project-root>"}
@@ -31,9 +33,9 @@ public class BlankoutBoxAtlasTool {
 
   private static final String INPUT_EXTENSION = ".png";
   private static final int TILE_SIZE = 256;
-  private static final int COLS = 4;
+  private static final int COLS = 8;
   private static final int ROWS = 2;
-  private static final int OUTPUT_WIDTH = COLS * TILE_SIZE;   // 1024
+  private static final int OUTPUT_WIDTH = COLS * TILE_SIZE;   // 2048
   private static final int OUTPUT_HEIGHT = ROWS * TILE_SIZE;  // 512
 
   /**
@@ -42,30 +44,40 @@ public class BlankoutBoxAtlasTool {
    * only append new ones at the end to preserve index stability.
    *
    * <pre>
-   * Index  Texture       Row  Col  Type           State
-   * -----  ----------    ---  ---  -------------- -----
-   *   0    DW_BO         0    0    Don't Walk     ON
-   *   1    NLT_BO        0    1    No Left Turn   ON
-   *   2    NRT_BO        0    2    No Right Turn  ON
-   *   3    DNE_BO        0    3    Do Not Enter   ON
-   *   4    DW_BO_OFF     1    0    Don't Walk     OFF
-   *   5    NLT_BO_OFF    1    1    No Left Turn   OFF
-   *   6    NRT_BO_OFF    1    2    No Right Turn  OFF
-   *   7    DNE_BO_OFF    1    3    Do Not Enter   OFF
+   * Index  Texture        Row  Col  Type           State
+   * -----  ----------     ---  ---  -------------- -----
+   *   0    DW_BO          0    0    Don't Walk     ON
+   *   1    NLT_BO         0    1    No Left Turn   ON
+   *   2    NRT_BO         0    2    No Right Turn  ON
+   *   3    DNE_BO         0    3    Do Not Enter   ON
+   *   4    NUT_BO         0    4    No U-Turn      ON
+   *   5    TRAIN_BO       0    5    Train          ON
+   *   8    DW_BO_OFF      1    0    Don't Walk     OFF
+   *   9    NLT_BO_OFF     1    1    No Left Turn   OFF
+   *  10    NRT_BO_OFF     1    2    No Right Turn  OFF
+   *  11    DNE_BO_OFF     1    3    Do Not Enter   OFF
+   *  12    NUT_BO_OFF     1    4    No U-Turn      OFF
+   *  13    TRAIN_BO_OFF   1    5    Train          OFF
    * </pre>
    */
   private static final String[] INPUT_IMAGE_NAMES = {
-      // Row 0: ON textures (indices 0-3)
-      "dw_bo",      // 0: Don't Walk ON
-      "nlt_bo",     // 1: No Left Turn ON
-      "nrt_bo",     // 2: No Right Turn ON
-      "dne_bo",     // 3: Do Not Enter ON
+      // Row 0: ON textures (indices 0-7)
+      "dw_bo",         // 0: Don't Walk ON
+      "nlt_bo",        // 1: No Left Turn ON
+      "nrt_bo",        // 2: No Right Turn ON
+      "dne_bo",        // 3: Do Not Enter ON
+      "nut_bo",        // 4: No U-Turn ON
+      "train_bo",      // 5: Train ON
+      "",              // 6: spare
+      "",              // 7: spare
 
-      // Row 1: OFF textures (indices 4-7)
-      "dw_bo_off",  // 4: Don't Walk OFF
-      "nlt_bo_off", // 5: No Left Turn OFF
-      "nrt_bo_off",  // 6: No Right Turn OFF
-      "dne_bo_off",  // 7: Do Not Enter OFF
+      // Row 1: OFF textures (indices 8-15)
+      "dw_bo_off",     // 8: Don't Walk OFF
+      "nlt_bo_off",    // 9: No Left Turn OFF
+      "nrt_bo_off",    // 10: No Right Turn OFF
+      "dne_bo_off",    // 11: Do Not Enter OFF
+      "nut_bo_off",    // 12: No U-Turn OFF
+      "train_bo_off",  // 13: Train OFF
   };
 
   public static void main(String[] args) {
@@ -84,7 +96,13 @@ public class BlankoutBoxAtlasTool {
           }
 
           BufferedImage[] loadedImages = new BufferedImage[INPUT_IMAGE_NAMES.length];
+          int tileCount = 0;
           for (int i = 0; i < INPUT_IMAGE_NAMES.length; i++) {
+            if (INPUT_IMAGE_NAMES[i].isEmpty()) {
+              loadedImages[i] = null;  // spare slot: left blank
+              continue;
+            }
+            tileCount++;
             File imgFile = new File(inputFolder, INPUT_IMAGE_NAMES[i] + INPUT_EXTENSION);
             try {
               loadedImages[i] = ImageIO.read(imgFile);
@@ -102,6 +120,9 @@ public class BlankoutBoxAtlasTool {
           Graphics2D g2d = outputImage.createGraphics();
 
           for (int i = 0; i < INPUT_IMAGE_NAMES.length; i++) {
+            if (loadedImages[i] == null) {
+              continue;
+            }
             int row = i / COLS;
             int col = i % COLS;
             g2d.drawImage(loadedImages[i],
@@ -112,10 +133,10 @@ public class BlankoutBoxAtlasTool {
 
           ImageIO.write(outputImage, "png", outputFile);
           System.out.println("\nAtlas generated: " + outputFile.getAbsolutePath());
-          System.out.println("  " + INPUT_IMAGE_NAMES.length + " tiles in "
+          System.out.println("  " + tileCount + " tiles in "
               + COLS + "x" + ROWS + " grid ("
               + OUTPUT_WIDTH + "x" + OUTPUT_HEIGHT + "px)");
-          System.out.println("  " + (totalSlots - INPUT_IMAGE_NAMES.length)
+          System.out.println("  " + (totalSlots - tileCount)
               + " empty slots remaining for future textures");
         });
   }

@@ -652,8 +652,8 @@ public class CsmTabRoadSigns extends CsmTab {
 
     // Redstone-powered two-state electronic signs (energized face vs. blank/dark face). These
     // use BlockPoweredTrafficSign; the on/off texture swap is driven by the POWERED blockstate.
-    initTabBlock(new BlockPoweredTrafficSign("adaptivenouturnsign"));
-    initTabBlock(new BlockPoweredTrafficSign("adaptivetrainsign"));
+    // The adaptive no-U-turn and train legends live on the blankout box instead (see
+    // BlankoutBoxType), which is what an intersection actually uses for them.
     initTabBlock(new BlockPoweredTrafficSign("lightsoutnopowersign"));
   }
 }
