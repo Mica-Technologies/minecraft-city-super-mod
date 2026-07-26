@@ -158,15 +158,47 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
     compound.removeTag(legacyGlitchyKey);
     compound.removeTag(legacyConnectedAppliancesKey);
 
-    // Re-register with the API registry if this panel was saved with an active alarm
-    if (world != null && !world.isRemote) {
-      int dim = world.provider.getDimension();
-      if (alarm) {
-        FireAlarmPanelRegistry.registerFireAlarm(dim, getPos());
-      }
-      if (alarmStorm) {
-        FireAlarmPanelRegistry.registerStormAlarm(dim, getPos());
-      }
+    // Re-register with the API registry if this panel was saved with an active alarm.
+    // NOTE: this does NOT cover the chunk-load path — TileEntity.create calls setWorldCreate
+    // (an empty no-op in vanilla 1.12.2) before readFromNBT, so `world` is still null here when
+    // a panel is read back off disk. onLoad() below is what actually restores the registration;
+    // this block only helps on paths where the TE already has a world (e.g. a re-read after
+    // placement). Keep both — they are cheap and idempotent.
+    registerActiveAlarms();
+  }
+
+  /**
+   * Restores this panel's entries in {@link FireAlarmPanelRegistry} when the tile entity is
+   * added to the world.
+   * <p>
+   * Required for correctness on dedicated servers: {@link #onChunkUnload()} drops the
+   * registration when a chunk unloads, and nothing else adds it back. Registration otherwise
+   * only happens on an OFF -&gt; ON transition in {@link #setAlarmState(boolean)} /
+   * {@link #setAlarmStormState(boolean)}, so a latched alarm that survives a chunk reload
+   * would keep sounding while {@code CsmFireAlarmQuery} reported no alarm at all — silently
+   * breaking every consumer of the API (SUM's roamer evacuation AI, for one). Fire alarms
+   * latch until manually reset, so they never recovered; redstone-driven storm alarms only
+   * recovered if something re-triggered them.
+   * <p>
+   * {@code onLoad} is the correct hook because {@code World.addTileEntity} calls it after
+   * {@code setWorld}, so {@code world} is populated (unlike during {@code readFromNBT}).
+   */
+  @Override
+  public void onLoad() {
+    super.onLoad();
+    registerActiveAlarms();
+  }
+
+  private void registerActiveAlarms() {
+    if (world == null || world.isRemote) {
+      return;
+    }
+    int dim = world.provider.getDimension();
+    if (alarm) {
+      FireAlarmPanelRegistry.registerFireAlarm(dim, getPos());
+    }
+    if (alarmStorm) {
+      FireAlarmPanelRegistry.registerStormAlarm(dim, getPos());
     }
   }
 
