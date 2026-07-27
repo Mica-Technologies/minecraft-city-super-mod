@@ -22,11 +22,13 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Set Up JDK 17
+      # RFG runs the Gradle process on Java 21+ (compiler + mod code stay Java 8 via
+      # Jabel); older Gradle-JVM Java versions are deprecated and slated for removal.
+      - name: Set Up JDK 21
         uses: actions/setup-java@v5
         with:
           distribution: 'zulu'
-          java-version: '17'
+          java-version: '21'
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v6
