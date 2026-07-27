@@ -78,24 +78,30 @@ jobs:
       - name: Assemble Mod with Gradle
         run: ./gradlew build -Dhttp.socketTimeout=60000 -Dhttp.connectionTimeout=60000 -Dorg.gradle.internal.http.socketTimeout=60000 -Dorg.gradle.internal.http.connectionTimeout=60000
 
+      # `| tail -n 1`: these values are pasted into a filename by the publish step below, so
+      # any stray stdout line corrupts the release. Gradle prints banners during project
+      # evaluation even under -q — the buildscript update check did exactly that on
+      # 2026-07-27 and the release died on `cp ./build/libs/Build script update available!...`.
+      # Taking the last line keeps the print task's own output. gradle.properties disables
+      # that particular check at the source; this is the belt-and-braces half.
       - name: Save Mod Name to GITHUB_ENV
         run: |
-          modName=$(${{github.workspace}}/gradlew -q printModName | xargs)
+          modName=$(${{github.workspace}}/gradlew -q printModName | tail -n 1 | xargs)
           echo "MOD_NAME=$modName" >> $GITHUB_ENV
 
       - name: Save Mod Version to GITHUB_ENV
         run: |
-          modVersion=$(${{github.workspace}}/gradlew -q printModVersion | xargs)
+          modVersion=$(${{github.workspace}}/gradlew -q printModVersion | tail -n 1 | xargs)
           echo "MOD_VERSION=$modVersion" >> $GITHUB_ENV
 
       - name: Save Mod Archive Base Name to GITHUB_ENV
         run: |
-          modArchiveBaseName=$(${{github.workspace}}/gradlew -q printArchivesBaseName | xargs)
+          modArchiveBaseName=$(${{github.workspace}}/gradlew -q printArchivesBaseName | tail -n 1 | xargs)
           echo "MOD_ARCHIVE_BASE_NAME=$modArchiveBaseName" >> $GITHUB_ENV
 
       - name: Save Minecraft Version to GITHUB_ENV
         run: |
-          minecraftVersion=$(${{github.workspace}}/gradlew -q printMinecraftVersion | xargs)
+          minecraftVersion=$(${{github.workspace}}/gradlew -q printMinecraftVersion | tail -n 1 | xargs)
           echo "MINECRAFT_VERSION=$minecraftVersion" >> $GITHUB_ENV
 
       - name: Copy Assembled Mod Jar to GitHub Actions Workspace
