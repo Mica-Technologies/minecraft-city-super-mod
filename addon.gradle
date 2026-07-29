@@ -10,6 +10,34 @@ if (project.hasProperty('usesShadowedDependencies') && usesShadowedDependencies.
         // missing locale data MaryTTS needs (causing StackOverflowError). Relocating our
         // full ICU4J gives MaryTTS its own complete copy without conflicting.
         relocate 'com.ibm.icu', 'com.micatechnologies.minecraft.csm.shadow.com.ibm.icu'
+
+        // MaryTTS also pulls in commons-lang 2.x and commons-collections, and shading those under
+        // their own names does not work: FML's relauncher registers `org.apache.commons.` as a
+        // CLASSLOADER EXCLUSION, so LaunchClassLoader.findClass delegates every class under that
+        // package straight to its parent and never looks inside a mod jar. All 143 commons-lang
+        // classes were in the jar and unreachable by construction.
+        //
+        // The symptom: MaryTTS never starts, and every TTS call silently falls through to the
+        // system narrator instead.
+        //
+        //   [CSM-TTS] Failed to initialize MaryTTS — TTS will fall back to system narrator
+        //   java.lang.NoClassDefFoundError: org/apache/commons/lang/StringUtils
+        //       at marytts.config.MaryConfig.getList(MaryConfig.java:261)
+        //
+        // Same class of problem as the ICU relocation above, and the same fix: give MaryTTS its own
+        // copy under a package name Forge has no opinion about.
+        //
+        // The lang3 exclude is load-bearing. Shadow matches relocation patterns by path prefix, so
+        // `org.apache.commons.lang` also matches `org.apache.commons.lang3` — which is deliberately
+        // NOT shaded (see excludeForgeProvided in dependencies.gradle) because Forge provides it.
+        // Without the exclude, every lang3 reference would be rewritten to point at a shaded
+        // package that does not exist.
+        relocate('org.apache.commons.lang',
+                'com.micatechnologies.minecraft.csm.shadow.org.apache.commons.lang') {
+            exclude 'org.apache.commons.lang3.**'
+        }
+        relocate 'org.apache.commons.collections',
+                'com.micatechnologies.minecraft.csm.shadow.org.apache.commons.collections'
     }
 }
 
