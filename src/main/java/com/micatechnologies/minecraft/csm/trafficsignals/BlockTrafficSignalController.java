@@ -7,6 +7,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import net.minecraft.block.Block;
+import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.BlockStateContainer;
@@ -38,7 +39,9 @@ public class BlockTrafficSignalController extends AbstractBlock implements ICsmT
   public static final PropertyBool POWERED = PropertyBool.create("powered");
 
   public BlockTrafficSignalController() {
-    super(Material.ROCK);
+    // Unlike the rest of the traffic signal equipment, the controller cabinet is a genuine
+    // opaque full cube, so it takes the full light opacity rather than zero.
+    super(Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 255);
     setTickRandomly(true);
   }
 
