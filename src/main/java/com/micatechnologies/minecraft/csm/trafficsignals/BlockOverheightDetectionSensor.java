@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.UUID;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
@@ -52,7 +53,7 @@ public class BlockOverheightDetectionSensor extends AbstractBlockRotatableNSEW
   }
 
   public BlockOverheightDetectionSensor() {
-    super(Material.ROCK);
+    super(Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0);
   }
 
   @Override
