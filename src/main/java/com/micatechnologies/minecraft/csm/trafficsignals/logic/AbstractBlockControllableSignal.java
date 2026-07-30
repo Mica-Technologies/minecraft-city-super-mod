@@ -5,6 +5,7 @@ import com.micatechnologies.minecraft.csm.codeutils.ICsmNoSnowAccumulation;
 import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalHead;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyInteger;
 import net.minecraft.block.state.BlockStateContainer;
@@ -29,8 +30,17 @@ public abstract class AbstractBlockControllableSignal extends AbstractBlockRotat
   public static final int SIGNAL_OFF = 3;
   public static final PropertyInteger COLOR = PropertyInteger.create("color", 0, 3);
 
+  /**
+   * Constructs an {@link AbstractBlockControllableSignal} using the mod-wide standard survival
+   * block properties (stone sound, iron-pickaxe harvest, hardness 2, blast resistance 10). Light
+   * level is left at zero here because every signal in this hierarchy computes its emitted light
+   * dynamically by overriding {@link #getLightValue(IBlockState, IBlockAccess, BlockPos)}; light
+   * opacity is zero because signals are never opaque cubes.
+   *
+   * @param p_i45394_1_ The material of the block.
+   */
   public AbstractBlockControllableSignal(Material p_i45394_1_) {
-    super(p_i45394_1_);
+    super(p_i45394_1_, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0);
   }
 
   public static boolean changeSignalColor(World world, BlockPos blockPos, int signalColor) {

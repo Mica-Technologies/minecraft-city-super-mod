@@ -6,6 +6,7 @@ import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalSensor;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.tileentity.TileEntity;
@@ -42,8 +43,15 @@ import net.minecraft.world.World;
 public abstract class AbstractBlockTrafficSignalSensor extends AbstractBlockRotatableNSEW
     implements ICsmTileEntityProvider, ICsmNoSnowAccumulation, ITrafficSignalSensor {
 
+  /**
+   * Constructs an {@link AbstractBlockTrafficSignalSensor} using the mod-wide standard survival
+   * block properties (stone sound, iron-pickaxe harvest, hardness 2, blast resistance 10). Sensors
+   * emit no light and are never opaque cubes, so both light values are zero.
+   *
+   * @param materialIn The material of the block.
+   */
   public AbstractBlockTrafficSignalSensor(Material materialIn) {
-    super(materialIn);
+    super(materialIn, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0);
   }
 
   /**
