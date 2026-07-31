@@ -1,0 +1,23 @@
+{
+  "type": "forge:ore_shaped",
+  "pattern": [
+    " S ",
+    "SCS",
+    " E "
+  ],
+  "key": {
+    "S": {
+      "item": "csm:part_sheet_metal"
+    },
+    "C": {
+      "item": "csm:part_control_board"
+    },
+    "E": {
+      "item": "csm:part_enclosure_shell"
+    }
+  },
+  "result": {
+    "item": "csm:csm_fabricator",
+    "count": 1
+  }
+}

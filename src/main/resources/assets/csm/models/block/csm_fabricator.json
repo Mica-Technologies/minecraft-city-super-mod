@@ -1,0 +1,12 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "particle": "csm:blocks/materials/fabricator_side",
+    "down": "csm:blocks/materials/fabricator_top",
+    "up": "csm:blocks/materials/fabricator_top",
+    "north": "csm:blocks/materials/fabricator_front",
+    "south": "csm:blocks/materials/fabricator_side",
+    "east": "csm:blocks/materials/fabricator_side",
+    "west": "csm:blocks/materials/fabricator_side"
+  }
+}
