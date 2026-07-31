@@ -171,6 +171,9 @@ public class Csm {
           com.micatechnologies.minecraft.csm.trafficsignals.SensorConfigPacketHandler.class,
           com.micatechnologies.minecraft.csm.trafficsignals.SensorConfigPacket.class, Side.SERVER);
       CsmNetwork.registerNetworkMessage(
+          com.micatechnologies.minecraft.csm.materials.CsmFabricateHandler.class,
+          com.micatechnologies.minecraft.csm.materials.CsmFabricatePacket.class, Side.SERVER);
+      CsmNetwork.registerNetworkMessage(
           com.micatechnologies.minecraft.csm.trafficsignals.CrosswalkConfigPacketHandler.class,
           com.micatechnologies.minecraft.csm.trafficsignals.CrosswalkConfigPacket.class, Side.SERVER);
       CsmNetwork.registerNetworkMessage(
@@ -357,6 +360,28 @@ public class Csm {
       proxy.postInit(event);
       logger.info("Finished post-initialization of proxy (" + side + ")");
       progressBar.step("Proxy Post-Initialization");
+
+      // Report Fabricator coverage. Creative tabs are assigned during preInit, so by now every
+      // block has its final tab and CsmFabricatorCosts can price it. A sudden drop in this
+      // number means a tab was added or renamed without pricing its contents.
+      //
+      // Guarded with Throwable rather than Exception: this is diagnostics, and it must not be
+      // able to take mod loading down. A linkage error here would otherwise escape the
+      // Exception-only catch below and surface as an unrelated "can't pop unfinished
+      // ProgressBar" from the finally block, hiding its own cause.
+      try {
+        int fabricable = 0;
+        for (net.minecraft.block.Block block : CsmRegistry.getBlocks()) {
+          if (com.micatechnologies.minecraft.csm.materials.CsmFabricatorCosts.getCost(block)
+              != null) {
+            fabricable++;
+          }
+        }
+        logger.info("Fabricator coverage: {} of {} registered blocks are fabricable",
+            fabricable, CsmRegistry.getBlocks().size());
+      } catch (Throwable t) {
+        logger.warn("Could not compute Fabricator coverage", t);
+      }
 
       // Output completion of post-initialization
       logger.info(

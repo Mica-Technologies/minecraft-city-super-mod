@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
@@ -234,6 +235,36 @@ public abstract class CsmTab {
    * @since 1.0
    */
   public abstract void initTabElements(FMLPreInitializationEvent fmlPreInitializationEvent);
+
+  /**
+   * Resolves a {@link CreativeTabs} instance back to the tab id of the {@link CsmTab} that
+   * created it.
+   *
+   * <p>This exists because {@link CreativeTabs#getTabLabel()} is annotated
+   * {@code @SideOnly(Side.CLIENT)}: FML strips it from the dedicated server, so calling it from
+   * common code compiles cleanly and then fails at runtime with a {@code NoSuchMethodError}.
+   * Matching against the tabs this mod created is side-safe because {@link #getTabId()} is our
+   * own method.</p>
+   *
+   * @param tab the creative tab to resolve, may be {@code null}
+   *
+   * @return the owning {@link CsmTab}'s id, or {@code null} if the tab is {@code null} or was
+   *     not created by this mod
+   *
+   * @since 2026.7
+   */
+  @Nullable
+  public static String getTabId(CreativeTabs tab) {
+    if (tab == null) {
+      return null;
+    }
+    for (CsmTab csmTab : TABS.values()) {
+      if (csmTab.getTab() == tab) {
+        return csmTab.getTabId();
+      }
+    }
+    return null;
+  }
 
   /**
    * Gets the {@link CreativeTabs} instance for the {@link CsmTab} implementation class.
