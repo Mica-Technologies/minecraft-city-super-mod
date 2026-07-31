@@ -1,0 +1,15 @@
+{
+  "type": "forge:ore_shapeless",
+  "ingredients": [
+    {
+      "item": "csm:part_sheet_metal"
+    },
+    {
+      "item": "csm:part_reflective_sheeting"
+    }
+  ],
+  "result": {
+    "item": "csm:part_sign_blank",
+    "count": 2
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "type": "forge:ore_shapeless",
+  "ingredients": [
+    {
+      "type": "forge:ore_dict",
+      "ore": "paneGlass"
+    },
+    {
+      "type": "forge:ore_dict",
+      "ore": "paneGlass"
+    },
+    {
+      "item": "minecraft:dye",
+      "data": 32767
+    }
+  ],
+  "result": {
+    "item": "csm:part_lens_assembly",
+    "count": 2
+  }
+}
