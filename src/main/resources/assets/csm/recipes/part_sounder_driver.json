@@ -1,0 +1,24 @@
+{
+  "type": "forge:ore_shaped",
+  "pattern": [
+    " S ",
+    "SNS",
+    " R "
+  ],
+  "key": {
+    "S": {
+      "item": "csm:part_sheet_metal"
+    },
+    "N": {
+      "item": "minecraft:noteblock"
+    },
+    "R": {
+      "type": "forge:ore_dict",
+      "ore": "dustRedstone"
+    }
+  },
+  "result": {
+    "item": "csm:part_sounder_driver",
+    "count": 1
+  }
+}

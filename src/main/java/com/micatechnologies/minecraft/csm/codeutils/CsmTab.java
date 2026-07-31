@@ -42,6 +42,7 @@ import org.apache.logging.log4j.Logger;
  *   Order 10 = CsmTabTrafficSignals
  *   Order 11 = CsmTabFurniture
  *   Order 12 = CsmTabGaming
+ *   Order 13 = CsmTabMaterials
  * </pre>
  * <p>When adding a new tab, choose the next available order value and update this list.</p>
  *
@@ -90,12 +91,7 @@ public abstract class CsmTab {
         @Override
         @Nonnull
         public ItemStack createIcon() {
-          Block icon = getTabIcon();
-          if (icon == null) {
-            throw new IllegalStateException(
-                "Tab icon block not found for tab: " + getTabId());
-          }
-          return new ItemStack(icon, TAB_ICON_STACK_ITEM_COUNT);
+          return getTabIconStack();
         }
 
         /**
@@ -133,13 +129,41 @@ public abstract class CsmTab {
   public abstract String getTabId();
 
   /**
-   * Gets the block to use as the icon of the tab
+   * Gets the block to use as the icon of the tab.
    *
-   * @return the block to use as the icon of the tab
+   * <p>Tabs whose contents are items rather than blocks (for example {@code CSM: Materials})
+   * cannot supply a block here; those override {@link #getTabIconStack()} instead and leave this
+   * method returning {@code null}.</p>
+   *
+   * @return the block to use as the icon of the tab, or {@code null} if the tab supplies its icon
+   *     by overriding {@link #getTabIconStack()}
    *
    * @since 1.0
    */
-  public abstract Block getTabIcon();
+  public Block getTabIcon() {
+    return null;
+  }
+
+  /**
+   * Gets the {@link ItemStack} to display as the tab's icon.
+   *
+   * <p>By default this wraps the block returned by {@link #getTabIcon()}. Tabs that contain only
+   * items override this method directly to supply an item stack.</p>
+   *
+   * @return the {@link ItemStack} to display as the tab's icon
+   *
+   * @throws IllegalStateException if neither this method nor {@link #getTabIcon()} supplies an
+   *     icon
+   * @since 2026.7
+   */
+  @Nonnull
+  public ItemStack getTabIconStack() {
+    Block icon = getTabIcon();
+    if (icon == null) {
+      throw new IllegalStateException("Tab icon not found for tab: " + getTabId());
+    }
+    return new ItemStack(icon, TAB_ICON_STACK_ITEM_COUNT);
+  }
 
   /**
    * Gets a boolean indicating if the tab is searchable (has its own search bar).

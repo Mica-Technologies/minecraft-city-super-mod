@@ -1,0 +1,15 @@
+{
+  "type": "forge:ore_shapeless",
+  "ingredients": [
+    {
+      "item": "csm:part_lens_assembly"
+    },
+    {
+      "item": "csm:part_control_board"
+    }
+  ],
+  "result": {
+    "item": "csm:part_optical_sensor",
+    "count": 1
+  }
+}
