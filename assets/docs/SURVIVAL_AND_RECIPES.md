@@ -85,34 +85,54 @@ generated and nothing needs regenerating. Costs are 2–3 ingredients and may mi
 vanilla items, so a recipe can say something true about the material — coloured metal takes the
 matching dye, wooden furniture takes planks, utility crossarms take timber.
 
+> **Never infer what a block is from its registry name.** Registry ids in this mod are not
+> descriptive, and they have been **reused** for different blocks when things changed, to avoid
+> bloating existing worlds. `novtm` is a tapered mast, `rcpb` and `ocpm` are concrete poles, `pcc`
+> is a popcorn ceiling and `ctf` is a ceiling tile — none of which their ids suggest. Pricing from
+> ids produced exactly these bugs: street-light masts costing LED modules and ceiling tiles priced
+> as concrete.
+
+Costs are therefore decided from the **English display name** (`materials/CsmBlockDisplayNames`,
+read from the shipped `en_us.lang` as a classpath resource) and from the block's base class. The
+registry name is used only as the key to look the display name up.
+
+The specific signal is the **last word of the display name**, which in this mod reliably names the
+thing. Parenthetical qualifiers are stripped first:
+
+| Display name | Noun | Priced as |
+|---|---|---|
+| NOV Tapered Mast (Truss Style) | mast | pole |
+| NOV Round Concrete Pole (Base 1) | pole | concrete pole |
+| Highbay Light Mount | mount | mounting hardware |
+| Post Light 1 | light | luminaire |
+| Pole-Mount Variable Speed Limit Sign | sign | device |
+| Christmas Tree | tree | ornament |
+
 Rules are applied in this order:
 
-1. **Road signs** take a Sign Blank — except signposts, which are the hardware a sign bolts onto
-   and take a Pole Section + Fastener Kit.
-2. **Building materials** are priced from their base class. Coloured metal takes 1–2 Sheet Metal
-   plus the vanilla dye matching its colour (iridescent uses prismarine crystals); slab, stairs and
-   fence variants are priced relative to the full block. The concrete family takes Concrete Mix.
-3. **Structural hardware is recognised by registry name and priced before any subsystem default.**
-   Poles take Pole Sections (concrete poles take Pole Section + Concrete Mix), signposts take a
-   Pole Section + Fastener Kit, utility crossarms take planks, and anything whose name ends in
-   `mount` / `bracket` / `base` / `backplate` / `cover` / `visor` / `plate` / `clamp` takes Sheet
-   Metal + Fastener Kit.
-4. **Optical devices** (`camera`, `alpr`, `radar`, `lidar` in the name) take Optical Sensor +
-   Control Board.
-5. **Equipment with a dedicated base class** is priced from that class: fire alarm sounders,
-   activators and detectors; signal heads, detection sensors and the controller cabinet.
-6. **Everything else takes its subsystem default** — Lighting is LED Module + Sheet Metal + Wiring;
+1. **Poles, masts and crossarms** — structural, whatever subsystem files them. Concrete ones take
+   Pole Section + Concrete Mix; wooden ones and crossarms take planks.
+2. **Road signs** take a Sign Blank. Note "Sign Pole" is a pole by rule 1, while "Sign Pole 4-Way
+   Sign" ends in *sign* and is a sign.
+3. **Building materials** from base class; coloured metal adds its matching dye (iridescent uses
+   prismarine crystals). The rest of that tab is ceiling finishes, not concrete.
+4. **Mounting hardware** — mount, bracket, backplate, cover, visor, base, plate, arm, top — takes
+   Sheet Metal + Fastener Kit rather than its subsystem's electronics.
+5. **Optical devices** (camera, ALPR, radar, lidar) take Optical Sensor + Control Board.
+6. **Equipment with a dedicated base class**: fire alarm sounders, activators and detectors;
+   signal heads, detection sensors, the controller cabinet.
+7. **Everything else takes its subsystem default** — Lighting is LED Module + Sheet Metal + Wiring;
    HVAC is Ducting + Sheet Metal; Technology is Control Board + Sheet Metal + Wiring; Furniture is
-   2 planks + Fastener Kit (metal furniture takes Sheet Metal instead); Novelties are 2 clay + any
-   dye (electronic novelties take Control Board + Sheet Metal).
+   2 planks + Fastener Kit (metal furniture takes Sheet Metal); Novelties are 2 clay + any dye
+   (electronic ones take Control Board + Sheet Metal); Gaming splits into arcade cabinets
+   (electronic), cards (paper) and everything else (woodwork).
 
-**Why step 3 is name-based.** There is no base class distinguishing "pole" from "bracket" from
-"cabinet" within a subsystem — they all share `AbstractBlockRotatableNSEWUD`. Class checks are used
-wherever a class carries the meaning; names are used only where they do not. Step 3 skips any block
-whose name carries an electronic marker (`signal`, `light`, `lamp`, `sign`, `beacon`, …) so an
-illuminated bollard or a variable message sign on a pole keeps its electronics rather than being
-demoted to sheet metal. `signpost` is checked *before* that guard, because the word contains
-"sign".
+Matching is on **whole words**, not substrings — that is what keeps "alarm" from matching "arm"
+and "christmas" from matching "mast".
+
+The lang file is read as a classpath resource rather than through `I18n` because the cost must be
+computed identically on the client and on a dedicated server, and because a recipe must not change
+when a player switches the game to another language.
 
 A `null` return means "not fabricable". That covers non-CSM blocks and, importantly, everything in
 `CsmTabNone`: `CsmTab` gives hidden and retiring blocks a `null` creative tab, so they drop out of
@@ -129,9 +149,8 @@ python3 dev-env-utils/scripts/audit_fabricator_costs.py --grep pole # what do po
 python3 dev-env-utils/scripts/audit_fabricator_costs.py --list LED_MODULE
 ```
 
-It also flags blocks whose name hints at a physical form their cost does not reflect. Some flags
-are known false positives and should stay: Christmas trees match "mast", pole-mounted sign brackets
-are genuinely mounts, and several fire alarm horn/strobes have "Sensor" in their product name.
+It also flags blocks whose display-name noun disagrees with their cost. That check uses the same
+signal the rules do, so a flag is a genuine disagreement worth looking at, not noise.
 
 **The audit is a mirror, not the source of truth** — it re-implements the Java rules in Python and
 can drift. Keep the two in step when editing either, and confirm the real number with the startup
