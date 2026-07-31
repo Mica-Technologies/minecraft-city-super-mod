@@ -80,27 +80,62 @@ ingredients. A cost therefore only has to be *fair*, not *unique*. The same reas
 
 ### How costs are decided
 
-`materials/CsmFabricatorCosts.java` computes cost at runtime from what a block is — its creative
-tab, refined by base class. Nothing is generated and nothing needs regenerating.
+`materials/CsmFabricatorCosts.java` computes cost at runtime from what a block is. Nothing is
+generated and nothing needs regenerating. Costs are 2–3 ingredients and may mix CSM parts with
+vanilla items, so a recipe can say something true about the material — coloured metal takes the
+matching dye, wooden furniture takes planks, utility crossarms take timber.
 
-| Tab | Cost |
-|---|---|
-| Road Signs | 1 Sign Blank |
-| Building Materials | slab 1 / stairs 2 / fence 1 + fastener / set block 2 sheet metal; concrete family 2 Concrete Mix |
-| HVAC | Ducting + Sheet Metal |
-| Life Safety | sounders: Sounder Driver + Enclosure; activators: Control Board + Sheet Metal; detectors: Optical Sensor + Control Board |
-| Lighting | LED Module + Sheet Metal + Wiring Harness |
-| Novelties | 2 Sheet Metal + Control Board |
-| Gaming | 2 Sheet Metal + Control Board + LED Module |
-| Power Grid | Pole Section + Wiring Harness |
-| Technology | Control Board + Sheet Metal + Wiring Harness |
-| Traffic Accessories | poles: Pole Section + Fastener Kit; otherwise Sheet Metal + Fastener Kit |
-| Traffic Signals | sensors: Optical Sensor + Control Board; controller: Enclosure + 2 Control Board + Wiring; heads: LED Module + Lens + Sheet Metal |
-| Furniture | Sheet Metal + Fastener Kit |
+Rules are applied in this order:
+
+1. **Road signs** take a Sign Blank — except signposts, which are the hardware a sign bolts onto
+   and take a Pole Section + Fastener Kit.
+2. **Building materials** are priced from their base class. Coloured metal takes 1–2 Sheet Metal
+   plus the vanilla dye matching its colour (iridescent uses prismarine crystals); slab, stairs and
+   fence variants are priced relative to the full block. The concrete family takes Concrete Mix.
+3. **Structural hardware is recognised by registry name and priced before any subsystem default.**
+   Poles take Pole Sections (concrete poles take Pole Section + Concrete Mix), signposts take a
+   Pole Section + Fastener Kit, utility crossarms take planks, and anything whose name ends in
+   `mount` / `bracket` / `base` / `backplate` / `cover` / `visor` / `plate` / `clamp` takes Sheet
+   Metal + Fastener Kit.
+4. **Optical devices** (`camera`, `alpr`, `radar`, `lidar` in the name) take Optical Sensor +
+   Control Board.
+5. **Equipment with a dedicated base class** is priced from that class: fire alarm sounders,
+   activators and detectors; signal heads, detection sensors and the controller cabinet.
+6. **Everything else takes its subsystem default** — Lighting is LED Module + Sheet Metal + Wiring;
+   HVAC is Ducting + Sheet Metal; Technology is Control Board + Sheet Metal + Wiring; Furniture is
+   2 planks + Fastener Kit (metal furniture takes Sheet Metal instead); Novelties are 2 clay + any
+   dye (electronic novelties take Control Board + Sheet Metal).
+
+**Why step 3 is name-based.** There is no base class distinguishing "pole" from "bracket" from
+"cabinet" within a subsystem — they all share `AbstractBlockRotatableNSEWUD`. Class checks are used
+wherever a class carries the meaning; names are used only where they do not. Step 3 skips any block
+whose name carries an electronic marker (`signal`, `light`, `lamp`, `sign`, `beacon`, …) so an
+illuminated bollard or a variable message sign on a pole keeps its electronics rather than being
+demoted to sheet metal. `signpost` is checked *before* that guard, because the word contains
+"sign".
 
 A `null` return means "not fabricable". That covers non-CSM blocks and, importantly, everything in
 `CsmTabNone`: `CsmTab` gives hidden and retiring blocks a `null` creative tab, so they drop out of
 the picker without needing a separate exclusion list.
+
+### Auditing the cost model
+
+`dev-env-utils/scripts/audit_fabricator_costs.py` mirrors these rules against the block index and
+reports every cost in use, without launching the game. Use it after changing the rules:
+
+```bash
+python3 dev-env-utils/scripts/audit_fabricator_costs.py             # summary by cost
+python3 dev-env-utils/scripts/audit_fabricator_costs.py --grep pole # what do poles cost?
+python3 dev-env-utils/scripts/audit_fabricator_costs.py --list LED_MODULE
+```
+
+It also flags blocks whose name hints at a physical form their cost does not reflect. Some flags
+are known false positives and should stay: Christmas trees match "mast", pole-mounted sign brackets
+are genuinely mounts, and several fire alarm horn/strobes have "Sensor" in their product name.
+
+**The audit is a mirror, not the source of truth** — it re-implements the Java rules in Python and
+can drift. Keep the two in step when editing either, and confirm the real number with the startup
+coverage line.
 
 ### Security model
 

@@ -1,8 +1,7 @@
 package com.micatechnologies.minecraft.csm.materials;
 
 import com.micatechnologies.minecraft.csm.CsmRegistry;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -74,8 +73,8 @@ public class CsmFabricateHandler implements IMessageHandler<CsmFabricatePacket, 
     if (target == null) {
       return;
     }
-    Map<String, Integer> unitCost = CsmFabricatorCosts.getCost(target);
-    if (unitCost == null) {
+    List<FabricatorIngredient> unitCost = CsmFabricatorCosts.getCost(target);
+    if (unitCost == null || unitCost.isEmpty()) {
       // Not a fabricable block. A well-behaved client never offers these, so no message.
       return;
     }
@@ -87,27 +86,21 @@ public class CsmFabricateHandler implements IMessageHandler<CsmFabricatePacket, 
       return;
     }
 
-    // Scale the unit cost by the batch size, then verify affordability before taking anything.
+    // Verify the player can pay for the whole batch before taking anything.
     InventoryPlayer inv = player.inventory;
-    Map<String, Integer> totalCost = new HashMap<>();
-    for (Map.Entry<String, Integer> entry : unitCost.entrySet()) {
-      totalCost.put(entry.getKey(), entry.getValue() * quantity);
-    }
-
-    for (Map.Entry<String, Integer> entry : totalCost.entrySet()) {
-      Item part = CsmRegistry.getItem(entry.getKey());
-      if (part == null) {
+    for (FabricatorIngredient ingredient : unitCost) {
+      if (ingredient.resolve() == null) {
         return;
       }
-      if (countItem(inv, part) < entry.getValue()) {
+      if (countMatching(inv, ingredient) < ingredient.getCount() * quantity) {
         player.sendMessage(new TextComponentString(
-            "§cNot enough parts — need " + describeCost(totalCost) + "."));
+            "§cNot enough parts — need " + describeCost(unitCost, quantity) + "."));
         return;
       }
     }
 
-    for (Map.Entry<String, Integer> entry : totalCost.entrySet()) {
-      consumeItem(inv, CsmRegistry.getItem(entry.getKey()), entry.getValue());
+    for (FabricatorIngredient ingredient : unitCost) {
+      consumeMatching(inv, ingredient, ingredient.getCount() * quantity);
     }
 
     ItemStack result = new ItemStack(targetItem, quantity);
@@ -122,28 +115,26 @@ public class CsmFabricateHandler implements IMessageHandler<CsmFabricatePacket, 
     player.inventoryContainer.detectAndSendChanges();
   }
 
-  /** Renders a cost map as "2x Sheet Metal, 1x Fastener Kit" for player-facing messages. */
-  private static String describeCost(Map<String, Integer> cost) {
+  /** Renders a cost as "2x Sheet Metal, 1x Fastener Kit" for player-facing messages. */
+  private static String describeCost(List<FabricatorIngredient> cost, int quantity) {
     StringBuilder builder = new StringBuilder();
-    for (Map.Entry<String, Integer> entry : cost.entrySet()) {
+    for (FabricatorIngredient ingredient : cost) {
       if (builder.length() > 0) {
         builder.append(", ");
       }
-      Item part = CsmRegistry.getItem(entry.getKey());
-      String name = part == null
-          ? entry.getKey()
-          : new ItemStack(part).getDisplayName();
-      builder.append(entry.getValue()).append("x ").append(name);
+      ItemStack display = ingredient.toDisplayStack(1);
+      String name = display.isEmpty() ? ingredient.getItemId() : display.getDisplayName();
+      builder.append(ingredient.getCount() * quantity).append("x ").append(name);
     }
     return builder.toString();
   }
 
-  /** Counts an item across the player's main inventory and hotbar. */
-  private static int countItem(InventoryPlayer inv, Item item) {
+  /** Counts stacks satisfying an ingredient across the player's main inventory and hotbar. */
+  private static int countMatching(InventoryPlayer inv, FabricatorIngredient ingredient) {
     int total = 0;
     for (int i = 0; i < inv.mainInventory.size(); i++) {
       ItemStack stack = inv.mainInventory.get(i);
-      if (stack.getItem() == item) {
+      if (ingredient.matches(stack)) {
         total += stack.getCount();
       }
     }
@@ -151,20 +142,22 @@ public class CsmFabricateHandler implements IMessageHandler<CsmFabricatePacket, 
   }
 
   /**
-   * Removes {@code amount} of an item from the player's main inventory. Callers must have
-   * verified availability with {@link #countItem} first.
+   * Removes {@code amount} items satisfying an ingredient from the player's main inventory.
+   * Callers must have verified availability with {@link #countMatching} first.
    */
-  private static void consumeItem(InventoryPlayer inv, Item item, int amount) {
+  private static void consumeMatching(InventoryPlayer inv, FabricatorIngredient ingredient,
+      int amount) {
     int remaining = amount;
     for (int i = 0; i < inv.mainInventory.size() && remaining > 0; i++) {
       ItemStack stack = inv.mainInventory.get(i);
-      if (stack.getItem() == item) {
-        int take = Math.min(stack.getCount(), remaining);
-        stack.shrink(take);
-        remaining -= take;
-        if (stack.isEmpty()) {
-          inv.mainInventory.set(i, ItemStack.EMPTY);
-        }
+      if (!ingredient.matches(stack)) {
+        continue;
+      }
+      int take = Math.min(stack.getCount(), remaining);
+      stack.shrink(take);
+      remaining -= take;
+      if (stack.isEmpty()) {
+        inv.mainInventory.set(i, ItemStack.EMPTY);
       }
     }
   }

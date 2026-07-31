@@ -98,11 +98,11 @@ public class CsmFabricatorGui extends GuiScreen {
     private final String registryName;
     private final String displayName;
     private final String category;
-    private final Map<String, Integer> cost;
+    private final List<FabricatorIngredient> cost;
     private final ItemStack icon;
 
     private Entry(String registryName, String displayName, String category,
-        Map<String, Integer> cost, ItemStack icon) {
+        List<FabricatorIngredient> cost, ItemStack icon) {
       this.registryName = registryName;
       this.displayName = displayName;
       this.category = category;
@@ -153,7 +153,7 @@ public class CsmFabricatorGui extends GuiScreen {
   private void buildEntries() {
     Map<String, Boolean> seenCategories = new LinkedHashMap<>();
     for (Block block : CsmRegistry.getBlocks()) {
-      Map<String, Integer> cost = CsmFabricatorCosts.getCost(block);
+      List<FabricatorIngredient> cost = CsmFabricatorCosts.getCost(block);
       if (cost == null || cost.isEmpty()) {
         continue;
       }
@@ -282,14 +282,13 @@ public class CsmFabricatorGui extends GuiScreen {
       int costX = panelX + PANEL_W - 10 - entry.cost.size() * COST_ICON_PITCH;
       int slotX = costX;
       RenderHelper.enableGUIStandardItemLighting();
-      for (Map.Entry<String, Integer> required : entry.cost.entrySet()) {
-        Item part = CsmRegistry.getItem(required.getKey());
-        if (part != null) {
-          int need = required.getValue() * quantity;
-          boolean enough = countHeld(player, part) >= need;
-          ItemStack partStack = new ItemStack(part, 1);
-          this.itemRender.renderItemAndEffectIntoGUI(partStack, slotX, rowY);
-          this.itemRender.renderItemOverlayIntoGUI(fontRenderer, partStack, slotX, rowY,
+      for (FabricatorIngredient ingredient : entry.cost) {
+        ItemStack display = ingredient.toDisplayStack(1);
+        if (!display.isEmpty()) {
+          int need = ingredient.getCount() * quantity;
+          boolean enough = countHeld(player, ingredient) >= need;
+          this.itemRender.renderItemAndEffectIntoGUI(display, slotX, rowY);
+          this.itemRender.renderItemOverlayIntoGUI(fontRenderer, display, slotX, rowY,
               (enough ? "§f" : "§c") + need);
         }
         slotX += COST_ICON_PITCH;
@@ -345,13 +344,11 @@ public class CsmFabricatorGui extends GuiScreen {
     lines.add("§7" + entry.category);
     lines.add("");
     lines.add("§fRequires (x" + quantity + "):");
-    for (Map.Entry<String, Integer> required : entry.cost.entrySet()) {
-      Item part = CsmRegistry.getItem(required.getKey());
-      String partName = part == null
-          ? required.getKey()
-          : new ItemStack(part).getDisplayName();
-      int need = required.getValue() * quantity;
-      int have = countHeld(player, part);
+    for (FabricatorIngredient ingredient : entry.cost) {
+      ItemStack display = ingredient.toDisplayStack(1);
+      String partName = display.isEmpty() ? ingredient.getItemId() : display.getDisplayName();
+      int need = ingredient.getCount() * quantity;
+      int have = countHeld(player, ingredient);
       String colour = have >= need ? "§a" : "§c";
       lines.add(colour + "  " + have + " / " + need + " " + partName);
     }
@@ -364,17 +361,16 @@ public class CsmFabricatorGui extends GuiScreen {
     return lines;
   }
 
-  /** Counts how many of an item the player is carrying. */
-  private static int countHeld(EntityPlayer player, Item item) {
-    if (player == null || item == null) {
+  /** Counts how many items satisfying an ingredient the player is carrying. */
+  private static int countHeld(EntityPlayer player, FabricatorIngredient ingredient) {
+    if (player == null || ingredient == null) {
       return 0;
     }
     InventoryPlayer inv = player.inventory;
     int total = 0;
     for (int i = 0; i < inv.mainInventory.size(); i++) {
-      ItemStack stack = inv.mainInventory.get(i);
-      if (stack.getItem() == item) {
-        total += stack.getCount();
+      if (ingredient.matches(inv.mainInventory.get(i))) {
+        total += inv.mainInventory.get(i).getCount();
       }
     }
     return total;
@@ -400,19 +396,17 @@ public class CsmFabricatorGui extends GuiScreen {
       return false;
     }
     InventoryPlayer inv = player.inventory;
-    for (Map.Entry<String, Integer> required : entry.cost.entrySet()) {
-      Item part = CsmRegistry.getItem(required.getKey());
-      if (part == null) {
+    for (FabricatorIngredient ingredient : entry.cost) {
+      if (ingredient.resolve() == null) {
         return false;
       }
       int held = 0;
       for (int i = 0; i < inv.mainInventory.size(); i++) {
-        ItemStack stack = inv.mainInventory.get(i);
-        if (stack.getItem() == part) {
-          held += stack.getCount();
+        if (ingredient.matches(inv.mainInventory.get(i))) {
+          held += inv.mainInventory.get(i).getCount();
         }
       }
-      if (held < required.getValue() * quantity) {
+      if (held < ingredient.getCount() * quantity) {
         return false;
       }
     }
