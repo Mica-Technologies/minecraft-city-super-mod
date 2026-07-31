@@ -13,6 +13,7 @@ Use it to sanity check that costs make sense for what each block actually is:
 """
 
 import collections
+import io
 import sys
 
 import csm_block_index as index_mod
@@ -43,51 +44,68 @@ def build_ancestry(classes):
     return ancestry
 
 
-ELECTRONIC_MARKERS = ["signal", "light", "lamp", "sign", "beacon", "strobe", "horn", "speaker",
-                      "camera", "detector", "meter", "display", "message", "screen", "monitor",
-                      "radar"]
-MOUNTING_SUFFIXES = ["mount", "mounts", "mountkit", "bracket", "base", "backplate", "cover",
-                     "visor", "hanger", "plate", "clamp"]
-OPTICAL_MARKERS = ["camera", "alpr", "radar", "lidar"]
-METAL_FURNITURE = ["hydrant", "anchor", "chain", "barbedwire", "radiator", "grill", "grate", "rail"]
-ELECTRONIC_NOVELTY = ["record", "player", "jukebox", "radio", "arcade", "tv"]
+import os
+import re
+
+LANG = os.path.join(index_mod.REPO_ROOT, "src", "main", "resources", "assets", "csm", "lang",
+                    "en_us.lang")
+
+POLE_NOUNS = {"pole", "mast", "crossarm", "standard", "post"}
+MOUNT_NOUNS = {"mount", "bracket", "backplate", "cover", "visor", "clamp", "hanger", "adapter",
+               "coupler", "cap", "top", "base", "plate", "arm"}
+OPTICAL_WORDS = ["camera", "alpr", "radar", "lidar"]
+METAL_FURNITURE_WORDS = ["hydrant", "anchor", "chain", "chains", "barbed", "radiator", "grill",
+                         "grate", "rail"]
+ELECTRONIC_NOVELTY_WORDS = ["record", "player", "jukebox", "radio", "television", "tv"]
 
 
-def _any(name, frags):
-    return any(f in name for f in frags)
+def load_display_names():
+    """Mirror of CsmBlockDisplayNames: registry name -> normalized display name."""
+    names = {}
+    with io.open(LANG, encoding="utf-8") as handle:
+        for line in handle:
+            match = re.match(r"tile\.([^=]+)\.name=(.*)", line.strip())
+            if match:
+                names[match.group(1)] = re.sub(r"\([^)]*\)|\[[^\]]*\]", " ",
+                                              match.group(2)).strip().lower()
+    return names
 
 
-def _ends(name, sfx):
-    return any(name.endswith(s) for s in sfx)
+DISPLAY = load_display_names()
 
 
-def _metal_dye(name):
-    if name.startswith("iridescent"):
+def last_word(registry):
+    words = re.findall(r"[a-z]+", DISPLAY.get(registry, ""))
+    return words[-1] if words else ""
+
+
+def words_of(registry):
+    """Whole words of the display name.
+
+    Token matching rather than substring, mirroring CsmBlockDisplayNames.hasWord: it is what
+    keeps "alarm" from matching "arm" and "christmas" from matching "mast".
+    """
+    return set(re.findall(r"[a-z]+", DISPLAY.get(registry, "")))
+
+
+def has_word(registry, word):
+    return word in words_of(registry)
+
+
+def has_any(registry, words):
+    return any(has_word(registry, w) for w in words)
+
+
+def _metal_dye(registry):
+    if has_word(registry, "iridescent"):
         return "prismarine_crystals"
-    for prefix in ("black", "red", "green", "blue", "purple", "silver", "pink", "lime",
-                   "yellow", "lightblue", "magenta", "orange", "copper", "white"):
-        if name.startswith(prefix):
-            return "dye:" + prefix
+    if has_word(registry, "light") and has_word(registry, "blue"):
+        return "dye:lightblue"
+    for colour in ("black", "red", "green", "blue", "purple", "silver", "pink", "lime",
+                   "yellow", "magenta", "orange", "copper"):
+        if has_word(registry, colour):
+            return "dye:" + colour
     return "dye:white"
-
-
-def structural_cost(name, ancestors):
-    if "AbstractBlockTrafficPole" in ancestors or "AbstractBlockTrafficPoleDiagonal" in ancestors:
-        return ("POLE_SECTION", "FASTENER_KIT")
-    # Ahead of the electronic guard: "signpost" contains "sign".
-    if "signpost" in name:
-        return ("POLE_SECTION", "FASTENER_KIT")
-    if _any(name, ELECTRONIC_MARKERS):
-        return None
-    if "xarm" in name:
-        return ("planks x2", "FASTENER_KIT")
-    if "pole" in name:
-        if "concrete" in name:
-            return ("POLE_SECTION", "CONCRETE_MIX")
-        return ("POLE_SECTION x2",)
-    if _ends(name, MOUNTING_SUFFIXES):
-        return ("SHEET_METAL", "FASTENER_KIT")
-    return None
 
 
 def cost_for(registry, info, ancestors):
@@ -95,19 +113,25 @@ def cost_for(registry, info, ancestors):
     tab = info["tab"]
     if tab in NON_FABRICABLE_TABS:
         return None
-    name = registry.lower()
 
     def has(*names):
         return any(n in ancestors for n in names)
 
+    noun = last_word(registry)
+
+    if noun in POLE_NOUNS:
+        if has_word(registry, "concrete"):
+            return ("POLE_SECTION", "CONCRETE_MIX")
+        if has_word(registry, "wood") or has_word(registry, "wooden") or noun == "crossarm":
+            return ("planks x2", "FASTENER_KIT")
+        return ("POLE_SECTION x2",)
+
     if tab == "tabroadsigns":
-        if "signpost" in name:
-            return ("POLE_SECTION", "FASTENER_KIT")
         return ("SIGN_BLANK",)
 
     if tab == "tabbuildingmaterials":
-        if "metal" in name:
-            dye = _metal_dye(name)
+        if has_word(registry, "metal"):
+            dye = _metal_dye(registry)
             if has("AbstractBlockSlab"):
                 return ("SHEET_METAL", dye)
             if has("AbstractBlockStairs"):
@@ -115,15 +139,12 @@ def cost_for(registry, info, ancestors):
             if has("AbstractBlockFence"):
                 return ("SHEET_METAL", "FASTENER_KIT", dye)
             return ("SHEET_METAL x2", dye)
-        if has("AbstractBlockSlab"):
-            return ("CONCRETE_MIX",)
-        return ("CONCRETE_MIX x2",)
+        return ("CONCRETE_MIX", "clay_ball")
 
-    structural = structural_cost(name, ancestors)
-    if structural:
-        return structural
+    if noun in MOUNT_NOUNS:
+        return ("SHEET_METAL", "FASTENER_KIT")
 
-    if _any(name, OPTICAL_MARKERS):
+    if has_any(registry, OPTICAL_WORDS):
         return ("OPTICAL_SENSOR", "CONTROL_BOARD")
 
     if tab == "tabhvac":
@@ -139,11 +160,15 @@ def cost_for(registry, info, ancestors):
     if tab == "tablighting":
         return ("LED_MODULE", "SHEET_METAL", "WIRING_HARNESS")
     if tab == "tabnovelties":
-        if _any(name, ELECTRONIC_NOVELTY):
+        if has_any(registry, ELECTRONIC_NOVELTY_WORDS):
             return ("CONTROL_BOARD", "SHEET_METAL")
         return ("clay_ball x2", "dye:any")
     if tab == "tabgaming":
-        return ("SHEET_METAL x2", "CONTROL_BOARD", "LED_MODULE")
+        if has_word(registry, "arcade"):
+            return ("SHEET_METAL x2", "CONTROL_BOARD", "LED_MODULE")
+        if noun in ("cards", "deck") or has_word(registry, "card"):
+            return ("paper x3",)
+        return ("planks x2", "FASTENER_KIT")
     if tab == "tabpowergrid":
         return ("POLE_SECTION", "WIRING_HARNESS")
     if tab == "tabtechnology":
@@ -159,7 +184,7 @@ def cost_for(registry, info, ancestors):
             return ("LED_MODULE", "LENS_ASSEMBLY", "SHEET_METAL")
         return ("SHEET_METAL", "WIRING_HARNESS")
     if tab == "tabfurniture":
-        if _any(name, METAL_FURNITURE):
+        if has_any(registry, METAL_FURNITURE_WORDS):
             return ("SHEET_METAL", "FASTENER_KIT")
         return ("planks x2", "FASTENER_KIT")
     return ("SHEET_METAL", "FASTENER_KIT")
@@ -212,23 +237,31 @@ def main():
     print()
     print("Distinct cost recipes: {0}".format(len(counter)))
 
-    # Blocks whose name hints at a physical form that its cost does not reflect.
+    # Blocks whose DISPLAY name says they are one thing while their cost says another.
+    #
+    # This checks the last word of the display name, the same signal the cost rules use, so it
+    # only reports genuine disagreements. Checking registry names here would be worse than
+    # useless: they are not descriptive and have been reused across different blocks, which is
+    # exactly why the cost rules stopped consulting them.
     print()
-    print("Possible mismatches (name hint vs cost):")
+    print("Possible mismatches (display-name noun vs cost):")
     hints = {
         "pole": "POLE_SECTION",
         "mast": "POLE_SECTION",
-        "signpost": "POLE_SECTION",
+        "crossarm": "planks",
         "duct": "DUCTING",
         "camera": "OPTICAL_SENSOR",
-        "sensor": "OPTICAL_SENSOR",
     }
-    for needle, expected in sorted(hints.items()):
+    found_any = False
+    for noun, expected in sorted(hints.items()):
         bad = sorted(r for r, (c, _i) in priced.items()
-                     if needle in r.lower() and expected not in " ".join(c))
+                     if last_word(r) == noun and expected not in " ".join(c))
         if bad:
+            found_any = True
             print("  '{0}' without {1}: {2} blocks (e.g. {3})".format(
-                needle, expected, len(bad), ", ".join(bad[:4])))
+                noun, expected, len(bad), ", ".join(bad[:4])))
+    if not found_any:
+        print("  none")
 
 
 if __name__ == "__main__":
