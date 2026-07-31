@@ -150,12 +150,15 @@ def cost_for(registry, info, ancestors):
     if tab == "tabhvac":
         return ("DUCTING", "SHEET_METAL")
     if tab == "tablifesafety":
-        if has("AbstractBlockFireAlarmSounder", "AbstractBlockFireAlarmSounderVoiceEvac"):
-            return ("SOUNDER_DRIVER", "ENCLOSURE_SHELL")
-        if has("AbstractBlockFireAlarmActivator"):
-            return ("CONTROL_BOARD", "SHEET_METAL")
+        if has_word(registry, "sprinkler"):
+            return ("SHEET_METAL", "LENS_ASSEMBLY")
+        # Most specific first: Detector extends Activator, VoiceEvac extends Sounder.
         if has("AbstractBlockFireAlarmDetector"):
             return ("OPTICAL_SENSOR", "CONTROL_BOARD")
+        if has("AbstractBlockFireAlarmActivator"):
+            return ("CONTROL_BOARD", "SHEET_METAL")
+        if has("AbstractBlockFireAlarmSounder"):
+            return ("SOUNDER_DRIVER", "ENCLOSURE_SHELL")
         return ("SHEET_METAL", "WIRING_HARNESS")
     if tab == "tablighting":
         return ("LED_MODULE", "SHEET_METAL", "WIRING_HARNESS")
