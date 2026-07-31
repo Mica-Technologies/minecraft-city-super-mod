@@ -42,7 +42,6 @@ public class CsmFabricatorGui extends GuiScreen {
   private static final int BUTTON_ID_CLOSE = 0;
   private static final int BUTTON_ID_CATEGORY = 1;
   private static final int BUTTON_ID_QUANTITY = 2;
-  private static final int BUTTON_ID_ROW_BASE = 100;
 
   private static final int PANEL_W = 320;
   private static final int PANEL_H = 222;
@@ -50,9 +49,13 @@ public class CsmFabricatorGui extends GuiScreen {
   private static final int ROW_H = 18;
   private static final int VISIBLE_ROWS = 7;
 
+  /** Horizontal spacing between the cost part icons drawn at the right of each row. */
+  private static final int COST_ICON_PITCH = 20;
+
   private static final int COLOR_BG = 0xFF20262E;
   private static final int COLOR_HEADER_BG = 0xFF161B21;
   private static final int COLOR_ROW_BG = 0xFF2A323C;
+  private static final int COLOR_ROW_HOVER = 0xFF3C4756;
   private static final int COLOR_TEXT = 0xFFFFFFFF;
   private static final int COLOR_DIM = 0xFFA8B2BF;
   private static final int COLOR_OK = 0xFF7FD98A;
@@ -73,11 +76,15 @@ public class CsmFabricatorGui extends GuiScreen {
   private GuiTextField searchField;
   private GuiButton categoryButton;
   private GuiButton quantityButton;
-  private final List<GuiButton> rowButtons = new ArrayList<>();
 
   private int categoryIndex;
   private int quantityIndex;
   private int scroll;
+
+  /** Transient footer feedback, so a click always visibly does something. */
+  private String statusMessage;
+  private boolean statusOk;
+  private int statusTimer;
 
   private int panelX;
   private int panelY;
@@ -116,7 +123,6 @@ public class CsmFabricatorGui extends GuiScreen {
     }
 
     this.buttonList.clear();
-    rowButtons.clear();
 
     Keyboard0.enableRepeat();
 
@@ -132,13 +138,10 @@ public class CsmFabricatorGui extends GuiScreen {
         "x" + QUANTITIES[quantityIndex]);
     this.buttonList.add(quantityButton);
 
-    for (int i = 0; i < VISIBLE_ROWS; i++) {
-      GuiButton row = new GuiButton(BUTTON_ID_ROW_BASE + i, panelX + 8,
-          panelY + HEADER_H + i * ROW_H, PANEL_W - 16, ROW_H - 2, "");
-      row.visible = false;
-      this.buttonList.add(row);
-      rowButtons.add(row);
-    }
+    // Rows are deliberately NOT GuiButtons. A GuiButton paints its own texture during
+    // super.drawScreen(), which runs after this screen's custom drawing and would cover the row
+    // name and cost text. Rows are drawn manually after super.drawScreen() and hit-tested in
+    // mouseClicked() instead.
 
     this.buttonList.add(new GuiButton(BUTTON_ID_CLOSE, panelX + (PANEL_W - 70) / 2,
         panelY + PANEL_H - 22, 70, 18, "Close"));
@@ -246,43 +249,142 @@ public class CsmFabricatorGui extends GuiScreen {
       fontRenderer.drawString("Search...", panelX + 12, panelY + 23, COLOR_DIM);
     }
 
+    // Draw the vanilla widgets first, then the rows on top. Doing this the other way round is
+    // what hid the row name and cost behind the button textures.
+    super.drawScreen(mouseX, mouseY, partialTicks);
+
     EntityPlayer player = this.mc.player;
     int quantity = QUANTITIES[quantityIndex];
+    Entry hovered = null;
+    int hoveredY = 0;
 
-    for (int i = 0; i < rowButtons.size(); i++) {
-      GuiButton row = rowButtons.get(i);
+    for (int i = 0; i < VISIBLE_ROWS; i++) {
       int index = scroll + i;
       if (index >= filtered.size()) {
-        row.visible = false;
         continue;
       }
-      row.visible = true;
-      row.displayString = "";
       Entry entry = filtered.get(index);
 
-      int rowY = panelY + HEADER_H + i * ROW_H;
-      drawRect(panelX + 8, rowY, panelX + PANEL_W - 8, rowY + ROW_H - 2, COLOR_ROW_BG);
+      int rowY = rowTop(i);
+      boolean isHovered = isOverRow(mouseX, mouseY, i);
+      boolean affordable = canAfford(player, entry, quantity);
+
+      drawRect(panelX + 8, rowY, panelX + PANEL_W - 8, rowY + ROW_H - 2,
+          isHovered ? COLOR_ROW_HOVER : COLOR_ROW_BG);
 
       RenderHelper.enableGUIStandardItemLighting();
       this.itemRender.renderItemAndEffectIntoGUI(entry.icon, panelX + 11, rowY);
       RenderHelper.disableStandardItemLighting();
 
-      boolean affordable = canAfford(player, entry, quantity);
-      String name = trim(entry.displayName, 150);
-      fontRenderer.drawString(name, panelX + 31, rowY + 5, affordable ? COLOR_TEXT : COLOR_DIM);
+      // The cost is drawn as part icons with counts rather than text: spelled out, a three-part
+      // cost at x64 runs to roughly 200px of a 320px row and leaves no room for the block name.
+      // The hover tooltip carries the full wording.
+      int costX = panelX + PANEL_W - 10 - entry.cost.size() * COST_ICON_PITCH;
+      int slotX = costX;
+      RenderHelper.enableGUIStandardItemLighting();
+      for (Map.Entry<String, Integer> required : entry.cost.entrySet()) {
+        Item part = CsmRegistry.getItem(required.getKey());
+        if (part != null) {
+          int need = required.getValue() * quantity;
+          boolean enough = countHeld(player, part) >= need;
+          ItemStack partStack = new ItemStack(part, 1);
+          this.itemRender.renderItemAndEffectIntoGUI(partStack, slotX, rowY);
+          this.itemRender.renderItemOverlayIntoGUI(fontRenderer, partStack, slotX, rowY,
+              (enough ? "§f" : "§c") + need);
+        }
+        slotX += COST_ICON_PITCH;
+      }
+      RenderHelper.disableStandardItemLighting();
 
-      String costText = describeCost(entry.cost, quantity);
-      fontRenderer.drawString(costText,
-          panelX + PANEL_W - 12 - fontRenderer.getStringWidth(costText), rowY + 5,
-          affordable ? COLOR_OK : COLOR_NO);
+      int nameX = panelX + 31;
+      String name = trim(entry.displayName, Math.max(20, costX - nameX - 6));
+      fontRenderer.drawString(name, nameX, rowY + 5, affordable ? COLOR_TEXT : COLOR_DIM);
+
+      if (isHovered) {
+        hovered = entry;
+        hoveredY = rowY;
+      }
     }
-
-    super.drawScreen(mouseX, mouseY, partialTicks);
 
     if (maxScroll() > 0) {
-      String hint = "Scroll for more";
-      fontRenderer.drawString(hint, panelX + 8, panelY + PANEL_H - 34, COLOR_DIM);
+      fontRenderer.drawString("Scroll for more", panelX + 8, panelY + PANEL_H - 34, COLOR_DIM);
     }
+
+    if (statusTimer > 0 && statusMessage != null) {
+      fontRenderer.drawString(statusMessage,
+          panelX + PANEL_W - 8 - fontRenderer.getStringWidth(statusMessage),
+          panelY + PANEL_H - 34, statusOk ? COLOR_OK : COLOR_NO);
+    }
+
+    // Tooltip last, so it sits above everything.
+    if (hovered != null) {
+      drawHoveringText(buildTooltip(player, hovered, quantity), mouseX,
+          Math.max(mouseY, hoveredY + 12));
+    }
+  }
+
+  /** Top pixel of the given visible row slot. */
+  private int rowTop(int slot) {
+    return panelY + HEADER_H + slot * ROW_H;
+  }
+
+  /** Whether the cursor is over the given visible row slot. */
+  private boolean isOverRow(int mouseX, int mouseY, int slot) {
+    int rowY = rowTop(slot);
+    return mouseX >= panelX + 8 && mouseX <= panelX + PANEL_W - 8
+        && mouseY >= rowY && mouseY < rowY + ROW_H - 2;
+  }
+
+  /**
+   * Builds the hover tooltip: the block name, then one line per required part showing how many
+   * the player has against how many the batch needs, so a shortfall is obvious before clicking.
+   */
+  private List<String> buildTooltip(EntityPlayer player, Entry entry, int quantity) {
+    List<String> lines = new ArrayList<>();
+    lines.add(entry.displayName);
+    lines.add("§7" + entry.category);
+    lines.add("");
+    lines.add("§fRequires (x" + quantity + "):");
+    for (Map.Entry<String, Integer> required : entry.cost.entrySet()) {
+      Item part = CsmRegistry.getItem(required.getKey());
+      String partName = part == null
+          ? required.getKey()
+          : new ItemStack(part).getDisplayName();
+      int need = required.getValue() * quantity;
+      int have = countHeld(player, part);
+      String colour = have >= need ? "§a" : "§c";
+      lines.add(colour + "  " + have + " / " + need + " " + partName);
+    }
+    lines.add("");
+    if (canAfford(player, entry, quantity)) {
+      lines.add("§eClick to fabricate");
+    } else {
+      lines.add("§cNot enough parts");
+    }
+    return lines;
+  }
+
+  /** Counts how many of an item the player is carrying. */
+  private static int countHeld(EntityPlayer player, Item item) {
+    if (player == null || item == null) {
+      return 0;
+    }
+    InventoryPlayer inv = player.inventory;
+    int total = 0;
+    for (int i = 0; i < inv.mainInventory.size(); i++) {
+      ItemStack stack = inv.mainInventory.get(i);
+      if (stack.getItem() == item) {
+        total += stack.getCount();
+      }
+    }
+    return total;
+  }
+
+  /** Shows a short-lived message in the footer. */
+  private void setStatus(String message, boolean ok) {
+    this.statusMessage = message;
+    this.statusOk = ok;
+    this.statusTimer = 60;
   }
 
   private String trim(String text, int maxWidth) {
@@ -292,19 +394,6 @@ public class CsmFabricatorGui extends GuiScreen {
     return fontRenderer.trimStringToWidth(text, maxWidth - 8) + "...";
   }
 
-  /** Formats a cost map scaled by the batch size, e.g. "2 Sheet Metal + 2 Fastener Kit". */
-  private static String describeCost(Map<String, Integer> cost, int quantity) {
-    StringBuilder builder = new StringBuilder();
-    for (Map.Entry<String, Integer> entry : cost.entrySet()) {
-      if (builder.length() > 0) {
-        builder.append(" + ");
-      }
-      Item part = CsmRegistry.getItem(entry.getKey());
-      String name = part == null ? entry.getKey() : new ItemStack(part).getDisplayName();
-      builder.append(entry.getValue() * quantity).append(' ').append(name);
-    }
-    return builder.toString();
-  }
 
   private static boolean canAfford(EntityPlayer player, Entry entry, int quantity) {
     if (player == null) {
@@ -344,6 +433,36 @@ public class CsmFabricatorGui extends GuiScreen {
   protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
     super.mouseClicked(mouseX, mouseY, mouseButton);
     searchField.mouseClicked(mouseX, mouseY, mouseButton);
+    if (mouseButton != 0) {
+      return;
+    }
+    for (int i = 0; i < VISIBLE_ROWS; i++) {
+      int index = scroll + i;
+      if (index >= filtered.size() || !isOverRow(mouseX, mouseY, i)) {
+        continue;
+      }
+      selectRow(filtered.get(index));
+      return;
+    }
+  }
+
+  /**
+   * Handles a click on a result row. The server re-checks affordability regardless; refusing here
+   * only avoids sending a request that must fail, and gives the player an immediate reason why.
+   */
+  private void selectRow(Entry entry) {
+    int quantity = QUANTITIES[quantityIndex];
+    if (!canAfford(this.mc.player, entry, quantity)) {
+      setStatus("Not enough parts", false);
+      this.mc.getSoundHandler().playSound(net.minecraft.client.audio.PositionedSoundRecord
+          .getMasterRecord(net.minecraft.init.SoundEvents.BLOCK_NOTE_BASS, 0.8F));
+      return;
+    }
+    CsmNetwork.sendToServer(
+        new CsmFabricatePacket(fabricatorPos, entry.registryName, quantity));
+    setStatus("Fabricating " + quantity + "x " + entry.displayName, true);
+    this.mc.getSoundHandler().playSound(net.minecraft.client.audio.PositionedSoundRecord
+        .getMasterRecord(net.minecraft.init.SoundEvents.UI_BUTTON_CLICK, 1.0F));
   }
 
   @Override
@@ -373,23 +492,7 @@ public class CsmFabricatorGui extends GuiScreen {
     if (button.id == BUTTON_ID_QUANTITY) {
       quantityIndex = (quantityIndex + 1) % QUANTITIES.length;
       quantityButton.displayString = "x" + QUANTITIES[quantityIndex];
-      return;
     }
-    int rowIndex = button.id - BUTTON_ID_ROW_BASE;
-    if (rowIndex < 0 || rowIndex >= VISIBLE_ROWS) {
-      return;
-    }
-    int index = scroll + rowIndex;
-    if (index >= filtered.size()) {
-      return;
-    }
-    Entry entry = filtered.get(index);
-    // The server re-checks affordability; this only avoids sending a request that must fail.
-    if (!canAfford(this.mc.player, entry, QUANTITIES[quantityIndex])) {
-      return;
-    }
-    CsmNetwork.sendToServer(
-        new CsmFabricatePacket(fabricatorPos, entry.registryName, QUANTITIES[quantityIndex]));
   }
 
   @Override
@@ -402,6 +505,9 @@ public class CsmFabricatorGui extends GuiScreen {
   public void updateScreen() {
     super.updateScreen();
     searchField.updateCursorCounter();
+    if (statusTimer > 0) {
+      statusTimer--;
+    }
   }
 
   @Override
