@@ -1,0 +1,25 @@
+{
+  "type": "forge:ore_shaped",
+  "pattern": [
+    "GRG",
+    "PPP"
+  ],
+  "key": {
+    "G": {
+      "type": "forge:ore_dict",
+      "ore": "dustGlowstone"
+    },
+    "R": {
+      "type": "forge:ore_dict",
+      "ore": "dustRedstone"
+    },
+    "P": {
+      "type": "forge:ore_dict",
+      "ore": "paneGlass"
+    }
+  },
+  "result": {
+    "item": "csm:part_led_module",
+    "count": 2
+  }
+}

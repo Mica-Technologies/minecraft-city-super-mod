@@ -1,0 +1,17 @@
+{
+  "type": "forge:ore_shaped",
+  "pattern": [
+    "S",
+    "S",
+    "S"
+  ],
+  "key": {
+    "S": {
+      "item": "csm:part_sheet_metal"
+    }
+  },
+  "result": {
+    "item": "csm:part_pole_section",
+    "count": 2
+  }
+}
