@@ -230,6 +230,7 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
 - `gen_part_textures.py` -- crafting part textures, item models and recipes; validates ingredients before writing
 - `gen_fabricator_textures.py` -- CSM Fabricator block textures
 - `csm_block_index.py` -- resolves every block to its registry name, package and creative tab by parsing the sources; importable as a module by other scripts
+- `audit_fabricator_costs.py` -- mirrors the Fabricator cost rules against that index to sanity check what every block costs, without launching the game
 
 These correspond to IntelliJ run configurations: `Check Block Item Integrity`, `Extract Bounding Boxes`, `Process Batch Rename`, `Sort Lang File(s)`, `Generate Signal Light Atlas`.
 
