@@ -128,6 +128,12 @@ public class CsmGuiHandler implements IGuiHandler {
     } else if (id == 19 && tileEntity instanceof com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalSensor) {
       returnValue = new com.micatechnologies.minecraft.csm.trafficsignals.SensorConfigGui(
           (com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalSensor) tileEntity);
+    } else if (id == com.micatechnologies.minecraft.csm.materials.BlockCsmFabricator.GUI_ID
+        && world.getBlockState(pos).getBlock()
+        instanceof com.micatechnologies.minecraft.csm.materials.BlockCsmFabricator) {
+      // The Fabricator has no tile entity; the picker only needs the block position so the
+      // server can verify proximity when a selection is confirmed.
+      returnValue = new com.micatechnologies.minecraft.csm.materials.CsmFabricatorGui(pos);
     }
     return returnValue;
   }

@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.tabs;
 
 import com.micatechnologies.minecraft.csm.CsmRegistry;
 import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
+import com.micatechnologies.minecraft.csm.materials.BlockCsmFabricator;
 import com.micatechnologies.minecraft.csm.materials.CsmParts;
 import com.micatechnologies.minecraft.csm.materials.ItemCraftingPart;
 import javax.annotation.Nonnull;
@@ -87,6 +88,7 @@ public class CsmTabMaterials extends CsmTab {
    */
   @Override
   public void initTabElements(FMLPreInitializationEvent fmlPreInitializationEvent) {
+    initTabBlock(BlockCsmFabricator.class, fmlPreInitializationEvent);
     initTabItem(new ItemCraftingPart(CsmParts.SHEET_METAL,
         "Stock material for most CSM equipment bodies"));
     initTabItem(new ItemCraftingPart(CsmParts.FASTENER_KIT,
