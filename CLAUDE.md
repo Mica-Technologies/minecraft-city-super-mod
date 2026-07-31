@@ -57,18 +57,24 @@ The RetroFuturaGradle plugin is pinned to `1.4.7` (build.gradle): `1.4.0` was re
 
 ## Architecture Overview
 
-This is a **Minecraft 1.12.2 Forge mod** (mod ID: `csm`) that adds 1,264+ city-themed blocks and 113+ items. The build system is GregTechCEu Buildscripts (RetroFuturaGradle wrapper).
+This is a **Minecraft 1.12.2 Forge mod** (mod ID: `csm`) that adds 1,550+ city-themed blocks and 35+ items. The build system is GregTechCEu Buildscripts (RetroFuturaGradle wrapper).
+
+The mod is aimed at creative play, but all of its content is also obtainable in survival via a
+two-tier chain: vanilla ores/ingots → CSM parts (crafting table) → CSM blocks (CSM Fabricator).
+CSM adds nothing to world generation. See `assets/docs/SURVIVAL_AND_RECIPES.md`.
 
 ### Source Layout
 
 ```
 src/main/java/com/micatechnologies/minecraft/csm/
 ├── codeutils/        # Base classes and utilities (see below)
-├── tabs/             # Creative inventory tab definitions (11 tabs)
+├── tabs/             # Creative inventory tab definitions (14 tabs)
 ├── buildingmaterials/
+├── furniture/
 ├── hvac/
 ├── lifesafety/       # Largest: fire alarms, emergency lighting, exit signs
 ├── lighting/
+├── materials/        # Survival crafting parts + the CSM Fabricator
 ├── novelties/        # Arcade games, decorative items
 ├── powergrid/        # Utility poles, electrical infrastructure
 ├── technology/       # Modern tech: servers, routers, TVs
@@ -89,11 +95,16 @@ src/main/resources/assets/csm/
 │       ├── trafficaccessories/ # 61 models
 │       └── trafficsignals/  # 50 models
 ├── models/item/      # Item model JSONs (only for actual items, not block inventory)
-├── textures/block/
-├── textures/item/
+├── recipes/          # Tier-1 JSON recipes (parts + the Fabricator); parsed at game start
+├── textures/blocks/  # Organized by subsystem subfolder
+├── textures/items/
 ├── sounds/
 └── lang/en_us.lang
 ```
+
+**Note the plural directory names:** textures live in `textures/blocks/` and `textures/items/`,
+referenced as `csm:blocks/...` and `csm:items/...`. The model directories are singular
+(`models/block/`, `models/item/`).
 
 ### Base Classes (`codeutils/`)
 
@@ -133,10 +144,16 @@ Version is derived from Git tags (format: `YYYY.MM.DD` for releases). No manual 
 1. Create class in the appropriate subsystem package extending a base class; use `snake_case` registry name
 2. Create `src/main/resources/assets/csm/blockstates/<registry_name>.json` (prefer Forge format with `forge_marker: 1` — see below)
 3. Create `src/main/resources/assets/csm/models/block/<registry_name>.json` (parent references shared model via `csm:block/shared_models/<subsystem>/<model_name>`)
-4. Add textures to `src/main/resources/assets/csm/textures/block/` (PNG, power-of-two resolution)
+4. Add textures to `src/main/resources/assets/csm/textures/blocks/<subsystem>/` (PNG, power-of-two resolution)
 5. Add lang entry to `src/main/resources/assets/csm/lang/en_us.lang`: `tile.<registry_name>.name=Human Name`
 6. Register the block in the appropriate `tabs/CsmTab*.java` via `initTabBlock(BlockExample.class, event)`
 7. If the blockstate has no `inventory` variant, create `src/main/resources/assets/csm/models/item/<registry_name>.json`
+
+**Survival crafting needs no step here.** Fabricator costs are derived at runtime from the block's
+creative tab and base class, so a new block is automatically craftable at its subsystem's cost.
+You only need to edit `materials/CsmFabricatorCosts.java` if you add a whole new creative tab (its
+contents would otherwise fall through to a generic cost) or the block is a new *kind* of equipment
+whose subsystem default is a poor fit. See `assets/docs/SURVIVAL_AND_RECIPES.md`.
 
 **Forge blockstate format (preferred):** Use `"forge_marker": 1` with `defaults`, separate variant
 blocks for each property, and `"inventory": [{}]` to handle item rendering without a separate item
@@ -146,11 +163,18 @@ See `trafficsignals/` and `trafficsigns/` blockstates for reference. The traffic
 
 ## Adding an Item (Checklist)
 
-1. Create class in `src/main/java/com/micatechnologies/minecraft/csm/item/` extending `AbstractItem`
+1. Create class in the appropriate subsystem package extending `AbstractItem`
 2. Create `src/main/resources/assets/csm/models/item/<registry_name>.json`
-3. Add texture to `src/main/resources/assets/csm/textures/item/`
+3. Add texture to `src/main/resources/assets/csm/textures/items/`
 4. Add lang entry: `item.<registry_name>.name=Human Name`
 5. Register in appropriate tab via `initTabItem(ItemExample.class, event)`
+6. Items are not fabricable — if the item should be obtainable in survival, add a JSON recipe in
+   `src/main/resources/assets/csm/recipes/`
+
+For items that differ only in registry name and tooltip, use a factory
+(`codeutils/ItemDecorativeFactory` for decorative items, `materials/ItemCraftingPart` for crafting
+parts) and register the instance via the `initTabItem(Item)` overload, rather than adding a class
+per item.
 
 ## Adding a Sound (Checklist)
 
@@ -188,6 +212,7 @@ See `assets/docs/` for detailed technical documentation on major subsystems:
 - `assets/docs/LIGHTING_SYSTEM.md` -- 4-state on/off control, light-up air projection, AbstractBrightLight
 - `assets/docs/POWER_GRID_SYSTEM.md` -- Forge Energy integration, utility poles, electrical infrastructure
 - `assets/docs/TRAFFIC_SIGNS.md` -- Forge blockstate format, dynamic properties, 472-sign system
+- `assets/docs/SURVIVAL_AND_RECIPES.md` -- Crafting parts, the CSM Fabricator, mining behavior, why there is no per-block recipe
 
 Agent progress/tracking docs are in `assets/docs/agent_progress/`.
 
@@ -200,6 +225,11 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
 - Block/item integrity checking
 - Signal light texture atlas generation (ImageTilerTool)
 - Blockbench model to `.ogldata` vertex data conversion (ModelToOglDataTool)
+
+`dev-env-utils/scripts/` holds Python asset generators (Pillow required), run directly:
+- `gen_part_textures.py` -- crafting part textures, item models and recipes; validates ingredients before writing
+- `gen_fabricator_textures.py` -- CSM Fabricator block textures
+- `csm_block_index.py` -- resolves every block to its registry name, package and creative tab by parsing the sources; importable as a module by other scripts
 
 These correspond to IntelliJ run configurations: `Check Block Item Integrity`, `Extract Bounding Boxes`, `Process Batch Rename`, `Sort Lang File(s)`, `Generate Signal Light Atlas`.
 
