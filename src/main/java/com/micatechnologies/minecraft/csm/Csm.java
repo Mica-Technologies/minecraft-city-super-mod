@@ -237,9 +237,9 @@ public class Csm {
 
       // Call pre-initialization of the proxy (client or server/common)
       String side = event.getSide().isClient() ? "client" : "server";
-      logger.info("Calling pre-initialization of proxy (" + side + ")");
+      logger.info("Calling pre-initialization of proxy ({})", side);
       proxy.preInit(event);
-      logger.info("Finished pre-initialization of proxy (" + side + ")");
+      logger.info("Finished pre-initialization of proxy ({})", side);
       progressBar.step("Proxy Pre-Initialization");
 
       // Output completion of pre-initialization
@@ -296,9 +296,8 @@ public class Csm {
           if (registeredTileEntities.contains(tileEntityName)
               || registeredTileEntityClasses.contains(tileEntityClass)) {
             if (!warnedTileEntities.contains(tileEntityName)) {
-              logger.warn("Attempted to register tile entity with name: " +
-                  tileEntityName +
-                  " more than once (or class already registered under a different name).");
+              logger.warn("Attempted to register tile entity with name: {} more than once "
+                  + "(or class already registered under a different name).", tileEntityName);
               warnedTileEntities.add(tileEntityName);
             }
             return;
@@ -308,7 +307,7 @@ public class Csm {
           registeredTileEntities.add(tileEntityName);
           registeredTileEntityClasses.add(tileEntityClass);
         } catch (Exception e) {
-          logger.error("Failed to register tile entity for block: " + tileEntityProvider, e);
+          logger.error("Failed to register tile entity for block: {}", tileEntityProvider, e);
         }
       });
       logger.info("Finished registering tile entities");
@@ -322,9 +321,9 @@ public class Csm {
 
       // Call initialization of the proxy (client or server/common)
       String side = event.getSide().isClient() ? "client" : "server";
-      logger.info("Calling initialization of proxy (" + side + ")");
+      logger.info("Calling initialization of proxy ({})", side);
       proxy.init(event);
-      logger.info("Finished initialization of proxy (" + side + ")");
+      logger.info("Finished initialization of proxy ({})", side);
       progressBar.step("Proxy Initialization");
 
       // Output completion of initialization
@@ -356,9 +355,9 @@ public class Csm {
     try {
       // Call post-initialization of the proxy (client or server/common)
       String side = event.getSide().isClient() ? "client" : "server";
-      logger.info("Calling post-initialization of proxy (" + side + ")");
+      logger.info("Calling post-initialization of proxy ({})", side);
       proxy.postInit(event);
-      logger.info("Finished post-initialization of proxy (" + side + ")");
+      logger.info("Finished post-initialization of proxy ({})", side);
       progressBar.step("Proxy Post-Initialization");
 
       // Report Fabricator coverage. Creative tabs are assigned during preInit, so by now every
@@ -416,9 +415,9 @@ public class Csm {
 
     // Call server load of the proxy (client or server/common)
     String side = event.getSide().isClient() ? "client" : "server";
-    logger.info("Calling server-load initialization of proxy (" + side + ")");
+    logger.info("Calling server-load initialization of proxy ({})", side);
     proxy.serverLoad(event);
-    logger.info("Finished server-load initialization of proxy (" + side + ")");
+    logger.info("Finished server-load initialization of proxy ({})", side);
 
     // Output completion of server-load initialization
     logger.info("Finished handling server load for " + CsmConstants.MOD_NAME + " v"

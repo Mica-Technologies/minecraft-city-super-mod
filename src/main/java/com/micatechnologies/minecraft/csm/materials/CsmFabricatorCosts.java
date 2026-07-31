@@ -8,7 +8,6 @@ import com.micatechnologies.minecraft.csm.codeutils.ICsmBlock;
 import com.micatechnologies.minecraft.csm.lifesafety.AbstractBlockFireAlarmActivator;
 import com.micatechnologies.minecraft.csm.lifesafety.AbstractBlockFireAlarmDetector;
 import com.micatechnologies.minecraft.csm.lifesafety.AbstractBlockFireAlarmSounder;
-import com.micatechnologies.minecraft.csm.lifesafety.AbstractBlockFireAlarmSounderVoiceEvac;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockTrafficSignalController;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignal;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockTrafficSignalSensor;
@@ -134,6 +133,9 @@ public final class CsmFabricatorCosts {
     CreativeTabs tab = block.getCreativeTab();
     if (tab == null) {
       // Hidden / retiring blocks (CsmTabNone) get a null tab and are deliberately not fabricable.
+      // The IDE flags this condition as always false because the MCP mappings do not mark
+      // Block.getCreativeTab() nullable; it very much can be null here, and removing the check
+      // would make all 112 hidden blocks fabricable.
       return null;
     }
     // Resolved via CsmTab rather than CreativeTabs.getTabLabel(), which is client-only and is
@@ -193,7 +195,7 @@ public final class CsmFabricatorCosts {
             FabricatorIngredient.part(CsmParts.SHEET_METAL, 1));
 
       case TAB_LIFE_SAFETY:
-        return lifeSafetyCost(block);
+        return lifeSafetyCost(block, registryName);
 
       case TAB_LIGHTING:
         return cost(FabricatorIngredient.part(CsmParts.LED_MODULE, 1),
@@ -325,20 +327,35 @@ public final class CsmFabricatorCosts {
     return FabricatorIngredient.exact(MC_DYE, meta, 1);
   }
 
-  /** Prices fire alarm and life safety equipment by appliance type. */
-  private static List<FabricatorIngredient> lifeSafetyCost(Block block) {
-    if (block instanceof AbstractBlockFireAlarmSounder
-        || block instanceof AbstractBlockFireAlarmSounderVoiceEvac) {
-      return cost(FabricatorIngredient.part(CsmParts.SOUNDER_DRIVER, 1),
-          FabricatorIngredient.part(CsmParts.ENCLOSURE_SHELL, 1));
+  /**
+   * Prices fire alarm and life safety equipment by appliance type.
+   *
+   * <p><b>Order matters, most specific first.</b> {@code AbstractBlockFireAlarmDetector} extends
+   * {@code AbstractBlockFireAlarmActivator}, and {@code AbstractBlockFireAlarmSounderVoiceEvac}
+   * extends {@code AbstractBlockFireAlarmSounder}, so testing the parent first would swallow the
+   * subclass and leave its branch unreachable. Detectors were previously priced as pull stations
+   * for exactly that reason.</p>
+   */
+  private static List<FabricatorIngredient> lifeSafetyCost(Block block, String registryName) {
+    // Sprinklers are classed as detectors but are a glass bulb on a brass body, not an
+    // electronic sensor.
+    if (CsmBlockDisplayNames.hasWord(registryName, "sprinkler")) {
+      return cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 1),
+          FabricatorIngredient.part(CsmParts.LENS_ASSEMBLY, 1));
+    }
+    // Detectors sense; check before activators, which they extend.
+    if (block instanceof AbstractBlockFireAlarmDetector) {
+      return cost(FabricatorIngredient.part(CsmParts.OPTICAL_SENSOR, 1),
+          FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1));
     }
     if (block instanceof AbstractBlockFireAlarmActivator) {
       return cost(FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1),
           FabricatorIngredient.part(CsmParts.SHEET_METAL, 1));
     }
-    if (block instanceof AbstractBlockFireAlarmDetector) {
-      return cost(FabricatorIngredient.part(CsmParts.OPTICAL_SENSOR, 1),
-          FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1));
+    // Voice evac speakers are a kind of sounder and cost the same, so one check covers both.
+    if (block instanceof AbstractBlockFireAlarmSounder) {
+      return cost(FabricatorIngredient.part(CsmParts.SOUNDER_DRIVER, 1),
+          FabricatorIngredient.part(CsmParts.ENCLOSURE_SHELL, 1));
     }
     return cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 1),
         FabricatorIngredient.part(CsmParts.WIRING_HARNESS, 1));
