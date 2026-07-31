@@ -6,10 +6,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
@@ -361,7 +359,7 @@ public abstract class CsmTab {
       return entryClass.getDeclaredConstructor().newInstance();
     } catch (Exception e) {
       fmlPreInitializationEvent.getModLog()
-          .error("Error initializing tab element: " + entryClass.getName(), e);
+          .error("Error initializing tab element: {}", entryClass.getName(), e);
     }
     return null;
   }

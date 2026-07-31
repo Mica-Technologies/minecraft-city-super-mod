@@ -75,7 +75,9 @@ public class CsmGuiHandler implements IGuiHandler {
     BlockPos pos = new BlockPos(x, y, z);
     TileEntity tileEntity = world.getTileEntity(pos);
     Object returnValue = null;
-    if (id == 0) {
+    if (id == 0 && tileEntity instanceof TileEntityRedstoneTTS) {
+      // Guarded like every other id below. Without the instanceof this branch would throw on a
+      // missing or mismatched tile entity instead of simply declining to open a screen.
       returnValue = new BlockRedstoneTTSGui((TileEntityRedstoneTTS) tileEntity);
     } else if (id == 1 && tileEntity instanceof TileEntityTrafficSignalHead) {
       returnValue = new SignalHeadConfigGui((TileEntityTrafficSignalHead) tileEntity);
