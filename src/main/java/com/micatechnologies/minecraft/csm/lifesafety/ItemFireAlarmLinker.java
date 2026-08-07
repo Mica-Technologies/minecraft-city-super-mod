@@ -30,6 +30,27 @@ public class ItemFireAlarmLinker extends AbstractItem {
     super(0, 1);
   }
 
+  /**
+   * Gets the fire alarm control panel this linker currently has selected, or null if none has been
+   * selected yet.
+   * <p>
+   * Exposed so that other mods can take part in linking. The linker itself only knows how to attach
+   * CSM's own sounders and sensors to a panel, and teaching it about every block another mod might
+   * want to link would mean CSM knowing about those mods. Letting the other mod read the selection
+   * inverts that: it can handle its own blocks with this same tool, and CSM needs to know nothing
+   * about it.
+   * <p>
+   * Note the selection lives on the item instance, which is a singleton, so it is shared by everyone
+   * holding one. That is pre-existing behaviour and is fine in single player.
+   *
+   * @return the selected fire alarm control panel position, or null
+   *
+   * @since 2026.08.07
+   */
+  public BlockPos getSelectedPanel() {
+    return alarmPanelPos;
+  }
+
   @Override
   public EnumActionResult onItemUse(EntityPlayer player,
       World worldIn,
