@@ -189,16 +189,58 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
     registerActiveAlarms();
   }
 
+  /**
+   * Puts an already-alarming panel back into the registry when it loads, and says so.
+   * <p>
+   * The events are posted here for the same reason {@link #unregisterActiveAlarms()} posts them:
+   * {@link FireAlarmEvent} is meant to be a faithful running commentary on what
+   * {@link CsmFireAlarmQuery} would answer, and a panel appearing in that answer without an
+   * {@code Activated} behind it leaves an event-driven listener believing the building is quiet
+   * while the query says otherwise. A listener that keeps no state of its own sees nothing new; one
+   * that mirrors the events now stays in step across a chunk cycle.
+   * <p>
+   * Guarded on the registry actually changing, so the load path cannot announce an alarm that was
+   * already listed -- {@code onLoad} can run more than once for one panel.
+   */
   private void registerActiveAlarms() {
     if (world == null || world.isRemote) {
       return;
     }
     int dim = world.provider.getDimension();
-    if (alarm) {
-      FireAlarmPanelRegistry.registerFireAlarm(dim, getPos());
+    if (alarm && FireAlarmPanelRegistry.registerFireAlarm(dim, getPos())) {
+      MinecraftForge.EVENT_BUS.post(new FireAlarmEvent.Activated(world, getPos()));
     }
-    if (alarmStorm) {
-      FireAlarmPanelRegistry.registerStormAlarm(dim, getPos());
+    if (alarmStorm && FireAlarmPanelRegistry.registerStormAlarm(dim, getPos())) {
+      MinecraftForge.EVENT_BUS.post(new FireAlarmEvent.StormActivated(world, getPos()));
+    }
+  }
+
+  /**
+   * Takes the panel out of the registry when it goes away, and says so.
+   * <p>
+   * Both of the paths that call this -- the block being broken and the chunk unloading -- used to
+   * remove the panel silently, so anything driven by the events heard an alarm start and never
+   * heard it stop. Polling consumers were unaffected, which is what kept this hidden.
+   * <p>
+   * Note that a chunk unload is not the alarm being reset: the state is saved, and loading the
+   * chunk again re-registers it and posts a fresh {@code Activated}. What the pair of events
+   * describes is the panel being answerable, which is the only thing anything outside this mod can
+   * observe about it.
+   * <p>
+   * Safe to call twice. Forge runs both {@code invalidate} and {@code onChunkUnload} on some
+   * unload paths, and the registry reports whether the removal did anything, so the second call is
+   * silent rather than a repeated event.
+   */
+  private void unregisterActiveAlarms() {
+    if (world == null || world.isRemote) {
+      return;
+    }
+    int dim = world.provider.getDimension();
+    if (FireAlarmPanelRegistry.unregisterFireAlarm(dim, getPos())) {
+      MinecraftForge.EVENT_BUS.post(new FireAlarmEvent.Deactivated(world, getPos()));
+    }
+    if (FireAlarmPanelRegistry.unregisterStormAlarm(dim, getPos())) {
+      MinecraftForge.EVENT_BUS.post(new FireAlarmEvent.StormDeactivated(world, getPos()));
     }
   }
 
@@ -371,17 +413,13 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
 
   @Override
   public void invalidate() {
-    if (world != null && !world.isRemote) {
-      FireAlarmPanelRegistry.unregisterAll(world.provider.getDimension(), getPos());
-    }
+    unregisterActiveAlarms();
     super.invalidate();
   }
 
   @Override
   public void onChunkUnload() {
-    if (world != null && !world.isRemote) {
-      FireAlarmPanelRegistry.unregisterAll(world.provider.getDimension(), getPos());
-    }
+    unregisterActiveAlarms();
     super.onChunkUnload();
   }
 
