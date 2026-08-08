@@ -20,32 +20,45 @@ public class FireAlarmPanelRegistry {
   private static final Map<Integer, Set<BlockPos>> fireAlarmPanels = new HashMap<>();
   private static final Map<Integer, Set<BlockPos>> stormAlarmPanels = new HashMap<>();
 
-  public static synchronized void registerFireAlarm(int dimensionId, BlockPos panelPos) {
-    fireAlarmPanels.computeIfAbsent(dimensionId, k -> new HashSet<>()).add(panelPos);
+  /**
+   * @return true if the panel was not already listed, i.e. this call changed what a query sees
+   */
+  public static synchronized boolean registerFireAlarm(int dimensionId, BlockPos panelPos) {
+    return fireAlarmPanels.computeIfAbsent(dimensionId, k -> new HashSet<>()).add(panelPos);
   }
 
-  public static synchronized void unregisterFireAlarm(int dimensionId, BlockPos panelPos) {
-    Set<BlockPos> panels = fireAlarmPanels.get(dimensionId);
-    if (panels != null) {
-      panels.remove(panelPos);
-      if (panels.isEmpty()) {
-        fireAlarmPanels.remove(dimensionId);
-      }
+  /**
+   * @return true if the panel was listed, i.e. this call changed what a query sees
+   */
+  public static synchronized boolean unregisterFireAlarm(int dimensionId, BlockPos panelPos) {
+    return remove(fireAlarmPanels, dimensionId, panelPos);
+  }
+
+  /**
+   * @return true if the panel was not already listed, i.e. this call changed what a query sees
+   */
+  public static synchronized boolean registerStormAlarm(int dimensionId, BlockPos panelPos) {
+    return stormAlarmPanels.computeIfAbsent(dimensionId, k -> new HashSet<>()).add(panelPos);
+  }
+
+  /**
+   * @return true if the panel was listed, i.e. this call changed what a query sees
+   */
+  public static synchronized boolean unregisterStormAlarm(int dimensionId, BlockPos panelPos) {
+    return remove(stormAlarmPanels, dimensionId, panelPos);
+  }
+
+  private static boolean remove(Map<Integer, Set<BlockPos>> registry, int dimensionId,
+      BlockPos panelPos) {
+    Set<BlockPos> panels = registry.get(dimensionId);
+    if (panels == null) {
+      return false;
     }
-  }
-
-  public static synchronized void registerStormAlarm(int dimensionId, BlockPos panelPos) {
-    stormAlarmPanels.computeIfAbsent(dimensionId, k -> new HashSet<>()).add(panelPos);
-  }
-
-  public static synchronized void unregisterStormAlarm(int dimensionId, BlockPos panelPos) {
-    Set<BlockPos> panels = stormAlarmPanels.get(dimensionId);
-    if (panels != null) {
-      panels.remove(panelPos);
-      if (panels.isEmpty()) {
-        stormAlarmPanels.remove(dimensionId);
-      }
+    boolean removed = panels.remove(panelPos);
+    if (panels.isEmpty()) {
+      registry.remove(dimensionId);
     }
+    return removed;
   }
 
   /**
@@ -71,8 +84,13 @@ public class FireAlarmPanelRegistry {
   }
 
   /**
-   * Removes a panel from all registries (fire + storm). Called when a panel TE is invalidated
-   * or its chunk is unloaded.
+   * Removes a panel from all registries (fire + storm).
+   * <p>
+   * Prefer the individual {@code unregister} methods where the caller has to post the API events
+   * that go with leaving the registry, since those report which of the two actually changed. This
+   * one drops that answer, and a caller using it cannot keep {@link FireAlarmEvent} in step with
+   * what {@link CsmFireAlarmQuery} reports -- which is precisely how a panel used to leave the
+   * registry on chunk unload with no matching {@code Deactivated} behind it.
    */
   public static synchronized void unregisterAll(int dimensionId, BlockPos panelPos) {
     unregisterFireAlarm(dimensionId, panelPos);
