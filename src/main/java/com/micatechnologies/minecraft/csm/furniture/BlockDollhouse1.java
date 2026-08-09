@@ -1,6 +1,6 @@
 package com.micatechnologies.minecraft.csm.furniture;
 
-import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEWUD;
+import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEW;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.block.SoundType;
@@ -12,7 +12,7 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 
-public class BlockDollhouse1 extends AbstractBlockRotatableNSEWUD {
+public class BlockDollhouse1 extends AbstractBlockRotatableNSEW {
 
   public BlockDollhouse1() {
     super(Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0);

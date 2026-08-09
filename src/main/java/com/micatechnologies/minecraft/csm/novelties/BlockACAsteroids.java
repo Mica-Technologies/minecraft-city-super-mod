@@ -1,7 +1,7 @@
 package com.micatechnologies.minecraft.csm.novelties;
 
 import com.micatechnologies.minecraft.csm.CsmSounds;
-import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEWUD;
+import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEW;
 import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -27,7 +27,7 @@ import net.minecraft.world.World;
  * @author Mica Technologies
  * @since 2026.4
  */
-public class BlockACAsteroids extends AbstractBlockRotatableNSEWUD {
+public class BlockACAsteroids extends AbstractBlockRotatableNSEW {
 
   public BlockACAsteroids() {
     super(Material.ROCK, SoundType.STONE, "pickaxe", 1, 1F, 10F, 1F, 0);
@@ -58,7 +58,10 @@ public class BlockACAsteroids extends AbstractBlockRotatableNSEWUD {
      */
     @Override
     public AxisAlignedBB getBlockBoundingBox( IBlockState state, IBlockAccess source, BlockPos pos ) {
-        return new AxisAlignedBB(0.000000, 0.000000, -0.625000, 1.000000, 2.000000, 1.000000);
+        // The cabinet model occupies exactly one column, two blocks tall. The old z minimum of
+        // -0.625 put an invisible wall in the block in front of the cabinet, where the player
+        // has to stand to use it.
+        return new AxisAlignedBB(0.000000, 0.000000, 0.000000, 1.000000, 2.000000, 1.000000);
     }
 
   /**
@@ -86,7 +89,7 @@ public class BlockACAsteroids extends AbstractBlockRotatableNSEWUD {
    */
   @Override
   public boolean getBlockIsFullCube(IBlockState state) {
-    return true;
+    return false;
   }
 
   /**
