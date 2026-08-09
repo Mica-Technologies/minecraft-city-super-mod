@@ -1,6 +1,6 @@
 package com.micatechnologies.minecraft.csm.novelties;
 
-import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEWUD;
+import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEW;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.block.SoundType;
@@ -18,7 +18,7 @@ import net.minecraft.world.IBlockAccess;
  * @author Mica Technologies
  * @since 2026.4
  */
-public class BlockAirHockeyTable extends AbstractBlockRotatableNSEWUD {
+public class BlockAirHockeyTable extends AbstractBlockRotatableNSEW {
 
   public BlockAirHockeyTable() {
     super(Material.ROCK, SoundType.STONE, "pickaxe", 1, 1F, 10F, 0F, 0);
@@ -49,7 +49,10 @@ public class BlockAirHockeyTable extends AbstractBlockRotatableNSEWUD {
      */
     @Override
     public AxisAlignedBB getBlockBoundingBox( IBlockState state, IBlockAccess source, BlockPos pos ) {
-        return new AxisAlignedBB(-1.000000, 0.000000, -0.946384, 2.000000, 1.187500, 1.690102);
+        // Matches the model's actual extents (x -16..32, y 0..19, z -6..22 in model pixels). The
+        // previous z range was stale and reached ~0.57 blocks further north than any geometry,
+        // leaving an invisible wall alongside the table.
+        return new AxisAlignedBB(-1.000000, 0.000000, -0.375000, 2.000000, 1.187500, 1.375625);
     }
 
   /**
@@ -77,7 +80,7 @@ public class BlockAirHockeyTable extends AbstractBlockRotatableNSEWUD {
    */
   @Override
   public boolean getBlockIsFullCube(IBlockState state) {
-    return true;
+    return false;
   }
 
   /**
