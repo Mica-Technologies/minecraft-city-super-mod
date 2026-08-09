@@ -1,6 +1,6 @@
 package com.micatechnologies.minecraft.csm.novelties;
 
-import com.micatechnologies.minecraft.csm.codeutils.AbstractBlock;
+import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEW;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.block.SoundType;
@@ -13,12 +13,12 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 
 /**
- * Decorative ping pong table block. This is a non-rotatable static block.
+ * Decorative ping pong table block with horizontal rotation support.
  *
  * @author Mica Technologies
  * @since 2026.4
  */
-public class BlockPingPongTable extends AbstractBlock {
+public class BlockPingPongTable extends AbstractBlockRotatableNSEW {
 
   public BlockPingPongTable() {
     super(Material.ROCK, SoundType.STONE, "pickaxe", 1, 1F, 10F, 0F, 0);
@@ -77,7 +77,7 @@ public class BlockPingPongTable extends AbstractBlock {
    */
   @Override
   public boolean getBlockIsFullCube(IBlockState state) {
-    return true;
+    return false;
   }
 
   /**
