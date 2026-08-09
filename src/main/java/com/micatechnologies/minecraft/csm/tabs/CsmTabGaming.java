@@ -19,6 +19,7 @@ import com.micatechnologies.minecraft.csm.novelties.BlockACMisCmd;
 import com.micatechnologies.minecraft.csm.novelties.BlockACPacMan;
 import com.micatechnologies.minecraft.csm.novelties.BlockACTempest;
 import com.micatechnologies.minecraft.csm.novelties.BlockAirHockeyTable;
+import com.micatechnologies.minecraft.csm.novelties.BlockArcadeMultiGame;
 import com.micatechnologies.minecraft.csm.novelties.BlockPingPongTable;
 import net.minecraft.block.Block;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -61,6 +62,10 @@ public class CsmTabGaming extends CsmTab {
     initTabBlock(BlockACMisCmd.class, fmlPreInitializationEvent); // AC Missile Command
     initTabBlock(BlockACPacMan.class, fmlPreInitializationEvent); // AC PacMan
     initTabBlock(BlockACTempest.class, fmlPreInitializationEvent); // AC Tempest
+
+    // Playable Cabinets
+    initTabBlock(BlockArcadeMultiGame.class,
+        fmlPreInitializationEvent); // Multi-Game Arcade Cabinet
 
     // Game Tables
     initTabBlock(BlockAirHockeyTable.class, fmlPreInitializationEvent); // Air Hockey Table

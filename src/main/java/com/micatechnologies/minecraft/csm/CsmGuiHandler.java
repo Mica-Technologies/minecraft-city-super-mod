@@ -130,6 +130,12 @@ public class CsmGuiHandler implements IGuiHandler {
     } else if (id == 19 && tileEntity instanceof com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalSensor) {
       returnValue = new com.micatechnologies.minecraft.csm.trafficsignals.SensorConfigGui(
           (com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalSensor) tileEntity);
+    } else if (id == com.micatechnologies.minecraft.csm.novelties.BlockArcadeMultiGame.GUI_ID
+        && tileEntity instanceof com.micatechnologies.minecraft.csm.novelties.TileEntityArcadeCabinet) {
+      // The GUI opens on its own game-select screen and instantiates a game only once the player
+      // picks one, so nothing outside this client-side branch ever names a game class.
+      returnValue = new com.micatechnologies.minecraft.csm.novelties.ArcadeGui(
+          (com.micatechnologies.minecraft.csm.novelties.TileEntityArcadeCabinet) tileEntity);
     } else if (id == com.micatechnologies.minecraft.csm.materials.BlockCsmFabricator.GUI_ID
         && world.getBlockState(pos).getBlock()
         instanceof com.micatechnologies.minecraft.csm.materials.BlockCsmFabricator) {
