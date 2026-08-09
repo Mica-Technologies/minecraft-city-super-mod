@@ -1,0 +1,32 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:novelties/shared_models/arcade_cabinet",
+    "textures": {
+      "all": "csm:blocks/novelties/shared_textures/arcade_multigame_cabinet",
+      "particle": "csm:blocks/novelties/shared_textures/arcade_multigame_cabinet",
+      "0": "csm:blocks/novelties/shared_textures/arcade_multigame_cabinet",
+      "1": "csm:blocks/novelties/arcade_multigame_screen"
+    }
+  },
+  "variants": {
+    "facing": {
+      "east": {
+        "y": 90
+      },
+      "north": {},
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "inventory": [
+      {}
+    ],
+    "normal": [
+      {}
+    ]
+  }
+}
