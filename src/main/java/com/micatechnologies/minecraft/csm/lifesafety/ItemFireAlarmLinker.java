@@ -8,6 +8,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
@@ -195,6 +196,29 @@ public class ItemFireAlarmLinker extends AbstractItem {
       }
     }
     return EnumActionResult.FAIL;
+  }
+
+  /**
+   * Sneaking and right-clicking the air forgets the selected panel.
+   * <p>
+   * Needed because the selection now persists. It used to live on the item instance, which is to say
+   * in memory, so restarting the game cleared it for everybody whether they wanted that or not --
+   * there was nothing to forget and no way to ask. On the stack it survives being put down and
+   * logged out with, so a linker carried from one building to the next would otherwise keep pointing
+   * at a panel across the map, and the next click would wire a sounder to the wrong building.
+   */
+  @Override
+  public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer player,
+      EnumHand hand) {
+    ItemStack heldStack = player.getHeldItem(hand);
+    if (player.isSneaking() && getSelectedPanel(heldStack) != null) {
+      setSelectedPanel(heldStack, null);
+      if (!worldIn.isRemote) {
+        player.sendMessage(new TextComponentString("Cleared the selected fire alarm control panel"));
+      }
+      return new ActionResult<>(EnumActionResult.SUCCESS, heldStack);
+    }
+    return super.onItemRightClick(worldIn, player, hand);
   }
 
   /**
