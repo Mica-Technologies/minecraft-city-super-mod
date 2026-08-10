@@ -60,7 +60,7 @@ public class ItemFireAlarmLinker extends AbstractItem {
    *
    * @return the selected fire alarm control panel position, or null
    *
-   * @since 2026.08.08
+   * @since 2026.08.10
    */
   public static BlockPos getSelectedPanel(ItemStack stack) {
     if (stack == null || !(stack.getItem() instanceof ItemFireAlarmLinker)) {
