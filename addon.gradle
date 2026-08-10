@@ -38,6 +38,55 @@ if (project.hasProperty('usesShadowedDependencies') && usesShadowedDependencies.
         }
         relocate 'org.apache.commons.collections',
                 'com.micatechnologies.minecraft.csm.shadow.org.apache.commons.collections'
+
+        // MaryTTS logs through the old org.apache.log4j API, so we shade the log4j 1.x -> 2.x
+        // bridge (see dependencies.gradle). Shading it under its own name does not work either,
+        // for a third reason on top of the two above -- not a parent-first collision like ICU, and
+        // not a classloader exclusion like commons-lang, but a POISONED CACHE.
+        //
+        // Netty probes for a logging backend during Forge's startup, and its search order reaches
+        // log4j 1.x before log4j 2:
+        //
+        //   at io.netty.util.internal.logging.Log4JLoggerFactory.newInstance(Log4JLoggerFactory.java:38)
+        //   at io.netty.util.internal.logging.InternalLoggerFactory.newDefaultFactory(InternalLoggerFactory.java:47)
+        //
+        // That runs long before this mod's jar can serve those classes, so the load fails and
+        // LaunchClassLoader records the name in `invalidClasses` -- permanently. Every later
+        // request short-circuits on the first line of findClass and throws ClassNotFoundException
+        // without looking in any jar. MaryTTS then dies during startup and every TTS call falls
+        // through to the system narrator:
+        //
+        //   [CSM-TTS] Failed to initialize MaryTTS - TTS will fall back to system narrator
+        //   java.lang.NoClassDefFoundError: org/apache/log4j/Priority
+        //       at org.apache.log4j.LogManager.getRootLogger(LogManager.java:89)
+        //
+        // The class was in the jar and undamaged the whole time; the name was blacklisted before we
+        // ever got a turn. Relocating gives MaryTTS a name Netty never probed and so never
+        // poisoned. This carries slf4j-log4j12's binding with it, which is shaded alongside and
+        // references the same package.
+        //
+        // `org.apache.logging.log4j` -- Forge's log4j 2, deliberately not shaded -- does not match
+        // this pattern, since it is not under the org.apache.log4j path. The bridge therefore keeps
+        // delegating to the real logging backend.
+        relocate 'org.apache.log4j',
+                'com.micatechnologies.minecraft.csm.shadow.org.apache.log4j'
+
+        // Same poisoning, one probe earlier. Netty tries SLF4J before it tries log4j 1.x, so
+        // `org.slf4j` is blacklisted a few milliseconds before `org.apache.log4j` is, by the
+        // adjacent frame in the very same InternalLoggerFactory.newDefaultFactory call:
+        //
+        //   at io.netty.util.internal.logging.Slf4JLoggerFactory.<init>(Slf4JLoggerFactory.java:40)
+        //   at io.netty.util.internal.logging.InternalLoggerFactory.newDefaultFactory(InternalLoggerFactory.java:42)
+        //
+        // Relocating log4j alone therefore only moves the failure: MaryTTS gets all the way through
+        // module registration and then dies starting JTokeniser, whose static initialiser wants
+        // org.slf4j.LoggerFactory. Both packages have to move, for the identical reason.
+        //
+        // This takes the bundled slf4j-api and the slf4j-log4j12 binding together, which is what we
+        // want -- SLF4J finds its binding by looking up org/slf4j/impl/StaticLoggerBinder, and both
+        // sides of that lookup are relocated in step.
+        relocate 'org.slf4j',
+                'com.micatechnologies.minecraft.csm.shadow.org.slf4j'
     }
 }
 
