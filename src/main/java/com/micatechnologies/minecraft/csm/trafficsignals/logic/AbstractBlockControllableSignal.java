@@ -44,6 +44,27 @@ public abstract class AbstractBlockControllableSignal extends AbstractBlockRotat
   }
 
   public static boolean changeSignalColor(World world, BlockPos blockPos, int signalColor) {
+    return changeSignalColor(world, blockPos, signalColor, false);
+  }
+
+  /**
+   * Sets the color state of the signal at the given position, and — for signal heads — whether
+   * the permissive flashing yellow arrow (FYA) is being commanded. The FYA flag lives on the
+   * head tile entity ({@code TileEntityTrafficSignalHead#setFyaActive}) rather than in block
+   * meta, and is only meaningful together with {@link #SIGNAL_GREEN}; any other color clears it.
+   *
+   * @param world       the world
+   * @param blockPos    the signal position
+   * @param signalColor one of {@link #SIGNAL_RED}, {@link #SIGNAL_YELLOW}, {@link #SIGNAL_GREEN},
+   *                    {@link #SIGNAL_OFF}
+   * @param fya         true when {@code signalColor} is green and the indication is the
+   *                    permissive flashing yellow arrow rather than a solid green
+   *
+   * @return true if the signal was set (or is unloaded / already matching); false if the block
+   *     at the position is not a controllable signal
+   */
+  public static boolean changeSignalColor(World world, BlockPos blockPos, int signalColor,
+      boolean fya) {
     // Skip signals in unloaded chunks — not a fault, just out of range
     if (!world.isBlockLoaded(blockPos)) {
       return true;
@@ -51,6 +72,15 @@ public abstract class AbstractBlockControllableSignal extends AbstractBlockRotat
 
     IBlockState blockState = world.getBlockState(blockPos);
     if (blockState.getBlock() instanceof AbstractBlockControllableSignal) {
+      // The FYA flag is independent of the color property, so update it before the color
+      // early-return: an FYA <-> solid green change keeps COLOR at green.
+      boolean fyaActive = fya && signalColor == SIGNAL_GREEN;
+      net.minecraft.tileentity.TileEntity fyaTe = world.getTileEntity(blockPos);
+      if (fyaTe instanceof com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalHead) {
+        ((com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalHead) fyaTe)
+            .setFyaActive(fyaActive);
+      }
+
       // Skip if color already matches — avoids redundant setBlockState calls
       if (blockState.getValue(COLOR) == signalColor) {
         return true;
@@ -251,6 +281,16 @@ public abstract class AbstractBlockControllableSignal extends AbstractBlockRotat
   public enum SIGNAL_SIDE {
     FLASHING_LEFT,
     FLASHING_RIGHT,
+    /**
+     * Single-head bimodal FYA left turn signal: contains the yellow clearance arrow, the
+     * protected green arrow and the permissive flashing yellow arrow in one head (a
+     * "bimodal" section switches between two of them). Linked into <em>both</em> the flashing
+     * left and left circuit lists so the controller drives it as the FYA head and the green
+     * add-on at once; the phase reconciles the pair of assignments on apply.
+     */
+    BIMODAL_LEFT,
+    /** Right-turn counterpart of {@link #BIMODAL_LEFT}. */
+    BIMODAL_RIGHT,
     LEFT,
     THROUGH,
     RIGHT,

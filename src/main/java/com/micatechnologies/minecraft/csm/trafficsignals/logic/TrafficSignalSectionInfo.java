@@ -30,6 +30,7 @@ public class TrafficSignalSectionInfo {
   private static final String KEY_BULB_LIT = "bulbLit";
   private static final String KEY_BULB_FLASHING = "bulbFlashing";
   private static final String KEY_BODY_STYLE = "bodyStyle";
+  private static final String KEY_BIMODAL = "bimodal";
 
   private TrafficSignalBodyColor bodyColor;
   private TrafficSignalBodyColor doorColor;
@@ -43,6 +44,13 @@ public class TrafficSignalSectionInfo {
   private TrafficSignalBulbColor bulbCustomColor;
   private boolean bulbLit;
   private boolean bulbFlashing;
+  /**
+   * Whether this section is a bimodal green-arrow / flashing-yellow-arrow (or solid-yellow /
+   * flashing-yellow) section. When the head is commanded to the permissive flashing yellow
+   * arrow (FYA) the section lights as flashing yellow; otherwise it behaves as a normal
+   * section of its {@link #bulbColor}. Block-defined; persisted so section edits keep it.
+   */
+  private boolean bimodal;
   // Transient: whether the controller has commanded this section lit on the current
   // tick, ignoring bulb-aging effects. Used by accessories that are physically separate
   // from the bulb (e.g. the Barlo strobe) so they keep functioning even when the bulb
@@ -209,6 +217,24 @@ public class TrafficSignalSectionInfo {
     this.bulbFlashing = bulbFlashing;
   }
 
+  public boolean isBimodal() {
+    return bimodal;
+  }
+
+  public void setBimodal(boolean bimodal) {
+    this.bimodal = bimodal;
+  }
+
+  /**
+   * Fluent variant of {@link #setBimodal(boolean)} for use in block section-info suppliers.
+   *
+   * @return this instance
+   */
+  public TrafficSignalSectionInfo bimodal(boolean bimodal) {
+    this.bimodal = bimodal;
+    return this;
+  }
+
   /**
    * Converts the TrafficSignalSectionInfo to an NBTTagCompound for NBT storage.
    *
@@ -227,6 +253,9 @@ public class TrafficSignalSectionInfo {
     nbt.setBoolean(KEY_BULB_LIT, bulbLit);
     nbt.setBoolean(KEY_BULB_FLASHING, bulbFlashing);
     nbt.setInteger(KEY_BODY_STYLE, bodyStyle.toNBT());
+    if (bimodal) {
+      nbt.setBoolean(KEY_BIMODAL, true);
+    }
     return nbt;
   }
 
@@ -247,7 +276,8 @@ public class TrafficSignalSectionInfo {
         bulbCustomColor.toNBT(),
         bulbLit ? 1 : 0, // Convert boolean to int (1 for true, 0 for false)
         bulbFlashing ? 1 : 0, // Convert boolean to int (1 for true, 0 for false)
-        bodyStyle.toNBT()
+        bodyStyle.toNBT(),
+        bimodal ? 1 : 0
     };
   }
 
@@ -271,6 +301,8 @@ public class TrafficSignalSectionInfo {
     info.bulbFlashing = nbt.getBoolean(KEY_BULB_FLASHING);
     // Absent on pre-body-style NBT — getInteger returns 0 = STANDARD, the old look.
     info.bodyStyle = TrafficSignalBodyStyle.fromNBT(nbt.getInteger(KEY_BODY_STYLE));
+    // Absent on pre-bimodal NBT — getBoolean returns false.
+    info.bimodal = nbt.getBoolean(KEY_BIMODAL);
     return info;
   }
 
@@ -299,6 +331,10 @@ public class TrafficSignalSectionInfo {
     // Pre-body-style arrays are 10 long; missing = STANDARD (the old look).
     if (data.length > 10) {
       info.bodyStyle = TrafficSignalBodyStyle.fromNBT(data[10]);
+    }
+    // Pre-bimodal arrays are 11 long; missing = not bimodal.
+    if (data.length > 11) {
+      info.bimodal = data[11] == 1;
     }
     return info;
   }

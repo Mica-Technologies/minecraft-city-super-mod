@@ -823,6 +823,15 @@ public class TrafficSignalControllerCircuit {
       return linkFlashingLeftSignal(devicePos);
     } else if (side == SIGNAL_SIDE.FLASHING_RIGHT) {
       return linkFlashingRightSignal(devicePos);
+    } else if (side == SIGNAL_SIDE.BIMODAL_LEFT) {
+      // Dual membership: the head is both the FYA head and the protected green arrow.
+      boolean linked = linkFlashingLeftSignal(devicePos);
+      linked |= linkLeftSignal(devicePos);
+      return linked;
+    } else if (side == SIGNAL_SIDE.BIMODAL_RIGHT) {
+      boolean linked = linkFlashingRightSignal(devicePos);
+      linked |= linkRightSignal(devicePos);
+      return linked;
     } else if (side == SIGNAL_SIDE.BEACON) {
       return linkBeaconSignal(devicePos);
     } else if (side == SIGNAL_SIDE.NO_TURN_BLANKOUT) {
@@ -976,10 +985,24 @@ public class TrafficSignalControllerCircuit {
    * @since 1.0
    */
   public int getSize() {
+    // Bimodal FYA heads sit in both a flashing list and its plain counterpart; count each
+    // such device once.
+    int bimodalDuplicates = 0;
+    for (BlockPos pos : flashingLeftSignals) {
+      if (leftSignals.contains(pos)) {
+        bimodalDuplicates++;
+      }
+    }
+    for (BlockPos pos : flashingRightSignals) {
+      if (rightSignals.contains(pos)) {
+        bimodalDuplicates++;
+      }
+    }
     return flashingLeftSignals.size() +
         flashingRightSignals.size() +
         leftSignals.size() +
-        rightSignals.size() +
+        rightSignals.size() -
+        bimodalDuplicates +
         throughSignals.size() +
         pedestrianSignals.size() +
         pedestrianBeaconSignals.size() +

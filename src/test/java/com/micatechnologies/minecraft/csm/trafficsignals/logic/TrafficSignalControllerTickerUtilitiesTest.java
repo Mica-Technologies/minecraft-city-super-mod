@@ -5889,4 +5889,90 @@ class TrafficSignalControllerTickerUtilitiesTest {
       assertTrue(phase.getWalkSignals().contains(notABlankout));
     }
   }
+
+  // ========================================================================
+  // Bimodal FYA heads: one position in both the flashing and plain turn lists
+  // ========================================================================
+  @Nested
+  @DisplayName("bimodal FYA head (dual membership) resolves to GREEN protected / FYA permissive")
+  class BimodalFyaHeadTest {
+
+    private static final BlockPos BIMODAL = new BlockPos(1, 0, 0);
+    private static final BlockPos THROUGH = new BlockPos(5, 0, 0);
+    private static final int GREEN = AbstractBlockControllableSignal.SIGNAL_GREEN;
+    private static final int FYA = 4;
+
+    private Tuple<List<BlockPos>, List<BlockPos>> matching(BlockPos pos) {
+      return new Tuple<>(new java.util.ArrayList<>(Collections.singletonList(pos)),
+          new java.util.ArrayList<>());
+    }
+
+    private Tuple<List<BlockPos>, List<BlockPos>> nonMatching(BlockPos pos) {
+      return new Tuple<>(new java.util.ArrayList<>(),
+          new java.util.ArrayList<>(Collections.singletonList(pos)));
+    }
+
+    private Tuple<List<BlockPos>, List<BlockPos>> emptyTuple() {
+      return new Tuple<>(new java.util.ArrayList<>(), new java.util.ArrayList<>());
+    }
+
+    private TrafficSignalControllerCircuit circuit() {
+      TrafficSignalControllerCircuit circuit = emptyCircuit();
+      circuit.getThroughSignals().add(THROUGH);
+      circuit.linkDevice(BIMODAL, AbstractBlockControllableSignal.SIGNAL_SIDE.BIMODAL_LEFT);
+      return circuit;
+    }
+
+    @Test
+    @DisplayName("through phase, matching facing: OFF + GREEN pair resolves to GREEN")
+    void protectedFacingResolvesGreen() {
+      TrafficSignalPhase phase = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.ALL_THROUGHS_PROTECTEDS);
+      TrafficSignalControllerTickerUtilities.applyAllThroughsProtectedsSignalStates(
+          circuit(), phase,
+          /* flashingLeft */ matching(BIMODAL),
+          /* left */ matching(BIMODAL),
+          emptyTuple(), emptyTuple(), emptyTuple());
+
+      assertTrue(phase.getOffSignals().contains(BIMODAL));
+      assertTrue(phase.getGreenSignals().contains(BIMODAL));
+      assertEquals(GREEN, phase.resolveVehicleSignalStates().get(BIMODAL));
+    }
+
+    @Test
+    @DisplayName("through phase, non-matching facing: FYA + RED pair resolves to FYA")
+    void permissiveFacingResolvesFya() {
+      TrafficSignalPhase phase = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.ALL_THROUGHS_PROTECTEDS);
+      TrafficSignalControllerTickerUtilities.applyAllThroughsProtectedsSignalStates(
+          circuit(), phase,
+          /* flashingLeft */ nonMatching(BIMODAL),
+          /* left */ nonMatching(BIMODAL),
+          emptyTuple(), emptyTuple(), emptyTuple());
+
+      assertTrue(phase.getFyaSignals().contains(BIMODAL));
+      assertTrue(phase.getRedSignals().contains(BIMODAL));
+      assertEquals(FYA, phase.resolveVehicleSignalStates().get(BIMODAL));
+    }
+
+    @Test
+    @DisplayName("directional green: a bimodal head counts as a green arrow -> protected GREEN")
+    void directionalGreenTreatsBimodalAsGreenArrow() {
+      TrafficSignalPhase phase = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.ALL_NORTH);
+      TrafficSignalControllerTickerUtilities.applyDirectionalGreenSignalAssignments(
+          circuit(), phase,
+          /* flashingLeft */ matching(BIMODAL),
+          /* flashingRight */ emptyTuple(),
+          /* left */ matching(BIMODAL),
+          /* right */ emptyTuple(),
+          /* through */ matching(THROUGH),
+          /* pedestrianBeacon */ emptyTuple(),
+          /* protected */ emptyTuple());
+
+      assertFalse(phase.getFyaSignals().contains(BIMODAL),
+          "with a green arrow present the matching left runs protected, not FYA");
+      assertEquals(GREEN, phase.resolveVehicleSignalStates().get(BIMODAL));
+    }
+  }
 }

@@ -93,6 +93,8 @@ vehicle detection sensors, and signal overlaps. All traffic signal code lives in
 | `PROTECTED` | Protected left turn signal |
 | `FLASHING_LEFT` | Flashing left turn arrow |
 | `FLASHING_RIGHT` | Flashing right turn arrow |
+| `BIMODAL_LEFT` | Single-head bimodal FYA left signal (protected green + permissive FYA in one head); linked into **both** the flashing-left and left lists — see [Single-Head Bimodal FYA Signals](#single-head-bimodal-fya-signals) |
+| `BIMODAL_RIGHT` | Right-turn counterpart of `BIMODAL_LEFT` |
 | `PEDESTRIAN` | Walk/don't walk signal |
 | `PEDESTRIAN_BEACON` | Beacon-style pedestrian signal |
 | `PEDESTRIAN_ACCESSORY` | Crosswalk button or APS block |
@@ -160,6 +162,64 @@ own demand get solid green.
 The transit/bike protected-vs-right-turn conflict is also resolved per-facing: a protected
 signal at a facing where right is solid green goes red; at a facing where right is FYA
 permissive, the protected stays green.
+
+### Single-Head Bimodal FYA Signals
+
+The two-head compound above needs a separate green add-on because a head has exactly one
+`COLOR` value (0–3, meta is full) fed by one circuit list, and FYA is folded into green
+(`COLOR=2`) when a phase is applied. Real installations also use **single heads** that show
+the protected green arrow *and* the permissive flashing yellow arrow, with one "bimodal"
+section switching between two indications. Three families ship, each in left and right:
+
+| Family | Layout (top → bottom) | Blocks |
+|---|---|---|
+| Doghouse FYA add-on | yellow arrow / **bimodal green ▸ FYA** (mounts *below* the doghouse main; the shared red ball is the turn's red) | `controllabledoghousesignalsecondarybimodalleft` / `…right` |
+| 3-section, bimodal yellow | red arrow / **bimodal yellow ▸ FYA** / green arrow | `controllableverticalbimodalyellowleftsignal` / `…rightsignal` |
+| 3-section, bimodal green | red arrow / yellow arrow / **bimodal green ▸ FYA** | `controllableverticalbimodalgreenleftsignal` / `…rightsignal` |
+
+Bimodal sections whose two indications differ in color (green ▸ FYA) use
+`TrafficSignalBulbStyle.LED_DOTTED`, whose off texture is not color-tinted; the yellow ▸ FYA
+section keeps plain `LED`.
+
+Inventory icons use animated textures that show the bimodal cycle (`shared_textures/
+bimodalgreenarrow{left,right}flash.png` = dotted green held, then dotted yellow flashing;
+`bimodalyellowarrow{left,right}flash.png` = solid yellow held, then flashing), with per-frame
+timing in the `.png.mcmeta`. `ledgreenarrowright.png` was added for the right-hand green frame.
+
+**Head state (the "5th state").** `TileEntityTrafficSignalHead.fyaActive` (NBT `fya`, synced
+to the client) records that the controller is commanding the permissive arrow. `COLOR` stays
+`2` while it is set, so light emission, backplates, the mount kit and every other consumer of
+the color property are unaffected. It is written by
+`AbstractBlockControllableSignal.changeSignalColor(world, pos, color, fya)`; any non-green
+color clears it. The legacy 3-arg overload passes `fya=false`.
+
+**Bimodal section flag.** `TrafficSignalSectionInfo.bimodal` (compound key `bimodal`, int-array
+slot 11; absent = false). Block-defined via `.bimodal(true)` on the section, persisted with the
+rest of the section data. Lighting rule in the head TE's per-frame pass: **if the head has at
+least one bimodal section and `fyaActive` is set (with `COLOR=2`)**, only bimodal sections
+light, as flashing yellow (`bulbCustomColor=YELLOW`, in phase with the other flashing bulbs);
+otherwise the normal color mapping applies and bimodal sections render their base color
+solid. Heads with no bimodal section — including the legacy hybrid, whose FYA section is a
+plain green section drawn yellow — ignore the flag entirely.
+
+**Controller side.** A bimodal head is linked as `SIGNAL_SIDE.BIMODAL_LEFT/RIGHT`, which
+`TrafficSignalControllerCircuit.linkDevice` puts into **both** `flashingLeft(Right)Signals`
+and `left(Right)Signals` (dual membership; `getSize()` counts it once, `unlinkDevice` removes it
+from both). Every ticker site therefore hands the head the same *pair* of assignments the
+two-head compound gets, with no per-site changes; `TrafficSignalPhase.apply()` reconciles them
+via `resolveVehicleSignalStates()` with priority **GREEN > FYA > YELLOW > RED > OFF** and writes
+each position once:
+
+| Situation | Flashing-list assignment | Plain-list assignment | Resolved |
+|---|---|---|---|
+| Protected green | OFF | GREEN | GREEN (`COLOR=2`, `fya=false`) |
+| Permissive FYA | FYA | RED | FYA (`COLOR=2`, `fya=true`) |
+| Yellow clearance | YELLOW | RED / YELLOW | YELLOW |
+| Stopped / flash mode | RED | RED / OFF | RED (dark on the doghouse add-on, red arrow on the 3-section heads) |
+
+Positions that appear in exactly one list (every legacy head) resolve to that list, so
+existing worlds are unaffected. `moveOverlapSignalTo*` removes a position from *every* other
+list before adding it, so an overlap move cannot leave a dual-member head in two states.
 
 ### Sensor Blocks
 

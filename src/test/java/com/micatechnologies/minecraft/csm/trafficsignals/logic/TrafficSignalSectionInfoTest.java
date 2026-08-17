@@ -135,9 +135,10 @@ class TrafficSignalSectionInfoTest {
     );
 
     original.setBodyStyle(TrafficSignalBodyStyle.BUBBLED);
+    original.setBimodal(true);
 
     int[] array = original.toNBTArray();
-    assertEquals(11, array.length);
+    assertEquals(12, array.length);
 
     var restored = TrafficSignalSectionInfo.fromNBTArray(array);
     assertEquals(original.getBodyColor(), restored.getBodyColor());
@@ -151,6 +152,27 @@ class TrafficSignalSectionInfoTest {
     assertEquals(original.isBulbLit(), restored.isBulbLit());
     assertEquals(original.isBulbFlashing(), restored.isBulbFlashing());
     assertEquals(original.getBodyStyle(), restored.getBodyStyle());
+    assertEquals(original.isBimodal(), restored.isBimodal());
+  }
+
+  @Test
+  void legacyElevenSlotArrayDefaultsToNotBimodal() {
+    // Pre-bimodal saves wrote 11-int arrays; they must load as ordinary sections.
+    var restored = TrafficSignalSectionInfo.fromNBTArray(
+        new int[]{1, 0, 0, 0, 0, 6, 0, 0, 0, 0, 1});
+    assertEquals(TrafficSignalBodyStyle.BUBBLED, restored.getBodyStyle());
+    assertFalse(restored.isBimodal());
+  }
+
+  @Test
+  void bimodalRoundTripsThroughCompoundNbtOnlyWhenSet() {
+    var plain = new TrafficSignalSectionInfo();
+    assertFalse(plain.toNBT().hasKey("bimodal"));
+    assertFalse(TrafficSignalSectionInfo.fromNBT(plain.toNBT()).isBimodal());
+
+    var bimodal = new TrafficSignalSectionInfo().bimodal(true);
+    assertTrue(bimodal.toNBT().getBoolean("bimodal"));
+    assertTrue(TrafficSignalSectionInfo.fromNBT(bimodal.toNBT()).isBimodal());
   }
 
   @Test

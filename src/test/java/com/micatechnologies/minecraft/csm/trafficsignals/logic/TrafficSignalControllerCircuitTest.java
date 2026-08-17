@@ -406,4 +406,53 @@ class TrafficSignalControllerCircuitTest {
   }
 
   // endregion
+
+  // region: bimodal FYA heads (dual membership)
+
+  @Test
+  void bimodalLeftLinksIntoFlashingLeftAndLeft() {
+    TrafficSignalControllerCircuit circuit = new TrafficSignalControllerCircuit();
+    BlockPos pos = new BlockPos(1, 2, 3);
+    assertTrue(circuit.linkDevice(pos, AbstractBlockControllableSignal.SIGNAL_SIDE.BIMODAL_LEFT));
+    assertTrue(circuit.getFlashingLeftSignals().contains(pos));
+    assertTrue(circuit.getLeftSignals().contains(pos));
+    assertFalse(circuit.getFlashingRightSignals().contains(pos));
+    assertTrue(circuit.isDeviceLinked(pos));
+    // Counted once even though it sits in two lists
+    assertEquals(1, circuit.getSize());
+  }
+
+  @Test
+  void bimodalRightLinksIntoFlashingRightAndRight() {
+    TrafficSignalControllerCircuit circuit = new TrafficSignalControllerCircuit();
+    BlockPos pos = new BlockPos(4, 5, 6);
+    assertTrue(circuit.linkDevice(pos, AbstractBlockControllableSignal.SIGNAL_SIDE.BIMODAL_RIGHT));
+    assertTrue(circuit.getFlashingRightSignals().contains(pos));
+    assertTrue(circuit.getRightSignals().contains(pos));
+    assertEquals(1, circuit.getSize());
+  }
+
+  @Test
+  void bimodalUnlinkRemovesFromBothLists() {
+    TrafficSignalControllerCircuit circuit = new TrafficSignalControllerCircuit();
+    BlockPos pos = new BlockPos(7, 8, 9);
+    circuit.linkDevice(pos, AbstractBlockControllableSignal.SIGNAL_SIDE.BIMODAL_LEFT);
+    assertTrue(circuit.unlinkDevice(pos));
+    assertFalse(circuit.isDeviceLinked(pos));
+    assertEquals(0, circuit.getSize());
+  }
+
+  @Test
+  void bimodalDualMembershipSurvivesNbtRoundTrip() {
+    TrafficSignalControllerCircuit circuit = new TrafficSignalControllerCircuit();
+    BlockPos pos = new BlockPos(10, 11, 12);
+    circuit.linkDevice(pos, AbstractBlockControllableSignal.SIGNAL_SIDE.BIMODAL_LEFT);
+    TrafficSignalControllerCircuit restored =
+        TrafficSignalControllerCircuit.fromNBT(circuit.toNBT());
+    assertTrue(restored.getFlashingLeftSignals().contains(pos));
+    assertTrue(restored.getLeftSignals().contains(pos));
+    assertEquals(circuit, restored);
+  }
+
+  // endregion
 }

@@ -2,7 +2,9 @@ package com.micatechnologies.minecraft.csm.trafficsignals.logic;
 
 import com.micatechnologies.minecraft.csm.codeutils.SerializationUtils;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.Tuple;
@@ -753,58 +755,44 @@ public class TrafficSignalPhase {
    *     false otherwise.
    */
   public boolean moveOverlapSignalToGreen(BlockPos pos) {
-    boolean moved = false;
-    if (!greenSignals.contains(pos)) {
-      if (redSignals.remove(pos)) {
-        moved = greenSignals.add(pos);
-      } else if (yellowSignals.remove(pos)) {
-        moved = greenSignals.add(pos);
-      } else if (fyaSignals.remove(pos)) {
-        moved = greenSignals.add(pos);
-      } else if (offSignals.remove(pos)) {
-        moved = greenSignals.add(pos);
-      }
-    }
-
-    return moved;
+    return moveOverlapSignalTo(pos, greenSignals);
   }
 
   /**
    * Moves the given {@link BlockPos} of an overlap signal to the 'yellow' state.
    */
   public boolean moveOverlapSignalToYellow(BlockPos pos) {
-    boolean moved = false;
-    if (!yellowSignals.contains(pos)) {
-      if (greenSignals.remove(pos)) {
-        moved = yellowSignals.add(pos);
-      } else if (redSignals.remove(pos)) {
-        moved = yellowSignals.add(pos);
-      } else if (fyaSignals.remove(pos)) {
-        moved = yellowSignals.add(pos);
-      } else if (offSignals.remove(pos)) {
-        moved = yellowSignals.add(pos);
-      }
-    }
-    return moved;
+    return moveOverlapSignalTo(pos, yellowSignals);
   }
 
   /**
    * Moves the given {@link BlockPos} of an overlap signal to the 'red' state.
    */
   public boolean moveOverlapSignalToRed(BlockPos pos) {
-    boolean moved = false;
-    if (!redSignals.contains(pos)) {
-      if (greenSignals.remove(pos)) {
-        moved = redSignals.add(pos);
-      } else if (yellowSignals.remove(pos)) {
-        moved = redSignals.add(pos);
-      } else if (fyaSignals.remove(pos)) {
-        moved = redSignals.add(pos);
-      } else if (offSignals.remove(pos)) {
-        moved = redSignals.add(pos);
+    return moveOverlapSignalTo(pos, redSignals);
+  }
+
+  /**
+   * Removes {@code pos} from every vehicle-signal state list other than {@code destination}
+   * and adds it to {@code destination}. A position may legitimately be in more than one list
+   * (bimodal FYA heads are linked as both a flashing and a plain turn signal), so every list
+   * is checked rather than stopping at the first hit.
+   *
+   * @return true if the position was found in at least one other list and moved; false if it
+   *     was not in any list or was already only in {@code destination}.
+   */
+  private boolean moveOverlapSignalTo(BlockPos pos, List<BlockPos> destination) {
+    boolean removed = false;
+    for (List<BlockPos> list : new List[] {greenSignals, yellowSignals, redSignals, offSignals,
+        fyaSignals}) {
+      if (list != destination) {
+        removed |= list.remove(pos);
       }
     }
-    return moved;
+    if (removed && !destination.contains(pos)) {
+      destination.add(pos);
+    }
+    return removed;
   }
 
   /**
@@ -820,15 +808,81 @@ public class TrafficSignalPhase {
    */
   public BlockPos apply(World world) {
     BlockPos firstMissing = null;
-    firstMissing = applyColorToSignals(world, greenSignals, AbstractBlockControllableSignal.SIGNAL_GREEN, firstMissing);
-    firstMissing = applyColorToSignals(world, yellowSignals, AbstractBlockControllableSignal.SIGNAL_YELLOW, firstMissing);
-    firstMissing = applyColorToSignals(world, redSignals, AbstractBlockControllableSignal.SIGNAL_RED, firstMissing);
-    firstMissing = applyColorToSignals(world, offSignals, AbstractBlockControllableSignal.SIGNAL_OFF, firstMissing);
-    firstMissing = applyColorToSignals(world, fyaSignals, AbstractBlockControllableSignal.SIGNAL_GREEN, firstMissing);
+    // Vehicle signals: a position may be in more than one list (bimodal FYA heads are linked
+    // as both a flashing and a plain turn signal, so a phase hands them e.g. OFF + GREEN).
+    // Resolve each position to a single indication first, then write once per position.
+    Map<BlockPos, Integer> resolved = resolveVehicleSignalStates();
+    for (Map.Entry<BlockPos, Integer> entry : resolved.entrySet()) {
+      BlockPos pos = entry.getKey();
+      if (!world.isBlockLoaded(pos)) {
+        continue;
+      }
+      int indication = entry.getValue();
+      int color = indication == INDICATION_FYA ? AbstractBlockControllableSignal.SIGNAL_GREEN
+          : indication;
+      if (!AbstractBlockControllableSignal.changeSignalColor(world, pos, color,
+          indication == INDICATION_FYA) && firstMissing == null) {
+        firstMissing = pos;
+      }
+    }
     firstMissing = applyColorToSignals(world, walkSignals, AbstractBlockControllableSignal.SIGNAL_GREEN, firstMissing);
     firstMissing = applyColorToSignals(world, flashDontWalkSignals, AbstractBlockControllableSignal.SIGNAL_YELLOW, firstMissing);
     firstMissing = applyColorToSignals(world, dontWalkSignals, AbstractBlockControllableSignal.SIGNAL_RED, firstMissing);
     return firstMissing;
+  }
+
+  /** Pseudo-indication for the permissive flashing yellow arrow (distinct from solid green). */
+  private static final int INDICATION_FYA = 4;
+
+  /**
+   * Priority of each vehicle indication when a position appears in more than one state list.
+   * Higher wins. GREEN > FYA > YELLOW > RED > OFF: for a bimodal FYA head the flashing-list
+   * assignment and the plain-list assignment combine as protected = OFF + GREEN -> GREEN,
+   * permissive = FYA + RED -> FYA, clearance = YELLOW + RED -> YELLOW, stopped = RED + RED ->
+   * RED. Positions that appear in exactly one list (every legacy head) are unaffected.
+   */
+  private static int indicationPriority(int indication) {
+    switch (indication) {
+      case AbstractBlockControllableSignal.SIGNAL_GREEN:
+        return 4;
+      case INDICATION_FYA:
+        return 3;
+      case AbstractBlockControllableSignal.SIGNAL_YELLOW:
+        return 2;
+      case AbstractBlockControllableSignal.SIGNAL_RED:
+        return 1;
+      default:
+        return 0;
+    }
+  }
+
+  /**
+   * Resolves the vehicle-signal state lists (green, yellow, red, off, FYA) to one indication per
+   * position using {@link #indicationPriority(int)}. Insertion order follows the lists in
+   * priority order so the write order is deterministic.
+   *
+   * @return map of position to indication ({@code SIGNAL_*} color, or {@link #INDICATION_FYA})
+   *
+   * @since 2026.8
+   */
+  Map<BlockPos, Integer> resolveVehicleSignalStates() {
+    Map<BlockPos, Integer> resolved = new LinkedHashMap<>();
+    mergeIndication(resolved, greenSignals, AbstractBlockControllableSignal.SIGNAL_GREEN);
+    mergeIndication(resolved, fyaSignals, INDICATION_FYA);
+    mergeIndication(resolved, yellowSignals, AbstractBlockControllableSignal.SIGNAL_YELLOW);
+    mergeIndication(resolved, redSignals, AbstractBlockControllableSignal.SIGNAL_RED);
+    mergeIndication(resolved, offSignals, AbstractBlockControllableSignal.SIGNAL_OFF);
+    return resolved;
+  }
+
+  private static void mergeIndication(Map<BlockPos, Integer> resolved, List<BlockPos> signals,
+      int indication) {
+    for (BlockPos pos : signals) {
+      Integer existing = resolved.get(pos);
+      if (existing == null || indicationPriority(indication) > indicationPriority(existing)) {
+        resolved.put(pos, indication);
+      }
+    }
   }
 
   /**
