@@ -633,6 +633,29 @@ class TrafficSignalControllerTickerUtilitiesTest {
     }
 
     @Test
+    @DisplayName("FYA going protected keeps flashing during LPI (add-on held red)")
+    void fyaGoingProtected_keepsFlashingDuringLpi() {
+      BlockPos threeSec = new BlockPos(15, 64, 20);
+      BlockPos addOn = new BlockPos(15, 63, 20);
+      TrafficSignalPhase originating = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.RED_TRANSITIONING);
+      originating.addFyaSignal(threeSec);
+      originating.addRedSignal(addOn);
+      TrafficSignalPhase upcoming = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.ALL_LEFTS);
+      upcoming.addOffSignal(threeSec);
+      upcoming.addGreenSignal(addOn);
+      upcoming.addWalkSignal(new BlockPos(20, 64, 30));
+
+      TrafficSignalPhase lpi =
+          TrafficSignalControllerTickerUtilities.getLpiPhaseForUpcoming(originating, upcoming);
+      assertTrue(lpi.getFyaSignals().contains(threeSec));
+      assertTrue(lpi.getRedSignals().contains(addOn), "new green arrow held red for the head start");
+      assertNull(TrafficSignalControllerTickerUtilities.findSkippedClearance(originating, lpi, null));
+      assertNull(TrafficSignalControllerTickerUtilities.findSkippedClearance(lpi, upcoming, null));
+    }
+
+    @Test
     @DisplayName("OFF in both phases stays OFF; newly-off is held RED")
     void offHandling() {
       BlockPos stayingOff = new BlockPos(13, 64, 20);
@@ -1359,26 +1382,92 @@ class TrafficSignalControllerTickerUtilitiesTest {
   class GetYellowTransitionFyaTest {
 
     @Test
-    @DisplayName("FYA→OFF gets solid yellow clearance (permissive→protected transition)")
-    void fyaToOff_getsYellow() {
+    @DisplayName("FYA→OFF (permissive→protected, compound hybrid) keeps flashing — no clearance")
+    void fyaToOff_keepsFlashing() {
       BlockPos fyaPos = new BlockPos(10, 64, 20);
+      BlockPos addOn = new BlockPos(10, 63, 20);
+      BlockPos through = new BlockPos(11, 64, 20);
 
       TrafficSignalPhase current = new TrafficSignalPhase(1, null,
           TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS);
       current.addFyaSignal(fyaPos);
+      current.addRedSignal(addOn);
+      current.addGreenSignal(through);
 
       TrafficSignalPhase upcoming = new TrafficSignalPhase(1, null,
-          TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS);
+          TrafficSignalPhaseApplicability.ALL_LEFTS);
       upcoming.addOffSignal(fyaPos);
+      upcoming.addGreenSignal(addOn);
+      upcoming.addRedSignal(through);
 
-      TrafficSignalPhase result =
+      TrafficSignalPhase yellow =
           TrafficSignalControllerTickerUtilities.getYellowTransitionPhaseForUpcoming(
               current, upcoming);
+      assertTrue(yellow.getFyaSignals().contains(fyaPos), "FYA keeps flashing during the through's yellow");
+      assertFalse(yellow.getYellowSignals().contains(fyaPos));
+      assertTrue(yellow.getYellowSignals().contains(through));
+      assertTrue(yellow.getRedSignals().contains(addOn));
 
-      assertTrue(result.getYellowSignals().contains(fyaPos),
-          "FYA going to OFF should get solid yellow clearance");
-      assertFalse(result.getFyaSignals().contains(fyaPos),
-          "FYA going to OFF should not stay as FYA");
+      TrafficSignalPhase red =
+          TrafficSignalControllerTickerUtilities.getRedTransitionPhaseForUpcoming(yellow, upcoming);
+      assertTrue(red.getFyaSignals().contains(fyaPos), "FYA keeps flashing during all-red");
+      assertTrue(red.getRedSignals().contains(through));
+
+      // Then straight to protected: 3-section OFF, add-on GREEN — MMU-clean at every step
+      assertNull(TrafficSignalControllerTickerUtilities.findSkippedClearance(current, yellow, null));
+      assertNull(TrafficSignalControllerTickerUtilities.findSkippedClearance(yellow, red, null));
+      assertNull(TrafficSignalControllerTickerUtilities.findSkippedClearance(red, upcoming, null));
+    }
+
+    @Test
+    @DisplayName("FYA→GREEN (bimodal head going protected) keeps flashing, then flips to green")
+    void fyaToGreen_bimodal_keepsFlashing() {
+      BlockPos head = new BlockPos(10, 64, 20);
+      // Dual-member bimodal head: permissive = FYA + RED, protected = OFF + GREEN
+      TrafficSignalPhase current = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS);
+      current.addFyaSignal(head);
+      current.addRedSignal(head);
+      TrafficSignalPhase upcoming = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.ALL_LEFTS);
+      upcoming.addOffSignal(head);
+      upcoming.addGreenSignal(head);
+
+      TrafficSignalPhase yellow =
+          TrafficSignalControllerTickerUtilities.getYellowTransitionPhaseForUpcoming(
+              current, upcoming);
+      assertEquals(4, yellow.resolveVehicleSignalStates().get(head), "resolved FYA");
+      TrafficSignalPhase red =
+          TrafficSignalControllerTickerUtilities.getRedTransitionPhaseForUpcoming(yellow, upcoming);
+      assertEquals(4, red.resolveVehicleSignalStates().get(head), "resolved FYA");
+      assertEquals(AbstractBlockControllableSignal.SIGNAL_GREEN,
+          upcoming.resolveVehicleSignalStates().get(head));
+      assertNull(TrafficSignalControllerTickerUtilities.findSkippedClearance(red, upcoming, null));
+    }
+
+    @Test
+    @DisplayName("GREEN arrow → FYA still gets yellow + red clearance")
+    void greenArrowToFya_getsClearance() {
+      BlockPos threeSec = new BlockPos(10, 64, 20);
+      BlockPos addOn = new BlockPos(10, 63, 20);
+      TrafficSignalPhase protectedPhase = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.ALL_LEFTS);
+      protectedPhase.addOffSignal(threeSec);
+      protectedPhase.addGreenSignal(addOn);
+      TrafficSignalPhase permissive = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS);
+      permissive.addFyaSignal(threeSec);
+      permissive.addRedSignal(addOn);
+
+      TrafficSignalPhase yellow =
+          TrafficSignalControllerTickerUtilities.getYellowTransitionPhaseForUpcoming(
+              protectedPhase, permissive);
+      assertTrue(yellow.getYellowSignals().contains(threeSec), "solid yellow arrow");
+      assertTrue(yellow.getYellowSignals().contains(addOn));
+      TrafficSignalPhase red =
+          TrafficSignalControllerTickerUtilities.getRedTransitionPhaseForUpcoming(yellow, permissive);
+      assertTrue(red.getRedSignals().contains(threeSec), "red arrow before FYA resumes");
+      assertTrue(red.getRedSignals().contains(addOn));
     }
 
     @Test
@@ -1669,8 +1758,8 @@ class TrafficSignalControllerTickerUtilitiesTest {
   class CompoundHybridFyaToGreenTest {
 
     @Test
-    @DisplayName("FYA→GREEN gets YELLOW clearance per MUTCD")
-    void fyaToGreen_getsYellow() {
+    @DisplayName("FYA→GREEN keeps flashing (permissive → protected needs no clearance)")
+    void fyaToGreen_keepsFlashing() {
       BlockPos fyaPos = new BlockPos(10, 64, 20);
 
       TrafficSignalPhase current = new TrafficSignalPhase(1, null,
@@ -1685,9 +1774,9 @@ class TrafficSignalControllerTickerUtilitiesTest {
           TrafficSignalControllerTickerUtilities.getYellowTransitionPhaseForUpcoming(
               current, upcoming);
 
-      assertTrue(yellow.getYellowSignals().contains(fyaPos),
-          "FYA→GREEN should get YELLOW clearance");
-      assertFalse(yellow.getFyaSignals().contains(fyaPos));
+      assertTrue(yellow.getFyaSignals().contains(fyaPos),
+          "FYA→GREEN keeps flashing until the green arrow shows");
+      assertFalse(yellow.getYellowSignals().contains(fyaPos));
       assertFalse(yellow.getGreenSignals().contains(fyaPos));
     }
 
@@ -2559,7 +2648,7 @@ class TrafficSignalControllerTickerUtilitiesTest {
     }
 
     @Test
-    @DisplayName("FYA→GREEN becomes YELLOW")
+    @DisplayName("FYA→GREEN stays FYA (no clearance into protected)")
     void fyaToGreen() {
       BlockPos p = new BlockPos(1, 0, 0);
       TrafficSignalPhase curr = new TrafficSignalPhase(1, null,
@@ -2571,7 +2660,8 @@ class TrafficSignalControllerTickerUtilitiesTest {
 
       TrafficSignalPhase y = TrafficSignalControllerTickerUtilities
           .getYellowTransitionPhaseForUpcoming(curr, next);
-      assertTrue(y.getYellowSignals().contains(p));
+      assertTrue(y.getFyaSignals().contains(p));
+      assertFalse(y.getYellowSignals().contains(p));
     }
 
     @Test

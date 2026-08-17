@@ -132,11 +132,18 @@ together form one compound indication:
 - **Protected green → any other state**: The 3-section block transitions from OFF to YELLOW
   during the yellow clearance interval (lights the solid yellow arrow section). The add-on
   block transitions from GREEN to YELLOW (which renders as dark, since it only displays green).
-- **FYA → any other state (except FYA)**: The 3-section block transitions from GREEN/FYA to
-  YELLOW (solid yellow arrow replaces flashing yellow arrow). Requires full yellow + red
-  clearance before the next indication.
+- **FYA → RED** (permissive ending restrictively): The 3-section block transitions from
+  GREEN/FYA to YELLOW (solid yellow arrow replaces flashing yellow arrow), then RED. Requires
+  full yellow + red clearance before the next indication.
+- **FYA → protected green** (lagging left): **no clearance.** The flashing yellow arrow keeps
+  flashing through the adjacent through's yellow + all-red (add-on held red) and goes straight
+  to the green arrow — 3-section OFF, add-on GREEN (a bimodal head flips its section from
+  flashing yellow to solid green). Implemented by `fyaContinuesInto` in the yellow/red
+  transition builders and mirrored in the LPI builder; ADVANCED does the same via
+  `fyaHoldFlash`.
 - **FYA → FYA (no state change)**: No clearance needed; FYA continues uninterrupted.
-- **Any state → FYA**: Must go through yellow + red clearance first, then FYA activates.
+- **Any state → FYA** (including protected green arrow → FYA): Must go through yellow + red
+  clearance first, then FYA activates.
 
 **Per-direction protected-vs-FYA arbitration:** the controller decides protected-green
 vs. permissive-FYA on a **per-facing** basis, not per-circuit.
