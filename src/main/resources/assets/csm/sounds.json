@@ -1060,5 +1060,23 @@
         "stream": false
       }
     ]
+  },
+  "spectralert_classic": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:spectralert_classic_code3",
+        "stream": false
+      }
+    ]
+  },
+  "spectralert_lf": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:spectralert_lf_code3",
+        "stream": false
+      }
+    ]
   }
 }

@@ -136,10 +136,12 @@ public class TileEntityFireAlarmStrobeRenderer
     float maxZ = to[2] / 16f - 0.5f;
     float depth = maxZ - minZ;
 
-    // Color: red for older incandescent-style strobes, white for modern xenon/LED
-    float r = redToggle ? 1.0f : 1.0f;
-    float g = redToggle ? 0.15f : 1.0f;
-    float b = redToggle ? 0.1f : 1.0f;
+    // Color comes from the block: red for older incandescent-style strobes, white for
+    // modern xenon/LED, and the lens colour for coloured-lens devices such as beacons.
+    float[] strobeColor = strobeBlock.getStrobeColor();
+    float r = strobeColor[0];
+    float g = strobeColor[1];
+    float b = strobeColor[2];
 
     // Front face — main flash quad covering the strobe lens (fully opaque core)
     float coreA = 1.0f * intensity;

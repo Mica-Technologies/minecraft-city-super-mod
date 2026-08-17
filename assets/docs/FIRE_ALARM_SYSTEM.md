@@ -263,7 +263,9 @@ See `README.md` "Adding a Sound" section for full details with code examples.
 | Sound ID | File | Used By |
 |---|---|---|
 | `csm:stahorn` | `simplex_truealart_horn.ogg` | TrueAlert horns/strobes, TrueAlert LED, 4903 (alt) |
-| `csm:spectralert` | `spectalert.ogg` | System Sensor Advance + L-Series (10 blocks) |
+| `csm:spectralert` | `spectalert.ogg` | System Sensor Advance + L-Series, incl. L-Series LED (16 blocks) |
+| `csm:spectralert_classic` | `spectralert_classic_code3.ogg` | System Sensor SpectrAlert Classic horn strobes |
+| `csm:spectralert_lf` | `spectralert_lf_code3.ogg` | System Sensor SpectrAlert Advance LF low frequency sounders |
 | `csm:est_integrity` | `est_integrity.ogg` | EST Integrity horn strobes |
 | `csm:wheelockas` | `wheelockas.ogg` | Wheelock AS/Exceeder/MT (alt) |
 | `csm:mt_code3` | `mt_code3_bldng_m_lbcc.ogg` | Wheelock MT (default) |
