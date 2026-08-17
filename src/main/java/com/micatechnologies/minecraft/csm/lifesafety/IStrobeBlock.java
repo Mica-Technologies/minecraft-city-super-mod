@@ -36,4 +36,17 @@ public interface IStrobeBlock {
   default boolean isRedSlowToggleStrobe() {
     return false;
   }
+
+  /**
+   * Returns the colour of the rendered flash as {red, green, blue}, each 0-1.
+   *
+   * <p>Defaults to the deep red of an incandescent strobe when
+   * {@link #isRedSlowToggleStrobe()} is set and plain white otherwise, which is what
+   * every horn strobe and speaker strobe wants. Coloured-lens devices such as beacons
+   * override this so the flash matches the lens.</p>
+   */
+  default float[] getStrobeColor() {
+    return isRedSlowToggleStrobe() ? new float[]{1.0f, 0.15f, 0.1f}
+        : new float[]{1.0f, 1.0f, 1.0f};
+  }
 }

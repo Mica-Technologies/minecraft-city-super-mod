@@ -48,6 +48,8 @@ public class CsmSounds {
     _4030CODE44("4030code44"),
     SMOKEALARM("smokealarm"),
     SPECTRALERT("spectralert"),
+    SPECTRALERT_CLASSIC("spectralert_classic"),
+    SPECTRALERT_LF("spectralert_lf"),
     WHEELOCKAS("wheelockas"),
     ADAPTABELL("adaptabell"),
     BELL2("bell2"),
