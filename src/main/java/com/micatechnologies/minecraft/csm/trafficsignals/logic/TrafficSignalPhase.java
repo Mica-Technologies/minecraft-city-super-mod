@@ -832,7 +832,7 @@ public class TrafficSignalPhase {
   }
 
   /** Pseudo-indication for the permissive flashing yellow arrow (distinct from solid green). */
-  private static final int INDICATION_FYA = 4;
+  static final int INDICATION_FYA = 4;
 
   /**
    * Priority of each vehicle indication when a position appears in more than one state list.
