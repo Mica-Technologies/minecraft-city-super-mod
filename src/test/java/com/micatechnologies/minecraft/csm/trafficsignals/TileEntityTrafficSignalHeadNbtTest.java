@@ -75,7 +75,9 @@ class TileEntityTrafficSignalHeadNbtTest {
 
   /** The expected rewrite of a legacy 10-slot section array: body-style slot appended as 0. */
   private static int[] withStandardBodyStyle(int[] legacy) {
-    int[] out = new int[legacy.length + 1];
+    // Legacy 10-slot arrays are rewritten with the appended body-style slot (0 = STANDARD)
+    // and the appended bimodal slot (0 = not bimodal).
+    int[] out = new int[legacy.length + 2];
     System.arraycopy(legacy, 0, out, 0, legacy.length);
     return out;
   }
@@ -106,5 +108,30 @@ class TileEntityTrafficSignalHeadNbtTest {
 
     NBTTagCompound infos = output.getCompoundTag("sInfs");
     assertEquals(1, infos.getInteger("count"));
+  }
+
+  @Test
+  void fyaActiveRoundTripsAndDefaultsToFalse() {
+    int[][] sections = {{0, 0, 0, 0, 0, 6, 0, 0, 0, 0}};
+
+    // Absent key -> not active, and not written back (keeps NBT small)
+    NBTTagCompound input = new NBTTagCompound();
+    input.setTag("sInfs", buildSectionInfos(1, sections));
+    TileEntityTrafficSignalHead te = new TileEntityTrafficSignalHead();
+    te.readNBT(input);
+    assertFalse(te.isFyaActive());
+    assertFalse(te.writeNBT(new NBTTagCompound()).hasKey("fya"));
+
+    // Present and true -> active, written back
+    input.setBoolean("fya", true);
+    te = new TileEntityTrafficSignalHead();
+    te.readNBT(input);
+    assertTrue(te.isFyaActive());
+    assertTrue(te.writeNBT(new NBTTagCompound()).getBoolean("fya"));
+
+    // Setter reports change only when the value flips (world is null in tests, no sync)
+    assertFalse(te.setFyaActive(true));
+    assertTrue(te.setFyaActive(false));
+    assertFalse(te.isFyaActive());
   }
 }

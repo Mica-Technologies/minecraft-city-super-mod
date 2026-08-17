@@ -148,6 +148,56 @@ public final class TrafficSignalBlocks {
           .allowsHorizontalFlip(false)
           .build();
 
+  /**
+   * Doghouse add-on (mounts below the doghouse main), left arrows: yellow arrow over a bimodal
+   * green-arrow / flashing-yellow-arrow section. Single-head FYA: protected green and permissive
+   * FYA in one head; the doghouse main's red ball is the turn's red.
+   */
+  public static final BlockControllableSignal DOGHOUSE_SECONDARY_BIMODAL_LEFT_SIGNAL =
+      new BlockControllableSignal.Builder(
+          "controllabledoghousesignalsecondarybimodalleft",
+          SIGNAL_SIDE.BIMODAL_LEFT,
+          true,
+          () -> {
+            return new TrafficSignalSectionInfo[] {
+            new TrafficSignalSectionInfo(TrafficSignalBodyColor.FLAT_BLACK, TrafficSignalBodyColor.FLAT_BLACK, TrafficSignalBodyColor.FLAT_BLACK,
+            TrafficSignalVisorType.CIRCLE, TrafficSignalBulbStyle.LED, TrafficSignalBulbType.LEFT,
+            TrafficSignalBulbColor.YELLOW, false),
+            new TrafficSignalSectionInfo(TrafficSignalBodyColor.FLAT_BLACK, TrafficSignalBodyColor.FLAT_BLACK, TrafficSignalBodyColor.FLAT_BLACK,
+            TrafficSignalVisorType.CIRCLE, TrafficSignalBulbStyle.LED_DOTTED, TrafficSignalBulbType.LEFT,
+            TrafficSignalBulbColor.GREEN, false).bimodal(true)
+            };
+          })
+          .sectionYPositions(16.0f, 4.0f)
+          .sectionXPositions(6, 6)
+          .allowsHorizontalFlip(false)
+          .build();
+
+  /**
+   * Doghouse add-on (mounts below the doghouse main), right arrows: yellow arrow over a bimodal
+   * green-arrow / flashing-yellow-arrow section. Right-turn twin of
+   * {@link #DOGHOUSE_SECONDARY_BIMODAL_LEFT_SIGNAL}.
+   */
+  public static final BlockControllableSignal DOGHOUSE_SECONDARY_BIMODAL_RIGHT_SIGNAL =
+      new BlockControllableSignal.Builder(
+          "controllabledoghousesignalsecondarybimodalright",
+          SIGNAL_SIDE.BIMODAL_RIGHT,
+          true,
+          () -> {
+            return new TrafficSignalSectionInfo[] {
+            new TrafficSignalSectionInfo(TrafficSignalBodyColor.FLAT_BLACK, TrafficSignalBodyColor.FLAT_BLACK, TrafficSignalBodyColor.FLAT_BLACK,
+            TrafficSignalVisorType.CIRCLE, TrafficSignalBulbStyle.LED, TrafficSignalBulbType.RIGHT,
+            TrafficSignalBulbColor.YELLOW, false),
+            new TrafficSignalSectionInfo(TrafficSignalBodyColor.FLAT_BLACK, TrafficSignalBodyColor.FLAT_BLACK, TrafficSignalBodyColor.FLAT_BLACK,
+            TrafficSignalVisorType.CIRCLE, TrafficSignalBulbStyle.LED_DOTTED, TrafficSignalBulbType.RIGHT,
+            TrafficSignalBulbColor.GREEN, false).bimodal(true)
+            };
+          })
+          .sectionYPositions(16.0f, 4.0f)
+          .sectionXPositions(-6, -6)
+          .allowsHorizontalFlip(false)
+          .build();
+
   public static final BlockControllableSignal HORIZONTAL_AHEAD_SIGNAL =
       new BlockControllableSignal.Builder(
           "controllablehorizontalaheadsignal",
@@ -1444,6 +1494,108 @@ public final class TrafficSignalBlocks {
             new TrafficSignalSectionInfo(TrafficSignalBodyColor.FLAT_BLACK, TrafficSignalBodyColor.FLAT_BLACK, TrafficSignalBodyColor.FLAT_BLACK,
             TrafficSignalVisorType.CIRCLE, TrafficSignalBulbStyle.LED, TrafficSignalBulbType.LEFT,
             TrafficSignalBulbColor.GREEN, TrafficSignalBulbColor.YELLOW, false, true)
+            };
+            return infos;
+          })
+          .build();
+
+  /**
+   * 3-section single-head FYA left signal: red arrow / bimodal solid-yellow / flashing-yellow
+   * arrow / green arrow. The middle section is solid yellow on clearance and flashes yellow on
+   * permissive; the bottom green arrow is the protected indication.
+   */
+  public static final BlockControllableSignal VERTICAL_BIMODAL_YELLOW_LEFT_SIGNAL =
+      new BlockControllableSignal.Builder(
+          "controllableverticalbimodalyellowleftsignal",
+          SIGNAL_SIDE.BIMODAL_LEFT,
+          true,
+          () -> {
+            TrafficSignalSectionInfo[] infos = new TrafficSignalSectionInfo[] {
+            new TrafficSignalSectionInfo(TrafficSignalBodyColor.FLAT_BLACK, TrafficSignalBodyColor.FLAT_BLACK, TrafficSignalBodyColor.FLAT_BLACK,
+            TrafficSignalVisorType.CIRCLE, TrafficSignalBulbStyle.LED, TrafficSignalBulbType.LEFT,
+            TrafficSignalBulbColor.RED, false),
+            new TrafficSignalSectionInfo(TrafficSignalBodyColor.FLAT_BLACK, TrafficSignalBodyColor.FLAT_BLACK, TrafficSignalBodyColor.FLAT_BLACK,
+            TrafficSignalVisorType.CIRCLE, TrafficSignalBulbStyle.LED, TrafficSignalBulbType.LEFT,
+            TrafficSignalBulbColor.YELLOW, false).bimodal(true),
+            new TrafficSignalSectionInfo(TrafficSignalBodyColor.FLAT_BLACK, TrafficSignalBodyColor.FLAT_BLACK, TrafficSignalBodyColor.FLAT_BLACK,
+            TrafficSignalVisorType.CIRCLE, TrafficSignalBulbStyle.LED, TrafficSignalBulbType.LEFT,
+            TrafficSignalBulbColor.GREEN, false)
+            };
+            return infos;
+          })
+          .build();
+
+  /**
+   * Right-turn twin of {@link #VERTICAL_BIMODAL_YELLOW_LEFT_SIGNAL}: red arrow / bimodal
+   * solid-yellow / flashing-yellow arrow / green arrow.
+   */
+  public static final BlockControllableSignal VERTICAL_BIMODAL_YELLOW_RIGHT_SIGNAL =
+      new BlockControllableSignal.Builder(
+          "controllableverticalbimodalyellowrightsignal",
+          SIGNAL_SIDE.BIMODAL_RIGHT,
+          true,
+          () -> {
+            TrafficSignalSectionInfo[] infos = new TrafficSignalSectionInfo[] {
+            new TrafficSignalSectionInfo(TrafficSignalBodyColor.FLAT_BLACK, TrafficSignalBodyColor.FLAT_BLACK, TrafficSignalBodyColor.FLAT_BLACK,
+            TrafficSignalVisorType.CIRCLE, TrafficSignalBulbStyle.LED, TrafficSignalBulbType.RIGHT,
+            TrafficSignalBulbColor.RED, false),
+            new TrafficSignalSectionInfo(TrafficSignalBodyColor.FLAT_BLACK, TrafficSignalBodyColor.FLAT_BLACK, TrafficSignalBodyColor.FLAT_BLACK,
+            TrafficSignalVisorType.CIRCLE, TrafficSignalBulbStyle.LED, TrafficSignalBulbType.RIGHT,
+            TrafficSignalBulbColor.YELLOW, false).bimodal(true),
+            new TrafficSignalSectionInfo(TrafficSignalBodyColor.FLAT_BLACK, TrafficSignalBodyColor.FLAT_BLACK, TrafficSignalBodyColor.FLAT_BLACK,
+            TrafficSignalVisorType.CIRCLE, TrafficSignalBulbStyle.LED, TrafficSignalBulbType.RIGHT,
+            TrafficSignalBulbColor.GREEN, false)
+            };
+            return infos;
+          })
+          .build();
+
+  /**
+   * 3-section single-head FYA left signal: red arrow / yellow arrow / bimodal green-arrow /
+   * flashing-yellow-arrow. The bottom section is solid green on protected and flashes yellow on
+   * permissive.
+   */
+  public static final BlockControllableSignal VERTICAL_BIMODAL_GREEN_LEFT_SIGNAL =
+      new BlockControllableSignal.Builder(
+          "controllableverticalbimodalgreenleftsignal",
+          SIGNAL_SIDE.BIMODAL_LEFT,
+          true,
+          () -> {
+            TrafficSignalSectionInfo[] infos = new TrafficSignalSectionInfo[] {
+            new TrafficSignalSectionInfo(TrafficSignalBodyColor.FLAT_BLACK, TrafficSignalBodyColor.FLAT_BLACK, TrafficSignalBodyColor.FLAT_BLACK,
+            TrafficSignalVisorType.CIRCLE, TrafficSignalBulbStyle.LED, TrafficSignalBulbType.LEFT,
+            TrafficSignalBulbColor.RED, false),
+            new TrafficSignalSectionInfo(TrafficSignalBodyColor.FLAT_BLACK, TrafficSignalBodyColor.FLAT_BLACK, TrafficSignalBodyColor.FLAT_BLACK,
+            TrafficSignalVisorType.CIRCLE, TrafficSignalBulbStyle.LED, TrafficSignalBulbType.LEFT,
+            TrafficSignalBulbColor.YELLOW, false),
+            new TrafficSignalSectionInfo(TrafficSignalBodyColor.FLAT_BLACK, TrafficSignalBodyColor.FLAT_BLACK, TrafficSignalBodyColor.FLAT_BLACK,
+            TrafficSignalVisorType.CIRCLE, TrafficSignalBulbStyle.LED_DOTTED, TrafficSignalBulbType.LEFT,
+            TrafficSignalBulbColor.GREEN, false).bimodal(true)
+            };
+            return infos;
+          })
+          .build();
+
+  /**
+   * Right-turn twin of {@link #VERTICAL_BIMODAL_GREEN_LEFT_SIGNAL}: red arrow / yellow arrow /
+   * bimodal green-arrow / flashing-yellow-arrow.
+   */
+  public static final BlockControllableSignal VERTICAL_BIMODAL_GREEN_RIGHT_SIGNAL =
+      new BlockControllableSignal.Builder(
+          "controllableverticalbimodalgreenrightsignal",
+          SIGNAL_SIDE.BIMODAL_RIGHT,
+          true,
+          () -> {
+            TrafficSignalSectionInfo[] infos = new TrafficSignalSectionInfo[] {
+            new TrafficSignalSectionInfo(TrafficSignalBodyColor.FLAT_BLACK, TrafficSignalBodyColor.FLAT_BLACK, TrafficSignalBodyColor.FLAT_BLACK,
+            TrafficSignalVisorType.CIRCLE, TrafficSignalBulbStyle.LED, TrafficSignalBulbType.RIGHT,
+            TrafficSignalBulbColor.RED, false),
+            new TrafficSignalSectionInfo(TrafficSignalBodyColor.FLAT_BLACK, TrafficSignalBodyColor.FLAT_BLACK, TrafficSignalBodyColor.FLAT_BLACK,
+            TrafficSignalVisorType.CIRCLE, TrafficSignalBulbStyle.LED, TrafficSignalBulbType.RIGHT,
+            TrafficSignalBulbColor.YELLOW, false),
+            new TrafficSignalSectionInfo(TrafficSignalBodyColor.FLAT_BLACK, TrafficSignalBodyColor.FLAT_BLACK, TrafficSignalBodyColor.FLAT_BLACK,
+            TrafficSignalVisorType.CIRCLE, TrafficSignalBulbStyle.LED_DOTTED, TrafficSignalBulbType.RIGHT,
+            TrafficSignalBulbColor.GREEN, false).bimodal(true)
             };
             return infos;
           })

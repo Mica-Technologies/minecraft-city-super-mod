@@ -131,6 +131,15 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
   private boolean dirty = true;
   private boolean powerLossOff = true;
 
+  /**
+   * Whether the controller is currently commanding this head to display the permissive
+   * flashing yellow arrow (FYA). The block's {@code COLOR} property stays at green (2) while
+   * this is set; heads with a bimodal section use the flag to choose between the solid green
+   * arrow and the flashing yellow arrow. Persisted and synced to the client.
+   */
+  private static final String FYA_ACTIVE_KEY = "fya";
+  private boolean fyaActive = false;
+
   // Bulb aging fields (short-form keys; LEGACY_* variants retained for back-compat reads)
   private static final String AGING_ENABLED_KEY = "agE";
   private static final String LEGACY_AGING_ENABLED_KEY = "agingEnabled";
@@ -197,6 +206,9 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
     } else if (compound.hasKey(LEGACY_ALTERNATE_FLASH_KEY)) {
       alternateFlash = compound.getBoolean(LEGACY_ALTERNATE_FLASH_KEY);
     }
+
+    // Get the FYA (permissive flashing yellow arrow) state; absent means not active
+    fyaActive = compound.hasKey(FYA_ACTIVE_KEY) && compound.getBoolean(FYA_ACTIVE_KEY);
 
     // Get the horizontal-flip setting
     if (compound.hasKey(HORIZONTAL_FLIP_KEY)) {
@@ -302,6 +314,9 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
 
     // Set the alternate flash setting
     compound.setBoolean(ALTERNATE_FLASH_KEY, alternateFlash);
+    if (fyaActive) {
+      compound.setBoolean(FYA_ACTIVE_KEY, true);
+    }
     compound.setBoolean(HORIZONTAL_FLIP_KEY, horizontalFlip);
     compound.setInteger(MOUNT_TYPE_KEY, mountType.toNBT());
     compound.setInteger(MOUNT_COLOR_KEY, mountColor.toNBT());
@@ -354,6 +369,21 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
     boolean hawkWigwag = currentBulbColor == 2 && block instanceof BlockControllableHawkSignal;
     BlockControllableHawkSignal hawkBlock = hawkWigwag ? (BlockControllableHawkSignal) block : null;
 
+    // Bimodal FYA override — when the controller commands the permissive flashing yellow
+    // arrow (green color state + fyaActive) on a head that has a bimodal section, only the
+    // bimodal sections light, as flashing yellow. Heads without a bimodal section (including
+    // the legacy 3-section hybrid, whose FYA section is a plain "green drawn as yellow"
+    // section) ignore the flag entirely, so their behaviour is unchanged.
+    boolean bimodalFya = false;
+    if (fyaActive && currentBulbColor == 2) {
+      for (TrafficSignalSectionInfo info : sectionInfos) {
+        if (info.isBimodal()) {
+          bimodalFya = true;
+          break;
+        }
+      }
+    }
+
     // Flash flip — alternateFlash inverts the flash phase for wig-wag beacon pairs. Uses
     // the wall-clock flash timer so the flash rate stays visually constant through tick
     // lag spikes (decoupled from world tick progression).
@@ -374,7 +404,21 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
       // overrides the normal mapping with a per-section alternating pattern; otherwise
       // fall through to the block's color mapping or the default mapping.
       boolean lit;
-      if (hawkWigwag) {
+      boolean flashing = sectionInfo.isBulbFlashing();
+      if (sectionInfo.isBimodal()) {
+        // Bimodal sections switch appearance with the FYA flag: flashing yellow while the
+        // permissive arrow is commanded, otherwise their base color, solid.
+        if (bimodalFya) {
+          sectionInfo.setBulbCustomColor(TrafficSignalBulbColor.YELLOW);
+          flashing = true;
+        } else {
+          sectionInfo.setBulbCustomColor(sectionInfo.getBulbColor());
+          flashing = false;
+        }
+      }
+      if (bimodalFya) {
+        lit = sectionInfo.isBimodal();
+      } else if (hawkWigwag) {
         lit = hawkBlock.shouldLightWigwagSection(i, gameMillis);
       } else if (currentBulbColor == 3) {
         lit = false;
@@ -396,7 +440,7 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
 
       // Pass 4 fused: flash flip — if the bulb is lit and set to flashing, blink it off
       // during the first half of the cycle.
-      if (lit && firstHalfOfSecond && sectionInfo.isBulbFlashing()) {
+      if (lit && firstHalfOfSecond && flashing) {
         lit = false;
       }
 
@@ -809,6 +853,32 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
 
   public void setPowerLossOff( boolean powerLossOff ) {
     this.powerLossOff = powerLossOff;
+  }
+
+  /**
+   * Returns whether the controller is currently commanding the permissive flashing yellow
+   * arrow (FYA) on this head. Only meaningful while the block's color state is green (2).
+   */
+  public boolean isFyaActive() {
+    return fyaActive;
+  }
+
+  /**
+   * Sets the FYA (permissive flashing yellow arrow) state. Persists and syncs to the client
+   * only when the value actually changes, so the per-tick controller apply stays cheap.
+   *
+   * @return true if the value changed
+   */
+  public boolean setFyaActive(boolean fyaActive) {
+    if (this.fyaActive == fyaActive) {
+      return false;
+    }
+    this.fyaActive = fyaActive;
+    dirty = true;
+    if (world != null) {
+      markDirtySync(world, pos, true);
+    }
+    return true;
   }
 
   // --- Bulb Aging ---

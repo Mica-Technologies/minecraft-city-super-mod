@@ -131,6 +131,8 @@ public class CsmTabTrafficSignals extends CsmTab {
     initTabBlock(TrafficSignalBlocks.DOGHOUSE_SECONDARY_LEFT_SIGNAL);
     initTabBlock(TrafficSignalBlocks.DOGHOUSE_SECONDARY_RIGHT_FYA_SIGNAL);
     initTabBlock(TrafficSignalBlocks.DOGHOUSE_SECONDARY_RIGHT_SIGNAL);
+    initTabBlock(TrafficSignalBlocks.DOGHOUSE_SECONDARY_BIMODAL_LEFT_SIGNAL);
+    initTabBlock(TrafficSignalBlocks.DOGHOUSE_SECONDARY_BIMODAL_RIGHT_SIGNAL);
     initTabBlock(BlockControllableHawkSignal.class,
         fmlPreInitializationEvent); // ControllableHawkSignal
     initTabBlock(BlockControllableRampMeterOnSignalLeftMount.class,
@@ -155,6 +157,10 @@ public class CsmTabTrafficSignals extends CsmTab {
     initTabBlock(TrafficSignalBlocks.VERTICAL_BIKE_SIGNAL4_INCH);
     initTabBlock(TrafficSignalBlocks.VERTICAL_HYBRID_LEFT_ADD_ON_SIGNAL);
     initTabBlock(TrafficSignalBlocks.VERTICAL_HYBRID_LEFT_SIGNAL);
+    initTabBlock(TrafficSignalBlocks.VERTICAL_BIMODAL_YELLOW_LEFT_SIGNAL);
+    initTabBlock(TrafficSignalBlocks.VERTICAL_BIMODAL_YELLOW_RIGHT_SIGNAL);
+    initTabBlock(TrafficSignalBlocks.VERTICAL_BIMODAL_GREEN_LEFT_SIGNAL);
+    initTabBlock(TrafficSignalBlocks.VERTICAL_BIMODAL_GREEN_RIGHT_SIGNAL);
     initTabBlock(TrafficSignalBlocks.VERTICAL_LEFT_ADD_ON_FYA_SIGNAL);
     initTabBlock(TrafficSignalBlocks.VERTICAL_LEFT_ADD_ON_SIGNAL);
     initTabBlock(TrafficSignalBlocks.VERTICAL_LEFT_DOUBLE_ADD_ON_SIGNAL);
