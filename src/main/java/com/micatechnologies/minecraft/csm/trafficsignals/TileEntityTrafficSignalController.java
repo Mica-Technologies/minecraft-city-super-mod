@@ -571,6 +571,25 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
         // Store previous phase temporarily
         TrafficSignalPhase previousPhase = currentPhase;
 
+        // Conflict monitor (MMU): an automatic NORMAL / ADVANCED progression must never take a
+        // vehicle signal from GREEN or FYA straight to RED. If one would, fault into flash with
+        // the offending head named instead of displaying it — exactly what a real MMU does on a
+        // skipped yellow clearance. Manual mode changes, resets and power loss are not
+        // progressions and are not checked.
+        if (!isInFaultState()
+            && (operatingMode == TrafficSignalControllerMode.NORMAL
+                || operatingMode == TrafficSignalControllerMode.ADVANCED)) {
+          String skipped = TrafficSignalControllerTickerUtilities.findSkippedClearance(
+              previousPhase, newPhase, circuits);
+          if (skipped != null) {
+            System.err.println("Traffic signal controller MMU fault at " + getPos() + ": "
+                + skipped);
+            enterFaultState(skipped);
+            invalidateTickRateCache();
+            return;
+          }
+        }
+
         // Update current phase and last phase change time
         currentPhase = newPhase;
         lastPhaseChangeTime = tickTime;

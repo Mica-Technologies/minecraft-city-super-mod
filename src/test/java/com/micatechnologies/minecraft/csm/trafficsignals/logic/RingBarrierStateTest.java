@@ -3,6 +3,7 @@ package com.micatechnologies.minecraft.csm.trafficsignals.logic;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.RingBarrierState.PedInterval;
@@ -10,6 +11,7 @@ import com.micatechnologies.minecraft.csm.trafficsignals.logic.RingBarrierState.
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.RingBarrierState.VehInterval;
 import java.util.HashMap;
 import java.util.Map;
+import net.minecraft.util.math.BlockPos;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -942,4 +944,127 @@ class RingBarrierStateTest {
         "once the clearance completes with no conflict, the walk recycles");
     assertEquals(VehInterval.GREEN, rb.getLastServed(1).vehicle);
   }
+
+  // region: output-stage clearance enforcer
+
+  private static TrafficSignalPhase phaseWith(int color, BlockPos pos) {
+    TrafficSignalPhase p = new TrafficSignalPhase(1, null,
+        TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS);
+    switch (color) {
+      case AbstractBlockControllableSignal.SIGNAL_GREEN: p.addGreenSignal(pos); break;
+      case AbstractBlockControllableSignal.SIGNAL_YELLOW: p.addYellowSignal(pos); break;
+      case AbstractBlockControllableSignal.SIGNAL_RED: p.addRedSignal(pos); break;
+      case AbstractBlockControllableSignal.SIGNAL_OFF: p.addOffSignal(pos); break;
+      default: p.addFyaSignal(pos); break;
+    }
+    return p;
+  }
+
+  @Test
+  @DisplayName("output clearance: GREEN -> RED is held at YELLOW for the yellow interval")
+  void outputClearanceHoldsYellowThenReleases() {
+    BlockPos head = new BlockPos(1, 0, 0);
+    Map<BlockPos, Long> holds = new HashMap<>();
+    TrafficSignalPhase prev = phaseWith(AbstractBlockControllableSignal.SIGNAL_GREEN, head);
+
+    TrafficSignalPhase t0 = RingBarrierState.enforceOutputClearance(prev,
+        phaseWith(AbstractBlockControllableSignal.SIGNAL_RED, head), holds, 80L, 1000L);
+    assertTrue(t0.getYellowSignals().contains(head), "skip converted to yellow");
+    assertFalse(t0.getRedSignals().contains(head));
+    assertTrue(holds.containsKey(head));
+
+    // Still inside the yellow interval: keeps holding
+    TrafficSignalPhase t1 = RingBarrierState.enforceOutputClearance(t0,
+        phaseWith(AbstractBlockControllableSignal.SIGNAL_RED, head), holds, 80L, 1040L);
+    assertTrue(t1.getYellowSignals().contains(head));
+
+    // Interval elapsed: released to red, hold cleared
+    TrafficSignalPhase t2 = RingBarrierState.enforceOutputClearance(t1,
+        phaseWith(AbstractBlockControllableSignal.SIGNAL_RED, head), holds, 80L, 1080L);
+    assertTrue(t2.getRedSignals().contains(head));
+    assertFalse(t2.getYellowSignals().contains(head));
+    assertFalse(holds.containsKey(head));
+  }
+
+  @Test
+  @DisplayName("output clearance: FYA -> RED is held at YELLOW too; GREEN -> YELLOW is untouched")
+  void outputClearanceFyaAndNormalYellow() {
+    BlockPos head = new BlockPos(1, 0, 0);
+    Map<BlockPos, Long> holds = new HashMap<>();
+    TrafficSignalPhase prevFya = phaseWith(4, head);
+    TrafficSignalPhase out = RingBarrierState.enforceOutputClearance(prevFya,
+        phaseWith(AbstractBlockControllableSignal.SIGNAL_RED, head), holds, 80L, 0L);
+    assertTrue(out.getYellowSignals().contains(head));
+
+    holds.clear();
+    TrafficSignalPhase prevGreen = phaseWith(AbstractBlockControllableSignal.SIGNAL_GREEN, head);
+    TrafficSignalPhase yellow = RingBarrierState.enforceOutputClearance(prevGreen,
+        phaseWith(AbstractBlockControllableSignal.SIGNAL_YELLOW, head), holds, 80L, 0L);
+    assertTrue(yellow.getYellowSignals().contains(head));
+    assertTrue(holds.isEmpty(), "a proper yellow needs no hold");
+    // and the following red is normal too
+    TrafficSignalPhase red = RingBarrierState.enforceOutputClearance(yellow,
+        phaseWith(AbstractBlockControllableSignal.SIGNAL_RED, head), holds, 80L, 80L);
+    assertTrue(red.getRedSignals().contains(head));
+    assertTrue(holds.isEmpty());
+  }
+
+  @Test
+  @DisplayName("output clearance: a held head that goes green again is released; off/red untouched")
+  void outputClearanceReleaseAndIgnore() {
+    BlockPos head = new BlockPos(1, 0, 0);
+    Map<BlockPos, Long> holds = new HashMap<>();
+    TrafficSignalPhase prev = phaseWith(AbstractBlockControllableSignal.SIGNAL_GREEN, head);
+    TrafficSignalPhase held = RingBarrierState.enforceOutputClearance(prev,
+        phaseWith(AbstractBlockControllableSignal.SIGNAL_RED, head), holds, 80L, 0L);
+    assertTrue(held.getYellowSignals().contains(head));
+    TrafficSignalPhase back = RingBarrierState.enforceOutputClearance(held,
+        phaseWith(AbstractBlockControllableSignal.SIGNAL_GREEN, head), holds, 80L, 20L);
+    assertTrue(back.getGreenSignals().contains(head));
+    assertTrue(holds.isEmpty());
+
+    // FYA -> OFF (compound going protected) and RED -> anything are not clearance skips
+    TrafficSignalPhase off = RingBarrierState.enforceOutputClearance(phaseWith(4, head),
+        phaseWith(AbstractBlockControllableSignal.SIGNAL_OFF, head), holds, 80L, 0L);
+    assertTrue(off.getOffSignals().contains(head));
+    assertTrue(holds.isEmpty());
+    assertNull(RingBarrierState.enforceOutputClearance(prev, null, holds, 80L, 0L));
+  }
+
+  @Test
+  @DisplayName("output clearance: enforcer output never trips the MMU conflict monitor")
+  void outputClearanceSatisfiesMmu() {
+    BlockPos a = new BlockPos(1, 0, 0);
+    BlockPos b = new BlockPos(2, 0, 0);
+    Map<BlockPos, Long> holds = new HashMap<>();
+    TrafficSignalPhase prev = new TrafficSignalPhase(1, null,
+        TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS);
+    prev.addGreenSignal(a);
+    prev.addFyaSignal(b);
+    TrafficSignalPhase next = new TrafficSignalPhase(1, null,
+        TrafficSignalPhaseApplicability.ALL_RED);
+    next.addRedSignal(a);
+    next.addRedSignal(b);
+    TrafficSignalPhase out = RingBarrierState.enforceOutputClearance(prev, next, holds, 80L, 0L);
+    assertNull(TrafficSignalControllerTickerUtilities.findSkippedClearance(prev, out, null));
+  }
+
+  @Test
+  @DisplayName("output clearance yellow follows the longest programmed phase yellow")
+  void outputClearanceYellowFromPlan() {
+    assertEquals(RingBarrierState.DEFAULT_OUTPUT_CLEARANCE_YELLOW,
+        RingBarrierState.outputClearanceYellow(null));
+    TrafficSignalProgrammedPhasePlan plan = TrafficSignalProgrammedPhasePlan.createDefault();
+    long expected = 0L;
+    for (int n = 1; n <= TrafficSignalProgrammedPhasePlan.PHASE_COUNT; n++) {
+      TrafficSignalProgrammedPhase ph = plan.getPhase(n);
+      if (ph != null) {
+        expected = Math.max(expected, ph.getYellow());
+      }
+    }
+    assertEquals(expected > 0L ? expected : RingBarrierState.DEFAULT_OUTPUT_CLEARANCE_YELLOW,
+        RingBarrierState.outputClearanceYellow(plan));
+  }
+
+  // endregion
 }

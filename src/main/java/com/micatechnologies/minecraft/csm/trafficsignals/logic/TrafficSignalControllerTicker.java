@@ -728,6 +728,18 @@ public class TrafficSignalControllerTicker {
         // If demand is still for another circuit, keep the stored upcoming phase
       }
 
+      // The stored upcoming phase is clearance-safe by construction (the yellow and red
+      // transitions were built against it). A redirected phase is not guaranteed to be — e.g. an
+      // FYA head kept flashing through the clearance because the stored phase was on its own
+      // circuit would drop straight to red if the redirect lands on another circuit. Never
+      // apply such a redirect; fall back to the stored phase and let the next cycle re-decide.
+      TrafficSignalPhase storedUpcoming = originalPhase.getUpcomingPhase();
+      if (storedUpcoming != null && upcomingGreenPhase != storedUpcoming
+          && TrafficSignalControllerTickerUtilities.findSkippedClearance(originalPhase,
+              upcomingGreenPhase, circuits) != null) {
+        upcomingGreenPhase = storedUpcoming;
+      }
+
       // Insert LPI phase if applicable (originating phase preserves signals that stay green)
       nextPhase = TrafficSignalControllerTickerUtilities.maybeWrapWithLpi(originalPhase,
           upcomingGreenPhase, overlapPedestrianSignals, leadPedestrianIntervalTime);

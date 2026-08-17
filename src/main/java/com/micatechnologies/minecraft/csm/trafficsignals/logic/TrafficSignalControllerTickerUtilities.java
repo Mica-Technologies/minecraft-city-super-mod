@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityBlankoutBox;
 import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -255,13 +256,18 @@ public class TrafficSignalControllerTickerUtilities {
 
   /**
    * Creates a lead pedestrian interval (LPI) phase for the specified upcoming green phase. During
-   * the LPI phase, vehicle signals that are newly turning green are held at red while pedestrian
-   * walk signals from the upcoming phase are displayed, giving pedestrians a head start before the
-   * vehicle phase begins. Signals that are already green in the originating phase and will remain
-   * green in the upcoming phase are kept green (not forced to red).
+   * the LPI phase, vehicle signals that are newly turning green (or newly FYA) are held at red
+   * while pedestrian walk signals from the upcoming phase are displayed, giving pedestrians a
+   * head start before the vehicle phase begins. Signals whose indication does not change between
+   * the originating phase and the upcoming phase are left alone: green stays green, permissive
+   * FYA stays FYA, and off stays off. Forcing a continuing FYA to red would end a permissive
+   * movement restrictively without any yellow clearance (and it would come straight back to FYA
+   * when LPI ends); forcing a continuing OFF to red would light the red arrow of a compound
+   * hybrid head while its green add-on stays green.
    *
-   * @param originatingPhase   The phase we are transitioning from. Signals green in both this
-   *                           phase and the upcoming phase will remain green during LPI.
+   * @param originatingPhase   The phase we are transitioning from. Signals green (or FYA, or off)
+   *                           in both this phase and the upcoming phase keep that indication
+   *                           during LPI.
    * @param upcomingGreenPhase The upcoming green phase that will follow the LPI phase.
    *
    * @return The LPI phase with walk signals active and newly-green vehicle signals held at red.
@@ -295,11 +301,32 @@ public class TrafficSignalControllerTickerUtilities {
       }
     }
 
+    // For FYA signals: a permissive arrow that is already flashing keeps flashing (there is no
+    // new movement to hold back, and FYA -> RED needs yellow clearance); a newly-permissive
+    // arrow is held red until LPI ends
+    List<BlockPos> originFyaSignals = originatingPhase.getFyaSignals();
+    for (BlockPos fyaSignal : upcomingGreenPhase.getFyaSignals()) {
+      if (originFyaSignals.contains(fyaSignal)) {
+        lpiPhase.addFyaSignal(fyaSignal);
+      } else {
+        lpiPhase.addRedSignal(fyaSignal);
+      }
+    }
+
+    // For OFF signals: a head that is off in both phases stays off (e.g. the 3-section block of
+    // a compound hybrid whose add-on keeps its green); a head that is newly off is held red
+    List<BlockPos> originOffSignals = originatingPhase.getOffSignals();
+    for (BlockPos offSignal : upcomingGreenPhase.getOffSignals()) {
+      if (originOffSignals.contains(offSignal)) {
+        lpiPhase.addOffSignal(offSignal);
+      } else {
+        lpiPhase.addRedSignal(offSignal);
+      }
+    }
+
     // All other vehicle signals remain red during LPI
     lpiPhase.addRedSignals(upcomingGreenPhase.getRedSignals());
     lpiPhase.addRedSignals(upcomingGreenPhase.getYellowSignals());
-    lpiPhase.addRedSignals(upcomingGreenPhase.getFyaSignals());
-    lpiPhase.addRedSignals(upcomingGreenPhase.getOffSignals());
 
     return lpiPhase;
   }
@@ -1027,9 +1054,18 @@ public class TrafficSignalControllerTickerUtilities {
   }
 
   /**
-   * Applies overlaps to a transition phase. For each overlap source that is in a transition state
-   * (yellow or red), the corresponding overlap targets are moved to the same state. This ensures
-   * overlap signals get proper clearance during phase transitions.
+   * Applies overlaps to a transition phase. Overlap targets follow the <em>most permissive</em>
+   * state of any of their sources (green over yellow over red), and are never demoted past a
+   * clearance step: a target that is green stays green (it is green in its own right or through
+   * another source and will get its own yellow when that ends), and a target that is yellow is
+   * never dropped straight to red by a red source. The transition builders already carry overlap
+   * targets through green → yellow → red on their own, because both the current and the upcoming
+   * phase have overlaps applied; this pass only fills in targets the builders could not see
+   * (e.g. a target still off/red while its source is yellow or green).
+   *
+   * <p>Demoting here was the cause of overlap targets skipping their yellow interval: any
+   * transition in which some source was red (its circuit not being served, or a second source of
+   * a multi-source target) forced the target red mid-clearance.</p>
    *
    * @param phase    The transition phase to apply overlaps to.
    * @param overlaps The configured overlaps.
@@ -1044,34 +1080,124 @@ public class TrafficSignalControllerTickerUtilities {
       return phase;
     }
 
-    // Green overlaps: source is green → targets go green
-    List<BlockPos> greenSignals = Lists.newArrayList(phase.getGreenSignals());
-    for (BlockPos greenSignal : greenSignals) {
-      List<BlockPos> overlapSignals = overlaps.getOverlapsForSource(greenSignal);
-      if (overlapSignals != null) {
-        overlapSignals.forEach(phase::moveOverlapSignalToGreen);
-      }
-    }
+    // Resolve the best (most permissive) source state per target: 3 = green, 2 = yellow,
+    // 1 = red. Iteration order is deterministic (LinkedHashMap) so the writes below are too.
+    Map<BlockPos, Integer> bestSourceState = new LinkedHashMap<>();
+    collectOverlapTargets(bestSourceState, phase.getGreenSignals(), overlaps, 3);
+    collectOverlapTargets(bestSourceState, phase.getYellowSignals(), overlaps, 2);
+    collectOverlapTargets(bestSourceState, phase.getRedSignals(), overlaps, 1);
 
-    // Yellow overlaps: source is yellow → targets go yellow
-    List<BlockPos> yellowSignals = Lists.newArrayList(phase.getYellowSignals());
-    for (BlockPos yellowSignal : yellowSignals) {
-      List<BlockPos> overlapSignals = overlaps.getOverlapsForSource(yellowSignal);
-      if (overlapSignals != null) {
-        overlapSignals.forEach(phase::moveOverlapSignalToYellow);
-      }
-    }
-
-    // Red overlaps: source is red → targets go red
-    List<BlockPos> redSignals = Lists.newArrayList(phase.getRedSignals());
-    for (BlockPos redSignal : redSignals) {
-      List<BlockPos> overlapSignals = overlaps.getOverlapsForSource(redSignal);
-      if (overlapSignals != null) {
-        overlapSignals.forEach(phase::moveOverlapSignalToRed);
+    for (Map.Entry<BlockPos, Integer> entry : bestSourceState.entrySet()) {
+      BlockPos target = entry.getKey();
+      switch (entry.getValue()) {
+        case 3:
+          // Source green: target green (same as the green-phase overlap rule)
+          phase.moveOverlapSignalToGreen(target);
+          break;
+        case 2:
+          // Source yellow: target yellow unless it is green in its own right
+          if (!phase.getGreenSignals().contains(target)) {
+            phase.moveOverlapSignalToYellow(target);
+          }
+          break;
+        default:
+          // Source red: only pull in a target that is dark; never skip a target's own
+          // green -> yellow -> red clearance, and never end a permissive FYA restrictively
+          if (!phase.getGreenSignals().contains(target)
+              && !phase.getYellowSignals().contains(target)
+              && !phase.getFyaSignals().contains(target)) {
+            phase.moveOverlapSignalToRed(target);
+          }
+          break;
       }
     }
 
     return phase;
+  }
+
+  /**
+   * Records {@code state} for every overlap target of every source in {@code sources}, keeping the
+   * highest state seen per target.
+   */
+  private static void collectOverlapTargets(Map<BlockPos, Integer> bestSourceState,
+      List<BlockPos> sources, TrafficSignalControllerOverlaps overlaps, int state) {
+    for (BlockPos source : Lists.newArrayList(sources)) {
+      List<BlockPos> targets = overlaps.getOverlapsForSource(source);
+      if (targets == null) {
+        continue;
+      }
+      for (BlockPos target : targets) {
+        Integer existing = bestSourceState.get(target);
+        if (existing == null || state > existing) {
+          bestSourceState.put(target, state);
+        }
+      }
+    }
+  }
+
+  /**
+   * MMU-style conflict monitor: checks whether applying {@code next} after {@code previous} would
+   * take any vehicle signal from GREEN or FYA straight to RED, skipping its yellow clearance
+   * interval. States are compared after per-position resolution
+   * ({@link TrafficSignalPhase#resolveVehicleSignalStates()}), so a head that legitimately sits in
+   * two lists (bimodal FYA heads) is judged on what it will actually display. Beacon and
+   * pedestrian-beacon heads are excluded: they use the same colour slots for flash / wig-wag
+   * indications that are not a green-to-red vehicle movement.
+   *
+   * <p>A real controller's malfunction management unit would drop the intersection into flash on
+   * exactly this condition, and so does ours: callers fault with the returned message. Every
+   * automatic NORMAL / ADVANCED phase progression is expected to satisfy this, so a hit is a
+   * controller bug, not a configuration problem.</p>
+   *
+   * @param previous the phase currently displayed (may be {@code null} — nothing to check)
+   * @param next     the phase about to be applied
+   * @param circuits the controller circuits (used to exclude beacon heads); may be {@code null}
+   *
+   * @return a human-readable fault message describing the first violation, or {@code null} if the
+   *     transition is clean
+   *
+   * @since 2026.8
+   */
+  public static String findSkippedClearance(TrafficSignalPhase previous, TrafficSignalPhase next,
+      TrafficSignalControllerCircuits circuits) {
+    if (previous == null || next == null || previous == next) {
+      return null;
+    }
+    Map<BlockPos, Integer> before = previous.resolveVehicleSignalStates();
+    if (before.isEmpty()) {
+      return null;
+    }
+    Map<BlockPos, Integer> after = next.resolveVehicleSignalStates();
+    for (Map.Entry<BlockPos, Integer> entry : before.entrySet()) {
+      int was = entry.getValue();
+      boolean permissive = was == AbstractBlockControllableSignal.SIGNAL_GREEN
+          || was == TrafficSignalPhase.INDICATION_FYA;
+      if (!permissive) {
+        continue;
+      }
+      Integer now = after.get(entry.getKey());
+      if (now == null || now != AbstractBlockControllableSignal.SIGNAL_RED) {
+        continue;
+      }
+      if (circuits != null && isBeaconPosition(circuits, entry.getKey())) {
+        continue;
+      }
+      return "Skipped yellow clearance at " + entry.getKey() + ": "
+          + (was == TrafficSignalPhase.INDICATION_FYA ? "FYA" : "GREEN") + " -> RED ("
+          + previous.getApplicability() + " -> " + next.getApplicability() + ")";
+    }
+    return null;
+  }
+
+  private static boolean isBeaconPosition(TrafficSignalControllerCircuits circuits,
+      BlockPos pos) {
+    for (TrafficSignalControllerCircuit circuit : circuits.getCircuits()) {
+      if (circuit.getBeaconSignals().contains(pos)
+          || circuit.getPedestrianBeaconSignals().contains(pos)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   /**
