@@ -136,13 +136,15 @@ public class TrafficSignalControllerTickerUtilities {
       }
     }
 
-    // FYA signals: only stay FYA when the upcoming phase also has them as FYA (no state
-    // change). All other transitions (FYA→RED, FYA→OFF, FYA→GREEN) require solid yellow
-    // clearance. In the compound hybrid left/right layout, the 3-section block
-    // (flashingLeftSignals / flashingRightSignals) uses its YELLOW section for clearance
-    // regardless of whether the upcoming state is RED, OFF, or GREEN.
+    // FYA signals: stay FYA when the upcoming phase also has them FYA (no state change) and
+    // when the movement is going PROTECTED — the permissive flash continues through the
+    // adjacent through's clearance and then goes straight to the green arrow (FYA -> GREEN
+    // needs no clearance; MUTCD lagging-left operation). In the compound hybrid layout that
+    // means the 3-section block keeps flashing while its add-on waits at red, then goes OFF as
+    // the add-on lights green; a bimodal head simply flips its section from flashing yellow to
+    // solid green. Only FYA ending restrictively (upcoming RED) gets the solid yellow arrow.
     for (BlockPos fyaSignal : currentPhase.getFyaSignals()) {
-      if (upcomingPhase.getFyaSignals().contains(fyaSignal)) {
+      if (fyaContinuesInto(upcomingPhase, fyaSignal)) {
         yellowTransitionPhase.addFyaSignal(fyaSignal);
       } else {
         yellowTransitionPhase.addYellowSignal(fyaSignal);
@@ -195,10 +197,12 @@ public class TrafficSignalControllerTickerUtilities {
     // Yellow signals become red
     redTransitionPhase.addRedSignals(currentPhase.getYellowSignals());
 
-    // FYA signals staying FYA in the upcoming phase are preserved (no red blip for a
-    // permissive signal that continues as permissive). All others become red.
+    // FYA signals staying FYA in the upcoming phase, or going protected (FYA -> green arrow
+    // needs no clearance), are preserved — no red blip for a permissive movement that continues.
+    // All others become red. (An FYA that is ending restrictively was already turned yellow by
+    // the yellow transition and is handled by the yellow -> red rule above.)
     for (BlockPos fyaSignal : currentPhase.getFyaSignals()) {
-      if (upcomingPhase.getFyaSignals().contains(fyaSignal)) {
+      if (fyaContinuesInto(upcomingPhase, fyaSignal)) {
         redTransitionPhase.addFyaSignal(fyaSignal);
       } else {
         redTransitionPhase.addRedSignal(fyaSignal);
@@ -217,6 +221,21 @@ public class TrafficSignalControllerTickerUtilities {
 
     // Return resulting red transition phase
     return redTransitionPhase;
+  }
+
+  /**
+   * Whether a head that is currently showing the permissive flashing yellow arrow keeps flashing
+   * into {@code upcomingPhase}: it does when the upcoming phase has it FYA again, and when the
+   * movement is going protected — the upcoming phase has the head OFF (compound hybrid 3-section
+   * whose add-on lights green) or GREEN (bimodal head, or the resolved state of a dual-member
+   * head). FYA -> green arrow needs no clearance; only FYA -> RED does.
+   *
+   * @since 2026.8
+   */
+  static boolean fyaContinuesInto(TrafficSignalPhase upcomingPhase, BlockPos fyaSignal) {
+    return upcomingPhase.getFyaSignals().contains(fyaSignal)
+        || upcomingPhase.getOffSignals().contains(fyaSignal)
+        || upcomingPhase.getGreenSignals().contains(fyaSignal);
   }
 
   /**
@@ -292,10 +311,15 @@ public class TrafficSignalControllerTickerUtilities {
     // Flash don't walk signals from the upcoming phase stay as don't walk during LPI
     lpiPhase.addDontWalkSignals(upcomingGreenPhase.getFlashDontWalkSignals());
 
-    // For green signals: keep green if already green in the originating phase, otherwise hold red
+    // For green signals: keep green if already green in the originating phase; a head that was
+    // flashing (FYA) and is going protected keeps flashing (see the OFF rule below); otherwise
+    // hold red
+    List<BlockPos> originFyaSignals = originatingPhase.getFyaSignals();
     for (BlockPos greenSignal : upcomingGreenPhase.getGreenSignals()) {
       if (originGreenSignals.contains(greenSignal)) {
         lpiPhase.addGreenSignal(greenSignal);
+      } else if (originFyaSignals.contains(greenSignal)) {
+        lpiPhase.addFyaSignal(greenSignal);
       } else {
         lpiPhase.addRedSignal(greenSignal);
       }
@@ -304,7 +328,6 @@ public class TrafficSignalControllerTickerUtilities {
     // For FYA signals: a permissive arrow that is already flashing keeps flashing (there is no
     // new movement to hold back, and FYA -> RED needs yellow clearance); a newly-permissive
     // arrow is held red until LPI ends
-    List<BlockPos> originFyaSignals = originatingPhase.getFyaSignals();
     for (BlockPos fyaSignal : upcomingGreenPhase.getFyaSignals()) {
       if (originFyaSignals.contains(fyaSignal)) {
         lpiPhase.addFyaSignal(fyaSignal);
@@ -314,11 +337,16 @@ public class TrafficSignalControllerTickerUtilities {
     }
 
     // For OFF signals: a head that is off in both phases stays off (e.g. the 3-section block of
-    // a compound hybrid whose add-on keeps its green); a head that is newly off is held red
+    // a compound hybrid whose add-on keeps its green); a head that was flashing (FYA) and is
+    // going protected keeps flashing while its add-on is held red (FYA -> RED would need a yellow
+    // this interval does not have; FYA + WALK is a legitimate permissive display); a head that
+    // is newly off from anything else is held red
     List<BlockPos> originOffSignals = originatingPhase.getOffSignals();
     for (BlockPos offSignal : upcomingGreenPhase.getOffSignals()) {
       if (originOffSignals.contains(offSignal)) {
         lpiPhase.addOffSignal(offSignal);
+      } else if (originFyaSignals.contains(offSignal)) {
+        lpiPhase.addFyaSignal(offSignal);
       } else {
         lpiPhase.addRedSignal(offSignal);
       }
