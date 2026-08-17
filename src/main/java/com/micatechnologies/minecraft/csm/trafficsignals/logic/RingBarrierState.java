@@ -2,8 +2,10 @@ package com.micatechnologies.minecraft.csm.trafficsignals.logic;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 /**
@@ -98,6 +100,15 @@ public class RingBarrierState {
   private final RingRuntime ring2 = new RingRuntime();
   private boolean initialized = false;
   private TrafficSignalPhase lastApplied = null;
+
+  /**
+   * Output-stage clearance holds: heads the enforcer is currently holding in solid yellow, keyed
+   * to the tick the hold began. See {@link #enforceOutputClearance}.
+   */
+  private final Map<BlockPos, Long> outputClearanceHolds = new HashMap<>();
+
+  /** Yellow interval used by the output-stage clearance when the plan has no phases (ticks). */
+  static final long DEFAULT_OUTPUT_CLEARANCE_YELLOW = 80L;
 
   // Preemption runtime.
   private PreemptStage preemptStage = PreemptStage.NONE;
@@ -241,7 +252,8 @@ public class RingBarrierState {
     updatePreempt(plan, now);
     if (preemptStage != PreemptStage.NONE) {
       resetRings(); // park normal operation so it resumes cleanly after the preempt clears
-      return changedOrNull(buildPreemptPhase(world, plan, circuits, overlaps, now));
+      return changedOrNull(enforceOutputClearance(
+          buildPreemptPhase(world, plan, circuits, overlaps, now), plan, now));
     }
 
     // 1. Advance each ring's active phase through its intervals (green -> yellow -> red clearance).
@@ -266,8 +278,85 @@ public class RingBarrierState {
     this.lastServed2 = m2;
     List<VehInterval> overlapIntervals = computeOverlapIntervals(plan, m1, m2, now, called);
     java.util.Set<Integer> fyaHoldFlash = computeFyaHoldFlash(plan, called);
-    return changedOrNull(AdvancedPhaseBuilder.build(
-        world, plan, circuits, overlaps, m1, m2, overlapIntervals, fyaHoldFlash));
+    return changedOrNull(enforceOutputClearance(AdvancedPhaseBuilder.build(
+        world, plan, circuits, overlaps, m1, m2, overlapIntervals, fyaHoldFlash), plan, now));
+  }
+
+  /**
+   * Output-stage clearance enforcer. The ring phases themselves always time green &rarr; yellow
+   * &rarr; red, but several layered outputs are computed statelessly from the rings and can drop
+   * from GREEN (or FYA) straight to RED: an overlap whose trailing green outlasts its parents'
+   * clearance, a {@code -GRN/YEL} modifier phase coming up while the overlap (or its permissive
+   * flash) is on, a preempt entry catching an overlap. A real controller times an overlap
+   * yellow (and red) clearance in those cases, and an MMU faults the intersection if it sees the
+   * skip. This pass gives every such head its yellow: any head that was GREEN or FYA in the last
+   * applied phase and would now be RED is held at solid YELLOW for the plan's yellow interval,
+   * then released to RED.
+   *
+   * <p>Holds are keyed by head position and survive across ticks in {@link #outputClearanceHolds};
+   * a head that becomes green or FYA again while held is released immediately (nothing to
+   * clear). States are compared after {@link TrafficSignalPhase#resolveVehicleSignalStates()} so
+   * dual-member bimodal heads are judged on what they display.</p>
+   */
+  TrafficSignalPhase enforceOutputClearance(TrafficSignalPhase phase,
+      TrafficSignalProgrammedPhasePlan plan, long now) {
+    return enforceOutputClearance(lastApplied, phase, outputClearanceHolds,
+        outputClearanceYellow(plan), now);
+  }
+
+  /** Pure form of {@link #enforceOutputClearance(TrafficSignalPhase, TrafficSignalProgrammedPhasePlan, long)}. */
+  static TrafficSignalPhase enforceOutputClearance(TrafficSignalPhase previous,
+      TrafficSignalPhase phase, Map<BlockPos, Long> holds, long yellowTicks, long now) {
+    if (phase == null) {
+      return null;
+    }
+    Map<BlockPos, Integer> before = previous == null
+        ? java.util.Collections.<BlockPos, Integer>emptyMap()
+        : previous.resolveVehicleSignalStates();
+    Map<BlockPos, Integer> after = phase.resolveVehicleSignalStates();
+
+    // Start a hold for every head about to skip its yellow
+    for (Map.Entry<BlockPos, Integer> entry : after.entrySet()) {
+      if (entry.getValue() != AbstractBlockControllableSignal.SIGNAL_RED) {
+        continue;
+      }
+      Integer was = before.get(entry.getKey());
+      boolean permissive = was != null
+          && (was == AbstractBlockControllableSignal.SIGNAL_GREEN
+              || was == TrafficSignalPhase.INDICATION_FYA);
+      if (permissive && !holds.containsKey(entry.getKey())) {
+        holds.put(entry.getKey(), now);
+      }
+    }
+
+    // Apply / expire holds
+    Iterator<Map.Entry<BlockPos, Long>> it = holds.entrySet().iterator();
+    while (it.hasNext()) {
+      Map.Entry<BlockPos, Long> hold = it.next();
+      BlockPos pos = hold.getKey();
+      Integer state = after.get(pos);
+      boolean stillRed = state != null && state == AbstractBlockControllableSignal.SIGNAL_RED;
+      if (!stillRed || now - hold.getValue() >= yellowTicks) {
+        it.remove();
+        continue;
+      }
+      phase.moveOverlapSignalToYellow(pos);
+    }
+    return phase;
+  }
+
+  /** The longest yellow interval programmed on any phase of the plan (ticks), or the default. */
+  static long outputClearanceYellow(TrafficSignalProgrammedPhasePlan plan) {
+    long yellow = 0L;
+    if (plan != null) {
+      for (int n = 1; n <= TrafficSignalProgrammedPhasePlan.PHASE_COUNT; n++) {
+        TrafficSignalProgrammedPhase phase = plan.getPhase(n);
+        if (phase != null) {
+          yellow = Math.max(yellow, phase.getYellow());
+        }
+      }
+    }
+    return yellow > 0L ? yellow : DEFAULT_OUTPUT_CLEARANCE_YELLOW;
   }
 
   /**

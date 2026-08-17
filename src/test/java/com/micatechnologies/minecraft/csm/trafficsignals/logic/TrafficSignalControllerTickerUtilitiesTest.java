@@ -582,6 +582,80 @@ class TrafficSignalControllerTickerUtilitiesTest {
       assertFalse(result.getGreenSignals().contains(newGreenPos),
           "Newly-green signal should NOT be green during LPI");
     }
+
+    @Test
+    @DisplayName("FYA already flashing in originating stays FYA (no red blip without clearance)")
+    void continuingFya_staysFya() {
+      BlockPos fyaPos = new BlockPos(11, 64, 20);
+      BlockPos throughPos = new BlockPos(12, 64, 20);
+
+      // Recycle to the same circuit: through green in both, FYA flashing in both
+      TrafficSignalPhase originating = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.RED_TRANSITIONING);
+      originating.addGreenSignal(throughPos);
+      originating.addFyaSignal(fyaPos);
+
+      TrafficSignalPhase upcoming = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS);
+      upcoming.addGreenSignal(throughPos);
+      upcoming.addFyaSignal(fyaPos);
+      upcoming.addWalkSignal(new BlockPos(20, 64, 30));
+
+      TrafficSignalPhase result =
+          TrafficSignalControllerTickerUtilities.getLpiPhaseForUpcoming(originating, upcoming);
+
+      assertTrue(result.getFyaSignals().contains(fyaPos), "continuing FYA must stay FYA");
+      assertFalse(result.getRedSignals().contains(fyaPos), "continuing FYA must not go red");
+      assertTrue(result.getGreenSignals().contains(throughPos));
+      assertFalse(TrafficSignalControllerTickerUtilities.hasVehicleSignalConflict(originating,
+          result), "LPI phase must not change any vehicle signal without clearance");
+    }
+
+    @Test
+    @DisplayName("NEW FYA (from red) is held RED during LPI")
+    void newFya_heldRed() {
+      BlockPos fyaPos = new BlockPos(11, 64, 20);
+
+      TrafficSignalPhase originating = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.ALL_RED);
+      originating.addRedSignal(fyaPos);
+
+      TrafficSignalPhase upcoming = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS);
+      upcoming.addFyaSignal(fyaPos);
+      upcoming.addWalkSignal(new BlockPos(20, 64, 30));
+
+      TrafficSignalPhase result =
+          TrafficSignalControllerTickerUtilities.getLpiPhaseForUpcoming(originating, upcoming);
+
+      assertTrue(result.getRedSignals().contains(fyaPos));
+      assertFalse(result.getFyaSignals().contains(fyaPos));
+    }
+
+    @Test
+    @DisplayName("OFF in both phases stays OFF; newly-off is held RED")
+    void offHandling() {
+      BlockPos stayingOff = new BlockPos(13, 64, 20);
+      BlockPos newlyOff = new BlockPos(14, 64, 20);
+
+      TrafficSignalPhase originating = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.RED_TRANSITIONING);
+      originating.addOffSignal(stayingOff);
+      originating.addRedSignal(newlyOff);
+
+      TrafficSignalPhase upcoming = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS);
+      upcoming.addOffSignal(stayingOff);
+      upcoming.addOffSignal(newlyOff);
+      upcoming.addWalkSignal(new BlockPos(20, 64, 30));
+
+      TrafficSignalPhase result =
+          TrafficSignalControllerTickerUtilities.getLpiPhaseForUpcoming(originating, upcoming);
+
+      assertTrue(result.getOffSignals().contains(stayingOff));
+      assertFalse(result.getRedSignals().contains(stayingOff));
+      assertTrue(result.getRedSignals().contains(newlyOff));
+    }
   }
 
   // ========================================================================
@@ -836,6 +910,229 @@ class TrafficSignalControllerTickerUtilitiesTest {
 
       assertTrue(phase.getGreenSignals().contains(target),
           "Overlap target should be green when source is green");
+    }
+
+    @Test
+    @DisplayName("red source does NOT demote a target that is mid-yellow (no clearance skip)")
+    void redSourceDoesNotSkipTargetYellow() {
+      BlockPos source = new BlockPos(10, 64, 20);
+      BlockPos target = new BlockPos(11, 64, 21);
+
+      // Target is a signal in its own right, currently clearing (yellow); its overlap source
+      // belongs to a circuit that is red this transition
+      TrafficSignalPhase phase = new TrafficSignalPhase(2, null,
+          TrafficSignalPhaseApplicability.YELLOW_TRANSITIONING);
+      phase.addRedSignal(source);
+      phase.addYellowSignal(target);
+
+      TrafficSignalControllerOverlaps overlaps = new TrafficSignalControllerOverlaps();
+      overlaps.addOverlap(source, target);
+
+      TrafficSignalControllerTickerUtilities.getTransitionPhaseWithOverlapsApplied(
+          phase, overlaps);
+
+      assertTrue(phase.getYellowSignals().contains(target), "target must keep its yellow");
+      assertFalse(phase.getRedSignals().contains(target), "target must not jump to red");
+    }
+
+    @Test
+    @DisplayName("red source does NOT demote a target that is green in its own right")
+    void redSourceDoesNotDemoteOwnGreen() {
+      BlockPos source = new BlockPos(10, 64, 20);
+      BlockPos target = new BlockPos(11, 64, 21);
+
+      TrafficSignalPhase phase = new TrafficSignalPhase(2, null,
+          TrafficSignalPhaseApplicability.RED_TRANSITIONING);
+      phase.addRedSignal(source);
+      phase.addGreenSignal(target);
+
+      TrafficSignalControllerOverlaps overlaps = new TrafficSignalControllerOverlaps();
+      overlaps.addOverlap(source, target);
+
+      TrafficSignalControllerTickerUtilities.getTransitionPhaseWithOverlapsApplied(
+          phase, overlaps);
+
+      assertTrue(phase.getGreenSignals().contains(target));
+      assertFalse(phase.getRedSignals().contains(target));
+    }
+
+    @Test
+    @DisplayName("yellow source does NOT demote a target that stays green")
+    void yellowSourceDoesNotDemoteGreen() {
+      BlockPos source = new BlockPos(10, 64, 20);
+      BlockPos target = new BlockPos(11, 64, 21);
+
+      TrafficSignalPhase phase = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.YELLOW_TRANSITIONING);
+      phase.addYellowSignal(source);
+      phase.addGreenSignal(target);
+
+      TrafficSignalControllerOverlaps overlaps = new TrafficSignalControllerOverlaps();
+      overlaps.addOverlap(source, target);
+
+      TrafficSignalControllerTickerUtilities.getTransitionPhaseWithOverlapsApplied(
+          phase, overlaps);
+
+      assertTrue(phase.getGreenSignals().contains(target));
+      assertFalse(phase.getYellowSignals().contains(target));
+    }
+
+    @Test
+    @DisplayName("multi-source target follows the most permissive source")
+    void multiSourceTargetFollowsMostPermissive() {
+      BlockPos greenSource = new BlockPos(10, 64, 20);
+      BlockPos redSource = new BlockPos(12, 64, 20);
+      BlockPos yellowSource = new BlockPos(13, 64, 20);
+      BlockPos target = new BlockPos(11, 64, 21);
+
+      TrafficSignalControllerOverlaps overlaps = new TrafficSignalControllerOverlaps();
+      overlaps.addOverlap(greenSource, target);
+      overlaps.addOverlap(redSource, target);
+      overlaps.addOverlap(yellowSource, target);
+
+      // green + red + yellow sources -> green
+      TrafficSignalPhase phase = new TrafficSignalPhase(1, null,
+          TrafficSignalPhaseApplicability.YELLOW_TRANSITIONING);
+      phase.addGreenSignal(greenSource);
+      phase.addRedSignal(redSource);
+      phase.addYellowSignal(yellowSource);
+      phase.addRedSignal(target);
+      TrafficSignalControllerTickerUtilities.getTransitionPhaseWithOverlapsApplied(
+          phase, overlaps);
+      assertTrue(phase.getGreenSignals().contains(target));
+
+      // yellow + red sources -> yellow (not red)
+      phase = new TrafficSignalPhase(1, null, TrafficSignalPhaseApplicability.YELLOW_TRANSITIONING);
+      phase.addRedSignal(greenSource);
+      phase.addRedSignal(redSource);
+      phase.addYellowSignal(yellowSource);
+      phase.addRedSignal(target);
+      TrafficSignalControllerTickerUtilities.getTransitionPhaseWithOverlapsApplied(
+          phase, overlaps);
+      assertTrue(phase.getYellowSignals().contains(target));
+      assertFalse(phase.getRedSignals().contains(target));
+    }
+  }
+
+  // ========================================================================
+  // findSkippedClearance (MMU conflict monitor)
+  // ========================================================================
+  @Nested
+  @DisplayName("findSkippedClearance: GREEN/FYA -> RED without yellow is a fault")
+  class FindSkippedClearanceTest {
+
+    private final BlockPos head = new BlockPos(1, 0, 0);
+
+    private TrafficSignalPhase phase(TrafficSignalPhaseApplicability ap) {
+      return new TrafficSignalPhase(1, null, ap);
+    }
+
+    @Test
+    void greenToRedIsAViolation() {
+      TrafficSignalPhase prev = phase(TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS);
+      prev.addGreenSignal(head);
+      TrafficSignalPhase next = phase(TrafficSignalPhaseApplicability.ALL_RED);
+      next.addRedSignal(head);
+      String msg = TrafficSignalControllerTickerUtilities.findSkippedClearance(prev, next, null);
+      assertNotNull(msg);
+      assertTrue(msg.contains("GREEN -> RED"), msg);
+    }
+
+    @Test
+    void fyaToRedIsAViolation() {
+      TrafficSignalPhase prev = phase(TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS);
+      prev.addFyaSignal(head);
+      TrafficSignalPhase next = phase(TrafficSignalPhaseApplicability.LEAD_PEDESTRIAN_INTERVAL);
+      next.addRedSignal(head);
+      String msg = TrafficSignalControllerTickerUtilities.findSkippedClearance(prev, next, null);
+      assertNotNull(msg);
+      assertTrue(msg.contains("FYA -> RED"), msg);
+    }
+
+    @Test
+    void greenToYellowAndYellowToRedAreClean() {
+      TrafficSignalPhase green = phase(TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS);
+      green.addGreenSignal(head);
+      TrafficSignalPhase yellow = phase(TrafficSignalPhaseApplicability.YELLOW_TRANSITIONING);
+      yellow.addYellowSignal(head);
+      TrafficSignalPhase red = phase(TrafficSignalPhaseApplicability.RED_TRANSITIONING);
+      red.addRedSignal(head);
+      assertNull(TrafficSignalControllerTickerUtilities.findSkippedClearance(green, yellow, null));
+      assertNull(TrafficSignalControllerTickerUtilities.findSkippedClearance(yellow, red, null));
+      assertNull(TrafficSignalControllerTickerUtilities.findSkippedClearance(red, green, null));
+    }
+
+    @Test
+    void fyaToOffAndFyaToGreenAreClean() {
+      // Compound hybrid going protected: FYA -> OFF (3-section) is legitimate
+      TrafficSignalPhase prev = phase(TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS);
+      prev.addFyaSignal(head);
+      TrafficSignalPhase off = phase(TrafficSignalPhaseApplicability.ALL_LEFTS);
+      off.addOffSignal(head);
+      TrafficSignalPhase green = phase(TrafficSignalPhaseApplicability.ALL_LEFTS);
+      green.addGreenSignal(head);
+      assertNull(TrafficSignalControllerTickerUtilities.findSkippedClearance(prev, off, null));
+      assertNull(TrafficSignalControllerTickerUtilities.findSkippedClearance(prev, green, null));
+    }
+
+    @Test
+    void bimodalDualMemberIsJudgedOnResolvedState() {
+      // Permissive bimodal head: FYA (flashing list) + RED (plain list) -> YELLOW + RED
+      TrafficSignalPhase prev = phase(TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS);
+      prev.addFyaSignal(head);
+      prev.addRedSignal(head);
+      TrafficSignalPhase next = phase(TrafficSignalPhaseApplicability.YELLOW_TRANSITIONING);
+      next.addYellowSignal(head);
+      next.addRedSignal(head);
+      assertNull(TrafficSignalControllerTickerUtilities.findSkippedClearance(prev, next, null),
+          "resolved YELLOW must not be mistaken for the RED list membership");
+
+      // ...but a genuine drop to RED + RED is still caught
+      TrafficSignalPhase bad = phase(TrafficSignalPhaseApplicability.RED_TRANSITIONING);
+      bad.addRedSignal(head);
+      assertNotNull(TrafficSignalControllerTickerUtilities.findSkippedClearance(prev, bad, null));
+    }
+
+    @Test
+    void beaconHeadsAreExcluded() {
+      TrafficSignalControllerCircuits circuits = new TrafficSignalControllerCircuits();
+      TrafficSignalControllerCircuit circuit = new TrafficSignalControllerCircuit();
+      circuit.linkPedestrianBeaconSignal(head);
+      circuits.addCircuit(circuit);
+      TrafficSignalPhase prev = phase(TrafficSignalPhaseApplicability.PEDESTRIAN);
+      prev.addGreenSignal(head);
+      TrafficSignalPhase next = phase(TrafficSignalPhaseApplicability.ALL_RED);
+      next.addRedSignal(head);
+      assertNull(
+          TrafficSignalControllerTickerUtilities.findSkippedClearance(prev, next, circuits));
+      assertNotNull(TrafficSignalControllerTickerUtilities.findSkippedClearance(prev, next, null));
+    }
+
+    @Test
+    void nullPhasesAreClean() {
+      TrafficSignalPhase p = phase(TrafficSignalPhaseApplicability.ALL_RED);
+      assertNull(TrafficSignalControllerTickerUtilities.findSkippedClearance(null, p, null));
+      assertNull(TrafficSignalControllerTickerUtilities.findSkippedClearance(p, null, null));
+      assertNull(TrafficSignalControllerTickerUtilities.findSkippedClearance(p, p, null));
+    }
+
+    @Test
+    @DisplayName("regression: LPI wrapping a same-circuit recycle no longer reds a continuing FYA")
+    void lpiRecycleIsClean() {
+      BlockPos through = new BlockPos(2, 0, 0);
+      BlockPos walk = new BlockPos(3, 0, 0);
+      TrafficSignalPhase redTransition = phase(TrafficSignalPhaseApplicability.RED_TRANSITIONING);
+      redTransition.addGreenSignal(through);
+      redTransition.addFyaSignal(head);
+      TrafficSignalPhase upcoming = phase(TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS);
+      upcoming.addGreenSignal(through);
+      upcoming.addFyaSignal(head);
+      upcoming.addWalkSignal(walk);
+      TrafficSignalPhase lpi =
+          TrafficSignalControllerTickerUtilities.getLpiPhaseForUpcoming(redTransition, upcoming);
+      assertNull(TrafficSignalControllerTickerUtilities.findSkippedClearance(redTransition, lpi,
+          null));
+      assertNull(TrafficSignalControllerTickerUtilities.findSkippedClearance(lpi, upcoming, null));
     }
   }
 

@@ -793,6 +793,48 @@ arbitration within ADVANCED mode is a planned refinement. Live runtime status (a
 countdown) is not yet synced to the GUI, so STATUS shows the program overview rather than a live
 countdown.
 
+## Clearance Guarantee & Conflict Monitor (MMU)
+
+**Invariant:** in `NORMAL` and `ADVANCED` modes no vehicle signal ever goes from GREEN or FYA
+straight to RED — a yellow interval always sits in between. (Ramp-meter modes are exempt by
+design; a mode change, controller reset or power loss is not a phase progression and is not
+subject to it.)
+
+The controller enforces this like a real malfunction management unit:
+`TileEntityTrafficSignalController.onTick` runs
+`TrafficSignalControllerTickerUtilities.findSkippedClearance(previousPhase, newPhase, circuits)`
+before applying every automatic phase progression. If any head would skip its yellow, the
+controller **enters fault state** with a message of the form
+`Skipped yellow clearance at BlockPos{…}: FYA -> RED (YELLOW_TRANSITIONING -> RED_TRANSITIONING)`
+instead of displaying it. States are compared after `TrafficSignalPhase.resolveVehicleSignalStates()`
+(so dual-member bimodal heads are judged on what they display); beacon and pedestrian-beacon
+heads are excluded (they use the same colour slots for flash / wig-wag). A hit is a controller
+bug, not a configuration problem — report it with the message.
+
+Rules the phase builders follow so the monitor never trips:
+
+- **Transitions** (`getYellowTransitionPhaseForUpcoming` / `getRedTransitionPhaseForUpcoming`)
+  carry every green/FYA head through yellow; FYA heads stay FYA only when the upcoming phase
+  also has them FYA.
+- **Lead pedestrian interval** (`getLpiPhaseForUpcoming`) holds *newly* green/FYA heads at red
+  but leaves continuing indications alone: green stays green, FYA stays FYA, off stays off.
+  (Historically it forced every upcoming FYA to red, which produced FYA→red→FYA blips whenever
+  the controller recycled to the same circuit's phase with peds walking.)
+- **Overlaps on transition phases** (`getTransitionPhaseWithOverlapsApplied`) are
+  non-demoting: a target follows the most permissive of its sources and is never dropped past a
+  clearance step (a red source no longer forces a mid-yellow or own-green target to red). The
+  transition builders already carry overlap targets because both the current and the upcoming
+  phase have overlaps applied.
+- **All-red-end redirects**: when demand changes during clearance and the ticker would redirect
+  to a different green phase than the one the transitions were built against, the redirect is
+  only taken if it passes `findSkippedClearance`; otherwise the stored upcoming phase is used.
+- **Direct rebuild/recall applications** are guarded by `hasVehicleSignalConflict`.
+- **ADVANCED**: `RingBarrierState.enforceOutputClearance` is an output-stage clearance for the
+  statelessly-computed layers (programmed overlaps' trailing green, `-GRN/YEL` modifiers, FYA
+  overlays, preempt entry). Any head that was GREEN/FYA in the last applied phase and would be RED
+  is held at solid yellow for the plan's longest programmed yellow, then released to red; a head
+  that goes green/FYA again while held is released immediately.
+
 ## Known Considerations
 
 - Sensors detect `EntityPlayer` and `EntityVillager` as vehicle proxies -- there are no
