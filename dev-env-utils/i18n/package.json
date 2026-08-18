@@ -1,0 +1,15 @@
+{
+  "name": "csm-i18n-tools",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Incremental translation tooling for the City Super Mod language files. Reads src/main/resources/assets/csm/lang/en_us.lang as the English source of truth and refreshes es_es.lang, de_de.lang and sv_se.lang via google-translate-api-x.",
+  "scripts": {
+    "translate": "node translate-lang.js",
+    "translate:dry": "node translate-lang.js --dry-run",
+    "translate:force": "node translate-lang.js --force"
+  },
+  "dependencies": {
+    "google-translate-api-x": "^10.7.2"
+  }
+}
