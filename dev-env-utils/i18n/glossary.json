@@ -1,0 +1,105 @@
+{
+  "_comment": [
+    "Shared vocabulary for the CSM language files. Two jobs:",
+    "  1. `protected` lists strings that must survive translation untouched. They are swapped",
+    "     for sentinels around each API call and restored afterwards, the same mechanism the",
+    "     launcher's translate-locales.js uses for {0} placeholders.",
+    "  2. `terms` pins the translation of vocabulary that recurs across many names. A machine",
+    "     translator has no memory between calls, so without this the same English head noun",
+    "     comes back three different ways in three different places -- invisible to anyone who",
+    "     does not read the language. Any English term listed here is substituted directly and",
+    "     never sent to the API.",
+    "These values were settled during the bulk translation pass; keep them in step with it."
+  ],
+
+  "protected": [
+    "EST", "Wheelock", "Simplex", "SpectrAlert", "Gentex", "TrueAlert", "Genesis",
+    "Adaptahorn", "Integrity", "NOV", "GreenCobra", "DuraLife", "MacLean", "PUPI",
+    "McCain", "Econolite", "Autoscope", "Solo Terra", "Miovision", "Campbell", "Guardian",
+    "Polara", "iN2", "Barlo", "KAC", "Kidde", "JBL", "Bose", "Verizon", "Lithonia",
+    "Leotek", "Westinghouse", "Solarmax", "Verifone", "TP-Link", "Omada", "Enterasys",
+    "Spectrum", "Technicolor", "American Electric", "Etch A Sketch", "Apple", "iPhone",
+    "iPad", "iMac", "MacBook", "GE", "MBTA", "MassDOT", "LADOT", "Alto", "UIA", "DWP",
+    "FAWE", "RGR",
+    "HOV", "FYA", "MPH", "FDC", "ARV", "ATV", "LED", "HVAC", "CSM", "TV", "APS", "ISA",
+    "GCM", "LF", "HWY", "FWY", "JCT", "PCH", "LHS"
+  ],
+
+  "_units_note": [
+    "Units printed on the depicted sign face stay verbatim, because a localised label would",
+    "contradict the artwork the player is looking at: MPH, clock times such as 8:30a-5:30p,",
+    "and distances such as 500 Feet / 1 Mile. Units that are equipment specifications and",
+    "appear on no sign are localised instead: lens diameters in inches, rotation in degrees.",
+    "The sign-face units are listed in `protected` or matched by `signFaceUnitPattern`."
+  ],
+  "signFaceUnitPattern": "\\b(MPH|Feet|Foot|Miles?)\\b|\\d{1,2}:\\d{2}\\s*[ap]\\b",
+
+  "terms": {
+    "es_es": {
+      "Sign": "Señal",
+      "Signal": "Semáforo",
+      "Solid": "Circular",
+      "Border": "Placa de Contraste",
+      "Mount": "Soporte",
+      "Pole": "Poste",
+      "Light": "Luz",
+      "Horn": "Bocina",
+      "Strobe": "Estrobo",
+      "Crosswalk": "Cruce Peatonal",
+      "Beacon": "Baliza",
+      "Speaker": "Altavoz",
+      "Add-On": "Complemento",
+      "Inch": "Pulgadas",
+      "Degree": "Grados",
+      "Doghouse": "Doghouse",
+      "Hawk": "Hawk",
+      "Bimodal": "Bimodal",
+      "Permissive": "Permisiva",
+      "Protected": "Protegido"
+    },
+    "de_de": {
+      "Sign": "Schild",
+      "Signal": "Signal",
+      "Solid": "Rund",
+      "Border": "Rückplatte",
+      "Mount": "Halterung",
+      "Pole": "Mast",
+      "Light": "Leuchte",
+      "Horn": "Horn",
+      "Strobe": "Blitzleuchte",
+      "Crosswalk": "Fußgänger",
+      "Beacon": "Bake",
+      "Speaker": "Lautsprecher",
+      "Add-On": "Zusatz",
+      "Inch": "Zoll",
+      "Degree": "Grad",
+      "Doghouse": "Doghouse",
+      "Hawk": "Hawk",
+      "Bimodal": "Bimodal",
+      "Permissive": "Permissiv",
+      "Protected": "Geschützt"
+    },
+    "sv_se": {
+      "Sign": "Vägmärke",
+      "Signal": "Signal",
+      "Solid": "Rund",
+      "Border": "Kontrastskärm",
+      "Mount": "Fäste",
+      "Pole": "Stolpe",
+      "Light": "Ljus",
+      "Horn": "Horn",
+      "Strobe": "Blixtljus",
+      "Crosswalk": "Övergångsställe",
+      "Beacon": "Blixtljus",
+      "Speaker": "Högtalare",
+      "Add-On": "Tillägg",
+      "Inch": "Tum",
+      "Degree": "Grader",
+      "Doghouse": "Doghouse",
+      "Hawk": "Hawk",
+      "Bimodal": "Bimodal",
+      "Permissive": "Permissiv",
+      "Protected": "Skyddad"
+    }
+  }
+}

@@ -87,6 +87,9 @@ logs/
 .claude/settings.local.json
 .claude/worktrees/
 dev-env-utils/target/
+
+# npm dependencies for the i18n tooling (dev-env-utils/i18n)
+node_modules/
 assets/docs/agent_progress/
 .rosetta-natives/
 
