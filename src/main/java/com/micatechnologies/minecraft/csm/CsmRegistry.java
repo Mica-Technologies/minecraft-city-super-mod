@@ -5,7 +5,7 @@ import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import net.minecraft.block.Block;
@@ -23,16 +23,27 @@ public class CsmRegistry {
   /**
    * The map of blocks registered with the mod.
    *
+   * <p>Insertion-ordered on purpose. Blocks are handed to Forge in this map's iteration order
+   * (see {@code Csm#registerBlocks}), and a creative tab renders its contents by walking the item
+   * registry in registration order. Iteration order is therefore the order blocks appear in the
+   * creative inventory, and insertion order is the order in which the {@link
+   * com.micatechnologies.minecraft.csm.codeutils.CsmTab} subclasses call {@code initTabBlock}. A
+   * plain {@code HashMap} here scattered every tab into hash-bucket order.</p>
+   *
    * @since 1.0
    */
-  private static final Map<String, Block> BLOCKS = new HashMap<>();
+  private static final Map<String, Block> BLOCKS = new LinkedHashMap<>();
 
   /**
    * The map of items registered with the mod, keyed by registry name.
    *
+   * <p>Insertion-ordered for the same reason as {@link #BLOCKS}: this map's iteration order is the
+   * creative inventory display order. Each block's {@code ItemBlock} is inserted from the block's
+   * constructor, so item order tracks block order.</p>
+   *
    * @since 1.0
    */
-  private static final Map<String, Item> ITEMS = new HashMap<>();
+  private static final Map<String, Item> ITEMS = new LinkedHashMap<>();
 
   private static final List<ICsmTileEntityProvider> TILE_ENTITY_PROVIDERS = new ArrayList<>();
 
