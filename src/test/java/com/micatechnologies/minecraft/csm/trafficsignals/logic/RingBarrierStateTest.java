@@ -1066,5 +1066,51 @@ class RingBarrierStateTest {
         RingBarrierState.outputClearanceYellow(plan));
   }
 
+  @Test
+  @DisplayName("cold start: a fresh RingBarrierState ignores the previously-displayed phase "
+      + "(TileEntityTrafficSignalController must not run the MMU check against it)")
+  void coldStartIgnoresPreviouslyDisplayedPhase() {
+    // A real controller reload (chunk unload/reload, server restart) rebuilds this engine from
+    // scratch: TileEntityTrafficSignalController#advancedRuntime is transient and is not saved
+    // to NBT, unlike currentPhase (the last phase actually displayed). This test documents why
+    // TileEntityTrafficSignalController#onTick must not run findSkippedClearance against a fresh
+    // engine's first output -- it would false-positive on almost every reload. Conflicting
+    // barriers: phase 2 (circuit 0) is barrier 1, phase 4 (circuit 1) is barrier 2, so only one
+    // of the two heads can be green at a time.
+    TrafficSignalProgrammedPhasePlan plan = TrafficSignalProgrammedPhasePlan.createDefault();
+    enable(plan, 2, 0);
+    enable(plan, 4, 1);
+    TrafficSignalControllerCircuits ckts = circuits(2);
+    BlockPos head0 = new BlockPos(0, 0, 0);
+    BlockPos head1 = new BlockPos(1, 0, 0);
+    ckts.getCircuit(0).getThroughSignals().add(head0);
+    ckts.getCircuit(1).getThroughSignals().add(head1);
+
+    // What got written to NBT: the intersection was actually displaying circuit 1 (barrier 2)
+    // green when the chunk was saved.
+    TrafficSignalPhase persisted = new TrafficSignalPhase(-1, null,
+        TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS);
+    persisted.addGreenSignal(head1);
+    persisted.addRedSignal(head0);
+
+    // After the reload: a brand-new RingBarrierState always cold-starts at firstBarrier(plan) --
+    // barrier 1 here -- regardless of what was actually displayed before. Demand now favors
+    // circuit 0.
+    Demand d = new Demand().veh(0, 3, 0, 0);
+    RingBarrierState reloaded = new RingBarrierState();
+    TrafficSignalPhase afterReload = reloaded.tick(plan, ckts, NO_OVERLAPS, 0L, d);
+    assertNotNull(afterReload);
+    assertTrue(afterReload.getGreenSignals().contains(head0),
+        "cold start serves the plan's first barrier regardless of what was persisted");
+
+    // This is exactly the mismatch findSkippedClearance is built to catch -- confirming it
+    // fires here is what justifies TileEntityTrafficSignalController's advancedRuntimeColdStart
+    // exemption rather than a coincidence the exemption happens to paper over.
+    String skipped = TrafficSignalControllerTickerUtilities.findSkippedClearance(
+        persisted, afterReload, ckts);
+    assertNotNull(skipped, "a naive check would fault every reload where the persisted phase "
+        + "does not match the plan's first barrier");
+  }
+
   // endregion
 }
