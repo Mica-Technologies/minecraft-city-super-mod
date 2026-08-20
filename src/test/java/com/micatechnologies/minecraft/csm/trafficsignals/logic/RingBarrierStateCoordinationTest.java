@@ -1,6 +1,8 @@
 package com.micatechnologies.minecraft.csm.trafficsignals.logic;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.RingBarrierState.ServedMovement;
@@ -290,5 +292,30 @@ class RingBarrierStateCoordinationTest {
       wasGreen = green;
     }
     assertTrue(checked, "expected to observe the side street leaving green at least once");
+  }
+
+  @Test
+  @DisplayName("coordination: an over-subscribed split is reported, and a split that fits is not")
+  void overSubscribedSplitIsReported() {
+    // On a 600-tick cycle the mains' split is 300, but a rest-in-walk phase needs
+    // walk(140) + pedClear(200) + yellow(70) + redClear(40) = 450. The split cannot contain the
+    // phase, so the side street starts late every cycle no matter how well the engine clears --
+    // that is a plan the player has to fix, not something offset correction can absorb, so it is
+    // surfaced rather than silently costing a few ticks a cycle.
+    TrafficSignalProgrammedPhasePlan tooShort = coordinatedPlan();
+    tooShort.getCoordination().setCycleLength(600L);
+    RingBarrierState rb = new RingBarrierState();
+    TrafficSignalControllerCircuits ckts = RingBarrierStateTest.circuits(4);
+    rb.tick(tooShort, ckts, NO_OVERLAPS, 0L, new RingBarrierStateTest.Demand());
+    String shortfall = rb.findSplitShortfall(tooShort);
+    assertNotNull(shortfall, "a 300-tick split cannot hold a 450-tick rest-in-walk phase");
+    assertTrue(shortfall.contains("phase 2"), "should name the offending phase: " + shortfall);
+
+    // The default 1800-tick cycle gives the same phase a 900-tick split, which fits comfortably.
+    TrafficSignalProgrammedPhasePlan roomy = coordinatedPlan();
+    RingBarrierState rb2 = new RingBarrierState();
+    rb2.tick(roomy, ckts, NO_OVERLAPS, 0L, new RingBarrierStateTest.Demand());
+    assertNull(rb2.findSplitShortfall(roomy),
+        "a 900-tick split comfortably holds the same phase; nothing should be reported");
   }
 }
