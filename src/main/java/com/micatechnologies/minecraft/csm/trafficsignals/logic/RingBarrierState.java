@@ -160,6 +160,8 @@ public class RingBarrierState {
   private final long[] windowStart = new long[PHASE_SLOTS];
   private final long[] windowEnd = new long[PHASE_SLOTS];
   private final boolean[] coordPhase = new boolean[PHASE_SLOTS];
+  /** Per-tick demand ignoring the permissive-window gate; see the coordinated yield point. */
+  private final boolean[] tickRawCalled = new boolean[PHASE_SLOTS];
 
   /**
    * Source of per-tick detector and pedestrian demand. Production wraps the world; unit tests
@@ -248,6 +250,15 @@ public class RingBarrierState {
     boolean[] called = new boolean[TrafficSignalProgrammedPhasePlan.PHASE_COUNT + 1];
     for (int n = 1; n <= TrafficSignalProgrammedPhasePlan.PHASE_COUNT; n++) {
       called[n] = isCalled(plan, plan.getPhase(n));
+    }
+    // The same demand WITHOUT coordination's permissive-window gate. The coordinated phase's yield
+    // point needs it: it has to start clearing before the waiting phase's window opens, so it
+    // cannot wait for that phase's call to be accepted (see the coordinated yield in advanceRing).
+    for (int n = 1; n <= TrafficSignalProgrammedPhasePlan.PHASE_COUNT; n++) {
+      TrafficSignalProgrammedPhase p = plan.getPhase(n);
+      tickRawCalled[n] = p != null && p.isActive()
+          && p.getCircuitIndex() < tickCircuits.getCircuitCount()
+          && ((coordinated && coordPhase[n]) || hasDemand(plan, p));
     }
 
     if (!initialized) {
@@ -572,16 +583,57 @@ public class RingBarrierState {
           conflict = withinBarrierConflict(phase, ringNum, plan, called)
               || !ringWorkingBarrier(companion, companionRingNum, plan, called);
         }
+        int phaseNum = ring.activePhase;
+        boolean isCoord = coordinated && coordPhase[phaseNum];
+
+        // Coordinated yield point. A coordinated phase has no force-off, so it can only be taken
+        // off green once a conflicting call is ACCEPTED — which cannot happen until that phase's
+        // own permissive window opens. With a tight side-street split that is far too late: the
+        // mains' pedestrian clearance, yellow and red all land inside the side street's window, the
+        // side street is then served entirely outside its window on bare min green, and the whole
+        // cycle sits permanently late with nothing to ever take the lateness back.
+        //
+        // So give the coordinated phase a yield point of its own, set back from its window end by
+        // everything its termination actually costs — pedestrian clearance when it is serving one,
+        // plus yellow and red — so the next phase's green begins at that phase's window start. It
+        // yields only when a conflicting movement is genuinely waiting, judged on raw demand
+        // because the waiting phase's window has not opened yet; with nothing calling anywhere the
+        // coordinated phase keeps resting in green, which is the whole point of coordination.
+        //
+        // The same test is what stops the coordinated phase yielding EARLY: until its yield point
+        // it holds green (past max green, which coordinated phases are already exempt from) rather
+        // than giving the time away and shifting the rest of the cycle. A coordinated phase that
+        // finds itself outside its own window dwells on green until the cycle comes back round to
+        // that point — add-only offset correction; see coordYieldReached.
+        // Budget the pedestrian clearance this phase still OWES, not the whole interval: with a
+        // ped recall the walk and its clearance run once from green start and are usually long
+        // finished by the yield point, so charging the full interval yields that much too early —
+        // the next phase then starts before its own window opens and is force-off'd on bare min
+        // green, starving it. A phase resting on WALK is the exception: it recycles the walk, so
+        // its clearance has not started counting down and it still owes all of it.
+        long pedRemaining = 0L;
+        if (ring.pedServing) {
+          pedRemaining = ring.resting ? phase.getPedClear()
+              : Math.max(0L, ring.pedStart + ring.walkHold + phase.getPedClear() - now);
+        }
+        long coordClearance = phase.getYellow() + phase.getRedClear() + pedRemaining;
+        boolean coordYieldDue = isCoord && !ring.dualEntry
+            && coordYieldReached(phaseNum, coordClearance, now - ring.greenStart)
+            && demandConflictsWith(phase, ringNum, plan, tickRawCalled);
+        // While a coordinated phase is holding for its yield point, ordinary gap-out/conflict
+        // termination must not take it off green — that is what the hold IS.
+        boolean coordHold = isCoord && !ring.dualEntry && !coordYieldDue;
+
         // Rest-in-walk clearance: a phase resting on WALK cannot snap the walk straight to
         // don't-walk when a conflicting call arrives — it must first run pedestrian clearance
         // (FDW). End the rest (the vehicle stays green) and re-arm the ped timer to the start of
-        // FDW; the terminate logic below then holds the green until the clearance finishes.
-        if (ring.resting && ring.pedServing && conflict) {
+        // FDW; the terminate logic below then holds the green until the clearance finishes. A
+        // coordinated phase reaching its yield point starts the same clearance, so that the walk
+        // it is resting on ends early enough for the next phase to start on time.
+        if (ring.resting && ring.pedServing && (conflict || coordYieldDue)) {
           ring.resting = false;
           ring.pedStart = now - ring.walkHold;
         }
-        int phaseNum = ring.activePhase;
-        boolean isCoord = coordinated && coordPhase[phaseNum];
         long greenElapsed = now - ring.greenStart;
         // Volume-density: minimum green is extended by added initial (queue at start) and bike
         // minimum green; the passage gaps shorter as green runs on; Max 2 replaces Max 1 in
@@ -627,7 +679,8 @@ public class RingBarrierState {
         // phase has gapped out, and something conflicting is actually waiting (otherwise rest in
         // green). A dual-entry companion follows the same rule: with no conflicting demand it
         // simply holds green alongside whatever the other ring serves on this barrier.
-        boolean terminate = maxOut || forceOff || (minMet && pedDone && gapOut && conflict);
+        boolean terminate = maxOut || forceOff || (coordYieldDue && pedDone)
+            || (!coordHold && minMet && pedDone && gapOut && conflict);
         if (terminate && minMet) {
           if (forceOff) {
             // Forcing off consumes the window acceptance: the phase's window has closed, so it has
@@ -1128,6 +1181,41 @@ public class RingBarrierState {
       return false;
     }
     return windowPos(phaseNumber) < Math.max(1L, windowLen - Math.max(0L, clearance));
+  }
+
+  /**
+   * Whether the coordinated phase has reached the yield point at which it must start terminating.
+   *
+   * <p>Deliberately <em>not</em> {@link #pastYieldPoint}: that treats any position outside the
+   * window as "past", which is right for a non-coordinated force-off (a phase outside its window
+   * must get off) but exactly wrong for the coordinated phase, which is the one that should be
+   * <em>filling</em> time whenever the cycle is out of alignment. A coordinated phase found outside
+   * its own window is the signal running off its offset, and the recovery is to dwell — hold green
+   * (past max green, which coordinated phases are already exempt from) until the cycle comes back
+   * around to its yield point, then resume normal service from there.</p>
+   *
+   * <p>This is add-only correction: the coordinated phase absorbs the whole error by running long,
+   * and no side-street split or pedestrian interval is ever shortened to catch up.</p>
+   *
+   * <p>The test is whether <em>this green</em> has run through the yield point, not where the local
+   * cycle happens to sit right now. An instantaneous "am I past the yield point" comparison cannot
+   * tell apart the two cases that matter: a green that started on time and has just crossed its
+   * yield point (terminate now — it may have crossed it between two sparse ticks) and a green that
+   * only just started well beyond it because the cycle is out of alignment (dwell until the yield
+   * point comes round again). Measuring from the start of the green separates them exactly.</p>
+   *
+   * @param greenElapsed ticks this phase has been green
+   */
+  private boolean coordYieldReached(int phaseNumber, long clearance, long greenElapsed) {
+    long windowLen = windowEnd[phaseNumber] - windowStart[phaseNumber];
+    if (windowLen <= 0L) {
+      return false;
+    }
+    long yieldPos = (windowStart[phaseNumber]
+        + Math.max(0L, windowLen - Math.max(0L, clearance))) % cycleTicks;
+    long startPos = ((localCycle - greenElapsed) % cycleTicks + cycleTicks) % cycleTicks;
+    long arcToYield = ((yieldPos - startPos) % cycleTicks + cycleTicks) % cycleTicks;
+    return greenElapsed >= arcToYield;
   }
 
   /**

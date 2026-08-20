@@ -188,40 +188,107 @@ class RingBarrierStateCoordinationTest {
   }
 
   @Test
-  @DisplayName("coordination: the coordinated phase starts green at the offset every cycle "
-      + "(splits must budget each phase's own clearance)")
-  void coordinatedPhaseStartsGreenOnTheOffsetEveryCycle() {
+  @DisplayName("coordination: the green band holds and the side street starts at its window "
+      + "start every cycle (splits must budget each phase's own clearance)")
+  void coordinationLocksToTheOffsetEveryCycle() {
+    // The two properties that define a working coordinated controller:
+    //   1. the coordinated phase is GREEN at the offset -- that IS the green band, and
+    //   2. the side street's green begins at ITS window start, once per cycle.
+    // Note it is the coordinated phase being green AT the offset that matters, not its green
+    // STARTING there: when the controller is recovering, the coordinated phase dwells across the
+    // top of the cycle, which is the add-only correction working as intended.
+    //
     // Splits tile the cycle as if they were all green, but real service is green + yellow +
     // red-clear. Force-offing a phase at its window END rather than its yield point let every
-    // phase overrun by its own clearance, so the coordinated phase began yellow+redClear late
-    // every cycle with nothing to ever take the lateness back -- a permanent offset error that
-    // looked like "the signal never catches up".
+    // phase overrun by its own clearance, so the side street started that much late every cycle
+    // with nothing to ever take the lateness back -- the permanent offset error that looked like
+    // "the signal never catches up".
     TrafficSignalProgrammedPhasePlan plan = coordinatedPlan();
     long cycle = plan.getCoordination().getCycleLength();
+    long sideWindowStart = cycle / 2; // even splits: phase 4's window is [900, 1800)
     RingBarrierState rb = new RingBarrierState();
     TrafficSignalControllerCircuits ckts = RingBarrierStateTest.circuits(4);
     RingBarrierStateTest.Demand busy = new RingBarrierStateTest.Demand()
         .veh(2, 1, 0, 0).veh(3, 1, 0, 0);
 
-    int starts = 0;
-    boolean wasGreen = false;
-    // Skip the first cycle: the engine cold-starts at t=0 and the steady state is what matters.
+    int offsetsSeen = 0;
+    int bandHeld = 0;
+    int sideStarts = 0;
+    boolean sideWasGreen = false;
     for (long t = 0; t <= cycle * 6; t++) {
       rb.tick(plan, ckts, NO_OVERLAPS, t, busy);
+      long local = ((t - plan.getCoordination().getOffset()) % cycle + cycle) % cycle;
       ServedMovement m1 = rb.getLastServed(1);
-      boolean green = m1 != null && m1.phaseNumber == 2 && m1.vehicle == VehInterval.GREEN;
-      if (green && !wasGreen && t > cycle) {
+      boolean coordGreen = m1 != null && m1.phaseNumber == 2 && m1.vehicle == VehInterval.GREEN;
+      boolean sideGreen = m1 != null && m1.phaseNumber == 4 && m1.vehicle == VehInterval.GREEN;
+      // Skip the first cycle: the engine cold-starts at t=0 and steady state is what matters.
+      if (t > cycle) {
+        if (local == 0) {
+          offsetsSeen++;
+          if (coordGreen) {
+            bandHeld++;
+          }
+        }
+        if (sideGreen && !sideWasGreen) {
+          sideStarts++;
+          assertEquals(sideWindowStart, local,
+              "side street (phase 4) went green at localCycle=" + local + " (t=" + t
+                  + ") instead of at its window start " + sideWindowStart);
+        }
+      }
+      sideWasGreen = sideGreen;
+    }
+    assertEquals(offsetsSeen, bandHeld,
+        "the coordinated phase must be green at the offset on every cycle (green band)");
+    assertEquals(5, sideStarts,
+        "expected exactly one side-street green per cycle over 5 steady-state cycles");
+  }
+
+  @Test
+  @DisplayName("coordination: a phase's clearance fits inside its own split, so it never eats "
+      + "into the next phase's window")
+  void phaseClearanceFitsInsideItsOwnSplit() {
+    // A split is the time the movement owns end to end -- green AND its clearance -- so a phase
+    // must go yellow early enough that its red clearance has finished by its window end. Force-
+    // offing at the window end instead pushed every phase's clearance into the next phase's
+    // window. The dwell correction can absorb that, so the green band still holds and the
+    // symptom hides; this test pins the split arithmetic itself.
+    TrafficSignalProgrammedPhasePlan plan = coordinatedPlan();
+    // Max green must not be what ends the phase, or force-off is never the binding constraint
+    // and the split arithmetic is not exercised at all.
+    plan.getPhase(4).setMaxGreen(6000L);
+    plan.getPhase(8).setMaxGreen(6000L);
+    long cycle = plan.getCoordination().getCycleLength();
+    // Even splits: phase 4's window is [900, 1800). Measure the green-end WINDOW-RELATIVE, not by
+    // raw localCycle -- phase 4's window ends at the cycle wrap, where a green ending late reads
+    // as localCycle 0 and would look early. Same trap the engine's pastYieldPoint documents.
+    long sideWindowStart = cycle / 2;
+    long sideWindowLen = cycle - sideWindowStart;
+    long clearance = plan.getPhase(4).getYellow() + plan.getPhase(4).getRedClear();
+    RingBarrierState rb = new RingBarrierState();
+    TrafficSignalControllerCircuits ckts = RingBarrierStateTest.circuits(4);
+    RingBarrierStateTest.Demand busy = new RingBarrierStateTest.Demand()
+        .veh(2, 1, 0, 0).veh(3, 1, 0, 0);
+
+    boolean checked = false;
+    boolean wasGreen = false;
+    for (long t = 0; t <= cycle * 4; t++) {
+      rb.tick(plan, ckts, NO_OVERLAPS, t, busy);
+      ServedMovement m1 = rb.getLastServed(1);
+      boolean green = m1 != null && m1.phaseNumber == 4 && m1.vehicle == VehInterval.GREEN;
+      if (!green && wasGreen && t > cycle) {
         long local = ((t - plan.getCoordination().getOffset()) % cycle + cycle) % cycle;
-        long error = Math.min(local, cycle - local);
-        starts++;
-        assertTrue(error <= 20L,
-            "coordinated phase 2 went green at localCycle=" + local + " (t=" + t + "), "
-                + error + " ticks off the offset — it must start at the top of the cycle");
+        long pos = ((local - sideWindowStart) % cycle + cycle) % cycle;
+        // Green ended here; its clearance still has to run. It must finish by the window end.
+        assertTrue(pos + clearance <= sideWindowLen,
+            "phase 4 left green " + pos + " ticks into its " + sideWindowLen
+                + "-tick window (localCycle=" + local + ", t=" + t + "); its " + clearance
+                + "-tick clearance would run " + (pos + clearance - sideWindowLen)
+                + " ticks past the window end — the split must budget the phase's own clearance");
+        checked = true;
       }
       wasGreen = green;
     }
-    // Exactly one coordinated-phase green per cycle: no runt/extra services.
-    assertEquals(5, starts,
-        "expected one coordinated-phase green per cycle over 5 steady-state cycles");
+    assertTrue(checked, "expected to observe the side street leaving green at least once");
   }
 }
