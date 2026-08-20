@@ -162,6 +162,8 @@ public class RingBarrierState {
   private final boolean[] coordPhase = new boolean[PHASE_SLOTS];
   /** Per-tick demand ignoring the permissive-window gate; see the coordinated yield point. */
   private final boolean[] tickRawCalled = new boolean[PHASE_SLOTS];
+  /** Whether the over-subscribed-split advisory has been emitted by this engine instance. */
+  private boolean splitShortfallReported = false;
 
   /**
    * Source of per-tick detector and pedestrian demand. Production wraps the world; unit tests
@@ -265,6 +267,7 @@ public class RingBarrierState {
       currentBarrier = firstBarrier(plan);
       initialized = true;
     }
+    reportSplitShortfallOnce(plan);
 
     // Preemption overrides normal/coordinated operation while active.
     updatePreempt(plan, now);
@@ -1127,6 +1130,66 @@ public class RingBarrierState {
     for (int n = 1; n <= TrafficSignalProgrammedPhasePlan.PHASE_COUNT; n++) {
       coordPhase[n] = co.isCoordinatedPhase(n);
     }
+  }
+
+  /**
+   * Reports an over-subscribed coordinated split once per engine instance (so once per load, not
+   * once per tick). See {@link #findSplitShortfall}.
+   */
+  private void reportSplitShortfallOnce(TrafficSignalProgrammedPhasePlan plan) {
+    if (!coordinated || splitShortfallReported) {
+      return;
+    }
+    splitShortfallReported = true;
+    String shortfall = findSplitShortfall(plan);
+    if (shortfall != null) {
+      System.err.println("Traffic signal controller coordination advisory: " + shortfall);
+    }
+  }
+
+  /**
+   * Non-fatal check for a coordinated split that is too short to contain what the phase actually
+   * needs: its minimum green (or its full walk + pedestrian clearance when it services a walk every
+   * cycle) plus the yellow and red clearance that must finish inside the same split.
+   *
+   * <p>When a split is over-subscribed the engine still does the best it can — it clears as early
+   * as the yield point allows — but the next phase necessarily starts late by the shortfall on
+   * <em>every</em> cycle, and no amount of offset correction can recover time the plan never
+   * allocated. Only phases that service a pedestrian every cycle (ped recall, pedestrian recall
+   * mode, or rest-in-walk) are charged for the walk; an on-demand ped is intermittent and would
+   * produce false positives.</p>
+   *
+   * <p>Deliberately an advisory and not part of {@link TrafficSignalProgrammedPhasePlan#validate}:
+   * over-subscribed splits are a tuning problem, and faulting the intersection into flash over one
+   * would be far more disruptive than the few ticks of lateness it causes.</p>
+   *
+   * @return a description of the first shortfall found, or {@code null} if every split fits
+   */
+  String findSplitShortfall(TrafficSignalProgrammedPhasePlan plan) {
+    for (int n = 1; n <= TrafficSignalProgrammedPhasePlan.PHASE_COUNT; n++) {
+      TrafficSignalProgrammedPhase p = plan.getPhase(n);
+      if (p == null || !p.isActive()) {
+        continue;
+      }
+      long windowLen = windowEnd[n] - windowStart[n];
+      if (windowLen <= 0L) {
+        continue;
+      }
+      boolean servesPedEveryCycle = p.isPedRecall() || p.isRestInWalk()
+          || p.getRecallMode() == TrafficSignalRecallMode.PEDESTRIAN;
+      long green = servesPedEveryCycle
+          ? Math.max(p.getMinGreen(), p.getWalk() + p.getPedClear())
+          : p.getMinGreen();
+      long needed = green + p.getYellow() + p.getRedClear();
+      if (needed > windowLen) {
+        return "phase " + n + "'s split is " + windowLen + " ticks but the phase wants up to "
+            + needed + " (green " + green + " + yellow " + p.getYellow() + " + red clear "
+            + p.getRedClear() + "). The split cannot contain the phase, so the next phase starts "
+            + "late every cycle and offset correction cannot recover the difference. Lengthen the "
+            + "split or the cycle.";
+      }
+    }
+    return null;
   }
 
   /** Whether a non-coordinated phase's permissive window is currently open. */

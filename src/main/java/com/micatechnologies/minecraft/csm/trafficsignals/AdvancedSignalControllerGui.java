@@ -188,6 +188,20 @@ public class AdvancedSignalControllerGui extends GuiScreen {
           + "you typed), so total EACH ring to the cycle — and keep concurrent groups matched "
           + "across rings so companion phases open together (e.g. with phases 2,4,5,6,8: "
           + "splits 5+6 should equal 2, and 8 should equal 4).",
+      "A split is the whole slice a movement owns — its green AND the yellow and red clearance "
+          + "that follow. Each phase therefore starts clearing early enough that its red finishes "
+          + "as its split ends, so the next phase goes green exactly when its own split starts. "
+          + "Budget min green (or walk + ped clear, whichever is longer) plus yellow plus red "
+          + "clearance into every split; a split too short to hold its own phase makes the next "
+          + "one start late every cycle, and the game log will say so.",
+      "Recovering the offset: the coordinated phase is the slack. It will not give up green early "
+          + "even to waiting traffic — it holds until its yield point — and a controller that has "
+          + "been knocked off its offset (a preempt, a chunk reload, a mode change) dwells on the "
+          + "coordinated green, running it past max green, until the cycle lines back up. "
+          + "Correction only ever ADDS to the coordinated phase; no side street's split and no "
+          + "pedestrian interval is ever cut short to catch up. While it recovers, the coordinated "
+          + "green starts late and runs across the top of the cycle — that is the correction "
+          + "working, not a fault.",
       "Dual entry never adds time: a DE companion comes up WITH the called phase and clears WITH "
           + "it when the barrier's work is done — demand waiting on the other barrier (including "
           + "the coordinated phases' standing calls) never strips it off early. The called "
@@ -1288,11 +1302,18 @@ public class AdvancedSignalControllerGui extends GuiScreen {
         "only called and served inside their split windows.");
     addHelp(lcdX, lcdY + 38, 64, 9, "Offset",
         "Cycle-start offset relative to the system master clock —",
-        "stagger offsets along a corridor to build green waves.");
+        "stagger offsets along a corridor to build green waves.",
+        "A controller knocked off its offset recovers by holding the",
+        "coordinated phase green (past max) until it lines back up;",
+        "no other phase's split or walk is ever shortened to catch up.");
     addHelp(lcdX, lcdY + 50, lcdW - 6, 9, "Splits & coordinated phases",
-        "Split = the slice of the cycle budgeted to each phase. Toggle",
-        "COORD to mark a phase as a coordinated (synced) phase that",
-        "rests in green between its permissive windows. R1/R2 + A/B =",
+        "Split = the slice of the cycle budgeted to each phase, GREEN",
+        "PLUS its yellow and red clearance — a phase starts clearing",
+        "early enough that the next one goes green exactly when its own",
+        "split starts. Budget min green + walk + ped clear + yellow +",
+        "red into every split, or the next phase runs late every cycle.",
+        "Toggle COORD to mark a phase as a coordinated (synced) phase",
+        "that rests in green between permissive windows. R1/R2 + A/B =",
         "the phase's ring and barrier. * = enabled; dim rows disabled.",
         "The rings time in PARALLEL, so budget EACH ring to the full",
         "cycle (all eight splits together total TWICE the cycle). Rings",
