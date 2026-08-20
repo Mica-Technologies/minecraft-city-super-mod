@@ -15,7 +15,18 @@ tectonic ASC3_MANUAL.tex
 
 On Windows, grab `tectonic-*-x86_64-pc-windows-msvc.zip` from the GitHub
 releases page (it is not on winget), or use MiKTeX (`winget install
-MiKTeX.MiKTeX`) and run `pdflatex`-compatible builds via `latexmk`.
+MiKTeX.MiKTeX`):
+
+```bash
+latexmk -xelatex -interaction=nonstopmode ASC3_MANUAL.tex
+latexmk -c   # remove the aux files; commit only the .tex and .pdf
+```
+
+**Use `xelatex`, not `pdflatex`.** The source has no `inputenc`/`fontspec` and
+relies on the engine reading UTF-8 directly, which the XeTeX-family engines
+(Tectonic, `xelatex`) do. `pdflatex` aborts on the Unicode minus signs in the
+keypad diagrams with `Unicode character − (U+2212) not set up for use with
+LaTeX`.
 
 The `Fontconfig error: Cannot load default config file` warning from Tectonic
 on Windows is harmless.
