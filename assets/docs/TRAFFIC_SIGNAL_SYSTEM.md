@@ -761,14 +761,63 @@ conflicting call waiting (and ped clearance is done).
 
 `TrafficSignalCoordinationPlan` adds FREE vs COORDINATED. Coordinated operation runs a background
 cycle (cycle length + offset against world time, so multiple intersections sync), tiles each ring's
-cycle into per-phase **permissive windows** from the splits, force-offs non-coordinated phases
-running outside their window (never truncating an in-progress ped clearance), and rests the
-coordinated phases (default p2/p6) in green. A call **registers** only while its phase's window is
-open, but once accepted it **sticks** (`RingBarrierState.windowAccepted`) until the phase is served
-or the demand drops — serving it takes real time (the mains' rest-in-walk ped clearance alone can
-outlast a tight window), so re-gating each tick would erase the call mid-sequence and the side
-street would never be served. A phase that starts late on a stuck accepted call gets its min green,
-then the force-off clips it back to the coordinated phases.
+cycle into per-phase **permissive windows** from the splits, force-offs non-coordinated phases at
+their yield point (never truncating an in-progress ped clearance), and rests the coordinated phases
+(default p2/p6) in green. A call **registers** only while its phase's window is open, but once
+accepted it **sticks** (`RingBarrierState.windowAccepted`) until the phase is served, the demand
+drops, or the phase is forced off — serving it takes real time (the mains' rest-in-walk ped
+clearance alone can outlast a tight window), so re-gating each tick would erase the call
+mid-sequence and the side street would never be served. A phase that starts late on a stuck
+accepted call gets its min green, then the force-off clips it back to the coordinated phases.
+
+#### Splits include clearance — the yield point
+
+**A split is the time a movement owns end to end: green *and* its clearance.** A phase therefore
+terminates at its **yield point**, set back from its window end by its own yellow + red-clear, so
+the *next* phase's green begins exactly at that phase's window start. (`pastYieldPoint`; the same
+point also gates *acceptance* via `acceptanceOpen`, because a call arriving after it cannot be
+served this cycle and would otherwise hand the phase a standing call into the next one.)
+
+Both are measured as a position *within the window* rather than against `windowEnd` directly — the
+last window in each ring ends exactly at the cycle wrap, where a plain `localCycle >= windowEnd`
+test can never be true. Positions wrap, so a phase being served outside its window is past its
+yield point and force-offs at once. Min green is still guaranteed (`terminate && minMet`), and a
+split configured shorter than its own clearance keeps a one-tick acceptance sliver rather than
+starving.
+
+> **Behavior change for existing worlds:** splits previously behaved as if they were all green, so
+> every phase overran its window by its clearance. Side-street greens are now shorter by their own
+> yellow + red-clear. If a split was tuned to the old behavior, add the clearance to it.
+
+#### Offset correction — the coordinated phase dwells
+
+The local cycle is a perfect clock derived from world time, but it used to be only a *gate*, never
+a *target*: nothing steered actual operation back onto it, so once a controller was knocked off
+(preempt, reload, mode change) it stayed off. In-game this read as signals that get out of sync and
+never catch up.
+
+The coordinated phase now has a yield point of its own, budgeting the pedestrian clearance it still
+**owes** (a ped recall has usually finished by then; a phase resting on WALK recycles its walk and
+still owes all of it) plus yellow and red. That single point does both jobs:
+
+- **It stops the phase yielding early.** Until the yield point, ordinary gap-out/conflict
+  termination cannot take the coordinated phase off green — it holds *past max green*, which
+  coordinated phases are already exempt from, rather than giving the time away and shifting the
+  rest of the cycle.
+- **It makes the phase dwell to recover.** A coordinated phase that finds itself outside its own
+  window holds green until the yield point comes round again (`coordYieldReached`). This is
+  **add-only** correction: the coordinated phase absorbs the entire error by running long, and no
+  side-street split or pedestrian interval is ever shortened to catch up.
+
+Whether the yield point has been reached is measured **from the start of the green**, not from
+where the cycle sits now. An instantaneous comparison cannot separate a green that started on time
+and has just crossed its yield point (terminate now — it may have crossed between two sparse ticks)
+from one that only just started well beyond it because the cycle is out of alignment (dwell).
+
+Note the consequence when reading a running controller: while recovering, the coordinated phase's
+green *starts* late and spans the top of the cycle. What defines correct coordination is that the
+coordinated phase is **green at the offset** (the green band) and that the side street **starts at
+its window start** — not that the coordinated green begins at the offset.
 
 ### Preemption
 

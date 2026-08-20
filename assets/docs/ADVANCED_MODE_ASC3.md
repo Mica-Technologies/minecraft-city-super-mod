@@ -347,6 +347,48 @@ Any edit that can change the programmed flash — `ph.flash`, `ph.circuit`, `ph.
 `ph.enabled`, `loadTemplate` — regenerates the cached phases
 (`TileEntityTrafficSignalController.affectsProgrammedFlash`).
 
+## 5b. Coordination: yield points and offset correction
+
+### What the ASC/3 does
+
+A coordinated controller runs a fixed background cycle and gives each phase a **split** — the time
+that movement owns end to end, *green plus its yellow and all-red*. The coordinated phase (usually
+the arterial through) is the slack: it rests in green and gives up time only at its **yield point**,
+the moment it must begin clearing so the next phase's green starts on schedule. When the controller
+drifts off its offset, an offset-correction mode pulls it back; `Add Only` (dwell) does so purely by
+running the coordinated phase long, never by shortening another phase's split.
+
+### Our model
+
+Splits tile each ring's cycle into permissive windows, and **every phase terminates at its yield
+point** — window end less its own clearance — rather than at the window end. Non-coordinated phases
+force off there; the same point gates whether a new call is even accepted, since a call arriving
+later cannot be served this cycle.
+
+The coordinated phase has a yield point too, budgeting the pedestrian clearance it still **owes**
+(a ped recall has normally finished by then; a phase resting on WALK recycles its walk and still
+owes the full interval) plus yellow and red. It is the only thing that ends a coordinated green:
+
+- Before it, gap-out and conflicting calls **cannot** take the phase off green — it holds past max
+  green (coordinated phases are already max-out exempt).
+- A coordinated phase sitting outside its own window **dwells** on green until the yield point comes
+  round again. That is the whole of our offset correction, and it is add-only by construction: no
+  side-street split and no pedestrian interval is ever cut short to catch up.
+
+"Has the yield point been reached" is evaluated from the **start of the green**, not from the
+current cycle position — that is what separates a green that legitimately crossed its yield point
+between two sparse ticks from one that only just started beyond it and should dwell.
+
+### Simplifications
+
+- Correction is not selectable. `Add Only` behavior is intrinsic; there is no `Shortway`, no
+  `Subtract`, and no max-correction-per-cycle limit (the dwell is bounded by one cycle anyway).
+- There is no master/secondary relationship between controllers. Each derives its local cycle
+  independently from world time + offset, which is enough for a shared clock across an arterial.
+
+See `TRAFFIC_SIGNAL_SYSTEM.md` § Coordination for the mechanism and the note that splits now
+include clearance, which shortens side-street greens on plans tuned to the older behavior.
+
 ## 6. Roadmap
 
 Only niche / poor-fit items remain:
