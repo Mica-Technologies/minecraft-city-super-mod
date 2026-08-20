@@ -524,6 +524,13 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
       long timeSinceLastPhaseApplicabilityChange = tickTime - lastPhaseApplicabilityChangeTime;
       TrafficSignalPhase newPhase;
 
+      // Whether this tick constructs a brand-new ADVANCED runtime (see below). The engine's
+      // ring/barrier state is transient and is not saved to NBT, so it always cold-starts at
+      // the plan's first barrier on world/chunk reload -- regardless of what circuit was
+      // actually displayed green in the persisted currentPhase. That first phase is a controller
+      // restart, not a live progression, and must not be judged against the persisted display.
+      boolean advancedRuntimeColdStart = false;
+
       // WWVDS and overheight modes are handled directly because they require mutable tracking state
       if (operatingMode == TrafficSignalControllerMode.WRONG_WAY_DETECTION) {
         newPhase = TrafficSignalControllerTicker.wrongWayDetectionModeTick(
@@ -546,6 +553,7 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
         }
         if (advancedRuntime == null) {
           advancedRuntime = new RingBarrierState();
+          advancedRuntimeColdStart = true;
         }
         newPhase = advancedRuntime.tick(getWorld(), plan, circuits, overlaps, tickTime);
       } else {
@@ -574,9 +582,11 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
         // Conflict monitor (MMU): an automatic NORMAL / ADVANCED progression must never take a
         // vehicle signal from GREEN or FYA straight to RED. If one would, fault into flash with
         // the offending head named instead of displaying it — exactly what a real MMU does on a
-        // skipped yellow clearance. Manual mode changes, resets and power loss are not
-        // progressions and are not checked.
+        // skipped yellow clearance. Manual mode changes, resets, power loss and an ADVANCED
+        // runtime cold start (see advancedRuntimeColdStart above) are not progressions and are
+        // not checked.
         if (!isInFaultState()
+            && !advancedRuntimeColdStart
             && (operatingMode == TrafficSignalControllerMode.NORMAL
                 || operatingMode == TrafficSignalControllerMode.ADVANCED)) {
           String skipped = TrafficSignalControllerTickerUtilities.findSkippedClearance(

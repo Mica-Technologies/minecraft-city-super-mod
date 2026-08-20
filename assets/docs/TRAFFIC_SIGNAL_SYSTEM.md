@@ -804,8 +804,8 @@ countdown.
 
 **Invariant:** in `NORMAL` and `ADVANCED` modes no vehicle signal ever goes from GREEN or FYA
 straight to RED — a yellow interval always sits in between. (Ramp-meter modes are exempt by
-design; a mode change, controller reset or power loss is not a phase progression and is not
-subject to it.)
+design; a mode change, controller reset, power loss or an ADVANCED runtime cold start is not a
+phase progression and is not subject to it.)
 
 The controller enforces this like a real malfunction management unit:
 `TileEntityTrafficSignalController.onTick` runs
@@ -841,6 +841,17 @@ Rules the phase builders follow so the monitor never trips:
   overlays, preempt entry). Any head that was GREEN/FYA in the last applied phase and would be RED
   is held at solid yellow for the plan's longest programmed yellow, then released to red; a head
   that goes green/FYA again while held is released immediately.
+- **ADVANCED runtime cold start**: `TileEntityTrafficSignalController.advancedRuntime` (the
+  `RingBarrierState`) is `transient` — it is not written to NBT — while `currentPhase` (the last
+  *displayed* phase) is. So every chunk unload/reload or server restart rebuilds the ring engine
+  from scratch, and it always cold-starts at the plan's first barrier
+  (`RingBarrierState.firstBarrier`), independent of whichever circuit was actually green when the
+  world was saved. Comparing that cold-start phase against the persisted `currentPhase` would
+  false-positive on `findSkippedClearance` almost every reload for any circuit not on the first
+  barrier — so `onTick` tracks `advancedRuntimeColdStart` and skips the conflict-monitor check for
+  the one phase produced right after `advancedRuntime` is (re)constructed, the same as a reset.
+  This still lets that first post-reload phase visually snap heads straight to red without a
+  yellow (pre-existing behavior, unchanged) — only the false fault is suppressed.
 
 ## Known Considerations
 
