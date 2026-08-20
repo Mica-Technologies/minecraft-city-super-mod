@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.trafficsignals.logic;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.RingBarrierState.ServedMovement;
@@ -150,5 +151,77 @@ class RingBarrierStateCoordinationTest {
     ServedMovement m1 = rb.getLastServed(1);
     assertTrue(m1 == null || m1.phaseNumber != 4 || m1.vehicle != VehInterval.GREEN,
         "phase 4 must be forced off at the cycle wrap, not run on toward max green");
+  }
+
+  @Test
+  @DisplayName("coordination: under continuous demand a side street is never served outside its "
+      + "permissive window (a force-off must consume the window acceptance)")
+  void forcedOffPhaseDoesNotKeepCallingThroughTheMainsGreen() {
+    // Continuous demand on BOTH side streets is the loaded-intersection case. The window
+    // acceptance latch is only cleared when demand drops, so with demand that never drops a
+    // force-off that left the latch set gave the side street a standing call straight through the
+    // mains' green: phase 2 was terminated after bare min green and phase 4 was then served well
+    // outside its own window, three serve-rounds per two cycles, permanently off offset.
+    TrafficSignalProgrammedPhasePlan plan = coordinatedPlan();
+    long cycle = plan.getCoordination().getCycleLength();
+    RingBarrierState rb = new RingBarrierState();
+    TrafficSignalControllerCircuits ckts = RingBarrierStateTest.circuits(4);
+    RingBarrierStateTest.Demand busy = new RingBarrierStateTest.Demand()
+        .veh(2, 1, 0, 0).veh(3, 1, 0, 0);
+
+    // Phase 4's permissive window with even splits is [900, 1800) of the 1800-tick cycle. Allow a
+    // grace equal to its clearance for a green that legitimately began inside the window and is
+    // still finishing; serving green well before the window opens is the defect.
+    long windowStart = cycle / 2;
+    long grace = plan.getPhase(4).getYellow() + plan.getPhase(4).getRedClear();
+    for (long t = 0; t <= cycle * 6; t++) {
+      rb.tick(plan, ckts, NO_OVERLAPS, t, busy);
+      ServedMovement m1 = rb.getLastServed(1);
+      if (m1 == null || m1.phaseNumber != 4 || m1.vehicle != VehInterval.GREEN) {
+        continue;
+      }
+      long local = ((t - plan.getCoordination().getOffset()) % cycle + cycle) % cycle;
+      assertTrue(local >= windowStart - grace,
+          "phase 4 was green at localCycle=" + local + " (t=" + t + "), before its window opened "
+              + "at " + windowStart + " — a stale window acceptance survived its force-off");
+    }
+  }
+
+  @Test
+  @DisplayName("coordination: the coordinated phase starts green at the offset every cycle "
+      + "(splits must budget each phase's own clearance)")
+  void coordinatedPhaseStartsGreenOnTheOffsetEveryCycle() {
+    // Splits tile the cycle as if they were all green, but real service is green + yellow +
+    // red-clear. Force-offing a phase at its window END rather than its yield point let every
+    // phase overrun by its own clearance, so the coordinated phase began yellow+redClear late
+    // every cycle with nothing to ever take the lateness back -- a permanent offset error that
+    // looked like "the signal never catches up".
+    TrafficSignalProgrammedPhasePlan plan = coordinatedPlan();
+    long cycle = plan.getCoordination().getCycleLength();
+    RingBarrierState rb = new RingBarrierState();
+    TrafficSignalControllerCircuits ckts = RingBarrierStateTest.circuits(4);
+    RingBarrierStateTest.Demand busy = new RingBarrierStateTest.Demand()
+        .veh(2, 1, 0, 0).veh(3, 1, 0, 0);
+
+    int starts = 0;
+    boolean wasGreen = false;
+    // Skip the first cycle: the engine cold-starts at t=0 and the steady state is what matters.
+    for (long t = 0; t <= cycle * 6; t++) {
+      rb.tick(plan, ckts, NO_OVERLAPS, t, busy);
+      ServedMovement m1 = rb.getLastServed(1);
+      boolean green = m1 != null && m1.phaseNumber == 2 && m1.vehicle == VehInterval.GREEN;
+      if (green && !wasGreen && t > cycle) {
+        long local = ((t - plan.getCoordination().getOffset()) % cycle + cycle) % cycle;
+        long error = Math.min(local, cycle - local);
+        starts++;
+        assertTrue(error <= 20L,
+            "coordinated phase 2 went green at localCycle=" + local + " (t=" + t + "), "
+                + error + " ticks off the offset — it must start at the top of the cycle");
+      }
+      wasGreen = green;
+    }
+    // Exactly one coordinated-phase green per cycle: no runt/extra services.
+    assertEquals(5, starts,
+        "expected one coordinated-phase green per cycle over 5 steady-state cycles");
   }
 }

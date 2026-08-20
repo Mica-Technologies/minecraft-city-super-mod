@@ -136,12 +136,17 @@ public class RingBarrierState {
       new boolean[TrafficSignalProgrammedPhasePlan.PHASE_COUNT + 1];
   /**
    * Coordination permissive-window acceptance, by phase number: set when a phase's demand
-   * registers while its permissive window is open, and held until the phase is served or its
-   * demand drops. Serving an accepted call takes real time (the coordinated phases' rest-in-walk
-   * pedestrian clearance alone can outlast a tight window), so acceptance must survive the window
-   * closing — re-gating on the open window each tick would erase the call mid-sequence and the
-   * side street would never be served (the mains would recycle WALK &rarr; FDW &rarr; WALK every
-   * cycle instead).
+   * registers while its permissive window is open, and held until the phase is served, its demand
+   * drops, or it is forced off. Serving an accepted call takes real time (the coordinated phases'
+   * rest-in-walk pedestrian clearance alone can outlast a tight window), so acceptance must
+   * survive the window closing — re-gating on the open window each tick would erase the call
+   * mid-sequence and the side street would never be served (the mains would recycle WALK &rarr;
+   * FDW &rarr; WALK every cycle instead).
+   *
+   * <p>It must not survive a <em>force-off</em>, though: that means the phase's window closed while
+   * it was being served, so it has had its turn. Under continuous demand the latch would otherwise
+   * never clear (the "demand drops" condition never fires), leaving a standing side-street call
+   * through the whole of the mains' green and pulling the controller off its offset for good.</p>
    */
   private final boolean[] windowAccepted =
       new boolean[TrafficSignalProgrammedPhasePlan.PHASE_COUNT + 1];
@@ -150,6 +155,8 @@ public class RingBarrierState {
   private static final int PHASE_SLOTS = TrafficSignalProgrammedPhasePlan.PHASE_COUNT + 1;
   private boolean coordinated = false;
   private long localCycle = 0L;
+  /** Coordination cycle length in ticks for this tick's plan; 1 when not coordinated. */
+  private long cycleTicks = 1L;
   private final long[] windowStart = new long[PHASE_SLOTS];
   private final long[] windowEnd = new long[PHASE_SLOTS];
   private final boolean[] coordPhase = new boolean[PHASE_SLOTS];
@@ -605,16 +612,16 @@ public class RingBarrierState {
         boolean maxOut = !ring.resting && !isCoord && ring.maxStart >= 0L
             && (now - ring.maxStart) >= effMaxGreen && pedDone;
         boolean gapOut = (now - ring.lastActuation) >= effPassage;
-        // Coordinated force-off: a non-coordinated phase must end when its permissive window
-        // closes. Tested via windowOpen — not a windowEnd comparison, which the last window in
-        // each ring (ending exactly at the cycle wrap) could never satisfy — so a phase running
-        // past the wrap, or one served late on a sticky accepted call, is forced off too. Like
-        // max-out, force-off never truncates pedestrian clearance (the walk/FDW finishes first),
-        // and a resting phase is exempt (with no demand anywhere there is nothing to return the
-        // time to). A dual-entry companion is exempt while riding — its own split/force-off apply
-        // only when it is served on its own call; the pair ends via the companion's termination.
+        // Coordinated force-off: a non-coordinated phase must end at its yield point — its window
+        // end less its own clearance — so the next phase's green starts at its window start rather
+        // than a clearance later (see pastYieldPoint, which also covers the cycle wrap and a phase
+        // served outside its window). Like max-out, force-off never truncates pedestrian clearance
+        // (the walk/FDW finishes first), and a resting phase is exempt (with no demand anywhere
+        // there is nothing to return the time to). A dual-entry companion is exempt while riding —
+        // its own split/force-off apply only when it is served on its own call; the pair ends via
+        // the companion's termination.
         boolean forceOff = coordinated && !isCoord && !ring.resting && !ring.dualEntry
-            && !windowOpen(phaseNum) && pedDone;
+            && pastYieldPoint(phaseNum, phase.getYellow() + phase.getRedClear()) && pedDone;
 
         // Terminate on max-out or force-off, or once min green is met, ped clearance is done, the
         // phase has gapped out, and something conflicting is actually waiting (otherwise rest in
@@ -622,6 +629,15 @@ public class RingBarrierState {
         // simply holds green alongside whatever the other ring serves on this barrier.
         boolean terminate = maxOut || forceOff || (minMet && pedDone && gapOut && conflict);
         if (terminate && minMet) {
+          if (forceOff) {
+            // Forcing off consumes the window acceptance: the phase's window has closed, so it has
+            // had its chance this cycle and the remaining time belongs to the coordinated phase.
+            // Without this the acceptance latch survives under continuous demand (it is only
+            // cleared when the demand itself drops), leaving the side street with a standing call
+            // straight through the mains' green — which terminates the coordinated phase after
+            // bare min green and pulls the controller permanently off its offset.
+            windowAccepted[phaseNum] = false;
+          }
           ring.interval = VehInterval.YELLOW;
           ring.intervalStart = now;
           ring.pedServing = false;
@@ -1014,9 +1030,11 @@ public class RingBarrierState {
       coordPhase[i] = false;
     }
     if (!coordinated) {
+      cycleTicks = 1L;
       return;
     }
     long cycle = Math.max(1L, co.getCycleLength());
+    cycleTicks = cycle;
     localCycle = ((now - co.getOffset()) % cycle + cycle) % cycle;
 
     for (int ring = 1; ring <= 2; ring++) {
@@ -1061,6 +1079,63 @@ public class RingBarrierState {
   /** Whether a non-coordinated phase's permissive window is currently open. */
   private boolean windowOpen(int phaseNumber) {
     return localCycle >= windowStart[phaseNumber] && localCycle < windowEnd[phaseNumber];
+  }
+
+  /**
+   * Whether the local cycle has reached a phase's <em>yield point</em>: the end of its permissive
+   * window, less its own clearance ({@code yellow + redClear}). A split is the time the movement
+   * owns end to end — green <em>and</em> its clearance, as on a real controller — so a phase must
+   * begin terminating early enough that the next phase's green starts at its own window start.
+   * Force-offing at the window end instead let every phase overrun by its clearance, which put the
+   * coordinated phase {@code yellow + redClear} ticks late every single cycle with nothing to ever
+   * take the lateness back.
+   *
+   * <p>Measured as a position within the window rather than against {@link #windowEnd} directly:
+   * the last window in each ring ends exactly at the cycle wrap, where a plain {@code localCycle >=
+   * windowEnd} comparison can never be true. Positions wrap, so a phase being served <em>outside</em>
+   * its window (served late on a sticky accepted call, or before the window opens) lands past the
+   * yield point and is forced off at once — the previous behavior of the {@code !windowOpen} test.</p>
+   *
+   * <p>Never returns a yield point below zero, and callers must keep it behind the
+   * {@code terminate && minMet} guard so a split shorter than its own clearance still gets its
+   * minimum green.</p>
+   */
+  private boolean pastYieldPoint(int phaseNumber, long clearance) {
+    long windowLen = windowEnd[phaseNumber] - windowStart[phaseNumber];
+    if (windowLen <= 0L) {
+      return true;
+    }
+    return windowPos(phaseNumber) >= Math.max(0L, windowLen - Math.max(0L, clearance));
+  }
+
+  /**
+   * Whether a phase's permissive window is open for <em>accepting</em> a new call. A call is only
+   * worth accepting while the phase could still be served this cycle, so acceptance closes at the
+   * same yield point that force-off uses — not at the window end.
+   *
+   * <p>Gating acceptance on the window end instead re-granted acceptance to a phase during its own
+   * clearance (its yellow and red-clear still fall inside its window), handing it a standing call
+   * into the next cycle: the coordinated phase was then terminated after bare min green and the
+   * side street ran a runt green outside its window.</p>
+   *
+   * <p>Always leaves at least a one-tick acceptance opportunity, so a split configured shorter than
+   * its own clearance still gets served rather than starving. Minimum green is guaranteed
+   * separately by the {@code terminate && minMet} guard.</p>
+   */
+  private boolean acceptanceOpen(int phaseNumber, long clearance) {
+    long windowLen = windowEnd[phaseNumber] - windowStart[phaseNumber];
+    if (windowLen <= 0L) {
+      return false;
+    }
+    return windowPos(phaseNumber) < Math.max(1L, windowLen - Math.max(0L, clearance));
+  }
+
+  /**
+   * The local cycle's position within a phase's permissive window. Positions wrap, so a local cycle
+   * outside the window yields a position at or beyond the window's length.
+   */
+  private long windowPos(int phaseNumber) {
+    return ((localCycle - windowStart[phaseNumber]) % cycleTicks + cycleTicks) % cycleTicks;
   }
 
   // endregion
@@ -1120,7 +1195,7 @@ public class RingBarrierState {
       windowAccepted[n] = false;
       return false;
     }
-    if (windowOpen(n)) {
+    if (acceptanceOpen(n, phase.getYellow() + phase.getRedClear())) {
       windowAccepted[n] = true;
     }
     return windowAccepted[n];
