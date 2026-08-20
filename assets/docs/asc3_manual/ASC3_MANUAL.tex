@@ -1029,15 +1029,28 @@ Three rules govern the sweep:
 
 \begin{itemize}[nosep]
   \item A \textbf{non-coordinated} phase can be \emph{called} only while the sweep
-        is inside its window, and is \textbf{forced off} the moment the sweep
-        leaves it. Min green always completes first, and a started pedestrian
+        is inside its window, and is \textbf{forced off} at its \textbf{yield
+        point} --- set back from the end of its window by that phase's own yellow
+        and red clearance, so the \emph{next} phase goes green exactly as its own
+        window begins. Min green always completes first, and a started pedestrian
         clearance always finishes.
   \item A \textbf{coordinated} phase is served every cycle with no call, has no
-        max-out, and \emph{rests in green} whenever nothing else may run.
-  \item A split is a \emph{maximum}, not a guarantee: a phase still gaps out early
-        when traffic clears, and the unused remainder reverts to the coordinated
-        phase.
+        max-out, and \emph{rests in green} whenever nothing else may run. It has a
+        yield point of its own (\S\ref{sec:offsets}) and will not give up green
+        before reaching it, even to waiting traffic.
+  \item A split is the whole slice the movement owns --- \emph{green and its
+        clearance}. Within that, the green is a \emph{maximum}, not a guarantee: a
+        phase still gaps out early when traffic clears, and the unused remainder
+        reverts to the coordinated phase.
 \end{itemize}
+
+\begin{warnbox}
+Budget each split to hold its whole phase: minimum green (or walk plus pedestrian
+clearance, whichever is longer), then yellow, then red clearance. A split too
+short to contain its own phase makes the next phase start late on \emph{every}
+cycle --- time no amount of offset correction can give back --- and the
+controller says so once in the game log.
+\end{warnbox}
 
 \subsection{Splits are per-ring proportions}\label{sec:splits}
 
@@ -1203,6 +1216,38 @@ Guidelines:
   \item Offsets wrap: on a 90\,s cycle, 0 and 90 are identical.
 \end{itemize}
 
+\subsubsection*{Getting back on offset}
+
+Things knock a controller off its offset: a preemption parks normal operation, a
+chunk reload rebuilds the ring engine, an operator drops the unit to flash and
+back. The controller then has to walk its cycle back to where the master clock
+says it should be.
+
+It does so by \textbf{dwelling on the coordinated phase}. The coordinated phase
+is the slack in the plan, so all correction is taken there:
+
+\begin{itemize}[nosep]
+  \item It will not surrender green \emph{early}. Until its yield point, gap-out
+        and waiting cross traffic cannot end it --- it holds green, past max
+        green, rather than giving time away and shifting the rest of the cycle.
+  \item A coordinated phase that finds itself \emph{outside} its own window holds
+        green until the yield point comes round again, absorbing the whole error
+        in one long green.
+\end{itemize}
+
+Correction is therefore \textbf{add-only}: it lengthens the coordinated green and
+never shortens a side street's split or a pedestrian interval to catch up. A
+badly displaced controller is back in step within a cycle or two, having only
+ever over-served the arterial.
+
+\begin{tipbox}
+While a controller is recovering, the coordinated green \emph{starts} late and
+runs across the top of the cycle --- so ``phase 2 turned green at 0\,s'' is not
+the test of a healthy plan. What matters is that the coordinated phase is
+\textbf{green at} the offset, and that each side street \textbf{starts} at its own
+split window. Both are true once the controller is in step.
+\end{tipbox}
+
 \subsection{Programming recipe}\label{sec:coordrecipe}
 
 On \screen{COORD}, at each intersection:
@@ -1211,7 +1256,9 @@ On \screen{COORD}, at each intersection:
   \item \field{Cycle} — the shared corridor cycle length.
   \item \field{Offset} — 0 at the reference intersection; travel-time based at the rest.
   \item \field{Splits} — a value for every enabled phase (marked \texttt{*}).
-        Check each ring sums to the cycle; match groups across rings.
+        Check each ring sums to the cycle; match groups across rings. Size each
+        split to hold the phase \emph{and} its clearance: min green (or walk plus
+        ped clearance, whichever is longer), then yellow, then red clear.
   \item \field{COORD} toggles — mark the main-street phases (usually \ph{2}+\ph{6}).
   \item \field{Mode} — flip \texttt{Free} $\to$ \texttt{Coordinated}. The COORD LED
         lights while the plan runs.
@@ -1219,9 +1266,10 @@ On \screen{COORD}, at each intersection:
 
 Supporting settings: \field{Mx2} on \screen{ACT} raises the max green used under
 coordination without loosening free operation; coordinated phases need no recall
-(coordination already serves them every cycle); and WALK + ped clearance must fit
-inside each phase's split or that cycle will run late (safety intervals always
-finish).
+(coordination already serves them every cycle); and WALK + ped clearance + yellow
++ red clear must fit inside each phase's split or that phase will push the next
+one late on every cycle (safety intervals always finish). The controller writes a
+one-line advisory to the game log naming any phase whose split cannot hold it.
 
 \subsection{Worked example}\label{sec:coordexample}
 
@@ -1535,7 +1583,10 @@ trafficsignals}:
 \texttt{TileEntityTrafficSignalController} & The controller block entity; applies
   panel edits (\texttt{applyAdvancedConfig}). \\
 \texttt{logic.RingBarrierState} & The per-tick dual-ring state machine: calls,
-  greens, barriers, coordination windows, dual entry, conditional service. \\
+  greens, barriers, coordination windows, dual entry, conditional service. Yield
+  points and the add-only dwell live here (\texttt{pastYieldPoint},
+  \texttt{acceptanceOpen}, \texttt{coordYieldReached},
+  \texttt{findSplitShortfall}). \\
 \texttt{logic.TrafficSignalProgrammedPhasePlan} & The stored program: phases, ring
   sequences, coordination, preempts, overlaps. \\
 \texttt{logic.TrafficSignalCoordinationPlan} & Cycle/offset/splits/coordinated
