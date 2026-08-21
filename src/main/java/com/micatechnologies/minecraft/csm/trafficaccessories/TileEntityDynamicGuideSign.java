@@ -94,4 +94,12 @@ public class TileEntityDynamicGuideSign extends AbstractTileEntity {
         pos.getX() - 8, pos.getY() - 4, pos.getZ() - 8,
         pos.getX() + 9, pos.getY() + 5, pos.getZ() + 9);
   }
+
+  @Override
+  @SideOnly(Side.CLIENT)
+  public double getMaxRenderDistanceSquared() {
+    // Explicit TESR render distance (vanilla default is also 64 blocks). Traffic
+    // signal heads use 128; raise this to match if signs pop out before signals.
+    return 64.0 * 64.0;
+  }
 }
