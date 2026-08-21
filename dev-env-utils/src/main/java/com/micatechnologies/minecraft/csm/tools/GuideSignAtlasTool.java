@@ -37,6 +37,8 @@ import org.apache.batik.transcoder.image.ImageTranscoder;
  *   <li>Row 7, cols 0-7: State markers (NV, NJ, NM, NC, ND, OH, OK, OR)</li>
  *   <li>Row 8, cols 0-7: State markers (PA, SC, SD, TN, UT, VA, WA, WV)</li>
  *   <li>Row 9, cols 0-1: State markers (WI, WY)</li>
+ *   <li>Row 9, cols 2-7: DC + Canadian province markers (DC, ON, QC, NB, NS, NL)</li>
+ *   <li>Row 10, col 0: Canadian province marker (PE)</li>
  * </ul>
  *
  * <p>Shield SVG sources (public domain MUTCD designs from Wikimedia Commons):
@@ -157,6 +159,17 @@ public class GuideSignAtlasTool {
     drawStateShield(g, 7, 8, makePeakShape(7, 8, true), new Color(0, 40, 85)); // West Virginia
     drawStateShield(g, 0, 9, makeRoundedSquare(0, 9), new Color(155, 27, 48)); // Wisconsin
     drawStateShield(g, 1, 9, makePeakShape(1, 9, true), new Color(28, 63, 110)); // Wyoming
+
+    // Washington DC + Canadian provinces — programmatic approximations styled
+    // after each jurisdiction's real route marker (DC flag bars, Ontario's
+    // white King's Highway crest, Quebec's blue Autoroute band, etc).
+    drawDcShield(g, 2, 9);          // District of Columbia
+    drawOntarioShield(g, 3, 9);     // Ontario
+    drawQuebecShield(g, 4, 9);      // Quebec
+    drawStateShield(g, 5, 9, makeRoundedSquare(5, 9), new Color(30, 110, 55));  // New Brunswick
+    drawStateShield(g, 6, 9, makePeakShape(6, 9, true), new Color(30, 70, 140)); // Nova Scotia
+    drawStateShield(g, 7, 9, makeWideOval(7, 9), new Color(120, 20, 30));       // Newfoundland and Labrador
+    drawStateShield(g, 0, 10, makeCircle(0, 10), new Color(120, 72, 40));       // Prince Edward Island
   }
 
   // ---- State shield helpers ----
@@ -573,6 +586,88 @@ public class GuideSignAtlasTool {
     g.setColor(new Color(100, 100, 100));
     g.setStroke(new BasicStroke(1.5f));
     g.draw(rect);
+  }
+
+  private static void drawDcShield(Graphics2D g, int col, int row) {
+    // White rounded rectangle with two thin red horizontal bars near the top,
+    // a simplified nod to the DC flag's stars-and-bars motif.
+    int x = col * CELL_SIZE;
+    int y = row * CELL_SIZE;
+    int s = CELL_SIZE;
+    int m = 6;
+
+    RoundRectangle2D outer = new RoundRectangle2D.Float(
+        x + m, y + m, s - m * 2, s - m * 2, 8, 8);
+    g.setColor(Color.WHITE);
+    g.fill(outer);
+
+    g.setColor(new Color(178, 34, 52));
+    float barX = x + m + 6;
+    float barW = s - m * 2 - 12;
+    g.fill(new java.awt.geom.Rectangle2D.Float(barX, y + m + 8, barW, 4));
+    g.fill(new java.awt.geom.Rectangle2D.Float(barX, y + m + 16, barW, 4));
+
+    g.setColor(new Color(20, 20, 20));
+    g.setStroke(new BasicStroke(2.5f));
+    g.draw(outer);
+  }
+
+  private static Shape makeOntarioCrestShape(int col, int row) {
+    // Shield crest: flat top, sides curving inward to a point at the bottom —
+    // evokes Ontario's white King's Highway marker silhouette.
+    int x = col * CELL_SIZE;
+    int y = row * CELL_SIZE;
+    int s = CELL_SIZE;
+    int m = 6;
+    GeneralPath p = new GeneralPath();
+    p.moveTo(x + m, y + m);
+    p.lineTo(x + s - m, y + m);
+    p.curveTo(x + s - m, y + s * 0.55, x + s * 0.72, y + s * 0.85, x + s / 2.0, y + s - m);
+    p.curveTo(x + s * 0.28, y + s * 0.85, x + m, y + s * 0.55, x + m, y + m);
+    p.closePath();
+    return p;
+  }
+
+  private static void drawOntarioShield(Graphics2D g, int col, int row) {
+    int x = col * CELL_SIZE;
+    int y = row * CELL_SIZE;
+    int s = CELL_SIZE;
+    int m = 6;
+
+    Shape crest = makeOntarioCrestShape(col, row);
+    g.setColor(Color.WHITE);
+    g.fill(crest);
+
+    Area band = new Area(new java.awt.geom.Rectangle2D.Float(x, y + m + 4, s, 6));
+    band.intersect(new Area(crest));
+    g.setColor(new Color(0, 100, 55));
+    g.fill(band);
+
+    g.setColor(new Color(20, 20, 20));
+    g.setStroke(new BasicStroke(2.5f));
+    g.draw(crest);
+  }
+
+  private static void drawQuebecShield(Graphics2D g, int col, int row) {
+    // White rounded square with a blue top band — Quebec's Autoroute markers
+    // are blue/white, and the band alone reads as distinctly Quebec at 64px.
+    int x = col * CELL_SIZE;
+    int y = row * CELL_SIZE;
+    int s = CELL_SIZE;
+    int m = 6;
+
+    Shape square = makeRoundedSquare(col, row);
+    g.setColor(Color.WHITE);
+    g.fill(square);
+
+    Area band = new Area(new java.awt.geom.Rectangle2D.Float(x, y + m, s, 12));
+    band.intersect(new Area(square));
+    g.setColor(new Color(35, 70, 160));
+    g.fill(band);
+
+    g.setColor(new Color(20, 20, 20));
+    g.setStroke(new BasicStroke(2.5f));
+    g.draw(square);
   }
 
   // ---- Arrow drawing ----

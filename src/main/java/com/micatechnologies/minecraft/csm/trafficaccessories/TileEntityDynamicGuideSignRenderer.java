@@ -52,6 +52,9 @@ public class TileEntityDynamicGuideSignRenderer
   private static final float BANNER_CELL_PADDING = 2.0f;
   private static final float EXIT_TAB_HEIGHT = 8.0f;
   private static final float EXIT_TAB_PADDING = 3.0f;
+  private static final float EXIT_TAB_PADDING_WIDE = 9.0f;
+  // Margin the white backing plate extends past the shield graphic on each side.
+  private static final float SHIELD_BACK_MARGIN = 0.75f;
   private static final float PANEL_GAP = 4.0f;
   private static final float PANEL_DIVIDER_THICKNESS = 0.7f;
   private static final float DIVIDER_ELEMENT_WIDTH = 0.8f;
@@ -76,8 +79,11 @@ public class TileEntityDynamicGuideSignRenderer
   private static final float BANNER_AREA_HEIGHT = 5.5f;
 
   // Arrow-per-lane (MUTCD APL) band, drawn below a panel's rows: one up arrow per lane,
-  // evenly pitched across the sign's content width.
-  private static final float APL_HEIGHT = 15.0f;
+  // evenly pitched across the sign's content width. The band is zoned vertically:
+  // arrows live in the top zone, and the bottom APL_TEXT_ZONE strip is reserved for the
+  // EXIT ONLY legend so text and arrow tails can never overlap.
+  private static final float APL_HEIGHT = 18.0f;
+  private static final float APL_TEXT_ZONE = 4.5f;
   private static final float APL_ARROW_WIDTH = 9.0f;
   // Minimum horizontal room reserved per lane, so the sign widens instead of cramming
   // arrows together. Consumed by computeTotalSignWidth.
@@ -371,7 +377,8 @@ public class TileEntityDynamicGuideSignRenderer
     }
 
     float tabTextW = GuideSignFontRenderer.getStringWidth(tabText, EXIT_TAB_CAP_HEIGHT);
-    float tabWidth = tabTextW + EXIT_TAB_PADDING * 2;
+    float tabPad = tab.isWide() ? EXIT_TAB_PADDING_WIDE : EXIT_TAB_PADDING;
+    float tabWidth = tabTextW + tabPad * 2;
     float tabHeight = EXIT_TAB_HEIGHT;
 
     float tabX;
@@ -534,8 +541,11 @@ public class TileEntityDynamicGuideSignRenderer
 
     float[] uv = GuideSignAtlas.getArrowUV(GuideSignArrowType.UP);
     float halfW = APL_ARROW_WIDTH / 2.0f;
-    float halfH = (APL_HEIGHT - 2.0f) / 2.0f;
-    float centerY = topY - APL_HEIGHT / 2.0f;
+    // Arrows occupy only the zone above the reserved legend strip; with no exit lanes
+    // there is no legend, so they use the full band.
+    float arrowZone = exitLanes > 0 ? APL_HEIGHT - APL_TEXT_ZONE : APL_HEIGHT;
+    float halfH = (arrowZone - 1.5f) / 2.0f;
+    float centerY = topY - arrowZone / 2.0f;
     float qZ = faceZ - 0.3f;
 
     Minecraft.getMinecraft().getTextureManager().bindTexture(GuideSignAtlas.ATLAS_TEXTURE);
@@ -563,8 +573,9 @@ public class TileEntityDynamicGuideSignRenderer
         w = avail;
       }
       GlStateManager.depthMask(false);
+      // Centered in the reserved bottom strip, clear of the arrow tails above it.
       GuideSignFontRenderer.drawString(APL_EXIT_TEXT,
-          patchLeft + patchWidth / 2.0f - w / 2.0f, bandBottom + capPx / 2.0f + 1.0f,
+          patchLeft + patchWidth / 2.0f - w / 2.0f, bandBottom + APL_TEXT_ZONE / 2.0f,
           faceZ - 0.4f, capPx, LEGEND_DARK, worldSkyLight, worldBlockLight);
       GlStateManager.depthMask(true);
     }
@@ -629,10 +640,24 @@ public class TileEntityDynamicGuideSignRenderer
     float shieldCenterY = topY - rowHeight / 2.0f;
     float halfSize = SHIELD_SIZE / 2.0f;
 
-    Minecraft.getMinecraft().getTextureManager().bindTexture(GuideSignAtlas.ATLAS_TEXTURE);
-
     Tessellator tess = Tessellator.getInstance();
     BufferBuilder buf = tess.getBuffer();
+
+    if (elem.hasShieldBack()) {
+      // White backing plate behind the shield graphic (between the sign face at
+      // faceZ - 0.1 and the shield quad at faceZ - 0.3).
+      float m = halfSize + SHIELD_BACK_MARGIN;
+      List<RenderHelper.Box> back = new ArrayList<>();
+      addRectBoxes(back, shieldCenterX - m, shieldCenterY - m, shieldCenterX + m,
+          shieldCenterY + m, faceZ - 0.25f, faceZ - 0.2f, CornerStyle.ROUND);
+      Minecraft.getMinecraft().getTextureManager().bindTexture(WHITE_TEXTURE);
+      buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
+      RenderHelper.addBoxesToBufferLit(back, buf, 0.95f, 0.95f, 0.93f, 1.0f, 0, 0, 0,
+          worldSkyLight, worldBlockLight);
+      tess.draw();
+    }
+
+    Minecraft.getMinecraft().getTextureManager().bindTexture(GuideSignAtlas.ATLAS_TEXTURE);
     buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
 
     float qLeft = shieldCenterX - halfSize;
@@ -899,12 +924,14 @@ public class TileEntityDynamicGuideSignRenderer
     // Only the first panel's exit tab renders; the sign body just needs to be wide
     // enough that the tab (which sits between the sign's side edges) fits.
     if (!panels.isEmpty() && panels.get(0).hasExitTab()) {
-      String tabText = panels.get(0).getExitTab().getText();
+      ExitTabData tab = panels.get(0).getExitTab();
+      String tabText = tab.getText();
       if (tabText == null || tabText.isEmpty()) {
         tabText = "EXIT";
       }
+      float tabPad = tab.isWide() ? EXIT_TAB_PADDING_WIDE : EXIT_TAB_PADDING;
       float tabW = GuideSignFontRenderer.getStringWidth(tabText, EXIT_TAB_CAP_HEIGHT)
-          + EXIT_TAB_PADDING * 2;
+          + tabPad * 2;
       float tabNeed = tabW + PANEL_PADDING_SIDE * 2;
       if (tabNeed > width) {
         width = tabNeed;
