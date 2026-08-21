@@ -36,7 +36,7 @@ GuideSignData                 (root: color, post, border, corner style, min widt
 | Class | Role | Key facts |
 |---|---|---|
 | `GuideSignData` | Root document | `VERSION = 1`, `MAX_PANELS = 4`. Defaults: GREEN, OVERHEAD post, border 1, ROUND corners, `minWidth = 32`. `toJson()` / `fromJson()` via Gson; `fromJson` is defensive (null/empty → fresh default, repairs null lists, never throws). `copy()` = round-trip through JSON. |
-| `GuideSignPanel` | One stacked sign section | `MAX_ROWS = 6`. Holds an optional `ExitTabData`; `enableExitTab()` / `disableExitTab()`. |
+| `GuideSignPanel` | One stacked sign section | `MAX_ROWS = 6`. Holds an optional `ExitTabData`; `enableExitTab()` / `disableExitTab()`. `aplLanes` (0 = off, clamped 0–`MAX_APL_LANES = 8`) turns on an arrow-per-lane band under the panel's rows; `aplExitLanes` (clamped 0–`aplLanes`) marks the rightmost lanes EXIT ONLY. Both absent in older JSON → 0, so existing signs gain no band; lowering `aplLanes` re-clamps `aplExitLanes`. |
 | `GuideSignRow` | A horizontal line of elements | `MAX_ELEMENTS = 5`. `verticalSpacing` clamped 0–16. `alignment` is a `RowAlignment` ordinal (default CENTER). `yellowPatch` (default false) renders the row on a MUTCD "EXIT ONLY"-style yellow band spanning the sign, with dark text and dark-tinted arrows. Element reorder via `moveElementUp/Down`. |
 | `GuideSignElement` | Polymorphic cell | Type constants `TYPE_TEXT=0`, `TYPE_SHIELD=1`, `TYPE_ARROW=2`, `TYPE_DIVIDER=3`, `TYPE_SPACING=4`. Factory methods `createText/createShield/createArrow/createDivider/createSpacing`. `textScale` clamped 0.5–2.0, `spacingWidth` clamped 1–32. |
 | `GuideSignColor` | FHWA sign colors | 7 values with normalized RGB floats: GREEN, BLUE, BROWN, YELLOW, WHITE, BLACK, PURPLE. |
@@ -189,6 +189,22 @@ floor of `data.getMinWidth()` (user-settable 16–96). `computeTotalSignHeight` 
 `ROW_HEIGHT + ROW_SPACING + verticalSpacing` (plus `BANNER_AREA_HEIGHT` for banner rows), adds top
 / bottom padding, panel gaps, and `2 × borderInset`, then clamps to a floor of 16.
 
+**Arrow-per-lane (APL) band.** A panel with `aplLanes > 0` gets a band under its rows, drawn by
+`renderAplBand` before the next panel's divider: one atlas `GuideSignArrowType.UP` arrow per lane,
+`APL_ARROW_WIDTH = 9` wide by `APL_HEIGHT − 2` tall, centered in each lane slot at a pitch of
+`contentWidth / aplLanes`. The band is `APL_HEIGHT = 15` tall. The rightmost `aplExitLanes` slots sit
+on a `GuideSignColor.YELLOW` patch z-layered behind the arrows (`faceZ − 0.15…−0.05`, arrows at
+`faceZ − 0.3`), with those arrows tinted `0.08` dark; when the patch spans at least
+`APL_EXIT_TEXT_MIN_WIDTH = 20` sign px it carries dark "EXIT ONLY" legend at
+`APL_EXIT_TEXT_CAP_HEIGHT = 2.8` near the patch bottom, shrunk to fit if it would overhang. Because
+lanes need room, `computeTotalSignWidth` floors the content width at
+`aplLanes × APL_LANE_MIN_PITCH (11)`.
+
+The band is subject to the same lockstep rule as rows: the render loop spends exactly
+`ROW_SPACING + APL_HEIGHT` on it (after the trailing-spacing give-back), and
+`computeTotalSignHeight` adds exactly `APL_HEIGHT + ROW_SPACING` for every panel with APL on. Change
+one and you must change the other, or the sign's content drifts off its face.
+
 **ROUND corners.** `addRectBoxes` approximates a rounded corner as two overlapping boxes — a
 horizontal strip and a vertical strip — that leave a `CORNER_STEP`-sized square notch at each of the
 four outer corners. It falls back to a single SHARP box when the style is SHARP or the rectangle is
@@ -216,8 +232,8 @@ when content overflows.
 
 - **Properties** (`TAB_PROPERTIES`): sign color cycle, post type cycle, border +/−, min-width,
   corner style, panel count, template cycle, and copy/paste.
-- **Panel** (`TAB_PANEL`): panel prev/next, exit-tab toggle/position/color/toll/text, scrollable row
-  list with add/remove, and "edit row" which jumps to the Row tab.
+- **Panel** (`TAB_PANEL`): panel prev/next, exit-tab toggle/position/color/toll/text, APL lane and
+  exit-lane steppers, scrollable row list with add/remove, and "edit row" which jumps to the Row tab.
 - **Row** (`TAB_ROW`): row prev/next, vertical-spacing +/−, row-alignment cycle, element list with
   add/remove/up/down, and a contextual editor per element type (text field + scale; shield type +
   route field + banner; arrow type; spacing width).

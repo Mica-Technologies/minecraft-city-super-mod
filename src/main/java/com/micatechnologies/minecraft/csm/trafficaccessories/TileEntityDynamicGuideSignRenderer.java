@@ -75,6 +75,18 @@ public class TileEntityDynamicGuideSignRenderer
   private static final float ROUTE_TEXT_MAX_FRACTION = 0.62f;
   private static final float BANNER_AREA_HEIGHT = 5.5f;
 
+  // Arrow-per-lane (MUTCD APL) band, drawn below a panel's rows: one up arrow per lane,
+  // evenly pitched across the sign's content width.
+  private static final float APL_HEIGHT = 15.0f;
+  private static final float APL_ARROW_WIDTH = 9.0f;
+  // Minimum horizontal room reserved per lane, so the sign widens instead of cramming
+  // arrows together. Consumed by computeTotalSignWidth.
+  private static final float APL_LANE_MIN_PITCH = 11.0f;
+  // An EXIT ONLY patch narrower than this has no room for its legend.
+  private static final float APL_EXIT_TEXT_MIN_WIDTH = 20.0f;
+  private static final float APL_EXIT_TEXT_CAP_HEIGHT = 2.8f;
+  private static final String APL_EXIT_TEXT = "EXIT ONLY";
+
   // Per-step chamfer for ROUND corners. Two stair steps approximate a small radius.
   private static final float CORNER_STEP = 0.6f;
 
@@ -245,6 +257,15 @@ public class TileEntityDynamicGuideSignRenderer
       // spacing BETWEEN rows). Without this the content drifts lower with every panel.
       if (!panel.getRows().isEmpty()) {
         panelY += ROW_SPACING;
+      }
+
+      // Arrow-per-lane band, below the panel's rows. It spends exactly
+      // ROW_SPACING + APL_HEIGHT, which computeTotalSignHeight adds back for any panel
+      // with APL on — keep the two in lockstep.
+      if (panel.hasApl()) {
+        panelY -= ROW_SPACING;
+        renderAplBand(panel, contentLeft, contentRight, panelY, faceZ);
+        panelY -= APL_HEIGHT;
       }
 
       if (pi < panels.size() - 1) {
@@ -475,6 +496,81 @@ public class TileEntityDynamicGuideSignRenderer
     RenderHelper.addBoxesToBufferLit(band, buf, y.getRed(), y.getGreen(), y.getBlue(), 1.0f,
         0, 0, 0, worldSkyLight, worldBlockLight);
     tess.draw();
+  }
+
+  /**
+   * MUTCD arrow-per-lane band: one upward arrow per lane, evenly pitched across the
+   * sign's content width, with the panel's rightmost {@code aplExitLanes} lanes sitting
+   * on an EXIT ONLY yellow patch and drawn in dark legend. The band's top edge is
+   * {@code topY} and it is {@code APL_HEIGHT} tall.
+   */
+  private void renderAplBand(GuideSignPanel panel, float contentLeft, float contentRight,
+      float topY, float faceZ) {
+    int lanes = panel.getAplLanes();
+    if (lanes <= 0) {
+      return;
+    }
+    int exitLanes = Math.max(0, Math.min(lanes, panel.getAplExitLanes()));
+    float pitch = (contentRight - contentLeft) / lanes;
+    float bandBottom = topY - APL_HEIGHT;
+    int firstExitLane = lanes - exitLanes;
+    float patchLeft = contentLeft + firstExitLane * pitch;
+
+    Tessellator tess = Tessellator.getInstance();
+    BufferBuilder buf = tess.getBuffer();
+
+    if (exitLanes > 0) {
+      // Behind the arrows (less negative Z), like the row-level yellow patch.
+      List<RenderHelper.Box> patch = new ArrayList<>();
+      patch.add(new RenderHelper.Box(
+          new float[]{patchLeft, bandBottom, faceZ - 0.15f},
+          new float[]{contentRight, topY, faceZ - 0.05f}));
+      GuideSignColor yellow = GuideSignColor.YELLOW;
+      buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
+      RenderHelper.addBoxesToBufferLit(patch, buf, yellow.getRed(), yellow.getGreen(),
+          yellow.getBlue(), 1.0f, 0, 0, 0, worldSkyLight, worldBlockLight);
+      tess.draw();
+    }
+
+    float[] uv = GuideSignAtlas.getArrowUV(GuideSignArrowType.UP);
+    float halfW = APL_ARROW_WIDTH / 2.0f;
+    float halfH = (APL_HEIGHT - 2.0f) / 2.0f;
+    float centerY = topY - APL_HEIGHT / 2.0f;
+    float qZ = faceZ - 0.3f;
+
+    Minecraft.getMinecraft().getTextureManager().bindTexture(GuideSignAtlas.ATLAS_TEXTURE);
+    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
+    for (int lane = 0; lane < lanes; lane++) {
+      float centerX = contentLeft + (lane + 0.5f) * pitch;
+      // The atlas arrow is white; exit-only lanes tint it near-black over the patch.
+      float tint = lane >= firstExitLane ? 0.08f : 1.0f;
+      // u0 on the left edge: the enclosing transform already un-mirrors pixel space.
+      atlasVertex(buf, centerX + halfW, centerY + halfH, qZ, uv[2], uv[1], tint);
+      atlasVertex(buf, centerX - halfW, centerY + halfH, qZ, uv[0], uv[1], tint);
+      atlasVertex(buf, centerX - halfW, centerY - halfH, qZ, uv[0], uv[3], tint);
+      atlasVertex(buf, centerX + halfW, centerY - halfH, qZ, uv[2], uv[3], tint);
+    }
+    tess.draw();
+
+    float patchWidth = contentRight - patchLeft;
+    if (exitLanes > 0 && patchWidth >= APL_EXIT_TEXT_MIN_WIDTH) {
+      // Shrink to fit so the legend never spills past the patch it labels.
+      float capPx = APL_EXIT_TEXT_CAP_HEIGHT;
+      float w = GuideSignFontRenderer.getStringWidth(APL_EXIT_TEXT, capPx);
+      float avail = patchWidth - 2.0f;
+      if (w > avail) {
+        capPx *= avail / w;
+        w = avail;
+      }
+      GlStateManager.depthMask(false);
+      GuideSignFontRenderer.drawString(APL_EXIT_TEXT,
+          patchLeft + patchWidth / 2.0f - w / 2.0f, bandBottom + capPx / 2.0f + 1.0f,
+          faceZ - 0.4f, capPx, LEGEND_DARK, worldSkyLight, worldBlockLight);
+      GlStateManager.depthMask(true);
+    }
+
+    // Restore white-pixel binding for subsequent untextured geometry passes.
+    Minecraft.getMinecraft().getTextureManager().bindTexture(WHITE_TEXTURE);
   }
 
   private void renderTextElement(GuideSignElement elem,
@@ -753,6 +849,10 @@ public class TileEntityDynamicGuideSignRenderer
       if (!panel.getRows().isEmpty()) {
         h -= ROW_SPACING;
       }
+      // Mirrors exactly what the render loop spends on the arrow-per-lane band.
+      if (panel.hasApl()) {
+        h += APL_HEIGHT + ROW_SPACING;
+      }
       if (pi < panels.size() - 1) {
         h += PANEL_GAP;
       }
@@ -777,6 +877,7 @@ public class TileEntityDynamicGuideSignRenderer
 
   private float computeTotalSignWidth(List<GuideSignPanel> panels, GuideSignData data) {
     float maxRowW = 0;
+    int maxAplLanes = 0;
     for (GuideSignPanel panel : panels) {
       for (GuideSignRow row : panel.getRows()) {
         float rw = computeRowWidth(row, data);
@@ -784,6 +885,15 @@ public class TileEntityDynamicGuideSignRenderer
           maxRowW = rw;
         }
       }
+      if (panel.getAplLanes() > maxAplLanes) {
+        maxAplLanes = panel.getAplLanes();
+      }
+    }
+    // Every lane needs its own slot, so an APL band widens the sign rather than packing
+    // the arrows shoulder to shoulder.
+    float aplW = maxAplLanes * APL_LANE_MIN_PITCH;
+    if (aplW > maxRowW) {
+      maxRowW = aplW;
     }
     float width = maxRowW + PANEL_PADDING_SIDE * 2;
     // Only the first panel's exit tab renders; the sign body just needs to be wide
