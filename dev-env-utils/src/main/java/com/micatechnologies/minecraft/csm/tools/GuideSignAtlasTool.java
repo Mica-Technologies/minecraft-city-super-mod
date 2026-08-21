@@ -170,6 +170,38 @@ public class GuideSignAtlasTool {
     drawStateShield(g, 6, 9, makePeakShape(6, 9, true), new Color(30, 70, 140)); // Nova Scotia
     drawStateShield(g, 7, 9, makeWideOval(7, 9), new Color(120, 20, 30));       // Newfoundland and Labrador
     drawStateShield(g, 0, 10, makeCircle(0, 10), new Color(120, 72, 40));       // Prince Edward Island
+
+    // Alto route markers — provided PNG artwork, used as-is. The 3-digit variants are
+    // wider (693x512); they are stretched to fill the square cell here and the TESR
+    // draws them back at their true aspect (GuideSignShieldType wide-variant support).
+    drawPngShield(g, 1, 10, "shieldalto2.png");
+    drawPngShield(g, 2, 10, "shieldalto3.png");
+    drawPngShield(g, 3, 10, "shieldaltoblue2.png");
+    drawPngShield(g, 4, 10, "shieldaltoblue3.png");
+  }
+
+  private static void drawPngShield(Graphics2D g, int col, int row, String pngFile) {
+    try {
+      String resourcePath = SHIELD_RESOURCE_DIR + pngFile;
+      InputStream pngStream = GuideSignAtlasTool.class.getResourceAsStream(resourcePath);
+      if (pngStream == null) {
+        System.err.println("PNG not found: " + resourcePath + " — falling back to placeholder");
+        drawPlaceholder(g, col, row);
+        return;
+      }
+      BufferedImage img = ImageIO.read(pngStream);
+      pngStream.close();
+      int x = col * CELL_SIZE;
+      int y = row * CELL_SIZE;
+      int target = CELL_SIZE - SHIELD_PADDING * 2;
+      // Fill the padded cell fully (aspect restored at render time for wide variants).
+      g.drawImage(img, x + SHIELD_PADDING, y + SHIELD_PADDING, target, target, null);
+      System.out.println("  Rendered PNG: " + pngFile + " (" + img.getWidth() + "x"
+          + img.getHeight() + ")");
+    } catch (Exception e) {
+      System.err.println("Failed to render PNG " + pngFile + ": " + e.getMessage());
+      drawPlaceholder(g, col, row);
+    }
   }
 
   // ---- State shield helpers ----
