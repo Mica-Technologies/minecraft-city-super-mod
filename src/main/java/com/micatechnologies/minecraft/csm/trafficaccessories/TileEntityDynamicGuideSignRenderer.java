@@ -94,6 +94,11 @@ public class TileEntityDynamicGuideSignRenderer
   // Per-step chamfer for ROUND corners. Two stair steps approximate a small radius.
   private static final float CORNER_STEP = 0.6f;
 
+  // Beyond this camera distance the sign renders as a cheap LOD (body, back, and
+  // posts only — no text, shields, or arrows). The TE's render distance is 128 to
+  // match traffic signals; full detail is unreadable past ~64 blocks anyway.
+  private static final double LOD_FULL_DETAIL_DIST_SQ = 64.0 * 64.0;
+
   private static final int LEGEND_DARK = 0x101010;
   private static final int LEGEND_WHITE = 0xFFFFFF;
 
@@ -159,7 +164,10 @@ public class TileEntityDynamicGuideSignRenderer
     GlStateManager.translate(16.0f, 0.0f, 0.0f);
     GlStateManager.scale(-1.0f, 1.0f, 1.0f);
 
-    renderSign(data);
+    // x/y/z are camera-relative, so this is the squared camera distance. Past the
+    // full-detail range, draw the cheap silhouette LOD.
+    boolean farLod = x * x + y * y + z * z > LOD_FULL_DETAIL_DIST_SQ;
+    renderSign(data, farLod);
 
     GlStateManager.popMatrix();
   }
@@ -173,7 +181,7 @@ public class TileEntityDynamicGuideSignRenderer
   public void renderForGui(GuideSignData data) {
     worldSkyLight = 240;
     worldBlockLight = 240;
-    renderSign(data);
+    renderSign(data, false);
   }
 
   /** {width, height} of the sign body in sign pixels, for preview fit math. */
@@ -183,7 +191,7 @@ public class TileEntityDynamicGuideSignRenderer
         computeTotalSignHeight(data.getPanels(), data)};
   }
 
-  private void renderSign(GuideSignData data) {
+  private void renderSign(GuideSignData data, boolean farLod) {
     GuideSignColor signColor = data.getSignColor();
     int borderWidth = data.getBorderWidth();
     CornerStyle cornerStyle = data.getCornerStyle();
@@ -217,6 +225,19 @@ public class TileEntityDynamicGuideSignRenderer
 
     renderSignBackground(signLeft, signBottom, totalSignWidth, totalSignHeight,
         faceZ, signColor, borderWidth, cornerStyle, legendR, legendG, legendB);
+
+    // Far LOD (64-128 blocks): just the body silhouette and posts. Legend detail is
+    // unreadable at that distance and the font/atlas passes are the expensive part.
+    if (farLod) {
+      renderPost(data.getPostType(), signLeft, signBottom, totalSignWidth, faceZ);
+      GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
+      GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+      GlStateManager.enableLighting();
+      GL11.glEnable(GL11.GL_LIGHTING);
+      GlStateManager.enableCull();
+      GlStateManager.disableBlend();
+      return;
+    }
 
     float borderInset = borderWidth > 0 ? borderWidth * BORDER_INSET : 0;
     float contentLeft = signLeft + PANEL_PADDING_SIDE + borderInset;
