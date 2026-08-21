@@ -680,11 +680,13 @@ public class TileEntityDynamicGuideSignRenderer
     float[] uvThrough = GuideSignAtlas.getArrowUV(panel.getAplArrowType());
     float[] uvExit = GuideSignAtlas.getArrowUV(panel.getAplExitArrowType());
     float halfW = APL_ARROW_WIDTH * s / 2.0f;
-    // Arrows occupy only the zone above the reserved legend strip; with no exit lanes
-    // there is no legend, so they use the full band.
+    // Exit arrows occupy only the zone above the reserved legend strip; through arrows
+    // (which have no legend below them) center on the FULL band height, so their
+    // middles line up with the exit section's overall middle.
     float arrowZone = exitLanes > 0 ? bandHeight - APL_TEXT_ZONE * s : bandHeight;
     float halfH = (arrowZone - 1.5f * s) / 2.0f;
-    float centerY = topY - arrowZone / 2.0f;
+    float exitCenterY = topY - arrowZone / 2.0f;
+    float throughCenterY = topY - bandHeight / 2.0f;
     float qZ = faceZ - 0.3f;
 
     Minecraft.getMinecraft().getTextureManager().bindTexture(GuideSignAtlas.ATLAS_TEXTURE);
@@ -695,6 +697,7 @@ public class TileEntityDynamicGuideSignRenderer
       boolean isExit = exitLanes > 0 && lane >= firstExitLane && lane <= lastExitLane;
       float tint = isExit ? 0.08f : 1.0f;
       float[] uv = isExit ? uvExit : uvThrough;
+      float centerY = isExit ? exitCenterY : throughCenterY;
       // u0 on the left edge: the enclosing transform already un-mirrors pixel space.
       atlasVertex(buf, centerX + halfW, centerY + halfH, qZ, uv[2], uv[1], tint);
       atlasVertex(buf, centerX - halfW, centerY + halfH, qZ, uv[0], uv[1], tint);
