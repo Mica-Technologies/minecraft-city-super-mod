@@ -112,6 +112,11 @@ public class TileEntityDynamicGuideSignRenderer
   private int worldSkyLight;
   private int worldBlockLight;
 
+  // Uniform content scale for the sign being rendered (1.0 unless auto-fit is on).
+  // Set by computeContentScale before any layout math; every content metric (text,
+  // shields, arrows, spacing, exit tab) multiplies by it, in COMPUTE AND RENDER BOTH.
+  private float contentScale = 1.0f;
+
   private static final ResourceLocation WHITE_TEXTURE =
       new ResourceLocation("csm", "textures/blocks/white1px.png");
 
@@ -189,6 +194,7 @@ public class TileEntityDynamicGuideSignRenderer
 
   /** {width, height} of the sign body in sign pixels, for preview fit math. */
   public float[] computeSignDimensions(GuideSignData data) {
+    contentScale = computeContentScale(data);
     float width = computeTotalSignWidth(data.getPanels(), data);
     float borderInset =
         data.getBorderWidth() > 0 ? data.getBorderWidth() * BORDER_INSET : 0;
@@ -198,7 +204,41 @@ public class TileEntityDynamicGuideSignRenderer
     return new float[]{width, height};
   }
 
+  /**
+   * The auto-fit content scale for this sign: 1.0 when auto-fit is off; otherwise the
+   * factor that grows the content to fill whichever of min-width/min-height actually
+   * exceeds the natural size (the smaller ratio when both do, so nothing overflows).
+   * Paddings and gaps don't scale, so the result lands slightly under the target and
+   * the min-height surplus centering absorbs the rest.
+   */
+  public float computeContentScale(GuideSignData data) {
+    if (!data.isAutoFit()) {
+      return 1.0f;
+    }
+    contentScale = 1.0f;
+    List<GuideSignPanel> panels = data.getPanels();
+    float naturalW = computeNaturalSignWidth(panels, data);
+    float borderInset =
+        data.getBorderWidth() > 0 ? data.getBorderWidth() * BORDER_INSET : 0;
+    float naturalH = computeNaturalSignHeight(panels, data,
+        naturalW - 2 * (PANEL_PADDING_SIDE + borderInset));
+    float ws = data.getMinWidth() / Math.max(1.0f, naturalW);
+    float hs = data.getMinHeight() / Math.max(1.0f, naturalH);
+    float s = Float.MAX_VALUE;
+    if (ws > 1.0f) {
+      s = Math.min(s, ws);
+    }
+    if (hs > 1.0f) {
+      s = Math.min(s, hs);
+    }
+    if (s == Float.MAX_VALUE) {
+      return 1.0f;
+    }
+    return Math.min(8.0f, s);
+  }
+
   private void renderSign(GuideSignData data, boolean farLod) {
+    contentScale = computeContentScale(data);
     GuideSignColor signColor = data.getSignColor();
     int borderWidth = data.getBorderWidth();
     CornerStyle cornerStyle = data.getCornerStyle();
@@ -272,7 +312,7 @@ public class TileEntityDynamicGuideSignRenderer
       List<GuideSignRow> panelRows = panel.getRows();
       for (int ri = 0; ri < panelRows.size(); ri++) {
         GuideSignRow row = panelRows.get(ri);
-        panelY -= row.getVerticalSpacing();
+        panelY -= row.getVerticalSpacing() * contentScale;
 
         float bannerExtra = rowBannerExtra(row);
         panelY -= bannerExtra;
@@ -424,18 +464,21 @@ public class TileEntityDynamicGuideSignRenderer
       tabText = "EXIT";
     }
 
-    float tabTextW = GuideSignFontRenderer.getStringWidth(tabText, EXIT_TAB_CAP_HEIGHT);
-    float tabPad = tab.isWide() ? EXIT_TAB_PADDING_WIDE : EXIT_TAB_PADDING;
+    // The tab scales with the sign's auto-fit content scale, like all other legend.
+    float tabCap = EXIT_TAB_CAP_HEIGHT * contentScale;
+    float tabTextW = GuideSignFontRenderer.getStringWidth(tabText, tabCap);
+    float tabPad = (tab.isWide() ? EXIT_TAB_PADDING_WIDE : EXIT_TAB_PADDING) * contentScale;
     float tabWidth = tabTextW + tabPad * 2;
     // Toll exits get a purple TOLL segment prepended to the tab.
+    float tollCap = EXIT_TAB_TOLL_CAP_HEIGHT * contentScale;
     float tollSegW = 0;
     float tollTextW = 0;
     if (tab.isToll()) {
-      tollTextW = GuideSignFontRenderer.getStringWidth("TOLL", EXIT_TAB_TOLL_CAP_HEIGHT);
-      tollSegW = tollTextW + EXIT_TAB_TOLL_PADDING * 2;
+      tollTextW = GuideSignFontRenderer.getStringWidth("TOLL", tollCap);
+      tollSegW = tollTextW + EXIT_TAB_TOLL_PADDING * 2 * contentScale;
       tabWidth += tollSegW;
     }
-    float tabHeight = EXIT_TAB_HEIGHT;
+    float tabHeight = EXIT_TAB_HEIGHT * contentScale;
 
     float tabX;
     switch (tab.getPosition()) {
@@ -513,7 +556,7 @@ public class TileEntityDynamicGuideSignRenderer
       GlStateManager.depthMask(false);
       GuideSignFontRenderer.drawString("TOLL",
           tabX + tollSegW / 2.0f - tollTextW / 2.0f, tabBottom + tabHeight / 2.0f,
-          tabFaceZ - 0.1f, EXIT_TAB_TOLL_CAP_HEIGHT, LEGEND_WHITE,
+          tabFaceZ - 0.1f, tollCap, LEGEND_WHITE,
           worldSkyLight, worldBlockLight);
       GlStateManager.depthMask(true);
     }
@@ -523,7 +566,7 @@ public class TileEntityDynamicGuideSignRenderer
     int tabTextColor = tabColor.isLight() ? LEGEND_DARK : LEGEND_WHITE;
     GlStateManager.depthMask(false);
     GuideSignFontRenderer.drawString(tabText, textCenterX - tabTextW / 2.0f, textCenterY,
-        tabFaceZ - 0.1f, EXIT_TAB_CAP_HEIGHT, tabTextColor, worldSkyLight, worldBlockLight);
+        tabFaceZ - 0.1f, tabCap, tabTextColor, worldSkyLight, worldBlockLight);
     GlStateManager.depthMask(true);
 
     // Restore the white-pixel binding for subsequent untextured geometry passes.
@@ -548,22 +591,23 @@ public class TileEntityDynamicGuideSignRenderer
       switch (elem.getType()) {
         case GuideSignElement.TYPE_TEXT:
           renderTextElement(elem, curX, topY, rowHeight, faceZ, textColor);
-          curX += getTextWidth(elem) + ELEMENT_SPACING;
+          curX += getTextWidth(elem) + ELEMENT_SPACING * contentScale;
           break;
         case GuideSignElement.TYPE_SHIELD:
           renderShieldElement(elem, curX, topY, rowHeight, faceZ, textColor);
-          curX += getShieldWidth(elem) + ELEMENT_SPACING;
+          curX += getShieldWidth(elem) + ELEMENT_SPACING * contentScale;
           break;
         case GuideSignElement.TYPE_ARROW:
           renderArrowElement(elem, curX, topY, rowHeight, faceZ, arrowTint);
-          curX += ARROW_SIZE * elem.getTextScale() + ELEMENT_SPACING;
+          curX += ARROW_SIZE * elem.getTextScale() * contentScale
+              + ELEMENT_SPACING * contentScale;
           break;
         case GuideSignElement.TYPE_DIVIDER:
           renderDividerElement(curX, topY, rowHeight, faceZ, barR, barG, barB);
-          curX += DIVIDER_ELEMENT_WIDTH + ELEMENT_SPACING;
+          curX += (DIVIDER_ELEMENT_WIDTH + ELEMENT_SPACING) * contentScale;
           break;
         case GuideSignElement.TYPE_SPACING:
-          curX += elem.getSpacingWidth();
+          curX += elem.getSpacingWidth() * contentScale;
           break;
       }
     }
@@ -688,7 +732,7 @@ public class TileEntityDynamicGuideSignRenderer
       return;
     }
 
-    float capPx = TEXT_CAP_HEIGHT * elem.getTextScale();
+    float capPx = TEXT_CAP_HEIGHT * elem.getTextScale() * contentScale;
     float centerY = topY - rowHeight / 2.0f;
 
     GlStateManager.depthMask(false);
@@ -707,7 +751,7 @@ public class TileEntityDynamicGuideSignRenderer
     List<RenderHelper.Box> bar = new ArrayList<>();
     bar.add(new RenderHelper.Box(
         new float[]{x, topY - rowHeight, faceZ - 0.2f},
-        new float[]{x + DIVIDER_ELEMENT_WIDTH, topY, faceZ - 0.1f}));
+        new float[]{x + DIVIDER_ELEMENT_WIDTH * contentScale, topY, faceZ - 0.1f}));
     buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
     RenderHelper.addBoxesToBufferLit(bar, buf, legendR, legendG, legendB, 1.0f, 0, 0, 0,
         worldSkyLight, worldBlockLight);
@@ -722,9 +766,9 @@ public class TileEntityDynamicGuideSignRenderer
     boolean wide = shieldType.usesWideVariant(elem.getRouteNumber());
     float[] uv = wide ? GuideSignAtlas.getShieldWideUV(shieldType)
         : GuideSignAtlas.getShieldUV(shieldType);
-    // The element's scale sizes the whole shield (like textScale does for text), so
-    // gigantic signs can carry proportionally large markers.
-    float sSize = SHIELD_SIZE * elem.getTextScale();
+    // The element's scale (times the sign's auto-fit scale) sizes the whole shield,
+    // so gigantic signs can carry proportionally large markers.
+    float sSize = SHIELD_SIZE * elem.getTextScale() * contentScale;
     float shieldW = wide ? sSize * shieldType.getWideAspect() : sSize;
 
     // The cell may be wider than the shield: an ABOVE banner wider than the shield
@@ -808,7 +852,7 @@ public class TileEntityDynamicGuideSignRenderer
         // Centered in the row's reserved banner zone, which sits ABOVE the row's
         // content band and scales with the element (see rowBannerExtra).
         bannerLeftX = shieldCenterX - w / 2.0f;
-        bannerY = topY + BANNER_AREA_HEIGHT * elem.getTextScale() / 2.0f;
+        bannerY = topY + BANNER_AREA_HEIGHT * elem.getTextScale() * contentScale / 2.0f;
       } else if (bannerPos == BannerPosition.LEFT) {
         bannerLeftX = x;
         bannerY = shieldCenterY;
@@ -831,7 +875,7 @@ public class TileEntityDynamicGuideSignRenderer
     GuideSignArrowType arrowType = elem.getGuideSignArrowType();
     float[] uv = GuideSignAtlas.getArrowUV(arrowType);
 
-    float aSize = ARROW_SIZE * elem.getTextScale();
+    float aSize = ARROW_SIZE * elem.getTextScale() * contentScale;
     float centerX = x + aSize / 2.0f;
     float centerY = topY - rowHeight / 2.0f;
     float halfSize = aSize / 2.0f;
@@ -944,22 +988,23 @@ public class TileEntityDynamicGuideSignRenderer
    */
   private float computeRowHeight(GuideSignRow row) {
     if (row.getElements().isEmpty()) {
-      return ROW_HEIGHT;
+      return ROW_HEIGHT * contentScale;
     }
-    float h = ROW_MIN_HEIGHT;
+    float h = ROW_MIN_HEIGHT * contentScale;
     for (GuideSignElement elem : row.getElements()) {
+      float es = elem.getTextScale() * contentScale;
       switch (elem.getType()) {
         case GuideSignElement.TYPE_TEXT:
-          float th = TEXT_CAP_HEIGHT * elem.getTextScale() * TEXT_VISUAL_FACTOR + TEXT_LEADING;
+          float th = TEXT_CAP_HEIGHT * es * TEXT_VISUAL_FACTOR + TEXT_LEADING;
           if (th > h) {
             h = th;
           }
           break;
         case GuideSignElement.TYPE_SHIELD:
-          h = Math.max(h, SHIELD_SIZE * elem.getTextScale());
+          h = Math.max(h, SHIELD_SIZE * es);
           break;
         case GuideSignElement.TYPE_ARROW:
-          h = Math.max(h, ARROW_SIZE * elem.getTextScale());
+          h = Math.max(h, ARROW_SIZE * es);
           break;
         default:
           break;
@@ -988,7 +1033,7 @@ public class TileEntityDynamicGuideSignRenderer
     for (int pi = 0; pi < panels.size(); pi++) {
       GuideSignPanel panel = panels.get(pi);
       for (GuideSignRow row : panel.getRows()) {
-        h += computeRowHeight(row) + ROW_SPACING + row.getVerticalSpacing();
+        h += computeRowHeight(row) + ROW_SPACING + row.getVerticalSpacing() * contentScale;
         h += rowBannerExtra(row);
       }
       if (!panel.getRows().isEmpty()) {
@@ -1018,13 +1063,19 @@ public class TileEntityDynamicGuideSignRenderer
       if (e.getType() == GuideSignElement.TYPE_SHIELD
           && !e.getGuideSignBannerType().getBannerText().isEmpty()
           && e.getBannerPosition() == BannerPosition.ABOVE) {
-        extra = Math.max(extra, BANNER_AREA_HEIGHT * e.getTextScale());
+        extra = Math.max(extra, BANNER_AREA_HEIGHT * e.getTextScale() * contentScale);
       }
     }
     return extra;
   }
 
   private float computeTotalSignWidth(List<GuideSignPanel> panels, GuideSignData data) {
+    return Math.max((float) data.getMinWidth(), computeNaturalSignWidth(panels, data));
+  }
+
+  // Content-driven width (paddings and border included) with no min-width floor;
+  // the auto-fit scale is derived from this, so it must respect contentScale.
+  private float computeNaturalSignWidth(List<GuideSignPanel> panels, GuideSignData data) {
     float maxRowW = 0;
     int maxAplLanes = 0;
     for (GuideSignPanel panel : panels) {
@@ -1054,12 +1105,13 @@ public class TileEntityDynamicGuideSignRenderer
         tabText = "EXIT";
       }
       float tabPad = tab.isWide() ? EXIT_TAB_PADDING_WIDE : EXIT_TAB_PADDING;
-      float tabW = GuideSignFontRenderer.getStringWidth(tabText, EXIT_TAB_CAP_HEIGHT)
-          + tabPad * 2;
+      float tabW = GuideSignFontRenderer.getStringWidth(tabText,
+          EXIT_TAB_CAP_HEIGHT * contentScale) + tabPad * 2 * contentScale;
       if (tab.isToll()) {
         // Must match renderExitTab's TOLL segment width.
-        tabW += GuideSignFontRenderer.getStringWidth("TOLL", EXIT_TAB_TOLL_CAP_HEIGHT)
-            + EXIT_TAB_TOLL_PADDING * 2;
+        tabW += GuideSignFontRenderer.getStringWidth("TOLL",
+            EXIT_TAB_TOLL_CAP_HEIGHT * contentScale)
+            + EXIT_TAB_TOLL_PADDING * 2 * contentScale;
       }
       float tabNeed = tabW + PANEL_PADDING_SIDE * 2;
       if (tabNeed > width) {
@@ -1067,14 +1119,14 @@ public class TileEntityDynamicGuideSignRenderer
       }
     }
     float borderInset = data.getBorderWidth() > 0 ? data.getBorderWidth() * BORDER_INSET : 0;
-    return Math.max((float) data.getMinWidth(), width + 2 * borderInset);
+    return width + 2 * borderInset;
   }
 
   private float computeRowWidth(GuideSignRow row, GuideSignData data) {
     float w = 0;
     for (int i = 0; i < row.getElements().size(); i++) {
       if (i > 0) {
-        w += ELEMENT_SPACING;
+        w += ELEMENT_SPACING * contentScale;
       }
       GuideSignElement elem = row.getElements().get(i);
       switch (elem.getType()) {
@@ -1085,13 +1137,13 @@ public class TileEntityDynamicGuideSignRenderer
           w += getShieldWidth(elem);
           break;
         case GuideSignElement.TYPE_ARROW:
-          w += ARROW_SIZE * elem.getTextScale();
+          w += ARROW_SIZE * elem.getTextScale() * contentScale;
           break;
         case GuideSignElement.TYPE_DIVIDER:
-          w += DIVIDER_ELEMENT_WIDTH;
+          w += DIVIDER_ELEMENT_WIDTH * contentScale;
           break;
         case GuideSignElement.TYPE_SPACING:
-          w += elem.getSpacingWidth();
+          w += elem.getSpacingWidth() * contentScale;
           break;
       }
     }
@@ -1103,12 +1155,13 @@ public class TileEntityDynamicGuideSignRenderer
     if (text == null || text.isEmpty()) {
       return 0;
     }
-    return GuideSignFontRenderer.getStringWidth(text, TEXT_CAP_HEIGHT * elem.getTextScale());
+    return GuideSignFontRenderer.getStringWidth(text,
+        TEXT_CAP_HEIGHT * elem.getTextScale() * contentScale);
   }
 
   private float getShieldWidth(GuideSignElement elem) {
     GuideSignShieldType type = elem.getGuideSignShieldType();
-    float sSize = SHIELD_SIZE * elem.getTextScale();
+    float sSize = SHIELD_SIZE * elem.getTextScale() * contentScale;
     float w = type.usesWideVariant(elem.getRouteNumber())
         ? sSize * type.getWideAspect()
         : sSize;
