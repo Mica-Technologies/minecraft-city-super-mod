@@ -95,7 +95,8 @@ public class GuideSignElement {
   }
 
   public void setTextScale(float textScale) {
-    this.textScale = Math.max(0.5f, Math.min(2.0f, textScale));
+    // Up to 6x for gigantic signs (a 30-block sign needs proportionally huge legend).
+    this.textScale = Math.max(0.5f, Math.min(6.0f, textScale));
   }
 
   public int getShieldType() {

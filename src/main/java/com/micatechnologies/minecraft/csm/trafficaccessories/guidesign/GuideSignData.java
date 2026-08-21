@@ -17,7 +17,14 @@ public class GuideSignData {
   private int borderWidth = 1;
   private int cornerStyle = CornerStyle.ROUND.ordinal();
   private int minWidth = 32;
+  // Floor for the sign's height in sign pixels (16 px = 1 block); content is centered
+  // vertically in any surplus. Absent in older JSON → 16 (no effect).
+  private int minHeight = 16;
   private List<GuideSignPanel> panels = new ArrayList<>();
+
+  // 16 px = 1 block: signs may be up to 30 blocks wide and 15 blocks tall.
+  public static final int MAX_MIN_WIDTH = 480;
+  public static final int MAX_MIN_HEIGHT = 240;
 
   public GuideSignData() {
     GuideSignPanel defaultPanel = new GuideSignPanel();
@@ -88,7 +95,15 @@ public class GuideSignData {
   }
 
   public void setMinWidth(int minWidth) {
-    this.minWidth = Math.max(16, Math.min(96, minWidth));
+    this.minWidth = Math.max(16, Math.min(MAX_MIN_WIDTH, minWidth));
+  }
+
+  public int getMinHeight() {
+    return minHeight;
+  }
+
+  public void setMinHeight(int minHeight) {
+    this.minHeight = Math.max(16, Math.min(MAX_MIN_HEIGHT, minHeight));
   }
 
   public List<GuideSignPanel> getPanels() {
