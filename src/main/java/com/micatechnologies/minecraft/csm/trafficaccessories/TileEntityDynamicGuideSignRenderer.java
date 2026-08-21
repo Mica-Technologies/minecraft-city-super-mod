@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories;
 
 import com.micatechnologies.minecraft.csm.codeutils.RenderHelper;
+import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.BannerPosition;
 import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.CornerStyle;
 import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.ExitTabData;
 import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.GuideSignArrowType;
@@ -209,8 +210,14 @@ public class TileEntityDynamicGuideSignRenderer
         float rowWidth = computeRowWidth(row, data);
         float rowX = computeRowX(row, contentLeft, contentRight, rowWidth);
 
+        if (row.isYellowPatch()) {
+          // MUTCD "EXIT ONLY"-style patch: a yellow band across the sign behind this
+          // row, with dark legend drawn over it.
+          renderYellowPatch(signLeft, panelY, rowHeight, totalSignWidth, faceZ,
+              borderInset);
+        }
         renderRow(row, rowX, panelY, rowHeight, faceZ, legendTextColor,
-            legendR, legendG, legendB);
+            legendR, legendG, legendB, row.isYellowPatch());
 
         panelY -= rowHeight + ROW_SPACING;
       }
@@ -396,26 +403,35 @@ public class TileEntityDynamicGuideSignRenderer
   }
 
   private void renderRow(GuideSignRow row, float startX, float topY, float rowHeight,
-      float faceZ, int legendTextColor, float legendR, float legendG, float legendB) {
+      float faceZ, int legendTextColor, float legendR, float legendG, float legendB,
+      boolean onYellowPatch) {
     float curX = startX;
+
+    // On a yellow patch the legend flips dark regardless of the sign color, and arrows
+    // (white in the atlas) are tinted near-black.
+    int textColor = onYellowPatch ? LEGEND_DARK : legendTextColor;
+    float barR = onYellowPatch ? 0.08f : legendR;
+    float barG = onYellowPatch ? 0.08f : legendG;
+    float barB = onYellowPatch ? 0.08f : legendB;
+    float arrowTint = onYellowPatch ? 0.08f : 1.0f;
 
     // Lightmap is baked per-vertex; sub-element renderers use worldSkyLight / worldBlockLight.
     for (GuideSignElement elem : row.getElements()) {
       switch (elem.getType()) {
         case GuideSignElement.TYPE_TEXT:
-          renderTextElement(elem, curX, topY, rowHeight, faceZ, legendTextColor);
+          renderTextElement(elem, curX, topY, rowHeight, faceZ, textColor);
           curX += getTextWidth(elem) + ELEMENT_SPACING;
           break;
         case GuideSignElement.TYPE_SHIELD:
-          renderShieldElement(elem, curX, topY, rowHeight, faceZ, legendTextColor);
+          renderShieldElement(elem, curX, topY, rowHeight, faceZ, textColor);
           curX += getShieldWidth(elem) + ELEMENT_SPACING;
           break;
         case GuideSignElement.TYPE_ARROW:
-          renderArrowElement(elem, curX, topY, rowHeight, faceZ);
+          renderArrowElement(elem, curX, topY, rowHeight, faceZ, arrowTint);
           curX += ARROW_SIZE + ELEMENT_SPACING;
           break;
         case GuideSignElement.TYPE_DIVIDER:
-          renderDividerElement(curX, topY, rowHeight, faceZ, legendR, legendG, legendB);
+          renderDividerElement(curX, topY, rowHeight, faceZ, barR, barG, barB);
           curX += DIVIDER_ELEMENT_WIDTH + ELEMENT_SPACING;
           break;
         case GuideSignElement.TYPE_SPACING:
@@ -423,6 +439,23 @@ public class TileEntityDynamicGuideSignRenderer
           break;
       }
     }
+  }
+
+  private void renderYellowPatch(float signLeft, float topY, float rowHeight,
+      float signWidth, float faceZ, float borderInset) {
+    Tessellator tess = Tessellator.getInstance();
+    BufferBuilder buf = tess.getBuffer();
+    List<RenderHelper.Box> band = new ArrayList<>();
+    // Full sign width inside the border, padded half a row-spacing above and below.
+    float pad = ROW_SPACING / 2.0f;
+    band.add(new RenderHelper.Box(
+        new float[]{signLeft + borderInset, topY - rowHeight - pad, faceZ - 0.15f},
+        new float[]{signLeft + signWidth - borderInset, topY + pad, faceZ - 0.05f}));
+    GuideSignColor y = GuideSignColor.YELLOW;
+    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
+    RenderHelper.addBoxesToBufferLit(band, buf, y.getRed(), y.getGreen(), y.getBlue(), 1.0f,
+        0, 0, 0, worldSkyLight, worldBlockLight);
+    tess.draw();
   }
 
   private void renderTextElement(GuideSignElement elem,
@@ -463,10 +496,21 @@ public class TileEntityDynamicGuideSignRenderer
     GuideSignShieldType shieldType = elem.getGuideSignShieldType();
     float[] uv = GuideSignAtlas.getShieldUV(shieldType);
 
-    // The cell may be wider than the shield when a banner word above it is wider;
-    // center the shield (and its banner) within the full cell width.
+    // The cell may be wider than the shield: an ABOVE banner wider than the shield
+    // centers both in the cell; a LEFT/RIGHT banner sits beside the shield.
+    BannerPosition bannerPos = elem.getBannerPosition();
+    String bannerText = elem.getGuideSignBannerType().getBannerText();
+    boolean besideBanner = !bannerText.isEmpty() && bannerPos != BannerPosition.ABOVE;
     float cellWidth = getShieldWidth(elem);
-    float shieldCenterX = x + cellWidth / 2.0f;
+    float shieldCenterX;
+    if (!besideBanner) {
+      shieldCenterX = x + cellWidth / 2.0f;
+    } else if (bannerPos == BannerPosition.LEFT) {
+      // Banner occupies the left of the cell, shield the right.
+      shieldCenterX = x + cellWidth - SHIELD_SIZE / 2.0f;
+    } else {
+      shieldCenterX = x + SHIELD_SIZE / 2.0f;
+    }
     float shieldCenterY = topY - rowHeight / 2.0f;
     float halfSize = SHIELD_SIZE / 2.0f;
 
@@ -508,15 +552,25 @@ public class TileEntityDynamicGuideSignRenderer
       GlStateManager.depthMask(true);
     }
 
-    String bannerText = elem.getGuideSignBannerType().getBannerText();
     if (!bannerText.isEmpty()) {
-      // Banner is centered in the row's reserved banner zone, which sits ABOVE
-      // the row's content band (between topY and topY + BANNER_AREA_HEIGHT).
-      float bannerY = topY + BANNER_AREA_HEIGHT / 2.0f;
       float capPx = SHIELD_SIZE * BANNER_CAP_FRACTION;
       float w = GuideSignFontRenderer.getStringWidth(bannerText, capPx);
+      float bannerLeftX;
+      float bannerY;
+      if (!besideBanner) {
+        // Centered in the row's reserved banner zone, which sits ABOVE the row's
+        // content band (between topY and topY + BANNER_AREA_HEIGHT).
+        bannerLeftX = shieldCenterX - w / 2.0f;
+        bannerY = topY + BANNER_AREA_HEIGHT / 2.0f;
+      } else if (bannerPos == BannerPosition.LEFT) {
+        bannerLeftX = x;
+        bannerY = shieldCenterY;
+      } else {
+        bannerLeftX = shieldCenterX + SHIELD_SIZE / 2.0f + ELEMENT_SPACING;
+        bannerY = shieldCenterY;
+      }
       GlStateManager.depthMask(false);
-      GuideSignFontRenderer.drawString(bannerText, shieldCenterX - w / 2.0f, bannerY,
+      GuideSignFontRenderer.drawString(bannerText, bannerLeftX, bannerY,
           faceZ - 0.4f, capPx, legendTextColor, worldSkyLight, worldBlockLight);
       GlStateManager.depthMask(true);
     }
@@ -526,7 +580,7 @@ public class TileEntityDynamicGuideSignRenderer
   }
 
   private void renderArrowElement(GuideSignElement elem, float x, float topY,
-      float rowHeight, float faceZ) {
+      float rowHeight, float faceZ, float tint) {
     GuideSignArrowType arrowType = elem.getGuideSignArrowType();
     float[] uv = GuideSignAtlas.getArrowUV(arrowType);
 
@@ -542,10 +596,11 @@ public class TileEntityDynamicGuideSignRenderer
 
     float qZ = faceZ - 0.3f;
     // u0 on the left edge: the enclosing transform already un-mirrors pixel space.
-    atlasVertex(buf, centerX + halfSize, centerY + halfSize, qZ, uv[2], uv[1]);
-    atlasVertex(buf, centerX - halfSize, centerY + halfSize, qZ, uv[0], uv[1]);
-    atlasVertex(buf, centerX - halfSize, centerY - halfSize, qZ, uv[0], uv[3]);
-    atlasVertex(buf, centerX + halfSize, centerY - halfSize, qZ, uv[2], uv[3]);
+    // The atlas arrow is white; the tint turns it dark on yellow-patch rows.
+    atlasVertex(buf, centerX + halfSize, centerY + halfSize, qZ, uv[2], uv[1], tint);
+    atlasVertex(buf, centerX - halfSize, centerY + halfSize, qZ, uv[0], uv[1], tint);
+    atlasVertex(buf, centerX - halfSize, centerY - halfSize, qZ, uv[0], uv[3], tint);
+    atlasVertex(buf, centerX + halfSize, centerY - halfSize, qZ, uv[2], uv[3], tint);
 
     tess.draw();
     // Restore white-pixel binding for subsequent untextured geometry passes.
@@ -553,7 +608,12 @@ public class TileEntityDynamicGuideSignRenderer
   }
 
   private void atlasVertex(BufferBuilder buf, float x, float y, float z, float u, float v) {
-    buf.pos(x, y, z).color(1.0f, 1.0f, 1.0f, 1.0f).tex(u, v)
+    atlasVertex(buf, x, y, z, u, v, 1.0f);
+  }
+
+  private void atlasVertex(BufferBuilder buf, float x, float y, float z, float u, float v,
+      float tint) {
+    buf.pos(x, y, z).color(tint, tint, tint, 1.0f).tex(u, v)
         .lightmap(worldSkyLight, worldBlockLight).endVertex();
   }
 
@@ -683,10 +743,13 @@ public class TileEntityDynamicGuideSignRenderer
     return Math.max(16.0f, h);
   }
 
+  // Only ABOVE banners occupy the reserved zone over the row; LEFT/RIGHT banners widen
+  // the shield element instead and reserve no extra height.
   private boolean rowHasBanner(GuideSignRow row) {
     for (GuideSignElement e : row.getElements()) {
       if (e.getType() == GuideSignElement.TYPE_SHIELD
-          && !e.getGuideSignBannerType().getBannerText().isEmpty()) {
+          && !e.getGuideSignBannerType().getBannerText().isEmpty()
+          && e.getBannerPosition() == BannerPosition.ABOVE) {
         return true;
       }
     }
@@ -766,7 +829,12 @@ public class TileEntityDynamicGuideSignRenderer
       // or the reserved cell width and the drawn banner disagree.
       float bannerW = GuideSignFontRenderer.getStringWidth(bannerText,
           SHIELD_SIZE * BANNER_CAP_FRACTION) + BANNER_CELL_PADDING;
-      w = Math.max(w, bannerW);
+      if (elem.getBannerPosition() == BannerPosition.ABOVE) {
+        w = Math.max(w, bannerW);
+      } else {
+        // Beside the shield: the cell holds shield + gap + banner word.
+        w = SHIELD_SIZE + ELEMENT_SPACING + bannerW;
+      }
     }
     return w;
   }

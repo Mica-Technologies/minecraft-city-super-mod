@@ -14,7 +14,23 @@ public enum GuideSignBannerType {
   ALTERNATE("Alternate"),
   BYPASS("Bypass"),
   CONNECTOR("Connector"),
-  TRUCK("Truck");
+  TRUCK("Truck"),
+
+  // Appended after the original set — ordinals are serialized in sign JSON, so new
+  // entries must only ever be added at the END of this enum.
+  JCT("Jct"),
+  BEGIN("Begin"),
+  END("End"),
+  TRUNK("Trunk"),
+  EXPRESS("Express"),
+  LOCAL("Local"),
+  INNER("Inner"),
+  OUTER("Outer"),
+  FUTURE("Future"),
+  CITY("City"),
+  OLD("Old"),
+  HISTORIC("Historic"),
+  ARTERIAL("Arterial");
 
   private final String friendlyName;
 
@@ -36,6 +52,11 @@ public enum GuideSignBannerType {
   public GuideSignBannerType next() {
     GuideSignBannerType[] vals = values();
     return vals[(ordinal() + 1) % vals.length];
+  }
+
+  public GuideSignBannerType prev() {
+    GuideSignBannerType[] vals = values();
+    return vals[(ordinal() - 1 + vals.length) % vals.length];
   }
 
   public static GuideSignBannerType fromOrdinal(int value) {

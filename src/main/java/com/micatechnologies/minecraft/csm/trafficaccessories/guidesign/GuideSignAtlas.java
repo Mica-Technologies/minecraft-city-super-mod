@@ -7,9 +7,10 @@ public class GuideSignAtlas {
   public static final ResourceLocation ATLAS_TEXTURE =
       new ResourceLocation("csm", "textures/blocks/trafficaccessories/guidesign/sign_atlas.png");
 
-  private static final int ATLAS_SIZE = 512;
+  private static final int ATLAS_WIDTH = 512;
+  private static final int ATLAS_HEIGHT = 1024;
   private static final int CELL_SIZE = 64;
-  private static final int COLS = ATLAS_SIZE / CELL_SIZE;
+  private static final int COLS = ATLAS_WIDTH / CELL_SIZE;
 
   private static final int ARROW_ROW_OFFSET = 4;
 
@@ -26,10 +27,10 @@ public class GuideSignAtlas {
   }
 
   private static float[] getCellUV(int col, int row) {
-    float u0 = (float) (col * CELL_SIZE) / ATLAS_SIZE;
-    float v0 = (float) (row * CELL_SIZE) / ATLAS_SIZE;
-    float u1 = (float) ((col + 1) * CELL_SIZE) / ATLAS_SIZE;
-    float v1 = (float) ((row + 1) * CELL_SIZE) / ATLAS_SIZE;
+    float u0 = (float) (col * CELL_SIZE) / ATLAS_WIDTH;
+    float v0 = (float) (row * CELL_SIZE) / ATLAS_HEIGHT;
+    float u1 = (float) ((col + 1) * CELL_SIZE) / ATLAS_WIDTH;
+    float v1 = (float) ((row + 1) * CELL_SIZE) / ATLAS_HEIGHT;
     return new float[]{u0, v0, u1, v1};
   }
 }
