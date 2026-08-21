@@ -70,6 +70,9 @@ public class TileEntityDynamicGuideSignRenderer
   // Vertical breathing room added above+below a text element when sizing its row.
   private static final float TEXT_LEADING = 2.0f;
   private static final float EXIT_TAB_CAP_HEIGHT = 4.5f;
+  // Purple TOLL segment prepended to a toll exit tab.
+  private static final float EXIT_TAB_TOLL_CAP_HEIGHT = 3.2f;
+  private static final float EXIT_TAB_TOLL_PADDING = 2.0f;
   // MUTCD-ish ratios against the shield: route numerals ~42% of shield height, banner
   // words ~33%.
   private static final float ROUTE_CAP_FRACTION = 0.42f;
@@ -298,7 +301,8 @@ public class TileEntityDynamicGuideSignRenderer
       // with APL on — keep the two in lockstep.
       if (panel.hasApl()) {
         panelY -= ROW_SPACING;
-        renderAplBand(panel, contentLeft, contentRight, panelY, faceZ,
+        renderAplBand(panel, contentLeft, contentRight,
+            signLeft + borderInset, signLeft + totalSignWidth - borderInset, panelY, faceZ,
             pi == panels.size() - 1 ? signBottom + borderInset : Float.NaN);
         panelY -= APL_HEIGHT;
       }
@@ -412,6 +416,14 @@ public class TileEntityDynamicGuideSignRenderer
     float tabTextW = GuideSignFontRenderer.getStringWidth(tabText, EXIT_TAB_CAP_HEIGHT);
     float tabPad = tab.isWide() ? EXIT_TAB_PADDING_WIDE : EXIT_TAB_PADDING;
     float tabWidth = tabTextW + tabPad * 2;
+    // Toll exits get a purple TOLL segment prepended to the tab.
+    float tollSegW = 0;
+    float tollTextW = 0;
+    if (tab.isToll()) {
+      tollTextW = GuideSignFontRenderer.getStringWidth("TOLL", EXIT_TAB_TOLL_CAP_HEIGHT);
+      tollSegW = tollTextW + EXIT_TAB_TOLL_PADDING * 2;
+      tabWidth += tollSegW;
+    }
     float tabHeight = EXIT_TAB_HEIGHT;
 
     float tabX;
@@ -474,7 +486,28 @@ public class TileEntityDynamicGuideSignRenderer
         worldSkyLight, worldBlockLight);
     tess.draw();
 
-    float textCenterX = tabX + tabWidth / 2.0f;
+    if (tollSegW > 0) {
+      // Thin purple plate over the left end of the tab face, with white TOLL text.
+      GuideSignColor purple = GuideSignColor.PURPLE;
+      List<RenderHelper.Box> tollSeg = new ArrayList<>();
+      tollSeg.add(new RenderHelper.Box(
+          new float[]{tabX, tabBottom, tabFaceZ - 0.05f},
+          new float[]{tabX + tollSegW, tabTop, tabFaceZ - 0.02f}));
+      buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
+      RenderHelper.addBoxesToBufferLit(tollSeg, buf,
+          purple.getRed(), purple.getGreen(), purple.getBlue(), 1.0f, 0, 0, 0,
+          worldSkyLight, worldBlockLight);
+      tess.draw();
+
+      GlStateManager.depthMask(false);
+      GuideSignFontRenderer.drawString("TOLL",
+          tabX + tollSegW / 2.0f - tollTextW / 2.0f, tabBottom + tabHeight / 2.0f,
+          tabFaceZ - 0.1f, EXIT_TAB_TOLL_CAP_HEIGHT, LEGEND_WHITE,
+          worldSkyLight, worldBlockLight);
+      GlStateManager.depthMask(true);
+    }
+
+    float textCenterX = tabX + tollSegW + (tabWidth - tollSegW) / 2.0f;
     float textCenterY = tabBottom + tabHeight / 2.0f;
     int tabTextColor = tabColor.isLight() ? LEGEND_DARK : LEGEND_WHITE;
     GlStateManager.depthMask(false);
@@ -550,7 +583,7 @@ public class TileEntityDynamicGuideSignRenderer
    * {@code topY} and it is {@code APL_HEIGHT} tall.
    */
   private void renderAplBand(GuideSignPanel panel, float contentLeft, float contentRight,
-      float topY, float faceZ, float bottomEdgeOverride) {
+      float edgeLeft, float edgeRight, float topY, float faceZ, float bottomEdgeOverride) {
     int lanes = panel.getAplLanes();
     if (lanes <= 0) {
       return;
@@ -558,8 +591,14 @@ public class TileEntityDynamicGuideSignRenderer
     int exitLanes = Math.max(0, Math.min(lanes, panel.getAplExitLanes()));
     float pitch = (contentRight - contentLeft) / lanes;
     float bandBottom = topY - APL_HEIGHT;
-    int firstExitLane = lanes - exitLanes;
-    float patchLeft = contentLeft + firstExitLane * pitch;
+    // Exit lanes occupy one contiguous end of the band: the right by default, or the
+    // left when the panel says so. The patch bleeds past the content padding to the
+    // sign's inner border edge on its exit side, like a real sign.
+    boolean exitLeft = panel.isAplExitLeft();
+    int firstExitLane = exitLeft ? 0 : lanes - exitLanes;
+    int lastExitLane = exitLeft ? exitLanes - 1 : lanes - 1;
+    float patchLeft = exitLeft ? edgeLeft : contentLeft + firstExitLane * pitch;
+    float patchRight = exitLeft ? contentLeft + exitLanes * pitch : edgeRight;
 
     Tessellator tess = Tessellator.getInstance();
     BufferBuilder buf = tess.getBuffer();
@@ -572,7 +611,7 @@ public class TileEntityDynamicGuideSignRenderer
       List<RenderHelper.Box> patch = new ArrayList<>();
       patch.add(new RenderHelper.Box(
           new float[]{patchLeft, patchBottom, faceZ - 0.15f},
-          new float[]{contentRight, topY, faceZ - 0.05f}));
+          new float[]{patchRight, topY, faceZ - 0.05f}));
       GuideSignColor yellow = GuideSignColor.YELLOW;
       buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
       RenderHelper.addBoxesToBufferLit(patch, buf, yellow.getRed(), yellow.getGreen(),
@@ -580,7 +619,9 @@ public class TileEntityDynamicGuideSignRenderer
       tess.draw();
     }
 
-    float[] uv = GuideSignAtlas.getArrowUV(GuideSignArrowType.UP);
+    // Through lanes and exit lanes can use different arrow glyphs (both default UP).
+    float[] uvThrough = GuideSignAtlas.getArrowUV(panel.getAplArrowType());
+    float[] uvExit = GuideSignAtlas.getArrowUV(panel.getAplExitArrowType());
     float halfW = APL_ARROW_WIDTH / 2.0f;
     // Arrows occupy only the zone above the reserved legend strip; with no exit lanes
     // there is no legend, so they use the full band.
@@ -594,7 +635,9 @@ public class TileEntityDynamicGuideSignRenderer
     for (int lane = 0; lane < lanes; lane++) {
       float centerX = contentLeft + (lane + 0.5f) * pitch;
       // The atlas arrow is white; exit-only lanes tint it near-black over the patch.
-      float tint = lane >= firstExitLane ? 0.08f : 1.0f;
+      boolean isExit = exitLanes > 0 && lane >= firstExitLane && lane <= lastExitLane;
+      float tint = isExit ? 0.08f : 1.0f;
+      float[] uv = isExit ? uvExit : uvThrough;
       // u0 on the left edge: the enclosing transform already un-mirrors pixel space.
       atlasVertex(buf, centerX + halfW, centerY + halfH, qZ, uv[2], uv[1], tint);
       atlasVertex(buf, centerX - halfW, centerY + halfH, qZ, uv[0], uv[1], tint);
@@ -603,7 +646,7 @@ public class TileEntityDynamicGuideSignRenderer
     }
     tess.draw();
 
-    float patchWidth = contentRight - patchLeft;
+    float patchWidth = patchRight - patchLeft;
     if (exitLanes > 0 && patchWidth >= APL_EXIT_TEXT_MIN_WIDTH) {
       // Shrink to fit so the legend never spills past the patch it labels.
       float capPx = APL_EXIT_TEXT_CAP_HEIGHT;
@@ -983,6 +1026,11 @@ public class TileEntityDynamicGuideSignRenderer
       float tabPad = tab.isWide() ? EXIT_TAB_PADDING_WIDE : EXIT_TAB_PADDING;
       float tabW = GuideSignFontRenderer.getStringWidth(tabText, EXIT_TAB_CAP_HEIGHT)
           + tabPad * 2;
+      if (tab.isToll()) {
+        // Must match renderExitTab's TOLL segment width.
+        tabW += GuideSignFontRenderer.getStringWidth("TOLL", EXIT_TAB_TOLL_CAP_HEIGHT)
+            + EXIT_TAB_TOLL_PADDING * 2;
+      }
       float tabNeed = tabW + PANEL_PADDING_SIDE * 2;
       if (tabNeed > width) {
         width = tabNeed;
