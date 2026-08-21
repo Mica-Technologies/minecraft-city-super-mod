@@ -72,6 +72,8 @@ public class DynamicGuideSignGui extends GuiScreen {
   private static final int BTN_APL_EXIT_SIDE = 63;
   private static final int BTN_APL_ARROW = 64;
   private static final int BTN_APL_EXIT_ARROW = 65;
+  private static final int BTN_MIN_HEIGHT_DOWN = 66;
+  private static final int BTN_MIN_HEIGHT_UP = 67;
 
   private static final int BTN_ROW_PREV = 30;
   private static final int BTN_ROW_NEXT = 31;
@@ -256,6 +258,10 @@ public class DynamicGuideSignGui extends GuiScreen {
     y += BTN_HEIGHT + 3;
     addContentBtn(new GuiButton(BTN_MIN_WIDTH_DOWN, left, y, 30, BTN_HEIGHT, "-"));
     addContentBtn(new GuiButton(BTN_MIN_WIDTH_UP, left + FIELD_WIDTH - 30, y, 30, BTN_HEIGHT, "+"));
+    y += BTN_HEIGHT + 3;
+    addContentBtn(new GuiButton(BTN_MIN_HEIGHT_DOWN, left, y, 30, BTN_HEIGHT, "-"));
+    addContentBtn(
+        new GuiButton(BTN_MIN_HEIGHT_UP, left + FIELD_WIDTH - 30, y, 30, BTN_HEIGHT, "+"));
     y += BTN_HEIGHT + 3;
     addContentBtn(new GuiButton(BTN_CORNER_STYLE, left, y, FIELD_WIDTH, BTN_HEIGHT, ""));
     y += BTN_HEIGHT + 6;
@@ -461,11 +467,21 @@ public class DynamicGuideSignGui extends GuiScreen {
             new GuiButton(BTN_BANNER_POS, left, y, halfW, BTN_HEIGHT, ""));
         addContentBtn(
             new GuiButton(BTN_SHIELD_BACK, left + halfW + 4, y, halfW, BTN_HEIGHT, ""));
+        y += BTN_HEIGHT + 2;
+        addContentBtn(
+            new GuiButton(BTN_TEXT_SCALE_DOWN, left, y, 30, BTN_HEIGHT, "-"));
+        addContentBtn(
+            new GuiButton(BTN_TEXT_SCALE_UP, left + FIELD_WIDTH - 30, y, 30, BTN_HEIGHT, "+"));
         break;
 
       case GuideSignElement.TYPE_ARROW:
         addContentBtn(
             new GuiButton(BTN_ARROW_TYPE, left, y, FIELD_WIDTH, BTN_HEIGHT, ""));
+        y += BTN_HEIGHT + 2;
+        addContentBtn(
+            new GuiButton(BTN_TEXT_SCALE_DOWN, left, y, 30, BTN_HEIGHT, "-"));
+        addContentBtn(
+            new GuiButton(BTN_TEXT_SCALE_UP, left + FIELD_WIDTH - 30, y, 30, BTN_HEIGHT, "+"));
         break;
 
       case GuideSignElement.TYPE_SPACING:
@@ -704,8 +720,12 @@ public class DynamicGuideSignGui extends GuiScreen {
     }
     drawScrolledCenteredString("Border: " + data.getBorderWidth(), centerX,
         y + (BTN_HEIGHT + 3) * 2 + 5, 0xFFFFFF);
-    drawScrolledCenteredString("Min Width: " + data.getMinWidth(), centerX,
-        y + (BTN_HEIGHT + 3) * 3 + 5, 0xFFFFFF);
+    drawScrolledCenteredString(
+        "Min Width: " + data.getMinWidth() + " (" + (data.getMinWidth() / 16.0f) + " blk)",
+        centerX, y + (BTN_HEIGHT + 3) * 3 + 5, 0xFFFFFF);
+    drawScrolledCenteredString(
+        "Min Height: " + data.getMinHeight() + " (" + (data.getMinHeight() / 16.0f) + " blk)",
+        centerX, y + (BTN_HEIGHT + 3) * 4 + 5, 0xFFFFFF);
     // The panel count lives in the Add Panel button label; a separate label here had no
     // vertical room between the button rows and rendered behind the Corners button.
     for (GuiButton btn : buttonList) {
@@ -810,10 +830,15 @@ public class DynamicGuideSignGui extends GuiScreen {
         }
       }
 
-      if (elem.getType() == GuideSignElement.TYPE_TEXT) {
-        drawScrolledCenteredString("Scale: " + String.format("%.1f", elem.getTextScale()),
+      if (elem.getType() == GuideSignElement.TYPE_TEXT
+          || elem.getType() == GuideSignElement.TYPE_ARROW) {
+        drawScrolledCenteredString("Scale: " + String.format("%.2f", elem.getTextScale()),
             left + FIELD_WIDTH / 2,
-            y + BTN_HEIGHT + 2 + BTN_HEIGHT + 2 + 5, 0xFFFFFF);
+            y + (BTN_HEIGHT + 2) * 2 + 5, 0xFFFFFF);
+      } else if (elem.getType() == GuideSignElement.TYPE_SHIELD) {
+        drawScrolledCenteredString("Scale: " + String.format("%.2f", elem.getTextScale()),
+            left + FIELD_WIDTH / 2,
+            y + (BTN_HEIGHT + 2) * 4 + 5, 0xFFFFFF);
       } else if (elem.getType() == GuideSignElement.TYPE_SPACING) {
         drawScrolledCenteredString("Width: " + elem.getSpacingWidth(),
             left + FIELD_WIDTH / 2, y + BTN_HEIGHT + 3 + 5, 0xFFFFFF);
@@ -949,10 +974,17 @@ public class DynamicGuideSignGui extends GuiScreen {
         data.setBorderWidth(data.getBorderWidth() + 1);
         break;
       case BTN_MIN_WIDTH_DOWN:
-        data.setMinWidth(data.getMinWidth() - 4);
+        // One block (16 px) per click; the range runs to 30 blocks.
+        data.setMinWidth(data.getMinWidth() - 16);
         break;
       case BTN_MIN_WIDTH_UP:
-        data.setMinWidth(data.getMinWidth() + 4);
+        data.setMinWidth(data.getMinWidth() + 16);
+        break;
+      case BTN_MIN_HEIGHT_DOWN:
+        data.setMinHeight(data.getMinHeight() - 16);
+        break;
+      case BTN_MIN_HEIGHT_UP:
+        data.setMinHeight(data.getMinHeight() + 16);
         break;
       case BTN_CORNER_STYLE:
         data.cycleCornerStyle();
@@ -1204,14 +1236,14 @@ public class DynamicGuideSignGui extends GuiScreen {
       case BTN_TEXT_SCALE_DOWN: {
         GuideSignElement elem = getSelectedElement();
         if (elem != null) {
-          elem.setTextScale(elem.getTextScale() - 0.1f);
+          elem.setTextScale(elem.getTextScale() - 0.25f);
         }
         break;
       }
       case BTN_TEXT_SCALE_UP: {
         GuideSignElement elem = getSelectedElement();
         if (elem != null) {
-          elem.setTextScale(elem.getTextScale() + 0.1f);
+          elem.setTextScale(elem.getTextScale() + 0.25f);
         }
         break;
       }

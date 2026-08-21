@@ -90,9 +90,12 @@ public class TileEntityDynamicGuideSign extends AbstractTileEntity {
   @Override
   @SideOnly(Side.CLIENT)
   public AxisAlignedBB getRenderBoundingBox() {
+    // Signs may reach 30 blocks wide and 15 tall (centered on the block), plus posts
+    // running 3 blocks below; the box must cover that or big signs cull when the
+    // block itself leaves the frustum.
     return new AxisAlignedBB(
-        pos.getX() - 8, pos.getY() - 4, pos.getZ() - 8,
-        pos.getX() + 9, pos.getY() + 5, pos.getZ() + 9);
+        pos.getX() - 15, pos.getY() - 11, pos.getZ() - 15,
+        pos.getX() + 16, pos.getY() + 9, pos.getZ() + 16);
   }
 
   @Override

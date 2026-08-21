@@ -189,9 +189,13 @@ public class TileEntityDynamicGuideSignRenderer
 
   /** {width, height} of the sign body in sign pixels, for preview fit math. */
   public float[] computeSignDimensions(GuideSignData data) {
-    return new float[]{
-        computeTotalSignWidth(data.getPanels(), data),
-        computeTotalSignHeight(data.getPanels(), data)};
+    float width = computeTotalSignWidth(data.getPanels(), data);
+    float borderInset =
+        data.getBorderWidth() > 0 ? data.getBorderWidth() * BORDER_INSET : 0;
+    float contentWidth = width - 2 * (PANEL_PADDING_SIDE + borderInset);
+    float height = Math.max(Math.max(16.0f, data.getMinHeight()),
+        computeNaturalSignHeight(data.getPanels(), data, contentWidth));
+    return new float[]{width, height};
   }
 
   private void renderSign(GuideSignData data, boolean farLod) {
@@ -208,8 +212,14 @@ public class TileEntityDynamicGuideSignRenderer
     float legendB = lightSign ? 0.06f : 0.90f;
     int legendTextColor = lightSign ? LEGEND_DARK : LEGEND_WHITE;
 
-    float totalSignHeight = computeTotalSignHeight(panels, data);
+    // Width first: the APL band scales with lane pitch, so height depends on width.
     float totalSignWidth = computeTotalSignWidth(panels, data);
+    float borderInsetForContent = borderWidth > 0 ? borderWidth * BORDER_INSET : 0;
+    float contentWidth = totalSignWidth - 2 * (PANEL_PADDING_SIDE + borderInsetForContent);
+    float naturalHeight = computeNaturalSignHeight(panels, data, contentWidth);
+    float totalSignHeight = Math.max(Math.max(16.0f, data.getMinHeight()), naturalHeight);
+    // Extra height from the min-height floor centers the content vertically.
+    float heightSurplus = totalSignHeight - naturalHeight;
 
     float signLeft = CX - totalSignWidth / 2.0f;
     float signTop = CY + totalSignHeight / 2.0f;
@@ -242,11 +252,11 @@ public class TileEntityDynamicGuideSignRenderer
       return;
     }
 
-    float borderInset = borderWidth > 0 ? borderWidth * BORDER_INSET : 0;
+    float borderInset = borderInsetForContent;
     float contentLeft = signLeft + PANEL_PADDING_SIDE + borderInset;
     float contentRight = signLeft + totalSignWidth - PANEL_PADDING_SIDE - borderInset;
 
-    float panelY = signTop - PANEL_PADDING_TOP - borderInset;
+    float panelY = signTop - PANEL_PADDING_TOP - borderInset - heightSurplus / 2.0f;
 
     for (int pi = 0; pi < panels.size(); pi++) {
       GuideSignPanel panel = panels.get(pi);
@@ -264,7 +274,7 @@ public class TileEntityDynamicGuideSignRenderer
         GuideSignRow row = panelRows.get(ri);
         panelY -= row.getVerticalSpacing();
 
-        float bannerExtra = rowHasBanner(row) ? BANNER_AREA_HEIGHT : 0;
+        float bannerExtra = rowBannerExtra(row);
         panelY -= bannerExtra;
 
         float rowHeight = computeRowHeight(row);
@@ -303,8 +313,9 @@ public class TileEntityDynamicGuideSignRenderer
         panelY -= ROW_SPACING;
         renderAplBand(panel, contentLeft, contentRight,
             signLeft + borderInset, signLeft + totalSignWidth - borderInset, panelY, faceZ,
-            pi == panels.size() - 1 ? signBottom + borderInset : Float.NaN);
-        panelY -= APL_HEIGHT;
+            pi == panels.size() - 1 ? signBottom + borderInset : Float.NaN,
+            aplScale(panel, contentWidth));
+        panelY -= aplBandHeight(panel, contentWidth);
       }
 
       if (pi < panels.size() - 1) {
@@ -545,7 +556,7 @@ public class TileEntityDynamicGuideSignRenderer
           break;
         case GuideSignElement.TYPE_ARROW:
           renderArrowElement(elem, curX, topY, rowHeight, faceZ, arrowTint);
-          curX += ARROW_SIZE + ELEMENT_SPACING;
+          curX += ARROW_SIZE * elem.getTextScale() + ELEMENT_SPACING;
           break;
         case GuideSignElement.TYPE_DIVIDER:
           renderDividerElement(curX, topY, rowHeight, faceZ, barR, barG, barB);
@@ -583,14 +594,16 @@ public class TileEntityDynamicGuideSignRenderer
    * {@code topY} and it is {@code APL_HEIGHT} tall.
    */
   private void renderAplBand(GuideSignPanel panel, float contentLeft, float contentRight,
-      float edgeLeft, float edgeRight, float topY, float faceZ, float bottomEdgeOverride) {
+      float edgeLeft, float edgeRight, float topY, float faceZ, float bottomEdgeOverride,
+      float s) {
     int lanes = panel.getAplLanes();
     if (lanes <= 0) {
       return;
     }
     int exitLanes = Math.max(0, Math.min(lanes, panel.getAplExitLanes()));
     float pitch = (contentRight - contentLeft) / lanes;
-    float bandBottom = topY - APL_HEIGHT;
+    float bandHeight = APL_HEIGHT * s;
+    float bandBottom = topY - bandHeight;
     // Exit lanes occupy one contiguous end of the band: the right by default, or the
     // left when the panel says so. The patch bleeds past the content padding to the
     // sign's inner border edge on its exit side, like a real sign.
@@ -622,11 +635,11 @@ public class TileEntityDynamicGuideSignRenderer
     // Through lanes and exit lanes can use different arrow glyphs (both default UP).
     float[] uvThrough = GuideSignAtlas.getArrowUV(panel.getAplArrowType());
     float[] uvExit = GuideSignAtlas.getArrowUV(panel.getAplExitArrowType());
-    float halfW = APL_ARROW_WIDTH / 2.0f;
+    float halfW = APL_ARROW_WIDTH * s / 2.0f;
     // Arrows occupy only the zone above the reserved legend strip; with no exit lanes
     // there is no legend, so they use the full band.
-    float arrowZone = exitLanes > 0 ? APL_HEIGHT - APL_TEXT_ZONE : APL_HEIGHT;
-    float halfH = (arrowZone - 1.5f) / 2.0f;
+    float arrowZone = exitLanes > 0 ? bandHeight - APL_TEXT_ZONE * s : bandHeight;
+    float halfH = (arrowZone - 1.5f * s) / 2.0f;
     float centerY = topY - arrowZone / 2.0f;
     float qZ = faceZ - 0.3f;
 
@@ -649,7 +662,7 @@ public class TileEntityDynamicGuideSignRenderer
     float patchWidth = patchRight - patchLeft;
     if (exitLanes > 0 && patchWidth >= APL_EXIT_TEXT_MIN_WIDTH) {
       // Shrink to fit so the legend never spills past the patch it labels.
-      float capPx = APL_EXIT_TEXT_CAP_HEIGHT;
+      float capPx = APL_EXIT_TEXT_CAP_HEIGHT * s;
       float w = GuideSignFontRenderer.getStringWidth(APL_EXIT_TEXT, capPx);
       float avail = patchWidth - 2.0f;
       if (w > avail) {
@@ -659,7 +672,7 @@ public class TileEntityDynamicGuideSignRenderer
       GlStateManager.depthMask(false);
       // Centered in the reserved bottom strip, clear of the arrow tails above it.
       GuideSignFontRenderer.drawString(APL_EXIT_TEXT,
-          patchLeft + patchWidth / 2.0f - w / 2.0f, bandBottom + APL_TEXT_ZONE / 2.0f,
+          patchLeft + patchWidth / 2.0f - w / 2.0f, bandBottom + APL_TEXT_ZONE * s / 2.0f,
           faceZ - 0.4f, capPx, LEGEND_DARK, worldSkyLight, worldBlockLight);
       GlStateManager.depthMask(true);
     }
@@ -709,7 +722,10 @@ public class TileEntityDynamicGuideSignRenderer
     boolean wide = shieldType.usesWideVariant(elem.getRouteNumber());
     float[] uv = wide ? GuideSignAtlas.getShieldWideUV(shieldType)
         : GuideSignAtlas.getShieldUV(shieldType);
-    float shieldW = wide ? SHIELD_SIZE * shieldType.getWideAspect() : SHIELD_SIZE;
+    // The element's scale sizes the whole shield (like textScale does for text), so
+    // gigantic signs can carry proportionally large markers.
+    float sSize = SHIELD_SIZE * elem.getTextScale();
+    float shieldW = wide ? sSize * shieldType.getWideAspect() : sSize;
 
     // The cell may be wider than the shield: an ABOVE banner wider than the shield
     // centers both in the cell; a LEFT/RIGHT banner sits beside the shield.
@@ -727,7 +743,7 @@ public class TileEntityDynamicGuideSignRenderer
       shieldCenterX = x + shieldW / 2.0f;
     }
     float shieldCenterY = topY - rowHeight / 2.0f;
-    float halfSize = SHIELD_SIZE / 2.0f;
+    float halfSize = sSize / 2.0f;
     float halfW = shieldW / 2.0f;
 
     Tessellator tess = Tessellator.getInstance();
@@ -769,7 +785,7 @@ public class TileEntityDynamicGuideSignRenderer
     if (routeNum != null && !routeNum.isEmpty()) {
       // Shrink to fit: long route numbers scale down so they stay inside the
       // shield's legend area instead of spilling over its edges.
-      float capPx = SHIELD_SIZE * ROUTE_CAP_FRACTION;
+      float capPx = sSize * ROUTE_CAP_FRACTION;
       float avail = shieldW * shieldType.getRouteTextMaxFraction();
       float w = GuideSignFontRenderer.getStringWidth(routeNum, capPx);
       if (w > avail) {
@@ -784,15 +800,15 @@ public class TileEntityDynamicGuideSignRenderer
     }
 
     if (!bannerText.isEmpty()) {
-      float capPx = SHIELD_SIZE * BANNER_CAP_FRACTION;
+      float capPx = sSize * BANNER_CAP_FRACTION;
       float w = GuideSignFontRenderer.getStringWidth(bannerText, capPx);
       float bannerLeftX;
       float bannerY;
       if (!besideBanner) {
         // Centered in the row's reserved banner zone, which sits ABOVE the row's
-        // content band (between topY and topY + BANNER_AREA_HEIGHT).
+        // content band and scales with the element (see rowBannerExtra).
         bannerLeftX = shieldCenterX - w / 2.0f;
-        bannerY = topY + BANNER_AREA_HEIGHT / 2.0f;
+        bannerY = topY + BANNER_AREA_HEIGHT * elem.getTextScale() / 2.0f;
       } else if (bannerPos == BannerPosition.LEFT) {
         bannerLeftX = x;
         bannerY = shieldCenterY;
@@ -815,9 +831,10 @@ public class TileEntityDynamicGuideSignRenderer
     GuideSignArrowType arrowType = elem.getGuideSignArrowType();
     float[] uv = GuideSignAtlas.getArrowUV(arrowType);
 
-    float centerX = x + ARROW_SIZE / 2.0f;
+    float aSize = ARROW_SIZE * elem.getTextScale();
+    float centerX = x + aSize / 2.0f;
     float centerY = topY - rowHeight / 2.0f;
-    float halfSize = ARROW_SIZE / 2.0f;
+    float halfSize = aSize / 2.0f;
 
     Minecraft.getMinecraft().getTextureManager().bindTexture(GuideSignAtlas.ATLAS_TEXTURE);
 
@@ -939,14 +956,10 @@ public class TileEntityDynamicGuideSignRenderer
           }
           break;
         case GuideSignElement.TYPE_SHIELD:
-          if (SHIELD_SIZE > h) {
-            h = SHIELD_SIZE;
-          }
+          h = Math.max(h, SHIELD_SIZE * elem.getTextScale());
           break;
         case GuideSignElement.TYPE_ARROW:
-          if (ARROW_SIZE > h) {
-            h = ARROW_SIZE;
-          }
+          h = Math.max(h, ARROW_SIZE * elem.getTextScale());
           break;
         default:
           break;
@@ -955,22 +968,35 @@ public class TileEntityDynamicGuideSignRenderer
     return h;
   }
 
-  private float computeTotalSignHeight(List<GuideSignPanel> panels, GuideSignData data) {
+  /**
+   * How much the APL band grows on wide signs: arrows and band scale with lane pitch
+   * so a sign stretched over real lanes doesn't render spindly arrows. 1.0 at the
+   * classic minimum pitch; capped at 3x.
+   */
+  private float aplScale(GuideSignPanel panel, float contentWidth) {
+    float pitch = contentWidth / Math.max(1, panel.getAplLanes());
+    return Math.max(1.0f, Math.min(3.0f, pitch / 13.0f));
+  }
+
+  private float aplBandHeight(GuideSignPanel panel, float contentWidth) {
+    return APL_HEIGHT * aplScale(panel, contentWidth);
+  }
+
+  private float computeNaturalSignHeight(List<GuideSignPanel> panels, GuideSignData data,
+      float contentWidth) {
     float h = PANEL_PADDING_TOP + PANEL_PADDING_BOTTOM;
     for (int pi = 0; pi < panels.size(); pi++) {
       GuideSignPanel panel = panels.get(pi);
       for (GuideSignRow row : panel.getRows()) {
         h += computeRowHeight(row) + ROW_SPACING + row.getVerticalSpacing();
-        if (rowHasBanner(row)) {
-          h += BANNER_AREA_HEIGHT;
-        }
+        h += rowBannerExtra(row);
       }
       if (!panel.getRows().isEmpty()) {
         h -= ROW_SPACING;
       }
       // Mirrors exactly what the render loop spends on the arrow-per-lane band.
       if (panel.hasApl()) {
-        h += APL_HEIGHT + ROW_SPACING;
+        h += aplBandHeight(panel, contentWidth) + ROW_SPACING;
       }
       if (pi < panels.size() - 1) {
         h += PANEL_GAP;
@@ -978,20 +1004,24 @@ public class TileEntityDynamicGuideSignRenderer
     }
     float borderInset = data.getBorderWidth() > 0 ? data.getBorderWidth() * BORDER_INSET : 0;
     h += 2 * borderInset;
-    return Math.max(16.0f, h);
+    // Natural (content-driven) height; callers apply the 16px and minHeight floors.
+    return h;
   }
 
   // Only ABOVE banners occupy the reserved zone over the row; LEFT/RIGHT banners widen
   // the shield element instead and reserve no extra height.
-  private boolean rowHasBanner(GuideSignRow row) {
+  // Vertical space reserved ABOVE a row for its shields' banner words. Scales with the
+  // largest banner-bearing shield's element scale; 0 when no ABOVE banner exists.
+  private float rowBannerExtra(GuideSignRow row) {
+    float extra = 0;
     for (GuideSignElement e : row.getElements()) {
       if (e.getType() == GuideSignElement.TYPE_SHIELD
           && !e.getGuideSignBannerType().getBannerText().isEmpty()
           && e.getBannerPosition() == BannerPosition.ABOVE) {
-        return true;
+        extra = Math.max(extra, BANNER_AREA_HEIGHT * e.getTextScale());
       }
     }
-    return false;
+    return extra;
   }
 
   private float computeTotalSignWidth(List<GuideSignPanel> panels, GuideSignData data) {
@@ -1055,7 +1085,7 @@ public class TileEntityDynamicGuideSignRenderer
           w += getShieldWidth(elem);
           break;
         case GuideSignElement.TYPE_ARROW:
-          w += ARROW_SIZE;
+          w += ARROW_SIZE * elem.getTextScale();
           break;
         case GuideSignElement.TYPE_DIVIDER:
           w += DIVIDER_ELEMENT_WIDTH;
@@ -1078,15 +1108,16 @@ public class TileEntityDynamicGuideSignRenderer
 
   private float getShieldWidth(GuideSignElement elem) {
     GuideSignShieldType type = elem.getGuideSignShieldType();
+    float sSize = SHIELD_SIZE * elem.getTextScale();
     float w = type.usesWideVariant(elem.getRouteNumber())
-        ? SHIELD_SIZE * type.getWideAspect()
-        : SHIELD_SIZE;
+        ? sSize * type.getWideAspect()
+        : sSize;
     String bannerText = elem.getGuideSignBannerType().getBannerText();
     if (!bannerText.isEmpty()) {
       // Must match the cap height renderShieldElement actually draws the banner at,
       // or the reserved cell width and the drawn banner disagree.
       float bannerW = GuideSignFontRenderer.getStringWidth(bannerText,
-          SHIELD_SIZE * BANNER_CAP_FRACTION) + BANNER_CELL_PADDING;
+          sSize * BANNER_CAP_FRACTION) + BANNER_CELL_PADDING;
       if (elem.getBannerPosition() == BannerPosition.ABOVE) {
         w = Math.max(w, bannerW);
       } else {
