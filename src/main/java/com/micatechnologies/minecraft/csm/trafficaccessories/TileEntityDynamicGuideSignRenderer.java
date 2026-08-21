@@ -74,8 +74,6 @@ public class TileEntityDynamicGuideSignRenderer
   // words ~33%.
   private static final float ROUTE_CAP_FRACTION = 0.42f;
   private static final float BANNER_CAP_FRACTION = 0.33f;
-  // Fraction of the shield cell the route number may span before it shrinks to fit.
-  private static final float ROUTE_TEXT_MAX_FRACTION = 0.62f;
   private static final float BANNER_AREA_HEIGHT = 5.5f;
 
   // Arrow-per-lane (MUTCD APL) band, drawn below a panel's rows: one up arrow per lane,
@@ -237,7 +235,9 @@ public class TileEntityDynamicGuideSignRenderer
             faceZ, borderWidth, cornerStyle, legendR, legendG, legendB);
       }
 
-      for (GuideSignRow row : panel.getRows()) {
+      List<GuideSignRow> panelRows = panel.getRows();
+      for (int ri = 0; ri < panelRows.size(); ri++) {
+        GuideSignRow row = panelRows.get(ri);
         panelY -= row.getVerticalSpacing();
 
         float bannerExtra = rowHasBanner(row) ? BANNER_AREA_HEIGHT : 0;
@@ -249,8 +249,15 @@ public class TileEntityDynamicGuideSignRenderer
 
         if (row.isYellowPatch()) {
           // MUTCD "EXIT ONLY"-style patch: a yellow band across the sign behind this
-          // row, with dark legend drawn over it.
-          renderYellowPatch(signLeft, panelY, rowHeight, totalSignWidth, faceZ,
+          // row, with dark legend drawn over it. On real signs the patch bleeds to the
+          // sign's bottom edge, so when this row is the sign's bottom-most content the
+          // band extends to the border instead of stopping at the row.
+          boolean bottomMost = pi == panels.size() - 1 && ri == panelRows.size() - 1
+              && !panel.hasApl();
+          float patchBottom = bottomMost
+              ? signBottom + borderInset
+              : panelY - rowHeight - ROW_SPACING / 2.0f;
+          renderYellowPatch(signLeft, panelY, patchBottom, totalSignWidth, faceZ,
               borderInset);
         }
         renderRow(row, rowX, panelY, rowHeight, faceZ, legendTextColor,
@@ -270,7 +277,8 @@ public class TileEntityDynamicGuideSignRenderer
       // with APL on — keep the two in lockstep.
       if (panel.hasApl()) {
         panelY -= ROW_SPACING;
-        renderAplBand(panel, contentLeft, contentRight, panelY, faceZ);
+        renderAplBand(panel, contentLeft, contentRight, panelY, faceZ,
+            pi == panels.size() - 1 ? signBottom + borderInset : Float.NaN);
         panelY -= APL_HEIGHT;
       }
 
@@ -488,15 +496,16 @@ public class TileEntityDynamicGuideSignRenderer
     }
   }
 
-  private void renderYellowPatch(float signLeft, float topY, float rowHeight,
+  private void renderYellowPatch(float signLeft, float topY, float patchBottom,
       float signWidth, float faceZ, float borderInset) {
     Tessellator tess = Tessellator.getInstance();
     BufferBuilder buf = tess.getBuffer();
     List<RenderHelper.Box> band = new ArrayList<>();
-    // Full sign width inside the border, padded half a row-spacing above and below.
+    // Full sign width inside the border; the caller decides the bottom edge (row band,
+    // or the sign's bottom border for a bottom-most patch row).
     float pad = ROW_SPACING / 2.0f;
     band.add(new RenderHelper.Box(
-        new float[]{signLeft + borderInset, topY - rowHeight - pad, faceZ - 0.15f},
+        new float[]{signLeft + borderInset, patchBottom, faceZ - 0.15f},
         new float[]{signLeft + signWidth - borderInset, topY + pad, faceZ - 0.05f}));
     GuideSignColor y = GuideSignColor.YELLOW;
     buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
@@ -512,7 +521,7 @@ public class TileEntityDynamicGuideSignRenderer
    * {@code topY} and it is {@code APL_HEIGHT} tall.
    */
   private void renderAplBand(GuideSignPanel panel, float contentLeft, float contentRight,
-      float topY, float faceZ) {
+      float topY, float faceZ, float bottomEdgeOverride) {
     int lanes = panel.getAplLanes();
     if (lanes <= 0) {
       return;
@@ -527,10 +536,13 @@ public class TileEntityDynamicGuideSignRenderer
     BufferBuilder buf = tess.getBuffer();
 
     if (exitLanes > 0) {
-      // Behind the arrows (less negative Z), like the row-level yellow patch.
+      // Behind the arrows (less negative Z), like the row-level yellow patch. On the
+      // last panel the patch bleeds to the sign's bottom border like a real sign
+      // (bottomEdgeOverride, NaN when this is not the bottom-most band).
+      float patchBottom = Float.isNaN(bottomEdgeOverride) ? bandBottom : bottomEdgeOverride;
       List<RenderHelper.Box> patch = new ArrayList<>();
       patch.add(new RenderHelper.Box(
-          new float[]{patchLeft, bandBottom, faceZ - 0.15f},
+          new float[]{patchLeft, patchBottom, faceZ - 0.15f},
           new float[]{contentRight, topY, faceZ - 0.05f}));
       GuideSignColor yellow = GuideSignColor.YELLOW;
       buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
@@ -679,7 +691,7 @@ public class TileEntityDynamicGuideSignRenderer
       // Shrink to fit: long route numbers scale down so they stay inside the
       // shield's legend area instead of spilling over its edges.
       float capPx = SHIELD_SIZE * ROUTE_CAP_FRACTION;
-      float avail = SHIELD_SIZE * ROUTE_TEXT_MAX_FRACTION;
+      float avail = SHIELD_SIZE * shieldType.getRouteTextMaxFraction();
       float w = GuideSignFontRenderer.getStringWidth(routeNum, capPx);
       if (w > avail) {
         capPx *= avail / w;
