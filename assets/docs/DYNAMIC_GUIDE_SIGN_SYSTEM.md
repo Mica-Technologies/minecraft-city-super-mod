@@ -145,12 +145,34 @@ drawing must follow the same rules.
 | `PANEL_GAP` | `4.0` | Vertical gap between stacked panels (divider bar sits in the middle). |
 | `PANEL_DIVIDER_THICKNESS` | `0.7` | Thickness of the between-panels divider bar. |
 | `POST_WIDTH` / `POST_DEPTH` | `2.5` / `1.5` | Mounting post cross-section. Posts run 48 units below the sign bottom. |
-| `TEXT_BASE_SCALE` | `0.8` | Base FontRenderer scale; element `textScale` multiplies it. |
-| `EXIT_TAB_TEXT_SCALE` | `0.65` | Exit-tab text scale. |
-| `BANNER_TEXT_SCALE` | `0.5` | Banner-word text scale (~33% of shield height in caps, per MUTCD ratio). Width reservation uses the same constant plus `BANNER_CELL_PADDING = 2` so adjacent banners cannot collide. |
+| `TEXT_CAP_HEIGHT` | `5.6` | Destination text capital height in sign pixels at `textScale` 1.0; the element's `textScale` multiplies it. All text draws through `GuideSignFontRenderer` (see below), never the Minecraft font. |
+| `TEXT_VISUAL_FACTOR` | `1.3` | Row-height factor over cap height (room for lowercase descenders). |
+| `EXIT_TAB_CAP_HEIGHT` | `4.5` | Exit-tab text cap height. |
+| `BANNER_CAP_FRACTION` | `0.33` | Banner-word cap height as a fraction of `SHIELD_SIZE` (MUTCD ratio). Width reservation uses the same fraction plus `BANNER_CELL_PADDING = 2` so adjacent banners cannot collide. |
 | `BANNER_AREA_HEIGHT` | `5.5` | Vertical zone reserved above a banner-bearing row's content; banner text is centered in it. |
-| `ROUTE_TEXT_SCALE` / `ROUTE_TEXT_MAX_FRACTION` | `0.7` / `0.62` | Route-number scale over the shield; numbers wider than `SHIELD_SIZE × 0.62` shrink to fit. Color comes from `GuideSignShieldType.getRouteTextColor()` (black on light shields, yellow on the county pentagon, white on dark). |
+| `ROUTE_CAP_FRACTION` / `ROUTE_TEXT_MAX_FRACTION` | `0.42` / `0.62` | Route-number cap height over the shield; numbers wider than `SHIELD_SIZE × 0.62` shrink to fit. Color comes from `GuideSignShieldType.getRouteTextColor()` (black on light shields, yellow on the county pentagon, white on dark). |
 | `CORNER_STEP` | `0.6` | Chamfer size per outer corner for ROUND corners. |
+
+### FHWA legend font (`GuideSignFontRenderer`)
+
+Sign legend text (destinations, route numbers, banners, exit tab) renders in an FHWA-style
+highway font, not the Minecraft font. `trafficaccessories/GuideSignFontRenderer.java` draws
+textured quads from a pre-generated glyph atlas:
+
+- **Atlas:** `textures/fonts/guide_sign_font.png` — 1024×512, fixed 64×72 cells, 16 columns,
+  baseline at y=52, pen origin x=8, capital height exactly 40px. White glyphs on transparent,
+  tinted per-vertex at draw time (so legend contrast colors and lightmap baking work unchanged).
+- **Metrics:** `assets/csm/fonts/guide_sign_font.json` — texture/cell geometry plus per-glyph
+  atlas cell and advance; parsed once, lazily, with Gson. Missing characters fall back to `?`;
+  a missing metrics file logs once and draws nothing (no crash).
+- **API units:** cap height in sign pixels — `getStringWidth(text, capHeightPx)` and
+  `drawString(text, leftX, centerY, z, capHeightPx, rgb, sky, block)`. Text is drawn
+  left-aligned with capitals vertically centered on `centerY`, in the TESR's un-mirrored pixel
+  space (+X reader-right, u0 = glyph left edge).
+- **Generation:** dev-env-utils `GuideSignFontAtlasTool` renders
+  `assets/csm/fonts/highway_gothic_wide.ttf` (already shipped for the static sign-texture
+  pipeline) at whatever point size makes 'H' exactly 40px tall. Glyph set: A–Z a–z 0–9 and
+  ` -.,'"/&():;?!+#%`. Rerun it after changing the font or glyph set; it rewrites both outputs.
 
 The exit tab is **flush-mounted**: its background starts at the sign border's outer edge
 (`signTop + borderInset`), so tab and sign read as one attached assembly. Only the **first
