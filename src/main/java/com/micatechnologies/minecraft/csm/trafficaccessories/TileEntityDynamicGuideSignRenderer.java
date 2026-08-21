@@ -85,6 +85,9 @@ public class TileEntityDynamicGuideSignRenderer
   // EXIT ONLY legend so text and arrow tails can never overlap.
   private static final float APL_HEIGHT = 19.0f;
   private static final float APL_TEXT_ZONE = 5.5f;
+  // Breathing room between the panel's last row and the band (scales with the band),
+  // so legend never sits directly against the EXIT ONLY patch's top edge.
+  private static final float APL_TOP_GAP = 2.5f;
   private static final float APL_ARROW_WIDTH = 9.0f;
   // Minimum horizontal room reserved per lane, so the sign widens instead of cramming
   // arrows together. Consumed by computeTotalSignWidth.
@@ -351,11 +354,11 @@ public class TileEntityDynamicGuideSignRenderer
       // ROW_SPACING + APL_HEIGHT, which computeTotalSignHeight adds back for any panel
       // with APL on — keep the two in lockstep.
       if (panel.hasApl()) {
-        panelY -= ROW_SPACING;
+        float aplS = aplScale(panel, contentWidth);
+        panelY -= ROW_SPACING + APL_TOP_GAP * aplS;
         renderAplBand(panel, contentLeft, contentRight,
             signLeft + borderInset, signLeft + totalSignWidth - borderInset, panelY, faceZ,
-            pi == panels.size() - 1 ? signBottom + borderInset : Float.NaN,
-            aplScale(panel, contentWidth));
+            pi == panels.size() - 1 ? signBottom + borderInset : Float.NaN, aplS);
         panelY -= aplBandHeight(panel, contentWidth);
       }
 
@@ -1045,7 +1048,8 @@ public class TileEntityDynamicGuideSignRenderer
       }
       // Mirrors exactly what the render loop spends on the arrow-per-lane band.
       if (panel.hasApl()) {
-        h += aplBandHeight(panel, contentWidth) + ROW_SPACING;
+        h += aplBandHeight(panel, contentWidth) + ROW_SPACING
+            + APL_TOP_GAP * aplScale(panel, contentWidth);
       }
       if (pi < panels.size() - 1) {
         h += PANEL_GAP;
