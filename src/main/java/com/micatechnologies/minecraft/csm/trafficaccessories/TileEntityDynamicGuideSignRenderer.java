@@ -148,6 +148,25 @@ public class TileEntityDynamicGuideSignRenderer
     GlStateManager.popMatrix();
   }
 
+  /**
+   * Draws the sign flat for a GUI preview, fullbright, using the exact world render
+   * path. The caller owns the matrix: sign pixel space is +X reader-right and +Y UP
+   * (flip Y from GUI space), centered horizontally on x=8 with the sign's vertical
+   * center at y=8; quads land at z ~14-16 plus small negative offsets.
+   */
+  public void renderForGui(GuideSignData data) {
+    worldSkyLight = 240;
+    worldBlockLight = 240;
+    renderSign(data);
+  }
+
+  /** {width, height} of the sign body in sign pixels, for preview fit math. */
+  public float[] computeSignDimensions(GuideSignData data) {
+    return new float[]{
+        computeTotalSignWidth(data.getPanels(), data),
+        computeTotalSignHeight(data.getPanels(), data)};
+  }
+
   private void renderSign(GuideSignData data) {
     GuideSignColor signColor = data.getSignColor();
     int borderWidth = data.getBorderWidth();
