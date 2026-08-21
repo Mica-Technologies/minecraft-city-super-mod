@@ -820,8 +820,11 @@ public class TileEntityDynamicGuideSignRenderer
     BufferBuilder buf = tess.getBuffer();
 
     float postBottom = signBottom - 48.0f;
-    float postTop = signBottom;
-    float postFrontZ = faceZ + SIGN_DEPTH / 2.0f - POST_DEPTH / 2.0f;
+    // Posts run up behind the panel like a real sign's; overlap the sign vertically so
+    // there is no gap under the border, but sit entirely BEHIND the assembly in depth
+    // (past the aluminum back slab at frontZ + 0.05) so nothing z-fights.
+    float postTop = signBottom + 2.0f;
+    float postFrontZ = faceZ + SIGN_DEPTH + 0.1f;
     float postBackZ = postFrontZ + POST_DEPTH;
 
     List<RenderHelper.Box> posts = new ArrayList<>();
