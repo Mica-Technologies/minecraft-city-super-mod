@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
@@ -59,12 +58,18 @@ public class TileEntityDynamicGuideSignRenderer
   private static final float POST_WIDTH = 2.5f;
   private static final float POST_DEPTH = 1.5f;
 
-  private static final float TEXT_BASE_SCALE = 0.8f;
+  // Legend text renders in the FHWA-style highway font (GuideSignFontRenderer); all
+  // text sizes below are CAP HEIGHTS in sign pixel units.
+  private static final float TEXT_CAP_HEIGHT = 5.6f;
+  // Row-height factor over cap height, making room for lowercase descenders.
+  private static final float TEXT_VISUAL_FACTOR = 1.3f;
   // Vertical breathing room added above+below a text element when sizing its row.
   private static final float TEXT_LEADING = 2.0f;
-  private static final float EXIT_TAB_TEXT_SCALE = 0.65f;
-  private static final float BANNER_TEXT_SCALE = 0.5f;
-  private static final float ROUTE_TEXT_SCALE = 0.7f;
+  private static final float EXIT_TAB_CAP_HEIGHT = 4.5f;
+  // MUTCD-ish ratios against the shield: route numerals ~42% of shield height, banner
+  // words ~33%.
+  private static final float ROUTE_CAP_FRACTION = 0.42f;
+  private static final float BANNER_CAP_FRACTION = 0.33f;
   // Fraction of the shield cell the route number may span before it shrinks to fit.
   private static final float ROUTE_TEXT_MAX_FRACTION = 0.62f;
   private static final float BANNER_AREA_HEIGHT = 5.5f;
@@ -131,9 +136,9 @@ public class TileEntityDynamicGuideSignRenderer
     // Mirror pixel-space X about the block center so +X in the layout math below is the
     // READER's right. Without this every position (element order, row alignment, exit tab
     // and post sides) renders mirrored: the local +X axis points to the reader's left on
-    // the readable face. Consequence for overlays drawn inside this space: FontRenderer
-    // text is drawn with scale(s, -s, s) and NO extra 180-degree rotation, and atlas quads
-    // map u0 to their LEFT edge, exactly as unmirrored 2D drawing would.
+    // the readable face. Consequence for overlays drawn inside this space: text and atlas
+    // quads map u0 to their LEFT edge and advance toward +X, exactly as unmirrored 2D
+    // drawing would (see GuideSignFontRenderer).
     GlStateManager.translate(16.0f, 0.0f, 0.0f);
     GlStateManager.scale(-1.0f, 1.0f, 1.0f);
 
@@ -313,13 +318,13 @@ public class TileEntityDynamicGuideSignRenderer
   private void renderExitTab(ExitTabData tab, float signLeft, float signTop,
       float signWidth, float faceZ, int borderWidth, CornerStyle cornerStyle,
       float legendR, float legendG, float legendB) {
-    FontRenderer fr = Minecraft.getMinecraft().fontRenderer;
     String tabText = tab.getText();
     if (tabText == null || tabText.isEmpty()) {
       tabText = "EXIT";
     }
 
-    float tabWidth = fr.getStringWidth(tabText) * EXIT_TAB_TEXT_SCALE + EXIT_TAB_PADDING * 2;
+    float tabTextW = GuideSignFontRenderer.getStringWidth(tabText, EXIT_TAB_CAP_HEIGHT);
+    float tabWidth = tabTextW + EXIT_TAB_PADDING * 2;
     float tabHeight = EXIT_TAB_HEIGHT;
 
     float tabX;
@@ -378,20 +383,13 @@ public class TileEntityDynamicGuideSignRenderer
         worldSkyLight, worldBlockLight);
     tess.draw();
 
-    // FontRenderer rebinds its own texture; lightmap is no longer global state.
-    GlStateManager.pushMatrix();
     float textCenterX = tabX + tabWidth / 2.0f;
     float textCenterY = tabBottom + tabHeight / 2.0f;
-    GlStateManager.translate(textCenterX, textCenterY, tabFaceZ - 0.1f);
-    GlStateManager.scale(EXIT_TAB_TEXT_SCALE, -EXIT_TAB_TEXT_SCALE, EXIT_TAB_TEXT_SCALE);
-    GlStateManager.depthMask(false);
-
     int tabTextColor = tabColor.isLight() ? LEGEND_DARK : LEGEND_WHITE;
-    int textW = fr.getStringWidth(tabText);
-    fr.drawString(tabText, -textW / 2, -fr.FONT_HEIGHT / 2, tabTextColor);
-
+    GlStateManager.depthMask(false);
+    GuideSignFontRenderer.drawString(tabText, textCenterX - tabTextW / 2.0f, textCenterY,
+        tabFaceZ - 0.1f, EXIT_TAB_CAP_HEIGHT, tabTextColor, worldSkyLight, worldBlockLight);
     GlStateManager.depthMask(true);
-    GlStateManager.popMatrix();
 
     // Restore the white-pixel binding for subsequent untextured geometry passes.
     Minecraft.getMinecraft().getTextureManager().bindTexture(WHITE_TEXTURE);
@@ -399,18 +397,17 @@ public class TileEntityDynamicGuideSignRenderer
 
   private void renderRow(GuideSignRow row, float startX, float topY, float rowHeight,
       float faceZ, int legendTextColor, float legendR, float legendG, float legendB) {
-    FontRenderer fr = Minecraft.getMinecraft().fontRenderer;
     float curX = startX;
 
     // Lightmap is baked per-vertex; sub-element renderers use worldSkyLight / worldBlockLight.
     for (GuideSignElement elem : row.getElements()) {
       switch (elem.getType()) {
         case GuideSignElement.TYPE_TEXT:
-          renderTextElement(fr, elem, curX, topY, rowHeight, faceZ, legendTextColor);
-          curX += getTextWidth(fr, elem) + ELEMENT_SPACING;
+          renderTextElement(elem, curX, topY, rowHeight, faceZ, legendTextColor);
+          curX += getTextWidth(elem) + ELEMENT_SPACING;
           break;
         case GuideSignElement.TYPE_SHIELD:
-          renderShieldElement(fr, elem, curX, topY, rowHeight, faceZ, legendTextColor);
+          renderShieldElement(elem, curX, topY, rowHeight, faceZ, legendTextColor);
           curX += getShieldWidth(elem) + ELEMENT_SPACING;
           break;
         case GuideSignElement.TYPE_ARROW:
@@ -428,29 +425,20 @@ public class TileEntityDynamicGuideSignRenderer
     }
   }
 
-  private void renderTextElement(FontRenderer fr, GuideSignElement elem,
+  private void renderTextElement(GuideSignElement elem,
       float x, float topY, float rowHeight, float faceZ, int color) {
     String text = elem.getText();
     if (text == null || text.isEmpty()) {
       return;
     }
 
-    GlStateManager.pushMatrix();
-
-    float scale = TEXT_BASE_SCALE * elem.getTextScale();
-    float textWidth = fr.getStringWidth(text) * scale;
-    float centerX = x + textWidth / 2.0f;
+    float capPx = TEXT_CAP_HEIGHT * elem.getTextScale();
     float centerY = topY - rowHeight / 2.0f;
 
-    GlStateManager.translate(centerX, centerY, faceZ - 0.2f);
-    GlStateManager.scale(scale, -scale, scale);
     GlStateManager.depthMask(false);
-
-    int textW = fr.getStringWidth(text);
-    fr.drawString(text, -textW / 2, -fr.FONT_HEIGHT / 2, color);
-
+    GuideSignFontRenderer.drawString(text, x, centerY, faceZ - 0.2f, capPx, color,
+        worldSkyLight, worldBlockLight);
     GlStateManager.depthMask(true);
-    GlStateManager.popMatrix();
 
     // Restore white-pixel binding for subsequent untextured geometry passes.
     Minecraft.getMinecraft().getTextureManager().bindTexture(WHITE_TEXTURE);
@@ -470,7 +458,7 @@ public class TileEntityDynamicGuideSignRenderer
     tess.draw();
   }
 
-  private void renderShieldElement(FontRenderer fr, GuideSignElement elem,
+  private void renderShieldElement(GuideSignElement elem,
       float x, float topY, float rowHeight, float faceZ, int legendTextColor) {
     GuideSignShieldType shieldType = elem.getGuideSignShieldType();
     float[] uv = GuideSignAtlas.getShieldUV(shieldType);
@@ -504,42 +492,33 @@ public class TileEntityDynamicGuideSignRenderer
 
     String routeNum = elem.getRouteNumber();
     if (routeNum != null && !routeNum.isEmpty()) {
-      GlStateManager.pushMatrix();
-      GlStateManager.translate(shieldCenterX, shieldCenterY, faceZ - 0.4f);
       // Shrink to fit: long route numbers scale down so they stay inside the
       // shield's legend area instead of spilling over its edges.
-      float numScale = TEXT_BASE_SCALE * ROUTE_TEXT_SCALE;
+      float capPx = SHIELD_SIZE * ROUTE_CAP_FRACTION;
       float avail = SHIELD_SIZE * ROUTE_TEXT_MAX_FRACTION;
-      int rawW = fr.getStringWidth(routeNum);
-      if (rawW * numScale > avail) {
-        numScale = avail / rawW;
+      float w = GuideSignFontRenderer.getStringWidth(routeNum, capPx);
+      if (w > avail) {
+        capPx *= avail / w;
+        w = avail;
       }
-      GlStateManager.scale(numScale, -numScale, numScale);
       GlStateManager.depthMask(false);
-
-      fr.drawString(routeNum, -rawW / 2, -fr.FONT_HEIGHT / 2,
-          shieldType.getRouteTextColor());
-
+      GuideSignFontRenderer.drawString(routeNum, shieldCenterX - w / 2.0f, shieldCenterY,
+          faceZ - 0.4f, capPx, shieldType.getRouteTextColor(),
+          worldSkyLight, worldBlockLight);
       GlStateManager.depthMask(true);
-      GlStateManager.popMatrix();
     }
 
     String bannerText = elem.getGuideSignBannerType().getBannerText();
     if (!bannerText.isEmpty()) {
-      GlStateManager.pushMatrix();
       // Banner is centered in the row's reserved banner zone, which sits ABOVE
       // the row's content band (between topY and topY + BANNER_AREA_HEIGHT).
       float bannerY = topY + BANNER_AREA_HEIGHT / 2.0f;
-      GlStateManager.translate(shieldCenterX, bannerY, faceZ - 0.4f);
-      float bannerScale = TEXT_BASE_SCALE * BANNER_TEXT_SCALE;
-      GlStateManager.scale(bannerScale, -bannerScale, bannerScale);
+      float capPx = SHIELD_SIZE * BANNER_CAP_FRACTION;
+      float w = GuideSignFontRenderer.getStringWidth(bannerText, capPx);
       GlStateManager.depthMask(false);
-
-      int bw = fr.getStringWidth(bannerText);
-      fr.drawString(bannerText, -bw / 2, -fr.FONT_HEIGHT / 2, legendTextColor);
-
+      GuideSignFontRenderer.drawString(bannerText, shieldCenterX - w / 2.0f, bannerY,
+          faceZ - 0.4f, capPx, legendTextColor, worldSkyLight, worldBlockLight);
       GlStateManager.depthMask(true);
-      GlStateManager.popMatrix();
     }
 
     // Restore white-pixel binding for subsequent untextured geometry passes.
@@ -656,12 +635,11 @@ public class TileEntityDynamicGuideSignRenderer
     if (row.getElements().isEmpty()) {
       return ROW_HEIGHT;
     }
-    FontRenderer fr = Minecraft.getMinecraft().fontRenderer;
     float h = ROW_MIN_HEIGHT;
     for (GuideSignElement elem : row.getElements()) {
       switch (elem.getType()) {
         case GuideSignElement.TYPE_TEXT:
-          float th = fr.FONT_HEIGHT * TEXT_BASE_SCALE * elem.getTextScale() + TEXT_LEADING;
+          float th = TEXT_CAP_HEIGHT * elem.getTextScale() * TEXT_VISUAL_FACTOR + TEXT_LEADING;
           if (th > h) {
             h = th;
           }
@@ -729,12 +707,12 @@ public class TileEntityDynamicGuideSignRenderer
     // Only the first panel's exit tab renders; the sign body just needs to be wide
     // enough that the tab (which sits between the sign's side edges) fits.
     if (!panels.isEmpty() && panels.get(0).hasExitTab()) {
-      FontRenderer fr = Minecraft.getMinecraft().fontRenderer;
       String tabText = panels.get(0).getExitTab().getText();
       if (tabText == null || tabText.isEmpty()) {
         tabText = "EXIT";
       }
-      float tabW = fr.getStringWidth(tabText) * EXIT_TAB_TEXT_SCALE + EXIT_TAB_PADDING * 2;
+      float tabW = GuideSignFontRenderer.getStringWidth(tabText, EXIT_TAB_CAP_HEIGHT)
+          + EXIT_TAB_PADDING * 2;
       float tabNeed = tabW + PANEL_PADDING_SIDE * 2;
       if (tabNeed > width) {
         width = tabNeed;
@@ -745,7 +723,6 @@ public class TileEntityDynamicGuideSignRenderer
   }
 
   private float computeRowWidth(GuideSignRow row, GuideSignData data) {
-    FontRenderer fr = Minecraft.getMinecraft().fontRenderer;
     float w = 0;
     for (int i = 0; i < row.getElements().size(); i++) {
       if (i > 0) {
@@ -754,7 +731,7 @@ public class TileEntityDynamicGuideSignRenderer
       GuideSignElement elem = row.getElements().get(i);
       switch (elem.getType()) {
         case GuideSignElement.TYPE_TEXT:
-          w += getTextWidth(fr, elem);
+          w += getTextWidth(elem);
           break;
         case GuideSignElement.TYPE_SHIELD:
           w += getShieldWidth(elem);
@@ -773,23 +750,22 @@ public class TileEntityDynamicGuideSignRenderer
     return w;
   }
 
-  private float getTextWidth(FontRenderer fr, GuideSignElement elem) {
+  private float getTextWidth(GuideSignElement elem) {
     String text = elem.getText();
     if (text == null || text.isEmpty()) {
       return 0;
     }
-    return fr.getStringWidth(text) * TEXT_BASE_SCALE * elem.getTextScale();
+    return GuideSignFontRenderer.getStringWidth(text, TEXT_CAP_HEIGHT * elem.getTextScale());
   }
 
   private float getShieldWidth(GuideSignElement elem) {
     float w = SHIELD_SIZE;
     String bannerText = elem.getGuideSignBannerType().getBannerText();
     if (!bannerText.isEmpty()) {
-      // Must match the scale renderShieldElement actually draws the banner at,
+      // Must match the cap height renderShieldElement actually draws the banner at,
       // or the reserved cell width and the drawn banner disagree.
-      FontRenderer fr = Minecraft.getMinecraft().fontRenderer;
-      float bannerW = fr.getStringWidth(bannerText) * TEXT_BASE_SCALE * BANNER_TEXT_SCALE
-          + BANNER_CELL_PADDING;
+      float bannerW = GuideSignFontRenderer.getStringWidth(bannerText,
+          SHIELD_SIZE * BANNER_CAP_FRACTION) + BANNER_CELL_PADDING;
       w = Math.max(w, bannerW);
     }
     return w;
