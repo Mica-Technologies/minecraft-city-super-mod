@@ -7,6 +7,8 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Arc2D;
+import java.awt.geom.Area;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.RoundRectangle2D;
@@ -23,12 +25,18 @@ import org.apache.batik.transcoder.image.ImageTranscoder;
  * from Wikimedia Commons SVGs via Apache Batik, and draws directional arrows
  * programmatically.
  *
- * <p>Atlas layout (512x512, 64x64 cells, matches {@code GuideSignAtlas.java}):
+ * <p>Atlas layout (512x1024, 64x64 cells, matches {@code GuideSignAtlas.java}):
  * <ul>
  *   <li>Row 0, cols 0-7: Generic shield backgrounds (no text baked in)</li>
  *   <li>Row 1, cols 0-7: State markers (CA, TX, FL, NY, CT, MA, ME, NH)</li>
  *   <li>Row 2, cols 0-1: State markers (RI, VT)</li>
+ *   <li>Row 2, cols 2-7: State markers (AL, AK, AZ, AR, CO, DE)</li>
+ *   <li>Row 3, cols 0-7: State markers (GA, HI, ID, IL, IN, IA, KS, KY)</li>
  *   <li>Rows 4-5, cols 0-4: Directional arrows (white on transparent)</li>
+ *   <li>Row 6, cols 0-7: State markers (LA, MD, MI, MN, MS, MO, MT, NE)</li>
+ *   <li>Row 7, cols 0-7: State markers (NV, NJ, NM, NC, ND, OH, OK, OR)</li>
+ *   <li>Row 8, cols 0-7: State markers (PA, SC, SD, TN, UT, VA, WA, WV)</li>
+ *   <li>Row 9, cols 0-1: State markers (WI, WY)</li>
  * </ul>
  *
  * <p>Shield SVG sources (public domain MUTCD designs from Wikimedia Commons):
@@ -50,7 +58,8 @@ public class GuideSignAtlasTool {
 
   private static final String SHIELD_RESOURCE_DIR = "/guidesign/shields/";
 
-  private static final int ATLAS_SIZE = 512;
+  private static final int ATLAS_WIDTH = 512;
+  private static final int ATLAS_HEIGHT = 1024;
   private static final int CELL_SIZE = 64;
 
   private static final int ARROW_ROW_OFFSET = 4;
@@ -64,7 +73,7 @@ public class GuideSignAtlasTool {
           outputFile.getParentFile().mkdirs();
 
           BufferedImage atlas = new BufferedImage(
-              ATLAS_SIZE, ATLAS_SIZE, BufferedImage.TYPE_INT_ARGB);
+              ATLAS_WIDTH, ATLAS_HEIGHT, BufferedImage.TYPE_INT_ARGB);
           Graphics2D g = atlas.createGraphics();
           g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
               RenderingHints.VALUE_ANTIALIAS_ON);
@@ -103,6 +112,51 @@ public class GuideSignAtlasTool {
     drawStateShield(g, 7, 1, makePeakShape(7, 1, true), new Color(40, 100, 60));
     drawStateShield(g, 0, 2, makeRhodeIslandShape(0, 2), new Color(55, 95, 160));
     drawStateShield(g, 1, 2, makePeakShape(1, 2, false), new Color(55, 120, 70));
+
+    // Remaining 40 states — mix of a few iconic silhouettes (keystone, Ohio's
+    // jagged eastern border, a beehive, a notched Arizona rectangle, a bust-like
+    // oval for Washington) and generic archetypes (circle/hexagon/diamond/
+    // octagon/oval/rounded-square/peak) in state-themed colors for the rest.
+    drawStateShield(g, 2, 2, makeOctagon(2, 2), new Color(176, 48, 64));       // Alabama
+    drawStateShield(g, 3, 2, makeHexagon(3, 2), new Color(46, 111, 142));      // Alaska
+    drawStateShield(g, 4, 2, makeArizonaShape(4, 2), new Color(181, 101, 29)); // Arizona
+    drawStateShield(g, 5, 2, makeDiamond(5, 2), new Color(47, 107, 58));       // Arkansas
+    drawStateShield(g, 6, 2, makeRoundedSquare(6, 2), Color.WHITE);            // Colorado
+    drawStateShield(g, 7, 2, makeCircle(7, 2), new Color(34, 68, 170));        // Delaware
+    drawStateShield(g, 0, 3, makePeakShape(0, 3, true), new Color(224, 128, 48)); // Georgia
+    drawStateShield(g, 1, 3, makeWideOval(1, 3), new Color(30, 138, 138));     // Hawaii
+    drawStateShield(g, 2, 3, makePeakShape(2, 3, true), new Color(44, 71, 112)); // Idaho
+    drawStateShield(g, 3, 3, makeRoundedSquare(3, 3), new Color(0, 51, 160));  // Illinois
+    drawStateShield(g, 4, 3, makeDiamond(4, 3), new Color(27, 63, 139));       // Indiana
+    drawStateShield(g, 5, 3, makeWideOval(5, 3), new Color(199, 154, 46));     // Iowa
+    drawStateShield(g, 6, 3, makeCircle(6, 3), new Color(232, 201, 58));       // Kansas
+    drawStateShield(g, 7, 3, makeHexagon(7, 3), new Color(46, 90, 62));        // Kentucky
+    drawStateShield(g, 0, 6, makeDiamond(0, 6), new Color(91, 42, 134));       // Louisiana
+    drawStateShield(g, 1, 6, makeHexagon(1, 6), new Color(26, 26, 26));        // Maryland
+    drawStateShield(g, 2, 6, makePeakShape(2, 6, false), new Color(0, 39, 76)); // Michigan
+    drawStateShield(g, 3, 6, makeRoundedSquare(3, 6), Color.WHITE);            // Minnesota
+    drawStateShield(g, 4, 6, makeWideOval(4, 6), new Color(31, 110, 82));      // Mississippi
+    drawStateShield(g, 5, 6, makeRoundedSquare(5, 6), Color.WHITE);            // Missouri
+    drawStateShield(g, 6, 6, makePeakShape(6, 6, true), new Color(61, 111, 166)); // Montana
+    drawStateShield(g, 7, 6, makeHexagon(7, 6), new Color(176, 30, 40));       // Nebraska
+    drawStateShield(g, 0, 7, makeDiamond(0, 7), new Color(138, 141, 145));     // Nevada
+    drawStateShield(g, 1, 7, makeOctagon(1, 7), new Color(30, 58, 138));       // New Jersey
+    drawStateShield(g, 2, 7, makeRoundedSquare(2, 7), new Color(186, 12, 47)); // New Mexico (zia red)
+    drawStateShield(g, 3, 7, makeDiamond(3, 7), Color.WHITE);                  // North Carolina
+    drawStateShield(g, 4, 7, makeWideOval(4, 7), new Color(212, 175, 55));     // North Dakota
+    drawStateShield(g, 5, 7, makeOhioShape(5, 7), Color.WHITE);                // Ohio
+    drawStateShield(g, 6, 7, makeHexagon(6, 7), new Color(163, 63, 31));       // Oklahoma
+    drawStateShield(g, 7, 7, makePeakShape(7, 7, true), new Color(27, 77, 62)); // Oregon
+    drawStateShield(g, 0, 8, makeKeystoneShape(0, 8), new Color(20, 38, 75));  // Pennsylvania
+    drawStateShield(g, 1, 8, makeDiamond(1, 8), new Color(102, 0, 31));        // South Carolina
+    drawStateShield(g, 2, 8, makeCircle(2, 8), new Color(107, 107, 107));      // South Dakota
+    drawStateShield(g, 3, 8, makeHexagon(3, 8), new Color(200, 16, 46));       // Tennessee
+    drawStateShield(g, 4, 8, makeBeehiveShape(4, 8), Color.WHITE);             // Utah
+    drawStateShield(g, 5, 8, makeWideOval(5, 8), new Color(35, 45, 75));       // Virginia
+    drawStateShield(g, 6, 8, makeWashingtonBustShape(6, 8), Color.WHITE);      // Washington
+    drawStateShield(g, 7, 8, makePeakShape(7, 8, true), new Color(0, 40, 85)); // West Virginia
+    drawStateShield(g, 0, 9, makeRoundedSquare(0, 9), new Color(155, 27, 48)); // Wisconsin
+    drawStateShield(g, 1, 9, makePeakShape(1, 9, true), new Color(28, 63, 110)); // Wyoming
   }
 
   // ---- State shield helpers ----
@@ -110,9 +164,17 @@ public class GuideSignAtlasTool {
   private static void drawStateShield(Graphics2D g, int col, int row, Shape shape, Color color) {
     g.setColor(color);
     g.fill(shape);
-    g.setColor(Color.WHITE);
+    // Light fills (white/yellow/gold state shields) need a dark outline to stay
+    // visible; dark fills keep the original white outline. Mirrors the dark-fill
+    // -> white-text / light-fill -> dark-text rule used for routeTextColor.
+    g.setColor(isLightColor(color) ? new Color(20, 20, 20) : Color.WHITE);
     g.setStroke(new BasicStroke(2.5f));
     g.draw(shape);
+  }
+
+  private static boolean isLightColor(Color c) {
+    double luminance = 0.299 * c.getRed() + 0.587 * c.getGreen() + 0.114 * c.getBlue();
+    return luminance > 150;
   }
 
   private static Shape makeCaliforniaShape(int col, int row) {
@@ -252,6 +314,171 @@ public class GuideSignAtlasTool {
     int s = CELL_SIZE;
     int m = 12;
     return new RoundRectangle2D.Float(x + m, y + m, s - m * 2, s - m * 2, 8, 8);
+  }
+
+  private static Shape makeCircle(int col, int row) {
+    int x = col * CELL_SIZE;
+    int y = row * CELL_SIZE;
+    int s = CELL_SIZE;
+    int m = 6;
+    return new Ellipse2D.Float(x + m, y + m, s - m * 2, s - m * 2);
+  }
+
+  private static Shape makeHexagon(int col, int row) {
+    int x = col * CELL_SIZE;
+    int y = row * CELL_SIZE;
+    int s = CELL_SIZE;
+    int m = 6;
+    double cx = x + s / 2.0;
+    double cy = y + s / 2.0;
+    double r = (s - m * 2) / 2.0;
+    GeneralPath p = new GeneralPath();
+    for (int i = 0; i < 6; i++) {
+      double angle = Math.toRadians(60 * i - 30);
+      double px = cx + r * Math.cos(angle);
+      double py = cy + r * Math.sin(angle);
+      if (i == 0) {
+        p.moveTo(px, py);
+      } else {
+        p.lineTo(px, py);
+      }
+    }
+    p.closePath();
+    return p;
+  }
+
+  private static Shape makeDiamond(int col, int row) {
+    int x = col * CELL_SIZE;
+    int y = row * CELL_SIZE;
+    int s = CELL_SIZE;
+    int m = 5;
+    double cx = x + s / 2.0;
+    double cy = y + s / 2.0;
+    GeneralPath p = new GeneralPath();
+    p.moveTo(cx, y + m);
+    p.lineTo(x + s - m, cy);
+    p.lineTo(cx, y + s - m);
+    p.lineTo(x + m, cy);
+    p.closePath();
+    return p;
+  }
+
+  private static Shape makeOctagon(int col, int row) {
+    int x = col * CELL_SIZE;
+    int y = row * CELL_SIZE;
+    int s = CELL_SIZE;
+    int m = 6;
+    double w = s - m * 2;
+    double inset = w * 0.3;
+    GeneralPath p = new GeneralPath();
+    p.moveTo(x + m + inset, y + m);
+    p.lineTo(x + s - m - inset, y + m);
+    p.lineTo(x + s - m, y + m + inset);
+    p.lineTo(x + s - m, y + s - m - inset);
+    p.lineTo(x + s - m - inset, y + s - m);
+    p.lineTo(x + m + inset, y + s - m);
+    p.lineTo(x + m, y + s - m - inset);
+    p.lineTo(x + m, y + m + inset);
+    p.closePath();
+    return p;
+  }
+
+  private static Shape makeArizonaShape(int col, int row) {
+    // Rectangular state outline with a notch cut from the top-right corner,
+    // evoking AZ's straight borders with the Utah/Four Corners step.
+    int x = col * CELL_SIZE;
+    int y = row * CELL_SIZE;
+    int s = CELL_SIZE;
+    int m = 6;
+    GeneralPath p = new GeneralPath();
+    p.moveTo(x + m, y + m);
+    p.lineTo(x + s * 0.65, y + m);
+    p.lineTo(x + s * 0.65, y + s * 0.35);
+    p.lineTo(x + s - m, y + s * 0.35);
+    p.lineTo(x + s - m, y + s - m);
+    p.lineTo(x + m, y + s - m);
+    p.closePath();
+    return p;
+  }
+
+  private static Shape makeOhioShape(int col, int row) {
+    // Straight western/southern edges with a jagged eastern edge, hinting at
+    // the Ohio River border.
+    int x = col * CELL_SIZE;
+    int y = row * CELL_SIZE;
+    int s = CELL_SIZE;
+    int m = 6;
+    GeneralPath p = new GeneralPath();
+    p.moveTo(x + m, y + m);
+    p.lineTo(x + s * 0.70, y + m);
+    p.lineTo(x + s * 0.78, y + s * 0.15);
+    p.lineTo(x + s * 0.68, y + s * 0.28);
+    p.lineTo(x + s - m, y + s * 0.40);
+    p.lineTo(x + s * 0.85, y + s * 0.55);
+    p.lineTo(x + s - m, y + s * 0.68);
+    p.lineTo(x + s * 0.75, y + s - m);
+    p.lineTo(x + m, y + s - m);
+    p.closePath();
+    return p;
+  }
+
+  private static Shape makeKeystoneShape(int col, int row) {
+    // Classic architectural keystone: narrow top, flared wider bottom.
+    int x = col * CELL_SIZE;
+    int y = row * CELL_SIZE;
+    int s = CELL_SIZE;
+    int m = 6;
+    GeneralPath p = new GeneralPath();
+    p.moveTo(x + s * 0.34, y + m);
+    p.lineTo(x + s * 0.66, y + m);
+    p.lineTo(x + s * 0.80, y + s * 0.45);
+    p.lineTo(x + s * 0.86, y + s - m);
+    p.lineTo(x + s * 0.14, y + s - m);
+    p.lineTo(x + s * 0.20, y + s * 0.45);
+    p.closePath();
+    return p;
+  }
+
+  private static Shape makeBeehiveShape(int col, int row) {
+    // Domed top (chord arc) fused with a trapezoid base — a simple beehive.
+    int x = col * CELL_SIZE;
+    int y = row * CELL_SIZE;
+    int s = CELL_SIZE;
+    int m = 6;
+    double baseBottomY = y + s - m;
+    double baseTopY = y + s * 0.55;
+    double domeTopY = y + m;
+    double leftTop = x + s * 0.34;
+    double rightTop = x + s * 0.66;
+    double leftBottom = x + s * 0.22;
+    double rightBottom = x + s * 0.78;
+
+    Arc2D.Double dome = new Arc2D.Double(
+        leftTop, domeTopY, rightTop - leftTop, (baseTopY - domeTopY) * 2, 0, 180, Arc2D.CHORD);
+
+    GeneralPath trapezoid = new GeneralPath();
+    trapezoid.moveTo(leftTop, baseTopY);
+    trapezoid.lineTo(rightTop, baseTopY);
+    trapezoid.lineTo(rightBottom, baseBottomY);
+    trapezoid.lineTo(leftBottom, baseBottomY);
+    trapezoid.closePath();
+
+    Area beehive = new Area(dome);
+    beehive.add(new Area(trapezoid));
+    return beehive;
+  }
+
+  private static Shape makeWashingtonBustShape(int col, int row) {
+    // Upright oval with a flat bottom (chord arc), suggesting a bust profile
+    // without attempting actual portraiture.
+    int x = col * CELL_SIZE;
+    int y = row * CELL_SIZE;
+    int s = CELL_SIZE;
+    int m = 8;
+    double height = s - m * 2;
+    double width = height * 0.72;
+    double left = x + (s - width) / 2.0;
+    return new Arc2D.Double(left, y + m, width, height, 0, 180, Arc2D.CHORD);
   }
 
   private static void drawSvgShield(Graphics2D g, int col, int row, String svgFile) {

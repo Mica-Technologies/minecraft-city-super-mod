@@ -18,6 +18,8 @@ public class GuideSignElement {
   private int shieldType = 0;
   private String routeNumber = "";
   private int bannerType = 0;
+  // BannerPosition ordinal; absent in pre-existing sign JSON, so Gson leaves it 0 (ABOVE).
+  private int bannerPosition = 0;
 
   private int arrowType = 0;
 
@@ -125,6 +127,14 @@ public class GuideSignElement {
     return GuideSignBannerType.fromOrdinal(bannerType);
   }
 
+  public void setBannerPosition(int bannerPosition) {
+    this.bannerPosition = bannerPosition;
+  }
+
+  public BannerPosition getBannerPosition() {
+    return BannerPosition.fromOrdinal(bannerPosition);
+  }
+
   public int getArrowType() {
     return arrowType;
   }
@@ -149,8 +159,17 @@ public class GuideSignElement {
     switch (type) {
       case TYPE_TEXT:
         return "\"" + (text.length() > 12 ? text.substring(0, 12) + ".." : text) + "\"";
-      case TYPE_SHIELD:
-        return getGuideSignShieldType().getFriendlyName() + " " + routeNumber;
+      case TYPE_SHIELD: {
+        String s = getGuideSignShieldType().getFriendlyName() + " " + routeNumber;
+        GuideSignBannerType banner = getGuideSignBannerType();
+        if (banner != GuideSignBannerType.NONE) {
+          s += " +" + banner.getFriendlyName();
+          if (getBannerPosition() != BannerPosition.ABOVE) {
+            s += "(" + getBannerPosition().getFriendlyName().toLowerCase() + ")";
+          }
+        }
+        return s;
+      }
       case TYPE_ARROW:
         return getGuideSignArrowType().getFriendlyName() + " Arrow";
       case TYPE_DIVIDER:
@@ -170,6 +189,7 @@ public class GuideSignElement {
     e.shieldType = shieldType;
     e.routeNumber = routeNumber;
     e.bannerType = bannerType;
+    e.bannerPosition = bannerPosition;
     e.arrowType = arrowType;
     e.spacingWidth = spacingWidth;
     return e;
