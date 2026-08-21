@@ -63,6 +63,10 @@ public class DynamicGuideSignGui extends GuiScreen {
   private static final int BTN_ADD_ROW = 26;
   private static final int BTN_REMOVE_ROW = 27;
   private static final int BTN_EDIT_ROW = 28;
+  private static final int BTN_APL_LANES_DOWN = 57;
+  private static final int BTN_APL_LANES_UP = 58;
+  private static final int BTN_APL_EXIT_DOWN = 59;
+  private static final int BTN_APL_EXIT_UP = 60;
 
   private static final int BTN_ROW_PREV = 30;
   private static final int BTN_ROW_NEXT = 31;
@@ -299,6 +303,21 @@ public class DynamicGuideSignGui extends GuiScreen {
       exitTextField = null;
     }
 
+    // Arrow-per-lane band. Labels are drawn between the steppers in drawPanelLabels,
+    // which must step y identically to the layout above.
+    addContentBtn(new GuiButton(BTN_APL_LANES_DOWN, left, y, 30, BTN_HEIGHT, "-"));
+    addContentBtn(
+        new GuiButton(BTN_APL_LANES_UP, left + FIELD_WIDTH - 30, y, 30, BTN_HEIGHT, "+"));
+    y += BTN_HEIGHT + 2;
+    GuiButton aplExitDown = new GuiButton(BTN_APL_EXIT_DOWN, left, y, 30, BTN_HEIGHT, "-");
+    GuiButton aplExitUp =
+        new GuiButton(BTN_APL_EXIT_UP, left + FIELD_WIDTH - 30, y, 30, BTN_HEIGHT, "+");
+    aplExitDown.enabled = panel.hasApl();
+    aplExitUp.enabled = panel.hasApl();
+    addContentBtn(aplExitDown);
+    addContentBtn(aplExitUp);
+    y += BTN_HEIGHT + 2;
+
     y += 4;
 
     List<GuideSignRow> rows = panel.getRows();
@@ -470,6 +489,10 @@ public class DynamicGuideSignGui extends GuiScreen {
         previewLines.add(sb.toString());
       } else {
         previewLines.add(TextFormatting.GRAY + "(no exit tab)");
+      }
+      if (panel.hasApl()) {
+        previewLines.add("APL: " + panel.getAplLanes() + " lanes, "
+            + panel.getAplExitLanes() + " exit");
       }
 
       List<GuideSignRow> rows = panel.getRows();
@@ -690,6 +713,19 @@ public class DynamicGuideSignGui extends GuiScreen {
         btn.displayString = "Toll: " + (panel.getExitTab().isToll() ? "Yes" : "No");
       }
     }
+
+    // Step y exactly as buildPanelTab lays the buttons out, or the APL labels drift out
+    // from between their steppers.
+    int aplY = y + (BTN_HEIGHT + 4) + (BTN_HEIGHT + 2);
+    if (panel.hasExitTab()) {
+      aplY += (BTN_HEIGHT + 2) * 2;
+    }
+    drawScrolledCenteredString(
+        panel.hasApl() ? "APL Lanes: " + panel.getAplLanes() : "APL Lanes: Off",
+        centerX, aplY + 5, 0xFFFFFF);
+    aplY += BTN_HEIGHT + 2;
+    drawScrolledCenteredString("Exit Lanes: " + panel.getAplExitLanes(), centerX,
+        aplY + 5, panel.hasApl() ? 0xFFFFFF : 0x808080);
   }
 
   private void drawRowLabels(int left, int y, int centerX) {
@@ -961,6 +997,28 @@ public class DynamicGuideSignGui extends GuiScreen {
         if (panel.hasExitTab()) {
           panel.getExitTab().setToll(!panel.getExitTab().isToll());
         }
+        break;
+      }
+      case BTN_APL_LANES_DOWN: {
+        GuideSignPanel panel = data.getPanels().get(selectedPanel);
+        panel.setAplLanes(panel.getAplLanes() - 1);
+        initGui();
+        break;
+      }
+      case BTN_APL_LANES_UP: {
+        GuideSignPanel panel = data.getPanels().get(selectedPanel);
+        panel.setAplLanes(panel.getAplLanes() + 1);
+        initGui();
+        break;
+      }
+      case BTN_APL_EXIT_DOWN: {
+        GuideSignPanel panel = data.getPanels().get(selectedPanel);
+        panel.setAplExitLanes(panel.getAplExitLanes() - 1);
+        break;
+      }
+      case BTN_APL_EXIT_UP: {
+        GuideSignPanel panel = data.getPanels().get(selectedPanel);
+        panel.setAplExitLanes(panel.getAplExitLanes() + 1);
         break;
       }
       case BTN_ADD_ROW: {
