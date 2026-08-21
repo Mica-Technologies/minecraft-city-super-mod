@@ -67,6 +67,8 @@ public class DynamicGuideSignGui extends GuiScreen {
   private static final int BTN_APL_LANES_UP = 58;
   private static final int BTN_APL_EXIT_DOWN = 59;
   private static final int BTN_APL_EXIT_UP = 60;
+  private static final int BTN_SHIELD_BACK = 61;
+  private static final int BTN_EXIT_TAB_WIDE = 62;
 
   private static final int BTN_ROW_PREV = 30;
   private static final int BTN_ROW_NEXT = 31;
@@ -295,9 +297,11 @@ public class DynamicGuideSignGui extends GuiScreen {
           new GuiButton(BTN_EXIT_TAB_POS, left + halfW + 2, y, halfW, BTN_HEIGHT, ""));
       y += BTN_HEIGHT + 2;
       addContentBtn(
-          new GuiButton(BTN_EXIT_TAB_COLOR, left, y, halfW - 2, BTN_HEIGHT, ""));
+          new GuiButton(BTN_EXIT_TAB_COLOR, left, y, 84, BTN_HEIGHT, ""));
       addContentBtn(
-          new GuiButton(BTN_EXIT_TAB_TOLL, left + halfW + 2, y, halfW, BTN_HEIGHT, ""));
+          new GuiButton(BTN_EXIT_TAB_TOLL, left + 88, y, 74, BTN_HEIGHT, ""));
+      addContentBtn(
+          new GuiButton(BTN_EXIT_TAB_WIDE, left + 166, y, 74, BTN_HEIGHT, ""));
       y += BTN_HEIGHT + 2;
     } else {
       exitTextField = null;
@@ -439,7 +443,9 @@ public class DynamicGuideSignGui extends GuiScreen {
             new GuiButton(BTN_BANNER_TYPE, left + halfW + 24, y, halfW - 22, BTN_HEIGHT, ""));
         y += BTN_HEIGHT + 2;
         addContentBtn(
-            new GuiButton(BTN_BANNER_POS, left, y, FIELD_WIDTH, BTN_HEIGHT, ""));
+            new GuiButton(BTN_BANNER_POS, left, y, halfW, BTN_HEIGHT, ""));
+        addContentBtn(
+            new GuiButton(BTN_SHIELD_BACK, left + halfW + 4, y, halfW, BTN_HEIGHT, ""));
         break;
 
       case GuideSignElement.TYPE_ARROW:
@@ -711,6 +717,8 @@ public class DynamicGuideSignGui extends GuiScreen {
         btn.displayString = "Color: " + panel.getExitTab().getGuideSignColor().getFriendlyName();
       } else if (btn.id == BTN_EXIT_TAB_TOLL && panel.hasExitTab()) {
         btn.displayString = "Toll: " + (panel.getExitTab().isToll() ? "Yes" : "No");
+      } else if (btn.id == BTN_EXIT_TAB_WIDE && panel.hasExitTab()) {
+        btn.displayString = panel.getExitTab().isWide() ? "Wide" : "Narrow";
       }
     }
 
@@ -771,6 +779,8 @@ public class DynamicGuideSignGui extends GuiScreen {
           btn.displayString = "Banner: " + elem.getGuideSignBannerType().getFriendlyName();
         } else if (btn.id == BTN_BANNER_POS) {
           btn.displayString = "Banner Pos: " + elem.getBannerPosition().getFriendlyName();
+        } else if (btn.id == BTN_SHIELD_BACK) {
+          btn.displayString = "Back: " + (elem.hasShieldBack() ? "ON" : "OFF");
         } else if (btn.id == BTN_ARROW_TYPE) {
           btn.displayString = "Arrow: " + elem.getGuideSignArrowType().getFriendlyName();
         }
@@ -999,6 +1009,13 @@ public class DynamicGuideSignGui extends GuiScreen {
         }
         break;
       }
+      case BTN_EXIT_TAB_WIDE: {
+        GuideSignPanel panel = data.getPanels().get(selectedPanel);
+        if (panel.hasExitTab()) {
+          panel.getExitTab().setWide(!panel.getExitTab().isWide());
+        }
+        break;
+      }
       case BTN_APL_LANES_DOWN: {
         GuideSignPanel panel = data.getPanels().get(selectedPanel);
         panel.setAplLanes(panel.getAplLanes() - 1);
@@ -1191,6 +1208,13 @@ public class DynamicGuideSignGui extends GuiScreen {
         GuideSignElement elem = getSelectedElement();
         if (elem != null) {
           elem.setBannerPosition(elem.getBannerPosition().next().ordinal());
+        }
+        break;
+      }
+      case BTN_SHIELD_BACK: {
+        GuideSignElement elem = getSelectedElement();
+        if (elem != null) {
+          elem.setShieldBack(!elem.hasShieldBack());
         }
         break;
       }

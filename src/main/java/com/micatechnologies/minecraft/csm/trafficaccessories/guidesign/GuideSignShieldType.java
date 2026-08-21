@@ -65,7 +65,18 @@ public enum GuideSignShieldType {
   WASHINGTON(6, 8, "Washington", 0x101010),
   WEST_VIRGINIA(7, 8, "West Virginia", 0xFFFFFF),
   WISCONSIN(0, 9, "Wisconsin", 0xFFFFFF),
-  WYOMING(1, 9, "Wyoming", 0xFFFFFF);
+  WYOMING(1, 9, "Wyoming", 0xFFFFFF),
+
+  // Washington DC + Canadian provinces. Ordinals are serialized in sign JSON —
+  // always append new entries at the end, never reorder or insert. Atlas row 9
+  // cols 2-7 holds the first six, row 10 col 0 holds the seventh.
+  DISTRICT_OF_COLUMBIA(2, 9, "Washington DC", 0x101010),
+  ONTARIO(3, 9, "Ontario", 0x101010),
+  QUEBEC(4, 9, "Quebec", 0x101010),
+  NEW_BRUNSWICK(5, 9, "New Brunswick", 0xFFFFFF),
+  NOVA_SCOTIA(6, 9, "Nova Scotia", 0xFFFFFF),
+  NEWFOUNDLAND(7, 9, "Newfoundland and Labrador", 0xFFFFFF),
+  PRINCE_EDWARD_ISLAND(0, 10, "Prince Edward Island", 0xFFFFFF);
 
   private final int atlasCol;
   private final int atlasRow;

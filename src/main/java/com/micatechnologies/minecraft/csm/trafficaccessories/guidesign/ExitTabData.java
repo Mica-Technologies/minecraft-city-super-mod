@@ -11,6 +11,9 @@ public class ExitTabData {
   private String text = "EXIT";
   private int color = GuideSignColor.GREEN.ordinal();
   private boolean toll = false;
+  // Wide style: extra horizontal padding around the tab text (SignMaker's narrow/wide).
+  // Absent in older sign JSON → false (narrow).
+  private boolean wide = false;
 
   public ExitTabData() {
   }
@@ -70,7 +73,17 @@ public class ExitTabData {
     this.toll = toll;
   }
 
+  public boolean isWide() {
+    return wide;
+  }
+
+  public void setWide(boolean wide) {
+    this.wide = wide;
+  }
+
   public ExitTabData copy() {
-    return new ExitTabData(position, text, color, toll);
+    ExitTabData t = new ExitTabData(position, text, color, toll);
+    t.wide = wide;
+    return t;
   }
 }

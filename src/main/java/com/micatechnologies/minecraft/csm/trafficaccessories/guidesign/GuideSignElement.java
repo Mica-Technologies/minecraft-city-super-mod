@@ -20,6 +20,9 @@ public class GuideSignElement {
   private int bannerType = 0;
   // BannerPosition ordinal; absent in pre-existing sign JSON, so Gson leaves it 0 (ABOVE).
   private int bannerPosition = 0;
+  // White backing plate drawn behind the shield (SignMaker's "Shield Backs").
+  // Absent in older sign JSON → false.
+  private boolean shieldBack = false;
 
   private int arrowType = 0;
 
@@ -135,6 +138,14 @@ public class GuideSignElement {
     return BannerPosition.fromOrdinal(bannerPosition);
   }
 
+  public boolean hasShieldBack() {
+    return shieldBack;
+  }
+
+  public void setShieldBack(boolean shieldBack) {
+    this.shieldBack = shieldBack;
+  }
+
   public int getArrowType() {
     return arrowType;
   }
@@ -190,6 +201,7 @@ public class GuideSignElement {
     e.routeNumber = routeNumber;
     e.bannerType = bannerType;
     e.bannerPosition = bannerPosition;
+    e.shieldBack = shieldBack;
     e.arrowType = arrowType;
     e.spacingWidth = spacingWidth;
     return e;
