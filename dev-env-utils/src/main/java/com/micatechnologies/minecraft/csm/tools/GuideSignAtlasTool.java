@@ -820,6 +820,20 @@ public class GuideSignAtlasTool {
     at.rotate(Math.toRadians(angleDeg));
     arrow.transform(at);
 
+    // Rotation changes the ink's bounding box (a bbox-centered shape is no longer
+    // bbox-centered after 45 degrees), which made diagonal arrows sit ~2px off-center
+    // and render ~20% smaller than straight ones — the TESR draws every cell with the
+    // same quad, so all arrows must have identically sized, centered ink. Scale the
+    // ink's larger extent to the straight arrow's height and recenter on the cell.
+    java.awt.geom.Rectangle2D b = arrow.getBounds2D();
+    double targetExtent = s - 2 * m;
+    double scale = targetExtent / Math.max(b.getWidth(), b.getHeight());
+    AffineTransform fix = new AffineTransform();
+    fix.translate(cx, cy);
+    fix.scale(scale, scale);
+    fix.translate(-b.getCenterX(), -b.getCenterY());
+    arrow.transform(fix);
+
     g.fill(arrow);
   }
 
