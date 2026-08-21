@@ -11,6 +11,7 @@ import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.GuideSign
 import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.GuideSignPanel;
 import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.GuideSignRow;
 import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.GuideSignShieldType;
+import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.PostType;
 import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.SignTemplates;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -18,6 +19,8 @@ import java.util.List;
 import javax.annotation.ParametersAreNonnullByDefault;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.renderer.GlStateManager;
+import org.lwjgl.opengl.GL11;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.util.text.TextFormatting;
@@ -74,6 +77,8 @@ public class DynamicGuideSignGui extends GuiScreen {
   private static final int BTN_SHIELD_TYPE = 43;
   private static final int BTN_BANNER_TYPE = 44;
   private static final int BTN_BANNER_POS = 53;
+  private static final int BTN_SHIELD_TYPE_PREV = 55;
+  private static final int BTN_BANNER_TYPE_PREV = 56;
   private static final int BTN_ARROW_TYPE = 45;
   private static final int BTN_SPACING_DOWN = 46;
   private static final int BTN_SPACING_UP = 47;
@@ -117,6 +122,11 @@ public class DynamicGuideSignGui extends GuiScreen {
 
   private final List<String> previewLines = new ArrayList<>();
   private static final int PREVIEW_LINE_HEIGHT = 11;
+  // Height of the WYSIWYG sign preview box at the top of the Preview tab.
+  private static final int PREVIEW_VISUAL_HEIGHT = 100;
+  // Renders the live preview with the exact world (TESR) code path, fullbright.
+  private final TileEntityDynamicGuideSignRenderer previewRenderer =
+      new TileEntityDynamicGuideSignRenderer();
 
   public DynamicGuideSignGui(TileEntityDynamicGuideSign tileEntity) {
     this.tileEntity = tileEntity;
@@ -394,16 +404,20 @@ public class DynamicGuideSignGui extends GuiScreen {
         break;
 
       case GuideSignElement.TYPE_SHIELD:
-        addContentBtn(
-            new GuiButton(BTN_SHIELD_TYPE, left, y, FIELD_WIDTH, BTN_HEIGHT, ""));
+        // 58 shield types: two-way cycling, or one-way is unusable.
+        addContentBtn(new GuiButton(BTN_SHIELD_TYPE_PREV, left, y, 20, BTN_HEIGHT, "<"));
+        addContentBtn(new GuiButton(BTN_SHIELD_TYPE, left + 22, y, FIELD_WIDTH - 22,
+            BTN_HEIGHT, ""));
         y += BTN_HEIGHT + 2;
         routeField = new GuiTextField(71, fontRenderer, left, y, halfW - 2, BTN_HEIGHT);
         routeField.setMaxStringLength(5);
         routeField.setText(elem.getRouteNumber());
         routeField.setFocused(true);
         addContentField(routeField);
+        addContentBtn(new GuiButton(BTN_BANNER_TYPE_PREV, left + halfW + 2, y, 20,
+            BTN_HEIGHT, "<"));
         addContentBtn(
-            new GuiButton(BTN_BANNER_TYPE, left + halfW + 2, y, halfW, BTN_HEIGHT, ""));
+            new GuiButton(BTN_BANNER_TYPE, left + halfW + 24, y, halfW - 22, BTN_HEIGHT, ""));
         y += BTN_HEIGHT + 2;
         addContentBtn(
             new GuiButton(BTN_BANNER_POS, left, y, FIELD_WIDTH, BTN_HEIGHT, ""));
@@ -430,7 +444,7 @@ public class DynamicGuideSignGui extends GuiScreen {
 
   private void buildPreviewTab(int left, int y) {
     rebuildPreviewLines();
-    int totalHeight = previewLines.size() * PREVIEW_LINE_HEIGHT;
+    int totalHeight = PREVIEW_VISUAL_HEIGHT + 4 + previewLines.size() * PREVIEW_LINE_HEIGHT;
     customContentBottom = y + totalHeight + 4;
   }
 
@@ -485,11 +499,69 @@ public class DynamicGuideSignGui extends GuiScreen {
   }
 
   private void drawPreviewLabels(int left, int y) {
-    int lineY = y;
+    drawVisualPreview(left, y);
+    int lineY = y + PREVIEW_VISUAL_HEIGHT + 4;
     for (String line : previewLines) {
       drawScrolledString(line, left, lineY, 0xFFFFFF);
       lineY += PREVIEW_LINE_HEIGHT;
     }
+  }
+
+  // Live WYSIWYG preview drawn with the TESR's own render path. The sign is scaled to
+  // fit the preview box; posts (when present) hang below the body and share the fit.
+  private void drawVisualPreview(int left, int naturalY) {
+    int boxTop = naturalY - tabContentScroll;
+    if (boxTop + PREVIEW_VISUAL_HEIGHT < viewportTop || boxTop > viewportBottom) {
+      return;
+    }
+    // Dark backdrop so white borders and light sign colors stay visible.
+    drawRect(left, boxTop, left + FIELD_WIDTH, boxTop + PREVIEW_VISUAL_HEIGHT, 0xFF2A2A2E);
+
+    float[] dims = previewRenderer.computeSignDimensions(data);
+    float signW = dims[0];
+    float signH = dims[1];
+    boolean hasPosts = data.getPostType() != PostType.OVERHEAD;
+    float postExtra = hasPosts ? 20.0f : 0.0f;
+    // The exit tab renders ABOVE the sign's top edge; include it in the fit or it
+    // escapes the preview box and overlaps the tab strip.
+    boolean hasTab = !data.getPanels().isEmpty() && data.getPanels().get(0).hasExitTab();
+    float tabExtra = hasTab ? 11.0f : 0.0f;
+    float totalH = signH + tabExtra + postExtra;
+    float scale = Math.min((FIELD_WIDTH - 8) / signW,
+        (PREVIEW_VISUAL_HEIGHT - 8) / totalH);
+
+    float cx = left + FIELD_WIDTH / 2.0f;
+    // Place the sign's vertical center so tab (above) and post stub (below) both fit.
+    float topMargin = (PREVIEW_VISUAL_HEIGHT - totalH * scale) / 2.0f;
+    float cy = boxTop + topMargin + (tabExtra + signH / 2.0f) * scale;
+
+    // Clip to the preview box: posts run 48 sign-px below the sign and would otherwise
+    // draw over the summary text and buttons. glScissor takes real pixels, bottom-up.
+    ScaledResolution sr = new ScaledResolution(mc);
+    int f = sr.getScaleFactor();
+    GL11.glEnable(GL11.GL_SCISSOR_TEST);
+    GL11.glScissor(left * f, mc.displayHeight - (boxTop + PREVIEW_VISUAL_HEIGHT) * f,
+        FIELD_WIDTH * f, PREVIEW_VISUAL_HEIGHT * f);
+
+    GlStateManager.pushMatrix();
+    GlStateManager.translate(cx, cy, 120);
+    // Flip Y: sign pixel space is +Y up. Flip Z too: GUI ortho treats larger z as
+    // closer, but the sign's readable face is at SMALLER z than its aluminum back —
+    // without the flip the preview shows the back of the sign. No X mirror here — the
+    // TESR applies its own mirror only in world space; in GUI space +X is already the
+    // reader's right.
+    GlStateManager.scale(scale, -scale, -1.0f);
+    GlStateManager.translate(-8.0f, -8.0f, 0.0f);
+    GlStateManager.enableDepth();
+    previewRenderer.renderForGui(data);
+    GlStateManager.popMatrix();
+
+    GL11.glDisable(GL11.GL_SCISSOR_TEST);
+
+    // Reset depth so the preview's z-layered quads can't occlude later GUI drawing.
+    GlStateManager.clear(GL11.GL_DEPTH_BUFFER_BIT);
+    GlStateManager.disableLighting();
+    GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
   }
 
   private void updateTabButtonStates() {
@@ -1033,6 +1105,20 @@ public class DynamicGuideSignGui extends GuiScreen {
         GuideSignElement elem = getSelectedElement();
         if (elem != null) {
           elem.setShieldType(elem.getGuideSignShieldType().next().ordinal());
+        }
+        break;
+      }
+      case BTN_SHIELD_TYPE_PREV: {
+        GuideSignElement elem = getSelectedElement();
+        if (elem != null) {
+          elem.setShieldType(elem.getGuideSignShieldType().prev().ordinal());
+        }
+        break;
+      }
+      case BTN_BANNER_TYPE_PREV: {
+        GuideSignElement elem = getSelectedElement();
+        if (elem != null) {
+          elem.setBannerType(elem.getGuideSignBannerType().prev().ordinal());
         }
         break;
       }

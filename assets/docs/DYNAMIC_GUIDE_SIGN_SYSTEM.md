@@ -221,8 +221,12 @@ when content overflows.
 - **Row** (`TAB_ROW`): row prev/next, vertical-spacing +/−, row-alignment cycle, element list with
   add/remove/up/down, and a contextual editor per element type (text field + scale; shield type +
   route field + banner; arrow type; spacing width).
-- **Preview** (`TAB_PREVIEW`): live-regenerated text summary of the whole sign (color/post/border/
-  corners, then per-panel exit-tab info, then per-row alignment/spacing/elements).
+- **Preview** (`TAB_PREVIEW`): a live WYSIWYG render of the sign at the top — drawn by the
+  TESR's own code path (`renderForGui`, fullbright, scaled to fit, scissor-clipped to its box;
+  the GUI transform flips Y because sign pixel space is +Y-up, and flips Z because GUI ortho
+  treats larger z as closer while the readable face sits at smaller z than the aluminum back) —
+  followed by the text summary (color/post/border/corners, per-panel exit-tab info, per-row
+  alignment/spacing/patch/elements).
 
 **Copy/paste** uses a process-static `clipboardJson` field. Copy serializes the current data to JSON;
 Paste deserializes it back (the Paste button is disabled while the clipboard is empty). This lets a
