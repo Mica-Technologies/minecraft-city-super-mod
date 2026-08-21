@@ -98,8 +98,9 @@ public class TileEntityDynamicGuideSign extends AbstractTileEntity {
   @Override
   @SideOnly(Side.CLIENT)
   public double getMaxRenderDistanceSquared() {
-    // Explicit TESR render distance (vanilla default is also 64 blocks). Traffic
-    // signal heads use 128; raise this to match if signs pop out before signals.
-    return 64.0 * 64.0;
+    // Matches the traffic signal heads' 128 blocks. The renderer draws full detail
+    // (text, shields, arrows) only inside 64 blocks; between 64 and 128 it draws a
+    // cheap LOD of just the sign body, back, and posts.
+    return 128.0 * 128.0;
   }
 }
