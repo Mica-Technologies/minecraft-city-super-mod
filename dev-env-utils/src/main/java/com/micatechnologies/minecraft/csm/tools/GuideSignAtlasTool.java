@@ -397,39 +397,45 @@ public class GuideSignAtlasTool {
   }
 
   private static Shape makeArizonaShape(int col, int row) {
-    // Rectangular state outline with a notch cut from the top-right corner,
-    // evoking AZ's straight borders with the Utah/Four Corners step.
+    // Rectangular state outline with a modest notch cut from the top-right corner,
+    // evoking AZ's straight borders with the Utah/Four Corners step. The notch is
+    // kept small and the margins are balanced (rather than uniform) so the shape's
+    // visual mass — not just its bounding box — centers in the cell.
     int x = col * CELL_SIZE;
     int y = row * CELL_SIZE;
     int s = CELL_SIZE;
-    int m = 6;
+    float mLeft = 7f;
+    float mRight = 5f;
+    float mTop = 5f;
+    float mBottom = 7f;
     GeneralPath p = new GeneralPath();
-    p.moveTo(x + m, y + m);
-    p.lineTo(x + s * 0.65, y + m);
-    p.lineTo(x + s * 0.65, y + s * 0.35);
-    p.lineTo(x + s - m, y + s * 0.35);
-    p.lineTo(x + s - m, y + s - m);
-    p.lineTo(x + m, y + s - m);
+    p.moveTo(x + mLeft, y + mTop);
+    p.lineTo(x + s * 0.72, y + mTop);
+    p.lineTo(x + s * 0.72, y + s * 0.30);
+    p.lineTo(x + s - mRight, y + s * 0.30);
+    p.lineTo(x + s - mRight, y + s - mBottom);
+    p.lineTo(x + mLeft, y + s - mBottom);
     p.closePath();
     return p;
   }
 
   private static Shape makeOhioShape(int col, int row) {
     // Straight western/southern edges with a jagged eastern edge, hinting at
-    // the Ohio River border.
+    // the Ohio River border. Enlarged (smaller margin, gentler notch) versus the
+    // original so the mid-band stays comfortably wide for a 2-digit route number.
     int x = col * CELL_SIZE;
     int y = row * CELL_SIZE;
     int s = CELL_SIZE;
-    int m = 6;
+    int m = 4;
     GeneralPath p = new GeneralPath();
     p.moveTo(x + m, y + m);
-    p.lineTo(x + s * 0.70, y + m);
-    p.lineTo(x + s * 0.78, y + s * 0.15);
-    p.lineTo(x + s * 0.68, y + s * 0.28);
-    p.lineTo(x + s - m, y + s * 0.40);
-    p.lineTo(x + s * 0.85, y + s * 0.55);
-    p.lineTo(x + s - m, y + s * 0.68);
-    p.lineTo(x + s * 0.75, y + s - m);
+    p.lineTo(x + s * 0.72, y + m);
+    p.lineTo(x + s * 0.80, y + s * 0.14);
+    p.lineTo(x + s * 0.70, y + s * 0.26);
+    p.lineTo(x + s - m, y + s * 0.38);
+    p.lineTo(x + s * 0.88, y + s * 0.55);
+    p.lineTo(x + s - m, y + s * 0.66);
+    p.lineTo(x + s * 0.78, y + s - m);
     p.lineTo(x + m, y + s - m);
     p.closePath();
     return p;
@@ -453,18 +459,20 @@ public class GuideSignAtlasTool {
   }
 
   private static Shape makeBeehiveShape(int col, int row) {
-    // Domed top (chord arc) fused with a trapezoid base — a simple beehive.
+    // Domed top (chord arc) fused with a trapezoid base — a simple beehive. Widened
+    // from the original (which tapered to only ~20px across its dome/base) so the
+    // trapezoid — which now starts above the text mid-band — carries a route number.
     int x = col * CELL_SIZE;
     int y = row * CELL_SIZE;
     int s = CELL_SIZE;
     int m = 6;
     double baseBottomY = y + s - m;
-    double baseTopY = y + s * 0.55;
+    double baseTopY = y + s * 0.375;
     double domeTopY = y + m;
-    double leftTop = x + s * 0.34;
-    double rightTop = x + s * 0.66;
-    double leftBottom = x + s * 0.22;
-    double rightBottom = x + s * 0.78;
+    double leftTop = x + s * 0.22;
+    double rightTop = x + s * 0.78;
+    double leftBottom = x + s * 0.125;
+    double rightBottom = x + s * 0.875;
 
     Arc2D.Double dome = new Arc2D.Double(
         leftTop, domeTopY, rightTop - leftTop, (baseTopY - domeTopY) * 2, 0, 180, Arc2D.CHORD);
@@ -482,16 +490,28 @@ public class GuideSignAtlasTool {
   }
 
   private static Shape makeWashingtonBustShape(int col, int row) {
-    // Upright oval with a flat bottom (chord arc), suggesting a bust profile
-    // without attempting actual portraiture.
+    // Upright oval with a flat-cut bottom, suggesting a bust profile without
+    // attempting actual portraiture. Built as an ellipse intersected with a
+    // rectangle (rather than a half-height CHORD arc, which only ever traced the
+    // ellipse's top semicircle and left the shape stranded in the cell's upper
+    // half) so the silhouette is properly centered and wide across its middle.
     int x = col * CELL_SIZE;
     int y = row * CELL_SIZE;
     int s = CELL_SIZE;
-    int m = 8;
-    double height = s - m * 2;
-    double width = height * 0.72;
-    double left = x + (s - width) / 2.0;
-    return new Arc2D.Double(left, y + m, width, height, 0, 180, Arc2D.CHORD);
+    double ry = 24;
+    double rx = 21.6;
+    double domeTopY = y + 12;
+    double equatorY = domeTopY + ry;
+    double clipBottomY = equatorY + ry - 8;
+
+    Ellipse2D.Double oval = new Ellipse2D.Double(
+        x + s / 2.0 - rx, domeTopY, rx * 2, ry * 2);
+    java.awt.geom.Rectangle2D.Double clip = new java.awt.geom.Rectangle2D.Double(
+        x, domeTopY, s, clipBottomY - domeTopY);
+
+    Area bust = new Area(oval);
+    bust.intersect(new Area(clip));
+    return bust;
   }
 
   private static void drawSvgShield(Graphics2D g, int col, int row, String svgFile) {
