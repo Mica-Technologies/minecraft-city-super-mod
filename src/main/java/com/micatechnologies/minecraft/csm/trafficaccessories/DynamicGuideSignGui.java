@@ -580,9 +580,13 @@ public class DynamicGuideSignGui extends GuiScreen {
         y + (BTN_HEIGHT + 3) * 2 + 5, 0xFFFFFF);
     drawScrolledCenteredString("Min Width: " + data.getMinWidth(), centerX,
         y + (BTN_HEIGHT + 3) * 3 + 5, 0xFFFFFF);
-
-    drawScrolledString("Panels: " + data.getPanels().size(), left,
-        y + (BTN_HEIGHT + 3) * 5 - 8, 0xAAAAAA);
+    // The panel count lives in the Add Panel button label; a separate label here had no
+    // vertical room between the button rows and rendered behind the Corners button.
+    for (GuiButton btn : buttonList) {
+      if (btn.id == BTN_ADD_PANEL) {
+        btn.displayString = "+ Add Panel (" + data.getPanels().size() + "/4)";
+      }
+    }
   }
 
   private void drawPanelLabels(int left, int y, int centerX) {
@@ -593,7 +597,12 @@ public class DynamicGuideSignGui extends GuiScreen {
     GuideSignPanel panel = data.getPanels().get(selectedPanel);
     for (GuiButton btn : buttonList) {
       if (btn.id == BTN_EXIT_TAB_TOGGLE) {
-        btn.displayString = panel.hasExitTab() ? "Exit Tab: ON" : "Exit Tab: OFF";
+        // Only the top panel's exit tab is rendered by the TESR (stacked panels have no
+        // free top edge); make that visible when editing a lower panel.
+        String state = panel.hasExitTab() ? "ON" : "OFF";
+        btn.displayString = selectedPanel > 0
+            ? "Exit Tab (top panel only): " + state
+            : "Exit Tab: " + state;
       } else if (btn.id == BTN_EXIT_TAB_POS && panel.hasExitTab()) {
         btn.displayString = "Pos: " + panel.getExitTab().getPositionName();
       } else if (btn.id == BTN_EXIT_TAB_COLOR && panel.hasExitTab()) {
