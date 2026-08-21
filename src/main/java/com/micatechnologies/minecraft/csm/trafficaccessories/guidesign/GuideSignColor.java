@@ -37,6 +37,14 @@ public enum GuideSignColor {
     return friendlyName;
   }
 
+  /**
+   * Whether this background is light enough that legend (text, borders,
+   * dividers) drawn over it must be dark to stay readable.
+   */
+  public boolean isLight() {
+    return this == YELLOW || this == WHITE;
+  }
+
   public int toNBT() {
     return ordinal();
   }

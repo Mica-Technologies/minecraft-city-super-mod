@@ -57,7 +57,7 @@ safe default for out-of-range values, so deserialized data can never produce an 
 
 | Component | File | Notes |
 |---|---|---|
-| Block | `trafficaccessories/BlockDynamicGuideSign.java` | Extends `AbstractBlockRotatableNSEW` + `ICsmTileEntityProvider`. Material IRON, SoundType METAL, `CUTOUT_MIPPED` render layer, not opaque/full cube. `onBlockActivated` opens GUI 14. Returns a thin 1.5/16-block-thick AABB on the face determined by FACING (note the mapping is rotated 90° from the FACING name because the TESR renders rotated relative to the FACING axis). |
+| Block | `trafficaccessories/BlockDynamicGuideSign.java` | Extends `AbstractBlockRotatableNSEW` + `ICsmTileEntityProvider`. Material IRON, SoundType METAL, `CUTOUT_MIPPED` render layer, not opaque/full cube. `onBlockActivated` opens GUI 14. Returns a thin 1.5/16-block-thick AABB on the face the TESR actually renders the panel on: south/east/north/west face for FACING SOUTH/WEST/NORTH/EAST. (A 2026-08 fix: this mapping used to be a further 90° off, which made the sign untargetable from the readable side.) |
 | TileEntity | `trafficaccessories/TileEntityDynamicGuideSign.java` | Extends `AbstractTileEntity`. Stores JSON in NBT key `"signData"`. Lazy deserialization: `cachedData` is built on first `getSignData()` and invalidated on any write; `stateDirty` flag tracks change. `setSignDataJson` calls `markDirtySync` for client sync. `getRenderBoundingBox` is expanded to `pos −8/−4/−8 … +9/+5/+9` so large signs are not culled. |
 | Renderer | `trafficaccessories/TileEntityDynamicGuideSignRenderer.java` | `TileEntitySpecialRenderer`. Direct immediate-mode rendering (no display-list cache). Translates to block center, rotates by FACING, scales by `0.0625` (1/16) so all renderer constants are in pixel units. |
 | Update packet | `codeutils/packets/DynamicGuideSignUpdatePacket.java` | Carries `BlockPos` (as long) + `signDataJson` (UTF-8). |
@@ -120,26 +120,45 @@ All renderer constants are in **pixel units** (the renderer scales by 1/16 so 16
 Geometry is built front-facing at `faceZ = 16 − SIGN_DEPTH`, with sub-elements layered toward the
 viewer by small negative Z offsets to avoid z-fighting.
 
+**Mirrored pixel space.** After the 1/16 scale, the renderer applies `translate(16,0,0);
+scale(-1,1,1)` so that +X in all layout math is the READER's right. Without this, every layout
+position renders mirrored (element order right-to-left, LEFT/RIGHT row alignment and exit-tab
+positions swapped, LEFT/RIGHT posts swapped) — precisely the pre-2026-08 bug. Consequences inside
+this space: FontRenderer text is drawn with `scale(s, -s, s)` and **no** extra 180° rotation, and
+atlas quads map `u0` to their **left** edge, exactly like ordinary 2D drawing. Any new overlay
+drawing must follow the same rules.
+
 | Constant | Value | Controls |
 |---|---|---|
 | `SIGN_DEPTH` | `1.5` | Thickness of the sign body / border slab. |
 | `BORDER_INSET` | `0.4` | Multiplier: actual border thickness = `borderWidth × 0.4`. Also the inset of the colored face inside the border. |
 | `PANEL_PADDING_TOP` / `_BOTTOM` | `2.5` / `2.5` | Vertical padding between sign edge and first/last row. |
 | `PANEL_PADDING_SIDE` | `3.0` | Horizontal padding inside the sign; also the divider inset. |
-| `ROW_HEIGHT` | `10.0` | Height of one row's content band. |
-| `ROW_SPACING` | `1.5` | Gap between consecutive rows. |
+| `ROW_HEIGHT` | `10.0` | Fallback height for an empty row. Non-empty rows size dynamically: `computeRowHeight` takes the max of each element's need (text = `FONT_HEIGHT × TEXT_BASE_SCALE × textScale + TEXT_LEADING`; shield/arrow = their size), floored at `ROW_MIN_HEIGHT = 6`. |
+| `TEXT_LEADING` | `2.0` | Vertical breathing room added around a text element when sizing its row. |
+| `ROW_SPACING` | `1.5` | Gap between consecutive rows (between only — not after a panel's last row). |
 | `ELEMENT_SPACING` | `2.0` | Gap between elements within a row. |
-| `SHIELD_SIZE` / `ARROW_SIZE` | `10.0` / `10.0` | Rendered size of shields and arrows. |
+| `SHIELD_SIZE` / `ARROW_SIZE` | `12.0` / `12.0` | Rendered size of shields and arrows. Sized to SignMaker/MUTCD ratios: ~2.4× the destination text's cap height. |
+| `DIVIDER_ELEMENT_WIDTH` | `0.8` | Width of the vertical bar drawn for a DIVIDER element. |
 | `EXIT_TAB_HEIGHT` | `8.0` | Height of the exit tab. |
 | `EXIT_TAB_PADDING` | `3.0` | Horizontal text padding inside the exit tab (used in tab width). |
-| `EXIT_TAB_GAP` | `0.5` | Gap between the sign top edge and the exit tab. |
-| `PANEL_GAP` | `1.0` | Vertical gap between stacked panels (divider sits in the middle). |
+| `PANEL_GAP` | `4.0` | Vertical gap between stacked panels (divider bar sits in the middle). |
+| `PANEL_DIVIDER_THICKNESS` | `0.7` | Thickness of the between-panels divider bar. |
 | `POST_WIDTH` / `POST_DEPTH` | `2.5` / `1.5` | Mounting post cross-section. Posts run 48 units below the sign bottom. |
 | `TEXT_BASE_SCALE` | `0.8` | Base FontRenderer scale; element `textScale` multiplies it. |
 | `EXIT_TAB_TEXT_SCALE` | `0.65` | Exit-tab text scale. |
-| `BANNER_TEXT_SCALE` | `0.35` | Banner-word text scale. |
-| `BANNER_AREA_HEIGHT` | `4.5` | Vertical zone reserved above a banner-bearing row's content; banner text is centered in it. |
+| `BANNER_TEXT_SCALE` | `0.5` | Banner-word text scale (~33% of shield height in caps, per MUTCD ratio). Width reservation uses the same constant plus `BANNER_CELL_PADDING = 2` so adjacent banners cannot collide. |
+| `BANNER_AREA_HEIGHT` | `5.5` | Vertical zone reserved above a banner-bearing row's content; banner text is centered in it. |
+| `ROUTE_TEXT_SCALE` / `ROUTE_TEXT_MAX_FRACTION` | `0.7` / `0.62` | Route-number scale over the shield; numbers wider than `SHIELD_SIZE × 0.62` shrink to fit. Color comes from `GuideSignShieldType.getRouteTextColor()` (black on light shields, yellow on the county pentagon, white on dark). |
 | `CORNER_STEP` | `0.6` | Chamfer size per outer corner for ROUND corners. |
+
+The exit tab is **flush-mounted**: its background starts at the sign border's outer edge
+(`signTop + borderInset`), so tab and sign read as one attached assembly. Only the **first
+panel's** exit tab renders (stacked lower panels have no free top edge); the GUI labels the toggle
+accordingly on lower panels. Legend colors (border, dividers, default text) contrast with the sign
+color via `GuideSignColor.isLight()` — near-black on WHITE/YELLOW signs, white otherwise. The
+back of the sign body and exit tab is covered by an unpainted-aluminum gray slab, like a real
+sign's reverse.
 
 **Dynamic sizing.** The sign auto-sizes to its content. `computeTotalSignWidth` takes the widest
 row (and exit-tab width), adds `2 × PANEL_PADDING_SIDE` and `2 × borderInset`, then clamps to a
@@ -214,6 +233,12 @@ modifying the renderer.
 | Overhead mode shows two posts | The OVERHEAD case drew posts | OVERHEAD must draw no posts (empty break in `renderPost`). |
 | Banner text overflows the sign | Banner floated above the shield, past the row bounds | Banner-bearing rows reserve `BANNER_AREA_HEIGHT` above their content, and banner text is centered in that reserved zone. Both `computeTotalSignHeight` and `rowHasBanner` must account for it. |
 | Content drifts under the border for LEFT/RIGHT alignment | Width/height didn't include the border inset | `computeTotalSignWidth/Height` add `2 × borderInset`, and `contentLeft/Right` subtract it, so aligned content stays inside the border. |
+| Everything positional rendered mirrored (element order right-to-left, LEFT/RIGHT alignment and tab/post sides swapped) while text/textures read correctly | Local +X points to the reader's LEFT on the readable face; text and atlas quads were individually counter-flipped, masking the mirror | The renderer un-mirrors pixel space once (`translate(16,0,0); scale(-1,1,1)`); overlays draw unflipped (see "Mirrored pixel space" above). Never re-add per-overlay flips. |
+| Content drifted lower with each panel; bottom row touched the edge | Render loop spent `ROW_SPACING` after a panel's last row; `computeTotalSignHeight` only counts spacing between rows | The loop gives back the trailing `ROW_SPACING` per panel. Keep the loop and `computeTotalSignHeight` in lockstep — this class of mismatch has bitten repeatedly. |
+| Every panel's exit tab rendered at the sign top, overlapping | Tabs were anchored to `signTop` regardless of panel | Only panel 0's tab renders; the GUI labels lower panels' toggles "(top panel only)". |
+| Scaled-up text overflowed its row and the sign bottom | Fixed `ROW_HEIGHT` regardless of `textScale` | Rows size via `computeRowHeight` (used by BOTH the render loop and the height calc). |
+| Route numbers invisible on white/light shields | Number always drew white | Per-type `GuideSignShieldType.getRouteTextColor()`. |
+| Sign untargetable (no hitbox) from the readable side | Block AABB face mapping was 90° off from the TESR's rotation | AABB mapping matches the TESR: SOUTH/WEST/NORTH/EAST → south/east/north/west face. |
 
 ---
 

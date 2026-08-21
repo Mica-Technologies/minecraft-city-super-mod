@@ -394,10 +394,10 @@ public class GuideSignAtlasTool {
         drawStraightArrow(g2, s, 90);
         break;
       case UP_LEFT:
-        drawBentArrow(g2, s, false);
+        drawStraightArrow(g2, s, -45);
         break;
       case UP_RIGHT:
-        drawBentArrow(g2, s, true);
+        drawStraightArrow(g2, s, 45);
         break;
       case DOWN_LEFT:
         drawStraightArrow(g2, s, -135);
@@ -419,15 +419,20 @@ public class GuideSignAtlasTool {
   private static void drawStraightArrow(Graphics2D g, int s, double angleDeg) {
     float cx = s / 2f;
     float cy = s / 2f;
+    float m = 6f;
+
+    // Bold FHWA/MUTCD-style proportions: thick shaft, large solid triangular
+    // head clearly wider than the shaft, short overall length.
+    float headW = s * 0.52f;
+    float headH = s * 0.30f;
+    float shaftW = s * 0.20f;
+
+    float tipY = -cy + m;
+    float shaftTop = tipY + headH;
+    float shaftBot = cy - m;
 
     GeneralPath arrow = new GeneralPath();
-    float headW = s * 0.45f;
-    float headH = s * 0.3f;
-    float shaftW = s * 0.16f;
-    float shaftTop = -cy + headH;
-    float shaftBot = cy - 3;
-
-    arrow.moveTo(0, -cy + 3);
+    arrow.moveTo(0, tipY);
     arrow.lineTo(-headW / 2, shaftTop);
     arrow.lineTo(-shaftW / 2, shaftTop);
     arrow.lineTo(-shaftW / 2, shaftBot);
@@ -444,46 +449,15 @@ public class GuideSignAtlasTool {
     g.fill(arrow);
   }
 
-  private static void drawBentArrow(Graphics2D g, int s, boolean mirrorRight) {
-    float cx = s / 2f;
-    float m = 4;
-    float shaftW = s * 0.15f;
-    float headW = s * 0.4f;
-    float headH = s * 0.28f;
-
-    GeneralPath arrow = new GeneralPath();
-    float shaftBot = s - m;
-    float bendY = s * 0.45f;
-    float tipX = mirrorRight ? s - m : m;
-    float shaftX = cx;
-
-    arrow.moveTo(shaftX - shaftW / 2, shaftBot);
-    arrow.lineTo(shaftX - shaftW / 2, bendY);
-    if (mirrorRight) {
-      arrow.lineTo(tipX - headH, bendY - headW / 2);
-      arrow.lineTo(tipX, bendY);
-      arrow.lineTo(tipX - headH, bendY + headW / 2);
-    } else {
-      arrow.lineTo(tipX + headH, bendY - headW / 2);
-      arrow.lineTo(tipX, bendY);
-      arrow.lineTo(tipX + headH, bendY + headW / 2);
-    }
-    arrow.lineTo(shaftX + shaftW / 2, bendY);
-    arrow.lineTo(shaftX + shaftW / 2, shaftBot);
-    arrow.closePath();
-
-    g.fill(arrow);
-  }
-
   private static void drawSplitArrow(Graphics2D g, int s) {
     float cx = s / 2f;
-    float m = 4;
-    float shaftW = s * 0.14f;
-    float headW = s * 0.32f;
-    float headH = s * 0.24f;
+    float m = 6f;
+    float shaftW = s * 0.20f;
+    float headW = s * 0.36f;
+    float headH = s * 0.26f;
 
     float shaftBot = s - m;
-    float splitY = s * 0.55f;
+    float splitY = s * 0.56f;
     float tipY = m;
 
     GeneralPath center = new GeneralPath();
@@ -496,7 +470,7 @@ public class GuideSignAtlasTool {
 
     drawStraightArrow(g, s, 0);
 
-    float offsetX = s * 0.28f;
+    float offsetX = s * 0.24f;
     GeneralPath leftHead = new GeneralPath();
     float lx = cx - offsetX;
     leftHead.moveTo(lx, tipY);

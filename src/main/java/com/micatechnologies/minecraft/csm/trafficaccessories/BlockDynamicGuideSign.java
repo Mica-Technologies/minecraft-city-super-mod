@@ -57,20 +57,22 @@ public class BlockDynamicGuideSign extends AbstractBlockRotatableNSEW
 
   @Override
   public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-    // Thin slab matching the visible sign panel. The mapping is rotated 90° from what the
-    // FACING name naively suggests because the TESR renders its panel rotated relative to
-    // the FACING axis: FACING=SOUTH puts the panel on the +X face, etc.
+    // Thin slab matching the visible sign panel. Derived from the TESR's rotation: the
+    // panel is modeled at z = 14.5..16 and rotated by 0/90/180/270 degrees for
+    // SOUTH/WEST/NORTH/EAST, which lands it on the south/east/north/west face
+    // respectively. (An earlier version had this rotated a further 90 degrees, which made
+    // the sign untargetable from the readable side.)
     EnumFacing facing = state.getValue(BlockHorizontal.FACING);
     final double t = 1.5 / 16.0;
     switch (facing) {
       case SOUTH:
-        return new AxisAlignedBB(1.0 - t, 0.0, 0.0, 1.0, 1.0, 1.0);
-      case NORTH:
-        return new AxisAlignedBB(0.0, 0.0, 0.0, t, 1.0, 1.0);
-      case WEST:
-        return new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 1.0, t);
-      case EAST:
         return new AxisAlignedBB(0.0, 0.0, 1.0 - t, 1.0, 1.0, 1.0);
+      case NORTH:
+        return new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 1.0, t);
+      case WEST:
+        return new AxisAlignedBB(1.0 - t, 0.0, 0.0, 1.0, 1.0, 1.0);
+      case EAST:
+        return new AxisAlignedBB(0.0, 0.0, 0.0, t, 1.0, 1.0);
       default:
         return new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 1.0, 1.0);
     }
