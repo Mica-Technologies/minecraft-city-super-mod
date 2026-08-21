@@ -9,7 +9,9 @@ public final class SignTemplates {
       "Blank Green",
       "Blank Blue",
       "Brown Recreation",
-      "Standard Exit"
+      "Standard Exit",
+      "Exit Only",
+      "Junction Split"
   };
 
   public static int count() {
@@ -30,6 +32,10 @@ public final class SignTemplates {
         return brownRecreation();
       case 3:
         return standardExit();
+      case 4:
+        return exitOnly();
+      case 5:
+        return junctionSplit();
       default:
         return new GuideSignData();
     }
@@ -74,6 +80,42 @@ public final class SignTemplates {
     p.addRow(textRow("BALTIMORE", 1.0f));
     p.addRow(arrowRow(GuideSignArrowType.RIGHT));
     d.getPanels().add(p);
+    return d;
+  }
+
+  private static GuideSignData exitOnly() {
+    GuideSignData d = baseData(GuideSignColor.GREEN, PostType.OVERHEAD);
+    d.getPanels().clear();
+    GuideSignPanel p = new GuideSignPanel();
+    ExitTabData exitTab = new ExitTabData();
+    exitTab.setText("EXIT 12");
+    p.setExitTab(exitTab);
+    p.addRow(shieldRow(GuideSignShieldType.INTERSTATE, "70", GuideSignBannerType.EAST));
+    p.addRow(textRow("SPRINGFIELD", 1.0f));
+    GuideSignRow patch = new GuideSignRow();
+    patch.addElement(GuideSignElement.createText("EXIT", 0.9f));
+    patch.addElement(GuideSignElement.createArrow(GuideSignArrowType.DOWN));
+    patch.addElement(GuideSignElement.createText("ONLY", 0.9f));
+    patch.setYellowPatch(true);
+    p.addRow(patch);
+    d.getPanels().add(p);
+    return d;
+  }
+
+  private static GuideSignData junctionSplit() {
+    GuideSignData d = baseData(GuideSignColor.GREEN, PostType.OVERHEAD);
+    d.setMinWidth(48);
+    d.getPanels().clear();
+    GuideSignPanel top = new GuideSignPanel();
+    top.addRow(shieldRow(GuideSignShieldType.INTERSTATE, "95", GuideSignBannerType.NORTH));
+    top.addRow(textRow("CITY CENTER", 1.0f));
+    top.addRow(arrowRow(GuideSignArrowType.UP_LEFT));
+    d.getPanels().add(top);
+    GuideSignPanel bottom = new GuideSignPanel();
+    bottom.addRow(shieldRow(GuideSignShieldType.US_ROUTE, "1", GuideSignBannerType.SOUTH));
+    bottom.addRow(textRow("HARBOR", 1.0f));
+    bottom.addRow(arrowRow(GuideSignArrowType.UP_RIGHT));
+    d.getPanels().add(bottom);
     return d;
   }
 
