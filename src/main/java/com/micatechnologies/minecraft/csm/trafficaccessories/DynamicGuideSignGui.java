@@ -73,12 +73,14 @@ public class DynamicGuideSignGui extends GuiScreen {
   private static final int BTN_TEXT_SCALE_UP = 42;
   private static final int BTN_SHIELD_TYPE = 43;
   private static final int BTN_BANNER_TYPE = 44;
+  private static final int BTN_BANNER_POS = 53;
   private static final int BTN_ARROW_TYPE = 45;
   private static final int BTN_SPACING_DOWN = 46;
   private static final int BTN_SPACING_UP = 47;
   private static final int BTN_VSPACING_DOWN = 48;
   private static final int BTN_VSPACING_UP = 49;
   private static final int BTN_ROW_ALIGN = 50;
+  private static final int BTN_ROW_PATCH = 54;
 
   private static final int FIELD_WIDTH = 240;
   private static final int BTN_HEIGHT = 18;
@@ -333,7 +335,8 @@ public class DynamicGuideSignGui extends GuiScreen {
     addContentBtn(
         new GuiButton(BTN_VSPACING_UP, left + FIELD_WIDTH - 30, y, 30, BTN_HEIGHT, "+"));
     y += BTN_HEIGHT + 2;
-    addContentBtn(new GuiButton(BTN_ROW_ALIGN, left, y, FIELD_WIDTH, BTN_HEIGHT, ""));
+    addContentBtn(new GuiButton(BTN_ROW_ALIGN, left, y, halfW, BTN_HEIGHT, ""));
+    addContentBtn(new GuiButton(BTN_ROW_PATCH, left + halfW + 4, y, halfW, BTN_HEIGHT, ""));
     y += BTN_HEIGHT + 4;
 
     List<GuideSignElement> elems = row.getElements();
@@ -401,6 +404,9 @@ public class DynamicGuideSignGui extends GuiScreen {
         addContentField(routeField);
         addContentBtn(
             new GuiButton(BTN_BANNER_TYPE, left + halfW + 2, y, halfW, BTN_HEIGHT, ""));
+        y += BTN_HEIGHT + 2;
+        addContentBtn(
+            new GuiButton(BTN_BANNER_POS, left, y, FIELD_WIDTH, BTN_HEIGHT, ""));
         break;
 
       case GuideSignElement.TYPE_ARROW:
@@ -461,6 +467,7 @@ public class DynamicGuideSignGui extends GuiScreen {
         previewLines.add("  Row " + (r + 1) + " ["
             + row.getAlignment().getFriendlyName().toLowerCase()
             + (row.getVerticalSpacing() > 0 ? ", vsp=" + row.getVerticalSpacing() : "")
+            + (row.isYellowPatch() ? ", yellow patch" : "")
             + "]");
         List<GuideSignElement> elems = row.getElements();
         if (elems.isEmpty()) {
@@ -635,6 +642,8 @@ public class DynamicGuideSignGui extends GuiScreen {
     for (GuiButton btn : buttonList) {
       if (btn.id == BTN_ROW_ALIGN) {
         btn.displayString = "Align: " + row.getAlignment().getFriendlyName();
+      } else if (btn.id == BTN_ROW_PATCH) {
+        btn.displayString = row.isYellowPatch() ? "Yellow Patch: ON" : "Yellow Patch: OFF";
       }
     }
     y += BTN_HEIGHT + 4;
@@ -652,6 +661,8 @@ public class DynamicGuideSignGui extends GuiScreen {
           btn.displayString = "Shield: " + elem.getGuideSignShieldType().getFriendlyName();
         } else if (btn.id == BTN_BANNER_TYPE) {
           btn.displayString = "Banner: " + elem.getGuideSignBannerType().getFriendlyName();
+        } else if (btn.id == BTN_BANNER_POS) {
+          btn.displayString = "Banner Pos: " + elem.getBannerPosition().getFriendlyName();
         } else if (btn.id == BTN_ARROW_TYPE) {
           btn.displayString = "Arrow: " + elem.getGuideSignArrowType().getFriendlyName();
         }
@@ -949,6 +960,13 @@ public class DynamicGuideSignGui extends GuiScreen {
         }
         break;
       }
+      case BTN_ROW_PATCH: {
+        GuideSignRow row = getSelectedRow();
+        if (row != null) {
+          row.setYellowPatch(!row.isYellowPatch());
+        }
+        break;
+      }
       case BTN_ADD_ELEMENT: {
         GuideSignRow row = getSelectedRow();
         if (row != null) {
@@ -1022,6 +1040,13 @@ public class DynamicGuideSignGui extends GuiScreen {
         GuideSignElement elem = getSelectedElement();
         if (elem != null) {
           elem.setBannerType(elem.getGuideSignBannerType().next().ordinal());
+        }
+        break;
+      }
+      case BTN_BANNER_POS: {
+        GuideSignElement elem = getSelectedElement();
+        if (elem != null) {
+          elem.setBannerPosition(elem.getBannerPosition().next().ordinal());
         }
         break;
       }

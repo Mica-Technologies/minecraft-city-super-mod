@@ -10,6 +10,9 @@ public class GuideSignRow {
   private List<GuideSignElement> elements = new ArrayList<>();
   private int verticalSpacing = 0;
   private int alignment = RowAlignment.CENTER.ordinal();
+  // MUTCD "EXIT ONLY"-style yellow patch: the row renders on a yellow band spanning the
+  // sign width, with dark legend. Absent in older sign JSON, so Gson defaults to false.
+  private boolean yellowPatch = false;
 
   public GuideSignRow() {
   }
@@ -28,6 +31,14 @@ public class GuideSignRow {
 
   public void setVerticalSpacing(int verticalSpacing) {
     this.verticalSpacing = Math.max(0, Math.min(16, verticalSpacing));
+  }
+
+  public boolean isYellowPatch() {
+    return yellowPatch;
+  }
+
+  public void setYellowPatch(boolean yellowPatch) {
+    this.yellowPatch = yellowPatch;
   }
 
   public int getAlignmentOrdinal() {
@@ -90,6 +101,7 @@ public class GuideSignRow {
     GuideSignRow r = new GuideSignRow();
     r.verticalSpacing = verticalSpacing;
     r.alignment = alignment;
+    r.yellowPatch = yellowPatch;
     for (GuideSignElement e : elements) {
       r.elements.add(e.copy());
     }
