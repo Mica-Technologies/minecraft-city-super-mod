@@ -74,6 +74,7 @@ public class DynamicGuideSignGui extends GuiScreen {
   private static final int BTN_APL_EXIT_ARROW = 65;
   private static final int BTN_MIN_HEIGHT_DOWN = 66;
   private static final int BTN_MIN_HEIGHT_UP = 67;
+  private static final int BTN_AUTO_FIT = 68;
 
   private static final int BTN_ROW_PREV = 30;
   private static final int BTN_ROW_NEXT = 31;
@@ -263,7 +264,8 @@ public class DynamicGuideSignGui extends GuiScreen {
     addContentBtn(
         new GuiButton(BTN_MIN_HEIGHT_UP, left + FIELD_WIDTH - 30, y, 30, BTN_HEIGHT, "+"));
     y += BTN_HEIGHT + 3;
-    addContentBtn(new GuiButton(BTN_CORNER_STYLE, left, y, FIELD_WIDTH, BTN_HEIGHT, ""));
+    addContentBtn(new GuiButton(BTN_CORNER_STYLE, left, y, halfW, BTN_HEIGHT, ""));
+    addContentBtn(new GuiButton(BTN_AUTO_FIT, left + halfW + 4, y, halfW, BTN_HEIGHT, ""));
     y += BTN_HEIGHT + 6;
     addContentBtn(new GuiButton(BTN_ADD_PANEL, left, y, halfW, BTN_HEIGHT, "+ Add Panel"));
     GuiButton removePanel = new GuiButton(BTN_REMOVE_PANEL, left + halfW + 4, y, halfW,
@@ -588,7 +590,7 @@ public class DynamicGuideSignGui extends GuiScreen {
     // The exit tab renders ABOVE the sign's top edge; include it in the fit or it
     // escapes the preview box and overlaps the tab strip.
     boolean hasTab = !data.getPanels().isEmpty() && data.getPanels().get(0).hasExitTab();
-    float tabExtra = hasTab ? 11.0f : 0.0f;
+    float tabExtra = hasTab ? 11.0f * previewRenderer.computeContentScale(data) : 0.0f;
     float totalH = signH + tabExtra + postExtra;
     float scale = Math.min((FIELD_WIDTH - 8) / signW,
         (PREVIEW_VISUAL_HEIGHT - 8) / totalH);
@@ -714,6 +716,8 @@ public class DynamicGuideSignGui extends GuiScreen {
         btn.displayString = "Post: " + data.getPostType().getFriendlyName();
       } else if (btn.id == BTN_CORNER_STYLE) {
         btn.displayString = "Corners: " + data.getCornerStyle().getFriendlyName();
+      } else if (btn.id == BTN_AUTO_FIT) {
+        btn.displayString = "Auto-Fit: " + (data.isAutoFit() ? "ON" : "OFF");
       } else if (btn.id == BTN_TEMPLATE) {
         btn.displayString = "Apply Template: " + SignTemplates.getName(templateIndex);
       }
@@ -988,6 +992,9 @@ public class DynamicGuideSignGui extends GuiScreen {
         break;
       case BTN_CORNER_STYLE:
         data.cycleCornerStyle();
+        break;
+      case BTN_AUTO_FIT:
+        data.setAutoFit(!data.isAutoFit());
         break;
       case BTN_ADD_PANEL:
         data.addPanel();

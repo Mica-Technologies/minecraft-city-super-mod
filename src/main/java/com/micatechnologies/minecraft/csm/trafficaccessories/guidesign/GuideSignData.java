@@ -20,6 +20,9 @@ public class GuideSignData {
   // Floor for the sign's height in sign pixels (16 px = 1 block); content is centered
   // vertically in any surplus. Absent in older JSON → 16 (no effect).
   private int minHeight = 16;
+  // Auto-fit: scale the sign's content (text, shields, arrows, spacing, exit tab)
+  // uniformly to fill the min-width/min-height box. Absent in older JSON → false.
+  private boolean autoFit = false;
   private List<GuideSignPanel> panels = new ArrayList<>();
 
   // 16 px = 1 block: signs may be up to 30 blocks wide and 15 blocks tall.
@@ -104,6 +107,14 @@ public class GuideSignData {
 
   public void setMinHeight(int minHeight) {
     this.minHeight = Math.max(16, Math.min(MAX_MIN_HEIGHT, minHeight));
+  }
+
+  public boolean isAutoFit() {
+    return autoFit;
+  }
+
+  public void setAutoFit(boolean autoFit) {
+    this.autoFit = autoFit;
   }
 
   public List<GuideSignPanel> getPanels() {
