@@ -20,6 +20,11 @@ public class GuideSignAtlas {
     return getCellUV(col, row);
   }
 
+  /** UVs for a type's wide (3+ digit) variant cell; only valid when the type has one. */
+  public static float[] getShieldWideUV(GuideSignShieldType type) {
+    return getCellUV(type.getWideCol(), type.getWideRow());
+  }
+
   public static float[] getArrowUV(GuideSignArrowType type) {
     int col = type.getAtlasCol();
     int row = type.getAtlasRow() + ARROW_ROW_OFFSET;

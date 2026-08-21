@@ -632,7 +632,12 @@ public class TileEntityDynamicGuideSignRenderer
   private void renderShieldElement(GuideSignElement elem,
       float x, float topY, float rowHeight, float faceZ, int legendTextColor) {
     GuideSignShieldType shieldType = elem.getGuideSignShieldType();
-    float[] uv = GuideSignAtlas.getShieldUV(shieldType);
+    // 3+ digit routes on types with a wide variant use the wide atlas cell, drawn at
+    // its true aspect (the atlas stores it stretched into a square cell).
+    boolean wide = shieldType.usesWideVariant(elem.getRouteNumber());
+    float[] uv = wide ? GuideSignAtlas.getShieldWideUV(shieldType)
+        : GuideSignAtlas.getShieldUV(shieldType);
+    float shieldW = wide ? SHIELD_SIZE * shieldType.getWideAspect() : SHIELD_SIZE;
 
     // The cell may be wider than the shield: an ABOVE banner wider than the shield
     // centers both in the cell; a LEFT/RIGHT banner sits beside the shield.
@@ -645,12 +650,13 @@ public class TileEntityDynamicGuideSignRenderer
       shieldCenterX = x + cellWidth / 2.0f;
     } else if (bannerPos == BannerPosition.LEFT) {
       // Banner occupies the left of the cell, shield the right.
-      shieldCenterX = x + cellWidth - SHIELD_SIZE / 2.0f;
+      shieldCenterX = x + cellWidth - shieldW / 2.0f;
     } else {
-      shieldCenterX = x + SHIELD_SIZE / 2.0f;
+      shieldCenterX = x + shieldW / 2.0f;
     }
     float shieldCenterY = topY - rowHeight / 2.0f;
     float halfSize = SHIELD_SIZE / 2.0f;
+    float halfW = shieldW / 2.0f;
 
     Tessellator tess = Tessellator.getInstance();
     BufferBuilder buf = tess.getBuffer();
@@ -658,10 +664,11 @@ public class TileEntityDynamicGuideSignRenderer
     if (elem.hasShieldBack()) {
       // White backing plate behind the shield graphic (between the sign face at
       // faceZ - 0.1 and the shield quad at faceZ - 0.3).
-      float m = halfSize + SHIELD_BACK_MARGIN;
+      float mx = halfW + SHIELD_BACK_MARGIN;
+      float my = halfSize + SHIELD_BACK_MARGIN;
       List<RenderHelper.Box> back = new ArrayList<>();
-      addRectBoxes(back, shieldCenterX - m, shieldCenterY - m, shieldCenterX + m,
-          shieldCenterY + m, faceZ - 0.25f, faceZ - 0.2f, CornerStyle.ROUND);
+      addRectBoxes(back, shieldCenterX - mx, shieldCenterY - my, shieldCenterX + mx,
+          shieldCenterY + my, faceZ - 0.25f, faceZ - 0.2f, CornerStyle.ROUND);
       Minecraft.getMinecraft().getTextureManager().bindTexture(WHITE_TEXTURE);
       buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
       RenderHelper.addBoxesToBufferLit(back, buf, 0.95f, 0.95f, 0.93f, 1.0f, 0, 0, 0,
@@ -672,8 +679,8 @@ public class TileEntityDynamicGuideSignRenderer
     Minecraft.getMinecraft().getTextureManager().bindTexture(GuideSignAtlas.ATLAS_TEXTURE);
     buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
 
-    float qLeft = shieldCenterX - halfSize;
-    float qRight = shieldCenterX + halfSize;
+    float qLeft = shieldCenterX - halfW;
+    float qRight = shieldCenterX + halfW;
     float qTop = shieldCenterY + halfSize;
     float qBottom = shieldCenterY - halfSize;
     float qZ = faceZ - 0.3f;
@@ -691,7 +698,7 @@ public class TileEntityDynamicGuideSignRenderer
       // Shrink to fit: long route numbers scale down so they stay inside the
       // shield's legend area instead of spilling over its edges.
       float capPx = SHIELD_SIZE * ROUTE_CAP_FRACTION;
-      float avail = SHIELD_SIZE * shieldType.getRouteTextMaxFraction();
+      float avail = shieldW * shieldType.getRouteTextMaxFraction();
       float w = GuideSignFontRenderer.getStringWidth(routeNum, capPx);
       if (w > avail) {
         capPx *= avail / w;
@@ -718,7 +725,7 @@ public class TileEntityDynamicGuideSignRenderer
         bannerLeftX = x;
         bannerY = shieldCenterY;
       } else {
-        bannerLeftX = shieldCenterX + SHIELD_SIZE / 2.0f + ELEMENT_SPACING;
+        bannerLeftX = shieldCenterX + halfW + ELEMENT_SPACING;
         bannerY = shieldCenterY;
       }
       GlStateManager.depthMask(false);
@@ -990,7 +997,10 @@ public class TileEntityDynamicGuideSignRenderer
   }
 
   private float getShieldWidth(GuideSignElement elem) {
-    float w = SHIELD_SIZE;
+    GuideSignShieldType type = elem.getGuideSignShieldType();
+    float w = type.usesWideVariant(elem.getRouteNumber())
+        ? SHIELD_SIZE * type.getWideAspect()
+        : SHIELD_SIZE;
     String bannerText = elem.getGuideSignBannerType().getBannerText();
     if (!bannerText.isEmpty()) {
       // Must match the cap height renderShieldElement actually draws the banner at,
@@ -1001,7 +1011,7 @@ public class TileEntityDynamicGuideSignRenderer
         w = Math.max(w, bannerW);
       } else {
         // Beside the shield: the cell holds shield + gap + banner word.
-        w = SHIELD_SIZE + ELEMENT_SPACING + bannerW;
+        w = w + ELEMENT_SPACING + bannerW;
       }
     }
     return w;
