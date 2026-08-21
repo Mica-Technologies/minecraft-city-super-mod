@@ -83,15 +83,16 @@ public class TileEntityDynamicGuideSignRenderer
   // evenly pitched across the sign's content width. The band is zoned vertically:
   // arrows live in the top zone, and the bottom APL_TEXT_ZONE strip is reserved for the
   // EXIT ONLY legend so text and arrow tails can never overlap.
-  private static final float APL_HEIGHT = 18.0f;
-  private static final float APL_TEXT_ZONE = 4.5f;
+  private static final float APL_HEIGHT = 19.0f;
+  private static final float APL_TEXT_ZONE = 5.5f;
   private static final float APL_ARROW_WIDTH = 9.0f;
   // Minimum horizontal room reserved per lane, so the sign widens instead of cramming
   // arrows together. Consumed by computeTotalSignWidth.
   private static final float APL_LANE_MIN_PITCH = 11.0f;
   // An EXIT ONLY patch narrower than this has no room for its legend.
   private static final float APL_EXIT_TEXT_MIN_WIDTH = 20.0f;
-  private static final float APL_EXIT_TEXT_CAP_HEIGHT = 2.8f;
+  // Sized like real patches: the legend reads at roughly half the destination text.
+  private static final float APL_EXIT_TEXT_CAP_HEIGHT = 3.6f;
   private static final String APL_EXIT_TEXT = "EXIT ONLY";
 
   // Per-step chamfer for ROUND corners. Two stair steps approximate a small radius.
