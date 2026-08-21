@@ -353,9 +353,13 @@ public class TileEntityDynamicGuideSignRenderer
 
     // Aluminum back: real guide signs are unpainted on the reverse, so cover the back of
     // the assembly (border extent included) with a gray slab instead of the legend color.
+    // Inset a hair from the body's rect so the slab's side faces are never coplanar with
+    // the border's (or, on borderless signs, the face's) — coplanar edges z-fight.
     float bw = borderWidth > 0 ? borderWidth * BORDER_INSET : 0;
+    float edgeInset = 0.05f;
     List<RenderHelper.Box> back = new ArrayList<>();
-    addRectBoxes(back, left - bw, bottom - bw, left + width + bw, bottom + height + bw,
+    addRectBoxes(back, left - bw + edgeInset, bottom - bw + edgeInset,
+        left + width + bw - edgeInset, bottom + height + bw - edgeInset,
         frontZ - 0.4f, frontZ + 0.05f, cornerStyle);
     buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
     RenderHelper.addBoxesToBufferLit(back, buf, 0.55f, 0.56f, 0.58f, 1.0f, 0, 0, 0,
@@ -457,9 +461,13 @@ public class TileEntityDynamicGuideSignRenderer
         worldSkyLight, worldBlockLight);
     tess.draw();
 
-    // Aluminum back for the tab, matching the sign body's unpainted reverse.
+    // Aluminum back for the tab, matching the sign body's unpainted reverse. Inset a
+    // hair so its side faces are never coplanar with the tab border's (see the sign
+    // body's back slab).
+    float tabEdgeInset = 0.05f;
     List<RenderHelper.Box> tabBack = new ArrayList<>();
-    addRectBoxes(tabBack, tabX - bw, tabBottom - bw, tabX + tabWidth + bw, tabTop + bw,
+    addRectBoxes(tabBack, tabX - bw + tabEdgeInset, tabBottom - bw + tabEdgeInset,
+        tabX + tabWidth + bw - tabEdgeInset, tabTop + bw - tabEdgeInset,
         tabFrontZ - 0.2f, tabFrontZ + 0.15f, cornerStyle);
     buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
     RenderHelper.addBoxesToBufferLit(tabBack, buf, 0.55f, 0.56f, 0.58f, 1.0f, 0, 0, 0,
