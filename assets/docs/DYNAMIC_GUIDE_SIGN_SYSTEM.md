@@ -151,7 +151,8 @@ drawing must follow the same rules.
 | `EXIT_TAB_CAP_HEIGHT` | `4.5` | Exit-tab text cap height. |
 | `BANNER_CAP_FRACTION` | `0.33` | Banner-word cap height as a fraction of `SHIELD_SIZE` (MUTCD ratio). Width reservation uses the same fraction plus `BANNER_CELL_PADDING = 2` so adjacent banners cannot collide. |
 | `BANNER_AREA_HEIGHT` | `5.5` | Vertical zone reserved above a banner-bearing row's content; banner text is centered in it. |
-| `ROUTE_CAP_FRACTION` / `ROUTE_TEXT_MAX_FRACTION` | `0.42` / `0.62` | Route-number cap height over the shield; numbers wider than `SHIELD_SIZE × 0.62` shrink to fit. Color comes from `GuideSignShieldType.getRouteTextColor()` (black on light shields, yellow on the county pentagon, white on dark). |
+| `ROUTE_CAP_FRACTION` | `0.42` | Route-number cap height over the shield, as a fraction of `SHIELD_SIZE`. |
+| `GuideSignShieldType.getRouteTextMaxFraction()` | per shield, `0.30`–`0.62` | Max width the route number may span (as a fraction of `SHIELD_SIZE`) before it shrinks to fit — replaces what used to be a single global constant. Measured per shield from the atlas cell's interior: the narrowest horizontal run of opaque pixels in the cell's y=26–38 mid-band (constriction governs), divided by 64, scaled by an 0.80 safety margin, clamped to `[0.30, 0.62]`. Wide silhouettes (Interstate, rounded squares) sit at the 0.62 cap; narrow ones (Florida's peninsula, the diamond states, Utah's beehive, Washington's bust oval) get a tighter fraction so a 2-digit route number never spills past the shield's outline. Color comes from `GuideSignShieldType.getRouteTextColor()` (black on light shields, yellow on the county pentagon, white on dark). |
 | `CORNER_STEP` | `0.6` | Chamfer size per outer corner for ROUND corners. |
 
 ### FHWA legend font (`GuideSignFontRenderer`)
