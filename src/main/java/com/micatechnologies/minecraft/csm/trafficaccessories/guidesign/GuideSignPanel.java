@@ -15,8 +15,15 @@ public class GuideSignPanel {
   // Arrow-per-lane (MUTCD APL) band below this panel's rows. 0 = off. Absent in older
   // JSON, which Gson leaves at these initializers, so old signs simply have no band.
   private int aplLanes = 0;
-  // The rightmost N of aplLanes lanes are EXIT ONLY (yellow patch + dark arrows).
+  // N of aplLanes lanes are EXIT ONLY (yellow patch + dark arrows), on the right by
+  // default or the left when aplExitLeft is set.
   private int aplExitLanes = 0;
+  // Absent in older JSON → false (exit lanes on the right).
+  private boolean aplExitLeft = false;
+  // GuideSignArrowType ordinals for the through lanes and the exit lanes; absent in
+  // older JSON → 0 (UP), the classic APL look.
+  private int aplArrowType = 0;
+  private int aplExitArrowType = 0;
 
   public GuideSignPanel() {
   }
@@ -74,6 +81,30 @@ public class GuideSignPanel {
     this.aplExitLanes = Math.max(0, Math.min(this.aplLanes, aplExitLanes));
   }
 
+  public boolean isAplExitLeft() {
+    return aplExitLeft;
+  }
+
+  public void setAplExitLeft(boolean aplExitLeft) {
+    this.aplExitLeft = aplExitLeft;
+  }
+
+  public GuideSignArrowType getAplArrowType() {
+    return GuideSignArrowType.fromOrdinal(aplArrowType);
+  }
+
+  public void setAplArrowType(int aplArrowType) {
+    this.aplArrowType = aplArrowType;
+  }
+
+  public GuideSignArrowType getAplExitArrowType() {
+    return GuideSignArrowType.fromOrdinal(aplExitArrowType);
+  }
+
+  public void setAplExitArrowType(int aplExitArrowType) {
+    this.aplExitArrowType = aplExitArrowType;
+  }
+
   public boolean canAddRow() {
     return rows.size() < MAX_ROWS;
   }
@@ -98,6 +129,9 @@ public class GuideSignPanel {
     p.exitTab = exitTab != null ? exitTab.copy() : null;
     p.aplLanes = aplLanes;
     p.aplExitLanes = aplExitLanes;
+    p.aplExitLeft = aplExitLeft;
+    p.aplArrowType = aplArrowType;
+    p.aplExitArrowType = aplExitArrowType;
     return p;
   }
 }

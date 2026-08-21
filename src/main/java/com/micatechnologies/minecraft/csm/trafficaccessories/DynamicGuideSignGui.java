@@ -69,6 +69,9 @@ public class DynamicGuideSignGui extends GuiScreen {
   private static final int BTN_APL_EXIT_UP = 60;
   private static final int BTN_SHIELD_BACK = 61;
   private static final int BTN_EXIT_TAB_WIDE = 62;
+  private static final int BTN_APL_EXIT_SIDE = 63;
+  private static final int BTN_APL_ARROW = 64;
+  private static final int BTN_APL_EXIT_ARROW = 65;
 
   private static final int BTN_ROW_PREV = 30;
   private static final int BTN_ROW_NEXT = 31;
@@ -321,6 +324,18 @@ public class DynamicGuideSignGui extends GuiScreen {
     addContentBtn(aplExitDown);
     addContentBtn(aplExitUp);
     y += BTN_HEIGHT + 2;
+    GuiButton aplSide = new GuiButton(BTN_APL_EXIT_SIDE, left, y, FIELD_WIDTH, BTN_HEIGHT, "");
+    aplSide.enabled = panel.hasApl();
+    addContentBtn(aplSide);
+    y += BTN_HEIGHT + 2;
+    GuiButton aplArrow = new GuiButton(BTN_APL_ARROW, left, y, halfW, BTN_HEIGHT, "");
+    GuiButton aplExitArrow =
+        new GuiButton(BTN_APL_EXIT_ARROW, left + halfW + 4, y, halfW, BTN_HEIGHT, "");
+    aplArrow.enabled = panel.hasApl();
+    aplExitArrow.enabled = panel.hasApl();
+    addContentBtn(aplArrow);
+    addContentBtn(aplExitArrow);
+    y += BTN_HEIGHT + 2;
 
     y += 4;
 
@@ -498,7 +513,10 @@ public class DynamicGuideSignGui extends GuiScreen {
       }
       if (panel.hasApl()) {
         previewLines.add("APL: " + panel.getAplLanes() + " lanes, "
-            + panel.getAplExitLanes() + " exit");
+            + panel.getAplExitLanes() + " exit ("
+            + (panel.isAplExitLeft() ? "left" : "right") + ", "
+            + panel.getAplArrowType().getFriendlyName() + "/"
+            + panel.getAplExitArrowType().getFriendlyName() + ")");
       }
 
       List<GuideSignRow> rows = panel.getRows();
@@ -719,6 +737,12 @@ public class DynamicGuideSignGui extends GuiScreen {
         btn.displayString = "Toll: " + (panel.getExitTab().isToll() ? "Yes" : "No");
       } else if (btn.id == BTN_EXIT_TAB_WIDE && panel.hasExitTab()) {
         btn.displayString = panel.getExitTab().isWide() ? "Wide" : "Narrow";
+      } else if (btn.id == BTN_APL_EXIT_SIDE) {
+        btn.displayString = "Exit Side: " + (panel.isAplExitLeft() ? "Left" : "Right");
+      } else if (btn.id == BTN_APL_ARROW) {
+        btn.displayString = "Arw: " + panel.getAplArrowType().getFriendlyName();
+      } else if (btn.id == BTN_APL_EXIT_ARROW) {
+        btn.displayString = "Exit: " + panel.getAplExitArrowType().getFriendlyName();
       }
     }
 
@@ -1014,6 +1038,21 @@ public class DynamicGuideSignGui extends GuiScreen {
         if (panel.hasExitTab()) {
           panel.getExitTab().setWide(!panel.getExitTab().isWide());
         }
+        break;
+      }
+      case BTN_APL_EXIT_SIDE: {
+        GuideSignPanel panel = data.getPanels().get(selectedPanel);
+        panel.setAplExitLeft(!panel.isAplExitLeft());
+        break;
+      }
+      case BTN_APL_ARROW: {
+        GuideSignPanel panel = data.getPanels().get(selectedPanel);
+        panel.setAplArrowType(panel.getAplArrowType().next().ordinal());
+        break;
+      }
+      case BTN_APL_EXIT_ARROW: {
+        GuideSignPanel panel = data.getPanels().get(selectedPanel);
+        panel.setAplExitArrowType(panel.getAplExitArrowType().next().ordinal());
         break;
       }
       case BTN_APL_LANES_DOWN: {
