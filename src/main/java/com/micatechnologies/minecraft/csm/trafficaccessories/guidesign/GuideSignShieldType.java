@@ -76,21 +76,57 @@ public enum GuideSignShieldType {
   NEW_BRUNSWICK(5, 9, "New Brunswick", 0xFFFFFF, 0.62f),
   NOVA_SCOTIA(6, 9, "Nova Scotia", 0xFFFFFF, 0.62f),
   NEWFOUNDLAND(7, 9, "Newfoundland and Labrador", 0xFFFFFF, 0.62f),
-  PRINCE_EDWARD_ISLAND(0, 10, "Prince Edward Island", 0xFFFFFF, 0.62f);
+  PRINCE_EDWARD_ISLAND(0, 10, "Prince Edward Island", 0xFFFFFF, 0.62f),
+
+  // Alto route markers (provided artwork). Each has a wider 3-digit variant in the next
+  // atlas cell, selected automatically when the route number is 3+ characters.
+  ALTO(1, 10, "Alto", 0x101010, 0.62f, 2, 10, 1.35f),
+  ALTO_BLUE(3, 10, "Alto Blue", 0x101010, 0.62f, 4, 10, 1.35f);
 
   private final int atlasCol;
   private final int atlasRow;
   private final String friendlyName;
   private final int routeTextColor;
   private final float routeTextMaxFraction;
+  // Optional wider variant used for 3+ digit route numbers (like real Interstate
+  // shields). wideCol < 0 means the type has no wide variant.
+  private final int wideCol;
+  private final int wideRow;
+  private final float wideAspect;
 
   GuideSignShieldType(int atlasCol, int atlasRow, String friendlyName, int routeTextColor,
       float routeTextMaxFraction) {
+    this(atlasCol, atlasRow, friendlyName, routeTextColor, routeTextMaxFraction, -1, -1, 1.0f);
+  }
+
+  GuideSignShieldType(int atlasCol, int atlasRow, String friendlyName, int routeTextColor,
+      float routeTextMaxFraction, int wideCol, int wideRow, float wideAspect) {
     this.atlasCol = atlasCol;
     this.atlasRow = atlasRow;
     this.friendlyName = friendlyName;
     this.routeTextColor = routeTextColor;
     this.routeTextMaxFraction = routeTextMaxFraction;
+    this.wideCol = wideCol;
+    this.wideRow = wideRow;
+    this.wideAspect = wideAspect;
+  }
+
+  /** Whether the wide variant should be used for the given route number. */
+  public boolean usesWideVariant(String routeNumber) {
+    return wideCol >= 0 && routeNumber != null && routeNumber.length() >= 3;
+  }
+
+  public int getWideCol() {
+    return wideCol;
+  }
+
+  public int getWideRow() {
+    return wideRow;
+  }
+
+  /** Width/height ratio the wide variant renders at (1.0 for the square base cell). */
+  public float getWideAspect() {
+    return wideAspect;
   }
 
   /**
