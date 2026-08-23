@@ -102,7 +102,11 @@ def main():
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args()
 
-    samples = [m for m in (measure(n) for n in args.family) if m]
+    # Never let the subject vote on the target it is being measured against -- it is usually a
+    # member of its own family list, and self-inclusion drags the median toward whatever is wrong
+    # with it.
+    family = [n for n in args.family if n != args.texture]
+    samples = [m for m in (measure(n) for n in family) if m]
     if not samples:
         print("no family member had enough red to measure", file=sys.stderr)
         return 1
