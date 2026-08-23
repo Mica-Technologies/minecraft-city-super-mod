@@ -429,6 +429,7 @@ tile.firealarmsystemsensorlseriesledceilingspeakerstrobewhite.name=System Sensor
 tile.firealarmsystemsensorlseriesledhornstrobeoutdoorred.name=System Sensor L Series LED Red/Outdoor (Horn Strobe)
 tile.firealarmsystemsensorlseriesledhornstrobered.name=System Sensor L Series LED Red (Horn Strobe)
 tile.firealarmsystemsensorlseriesledhornstrobewhite.name=System Sensor L Series LED White (Horn Strobe)
+tile.firealarmsystemsensorlseriesledspeakerstrobeblack.name=System Sensor L Series LED Black (Speaker Strobe)
 tile.firealarmsystemsensorlseriesledspeakerstrobered.name=System Sensor L Series LED Red (Speaker Strobe)
 tile.firealarmsystemsensorlseriesledspeakerstrobewhite.name=System Sensor L Series LED White (Speaker Strobe)
 tile.firealarmsystemsensorlseriesspeakerred.name=System Sensor L Series Red (Speaker)
