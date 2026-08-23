@@ -1,0 +1,44 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:lifesafety/shared_models/wheelock_et24_sounderstrobe.obj",
+    "textures": {
+      "#body": "csm:blocks/lifesafety/wheelock_et24_red_sounder_strobe"
+    },
+    "custom": {
+      "flip-v": true
+    }
+  },
+  "variants": {
+    "facing": {
+      "down": {
+        "x": 90
+      },
+      "east": {
+        "y": 90
+      },
+      "north": {},
+      "south": {
+        "y": 180
+      },
+      "up": {
+        "x": 270
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "sound": {
+      "0": {},
+      "1": {}
+    },
+    "inventory": [
+      {
+        "transform": "forge:default-block"
+      }
+    ],
+    "normal": [
+      {}
+    ]
+  }
+}

@@ -39,6 +39,7 @@ import com.micatechnologies.minecraft.csm.lifesafety.BlockFireAlarmWheelockASRed
 import com.micatechnologies.minecraft.csm.lifesafety.BlockFireAlarmWheelockASWhite;
 import com.micatechnologies.minecraft.csm.lifesafety.BlockFireAlarmWheelockExceederRed;
 import com.micatechnologies.minecraft.csm.lifesafety.BlockFireAlarmWheelockExceederWhite;
+import com.micatechnologies.minecraft.csm.lifesafety.BlockFireAlarmWheelockET24SounderStrobeRed;
 import com.micatechnologies.minecraft.csm.lifesafety.BlockFireAlarmWheelockMTHornRed;
 import com.micatechnologies.minecraft.csm.lifesafety.BlockFireAlarmWheelockMTHornStrobeRed;
 import com.micatechnologies.minecraft.csm.lifesafety.BlockFireAlarmWheelockMTHornStrobeWhite;
@@ -232,6 +233,7 @@ public class CsmTabLifeSafety extends CsmTab {
     initTabBlock(new BlockFireAlarmSounderStrobeFactory("firealarmwheelocket80red", "csm:simplex_4051_marchtime", new AxisAlignedBB(0.125000, 0.250000, 0.687500, 0.875000, 1.000000, 1.000000), new float[]{6.6f, 5f, 11f}, new float[]{9.6f, 15f, 14f}));
     initTabBlock(BlockFireAlarmWheelockExceederRed.class, fmlPreInitializationEvent);
     initTabBlock(BlockFireAlarmWheelockExceederWhite.class, fmlPreInitializationEvent);
+    initTabBlock(BlockFireAlarmWheelockET24SounderStrobeRed.class, fmlPreInitializationEvent);
     initTabBlock(BlockFireAlarmWheelockMTHornRed.class, fmlPreInitializationEvent);
     initTabBlock(BlockFireAlarmWheelockMTHornStrobeRed.class, fmlPreInitializationEvent);
     initTabBlock(BlockFireAlarmWheelockMTHornStrobeWhite.class, fmlPreInitializationEvent);
