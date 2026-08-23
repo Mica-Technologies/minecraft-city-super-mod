@@ -73,7 +73,8 @@ MATERIAL = "body"
 VARIANTS = {
     "system_sensor_l_series_led_red_horn_strobe": ["system_sensor_l_series_led_white_horn_strobe"],
     "system_sensor_l_series_led_red_speaker_strobe":
-        ["system_sensor_l_series_led_white_speaker_strobe"],
+        ["system_sensor_l_series_led_white_speaker_strobe",
+         "system_sensor_l_series_led_black_speaker_strobe"],
     "system_sensor_l_series_led_red_ceiling_speaker_strobe":
         ["system_sensor_l_series_led_white_ceiling_speaker_strobe"],
     "system_sensor_l_series_led_red_outdoor_horn_strobe": [],
@@ -835,7 +836,7 @@ def classic_unit(texture):
 STROBE_MATERIAL = "strobe"
 
 
-def fit_rounded_rect_uv(textures, per_corner=5, shrink=0.20):
+def fit_rounded_rect_uv(textures, per_corner=5, shrink=0.20, radius=None):
     """Fit a straight-sided, round-cornered outline to a silhouette, in UV units.
 
     Tracing the alpha edge is right for a shape whose outline really is a curve -- the LF's bowed
@@ -864,7 +865,11 @@ def fit_rounded_rect_uv(textures, per_corner=5, shrink=0.20):
     v0 = sum(b[1] for b in boxes) / len(boxes) + shrink
     u1 = sum(b[2] for b in boxes) / len(boxes) - shrink
     v1 = sum(b[3] for b in boxes) / len(boxes) - shrink
-    radius = sum(radii) / len(radii)
+    # The area estimate assumes the ONLY thing missing from the bounding box is four corner arcs.
+    # That holds for the L-Series shells; it over-reads on a photograph carrying a soft edge or a
+    # drop shadow, where the deficit has another source. Pass `radius` to override it when walking
+    # the outline in from a corner says the real corners are tighter than the area implies.
+    radius = sum(radii) / len(radii) if radius is None else radius
     return (rounded_rect(u0, v0, u1, v1, radius, per_corner),
             ((u0 + u1) / 2.0, (v0 + v1) / 2.0), radius)
 
@@ -1053,7 +1058,10 @@ def e50_unit(texture, variants):
     mesh = Mesh()
     model_rect = (3.0, 2.6, 13.0, 16.0)     # 10 x 13.4, the enclosure's own 0.745 aspect
     front_map = FrontMap(opaque_bounds(texture), model_rect)
-    contour, centre_uv, _ = fit_rounded_rect_uv(variants)
+    # Radius measured off the outline rather than off the area. Walking in from the top edge, the
+    # E50 reaches near-full width within two pixels, so its corners are tight; the area estimate
+    # reads 1.63 here because this photograph loses box area to something other than its corners.
+    contour, centre_uv, _ = fit_rounded_rect_uv(variants, radius=0.75)
     # Left and right take the legend panel, which runs the full height of the flank texture so the
     # letters land at the height they do on the appliance. Top and bottom take plain housing --
     # routing every wall segment to the panel would run FIRE around the top and bottom edges too.
