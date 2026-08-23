@@ -267,7 +267,7 @@ public class CsmTabLifeSafety extends CsmTab {
     initTabBlock(BlockOldFireSprinkler4.class, fmlPreInitializationEvent);
     initTabBlock(BlockOldFireSprinkler5.class, fmlPreInitializationEvent);
     initTabBlock(BlockOldFireSprinkler6.class, fmlPreInitializationEvent);
-    initTabBlock(new BlockFireAlarmSounderStrobeFactory("sslstrobe", null, new AxisAlignedBB(0.187500, 0.187500, 0.812500, 0.812500, 1.000000, 1.000000), new float[]{5.2f, 4.6f, 13f}, new float[]{11.2f, 8.6f, 14f}));
+    initTabBlock(new BlockFireAlarmSounderStrobeFactory("sslstrobe", null, new AxisAlignedBB(0.187500, 0.187500, 0.812500, 0.812500, 1.000000, 1.000000), new float[]{5.5f, 4.86f, 13f}, new float[]{10.25f, 9.63f, 14f}));
     initTabBlock(new BlockRotatableNSEWUDFactory("stairssignonesided", Material.ROCK, SoundType.STONE, "pickaxe", 1, 1F, 10F, 0.85F, 0, new AxisAlignedBB(0.000000, 0.250000, 0.812500, 1.000000, 1.062500, 1.000000), false, false, false, BlockRenderLayer.TRANSLUCENT, false, false));
     initTabItem(ItemFireAlarmLinker.class, fmlPreInitializationEvent);
     initTabItem(ItemFireAlarmConfigTool.class, fmlPreInitializationEvent);

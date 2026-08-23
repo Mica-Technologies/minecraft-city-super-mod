@@ -1299,6 +1299,18 @@ def main():
                                    "System Sensor L-Series %s" % stem),
                         None))
 
+    # The standalone strobe: same shell, single colour, no sounder.
+    mesh, lens_from, lens_to = lseries_xenon_unit("system_sensor_l_series_strobe_red",
+                                                 ["system_sensor_l_series_strobe_red"])
+    reports.append(("systemsensor_lseries_strobe.obj",
+                    mesh.write(os.path.join(OUT_DIR, "systemsensor_lseries_strobe.obj"),
+                               "lseries_strobe",
+                               "csm:blocks/lifesafety/system_sensor_l_series_strobe_red",
+                               "System Sensor L-Series standalone strobe"),
+                    (((lens_from[0] + lens_to[0]) / 2, (lens_from[1] + lens_to[1]) / 2),
+                     ((lens_to[0] - lens_from[0]) / 2, (lens_to[1] - lens_from[1]) / 2),
+                     lens_to[2], lens_from[2])))
+
     for stem, colours in (("hornstrobe", ("system_sensor_l_series_red_horn_strobe",
                                          "system_sensor_l_series_white_horn_strobe")),
                           ("speakerstrobe", ("system_sensor_l_series_red_speaker_strobe",
