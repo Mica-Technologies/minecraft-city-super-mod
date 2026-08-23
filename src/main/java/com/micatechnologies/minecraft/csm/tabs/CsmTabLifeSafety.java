@@ -217,8 +217,8 @@ public class CsmTabLifeSafety extends CsmTab {
     initTabBlock(BlockFireAlarmWheelock7002TRed.class, fmlPreInitializationEvent);
     initTabBlock(BlockFireAlarmWheelockASRed.class, fmlPreInitializationEvent);
     initTabBlock(BlockFireAlarmWheelockASWhite.class, fmlPreInitializationEvent);
-    initTabBlock(new BlockFireAlarmVoiceEvacStrobeFactory("firealarmwheelocke50red", new AxisAlignedBB(0.187500, 0.250000, 0.812500, 0.812500, 1.000000, 1.000000), new float[]{3.5f, 13.3f, 13f}, new float[]{12.5f, 15.3f, 14f}));
-    initTabBlock(new BlockFireAlarmVoiceEvacStrobeFactory("firealarmwheelocke50white", new AxisAlignedBB(0.187500, 0.250000, 0.812500, 0.812500, 1.000000, 1.000000), new float[]{3.5f, 13.3f, 13f}, new float[]{12.5f, 15.3f, 14f}));
+    initTabBlock(new BlockFireAlarmVoiceEvacStrobeFactory("firealarmwheelocke50red", new AxisAlignedBB(0.187500, 0.162500, 0.800000, 0.812500, 1.000000, 1.000000), new float[]{3.54f, 12.49f, 12.8f}, new float[]{12.35f, 15.47f, 14f}));
+    initTabBlock(new BlockFireAlarmVoiceEvacStrobeFactory("firealarmwheelocke50white", new AxisAlignedBB(0.187500, 0.162500, 0.800000, 0.812500, 1.000000, 1.000000), new float[]{3.54f, 12.49f, 12.8f}, new float[]{12.35f, 15.47f, 14f}));
     initTabBlock(new BlockFireAlarmVoiceEvacStrobeFactory("firealarmwheelocke60white", new AxisAlignedBB(0.000000, 0.000000, 0.875000, 1.000000, 1.000000, 1.000000), new float[]{4f, 7f, 14f}, new float[]{12f, 9f, 16f}));
     initTabBlock(new BlockFireAlarmSounderStrobeFactory("firealarmwheelocke70chimered", "csm:et70_chime", new AxisAlignedBB(0.125000, 0.250000, 0.750000, 0.875000, 1.000000, 0.937500), new float[]{3f, 9f, 13f}, new float[]{13f, 12f, 15f}));
     initTabBlock(new BlockFireAlarmSounderStrobeFactory("firealarmwheelocke70chimewhite", "csm:et70_chime", new AxisAlignedBB(0.125000, 0.250000, 0.750000, 0.875000, 1.000000, 0.937500), new float[]{3f, 9f, 13f}, new float[]{13f, 12f, 15f}));
