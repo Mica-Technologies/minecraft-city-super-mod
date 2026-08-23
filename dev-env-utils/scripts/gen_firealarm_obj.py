@@ -705,11 +705,20 @@ def lens_from_uv(front_map, lens_uv):
     return centre, radius, uv_centre, uv_radius
 
 
-def wall_unit(texture, model_rect, z_front=14.0, z_back=16.0, lens_depth=1.0):
-    """The two L-Series LED wall devices: traced enclosure, round lens standing off its face."""
+def wall_unit(texture, model_rect, z_front=14.0, z_back=16.0, lens_depth=1.0, outline="fitted"):
+    """The two L-Series LED wall devices: round lens standing off a flat-sided enclosure.
+
+    `outline` picks how the shell is shaped. "fitted" builds a rounded rectangle, which is what
+    these mouldings are -- flat sides, round corners -- and gives each straight run one quad with
+    one normal. "traced" follows the alpha edge and is for the ceiling unit, whose outline really
+    is a curve all the way round.
+    """
     mesh = Mesh()
     uv_rect = opaque_bounds(texture)
-    contour, centre_uv = trace_silhouette(texture)
+    if outline == "fitted":
+        contour, centre_uv, _ = fit_rounded_rect_uv([texture] + VARIANTS.get(texture, []))
+    else:
+        contour, centre_uv = trace_silhouette(texture)
     front_map = FrontMap(uv_rect, model_rect)
     build_shell(mesh, contour, centre_uv, front_map, z_front, z_back, housing_patch(texture))
     centre, radius, uv_centre, uv_radius = lens_from_uv(front_map, measure_lens(texture))
@@ -722,7 +731,7 @@ def ceiling_unit(texture, model_rect, z_front, z_back, lens_depth):
     trace that squares up a wall unit's corners gives this one a genuinely round rim -- and the
     shell gains the depth a real ceiling appliance has, instead of the 0.01-unit pancake the JSON
     model inherited from its predecessor."""
-    return wall_unit(texture, model_rect, z_front, z_back, lens_depth)
+    return wall_unit(texture, model_rect, z_front, z_back, lens_depth, outline="traced")
 
 
 def outdoor_unit(texture):
@@ -824,6 +833,152 @@ def classic_unit(texture):
 STROBE_MATERIAL = "strobe"
 
 
+def fit_rounded_rect_uv(textures, per_corner=5, shrink=0.20):
+    """Fit a straight-sided, round-cornered outline to a silhouette, in UV units.
+
+    Tracing the alpha edge is right for a shape whose outline really is a curve -- the LF's bowed
+    top and bottom, a ceiling unit's disc. It is wrong for a moulding with FLAT sides. The traced
+    outline of one is straight to within a pixel, but it arrives as sixty-odd short segments, and
+    the extruded flank then gets sixty-odd slightly different normals: Minecraft shades each one
+    separately and a flat side reads as a bevelled curve. Fitting instead gives each straight run a
+    single quad with a single normal, and leaves the corners as real arcs.
+
+    The corner radius comes from how much area the silhouette is missing against its own bounding
+    box -- a rounded rectangle loses exactly (4 - pi) r^2 to its four corners -- so it is measured
+    off the art rather than guessed. Averaged across the colour variants a model serves, since
+    antialiasing puts their edges a fraction of a pixel apart.
+    """
+    boxes, radii = [], []
+    for name in textures:
+        alpha, scale = alpha_of(name)
+        solid = alpha > 128
+        rows, cols = np.nonzero(solid)
+        u0, u1 = cols.min() / scale, (cols.max() + 1) / scale
+        v0, v1 = rows.min() / scale, (rows.max() + 1) / scale
+        area = solid.sum() / (scale * scale)
+        radii.append(math.sqrt(max(0.0, ((u1 - u0) * (v1 - v0) - area) / (4.0 - math.pi))))
+        boxes.append((u0, v0, u1, v1))
+    u0 = sum(b[0] for b in boxes) / len(boxes) + shrink
+    v0 = sum(b[1] for b in boxes) / len(boxes) + shrink
+    u1 = sum(b[2] for b in boxes) / len(boxes) - shrink
+    v1 = sum(b[3] for b in boxes) / len(boxes) - shrink
+    radius = sum(radii) / len(radii)
+    return (rounded_rect(u0, v0, u1, v1, radius, per_corner),
+            ((u0 + u1) / 2.0, (v0 + v1) / 2.0), radius)
+
+
+def straighten_sides(contour, centre, band=0.5, tolerance=0.40):
+    """Snap the near-vertical runs of a traced outline onto straight lines, leaving the rest.
+
+    For a shell whose outline is a rounded rectangle all the way round, fit_rounded_rect_uv is the
+    tool. This is for the ones that are only PARTLY straight -- the TrueAlert has flat sides but a
+    bottom edge that genuinely bows outward, and fitting a rectangle to it would throw that away.
+
+    A line is fitted to each side over the middle of the height, where the outline is certainly on
+    the flat run, then every point on that side lying within `tolerance` of the line is pulled onto
+    it. Points further off -- the corner arcs, the curved bottom -- are left exactly as traced. The
+    fit allows a slope, so a moulding that tapers slightly stays tapered instead of being forced
+    parallel.
+    """
+    if len(contour) < 8:
+        return contour
+    vs = [point[1] for point in contour]
+    low, high = min(vs), max(vs)
+    span = high - low
+    if span <= 0:
+        return contour
+    inner_low = low + span * (1.0 - band) / 2.0
+    inner_high = high - span * (1.0 - band) / 2.0
+
+    result = list(contour)
+    for side in (-1, 1):
+        seed = [i for i, p in enumerate(contour)
+                if (p[0] - centre[0]) * side > 0 and inner_low <= p[1] <= inner_high]
+        if len(seed) < 3:
+            continue
+        us = np.array([contour[i][0] for i in seed])
+        vv = np.array([contour[i][1] for i in seed])
+        if vv.max() - vv.min() < 1e-6:
+            continue
+        slope, intercept = np.polyfit(vv, us, 1)
+        # Snap only within the straight run's own height, grown a little. Without this bound a
+        # corner point that happens to sit near the line gets pulled onto it, squaring off the
+        # corner and kinking whatever curve follows -- on the TrueAlert that ate two points out of
+        # its bowed bottom.
+        margin = 0.10 * span
+        reach_low, reach_high = vv.min() - margin, vv.max() + margin
+        for i, point in enumerate(contour):
+            if (point[0] - centre[0]) * side <= 0:
+                continue
+            if not (reach_low <= point[1] <= reach_high):
+                continue
+            fitted = slope * point[1] + intercept
+            if abs(point[0] - fitted) <= tolerance:
+                result[i] = (fitted, point[1])
+    return result
+
+
+def measure_xenon_lens(texture, window=(3.5, 7.0, 12.5, 14.5), pad=0.25):
+    """Find a rectangular xenon lens in a RED enclosure texture and return its UV rect.
+
+    The L-Series LED devices are located by their LED die, a saturated yellow square at the exact
+    centre of a round lens. A xenon unit has no die and no circle: it has a wide, low chrome
+    reflector box, and its lens sits noticeably lower on the face than the LED lens does -- which
+    is why the two families cannot share a lens position.
+
+    So this looks for what is NOT the enclosure's red, bright enough to be the reflector, inside a
+    window that excludes the FIRE legend down each flank (also not red, also bright). Occupancy per
+    column and per row then gives the span where the feature is actually dense, rather than a
+    bounding box that any stray speck could widen. Measured on the red texture of a pair; the white
+    enclosure is too close to the chrome to separate, and both are the same appliance.
+    """
+    rgba = np.asarray(Image.open(os.path.join(TEX_DIR, texture + ".png")).convert("RGBA"),
+                      dtype=float)
+    colour, alpha = rgba[..., :3], rgba[..., 3]
+    height, width, _ = colour.shape
+    scale = width / 16.0
+    red, green, blue = colour[..., 0], colour[..., 1], colour[..., 2]
+    mask = (~((red - np.maximum(green, blue)) > 38)) & (alpha > 200) & (colour.max(2) > 95)
+    keep = np.zeros_like(mask)
+    u0, v0, u1, v1 = [int(round(value * scale)) for value in window]
+    keep[v0:v1, u0:u1] = True
+    mask &= keep
+    if mask.sum() < 150:
+        raise ValueError("no xenon lens found in %s" % texture)
+    columns = mask.sum(0)
+    rows = mask.sum(1)
+    dense_u = [x for x in range(width) if columns[x] > 0.18 * columns.max()]
+    dense_v = [y for y in range(height) if rows[y] > 0.18 * rows.max()]
+    return (min(dense_u) / scale - pad, min(dense_v) / scale - pad,
+            (max(dense_u) + 1) / scale + pad, (max(dense_v) + 1) / scale + pad)
+
+
+def lseries_xenon_unit(texture, variants, model_rect=(3.0, 3.0, 13.0, 16.0),
+                       z_front=14.0, z_back=16.0, lens_depth=1.0):
+    """A System Sensor L-Series wall appliance with a rectangular xenon lens.
+
+    Same enclosure as the L-Series LED units -- same footprint, so the two sit together on a wall
+    without one looking a size apart from the other -- but the lens is a wide low reflector box
+    lower on the face rather than a round dome in the middle.
+    """
+    mesh = Mesh()
+    front_map = FrontMap(opaque_bounds(texture), model_rect)
+    # A fitted outline rather than a traced one: this shell's sides are flat, and only its corners
+    # are round. See fit_rounded_rect_uv for why tracing a flat side is the wrong tool.
+    contour, centre_uv, _ = fit_rounded_rect_uv(variants)
+    build_shell(mesh, contour, centre_uv, front_map, z_front, z_back, find_flat_patch(variants, 0.8))
+
+    # Shallow UV insets, as on the TrueAlert: this lens is wide and short, so deeper ones would
+    # reach past its bright rim and wrap the dark reflector interior around its sides.
+    lens = panel_from_uv(front_map, measure_xenon_lens(texture), radius=0.45)
+    build_panel(mesh, front_map, lens,
+                [(z_front, 0.0, 0.30), (z_front - lens_depth * 0.75, 0.0, 0.12),
+                 (z_front - lens_depth, 0.22, 0.03)])
+    xs = [p[0] for p in lens]
+    ys = [p[1] for p in lens]
+    return (mesh, (min(xs), min(ys), z_front - lens_depth), (max(xs), max(ys), z_front))
+
+
 def truealert_unit(texture, variants):
     """The Simplex TrueAlert horn strobe and speaker strobe, which share one enclosure.
 
@@ -840,6 +995,7 @@ def truealert_unit(texture, variants):
     model_rect = (1.6, -3.2, 14.4, 16.0)
     front_map = FrontMap(opaque_bounds(texture), model_rect)
     contour, centre_uv = trace_silhouette(texture)
+    contour = straighten_sides(contour, centre_uv)
     # Two units of body: the side profile puts the enclosure's depth at roughly a sixth of its
     # width, and it is a moulded shell rather than the thin plate the previous model implied.
     build_shell(mesh, contour, centre_uv, front_map, 14.0, 16.0, find_flat_patch(variants, 0.8))
@@ -1011,6 +1167,20 @@ def main():
          "system_sensor_l_series_led_red_outdoor_horn_strobe",
          "System Sensor L-Series LED weatherproof horn strobe",
          (centre, radius, 11.5, 10.5))
+
+    for stem, colours in (("hornstrobe", ("system_sensor_l_series_red_horn_strobe",
+                                         "system_sensor_l_series_white_horn_strobe")),
+                          ("speakerstrobe", ("system_sensor_l_series_red_speaker_strobe",
+                                             "system_sensor_l_series_white_speaker_strobe"))):
+        mesh, lens_from, lens_to = lseries_xenon_unit(colours[0], list(colours))
+        reports.append(("systemsensor_lseries_%s.obj" % stem,
+                        mesh.write(os.path.join(OUT_DIR, "systemsensor_lseries_%s.obj" % stem),
+                                   "lseries_%s" % stem,
+                                   "csm:blocks/lifesafety/" + colours[0],
+                                   "System Sensor L-Series xenon %s" % stem),
+                        (((lens_from[0] + lens_to[0]) / 2, (lens_from[1] + lens_to[1]) / 2),
+                         ((lens_to[0] - lens_from[0]) / 2, (lens_to[1] - lens_from[1]) / 2),
+                         lens_to[2], lens_from[2])))
 
     mesh, lens_from, lens_to = truealert_unit(
         "shared_textures/simplex_truealert_red_horn_strobe",
