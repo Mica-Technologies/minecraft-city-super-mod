@@ -990,13 +990,20 @@ def measure_chrome_lens(texture, window=(5.0, 5.0, 11.0, 11.0), pad=0.15):
 
 def plain_shell_unit(texture, variants, model_rect, z_front, z_back, outline="fitted"):
     """An appliance with no strobe: just the enclosure. The horn and speaker versions of a device
-    are the same moulding as their strobe siblings with the lens left off."""
+    are the same moulding as their strobe siblings with the lens left off.
+
+    `outline` is "fitted" for a rounded rectangle, "traced" to follow the alpha edge, or
+    "straightened" to follow it with the near-vertical runs snapped flat -- which is what a shape
+    with straight sides and a genuinely curved top or bottom needs.
+    """
     mesh = Mesh()
     front_map = FrontMap(opaque_bounds(texture), model_rect)
     if outline == "fitted":
         contour, centre_uv, _ = fit_rounded_rect_uv(variants)
     else:
         contour, centre_uv = trace_silhouette(texture)
+        if outline == "straightened":
+            contour = straighten_sides(contour, centre_uv)
     build_shell(mesh, contour, centre_uv, front_map, z_front, z_back, find_flat_patch(variants, 0.8))
     return mesh
 
@@ -1067,7 +1074,11 @@ def e50_unit(texture, variants):
     # routing every wall segment to the panel would run FIRE around the top and bottom edges too.
     build_shell(mesh, contour, centre_uv, front_map, 14.0, 16.0,
                 (3.4, 0.4, 6.6, 3.6), wall_material=FLANK_MATERIAL,
-                side_strips={"east": (0.1, 2.3), "west": (0.1, 2.3)})
+                # One flank takes the panel reversed. East and west run their u in opposite senses
+                # and are viewed from opposite sides, so an identical rect comes out mirrored on
+                # one of them. Reversing costs nothing here: unlike the E7070's flank, this panel
+                # has no cap at one end, so flipping it only un-mirrors the legend.
+                side_strips={"east": (2.3, 0.1), "west": (0.1, 2.3)})
 
     # Wide, short lens bar: shallow UV insets, as on the TrueAlert and the xenon L-Series.
     lens = panel_from_uv(front_map, (3.52, 1.90, 12.22, 4.85), radius=0.40)
@@ -1298,6 +1309,19 @@ def main():
                                    "lseries_%s" % stem, "csm:blocks/lifesafety/" + colours[0],
                                    "System Sensor L-Series %s" % stem),
                         None))
+
+    # TrueAlert plain horn / speaker: the strobe's enclosure without the lens. Straightened
+    # rather than fitted, so its bowed bottom survives the way the strobe version's does.
+    mesh = plain_shell_unit("shared_textures/simplex_truealert_red_horn",
+                            ["shared_textures/simplex_truealert_red_horn",
+                             "shared_textures/simplex_truealert_white_horn"],
+                            (2.0, 3.5, 14.0, 16.0), 14.0, 16.0, outline="straightened")
+    reports.append(("simplex_truealert_sounder.obj",
+                    mesh.write(os.path.join(OUT_DIR, "simplex_truealert_sounder.obj"),
+                               "simplex_truealert_sounder",
+                               "csm:blocks/lifesafety/shared_textures/simplex_truealert_red_horn",
+                               "Simplex TrueAlert horn / speaker"),
+                    None))
 
     # The standalone strobe: same shell, single colour, no sounder.
     mesh, lens_from, lens_to = lseries_xenon_unit("system_sensor_l_series_strobe_red",
