@@ -440,12 +440,14 @@ class FrontMap:
 
 # --------------------------------------------------------------------------- builders
 def build_shell(mesh, contour_uv, centre_uv, front_map, z_front, z_back, wall_uv,
-                back_cap=True, side_strips=None):
+                back_cap=True, side_strips=None, wall_material=None):
     """An enclosure: traced front cap, extruded side wall, optional flat back.
 
     The front cap's UVs are the traced points themselves, so the art lands on the geometry it was
     traced from -- an identity mapping, which cannot bleed into the transparent margin. `wall_uv`
-    is a flat patch of enclosure surface for the flanks.
+    is a flat patch of enclosure surface for the flanks. `wall_material` puts the flanks on a
+    material of their own, for a device whose sides carry art the front-on photograph cannot hold
+    -- the E50's FIRE legend runs down its flanks and appears nowhere on its plate.
 
     `side_strips` is for a texture that photographs the device's side walls separately, as the
     weatherproof unit's does: {"east": (u_at_front, u_at_back), "west": (...)}. Note that the two
@@ -486,7 +488,7 @@ def build_shell(mesh, contour_uv, centre_uv, front_map, z_front, z_back, wall_uv
                   (points[j][0], points[j][1], z_front),
                   (points[j][0], points[j][1], z_back),
                   (points[i][0], points[i][1], z_back),
-                  front_i, front_j, back_j, back_i, outward=outward)
+                  front_i, front_j, back_j, back_i, outward=outward, material=wall_material)
 
     if back_cap:
         back_centre = (centre_model[0], centre_model[1], z_back)
@@ -496,7 +498,7 @@ def build_shell(mesh, contour_uv, centre_uv, front_map, z_front, z_back, wall_uv
                           (points[i][0], points[i][1], z_back),
                           (points[j][0], points[j][1], z_back),
                           (wu0, wv0), (wu1, wv0), (wu1, wv1),
-                          outward=(0.0, 0.0, 1.0))
+                          outward=(0.0, 0.0, 1.0), material=wall_material)
 
 
 def rounded_rect(x0, y0, x1, y1, radius, per_corner=6):
@@ -1036,6 +1038,38 @@ def lseries_xenon_unit(texture, variants, model_rect=(3.0, 3.0, 13.0, 16.0),
     return (mesh, (min(xs), min(ys), z_front - lens_depth), (max(xs), max(ys), z_front))
 
 
+FLANK_MATERIAL = "flank"
+
+
+def e50_unit(texture, variants):
+    """The Wheelock E50 speaker strobe: a boxy enclosure with a wide lens bar across its top.
+
+    The flanks are the interesting part. A real E50 carries FIRE down each side -- white on the red
+    unit, red on the white one -- and its plate photograph, being straight on, contains none of it.
+    So the shell's wall goes on a second material that gen_e50_flank_texture.py draws per colour.
+    It cannot be shared the way the E7070's strobe module is, because that module is white on both
+    variants while this legend inverts between them.
+    """
+    mesh = Mesh()
+    model_rect = (3.0, 2.6, 13.0, 16.0)     # 10 x 13.4, the enclosure's own 0.745 aspect
+    front_map = FrontMap(opaque_bounds(texture), model_rect)
+    contour, centre_uv, _ = fit_rounded_rect_uv(variants)
+    # Left and right take the legend panel, which runs the full height of the flank texture so the
+    # letters land at the height they do on the appliance. Top and bottom take plain housing --
+    # routing every wall segment to the panel would run FIRE around the top and bottom edges too.
+    build_shell(mesh, contour, centre_uv, front_map, 14.0, 16.0,
+                (3.4, 0.4, 6.6, 3.6), wall_material=FLANK_MATERIAL,
+                side_strips={"east": (0.1, 2.3), "west": (0.1, 2.3)})
+
+    # Wide, short lens bar: shallow UV insets, as on the TrueAlert and the xenon L-Series.
+    lens = panel_from_uv(front_map, (3.52, 1.90, 12.22, 4.85), radius=0.40)
+    build_panel(mesh, front_map, lens,
+                [(14.0, 0.0, 0.30), (13.05, 0.0, 0.12), (12.8, 0.20, 0.03)])
+    xs = [p[0] for p in lens]
+    ys = [p[1] for p in lens]
+    return mesh, (min(xs), min(ys), 12.8), (max(xs), max(ys), 14.0)
+
+
 def truealert_unit(texture, variants):
     """The Simplex TrueAlert horn strobe and speaker strobe, which share one enclosure.
 
@@ -1270,6 +1304,20 @@ def main():
                         (((lens_from[0] + lens_to[0]) / 2, (lens_from[1] + lens_to[1]) / 2),
                          ((lens_to[0] - lens_from[0]) / 2, (lens_to[1] - lens_from[1]) / 2),
                          lens_to[2], lens_from[2])))
+
+    mesh, lens_from, lens_to = e50_unit(
+        "wheelock_e50_red_speaker_strobe",
+        ["wheelock_e50_red_speaker_strobe", "wheelock_e50_white_speaker_strobe"])
+    reports.append(("wheelock_e50_speakerstrobe.obj",
+                    mesh.write(os.path.join(OUT_DIR, "wheelock_e50_speakerstrobe.obj"),
+                               "wheelock_e50_speakerstrobe",
+                               "csm:blocks/lifesafety/wheelock_e50_red_speaker_strobe",
+                               "Wheelock E50 speaker strobe",
+                               extra_materials={FLANK_MATERIAL:
+                                                "csm:blocks/lifesafety/wheelock_e50_flank_red"}),
+                    (((lens_from[0] + lens_to[0]) / 2, (lens_from[1] + lens_to[1]) / 2),
+                     ((lens_to[0] - lens_from[0]) / 2, (lens_to[1] - lens_from[1]) / 2),
+                     lens_to[2], lens_from[2])))
 
     mesh, lens_from, lens_to = truealert_unit(
         "shared_textures/simplex_truealert_red_horn_strobe",
