@@ -226,10 +226,10 @@ public class CsmTabLifeSafety extends CsmTab {
     initTabBlock(new BlockFireAlarmVoiceEvacFactory("firealarmwheelocke70speakerred", new AxisAlignedBB(0.125000, 0.250000, 0.937500, 0.875000, 1.000000, 1.000000)));
     initTabBlock(new BlockFireAlarmVoiceEvacFactory("firealarmwheelocke70speakerwhite", new AxisAlignedBB(0.125000, 0.250000, 0.875000, 0.875000, 1.000000, 0.937500)));
     initTabBlock(new BlockFireAlarmVoiceEvacStrobeFactory("firealarmwheelocke70white", new AxisAlignedBB(0.125000, 0.250000, 0.750000, 0.875000, 1.000000, 0.937500), new float[]{3f, 9f, 13f}, new float[]{13f, 12f, 15f}));
-    initTabBlock(new BlockFireAlarmVoiceEvacStrobeFactory("firealarmwheelocket70red", new AxisAlignedBB(0.125000, 0.250000, 0.812500, 0.875000, 1.000000, 1.000000), new float[]{6.4f, 5f, 13f}, new float[]{9.4f, 15f, 15f}));
+    initTabBlock(new BlockFireAlarmVoiceEvacStrobeFactory("firealarmwheelocket70red", new AxisAlignedBB(0.125000, 0.250000, 0.718750, 0.875000, 1.000000, 1.000000), new float[]{7.1f, 5.2f, 11.5f}, new float[]{9.5f, 14.8f, 13.11f}));
     initTabBlock(new BlockFireAlarmVoiceEvacStrobeFactory("firealarmwheelocket70wpred", new AxisAlignedBB(0.125000, 0.250000, 0.500000, 0.875000, 1.000000, 1.000000), new float[]{2.9f, 10.7f, 8f}, new float[]{12.9f, 13.7f, 12f}));
     initTabBlock(new BlockFireAlarmVoiceEvacStrobeFactory("firealarmwheelocket70wpwhite", new AxisAlignedBB(0.125000, 0.250000, 0.500000, 0.875000, 1.000000, 1.000000), new float[]{2.9f, 10.7f, 8f}, new float[]{12.9f, 13.7f, 12f}));
-    initTabBlock(new BlockFireAlarmVoiceEvacStrobeFactory("firealarmwheelocket70white", new AxisAlignedBB(0.125000, 0.250000, 0.812500, 0.875000, 1.000000, 1.000000), new float[]{6.4f, 5f, 13f}, new float[]{9.4f, 15f, 15f}));
+    initTabBlock(new BlockFireAlarmVoiceEvacStrobeFactory("firealarmwheelocket70white", new AxisAlignedBB(0.125000, 0.250000, 0.718750, 0.875000, 1.000000, 1.000000), new float[]{7.1f, 5.2f, 11.5f}, new float[]{9.5f, 14.8f, 13.11f}));
     initTabBlock(new BlockFireAlarmSounderStrobeFactory("firealarmwheelocket80red", "csm:simplex_4051_marchtime", new AxisAlignedBB(0.125000, 0.250000, 0.687500, 0.875000, 1.000000, 1.000000), new float[]{6.6f, 5f, 11f}, new float[]{9.6f, 15f, 14f}));
     initTabBlock(BlockFireAlarmWheelockExceederRed.class, fmlPreInitializationEvent);
     initTabBlock(BlockFireAlarmWheelockExceederWhite.class, fmlPreInitializationEvent);
