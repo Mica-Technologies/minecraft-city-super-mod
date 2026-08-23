@@ -824,6 +824,40 @@ def classic_unit(texture):
 STROBE_MATERIAL = "strobe"
 
 
+def truealert_unit(texture, variants):
+    """The Simplex TrueAlert horn strobe and speaker strobe, which share one enclosure.
+
+    The shape is the point here. A TrueAlert is 0.66 wide-to-tall with a bottom edge that bows
+    downward in a broad arc under the FIRE band, and the model it replaces was a plain box wearing
+    a squashed 1.12-aspect photograph, so the curve simply did not exist. Tracing the silhouette
+    off a properly proportioned cutout gets the arc, the rounded shoulders and the tapered flanks
+    for free -- there is no radius to tune, because none of it is a radius.
+    """
+    mesh = Mesh()
+    # A TrueAlert is a big appliance, so it hangs about a fifth of a block below its own, keeping
+    # its top edge on the block's. The rect is scaled about that top edge rather than stretched:
+    # 12.8 x 19.2 holds the same 0.667 aspect the cutout has, so nothing in the art elongates.
+    model_rect = (1.6, -3.2, 14.4, 16.0)
+    front_map = FrontMap(opaque_bounds(texture), model_rect)
+    contour, centre_uv = trace_silhouette(texture)
+    # Two units of body: the side profile puts the enclosure's depth at roughly a sixth of its
+    # width, and it is a moulded shell rather than the thin plate the previous model implied.
+    build_shell(mesh, contour, centre_uv, front_map, 14.0, 16.0, find_flat_patch(variants, 0.8))
+
+    # The lens is a clear wraparound standing about half the body's depth proud of its face, so
+    # its flanks show its own glass rather than housing.
+    # Shallow UV insets: this lens is wide and short, only about three units tall in the texture,
+    # so the deeper insets the taller lenses use would reach past its bright bezel and wrap the
+    # dark reflector interior around its sides. A third of a unit stays on the bezel, which is
+    # what the real clear edge looks like.
+    lens = panel_from_uv(front_map, (3.4, 9.95, 12.6, 12.9), radius=0.55)
+    build_panel(mesh, front_map, lens,
+                [(14.0, 0.0, 0.30), (13.15, 0.0, 0.12), (12.9, 0.25, 0.03)])
+    xs = [p[0] for p in lens]
+    ys = [p[1] for p in lens]
+    return mesh, (min(xs), min(ys), 12.9), (max(xs), max(ys), 14.0)
+
+
 def e7070_unit(texture, variants):
     """The Wheelock E7070 speaker strobe: a square plate with a strobe module clipped to its face.
 
@@ -977,6 +1011,20 @@ def main():
          "system_sensor_l_series_led_red_outdoor_horn_strobe",
          "System Sensor L-Series LED weatherproof horn strobe",
          (centre, radius, 11.5, 10.5))
+
+    mesh, lens_from, lens_to = truealert_unit(
+        "shared_textures/simplex_truealert_red_horn_strobe",
+        ["shared_textures/simplex_truealert_red_horn_strobe",
+         "shared_textures/simplex_truealert_white_horn_strobe"])
+    reports.append(("simplex_truealert_hornstrobe.obj",
+                    mesh.write(os.path.join(OUT_DIR, "simplex_truealert_hornstrobe.obj"),
+                               "simplex_truealert_hornstrobe",
+                               "csm:blocks/lifesafety/shared_textures/"
+                               "simplex_truealert_red_horn_strobe",
+                               "Simplex TrueAlert horn strobe / speaker strobe"),
+                    (((lens_from[0] + lens_to[0]) / 2, (lens_from[1] + lens_to[1]) / 2),
+                     ((lens_to[0] - lens_from[0]) / 2, (lens_to[1] - lens_from[1]) / 2),
+                     lens_to[2], lens_from[2])))
 
     mesh, lens_from, lens_to = e7070_unit(
         "wheelock_et70_red_speaker_strobe",
