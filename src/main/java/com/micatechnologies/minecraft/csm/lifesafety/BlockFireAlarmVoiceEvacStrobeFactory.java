@@ -28,18 +28,32 @@ public class BlockFireAlarmVoiceEvacStrobeFactory extends AbstractBlockFireAlarm
   private final AxisAlignedBB boundingBox;
   private final float[] strobeLensFrom;
   private final float[] strobeLensTo;
+  private final StrobeLensShape strobeLensShape;
 
   public BlockFireAlarmVoiceEvacStrobeFactory(String registryName, AxisAlignedBB boundingBox,
       float[] strobeLensFrom, float[] strobeLensTo) {
-    this(initRegistryName(registryName), registryName, boundingBox, strobeLensFrom, strobeLensTo);
+    this(registryName, boundingBox, strobeLensFrom, strobeLensTo, StrobeLensShape.RECTANGULAR);
+  }
+
+  public BlockFireAlarmVoiceEvacStrobeFactory(String registryName, AxisAlignedBB boundingBox,
+      float[] strobeLensFrom, float[] strobeLensTo, StrobeLensShape strobeLensShape) {
+    this(initRegistryName(registryName), registryName, boundingBox, strobeLensFrom, strobeLensTo,
+        strobeLensShape);
   }
 
   private BlockFireAlarmVoiceEvacStrobeFactory(Void ignored, String registryName,
-      AxisAlignedBB boundingBox, float[] strobeLensFrom, float[] strobeLensTo) {
+      AxisAlignedBB boundingBox, float[] strobeLensFrom, float[] strobeLensTo,
+      StrobeLensShape strobeLensShape) {
     this.registryName = registryName;
     this.boundingBox = boundingBox;
     this.strobeLensFrom = strobeLensFrom;
     this.strobeLensTo = strobeLensTo;
+    this.strobeLensShape = strobeLensShape;
+  }
+
+  @Override
+  public StrobeLensShape getStrobeLensShape() {
+    return strobeLensShape;
   }
 
   private static Void initRegistryName(String name) {

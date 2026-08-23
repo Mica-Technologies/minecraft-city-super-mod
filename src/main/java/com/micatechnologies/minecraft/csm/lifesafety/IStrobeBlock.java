@@ -11,6 +11,30 @@ package com.micatechnologies.minecraft.csm.lifesafety;
 public interface IStrobeBlock {
 
   /**
+   * The outline of a strobe lens, which the renderer uses to shape the flash it draws over it.
+   *
+   * <p>Xenon appliances have a rectangular lens and are the default. The System Sensor L-Series
+   * LED devices and the coloured-lens beacons have a circular one, and a square flash sitting on
+   * a round lens is obvious the moment it fires.</p>
+   */
+  enum StrobeLensShape {
+    /** A rectangular lens, as on every xenon horn strobe and speaker strobe. */
+    RECTANGULAR,
+    /** A circular lens, as on the L-Series LED appliances and the beacons. */
+    ROUND
+  }
+
+  /**
+   * Returns the outline of this device's strobe lens. The bounds from
+   * {@link #getStrobeLensFrom()} and {@link #getStrobeLensTo()} describe the lens either way; the
+   * shape says whether the flash fills those bounds as a rectangle or as the ellipse inscribed in
+   * them.
+   */
+  default StrobeLensShape getStrobeLensShape() {
+    return StrobeLensShape.RECTANGULAR;
+  }
+
+  /**
    * Returns the "from" corner of the strobe lens element in model coordinates (0-16).
    * Extracted from Element 2 of the device's shared model JSON.
    * Default returns a centered position suitable for most wall-mount devices.
