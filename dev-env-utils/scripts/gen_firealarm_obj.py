@@ -326,7 +326,7 @@ def trace_silhouette(texture_name, points=CONTOUR_POINTS, threshold=128, uv_box=
     return contour, centre_uv
 
 
-def find_flat_patch(texture_names, size=0.8):
+def find_flat_patch(texture_names, size=0.8, within=None):
     """The smoothest fully-opaque square of enclosure surface shared by a model's colour variants.
 
     An enclosure's side wall is a plain moulded flank, so it wants a plain colour. Sampling it
@@ -337,6 +337,8 @@ def find_flat_patch(texture_names, size=0.8):
     face normals still shade it away from the front.
 
     The patch has to be flat in every texture the model wears, since one model serves red and white.
+    `within` restricts the search to one region, for when a particular part's own surface is wanted
+    rather than the enclosure's -- a strobe lens flank should be frosted white, not housing red.
     """
     images = []
     for name in texture_names:
@@ -345,9 +347,13 @@ def find_flat_patch(texture_names, size=0.8):
         images.append(data)
     scale = images[0].shape[1] / 16.0
     window = max(1, int(size * scale))
+    u_lo, v_lo, u_hi, v_hi = within or (0.0, 0.0, 16.0, 16.0)
+    # A whole-texture sweep steps coarsely; a restricted region can be only a couple of units
+    # across, so it needs a finer one to have any candidates at all.
+    step = 0.25 if within is None else 0.05
     best = None
-    for v in np.arange(0.0, 16.0 - size, 0.25):
-        for u in np.arange(0.0, 16.0 - size, 0.25):
+    for v in np.arange(v_lo, v_hi - size, step):
+        for u in np.arange(u_lo, u_hi - size, step):
             y0, x0 = int(v * scale), int(u * scale)
             roughness, usable = 0.0, True
             for data in images:
@@ -488,7 +494,7 @@ def rounded_rect(x0, y0, x1, y1, radius, per_corner=6):
     return points
 
 
-def build_panel(mesh, front_map, contour, z_profile):
+def build_panel(mesh, front_map, contour, z_profile, rim_uv=None):
     """A raised moulding standing off an enclosure face -- the SpectrAlert Classic's louvred horn
     module and its xenon lens are both one of these.
 
@@ -504,6 +510,10 @@ def build_panel(mesh, front_map, contour, z_profile):
     and the horn's ribs carry on around the moulding, so neither wants a flat slab of enclosure
     colour there. Sampling deepest at the plate and closest to the outline at the front lip also
     puts the bright edge highlight where the real part catches light.
+
+    Pass `rim_uv` instead when a part's flanks are NOT a continuation of its face: the ET24's
+    strobe lens carries its FIRE legend on the front only, so wrapping would run the lettering
+    round the sides. A flat patch of the lens's own frosted surface is what those flanks are.
     """
     centre = (sum(p[0] for p in contour) / len(contour),
               sum(p[1] for p in contour) / len(contour))
@@ -525,12 +535,17 @@ def build_panel(mesh, front_map, contour, z_profile):
             pc, pd = at(contour[j], inset_b), at(contour[i], inset_b)
             outward = (pa[0] + pb[0] - 2 * centre[0], pa[1] + pb[1] - 2 * centre[1],
                        -(inset_b - inset_a))
+            if rim_uv:
+                ru0, rv0, ru1, rv1 = rim_uv
+                uvs = ((ru0, rv0), (ru1, rv0), (ru1, rv1), (ru0, rv1))
+            else:
+                uvs = (front_map.to_uv(at(contour[i], uv_a)),
+                       front_map.to_uv(at(contour[j], uv_a)),
+                       front_map.to_uv(at(contour[j], uv_b)),
+                       front_map.to_uv(at(contour[i], uv_b)))
             mesh.quad((pa[0], pa[1], z_a), (pb[0], pb[1], z_a),
                       (pc[0], pc[1], z_b), (pd[0], pd[1], z_b),
-                      front_map.to_uv(at(contour[i], uv_a)),
-                      front_map.to_uv(at(contour[j], uv_a)),
-                      front_map.to_uv(at(contour[j], uv_b)),
-                      front_map.to_uv(at(contour[i], uv_b)), outward=outward)
+                      uvs[0], uvs[1], uvs[2], uvs[3], outward=outward)
 
     z_front, inset_front, _ = z_profile[-1]
     # The cap shows the part's own art at full size: it is a hair smaller than the outline because
@@ -783,6 +798,34 @@ def classic_unit(texture):
     return mesh
 
 
+def et24_unit(texture):
+    """The Wheelock ET24 sounder strobe: a square plate with a tall frosted strobe lens on it.
+
+    Unlike the other appliances here the plate's texture is fully opaque with no silhouette to
+    trace, so the plate is a plain box wearing the whole photograph. The lens stands off it by the
+    two units the Wheelock E70 and ET70 strobes use, and takes a flat patch of its own frosted
+    surface on the flanks -- the FIRE legend is printed on the lens face only, so wrapping it would
+    run the lettering around the sides of a part that is really just a translucent block.
+    """
+    mesh = Mesh()
+    plate_rect = (1.5, 1.5, 14.5, 14.5)
+    front_map = FrontMap((0.0, 0.0, 16.0, 16.0), plate_rect)
+    plate_rim = find_flat_patch([texture], 0.8, within=(4.5, 13.9, 9.0, 15.9))
+    build_box(mesh, (plate_rect[0], plate_rect[1], 14.0), (plate_rect[2], plate_rect[3], 16.0),
+              {"north": (0.0, 0.0, 16.0, 16.0), "south": plate_rim, "east": plate_rim,
+               "west": plate_rim, "up": plate_rim, "down": plate_rim})
+
+    lens_uv = (4.38, 1.0, 8.56, 13.94)
+    lens = panel_from_uv(front_map, lens_uv, radius=0.5)
+    frosted = find_flat_patch([texture], 0.6, within=lens_uv)
+    build_panel(mesh, front_map, lens,
+                [(14.0, 0.0, 0.0), (12.3, 0.0, 0.0), (12.0, 0.22, 0.0)], rim_uv=frosted)
+
+    xs = [p[0] for p in lens]
+    ys = [p[1] for p in lens]
+    return mesh, (min(xs), min(ys), 12.0), (max(xs), max(ys), 14.0)
+
+
 def beacon():
     """The colour-lens beacon: a square mount plate carrying a round, fluted Fresnel barrel.
 
@@ -861,6 +904,16 @@ def main():
          "system_sensor_l_series_led_red_outdoor_horn_strobe",
          "System Sensor L-Series LED weatherproof horn strobe",
          (centre, radius, 11.5, 10.5))
+
+    mesh, lens_from, lens_to = et24_unit("wheelock_et24_red_sounder_strobe")
+    reports.append(("wheelock_et24_sounderstrobe.obj",
+                    mesh.write(os.path.join(OUT_DIR, "wheelock_et24_sounderstrobe.obj"),
+                               "wheelock_et24_sounderstrobe",
+                               "csm:blocks/lifesafety/wheelock_et24_red_sounder_strobe",
+                               "Wheelock ET24 sounder strobe"),
+                    (((lens_from[0] + lens_to[0]) / 2, (lens_from[1] + lens_to[1]) / 2),
+                     ((lens_to[0] - lens_from[0]) / 2, (lens_to[1] - lens_from[1]) / 2),
+                     lens_to[2], lens_from[2])))
 
     mesh, lens_from, lens_to = lf_unit("system_sensor_spectralert_advance_lf_red_horn_strobe")
     reports.append(("systemsensor_sa_lf_hornstrobe.obj",
