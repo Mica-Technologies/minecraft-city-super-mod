@@ -953,6 +953,63 @@ def measure_xenon_lens(texture, window=(3.5, 7.0, 12.5, 14.5), pad=0.25):
             (max(dense_u) + 1) / scale + pad, (max(dense_v) + 1) / scale + pad)
 
 
+def measure_chrome_lens(texture, window=(5.0, 5.0, 11.0, 11.0), pad=0.15):
+    """Find a round CHROME lens and return its UV rect.
+
+    A ceiling unit's strobe is a bare chrome dome: no LED die to sit on, and on the white variants
+    no colour contrast to find it by either. What it does have is a reflector that is not the
+    enclosure's red, near the middle of a disc, so the same not-red-and-bright test the xenon wall
+    lenses use works here with the window pulled in to the centre.
+    """
+    rgba = np.asarray(Image.open(os.path.join(TEX_DIR, texture + ".png")).convert("RGBA"),
+                      dtype=float)
+    colour, alpha = rgba[..., :3], rgba[..., 3]
+    height, width, _ = colour.shape
+    scale = width / 16.0
+    red, green, blue = colour[..., 0], colour[..., 1], colour[..., 2]
+    mask = (~((red - np.maximum(green, blue)) > 38)) & (alpha > 200) & (colour.max(2) > 95)
+    keep = np.zeros_like(mask)
+    u0, v0, u1, v1 = [int(round(value * scale)) for value in window]
+    keep[v0:v1, u0:u1] = True
+    mask &= keep
+    if mask.sum() < 150:
+        raise ValueError("no chrome lens found in %s" % texture)
+    columns, rows = mask.sum(0), mask.sum(1)
+    dense_u = [x for x in range(width) if columns[x] > 0.18 * columns.max()]
+    dense_v = [y for y in range(height) if rows[y] > 0.18 * rows.max()]
+    return (min(dense_u) / scale - pad, min(dense_v) / scale - pad,
+            (max(dense_u) + 1) / scale + pad, (max(dense_v) + 1) / scale + pad)
+
+
+def plain_shell_unit(texture, variants, model_rect, z_front, z_back, outline="fitted"):
+    """An appliance with no strobe: just the enclosure. The horn and speaker versions of a device
+    are the same moulding as their strobe siblings with the lens left off."""
+    mesh = Mesh()
+    front_map = FrontMap(opaque_bounds(texture), model_rect)
+    if outline == "fitted":
+        contour, centre_uv, _ = fit_rounded_rect_uv(variants)
+    else:
+        contour, centre_uv = trace_silhouette(texture)
+    build_shell(mesh, contour, centre_uv, front_map, z_front, z_back, find_flat_patch(variants, 0.8))
+    return mesh
+
+
+def ceiling_strobe_unit(texture, variants, model_rect=(1.0, 1.0, 15.0, 15.0),
+                        z_front=14.4, z_back=16.0, lens_depth=0.9):
+    """A ceiling appliance: a traced disc with a round chrome dome at its centre.
+
+    Traced, not fitted -- a disc's outline really is a curve the whole way round, which is the one
+    case where following the alpha edge is the right tool.
+    """
+    mesh = Mesh()
+    front_map = FrontMap(opaque_bounds(texture), model_rect)
+    contour, centre_uv = trace_silhouette(texture)
+    build_shell(mesh, contour, centre_uv, front_map, z_front, z_back, find_flat_patch(variants, 0.8))
+    centre, radius, uv_centre, uv_radius = lens_from_uv(front_map, measure_chrome_lens(texture))
+    build_dome(mesh, centre, radius, z_front, z_front - lens_depth, uv_centre, uv_radius)
+    return mesh, centre, radius
+
+
 def lseries_xenon_unit(texture, variants, model_rect=(3.0, 3.0, 13.0, 16.0),
                        z_front=14.0, z_back=16.0, lens_depth=1.0):
     """A System Sensor L-Series wall appliance with a rectangular xenon lens.
@@ -1167,6 +1224,38 @@ def main():
          "system_sensor_l_series_led_red_outdoor_horn_strobe",
          "System Sensor L-Series LED weatherproof horn strobe",
          (centre, radius, 11.5, 10.5))
+
+    # Ceiling strobes: traced disc, chrome dome.
+    for stem, colours in (("ceiling_hornstrobe",
+                           ("system_sensor_l_series_red_ceiling_horn_strobe",
+                            "system_sensor_l_series_white_ceiling_horn_strobe")),
+                          ("ceiling_speakerstrobe",
+                           ("system_sensor_l_series_red_ceiling_speaker_strobe",
+                            "system_sensor_l_series_white_ceiling_speaker_strobe"))):
+        mesh, centre, radius = ceiling_strobe_unit(colours[0], list(colours))
+        reports.append(("systemsensor_lseries_%s.obj" % stem,
+                        mesh.write(os.path.join(OUT_DIR, "systemsensor_lseries_%s.obj" % stem),
+                                   "lseries_%s" % stem, "csm:blocks/lifesafety/" + colours[0],
+                                   "System Sensor L-Series ceiling %s" % stem),
+                        (centre, radius, 14.4, 13.5)))
+
+    # No-strobe enclosures: the same mouldings with the lens left off.
+    for stem, colours, rect, outline, depth in (
+            ("ceiling_speaker", ("system_sensor_l_series_red_ceiling_speaker",
+                                 "system_sensor_l_series_white_ceiling_speaker"),
+             (1.0, 1.0, 15.0, 15.0), "traced", (14.4, 16.0)),
+            ("horn", ("system_sensor_l_series_red_horn",
+                      "system_sensor_l_series_white_horn"),
+             (3.0, 4.0, 13.0, 16.0), "fitted", (14.0, 16.0)),
+            ("speaker", ("system_sensor_l_series_red_speaker",
+                         "system_sensor_l_series_white_speaker"),
+             (3.0, 4.0, 13.0, 16.0), "fitted", (14.0, 16.0))):
+        mesh = plain_shell_unit(colours[0], list(colours), rect, depth[0], depth[1], outline)
+        reports.append(("systemsensor_lseries_%s.obj" % stem,
+                        mesh.write(os.path.join(OUT_DIR, "systemsensor_lseries_%s.obj" % stem),
+                                   "lseries_%s" % stem, "csm:blocks/lifesafety/" + colours[0],
+                                   "System Sensor L-Series %s" % stem),
+                        None))
 
     for stem, colours in (("hornstrobe", ("system_sensor_l_series_red_horn_strobe",
                                          "system_sensor_l_series_white_horn_strobe")),
