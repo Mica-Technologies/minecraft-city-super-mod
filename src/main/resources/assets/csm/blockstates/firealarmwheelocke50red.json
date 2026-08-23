@@ -1,11 +1,13 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:lifesafety/shared_models/wheelock_e50_speakerstrobe_red",
+    "model": "csm:lifesafety/shared_models/wheelock_e50_speakerstrobe.obj",
     "textures": {
-      "all": "csm:blocks/lifesafety/wheelock_e50_red_speaker_strobe",
-      "particle": "csm:blocks/lifesafety/wheelock_e50_red_speaker_strobe",
-      "0": "csm:blocks/lifesafety/wheelock_e50_red_speaker_strobe"
+      "#body": "csm:blocks/lifesafety/wheelock_e50_red_speaker_strobe",
+      "#flank": "csm:blocks/lifesafety/wheelock_e50_flank_red"
+    },
+    "custom": {
+      "flip-v": true
     }
   },
   "variants": {
@@ -28,7 +30,9 @@
       }
     },
     "inventory": [
-      {}
+      {
+        "transform": "forge:default-block"
+      }
     ],
     "normal": [
       {}
