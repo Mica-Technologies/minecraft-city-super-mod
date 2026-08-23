@@ -1,12 +1,12 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:lifesafety/shared_models/systemsensor_lseries_speakerstrobe_white_ceiling",
+    "model": "csm:lifesafety/shared_models/systemsensor_lseries_ceiling_speakerstrobe.obj",
     "textures": {
-      "all": "csm:blocks/lifesafety/system_sensor_l_series_red_ceiling_speaker_strobe",
-      "particle": "csm:blocks/lifesafety/system_sensor_l_series_red_ceiling_speaker_strobe",
-      "0": "csm:blocks/lifesafety/system_sensor_l_series_red_ceiling_speaker_strobe",
-      "missing": "csm:blocks/lifesafety/system_sensor_l_series_red_ceiling_speaker_strobe"
+      "#body": "csm:blocks/lifesafety/system_sensor_l_series_red_ceiling_speaker_strobe"
+    },
+    "custom": {
+      "flip-v": true
     }
   },
   "variants": {
@@ -29,7 +29,9 @@
       }
     },
     "inventory": [
-      {}
+      {
+        "transform": "forge:default-block"
+      }
     ],
     "normal": [
       {}
