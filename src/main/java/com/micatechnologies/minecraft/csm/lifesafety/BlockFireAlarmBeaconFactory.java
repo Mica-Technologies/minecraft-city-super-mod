@@ -91,6 +91,11 @@ public class BlockFireAlarmBeaconFactory extends AbstractBlockFireAlarmSounder
   }
 
   @Override
+  public StrobeLensShape getStrobeLensShape() {
+    return StrobeLensShape.ROUND;
+  }
+
+  @Override
   public Class<? extends TileEntity> getTileEntityClass() {
     return TileEntityFireAlarmStrobe.class;
   }

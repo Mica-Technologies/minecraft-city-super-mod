@@ -42,6 +42,25 @@ public class TileEntityFireAlarmStrobeRenderer
   // by the lens width/height to get each ring's size. This avoids allocating four
   // segments+1 float arrays (and populating them via the i/SEGMENTS linear interpolation)
   // on every frame per strobe.
+  // Unit outlines of the two lens shapes, as offsets from the lens centre in units of its half
+  // width and half height. Every part of the effect -- the core, the sides, the halo and each cone
+  // segment -- is one of these outlines scaled and placed at a depth, so a round lens costs nothing
+  // beyond swapping which array is read and a rectangular one emits exactly the quads it always
+  // did, in the same order.
+  private static final float[] RECT_UNIT_X = {-1.0f, 1.0f, 1.0f, -1.0f};
+  private static final float[] RECT_UNIT_Y = {-1.0f, -1.0f, 1.0f, 1.0f};
+  private static final int ROUND_SEGMENTS = 20;
+  private static final float[] ROUND_UNIT_X = new float[ROUND_SEGMENTS];
+  private static final float[] ROUND_UNIT_Y = new float[ROUND_SEGMENTS];
+
+  static {
+    for (int i = 0; i < ROUND_SEGMENTS; i++) {
+      double angle = 2.0 * Math.PI * i / ROUND_SEGMENTS;
+      ROUND_UNIT_X[i] = (float) Math.cos(angle);
+      ROUND_UNIT_Y[i] = (float) Math.sin(angle);
+    }
+  }
+
   private static final int CONE_SEGMENTS = 5;
   private static final float CONE_MAX_PROJECTION_DIST = 0.45f;
   private static final float CONE_START_PAD = 0.6f;
@@ -136,6 +155,15 @@ public class TileEntityFireAlarmStrobeRenderer
     float maxZ = to[2] / 16f - 0.5f;
     float depth = maxZ - minZ;
 
+    // The lens as a centre plus half extents, which is how every piece below is placed.
+    float cenX = (minX + maxX) * 0.5f;
+    float cenY = (minY + maxY) * 0.5f;
+    float halfW = (maxX - minX) * 0.5f;
+    float halfH = (maxY - minY) * 0.5f;
+    boolean round = strobeBlock.getStrobeLensShape() == IStrobeBlock.StrobeLensShape.ROUND;
+    float[] unitX = round ? ROUND_UNIT_X : RECT_UNIT_X;
+    float[] unitY = round ? ROUND_UNIT_Y : RECT_UNIT_Y;
+
     // Color comes from the block: red for older incandescent-style strobes, white for
     // modern xenon/LED, and the lens colour for coloured-lens devices such as beacons.
     float[] strobeColor = strobeBlock.getStrobeColor();
@@ -143,49 +171,24 @@ public class TileEntityFireAlarmStrobeRenderer
     float g = strobeColor[1];
     float b = strobeColor[2];
 
-    // Front face — main flash quad covering the strobe lens (fully opaque core)
+    // Front face — main flash covering the strobe lens (fully opaque core)
     float coreA = 1.0f * intensity;
     buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
-    emit(buffer, minX, minY, quadZ, r, g, b, coreA);
-    emit(buffer, maxX, minY, quadZ, r, g, b, coreA);
-    emit(buffer, maxX, maxY, quadZ, r, g, b, coreA);
-    emit(buffer, minX, maxY, quadZ, r, g, b, coreA);
+    emitCap(buffer, unitX, unitY, cenX, cenY, halfW, halfH, quadZ, r, g, b, coreA);
     tessellator.draw();
 
-    // Side quads — make the strobe visible from angles (along the lens depth)
+    // Side wall — makes the strobe visible from angles (along the lens depth)
     float sideA = 0.7f * intensity;
     buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
-    // Left side
-    emit(buffer, minX, minY, quadZ, r, g, b, sideA);
-    emit(buffer, minX, minY, quadZ + depth, r, g, b, sideA);
-    emit(buffer, minX, maxY, quadZ + depth, r, g, b, sideA);
-    emit(buffer, minX, maxY, quadZ, r, g, b, sideA);
-    // Right side
-    emit(buffer, maxX, minY, quadZ + depth, r, g, b, sideA);
-    emit(buffer, maxX, minY, quadZ, r, g, b, sideA);
-    emit(buffer, maxX, maxY, quadZ, r, g, b, sideA);
-    emit(buffer, maxX, maxY, quadZ + depth, r, g, b, sideA);
-    // Top side
-    emit(buffer, minX, maxY, quadZ, r, g, b, sideA);
-    emit(buffer, minX, maxY, quadZ + depth, r, g, b, sideA);
-    emit(buffer, maxX, maxY, quadZ + depth, r, g, b, sideA);
-    emit(buffer, maxX, maxY, quadZ, r, g, b, sideA);
-    // Bottom side
-    emit(buffer, minX, minY, quadZ + depth, r, g, b, sideA);
-    emit(buffer, minX, minY, quadZ, r, g, b, sideA);
-    emit(buffer, maxX, minY, quadZ, r, g, b, sideA);
-    emit(buffer, maxX, minY, quadZ + depth, r, g, b, sideA);
+    emitBand(buffer, unitX, unitY, cenX, cenY, halfW, halfH, quadZ, halfW, halfH,
+        quadZ + depth, r, g, b, sideA);
     tessellator.draw();
 
-    // Inner glow halo — close bloom around the lens
-    float pad1X = (maxX - minX) * 0.5f;
-    float pad1Y = (maxY - minY) * 0.5f;
+    // Inner glow halo — close bloom around the lens, at twice its extents
     float haloA = 0.35f * intensity;
     buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
-    emit(buffer, minX - pad1X, minY - pad1Y, quadZ - 0.02f, r, g, b, haloA);
-    emit(buffer, maxX + pad1X, minY - pad1Y, quadZ - 0.02f, r, g, b, haloA);
-    emit(buffer, maxX + pad1X, maxY + pad1Y, quadZ - 0.02f, r, g, b, haloA);
-    emit(buffer, minX - pad1X, maxY + pad1Y, quadZ - 0.02f, r, g, b, haloA);
+    emitCap(buffer, unitX, unitY, cenX, cenY, halfW * 2f, halfH * 2f, quadZ - 0.02f,
+        r, g, b, haloA);
     tessellator.draw();
 
     // Projected light cone — a 3D frustum (truncated pyramid) expanding outward from the
@@ -193,8 +196,6 @@ public class TileEntityFireAlarmStrobeRenderer
     // falloff. Each segment has 4 side walls + a front cap, visible from any viewing angle.
     float lensW = maxX - minX;
     float lensH = maxY - minY;
-    float cenX = (minX + maxX) * 0.5f;
-    float cenY = (minY + maxY) * 0.5f;
 
     for (int i = 0; i < CONE_SEGMENTS; i++) {
       // Apply per-frame, per-block values to the precomputed segment factors
@@ -209,40 +210,15 @@ public class TileEntityFireAlarmStrobeRenderer
       // Alpha for this segment is the average of the two ring endpoints
       float segAlpha = (nearAlpha + farAlpha) * 0.5f;
 
+      // Segment side walls
       buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
-
-      // Left wall
-      emit(buffer, cenX - nw, cenY - nh, nearZ, r, g, b, segAlpha);
-      emit(buffer, cenX - fw, cenY - fh, farZ, r, g, b, segAlpha);
-      emit(buffer, cenX - fw, cenY + fh, farZ, r, g, b, segAlpha);
-      emit(buffer, cenX - nw, cenY + nh, nearZ, r, g, b, segAlpha);
-
-      // Right wall
-      emit(buffer, cenX + nw, cenY - nh, nearZ, r, g, b, segAlpha);
-      emit(buffer, cenX + nw, cenY + nh, nearZ, r, g, b, segAlpha);
-      emit(buffer, cenX + fw, cenY + fh, farZ, r, g, b, segAlpha);
-      emit(buffer, cenX + fw, cenY - fh, farZ, r, g, b, segAlpha);
-
-      // Top wall
-      emit(buffer, cenX - nw, cenY + nh, nearZ, r, g, b, segAlpha);
-      emit(buffer, cenX - fw, cenY + fh, farZ, r, g, b, segAlpha);
-      emit(buffer, cenX + fw, cenY + fh, farZ, r, g, b, segAlpha);
-      emit(buffer, cenX + nw, cenY + nh, nearZ, r, g, b, segAlpha);
-
-      // Bottom wall
-      emit(buffer, cenX - nw, cenY - nh, nearZ, r, g, b, segAlpha);
-      emit(buffer, cenX + nw, cenY - nh, nearZ, r, g, b, segAlpha);
-      emit(buffer, cenX + fw, cenY - fh, farZ, r, g, b, segAlpha);
-      emit(buffer, cenX - fw, cenY - fh, farZ, r, g, b, segAlpha);
-
+      emitBand(buffer, unitX, unitY, cenX, cenY, nw, nh, nearZ, fw, fh, farZ,
+          r, g, b, segAlpha);
       tessellator.draw();
 
       // Front cap on each segment for head-on viewing
       buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
-      emit(buffer, cenX - fw, cenY - fh, farZ, r, g, b, farAlpha);
-      emit(buffer, cenX + fw, cenY - fh, farZ, r, g, b, farAlpha);
-      emit(buffer, cenX + fw, cenY + fh, farZ, r, g, b, farAlpha);
-      emit(buffer, cenX - fw, cenY + fh, farZ, r, g, b, farAlpha);
+      emitCap(buffer, unitX, unitY, cenX, cenY, fw, fh, farZ, r, g, b, farAlpha);
       tessellator.draw();
     }
 
@@ -257,6 +233,47 @@ public class TileEntityFireAlarmStrobeRenderer
         GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
     GlStateManager.disableBlend();
     GlStateManager.popMatrix();
+  }
+
+  /**
+   * Emits a filled cap: one outline at a single depth, as quads covering its interior.
+   *
+   * <p>A four-point outline is the quad itself. A round one fans out from the centre, emitting a
+   * quad per segment whose first two corners coincide so it degenerates to a triangle -- which
+   * keeps the whole effect in {@link GL11#GL_QUADS} rather than switching primitive mode midway
+   * through a draw.</p>
+   */
+  private static void emitCap(BufferBuilder buf, float[] unitX, float[] unitY,
+      float cenX, float cenY, float halfW, float halfH, float z,
+      float r, float g, float b, float a) {
+    int count = unitX.length;
+    if (count == 4) {
+      for (int i = 0; i < 4; i++) {
+        emit(buf, cenX + unitX[i] * halfW, cenY + unitY[i] * halfH, z, r, g, b, a);
+      }
+      return;
+    }
+    for (int i = 0; i < count; i++) {
+      int next = (i + 1) % count;
+      emit(buf, cenX, cenY, z, r, g, b, a);
+      emit(buf, cenX, cenY, z, r, g, b, a);
+      emit(buf, cenX + unitX[i] * halfW, cenY + unitY[i] * halfH, z, r, g, b, a);
+      emit(buf, cenX + unitX[next] * halfW, cenY + unitY[next] * halfH, z, r, g, b, a);
+    }
+  }
+
+  /** Emits the wall joining two copies of an outline at different depths and extents. */
+  private static void emitBand(BufferBuilder buf, float[] unitX, float[] unitY,
+      float cenX, float cenY, float nearW, float nearH, float nearZ,
+      float farW, float farH, float farZ, float r, float g, float b, float a) {
+    int count = unitX.length;
+    for (int i = 0; i < count; i++) {
+      int next = (i + 1) % count;
+      emit(buf, cenX + unitX[i] * nearW, cenY + unitY[i] * nearH, nearZ, r, g, b, a);
+      emit(buf, cenX + unitX[next] * nearW, cenY + unitY[next] * nearH, nearZ, r, g, b, a);
+      emit(buf, cenX + unitX[next] * farW, cenY + unitY[next] * farH, farZ, r, g, b, a);
+      emit(buf, cenX + unitX[i] * farW, cenY + unitY[i] * farH, farZ, r, g, b, a);
+    }
   }
 
   /** Emits one BLOCK-format vertex with explicit color and fullbright lightmap. */
