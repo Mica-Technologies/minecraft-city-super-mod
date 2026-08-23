@@ -1,11 +1,12 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:lifesafety/shared_models/firealarm_beacon",
+    "model": "csm:lifesafety/shared_models/firealarm_beacon.obj",
     "textures": {
-      "all": "csm:blocks/lifesafety/fire_alarm_beacon_blue",
-      "particle": "csm:blocks/lifesafety/fire_alarm_beacon_blue",
-      "0": "csm:blocks/lifesafety/fire_alarm_beacon_blue"
+      "#body": "csm:blocks/lifesafety/fire_alarm_beacon_blue"
+    },
+    "custom": {
+      "flip-v": true
     }
   },
   "variants": {
@@ -28,7 +29,9 @@
       }
     },
     "inventory": [
-      {}
+      {
+        "transform": "forge:default-block"
+      }
     ],
     "normal": [
       {}

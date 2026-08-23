@@ -1,11 +1,12 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:lifesafety/shared_models/systemsensor_spectralert_classic_hornstrobe",
+    "model": "csm:lifesafety/shared_models/systemsensor_spectralert_classic_hornstrobe.obj",
     "textures": {
-      "all": "csm:blocks/lifesafety/system_sensor_spectralert_classic_white_horn_strobe",
-      "particle": "csm:blocks/lifesafety/system_sensor_spectralert_classic_white_horn_strobe",
-      "0": "csm:blocks/lifesafety/system_sensor_spectralert_classic_white_horn_strobe"
+      "#body": "csm:blocks/lifesafety/system_sensor_spectralert_classic_white_horn_strobe"
+    },
+    "custom": {
+      "flip-v": true
     }
   },
   "variants": {
@@ -28,7 +29,9 @@
       }
     },
     "inventory": [
-      {}
+      {
+        "transform": "forge:default-block"
+      }
     ],
     "normal": [
       {}

@@ -30,28 +30,50 @@ public class BlockFireAlarmSounderStrobeFactory extends AbstractBlockFireAlarmSo
   private final float[] strobeLensFrom;
   private final float[] strobeLensTo;
   private final boolean redSlowToggle;
+  private final StrobeLensShape strobeLensShape;
 
   public BlockFireAlarmSounderStrobeFactory(String registryName, String soundResource,
       AxisAlignedBB boundingBox, float[] strobeLensFrom, float[] strobeLensTo) {
-    this(registryName, soundResource, boundingBox, strobeLensFrom, strobeLensTo, false);
+    this(registryName, soundResource, boundingBox, strobeLensFrom, strobeLensTo, false,
+        StrobeLensShape.RECTANGULAR);
+  }
+
+  public BlockFireAlarmSounderStrobeFactory(String registryName, String soundResource,
+      AxisAlignedBB boundingBox, float[] strobeLensFrom, float[] strobeLensTo,
+      StrobeLensShape strobeLensShape) {
+    this(registryName, soundResource, boundingBox, strobeLensFrom, strobeLensTo, false,
+        strobeLensShape);
   }
 
   public BlockFireAlarmSounderStrobeFactory(String registryName, String soundResource,
       AxisAlignedBB boundingBox, float[] strobeLensFrom, float[] strobeLensTo,
       boolean redSlowToggle) {
+    this(registryName, soundResource, boundingBox, strobeLensFrom, strobeLensTo, redSlowToggle,
+        StrobeLensShape.RECTANGULAR);
+  }
+
+  public BlockFireAlarmSounderStrobeFactory(String registryName, String soundResource,
+      AxisAlignedBB boundingBox, float[] strobeLensFrom, float[] strobeLensTo,
+      boolean redSlowToggle, StrobeLensShape strobeLensShape) {
     this(initRegistryName(registryName), registryName, soundResource, boundingBox,
-        strobeLensFrom, strobeLensTo, redSlowToggle);
+        strobeLensFrom, strobeLensTo, redSlowToggle, strobeLensShape);
   }
 
   private BlockFireAlarmSounderStrobeFactory(Void ignored, String registryName,
       String soundResource, AxisAlignedBB boundingBox, float[] strobeLensFrom,
-      float[] strobeLensTo, boolean redSlowToggle) {
+      float[] strobeLensTo, boolean redSlowToggle, StrobeLensShape strobeLensShape) {
     this.registryName = registryName;
     this.soundResource = soundResource;
     this.boundingBox = boundingBox;
     this.strobeLensFrom = strobeLensFrom;
     this.strobeLensTo = strobeLensTo;
     this.redSlowToggle = redSlowToggle;
+    this.strobeLensShape = strobeLensShape;
+  }
+
+  @Override
+  public StrobeLensShape getStrobeLensShape() {
+    return strobeLensShape;
   }
 
   private static Void initRegistryName(String name) {
