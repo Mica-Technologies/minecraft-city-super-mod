@@ -76,7 +76,8 @@ VARIANTS = {
         ["system_sensor_l_series_led_white_speaker_strobe",
          "system_sensor_l_series_led_black_speaker_strobe"],
     "system_sensor_l_series_led_red_ceiling_speaker_strobe":
-        ["system_sensor_l_series_led_white_ceiling_speaker_strobe"],
+        ["system_sensor_l_series_led_white_ceiling_speaker_strobe",
+         "system_sensor_l_series_led_black_ceiling_speaker_strobe"],
     "system_sensor_l_series_led_red_outdoor_horn_strobe": [],
     "system_sensor_spectralert_advance_lf_red_horn_strobe":
         ["system_sensor_spectralert_advance_lf_white_horn_strobe"],
@@ -1080,10 +1081,19 @@ def e50_unit(texture, variants):
                 # has no cap at one end, so flipping it only un-mirrors the legend.
                 side_strips={"east": (2.3, 0.1), "west": (0.1, 2.3)})
 
-    # Wide, short lens bar: shallow UV insets, as on the TrueAlert and the xenon L-Series.
-    lens = panel_from_uv(front_map, (3.52, 1.90, 12.22, 4.85), radius=0.40)
+    # Wide, short lens bar. The rect is the lens's own measured extent, not a hair outside it: the
+    # photograph puts a dark drop shadow under the lens and the red plate immediately beside it, and
+    # a rect that reached those by even one pixel handed the side walls a slab of shadow instead of
+    # glass -- the strobe's ends and underside came out charcoal grey.
+    # The default window looks lower down the face, where a SpectrAlert's xenon lens sits; the
+    # E50 wears its bar across the top, and no padding, so the rect ends on the lens.
+    lens = panel_from_uv(front_map,
+                         measure_xenon_lens(texture, window=(3.0, 1.5, 13.0, 5.5), pad=0.0),
+                         radius=0.40)
+    # Shallow insets, as on the TrueAlert and the xenon L-Series -- but every ring must stay inside
+    # the lens, so the front lip samples a sixth of a unit in rather than sitting on the boundary.
     build_panel(mesh, front_map, lens,
-                [(14.0, 0.0, 0.30), (13.05, 0.0, 0.12), (12.8, 0.20, 0.03)])
+                [(14.0, 0.0, 0.34), (13.05, 0.0, 0.24), (12.8, 0.20, 0.16)])
     xs = [p[0] for p in lens]
     ys = [p[1] for p in lens]
     return mesh, (min(xs), min(ys), 12.8), (max(xs), max(ys), 14.0)
