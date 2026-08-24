@@ -19,6 +19,23 @@ Usage:
     <source>/<output> are file stems under textures/blocks/lifesafety/, no extension.
     --range is the value band the housing is mapped into, 0-255. White housing sits around 220;
     a matte black wants something like 22 58.
+
+The black L-Series LED family is made with these, kept here so a new member of it matches the ones
+already shipped rather than being re-guessed -- the wall unit's arguments went unrecorded the first
+time and had to be recovered from the texture, which is the mistake this block exists to prevent.
+--keep is the lens circle measure_lens() reports for the RED texture of the pair, grown a little so
+the halo of body immediately around the lens stays bright the way it does on a real one:
+
+    python recolor_housing.py system_sensor_l_series_led_white_speaker_strobe
+         system_sensor_l_series_led_black_speaker_strobe
+         --range 8 34 --keep 5.703 3.965 10.148 8.285 --legend-boost 1.35
+
+    python recolor_housing.py system_sensor_l_series_led_white_ceiling_speaker_strobe
+         system_sensor_l_series_led_black_ceiling_speaker_strobe
+         --range 8 34 --keep 5.768 5.870 10.118 10.095 --legend-boost 1.35
+
+The ceiling unit carries no FIRE legend, so --legend-boost only reaches its LED die there -- which
+is the same thing it does to the wall unit's die, and is why both keep it.
 """
 
 import argparse
