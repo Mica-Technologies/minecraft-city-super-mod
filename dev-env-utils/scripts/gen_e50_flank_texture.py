@@ -63,7 +63,11 @@ def draw_flank(width, height, housing, legend):
 
     letters = "FIRE"
     cell = height / (len(letters) + 1.6)
-    size = int(min(width * 0.70, cell * 0.78))
+    # Width-limited, not cell-limited: the flank is 2.4 units wide and 16 tall, so what caps the
+    # letter is how much of the depth it may cover. A real E50's legend leaves a clear margin of
+    # moulding either side of it; at 0.70 the letters ran nearly edge to edge and read as oversized
+    # against the enclosure.
+    size = int(min(width * 0.58, cell * 0.78))
     font = _font(size)
     for index, letter in enumerate(letters):
         box = draw.textbbox((0, 0), letter, font=font)
