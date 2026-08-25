@@ -1,0 +1,40 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:lifesafety/shared_models/gentex_commander5_hornstrobe.obj",
+    "textures": {
+      "#body": "csm:blocks/lifesafety/gentex_commander_5_red_horn_strobe"
+    },
+    "custom": {
+      "flip-v": true
+    }
+  },
+  "variants": {
+    "facing": {
+      "down": {
+        "x": 90
+      },
+      "east": {
+        "y": 90
+      },
+      "north": {},
+      "south": {
+        "y": 180
+      },
+      "up": {
+        "x": 270
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "inventory": [
+      {
+        "transform": "forge:default-block"
+      }
+    ],
+    "normal": [
+      {}
+    ]
+  }
+}
