@@ -1160,6 +1160,86 @@ def e50_unit(texture, variants):
     return mesh, (min(xs), min(ys), 12.8), (max(xs), max(ys), 14.0)
 
 
+#: Width of the flank strip in gentex_commander_3_outdoor_flank.png, in UV units, and the plain
+#: patch beside it. crop_device_flank.py --pair wrote both there, and the mirrored second copy of
+#: the strip sits at u[STRIP, 2*STRIP].
+GENTEX_OUTDOOR_STRIP = 7.5
+GENTEX_OUTDOOR_PATCH = (15.2, 0.2, 15.8, 0.8)
+#: The parts of a Commander 3, as the UV rects they occupy on each faceplate. A Commander 3 is
+#: three things stacked, which is the shape a wall photograph of one shows plainly and no amount of
+#: profile-tracing off a side view will ever produce: a flat backplate, a raised body standing well
+#: off it carrying the horn grille and the badge, and a clear strobe hood at the TOP of that body
+#: standing off further still. Its depth therefore varies across the WIDTH as much as down the
+#: height -- the plate stays flat all the way round the body -- and a surface swept from a single
+#: depth-versus-height profile cannot express that at all. It reads as a slab or as a wedge
+#: depending on the profile, and the appliance is neither.
+GENTEX_OUTDOOR_BODY = (3.90, 0.60, 12.50, 15.20)
+GENTEX_OUTDOOR_HOOD = (4.19, 1.06, 12.19, 7.75)
+GENTEX_INDOOR_BODY = (5.00, 2.58, 11.00, 13.54)
+GENTEX_INDOOR_HOOD = (5.25, 2.74, 10.88, 7.12)
+
+
+def gentex_commander3_unit(texture, variants, body_uv, hood_uv, model_rect, z_plate, z_body,
+                           z_hood, plate_radius, shrink=0.35, flank=False):
+    """A Gentex Commander 3, indoors or out: backplate, raised body, clear strobe hood.
+
+    The three parts of GENTEX_OUTDOOR_BODY's note, built as three parts, because that is what the
+    appliance is and it is the reason a Commander 3 does not read as a box: the plate stays flat
+    right round a body that stands well proud of it, and the hood stands proud of THAT.
+
+    `flank` says whether the sides get the photographed band or plain moulding. Out of doors this
+    is a backbox as deep as two thirds of the unit's width wearing a cover clipped over the front,
+    and its side carries all of that -- the red box with its conduit knockout, then the cover's rim
+    with FIRE down it. Indoors there is no backbox: the plate is thin and its edge is plain moulding
+    like any other appliance's, so a flat patch is the whole of it.
+    """
+    mesh = Mesh()
+    front_map = FrontMap(opaque_bounds(texture), model_rect)
+    contour, centre_uv, _ = fit_rounded_rect_uv(variants, radius=plate_radius, shrink=shrink)
+    if flank:
+        build_shell(mesh, contour, centre_uv, front_map, z_plate, 16.0, GENTEX_OUTDOOR_PATCH,
+                    wall_material=FLANK_MATERIAL,
+                    # Each flank takes its OWN copy of the band -- crop_device_flank.py --pair
+                    # writes the second one with its legend mirrored, and its note says why one
+                    # copy cannot serve both.
+                    side_strips={"east": (GENTEX_OUTDOOR_STRIP, 0.0),
+                                 "west": (2.0 * GENTEX_OUTDOOR_STRIP, GENTEX_OUTDOOR_STRIP)})
+    else:
+        build_shell(mesh, contour, centre_uv, front_map, z_plate, 16.0,
+                    find_flat_patch(variants, 0.8))
+
+    body = panel_from_uv(front_map, body_uv, radius=0.85)
+    build_panel(mesh, front_map, body,
+                [(z_plate, 0.0, 0.30), (z_body + 0.35, 0.0, 0.16), (z_body, 0.22, 0.05)])
+
+    hood = panel_from_uv(front_map, hood_uv, radius=0.55)
+    build_panel(mesh, front_map, hood,
+                [(z_body, 0.0, 0.26), (z_hood + 0.45, 0.0, 0.12), (z_hood, 0.28, 0.04)])
+
+    xs = [point[0] for point in hood]
+    ys = [point[1] for point in hood]
+    return mesh, (min(xs), min(ys), z_hood), (max(xs), max(ys), z_body)
+
+
+def gentex_outdoor_unit(texture):
+    """The weatherproof Commander 3: the appliance inside a clear cover on a backbox."""
+    return gentex_commander3_unit(texture, [texture], GENTEX_OUTDOOR_BODY, GENTEX_OUTDOOR_HOOD,
+                                  model_rect=(3.0, 3.7, 13.0, 16.0), z_plate=12.2, z_body=11.0,
+                                  z_hood=9.6, plate_radius=2.2, flank=True)
+
+
+def gentex_indoor_unit(texture, variants):
+    """The indoor Commander 3, red and white on one model.
+
+    Shallower than the weatherproof one by the depth of a backbox, and thinner at the plate for
+    the same reason: what is left is the appliance itself, which is a thin plate with the body and
+    the hood standing off it.
+    """
+    return gentex_commander3_unit(texture, variants, GENTEX_INDOOR_BODY, GENTEX_INDOOR_HOOD,
+                                  model_rect=(3.0, 3.9, 13.0, 16.0), z_plate=15.0, z_body=13.3,
+                                  z_hood=11.5, plate_radius=1.6)
+
+
 #: Where a Commander 5's strobe lens sits on its face, as a UV rect to search inside. The face
 #: carries a perforated horn grille as well, which is every bit as rough as the lens, and the FIRE
 #: legends down the outer edges are rough too -- so the window has to fence off both.
@@ -1659,6 +1739,31 @@ def main():
 
     # The black edition is the red plate repainted (recolor_housing.py --from-saturated), so it
     # keeps the red unit's light FIRE legends where the white unit's dark ones would vanish.
+    indoor = ["gentex_commander_3_red_horn_strobe", "gentex_commander_3_white_horn_strobe"]
+    mesh, lens_from, lens_to = gentex_indoor_unit(indoor[0], indoor)
+    reports.append(("gentex_commander3_hornstrobe.obj",
+                    mesh.write(os.path.join(OUT_DIR, "gentex_commander3_hornstrobe.obj"),
+                               "gentex_commander3_hornstrobe",
+                               "csm:blocks/lifesafety/" + indoor[0],
+                               "Gentex Commander 3 horn strobe"),
+                    (((lens_from[0] + lens_to[0]) / 2, (lens_from[1] + lens_to[1]) / 2),
+                     ((lens_to[0] - lens_from[0]) / 2, (lens_to[1] - lens_from[1]) / 2),
+                     lens_to[2], lens_from[2])))
+
+    mesh, lens_from, lens_to = gentex_outdoor_unit("gentex_commander_3_red_outdoor_horn_strobe")
+    reports.append(("gentex_commander3_hornstrobe_outdoor.obj",
+                    mesh.write(os.path.join(OUT_DIR, "gentex_commander3_hornstrobe_outdoor.obj"),
+                               "gentex_commander3_hornstrobe_outdoor",
+                               "csm:blocks/lifesafety/"
+                               "gentex_commander_3_red_outdoor_horn_strobe",
+                               "Gentex Commander 3 weatherproof horn strobe",
+                               extra_materials={FLANK_MATERIAL:
+                                                "csm:blocks/lifesafety/"
+                                                "gentex_commander_3_outdoor_flank"}),
+                    (((lens_from[0] + lens_to[0]) / 2, (lens_from[1] + lens_to[1]) / 2),
+                     ((lens_to[0] - lens_from[0]) / 2, (lens_to[1] - lens_from[1]) / 2),
+                     lens_to[2], lens_from[2])))
+
     gentex5 = ["gentex_commander_5_red_horn_strobe", "gentex_commander_5_white_horn_strobe",
                "gentex_commander_5_black_horn_strobe"]
     mesh, lens_from, lens_to = gentex_commander5_unit(gentex5[0], gentex5)

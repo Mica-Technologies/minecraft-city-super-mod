@@ -25,12 +25,12 @@ public class BlockFireAlarmGentexCommander3White extends AbstractBlockFireAlarmS
 
   @Override
   public float[] getStrobeLensFrom() {
-    return new float[]{5f, 10.6f, 14f};
+    return new float[]{5.26f, 10.79f, 11.5f};
   }
 
   @Override
   public float[] getStrobeLensTo() {
-    return new float[]{11f, 14.6f, 15f};
+    return new float[]{10.62f, 14.94f, 13.3f};
   }
 
   @Override
@@ -71,7 +71,7 @@ public class BlockFireAlarmGentexCommander3White extends AbstractBlockFireAlarmS
      */
     @Override
     public AxisAlignedBB getBlockBoundingBox( IBlockState state, IBlockAccess source, BlockPos pos ) {
-        return new AxisAlignedBB(0.187500, 0.187500, 0.875000, 0.812500, 1.000000, 1.000000);
+        return new AxisAlignedBB(0.187500, 0.243750, 0.718750, 0.812500, 1.000000, 1.000000);
     }
 
   @Override

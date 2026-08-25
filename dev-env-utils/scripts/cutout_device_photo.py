@@ -16,9 +16,14 @@ The background is lifted by flood-filling inward from the border, NOT by thresho
 image: these devices have white lettering, chrome reflectors and pale logos on them, and a global
 threshold punches holes straight through all of it.
 
+Stock photographs often carry a seller's watermark somewhere in the margin. It is NOT background
+as far as the flood fill is concerned -- it is dark, so the fill cannot reach it, and it survives
+as a floating blob that also stretches the crop box and squashes the device. `--erase` paints a
+rectangle of the source white first, which is what to do with one.
+
 Usage:
     python cutout_device_photo.py <source-image> <output-name> [--size 256] [--threshold 228]
-                                  [--margin 0.02]
+                                  [--margin 0.02] [--erase x0,y0,x1,y1]
 
     <output-name> is the file stem written under textures/blocks/lifesafety/, no extension;
     pass a path with slashes to place it in a subfolder such as shared_textures/.
@@ -30,7 +35,7 @@ import sys
 from collections import deque
 
 import numpy as np
-from PIL import Image
+from PIL import Image, ImageDraw
 
 REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 TEX_DIR = os.path.join(REPO_ROOT, "src", "main", "resources", "assets", "csm",
@@ -82,9 +87,19 @@ def main():
     parser.add_argument("--threshold", type=int, default=228)
     parser.add_argument("--margin", type=float, default=0.02,
                         help="fraction of the canvas left clear around the device")
+    parser.add_argument("--erase", action="append", default=None,
+                        metavar="X0,Y0,X1,Y1",
+                        help="paint this rectangle of the SOURCE white before lifting the "
+                             "background, for a watermark or a label outside the device; repeat "
+                             "for more than one")
     args = parser.parse_args()
 
     photo = Image.open(args.source)
+    if args.erase:
+        photo = photo.convert("RGBA")
+        painter = ImageDraw.Draw(photo)
+        for rect in args.erase:
+            painter.rectangle([int(v) for v in rect.split(",")], fill=(255, 255, 255, 255))
     rgba = np.asarray(photo.convert("RGBA"), dtype=np.float64)
     rgb = rgba[..., :3]
     if rgba[..., 3].min() < 250:
