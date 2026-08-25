@@ -12,5 +12,13 @@ public enum FireAlarmPanelConfigAction {
   CYCLE_VOICE_EVAC_SOUND,
   AUDIBLE_SILENCE,
   RESET_PANEL,
-  TOGGLE_GLITCHY
+  TOGGLE_GLITCHY,
+  /** Selects a voice evacuation message directly; the packet's value carries the index. */
+  SET_VOICE_EVAC_SOUND,
+  /** Acknowledges an active alarm without silencing anything. */
+  ACKNOWLEDGE,
+  /** Starts an evacuation drill from the panel. */
+  DRILL,
+  /** Lifts an audible silence and re-sounds the notification appliances. */
+  RESOUND
 }

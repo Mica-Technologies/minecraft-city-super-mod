@@ -22,7 +22,8 @@ public class BlockFireAlarmHeatDetector extends AbstractBlockFireAlarmDetector {
   }
 
   @Override
-  public void onFire(World world, BlockPos blockPos, IBlockState blockState) {
+  public void onFire(World world, BlockPos blockPos, IBlockState blockState, BlockPos firePos) {
+    // A heat detector only reports; suppression is the sprinklers' job.
   }
 
     /**

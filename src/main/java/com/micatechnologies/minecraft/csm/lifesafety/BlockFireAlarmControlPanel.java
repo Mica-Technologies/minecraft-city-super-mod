@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.lifesafety;
 
+import com.micatechnologies.minecraft.csm.Csm;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEW;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import java.util.List;
@@ -113,29 +114,14 @@ public class BlockFireAlarmControlPanel extends AbstractBlockRotatableNSEW imple
     }
 
     if (valid) {
-      TileEntity tileEntity = p_onBlockActivated_1_.getTileEntity(p_onBlockActivated_2_);
-      if (tileEntity instanceof TileEntityFireAlarmControlPanel) {
-        TileEntityFireAlarmControlPanel tileEntityFireAlarmControlPanel
-            = (TileEntityFireAlarmControlPanel) tileEntity;
-
-        boolean alarmState = tileEntityFireAlarmControlPanel.getAlarmState();
-        if (alarmState) {
-          tileEntityFireAlarmControlPanel.setAlarmState(false);
-          if (!p_onBlockActivated_1_.isRemote) {
-            p_onBlockActivated_4_.sendMessage(
-                new TextComponentString("Panel alarm status has been reset!"));
-          }
-        }
-
-        if (p_onBlockActivated_4_.isSneaking()) {
-          tileEntityFireAlarmControlPanel.switchSound();
-          if (!p_onBlockActivated_1_.isRemote) {
-            p_onBlockActivated_4_.sendMessage(
-                new TextComponentString("Switching alarm panel sound to " +
-                    tileEntityFireAlarmControlPanel.getCurrentSoundName()));
-          }
-        }
-      }
+      // Open the panel's front-panel screen. Acknowledge, silence, reset, drill and the voice
+      // message selection all live there now, so the block itself no longer reacts to a bare
+      // right-click by resetting the alarm -- a press of the panel's own RESET key does that.
+      // Called on both sides like the mod's other GUI blocks: the handler returns null server
+      // side, and the client side is what actually opens the screen.
+      p_onBlockActivated_4_.openGui(Csm.instance, 3, p_onBlockActivated_1_,
+          p_onBlockActivated_2_.getX(), p_onBlockActivated_2_.getY(),
+          p_onBlockActivated_2_.getZ());
     }
 
     return true;

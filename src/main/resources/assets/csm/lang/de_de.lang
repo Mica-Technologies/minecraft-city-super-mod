@@ -1,4 +1,4 @@
-csm.firealarmcontrolpanel.note=Rechtsklick zum Stoppen des Alarms, Schleichen+Rechtsklick zum Ändern des Sounds
+csm.firealarmcontrolpanel.note=Rechtsklick zum Öffnen der Zentrale
 csm.highvoltage=Hochspannung!
 csm.signalcontroller=McCain Modell MC2000
 csm.signalcontroller.timing.allred=  Allrot: %ss
