@@ -14,6 +14,8 @@ import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.GuideSign
 import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.GuideSignShieldType;
 import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.PostType;
 import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.RowAlignment;
+import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.SignLightMode;
+import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.SignLightType;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.block.BlockHorizontal;
@@ -26,12 +28,29 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.EnumSkyBlock;
 import org.lwjgl.opengl.GL11;
 
 public class TileEntityDynamicGuideSignRenderer
     extends TileEntitySpecialRenderer<TileEntityDynamicGuideSign> {
 
   private static final float SIGN_DEPTH = 1.5f;
+  // The sign's painted plates -- colored face, border, exit tab -- are only this deep, and
+  // the aluminum back slab is drawn slightly LARGER than their outline and starting just
+  // behind their front, so it sleeves them: their side and rear faces end up inside it and
+  // only their front faces are ever seen.
+  //
+  // That sleeve is what confines the lit-sign effect to the face. A box lights all six of its
+  // faces the same, so a fullbright plate spanning the sign's full depth glows along its
+  // edges and reverse -- a lit sign read from behind became a bright outline in the dark.
+  // Hiding every face but the front is the only fix that keeps per-box lighting.
+  private static final float LIT_FACE_DEPTH = 0.35f;
+  // How far the back slab's front sits behind the border plate's, and how far it oversizes
+  // the painted outline. Both are sub-pixel at any normal viewing distance; the visible
+  // result is a hairline of bare aluminum around the sign's edge, which is what a real
+  // panel's edge looks like anyway.
+  private static final float BACK_SLEEVE_LIP = 0.05f;
+  private static final float BACK_SLEEVE_MARGIN = 0.06f;
   private static final float BORDER_INSET = 0.4f;
   private static final float CX = 8.0f;
   private static final float CY = 8.0f;
@@ -109,12 +128,47 @@ public class TileEntityDynamicGuideSignRenderer
   private static final int LEGEND_DARK = 0x101010;
   private static final int LEGEND_WHITE = 0xFFFFFF;
 
+  // ---- Sign lighting -------------------------------------------------------------
+  // One luminaire per this many sign pixels of width (2.5 blocks), clamped to the range
+  // below. Real installs space sign lights roughly every 8-12 ft along the sign.
+  private static final float LIGHT_FIXTURE_SPACING = 40.0f;
+  private static final int LIGHT_FIXTURE_MIN = 1;
+  private static final int LIGHT_FIXTURE_MAX = 12;
+  // How far in FRONT of the sign face (toward the reader, i.e. decreasing Z) the
+  // luminaires stand off. Positive; subtracted from faceZ.
+  private static final float LIGHT_ARM_REACH = 7.0f;
+  private static final float LIGHT_ARM_THICKNESS = 1.2f;
+  private static final float LIGHT_RAIL_THICKNESS = 1.1f;
+  private static final float LIGHT_HOUSING_WIDTH = 7.0f;
+  private static final float LIGHT_HOUSING_HEIGHT = 3.2f;
+  private static final float LIGHT_HOUSING_DEPTH = 4.4f;
+  private static final float LIGHT_LENS_INSET = 0.9f;
+  // Members of the lighting assembly overlap each other by this much so no two faces are
+  // ever coplanar (coplanar faces z-fight).
+  private static final float JOINT_OVERLAP = 0.3f;
+  // Effective sky light (0-15) at or below which SignLightMode.NIGHT energizes the
+  // lights. 8 is vanilla's own darkness threshold, which lands the switch-on at dusk.
+  private static final int LIGHT_NIGHT_SKY_THRESHOLD = 8;
+  private static final int FULLBRIGHT = 240;
+
   // Cached per-frame lightmap split from the block's actual combined light, used so
   // text/shield/banner overlays respect day-night cycle and nearby light sources rather
   // than rendering at fullbright. Baked per-vertex via the BLOCK vertex format for shader
   // compatibility (shaders ignore OpenGlHelper.setLightmapTextureCoords global state).
   private int worldSkyLight;
   private int worldBlockLight;
+
+  // The block's real light, kept aside because a lit sign forces worldSky/BlockLight to
+  // fullbright for the face and legend. Structural metal that the fixtures do NOT wash --
+  // posts, brackets, housings -- keeps this ambient light so a night scene still reads as
+  // night around a glowing sign.
+  private int ambientSkyLight;
+  private int ambientBlockLight;
+
+  // Whether this sign's lighting is energized for the frame being drawn. Resolved once per
+  // render from the sign's light mode plus redstone / sky light, then used by both the
+  // fullbright face pass and the luminaire lenses.
+  private boolean lightOn;
 
   // Uniform content scale for the sign being rendered (1.0 unless auto-fit is on).
   // Set by computeContentScale before any layout math; every content metric (text,
@@ -139,6 +193,9 @@ public class TileEntityDynamicGuideSignRenderer
     int combinedLight = te.getWorld().getCombinedLight(te.getPos(), 0);
     worldSkyLight = (combinedLight >> 16) & 0xFFFF;
     worldBlockLight = combinedLight & 0xFFFF;
+    ambientSkyLight = worldSkyLight;
+    ambientBlockLight = worldBlockLight;
+    lightOn = resolveLightOn(data, te);
 
     EnumFacing facing = te.getWorld().getBlockState(te.getPos())
         .getValue(BlockHorizontal.FACING);
@@ -191,9 +248,46 @@ public class TileEntityDynamicGuideSignRenderer
    * center at y=8; quads land at z ~14-16 plus small negative offsets.
    */
   public void renderForGui(GuideSignData data) {
-    worldSkyLight = 240;
-    worldBlockLight = 240;
+    worldSkyLight = FULLBRIGHT;
+    worldBlockLight = FULLBRIGHT;
+    ambientSkyLight = FULLBRIGHT;
+    ambientBlockLight = FULLBRIGHT;
+    // The preview has no world to read redstone or time of day from, so show the fixtures
+    // energized whenever the sign is wired for light at all. That is what the player is
+    // trying to see when they pick a lighting type.
+    lightOn = data.hasLighting();
     renderSign(data, false);
+  }
+
+  /**
+   * Whether the sign's lighting is energized right now.
+   *
+   * <p>NIGHT is a photocell: it reads the sky light actually reaching the sign, minus the
+   * world's current skylight subtraction, so the lights come on at dusk, in a storm, and
+   * inside a tunnel -- and stay off at noon in the open. A dimension with no sky (the
+   * Nether) reads 0 and the lights simply stay on.</p>
+   */
+  private boolean resolveLightOn(GuideSignData data, TileEntityDynamicGuideSign te) {
+    if (data.getLightType() == SignLightType.NONE) {
+      return false;
+    }
+    SignLightMode mode = data.getLightMode();
+    if (mode == SignLightMode.ON) {
+      return true;
+    }
+    if (mode == SignLightMode.REDSTONE) {
+      return te.isPowered();
+    }
+    if (mode == SignLightMode.NIGHT) {
+      // calculateSkylightSubtracted, NOT getSkylightSubtracted: the cached field behind the
+      // getter is written once in the WorldClient constructor and never updated again, so on
+      // the client it forever reports the sky as it was when the player joined. The
+      // calculating call derives it from the celestial angle and the weather every time.
+      int skyLevel = te.getWorld().getLightFor(EnumSkyBlock.SKY, te.getPos())
+          - te.getWorld().calculateSkylightSubtracted(1.0f);
+      return skyLevel <= LIGHT_NIGHT_SKY_THRESHOLD;
+    }
+    return false;
   }
 
   /** {width, height} of the sign body in sign pixels, for preview fit math. */
@@ -243,6 +337,14 @@ public class TileEntityDynamicGuideSignRenderer
 
   private void renderSign(GuideSignData data, boolean farLod) {
     contentScale = computeContentScale(data);
+    // A lit sign reads at full brightness however dark the world is -- that is the whole
+    // point of sign lighting, and it matches how a real lit guide sign looks at night.
+    // Only the face and legend go fullbright; renderPost and renderSignLighting draw their
+    // structural metal with the ambient light kept aside above.
+    if (lightOn) {
+      worldSkyLight = FULLBRIGHT;
+      worldBlockLight = FULLBRIGHT;
+    }
     GuideSignColor signColor = data.getSignColor();
     int borderWidth = data.getBorderWidth();
     CornerStyle cornerStyle = data.getCornerStyle();
@@ -287,6 +389,8 @@ public class TileEntityDynamicGuideSignRenderer
     // unreadable at that distance and the font/atlas passes are the expensive part.
     if (farLod) {
       renderPost(data.getPostType(), signLeft, signBottom, totalSignWidth, faceZ);
+      renderSignLighting(data, signLeft, signBottom, signTop, totalSignWidth, faceZ,
+          borderWidth);
       GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
       GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
       GlStateManager.enableLighting();
@@ -370,6 +474,8 @@ public class TileEntityDynamicGuideSignRenderer
     }
 
     renderPost(data.getPostType(), signLeft, signBottom, totalSignWidth, faceZ);
+    renderSignLighting(data, signLeft, signBottom, signTop, totalSignWidth, faceZ,
+        borderWidth);
 
     GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
     GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
@@ -391,7 +497,7 @@ public class TileEntityDynamicGuideSignRenderer
       float bw = borderWidth * BORDER_INSET;
       List<RenderHelper.Box> border = new ArrayList<>();
       addRectBoxes(border, left - bw, bottom - bw, left + width + bw, bottom + height + bw,
-          faceZ, frontZ, cornerStyle);
+          faceZ, faceZ + LIT_FACE_DEPTH, cornerStyle);
 
       buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
       RenderHelper.addBoxesToBufferLit(border, buf, legendR, legendG, legendB, 1.0f, 0, 0, 0,
@@ -402,7 +508,7 @@ public class TileEntityDynamicGuideSignRenderer
     float inset = borderWidth > 0 ? borderWidth * BORDER_INSET : 0;
     List<RenderHelper.Box> face = new ArrayList<>();
     addRectBoxes(face, left + inset, bottom + inset, left + width - inset, bottom + height - inset,
-        faceZ - 0.1f, frontZ - 0.1f, cornerStyle);
+        faceZ - 0.1f, faceZ + LIT_FACE_DEPTH - 0.1f, cornerStyle);
 
     buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
     RenderHelper.addBoxesToBufferLit(face, buf,
@@ -410,19 +516,21 @@ public class TileEntityDynamicGuideSignRenderer
         worldSkyLight, worldBlockLight);
     tess.draw();
 
-    // Aluminum back: real guide signs are unpainted on the reverse, so cover the back of
-    // the assembly (border extent included) with a gray slab instead of the legend color.
-    // Inset a hair from the body's rect so the slab's side faces are never coplanar with
-    // the border's (or, on borderless signs, the face's) — coplanar edges z-fight.
+    // Aluminum back: real guide signs are unpainted on the reverse, so the reverse of the
+    // assembly is a gray slab rather than the legend color. It is drawn a hair OVERSIZE and
+    // starting just behind the border plate's front, so it sleeves the painted plates (see
+    // LIT_FACE_DEPTH): their side and rear faces sit inside it and only their front faces
+    // show. That is what keeps a lit sign's fullbright on its face -- this slab always draws
+    // at ambient light, so from behind, from the side, and along the top edge a lit sign is
+    // as dark as the night around it.
     float bw = borderWidth > 0 ? borderWidth * BORDER_INSET : 0;
-    float edgeInset = 0.05f;
     List<RenderHelper.Box> back = new ArrayList<>();
-    addRectBoxes(back, left - bw + edgeInset, bottom - bw + edgeInset,
-        left + width + bw - edgeInset, bottom + height + bw - edgeInset,
-        frontZ - 0.4f, frontZ + 0.05f, cornerStyle);
+    addRectBoxes(back, left - bw - BACK_SLEEVE_MARGIN, bottom - bw - BACK_SLEEVE_MARGIN,
+        left + width + bw + BACK_SLEEVE_MARGIN, bottom + height + bw + BACK_SLEEVE_MARGIN,
+        faceZ + BACK_SLEEVE_LIP, frontZ + 0.05f, cornerStyle);
     buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
     RenderHelper.addBoxesToBufferLit(back, buf, 0.55f, 0.56f, 0.58f, 1.0f, 0, 0, 0,
-        worldSkyLight, worldBlockLight);
+        ambientSkyLight, ambientBlockLight);
     tess.draw();
   }
 
@@ -514,7 +622,7 @@ public class TileEntityDynamicGuideSignRenderer
     if (borderWidth > 0) {
       List<RenderHelper.Box> tabBorder = new ArrayList<>();
       addRectBoxes(tabBorder, tabX - bw, tabBottom - bw, tabX + tabWidth + bw, tabTop + bw,
-          tabFaceZ + 0.1f, tabFrontZ + 0.1f, cornerStyle);
+          tabFaceZ + 0.1f, tabFaceZ + 0.1f + LIT_FACE_DEPTH, cornerStyle);
       buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
       RenderHelper.addBoxesToBufferLit(tabBorder, buf, legendR, legendG, legendB, 1.0f,
           0, 0, 0, worldSkyLight, worldBlockLight);
@@ -523,25 +631,25 @@ public class TileEntityDynamicGuideSignRenderer
 
     GuideSignColor tabColor = tab.getGuideSignColor();
     List<RenderHelper.Box> tabBg = new ArrayList<>();
-    addRectBoxes(tabBg, tabX, tabBottom, tabX + tabWidth, tabTop, tabFaceZ, tabFrontZ,
-        cornerStyle);
+    addRectBoxes(tabBg, tabX, tabBottom, tabX + tabWidth, tabTop, tabFaceZ,
+        tabFaceZ + LIT_FACE_DEPTH, cornerStyle);
     buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
     RenderHelper.addBoxesToBufferLit(tabBg, buf,
         tabColor.getRed(), tabColor.getGreen(), tabColor.getBlue(), 1.0f, 0, 0, 0,
         worldSkyLight, worldBlockLight);
     tess.draw();
 
-    // Aluminum back for the tab, matching the sign body's unpainted reverse. Inset a
-    // hair so its side faces are never coplanar with the tab border's (see the sign
-    // body's back slab).
-    float tabEdgeInset = 0.05f;
+    // Aluminum back for the tab, matching the sign body's unpainted reverse -- and, like
+    // it, drawn oversize and sleeving the tab's painted plates so a lit tab shows its
+    // fullbright on the face only.
     List<RenderHelper.Box> tabBack = new ArrayList<>();
-    addRectBoxes(tabBack, tabX - bw + tabEdgeInset, tabBottom - bw + tabEdgeInset,
-        tabX + tabWidth + bw - tabEdgeInset, tabTop + bw - tabEdgeInset,
-        tabFrontZ - 0.2f, tabFrontZ + 0.15f, cornerStyle);
+    addRectBoxes(tabBack, tabX - bw - BACK_SLEEVE_MARGIN, tabBottom - bw - BACK_SLEEVE_MARGIN,
+        tabX + tabWidth + bw + BACK_SLEEVE_MARGIN, tabTop + bw + BACK_SLEEVE_MARGIN,
+        tabFaceZ + 0.1f + BACK_SLEEVE_LIP, tabFrontZ + 0.15f, cornerStyle);
     buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
+    // Ambient, like the sign body's back slab: the tab is lit on its face only.
     RenderHelper.addBoxesToBufferLit(tabBack, buf, 0.55f, 0.56f, 0.58f, 1.0f, 0, 0, 0,
-        worldSkyLight, worldBlockLight);
+        ambientSkyLight, ambientBlockLight);
     tess.draw();
 
     if (tollSegW > 0) {
@@ -981,11 +1089,148 @@ public class TileEntityDynamicGuideSignRenderer
     }
 
     if (!posts.isEmpty()) {
+      // Ambient, not worldSkyLight: a lit sign forces the face fullbright, but its posts
+      // are still standing in the dark.
       buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
       RenderHelper.addBoxesToBufferLit(posts, buf, 0.45f, 0.45f, 0.47f, 1.0f, 0, 0, 0,
-          worldSkyLight, worldBlockLight);
+          ambientSkyLight, ambientBlockLight);
       tess.draw();
     }
+  }
+
+  /**
+   * Draws the sign's luminaires: a stand-off rail in front of the sign carrying evenly
+   * spaced housings, below the sign for {@link SignLightType#BOTTOM} and above it for
+   * {@link SignLightType#TOP}. {@link SignLightType#INTERNAL} and {@link SignLightType#NONE}
+   * draw nothing here -- internal illumination is entirely the fullbright face in
+   * {@link #renderSign}.
+   *
+   * <p>The bracketry is drawn at ambient light so it stays dark at night; only the lens
+   * quad on each housing goes fullbright, and only while {@link #lightOn}.</p>
+   */
+  private void renderSignLighting(GuideSignData data, float signLeft, float signBottom,
+      float signTop, float signWidth, float faceZ, int borderWidth) {
+    SignLightType type = data.getLightType();
+    if (!type.hasFixtures()) {
+      return;
+    }
+
+    Tessellator tess = Tessellator.getInstance();
+    BufferBuilder buf = tess.getBuffer();
+
+    boolean below = type == SignLightType.BOTTOM;
+    float bw = borderWidth > 0 ? borderWidth * BORDER_INSET : 0;
+    // Where the bracketry leaves the sign, just outside the border on the relevant edge.
+    float edgeY = below ? signBottom - bw : signTop + bw;
+    // Rail centerline, standing off the edge far enough that the housings clear the border.
+    float railY = below ? edgeY - 2.6f : edgeY + 2.6f;
+    // Front of the sign is DECREASING Z (see the mirror note in render()).
+    float railFrontZ = faceZ - LIGHT_ARM_REACH;
+    float railBackZ = railFrontZ + LIGHT_RAIL_THICKNESS;
+
+    int fixtures = fixtureCount(signWidth);
+
+    List<RenderHelper.Box> metal = new ArrayList<>();
+
+    // Continuous rail spanning the sign, inset slightly from the corners.
+    float railLeft = signLeft + 1.0f;
+    float railRight = signLeft + signWidth - 1.0f;
+    metal.add(new RenderHelper.Box(
+        new float[]{railLeft, railY - LIGHT_RAIL_THICKNESS / 2.0f, railFrontZ},
+        new float[]{railRight, railY + LIGHT_RAIL_THICKNESS / 2.0f, railBackZ}));
+
+    // One arm per fixture, running from the sign face out to the rail.
+    for (int i = 0; i < fixtures; i++) {
+      float cx = fixtureCenterX(signLeft, signWidth, fixtures, i);
+      // Every member here overlaps its neighbor rather than butting flush against it:
+      // coplanar faces z-fight, and the sign already learned that lesson with its posts.
+      metal.add(new RenderHelper.Box(
+          new float[]{cx - LIGHT_ARM_THICKNESS / 2.0f, railY - LIGHT_ARM_THICKNESS / 2.0f,
+              railFrontZ + JOINT_OVERLAP},
+          new float[]{cx + LIGHT_ARM_THICKNESS / 2.0f, railY + LIGHT_ARM_THICKNESS / 2.0f,
+              faceZ + SIGN_DEPTH}));
+      // Short drop/riser tying the arm back to the sign edge so it does not float. Its
+      // inboard end runs a little way INTO the sign body, where it is hidden.
+      metal.add(new RenderHelper.Box(
+          new float[]{cx - LIGHT_ARM_THICKNESS / 2.0f,
+              below ? railY : edgeY - JOINT_OVERLAP,
+              faceZ + SIGN_DEPTH - LIGHT_ARM_THICKNESS},
+          new float[]{cx + LIGHT_ARM_THICKNESS / 2.0f,
+              below ? edgeY + JOINT_OVERLAP : railY,
+              faceZ + SIGN_DEPTH}));
+    }
+
+    // Housings: bodies sit on the rail (BOTTOM) or hang from it (TOP), aimed at the face.
+    float housingNear = below
+        ? railY + LIGHT_RAIL_THICKNESS / 2.0f - JOINT_OVERLAP
+        : railY - LIGHT_RAIL_THICKNESS / 2.0f + JOINT_OVERLAP - LIGHT_HOUSING_HEIGHT;
+    float housingFar = housingNear + LIGHT_HOUSING_HEIGHT;
+    float housingFrontZ = railFrontZ - (LIGHT_HOUSING_DEPTH - LIGHT_RAIL_THICKNESS) / 2.0f;
+    float housingBackZ = housingFrontZ + LIGHT_HOUSING_DEPTH;
+
+    List<RenderHelper.Box> housings = new ArrayList<>();
+    for (int i = 0; i < fixtures; i++) {
+      float cx = fixtureCenterX(signLeft, signWidth, fixtures, i);
+      housings.add(new RenderHelper.Box(
+          new float[]{cx - LIGHT_HOUSING_WIDTH / 2.0f, housingNear, housingFrontZ},
+          new float[]{cx + LIGHT_HOUSING_WIDTH / 2.0f, housingFar, housingBackZ}));
+    }
+
+    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
+    RenderHelper.addBoxesToBufferLit(metal, buf, 0.42f, 0.42f, 0.44f, 1.0f, 0, 0, 0,
+        ambientSkyLight, ambientBlockLight);
+    tess.draw();
+
+    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
+    RenderHelper.addBoxesToBufferLit(housings, buf, 0.26f, 0.26f, 0.28f, 1.0f, 0, 0, 0,
+        ambientSkyLight, ambientBlockLight);
+    tess.draw();
+
+    // Lens: a thin slab on the face of the housing that points at the sign -- the top of a
+    // bottom-mounted fixture, the underside of a top-mounted one. Warm white and fullbright
+    // when energized, dull gray glass when not.
+    float lensFar = below ? housingFar + JOINT_OVERLAP : housingNear + 0.35f - JOINT_OVERLAP;
+    float lensNear = lensFar - 0.35f;
+    List<RenderHelper.Box> lenses = new ArrayList<>();
+    for (int i = 0; i < fixtures; i++) {
+      float cx = fixtureCenterX(signLeft, signWidth, fixtures, i);
+      lenses.add(new RenderHelper.Box(
+          new float[]{cx - LIGHT_HOUSING_WIDTH / 2.0f + LIGHT_LENS_INSET, lensNear,
+              housingFrontZ + LIGHT_LENS_INSET},
+          new float[]{cx + LIGHT_HOUSING_WIDTH / 2.0f - LIGHT_LENS_INSET, lensFar,
+              housingBackZ - LIGHT_LENS_INSET}));
+    }
+
+    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
+    if (lightOn) {
+      RenderHelper.addBoxesToBufferLit(lenses, buf, 1.0f, 0.96f, 0.80f, 1.0f, 0, 0, 0,
+          FULLBRIGHT, FULLBRIGHT);
+    } else {
+      RenderHelper.addBoxesToBufferLit(lenses, buf, 0.50f, 0.50f, 0.46f, 1.0f, 0, 0, 0,
+          ambientSkyLight, ambientBlockLight);
+    }
+    tess.draw();
+  }
+
+  /** How many luminaires a sign of this width carries. */
+  private static int fixtureCount(float signWidth) {
+    int n = Math.round(signWidth / LIGHT_FIXTURE_SPACING);
+    return Math.max(LIGHT_FIXTURE_MIN, Math.min(LIGHT_FIXTURE_MAX, n));
+  }
+
+  /** Center X of fixture {@code i} of {@code count}, spread evenly across the sign. */
+  private static float fixtureCenterX(float signLeft, float signWidth, int count, int i) {
+    return signLeft + signWidth * (i + 0.5f) / count;
+  }
+
+  /**
+   * How far the sign's lighting hardware reaches beyond the sign body, in sign pixels, on
+   * the edge it is mounted to. Used by the GUI preview to fit the fixtures in its box.
+   */
+  public static float lightingOverhang(GuideSignData data) {
+    return data.getLightType().hasFixtures()
+        ? 2.6f + LIGHT_RAIL_THICKNESS / 2.0f + LIGHT_HOUSING_HEIGHT
+        : 0.0f;
   }
 
   /**

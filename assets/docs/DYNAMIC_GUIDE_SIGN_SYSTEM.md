@@ -47,6 +47,8 @@ GuideSignData                 (root: color, post, border, corner style, min widt
 | `ExitTabData` | Exit number tab | `POS_LEFT=0 / POS_CENTER=1 / POS_RIGHT=2` (default RIGHT), `text` (default "EXIT"), `color`, `toll` flag, `wide` flag (extra horizontal padding, `EXIT_TAB_PADDING_WIDE = 9` vs `3`; absent in old JSON → narrow). |
 | `PostType` | Mounting post layout | LEFT, RIGHT, CENTER, OVERHEAD (no posts), RURAL (two posts). |
 | `CornerStyle` | Sign corner shape | ROUND (chamfered) or SHARP. |
+| `SignLightType` | How the sign is illuminated | NONE (retroreflective only), BOTTOM (luminaires on a bracket below, aimed up), TOP (brackets above, aimed down), INTERNAL (no fixtures; the face itself is lit). `hasFixtures()` is true for BOTTOM/TOP. **Append-only: ordinals are serialized.** |
+| `SignLightMode` | When the lighting is energized | OFF, ON, REDSTONE (follows power at the block), NIGHT (photocell). **Append-only: ordinals are serialized.** |
 | `RowAlignment` | Per-row horizontal alignment | LEFT, CENTER (default), RIGHT. |
 | `SignTemplates` | Preset sign configurations | 4 cycling presets: Blank Green, Blank Blue, Brown Recreation, Standard Exit. Each `get(index)` returns a fresh instance. |
 | `GuideSignAtlas` | UV lookup for the shared texture atlas | Maps shield/arrow types to atlas cell UVs (see below). |
@@ -131,7 +133,9 @@ drawing must follow the same rules.
 
 | Constant | Value | Controls |
 |---|---|---|
-| `SIGN_DEPTH` | `1.5` | Thickness of the sign body / border slab. |
+| `SIGN_DEPTH` | `1.5` | Thickness of the whole sign assembly, face plate to aluminum back. |
+| `LIT_FACE_DEPTH` | `0.35` | Depth of the painted plates only. The back slab fills the rest — see **Sign lighting**. |
+| `BACK_SLEEVE_LIP` / `_MARGIN` | `0.05` / `0.06` | How far the back slab sits behind the border plate's front, and how far it oversizes the painted outline, so it sleeves the plates' side and rear faces. |
 | `BORDER_INSET` | `0.4` | Multiplier: actual border thickness = `borderWidth × 0.4`. Also the inset of the colored face inside the border. |
 | `PANEL_PADDING_TOP` / `_BOTTOM` | `2.5` / `2.5` | Vertical padding between sign edge and first/last row. |
 | `PANEL_PADDING_SIDE` | `3.0` | Horizontal padding inside the sign; also the divider inset. |
@@ -154,6 +158,69 @@ drawing must follow the same rules.
 | `ROUTE_CAP_FRACTION` | `0.42` | Route-number cap height over the shield, as a fraction of `SHIELD_SIZE`. |
 | `GuideSignShieldType.getRouteTextMaxFraction()` | per shield, `0.30`–`0.62` | Max width the route number may span (as a fraction of `SHIELD_SIZE`) before it shrinks to fit — replaces what used to be a single global constant. Measured per shield from the atlas cell's interior: the narrowest horizontal run of opaque pixels in the cell's y=26–38 mid-band (constriction governs), divided by 64, scaled by an 0.80 safety margin, clamped to `[0.30, 0.62]`. Wide silhouettes (Interstate, rounded squares) sit at the 0.62 cap; narrow ones (Florida's peninsula, the diamond states, Utah's beehive, Washington's bust oval) get a tighter fraction so a 2-digit route number never spills past the shield's outline. Color comes from `GuideSignShieldType.getRouteTextColor()` (black on light shields, yellow on the county pentagon, white on dark). |
 | `CORNER_STEP` | `0.6` | Chamfer size per outer corner for ROUND corners. |
+| `LIGHT_FIXTURE_SPACING` | `40.0` | Sign pixels of width per luminaire (2.5 blocks), clamped to `[LIGHT_FIXTURE_MIN=1, LIGHT_FIXTURE_MAX=12]`. |
+| `LIGHT_ARM_REACH` | `7.0` | How far in FRONT of the face (decreasing Z) the luminaire rail stands off. |
+| `LIGHT_HOUSING_WIDTH` / `_HEIGHT` / `_DEPTH` | `7.0` / `3.2` / `4.4` | Luminaire housing box. |
+| `JOINT_OVERLAP` | `0.3` | Every member of the lighting assembly overlaps its neighbor by this much so no two faces are ever coplanar. |
+| `LIGHT_NIGHT_SKY_THRESHOLD` | `8` | Effective sky light at or below which `SignLightMode.NIGHT` energizes the lights. |
+
+### Sign lighting
+
+`SignLightType` selects the hardware, `SignLightMode` selects when it is energized, and both live
+in `GuideSignData` (JSON, not block meta — meta is full with FACING).
+
+`resolveLightOn` runs once per render, before any geometry:
+
+- `ON` → always lit. `OFF` / type `NONE` → never.
+- `REDSTONE` → `TileEntityDynamicGuideSign.isPowered()`. The block's `neighborChanged` /
+  `onBlockPlacedBy` write that flag server-side and `setPowered` syncs it to clients when it
+  changes, so the renderer never polls neighbors per frame. `getBlockConnectsRedstone` returns
+  true so wire runs up to the sign.
+- `NIGHT` → a photocell: `getLightFor(SKY, pos) − calculateSkylightSubtracted(1.0f)`, so the
+  lights come on at dusk, in a storm, and inside a tunnel, and stay off at noon in the open. A
+  dimension with no sky reads 0 and the lights simply stay on. **Use `calculateSkylightSubtracted`,
+  never `getSkylightSubtracted`**: the cached field behind the getter is written once in the
+  `WorldClient` constructor and never updated, so on the client it reports the sky as it was when
+  the player joined — a sign set to NIGHT while it was day stayed dark all night.
+
+**Lit signs render fullbright.** When `lightOn`, `renderSign` raises `worldSkyLight`/
+`worldBlockLight` to 240 for the face, border, and legend — which is how a real lit guide sign
+reads at night, and covers INTERNAL entirely (it draws no fixtures). The block's true light is
+kept aside in `ambientSkyLight`/`ambientBlockLight`, and `renderPost` and the fixture bracketry
+use *that*, so posts and brackets stay dark at night around a glowing sign. Only the lens slab on
+each housing goes fullbright, and only while lit; unlit it draws dull gray at ambient light.
+
+**The lit effect is confined to the face by an aluminum sleeve.** `addBoxesToBufferLit` lights all
+six faces of a box the same, so a fullbright plate spanning the sign's full depth glows along its
+edges and its reverse — a lit sign read from behind was a bright outline in the dark, and its top
+edge a bright line. The fix is geometric, not a lighting one: the painted plates (colored face,
+border, exit tab background and border) are only `LIT_FACE_DEPTH = 0.35` deep, and each back slab
+is drawn `BACK_SLEEVE_MARGIN = 0.06` **oversize** and starting `BACK_SLEEVE_LIP = 0.05` behind the
+border plate's front, so it *sleeves* them: their side and rear faces end up inside it and only
+their front faces are ever seen. Both back slabs draw at ambient light, so from behind, from the
+side, and along the top edge a lit sign is as dark as the night around it.
+
+Depths, front to back, for the body (`faceZ = 14.5`) and the tab (`tabFaceZ = 14.3`):
+
+| Plate | Body z | Tab z |
+|---|---|---|
+| Colored face / tab background | 14.4 – 14.75 | 14.3 – 14.65 |
+| Border plate | 14.5 – 14.85 | 14.4 – 14.75 |
+| Aluminum back slab (ambient, oversize) | 14.55 – 16.05 | 14.45 – 15.95 |
+
+No two of those values coincide, and the three outlines differ — coplanar faces z-fight. The
+visible cost of the sleeve is a hairline of bare aluminum around the sign's edge, which is what a
+real panel's edge looks like anyway. Anything new drawn behind the face plane must follow the same
+rule, or it will glow from the back on a lit sign.
+
+`renderSignLighting` draws a continuous stand-off rail across the sign with one arm and one
+housing per fixture, below the bottom border for BOTTOM and above the top border for TOP. It runs
+in the far-LOD path too — the fixtures are a handful of boxes, and a lit sign that loses its lights
+at 64 blocks would be more conspicuous than the cost. `lightingOverhang(data)` is the public
+reach beyond the sign edge, used by the GUI preview's fit math.
+
+The sign emits **no** Minecraft block light: this is a rendering effect only, so there is no
+chunk-relight cost and no light-update churn when a photocell sign switches at dusk.
 
 ### FHWA legend font (`GuideSignFontRenderer`)
 
@@ -232,7 +299,10 @@ they don't intercept clicks or bleed through the fixed strips, and a scrollbar i
 when content overflows.
 
 - **Properties** (`TAB_PROPERTIES`): sign color cycle, post type cycle, border +/−, min-width,
-  corner style, panel count, template cycle, and copy/paste.
+  min-height, corner style, auto-fit, lighting type and light mode (two full-width cycles —
+  the friendly names do not fit a half-width button), panel count, template cycle, and
+  copy/paste. Cycling the lighting type off parks the mode at OFF; cycling it on from OFF
+  moves the mode to NIGHT, so fitting lights to a sign visibly does something.
 - **Panel** (`TAB_PANEL`): panel prev/next, exit-tab toggle/position/color/toll/text, APL lane and
   exit-lane steppers, scrollable row list with add/remove, and "edit row" which jumps to the Row tab.
 - **Row** (`TAB_ROW`): row prev/next, vertical-spacing +/−, row-alignment cycle, element list with
@@ -242,8 +312,11 @@ when content overflows.
   TESR's own code path (`renderForGui`, fullbright, scaled to fit, scissor-clipped to its box;
   the GUI transform flips Y because sign pixel space is +Y-up, and flips Z because GUI ortho
   treats larger z as closer while the readable face sits at smaller z than the aluminum back) —
-  followed by the text summary (color/post/border/corners, per-panel exit-tab info, per-row
-  alignment/spacing/patch/elements).
+  followed by the text summary (color/post/border/corners/lighting, per-panel exit-tab info,
+  per-row alignment/spacing/patch/elements). The preview shows the fixtures energized whenever
+  a lighting type is fitted and the mode is not OFF: it has no world to read redstone or the
+  time of day from, and showing them dark is not what the player is trying to see. Its fit math
+  adds `lightingOverhang(data)` to whichever edge carries the fixtures.
 
 **Copy/paste** uses a process-static `clipboardJson` field. Copy serializes the current data to JSON;
 Paste deserializes it back (the Paste button is disabled while the clipboard is empty). This lets a
