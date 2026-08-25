@@ -4,7 +4,7 @@ import com.micatechnologies.minecraft.csm.hvac.HvacThermostatGui;
 import com.micatechnologies.minecraft.csm.hvac.HvacZoneThermostatGui;
 import com.micatechnologies.minecraft.csm.hvac.TileEntityHvacThermostat;
 import com.micatechnologies.minecraft.csm.hvac.TileEntityHvacZoneThermostat;
-import com.micatechnologies.minecraft.csm.lifesafety.FireAlarmPanelConfigGui;
+import com.micatechnologies.minecraft.csm.lifesafety.FireAlarmControlPanelGui;
 import com.micatechnologies.minecraft.csm.lifesafety.TileEntityFireAlarmControlPanel;
 import com.micatechnologies.minecraft.csm.technology.BlockFareVendingMachine;
 import com.micatechnologies.minecraft.csm.technology.BlockRedstoneTTSGui;
@@ -86,7 +86,7 @@ public class CsmGuiHandler implements IGuiHandler {
     } else if (id == 5 && tileEntity instanceof TileEntityTrafficSignalController) {
       returnValue = new SignalControllerVisualGui((TileEntityTrafficSignalController) tileEntity);
     } else if (id == 3 && tileEntity instanceof TileEntityFireAlarmControlPanel) {
-      returnValue = new FireAlarmPanelConfigGui((TileEntityFireAlarmControlPanel) tileEntity);
+      returnValue = new FireAlarmControlPanelGui((TileEntityFireAlarmControlPanel) tileEntity);
     } else if (id == 4 && tileEntity instanceof TileEntityCrosswalkSignalNew) {
       // The extra data bit (encoded in the GUI ID) tells us if it's the double signal
       boolean isDouble = world.getBlockState(pos).getBlock()

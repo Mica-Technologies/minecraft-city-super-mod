@@ -1,6 +1,5 @@
 package com.micatechnologies.minecraft.csm.lifesafety;
 
-import com.micatechnologies.minecraft.csm.Csm;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractItem;
 import java.util.List;
 import net.minecraft.block.Block;
@@ -17,8 +16,8 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 
 /**
- * Hand-held item used to configure fire alarm control panels. Supports multiple modes
- * including opening the config GUI, audible silence, panel reset, and voice evac sound cycling.
+ * Hand-held item used to configure fire alarm control panels from a distance, without opening
+ * the panel's own screen. Supports audible silence, panel reset, and voice evac sound cycling.
  *
  * @author Mica Technologies
  * @since 2026.4
@@ -38,14 +37,6 @@ public class ItemFireAlarmConfigTool extends AbstractItem {
       float hitY,
       float hitZ) {
     ItemStack heldStack = player.getHeldItem(hand);
-
-    // OPEN_GUI mode must run on client side (GuiScreen has no server Container)
-    if (worldIn.isRemote && !player.isSneaking()
-        && getMode(heldStack) == ItemFireAlarmConfigToolMode.OPEN_GUI
-        && worldIn.getBlockState(pos).getBlock() instanceof BlockFireAlarmControlPanel) {
-      player.openGui(Csm.instance, 3, worldIn, pos.getX(), pos.getY(), pos.getZ());
-      return EnumActionResult.SUCCESS;
-    }
 
     if (!worldIn.isRemote) {
       Block clickedBlock = worldIn.getBlockState(pos).getBlock();
@@ -96,9 +87,6 @@ public class ItemFireAlarmConfigTool extends AbstractItem {
           player.sendMessage(new TextComponentString(
               "Switching alarm panel sound to " + panel.getCurrentSoundName()));
           break;
-        case OPEN_GUI:
-          // Handled on client side above
-          break;
       }
 
       return EnumActionResult.SUCCESS;
@@ -116,7 +104,7 @@ public class ItemFireAlarmConfigTool extends AbstractItem {
         return values[ordinal];
       }
     }
-    return ItemFireAlarmConfigToolMode.OPEN_GUI;
+    return ItemFireAlarmConfigToolMode.AUDIBLE_SILENCE;
   }
 
   public static void switchToNextMode(ItemStack stack) {
@@ -134,8 +122,8 @@ public class ItemFireAlarmConfigTool extends AbstractItem {
   public void addInformation(ItemStack itemstack, World world, List<String> list,
       ITooltipFlag flag) {
     super.addInformation(itemstack, world, list, flag);
-    list.add("Configure fire alarm panel: audible silence,");
-    list.add("reset, voice evac sound selection, and more.");
+    list.add("Operate a fire alarm panel without opening it:");
+    list.add("audible silence, reset, and voice evac sound cycling.");
     list.add("Right-click to apply. Sneak + right-click to switch modes.");
     list.add("Current mode: " + getMode(itemstack).getFriendlyName());
   }

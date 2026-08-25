@@ -53,6 +53,18 @@ public class FireAlarmPanelConfigPacketHandler implements
         case TOGGLE_GLITCHY:
           panel.toggleGlitchy();
           break;
+        case SET_VOICE_EVAC_SOUND:
+          panel.setSoundIndex(message.getValue());
+          break;
+        case ACKNOWLEDGE:
+          panel.acknowledge();
+          break;
+        case DRILL:
+          panel.startDrill();
+          break;
+        case RESOUND:
+          panel.setAudibleSilence(false);
+          break;
       }
       panel.syncServerToClient(world);
     });

@@ -1,4 +1,4 @@
-csm.firealarmcontrolpanel.note=Right Click to Stop Alarm, Sneak+Right Click to Change Sound
+csm.firealarmcontrolpanel.note=Right Click to Open the Panel
 csm.highvoltage=High Voltage!
 csm.signalcontroller=McCain Model MC2000
 csm.signalcontroller.timing.allred=  All-red: %ss

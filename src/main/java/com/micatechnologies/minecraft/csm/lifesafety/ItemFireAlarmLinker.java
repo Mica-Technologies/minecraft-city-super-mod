@@ -174,17 +174,33 @@ public class ItemFireAlarmLinker extends AbstractItem {
         if (tileEntityAtClickedPos instanceof TileEntityFireAlarmSensor) {
           TileEntityFireAlarmSensor fireAlarmSensor =
               (TileEntityFireAlarmSensor) tileEntityAtClickedPos;
-          boolean didLink = fireAlarmSensor.setLinkedPanelPos(alarmPanelPos, player);
-          if (didLink && !worldIn.isRemote) {
-            player.sendMessage(new TextComponentString("Successfully linked activator to " +
-                "alarm control panel at " +
-                "(" +
-                alarmPanelPos.getX() +
-                "," +
-                alarmPanelPos.getY() +
-                "," +
-                alarmPanelPos.getZ() +
-                ")"));
+          TileEntityFireAlarmSensor.LinkResult result =
+              fireAlarmSensor.setLinkedPanelPos(alarmPanelPos);
+
+          // Index the device on the panel too. The device stores which panel it reports to; the
+          // panel needs the reverse to reach its devices when it is reset.
+          TileEntity tileEntityAtPanelPos = worldIn.getTileEntity(alarmPanelPos);
+          if (tileEntityAtPanelPos instanceof TileEntityFireAlarmControlPanel) {
+            ((TileEntityFireAlarmControlPanel) tileEntityAtPanelPos)
+                .addLinkedInitiatingDevice(pos);
+          }
+
+          if (!worldIn.isRemote) {
+            String panelDescription = "alarm control panel at (" +
+                alarmPanelPos.getX() + "," + alarmPanelPos.getY() + "," + alarmPanelPos.getZ()
+                + ")";
+            // Every outcome is reported. A device that was already linked used to be refused in
+            // silence, which was indistinguishable from the click not registering.
+            if (result == TileEntityFireAlarmSensor.LinkResult.RELINKED) {
+              player.sendMessage(new TextComponentString(
+                  "Moved activator to " + panelDescription));
+            } else if (result == TileEntityFireAlarmSensor.LinkResult.ALREADY_LINKED) {
+              player.sendMessage(new TextComponentString(
+                  "Activator is already linked to " + panelDescription));
+            } else {
+              player.sendMessage(new TextComponentString(
+                  "Successfully linked activator to " + panelDescription));
+            }
           }
         }
 
