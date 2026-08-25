@@ -30,6 +30,8 @@ public final class ActiveStrobeRegistry {
 
   public static void clearAll() {
     activePositions.clear();
+    // The cached projections are keyed by position and mean nothing once the world is gone.
+    StrobeSurfaceProjection.clear();
   }
 
   public static boolean isActive(BlockPos pos) {
