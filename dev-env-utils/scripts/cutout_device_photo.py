@@ -84,9 +84,16 @@ def main():
                         help="fraction of the canvas left clear around the device")
     args = parser.parse_args()
 
-    photo = Image.open(args.source).convert("RGB")
-    rgb = np.asarray(photo, dtype=np.float64)
-    alpha = lift_background(rgb, args.threshold)
+    photo = Image.open(args.source)
+    rgba = np.asarray(photo.convert("RGBA"), dtype=np.float64)
+    rgb = rgba[..., :3]
+    if rgba[..., 3].min() < 250:
+        # Already cut out. Some product shots arrive as PNGs whose background is transparent
+        # rather than white, and flattening one to RGB first hands the flood fill whatever colour
+        # happens to sit under the transparency -- usually a dark fringe, which it cannot lift.
+        alpha = rgba[..., 3] / 255.0
+    else:
+        alpha = lift_background(rgb, args.threshold)
     rows, cols = np.nonzero(alpha > 0.5)
     if len(rows) == 0:
         print("nothing survived the background lift -- try a lower --threshold", file=sys.stderr)
