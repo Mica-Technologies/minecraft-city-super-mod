@@ -12,6 +12,8 @@ import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.GuideSign
 import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.GuideSignRow;
 import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.GuideSignShieldType;
 import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.PostType;
+import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.SignLightMode;
+import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.SignLightType;
 import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.SignTemplates;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -75,6 +77,8 @@ public class DynamicGuideSignGui extends GuiScreen {
   private static final int BTN_MIN_HEIGHT_DOWN = 66;
   private static final int BTN_MIN_HEIGHT_UP = 67;
   private static final int BTN_AUTO_FIT = 68;
+  private static final int BTN_LIGHT_TYPE = 69;
+  private static final int BTN_LIGHT_MODE = 70;
 
   private static final int BTN_ROW_PREV = 30;
   private static final int BTN_ROW_NEXT = 31;
@@ -266,6 +270,15 @@ public class DynamicGuideSignGui extends GuiScreen {
     y += BTN_HEIGHT + 3;
     addContentBtn(new GuiButton(BTN_CORNER_STYLE, left, y, halfW, BTN_HEIGHT, ""));
     addContentBtn(new GuiButton(BTN_AUTO_FIT, left + halfW + 4, y, halfW, BTN_HEIGHT, ""));
+    y += BTN_HEIGHT + 6;
+    // Sign lighting gets full-width rows: the friendly names ("Bottom Mount",
+    // "Auto (Night)") do not fit a half-width button without truncating.
+    addContentBtn(new GuiButton(BTN_LIGHT_TYPE, left, y, FIELD_WIDTH, BTN_HEIGHT, ""));
+    y += BTN_HEIGHT + 3;
+    GuiButton lightMode = new GuiButton(BTN_LIGHT_MODE, left, y, FIELD_WIDTH, BTN_HEIGHT, "");
+    // With no lighting fitted there is nothing for the mode to switch.
+    lightMode.enabled = data.getLightType() != SignLightType.NONE;
+    addContentBtn(lightMode);
     y += BTN_HEIGHT + 6;
     addContentBtn(new GuiButton(BTN_ADD_PANEL, left, y, halfW, BTN_HEIGHT, "+ Add Panel"));
     GuiButton removePanel = new GuiButton(BTN_REMOVE_PANEL, left + halfW + 4, y, halfW,
@@ -513,6 +526,9 @@ public class DynamicGuideSignGui extends GuiScreen {
     previewLines.add("Post: " + data.getPostType().getFriendlyName());
     previewLines.add("Border: " + data.getBorderWidth());
     previewLines.add("Corners: " + data.getCornerStyle().getFriendlyName());
+    previewLines.add("Lighting: " + data.getLightType().getFriendlyName()
+        + (data.getLightType() == SignLightType.NONE
+            ? "" : " (" + data.getLightMode().getFriendlyName() + ")"));
     previewLines.add("");
 
     List<GuideSignPanel> panels = data.getPanels();
@@ -591,6 +607,13 @@ public class DynamicGuideSignGui extends GuiScreen {
     // escapes the preview box and overlaps the tab strip.
     boolean hasTab = !data.getPanels().isEmpty() && data.getPanels().get(0).hasExitTab();
     float tabExtra = hasTab ? 11.0f * previewRenderer.computeContentScale(data) : 0.0f;
+    // Luminaires hang off whichever edge they are mounted to, so give that edge room.
+    float lightExtra = TileEntityDynamicGuideSignRenderer.lightingOverhang(data);
+    if (data.getLightType() == SignLightType.TOP) {
+      tabExtra += lightExtra;
+    } else {
+      postExtra = Math.max(postExtra, lightExtra);
+    }
     float totalH = signH + tabExtra + postExtra;
     float scale = Math.min((FIELD_WIDTH - 8) / signW,
         (PREVIEW_VISUAL_HEIGHT - 8) / totalH);
@@ -718,6 +741,10 @@ public class DynamicGuideSignGui extends GuiScreen {
         btn.displayString = "Corners: " + data.getCornerStyle().getFriendlyName();
       } else if (btn.id == BTN_AUTO_FIT) {
         btn.displayString = "Auto-Fit: " + (data.isAutoFit() ? "ON" : "OFF");
+      } else if (btn.id == BTN_LIGHT_TYPE) {
+        btn.displayString = "Lighting: " + data.getLightType().getFriendlyName();
+      } else if (btn.id == BTN_LIGHT_MODE) {
+        btn.displayString = "Lights: " + data.getLightMode().getFriendlyName();
       } else if (btn.id == BTN_TEMPLATE) {
         btn.displayString = "Apply Template: " + SignTemplates.getName(templateIndex);
       }
@@ -995,6 +1022,20 @@ public class DynamicGuideSignGui extends GuiScreen {
         break;
       case BTN_AUTO_FIT:
         data.setAutoFit(!data.isAutoFit());
+        break;
+      case BTN_LIGHT_TYPE:
+        data.cycleLightType();
+        // Fitting lights to a previously unlit sign should turn them on, not leave the
+        // player wondering why nothing changed; removing them parks the mode back at off.
+        if (data.getLightType() == SignLightType.NONE) {
+          data.setLightMode(SignLightMode.OFF.ordinal());
+        } else if (data.getLightMode() == SignLightMode.OFF) {
+          data.setLightMode(SignLightMode.NIGHT.ordinal());
+        }
+        initGui();
+        break;
+      case BTN_LIGHT_MODE:
+        data.cycleLightMode();
         break;
       case BTN_ADD_PANEL:
         data.addPanel();

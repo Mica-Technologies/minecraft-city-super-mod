@@ -10,8 +10,13 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class TileEntityDynamicGuideSign extends AbstractTileEntity {
 
   private static final String NBT_KEY = "signData";
+  private static final String NBT_KEY_POWERED = "lightPowered";
 
   private String signDataJson = "";
+  // Redstone power at this block, kept server-authoritative and synced so the client-side
+  // renderer can light the sign in SignLightMode.REDSTONE without polling neighbors every
+  // frame. Only meaningful for lighting; the sign has no other redstone behavior.
+  private boolean powered = false;
   private transient GuideSignData cachedData = null;
   private transient boolean stateDirty = true;
 
@@ -21,6 +26,7 @@ public class TileEntityDynamicGuideSign extends AbstractTileEntity {
   @Override
   public void readNBT(NBTTagCompound compound) {
     signDataJson = compound.getString(NBT_KEY);
+    powered = compound.getBoolean(NBT_KEY_POWERED);
     cachedData = null;
     stateDirty = true;
   }
@@ -28,6 +34,7 @@ public class TileEntityDynamicGuideSign extends AbstractTileEntity {
   @Override
   public NBTTagCompound writeNBT(NBTTagCompound compound) {
     compound.setString(NBT_KEY, signDataJson);
+    compound.setBoolean(NBT_KEY_POWERED, powered);
     return compound;
   }
 
@@ -61,6 +68,25 @@ public class TileEntityDynamicGuideSign extends AbstractTileEntity {
 
   public String getSignDataJson() {
     return signDataJson;
+  }
+
+  public boolean isPowered() {
+    return powered;
+  }
+
+  /**
+   * Records the redstone power state and, when it actually changed, pushes it to clients
+   * so redstone-controlled sign lighting updates without a block update.
+   */
+  public void setPowered(boolean powered) {
+    if (this.powered == powered) {
+      return;
+    }
+    this.powered = powered;
+    this.stateDirty = true;
+    if (getWorld() != null) {
+      markDirtySync(getWorld(), getPos(), true);
+    }
   }
 
   public boolean isStateDirty() {
