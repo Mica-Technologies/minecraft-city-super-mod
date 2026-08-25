@@ -154,6 +154,7 @@ public class CsmTabLifeSafety extends CsmTab {
     initTabBlock(BlockFireAlarmFireLiteBG8.class, fmlPreInitializationEvent);
     initTabBlock(BlockFireAlarmGamewellCenturyPull.class, fmlPreInitializationEvent);
     initTabBlock(BlockFireAlarmGenericPullStation.class, fmlPreInitializationEvent);
+    initTabBlock(new BlockFireAlarmSoundIndexStrobeFactory("firealarmgentexcommander3outdoorred", new AxisAlignedBB(0.187500, 0.231250, 0.600000, 0.812500, 1.000000, 1.000000), new float[]{4.56f, 10.03f, 9.6f}, new float[]{11.03f, 15.4f, 11f}, FireAlarmSoundSets.GENTEX_GOS, FireAlarmSoundSets.GENTEX_GOS_NAMES));
     initTabBlock(BlockFireAlarmGentexCommander3Red.class, fmlPreInitializationEvent);
     initTabBlock(BlockFireAlarmGentexCommander3White.class, fmlPreInitializationEvent);
     initTabBlock(new BlockFireAlarmSoundIndexStrobeFactory("firealarmgentexcommander5red", new AxisAlignedBB(0.156250, 0.156250, 0.775000, 0.843750, 0.843750, 1.000000), new float[]{4.74f, 4.74f, 12.4f}, new float[]{11.17f, 8.38f, 13.1f}, FireAlarmSoundSets.GENTEX_GOS, FireAlarmSoundSets.GENTEX_GOS_NAMES));
