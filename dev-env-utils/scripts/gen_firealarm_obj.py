@@ -1240,6 +1240,49 @@ def gentex_indoor_unit(texture, variants):
                                   z_hood=11.5, plate_radius=1.6)
 
 
+#: The Simplex 4903's strobe lens, as the UV rect it occupies on the vertical faceplate. Measured
+#: off the red one and shared, as the L-Series pairs' rects are: the two photographs put it within
+#: a texel of each other.
+SIMPLEX_4903_VERTICAL_LENS = (3.44, 1.06, 12.44, 5.44)
+
+
+def simplex_4903_vertical_unit(texture, variants, model_rect=(3.35, 2.0, 12.65, 16.0),
+                               z_plate=14.0, z_lens=11.0, plate_radius=0.65, shrink=0.40):
+    """The vertical Simplex 4903: a flat plate with a clear strobe lens standing off its top.
+
+    The simplest device in this file, and the one that most nearly justified staying as JSON. What
+    it gains by not being a box is its outline -- a 4903's corners are properly round, and the two
+    stacked cuboids it was drawn as had square ones -- and a lens whose flanks show its own glass
+    instead of a rect of plate smeared down them.
+
+    Its horizontal siblings put the lens at one end of a landscape plate; this is the same
+    appliance turned a quarter turn, so the plate is portrait and the lens sits across the top.
+    """
+    mesh = Mesh()
+    front_map = FrontMap(opaque_bounds(texture), model_rect)
+    contour, centre_uv, _ = fit_rounded_rect_uv(variants, radius=plate_radius, shrink=shrink)
+    build_shell(mesh, contour, centre_uv, front_map, z_plate, 16.0, find_flat_patch(variants, 0.8))
+
+    # The lens's flanks take a flat patch of its own glass rather than build_panel's usual wrap.
+    # Three units is a lot of flank for a lens whose art stops dead at its outline: the rect's
+    # bottom edge IS the line where the clear cover meets the red plate, so sampling a few
+    # hundredths inside it -- which is what the wrap does at the front lip -- ran a smear of plate
+    # red down the underside.
+    lens = panel_from_uv(front_map, SIMPLEX_4903_VERTICAL_LENS, radius=0.45)
+    build_panel(mesh, front_map, lens,
+                [(z_plate, 0.0, 0.0), (z_lens + 0.9, 0.0, 0.0), (z_lens, 0.26, 0.0)],
+                # A small, strictly-chosen patch. This lens is a chrome reflector under clear
+                # plastic and most of its area is deep shadow between facets, so the usual
+                # search settles on something nearly black; asking for the flattest of only
+                # the brightest twelfth finds the clear plastic instead, which is what the
+                # side of one actually looks like.
+                rim_uv=find_glassy_patch(variants, SIMPLEX_4903_VERTICAL_LENS,
+                                         size=0.35, brightest=0.08))
+    xs = [point[0] for point in lens]
+    ys = [point[1] for point in lens]
+    return mesh, (min(xs), min(ys), z_lens), (max(xs), max(ys), z_plate)
+
+
 #: Where a Commander 5's strobe lens sits on its face, as a UV rect to search inside. The face
 #: carries a perforated horn grille as well, which is every bit as rough as the lens, and the FIRE
 #: legends down the outer edges are rough too -- so the window has to fence off both.
@@ -1739,6 +1782,18 @@ def main():
 
     # The black edition is the red plate repainted (recolor_housing.py --from-saturated), so it
     # keeps the red unit's light FIRE legends where the white unit's dark ones would vanish.
+    vertical4903 = ["shared_textures/simplex_4903_vertical_red_horn_strobe",
+                    "shared_textures/simplex_4903_vertical_white_horn_strobe"]
+    mesh, lens_from, lens_to = simplex_4903_vertical_unit(vertical4903[0], vertical4903)
+    reports.append(("simplex_4903_vertical_hornstrobe.obj",
+                    mesh.write(os.path.join(OUT_DIR, "simplex_4903_vertical_hornstrobe.obj"),
+                               "simplex_4903_vertical_hornstrobe",
+                               "csm:blocks/lifesafety/" + vertical4903[0],
+                               "Simplex 4903 vertical horn strobe / speaker strobe"),
+                    (((lens_from[0] + lens_to[0]) / 2, (lens_from[1] + lens_to[1]) / 2),
+                     ((lens_to[0] - lens_from[0]) / 2, (lens_to[1] - lens_from[1]) / 2),
+                     lens_to[2], lens_from[2])))
+
     indoor = ["gentex_commander_3_red_horn_strobe", "gentex_commander_3_white_horn_strobe"]
     mesh, lens_from, lens_to = gentex_indoor_unit(indoor[0], indoor)
     reports.append(("gentex_commander3_hornstrobe.obj",
