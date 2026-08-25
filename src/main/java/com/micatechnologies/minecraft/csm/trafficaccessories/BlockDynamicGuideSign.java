@@ -3,11 +3,14 @@ package com.micatechnologies.minecraft.csm.trafficaccessories;
 import com.micatechnologies.minecraft.csm.Csm;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEW;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
@@ -93,9 +96,40 @@ public class BlockDynamicGuideSign extends AbstractBlockRotatableNSEW
     return BlockRenderLayer.CUTOUT_MIPPED;
   }
 
+  /**
+   * The sign itself has no redstone behavior, but its lighting can be wired: a sign whose
+   * light mode is REDSTONE lights while the block is powered. The power state is cached on
+   * the tile entity (and synced) rather than kept in block meta, which is full with FACING.
+   */
+  @Override
+  public void neighborChanged(IBlockState state, World world, BlockPos pos, Block blockIn,
+      BlockPos fromPos) {
+    super.neighborChanged(state, world, pos, blockIn, fromPos);
+    updatePoweredState(world, pos);
+  }
+
+  @Override
+  public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state,
+      EntityLivingBase placer, ItemStack stack) {
+    super.onBlockPlacedBy(world, pos, state, placer, stack);
+    updatePoweredState(world, pos);
+  }
+
+  private void updatePoweredState(World world, BlockPos pos) {
+    if (world.isRemote) {
+      return;
+    }
+    TileEntity tileEntity = world.getTileEntity(pos);
+    if (tileEntity instanceof TileEntityDynamicGuideSign) {
+      ((TileEntityDynamicGuideSign) tileEntity)
+          .setPowered(world.getRedstonePowerFromNeighbors(pos) > 0);
+    }
+  }
+
+  /** Redstone wire runs up to the sign so its lighting can be switched. */
   @Override
   public boolean getBlockConnectsRedstone(IBlockState state, IBlockAccess access, BlockPos pos,
       EnumFacing facing) {
-    return false;
+    return true;
   }
 }

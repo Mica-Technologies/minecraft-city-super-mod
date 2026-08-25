@@ -23,6 +23,10 @@ public class GuideSignData {
   // Auto-fit: scale the sign's content (text, shields, arrows, spacing, exit tab)
   // uniformly to fill the min-width/min-height box. Absent in older JSON → false.
   private boolean autoFit = false;
+  // Sign lighting. Absent in older JSON -> 0/0, an unlit sign that is switched off, which
+  // is exactly how every sign built before this feature existed rendered.
+  private int lightType = SignLightType.NONE.ordinal();
+  private int lightMode = SignLightMode.OFF.ordinal();
   private List<GuideSignPanel> panels = new ArrayList<>();
 
   // 16 px = 1 block: signs may be up to 30 blocks wide and 15 blocks tall.
@@ -115,6 +119,47 @@ public class GuideSignData {
 
   public void setAutoFit(boolean autoFit) {
     this.autoFit = autoFit;
+  }
+
+  public int getLightTypeOrdinal() {
+    return lightType;
+  }
+
+  public SignLightType getLightType() {
+    return SignLightType.fromOrdinal(lightType);
+  }
+
+  public void setLightType(int lightType) {
+    this.lightType = lightType;
+  }
+
+  public void cycleLightType() {
+    this.lightType = getLightType().next().ordinal();
+  }
+
+  public int getLightModeOrdinal() {
+    return lightMode;
+  }
+
+  public SignLightMode getLightMode() {
+    return SignLightMode.fromOrdinal(lightMode);
+  }
+
+  public void setLightMode(int lightMode) {
+    this.lightMode = lightMode;
+  }
+
+  public void cycleLightMode() {
+    this.lightMode = getLightMode().next().ordinal();
+  }
+
+  /**
+   * True when this sign is fitted with lighting that could be energized: a lighting type
+   * is selected and the mode is not "always off". Whether it is lit RIGHT NOW also
+   * depends on redstone or the time of day, which only the renderer can know.
+   */
+  public boolean hasLighting() {
+    return getLightType() != SignLightType.NONE && getLightMode() != SignLightMode.OFF;
   }
 
   public List<GuideSignPanel> getPanels() {
