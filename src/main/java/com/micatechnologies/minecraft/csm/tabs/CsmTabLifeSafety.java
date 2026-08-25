@@ -134,6 +134,8 @@ public class CsmTabLifeSafety extends CsmTab {
     initTabBlock(new BlockFireAlarmBeaconFactory("firealarmbeaconblue", new AxisAlignedBB(0.187500, 0.187500, 0.500000, 0.812500, 0.812500, 1.000000), new float[]{5.4f, 5.4f, 8f}, new float[]{10.6f, 10.6f, 9f}, new float[]{0.28f, 0.5f, 1.0f}));
     initTabBlock(new BlockFireAlarmBeaconFactory("firealarmbeaconclear", new AxisAlignedBB(0.187500, 0.187500, 0.500000, 0.812500, 0.812500, 1.000000), new float[]{5.4f, 5.4f, 8f}, new float[]{10.6f, 10.6f, 9f}, new float[]{1.0f, 1.0f, 1.0f}));
     initTabBlock(BlockFireAlarmControlPanel.class, fmlPreInitializationEvent);
+    initTabBlock(new BlockFireAlarmSounderStrobeFactory("firealarmest2028atstrobered", null, new AxisAlignedBB(0.187500, 0.087500, 0.675000, 0.812500, 1.000000, 1.000000), new float[]{5.63f, 2.78f, 10.8f}, new float[]{10.55f, 14.38f, 12.6f}));
+    initTabBlock(new BlockFireAlarmSounderStrobeFactory("firealarmest2028atwstrobewhite", null, new AxisAlignedBB(0.187500, 0.087500, 0.675000, 0.812500, 1.000000, 1.000000), new float[]{5.63f, 2.78f, 10.8f}, new float[]{10.55f, 14.38f, 12.6f}));
     initTabBlock(new BlockFireAlarmSounderFactory("firealarmestadaptahorngray", "csm:edwards_adaptahorn_code44", new AxisAlignedBB(0.000000, 0.000000, 0.900000, 1.000000, 1.000000, 1.000000)));
     initTabBlock(new BlockFireAlarmSounderFactory("firealarmestadaptahornred", "csm:edwards_adaptahorn_code44", new AxisAlignedBB(0.000000, 0.000000, 0.900000, 1.000000, 1.000000, 1.000000)));
     initTabBlock(new BlockFireAlarmSounderStrobeFactory("firealarmestgenesisred", "csm:est_genesis", new AxisAlignedBB(0.312500, 0.375000, 0.937500, 0.687500, 1.000000, 1.000000), new float[]{5f, 7f, 14.25f}, new float[]{11f, 9f, 15f}));

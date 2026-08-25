@@ -12,9 +12,16 @@ replaced. Saturated pixels (a red legend) keep their colour, and a rectangle can
 entirely for a lens, whose chrome is near-neutral too and would otherwise be repainted with the
 body around it.
 
+The inverse case is `--from-saturated`: repainting a COLOURED housing neutral, for the white half
+of a pair photographed only in red. It masks on saturation the other way round and writes grey,
+still remapping value rather than replacing it, so the moulding's shading and the shadow under its
+lens survive. The Edwards EST 202-8A-TW is made this way -- its own product shot exists but is a
+different plate, narrower against its height and pierced by a lens window that runs nearly to the
+top edge, and a model shared with the -T cannot land on both.
+
 Usage:
     python recolor_housing.py <source> <output> --range LOW HIGH [--keep u0 v0 u1 v1]
-                              [--legend-boost 1.0]
+                              [--legend-boost 1.0] [--from-saturated]
 
     <source>/<output> are file stems under textures/blocks/lifesafety/, no extension.
     --range is the value band the housing is mapped into, 0-255. White housing sits around 220;
@@ -61,6 +68,9 @@ def main():
                         help="UV rect left untouched, for a lens")
     parser.add_argument("--legend-boost", type=float, default=1.0,
                         help="brighten saturated pixels, for a legend that must read on a dark body")
+    parser.add_argument("--from-saturated", action="store_true",
+                        help="repaint the SATURATED housing to neutral grey, rather than the "
+                             "near-neutral housing to a new value band")
     args = parser.parse_args()
 
     data = np.asarray(Image.open(os.path.join(TEX_DIR, *args.source.split("/")) + ".png")
@@ -73,8 +83,12 @@ def main():
     low = colour.min(2)
     saturation = np.where(high > 1e-6, (high - low) / np.maximum(high, 1.0), 0.0)
 
-    # Housing: near-neutral, opaque, and not inside the fenced-off lens.
-    weight = np.clip((0.26 - saturation) / 0.14, 0.0, 1.0) * (alpha > 200)
+    # Housing: opaque, not inside the fenced-off lens, and on the right side of the saturation
+    # line -- near-neutral normally, coloured under --from-saturated.
+    if args.from_saturated:
+        weight = np.clip((saturation - 0.24) / 0.14, 0.0, 1.0) * (alpha > 200)
+    else:
+        weight = np.clip((0.26 - saturation) / 0.14, 0.0, 1.0) * (alpha > 200)
     if args.keep:
         # The fence is the ELLIPSE inscribed in the rect, not the rect. A round lens fenced off
         # squarely leaves its four corners the old housing colour -- a white square framing the
@@ -94,9 +108,16 @@ def main():
     target_low, target_high = args.range
     span = max(1e-6, source_high - source_low)
     scaled = target_low + (high - source_low) / span * (target_high - target_low)
-    factor = np.where(high > 1e-6, np.clip(scaled, 0.0, 255.0) / np.maximum(high, 1e-6), 1.0)
-    factor = 1.0 + weight * (factor - 1.0)
-    out = colour * factor[..., None]
+    if args.from_saturated:
+        # Toward grey, not toward a scaled version of the same hue: a red plate scaled down the
+        # value axis is still a red plate. The target is neutral at the remapped value, mixed in
+        # by the same weight so the mask's feathered edge stays feathered.
+        grey = np.clip(scaled, 0.0, 255.0)[..., None] * np.ones(3)
+        out = colour * (1.0 - weight[..., None]) + grey * weight[..., None]
+    else:
+        factor = np.where(high > 1e-6, np.clip(scaled, 0.0, 255.0) / np.maximum(high, 1e-6), 1.0)
+        factor = 1.0 + weight * (factor - 1.0)
+        out = colour * factor[..., None]
 
     if args.legend_boost != 1.0:
         legend = np.clip((saturation - 0.30) / 0.15, 0.0, 1.0) * (alpha > 200)

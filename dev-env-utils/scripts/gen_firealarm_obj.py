@@ -54,7 +54,7 @@ import os
 import sys
 
 import numpy as np
-from PIL import Image
+from PIL import Image, ImageFilter
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 # How much of the E7070 module's depth is clear lens cap. Imported rather than repeated so the
@@ -1099,6 +1099,159 @@ def e50_unit(texture, variants):
     return mesh, (min(xs), min(ys), 12.8), (max(xs), max(ys), 14.0)
 
 
+def measure_moulding(texture, inset=(0.06, 0.05), contrast=45, occupancy=0.25, shrink=0.0):
+    """Find a raised moulding on an enclosure face by CONTRAST, and return its UV rect.
+
+    measure_xenon_lens and measure_chrome_lens both separate the part from the plate by colour --
+    "not red, and bright" -- which only works on the red half of a pair. The Edwards 202-8A is
+    sold in a red version and a grey one, and on the grey one the plate, the moulding's bezel and
+    the chrome reflector behind the lens are all the same lightness; nothing in colour space tells
+    them apart. What does is surface: a moulded plate is smooth, and a prismatic chrome reflector
+    under a clear cover is emphatically not. So this looks for local contrast -- the spread between
+    the lightest and darkest pixel in a small window -- and takes the bounding box of the region
+    that has it, which finds the same moulding on both colours.
+
+    `inset` skips a margin inside the silhouette, where a photographed plate's own bevel catches a
+    highlight against a shadow and reads as contrast. `occupancy` requires a row or column to be
+    mostly inside the moulding before it counts, so a screw head or a stamped notice off to one
+    side cannot stretch the box. `shrink` pulls the result in afterwards: the detector stops on the
+    drop shadow the moulding casts on the plate, which sits a little outside the moulding itself.
+    """
+    image = Image.open(os.path.join(TEX_DIR, texture + ".png")).convert("RGBA")
+    alpha = np.asarray(image)[..., 3]
+    scale = alpha.shape[1] / 16.0
+    grey = image.convert("L")
+    spread = (np.asarray(grey.filter(ImageFilter.MaxFilter(5)), dtype=float)
+              - np.asarray(grey.filter(ImageFilter.MinFilter(5)), dtype=float))
+
+    rows, cols = np.nonzero(alpha > 128)
+    x0, x1, y0, y1 = cols.min(), cols.max(), rows.min(), rows.max()
+    width, height = x1 - x0 + 1, y1 - y0 + 1
+    region = np.zeros(alpha.shape, dtype=bool)
+    region[y0 + int(inset[1] * height):y1 - int(inset[1] * height),
+           x0 + int(inset[0] * width):x1 - int(inset[0] * width)] = True
+    rough = region & (alpha > 128) & (spread > contrast)
+
+    columns = np.nonzero(rough.sum(0) > occupancy * height)[0]
+    lines = np.nonzero(rough.sum(1) > occupancy * width)[0]
+    if len(columns) == 0 or len(lines) == 0:
+        raise ValueError("no raised moulding found in %s" % texture)
+    return (columns.min() / scale + shrink, lines.min() / scale + shrink,
+            (columns.max() + 1) / scale - shrink, (lines.max() + 1) / scale - shrink)
+
+
+def find_glassy_patch(textures, lens_uv, size=0.5, brightest=0.75):
+    """A flat and BRIGHT patch of a clear lens cover, for the flanks of a deep one.
+
+    build_panel's default wrap -- sampling the part's own art a little inside its own outline --
+    is right for a shallow lens, where the flank is barely a lip and what it should show is the
+    bright bezel the art already has there. This cover is nearly two units deep, and the wrap hands
+    that much flank a slab of the reflector behind the glass: on the -TW's photograph that is very
+    nearly black, and it renders as the lens smeared back over the housing behind it.
+
+    What a real clear cover's side actually looks like is in the side profiles -- bright
+    translucent plastic, the reflector only dimly behind it. So the flanks take a flat patch of the
+    lens's own art, like the ET24's frosted one, except that flattest alone would happily settle on
+    the dark chrome, which is every bit as smooth as the glass. Candidates are ranked by roughness
+    only after discarding all but the brightest `brightest` fraction of them. Scored across every
+    texture the model wears, taking each candidate's worst case, since one model serves both
+    colours and a patch has to be glass in each.
+    """
+    images = [np.asarray(Image.open(os.path.join(TEX_DIR, name + ".png")).convert("RGBA"),
+                         dtype=float) for name in textures]
+    scale = images[0].shape[1] / 16.0
+    window = max(1, int(size * scale))
+    candidates = []
+    for v in np.arange(lens_uv[1], lens_uv[3] - size, 0.1):
+        for u in np.arange(lens_uv[0], lens_uv[2] - size, 0.1):
+            brightness, roughness, usable = 255.0, 0.0, True
+            for image in images:
+                block = image[int(v * scale):int(v * scale) + window,
+                              int(u * scale):int(u * scale) + window]
+                if block.size == 0 or block[..., 3].min() < 250:
+                    usable = False
+                    break
+                pixels = block[..., :3].reshape(-1, 3)
+                brightness = min(brightness, float(pixels.mean()))
+                roughness = max(roughness, float(pixels.std(0).mean()))
+            if usable:
+                candidates.append((brightness, roughness, float(u), float(v)))
+    if not candidates:
+        raise ValueError("no patch of lens found in %s" % (textures,))
+    cut = sorted(c[0] for c in candidates)[int((1.0 - brightest) * (len(candidates) - 1))]
+    bright = [c for c in candidates if c[0] >= cut] or candidates
+    _, _, u, v = min(bright, key=lambda c: c[1])
+    return (u + 0.05, v + 0.05, u + size - 0.05, v + size - 0.05)
+
+
+#: Width of the flank strip in edwards_est_202_8a_flank.png, in UV units. crop_device_flank.py
+#: wrote it at that width; the model has to sample exactly it or the FIRE legend stretches.
+EDWARDS_FLANK_STRIP = 2.9
+#: The plain-moulding patch in the same atlas, pulled a hair inside its rect.
+EDWARDS_FLANK_PATCH = (3.6, 0.1, 7.4, 3.9)
+
+
+def edwards_202_unit(texture, variants, model_rect=(3.0, 1.4, 13.0, 16.0), z_plate=15.4,
+                     z_body=12.6,
+                     z_lens=10.8, moulding_shrink=0.30, bezel=0.34, plate_radius=0.55):
+    """The Edwards EST 202-8A wall strobe: a thin plate carrying a deep body under a clear lens.
+
+    This one is mostly about depth. Its siblings in this file are two-unit-thick appliances whose
+    lens stands a unit proud; a 202-8A is a stack -- mounting plate, then a grey moulded body a
+    third of the plate's width deep, then a big clear prismatic cover on the front of that. The
+    side profile puts the whole protrusion at a shade under half the plate's width, so it is built
+    as three parts rather than a shell with a lens on it.
+
+One model serves both colours, because the -TW's texture is the -T's with its plate repainted
+    (recolor_housing.py --from-saturated) rather than a second photograph. Its own product shot
+    exists, but it is a different plate -- narrower against its height, and pierced by a lens window
+    that runs nearly to the top edge where the -T leaves a margin. Built to its own art the -TW came
+    out with the strobe stretched to the plate's edge and no bezel above it, and no single set of
+    baked UVs can sit on both. Repainting the good photograph gets one geometry, one model, and a
+    pair that is the same size on a wall the way the real pair is.
+
+    The body's flanks are the reason it needs a second material. A real 202-8A carries FIRE down
+    each side of that grey body in rotated red capitals, and the plate photograph -- taken straight
+    on -- contains none of it. crop_device_flank.py lifts the band out of a side profile instead.
+    The -T and the -TW share the moulding exactly, only the plate behind it changing colour, so
+    unlike the E50's inverting legend one flank texture serves both blocks.
+    """
+    mesh = Mesh()
+    front_map = FrontMap(opaque_bounds(texture), model_rect)
+
+    # The plate: flat sides, rounded corners, and thin. Its own radius is passed rather than
+    # measured -- these photographs carry a soft cut edge, and the area estimate reads that
+    # missing sliver all the way round as though it were corner.
+    contour, centre_uv, _ = fit_rounded_rect_uv(variants, radius=plate_radius)
+    build_shell(mesh, contour, centre_uv, front_map, z_plate, 16.0, find_flat_patch(variants, 0.8))
+
+    # The body, extruded forward off the plate. Its front cap wears the plate photograph's own
+    # lens region, so the grey bezel ring around the clear cover is real art rather than a guess.
+    body_uv = measure_moulding(texture, shrink=moulding_shrink)
+    body_centre = ((body_uv[0] + body_uv[2]) / 2.0, (body_uv[1] + body_uv[3]) / 2.0)
+    build_shell(mesh, rounded_rect(*body_uv, radius=0.45, per_corner=5), body_centre, front_map,
+                z_body, z_plate, EDWARDS_FLANK_PATCH, back_cap=False,
+                wall_material=FLANK_MATERIAL,
+                # East takes the strip with its front edge at the strip's far end. Texture u runs
+                # opposite to model x on a north-facing front, so handing both flanks the same
+                # sense mirrors the legend on one of them -- see the E50, which has the same
+                # problem for the same reason.
+                side_strips={"east": (EDWARDS_FLANK_STRIP, 0.0),
+                             "west": (0.0, EDWARDS_FLANK_STRIP)})
+
+    # The clear cover, inset from the body by the width of the bezel holding it. Its flanks get a
+    # flat patch of its own bright glass rather than the usual wrap -- see find_glassy_patch.
+    lens_uv = (body_uv[0] + bezel, body_uv[1] + bezel, body_uv[2] - bezel, body_uv[3] - bezel)
+    lens = panel_from_uv(front_map, lens_uv, radius=0.40)
+    depth = z_body - z_lens
+    build_panel(mesh, front_map, lens,
+                [(z_body, 0.0, 0.0), (z_body - depth * 0.65, 0.0, 0.0), (z_lens, 0.30, 0.0)],
+                rim_uv=find_glassy_patch(variants, lens_uv))
+    xs = [p[0] for p in lens]
+    ys = [p[1] for p in lens]
+    return mesh, (min(xs), min(ys), z_lens), (max(xs), max(ys), z_body)
+
+
 def truealert_unit(texture, variants):
     """The Simplex TrueAlert horn strobe and speaker strobe, which share one enclosure.
 
@@ -1369,6 +1522,22 @@ def main():
                                "Wheelock E50 speaker strobe",
                                extra_materials={FLANK_MATERIAL:
                                                 "csm:blocks/lifesafety/wheelock_e50_flank_red"}),
+                    (((lens_from[0] + lens_to[0]) / 2, (lens_from[1] + lens_to[1]) / 2),
+                     ((lens_to[0] - lens_from[0]) / 2, (lens_to[1] - lens_from[1]) / 2),
+                     lens_to[2], lens_from[2])))
+
+    # The Edwards 202-8A pair, on one model: see edwards_202_unit for why the -TW is a repaint of
+    # the -T's plate rather than its own photograph.
+    edwards = ["edwards_est_202_8a_t_red", "edwards_est_202_8a_tw_white"]
+    mesh, lens_from, lens_to = edwards_202_unit(edwards[0], edwards)
+    reports.append(("edwards_est_202_8a_strobe.obj",
+                    mesh.write(os.path.join(OUT_DIR, "edwards_est_202_8a_strobe.obj"),
+                               "edwards_est_202_8a_strobe",
+                               "csm:blocks/lifesafety/" + edwards[0],
+                               "Edwards EST 202-8A wall strobe",
+                               extra_materials={FLANK_MATERIAL:
+                                                "csm:blocks/lifesafety/"
+                                                "edwards_est_202_8a_flank"}),
                     (((lens_from[0] + lens_to[0]) / 2, (lens_from[1] + lens_to[1]) / 2),
                      ((lens_to[0] - lens_from[0]) / 2, (lens_to[1] - lens_from[1]) / 2),
                      lens_to[2], lens_from[2])))
