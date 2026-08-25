@@ -974,11 +974,9 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
       } else if (blockAtPos instanceof AbstractBlockFireAlarmSounder) {
         AbstractBlockFireAlarmSounder sounder = (AbstractBlockFireAlarmSounder) blockAtPos;
         String soundName;
-        if (blockAtPos instanceof BlockFireAlarmGentexCommander3Red) {
-          soundName = ((BlockFireAlarmGentexCommander3Red) blockAtPos)
-              .getSoundResourceName(world, bp, blockStateAtPos);
-        } else if (blockAtPos instanceof BlockFireAlarmGentexCommander3White) {
-          soundName = ((BlockFireAlarmGentexCommander3White) blockAtPos)
+        if (blockAtPos instanceof ISoundIndexBlock) {
+          // Its tone is stored per placed block rather than in metadata, so it takes the world.
+          soundName = ((ISoundIndexBlock) blockAtPos)
               .getSoundResourceName(world, bp, blockStateAtPos);
         } else {
           soundName = sounder.getSoundResourceName(blockStateAtPos);

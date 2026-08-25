@@ -21,7 +21,7 @@ import net.minecraft.world.World;
  */
 
 public class BlockFireAlarmGentexCommander3Red extends AbstractBlockFireAlarmSounder
-    implements ICsmTileEntityProvider, IStrobeBlock {
+    implements ICsmTileEntityProvider, IStrobeBlock, ISoundIndexBlock {
 
   @Override
   public float[] getStrobeLensFrom() {
@@ -33,21 +33,6 @@ public class BlockFireAlarmGentexCommander3Red extends AbstractBlockFireAlarmSou
     return new float[]{11f, 14.6f, 15f};
   }
 
-  private static final String[] SOUND_RESOURCE_NAMES = {
-      "csm:gentex_gos_code3",
-      "csm:gentex_gos_code3_chime",
-      "csm:gentex_gos_whoop",
-      "csm:gentex_gos_continuous_chime",
-      "csm:broken_gentex_gos"
-  };
-  private static final String[] SOUND_DISPLAY_NAMES = {
-      "Code 3 Horn",
-      "Code 3 Chime",
-      "Whoop",
-      "Continuous Chime",
-      "Broken GOS"
-  };
-
   @Override
   public String getBlockRegistryName() {
     return "firealarmgentexcommander3red";
@@ -55,21 +40,22 @@ public class BlockFireAlarmGentexCommander3Red extends AbstractBlockFireAlarmSou
 
   @Override
   public String getSoundResourceName(IBlockState blockState) {
-    return SOUND_RESOURCE_NAMES[0];
+    return FireAlarmSoundSets.GENTEX_GOS[0];
   }
 
   /**
    * Gets the sound resource name using the tile entity's stored sound index.
    */
+  @Override
   public String getSoundResourceName(World world, BlockPos pos, IBlockState blockState) {
     TileEntity te = world.getTileEntity(pos);
     if (te instanceof TileEntityFireAlarmSoundIndex) {
       int idx = ((TileEntityFireAlarmSoundIndex) te).getSoundIndex();
-      if (idx >= 0 && idx < SOUND_RESOURCE_NAMES.length) {
-        return SOUND_RESOURCE_NAMES[idx];
+      if (idx >= 0 && idx < FireAlarmSoundSets.GENTEX_GOS.length) {
+        return FireAlarmSoundSets.GENTEX_GOS[idx];
       }
     }
-    return SOUND_RESOURCE_NAMES[0];
+    return FireAlarmSoundSets.GENTEX_GOS[0];
   }
 
       /**
@@ -96,11 +82,11 @@ public class BlockFireAlarmGentexCommander3Red extends AbstractBlockFireAlarmSou
       TileEntity te = worldIn.getTileEntity(pos);
       if (te instanceof TileEntityFireAlarmSoundIndex) {
         TileEntityFireAlarmSoundIndex soundTE = (TileEntityFireAlarmSoundIndex) te;
-        soundTE.cycleSoundIndex(SOUND_RESOURCE_NAMES.length);
+        soundTE.cycleSoundIndex(FireAlarmSoundSets.GENTEX_GOS.length);
         if (!worldIn.isRemote) {
           int newIdx = soundTE.getSoundIndex();
           playerIn.sendMessage(new TextComponentString(
-              "Alarm sound changed to: " + SOUND_DISPLAY_NAMES[newIdx]));
+              "Alarm sound changed to: " + FireAlarmSoundSets.GENTEX_GOS_NAMES[newIdx]));
         }
       }
       return true;

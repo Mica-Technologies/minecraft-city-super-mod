@@ -583,6 +583,67 @@ def build_panel(mesh, front_map, contour, z_profile, rim_uv=None):
                       front_map.to_uv(contour[j]), outward=(0.0, 0.0, -1.0))
 
 
+def build_dish(mesh, front_map, contour, z_profile, back_uv=None):
+    """A housing that TAPERS toward its face -- a truncated dome, wide at the wall and narrower
+    where its own front sits.
+
+    build_shell extrudes an outline straight back, which is what a flat-flanked moulding is. A
+    Gentex Commander 5 is not one: it is a rounded pillow whose flanks slope in from the mounting
+    surface to a recessed face, and its FIRE legends live on that slope. Nothing here needs a flat
+    patch for the sides, because a straight-on photograph of the appliance already contains the
+    slope -- foreshortened into a ring around the perimeter. So every ring takes its UVs from the
+    very contour its geometry comes from, which makes the mapping the identity and lands the
+    legends back on the slope they were photographed on.
+
+    `contour` is in MODEL space and `z_profile` is [(z, inset), ...] running from the mounting
+    surface forward, the last entry capped. `back_uv` is a flat patch for the hidden back; without
+    it the back is left open, which is right when something else caps it.
+    """
+    centre = (sum(p[0] for p in contour) / len(contour),
+              sum(p[1] for p in contour) / len(contour))
+
+    def at(point, inset):
+        dx, dy = point[0] - centre[0], point[1] - centre[1]
+        length = math.hypot(dx, dy)
+        if length < 1e-6 or inset <= 0.0:
+            return point
+        factor = max(0.0, length - inset) / length
+        return (centre[0] + dx * factor, centre[1] + dy * factor)
+
+    count = len(contour)
+    for k in range(len(z_profile) - 1):
+        (z_a, inset_a), (z_b, inset_b) = z_profile[k], z_profile[k + 1]
+        for i in range(count):
+            j = (i + 1) % count
+            pa, pb = at(contour[i], inset_a), at(contour[j], inset_a)
+            pc, pd = at(contour[j], inset_b), at(contour[i], inset_b)
+            outward = (pa[0] + pb[0] - 2 * centre[0], pa[1] + pb[1] - 2 * centre[1],
+                       -(inset_b - inset_a))
+            mesh.quad((pa[0], pa[1], z_a), (pb[0], pb[1], z_a),
+                      (pc[0], pc[1], z_b), (pd[0], pd[1], z_b),
+                      front_map.to_uv(pa), front_map.to_uv(pb),
+                      front_map.to_uv(pc), front_map.to_uv(pd), outward=outward)
+
+    z_front, inset_front = z_profile[-1]
+    for i in range(count):
+        j = (i + 1) % count
+        pa, pb = at(contour[i], inset_front), at(contour[j], inset_front)
+        mesh.triangle((centre[0], centre[1], z_front), (pa[0], pa[1], z_front),
+                      (pb[0], pb[1], z_front),
+                      front_map.to_uv((centre[0], centre[1])), front_map.to_uv(pa),
+                      front_map.to_uv(pb), outward=(0.0, 0.0, -1.0))
+
+    if back_uv:
+        z_back, inset_back = z_profile[0]
+        bu0, bv0, bu1, bv1 = back_uv
+        for i in range(count):
+            j = (i + 1) % count
+            pa, pb = at(contour[i], inset_back), at(contour[j], inset_back)
+            mesh.triangle((centre[0], centre[1], z_back), (pa[0], pa[1], z_back),
+                          (pb[0], pb[1], z_back), (bu0, bv0), (bu1, bv0), (bu1, bv1),
+                          outward=(0.0, 0.0, 1.0))
+
+
 def build_dome(mesh, centre, radius, z_base, z_tip, uv_centre, uv_radius,
                segments=RING_SEGMENTS, profile=None):
     """A shallow round lens dome, UV'd radially from the circle the lens occupies in the texture.
@@ -1099,7 +1160,66 @@ def e50_unit(texture, variants):
     return mesh, (min(xs), min(ys), 12.8), (max(xs), max(ys), 14.0)
 
 
-def measure_moulding(texture, inset=(0.06, 0.05), contrast=45, occupancy=0.25, shrink=0.0):
+#: Where a Commander 5's strobe lens sits on its face, as a UV rect to search inside. The face
+#: carries a perforated horn grille as well, which is every bit as rough as the lens, and the FIRE
+#: legends down the outer edges are rough too -- so the window has to fence off both.
+GENTEX_C5_LENS_WINDOW = (2.8, 7.0, 13.2, 13.8)
+
+#: How the housing's slope runs, as (depth from the mounting surface, inset) pairs. Read off the
+#: ceiling-mount profiles: the pillow rolls over slowly at the wall and straightens as it goes,
+#: reaching a face about two thirds the width of the plate.
+GENTEX_C5_TAPER = [(0.00, 0.00), (0.22, 0.18), (0.50, 0.75), (0.78, 1.45), (1.00, 2.05)]
+
+
+def gentex_commander5_unit(texture, variants, model_rect=(2.5, 2.5, 13.5, 13.5),
+                           z_back=16.0, z_face=13.1, lens_depth=0.7, plate_radius=2.8,
+                           shrink=0.50):
+    """The Gentex Commander 5 horn strobe: a rounded pillow with a recessed face.
+
+    Universal mount -- the same appliance goes on a wall or a ceiling -- which costs nothing here,
+    since NSEWUD rotation already turns the whole model to face out of whatever it is stuck to.
+
+    It is pulled shallower than the ceiling-mount profiles measure. At the real appliance's ratio
+    an 11-wide unit wants four and a half units of depth, and on a wall in game that reads as a
+    box bolted to it rather than an appliance; a third of its width sits better beside the flat
+    plates it shares a corridor with, and the taper carries the bulk it loses.
+
+    The shape is a taper rather than an extrusion, so it needs build_dish rather than build_shell:
+    the housing is widest where it meets the mounting surface and narrows to a face about two
+    thirds of that, and the FIRE legends live on the slope between the two. Its front cap lands on
+    the recessed grey module -- horn grille above, LED lens below -- because the identity mapping
+    puts the middle of the photograph on the middle of the model.
+    """
+    mesh = Mesh()
+    front_map = FrontMap(opaque_bounds(texture), model_rect)
+    # A deeper shrink than the default. The outline's job here is also to say where the art
+    # STARTS, and a photograph's cut edge carries a couple of texels of shadow that the
+    # default 0.2 leaves the outermost ring sitting on -- a dark fringe all round the housing
+    # where it meets the wall, and Minecraft's mipmapping widens it.
+    contour_uv, centre_uv, _ = fit_rounded_rect_uv(variants, radius=plate_radius,
+                                                   shrink=shrink)
+    contour = [front_map.to_model(uv) for uv in contour_uv]
+    depth = z_back - z_face
+    build_dish(mesh, front_map, contour,
+               [(z_back - depth * where, inset) for where, inset in GENTEX_C5_TAPER],
+               back_uv=find_flat_patch(variants, 0.8))
+
+    # The lens stands proud of the face. It is shallow enough that wrapping its own art round its
+    # sides is right -- what shows there is the clear cover's edge, which is what the art has just
+    # inside its outline.
+    lens = panel_from_uv(front_map,
+                         measure_moulding(texture, window=GENTEX_C5_LENS_WINDOW, occupancy=0.4),
+                         radius=0.35)
+    build_panel(mesh, front_map, lens,
+                [(z_face, 0.0, 0.28), (z_face - lens_depth * 0.7, 0.0, 0.12),
+                 (z_face - lens_depth, 0.18, 0.03)])
+    xs = [p[0] for p in lens]
+    ys = [p[1] for p in lens]
+    return mesh, (min(xs), min(ys), z_face - lens_depth), (max(xs), max(ys), z_face)
+
+
+def measure_moulding(texture, inset=(0.06, 0.05), contrast=45, occupancy=0.25, shrink=0.0,
+                     window=None):
     """Find a raised moulding on an enclosure face by CONTRAST, and return its UV rect.
 
     measure_xenon_lens and measure_chrome_lens both separate the part from the plate by colour --
@@ -1116,6 +1236,8 @@ def measure_moulding(texture, inset=(0.06, 0.05), contrast=45, occupancy=0.25, s
     mostly inside the moulding before it counts, so a screw head or a stamped notice off to one
     side cannot stretch the box. `shrink` pulls the result in afterwards: the detector stops on the
     drop shadow the moulding casts on the plate, which sits a little outside the moulding itself.
+    `window` is a UV rect to search inside, for a face carrying more than one rough thing: a
+    Commander 5 has a perforated horn grille above its lens, and both are as rough as each other.
     """
     image = Image.open(os.path.join(TEX_DIR, texture + ".png")).convert("RGBA")
     alpha = np.asarray(image)[..., 3]
@@ -1130,10 +1252,19 @@ def measure_moulding(texture, inset=(0.06, 0.05), contrast=45, occupancy=0.25, s
     region = np.zeros(alpha.shape, dtype=bool)
     region[y0 + int(inset[1] * height):y1 - int(inset[1] * height),
            x0 + int(inset[0] * width):x1 - int(inset[0] * width)] = True
+    if window:
+        fence = np.zeros(alpha.shape, dtype=bool)
+        fence[int(window[1] * scale):int(window[3] * scale),
+              int(window[0] * scale):int(window[2] * scale)] = True
+        region &= fence
     rough = region & (alpha > 128) & (spread > contrast)
 
-    columns = np.nonzero(rough.sum(0) > occupancy * height)[0]
-    lines = np.nonzero(rough.sum(1) > occupancy * width)[0]
+    # Occupancy is measured against the SEARCH region, not the whole silhouette: inside a window
+    # only a few units tall, a row of the lens covers all of it and a fraction of the plate's
+    # height would never be reached.
+    span_y, span_x = max(1, region.sum(0).max()), max(1, region.sum(1).max())
+    columns = np.nonzero(rough.sum(0) > occupancy * span_y)[0]
+    lines = np.nonzero(rough.sum(1) > occupancy * span_x)[0]
     if len(columns) == 0 or len(lines) == 0:
         raise ValueError("no raised moulding found in %s" % texture)
     return (columns.min() / scale + shrink, lines.min() / scale + shrink,
@@ -1522,6 +1653,20 @@ def main():
                                "Wheelock E50 speaker strobe",
                                extra_materials={FLANK_MATERIAL:
                                                 "csm:blocks/lifesafety/wheelock_e50_flank_red"}),
+                    (((lens_from[0] + lens_to[0]) / 2, (lens_from[1] + lens_to[1]) / 2),
+                     ((lens_to[0] - lens_from[0]) / 2, (lens_to[1] - lens_from[1]) / 2),
+                     lens_to[2], lens_from[2])))
+
+    # The black edition is the red plate repainted (recolor_housing.py --from-saturated), so it
+    # keeps the red unit's light FIRE legends where the white unit's dark ones would vanish.
+    gentex5 = ["gentex_commander_5_red_horn_strobe", "gentex_commander_5_white_horn_strobe",
+               "gentex_commander_5_black_horn_strobe"]
+    mesh, lens_from, lens_to = gentex_commander5_unit(gentex5[0], gentex5)
+    reports.append(("gentex_commander5_hornstrobe.obj",
+                    mesh.write(os.path.join(OUT_DIR, "gentex_commander5_hornstrobe.obj"),
+                               "gentex_commander5_hornstrobe",
+                               "csm:blocks/lifesafety/" + gentex5[0],
+                               "Gentex Commander 5 horn strobe"),
                     (((lens_from[0] + lens_to[0]) / 2, (lens_from[1] + lens_to[1]) / 2),
                      ((lens_to[0] - lens_from[0]) / 2, (lens_to[1] - lens_from[1]) / 2),
                      lens_to[2], lens_from[2])))
