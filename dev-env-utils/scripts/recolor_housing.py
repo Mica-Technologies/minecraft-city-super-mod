@@ -66,6 +66,10 @@ def main():
     parser.add_argument("--keep", nargs=4, type=float, default=None,
                         metavar=("U0", "V0", "U1", "V1"),
                         help="UV rect left untouched, for a lens")
+    parser.add_argument("--keep-shape", choices=("ellipse", "rect"), default="ellipse",
+                        help="whether --keep fences the ellipse inscribed in the rect, or the "
+                             "rect itself; a round lens wants the ellipse, a rectangular one "
+                             "wants the rect")
     parser.add_argument("--legend-boost", type=float, default=1.0,
                         help="brighten saturated pixels, for a legend that must read on a dark body")
     parser.add_argument("--from-saturated", action="store_true",
@@ -90,14 +94,20 @@ def main():
     else:
         weight = np.clip((0.26 - saturation) / 0.14, 0.0, 1.0) * (alpha > 200)
     if args.keep:
-        # The fence is the ELLIPSE inscribed in the rect, not the rect. A round lens fenced off
-        # squarely leaves its four corners the old housing colour -- a white square framing the
-        # lens on a body that has gone black. Feathered by a pixel so the join is not a hard step.
+        # For a ROUND lens the fence is the ellipse inscribed in the rect, not the rect: fenced off
+        # squarely it leaves its four corners the old housing colour -- a white square framing the
+        # lens on a body that has gone black. A rectangular lens wants the rect itself, and gets it
+        # with --keep-shape rect. Either way the edge is feathered so the join is not a hard step.
         u0, v0, u1, v1 = args.keep
         centre_u, centre_v = (u0 + u1) / 2.0 * scale, (v0 + v1) / 2.0 * scale
         radius_u, radius_v = max(1e-6, (u1 - u0) / 2.0 * scale), max(1e-6, (v1 - v0) / 2.0 * scale)
         yy, xx = np.mgrid[0:height, 0:width]
-        distance = np.sqrt(((xx - centre_u) / radius_u) ** 2 + ((yy - centre_v) / radius_v) ** 2)
+        if args.keep_shape == "rect":
+            distance = np.maximum(np.abs(xx - centre_u) / radius_u,
+                                  np.abs(yy - centre_v) / radius_v)
+        else:
+            distance = np.sqrt(((xx - centre_u) / radius_u) ** 2
+                               + ((yy - centre_v) / radius_v) ** 2)
         weight *= np.clip((distance - 1.0) / 0.06, 0.0, 1.0)
 
     lit = high[weight > 0.5]
