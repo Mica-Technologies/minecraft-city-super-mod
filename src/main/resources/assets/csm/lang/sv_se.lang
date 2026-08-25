@@ -1,4 +1,4 @@
-csm.firealarmcontrolpanel.note=Högerklicka för att stoppa larmet, smyg+högerklicka för att byta ljud
+csm.firealarmcontrolpanel.note=Högerklicka för att öppna panelen
 csm.highvoltage=Högspänning!
 csm.signalcontroller=McCain Modell MC2000
 csm.signalcontroller.timing.allred=  Helröd: %ss

@@ -19,6 +19,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.common.MinecraftForge;
@@ -52,6 +53,12 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
   private static final String legacyAudibleSilenceKey = "audibleSilence";
   private static final String glitchyKey = "gl";
   private static final String legacyGlitchyKey = "glitchy";
+  private static final String acknowledgedKey = "akd";
+  private static final String drillKey = "drl";
+  private static final String alarmOriginPosKey = "aoP";
+  private static final String alarmOriginNameKey = "aoN";
+  /** Initiating devices that report to this panel, as a flat IntArray of x, y, z triples. */
+  private static final String initiatingDevicesKey = "init";
   private static final String[] SOUND_RESOURCE_NAMES = {"csm:svenew",
       "csm:sveold",
       "csm:simplex_voice_evac_old_alt",
@@ -103,6 +110,11 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
   private boolean alarmAnnounced;
   private boolean audibleSilence;
   private boolean glitchy;
+  private boolean acknowledged;
+  private boolean drill;
+  private BlockPos alarmOriginPos;
+  private String alarmOriginName = "";
+  private final ArrayList<BlockPos> initiatingDevices = new ArrayList<>();
   private boolean alarmWasActive = false;
   private int pruneTickCounter = 0;
 
@@ -127,6 +139,18 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
     alarmAnnounced = readBool(compound, alarmAnnouncedKey, legacyAlarmAnnouncedKey);
     audibleSilence = readBool(compound, audibleSilenceKey, legacyAudibleSilenceKey);
     glitchy = readBool(compound, glitchyKey, legacyGlitchyKey);
+    acknowledged = compound.getBoolean(acknowledgedKey);
+    drill = compound.getBoolean(drillKey);
+
+    int[] origin = compound.getIntArray(alarmOriginPosKey);
+    alarmOriginPos = origin.length == 3 ? new BlockPos(origin[0], origin[1], origin[2]) : null;
+    alarmOriginName = compound.getString(alarmOriginNameKey);
+
+    initiatingDevices.clear();
+    int[] inits = compound.getIntArray(initiatingDevicesKey);
+    for (int i = 0; i + 2 < inits.length; i += 3) {
+      initiatingDevices.add(new BlockPos(inits[i], inits[i + 1], inits[i + 2]));
+    }
 
     connectedAppliances.clear();
     String appliancesBlob = null;
@@ -269,6 +293,23 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
     compound.setBoolean(alarmAnnouncedKey, alarmAnnounced);
     compound.setBoolean(audibleSilenceKey, audibleSilence);
     compound.setBoolean(glitchyKey, glitchy);
+    compound.setBoolean(acknowledgedKey, acknowledged);
+    compound.setBoolean(drillKey, drill);
+    if (alarmOriginPos != null) {
+      compound.setIntArray(alarmOriginPosKey, new int[] {alarmOriginPos.getX(),
+          alarmOriginPos.getY(), alarmOriginPos.getZ()});
+      compound.setString(alarmOriginNameKey, alarmOriginName);
+    }
+    if (!initiatingDevices.isEmpty()) {
+      int[] inits = new int[initiatingDevices.size() * 3];
+      for (int i = 0; i < initiatingDevices.size(); i++) {
+        BlockPos bp = initiatingDevices.get(i);
+        inits[i * 3] = bp.getX();
+        inits[i * 3 + 1] = bp.getY();
+        inits[i * 3 + 2] = bp.getZ();
+      }
+      compound.setIntArray(initiatingDevicesKey, inits);
+    }
 
     StringBuilder connectedAppliancesString = new StringBuilder();
     for (BlockPos bp : connectedAppliances) {
@@ -328,8 +369,25 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
     if (!alarmState) {
       audibleSilence = false;
     }
+    // A fresh alarm arrives unacknowledged, so the panel's FIRE ALARM lamp flashes until someone
+    // presses ACK. A reset clears both the acknowledgement and any drill the reset ended.
+    if (!wasActive && alarmState) {
+      acknowledged = false;
+    } else if (!alarmState) {
+      acknowledged = false;
+      drill = false;
+      alarmOriginPos = null;
+      alarmOriginName = "";
+    }
     alarm = alarmState;
     markDirty();
+
+    // Resetting the panel also shuts the sprinklers off: every head that discharged took note of
+    // what it flooded, and this is where that water is handed back. Without it the only way to
+    // clear a discharge was to place a block in the puddle.
+    if (!alarmState && wasActive && world != null && !world.isRemote) {
+      resetInitiatingDevices();
+    }
 
     // Post API events and update registry on state transitions
     if (world != null && !world.isRemote) {
@@ -341,7 +399,111 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
         FireAlarmPanelRegistry.unregisterFireAlarm(dim, getPos());
         MinecraftForge.EVENT_BUS.post(new FireAlarmEvent.Deactivated(world, getPos()));
       }
+      if (wasActive != alarmState) {
+        syncServerToClient(world);
+      }
     }
+  }
+
+  /**
+   * Activates the alarm and records which device raised it, so the panel can say where the alarm
+   * came from instead of only that there is one.
+   *
+   * @param originPos  the initiating device's position
+   * @param originName the initiating device's block registry name, resolved to a display name by
+   *                   the panel GUI
+   */
+  public void activateAlarmFrom(BlockPos originPos, String originName) {
+    // Only the first device to report is kept, matching a real panel's "first alarm" display: a
+    // second station pulled during an active alarm does not overwrite where it started.
+    if (!alarm) {
+      alarmOriginPos = originPos;
+      alarmOriginName = originName == null ? "" : originName;
+    }
+    setAlarmState(true);
+  }
+
+  /**
+   * The position of the device that raised the current alarm, or {@code null} if the alarm was
+   * started some other way (a drill, redstone, or an external caller).
+   *
+   * @return the initiating device's position, or {@code null}
+   */
+  public BlockPos getAlarmOriginPos() {
+    return alarmOriginPos;
+  }
+
+  /**
+   * The block registry name of the device that raised the current alarm, empty if unknown.
+   *
+   * @return the initiating device's registry name, or an empty string
+   */
+  public String getAlarmOriginName() {
+    return alarmOriginName;
+  }
+
+  /**
+   * Records an initiating device (pull station, detector, sprinkler) as reporting to this panel.
+   * <p>
+   * The link itself lives on the device, which stores the panel it reports to; this is the
+   * reverse index, and it exists so the panel can reach its devices on reset. Without it a panel
+   * has no way to enumerate what feeds it.
+   *
+   * @param blockPos the device's position
+   *
+   * @return {@code true} if this device was not already indexed
+   */
+  public synchronized boolean addLinkedInitiatingDevice(BlockPos blockPos) {
+    if (initiatingDevices.contains(blockPos)) {
+      return false;
+    }
+    initiatingDevices.add(blockPos);
+    markDirty();
+    return true;
+  }
+
+  /**
+   * The initiating devices indexed against this panel.
+   *
+   * @return an unmodifiable copy of the initiating device positions
+   */
+  public List<BlockPos> getLinkedInitiatingDevices() {
+    return Collections.unmodifiableList(new ArrayList<>(initiatingDevices));
+  }
+
+  /**
+   * Tells every indexed initiating device the panel has been reset, and drops the ones that are
+   * no longer there. Sprinklers use this to drain what they discharged.
+   */
+  private void resetInitiatingDevices() {
+    Iterator<BlockPos> it = initiatingDevices.iterator();
+    boolean changed = false;
+    while (it.hasNext()) {
+      BlockPos bp = it.next();
+      if (!world.isBlockLoaded(bp)) {
+        continue;
+      }
+      TileEntity te = world.getTileEntity(bp);
+      if (te instanceof TileEntityFireAlarmSensor) {
+        ((TileEntityFireAlarmSensor) te).clearDischargedWater(world);
+      } else {
+        it.remove();
+        changed = true;
+      }
+    }
+    if (changed) {
+      markDirty();
+    }
+  }
+
+  /**
+   * Whether the panel is running the storm warning announcement, which is driven by redstone
+   * power rather than by a fire alarm activation.
+   *
+   * @return {@code true} if the storm alarm is active
+   */
+  public boolean getAlarmStormState() {
+    return alarmStorm;
   }
 
   public void setAlarmStormState(boolean alarmStormState) {
@@ -357,6 +519,9 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
       } else if (wasActive && !alarmStormState) {
         FireAlarmPanelRegistry.unregisterStormAlarm(dim, getPos());
         MinecraftForge.EVENT_BUS.post(new FireAlarmEvent.StormDeactivated(world, getPos()));
+      }
+      if (wasActive != alarmStormState) {
+        syncServerToClient(world);
       }
     }
   }
@@ -374,9 +539,74 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
     audibleSilence = audibleSilenceState;
     markDirty();
 
-    if (world != null && !world.isRemote && audibleSilenceState) {
-      MinecraftForge.EVENT_BUS.post(new FireAlarmEvent.AudibleSilenced(world, getPos()));
+    if (world != null && !world.isRemote) {
+      if (audibleSilenceState) {
+        MinecraftForge.EVENT_BUS.post(new FireAlarmEvent.AudibleSilenced(world, getPos()));
+      }
+      syncServerToClient(world);
     }
+  }
+
+  /**
+   * Whether the current alarm has been acknowledged at the panel. Drives the difference between a
+   * flashing and a steady FIRE ALARM lamp, exactly as it does on a real panel: acknowledging says
+   * an operator has seen the alarm, and does nothing to the notification appliances.
+   *
+   * @return {@code true} if the active alarm has been acknowledged
+   */
+  public boolean getAcknowledged() {
+    return acknowledged;
+  }
+
+  /**
+   * Acknowledges the active alarm. No-op when the panel is not in alarm, so a stray press cannot
+   * leave a quiet panel latched into the acknowledged state.
+   */
+  public void acknowledge() {
+    if (!alarm || acknowledged) {
+      return;
+    }
+    acknowledged = true;
+    markDirty();
+    if (world != null && !world.isRemote) {
+      syncServerToClient(world);
+    }
+  }
+
+  /**
+   * Whether the active alarm is an evacuation drill started at the panel rather than a real alarm
+   * from a pull station or detector. Purely presentational -- the appliances do exactly what they
+   * do in a real alarm -- but it lets the panel and the chat announcement say "drill".
+   *
+   * @return {@code true} if the active alarm was started as a drill
+   */
+  public boolean getDrill() {
+    return drill;
+  }
+
+  /**
+   * Starts an evacuation drill: marks the alarm as a drill and then activates it. The flag is set
+   * first so the announcement made on the next tick already knows this is a drill.
+   */
+  public void startDrill() {
+    if (alarm) {
+      return;
+    }
+    drill = true;
+    setAlarmState(true);
+  }
+
+  /**
+   * Selects the voice evacuation message by index, ignoring out-of-range values.
+   *
+   * @param index index into the voice evacuation message table
+   */
+  public void setSoundIndex(int index) {
+    if (index < 0 || index >= SOUND_RESOURCE_NAMES.length || index == soundIndex) {
+      return;
+    }
+    soundIndex = index;
+    markDirty();
   }
 
   public boolean getGlitchy() {
@@ -394,7 +624,7 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
     if (alarm && audibleSilence) {
       return "Audible Silence";
     } else if (alarm) {
-      return "Alarm Active";
+      return drill ? "Drill Active" : "Alarm Active";
     }
     return "Normal";
   }
@@ -480,7 +710,7 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
                     "," +
                     blockPos.getZ() +
                     "] " +
-                    "has been activated!"));
+                    (drill ? "has started an evacuation drill!" : "has been activated!")));
             setAlarmAnnouncedState(true);
           }
         }

@@ -45,12 +45,117 @@ All fire alarm code lives in `src/main/java/com/micatechnologies/minecraft/csm/l
 
 ### Control Panel
 - **`BlockFireAlarmControlPanel`** -- The block class. Detects redstone input via
-  `neighborChanged()`. Sneak-click cycles voice evac sound. Normal click resets alarm.
-  Implements `ICsmTileEntityProvider`.
+  `neighborChanged()`. Right-click opens the panel GUI (GUI id 3); the block itself performs no
+  alarm actions. Implements `ICsmTileEntityProvider`.
 - **`TileEntityFireAlarmControlPanel`** -- Server-side tickable tile entity (20-tick rate).
   Manages connected appliances, groups horns by sound, sends/stops MovingSound packets per
-  channel. Stores alarm state, storm state, sound index, and connected appliance positions
-  in NBT.
+  channel. Stores alarm state, storm state, acknowledgement, drill flag, sound index, and
+  connected appliance positions in NBT. State transitions (alarm, storm, audible silence,
+  acknowledgement) call `syncServerToClient` so an open GUI tracks alarms raised elsewhere.
+
+### Panel GUI ("CSM 4100")
+- **`FireAlarmControlPanelGui`** -- Client-side front-panel screen: amber-on-black display,
+  FIRE ALARM / SUPERVISORY / TROUBLE / SIGNALS SILENCED / AC POWER lamps, and ACK, SILENCE
+  (RESOUND while silenced), RESET, DRILL and LAMP TEST membrane keys. Drawn in a fixed
+  372x238 design space scaled about the screen centre, the same approach the ASC-3 programmer
+  uses; mouse coordinates are mapped back through that scale. The voice evacuation message is
+  picked from a scrollable list rather than cycled.
+  - The appliance census (SPKR / HORN / STRB) is computed **client-side** once a second by
+    classifying each linked position exactly as `rebuildApplianceCache` does. Positions in
+    unloaded chunks are counted separately and never reported as trouble -- a client cannot
+    tell an unloaded appliance from a removed one.
+  - LAMP TEST is purely local: it lights the panel's own lamps for 60 ticks and sends nothing.
+- **`FireAlarmPanelConfigAction`** -- Actions the GUI and the config tool can request:
+  `CYCLE_VOICE_EVAC_SOUND`, `AUDIBLE_SILENCE`, `RESET_PANEL`, `TOGGLE_GLITCHY`,
+  `SET_VOICE_EVAC_SOUND` (index carried in the packet's `value`), `ACKNOWLEDGE`, `DRILL`,
+  `RESOUND`. Append new actions to the end -- the ordinal is what goes over the wire.
+- **`ItemFireAlarmConfigTool`** -- Still useful for operating a panel without opening it
+  (silence, reset, cycle sound); its `OPEN_GUI` mode was removed when the GUI moved onto the
+  block.
+
+### Alarm Origin (Annunciation)
+`activateLinkedPanel` reports the initiating device's position and block registry name to the
+panel, which stores them (`aoP` / `aoN`) and shows them on the display as
+`FROM x, y, z  <device name>`. Only the **first** device to report is kept while an alarm is
+active, matching a real panel's first-alarm display; a reset clears it. Alarms with no reporting
+device -- drills, redstone, external API callers -- have no origin and the line is omitted. The
+GUI resolves the registry name to a localised name client-side and elides it to fit, so the
+coordinates always survive truncation.
+
+### Initiating Devices and the Reverse Index
+The link itself lives on the **device** (`TileEntityFireAlarmSensor.lp`), which stores the one
+panel it reports to. The panel additionally keeps a reverse index of its initiating devices
+(`init`), because the device-side link alone gives a panel no way to enumerate what feeds it.
+The index is written both when the linker is used and whenever a device activates the panel, so
+worlds predating it heal themselves on first use and need no migration.
+
+Devices can be **re-linked** freely. `setLinkedPanelPos` returns a `LinkResult`
+(`LINKED` / `RELINKED` / `ALREADY_LINKED`) and the linker reports each outcome; it previously
+refused any device that already had a panel, silently, so the only way to move a pull station was
+to break it.
+
+### Detector Scanning
+`AbstractBlockFireAlarmDetector.findFire` covers the column under each position within
+`RADIUS_AROUND_BLOCKS_CHECK` (15), running down from the detector **until it reaches a floor** --
+any block whose material blocks movement -- or until it has descended
+`VERT_BELOW_BLOCKS_CHECK` (30), whichever comes first. Liquids and fire do not count as floors, so
+a sprinkler's own discharge cannot blind it.
+
+The depth is therefore the height of the room, not a fixed number. That matters because a fixed
+depth is simultaneously too deep for a five-block room and too shallow for an atrium: a normal
+room now stops after a handful of layers, while an open shaft is still covered to the full 30.
+It also means a detector no longer alarms for a fire on the floor below through an intact floor,
+which it used to and should not have.
+
+**Why the horizontal radius is not the lever.** Volume is `W^2 x V` and floor area is `W^2`, so
+cost per unit of protected floor is exactly `V`, the vertical extent -- the horizontal term
+cancels. Halving the radius quarters each scan but needs four times as many heads for the same
+floor, which is a wash (slightly worse, given per-head tile entities and scheduled ticks). Only
+the vertical axis buys anything, which is why this stops at floors rather than shrinking the box.
+
+**How it is walked.** Layer by layer from the top down, carrying a per-column "has hit its floor"
+flag, rather than column by column. Both cover the same space, but chunk storage is indexed
+`y << 8 | z << 4 | x`, so descending a column strides 256 entries per step and misses the cache on
+every read, while walking a layer reads contiguously. The flags keep the fast order and still stop
+at the floor, and the scan ends early once every column has floored. Reads come straight from each
+chunk's `ExtendedBlockStorage`; an all-air section is skipped whole.
+
+**The detector's own layer is exempt from flooring** (read for fire, never marks a column). Without
+that, a head mounted flush in a ceiling marks every column blocked on the first layer and is blind
+forever -- a silent, total loss of coverage. Verified explicitly (test 5 below).
+
+Chunks are checked with `isBlockLoaded` before being touched: `World.getBlockState` resolves its
+chunk through `provideChunk`, which loads from disk and generates terrain for an absent chunk, so
+scanning used to pull in neighbouring chunks every 25 seconds. Nothing is lost by skipping them --
+fire does not burn in a chunk that is not ticking.
+
+Traversal *order* differs from the old `BlockPos.getAllInBox` walk, so with several fires in range
+the one reported may differ. Any fire in range is an equally correct answer and only the first is
+used.
+
+Verified in-game against a live panel:
+
+| Case | Expected | Result |
+|---|---|---|
+| Fire on the room floor, clear air between | detect | `[-470,42,270]` |
+| Fire one floor below, intact floor between | **no** detect | no alarm |
+| Fire above that floor, same room as head | detect | `[-470,44,270]` |
+| Open shaft, fire at exactly 30 below | detect | `[-470,15,270]` |
+| Horizontal +15 / +16 | detect / **no** detect | `[-455,44,270]` / no alarm |
+| Head flush in a solid ceiling | detect | `[-470,44,270]` |
+
+### Sprinklers
+All sprinkler heads extend `AbstractBlockFireSprinkler`, which holds the discharge logic that was
+formerly duplicated verbatim in nine block classes. On detecting fire a head floods **two**
+blocks: the one beneath itself (the visible discharge) and the fire it actually found -- the
+detector used to locate the fire and discard the position, so heads could only ever water
+themselves. Flooding is guarded to air, fire and other replaceable blocks, so a head can no
+longer delete what a player built under it.
+
+Each flooded position is recorded on the head's tile entity (`wtr`). **Resetting the panel drains
+them**: `setAlarmState(false)` walks the reverse index and calls `clearDischargedWater` on every
+device. Only blocks that are still water are cleared, and water that spread from the discharge
+drains on its own once the sources are gone.
 
 ### Sound Playback
 - **`FireAlarmSoundPacket`** -- Network packet (server -> client) with fields: `start`
@@ -119,8 +224,8 @@ each player's client.
 - **Player disconnects**: Cleaned up via `removeIf` on the UUID set
 
 ### Alarm Deactivation
-1. Player right-clicks control panel (not sneaking)
-2. Sets `alarm = false`
+1. Player presses RESET on the panel GUI (or uses the config tool in RESET_PANEL mode)
+2. Sets `alarm = false`, clearing audible silence, acknowledgement and the drill flag
 3. Sends `FireAlarmSoundPacket.stopAll()` to all players with active sounds
 4. Clears all channel tracking
 5. Broadcasts chat: "The fire alarm at [x,y,z] has been reset."

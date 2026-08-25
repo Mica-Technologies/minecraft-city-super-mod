@@ -80,17 +80,33 @@ public abstract class AbstractBlockFireAlarmActivator extends AbstractBlockRotat
       TileEntityFireAlarmSensor tileEntityFireAlarmSensor =
           (TileEntityFireAlarmSensor) tileEntityAtPos;
       BlockPos linkedPanelPos = tileEntityFireAlarmSensor.getLinkedPanelPos(world);
-      if (linkedPanelPos != null) {
+      if (linkedPanelPos != null && world.isBlockLoaded(linkedPanelPos)) {
         TileEntity tileEntityAtLinkedPanelPos = world.getTileEntity(linkedPanelPos);
         if (tileEntityAtLinkedPanelPos instanceof TileEntityFireAlarmControlPanel) {
           TileEntityFireAlarmControlPanel fireAlarmControlPanel
               = (TileEntityFireAlarmControlPanel) tileEntityAtLinkedPanelPos;
-          fireAlarmControlPanel.setAlarmState(true);
+          // Index this device on the panel as it reports. Doing it here as well as at link
+          // time means a device linked before the panel kept a reverse index heals itself the
+          // first time it fires, so existing worlds need no migration.
+          fireAlarmControlPanel.addLinkedInitiatingDevice(blockPos);
+          // Tell the panel which device is reporting, so it can annunciate the origin rather
+          // than only the fact of an alarm.
+          fireAlarmControlPanel.activateAlarmFrom(blockPos, getRegistryNameString(world, blockPos));
           activated = true;
         }
       }
     }
     return activated;
+  }
+
+  /**
+   * The registry name of the block at a position, as the panel's origin label. Resolved from the
+   * world rather than from {@code this} so a device reports its own concrete type.
+   */
+  private static String getRegistryNameString(World world, BlockPos blockPos) {
+    net.minecraft.util.ResourceLocation name =
+        world.getBlockState(blockPos).getBlock().getRegistryName();
+    return name == null ? "" : name.toString();
   }
 
   /**

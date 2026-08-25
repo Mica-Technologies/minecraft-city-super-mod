@@ -1,4 +1,4 @@
-csm.firealarmcontrolpanel.note=Clic Derecho para Detener la Alarma, Agachar+Clic Derecho para Cambiar el Sonido
+csm.firealarmcontrolpanel.note=Clic Derecho para Abrir el Panel
 csm.highvoltage=¡Alta Tensión!
 csm.signalcontroller=McCain Modelo MC2000
 csm.signalcontroller.timing.allred=  Todo rojo: %ss
