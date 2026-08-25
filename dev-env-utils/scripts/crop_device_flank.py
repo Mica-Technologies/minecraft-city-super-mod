@@ -13,7 +13,28 @@ Output is a 256-unit-square atlas in the same layout gen_e50_flank_texture.py us
 consume either kind identically:
 
     u[0, --units]   v[0, 16]   the enclosure flank, the crop resized to fill it
-    u[3.5, 7.5]     v[0, 4]    plain moulding, for the top and bottom caps and the hidden back
+    u[units+0.6, +4] v[0, 4]   plain moulding, for the top and bottom caps and the hidden back
+
+With --pair the atlas holds the band TWICE, and the plain patch shrinks to a square in what is
+left over:
+
+    u[0, units]        v[0, 16]  the band as cropped
+    u[units, 2*units]  v[0, 16]  the same band with only its --legend columns mirrored in place
+    u[2*units+0.1, +0.8]         plain moulding
+
+A model needs two copies when its flank is strongly asymmetric end to end. A strip's u maps onto
+the model's depth, and depth is the same physical axis either side of a device, so handing both
+flanks the same rect puts front at the front on both -- and then the lettering on one of them comes
+out mirrored. That is not a bug in the mapping: a legend printed to read correctly from outside
+really IS mirrored between the two flanks in the device's own coordinates, because a viewer on the
+left has the device's back on their right and a viewer on the right has its front there.
+
+Note what does NOT fix it. Reversing the rect on one flank mirrors the letters and swaps that
+flank's front for its back -- fine on a near-symmetric band, ruinous on one that is a red backbox
+at one end and a clear rim at the other. Nor does mirroring the whole strip and reading it
+backwards: that is the identity, and renders exactly as the original did. Only the legend is
+mirrored on a real appliance and only the legend may be mirrored here, which is what --legend
+names -- as a pair of fractions across the strip's width.
 
 Pick --units so the strip's aspect matches the flank's own depth-to-height ratio on the model; the
 strip is stretched across whatever u range the model's `side_strips` names, so a mismatch there is
@@ -40,6 +61,10 @@ Recorded invocations:
     # both blocks.
     python crop_device_flank.py 202-8a-t_1_edited.png edwards_est_202_8a_flank \
         --box 214,150,374,995 --units 2.9
+
+    # Gentex Commander 3 weatherproof flank: red backbox with its conduit knockout, then the
+    # clear cover's rim with FIRE down it. Strongly asymmetric end to end, so --pair.
+    python crop_device_flank.py wgec24-75wr_1_edited.jpg \n        gentex_commander_3_outdoor_flank --box 50,90,375,700 --units 7.5 --pair --legend 0.66,1.0
 """
 
 import argparse
@@ -53,8 +78,13 @@ REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 TEX_DIR = os.path.join(REPO_ROOT, "src", "main", "resources", "assets", "csm",
                        "textures", "blocks", "lifesafety")
 
-#: Where the plain patch goes, in the 16-unit UV space. Matches gen_e50_flank_texture.py.
-PATCH_RECT = (3.5, 0.0, 7.5, 4.0)
+#: Size of the plain patch, in the 16-unit UV space, and the gap left between it and the strip.
+#: It follows the strip rather than sitting at a fixed place, because a deep enclosure needs a wide
+#: strip -- a weatherproof backbox takes six units where a flat plate's flank takes three -- and a
+#: fixed patch would end up drawn on top of it. At the E50's 2.9-unit strip this lands exactly
+#: where gen_e50_flank_texture.py puts it.
+PATCH_SIZE = 4.0
+PATCH_GAP = 0.6
 
 
 def plain_colour(crop):
@@ -82,6 +112,13 @@ def main():
     parser.add_argument("--size", type=int, default=256)
     parser.add_argument("--flip", action="store_true",
                         help="mirror the crop, for a photograph taken of the other flank")
+    parser.add_argument("--pair", action="store_true",
+                        help="write the band twice, so a model's two flanks can each have it the "
+                             "right way round")
+    parser.add_argument("--legend", default="0,1",
+                        metavar="F0,F1",
+                        help="with --pair, the span of the strip's width holding the legend, as "
+                             "two fractions; only these columns are mirrored in the second copy")
     args = parser.parse_args()
 
     try:
@@ -102,10 +139,24 @@ def main():
     atlas = Image.new("RGBA", (args.size, args.size), housing + (255,))
 
     strip_width = max(1, int(round(args.units * unit)))
-    atlas.paste(crop.resize((strip_width, args.size), Image.LANCZOS).convert("RGBA"), (0, 0))
+    scaled = crop.resize((strip_width, args.size), Image.LANCZOS).convert("RGBA")
+    atlas.paste(scaled, (0, 0))
+    if args.pair:
+        first, last = (float(v) for v in args.legend.split(","))
+        low, high = int(first * strip_width), int(last * strip_width)
+        mirrored = scaled.copy()
+        band = scaled.crop((low, 0, high, args.size)).transpose(Image.FLIP_LEFT_RIGHT)
+        mirrored.paste(band, (low, 0))
+        atlas.paste(mirrored, (strip_width, 0))
+        print("second copy has columns %d..%d mirrored" % (low, high))
 
     rng = np.random.RandomState(11)      # fixed, so regenerating gives the same file
-    pu0, pv0, pu1, pv1 = PATCH_RECT
+    if args.pair:
+        pu0, pv0 = 2.0 * args.units + 0.1, 0.1
+        pu1, pv1 = pu0 + 0.8, pv0 + 0.8
+    else:
+        pu0, pv0 = args.units + PATCH_GAP, 0.0
+        pu1, pv1 = pu0 + PATCH_SIZE, PATCH_SIZE
     patch_size = (int(round((pu1 - pu0) * unit)), int(round((pv1 - pv0) * unit)))
     plain = np.full((patch_size[1], patch_size[0], 3), housing, dtype=np.int16)
     plain = np.clip(plain + rng.randint(-3, 4, plain.shape), 0, 255).astype(np.uint8)
@@ -115,8 +166,8 @@ def main():
     path = os.path.join(TEX_DIR, *args.output.split("/"))
     os.makedirs(os.path.dirname(path), exist_ok=True)
     atlas.save(path + ".png")
-    print("wrote %s.png (%dx%d, strip %d px wide, moulding rgb%s)"
-          % (path, args.size, args.size, strip_width, housing))
+    print("wrote %s.png (%dx%d, strip %d px wide, patch at u %.1f..%.1f, moulding rgb%s)"
+          % (path, args.size, args.size, strip_width, pu0, pu1, housing))
     return 0
 
 
