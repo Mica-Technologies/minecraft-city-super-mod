@@ -46,16 +46,17 @@ public class TileEntityFireAlarmSoundIndex extends AbstractTileEntity {
   }
 
   /**
-   * Returns a render bounding box sized for the strobe flash quad + a 1-block margin, so
-   * vanilla frustum culling can skip the shared strobe TESR when the device is offscreen.
-   * This TE is bound to {@code TileEntityFireAlarmStrobeRenderer} for the Gentex Commander
+   * Returns a render bounding box sized for the strobe flash and the light it throws onto nearby
+   * surfaces, so vanilla frustum culling can skip the shared strobe TESR when none of that is on
+   * screen. This TE is bound to {@code TileEntityFireAlarmStrobeRenderer} for the Gentex Commander
    * 3 line, which renders the same flash effect that {@link TileEntityFireAlarmStrobe}
    * does — the bounds match for consistent culling.
    */
   @Override
   public AxisAlignedBB getRenderBoundingBox() {
+    double reach = StrobeSurfaceProjection.MAX_DISTANCE + 1.0;
     return new AxisAlignedBB(
-        pos.getX() - 1.0, pos.getY() - 1.0, pos.getZ() - 1.0,
-        pos.getX() + 2.0, pos.getY() + 2.0, pos.getZ() + 2.0);
+        pos.getX() - reach, pos.getY() - reach, pos.getZ() - reach,
+        pos.getX() + 1.0 + reach, pos.getY() + 1.0 + reach, pos.getZ() + 1.0 + reach);
   }
 }

@@ -21,15 +21,19 @@ public class TileEntityFireAlarmStrobe extends AbstractTileEntity {
   }
 
   /**
-   * Returns a render bounding box sized for the flash quad plus a 1-block margin on every
-   * side so the lens-face quad is never clipped at the edge of the frustum. Overriding this
-   * switches vanilla from {@code INFINITE_EXTENT_AABB} (which disables frustum culling) to
-   * real frustum culling — strobes outside the view skip the TESR render entirely.
+   * Returns a render bounding box covering everything the flash draws: the lens quad, and the
+   * pools of light {@link StrobeSurfaceProjection} throws onto surfaces up to
+   * {@link StrobeSurfaceProjection#MAX_DISTANCE} away. Overriding this switches vanilla from
+   * {@code INFINITE_EXTENT_AABB} (which disables frustum culling) to real frustum culling —
+   * strobes outside the view skip the TESR render entirely. The box has to reach as far as the
+   * light does, though: sized to the block alone, a pool on the far wall would wink out as soon
+   * as the device itself left the screen.
    */
   @Override
   public AxisAlignedBB getRenderBoundingBox() {
+    double reach = StrobeSurfaceProjection.MAX_DISTANCE + 1.0;
     return new AxisAlignedBB(
-        pos.getX() - 1.0, pos.getY() - 1.0, pos.getZ() - 1.0,
-        pos.getX() + 2.0, pos.getY() + 2.0, pos.getZ() + 2.0);
+        pos.getX() - reach, pos.getY() - reach, pos.getZ() - reach,
+        pos.getX() + 1.0 + reach, pos.getY() + 1.0 + reach, pos.getZ() + 1.0 + reach);
   }
 }
