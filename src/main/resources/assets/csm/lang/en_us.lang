@@ -1542,6 +1542,7 @@ tile.overhead_speed_limit_sign.name=Overhead Variable Speed Limit Sign
 tile.polemount_speed_limit_sign.name=Pole-Mount Variable Speed Limit Sign
 tile.lane_control_signal.name=Lane Control Signal
 tile.dynamic_guide_sign.name=Dynamic Highway Guide Sign
+tile.dynamic_street_sign.name=Dynamic Street Sign
 # --- staged traffic signs ---
 tile.1hrtruckparkingsign.name=1 Hr Truck Parking
 tile.99onlypricesignnew.name=99 Cents Only Price Sign (New)

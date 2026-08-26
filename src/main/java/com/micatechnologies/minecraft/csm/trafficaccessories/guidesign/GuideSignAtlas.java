@@ -31,7 +31,12 @@ public class GuideSignAtlas {
     return getCellUV(col, row);
   }
 
-  private static float[] getCellUV(int col, int row) {
+  /**
+   * UVs for an arbitrary atlas cell. Public because the atlas is shared: the dynamic street
+   * sign addresses its civic-logo cells (rows 11-12) by coordinate rather than through a
+   * shield or arrow enum this package knows about.
+   */
+  public static float[] getCellUV(int col, int row) {
     float u0 = (float) (col * CELL_SIZE) / ATLAS_WIDTH;
     float v0 = (float) (row * CELL_SIZE) / ATLAS_HEIGHT;
     float u1 = (float) ((col + 1) * CELL_SIZE) / ATLAS_WIDTH;

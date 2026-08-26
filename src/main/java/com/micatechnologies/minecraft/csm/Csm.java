@@ -211,6 +211,10 @@ public class Csm {
           com.micatechnologies.minecraft.csm.codeutils.packets.DynamicGuideSignUpdatePacket.class,
           Side.SERVER);
       CsmNetwork.registerNetworkMessage(
+          com.micatechnologies.minecraft.csm.codeutils.packets.DynamicStreetSignUpdateHandler.class,
+          com.micatechnologies.minecraft.csm.codeutils.packets.DynamicStreetSignUpdatePacket.class,
+          Side.SERVER);
+      CsmNetwork.registerNetworkMessage(
           com.micatechnologies.minecraft.csm.technology.ComputerNotepadHandler.class,
           com.micatechnologies.minecraft.csm.technology.ComputerNotepadPacket.class,
           Side.SERVER);

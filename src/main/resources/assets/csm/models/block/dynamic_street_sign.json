@@ -1,0 +1,40 @@
+{
+  "parent": "block/cube_all",
+  "textures": {
+    "all": "csm:blocks/trafficaccessories/dynamic_street_sign"
+  },
+  "elements": [
+    {
+      "from": [
+        1,
+        2,
+        7
+      ],
+      "to": [
+        15,
+        14,
+        9
+      ],
+      "faces": {
+        "down": {
+          "texture": "#all"
+        },
+        "up": {
+          "texture": "#all"
+        },
+        "north": {
+          "texture": "#all"
+        },
+        "south": {
+          "texture": "#all"
+        },
+        "west": {
+          "texture": "#all"
+        },
+        "east": {
+          "texture": "#all"
+        }
+      }
+    }
+  ]
+}

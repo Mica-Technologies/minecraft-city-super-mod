@@ -525,5 +525,9 @@ public class CsmTabTrafficAccessories extends CsmTab {
     // --- Class-based: Dynamic Guide Sign ---
     initTabBlock(com.micatechnologies.minecraft.csm.trafficaccessories.BlockDynamicGuideSign.class,
         fmlPreInitializationEvent);
+
+    // --- Class-based: Dynamic Street Sign ---
+    initTabBlock(com.micatechnologies.minecraft.csm.trafficaccessories.BlockDynamicStreetSign.class,
+        fmlPreInitializationEvent);
   }
 }
