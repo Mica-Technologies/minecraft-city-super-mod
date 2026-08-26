@@ -1,10 +1,11 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:lighting/shared_models/ceiling_square.obj",
+    "model": "csm:lighting/shared_models/pendant_schoolhouse.obj",
     "textures": {
-      "#body": "csm:blocks/lighting/shared_textures/finish_white",
-      "#lens": "csm:blocks/lighting/shared_textures/lens_opal_off"
+      "#body": "csm:blocks/lighting/shared_textures/finish_bronze",
+      "#lens": "csm:blocks/lighting/shared_textures/lens_opal_off",
+      "#shade": "csm:blocks/lighting/shared_textures/shade_enamel"
     },
     "custom": {
       "flip-v": true
