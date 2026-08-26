@@ -58,6 +58,17 @@ TEX_DIR = os.path.join(ASSETS, "textures", "blocks", "lighting", "shared_texture
 
 BODY, SHADE, LENS = "body", "shade", "lens"
 
+#: Where a wall fixture's geometry may sit instead of exactly on z = 16.
+#:
+#: Anything drawn on a block boundary is coplanar with the neighbouring block's own face. If both
+#: point the same way -- which a wall fixture's backward-facing geometry and the wall's inward face
+#: both do -- the depth buffer cannot separate them and the surface shimmers. A tenth of a unit is
+#: 1/160 of a block: far too small to see, far too large for the depth buffer to confuse.
+WALL_STANDOFF = 15.9
+
+#: The same idea for one part sitting on another's face rather than on a block boundary.
+COPLANAR_NUDGE = 0.15
+
 TAU = 2.0 * math.pi
 
 #: Round shapes are lathed at this many segments. 16 reads as a circle at block scale without
@@ -210,16 +221,44 @@ def lathe(mesh, profile, material, segments=SEGMENTS, centre=(8.0, 8.0), axis="y
     u0, u1 = u_span
     v0, v1 = v_span
     steps = max(1, len(profile) - 1)
+
+    # Which perpendicular is "outward" depends on the direction the profile was authored in, and it
+    # has to be decided for the SURFACE, not per band. Deciding per band is what a rule like
+    # "always give the radial component a positive sign" amounts to, and it is wrong for any
+    # profile that curves back on itself: on a torus the inner half of the tube genuinely faces
+    # TOWARDS the axis, and forcing it outward flips the winding on half of every link.
+    #
+    # So: take the raw perpendicular (da, -dr), weight each band's radial component by how far out
+    # it sits, and if the surface as a whole then faces inward, reverse the lot. A shade authored
+    # neck-first gets reversed; a torus does not, because its outer half has the greater radius and
+    # therefore the greater say.
+    lean = sum((profile[i + 1][1] - profile[i][1]) * (profile[i + 1][0] + profile[i][0])
+               for i in range(len(profile) - 1))
+    sense = 1.0 if lean >= 0.0 else -1.0
     for r in range(len(rings) - 1):
         lower, upper = rings[r], rings[r + 1]
         v_lo = v0 + (v1 - v0) * r / steps
         v_hi = v0 + (v1 - v0) * (r + 1) / steps
+        # The outward reference has to lean the way the profile leans. A purely radial one is
+        # perpendicular to the true normal wherever the profile runs flat -- the top of a dome, the
+        # lip of a bowl -- so the winding test there decides on a dot product near zero and gets it
+        # wrong as often as right. Those faces then cull from outside and the shade has a hole in
+        # it when you look down on it.
+        #
+        # In the (radius, along) plane the normal is perpendicular to the profile tangent (dr, da),
+        # which is (da, -dr). Which of the two perpendiculars that is depends on which way the
+        # profile was authored, so `sense` below settles it once for the whole surface rather than
+        # per band -- see the note where it is computed.
+        dr = (profile[r + 1][0] - profile[r][0]) * sense
+        da = (profile[r + 1][1] - profile[r][1]) * sense
+        radial_weight, axial = da, -dr
         for i in range(segments):
             u_lo = u0 + (u1 - u0) * i / segments
             u_hi = u0 + (u1 - u0) * (i + 1) / segments
             p1, p2, p3, p4 = lower[i], lower[i + 1], upper[i + 1], upper[i]
             mid_angle = (angles[i] + angles[i + 1]) / 2.0
-            outward = radial(mid_angle)
+            outward = _normalise(_add(_scale(radial(mid_angle), radial_weight),
+                                      _scale(e_axis, axial)))
             if flip:
                 outward = _scale(outward, -1.0)
             mesh.quad(p1, p2, p3, p4,
@@ -350,8 +389,14 @@ def box(mesh, lo, hi, material, uv=(1.0, 1.0, 15.0, 15.0)):
                   (u0, v0), (u1, v0), (u1, v1), (u0, v1), outward, material)
 
 
-def strut(mesh, start, end, thickness, material):
-    """A thin square bar between two points -- cage wires, lantern posts, gooseneck arms."""
+def strut(mesh, start, end, thickness, material, caps=True):
+    """A thin square bar between two points -- cage wires, lantern posts, gooseneck arms.
+
+    Capped by default. An open-ended tube is fine only where both ends are buried in something
+    else; a jointed arm like the gooseneck's bends, so consecutive segments meet at an angle and
+    the wedge between them is a hole you can see straight through. Pass `caps=False` only when the
+    ends are genuinely covered.
+    """
     dx, dy, dz = end[0] - start[0], end[1] - start[1], end[2] - start[2]
     length = math.sqrt(dx * dx + dy * dy + dz * dz)
     if length < 1e-6:
@@ -374,6 +419,13 @@ def strut(mesh, start, end, thickness, material):
         mesh.quad(corner(start, *s0), corner(start, *s1), corner(end, *s1), corner(end, *s0),
                   (3.0, 1.0), (7.0, 1.0), (7.0, 15.0), (3.0, 15.0), outward, material)
 
+    if caps:
+        for point, facing in ((start, -1.0), (end, 1.0)):
+            outward = _scale(direction, facing)
+            mesh.quad(corner(point, *signs[0]), corner(point, *signs[1]),
+                      corner(point, *signs[2]), corner(point, *signs[3]),
+                      (3.0, 3.0), (7.0, 3.0), (7.0, 7.0), (3.0, 7.0), outward, material)
+
 
 def _cross(a, b):
     return (a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0])
@@ -384,23 +436,89 @@ def _normalise(vector):
     return _scale(vector, 1.0 / length)
 
 
-def strut_ring(mesh, centre, radius, plane, thickness, material, sides=8):
-    """A closed ring built from struts -- a chain link, a cage band."""
-    e_a, e_b = {"xy": (AXES["z"][0], AXES["z"][1]),
-                "xz": (AXES["y"][0], AXES["y"][1]),
-                "yz": (AXES["x"][0], AXES["x"][1])}[plane]
-    points = []
-    for i in range(sides):
-        angle = TAU * i / sides
-        points.append(_add(centre, _scale(e_a, radius * math.cos(angle)),
-                           _scale(e_b, radius * math.sin(angle))))
-    for i in range(sides):
-        strut(mesh, points[i], points[(i + 1) % sides], thickness, material)
+def torus(mesh, centre, radius, thickness, material, axis="y", ring_segments=10, tube_segments=6):
+    """A closed ring -- a chain link.
+
+    A lathe, not a loop of struts. Struts round a ring meet at an angle, so consecutive boxes
+    interpenetrate and their outer faces end up coplanar AND overlapping, which is z-fighting all
+    the way round every link. A torus is genuinely a surface of revolution: the profile is a circle
+    offset from the axis, and it closes on itself with no seams and no caps.
+    """
+    tube = thickness / 2.0
+    along = _dot(centre, AXES[axis][2])
+    across = (_dot(centre, AXES[axis][0]), _dot(centre, AXES[axis][1]))
+    profile = []
+    for i in range(tube_segments + 1):
+        angle = TAU * i / tube_segments
+        profile.append((radius + tube * math.cos(angle), along + tube * math.sin(angle)))
+    lathe(mesh, profile, material, segments=ring_segments, centre=across, axis=axis)
+
+
+def sweep(mesh, points, thickness, material):
+    """A square tube following a polyline, mitred at each joint.
+
+    Independent struts were wrong twice over at a bend: the boxes interpenetrate, so their outer
+    faces are coplanar and overlapping (z-fighting), while the wedge on the outside of the bend is
+    open (a hole you can see through). One continuous tube whose cross-section rotates with the
+    path has neither problem -- consecutive segments share a ring rather than each ending in mid-air.
+    """
+    if len(points) < 2:
+        return
+    directions = [_normalise(tuple(b[i] - a[i] for i in range(3)))
+                  for a, b in zip(points, points[1:])]
+    # The plane of each ring: the segment's own direction at the ends, the bisector at a joint, so
+    # the tube meets itself squarely instead of one segment overshooting into the next.
+    normals = [directions[0]]
+    for before, after in zip(directions, directions[1:]):
+        normals.append(_normalise(_add(before, after)))
+    normals.append(directions[-1])
+
+    # Parallel transport one reference vector along the path, so the cross-section does not spin.
+    helper = (0.0, 1.0, 0.0) if abs(directions[0][1]) < 0.9 else (1.0, 0.0, 0.0)
+    reference = _normalise(_cross(directions[0], helper))
+    rings, half = [], thickness / 2.0
+    for point, plane in zip(points, normals):
+        # Re-perpendicularise against the new plane rather than starting over, which is what keeps
+        # consecutive rings aligned corner to corner.
+        u = _add(reference, _scale(plane, -_dot(reference, plane)))
+        u = _normalise(u) if math.sqrt(sum(c * c for c in u)) > 1e-6 else reference
+        v = _normalise(_cross(plane, u))
+        reference = u
+        rings.append([_add(point, _scale(u, su * half), _scale(v, sv * half))
+                      for su, sv in ((-1, -1), (1, -1), (1, 1), (-1, 1))])
+
+    for lower, upper in zip(rings, rings[1:]):
+        centre_lo = _centroid(lower)
+        centre_hi = _centroid(upper)
+        for i in range(4):
+            j = (i + 1) % 4
+            face = (lower[i], lower[j], upper[j], upper[i])
+            mid = _centroid(face)
+            outward = _normalise(tuple(mid[k] - (centre_lo[k] + centre_hi[k]) / 2.0
+                                       for k in range(3)))
+            mesh.quad(*face, (3.0, 1.0), (7.0, 1.0), (7.0, 15.0), (3.0, 15.0), outward, material)
+
+    for ring, facing in ((rings[0], -1.0), (rings[-1], 1.0)):
+        plane = normals[0] if facing < 0 else normals[-1]
+        mesh.quad(ring[0], ring[1], ring[2], ring[3],
+                  (3.0, 3.0), (7.0, 3.0), (7.0, 7.0), (3.0, 7.0),
+                  _scale(plane, facing), material)
+
+
+def _centroid(points):
+    return tuple(sum(p[i] for p in points) / len(points) for i in range(3))
 
 
 def canopy(mesh, y_top=16.0, radius=3.0, depth=1.0):
-    """The ceiling plate every pendant hangs from."""
-    lathe(mesh, [(radius * 0.94, y_top), (radius, y_top - depth)], BODY, close_end=True)
+    """The ceiling plate every pendant hangs from.
+
+    Closed at BOTH ends. Leaving the top open is tempting -- a ceiling covers it -- but a pendant
+    hung on a chain has open air above it, and an open canopy is then a clean line of sight down
+    the stem and straight through the shade to the bulb. The top cap lies on y = 16 facing up,
+    which is out of the block and therefore culled against a ceiling and harmless against air.
+    """
+    lathe(mesh, [(radius * 0.94, y_top), (radius, y_top - depth)], BODY,
+          close_start=True, close_end=True)
 
 
 # --------------------------------------------------------------------------- textures
@@ -524,20 +642,29 @@ def sconce_halfshell(mesh):
     so the shell carries the lens material and the metal is only a slim plate and a rim band. The
     cut faces sit flush on z = 16 against the wall, which is why the lathe stops at half a turn.
     """
-    box(mesh, (3.6, 4.0, 15.3), (12.4, 5.2, 16.0), BODY)
+    box(mesh, (2.2, 3.9, 15.3), (13.8, 5.4, 16.0), BODY)
+    # The axis stands at z = WALL_STANDOFF, not at 16. `close_sides` fills the cut with flat faces
+    # lying in the axis plane and pointing into the room -- which on z = 16 is exactly coplanar with
+    # the neighbouring wall block's own face, pointing the same way. Two surfaces at one depth is
+    # z-fighting, and it shimmered right across the back of the shell.
     lathe(mesh, [(1.3, 4.4), (3.3, 5.1), (4.7, 6.2), (5.4, 7.5), (5.6, 8.8)],
-          LENS, centre=(8.0, 16.0), angle_span=(math.pi, TAU),
+          LENS, centre=(8.0, WALL_STANDOFF), angle_span=(math.pi, TAU),
           close_start=True, close_sides=True)
-    lathe(mesh, [(5.65, 8.8), (5.65, 9.2)], BODY, centre=(8.0, 16.0),
+    lathe(mesh, [(5.65, 8.8), (5.65, 9.2)], BODY, centre=(8.0, WALL_STANDOFF),
           angle_span=(math.pi, TAU), close_sides=True)
 
 
 def sconce_colonial(mesh):
     """Candle-style wall sconce."""
     box(mesh, (6.2, 4.6, 15.2), (9.8, 10.6, 16.0), BODY)
-    lathe(mesh, [(2.1, 15.2), (2.1, 16.0)], BODY, centre=(8.0, 10.6), axis="z",
+    # The boss stands proud of the plate. Its cap used to land on z = 15.2, the plate's own front
+    # face, both facing the room -- the shimmer that ran down the middle of the sconce.
+    lathe(mesh, [(2.1, 15.2 - COPLANAR_NUDGE), (2.1, 16.0)], BODY, centre=(8.0, 10.6), axis="z",
           close_start=True)
-    strut(mesh, (8.0, 6.0, 15.2), (8.0, 6.0, 13.0), 0.8, BODY)
+    # Started inside the plate rather than on its face, so the strut's own end cap is buried.
+    # Clear of the cup's bottom cap at y = 5.6; sharing that plane put two down-facing
+    # surfaces at one depth.
+    strut(mesh, (8.0, 6.3, 15.7), (8.0, 6.3, 13.0), 0.8, BODY)
     lathe(mesh, [(1.5, 5.6), (1.05, 6.6)], BODY, centre=(8.0, 13.0), close_start=True)
     cylinder(mesh, (8.0, 13.0), 0.78, 6.6, 10.0, SHADE)
     lathe(mesh, [(0.62, 10.0), (0.55, 10.6), (0.32, 11.3), (0.0, 11.9)], LENS,
@@ -548,7 +675,8 @@ def sconce_vanity_bar(mesh):
     """Three-lamp mirror bar."""
     box(mesh, (1.4, 6.5, 15.2), (14.6, 9.5, 16.0), BODY)
     for x in (4.0, 8.0, 12.0):
-        cylinder(mesh, (x, 8.0), 1.05, 14.5, 15.2, BODY, axis="z", close_end=True)
+        cylinder(mesh, (x, 8.0), 1.05, 14.5, 15.2 - COPLANAR_NUDGE, BODY, axis="z",
+                 close_end=True)
         lathe(mesh, [(0.95, 14.5), (1.65, 13.7), (1.95, 12.8), (1.85, 12.0),
                      (1.25, 11.4), (0.45, 11.1)],
               LENS, centre=(x, 8.0), axis="z", close_end=True)
@@ -557,7 +685,7 @@ def sconce_vanity_bar(mesh):
 def sconce_carriage_lantern(mesh):
     """Exterior porch lantern -- square glass body under a tapered cap."""
     box(mesh, (6.4, 7.6, 15.2), (9.6, 13.2, 16.0), BODY)
-    strut(mesh, (8.0, 12.0, 15.2), (8.0, 12.0, 12.2), 0.9, BODY)
+    strut(mesh, (8.0, 12.0, 15.7), (8.0, 12.0, 12.2), 0.9, BODY)
     # Cap and finial.
     lathe(mesh, [(3.5, 11.5), (2.3, 12.5), (0.7, 13.3)], BODY, centre=(8.0, 11.5),
           close_start=True, close_end=True)
@@ -569,8 +697,10 @@ def sconce_carriage_lantern(mesh):
     for cx in (x0, x1):
         for cz in (z0, z1):
             strut(mesh, (cx, y0, cz), (cx, y1, cz), 0.62, BODY)
-    box(mesh, (x0, y0 + 0.2, z0), (x1, y1 - 0.2, z0 + 0.22), LENS)
-    box(mesh, (x0, y0 + 0.2, z1 - 0.22), (x1, y1 - 0.2, z1), LENS)
+    # The four panes abut rather than overlap. Spanning the full width in both axes made each
+    # corner two panes occupying the same space, with coincident faces that fought.
+    box(mesh, (x0 + 0.22, y0 + 0.2, z0), (x1 - 0.22, y1 - 0.2, z0 + 0.22), LENS)
+    box(mesh, (x0 + 0.22, y0 + 0.2, z1 - 0.22), (x1 - 0.22, y1 - 0.2, z1), LENS)
     box(mesh, (x0, y0 + 0.2, z0), (x0 + 0.22, y1 - 0.2, z1), LENS)
     box(mesh, (x1 - 0.22, y0 + 0.2, z0), (x1, y1 - 0.2, z1), LENS)
     box(mesh, (x0 - 0.3, y0 - 0.7, z0 - 0.3), (x1 + 0.3, y0, z1 + 0.3), BODY)
@@ -581,10 +711,9 @@ def sconce_carriage_lantern(mesh):
 def sconce_rlm_gooseneck(mesh):
     """Exterior storefront barn light on a gooseneck arm."""
     box(mesh, (6.2, 9.2, 15.2), (9.8, 12.8, 16.0), BODY)
-    arm = [(8.0, 11.0, 15.2), (8.0, 11.7, 13.4), (8.0, 11.7, 10.9),
+    arm = [(8.0, 11.0, 15.7), (8.0, 11.7, 13.4), (8.0, 11.7, 10.9),
            (8.0, 11.0, 9.2), (8.0, 10.2, 8.4)]
-    for start, end in zip(arm, arm[1:]):
-        strut(mesh, start, end, 0.9, BODY)
+    sweep(mesh, arm, 0.9, BODY)
     lathe(mesh, [(1.1, 10.2), (2.5, 9.5), (4.1, 8.4), (5.5, 7.1),
                  (6.2, 6.0), (6.4, 5.4), (6.1, 5.0)], BODY, centre=(8.0, 8.2),
           close_start=True)
@@ -634,8 +763,9 @@ def ceiling_square(mesh):
 def pendant_chain(mesh):
     """Stackable chain/stem extension. Links alternate plane so it reads as chain from any angle."""
     for index, y in enumerate((2.0, 6.0, 10.0, 14.0)):
-        plane = "xy" if index % 2 == 0 else "yz"
-        strut_ring(mesh, (8.0, y, 8.0), 2.3, plane, 0.55, BODY, sides=8)
+        # Alternating planes, so a stack reads as chain rather than a column of hoops.
+        axis = "z" if index % 2 == 0 else "x"
+        torus(mesh, (8.0, y, 8.0), 2.3, 0.55, BODY, axis=axis)
 
 
 # --------------------------------------------------------------------------- driver

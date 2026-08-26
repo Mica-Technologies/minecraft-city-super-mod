@@ -37,7 +37,7 @@ public class BlockDecorativeChainFactory extends AbstractBlock {
    * rather than four separate rings per block.
    */
   private static final AxisAlignedBB CHAIN_BOX =
-      new AxisAlignedBB(0.340371, 0.0, 0.340371, 0.659629, 1.0, 0.659629);
+      new AxisAlignedBB(0.339375, 0.0, 0.346875, 0.660625, 1.0, 0.653125);
 
   private final String registryName;
 

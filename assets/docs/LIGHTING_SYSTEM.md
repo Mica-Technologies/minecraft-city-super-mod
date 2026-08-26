@@ -279,6 +279,25 @@ alone.
 - **Wall fixtures put their back plate at z = 16.** `AbstractBlockRotatableNSEW.getStateForPlacement`
   sets FACING to the placer's horizontal facing *opposite*, so a plate at high z ends up against
   the wall the player was looking at. This matches `altomvwl`.
+- **Nothing may sit exactly on a block boundary and face back into the block.** A surface drawn on
+  z = 16 is at precisely the depth of the neighbouring block's own inward face, which is also
+  drawn, and the depth buffer cannot separate them — it shimmers. Wall fixtures lathe about
+  `WALL_STANDOFF` (15.9) rather than 16. The same applies to one part landing on another's face:
+  a boss sitting on the plate behind it needs `COPLANAR_NUDGE`. A face on the boundary pointing
+  *out* of the block is culled and harmless.
+- **A lathe's outward reference must lean the way the profile leans.** A purely radial one is
+  perpendicular to the true normal wherever the profile runs flat — the top of a dome, the lip of
+  a bowl — so the winding test there turns on a dot product near zero and gets it wrong half the
+  time. Those faces then cull from outside and the shade has a hole in it viewed from above.
+  Which of the two perpendiculars is outward depends on how the profile was authored, so it is
+  settled once per surface, not per band: deciding per band breaks any profile that curves back
+  on itself, which is every torus.
+- **A jointed arm is one swept tube, not a row of struts.** Independent boxes meeting at an angle
+  interpenetrate — coplanar overlapping faces, so z-fighting — while the wedge on the outside of
+  the bend is an open hole. `sweep()` mitres the cross-section at each joint instead.
+- **Run `python dev-env-utils/scripts/audit_obj_models.py` after regenerating.** It finds all of
+  the above mechanically: coplanar overlaps, faces on block boundaries, and inconsistent winding.
+  Every one of those rules is there because the audit caught a real instance of it.
 - **Inventory transforms use `forge:default-block`.** These models are authored in 0..1 space with
   the block's min corner at the origin, which the preset frames correctly. Do not hand-write a
   transform dict without checking units first — blockstate translations are in *blocks*, not the
