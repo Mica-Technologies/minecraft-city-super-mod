@@ -1541,6 +1541,7 @@ tile.overhead_speed_limit_sign.name=Señal Elevada de Límite de Velocidad Varia
 tile.polemount_speed_limit_sign.name=Señal de Límite de Velocidad Variable en Poste
 tile.lane_control_signal.name=Semáforo de Control de Carril
 tile.dynamic_guide_sign.name=Señal Dinámica de Guía de Carretera
+tile.dynamic_street_sign.name=Señal Dinámica de Nombre de Calle
 tile.1hrtruckparkingsign.name=Aparcamiento de Camiones por 1 Hora
 tile.99onlypricesignnew.name=Señal de Precio 99 Cents Only (Nueva)
 tile.99onlypricesignnew2.name=Precios Más Bajos Garantizados

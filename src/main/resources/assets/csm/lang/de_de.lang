@@ -1541,6 +1541,7 @@ tile.overhead_speed_limit_sign.name=Überkopf-Variables Tempolimit-Schild
 tile.polemount_speed_limit_sign.name=Mastmontiertes Variables Tempolimit-Schild
 tile.lane_control_signal.name=Fahrstreifensignal
 tile.dynamic_guide_sign.name=Dynamisches Landstraßen-Wegweiserschild
+tile.dynamic_street_sign.name=Dynamisches Straßennamenschild
 tile.1hrtruckparkingsign.name=1 Std. LKW-Parken
 tile.99onlypricesignnew.name=99-Cent-Preisschild (Neu)
 tile.99onlypricesignnew2.name=Niedrigste Preise Garantiert
