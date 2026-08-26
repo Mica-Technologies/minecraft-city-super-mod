@@ -1541,6 +1541,7 @@ tile.overhead_speed_limit_sign.name=Variabelt Hastighetsbegränsningsvägmärke 
 tile.polemount_speed_limit_sign.name=Variabelt Hastighetsbegränsningsvägmärke (Stolpmonterat)
 tile.lane_control_signal.name=Körfältssignal
 tile.dynamic_guide_sign.name=Dynamisk Vägvisare
+tile.dynamic_street_sign.name=Dynamisk Gatunamnsskylt
 tile.1hrtruckparkingsign.name=1 h Lastbilsparkering
 tile.99onlypricesignnew.name=99 Cent-Prisskylt (Ny)
 tile.99onlypricesignnew2.name=Lägsta Priser Garanterade

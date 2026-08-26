@@ -155,6 +155,10 @@ public class CsmClientProxy implements ICsmProxy {
         new com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityDynamicGuideSignRenderer());
 
     ClientRegistry.bindTileEntitySpecialRenderer(
+        com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityDynamicStreetSign.class,
+        new com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityDynamicStreetSignRenderer());
+
+    ClientRegistry.bindTileEntitySpecialRenderer(
         com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityTrafficBeacon.class,
         new com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityTrafficBeaconRenderer());
 
