@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.tabs;
 
 import com.micatechnologies.minecraft.csm.CsmRegistry;
 import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
+import com.micatechnologies.minecraft.csm.lighting.BlockDecorativeChainFactory;
 import com.micatechnologies.minecraft.csm.lighting.BlockBrightLightFactory;
 import com.micatechnologies.minecraft.csm.lighting.BlockBrightLightPoleColoredFactory;
 import com.micatechnologies.minecraft.csm.lighting.BlockAltoLLM;
@@ -103,8 +104,8 @@ public class CsmTabLighting extends CsmTab {
     initTabBlock(new BlockBrightLightFactory("altorll", new AxisAlignedBB(0.312500, 0.000000, 0.187500, 0.687500, 0.250000, 1.000000), 0));
     initTabBlock(new BlockBrightLightFactory("altorell", new AxisAlignedBB(0.312500, 0.000000, 0.187500, 0.687500, 0.250000, 1.000000), 0));
     initTabBlock(new BlockBrightLightFactory("altosqll", new AxisAlignedBB(0.312500, 0.000000, 0.375000, 0.687500, 0.250000, 1.000000), 0));
-    initTabBlock(new BlockBrightLightFactory("cehalo", new AxisAlignedBB(0.375000, 1.000000, 0.375000, 0.625000, 1.100000, 0.625000), 0));
-    initTabBlock(new BlockBrightLightFactory("cesquare", new AxisAlignedBB(0.312500, 1.000000, 0.312500, 0.687500, 1.100000, 0.687500), 0));
+    initTabBlock(new BlockBrightLightFactory("cehalo", new AxisAlignedBB(0.150000, 0.937500, 0.150000, 0.850000, 1.000000, 0.850000), 0));
+    initTabBlock(new BlockBrightLightFactory("cesquare", new AxisAlignedBB(0.212500, 0.937500, 0.212500, 0.787500, 1.000000, 0.787500), 0));
     initTabBlock(new BlockBrightLightFactory("cinavion", new AxisAlignedBB(0.312500, 0.000000, 0.000000, 0.687500, 0.375000, 1.000000), 0));
     initTabBlock(new BlockBrightLightFactory("cinavionalt", new AxisAlignedBB(0.312500, 0.000000, -0.250000, 0.687500, 0.375000, 1.000000), 0));
     initTabBlock(new BlockBrightLightFactory("creeledway", new AxisAlignedBB(0.250000, 0.000000, 0.000000, 0.750000, 0.500000, 1.000000), 0));
@@ -179,6 +180,43 @@ public class CsmTabLighting extends CsmTab {
     initTabBlock(new BlockBrightLightFactory("whov50shaded", new AxisAlignedBB(0.125000, -0.187500, 0.062500, 0.875000, 0.375000, 1.000000), 0));
     initTabBlock(new BlockBrightLightFactory("whov50shadednp", new AxisAlignedBB(0.125000, -0.187500, 0.062500, 0.875000, 0.250000, 1.000000), 0));
     initTabBlock(new BlockBrightLightFactory("wsl", new AxisAlignedBB(0.437500, 0.000000, 0.875000, 0.562500, 1.000000, 1.000000), 0));
+    // Decorative pendants
+    initTabBlock(new BlockBrightLightFactory("pendschoolhouseblack", new AxisAlignedBB(0.187500, 0.225000, 0.187500, 0.812500, 1.000000, 0.812500), 0));
+    initTabBlock(new BlockBrightLightFactory("pendschoolhousebronze", new AxisAlignedBB(0.187500, 0.225000, 0.187500, 0.812500, 1.000000, 0.812500), 0));
+    initTabBlock(new BlockBrightLightFactory("pendschoolhousenickel", new AxisAlignedBB(0.187500, 0.225000, 0.187500, 0.812500, 1.000000, 0.812500), 0));
+    initTabBlock(new BlockBrightLightFactory("penddomeblack", new AxisAlignedBB(0.106250, 0.265625, 0.106250, 0.893750, 1.000000, 0.893750), 0));
+    initTabBlock(new BlockBrightLightFactory("penddomebronze", new AxisAlignedBB(0.106250, 0.265625, 0.106250, 0.893750, 1.000000, 0.893750), 0));
+    initTabBlock(new BlockBrightLightFactory("penddomenickel", new AxisAlignedBB(0.106250, 0.265625, 0.106250, 0.893750, 1.000000, 0.893750), 0));
+    initTabBlock(new BlockBrightLightFactory("pendconeblack", new AxisAlignedBB(0.156250, 0.215625, 0.156250, 0.843750, 1.000000, 0.843750), 0));
+    initTabBlock(new BlockBrightLightFactory("pendconebronze", new AxisAlignedBB(0.156250, 0.215625, 0.156250, 0.843750, 1.000000, 0.843750), 0));
+    initTabBlock(new BlockBrightLightFactory("pendconenickel", new AxisAlignedBB(0.156250, 0.215625, 0.156250, 0.843750, 1.000000, 0.843750), 0));
+    initTabBlock(new BlockBrightLightFactory("pendcagedblack", new AxisAlignedBB(0.301630, 0.281250, 0.315625, 0.698370, 1.000000, 0.684375), 0));
+    initTabBlock(new BlockBrightLightFactory("pendcagedbronze", new AxisAlignedBB(0.301630, 0.281250, 0.315625, 0.698370, 1.000000, 0.684375), 0));
+    initTabBlock(new BlockBrightLightFactory("pendcagednickel", new AxisAlignedBB(0.301630, 0.281250, 0.315625, 0.698370, 1.000000, 0.684375), 0));
+    initTabBlock(new BlockBrightLightFactory("pendglobeblack", new AxisAlignedBB(0.262867, 0.256250, 0.262867, 0.737133, 1.000000, 0.737133), 0));
+    initTabBlock(new BlockBrightLightFactory("pendglobebronze", new AxisAlignedBB(0.262867, 0.256250, 0.262867, 0.737133, 1.000000, 0.737133), 0));
+    initTabBlock(new BlockBrightLightFactory("pendglobenickel", new AxisAlignedBB(0.262867, 0.256250, 0.262867, 0.737133, 1.000000, 0.737133), 0));
+    // Decorative wall sconces
+    initTabBlock(new BlockBrightLightFactory("sconcehalfshellblack", new AxisAlignedBB(0.146875, 0.250000, 0.646875, 0.853125, 0.575000, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("sconcehalfshellbronze", new AxisAlignedBB(0.146875, 0.250000, 0.646875, 0.853125, 0.575000, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("sconcehalfshellnickel", new AxisAlignedBB(0.146875, 0.250000, 0.646875, 0.853125, 0.575000, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("sconcecolonialblack", new AxisAlignedBB(0.368750, 0.287500, 0.718750, 0.631250, 0.793750, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("sconcecolonialbronze", new AxisAlignedBB(0.368750, 0.287500, 0.718750, 0.631250, 0.793750, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("sconcecolonialnickel", new AxisAlignedBB(0.368750, 0.287500, 0.718750, 0.631250, 0.793750, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("sconcevanityblack", new AxisAlignedBB(0.087500, 0.378125, 0.693750, 0.912500, 0.621875, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("sconcevanitybronze", new AxisAlignedBB(0.087500, 0.378125, 0.693750, 0.912500, 0.621875, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("sconcevanitynickel", new AxisAlignedBB(0.087500, 0.378125, 0.693750, 0.912500, 0.621875, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("sconcelanternblack", new AxisAlignedBB(0.281250, 0.268750, 0.500000, 0.718750, 0.884375, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("sconcelanternbronze", new AxisAlignedBB(0.281250, 0.268750, 0.500000, 0.718750, 0.884375, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("sconcelanternnickel", new AxisAlignedBB(0.281250, 0.268750, 0.500000, 0.718750, 0.884375, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("sconcerlmblack", new AxisAlignedBB(0.100000, 0.256250, 0.112500, 0.900000, 0.800000, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("sconcerlmbronze", new AxisAlignedBB(0.100000, 0.256250, 0.112500, 0.900000, 0.800000, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("sconcerlmnickel", new AxisAlignedBB(0.100000, 0.256250, 0.112500, 0.900000, 0.800000, 1.000000), 0));
+    // Chain that extends any pendant's drop
+    initTabBlock(new BlockDecorativeChainFactory("pendchainblack"));
+    initTabBlock(new BlockDecorativeChainFactory("pendchainbronze"));
+    initTabBlock(new BlockDecorativeChainFactory("pendchainnickel"));
+
     initTabBlock(BlockAltoLLM.class, fmlPreInitializationEvent);
     initTabBlock(BlockFBM.class, fmlPreInitializationEvent);
     initTabBlock(BlockFBM2.class, fmlPreInitializationEvent);
