@@ -20,8 +20,6 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class BlockDynamicGuideSign extends AbstractBlockRotatableNSEW
     implements ICsmTileEntityProvider {
@@ -50,12 +48,26 @@ public class BlockDynamicGuideSign extends AbstractBlockRotatableNSEW
     return new TileEntityDynamicGuideSign();
   }
 
-  @SideOnly(Side.CLIENT)
+  /**
+   * Opens the editor, and consumes the click on BOTH sides.
+   *
+   * <p>The GUI is client-only -- {@code CsmGuiHandler.getServerGuiElement} returns null for every
+   * id, so {@code openGui} does nothing when called from the server and the screen has to be
+   * opened here. That is why this carried {@code @SideOnly(Side.CLIENT)}.
+   *
+   * <p>Which was the bug. Side-stripping removes the whole override from the server, so the server
+   * ran {@code Block.onBlockActivated}, got {@code false}, and went on to use whatever the player
+   * was holding -- right-clicking to edit a sign placed a block. The client is not the side that
+   * decides that. The method now exists on both sides and returns true on both; only the
+   * {@code openGui} call is client-guarded.
+   */
   @Override
   public boolean onBlockActivated(World world, BlockPos pos, IBlockState state,
       EntityPlayer player, EnumHand hand, EnumFacing facing,
       float hitX, float hitY, float hitZ) {
-    player.openGui(Csm.instance, 14, world, pos.getX(), pos.getY(), pos.getZ());
+    if (world.isRemote) {
+      player.openGui(Csm.instance, 14, world, pos.getX(), pos.getY(), pos.getZ());
+    }
     return true;
   }
 
@@ -65,18 +77,19 @@ public class BlockDynamicGuideSign extends AbstractBlockRotatableNSEW
     // the block's facing, not a canonical box waiting to be rotated. See getBoundingBox below,
     // which stops the base class rotating it a second time.
     //
-    // The panel is modeled at z = 14.5..16 and rotated by 0/90/180/270 degrees for
-    // SOUTH/WEST/NORTH/EAST, landing it on the south/east/north/west face respectively. The
-    // east/west pair being crossed is not a typo: the panel sits on the side OPPOSITE the
-    // direction it reads toward, which a west-facing sign viewed from directly overhead shows
-    // plainly -- it sits hard against the east edge of its own block.
+    // The panel is modeled at z = 14.5..16 reading toward -Z, and rotated by 0/90/180/270
+    // degrees for NORTH/WEST/SOUTH/EAST. It therefore sits on the side OPPOSITE the direction it
+    // reads toward, in every case: north face for SOUTH, east face for WEST, south face for
+    // NORTH, west face for EAST. That is not a typo, and it is now uniform -- the north/south
+    // pair used to be listed the other way round, which matched a renderer that drew those two
+    // backwards.
     EnumFacing facing = state.getValue(BlockHorizontal.FACING);
     final double t = 1.5 / 16.0;
     switch (facing) {
       case SOUTH:
-        return new AxisAlignedBB(0.0, 0.0, 1.0 - t, 1.0, 1.0, 1.0);
-      case NORTH:
         return new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 1.0, t);
+      case NORTH:
+        return new AxisAlignedBB(0.0, 0.0, 1.0 - t, 1.0, 1.0, 1.0);
       case WEST:
         return new AxisAlignedBB(1.0 - t, 0.0, 0.0, 1.0, 1.0, 1.0);
       case EAST:

@@ -130,8 +130,9 @@ public class TileEntityDynamicStreetSign extends AbstractTileEntity {
   @Override
   @SideOnly(Side.CLIENT)
   public double getMaxRenderDistanceSquared() {
-    // Blades carry small legend that is unreadable much past this; the renderer drops to a
-    // body-only LOD at 48 blocks and stops entirely at 96.
-    return 96.0 * 96.0;
+    // Matched to the guide sign (and the traffic signal heads) at 128 blocks. Blades stopped
+    // at 96 while every other dynamic sign around them kept drawing, which reads as the blade
+    // popping out of a junction rather than as distance. Full detail holds to 64 blocks.
+    return 128.0 * 128.0;
   }
 }
