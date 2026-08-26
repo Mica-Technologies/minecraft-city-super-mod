@@ -1,10 +1,11 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:lighting/shared_models/ceiling_square.obj",
+    "model": "csm:lighting/shared_models/pendant_caged_edison.obj",
     "textures": {
-      "#body": "csm:blocks/lighting/shared_textures/finish_white",
-      "#lens": "csm:blocks/lighting/shared_textures/lens_opal_off"
+      "#body": "csm:blocks/lighting/shared_textures/finish_black",
+      "#lens": "csm:blocks/lighting/shared_textures/lens_bulb_off",
+      "#shade": "csm:blocks/lighting/shared_textures/shade_enamel"
     },
     "custom": {
       "flip-v": true
@@ -28,22 +29,22 @@
     "state": {
       "0": {
         "textures": {
-          "#lens": "csm:blocks/lighting/shared_textures/lens_opal_off"
+          "#lens": "csm:blocks/lighting/shared_textures/lens_bulb_off"
         }
       },
       "1": {
         "textures": {
-          "#lens": "csm:blocks/lighting/shared_textures/lens_opal_on"
+          "#lens": "csm:blocks/lighting/shared_textures/lens_bulb_on"
         }
       },
       "2": {
         "textures": {
-          "#lens": "csm:blocks/lighting/shared_textures/lens_opal_off"
+          "#lens": "csm:blocks/lighting/shared_textures/lens_bulb_off"
         }
       },
       "3": {
         "textures": {
-          "#lens": "csm:blocks/lighting/shared_textures/lens_opal_on"
+          "#lens": "csm:blocks/lighting/shared_textures/lens_bulb_on"
         }
       }
     },
@@ -51,7 +52,7 @@
       {
         "transform": "forge:default-block",
         "textures": {
-          "#lens": "csm:blocks/lighting/shared_textures/lens_opal_on"
+          "#lens": "csm:blocks/lighting/shared_textures/lens_bulb_on"
         }
       }
     ],

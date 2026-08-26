@@ -1,19 +1,23 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:lighting/shared_models/commercial_electric_led_halo_light",
+    "model": "csm:lighting/shared_models/ceiling_halo.obj",
     "textures": {
-      "all": "csm:blocks/lighting/shared_textures/troffers",
-      "particle": "csm:blocks/lighting/shared_textures/troffers",
-      "0": "csm:blocks/lighting/shared_textures/troffers"
+      "#body": "csm:blocks/lighting/shared_textures/finish_white",
+      "#lens": "csm:blocks/lighting/shared_textures/lens_opal_off"
+    },
+    "custom": {
+      "flip-v": true
     }
   },
   "variants": {
     "facing": {
+      "north": {
+        "y": 0
+      },
       "east": {
         "y": 90
       },
-      "north": {},
       "south": {
         "y": 180
       },
@@ -22,13 +26,34 @@
       }
     },
     "state": {
-      "0": {},
-      "1": {},
-      "2": {},
-      "3": {}
+      "0": {
+        "textures": {
+          "#lens": "csm:blocks/lighting/shared_textures/lens_opal_off"
+        }
+      },
+      "1": {
+        "textures": {
+          "#lens": "csm:blocks/lighting/shared_textures/lens_opal_on"
+        }
+      },
+      "2": {
+        "textures": {
+          "#lens": "csm:blocks/lighting/shared_textures/lens_opal_off"
+        }
+      },
+      "3": {
+        "textures": {
+          "#lens": "csm:blocks/lighting/shared_textures/lens_opal_on"
+        }
+      }
     },
     "inventory": [
-      {}
+      {
+        "transform": "forge:default-block",
+        "textures": {
+          "#lens": "csm:blocks/lighting/shared_textures/lens_opal_on"
+        }
+      }
     ],
     "normal": [
       {}

@@ -1,0 +1,22 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:lighting/shared_models/pendant_chain.obj",
+    "textures": {
+      "#body": "csm:blocks/lighting/shared_textures/finish_nickel"
+    },
+    "custom": {
+      "flip-v": true
+    }
+  },
+  "variants": {
+    "inventory": [
+      {
+        "transform": "forge:default-block"
+      }
+    ],
+    "normal": [
+      {}
+    ]
+  }
+}
