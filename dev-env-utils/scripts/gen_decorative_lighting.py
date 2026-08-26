@@ -352,7 +352,8 @@ def disc(mesh, centre, radius, material, axis="y", facing=1.0, segments=SEGMENTS
          outward=_scale(e_axis, facing))
 
 
-def annulus(mesh, centre, inner, outer, material, axis="y", facing=-1.0, segments=SEGMENTS):
+def annulus(mesh, centre, inner, outer, material, axis="y", facing=-1.0, segments=SEGMENTS,
+            angle_span=(0.0, TAU)):
     """A flat ring -- the trim flange of a recessed downlight.
 
     Like `disc`, this cannot be a zero-height lathe: a lathe picks its winding from a radial
@@ -362,9 +363,10 @@ def annulus(mesh, centre, inner, outer, material, axis="y", facing=-1.0, segment
     along = _dot(centre, e_axis)
     base = _add(_scale(e_a, _dot(centre, e_a)), _scale(e_b, _dot(centre, e_b)))
     outward = _scale(e_axis, facing)
+    start, end = angle_span
     for i in range(segments):
-        a0 = TAU * i / segments
-        a1 = TAU * (i + 1) / segments
+        a0 = start + (end - start) * i / segments
+        a1 = start + (end - start) * (i + 1) / segments
         def at(radius, angle):
             return _add(base, _scale(e_axis, along),
                         _scale(_add(_scale(e_a, math.cos(angle)), _scale(e_b, math.sin(angle))),
@@ -647,10 +649,29 @@ def sconce_halfshell(mesh):
     # lying in the axis plane and pointing into the room -- which on z = 16 is exactly coplanar with
     # the neighbouring wall block's own face, pointing the same way. Two surfaces at one depth is
     # z-fighting, and it shimmered right across the back of the shell.
-    lathe(mesh, [(1.3, 4.4), (3.3, 5.1), (4.7, 6.2), (5.4, 7.5), (5.6, 8.8)],
-          LENS, centre=(8.0, WALL_STANDOFF), angle_span=(math.pi, TAU),
+    #
+    # The shell is WALLED, not a single skin. A lathe emits one side, and the side it emits faces
+    # away from the axis -- so an open bowl modelled as one surface is invisible from above, where
+    # you are looking at the back of every face and straight through to the wall. The liner is the
+    # same sweep drawn inward, and the flat ring at the mouth joins the two.
+    outer = [(1.3, 4.4), (3.3, 5.1), (4.7, 6.2), (5.4, 7.5), (5.6, 8.8)]
+    lathe(mesh, outer, LENS, centre=(8.0, WALL_STANDOFF), angle_span=(math.pi, TAU),
           close_start=True, close_sides=True)
-    lathe(mesh, [(5.65, 8.8), (5.65, 9.2)], BODY, centre=(8.0, WALL_STANDOFF),
+    # No `close_sides` on the liner: the outer shell's cut already fills that plane, and a second
+    # face on it would be coplanar, same-facing and fighting.
+    # No `close_start` on the liner either: `_cap` takes its facing from the profile slope, so both
+    # bottoms would face the same way on the same plane and overlap. The interior floor is an
+    # explicit disc facing up into the bowl instead.
+    lathe(mesh, [(radius - 0.25, along) for radius, along in outer], LENS,
+          centre=(8.0, WALL_STANDOFF), angle_span=(math.pi, TAU), flip=True)
+    disc(mesh, (8.0, 4.55, WALL_STANDOFF), 1.05, LENS, facing=1.0,
+         angle_span=(math.pi, TAU))
+    # The rim sits flush with the shell rather than overhanging it. A proud rim looks better and
+    # is wrong: the strip of flange past the shell's outer edge has nothing underneath, and since
+    # it only faces up you can see through it from below.
+    annulus(mesh, (8.0, 8.8, WALL_STANDOFF), 5.35, 5.62, BODY, facing=1.0,
+            angle_span=(math.pi, TAU))
+    lathe(mesh, [(5.62, 8.8), (5.62, 9.15)], BODY, centre=(8.0, WALL_STANDOFF),
           angle_span=(math.pi, TAU), close_sides=True)
 
 
