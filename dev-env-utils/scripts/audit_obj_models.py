@@ -18,8 +18,14 @@ in the decorative lighting family before this existed:
     open surfaces meeting at a seam trip it legitimately, so check the render before acting.
   * SEE-THROUGH -- rays from fourteen directions whose nearest hit is a BACK face. Back-face
     culling draws nothing there, so you look straight through the model. This is the check that
-    matters: a bowl modelled as one skin trips neither the winding nor the boundary count and is
-    still invisible from above, which is exactly the bug it was added for.
+    found the half-shell sconce, which was a single skin and invisible from above while tripping
+    neither the winding nor the boundary count.
+
+    Reported, never gated, because reading it takes judgement: a wire cage is SUPPOSED to be
+    see-through between its wires, and a shade open at the mouth is see-through from below. The
+    number is what matters, not its presence -- the half-shell was 348 rays of 528, while an open
+    cage is a handful. Directions that only see through into the block the fixture mounts against
+    are marked excused, since a ceiling or wall is there.
   * BOUNDARY EDGES -- an edge used by one triangle only, so the surface is open there. Counted, not
     judged: a shade's neck and a canopy's top are open on purpose. A jump in the count after an
     edit is the signal worth reading.
@@ -28,7 +34,8 @@ Usage:
     python audit_obj_models.py                     # every lighting shared model
     python audit_obj_models.py <model.obj> [...]   # specific files
 
-Exits non-zero if anything FAILs, so it can gate a commit.
+Exits non-zero on a FAIL -- coplanar overlap or a face on a block boundary, both of which are
+unambiguous -- so it can gate a commit. Winding and see-through are warnings to read.
 """
 
 import glob
@@ -203,6 +210,22 @@ def see_through(triangles, samples=RAY_GRID):
     lo, hi = tris.reshape(-1, 3).min(axis=0), tris.reshape(-1, 3).max(axis=0)
     centre, radius = (lo + hi) / 2.0, float(np.linalg.norm(hi - lo)) / 2.0 + 1e-3
 
+    # Which block faces this model mounts against. A ceiling downlight is open on top BECAUSE
+    # a ceiling is there, and a wall sconce is open at the back for the same reason -- reporting
+    # those as holes makes the tool cry wolf on every healthy model. A direction is excused when
+    # the viewer would have to stand inside the block the fixture is mounted to.
+    verts = tris.reshape(-1, 3)
+    touches_max = [bool((verts[:, i] > 1.0 - 1e-4).any()) for i in range(3)]
+    touches_min = [bool((verts[:, i] < 1e-4).any()) for i in range(3)]
+
+    def mounted(direction):
+        for i, component in enumerate(direction):
+            if component < 0 and touches_max[i]:
+                return True
+            if component > 0 and touches_min[i]:
+                return True
+        return False
+
     failures = []
     for direction in VIEW_DIRECTIONS:
         d = np.array(direction, dtype=np.float64)
@@ -239,7 +262,8 @@ def see_through(triangles, samples=RAY_GRID):
         seen = np.isfinite(best)
         through = seen & ~best_facing
         if through.any():
-            failures.append((direction, int(through.sum()), int(seen.sum())))
+            failures.append((direction, int(through.sum()), int(seen.sum()),
+                             mounted(direction)))
     return failures
 
 
@@ -252,14 +276,17 @@ def main():
         overlaps = coplanar_overlaps(triangles)
         boundary_faces = on_block_boundary(triangles)
         holes = see_through(triangles)
+        open_holes = [hole for hole in holes if not hole[3]]
         name = path.replace("\\", "/").rsplit("/", 1)[-1]
-        flag = "FAIL" if (overlaps or boundary_faces or holes) else ("warn" if inconsistent else "ok  ")
+        flag = ("FAIL" if (overlaps or boundary_faces)
+                else "warn" if (inconsistent or open_holes) else "ok  ")
         print("%s %-32s tris=%4d  winding=%-3d coplanar=%-3d onface=%-3d seethru=%-2d boundary=%d"
               % (flag, name, len(triangles), len(inconsistent), len(overlaps),
-                 len(boundary_faces), len(holes), len(boundary)))
-        for direction, count, seen in holes[:4]:
-            print("        see-through looking along %s: %d of %d rays hit a back face first"
-                  % (direction, count, seen))
+                 len(boundary_faces), len(open_holes), len(boundary)))
+        for direction, count, seen, is_mounted in holes[:5]:
+            print("        see-through looking along %s: %d of %d rays hit a back face first%s"
+                  % (direction, count, seen,
+                     "  (excused: mounts against a block that way)" if is_mounted else ""))
         for i, j in overlaps[:4]:
             centre = [sum(t[k] * 16 for t in triangles[i]) / 3 for k in range(3)]
             print("        coplanar overlap near (%.2f, %.2f, %.2f)" % tuple(centre))
@@ -270,7 +297,7 @@ def main():
         for i, j in inconsistent[:4]:
             centre = [sum(t[k] * 16 for t in triangles[i]) / 3 for k in range(3)]
             print("        winding flip near (%.2f, %.2f, %.2f)" % tuple(centre))
-        worst = max(worst, len(overlaps) + len(boundary_faces) + len(holes))
+        worst = max(worst, len(overlaps) + len(boundary_faces))
     return 1 if worst else 0
 
 
