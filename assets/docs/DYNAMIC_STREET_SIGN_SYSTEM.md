@@ -32,7 +32,7 @@ dependency, so it is usable on both sides. Gson serializes it to one NBT string 
 | Class | Role | Key facts |
 |---|---|---|
 | `StreetSignData` | The whole sign | `VERSION = 1`. Panel style (color, border 0–4, corners, mount, extruded frame, both-sides), lighting (`internalLight` + `SignLightMode`), legend (`prefix`, `streetName`, `suffix`, `cityText`, `textScale` 0.5–3.0), block-number slot, emblem slot, arrow slot, and `minWidth` / `minHeight` floors (16–320 / 8–64 sign px). String setters clamp to per-field length caps. `fromJson` is defensive — null/empty/malformed yields a fresh default and never throws, because it runs in the renderer and on the network path. `copy()` is a JSON round trip. |
-| `StreetSignMount` | How the blade hangs | `HANGING` (suspended below two mast-arm hangers, panel centered in the block's depth) or `FLAT` (back against the block behind, like a guide sign). `canBeDoubleSided()` is true only for HANGING. |
+| `StreetSignMount` | How the blade hangs | `HANGING` (suspended below two hangers that reach half a block above, panel centered in the block's depth) or `FLAT` (back against the block behind, like a guide sign). `canBeDoubleSided()` is true only for HANGING. |
 | `StreetSignSlotPosition` | Where an optional slot sits | `NONE` / `LEFT` / `RIGHT`, used independently by the block number, the emblem, and the arrow. |
 | `StreetSignVerticalPos` | Vertical placement | `TOP` / `MIDDLE` / `BOTTOM`. Used by the block number (real blades put it against an edge far more often than centered) and by `affixVertical`, which aligns the prefix and suffix against the street name's cap line, center, or baseline. |
 | `StreetSignEmblemKind` | What the emblem slot holds | `NONE` / `SHIELD` (a `GuideSignShieldType` with its route number drawn over it) / `LOGO` (a `StreetSignLogoType` cell). |
@@ -138,6 +138,7 @@ preview's fit math need — computed once so the two can never disagree.
 | `ROUTE_CAP_FRACTION` | `0.42` | Route-number cap height over a shield emblem. |
 | `CORNER_STEP` | `0.6` | Chamfer per outer corner for ROUND corners. |
 | `HANG_DROP` | `5.5` | How far below the block's top edge a hanging blade's top rail sits. |
+| `HANGER_REACH_ABOVE` | `8.0` | How far above its own block the hanger run reaches, so the clamp lands on the underside of a top slab. |
 
 `textScale` multiplies every legend metric and every gap, so the blade stays proportionate at
 any size.
@@ -178,7 +179,7 @@ Surplus from a floor leaves the content centered.
 | Core slab rear | `16.05` | `16 − faceZ − BACK_SLEEVE_LIP` = 8.70 |
 | Vertical placement | Centered on the block (`signTop = 8 + h/2`) | Hangs from `signTop = 16 − HANG_DROP` |
 | Back face | Never (a block is behind it) | When `doubleSided` |
-| Hangers | None | Two: shoe + rod + mast clamp |
+| Hangers | None | Two: shoe + rod + clamp, reaching half a block above |
 
 **The back face is the same draw inside a 180° Y rotation about the block center.** That
 rotation is orientation-preserving, so combined with the outer mirror the legend reads correctly
@@ -200,9 +201,42 @@ light and does not glow along with the face.
 ### Hangers
 
 Two assemblies inset `HANGER_INSET_FRACTION` from each end of the blade, each a shoe on the
-blade's top edge, a rod, and a clamp at `y = 16` where the mast arm would run. Members overlap by
-`JOINT_OVERLAP` so no two faces are ever coplanar. On a blade too narrow for two, they collapse
-to a single hanger down the middle. Ambient-lit, like the frame.
+blade's top edge, a rod, and a clamp. Members overlap by `JOINT_OVERLAP` so no two faces are ever
+coplanar. On a blade too narrow for two, they collapse to a single hanger down the middle.
+Ambient-lit, like the frame.
+
+The run reaches `HANGER_REACH_ABOVE = 8` sign px **past the top of its own block** — half a block
+up — and the clamp grips at the top of that run rather than at the block boundary, so whatever
+the run reaches is what the blade appears to hang from.
+
+Stopping at the boundary (`y = 16`) was only ever right for the things whose underside *is* that
+boundary: a full block, or a bottom slab. Anything mounted higher in the space above — a top
+slab, an upper step — left the blade hanging from nothing across a visible gap. Reaching `y = 24`
+covers those and costs nothing in the cases that already worked, because there the extra length
+is buried inside the block or slab above and never seen. The tile entity's render bounding box
+already extends four blocks up, so no culling change is needed; the block's own hitbox
+deliberately stays within `0..1` (the part of the hanger above the block is not clickable, the
+same way the guide sign's posts are not).
+
+### Traffic poles
+
+A traffic pole beside a blade decides whether to sprout a mount stub toward it, and the answer
+depends on the mount. A hanging blade already carries its own two hangers, so a pole stub would
+put a second, contradictory mount on the same sign -- it is ignored. A flat blade is bolted to
+whatever is behind it, which is exactly what a mount stub depicts, so it is left mountable.
+
+`AbstractBlockTrafficPole.IGNORE_BLOCK` cannot express that: it is class-based, so it can only
+say always or never. The decision therefore lives in `isIgnoredForItsState`, a third filter in
+`isMountableAdjacent` alongside the class list and the config-driven registry-name set. It is
+checked per placed block against its tile entity, and both pole types (straight and diagonal)
+funnel through that one method. With no tile entity attached yet -- it runs during chunk load --
+it falls back to the same default mount the sign's own hitbox uses, so the two cannot disagree.
+
+Changing the mount has to reach the neighbours, and the ordinary sync does not do it:
+`markDirtySync` explicitly does not re-render, and the pole's decision is evaluated in *its*
+`getActualState` during a chunk rebuild. `TileEntityDynamicStreetSign.refreshNeighborsOnMountChange`
+covers both sides -- a render update around the block on the client, a neighbour notification on
+the server -- and fires only when the mount actually changed.
 
 ### Lighting
 

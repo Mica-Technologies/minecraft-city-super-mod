@@ -48,10 +48,10 @@ import org.lwjgl.opengl.GL11;
  *
  * <p>What is different here is the mount. A {@link StreetSignMount#FLAT} blade sits against
  * the block behind it exactly like a guide sign. A {@link StreetSignMount#HANGING} blade is
- * centered in the block's depth, drops below two hangers that reach the block's top, and can
- * carry its legend on both faces -- the back face is the same draw inside a 180 degree Y
- * rotation about the block center, which is orientation-preserving and so reads correctly
- * (not mirrored) from behind.
+ * centered in the block's depth, drops below two hangers that reach half a block ABOVE its own
+ * block so they can grip a top slab, and can carry its legend on both faces -- the back face
+ * is the same draw inside a 180 degree Y rotation about the block center, which is
+ * orientation-preserving and so reads correctly (not mirrored) from behind.
  */
 public class TileEntityDynamicStreetSignRenderer
     extends TileEntitySpecialRenderer<TileEntityDynamicStreetSign> {
@@ -143,6 +143,17 @@ public class TileEntityDynamicStreetSignRenderer
   private static final float HANGER_CLAMP_DEPTH = 3.4f;
   /** Fraction of the blade's width the hangers are inset from each end. */
   private static final float HANGER_INSET_FRACTION = 0.22f;
+  /**
+   * How far above its own block the hanger run reaches -- half a block, so the clamp lands on
+   * the underside of a TOP slab sitting in the space above.
+   *
+   * <p>Stopping at the block boundary (16) was only ever right for the things whose underside
+   * IS that boundary: a full block, or a bottom slab. Anything mounted higher in the block
+   * above -- a top slab, an upper step -- left the blade hanging from nothing across a visible
+   * gap. Running to 24 covers those, and costs nothing in the cases that already worked: the
+   * extra length is inside a full block or inside a bottom slab, so it is never seen.
+   */
+  private static final float HANGER_REACH_ABOVE = 8.0f;
   /** Every member overlaps its neighbor by this much so no two faces are ever coplanar. */
   private static final float JOINT_OVERLAP = 0.3f;
 
@@ -389,7 +400,7 @@ public class TileEntityDynamicStreetSignRenderer
       l.signBottom = l.signTop - l.signHeight;
       l.faceZ = CZ - SIGN_DEPTH / 2.0f;
       l.coreBack = 16.0f - l.faceZ - Z_CORE_FRONT;
-      l.assemblyTop = 16.0f;
+      l.assemblyTop = 16.0f + HANGER_REACH_ABOVE;
       l.assemblyBottom = l.signBottom - l.borderInset - l.frameOverhangY;
     } else {
       l.signTop = CY + l.signHeight / 2.0f;
@@ -779,7 +790,10 @@ public class TileEntityDynamicStreetSignRenderer
 
     float shoeBottom = l.signTop + l.borderInset + l.frameOverhangY - JOINT_OVERLAP;
     float shoeTop = shoeBottom + HANGER_SHOE_HEIGHT;
-    float clampBottom = 16.0f - HANGER_CLAMP_HEIGHT;
+    // The clamp grips at the TOP of the run, not at the block boundary, so whatever the run
+    // reaches is what it appears to hang from.
+    float hangerTop = 16.0f + HANGER_REACH_ABOVE;
+    float clampBottom = hangerTop - HANGER_CLAMP_HEIGHT;
 
     List<RenderHelper.Box> parts = new ArrayList<>();
     for (float hx : centers) {
@@ -795,7 +809,7 @@ public class TileEntityDynamicStreetSignRenderer
       parts.add(new RenderHelper.Box(
           new float[]{hx - HANGER_CLAMP_WIDTH / 2, clampBottom,
               CZ - HANGER_CLAMP_DEPTH / 2},
-          new float[]{hx + HANGER_CLAMP_WIDTH / 2, 16.0f, CZ + HANGER_CLAMP_DEPTH / 2}));
+          new float[]{hx + HANGER_CLAMP_WIDTH / 2, hangerTop, CZ + HANGER_CLAMP_DEPTH / 2}));
     }
 
     Minecraft.getMinecraft().getTextureManager().bindTexture(WHITE_TEXTURE);
