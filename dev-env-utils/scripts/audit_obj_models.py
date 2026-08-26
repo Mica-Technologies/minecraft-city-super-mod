@@ -16,6 +16,10 @@ in the decorative lighting family before this existed:
     inside-out and culls from the side you are looking at. This is what makes the top of a shade
     disappear when viewed from above. Reported as a warning rather than a failure: two DIFFERENT
     open surfaces meeting at a seam trip it legitimately, so check the render before acting.
+  * SEE-THROUGH -- rays from fourteen directions whose nearest hit is a BACK face. Back-face
+    culling draws nothing there, so you look straight through the model. This is the check that
+    matters: a bowl modelled as one skin trips neither the winding nor the boundary count and is
+    still invisible from above, which is exactly the bug it was added for.
   * BOUNDARY EDGES -- an edge used by one triangle only, so the surface is open there. Counted, not
     judged: a shade's neck and a canopy's top are open on purpose. A jump in the count after an
     edit is the signal worth reading.
@@ -32,6 +36,8 @@ import itertools
 import math
 import os
 import sys
+
+import numpy as np
 
 REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 DEFAULT_GLOB = os.path.join(REPO_ROOT, "src", "main", "resources", "assets", "csm", "models",
@@ -167,6 +173,76 @@ def on_block_boundary(triangles):
     return hits
 
 
+
+#: View directions for the see-through test: the six axes plus the eight corners.
+VIEW_DIRECTIONS = ([(1, 0, 0), (-1, 0, 0), (0, 1, 0), (0, -1, 0), (0, 0, 1), (0, 0, -1)]
+                   + [(x, y, z) for x in (-1, 1) for y in (-1, 1) for z in (-1, 1)])
+RAY_GRID = 44
+
+
+def see_through(triangles, samples=RAY_GRID):
+    """Rays whose NEAREST hit is a back face -- i.e. you look straight through the model.
+
+    This is the check that matters, because it asks the question the eye asks. Winding and boundary
+    counts are proxies: a seam between two open surfaces trips them harmlessly, while a bowl
+    modelled as a single skin trips neither and is still invisible from above. Back-face culling
+    means the first thing a ray meets must be facing the ray; if it is facing away, nothing is
+    drawn there and you see whatever is behind the model.
+    """
+    if not triangles:
+        return []
+    tris = np.array(triangles, dtype=np.float64)
+    v0, v1, v2 = tris[:, 0], tris[:, 1], tris[:, 2]
+    edge1, edge2 = v1 - v0, v2 - v0
+    normals = np.cross(edge1, edge2)
+    lengths = np.linalg.norm(normals, axis=1)
+    keep = lengths > 1e-12
+    v0, edge1, edge2 = v0[keep], edge1[keep], edge2[keep]
+    normals = normals[keep] / lengths[keep, None]
+
+    lo, hi = tris.reshape(-1, 3).min(axis=0), tris.reshape(-1, 3).max(axis=0)
+    centre, radius = (lo + hi) / 2.0, float(np.linalg.norm(hi - lo)) / 2.0 + 1e-3
+
+    failures = []
+    for direction in VIEW_DIRECTIONS:
+        d = np.array(direction, dtype=np.float64)
+        d /= np.linalg.norm(d)
+        # Two axes across the view, so the rays tile the model's silhouette.
+        helper = np.array([0.0, 1.0, 0.0]) if abs(d[1]) < 0.9 else np.array([1.0, 0.0, 0.0])
+        u = np.cross(d, helper)
+        u /= np.linalg.norm(u)
+        w = np.cross(d, u)
+        steps = np.linspace(-radius, radius, samples)
+        grid_u, grid_w = np.meshgrid(steps, steps)
+        origins = (centre - d * radius * 2.0
+                   + grid_u.reshape(-1, 1) * u + grid_w.reshape(-1, 1) * w)
+
+        best = np.full(len(origins), np.inf)
+        best_facing = np.zeros(len(origins), dtype=bool)
+        for i in range(len(v0)):
+            # Moller-Trumbore, vectorised over rays for one triangle.
+            pvec = np.cross(d, edge2[i])
+            det = edge1[i] @ pvec
+            if abs(det) < 1e-12:
+                continue
+            tvec = origins - v0[i]
+            uu = (tvec @ pvec) / det
+            qvec = np.cross(tvec, edge1[i])
+            vv = (qvec @ d) / det
+            tt = (edge2[i] @ qvec.T) / det
+            hit = (uu >= 0) & (vv >= 0) & (uu + vv <= 1) & (tt > 1e-6) & (tt < best)
+            if not hit.any():
+                continue
+            best[hit] = tt[hit]
+            best_facing[hit] = (normals[i] @ d) < 0.0
+
+        seen = np.isfinite(best)
+        through = seen & ~best_facing
+        if through.any():
+            failures.append((direction, int(through.sum()), int(seen.sum())))
+    return failures
+
+
 def main():
     worst = 0
     paths = sys.argv[1:] or sorted(glob.glob(DEFAULT_GLOB))
@@ -175,11 +251,15 @@ def main():
         inconsistent, boundary = winding_and_boundary(triangles)
         overlaps = coplanar_overlaps(triangles)
         boundary_faces = on_block_boundary(triangles)
+        holes = see_through(triangles)
         name = path.replace("\\", "/").rsplit("/", 1)[-1]
-        flag = "FAIL" if (overlaps or boundary_faces) else ("warn" if inconsistent else "ok  ")
-        print("%s %-32s tris=%4d  winding=%-3d coplanar=%-3d onface=%-3d boundary=%d"
+        flag = "FAIL" if (overlaps or boundary_faces or holes) else ("warn" if inconsistent else "ok  ")
+        print("%s %-32s tris=%4d  winding=%-3d coplanar=%-3d onface=%-3d seethru=%-2d boundary=%d"
               % (flag, name, len(triangles), len(inconsistent), len(overlaps),
-                 len(boundary_faces), len(boundary)))
+                 len(boundary_faces), len(holes), len(boundary)))
+        for direction, count, seen in holes[:4]:
+            print("        see-through looking along %s: %d of %d rays hit a back face first"
+                  % (direction, count, seen))
         for i, j in overlaps[:4]:
             centre = [sum(t[k] * 16 for t in triangles[i]) / 3 for k in range(3)]
             print("        coplanar overlap near (%.2f, %.2f, %.2f)" % tuple(centre))
@@ -190,7 +270,7 @@ def main():
         for i, j in inconsistent[:4]:
             centre = [sum(t[k] * 16 for t in triangles[i]) / 3 for k in range(3)]
             print("        winding flip near (%.2f, %.2f, %.2f)" % tuple(centre))
-        worst = max(worst, len(overlaps) + len(boundary_faces))
+        worst = max(worst, len(overlaps) + len(boundary_faces) + len(holes))
     return 1 if worst else 0
 
 
