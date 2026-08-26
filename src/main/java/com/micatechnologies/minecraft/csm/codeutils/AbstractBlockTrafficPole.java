@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.codeutils;
 
 import com.micatechnologies.minecraft.csm.CsmConfig;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockDynamicStreetSign;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockPreemptBeacon;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockSnowBeacon;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficAccessoryNSEWUD;
@@ -9,6 +10,9 @@ import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficSignalF
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficSignalFatigueMitigator3;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficSignalFatigueMitigator4;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficStreetNameSignMount;
+import com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityDynamicStreetSign;
+import com.micatechnologies.minecraft.csm.trafficaccessories.streetsign.StreetSignData;
+import com.micatechnologies.minecraft.csm.trafficaccessories.streetsign.StreetSignMount;
 import com.micatechnologies.minecraft.csm.trafficsignals.AbstractBlockControllableCrosswalkSignal;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableTattleTaleBeacon;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignalHead;
@@ -56,6 +60,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.IStringSerializable;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -355,7 +360,42 @@ public abstract class AbstractBlockTrafficPole extends AbstractBlockRotatableNSE
         && CsmConfig.getTrafficPoleIgnoreBlockIds().contains(registryName)) {
       return false;
     }
+    if (isIgnoredForItsState(worldIn, pos)) {
+      return false;
+    }
     return BlockUtils.getIsBlockToSide(worldIn, pos, ignoreBlock);
+  }
+
+  /**
+   * The third filter: blocks a pole should ignore only in some of their states.
+   *
+   * <p>{@link #IGNORE_BLOCK} is class-based, so it can only say "always" or "never". That is
+   * the wrong answer for a block whose mounting hardware is part of its configuration rather
+   * than its type. This hook is checked per placed block against its tile entity, so such a
+   * block can be ignored in one state and mounted in another.
+   *
+   * <p>Today that is the dynamic street sign. On its hanging mount it swings below a mast arm
+   * on its own two hangers, and a pole sprouting a stub into it puts a second, contradictory
+   * mount on the same blade -- so a hanging blade is ignored. On its flat mount it is bolted
+   * to whatever is behind it, which is exactly what a pole mount stub exists to depict, so a
+   * flat blade is left mountable.
+   *
+   * @param worldIn the world/block access
+   * @param pos     the adjacent position to test
+   *
+   * @return {@code true} if this particular block, in its current state, should be ignored
+   */
+  private static boolean isIgnoredForItsState(IBlockAccess worldIn, BlockPos pos) {
+    if (!(worldIn.getBlockState(pos).getBlock() instanceof BlockDynamicStreetSign)) {
+      return false;
+    }
+    TileEntity tileEntity = worldIn.getTileEntity(pos);
+    // No tile entity yet means this ran during chunk load, before entities are attached. Fall
+    // back to the same default the sign's own hitbox uses, so the two cannot disagree.
+    StreetSignMount mount = tileEntity instanceof TileEntityDynamicStreetSign
+        ? ((TileEntityDynamicStreetSign) tileEntity).getSignData().getMountType()
+        : new StreetSignData().getMountType();
+    return mount == StreetSignMount.HANGING;
   }
 
   /**
