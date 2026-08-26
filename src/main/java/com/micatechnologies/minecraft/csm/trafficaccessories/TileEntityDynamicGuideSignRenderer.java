@@ -204,15 +204,19 @@ public class TileEntityDynamicGuideSignRenderer
     GlStateManager.translate(x, y, z);
     GlStateManager.translate(0.5, 0.0, 0.5);
 
+    // The panel is modelled on the block's +Z side reading toward -Z, so an unrotated draw faces
+    // NORTH. Assigning 0 degrees to SOUTH therefore rendered the north/south pair backwards --
+    // a sign set to face south showed its blank back to a viewer standing south of it -- while
+    // east and west, being a quarter turn either side, came out right and hid the error.
     float rotY = 0;
     switch (facing) {
-      case SOUTH:
+      case NORTH:
         rotY = 0;
         break;
       case WEST:
         rotY = 90;
         break;
-      case NORTH:
+      case SOUTH:
         rotY = 180;
         break;
       case EAST:

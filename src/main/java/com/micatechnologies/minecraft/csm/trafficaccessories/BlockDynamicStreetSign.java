@@ -22,8 +22,6 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 /**
  * The player-configurable intersection street-name blade. Everything visible is drawn by
@@ -73,12 +71,20 @@ public class BlockDynamicStreetSign extends AbstractBlockRotatableNSEW
     return new TileEntityDynamicStreetSign();
   }
 
-  @SideOnly(Side.CLIENT)
+  /**
+   * Opens the editor, and consumes the click on BOTH sides.
+   *
+   * <p>See {@link BlockDynamicGuideSign#onBlockActivated}: the GUI is client-only, but a
+   * {@code @SideOnly(Side.CLIENT)} override is absent from the server entirely, so the server fell
+   * through to the default and used the held item. Right-clicking to edit placed a block.
+   */
   @Override
   public boolean onBlockActivated(World world, BlockPos pos, IBlockState state,
       EntityPlayer player, EnumHand hand, EnumFacing facing,
       float hitX, float hitY, float hitZ) {
-    player.openGui(Csm.instance, GUI_ID, world, pos.getX(), pos.getY(), pos.getZ());
+    if (world.isRemote) {
+      player.openGui(Csm.instance, GUI_ID, world, pos.getX(), pos.getY(), pos.getZ());
+    }
     return true;
   }
 
@@ -92,11 +98,11 @@ public class BlockDynamicStreetSign extends AbstractBlockRotatableNSEW
    * blade is a slab through the middle of the block readable from both sides. One box for both
    * left the hanging blade untargetable from one side.
    *
-   * <p>The flat face mapping is the TESR's, read off a running game rather than derived: the
-   * panel is drawn on the south face for FACING SOUTH, the <b>east</b> face for WEST, the north
-   * face for NORTH and the <b>west</b> face for EAST. The east/west pair being crossed is not a
-   * typo — the panel sits on the side opposite the direction it reads toward, and a west-facing
-   * blade viewed from directly overhead sits hard against the east edge of its own block.
+   * <p>The flat face mapping is the TESR's: the panel sits on the side <b>opposite</b> the
+   * direction it reads toward, in every case — north face for FACING SOUTH, east face for WEST,
+   * south face for NORTH, west face for EAST. A west-facing blade viewed from directly overhead
+   * sits hard against the east edge of its own block. This used to be crossed for east/west only,
+   * matching a renderer that drew the north/south pair backwards.
    */
   @Override
   public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
@@ -116,9 +122,9 @@ public class BlockDynamicStreetSign extends AbstractBlockRotatableNSEW
     final double t = FLAT_THICKNESS;
     switch (facing) {
       case SOUTH:
-        return new AxisAlignedBB(0.0, 0.0, 1.0 - t, 1.0, 1.0, 1.0);
-      case NORTH:
         return new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 1.0, t);
+      case NORTH:
+        return new AxisAlignedBB(0.0, 0.0, 1.0 - t, 1.0, 1.0, 1.0);
       case WEST:
         return new AxisAlignedBB(1.0 - t, 0.0, 0.0, 1.0, 1.0, 1.0);
       case EAST:
