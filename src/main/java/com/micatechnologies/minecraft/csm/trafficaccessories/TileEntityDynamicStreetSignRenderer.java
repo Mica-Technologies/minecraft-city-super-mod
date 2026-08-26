@@ -157,6 +157,19 @@ public class TileEntityDynamicStreetSignRenderer
   /** Every member overlaps its neighbor by this much so no two faces are ever coplanar. */
   private static final float JOINT_OVERLAP = 0.3f;
 
+  // ---- Power feed cable ----------------------------------------------------------------
+  /**
+   * Square section of the feed cable. Matches the wire radius the sensor blocks' OBJ models use
+   * (0.018-0.022 blocks, so ~0.6 sign px across) so every cable in the mod reads at one weight.
+   */
+  private static final float CABLE_THICKNESS = 0.65f;
+  /** How far the cable bellies away from the blade at the middle of its run. */
+  private static final float CABLE_BOW = 0.7f;
+  /** Where along the frame's end casting the cable leaves, as a fraction of its width. */
+  private static final float CABLE_END_FRACTION = 0.35f;
+  /** Segments the bow is stepped in. Enough to read as a curve at the size it renders. */
+  private static final int CABLE_SEGMENTS = 8;
+
   // ---- Lighting / LOD -----------------------------------------------------------------------
   private static final int LIGHT_NIGHT_SKY_THRESHOLD = 8;
   private static final int FULLBRIGHT = 240;
@@ -491,6 +504,9 @@ public class TileEntityDynamicStreetSignRenderer
     }
     if (data.getMountType() == StreetSignMount.HANGING) {
       renderHangers(l);
+      if (data.hasExtrudedFrame()) {
+        renderPowerCable(l);
+      }
     }
 
     GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
@@ -817,6 +833,53 @@ public class TileEntityDynamicStreetSignRenderer
     BufferBuilder buf = tess.getBuffer();
     buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
     RenderHelper.addBoxesToBufferLit(parts, buf, 0.18f, 0.18f, 0.20f, 1.0f, 0, 0, 0,
+        ambientSkyLight, ambientBlockLight);
+    tess.draw();
+  }
+
+  /**
+   * The power feed: a cable leaving the top of the extruded frame's end casting and running up
+   * to the same height the hangers reach, so it disappears into whatever the blade hangs from
+   * rather than stopping in mid-air.
+   *
+   * <p>Drawn only for a framed hanging blade, which is the only configuration with anything to
+   * feed: the frame is the housing of an internally-lit sign, and a flat blade's conduit runs
+   * inside whatever it is bolted to, where nobody would see it. It leaves from beyond the
+   * blade's end rather than from the top rail, both because that is where the real ones are
+   * dressed and because there it is never hidden behind the panel.
+   *
+   * <p>The run bellies away from the blade in the middle and returns to the same x at both
+   * ends, which is what a slack cable between two fixed points does; a dead-straight one reads
+   * as a rod. Ambient-lit like the rest of the metalwork, so it stays dark against a glowing
+   * blade at night.
+   */
+  private void renderPowerCable(Layout l) {
+    float baseX = l.signRight + l.borderInset + FRAME_END * CABLE_END_FRACTION;
+    float baseY = l.signTop + l.borderInset + l.frameOverhangY - JOINT_OVERLAP;
+    float topY = 16.0f + HANGER_REACH_ABOVE;
+    float half = CABLE_THICKNESS / 2.0f;
+
+    List<RenderHelper.Box> cable = new ArrayList<>();
+    float previousX = baseX;
+    float previousY = baseY;
+    for (int i = 1; i <= CABLE_SEGMENTS; i++) {
+      float t = (float) i / CABLE_SEGMENTS;
+      float y = baseY + (topY - baseY) * t;
+      float x = baseX + CABLE_BOW * (float) Math.sin(Math.PI * t);
+      // Each segment spans both endpoints' x, so consecutive boxes overlap along the bow and
+      // the run reads as one cable rather than a ladder of disconnected pieces.
+      cable.add(new RenderHelper.Box(
+          new float[]{Math.min(previousX, x) - half, previousY, CZ - half},
+          new float[]{Math.max(previousX, x) + half, y, CZ + half}));
+      previousX = x;
+      previousY = y;
+    }
+
+    Minecraft.getMinecraft().getTextureManager().bindTexture(WHITE_TEXTURE);
+    Tessellator tess = Tessellator.getInstance();
+    BufferBuilder buf = tess.getBuffer();
+    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
+    RenderHelper.addBoxesToBufferLit(cable, buf, 0.11f, 0.11f, 0.12f, 1.0f, 0, 0, 0,
         ambientSkyLight, ambientBlockLight);
     tess.draw();
   }

@@ -180,6 +180,7 @@ Surplus from a floor leaves the content centered.
 | Vertical placement | Centered on the block (`signTop = 8 + h/2`) | Hangs from `signTop = 16 − HANG_DROP` |
 | Back face | Never (a block is behind it) | When `doubleSided` |
 | Hangers | None | Two: shoe + rod + clamp, reaching half a block above |
+| Power feed cable | None | When framed: one, from the end casting to the same height |
 
 **The back face is the same draw inside a 180° Y rotation about the block center.** That
 rotation is orientation-preserving, so combined with the outer mirror the legend reads correctly
@@ -237,6 +238,26 @@ Changing the mount has to reach the neighbours, and the ordinary sync does not d
 `getActualState` during a chunk rebuild. `TileEntityDynamicStreetSign.refreshNeighborsOnMountChange`
 covers both sides -- a render update around the block on the client, a neighbour notification on
 the server -- and fires only when the mount actually changed.
+
+### Power feed cable
+
+A framed **hanging** blade gets a thin cable from the top of its extruded frame's end casting up
+to the same height the hangers reach, so it disappears into whatever the blade hangs from rather
+than stopping in mid-air. `CABLE_THICKNESS = 0.65` sign px matches the wire radius the sensor
+blocks' OBJ models use (0.018–0.022 blocks), so every cable in the mod reads at one weight, and
+it is drawn a touch darker than the hangers so it reads as jacketed cable rather than bracketry.
+
+Drawn only when the frame is on **and** the mount is hanging — the only configuration with
+anything to feed, since the frame is the housing of an internally-lit sign and a flat blade's
+conduit runs inside whatever it is bolted to. It leaves from beyond the blade's end rather than
+from the top rail, both because that is where the real ones are dressed and because there it is
+never hidden behind the panel.
+
+The run bellies `CABLE_BOW` away from the blade at mid-height and returns to the same x at both
+ends, which is what a slack cable between two fixed points does; dead straight, it reads as a
+rod. It is stepped in `CABLE_SEGMENTS` boxes, each spanning both of its endpoints' x so
+consecutive boxes overlap along the bow and the run reads as one cable rather than a ladder.
+Ambient-lit like the rest of the metalwork, so it stays dark against a glowing blade at night.
 
 ### Lighting
 
