@@ -5,6 +5,7 @@ import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEW;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import com.micatechnologies.minecraft.csm.trafficaccessories.streetsign.StreetSignData;
 import com.micatechnologies.minecraft.csm.trafficaccessories.streetsign.StreetSignMount;
+import javax.annotation.Nonnull;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.SoundType;
@@ -82,14 +83,20 @@ public class BlockDynamicStreetSign extends AbstractBlockRotatableNSEW
   }
 
   /**
-   * The hitbox follows the mount the player picked, because the two mounts put the panel in
-   * completely different places: a flat blade is a thin slab against the face the TESR draws
-   * on, while a hanging blade is a slab through the middle of the block readable from both
-   * sides. Using one box for both left the hanging blade untargetable from one side.
+   * The hitbox, in <b>world orientation</b> — already correct for the block's facing, not a
+   * canonical box waiting to be rotated. {@link #getBoundingBox} below stops the base class
+   * rotating it again.
    *
-   * <p>Face mapping for the flat case is derived from the TESR's rotation, exactly as on the
-   * dynamic guide sign: FACING SOUTH/WEST/NORTH/EAST puts the panel on the south/east/north/
-   * west face.
+   * <p>It follows the mount, because the two mounts put the panel in completely different
+   * places: a flat blade is a thin slab against the face the TESR draws on, while a hanging
+   * blade is a slab through the middle of the block readable from both sides. One box for both
+   * left the hanging blade untargetable from one side.
+   *
+   * <p>The flat face mapping is the TESR's, read off a running game rather than derived: the
+   * panel is drawn on the south face for FACING SOUTH, the <b>east</b> face for WEST, the north
+   * face for NORTH and the <b>west</b> face for EAST. The east/west pair being crossed is not a
+   * typo — the panel sits on the side opposite the direction it reads toward, and a west-facing
+   * blade viewed from directly overhead sits hard against the east edge of its own block.
    */
   @Override
   public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
@@ -119,6 +126,27 @@ public class BlockDynamicStreetSign extends AbstractBlockRotatableNSEW
       default:
         return FULL_BLOCK_AABB;
     }
+  }
+
+  /**
+   * Takes the box above as final instead of rotating it.
+   *
+   * <p>{@link AbstractBlockRotatableNSEW#getBoundingBox} rotates whatever
+   * {@code getBlockBoundingBox} returns by the block's facing, which is the right service for a
+   * block that describes itself once in a canonical orientation. This one does not: it knows
+   * where the TESR put its panel for each facing and says so directly, so going through that
+   * rotation turns the box a second time and lands it on the wrong face.
+   *
+   * <p>That failure is invisible in a screenshot — the block still has a hitbox, still inside
+   * itself — and it survived review twice. It shows up only by reading the box back out of a
+   * running game, where a flat blade reported a box on the face opposite its panel and a
+   * north-facing one was the single case that happened to come out right. The symmetric hanging
+   * box was never affected, which is why placing a hanging blade felt fine throughout.
+   */
+  @Override
+  @Nonnull
+  public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
+    return getBlockBoundingBox(state, source, pos);
   }
 
   /**
