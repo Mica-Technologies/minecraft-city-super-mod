@@ -197,9 +197,9 @@ public class CsmTabLighting extends CsmTab {
     initTabBlock(new BlockBrightLightFactory("pendglobebronze", new AxisAlignedBB(0.262867, 0.256250, 0.262867, 0.737133, 1.000000, 0.737133), 0));
     initTabBlock(new BlockBrightLightFactory("pendglobenickel", new AxisAlignedBB(0.262867, 0.256250, 0.262867, 0.737133, 1.000000, 0.737133), 0));
     // Decorative wall sconces
-    initTabBlock(new BlockBrightLightFactory("sconcehalfshellblack", new AxisAlignedBB(0.146875, 0.250000, 0.646875, 0.853125, 0.575000, 1.000000), 0));
-    initTabBlock(new BlockBrightLightFactory("sconcehalfshellbronze", new AxisAlignedBB(0.146875, 0.250000, 0.646875, 0.853125, 0.575000, 1.000000), 0));
-    initTabBlock(new BlockBrightLightFactory("sconcehalfshellnickel", new AxisAlignedBB(0.146875, 0.250000, 0.646875, 0.853125, 0.575000, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("sconcehalfshellblack", new AxisAlignedBB(0.137500, 0.243750, 0.640625, 0.862500, 0.575000, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("sconcehalfshellbronze", new AxisAlignedBB(0.137500, 0.243750, 0.640625, 0.862500, 0.575000, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("sconcehalfshellnickel", new AxisAlignedBB(0.137500, 0.243750, 0.640625, 0.862500, 0.575000, 1.000000), 0));
     initTabBlock(new BlockBrightLightFactory("sconcecolonialblack", new AxisAlignedBB(0.368750, 0.287500, 0.718750, 0.631250, 0.793750, 1.000000), 0));
     initTabBlock(new BlockBrightLightFactory("sconcecolonialbronze", new AxisAlignedBB(0.368750, 0.287500, 0.718750, 0.631250, 0.793750, 1.000000), 0));
     initTabBlock(new BlockBrightLightFactory("sconcecolonialnickel", new AxisAlignedBB(0.368750, 0.287500, 0.718750, 0.631250, 0.793750, 1.000000), 0));
