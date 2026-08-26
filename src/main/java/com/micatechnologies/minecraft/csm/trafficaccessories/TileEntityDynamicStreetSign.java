@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.trafficaccessories;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractTileEntity;
 import com.micatechnologies.minecraft.csm.trafficaccessories.streetsign.StreetSignData;
+import com.micatechnologies.minecraft.csm.trafficaccessories.streetsign.StreetSignMount;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.fml.relauncher.Side;
@@ -29,9 +30,15 @@ public class TileEntityDynamicStreetSign extends AbstractTileEntity {
 
   @Override
   public void readNBT(NBTTagCompound compound) {
+    StreetSignMount previousMount = signDataJson.isEmpty() ? null : getSignData().getMountType();
     signDataJson = compound.getString(NBT_KEY);
     powered = compound.getBoolean(NBT_KEY_POWERED);
     cachedData = null;
+    // This is also the client's receive path for a sync, so it is where a mount change made on
+    // the server has to reach the neighbouring poles.
+    if (previousMount != null) {
+      refreshNeighborsOnMountChange(previousMount);
+    }
   }
 
   @Override
@@ -53,10 +60,36 @@ public class TileEntityDynamicStreetSign extends AbstractTileEntity {
   }
 
   public void setSignDataJson(String json) {
+    StreetSignMount previousMount = getSignData().getMountType();
     this.signDataJson = json != null ? json : "";
     this.cachedData = null;
     if (getWorld() != null) {
       markDirtySync(getWorld(), getPos(), true);
+      refreshNeighborsOnMountChange(previousMount);
+    }
+  }
+
+  /**
+   * Tells the neighbours when the mount changes, because a traffic pole decides whether to
+   * sprout a mount stub toward this block from the mount type -- a hanging blade already has
+   * its own hangers and is ignored, a flat one is bolted to something and is not.
+   *
+   * <p>Neither half of that is covered by the ordinary sync. {@code markDirtySync} explicitly
+   * does not re-render, and would only cover this block if it did; the pole's decision is
+   * evaluated in ITS {@code getActualState} during a chunk rebuild. Without this an adjacent
+   * pole keeps the stub it had until something else happens to update it.
+   *
+   * <p>It fires only on an actual mount change: nothing else on this sign is any of a
+   * neighbour's business, and a re-render per keystroke in the editing GUI would be waste.
+   */
+  private void refreshNeighborsOnMountChange(StreetSignMount previousMount) {
+    if (getWorld() == null || getSignData().getMountType() == previousMount) {
+      return;
+    }
+    if (getWorld().isRemote) {
+      getWorld().markBlockRangeForRenderUpdate(getPos().add(-1, -1, -1), getPos().add(1, 1, 1));
+    } else {
+      getWorld().notifyNeighborsOfStateChange(getPos(), getBlockType(), false);
     }
   }
 
@@ -86,8 +119,9 @@ public class TileEntityDynamicStreetSign extends AbstractTileEntity {
   @SideOnly(Side.CLIENT)
   public AxisAlignedBB getRenderBoundingBox() {
     // A blade may be forced out to 20 blocks wide and 4 tall (StreetSignData's min-size
-    // ceilings), centered on the block, and a hanging one carries its hangers above. The box
-    // must cover that or a wide blade culls the moment its own block leaves the frustum.
+    // ceilings), centered on the block, and a hanging one carries its hangers half a block
+    // above. The box must cover that or a wide blade culls the moment its own block leaves
+    // the frustum.
     return new AxisAlignedBB(
         pos.getX() - 10, pos.getY() - 3, pos.getZ() - 10,
         pos.getX() + 11, pos.getY() + 4, pos.getZ() + 11);
