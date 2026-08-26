@@ -239,6 +239,9 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   geometry for 11 models, draws the shared metal/shade/lens swatch textures, and emits all 33
   blockstates plus lang and tab-registration fragments from one catalogue, so an id cannot drift
   from its blockstate
+- `audit_obj_models.py` -- checks generated OBJ models for the faults that only show up in game:
+  coplanar overlapping faces and faces lying on a block boundary (both z-fighting), inconsistent
+  winding (a surface that culls from the side you are looking at), and open boundary edges
 - `preview_block_model.py` -- renders a Forge JSON element model or an OBJ against its texture offline, with Minecraft's face winding and UV origin, so stretched UVs and transparent bleed can be caught without launching the game
 
 These correspond to IntelliJ run configurations: `Check Block Item Integrity`, `Extract Bounding Boxes`, `Process Batch Rename`, `Sort Lang File(s)`, `Generate Signal Light Atlas`.
