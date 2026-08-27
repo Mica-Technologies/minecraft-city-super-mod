@@ -16,7 +16,11 @@ import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalViso
 import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
 /**
  * Tile entity utility class for traffic signal heads. This class assists in tracking and managing
@@ -27,6 +31,116 @@ import net.minecraft.util.math.AxisAlignedBB;
  * @since 2024.8.19
  */
 public class TileEntityTrafficSignalHead extends AbstractTileEntity {
+
+  /** {@link #getMountSuppression} bit meaning the low (or left) bracket end is suppressed. */
+  public static final int MOUNT_SUPPRESS_LOW = 1;
+
+  /** {@link #getMountSuppression} bit meaning the high (or right) bracket end is suppressed. */
+  public static final int MOUNT_SUPPRESS_HIGH = 2;
+
+  /**
+   * Cached mount-edge suppression mask, or -1 when it needs recomputing.
+   *
+   * <p>The renderer leaves a bracket end off where two heads share a bar, which means asking
+   * whether a signal head adjoins this one along the mount axis. That costs up to four
+   * {@code getTileEntity} lookups and four {@link BlockPos} allocations, and it used to run inside
+   * the per-frame mount pass -- so with a hundred intersections in view it happened on the order
+   * of a quarter of a million times a second, purely to decide whether to draw a bracket end.</p>
+   *
+   * <p>The answer changes only when a neighbouring block does, which is what
+   * {@link #invalidateMountSuppression()} handles. Not persisted: it is derived from the world.</p>
+   */
+  private transient int cachedMountSuppression = -1;
+
+  /**
+   * World time at which {@link #cachedMountSuppression} was last derived.
+   *
+   * <p>Neighbour invalidation alone is not quite enough. A head can render, and cache its answer,
+   * before the chunk holding the head beside it has loaded -- and a chunk loading fires no
+   * neighbour change here, so nothing would ever correct it. Re-deriving on a slow cadence closes
+   * that without giving the saving back: at sixty frames a second this still skips fifty-nine
+   * lookups out of sixty, and any stale answer fixes itself within a second.</p>
+   */
+  private transient long cachedMountSuppressionTick = Long.MIN_VALUE;
+
+  /** How long a derived mount-edge suppression answer is reused before being re-derived. */
+  private static final long MOUNT_SUPPRESSION_REFRESH_TICKS = 20L;
+
+  /**
+   * Drops the cached mount-edge suppression so the next render recomputes it. Called from the
+   * block's {@code neighborChanged} -- exactly when a head appearing or disappearing beside this
+   * one can change the answer.
+   */
+  public void invalidateMountSuppression() {
+    cachedMountSuppression = -1;
+    cachedMountSuppressionTick = Long.MIN_VALUE;
+  }
+
+  /**
+   * Returns which mount bracket ends to suppress because another head adjoins this one along the
+   * mount axis, as a mask of {@link #MOUNT_SUPPRESS_LOW} and {@link #MOUNT_SUPPRESS_HIGH}.
+   *
+   * @param horizontal whether this head uses horizontal body orientation, which changes the axis
+   *                   neighbours are looked for along
+   * @param state      this block's state; passed in because the caller already holds it
+   *
+   * @return the suppression mask
+   */
+  public int getMountSuppression(boolean horizontal, IBlockState state) {
+    World world = getWorld();
+    long now = world == null ? 0L : world.getTotalWorldTime();
+    if (cachedMountSuppression >= 0
+        && cachedMountSuppressionTick != Long.MIN_VALUE
+        && now - cachedMountSuppressionTick < MOUNT_SUPPRESSION_REFRESH_TICKS) {
+      return cachedMountSuppression;
+    }
+    int mask = 0;
+    if (world != null) {
+      BlockPos pos = getPos();
+      if (horizontal) {
+        if (state.getProperties().containsKey(AbstractBlockControllableSignalHead.FACING)) {
+          EnumFacing facing = state.getValue(AbstractBlockControllableSignalHead.FACING);
+          if (hasPairedSignalAlong(world, pos, facing.rotateYCCW())) {
+            mask |= MOUNT_SUPPRESS_LOW;
+          }
+          if (hasPairedSignalAlong(world, pos, facing.rotateY())) {
+            mask |= MOUNT_SUPPRESS_HIGH;
+          }
+        }
+      } else {
+        if (hasPairedSignalAlong(world, pos, EnumFacing.DOWN)) {
+          mask |= MOUNT_SUPPRESS_LOW;
+        }
+        if (hasPairedSignalAlong(world, pos, EnumFacing.UP)) {
+          mask |= MOUNT_SUPPRESS_HIGH;
+        }
+      }
+    }
+    cachedMountSuppression = mask;
+    cachedMountSuppressionTick = now;
+    return mask;
+  }
+
+  /**
+   * Whether a signal head sits one block along {@code dir}, or two through air -- doghouse add-ons
+   * leave a gap.
+   *
+   * @param world the world
+   * @param pos   this block's position
+   * @param dir   the direction to look along
+   *
+   * @return true if a paired signal head was found
+   */
+  private static boolean hasPairedSignalAlong(World world, BlockPos pos, EnumFacing dir) {
+    BlockPos adjacent = pos.offset(dir);
+    if (world.getTileEntity(adjacent) instanceof TileEntityTrafficSignalHead) {
+      return true;
+    }
+    if (world.isAirBlock(adjacent)) {
+      return world.getTileEntity(pos.offset(dir, 2)) instanceof TileEntityTrafficSignalHead;
+    }
+    return false;
+  }
 
   /**
    * Returns an expanded render bounding box so Minecraft's frustum culling doesn't hide
