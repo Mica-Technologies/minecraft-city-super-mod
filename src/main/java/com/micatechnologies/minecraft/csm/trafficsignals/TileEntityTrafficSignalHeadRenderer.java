@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
 import com.micatechnologies.minecraft.csm.codeutils.CsmDisplayListCache;
+import com.micatechnologies.minecraft.csm.codeutils.CsmRenderToggles;
 import com.micatechnologies.minecraft.csm.codeutils.CsmRenderUtils;
 import com.micatechnologies.minecraft.csm.codeutils.DirectionSixteen;
 import com.micatechnologies.minecraft.csm.codeutils.RenderHelper;
@@ -56,6 +57,13 @@ public class TileEntityTrafficSignalHeadRenderer extends
 
   // Fullbright lightmap coords (light level 15 << 4 = 240). Used for lit bulbs and the
   // visor-interior overdraw pass.
+  /**
+   * How many steps the lit-visor daylight tint is rounded to. The tint drives a display list key,
+   * so each step is a potential recompile; 32 keeps the banding invisible while the sun crosses a
+   * boundary only a handful of times per in-game day.
+   */
+  private static final int VISOR_TINT_BUCKETS = 32;
+
   private static final int LIGHTMAP_FULLBRIGHT_SKY = 240;
   private static final int LIGHTMAP_FULLBRIGHT_BLOCK = 240;
 
@@ -239,12 +247,26 @@ public class TileEntityTrafficSignalHeadRenderer extends
     }
 
     BlockPos pos = te.getPos();
-    // Fold every input the compiled geometry depends on into one key. combinedLight is 32 bits
-    // (packed sky << 16 | block), so it takes the low half and the colour state and lit-bulb mask
-    // are packed above it -- no field can alias another.
+
+    // The lit-visor overlay scales its colour by daylight, and that was the only thing stopping it
+    // being baked -- so quantise it. The tint is a smooth function of the sun, so rounding it to a
+    // fixed number of steps changes the picture imperceptibly while turning a per-frame value into
+    // one that changes a handful of times per in-game day. Measured at 62% of the whole frame
+    // before this; see the plan doc's attribution table.
+    int skyLightLevel = te.getWorld().getLightFor(EnumSkyBlock.SKY, te.getPos());
+    float sunBrightness = te.getWorld().getSunBrightness(partialTicks);
+    float daylightFactor = (skyLightLevel / 15.0f) * sunBrightness;
+    float rawTintScale = 1.0f - VISOR_DAYLIGHT_DIM_AMOUNT * daylightFactor;
+    int tintBucket = Math.max(0, Math.min(VISOR_TINT_BUCKETS,
+        Math.round(rawTintScale * VISOR_TINT_BUCKETS)));
+    float tintScale = (float) tintBucket / VISOR_TINT_BUCKETS;
+
+    // Fold every input the compiled geometry depends on into one key, each in its own bit range
+    // so no field can alias another.
     long stateKey = (combinedLight & 0xFFFFFFFFL)
-        | ((long) (signalColorState & 0xFF) << 32)
-        | ((long) (litMask & 0xFFFFFF) << 40);
+        | ((long) (signalColorState & 0xF) << 32)
+        | ((long) (tintBucket & 0x7F) << 36)
+        | ((long) (litMask & 0xFFFFF) << 43);
     int displayList = te.isStateDirty()
         ? CsmDisplayListCache.NO_LIST
         : DISPLAY_LISTS.get(pos, stateKey);
@@ -254,6 +276,15 @@ public class TileEntityTrafficSignalHeadRenderer extends
         GL11.glNewList(displayList, GL11.GL_COMPILE);
         renderStaticParts(sectionInfos, sectionYPositions, sectionXPositions, sectionSizes,
             horizontal, zPushBack, worldSkyLight, worldBlockLight);
+        // Baked in here rather than drawn per frame. It is safe to sit in the list because it
+        // draws geometry against the same WHITE_TEXTURE the static parts use and issues no
+        // GlStateManager calls of its own -- the two conditions the dynamic sign attempt failed.
+        // It also stays in the same position in the draw order it had when it ran per frame.
+        if (!CsmRenderToggles.skipSignalVisorInteriors
+            && !CsmRenderToggles.visorInteriorsPerFrame) {
+          renderLitVisorInteriors(sectionInfos, sectionYPositions, sectionXPositions, sectionSizes,
+              zPushBack, tintScale);
+        }
         GL11.glEndList();
         te.clearDirtyFlag();
       }
@@ -271,27 +302,26 @@ public class TileEntityTrafficSignalHeadRenderer extends
     // current, so the per-frame cost is negligible — and this bug occurs without shaders too
     // (any time display list compile order leaves WHITE_TEXTURE bound), so the bind must be
     // unconditional, not gated on the legacy shader-compatibility option.
-    Minecraft.getMinecraft().getTextureManager().bindTexture(WHITE_TEXTURE);
-    GL11.glCallList(displayList);
+    if (!CsmRenderToggles.skipSignalBody) {
+      Minecraft.getMinecraft().getTextureManager().bindTexture(WHITE_TEXTURE);
+      GL11.glCallList(displayList);
+    }
 
-    // Overlay the inner-colored faces of every lit visor at fullbright. The display list
-    // already drew them with the bulb tint but at world lightmap, so the reflected-light
-    // effect was getting dimmed by ambient lighting (looking dull at night/in shadow).
-    // Scale the overlay by daylight (sky exposure × sun brightness) so it eases off in
-    // direct sunlight, mimicking how a real reflected-light effect washes out in daylight.
-    int skyLightLevel = te.getWorld().getLightFor(EnumSkyBlock.SKY, te.getPos());
-    float sunBrightness = te.getWorld().getSunBrightness(partialTicks);
-    float daylightFactor = (skyLightLevel / 15.0f) * sunBrightness;
-    float tintScale = 1.0f - VISOR_DAYLIGHT_DIM_AMOUNT * daylightFactor;
-    renderLitVisorInteriors(sectionInfos, sectionYPositions, sectionXPositions, sectionSizes,
-        zPushBack, tintScale);
+    // The pre-baking path, kept behind a toggle purely so the two can be compared inside one
+    // session. Uses the raw tint rather than the bucketed one, as it did before.
+    if (CsmRenderToggles.visorInteriorsPerFrame && !CsmRenderToggles.skipSignalVisorInteriors) {
+      renderLitVisorInteriors(sectionInfos, sectionYPositions, sectionXPositions, sectionSizes,
+          zPushBack, rawTintScale);
+    }
 
     // Wall-clock flash timer — threaded into the bulb/Barlo paths so they can do 1300 ms /
     // 1000 ms modulo timing by reading the once-per-frame cached value instead of each
     // calling System.currentTimeMillis() (a JNI call that adds up with many visible signals).
     long gameMillis = CsmRenderUtils.gameMillis(te.getWorld(), partialTicks);
-    renderBulbs(sectionInfos, sectionYPositions, sectionXPositions, sectionSizes, zPushBack,
-        gameMillis);
+    if (!CsmRenderToggles.skipSignalBulbs) {
+      renderBulbs(sectionInfos, sectionYPositions, sectionXPositions, sectionSizes, zPushBack,
+              gameMillis);
+    }
 
     // Mount hardware renders outside the cached display list: adjacency changes (add-on
     // placed/broken beside this signal) don't invalidate the TE's dirty flag, so rebuilding
@@ -305,8 +335,10 @@ public class TileEntityTrafficSignalHeadRenderer extends
     // BracketSpec uses mountTiltAngle to inverse-rotate the target before solving, cancelling
     // the GL tilt out and leaving the arm tip at the actual world pole position.
     float mountTiltAngle = bodyDirection.getRotation() - getBaseFacingAngle(facing);
-    renderMount(te, blockState, sectionSizes, sectionYPositions, sectionXPositions, horizontal,
-        zPushBack, mountTiltAngle, worldSkyLight, worldBlockLight);
+    if (!CsmRenderToggles.skipSignalMount) {
+      renderMount(te, blockState, sectionSizes, sectionYPositions, sectionXPositions, horizontal,
+          zPushBack, mountTiltAngle, worldSkyLight, worldBlockLight);
+    }
 
     GL11.glPopMatrix();
 
