@@ -243,6 +243,27 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   coplanar overlapping faces and faces lying on a block boundary (both z-fighting), inconsistent
   winding (a surface that culls from the side you are looking at), and open boundary edges
 - `preview_block_model.py` -- renders a Forge JSON element model or an OBJ against its texture offline, with Minecraft's face winding and UV origin, so stretched UVs and transparent bleed can be caught without launching the game
+- `csm_bench.py` -- builds a dense grid of CSM content in a throwaway world and measures client
+  frame time against it over MCMCP (`build` / `measure` / `compare`). It pins the time, weather and
+  view distance, and refuses to report a figure taken while the frame rate is sitting at the
+  configured cap or before the scene has finished loading -- both of which have produced confident
+  nonsense before
+- `csm_bench_attribute.py` -- answers "where does the frame time actually go" by deleting one
+  category of block at a time and differencing. Subtractive rather than instrumented, so it cannot
+  be fooled by a mistaken belief about which code runs
+
+### Render pass toggles (in game)
+
+`/csm renderpass <list|skip|draw|reset> [pass]` turns an individual render pass off mid-session,
+and `/csm displaylists` reports what the geometry caches hold. Attributing *inside* a renderer this
+way, rather than by deleting blocks, is what finds the real target: on the crosswalk the pass that
+looked expensive was worth 1.5% of the frame and the one nobody suspected 10.3%, and on the dynamic
+signs the legend text everyone assumes is costly turned out to be under 3%. Skipping a pass draws
+the game incorrectly on purpose, so nothing persists across a restart.
+
+Before caching any render pass in a display list, read "Display lists: one texture, no cached state"
+in `assets/docs/TRAFFIC_SIGNAL_SYSTEM.md`. The constraints there are not obvious and have been
+rediscovered the hard way more than once.
 
 These correspond to IntelliJ run configurations: `Check Block Item Integrity`, `Extract Bounding Boxes`, `Process Batch Rename`, `Sort Lang File(s)`, `Generate Signal Light Atlas`.
 

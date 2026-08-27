@@ -975,7 +975,7 @@ Replace every untextured `disableTexture2D` draw with this sequence:
 through the shared private `litVertex(...)` helper. The original (non-`Lit`) methods are
 left unchanged for any caller that still uses them.
 
-### Display-list × texture-binding gotcha
+### Display lists: one texture, no cached state
 
 For TESRs that cache geometry in a GL display list (`glNewList` / `glCallList`), binding the
 white texture *inside* the list is **not** sufficient. Minecraft's
@@ -987,11 +987,51 @@ draws sample the atlas at UV `(0.5, 0.5)` — a near-white pixel — and the bod
 **white-tinted**. This is compile-order-dependent, which is why only *some* signals were
 affected.
 
-The fix is to **bind `WHITE_TEXTURE` outside the display list, every frame, immediately
-before `GL11.glCallList(displayList)`**. The bind inside the compiled geometry remains as a
-harmless defensive duplicate. New display-list TESRs should follow the same outside-list
+The fix is to **bind the texture outside the display list, every frame, immediately before
+`GL11.glCallList(displayList)`**. New display-list TESRs should follow the same outside-list
 pre-call pattern and add the combined light value to the cache-invalidation key (the lightmap
-is now baked into the vertex data, so the cache must rebuild when world light changes).
+is baked into the vertex data, so the cache must rebuild when world light changes).
+
+#### The general rule
+
+Compile-time elision is only half of it, and the half that is easy to miss cost three failed
+attempts at caching the signal bulbs. **`glCallList` changes real GL state without
+`GlStateManager` noticing**, because nothing routes through it. If a list rebinds the texture,
+the shadow state still names the *old* texture while the *new* one is genuinely bound — so the
+next `bindTexture(old)` is skipped as redundant and everything drawn afterwards, including the
+following tile entity, samples the wrong texture. That is why the failures varied frame to
+frame rather than failing consistently: compile order decided which signal got corrupted.
+
+So, for any geometry compiled into a display list:
+
+1. **One texture per list.** If a pass needs two, it needs two lists, each bound from outside.
+2. **No cached `GlStateManager` call inside the list.** `bindTexture`, `depthMask`, `color`,
+   `blend` and `cull` are all cached, so a call issued during `GL_COMPILE` may simply not be
+   recorded. Hoist them out — the crosswalk countdown's `depthMask(false)` / `depthMask(true)`
+   sit either side of its `glCallList` for exactly this reason.
+3. **`Tessellator.draw()` is not geometry-only.** It reaches `ForgeHooksClient.preDraw`, which
+   issues `glVertexPointer` / `glColorPointer` / `glTexCoordPointer` and `glEnableClientState`.
+   Those wrappers are *not* cached, so they are safe — but do not assume a "geometry" call is
+   only geometry.
+4. **Read the tile entity's dirty flag once, before anything clears it.** Several renderers call
+   `clearDirtyFlag()` inside the first pass that recompiles; a later pass re-reading the flag
+   always sees false and will happily serve a list compiled against the previous configuration.
+5. **A display list does not capture the model-view matrix**, so one list can be replayed under
+   several transforms — the street sign draws both faces of a double-sided blade from one list.
+
+#### Verifying a bake
+
+A screenshot diff proves nothing on its own, because the scene animates: signals flash, faces
+flash, countdown digits tick, and clouds drift even with the day cycle frozen. Two instruments
+make the comparison mean something, both driven by the `/csm renderpass` toggles:
+
+* **Make the scene provably still, then assert it.** Skip the animated passes, crop out the sky,
+  and confirm every frame pair is byte-identical *before* comparing baked against live.
+* **Always run a positive control.** Skip the pass under test entirely and confirm the pixels
+  move. Without it a "no difference" result may just mean the thing was never on screen.
+* **Where a pass cannot be stilled, use a matched interval.** Capture live, baked, live — so the
+  cross-path gap equals the same-path gap. Animation appears in both comparisons; a bake fault
+  appears only in the first.
 
 Note: the per-frame pre-call bind is now **unconditional** in the shipped renderer. It began
 life behind a `shaderCompatibilityMode` config gate, but the white-tint bug occurs without

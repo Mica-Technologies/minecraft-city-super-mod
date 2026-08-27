@@ -377,9 +377,18 @@ the cell.
 
 ### Performance note (display-list caching)
 
-The renderer currently does direct immediate-mode rendering every frame. A display-list cache was
-attempted and **removed** because compiling Tessellator/VBO geometry inside a display list desynced
-GlStateManager's cached GL state. `cleanupDisplayList(BlockPos)` exists as a no-op stub (called from
-the TE's `invalidate` / `onChunkUnload`) reserved for a future reintroduction. If revisited, state
-changes inside the list must use raw GL11 calls (not GlStateManager), and Tessellator+VBO
-interaction must be handled carefully. This is deferred until profiling shows it is needed.
+The sign's **background** — border, painted face and backing — is cached in a display list. The
+**legend** is not, and deliberately so: skipping the legend entirely is worth 0.4% of frame time at
+a dense test scene against 7.6% for the whole renderer, so there is nothing there to justify
+reproducing its interleaved white-pixel, atlas and font binds inside a list.
+
+The background list is keyed on the block's combined light **and on whether the sign is lit**. The
+lit bit is not optional: `SignLightMode.NIGHT` resolves against the sky every frame, so a sign can
+start and stop being lit without the tile entity ever being marked dirty. `cleanupDisplayList`
+releases the list from the TE's `invalidate` / `onChunkUnload`.
+
+An earlier attempt at caching the *whole* renderer was reverted, and the note that replaced it
+blamed "Tessellator/VBO interaction" and prescribed raw GL11 calls inside the list. **That
+diagnosis was wrong.** The real constraint is narrower and is set out in full under
+"Display lists: one texture, no cached state" in `TRAFFIC_SIGNAL_SYSTEM.md`. Read it before
+extending any list here.
