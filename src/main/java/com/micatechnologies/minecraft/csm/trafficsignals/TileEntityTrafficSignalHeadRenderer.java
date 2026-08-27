@@ -81,12 +81,21 @@ public class TileEntityTrafficSignalHeadRenderer extends
       new CsmDisplayListCache("traffic_signal_head");
 
   /**
+   * The bulb lens quads, cached separately from the body. They need their own list because they
+   * draw against a different texture than the body does, and a display list must contain geometry
+   * for exactly one texture -- see the bind discipline documented at the replay site below.
+   */
+  private static final CsmDisplayListCache BULB_DISPLAY_LISTS =
+      new CsmDisplayListCache("traffic_signal_head_bulbs");
+
+  /**
    * Cleans up the cached display list for a signal head at the given position.
    * Called from AbstractBlockControllableSignalHead.breakBlock() to prevent
    * stale entries from accumulating during long play sessions.
    */
   public static void cleanupDisplayList(BlockPos pos) {
     DISPLAY_LISTS.invalidate(pos);
+    BULB_DISPLAY_LISTS.invalidate(pos);
   }
 
   @Override
@@ -267,7 +276,22 @@ public class TileEntityTrafficSignalHeadRenderer extends
         | ((long) (signalColorState & 0xF) << 32)
         | ((long) (tintBucket & 0x7F) << 36)
         | ((long) (litMask & 0xFFFFF) << 43);
-    int displayList = te.isStateDirty()
+    // The bulbs take neither the world light nor the visor tint: every bulb vertex is emitted
+    // white at a fullbright lightmap, so only which lens is lit and what colour it shows can change
+    // the geometry. A narrower key means the bulb lists survive lighting changes the body's do not.
+    long bulbStateKey = (signalColorState & 0xFL)
+        | ((long) (litMask & 0xFFFFF) << 4);
+    // Read the dirty flag ONCE, before the body path clears it. Both caches key on geometry the
+    // flag governs (the section layout), and the body block calls clearDirtyFlag() as soon as it
+    // has recompiled -- so a bulb path that re-read the flag afterwards would always see false and
+    // happily serve a list compiled against the previous layout. That produced a one-frame stale
+    // bulb draw whenever a signal's sections changed, which is exactly the kind of intermittent
+    // wrongness a single screenshot comparison would have passed.
+    boolean stateDirty = te.isStateDirty();
+    if (stateDirty) {
+      BULB_DISPLAY_LISTS.invalidate(pos);
+    }
+    int displayList = stateDirty
         ? CsmDisplayListCache.NO_LIST
         : DISPLAY_LISTS.get(pos, stateKey);
     if (displayList == CsmDisplayListCache.NO_LIST) {
@@ -319,8 +343,52 @@ public class TileEntityTrafficSignalHeadRenderer extends
     // calling System.currentTimeMillis() (a JNI call that adds up with many visible signals).
     long gameMillis = CsmRenderUtils.gameMillis(te.getWorld(), partialTicks);
     if (!CsmRenderToggles.skipSignalBulbs) {
-      renderBulbs(sectionInfos, sectionYPositions, sectionXPositions, sectionSizes, zPushBack,
-              gameMillis);
+      // The bulb lens quads are static for a given lit/colour state, so they bake the same way the
+      // body does -- but they sample the signal atlas, not the white pixel, and that difference is
+      // the whole reason this took three failed attempts to get right.
+      //
+      // A display list must contain geometry for ONE texture, with the bind done OUTSIDE it. Two
+      // separate mechanisms punish a bind placed inside:
+      //
+      //   * At compile time, MC's TextureManager routes through GlStateManager, which skips the
+      //     real glBindTexture when it believes that texture is already current. A signal that
+      //     compiles while the atlas happens to be bound therefore records NO bind at all, and
+      //     replays against whatever texture is current then. This is the same trap already
+      //     documented for the body list above.
+      //   * At replay time -- and this is the half that is easy to miss -- glCallList changes the
+      //     real GL binding without GlStateManager noticing, because nothing routes through it.
+      //     Its shadow state still says WHITE_TEXTURE while the atlas is actually bound, so the
+      //     NEXT bindTexture(WHITE_TEXTURE) is elided as redundant and the mount pass, plus every
+      //     signal drawn after this one, samples the wrong texture. That desync is what made the
+      //     earlier attempts vary from frame to frame instead of failing consistently.
+      //
+      // Binding outside the list avoids both: the list holds only geometry, and the real binding
+      // after replay still matches what GlStateManager believes.
+      int bulbList = (stateDirty || CsmRenderToggles.bulbsPerFrame)
+          ? CsmDisplayListCache.NO_LIST
+          : BULB_DISPLAY_LISTS.get(pos, bulbStateKey);
+      if (bulbList == CsmDisplayListCache.NO_LIST) {
+        bulbList = CsmRenderToggles.bulbsPerFrame
+            ? CsmDisplayListCache.NO_LIST
+            : BULB_DISPLAY_LISTS.allocate(pos, bulbStateKey);
+        if (bulbList != CsmDisplayListCache.NO_LIST) {
+          GL11.glNewList(bulbList, GL11.GL_COMPILE);
+          renderBulbQuads(sectionInfos, sectionYPositions, sectionXPositions, sectionSizes,
+              zPushBack);
+          GL11.glEndList();
+        }
+      }
+      Minecraft.getMinecraft().getTextureManager().bindTexture(ATLAS_TEXTURE);
+      if (bulbList == CsmDisplayListCache.NO_LIST) {
+        renderBulbQuads(sectionInfos, sectionYPositions, sectionXPositions, sectionSizes,
+            zPushBack);
+      } else {
+        GL11.glCallList(bulbList);
+      }
+      // Strobe bars stay per frame: they are a wall-clock animation, so baking them would key a
+      // list on the millisecond.
+      renderBarloStrobeBars(sectionInfos, sectionYPositions, sectionXPositions, sectionSizes,
+          zPushBack, gameMillis);
     }
 
     // Mount hardware renders outside the cached display list: adjacency changes (add-on
@@ -632,10 +700,13 @@ public class TileEntityTrafficSignalHeadRenderer extends
    * Renders all bulb face quads in a single batched draw call. Pre-computes rotated vertex
    * positions in Java to avoid per-section GL matrix push/pop and separate draw calls.
    */
-  private void renderBulbs(TrafficSignalSectionInfo[] sectionInfos, float[] sectionYPositions,
-      float[] sectionXPositions, int[] sectionSizes, float zPushBack, long gameMillis) {
-    Minecraft.getMinecraft().getTextureManager().bindTexture(ATLAS_TEXTURE);
-
+  /**
+   * Emits the bulb lens quads and nothing else -- no texture bind, no GlStateManager call, no
+   * animated geometry. That restriction is what makes the pass safe to compile into a display
+   * list; see the call site for why each part of it matters.
+   */
+  private void renderBulbQuads(TrafficSignalSectionInfo[] sectionInfos, float[] sectionYPositions,
+      float[] sectionXPositions, int[] sectionSizes, float zPushBack) {
     Tessellator tessellator = Tessellator.getInstance();
     BufferBuilder buffer = tessellator.getBuffer();
     // BLOCK format = POSITION + COLOR + UV + LMAP. Per-vertex fullbright lightmap is what
@@ -725,10 +796,6 @@ public class TileEntityTrafficSignalHeadRenderer extends
     }
 
     tessellator.draw();
-
-    // Render Barlo strobe bars (dynamic, untextured white quads)
-    renderBarloStrobeBars(sectionInfos, sectionYPositions, sectionXPositions, sectionSizes,
-        zPushBack, gameMillis);
   }
 
   /** Emits one bulb vertex in BLOCK format with white tint and fullbright lightmap. */
