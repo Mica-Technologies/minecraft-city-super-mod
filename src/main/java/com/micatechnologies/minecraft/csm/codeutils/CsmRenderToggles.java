@@ -48,6 +48,13 @@ public final class CsmRenderToggles {
    */
   public static boolean visorInteriorsPerFrame = false;
 
+  /**
+   * Draw the bulb lens quads per frame instead of replaying their display list, the way they were
+   * drawn before they were baked. Kept so the two can be measured and pixel-compared inside one
+   * session; the baked path is what ships.
+   */
+  public static boolean bulbsPerFrame = false;
+
   private CsmRenderToggles() {
   }
 
@@ -63,6 +70,7 @@ public final class CsmRenderToggles {
     values.put("signalMount", skipSignalMount);
     values.put("signalBody", skipSignalBody);
     values.put("visorInteriorsPerFrame", visorInteriorsPerFrame);
+    values.put("bulbsPerFrame", bulbsPerFrame);
     return values;
   }
 
@@ -85,6 +93,8 @@ public final class CsmRenderToggles {
       skipSignalBody = skipped;
     } else if ("visorInteriorsPerFrame".equalsIgnoreCase(name)) {
       visorInteriorsPerFrame = skipped;
+    } else if ("bulbsPerFrame".equalsIgnoreCase(name)) {
+      bulbsPerFrame = skipped;
     } else {
       return false;
     }
@@ -98,6 +108,7 @@ public final class CsmRenderToggles {
     skipSignalMount = false;
     skipSignalBody = false;
     visorInteriorsPerFrame = false;
+    bulbsPerFrame = false;
   }
 
   /**
