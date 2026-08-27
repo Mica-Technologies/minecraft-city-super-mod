@@ -66,6 +66,16 @@ public class BlockTrafficSignalController extends AbstractBlock implements ICsmT
       BlockPos p_189540_5_) {
     int powered = world.getRedstonePowerFromNeighbors(pos);
     world.setBlockState(pos, state.withProperty(POWERED, powered > 0), 3);
+
+    // Tell the tile entity its cached power state is stale. The controller reads power from
+    // pauseTicking(), which the tickable base class evaluates on every world tick regardless of
+    // the controller's own tick rate; caching it there and invalidating here keeps the response
+    // immediate while removing twenty redundant neighbour probes a second. The tile entity
+    // survives the setBlockState above -- shouldRefresh only refreshes on a block-type change.
+    TileEntity tileEntity = world.getTileEntity(pos);
+    if (tileEntity instanceof TileEntityTrafficSignalController) {
+      ((TileEntityTrafficSignalController) tileEntity).invalidatePoweredCache();
+    }
   }
 
   @Override
