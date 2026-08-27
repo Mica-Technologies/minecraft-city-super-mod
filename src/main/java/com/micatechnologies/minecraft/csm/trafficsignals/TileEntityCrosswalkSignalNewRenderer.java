@@ -51,6 +51,14 @@ public class TileEntityCrosswalkSignalNewRenderer
     private static final CsmDisplayListCache DISPLAY_FACE_LISTS =
             new CsmDisplayListCache("crosswalk_display_face");
 
+    /**
+     * The 7-segment countdown overlay. Its dim "88" backing is fixed and its lit digits change
+     * once a second at most, so replaying it costs a fraction of rebuilding the segment quads on
+     * every frame.
+     */
+    private static final CsmDisplayListCache COUNTDOWN_LISTS =
+            new CsmDisplayListCache("crosswalk_countdown");
+
     private static final ResourceLocation WHITE_TEXTURE =
         new ResourceLocation("csm", "textures/blocks/white1px.png");
     private static final int LIGHTMAP_FULLBRIGHT_SKY = 240;
@@ -94,6 +102,7 @@ public class TileEntityCrosswalkSignalNewRenderer
     public static void cleanupDisplayList( BlockPos pos ) {
         DISPLAY_LISTS.invalidate( pos );
         DISPLAY_FACE_LISTS.invalidate( pos );
+        COUNTDOWN_LISTS.invalidate( pos );
     }
 
     @Override
@@ -159,7 +168,7 @@ public class TileEntityCrosswalkSignalNewRenderer
         // Horizontal arms: rendered with BASE facing only (no tilt) so pole-side
         // mount point stays stationary. Arms angle to meet the tilted stubs.
         // =============================================
-        if ( mountType != CrosswalkMountType.BASE ) {
+        if ( mountType != CrosswalkMountType.BASE && !CsmRenderToggles.skipCrosswalkArms ) {
             GL11.glPushMatrix();
             GL11.glTranslated( 8, 8, 8 );
             GL11.glRotatef( baseDirection.getRotation(), 0, 1, 0 );
@@ -186,7 +195,7 @@ public class TileEntityCrosswalkSignalNewRenderer
         }
 
         // Render stubs in the tilted context (before display list)
-        if ( mountType != CrosswalkMountType.BASE ) {
+        if ( mountType != CrosswalkMountType.BASE && !CsmRenderToggles.skipCrosswalkArms ) {
             renderBoxes( bodyColor, CrosswalkSignalVertexData.getStubData(
                     mountType, displayType ), worldSkyLight, worldBlockLight );
         }
@@ -203,6 +212,7 @@ public class TileEntityCrosswalkSignalNewRenderer
         boolean stateDirty = te.isStateDirty();
         if ( stateDirty ) {
             DISPLAY_FACE_LISTS.invalidate( pos );
+            COUNTDOWN_LISTS.invalidate( pos );
         }
         int displayList = stateDirty
                 ? CsmDisplayListCache.NO_LIST
@@ -269,11 +279,14 @@ public class TileEntityCrosswalkSignalNewRenderer
         // 7-segment countdown area:
         // - Single 16-inch: always renders on the signal face
         // - Double 12-inch HAND_MAN_COUNTDOWN: renders on the lower section
-        if ( displayType == CrosswalkDisplayType.SYMBOL ) {
-            renderCountdown( te, colorState, false );
+        if ( CsmRenderToggles.skipCrosswalkCountdown ) {
+            // measurement only
+        }
+        else if ( displayType == CrosswalkDisplayType.SYMBOL ) {
+            renderCountdown( te, colorState, false, pos, stateDirty );
         }
         else if ( bulbType == CrosswalkBulbType.HAND_MAN_COUNTDOWN ) {
-            renderCountdown( te, colorState, true );
+            renderCountdown( te, colorState, true, pos, stateDirty );
         }
 
         GL11.glPopMatrix();
@@ -638,9 +651,55 @@ public class TileEntityCrosswalkSignalNewRenderer
      *                       (centered at Y=6, scaled to fit 12-unit section)
      */
     private void renderCountdown( TileEntityCrosswalkSignalNew te, int colorState,
-            boolean isLowerSection ) {
+            boolean isLowerSection, BlockPos pos, boolean stateDirty ) {
+        // The bind and the depth mask both stay OUTSIDE the list. The bind because a display list
+        // may hold geometry for exactly one texture and a bind inside it is elided at compile time
+        // and desynchronises GlStateManager at replay; the depth mask for the same caching reason
+        // -- GlStateManager skips a depthMask call that matches what it believes is already set, so
+        // one recorded during GL_COMPILE may simply be missing from the list.
         Minecraft.getMinecraft().getTextureManager().bindTexture( WHITE_TEXTURE );
         GlStateManager.depthMask( false );
+
+        // Everything the segment quads depend on: which section they sit on, and the number shown
+        // (-1 when no digits are lit). The dim "88" backing is the same in every state, and the
+        // digits change at most once a second, so a signal holds one cached list for long stretches
+        // instead of rebuilding ~28 quads every frame.
+        int countdownValue = te.getCurrentCountdown();
+        int displayValue = ( countdownValue >= 0 && colorState == 1 )
+                ? Math.min( countdownValue, 99 )
+                : -1;
+        long countdownKey = ( isLowerSection ? 1L : 0L )
+                | ( (long) ( displayValue + 1 ) << 1 );
+        int countdownList = ( stateDirty || CsmRenderToggles.crosswalkCountdownPerFrame )
+                ? CsmDisplayListCache.NO_LIST
+                : COUNTDOWN_LISTS.get( pos, countdownKey );
+        if ( countdownList == CsmDisplayListCache.NO_LIST
+                && !CsmRenderToggles.crosswalkCountdownPerFrame ) {
+            countdownList = COUNTDOWN_LISTS.allocate( pos, countdownKey );
+            if ( countdownList != CsmDisplayListCache.NO_LIST ) {
+                GL11.glNewList( countdownList, GL11.GL_COMPILE );
+                renderCountdownQuads( displayValue, isLowerSection );
+                GL11.glEndList();
+            }
+        }
+        if ( countdownList == CsmDisplayListCache.NO_LIST ) {
+            renderCountdownQuads( displayValue, isLowerSection );
+        }
+        else {
+            GL11.glCallList( countdownList );
+        }
+
+        GlStateManager.depthMask( true );
+    }
+
+    /**
+     * Emits the countdown's segment quads and nothing else -- no texture bind and no
+     * GlStateManager call, which is what makes the pass safe to compile into a display list.
+     *
+     * @param displayValue   the number to light, or -1 for none
+     * @param isLowerSection true when drawing on the double signal's lower 12-inch section
+     */
+    private void renderCountdownQuads( int displayValue, boolean isLowerSection ) {
 
         // Positioning: on single 16-inch face, digits are in the right half.
         // On double 12-inch lower section, digits are centered on the section.
@@ -685,9 +744,7 @@ public class TileEntityCrosswalkSignalNewRenderer
         tess.draw();
 
         // --- Foreground layer: lit countdown digits (only during clearance) ---
-        int countdown = te.getCurrentCountdown();
-        if ( countdown >= 0 && colorState == 1 ) {
-            int displayValue = Math.min( countdown, 99 );
+        if ( displayValue >= 0 ) {
             int tens = displayValue / 10;
             int ones = displayValue % 10;
 
@@ -706,8 +763,6 @@ public class TileEntityCrosswalkSignalNewRenderer
             }
             tess.draw();
         }
-
-        GlStateManager.depthMask( true );
     }
 
     /**
