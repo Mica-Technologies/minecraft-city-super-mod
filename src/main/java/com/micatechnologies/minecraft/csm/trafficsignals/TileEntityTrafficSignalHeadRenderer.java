@@ -66,6 +66,9 @@ public class TileEntityTrafficSignalHeadRenderer extends
    * the tile entity's lifecycle callbacks and bounded as a backstop; see
    * {@link CsmDisplayListCache}.
    */
+  /** Read-only fallback pivot offset for a block that is not a controllable signal head. */
+  private static final int[] NO_TILT_PIVOT = new int[]{0, 0, 0};
+
   private static final CsmDisplayListCache DISPLAY_LISTS =
       new CsmDisplayListCache("traffic_signal_head");
 
@@ -115,11 +118,10 @@ public class TileEntityTrafficSignalHeadRenderer extends
 
     // Get tilt pivot offset for add-on signals that need to rotate in sync with
     // their parent signal (offset is in block units from this block to the main signal)
-    int[] tiltPivotOffset = new int[]{0, 0, 0};
-    if (blockState.getBlock() instanceof AbstractBlockControllableSignalHead) {
-      tiltPivotOffset = ((AbstractBlockControllableSignalHead) blockState.getBlock())
-          .getTiltPivotOffset(te.getWorld(), te.getPos());
-    }
+    int[] tiltPivotOffset = blockState.getBlock() instanceof AbstractBlockControllableSignalHead
+        ? ((AbstractBlockControllableSignalHead) blockState.getBlock())
+            .getTiltPivotOffset(te.getWorld(), te.getPos())
+        : NO_TILT_PIVOT;
 
     boolean hasTiltPivot = (tiltPivotOffset[0] != 0 || tiltPivotOffset[2] != 0)
         && bodyTilt != TrafficSignalBodyTilt.NONE;
