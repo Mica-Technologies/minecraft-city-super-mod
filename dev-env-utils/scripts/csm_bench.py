@@ -45,6 +45,21 @@ Measurement notes that matter for trusting the output
   That second figure is why `compare` refuses to draw conclusions from tick time by default. It
   is a rolling average that never fully settles between runs; treat it as indicative only, and
   only when a change is large, repeated, and consistent in direction across every pose.
+
+* **Comparing two builds means restarting the client, and that restart is itself a noise source
+  bigger than most changes worth measuring.** Two runs of one build inside a single session agree
+  to within about 2-3%. Two runs of the same build in *different* sessions have been seen to
+  differ by 5-7% -- enough to invent an improvement or hide one. A single cross-restart A/B
+  therefore cannot resolve anything smaller than roughly ten percent, and reading one as if it
+  could is how this harness first "measured" a change that mechanically could not have been
+  slower than its baseline.
+
+  For a change below that threshold, do not A/B across restarts. Put the old and new paths behind
+  a runtime toggle so both can be measured inside one session, and compare there. Failing that,
+  alternate several runs per build and compare medians of medians -- never one run each.
+
+* Attribution (`csm_bench_attribute.py`) does not have this problem: it removes content and
+  re-measures inside a single session, so its numbers are directly comparable.
 """
 
 import argparse
@@ -69,7 +84,10 @@ SERVER_URL = "http://127.0.0.1:25586/mcp"
 # A grid of intersections. Deterministic: no randomness anywhere, so the same build command
 # produces the same world and two measurement runs differ only by the code under test.
 
-GRID = 5                 # GRID x GRID intersections
+# Scaled for the server side, not the client. At 25 intersections the whole server tick ran at
+# 0.3 ms and meanTickMillis could not resolve any change from noise -- percentage deltas on a
+# number that small are meaningless. 100 powered controllers puts real work in the tick.
+GRID = 10                # GRID x GRID intersections
 SPACING = 16             # blocks between intersection centres
 ORIGIN = (0, 5, 0)       # south-west corner of the grid
 ROAD_Y = 4               # road surface
@@ -229,7 +247,12 @@ def intersection_blocks(cx, cz):
         out.append({"x": cx + dx, "y": MAST_Y - 4, "z": cz + dz,
                     "block": CROSSWALK, "metadata": FACINGS[i]})
     # One controller cabinet per intersection -- this is the ticking half of the benchmark.
+    # It must be POWERED: pauseTicking() short-circuits an unpowered controller, so a scene full
+    # of dark cabinets measures nothing at all on the server side. A redstone block beside each
+    # one keeps them all running.
     out.append({"x": cx + 4, "y": ROAD_Y + 1, "z": cz + 4, "block": CONTROLLER, "metadata": 0})
+    out.append({"x": cx + 5, "y": ROAD_Y + 1, "z": cz + 4,
+                "block": "minecraft:redstone_block", "metadata": 0})
     # Street name blade and a guide sign: the two renderers with no display list caching.
     out.append({"x": cx - 4, "y": MAST_Y, "z": cz - 4, "block": STREET_SIGN, "metadata": 0})
     out.append({"x": cx + 6, "y": MAST_Y + 1, "z": cz - 6, "block": GUIDE_SIGN, "metadata": 0})

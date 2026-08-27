@@ -368,6 +368,12 @@ public abstract class AbstractBlockControllableSignalHead extends AbstractBlockC
   public void neighborChanged(IBlockState state, World worldIn, BlockPos pos,
       net.minecraft.block.Block blockIn, BlockPos fromPos) {
     ensureTileEntity(worldIn, pos);
+    // A head appearing or disappearing beside this one changes whether the mount bracket keeps
+    // its end cap, and the renderer caches that answer rather than re-deriving it every frame.
+    net.minecraft.tileentity.TileEntity tileEntity = worldIn.getTileEntity(pos);
+    if (tileEntity instanceof TileEntityTrafficSignalHead) {
+      ((TileEntityTrafficSignalHead) tileEntity).invalidateMountSuppression();
+    }
     super.neighborChanged(state, worldIn, pos, blockIn, fromPos);
   }
 
