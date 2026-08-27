@@ -244,6 +244,104 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
   private transient Map<Integer, Long> overheightCircuitHoldTimers = new HashMap<>();
 
   /**
+   * How often, in world ticks, the configuration validators re-run even when nothing has
+   * explicitly invalidated them. Both validators (sensor facing in NORMAL, programmed plan in
+   * ADVANCED) walk every circuit and resolve a blockstate per linked device, so running them on
+   * every tick is wasted work: their verdict can only change when the configuration changes,
+   * and every configuration path routes through {@link #resetController(boolean, boolean)}.
+   * <p>
+   * The periodic re-run exists for the one case explicit invalidation cannot see: a player
+   * breaking or replacing a linked device block, which never notifies the controller. Without it,
+   * a setup broken that way would run unvalidated until the next configuration edit. With it, the
+   * fault still appears on its own — just within ten seconds rather than within one.
+   * </p>
+   *
+   * @since 2026.8
+   */
+  private static final long CONFIG_VALIDATION_REVALIDATE_INTERVAL_TICKS = 200L;
+
+  /**
+   * Whether the cached sensor-facing validation verdict needs recomputing. Set by
+   * {@link #invalidateConfigValidation()}; starts true so a freshly constructed or freshly
+   * loaded tile entity always validates on its first tick. Not persisted to NBT.
+   *
+   * @since 2026.8
+   */
+  private transient boolean sensorFacingValidationDirty = true;
+
+  /**
+   * Cached result of the last sensor-facing validation: the fault message, or {@code null} when
+   * the configuration validated cleanly. Only meaningful while
+   * {@link #sensorFacingValidationDirty} is false. Not persisted to NBT.
+   *
+   * @since 2026.8
+   */
+  private transient String cachedSensorFacingError = null;
+
+  /**
+   * Whether the cached programmed-plan validation verdict needs recomputing. Tracked separately
+   * from {@link #sensorFacingValidationDirty} so that a controller whose operating mode flips
+   * between NORMAL and ADVANCED cannot consume the other validator's cleared flag and skip its
+   * own first validation. Not persisted to NBT.
+   *
+   * @since 2026.8
+   */
+  private transient boolean planValidationDirty = true;
+
+  /**
+   * Cached result of the last programmed-plan validation: the fault message, or {@code null} when
+   * the plan validated cleanly. Only meaningful while {@link #planValidationDirty} is false. Not
+   * persisted to NBT.
+   *
+   * @since 2026.8
+   */
+  private transient String cachedPlanValidationError = null;
+
+  /**
+   * World time (in ticks) at which the configuration validators last actually ran, used to drive
+   * {@link #CONFIG_VALIDATION_REVALIDATE_INTERVAL_TICKS}. Not persisted to NBT.
+   *
+   * @since 2026.8
+   */
+  private transient long lastConfigValidationTick = Long.MIN_VALUE;
+
+  /**
+   * How often, in world ticks, the cached redstone power state is re-read from the world even
+   * when no neighbour change has invalidated it. This is a backstop, not the primary mechanism:
+   * {@link BlockTrafficSignalController#neighborChanged} invalidates the cache the moment the
+   * redstone around the cabinet actually changes, so response time is unchanged from reading the
+   * world directly. The interval only bounds how long a hypothetical missed notification could
+   * go unnoticed.
+   *
+   * @since 2026.8
+   */
+  private static final long POWERED_CACHE_BACKSTOP_INTERVAL_TICKS = 20L;
+
+  /**
+   * Cached result of the last {@code isBlockPowered} probe. Only meaningful while
+   * {@link #poweredCacheValid} is true. Not persisted to NBT.
+   *
+   * @since 2026.8
+   */
+  private transient boolean cachedPowered = false;
+
+  /**
+   * Whether {@link #cachedPowered} holds a usable value. Starts false so the first
+   * {@link #pauseTicking()} call after construction or load always probes the world.
+   *
+   * @since 2026.8
+   */
+  private transient boolean poweredCacheValid = false;
+
+  /**
+   * World time (in ticks) at which {@link #cachedPowered} was last refreshed from the world.
+   * Only meaningful while {@link #poweredCacheValid} is true. Not persisted to NBT.
+   *
+   * @since 2026.8
+   */
+  private transient long poweredCacheTick = Long.MIN_VALUE;
+
+  /**
    * Default yellow clearance time, in ticks (20 ticks = 1 second). Also surfaced in the
    * controller block's inventory tooltip.
    *
@@ -413,7 +511,7 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
    */
   @Override
   public boolean pauseTicking() {
-    boolean shouldPause = !getWorld().isBlockPowered(getPos()) && !powerLossFallbackToFlashMode;
+    boolean shouldPause = !isControllerPowered() && !powerLossFallbackToFlashMode;
 
     // Mark dirty if the paused state has changed
     if (shouldPause != paused) {
@@ -506,11 +604,21 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
       // and inflates phase priority — fault here so the broken setup gets visible attention
       // instead of degrading silently. Other modes don't use sensor facing the same way and
       // are not subject to this check.
+      long tickTime = getWorld().getTotalWorldTime();
+
       if (mode == TrafficSignalControllerMode.NORMAL
           && operatingMode == TrafficSignalControllerMode.NORMAL
           && !isInFaultState()) {
-        String mismatch = TrafficSignalControllerTickerUtilities.validateSensorFacings(
-            getWorld(), circuits);
+        // The verdict only changes when the configuration changes, so reuse the cached one
+        // rather than re-resolving a blockstate for every linked device on every tick. See
+        // CONFIG_VALIDATION_REVALIDATE_INTERVAL_TICKS for why it still re-runs periodically.
+        if (shouldRunConfigValidation(sensorFacingValidationDirty, tickTime)) {
+          cachedSensorFacingError = TrafficSignalControllerTickerUtilities.validateSensorFacings(
+              getWorld(), circuits);
+          sensorFacingValidationDirty = false;
+          lastConfigValidationTick = tickTime;
+        }
+        String mismatch = cachedSensorFacingError;
         if (mismatch != null) {
           enterFaultState(mismatch);
           invalidateTickRateCache();
@@ -519,7 +627,6 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
       }
 
       // Pass tick event to traffic signal controller ticker
-      long tickTime = getWorld().getTotalWorldTime();
       long timeSinceLastPhaseChange = tickTime - lastPhaseChangeTime;
       long timeSinceLastPhaseApplicabilityChange = tickTime - lastPhaseApplicabilityChangeTime;
       TrafficSignalPhase newPhase;
@@ -545,7 +652,15 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
         // because it carries its own mutable runtime state machine. A misconfigured plan faults
         // with a descriptive message rather than running undefined.
         TrafficSignalProgrammedPhasePlan plan = getOrCreateProgrammedPhasePlan();
-        String validationError = plan.validate(circuits);
+        // Same caching rationale as the sensor-facing check above -- plan.validate() re-walks
+        // every enabled phase and its circuit's signal lists, and ADVANCED ticks ten times a
+        // second, so this was by far the hottest thing in the ADVANCED path.
+        if (shouldRunConfigValidation(planValidationDirty, tickTime)) {
+          cachedPlanValidationError = plan.validate(circuits);
+          planValidationDirty = false;
+          lastConfigValidationTick = tickTime;
+        }
+        String validationError = cachedPlanValidationError;
         if (validationError != null) {
           enterFaultState(validationError);
           invalidateTickRateCache();
@@ -658,6 +773,11 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
    */
   @Override
   public void readNBT(NBTTagCompound compound) {
+    // Everything the configuration validators inspect is about to be replaced, so drop their
+    // cached verdicts. (The transient flags already default to dirty on a freshly constructed
+    // tile entity; this covers a re-read into an existing one.)
+    invalidateConfigValidation();
+
     // Load the traffic signal controller mode (key unchanged — "tcMode")
     if (compound.hasKey(TrafficSignalControllerNBTKeys.MODE)) {
       mode = TrafficSignalControllerMode.fromNBT(
@@ -2126,8 +2246,78 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
    *
    * @since 2.0
    */
+  /**
+   * Marks both configuration validators dirty so the next tick recomputes their verdicts instead
+   * of reusing the cached ones. Called from every path that can change what the validators would
+   * conclude: device link/unlink, mode change, retiming, plan edits, controller reset, and NBT
+   * load.
+   *
+   * @see #CONFIG_VALIDATION_REVALIDATE_INTERVAL_TICKS
+   * @since 2026.8
+   */
+  private void invalidateConfigValidation() {
+    sensorFacingValidationDirty = true;
+    planValidationDirty = true;
+  }
+
+  /**
+   * Marks the cached redstone power state stale so the next {@link #pauseTicking()} call re-reads
+   * it from the world. Called from {@link BlockTrafficSignalController#neighborChanged}, which is
+   * exactly when the redstone around the cabinet can change.
+   *
+   * @since 2026.8
+   */
+  public void invalidatePoweredCache() {
+    poweredCacheValid = false;
+  }
+
+  /**
+   * Returns whether the controller cabinet is receiving redstone power, reading a cached value
+   * where possible.
+   * <p>
+   * This is called from {@link #pauseTicking()}, which the tickable base class evaluates on
+   * <em>every</em> world tick — ahead of the tick-rate gate, because {@code &&} short-circuits
+   * left to right. Probing {@code isBlockPowered} there meant six neighbour blockstate lookups
+   * twenty times a second per controller, even for modes that tick once every four or fifteen
+   * seconds. The cache is invalidated on neighbour change, so a redstone edit is still seen on
+   * the very next tick.
+   * </p>
+   *
+   * @return true if the controller is powered
+   *
+   * @see #POWERED_CACHE_BACKSTOP_INTERVAL_TICKS
+   * @since 2026.8
+   */
+  private boolean isControllerPowered() {
+    long now = getWorld().getTotalWorldTime();
+    if (!poweredCacheValid || now - poweredCacheTick >= POWERED_CACHE_BACKSTOP_INTERVAL_TICKS) {
+      cachedPowered = getWorld().isBlockPowered(getPos());
+      poweredCacheValid = true;
+      poweredCacheTick = now;
+    }
+    return cachedPowered;
+  }
+
+  /**
+   * Returns whether the configuration validators should actually run on this tick, rather than
+   * reusing their cached verdicts. True when the caller's validator has been explicitly
+   * invalidated, or when the periodic safety re-validation interval has elapsed.
+   *
+   * @param dirty    whether the calling validator's own dirty flag is set
+   * @param tickTime the current world time, in ticks
+   *
+   * @return true if the validator should run, false to reuse the cached verdict
+   *
+   * @since 2026.8
+   */
+  private boolean shouldRunConfigValidation(boolean dirty, long tickTime) {
+    return dirty
+        || tickTime - lastConfigValidationTick >= CONFIG_VALIDATION_REVALIDATE_INTERVAL_TICKS;
+  }
+
   private void resetController(boolean regeneratePhaseCache, boolean forceTick) {
     invalidateTickRateCache();
+    invalidateConfigValidation();
     lastPhaseChangeTime = -1;
     currentPhase = null;
     // Clear transient tracking state on reset (mode change, device link/unlink, etc.)
