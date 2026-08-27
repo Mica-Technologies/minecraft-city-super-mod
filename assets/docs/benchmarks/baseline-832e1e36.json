@@ -1,0 +1,110 @@
+{
+  "label": "baseline-832e1e36",
+  "commit": "832e1e362-dirty",
+  "recorded_utc": "2026-08-27T14:50:13Z",
+  "scene": {
+    "grid": 5,
+    "spacing": 16,
+    "intersections": 25
+  },
+  "client": {
+    "displayWidth": 854,
+    "displayHeight": 480,
+    "renderDistanceChunks": 12,
+    "fancyGraphics": true,
+    "maxFps": 260,
+    "enableVsync": false,
+    "usedMegabytesStart": null,
+    "usedMegabytesEnd": null
+  },
+  "poses": [
+    {
+      "pose": "intersection_close",
+      "fps_median": 107.0,
+      "fps_min": 101,
+      "fps_max": 111,
+      "fps_samples": [
+        110,
+        107,
+        107,
+        108,
+        108,
+        111,
+        111,
+        101,
+        101,
+        101,
+        106,
+        106
+      ],
+      "mean_tick_millis_median": 0.63,
+      "tps_median": 20.0
+    },
+    {
+      "pose": "corridor_long",
+      "fps_median": 126.5,
+      "fps_min": 117,
+      "fps_max": 132,
+      "fps_samples": [
+        129,
+        129,
+        132,
+        132,
+        126,
+        126,
+        119,
+        119,
+        117,
+        117,
+        127,
+        127
+      ],
+      "mean_tick_millis_median": 0.37,
+      "tps_median": 20.0
+    },
+    {
+      "pose": "grid_overview",
+      "fps_median": 116.0,
+      "fps_min": 112,
+      "fps_max": 119,
+      "fps_samples": [
+        117,
+        117,
+        117,
+        113,
+        113,
+        116,
+        116,
+        112,
+        112,
+        116,
+        116,
+        119
+      ],
+      "mean_tick_millis_median": 0.38,
+      "tps_median": 20.0
+    },
+    {
+      "pose": "dynamic_signs",
+      "fps_median": 125.0,
+      "fps_min": 122,
+      "fps_max": 131,
+      "fps_samples": [
+        131,
+        131,
+        131,
+        124,
+        124,
+        124,
+        126,
+        126,
+        122,
+        122,
+        125,
+        125
+      ],
+      "mean_tick_millis_median": 0.33499999999999996,
+      "tps_median": 20.0
+    }
+  ]
+}
