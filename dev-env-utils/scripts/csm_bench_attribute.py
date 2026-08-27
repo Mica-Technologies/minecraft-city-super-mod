@@ -37,9 +37,11 @@ CATEGORIES = [
     ("controllers", [B.CONTROLLER]),
 ]
 
-# Signals face south, so the camera stands on the +Z side looking back at their fronts.
-POSE = {"name": "intersection_close", "x": 0.5, "y": 11.0, "z": 14.0,
-        "yaw": 180.0, "pitch": 3.0}
+# Signals face south, so the camera stands on the +Z side looking back at their fronts. Use a
+# dense pose: attributing at a close-up that sees three intersections measures nothing useful,
+# because the terrain floor then outweighs all the CSM content in view.
+POSE = {"name": "corridor_long", "x": 0.5, "y": 12.0, "z": 152.0,
+        "yaw": 180.0, "pitch": 2.0}
 SAMPLES = 14
 SETTLE_TICKS = 200
 
