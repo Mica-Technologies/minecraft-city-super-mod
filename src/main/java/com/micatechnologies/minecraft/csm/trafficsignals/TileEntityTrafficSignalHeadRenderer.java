@@ -970,24 +970,6 @@ public class TileEntityTrafficSignalHeadRenderer extends
   // Block centre on any axis.
   private static final float BLOCK_CENTRE = 8.0f;
 
-  /**
-   * Returns true when a signal head sits along {@code dir} from {@code pos} — either
-   * directly adjacent or two blocks out through a single air-block gap. The air-gap path
-   * covers double-arrow add-on signals, which are placed one block away from their main
-   * signal rather than touching it, so the shared mount edge is actually two blocks apart.
-   */
-  private static boolean hasPairedSignalAlong(net.minecraft.world.World world, BlockPos pos,
-      EnumFacing dir) {
-    BlockPos adjacent = pos.offset(dir);
-    if (world.getTileEntity(adjacent) instanceof TileEntityTrafficSignalHead) {
-      return true;
-    }
-    if (world.isAirBlock(adjacent)) {
-      BlockPos farther = pos.offset(dir, 2);
-      return world.getTileEntity(farther) instanceof TileEntityTrafficSignalHead;
-    }
-    return false;
-  }
 
   private void renderMount(TileEntityTrafficSignalHead te, IBlockState blockState,
       int[] sectionSizes,
@@ -1016,21 +998,12 @@ public class TileEntityTrafficSignalHeadRenderer extends
     // the main signal (air gap between), so the scan also peeks two blocks out through air.
     // Adjacent-signal detection — uses the blockState threaded from render() instead of
     // calling world.getBlockState(pos) again; the caller already has it in hand.
-    boolean suppressHighEnd = false, suppressLowEnd = false;
-    net.minecraft.world.World world = te.getWorld();
-    if (world != null) {
-      BlockPos pos = te.getPos();
-      if (horizontal) {
-        if (blockState.getProperties().containsKey(AbstractBlockControllableSignalHead.FACING)) {
-          EnumFacing facing = blockState.getValue(AbstractBlockControllableSignalHead.FACING);
-          suppressLowEnd = hasPairedSignalAlong(world, pos, facing.rotateYCCW());
-          suppressHighEnd = hasPairedSignalAlong(world, pos, facing.rotateY());
-        }
-      } else {
-        suppressHighEnd = hasPairedSignalAlong(world, pos, EnumFacing.UP);
-        suppressLowEnd = hasPairedSignalAlong(world, pos, EnumFacing.DOWN);
-      }
-    }
+    // Mount-edge suppression is cached on the tile entity and invalidated on neighbour change.
+    // Computing it here meant up to four getTileEntity lookups per head per frame, which at a
+    // hundred intersections dominated this pass -- see TileEntityTrafficSignalHead.
+    int suppression = te.getMountSuppression(horizontal, blockState);
+    boolean suppressLowEnd = (suppression & TileEntityTrafficSignalHead.MOUNT_SUPPRESS_LOW) != 0;
+    boolean suppressHighEnd = (suppression & TileEntityTrafficSignalHead.MOUNT_SUPPRESS_HIGH) != 0;
 
     TrafficSignalBodyColor color = te.getMountColor();
 
