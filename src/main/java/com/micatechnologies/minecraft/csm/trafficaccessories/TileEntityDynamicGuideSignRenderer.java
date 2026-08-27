@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmDisplayListCache;
 import com.micatechnologies.minecraft.csm.codeutils.CsmRenderToggles;
 import com.micatechnologies.minecraft.csm.codeutils.RenderHelper;
 import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.BannerPosition;
@@ -150,6 +151,19 @@ public class TileEntityDynamicGuideSignRenderer
   // Effective sky light (0-15) at or below which SignLightMode.NIGHT energizes the
   // lights. 8 is vanilla's own darkness threshold, which lands the switch-on at dusk.
   private static final int LIGHT_NIGHT_SKY_THRESHOLD = 8;
+  /**
+   * The sign's blank face: its border, its painted background and its backing. None of it changes
+   * unless the sign is reconfigured or the light moves, yet it was rebuilt every frame. Keyed on
+   * the illumination state as well as the block light, because a lit sign draws its face
+   * fullbright and that can follow the sky without the tile entity being marked dirty.
+   *
+   * <p>The legend is deliberately left drawing per frame. Skipping it outright costs 0.4% of the
+   * frame at the dense verification pose against 7.6% for the whole renderer, so there is nothing
+   * there worth the interleaved texture binds it would need.</p>
+   */
+  private static final CsmDisplayListCache BACKGROUND_LISTS =
+      new CsmDisplayListCache("guide_sign_background");
+
   private static final int FULLBRIGHT = 240;
 
   // Cached per-frame lightmap split from the block's actual combined light, used so
@@ -246,7 +260,8 @@ public class TileEntityDynamicGuideSignRenderer
     }
     boolean farLod = x * x + y * y + z * z > LOD_FULL_DETAIL_DIST_SQ
         || CsmRenderToggles.guideSignForceFarLod;
-    renderSign(data, farLod);
+    renderSign(data, farLod, te.getPos(), te.isStateDirty(), combinedLight);
+    te.clearStateDirty();
 
     GlStateManager.popMatrix();
   }
@@ -266,7 +281,7 @@ public class TileEntityDynamicGuideSignRenderer
     // energized whenever the sign is wired for light at all. That is what the player is
     // trying to see when they pick a lighting type.
     lightOn = data.hasLighting();
-    renderSign(data, false);
+    renderSign(data, false, null, true, 0);
   }
 
   /**
@@ -345,7 +360,8 @@ public class TileEntityDynamicGuideSignRenderer
     return Math.min(8.0f, s);
   }
 
-  private void renderSign(GuideSignData data, boolean farLod) {
+  private void renderSign(GuideSignData data, boolean farLod, BlockPos pos,
+      boolean stateDirty, int combinedLight) {
     contentScale = computeContentScale(data);
     // A lit sign reads at full brightness however dark the world is -- that is the whole
     // point of sign lighting, and it matches how a real lit guide sign looks at night.
@@ -392,8 +408,34 @@ public class TileEntityDynamicGuideSignRenderer
     GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
     GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 
-    renderSignBackground(signLeft, signBottom, totalSignWidth, totalSignHeight,
-        faceZ, signColor, borderWidth, cornerStyle, legendR, legendG, legendB);
+    // The white pixel is already bound, just above and outside any list. A bind inside a display
+    // list is dropped at compile time whenever TextureManager believes the texture is current, and
+    // at replay time glCallList moves the real binding without GlStateManager noticing, leaving
+    // its shadow state stale for everything drawn afterwards. See
+    // TileEntityTrafficSignalHeadRenderer for the full account.
+    boolean bakeable = pos != null && !CsmRenderToggles.guideSignBackgroundPerFrame;
+    long backgroundKey = (combinedLight & 0xFFFFFFFFL) | (lightOn ? 1L << 32 : 0L);
+    if (stateDirty && pos != null) {
+      cleanupDisplayList(pos);
+    }
+    int backgroundList = bakeable
+        ? BACKGROUND_LISTS.get(pos, backgroundKey)
+        : CsmDisplayListCache.NO_LIST;
+    if (backgroundList == CsmDisplayListCache.NO_LIST && bakeable) {
+      backgroundList = BACKGROUND_LISTS.allocate(pos, backgroundKey);
+      if (backgroundList != CsmDisplayListCache.NO_LIST) {
+        GL11.glNewList(backgroundList, GL11.GL_COMPILE);
+        renderSignBackground(signLeft, signBottom, totalSignWidth, totalSignHeight,
+            faceZ, signColor, borderWidth, cornerStyle, legendR, legendG, legendB);
+        GL11.glEndList();
+      }
+    }
+    if (backgroundList == CsmDisplayListCache.NO_LIST) {
+      renderSignBackground(signLeft, signBottom, totalSignWidth, totalSignHeight,
+          faceZ, signColor, borderWidth, cornerStyle, legendR, legendG, legendB);
+    } else {
+      GL11.glCallList(backgroundList);
+    }
 
     // Far LOD (64-128 blocks): just the body silhouette and posts. Legend detail is
     // unreadable at that distance and the font/atlas passes are the expensive part.
@@ -1452,7 +1494,12 @@ public class TileEntityDynamicGuideSignRenderer
     return w;
   }
 
+  /**
+   * Releases the compiled geometry for one sign.
+   *
+   * @param pos the block position
+   */
   public static void cleanupDisplayList(BlockPos pos) {
-    // Reserved for future display list caching optimization
+    BACKGROUND_LISTS.invalidate(pos);
   }
 }
