@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.block.BlockHorizontal;
 import com.micatechnologies.minecraft.csm.codeutils.CsmFontRenderer;
+import com.micatechnologies.minecraft.csm.codeutils.CsmRenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
@@ -360,7 +361,9 @@ public class TileEntityPortableSpeedLimitRenderer
 
     boolean bulbLit = false;
     if (mode == TileEntityVariableSpeedLimit.FLASHER_ON) {
-      bulbLit = (System.currentTimeMillis() / 500) % 2 == 0;
+      // Read the once-per-frame cached wall clock rather than calling currentTimeMillis()
+      // directly -- it is a JNI call, and this runs per visible sign per frame.
+      bulbLit = (CsmRenderUtils.gameMillis(te.getWorld()) / 500) % 2 == 0;
     }
 
     float signLeftEdge = CX - SIGN_WIDTH / 2 - SIGN_FRAME;
