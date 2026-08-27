@@ -42,6 +42,11 @@ public class CsmClientLifecycleHandler {
       SpeakerAmbientPacketHandler.stopAllSounds();
       BlockHd.clearClientCaches();
       AbstractBlockSign.clearSetbackCache();
+      // Release every cached OpenGL display list. These hold driver/GPU memory, so carrying
+      // them into the next world the player joins would be a genuine leak rather than just a
+      // stale map. Safe here: addScheduledTask puts this on the client thread, which is the
+      // render thread that owns the GL context.
+      CsmDisplayListCache.clearAll();
     });
   }
 }
