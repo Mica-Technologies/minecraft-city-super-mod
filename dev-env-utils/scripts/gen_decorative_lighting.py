@@ -511,6 +511,19 @@ def _centroid(points):
     return tuple(sum(p[i] for p in points) / len(points) for i in range(3))
 
 
+def bulb_socket(mesh, across, top, bulb_top, stem=0.42, collar=0.95, height=1.1, bite=0.4):
+    """The lamp holder a bare bulb screws into.
+
+    Without one the bulb hangs in mid-air inside the shade, which is what these shipped as. It
+    runs from the shade's inner apex down to a collar over the bulb's neck, and the collar bites
+    `bite` units into the sphere so no gap can open between the two at any angle.
+    """
+    bottom = bulb_top - bite
+    shoulder = bottom + height
+    lathe(mesh, [(stem, top), (stem, shoulder), (collar, shoulder - 0.15), (collar, bottom)],
+          BODY, segments=STEM_SEGMENTS, close_start=True, close_end=True)
+
+
 def canopy(mesh, y_top=16.0, radius=3.0, depth=1.0):
     """The ceiling plate every pendant hangs from.
 
@@ -592,7 +605,7 @@ def pendant_industrial_dome(mesh):
     lathe(mesh, [(1.2, 11.8), (2.2, 11.1), (3.6, 10.1), (5.0, 8.7),
                  (5.8, 7.3), (6.1, 6.2), (6.2, 5.75)], SHADE, flip=True)
     disc(mesh, (8.0, 11.8, 8.0), 1.2, SHADE, facing=-1.0)
-    cylinder(mesh, (8.0, 8.0), 0.9, 6.6, 7.8, BODY)
+    bulb_socket(mesh, (8.0, 8.0), 11.75, 6.95)
     sphere(mesh, (8.0, 5.6, 8.0), 1.35, LENS, rings=6)
 
 
@@ -604,6 +617,7 @@ def pendant_cone(mesh):
           BODY, close_start=True)
     lathe(mesh, [(0.85, 10.9), (2.5, 9.2), (4.0, 7.25), (5.1, 5.5), (5.4, 4.7)],
           SHADE, flip=True)
+    bulb_socket(mesh, (8.0, 8.0), 10.85, 5.75)
     sphere(mesh, (8.0, 4.6, 8.0), 1.15, LENS, rings=6)
 
 
@@ -741,6 +755,7 @@ def sconce_rlm_gooseneck(mesh):
     lathe(mesh, [(1.0, 10.1), (2.4, 9.4), (4.0, 8.35), (5.4, 7.1),
                  (6.1, 6.0), (6.3, 5.45)], SHADE, centre=(8.0, 8.2), flip=True)
     disc(mesh, (8.0, 10.1, 8.2), 1.0, SHADE, facing=-1.0)
+    bulb_socket(mesh, (8.0, 8.2), 10.05, 6.7)
     sphere(mesh, (8.0, 5.4, 8.2), 1.3, LENS, rings=6)
 
 
