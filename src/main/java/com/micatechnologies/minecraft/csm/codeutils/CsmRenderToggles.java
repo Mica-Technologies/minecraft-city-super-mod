@@ -55,6 +55,12 @@ public final class CsmRenderToggles {
    */
   public static boolean bulbsPerFrame = false;
 
+  /** Skip the crosswalk's arm and stub boxes. Measurement only -- the bracket vanishes. */
+  public static boolean skipCrosswalkArms = false;
+
+  /** Skip the crosswalk's 7-segment countdown overlay. Measurement only. */
+  public static boolean skipCrosswalkCountdown = false;
+
   /** Skip the crosswalk display face entirely. Measurement only -- the face goes blank. */
   public static boolean skipCrosswalkFace = false;
 
@@ -64,6 +70,13 @@ public final class CsmRenderToggles {
    * session; the baked path is what ships.
    */
   public static boolean crosswalkFacePerFrame = false;
+
+  /**
+   * Draw the crosswalk countdown overlay per frame instead of replaying its display list, the way
+   * it was drawn before it was baked. Kept so the two can be measured and pixel-compared inside one
+   * session; the baked path is what ships.
+   */
+  public static boolean crosswalkCountdownPerFrame = false;
 
   private CsmRenderToggles() {
   }
@@ -81,8 +94,11 @@ public final class CsmRenderToggles {
     values.put("signalBody", skipSignalBody);
     values.put("visorInteriorsPerFrame", visorInteriorsPerFrame);
     values.put("bulbsPerFrame", bulbsPerFrame);
+    values.put("crosswalkArms", skipCrosswalkArms);
+    values.put("crosswalkCountdown", skipCrosswalkCountdown);
     values.put("crosswalkFace", skipCrosswalkFace);
     values.put("crosswalkFacePerFrame", crosswalkFacePerFrame);
+    values.put("crosswalkCountdownPerFrame", crosswalkCountdownPerFrame);
     return values;
   }
 
@@ -107,10 +123,16 @@ public final class CsmRenderToggles {
       visorInteriorsPerFrame = skipped;
     } else if ("bulbsPerFrame".equalsIgnoreCase(name)) {
       bulbsPerFrame = skipped;
+    } else if ("crosswalkArms".equalsIgnoreCase(name)) {
+      skipCrosswalkArms = skipped;
+    } else if ("crosswalkCountdown".equalsIgnoreCase(name)) {
+      skipCrosswalkCountdown = skipped;
     } else if ("crosswalkFace".equalsIgnoreCase(name)) {
       skipCrosswalkFace = skipped;
     } else if ("crosswalkFacePerFrame".equalsIgnoreCase(name)) {
       crosswalkFacePerFrame = skipped;
+    } else if ("crosswalkCountdownPerFrame".equalsIgnoreCase(name)) {
+      crosswalkCountdownPerFrame = skipped;
     } else {
       return false;
     }
@@ -125,8 +147,11 @@ public final class CsmRenderToggles {
     skipSignalBody = false;
     visorInteriorsPerFrame = false;
     bulbsPerFrame = false;
+    skipCrosswalkArms = false;
+    skipCrosswalkCountdown = false;
     skipCrosswalkFace = false;
     crosswalkFacePerFrame = false;
+    crosswalkCountdownPerFrame = false;
   }
 
   /**
