@@ -9,8 +9,6 @@ import javax.annotation.Nullable;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -194,19 +192,6 @@ public class BlockBlankoutBox extends AbstractBlockControllableSignal
         ensureTileEntity( worldIn, pos );
         return super.onBlockActivated( worldIn, pos, state, player, hand, facing, hitX, hitY,
                 hitZ );
-    }
-
-    @Override
-    public void breakBlock( World worldIn, BlockPos pos, IBlockState state ) {
-        if ( worldIn.isRemote ) {
-            TileEntitySpecialRenderer<?> renderer =
-                    TileEntityRendererDispatcher.instance.renderers.get(
-                            TileEntityBlankoutBox.class );
-            if ( renderer instanceof TileEntityBlankoutBoxRenderer ) {
-                ( (TileEntityBlankoutBoxRenderer) renderer ).cleanupDisplayList( pos );
-            }
-        }
-        super.breakBlock( worldIn, pos, state );
     }
 
     // endregion

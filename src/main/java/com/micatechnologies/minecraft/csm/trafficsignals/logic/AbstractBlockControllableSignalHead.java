@@ -11,8 +11,6 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
@@ -332,19 +330,6 @@ public abstract class AbstractBlockControllableSignalHead extends AbstractBlockC
       net.minecraft.block.Block blockIn, BlockPos fromPos) {
     ensureTileEntity(worldIn, pos);
     super.neighborChanged(state, worldIn, pos, blockIn, fromPos);
-  }
-
-  @Override
-  public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
-    // Clean up the renderer's cached display list for this position
-    if (worldIn.isRemote) {
-      TileEntitySpecialRenderer<?> renderer =
-          TileEntityRendererDispatcher.instance.renderers.get(TileEntityTrafficSignalHead.class);
-      if (renderer instanceof TileEntityTrafficSignalHeadRenderer) {
-        ((TileEntityTrafficSignalHeadRenderer) renderer).cleanupDisplayList(pos);
-      }
-    }
-    super.breakBlock(worldIn, pos, state);
   }
 
   @Override

@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmDisplayListCache;
 import com.micatechnologies.minecraft.csm.codeutils.CsmRenderUtils;
 import com.micatechnologies.minecraft.csm.codeutils.DirectionSixteen;
 import com.micatechnologies.minecraft.csm.codeutils.RenderHelper;
@@ -13,9 +14,7 @@ import com.micatechnologies.minecraft.csm.trafficsignals.logic.CrosswalkTextureM
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.CrosswalkVisorType;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyColor;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyTilt;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -36,8 +35,12 @@ import org.lwjgl.opengl.GL11;
 public class TileEntityCrosswalkSignalNewRenderer
         extends TileEntitySpecialRenderer<TileEntityCrosswalkSignalNew> {
 
-    private final Map<BlockPos, Integer> displayListCache = new HashMap<>();
-    private final Map<BlockPos, Integer> lastCombinedLightCache = new HashMap<>();
+    /**
+     * Cached body + visor geometry, keyed by position. Released precisely from the tile entity's
+     * lifecycle callbacks and bounded as a backstop -- see {@link CsmDisplayListCache}.
+     */
+    private static final CsmDisplayListCache DISPLAY_LISTS =
+            new CsmDisplayListCache("crosswalk_signal_new");
 
     private static final ResourceLocation WHITE_TEXTURE =
         new ResourceLocation("csm", "textures/blocks/white1px.png");
@@ -73,12 +76,14 @@ public class TileEntityCrosswalkSignalNewRenderer
     private static final float AREA_CENTER_X = 0.24f;
     private static final int CD_COLOR_R = 255, CD_COLOR_G = 136, CD_COLOR_B = 0, CD_COLOR_A = 255;
 
-    public void cleanupDisplayList( BlockPos pos ) {
-        Integer listId = displayListCache.remove( pos );
-        if ( listId != null ) {
-            GL11.glDeleteLists( listId, 1 );
-        }
-        lastCombinedLightCache.remove( pos );
+    /**
+     * Releases the cached display list for a position. Called from the block's
+     * {@code breakBlock} and from the tile entity's {@code invalidate()} / {@code onChunkUnload()}.
+     *
+     * @param pos the block position
+     */
+    public static void cleanupDisplayList( BlockPos pos ) {
+        DISPLAY_LISTS.invalidate( pos );
     }
 
     @Override
@@ -178,21 +183,21 @@ public class TileEntityCrosswalkSignalNewRenderer
 
         // Display list: body + visor only (no bracket)
         BlockPos pos = te.getPos();
-        Integer displayList = displayListCache.get( pos );
-        Integer lastLight = lastCombinedLightCache.get( pos );
-        if ( displayList == null || te.isStateDirty()
-                || lastLight == null || lastLight != combinedLight ) {
-            if ( displayList != null ) {
-                GL11.glDeleteLists( displayList, 1 );
+        // The compiled geometry depends only on the block light level here; everything else that
+        // can change it routes through the tile entity's explicit dirty flag.
+        long stateKey = combinedLight;
+        int displayList = te.isStateDirty()
+                ? CsmDisplayListCache.NO_LIST
+                : DISPLAY_LISTS.get( pos, stateKey );
+        if ( displayList == CsmDisplayListCache.NO_LIST ) {
+            displayList = DISPLAY_LISTS.allocate( pos, stateKey );
+            if ( displayList != CsmDisplayListCache.NO_LIST ) {
+                GL11.glNewList( displayList, GL11.GL_COMPILE );
+                renderStaticParts( bodyColor, visorColor, visorType, displayType,
+                        worldSkyLight, worldBlockLight );
+                GL11.glEndList();
+                te.clearDirtyFlag();
             }
-            displayList = GL11.glGenLists( 1 );
-            displayListCache.put( pos, displayList );
-            lastCombinedLightCache.put( pos, combinedLight );
-            GL11.glNewList( displayList, GL11.GL_COMPILE );
-            renderStaticParts( bodyColor, visorColor, visorType, displayType,
-                    worldSkyLight, worldBlockLight );
-            GL11.glEndList();
-            te.clearDirtyFlag();
         }
         // See TileEntityTrafficSignalHeadRenderer for why this bind must be unconditional —
         // TextureManager no-ops the bindTexture call inside renderStaticParts() if WHITE_TEXTURE

@@ -11,8 +11,6 @@ import net.minecraft.block.material.Material;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -174,19 +172,6 @@ public class BlockLaneControlSignal extends AbstractBlockRotatableNSEW
         player.openGui(Csm.instance, GUI_ID, worldIn, pos.getX(), pos.getY(),
                 pos.getZ());
         return true;
-    }
-
-    @Override
-    public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
-        if (worldIn.isRemote) {
-            TileEntitySpecialRenderer<?> renderer =
-                    TileEntityRendererDispatcher.instance.renderers.get(
-                            TileEntityLaneControlSignal.class);
-            if (renderer instanceof TileEntityLaneControlSignalRenderer) {
-                ((TileEntityLaneControlSignalRenderer) renderer).cleanupDisplayList(pos);
-            }
-        }
-        super.breakBlock(worldIn, pos, state);
     }
 
     // endregion

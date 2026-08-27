@@ -7,8 +7,6 @@ import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityCrosswalkSign
 import javax.annotation.Nullable;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -196,19 +194,6 @@ public abstract class AbstractBlockControllableCrosswalkSignalNew
         ensureTileEntity( p_180639_1_, p_180639_2_ );
         return super.onBlockActivated( p_180639_1_, p_180639_2_, p_180639_3_, p_180639_4_,
                 p_180639_5_, p_180639_6_, p_180639_7_, p_180639_8_, p_180639_9_ );
-    }
-
-    @Override
-    public void breakBlock( World worldIn, BlockPos pos, IBlockState state ) {
-        if ( worldIn.isRemote ) {
-            TileEntitySpecialRenderer< ? > renderer =
-                    TileEntityRendererDispatcher.instance.renderers.get(
-                            TileEntityCrosswalkSignalNew.class );
-            if ( renderer instanceof TileEntityCrosswalkSignalNewRenderer ) {
-                ( (TileEntityCrosswalkSignalNewRenderer) renderer ).cleanupDisplayList( pos );
-            }
-        }
-        super.breakBlock( worldIn, pos, state );
     }
 
     // endregion

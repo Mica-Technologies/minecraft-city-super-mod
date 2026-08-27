@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmDisplayListCache;
 import com.micatechnologies.minecraft.csm.codeutils.CsmRenderUtils;
 import com.micatechnologies.minecraft.csm.codeutils.DirectionSixteen;
 import com.micatechnologies.minecraft.csm.codeutils.RenderHelper;
@@ -18,9 +19,7 @@ import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalText
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalVertexData;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalVisorType;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.client.renderer.GlStateManager;
@@ -60,28 +59,23 @@ public class TileEntityTrafficSignalHeadRenderer extends
   private static final int LIGHTMAP_FULLBRIGHT_SKY = 240;
   private static final int LIGHTMAP_FULLBRIGHT_BLOCK = 240;
 
-  // Per-tile-entity display list cache (keyed by BlockPos to avoid shared state bug)
-  private final Map<BlockPos, Integer> displayListCache = new HashMap<>();
-  private final Map<BlockPos, Integer> lastColorStateCache = new HashMap<>();
-  private final Map<BlockPos, Integer> lastLitMaskCache = new HashMap<>();
-  // Track combined world light for cache invalidation: lightmap is now baked per-vertex into
-  // the BLOCK-format display list (so it survives shader rebinds), so the cache must rebuild
-  // whenever lighting around the signal changes.
-  private final Map<BlockPos, Integer> lastCombinedLightCache = new HashMap<>();
+  /**
+   * Cached body / door / visor geometry, keyed by position. The state key folds together every
+   * input the compiled list depends on -- the signal colour state, which bulbs are lit, and the
+   * block light level -- so a change in any of them forces a recompile. Released precisely from
+   * the tile entity's lifecycle callbacks and bounded as a backstop; see
+   * {@link CsmDisplayListCache}.
+   */
+  private static final CsmDisplayListCache DISPLAY_LISTS =
+      new CsmDisplayListCache("traffic_signal_head");
 
   /**
    * Cleans up the cached display list for a signal head at the given position.
    * Called from AbstractBlockControllableSignalHead.breakBlock() to prevent
    * stale entries from accumulating during long play sessions.
    */
-  public void cleanupDisplayList(BlockPos pos) {
-    Integer displayList = displayListCache.remove(pos);
-    if (displayList != null) {
-      GL11.glDeleteLists(displayList, 1);
-    }
-    lastColorStateCache.remove(pos);
-    lastLitMaskCache.remove(pos);
-    lastCombinedLightCache.remove(pos);
+  public static void cleanupDisplayList(BlockPos pos) {
+    DISPLAY_LISTS.invalidate(pos);
   }
 
   @Override
@@ -243,27 +237,24 @@ public class TileEntityTrafficSignalHeadRenderer extends
     }
 
     BlockPos pos = te.getPos();
-    Integer displayList = displayListCache.get(pos);
-    Integer lastColor = lastColorStateCache.get(pos);
-    Integer lastLit = lastLitMaskCache.get(pos);
-    Integer lastLight = lastCombinedLightCache.get(pos);
-    if (displayList == null || te.isStateDirty()
-        || lastColor == null || lastColor != signalColorState
-        || lastLit == null || lastLit != litMask
-        || lastLight == null || lastLight != combinedLight) {
-      if (displayList != null) {
-        GL11.glDeleteLists(displayList, 1);
+    // Fold every input the compiled geometry depends on into one key. combinedLight is 32 bits
+    // (packed sky << 16 | block), so it takes the low half and the colour state and lit-bulb mask
+    // are packed above it -- no field can alias another.
+    long stateKey = (combinedLight & 0xFFFFFFFFL)
+        | ((long) (signalColorState & 0xFF) << 32)
+        | ((long) (litMask & 0xFFFFFF) << 40);
+    int displayList = te.isStateDirty()
+        ? CsmDisplayListCache.NO_LIST
+        : DISPLAY_LISTS.get(pos, stateKey);
+    if (displayList == CsmDisplayListCache.NO_LIST) {
+      displayList = DISPLAY_LISTS.allocate(pos, stateKey);
+      if (displayList != CsmDisplayListCache.NO_LIST) {
+        GL11.glNewList(displayList, GL11.GL_COMPILE);
+        renderStaticParts(sectionInfos, sectionYPositions, sectionXPositions, sectionSizes,
+            horizontal, zPushBack, worldSkyLight, worldBlockLight);
+        GL11.glEndList();
+        te.clearDirtyFlag();
       }
-      displayList = GL11.glGenLists(1);
-      displayListCache.put(pos, displayList);
-      lastColorStateCache.put(pos, signalColorState);
-      lastLitMaskCache.put(pos, litMask);
-      lastCombinedLightCache.put(pos, combinedLight);
-      GL11.glNewList(displayList, GL11.GL_COMPILE);
-      renderStaticParts(sectionInfos, sectionYPositions, sectionXPositions, sectionSizes,
-          horizontal, zPushBack, worldSkyLight, worldBlockLight);
-      GL11.glEndList();
-      te.clearDirtyFlag();
     }
     // Bind the white pixel OUTSIDE the display list, every frame, before replay. The
     // bindTexture inside renderStaticParts() runs during GL_COMPILE, but MC's TextureManager
