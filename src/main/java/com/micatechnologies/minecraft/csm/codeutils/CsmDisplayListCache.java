@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.Map;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.relauncher.Side;
@@ -77,6 +78,15 @@ public final class CsmDisplayListCache {
   private final int maxEntries;
 
   /**
+   * How many display lists this cache currently holds compiled. Maintained on allocation and
+   * deletion rather than counted on demand: the /csm displaylists diagnostic reads it from the
+   * server thread, and walking the entry map from there is a guaranteed
+   * ConcurrentModificationException -- the map is access-ordered, so the render thread's every
+   * cache hit structurally modifies it.
+   */
+  private final AtomicInteger liveLists = new AtomicInteger();
+
+  /**
    * Position to cache entry, in access order so the eldest entry is the least recently rendered.
    */
   private final LinkedHashMap<BlockPos, CachedList> entries;
@@ -100,6 +110,13 @@ public final class CsmDisplayListCache {
    */
   private static final class CachedList {
 
+    /** The owning cache's live-list counter, decremented as this entry's lists are deleted. */
+    private final AtomicInteger liveLists;
+
+    private CachedList(AtomicInteger liveLists) {
+      this.liveLists = liveLists;
+    }
+
     /** State key to GL display list name, most recently used last. */
     private final LinkedHashMap<Long, Integer> byState =
         new LinkedHashMap<Long, Integer>(4, 0.75f, true) {
@@ -108,14 +125,14 @@ public final class CsmDisplayListCache {
             if (size() <= STATES_PER_POSITION) {
               return false;
             }
-            deleteList(eldest.getValue());
+            deleteList(liveLists, eldest.getValue());
             return true;
           }
         };
 
     private void releaseAll() {
       for (Integer listId : byState.values()) {
-        deleteList(listId);
+        deleteList(liveLists, listId);
       }
       byState.clear();
     }
@@ -199,7 +216,7 @@ public final class CsmDisplayListCache {
       // Key on an immutable copy: BlockPos.MutableBlockPos is a BlockPos subclass whose hash and
       // equality follow its coordinates, so storing one a caller later mutates would silently
       // corrupt the map.
-      entry = new CachedList();
+      entry = new CachedList(liveLists);
       entries.put(pos.toImmutable(), entry);
     }
     Integer existing = entry.byState.get(stateKey);
@@ -212,6 +229,7 @@ public final class CsmDisplayListCache {
       return NO_LIST;
     }
     entry.byState.put(stateKey, listId);
+    liveLists.incrementAndGet();
     return listId;
   }
 
@@ -279,7 +297,7 @@ public final class CsmDisplayListCache {
   public static List<String> describeAll() {
     List<String> out = new ArrayList<>();
     int totalLists = 0;
-    for (CsmDisplayListCache cache : ALL_CACHES) {
+    for (CsmDisplayListCache cache : new ArrayList<>(ALL_CACHES)) {
       int lists = cache.compiledListCount();
       totalLists += lists;
       out.add(String.format("%-24s %4d/%d positions, %5d compiled lists",
@@ -297,11 +315,7 @@ public final class CsmDisplayListCache {
    * @return the compiled list count
    */
   public int compiledListCount() {
-    int total = 0;
-    for (CachedList entry : entries.values()) {
-      total += entry.size();
-    }
-    return total;
+    return liveLists.get();
   }
 
   /**
@@ -319,9 +333,10 @@ public final class CsmDisplayListCache {
    *
    * @param listId the display list name to delete
    */
-  private static void deleteList(int listId) {
+  private static void deleteList(AtomicInteger liveLists, int listId) {
     if (listId != NO_LIST) {
       GL11.glDeleteLists(listId, 1);
+      liveLists.decrementAndGet();
     }
   }
 }
