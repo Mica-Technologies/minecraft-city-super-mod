@@ -78,6 +78,34 @@ public final class CsmRenderToggles {
    */
   public static boolean crosswalkCountdownPerFrame = false;
 
+  /** Skip the dynamic guide sign renderer entirely. Measurement only. */
+  public static boolean skipGuideSign = false;
+
+  /** Skip the dynamic street sign renderer entirely. Measurement only. */
+  public static boolean skipStreetSign = false;
+
+  /**
+   * Force the guide sign's far-distance level of detail at any range, dropping the legend, shields,
+   * arrows and text and leaving the body, posts and lighting. Measurement only -- it isolates what
+   * the legend detail costs, using the LOD path the renderer already has.
+   */
+  public static boolean guideSignForceFarLod = false;
+
+  /** As {@link #guideSignForceFarLod}, for the street sign. Measurement only. */
+  public static boolean streetSignForceFarLod = false;
+
+  /** Skip the guide sign's post structure. Measurement only. */
+  public static boolean skipGuideSignPost = false;
+
+  /** Skip the guide sign's external lighting fixtures. Measurement only. */
+  public static boolean skipGuideSignLighting = false;
+
+  /**
+   * Draw the street sign's structural geometry per frame instead of replaying its display lists.
+   * Kept so the two can be measured and pixel-compared inside one session; the baked path ships.
+   */
+  public static boolean streetSignStructurePerFrame = false;
+
   private CsmRenderToggles() {
   }
 
@@ -97,6 +125,13 @@ public final class CsmRenderToggles {
     values.put("crosswalkArms", skipCrosswalkArms);
     values.put("crosswalkCountdown", skipCrosswalkCountdown);
     values.put("crosswalkFace", skipCrosswalkFace);
+    values.put("guideSign", skipGuideSign);
+    values.put("streetSign", skipStreetSign);
+    values.put("guideSignForceFarLod", guideSignForceFarLod);
+    values.put("streetSignForceFarLod", streetSignForceFarLod);
+    values.put("guideSignPost", skipGuideSignPost);
+    values.put("guideSignLighting", skipGuideSignLighting);
+    values.put("streetSignStructurePerFrame", streetSignStructurePerFrame);
     values.put("crosswalkFacePerFrame", crosswalkFacePerFrame);
     values.put("crosswalkCountdownPerFrame", crosswalkCountdownPerFrame);
     return values;
@@ -129,6 +164,20 @@ public final class CsmRenderToggles {
       skipCrosswalkCountdown = skipped;
     } else if ("crosswalkFace".equalsIgnoreCase(name)) {
       skipCrosswalkFace = skipped;
+    } else if ("guideSign".equalsIgnoreCase(name)) {
+      skipGuideSign = skipped;
+    } else if ("streetSign".equalsIgnoreCase(name)) {
+      skipStreetSign = skipped;
+    } else if ("guideSignForceFarLod".equalsIgnoreCase(name)) {
+      guideSignForceFarLod = skipped;
+    } else if ("streetSignForceFarLod".equalsIgnoreCase(name)) {
+      streetSignForceFarLod = skipped;
+    } else if ("guideSignPost".equalsIgnoreCase(name)) {
+      skipGuideSignPost = skipped;
+    } else if ("guideSignLighting".equalsIgnoreCase(name)) {
+      skipGuideSignLighting = skipped;
+    } else if ("streetSignStructurePerFrame".equalsIgnoreCase(name)) {
+      streetSignStructurePerFrame = skipped;
     } else if ("crosswalkFacePerFrame".equalsIgnoreCase(name)) {
       crosswalkFacePerFrame = skipped;
     } else if ("crosswalkCountdownPerFrame".equalsIgnoreCase(name)) {
@@ -150,6 +199,13 @@ public final class CsmRenderToggles {
     skipCrosswalkArms = false;
     skipCrosswalkCountdown = false;
     skipCrosswalkFace = false;
+    skipGuideSign = false;
+    skipStreetSign = false;
+    guideSignForceFarLod = false;
+    streetSignForceFarLod = false;
+    skipGuideSignPost = false;
+    skipGuideSignLighting = false;
+    streetSignStructurePerFrame = false;
     crosswalkFacePerFrame = false;
     crosswalkCountdownPerFrame = false;
   }
