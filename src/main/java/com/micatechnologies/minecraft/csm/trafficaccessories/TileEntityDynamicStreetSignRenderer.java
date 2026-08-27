@@ -1,5 +1,7 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmDisplayListCache;
+import com.micatechnologies.minecraft.csm.codeutils.CsmRenderToggles;
 import com.micatechnologies.minecraft.csm.codeutils.RenderHelper;
 import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.CornerStyle;
 import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.GuideSignAtlas;
@@ -20,6 +22,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.EnumSkyBlock;
@@ -172,6 +175,42 @@ public class TileEntityDynamicStreetSignRenderer
 
   // ---- Lighting / LOD -----------------------------------------------------------------------
   private static final int LIGHT_NIGHT_SKY_THRESHOLD = 8;
+  /**
+   * The blade's structural aluminium: the core slab, and the frame, hangers and power cable. All
+   * of it draws against the white pixel at ambient light and never animates, so it compiles once
+   * and replays. Measured at the dense verification pose, the whole street sign renderer was 20.5%
+   * of frame time while its legend detail was only 2.3% -- the structure is where the time went.
+   *
+   * <p>Two caches rather than one because the face draws between them and the order matters: the
+   * core sleeves the painted plates from behind, and the frame sits in front of them.</p>
+   */
+  private static final CsmDisplayListCache CORE_LISTS =
+      new CsmDisplayListCache("street_sign_core");
+
+  private static final CsmDisplayListCache FRAME_LISTS =
+      new CsmDisplayListCache("street_sign_frame");
+
+  /**
+   * The painted face and its border plate. Static like the structure, but keyed on the illumination
+   * state as well: a lit blade draws its face at full brightness, and in
+   * {@link SignLightMode#NIGHT} that follows the sky without the tile entity ever being marked
+   * dirty. One list serves both sides of a double-sided blade -- the back is the same geometry
+   * under a rotated matrix, and a display list does not capture the matrix.
+   */
+  private static final CsmDisplayListCache FACE_LISTS =
+      new CsmDisplayListCache("street_sign_face");
+
+  /**
+   * Releases the compiled geometry for one blade.
+   *
+   * @param pos the block position
+   */
+  public static void cleanupDisplayList(BlockPos pos) {
+    CORE_LISTS.invalidate(pos);
+    FRAME_LISTS.invalidate(pos);
+    FACE_LISTS.invalidate(pos);
+  }
+
   private static final int FULLBRIGHT = 240;
   private static final double LOD_FULL_DETAIL_DIST_SQ = 64.0 * 64.0;
   private static final int LEGEND_DARK = 0x101010;
@@ -243,8 +282,14 @@ public class TileEntityDynamicStreetSignRenderer
     GlStateManager.scale(-1.0f, 1.0f, 1.0f);
 
     // x/y/z are camera-relative, so this is the squared camera distance.
-    boolean farLod = x * x + y * y + z * z > LOD_FULL_DETAIL_DIST_SQ;
-    renderSign(data, farLod);
+    if (CsmRenderToggles.skipStreetSign) {
+      GlStateManager.popMatrix();
+      return;
+    }
+    boolean farLod = x * x + y * y + z * z > LOD_FULL_DETAIL_DIST_SQ
+        || CsmRenderToggles.streetSignForceFarLod;
+    renderSign(data, farLod, te.getPos(), te.isStateDirty(), combinedLight);
+    te.clearStateDirty();
 
     GlStateManager.popMatrix();
   }
@@ -262,7 +307,7 @@ public class TileEntityDynamicStreetSignRenderer
     // The preview has no world to read redstone or the time of day from, so show the blade
     // energized whenever it is wired for light at all -- that is what the player is checking.
     lightOn = data.hasInternalLight() && data.getLightMode() != SignLightMode.OFF;
-    renderSign(data, false);
+    renderSign(data, false, null, true, 0);
   }
 
   /**
@@ -462,7 +507,8 @@ public class TileEntityDynamicStreetSignRenderer
 
   // ==================================================================== drawing ========
 
-  private void renderSign(StreetSignData data, boolean farLod) {
+  private void renderSign(StreetSignData data, boolean farLod, BlockPos pos,
+      boolean stateDirty, int combinedLight) {
     // An illuminated blade reads at full brightness however dark the world is -- that is the
     // point of internal illumination. Only the face and legend go fullbright; the core slab,
     // the frame, and the hangers keep the ambient light stashed above.
@@ -490,8 +536,38 @@ public class TileEntityDynamicStreetSignRenderer
     GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
     GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 
-    renderCore(l, data.getCornerStyle());
-    renderFace(l, data, signColor, legendR, legendG, legendB, legendTextColor, farLod);
+    // The structural passes below compile into display lists keyed on the block light, which is
+    // the only input to them that changes without the tile entity being marked dirty (they draw at
+    // ambient light, so an illuminated blade does not affect them). The white pixel is bound
+    // outside every list: a bind inside is dropped at compile time whenever TextureManager
+    // believes that texture is current, and at replay time glCallList moves the real binding
+    // without GlStateManager noticing, leaving its shadow state stale. See
+    // TileEntityTrafficSignalHeadRenderer for the full account.
+    boolean bakeable = pos != null && !CsmRenderToggles.streetSignStructurePerFrame;
+    long structureKey = combinedLight & 0xFFFFFFFFL;
+    // The face additionally follows the illumination, which the structure does not.
+    long faceKey = structureKey | (lightOn ? 1L << 32 : 0L);
+    if (stateDirty && pos != null) {
+      cleanupDisplayList(pos);
+    }
+
+    int coreList = bakeable ? CORE_LISTS.get(pos, structureKey) : CsmDisplayListCache.NO_LIST;
+    if (coreList == CsmDisplayListCache.NO_LIST && bakeable) {
+      coreList = CORE_LISTS.allocate(pos, structureKey);
+      if (coreList != CsmDisplayListCache.NO_LIST) {
+        GL11.glNewList(coreList, GL11.GL_COMPILE);
+        renderCore(l, data.getCornerStyle());
+        GL11.glEndList();
+      }
+    }
+    if (coreList == CsmDisplayListCache.NO_LIST) {
+      renderCore(l, data.getCornerStyle());
+    } else {
+      GL11.glCallList(coreList);
+    }
+
+    renderFace(l, data, signColor, legendR, legendG, legendB, legendTextColor, farLod,
+        pos, bakeable, faceKey);
     if (data.isDoubleSided()) {
       // The back face is the same draw rotated 180 degrees about the block's vertical axis.
       // That is orientation-preserving, so combined with the outer mirror the legend reads
@@ -500,9 +576,44 @@ public class TileEntityDynamicStreetSignRenderer
       GlStateManager.translate(CX, 0.0f, CZ);
       GlStateManager.rotate(180.0f, 0.0f, 1.0f, 0.0f);
       GlStateManager.translate(-CX, 0.0f, -CZ);
-      renderFace(l, data, signColor, legendR, legendG, legendB, legendTextColor, farLod);
+      renderFace(l, data, signColor, legendR, legendG, legendB, legendTextColor, farLod,
+          pos, bakeable, faceKey);
       GlStateManager.popMatrix();
     }
+    // Frame, hangers and cable share one list: they are contiguous in the draw order and all draw
+    // against the white pixel, so nothing separates them.
+    Minecraft.getMinecraft().getTextureManager().bindTexture(WHITE_TEXTURE);
+    int frameList = bakeable ? FRAME_LISTS.get(pos, structureKey) : CsmDisplayListCache.NO_LIST;
+    if (frameList == CsmDisplayListCache.NO_LIST && bakeable) {
+      frameList = FRAME_LISTS.allocate(pos, structureKey);
+      if (frameList != CsmDisplayListCache.NO_LIST) {
+        GL11.glNewList(frameList, GL11.GL_COMPILE);
+        renderStructure(l, data);
+        GL11.glEndList();
+      }
+    }
+    if (frameList == CsmDisplayListCache.NO_LIST) {
+      renderStructure(l, data);
+    } else {
+      GL11.glCallList(frameList);
+    }
+
+    GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
+    GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+    GlStateManager.enableLighting();
+    GL11.glEnable(GL11.GL_LIGHTING);
+    GlStateManager.enableCull();
+    GlStateManager.disableBlend();
+  }
+
+  /**
+   * The frame, hangers and power cable, in the order they were drawn before they shared a display
+   * list. Emits geometry only -- the white pixel is bound by the caller, outside the list.
+   *
+   * @param l    the resolved layout
+   * @param data the blade's configuration
+   */
+  private void renderStructure(Layout l, StreetSignData data) {
     if (data.hasExtrudedFrame()) {
       renderExtrudedFrame(l, data.getMountType());
     }
@@ -512,13 +623,6 @@ public class TileEntityDynamicStreetSignRenderer
         renderPowerCable(l);
       }
     }
-
-    GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
-    GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-    GlStateManager.enableLighting();
-    GL11.glEnable(GL11.GL_LIGHTING);
-    GlStateManager.enableCull();
-    GlStateManager.disableBlend();
   }
 
   /**
@@ -544,35 +648,26 @@ public class TileEntityDynamicStreetSignRenderer
 
   /** Border plate, painted face, and (unless in far LOD) the whole legend. */
   private void renderFace(Layout l, StreetSignData data, GuideSignColor signColor,
-      float legendR, float legendG, float legendB, int legendTextColor, boolean farLod) {
-    Tessellator tess = Tessellator.getInstance();
-    BufferBuilder buf = tess.getBuffer();
+      float legendR, float legendG, float legendB, int legendTextColor, boolean farLod,
+      BlockPos pos, boolean bakeable, long faceKey) {
     CornerStyle corners = data.getCornerStyle();
 
     Minecraft.getMinecraft().getTextureManager().bindTexture(WHITE_TEXTURE);
 
-    if (l.borderInset > 0) {
-      List<RenderHelper.Box> border = new ArrayList<>();
-      addRectBoxes(border, l.signLeft - l.borderInset, l.signBottom - l.borderInset,
-          l.signRight + l.borderInset, l.signTop + l.borderInset,
-          l.faceZ + Z_BORDER_PLATE, l.faceZ + Z_BORDER_PLATE + LIT_FACE_DEPTH, corners);
-      buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
-      RenderHelper.addBoxesToBufferLit(border, buf, legendR, legendG, legendB, 1.0f, 0, 0, 0,
-          worldSkyLight, worldBlockLight);
-      tess.draw();
+    int faceList = bakeable ? FACE_LISTS.get(pos, faceKey) : CsmDisplayListCache.NO_LIST;
+    if (faceList == CsmDisplayListCache.NO_LIST && bakeable) {
+      faceList = FACE_LISTS.allocate(pos, faceKey);
+      if (faceList != CsmDisplayListCache.NO_LIST) {
+        GL11.glNewList(faceList, GL11.GL_COMPILE);
+        renderFaceBackground(l, signColor, legendR, legendG, legendB, corners);
+        GL11.glEndList();
+      }
     }
-
-    // The painted face sits IN FRONT of the border plate (smaller Z), never behind it and
-    // never at the same depth -- coplanar faces z-fight and a face behind the border renders
-    // white from the front.
-    List<RenderHelper.Box> face = new ArrayList<>();
-    addRectBoxes(face, l.signLeft, l.signBottom, l.signRight, l.signTop,
-        l.faceZ + Z_FACE_PLATE, l.faceZ + Z_FACE_PLATE + LIT_FACE_DEPTH, corners);
-    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
-    RenderHelper.addBoxesToBufferLit(face, buf,
-        signColor.getRed(), signColor.getGreen(), signColor.getBlue(), 1.0f, 0, 0, 0,
-        worldSkyLight, worldBlockLight);
-    tess.draw();
+    if (faceList == CsmDisplayListCache.NO_LIST) {
+      renderFaceBackground(l, signColor, legendR, legendG, legendB, corners);
+    } else {
+      GL11.glCallList(faceList);
+    }
 
     if (farLod) {
       // Past the detail range the legend is unreadable and the font and atlas passes are the
@@ -620,6 +715,46 @@ public class TileEntityDynamicStreetSignRenderer
   }
 
   /** Prefix, street name, suffix on one line, with the optional city line centered under it. */
+  /**
+   * The border plate and the painted face behind the legend. Emits geometry only -- the white pixel
+   * is bound by the caller, outside the list.
+   *
+   * @param l         the resolved layout
+   * @param signColor the face colour
+   * @param legendR   the legend red channel, which the border plate is painted in
+   * @param legendG   the legend green channel
+   * @param legendB   the legend blue channel
+   * @param corners   the corner style
+   */
+  private void renderFaceBackground(Layout l, GuideSignColor signColor,
+      float legendR, float legendG, float legendB, CornerStyle corners) {
+    Tessellator tess = Tessellator.getInstance();
+    BufferBuilder buf = tess.getBuffer();
+
+    if (l.borderInset > 0) {
+      List<RenderHelper.Box> border = new ArrayList<>();
+      addRectBoxes(border, l.signLeft - l.borderInset, l.signBottom - l.borderInset,
+          l.signRight + l.borderInset, l.signTop + l.borderInset,
+          l.faceZ + Z_BORDER_PLATE, l.faceZ + Z_BORDER_PLATE + LIT_FACE_DEPTH, corners);
+      buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
+      RenderHelper.addBoxesToBufferLit(border, buf, legendR, legendG, legendB, 1.0f, 0, 0, 0,
+          worldSkyLight, worldBlockLight);
+      tess.draw();
+    }
+
+    // The painted face sits IN FRONT of the border plate (smaller Z), never behind it and
+    // never at the same depth -- coplanar faces z-fight and a face behind the border renders
+    // white from the front.
+    List<RenderHelper.Box> face = new ArrayList<>();
+    addRectBoxes(face, l.signLeft, l.signBottom, l.signRight, l.signTop,
+        l.faceZ + Z_FACE_PLATE, l.faceZ + Z_FACE_PLATE + LIT_FACE_DEPTH, corners);
+    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
+    RenderHelper.addBoxesToBufferLit(face, buf,
+        signColor.getRed(), signColor.getGreen(), signColor.getBlue(), 1.0f, 0, 0, 0,
+        worldSkyLight, worldBlockLight);
+    tess.draw();
+  }
+
   private void renderTextColumn(StreetSignData data, Layout l, float columnLeft, int color) {
     float gapAffix = AFFIX_GAP * l.scale;
     float groupLeft = columnLeft + (l.textColumnWidth - l.nameGroupWidth) / 2.0f;
@@ -786,7 +921,6 @@ public class TileEntityDynamicStreetSignRenderer
         new float[]{outerRight - FRAME_SEAM, outerBottom - FRAME_RAIL, front},
         new float[]{outerRight + FRAME_END, outerTop + FRAME_RAIL, back}));
 
-    Minecraft.getMinecraft().getTextureManager().bindTexture(WHITE_TEXTURE);
     Tessellator tess = Tessellator.getInstance();
     BufferBuilder buf = tess.getBuffer();
     buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
@@ -832,7 +966,6 @@ public class TileEntityDynamicStreetSignRenderer
           new float[]{hx + HANGER_CLAMP_WIDTH / 2, hangerTop, CZ + HANGER_CLAMP_DEPTH / 2}));
     }
 
-    Minecraft.getMinecraft().getTextureManager().bindTexture(WHITE_TEXTURE);
     Tessellator tess = Tessellator.getInstance();
     BufferBuilder buf = tess.getBuffer();
     buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
@@ -879,7 +1012,6 @@ public class TileEntityDynamicStreetSignRenderer
       previousY = y;
     }
 
-    Minecraft.getMinecraft().getTextureManager().bindTexture(WHITE_TEXTURE);
     Tessellator tess = Tessellator.getInstance();
     BufferBuilder buf = tess.getBuffer();
     buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);

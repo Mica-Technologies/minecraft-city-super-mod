@@ -24,6 +24,10 @@ public class TileEntityDynamicStreetSign extends AbstractTileEntity {
   // frame. Only meaningful for lighting; the blade has no other redstone behavior.
   private boolean powered = false;
   private transient StreetSignData cachedData = null;
+  // Set whenever anything the renderer bakes into a display list changes, and cleared by the
+  // renderer once it has recompiled. Light is NOT covered by this -- it changes without the tile
+  // entity being touched, so the renderer keys its caches on the block light separately.
+  private transient boolean stateDirty = true;
 
   public TileEntityDynamicStreetSign() {
   }
@@ -34,6 +38,7 @@ public class TileEntityDynamicStreetSign extends AbstractTileEntity {
     signDataJson = compound.getString(NBT_KEY);
     powered = compound.getBoolean(NBT_KEY_POWERED);
     cachedData = null;
+    stateDirty = true;
     // This is also the client's receive path for a sync, so it is where a mount change made on
     // the server has to reach the neighbouring poles.
     if (previousMount != null) {
@@ -63,6 +68,7 @@ public class TileEntityDynamicStreetSign extends AbstractTileEntity {
     StreetSignMount previousMount = getSignData().getMountType();
     this.signDataJson = json != null ? json : "";
     this.cachedData = null;
+    this.stateDirty = true;
     if (getWorld() != null) {
       markDirtySync(getWorld(), getPos(), true);
       refreshNeighborsOnMountChange(previousMount);
@@ -93,6 +99,42 @@ public class TileEntityDynamicStreetSign extends AbstractTileEntity {
     }
   }
 
+  /**
+   * Whether anything the renderer caches has changed since it last rebuilt.
+   *
+   * @return true if the renderer must discard what it compiled for this blade
+   */
+  public boolean isStateDirty() {
+    return stateDirty;
+  }
+
+  /** Clears the dirty flag once the renderer has rebuilt from current data. */
+  public void clearStateDirty() {
+    stateDirty = false;
+  }
+
+  @Override
+  public void invalidate() {
+    super.invalidate();
+    releaseRenderCache();
+  }
+
+  @Override
+  public void onChunkUnload() {
+    super.onChunkUnload();
+    releaseRenderCache();
+  }
+
+  /**
+   * Hands the blade's compiled geometry back on the client. Without this the display lists for a
+   * removed or unloaded blade stay allocated until the cache evicts them.
+   */
+  private void releaseRenderCache() {
+    if (getWorld() != null && getWorld().isRemote) {
+      TileEntityDynamicStreetSignRenderer.cleanupDisplayList(getPos());
+    }
+  }
+
   public String getSignDataJson() {
     return signDataJson;
   }
@@ -110,6 +152,7 @@ public class TileEntityDynamicStreetSign extends AbstractTileEntity {
       return;
     }
     this.powered = powered;
+    this.stateDirty = true;
     if (getWorld() != null) {
       markDirtySync(getWorld(), getPos(), true);
     }
