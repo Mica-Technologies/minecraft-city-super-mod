@@ -495,4 +495,33 @@ public class TileEntityCrosswalkSignalNew extends AbstractTickableTileEntity {
     }
 
     // endregion
+
+
+  /**
+   * Releases this position's cached display list when the tile entity goes away -- block broken,
+   * block replaced, or the tile entity otherwise invalidated.
+   *
+   * <p>Without this (and {@link #onChunkUnload()}), the renderer's cache kept the entry and its
+   * OpenGL list handle for the rest of the session: the handle holds driver and GPU memory, not
+   * just heap, so touring a large city accumulated one per block ever rendered.</p>
+   */
+  @Override
+  public void invalidate() {
+    super.invalidate();
+    if (world != null && world.isRemote) {
+      TileEntityCrosswalkSignalNewRenderer.cleanupDisplayList(pos);
+    }
+  }
+
+  /**
+   * Releases this position's cached display list when the chunk unloads. This is the common case
+   * -- a player walking away from a block, rather than breaking it.
+   */
+  @Override
+  public void onChunkUnload() {
+    super.onChunkUnload();
+    if (world != null && world.isRemote) {
+      TileEntityCrosswalkSignalNewRenderer.cleanupDisplayList(pos);
+    }
+  }
 }
