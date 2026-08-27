@@ -37,8 +37,9 @@ CATEGORIES = [
     ("controllers", [B.CONTROLLER]),
 ]
 
-POSE = {"name": "intersection_close", "x": -6.5, "y": 11.0, "z": -6.5,
-        "yaw": 315.0, "pitch": 5.0}
+# Signals face south, so the camera stands on the +Z side looking back at their fronts.
+POSE = {"name": "intersection_close", "x": 0.5, "y": 11.0, "z": 14.0,
+        "yaw": 180.0, "pitch": 3.0}
 SAMPLES = 14
 SETTLE_TICKS = 200
 

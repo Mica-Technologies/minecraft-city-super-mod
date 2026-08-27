@@ -108,12 +108,19 @@ FACINGS = [0, 1, 2, 3]
 # Camera poses sampled at each measurement. Chosen to cover the cases the plan's findings are
 # about: dense signals close up, a long view down a corridor of them, and the dynamic signs.
 POSES = [
-    # Yaw is degrees clockwise from south: 0 = +Z, 90 = -X, 180 = -Z, 270 = +X. The grid grows in
-    # +X and +Z from the origin, so the useful viewing directions are between 270 and 360.
-    {"name": "intersection_close", "x": -6.5, "y": 11.0, "z": -6.5, "yaw": 315.0, "pitch": 5.0},
-    {"name": "corridor_long",      "x": -14.5, "y": 11.0, "z": 0.5, "yaw": 270.0, "pitch": 2.0},
-    {"name": "grid_overview",      "x": -24.0, "y": 42.0, "z": -24.0, "yaw": 315.0, "pitch": 23.0},
-    {"name": "dynamic_signs",      "x": 0.5, "y": 11.0, "z": -18.0, "yaw": 0.0, "pitch": 0.0},
+    # Yaw is degrees clockwise from south: 0 = +Z, 90 = -X, 180 = -Z, 270 = +X.
+    #
+    # Every signal head in the scene faces SOUTH, so their fronts look toward +Z: a camera has to
+    # stand at a HIGHER z than the signals and look back (yaw 180) to see them. Two earlier
+    # versions of these poses got this wrong -- one stood on the -Z side and measured the backs of
+    # 1200 signals, the other looked away from the grid entirely and measured an empty field at
+    # 748 fps. Both understate the work, because the lit bulbs and lit visor interiors are
+    # front-facing and are largely hidden by the body from behind. Verify with a screenshot after
+    # changing any of these; red bulbs should be facing the camera.
+    {"name": "intersection_close", "x": 0.5, "y": 10.5, "z": 22.0, "yaw": 180.0, "pitch": 3.0},
+    {"name": "corridor_long", "x": 0.5, "y": 12.0, "z": 152.0, "yaw": 180.0, "pitch": 2.0},
+    {"name": "grid_overview", "x": 72.0, "y": 46.0, "z": 205.0, "yaw": 180.0, "pitch": 14.0},
+    {"name": "dynamic_signs", "x": 6.5, "y": 11.0, "z": 20.0, "yaw": 180.0, "pitch": 0.0},
 ]
 
 # Chunk loading and tile entity init dominate the first seconds after a teleport, and
