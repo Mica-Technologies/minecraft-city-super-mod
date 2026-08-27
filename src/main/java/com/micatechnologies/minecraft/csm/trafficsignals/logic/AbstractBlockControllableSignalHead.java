@@ -1,6 +1,8 @@
 package com.micatechnologies.minecraft.csm.trafficsignals.logic;
 
 import java.util.Arrays;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.Map;
 import com.micatechnologies.minecraft.csm.codeutils.DirectionSixteen;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalHead;
@@ -22,6 +24,27 @@ import org.jetbrains.annotations.NotNull;
 
 public abstract class AbstractBlockControllableSignalHead extends AbstractBlockControllableSignal
     implements ICsmTileEntityProvider {
+
+  /**
+   * Shared "no pivot offset" result for {@link #getTiltPivotOffset(IBlockAccess, BlockPos)}.
+   *
+   * <p><b>Read-only.</b> The section-layout accessors on this class have always been free to
+   * return an internally held array -- {@code BlockControllableSignal} returns its own configured
+   * arrays directly -- so callers already must not write into what they get back. These caches
+   * lean on that same contract to stop re-deriving constant layouts on every frame: the renderer,
+   * the traffic light cover and mount kit, and the bounding box helper all call these per frame,
+   * per visible signal.</p>
+   */
+  private static final int[] NO_TILT_PIVOT = new int[]{0, 0, 0};
+
+  /** Default vertical stack layouts, memoised by section count. Read-only; see NO_TILT_PIVOT. */
+  private static final Map<Integer, float[]> DEFAULT_Y_POSITIONS = new ConcurrentHashMap<>();
+
+  /** Default (all-zero) X offsets, memoised by section count. Read-only; see NO_TILT_PIVOT. */
+  private static final Map<Integer, float[]> DEFAULT_X_POSITIONS = new ConcurrentHashMap<>();
+
+  /** Default (all 12-inch) section sizes, memoised by section count. Read-only. */
+  private static final Map<Integer, int[]> DEFAULT_SIZES = new ConcurrentHashMap<>();
 
   public AbstractBlockControllableSignalHead(Material p_i45394_1_) {
     super(p_i45394_1_);
@@ -206,10 +229,15 @@ public abstract class AbstractBlockControllableSignalHead extends AbstractBlockC
    * layouts such as add-on signals where multiple sections overlap at the same position.
    */
   public float[] getSectionYPositions(int sectionCount) {
+    float[] cached = DEFAULT_Y_POSITIONS.get(sectionCount);
+    if (cached != null) {
+      return cached;
+    }
     float[] positions = new float[sectionCount];
     for (int i = 0; i < sectionCount; i++) {
       positions[i] = ((sectionCount - 1 - i) - (sectionCount - 1) / 2.0f) * 12.0f;
     }
+    DEFAULT_Y_POSITIONS.put(sectionCount, positions);
     return positions;
   }
 
@@ -238,8 +266,13 @@ public abstract class AbstractBlockControllableSignalHead extends AbstractBlockC
    * Override for 8-inch signals or mixed-size (8-8-12, 12-8-8) signals.
    */
   public int[] getSectionSizes(int sectionCount) {
+    int[] cached = DEFAULT_SIZES.get(sectionCount);
+    if (cached != null) {
+      return cached;
+    }
     int[] sizes = new int[sectionCount];
     Arrays.fill(sizes, 12);
+    DEFAULT_SIZES.put(sectionCount, sizes);
     return sizes;
   }
 
@@ -249,7 +282,13 @@ public abstract class AbstractBlockControllableSignalHead extends AbstractBlockC
    * are shifted left or right relative to the top section.
    */
   public float[] getSectionXPositions(int sectionCount) {
-    return new float[sectionCount]; // all zeros
+    float[] cached = DEFAULT_X_POSITIONS.get(sectionCount);
+    if (cached != null) {
+      return cached;
+    }
+    float[] positions = new float[sectionCount]; // all zeros
+    DEFAULT_X_POSITIONS.put(sectionCount, positions);
+    return positions;
   }
 
   // --- World-aware layout overloads ---
@@ -295,7 +334,7 @@ public abstract class AbstractBlockControllableSignalHead extends AbstractBlockC
    * @return int[3] array {dx, dy, dz} in block units from this block to the main signal
    */
   public int[] getTiltPivotOffset(IBlockAccess world, BlockPos pos) {
-    return new int[]{0, 0, 0};
+    return NO_TILT_PIVOT;
   }
 
   /**
