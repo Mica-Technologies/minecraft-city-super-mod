@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
+import com.micatechnologies.minecraft.csm.codeutils.ICsmScheduledTickConsumer;
 import com.micatechnologies.minecraft.csm.CsmNetwork;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableCrosswalkAccessory;
 import java.util.Random;
@@ -19,7 +20,7 @@ import net.minecraftforge.fml.common.network.NetworkRegistry;
  * @since 1.0
  */
 public class BlockControllableCrosswalkTweeter2
-    extends AbstractBlockControllableCrosswalkAccessory {
+    extends AbstractBlockControllableCrosswalkAccessory implements ICsmScheduledTickConsumer {
 
   final int lenOfTweetSound = 80;
 

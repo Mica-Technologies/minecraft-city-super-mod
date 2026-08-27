@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.codeutils;
 
 import javax.annotation.Nullable;
+import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
@@ -43,7 +44,14 @@ public abstract class AbstractTileEntity extends TileEntity {
    * @param sendClientUpdate whether to send a client update packet or not
    */
   public void markDirtySync(World world, BlockPos pos, boolean sendClientUpdate) {
-    world.scheduleBlockUpdate(pos, this.getBlockType(), 0, 0);
+    // Only schedule a block update for blocks that actually act on one. Scheduling costs a
+    // NextTickListEntry allocation plus an insert and removal on the server's pending-tick set,
+    // and vanilla's Block.updateTick is empty -- so for every tile entity whose block does not
+    // override it (which is nearly all of ours) this was buying nothing on every state sync.
+    Block blockType = this.getBlockType();
+    if (blockType instanceof ICsmScheduledTickConsumer) {
+      world.scheduleBlockUpdate(pos, blockType, 0, 0);
+    }
     markDirty();
     if (sendClientUpdate) {
       syncServerToClient(world);

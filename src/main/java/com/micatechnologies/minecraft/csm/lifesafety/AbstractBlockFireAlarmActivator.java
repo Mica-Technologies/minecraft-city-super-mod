@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.lifesafety;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEWUD;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmScheduledTickConsumer;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import java.util.Random;
 import javax.annotation.Nonnull;
@@ -29,7 +30,7 @@ import net.minecraft.world.World;
  */
 
 public abstract class AbstractBlockFireAlarmActivator extends AbstractBlockRotatableNSEWUD
-    implements ICsmTileEntityProvider {
+    implements ICsmTileEntityProvider, ICsmScheduledTickConsumer {
 
   // TODO: Why is this here because it concerns me
   public static final PropertyDirection FACING = BlockDirectional.FACING;
