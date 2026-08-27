@@ -55,6 +55,16 @@ public final class CsmRenderToggles {
    */
   public static boolean bulbsPerFrame = false;
 
+  /** Skip the crosswalk display face entirely. Measurement only -- the face goes blank. */
+  public static boolean skipCrosswalkFace = false;
+
+  /**
+   * Draw the crosswalk display face per frame instead of replaying its display list, the way it was
+   * drawn before it was baked. Kept so the two can be measured and pixel-compared inside one
+   * session; the baked path is what ships.
+   */
+  public static boolean crosswalkFacePerFrame = false;
+
   private CsmRenderToggles() {
   }
 
@@ -71,6 +81,8 @@ public final class CsmRenderToggles {
     values.put("signalBody", skipSignalBody);
     values.put("visorInteriorsPerFrame", visorInteriorsPerFrame);
     values.put("bulbsPerFrame", bulbsPerFrame);
+    values.put("crosswalkFace", skipCrosswalkFace);
+    values.put("crosswalkFacePerFrame", crosswalkFacePerFrame);
     return values;
   }
 
@@ -95,6 +107,10 @@ public final class CsmRenderToggles {
       visorInteriorsPerFrame = skipped;
     } else if ("bulbsPerFrame".equalsIgnoreCase(name)) {
       bulbsPerFrame = skipped;
+    } else if ("crosswalkFace".equalsIgnoreCase(name)) {
+      skipCrosswalkFace = skipped;
+    } else if ("crosswalkFacePerFrame".equalsIgnoreCase(name)) {
+      crosswalkFacePerFrame = skipped;
     } else {
       return false;
     }
@@ -109,6 +125,8 @@ public final class CsmRenderToggles {
     skipSignalBody = false;
     visorInteriorsPerFrame = false;
     bulbsPerFrame = false;
+    skipCrosswalkFace = false;
+    crosswalkFacePerFrame = false;
   }
 
   /**
