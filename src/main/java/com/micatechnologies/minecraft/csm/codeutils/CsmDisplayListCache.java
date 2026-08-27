@@ -267,6 +267,44 @@ public final class CsmDisplayListCache {
   }
 
   /**
+   * Returns one line per cache describing how full it is, for diagnostics.
+   *
+   * <p>Reports compiled lists as well as positions, because they are not the same number and the
+   * lists are what cost driver and GPU memory: each position keeps up to
+   * {@link #STATES_PER_POSITION} of them so a flashing signal does not recompile on every flash.
+   * Nothing here reports GPU bytes, because OpenGL offers no way to ask.</p>
+   *
+   * @return a human-readable line per cache
+   */
+  public static List<String> describeAll() {
+    List<String> out = new ArrayList<>();
+    int totalLists = 0;
+    for (CsmDisplayListCache cache : ALL_CACHES) {
+      int lists = cache.compiledListCount();
+      totalLists += lists;
+      out.add(String.format("%-24s %4d/%d positions, %5d compiled lists",
+          cache.name, cache.entries.size(), cache.maxEntries, lists));
+    }
+    out.add(String.format("%-24s %5d compiled lists across %d caches",
+        "TOTAL", totalLists, ALL_CACHES.size()));
+    return out;
+  }
+
+  /**
+   * Returns how many display lists this cache currently holds compiled, across every position and
+   * every cached state.
+   *
+   * @return the compiled list count
+   */
+  public int compiledListCount() {
+    int total = 0;
+    for (CachedList entry : entries.values()) {
+      total += entry.size();
+    }
+    return total;
+  }
+
+  /**
    * Releases every list held by every cache. Called on client disconnect so display list handles
    * do not survive into the next world the player joins.
    */
