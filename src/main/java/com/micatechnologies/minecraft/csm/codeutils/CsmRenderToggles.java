@@ -106,6 +106,12 @@ public final class CsmRenderToggles {
    */
   public static boolean streetSignStructurePerFrame = false;
 
+  /**
+   * Draw the guide sign's background per frame instead of replaying its display list. Kept so the
+   * two can be measured and pixel-compared inside one session; the baked path ships.
+   */
+  public static boolean guideSignBackgroundPerFrame = false;
+
   private CsmRenderToggles() {
   }
 
@@ -132,6 +138,7 @@ public final class CsmRenderToggles {
     values.put("guideSignPost", skipGuideSignPost);
     values.put("guideSignLighting", skipGuideSignLighting);
     values.put("streetSignStructurePerFrame", streetSignStructurePerFrame);
+    values.put("guideSignBackgroundPerFrame", guideSignBackgroundPerFrame);
     values.put("crosswalkFacePerFrame", crosswalkFacePerFrame);
     values.put("crosswalkCountdownPerFrame", crosswalkCountdownPerFrame);
     return values;
@@ -178,6 +185,8 @@ public final class CsmRenderToggles {
       skipGuideSignLighting = skipped;
     } else if ("streetSignStructurePerFrame".equalsIgnoreCase(name)) {
       streetSignStructurePerFrame = skipped;
+    } else if ("guideSignBackgroundPerFrame".equalsIgnoreCase(name)) {
+      guideSignBackgroundPerFrame = skipped;
     } else if ("crosswalkFacePerFrame".equalsIgnoreCase(name)) {
       crosswalkFacePerFrame = skipped;
     } else if ("crosswalkCountdownPerFrame".equalsIgnoreCase(name)) {
@@ -206,6 +215,7 @@ public final class CsmRenderToggles {
     skipGuideSignPost = false;
     skipGuideSignLighting = false;
     streetSignStructurePerFrame = false;
+    guideSignBackgroundPerFrame = false;
     crosswalkFacePerFrame = false;
     crosswalkCountdownPerFrame = false;
   }
