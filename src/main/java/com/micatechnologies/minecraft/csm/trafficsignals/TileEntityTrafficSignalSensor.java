@@ -1,14 +1,17 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
+import com.google.common.base.Predicate;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractTileEntity;
 import com.micatechnologies.minecraft.csm.codeutils.SerializationUtils;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockTrafficSignalSensor;
 import java.util.ArrayList;
 import java.util.List;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EntitySelectors;
 import net.minecraft.util.Tuple;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -28,6 +31,22 @@ import net.minecraft.util.math.Vec3d;
  * @since 2023.2.0
  */
 public class TileEntityTrafficSignalSensor extends AbstractTileEntity {
+
+  /**
+   * Matches the entities a traffic signal sensor counts as demand: players and villagers.
+   * <p>
+   * The {@code NOT_SPECTATING} term is load-bearing, not decorative. The two-argument
+   * {@code World.getEntitiesWithinAABB(Class, AxisAlignedBB)} applies
+   * {@link EntitySelectors#NOT_SPECTATING} internally, but the three-argument overload used here
+   * <em>replaces</em> that default with the supplied predicate rather than adding to it. Dropping
+   * it would let a player in spectator mode place a call at an intersection.
+   * </p>
+   *
+   * @since 2026.8
+   */
+  private static final Predicate<Entity> ELIGIBLE_ENTITY =
+      entity -> EntitySelectors.NOT_SPECTATING.apply(entity)
+          && (entity instanceof EntityPlayer || entity instanceof EntityVillager);
 
   // Short-form NBT keys for the sensor's eight scan corner positions. LEGACY_* constants are
   // retained for back-compat reads only.
@@ -291,9 +310,12 @@ public class TileEntityTrafficSignalSensor extends AbstractTileEntity {
     int count = 0;
     if (world != null && corner1 != null && corner2 != null) {
       AxisAlignedBB scanRange = new AxisAlignedBB(corner1, corner2);
-      // Use type-filtered queries instead of scanning all entities
-      count += world.getEntitiesWithinAABB(EntityPlayer.class, scanRange).size();
-      count += world.getEntitiesWithinAABB(EntityVillager.class, scanRange).size();
+      // One sweep with a predicate rather than one per entity class. The class argument to
+      // getEntitiesWithinAABB filters the results, it does not narrow the search: each call
+      // still walks every chunk overlapping the box and every entity list within it. Since a
+      // sensor scans four regions and the controller polls every sensor on its circuit, the
+      // second sweep was doubling the cost of the whole demand poll for no extra information.
+      count += world.getEntitiesWithinAABB(Entity.class, scanRange, ELIGIBLE_ENTITY).size();
     }
     return count;
   }
@@ -457,11 +479,9 @@ public class TileEntityTrafficSignalSensor extends AbstractTileEntity {
     List<Tuple<Integer, Vec3d>> results = new ArrayList<>();
     if (world != null && corner1 != null && corner2 != null) {
       AxisAlignedBB scanRange = new AxisAlignedBB(corner1, corner2);
-      // Use type-filtered queries instead of scanning all entities
-      for (EntityPlayer entity : world.getEntitiesWithinAABB(EntityPlayer.class, scanRange)) {
-        results.add(new Tuple<>(entity.getEntityId(), entity.getPositionVector()));
-      }
-      for (EntityVillager entity : world.getEntitiesWithinAABB(EntityVillager.class, scanRange)) {
+      // Single predicate sweep -- see scanCornersForEntities for why two class-filtered calls
+      // cost twice as much as one predicate call for the same set of entities.
+      for (Entity entity : world.getEntitiesWithinAABB(Entity.class, scanRange, ELIGIBLE_ENTITY)) {
         results.add(new Tuple<>(entity.getEntityId(), entity.getPositionVector()));
       }
     }
