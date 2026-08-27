@@ -5,6 +5,7 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.common.MinecraftForge;
@@ -109,10 +110,16 @@ public class HvacHudOverlay {
     }
 
     World world = player.world;
-    BlockPos playerPos = player.getPosition();
+
+    // Derive the chunk key straight from the player's coordinates rather than allocating a
+    // BlockPos: this runs every frame, and for a player nowhere near an HVAC unit it is the
+    // only work the overlay should be doing.
+    int playerBlockX = MathHelper.floor(player.posX);
+    int playerBlockY = MathHelper.floor(player.posY);
+    int playerBlockZ = MathHelper.floor(player.posZ);
 
     // Force recheck when player moves to a different chunk
-    long currentChunkKey = ((long) (playerPos.getX() >> 4)) ^ (((long) (playerPos.getZ() >> 4)) << 32);
+    long currentChunkKey = ((long) (playerBlockX >> 4)) ^ (((long) (playerBlockZ >> 4)) << 32);
     boolean chunkChanged = currentChunkKey != cachedChunkKey;
     if (chunkChanged) {
       cachedChunkKey = currentChunkKey;
@@ -123,8 +130,18 @@ public class HvacHudOverlay {
     // dynamics defined by TemperatureSmoother (fast ramp when HVAC pushes, slow decay
     // when it stops).
     long now = System.currentTimeMillis();
-    if (chunkChanged || (now - lastCheckTime > RECHECK_INTERVAL_MS)) {
+    boolean recheckDue = chunkChanged || (now - lastCheckTime > RECHECK_INTERVAL_MS);
+
+    // Nothing on screen and nothing to refresh -- leave before touching the world. The
+    // proximity scan below walks every tile entity in a 3x3 chunk block, and CSM chunks are
+    // unusually tile-entity dense, so this exit matters for players with no HVAC at all.
+    if (!recheckDue && !cachedNearHvac) {
+      return;
+    }
+
+    if (recheckDue) {
       lastCheckTime = now;
+      BlockPos playerPos = new BlockPos(playerBlockX, playerBlockY, playerBlockZ);
       cachedNearHvac = HvacTemperatureManager.isNearAnyHvac(world, playerPos, HVAC_DETECTION_RANGE);
       float rawTemp = HvacTemperatureManager.getTemperatureAt(world, playerPos);
       float baseline = HvacTemperatureManager.getBaselineAt(world, playerPos);
@@ -137,7 +154,7 @@ public class HvacHudOverlay {
 
     float temperature = cachedTemperature;
     int indicatorColor = getIndicatorColor(temperature);
-    String altitudeIndicator = playerPos.getY() > ALTITUDE_THRESHOLD ? " \u2191" : "";
+    String altitudeIndicator = playerBlockY > ALTITUDE_THRESHOLD ? " \u2191" : "";
     String tempText = Math.round(temperature) + "\u00B0F" + altitudeIndicator;
 
     ScaledResolution resolution = event.getResolution();
