@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmRenderToggles;
 import com.micatechnologies.minecraft.csm.codeutils.RenderHelper;
 import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.BannerPosition;
 import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.CornerStyle;
@@ -239,7 +240,12 @@ public class TileEntityDynamicGuideSignRenderer
 
     // x/y/z are camera-relative, so this is the squared camera distance. Past the
     // full-detail range, draw the cheap silhouette LOD.
-    boolean farLod = x * x + y * y + z * z > LOD_FULL_DETAIL_DIST_SQ;
+    if (CsmRenderToggles.skipGuideSign) {
+      GlStateManager.popMatrix();
+      return;
+    }
+    boolean farLod = x * x + y * y + z * z > LOD_FULL_DETAIL_DIST_SQ
+        || CsmRenderToggles.guideSignForceFarLod;
     renderSign(data, farLod);
 
     GlStateManager.popMatrix();
@@ -392,9 +398,13 @@ public class TileEntityDynamicGuideSignRenderer
     // Far LOD (64-128 blocks): just the body silhouette and posts. Legend detail is
     // unreadable at that distance and the font/atlas passes are the expensive part.
     if (farLod) {
-      renderPost(data.getPostType(), signLeft, signBottom, totalSignWidth, faceZ);
-      renderSignLighting(data, signLeft, signBottom, signTop, totalSignWidth, faceZ,
-          borderWidth);
+      if (!CsmRenderToggles.skipGuideSignPost) {
+        renderPost(data.getPostType(), signLeft, signBottom, totalSignWidth, faceZ);
+      }
+      if (!CsmRenderToggles.skipGuideSignLighting) {
+        renderSignLighting(data, signLeft, signBottom, signTop, totalSignWidth, faceZ,
+            borderWidth);
+      }
       GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
       GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
       GlStateManager.enableLighting();
@@ -477,9 +487,13 @@ public class TileEntityDynamicGuideSignRenderer
       }
     }
 
-    renderPost(data.getPostType(), signLeft, signBottom, totalSignWidth, faceZ);
-    renderSignLighting(data, signLeft, signBottom, signTop, totalSignWidth, faceZ,
-        borderWidth);
+    if (!CsmRenderToggles.skipGuideSignPost) {
+      renderPost(data.getPostType(), signLeft, signBottom, totalSignWidth, faceZ);
+    }
+    if (!CsmRenderToggles.skipGuideSignLighting) {
+      renderSignLighting(data, signLeft, signBottom, signTop, totalSignWidth, faceZ,
+          borderWidth);
+    }
 
     GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
     GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
