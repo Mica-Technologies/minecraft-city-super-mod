@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm;
 
 import com.google.common.collect.Lists;
+import com.micatechnologies.minecraft.csm.codeutils.CsmDisplayListCache;
 import com.micatechnologies.minecraft.csm.codeutils.CsmRenderToggles;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -38,7 +39,7 @@ public class CommandCsm extends CommandBase {
 
   private static final String USAGE =
       "/csm <reloadconfig|poleignore <list|add|remove> [block]"
-          + "|renderpass <list|skip|draw|reset> [pass]>";
+          + "|renderpass <list|skip|draw|reset> [pass]|displaylists>";
 
   @Override
   public String getName() {
@@ -77,6 +78,9 @@ public class CommandCsm extends CommandBase {
       case "renderpass":
         handleRenderPass(sender, args);
         return;
+      case "displaylists":
+        handleDisplayLists(sender);
+        return;
       default:
         throw new WrongUsageException(USAGE);
     }
@@ -100,6 +104,25 @@ public class CommandCsm extends CommandBase {
    *
    * @throws CommandException on bad usage
    */
+  /**
+   * Reports how many display lists the render caches are holding, and the client's heap use.
+   *
+   * <p>Useful because the two numbers move independently: the Java side of these caches is a few
+   * hundred bytes per position, while the compiled lists themselves live in driver and GPU memory
+   * that no Java measurement here can see.</p>
+   *
+   * @param sender the command sender
+   */
+  private static void handleDisplayLists(ICommandSender sender) {
+    for (String line : CsmDisplayListCache.describeAll()) {
+      sendSuccess(sender, line);
+    }
+    Runtime runtime = Runtime.getRuntime();
+    long usedMb = (runtime.totalMemory() - runtime.freeMemory()) / (1024L * 1024L);
+    long maxMb = runtime.maxMemory() / (1024L * 1024L);
+    sendSuccess(sender, String.format("heap %d/%d MB", usedMb, maxMb));
+  }
+
   private static void handleRenderPass(ICommandSender sender, String[] args)
       throws CommandException {
     if (args.length < 2) {

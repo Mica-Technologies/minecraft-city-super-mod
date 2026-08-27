@@ -1,0 +1,10 @@
+// Constrain the dev client's heap so CSM can be tested under memory pressure.
+// A later -Xmx wins in HotSpot, so appending overrides the default 6G.
+gradle.projectsEvaluated {
+    def heap = System.getProperty('csm.testHeap') ?: '1G'
+    rootProject.tasks.matching { it.name == 'runClient' }.configureEach {
+        extraJvmArgs.add("-Xmx${heap}".toString())
+        extraJvmArgs.add("-Xms256M")
+        logger.lifecycle("[lowmem] runClient heap capped at ${heap}")
+    }
+}
