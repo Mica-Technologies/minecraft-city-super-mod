@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
 import com.micatechnologies.minecraft.csm.codeutils.CsmDisplayListCache;
+import com.micatechnologies.minecraft.csm.codeutils.CsmRenderToggles;
 import com.micatechnologies.minecraft.csm.codeutils.CsmRenderUtils;
 import com.micatechnologies.minecraft.csm.codeutils.DirectionSixteen;
 import com.micatechnologies.minecraft.csm.codeutils.RenderHelper;
@@ -41,6 +42,14 @@ public class TileEntityCrosswalkSignalNewRenderer
      */
     private static final CsmDisplayListCache DISPLAY_LISTS =
             new CsmDisplayListCache("crosswalk_signal_new");
+
+    /**
+     * The display face quads, cached apart from the body because they draw against the crosswalk
+     * atlas rather than the white pixel. A display list may hold geometry for exactly one texture,
+     * with the bind done outside it -- see the replay site below.
+     */
+    private static final CsmDisplayListCache DISPLAY_FACE_LISTS =
+            new CsmDisplayListCache("crosswalk_display_face");
 
     private static final ResourceLocation WHITE_TEXTURE =
         new ResourceLocation("csm", "textures/blocks/white1px.png");
@@ -84,6 +93,7 @@ public class TileEntityCrosswalkSignalNewRenderer
      */
     public static void cleanupDisplayList( BlockPos pos ) {
         DISPLAY_LISTS.invalidate( pos );
+        DISPLAY_FACE_LISTS.invalidate( pos );
     }
 
     @Override
@@ -186,7 +196,15 @@ public class TileEntityCrosswalkSignalNewRenderer
         // The compiled geometry depends only on the block light level here; everything else that
         // can change it routes through the tile entity's explicit dirty flag.
         long stateKey = combinedLight;
-        int displayList = te.isStateDirty()
+        // Read the dirty flag ONCE, up front. The body block below calls clearDirtyFlag() as soon
+        // as it has recompiled, so anything downstream that re-read the flag would always see
+        // false and could serve a list compiled against the previous display type -- a one-frame
+        // stale draw that only appears on the frame a signal's configuration changes.
+        boolean stateDirty = te.isStateDirty();
+        if ( stateDirty ) {
+            DISPLAY_FACE_LISTS.invalidate( pos );
+        }
+        int displayList = stateDirty
                 ? CsmDisplayListCache.NO_LIST
                 : DISPLAY_LISTS.get( pos, stateKey );
         if ( displayList == CsmDisplayListCache.NO_LIST ) {
@@ -213,7 +231,40 @@ public class TileEntityCrosswalkSignalNewRenderer
         // TileEntityTrafficSignalHead's "flash flip" pass), so the ped clearance flash lights
         // in the same half so the two blink together rather than alternately.
         boolean flashOn = (CsmRenderUtils.gameMillis(te.getWorld(), partialTicks) % 1000L) >= 500L;
-        renderDisplayFace( displayType, bulbType, colorState, flashOn );
+
+        // The face is a couple of textured quads whose geometry is fixed once the atlas tiles are
+        // chosen, so it compiles into a list the same way the body does. Keying on the resolved
+        // atlas indices rather than on (colorState, flashOn) means states that draw identically
+        // share one list: the flash flag only changes the tiles during clearance, so a steady
+        // signal holds a single cached list instead of alternating twice a second.
+        //
+        // The atlas bind stays OUTSIDE the list. A bind inside would be dropped at compile time
+        // whenever TextureManager believed the atlas was already current, and at replay time
+        // glCallList would move the real binding without GlStateManager seeing it -- leaving its
+        // shadow state stale so the countdown pass's next bind is wrongly skipped. See
+        // TileEntityTrafficSignalHeadRenderer for the full account.
+        if ( !CsmRenderToggles.skipCrosswalkFace ) {
+            long faceKey = displayFaceKey( displayType, bulbType, colorState, flashOn );
+            int faceList = ( stateDirty || CsmRenderToggles.crosswalkFacePerFrame )
+                    ? CsmDisplayListCache.NO_LIST
+                    : DISPLAY_FACE_LISTS.get( pos, faceKey );
+            if ( faceList == CsmDisplayListCache.NO_LIST && !CsmRenderToggles.crosswalkFacePerFrame ) {
+                faceList = DISPLAY_FACE_LISTS.allocate( pos, faceKey );
+                if ( faceList != CsmDisplayListCache.NO_LIST ) {
+                    GL11.glNewList( faceList, GL11.GL_COMPILE );
+                    renderDisplayFaceQuads( displayType, bulbType, colorState, flashOn );
+                    GL11.glEndList();
+                }
+            }
+            Minecraft.getMinecraft().getTextureManager().bindTexture(
+                    CrosswalkTextureMap.ATLAS_TEXTURE );
+            if ( faceList == CsmDisplayListCache.NO_LIST ) {
+                renderDisplayFaceQuads( displayType, bulbType, colorState, flashOn );
+            }
+            else {
+                GL11.glCallList( faceList );
+            }
+        }
 
         // 7-segment countdown area:
         // - Single 16-inch: always renders on the signal face
@@ -424,7 +475,54 @@ public class TileEntityCrosswalkSignalNewRenderer
     // Dynamic: display face rendering
     // =====================================================================================
 
-    private void renderDisplayFace( CrosswalkDisplayType displayType,
+    /**
+     * Identifies the face a given state draws, for use as a display list cache key. It resolves the
+     * same branch and the same atlas tiles {@link #renderDisplayFaceQuads} does, so two states that
+     * would draw an identical face produce an identical key and share one compiled list.
+     *
+     * @param displayType the display type
+     * @param bulbType    the bulb type
+     * @param colorState  the current signal colour state
+     * @param flashOn     whether the clearance flash is currently lit
+     *
+     * @return a key identifying the face geometry this state draws
+     */
+    private static long displayFaceKey( CrosswalkDisplayType displayType,
+            CrosswalkBulbType bulbType, int colorState, boolean flashOn ) {
+        int branch;
+        int upper;
+        int lower = -1;
+        if ( displayType == CrosswalkDisplayType.SYMBOL ) {
+            branch = 0;
+            upper = CrosswalkTextureMap.getSingleFaceAtlasIndex( colorState, flashOn );
+        }
+        else if ( displayType == CrosswalkDisplayType.SYMBOL_12INCH ) {
+            branch = 1;
+            upper = CrosswalkTextureMap.getSingle12InchFaceAtlasIndex( colorState, flashOn );
+        }
+        else if ( bulbType == CrosswalkBulbType.HAND_MAN_COUNTDOWN ) {
+            branch = 2;
+            upper = CrosswalkTextureMap.getHandManUpperAtlasIndex( colorState, flashOn );
+            lower = CrosswalkTextureMap.getHandManLowerAtlasIndex();
+        }
+        else {
+            branch = 3;
+            upper = CrosswalkTextureMap.getWordedUpperAtlasIndex( colorState, flashOn );
+            lower = CrosswalkTextureMap.getWordedLowerAtlasIndex( colorState, flashOn );
+        }
+        // Each field in its own bit range so none can alias another; lower is biased by one so its
+        // "unused" sentinel stays non-negative.
+        return ( branch & 0xFL )
+                | ( ( upper & 0xFFFL ) << 4 )
+                | ( ( (long) ( lower + 1 ) & 0xFFFL ) << 16 );
+    }
+
+    /**
+     * Emits the display face quads and nothing else -- no texture bind and no GlStateManager call,
+     * which is what makes the pass safe to compile into a display list. The atlas is bound by the
+     * caller, outside the list.
+     */
+    private void renderDisplayFaceQuads( CrosswalkDisplayType displayType,
             CrosswalkBulbType bulbType, int colorState, boolean flashOn ) {
         // Flash timing (computed in render() from the wall-clock flash timer): 1Hz on/off
         // cycle during clearance (color=1)
@@ -435,8 +533,6 @@ public class TileEntityCrosswalkSignalNewRenderer
         if ( displayType == CrosswalkDisplayType.SYMBOL ) {
             // Single 16-inch: atlas-based rendering
             int atlasIdx = CrosswalkTextureMap.getSingleFaceAtlasIndex( colorState, flashOn );
-            Minecraft.getMinecraft().getTextureManager().bindTexture(
-                    CrosswalkTextureMap.ATLAS_TEXTURE );
             buffer.begin( GL11.GL_QUADS, DefaultVertexFormats.BLOCK );
             addAtlasQuad( buffer, atlasIdx,
                     CrosswalkSignalVertexData.SINGLE_DISPLAY_X1,
@@ -450,8 +546,6 @@ public class TileEntityCrosswalkSignalNewRenderer
             // Single 12-inch: atlas-based rendering with 12-inch bimodal textures
             int atlasIdx = CrosswalkTextureMap.getSingle12InchFaceAtlasIndex(
                     colorState, flashOn );
-            Minecraft.getMinecraft().getTextureManager().bindTexture(
-                    CrosswalkTextureMap.ATLAS_TEXTURE );
             buffer.begin( GL11.GL_QUADS, DefaultVertexFormats.BLOCK );
             addAtlasQuad( buffer, atlasIdx,
                     CrosswalkSignalVertexData.SINGLE_12INCH_DISPLAY_X1,
@@ -463,9 +557,6 @@ public class TileEntityCrosswalkSignalNewRenderer
         }
         else if ( bulbType == CrosswalkBulbType.HAND_MAN_COUNTDOWN ) {
             // Double 12-inch: atlas-based — upper = bimodal hand/man, lower = countdown base
-            Minecraft.getMinecraft().getTextureManager().bindTexture(
-                    CrosswalkTextureMap.ATLAS_TEXTURE );
-
             int upperIdx = CrosswalkTextureMap.getHandManUpperAtlasIndex(
                     colorState, flashOn );
             buffer.begin( GL11.GL_QUADS, DefaultVertexFormats.BLOCK );
@@ -487,9 +578,6 @@ public class TileEntityCrosswalkSignalNewRenderer
         }
         else {
             // Double 12-inch WORDED: atlas-based
-            Minecraft.getMinecraft().getTextureManager().bindTexture(
-                    CrosswalkTextureMap.ATLAS_TEXTURE );
-
             int upperIdx = CrosswalkTextureMap.getWordedUpperAtlasIndex(
                     colorState, flashOn );
             buffer.begin( GL11.GL_QUADS, DefaultVertexFormats.BLOCK );
