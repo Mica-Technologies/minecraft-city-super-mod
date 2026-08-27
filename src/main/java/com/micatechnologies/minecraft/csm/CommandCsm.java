@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm;
 
 import com.google.common.collect.Lists;
+import com.micatechnologies.minecraft.csm.codeutils.CsmRenderToggles;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -36,7 +37,8 @@ import net.minecraftforge.fml.common.registry.ForgeRegistries;
 public class CommandCsm extends CommandBase {
 
   private static final String USAGE =
-      "/csm <reloadconfig|poleignore <list|add|remove> [block]>";
+      "/csm <reloadconfig|poleignore <list|add|remove> [block]"
+          + "|renderpass <list|skip|draw|reset> [pass]>";
 
   @Override
   public String getName() {
@@ -72,6 +74,9 @@ public class CommandCsm extends CommandBase {
       case "poleignore":
         handlePoleIgnore(sender, args);
         return;
+      case "renderpass":
+        handleRenderPass(sender, args);
+        return;
       default:
         throw new WrongUsageException(USAGE);
     }
@@ -80,6 +85,53 @@ public class CommandCsm extends CommandBase {
   private static void handleReloadConfig(ICommandSender sender) {
     CsmConfig.reload();
     sendSuccess(sender, "CSM config reloaded from disk.");
+  }
+
+  /**
+   * Turns individual client render passes off, so their cost can be measured inside one session.
+   *
+   * <p>Comparing two builds means restarting the client, and the restart alone moves the frame
+   * rate more than most changes do -- so a pass is measured by switching it off here and watching
+   * what the frame time does, not by rebuilding. The game renders wrongly while a pass is off;
+   * that is the point, and nothing here is persisted.</p>
+   *
+   * @param sender the command sender
+   * @param args   the full argument array
+   *
+   * @throws CommandException on bad usage
+   */
+  private static void handleRenderPass(ICommandSender sender, String[] args)
+      throws CommandException {
+    if (args.length < 2) {
+      throw new WrongUsageException("/csm renderpass <list|skip|draw|reset> [pass]");
+    }
+    String action = args[1].toLowerCase();
+    if ("list".equals(action)) {
+      sendSuccess(sender, "Render passes (skipped = not drawn):");
+      for (java.util.Map.Entry<String, Boolean> entry : CsmRenderToggles.snapshot().entrySet()) {
+        sendSuccess(sender, "  " + entry.getKey() + ": "
+            + (entry.getValue() ? "SKIPPED" : "drawn"));
+      }
+      return;
+    }
+    if ("reset".equals(action)) {
+      CsmRenderToggles.reset();
+      sendSuccess(sender, "All render passes restored.");
+      return;
+    }
+    if (args.length < 3) {
+      throw new WrongUsageException("/csm renderpass <skip|draw> <pass>");
+    }
+    boolean skip = "skip".equals(action);
+    if (!skip && !"draw".equals(action)) {
+      throw new WrongUsageException("/csm renderpass <list|skip|draw|reset> [pass]");
+    }
+    if (!CsmRenderToggles.set(args[2], skip)) {
+      throw new WrongUsageException("Unknown render pass '" + args[2]
+          + "'. Use /csm renderpass list.");
+    }
+    sendSuccess(sender, "Render pass " + args[2] + " is now "
+        + (skip ? "SKIPPED (the game is drawing incorrectly on purpose)" : "drawn") + ".");
   }
 
   private static void handlePoleIgnore(ICommandSender sender, String[] args)

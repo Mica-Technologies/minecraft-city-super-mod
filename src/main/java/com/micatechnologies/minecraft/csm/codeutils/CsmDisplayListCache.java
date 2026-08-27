@@ -82,21 +82,46 @@ public final class CsmDisplayListCache {
   private final LinkedHashMap<BlockPos, CachedList> entries;
 
   /**
-   * One cached display list: the GL handle, plus the state key it was compiled for. Named
-   * CachedList rather than Entry so it cannot shadow Map.Entry inside the anonymous
-   * LinkedHashMap subclass below, where the two would have the same erasure.
+   * How many distinct states are kept compiled per position.
+   *
+   * <p>One is not enough, and the reason is visible to players. A flashing signal alternates
+   * between two lit states roughly twice a second, so a single-state cache recompiles its list on
+   * every flash -- and because the flash phase comes from a shared wall clock, every flashing
+   * signal on screen recompiles on the <em>same</em> frame. That produces a periodic stutter
+   * locked to the flash rate, which is precisely what it looks like. Keeping a handful of states
+   * resident turns the alternation into two cache hits.</p>
+   */
+  private static final int STATES_PER_POSITION = 4;
+
+  /**
+   * The display lists compiled for one position, keyed by the renderer's state key. Named
+   * CachedList rather than Entry so it cannot shadow Map.Entry inside the anonymous LinkedHashMap
+   * subclass below, where the two would have the same erasure.
    */
   private static final class CachedList {
 
-    /** The GL display list name. Always non-zero for a live entry. */
-    private int listId;
+    /** State key to GL display list name, most recently used last. */
+    private final LinkedHashMap<Long, Integer> byState =
+        new LinkedHashMap<Long, Integer>(4, 0.75f, true) {
+          @Override
+          protected boolean removeEldestEntry(Map.Entry<Long, Integer> eldest) {
+            if (size() <= STATES_PER_POSITION) {
+              return false;
+            }
+            deleteList(eldest.getValue());
+            return true;
+          }
+        };
 
-    /** The value of the renderer's state key at the time this list was compiled. */
-    private long stateKey;
+    private void releaseAll() {
+      for (Integer listId : byState.values()) {
+        deleteList(listId);
+      }
+      byState.clear();
+    }
 
-    private CachedList(int listId, long stateKey) {
-      this.listId = listId;
-      this.stateKey = stateKey;
+    private int size() {
+      return byState.size();
     }
   }
 
@@ -126,7 +151,7 @@ public final class CsmDisplayListCache {
         }
         // Release the GL handle before dropping the entry -- otherwise the eviction that is
         // supposed to bound this cache would itself leak the thing being bounded.
-        deleteList(eldest.getValue().listId);
+        eldest.getValue().releaseAll();
         return true;
       }
     };
@@ -147,10 +172,11 @@ public final class CsmDisplayListCache {
    */
   public int get(BlockPos pos, long stateKey) {
     CachedList entry = entries.get(pos);
-    if (entry == null || entry.stateKey != stateKey) {
+    if (entry == null) {
       return NO_LIST;
     }
-    return entry.listId;
+    Integer listId = entry.byState.get(stateKey);
+    return listId == null ? NO_LIST : listId;
   }
 
   /**
@@ -169,19 +195,23 @@ public final class CsmDisplayListCache {
    */
   public int allocate(BlockPos pos, long stateKey) {
     CachedList entry = entries.get(pos);
-    if (entry != null && entry.listId != NO_LIST) {
-      entry.stateKey = stateKey;
-      return entry.listId;
+    if (entry == null) {
+      // Key on an immutable copy: BlockPos.MutableBlockPos is a BlockPos subclass whose hash and
+      // equality follow its coordinates, so storing one a caller later mutates would silently
+      // corrupt the map.
+      entry = new CachedList();
+      entries.put(pos.toImmutable(), entry);
+    }
+    Integer existing = entry.byState.get(stateKey);
+    if (existing != null) {
+      return existing;
     }
     int listId = GL11.glGenLists(1);
     if (listId == NO_LIST) {
       // Driver refused to allocate; the caller falls back to immediate-mode drawing this frame.
       return NO_LIST;
     }
-    // Key on an immutable copy: BlockPos.MutableBlockPos is a BlockPos subclass whose hash and
-    // equality follow its coordinates, so storing one a caller later mutates would silently
-    // corrupt the map.
-    entries.put(pos.toImmutable(), new CachedList(listId, stateKey));
+    entry.byState.put(stateKey, listId);
     return listId;
   }
 
@@ -195,7 +225,7 @@ public final class CsmDisplayListCache {
   public void invalidate(BlockPos pos) {
     CachedList entry = entries.remove(pos);
     if (entry != null) {
-      deleteList(entry.listId);
+      entry.releaseAll();
     }
   }
 
@@ -204,7 +234,7 @@ public final class CsmDisplayListCache {
    */
   public void clear() {
     for (Iterator<CachedList> iterator = entries.values().iterator(); iterator.hasNext(); ) {
-      deleteList(iterator.next().listId);
+      iterator.next().releaseAll();
     }
     entries.clear();
   }
