@@ -56,8 +56,8 @@ public class SignalHeadConfigPacketHandler implements
         case CYCLE_BULB_TYPE:
           signalHead.getNextBulbType();
           break;
-        case TOGGLE_ALTERNATE_FLASH:
-          signalHead.toggleAlternateFlash();
+        case CYCLE_ALTERNATE_FLASH:
+          signalHead.getNextFlashPattern();
           break;
         case TOGGLE_AGING:
           signalHead.toggleAging();

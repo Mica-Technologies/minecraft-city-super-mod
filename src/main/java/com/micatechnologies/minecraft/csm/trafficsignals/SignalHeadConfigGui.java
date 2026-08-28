@@ -314,8 +314,8 @@ public class SignalHeadConfigGui extends GuiScreen {
         return infos[0].getBulbStyle().getFriendlyName();
       case CYCLE_BULB_TYPE:
         return infos[0].getBulbType().getFriendlyName();
-      case TOGGLE_ALTERNATE_FLASH:
-        return tileEntity.isAlternateFlash() ? "ON (wig-wag B)" : "OFF (normal)";
+      case CYCLE_ALTERNATE_FLASH:
+        return tileEntity.getFlashPattern().getFriendlyName();
       case TOGGLE_AGING:
         return tileEntity.isAgingEnabled() ? "ON" : "OFF";
       case TOGGLE_HORIZONTAL:

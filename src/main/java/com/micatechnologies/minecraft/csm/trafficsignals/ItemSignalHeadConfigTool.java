@@ -128,7 +128,7 @@ public class ItemSignalHeadConfigTool extends AbstractItem {
           case CYCLE_DOOR_COLOR:
           case CYCLE_BULB_STYLE:
           case CYCLE_BODY_STYLE:
-          case TOGGLE_ALTERNATE_FLASH:
+          case CYCLE_ALTERNATE_FLASH:
             player.sendMessage(new TextComponentString("Not applicable to blankout boxes."));
             break;
           case OPEN_GUI:
@@ -194,7 +194,7 @@ public class ItemSignalHeadConfigTool extends AbstractItem {
           case CYCLE_BODY_STYLE:
             player.sendMessage(new TextComponentString("Not applicable to crosswalk signals."));
             break;
-          case TOGGLE_ALTERNATE_FLASH:
+          case CYCLE_ALTERNATE_FLASH:
             player.sendMessage(new TextComponentString("Not applicable to crosswalk signals."));
             break;
           case OPEN_GUI:
@@ -273,9 +273,10 @@ public class ItemSignalHeadConfigTool extends AbstractItem {
           player.sendMessage(new TextComponentString("Signal color set to " + colorName(newColor)));
           break;
         }
-        case TOGGLE_ALTERNATE_FLASH: {
-          boolean newVal = te.toggleAlternateFlash();
-          player.sendMessage(new TextComponentString("Alternate flash: " + (newVal ? "ON (wig-wag B)" : "OFF (normal)")));
+        case CYCLE_ALTERNATE_FLASH: {
+          var next = te.getNextFlashPattern();
+          player.sendMessage(
+              new TextComponentString("Alternate flash: " + next.getFriendlyName()));
           break;
         }
         case OPEN_GUI:

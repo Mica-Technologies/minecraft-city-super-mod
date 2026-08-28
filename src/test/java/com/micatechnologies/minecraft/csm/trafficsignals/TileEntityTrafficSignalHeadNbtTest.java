@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.trafficsignals;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalFlashPattern;
 import net.minecraft.nbt.NBTTagCompound;
 import org.junit.jupiter.api.Test;
 
@@ -43,7 +44,8 @@ class TileEntityTrafficSignalHeadNbtTest {
     // Short keys present
     assertTrue(output.hasKey("sInfs"));
     assertEquals(1, output.getInteger("tlt"));
-    assertTrue(output.getBoolean("altF"));
+    // The legacy boolean migrates to the flash-pattern ordinal (true -> B)
+    assertEquals(1, output.getInteger("flsP"));
     assertFalse(output.getBoolean("hF"));
     assertEquals(2, output.getInteger("mT"));
     assertEquals(3, output.getInteger("mC"));
@@ -64,6 +66,7 @@ class TileEntityTrafficSignalHeadNbtTest {
     assertFalse(output.hasKey("sectionInfos"));
     assertFalse(output.hasKey("bodyTilt"));
     assertFalse(output.hasKey("alternateFlash"));
+    assertFalse(output.hasKey("altF"));
     assertFalse(output.hasKey("horizontalFlip"));
     assertFalse(output.hasKey("mountType"));
     assertFalse(output.hasKey("mountColor"));
@@ -88,7 +91,7 @@ class TileEntityTrafficSignalHeadNbtTest {
     NBTTagCompound input = new NBTTagCompound();
     input.setTag("sInfs", buildSectionInfos(1, sections));
     input.setInteger("tlt", 0);
-    input.setBoolean("altF", false);
+    input.setInteger("flsP", 2);
     input.setBoolean("hF", true);
     input.setInteger("mT", 1);
     input.setInteger("mC", 0);
@@ -102,12 +105,52 @@ class TileEntityTrafficSignalHeadNbtTest {
 
     NBTTagCompound output = te.writeNBT(new NBTTagCompound());
 
+    assertEquals(2, output.getInteger("flsP"));
     assertTrue(output.getBoolean("hF"));
     assertEquals(1, output.getInteger("mT"));
     assertEquals(42L, output.getLong("agSd"));
 
     NBTTagCompound infos = output.getCompoundTag("sInfs");
     assertEquals(1, infos.getInteger("count"));
+  }
+
+  @Test
+  void legacyAlternateFlashBooleanMigratesToPattern() {
+    int[][] sections = {{0, 0, 0, 0, 0, 6, 0, 0, 0, 0}};
+
+    // The short-form boolean from before the pattern existed: true meant the wig-wag
+    // counterpart, which is pattern B.
+    NBTTagCompound input = new NBTTagCompound();
+    input.setTag("sInfs", buildSectionInfos(1, sections));
+    input.setBoolean("altF", true);
+    TileEntityTrafficSignalHead te = new TileEntityTrafficSignalHead();
+    te.readNBT(input);
+    assertEquals(TrafficSignalFlashPattern.B, te.getFlashPattern());
+    assertEquals(1, te.writeNBT(new NBTTagCompound()).getInteger("flsP"));
+
+    // false meant the normal flash, which is OFF
+    input.setBoolean("altF", false);
+    te = new TileEntityTrafficSignalHead();
+    te.readNBT(input);
+    assertEquals(TrafficSignalFlashPattern.OFF, te.getFlashPattern());
+
+    // Absent entirely -> OFF, the default
+    NBTTagCompound bare = new NBTTagCompound();
+    bare.setTag("sInfs", buildSectionInfos(1, sections));
+    te = new TileEntityTrafficSignalHead();
+    te.readNBT(bare);
+    assertEquals(TrafficSignalFlashPattern.OFF, te.getFlashPattern());
+
+    // The new key wins over a stale legacy boolean, and an out-of-range ordinal from a
+    // future version falls back to OFF rather than throwing.
+    NBTTagCompound both = new NBTTagCompound();
+    both.setTag("sInfs", buildSectionInfos(1, sections));
+    both.setInteger("flsP", 2);
+    both.setBoolean("altF", false);
+    te = new TileEntityTrafficSignalHead();
+    te.readNBT(both);
+    assertEquals(TrafficSignalFlashPattern.C, te.getFlashPattern());
+    assertEquals(TrafficSignalFlashPattern.OFF, TrafficSignalFlashPattern.fromNBT(99));
   }
 
   @Test
