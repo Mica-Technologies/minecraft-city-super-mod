@@ -24,6 +24,8 @@ import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleLar
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleLargeTan;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleLargeUnpainted;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleLargeWhite;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleMastArmCurve;
+import com.micatechnologies.minecraft.csm.trafficaccessories.MastArmCurveProfile;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleSmallBlack;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleSmallGray;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleSmallTan;
@@ -406,6 +408,33 @@ public class CsmTabTrafficAccessories extends CsmTab {
     initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpoleverticalcurveconnectordoubleguywhite", BB_TRAFFIC_POLE_VERT_CURVE_CONNECTOR, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
     initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpoleverticalcurveconnectortan", BB_TRAFFIC_POLE_VERT_CURVE_CONNECTOR, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
     initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpoleverticalcurveconnectorwhite", BB_TRAFFIC_POLE_VERT_CURVE_CONNECTOR, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
+
+    // --- Realistic multi-block mast arm curves (OBJ; each places several cells) ---
+    initTabBlock(new BlockTrafficPoleMastArmCurve("trafficpolemastarmcurve4x1silver", MastArmCurveProfile.P4X1));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("trafficpolemastarmcurve4x1black", MastArmCurveProfile.P4X1));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("trafficpolemastarmcurve4x1tan", MastArmCurveProfile.P4X1));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("trafficpolemastarmcurve4x1white", MastArmCurveProfile.P4X1));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("trafficpolemastarmcurve4x1unpainted", MastArmCurveProfile.P4X1));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("trafficpolemastarmcurve5x1silver", MastArmCurveProfile.P5X1));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("trafficpolemastarmcurve5x1black", MastArmCurveProfile.P5X1));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("trafficpolemastarmcurve5x1tan", MastArmCurveProfile.P5X1));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("trafficpolemastarmcurve5x1white", MastArmCurveProfile.P5X1));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("trafficpolemastarmcurve5x1unpainted", MastArmCurveProfile.P5X1));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("trafficpolemastarmcurve6x2silver", MastArmCurveProfile.P6X2));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("trafficpolemastarmcurve6x2black", MastArmCurveProfile.P6X2));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("trafficpolemastarmcurve6x2tan", MastArmCurveProfile.P6X2));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("trafficpolemastarmcurve6x2white", MastArmCurveProfile.P6X2));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("trafficpolemastarmcurve6x2unpainted", MastArmCurveProfile.P6X2));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("trafficpolemastarmcurve8x2silver", MastArmCurveProfile.P8X2));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("trafficpolemastarmcurve8x2black", MastArmCurveProfile.P8X2));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("trafficpolemastarmcurve8x2tan", MastArmCurveProfile.P8X2));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("trafficpolemastarmcurve8x2white", MastArmCurveProfile.P8X2));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("trafficpolemastarmcurve8x2unpainted", MastArmCurveProfile.P8X2));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("trafficpolemastarmcurve10x2silver", MastArmCurveProfile.P10X2));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("trafficpolemastarmcurve10x2black", MastArmCurveProfile.P10X2));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("trafficpolemastarmcurve10x2tan", MastArmCurveProfile.P10X2));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("trafficpolemastarmcurve10x2white", MastArmCurveProfile.P10X2));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("trafficpolemastarmcurve10x2unpainted", MastArmCurveProfile.P10X2));
 
     // --- NSEWUD factory blocks: Vertical Double Guy Mounts ---
     initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpoleverticaldoubleguymountblack", BB_TRAFFIC_POLE_VERT_DOUBLE_GUY_MOUNT, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));

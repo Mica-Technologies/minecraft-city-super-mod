@@ -1,0 +1,73 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:trafficaccessories/shared_models/mastarmcurve_10x2_c0.obj",
+    "custom": {
+      "flip-v": true
+    },
+    "textures": {
+      "#body": "csm:blocks/trafficaccessories/shared_textures/metal_mattetan",
+      "particle": "csm:blocks/trafficaccessories/shared_textures/metal_mattetan"
+    }
+  },
+  "variants": {
+    "cell": {
+      "0": {
+        "model": "csm:trafficaccessories/shared_models/mastarmcurve_10x2_c0.obj"
+      },
+      "1": {
+        "model": "csm:trafficaccessories/shared_models/mastarmcurve_10x2_c1.obj"
+      },
+      "2": {
+        "model": "csm:trafficaccessories/shared_models/mastarmcurve_10x2_c2.obj"
+      },
+      "3": {
+        "model": "csm:trafficaccessories/shared_models/mastarmcurve_10x2_c3.obj"
+      },
+      "4": {
+        "model": "csm:trafficaccessories/shared_models/mastarmcurve_10x2_c4.obj"
+      },
+      "5": {
+        "model": "csm:trafficaccessories/shared_models/mastarmcurve_10x2_c5.obj"
+      },
+      "6": {
+        "model": "csm:trafficaccessories/shared_models/mastarmcurve_10x2_c6.obj"
+      },
+      "7": {
+        "model": "csm:trafficaccessories/shared_models/mastarmcurve_10x2_c7.obj"
+      },
+      "8": {
+        "model": "csm:trafficaccessories/shared_models/mastarmcurve_10x2_c8.obj"
+      },
+      "9": {
+        "model": "csm:trafficaccessories/shared_models/mastarmcurve_10x2_c9.obj"
+      },
+      "10": {
+        "model": "csm:trafficaccessories/shared_models/mastarmcurve_10x2_c10.obj"
+      },
+      "11": {
+        "model": "csm:trafficaccessories/shared_models/mastarmcurve_10x2_c11.obj"
+      }
+    },
+    "facing": {
+      "north": {
+        "y": 0
+      },
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "inventory": [
+      {
+        "model": "csm:trafficaccessories/shared_models/mastarmcurve_10x2_inv.obj",
+        "transform": "forge:default-block"
+      }
+    ]
+  }
+}

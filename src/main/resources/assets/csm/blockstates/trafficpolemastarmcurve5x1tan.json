@@ -1,0 +1,55 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:trafficaccessories/shared_models/mastarmcurve_5x1_c0.obj",
+    "custom": {
+      "flip-v": true
+    },
+    "textures": {
+      "#body": "csm:blocks/trafficaccessories/shared_textures/metal_mattetan",
+      "particle": "csm:blocks/trafficaccessories/shared_textures/metal_mattetan"
+    }
+  },
+  "variants": {
+    "cell": {
+      "0": {
+        "model": "csm:trafficaccessories/shared_models/mastarmcurve_5x1_c0.obj"
+      },
+      "1": {
+        "model": "csm:trafficaccessories/shared_models/mastarmcurve_5x1_c1.obj"
+      },
+      "2": {
+        "model": "csm:trafficaccessories/shared_models/mastarmcurve_5x1_c2.obj"
+      },
+      "3": {
+        "model": "csm:trafficaccessories/shared_models/mastarmcurve_5x1_c3.obj"
+      },
+      "4": {
+        "model": "csm:trafficaccessories/shared_models/mastarmcurve_5x1_c4.obj"
+      },
+      "5": {
+        "model": "csm:trafficaccessories/shared_models/mastarmcurve_5x1_c5.obj"
+      }
+    },
+    "facing": {
+      "north": {
+        "y": 0
+      },
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "inventory": [
+      {
+        "model": "csm:trafficaccessories/shared_models/mastarmcurve_5x1_inv.obj",
+        "transform": "forge:default-block"
+      }
+    ]
+  }
+}
