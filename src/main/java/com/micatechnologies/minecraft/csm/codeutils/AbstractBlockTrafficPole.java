@@ -151,6 +151,11 @@ public abstract class AbstractBlockTrafficPole extends AbstractBlockRotatableNSE
           // have their own built-in mount hardware plus the Pelco-style standalone mount
           // blocks, so poles should never auto-sprout a stub into a signal head.
           AbstractBlockControllableSignalHead.class,
+          // A mast arm curve carries its own bolted flange where it meets the pole, which is
+          // exactly the hardware a mount stub exists to depict. A stub as well would be a
+          // second, contradictory connection on the same joint.
+          com.micatechnologies.minecraft.csm.trafficaccessories
+              .BlockTrafficPoleMastArmCurve.class,
           BlockSnow.class, BlockSnowBlock.class, BlockBush.class, BlockLeaves.class,
           BlockVine.class, BlockCarpet.class, BlockTorch.class, BlockRedstoneWire.class,
           BlockRailBase.class, BlockCactus.class, BlockReed.class, BlockWeb.class,

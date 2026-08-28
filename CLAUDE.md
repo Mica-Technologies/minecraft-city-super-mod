@@ -214,6 +214,7 @@ See `assets/docs/` for detailed technical documentation on major subsystems:
 - `assets/docs/TRAFFIC_SIGNS.md` -- Forge blockstate format, dynamic properties, 472-sign system
 - `assets/docs/DYNAMIC_GUIDE_SIGN_SYSTEM.md` -- Highway guide signs: panel/row/element data model, TESR, FHWA legend font, sign atlas
 - `assets/docs/DYNAMIC_STREET_SIGN_SYSTEM.md` -- Street name blades: fixed-slot data model, hanging vs flat mount, double-sided rendering, civic logo atlas rows
+- `assets/docs/MAST_ARM_CURVE_SYSTEM.md` -- Realistically scaled signal mast arm upsweeps: why they are multi-block, the parabolic sweep, oblique end clipping
 - `assets/docs/SURVIVAL_AND_RECIPES.md` -- Crafting parts, the CSM Fabricator, mining behavior, why there is no per-block recipe
 
 Agent progress/tracking docs are in `assets/docs/agent_progress/`.
@@ -242,6 +243,10 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
 - `audit_obj_models.py` -- checks generated OBJ models for the faults that only show up in game:
   coplanar overlapping faces and faces lying on a block boundary (both z-fighting), inconsistent
   winding (a surface that culls from the side you are looking at), and open boundary edges
+- `gen_mast_arm_curves.py` -- the realistically scaled mast arm upsweeps: sweeps a tapered
+  parabolic tube, splits it across the block cells it passes through, and emits one OBJ per
+  cell plus all 25 blockstates AND the Java enum holding the cell layout, so the placement code
+  cannot disagree with the geometry it was split on
 - `preview_block_model.py` -- renders a Forge JSON element model or an OBJ against its texture offline, with Minecraft's face winding and UV origin, so stretched UVs and transparent bleed can be caught without launching the game
 - `csm_bench.py` -- builds a dense grid of CSM content in a throwaway world and measures client
   frame time against it over MCMCP (`build` / `measure` / `compare`). It pins the time, weather and
