@@ -107,7 +107,7 @@ public class BlockDynamicStreetSign extends AbstractBlockRotatableNSEW
   @Override
   public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
     EnumFacing facing = state.getValue(BlockHorizontal.FACING);
-    if (getMountType(source, pos) == StreetSignMount.HANGING) {
+    if (getMountType(source, pos).isHanging()) {
       switch (facing) {
         case SOUTH:
         case NORTH:

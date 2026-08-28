@@ -50,11 +50,16 @@ import org.lwjgl.opengl.GL11;
  * </ul>
  *
  * <p>What is different here is the mount. A {@link StreetSignMount#FLAT} blade sits against
- * the block behind it exactly like a guide sign. A {@link StreetSignMount#HANGING} blade is
- * centered in the block's depth, drops below two hangers that reach half a block ABOVE its own
- * block so they can grip a top slab, and can carry its legend on both faces -- the back face
- * is the same draw inside a 180 degree Y rotation about the block center, which is
- * orientation-preserving and so reads correctly (not mirrored) from behind.
+ * the block behind it exactly like a guide sign. A hanging blade is centered in the block's
+ * depth, hangs below hardware that reaches half a block ABOVE its own block so it can grip a
+ * top slab, and can carry its legend on both faces -- the back face is the same draw inside a
+ * 180 degree Y rotation about the block center, which is orientation-preserving and so reads
+ * correctly (not mirrored) from behind.
+ *
+ * <p>The two hanging styles differ only in that hardware. {@link StreetSignMount#HANGING} runs
+ * two independent hangers the full way up. {@link StreetSignMount#HANGING_BRACKET} hangs the
+ * blade off a horizontal support beam on two short links and carries the beam on a single
+ * centre drop, so the assembly needs one attachment point instead of two.
  */
 public class TileEntityDynamicStreetSignRenderer
     extends TileEntitySpecialRenderer<TileEntityDynamicStreetSign> {
@@ -159,6 +164,36 @@ public class TileEntityDynamicStreetSignRenderer
   private static final float HANGER_REACH_ABOVE = 8.0f;
   /** Every member overlaps its neighbor by this much so no two faces are ever coplanar. */
   private static final float JOINT_OVERLAP = 0.3f;
+
+  // ---- Bracket hanger (HANGING_BRACKET) ----------------------------------------------------
+  /** Vertical clearance between the blade's top edge and the underside of the support beam. */
+  private static final float BEAM_GAP = 2.6f;
+  /** Square section of the horizontal support beam. */
+  private static final float BEAM_THICKNESS = 1.4f;
+  /**
+   * How far the beam runs past each end of the blade. It has to overhang visibly: a beam
+   * flush with the blade reads as part of the panel's frame rather than as the thing the
+   * panel is hanging from.
+   */
+  private static final float BEAM_OVERHANG = 3.2f;
+  /** Width of the cap closing each end of the beam, and how far it stands proud of it. */
+  private static final float BEAM_CAP_WIDTH = 0.8f;
+  private static final float BEAM_CAP_GROW = 0.25f;
+  /** The collar clamping each blade link onto the beam. */
+  private static final float BEAM_COLLAR_WIDTH = 2.2f;
+  private static final float BEAM_COLLAR_GROW = 0.4f;
+  /**
+   * Fraction of the blade's width the links are inset from each end -- well outboard of the
+   * two-hanger mount's HANGER_INSET_FRACTION. These links are short fittings rather than a
+   * full-height run, so at that mount's inset they bunch in toward the centre drop instead of
+   * reading as carrying the blade. Out near the ends is also where the real ones sit.
+   */
+  private static final float BRACKET_LINK_INSET_FRACTION = 0.12f;
+  /** Square section of the single centre drop that carries the whole assembly. */
+  private static final float DROP_POST_WIDTH = 1.3f;
+  /** The saddle casting where the centre drop meets the beam. */
+  private static final float DROP_SADDLE_WIDTH = 3.0f;
+  private static final float DROP_SADDLE_HEIGHT = 1.5f;
 
   // ---- Power feed cable ----------------------------------------------------------------
   /**
@@ -356,6 +391,12 @@ public class TileEntityDynamicStreetSignRenderer
     /** How far the extruded frame reaches past the panel, vertically and horizontally. */
     float frameOverhangY;
     float frameOverhangX;
+    /**
+     * How far the mount's own hardware reaches past everything else horizontally -- the
+     * bracket mount's support beam overhangs both ends of the blade. Zero for the mounts whose
+     * hardware stays within the panel's width.
+     */
+    float mountOverhangX;
     /** Front plane of the painted plates; the viewer is at smaller Z than this. */
     float faceZ;
     /** Rear plane of the ambient-lit core slab. */
@@ -455,15 +496,25 @@ public class TileEntityDynamicStreetSignRenderer
     l.signRight = l.signLeft + l.signWidth;
 
     StreetSignMount mount = data.getMountType();
-    if (mount == StreetSignMount.HANGING) {
-      // The blade drops from its hangers rather than centering on the block, so the hangers
-      // have somewhere to go.
+    if (mount.isHanging()) {
+      // The blade drops from its hardware rather than centering on the block, so the hangers
+      // have somewhere to go. Both hanging styles drop by the same amount, so switching
+      // between them swaps the hardware without moving the panel.
       l.signTop = 16.0f - HANG_DROP;
       l.signBottom = l.signTop - l.signHeight;
       l.faceZ = CZ - SIGN_DEPTH / 2.0f;
       l.coreBack = 16.0f - l.faceZ - Z_CORE_FRONT;
       l.assemblyTop = 16.0f + HANGER_REACH_ABOVE;
       l.assemblyBottom = l.signBottom - l.borderInset - l.frameOverhangY;
+      if (mount == StreetSignMount.HANGING_BRACKET) {
+        l.mountOverhangX = BEAM_OVERHANG;
+        // A deeply bordered and framed blade can push the beam most of the way to the top of
+        // the run on its own. Take the whole stack as the floor so the centre drop always has
+        // somewhere to go: without it the post's box inverts and renders inside out.
+        l.assemblyTop = Math.max(l.assemblyTop,
+            l.signTop + l.borderInset + l.frameOverhangY + BEAM_GAP + BEAM_THICKNESS
+                + DROP_SADDLE_HEIGHT + HANGER_CLAMP_HEIGHT + JOINT_OVERLAP);
+      }
     } else {
       l.signTop = CY + l.signHeight / 2.0f;
       l.signBottom = CY - l.signHeight / 2.0f;
@@ -500,7 +551,7 @@ public class TileEntityDynamicStreetSignRenderer
    */
   public float[] computePreviewBox(StreetSignData data) {
     Layout l = computeLayout(data);
-    float width = l.signWidth + 2 * (l.borderInset + l.frameOverhangX);
+    float width = l.signWidth + 2 * (l.borderInset + l.frameOverhangX + l.mountOverhangX);
     float height = l.assemblyTop - l.assemblyBottom;
     return new float[]{CX, (l.assemblyTop + l.assemblyBottom) / 2.0f, width, height};
   }
@@ -614,13 +665,18 @@ public class TileEntityDynamicStreetSignRenderer
    * @param data the blade's configuration
    */
   private void renderStructure(Layout l, StreetSignData data) {
+    StreetSignMount mount = data.getMountType();
     if (data.hasExtrudedFrame()) {
-      renderExtrudedFrame(l, data.getMountType());
+      renderExtrudedFrame(l, mount);
     }
-    if (data.getMountType() == StreetSignMount.HANGING) {
-      renderHangers(l);
+    if (mount.isHanging()) {
+      if (mount == StreetSignMount.HANGING_BRACKET) {
+        renderBracketHanger(l);
+      } else {
+        renderHangers(l);
+      }
       if (data.hasExtrudedFrame()) {
-        renderPowerCable(l);
+        renderPowerCable(l, mount);
       }
     }
   }
@@ -902,7 +958,7 @@ public class TileEntityDynamicStreetSignRenderer
     // A double-sided blade carries painted plates on BOTH faces (the back pass mirrors them
     // about the block center), so the extrusion has to reach symmetrically past both or the
     // rear face renders unframed and the frame looks like it stops halfway.
-    float back = mount == StreetSignMount.HANGING ? 16.0f - front : l.coreBack + 0.05f;
+    float back = mount.isHanging() ? 16.0f - front : l.coreBack + 0.05f;
 
     List<RenderHelper.Box> frame = new ArrayList<>();
     // Rails and end castings sit OUTSIDE the painted panel, overlapping it only by
@@ -935,37 +991,141 @@ public class TileEntityDynamicStreetSignRenderer
    * ambient light so it stays dark around a glowing blade.
    */
   private void renderHangers(Layout l) {
-    float inset = Math.max(HANGER_CLAMP_WIDTH, l.signWidth * HANGER_INSET_FRACTION);
-    float[] centers = {l.signLeft + inset, l.signRight - inset};
-    // On a very narrow blade the two hangers would collide; collapse to one down the middle.
-    if (centers[1] - centers[0] < HANGER_CLAMP_WIDTH * 1.5f) {
-      centers = new float[]{CX};
-    }
-
-    float shoeBottom = l.signTop + l.borderInset + l.frameOverhangY - JOINT_OVERLAP;
+    float shoeBottom = bladeTop(l) - JOINT_OVERLAP;
     float shoeTop = shoeBottom + HANGER_SHOE_HEIGHT;
     // The clamp grips at the TOP of the run, not at the block boundary, so whatever the run
     // reaches is what it appears to hang from.
-    float hangerTop = 16.0f + HANGER_REACH_ABOVE;
+    float hangerTop = l.assemblyTop;
     float clampBottom = hangerTop - HANGER_CLAMP_HEIGHT;
 
     List<RenderHelper.Box> parts = new ArrayList<>();
-    for (float hx : centers) {
-      parts.add(new RenderHelper.Box(
-          new float[]{hx - HANGER_SHOE_WIDTH / 2, shoeBottom - HANGER_SHOE_HEIGHT,
-              CZ - HANGER_SHOE_DEPTH / 2},
-          new float[]{hx + HANGER_SHOE_WIDTH / 2, shoeTop, CZ + HANGER_SHOE_DEPTH / 2}));
+    for (float hx : hangerCenters(l, HANGER_INSET_FRACTION)) {
+      addHangerShoe(parts, hx, shoeBottom);
       parts.add(new RenderHelper.Box(
           new float[]{hx - HANGER_ROD_WIDTH / 2, shoeTop - JOINT_OVERLAP,
               CZ - HANGER_ROD_WIDTH / 2},
           new float[]{hx + HANGER_ROD_WIDTH / 2, clampBottom + JOINT_OVERLAP,
               CZ + HANGER_ROD_WIDTH / 2}));
-      parts.add(new RenderHelper.Box(
-          new float[]{hx - HANGER_CLAMP_WIDTH / 2, clampBottom,
-              CZ - HANGER_CLAMP_DEPTH / 2},
-          new float[]{hx + HANGER_CLAMP_WIDTH / 2, hangerTop, CZ + HANGER_CLAMP_DEPTH / 2}));
+      addHangerClamp(parts, hx, clampBottom, hangerTop);
     }
 
+    drawMetalwork(parts);
+  }
+
+  /**
+   * The other common way a blade is hung: it swings off a horizontal support beam on two short
+   * links, and the beam itself is carried on a <b>single</b> drop in the middle -- one
+   * attachment point on the mast arm instead of two.
+   *
+   * <p>The links sit well outboard of where the two-hanger mount grips, for the reason given
+   * on BRACKET_LINK_INSET_FRACTION. The beam overhangs both ends of the blade and is capped
+   * there; flush with the blade it read as one more rail of the panel's own frame rather than
+   * as the thing the panel hangs from.
+   *
+   * <p>Structural metal like the rest of it, so it draws at ambient light and stays dark around
+   * a glowing blade.
+   */
+  private void renderBracketHanger(Layout l) {
+    float shoeBottom = bladeTop(l) - JOINT_OVERLAP;
+    float shoeTop = shoeBottom + HANGER_SHOE_HEIGHT;
+    float beamBottom = beamBottom(l);
+    float beamTop = beamBottom + BEAM_THICKNESS;
+    float beamLeft = l.signLeft - l.borderInset - l.frameOverhangX - BEAM_OVERHANG;
+    float beamRight = l.signRight + l.borderInset + l.frameOverhangX + BEAM_OVERHANG;
+    float beamNear = CZ - BEAM_THICKNESS / 2;
+    float beamFar = CZ + BEAM_THICKNESS / 2;
+
+    List<RenderHelper.Box> parts = new ArrayList<>();
+    parts.add(new RenderHelper.Box(
+        new float[]{beamLeft, beamBottom, beamNear},
+        new float[]{beamRight, beamTop, beamFar}));
+    for (float capX : new float[]{beamLeft, beamRight - BEAM_CAP_WIDTH}) {
+      parts.add(new RenderHelper.Box(
+          new float[]{capX, beamBottom - BEAM_CAP_GROW, beamNear - BEAM_CAP_GROW},
+          new float[]{capX + BEAM_CAP_WIDTH, beamTop + BEAM_CAP_GROW,
+              beamFar + BEAM_CAP_GROW}));
+    }
+
+    for (float hx : hangerCenters(l, BRACKET_LINK_INSET_FRACTION)) {
+      addHangerShoe(parts, hx, shoeBottom);
+      parts.add(new RenderHelper.Box(
+          new float[]{hx - HANGER_ROD_WIDTH / 2, shoeTop - JOINT_OVERLAP,
+              CZ - HANGER_ROD_WIDTH / 2},
+          new float[]{hx + HANGER_ROD_WIDTH / 2, beamBottom + JOINT_OVERLAP,
+              CZ + HANGER_ROD_WIDTH / 2}));
+      // The collar wraps the beam rather than butting into it, which is what makes the link
+      // read as clamped onto a continuous beam instead of welded to a broken one.
+      parts.add(new RenderHelper.Box(
+          new float[]{hx - BEAM_COLLAR_WIDTH / 2, beamBottom - BEAM_COLLAR_GROW,
+              beamNear - BEAM_COLLAR_GROW},
+          new float[]{hx + BEAM_COLLAR_WIDTH / 2, beamTop + BEAM_COLLAR_GROW,
+              beamFar + BEAM_COLLAR_GROW}));
+    }
+
+    // The single centre drop: a saddle over the beam, the post, and the clamp gripping
+    // whatever is above -- at the same height the two-hanger mount's clamps reach, so either
+    // mount appears to hang from the same thing.
+    float saddleTop = beamTop + DROP_SADDLE_HEIGHT;
+    float hangerTop = l.assemblyTop;
+    float clampBottom = hangerTop - HANGER_CLAMP_HEIGHT;
+    parts.add(new RenderHelper.Box(
+        new float[]{CX - DROP_SADDLE_WIDTH / 2, beamBottom - BEAM_COLLAR_GROW,
+            beamNear - BEAM_COLLAR_GROW},
+        new float[]{CX + DROP_SADDLE_WIDTH / 2, saddleTop, beamFar + BEAM_COLLAR_GROW}));
+    parts.add(new RenderHelper.Box(
+        new float[]{CX - DROP_POST_WIDTH / 2, saddleTop - JOINT_OVERLAP,
+            CZ - DROP_POST_WIDTH / 2},
+        new float[]{CX + DROP_POST_WIDTH / 2, clampBottom + JOINT_OVERLAP,
+            CZ + DROP_POST_WIDTH / 2}));
+    addHangerClamp(parts, CX, clampBottom, hangerTop);
+
+    drawMetalwork(parts);
+  }
+
+  /** Top edge of the blade, border and extruded frame included. */
+  private static float bladeTop(Layout l) {
+    return l.signTop + l.borderInset + l.frameOverhangY;
+  }
+
+  /** Underside of the bracket mount's support beam. */
+  private static float beamBottom(Layout l) {
+    return bladeTop(l) + BEAM_GAP;
+  }
+
+  /**
+   * Where along the blade the hangers -- or, on the bracket mount, the links up to the beam --
+   * grip it. Shared, but not at a shared inset: see BRACKET_LINK_INSET_FRACTION.
+   *
+   * @param l             the resolved layout
+   * @param insetFraction how far in from each end to grip, as a fraction of the blade's width
+   */
+  private static float[] hangerCenters(Layout l, float insetFraction) {
+    float inset = Math.max(HANGER_CLAMP_WIDTH, l.signWidth * insetFraction);
+    float[] centers = {l.signLeft + inset, l.signRight - inset};
+    // On a very narrow blade the two hangers would collide; collapse to one down the middle.
+    if (centers[1] - centers[0] < HANGER_CLAMP_WIDTH * 1.5f) {
+      return new float[]{CX};
+    }
+    return centers;
+  }
+
+  private static void addHangerShoe(List<RenderHelper.Box> parts, float hx, float shoeBottom) {
+    parts.add(new RenderHelper.Box(
+        new float[]{hx - HANGER_SHOE_WIDTH / 2, shoeBottom - HANGER_SHOE_HEIGHT,
+            CZ - HANGER_SHOE_DEPTH / 2},
+        new float[]{hx + HANGER_SHOE_WIDTH / 2, shoeBottom + HANGER_SHOE_HEIGHT,
+            CZ + HANGER_SHOE_DEPTH / 2}));
+  }
+
+  private static void addHangerClamp(List<RenderHelper.Box> parts, float hx, float clampBottom,
+      float clampTop) {
+    parts.add(new RenderHelper.Box(
+        new float[]{hx - HANGER_CLAMP_WIDTH / 2, clampBottom, CZ - HANGER_CLAMP_DEPTH / 2},
+        new float[]{hx + HANGER_CLAMP_WIDTH / 2, clampTop, CZ + HANGER_CLAMP_DEPTH / 2}));
+  }
+
+  /** One buffered pass of ambient-lit structural aluminum. */
+  private void drawMetalwork(List<RenderHelper.Box> parts) {
     Tessellator tess = Tessellator.getInstance();
     BufferBuilder buf = tess.getBuffer();
     buf.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
@@ -989,11 +1149,20 @@ public class TileEntityDynamicStreetSignRenderer
    * ends, which is what a slack cable between two fixed points does; a dead-straight one reads
    * as a rod. Ambient-lit like the rest of the metalwork, so it stays dark against a glowing
    * blade at night.
+   *
+   * <p>Where it terminates follows the mount. On the two-hanger mount it runs the full height
+   * the hangers reach, so it disappears into the same thing they grip. On the bracket mount
+   * the support beam is already in the way at that x -- it overhangs the blade further than
+   * the cable leaves -- so the cable ends inside the beam instead, which is where the real
+   * ones are dressed anyway. Running it to full height there would have it pass visibly
+   * through the beam.
    */
-  private void renderPowerCable(Layout l) {
+  private void renderPowerCable(Layout l, StreetSignMount mount) {
     float baseX = l.signRight + l.borderInset + FRAME_END * CABLE_END_FRACTION;
-    float baseY = l.signTop + l.borderInset + l.frameOverhangY - JOINT_OVERLAP;
-    float topY = 16.0f + HANGER_REACH_ABOVE;
+    float baseY = bladeTop(l) - JOINT_OVERLAP;
+    float topY = mount == StreetSignMount.HANGING_BRACKET
+        ? beamBottom(l) + BEAM_THICKNESS / 2.0f
+        : l.assemblyTop;
     float half = CABLE_THICKNESS / 2.0f;
 
     List<RenderHelper.Box> cable = new ArrayList<>();
