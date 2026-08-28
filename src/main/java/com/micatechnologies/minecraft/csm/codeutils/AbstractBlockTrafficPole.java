@@ -384,11 +384,11 @@ public abstract class AbstractBlockTrafficPole extends AbstractBlockRotatableNSE
    * than its type. This hook is checked per placed block against its tile entity, so such a
    * block can be ignored in one state and mounted in another.
    *
-   * <p>Today that is the dynamic street sign. On its hanging mount it swings below a mast arm
-   * on its own two hangers, and a pole sprouting a stub into it puts a second, contradictory
-   * mount on the same blade -- so a hanging blade is ignored. On its flat mount it is bolted
-   * to whatever is behind it, which is exactly what a pole mount stub exists to depict, so a
-   * flat blade is left mountable.
+   * <p>Today that is the dynamic street sign. On either of its hanging mounts it swings below
+   * a mast arm on hardware it draws itself, and a pole sprouting a stub into it puts a second,
+   * contradictory mount on the same blade -- so a hanging blade is ignored. On its flat mount
+   * it is bolted to whatever is behind it, which is exactly what a pole mount stub exists to
+   * depict, so a flat blade is left mountable.
    *
    * @param worldIn the world/block access
    * @param pos     the adjacent position to test
@@ -405,7 +405,7 @@ public abstract class AbstractBlockTrafficPole extends AbstractBlockRotatableNSE
     StreetSignMount mount = tileEntity instanceof TileEntityDynamicStreetSign
         ? ((TileEntityDynamicStreetSign) tileEntity).getSignData().getMountType()
         : new StreetSignData().getMountType();
-    return mount == StreetSignMount.HANGING;
+    return mount.isHanging();
   }
 
   /**
