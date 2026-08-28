@@ -126,6 +126,52 @@ public enum MastArmCurveProfile {
   }
 
   /**
+   * Bits of a mount mask. Model space, as the curve is drawn facing north with the arm running
+   * toward -Z; the blockstate's y rotation carries them round with the block, so model EAST is
+   * {@code facing.rotateY()} in the world and model WEST is {@code facing.rotateYCCW()}.
+   */
+  public static final int MOUNT_DOWN = 1;
+
+  /**
+   * @see #MOUNT_DOWN
+   */
+  public static final int MOUNT_UP = 2;
+
+  /**
+   * @see #MOUNT_DOWN
+   */
+  public static final int MOUNT_EAST = 4;
+
+  /**
+   * @see #MOUNT_DOWN
+   */
+  public static final int MOUNT_WEST = 8;
+
+  /**
+   * How many shape values one cell accounts for -- one per mount mask.
+   */
+  public static final int SHAPE_STRIDE = 16;
+
+  /**
+   * Packs a cell index and a mount mask into the single {@code shape} property value the
+   * blockstate keys its model and its stub submodels off.
+   *
+   * <p>One property rather than five is forced, not preferred. A stub model depends on both the
+   * cell and the direction, so a mount property would have to carry the cell index; four such
+   * properties beside cell and facing come to 1,370,928 block states, and Minecraft builds every
+   * one of them eagerly. This packing is 768 -- the same as four plain booleans would have cost.
+   *
+   * @param cell      the cell index
+   * @param mountMask any of {@link #MOUNT_DOWN}, {@link #MOUNT_UP}, {@link #MOUNT_EAST},
+   *                  {@link #MOUNT_WEST}, or-ed together
+   *
+   * @return the packed shape value
+   */
+  public static int shapeIndex(int cell, int mountMask) {
+    return cell * SHAPE_STRIDE + mountMask;
+  }
+
+  /**
    * The offset of one cell from the root, as {@code {alongArm, up}} in blocks, unrotated.
    *
    * @param index the cell index, {@code 0} being the root at the pole
@@ -149,5 +195,15 @@ public enum MastArmCurveProfile {
    */
   public double[] getCellBox(int index) {
     return boxes[index];
+  }
+
+  /**
+   * The number of distinct {@code shape} values this profile can take: one per cell per mount
+   * mask.
+   *
+   * @return the shape count
+   */
+  public int getShapeCount() {
+    return cells.length * SHAPE_STRIDE;
   }
 }
