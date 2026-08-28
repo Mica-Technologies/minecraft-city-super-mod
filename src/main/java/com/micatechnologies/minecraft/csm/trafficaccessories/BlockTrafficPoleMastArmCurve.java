@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEW;
+import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockTrafficPole;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmNoSnowAccumulation;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import java.util.HashMap;
@@ -43,6 +44,12 @@ import org.jetbrains.annotations.NotNull;
  * signs can mount anywhere along the curve because there is a real block there, and the
  * auto-connecting pole system -- which works on block adjacency -- can eventually see it.
  *
+ * <p>Every cell also grows mount hardware -- a band clamped round the tube, a bracket and a face
+ * plate -- toward any of its four sides that has something mountable against it, the same way a
+ * pole does. On a pole that is one model reused everywhere, because a pole is a straight tube
+ * centred in its block; a curve cell's tube is neither centred nor level and its pose differs in
+ * every cell, so the hardware is generated per cell and per direction.
+ *
  * <p>Break any cell and the whole curve goes, dropping one item. Which cell was hit does not
  * matter: a cell knows its index, and index plus facing locates the root.
  *
@@ -67,11 +74,11 @@ public class BlockTrafficPoleMastArmCurve extends AbstractBlockRotatableNSEW
   private static final ThreadLocal<Object[]> PENDING = new ThreadLocal<>();
 
   /**
-   * One {@link PropertyInteger} per distinct cell count, shared by every block that needs it.
+   * One {@link PropertyInteger} per distinct shape count, shared by every block that needs it.
    * The property object's identity has to be the same in {@link #createBlockState()} and in the
    * field below, or the state container and the lookups would disagree.
    */
-  private static final Map<Integer, PropertyInteger> CELL_PROPERTIES = new HashMap<>();
+  private static final Map<Integer, PropertyInteger> SHAPE_PROPERTIES = new HashMap<>();
 
   /**
    * Set while a curve is tearing itself down, so that removing a sibling cell does not start a
@@ -82,7 +89,7 @@ public class BlockTrafficPoleMastArmCurve extends AbstractBlockRotatableNSEW
 
   private final String registryName;
   private final MastArmCurveProfile profile;
-  private final PropertyInteger cellProperty;
+  private final PropertyInteger shapeProperty;
 
   /**
    * Constructs a mast arm curve block.
@@ -94,7 +101,7 @@ public class BlockTrafficPoleMastArmCurve extends AbstractBlockRotatableNSEW
     super(stash(registryName, profile), SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0);
     this.registryName = registryName;
     this.profile = profile;
-    this.cellProperty = cellProperty(profile.getCellCount());
+    this.shapeProperty = shapeProperty(profile.getShapeCount());
     PENDING.remove();
   }
 
@@ -103,9 +110,9 @@ public class BlockTrafficPoleMastArmCurve extends AbstractBlockRotatableNSEW
     return Material.ROCK;
   }
 
-  private static synchronized PropertyInteger cellProperty(int cellCount) {
-    return CELL_PROPERTIES.computeIfAbsent(cellCount,
-        count -> PropertyInteger.create("cell", 0, count - 1));
+  private static synchronized PropertyInteger shapeProperty(int shapeCount) {
+    return SHAPE_PROPERTIES.computeIfAbsent(shapeCount,
+        count -> PropertyInteger.create("shape", 0, count - 1));
   }
 
   @Override
@@ -130,7 +137,7 @@ public class BlockTrafficPoleMastArmCurve extends AbstractBlockRotatableNSEW
   protected BlockStateContainer createBlockState() {
     MastArmCurveProfile pending =
         profile != null ? profile : (MastArmCurveProfile) PENDING.get()[1];
-    return new BlockStateContainer(this, FACING, cellProperty(pending.getCellCount()));
+    return new BlockStateContainer(this, FACING, shapeProperty(pending.getShapeCount()));
   }
 
   /**
@@ -265,11 +272,42 @@ public class BlockTrafficPoleMastArmCurve extends AbstractBlockRotatableNSEW
     super.breakBlock(world, pos, state);
   }
 
+  /**
+   * Resolves which cell this block is and which of its four faces have something worth mounting
+   * to, and packs both into the single {@code shape} property the blockstate keys off.
+   *
+   * <p>The four directions are read in MODEL space, because that is the frame the stub models
+   * were generated in: the curve is drawn facing north with the arm running toward -Z, so model
+   * east is {@code facing.rotateY()} in the world and model west is {@code facing.rotateYCCW()}.
+   * Along the arm there is no stub -- that is where the arm itself goes.
+   *
+   * <p>The mountability test is {@link AbstractBlockTrafficPole}'s own, so a curve ignores exactly
+   * what a pole ignores. That list already contains this class, which is what stops one cell of a
+   * curve from sprouting hardware into the next cell of the same curve.
+   */
   @Override
   public @NotNull IBlockState getActualState(@NotNull IBlockState state,
       @NotNull IBlockAccess worldIn,
       @NotNull BlockPos pos) {
-    return state.withProperty(cellProperty, cellIndexAt(worldIn, pos));
+    EnumFacing facing = state.getValue(FACING);
+    Class<?>[] ignore = AbstractBlockTrafficPole.IGNORE_BLOCK;
+    int mask = 0;
+    if (AbstractBlockTrafficPole.isMountableAdjacent(worldIn, pos.down(), ignore)) {
+      mask |= MastArmCurveProfile.MOUNT_DOWN;
+    }
+    if (AbstractBlockTrafficPole.isMountableAdjacent(worldIn, pos.up(), ignore)) {
+      mask |= MastArmCurveProfile.MOUNT_UP;
+    }
+    if (AbstractBlockTrafficPole.isMountableAdjacent(worldIn, pos.offset(facing.rotateY()),
+        ignore)) {
+      mask |= MastArmCurveProfile.MOUNT_EAST;
+    }
+    if (AbstractBlockTrafficPole.isMountableAdjacent(worldIn, pos.offset(facing.rotateYCCW()),
+        ignore)) {
+      mask |= MastArmCurveProfile.MOUNT_WEST;
+    }
+    return state.withProperty(shapeProperty,
+        MastArmCurveProfile.shapeIndex(cellIndexAt(worldIn, pos), mask));
   }
 
   /**

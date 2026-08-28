@@ -356,9 +356,14 @@ public abstract class AbstractBlockTrafficPole extends AbstractBlockRotatableNSE
    * @param pos         the adjacent position to test
    * @param ignoreBlock the combined class-based ignore array
    *
+   * <p>Public rather than protected because the mast arm curve needs the same three filters and
+   * is deliberately not a subclass: it is horizontally rotatable only, where this class is
+   * six-way, so inheriting would give it up/down facings that a curve cannot have. Sharing the
+   * method is what keeps the two from drifting apart.
+   *
    * @return {@code true} if the pole should render a connector toward {@code pos}
    */
-  protected static boolean isMountableAdjacent(IBlockAccess worldIn, BlockPos pos,
+  public static boolean isMountableAdjacent(IBlockAccess worldIn, BlockPos pos,
       Class<?>[] ignoreBlock) {
     ResourceLocation registryName = worldIn.getBlockState(pos).getBlock().getRegistryName();
     if (registryName != null

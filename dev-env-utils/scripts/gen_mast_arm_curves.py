@@ -463,6 +463,135 @@ def emit_flange(mesh, run, rise):
 
 
 # --------------------------------------------------------------------------------------------
+# Mount stubs
+#
+# When something mountable sits next to a curve cell, that cell grows the hardware a pole grows:
+# a band clamped round the tube, a short bracket, and a plate on the shared face. On a pole this
+# is one model reused everywhere, because a pole is a straight tube centred in its block. A curve
+# cell's tube is neither centred nor level and its pose differs in every cell, so the hardware has
+# to be generated per cell and per direction -- 4 files per cell.
+#
+# Directions are MODEL space, i.e. as the curve is drawn facing north with the arm running toward
+# -Z. The blockstate's y rotation carries them round with the block. The order of this list is the
+# bit order of the mount mask; MOUNT_BIT_ORDER in the generated enum repeats it for the Java side.
+# --------------------------------------------------------------------------------------------
+
+# (name, centre of the face it reaches, that face's outward normal)
+STUB_DIRECTIONS = [
+    ("down", (8.0, 0.0, 8.0), (0.0, -1.0, 0.0)),
+    ("up", (8.0, 16.0, 8.0), (0.0, 1.0, 0.0)),
+    ("east", (16.0, 8.0, 8.0), (1.0, 0.0, 0.0)),
+    ("west", (0.0, 8.0, 8.0), (-1.0, 0.0, 0.0)),
+]
+
+BAND_MARGIN = 0.9    # how far the clamp band stands off the tube it grips
+BAND_LEN = 3.0
+BRACKET_R = 1.6
+PLATE_R = 3.2
+PLATE_LEN = 1.2
+
+
+def vsub(a, b):
+    return (a[0] - b[0], a[1] - b[1], a[2] - b[2])
+
+
+def vadd(a, b):
+    return (a[0] + b[0], a[1] + b[1], a[2] + b[2])
+
+
+def vmul(a, k):
+    return (a[0] * k, a[1] * k, a[2] * k)
+
+
+def vlen(a):
+    return math.sqrt(a[0] * a[0] + a[1] * a[1] + a[2] * a[2])
+
+
+def vnorm(a):
+    n = vlen(a) or 1e-9
+    return (a[0] / n, a[1] / n, a[2] / n)
+
+
+def vcross(a, b):
+    return (a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0])
+
+
+def emit_cylinder(mesh, a, b, r, sides=12):
+    """A capped cylinder from a to b. Used for all three pieces of a stub.
+
+    The cross-section basis is deliberately LEFT handed (q = p x axis, not axis x p) to match the
+    basis the tube sweep uses, so the same vertex order winds outward here as it does there rather
+    than inside out."""
+    axis = vnorm(vsub(b, a))
+    seed = (0.0, 0.0, 1.0) if abs(axis[2]) < 0.9 else (1.0, 0.0, 0.0)
+    p = vnorm(vcross(axis, seed))
+    q = vcross(p, axis)
+    ra, rb, normals = [], [], []
+    for i in range(sides):
+        ang = 2.0 * math.pi * i / sides
+        d = vadd(vmul(p, math.cos(ang)), vmul(q, math.sin(ang)))
+        normals.append(d)
+        ra.append(vadd(a, vmul(d, r)))
+        rb.append(vadd(b, vmul(d, r)))
+    for i in range(sides):
+        j = (i + 1) % sides
+        ua, ub = i / sides, (i + 1) / sides
+        mesh.quad((ra[i], uv(ua, 0.0), normals[i]),
+                  (rb[i], uv(ua, r / 16.0), normals[i]),
+                  (rb[j], uv(ub, r / 16.0), normals[j]),
+                  (ra[j], uv(ub, 0.0), normals[j]))
+    # Caps. Going round the ring in increasing angle turns toward -axis in this basis (it is
+    # left handed by construction, see above), so the cap that faces along +axis is the one that
+    # needs its winding reversed -- the opposite of what reads naturally.
+    cu = uv(0.5, 0.5)
+    for (centre_pt, rng, n, reverse) in ((a, ra, vmul(axis, -1.0), False),
+                                         (b, rb, axis, True)):
+        for i in range(sides):
+            j = (i + 1) % sides
+            tri = [(centre_pt, cu, n), (rng[i], uv(0.3, 0.3), n), (rng[j], uv(0.7, 0.7), n)]
+            mesh.tri([tri[0], tri[2], tri[1]] if reverse else tri)
+
+
+def emit_stub(mesh, t_lo, t_hi, run, rise, offset, face_centre, face_normal):
+    """One direction's mount hardware for one cell, in that cell's local frame.
+
+    The band is placed at the point of the tube CLOSEST TO THE FACE CENTRE rather than at the
+    cell's middle. Those are not the same point: in a cell the tube only clips a corner of -- and
+    several of every preset's cells are like that -- the middle of the cell has no tube in it, and
+    hardware placed there would float."""
+    best = None
+    for i in range(129):
+        t = t_lo + (t_hi - t_lo) * i / 128.0
+        pt = vsub(centre(t, run, rise), offset)
+        d = vlen(vsub(face_centre, pt))
+        if best is None or d < best[0]:
+            best = (d, t, pt)
+    dist, t_star, anchor = best
+    r = radius(t_star, run)
+    to_face = vnorm(vsub(face_centre, anchor))
+
+    # Clamp band, straddling the tube along its own axis.
+    tan = tangent(t_star, run, rise)
+    speed = vlen(vsub(centre(t_star + 1e-4, run, rise), centre(t_star - 1e-4, run, rise))) / 2e-4
+    half = vmul(tan, BAND_LEN / 2.0) if speed else (0.0, 0.0, 0.0)
+    emit_cylinder(mesh, vsub(anchor, half), vadd(anchor, half), r + BAND_MARGIN, sides=16)
+
+    # Face plate, lying FLAT on the face it reaches -- its axis is the face's own normal, not the
+    # bracket's. The bracket leaves the tube at whatever angle the tube happens to sit at, so a
+    # plate square to the bracket ends up tilted against the block it is supposed to be bolted
+    # to. Only the bracket should be allowed to slant; the plate is hardware against a flat
+    # surface. Held a hair off the boundary so it is never coplanar with the neighbour's own face.
+    plate_inner = vadd(face_centre, vmul(face_normal, -PLATE_LEN))
+    emit_cylinder(mesh, plate_inner, vadd(face_centre, vmul(face_normal, -INSET)), PLATE_R,
+                  sides=8)
+
+    # Bracket, only when there is actually a gap to span. On a cell whose tube runs close to the
+    # face -- an "up" stub under a tube that already fills the top of its cell -- there is not.
+    if dist > r + BAND_MARGIN + 1.0:
+        emit_cylinder(mesh, vadd(anchor, vmul(to_face, r - 0.6)), plate_inner, BRACKET_R)
+
+
+# --------------------------------------------------------------------------------------------
 # Cell assignment
 # --------------------------------------------------------------------------------------------
 
@@ -548,12 +677,20 @@ def build_preset(preset_id, run, rise):
         # 16-16ci and y from 16cj upward.
         (lo, hi) = m.bounds()
         off = (0.0, 16.0 * cj, -16.0 * ci)
+        # The span of the sweep this cell owns, which is what the stubs anchor against.
+        t_lo = min(b[2] for b in owned[(ci, cj)])
+        t_hi = max(b[3] for b in owned[(ci, cj)])
+        stubs = []
+        for (dir_name, face_centre, face_normal) in STUB_DIRECTIONS:
+            sm = Mesh()
+            emit_stub(sm, t_lo, t_hi, run, rise, off, face_centre, face_normal)
+            stubs.append((dir_name, sm))
         # The cell's own slice, in its own block, clamped to the block. Geometry that overhangs
         # into a neighbour is that neighbour's cell to cover -- and it does, because every cell
         # of a curve is a placed block, so the union of the clamped boxes covers the whole tube.
         box = tuple(min(1.0, max(0.0, (v[k] - off[k]) / 16.0))
                     for v in (lo, hi) for k in range(3))
-        cells.append(((ci, cj), m, off, box))
+        cells.append(((ci, cj), m, off, box, stubs))
     return cells, whole
 
 
@@ -582,11 +719,18 @@ def main():
         cells, whole = build_preset(preset_id, run, rise)
         entry_deg = math.degrees(math.atan2(2.0 * rise, float(run)))
 
-        for idx, ((ci, cj), mesh, offset, _box) in enumerate(cells):
+        for idx, ((ci, cj), mesh, offset, _box, stubs) in enumerate(cells):
             mesh.write(os.path.join(MODEL_DIR, "mastarmcurve_%s_c%d.obj" % (preset_id, idx)),
                        "mastarm_%s_c%d" % (preset_id, idx), offset=offset,
                        header="cell %d of %d at (+%d along arm, +%d up)"
                               % (idx, len(cells), ci, cj))
+            # Stubs are already built in the cell's own frame, so they are written unoffset.
+            for (dir_name, stub_mesh) in stubs:
+                stub_mesh.write(
+                    os.path.join(MODEL_DIR,
+                                 "mastarmcurve_%s_c%d_%s.obj" % (preset_id, idx, dir_name)),
+                    "mastarm_%s_c%d_%s" % (preset_id, idx, dir_name),
+                    header="mount hardware on cell %d, model-space %s" % (idx, dir_name))
 
         (lo, hi) = whole.bounds()
         span = max(hi[0] - lo[0], hi[1] - lo[1], hi[2] - lo[2])
@@ -629,11 +773,36 @@ def main():
 
 
 def write_blockstate(name, preset_id, cell_count, texture):
-    cell_variants = {}
-    for i in range(cell_count):
-        cell_variants[str(i)] = {
-            "model": "%s/mastarmcurve_%s_c%d.obj" % (MODEL_PREFIX, preset_id, i)
-        }
+    """One blockstate per preset per colour.
+
+    Model and mount hardware are selected by a SINGLE `shape` property holding
+    `cell * 16 + mountMask`, not by a `cell` property plus four mount properties. That is not a
+    style choice, it is the only encoding that fits: a stub model depends on BOTH which cell it is
+    and which way it points, so a mount property would have to carry the cell index, and four
+    13-value mount properties alongside cell and facing is 1,370,928 block states -- all of which
+    Minecraft materialises eagerly. Folding the same information into one property is 768 states,
+    exactly what four plain booleans would have cost, while still letting each stub match the tube
+    it clamps to.
+    """
+    shape_variants = {}
+    for cell in range(cell_count):
+        for mask in range(1 << len(STUB_DIRECTIONS)):
+            variant = {
+                "model": "%s/mastarmcurve_%s_c%d.obj" % (MODEL_PREFIX, preset_id, cell)
+            }
+            submodels = {}
+            for bit, (dir_name, _face, _normal) in enumerate(STUB_DIRECTIONS):
+                if mask & (1 << bit):
+                    submodels["mount_" + dir_name] = {
+                        "model": "%s/mastarmcurve_%s_c%d_%s.obj"
+                                 % (MODEL_PREFIX, preset_id, cell, dir_name),
+                        "custom": {"flip-v": True},
+                        "textures": {"#" + MATERIAL: texture},
+                    }
+            if submodels:
+                variant["submodel"] = submodels
+            shape_variants[str(cell * 16 + mask)] = variant
+
     data = {
         "forge_marker": 1,
         "defaults": {
@@ -642,7 +811,7 @@ def write_blockstate(name, preset_id, cell_count, texture):
             "textures": {"#" + MATERIAL: texture, "particle": texture},
         },
         "variants": {
-            "cell": cell_variants,
+            "shape": shape_variants,
             "facing": {
                 "north": {"y": 0},
                 "east": {"y": 90},
@@ -735,6 +904,52 @@ public enum MastArmCurveProfile {
   }
 
   /**
+   * Bits of a mount mask. Model space, as the curve is drawn facing north with the arm running
+   * toward -Z; the blockstate's y rotation carries them round with the block, so model EAST is
+   * {@code facing.rotateY()} in the world and model WEST is {@code facing.rotateYCCW()}.
+   */
+  public static final int MOUNT_DOWN = 1;
+
+  /**
+   * @see #MOUNT_DOWN
+   */
+  public static final int MOUNT_UP = 2;
+
+  /**
+   * @see #MOUNT_DOWN
+   */
+  public static final int MOUNT_EAST = 4;
+
+  /**
+   * @see #MOUNT_DOWN
+   */
+  public static final int MOUNT_WEST = 8;
+
+  /**
+   * How many shape values one cell accounts for -- one per mount mask.
+   */
+  public static final int SHAPE_STRIDE = 16;
+
+  /**
+   * Packs a cell index and a mount mask into the single {@code shape} property value the
+   * blockstate keys its model and its stub submodels off.
+   *
+   * <p>One property rather than five is forced, not preferred. A stub model depends on both the
+   * cell and the direction, so a mount property would have to carry the cell index; four such
+   * properties beside cell and facing come to 1,370,928 block states, and Minecraft builds every
+   * one of them eagerly. This packing is 768 -- the same as four plain booleans would have cost.
+   *
+   * @param cell      the cell index
+   * @param mountMask any of {@link #MOUNT_DOWN}, {@link #MOUNT_UP}, {@link #MOUNT_EAST},
+   *                  {@link #MOUNT_WEST}, or-ed together
+   *
+   * @return the packed shape value
+   */
+  public static int shapeIndex(int cell, int mountMask) {
+    return cell * SHAPE_STRIDE + mountMask;
+  }
+
+  /**
    * The offset of one cell from the root, as {@code {alongArm, up}} in blocks, unrotated.
    *
    * @param index the cell index, {@code 0} being the root at the pole
@@ -758,6 +973,16 @@ public enum MastArmCurveProfile {
    */
   public double[] getCellBox(int index) {
     return boxes[index];
+  }
+
+  /**
+   * The number of distinct {@code shape} values this profile can take: one per cell per mount
+   * mask.
+   *
+   * @return the shape count
+   */
+  public int getShapeCount() {
+    return cells.length * SHAPE_STRIDE;
   }
 }
 ''' % ("\n".join(body))
