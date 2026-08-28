@@ -56,9 +56,9 @@ import org.jetbrains.annotations.NotNull;
  * <p><b>Placement follows the pole family's rule</b>, inherited unchanged from
  * {@link AbstractBlockRotatableNSEW}: the arm reaches away from the face you clicked. Click the
  * side of a pole and the arm sweeps out from it, which is both how every other CSM pole
- * accessory behaves and the orientation the connection collar is built for -- the collar
- * deliberately overhangs its own block to reach the pole's surface, which sits 2 units inside
- * the neighbouring block face. An earlier version pointed the arm the way the player was looking
+ * accessory behaves and the orientation the pole-end boot is built for -- the arm is saddle-cut
+ * against the pole's own cylinder, so it only lands correctly when the pole really is behind it.
+ * An earlier version pointed the arm the way the player was looking
  * instead; that reads well when placing on top of a pole and makes the realistic side mount
  * impossible to aim, so it was dropped.
  */

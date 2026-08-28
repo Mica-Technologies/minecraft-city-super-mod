@@ -57,9 +57,10 @@ y(t) = rise * (2t/run - t²/run²)
 entry angle is a **derived, reportable** number and every preset is automatically consistent
 with every other.
 
-The tube tapers from 10 units across at the flange to 8 at the tip. The 8 is not free: it is the
-diameter of `trafficpolehorizontal`, the block this has to mate with. The far ring lands on the
-block boundary plane so that join is flush.
+The tube tapers from 9.2 units across at the root to 8 at the tip, and swells back to 10 over the
+last third of a block as the boot. The 8 is not free: it is the diameter of
+`trafficpolehorizontal`, the block this has to mate with. The far ring lands on the block boundary
+plane so that join is flush.
 
 ### Presets
 
@@ -114,20 +115,15 @@ blockstate's `shape` property exists only in actual state, never in meta.
 
 **Placement is the pole family's inherited rule: the arm reaches away from the face you
 clicked.** Click the side of a pole and the arm sweeps out from it. That is what every other CSM
-pole accessory does, and it is the orientation the connection collar is built for.
+pole accessory does, and it is the orientation the pole-end boot is built for.
 
 An earlier version overrode `getStateForPlacement` to send the arm the way the player was
 *looking*. It reads well when placing on top of a pole and it makes the realistic side mount
 impossible to aim: to click a pole's north face you must stand north of it looking south, which
 would have pointed the arm back into the pole. Reverted.
 
-**The collar overhangs its own block on purpose.** A CSM pole is a cylinder of radius 6 centred
-in its block, so its surface stops 2 units short of the block face. A collar ending exactly on
-the boundary floats a visible 2 units off the pole it is supposedly bolted to — this was caught
-in game, not on paper. `FLANGE_REACH` pushes it 2.5 units past, through the pole's skin. Because
-the collar is fractionally wider than the pole (6.2 against 6.0) a thin ring of it stays visible
-around the pole, which is what a real bolted flange plate looks like. The cost is that a curve
-placed on *top* of a pole, rather than against its side, shows that 2.5-unit stub in open air.
+**The arm is cut against the pole itself.** See "The pole joint" below — it is the part of this
+model that took the most attempts to get right.
 
 **All or nothing.** `onBlockPlacedBy` validates every cell before placing any of them. A partly
 built curve would draw a tube stopping in mid-air and would leave orphan cells when broken. If
@@ -146,7 +142,7 @@ unrotated (north) orientation only — `AbstractBlockRotatableNSEW.getBoundingBo
 facing rotation itself, and rotating in `getBlockBoundingBox` as well turns it twice.
 
 **Poles do not sprout a stub into a curve.** `BlockTrafficPoleMastArmCurve` is in
-`AbstractBlockTrafficPole.IGNORE_BLOCK`. The curve carries its own bolted flange where it meets
+`AbstractBlockTrafficPole.IGNORE_BLOCK`. The curve carries its own boot where it meets
 the pole, which is exactly the hardware a mount stub depicts; both would be two contradictory
 connections on one joint.
 
@@ -194,26 +190,39 @@ The cost is blockstate size: 16 mask values per cell means up to 192 variants pe
 2.5 MB of generated JSON across the 25 files. `MastArmCurveProfile.shapeIndex` is the one
 definition of the packing, and the generator writes both sides of it.
 
+## The pole joint
+
+The arm's pole end is **saddle-cut against the pole's own cylinder**, and it swells into a boot
+as it approaches. Three earlier versions of this joint were wrong, each for its own reason, and
+the reasons are worth keeping:
+
+1. **Sheared onto a plane.** The end ring slid bodily along the tangent onto the pole face. An
+   oblique cut through a tube is an ellipse stretched by `1/cos(theta)`, so the slid ring came out
+   far taller than the ring behind it and the surface folded back on itself — near-degenerate,
+   inside-out triangles along the top of the arm, exactly where it meets the pole.
+2. **Clipped rail by rail against a flat plane.** Correct geometry, wrong surface. A pole is
+   round, so a flat cut is at the right depth only along the arm's centreline; at the arm's flanks
+   the pole's skin has receded 2.7 units further back and the cut face hangs in open air.
+3. **Covered with a flat elliptical collar.** To hide (2), a collar 12.4 units across was placed
+   over the joint — against a pole 12 units across. That cannot work at any angle, and it showed
+   as flat slivers either side of the pole. The lesson is one subtraction: anything meant to hide
+   behind the pole must be **narrower than 12**.
+
+The current joint solves all three at once. Every angular rail of the tube is clipped where it
+crosses the pole's cylinder, so the arm lands on the pole's skin everywhere at once — to machine
+precision, which the generator can assert. There is no separate collar at all: the boot is part
+of the tube's own radius profile, so there is only ever one surface here and nothing to bleed
+through. `R_BOOT` is 5.0 because it has to disappear behind two things — the pole (12 across) and
+`trafficpoleverticalconnectorangled*`, the existing block for this joint, whose boss is 10 across
+and 11 tall.
+
+**Finding the crossing needs the first root, not any root.** Depth into the pole is negative on
+*both* sides of it — keep walking backwards and a rail comes out the far side — so a plain
+bisection over a wide bracket is as likely to land on the exit as the entry, and the exit is
+forty-odd units away through the middle of the pole. The generator scans backwards in small steps
+from a parameter known to be outside, then bisects the first bracket that straddles the skin.
+
 ## Geometry details worth not rediscovering
-
-**The pole end is clipped, not sheared.** The arm meets the pole at an angle, so the plane of the
-pole face cuts the tube obliquely and the true aperture is an ellipse stretched by `1/cos θ`. The
-tempting shortcut — take the end ring and slide it bodily onto the plane along the tangent —
-produces a ring much taller than the one that follows it, so the surface folds back on itself:
-near-degenerate, inside-out triangles along the top of the arm exactly where it meets the pole.
-The generator instead clips **rail by rail**, giving each angular rail of the cross-section its
-own parameter, the one where that rail crosses the plane. That is the genuine aperture, and every
-quad stays forward-going.
-
-**The connection collar is elliptical for the same reason.** A round collar sized to the tube's
-diameter would not cover the oblique aperture; one sized to the aperture's height would be
-absurdly wide. It is sized to the actual cut plus a fixed margin.
-
-**Two samples closer than `MERGE_TOL` are one sample.** A plain set does not do this job. At
-`run=10 rise=2` the row crossing solves to `t = 5`, which is also a column crossing and also a
-uniform sample — but the quadratic returns `5.000000000000001`. Three "identical" samples then
-survive as two, separated by 1e-15, and the band between them is degenerate. Set membership is
-exact; nearness is what actually matters.
 
 **Boundary crossings get one sample, not a straddling pair.** The sweep injects a sample wherever
 the centerline crosses a cell boundary, so no band spans two cells. Inserting a *pair* at
