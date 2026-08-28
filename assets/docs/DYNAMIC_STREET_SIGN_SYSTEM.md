@@ -32,7 +32,7 @@ dependency, so it is usable on both sides. Gson serializes it to one NBT string 
 | Class | Role | Key facts |
 |---|---|---|
 | `StreetSignData` | The whole sign | `VERSION = 1`. Panel style (color, border 0–4, corners, mount, extruded frame, both-sides), lighting (`internalLight` + `SignLightMode`), legend (`prefix`, `streetName`, `suffix`, `cityText`, `textScale` 0.5–3.0), block-number slot, emblem slot, arrow slot, and `minWidth` / `minHeight` floors (16–320 / 8–64 sign px). String setters clamp to per-field length caps. `fromJson` is defensive — null/empty/malformed yields a fresh default and never throws, because it runs in the renderer and on the network path. `copy()` is a JSON round trip. |
-| `StreetSignMount` | How the blade hangs | `HANGING` (suspended below two hangers that reach half a block above, panel centered in the block's depth) or `FLAT` (back against the block behind, like a guide sign). `canBeDoubleSided()` is true only for HANGING. |
+| `StreetSignMount` | How the blade hangs | `HANGING` (suspended below two hangers that reach half a block above, panel centered in the block's depth), `HANGING_BRACKET` (the same panel, hung off a horizontal support beam carried on a single centre drop) or `FLAT` (back against the block behind, like a guide sign). `canBeDoubleSided()` is true for either hanging style. Ask `isHanging()` rather than comparing against a constant -- the second hanging style had to be appended after `FLAT` because ordinals are serialized. |
 | `StreetSignSlotPosition` | Where an optional slot sits | `NONE` / `LEFT` / `RIGHT`, used independently by the block number, the emblem, and the arrow. |
 | `StreetSignVerticalPos` | Vertical placement | `TOP` / `MIDDLE` / `BOTTOM`. Used by the block number (real blades put it against an edge far more often than centered) and by `affixVertical`, which aligns the prefix and suffix against the street name's cap line, center, or baseline. |
 | `StreetSignEmblemKind` | What the emblem slot holds | `NONE` / `SHIELD` (a `GuideSignShieldType` with its route number drawn over it) / `LOGO` (a `StreetSignLogoType` cell). |
@@ -65,14 +65,16 @@ lang keys in `en_us`/`de_de`/`es_es`/`sv_se`.
 
 ### Mount-aware hitbox
 
-The two mounts put the panel in completely different places, so one hitbox cannot serve both —
-using a face-hugging slab for a hanging blade left it untargetable from one side.
+A hanging mount and a flat one put the panel in completely different places, so one hitbox
+cannot serve both — using a face-hugging slab for a hanging blade left it untargetable from one
+side.
 
 - **FLAT** → a `1.5/16` slab on the face the TESR draws on. The mapping is derived from the
   TESR's rotation and matches the guide sign's: FACING SOUTH/WEST/NORTH/EAST → south/east/north/
   west face.
-- **HANGING** → a slab through the middle of the block (`6.5/16 … 9.5/16` on whichever axis the
-  panel's thickness runs along), full height so the hangers are clickable too.
+- **Either hanging mount** → a slab through the middle of the block (`6.5/16 … 9.5/16` on
+  whichever axis the panel's thickness runs along), full height so the hangers are clickable
+  too. The two hanging styles differ only in the hardware above the blade, so they share a box.
 
 `getBlockBoundingBox` reads the mount off the tile entity. It is called during chunk load
 **before** tile entities are attached, so the lookup falls back to the default mount when there
@@ -137,8 +139,12 @@ preview's fit math need — computed once so the two can never disagree.
 | `EMBLEM_SIZE` / `ARROW_SIZE` | `11.0` / `9.0` | Rendered size of the emblem and arrow. |
 | `ROUTE_CAP_FRACTION` | `0.42` | Route-number cap height over a shield emblem. |
 | `CORNER_STEP` | `0.6` | Chamfer per outer corner for ROUND corners. |
-| `HANG_DROP` | `5.5` | How far below the block's top edge a hanging blade's top rail sits. |
+| `HANG_DROP` | `5.5` | How far below the block's top edge a hanging blade's top rail sits. Shared by both hanging styles, so switching between them swaps the hardware without moving the panel. |
 | `HANGER_REACH_ABOVE` | `8.0` | How far above its own block the hanger run reaches, so the clamp lands on the underside of a top slab. |
+| `BEAM_GAP` / `BEAM_THICKNESS` | `2.6` / `1.4` | Bracket mount: clearance from the blade's top edge to the underside of the support beam, and the beam's square section. |
+| `BEAM_OVERHANG` | `3.2` | How far the support beam runs past each end of the blade. |
+| `DROP_POST_WIDTH` / `DROP_SADDLE_HEIGHT` | `1.3` / `1.5` | The single centre drop's section, and the saddle casting where it meets the beam. |
+| `HANGER_INSET_FRACTION` / `BRACKET_LINK_INSET_FRACTION` | `0.22` / `0.12` | How far in from each end the two hangers, and the bracket mount's two links, grip the blade. |
 
 `textScale` multiplies every legend metric and every gap, so the blade stays proportionate at
 any size.
@@ -173,14 +179,14 @@ Surplus from a floor leaves the content centered.
 
 ### Mount geometry
 
-| | FLAT | HANGING |
-|---|---|---|
-| Panel front (`faceZ`) | `16 − SIGN_DEPTH` = 14.5 | `8 − SIGN_DEPTH/2` = 7.25 |
-| Core slab rear | `16.05` | `16 − faceZ − BACK_SLEEVE_LIP` = 8.70 |
-| Vertical placement | Centered on the block (`signTop = 8 + h/2`) | Hangs from `signTop = 16 − HANG_DROP` |
-| Back face | Never (a block is behind it) | When `doubleSided` |
-| Hangers | None | Two: shoe + rod + clamp, reaching half a block above |
-| Power feed cable | None | When framed: one, from the end casting to the same height |
+| | FLAT | HANGING | HANGING_BRACKET |
+|---|---|---|---|
+| Panel front (`faceZ`) | `16 − SIGN_DEPTH` = 14.5 | `8 − SIGN_DEPTH/2` = 7.25 | same as HANGING |
+| Core slab rear | `16.05` | `16 − faceZ − BACK_SLEEVE_LIP` = 8.70 | same as HANGING |
+| Vertical placement | Centered on the block (`signTop = 8 + h/2`) | Hangs from `signTop = 16 − HANG_DROP` | same as HANGING |
+| Back face | Never (a block is behind it) | When `doubleSided` | When `doubleSided` |
+| Hangers | None | Two: shoe + rod + clamp, reaching half a block above | Two short links to a beam, then one centre drop to the same height |
+| Power feed cable | None | When framed: one, from the end casting to the same height | When framed: one, from the end casting into the beam |
 
 **The back face is the same draw inside a 180° Y rotation about the block center.** That
 rotation is orientation-preserving, so combined with the outer mirror the legend reads correctly
@@ -219,12 +225,43 @@ already extends four blocks up, so no culling change is needed; the block's own 
 deliberately stays within `0..1` (the part of the hanger above the block is not clickable, the
 same way the guide sign's posts are not).
 
+### Bracket hanger
+
+`HANGING_BRACKET` hangs the same panel a different way: the blade swings on two **short** links
+up to a horizontal support beam, and the beam is carried on a **single** centre drop — one
+attachment point on the mast arm instead of two. It is the arrangement you get whenever the blade
+is not directly under a convenient stretch of arm.
+
+The drop's clamp reaches the same `HANGER_REACH_ABOVE` height the two hangers do, so switching
+between the two hanging styles swaps the hardware without moving the blade or changing what it
+appears to hang from. Both mounts share one `bladeTop` / `hangerCenters` / shoe / clamp helper
+set for exactly that reason.
+
+They do **not** share an inset. `hangerCenters` takes the fraction as a parameter, and the
+bracket mount grips at `BRACKET_LINK_INSET_FRACTION = 0.12` against the hangers' `0.22`: the
+links here are short fittings rather than a full-height run, so at the hangers' inset they bunch
+in toward the centre drop instead of reading as carrying the blade.
+
+Three details are what make it read as an assembly rather than a plus sign:
+
+- The beam **overhangs** the blade by `BEAM_OVERHANG` at each end and is capped there. Flush with
+  the blade, it reads as one more rail of the panel's own frame.
+- Each link's collar and the centre saddle **wrap** the beam — they are drawn a hair oversize in
+  Y and Z rather than butting into it — so the beam reads as continuous under them instead of
+  broken into segments.
+- The centre drop's post can be squeezed to almost nothing by a deeply bordered *and* framed
+  blade, which pushes the beam most of the way to the top of the run on its own. `computeLayout`
+  therefore takes the whole hardware stack as a floor on `assemblyTop`; without it the post's box
+  inverts and renders inside out. The renderer reads its clamp height off `assemblyTop` rather
+  than recomputing it, so the guard cannot be bypassed.
+
 ### Traffic poles
 
 A traffic pole beside a blade decides whether to sprout a mount stub toward it, and the answer
-depends on the mount. A hanging blade already carries its own two hangers, so a pole stub would
-put a second, contradictory mount on the same sign -- it is ignored. A flat blade is bolted to
-whatever is behind it, which is exactly what a mount stub depicts, so it is left mountable.
+depends on the mount. A hanging blade -- either style -- already carries its own hardware, so a
+pole stub would put a second, contradictory mount on the same sign: `isHanging()` blades are
+ignored. A flat blade is bolted to whatever is behind it, which is exactly what a mount stub
+depicts, so it is left mountable.
 
 `AbstractBlockTrafficPole.IGNORE_BLOCK` cannot express that: it is class-based, so it can only
 say always or never. The decision therefore lives in `isIgnoredForItsState`, a third filter in
@@ -252,6 +289,12 @@ anything to feed, since the frame is the housing of an internally-lit sign and a
 conduit runs inside whatever it is bolted to. It leaves from beyond the blade's end rather than
 from the top rail, both because that is where the real ones are dressed and because there it is
 never hidden behind the panel.
+
+Where it terminates follows the mount. On `HANGING` it runs the full height the hangers reach, so
+it disappears into the same thing they grip. On `HANGING_BRACKET` the support beam already spans
+that x — it overhangs the blade further than the cable leaves — so the cable ends **inside the
+beam**, which is where the real ones are dressed anyway; run to full height there it would pass
+visibly through the beam.
 
 The run bellies `CABLE_BOW` away from the blade at mid-height and returns to the same x at both
 ends, which is what a slack cable between two fixed points does; dead straight, it reads as a
