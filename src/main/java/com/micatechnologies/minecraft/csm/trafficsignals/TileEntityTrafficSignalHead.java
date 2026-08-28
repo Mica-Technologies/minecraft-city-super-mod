@@ -11,6 +11,7 @@ import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBody
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBulbColor;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBulbStyle;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBulbType;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalFlashPattern;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalSectionInfo;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalVisorType;
 import java.util.Random;
@@ -206,10 +207,18 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
    */
   private TrafficSignalBodyTilt bodyTilt = TrafficSignalBodyTilt.NONE;
 
-  private static final String ALTERNATE_FLASH_KEY = "altF";
-  /** Legacy long-form counterpart of {@link #ALTERNATE_FLASH_KEY}. Read-only. */
-  private static final String LEGACY_ALTERNATE_FLASH_KEY = "alternateFlash";
-  private boolean alternateFlash = false;
+  /**
+   * Flash pattern for this head's flashing bulbs. Stored as the pattern's ordinal.
+   */
+  private static final String FLASH_PATTERN_KEY = "flsP";
+  /**
+   * Legacy boolean counterpart of {@link #FLASH_PATTERN_KEY}, from before the setting grew a
+   * third pattern. Read-only: {@code true} migrates to {@link TrafficSignalFlashPattern#B}.
+   */
+  private static final String LEGACY_ALTERNATE_FLASH_KEY = "altF";
+  /** Legacy long-form counterpart of {@link #LEGACY_ALTERNATE_FLASH_KEY}. Read-only. */
+  private static final String LEGACY_ALTERNATE_FLASH_LONG_KEY = "alternateFlash";
+  private TrafficSignalFlashPattern flashPattern = TrafficSignalFlashPattern.OFF;
 
   /**
    * Player-set horizontal-orientation override. When {@code true}, the signal renders in
@@ -314,11 +323,17 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
       bodyTilt = TrafficSignalBodyTilt.fromNBT(compound.getInteger(LEGACY_BODY_TILT_KEY));
     }
 
-    // Get the alternate flash setting
-    if (compound.hasKey(ALTERNATE_FLASH_KEY)) {
-      alternateFlash = compound.getBoolean(ALTERNATE_FLASH_KEY);
+    // Get the flash pattern. Signals saved before the pattern existed carry a boolean that
+    // only distinguished the normal flash from its wig-wag counterpart, under either the short
+    // or the long-form key; both migrate to the equivalent pattern.
+    if (compound.hasKey(FLASH_PATTERN_KEY)) {
+      flashPattern = TrafficSignalFlashPattern.fromNBT(compound.getInteger(FLASH_PATTERN_KEY));
     } else if (compound.hasKey(LEGACY_ALTERNATE_FLASH_KEY)) {
-      alternateFlash = compound.getBoolean(LEGACY_ALTERNATE_FLASH_KEY);
+      flashPattern = TrafficSignalFlashPattern.fromLegacyAlternateFlash(
+          compound.getBoolean(LEGACY_ALTERNATE_FLASH_KEY));
+    } else if (compound.hasKey(LEGACY_ALTERNATE_FLASH_LONG_KEY)) {
+      flashPattern = TrafficSignalFlashPattern.fromLegacyAlternateFlash(
+          compound.getBoolean(LEGACY_ALTERNATE_FLASH_LONG_KEY));
     }
 
     // Get the FYA (permissive flashing yellow arrow) state; absent means not active
@@ -369,6 +384,7 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
     compound.removeTag(LEGACY_SECTION_INFOS_KEY);
     compound.removeTag(LEGACY_BODY_TILT_KEY);
     compound.removeTag(LEGACY_ALTERNATE_FLASH_KEY);
+    compound.removeTag(LEGACY_ALTERNATE_FLASH_LONG_KEY);
     compound.removeTag(LEGACY_HORIZONTAL_FLIP_KEY);
     compound.removeTag(LEGACY_MOUNT_TYPE_KEY);
     compound.removeTag(LEGACY_MOUNT_COLOR_KEY);
@@ -426,8 +442,8 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
     // Set the body tilt
     compound.setInteger(BODY_TILT_KEY, bodyTilt.toNBT());
 
-    // Set the alternate flash setting
-    compound.setBoolean(ALTERNATE_FLASH_KEY, alternateFlash);
+    // Set the flash pattern
+    compound.setInteger(FLASH_PATTERN_KEY, flashPattern.toNBT());
     if (fyaActive) {
       compound.setBoolean(FYA_ACTIVE_KEY, true);
     }
@@ -498,14 +514,12 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
       }
     }
 
-    // Flash flip — alternateFlash inverts the flash phase for wig-wag beacon pairs. Uses
-    // the wall-clock flash timer so the flash rate stays visually constant through tick
-    // lag spikes (decoupled from world tick progression).
-    long blinkInterval = 500L; // ms
+    // Flash phase — the head's flash pattern decides when a flashing bulb is lit: OFF and B are
+    // the two halves of a wig-wag pair, C is the rapid Barlo-style strobe. Uses the wall-clock
+    // flash timer so the flash rate stays visually constant through tick lag spikes (decoupled
+    // from world tick progression). With no world there is no clock, so flashing bulbs stay lit.
     long gameMillis = world != null ? CsmRenderUtils.gameMillis(world) : 0L;
-    boolean firstHalfOfSecond = world != null
-        && (gameMillis % (blinkInterval * 2L)) < blinkInterval;
-    if (alternateFlash) firstHalfOfSecond = !firstHalfOfSecond;
+    boolean flashLit = world == null || flashPattern.isFlashLit(gameMillis);
 
     // Aging-effect pre-checks — skipping these per-section entirely when no bulb has an
     // aging state keeps the happy path branch-free.
@@ -552,9 +566,9 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
         sectionInfo.setBulbStyle(enforcedStyle);
       }
 
-      // Pass 4 fused: flash flip — if the bulb is lit and set to flashing, blink it off
-      // during the first half of the cycle.
-      if (lit && firstHalfOfSecond && flashing) {
+      // Pass 4 fused: flash phase — if the bulb is lit and set to flashing, blink it off
+      // during the dark part of the pattern's cycle.
+      if (lit && !flashLit && flashing) {
         lit = false;
       }
 
@@ -729,19 +743,26 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
   }
 
   /**
-   * Returns whether this signal head uses alternate (inverted) flash timing for wig-wag.
+   * Returns the flash pattern this signal head's flashing bulbs follow.
    */
-  public boolean isAlternateFlash() {
-    return alternateFlash;
+  public TrafficSignalFlashPattern getFlashPattern() {
+    return flashPattern;
   }
 
   /**
-   * Toggles the alternate flash setting and returns the new value.
+   * Sets the flash pattern this signal head's flashing bulbs follow.
    */
-  public boolean toggleAlternateFlash() {
-    alternateFlash = !alternateFlash;
+  public void setFlashPattern(TrafficSignalFlashPattern flashPattern) {
+    this.flashPattern = flashPattern;
     markDirtySync(world, pos, true);
-    return alternateFlash;
+  }
+
+  /**
+   * Advances to the next flash pattern in the sequence and returns the new value.
+   */
+  public TrafficSignalFlashPattern getNextFlashPattern() {
+    setFlashPattern(flashPattern.getNextPattern());
+    return getFlashPattern();
   }
 
   /**

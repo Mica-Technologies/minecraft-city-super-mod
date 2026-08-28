@@ -13,6 +13,7 @@ import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBody
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBulbColor;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBulbStyle;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBulbType;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalFlashPattern;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalSectionInfo;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalTextureMap;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.SignalHeadMountType;
@@ -911,7 +912,8 @@ public class TileEntityTrafficSignalHeadRenderer extends
    * Renders Barlo Safety Beam for RED sections with BARLO or BARLO_VERTICAL visor type. Draws a
    * permanent dark mounting bar (flat black) and a flashing white strobe on top. BARLO uses a
    * horizontal bar with tunnel visor; BARLO_VERTICAL uses a vertical bar with circle visor.
-   * The strobe flashes with a rapid 5-pulse pattern (500ms) followed by 800ms dark (1.3s cycle).
+   * The strobe timing lives in {@link TrafficSignalFlashPattern#isRapidStrobeLit(long)}, shared
+   * with the head's flash pattern C so a signal set to C strobes in step with a Barlo beam.
    * Only renders on red sections.
    */
   private void renderBarloStrobeBars(TrafficSignalSectionInfo[] sectionInfos,
@@ -954,8 +956,7 @@ public class TileEntityTrafficSignalHeadRenderer extends
     // the wall-clock flash timer (threaded from render() so we read the frame-cached value
     // rather than paying the System.currentTimeMillis() JNI cost on every signal head with a
     // Barlo visor).
-    long t = gameMillis % 1300L;
-    boolean strobeOn = t < 500L && (t / 50L) % 2L == 1L;
+    boolean strobeOn = TrafficSignalFlashPattern.isRapidStrobeLit(gameMillis);
 
     if (strobeOn) {
       buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
