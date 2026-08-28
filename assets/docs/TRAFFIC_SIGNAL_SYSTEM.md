@@ -464,7 +464,7 @@ Configurable properties:
 | Body tilt | `TrafficSignalBodyTilt` | `LEFT_ANGLE` / `LEFT_TILT` / `NONE` / `RIGHT_TILT` / `RIGHT_ANGLE` (±45° / ±22.5°) |
 | Bulb style | `TrafficSignalBulbStyle` | `getEnforcedBulbStyle()` can lock a style for bi-modal signals |
 | Bulb type | `TrafficSignalBulbType` | Ball / Arrow / Other (affects texture lookup + rotation) |
-| Alternate flash | boolean | Whether this head alternates in flash mode |
+| Alternate flash | `TrafficSignalFlashPattern` | `OFF` (lit on the second half-second) / `B` (lit on the first half-second, the wig-wag counterpart of `OFF`) / `C` (rapid five-pulse strobe, shares its timing with the Barlo safety beam). Persisted as an ordinal under `flsP`; the pre-pattern boolean `altF` migrates to `OFF`/`B` |
 | Aging | boolean | Dims / discolors textures |
 | Horizontal orientation | boolean | `allowsHorizontalFlip()` gates whether the toggle is shown |
 | Mount type | `SignalHeadMountType` | `NONE` / `REAR` / `LEFT` / `RIGHT` — see below |

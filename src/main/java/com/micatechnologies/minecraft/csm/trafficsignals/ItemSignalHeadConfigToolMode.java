@@ -17,7 +17,7 @@ public enum ItemSignalHeadConfigToolMode {
   CYCLE_BULB_STYLE("Cycle Bulb Style"),
   CYCLE_BULB_TYPE("Cycle Bulb Type"),
   CYCLE_SIGNAL_COLOR("Cycle Signal Color"),
-  TOGGLE_ALTERNATE_FLASH("Toggle Alternate Flash"),
+  CYCLE_ALTERNATE_FLASH("Cycle Alternate Flash"),
   CYCLE_MOUNT_TYPE("Cycle Mount Type"),
   // Appended (not inserted) so saved tools' NBT mode ordinals stay stable.
   CYCLE_BODY_STYLE("Cycle Body Style");
