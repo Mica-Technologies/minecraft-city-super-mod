@@ -118,25 +118,32 @@ COLORS = [
 
 SIDES = 16           # cross-section is a hexadecagon, matching the pole family's silhouette
 SAMPLES_PER_BLOCK = 12
-R_FLANGE = 5.0       # tube radius in units at the pole (10 across)
+R_ROOT = 4.6         # tube radius in units where the boot ends (9.2 across)
 R_TIP = 4.0          # tube radius at the tip -- MUST match trafficpolehorizontal's 8 across
-FLANGE_MARGIN = 1.2  # how far the connection collar stands proud of the entry aperture
-FLANGE_LEN = 2.1
 INSET = 0.01         # keeps end caps off the block boundary plane exactly
+
+# The boot: the arm swells over its last stretch before the pole, the way a welded mast arm boot
+# does. R_BOOT is capped by two neighbours it has to disappear behind, and 5.0 is the largest
+# value that clears both:
+#   * the pole itself is 12 across, so anything wider than 12 cannot hide behind it at any angle;
+#   * `trafficpoleverticalconnectorangled*`, the existing block for this joint, has a boss
+#     10 across (x 3..13) and 11 tall, and the boot should tuck inside that too.
+# The collar this replaces was 12.4 across against a 12-wide pole -- it could not hide, which is
+# why it showed as flat slivers either side of the pole.
+R_BOOT = 5.0
+BOOT_LEN = 0.36      # blocks of run over which the boot swells
+
+# The pole the arm lands on, in the root cell's own frame. A CSM pole is a cylinder of radius 6
+# centred in its block; the block north of the root starts at z = 16, so its axis is at z = 24.
+POLE_RADIUS = 6.0
+POLE_AXIS_X = 8.0
+POLE_AXIS_Z = 24.0
 
 # Two sweep samples closer than this (in blocks travelled) are the same sample. Comfortably below
 # the uniform spacing of run/SAMPLES_PER_BLOCK, and comfortably above the float noise that makes a
 # solved boundary crossing miss an exact one.
 MERGE_TOL = 1e-4
 
-# How far past its own block the collar reaches toward the pole.
-#
-# A CSM pole is a cylinder of radius 6 centred in its block, so its surface stops 2 units short
-# of the block face -- an arm that ended exactly on the boundary would float a visible 2 units
-# off the pole it is supposedly bolted to. 2.5 puts the collar through the pole's skin. Because
-# the collar is fractionally wider than the pole (6.2 against 6.0), a thin ring of it stays
-# visible around the pole, which is what a real bolted flange plate looks like.
-FLANGE_REACH = 2.5
 
 
 # --------------------------------------------------------------------------------------------
@@ -161,7 +168,15 @@ def tangent(t, run, rise):
 
 
 def radius(t, run):
-    return R_FLANGE + (R_TIP - R_FLANGE) * (t / run)
+    """Tube radius at t, including the boot.
+
+    Two effects superposed: the arm's own taper from root to tip, plus a swelling over the last
+    BOOT_LEN of run before the pole. Making the boot part of the tube's radius rather than a
+    separate collar part is what keeps it from poking out of anything -- there is only ever one
+    surface here, so there is nothing to bleed through."""
+    base = R_ROOT + (R_TIP - R_ROOT) * (t / run)
+    u = min(1.0, max(0.0, t / BOOT_LEN))
+    return base + (R_BOOT - R_ROOT) * (1.0 - u) ** 1.6
 
 
 def ring(t, run, rise, r=None):
@@ -181,38 +196,61 @@ def ring(t, run, rise, r=None):
     return out
 
 
-def rail_z(t, i, run, rise):
-    """z of one angular rail of the tube at parameter t. A rail is the path a single point of
+def rail_point(t, i, run, rise):
+    """Where one angular rail of the tube is at parameter t. A rail is the path a single point of
     the cross-section traces along the sweep."""
-    px, py, pz = centre(t, run, rise)
-    _, ty, tz = tangent(t, run, rise)
-    nz = ty  # in-plane normal's z component
-    return pz + radius(t, run) * math.sin(2.0 * math.pi * i / SIDES) * nz
+    return ring(t, run, rise)[i][0]
 
 
-def clip_ring(target_z, run, rise):
-    """The tube's true intersection with the plane z = target_z, as a ragged ring: every angular
-    rail gets its OWN parameter, the one where that rail crosses the plane.
+def pole_depth(t, i, run, rise):
+    """How far inside the pole's cylinder a rail is at t. Negative outside, zero on the skin."""
+    p = rail_point(t, i, run, rise)
+    dx = p[0] - POLE_AXIS_X
+    dz = p[2] - POLE_AXIS_Z
+    return POLE_RADIUS * POLE_RADIUS - (dx * dx + dz * dz)
 
-    The obvious alternative -- take one ring and slide it bodily onto the plane along the tangent
-    -- is wrong, and wrong in a way that shows. An oblique cut through a tube is an ellipse
-    stretched by 1/cos(theta), so the slid ring is much taller than the ring that follows it, and
-    the surface between them folds back on itself: near-degenerate, inside-out triangles along
-    the top of the arm right where it meets the pole. Clipping rail by rail gives the genuine
-    aperture and leaves every quad forward-going.
+
+def clip_ring(run, rise):
+    """The arm's true intersection with the POLE, as a ragged ring: every angular rail gets its
+    own parameter, the one where that rail meets the pole's skin.
+
+    Cutting against the pole's cylinder rather than against a flat plane is the whole difference
+    between a joint and a mess. A pole is round, so a flat cut lands at the right depth only
+    along the arm's centreline: at the arm's flanks the pole's surface has receded 2.7 units
+    further back, and the flat cut face hangs in the open there. That, plus a collar wider than
+    the pole it was meant to hide behind, is what made the old joint look unfinished. A saddle
+    cut lands every rail exactly on the pole's skin, so the arm meets it everywhere at once --
+    which is also what a welded mast arm boot actually looks like.
+
+    Rails can only miss the cylinder if the tube were wider than the pole; R_BOOT (5.0) against
+    POLE_RADIUS (6.0) guarantees they do not.
 
     Returns (points_with_normals, t_of_each_rail)."""
     pts, ts = [], []
     for i in range(SIDES):
-        lo, hi = -1.0, 1.0
-        # rail_z decreases with t, so bisect on the sign of (rail_z - target).
-        for _ in range(60):
-            mid = (lo + hi) / 2.0
-            if rail_z(mid, i, run, rise) > target_z:
-                lo = mid
+        # Find the FIRST crossing walking backwards, not any root. Depth is negative on both
+        # sides of the pole -- keep going and a rail comes out the far side -- so a plain
+        # bisection over a wide bracket is as likely to land on the exit as on the entry, and
+        # the exit is 40-odd units away through the middle of the pole.
+        t_out = 0.5                      # z = 8 here, 16 from the pole's axis: certainly outside
+        step = 0.002
+        t_in = None
+        t = t_out
+        while t > -1.5:
+            t -= step
+            if pole_depth(t, i, run, rise) > 0.0:
+                t_in = t
+                break
+            t_out = t
+        if t_in is None:
+            raise AssertionError("rail %d of run=%d rise=%d never reaches the pole" % (i, run, rise))
+        for _ in range(50):
+            mid = (t_out + t_in) / 2.0
+            if pole_depth(mid, i, run, rise) > 0.0:
+                t_in = mid
             else:
-                hi = mid
-        t = (lo + hi) / 2.0
+                t_out = mid
+        t = (t_out + t_in) / 2.0
         ts.append(t)
         pts.append(ring(t, run, rise)[i])
     return pts, ts
@@ -359,7 +397,7 @@ def uv(u_frac, v_frac):
 
 def build_sweep(run, rise):
     """Returns (bands, rings). A band is (ring_a, ring_b, t_a, t_b, arclen_a, arclen_b)."""
-    near_ring, near_ts = clip_ring(16.0 + FLANGE_REACH, run, rise)
+    near_ring, near_ts = clip_ring(run, rise)
     # The first FULL ring has to sit past every clipped rail, or a quad would run backwards.
     t_first = max(near_ts)
     # The far end needs no clipping: the parabola is horizontal at t = run, so the cross-section
@@ -424,42 +462,17 @@ def emit_cap(mesh, rng, normal, centre_pt):
             mesh.tri([(centre_pt, cu, normal), (b, ub, normal), (a, ua, normal)])
 
 
-def emit_flange(mesh, run, rise):
-    """The bolted connection collar where the arm meets the pole.
+def emit_saddle_cap(mesh, rng):
+    """Closes the saddle-cut end of the arm.
 
-    It is an ELLIPSE, not a circle, and that is forced rather than decorative. The arm leaves the
-    pole at an angle, so the plane where it meets the pole face cuts the tube obliquely -- the
-    entry aperture is an ellipse stretched vertically by 1/cos(theta). A round collar sized to
-    the tube's diameter would not cover it, and one sized to its height would be absurdly wide.
-    Sizing the collar to the actual cut plus a fixed margin covers the seam at every preset and
-    stays inside the block.
-    """
-    _, ty, tz = tangent(0.0, run, rise)
-    stretch = 1.0 / abs(tz)  # = 1/cos(theta), the oblique-cut elongation
-    rx = R_FLANGE + FLANGE_MARGIN
-    ry = R_FLANGE * stretch + FLANGE_MARGIN
-    z_front = 16.0 + FLANGE_REACH
-    z_back = z_front - FLANGE_LEN
-    front, back = [], []
-    for i in range(SIDES):
-        a = 2.0 * math.pi * i / SIDES
-        ca, sa = math.cos(a), math.sin(a)
-        # Outward normal of an ellipse is not its radial direction; scale the components the
-        # other way round so shading across the collar stays believable.
-        n = (ca / rx, sa / ry, 0.0)
-        nl = math.hypot(n[0], n[1])
-        n = (n[0] / nl, n[1] / nl, 0.0)
-        front.append(((8.0 + rx * ca, 8.0 + ry * sa, z_front), n))
-        back.append(((8.0 + rx * ca, 8.0 + ry * sa, z_back), n))
-    for i in range(SIDES):
-        j = (i + 1) % SIDES
-        ua, ub = i / SIDES, (i + 1) / SIDES
-        mesh.quad((front[i][0], uv(ua, 0.0), front[i][1]),
-                  (back[i][0], uv(ua, FLANGE_LEN / 16.0), back[i][1]),
-                  (back[j][0], uv(ub, FLANGE_LEN / 16.0), back[j][1]),
-                  (front[j][0], uv(ub, 0.0), front[j][1]))
-    emit_cap(mesh, front, (0.0, 0.0, 1.0), (8.0, 8.0, z_front))
-    emit_cap(mesh, back, (0.0, 0.0, -1.0), (8.0, 8.0, z_back))
+    Normally invisible -- it sits inside the pole. It exists for the case where someone places a
+    curve without a pole behind it, where an open end would be see-through. The ring is not
+    planar, so this fans from its centroid rather than from a plane centre."""
+    n = len(rng)
+    centroid = (sum(p[0][0] for p in rng) / n,
+                sum(p[0][1] for p in rng) / n,
+                sum(p[0][2] for p in rng) / n)
+    emit_cap(mesh, rng, (0.0, 0.0, 1.0), centroid)
 
 
 # --------------------------------------------------------------------------------------------
@@ -655,9 +668,7 @@ def build_preset(preset_id, run, rise):
 
     # Whole-curve mesh, used for the inventory icon.
     whole = Mesh()
-    # The flange's front disc closes the aperture, so the tube needs no cap of its own here --
-    # a second disc on the same plane facing the same way would just z-fight with it.
-    emit_flange(whole, run, rise)
+    emit_saddle_cap(whole, rings[0])
     for b in bands:
         emit_tube(whole, b)
     emit_cap(whole, rings[-1], (0.0, 0.0, -1.0),
@@ -667,7 +678,7 @@ def build_preset(preset_id, run, rise):
     for idx, (ci, cj) in enumerate(order):
         m = Mesh()
         if idx == 0:
-            emit_flange(m, run, rise)
+            emit_saddle_cap(m, rings[0])
         for b in owned[(ci, cj)]:
             emit_tube(m, b)
         if (ci, cj) == order[-1]:
