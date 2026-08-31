@@ -1,0 +1,49 @@
+{
+  "__comment": "Guy anchor: a plate at ground level with a short rod standing proud of it, and an eye at the top the guy strand is clamped to. The guy is drawn by the span anchor's renderer and terminates at y=0.45, matching GUY_ANCHOR_HEIGHT.",
+  "parent": "block/block",
+  "textures": {
+    "metal": "csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "particle": "csm:blocks/trafficsignals/shared_textures/metal_silver"
+  },
+  "elements": [
+    {
+      "__comment": "Ground plate",
+      "from": [5, 0, 5],
+      "to": [11, 1, 11],
+      "faces": {
+        "north": {"texture": "#metal", "uv": [5, 0, 11, 1]},
+        "south": {"texture": "#metal", "uv": [5, 0, 11, 1]},
+        "east": {"texture": "#metal", "uv": [5, 0, 11, 1]},
+        "west": {"texture": "#metal", "uv": [5, 0, 11, 1]},
+        "up": {"texture": "#metal", "uv": [5, 5, 11, 11]},
+        "down": {"texture": "#metal", "uv": [5, 5, 11, 11]}
+      }
+    },
+    {
+      "__comment": "Rod, leaning slightly so it reads as taking a pull",
+      "from": [7, 1, 7],
+      "to": [9, 7, 9],
+      "faces": {
+        "north": {"texture": "#metal", "uv": [7, 1, 9, 7]},
+        "south": {"texture": "#metal", "uv": [7, 1, 9, 7]},
+        "east": {"texture": "#metal", "uv": [7, 1, 9, 7]},
+        "west": {"texture": "#metal", "uv": [7, 1, 9, 7]},
+        "up": {"texture": "#metal", "uv": [7, 7, 9, 9]},
+        "down": {"texture": "#metal", "uv": [7, 7, 9, 9]}
+      }
+    },
+    {
+      "__comment": "Eye at the top, where the guy clamps on",
+      "from": [6.5, 6, 7.25],
+      "to": [9.5, 8.5, 8.75],
+      "faces": {
+        "north": {"texture": "#metal", "uv": [6, 6, 10, 9]},
+        "south": {"texture": "#metal", "uv": [6, 6, 10, 9]},
+        "east": {"texture": "#metal", "uv": [7, 6, 9, 9]},
+        "west": {"texture": "#metal", "uv": [7, 6, 9, 9]},
+        "up": {"texture": "#metal", "uv": [6, 7, 10, 9]},
+        "down": {"texture": "#metal", "uv": [6, 7, 10, 9]}
+      }
+    }
+  ]
+}

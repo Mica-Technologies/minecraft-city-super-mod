@@ -1,0 +1,49 @@
+{
+  "__comment": "Span wire dead-end anchor: backing plate against the pole, a standoff, and the eye the messenger cable terminates on. The eye is centred at y=12 (0.75 blocks) to match SpanWireDefinition.CABLE_ATTACH_HEIGHT, so the drawn hardware and the solved cable meet at the same point.",
+  "parent": "block/block",
+  "textures": {
+    "metal": "csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "particle": "csm:blocks/trafficsignals/shared_textures/metal_silver"
+  },
+  "elements": [
+    {
+      "__comment": "Backing plate, bolted flat to the pole",
+      "from": [5, 6, 0],
+      "to": [11, 15, 2],
+      "faces": {
+        "north": {"texture": "#metal", "uv": [5, 1, 11, 10]},
+        "south": {"texture": "#metal", "uv": [5, 1, 11, 10]},
+        "east": {"texture": "#metal", "uv": [0, 1, 2, 10]},
+        "west": {"texture": "#metal", "uv": [0, 1, 2, 10]},
+        "up": {"texture": "#metal", "uv": [5, 0, 11, 2]},
+        "down": {"texture": "#metal", "uv": [5, 0, 11, 2]}
+      }
+    },
+    {
+      "__comment": "Standoff between plate and eye",
+      "from": [7, 11, 2],
+      "to": [9, 13, 5],
+      "faces": {
+        "north": {"texture": "#metal", "uv": [7, 3, 9, 5]},
+        "south": {"texture": "#metal", "uv": [7, 3, 9, 5]},
+        "east": {"texture": "#metal", "uv": [2, 3, 5, 5]},
+        "west": {"texture": "#metal", "uv": [2, 3, 5, 5]},
+        "up": {"texture": "#metal", "uv": [7, 2, 9, 5]},
+        "down": {"texture": "#metal", "uv": [7, 2, 9, 5]}
+      }
+    },
+    {
+      "__comment": "Eye plate; cable dead ends at its centre, y=12",
+      "from": [6.5, 9.5, 5],
+      "to": [9.5, 14.5, 6.5],
+      "faces": {
+        "north": {"texture": "#metal", "uv": [6, 2, 10, 7]},
+        "south": {"texture": "#metal", "uv": [6, 2, 10, 7]},
+        "east": {"texture": "#metal", "uv": [5, 2, 7, 7]},
+        "west": {"texture": "#metal", "uv": [5, 2, 7, 7]},
+        "up": {"texture": "#metal", "uv": [6, 5, 10, 7]},
+        "down": {"texture": "#metal", "uv": [6, 5, 10, 7]}
+      }
+    }
+  ]
+}

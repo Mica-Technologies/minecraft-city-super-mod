@@ -1,0 +1,23 @@
+{
+  "type": "forge:ore_shaped",
+  "pattern": [
+    " S ",
+    "SWS",
+    " F "
+  ],
+  "key": {
+    "S": {
+      "item": "csm:part_sheet_metal"
+    },
+    "W": {
+      "item": "csm:part_wiring_harness"
+    },
+    "F": {
+      "item": "csm:part_fastener_kit"
+    }
+  },
+  "result": {
+    "item": "csm:spanwiretool",
+    "count": 1
+  }
+}

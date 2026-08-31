@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.trafficsignals;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractTileEntity;
 import com.micatechnologies.minecraft.csm.codeutils.CsmRenderUtils;
+import com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.SpanWireHangOffset;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignal.SIGNAL_SIDE;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignalHead;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.SignalHeadMountType;
@@ -66,6 +67,44 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
 
   /** How long a derived mount-edge suppression answer is reused before being re-derived. */
   private static final long MOUNT_SUPPRESSION_REFRESH_TICKS = 20L;
+
+  /**
+   * How far this signal is shifted by hanging from a span wire, in model units, and when that was
+   * last worked out.
+   *
+   * <p>Cached for the same reason as the mount suppression above, and more urgently: the renderer
+   * asks for this signal's total Y offset every frame, and so does the bounding box helper.
+   * Deriving it walks up to three block positions looking for the mount this signal hangs from,
+   * and an intersection can easily have a dozen hanging heads in view at once.
+   *
+   * <p>Re-derived on the same slow cadence rather than invalidated precisely, because the events
+   * that change the answer are not all local to this block: a span is re-strung from a tool click
+   * on an anchor that may be thirty blocks away, and re-solving it moves every signal on the span.
+   * A second of staleness after a re-link is not worth a notification path from the anchor to
+   * every head hanging off it.
+   */
+  private transient float cachedSpanWireYOffset = 0.0f;
+  private transient long cachedSpanWireYOffsetTick = Long.MIN_VALUE;
+
+  /** How long a derived span wire offset is reused before being re-derived. */
+  private static final long SPAN_WIRE_OFFSET_REFRESH_TICKS = 20L;
+
+  /**
+   * How far this signal is shifted by hanging from a span wire, in model units. Zero when it does
+   * not hang from one, which is every signal on a pole or a mast arm.
+   */
+  public float getSpanWireYOffset() {
+    final World world = getWorld();
+    final long now = world == null ? 0L : world.getTotalWorldTime();
+    if (cachedSpanWireYOffsetTick != Long.MIN_VALUE
+        && now - cachedSpanWireYOffsetTick < SPAN_WIRE_OFFSET_REFRESH_TICKS) {
+      return cachedSpanWireYOffset;
+    }
+    cachedSpanWireYOffset =
+        world == null ? 0.0f : SpanWireHangOffset.computeFor(world, getPos());
+    cachedSpanWireYOffsetTick = now;
+    return cachedSpanWireYOffset;
+  }
 
   /**
    * Drops the cached mount-edge suppression so the next render recomputes it. Called from the
