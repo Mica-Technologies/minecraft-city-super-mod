@@ -7,6 +7,8 @@ import com.micatechnologies.minecraft.csm.codeutils.DirectionEight;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmNoSnowAccumulation;
 import com.micatechnologies.minecraft.csm.codeutils.RotationUtils;
 import com.micatechnologies.minecraft.csm.codeutils.SignShift;
+import com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.ISpanWireHangable;
+import com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.SpanWireHangOffset;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -29,9 +31,44 @@ import org.jetbrains.annotations.NotNull;
 
 @MethodsReturnNonnullByDefault
 public abstract class AbstractBlockSign extends AbstractBlockRotatableHZEight
-    implements ICsmNoSnowAccumulation {
+    implements ICsmNoSnowAccumulation, ISpanWireHangable {
 
   public static final PropertyBool DOWNWARD = PropertyBool.create("downward");
+  /**
+   * How far behind the middle of the block a setback panel sits, in blocks.
+   *
+   * <p>Read off the setback bounding box below, whose panel box is z 0.75 to 0.8125 -- centre
+   * 0.78125, which is 0.28125 past the middle. A span's drop hardware comes down to this so it
+   * meets the sign rather than passing through its face.
+   */
+  private static final double SETBACK_PANEL_OFFSET = 0.28125;
+
+  /**
+   * Brings a span's drop hardware back onto the panel instead of through its face.
+   *
+   * <p>Only in setback, which is the mode a sign on a span is always put into -- see
+   * {@code SpanWireHangOffset.hangsFromSpan}. In any other mode the panel is at the front of its
+   * block, where a drop coming down the centre line is already behind it and needs no help.
+   */
+  @Override
+  public net.minecraft.util.math.Vec3d getSpanHardwareOffset(IBlockAccess world, BlockPos pos,
+      IBlockState state) {
+    final IBlockState actual = state.getActualState(world, pos);
+    if (actual.getValue(SHIFT) != SignShift.SETBACK) {
+      return net.minecraft.util.math.Vec3d.ZERO;
+    }
+    final DirectionEight back = actual.getValue(FACING).getOpposite();
+    // Normalised, because a sign may face a diagonal and its raw step is then (+-1, +-1) --
+    // root two long, which would set a diagonal sign back further than a square-on one.
+    final double length = Math.hypot(back.getOffsetX(), back.getOffsetZ());
+    if (length < 1.0e-9) {
+      return net.minecraft.util.math.Vec3d.ZERO;
+    }
+    final double scale = SETBACK_PANEL_OFFSET / length;
+    return new net.minecraft.util.math.Vec3d(
+        back.getOffsetX() * scale, 0.0, back.getOffsetZ() * scale);
+  }
+
   public static final PropertyEnum<SignShift> SHIFT =
       PropertyEnum.create("shift", SignShift.class);
 
@@ -251,6 +288,17 @@ public abstract class AbstractBlockSign extends AbstractBlockRotatableHZEight
   }
 
   public boolean getShouldSetback(IBlockAccess source, BlockPos pos) {
+    // A sign hung from a span wire sets back for the same reason it does in front of a signal
+    // arm: it has to sit in line with the hardware beside it rather than centred in its block.
+    // Setback was built for wall and pole mounting rather than for this, but the shift it
+    // produces is exactly the one a span needs -- one step backwards, into line with the wire
+    // and the signal housings -- so it is reused rather than duplicated. A sign is a plain block
+    // model and cannot take the sub-block offset a signal head does, which is what makes this
+    // the only lever available.
+    if (SpanWireHangOffset.hangsFromSpan(source, pos)) {
+      return true;
+    }
+
     if (getBlockIsInFrontOfSignalArm(source, pos)) {
       return true;
     }

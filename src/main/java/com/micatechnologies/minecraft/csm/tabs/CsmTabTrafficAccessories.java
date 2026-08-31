@@ -25,6 +25,12 @@ import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleLar
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleLargeUnpainted;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleLargeWhite;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleMastArmCurve;
+import com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.BlockSpanWireAnchor;
+import com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.BlockSpanWireClusterMount;
+import com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.BlockSpanWireDisconnectBox;
+import com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.BlockSpanWireGuyAnchor;
+import com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.BlockSpanWireHangerMount;
+import com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.ItemSpanWireTool;
 import com.micatechnologies.minecraft.csm.trafficaccessories.MastArmCurveProfile;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleSmallBlack;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleSmallGray;
@@ -343,8 +349,15 @@ public class CsmTabTrafficAccessories extends CsmTab {
     initTabBlock(new BlockTrafficLightMountKit());
     initTabBlock(new BlockTrafficAccessoryNSEW("plumbizer_signal_mount", BB_PLUMBIZER_SIGNAL_MOUNT,
         BlockRenderLayer.CUTOUT_MIPPED, 2F, false));
-    initTabBlock(new BlockTrafficAccessoryNSEWUD("tlitehorzwiremount", BB_TLITE_HORZ_WIRE_MOUNT, BlockRenderLayer.SOLID, 1F, true));
-    initTabBlock(new BlockTrafficAccessoryNSEWUD("tlitevertwiremount", BB_TLITE_VERT_WIRE_MOUNT, BlockRenderLayer.SOLID, 1F, true));
+    // Wire mounts carry a span wire hanger tile entity so they can hang from a strung span.
+    // Unlinked they are the same decorative mounts they have always been.
+    initTabBlock(new BlockSpanWireHangerMount("tlitehorzwiremount", BB_TLITE_HORZ_WIRE_MOUNT, BlockRenderLayer.SOLID, 1F, true));
+    initTabBlock(new BlockSpanWireHangerMount("tlitevertwiremount", BB_TLITE_VERT_WIRE_MOUNT, BlockRenderLayer.SOLID, 1F, true));
+    initTabBlock(new BlockSpanWireClusterMount("spanwireclustermount", BB_TLITE_VERT_WIRE_MOUNT, BlockRenderLayer.SOLID, 1F, true));
+    initTabBlock(new BlockSpanWireDisconnectBox("spanwiredisconnectbox", BB_TLITE_VERT_WIRE_MOUNT, BlockRenderLayer.CUTOUT_MIPPED, 1F, false));
+    initTabBlock(new BlockSpanWireAnchor());
+    initTabBlock(new BlockSpanWireGuyAnchor());
+    initTabItem(ItemSpanWireTool.class, fmlPreInitializationEvent); // Span Wire Tool
     initTabBlock(new BlockTrafficAccessoryNSEWUD("tlpmunpainted", BB_TL_PM, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
 
     // --- NSEWUD factory blocks: Traffic Pole Bases ---

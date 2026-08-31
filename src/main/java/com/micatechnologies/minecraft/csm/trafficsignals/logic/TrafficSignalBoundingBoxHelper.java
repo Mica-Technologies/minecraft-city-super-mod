@@ -28,6 +28,21 @@ public final class TrafficSignalBoundingBoxHelper {
   private static final float CENTER_Y = 6.0f;
   private static final float CENTER_Z_VISOR = 11.0f;
 
+  /**
+   * How far behind the middle of its block a signal's body sits, in blocks.
+   *
+   * <p>A signal is not centred in its block and this is the number that says so. The body runs
+   * from {@link #CENTER_Z_VISOR} back to {@link #BODY_MAX_Z}; the visor hangs off the front of
+   * it, forward to {@link #VISOR_MIN_Z}. So the middle of the <em>body</em> is well behind the
+   * middle of the <em>block</em>, and anything that wants to meet the body -- a span wire drop,
+   * most of all -- has to come back by this much or it lands on a visor instead.
+   *
+   * <p>Derived from the same constants the bounding box is built from rather than written out,
+   * so re-proportioning a signal moves the hardware with it.
+   */
+  public static final double BODY_CENTRE_SETBACK =
+      ((CENTER_Z_VISOR + BODY_MAX_Z) / 2.0 - CENTER_X) / 16.0;
+
   private TrafficSignalBoundingBoxHelper() {}
 
   /**

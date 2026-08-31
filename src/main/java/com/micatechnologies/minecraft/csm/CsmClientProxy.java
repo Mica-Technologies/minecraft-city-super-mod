@@ -101,6 +101,20 @@ public class CsmClientProxy implements ICsmProxy {
     ClientRegistry.bindTileEntitySpecialRenderer(
         com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityLaneControlSignal.class,
         new com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityLaneControlSignalRenderer());
+    // Span wire: both ends of every cable segment draw their own piece, so both attachment
+    // kinds get the same renderer behaviour bound to their own tile entity type.
+    ClientRegistry.bindTileEntitySpecialRenderer(
+        com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.TileEntitySpanWireAnchor.class,
+        new com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.TileEntitySpanWireAnchorRenderer());
+    ClientRegistry.bindTileEntitySpecialRenderer(
+        com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.TileEntitySpanWireHanger.class,
+        new com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.TileEntitySpanWireHangerRenderer());
+    ClientRegistry.bindTileEntitySpecialRenderer(
+        com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.TileEntitySpanWireClusterMount.class,
+        new com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.TileEntitySpanWireClusterMountRenderer());
+    ClientRegistry.bindTileEntitySpecialRenderer(
+        com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.TileEntitySpanWireDisconnectBox.class,
+        new com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.TileEntitySpanWireHangerRenderer());
     ClientRegistry.bindTileEntitySpecialRenderer(
         com.micatechnologies.minecraft.csm.lifesafety.TileEntityFireAlarmStrobe.class,
         new com.micatechnologies.minecraft.csm.lifesafety.TileEntityFireAlarmStrobeRenderer());

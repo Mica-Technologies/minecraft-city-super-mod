@@ -26,6 +26,14 @@
         "y": 270
       }
     },
+    "linked": {
+      "false": {
+        "model": "csm:trafficaccessories/shared_models/tliteverticalwiremount"
+      },
+      "true": {
+        "model": "csm:trafficaccessories/shared_models/span_wire_hidden"
+      }
+    },
     "inventory": [
       {}
     ],
