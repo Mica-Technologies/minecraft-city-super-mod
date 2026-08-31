@@ -223,6 +223,13 @@ in wind. Two things about it are not obvious:
   as bad. `tetherDropAtAnchors` adds the sag difference so the clearance at the *tightest* point
   is `TETHER_MIN_CLEARANCE` at every span length.
 
+**Known limit:** that holds across span *length*, not across hang *height*. The gap from cable to
+signal bottom also depends on the mount's own drop, so a span whose mounts hang further below the
+cable than the one this constant was tuned against puts the tether above the signal bottoms rather
+than at them. Deriving the height from the payload's actual bottom -- the way
+`getSpanHardwareOffset` derives the sideways offset -- is the real fix, and is deferred rather than
+done.
+
 ## Rendering
 
 Geometry is procedural, emitted per frame into a display list — no OBJ files, so
