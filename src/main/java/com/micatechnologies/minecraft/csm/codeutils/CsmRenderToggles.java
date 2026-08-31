@@ -112,6 +112,15 @@ public final class CsmRenderToggles {
    */
   public static boolean guideSignBackgroundPerFrame = false;
 
+  /** Skip the span wire messenger cable entirely. Measurement only. */
+  public static boolean skipSpanWireCable = false;
+
+  /**
+   * Draw the span wire cable per frame instead of replaying its display list. Kept so the two can
+   * be measured and pixel-compared inside one session; the baked path ships.
+   */
+  public static boolean spanWireCablePerFrame = false;
+
   private CsmRenderToggles() {
   }
 
@@ -141,6 +150,8 @@ public final class CsmRenderToggles {
     values.put("guideSignBackgroundPerFrame", guideSignBackgroundPerFrame);
     values.put("crosswalkFacePerFrame", crosswalkFacePerFrame);
     values.put("crosswalkCountdownPerFrame", crosswalkCountdownPerFrame);
+    values.put("spanWireCable", skipSpanWireCable);
+    values.put("spanWireCablePerFrame", spanWireCablePerFrame);
     return values;
   }
 
@@ -191,6 +202,10 @@ public final class CsmRenderToggles {
       crosswalkFacePerFrame = skipped;
     } else if ("crosswalkCountdownPerFrame".equalsIgnoreCase(name)) {
       crosswalkCountdownPerFrame = skipped;
+    } else if ("spanWireCable".equalsIgnoreCase(name)) {
+      skipSpanWireCable = skipped;
+    } else if ("spanWireCablePerFrame".equalsIgnoreCase(name)) {
+      spanWireCablePerFrame = skipped;
     } else {
       return false;
     }
@@ -218,6 +233,8 @@ public final class CsmRenderToggles {
     guideSignBackgroundPerFrame = false;
     crosswalkFacePerFrame = false;
     crosswalkCountdownPerFrame = false;
+    skipSpanWireCable = false;
+    spanWireCablePerFrame = false;
   }
 
   /**

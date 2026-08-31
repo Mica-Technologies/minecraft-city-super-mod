@@ -5,6 +5,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.Map;
 import com.micatechnologies.minecraft.csm.codeutils.DirectionSixteen;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
+import com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.ISpanWireHangable;
 import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalHead;
 import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalHeadRenderer;
 import javax.annotation.Nullable;
@@ -23,7 +24,32 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class AbstractBlockControllableSignalHead extends AbstractBlockControllableSignal
-    implements ICsmTileEntityProvider {
+    implements ICsmTileEntityProvider, ISpanWireHangable {
+
+  /**
+   * No strap. A signal head already draws its own mast and bracket where it meets a span, and a
+   * strap on top of that reads as two mounts stacked on one head.
+   */
+  @Override
+  public boolean needsSpanHangerStrap() {
+    return false;
+  }
+
+  /**
+   * Brings a span's drop back onto the roof of the housing instead of onto a visor.
+   *
+   * <p>A signal is not centred in its block: the body sits at the back by
+   * {@link TrafficSignalBoundingBoxHelper#BODY_CENTRE_SETBACK} and the visors hang off the front
+   * of it. So hardware coming straight down the block's centre line meets the top visor, which
+   * is both wrong and conspicuously wrong. Backwards is the opposite of the way the head faces.
+   */
+  @Override
+  public net.minecraft.util.math.Vec3d getSpanHardwareOffset(
+      net.minecraft.world.IBlockAccess world, BlockPos pos, IBlockState state) {
+    final EnumFacing back = state.getValue(FACING).getOpposite();
+    return new net.minecraft.util.math.Vec3d(back.getXOffset(), 0.0, back.getZOffset())
+        .scale(TrafficSignalBoundingBoxHelper.BODY_CENTRE_SETBACK);
+  }
 
   /**
    * Shared "no pivot offset" result for {@link #getTiltPivotOffset(IBlockAccess, BlockPos)}.
@@ -319,10 +345,41 @@ public abstract class AbstractBlockControllableSignalHead extends AbstractBlockC
   }
 
   /**
-   * World-aware version of {@link #getSignalYOffset()}.
+   * World-aware version of {@link #getSignalYOffset()}: everything that shifts this signal
+   * vertically, added together.
+   *
+   * <p>Final on purpose. The span wire term has to reach every caller — the renderer, the
+   * bounding box helper, and the cover and mount-kit geometry that fit themselves around a
+   * signal — and a subclass that overrode this and forgot to add it would silently draw a
+   * hanging signal in the wrong place, with a hitbox somewhere else again. Subclasses adjust
+   * their own contribution through {@link #getBaseSignalYOffset} instead.
    */
-  public float getSignalYOffset(IBlockAccess world, BlockPos pos) {
+  public final float getSignalYOffset(IBlockAccess world, BlockPos pos) {
+    return getBaseSignalYOffset(world, pos) + getSpanWireYOffset(world, pos);
+  }
+
+  /**
+   * This signal's own vertical offset, before anything it hangs from is taken into account.
+   * Override this rather than {@link #getSignalYOffset(IBlockAccess, BlockPos)}.
+   */
+  protected float getBaseSignalYOffset(IBlockAccess world, BlockPos pos) {
     return getSignalYOffset();
+  }
+
+  /**
+   * How far this signal is shifted by hanging from a span wire, in model units, or zero when it
+   * does not. Read through the tile entity, which caches it — the renderer asks for the total
+   * offset every frame, and the underlying lookup walks blocks.
+   */
+  private float getSpanWireYOffset(IBlockAccess world, BlockPos pos) {
+    if (world == null || pos == null) {
+      return 0.0f;
+    }
+    final TileEntity tileEntity = world.getTileEntity(pos);
+    if (tileEntity instanceof TileEntityTrafficSignalHead) {
+      return ((TileEntityTrafficSignalHead) tileEntity).getSpanWireYOffset();
+    }
+    return 0.0f;
   }
 
   /**

@@ -1,0 +1,36 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:spanwireanchor",
+    "textures": {
+      "metal": "csm:blocks/trafficsignals/shared_textures/metal_silver",
+      "particle": "csm:blocks/trafficsignals/shared_textures/metal_silver"
+    }
+  },
+  "variants": {
+    "facing": {
+      "east": {
+        "y": 90
+      },
+      "north": {
+        "y": 0
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "inventory": [
+      {
+        "y": 0
+      }
+    ],
+    "normal": [
+      {
+        "y": 0
+      }
+    ]
+  }
+}

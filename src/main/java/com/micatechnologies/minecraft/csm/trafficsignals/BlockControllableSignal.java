@@ -275,7 +275,7 @@ public class BlockControllableSignal extends AbstractBlockControllableSignalHead
   }
 
   @Override
-  public float getSignalYOffset(IBlockAccess world, BlockPos pos) {
+  protected float getBaseSignalYOffset(IBlockAccess world, BlockPos pos) {
     if (needsLayoutSwap(world, pos)) {
       // Y offset folded into X positions in horizontal mode
       return 0.0f;

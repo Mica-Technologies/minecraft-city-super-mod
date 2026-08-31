@@ -1,0 +1,48 @@
+{
+  "__comment": "Disconnect box hung on a span: a shallow enclosure with a lid lip and a conduit stub out of the bottom. Hangs from the mount hardware the span wire renderer draws above it.",
+  "parent": "block/block",
+  "textures": {
+    "metal": "csm:blocks/trafficsignals/shared_textures/metal_mattewhite",
+    "particle": "csm:blocks/trafficsignals/shared_textures/metal_mattewhite"
+  },
+  "elements": [
+    {
+      "__comment": "Enclosure body",
+      "from": [4, 2, 5],
+      "to": [12, 12, 11],
+      "faces": {
+        "north": {"texture": "#metal", "uv": [4, 4, 12, 14]},
+        "south": {"texture": "#metal", "uv": [4, 4, 12, 14]},
+        "east": {"texture": "#metal", "uv": [5, 4, 11, 14]},
+        "west": {"texture": "#metal", "uv": [5, 4, 11, 14]},
+        "up": {"texture": "#metal", "uv": [4, 5, 12, 11]},
+        "down": {"texture": "#metal", "uv": [4, 5, 12, 11]}
+      }
+    },
+    {
+      "__comment": "Lid lip, standing a little proud of the body",
+      "from": [3.5, 11.5, 4.5],
+      "to": [12.5, 13, 11.5],
+      "faces": {
+        "north": {"texture": "#metal", "uv": [3, 3, 13, 5]},
+        "south": {"texture": "#metal", "uv": [3, 3, 13, 5]},
+        "east": {"texture": "#metal", "uv": [4, 3, 12, 5]},
+        "west": {"texture": "#metal", "uv": [4, 3, 12, 5]},
+        "up": {"texture": "#metal", "uv": [3, 4, 13, 12]},
+        "down": {"texture": "#metal", "uv": [3, 4, 13, 12]}
+      }
+    },
+    {
+      "__comment": "Conduit stub leaving the bottom",
+      "from": [7, 0, 7],
+      "to": [9, 2, 9],
+      "faces": {
+        "north": {"texture": "#metal", "uv": [7, 14, 9, 16]},
+        "south": {"texture": "#metal", "uv": [7, 14, 9, 16]},
+        "east": {"texture": "#metal", "uv": [7, 14, 9, 16]},
+        "west": {"texture": "#metal", "uv": [7, 14, 9, 16]},
+        "down": {"texture": "#metal", "uv": [7, 7, 9, 9]}
+      }
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "__comment": "Nothing. Used by a wire mount that is part of a span: the span renderer draws the real hardware, so the mount's own decorative bracket would be a second bracket in the same place, hanging into the signal below it.",
+  "textures": {
+    "particle": "csm:blocks/trafficaccessories/shared_textures/signalbody"
+  },
+  "elements": []
+}

@@ -180,6 +180,10 @@ public class Csm {
           com.micatechnologies.minecraft.csm.trafficsignals.BlankoutBoxConfigPacketHandler.class,
           com.micatechnologies.minecraft.csm.trafficsignals.BlankoutBoxConfigPacket.class, Side.SERVER);
       CsmNetwork.registerNetworkMessage(
+          com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.SpanWireMountConfigPacketHandler.class,
+          com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.SpanWireMountConfigPacket.class,
+          Side.SERVER);
+      CsmNetwork.registerNetworkMessage(
           com.micatechnologies.minecraft.csm.trafficaccessories.LaneControlSignalConfigPacketHandler.class,
           com.micatechnologies.minecraft.csm.trafficaccessories.LaneControlSignalConfigPacket.class, Side.SERVER);
       CsmNetwork.registerNetworkMessage(
