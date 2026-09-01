@@ -131,6 +131,13 @@ public final class SpanWireDefinition {
   @Nullable
   private final BlockPos tetherAnchorB;
 
+  /**
+   * Lazily computed {@link #hashCode()}. Not final because it is filled on first use; not volatile
+   * because the computation is pure and idempotent, so two threads racing on it can only arrive at
+   * the same value (the same reasoning {@link String#hashCode()} uses).
+   */
+  private transient int cachedHash;
+
   public SpanWireDefinition(BlockPos anchorA, BlockPos anchorB, List<BlockPos> hangers,
       double slack) {
     this(anchorA, anchorB, hangers, slack, false);
@@ -566,9 +573,22 @@ public final class SpanWireDefinition {
 
   @Override
   public int hashCode() {
-    return Arrays.hashCode(
-        new Object[]{anchorA, anchorB, hangers, slack, boxSpan, signalSide, autoOffsetX,
-            autoOffsetZ, tetherClearance, tetherAnchorA, tetherAnchorB});
+    // Computed once and kept. Every attachment on the span asks for this once a frame, purely to
+    // decide whether its cached display list is still valid, and the un-cached form allocated an
+    // eleven-element array, boxed five primitives and walked the whole hanger list to answer --
+    // per attachment, per frame, so the cost grew with the square of the span. Safe because every
+    // field here is final and the hanger list is unmodifiable: this object cannot become a
+    // different object, which is the only thing that could make a remembered hash wrong.
+    if (cachedHash == 0) {
+      final int computed = Arrays.hashCode(
+          new Object[]{anchorA, anchorB, hangers, slack, boxSpan, signalSide, autoOffsetX,
+              autoOffsetZ, tetherClearance, tetherAnchorA, tetherAnchorB});
+      // Zero is the "not computed yet" marker, so a span that genuinely hashes to zero would be
+      // recomputed every time. Harmless, and far cheaper than a second field to track validity.
+      cachedHash = computed;
+      return computed;
+    }
+    return cachedHash;
   }
 
   @Override

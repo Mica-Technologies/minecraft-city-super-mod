@@ -519,8 +519,18 @@ public abstract class AbstractBlockControllableSignalHead extends AbstractBlockC
    * @return the displacement in model units and world axes, never null.
    */
   public final Vec3d getHeadDisplacement(IBlockAccess world, BlockPos pos) {
-    final Vec3d span = getSpanWireOffset(world, pos);
-    final Vec3d nudge = getNudgeOffset(world, pos);
+    // One tile entity lookup for both terms. They each used to fetch it themselves, which meant
+    // every caller of this paid for two -- and this is read per head per frame by the renderer,
+    // the bounding box helper, and the cover and mount kit geometry that fit around a signal.
+    final TileEntity tileEntity = world == null || pos == null ? null : world.getTileEntity(pos);
+    final TileEntityTrafficSignalHead head = tileEntity instanceof TileEntityTrafficSignalHead
+        ? (TileEntityTrafficSignalHead) tileEntity
+        : null;
+    if (head == null) {
+      return Vec3d.ZERO;
+    }
+    final Vec3d span = head.getSpanWireOffset();
+    final Vec3d nudge = getNudgeOffset(world, pos, head);
     return new Vec3d(span.x + nudge.x, span.y, span.z + nudge.z);
   }
 
@@ -536,15 +546,8 @@ public abstract class AbstractBlockControllableSignalHead extends AbstractBlockC
    *
    * @return the nudge in world axes and model units, with a zero Y.
    */
-  private Vec3d getNudgeOffset(IBlockAccess world, BlockPos pos) {
-    if (world == null || pos == null) {
-      return Vec3d.ZERO;
-    }
-    final TileEntity tileEntity = world.getTileEntity(pos);
-    if (!(tileEntity instanceof TileEntityTrafficSignalHead)) {
-      return Vec3d.ZERO;
-    }
-    final TileEntityTrafficSignalHead head = (TileEntityTrafficSignalHead) tileEntity;
+  private Vec3d getNudgeOffset(IBlockAccess world, BlockPos pos,
+      TileEntityTrafficSignalHead head) {
     final int forward = head.getNudgeForward();
     final int side = head.getNudgeSide();
     if (forward == 0 && side == 0) {
@@ -604,21 +607,6 @@ public abstract class AbstractBlockControllableSignalHead extends AbstractBlockC
     return getSignalYOffset();
   }
 
-  /**
-   * How far this signal is shifted by hanging from a span wire, in model units, or zero when it
-   * does not. Read through the tile entity, which caches it — the renderer asks for the total
-   * offset every frame, and the underlying lookup walks blocks.
-   */
-  private Vec3d getSpanWireOffset(IBlockAccess world, BlockPos pos) {
-    if (world == null || pos == null) {
-      return Vec3d.ZERO;
-    }
-    final TileEntity tileEntity = world.getTileEntity(pos);
-    if (tileEntity instanceof TileEntityTrafficSignalHead) {
-      return ((TileEntityTrafficSignalHead) tileEntity).getSpanWireOffset();
-    }
-    return Vec3d.ZERO;
-  }
 
   /**
    * Returns the block-space offset from this signal to the main signal that this add-on
