@@ -31,6 +31,14 @@ public class TileEntitySpanWireClusterMountRenderer
    */
   private static final double TIE_BAR_RADIUS = SpanWireCableGeometry.CABLE_RADIUS * 0.9;
 
+  /**
+   * How far above the bar a head has to sit before it is given a leg down to it.
+   *
+   * <p>Below this the two are touching and a leg would be a tube inside a tube, which costs
+   * geometry and can z-fight. Well under the smallest real difference, which is one section.
+   */
+  private static final double LEG_EPSILON = 0.02;
+
   /** How far the drops reach below the bracket, ending just inside the head tops they bolt to. */
   private static final double DROP_LENGTH = 0.18;
 
@@ -181,6 +189,20 @@ public class TileEntitySpanWireClusterMountRenderer
     final Vec3d lastEnd = tieBarEnd(te, last, tieY);
     if (tieCount > 1 && first != last) {
       SpanWireCableGeometry.emitStraightTube(buffer, firstEnd, lastEnd,
+          origin, TIE_BAR_RADIUS, STEEL_RED, STEEL_GREEN, STEEL_BLUE, skyLight, blockLight);
+    }
+
+    // A leg from any head that does not reach the bar down to it. The bar runs at the deepest
+    // assembly's underside so it can pass beneath every housing, which leaves a shorter head
+    // ending a clear gap above it -- tied, on paper, to a bar it does not touch. Only the heads
+    // that need one get one; on the ordinary cluster of matching heads every head is already on
+    // the bar and none of these is drawn.
+    for (TileEntitySpanWireClusterMount.ClusterPayload payload : payloads) {
+      if (Double.isNaN(payload.getTieY()) || payload.getTieY() - tieY < LEG_EPSILON) {
+        continue;
+      }
+      SpanWireCableGeometry.emitStraightTube(buffer,
+          tieBarEnd(te, payload, payload.getTieY()), tieBarEnd(te, payload, tieY),
           origin, TIE_BAR_RADIUS, STEEL_RED, STEEL_GREEN, STEEL_BLUE, skyLight, blockLight);
     }
 
