@@ -236,12 +236,21 @@ in wind. Two things about it are not obvious:
 
 * It is strung **far** tighter than the messenger — `TETHER_SLACK = 1.000265` against the
   messenger's `1.0066`, which is 80% less sag. Solved for, not guessed.
-* It is **dead-ended on the pole at both ends**, by `emitTetherTermination`. Without that it
-  simply stopped in the air a few blocks under the anchor, held by nothing -- the one piece of a
-  box span that was not visibly fixed to anything. The direction comes from the span, not from the
-  anchor block's facing: the anchor sits between the pole and the run, so *outward along the span*
-  is where the pole is, and that stays true for a span leaving at any angle. A block facing could
-  only ever be square to one of the two axes, so it would be wrong on every diagonal.
+* It **dead-ends on a second pair of anchors**, which are ordinary `spanwireanchor` blocks placed
+  lower on the same poles. Same block as the messenger's own anchors, deliberately: the lower end
+  of a box span then looks exactly like the upper one, has a hitbox, and takes part in the traffic
+  poles' auto-connection like any other block. The tether runs anchor to anchor, at whatever
+  height they were placed, and the hardware drawn to meet them is the same shackle-and-thimble the
+  messenger gets.
+
+  **Both ends or neither.** One end dead-ended and the other hanging at a derived drop would be a
+  tether at two different heights depending on which end you looked at -- worse than either answer
+  alone -- so a lone lower anchor is ignored until its partner exists, and breaking one drops both
+  back to the derived height. `SpanWireManager.onTetherAnchorRemoved` is the inverse of
+  `findTetherAnchorBelow` and shares its reach, so the two cannot drift apart.
+
+  With no anchors placed the tether falls back to hanging at the derived clearance below, with a
+  plain stub back toward the pole. That is the fallback, not the intent.
 * Its drop is **derived, not fixed**. A tight tether and a sagging messenger converge toward
   midspan, so a fixed drop is only correct at the anchors: on a 20-block span a 2.75 drop leaves
   1.95 of real clearance in the middle, straight through the lamps, and a 40-block span is twice

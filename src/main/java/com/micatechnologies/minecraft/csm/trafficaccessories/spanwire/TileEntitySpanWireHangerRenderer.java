@@ -46,15 +46,17 @@ public class TileEntitySpanWireHangerRenderer
   private static final int COIL_LOOPS = 2;
   private static final int COIL_SEGMENTS = 10;
   private static final double COIL_RADIUS = 0.13;
-  private static final double COIL_WIRE_RADIUS = SpanWireCableGeometry.CABLE_RADIUS * 0.7;
-  private static final double COIL_SPACING = 0.055;
 
   /**
-   * How far along the cable the coils sit from the mast, so they hang beside it rather than
-   * through it. Enough to clear the mast and the saddle, both of which are centred on the clamp.
+   * How much larger the coils are on an extending mast.
+   *
+   * <p>An extending mast is chosen for a long drop, and a long drop means more slack conductor
+   * left coiled at the clamp -- so the loop hanging there is bigger. At the flush size it read as
+   * a token loop next to all that mast.
    */
-  private static final double COIL_SIDE_OFFSET =
-      SADDLE_HALF_LENGTH + COIL_RADIUS + SpanWireCableGeometry.CABLE_RADIUS;
+  private static final double COIL_MAST_SCALE = 1.625;
+  private static final double COIL_WIRE_RADIUS = SpanWireCableGeometry.CABLE_RADIUS * 0.7;
+  private static final double COIL_SPACING = 0.055;
 
   /**
    * The frame a flat payload hangs from: two drops this far apart along the cable, joined across
@@ -120,8 +122,8 @@ public class TileEntitySpanWireHangerRenderer
         cablePoint.add(along.scale(SADDLE_HALF_LENGTH)),
         origin, SADDLE_RADIUS, MAST_RED, MAST_GREEN, MAST_BLUE, skyLight, blockLight);
 
-    emitConductorCoils(buffer, te.getCoilStyle(), cablePoint, along, origin, skyLight,
-        blockLight);
+    emitConductorCoils(buffer, te.getCoilStyle(), te.getMountStyle(), cablePoint, along, origin,
+        skyLight, blockLight);
     emitTetherTie(buffer, te, atT, origin, skyLight, blockLight);
   }
 
@@ -218,7 +220,14 @@ public class TileEntitySpanWireHangerRenderer
    * common case.
    */
   private void emitConductorCoils(BufferBuilder buffer, SpanWireCoilStyle style,
-      Vec3d cablePoint, Vec3d along, Vec3d origin, int skyLight, int blockLight) {
+      SpanWireMountStyle mountStyle, Vec3d cablePoint, Vec3d along, Vec3d origin, int skyLight,
+      int blockLight) {
+    final double coilRadius =
+        COIL_RADIUS * (mountStyle == SpanWireMountStyle.MAST ? COIL_MAST_SCALE : 1.0);
+    // The clearance past the saddle grows with the coil. Without that, a bigger loop simply moves
+    // back into the hardware it was offset sideways to avoid in the first place.
+    final double sideOffset =
+        SADDLE_HALF_LENGTH + coilRadius + SpanWireCableGeometry.CABLE_RADIUS;
     if (style == SpanWireCoilStyle.NONE) {
       return;
     }
@@ -229,24 +238,31 @@ public class TileEntitySpanWireHangerRenderer
     final int sides = style == SpanWireCoilStyle.BOTH_SIDES ? 2 : 1;
     for (int side = 0; side < sides; side++) {
       final double direction = side == 0 ? 1.0 : -1.0;
-      emitCoilBundle(buffer, cablePoint, along, up, direction, origin, skyLight, blockLight);
+      emitCoilBundle(buffer, cablePoint, along, up, direction, coilRadius, sideOffset, origin,
+          skyLight, blockLight);
     }
   }
 
-  /** One bundle of loops, hanging to one side of the mast. */
+  /**
+   * One bundle of loops, hanging to one side of the mast.
+   *
+   * <p>Takes its size and its clearance rather than reading constants, because both depend on the
+   * mount style: an extending mast carries visibly more coiled slack than a flush clamp.
+   */
   private void emitCoilBundle(BufferBuilder buffer, Vec3d cablePoint, Vec3d along, Vec3d up,
-      double direction, Vec3d origin, int skyLight, int blockLight) {
+      double direction, double coilRadius, double sideOffset, Vec3d origin, int skyLight,
+      int blockLight) {
     for (int loop = 0; loop < COIL_LOOPS; loop++) {
-      final double alongOffset = direction * (COIL_SIDE_OFFSET + loop * COIL_SPACING);
+      final double alongOffset = direction * (sideOffset + loop * COIL_SPACING);
       final Vec3d centre = cablePoint
           .add(along.scale(alongOffset))
-          .add(0.0, -(COIL_RADIUS + SpanWireCableGeometry.CABLE_RADIUS), 0.0);
+          .add(0.0, -(coilRadius + SpanWireCableGeometry.CABLE_RADIUS), 0.0);
 
       final List<Vec3d> ring = new ArrayList<>(COIL_SEGMENTS);
       for (int i = 0; i < COIL_SEGMENTS; i++) {
         final double angle = 2.0 * Math.PI * i / COIL_SEGMENTS;
-        final double c = Math.cos(angle) * COIL_RADIUS;
-        final double s = Math.sin(angle) * COIL_RADIUS;
+        final double c = Math.cos(angle) * coilRadius;
+        final double s = Math.sin(angle) * coilRadius;
         ring.add(centre.add(along.scale(c)).add(up.scale(s)));
       }
 

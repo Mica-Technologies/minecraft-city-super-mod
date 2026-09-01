@@ -79,27 +79,12 @@ public final class SpanWireHangOffset {
     if (mount == null) {
       return 0.0f;
     }
-    // An extending mast is the choice that the *mast* gives rather than the payload, so the
-    // payload stays exactly where its block puts it. That is the whole point of the setting:
-    // heads of different sizes on one span line up with each other instead of with the wire.
-    if (mount.getMountStyle() == SpanWireMountStyle.MAST) {
-      return 0.0f;
-    }
-    // A cluster bracket is rigid and hangs at a fixed height under its mast, so everything on it
-    // sits level with everything else on it -- which is exactly what a real cluster looks like,
-    // and is why the heads on one do not each trace the cable's curve. Letting them rise drove
-    // their tops up through the bracket that is supposed to be carrying them.
-    if (mount instanceof TileEntitySpanWireClusterMount) {
-      return 0.0f;
-    }
-    final double drop = mount.getCableDrop();
-    // A mount above its own cable is a placement error the tool reports; the payload stays put
-    // rather than being dragged somewhere that hides it.
-    if (drop <= 0.0) {
-      return 0.0f;
-    }
-    final double clamped = Math.min(drop, mount.getMountStyle().getMaximumDrop());
-    return (float) (clamped * MODEL_UNITS_PER_BLOCK);
+    // The mount owns this number -- an extending mast gives nothing because the payload is meant
+    // to stay on its own block, a cluster gives nothing because its bracket is rigid and holds
+    // everything on it level, and anything else gives its drop up to the style's limit. Asking it
+    // rather than repeating the rules here is what keeps this in step with the hardware, which
+    // adds the same rise to the payload geometry it is drawn against.
+    return (float) (mount.getPayloadRise() * MODEL_UNITS_PER_BLOCK);
   }
 
   /**

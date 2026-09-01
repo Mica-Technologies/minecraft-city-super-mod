@@ -152,6 +152,7 @@ public final class SpanWireManager {
     // player clicks two anchors, not per tick.
     SpanWireDefinition aligned = span.withAutoOffset(measureAutoOffset(world, span));
     if (aligned.isBoxSpan()) {
+      aligned = attachTetherAnchors(world, aligned);
       aligned = aligned.withTetherClearance(measureTetherClearance(world, aligned));
     }
     if (!aligned.equals(span)) {
@@ -183,7 +184,78 @@ public final class SpanWireManager {
    * <p>Falls back to {@link SpanWireDefinition#TETHER_MIN_CLEARANCE} when nothing on the span
    * answers, which is the same figure spans used before this was measured.
    */
+  /**
+   * How far below an anchor to look for the tether's own anchor on the same pole.
+   *
+   * <p>Generous enough for a tall signal assembly to hang between the two wires, and bounded so
+   * a lone anchor at the foot of a pole is not adopted by a span several blocks above it.
+   */
+  private static final int MAX_TETHER_ANCHOR_DROP = 8;
+
+  /**
+   * Finds the pair of lower anchors a box span's tether should dead-end on, if the builder has
+   * placed them.
+   *
+   * <p><b>Both ends or neither.</b> One end dead-ended and the other hanging at a derived drop
+   * would be a tether at two different heights depending on which end you looked at -- worse than
+   * either answer on its own -- so a single lower anchor is ignored until its partner exists.
+   */
+  private static SpanWireDefinition attachTetherAnchors(World world, SpanWireDefinition span) {
+    final BlockPos lowerA = findTetherAnchorBelow(world, span.getAnchorA());
+    final BlockPos lowerB = findTetherAnchorBelow(world, span.getAnchorB());
+    return span.withTetherAnchors(lowerA, lowerB);
+  }
+
+  /**
+   * Re-derives the tether ends of any span that was dead-ended on an anchor at this position.
+   *
+   * <p>The inverse of {@link #findTetherAnchorBelow}: a span that could be using this block is a
+   * span whose anchor is directly above it within the same reach, so one definition of range
+   * serves both directions and they cannot drift apart.
+   *
+   * <p>Losing one end drops <em>both</em>, by the both-or-neither rule, and the tether falls back
+   * to a derived drop rather than being left hanging off a block that is gone.
+   */
+  public static void onTetherAnchorRemoved(World world, BlockPos removed) {
+    if (world.isRemote) {
+      return;
+    }
+    for (int rise = 1; rise <= MAX_TETHER_ANCHOR_DROP; rise++) {
+      final BlockPos above = removed.up(rise);
+      if (!world.isBlockLoaded(above)) {
+        return;
+      }
+      final SpanWireDefinition span = getSpanAt(world, above);
+      if (span == null || !span.hasTetherAnchors()) {
+        continue;
+      }
+      if (removed.equals(span.getTetherAnchorFor(above))) {
+        apply(world, span.withTetherAnchors(null, null));
+      }
+    }
+  }
+
+  /** The nearest span wire anchor directly below this one, within reach, or null. */
+  @Nullable
+  private static BlockPos findTetherAnchorBelow(World world, BlockPos anchor) {
+    for (int drop = 1; drop <= MAX_TETHER_ANCHOR_DROP; drop++) {
+      final BlockPos candidate = anchor.down(drop);
+      if (!world.isBlockLoaded(candidate)) {
+        return null;
+      }
+      if (world.getBlockState(candidate).getBlock() instanceof BlockSpanWireAnchor) {
+        return candidate;
+      }
+    }
+    return null;
+  }
+
   private static double measureTetherClearance(World world, SpanWireDefinition span) {
+    if (span.hasTetherAnchors()) {
+      // The anchors decide the height; the derived clearance is the fallback for when they do not
+      // exist, and re-measuring it here would only bake a number nothing reads.
+      return span.getTetherClearance();
+    }
     final SpanWireCatenary cable = span.solve();
     double deepest = 0.0;
     boolean found = false;
@@ -402,6 +474,7 @@ public final class SpanWireManager {
     // Measured here as well as at link time, because a span strung without a tether never ran the
     // measurement and would otherwise get the fallback clearance the moment one is switched on.
     if (toggled.isBoxSpan()) {
+      toggled = attachTetherAnchors(world, toggled);
       toggled = toggled.withTetherClearance(measureTetherClearance(world, toggled));
     }
     apply(world, toggled);
