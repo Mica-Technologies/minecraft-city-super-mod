@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.trafficaccessories;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEWUD;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmNoSnowAccumulation;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalHead;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignalHead;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyTilt;
@@ -12,6 +13,8 @@ import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumBlockRenderType;
+import javax.annotation.Nonnull;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
@@ -26,7 +29,22 @@ import net.minecraft.world.World;
  * metadata storage is required on the backplate itself.
  */
 public abstract class AbstractBlockSignalBackplate extends AbstractBlockRotatableNSEWUD
-    implements ICsmNoSnowAccumulation {
+    implements ICsmNoSnowAccumulation, ICsmTileEntityProvider {
+
+  @Override
+  public Class<? extends TileEntity> getTileEntityClass() {
+    return TileEntitySignalBackplate.class;
+  }
+
+  @Override
+  public String getTileEntityName() {
+    return "tileentitysignalbackplate";
+  }
+
+  @Override
+  public TileEntity createNewTileEntity(net.minecraft.world.World worldIn, int meta) {
+    return new TileEntitySignalBackplate();
+  }
 
   /**
    * The combined tilt + horizontal-orientation property used for model selection. Forge v1
@@ -35,6 +53,7 @@ public abstract class AbstractBlockSignalBackplate extends AbstractBlockRotatabl
    */
   public static final PropertyEnum<BackplateModelVariant> MODEL_VARIANT =
       PropertyEnum.create("modelvariant", BackplateModelVariant.class);
+
 
   public AbstractBlockSignalBackplate(Material material, SoundType soundType,
       String harvestToolClass, int harvestLevel, float hardness, float resistance,
@@ -49,6 +68,28 @@ public abstract class AbstractBlockSignalBackplate extends AbstractBlockRotatabl
   @Override
   protected BlockStateContainer createBlockState() {
     return new BlockStateContainer(this, FACING, MODEL_VARIANT);
+  }
+
+  /**
+   * Nothing is drawn as chunk geometry; the plate is drawn entirely by
+   * {@code TileEntitySignalBackplateRenderer}.
+   *
+   * <p>The alternative was a derived "is it shifted" property that swapped in an empty model, so
+   * that an unmoved plate could stay in the cheap chunk batch. It does not survive contact with
+   * the actual blockstates: four families across two dialects, twenty of which enumerate all one
+   * hundred and twenty property combinations by hand and would have doubled, and a fitted subclass
+   * that builds its own state container the property would have broken. One render path for every
+   * plate is both less code and less to get wrong, and it is the path that can be shifted, tilted
+   * or rotated freely later.
+   *
+   * <p>The item model is unaffected -- that comes from the blockstate's {@code inventory} variant,
+   * which is not block rendering.
+   */
+  @Override
+  @Nonnull
+  @SuppressWarnings("deprecation")
+  public EnumBlockRenderType getRenderType(IBlockState state) {
+    return EnumBlockRenderType.INVISIBLE;
   }
 
   /**
@@ -84,6 +125,39 @@ public abstract class AbstractBlockSignalBackplate extends AbstractBlockRotatabl
     }
 
     return state.withProperty(MODEL_VARIANT, BackplateModelVariant.of(tilt, horizontal));
+  }
+
+  /**
+   * How far a span wire has lifted the head at this position, in model units, or zero.
+   *
+   * <p>Read from the head's own tile entity, which is the same cached value its renderer uses, so
+   * the plate stands down exactly when the head has actually moved rather than whenever it merely
+   * happens to hang near a span.
+   */
+  public static float spanRiseOf(IBlockAccess world, BlockPos signalPos) {
+    final TileEntity te = world.getTileEntity(signalPos);
+    return te instanceof TileEntityTrafficSignalHead
+        ? ((TileEntityTrafficSignalHead) te).getSpanWireYOffset()
+        : 0.0f;
+  }
+
+  /**
+   * The head a plate at this position belongs to, or null -- the same search
+   * {@link #getActualState} makes, exposed so the head's renderer can ask the question from the
+   * other end.
+   *
+   * <p>Behind first, then in front: a plate normally sits behind its head, but some configurations
+   * put it in front, and the original lookup has always allowed both.
+   */
+  public static BlockPos findSignalFor(IBlockAccess world, BlockPos platePos, EnumFacing facing) {
+    if (world.getTileEntity(platePos.offset(facing.getOpposite()))
+        instanceof TileEntityTrafficSignalHead) {
+      return platePos.offset(facing.getOpposite());
+    }
+    if (world.getTileEntity(platePos.offset(facing)) instanceof TileEntityTrafficSignalHead) {
+      return platePos.offset(facing);
+    }
+    return null;
   }
 
   /**
