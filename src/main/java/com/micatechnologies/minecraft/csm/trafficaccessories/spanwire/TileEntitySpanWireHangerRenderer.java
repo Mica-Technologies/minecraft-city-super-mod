@@ -151,8 +151,13 @@ public class TileEntitySpanWireHangerRenderer
       return;
     }
 
-    // The tether is already offset across the span, so its own curve is where the tie belongs.
-    final Vec3d tetherPoint = tether.pointAt(atT);
+    // Taken from the wire directly below the head, rather than at this mount's own parameter
+    // along the span. A mount's parameter is its block centre projected onto the chord, which on a
+    // diagonal is not where the head actually is -- so evaluating there put the tie's foot off to
+    // one side and left it leaning. Asking the wire for its point below the head keeps the tie
+    // plumb, and keeps it touching the wire even where the two do not quite agree.
+    final Vec3d foot = te.getHardwareFootPoint();
+    final Vec3d tetherPoint = tether.pointAt(tether.parameterAt(foot.x, foot.z));
 
     // Drawn to the payload's actual underside rather than a fixed height. The tether is strung
     // far tighter than the messenger, so heads hanging from the messenger's curve sit at
@@ -164,15 +169,8 @@ public class TileEntitySpanWireHangerRenderer
       return;
     }
 
-    // It ends under the payload, not straight up from the wire. A mount's parameter along the
-    // span is its block centre *projected* onto the chord, and on a diagonal the chord does not
-    // pass through block centres -- so the point on the tether sits off to one side of the head
-    // it is tying, and a vertical stub from it misses. The messenger's own mast has the same
-    // problem and answers it the same way, with a lean that takes up the difference. On a
-    // straight span the two coincide and this is plumb, exactly as before.
-    final Vec3d foot = te.getHardwareFootPoint();
     SpanWireCableGeometry.emitStraightTube(buffer, tetherPoint,
-        new Vec3d(foot.x, top, foot.z), origin, TIE_RADIUS,
+        new Vec3d(tetherPoint.x, top, tetherPoint.z), origin, TIE_RADIUS,
         MAST_RED, MAST_GREEN, MAST_BLUE, skyLight, blockLight);
   }
 
