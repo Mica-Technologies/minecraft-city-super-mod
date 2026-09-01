@@ -74,6 +74,12 @@ public class TileEntitySpanWireHanger extends AbstractTileEntitySpanWireAttachme
    */
   private transient double payloadTopY = Double.NaN;
 
+  /** How long a payload reading stays good for. One second; see {@link #refreshPayloadIfStale}. */
+  private static final long PAYLOAD_REFRESH_TICKS = 20L;
+
+  /** When the payload was last read, or {@link Long#MIN_VALUE} for never. */
+  private transient long payloadReadTick = Long.MIN_VALUE;
+
   @Override
   public void readNBT(NBTTagCompound compound) {
     super.readNBT(compound);
@@ -137,6 +143,19 @@ public class TileEntitySpanWireHanger extends AbstractTileEntitySpanWireAttachme
    * notification, which is what catches a sign being placed under an already-strung span.
    */
   public void refreshPayload() {
+    readPayload();
+  }
+
+  /**
+   * Reads what hangs below, without going through {@link #refreshPayload()}.
+   *
+   * <p>Private, and called directly by the stale-refresh path, so that a lazy refresh cannot reach
+   * a subclass override. A cluster's override rebuilds the payload list its renderer iterates, and
+   * a rebuild triggered from inside that iteration would be a concurrent modification. A cluster
+   * keeps its own refresh for its own list; this one only covers the fields declared here.
+   */
+  private void readPayload() {
+    payloadReadTick = world == null ? Long.MIN_VALUE : world.getTotalWorldTime();
     final boolean previousFeed = payloadTakesConductorFeed;
     final Vec3d previousOffset = payloadHardwareOffset;
 
@@ -184,9 +203,32 @@ public class TileEntitySpanWireHanger extends AbstractTileEntitySpanWireAttachme
    * giving it. See {@link #getPayloadRise()}.
    */
   public double getPayloadTetherTieY() {
+    refreshPayloadIfStale();
     return Double.isNaN(payloadTetherTieY)
         ? Double.NaN
         : payloadTetherTieY + appliedRise();
+  }
+
+  /**
+   * Re-reads the payload if the last reading has gone stale.
+   *
+   * <p>Exists because the notifications this mount does get are not enough to keep the reading
+   * true. A mount hears about its own neighbours, so it learns when the head directly beneath it
+   * is placed or broken -- but an add-on section going on the <em>bottom</em> of that head is two
+   * blocks down and silent, and it changes how far the assembly reaches. The alternative is
+   * re-stringing the span to force a refresh, which is a workaround rather than a fix.
+   *
+   * <p>Slow on purpose. One second is far below noticing and far above per-frame.
+   */
+  private void refreshPayloadIfStale() {
+    if (world == null) {
+      return;
+    }
+    final long now = world.getTotalWorldTime();
+    if (payloadReadTick != Long.MIN_VALUE && now - payloadReadTick < PAYLOAD_REFRESH_TICKS) {
+      return;
+    }
+    readPayload();
   }
 
   /**

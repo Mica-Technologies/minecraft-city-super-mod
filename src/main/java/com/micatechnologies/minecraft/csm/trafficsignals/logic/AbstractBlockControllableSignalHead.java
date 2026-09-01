@@ -6,6 +6,7 @@ import java.util.Map;
 import com.micatechnologies.minecraft.csm.codeutils.DirectionSixteen;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.ISpanWireHangable;
+import com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.SpanWireManager;
 import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalHead;
 import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalHeadRenderer;
 import javax.annotation.Nullable;
@@ -84,7 +85,78 @@ public abstract class AbstractBlockControllableSignalHead extends AbstractBlockC
 
   @Override
   public double getSpanTetherTieY(IBlockAccess world, BlockPos pos, IBlockState state) {
-    return pos.getY() + unrisenBoundingBox(world, pos).minY;
+    return assemblyBottomY(world, pos);
+  }
+
+  /**
+   * How far below a head to keep looking for further add-on sections, in blocks.
+   *
+   * <p>Derived from how far a payload will look <em>up</em> for its mount, and deliberately not
+   * chosen independently. A body further from the mount than that search reaches never finds it,
+   * never takes the span's rise, and so is not hanging with the rest of the assembly -- measuring
+   * it as though it were would drop the tether to clear something that is not actually there with
+   * the head. The payload itself sits one block under the mount, hence the one.
+   *
+   * <p>Two blocks is also exactly what the real arrangements need: a single-section add-on bolted
+   * straight under its main, or a doghouse add-on one block down across its gap.
+   */
+  private static final int MAX_ADDON_DEPTH =
+      com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.SpanWireHangOffset
+          .MAX_SEARCH_UP - 1;
+
+  /**
+   * The underside of this head <b>and everything stacked under it</b>, in world coordinates.
+   *
+   * <p>This is what a box span's tether has to clear, and the reason it cannot simply be this
+   * block's own bounding box: a signal assembly is frequently several blocks tall. A three-section
+   * head with a single-section add-on beneath it is one head to a driver and two blocks to the
+   * game, and a tether measured against only the block the mount happens to sit above is strung
+   * straight through the add-on -- which is exactly what it did.
+   *
+   * <p>Measured against each body's own un-risen box for the same ordering reason the single-block
+   * form has, and the whole stack takes one rise: every block in it finds the same mount through
+   * {@code SpanWireHangOffset}, whose upward search is deliberately deep enough to reach past an
+   * add-on and a gap.
+   */
+  private double assemblyBottomY(IBlockAccess world, BlockPos pos) {
+    double bottom = pos.getY() + unrisenBoundingBox(world, pos).minY;
+    BlockPos scan = pos;
+    while (true) {
+      final BlockPos next = addOnBelow(world, scan);
+      if (next == null || pos.getY() - next.getY() > MAX_ADDON_DEPTH) {
+        break;
+      }
+      final AbstractBlockControllableSignalHead head =
+          (AbstractBlockControllableSignalHead) world.getBlockState(next).getBlock();
+      bottom = Math.min(bottom, next.getY() + head.unrisenBoundingBox(world, next).minY);
+      scan = next;
+    }
+    return bottom;
+  }
+
+  /**
+   * The next signal body down from this one, or null when the assembly ends here.
+   *
+   * <p>Directly below, or two below through air: a single-section add-on sits flush against its
+   * main while a doghouse add-on leaves a gap, and both are one assembly. Deliberately the same
+   * rule {@code TileEntityTrafficSignalHead.hasPairedSignalAlong} uses to decide which mount
+   * bracket to suppress, because it is answering the same question -- whether these two blocks
+   * are one piece of hardware.
+   */
+  @Nullable
+  private static BlockPos addOnBelow(IBlockAccess world, BlockPos pos) {
+    final BlockPos adjacent = pos.down();
+    final IBlockState adjacentState = world.getBlockState(adjacent);
+    if (adjacentState.getBlock() instanceof AbstractBlockControllableSignalHead) {
+      return adjacent;
+    }
+    if (!adjacentState.getBlock().isAir(adjacentState, world, adjacent)) {
+      return null;
+    }
+    final BlockPos gapped = pos.down(2);
+    return world.getBlockState(gapped).getBlock() instanceof AbstractBlockControllableSignalHead
+        ? gapped
+        : null;
   }
 
   /**
@@ -596,6 +668,13 @@ public abstract class AbstractBlockControllableSignalHead extends AbstractBlockC
     net.minecraft.tileentity.TileEntity tileEntity = worldIn.getTileEntity(pos);
     if (tileEntity instanceof TileEntityTrafficSignalHead) {
       ((TileEntityTrafficSignalHead) tileEntity).invalidateMountSuppression();
+    }
+    // A section added or removed above or below changes how far this assembly reaches down, which
+    // is what a box span's tether was strung to clear. Only for a change in this column: a head
+    // beside this one cannot make this one taller, and the mount search behind this is far too
+    // expensive to run on every neighbour notification a signal receives.
+    if (fromPos.getX() == pos.getX() && fromPos.getZ() == pos.getZ()) {
+      SpanWireManager.onPayloadDepthChanged(worldIn, pos);
     }
     super.neighborChanged(state, worldIn, pos, blockIn, fromPos);
   }

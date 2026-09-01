@@ -125,6 +125,19 @@ public class BlockSpanWireAnchor extends AbstractBlockRotatableNSEW
    * dead end on nothing, so losing an anchor takes the span with it -- unlike losing a hanger,
    * which the cable simply closes over.
    */
+  /**
+   * Tells a box span above that its tether just gained a place to dead-end.
+   *
+   * <p>Without this an anchor placed under a finished span sat there doing nothing until the span
+   * was re-strung, while breaking the same block took effect at once -- the two halves of one
+   * behaviour, only one of which was wired up.
+   */
+  @Override
+  public void onBlockAdded(World worldIn, BlockPos pos, IBlockState state) {
+    super.onBlockAdded(worldIn, pos, state);
+    SpanWireManager.onTetherAnchorPlaced(worldIn, pos);
+  }
+
   @Override
   public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
     SpanWireManager.onAttachmentRemoved(worldIn, pos);
