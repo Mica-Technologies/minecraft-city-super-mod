@@ -1,0 +1,32 @@
+/* Amber accents against near-black, so the site reads as civic infrastructure rather than as
+   developer tooling. The palette in mkdocs.yml carries most of this; the rest is here. */
+
+:root {
+  --md-primary-fg-color: #1b1b1b;
+  --md-accent-fg-color: #f5a623;
+}
+
+/* Block reference tables are long and dense. A tighter row and a monospace id column make them
+   scannable instead of a wall. */
+.md-typeset table:not([class]) td:nth-child(2) {
+  font-family: var(--md-code-font-family);
+  font-size: 0.72rem;
+  white-space: nowrap;
+}
+
+.md-typeset table:not([class]) th {
+  position: sticky;
+  top: 0;
+  background-color: var(--md-default-bg-color);
+  z-index: 1;
+}
+
+/* Landing page cards */
+.md-typeset .grid.cards > ul > li {
+  border-radius: 0.4rem;
+  transition: border-color 125ms, box-shadow 125ms;
+}
+.md-typeset .grid.cards > ul > li:hover {
+  border-color: var(--md-accent-fg-color);
+  box-shadow: 0 0 0.4rem rgba(245, 166, 35, 0.25);
+}
