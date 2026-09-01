@@ -194,6 +194,11 @@ def write_page(tab_id, entries, names, classes, stats):
         "    Every block below is registered in the mod and has a blockstate on disk. This page is",
         "    generated from the source, so it cannot fall behind what the mod actually ships.",
         "",
+        # Wrapped so the site can style *these* tables -- sticky header, monospace id column,
+        # nowrap -- without that styling leaking onto every other table in the guidebook. It did
+        # leak once, and turned a prose table on the landing page into clipped monospace.
+        '<div class="block-table" markdown>',
+        "",
         "| Block | Registry ID | Hardness | Resistance | Tool | Harvest |",
         "|---|---|---|---|---|---|",
     ]
@@ -211,6 +216,8 @@ def write_page(tab_id, entries, names, classes, stats):
             resolved.get("harvest", ""),
         ))
 
+    lines.append("")
+    lines.append("</div>")
     lines.append("")
     with io.open(os.path.join(OUT_DIR, slug + ".md"), "w", encoding="utf-8",
                  newline="\n") as handle:

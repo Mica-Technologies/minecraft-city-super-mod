@@ -123,14 +123,20 @@
 
    Fourteen pages of long tables is most of this site, and they are the pages a
    reader actually works in. Sticky headers so the columns stay named while
-   scrolling six hundred road signs, and a monospace id column so a registry
-   name can be read character by character before it is typed into a command. */
+   scrolling six hundred road signs, and a nowrap id column so a registry name
+   is never broken across two lines before it is typed into a command.
 
-.md-typeset table:not([class]) {
+   Scoped to .block-table, which the generator wraps those tables in. It used to
+   apply to every table on the site, which is fine until a table is prose: the
+   landing page's own table had its second column set in monospace and forced
+   onto one line, running off the side of the card. Styling meant for one kind
+   of table has to say which kind. */
+
+.md-typeset .block-table table:not([class]) {
   font-size: 0.72rem;
 }
 
-.md-typeset table:not([class]) th {
+.md-typeset .block-table table:not([class]) th {
   position: sticky;
   top: 0;
   z-index: 1;
@@ -138,13 +144,12 @@
   font-weight: 500;
 }
 
-.md-typeset table:not([class]) td:nth-child(2) {
-  font-family: var(--md-code-font-family);
+.md-typeset .block-table table:not([class]) td:nth-child(2) {
   white-space: nowrap;
   color: var(--md-default-fg-color--light);
 }
 
-.md-typeset table:not([class]) tr:hover {
+.md-typeset .block-table table:not([class]) tr:hover {
   background-color: var(--md-accent-fg-color--transparent);
 }
 

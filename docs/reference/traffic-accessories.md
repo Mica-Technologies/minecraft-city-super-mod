@@ -7,6 +7,8 @@ Poles, mounts, mast arms, span wire hardware, backplates and cameras.
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
 
+<div class="block-table" markdown>
+
 | Block | Registry ID | Hardness | Resistance | Tool | Harvest |
 |---|---|---|---|---|---|
 | Black Angled Thin Traffic Pole | `csm:trafficpolehorizontalangleblack` | 2 | 10 | pickaxe | 1 |
@@ -267,3 +269,5 @@ Poles, mounts, mast arms, span wire hardware, backplates and cameras.
 | Wire Mount (Horizontal Signal) | `csm:tlitehorzwiremount` |  | 10 | pickaxe | 1 |
 | Wire Mount (Signal Cluster) | `csm:spanwireclustermount` |  | 10 | pickaxe | 1 |
 | Wire Mount (Vertical Signal) | `csm:tlitevertwiremount` |  | 10 | pickaxe | 1 |
+
+</div>
