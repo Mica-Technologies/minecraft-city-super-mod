@@ -188,6 +188,57 @@ The **disconnect box deliberately has no such variant**: its model *is* the obje
 wire, so it must keep drawing when linked. That distinction lives in the blockstate JSON, not in
 code — a new mount block opts in or out by what its own blockstate says.
 
+## A cluster hangs from the middle of its bracket
+
+The mast comes down at the **middle of the bar**, not on the mount's own block.
+
+That is not where the block is, and it cannot be. Coverage for an even-width cluster is this column
+and the next one along -- `-(clusterWidth - 1) / 2` truncates to zero in Java, and there is no half
+column to sit on anyway -- so a two-head cluster's bar runs from the block forward and its middle is
+half a block along. Drawing the mast on the block put it at one end, which reads as a bar bolted to
+the side of a mount rather than as something hanging from a mast.
+
+The bar cannot move instead: its drops have to land on the heads that are actually there. So
+`getHardwareFootPoint` is overridden to stand the mast on `getBracketCentreOffset`, and it stops at
+the bar rather than reaching down to a payload the way a single mount's does -- from the bar it is
+the drops that carry the heads.
+
+**Which columns the bar spans is one answer, `getBracketColumns`**, occupied where anything hangs
+and covered where nothing does. Both the bar and the mast standing on it ask for it, so the mast
+cannot end up centred on a different bar than the one drawn.
+
+### The clamp grips above the mast
+
+Once the mast moved, the arm at the top reached back along the wire to wherever the clamp still was.
+Fixing that turned out to matter for **every** mount, not just clusters, and it lives in the base
+renderer.
+
+The offset between a block and its payload has two parts, and only one of them is real hardware:
+
+- **Across** the cable is genuine. The messenger runs down the span's centre line and a housing sits
+  to one side of it, so something has to reach across. That arm stays.
+- **Along** the cable is not. A head is set back along the way it faces, which puts its housing
+  further down the span, and clamping at the block's own parameter left a stub of pipe lying on the
+  messenger reaching out to meet it.
+
+`cable.parameterAt(foot.x, foot.z)` projects the mast foot onto the span, which drops the
+along-cable part and keeps the across-cable part. A mount that lines up under the wire now clamps
+straight above itself; one that does not still gets its arm.
+
+### The lower tie bar
+
+A cluster draws a thin bar joining the bottoms of its heads, which real ones have and which is what
+stops two heads on a common bracket swinging independently.
+
+It is drawn at the height the payload already reports for a box span's tether, because both are
+asking the same question -- where is the underside of the housing. Nothing is drawn for a single
+head, or where no head reports a height: a guessed one would put a bar through the lenses. It runs
+between the outermost heads rather than past them; the top bracket overhangs because it has to look
+like it is carrying them, but this one is a tie between housings and stops at the ones it ties.
+
+That overhang is `0.09`. It was `0.4` -- most of a half block past the last head at each end, which
+read as a bar sized for heads that were not there.
+
 ## Payloads on a cluster bracket do not rise
 
 A cluster bracket is rigid and hangs at a fixed height under its mast, so everything on it sits
