@@ -34,9 +34,20 @@ catenary, so a head near midspan hangs lower than one near an anchor, and the ha
 mast down to the housing, a clamp on the messenger, a saddle, and the coiled slack conductor with a
 pigtail running back into the mast.
 
-Backplates follow their head, so a plate stays framed around a signal that has risen.
+Backplates follow their head, so a plate stays framed around a signal that has risen, and their
+retroreflective bands pick up light after dark the way the real tape does.
+
+<figure markdown="span">
+  ![Span wire signals at night, the yellow retroreflective bands around their backplates glowing](../assets/img/span-wire-retroreflective-night.png){ loading=lazy }
+  <figcaption>The same hardware after dark. The bands are drawn as retroreflective rather than lit, so they read without turning the plate into a lamp.</figcaption>
+</figure>
 
 ## Diagonals
+
+<figure markdown="span">
+  ![A span wire strung diagonally between two poles, with signal heads on it facing different ways](../assets/img/span-wire-diagonal.png){ loading=lazy }
+  <figcaption>A 45° span. The heads on it face independently — each one is aimed at its own approach, not at the cable.</figcaption>
+</figure>
 
 Spans do not have to run along an axis. A cable strung across an intersection at 45° works, and the
 hardware follows it: the clamp sits square to a skewed messenger, cluster brackets run along the
@@ -44,6 +55,11 @@ cable rather than along a block axis, and heads on it can face **any direction i
 which is the whole point of a diagonal crossing an intersection with approaches on several sides.
 
 ## Clusters
+
+<figure markdown="span">
+  ![A signal cluster mount carrying two backplated heads that face opposite directions](../assets/img/span-wire-cluster.png){ loading=lazy }
+  <figcaption>A cluster carrying two heads that face opposite ways, on one bracket under one mast, tied at the bottom.</figcaption>
+</figure>
 
 A Signal Cluster Mount carries two to four heads from one point, on a horizontal bracket under a
 single mast.
@@ -61,6 +77,11 @@ bracket trims itself to the columns that actually hold something — an empty cl
 into thin air.
 
 ## The box span
+
+<figure markdown="span">
+  ![A diagonal box span: a messenger cable above and a tether cable below the signals](../assets/img/span-wire-box-span.png){ loading=lazy }
+  <figcaption>A box span on a diagonal run — messenger above carrying the weight, tether below holding the heads square.</figcaption>
+</figure>
 
 A second, lower tether cable running parallel to the messenger, tying the bottoms of the heads
 together. Real installations use one to stop heads twisting in wind.
