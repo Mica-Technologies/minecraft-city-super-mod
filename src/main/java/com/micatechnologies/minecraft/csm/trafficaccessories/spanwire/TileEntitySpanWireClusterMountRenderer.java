@@ -1,5 +1,7 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories.spanwire;
 
+import java.util.ArrayList;
+import java.util.List;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -32,6 +34,9 @@ public class TileEntitySpanWireClusterMountRenderer
   /** How far the drops reach below the bracket, ending just inside the head tops they bolt to. */
   private static final double DROP_LENGTH = 0.18;
 
+  /** The longest a drop will stretch to reach a head that sits lower than the usual stub. */
+  private static final double MAX_DROP_LENGTH = 1.5;
+
   /** How far past the outermost column the bracket runs, so it reads as carrying it. */
   private static final double BRACKET_OVERHANG = 0.4;
 
@@ -59,25 +64,66 @@ public class TileEntitySpanWireClusterMountRenderer
     final Vec3d bracketCentre = attach.subtract(0.0, BRACKET_BELOW, 0.0);
     final Vec3d along = te.getBracketDirection();
 
+    final List<TileEntitySpanWireClusterMount.ClusterPayload> payloads = te.getPayloads();
+    if (payloads.isEmpty()) {
+      // Nothing hanging: draw the bare bracket across the columns it would cover, so an empty
+      // cluster still reads as a cluster waiting for heads rather than as a broken mount.
+      emitBracket(buffer, te, bracketCentre, along, te.getCoveredColumns(), origin, skyLight,
+          blockLight);
+      return;
+    }
+
+    // Trimmed to what is actually there. A four-wide cluster carrying two heads should not reach
+    // two empty columns further along, holding nothing.
+    final List<BlockPos> occupied = new ArrayList<>(payloads.size());
+    for (TileEntitySpanWireClusterMount.ClusterPayload payload : payloads) {
+      occupied.add(payload.getColumn());
+    }
+    emitBracket(buffer, te, bracketCentre, along, occupied, origin, skyLight, blockLight);
+
+    for (TileEntitySpanWireClusterMount.ClusterPayload payload : payloads) {
+      // Each drop leaves the bracket above its own column and lands on its own head. The heads on
+      // a cluster need not face the same way -- that is most of the point of one -- and a head's
+      // body is set back along the way it faces, so every drop ends somewhere different.
+      final Vec3d top = bracketCentre
+          .add(along.scale(offsetAlong(te, payload.getColumn(), along)));
+      final Vec3d foot = new Vec3d(
+          payload.getColumn().getX() + 0.5 + payload.getHardwareOffset().x,
+          dropFootY(top.y, payload.getTopY()),
+          payload.getColumn().getZ() + 0.5 + payload.getHardwareOffset().z);
+      SpanWireCableGeometry.emitStraightTube(buffer, top, foot, origin, DROP_RADIUS,
+          STEEL_RED, STEEL_GREEN, STEEL_BLUE, skyLight, blockLight);
+    }
+  }
+
+  /**
+   * How far down a drop reaches: onto the head's roof where it reported one, or a fixed stub.
+   *
+   * <p>Bounded either way, so a payload answering with something absurd cannot stretch a drop to
+   * the ground.
+   */
+  private static double dropFootY(double bracketY, double payloadTopY) {
+    if (Double.isNaN(payloadTopY)) {
+      return bracketY - DROP_LENGTH;
+    }
+    return Math.max(bracketY - MAX_DROP_LENGTH, Math.min(bracketY - DROP_LENGTH, payloadTopY));
+  }
+
+  /** The bar itself, spanning the given columns with a little overhang at each end. */
+  private void emitBracket(BufferBuilder buffer, TileEntitySpanWireClusterMount te,
+      Vec3d bracketCentre, Vec3d along, List<BlockPos> columns, Vec3d origin, int skyLight,
+      int blockLight) {
     double lowest = 0.0;
     double highest = 0.0;
-    for (BlockPos column : te.getCoveredColumns()) {
+    for (BlockPos column : columns) {
       final double offset = offsetAlong(te, column, along);
       lowest = Math.min(lowest, offset);
       highest = Math.max(highest, offset);
     }
-
     SpanWireCableGeometry.emitStraightTube(buffer,
         bracketCentre.add(along.scale(lowest - BRACKET_OVERHANG)),
         bracketCentre.add(along.scale(highest + BRACKET_OVERHANG)),
         origin, BRACKET_RADIUS, STEEL_RED, STEEL_GREEN, STEEL_BLUE, skyLight, blockLight);
-
-    for (BlockPos column : te.getCoveredColumns()) {
-      final Vec3d top = bracketCentre.add(along.scale(offsetAlong(te, column, along)));
-      SpanWireCableGeometry.emitStraightTube(buffer, top,
-          top.subtract(0.0, DROP_LENGTH, 0.0), origin, DROP_RADIUS,
-          STEEL_RED, STEEL_GREEN, STEEL_BLUE, skyLight, blockLight);
-    }
   }
 
   /** How far along the bracket a covered column sits, in blocks from the mount. */

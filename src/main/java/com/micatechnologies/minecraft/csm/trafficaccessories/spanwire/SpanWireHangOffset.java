@@ -35,15 +35,43 @@ public final class SpanWireHangOffset {
   private static final double MODEL_UNITS_PER_BLOCK = 16.0;
 
   /**
-   * Columns a cluster bracket could reach this block from, as x/z offsets. A cluster is at most
-   * four wide, so its mast is never more than two columns away along the bracket. Axis offsets
-   * only: a bracket runs along its span, and a span diagonal enough to put a head on a true
-   * diagonal from its mast would have the bracket crossing block corners anyway.
+   * How far along its bracket a cluster's mast can be from a head it carries. A cluster is at most
+   * four wide and centred on its mast, so never more than two columns.
    */
-  private static final int[][] CLUSTER_SEARCH_OFFSETS = {
-      {1, 0}, {-1, 0}, {0, 1}, {0, -1},
-      {2, 0}, {-2, 0}, {0, 2}, {0, -2},
-  };
+  private static final int CLUSTER_SEARCH_RADIUS = 2;
+
+  /**
+   * Every column a cluster bracket could reach this block from, as x/z offsets.
+   *
+   * <p>The <b>whole</b> ring, diagonals included. It used to be axis offsets only, on the reasoning
+   * that a bracket runs along its span and a span diagonal enough to put a head on a true diagonal
+   * from its mast would be crossing block corners anyway. That reasoning was wrong in the one case
+   * it mattered: a span running at forty-five degrees steps one across and one along per column,
+   * so <em>every</em> head on a diagonal cluster sits on a true diagonal from its mast, and none
+   * of them could find it.
+   *
+   * <p>Generated rather than written out, so the set cannot be short by one entry. Widening it is
+   * safe: a cluster is asked whether it actually covers the column before it is accepted, so the
+   * search only decides where to look, never what is true.
+   */
+  private static final int[][] CLUSTER_SEARCH_OFFSETS = buildSearchRing();
+
+  private static int[][] buildSearchRing() {
+    final int span = CLUSTER_SEARCH_RADIUS * 2 + 1;
+    final int[][] ring = new int[span * span - 1][2];
+    int i = 0;
+    for (int dx = -CLUSTER_SEARCH_RADIUS; dx <= CLUSTER_SEARCH_RADIUS; dx++) {
+      for (int dz = -CLUSTER_SEARCH_RADIUS; dz <= CLUSTER_SEARCH_RADIUS; dz++) {
+        if (dx == 0 && dz == 0) {
+          continue;
+        }
+        ring[i][0] = dx;
+        ring[i][1] = dz;
+        i++;
+      }
+    }
+    return ring;
+  }
 
   private SpanWireHangOffset() {
   }

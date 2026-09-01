@@ -1,7 +1,9 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories.spanwire;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -35,6 +37,44 @@ public class TileEntitySpanWireClusterMount extends TileEntitySpanWireHanger {
    */
   private final List<BlockPos> coveredColumns = new ArrayList<>();
 
+  /**
+   * What is actually hanging under each covered column, resolved once rather than per frame.
+   *
+   * <p>A cluster's whole point is that the heads on it need not face the same way, and a head's
+   * body is set back along the way it faces -- so every drop off this bracket lands somewhere
+   * different, and each one has to ask its own head where. Empty columns are simply absent, which
+   * is what stops the bracket growing arms into thin air.
+   */
+  private final List<ClusterPayload> payloads = new ArrayList<>();
+
+  /** One head under the bracket: which column, where its hardware wants to be met, and its roof. */
+  public static final class ClusterPayload {
+
+    private final BlockPos column;
+    private final Vec3d hardwareOffset;
+    private final double topY;
+
+    ClusterPayload(BlockPos column, Vec3d hardwareOffset, double topY) {
+      this.column = column;
+      this.hardwareOffset = hardwareOffset;
+      this.topY = topY;
+    }
+
+    public BlockPos getColumn() {
+      return column;
+    }
+
+    /** Horizontal shift from the column's centre line to where this head should be met. */
+    public Vec3d getHardwareOffset() {
+      return hardwareOffset;
+    }
+
+    /** World height of this head's roof, or {@code NaN} if it did not report one. */
+    public double getTopY() {
+      return topY;
+    }
+  }
+
   @Override
   public void readNBT(NBTTagCompound compound) {
     super.readNBT(compound);
@@ -58,8 +98,54 @@ public class TileEntitySpanWireClusterMount extends TileEntitySpanWireHanger {
   }
 
   @Override
+  public void refreshPayload() {
+    super.refreshPayload();
+    refreshClusterPayloads();
+  }
+
+  /** The heads hanging under this bracket, in order along it. Never null, often empty. */
+  public List<ClusterPayload> getPayloads() {
+    return Collections.unmodifiableList(payloads);
+  }
+
+  /**
+   * Re-reads what hangs under each covered column.
+   *
+   * <p>Run whenever coverage or the span changes, and from the mount's own payload refresh, which
+   * is what catches a head being placed under an already-linked cluster.
+   */
+  private void refreshClusterPayloads() {
+    payloads.clear();
+    if (world == null) {
+      return;
+    }
+    for (BlockPos column : coveredColumns) {
+      final BlockPos payloadPos = new BlockPos(column.getX(), pos.getY() - 1, column.getZ());
+      if (!world.isBlockLoaded(payloadPos)) {
+        continue;
+      }
+      final IBlockState state = world.getBlockState(payloadPos);
+      if (!(state.getBlock() instanceof ISpanWireHangable)) {
+        continue;
+      }
+      final ISpanWireHangable payload = (ISpanWireHangable) state.getBlock();
+      payloads.add(new ClusterPayload(column,
+          payload.getSpanHardwareOffset(world, payloadPos, state),
+          payload.getSpanHangerTopY(world, payloadPos, state)));
+    }
+  }
+
+  @Override
   public long getHardwareStateKey() {
-    return super.getHardwareStateKey() * 31L + clusterWidth;
+    long key = super.getHardwareStateKey() * 31L + clusterWidth;
+    // Folded in so the bracket is rebuilt when a head is added, removed or turned -- each of those
+    // moves a drop, and none of them changes anything else the key already covers.
+    for (ClusterPayload payload : payloads) {
+      key = key * 31L + payload.getColumn().hashCode();
+      key = key * 31L + Math.round(payload.getHardwareOffset().x * 64.0);
+      key = key * 31L + Math.round(payload.getHardwareOffset().z * 64.0);
+    }
+    return key;
   }
 
   public int getClusterWidth() {
@@ -133,6 +219,7 @@ public class TileEntitySpanWireClusterMount extends TileEntitySpanWireHanger {
         coveredColumns.add(column);
       }
     }
+    refreshClusterPayloads();
   }
 
   private static int clampWidth(int width) {
