@@ -9,11 +9,13 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BlockRendererDispatcher;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -55,6 +57,27 @@ public class TileEntitySignalBackplateRenderer
 
   private static final CsmDisplayListCache DISPLAY_LISTS =
       new CsmDisplayListCache("signal_backplate");
+
+  /**
+   * How bright the band goes at its very best: dead ahead, on the darkest night.
+   *
+   * <p>Sheeting throws a lot of light back but it is not a lamp, and this is added on top of a
+   * plate that is already lit. Past about a third it stops reading as paint catching headlights and
+   * starts reading as a light source, which is the wrong thing entirely.
+   */
+  private static final float MAX_GLOW = 0.34f;
+
+  /**
+   * How sharply the effect falls away as you move off the plate's axis.
+   *
+   * <p>Retroreflective sheeting returns light along the line it arrived on, so it is bright to a
+   * driver whose headlights are beside their eyes and almost invisible to anyone off to the side.
+   * A fourth power is a narrow enough lobe to read as that rather than as a general sheen.
+   */
+  private static final double GLOW_FOCUS = 4.0;
+
+  /** Below this the pass is skipped outright, which in daylight is always. */
+  private static final float GLOW_CUTOFF = 0.012f;
 
   /** Releases the cached geometry for a position. Called from the tile entity's lifecycle. */
   public static void cleanupDisplayList(BlockPos pos) {
@@ -137,8 +160,111 @@ public class TileEntitySignalBackplateRenderer
       GL11.glCallList(displayList);
     }
 
+    emitRetroreflection(te, pos, renderState, rise, partialTicks, facing);
+
     GlStateManager.enableLighting();
     GlStateManager.popMatrix();
+  }
+
+  /**
+   * The band catching headlights.
+   *
+   * <p>Backplates carry a retroreflective border, and until now the only thing standing in for it
+   * was an emissive texture that needs a shader pack to mean anything. This draws it directly: the
+   * plate's own geometry again, added on top of itself, scaled by how squarely it is being looked
+   * at and how dark it is.
+   *
+   * <p><b>Why adding the whole plate is right, and not a cheat.</b> Sheeting returns a fraction of
+   * what lands on it, so how brightly a patch comes back is its own colour -- which is exactly what
+   * addition does. The black body adds nothing because black is nothing, and the band brightens
+   * because it is bright. Nothing has to know which quads are the band, so this works on all
+   * nineteen models and every colour pairing without a list of which is which.
+   *
+   * <p><b>Cost.</b> Nothing at all in daylight or off-axis, which is nearly always: the factor
+   * falls under the cutoff and the method returns before touching GL. When it does draw it is one
+   * {@code glCallList} against a list that compiles once, because the brightness rides on
+   * {@code glColor} rather than on the vertices.
+   */
+  private void emitRetroreflection(TileEntitySignalBackplate te, BlockPos pos,
+      IBlockState renderState, float rise, float partialTicks, EnumFacing facing) {
+    final float strength = glowStrength(te, pos, facing, partialTicks);
+    if (strength < GLOW_CUTOFF) {
+      return;
+    }
+
+    GlStateManager.enableBlend();
+    // Additive: what comes back is added to what is already lit, never subtracted from it.
+    GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
+    GlStateManager.depthMask(false);
+
+    // The lightmap unit has to come off, and it is not optional. This pass draws in a format with
+    // no lightmap coordinate, so the unit would sample whatever coordinate happened to be current
+    // -- at night, near black -- and multiply the effect away to nothing. Switching the unit off
+    // rather than forcing it to full bright leaves the shared lightmap state alone, which the
+    // signal head renderer sets per vertex and relies on.
+    OpenGlHelper.setActiveTexture(OpenGlHelper.lightmapTexUnit);
+    GlStateManager.disableTexture2D();
+    OpenGlHelper.setActiveTexture(OpenGlHelper.defaultTexUnit);
+
+    bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+
+    GlStateManager.pushMatrix();
+    GlStateManager.translate(0.0, rise / MODEL_UNITS_PER_BLOCK, 0.0);
+    final BlockRendererDispatcher dispatcher =
+        Minecraft.getMinecraft().getBlockRendererDispatcher();
+    // Vanilla's own brightness path, which puts the strength into the vertex colours.
+    //
+    // The obvious optimisation -- compile the geometry once into a display list and vary the
+    // strength with glColor -- was tried and does not work. A vertex colour attribute overrides
+    // glColor, so a format carrying one ignores the strength; a format without one drew nothing
+    // here at all. This costs a buffer per quad, which is why the pass is gated as hard as it is:
+    // in daylight, or off the plate's axis, it returns before reaching any of this.
+    dispatcher.getBlockModelRenderer().renderModelBrightnessColor(
+        renderState, dispatcher.getModelForState(renderState), strength, 1.0f, 1.0f, 1.0f);
+    GlStateManager.popMatrix();
+
+    GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
+
+    OpenGlHelper.setActiveTexture(OpenGlHelper.lightmapTexUnit);
+    GlStateManager.enableTexture2D();
+    OpenGlHelper.setActiveTexture(OpenGlHelper.defaultTexUnit);
+
+    GlStateManager.depthMask(true);
+    GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+    GlStateManager.disableBlend();
+  }
+
+  /**
+   * How hard the band is throwing light back, from zero to {@link #MAX_GLOW}.
+   *
+   * <p>Two terms. How squarely the plate is being looked at, because sheeting returns light along
+   * the line it came in on. And how dark it is, because a retroreflector in daylight is just a
+   * yellow stripe -- the effect people picture is the one they have seen at night.
+   */
+  private float glowStrength(TileEntitySignalBackplate te, BlockPos pos, EnumFacing facing,
+      float partialTicks) {
+    if (te.getWorld() == null) {
+      return 0.0f;
+    }
+    final double toCameraX = TileEntityRendererDispatcher.staticPlayerX - (pos.getX() + 0.5);
+    final double toCameraY = TileEntityRendererDispatcher.staticPlayerY - (pos.getY() + 0.5);
+    final double toCameraZ = TileEntityRendererDispatcher.staticPlayerZ - (pos.getZ() + 0.5);
+    final double distance =
+        Math.sqrt(toCameraX * toCameraX + toCameraY * toCameraY + toCameraZ * toCameraZ);
+    if (distance < 1.0e-4) {
+      return 0.0f;
+    }
+
+    // The band is on the face the plate points at, so anyone behind it sees nothing come back.
+    final double alignment = (toCameraX * facing.getXOffset()
+        + toCameraY * facing.getYOffset()
+        + toCameraZ * facing.getZOffset()) / distance;
+    if (alignment <= 0.0) {
+      return 0.0f;
+    }
+
+    final float darkness = 1.0f - te.getWorld().getSunBrightness(partialTicks);
+    return (float) (Math.pow(alignment, GLOW_FOCUS) * darkness * MAX_GLOW);
   }
 
   /**

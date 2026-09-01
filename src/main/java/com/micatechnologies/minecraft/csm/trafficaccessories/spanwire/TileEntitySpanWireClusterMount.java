@@ -45,6 +45,24 @@ public class TileEntitySpanWireClusterMount extends TileEntitySpanWireHanger {
   private int clusterWidth = MIN_WIDTH;
 
   /**
+   * World time the payload list was last re-read, and how long it is trusted for.
+   *
+   * <p>A mount hears about a block placed <em>next to it</em>, which is how a sign or a head under
+   * an ordinary mount gets picked up with no polling. A cluster's other covered columns are a block
+   * or more away along the bracket, so placing a head under one of those notifies this block of
+   * nothing at all and the cluster carries on as though the column were empty. The only way to make
+   * it notice was to re-string the whole span, which is a lot of ceremony for hanging a signal --
+   * and it is what a builder ends up doing, having no way to know that is what is wrong.
+   *
+   * <p>So the list re-reads itself on a slow cadence, the same way this pack's other derived
+   * answers do. It costs four block lookups a second per cluster, and it also closes the case
+   * nothing could have notified about: a covered column whose chunk loaded after this one did.
+   */
+  private transient long payloadsReadTick = Long.MIN_VALUE;
+
+  private static final long PAYLOAD_REFRESH_TICKS = 20L;
+
+  /**
    * The block columns this cluster's bracket reaches over, its own included. Derived from the
    * width and the cable's direction whenever either changes, and held so the signals underneath
    * can ask a cheap question instead of repeating the geometry.
@@ -131,7 +149,27 @@ public class TileEntitySpanWireClusterMount extends TileEntitySpanWireHanger {
 
   /** The heads hanging under this bracket, in order along it. Never null, often empty. */
   public List<ClusterPayload> getPayloads() {
+    refreshPayloadsIfStale();
     return Collections.unmodifiableList(payloads);
+  }
+
+  /**
+   * Re-reads the payloads if the last read has gone stale.
+   *
+   * <p>Called from the entry points that are reached <em>before</em> anything iterates the list,
+   * never from the accessors used during iteration -- rebuilding the list underneath a loop over
+   * it would be a concurrent modification.
+   */
+  private void refreshPayloadsIfStale() {
+    if (world == null) {
+      return;
+    }
+    final long now = world.getTotalWorldTime();
+    if (payloadsReadTick != Long.MIN_VALUE && now - payloadsReadTick < PAYLOAD_REFRESH_TICKS) {
+      return;
+    }
+    payloadsReadTick = now;
+    refreshClusterPayloads();
   }
 
   /**
@@ -141,6 +179,7 @@ public class TileEntitySpanWireClusterMount extends TileEntitySpanWireHanger {
    * is what catches a head being placed under an already-linked cluster.
    */
   private void refreshClusterPayloads() {
+    payloadsReadTick = world == null ? Long.MIN_VALUE : world.getTotalWorldTime();
     payloads.clear();
     if (world == null) {
       return;
@@ -164,6 +203,7 @@ public class TileEntitySpanWireClusterMount extends TileEntitySpanWireHanger {
 
   @Override
   public long getHardwareStateKey() {
+    refreshPayloadsIfStale();
     long key = super.getHardwareStateKey() * 31L + clusterWidth;
     // Folded in so the bracket is rebuilt when a head is added, removed or turned -- each of those
     // moves a drop, and none of them changes anything else the key already covers.
@@ -221,6 +261,7 @@ public class TileEntitySpanWireClusterMount extends TileEntitySpanWireHanger {
    * @return the columns to span, never empty for a linked cluster.
    */
   public List<BlockPos> getBracketColumns() {
+    refreshPayloadsIfStale();
     if (payloads.isEmpty()) {
       return coveredColumns;
     }
@@ -289,6 +330,7 @@ public class TileEntitySpanWireClusterMount extends TileEntitySpanWireHanger {
     if (!payloadMoves() || payloadPos == null) {
       return Vec3d.ZERO;
     }
+    refreshPayloadsIfStale();
     for (ClusterPayload payload : payloads) {
       if (payload.getColumn().getX() == payloadPos.getX()
           && payload.getColumn().getZ() == payloadPos.getZ()) {
@@ -332,6 +374,7 @@ public class TileEntitySpanWireClusterMount extends TileEntitySpanWireHanger {
    * @return the offset of the bar's midpoint.
    */
   public double getBracketCentreOffset() {
+    refreshPayloadsIfStale();
     double lowest = Double.POSITIVE_INFINITY;
     double highest = Double.NEGATIVE_INFINITY;
     if (payloads.isEmpty()) {
