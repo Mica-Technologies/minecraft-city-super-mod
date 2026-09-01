@@ -28,6 +28,20 @@ public class TileEntitySpanWireClusterMount extends TileEntitySpanWireHanger {
   public static final int MIN_WIDTH = 2;
   public static final int MAX_WIDTH = 4;
 
+  /**
+   * How far below the attach point the bracket runs.
+   *
+   * <p>Has to clear the tops of the heads it carries, which is tighter than it looks: a head one
+   * block down reaches 0.5 above its own block, so with the attach point 0.75 up there is only a
+   * quarter of a block to work in. At 0.12 the bracket's underside clears a head top by about a
+   * pixel. Heads on a cluster take no span rise ({@code SpanWireHangOffset}), without which this
+   * clearance does not exist at all.
+   *
+   * <p>Lives here rather than in the renderer because the mast has to stand on the bar, so both
+   * need the same number.
+   */
+  public static final double BRACKET_DROP = 0.12;
+
   private int clusterWidth = MIN_WIDTH;
 
   /**
@@ -53,11 +67,13 @@ public class TileEntitySpanWireClusterMount extends TileEntitySpanWireHanger {
     private final BlockPos column;
     private final Vec3d hardwareOffset;
     private final double topY;
+    private final double tieY;
 
-    ClusterPayload(BlockPos column, Vec3d hardwareOffset, double topY) {
+    ClusterPayload(BlockPos column, Vec3d hardwareOffset, double topY, double tieY) {
       this.column = column;
       this.hardwareOffset = hardwareOffset;
       this.topY = topY;
+      this.tieY = tieY;
     }
 
     public BlockPos getColumn() {
@@ -72,6 +88,16 @@ public class TileEntitySpanWireClusterMount extends TileEntitySpanWireHanger {
     /** World height of this head's roof, or {@code NaN} if it did not report one. */
     public double getTopY() {
       return topY;
+    }
+
+    /**
+     * World height of this head's underside, or {@code NaN} if it did not report one.
+     *
+     * <p>The same height a box span's tether ties at, reused: both are asking where the bottom of
+     * the housing is, and a cluster's lower tie bar meets it in exactly the same place.
+     */
+    public double getTieY() {
+      return tieY;
     }
   }
 
@@ -131,7 +157,8 @@ public class TileEntitySpanWireClusterMount extends TileEntitySpanWireHanger {
       final ISpanWireHangable payload = (ISpanWireHangable) state.getBlock();
       payloads.add(new ClusterPayload(column,
           payload.getSpanHardwareOffset(world, payloadPos, state),
-          payload.getSpanHangerTopY(world, payloadPos, state)));
+          payload.getSpanHangerTopY(world, payloadPos, state),
+          payload.getSpanTetherTieY(world, payloadPos, state)));
     }
   }
 
@@ -144,6 +171,9 @@ public class TileEntitySpanWireClusterMount extends TileEntitySpanWireHanger {
       key = key * 31L + payload.getColumn().hashCode();
       key = key * 31L + Math.round(payload.getHardwareOffset().x * 64.0);
       key = key * 31L + Math.round(payload.getHardwareOffset().z * 64.0);
+      key = key * 31L + (Double.isNaN(payload.getTieY())
+          ? 0L
+          : Math.round(payload.getTieY() * 64.0));
     }
     return key;
   }
@@ -177,6 +207,88 @@ public class TileEntitySpanWireClusterMount extends TileEntitySpanWireHanger {
   /** The columns the bracket reaches, in order along the cable. */
   public List<BlockPos> getCoveredColumns() {
     return coveredColumns;
+  }
+
+  /**
+   * The columns the bracket actually spans: the occupied ones, or the covered ones when nothing
+   * hangs yet.
+   *
+   * <p>A four-wide cluster carrying two heads should not reach two empty columns further along
+   * holding nothing, but an empty cluster should still read as a cluster waiting for heads. Both
+   * the bar and the mast that stands on it ask this, so the mast cannot end up centred on a
+   * different bar than the one drawn.
+   *
+   * @return the columns to span, never empty for a linked cluster.
+   */
+  public List<BlockPos> getBracketColumns() {
+    if (payloads.isEmpty()) {
+      return coveredColumns;
+    }
+    final List<BlockPos> occupied = new ArrayList<>(payloads.size());
+    for (ClusterPayload payload : payloads) {
+      occupied.add(payload.getColumn());
+    }
+    return occupied;
+  }
+
+  /**
+   * How far along the bracket a column sits, in blocks from this mount.
+   *
+   * @param column the column to measure.
+   * @param along  the bracket's unit direction.
+   *
+   * @return signed distance along the bracket.
+   */
+  public double offsetAlongBracket(BlockPos column, Vec3d along) {
+    return (column.getX() - pos.getX()) * along.x + (column.getZ() - pos.getZ()) * along.z;
+  }
+
+  /**
+   * The middle of the bracket, in blocks along it from this mount.
+   *
+   * <p>Not zero, and that is the point. A two-wide cluster covers its own column and the next one
+   * along -- {@code -(2 - 1) / 2} truncates to zero in Java, and there is no half column to centre
+   * on anyway -- so its bar runs from this block forward and its middle is half a block along.
+   * Standing the mast on this rather than on the block is what stops the mast coming down at one
+   * end of the bar.
+   *
+   * @return the offset of the bar's midpoint.
+   */
+  public double getBracketCentreOffset() {
+    final Vec3d along = getBracketDirection();
+    double lowest = Double.POSITIVE_INFINITY;
+    double highest = Double.NEGATIVE_INFINITY;
+    for (BlockPos column : getBracketColumns()) {
+      final double offset = offsetAlongBracket(column, along);
+      lowest = Math.min(lowest, offset);
+      highest = Math.max(highest, offset);
+    }
+    if (lowest > highest) {
+      return 0.0;
+    }
+    return (lowest + highest) * 0.5;
+  }
+
+  /**
+   * The mast stands on the middle of the bracket, not on this block.
+   *
+   * <p>A cluster hangs from one point and spreads its heads either side of it; a mast at one end
+   * of the bar reads as a bar bolted to the side of a mount rather than as a cluster. The bar
+   * itself cannot move -- its drops have to land on the heads that are actually there -- so it is
+   * the mast that goes to the middle.
+   *
+   * <p>Stops at the bar, because from there it is the drops that carry the heads. The single
+   * mount's version reaches all the way down to its payload's roof, which on a cluster would put
+   * the mast through the bracket and down the back of whichever head it happened to land on.
+   */
+  @Override
+  public Vec3d getHardwareFootPoint() {
+    final Vec3d attach = getAttachPoint();
+    final Vec3d along = getBracketDirection();
+    final double centre = getBracketCentreOffset();
+    return new Vec3d(attach.x + along.x * centre,
+        attach.y - BRACKET_DROP,
+        attach.z + along.z * centre);
   }
 
   /**

@@ -78,11 +78,25 @@ public class TileEntitySpanWireHangerRenderer
       return;
     }
 
-    final Vec3d cablePoint = cable.pointAt(atT);
     // The foot stands on the payload, not on the middle of the block. For a signal head those
     // are not the same place -- the body is set back in its block and the visors hang off the
     // front, so a drop down the block centre line lands on the top visor.
     final Vec3d mountPoint = te.getHardwareFootPoint();
+
+    // Grip the cable directly above the mast, not at the mount's own place along the span.
+    //
+    // The offset between the block and the payload has two parts, and only one of them is real
+    // hardware. The part across the cable is genuine: the messenger runs down the centre line and
+    // the housing sits to one side of it, so something has to reach across. The part *along* the
+    // cable is not -- a head set back along the way it faces puts its housing further down the
+    // span, and clamping at the block's own parameter left an arm running away along the wire to
+    // meet it, which is what it looked like: a stub of pipe laid on the messenger.
+    //
+    // Projecting the foot onto the span drops the along-cable part and keeps the across-cable
+    // part, so the mast comes straight down from the clamp and the arm only ever bridges the
+    // offset that genuinely exists.
+    final double gripT = cable.parameterAt(mountPoint.x, mountPoint.z);
+    final Vec3d cablePoint = cable.pointAt(gripT);
 
     // The mast stands upright on the payload and the sideways offset is taken up by a short arm
     // at the top, rather than by leaning the mast across to the cable. The lean is the obvious
@@ -91,8 +105,8 @@ public class TileEntitySpanWireHangerRenderer
     // degrees. An upright mast with an offset arm is also what the real hardware looks like.
     // The cable's own direction here. Needed before the mast, because a paired hanger is spread
     // along it, and again below to keep the saddle square to a sloping messenger.
-    final Vec3d ahead = cable.pointAt(Math.min(1.0, atT + TANGENT_EPSILON));
-    final Vec3d behind = cable.pointAt(Math.max(0.0, atT - TANGENT_EPSILON));
+    final Vec3d ahead = cable.pointAt(Math.min(1.0, gripT + TANGENT_EPSILON));
+    final Vec3d behind = cable.pointAt(Math.max(0.0, gripT - TANGENT_EPSILON));
     Vec3d along = ahead.subtract(behind);
     if (along.x * along.x + along.y * along.y + along.z * along.z < 1.0e-18) {
       along = new Vec3d(1.0, 0.0, 0.0);
@@ -122,7 +136,7 @@ public class TileEntitySpanWireHangerRenderer
       emitConductorCoils(buffer, te.getCoilStyle(), te.getMountStyle(), cablePoint, along, origin,
           skyLight, blockLight);
     }
-    emitTetherTie(buffer, te, atT, origin, skyLight, blockLight);
+    emitTetherTie(buffer, te, gripT, origin, skyLight, blockLight);
   }
 
   /**
