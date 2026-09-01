@@ -7,6 +7,8 @@ Fire alarm horns, strobes, pull stations, panels and exit signage.
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
 
+<div class="block-table" markdown>
+
 | Block | Registry ID | Hardness | Resistance | Tool | Harvest |
 |---|---|---|---|---|---|
 | Edge Lit Exit Sign (Bi, Double-Sided) | `csm:mclacodeapprovedexitsigndual` |  |  |  |  |
@@ -164,3 +166,5 @@ Fire alarm horns, strobes, pull stations, panels and exit signage.
 | Wheelock MT White (Horn) | `csm:firealarmwheelockmthornwhite` | 2 | 10 | pickaxe | 1 |
 | Wheelock MT White/Blue (Horn Strobe) | `csm:firealarmwheelockmthornstrobewhiteblue` | 2 | 10 | pickaxe | 1 |
 | Wheelock RSS Strobe Red | `csm:rssstrobe` | 2 | 10 | pickaxe | 1 |
+
+</div>

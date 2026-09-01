@@ -7,6 +7,8 @@ Concrete, brick, metal and tile, with matching stairs, slabs and fences.
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
 
+<div class="block-table" markdown>
+
 | Block | Registry ID | Hardness | Resistance | Tool | Harvest |
 |---|---|---|---|---|---|
 | Black Metal | `csm:blackmetal` | 2 | 10 | pickaxe | 1 |
@@ -81,3 +83,5 @@ Concrete, brick, metal and tile, with matching stairs, slabs and fences.
 | Yellow Metal Fence | `csm:yellowmetal_fence` | 2 | 10 | pickaxe | 1 |
 | Yellow Metal Slab | `csm:yellowmetal_slab` | 2 | 10 | pickaxe | 1 |
 | Yellow Metal Stairs | `csm:yellowmetal_stairs` | 2 | 10 | pickaxe | 1 |
+
+</div>

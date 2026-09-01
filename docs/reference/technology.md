@@ -7,6 +7,8 @@ Servers, routers, screens and consumer electronics.
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
 
+<div class="block-table" markdown>
+
 | Block | Registry ID | Hardness | Resistance | Tool | Harvest |
 |---|---|---|---|---|---|
 | Apple iMac | `csm:imac` | 2 | 10 | pickaxe | 1 |
@@ -46,3 +48,5 @@ Servers, routers, screens and consumer electronics.
 | Valcom Speaker 8 | `csm:vcs8` |  |  |  |  |
 | Valcom Speaker 9 | `csm:vcs9` |  |  |  |  |
 | Verifone MX915 | `csm:vf915` | 2 | 10 | pickaxe | 1 |
+
+</div>

@@ -7,6 +7,8 @@ Signal heads, crosswalk signals and the controllers that drive them.
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
 
+<div class="block-table" markdown>
+
 | Block | Registry ID | Hardness | Resistance | Tool | Harvest |
 |---|---|---|---|---|---|
 | Advance Warning Signal (Flashing Yellow) | `csm:controllablesinglesolidsignalyellowadvanceflash` |  |  |  |  |
@@ -93,3 +95,5 @@ Signal heads, crosswalk signals and the controllers that drive them.
 | Vertical Traffic Signal (Up Left Arrow) | `csm:controllableverticalupleftsignal` |  |  |  |  |
 | Vertical Traffic Signal Add-On (Left w/ Flashing Yellow) | `csm:controllableverticalhybridleftaddonsignal` |  |  |  |  |
 | Vertical Traffic Signal Add-On (Right Arrow, Flashing Yellow) | `csm:controllableverticalrightflashyellowaddonsignal` |  |  |  |  |
+
+</div>
