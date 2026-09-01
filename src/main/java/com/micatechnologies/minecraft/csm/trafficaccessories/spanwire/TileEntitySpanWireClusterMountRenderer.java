@@ -74,27 +74,36 @@ public class TileEntitySpanWireClusterMountRenderer
     final Vec3d bracketCentre = attach.subtract(0.0, BRACKET_BELOW, 0.0);
     final Vec3d along = te.getBracketDirection();
 
-    // Occupied where anything hangs, covered where nothing does. Asked of the tile entity rather
-    // than worked out here, because the mast stands on the middle of this same answer and the two
-    // must not disagree.
-    emitBracket(buffer, te, bracketCentre, along, te.getBracketColumns(), origin, skyLight,
-        blockLight);
-
     final List<TileEntitySpanWireClusterMount.ClusterPayload> payloads = te.getPayloads();
     if (payloads.isEmpty()) {
+      // Nothing hanging: the bare bar across the columns it would cover, so an empty cluster still
+      // reads as one waiting for heads rather than as a broken mount.
+      emitEmptyBracket(buffer, te, bracketCentre, along, origin, skyLight, blockLight);
       return;
     }
 
+    // The bar spans the points the heads actually hang from, which is where the drops leave it.
+    double lowest = Double.POSITIVE_INFINITY;
+    double highest = Double.NEGATIVE_INFINITY;
     for (TileEntitySpanWireClusterMount.ClusterPayload payload : payloads) {
-      // Each drop leaves the bracket above its own column and lands on its own head. The heads on
-      // a cluster need not face the same way -- that is most of the point of one -- and a head's
-      // body is set back along the way it faces, so every drop ends somewhere different.
-      final Vec3d top = bracketCentre
-          .add(along.scale(te.offsetAlongBracket(payload.getColumn(), along)));
-      final Vec3d foot = new Vec3d(
-          payload.getColumn().getX() + 0.5 + payload.getHardwareOffset().x,
-          dropFootY(top.y, payload.getTopY()),
-          payload.getColumn().getZ() + 0.5 + payload.getHardwareOffset().z);
+      final double distance = te.alongFor(payload);
+      lowest = Math.min(lowest, distance);
+      highest = Math.max(highest, distance);
+    }
+    SpanWireCableGeometry.emitStraightTube(buffer,
+        bracketCentre.add(along.scale(lowest - BRACKET_OVERHANG)),
+        bracketCentre.add(along.scale(highest + BRACKET_OVERHANG)),
+        origin, BRACKET_RADIUS, STEEL_RED, STEEL_GREEN, STEEL_BLUE, skyLight, blockLight);
+
+    for (TileEntitySpanWireClusterMount.ClusterPayload payload : payloads) {
+      // Straight down. The head has been slid onto the bracket line by SpanWireHangOffset, using
+      // this same projection, so the point the drop leaves the bar is directly above the housing it
+      // lands on. It used to leave the bar above the head's block and then lean out to the housing,
+      // which on a head facing along the bar meant a drop that passed over the housing and bent
+      // back to it.
+      final Vec3d hanging = te.bracketPointFor(payload);
+      final Vec3d top = new Vec3d(hanging.x, bracketCentre.y, hanging.z);
+      final Vec3d foot = new Vec3d(top.x, dropFootY(top.y, payload.getTopY()), top.z);
       SpanWireCableGeometry.emitStraightTube(buffer, top, foot, origin, DROP_RADIUS,
           STEEL_RED, STEEL_GREEN, STEEL_BLUE, skyLight, blockLight);
     }
@@ -132,7 +141,7 @@ public class TileEntitySpanWireClusterMountRenderer
       if (Double.isNaN(payload.getTieY())) {
         continue;
       }
-      final double offset = te.offsetAlongBracket(payload.getColumn(), along);
+      final double offset = te.alongFor(payload);
       if (offset < lowestOffset) {
         lowestOffset = offset;
         first = payload;
@@ -151,17 +160,15 @@ public class TileEntitySpanWireClusterMountRenderer
 
     final double tieY = tieSum / tieCount;
     SpanWireCableGeometry.emitStraightTube(buffer,
-        tieBarEnd(first, tieY), tieBarEnd(last, tieY),
+        tieBarEnd(te, first, tieY), tieBarEnd(te, last, tieY),
         origin, TIE_BAR_RADIUS, STEEL_RED, STEEL_GREEN, STEEL_BLUE, skyLight, blockLight);
   }
 
-  /** Where the tie bar meets one head: the same point across the housing its drop lands on. */
-  private static Vec3d tieBarEnd(TileEntitySpanWireClusterMount.ClusterPayload payload,
-      double tieY) {
-    return new Vec3d(
-        payload.getColumn().getX() + 0.5 + payload.getHardwareOffset().x,
-        tieY,
-        payload.getColumn().getZ() + 0.5 + payload.getHardwareOffset().z);
+  /** Where the tie bar meets one head: directly under the point its drop leaves the bracket. */
+  private static Vec3d tieBarEnd(TileEntitySpanWireClusterMount te,
+      TileEntitySpanWireClusterMount.ClusterPayload payload, double tieY) {
+    final Vec3d hanging = te.bracketPointFor(payload);
+    return new Vec3d(hanging.x, tieY, hanging.z);
   }
 
   /**
@@ -177,13 +184,12 @@ public class TileEntitySpanWireClusterMountRenderer
     return Math.max(bracketY - MAX_DROP_LENGTH, Math.min(bracketY - DROP_LENGTH, payloadTopY));
   }
 
-  /** The bar itself, spanning the given columns with a little overhang at each end. */
-  private void emitBracket(BufferBuilder buffer, TileEntitySpanWireClusterMount te,
-      Vec3d bracketCentre, Vec3d along, List<BlockPos> columns, Vec3d origin, int skyLight,
-      int blockLight) {
+  /** The bar for a cluster with nothing on it yet, spanning the columns it would cover. */
+  private void emitEmptyBracket(BufferBuilder buffer, TileEntitySpanWireClusterMount te,
+      Vec3d bracketCentre, Vec3d along, Vec3d origin, int skyLight, int blockLight) {
     double lowest = 0.0;
     double highest = 0.0;
-    for (BlockPos column : columns) {
+    for (BlockPos column : te.getBracketColumns()) {
       final double offset = te.offsetAlongBracket(column, along);
       lowest = Math.min(lowest, offset);
       highest = Math.max(highest, offset);

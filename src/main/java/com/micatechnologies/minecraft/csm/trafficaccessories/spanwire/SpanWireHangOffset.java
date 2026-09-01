@@ -117,7 +117,7 @@ public final class SpanWireHangOffset {
     // everything on it level, and anything else gives its drop up to the style's limit. Asking it
     // rather than repeating the rules here is what keeps this in step with the hardware, which
     // adds the same rise to the payload geometry it is drawn against.
-    final Vec3d slide = mount.getPayloadSlide();
+    final Vec3d slide = mount.getPayloadSlide(pos);
     return new Vec3d(slide.x * MODEL_UNITS_PER_BLOCK,
         mount.getPayloadRise() * MODEL_UNITS_PER_BLOCK,
         slide.z * MODEL_UNITS_PER_BLOCK);
