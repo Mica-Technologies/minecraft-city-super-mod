@@ -26,9 +26,9 @@ It covers:
   tooling in `dev-env-utils/`
 - **Help and support** -- issue reporting, the Mica Minecraft homepage and the Discord
 
-> The [old GitHub Wiki](https://github.com/Mica-Technologies/minecraft-city-super-mod/wiki) has
-> been superseded by the guidebook and is no longer updated. It was missing several hundred blocks
-> that the guidebook generates directly from the source.
+> The old GitHub Wiki has been retired. Its pages now point here, so existing links still work,
+> but nothing there is maintained. It was missing several hundred blocks -- an entire creative tab
+> among them -- which the guidebook generates directly from the mod's source instead.
 
 ## Developer Information
 
