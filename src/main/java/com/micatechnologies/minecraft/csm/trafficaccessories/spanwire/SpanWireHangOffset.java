@@ -136,9 +136,10 @@ public final class SpanWireHangOffset {
    * columns a bracket could reach from and accepts a cluster only if that cluster agrees it covers
    * this column, so two clusters side by side on one span cannot claim each other's payloads.
    *
-   * <p>The sideways pass runs only when the straight-up one failed, which for the overwhelming
-   * majority of blocks in a world is a handful of map lookups behind the caller's own refresh
-   * interval.
+   * <p>The sideways pass runs only when the straight-up one failed <em>and</em> some bracket has
+   * registered a claim on this column with {@link SpanWireClusterColumns}. For the overwhelming
+   * majority of blocks in a world that is three map lookups and one hash lookup, behind the
+   * caller's own refresh interval.
    */
   @Nullable
   static TileEntitySpanWireHanger findMount(IBlockAccess world, BlockPos pos) {
@@ -150,6 +151,13 @@ public final class SpanWireHangOffset {
       if (above instanceof TileEntitySpanWireHanger) {
         return (TileEntitySpanWireHanger) above;
       }
+    }
+    // Almost every head in a world is on a pole or a mast arm, and for all of them the sweep
+    // below is seventy-two tile entity lookups that find nothing. Ask first whether any bracket
+    // anywhere claims this column: a no is a real answer and ends it here, a yes only means the
+    // sweep is worth running, and the sweep still decides.
+    if (!SpanWireClusterColumns.anyClusterCovers(pos)) {
+      return null;
     }
     for (int up = 1; up <= MAX_SEARCH_UP; up++) {
       for (int[] offset : CLUSTER_SEARCH_OFFSETS) {
