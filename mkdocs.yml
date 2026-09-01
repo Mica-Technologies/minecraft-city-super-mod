@@ -1,0 +1,118 @@
+site_name: City Super Mod
+site_description: >-
+  The City Super Mod for Minecraft 1.12.2 — 1,600+ city blocks: working traffic signals, fire
+  alarm systems, street lighting, road signs, HVAC and more.
+site_url: https://mica-technologies.github.io/minecraft-city-super-mod/
+repo_url: https://github.com/Mica-Technologies/minecraft-city-super-mod
+repo_name: Mica-Technologies/minecraft-city-super-mod
+edit_uri: edit/main/docs/
+copyright: >-
+  The City Super Mod is open source. Documentation is part of the mod's repository.
+
+# Working plans are gitignored and absent from a CI checkout anyway. This stops a LOCAL
+# `mkdocs serve` from finding them and quietly publishing one on the next deploy.
+exclude_docs: |
+  agent_progress/
+
+theme:
+  name: material
+  language: en
+  icon:
+    repo: fontawesome/brands/github
+    logo: material/traffic-light
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.top
+    - navigation.indexes
+    - navigation.footer
+    - search.suggest
+    - search.highlight
+    - search.share
+    - content.code.copy
+    - content.action.edit
+    - content.tooltips
+    - toc.follow
+  palette:
+    # Amber on near-black. Signal yellow against asphalt is what this mod is about, and it reads
+    # as civic infrastructure rather than as developer tooling -- which is deliberately the
+    # opposite signal from MCMCP's indigo, since these two sites sit side by side in one org.
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: black
+      accent: amber
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: black
+      accent: amber
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+
+markdown_extensions:
+  - abbr
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.details
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+
+plugins:
+  - search
+
+extra_css:
+  - assets/csm.css
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/Mica-Technologies/minecraft-city-super-mod
+      name: The mod on GitHub
+
+nav:
+  - Home: index.md
+  - Getting Started:
+      - getting-started/index.md
+      - Installation: getting-started/installation.md
+      - Compatibility: getting-started/compatibility.md
+      - Player & Developer Safety: getting-started/safety.md
+  - Guides:
+      - guides/index.md
+      - Survival & Crafting: guides/survival-and-crafting.md
+      - Span Wire: guides/span-wire.md
+  - Block Reference:
+      - reference/index.md
+      - Building Materials: reference/building-materials.md
+      - Furniture: reference/furniture.md
+      - Gaming: reference/gaming.md
+      - HVAC: reference/hvac.md
+      - Life Safety: reference/life-safety.md
+      - Lighting: reference/lighting.md
+      - Materials: reference/materials.md
+      - Novelties: reference/novelties.md
+      - Power Grid: reference/power-grid.md
+      - Road Signs: reference/road-signs.md
+      - Technology: reference/technology.md
+      - Traffic Accessories: reference/traffic-accessories.md
+      - Traffic Signals: reference/traffic-signals.md
+      - Unlisted: reference/unlisted.md
+  - Developer:
+      - developer/index.md
+      - Building from Source: developer/building.md
