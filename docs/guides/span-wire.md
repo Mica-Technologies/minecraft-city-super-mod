@@ -10,7 +10,7 @@ it can find at the moment it is strung.
 
 <figure markdown="span">
   ![A span wire between two poles carrying five signal assemblies of different heights, with a lower tether below them](../assets/img/span-wire-assemblies.png){ loading=lazy }
-  <figcaption>A finished box span. Six assemblies of different depths on one wire, the tether passing under all of them.</figcaption>
+  <figcaption>A finished box span. Five assemblies of different depths on one wire, the tether passing under all of them.</figcaption>
 </figure>
 
 **1. Put up two poles.** Anything works; the demos use vertical traffic poles. Leave enough height
@@ -80,7 +80,7 @@ below across a gap. Build these exactly as you would on a pole — the span trea
 one signal.
 
 <figure markdown="span">
-  ![A box span seen from below, its tether passing beneath six signal assemblies of differing depths](../assets/img/span-wire-addons.png){ loading=lazy }
+  ![A box span seen from below, its tether passing beneath five signal assemblies of differing depths](../assets/img/span-wire-addons.png){ loading=lazy }
   <figcaption>Seen from underneath. The tether hangs below the <em>deepest</em> assembly on the span, and every head gets a tie down to it — long ones for the short heads, short ones for the tall.</figcaption>
 </figure>
 
@@ -111,8 +111,8 @@ which is the whole point of a diagonal crossing an intersection with approaches 
 ## Clusters
 
 <figure markdown="span">
-  ![A signal cluster mount carrying two backplated heads that face opposite directions](../assets/img/span-wire-cluster.png){ loading=lazy }
-  <figcaption>A cluster carrying two heads that face opposite ways, on one bracket under one mast, tied at the bottom.</figcaption>
+  ![A four-wide signal cluster mount carrying heads that face two different directions](../assets/img/span-wire-cluster.png){ loading=lazy }
+  <figcaption>A four-wide cluster: two heads facing the camera, two facing away, all on one bracket under one mast and tied at the bottom.</figcaption>
 </figure>
 
 A Signal Cluster Mount carries two to four heads from one point, on a horizontal bracket under a
