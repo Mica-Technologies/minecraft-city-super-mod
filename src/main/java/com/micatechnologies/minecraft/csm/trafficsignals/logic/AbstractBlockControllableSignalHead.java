@@ -76,6 +76,20 @@ public abstract class AbstractBlockControllableSignalHead extends AbstractBlockC
     super(p_i45394_1_);
   }
 
+  /**
+   * Where a box span's tether ties to this head: the bottom of the housing as actually drawn.
+   *
+   * <p>Taken from the bounding box rather than from a constant, so it already accounts for the
+   * section count, the section sizes and the rise the span has given this head. A tether tie of
+   * fixed length cannot do that -- the heads on a sagging span sit at different heights relative
+   * to a taut tether, so a fixed stub overshoots into the lenses at one end of the span and falls
+   * short at the other.
+   */
+  @Override
+  public double getSpanTetherTieY(IBlockAccess world, BlockPos pos, IBlockState state) {
+    return pos.getY() + getBlockBoundingBox(state, world, pos).minY;
+  }
+
   @Override
   public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
     // Recomputed per-call: signals can flip between vertical and horizontal layout via
