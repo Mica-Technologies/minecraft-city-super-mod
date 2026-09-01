@@ -58,14 +58,6 @@ public class TileEntitySpanWireHangerRenderer
   private static final double COIL_WIRE_RADIUS = SpanWireCableGeometry.CABLE_RADIUS * 0.7;
   private static final double COIL_SPACING = 0.055;
 
-  /**
-   * The frame a flat payload hangs from: two drops this far apart along the cable, joined across
-   * the top. Wide enough to read as a frame at a distance, narrow enough to stay within the
-   * block a sign occupies.
-   */
-  private static final double HANGER_PAIR_SPACING = 0.42;
-  private static final double HANGER_RADIUS = SpanWireCableGeometry.CABLE_RADIUS * 1.5;
-
   /** The tie from the lower tether of a box span up to the bottom of the signal it steadies. */
   /** The longest tie that can be drawn, so a bad payload answer cannot reach across the sky. */
   private static final double MAX_TIE_HEIGHT = 1.5;
@@ -108,7 +100,8 @@ public class TileEntitySpanWireHangerRenderer
     along = along.normalize();
 
     final Vec3d mastTop = new Vec3d(mountPoint.x, cablePoint.y, mountPoint.z);
-    emitDrop(buffer, te, mountPoint, mastTop, along, origin, skyLight, blockLight);
+    SpanWireCableGeometry.emitStraightTube(buffer, mountPoint, mastTop, origin, MAST_RADIUS,
+        MAST_RED, MAST_GREEN, MAST_BLUE, skyLight, blockLight);
 
     final double armX = cablePoint.x - mastTop.x;
     final double armZ = cablePoint.z - mastTop.z;
@@ -122,40 +115,14 @@ public class TileEntitySpanWireHangerRenderer
         cablePoint.add(along.scale(SADDLE_HALF_LENGTH)),
         origin, SADDLE_RADIUS, MAST_RED, MAST_GREEN, MAST_BLUE, skyLight, blockLight);
 
-    emitConductorCoils(buffer, te.getCoilStyle(), te.getMountStyle(), cablePoint, along, origin,
-        skyLight, blockLight);
+    // Only where something is actually being fed. The coil is surplus conductor left from
+    // dropping power into the payload, so a sign -- bolted to the wire and wired to nothing --
+    // gets none.
+    if (te.payloadTakesConductorFeed()) {
+      emitConductorCoils(buffer, te.getCoilStyle(), te.getMountStyle(), cablePoint, along, origin,
+          skyLight, blockLight);
+    }
     emitTetherTie(buffer, te, atT, origin, skyLight, blockLight);
-  }
-
-  /**
-   * The drop from the cable down onto the payload: one mast, or a pair.
-   *
-   * <p>A signal head gets a single mast, because it brings its own bracket and lands on the roof
-   * of its housing. Anything hung flat -- a sign, a box -- gets <b>two</b> drops spread along the
-   * cable with a bar across the top, which is what real hung signs use and what stops a wide panel
-   * reading as balanced on a single pin.
-   *
-   * <p>This replaced a short strap drawn straight down from the mast foot. That strap was
-   * invisible: the foot sits three quarters of the way up the payload's own block, so the strap
-   * ran entirely inside the sign it was meant to be holding.
-   */
-  private void emitDrop(BufferBuilder buffer, TileEntitySpanWireHanger te, Vec3d foot, Vec3d top,
-      Vec3d along, Vec3d origin, int skyLight, int blockLight) {
-    if (!te.carriesStrapPayload()) {
-      SpanWireCableGeometry.emitStraightTube(buffer, foot, top, origin, MAST_RADIUS,
-          MAST_RED, MAST_GREEN, MAST_BLUE, skyLight, blockLight);
-      return;
-    }
-
-    final Vec3d spread = along.scale(HANGER_PAIR_SPACING * 0.5);
-    for (int side = -1; side <= 1; side += 2) {
-      final Vec3d shift = spread.scale(side);
-      SpanWireCableGeometry.emitStraightTube(buffer, foot.add(shift), top.add(shift), origin,
-          HANGER_RADIUS, MAST_RED, MAST_GREEN, MAST_BLUE, skyLight, blockLight);
-    }
-    // The bar tying the pair together at the top, so they read as one frame.
-    SpanWireCableGeometry.emitStraightTube(buffer, top.subtract(spread), top.add(spread), origin,
-        HANGER_RADIUS, MAST_RED, MAST_GREEN, MAST_BLUE, skyLight, blockLight);
   }
 
   /**

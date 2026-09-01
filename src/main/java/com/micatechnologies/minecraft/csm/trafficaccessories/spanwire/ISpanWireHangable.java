@@ -16,8 +16,8 @@ import net.minecraft.world.IBlockAccess;
  * <p>Two things follow from implementing it:
  *
  * <ul>
- *   <li>The mount above draws the hardware appropriate to what it is carrying — see
- *   {@link #needsSpanHangerStrap()}.</li>
+ *   <li>The mount above draws the hardware appropriate to what it is carrying — where its drop
+ *   reaches, whether a tether ties to it, and whether it is fed.</li>
  *   <li>The payload may take the span's vertical offset, so it hangs on the cable's curve rather
  *   than on the block grid, by calling {@link SpanWireHangOffset#computeFor}. That part is opt-in
  *   rather than automatic, because it is only possible for a block drawn by a tile entity
@@ -28,15 +28,33 @@ import net.minecraft.world.IBlockAccess;
 public interface ISpanWireHangable {
 
   /**
-   * Whether the mount above should draw a strap down onto this block.
+   * Whether this block is fed by the span's lashed conductors.
    *
-   * <p>True for anything that is simply hung — a sign, a box — which needs something visible
-   * joining it to the mount. False for anything that already carries its own mounting hardware
-   * and would double up: a signal head draws its own mast and bracket, so a strap on top of that
-   * reads as two mounts stacked.
+   * <p>Decides whether the mount above shows the coiled slack at its clamp. That coil is surplus
+   * conductor left over from dropping power into the thing below, so it belongs on a signal head
+   * and not on a sign: a sign is bolted to the wire and wired to nothing, and a coil at its clamp
+   * is hardware for a circuit that does not exist.
+   *
+   * <p>True by default, because most of what hangs from a span is powered.
    */
-  default boolean needsSpanHangerStrap() {
+  default boolean needsSpanConductorFeed() {
     return true;
+  }
+
+  /**
+   * Whether this block actually moves when its mount offers a vertical rise.
+   *
+   * <p>False by default, and the default is the common case: a block drawn from a JSON model sits
+   * at whole-block heights and cannot be shifted a fraction of a block, so it stays put no matter
+   * what the mount offers. Only a payload drawn by a tile entity renderer can take the offset --
+   * a signal head does, through {@link SpanWireHangOffset#computeFor}.
+   *
+   * <p>The mount needs to know, because it adds that same rise to the geometry a payload reports
+   * in order to place its hardware. Adding it for a payload that never moved put the drop's foot
+   * a rise above the thing it was supposed to be holding.
+   */
+  default boolean takesSpanRise() {
+    return false;
   }
 
   /**

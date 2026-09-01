@@ -46,7 +46,13 @@ public class TileEntitySpanWireHanger extends AbstractTileEntitySpanWireAttachme
    * Whether whatever hangs directly below wants a strap drawn onto it. Derived from the payload
    * rather than listed here, so a new kind of hangable block needs no edit to this class.
    */
-  private transient boolean carriesStrapPayload = false;
+  private transient boolean payloadTakesConductorFeed = true;
+
+  /**
+   * Whether the payload actually moves when this mount offers a rise. A sign does not, so its
+   * reported geometry is already where it will be.
+   */
+  private transient boolean payloadTakesRise = false;
 
   /**
    * Where the hardware should come down to meet the payload, as an offset from the middle of
@@ -112,7 +118,7 @@ public class TileEntitySpanWireHanger extends AbstractTileEntitySpanWireAttachme
   @Override
   public long getHardwareStateKey() {
     long key = (mountStyle.ordinal() * 31L + coilStyle.ordinal()) * 31L
-        + (carriesStrapPayload ? 1L : 0L);
+        + (payloadTakesConductorFeed ? 1L : 0L);
     // Quantised rather than taken raw off the double: the offset only ever holds a handful of
     // values, and this keeps the key stable against the last bit of floating point noise.
     key = key * 31L + Math.round(payloadHardwareOffset.x * 64.0);
@@ -121,8 +127,8 @@ public class TileEntitySpanWireHanger extends AbstractTileEntitySpanWireAttachme
   }
 
   /** Whether to draw a strap from this mount down onto what it carries. */
-  public boolean carriesStrapPayload() {
-    return carriesStrapPayload;
+  public boolean payloadTakesConductorFeed() {
+    return payloadTakesConductorFeed;
   }
 
   /**
@@ -130,24 +136,27 @@ public class TileEntitySpanWireHanger extends AbstractTileEntitySpanWireAttachme
    * notification, which is what catches a sign being placed under an already-strung span.
    */
   public void refreshPayload() {
-    final boolean previousStrap = carriesStrapPayload;
+    final boolean previousFeed = payloadTakesConductorFeed;
     final Vec3d previousOffset = payloadHardwareOffset;
 
     final IBlockState below = world == null ? null : world.getBlockState(pos.down());
     if (below != null && below.getBlock() instanceof ISpanWireHangable) {
       final ISpanWireHangable payload = (ISpanWireHangable) below.getBlock();
-      carriesStrapPayload = payload.needsSpanHangerStrap();
+      payloadTakesConductorFeed = payload.needsSpanConductorFeed();
+      payloadTakesRise = payload.takesSpanRise();
       payloadHardwareOffset = payload.getSpanHardwareOffset(world, pos.down(), below);
       payloadTetherTieY = payload.getSpanTetherTieY(world, pos.down(), below);
       payloadTopY = payload.getSpanHangerTopY(world, pos.down(), below);
     } else {
-      carriesStrapPayload = false;
+      payloadTakesConductorFeed = true;
+      payloadTakesRise = false;
       payloadHardwareOffset = Vec3d.ZERO;
       payloadTetherTieY = Double.NaN;
       payloadTopY = Double.NaN;
     }
 
-    if ((previousStrap != carriesStrapPayload || !previousOffset.equals(payloadHardwareOffset))
+    if ((previousFeed != payloadTakesConductorFeed
+        || !previousOffset.equals(payloadHardwareOffset))
         && world != null && world.isRemote) {
       SpanWireCableRenderer.cleanupDisplayList(pos);
     }
@@ -174,7 +183,17 @@ public class TileEntitySpanWireHanger extends AbstractTileEntitySpanWireAttachme
    * giving it. See {@link #getPayloadRise()}.
    */
   public double getPayloadTetherTieY() {
-    return Double.isNaN(payloadTetherTieY) ? Double.NaN : payloadTetherTieY + getPayloadRise();
+    return Double.isNaN(payloadTetherTieY)
+        ? Double.NaN
+        : payloadTetherTieY + appliedRise();
+  }
+
+  /**
+   * The rise this mount's payload actually ends up with: the rise on offer, or nothing at all for
+   * a payload that cannot move.
+   */
+  private double appliedRise() {
+    return payloadTakesRise ? getPayloadRise() : 0.0;
   }
 
   /**
@@ -200,7 +219,7 @@ public class TileEntitySpanWireHanger extends AbstractTileEntitySpanWireAttachme
     if (Double.isNaN(payloadTopY)) {
       return foot;
     }
-    final double payloadTop = payloadTopY + getPayloadRise();
+    final double payloadTop = payloadTopY + appliedRise();
     // Reaches down to the payload rather than stopping at this mount's own attach height. Only
     // lower, never higher: a payload that has risen to meet the hardware is already touching it,
     // and pulling the drop up to its top would bury the foot inside it. Bounded so a payload

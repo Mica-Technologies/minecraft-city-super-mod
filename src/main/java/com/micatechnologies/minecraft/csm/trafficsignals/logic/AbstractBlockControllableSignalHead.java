@@ -27,15 +27,6 @@ public abstract class AbstractBlockControllableSignalHead extends AbstractBlockC
     implements ICsmTileEntityProvider, ISpanWireHangable {
 
   /**
-   * No strap. A signal head already draws its own mast and bracket where it meets a span, and a
-   * strap on top of that reads as two mounts stacked on one head.
-   */
-  @Override
-  public boolean needsSpanHangerStrap() {
-    return false;
-  }
-
-  /**
    * Brings a span's drop back onto the roof of the housing instead of onto a visor.
    *
    * <p>A signal is not centred in its block: the body sits at the back by
@@ -85,6 +76,12 @@ public abstract class AbstractBlockControllableSignalHead extends AbstractBlockC
    * to a taut tether, so a fixed stub overshoots into the lenses at one end of the span and falls
    * short at the other.
    */
+  /** Drawn by its own renderer, so it can and does take the span's sub-block rise. */
+  @Override
+  public boolean takesSpanRise() {
+    return true;
+  }
+
   @Override
   public double getSpanTetherTieY(IBlockAccess world, BlockPos pos, IBlockState state) {
     return pos.getY() + unrisenBoundingBox(world, pos).minY;
