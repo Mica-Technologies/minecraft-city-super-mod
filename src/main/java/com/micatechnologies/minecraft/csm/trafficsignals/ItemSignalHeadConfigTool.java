@@ -257,6 +257,18 @@ public class ItemSignalHeadConfigTool extends AbstractItem {
           player.sendMessage(new TextComponentString("Body tilt: " + next.getFriendlyName()));
           break;
         }
+        case CYCLE_NUDGE_FORWARD: {
+          var next = te.getNextNudgeForward();
+          player.sendMessage(new TextComponentString(
+              "Nudge forward: " + next + " of 16ths (negative is back)"));
+          break;
+        }
+        case CYCLE_NUDGE_SIDE: {
+          var next = te.getNextNudgeSide();
+          player.sendMessage(new TextComponentString(
+              "Nudge side: " + next + " of 16ths (negative is left)"));
+          break;
+        }
         case CYCLE_BULB_STYLE: {
           var next = te.getNextBulbStyle();
           player.sendMessage(new TextComponentString("Bulb style: " + next.getFriendlyName()));

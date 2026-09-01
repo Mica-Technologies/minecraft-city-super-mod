@@ -428,8 +428,66 @@ public abstract class AbstractBlockControllableSignalHead extends AbstractBlockC
    * @return the offset in model units, never null.
    */
   public final Vec3d getSignalOffset(IBlockAccess world, BlockPos pos) {
+    final Vec3d moved = getHeadDisplacement(world, pos);
+    return new Vec3d(moved.x, getBaseSignalYOffset(world, pos) + moved.y, moved.z);
+  }
+
+  /**
+   * How far this head has moved off its own block: what a span did to it, plus any hand-placed
+   * nudge. In model units.
+   *
+   * <p>Deliberately excludes {@link #getBaseSignalYOffset}, which is not movement at all -- it is
+   * where this kind of head sits on its block in the first place, and anything drawn to match a
+   * head already accounts for it. A backplate wants this one: it is authored against the head's
+   * resting place and needs to follow only the part that moved.
+   *
+   * @param world the block access.
+   * @param pos   this block's position.
+   *
+   * @return the displacement in model units and world axes, never null.
+   */
+  public final Vec3d getHeadDisplacement(IBlockAccess world, BlockPos pos) {
     final Vec3d span = getSpanWireOffset(world, pos);
-    return new Vec3d(span.x, getBaseSignalYOffset(world, pos) + span.y, span.z);
+    final Vec3d nudge = getNudgeOffset(world, pos);
+    return new Vec3d(span.x + nudge.x, span.y, span.z + nudge.z);
+  }
+
+  /**
+   * A head's hand-placed nudge, turned from its own forward/right terms into world axes.
+   *
+   * <p>Stored against the facing so that turning a head takes its nudge with it, which is what
+   * anyone who placed one would expect; the renderer and the hitbox both want world axes, so the
+   * conversion happens once, here.
+   *
+   * @param world the block access.
+   * @param pos   this block's position.
+   *
+   * @return the nudge in world axes and model units, with a zero Y.
+   */
+  private Vec3d getNudgeOffset(IBlockAccess world, BlockPos pos) {
+    if (world == null || pos == null) {
+      return Vec3d.ZERO;
+    }
+    final TileEntity tileEntity = world.getTileEntity(pos);
+    if (!(tileEntity instanceof TileEntityTrafficSignalHead)) {
+      return Vec3d.ZERO;
+    }
+    final TileEntityTrafficSignalHead head = (TileEntityTrafficSignalHead) tileEntity;
+    final int forward = head.getNudgeForward();
+    final int side = head.getNudgeSide();
+    if (forward == 0 && side == 0) {
+      return Vec3d.ZERO;
+    }
+    final IBlockState state = world.getBlockState(pos);
+    if (!state.getProperties().containsKey(FACING)) {
+      return Vec3d.ZERO;
+    }
+    final EnumFacing facing = state.getValue(FACING);
+    final EnumFacing right = facing.rotateY();
+    return new Vec3d(
+        forward * facing.getXOffset() + side * right.getXOffset(),
+        0.0,
+        forward * facing.getZOffset() + side * right.getZOffset());
   }
 
   /**
