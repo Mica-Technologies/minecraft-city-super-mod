@@ -8,19 +8,27 @@ and provide a realistic city-building experience in Minecraft.
 ![GitHub Downloads (all assets, latest release)](https://img.shields.io/github/downloads/Mica-Technologies/minecraft-city-super-mod/latest/total?style=for-the-badge&label=Downloads)
 ![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/Mica-Technologies/minecraft-city-super-mod/total?style=for-the-badge&label=Downloads%20(All))
 
-## Wiki/Player Information
+## Guidebook / Player Information
 
-Information about the City Super Mod can be found on
-the City Super Mod
-Wiki [https://github.com/Mica-Technologies/minecraft-city-super-mod/wiki](https://github.com/Mica-Technologies/minecraft-city-super-mod/wiki).
+Everything about playing with the City Super Mod is in the **[City Super Mod
+Guidebook](https://mica-technologies.github.io/minecraft-city-super-mod/)**.
 
-Wiki topics include:
+It covers:
 
-- Supported Minecraft Versions
-- Player and Developer Safety
-- Downloading and Running the City Super Mod
-- Help and Support
-- Website and Discord
+- **Getting started** -- supported Minecraft versions, installing the mod, what it plays nicely
+  with, and where it is safe to download from
+- **Guides** -- how each system works and how to build with it: traffic signals and the ASC-3
+  controller, span wire, mast arms, crosswalks, road and highway signs, fire alarms, lighting,
+  HVAC, the power grid, and survival crafting
+- **Block reference** -- every block the mod registers, with the registry id you need for `/give`
+  and `/setblock`
+- **Developer** -- building from source, the block and item base classes, adding content, and the
+  tooling in `dev-env-utils/`
+- **Help and support** -- issue reporting, the Mica Minecraft homepage and the Discord
+
+> The [old GitHub Wiki](https://github.com/Mica-Technologies/minecraft-city-super-mod/wiki) has
+> been superseded by the guidebook and is no longer updated. It was missing several hundred blocks
+> that the guidebook generates directly from the source.
 
 ## Developer Information
 
@@ -403,7 +411,10 @@ Code 3 horn sounds should follow these targets for consistency:
 
 ### Developer Documentation
 
-The `assets/docs/` directory contains in-depth technical documentation for the mod's major
+For building from source, the base classes and how to add a block, start with the [Developer
+section of the guidebook](https://mica-technologies.github.io/minecraft-city-super-mod/developer/).
+
+The `assets/docs/` directory contains the deeper, implementation-level notes for the mod's major
 subsystems:
 
 - **[BLOCK_AND_ITEM_BASE_CLASSES.md](assets/docs/BLOCK_AND_ITEM_BASE_CLASSES.md)** --
