@@ -226,6 +226,42 @@ public final class SpanWireManager {
     }
   }
 
+  /**
+   * Dead-ends a box span's tether on an anchor placed below one of its own anchors.
+   *
+   * <p>The mirror of {@link #onTetherAnchorRemoved}, and it exists because the two were not
+   * symmetric: breaking a lower anchor dropped the tether back to its derived height immediately,
+   * but placing one did nothing at all until the span was re-strung. Anchors are how a builder
+   * says where the tether goes, so a span that ignores them until it is torn down and rebuilt is
+   * a span that looks broken.
+   *
+   * <p>Shares the both-or-neither rule with {@link #attachTetherAnchors}: this re-reads both ends
+   * rather than attaching the one just placed, so the first of a pair still changes nothing and
+   * the second brings both in at once.
+   */
+  public static void onTetherAnchorPlaced(World world, BlockPos placed) {
+    if (world == null || world.isRemote) {
+      return;
+    }
+    for (int rise = 1; rise <= MAX_TETHER_ANCHOR_DROP; rise++) {
+      final BlockPos above = placed.up(rise);
+      if (!world.isBlockLoaded(above)) {
+        return;
+      }
+      final SpanWireDefinition span = getSpanAt(world, above);
+      // Only a box span has a tether to dead-end, and only one not already dead-ended on this
+      // very block has anything to learn from it.
+      if (span == null || !span.isBoxSpan()) {
+        continue;
+      }
+      final SpanWireDefinition attached = attachTetherAnchors(world, span);
+      if (!attached.equals(span)) {
+        apply(world, attached);
+      }
+      return;
+    }
+  }
+
   /** The nearest span wire anchor directly below this one, within reach, or null. */
   @Nullable
   private static BlockPos findTetherAnchorBelow(World world, BlockPos anchor) {
@@ -252,23 +288,31 @@ public final class SpanWireManager {
     boolean found = false;
 
     for (BlockPos hanger : span.getHangers()) {
-      final BlockPos payloadPos = hanger.down();
-      if (!world.isBlockLoaded(payloadPos)) {
-        continue;
+      // Every column this mount carries, not just the one under its own block. A cluster holds up
+      // to four heads spread along its bracket and only one of them is under the mast, so reading
+      // `hanger.down()` alone measured one head in four and let the other three decide nothing --
+      // a deep head on an outer column had the tether strung straight through it.
+      for (BlockPos payloadPos : payloadPositions(world, hanger)) {
+        if (!world.isBlockLoaded(payloadPos)) {
+          continue;
+        }
+        final IBlockState below = world.getBlockState(payloadPos);
+        if (!(below.getBlock() instanceof ISpanWireHangable)) {
+          continue;
+        }
+        final double tieY = ((ISpanWireHangable) below.getBlock())
+            .getSpanTetherTieY(world, payloadPos, below);
+        if (Double.isNaN(tieY)) {
+          continue;
+        }
+        // Sampled under the payload rather than under the mast, for the same reason the tie
+        // itself is: on a diagonal cluster a head sits a column away from the block the mount
+        // occupies, where the cable is a different height.
+        final double cableY = cable.heightAt(
+            cable.parameterAt(payloadPos.getX() + 0.5, payloadPos.getZ() + 0.5));
+        deepest = Math.max(deepest, cableY - tieY);
+        found = true;
       }
-      final IBlockState below = world.getBlockState(payloadPos);
-      if (!(below.getBlock() instanceof ISpanWireHangable)) {
-        continue;
-      }
-      final double tieY = ((ISpanWireHangable) below.getBlock())
-          .getSpanTetherTieY(world, payloadPos, below);
-      if (Double.isNaN(tieY)) {
-        continue;
-      }
-      final double cableY = cable.heightAt(
-          cable.parameterAt(hanger.getX() + 0.5, hanger.getZ() + 0.5));
-      deepest = Math.max(deepest, cableY - tieY);
-      found = true;
     }
 
     return found ? deepest + TETHER_TIE_GAP : SpanWireDefinition.TETHER_MIN_CLEARANCE;
@@ -279,6 +323,29 @@ public final class SpanWireManager {
    * rather than as the wire grazing the housings.
    */
   private static final double TETHER_TIE_GAP = 0.35;
+
+  /**
+   * Every block position a mount carries something at.
+   *
+   * <p>One for an ordinary mount, up to four for a cluster. Asked of the cluster rather than
+   * re-derived from its width here, so the measurement can never disagree with the bracket that
+   * is actually drawn.
+   */
+  private static List<BlockPos> payloadPositions(World world, BlockPos hanger) {
+    final TileEntity mount = world.getTileEntity(hanger);
+    if (!(mount instanceof TileEntitySpanWireClusterMount)) {
+      return Collections.singletonList(hanger.down());
+    }
+    final List<BlockPos> columns = ((TileEntitySpanWireClusterMount) mount).getCoveredColumns();
+    if (columns.isEmpty()) {
+      return Collections.singletonList(hanger.down());
+    }
+    final List<BlockPos> positions = new ArrayList<>(columns.size());
+    for (BlockPos column : columns) {
+      positions.add(new BlockPos(column.getX(), hanger.getY() - 1, column.getZ()));
+    }
+    return positions;
+  }
 
   /**
    * Where this span should sit relative to the block centre line, measured from what hangs on it.
@@ -493,6 +560,46 @@ public final class SpanWireManager {
       toggled = toggled.withTetherClearance(measureTetherClearance(world, toggled));
     }
     apply(world, toggled);
+  }
+
+  /**
+   * How far the measured clearance must move before the span is rewritten, in blocks.
+   *
+   * <p>Only there to stop floating point noise from republishing an identical span; any real
+   * change is a section of signal, which is a great deal more than this.
+   */
+  private static final double TETHER_REMEASURE_EPSILON = 1.0e-3;
+
+  /**
+   * Re-measures a box span's tether after something changed how far a payload reaches down.
+   *
+   * <p>Called by the payload, never by the span -- a head knows when a section is added or taken
+   * off it, and a mount two blocks above never hears about it, because the block below a block
+   * below is not a neighbour. That gap is what made adding an add-on to a finished span require
+   * re-stringing it: the clearance had been measured once, against a shorter assembly, and nothing
+   * ever asked again.
+   *
+   * <p>Does nothing where there is nothing to do -- off a span, off a box span, or on a span whose
+   * tether dead-ends on its own anchors and so takes its height from them rather than from what
+   * hangs on it.
+   */
+  public static void onPayloadDepthChanged(World world, BlockPos payloadPos) {
+    if (world == null || world.isRemote) {
+      return;
+    }
+    final TileEntitySpanWireHanger mount = SpanWireHangOffset.findMount(world, payloadPos);
+    if (mount == null) {
+      return;
+    }
+    final SpanWireDefinition span = mount.getSpan();
+    if (span == null || !span.isBoxSpan() || span.hasTetherAnchors()) {
+      return;
+    }
+    final double measured = measureTetherClearance(world, span);
+    if (Math.abs(measured - span.getTetherClearance()) < TETHER_REMEASURE_EPSILON) {
+      return;
+    }
+    apply(world, span.withTetherClearance(measured));
   }
 
   /** The span the block at this position belongs to, or null. */

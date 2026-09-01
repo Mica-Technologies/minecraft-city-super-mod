@@ -119,10 +119,15 @@ public class TileEntitySpanWireClusterMountRenderer
    * the ones it ties.
    *
    * <p>Drawn at the same height a box span's tether would meet these heads, which is what the
-   * payload already answers for the bottom of its housing. Heads on a cluster hang level with each
-   * other, so a level bar meets all of them; where they somehow do not, the mean keeps it from
-   * favouring one end. A head that reports no such height is left out, and if none report one
-   * there is no bar -- a guessed height would put a metal bar through the lenses.
+   * payload already answers for the bottom of its assembly. Heads on a cluster hang level with
+   * each other, so for the ordinary cluster every answer is the same one.
+   *
+   * <p>Where they differ, the <b>deepest</b> wins rather than the mean. Heads on one bracket are
+   * level but assemblies on it need not be: hang a three-section head beside one carrying a
+   * single-section add-on and the two reach a block apart. A mean sits between them -- floating
+   * under the short one and buried in the tall one -- whereas the deepest passes under both, which
+   * is the one answer that can never put a metal bar through a lens. A head that reports no height
+   * is left out, and if none report one there is no bar.
    *
    * <p>Nothing is drawn for a single head. There is nothing to tie it to, and a stub sticking out
    * of one housing is worse than no bar at all.
@@ -134,7 +139,7 @@ public class TileEntitySpanWireClusterMountRenderer
     TileEntitySpanWireClusterMount.ClusterPayload last = null;
     double lowestOffset = Double.POSITIVE_INFINITY;
     double highestOffset = Double.NEGATIVE_INFINITY;
-    double tieSum = 0.0;
+    double tieY = Double.POSITIVE_INFINITY;
     int tieCount = 0;
 
     for (TileEntitySpanWireClusterMount.ClusterPayload payload : payloads) {
@@ -150,15 +155,13 @@ public class TileEntitySpanWireClusterMountRenderer
         highestOffset = offset;
         last = payload;
       }
-      tieSum += payload.getTieY();
+      tieY = Math.min(tieY, payload.getTieY());
       tieCount++;
     }
 
     if (tieCount < 2 || first == last) {
       return;
     }
-
-    final double tieY = tieSum / tieCount;
     SpanWireCableGeometry.emitStraightTube(buffer,
         tieBarEnd(te, first, tieY), tieBarEnd(te, last, tieY),
         origin, TIE_BAR_RADIUS, STEEL_RED, STEEL_GREEN, STEEL_BLUE, skyLight, blockLight);
