@@ -3,6 +3,7 @@ package com.micatechnologies.minecraft.csm.trafficaccessories.spanwire;
 import javax.annotation.Nullable;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.IBlockAccess;
 
 /**
@@ -95,24 +96,31 @@ public final class SpanWireHangOffset {
   }
 
   /**
-   * The Y offset, in model units, for a payload at the given position, or zero if it does not hang
+   * The offset, in model units, for a payload at the given position, or zero if it does not hang
    * from a span or its mount is set to give instead.
+   *
+   * <p>Three axes rather than the height alone. A head that only rises still hangs beside the wire
+   * whenever its housing is off its block's centre line, which is most of them; the horizontal
+   * terms slide it under the clamp so the mast comes straight down.
    *
    * <p>Clamped to the same limit the link tool enforces, so a span left in a state the tool warned
    * about cannot fling a signal an arbitrary distance from the block a player has to click to
    * break it.
    */
-  public static float computeFor(IBlockAccess world, BlockPos pos) {
+  public static Vec3d computeFor(IBlockAccess world, BlockPos pos) {
     final TileEntitySpanWireHanger mount = findMount(world, pos);
     if (mount == null) {
-      return 0.0f;
+      return Vec3d.ZERO;
     }
     // The mount owns this number -- an extending mast gives nothing because the payload is meant
     // to stay on its own block, a cluster gives nothing because its bracket is rigid and holds
     // everything on it level, and anything else gives its drop up to the style's limit. Asking it
     // rather than repeating the rules here is what keeps this in step with the hardware, which
     // adds the same rise to the payload geometry it is drawn against.
-    return (float) (mount.getPayloadRise() * MODEL_UNITS_PER_BLOCK);
+    final Vec3d slide = mount.getPayloadSlide();
+    return new Vec3d(slide.x * MODEL_UNITS_PER_BLOCK,
+        mount.getPayloadRise() * MODEL_UNITS_PER_BLOCK,
+        slide.z * MODEL_UNITS_PER_BLOCK);
   }
 
   /**

@@ -23,6 +23,7 @@ import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalViso
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.client.Minecraft;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
@@ -108,12 +109,15 @@ public class TileEntityTrafficSignalHeadRenderer extends
     EnumFacing facing = blockState.getValue(AbstractBlockControllableSignalHead.FACING);
     int signalColorState = blockState.getValue(AbstractBlockControllableSignalHead.COLOR);
 
-    // Get per-block-type Y offset for signal positioning (world-aware for add-on detection)
-    float signalYOffset = 0.0f;
+    // Everything shifting this head off its block, world-aware for add-on detection. The height
+    // goes in below in model units, after the rotations; the horizontal terms go in above them,
+    // because they are world axes and rotating with the model would send them the wrong way.
+    Vec3d signalOffset = Vec3d.ZERO;
     if (blockState.getBlock() instanceof AbstractBlockControllableSignalHead) {
-      signalYOffset = ((AbstractBlockControllableSignalHead) blockState.getBlock())
-          .getSignalYOffset(te.getWorld(), te.getPos());
+      signalOffset = ((AbstractBlockControllableSignalHead) blockState.getBlock())
+          .getSignalOffset(te.getWorld(), te.getPos());
     }
+    float signalYOffset = (float) signalOffset.y;
 
     // Gather tile entity information
     TrafficSignalSectionInfo[] sectionInfos = te.getSectionInfos(signalColorState);
@@ -147,6 +151,12 @@ public class TileEntityTrafficSignalHeadRenderer extends
     // Push matrix once
     GL11.glPushMatrix();
     GL11.glTranslated(x, y, z);
+    // In blocks and in world axes, ahead of the scale and every rotation below. A span slides a
+    // head sideways so it hangs under its clamp rather than beside it, and that direction is fixed
+    // by the wire, not by which way the head happens to face.
+    if (signalOffset.x != 0.0 || signalOffset.z != 0.0) {
+      GL11.glTranslated(signalOffset.x / 16.0, 0.0, signalOffset.z / 16.0);
+    }
     GL11.glScaled(0.0625, 0.0625, 0.0625);
 
     if (hasTiltPivot) {

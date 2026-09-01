@@ -16,6 +16,7 @@ import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.MathHelper;
 import org.lwjgl.opengl.GL11;
 
@@ -78,9 +79,10 @@ public class TileEntitySignalBackplateRenderer
     // else: a plate is a block model and cannot follow a head a fraction of a block on its own.
     final BlockPos signalPos = AbstractBlockSignalBackplate.findSignalFor(te.getWorld(), pos,
         actual.getValue(AbstractBlockSignalBackplate.FACING));
-    final float rise = signalPos == null
-        ? 0.0f
-        : AbstractBlockSignalBackplate.spanRiseOf(te.getWorld(), signalPos);
+    final Vec3d spanOffset = signalPos == null
+        ? Vec3d.ZERO
+        : AbstractBlockSignalBackplate.spanOffsetOf(te.getWorld(), signalPos);
+    final float rise = (float) spanOffset.y;
 
     // The plate is drawn from the untilted model and turned here. The tilted variants stay in
     // getActualState -- they are how the tilt reaches this renderer -- but they no longer choose
@@ -100,12 +102,20 @@ public class TileEntitySignalBackplateRenderer
 
     // Keyed on the state actually compiled. The tilt is a matrix outside the list, so two tilts of
     // one plate share a list rather than evicting each other.
-    final long key =
-        (renderState.hashCode() * 31L + Math.round(rise * 64.0f)) * 31L + combinedLight;
+    long key = renderState.hashCode() * 31L + Math.round(rise * 64.0f);
+    key = key * 31L + Math.round(spanOffset.x * 64.0);
+    key = key * 31L + Math.round(spanOffset.z * 64.0);
+    key = key * 31L + combinedLight;
 
     GlStateManager.pushMatrix();
     GlStateManager.disableLighting();
     GlStateManager.translate(x, y, z);
+    // Sideways with the head. The rise goes into the compiled geometry below because it is baked
+    // per position anyway; this is a plain world-axis shift and belongs in the matrix.
+    if (spanOffset.x != 0.0 || spanOffset.z != 0.0) {
+      GlStateManager.translate(spanOffset.x / MODEL_UNITS_PER_BLOCK, 0.0,
+          spanOffset.z / MODEL_UNITS_PER_BLOCK);
+    }
     applyTilt(pos, signalPos, facing, tilt);
 
     int displayList = DISPLAY_LISTS.get(pos, key);

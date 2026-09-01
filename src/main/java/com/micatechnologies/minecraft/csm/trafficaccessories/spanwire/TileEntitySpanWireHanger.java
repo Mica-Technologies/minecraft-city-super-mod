@@ -197,6 +197,39 @@ public class TileEntitySpanWireHanger extends AbstractTileEntitySpanWireAttachme
   }
 
   /**
+   * How far the payload should slide sideways so it hangs directly under the clamp, in blocks.
+   *
+   * <p>The horizontal companion to {@link #getPayloadRise()}, and the reason it is not always zero
+   * is the same reason the clamp needed moving: a housing does not sit on its block's centre line,
+   * so the mast reaches across to it and the head hangs beside the wire rather than under it.
+   * Raising the head without also sliding it fixes the height and leaves the sideways gap, which is
+   * what the arm was papering over.
+   *
+   * <p>This is the perpendicular from the mast foot to the span, because the clamp is that foot
+   * projected onto the span. Following it puts the head under the wire whichever way the span has
+   * been shifted -- a centred span pulls the head onto its own centre line, and a span already
+   * lined up with the housings asks for nothing.
+   *
+   * <p>Only where the mount actually lowers its payload, so it follows the rise exactly: an
+   * extending mast exists to keep the payload on its own block, and a cluster's heads are carried
+   * by drops that already aim at each housing, so moving either would break what holds them.
+   *
+   * @return the sideways shift in blocks, with a zero Y, never null.
+   */
+  public Vec3d getPayloadSlide() {
+    if (!payloadTakesRise || getPayloadRise() <= 0.0) {
+      return Vec3d.ZERO;
+    }
+    final SpanWireCatenary cable = getCable();
+    if (cable == null) {
+      return Vec3d.ZERO;
+    }
+    final Vec3d foot = getHardwareFootPoint();
+    final Vec3d clamp = cable.pointAt(cable.parameterAt(foot.x, foot.z));
+    return new Vec3d(clamp.x - foot.x, 0.0, clamp.z - foot.z);
+  }
+
+  /**
    * How far this mount lifts what it carries, in blocks.
    *
    * <p>The single definition of the rise. {@code SpanWireHangOffset} converts this for the signal
