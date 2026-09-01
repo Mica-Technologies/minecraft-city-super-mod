@@ -669,14 +669,35 @@ public abstract class AbstractBlockControllableSignalHead extends AbstractBlockC
     if (tileEntity instanceof TileEntityTrafficSignalHead) {
       ((TileEntityTrafficSignalHead) tileEntity).invalidateMountSuppression();
     }
-    // A section added or removed above or below changes how far this assembly reaches down, which
-    // is what a box span's tether was strung to clear. Only for a change in this column: a head
-    // beside this one cannot make this one taller, and the mount search behind this is far too
-    // expensive to run on every neighbour notification a signal receives.
-    if (fromPos.getX() == pos.getX() && fromPos.getZ() == pos.getZ()) {
-      SpanWireManager.onPayloadDepthChanged(worldIn, pos);
-    }
     super.neighborChanged(state, worldIn, pos, blockIn, fromPos);
+  }
+
+  /**
+   * Tells the span above that the assembly hanging under it just got taller.
+   *
+   * <p>Hooked on the section itself rather than on the head above it, because the head is not
+   * always told. A double-arrow add-on sits a block <em>below</em> its main with air between, so
+   * placing one notifies the empty block and the two air blocks either side of it and nothing
+   * else -- the head never hears, and the tether stays where it was strung for a shorter signal.
+   * The block being placed always knows it was placed.
+   */
+  @Override
+  public void onBlockAdded(World worldIn, BlockPos pos, IBlockState state) {
+    super.onBlockAdded(worldIn, pos, state);
+    SpanWireManager.onPayloadDepthChanged(worldIn, pos);
+  }
+
+  /**
+   * The inverse: an assembly that just got shorter lets its span's tether come back up.
+   *
+   * <p>Safe to measure from here. By the time a block's {@code breakBlock} runs, the chunk already
+   * holds the new state, so the sweep this kicks off sees the world without this section rather
+   * than with it.
+   */
+  @Override
+  public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
+    super.breakBlock(worldIn, pos, state);
+    SpanWireManager.onPayloadDepthChanged(worldIn, pos);
   }
 
   @Override

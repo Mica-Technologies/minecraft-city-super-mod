@@ -35,8 +35,15 @@ public class TileEntitySpanWireAnchorRenderer
   /** The shackle taking up the offset between the block's own eyebolt and the cable. */
   private static final double LINK_RADIUS = SpanWireCableGeometry.CABLE_RADIUS * 2.6;
 
-  /** How far the tether's dead end reaches back toward the pole. Past the block edge, into it. */
-  private static final double TETHER_TERMINATION_REACH = 0.62;
+  /**
+   * The longest stub that will be drawn from a dead-ended tether back to its pole.
+   *
+   * <p>A limit rather than the length. The stub runs to the pole, and how far that is depends on
+   * how far the span has been offset sideways off the block centre line; a fixed length is right
+   * at one offset and short at every other. This only stops a span in some unforeseen state from
+   * drawing a girder across the intersection.
+   */
+  private static final double TETHER_TERMINATION_MAX_REACH = 1.5;
 
   private static final float STEEL_RED = 0.24f;
   private static final float STEEL_GREEN = 0.25f;
@@ -141,18 +148,23 @@ public class TileEntitySpanWireAnchorRenderer
     }
 
     // No anchor placed: the tether hangs at a derived height, so there is nothing to dead-end on
-    // and the best that can be drawn is a stub back toward the pole. Sample inward along the
-    // tether; at an end one of the two samples is the end itself.
-    final double inward = atT < 0.5 ? Math.min(1.0, atT + 0.01) : Math.max(0.0, atT - 0.01);
-    Vec3d along = tether.pointAt(inward).subtract(end);
-    if (along.x * along.x + along.y * along.y + along.z * along.z < 1.0e-12) {
-      return;
+    // and the best that can be drawn is its own bracket, lower down the same pole.
+    //
+    // Aimed at the pole rather than run back along the wire. Running along the wire was a stub of
+    // fixed length pointing wherever the span happened to leave, which stopped in mid-air short of
+    // anything -- the wire ended near the anchor bracket rather than on it, and read as a gap. The
+    // pole is on this block's own centre line, and going there is what the shackle on the
+    // messenger above does, so the two ends now match.
+    final Vec3d eyebolt = SpanWireDefinition.attachPoint(te.getPos());
+    final Vec3d toPole = new Vec3d(eyebolt.x, end.y, eyebolt.z);
+    final double reach = end.distanceTo(toPole);
+    if (reach > 1.0e-6) {
+      SpanWireCableGeometry.emitStraightTube(buffer, end,
+          reach <= TETHER_TERMINATION_MAX_REACH
+              ? toPole
+              : end.add(toPole.subtract(end).normalize().scale(TETHER_TERMINATION_MAX_REACH)),
+          origin, LINK_RADIUS, STEEL_RED, STEEL_GREEN, STEEL_BLUE, skyLight, blockLight);
     }
-    along = along.normalize();
-
-    SpanWireCableGeometry.emitStraightTube(buffer, end,
-        end.subtract(along.scale(TETHER_TERMINATION_REACH)), origin, LINK_RADIUS,
-        STEEL_RED, STEEL_GREEN, STEEL_BLUE, skyLight, blockLight);
     emitThimble(buffer, tether, atT, end, origin, skyLight, blockLight);
   }
 
