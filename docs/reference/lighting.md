@@ -7,6 +7,8 @@ Street lights, floodlights, pendants and sconces, all switchable.
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
 
+<div class="block-table" markdown>
+
 | Block | Registry ID | Hardness | Resistance | Tool | Harvest |
 |---|---|---|---|---|---|
 | Alto Classic Post Light | `csm:mclaclassicpostlight` | 2 | 10 | pickaxe | 1 |
@@ -148,3 +150,5 @@ Street lights, floodlights, pendants and sconces, all switchable.
 | Westinghouse OV50 (Shaded) | `csm:whov50shaded` | 2 | 10 | pickaxe | 1 |
 | Westinghouse OV50 (Shaded, No Photocell) | `csm:whov50shadednp` | 2 | 10 | pickaxe | 1 |
 | Westinghouse OV50 (Standard) | `csm:whov50` | 2 | 10 | pickaxe | 1 |
+
+</div>

@@ -7,6 +7,8 @@ Arcade cabinets and the playable machines that go with them.
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
 
+<div class="block-table" markdown>
+
 | Block | Registry ID | Hardness | Resistance | Tool | Harvest |
 |---|---|---|---|---|---|
 | Air Hockey Table | `csm:airhockeytable` | 1 | 10 | pickaxe | 1 |
@@ -28,3 +30,5 @@ Arcade cabinets and the playable machines that go with them.
 | Tempest Arcade Cabinet | `csm:actempest` | 1 | 10 | pickaxe | 1 |
 | Toybox (Boy) | `csm:toyboxboy` | 2 | 10 | pickaxe | 1 |
 | Toybox (Girl) | `csm:toyboxgirl` | 2 | 10 | pickaxe | 1 |
+
+</div>

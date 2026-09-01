@@ -7,6 +7,8 @@ Utility poles, transformers and the Forge Energy that runs through them.
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
 
+<div class="block-table" markdown>
+
 | Block | Registry ID | Hardness | Resistance | Tool | Harvest |
 |---|---|---|---|---|---|
 | AF Extended Insulator (Side Mount) | `csm:afeis` |  |  |  |  |
@@ -55,3 +57,5 @@ Utility poles, transformers and the Forge Energy that runs through them.
 | TE Perch Guard | `csm:tepg` |  |  |  |  |
 | Transformer Mount | `csm:transformermount` |  |  |  |  |
 | Transformer Screw Caps | `csm:tsc` |  |  |  |  |
+
+</div>

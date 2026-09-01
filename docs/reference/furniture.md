@@ -7,6 +7,8 @@ Interior fittings: seating, counters, appliances and fixtures.
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
 
+<div class="block-table" markdown>
+
 | Block | Registry ID | Hardness | Resistance | Tool | Harvest |
 |---|---|---|---|---|---|
 | Anchor | `csm:anchor` | 2 | 10 | pickaxe | 1 |
@@ -71,3 +73,5 @@ Interior fittings: seating, counters, appliances and fixtures.
 | Water Pump | `csm:waterpump` | 2 | 10 | pickaxe | 1 |
 | Wind Chime | `csm:windchime` | 2 | 10 | pickaxe | 1 |
 | Wine Rack | `csm:winerack` | 2 | 10 | pickaxe | 1 |
+
+</div>

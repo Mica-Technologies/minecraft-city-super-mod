@@ -7,6 +7,8 @@ Retired and internal blocks kept so old worlds still load. Not in any creative t
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
 
+<div class="block-table" markdown>
+
 | Block | Registry ID | Hardness | Resistance | Tool | Harvest |
 |---|---|---|---|---|---|
 | Black Angled Thin Traffic Pole w/ 1 Mount | `csm:trafficpolehorizontalanglemount1black` |  | 10 | pickaxe | 1 |
@@ -121,3 +123,5 @@ Retired and internal blocks kept so old worlds still load. Not in any creative t
 | Worded Crosswalk Light (Dual 12-Inch, Left Mount) | `csm:controllablecrosswalkdoublewordedleftmount` | 2 | 10 | pickaxe | 1 |
 | Worded Crosswalk Light (Dual 12-Inch, Rear Mount) | `csm:controllablecrosswalkdoublewordedrearmount` | 2 | 10 | pickaxe | 1 |
 | Worded Crosswalk Light (Dual 12-Inch, Right Mount) | `csm:controllablecrosswalkdoublewordedrightmount` | 2 | 10 | pickaxe | 1 |
+
+</div>

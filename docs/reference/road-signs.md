@@ -7,6 +7,8 @@ The MUTCD sign set, grouped the way the manual groups it.
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
 
+<div class="block-table" markdown>
+
 | Block | Registry ID | Hardness | Resistance | Tool | Harvest |
 |---|---|---|---|---|---|
 | 1 Hr Truck Parking | `csm:1hrtruckparkingsign` | 2 | 10 | pickaxe | 1 |
@@ -583,3 +585,5 @@ The MUTCD sign set, grouped the way the manual groups it.
 | Y-Intersection Sign | `csm:signyintersection` | 2 | 10 | pickaxe | 1 |
 | Yield | `csm:yieldsign` | 2 | 10 | pickaxe | 1 |
 | Yield Ahead Sign | `csm:signyieldahead` | 2 | 10 | pickaxe | 1 |
+
+</div>
