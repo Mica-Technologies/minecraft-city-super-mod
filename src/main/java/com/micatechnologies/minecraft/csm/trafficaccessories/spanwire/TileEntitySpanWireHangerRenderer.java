@@ -55,6 +55,23 @@ public class TileEntitySpanWireHangerRenderer
    * a token loop next to all that mast.
    */
   private static final double COIL_MAST_SCALE = 1.625;
+
+  /**
+   * How far below the cable the pigtail enters the mast fitting.
+   *
+   * <p>Into the side of the gooseneck just under the clamp, which is where the conductor actually
+   * goes -- not into the clamp itself, which only holds the messenger.
+   */
+  private static final double PIGTAIL_MAST_DROP = 0.055;
+
+  /** How far the pigtail dips between its two ends. Slack wire, not a taut string. */
+  private static final double PIGTAIL_SAG = 0.045;
+
+  /** Enough segments for the dip to read as a curve rather than a bent stick. */
+  private static final int PIGTAIL_SEGMENTS = 6;
+
+  /** Where on the coil the lead leaves: the upper inner quarter, as a fraction of its radius. */
+  private static final double PIGTAIL_QUARTER = 0.707;
   private static final double COIL_WIRE_RADIUS = SpanWireCableGeometry.CABLE_RADIUS * 0.7;
   private static final double COIL_SPACING = 0.055;
 
@@ -133,8 +150,8 @@ public class TileEntitySpanWireHangerRenderer
     // dropping power into the payload, so a sign -- bolted to the wire and wired to nothing --
     // gets none.
     if (te.payloadTakesConductorFeed()) {
-      emitConductorCoils(buffer, te.getCoilStyle(), te.getMountStyle(), cablePoint, along, origin,
-          skyLight, blockLight);
+      emitConductorCoils(buffer, te.getCoilStyle(), te.getMountStyle(), cablePoint, mastTop,
+          along, origin, skyLight, blockLight);
     }
     emitTetherTie(buffer, te, gripT, origin, skyLight, blockLight);
   }
@@ -207,8 +224,8 @@ public class TileEntitySpanWireHangerRenderer
    * common case.
    */
   private void emitConductorCoils(BufferBuilder buffer, SpanWireCoilStyle style,
-      SpanWireMountStyle mountStyle, Vec3d cablePoint, Vec3d along, Vec3d origin, int skyLight,
-      int blockLight) {
+      SpanWireMountStyle mountStyle, Vec3d cablePoint, Vec3d mastTop, Vec3d along, Vec3d origin,
+      int skyLight, int blockLight) {
     final double coilRadius =
         COIL_RADIUS * (mountStyle == SpanWireMountStyle.MAST ? COIL_MAST_SCALE : 1.0);
     // The clearance past the saddle grows with the coil. Without that, a bigger loop simply moves
@@ -225,8 +242,8 @@ public class TileEntitySpanWireHangerRenderer
     final int sides = style == SpanWireCoilStyle.BOTH_SIDES ? 2 : 1;
     for (int side = 0; side < sides; side++) {
       final double direction = side == 0 ? 1.0 : -1.0;
-      emitCoilBundle(buffer, cablePoint, along, up, direction, coilRadius, sideOffset, origin,
-          skyLight, blockLight);
+      emitCoilBundle(buffer, cablePoint, mastTop, along, up, direction, coilRadius, sideOffset,
+          origin, skyLight, blockLight);
     }
   }
 
@@ -236,9 +253,10 @@ public class TileEntitySpanWireHangerRenderer
    * <p>Takes its size and its clearance rather than reading constants, because both depend on the
    * mount style: an extending mast carries visibly more coiled slack than a flush clamp.
    */
-  private void emitCoilBundle(BufferBuilder buffer, Vec3d cablePoint, Vec3d along, Vec3d up,
-      double direction, double coilRadius, double sideOffset, Vec3d origin, int skyLight,
+  private void emitCoilBundle(BufferBuilder buffer, Vec3d cablePoint, Vec3d mastTop, Vec3d along,
+      Vec3d up, double direction, double coilRadius, double sideOffset, Vec3d origin, int skyLight,
       int blockLight) {
+    Vec3d pigtailFrom = null;
     for (int loop = 0; loop < COIL_LOOPS; loop++) {
       final double alongOffset = direction * (sideOffset + loop * COIL_SPACING);
       final Vec3d centre = cablePoint
@@ -255,6 +273,45 @@ public class TileEntitySpanWireHangerRenderer
 
       SpanWireCableGeometry.emitTubePath(buffer, ring, true, origin, COIL_WIRE_RADIUS,
           COIL_RED, COIL_GREEN, COIL_BLUE, skyLight, blockLight);
+
+      // The loop nearest the mast is the one the lead comes off. Taken from its upper inner
+      // quarter, which is the part of a hanging coil that faces the hardware.
+      if (loop == 0) {
+        pigtailFrom = centre
+            .add(along.scale(-direction * coilRadius * PIGTAIL_QUARTER))
+            .add(up.scale(coilRadius * PIGTAIL_QUARTER));
+      }
     }
+
+    if (pigtailFrom != null) {
+      emitPigtail(buffer, mastTop.add(0.0, -PIGTAIL_MAST_DROP, 0.0), pigtailFrom, origin,
+          skyLight, blockLight);
+    }
+  }
+
+  /**
+   * The lead running from a coil back into the mast.
+   *
+   * <p>Coiled slack is surplus conductor, and conductor is surplus because it is on its way
+   * somewhere -- into the signal. Without this the coils are rings hanging near the hardware with
+   * no reason to be there, which is what they looked like: decoration rather than wiring.
+   *
+   * <p>Dipped between its ends rather than run straight. It is slack cable a few inches long, and a
+   * taut line between two points is the one thing it never looks like.
+   */
+  private void emitPigtail(BufferBuilder buffer, Vec3d atMast, Vec3d atCoil, Vec3d origin,
+      int skyLight, int blockLight) {
+    final List<Vec3d> path = new ArrayList<>(PIGTAIL_SEGMENTS + 1);
+    for (int i = 0; i <= PIGTAIL_SEGMENTS; i++) {
+      final double t = i / (double) PIGTAIL_SEGMENTS;
+      // Zero at both ends, deepest in the middle, so it leaves and arrives where it should.
+      final double sag = PIGTAIL_SAG * 4.0 * t * (1.0 - t);
+      path.add(new Vec3d(
+          atMast.x + (atCoil.x - atMast.x) * t,
+          atMast.y + (atCoil.y - atMast.y) * t - sag,
+          atMast.z + (atCoil.z - atMast.z) * t));
+    }
+    SpanWireCableGeometry.emitTubePath(buffer, path, false, origin, COIL_WIRE_RADIUS,
+        COIL_RED, COIL_GREEN, COIL_BLUE, skyLight, blockLight);
   }
 }
