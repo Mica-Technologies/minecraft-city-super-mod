@@ -117,34 +117,6 @@ public class TileEntitySpanWireClusterMountRenderer
     }
 
     emitTieBar(buffer, te, along, payloads, origin, skyLight, blockLight);
-    emitTetherTies(buffer, te, payloads, origin, skyLight, blockLight);
-  }
-
-  /**
-   * One tie down to a box span's tether for every head on the bracket.
-   *
-   * <p>Reached from the point each head hangs from rather than from the mount, which is the same
-   * projection the drops and the tie bar use -- so a tie leaves the tether directly under the
-   * housing it holds, on a diagonal span as much as a square one.
-   *
-   * <p>No rise is added to the reported height. A cluster's bracket is rigid and gives its heads
-   * no rise, so what the payload reports is already where its underside is.
-   */
-  private void emitTetherTies(BufferBuilder buffer, TileEntitySpanWireClusterMount te,
-      List<TileEntitySpanWireClusterMount.ClusterPayload> payloads, Vec3d origin, int skyLight,
-      int blockLight) {
-    final SpanWireCatenary tether = te.getTether();
-    if (tether == null) {
-      return;
-    }
-    for (TileEntitySpanWireClusterMount.ClusterPayload payload : payloads) {
-      // A payload that takes no tie -- a sign -- reports NaN, and gets no stub into thin air.
-      if (Double.isNaN(payload.getTieY())) {
-        continue;
-      }
-      TileEntitySpanWireHangerRenderer.emitTetherTieAt(buffer, tether, te.getSpan(),
-          te.bracketPointFor(payload), payload.getTieY(), origin, skyLight, blockLight);
-    }
   }
 
   /**
@@ -167,6 +139,12 @@ public class TileEntitySpanWireClusterMountRenderer
    *
    * <p>Nothing is drawn for a single head. There is nothing to tie it to, and a stub sticking out
    * of one housing is worse than no bar at all.
+   *
+   * <p>The bar is also what a box span's tether holds, which is why the drop down to the tether is
+   * emitted from here. A cluster gets <b>one</b>, from the middle of the bar. Drawing one per head
+   * was wrong twice over: the heads are already tied to each other by this bar, so a second
+   * connection at each of them is hardware doing nothing, and a drop under every housing reads as
+   * a row of legs rather than as one assembly hanging off one wire.
    */
   private void emitTieBar(BufferBuilder buffer, TileEntitySpanWireClusterMount te, Vec3d along,
       List<TileEntitySpanWireClusterMount.ClusterPayload> payloads, Vec3d origin, int skyLight,
@@ -195,12 +173,25 @@ public class TileEntitySpanWireClusterMountRenderer
       tieCount++;
     }
 
-    if (tieCount < 2 || first == last) {
+    if (tieCount == 0) {
       return;
     }
-    SpanWireCableGeometry.emitStraightTube(buffer,
-        tieBarEnd(te, first, tieY), tieBarEnd(te, last, tieY),
-        origin, TIE_BAR_RADIUS, STEEL_RED, STEEL_GREEN, STEEL_BLUE, skyLight, blockLight);
+
+    final Vec3d firstEnd = tieBarEnd(te, first, tieY);
+    final Vec3d lastEnd = tieBarEnd(te, last, tieY);
+    if (tieCount > 1 && first != last) {
+      SpanWireCableGeometry.emitStraightTube(buffer, firstEnd, lastEnd,
+          origin, TIE_BAR_RADIUS, STEEL_RED, STEEL_GREEN, STEEL_BLUE, skyLight, blockLight);
+    }
+
+    // One drop, from the middle of what the bar spans -- which for a single head is that head. The
+    // tether holds the assembly, and the assembly is already held together.
+    final SpanWireCatenary tether = te.getTether();
+    if (tether != null) {
+      TileEntitySpanWireHangerRenderer.emitTetherTieAt(buffer, tether, te.getSpan(),
+          new Vec3d((firstEnd.x + lastEnd.x) * 0.5, tieY, (firstEnd.z + lastEnd.z) * 0.5),
+          tieY, origin, skyLight, blockLight);
+    }
   }
 
   /** Where the tie bar meets one head: directly under the point its drop leaves the bracket. */
