@@ -12,6 +12,7 @@ import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import org.lwjgl.opengl.GL11;
 
 /**
@@ -73,7 +74,13 @@ public class TileEntitySignalBackplateRenderer
         ? 0.0f
         : AbstractBlockSignalBackplate.spanRiseOf(te.getWorld(), signalPos);
 
-    final long key = actual.hashCode() * 31L + Math.round(rise * 64.0f);
+    // The light is baked into the compiled vertices, so a change in it has to compile a new list.
+    // Day and night do not need this -- those move the lightmap texture under a fixed coordinate --
+    // but a torch going up next door changes the coordinate itself.
+    final int combinedLight = te.getWorld().getCombinedLight(pos, 0);
+
+    final long key =
+        (actual.hashCode() * 31L + Math.round(rise * 64.0f)) * 31L + combinedLight;
 
     GlStateManager.pushMatrix();
     GlStateManager.disableLighting();
@@ -119,8 +126,26 @@ public class TileEntitySignalBackplateRenderer
     // and add the lift. Without the first part every plate would be drawn at its absolute world
     // position on top of the translate already applied, and end up a very long way away.
     buffer.setTranslation(-pos.getX(), -pos.getY() + rise / MODEL_UNITS_PER_BLOCK, -pos.getZ());
+    // Flat, not the default smooth path, and this is the fix for the blotches on a plate's back.
+    //
+    // Smooth lighting computes ambient occlusion per vertex from the blocks around the face -- the
+    // *block's* face. A plate's geometry is nowhere near its block: the model runs from -2 to 18
+    // across and -16 to 28 up, so most of it hangs a block and a half outside the position whose
+    // neighbours are being sampled. The head and the pole next door therefore cast occlusion onto
+    // parts of the plate that are not next to them at all. On a plate mounted in the usual way, in
+    // full daylight, that put patches of pure black and near-black across a face whose lit value is
+    // 23 -- measured along one scanline as 0, 7, 10, 19 and 23 side by side.
+    //
+    // The flat path takes one brightness per quad instead, and since none of these quads lie on a
+    // block boundary they all resolve to this block's own light -- a single uniform value across
+    // the whole plate, which is what every other renderer in CSM already does by hand. The same
+    // scanline now reads 23 with 25 on the side rails. Face shading still comes through: the
+    // per-direction multiplier is baked into the quad colours at model bake time, so the plate
+    // keeps its depth. (An isolated plate with no neighbours looked fine either way -- which is why
+    // it is a useless control, and why this was checked on a mounted one.)
     dispatcher.getBlockModelRenderer()
-        .renderModel(te.getWorld(), model, actual, pos, buffer, false);
+        .renderModelFlat(te.getWorld(), model, actual, pos, buffer, false,
+            MathHelper.getPositionRandom(pos));
     buffer.setTranslation(0.0, 0.0, 0.0);
     tessellator.draw();
   }
