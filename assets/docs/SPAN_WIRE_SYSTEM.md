@@ -306,8 +306,17 @@ in wind. Two things about it are not obvious:
   back to the derived height. `SpanWireManager.onTetherAnchorRemoved` is the inverse of
   `findTetherAnchorBelow` and shares its reach, so the two cannot drift apart.
 
+  **Placing one takes effect immediately, as breaking one already did.** For a long time only half
+  of that was wired up: `onTetherAnchorRemoved` ran from the anchor's `breakBlock`, but nothing ran
+  on placement, so an anchor added under a finished span did nothing until the span was re-strung.
+  `onTetherAnchorPlaced` closes it, and re-reads *both* ends rather than attaching the one just
+  placed, so the both-or-neither rule still falls out of one function.
+
   With no anchors placed the tether falls back to hanging at the derived clearance below, with a
-  plain stub back toward the pole. That is the fallback, not the intent.
+  stub back to the pole. That stub is aimed at the block's own centre line, where the pole is, and
+  is bounded rather than fixed -- an earlier fixed-length stub run back along the wire pointed
+  wherever the span happened to leave and stopped in mid-air, so the wire ended *near* its bracket
+  rather than on it. This is still the fallback, not the intent.
 * Its drop is **derived, not fixed**. A tight tether and a sagging messenger converge toward
   midspan, so a fixed drop is only correct at the anchors: on a 20-block span a 2.75 drop leaves
   1.95 of real clearance in the middle, straight through the lamps, and a 40-block span is twice
@@ -326,12 +335,61 @@ the hardware is; vertically, an outlier must not be sliced through, and every ti
 upward to be drawn at all. Payloads that take no tie — signs — are not consulted, since nothing
 ties to them.
 
+**A payload is an assembly, not a block.** This is the correction that matters most, because nearly
+every real signal is more than one block: a three-section head with a single-section add-on bolted
+under it, a doghouse main over its bimodal secondary, a head with a double-arrow add-on a block
+below through a gap. All of those are one signal to a driver, and the tether was measured against
+whichever block the mount happened to sit above — so it was strung straight through the rest.
+`AbstractBlockControllableSignalHead.getSpanTetherTieY` now walks down through the bodies bolted to
+it, adjacent or across a one-block gap, and reports the underside of the whole stack.
+
+How far it walks is **derived from `SpanWireHangOffset.MAX_SEARCH_UP`, not chosen separately**. That
+search is what decides whether a body finds its mount, and therefore whether it takes the span's
+rise; a body beyond its reach is not hanging with the head at all, and dropping the wire to clear
+one would be clearing something that is not there. Reading the constant is the only way the two can
+be certain to agree.
+
+**Every column of a cluster is measured, not just the one under the mast.** A cluster carries up to
+four heads spread along its bracket and only one is under the mount block, so reading
+`hanger.down()` alone measured one head in four. The cable is sampled under each *payload* rather
+than under the mast, which on a diagonal is not the same place.
+
+**And it is re-measured when an assembly changes, without re-stringing.** A mount hears about its
+own neighbours, so a block placed under the block under it is silent — which is what made adding an
+add-on to a finished span require tearing it down and rebuilding it. The section reports its own
+placement and removal (`onBlockAdded` / `breakBlock` calling
+`SpanWireManager.onPayloadDepthChanged`) rather than relying on a neighbour notification that, for
+the gapped add-on, never reaches any head at all. The mount separately re-reads what it carries on a
+one-second interval, so the drawn hardware follows too.
+
 **The ties themselves reach the payload rather than standing a fixed height.** This is the part that
 actually fixes the alignment: the tether is strung far tighter than the messenger, so heads hanging
 from the messenger's curve sit at different heights above a taut tether along the span. A fixed stub
 is correct at exactly one point and pokes into the lenses everywhere else. Each mount asks its
 payload for `getSpanTetherTieY` and draws to it, clamped so a bad answer cannot reach across the
 sky.
+
+**That clamp is the span's own tether clearance, not a constant.** It used to be a fixed 1.5 blocks,
+which was fine until the tether started hanging below the deepest thing on the span: a plain head
+sharing a span with a tall assembly then needs a longer tie than that, and drew nothing at all. No
+honest tie can be longer than the clearance, since what it reaches is hanging from the messenger, so
+the bound moves with the span instead.
+
+**A cluster ties differently from a mount, and is not a special case of it.** A cluster reuses the
+single mount's whole hardware pass for its mast, saddle and coils — there is one mast — and for a
+while it reused the tie with it, which put one stub at the bracket's midpoint holding neither
+housing. Ties are per *head*; masts are per mount. But a cluster's heads are also already tied to
+each other by the bar across their bottoms, so one tie per head is hardware holding what is held.
+The arrangement is:
+
+* the **bar** runs at the deepest assembly's underside, the only height that passes beneath every
+  housing rather than through one;
+* any head sitting above the bar gets a short **leg** down to it, at the same point along the
+  bracket its drop comes down at — on a cluster of matching heads none of these is drawn;
+* **one drop** goes from the middle of what the bar spans down to the tether.
+
+`TileEntitySpanWireHangerRenderer.emitTetherTieAt` is the shared geometry; `drawsTetherTie()` is
+what the cluster's borrowed copy turns off.
 
 ## Rendering
 
