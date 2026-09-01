@@ -35,13 +35,16 @@ public abstract class AbstractBlockSign extends AbstractBlockRotatableHZEight
 
   public static final PropertyBool DOWNWARD = PropertyBool.create("downward");
   /**
-   * How far behind the middle of the block a setback panel sits, in blocks.
+   * How far behind the middle of the block a setback sign's own post sits, in blocks.
    *
-   * <p>Read off the setback bounding box below, whose panel box is z 0.75 to 0.8125 -- centre
-   * 0.78125, which is 0.28125 past the middle. A span's drop hardware comes down to this so it
-   * meets the sign rather than passing through its face.
+   * <p>Read off the setback model: the panel is a thin plate at z 12.5 to 13, and the post behind
+   * it runs z 13 to 16, centre 14.5 -- which is 0.40625 past the middle of the block.
+   *
+   * <p>The post, deliberately, and not the panel. A span's drop coming down to the panel plane
+   * clips through the face of the sign; coming down to the post it lands squarely on top of the
+   * mounting the sign already has, which is where a real one would be bolted.
    */
-  private static final double SETBACK_PANEL_OFFSET = 0.28125;
+  private static final double SETBACK_PANEL_OFFSET = 0.40625;
 
   /**
    * Brings a span's drop hardware back onto the panel instead of through its face.
