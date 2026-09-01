@@ -95,6 +95,9 @@ public class CsmClientProxy implements ICsmProxy {
   public void init(FMLInitializationEvent event) {
     // Bind the TESR to the TileEntity
     ClientRegistry.bindTileEntitySpecialRenderer(TileEntityTrafficSignalHead.class, new TileEntityTrafficSignalHeadRenderer());
+    ClientRegistry.bindTileEntitySpecialRenderer(
+        com.micatechnologies.minecraft.csm.trafficaccessories.TileEntitySignalBackplate.class,
+        new com.micatechnologies.minecraft.csm.trafficaccessories.TileEntitySignalBackplateRenderer());
     ClientRegistry.bindTileEntitySpecialRenderer(TileEntityCrosswalkSignal.class, new TileEntityCrosswalkSignalRenderer());
     ClientRegistry.bindTileEntitySpecialRenderer(TileEntityCrosswalkSignalNew.class, new TileEntityCrosswalkSignalNewRenderer());
     ClientRegistry.bindTileEntitySpecialRenderer(TileEntityBlankoutBox.class, new TileEntityBlankoutBoxRenderer());
