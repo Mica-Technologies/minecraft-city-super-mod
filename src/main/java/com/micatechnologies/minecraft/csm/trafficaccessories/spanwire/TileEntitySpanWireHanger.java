@@ -124,13 +124,34 @@ public class TileEntitySpanWireHanger extends AbstractTileEntitySpanWireAttachme
 
   @Override
   public long getHardwareStateKey() {
+    // The one per-frame entry point this mount has, so it is where the stale check goes -- not in
+    // the accessors below. Those are only reached while a display list is being compiled, and a
+    // list that is already cached never compiles again, so a reading refreshed only from there
+    // could never notice it had gone stale: cached list, no refresh, no key change, cached list.
+    refreshPayloadIfStale();
+
     long key = (mountStyle.ordinal() * 31L + coilStyle.ordinal()) * 31L
         + (payloadTakesConductorFeed ? 1L : 0L);
     // Quantised rather than taken raw off the double: the offset only ever holds a handful of
     // values, and this keeps the key stable against the last bit of floating point noise.
     key = key * 31L + Math.round(payloadHardwareOffset.x * 64.0);
     key = key * 31L + Math.round(payloadHardwareOffset.z * 64.0);
+    // How far the payload reaches, which is what the drop and the tether tie are drawn to. Left
+    // out until now, so bolting an add-on onto a head redrew nothing unless the change happened
+    // to move the span as well.
+    key = key * 31L + quantise(payloadTetherTieY);
+    key = key * 31L + quantise(payloadTopY);
     return key;
+  }
+
+  /**
+   * A height as a stable key term, or a sentinel for "none".
+   *
+   * <p>{@code NaN} is a real answer here -- it is what a payload that takes no tie reports -- and
+   * it has to be distinguishable from a height, which rounding it would not be.
+   */
+  private static long quantise(double height) {
+    return Double.isNaN(height) ? Long.MIN_VALUE : Math.round(height * 64.0);
   }
 
   /** Whether to draw a strap from this mount down onto what it carries. */
@@ -203,7 +224,6 @@ public class TileEntitySpanWireHanger extends AbstractTileEntitySpanWireAttachme
    * giving it. See {@link #getPayloadRise()}.
    */
   public double getPayloadTetherTieY() {
-    refreshPayloadIfStale();
     return Double.isNaN(payloadTetherTieY)
         ? Double.NaN
         : payloadTetherTieY + appliedRise();
