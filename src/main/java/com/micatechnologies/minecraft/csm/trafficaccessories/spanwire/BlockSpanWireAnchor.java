@@ -67,6 +67,32 @@ public class BlockSpanWireAnchor extends AbstractBlockRotatableNSEW
     return new TileEntitySpanWireAnchor();
   }
 
+  /**
+   * Places the anchor with its plate against the surface it was put on.
+   *
+   * <p>The inherited behaviour is {@code placer.getHorizontalFacing().getOpposite()}, which is
+   * right for a block whose front should look back at whoever placed it -- a signal head, a
+   * screen -- and exactly wrong for a bracket that bolts onto something. This block's facing
+   * points <em>at</em> its mounting surface: the plate occupies the facing half, and the eyebolt
+   * stands off the other way. So a builder facing a pole and clicking it got the plate on the far
+   * side of the block, with the eyebolt buried in the pole. A hundred and eighty degrees out,
+   * every time.
+   *
+   * <p>Taken from the clicked face rather than from the way the placer happens to be looking,
+   * because the clicked face is the surface being mounted to and stays right when a builder
+   * clicks a pole from an angle. A top or bottom face has no horizontal side to bolt to, so that
+   * case falls back to the placer.
+   */
+  @Override
+  @Nonnull
+  public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing,
+      float hitX, float hitY, float hitZ, int meta, net.minecraft.entity.EntityLivingBase placer) {
+    final EnumFacing towardSurface = facing.getAxis().isHorizontal()
+        ? facing.getOpposite()
+        : placer.getHorizontalFacing();
+    return getDefaultState().withProperty(FACING, towardSurface);
+  }
+
   @Override
   public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
     return BOUNDING_BOX;
