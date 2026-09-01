@@ -95,3 +95,9 @@ assets/docs/agent_progress/
 
 # macOS Finder metadata
 .DS_Store
+
+# MkDocs build output. The site is built by CI from docs/; this is only ever local.
+/site/
+
+# Python bytecode from the dev-env-utils scripts.
+dev-env-utils/scripts/__pycache__/

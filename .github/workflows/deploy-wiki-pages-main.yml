@@ -1,0 +1,80 @@
+name: Deploy Guidebook (GitHub Pages)
+
+# Publishes docs/ as the CSM guidebook at
+# https://mica-technologies.github.io/minecraft-city-super-mod/
+#
+# ONE-TIME MANUAL SETUP: Settings -> Pages -> Build and deployment -> Source -> "GitHub Actions".
+# Without that, this workflow builds cleanly and the deploy step fails with a 404 — Pages will
+# not accept an artifact while the source is still set to a branch.
+on:
+  push:
+    branches: [ main ]
+    # Only doc-affecting changes. A mod-code commit that touches nothing under docs/ has nothing
+    # to publish, and the alternative is a Pages deploy on literally every push to main.
+    paths:
+      - 'docs/**'
+      - 'mkdocs.yml'
+      - '.github/workflows/deploy-wiki-pages-main.yml'
+  # Manual re-publish, for when the site needs rebuilding without a doc change.
+  workflow_dispatch:
+
+# Least privilege: read the repo, write Pages, and mint the OIDC token deploy-pages exchanges
+# for its deployment credentials. Nothing here needs `contents: write` — there is no gh-pages
+# branch in this setup; the built site goes straight from an artifact to Pages.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# One deploy at a time, and never cancel one mid-flight: a cancelled deployment can leave the
+# Pages site on a half-published state, which is worse than publishing twice.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build site
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          # mkdocs-material's git-revision plugins read history. Not enabled today, but a shallow
+          # clone is the failure they present as, and it is a one-line thing to get wrong later.
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+          cache-dependency-path: docs/requirements.txt
+
+      - name: Install documentation toolchain
+        run: python -m pip install -r docs/requirements.txt
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      # --strict turns warnings into errors, so a broken internal link or a nav entry pointing at
+      # a file that no longer exists fails here rather than shipping a 404 to readers.
+      - name: Build with MkDocs
+        run: mkdocs build --strict
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
