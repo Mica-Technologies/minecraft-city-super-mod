@@ -32,6 +32,9 @@ public class TileEntitySpanWireAnchorRenderer
    */
   private static final double GUY_ANCHOR_HEIGHT = 0.45;
 
+  /** The shackle taking up the offset between the block's own eyebolt and the cable. */
+  private static final double LINK_RADIUS = SpanWireCableGeometry.CABLE_RADIUS * 1.6;
+
   private static final float STEEL_RED = 0.24f;
   private static final float STEEL_GREEN = 0.25f;
   private static final float STEEL_BLUE = 0.27f;
@@ -41,8 +44,33 @@ public class TileEntitySpanWireAnchorRenderer
       SpanWireCatenary cable, double atT, Vec3d origin, int skyLight, int blockLight) {
     final Vec3d attach = te.getAttachPoint();
 
+    emitOffsetLink(buffer, te, attach, origin, skyLight, blockLight);
     emitThimble(buffer, cable, atT, attach, origin, skyLight, blockLight);
     emitGuy(buffer, te, attach, origin, skyLight, blockLight);
+  }
+
+  /**
+   * The link from the eyebolt in this block's own model out to where the cable actually is.
+   *
+   * <p>The block model cannot move: it is a JSON model, the same for every anchor in the world,
+   * with its eyebolt on the block's centre line. The span, meanwhile, runs to one side of that
+   * line so its wires sit over the signal housings -- so the cable dead-ends beside the eyebolt
+   * rather than through it, and the anchor reads as a bracket the wire happens to pass near.
+   *
+   * <p>A short link closes it, and is what the real hardware would be: an anchor shackle taking up
+   * exactly the offset between a fixed plate and where the wire needs to land. Zero length when
+   * the span runs down the block centre line, in which case nothing is drawn at all.
+   */
+  private void emitOffsetLink(BufferBuilder buffer, TileEntitySpanWireAnchor te, Vec3d attach,
+      Vec3d origin, int skyLight, int blockLight) {
+    final Vec3d eyebolt = SpanWireDefinition.attachPoint(te.getPos());
+    final double dx = attach.x - eyebolt.x;
+    final double dz = attach.z - eyebolt.z;
+    if (dx * dx + dz * dz < 1.0e-8) {
+      return;
+    }
+    SpanWireCableGeometry.emitStraightTube(buffer, eyebolt, attach, origin, LINK_RADIUS,
+        STEEL_RED, STEEL_GREEN, STEEL_BLUE, skyLight, blockLight);
   }
 
   /**
