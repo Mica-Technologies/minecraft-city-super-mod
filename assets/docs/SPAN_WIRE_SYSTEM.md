@@ -101,6 +101,17 @@ Kept separate, the geometry corrects itself: when span and payload offsets agree
 `AUTO` arranges, the offset arm has zero length and the mast is plumb. When a builder overrides the
 side, the arm grows by the difference and still reaches. Neither case needs a special path.
 
+**Anything with a fixed block model needs the same treatment.** An anchor's eyebolt is drawn by a
+JSON model, identical for every anchor in the world and sitting on the block's centre line, so once
+the span runs to one side of that line the cable dead-ends *beside* the eyebolt rather than through
+it. `emitOffsetLink` closes the gap with a short shackle — the real hardware for exactly this, a
+fitting taking up the difference between a fixed plate and where the wire has to land. It draws
+nothing when the span runs down the centre line.
+
+The other blocks avoid the problem in their own ways, worth knowing before adding a fifth: a
+cluster mount hides its model entirely once linked, and a disconnect box carries no payload, so its
+foot is already on the block centre line and the mast's own arm absorbs the offset.
+
 ## The five things worth knowing before changing any of it
 
 **1. Mounts go *below* the cable, never above.** Hardware hangs downward from a clamp, so a mount
