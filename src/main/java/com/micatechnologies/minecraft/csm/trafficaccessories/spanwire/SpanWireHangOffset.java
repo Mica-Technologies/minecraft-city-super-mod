@@ -29,8 +29,13 @@ public final class SpanWireHangOffset {
   /**
    * How far above a payload to look for the mount it hangs from. Three blocks covers one directly
    * under its mount and the taller assemblies that put a backplate or a second head between them.
+   *
+   * <p>Public because it is also the definition of how tall an assembly can be: a body further
+   * from the mount than this does not find it, so it does not take the span's rise, so it is not
+   * hanging with the rest. Anything measuring an assembly has to stop where this stops, and
+   * reading it is the only way to be sure of that.
    */
-  private static final int MAX_SEARCH_UP = 3;
+  public static final int MAX_SEARCH_UP = 3;
 
   /** Model units per block, matching the scale the signal head renderer works in. */
   private static final double MODEL_UNITS_PER_BLOCK = 16.0;
@@ -136,7 +141,7 @@ public final class SpanWireHangOffset {
    * interval.
    */
   @Nullable
-  private static TileEntitySpanWireHanger findMount(IBlockAccess world, BlockPos pos) {
+  static TileEntitySpanWireHanger findMount(IBlockAccess world, BlockPos pos) {
     if (world == null || pos == null) {
       return null;
     }

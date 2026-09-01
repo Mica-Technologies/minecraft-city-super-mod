@@ -75,9 +75,16 @@ public class TileEntitySpanWireHangerRenderer
   private static final double COIL_WIRE_RADIUS = SpanWireCableGeometry.CABLE_RADIUS * 0.7;
   private static final double COIL_SPACING = 0.055;
 
-  /** The tie from the lower tether of a box span up to the bottom of the signal it steadies. */
-  /** The longest tie that can be drawn, so a bad payload answer cannot reach across the sky. */
-  private static final double MAX_TIE_HEIGHT = 1.5;
+  /**
+   * The shortest cap on a tether tie, used when the span's own clearance is smaller or unknown.
+   *
+   * <p>The cap exists so a payload reporting something absurd cannot draw a tie across the sky.
+   * It is a floor rather than the whole answer because a legitimate tie can be long: the tether
+   * hangs below the <em>deepest</em> thing on the span, so a plain three-section head sharing a
+   * span with a doghouse-plus-add-on assembly is tied by a stub two blocks and more in length,
+   * and a fixed 1.5 silently drew nothing there.
+   */
+  private static final double MIN_TIE_HEIGHT_CAP = 1.5;
   private static final double TIE_RADIUS = SpanWireCableGeometry.CABLE_RADIUS * 1.2;
 
   /** Black insulation, like the conductor run it is spliced out of. */
@@ -163,11 +170,11 @@ public class TileEntitySpanWireHangerRenderer
    * thing holding them steady, which is its entire reason to exist -- and a viewer reads that
    * immediately even if they could not say why.
    *
-   * <p>Drawn upward from the tether by a fixed amount rather than to the signal's actual bottom.
-   * Finding that would mean the span wire package reaching into the traffic signal package for
-   * per-head geometry, which is the dependency this system has been careful not to create; the
-   * tether's clearance is fixed, so a fixed tie lands in the right place for the heads it was
-   * sized against.
+   * <p>Drawn to the payload's own underside, which the payload reports -- the span wire package
+   * still never reaches into the traffic signal package for per-head geometry, it asks. An earlier
+   * version stood a fixed stub up from the tether instead, on the reasoning that the clearance was
+   * fixed too. It is not: the clearance is measured from the deepest thing on the span, so a fixed
+   * stub was correct at one mount and short or overshooting at every other.
    */
   private void emitTetherTie(BufferBuilder buffer, TileEntitySpanWireHanger te, double atT,
       Vec3d origin, int skyLight, int blockLight) {
@@ -195,7 +202,15 @@ public class TileEntitySpanWireHangerRenderer
     // different heights above it along the span: a fixed stub is only ever correct at one point
     // and pokes into the lenses everywhere else. Clamped so a payload reporting something absurd
     // cannot draw a tie across the sky.
-    final double top = Math.min(tieY, tetherPoint.y + MAX_TIE_HEIGHT);
+    // Capped by how far the tether hangs below the messenger, because no honest tie can be longer
+    // than that -- the payload it reaches is hanging from the messenger itself. That bound moves
+    // with the span, which is the point: a fixed cap either cuts off the legitimate long ties a
+    // mixed span produces, or is loose enough to be no guard at all on a short one.
+    final SpanWireDefinition span = te.getSpan();
+    final double cap = span == null
+        ? MIN_TIE_HEIGHT_CAP
+        : Math.max(MIN_TIE_HEIGHT_CAP, span.getTetherClearance());
+    final double top = Math.min(tieY, tetherPoint.y + cap);
     if (top - tetherPoint.y < 1.0e-4) {
       return;
     }
