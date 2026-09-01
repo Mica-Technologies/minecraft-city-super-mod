@@ -16,6 +16,9 @@ import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
+import java.util.List;
+import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -62,10 +65,10 @@ public class TileEntitySignalBackplateRenderer
    * How bright the band goes at its very best: dead ahead, on the darkest night.
    *
    * <p>Sheeting throws a lot of light back but it is not a lamp, and this is added on top of a
-   * plate that is already lit. Past about a third it stops reading as paint catching headlights and
-   * starts reading as a light source, which is the wrong thing entirely.
+   * plate that is already lit. There is a ceiling somewhere above which it stops reading as paint
+   * catching headlights and starts reading as a light source; this sits below it.
    */
-  private static final float MAX_GLOW = 0.34f;
+  private static final float MAX_GLOW = 0.62f;
 
   /**
    * How sharply the effect falls away as you move off the plate's axis.
@@ -210,17 +213,8 @@ public class TileEntitySignalBackplateRenderer
 
     GlStateManager.pushMatrix();
     GlStateManager.translate(0.0, rise / MODEL_UNITS_PER_BLOCK, 0.0);
-    final BlockRendererDispatcher dispatcher =
-        Minecraft.getMinecraft().getBlockRendererDispatcher();
-    // Vanilla's own brightness path, which puts the strength into the vertex colours.
-    //
-    // The obvious optimisation -- compile the geometry once into a display list and vary the
-    // strength with glColor -- was tried and does not work. A vertex colour attribute overrides
-    // glColor, so a format carrying one ignores the strength; a format without one drew nothing
-    // here at all. This costs a buffer per quad, which is why the pass is gated as hard as it is:
-    // in daylight, or off the plate's axis, it returns before reaching any of this.
-    dispatcher.getBlockModelRenderer().renderModelBrightnessColor(
-        renderState, dispatcher.getModelForState(renderState), strength, 1.0f, 1.0f, 1.0f);
+    emitGlow(Minecraft.getMinecraft().getBlockRendererDispatcher().getModelForState(renderState),
+        renderState, strength);
     GlStateManager.popMatrix();
 
     GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
@@ -232,6 +226,39 @@ public class TileEntitySignalBackplateRenderer
     GlStateManager.depthMask(true);
     GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
     GlStateManager.disableBlend();
+  }
+
+  /**
+   * The plate again, in one buffer, with the strength written into the vertex colours.
+   *
+   * <p>This is vanilla's {@code renderModelBrightnessColor} with the batching it does not do.
+   * That method begins and draws a buffer <em>per quad</em>, which for a plate is around fifty
+   * draw calls a frame; there is no reason for that, since every quad here takes the same colour.
+   * One begin, every quad, one draw.
+   *
+   * <p>The strength has to go into the vertex colours rather than {@code glColor}: a format with a
+   * colour attribute ignores glColor, and a format without one drew nothing at all here. That is
+   * also why the geometry cannot simply live in a display list -- the colour it is compiled with
+   * would be frozen into it, and the whole point is that the colour changes as you move.
+   */
+  private void emitGlow(IBakedModel model, IBlockState renderState, float strength) {
+    final Tessellator tessellator = Tessellator.getInstance();
+    final BufferBuilder buffer = tessellator.getBuffer();
+    buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.ITEM);
+    for (EnumFacing side : EnumFacing.values()) {
+      appendGlowQuads(buffer, model.getQuads(renderState, side, 0L), strength);
+    }
+    appendGlowQuads(buffer, model.getQuads(renderState, null, 0L), strength);
+    tessellator.draw();
+  }
+
+  private static void appendGlowQuads(BufferBuilder buffer, List<BakedQuad> quads, float strength) {
+    for (BakedQuad quad : quads) {
+      buffer.addVertexData(quad.getVertexData());
+      buffer.putColorRGB_F4(strength, strength, strength);
+      final Vec3i normal = quad.getFace().getDirectionVec();
+      buffer.putNormal(normal.getX(), normal.getY(), normal.getZ());
+    }
   }
 
   /**
