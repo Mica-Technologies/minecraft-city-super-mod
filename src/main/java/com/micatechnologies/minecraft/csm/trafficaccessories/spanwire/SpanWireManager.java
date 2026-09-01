@@ -150,7 +150,10 @@ public final class SpanWireManager {
     // knows it is on a span -- so asking first would get the answer for a sign that is still
     // sitting at the front of its block. Applying twice at link time is cheap; this runs when a
     // player clicks two anchors, not per tick.
-    final SpanWireDefinition aligned = span.withAutoOffset(measureAutoOffset(world, span));
+    SpanWireDefinition aligned = span.withAutoOffset(measureAutoOffset(world, span));
+    if (aligned.isBoxSpan()) {
+      aligned = aligned.withTetherClearance(measureTetherClearance(world, aligned));
+    }
     if (!aligned.equals(span)) {
       apply(world, aligned);
     }
@@ -169,6 +172,51 @@ public final class SpanWireManager {
    * run over the signals, not at some average depth that suits neither. The median also ignores a
    * single odd payload entirely, which a mean would let drag the whole run.
    */
+  /**
+   * How far below the messenger this span's tether has to hang to pass under everything on it.
+   *
+   * <p>The <b>deepest</b> payload wins, not the median: a tether that clears most of the heads and
+   * cuts through one is worse than one hanging slightly low, and every tie has to point upward for
+   * the ties to be drawn at all. Payloads that take no tie -- signs -- are not consulted, since
+   * nothing ties to them and there is no reason to drop the wire to clear one.
+   *
+   * <p>Falls back to {@link SpanWireDefinition#TETHER_MIN_CLEARANCE} when nothing on the span
+   * answers, which is the same figure spans used before this was measured.
+   */
+  private static double measureTetherClearance(World world, SpanWireDefinition span) {
+    final SpanWireCatenary cable = span.solve();
+    double deepest = 0.0;
+    boolean found = false;
+
+    for (BlockPos hanger : span.getHangers()) {
+      final BlockPos payloadPos = hanger.down();
+      if (!world.isBlockLoaded(payloadPos)) {
+        continue;
+      }
+      final IBlockState below = world.getBlockState(payloadPos);
+      if (!(below.getBlock() instanceof ISpanWireHangable)) {
+        continue;
+      }
+      final double tieY = ((ISpanWireHangable) below.getBlock())
+          .getSpanTetherTieY(world, payloadPos, below);
+      if (Double.isNaN(tieY)) {
+        continue;
+      }
+      final double cableY = cable.heightAt(
+          cable.parameterAt(hanger.getX() + 0.5, hanger.getZ() + 0.5));
+      deepest = Math.max(deepest, cableY - tieY);
+      found = true;
+    }
+
+    return found ? deepest + TETHER_TIE_GAP : SpanWireDefinition.TETHER_MIN_CLEARANCE;
+  }
+
+  /**
+   * How far under the deepest payload the tether is strung, so the ties up to it read as ties
+   * rather than as the wire grazing the housings.
+   */
+  private static final double TETHER_TIE_GAP = 0.35;
+
   private static double measureAutoOffset(World world, SpanWireDefinition span) {
     final Vec3d leftward = SpanWireSignalSide.leftwardOf(span.horizontalDirection());
     final List<Double> across = new ArrayList<>();
@@ -350,7 +398,13 @@ public final class SpanWireManager {
     if (span == null) {
       return;
     }
-    apply(world, span.withBoxSpan(!span.isBoxSpan()));
+    SpanWireDefinition toggled = span.withBoxSpan(!span.isBoxSpan());
+    // Measured here as well as at link time, because a span strung without a tether never ran the
+    // measurement and would otherwise get the fallback clearance the moment one is switched on.
+    if (toggled.isBoxSpan()) {
+      toggled = toggled.withTetherClearance(measureTetherClearance(world, toggled));
+    }
+    apply(world, toggled);
   }
 
   /** The span the block at this position belongs to, or null. */

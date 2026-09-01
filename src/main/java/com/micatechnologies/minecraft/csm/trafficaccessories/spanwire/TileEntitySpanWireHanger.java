@@ -19,6 +19,9 @@ import net.minecraft.util.math.Vec3d;
  */
 public class TileEntitySpanWireHanger extends AbstractTileEntitySpanWireAttachment {
 
+  /** The furthest a drop will stretch to reach a payload below it. */
+  private static final double MAX_HANGER_REACH = 2.0;
+
   private static final String MOUNT_STYLE_KEY = "swMS";
   private static final String COIL_STYLE_KEY = "swCS";
 
@@ -51,6 +54,18 @@ public class TileEntitySpanWireHanger extends AbstractTileEntitySpanWireAttachme
    * is derived once rather than per frame.
    */
   private transient Vec3d payloadHardwareOffset = Vec3d.ZERO;
+
+  /**
+   * The height a box span's tether ties to on the payload below, or {@code NaN} for a payload
+   * that takes no tie. Cached with everything else derived from the payload.
+   */
+  private transient double payloadTetherTieY = Double.NaN;
+
+  /**
+   * The height this mount's drop should reach down to on the payload, or {@code NaN} to stop at
+   * this mount's own attach height.
+   */
+  private transient double payloadTopY = Double.NaN;
 
   @Override
   public void readNBT(NBTTagCompound compound) {
@@ -123,9 +138,13 @@ public class TileEntitySpanWireHanger extends AbstractTileEntitySpanWireAttachme
       final ISpanWireHangable payload = (ISpanWireHangable) below.getBlock();
       carriesStrapPayload = payload.needsSpanHangerStrap();
       payloadHardwareOffset = payload.getSpanHardwareOffset(world, pos.down(), below);
+      payloadTetherTieY = payload.getSpanTetherTieY(world, pos.down(), below);
+      payloadTopY = payload.getSpanHangerTopY(world, pos.down(), below);
     } else {
       carriesStrapPayload = false;
       payloadHardwareOffset = Vec3d.ZERO;
+      payloadTetherTieY = Double.NaN;
+      payloadTopY = Double.NaN;
     }
 
     if ((previousStrap != carriesStrapPayload || !previousOffset.equals(payloadHardwareOffset))
@@ -148,8 +167,24 @@ public class TileEntitySpanWireHanger extends AbstractTileEntitySpanWireAttachme
    * the automatic side arranges -- the offset arm has zero length and the mast is plumb. When a
    * builder overrides the side, the arm grows by the difference and still reaches.
    */
+  /**
+   * The height a box span's tether ties to on what this mount carries, or {@code NaN} for none.
+   */
+  public double getPayloadTetherTieY() {
+    return payloadTetherTieY;
+  }
+
   public Vec3d getHardwareFootPoint() {
-    return SpanWireDefinition.attachPoint(pos).add(payloadHardwareOffset);
+    final Vec3d foot = SpanWireDefinition.attachPoint(pos).add(payloadHardwareOffset);
+    if (Double.isNaN(payloadTopY)) {
+      return foot;
+    }
+    // Reaches down to the payload rather than stopping at this mount's own attach height. Only
+    // lower, never higher: a payload that has risen to meet the hardware is already touching it,
+    // and pulling the drop up to its top would bury the foot inside it. Bounded so a payload
+    // reporting nonsense cannot stretch the drop to the ground.
+    final double reach = Math.max(foot.y - MAX_HANGER_REACH, Math.min(foot.y, payloadTopY));
+    return new Vec3d(foot.x, reach, foot.z);
   }
 
   public SpanWireMountStyle getMountStyle() {

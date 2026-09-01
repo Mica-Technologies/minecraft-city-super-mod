@@ -42,6 +42,7 @@ public final class SpanWireDefinition {
   private static final String BOX_SPAN_KEY = "swBox";
   private static final String SIGNAL_SIDE_KEY = "swSS";
   private static final String AUTO_OFFSET_KEY = "swAO";
+  private static final String TETHER_CLEARANCE_KEY = "swTC";
 
   /**
    * The <em>smallest</em> gap the tether keeps below the messenger anywhere along a span, in
@@ -95,6 +96,17 @@ public final class SpanWireDefinition {
    */
   private final double autoOffset;
 
+  /**
+   * How far below the messenger the tether hangs at its tightest point, in blocks.
+   *
+   * <p>Measured from the payloads when the span is strung, for the reason
+   * {@link #TETHER_MIN_CLEARANCE} could not be: how far a head reaches below the cable depends on
+   * how many sections it has and how big they are, so one constant clears a three-section head
+   * and is cut straight through a taller one. The measurement takes the <b>deepest</b> payload on
+   * the span, so the tether passes under all of them and every tie points upward.
+   */
+  private final double tetherClearance;
+
   public SpanWireDefinition(BlockPos anchorA, BlockPos anchorB, List<BlockPos> hangers,
       double slack) {
     this(anchorA, anchorB, hangers, slack, false);
@@ -112,6 +124,14 @@ public final class SpanWireDefinition {
 
   public SpanWireDefinition(BlockPos anchorA, BlockPos anchorB, List<BlockPos> hangers,
       double slack, boolean boxSpan, SpanWireSignalSide signalSide, double autoOffset) {
+    this(anchorA, anchorB, hangers, slack, boxSpan, signalSide, autoOffset,
+        TETHER_MIN_CLEARANCE);
+  }
+
+  public SpanWireDefinition(BlockPos anchorA, BlockPos anchorB, List<BlockPos> hangers,
+      double slack, boolean boxSpan, SpanWireSignalSide signalSide, double autoOffset,
+      double tetherClearance) {
+    this.tetherClearance = tetherClearance;
     this.anchorA = anchorA;
     this.anchorB = anchorB;
     this.hangers = Collections.unmodifiableList(new ArrayList<>(hangers));
@@ -134,12 +154,25 @@ public final class SpanWireDefinition {
 
   /** A copy of this span with a different signal side. */
   public SpanWireDefinition withSignalSide(SpanWireSignalSide side) {
-    return new SpanWireDefinition(anchorA, anchorB, hangers, slack, boxSpan, side, autoOffset);
+    return new SpanWireDefinition(anchorA, anchorB, hangers, slack, boxSpan, side, autoOffset,
+        tetherClearance);
+  }
+
+  /** The same span with a different measured tether clearance. */
+  public SpanWireDefinition withTetherClearance(double clearance) {
+    return new SpanWireDefinition(anchorA, anchorB, hangers, slack, boxSpan, signalSide,
+        autoOffset, clearance);
+  }
+
+  /** How far below the messenger this span's tether hangs at its tightest point. */
+  public double getTetherClearance() {
+    return tetherClearance;
   }
 
   /** The same span with the lower tether added or taken away. */
   public SpanWireDefinition withBoxSpan(boolean box) {
-    return new SpanWireDefinition(anchorA, anchorB, hangers, slack, box, signalSide, autoOffset);
+    return new SpanWireDefinition(anchorA, anchorB, hangers, slack, box, signalSide, autoOffset,
+        tetherClearance);
   }
 
   /**
@@ -149,7 +182,8 @@ public final class SpanWireDefinition {
    * fixed side keeps the value but ignores it, so switching back to automatic does not lose it.
    */
   public SpanWireDefinition withAutoOffset(double offset) {
-    return new SpanWireDefinition(anchorA, anchorB, hangers, slack, boxSpan, signalSide, offset);
+    return new SpanWireDefinition(anchorA, anchorB, hangers, slack, boxSpan, signalSide, offset,
+        tetherClearance);
   }
 
   /** How far off the block centre line an automatic span runs, signed, positive to the left. */
@@ -304,7 +338,7 @@ public final class SpanWireDefinition {
     final double messengerSag = solve().sag();
     final SpanWireCatenary probe =
         SpanWireCatenary.between(attachPoint(anchorA), attachPoint(anchorB), TETHER_SLACK);
-    return TETHER_MIN_CLEARANCE + Math.max(0.0, messengerSag - probe.sag());
+    return tetherClearance + Math.max(0.0, messengerSag - probe.sag());
   }
 
   /**
@@ -347,6 +381,8 @@ public final class SpanWireDefinition {
     // tethers existed and a world that never builds one never grows the key.
     if (boxSpan) {
       compound.setBoolean(BOX_SPAN_KEY, true);
+      // Only a box span has a tether, so only a box span carries the measurement for one.
+      compound.setDouble(TETHER_CLEARANCE_KEY, tetherClearance);
     }
     if (signalSide != SpanWireSignalSide.CENTRED) {
       compound.setInteger(SIGNAL_SIDE_KEY, signalSide.toNBT());
@@ -383,7 +419,10 @@ public final class SpanWireDefinition {
     return new SpanWireDefinition(anchorA, anchorB, hangers, slack,
         compound.getBoolean(BOX_SPAN_KEY),
         SpanWireSignalSide.fromNBT(compound.getInteger(SIGNAL_SIDE_KEY)),
-        compound.hasKey(AUTO_OFFSET_KEY) ? compound.getDouble(AUTO_OFFSET_KEY) : 0.0);
+        compound.hasKey(AUTO_OFFSET_KEY) ? compound.getDouble(AUTO_OFFSET_KEY) : 0.0,
+        compound.hasKey(TETHER_CLEARANCE_KEY)
+            ? compound.getDouble(TETHER_CLEARANCE_KEY)
+            : TETHER_MIN_CLEARANCE);
   }
 
   /** Clears every key this class writes, so a torn-down span leaves nothing behind in NBT. */
@@ -395,6 +434,7 @@ public final class SpanWireDefinition {
     compound.removeTag(BOX_SPAN_KEY);
     compound.removeTag(SIGNAL_SIDE_KEY);
     compound.removeTag(AUTO_OFFSET_KEY);
+    compound.removeTag(TETHER_CLEARANCE_KEY);
   }
 
   /** A copy of this span with the given hanger removed; used when one is broken. */
@@ -402,7 +442,7 @@ public final class SpanWireDefinition {
     final List<BlockPos> remaining = new ArrayList<>(hangers);
     remaining.remove(pos);
     return new SpanWireDefinition(anchorA, anchorB, remaining, slack, boxSpan, signalSide,
-        autoOffset);
+        autoOffset, tetherClearance);
   }
 
   @Override
@@ -420,13 +460,15 @@ public final class SpanWireDefinition {
         && Double.compare(slack, that.slack) == 0
         && boxSpan == that.boxSpan
         && Double.compare(autoOffset, that.autoOffset) == 0
+        && Double.compare(tetherClearance, that.tetherClearance) == 0
         && signalSide == that.signalSide;
   }
 
   @Override
   public int hashCode() {
     return Arrays.hashCode(
-        new Object[]{anchorA, anchorB, hangers, slack, boxSpan, signalSide, autoOffset});
+        new Object[]{anchorA, anchorB, hangers, slack, boxSpan, signalSide, autoOffset,
+            tetherClearance});
   }
 
   @Override
