@@ -1,6 +1,9 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories;
 
 import com.micatechnologies.minecraft.csm.codeutils.CsmDisplayListCache;
+import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalHeadRenderer;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignalHead;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyTilt;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BlockRendererDispatcher;
@@ -11,9 +14,11 @@ import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import org.lwjgl.opengl.GL11;
+
 
 /**
  * Draws a signal backplate.
@@ -74,24 +79,38 @@ public class TileEntitySignalBackplateRenderer
         ? 0.0f
         : AbstractBlockSignalBackplate.spanRiseOf(te.getWorld(), signalPos);
 
+    // The plate is drawn from the untilted model and turned here. The tilted variants stay in
+    // getActualState -- they are how the tilt reaches this renderer -- but they no longer choose
+    // geometry, so a tilt is now an exact transform rather than a model authored to approximate one.
+    final EnumFacing facing = actual.getValue(AbstractBlockSignalBackplate.FACING);
+    final IBlockState renderState = actual.withProperty(AbstractBlockSignalBackplate.MODEL_VARIANT,
+        actual.getValue(AbstractBlockSignalBackplate.MODEL_VARIANT).untilted());
+
+    final TrafficSignalBodyTilt tilt = signalPos == null
+        ? TrafficSignalBodyTilt.NONE
+        : AbstractBlockSignalBackplate.tiltOf(te.getWorld(), signalPos);
+
     // The light is baked into the compiled vertices, so a change in it has to compile a new list.
     // Day and night do not need this -- those move the lightmap texture under a fixed coordinate --
     // but a torch going up next door changes the coordinate itself.
     final int combinedLight = te.getWorld().getCombinedLight(pos, 0);
 
+    // Keyed on the state actually compiled. The tilt is a matrix outside the list, so two tilts of
+    // one plate share a list rather than evicting each other.
     final long key =
-        (actual.hashCode() * 31L + Math.round(rise * 64.0f)) * 31L + combinedLight;
+        (renderState.hashCode() * 31L + Math.round(rise * 64.0f)) * 31L + combinedLight;
 
     GlStateManager.pushMatrix();
     GlStateManager.disableLighting();
     GlStateManager.translate(x, y, z);
+    applyTilt(pos, signalPos, facing, tilt);
 
     int displayList = DISPLAY_LISTS.get(pos, key);
     if (displayList == CsmDisplayListCache.NO_LIST) {
       displayList = DISPLAY_LISTS.allocate(pos, key);
       if (displayList != CsmDisplayListCache.NO_LIST) {
         GL11.glNewList(displayList, GL11.GL_COMPILE);
-        emit(te, pos, actual, rise);
+        emit(te, pos, renderState, rise);
         GL11.glEndList();
       }
     }
@@ -100,13 +119,69 @@ public class TileEntitySignalBackplateRenderer
     bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
     if (displayList == CsmDisplayListCache.NO_LIST) {
       // The cache is full and would not give us a list. Draw straight rather than vanish.
-      emit(te, pos, actual, rise);
+      emit(te, pos, renderState, rise);
     } else {
       GL11.glCallList(displayList);
     }
 
     GlStateManager.enableLighting();
     GlStateManager.popMatrix();
+  }
+
+  /**
+   * Turns the plate to match the head it is mounted to.
+   *
+   * <p>A plate bolts to the back of a head, so when the head swings the plate has to swing with it
+   * -- about the <em>head's</em> centre, not its own. That is the whole bug this replaces: a
+   * blockstate can only bake one rotation origin into a model, and the right origin sits a block
+   * away in the facing direction, differently for every facing. The pre-tilted models were authored
+   * for whichever facing looked best and the rest drifted, which is the gap between a tilted signal
+   * and its plate.
+   *
+   * <p>Two things have to match the head exactly, and both are read from its renderer rather than
+   * copied, so they cannot drift apart later:
+   *
+   * <ul>
+   *   <li>the angle -- as a <em>delta</em> from the facing, because unlike the head's model the
+   *       plate's already has its facing baked in by the blockstate;</li>
+   *   <li>the sideways nudge a tilted head makes to stay visually centred. The head applies it in
+   *       its own turned frame, so it is rotated into world axes here and applied outside the
+   *       rotation, which comes to the same place.</li>
+   * </ul>
+   *
+   * <p>Only horizontal facings tilt. A plate lying flat has no left or right for a tilt to mean,
+   * and the head's own facing-angle table reads UP and DOWN as zero, so it is left alone.
+   */
+  private void applyTilt(BlockPos pos, BlockPos signalPos, EnumFacing facing,
+      TrafficSignalBodyTilt tilt) {
+    if (signalPos == null || tilt == TrafficSignalBodyTilt.NONE
+        || facing.getAxis() == EnumFacing.Axis.Y) {
+      return;
+    }
+
+    final float absoluteAngle =
+        AbstractBlockControllableSignalHead.getTiltedFacing(tilt, facing).getRotation();
+    final float delta =
+        absoluteAngle - TileEntityTrafficSignalHeadRenderer.getBaseFacingAngle(facing);
+    if (delta == 0.0f) {
+      return;
+    }
+
+    // The head's centre, in blocks relative to this plate's own corner. Only X and Z matter to a
+    // rotation about Y.
+    final double pivotX = (signalPos.getX() - pos.getX()) + 0.5;
+    final double pivotZ = (signalPos.getZ() - pos.getZ()) + 0.5;
+
+    // The head's lateral nudge, turned from its frame into world axes. glRotate about +Y sends
+    // (t, 0, 0) to (t*cos, 0, -t*sin).
+    final double nudge =
+        TileEntityTrafficSignalHeadRenderer.getLateralTiltOffset(tilt) / MODEL_UNITS_PER_BLOCK;
+    final double radians = Math.toRadians(absoluteAngle);
+
+    GlStateManager.translate(nudge * Math.cos(radians), 0.0, -nudge * Math.sin(radians));
+    GlStateManager.translate(pivotX, 0.0, pivotZ);
+    GlStateManager.rotate(delta, 0.0f, 1.0f, 0.0f);
+    GlStateManager.translate(-pivotX, 0.0, -pivotZ);
   }
 
   /**

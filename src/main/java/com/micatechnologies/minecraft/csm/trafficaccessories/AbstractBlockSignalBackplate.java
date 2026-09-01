@@ -134,6 +134,24 @@ public abstract class AbstractBlockSignalBackplate extends AbstractBlockRotatabl
    * the plate stands down exactly when the head has actually moved rather than whenever it merely
    * happens to hang near a span.
    */
+  /**
+   * The tilt of the head at a position, or {@link TrafficSignalBodyTilt#NONE} if there is none.
+   *
+   * <p>Read straight from the head's tile entity rather than inferred from this plate's model
+   * variant, so the plate turns by what the head actually did.
+   *
+   * @param world     the world to read.
+   * @param signalPos the head's position.
+   *
+   * @return the head's body tilt, never null.
+   */
+  public static TrafficSignalBodyTilt tiltOf(IBlockAccess world, BlockPos signalPos) {
+    final TileEntity te = world.getTileEntity(signalPos);
+    return te instanceof TileEntityTrafficSignalHead
+        ? ((TileEntityTrafficSignalHead) te).getBodyTilt()
+        : TrafficSignalBodyTilt.NONE;
+  }
+
   public static float spanRiseOf(IBlockAccess world, BlockPos signalPos) {
     final TileEntity te = world.getTileEntity(signalPos);
     return te instanceof TileEntityTrafficSignalHead

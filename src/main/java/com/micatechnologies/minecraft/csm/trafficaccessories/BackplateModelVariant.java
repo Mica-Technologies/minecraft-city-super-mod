@@ -55,6 +55,19 @@ public enum BackplateModelVariant implements IStringSerializable {
   }
 
   /**
+   * The untilted variant of the same orientation.
+   *
+   * <p>The renderer draws every plate from one of these two and turns it itself, so the eight
+   * tilted variants no longer select a model. They are still what {@code getActualState} reports,
+   * because that is what tells the renderer which way to turn.
+   *
+   * @return {@link #H_NONE} for a horizontal variant, {@link #V_NONE} otherwise.
+   */
+  public BackplateModelVariant untilted() {
+    return name.startsWith("h_") ? H_NONE : V_NONE;
+  }
+
+  /**
    * Picks the variant that matches the given tilt and orientation. Falls back to
    * {@link #V_NONE} if passed a null tilt.
    */
