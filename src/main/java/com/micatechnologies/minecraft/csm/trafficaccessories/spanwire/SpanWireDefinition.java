@@ -43,6 +43,8 @@ public final class SpanWireDefinition {
   private static final String BOX_SPAN_KEY = "swBox";
   private static final String SIGNAL_SIDE_KEY = "swSS";
   private static final String AUTO_OFFSET_KEY = "swAO";
+  private static final String AUTO_OFFSET_X_KEY = "swOX";
+  private static final String AUTO_OFFSET_Z_KEY = "swOZ";
   private static final String TETHER_CLEARANCE_KEY = "swTC";
   private static final String TETHER_ANCHOR_A_KEY = "swTA";
   private static final String TETHER_ANCHOR_B_KEY = "swTB";
@@ -97,7 +99,8 @@ public final class SpanWireDefinition {
    * anything. Kept even while a fixed side is selected, so switching back to automatic does not
    * throw the measurement away.
    */
-  private final double autoOffset;
+  private final double autoOffsetX;
+  private final double autoOffsetZ;
 
   /**
    * How far below the messenger the tether hangs at its tightest point, in blocks.
@@ -152,13 +155,13 @@ public final class SpanWireDefinition {
   public SpanWireDefinition(BlockPos anchorA, BlockPos anchorB, List<BlockPos> hangers,
       double slack, boolean boxSpan, SpanWireSignalSide signalSide, double autoOffset,
       double tetherClearance) {
-    this(anchorA, anchorB, hangers, slack, boxSpan, signalSide, autoOffset, tetherClearance,
+    this(anchorA, anchorB, hangers, slack, boxSpan, signalSide, autoOffset, 0.0, tetherClearance,
         null, null);
   }
 
   public SpanWireDefinition(BlockPos anchorA, BlockPos anchorB, List<BlockPos> hangers,
-      double slack, boolean boxSpan, SpanWireSignalSide signalSide, double autoOffset,
-      double tetherClearance, @Nullable BlockPos tetherAnchorA,
+      double slack, boolean boxSpan, SpanWireSignalSide signalSide, double autoOffsetX,
+      double autoOffsetZ, double tetherClearance, @Nullable BlockPos tetherAnchorA,
       @Nullable BlockPos tetherAnchorB) {
     this.tetherClearance = tetherClearance;
     this.tetherAnchorA = tetherAnchorA;
@@ -169,7 +172,8 @@ public final class SpanWireDefinition {
     this.slack = slack;
     this.boxSpan = boxSpan;
     this.signalSide = signalSide;
-    this.autoOffset = autoOffset;
+    this.autoOffsetX = autoOffsetX;
+    this.autoOffsetZ = autoOffsetZ;
   }
 
   /**
@@ -185,14 +189,14 @@ public final class SpanWireDefinition {
 
   /** A copy of this span with a different signal side. */
   public SpanWireDefinition withSignalSide(SpanWireSignalSide side) {
-    return new SpanWireDefinition(anchorA, anchorB, hangers, slack, boxSpan, side, autoOffset,
-        tetherClearance);
+    return new SpanWireDefinition(anchorA, anchorB, hangers, slack, boxSpan, side, autoOffsetX,
+        autoOffsetZ, tetherClearance, tetherAnchorA, tetherAnchorB);
   }
 
   /** The same span with a different measured tether clearance. */
   public SpanWireDefinition withTetherClearance(double clearance) {
     return new SpanWireDefinition(anchorA, anchorB, hangers, slack, boxSpan, signalSide,
-        autoOffset, clearance, tetherAnchorA, tetherAnchorB);
+        autoOffsetX, autoOffsetZ, clearance, tetherAnchorA, tetherAnchorB);
   }
 
   /** The same span with the tether dead-ended on a pair of lower anchors, or on neither. */
@@ -200,7 +204,7 @@ public final class SpanWireDefinition {
       @Nullable BlockPos lowerB) {
     final boolean both = lowerA != null && lowerB != null;
     return new SpanWireDefinition(anchorA, anchorB, hangers, slack, boxSpan, signalSide,
-        autoOffset, tetherClearance, both ? lowerA : null, both ? lowerB : null);
+        autoOffsetX, autoOffsetZ, tetherClearance, both ? lowerA : null, both ? lowerB : null);
   }
 
   /** Whether this span's tether dead-ends on placed anchors rather than hanging at a derived drop. */
@@ -230,8 +234,8 @@ public final class SpanWireDefinition {
 
   /** The same span with the lower tether added or taken away. */
   public SpanWireDefinition withBoxSpan(boolean box) {
-    return new SpanWireDefinition(anchorA, anchorB, hangers, slack, box, signalSide, autoOffset,
-        tetherClearance, tetherAnchorA, tetherAnchorB);
+    return new SpanWireDefinition(anchorA, anchorB, hangers, slack, box, signalSide, autoOffsetX,
+        autoOffsetZ, tetherClearance, tetherAnchorA, tetherAnchorB);
   }
 
   /**
@@ -240,14 +244,28 @@ public final class SpanWireDefinition {
    * <p>Only has any effect while the side is {@link SpanWireSignalSide#AUTO}; a span set to a
    * fixed side keeps the value but ignores it, so switching back to automatic does not lose it.
    */
-  public SpanWireDefinition withAutoOffset(double offset) {
-    return new SpanWireDefinition(anchorA, anchorB, hangers, slack, boxSpan, signalSide, offset,
-        tetherClearance, tetherAnchorA, tetherAnchorB);
+  public SpanWireDefinition withAutoOffset(Vec3d offset) {
+    return new SpanWireDefinition(anchorA, anchorB, hangers, slack, boxSpan, signalSide, offset.x,
+        offset.z, tetherClearance, tetherAnchorA, tetherAnchorB);
   }
 
-  /** How far off the block centre line an automatic span runs, signed, positive to the left. */
-  public double getAutoOffset() {
-    return autoOffset;
+  /**
+   * Where an automatic span sits relative to the block centre line: a full horizontal
+   * displacement, not just a sideways one.
+   *
+   * <p>It used to be a signed distance along the span's left-hand normal, which was wrong for any
+   * span that does not run along an axis. A head's body is set back along the way it <em>faces</em>,
+   * and on a diagonal that direction is not perpendicular to the wire -- so a purely perpendicular
+   * shift could never put the wire over the housings, and everything hung off it leaned to make up
+   * the difference.
+   *
+   * <p>Translating the whole span by the payload's own offset puts the wire directly over what it
+   * carries at any angle. It moves the ends slightly along the span as well as across it, which is
+   * harmless: an anchor's shackle already takes up the difference between its fixed eyebolt and
+   * where the wire actually lands.
+   */
+  public Vec3d getAutoOffset() {
+    return new Vec3d(autoOffsetX, 0.0, autoOffsetZ);
   }
 
   /**
@@ -271,11 +289,10 @@ public final class SpanWireDefinition {
    * fraction, so nothing that depends on that has to know this exists.
    */
   public Vec3d spanOffset() {
-    final Vec3d along = horizontalDirection();
     if (signalSide == SpanWireSignalSide.AUTO) {
-      return SpanWireSignalSide.leftwardOf(along).scale(autoOffset);
+      return getAutoOffset();
     }
-    return signalSide.offsetFor(along);
+    return signalSide.offsetFor(horizontalDirection());
   }
 
   /**
@@ -456,7 +473,8 @@ public final class SpanWireDefinition {
     }
     if (signalSide != SpanWireSignalSide.CENTRED) {
       compound.setInteger(SIGNAL_SIDE_KEY, signalSide.toNBT());
-      compound.setDouble(AUTO_OFFSET_KEY, autoOffset);
+      compound.setDouble(AUTO_OFFSET_X_KEY, autoOffsetX);
+      compound.setDouble(AUTO_OFFSET_Z_KEY, autoOffsetZ);
     }
     return compound;
   }
@@ -489,7 +507,8 @@ public final class SpanWireDefinition {
     return new SpanWireDefinition(anchorA, anchorB, hangers, slack,
         compound.getBoolean(BOX_SPAN_KEY),
         SpanWireSignalSide.fromNBT(compound.getInteger(SIGNAL_SIDE_KEY)),
-        compound.hasKey(AUTO_OFFSET_KEY) ? compound.getDouble(AUTO_OFFSET_KEY) : 0.0,
+        compound.hasKey(AUTO_OFFSET_X_KEY) ? compound.getDouble(AUTO_OFFSET_X_KEY) : 0.0,
+        compound.hasKey(AUTO_OFFSET_Z_KEY) ? compound.getDouble(AUTO_OFFSET_Z_KEY) : 0.0,
         compound.hasKey(TETHER_CLEARANCE_KEY)
             ? compound.getDouble(TETHER_CLEARANCE_KEY)
             : TETHER_MIN_CLEARANCE,
@@ -508,6 +527,8 @@ public final class SpanWireDefinition {
     compound.removeTag(BOX_SPAN_KEY);
     compound.removeTag(SIGNAL_SIDE_KEY);
     compound.removeTag(AUTO_OFFSET_KEY);
+    compound.removeTag(AUTO_OFFSET_X_KEY);
+    compound.removeTag(AUTO_OFFSET_Z_KEY);
     compound.removeTag(TETHER_CLEARANCE_KEY);
     compound.removeTag(TETHER_ANCHOR_A_KEY);
     compound.removeTag(TETHER_ANCHOR_B_KEY);
@@ -518,7 +539,7 @@ public final class SpanWireDefinition {
     final List<BlockPos> remaining = new ArrayList<>(hangers);
     remaining.remove(pos);
     return new SpanWireDefinition(anchorA, anchorB, remaining, slack, boxSpan, signalSide,
-        autoOffset, tetherClearance, tetherAnchorA, tetherAnchorB);
+        autoOffsetX, autoOffsetZ, tetherClearance, tetherAnchorA, tetherAnchorB);
   }
 
   @Override
@@ -535,7 +556,8 @@ public final class SpanWireDefinition {
         && hangers.equals(that.hangers)
         && Double.compare(slack, that.slack) == 0
         && boxSpan == that.boxSpan
-        && Double.compare(autoOffset, that.autoOffset) == 0
+        && Double.compare(autoOffsetX, that.autoOffsetX) == 0
+        && Double.compare(autoOffsetZ, that.autoOffsetZ) == 0
         && Double.compare(tetherClearance, that.tetherClearance) == 0
         && Objects.equals(tetherAnchorA, that.tetherAnchorA)
         && Objects.equals(tetherAnchorB, that.tetherAnchorB)
@@ -545,8 +567,8 @@ public final class SpanWireDefinition {
   @Override
   public int hashCode() {
     return Arrays.hashCode(
-        new Object[]{anchorA, anchorB, hangers, slack, boxSpan, signalSide, autoOffset,
-            tetherClearance, tetherAnchorA, tetherAnchorB});
+        new Object[]{anchorA, anchorB, hangers, slack, boxSpan, signalSide, autoOffsetX,
+            autoOffsetZ, tetherClearance, tetherAnchorA, tetherAnchorB});
   }
 
   @Override

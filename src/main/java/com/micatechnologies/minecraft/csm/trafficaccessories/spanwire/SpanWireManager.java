@@ -2,9 +2,11 @@ package com.micatechnologies.minecraft.csm.trafficaccessories.spanwire;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import javax.annotation.Nullable;
 import net.minecraft.block.state.IBlockState;
@@ -163,17 +165,6 @@ public final class SpanWireManager {
   }
 
   /**
-   * How far off the block centre line this span should run, measured from what hangs on it.
-   *
-   * <p>Each payload is asked where its own hardware wants to be met
-   * ({@link ISpanWireHangable#getSpanHardwareOffset}); that vector is projected onto the span's
-   * left-hand normal, so only the across-the-span part counts and anything along it is discarded.
-   *
-   * <p>The <b>median</b> rather than the mean: a span carrying four signals and one sign should
-   * run over the signals, not at some average depth that suits neither. The median also ignores a
-   * single odd payload entirely, which a mean would let drag the whole run.
-   */
-  /**
    * How far below the messenger this span's tether has to hang to pass under everything on it.
    *
    * <p>The <b>deepest</b> payload wins, not the median: a tether that clears most of the heads and
@@ -289,9 +280,25 @@ public final class SpanWireManager {
    */
   private static final double TETHER_TIE_GAP = 0.35;
 
-  private static double measureAutoOffset(World world, SpanWireDefinition span) {
-    final Vec3d leftward = SpanWireSignalSide.leftwardOf(span.horizontalDirection());
-    final List<Double> across = new ArrayList<>();
+  /**
+   * Where this span should sit relative to the block centre line, measured from what hangs on it.
+   *
+   * <p>Each payload is asked where its own hardware wants to be met
+   * ({@link ISpanWireHangable#getSpanHardwareOffset}) and the <b>whole</b> displacement is taken,
+   * not just the part across the span. That distinction is the difference between a wire that
+   * passes over its housings and one that only manages it where the span happens to run along an
+   * axis: a head is set back along the way it <em>faces</em>, which on a diagonal is not
+   * perpendicular to the wire. Taking only the perpendicular part left the wire beside the
+   * housings on every diagonal, and everything hanging off it leaning to make up the difference.
+   *
+   * <p>The <b>most common</b> answer wins rather than an average. These are a handful of discrete
+   * directions, so averaging two of them yields a direction no payload actually asked for --
+   * halfway between and right for neither. A span carrying four signals and one sign runs over
+   * the signals.
+   */
+  private static Vec3d measureAutoOffset(World world, SpanWireDefinition span) {
+    final Map<String, Vec3d> byKey = new LinkedHashMap<>();
+    final Map<String, Integer> counts = new LinkedHashMap<>();
 
     for (BlockPos hanger : span.getHangers()) {
       final BlockPos payloadPos = hanger.down();
@@ -304,14 +311,22 @@ public final class SpanWireManager {
       }
       final Vec3d offset = ((ISpanWireHangable) below.getBlock())
           .getSpanHardwareOffset(world, payloadPos, below);
-      across.add(offset.x * leftward.x + offset.z * leftward.z);
+      // Quantised into a key so near-identical answers group together instead of each counting as
+      // its own direction.
+      final String key = Math.round(offset.x * 64.0) + ":" + Math.round(offset.z * 64.0);
+      byKey.putIfAbsent(key, offset);
+      counts.merge(key, 1, Integer::sum);
     }
 
-    if (across.isEmpty()) {
-      return 0.0;
+    String best = null;
+    int bestCount = 0;
+    for (Map.Entry<String, Integer> entry : counts.entrySet()) {
+      if (entry.getValue() > bestCount) {
+        bestCount = entry.getValue();
+        best = entry.getKey();
+      }
     }
-    Collections.sort(across);
-    return across.get(across.size() / 2);
+    return best == null ? Vec3d.ZERO : byKey.get(best);
   }
 
   /**

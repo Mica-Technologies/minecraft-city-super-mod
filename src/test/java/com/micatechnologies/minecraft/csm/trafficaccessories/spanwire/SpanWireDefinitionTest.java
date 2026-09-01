@@ -14,6 +14,7 @@ import java.util.List;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -359,24 +360,44 @@ class SpanWireDefinitionTest {
     // so a span built in isolation like this one still has no displacement.
     final SpanWireDefinition span = sampleSpan();
     assertEquals(SpanWireSignalSide.AUTO, span.getSignalSide());
-    assertEquals(0.0, span.getAutoOffset(), 1.0e-12);
+    assertEquals(0.0, span.getAutoOffset().x, 1.0e-12);
+    assertEquals(0.0, span.getAutoOffset().z, 1.0e-12);
     assertEquals(0.0, span.spanOffset().x, 1.0e-12);
     assertEquals(0.0, span.spanOffset().z, 1.0e-12);
   }
 
   @Test
-  void anAutomaticOffsetShiftsTheSpanPerpendicularAndSurvivesNbt() {
-    // The span runs +x, so its left-hand normal is -z. A positive automatic offset must move the
-    // whole run to -z and not along x at all.
-    final SpanWireDefinition span = sampleSpan().withAutoOffset(0.34375);
-    assertEquals(0.0, span.spanOffset().x, 1.0e-12, "an offset must not move a span along itself");
+  void anAutomaticOffsetTranslatesTheWholeSpanAndSurvivesNbt() {
+    // Inverted deliberately, and the inversion is the point. This used to assert that an offset
+    // could only move a span *across* itself -- that it must never shift along its own run. That
+    // held a span to its chord's normal, and a head is set back along the way it faces, which on
+    // a diagonal is not the normal. The wire could then never sit over the housings and every tie
+    // hung off it leaned to make up the difference.
+    //
+    // An automatic offset is now the payload's own displacement, applied whole. Moving the ends a
+    // little along the span as well as across it is harmless: an anchor's shackle already takes up
+    // the difference between its fixed eyebolt and where the wire lands.
+    final Vec3d offset = new Vec3d(0.25, 0.0, -0.34375);
+    final SpanWireDefinition span = sampleSpan().withAutoOffset(offset);
+    assertEquals(0.25, span.spanOffset().x, 1.0e-12,
+        "an automatic offset is applied whole, including along the span");
     assertEquals(-0.34375, span.spanOffset().z, 1.0e-12);
 
     final SpanWireDefinition read =
         SpanWireDefinition.readFromNBT(span.writeToNBT(new NBTTagCompound()));
     assertEquals(SpanWireSignalSide.AUTO, read.getSignalSide());
-    assertEquals(0.34375, read.getAutoOffset(), 1.0e-12);
+    assertEquals(0.25, read.getAutoOffset().x, 1.0e-12);
+    assertEquals(-0.34375, read.getAutoOffset().z, 1.0e-12);
     assertEquals(-0.34375, read.spanOffset().z, 1.0e-12);
+  }
+
+  @Test
+  void afixedSideStillOnlyMovesTheSpanAcrossItself() {
+    // The manual sides are unchanged and still purely sideways: they are a builder saying "run the
+    // wires over that way", with no payload geometry behind them to justify anything else.
+    final SpanWireDefinition span = sampleSpan().withSignalSide(SpanWireSignalSide.LEFT);
+    assertEquals(0.0, span.spanOffset().x, 1.0e-12, "a fixed side must not move a span along itself");
+    assertEquals(-SpanWireSignalSide.OFFSET, span.spanOffset().z, 1.0e-12);
   }
 
   @Test
