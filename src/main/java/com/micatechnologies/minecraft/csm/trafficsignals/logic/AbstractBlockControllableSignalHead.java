@@ -87,7 +87,24 @@ public abstract class AbstractBlockControllableSignalHead extends AbstractBlockC
    */
   @Override
   public double getSpanTetherTieY(IBlockAccess world, BlockPos pos, IBlockState state) {
-    return pos.getY() + getBlockBoundingBox(state, world, pos).minY;
+    return pos.getY() + unrisenBoundingBox(world, pos).minY;
+  }
+
+  /**
+   * This head's shape <b>before</b> any span wire rise is applied.
+   *
+   * <p>Both span hooks report against this rather than against the live box, and the mount adds
+   * the rise it is giving. That is not a tidiness choice, it fixes an ordering bug: the live box
+   * asks the head's tile entity for its span offset, which is cached behind a refresh interval and
+   * is still zero at the moment a span is strung -- so hardware measured against it was built
+   * against an un-risen head and then never corrected, leaving the tether ties visibly short.
+   *
+   * <p>Taking the base and adding the rise makes the answer depend only on things known
+   * synchronously, so there is no moment at which it can be read too early.
+   */
+  private AxisAlignedBB unrisenBoundingBox(IBlockAccess world, BlockPos pos) {
+    return TrafficSignalBoundingBoxHelper.computeBoundingBox(this, world, pos,
+        getBaseSignalYOffset(world, pos));
   }
 
   /**
@@ -104,7 +121,7 @@ public abstract class AbstractBlockControllableSignalHead extends AbstractBlockC
    */
   @Override
   public double getSpanHangerTopY(IBlockAccess world, BlockPos pos, IBlockState state) {
-    return pos.getY() + getBlockBoundingBox(state, world, pos).maxY;
+    return pos.getY() + unrisenBoundingBox(world, pos).maxY;
   }
 
   @Override

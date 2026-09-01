@@ -103,6 +103,26 @@ public final class TrafficSignalBoundingBoxHelper {
     float yOffset = (world != null && pos != null)
         ? signalBlock.getSignalYOffset(world, pos)
         : signalBlock.getSignalYOffset();
+    return computeBoundingBox(signalBlock, world, pos, yOffset);
+  }
+
+  /**
+   * The same box, but built against a stated vertical offset instead of the head's current one.
+   *
+   * <p>For callers that need the shape a head would have <em>without</em> some contribution to
+   * that offset. The span wire hardware is the case this exists for: it needs the head's underside
+   * before the span's own rise is added, because it adds that rise itself and would otherwise
+   * count it twice -- or, worse, read a stale one.
+   */
+  public static AxisAlignedBB computeBoundingBox(AbstractBlockControllableSignalHead signalBlock,
+      @Nullable IBlockAccess world, @Nullable BlockPos pos, float yOffset) {
+    int sectionCount = signalBlock.getDefaultTrafficSignalSectionInfo().length;
+    float[] yPositions = (world != null && pos != null)
+        ? signalBlock.getSectionYPositions(sectionCount, world, pos)
+        : signalBlock.getSectionYPositions(sectionCount);
+    float[] xPositions = (world != null && pos != null)
+        ? signalBlock.getSectionXPositions(sectionCount, world, pos)
+        : signalBlock.getSectionXPositions(sectionCount);
     return computeBoundingBox(
         sectionCount,
         yPositions,

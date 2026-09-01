@@ -200,21 +200,32 @@ public abstract class AbstractTileEntitySpanWireAttachment extends AbstractTileE
     if (span == null || cachedCable == null) {
       return null;
     }
+    AxisAlignedBB box;
     if (cachedNext == null) {
-      // The far anchor draws no cable, only itself.
-      return new AxisAlignedBB(pos);
+      // The far anchor draws no cable, only its own hardware.
+      box = new AxisAlignedBB(pos);
+    } else {
+      final double sag = cachedCable.sag();
+      box = new AxisAlignedBB(
+          Math.min(pos.getX(), cachedNext.getX()),
+          Math.min(pos.getY(), cachedNext.getY()) - sag - 1.0,
+          Math.min(pos.getZ(), cachedNext.getZ()),
+          Math.max(pos.getX(), cachedNext.getX()) + 1.0,
+          Math.max(pos.getY(), cachedNext.getY()) + 1.0,
+          Math.max(pos.getZ(), cachedNext.getZ()) + 1.0);
     }
-    final double sag = cachedCable.sag();
-    // A box span's tether hangs below everything else, so the box has to reach past it too.
-    final double lowest =
-        sag + (cachedTether != null && span != null ? span.tetherDropAtAnchors() : 0.0);
-    return new AxisAlignedBB(
-        Math.min(pos.getX(), cachedNext.getX()),
-        Math.min(pos.getY(), cachedNext.getY()) - lowest - 1.0,
-        Math.min(pos.getZ(), cachedNext.getZ()),
-        Math.max(pos.getX(), cachedNext.getX()) + 1.0,
-        Math.max(pos.getY(), cachedNext.getY()) + 1.0,
-        Math.max(pos.getZ(), cachedNext.getZ()) + 1.0);
+
+    // A box span's tether hangs below everything else, and once it is dead-ended on placed
+    // anchors it sits at a height this attachment cannot work out from its own position -- so the
+    // wire's own points are taken rather than a drop being assumed. Only the stretch this
+    // attachment actually draws is unioned in, which is what keeps the boxes small enough for
+    // culling to still mean something (the plan's D6).
+    if (cachedTether != null) {
+      final Vec3d from = cachedTether.pointAt(cachedFromT);
+      final Vec3d to = cachedTether.pointAt(cachedToT);
+      box = box.union(new AxisAlignedBB(from.x, from.y, from.z, to.x, to.y, to.z).grow(1.0));
+    }
+    return box;
   }
 
   /** Releases this position's cached cable geometry when the block goes away. */
