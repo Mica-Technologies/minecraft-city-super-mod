@@ -70,6 +70,14 @@ public class TileEntitySpanWireClusterMount extends TileEntitySpanWireHanger {
   private final List<BlockPos> coveredColumns = new ArrayList<>();
 
   /**
+   * Exactly what was last handed to {@link SpanWireClusterColumns}, so the withdrawal can match
+   * the claim even after this cluster changes width. Kept separately from
+   * {@link #coveredColumns} rather than derived from it, because the whole point is to release
+   * what was taken and not what is currently true.
+   */
+  private final List<BlockPos> publishedColumns = new ArrayList<>();
+
+  /**
    * What is actually hanging under each covered column, resolved once rather than per frame.
    *
    * <p>A cluster's whole point is that the heads on it need not face the same way, and a head's
@@ -459,7 +467,46 @@ public class TileEntitySpanWireClusterMount extends TileEntitySpanWireHanger {
         coveredColumns.add(column);
       }
     }
+    republishColumns();
     refreshClusterPayloads();
+  }
+
+  /**
+   * Re-registers this bracket's reach, so a payload beside the mast can be told cheaply that
+   * looking for one here is worth the sweep.
+   *
+   * <p>Releases the previous claim before making the new one, and remembers what it claimed. A
+   * cluster that narrows would otherwise keep holding the columns it no longer reaches.
+   */
+  private void republishColumns() {
+    SpanWireClusterColumns.withdraw(publishedColumns);
+    publishedColumns.clear();
+    publishedColumns.addAll(coveredColumns);
+    SpanWireClusterColumns.publish(publishedColumns);
+  }
+
+  /**
+   * Releases this bracket's claim on its columns.
+   *
+   * <p>Idempotent, because the two callers below both fire in some orders and neither is
+   * guaranteed to be the only one: clearing the list is what makes a second withdrawal a no-op
+   * rather than a double release that could drop a column another bracket still holds.
+   */
+  private void withdrawColumns() {
+    SpanWireClusterColumns.withdraw(publishedColumns);
+    publishedColumns.clear();
+  }
+
+  @Override
+  public void invalidate() {
+    super.invalidate();
+    withdrawColumns();
+  }
+
+  @Override
+  public void onChunkUnload() {
+    super.onChunkUnload();
+    withdrawColumns();
   }
 
   private static int clampWidth(int width) {
