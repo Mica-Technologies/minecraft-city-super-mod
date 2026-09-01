@@ -1,32 +1,187 @@
-/* Amber accents against near-black, so the site reads as civic infrastructure rather than as
-   developer tooling. The palette in mkdocs.yml carries most of this; the rest is here. */
+/* ============================================================================
+   City Super Mod guidebook — Mica Technologies design system
+   ----------------------------------------------------------------------------
+   Colour comes from Mica Minecraft rather than from Mica Technologies' primary
+   blue, because this site sits under the Minecraft homepage and beside the
+   launcher: the grass-green ramp is the identity a reader arrives with.
+
+   Both ramps are copied from `themePrimitives.ts` in
+   website-minecraft-micatechnologies-com, which itself mirrors the launcher's
+   `ui-tokens-dark.css`. Kept as HSL, in the same steps, so a change there can be
+   carried across by reading rather than by converting.
+
+   Everything else — Roboto, the 8px spacing base, the 4/8/16 radii, light and
+   dark as equals — follows the design guidelines at micatechnologies.com/design.
+   ============================================================================ */
 
 :root {
-  --md-primary-fg-color: #1b1b1b;
-  --md-accent-fg-color: #f5a623;
+  /* Brand — Mica Minecraft Launcher wordmark grass-green (#6FCF3D family) */
+  --csm-brand-50:  hsl(95, 80%, 96%);
+  --csm-brand-100: hsl(95, 75%, 88%);
+  --csm-brand-200: hsl(95, 70%, 76%);
+  --csm-brand-300: hsl(95, 60%, 62%);
+  --csm-brand-400: hsl(95, 60%, 52%); /* ~#6FCF3D */
+  --csm-brand-500: hsl(95, 60%, 45%);
+  --csm-brand-600: hsl(95, 65%, 35%);
+  --csm-brand-700: hsl(95, 70%, 26%);
+  --csm-brand-800: hsl(95, 75%, 16%);
+  --csm-brand-900: hsl(95, 85%, 10%);
+
+  /* Neutrals — the launcher's dark surface stack, so cards and dividers match */
+  --csm-gray-50:  hsl(220, 35%, 97%);
+  --csm-gray-100: hsl(220, 30%, 94%);
+  --csm-gray-200: hsl(220, 20%, 88%);
+  --csm-gray-300: hsl(220, 20%, 80%);
+  --csm-gray-400: hsl(220, 20%, 65%);
+  --csm-gray-500: hsl(220, 20%, 42%);
+  --csm-gray-600: hsl(220, 20%, 35%);
+  --csm-gray-700: hsl(220, 20%, 25%);
+  --csm-gray-800: hsl(220, 30%, 9%);  /* launcher -color-bg-soft, ~#10151E */
+  --csm-gray-900: hsl(220, 30%, 5%);  /* launcher -color-bg,      ~#0C1017 */
+
+  /* 8px base unit */
+  --csm-space-1: 8px;
+  --csm-space-2: 16px;
+  --csm-space-3: 24px;
+  --csm-space-4: 32px;
+
+  /* 4 / 8 / 16 radii */
+  --csm-radius-1: 4px;
+  --csm-radius-2: 8px;
+  --csm-radius-4: 16px;
 }
 
-/* Block reference tables are long and dense. A tighter row and a monospace id column make them
-   scannable instead of a wall. */
-.md-typeset table:not([class]) td:nth-child(2) {
-  font-family: var(--md-code-font-family);
+/* ---------------------------------------------------------------- light mode */
+[data-md-color-scheme="default"] {
+  --md-primary-fg-color:          var(--csm-gray-900);
+  --md-primary-fg-color--light:   var(--csm-gray-700);
+  --md-primary-fg-color--dark:    var(--csm-gray-900);
+  --md-primary-bg-color:          var(--csm-gray-50);
+  --md-primary-bg-color--light:   var(--csm-gray-100);
+
+  /* 600 rather than 400 in light mode: the wordmark green on white does not
+     carry enough contrast for body links, and the guidelines put accessibility
+     ahead of matching a swatch exactly. */
+  --md-accent-fg-color:           var(--csm-brand-600);
+  --md-accent-fg-color--transparent: hsla(95, 65%, 35%, 0.1);
+
+  --md-typeset-a-color:           var(--csm-brand-700);
+  --md-default-bg-color:          #ffffff;
+  --md-code-bg-color:             var(--csm-gray-50);
+}
+
+/* ----------------------------------------------------------------- dark mode */
+[data-md-color-scheme="slate"] {
+  --md-primary-fg-color:          var(--csm-gray-900);
+  --md-primary-fg-color--light:   var(--csm-gray-800);
+  --md-primary-fg-color--dark:    var(--csm-gray-900);
+  --md-primary-bg-color:          var(--csm-gray-50);
+
+  --md-accent-fg-color:           var(--csm-brand-400);
+  --md-accent-fg-color--transparent: hsla(95, 60%, 52%, 0.12);
+
+  --md-typeset-a-color:           var(--csm-brand-300);
+
+  /* The launcher's own two surface tones, in the same roles they have there:
+     -color-bg behind everything, -color-bg-soft for anything raised. */
+  --md-default-bg-color:          var(--csm-gray-900);
+  --md-code-bg-color:             var(--csm-gray-800);
+  --md-default-fg-color:          hsl(0, 0%, 100%);
+  --md-default-fg-color--light:   var(--csm-gray-300);
+  --md-default-fg-color--lighter: var(--csm-gray-400);
+}
+
+/* --------------------------------------------------------------- typography */
+
+.md-typeset h1,
+.md-typeset h2 {
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+.md-typeset h1 {
+  color: var(--md-default-fg-color);
+}
+
+/* -------------------------------------------------------------------- shape */
+
+.md-typeset code,
+.md-typeset pre > code,
+.md-typeset .admonition,
+.md-typeset details,
+.md-typeset table:not([class]) {
+  border-radius: var(--csm-radius-2);
+}
+
+.md-typeset .admonition,
+.md-typeset details {
+  border-width: 0 0 0 4px;
+  box-shadow: none;
+}
+
+/* ------------------------------------------------------- the block reference
+
+   Fourteen pages of long tables is most of this site, and they are the pages a
+   reader actually works in. Sticky headers so the columns stay named while
+   scrolling six hundred road signs, and a monospace id column so a registry
+   name can be read character by character before it is typed into a command. */
+
+.md-typeset table:not([class]) {
   font-size: 0.72rem;
-  white-space: nowrap;
 }
 
 .md-typeset table:not([class]) th {
   position: sticky;
   top: 0;
-  background-color: var(--md-default-bg-color);
   z-index: 1;
+  background-color: var(--md-default-bg-color);
+  font-weight: 500;
 }
 
-/* Landing page cards */
-.md-typeset .grid.cards > ul > li {
-  border-radius: 0.4rem;
-  transition: border-color 125ms, box-shadow 125ms;
+.md-typeset table:not([class]) td:nth-child(2) {
+  font-family: var(--md-code-font-family);
+  white-space: nowrap;
+  color: var(--md-default-fg-color--light);
 }
+
+.md-typeset table:not([class]) tr:hover {
+  background-color: var(--md-accent-fg-color--transparent);
+}
+
+/* ---------------------------------------------------------- landing page cards */
+
+.md-typeset .grid.cards > ul > li {
+  border-radius: var(--csm-radius-2);
+  padding: var(--csm-space-3);
+  transition: border-color 125ms, box-shadow 125ms, transform 125ms;
+}
+
 .md-typeset .grid.cards > ul > li:hover {
   border-color: var(--md-accent-fg-color);
-  box-shadow: 0 0 0.4rem rgba(245, 166, 35, 0.25);
+  box-shadow: 0 2px 12px hsla(95, 60%, 45%, 0.18);
+  transform: translateY(-2px);
+}
+
+.md-typeset .grid.cards > ul > li > hr {
+  margin: var(--csm-space-1) 0 var(--csm-space-2);
+  border-color: var(--md-accent-fg-color);
+  opacity: 0.35;
+}
+
+/* The brand green is the one accent on the page; let the card icons carry it. */
+.md-typeset .grid.cards .lg.middle {
+  color: var(--md-accent-fg-color);
+}
+
+/* ------------------------------------------------------------------- header */
+
+.md-header {
+  box-shadow: 0 0 0.2rem rgba(0, 0, 0, 0.1), 0 0.2rem 0.4rem rgba(0, 0, 0, 0.2);
+}
+
+/* A green underline on the active tab, which is the only place the brand colour
+   appears in the chrome. Without it the near-black header reads as unbranded. */
+.md-tabs__link--active {
+  border-bottom: 2px solid var(--csm-brand-400);
+  padding-bottom: 2px;
 }
