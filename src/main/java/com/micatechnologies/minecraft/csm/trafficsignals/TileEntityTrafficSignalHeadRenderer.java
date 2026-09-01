@@ -180,16 +180,7 @@ public class TileEntityTrafficSignalHeadRenderer extends
 
     // --- Compensation for tilt: shift slightly left/right for visual alignment ---
     // 1 model unit = 1/16 block, so shift by ±2 for tilt, ±4 for angle
-    int tiltOffset = 0;
-    if (bodyTilt == TrafficSignalBodyTilt.RIGHT_ANGLE) {
-      tiltOffset = -4;
-    } else if (bodyTilt == TrafficSignalBodyTilt.RIGHT_TILT) {
-      tiltOffset = -2;
-    } else if (bodyTilt == TrafficSignalBodyTilt.LEFT_TILT) {
-      tiltOffset = 2;
-    } else if (bodyTilt == TrafficSignalBodyTilt.LEFT_ANGLE) {
-      tiltOffset = 4;
-    }
+    int tiltOffset = getLateralTiltOffset(bodyTilt);
 
     if (tiltOffset != 0) {
       GL11.glTranslated(tiltOffset, 0, 0);
@@ -636,7 +627,40 @@ public class TileEntityTrafficSignalHeadRenderer extends
   /**
    * Returns the base facing rotation angle (without tilt) for the given EnumFacing.
    */
-  private static float getBaseFacingAngle(EnumFacing facing) {
+  /**
+   * How far a tilted head is nudged sideways to stay visually centred, in model units.
+   *
+   * <p>Public because the backplate has to make the same move. A plate is mounted to the back of
+   * the head, so any shift the head makes that the plate does not is a gap between them.
+   *
+   * @param bodyTilt the head's tilt.
+   *
+   * @return the shift along the head's own X axis, in model units.
+   */
+  public static int getLateralTiltOffset(TrafficSignalBodyTilt bodyTilt) {
+    if (bodyTilt == TrafficSignalBodyTilt.RIGHT_ANGLE) {
+      return -4;
+    } else if (bodyTilt == TrafficSignalBodyTilt.RIGHT_TILT) {
+      return -2;
+    } else if (bodyTilt == TrafficSignalBodyTilt.LEFT_TILT) {
+      return 2;
+    } else if (bodyTilt == TrafficSignalBodyTilt.LEFT_ANGLE) {
+      return 4;
+    }
+    return 0;
+  }
+
+  /**
+   * The rotation a head's model gets from its facing alone, before any tilt.
+   *
+   * <p>Public for the same reason as {@link #getLateralTiltOffset}: the plate needs the tilt as a
+   * delta from this, because its own model already has the facing baked in by the blockstate.
+   *
+   * @param facing the block's facing.
+   *
+   * @return degrees about Y.
+   */
+  public static float getBaseFacingAngle(EnumFacing facing) {
     switch (facing) {
       case SOUTH: return 180.0f;
       case WEST:  return 90.0f;
