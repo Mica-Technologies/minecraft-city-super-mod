@@ -125,7 +125,14 @@ public abstract class AbstractBlockControllableSignalHead extends AbstractBlockC
   public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
     // Recomputed per-call: signals can flip between vertical and horizontal layout via
     // their TE, and a single per-block-class cache cannot reflect per-position state.
-    return TrafficSignalBoundingBoxHelper.computeBoundingBox(this, source, pos);
+    final AxisAlignedBB box = TrafficSignalBoundingBoxHelper.computeBoundingBox(this, source, pos);
+    if (source == null || pos == null || !state.getProperties().containsKey(FACING)) {
+      return box;
+    }
+    // The box follows the model sideways as well as up. A head slid under a span's clamp that kept
+    // its hitbox on the block would be clickable where it is not drawn and solid where it is.
+    final Vec3d slide = getBoundingBoxSlide(source, pos, state.getValue(FACING));
+    return slide == Vec3d.ZERO ? box : box.offset(slide.x, 0.0, slide.z);
   }
 
   /**
@@ -400,7 +407,63 @@ public abstract class AbstractBlockControllableSignalHead extends AbstractBlockC
    * their own contribution through {@link #getBaseSignalYOffset} instead.
    */
   public final float getSignalYOffset(IBlockAccess world, BlockPos pos) {
-    return getBaseSignalYOffset(world, pos) + getSpanWireYOffset(world, pos);
+    return (float) getSignalOffset(world, pos).y;
+  }
+
+  /**
+   * Everything that shifts this signal away from its block, on all three axes, in model units.
+   *
+   * <p>The head's own contribution is vertical only -- a signal sits where its block is unless
+   * something moved it -- so the horizontal terms come entirely from what it hangs from. A span
+   * wire is the one thing that supplies them today, and it uses them to slide a head under its
+   * clamp so the mast comes straight down instead of reaching across.
+   *
+   * <p>Final for the same reason the vertical form is: this has to reach the renderer, the hitbox,
+   * and the cover and mount-kit geometry that fit themselves around a signal, and anything that
+   * quietly dropped a term would draw a head in one place with a hitbox in another.
+   *
+   * @param world the block access.
+   * @param pos   this block's position.
+   *
+   * @return the offset in model units, never null.
+   */
+  public final Vec3d getSignalOffset(IBlockAccess world, BlockPos pos) {
+    final Vec3d span = getSpanWireOffset(world, pos);
+    return new Vec3d(span.x, getBaseSignalYOffset(world, pos) + span.y, span.z);
+  }
+
+  /**
+   * The horizontal part of {@link #getSignalOffset}, turned from world axes into the north-facing
+   * frame the bounding box is built in.
+   *
+   * <p>The box is authored facing north and rotated by {@code RotationUtils} afterwards, so a shift
+   * added to it in world axes would be rotated a second time and land on the wrong side of the
+   * block. This inverts that rotation so the box ends up moved the way the model is.
+   *
+   * @param world  the block access.
+   * @param pos    this block's position.
+   * @param facing the block's facing.
+   *
+   * @return the shift to apply to a north-facing box, in blocks.
+   */
+  public final Vec3d getBoundingBoxSlide(IBlockAccess world, BlockPos pos, EnumFacing facing) {
+    final Vec3d offset = getSignalOffset(world, pos);
+    final double x = offset.x / 16.0;
+    final double z = offset.z / 16.0;
+    if (x == 0.0 && z == 0.0) {
+      return Vec3d.ZERO;
+    }
+    switch (facing) {
+      case SOUTH:
+        return new Vec3d(-x, 0.0, -z);
+      case EAST:
+        return new Vec3d(z, 0.0, -x);
+      case WEST:
+        return new Vec3d(-z, 0.0, x);
+      case NORTH:
+      default:
+        return new Vec3d(x, 0.0, z);
+    }
   }
 
   /**
@@ -416,15 +479,15 @@ public abstract class AbstractBlockControllableSignalHead extends AbstractBlockC
    * does not. Read through the tile entity, which caches it — the renderer asks for the total
    * offset every frame, and the underlying lookup walks blocks.
    */
-  private float getSpanWireYOffset(IBlockAccess world, BlockPos pos) {
+  private Vec3d getSpanWireOffset(IBlockAccess world, BlockPos pos) {
     if (world == null || pos == null) {
-      return 0.0f;
+      return Vec3d.ZERO;
     }
     final TileEntity tileEntity = world.getTileEntity(pos);
     if (tileEntity instanceof TileEntityTrafficSignalHead) {
-      return ((TileEntityTrafficSignalHead) tileEntity).getSpanWireYOffset();
+      return ((TileEntityTrafficSignalHead) tileEntity).getSpanWireOffset();
     }
-    return 0.0f;
+    return Vec3d.ZERO;
   }
 
   /**

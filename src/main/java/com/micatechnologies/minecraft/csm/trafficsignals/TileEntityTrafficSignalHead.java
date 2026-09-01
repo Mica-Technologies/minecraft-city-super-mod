@@ -21,6 +21,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -83,27 +84,41 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
    * A second of staleness after a re-link is not worth a notification path from the anchor to
    * every head hanging off it.
    */
-  private transient float cachedSpanWireYOffset = 0.0f;
-  private transient long cachedSpanWireYOffsetTick = Long.MIN_VALUE;
+  private transient Vec3d cachedSpanWireOffset = Vec3d.ZERO;
+  private transient long cachedSpanWireOffsetTick = Long.MIN_VALUE;
 
   /** How long a derived span wire offset is reused before being re-derived. */
   private static final long SPAN_WIRE_OFFSET_REFRESH_TICKS = 20L;
 
   /**
-   * How far this signal is shifted by hanging from a span wire, in model units. Zero when it does
-   * not hang from one, which is every signal on a pole or a mast arm.
+   * How far this signal is shifted by hanging from a span wire, in model units, on all three axes.
+   * Zero when it does not hang from one, which is every signal on a pole or a mast arm.
+   *
+   * <p>The horizontal terms matter as much as the height: a housing does not sit on its block's
+   * centre line, so a head that only rises still hangs beside the wire rather than under it.
+   *
+   * @return the offset in model units, never null.
    */
-  public float getSpanWireYOffset() {
+  public Vec3d getSpanWireOffset() {
     final World world = getWorld();
     final long now = world == null ? 0L : world.getTotalWorldTime();
-    if (cachedSpanWireYOffsetTick != Long.MIN_VALUE
-        && now - cachedSpanWireYOffsetTick < SPAN_WIRE_OFFSET_REFRESH_TICKS) {
-      return cachedSpanWireYOffset;
+    if (cachedSpanWireOffsetTick != Long.MIN_VALUE
+        && now - cachedSpanWireOffsetTick < SPAN_WIRE_OFFSET_REFRESH_TICKS) {
+      return cachedSpanWireOffset;
     }
-    cachedSpanWireYOffset =
-        world == null ? 0.0f : SpanWireHangOffset.computeFor(world, getPos());
-    cachedSpanWireYOffsetTick = now;
-    return cachedSpanWireYOffset;
+    cachedSpanWireOffset =
+        world == null ? Vec3d.ZERO : SpanWireHangOffset.computeFor(world, getPos());
+    cachedSpanWireOffsetTick = now;
+    return cachedSpanWireOffset;
+  }
+
+  /**
+   * Just the height from {@link #getSpanWireOffset()}, for the callers that only shift vertically.
+   *
+   * @return the vertical part of the span offset, in model units.
+   */
+  public float getSpanWireYOffset() {
+    return (float) getSpanWireOffset().y;
   }
 
   /**
