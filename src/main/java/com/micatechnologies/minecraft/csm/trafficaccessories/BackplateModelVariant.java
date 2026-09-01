@@ -5,31 +5,28 @@ import net.minecraft.util.IStringSerializable;
 
 /**
  * Combined blockstate key that encodes both a signal backplate's tilt and its horizontal
- * orientation into a single property value. Backplate blockstate JSONs branch their model
- * selection on this single property so each of the ten (tilt &times; horizontal) combinations
- * can pick a distinct model file — something Forge v1 cannot express cleanly when tilt and
- * horizontal are kept as separate properties, because both end up overriding {@code model} and
- * only the last one wins.
+ * orientation into a single property value.
  *
- * <h3>Known limitation — horizontal add-on tilt/angle alignment</h3>
- * The {@code H_LEFT_TILT}, {@code H_RIGHT_TILT}, {@code H_LEFT_ANGLE}, and {@code H_RIGHT_ANGLE}
- * variants for the add-on horizontal backplate models ({@code signal_backplate_horizontal_addon_1/2})
- * render slightly misaligned (~¼–½ block) from the add-on signal head they're supposed to clamp
- * to. The signal head renderer pivots an add-on's tilt around the <i>main</i> signal's center
- * via a two-stage GL transform (tilt around main, then facing around own center), which the
- * blockstate-driven backplate can only approximate through an element {@code rotation} with an
- * off-center origin. Because the backplate block is offset from the signal block by one block
- * in the facing direction, the ideal rotation origin in local model space is different for each
- * facing, and Minecraft element rotations can only bake one. We author for the facing that looks
- * best on average; other facings drift, and some tilt angles push the geometry past Minecraft's
+ * <p>It no longer chooses a model. {@code TileEntitySignalBackplateRenderer} draws every plate
+ * from the untilted model of its orientation and turns it about the head's centre itself, so what
+ * this property now carries is <em>which way to turn</em> — the eight tilted constants are read by
+ * the renderer and are deliberately not distinct geometry any more. {@link #untilted()} is how the
+ * renderer gets from one to the model it actually wants.
+ *
+ * <h3>What this replaced</h3>
+ *
+ * Each of the ten combinations used to select its own pre-tilted model file, and the tilted ones
+ * never quite lined up. A plate is mounted to the back of a head, so it has to turn about the
+ * <em>head's</em> centre — a block away, in the facing direction. A blockstate can bake only one
+ * rotation origin into a model and the right origin is a different point for every facing, so the
+ * models were authored for whichever facing looked best and the rest drifted; the worst of it was
+ * the horizontal add-ons, a quarter to half a block out, because a head's add-on pivots about the
+ * <i>main</i> signal rather than itself. Some tilt angles also pushed geometry past Minecraft's
  * {@code [-16, 32]} per-axis element bounds.
  *
- * <p>A structural fix would require either a TESR that replicates the signal head's two-stage
- * rotation, or a placement-side inversion (add-on backplate placed on the opposite side of the
- * signal, with {@code getActualState} looking for the signal through {@code pos.offset(facing)}
- * instead of {@code pos.offset(facing.getOpposite())}) to effectively double the model's reach.
- * Neither is warranted right now — the un-tilted horizontal and all vertical cases work, and the
- * tilted horizontal add-on combination is a relatively rare configuration.
+ * <p>The fix named here for a long time was "a TESR that replicates the signal head's two-stage
+ * rotation". There is one now, so the angle is exact for every facing and the 64 pre-tilted model
+ * files are gone.
  */
 public enum BackplateModelVariant implements IStringSerializable {
   V_NONE("v_none"),
