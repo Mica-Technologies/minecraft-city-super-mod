@@ -126,8 +126,23 @@ public class TileEntitySpanWireAnchorRenderer
       return;
     }
     final Vec3d end = tether.pointAt(atT);
+    final SpanWireDefinition span = te.getSpan();
+    final BlockPos lower = span == null ? null : span.getTetherAnchorFor(te.getPos());
 
-    // Sample inward along the tether; at an end one of the two samples is the end itself.
+    if (lower != null) {
+      // Dead-ended on a real anchor. It is the same block as the one above, so the hardware that
+      // meets it is the same too: a shackle from that block's own eyebolt out to where the wire
+      // is, then the thimble the wire turns around. The eyebolt sits on the block centre line and
+      // the wire does not, for exactly the reason the messenger's does not.
+      SpanWireCableGeometry.emitStraightTube(buffer, SpanWireDefinition.attachPoint(lower), end,
+          origin, LINK_RADIUS, STEEL_RED, STEEL_GREEN, STEEL_BLUE, skyLight, blockLight);
+      emitThimble(buffer, tether, atT, end, origin, skyLight, blockLight);
+      return;
+    }
+
+    // No anchor placed: the tether hangs at a derived height, so there is nothing to dead-end on
+    // and the best that can be drawn is a stub back toward the pole. Sample inward along the
+    // tether; at an end one of the two samples is the end itself.
     final double inward = atT < 0.5 ? Math.min(1.0, atT + 0.01) : Math.max(0.0, atT - 0.01);
     Vec3d along = tether.pointAt(inward).subtract(end);
     if (along.x * along.x + along.y * along.y + along.z * along.z < 1.0e-12) {

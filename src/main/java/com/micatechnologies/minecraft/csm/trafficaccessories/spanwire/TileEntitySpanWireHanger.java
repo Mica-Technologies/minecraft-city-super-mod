@@ -169,9 +169,30 @@ public class TileEntitySpanWireHanger extends AbstractTileEntitySpanWireAttachme
    */
   /**
    * The height a box span's tether ties to on what this mount carries, or {@code NaN} for none.
+   *
+   * <p>The payload reports its underside before any span rise; this adds the rise this mount is
+   * giving it. See {@link #getPayloadRise()}.
    */
   public double getPayloadTetherTieY() {
-    return payloadTetherTieY;
+    return Double.isNaN(payloadTetherTieY) ? Double.NaN : payloadTetherTieY + getPayloadRise();
+  }
+
+  /**
+   * How far this mount lifts what it carries, in blocks.
+   *
+   * <p>The single definition of the rise. {@code SpanWireHangOffset} converts this for the signal
+   * head renderer and the hardware here adds it to the payload's reported geometry, so the two
+   * cannot disagree about where a head has ended up.
+   *
+   * <p>Zero for an extending mast, which exists precisely so the payload stays on its own block,
+   * and zero for a cluster, whose bracket is rigid and holds everything on it level.
+   */
+  public double getPayloadRise() {
+    if (mountStyle == SpanWireMountStyle.MAST || this instanceof TileEntitySpanWireClusterMount) {
+      return 0.0;
+    }
+    final double drop = getCableDrop();
+    return drop <= 0.0 ? 0.0 : Math.min(drop, mountStyle.getMaximumDrop());
   }
 
   public Vec3d getHardwareFootPoint() {
@@ -179,11 +200,12 @@ public class TileEntitySpanWireHanger extends AbstractTileEntitySpanWireAttachme
     if (Double.isNaN(payloadTopY)) {
       return foot;
     }
+    final double payloadTop = payloadTopY + getPayloadRise();
     // Reaches down to the payload rather than stopping at this mount's own attach height. Only
     // lower, never higher: a payload that has risen to meet the hardware is already touching it,
     // and pulling the drop up to its top would bury the foot inside it. Bounded so a payload
     // reporting nonsense cannot stretch the drop to the ground.
-    final double reach = Math.max(foot.y - MAX_HANGER_REACH, Math.min(foot.y, payloadTopY));
+    final double reach = Math.max(foot.y - MAX_HANGER_REACH, Math.min(foot.y, payloadTop));
     return new Vec3d(foot.x, reach, foot.z);
   }
 

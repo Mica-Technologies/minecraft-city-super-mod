@@ -102,6 +102,11 @@ public class BlockSpanWireAnchor extends AbstractBlockRotatableNSEW
   @Override
   public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
     SpanWireManager.onAttachmentRemoved(worldIn, pos);
+    // An anchor may also be the lower one a box span's tether dead-ends on, in which case it
+    // belongs to no span of its own and the span above has to be told its tether just lost an
+    // end. Run after the removal above, and before the block actually goes, for the same reason
+    // the guy anchor cleanup does: the search has to see the world it is correcting.
+    SpanWireManager.onTetherAnchorRemoved(worldIn, pos);
     super.breakBlock(worldIn, pos, state);
   }
 }
