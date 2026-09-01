@@ -18,35 +18,35 @@
       "x": 90
     },
     "facing=down,fitted=false,modelvariant=v_left_tilt": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full_left_tilt",
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full",
       "x": 90
     },
     "facing=down,fitted=false,modelvariant=h_left_tilt": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full_left_tilt",
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full",
       "x": 90
     },
     "facing=down,fitted=false,modelvariant=v_right_tilt": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full_right_tilt",
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full",
       "x": 90
     },
     "facing=down,fitted=false,modelvariant=h_right_tilt": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full_right_tilt",
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full",
       "x": 90
     },
     "facing=down,fitted=false,modelvariant=v_left_angle": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full_left_angle",
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full",
       "x": 90
     },
     "facing=down,fitted=false,modelvariant=h_left_angle": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full_left_angle",
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full",
       "x": 90
     },
     "facing=down,fitted=false,modelvariant=v_right_angle": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full_right_angle",
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full",
       "x": 90
     },
     "facing=down,fitted=false,modelvariant=h_right_angle": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full_right_angle",
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full",
       "x": 90
     },
     "facing=down,fitted=true,modelvariant=v_none": {
@@ -58,35 +58,35 @@
       "x": 90
     },
     "facing=down,fitted=true,modelvariant=v_left_tilt": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted_left_tilt",
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted",
       "x": 90
     },
     "facing=down,fitted=true,modelvariant=h_left_tilt": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted_left_tilt",
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted",
       "x": 90
     },
     "facing=down,fitted=true,modelvariant=v_right_tilt": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted_right_tilt",
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted",
       "x": 90
     },
     "facing=down,fitted=true,modelvariant=h_right_tilt": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted_right_tilt",
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted",
       "x": 90
     },
     "facing=down,fitted=true,modelvariant=v_left_angle": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted_left_angle",
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted",
       "x": 90
     },
     "facing=down,fitted=true,modelvariant=h_left_angle": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted_left_angle",
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted",
       "x": 90
     },
     "facing=down,fitted=true,modelvariant=v_right_angle": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted_right_angle",
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted",
       "x": 90
     },
     "facing=down,fitted=true,modelvariant=h_right_angle": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted_right_angle",
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted",
       "x": 90
     },
     "facing=east,fitted=false,modelvariant=v_none": {
@@ -98,35 +98,35 @@
       "y": 90
     },
     "facing=east,fitted=false,modelvariant=v_left_tilt": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full_left_tilt",
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full",
       "y": 90
     },
     "facing=east,fitted=false,modelvariant=h_left_tilt": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full_left_tilt",
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full",
       "y": 90
     },
     "facing=east,fitted=false,modelvariant=v_right_tilt": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full_right_tilt",
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full",
       "y": 90
     },
     "facing=east,fitted=false,modelvariant=h_right_tilt": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full_right_tilt",
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full",
       "y": 90
     },
     "facing=east,fitted=false,modelvariant=v_left_angle": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full_left_angle",
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full",
       "y": 90
     },
     "facing=east,fitted=false,modelvariant=h_left_angle": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full_left_angle",
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full",
       "y": 90
     },
     "facing=east,fitted=false,modelvariant=v_right_angle": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full_right_angle",
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full",
       "y": 90
     },
     "facing=east,fitted=false,modelvariant=h_right_angle": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full_right_angle",
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full",
       "y": 90
     },
     "facing=east,fitted=true,modelvariant=v_none": {
@@ -138,35 +138,35 @@
       "y": 90
     },
     "facing=east,fitted=true,modelvariant=v_left_tilt": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted_left_tilt",
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted",
       "y": 90
     },
     "facing=east,fitted=true,modelvariant=h_left_tilt": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted_left_tilt",
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted",
       "y": 90
     },
     "facing=east,fitted=true,modelvariant=v_right_tilt": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted_right_tilt",
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted",
       "y": 90
     },
     "facing=east,fitted=true,modelvariant=h_right_tilt": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted_right_tilt",
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted",
       "y": 90
     },
     "facing=east,fitted=true,modelvariant=v_left_angle": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted_left_angle",
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted",
       "y": 90
     },
     "facing=east,fitted=true,modelvariant=h_left_angle": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted_left_angle",
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted",
       "y": 90
     },
     "facing=east,fitted=true,modelvariant=v_right_angle": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted_right_angle",
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted",
       "y": 90
     },
     "facing=east,fitted=true,modelvariant=h_right_angle": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted_right_angle",
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted",
       "y": 90
     },
     "facing=north,fitted=false,modelvariant=v_none": {
@@ -176,28 +176,28 @@
       "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full"
     },
     "facing=north,fitted=false,modelvariant=v_left_tilt": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full_left_tilt"
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full"
     },
     "facing=north,fitted=false,modelvariant=h_left_tilt": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full_left_tilt"
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full"
     },
     "facing=north,fitted=false,modelvariant=v_right_tilt": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full_right_tilt"
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full"
     },
     "facing=north,fitted=false,modelvariant=h_right_tilt": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full_right_tilt"
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full"
     },
     "facing=north,fitted=false,modelvariant=v_left_angle": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full_left_angle"
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full"
     },
     "facing=north,fitted=false,modelvariant=h_left_angle": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full_left_angle"
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full"
     },
     "facing=north,fitted=false,modelvariant=v_right_angle": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full_right_angle"
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full"
     },
     "facing=north,fitted=false,modelvariant=h_right_angle": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full_right_angle"
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full"
     },
     "facing=north,fitted=true,modelvariant=v_none": {
       "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted"
@@ -206,28 +206,28 @@
       "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted"
     },
     "facing=north,fitted=true,modelvariant=v_left_tilt": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted_left_tilt"
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted"
     },
     "facing=north,fitted=true,modelvariant=h_left_tilt": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted_left_tilt"
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted"
     },
     "facing=north,fitted=true,modelvariant=v_right_tilt": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted_right_tilt"
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted"
     },
     "facing=north,fitted=true,modelvariant=h_right_tilt": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted_right_tilt"
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted"
     },
     "facing=north,fitted=true,modelvariant=v_left_angle": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted_left_angle"
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted"
     },
     "facing=north,fitted=true,modelvariant=h_left_angle": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted_left_angle"
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted"
     },
     "facing=north,fitted=true,modelvariant=v_right_angle": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted_right_angle"
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted"
     },
     "facing=north,fitted=true,modelvariant=h_right_angle": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted_right_angle"
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted"
     },
     "facing=south,fitted=false,modelvariant=v_none": {
       "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full",
@@ -238,35 +238,35 @@
       "y": 180
     },
     "facing=south,fitted=false,modelvariant=v_left_tilt": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full_left_tilt",
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full",
       "y": 180
     },
     "facing=south,fitted=false,modelvariant=h_left_tilt": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full_left_tilt",
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full",
       "y": 180
     },
     "facing=south,fitted=false,modelvariant=v_right_tilt": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full_right_tilt",
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full",
       "y": 180
     },
     "facing=south,fitted=false,modelvariant=h_right_tilt": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full_right_tilt",
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full",
       "y": 180
     },
     "facing=south,fitted=false,modelvariant=v_left_angle": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full_left_angle",
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full",
       "y": 180
     },
     "facing=south,fitted=false,modelvariant=h_left_angle": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full_left_angle",
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full",
       "y": 180
     },
     "facing=south,fitted=false,modelvariant=v_right_angle": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full_right_angle",
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full",
       "y": 180
     },
     "facing=south,fitted=false,modelvariant=h_right_angle": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full_right_angle",
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full",
       "y": 180
     },
     "facing=south,fitted=true,modelvariant=v_none": {
@@ -278,35 +278,35 @@
       "y": 180
     },
     "facing=south,fitted=true,modelvariant=v_left_tilt": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted_left_tilt",
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted",
       "y": 180
     },
     "facing=south,fitted=true,modelvariant=h_left_tilt": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted_left_tilt",
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted",
       "y": 180
     },
     "facing=south,fitted=true,modelvariant=v_right_tilt": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted_right_tilt",
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted",
       "y": 180
     },
     "facing=south,fitted=true,modelvariant=h_right_tilt": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted_right_tilt",
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted",
       "y": 180
     },
     "facing=south,fitted=true,modelvariant=v_left_angle": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted_left_angle",
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted",
       "y": 180
     },
     "facing=south,fitted=true,modelvariant=h_left_angle": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted_left_angle",
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted",
       "y": 180
     },
     "facing=south,fitted=true,modelvariant=v_right_angle": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted_right_angle",
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted",
       "y": 180
     },
     "facing=south,fitted=true,modelvariant=h_right_angle": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted_right_angle",
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted",
       "y": 180
     },
     "facing=up,fitted=false,modelvariant=v_none": {
@@ -318,35 +318,35 @@
       "x": 270
     },
     "facing=up,fitted=false,modelvariant=v_left_tilt": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full_left_tilt",
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full",
       "x": 270
     },
     "facing=up,fitted=false,modelvariant=h_left_tilt": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full_left_tilt",
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full",
       "x": 270
     },
     "facing=up,fitted=false,modelvariant=v_right_tilt": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full_right_tilt",
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full",
       "x": 270
     },
     "facing=up,fitted=false,modelvariant=h_right_tilt": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full_right_tilt",
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full",
       "x": 270
     },
     "facing=up,fitted=false,modelvariant=v_left_angle": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full_left_angle",
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full",
       "x": 270
     },
     "facing=up,fitted=false,modelvariant=h_left_angle": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full_left_angle",
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full",
       "x": 270
     },
     "facing=up,fitted=false,modelvariant=v_right_angle": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full_right_angle",
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full",
       "x": 270
     },
     "facing=up,fitted=false,modelvariant=h_right_angle": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full_right_angle",
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full",
       "x": 270
     },
     "facing=up,fitted=true,modelvariant=v_none": {
@@ -358,35 +358,35 @@
       "x": 270
     },
     "facing=up,fitted=true,modelvariant=v_left_tilt": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted_left_tilt",
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted",
       "x": 270
     },
     "facing=up,fitted=true,modelvariant=h_left_tilt": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted_left_tilt",
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted",
       "x": 270
     },
     "facing=up,fitted=true,modelvariant=v_right_tilt": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted_right_tilt",
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted",
       "x": 270
     },
     "facing=up,fitted=true,modelvariant=h_right_tilt": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted_right_tilt",
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted",
       "x": 270
     },
     "facing=up,fitted=true,modelvariant=v_left_angle": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted_left_angle",
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted",
       "x": 270
     },
     "facing=up,fitted=true,modelvariant=h_left_angle": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted_left_angle",
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted",
       "x": 270
     },
     "facing=up,fitted=true,modelvariant=v_right_angle": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted_right_angle",
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted",
       "x": 270
     },
     "facing=up,fitted=true,modelvariant=h_right_angle": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted_right_angle",
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted",
       "x": 270
     },
     "facing=west,fitted=false,modelvariant=v_none": {
@@ -398,35 +398,35 @@
       "y": 270
     },
     "facing=west,fitted=false,modelvariant=v_left_tilt": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full_left_tilt",
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full",
       "y": 270
     },
     "facing=west,fitted=false,modelvariant=h_left_tilt": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full_left_tilt",
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full",
       "y": 270
     },
     "facing=west,fitted=false,modelvariant=v_right_tilt": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full_right_tilt",
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full",
       "y": 270
     },
     "facing=west,fitted=false,modelvariant=h_right_tilt": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full_right_tilt",
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full",
       "y": 270
     },
     "facing=west,fitted=false,modelvariant=v_left_angle": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full_left_angle",
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full",
       "y": 270
     },
     "facing=west,fitted=false,modelvariant=h_left_angle": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full_left_angle",
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full",
       "y": 270
     },
     "facing=west,fitted=false,modelvariant=v_right_angle": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full_right_angle",
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full",
       "y": 270
     },
     "facing=west,fitted=false,modelvariant=h_right_angle": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full_right_angle",
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_full",
       "y": 270
     },
     "facing=west,fitted=true,modelvariant=v_none": {
@@ -438,35 +438,35 @@
       "y": 270
     },
     "facing=west,fitted=true,modelvariant=v_left_tilt": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted_left_tilt",
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted",
       "y": 270
     },
     "facing=west,fitted=true,modelvariant=h_left_tilt": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted_left_tilt",
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted",
       "y": 270
     },
     "facing=west,fitted=true,modelvariant=v_right_tilt": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted_right_tilt",
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted",
       "y": 270
     },
     "facing=west,fitted=true,modelvariant=h_right_tilt": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted_right_tilt",
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted",
       "y": 270
     },
     "facing=west,fitted=true,modelvariant=v_left_angle": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted_left_angle",
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted",
       "y": 270
     },
     "facing=west,fitted=true,modelvariant=h_left_angle": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted_left_angle",
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted",
       "y": 270
     },
     "facing=west,fitted=true,modelvariant=v_right_angle": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted_right_angle",
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted",
       "y": 270
     },
     "facing=west,fitted=true,modelvariant=h_right_angle": {
-      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted_right_angle",
+      "model": "csm:trafficsignals/shared_models/backplates/signal_backplate_hawk_fitted",
       "y": 270
     },
     "inventory": [
