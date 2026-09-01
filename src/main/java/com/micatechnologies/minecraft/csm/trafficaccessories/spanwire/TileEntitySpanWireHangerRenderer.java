@@ -160,7 +160,21 @@ public class TileEntitySpanWireHangerRenderer
       emitConductorCoils(buffer, te.getCoilStyle(), te.getMountStyle(), cablePoint, mastTop,
           along, origin, skyLight, blockLight);
     }
-    emitTetherTie(buffer, te, gripT, origin, skyLight, blockLight);
+    if (drawsTetherTie()) {
+      emitTetherTie(buffer, te, gripT, origin, skyLight, blockLight);
+    }
+  }
+
+  /**
+   * Whether this pass draws the tether tie for the mount it is given.
+   *
+   * <p>False for the copy a cluster borrows. A cluster reuses this whole pass for its mast, saddle
+   * and coils, which is right -- there is one mast -- but a tie is per <em>head</em>, and this
+   * would draw a single one at the bracket's midpoint, standing between the housings and holding
+   * neither. The cluster draws its own, one for each head it carries.
+   */
+  protected boolean drawsTetherTie() {
+    return true;
   }
 
   /**
@@ -195,6 +209,19 @@ public class TileEntitySpanWireHangerRenderer
     // one side and left it leaning. Asking the wire for its point below the head keeps the tie
     // plumb, and keeps it touching the wire even where the two do not quite agree.
     final Vec3d foot = te.getHardwareFootPoint();
+    emitTetherTieAt(buffer, tether, te.getSpan(), foot, tieY, origin, skyLight, blockLight);
+  }
+
+  /**
+   * One tie, from the tether up to a given point on a given payload.
+   *
+   * <p>Split out from the mount's own so a cluster can call it once per head. Everything here is
+   * per-head -- where the wire is reached from, and how far up it goes -- and none of it is per
+   * mount, which is exactly why a cluster could not use the mount's version.
+   */
+  static void emitTetherTieAt(BufferBuilder buffer, SpanWireCatenary tether,
+      SpanWireDefinition span, Vec3d foot, double tieY, Vec3d origin, int skyLight,
+      int blockLight) {
     final Vec3d tetherPoint = tether.pointAt(tether.parameterAt(foot.x, foot.z));
 
     // Drawn to the payload's actual underside rather than a fixed height. The tether is strung
@@ -206,7 +233,6 @@ public class TileEntitySpanWireHangerRenderer
     // than that -- the payload it reaches is hanging from the messenger itself. That bound moves
     // with the span, which is the point: a fixed cap either cuts off the legitimate long ties a
     // mixed span produces, or is loose enough to be no guard at all on a short one.
-    final SpanWireDefinition span = te.getSpan();
     final double cap = span == null
         ? MIN_TIE_HEIGHT_CAP
         : Math.max(MIN_TIE_HEIGHT_CAP, span.getTetherClearance());
