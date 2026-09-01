@@ -16,6 +16,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumBlockRenderType;
 import javax.annotation.Nonnull;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
@@ -128,13 +129,6 @@ public abstract class AbstractBlockSignalBackplate extends AbstractBlockRotatabl
   }
 
   /**
-   * How far a span wire has lifted the head at this position, in model units, or zero.
-   *
-   * <p>Read from the head's own tile entity, which is the same cached value its renderer uses, so
-   * the plate stands down exactly when the head has actually moved rather than whenever it merely
-   * happens to hang near a span.
-   */
-  /**
    * The tilt of the head at a position, or {@link TrafficSignalBodyTilt#NONE} if there is none.
    *
    * <p>Read straight from the head's tile entity rather than inferred from this plate's model
@@ -152,6 +146,37 @@ public abstract class AbstractBlockSignalBackplate extends AbstractBlockRotatabl
         : TrafficSignalBodyTilt.NONE;
   }
 
+  /**
+   * How far a span wire has moved the head at this position, in model units, or zero.
+   *
+   * <p>All three axes. A plate is bolted to the back of its head and has to go wherever the head
+   * went, and a span moves a head sideways as well as up -- following only the rise would leave the
+   * plate behind by however far the head slid under its clamp.
+   *
+   * <p>Read from the head's own tile entity, which is the same cached value its renderer uses, so
+   * the plate moves exactly when the head has actually moved rather than whenever it merely happens
+   * to hang near a span.
+   *
+   * @param world     the world to read.
+   * @param signalPos the head's position.
+   *
+   * @return the head's span offset in model units, never null.
+   */
+  public static Vec3d spanOffsetOf(IBlockAccess world, BlockPos signalPos) {
+    final TileEntity te = world.getTileEntity(signalPos);
+    return te instanceof TileEntityTrafficSignalHead
+        ? ((TileEntityTrafficSignalHead) te).getSpanWireOffset()
+        : Vec3d.ZERO;
+  }
+
+  /**
+   * Just the rise from {@link #spanOffsetOf}, for callers that only shift vertically.
+   *
+   * @param world     the world to read.
+   * @param signalPos the head's position.
+   *
+   * @return the vertical part of the head's span offset, in model units.
+   */
   public static float spanRiseOf(IBlockAccess world, BlockPos signalPos) {
     final TileEntity te = world.getTileEntity(signalPos);
     return te instanceof TileEntityTrafficSignalHead
