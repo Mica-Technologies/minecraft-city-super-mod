@@ -296,6 +296,48 @@ list then samples whatever the block atlas holds at the white pixel's UV.
 `/csm renderpass skip spanWireCable` removes the whole pass; `spanWireCablePerFrame` draws it
 without the display list, for A/B measurement inside one session.
 
+## Backplates follow a risen signal
+
+A signal that rises to meet a cable used to leave its backplate behind, stranded at the block grid.
+A plate is a block model, and a block model cannot be drawn a fraction of a block off its own
+position.
+
+So backplates are no longer drawn as chunk geometry at all. `AbstractBlockSignalBackplate` returns
+`INVISIBLE` from `getRenderType`, and every plate is drawn by `TileEntitySignalBackplateRenderer`,
+which reads the neighbouring head's span offset through `AbstractBlockSignalBackplate.spanRiseOf`
+and applies it as a translation.
+
+The obvious design was the other one: derive an "is it shifted" property, swap in an empty model
+when true, and keep the cheap chunk batch for every plate that has not moved. It was tried and
+abandoned, and it is worth writing down why, because it looks like the better plan right up until
+it is implemented:
+
+- There are four backplate families -- `tlborder`, `tlhborder`, `tldoghouseborder`, `tlhawkborder`
+  -- and a prefix glob over the blockstates silently catches only one of them. Three families come
+  back later as missing-variant errors at model load.
+- Twenty of those files do not use the property-map dialect at all. They enumerate all one hundred
+  and twenty `facing`/`fitted`/`modelvariant` combinations by hand, and adding a boolean doubles
+  every one of them.
+- `AbstractBlockSignalBackplateFitted` builds its own `BlockStateContainer`. A property added to the
+  parent is absent there, and `withProperty` on it throws.
+
+One render path for every plate is less code and less to get wrong. It is also the path that can
+shift, tilt or rotate a plate freely, which is what the span wire needed first and is not the last
+thing that will want it.
+
+The plate's own baked model is re-rendered rather than rebuilt in code. Seventy-odd models across
+shapes, section counts and tilt variants, with ninety-odd blocks pointing at them and their own
+textures -- including the emissive colour bands that make a plate read as retroreflective -- all
+stay exactly as authored. Only the transform is new.
+
+Cost is kept down the same way the cable is: the vertices go into a display list keyed on the
+plate's state and its rise, so a plate that is not moving costs one `glCallList`. The texture is
+bound outside the list, per the rule in `TRAFFIC_SIGNAL_SYSTEM.md`.
+
+Verified in game with two identical signal-and-plate pairs whose blocks both sit at `y=9`, one hung
+from a span and one not: the span pair draws visibly higher, and in both pairs the plate stays
+locked to its own head.
+
 ## Deliberately not carried over from Immersive Engineering
 
 The cable is **purely visual**: no collision, no damage, no energy, no network semantics. All
