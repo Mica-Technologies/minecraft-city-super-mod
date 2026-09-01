@@ -142,7 +142,15 @@ Three different mechanisms, because three different kinds of block can hang:
 | Boxes and anything new | A strap drawn from the mount, via `ISpanWireHangable.needsSpanHangerStrap()` | Nothing of its own to line up; the strap is what stops it reading as floating |
 
 Signal heads return `false` from `needsSpanHangerStrap()` — they bring their own mast and would
-otherwise wear two mounts stacked.
+otherwise wear two mounts stacked. Everything that returns `true` gets **two** drops spread along
+the cable with a bar across the top, rather than one: that is what real hung signs use, and a wide
+panel on a single central pin reads as balanced rather than hung.
+
+That flag used to select a short strap drawn straight down from the mast foot. The strap was
+invisible — the foot sits three quarters of the way up the payload's own block, so it ran entirely
+inside the sign it was meant to be holding. Worth remembering as a shape of bug: geometry that is
+*drawn* but never *seen* looks identical to geometry that was never drawn, and neither shows up in
+a build.
 
 **Stringing a span fires no block change at a payload's own position.** `setSpan` therefore calls
 `notifyNeighborsOfStateChange`, which is the vanilla path a sign's setback cache already listens
@@ -223,12 +231,24 @@ in wind. Two things about it are not obvious:
   as bad. `tetherDropAtAnchors` adds the sag difference so the clearance at the *tightest* point
   is `TETHER_MIN_CLEARANCE` at every span length.
 
-**Known limit:** that holds across span *length*, not across hang *height*. The gap from cable to
-signal bottom also depends on the mount's own drop, so a span whose mounts hang further below the
-cable than the one this constant was tuned against puts the tether above the signal bottoms rather
-than at them. Deriving the height from the payload's actual bottom -- the way
-`getSpanHardwareOffset` derives the sideways offset -- is the real fix, and is deferred rather than
-done.
+`TETHER_MIN_CLEARANCE` is now only the **fallback**. A span with payloads on it measures its own
+clearance at link time — `SpanWireManager.measureTetherClearance` — from the deepest thing hanging
+on it, plus a gap. The constant could never be right for every head, because how far a head reaches
+below the cable depends on its section count and sizes; a figure that clears a three-section head
+is cut straight through a taller one.
+
+The **deepest** payload wins here, not the median that the sideways offset uses. The two statistics
+answer different questions: sideways, an outlier should be ignored so the run stays where most of
+the hardware is; vertically, an outlier must not be sliced through, and every tie has to point
+upward to be drawn at all. Payloads that take no tie — signs — are not consulted, since nothing
+ties to them.
+
+**The ties themselves reach the payload rather than standing a fixed height.** This is the part that
+actually fixes the alignment: the tether is strung far tighter than the messenger, so heads hanging
+from the messenger's curve sit at different heights above a taut tether along the span. A fixed stub
+is correct at exactly one point and pokes into the lenses everywhere else. Each mount asks its
+payload for `getSpanTetherTieY` and draws to it, clamped so a bad answer cannot reach across the
+sky.
 
 ## Rendering
 

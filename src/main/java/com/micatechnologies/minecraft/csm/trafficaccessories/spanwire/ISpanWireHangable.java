@@ -55,4 +55,38 @@ public interface ISpanWireHangable {
   default Vec3d getSpanHardwareOffset(IBlockAccess world, BlockPos pos, IBlockState state) {
     return Vec3d.ZERO;
   }
+
+  /**
+   * The world height a box span's lower tether should tie to on this block -- its underside --
+   * or {@code NaN} for a payload that should not be tied at all.
+   *
+   * <p>{@code NaN} is the default, and it is the right default: a box span's tether exists to stop
+   * <em>signal heads</em> turning in wind. A sign hung on the same span is not tied to it, so
+   * anything that does not explicitly want a tie gets none rather than growing a stub to nowhere.
+   *
+   * <p>Asked of the payload because only the payload knows how far down it actually reaches. A
+   * head's underside moves with its section count, its size and the rise the span gives it, so
+   * any constant kept on the span side would be right for one configuration and wrong for the
+   * rest.
+   */
+  default double getSpanTetherTieY(IBlockAccess world, BlockPos pos, IBlockState state) {
+    return Double.NaN;
+  }
+
+  /**
+   * The world height a mount's drop should come down to on this block -- its top -- or
+   * {@code NaN} to stop at the mount's own attach height instead.
+   *
+   * <p>{@code NaN} is right for anything that <em>rises</em> to meet the cable: a signal head
+   * takes the span's vertical offset, so it comes up to the hardware and the hardware does not
+   * have to go looking for it.
+   *
+   * <p>It is wrong for everything else, and that is what this exists for. A sign hangs at whole
+   * block heights and cannot take that offset, so a drop stopping at the mount's attach height --
+   * three quarters of the way up the mount's own block -- ends a whole three quarters of a block
+   * above the sign, holding nothing.
+   */
+  default double getSpanHangerTopY(IBlockAccess world, BlockPos pos, IBlockState state) {
+    return Double.NaN;
+  }
 }

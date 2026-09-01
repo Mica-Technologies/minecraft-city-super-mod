@@ -50,6 +50,17 @@ public abstract class AbstractBlockSign extends AbstractBlockRotatableHZEight
    * {@code SpanWireHangOffset.hangsFromSpan}. In any other mode the panel is at the front of its
    * block, where a drop coming down the centre line is already behind it and needs no help.
    */
+  /**
+   * Where a span's drop should come down to: the top of the panel as actually drawn.
+   *
+   * <p>Taken from the bounding box, so a sign shifted downward in its block is met at its real top
+   * rather than at the top of the block it nominally occupies.
+   */
+  @Override
+  public double getSpanHangerTopY(IBlockAccess world, BlockPos pos, IBlockState state) {
+    return pos.getY() + getBlockBoundingBox(state.getActualState(world, pos), world, pos).maxY;
+  }
+
   @Override
   public net.minecraft.util.math.Vec3d getSpanHardwareOffset(IBlockAccess world, BlockPos pos,
       IBlockState state) {
