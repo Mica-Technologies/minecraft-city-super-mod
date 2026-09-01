@@ -16,6 +16,10 @@ thumbs.db
 *.war
 *.ear
 *.txt
+# ...but not the guidebook's toolchain pins. The rule above is for packaged artifacts and
+# swallowed this silently: the file existed, `git status` never mentioned it because it was
+# ignored, and the Pages deploy failed on a checkout that did not contain it.
+!docs/requirements.txt
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*

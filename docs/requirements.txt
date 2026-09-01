@@ -1,0 +1,9 @@
+# Documentation toolchain for the CSM guidebook, pinned so a CI build and a local
+# `mkdocs serve` render the same site.
+#
+# These are the versions the site is actually built and checked against locally. Pinning older
+# ones would have meant CI rendering something nobody had looked at -- which is the opposite of
+# what a pin is for.
+mkdocs==1.6.1
+mkdocs-material==9.7.7
+pymdown-extensions==11.0.1
