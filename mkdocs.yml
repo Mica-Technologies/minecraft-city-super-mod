@@ -35,20 +35,22 @@ theme:
     - content.tooltips
     - toc.follow
   palette:
-    # Amber on near-black. Signal yellow against asphalt is what this mod is about, and it reads
-    # as civic infrastructure rather than as developer tooling -- which is deliberately the
-    # opposite signal from MCMCP's indigo, since these two sites sit side by side in one org.
+    # Mica Minecraft's grass green over the launcher's gray surfaces, so this site, the Minecraft
+    # homepage and the launcher present as one identity. The exact ramps live in assets/csm.css;
+    # `custom` here only tells Material to read them from there rather than ship its own.
+    #
+    # Both modes are first-class per the design guidelines, so neither is a recolour of the other.
     - media: "(prefers-color-scheme: light)"
       scheme: default
-      primary: black
-      accent: amber
+      primary: custom
+      accent: custom
       toggle:
         icon: material/weather-night
         name: Switch to dark mode
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
-      primary: black
-      accent: amber
+      primary: custom
+      accent: custom
       toggle:
         icon: material/weather-sunny
         name: Switch to light mode
@@ -96,7 +98,19 @@ nav:
   - Guides:
       - guides/index.md
       - Survival & Crafting: guides/survival-and-crafting.md
+      - Traffic Signals: guides/traffic-signals.md
+      - Advanced Mode (ASC-3): guides/advanced-mode-asc3.md
+      - Crosswalks & APS: guides/crosswalks-and-aps.md
       - Span Wire: guides/span-wire.md
+      - Mast Arms: guides/mast-arms.md
+      - Road Signs: guides/road-signs.md
+      - Guide & Street Signs: guides/dynamic-signs.md
+      - Message & Speed Signs: guides/message-signs.md
+      - Fire Alarm Systems: guides/fire-alarms.md
+      - Lighting: guides/lighting.md
+      - HVAC: guides/hvac.md
+      - Power Grid: guides/power-grid.md
+      - Novelties: guides/novelties.md
   - Block Reference:
       - reference/index.md
       - Building Materials: reference/building-materials.md
