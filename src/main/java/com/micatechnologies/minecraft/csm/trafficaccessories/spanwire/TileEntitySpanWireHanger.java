@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.trafficaccessories.spanwire;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
 /**
@@ -214,10 +215,13 @@ public class TileEntitySpanWireHanger extends AbstractTileEntitySpanWireAttachme
    * extending mast exists to keep the payload on its own block, and a cluster's heads are carried
    * by drops that already aim at each housing, so moving either would break what holds them.
    *
+   * @param payloadPos the payload's own position. Ignored here, where a mount carries one thing;
+   *     a cluster carries several and answers differently for each.
+   *
    * @return the sideways shift in blocks, with a zero Y, never null.
    */
-  public Vec3d getPayloadSlide() {
-    if (!payloadTakesRise || getPayloadRise() <= 0.0) {
+  public Vec3d getPayloadSlide(BlockPos payloadPos) {
+    if (!payloadMoves() || getPayloadRise() <= 0.0) {
       return Vec3d.ZERO;
     }
     final SpanWireCatenary cable = getCable();
@@ -227,6 +231,18 @@ public class TileEntitySpanWireHanger extends AbstractTileEntitySpanWireAttachme
     final Vec3d foot = getHardwareFootPoint();
     final Vec3d clamp = cable.pointAt(cable.parameterAt(foot.x, foot.z));
     return new Vec3d(clamp.x - foot.x, 0.0, clamp.z - foot.z);
+  }
+
+  /**
+   * Whether what hangs here moves with the hardware at all.
+   *
+   * <p>A sign does not: its reported geometry is already where it will be, so shifting it would
+   * take it away from itself.
+   *
+   * @return true when the payload follows this mount.
+   */
+  protected boolean payloadMoves() {
+    return payloadTakesRise;
   }
 
   /**

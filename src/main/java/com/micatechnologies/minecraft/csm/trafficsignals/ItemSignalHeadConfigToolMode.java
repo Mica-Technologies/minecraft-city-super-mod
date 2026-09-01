@@ -20,7 +20,9 @@ public enum ItemSignalHeadConfigToolMode {
   CYCLE_ALTERNATE_FLASH("Cycle Alternate Flash"),
   CYCLE_MOUNT_TYPE("Cycle Mount Type"),
   // Appended (not inserted) so saved tools' NBT mode ordinals stay stable.
-  CYCLE_BODY_STYLE("Cycle Body Style");
+  CYCLE_BODY_STYLE("Cycle Body Style"),
+  CYCLE_NUDGE_FORWARD("Nudge Forward/Back"),
+  CYCLE_NUDGE_SIDE("Nudge Left/Right");
 
   private final String friendlyName;
 

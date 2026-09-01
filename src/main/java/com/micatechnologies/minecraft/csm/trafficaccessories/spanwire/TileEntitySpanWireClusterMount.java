@@ -232,6 +232,83 @@ public class TileEntitySpanWireClusterMount extends TileEntitySpanWireHanger {
   }
 
   /**
+   * Where along the bracket a payload actually hangs, in blocks from the attach point.
+   *
+   * <p>Measured to the payload's <b>hardware point</b> -- the place on its housing the drop lands
+   * -- rather than to the middle of its block. Those are not the same place: a head's body is set
+   * back along the way it faces, so two heads on one bracket facing different ways sit at different
+   * distances along it.
+   *
+   * @param payload the payload to measure.
+   *
+   * @return the signed distance along the bracket.
+   */
+  public double alongFor(ClusterPayload payload) {
+    final Vec3d attach = getAttachPoint();
+    final Vec3d along = getBracketDirection();
+    return (hardwareX(payload) - attach.x) * along.x + (hardwareZ(payload) - attach.z) * along.z;
+  }
+
+  /**
+   * The point on the bracket a payload hangs from, in world coordinates at the attach height.
+   *
+   * <p>This is the payload's hardware point projected onto the bracket, and it is the single
+   * definition three things now share: the bar spans between these, each drop falls straight down
+   * from one, and each head slides sideways onto one. Before they shared it, the bar ran down the
+   * span while the drops reached out to the housings, so a drop passed under the bar and then bent
+   * away to meet its head.
+   *
+   * @param payload the payload to place.
+   *
+   * @return the hanging point, with the attach point's own height.
+   */
+  public Vec3d bracketPointFor(ClusterPayload payload) {
+    final Vec3d attach = getAttachPoint();
+    final Vec3d along = getBracketDirection();
+    final double distance = alongFor(payload);
+    return new Vec3d(attach.x + along.x * distance, attach.y, attach.z + along.z * distance);
+  }
+
+  private static double hardwareX(ClusterPayload payload) {
+    return payload.getColumn().getX() + 0.5 + payload.getHardwareOffset().x;
+  }
+
+  private static double hardwareZ(ClusterPayload payload) {
+    return payload.getColumn().getZ() + 0.5 + payload.getHardwareOffset().z;
+  }
+
+  /**
+   * A clustered head slides onto the bracket, and takes no rise.
+   *
+   * <p>The bracket is a straight bar and the heads bolt to it, so the heads belong on its line.
+   * Sliding them there is what lets every drop fall straight down; the height is still the
+   * bracket's own, which is why {@link #getPayloadRise()} stays zero here.
+   */
+  @Override
+  public Vec3d getPayloadSlide(BlockPos payloadPos) {
+    if (!payloadMoves() || payloadPos == null) {
+      return Vec3d.ZERO;
+    }
+    for (ClusterPayload payload : payloads) {
+      if (payload.getColumn().getX() == payloadPos.getX()
+          && payload.getColumn().getZ() == payloadPos.getZ()) {
+        final Vec3d hanging = bracketPointFor(payload);
+        return new Vec3d(hanging.x - hardwareX(payload), 0.0, hanging.z - hardwareZ(payload));
+      }
+    }
+    return Vec3d.ZERO;
+  }
+
+  /**
+   * Clustered payloads move sideways even though they take no rise, so this cannot defer to the
+   * rise the way the single mount does.
+   */
+  @Override
+  protected boolean payloadMoves() {
+    return true;
+  }
+
+  /**
    * How far along the bracket a column sits, in blocks from this mount.
    *
    * @param column the column to measure.
@@ -255,13 +332,21 @@ public class TileEntitySpanWireClusterMount extends TileEntitySpanWireHanger {
    * @return the offset of the bar's midpoint.
    */
   public double getBracketCentreOffset() {
-    final Vec3d along = getBracketDirection();
     double lowest = Double.POSITIVE_INFINITY;
     double highest = Double.NEGATIVE_INFINITY;
-    for (BlockPos column : getBracketColumns()) {
-      final double offset = offsetAlongBracket(column, along);
-      lowest = Math.min(lowest, offset);
-      highest = Math.max(highest, offset);
+    if (payloads.isEmpty()) {
+      final Vec3d along = getBracketDirection();
+      for (BlockPos column : coveredColumns) {
+        final double offset = offsetAlongBracket(column, along);
+        lowest = Math.min(lowest, offset);
+        highest = Math.max(highest, offset);
+      }
+    } else {
+      for (ClusterPayload payload : payloads) {
+        final double offset = alongFor(payload);
+        lowest = Math.min(lowest, offset);
+        highest = Math.max(highest, offset);
+      }
     }
     if (lowest > highest) {
       return 0.0;

@@ -91,6 +91,30 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
   private static final long SPAN_WIRE_OFFSET_REFRESH_TICKS = 20L;
 
   /**
+   * How far a head may be nudged off its block by hand, in model units either way.
+   *
+   * <p>Four is a quarter of a block. Far enough to close the gaps a span leaves and to shuffle a
+   * head clear of something it is touching, and near enough that the head is still plainly on the
+   * block a player has to click to break it.
+   */
+  public static final int MAX_NUDGE = 4;
+
+  /**
+   * A hand-placed nudge along the way this head faces, in model units, positive forward.
+   *
+   * <p>Separate from anything a span works out for itself. The derived offset closes the gap the
+   * geometry knows about; this is for the part it cannot -- a head that would simply look better
+   * half a pixel further out, which is a judgement no rule is going to make correctly.
+   *
+   * <p>Held in the facing's own terms rather than world axes so it survives the head being turned:
+   * "forward" stays forward.
+   */
+  private byte nudgeForward = 0;
+
+  /** A hand-placed nudge across the way this head faces, in model units, positive to its right. */
+  private byte nudgeSide = 0;
+
+  /**
    * How far this signal is shifted by hanging from a span wire, in model units, on all three axes.
    * Zero when it does not hang from one, which is every signal on a pole or a mast arm.
    *
@@ -110,6 +134,51 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
         world == null ? Vec3d.ZERO : SpanWireHangOffset.computeFor(world, getPos());
     cachedSpanWireOffsetTick = now;
     return cachedSpanWireOffset;
+  }
+
+  /**
+   * How far this head has been nudged by hand along the way it faces, in model units.
+   *
+   * @return the forward nudge, within plus or minus {@link #MAX_NUDGE}.
+   */
+  public int getNudgeForward() {
+    return nudgeForward;
+  }
+
+  /**
+   * How far this head has been nudged by hand across the way it faces, in model units.
+   *
+   * @return the sideways nudge, positive to the head's right, within plus or minus
+   *     {@link #MAX_NUDGE}.
+   */
+  public int getNudgeSide() {
+    return nudgeSide;
+  }
+
+  /**
+   * Advances the forward nudge by one model unit, wrapping back to the far end at the limit.
+   *
+   * @return the new forward nudge.
+   */
+  public int getNextNudgeForward() {
+    nudgeForward = (byte) (nudgeForward >= MAX_NUDGE ? -MAX_NUDGE : nudgeForward + 1);
+    markDirtySync(world, pos, true);
+    return nudgeForward;
+  }
+
+  /**
+   * Advances the sideways nudge by one model unit, wrapping back to the far end at the limit.
+   *
+   * @return the new sideways nudge.
+   */
+  public int getNextNudgeSide() {
+    nudgeSide = (byte) (nudgeSide >= MAX_NUDGE ? -MAX_NUDGE : nudgeSide + 1);
+    markDirtySync(world, pos, true);
+    return nudgeSide;
+  }
+
+  private static byte clampNudge(int value) {
+    return (byte) Math.max(-MAX_NUDGE, Math.min(MAX_NUDGE, value));
   }
 
   /**
@@ -227,6 +296,12 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
    * @since 1.0
    */
   private static final String BODY_TILT_KEY = "tlt";
+
+  /** How far this head is nudged along the way it faces, in model units. */
+  private static final String NUDGE_FORWARD_KEY = "ndF";
+
+  /** How far this head is nudged across the way it faces, in model units. */
+  private static final String NUDGE_SIDE_KEY = "ndS";
 
   /** Legacy long-form counterpart of {@link #BODY_TILT_KEY}. Read-only. */
   private static final String LEGACY_BODY_TILT_KEY = "bodyTilt";
@@ -373,6 +448,12 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
     // Get the body tilt
     if (compound.hasKey(BODY_TILT_KEY)) {
       bodyTilt = TrafficSignalBodyTilt.fromNBT(compound.getInteger(BODY_TILT_KEY));
+    }
+    if (compound.hasKey(NUDGE_FORWARD_KEY)) {
+      nudgeForward = clampNudge(compound.getInteger(NUDGE_FORWARD_KEY));
+    }
+    if (compound.hasKey(NUDGE_SIDE_KEY)) {
+      nudgeSide = clampNudge(compound.getInteger(NUDGE_SIDE_KEY));
     } else if (compound.hasKey(LEGACY_BODY_TILT_KEY)) {
       bodyTilt = TrafficSignalBodyTilt.fromNBT(compound.getInteger(LEGACY_BODY_TILT_KEY));
     }
@@ -495,6 +576,13 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
 
     // Set the body tilt
     compound.setInteger(BODY_TILT_KEY, bodyTilt.toNBT());
+    // Written only when set, so a head nobody has nudged keeps the tag it always had.
+    if (nudgeForward != 0) {
+      compound.setInteger(NUDGE_FORWARD_KEY, nudgeForward);
+    }
+    if (nudgeSide != 0) {
+      compound.setInteger(NUDGE_SIDE_KEY, nudgeSide);
+    }
 
     // Set the flash pattern
     compound.setInteger(FLASH_PATTERN_KEY, flashPattern.toNBT());

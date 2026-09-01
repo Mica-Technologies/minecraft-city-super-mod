@@ -147,15 +147,15 @@ public abstract class AbstractBlockSignalBackplate extends AbstractBlockRotatabl
   }
 
   /**
-   * How far a span wire has moved the head at this position, in model units, or zero.
+   * How far the head at this position has moved off its own block, in model units, or zero.
    *
-   * <p>All three axes. A plate is bolted to the back of its head and has to go wherever the head
-   * went, and a span moves a head sideways as well as up -- following only the rise would leave the
-   * plate behind by however far the head slid under its clamp.
+   * <p>All three axes, and everything that moved it -- what a span did to it and any nudge placed
+   * by hand. A plate is bolted to the back of its head and has to go wherever the head went;
+   * following only the rise would leave the plate behind by however far the head slid, and
+   * following only the span would leave it behind by whatever a builder nudged.
    *
-   * <p>Read from the head's own tile entity, which is the same cached value its renderer uses, so
-   * the plate moves exactly when the head has actually moved rather than whenever it merely happens
-   * to hang near a span.
+   * <p>Asked of the head's block rather than assembled here, so there is one definition of how far
+   * a head has moved and the plate cannot drift from it.
    *
    * @param world     the world to read.
    * @param signalPos the head's position.
@@ -163,10 +163,12 @@ public abstract class AbstractBlockSignalBackplate extends AbstractBlockRotatabl
    * @return the head's span offset in model units, never null.
    */
   public static Vec3d spanOffsetOf(IBlockAccess world, BlockPos signalPos) {
-    final TileEntity te = world.getTileEntity(signalPos);
-    return te instanceof TileEntityTrafficSignalHead
-        ? ((TileEntityTrafficSignalHead) te).getSpanWireOffset()
-        : Vec3d.ZERO;
+    final IBlockState signalState = world.getBlockState(signalPos);
+    if (!(signalState.getBlock() instanceof AbstractBlockControllableSignalHead)) {
+      return Vec3d.ZERO;
+    }
+    return ((AbstractBlockControllableSignalHead) signalState.getBlock())
+        .getHeadDisplacement(world, signalPos);
   }
 
   /**
