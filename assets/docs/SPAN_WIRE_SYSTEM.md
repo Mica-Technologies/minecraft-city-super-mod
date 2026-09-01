@@ -152,16 +152,22 @@ Three different mechanisms, because three different kinds of block can hang:
 | Signs | The existing **setback** mode, triggered by `hangsFromSpan` | A sign is a plain block model and *cannot* take a sub-block offset. Setback was built for wall and pole mounting, but the shift it produces is exactly what a span needs. One change in `AbstractBlockSign` covers all 472 signs |
 | Boxes and anything new | A strap drawn from the mount, via `ISpanWireHangable.needsSpanHangerStrap()` | Nothing of its own to line up; the strap is what stops it reading as floating |
 
-Signal heads return `false` from `needsSpanHangerStrap()` — they bring their own mast and would
-otherwise wear two mounts stacked. Everything that returns `true` gets **two** drops spread along
-the cable with a bar across the top, rather than one: that is what real hung signs use, and a wide
-panel on a single central pin reads as balanced rather than hung.
+**Every payload hangs from one central drop.** Two earlier attempts are worth recording, because
+both looked reasonable and neither survived contact:
 
-That flag used to select a short strap drawn straight down from the mast foot. The strap was
-invisible — the foot sits three quarters of the way up the payload's own block, so it ran entirely
-inside the sign it was meant to be holding. Worth remembering as a shape of bug: geometry that is
-*drawn* but never *seen* looks identical to geometry that was never drawn, and neither shows up in
-a build.
+* A short strap drawn down from the mast foot. It was *invisible* — the foot sits three quarters of
+  the way up the payload's own block, so the strap ran entirely inside the sign it was meant to be
+  holding. Geometry that is drawn but never seen looks identical to geometry that was never drawn,
+  and no build catches it.
+* A pair of drops with a bar across the top, on the theory that a wide panel on one pin reads as
+  balanced rather than hung. In game two poles straddling a sign read as scaffolding. One centre
+  drop, reaching the payload's own top, is what it should have been.
+
+What a payload *does* still change is whether its mount shows coiled conductor.
+`needsSpanConductorFeed()` is true by default, since most of what hangs from a span is powered, and
+false for signs: the coil is surplus conductor left from dropping power into the thing below, so on
+a sign — bolted to the wire and wired to nothing — it is hardware for a circuit that does not
+exist.
 
 **Stringing a span fires no block change at a payload's own position.** `setSpan` therefore calls
 `notifyNeighborsOfStateChange`, which is the vanilla path a sign's setback cache already listens

@@ -51,6 +51,14 @@ public abstract class AbstractBlockSign extends AbstractBlockRotatableHZEight
    * block, where a drop coming down the centre line is already behind it and needs no help.
    */
   /**
+   * A sign is bolted to the wire and wired to nothing, so its mount shows no coiled conductor.
+   */
+  @Override
+  public boolean needsSpanConductorFeed() {
+    return false;
+  }
+
+  /**
    * Where a span's drop should come down to: the top of the panel as actually drawn.
    *
    * <p>Taken from the bounding box, so a sign shifted downward in its block is met at its real top
