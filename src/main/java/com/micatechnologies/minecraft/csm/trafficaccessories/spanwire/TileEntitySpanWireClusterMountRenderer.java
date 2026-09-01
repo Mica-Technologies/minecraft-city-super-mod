@@ -56,7 +56,15 @@ public class TileEntitySpanWireClusterMountRenderer
    * as any other mount, and any later change to those reaches both.
    */
   private final TileEntitySpanWireHangerRenderer singleMount =
-      new TileEntitySpanWireHangerRenderer();
+      new TileEntitySpanWireHangerRenderer() {
+        @Override
+        protected boolean drawsTetherTie() {
+          // A cluster has one mast and several heads. Borrowing the mount's tie gave one tie at
+          // the bracket's midpoint -- standing in the gap between two housings, holding neither,
+          // while both heads floated over the tether unattached. Ties are drawn per head below.
+          return false;
+        }
+      };
 
   @Override
   protected void emitAttachmentHardware(TileEntitySpanWireClusterMount te, BufferBuilder buffer,
@@ -109,6 +117,34 @@ public class TileEntitySpanWireClusterMountRenderer
     }
 
     emitTieBar(buffer, te, along, payloads, origin, skyLight, blockLight);
+    emitTetherTies(buffer, te, payloads, origin, skyLight, blockLight);
+  }
+
+  /**
+   * One tie down to a box span's tether for every head on the bracket.
+   *
+   * <p>Reached from the point each head hangs from rather than from the mount, which is the same
+   * projection the drops and the tie bar use -- so a tie leaves the tether directly under the
+   * housing it holds, on a diagonal span as much as a square one.
+   *
+   * <p>No rise is added to the reported height. A cluster's bracket is rigid and gives its heads
+   * no rise, so what the payload reports is already where its underside is.
+   */
+  private void emitTetherTies(BufferBuilder buffer, TileEntitySpanWireClusterMount te,
+      List<TileEntitySpanWireClusterMount.ClusterPayload> payloads, Vec3d origin, int skyLight,
+      int blockLight) {
+    final SpanWireCatenary tether = te.getTether();
+    if (tether == null) {
+      return;
+    }
+    for (TileEntitySpanWireClusterMount.ClusterPayload payload : payloads) {
+      // A payload that takes no tie -- a sign -- reports NaN, and gets no stub into thin air.
+      if (Double.isNaN(payload.getTieY())) {
+        continue;
+      }
+      TileEntitySpanWireHangerRenderer.emitTetherTieAt(buffer, tether, te.getSpan(),
+          te.bracketPointFor(payload), payload.getTieY(), origin, skyLight, blockLight);
+    }
   }
 
   /**
