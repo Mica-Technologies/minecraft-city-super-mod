@@ -325,18 +325,73 @@ One render path for every plate is less code and less to get wrong. It is also t
 shift, tilt or rotate a plate freely, which is what the span wire needed first and is not the last
 thing that will want it.
 
-The plate's own baked model is re-rendered rather than rebuilt in code. Seventy-odd models across
-shapes, section counts and tilt variants, with ninety-odd blocks pointing at them and their own
-textures -- including the emissive colour bands that make a plate read as retroreflective -- all
-stay exactly as authored. Only the transform is new.
+The plate's own baked model is re-rendered rather than rebuilt in code. Nineteen models across
+shapes and section counts, with ninety-odd blocks pointing at them and their own textures --
+including the colour bands that make a plate read as retroreflective -- all stay exactly as
+authored. Only the transform is new.
 
 Cost is kept down the same way the cable is: the vertices go into a display list keyed on the
-plate's state and its rise, so a plate that is not moving costs one `glCallList`. The texture is
-bound outside the list, per the rule in `TRAFFIC_SIGNAL_SYSTEM.md`.
+plate's state, its rise and its light, so a plate that is not moving costs one `glCallList`. The
+texture is bound outside the list, per the rule in `TRAFFIC_SIGNAL_SYSTEM.md`.
 
 Verified in game with two identical signal-and-plate pairs whose blocks both sit at `y=9`, one hung
 from a span and one not: the span pair draws visibly higher, and in both pairs the plate stays
 locked to its own head.
+
+### Light a plate flat, not smooth
+
+Plates were blotchy -- dark smears across a back face that should be one flat colour, worst where a
+plate sits against its head and pole, which is how every plate in a real build sits.
+
+Smooth lighting computes ambient occlusion per vertex from the blocks around the face, meaning the
+*block's* face. A plate's geometry is nowhere near its block: the models run from -2 to 18 across
+and -16 to 28 up, so most of the plate hangs a block and a half outside the position whose
+neighbours are being sampled, and the head and pole occluded parts of it that are not next to them
+at all. Measured along one scanline across a mounted plate, the back read 0, 7, 10, 19 and 23 side
+by side.
+
+`renderModelFlat` takes one brightness per quad, and since none of these quads lie on a block
+boundary they all resolve to the block's own light -- one uniform value, which is what every other
+renderer in CSM already does by hand with `getCombinedLight`. The same scanline now reads 23, with
+25 on the side rails from the per-direction shade baked into the quad colours at bake time, so the
+plate keeps its depth rather than going flat.
+
+An isolated plate in open air looks identical either way, because with no neighbours there is no
+occlusion to misplace. It is a useless control; check a mounted plate.
+
+### Tilt is a transform, not a model
+
+A plate is bolted to the back of a head, so when the head swings the plate has to swing with it
+about the **head's** centre -- a block away, in the facing direction.
+
+Each tilt used to select its own pre-tilted model file. A blockstate can bake only one rotation
+origin into a model, and the right origin is a different point for every facing, so those models
+were authored for whichever facing looked best and the rest drifted. That drift was the visible gap
+between a tilted signal and its plate, worst on the horizontal add-ons -- a quarter to half a block
+out, because a head's add-on pivots about the *main* signal rather than itself.
+
+The renderer now draws every plate from the untilted model of its orientation and applies the
+rotation itself. Two numbers have to match the head exactly, and both are read from
+`TileEntityTrafficSignalHeadRenderer` rather than copied, because a plate that disagrees with its
+head about either is the bug all over again:
+
+- `getBaseFacingAngle` -- the tilt is applied as a *delta* from it, because unlike the head's model
+  the plate's already has its facing baked in by the blockstate.
+- `getLateralTiltOffset` -- the sideways nudge a tilted head makes to stay centred. The head applies
+  it in its own turned frame, so it is rotated into world axes and applied outside the rotation,
+  which lands in the same place.
+
+An untilted plate takes an early return and is byte-identical to before, which is nearly all of
+them. Plates facing up or down are skipped: flat on its back, a plate has no left or right for a
+tilt to mean.
+
+The tilted `BackplateModelVariant` constants stay, because `getActualState` is still how the tilt
+reaches the renderer -- they simply no longer pick geometry. That made 64 pre-tilted model files
+unreferenced, and they are gone: 83 backplate models down to 19, about 56,000 lines. Their
+blockstate entries remain but no longer override `model`, and **the two dialects need different
+treatment**: a property-map variant may be `{}`, but a combined-key one may not. Forge types a
+combined-key variant by peeking its first sub-entry, so an empty one throws at model load and takes
+the whole blockstate down with it -- those keep an explicit `model` plus their `x`/`y`.
 
 ## Deliberately not carried over from Immersive Engineering
 
