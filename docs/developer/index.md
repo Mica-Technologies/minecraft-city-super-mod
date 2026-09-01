@@ -4,8 +4,32 @@ Working on the mod rather than playing with it.
 
 <div class="grid cards" markdown>
 
--   **[Building from source](building.md)** — the toolchain, the Gradle tasks, and the two ways to
-    run a dev client on Apple Silicon.
+-   :material-hammer:{ .lg .middle } **[Building from source](building.md)**
+
+    ---
+
+    The toolchain, the Gradle tasks, and the two ways to run a dev client on Apple Silicon — only
+    one of which currently gives a working window.
+
+-   :material-file-tree:{ .lg .middle } **[Block & item base classes](base-classes.md)**
+
+    ---
+
+    Which base class to extend, what the constructor does for you, and the two rotation traps that
+    read as "rotation is broken" when they are not.
+
+-   :material-plus-box:{ .lg .middle } **[Adding content](adding-content.md)**
+
+    ---
+
+    Blocks, items and sounds, step by step — including everything you deliberately do *not* have to
+    do, such as writing a crafting recipe.
+
+-   :material-wrench-cog:{ .lg .middle } **[Tooling](tooling.md)**
+
+    ---
+
+    The integrity checkers, asset generators, benchmarks and the in-game render-pass toggles.
 
 </div>
 
