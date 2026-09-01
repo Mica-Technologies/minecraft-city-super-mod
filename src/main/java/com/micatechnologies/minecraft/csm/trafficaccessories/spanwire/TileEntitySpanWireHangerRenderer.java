@@ -159,12 +159,20 @@ public class TileEntitySpanWireHangerRenderer
     // different heights above it along the span: a fixed stub is only ever correct at one point
     // and pokes into the lenses everywhere else. Clamped so a payload reporting something absurd
     // cannot draw a tie across the sky.
-    final double rise = Math.max(0.0, Math.min(MAX_TIE_HEIGHT, tieY - tetherPoint.y));
-    if (rise < 1.0e-4) {
+    final double top = Math.min(tieY, tetherPoint.y + MAX_TIE_HEIGHT);
+    if (top - tetherPoint.y < 1.0e-4) {
       return;
     }
+
+    // It ends under the payload, not straight up from the wire. A mount's parameter along the
+    // span is its block centre *projected* onto the chord, and on a diagonal the chord does not
+    // pass through block centres -- so the point on the tether sits off to one side of the head
+    // it is tying, and a vertical stub from it misses. The messenger's own mast has the same
+    // problem and answers it the same way, with a lean that takes up the difference. On a
+    // straight span the two coincide and this is plumb, exactly as before.
+    final Vec3d foot = te.getHardwareFootPoint();
     SpanWireCableGeometry.emitStraightTube(buffer, tetherPoint,
-        tetherPoint.add(0.0, rise, 0.0), origin, TIE_RADIUS,
+        new Vec3d(foot.x, top, foot.z), origin, TIE_RADIUS,
         MAST_RED, MAST_GREEN, MAST_BLUE, skyLight, blockLight);
   }
 
