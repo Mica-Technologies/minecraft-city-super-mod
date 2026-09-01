@@ -68,7 +68,7 @@ public class TileEntitySignalBackplateRenderer
    * plate that is already lit. There is a ceiling somewhere above which it stops reading as paint
    * catching headlights and starts reading as a light source; this sits below it.
    */
-  private static final float MAX_GLOW = 0.62f;
+  private static final float MAX_GLOW = 0.88f;
 
   /**
    * How sharply the effect falls away as you move off the plate's axis.
