@@ -130,3 +130,6 @@ nav:
   - Developer:
       - developer/index.md
       - Building from Source: developer/building.md
+      - Block & Item Base Classes: developer/base-classes.md
+      - Adding Content: developer/adding-content.md
+      - Tooling: developer/tooling.md
