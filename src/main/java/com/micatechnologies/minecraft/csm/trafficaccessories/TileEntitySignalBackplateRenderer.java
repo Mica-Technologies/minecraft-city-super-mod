@@ -33,10 +33,13 @@ import org.lwjgl.opengl.GL11;
  * plate freely.
  *
  * <p>It re-renders the plate's own baked model rather than rebuilding the shape in code. There are
- * seventy-odd backplate models across shapes, section counts and tilt variants, with ninety-odd
- * blocks pointing at them and their own textures; reproducing that here would put all of it at risk
- * in one step. The geometry and every texture stay exactly as authored, and only the transform is
- * new.
+ * nineteen backplate models across shapes and section counts, with ninety-odd blocks pointing at
+ * them and their own textures; reproducing that here would put all of it at risk in one step. The
+ * geometry and every texture stay exactly as authored, and only the transform is new.
+ *
+ * <p>Nineteen rather than the eighty-three there once were, because the transform absorbed the
+ * tilt: a plate is turned here instead of being drawn from a model authored pre-tilted, so the
+ * sixty-four pre-tilted files went with the approximation they encoded.
  *
  * <p>The vertices are baked into a display list, keyed on the plate's state and how far it has been
  * lifted, so the common case costs one {@code glCallList} rather than a model re-walk every frame.
