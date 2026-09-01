@@ -6,6 +6,11 @@ intersection if it is ever asked to show two conflicting greens.
 
 ## Building an intersection
 
+<figure markdown="span">
+  ![A signalised four-way intersection with heads on a curved mast arm and pedestrian signals on the corners](../assets/img/signalised-intersection.png){ loading=lazy }
+  <figcaption>A four-way running under one controller: through heads out on a curved mast arm, pedestrian signals on the corners.</figcaption>
+</figure>
+
 1. **Place a controller cabinet** somewhere near the intersection.
 2. **Place your signal heads** on poles, mast arms or a span wire.
 3. **Take a signal linker tool** — there is one for North–South and one for East–West.

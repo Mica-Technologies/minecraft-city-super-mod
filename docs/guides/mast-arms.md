@@ -5,6 +5,11 @@ roadway.
 
 ## Why they are several blocks
 
+<figure markdown="span">
+  ![A curved mast arm upsweep leaving a vertical pole and flattening out over the road](../assets/img/mast-arm-upsweep.png){ loading=lazy }
+  <figcaption>A 6×2 upsweep. It leaves the pole on a slope and arrives horizontal, so the straight run can continue from it without a kink.</figcaption>
+</figure>
+
 A real curved mast arm covers **10–25 feet of run and 4–10 feet of rise**, leaves the pole at
 roughly 20–35°, and arrives at the horizontal run with **zero** slope so the joint does not kink.
 

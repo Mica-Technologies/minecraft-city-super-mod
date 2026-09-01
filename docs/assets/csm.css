@@ -173,6 +173,34 @@
   color: var(--md-accent-fg-color);
 }
 
+/* ----------------------------------------------------------------- figures
+
+   Screenshots are 854x480 straight off the dev client, which is small enough that
+   letting them stretch to a wide column only makes them soft. Capped and centred
+   instead, on the same surface tone as a code block so a bright daytime capture
+   does not sit on white with nothing holding it. */
+
+.md-typeset figure {
+  margin: var(--csm-space-3) auto;
+  max-width: 42rem;
+}
+
+.md-typeset figure img {
+  border-radius: var(--csm-radius-2);
+  border: 1px solid var(--md-default-fg-color--lightest);
+  display: block;
+  width: 100%;
+}
+
+.md-typeset figure figcaption {
+  color: var(--md-default-fg-color--light);
+  font-size: 0.72rem;
+  line-height: 1.5;
+  margin: var(--csm-space-1) auto 0;
+  max-width: 100%;
+  text-align: center;
+}
+
 /* ------------------------------------------------------------------- header */
 
 .md-header {
