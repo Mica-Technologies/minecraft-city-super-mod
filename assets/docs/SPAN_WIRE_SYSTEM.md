@@ -236,6 +236,12 @@ in wind. Two things about it are not obvious:
 
 * It is strung **far** tighter than the messenger — `TETHER_SLACK = 1.000265` against the
   messenger's `1.0066`, which is 80% less sag. Solved for, not guessed.
+* It is **dead-ended on the pole at both ends**, by `emitTetherTermination`. Without that it
+  simply stopped in the air a few blocks under the anchor, held by nothing -- the one piece of a
+  box span that was not visibly fixed to anything. The direction comes from the span, not from the
+  anchor block's facing: the anchor sits between the pole and the run, so *outward along the span*
+  is where the pole is, and that stays true for a span leaving at any angle. A block facing could
+  only ever be square to one of the two axes, so it would be wrong on every diagonal.
 * Its drop is **derived, not fixed**. A tight tether and a sagging messenger converge toward
   midspan, so a fixed drop is only correct at the anchors: on a 20-block span a 2.75 drop leaves
   1.95 of real clearance in the middle, straight through the lamps, and a 40-block span is twice

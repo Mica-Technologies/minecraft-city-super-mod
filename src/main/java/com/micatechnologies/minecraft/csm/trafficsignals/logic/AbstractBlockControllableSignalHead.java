@@ -90,6 +90,23 @@ public abstract class AbstractBlockControllableSignalHead extends AbstractBlockC
     return pos.getY() + getBlockBoundingBox(state, world, pos).minY;
   }
 
+  /**
+   * Where a span's drop should come down to: the roof of the housing as actually drawn.
+   *
+   * <p>Matters for the extending-mast mount style, and only for that one. A flush mount lifts the
+   * head until it meets the hardware, so the drop has nothing to reach for; an extending mast
+   * deliberately leaves the head on its own block, and the drop then stopped at the mount's attach
+   * height three quarters of the way up the block above -- a quarter of a block clear of the roof
+   * it was supposed to be holding.
+   *
+   * <p>Read from the bounding box, so it follows the section count, the section sizes and whatever
+   * rise the head has taken, rather than assuming any of them.
+   */
+  @Override
+  public double getSpanHangerTopY(IBlockAccess world, BlockPos pos, IBlockState state) {
+    return pos.getY() + getBlockBoundingBox(state, world, pos).maxY;
+  }
+
   @Override
   public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
     // Recomputed per-call: signals can flip between vertical and horizontal layout via

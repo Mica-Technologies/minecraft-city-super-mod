@@ -20,8 +20,8 @@ public class TileEntitySpanWireAnchorRenderer
 
   /** The thimble: the teardrop the cable is turned around before it is clamped back on itself. */
   private static final int THIMBLE_SEGMENTS = 10;
-  private static final double THIMBLE_RADIUS = 0.15;
-  private static final double THIMBLE_WIRE_RADIUS = SpanWireCableGeometry.CABLE_RADIUS * 0.95;
+  private static final double THIMBLE_RADIUS = 0.17;
+  private static final double THIMBLE_WIRE_RADIUS = SpanWireCableGeometry.CABLE_RADIUS * 1.25;
 
   /** A guy strand is about as heavy as the messenger it is resisting. */
   private static final double GUY_RADIUS = SpanWireCableGeometry.CABLE_RADIUS * 0.95;
@@ -33,7 +33,10 @@ public class TileEntitySpanWireAnchorRenderer
   private static final double GUY_ANCHOR_HEIGHT = 0.45;
 
   /** The shackle taking up the offset between the block's own eyebolt and the cable. */
-  private static final double LINK_RADIUS = SpanWireCableGeometry.CABLE_RADIUS * 1.6;
+  private static final double LINK_RADIUS = SpanWireCableGeometry.CABLE_RADIUS * 2.6;
+
+  /** How far the tether's dead end reaches back toward the pole. Past the block edge, into it. */
+  private static final double TETHER_TERMINATION_REACH = 0.62;
 
   private static final float STEEL_RED = 0.24f;
   private static final float STEEL_GREEN = 0.25f;
@@ -46,6 +49,7 @@ public class TileEntitySpanWireAnchorRenderer
 
     emitOffsetLink(buffer, te, attach, origin, skyLight, blockLight);
     emitThimble(buffer, cable, atT, attach, origin, skyLight, blockLight);
+    emitTetherTermination(buffer, te, atT, origin, skyLight, blockLight);
     emitGuy(buffer, te, attach, origin, skyLight, blockLight);
   }
 
@@ -100,6 +104,41 @@ public class TileEntitySpanWireAnchorRenderer
     }
     SpanWireCableGeometry.emitTubePath(buffer, ring, true, origin, THIMBLE_WIRE_RADIUS,
         STEEL_RED, STEEL_GREEN, STEEL_BLUE, skyLight, blockLight);
+  }
+
+  /**
+   * Dead-ends a box span's lower tether on the pole.
+   *
+   * <p>Without it the tether simply stops in the air a few blocks under the anchor, held by
+   * nothing -- the one piece of a box span that was not visibly fixed to anything at either end.
+   * A real one gets its own bracket lower down the pole, so it is drawn as a thimble at the end
+   * plus a stub running back into the pole.
+   *
+   * <p>The direction is taken from the span rather than from the block's facing. The anchor sits
+   * between the pole and the run, so <em>outward along the span</em> is where the pole is, and
+   * that holds for a span leaving at any angle -- including the diagonals, where a block facing
+   * could only ever be square to one of the two axes.
+   */
+  private void emitTetherTermination(BufferBuilder buffer, TileEntitySpanWireAnchor te, double atT,
+      Vec3d origin, int skyLight, int blockLight) {
+    final SpanWireCatenary tether = te.getTether();
+    if (tether == null) {
+      return;
+    }
+    final Vec3d end = tether.pointAt(atT);
+
+    // Sample inward along the tether; at an end one of the two samples is the end itself.
+    final double inward = atT < 0.5 ? Math.min(1.0, atT + 0.01) : Math.max(0.0, atT - 0.01);
+    Vec3d along = tether.pointAt(inward).subtract(end);
+    if (along.x * along.x + along.y * along.y + along.z * along.z < 1.0e-12) {
+      return;
+    }
+    along = along.normalize();
+
+    SpanWireCableGeometry.emitStraightTube(buffer, end,
+        end.subtract(along.scale(TETHER_TERMINATION_REACH)), origin, LINK_RADIUS,
+        STEEL_RED, STEEL_GREEN, STEEL_BLUE, skyLight, blockLight);
+    emitThimble(buffer, tether, atT, end, origin, skyLight, blockLight);
   }
 
   /**

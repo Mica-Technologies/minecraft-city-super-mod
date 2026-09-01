@@ -41,7 +41,7 @@ public class BlockSpanWireAnchor extends AbstractBlockRotatableNSEW
    * the wrong face.
    */
   private static final AxisAlignedBB BOUNDING_BOX =
-      new AxisAlignedBB(0.3125D, 0.3125D, 0.0D, 0.6875D, 0.8125D, 0.5625D);
+      new AxisAlignedBB(0.28125D, 0.34375D, 0.0D, 0.71875D, 0.96875D, 0.5625D);
 
   public BlockSpanWireAnchor() {
     super(Material.IRON, SoundType.METAL, "pickaxe", 1, 2F, 10F, 0F, 0);
