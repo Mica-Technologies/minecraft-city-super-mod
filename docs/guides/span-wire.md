@@ -90,9 +90,11 @@ one signal.
 
 - The whole stack **rises together** onto the cable. Sections stay bolted to their head.
 - A box span's tether measures itself against the **deepest** assembly on the span, so it passes
-  under all of them rather than through the tallest.
+  under all of them rather than through the tallest. It measures where the heads actually hang,
+  so heads that have risen to a flush mount get a tether just under them, not one left down at
+  their blocks.
 - **Add or remove a section at any time.** The span re-measures and re-hangs its tether without
-  being re-strung.
+  being re-strung. Switching a mount between flush and extending mast re-measures too.
 
 !!! note "How far a stack can reach"
 

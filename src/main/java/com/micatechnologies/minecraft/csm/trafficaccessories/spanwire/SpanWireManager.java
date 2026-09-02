@@ -300,11 +300,18 @@ public final class SpanWireManager {
         if (!(below.getBlock() instanceof ISpanWireHangable)) {
           continue;
         }
-        final double tieY = ((ISpanWireHangable) below.getBlock())
-            .getSpanTetherTieY(world, payloadPos, below);
-        if (Double.isNaN(tieY)) {
+        final ISpanWireHangable payload = (ISpanWireHangable) below.getBlock();
+        final double reportedTieY = payload.getSpanTetherTieY(world, payloadPos, below);
+        if (Double.isNaN(reportedTieY)) {
           continue;
         }
+        // The payload reports its underside on the block grid, before any rise its mount gives
+        // it. A flush mount lifts a head up to a block and a half to meet the cable, and a tether
+        // measured against the unrisen bottom hung that far below the heads, every tie stretched
+        // down to reach it. The rise is the mount's number and is asked for through the same
+        // lookup the head renderer uses to move the head, so the two cannot disagree.
+        final double tieY = reportedTieY
+            + (payload.takesSpanRise() ? SpanWireHangOffset.riseFor(world, payloadPos) : 0.0);
         // Sampled under the payload rather than under the mast, for the same reason the tie
         // itself is: on a diagonal cluster a head sits a column away from the block the mount
         // occupies, where the cable is a different height.
@@ -591,7 +598,28 @@ public final class SpanWireManager {
     if (mount == null) {
       return;
     }
-    final SpanWireDefinition span = mount.getSpan();
+    remeasureTether(world, mount.getSpan());
+  }
+
+  /**
+   * Re-hangs a box span's tether after a mount changed how far it lifts its payload.
+   *
+   * <p>Switching a mount between flush and extending mast moves the head under it by up to a
+   * block and a half, and the tether is measured against where the heads actually hang, so it
+   * has to be measured again. Same rule as {@link #onPayloadDepthChanged}; only where the
+   * change was noticed differs.
+   */
+  public static void onMountStyleChanged(World world, BlockPos mountPos) {
+    if (world == null || world.isRemote) {
+      return;
+    }
+    final TileEntity tileEntity = world.getTileEntity(mountPos);
+    if (tileEntity instanceof TileEntitySpanWireHanger) {
+      remeasureTether(world, ((TileEntitySpanWireHanger) tileEntity).getSpan());
+    }
+  }
+
+  private static void remeasureTether(World world, @Nullable SpanWireDefinition span) {
     if (span == null || !span.isBoxSpan() || span.hasTetherAnchors()) {
       return;
     }
