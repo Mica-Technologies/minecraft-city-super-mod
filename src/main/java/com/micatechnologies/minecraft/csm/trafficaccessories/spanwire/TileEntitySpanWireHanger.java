@@ -80,6 +80,33 @@ public class TileEntitySpanWireHanger extends AbstractTileEntitySpanWireAttachme
   /** When the payload was last read, or {@link Long#MIN_VALUE} for never. */
   private transient long payloadReadTick = Long.MIN_VALUE;
 
+  /**
+   * Redraws the column this mount can carry, not just its own block.
+   *
+   * <p>A payload reads its mount by looking up to {@link SpanWireHangOffset#MAX_SEARCH_UP} blocks,
+   * so a sign two blocks down, under a head, changes shape the moment this mount exists -- but
+   * the render update a block placement gives off reaches one block around it, and a sign in the
+   * render section below that goes on drawing as it was until something else rebuilds it. This
+   * asks for that section too. Same on the way out, in {@link #invalidate()}.
+   */
+  @Override
+  public void onLoad() {
+    super.onLoad();
+    markPayloadColumnForRender();
+  }
+
+  @Override
+  public void invalidate() {
+    super.invalidate();
+    markPayloadColumnForRender();
+  }
+
+  private void markPayloadColumnForRender() {
+    if (world != null && world.isRemote) {
+      world.markBlockRangeForRenderUpdate(pos.down(SpanWireHangOffset.MAX_SEARCH_UP), pos);
+    }
+  }
+
   @Override
   public void readNBT(NBTTagCompound compound) {
     super.readNBT(compound);
