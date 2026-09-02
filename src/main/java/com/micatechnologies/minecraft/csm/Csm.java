@@ -132,6 +132,8 @@ public class Csm {
       MinecraftForge.EVENT_BUS.register(this);
       MinecraftForge.EVENT_BUS.register(
           new com.micatechnologies.minecraft.csm.codeutils.CsmCommonLifecycleHandler());
+      MinecraftForge.EVENT_BUS.register(
+          new com.micatechnologies.minecraft.csm.codeutils.CsmTileEntityBackfillHandler());
       logger.info("Finished registering event bus");
       progressBar.step("Event Bus Registration");
 
