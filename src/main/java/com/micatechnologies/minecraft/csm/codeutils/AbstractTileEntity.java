@@ -24,6 +24,22 @@ import net.minecraftforge.common.util.Constants;
 public abstract class AbstractTileEntity extends TileEntity {
 
   /**
+   * How far, in blocks, the mod's long-range renderers draw: signal heads, crosswalk and lane
+   * signals, blank-out boxes, the dynamic signs, and everything that hangs beside them.
+   *
+   * <p>One number rather than one per class because these things are seen together. A cable that
+   * dropped out at vanilla's 64 blocks left the heads on it hanging from nothing for the next 64,
+   * which is worse than either drawing or not drawing the lot. Anything that should stay in view
+   * as long as a signal does returns {@link #LONG_RANGE_RENDER_DISTANCE_SQUARED} from
+   * {@code getMaxRenderDistanceSquared}, or builds on it.
+   */
+  public static final double LONG_RANGE_RENDER_DISTANCE = 128.0;
+
+  /** {@link #LONG_RANGE_RENDER_DISTANCE} squared, in the form the tile entity API wants it. */
+  public static final double LONG_RANGE_RENDER_DISTANCE_SQUARED =
+      LONG_RANGE_RENDER_DISTANCE * LONG_RANGE_RENDER_DISTANCE;
+
+  /**
    * Helper method which marks the tile entity as dirty, and schedules a world update for the
    * block/tile entity. This method does not trigger re-rendering of the block.
    *

@@ -177,6 +177,32 @@ public abstract class AbstractTileEntitySpanWireAttachment extends AbstractTileE
     return cachedToT;
   }
 
+  /**
+   * Stays in view as long as the signals on it do, and then for as far as its own cable reaches.
+   *
+   * <p>Two halves. The first is the shared long-range distance every signal head uses; without
+   * it this fell through to vanilla's 64 blocks, and a span vanished with its heads still drawn
+   * for the next 64. The second is the distance from this block to the far corner of what it
+   * draws. Vanilla measures the cut-off to the tile entity's own block, and an anchor draws the
+   * whole run out to the first mount -- twenty blocks or more on a wide intersection -- so an
+   * anchor just past the limit would drop a segment whose far end, and the head hanging there,
+   * were well inside it. Adding the reach means any part of the cable a signal could be drawn
+   * beside is drawn too.
+   */
+  @Override
+  public double getMaxRenderDistanceSquared() {
+    final AxisAlignedBB bounds = getRenderBoundingBox();
+    final double cx = pos.getX() + 0.5;
+    final double cy = pos.getY() + 0.5;
+    final double cz = pos.getZ() + 0.5;
+    final double dx = Math.max(cx - bounds.minX, bounds.maxX - cx);
+    final double dy = Math.max(cy - bounds.minY, bounds.maxY - cy);
+    final double dz = Math.max(cz - bounds.minZ, bounds.maxZ - cz);
+    final double reach = Math.sqrt(dx * dx + dy * dy + dz * dz);
+    final double distance = LONG_RANGE_RENDER_DISTANCE + reach;
+    return distance * distance;
+  }
+
   @Override
   public AxisAlignedBB getRenderBoundingBox() {
     if (cachedRenderBounds != null) {

@@ -194,7 +194,7 @@ public class TileEntityPortableMessageSign extends AbstractTileEntity {
 
   @Override
   public double getMaxRenderDistanceSquared() {
-    return 128.0 * 128.0;
+    return LONG_RANGE_RENDER_DISTANCE_SQUARED;
   }
 
   @Override

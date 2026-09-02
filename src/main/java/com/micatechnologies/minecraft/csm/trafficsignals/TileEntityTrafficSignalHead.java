@@ -1349,7 +1349,7 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
 
   @Override
   public double getMaxRenderDistanceSquared() {
-    return 128.0 * 128.0; // 128 blocks
+    return LONG_RANGE_RENDER_DISTANCE_SQUARED;
   }
 
 
