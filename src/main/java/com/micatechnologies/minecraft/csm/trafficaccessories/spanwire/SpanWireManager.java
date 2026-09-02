@@ -549,6 +549,24 @@ public final class SpanWireManager {
   }
 
   /**
+   * Advances the messenger's droop to the next {@link SpanWireSag} preset, span-wide.
+   *
+   * <p>Moving the cable moves every mount's drop and so every head's rise, and a box span's
+   * tether is measured against where the heads hang -- so the tether is measured again once the
+   * new cable is on the blocks, exactly as it is after a mount style change.
+   */
+  public static void cycleSag(World world, BlockPos anyAttachment) {
+    final SpanWireDefinition span = getSpanAt(world, anyAttachment);
+    if (span == null) {
+      return;
+    }
+    final SpanWireSag next = SpanWireSag.closestTo(span.getSlack()).getNext();
+    final SpanWireDefinition changed = span.withSlack(next.getSlack());
+    apply(world, changed);
+    remeasureTether(world, changed);
+  }
+
+  /**
    * Adds or removes the lower tether on the whole span this attachment belongs to.
    *
    * <p>Span-wide for the same reason the signal side is: the tether is a single run, so a

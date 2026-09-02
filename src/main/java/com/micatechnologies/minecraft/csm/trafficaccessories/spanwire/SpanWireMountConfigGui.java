@@ -31,7 +31,8 @@ public class SpanWireMountConfigGui extends GuiScreen {
   private static final int CLOSE_BUTTON_ID = 100;
 
   private static final String[] LABELS =
-      {"Mount Style", "Conductor Coil", "Signal Side", "Lower Tether", "Cluster Width"};
+      {"Mount Style", "Conductor Coil", "Signal Side", "Lower Tether", "Cable Sag",
+          "Cluster Width"};
 
   private final TileEntitySpanWireHanger tileEntity;
   private final BlockPos blockPos;
@@ -91,6 +92,10 @@ public class SpanWireMountConfigGui extends GuiScreen {
         return tileEntity.getSpan() == null
             ? "N/A"
             : (tileEntity.getSpan().isBoxSpan() ? "Box span" : "None");
+      case CYCLE_SAG:
+        return tileEntity.getSpan() == null
+            ? "N/A"
+            : SpanWireSag.closestTo(tileEntity.getSpan().getSlack()).getFriendlyName();
       case CYCLE_CLUSTER_WIDTH:
         return tileEntity instanceof TileEntitySpanWireClusterMount
             ? ((TileEntitySpanWireClusterMount) tileEntity).getClusterWidth() + " signals"

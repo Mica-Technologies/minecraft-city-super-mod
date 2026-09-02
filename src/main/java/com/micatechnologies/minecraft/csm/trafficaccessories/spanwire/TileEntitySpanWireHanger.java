@@ -404,6 +404,13 @@ public class TileEntitySpanWireHanger extends AbstractTileEntitySpanWireAttachme
     }
   }
 
+  /** Advances the messenger's droop preset for the whole span. */
+  public void cycleSag() {
+    if (world != null && !world.isRemote) {
+      SpanWireManager.cycleSag(world, pos);
+    }
+  }
+
   /** Advances the coil style and pushes the change to clients. */
   public void cycleCoilStyle() {
     coilStyle = coilStyle.getNext();
