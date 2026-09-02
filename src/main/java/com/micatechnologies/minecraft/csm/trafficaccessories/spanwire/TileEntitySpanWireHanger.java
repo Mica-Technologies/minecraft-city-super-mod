@@ -378,6 +378,11 @@ public class TileEntitySpanWireHanger extends AbstractTileEntitySpanWireAttachme
   public void cycleMountStyle() {
     mountStyle = mountStyle.getNext();
     onSettingChanged();
+    // The style decides how far the head under this mount rises, and a box span's tether is hung
+    // against where the heads actually are, so the span has to measure again.
+    if (world != null && !world.isRemote) {
+      SpanWireManager.onMountStyleChanged(world, pos);
+    }
   }
 
   /**
