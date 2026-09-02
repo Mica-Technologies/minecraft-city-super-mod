@@ -129,6 +129,19 @@ public final class SpanWireHangOffset {
   }
 
   /**
+   * How far the mount above this position lifts what hangs there, in blocks. Zero when nothing
+   * does.
+   *
+   * <p>The vertical term of {@link #computeFor} in world units rather than model units, for the
+   * code that measures a span against its payloads rather than drawing them. Same lookup and the
+   * same number, so a tether measured with this lands where the head renderer will put the head.
+   */
+  public static double riseFor(IBlockAccess world, BlockPos pos) {
+    final TileEntitySpanWireHanger mount = findMount(world, pos);
+    return mount == null ? 0.0 : mount.getPayloadRise();
+  }
+
+  /**
    * The mount a block at this position hangs from, or null.
    *
    * <p>Looks straight up first, then sideways for a cluster bracket. A clustered payload sits

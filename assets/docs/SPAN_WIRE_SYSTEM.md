@@ -352,6 +352,16 @@ on it, plus a gap. The constant could never be right for every head, because how
 below the cable depends on its section count and sizes; a figure that clears a three-section head
 is cut straight through a taller one.
 
+**Measured against where the heads hang, not where their blocks are.** A payload reports its
+underside on the block grid, before any rise its mount gives it, and a flush mount lifts a head up
+to a block and a half to meet the cable. Measuring against the unrisen bottom hung the tether that
+far below a flush span's heads, with every tie stretched down to reach it — the gap was worst on
+exactly the span where every mount had been set flush. `measureTetherClearance` now adds
+`SpanWireHangOffset.riseFor` for any payload that takes the rise, which is the same lookup the head
+renderer moves the head with, so the two cannot disagree. Because the rise depends on the mount
+style, `cycleMountStyle` calls `SpanWireManager.onMountStyleChanged` and the span re-measures,
+the same way it does when a section is added under a head.
+
 The **deepest** payload wins here, not the median that the sideways offset uses. The two statistics
 answer different questions: sideways, an outlier should be ignored so the run stays where most of
 the hardware is; vertically, an outlier must not be sliced through, and every tie has to point
