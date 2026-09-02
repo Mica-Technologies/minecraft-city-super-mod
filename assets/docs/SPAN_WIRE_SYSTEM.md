@@ -47,13 +47,23 @@ Everything lives in `trafficaccessories/spanwire/`.
 | Remove a back-guy | Sneak + click the ground anchor |
 
 A mount's screen carries mount style (flush or extending mast), conductor coil (off, one side,
-both), signal side, lower tether, and cluster width on a cluster mount. The last row is drawn only
+both), signal side, lower tether, cable sag, and cluster width on a cluster mount. The last row is drawn only
 for a cluster, so **cluster width must stay last in `SpanWireMountConfigAction`** -- the screen
 draws one row per enum value in order and simply leaves the final one off.
 
-Signal side and lower tether apply to the **whole span**, not the mount they are set from. Both are
-single runs; a per-mount answer would let the wires zigzag, or exist along only part of their own
-length.
+Signal side, lower tether and cable sag apply to the **whole span**, not the mount they are set
+from. The wires are single runs; a per-mount answer would let them zigzag, exist along only part
+of their own length, or droop by two different amounts at once.
+
+**Cable sag is chosen from presets, not typed.** `SpanWireSag` carries four: taut (2.5%), standard
+(5%, the solver's default and what real signal spans are strung to), relaxed (8%) and loose (12%).
+Each is stored as the slack that produces it, through `slack = 1 + (8/3) * sag^2`, because slack
+is what the catenary solver takes and sag is what a builder can see. The standard preset returns
+`DEFAULT_SLACK` exactly rather than the formula's answer, so every span strung before the option
+existed reads back as standard. Changing the sag re-applies the span, which re-solves every
+mount's drop and every head's rise, and then re-measures a box span's tether against the moved
+heads. A mount left above the cable by a tauter setting is reported by its own screen, the same
+as one built too high.
 
 ## The back-guy is optional, and that is a correction
 

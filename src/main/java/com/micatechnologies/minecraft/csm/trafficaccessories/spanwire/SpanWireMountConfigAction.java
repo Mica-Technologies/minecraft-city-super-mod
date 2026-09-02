@@ -8,6 +8,8 @@ public enum SpanWireMountConfigAction {
   CYCLE_SIGNAL_SIDE,
   /** Also span-wide: adds or removes the lower tether. */
   TOGGLE_BOX_SPAN,
+  /** Span-wide: how far the messenger droops, from the presets in {@link SpanWireSag}. */
+  CYCLE_SAG,
   /**
    * Cluster mounts only; ignored on a single mount, which has no width to cycle.
    *
