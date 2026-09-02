@@ -9,7 +9,6 @@ import com.micatechnologies.minecraft.csm.codeutils.RotationUtils;
 import com.micatechnologies.minecraft.csm.codeutils.SignShift;
 import com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.ISpanWireHangable;
 import com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.SpanWireHangOffset;
-import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import mcp.MethodsReturnNonnullByDefault;
@@ -26,7 +25,6 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
-import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 
 @MethodsReturnNonnullByDefault
@@ -93,18 +91,6 @@ public abstract class AbstractBlockSign extends AbstractBlockRotatableHZEight
 
   public static final PropertyEnum<SignShift> SHIFT =
       PropertyEnum.create("shift", SignShift.class);
-
-  private static final ConcurrentHashMap<Long, Boolean> SETBACK_CACHE = new ConcurrentHashMap<>();
-
-  /**
-   * Clears the setback cache. Called on world unload (server) and client disconnect so entries
-   * don't accumulate across sessions. The cache is keyed by position only — lookups run with an
-   * IBlockAccess that exposes no dimension — so a sign at identical coordinates in two loaded
-   * dimensions shares an entry; any stale render state self-heals on the next neighbor change.
-   */
-  public static void clearSetbackCache() {
-    SETBACK_CACHE.clear();
-  }
 
   public AbstractBlockSign() {
     super(Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0);
@@ -317,10 +303,6 @@ public abstract class AbstractBlockSign extends AbstractBlockRotatableHZEight
     // and the signal housings -- so it is reused rather than duplicated. A sign is a plain block
     // model and cannot take the sub-block offset a signal head does, which is what makes this
     // the only lever available.
-    //
-    // Kept here so this method stays the complete answer for any direct caller, but the cached
-    // path in getSetbackCached asks this same question before consulting the cache, for the
-    // reason given there.
     if (SpanWireHangOffset.hangsFromSpan(source, pos)) {
       return true;
     }
@@ -360,47 +342,22 @@ public abstract class AbstractBlockSign extends AbstractBlockRotatableHZEight
     return new BlockStateContainer(this, FACING, DOWNWARD, SHIFT);
   }
 
-  @Override
-  @SuppressWarnings("deprecation")
-  public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn,
-      BlockPos fromPos) {
-    SETBACK_CACHE.remove(pos.toLong());
-    SETBACK_CACHE.remove(pos.up().toLong());
-    SETBACK_CACHE.remove(pos.down().toLong());
-  }
-
-  @Override
-  public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
-    SETBACK_CACHE.remove(pos.toLong());
-    super.breakBlock(worldIn, pos, state);
-  }
-
-  private boolean getSetbackCached(IBlockAccess source, BlockPos pos) {
-    // The span check is answered live, in front of the cache, because the cache cannot be kept
-    // honest for it. An entry is only ever dropped by a neighbour change at the sign itself, but
-    // the mount a sign hangs from can be up to three blocks above it -- a sign under a signal head
-    // under a mount is the everyday case -- and placing or breaking that mount notifies the head,
-    // never the sign. The entry then held a false from before the mount existed, and the sign hung
-    // forward of the head's housing until something unrelated happened to touch a neighbour.
-    // The check is three tile entity lookups and one hash lookup, cheaper than the back-to-back
-    // check that already runs uncached alongside it.
-    if (SpanWireHangOffset.hangsFromSpan(source, pos)) {
-      return true;
-    }
-    Long key = pos.toLong();
-    Boolean cached = SETBACK_CACHE.get(key);
-    if (cached != null) return cached;
-    boolean result = getShouldSetback(source, pos);
-    // Only cache when the sign is actually present in the world. World.mayPlace invokes
-    // getCollisionBoundingBox -> getActualState before the sign is placed; at that point
-    // getShouldSetback always returns false (the sign at pos is still air), and caching
-    // that false would survive placement and leave the sign rendered without setback
-    // until a neighbor change cleared the entry.
-    if (source.getBlockState(pos).getBlock() instanceof AbstractBlockSign) {
-      SETBACK_CACHE.put(key, result);
-    }
-    return result;
-  }
+  /*
+   * The shift is worked out from the neighbours on every call, and deliberately not cached.
+   *
+   * There used to be a per-position cache in front of getShouldSetback, dropped on a neighbour
+   * change at the sign. It could not be kept honest. A hand placement is predicted on the
+   * client, which rebuilds the render section from the cached answer before the server's clear
+   * has landed, and the server's block change packet then carries a state identical to the
+   * prediction, which the chunk code drops without re-rendering -- so a pole placed behind a
+   * sign left the sign drawn a block forward of it until something else rebuilt the section.
+   * A span mount can also sit up to three blocks above its sign, out of reach of any neighbour
+   * notification at all. Both were fixed for good by removing the cache: the client's first
+   * rebuild after a prediction already sees the placed block, so an uncached answer is right the
+   * first time. What it costs is one to three block lookups for the signal arm check and a few
+   * tile entity lookups for the span check, beside the three block lookups the back-to-back
+   * check has always made uncached.
+   */
 
   @Override
   @SuppressWarnings("deprecation")
@@ -412,7 +369,7 @@ public abstract class AbstractBlockSign extends AbstractBlockRotatableHZEight
     SignShift shift;
     if (getShouldBackToBack(worldIn, pos)) {
       shift = SignShift.BACKTOBACK;
-    } else if (getSetbackCached(worldIn, pos)) {
+    } else if (getShouldSetback(worldIn, pos)) {
       shift = SignShift.SETBACK;
     } else {
       shift = SignShift.NONE;
