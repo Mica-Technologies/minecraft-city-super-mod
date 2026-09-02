@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractTileEntity;
+import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalHead;
 import net.minecraft.util.math.AxisAlignedBB;
 
 /**
@@ -18,11 +19,15 @@ import net.minecraft.util.math.AxisAlignedBB;
 public class TileEntitySignalBackplate extends AbstractTileEntity {
 
   /**
-   * A plate reaches well past its own block -- the models run from roughly two units below it to
-   * ten above -- and it is drawn lifted on top of that. A box of one block would cull it while it
-   * was still plainly on screen.
+   * A plate reaches well past its own block -- the models run from a block below it to nearly two
+   * above -- and it is drawn wherever its head has gone on top of that. A box of one block would
+   * cull it while it was still plainly on screen.
+   *
+   * <p>Two blocks for the geometry, plus the same displacement allowance the head's own box uses,
+   * so the two boxes cannot disagree about whether a hung pair is on screen.
    */
-  private static final double RENDER_MARGIN = 2.0;
+  private static final double RENDER_MARGIN =
+      2.0 + TileEntityTrafficSignalHead.MAX_DISPLACEMENT_BLOCKS;
 
   @Override
   public AxisAlignedBB getRenderBoundingBox() {

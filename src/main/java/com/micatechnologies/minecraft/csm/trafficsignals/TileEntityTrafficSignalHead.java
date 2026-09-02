@@ -3,6 +3,7 @@ package com.micatechnologies.minecraft.csm.trafficsignals;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractTileEntity;
 import com.micatechnologies.minecraft.csm.codeutils.CsmRenderUtils;
 import com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.SpanWireHangOffset;
+import com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.SpanWireManager;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignal.SIGNAL_SIDE;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignalHead;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.SignalHeadMountType;
@@ -267,15 +268,30 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
   }
 
   /**
+   * How far, in blocks, a head can be drawn from its own block along any axis: the most a span
+   * hanger may lower it plus the most a builder may nudge it.
+   *
+   * <p>One number, derived from the two limits rather than guessed, because it pads two frustum
+   * boxes that have to agree -- this one and the backplate's. A box that ignored the displacement
+   * culled a hung head the moment its <em>block</em> left the screen, while its housing was still
+   * plainly in view a block and a half lower.
+   */
+  public static final double MAX_DISPLACEMENT_BLOCKS =
+      SpanWireManager.MAX_HANGER_DROP + MAX_NUDGE / 16.0;
+
+  /**
    * Returns an expanded render bounding box so Minecraft's frustum culling doesn't hide
    * the signal TESR when sections extend beyond the block position (e.g., 3-section
-   * vertical signals extend ~1.5 blocks above and below center, plus visors).
+   * vertical signals extend ~1.5 blocks above and below center, plus visors), padded further
+   * by {@link #MAX_DISPLACEMENT_BLOCKS} so a head hung from a span or nudged by hand is still
+   * inside the box wherever it has been drawn.
    */
   @Override
   public AxisAlignedBB getRenderBoundingBox() {
     return new AxisAlignedBB(
         pos.getX() - 1.0, pos.getY() - 1.0, pos.getZ() - 1.0,
-        pos.getX() + 2.0, pos.getY() + 2.0, pos.getZ() + 2.0);
+        pos.getX() + 2.0, pos.getY() + 2.0, pos.getZ() + 2.0)
+        .grow(MAX_DISPLACEMENT_BLOCKS);
   }
 
   /**
