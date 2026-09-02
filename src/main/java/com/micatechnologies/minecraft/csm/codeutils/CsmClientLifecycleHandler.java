@@ -4,7 +4,6 @@ import com.micatechnologies.minecraft.csm.lifesafety.FireAlarmSoundPacketHandler
 import com.micatechnologies.minecraft.csm.novelties.BlockHd;
 import com.micatechnologies.minecraft.csm.technology.SpeakerAmbientPacketHandler;
 import com.micatechnologies.minecraft.csm.trafficsignals.APSSoundPacketHandler;
-import com.micatechnologies.minecraft.csm.trafficsigns.AbstractBlockSign;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent;
@@ -41,7 +40,6 @@ public class CsmClientLifecycleHandler {
       APSSoundPacketHandler.stopAllSounds();
       SpeakerAmbientPacketHandler.stopAllSounds();
       BlockHd.clearClientCaches();
-      AbstractBlockSign.clearSetbackCache();
       // Release every cached OpenGL display list. These hold driver/GPU memory, so carrying
       // them into the next world the player joins would be a genuine leak rather than just a
       // stale map. Safe here: addScheduledTask puts this on the client thread, which is the
