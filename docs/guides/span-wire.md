@@ -27,6 +27,10 @@ joining them, so a mount level with the anchors ends up *above* the cable everyw
 **4. Put the signal heads in place**, in the block directly below each mount. For a cluster, in the
 blocks under the columns the bracket covers.
 
+A road sign can hang from a mount too, either on its own or under a head. It sets itself back in
+its block so the drop lands on its post and it lines up with the signal housings, and that happens
+as soon as the mount is there — the sign, the head and the mount can go in in any order.
+
 **5. Take the Span Wire Tool** and right-click one anchor, then the other. The tool reports what it
 found:
 
