@@ -176,6 +176,6 @@ public class TileEntityDynamicStreetSign extends AbstractTileEntity {
     // Matched to the guide sign (and the traffic signal heads) at 128 blocks. Blades stopped
     // at 96 while every other dynamic sign around them kept drawing, which reads as the blade
     // popping out of a junction rather than as distance. Full detail holds to 64 blocks.
-    return 128.0 * 128.0;
+    return LONG_RANGE_RENDER_DISTANCE_SQUARED;
   }
 }

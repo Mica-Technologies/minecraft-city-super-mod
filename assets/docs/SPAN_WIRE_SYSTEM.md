@@ -138,6 +138,16 @@ That keeps each tile entity's geometry to the gap between two mounts, so culling
 unloading degrade a long span gracefully instead of taking all of it away with one chunk. Every
 piece is a slice of the same solved curve, so the joins are exact.
 
+**A span stays in view as long as its signals do, and then as far as its own cable reaches.** The
+attachments once fell through to vanilla's `getMaxRenderDistanceSquared`, 64 blocks, while every
+signal head draws to 128 — so between those two distances the heads hung from nothing. The cut-off
+now builds on `AbstractTileEntity.LONG_RANGE_RENDER_DISTANCE`, the one constant every long-range
+tile entity in the mod returns, so the two cannot drift apart again. It then adds the distance
+from the block to the far corner of what it draws, because vanilla measures the cut-off to the
+tile entity's block and an anchor draws the whole run out to the first mount: twenty blocks or
+more on a wide intersection. Without the reach, an anchor just past the limit dropped a segment
+whose far end, and the head hanging there, were well inside it.
+
 **5. This package knows nothing about signals or signs, and must not learn.** The payload calls
 in — `SpanWireHangOffset.computeFor` for a vertical offset, `hangsFromSpan` for a yes/no — never
 the other way. A new kind of hangable thing implements `ISpanWireHangable` and needs no edit here.
