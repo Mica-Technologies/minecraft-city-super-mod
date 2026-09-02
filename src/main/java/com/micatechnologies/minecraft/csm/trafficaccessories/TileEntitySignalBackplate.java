@@ -30,6 +30,17 @@ public class TileEntitySignalBackplate extends AbstractTileEntity {
   }
 
   /**
+   * As far as the head it is bolted to. The head draws to {@link #LONG_RANGE_RENDER_DISTANCE};
+   * a plate that dropped out at vanilla's 64 blocks would leave the head hanging in front of
+   * nothing for the next 64, which is the same complaint a span cable answered by adopting this
+   * distance.
+   */
+  @Override
+  public double getMaxRenderDistanceSquared() {
+    return LONG_RANGE_RENDER_DISTANCE_SQUARED;
+  }
+
+  /**
    * Releases the plate's baked geometry when this block goes or its chunk unloads.
    *
    * <p>Without this the cache would hold a display list for every plate a player has ever walked
