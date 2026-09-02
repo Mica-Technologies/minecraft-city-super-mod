@@ -46,6 +46,9 @@ public class SpanWireMountConfigPacketHandler
         case TOGGLE_BOX_SPAN:
           hanger.toggleBoxSpan();
           break;
+        case CYCLE_SAG:
+          hanger.cycleSag();
+          break;
         case CYCLE_CLUSTER_WIDTH:
           if (hanger instanceof TileEntitySpanWireClusterMount) {
             ((TileEntitySpanWireClusterMount) hanger).cycleClusterWidth();

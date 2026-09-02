@@ -177,6 +177,7 @@ Right-click a mount with anything other than the Span Wire Tool:
 | **Conductor Coil** | None, one side, or both sides |
 | **Signal Side** | Shifts the whole span sideways so it lines up over the signal housings, which do not sit on their blocks' centre lines. Auto follows the signals |
 | **Lower Tether** | None, or box span |
+| **Cable Sag** | How far the messenger droops: taut (2.5%), standard (5%), relaxed (8%) or loose (12%) of the span length. Applies to the whole span. A tauter cable can end up passing below a mount that sat under it before; the screen's status line says so |
 | **Cluster Width** | Two to four. Only shown on a cluster mount |
 
 ## Things worth knowing

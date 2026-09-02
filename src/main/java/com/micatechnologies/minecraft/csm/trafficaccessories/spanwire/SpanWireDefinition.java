@@ -200,6 +200,12 @@ public final class SpanWireDefinition {
         autoOffsetZ, tetherClearance, tetherAnchorA, tetherAnchorB);
   }
 
+  /** The same span strung with a different slack, and so a different droop. */
+  public SpanWireDefinition withSlack(double newSlack) {
+    return new SpanWireDefinition(anchorA, anchorB, hangers, newSlack, boxSpan, signalSide,
+        autoOffsetX, autoOffsetZ, tetherClearance, tetherAnchorA, tetherAnchorB);
+  }
+
   /** The same span with a different measured tether clearance. */
   public SpanWireDefinition withTetherClearance(double clearance) {
     return new SpanWireDefinition(anchorA, anchorB, hangers, slack, boxSpan, signalSide,
