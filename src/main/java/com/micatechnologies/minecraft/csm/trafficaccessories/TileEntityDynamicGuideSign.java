@@ -130,6 +130,6 @@ public class TileEntityDynamicGuideSign extends AbstractTileEntity {
     // Matches the traffic signal heads' 128 blocks. The renderer draws full detail
     // (text, shields, arrows) only inside 64 blocks; between 64 and 128 it draws a
     // cheap LOD of just the sign body, back, and posts.
-    return 128.0 * 128.0;
+    return LONG_RANGE_RENDER_DISTANCE_SQUARED;
   }
 }
