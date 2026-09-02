@@ -84,7 +84,6 @@ public abstract class AbstractBlockPoweredSign extends AbstractBlockSign {
   @SuppressWarnings("deprecation")
   public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn,
       BlockPos fromPos) {
-    // Preserve the base sign's setback-cache invalidation, then track redstone power.
     super.neighborChanged(state, worldIn, pos, blockIn, fromPos);
     if (!worldIn.isRemote) {
       boolean powered = worldIn.getRedstonePowerFromNeighbors(pos) > 0;
