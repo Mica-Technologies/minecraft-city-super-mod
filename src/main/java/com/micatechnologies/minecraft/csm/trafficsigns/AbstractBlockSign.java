@@ -317,6 +317,10 @@ public abstract class AbstractBlockSign extends AbstractBlockRotatableHZEight
     // and the signal housings -- so it is reused rather than duplicated. A sign is a plain block
     // model and cannot take the sub-block offset a signal head does, which is what makes this
     // the only lever available.
+    //
+    // Kept here so this method stays the complete answer for any direct caller, but the cached
+    // path in getSetbackCached asks this same question before consulting the cache, for the
+    // reason given there.
     if (SpanWireHangOffset.hangsFromSpan(source, pos)) {
       return true;
     }
@@ -372,6 +376,17 @@ public abstract class AbstractBlockSign extends AbstractBlockRotatableHZEight
   }
 
   private boolean getSetbackCached(IBlockAccess source, BlockPos pos) {
+    // The span check is answered live, in front of the cache, because the cache cannot be kept
+    // honest for it. An entry is only ever dropped by a neighbour change at the sign itself, but
+    // the mount a sign hangs from can be up to three blocks above it -- a sign under a signal head
+    // under a mount is the everyday case -- and placing or breaking that mount notifies the head,
+    // never the sign. The entry then held a false from before the mount existed, and the sign hung
+    // forward of the head's housing until something unrelated happened to touch a neighbour.
+    // The check is three tile entity lookups and one hash lookup, cheaper than the back-to-back
+    // check that already runs uncached alongside it.
+    if (SpanWireHangOffset.hangsFromSpan(source, pos)) {
+      return true;
+    }
     Long key = pos.toLong();
     Boolean cached = SETBACK_CACHE.get(key);
     if (cached != null) return cached;

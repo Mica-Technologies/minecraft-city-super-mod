@@ -152,6 +152,19 @@ Three different mechanisms, because three different kinds of block can hang:
 | Signs | The existing **setback** mode, triggered by `hangsFromSpan` | A sign is a plain block model and *cannot* take a sub-block offset. Setback was built for wall and pole mounting, but the shift it produces is exactly what a span needs. One change in `AbstractBlockSign` covers all 472 signs |
 | Boxes and anything new | A strap drawn from the mount, via `ISpanWireHangable.needsSpanHangerStrap()` | Nothing of its own to line up; the strap is what stops it reading as floating |
 
+**The sign's span check runs in front of its setback cache, not behind it.** `AbstractBlockSign`
+caches the setback answer per position and drops the entry on a neighbour change at the sign. That
+is fine for the signal-arm cases the cache was built for, which are all adjacent, but a mount can
+be up to `MAX_SEARCH_UP` blocks above its sign — sign under head under mount is the everyday
+arrangement — and placing, breaking or stringing that mount notifies the head, never the sign. The
+entry then held a `false` from before the mount existed, and the sign hung forward of the head's
+housing with the drop coming down behind it, until some unrelated neighbour change happened to
+touch it. So `hangsFromSpan` is asked live on every call, ahead of the cache; it is three tile
+entity lookups and a hash lookup, cheaper than the back-to-back check that already runs uncached
+beside it. `TileEntitySpanWireHanger.onLoad`/`invalidate` mark the column below for a render
+rebuild for the same reason, since a block placement's own render update reaches one block, not
+three.
+
 **Every payload hangs from one central drop.** Two earlier attempts are worth recording, because
 both looked reasonable and neither survived contact:
 

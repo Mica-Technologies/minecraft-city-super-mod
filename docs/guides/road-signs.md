@@ -17,7 +17,8 @@ fiddling.
 The sign blockstates carry dynamic properties that decide, from what is around them:
 
 - whether a **post extension** is drawn below the sign
-- whether the sign is **set back** to clear a signal arm passing in front of it
+- whether the sign is **set back** to clear a signal arm passing in front of it, or to hang in
+  line under a [span wire](span-wire.md) mount
 
 You do not configure either. Place the sign and it works out what it needs.
 
