@@ -490,6 +490,27 @@ Verified in game with two identical signal-and-plate pairs whose blocks both sit
 from a span and one not: the span pair draws visibly higher, and in both pairs the plate stays
 locked to its own head.
 
+### Plates from before the renderer
+
+Moving the drawing into a TESR gave every backplate a tile entity, and a plate placed before that
+change has none saved with it. Nothing on the server ever creates one, and the client cannot draw
+a TESR for a tile entity it was never sent, so such a plate is invisible -- until something near
+the player looks it up on the client and conjures a temporary one, at which point it appears at
+close range and vanishes again on the next chunk reload. A plate written by a world editor's fast
+path, or pasted from a clipboard captured before the change, has the same problem.
+
+`CsmTileEntityBackfillHandler` creates the missing tile entity as the chunk loads on the server
+and marks the chunk for saving, so each plate is migrated once, the first time its chunk is
+visited. The mechanism and its limits are written up under "Giving a block that already exists a
+tile entity" in `BLOCK_AND_ITEM_BASE_CLASSES.md`. Verified by writing a plate into a far-off chunk
+with FAWE, which bypasses `setBlockState`: invisible beside its head; one chunk unload and reload
+later, drawn, logged as created, and still there on the following reload with nothing left to
+create.
+
+The plate also draws to `LONG_RANGE_RENDER_DISTANCE`, like the head and the cable, rather than
+vanilla's 64 blocks. A head still visible with its plate gone is the same complaint the cable
+answered.
+
 ### Light a plate flat, not smooth
 
 Plates were blotchy -- dark smears across a back face that should be one flat colour, worst where a

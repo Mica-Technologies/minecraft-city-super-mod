@@ -120,6 +120,39 @@ public class MyBlock extends AbstractBlock implements ICsmTileEntityProvider {
 Registration is automatic -- `Csm.java` scans all registered blocks for `ICsmTileEntityProvider`
 and registers their tile entity classes.
 
+#### Giving a block that already exists a tile entity
+
+A tile entity is created in exactly one place in normal play: `Chunk.setBlockState`, when the block
+is placed. Every other path assumes a block that wants one already has it saved beside it. So when
+a block that never had a tile entity gains one -- the signal backplates did when their rendering
+moved into a TESR, the wire mounts did when they became live span hangers -- every copy already
+standing in a saved world comes back without one. The same happens to blocks written straight into
+a chunk section without going through `setBlockState`: a schematic or clipboard captured before the
+block had a tile entity, or a world editor's fast path (FAWE's `//set` does this).
+
+The server never notices, because nothing asks. The client only receives the tile entities the
+server puts in the chunk packet, and the chunk renderer collects TESRs with
+`EnumCreateEntityType.CHECK`, which does not create. A block whose whole appearance comes from its
+TESR is therefore invisible. Then something near the player -- a block probe, the crosshair, a tool
+-- calls `World.getTileEntity`, which *does* create on the client, and the client's `addTileEntity`
+kicks the chunk into a rebuild: the block appears at close range out of nowhere. That client-side
+tile entity is never saved, so leaving and returning replays it. "Invisible until you get close,
+invisible again when you come back" is this cycle, exactly.
+
+`CsmTileEntityBackfillHandler` closes it. On every server-side `ChunkEvent.Load` it walks the
+chunk's non-empty sections, and for each CSM block whose state wants a tile entity and has none it
+creates one through `world.setTileEntity` and marks the chunk dirty. After that the tile entity is
+in the chunk packet and in the save, and the next load finds nothing to do. Migration is therefore
+one pass per chunk, as chunks are visited, at a cost of a few hundred microseconds of palette
+lookups; nothing scans the save and nothing has to be run by hand. It is filtered by registry
+namespace rather than base class, so a CSM block that provides its tile entity without extending
+`AbstractBlock` is covered and other mods' blocks are left alone.
+
+The backfilled tile entity is constructed with no NBT, which is the state a freshly placed block
+starts in. That is correct for every tile entity we have added to an existing block so far. If a
+future one needs data that cannot be defaulted, it needs its own migration, and its default
+constructor is the place to say so.
+
 ### Block Retirement (ICsmRetiringBlock)
 
 Blocks scheduled for replacement implement `ICsmRetiringBlock`:
