@@ -81,7 +81,9 @@ ingredients. A cost therefore only has to be *fair*, not *unique*. The same reas
 ### How costs are decided
 
 `materials/CsmFabricatorCosts.java` computes cost at runtime from what a block is. Nothing is
-generated and nothing needs regenerating. Costs are 2–3 ingredients and may mix CSM parts with
+generated and nothing needs regenerating. It lives in Core, along with the parts and the Fabricator
+itself, because every module's survival chain ends there; the rules that need to know a subsystem's
+own class hierarchy are supplied by that module instead (rule 6 below). Costs are 2–3 ingredients and may mix CSM parts with
 vanilla items, so a recipe can say something true about the material — coloured metal takes the
 matching dye, wooden furniture takes planks, utility crossarms take timber.
 
@@ -221,10 +223,28 @@ Fabricator coverage: 1426 of 1554 registered blocks are fabricable
 The remainder should be exactly the hidden-tab blocks, the itemless `*_slab_double` blocks, and
 the Fabricator itself. A sudden drop means a tab was added or renamed without pricing its contents.
 
+Both numbers depend on which modules are installed — only blocks from installed jars are registered
+at all — so compare a run against a run with the same module set. A module's cost rule ships with
+that module and is registered from its pre-initialization, so removing a module removes its blocks
+and its rule together.
+
 `dev-env-utils/scripts/csm_block_index.py` prints the same picture statically from the sources, and
 is useful for cross-checking the runtime number. It resolves the five different registration forms
 the tab files use (class literal, fully qualified class literal, constructor with a registry name,
 no-arg constructor, and pre-built instances held as constants on a holder class).
+
+## Where the recipes live
+
+Every JSON recipe is in **Core's** `assets/csm/recipes/`, because Forge reads a recipes folder per
+mod container and only Core has one. A recipe whose result ships in an optional module therefore
+needs a condition on that module, or a Core-only install logs a parsing error for it:
+
+```json
+"conditions": [{ "type": "forge:mod_loaded", "modid": "csm_roads" }]
+```
+
+`recipes/span_wire_tool.json` is the live example: the recipe id stays `csm:span_wire_tool`, and it
+is simply skipped when Roads & Traffic is not installed.
 
 ## Verifying recipes
 
