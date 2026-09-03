@@ -371,6 +371,43 @@ public class CsmLayout
     }
 
     /**
+     * Returns the first tree that has the specified asset folder, Core first.
+     *
+     * @param relativePath the path below {@code assets/csm}
+     *
+     * @return the folder, or where it would be in Core if no tree has it
+     *
+     * @since 1.0
+     */
+    public File assetDirForRead( String relativePath )
+    {
+        List< File > dirs = assetDirs( relativePath );
+        return dirs.isEmpty()
+                ? new File( new File( repoRoot, "src/main/resources/" + ASSETS_CSM ), relativePath )
+                : dirs.get( 0 );
+    }
+
+    /**
+     * Returns where a file generated from the contents of an asset folder should be written: in
+     * that folder, in the tree that holds it.
+     *
+     * <p>This is what an atlas generator wants. An atlas belongs beside the tiles it was built
+     * from, and those tiles are all in one module's tree; writing the atlas to Core instead would
+     * put a second copy of the same resource path in a second jar.
+     *
+     * @param relativeFolder the folder below {@code assets/csm}
+     * @param fileName       the file to write inside it
+     *
+     * @return the file to write
+     *
+     * @since 1.0
+     */
+    public File assetInFolderForWrite( String relativeFolder, String fileName )
+    {
+        return new File( assetDirForRead( relativeFolder ), fileName );
+    }
+
+    /**
      * Returns the first tree that has the specified asset, Core first.
      *
      * @param relativePath the path below {@code assets/csm}, e.g. {@code models/block/foo.json}

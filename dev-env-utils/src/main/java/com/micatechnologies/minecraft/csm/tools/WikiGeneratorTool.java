@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.micatechnologies.minecraft.csm.tools.tool_framework.CsmLayout;
 import com.micatechnologies.minecraft.csm.tools.tool_framework.CsmToolUtility;
 
 import java.io.File;
@@ -37,17 +38,12 @@ public class WikiGeneratorTool {
     // Constants — relative paths
     // ──────────────────────────────────────────────────────────────────────────
 
-    private static final String SOURCE_ROOT =
-            "src/main/java/com/micatechnologies/minecraft/csm";
-    private static final String TABS_FOLDER = SOURCE_ROOT + "/tabs";
-    private static final String LANG_FILE =
-            "src/main/resources/assets/csm/lang/en_us.lang";
-    private static final String BLOCKSTATES_FOLDER =
-            "src/main/resources/assets/csm/blockstates";
-    private static final String TEXTURES_FOLDER =
-            "src/main/resources/assets/csm/textures/blocks";
-    private static final String MODELS_FOLDER =
-            "src/main/resources/assets/csm/models/block";
+    // Relative to a tree, not to the repository: Core and every module carry a share of the
+    // sources and of the assets/csm domain, and the wiki documents the merged whole.
+    private static final String TABS_FOLDER = "tabs";
+    private static final String LANG_LOCALE = "en_us";
+    private static final String TEXTURES_FOLDER = "textures/blocks";
+    private static final String MODELS_FOLDER = "models/block";
     private static final String DEFAULT_OUTPUT_DIR = "dev-env-utils/wikiOutput";
 
     private static final String LINE_SEP = "\r\n";
@@ -143,6 +139,7 @@ public class WikiGeneratorTool {
 
     private void run(File devRoot) throws Exception {
         Path root = devRoot.toPath();
+        CsmLayout layout = new CsmLayout(devRoot);
         Path outputDir = root.resolve(DEFAULT_OUTPUT_DIR);
 
         // 1. Clean & recreate output directory
@@ -160,7 +157,10 @@ public class WikiGeneratorTool {
         Map<String, String> blockLang = new LinkedHashMap<>();
         Map<String, String> itemLang = new LinkedHashMap<>();
         Map<String, String> tabLang = new LinkedHashMap<>();
-        parseLangFile(root.resolve(LANG_FILE), blockLang, itemLang, tabLang);
+        // One lang file per tree, merged by the game.
+        for (File langFile : layout.langFiles(LANG_LOCALE)) {
+            parseLangFile(langFile.toPath(), blockLang, itemLang, tabLang);
+        }
         System.out.println("  Lang entries loaded: " + blockLang.size() + " blocks, "
                 + itemLang.size() + " items, " + tabLang.size() + " tabs");
 
@@ -168,18 +168,26 @@ public class WikiGeneratorTool {
         Map<String, String> blockClassToTabId = new LinkedHashMap<>();
         Map<String, String> itemClassToTabId = new LinkedHashMap<>();
         Map<String, String> tabIdToDisplayName = new LinkedHashMap<>();
-        parseTabs(root.resolve(TABS_FOLDER), blockClassToTabId, itemClassToTabId,
-                tabIdToDisplayName, tabLang);
+        for (File tabsFolder : layout.resolveSourceAll(TABS_FOLDER)) {
+            parseTabs(tabsFolder.toPath(), blockClassToTabId, itemClassToTabId,
+                    tabIdToDisplayName, tabLang);
+        }
         System.out.println("  Tab mappings loaded: " + blockClassToTabId.size() + " block entries, "
                 + itemClassToTabId.size() + " item entries across "
                 + tabIdToDisplayName.size() + " tabs");
 
         // 4. Discover blocks
-        List<BlockInfo> blocks = discoverBlocks(root.resolve(SOURCE_ROOT));
+        List<BlockInfo> blocks = new ArrayList<>();
+        for (File sourceRoot : layout.javaPackageRoots()) {
+            blocks.addAll(discoverBlocks(sourceRoot.toPath()));
+        }
         System.out.println("  Blocks discovered: " + blocks.size());
 
         // 5. Discover items
-        List<ItemInfo> items = discoverItems(root.resolve(SOURCE_ROOT));
+        List<ItemInfo> items = new ArrayList<>();
+        for (File sourceRoot : layout.javaPackageRoots()) {
+            items.addAll(discoverItems(sourceRoot.toPath()));
+        }
         System.out.println("  Items discovered: " + items.size());
 
         // 6. Enrich blocks with lang names, tab assignments, etc.
@@ -581,14 +589,16 @@ public class WikiGeneratorTool {
 
     private void resolveBlockImages(List<BlockInfo> blocks, Path projectRoot, Path outputDir)
             throws IOException {
-        Path blockstatesDir = projectRoot.resolve(BLOCKSTATES_FOLDER);
-        Path modelsDir = projectRoot.resolve(MODELS_FOLDER);
-        Path texturesDir = projectRoot.resolve(TEXTURES_FOLDER);
+        CsmLayout layout = new CsmLayout(projectRoot.toFile());
+        List<Path> modelsDir = toPaths(layout.assetDirs(MODELS_FOLDER));
+        List<Path> texturesDir = toPaths(layout.assetDirs(TEXTURES_FOLDER));
         Path imagesOut = outputDir.resolve("images/blocks");
 
         for (BlockInfo block : blocks) {
-            Path bsFile = blockstatesDir.resolve(block.registryName + ".json");
-            if (!Files.exists(bsFile)) continue;
+            // The blockstate sits in whichever tree ships the block.
+            File bs = layout.blockstateFile(block.registryName);
+            if (bs == null) continue;
+            Path bsFile = bs.toPath();
 
             try {
                 // Try 3D rendered image first via inventory model
@@ -616,7 +626,7 @@ public class WikiGeneratorTool {
      * Attempts to find the inventory variant's model, resolve it to a JSON file with elements,
      * and render it using MinecraftModelRenderer. Returns true if successful.
      */
-    private boolean tryRenderInventoryModel(Path bsFile, Path modelsDir, Path texturesDir,
+    private boolean tryRenderInventoryModel(Path bsFile, List<Path> modelsDir, List<Path> texturesDir,
             Path imagesOut, BlockInfo block) {
         try {
             String content = new String(Files.readAllBytes(bsFile), java.nio.charset.StandardCharsets.UTF_8);
@@ -692,7 +702,16 @@ public class WikiGeneratorTool {
      * Resolves a model reference (like "csm:trafficsignals/shared_models/foo" or
      * "csm:block/lighting/shared_models/bar") to a File on disk.
      */
-    private File resolveModelToFile(String modelRef, Path modelsDir) {
+    /** Turns the layout's per-tree folders into paths, in tree order. */
+    private static List<Path> toPaths(List<File> dirs) {
+        List<Path> paths = new ArrayList<>();
+        for (File dir : dirs) {
+            paths.add(dir.toPath());
+        }
+        return paths;
+    }
+
+    private File resolveModelToFile(String modelRef, List<Path> modelsDir) {
         if (modelRef == null) return null;
         String stripped = modelRef;
         if (stripped.startsWith("csm:")) {
@@ -701,12 +720,14 @@ public class WikiGeneratorTool {
         if (stripped.startsWith("block/")) {
             stripped = stripped.substring("block/".length());
         }
-        // Try as-is under models/block/
-        File f = modelsDir.resolve(stripped + ".json").toFile();
-        if (f.exists()) return f;
-        // Try with .json already
-        f = modelsDir.resolve(stripped).toFile();
-        if (f.exists()) return f;
+        // Try as-is under models/block/, in whichever tree ships the model.
+        for (Path dir : modelsDir) {
+            File f = dir.resolve(stripped + ".json").toFile();
+            if (f.exists()) return f;
+            // Try with .json already
+            f = dir.resolve(stripped).toFile();
+            if (f.exists()) return f;
+        }
         return null;
     }
 
@@ -717,7 +738,7 @@ public class WikiGeneratorTool {
      * 3. Inventory variant textures (highest priority)
      */
     private Map<String, File> buildTextureMap(JsonObject blockstate, JsonObject invVariant,
-            JsonObject modelJson, Path texturesDir) {
+            JsonObject modelJson, List<Path> texturesDir) {
         Map<String, File> map = new java.util.HashMap<>();
 
         // Defaults textures
@@ -741,7 +762,7 @@ public class WikiGeneratorTool {
         return map;
     }
 
-    private void addTexturesToMap(JsonObject textures, Path texturesDir, Map<String, File> map) {
+    private void addTexturesToMap(JsonObject textures, List<Path> texturesDir, Map<String, File> map) {
         for (Map.Entry<String, JsonElement> entry : textures.entrySet()) {
             if (!entry.getValue().isJsonPrimitive()) continue;
             String texRef = entry.getValue().getAsString();
@@ -752,7 +773,7 @@ public class WikiGeneratorTool {
         }
     }
 
-    private File resolveTextureToFile(String texRef, Path texturesDir) {
+    private File resolveTextureToFile(String texRef, List<Path> texturesDir) {
         if (texRef == null || texRef.contains("transparent")) return null;
         String stripped = texRef;
         if (stripped.startsWith("csm:blocks/")) {
@@ -763,14 +784,17 @@ public class WikiGeneratorTool {
                 stripped = stripped.substring("blocks/".length());
             }
         }
-        File f = texturesDir.resolve(stripped + ".png").toFile();
-        return f.exists() ? f : null;
+        for (Path dir : texturesDir) {
+            File f = dir.resolve(stripped + ".png").toFile();
+            if (f.exists()) return f;
+        }
+        return null;
     }
 
     /**
      * Falls back to copying a single texture file as the block image.
      */
-    private boolean tryCopyTexture(Path bsFile, Path texturesDir, Path imagesOut, BlockInfo block)
+    private boolean tryCopyTexture(Path bsFile, List<Path> texturesDir, Path imagesOut, BlockInfo block)
             throws IOException {
         String texturePath = resolveTexturePath(bsFile);
         if (texturePath == null) return false;
@@ -785,15 +809,18 @@ public class WikiGeneratorTool {
             }
         }
 
-        Path srcTexture = texturesDir.resolve(fileRelative + ".png");
-        if (!Files.exists(srcTexture)) {
-            srcTexture = texturesDir.resolve(
-                    fileRelative.replace("/", File.separator) + ".png");
-        }
-        if (Files.exists(srcTexture)) {
-            Path destTexture = imagesOut.resolve(block.registryName + ".png");
-            Files.copy(srcTexture, destTexture, StandardCopyOption.REPLACE_EXISTING);
-            return true;
+        // The texture sits in whichever tree ships it, which need not be the block's.
+        for (Path dir : texturesDir) {
+            Path srcTexture = dir.resolve(fileRelative + ".png");
+            if (!Files.exists(srcTexture)) {
+                srcTexture = dir.resolve(
+                        fileRelative.replace("/", File.separator) + ".png");
+            }
+            if (Files.exists(srcTexture)) {
+                Path destTexture = imagesOut.resolve(block.registryName + ".png");
+                Files.copy(srcTexture, destTexture, StandardCopyOption.REPLACE_EXISTING);
+                return true;
+            }
         }
         return false;
     }

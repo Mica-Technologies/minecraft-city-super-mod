@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.tools;
 
+import com.micatechnologies.minecraft.csm.tools.tool_framework.CsmLayout;
 import com.micatechnologies.minecraft.csm.tools.tool_framework.CsmToolUtility;
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -57,8 +58,11 @@ import org.apache.batik.transcoder.image.ImageTranscoder;
  */
 public class GuideSignAtlasTool {
 
-  private static final String OUTPUT_FILE =
-      "src/main/resources/assets/csm/textures/blocks/trafficaccessories/guidesign/sign_atlas.png";
+  // Relative to a tree's assets/csm. The Roads module ships the guide sign textures, so the
+  // atlas belongs in that tree; writing it to Core would put the path in two jars.
+  private static final String OUTPUT_FOLDER =
+      "textures/blocks/trafficaccessories/guidesign";
+  private static final String OUTPUT_FILE_NAME = "sign_atlas.png";
 
   private static final String SHIELD_RESOURCE_DIR = "/guidesign/shields/";
 
@@ -76,7 +80,9 @@ public class GuideSignAtlasTool {
   public static void main(String[] args) {
     CsmToolUtility.doToolExecuteWrapped("CSM Guide Sign Atlas Generator", args,
         (devEnvironmentPath) -> {
-          File outputFile = new File(devEnvironmentPath, OUTPUT_FILE);
+          CsmLayout layout = new CsmLayout(devEnvironmentPath);
+          File outputFile =
+              layout.assetInFolderForWrite(OUTPUT_FOLDER, OUTPUT_FILE_NAME);
           outputFile.getParentFile().mkdirs();
 
           BufferedImage atlas = new BufferedImage(

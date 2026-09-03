@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.tools.dynmap;
 
+import com.micatechnologies.minecraft.csm.tools.tool_framework.CsmLayout;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -29,10 +30,13 @@ import java.util.Set;
 public final class ModelResolver {
 
     private final File devEnvironmentPath;
+    /** Core plus every module tree; assets and sources are spread over all of them. */
+    private final CsmLayout layout;
     private final Map<String, JsonObject> modelCache = new HashMap<>();
 
     public ModelResolver(File devEnvironmentPath) {
         this.devEnvironmentPath = devEnvironmentPath;
+        this.layout = new CsmLayout(devEnvironmentPath);
     }
 
     /** Result of resolving a model reference. */
@@ -132,9 +136,10 @@ public final class ModelResolver {
             // CSM model refs like "trafficsignals/shared_models/foo" → assets/csm/models/block/...
             name = "block/" + name;
         }
-        relPath = "src/main/resources/assets/" + domain + "/models/" + name + ".json";
-        File f = new File(devEnvironmentPath, relPath);
-        if (!f.exists()) {
+        relPath = "assets/" + domain + "/models/" + name + ".json";
+        // The model sits in whichever tree ships it; the game merges the csm domain.
+        File f = layout.resolveResourceForRead(relPath);
+        if (f == null) {
             modelCache.put(modelRef, null);
             return null;
         }

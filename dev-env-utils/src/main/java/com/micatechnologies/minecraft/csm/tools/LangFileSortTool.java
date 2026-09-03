@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.tools;
 
+import com.micatechnologies.minecraft.csm.tools.tool_framework.CsmLayout;
 import com.micatechnologies.minecraft.csm.tools.tool_framework.CsmToolUtility;
 
 import java.io.File;
@@ -10,28 +11,40 @@ import java.util.List;
 
 public class LangFileSortTool
 {
-    private static final String LANG_FILE_FOLDER_PATH_RELATIVE = "src/main/resources/assets/csm/lang";
-    private static final String LANG_FILE_EXTENSION            = ".lang";
+    private static final String LANG_FILE_EXTENSION = ".lang";
 
     public static void main( String[] args ) {
 
         CsmToolUtility.doToolExecuteWrapped( "CSM Lang File Sorting Tool", args, ( devEnvironmentPath ) -> {
             // Sort lang files
-            sortLangFiles( devEnvironmentPath, LANG_FILE_FOLDER_PATH_RELATIVE );
+            sortLangFiles( devEnvironmentPath );
         } );
     }
 
-    public static void sortLangFiles( File devEnvironmentPath, String langFileFolderPathRelative ) throws Exception {
-        // Get lang file folder path
-        File langFileFolderPath = new File( devEnvironmentPath, langFileFolderPathRelative );
-
-        // Get lang file folder path
-        File[] langFiles = langFileFolderPath.listFiles( ( dir, name ) -> name.endsWith( LANG_FILE_EXTENSION ) );
-
-        // Sort each lang file
+    /**
+     * Sorts every lang file in the repository, each in place.
+     *
+     * <p>Core and every module ship their own share of each locale's lang file under the same
+     * {@code assets/csm/lang} path, and the game merges them. Sorting only Core's would leave the
+     * other nine unsorted and would say nothing about it.
+     *
+     * @param devEnvironmentPath the development environment root
+     *
+     * @throws Exception if a lang file could not be read or written
+     */
+    public static void sortLangFiles( File devEnvironmentPath ) throws Exception {
+        CsmLayout layout = new CsmLayout( devEnvironmentPath );
+        List< File > langFiles = layout.allLangFiles();
+        if ( langFiles.isEmpty() ) {
+            System.err.println( "No " + LANG_FILE_EXTENSION + " files found in any source tree." );
+            return;
+        }
         for ( File langFile : langFiles ) {
             sortLangFile( langFile );
+            System.out.println( "  Sorted " + langFile.getPath() );
         }
+        System.out.println( "Sorted " + langFiles.size() + " lang file(s) across "
+                                    + layout.assetDirs( "lang" ).size() + " source tree(s)." );
     }
 
     public static void sortLangFile( File langFile ) throws Exception {

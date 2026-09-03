@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.tools;
 
+import com.micatechnologies.minecraft.csm.tools.tool_framework.CsmLayout;
 import com.micatechnologies.minecraft.csm.tools.tool_framework.CsmToolUtility;
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -27,14 +28,16 @@ public class CrosswalkAtlasTool {
   /**
    * Folder containing individual crosswalk textures (relative to project root).
    */
+  // Relative to a tree's assets/csm. The tiles live in the module that ships them and the
+  // atlas belongs beside them: writing it to Core would put the same resource path in two
+  // jars, and which one the game loads would be down to classpath order.
   private static final String INPUT_FOLDER =
-      "src/main/resources/assets/csm/textures/blocks/trafficsignals/crosswalk/";
+      "textures/blocks/trafficsignals/crosswalk";
 
   /**
    * Output atlas file path (relative to project root).
    */
-  private static final String OUTPUT_FILE =
-      "src/main/resources/assets/csm/textures/blocks/trafficsignals/crosswalk/crosswalk_atlas.png";
+  private static final String OUTPUT_FILE_NAME = "crosswalk_atlas.png";
 
   private static final String INPUT_EXTENSION = ".png";
   private static final int TILE_SIZE = 128;
@@ -83,8 +86,9 @@ public class CrosswalkAtlasTool {
   public static void main(String[] args) {
     CsmToolUtility.doToolExecuteWrapped("CSM Crosswalk Atlas Generator", args,
         (devEnvironmentPath) -> {
-          File inputFolder = new File(devEnvironmentPath, INPUT_FOLDER);
-          File outputFile = new File(devEnvironmentPath, OUTPUT_FILE);
+          CsmLayout layout = new CsmLayout(devEnvironmentPath);
+          File inputFolder = layout.assetDirForRead(INPUT_FOLDER);
+          File outputFile = layout.assetInFolderForWrite(INPUT_FOLDER, OUTPUT_FILE_NAME);
 
           int tilesPerRow = OUTPUT_SIZE / TILE_SIZE;
           int totalSlots = tilesPerRow * tilesPerRow;

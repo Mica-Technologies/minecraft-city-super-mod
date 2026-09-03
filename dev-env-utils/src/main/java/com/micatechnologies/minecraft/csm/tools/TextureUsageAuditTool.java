@@ -3,6 +3,7 @@ package com.micatechnologies.minecraft.csm.tools;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.micatechnologies.minecraft.csm.tools.tool_framework.CsmLayout;
 import com.micatechnologies.minecraft.csm.tools.tool_framework.CsmToolUtility;
 import java.io.File;
 import java.io.IOException;
@@ -33,12 +34,13 @@ import java.util.stream.Stream;
  */
 public class TextureUsageAuditTool {
 
-  private static final String BLOCKSTATE_DIR = "src/main/resources/assets/csm/blockstates";
-  private static final String BLOCK_MODELS_DIR = "src/main/resources/assets/csm/models/block";
-  private static final String SHARED_MODELS_DIR = "src/main/resources/assets/csm/models/block/shared_models";
-  private static final String ITEM_MODELS_DIR = "src/main/resources/assets/csm/models/item";
-  private static final String BLOCK_TEXTURES_DIR = "src/main/resources/assets/csm/textures/blocks";
-  private static final String ITEM_TEXTURES_DIR = "src/main/resources/assets/csm/textures/items";
+  // Relative to a tree's assets/csm; Core and every module hold a share of each folder.
+  private static final String BLOCKSTATE_DIR = "blockstates";
+  private static final String BLOCK_MODELS_DIR = "models/block";
+  private static final String SHARED_MODELS_DIR = "models/block/shared_models";
+  private static final String ITEM_MODELS_DIR = "models/item";
+  private static final String BLOCK_TEXTURES_DIR = "textures/blocks";
+  private static final String ITEM_TEXTURES_DIR = "textures/items";
   private static final String MOD_PREFIX = "csm:";
 
   private static final Set<String> referencedBlockTextures = new HashSet<>();
@@ -50,35 +52,52 @@ public class TextureUsageAuditTool {
   public static void main(String[] args) {
     CsmToolUtility.doToolExecuteWrapped("CSM Texture Usage Audit Tool", args,
         (devEnvironmentPath) -> {
-          File blockstateDir = new File(devEnvironmentPath, BLOCKSTATE_DIR);
-          File blockModelsDir = new File(devEnvironmentPath, BLOCK_MODELS_DIR);
-          File sharedModelsDir = new File(devEnvironmentPath, SHARED_MODELS_DIR);
-          File itemModelsDir = new File(devEnvironmentPath, ITEM_MODELS_DIR);
-          File blockTexturesDir = new File(devEnvironmentPath, BLOCK_TEXTURES_DIR);
-          File itemTexturesDir = new File(devEnvironmentPath, ITEM_TEXTURES_DIR);
+          // Every folder below exists once per source tree and the game merges them, so a
+          // texture shipped by one module can be referenced by a model shipped by another.
+          CsmLayout layout = new CsmLayout(devEnvironmentPath);
+          List<File> blockstateDirs = layout.assetDirs(BLOCKSTATE_DIR);
+          List<File> blockModelsDirs = layout.assetDirs(BLOCK_MODELS_DIR);
+          List<File> sharedModelsDirs = layout.assetDirs(SHARED_MODELS_DIR);
+          List<File> itemModelsDirs = layout.assetDirs(ITEM_MODELS_DIR);
+          List<File> blockTexturesDirs = layout.assetDirs(BLOCK_TEXTURES_DIR);
+          List<File> itemTexturesDirs = layout.assetDirs(ITEM_TEXTURES_DIR);
 
           System.out.println("Phase 1: Scanning blockstates for texture references...");
-          scanAllBlockstates(blockstateDir, blockModelsDir, sharedModelsDir);
+          for (File dir : blockstateDirs) {
+            scanAllBlockstates(dir);
+          }
 
           System.out.println("Phase 2: Scanning block models for texture references...");
-          scanAllModels(blockModelsDir, sharedModelsDir);
+          for (File dir : blockModelsDirs) {
+            scanAllModels(dir, sharedModelsDirs, false);
+          }
 
           System.out.println("Phase 3: Scanning shared models for texture references...");
-          scanAllModels(sharedModelsDir, sharedModelsDir);
+          for (File dir : sharedModelsDirs) {
+            scanAllModels(dir, sharedModelsDirs, true);
+          }
 
           System.out.println("Phase 4: Scanning item models for texture references...");
-          scanAllModels(itemModelsDir, sharedModelsDir);
+          for (File dir : itemModelsDirs) {
+            scanAllModels(dir, sharedModelsDirs, false);
+          }
 
           System.out.println("Phase 5: Scanning OBJ/MTL files for texture references...");
-          scanMtlFiles(blockModelsDir);
+          for (File dir : blockModelsDirs) {
+            scanMtlFiles(dir);
+          }
 
           System.out.println("Phase 6: Comparing against texture files on disk...");
 
           // Find all texture files on disk
           Set<String> diskBlockTextures = new TreeSet<>();
           Set<String> diskItemTextures = new TreeSet<>();
-          collectTextureFiles(blockTexturesDir, blockTexturesDir, diskBlockTextures);
-          collectTextureFiles(itemTexturesDir, itemTexturesDir, diskItemTextures);
+          for (File dir : blockTexturesDirs) {
+            collectTextureFiles(dir, dir, diskBlockTextures);
+          }
+          for (File dir : itemTexturesDirs) {
+            collectTextureFiles(dir, dir, diskItemTextures);
+          }
 
           // Find unused textures
           Set<String> unusedBlock = new TreeSet<>(diskBlockTextures);
@@ -161,8 +180,7 @@ public class TextureUsageAuditTool {
     }
   }
 
-  private static void scanAllBlockstates(File blockstateDir, File blockModelsDir,
-      File sharedModelsDir) {
+  private static void scanAllBlockstates(File blockstateDir) {
     try (Stream<Path> files = Files.walk(blockstateDir.toPath())) {
       files.filter(p -> p.toString().endsWith(".json"))
           .forEach(p -> scanBlockstate(p.toFile()));
@@ -183,10 +201,16 @@ public class TextureUsageAuditTool {
     }
   }
 
-  private static void scanAllModels(File modelsDir, File sharedModelsDir) {
+  /**
+   * Scans one tree's model folder. The shared-model folders of every tree are excluded
+   * unless this call is the shared-model pass itself, so no model is counted twice.
+   */
+  private static void scanAllModels(File modelsDir, List<File> sharedModelsDirs,
+      boolean scanningShared) {
     try (Stream<Path> files = Files.walk(modelsDir.toPath())) {
       files.filter(p -> p.toString().endsWith(".json"))
-          .filter(p -> !p.startsWith(sharedModelsDir.toPath()) || modelsDir.equals(sharedModelsDir))
+          .filter(p -> scanningShared
+              || sharedModelsDirs.stream().noneMatch(d -> p.startsWith(d.toPath())))
           .forEach(p -> scanModel(p.toFile()));
     } catch (IOException e) {
       System.err.println("Error scanning models: " + e.getMessage());
