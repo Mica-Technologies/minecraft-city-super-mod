@@ -2,7 +2,7 @@
   {
     "modid": "${modid}",
     "name": "${modname}",
-    "description": "Bring your city to life with hundreds of new, city-inspired blocks",
+    "description": "Computers, servers, televisions, speakers and transit fare equipment for the City Super Mod. Requires CSM: Core.",
     "version": "${version}",
     "mcversion": "${mcversion}",
     "credits": "Alex H, Brandon H (Mica Technologies) & Formerly Mcreator",
@@ -12,9 +12,9 @@
     "authorList": [
       "Mica Technologies"
     ],
-    "dependencies": [],
+    "dependencies": ["csm"],
     "dependants": [],
-    "requiredMods": [],
+    "requiredMods": ["csm"],
     "useDependencyInformation": "true"
   }
 ]

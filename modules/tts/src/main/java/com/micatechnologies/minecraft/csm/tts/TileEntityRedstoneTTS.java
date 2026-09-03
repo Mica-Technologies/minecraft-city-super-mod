@@ -1,9 +1,8 @@
-package com.micatechnologies.minecraft.csm.technology;
+package com.micatechnologies.minecraft.csm.tts;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractTileEntity;
-import com.micatechnologies.minecraft.csm.codeutils.packets.TileEntityRedstoneTTSInvokePacket;
-import com.micatechnologies.minecraft.csm.codeutils.packets.TileEntityRedstoneTTSUpdatePacket;
-import com.micatechnologies.minecraft.csm.tts.CsmTextToSpeech;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmTtsBroadcaster;
+import com.micatechnologies.minecraft.csm.technology.TileEntitySpeaker;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -17,7 +16,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.util.Constants;
 
-public class TileEntityRedstoneTTS extends AbstractTileEntity {
+public class TileEntityRedstoneTTS extends AbstractTileEntity implements ICsmTtsBroadcaster {
 
   private static final String TTS_STRING_KEY = "tts";
   private static final String LEGACY_TTS_STRING_KEY = "ttsString";

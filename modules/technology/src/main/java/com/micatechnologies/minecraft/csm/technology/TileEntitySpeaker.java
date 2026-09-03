@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.technology;
 
 import com.micatechnologies.minecraft.csm.CsmConstants;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractTickableTileEntity;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmTtsBroadcaster;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -17,10 +18,12 @@ import net.minecraft.util.math.BlockPos;
  * Valcom, etc.). A speaker has two independent activation modes:
  *
  * <ul>
- *   <li><b>TTS endpoint</b> (Phase 2a) — when bound to a {@link TileEntityRedstoneTTS} via
- *   {@link ItemTtsLinker}, the TTS module extends its broadcast radius to include this
+ *   <li><b>TTS endpoint</b> (Phase 2a) — when bound to an {@link ICsmTtsBroadcaster} via the
+ *   TTS Linker, the Text to Speech module extends its broadcast radius to include this
  *   speaker's position so a player anywhere in the union of speaker coverage areas hears
- *   the announcement.</li>
+ *   the announcement. That module's classes are not on this one's compile classpath — it
+ *   requires Technology, so the reference can only go one way — hence the Core marker
+ *   interface rather than the Redstone TTS tile entity's own type.</li>
  *
  *   <li><b>Standalone ambient</b> (Phase 2b) — when an ambient sound is selected (right-click
  *   to cycle) AND the speaker is redstone-powered, the speaker plays a looping
@@ -249,7 +252,7 @@ public class TileEntitySpeaker extends AbstractTickableTileEntity {
     // TTS link validation (Phase 2a behavior).
     if (linkedTtsPos != null && world.isBlockLoaded(linkedTtsPos)) {
       TileEntity te = world.getTileEntity(linkedTtsPos);
-      if (!(te instanceof TileEntityRedstoneTTS)) {
+      if (!(te instanceof ICsmTtsBroadcaster)) {
         clearLink();
       }
     }
