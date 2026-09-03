@@ -4,6 +4,8 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.micatechnologies.minecraft.csm.tools.tool_framework.AssetFolder;
+import com.micatechnologies.minecraft.csm.tools.tool_framework.CsmLayout;
 import com.micatechnologies.minecraft.csm.tools.tool_framework.CsmToolUtility;
 import java.io.File;
 import java.nio.file.Files;
@@ -31,11 +33,13 @@ import java.util.stream.Stream;
  */
 public class ForgeBlockstateValidator {
 
-  private static final String BLOCKSTATE_DIR = "src/main/resources/assets/csm/blockstates";
-  private static final String BLOCK_MODELS_DIR = "src/main/resources/assets/csm/models/block";
-  private static final String SHARED_MODELS_DIR = "src/main/resources/assets/csm/models/block/shared_models";
-  private static final String BLOCK_TEXTURES_DIR = "src/main/resources/assets/csm/textures/blocks";
-  private static final String ITEM_TEXTURES_DIR = "src/main/resources/assets/csm/textures/items";
+  // Relative to a tree's assets/csm. Core and every module contribute a copy of each of these
+  // folders and the game merges them, so the validator resolves against all of them at once.
+  private static final String BLOCKSTATE_DIR = "blockstates";
+  private static final String BLOCK_MODELS_DIR = "models/block";
+  private static final String SHARED_MODELS_DIR = "models/block/shared_models";
+  private static final String BLOCK_TEXTURES_DIR = "textures/blocks";
+  private static final String ITEM_TEXTURES_DIR = "textures/items";
   private static final String MOD_PREFIX = "csm:";
 
   private static final AtomicInteger totalFiles = new AtomicInteger(0);
@@ -49,16 +53,19 @@ public class ForgeBlockstateValidator {
   public static void main(String[] args) {
     CsmToolUtility.doToolExecuteWrapped("CSM Forge Blockstate Validator Tool", args,
         (devEnvironmentPath) -> {
-          File blockstateDir = new File(devEnvironmentPath, BLOCKSTATE_DIR);
-          File blockModelsDir = new File(devEnvironmentPath, BLOCK_MODELS_DIR);
-          File sharedModelsDir = new File(devEnvironmentPath, SHARED_MODELS_DIR);
-          File blockTexturesDir = new File(devEnvironmentPath, BLOCK_TEXTURES_DIR);
-          File itemTexturesDir = new File(devEnvironmentPath, ITEM_TEXTURES_DIR);
+          CsmLayout layout = new CsmLayout(devEnvironmentPath);
+          AssetFolder blockModelsDir = AssetFolder.ofAsset(layout, BLOCK_MODELS_DIR);
+          AssetFolder sharedModelsDir = AssetFolder.ofAsset(layout, SHARED_MODELS_DIR);
+          AssetFolder blockTexturesDir = AssetFolder.ofAsset(layout, BLOCK_TEXTURES_DIR);
+          AssetFolder itemTexturesDir = AssetFolder.ofAsset(layout, ITEM_TEXTURES_DIR);
 
-          try (Stream<Path> files = Files.walk(blockstateDir.toPath())) {
-            files.filter(p -> p.toString().endsWith(".json"))
-                .forEach(p -> validateBlockstate(p.toFile(), blockModelsDir, sharedModelsDir,
-                    blockTexturesDir, itemTexturesDir));
+          // One blockstate folder per tree; every one of them ships blockstates for the mod.
+          for (File blockstateDir : layout.assetDirs(BLOCKSTATE_DIR)) {
+            try (Stream<Path> files = Files.walk(blockstateDir.toPath())) {
+              files.filter(p -> p.toString().endsWith(".json"))
+                  .forEach(p -> validateBlockstate(p.toFile(), blockModelsDir, sharedModelsDir,
+                      blockTexturesDir, itemTexturesDir));
+            }
           }
 
           // Print report
@@ -76,8 +83,8 @@ public class ForgeBlockstateValidator {
         });
   }
 
-  private static void validateBlockstate(File blockstateFile, File blockModelsDir,
-      File sharedModelsDir, File blockTexturesDir, File itemTexturesDir) {
+  private static void validateBlockstate(File blockstateFile, AssetFolder blockModelsDir,
+      AssetFolder sharedModelsDir, AssetFolder blockTexturesDir, AssetFolder itemTexturesDir) {
     totalFiles.incrementAndGet();
     String name = blockstateFile.getName().replace(".json", "");
 
@@ -136,8 +143,8 @@ public class ForgeBlockstateValidator {
     }
   }
 
-  private static void validateVariants(String name, JsonObject variants, File blockModelsDir,
-      File sharedModelsDir, File blockTexturesDir, File itemTexturesDir) {
+  private static void validateVariants(String name, JsonObject variants, AssetFolder blockModelsDir,
+      AssetFolder sharedModelsDir, AssetFolder blockTexturesDir, AssetFolder itemTexturesDir) {
     for (String key : variants.keySet()) {
       if (key.equals("inventory") || key.equals("normal")) {
         // Validate inventory/normal array entries
@@ -182,7 +189,7 @@ public class ForgeBlockstateValidator {
   }
 
   private static void validateModelReference(String blockstateName, String modelRef,
-      File blockModelsDir, File sharedModelsDir, String context) {
+      AssetFolder blockModelsDir, AssetFolder sharedModelsDir, String context) {
     validatedModels.incrementAndGet();
     if (!modelRef.startsWith(MOD_PREFIX)) {
       return; // Vanilla model reference — skip
@@ -193,17 +200,16 @@ public class ForgeBlockstateValidator {
 
     if (stripped.startsWith("shared_models/")) {
       // Blockstate model ref (auto-prepends block/) → resolves to shared_models/
-      modelFile = new File(sharedModelsDir,
-          stripped.substring("shared_models/".length()) + ".json");
+      modelFile = sharedModelsDir.file(stripped.substring("shared_models/".length()) + ".json");
     } else if (stripped.startsWith("block/shared_models/")) {
       // Should not appear in blockstates (double block/ issue)
       logError(blockstateName, "Model ref has 'block/shared_models/' prefix — will cause double "
           + "block/ resolution. Use 'shared_models/' instead. Context: " + context);
       return;
     } else if (stripped.endsWith(".obj")) {
-      modelFile = new File(blockModelsDir, stripped);
+      modelFile = blockModelsDir.file(stripped);
     } else {
-      modelFile = new File(blockModelsDir, stripped + ".json");
+      modelFile = blockModelsDir.file(stripped + ".json");
     }
 
     if (!modelFile.exists()) {
@@ -213,7 +219,7 @@ public class ForgeBlockstateValidator {
   }
 
   private static void validateTextureReferences(String blockstateName, JsonObject textures,
-      File blockTexturesDir, File itemTexturesDir, String context) {
+      AssetFolder blockTexturesDir, AssetFolder itemTexturesDir, String context) {
     for (String key : textures.keySet()) {
       validatedTextures.incrementAndGet();
       String value = textures.get(key).getAsString();
@@ -223,11 +229,9 @@ public class ForgeBlockstateValidator {
       String stripped = value.substring(MOD_PREFIX.length());
       File textureFile = null;
       if (stripped.startsWith("blocks/")) {
-        textureFile = new File(blockTexturesDir,
-            stripped.substring("blocks/".length()) + ".png");
+        textureFile = blockTexturesDir.file(stripped.substring("blocks/".length()) + ".png");
       } else if (stripped.startsWith("items/")) {
-        textureFile = new File(itemTexturesDir,
-            stripped.substring("items/".length()) + ".png");
+        textureFile = itemTexturesDir.file(stripped.substring("items/".length()) + ".png");
       }
 
       if (textureFile != null && !textureFile.exists()) {
