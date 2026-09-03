@@ -1,0 +1,137 @@
+{
+  "handdryer": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:handdryer",
+        "stream": false
+      }
+    ]
+  },
+  "oldradio": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:oldradio",
+        "stream": false
+      }
+    ]
+  },
+  "asteroids_cabinet": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:asteroids_cabinet",
+        "stream": false
+      }
+    ]
+  },
+  "bz_cabinet": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:bz_cabinet",
+        "stream": false
+      }
+    ]
+  },
+  "cp_cabinet": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:cp_cabinet",
+        "stream": false
+      }
+    ]
+  },
+  "galaga_cabinet": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:galaga_cabinet",
+        "stream": false
+      }
+    ]
+  },
+  "miscmd_cabinet": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:miscmd_cabinet",
+        "stream": false
+      }
+    ]
+  },
+  "pacman_cabinet": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:pacman_cabinet",
+        "stream": false
+      }
+    ]
+  },
+  "tempest_cabinet": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:tempest_cabinet",
+        "stream": false
+      }
+    ]
+  },
+  "oldrecordplayer2": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:oldrecordplayer2",
+        "stream": false
+      }
+    ]
+  },
+  "locker_door_close": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:locker_door_close",
+        "stream": false
+      }
+    ]
+  },
+  "locker_door_open": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:locker_door_open",
+        "stream": false
+      }
+    ]
+  },
+  "oldrecordplayer": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:oldrecordplayer",
+        "stream": false
+      }
+    ]
+  },
+  "sony_dream_machine_1980s": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:1980s_sony_dream_machine",
+        "stream": false
+      }
+    ]
+  },
+  "oldradio2": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:oldradio2",
+        "stream": false
+      }
+    ]
+  }
+}

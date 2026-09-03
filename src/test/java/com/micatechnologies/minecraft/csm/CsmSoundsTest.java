@@ -15,8 +15,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -66,27 +68,39 @@ class CsmSoundsTest {
   }
 
   /**
-   * Reads the keys of {@code sounds.json}, which is the list of sounds the mod actually ships.
+   * Reads the keys of every {@code sounds.json} the mod ships, which together are the sounds it
+   * actually has files for.
    *
-   * @return the sound names defined in {@code sounds.json}
+   * <p>Each module carries its own {@code assets/csm/sounds.json} holding only its own events,
+   * and Minecraft merges them across every pack that declares the domain, so the mod's sound
+   * list is their union and the test classpath holds one file per module at the same resource
+   * path. A key defined by two of them would register one event twice, so that is an error
+   * here.</p>
    *
-   * @throws IOException if the file cannot be read
+   * @return the sound names defined across every {@code sounds.json}
+   *
+   * @throws IOException if a file cannot be read
    */
   private static Set<String> readSoundsJsonKeys() throws IOException {
-    try (InputStream stream =
-             CsmSoundsTest.class.getResourceAsStream("/assets/csm/sounds.json")) {
-      assertNotNull(stream, "assets/csm/sounds.json should be on the test classpath");
-      try (Reader reader = new InputStreamReader(stream, StandardCharsets.UTF_8)) {
+    Enumeration<URL> resources =
+        CsmSoundsTest.class.getClassLoader().getResources("assets/csm/sounds.json");
+    assertTrue(resources.hasMoreElements(),
+        "at least one assets/csm/sounds.json should be on the test classpath");
+    Set<String> keys = new LinkedHashSet<>();
+    while (resources.hasMoreElements()) {
+      URL resource = resources.nextElement();
+      try (InputStream stream = resource.openStream();
+           Reader reader = new InputStreamReader(stream, StandardCharsets.UTF_8)) {
         // Minecraft 1.12.2 ships Gson 2.2.4, which has neither JsonParser.parseReader nor
         // JsonObject.keySet.
         JsonObject json = new JsonParser().parse(reader).getAsJsonObject();
-        Set<String> keys = new LinkedHashSet<>();
         for (Map.Entry<String, JsonElement> entry : json.entrySet()) {
-          keys.add(entry.getKey());
+          assertTrue(keys.add(entry.getKey()), "Sound " + entry.getKey()
+              + " is defined by more than one sounds.json (" + resource + ")");
         }
-        return keys;
       }
     }
+    return keys;
   }
 
   @Test
