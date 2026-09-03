@@ -1,7 +1,8 @@
 # Block and Item Base Classes
 
 Comprehensive reference for the abstract class hierarchy in
-`src/main/java/com/micatechnologies/minecraft/csm/codeutils/`.
+`src/main/java/com/micatechnologies/minecraft/csm/codeutils/` — Core's tree, since every module's
+blocks and items extend these.
 
 ## Design Philosophy
 
@@ -468,9 +469,16 @@ CsmRegistry.getBlocks();               // All registered blocks
 CsmRegistry.getItems();                // All registered items
 ```
 
+Registration is **Core's**, whichever jar a block class ships in. The mod is built as a mandatory
+Core jar plus nine optional module jars (`assets/docs/MODULE_SYSTEM.md`): a module's blocks still
+self-register into Core's `CsmRegistry` from their constructors, and Core's `RegistryEvent`
+listeners still hand them to Forge, which is what keeps every registry name in the `csm` namespace.
+A module must never call `GameRegistry`/`ForgeRegistries` itself.
+
 ### CsmTab (Creative Tabs)
 
-Tabs are defined in `src/main/java/.../csm/tabs/` and loaded via annotation:
+Tabs are defined in the `…csm.tabs` package — Core's tree holds the Materials tab, and each module's
+tree holds its own — and loaded via annotation:
 
 ```java
 @CsmTab.Load(order = 5)
@@ -489,10 +497,16 @@ public class CsmTabLifeSafety extends CsmTab {
 }
 ```
 
-The `order` annotation value determines tab display order in the creative menu.
+The `order` annotation value determines tab display order in the creative menu. `CsmTab.initTabs`
+discovers tab classes through the ASM data table, which spans **every loaded jar**, so a module
+contributes its tabs without Core naming them. Order is also registry order, so a hidden tab takes
+a negative value and registers its retiring blocks first.
 
 `initTabBlock(Class, event)` instantiates the block (triggering auto-registration) and assigns
 it to this tab. `initTabItem(Class, event)` does the same for items.
+`initTabBlockIfLoaded(modId, className, event)` and `initTabItemIfLoaded(...)` are the variants for
+an entry whose class ships in *another* module: the class is named as a string and the entry is
+skipped when that module is absent, so the tab keeps its order either way.
 
 ## Utility Classes
 

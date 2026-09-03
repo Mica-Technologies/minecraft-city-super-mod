@@ -61,6 +61,16 @@ In `dev-env-utils/scripts/`, run directly. Pillow required for the image ones.
 | `audit_obj_models.py` | The OBJ faults that only show up in game — coplanar overlapping faces, faces on a block boundary, inconsistent winding, open boundary edges |
 | `preview_block_model.py` | Renders a model against its texture offline, with Minecraft's winding and UV origin, so stretched UVs and transparent bleed are caught without launching |
 
+### Modules
+
+| Script | Answers |
+|---|---|
+| `check_module_assets.py` | Whether each module's models, textures and sounds resolve against that module plus Core and nothing else — which is what a partial install has. Run it after anything that moves an asset between trees |
+| `partition_assets.py` | Which module ships each resource, moving it there with `git mv` and keeping every `assets/csm` path byte for byte. `--dry-run` prints the whole plan first |
+| `audit_package_deps.py` | Which Java packages reference which. A module may only reference Core, so a Core → module cell is a bug |
+| `audit_asset_ownership.py` | Which creative tab owns each blockstate and what it reaches, including every reach into a folder named for another subsystem — the assets that have to stay in Core |
+| `diff_registry_dumps.py` | Whether a build registers exactly what a known-good one did, from two MCMCP `game_dump_registries` dumps. This is the regression oracle for anything that moves content between jars |
+
 ### Performance
 
 | Script | Answers |
