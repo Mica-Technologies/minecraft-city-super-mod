@@ -25,7 +25,7 @@ There are **no tile entities** in the novelties system. All logic is handled thr
 ### Arcade Cabinets
 
 Seven arcade cabinet blocks play an attract-mode sound clip on right-click. All use the same
-pattern: server-side only (`!world.isRemote`), look up a `CsmSounds.SOUND` enum value, and
+pattern: server-side only (`!world.isRemote`), look up a `FurnishingsSounds` enum value, and
 play it at the block position with volume 1.0 and pitch 1.0.
 
 Each cabinet emits light level 1 (the `lightOpacity` constructor parameter) and uses the
@@ -103,9 +103,9 @@ cases where a dryer block is broken or unloaded while active.
 
 **Right-click behavior** (server-side only):
 
-- **Normal click:** plays `CsmSounds.SOUND.OLDRECORDPLAYER` (`csm:oldrecordplayer`) --
+- **Normal click:** plays `FurnishingsSounds.OLDRECORDPLAYER` (`csm:oldrecordplayer`) --
   track 1.
-- **Sneak + click:** plays `CsmSounds.SOUND.OLDRECORDPLAYER2` (`csm:oldrecordplayer2`) --
+- **Sneak + click:** plays `FurnishingsSounds.OLDRECORDPLAYER2` (`csm:oldrecordplayer2`) --
   track 2.
 
 Both tracks play at volume 1.0, pitch 1.0.
@@ -158,10 +158,10 @@ redstone. All use `CUTOUT_MIPPED` render layer except arcade cabinets (`SOLID`).
 
 ## Sound Assets
 
-All custom sounds are registered in `CsmSounds.java` and defined in `sounds.json`. Every
+All custom sounds are declared in `FurnishingsSounds.java` (handed to Core's registrar by `CsmFurnishings.preInit`) and defined in `sounds.json`. Every
 entry uses `"stream": false` (loaded into memory, not streamed).
 
-| Sound Event ID | CsmSounds Enum | Used By | OGG File |
+| Sound Event ID | FurnishingsSounds Enum | Used By | OGG File |
 |---|---|---|---|
 | `csm:asteroids_cabinet` | `ASTEROIDS_CABINET` | BlockACAsteroids | `asteroids_cabinet.ogg` |
 | `csm:bz_cabinet` | `BZ_CABINET` | BlockACBattleZone | `bz_cabinet.ogg` |

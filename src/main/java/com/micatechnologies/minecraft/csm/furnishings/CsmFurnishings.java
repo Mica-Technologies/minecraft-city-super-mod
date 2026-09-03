@@ -7,6 +7,7 @@ import com.micatechnologies.minecraft.csm.codeutils.gui.CsmGuiRegistry;
 import com.micatechnologies.minecraft.csm.novelties.ArcadeHighScoreHandler;
 import com.micatechnologies.minecraft.csm.novelties.ArcadeHighScorePacket;
 import com.micatechnologies.minecraft.csm.novelties.BlockHd;
+import com.micatechnologies.minecraft.csm.novelties.FurnishingsSounds;
 import com.micatechnologies.minecraft.csm.novelties.NoveltiesGuiProvider;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -74,5 +75,10 @@ public class CsmFurnishings {
         ArcadeHighScoreHandler.class,
         ArcadeHighScorePacket.class,
         Side.SERVER);
+
+    // Hand this module's sound names to Core's registrar. Forge runs every mod's
+    // pre-initialization before it fires the sound registry event, so Core sees the complete
+    // union when it creates the sound events.
+    FurnishingsSounds.registerSounds();
   }
 }

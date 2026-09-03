@@ -133,7 +133,7 @@ for key in sj:
         if pkg in ("(root)","codeutils","tabs"): continue
         if any(('"'+key+'"') in t or ("csm:"+key) in t for t in texts): snd_users[key].add(pkg); hit=True
     if not hit: unref.append(key)
-print("\nSOUND EVENTS:",len(sj),"| referenced only via CsmSounds enum / root or unreferenced by literal:",len(unref))
+print("\nSOUND EVENTS:",len(sj),"| referenced only via a module sound enum / root or unreferenced by literal:",len(unref))
 cnt=collections.Counter()
 for k,v in snd_users.items():
     for p in v: cnt[p]+=1

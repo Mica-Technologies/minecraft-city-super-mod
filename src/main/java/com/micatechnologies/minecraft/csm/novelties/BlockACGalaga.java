@@ -1,6 +1,5 @@
 package com.micatechnologies.minecraft.csm.novelties;
 
-import com.micatechnologies.minecraft.csm.CsmSounds;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEW;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -128,7 +127,7 @@ public class BlockACGalaga extends AbstractBlockRotatableNSEW {
   public boolean onBlockActivated(World world, BlockPos pos, IBlockState state,
       EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
     if (!world.isRemote) {
-      SoundEvent sound = CsmSounds.SOUND.GALAGA_CABINET.getSoundEvent();
+      SoundEvent sound = FurnishingsSounds.GALAGA_CABINET.getSoundEvent();
       if (sound != null) {
         world.playSound(null, pos, sound, SoundCategory.BLOCKS, 1.0F, 1.0F);
       }

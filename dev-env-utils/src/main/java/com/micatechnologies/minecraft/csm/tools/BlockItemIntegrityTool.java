@@ -125,8 +125,16 @@ public class BlockItemIntegrityTool {
   private static final String SOUNDS_FILE_FOLDER_PATH_RELATIVE =
       "src/main/resources/assets/csm/sounds";
 
-  private static final String SOUNDS_CLASS_FILE_PATH_RELATIVE =
-      "src/main/java/com/micatechnologies/minecraft/csm/CsmSounds.java";
+  /**
+   * The per-module sound enums. Each module owns the sounds it ships and hands their names to
+   * Core's registrar, so there is no longer a single mod-wide sound class to parse.
+   */
+  private static final String[] SOUNDS_CLASS_FILE_PATHS_RELATIVE = {
+      "src/main/java/com/micatechnologies/minecraft/csm/trafficsignals/RoadsSounds.java",
+      "src/main/java/com/micatechnologies/minecraft/csm/lifesafety/LifeSafetySounds.java",
+      "src/main/java/com/micatechnologies/minecraft/csm/novelties/FurnishingsSounds.java",
+      "src/main/java/com/micatechnologies/minecraft/csm/technology/TechnologySounds.java",
+      "src/main/java/com/micatechnologies/minecraft/csm/hvac/HvacSounds.java"};
 
   private static final String SOUNDS_JSON_FILE_PATH_RELATIVE =
       "src/main/resources/assets/csm/sounds.json";
@@ -461,18 +469,38 @@ public class BlockItemIntegrityTool {
   }
 
   public static List<String> listEligibleSoundFiles(File devEnvironmentPath) {
-    File soundsClassFile = new File(devEnvironmentPath, SOUNDS_CLASS_FILE_PATH_RELATIVE);
-    return parseSoundNames(soundsClassFile);
+    List<String> soundNames = new ArrayList<>();
+    for (File soundsClassFile : listSoundsClassFiles(devEnvironmentPath)) {
+      soundNames.addAll(parseSoundNames(soundsClassFile));
+    }
+    return soundNames;
+  }
+
+  /**
+   * Lists the per-module sound enum source files.
+   *
+   * @param devEnvironmentPath the development environment root
+   *
+   * @return the sound enum source files
+   */
+  public static List<File> listSoundsClassFiles(File devEnvironmentPath) {
+    List<File> soundsClassFiles = new ArrayList<>();
+    for (String relativePath : SOUNDS_CLASS_FILE_PATHS_RELATIVE) {
+      soundsClassFiles.add(new File(devEnvironmentPath, relativePath));
+    }
+    return soundsClassFiles;
   }
 
   public static void checkSoundFilesIntegrity(File devEnvironmentPath, List<String> soundFiles) {
     // Create common File objects
     File soundsResourceFolder = new File(devEnvironmentPath, SOUNDS_FILE_FOLDER_PATH_RELATIVE);
-    File soundsClassFile = new File(devEnvironmentPath, SOUNDS_CLASS_FILE_PATH_RELATIVE);
+    List<File> soundsClassFiles = listSoundsClassFiles(devEnvironmentPath);
     File soundsJsonFile = new File(devEnvironmentPath, SOUNDS_JSON_FILE_PATH_RELATIVE);
 
-    if (!soundsClassFile.exists()) {
-      logError("Sounds class file does not exist: " + soundsClassFile.getPath());
+    for (File soundsClassFile : soundsClassFiles) {
+      if (!soundsClassFile.exists()) {
+        logError("Sounds class file does not exist: " + soundsClassFile.getPath());
+      }
     }
 
     if (!soundsJsonFile.exists()) {
@@ -480,17 +508,25 @@ public class BlockItemIntegrityTool {
     }
 
     for (String soundFile : soundFiles) {
-      checkSoundFileIntegrity(soundsResourceFolder, soundsClassFile, soundsJsonFile, soundFile);
+      checkSoundFileIntegrity(soundsResourceFolder, soundsClassFiles, soundsJsonFile, soundFile);
     }
   }
 
-  public static void checkSoundFileIntegrity(File soundsResourceFolder, File soundsClassFile,
-      File soundsJsonFile, String soundFile) {
+  public static void checkSoundFileIntegrity(File soundsResourceFolder,
+      List<File> soundsClassFiles, File soundsJsonFile, String soundFile) {
     try {
       validationsCount.incrementAndGet(); // Increment validation count
 
-      // Check for sound file in sounds class file
-      if (!Files.readString(soundsClassFile.toPath()).contains("\"" + soundFile + "\"")) {
+      // Check for sound file in one of the per-module sound enums
+      boolean foundInSoundsClass = false;
+      for (File soundsClassFile : soundsClassFiles) {
+        if (soundsClassFile.exists()
+            && Files.readString(soundsClassFile.toPath()).contains("\"" + soundFile + "\"")) {
+          foundInSoundsClass = true;
+          break;
+        }
+      }
+      if (!foundInSoundsClass) {
         logError("Sound file entry does not exist in sounds class file: " + soundFile);
       }
 

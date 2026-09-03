@@ -17,6 +17,7 @@
  */
 package com.micatechnologies.minecraft.csm;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmSoundRegistry;
 import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmProxy;
 import com.micatechnologies.minecraft.csm.codeutils.gui.CsmGuiRegistry;
@@ -385,7 +386,10 @@ public class Csm {
   }
 
   /**
-   * Registers the mod's sounds with the game during the sound registry event.
+   * Registers the mod's sounds with the game during the sound registry event. The sounds
+   * themselves belong to the modules, which hand their names to {@link CsmSoundRegistry} from
+   * their own pre-initialization; registering them from Core's listener is what keeps every
+   * sound event named {@code csm:<name>}.
    *
    * @param event the sound registry event
    *
@@ -395,7 +399,7 @@ public class Csm {
    */
   @SubscribeEvent
   public void registerSounds(RegistryEvent.Register<SoundEvent> event) {
-    CsmSounds.registerSounds(event);
+    CsmSoundRegistry.registerAll(event);
   }
 
   /**

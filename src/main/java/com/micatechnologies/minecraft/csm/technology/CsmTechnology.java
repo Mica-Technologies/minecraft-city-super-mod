@@ -83,5 +83,10 @@ public class CsmTechnology {
         FareGateOpModeHandler.class,
         FareGateOpModePacket.class,
         Side.SERVER);
+
+    // Hand this module's sound names to Core's registrar. Forge runs every mod's
+    // pre-initialization before it fires the sound registry event, so Core sees the complete
+    // union when it creates the sound events.
+    TechnologySounds.registerSounds();
   }
 }

@@ -1,6 +1,5 @@
 package com.micatechnologies.minecraft.csm.novelties;
 
-import com.micatechnologies.minecraft.csm.CsmSounds;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEWUD;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -126,8 +125,8 @@ public class BlockOldRecordPlayer extends AbstractBlockRotatableNSEWUD {
       EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
     if (!world.isRemote) {
       SoundEvent sound = player.isSneaking()
-          ? CsmSounds.SOUND.OLDRECORDPLAYER2.getSoundEvent()
-          : CsmSounds.SOUND.OLDRECORDPLAYER.getSoundEvent();
+          ? FurnishingsSounds.OLDRECORDPLAYER2.getSoundEvent()
+          : FurnishingsSounds.OLDRECORDPLAYER.getSoundEvent();
       if (sound != null) {
         world.playSound(null, pos, sound, SoundCategory.BLOCKS, 1.0F, 1.0F);
       }

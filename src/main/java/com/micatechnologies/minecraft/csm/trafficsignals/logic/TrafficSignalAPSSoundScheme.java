@@ -1,6 +1,6 @@
 package com.micatechnologies.minecraft.csm.trafficsignals.logic;
 
-import com.micatechnologies.minecraft.csm.CsmSounds;
+import com.micatechnologies.minecraft.csm.trafficsignals.RoadsSounds;
 
 /**
  * The
@@ -24,14 +24,14 @@ public class TrafficSignalAPSSoundScheme {
    *
    * @since 1.0
    */
-  private final CsmSounds.SOUND locateSound;
+  private final RoadsSounds locateSound;
 
   /**
    * The wait sound for the APS sound scheme.
    *
    * @since 1.0
    */
-  private final CsmSounds.SOUND waitSound;
+  private final RoadsSounds waitSound;
 
   /**
    * The length of the wait sound for the APS sound scheme.
@@ -45,7 +45,7 @@ public class TrafficSignalAPSSoundScheme {
    *
    * @since 1.0
    */
-  private final CsmSounds.SOUND pressSound;
+  private final RoadsSounds pressSound;
 
   /**
    * The length of the press sound for the APS sound scheme.
@@ -59,7 +59,7 @@ public class TrafficSignalAPSSoundScheme {
    *
    * @since 1.0
    */
-  private final CsmSounds.SOUND walkSound;
+  private final RoadsSounds walkSound;
 
   /**
    * The length of the walk sound for the APS sound scheme.
@@ -104,9 +104,9 @@ public class TrafficSignalAPSSoundScheme {
    *
    * @since 1.0
    */
-  TrafficSignalAPSSoundScheme(String name, CsmSounds.SOUND locateSound,
-      CsmSounds.SOUND waitSound, int lenOfWaitSound, CsmSounds.SOUND pressSound,
-      int lenOfPressSound, CsmSounds.SOUND walkSound, int lenOfWalkSound) {
+  TrafficSignalAPSSoundScheme(String name, RoadsSounds locateSound,
+      RoadsSounds waitSound, int lenOfWaitSound, RoadsSounds pressSound,
+      int lenOfPressSound, RoadsSounds walkSound, int lenOfWalkSound) {
     this.name = name;
     this.locateSound = locateSound;
     this.lenOfLocateSound = 20;
@@ -136,10 +136,10 @@ public class TrafficSignalAPSSoundScheme {
    *
    * @since 1.0
    */
-  TrafficSignalAPSSoundScheme(String name, CsmSounds.SOUND locateSound,
+  TrafficSignalAPSSoundScheme(String name, RoadsSounds locateSound,
       int lenOfLocateSound,
-      CsmSounds.SOUND waitSound, int lenOfWaitSound, CsmSounds.SOUND pressSound,
-      int lenOfPressSound, CsmSounds.SOUND walkSound, int lenOfWalkSound) {
+      RoadsSounds waitSound, int lenOfWaitSound, RoadsSounds pressSound,
+      int lenOfPressSound, RoadsSounds walkSound, int lenOfWalkSound) {
     this.name = name;
     this.locateSound = locateSound;
     this.lenOfLocateSound = lenOfLocateSound;
@@ -171,7 +171,7 @@ public class TrafficSignalAPSSoundScheme {
    *
    * @since 1.0
    */
-  public CsmSounds.SOUND getLocateSound() {
+  public RoadsSounds getLocateSound() {
     return locateSound;
   }
 
@@ -193,7 +193,7 @@ public class TrafficSignalAPSSoundScheme {
    *
    * @since 1.0
    */
-  public CsmSounds.SOUND getWaitSound() {
+  public RoadsSounds getWaitSound() {
     return waitSound;
   }
 
@@ -215,7 +215,7 @@ public class TrafficSignalAPSSoundScheme {
    *
    * @since 1.0
    */
-  public CsmSounds.SOUND getPressSound() {
+  public RoadsSounds getPressSound() {
     return pressSound;
   }
 
@@ -237,7 +237,7 @@ public class TrafficSignalAPSSoundScheme {
    *
    * @since 1.0
    */
-  public CsmSounds.SOUND getWalkSound() {
+  public RoadsSounds getWalkSound() {
     return walkSound;
   }
 
