@@ -1,6 +1,6 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories;
 
-import com.micatechnologies.minecraft.csm.codeutils.packets.DynamicStreetSignUpdatePacket;
+import com.micatechnologies.minecraft.csm.trafficaccessories.packets.DynamicStreetSignUpdatePacket;
 import com.micatechnologies.minecraft.csm.roads.CsmRoads;
 import com.micatechnologies.minecraft.csm.trafficaccessories.streetsign.StreetSignData;
 import com.micatechnologies.minecraft.csm.trafficaccessories.streetsign.StreetSignEmblemKind;
