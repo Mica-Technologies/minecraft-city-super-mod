@@ -178,3 +178,5 @@ if (project.hasProperty('rosetta')) {
         it.javaLauncher.set(rosettaLauncher)
     }
 }
+// CSM module jars (Core + one optional jar per module). See modules.gradle.
+apply from: 'modules.gradle'

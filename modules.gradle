@@ -1,0 +1,133 @@
+// CSM modules: one source set, one dev jar and one reobfuscated jar per optional module.
+//
+// Core is the `main` source set at src/main (the GTCEu build.gradle hard-codes that path in
+// its modGroup check and in generateAssets, so Core cannot move). Every other module lives in
+// modules/<name>/src/main/{java,resources}, compiles against Minecraft + Core only, and ships
+// as minecraft-city-super-mod-<name>-<version>.jar next to the Core jar.
+//
+// Why this works with the "DO NOT CHANGE" build.gradle and RetroFuturaGradle 1.4.7:
+//  - RFG adds a task rule `reobf<JarTaskName>` (mcp/MCPTasks.java) that reobfuscates the output
+//    of ANY Jar task with the same SRG/CSV/exceptor inputs as the default reobfJar, so a module's
+//    release jar needs no manual reobfuscation wiring.
+//  - RFG's runClient/runServer put the `jar` task's archive on the game classpath rather than
+//    the source set output, and RunMinecraftTask exposes classpath(...), so extra dev jars are
+//    added the same way. FML then discovers each jar's @Mod as a classpath mod.
+//  - Jabel is configured for every JavaCompile task except the two Minecraft ones, so module
+//    source sets get the same modern-syntax-targeting-Java-8 compiler.
+// This file is applied from addon.gradle, i.e. after build.gradle has finished configuring
+// `main`, so copying main's classpaths here picks up everything RFG added to them.
+
+def csmModules = [
+    [name: 'powergrid', modId: 'csm_powergrid', displayName: 'CSM: Power Grid'],
+]
+
+// The tasks that launch a game in the dev environment. Not all exist in every configuration
+// (the Java 17/21 ones are optional), hence tasks.matching rather than tasks.named.
+def csmRunTaskNames = ['runClient', 'runServer', 'runClient17', 'runServer17', 'runClient21', 'runServer21']
+
+// Which module jars the run tasks load. Default: all of them. `-PcsmRunModules=core` runs Core
+// alone; `-PcsmRunModules=powergrid,hvac` runs Core plus those modules. Core is always loaded.
+// This is how the "each module alone" and "Core only" checks are run without deleting jars.
+def csmRunModulesProperty = (project.findProperty('csmRunModules') ?: 'all').toString().trim()
+def csmRunModules = csmRunModulesProperty == 'all'
+        ? csmModules.collect { it.name }
+        : csmRunModulesProperty.split(',').collect { it.trim() }.findAll { it && it != 'core' }
+csmRunModules.each { name ->
+    if (!csmModules.any { it.name == name }) {
+        throw new GradleException("csmRunModules names unknown module '${name}'; known: " + csmModules.collect { it.name })
+    }
+}
+
+csmModules.each { m ->
+    def cap = m.name.capitalize()
+    def moduleDir = "modules/${m.name}"
+
+    def ss = sourceSets.create(m.name) {
+        java.srcDirs = ["${moduleDir}/src/main/java"]
+        resources.srcDirs = ["${moduleDir}/src/main/resources"]
+    }
+    // Minecraft + Core, nothing else: the compiler is the module boundary.
+    ss.compileClasspath += sourceSets.main.compileClasspath + sourceSets.main.output
+    ss.runtimeClasspath += sourceSets.main.runtimeClasspath + sourceSets.main.output
+    // Jabel and the other annotation processors are declared on Core's configuration only;
+    // without this the module compile finds the Jabel plugin on its classpath but not the
+    // processor path and dies with a ClassNotFoundException deep inside ByteBuddy.
+    configurations.named(ss.annotationProcessorConfigurationName).configure {
+        extendsFrom(configurations.annotationProcessor)
+    }
+
+    // A module's unit tests run in the one JUnit suite alongside Core's.
+    sourceSets.test.java.srcDir "${moduleDir}/src/test/java"
+    sourceSets.test.compileClasspath += ss.output
+    sourceSets.test.runtimeClasspath += ss.output
+
+    // Same token expansion the buildscript applies to Core's mcmod.info, plus Core's pack.mcmeta.
+    //
+    // The pack.mcmeta is not cosmetic. A mod jar without one gets a dummy pack_format 2 from
+    // FMLFileResourcePack, and FMLClientHandler.addModAsResource then wraps the pack in vanilla's
+    // LegacyV2Adapter, which rewrites every lang/<code>.lang lookup to the pre-1.11 upper-case
+    // form (lang/en_US.lang). Models and textures pass through untouched, so the module looks
+    // healthy in game while every one of its display names renders as tile.<id>.name. Copying
+    // Core's format-3 file into every module jar means no module can forget it.
+    tasks.named(ss.processResourcesTaskName, ProcessResources).configure {
+        from(file('src/main/resources/pack.mcmeta'))
+        // The dedicated server loads translations per mod container from
+        // assets/<that mod's id>/lang/en_us.lang only (FMLServerHandler.addModAsResource), so a
+        // module's csm-domain lang file is invisible server-side and FML warns "Missing English
+        // translation for <modid>". Duplicating the module's lang files under its own mod id at
+        // build time gives the server its names with no runtime code; the client loads both
+        // copies and they carry identical keys.
+        from("${moduleDir}/src/main/resources/assets/csm/lang") {
+            into "assets/${m.modId}/lang"
+        }
+        inputs.property 'version', modVersion
+        inputs.property 'mcversion', minecraftVersion
+        inputs.property 'modid', m.modId
+        filesMatching('mcmod.info') { fcd ->
+            fcd.expand(
+                    'version': modVersion,
+                    'mcversion': minecraftVersion,
+                    'modid': m.modId,
+                    'modname': m.displayName
+            )
+        }
+    }
+
+    // The MCP-named dev jar, loaded by the dev client. Classifier matches RFG's own `jar`.
+    def jarTask = tasks.register("${m.name}Jar", Jar) {
+        group = 'build'
+        description = "Assembles the ${m.displayName} dev jar"
+        from ss.output
+        archiveBaseName.set("${base.archivesName.get()}-${m.name}".toString())
+        archiveClassifier.set('dev')
+        manifest {
+            attributes(
+                    'Implementation-Title': m.displayName,
+                    'Implementation-Version': modVersion,
+                    'Implementation-Vendor': 'Mica Technologies'
+            )
+        }
+    }
+
+    // The release jar, produced by RFG's reobf<JarTaskName> rule from the dev jar above.
+    def reobfTask = tasks.named("reobf${cap}Jar")
+    tasks.named('assemble').configure { dependsOn(reobfTask) }
+
+    if (csmRunModules.contains(m.name)) {
+        csmRunTaskNames.each { runName ->
+            tasks.matching { it.name == runName }.configureEach {
+                dependsOn(jarTask)
+                classpath(jarTask)
+            }
+        }
+    }
+}
+
+// Lists the release jar file names, one per line, for the release workflow.
+task printModuleJarNames {
+    doLast {
+        def baseName = base.archivesName.get()
+        println "${baseName}-${project.version}.jar"
+        csmModules.each { m -> println "${baseName}-${m.name}-${project.version}.jar" }
+    }
+}
