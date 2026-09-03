@@ -119,5 +119,5 @@ public String getTileEntityName() {
 across. That is how blocks get consolidated without breaking existing worlds — the old id stays
 registered so a saved chunk still loads, and it becomes the new block in place.
 
-Retired blocks live in the `CsmTabNone` tab and appear on the
+Retired blocks live in a hidden tab (`CsmTabRoadsHidden`, `CsmTabLightingHidden`) and appear on the
 [Unlisted reference page](../reference/unlisted.md).

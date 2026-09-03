@@ -135,7 +135,7 @@ computed identically on the client and on a dedicated server, and because a reci
 when a player switches the game to another language.
 
 A `null` return means "not fabricable". That covers non-CSM blocks and, importantly, everything in
-`CsmTabNone`: `CsmTab` gives hidden and retiring blocks a `null` creative tab, so they drop out of
+Hidden tabs: `CsmTab` gives hidden and retiring blocks a `null` creative tab, so they drop out of
 the picker without needing a separate exclusion list.
 
 ### Auditing the cost model
@@ -210,7 +210,7 @@ Check the startup log line to confirm coverage:
 Fabricator coverage: 1426 of 1554 registered blocks are fabricable
 ```
 
-The remainder should be exactly the `CsmTabNone` blocks, the itemless `*_slab_double` blocks, and
+The remainder should be exactly the hidden-tab blocks, the itemless `*_slab_double` blocks, and
 the Fabricator itself. A sudden drop means a tab was added or renamed without pricing its contents.
 
 `dev-env-utils/scripts/csm_block_index.py` prints the same picture statically from the sources, and

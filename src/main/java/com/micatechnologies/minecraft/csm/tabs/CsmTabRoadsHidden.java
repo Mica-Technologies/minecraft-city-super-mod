@@ -1,7 +1,6 @@
 package com.micatechnologies.minecraft.csm.tabs;
 
 import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
-import com.micatechnologies.minecraft.csm.lighting.BlockLightupAir;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficAccessoryBackplate;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficAccessoryNSEWUD;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleHorizontalMountDouble;
@@ -19,12 +18,19 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 /**
- * The "none" tab for blocks which don't belong to a tab.
+ * The hidden tab holding the Roads &amp; Traffic blocks that have been retired: the
+ * deprecated signal heads, crosswalk signals, backplates, covers and pole mounts that
+ * convert themselves to their live replacements when an old world is loaded.
+ *
+ * <p>Hidden tabs have no creative-inventory presence at all: {@link CsmTab} gives them a
+ * {@code null} {@code CreativeTabs}, which is also what keeps their blocks out of the
+ * Fabricator. They exist only so a retiring block stays registered and can convert an old
+ * placement to its replacement.</p>
  *
  * @version 1.0
  */
-@CsmTab.Load(order = 0)
-public class CsmTabNone extends CsmTab {
+@CsmTab.Load(order = -10)
+public class CsmTabRoadsHidden extends CsmTab {
 
   /**
    * Gets the ID (unique identifier) of the tab.
@@ -83,8 +89,6 @@ public class CsmTabNone extends CsmTab {
    */
   @Override
   public void initTabElements(FMLPreInitializationEvent fmlPreInitializationEvent) {
-    initTabBlock(BlockLightupAir.class, fmlPreInitializationEvent); // Lightup Air
-
     // Deprecated angled signal blocks (auto-convert to non-angled equivalents via ICsmRetiringBlock)
     initTabBlock(TrafficSignalBlocks.VERTICAL_ANGLE_AHEAD_SIGNAL);
     initTabBlock(TrafficSignalBlocks.VERTICAL_ANGLE_BIKE_SIGNAL);

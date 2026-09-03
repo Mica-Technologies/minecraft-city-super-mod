@@ -132,7 +132,7 @@ Tile entities extend `AbstractTileEntity` or `AbstractTickableTileEntity`.
 
 1. **`Csm.java`** — Main `@Mod` class; handles `preInit`, `init`, `postInit` lifecycle events
 2. **`CsmRegistry.java`** — Block/item registration
-3. **`tabs/CsmTab*.java`** — Each tab's `initTabElements()` lists what blocks/items appear in that tab; blocks not registered here go in `CsmTabNone`
+3. **`tabs/CsmTab*.java`** — Each tab's `initTabElements()` lists what blocks/items appear in that tab; blocks that should not appear in the creative inventory go in a hidden tab (`CsmTabRoadsHidden`, `CsmTabLightingHidden`)
 4. **`CsmClientProxy` / `CsmCommonProxy`** — Client vs. server proxy pattern
 
 ### Version

@@ -98,9 +98,9 @@ def scan_tabs():
         path = os.path.join(TABS_DIR, filename)
         with open(path, "r", encoding="utf-8", errors="replace") as handle:
             text = _normalize(handle.read())
-        # CsmTabNone is the hidden catch-all and returns null from getTabId(), so it has no
-        # string id to scrape. Give it a synthetic one derived from the class name so its blocks
-        # are still indexed (they are excluded from recipes, but must be accounted for).
+        # A hidden tab returns null from getTabId(), so it has no string id to scrape. Give
+        # it a synthetic one derived from the class name so its blocks are still indexed (they
+        # are excluded from recipes, but must be accounted for).
         tab_id_match = _TAB_ID_RE.search(text)
         if tab_id_match:
             tab_id = tab_id_match.group(1)

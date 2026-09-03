@@ -83,7 +83,8 @@ public class BlockItemIntegrityTool {
           "src/main/java/com/micatechnologies/minecraft/csm/trafficsignals/logic/AbstractBlockControllableSignalHead.java",
           "src/main/java/com/micatechnologies/minecraft/csm/trafficaccessories/AbstractBlockSignalBackplate.java",
           "src/main/java/com/micatechnologies/minecraft/csm/trafficaccessories/AbstractBlockSignalBackplateFitted.java",
-          "src/main/java/com/micatechnologies/minecraft/csm/tabs/CsmTabNone.java"};
+          "src/main/java/com/micatechnologies/minecraft/csm/tabs/CsmTabRoadsHidden.java",
+          "src/main/java/com/micatechnologies/minecraft/csm/tabs/CsmTabLightingHidden.java"};
   private static final String[] DEFAULT_SOURCE_FILE_ELIGIBLE_EXTENDS_BLOCKS =
       {"AbstractBlock", "AbstractBlockRotatableNSEW", "AbstractBlockRotatableNSEWUD",
           "AbstractPoweredBlockRotatableNSEWUD", "AbstractBrightLight", "AbstractBlockSetBasic",
