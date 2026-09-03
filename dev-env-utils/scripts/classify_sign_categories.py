@@ -38,8 +38,7 @@ import csm_block_index as ix  # noqa: E402
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 REPO_ROOT = ix.REPO_ROOT
 ASSETS = os.path.join(REPO_ROOT, "src", "main", "resources", "assets", "csm")
-BLOCKSTATE_DIR = os.path.join(ASSETS, "blockstates")
-LANG_FILE = os.path.join(ASSETS, "lang", "en_us.lang")
+LANG_FILES = ix.lang_files("en_us")
 OUT_DIR = os.path.join(SCRIPT_DIR, "sign_classification")
 
 SIGN_TAB = "tabroadsigns"
@@ -379,11 +378,12 @@ def keyword_guess(display):
 
 def load_lang():
     names = {}
-    with open(LANG_FILE, encoding="utf-8") as handle:
-        for line in handle:
-            match = re.match(r"^tile\.([A-Za-z0-9_]+)\.name=(.*)$", line.strip())
-            if match:
-                names[match.group(1)] = match.group(2)
+    for path in LANG_FILES:
+        with open(path, encoding="utf-8") as handle:
+            for line in handle:
+                match = re.match(r"^tile\.([A-Za-z0-9_]+)\.name=(.*)$", line.strip())
+                if match:
+                    names[match.group(1)] = match.group(2)
     return names
 
 
@@ -393,8 +393,8 @@ def load_sign_textures():
     entries = [r for r, _ in tabs.get(SIGN_TAB, []) if r]
     resolved = []
     for registry in entries:
-        path = os.path.join(BLOCKSTATE_DIR, registry + ".json")
-        if not os.path.exists(path):
+        path = ix.blockstate_path(registry)
+        if path is None:
             continue
         with open(path, encoding="utf-8") as handle:
             data = json.load(handle)

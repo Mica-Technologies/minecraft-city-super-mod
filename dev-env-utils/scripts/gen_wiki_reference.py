@@ -36,8 +36,7 @@ sys.path.insert(0, SCRIPT_DIR)
 import csm_block_index as index_tool  # noqa: E402  (path set above)
 
 REPO_ROOT = index_tool.REPO_ROOT
-LANG_FILE = os.path.join(REPO_ROOT, "src", "main", "resources", "assets", "csm", "lang",
-                         "en_us.lang")
+LANG_FILES = index_tool.lang_files("en_us")
 OUT_DIR = os.path.join(REPO_ROOT, "docs", "reference")
 
 # The AbstractBlock constructor every stat in the old wiki came from:
@@ -127,19 +126,22 @@ PAGE_ORDER = ["tabbuildingmaterials", "tabfurniture", "tabgaming", "tabhvac", "t
 def read_lang():
     """Display names, keyed by registry name."""
     names = {}
-    with io.open(LANG_FILE, encoding="utf-8") as handle:
-        for line in handle:
-            match = _LANG_RE.match(line.strip())
-            if match:
-                names[match.group(1)] = match.group(2).strip()
+    for path in LANG_FILES:
+        with io.open(path, encoding="utf-8") as handle:
+            for line in handle:
+                match = _LANG_RE.match(line.strip())
+                if match:
+                    names[match.group(1)] = match.group(2).strip()
     return names
 
 
 def read_class_stats():
     """{class_name: (material, tool, harvest_level, hardness, resistance)} where declared."""
     stats = {}
-    src_root = index_tool.SRC_ROOT
-    for dirpath, _dirs, filenames in os.walk(src_root):
+    for dirpath, _dirs, filenames in (
+            entry
+            for _module, root in index_tool.source_roots()
+            for entry in os.walk(root)):
         for filename in filenames:
             if not filename.endswith(".java"):
                 continue
