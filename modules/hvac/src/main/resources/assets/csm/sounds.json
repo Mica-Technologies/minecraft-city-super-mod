@@ -1,0 +1,11 @@
+{
+  "panasonicfan": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:panasonic_fan",
+        "stream": false
+      }
+    ]
+  }
+}
