@@ -161,9 +161,10 @@ from its overall extent (clamped to `[0, 16]`), rather than emitting partially-c
 The generator runs one block at a time through these stages
 (`DynmapRenderdataTool.Run.processBlock`):
 
-1. **Discovery** (`BlockDiscovery`) — scans `assets/csm/blockstates/` and cross-references each
-   registry name against the Java sources, building a `BlockMetadata` carrying the blockstate file,
-   Java file, class name, and base-class name.
+1. **Discovery** (`BlockDiscovery`) — scans `assets/csm/blockstates/` in every source tree (Core's
+   plus each module's, which the game merges) and cross-references each registry name against the
+   Java sources of all those trees, building a `BlockMetadata` carrying the blockstate file, Java
+   file, class name, and base-class name.
 
 2. **Blockstate expansion** (`BlockstateExpander`) — produces an `ExpandedBlockstate` with a `Kind`
    (`FORGE`-style variants, `VANILLA`, `MULTIPART`, `OBJ`, or `EMPTY`) and a list of
