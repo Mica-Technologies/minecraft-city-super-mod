@@ -3,6 +3,7 @@ package com.micatechnologies.minecraft.csm.lifesafety;
 import com.micatechnologies.minecraft.csm.Tags;
 import com.micatechnologies.minecraft.csm.codeutils.CsmLifecycleHooks;
 import com.micatechnologies.minecraft.csm.codeutils.gui.CsmGuiRegistry;
+import com.micatechnologies.minecraft.csm.materials.CsmFabricatorCosts;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import org.apache.logging.log4j.Logger;
@@ -47,6 +48,11 @@ public class CsmLifeSafety {
     logger.info("Pre-initializing " + MOD_NAME + " v" + Tags.VERSION);
 
     CsmGuiRegistry.register(new LifeSafetyGuiProvider());
+
+    // Safe here: Fabricator costs are first read at post-initialization and thereafter only
+    // when a Fabricator GUI is opened, both after every mod's pre-initialization.
+    CsmFabricatorCosts.registerRule(LifeSafetyFabricatorRules.TAB_ID,
+        LifeSafetyFabricatorRules::price);
 
     // Also clears ActiveStrobeRegistry. A lambda, not
     // FireAlarmSoundPacketHandler::stopAllSounds: that method is @SideOnly(CLIENT), so it is

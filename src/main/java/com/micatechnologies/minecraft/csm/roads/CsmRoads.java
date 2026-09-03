@@ -3,9 +3,11 @@ package com.micatechnologies.minecraft.csm.roads;
 import com.micatechnologies.minecraft.csm.Tags;
 import com.micatechnologies.minecraft.csm.codeutils.CsmLifecycleHooks;
 import com.micatechnologies.minecraft.csm.codeutils.gui.CsmGuiRegistry;
+import com.micatechnologies.minecraft.csm.materials.CsmFabricatorCosts;
 import com.micatechnologies.minecraft.csm.trafficaccessories.TrafficAccessoriesGuiProvider;
 import com.micatechnologies.minecraft.csm.trafficsignals.APSSoundPacketHandler;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockOverheightDetectionSensor;
+import com.micatechnologies.minecraft.csm.trafficsignals.TrafficSignalsFabricatorRules;
 import com.micatechnologies.minecraft.csm.trafficsignals.TrafficSignalsGuiProvider;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -51,6 +53,11 @@ public class CsmRoads {
 
     CsmGuiRegistry.register(new TrafficSignalsGuiProvider());
     CsmGuiRegistry.register(new TrafficAccessoriesGuiProvider());
+
+    // Safe here: Fabricator costs are first read at post-initialization and thereafter only
+    // when a Fabricator GUI is opened, both after every mod's pre-initialization.
+    CsmFabricatorCosts.registerRule(TrafficSignalsFabricatorRules.TAB_ID,
+        TrafficSignalsFabricatorRules::price);
 
     // A lambda, not APSSoundPacketHandler::stopAllSounds: that method is @SideOnly(CLIENT), so
     // it is stripped from the class on a dedicated server and a method reference — which
