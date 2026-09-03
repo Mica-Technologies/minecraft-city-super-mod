@@ -120,7 +120,14 @@ Rules are applied in this order:
    Sheet Metal + Fastener Kit rather than its subsystem's electronics.
 5. **Optical devices** (camera, ALPR, radar, lidar) take Optical Sensor + Control Board.
 6. **Equipment with a dedicated base class**: fire alarm sounders, activators and detectors;
-   signal heads, detection sensors, the controller cabinet.
+   signal heads, detection sensors, the controller cabinet. These are the only rules that need to
+   know a subsystem's class hierarchy, so they live with the subsystem rather than in
+   `CsmFabricatorCosts`: `lifesafety/LifeSafetyFabricatorRules` and
+   `trafficsignals/TrafficSignalsFabricatorRules` implement `ICsmFabricatorCostRule` and register
+   themselves for their tab id from their module's pre-initialization, which is well before the
+   first cost is read at post-initialization. A tab whose rule is absent, or whose rule has no
+   opinion on a block, falls through to the same generic Sheet Metal + Wiring Harness cost that
+   branch always ended on.
 7. **Everything else takes its subsystem default** — Lighting is LED Module + Sheet Metal + Wiring;
    HVAC is Ducting + Sheet Metal; Technology is Control Board + Sheet Metal + Wiring; Furniture is
    2 planks + Fastener Kit (metal furniture takes Sheet Metal); Novelties are 2 clay + any dye
@@ -202,7 +209,8 @@ You only need to touch `CsmFabricatorCosts` when:
 - you add a **new creative tab** — add a case for it, or its contents silently fall through to the
   generic Sheet Metal + Fastener Kit cost; or
 - the block is a new *kind* of equipment whose subsystem default is a poor fit (a new detector type,
-  say) — add an `instanceof` branch.
+  say) — add an `instanceof` branch to that subsystem's `ICsmFabricatorCostRule`, not to
+  `CsmFabricatorCosts` itself.
 
 Check the startup log line to confirm coverage:
 
