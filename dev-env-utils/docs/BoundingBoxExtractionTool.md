@@ -5,7 +5,7 @@ variants suitable for use in block class definitions.
 
 ## How It Works
 
-1. Scans `models/custom/` for JSON model files
+1. Scans every source tree's `assets/csm/models/block/**/shared_models/` for JSON model files
 2. Parses each model's `"elements"` array to find all cuboid definitions
 3. For each cuboid, reads the `"from"` and `"to"` coordinates
 4. Calculates the overall axis-aligned bounding box (AABB) encompassing all elements
@@ -31,10 +31,16 @@ Constants in the source code (not configurable at runtime):
 Writes text files to `dev-env-utils/boundingBoxExtractorToolOutput/` with the calculated bounding
 box coordinates for each model.
 
+With `WRITE_BACK_LIVE` on it also rewrites the `getBoundingBox()` of **every mapped block in
+the repository**, not only the ones you were interested in — diff-check the result and revert
+the files you did not mean to touch. Each rewrite lands in the Java file that declares the
+block, in whichever source tree that is: the tool scans every tree's models, blockstates and
+sources, so a Roads block's box is written into the Roads module and never into Core.
+
 ## Limitations
 
-1. **Custom models only** — Only processes files in `models/custom/`. Does not handle block or
-   item models.
+1. **Shared models only** — Only processes the `shared_models` folders under each tree's
+   `assets/csm/models/block/`. Does not handle per-block or item models.
 2. **No rotation support** — Extracted bounding boxes don't account for model rotation transforms.
 3. **Hardcoded thresholds** — Rounding parameters require source code changes to modify.
 4. **No Java code generation** — Outputs raw coordinates rather than ready-to-paste Java code for

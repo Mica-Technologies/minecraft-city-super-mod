@@ -43,7 +43,8 @@ Arrays.asList(
 
 - **Consumer:** `TrafficSignalVertexData.java` — Parses `.ogldata` files into vertex arrays
 - **Renderer:** `TileEntityTrafficSignalHeadRenderer.java` — Uses vertex data for display lists
-- **Source models:** `src/main/resources/assets/csm/models/block/trafficsignals/visors/*.json`
+- **Source models:** `assets/csm/models/block/trafficsignals/visors/*.json`, in whichever source
+  tree ships them (the Roads module)
 - **Output directory:** `dev-env-utils/openGlData/` (NOT included in mod JAR)
 
 ## Limitations

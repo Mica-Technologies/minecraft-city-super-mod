@@ -14,8 +14,9 @@ Two files written to `dev-env-utils/dynmapRenderdataOutput/`:
 
 ## How It Works
 
-1. **Discovers blocks** — scans `src/main/resources/assets/csm/blockstates/`; cross-references
-   each registry name against Java sources in `src/main/java/.../csm/`.
+1. **Discovers blocks** — scans every source tree's `assets/csm/blockstates/` (Core's plus each
+   module's, which the game merges into one namespace); cross-references each registry name
+   against the Java sources of all those trees.
 2. **Expands blockstate variants** — for Forge-format blockstates (`forge_marker: 1`), enumerates
    the cartesian product of all variant properties (excluding `inventory` and `normal`, which are
    render-context selectors, not block properties). Vanilla-format blockstates fall back to a
