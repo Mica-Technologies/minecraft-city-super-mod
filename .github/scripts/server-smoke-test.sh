@@ -16,11 +16,16 @@
 # Env:
 #   SMOKE_TIMEOUT   seconds to wait for startup (default 900)
 #   SMOKE_LOG       log file path (default server-smoke.log)
+#   GRADLE_ARGS     extra arguments for the runServer line (default none). The mod ships as a
+#                   mandatory Core jar plus optional module jars, so `-PcsmRunModules=core`
+#                   boots the server with Core alone — the cheapest check that Core has not
+#                   grown a dependency on something only a module jar carries.
 
 set -uo pipefail
 
 TIMEOUT="${SMOKE_TIMEOUT:-900}"
 LOG="${SMOKE_LOG:-server-smoke.log}"
+GRADLE_ARGS="${GRADLE_ARGS:-}"
 
 # Signals a successfully started dedicated server.
 SUCCESS_RE='Done \([0-9.]+s\)!'
@@ -39,8 +44,10 @@ mkdir -p run run/server
 printf 'eula=true\n' > run/eula.txt
 printf 'eula=true\n' > run/server/eula.txt
 
-echo "==> Starting dedicated server (timeout ${TIMEOUT}s)"
-./gradlew runServer \
+echo "==> Starting dedicated server (timeout ${TIMEOUT}s)${GRADLE_ARGS:+ with ${GRADLE_ARGS}}"
+# GRADLE_ARGS is deliberately unquoted: it may carry more than one argument.
+# shellcheck disable=SC2086
+./gradlew runServer $GRADLE_ARGS \
   -Dhttp.socketTimeout=60000 -Dhttp.connectionTimeout=60000 \
   -Dorg.gradle.internal.http.socketTimeout=60000 \
   -Dorg.gradle.internal.http.connectionTimeout=60000 \

@@ -1,95 +1,5 @@
 // Add any additional Gradle commands or configuration here
 
-// MaryTTS uses Java ServiceLoader for module/voice discovery. The shadow plugin must
-// merge META-INF/services files from all JARs so every module is found at runtime.
-if (project.hasProperty('usesShadowedDependencies') && usesShadowedDependencies.toBoolean()) {
-    tasks.named('shadowJar').configure {
-        mergeServiceFiles()
-        // Minecraft bundles a stripped ICU4J fork (icu4j-core-mojang:51.2) on the system
-        // classloader. Forge's parent-first delegation means that copy always wins, but it's
-        // missing locale data MaryTTS needs (causing StackOverflowError). Relocating our
-        // full ICU4J gives MaryTTS its own complete copy without conflicting.
-        relocate 'com.ibm.icu', 'com.micatechnologies.minecraft.csm.shadow.com.ibm.icu'
-
-        // MaryTTS also pulls in commons-lang 2.x and commons-collections, and shading those under
-        // their own names does not work: FML's relauncher registers `org.apache.commons.` as a
-        // CLASSLOADER EXCLUSION, so LaunchClassLoader.findClass delegates every class under that
-        // package straight to its parent and never looks inside a mod jar. All 143 commons-lang
-        // classes were in the jar and unreachable by construction.
-        //
-        // The symptom: MaryTTS never starts, and every TTS call silently falls through to the
-        // system narrator instead.
-        //
-        //   [CSM-TTS] Failed to initialize MaryTTS — TTS will fall back to system narrator
-        //   java.lang.NoClassDefFoundError: org/apache/commons/lang/StringUtils
-        //       at marytts.config.MaryConfig.getList(MaryConfig.java:261)
-        //
-        // Same class of problem as the ICU relocation above, and the same fix: give MaryTTS its own
-        // copy under a package name Forge has no opinion about.
-        //
-        // The lang3 exclude is load-bearing. Shadow matches relocation patterns by path prefix, so
-        // `org.apache.commons.lang` also matches `org.apache.commons.lang3` — which is deliberately
-        // NOT shaded (see excludeForgeProvided in dependencies.gradle) because Forge provides it.
-        // Without the exclude, every lang3 reference would be rewritten to point at a shaded
-        // package that does not exist.
-        relocate('org.apache.commons.lang',
-                'com.micatechnologies.minecraft.csm.shadow.org.apache.commons.lang') {
-            exclude 'org.apache.commons.lang3.**'
-        }
-        relocate 'org.apache.commons.collections',
-                'com.micatechnologies.minecraft.csm.shadow.org.apache.commons.collections'
-
-        // MaryTTS logs through the old org.apache.log4j API, so we shade the log4j 1.x -> 2.x
-        // bridge (see dependencies.gradle). Shading it under its own name does not work either,
-        // for a third reason on top of the two above -- not a parent-first collision like ICU, and
-        // not a classloader exclusion like commons-lang, but a POISONED CACHE.
-        //
-        // Netty probes for a logging backend during Forge's startup, and its search order reaches
-        // log4j 1.x before log4j 2:
-        //
-        //   at io.netty.util.internal.logging.Log4JLoggerFactory.newInstance(Log4JLoggerFactory.java:38)
-        //   at io.netty.util.internal.logging.InternalLoggerFactory.newDefaultFactory(InternalLoggerFactory.java:47)
-        //
-        // That runs long before this mod's jar can serve those classes, so the load fails and
-        // LaunchClassLoader records the name in `invalidClasses` -- permanently. Every later
-        // request short-circuits on the first line of findClass and throws ClassNotFoundException
-        // without looking in any jar. MaryTTS then dies during startup and every TTS call falls
-        // through to the system narrator:
-        //
-        //   [CSM-TTS] Failed to initialize MaryTTS - TTS will fall back to system narrator
-        //   java.lang.NoClassDefFoundError: org/apache/log4j/Priority
-        //       at org.apache.log4j.LogManager.getRootLogger(LogManager.java:89)
-        //
-        // The class was in the jar and undamaged the whole time; the name was blacklisted before we
-        // ever got a turn. Relocating gives MaryTTS a name Netty never probed and so never
-        // poisoned. This carries slf4j-log4j12's binding with it, which is shaded alongside and
-        // references the same package.
-        //
-        // `org.apache.logging.log4j` -- Forge's log4j 2, deliberately not shaded -- does not match
-        // this pattern, since it is not under the org.apache.log4j path. The bridge therefore keeps
-        // delegating to the real logging backend.
-        relocate 'org.apache.log4j',
-                'com.micatechnologies.minecraft.csm.shadow.org.apache.log4j'
-
-        // Same poisoning, one probe earlier. Netty tries SLF4J before it tries log4j 1.x, so
-        // `org.slf4j` is blacklisted a few milliseconds before `org.apache.log4j` is, by the
-        // adjacent frame in the very same InternalLoggerFactory.newDefaultFactory call:
-        //
-        //   at io.netty.util.internal.logging.Slf4JLoggerFactory.<init>(Slf4JLoggerFactory.java:40)
-        //   at io.netty.util.internal.logging.InternalLoggerFactory.newDefaultFactory(InternalLoggerFactory.java:42)
-        //
-        // Relocating log4j alone therefore only moves the failure: MaryTTS gets all the way through
-        // module registration and then dies starting JTokeniser, whose static initialiser wants
-        // org.slf4j.LoggerFactory. Both packages have to move, for the identical reason.
-        //
-        // This takes the bundled slf4j-api and the slf4j-log4j12 binding together, which is what we
-        // want -- SLF4J finds its binding by looking up org/slf4j/impl/StaticLoggerBinder, and both
-        // sides of that lookup are relocated in step.
-        relocate 'org.slf4j',
-                'com.micatechnologies.minecraft.csm.shadow.org.slf4j'
-    }
-}
-
 // TOOLS FOR GITHUB ACTIONS
 task printModVersion {
     doLast {
@@ -124,24 +34,6 @@ if (project.hasProperty('enableJava17RunTasks') && enableJava17RunTasks.toBoolea
         java17PatchDependencies('net.java.dev.jna:jna:5.13.0') { transitive = false }
         java17PatchDependencies('net.java.dev.jna:jna-platform:5.13.0') { transitive = false }
         java17PatchDependencies('ca.weblite:java-objc-bridge:1.1') { transitive = false }
-    }
-}
-
-// Fix: wire the Java 17/21 run tasks to shadowJar.
-// When usesShadowedDependencies = true, build.gradle disables the plain `jar` task and makes
-// shadowJar produce the dev jar the run tasks load. build.gradle's own loop only adds
-// `dependsOn('shadowJar')` to the base runClient/runServer tasks, NOT to the
-// runClient17/runServer17/runClient21/runServer21 variants registered when
-// enableJava17RunTasks = true. Under Gradle 8.9 a task consuming another task's output without
-// declaring the dependency is a hard validation error, so runClient17 fails with:
-//   "Task ':runClient17' uses this output of task ':shadowJar' without declaring ... a dependency."
-// Declaring it here is update-safe (build.gradle is "DO NOT CHANGE").
-if (project.hasProperty('enableJava17RunTasks') && enableJava17RunTasks.toBoolean()
-        && project.hasProperty('usesShadowedDependencies') && usesShadowedDependencies.toBoolean()) {
-    for (runTask in ['runClient17', 'runServer17', 'runClient21', 'runServer21']) {
-        tasks.named(runTask).configure {
-            dependsOn('shadowJar')
-        }
     }
 }
 

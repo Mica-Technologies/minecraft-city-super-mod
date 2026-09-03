@@ -96,30 +96,65 @@ jobs:
           modVersion=$(${{github.workspace}}/gradlew -q printModVersion | tail -n 1 | xargs)
           echo "MOD_VERSION=$modVersion" >> $GITHUB_ENV
 
-      - name: Save Mod Archive Base Name to GITHUB_ENV
-        run: |
-          modArchiveBaseName=$(${{github.workspace}}/gradlew -q printArchivesBaseName | tail -n 1 | xargs)
-          echo "MOD_ARCHIVE_BASE_NAME=$modArchiveBaseName" >> $GITHUB_ENV
-
       - name: Save Minecraft Version to GITHUB_ENV
         run: |
           minecraftVersion=$(${{github.workspace}}/gradlew -q printMinecraftVersion | tail -n 1 | xargs)
           echo "MINECRAFT_VERSION=$minecraftVersion" >> $GITHUB_ENV
 
-      - name: Copy Assembled Mod Jar to GitHub Actions Workspace
-        run: cp ./build/libs/${{ env.MOD_ARCHIVE_BASE_NAME }}-${{ env.MOD_VERSION }}.jar ./
-
-      - name: Calculate Hashes for the Jar
-        id: calculate-hashes
+      # The mod releases as a mandatory Core jar plus one optional jar per subsystem, so the
+      # release assets come from a list Gradle prints rather than from a name pasted together
+      # here: `printModuleJarNames` prints the Core jar first and then one module jar per line,
+      # and a module added to modules.gradle ships without anyone remembering this file exists.
+      #
+      # The grep is the same defence as the `| tail -n 1` above, generalised to a list. Gradle
+      # prints banners during project evaluation even under -q — the buildscript update check
+      # corrupted a release that way on 2026-07-27, and RFG prints a JDK deprecation notice on
+      # older Java — and these names go straight into `cp` and the hash commands. Keeping only
+      # the lines shaped like a jar file name discards banners however many there are.
+      - name: Collect Release Jars and Calculate Hashes
         run: |
-          sha1=$(sha1sum ./${{ env.MOD_ARCHIVE_BASE_NAME }}-${{ env.MOD_VERSION }}.jar | awk '{print $1}')
-          md5=$(md5sum ./${{ env.MOD_ARCHIVE_BASE_NAME }}-${{ env.MOD_VERSION }}.jar | awk '{print $1}')
-          sha256=$(sha256sum ./${{ env.MOD_ARCHIVE_BASE_NAME }}-${{ env.MOD_VERSION }}.jar | awk '{print $1}')
-          crc32=$(cksum ./${{ env.MOD_ARCHIVE_BASE_NAME }}-${{ env.MOD_VERSION }}.jar | awk '{print $1}')
-          echo "SHA1_HASH=$sha1" >> $GITHUB_ENV
-          echo "MD5_HASH=$md5" >> $GITHUB_ENV
-          echo "SHA256_HASH=$sha256" >> $GITHUB_ENV
-          echo "CRC32_HASH=$crc32" >> $GITHUB_ENV
+          set -euo pipefail
+          mapfile -t jars < <(${{github.workspace}}/gradlew -q printModuleJarNames \
+            | tr -d '\r' | grep -E '^[A-Za-z0-9._+-]+\.jar$')
+          if [ "${#jars[@]}" -eq 0 ]; then
+            echo "::error::printModuleJarNames listed no jar names"
+            exit 1
+          fi
+
+          : > SHA256SUMS.txt
+          {
+            printf '| Jar | SHA-1 | SHA-256 | MD5 | CRC-32 |\n'
+            printf '|---|---|---|---|---|\n'
+          } > release-jar-table.md
+
+          for jar in "${jars[@]}"; do
+            if [ ! -f "build/libs/$jar" ]; then
+              echo "::error::build/libs/$jar was listed but never built"
+              exit 1
+            fi
+            cp "build/libs/$jar" ./
+            sha1=$(sha1sum "$jar" | awk '{print $1}')
+            sha256=$(sha256sum "$jar" | awk '{print $1}')
+            md5=$(md5sum "$jar" | awk '{print $1}')
+            crc32=$(cksum "$jar" | awk '{print $1}')
+            # sha256sum's own format, so `sha256sum -c SHA256SUMS.txt` verifies a download.
+            printf '%s  %s\n' "$sha256" "$jar" >> SHA256SUMS.txt
+            printf '| `%s` | `%s` | `%s` | `%s` | `%s` |\n' \
+              "$jar" "$sha1" "$sha256" "$md5" "$crc32" >> release-jar-table.md
+          done
+
+          echo "==> ${#jars[@]} release jars"
+          cat SHA256SUMS.txt
+
+          {
+            echo "RELEASE_FILES<<CSM_RELEASE_EOF"
+            printf '%s\n' "${jars[@]}"
+            echo "SHA256SUMS.txt"
+            echo "CSM_RELEASE_EOF"
+            echo "RELEASE_JAR_TABLE<<CSM_RELEASE_EOF"
+            cat release-jar-table.md
+            echo "CSM_RELEASE_EOF"
+          } >> "$GITHUB_ENV"
 
       - name: Create Release Entry
         if: ${{ github.event.inputs.release == 'true' && github.event.inputs.release }}
@@ -134,15 +169,19 @@ jobs:
             Mod Version: ${{ env.MOD_VERSION }}
             Game Version: ${{ env.MINECRAFT_VERSION }}
 
-            SHA-1: `${{ env.SHA1_HASH }}`
-            SHA-256: `${{ env.SHA256_HASH }}`
-            MD5: `${{ env.MD5_HASH }}`
-            CRC-32: `${{ env.CRC32_HASH }}`
+            The `core` jar is required. Every other jar is optional and adds one subsystem;
+            install as many of them alongside Core as you want. All jars in a release must be
+            the same version as each other.
+
+            ${{ env.RELEASE_JAR_TABLE }}
+
+            `SHA256SUMS.txt` is attached in `sha256sum` format, so
+            `sha256sum -c SHA256SUMS.txt` checks a download.
           draft: false
           prerelease: false
           generate_release_notes: true
           files: |
-            ${{ env.MOD_ARCHIVE_BASE_NAME }}-${{ env.MOD_VERSION }}.jar
+            ${{ env.RELEASE_FILES }}
 
       - name: Create Pre-Release Entry
         if: ${{ github.event.inputs.release == 'false' || !github.event.inputs.release }}
@@ -157,12 +196,16 @@ jobs:
             Mod Version: ${{ env.MOD_VERSION }}
             Game Version: ${{ env.MINECRAFT_VERSION }}
 
-            SHA-1: `${{ env.SHA1_HASH }}`
-            SHA-256: `${{ env.SHA256_HASH }}`
-            MD5: `${{ env.MD5_HASH }}`
-            CRC-32: `${{ env.CRC32_HASH }}`
-            
-            NOTICE: This is a pre-release version of the mod and is not 
+            The `core` jar is required. Every other jar is optional and adds one subsystem;
+            install as many of them alongside Core as you want. All jars in a release must be
+            the same version as each other.
+
+            ${{ env.RELEASE_JAR_TABLE }}
+
+            `SHA256SUMS.txt` is attached in `sha256sum` format, so
+            `sha256sum -c SHA256SUMS.txt` checks a download.
+
+            NOTICE: This is a pre-release version of the mod and is not
             guaranteed to be stable or permanently available for download/usage.
             Pre-release versions of ${{ env.MOD_NAME }} may be removed or unavailable after
             90 days from their initial release.
@@ -170,4 +213,4 @@ jobs:
           prerelease: true
           generate_release_notes: true
           files: |
-            ${{ env.MOD_ARCHIVE_BASE_NAME }}-${{ env.MOD_VERSION }}.jar
+            ${{ env.RELEASE_FILES }}
