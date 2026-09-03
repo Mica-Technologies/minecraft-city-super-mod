@@ -2,9 +2,12 @@ package com.micatechnologies.minecraft.csm.hvac;
 
 import com.micatechnologies.minecraft.csm.CsmNetwork;
 import com.micatechnologies.minecraft.csm.Tags;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmProxy;
 import com.micatechnologies.minecraft.csm.codeutils.CsmEnvironment;
 import com.micatechnologies.minecraft.csm.codeutils.gui.CsmGuiRegistry;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.SidedProxy;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import org.apache.logging.log4j.Logger;
@@ -33,6 +36,10 @@ public class CsmHvac {
 
   public static final String MOD_ID = "csm_hvac";
   public static final String MOD_NAME = "CSM: HVAC";
+
+  @SidedProxy(clientSide = "com.micatechnologies.minecraft.csm.hvac.CsmHvacClientProxy",
+              serverSide = "com.micatechnologies.minecraft.csm.hvac.CsmHvacCommonProxy")
+  public static ICsmProxy proxy;
 
   /**
    * This module's network channel. Its packets are registered below, in a fixed order, so
@@ -75,5 +82,12 @@ public class CsmHvac {
     // in range, so installing or removing this module only ever changes the equipment's own
     // contribution.
     CsmEnvironment.setTemperatureProvider(HvacTemperatureManager::getTemperatureAt);
+    proxy.preInit(event);
+  }
+
+  @Mod.EventHandler
+  public void init(FMLInitializationEvent event) {
+    // Client: bind this module's tile-entity renderers. Server: nothing.
+    proxy.init(event);
   }
 }
