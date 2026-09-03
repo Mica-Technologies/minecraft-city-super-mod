@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.tools;
 
+import com.micatechnologies.minecraft.csm.tools.tool_framework.AssetFolder;
 import com.micatechnologies.minecraft.csm.tools.tool_framework.CsmLayout;
 import com.micatechnologies.minecraft.csm.tools.tool_framework.CsmToolUtility;
 import java.awt.Color;
@@ -87,7 +88,9 @@ public class CrosswalkAtlasTool {
     CsmToolUtility.doToolExecuteWrapped("CSM Crosswalk Atlas Generator", args,
         (devEnvironmentPath) -> {
           CsmLayout layout = new CsmLayout(devEnvironmentPath);
-          File inputFolder = layout.assetDirForRead(INPUT_FOLDER);
+          // Read from every tree that has the folder, so a tile shipped by another module
+          // is still found; the atlas is written back beside the folder that owns it.
+          AssetFolder inputFolder = AssetFolder.ofAsset(layout, INPUT_FOLDER);
           File outputFile = layout.assetInFolderForWrite(INPUT_FOLDER, OUTPUT_FILE_NAME);
 
           int tilesPerRow = OUTPUT_SIZE / TILE_SIZE;
@@ -102,7 +105,7 @@ public class CrosswalkAtlasTool {
 
           BufferedImage[] loadedImages = new BufferedImage[INPUT_IMAGE_NAMES.length];
           for (int i = 0; i < INPUT_IMAGE_NAMES.length; i++) {
-            File imgFile = new File(inputFolder, INPUT_IMAGE_NAMES[i] + INPUT_EXTENSION);
+            File imgFile = inputFolder.file(INPUT_IMAGE_NAMES[i] + INPUT_EXTENSION);
             try {
               loadedImages[i] = ImageIO.read(imgFile);
               System.out.println("  [" + i + "] " + INPUT_IMAGE_NAMES[i] + " ("
