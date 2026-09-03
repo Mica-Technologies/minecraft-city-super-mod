@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmTrafficPoleIgnored;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignal;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.BlankoutBoxType;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.CrosswalkMountType;
@@ -24,7 +25,7 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 public class BlockBlankoutBox extends AbstractBlockControllableSignal
-        implements ICsmTileEntityProvider {
+        implements ICsmTileEntityProvider, ICsmTrafficPoleIgnored {
 
     public BlockBlankoutBox() {
         super( Material.ROCK );

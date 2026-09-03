@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.trafficsignals.logic;
 
+import com.micatechnologies.minecraft.csm.codeutils.ICsmTrafficPoleIgnored;
 import java.util.Arrays;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.Map;
@@ -25,7 +26,7 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class AbstractBlockControllableSignalHead extends AbstractBlockControllableSignal
-    implements ICsmTileEntityProvider, ISpanWireHangable {
+    implements ICsmTileEntityProvider, ISpanWireHangable, ICsmTrafficPoleIgnored {
 
   /**
    * Brings a span's drop back onto the roof of the housing instead of onto a visor.

@@ -4,6 +4,7 @@ import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEW;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockTrafficPole;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmNoSnowAccumulation;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmTrafficPoleIgnored;
 import java.util.HashMap;
 import java.util.Map;
 import javax.annotation.Nonnull;
@@ -63,7 +64,7 @@ import org.jetbrains.annotations.NotNull;
  * impossible to aim, so it was dropped.
  */
 public class BlockTrafficPoleMastArmCurve extends AbstractBlockRotatableNSEW
-    implements ICsmTileEntityProvider, ICsmNoSnowAccumulation {
+    implements ICsmTileEntityProvider, ICsmNoSnowAccumulation, ICsmTrafficPoleIgnored {
 
   /**
    * Carries the constructor arguments past {@code super()}. {@link #getBlockRegistryName()} and
