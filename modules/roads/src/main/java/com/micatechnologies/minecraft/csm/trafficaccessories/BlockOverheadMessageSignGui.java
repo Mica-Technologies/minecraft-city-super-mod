@@ -1,6 +1,6 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories;
 
-import com.micatechnologies.minecraft.csm.codeutils.packets.TileEntityPortableMessageSignUpdatePacket;
+import com.micatechnologies.minecraft.csm.trafficaccessories.packets.TileEntityPortableMessageSignUpdatePacket;
 import com.micatechnologies.minecraft.csm.roads.CsmRoads;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyColor;
 import java.io.IOException;

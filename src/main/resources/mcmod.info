@@ -18,24 +18,6 @@
     "useDependencyInformation": "true"
   },
   {
-    "modid": "csm_roads",
-    "name": "CSM: Roads & Traffic",
-    "description": "Traffic signals, traffic accessories and road signs for the City Super Mod. Requires CSM: Core.",
-    "version": "${version}",
-    "mcversion": "${mcversion}",
-    "credits": "Alex H, Brandon H (Mica Technologies) & Formerly Mcreator",
-    "logoFile": "assets/csm/textures/csm_icon.png",
-    "url": "https://minecraft.micatechnologies.com",
-    "updateUrl": "",
-    "authorList": [
-      "Mica Technologies"
-    ],
-    "dependencies": ["csm"],
-    "dependants": [],
-    "requiredMods": ["csm"],
-    "useDependencyInformation": "true"
-  },
-  {
     "modid": "csm_lifesafety",
     "name": "CSM: Life Safety",
     "description": "Fire alarm appliances and panels, emergency lighting and exit signs for the City Super Mod. Requires CSM: Core.",

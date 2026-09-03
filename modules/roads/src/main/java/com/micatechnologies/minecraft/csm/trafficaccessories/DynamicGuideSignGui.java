@@ -1,6 +1,6 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories;
 
-import com.micatechnologies.minecraft.csm.codeutils.packets.DynamicGuideSignUpdatePacket;
+import com.micatechnologies.minecraft.csm.trafficaccessories.packets.DynamicGuideSignUpdatePacket;
 import com.micatechnologies.minecraft.csm.roads.CsmRoads;
 import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.CornerStyle;
 import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.ExitTabData;

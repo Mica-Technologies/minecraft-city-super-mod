@@ -1,6 +1,6 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories;
 
-import com.micatechnologies.minecraft.csm.codeutils.packets.TileEntityVariableSpeedLimitUpdatePacket;
+import com.micatechnologies.minecraft.csm.trafficaccessories.packets.TileEntityVariableSpeedLimitUpdatePacket;
 import com.micatechnologies.minecraft.csm.roads.CsmRoads;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyColor;
 import javax.annotation.ParametersAreNonnullByDefault;
