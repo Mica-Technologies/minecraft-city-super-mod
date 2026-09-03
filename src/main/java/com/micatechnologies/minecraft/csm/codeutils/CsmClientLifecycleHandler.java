@@ -1,9 +1,5 @@
 package com.micatechnologies.minecraft.csm.codeutils;
 
-import com.micatechnologies.minecraft.csm.lifesafety.FireAlarmSoundPacketHandler;
-import com.micatechnologies.minecraft.csm.novelties.BlockHd;
-import com.micatechnologies.minecraft.csm.technology.SpeakerAmbientPacketHandler;
-import com.micatechnologies.minecraft.csm.trafficsignals.APSSoundPacketHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent;
@@ -17,6 +13,9 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  * the player joins — both a memory leak and a correctness bug (stale strobe positions could
  * render in a different world at the same coordinates). Registered on the Forge event bus
  * during {@code CsmClientProxy.preInit}.
+ *
+ * <p>The subsystem caches are cleared by the hooks each subsystem registers with
+ * {@link CsmLifecycleHooks}; this handler only knows about Core's own display list cache.</p>
  *
  * <p>See the memory &amp; lifecycle hygiene review in
  * {@code assets/docs/agent_progress/PERFORMANCE_IMPROVEMENT_PLAN.md} (§15).</p>
@@ -36,10 +35,7 @@ public class CsmClientLifecycleHandler {
   @SubscribeEvent
   public void onClientDisconnect(FMLNetworkEvent.ClientDisconnectionFromServerEvent event) {
     Minecraft.getMinecraft().addScheduledTask(() -> {
-      FireAlarmSoundPacketHandler.stopAllSounds(); // also clears ActiveStrobeRegistry
-      APSSoundPacketHandler.stopAllSounds();
-      SpeakerAmbientPacketHandler.stopAllSounds();
-      BlockHd.clearClientCaches();
+      CsmLifecycleHooks.runClientDisconnect();
       // Release every cached OpenGL display list. These hold driver/GPU memory, so carrying
       // them into the next world the player joins would be a genuine leak rather than just a
       // stale map. Safe here: addScheduledTask puts this on the client thread, which is the

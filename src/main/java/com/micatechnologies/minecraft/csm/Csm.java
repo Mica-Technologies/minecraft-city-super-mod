@@ -19,12 +19,14 @@ package com.micatechnologies.minecraft.csm;
 
 import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmProxy;
+import com.micatechnologies.minecraft.csm.codeutils.gui.CsmGuiRegistry;
 import com.micatechnologies.minecraft.csm.codeutils.packets.TileEntityRedstoneTTSInvokeHandler;
 import com.micatechnologies.minecraft.csm.codeutils.packets.TileEntityRedstoneTTSInvokePacket;
 import com.micatechnologies.minecraft.csm.codeutils.packets.TileEntityRedstoneTTSUpdateHandler;
 import com.micatechnologies.minecraft.csm.codeutils.packets.TileEntityRedstoneTTSUpdatePacket;
 import com.micatechnologies.minecraft.csm.lifesafety.FireAlarmSoundPacket;
 import com.micatechnologies.minecraft.csm.lifesafety.FireAlarmSoundPacketHandler;
+import com.micatechnologies.minecraft.csm.materials.MaterialsGuiProvider;
 import java.util.HashSet;
 import java.util.Set;
 import net.minecraft.block.Block;
@@ -136,6 +138,12 @@ public class Csm {
           new com.micatechnologies.minecraft.csm.codeutils.CsmTileEntityBackfillHandler());
       logger.info("Finished registering event bus");
       progressBar.step("Event Bus Registration");
+
+      // Register Core's GUI provider. Every other provider registers from its own module's
+      // pre-initialization; Forge runs all pre-initialization before any initialization, and
+      // the GUI handler itself is registered in init, so the registry is complete before a GUI
+      // can be opened.
+      CsmGuiRegistry.register(new MaterialsGuiProvider());
 
       // Register the mod's world generator
       logger.info("Registering world generator");
