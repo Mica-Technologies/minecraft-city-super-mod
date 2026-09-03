@@ -1,4 +1,4 @@
-package com.micatechnologies.minecraft.csm.technology;
+package com.micatechnologies.minecraft.csm.tts;
 
 import com.micatechnologies.minecraft.csm.codeutils.CsmTts;
 import com.micatechnologies.minecraft.csm.codeutils.GuiMultiLineTextField;

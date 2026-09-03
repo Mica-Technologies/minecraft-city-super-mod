@@ -1,4 +1,4 @@
-package com.micatechnologies.minecraft.csm.technology;
+package com.micatechnologies.minecraft.csm.tts;
 
 import com.micatechnologies.minecraft.csm.Csm;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlock;

@@ -1,4 +1,4 @@
-package com.micatechnologies.minecraft.csm.technology;
+package com.micatechnologies.minecraft.csm.tts;
 
 import static org.junit.jupiter.api.Assertions.*;
 

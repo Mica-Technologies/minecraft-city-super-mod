@@ -1,4 +1,4 @@
-package com.micatechnologies.minecraft.csm.codeutils.packets;
+package com.micatechnologies.minecraft.csm.tts;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.util.math.BlockPos;

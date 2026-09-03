@@ -72,24 +72,6 @@
     "useDependencyInformation": "true"
   },
   {
-    "modid": "csm_technology",
-    "name": "CSM: Technology",
-    "description": "Computers, servers, televisions, speakers and transit fare equipment for the City Super Mod. Requires CSM: Core.",
-    "version": "${version}",
-    "mcversion": "${mcversion}",
-    "credits": "Alex H, Brandon H (Mica Technologies) & Formerly Mcreator",
-    "logoFile": "assets/csm/textures/csm_icon.png",
-    "url": "https://minecraft.micatechnologies.com",
-    "updateUrl": "",
-    "authorList": [
-      "Mica Technologies"
-    ],
-    "dependencies": ["csm"],
-    "dependants": [],
-    "requiredMods": ["csm"],
-    "useDependencyInformation": "true"
-  },
-  {
     "modid": "csm_furnishings",
     "name": "CSM: Furniture & Novelties",
     "description": "Indoor and outdoor furniture, arcade cabinets and decorative novelties for the City Super Mod. Requires CSM: Core.",
@@ -123,24 +105,6 @@
     "dependencies": ["csm"],
     "dependants": [],
     "requiredMods": ["csm"],
-    "useDependencyInformation": "true"
-  },
-  {
-    "modid": "csm_tts",
-    "name": "CSM: Text to Speech",
-    "description": "The speech engine and the blocks that speak with it for the City Super Mod. Requires CSM: Core and CSM: Technology.",
-    "version": "${version}",
-    "mcversion": "${mcversion}",
-    "credits": "Alex H, Brandon H (Mica Technologies) & Formerly Mcreator",
-    "logoFile": "assets/csm/textures/csm_icon.png",
-    "url": "https://minecraft.micatechnologies.com",
-    "updateUrl": "",
-    "authorList": [
-      "Mica Technologies"
-    ],
-    "dependencies": ["csm", "csm_technology"],
-    "dependants": [],
-    "requiredMods": ["csm", "csm_technology"],
     "useDependencyInformation": "true"
   }
 ]

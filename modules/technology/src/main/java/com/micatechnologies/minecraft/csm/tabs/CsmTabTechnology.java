@@ -7,7 +7,6 @@ import com.micatechnologies.minecraft.csm.codeutils.ItemDecorativeFactory;
 import com.micatechnologies.minecraft.csm.technology.BlockImac;
 import com.micatechnologies.minecraft.csm.technology.BlockImacPro;
 import com.micatechnologies.minecraft.csm.technology.BlockMacBookPro;
-import com.micatechnologies.minecraft.csm.technology.BlockRedstoneTTS;
 import com.micatechnologies.minecraft.csm.technology.BlockFareGate;
 import com.micatechnologies.minecraft.csm.technology.BlockFareGateAda2;
 import com.micatechnologies.minecraft.csm.technology.BlockFareGateAda3;
@@ -17,7 +16,6 @@ import com.micatechnologies.minecraft.csm.technology.BlockVerifoneMx915;
 import com.micatechnologies.minecraft.csm.technology.ItemApplePencil;
 import com.micatechnologies.minecraft.csm.technology.ItemFareTicket;
 import com.micatechnologies.minecraft.csm.technology.ItemTransitCard;
-import com.micatechnologies.minecraft.csm.technology.ItemTtsLinker;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
@@ -126,8 +124,15 @@ public class CsmTabTechnology extends CsmTab {
     initTabBlock(new BlockRotatableNSEWUDFactory("wapac", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0, new AxisAlignedBB(0.250000, 0.250000, 0.937500, 0.750000, 0.750000, 1.000000), false, false, false, BlockRenderLayer.CUTOUT_MIPPED, false, false));
     initTabBlock(new BlockRotatableNSEWUDFactory("wapn", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0, new AxisAlignedBB(0.250000, 0.250000, 0.937500, 0.750000, 0.750000, 1.000000), false, false, false, BlockRenderLayer.SOLID, false, false));
     initTabBlock(new BlockRotatableNSEWUDFactory("wg", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0, new AxisAlignedBB(0.312500, 0.000000, 0.187500, 0.687500, 0.562500, 0.812500), false, false, false, BlockRenderLayer.CUTOUT_MIPPED, false, false));
-    initTabBlock(BlockRedstoneTTS.class, fmlPreInitializationEvent);
-    initTabItem(ItemTtsLinker.class, fmlPreInitializationEvent);
+    // The Redstone TTS Module and its linker belong to this tab but ship in the optional Text to
+    // Speech module, which requires this one. Naming their classes here would point Technology at
+    // a module that depends on it, so they are resolved by name and only when that module is
+    // installed. Keeping the calls in place means the tab's order is the same either way: with
+    // Text to Speech installed the entries appear exactly here, and without it they are absent.
+    initTabBlockIfLoaded("csm_tts",
+        "com.micatechnologies.minecraft.csm.tts.BlockRedstoneTTS", fmlPreInitializationEvent);
+    initTabItemIfLoaded("csm_tts",
+        "com.micatechnologies.minecraft.csm.tts.ItemTtsLinker", fmlPreInitializationEvent);
     initTabItem(ItemFareTicket.class, fmlPreInitializationEvent);
     initTabItem(ItemTransitCard.class, fmlPreInitializationEvent);
     initTabItem(new ItemDecorativeFactory("appleipadpro", "This iPad does nothing and is only for looks!"));

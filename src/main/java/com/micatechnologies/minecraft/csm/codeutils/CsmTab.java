@@ -14,6 +14,7 @@ import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.discovery.ASMDataTable;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.relauncher.Side;
@@ -309,6 +310,101 @@ public abstract class CsmTab {
       block = blockClass.cast(entry).setCreativeTab(tab);
     }
     return block;
+  }
+
+  /**
+   * Initializes the block with the given fully-qualified class name, but only if the named mod
+   * is installed. When it is not, nothing is registered and the tab simply skips this entry.
+   *
+   * <p>This exists because a tab and a block in it can belong to different modules. The
+   * Technology tab lists the Redstone TTS Module, whose block ships in the optional Text to
+   * Speech module; naming the class in Java would make Technology depend on a module that
+   * already depends on it. Calling this in the block's own place in {@code initTabElements}
+   * keeps the tab's order identical whether or not the other module is installed — the entry is
+   * either there, at that position, or absent.</p>
+   *
+   * <p>Resolving the class by name works because every mod jar is served by the same
+   * {@code LaunchClassLoader}: a class in another CSM module's jar is visible here as long as
+   * that jar is present, which is exactly what the mod id check establishes.</p>
+   *
+   * <p>{@link Loader#isModLoaded(String)} is valid to call from pre-initialization: FML builds
+   * the mod list during construction, before it fires the first lifecycle event, so the answer
+   * is already final and does not change later in the load.</p>
+   *
+   * @param modId                     the id of the mod that ships the block
+   * @param blockClassName            the fully-qualified name of the block class
+   * @param fmlPreInitializationEvent the {@link FMLPreInitializationEvent} that is being processed
+   *
+   * @return the registered block, or {@code null} if the mod is absent or the class could not be
+   *     loaded
+   *
+   * @since 2026.9
+   */
+  @Nullable
+  public Block initTabBlockIfLoaded(String modId, String blockClassName,
+      FMLPreInitializationEvent fmlPreInitializationEvent) {
+    if (!Loader.isModLoaded(modId)) {
+      return null;
+    }
+    Class<? extends Block> blockClass = loadTabElementClass(blockClassName, Block.class,
+        fmlPreInitializationEvent);
+    return blockClass == null ? null : initTabBlock(blockClass, fmlPreInitializationEvent);
+  }
+
+  /**
+   * Initializes the item with the given fully-qualified class name, but only if the named mod is
+   * installed. When it is not, nothing is registered and the tab simply skips this entry.
+   *
+   * <p>The item counterpart of
+   * {@link #initTabBlockIfLoaded(String, String, FMLPreInitializationEvent)}; see there for why
+   * the class is named as a string and why the mod check is sound during pre-initialization.</p>
+   *
+   * @param modId                     the id of the mod that ships the item
+   * @param itemClassName             the fully-qualified name of the item class
+   * @param fmlPreInitializationEvent the {@link FMLPreInitializationEvent} that is being processed
+   *
+   * @return the registered item, or {@code null} if the mod is absent or the class could not be
+   *     loaded
+   *
+   * @since 2026.9
+   */
+  @Nullable
+  public Item initTabItemIfLoaded(String modId, String itemClassName,
+      FMLPreInitializationEvent fmlPreInitializationEvent) {
+    if (!Loader.isModLoaded(modId)) {
+      return null;
+    }
+    Class<? extends Item> itemClass = loadTabElementClass(itemClassName, Item.class,
+        fmlPreInitializationEvent);
+    return itemClass == null ? null : initTabItem(itemClass, fmlPreInitializationEvent);
+  }
+
+  /**
+   * Loads the named class and checks that it is the expected kind of tab element.
+   *
+   * <p>A failure here is logged rather than thrown: the mod is installed, so the class should be
+   * present, but one missing creative-tab entry is a far better outcome than a crash at
+   * pre-initialization.</p>
+   *
+   * @param className                 the fully-qualified name of the class to load
+   * @param expectedType              the type the class must be assignable to
+   * @param fmlPreInitializationEvent the {@link FMLPreInitializationEvent} that is being processed
+   * @param <T>                       the type of tab element
+   *
+   * @return the loaded class, or {@code null} if it could not be loaded or is of the wrong type
+   *
+   * @since 2026.9
+   */
+  @Nullable
+  private <T> Class<? extends T> loadTabElementClass(String className, Class<T> expectedType,
+      FMLPreInitializationEvent fmlPreInitializationEvent) {
+    try {
+      return Class.forName(className).asSubclass(expectedType);
+    } catch (ClassNotFoundException | ClassCastException e) {
+      fmlPreInitializationEvent.getModLog()
+          .error("Error loading tab element class: {}", className, e);
+      return null;
+    }
   }
 
   /**

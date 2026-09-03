@@ -1,7 +1,6 @@
-package com.micatechnologies.minecraft.csm.codeutils.packets;
+package com.micatechnologies.minecraft.csm.tts;
 
 import com.micatechnologies.minecraft.csm.codeutils.CsmPacketUtils;
-import com.micatechnologies.minecraft.csm.technology.TileEntityRedstoneTTS;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;

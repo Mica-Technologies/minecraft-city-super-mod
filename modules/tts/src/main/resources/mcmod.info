@@ -1,0 +1,20 @@
+[
+  {
+    "modid": "${modid}",
+    "name": "${modname}",
+    "description": "The speech engine and the blocks that speak with it for the City Super Mod. Requires CSM: Core and CSM: Technology.",
+    "version": "${version}",
+    "mcversion": "${mcversion}",
+    "credits": "Alex H, Brandon H (Mica Technologies) & Formerly Mcreator",
+    "logoFile": "assets/csm/textures/csm_icon.png",
+    "url": "https://minecraft.micatechnologies.com",
+    "updateUrl": "",
+    "authorList": [
+      "Mica Technologies"
+    ],
+    "dependencies": ["csm", "csm_technology"],
+    "dependants": [],
+    "requiredMods": ["csm", "csm_technology"],
+    "useDependencyInformation": "true"
+  }
+]
