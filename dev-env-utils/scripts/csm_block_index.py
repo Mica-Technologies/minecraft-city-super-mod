@@ -232,6 +232,15 @@ def _tab_files():
     return sorted(files, key=lambda pair: os.path.basename(pair[1]))
 
 
+def tab_files():
+    """Return [(module, tab_file_path)] for every CsmTab*.java in every tree, sorted by name.
+
+    A tab class lives in the module that ships its blocks, so the module here is also the owner
+    of everything the tab registers -- which is what ``csm_layout`` builds ownership from.
+    """
+    return _tab_files()
+
+
 def scan_tabs():
     """Return ({tab_id: [(registry_name, class_name), ...]}, classes) over every source tree."""
     classes = scan_sources()
