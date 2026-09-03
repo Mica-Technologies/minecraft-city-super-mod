@@ -1,6 +1,6 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories;
 
-import com.micatechnologies.minecraft.csm.codeutils.packets.TileEntityVariableSpeedLimitUpdatePacket;
+import com.micatechnologies.minecraft.csm.trafficaccessories.packets.TileEntityVariableSpeedLimitUpdatePacket;
 import com.micatechnologies.minecraft.csm.roads.CsmRoads;
 import javax.annotation.ParametersAreNonnullByDefault;
 import net.minecraft.client.gui.GuiButton;

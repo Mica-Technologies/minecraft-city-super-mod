@@ -19,6 +19,7 @@
 
 def csmModules = [
     [name: 'powergrid', modId: 'csm_powergrid', displayName: 'CSM: Power Grid'],
+    [name: 'roads', modId: 'csm_roads', displayName: 'CSM: Roads & Traffic'],
 ]
 
 // The tasks that launch a game in the dev environment. Not all exist in every configuration

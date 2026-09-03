@@ -1,8 +1,7 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories;
 
-import com.micatechnologies.minecraft.csm.codeutils.packets.TileEntityPortableMessageSignUpdatePacket;
+import com.micatechnologies.minecraft.csm.trafficaccessories.packets.TileEntityPortableMessageSignUpdatePacket;
 import com.micatechnologies.minecraft.csm.roads.CsmRoads;
-import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyColor;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +12,7 @@ import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.gui.ScaledResolution;
 import org.lwjgl.input.Keyboard;
 
-public class BlockOverheadMessageSignGui extends GuiScreen {
+public class BlockPortableMessageSignGui extends GuiScreen {
 
   private static final int BTN_SAVE = 0;
   private static final int BTN_CANCEL = 1;
@@ -21,20 +20,24 @@ public class BlockOverheadMessageSignGui extends GuiScreen {
   private static final int BTN_NEXT_PAGE = 3;
   private static final int BTN_ADD_PAGE = 4;
   private static final int BTN_REMOVE_PAGE = 5;
+  private static final int BTN_FLASHERS = 6;
   private static final int BTN_SPEED_DOWN = 7;
   private static final int BTN_SPEED_UP = 8;
-  private static final int BTN_HOUSING_COLOR = 9;
+  private static final int BTN_COLOR = 9;
+  private static final int BTN_ANGLE = 10;
 
   private static final int FIELD_WIDTH = 200;
   private static final int FIELD_HEIGHT = 20;
-  private static final int MAX_LINE_LENGTH = 16;
+  private static final int MAX_LINE_LENGTH = 10;
   private static final int MAX_PAGES = 8;
 
   private final TileEntityPortableMessageSign tileEntity;
   private final List<String[]> pages = new ArrayList<>();
   private int currentPage = 0;
+  private int flasherMode;
   private int cycleSpeed;
-  private TrafficSignalBodyColor housingColor;
+  private int trailerColor;
+  private int signAngle;
 
   private GuiTextField line1Field;
   private GuiTextField line2Field;
@@ -44,15 +47,22 @@ public class BlockOverheadMessageSignGui extends GuiScreen {
   private GuiButton nextPageBtn;
   private GuiButton addPageBtn;
   private GuiButton removePageBtn;
+  private GuiButton flashersBtn;
+  private GuiButton speedDownBtn;
+  private GuiButton speedUpBtn;
+  private GuiButton colorBtn;
+  private GuiButton angleBtn;
 
-  public BlockOverheadMessageSignGui(TileEntityPortableMessageSign tileEntity) {
+  public BlockPortableMessageSignGui(TileEntityPortableMessageSign tileEntity) {
     this.tileEntity = tileEntity;
     for (int i = 0; i < tileEntity.getPageCount(); i++) {
       String[] src = tileEntity.getPage(i);
       pages.add(new String[]{src[0], src[1], src[2]});
     }
+    this.flasherMode = tileEntity.getFlasherMode();
     this.cycleSpeed = tileEntity.getCycleSpeed();
-    this.housingColor = tileEntity.getHousingColor();
+    this.trailerColor = tileEntity.getTrailerColor();
+    this.signAngle = tileEntity.getSignAngle();
   }
 
   @Override
@@ -64,51 +74,59 @@ public class BlockOverheadMessageSignGui extends GuiScreen {
     ScaledResolution sr = new ScaledResolution(this.mc);
     int centerX = sr.getScaledWidth() / 2;
     int fieldLeft = centerX - FIELD_WIDTH / 2;
-    int halfWidth = (FIELD_WIDTH - 4) / 2;
-    int startY = sr.getScaledHeight() / 2 - 75;
+    int startY = sr.getScaledHeight() / 2 - 105;
 
     int row = startY;
 
+    // Page navigation
     prevPageBtn = new GuiButton(BTN_PREV_PAGE, fieldLeft, row, 40, 20, "< Prev");
     nextPageBtn = new GuiButton(BTN_NEXT_PAGE, fieldLeft + FIELD_WIDTH - 40, row, 40, 20,
         "Next >");
     buttonList.add(prevPageBtn);
     buttonList.add(nextPageBtn);
-    row += 22;
+    row += 25;
 
+    // Text fields
     line1Field = new GuiTextField(10, fontRenderer, fieldLeft, row, FIELD_WIDTH, FIELD_HEIGHT);
     line1Field.setMaxStringLength(MAX_LINE_LENGTH);
     line1Field.setFocused(true);
-    row += 22;
+    row += 25;
 
     line2Field = new GuiTextField(11, fontRenderer, fieldLeft, row, FIELD_WIDTH, FIELD_HEIGHT);
     line2Field.setMaxStringLength(MAX_LINE_LENGTH);
-    row += 22;
+    row += 25;
 
     line3Field = new GuiTextField(12, fontRenderer, fieldLeft, row, FIELD_WIDTH, FIELD_HEIGHT);
     line3Field.setMaxStringLength(MAX_LINE_LENGTH);
-    row += 22;
+    row += 25;
 
-    addPageBtn = new GuiButton(BTN_ADD_PAGE, fieldLeft, row, halfWidth, 20, "+ Add Page");
-    removePageBtn = new GuiButton(BTN_REMOVE_PAGE, fieldLeft + halfWidth + 4, row, halfWidth, 20,
-        "- Remove Page");
+    // Add/remove page
+    addPageBtn = new GuiButton(BTN_ADD_PAGE, fieldLeft, row, 97, 20, "+ Add Page");
+    removePageBtn = new GuiButton(BTN_REMOVE_PAGE, fieldLeft + 103, row, 97, 20, "- Remove Page");
     buttonList.add(addPageBtn);
     buttonList.add(removePageBtn);
-    row += 22;
+    row += 25;
 
-    // Speed and housing color on same row
-    GuiButton speedDownBtn = new GuiButton(BTN_SPEED_DOWN, fieldLeft, row, 20, 20, "-");
-    GuiButton speedUpBtn = new GuiButton(BTN_SPEED_UP, fieldLeft + halfWidth - 20, row, 20, 20,
-        "+");
+    // Flashers toggle + speed controls
+    flashersBtn = new GuiButton(BTN_FLASHERS, fieldLeft, row, 97, 20, "");
+    speedDownBtn = new GuiButton(BTN_SPEED_DOWN, fieldLeft + 103, row, 20, 20, "-");
+    speedUpBtn = new GuiButton(BTN_SPEED_UP, fieldLeft + FIELD_WIDTH - 20, row, 20, 20, "+");
+    buttonList.add(flashersBtn);
     buttonList.add(speedDownBtn);
     buttonList.add(speedUpBtn);
-    buttonList.add(
-        new GuiButton(BTN_HOUSING_COLOR, fieldLeft + halfWidth + 4, row, halfWidth, 20, ""));
-    row += 22;
+    row += 25;
 
-    buttonList.add(new GuiButton(BTN_SAVE, fieldLeft, row, halfWidth, 20, "Save"));
-    buttonList.add(
-        new GuiButton(BTN_CANCEL, fieldLeft + halfWidth + 4, row, halfWidth, 20, "Cancel"));
+    // Color + angle selectors
+    colorBtn = new GuiButton(BTN_COLOR, fieldLeft, row, 97, 20, "");
+    angleBtn = new GuiButton(BTN_ANGLE, fieldLeft + 103, row, 97, 20, "");
+    buttonList.add(colorBtn);
+    buttonList.add(angleBtn);
+    row += 25;
+
+    // Save / Cancel
+    buttonList.add(new GuiButton(BTN_SAVE, fieldLeft, row, FIELD_WIDTH, 20, "Save"));
+    row += 25;
+    buttonList.add(new GuiButton(BTN_CANCEL, fieldLeft, row, FIELD_WIDTH, 20, "Cancel"));
 
     loadPageFields();
     updateButtonStates();
@@ -132,6 +150,9 @@ public class BlockOverheadMessageSignGui extends GuiScreen {
     nextPageBtn.enabled = currentPage < pages.size() - 1;
     addPageBtn.enabled = pages.size() < MAX_PAGES;
     removePageBtn.enabled = pages.size() > 1;
+    flashersBtn.displayString = "Flashers: " + TileEntityPortableMessageSign.FLASHER_MODE_NAMES[flasherMode];
+    colorBtn.displayString = TileEntityPortableMessageSign.COLOR_NAMES[trailerColor];
+    angleBtn.displayString = TileEntityPortableMessageSign.ANGLE_NAMES[signAngle];
   }
 
   @Override
@@ -140,25 +161,19 @@ public class BlockOverheadMessageSignGui extends GuiScreen {
 
     ScaledResolution sr = new ScaledResolution(this.mc);
     int centerX = sr.getScaledWidth() / 2;
-    int fieldLeft = centerX - FIELD_WIDTH / 2;
-    int halfWidth = (FIELD_WIDTH - 4) / 2;
-    int startY = sr.getScaledHeight() / 2 - 75;
+    int startY = sr.getScaledHeight() / 2 - 105;
 
-    drawCenteredString(fontRenderer, "Overhead Message Sign", centerX, startY - 15, 0xFFAA00);
+    drawCenteredString(fontRenderer, "Portable Message Sign", centerX, startY - 15, 0xFFAA00);
 
+    // Page indicator
     String pageLabel = "Page " + (currentPage + 1) + " of " + pages.size();
     drawCenteredString(fontRenderer, pageLabel, centerX, startY + 6, 0xFFFFFF);
 
-    int speedRowY = startY + 5 * 22;
-    int speedCenterX = fieldLeft + halfWidth / 2;
-    drawCenteredString(fontRenderer, "Speed: " + cycleSpeed + "s", speedCenterX,
-        speedRowY + 6, 0xFFFFFF);
-
-    for (GuiButton btn : buttonList) {
-      if (btn.id == BTN_HOUSING_COLOR) {
-        btn.displayString = "Housing: " + housingColor.getFriendlyName();
-      }
-    }
+    // Speed label
+    int speedLabelY = startY + 125 + 6;
+    int speedLabelX = centerX + FIELD_WIDTH / 2 - 50;
+    drawCenteredString(fontRenderer, "Speed: " + cycleSpeed + "s", speedLabelX, speedLabelY,
+        0xFFFFFF);
 
     line1Field.drawTextBox();
     line2Field.drawTextBox();
@@ -218,9 +233,8 @@ public class BlockOverheadMessageSignGui extends GuiScreen {
           });
         }
         CsmRoads.NETWORK.sendToServer(new TileEntityPortableMessageSignUpdatePacket(
-            tileEntity.getPos(), toSend,
-            TileEntityPortableMessageSign.FLASHER_NONE, cycleSpeed, 0, 0,
-            housingColor.toNBT()));
+            tileEntity.getPos(), toSend, flasherMode, cycleSpeed,
+            trailerColor, signAngle));
         this.mc.displayGuiScreen(null);
         break;
 
@@ -268,6 +282,11 @@ public class BlockOverheadMessageSignGui extends GuiScreen {
         }
         break;
 
+      case BTN_FLASHERS:
+        flasherMode = (flasherMode + 1) % TileEntityPortableMessageSign.FLASHER_MODE_COUNT;
+        updateButtonStates();
+        break;
+
       case BTN_SPEED_DOWN:
         if (cycleSpeed > 1) {
           cycleSpeed--;
@@ -280,8 +299,14 @@ public class BlockOverheadMessageSignGui extends GuiScreen {
         }
         break;
 
-      case BTN_HOUSING_COLOR:
-        housingColor = housingColor.getNextColor();
+      case BTN_COLOR:
+        trailerColor = (trailerColor + 1) % TileEntityPortableMessageSign.COLOR_COUNT;
+        updateButtonStates();
+        break;
+
+      case BTN_ANGLE:
+        signAngle = (signAngle + 1) % TileEntityPortableMessageSign.ANGLE_COUNT;
+        updateButtonStates();
         break;
     }
   }
