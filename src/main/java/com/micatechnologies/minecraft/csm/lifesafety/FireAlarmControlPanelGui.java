@@ -1,6 +1,5 @@
 package com.micatechnologies.minecraft.csm.lifesafety;
 
-import com.micatechnologies.minecraft.csm.CsmNetwork;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -259,11 +258,11 @@ public class FireAlarmControlPanelGui extends GuiScreen {
   }
 
   private void send(FireAlarmPanelConfigAction action) {
-    CsmNetwork.sendToServer(new FireAlarmPanelConfigPacket(blockPos, action.ordinal()));
+    CsmLifeSafety.NETWORK.sendToServer(new FireAlarmPanelConfigPacket(blockPos, action.ordinal()));
   }
 
   private void send(FireAlarmPanelConfigAction action, int value) {
-    CsmNetwork.sendToServer(new FireAlarmPanelConfigPacket(blockPos, action.ordinal(), value));
+    CsmLifeSafety.NETWORK.sendToServer(new FireAlarmPanelConfigPacket(blockPos, action.ordinal(), value));
   }
 
   @Override

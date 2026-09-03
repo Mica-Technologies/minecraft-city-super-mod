@@ -1,6 +1,5 @@
 package com.micatechnologies.minecraft.csm.technology;
 
-import com.micatechnologies.minecraft.csm.CsmNetwork;
 import com.micatechnologies.minecraft.csm.codeutils.GuiMultiLineTextField;
 import com.micatechnologies.minecraft.csm.hvac.HvacTemperatureManager;
 import java.io.IOException;
@@ -1266,7 +1265,7 @@ public class ComputerGui extends GuiScreen {
       } else {
         // No live widget to read from, but the cache holds whatever the user typed
         // before they switched tabs — send that so we don't clobber it server-side.
-        CsmNetwork.sendToServer(new ComputerNotepadPacket(tilePos, latestNotepadText, true));
+        CsmTechnology.NETWORK.sendToServer(new ComputerNotepadPacket(tilePos, latestNotepadText, true));
       }
       this.mc.displayGuiScreen(null);
       return;
@@ -1312,7 +1311,7 @@ public class ComputerGui extends GuiScreen {
   private void sendNotepad(boolean shutdown) {
     String text = notepad == null ? latestNotepadText : notepad.getText();
     latestNotepadText = text;
-    CsmNetwork.sendToServer(new ComputerNotepadPacket(tilePos, text, shutdown));
+    CsmTechnology.NETWORK.sendToServer(new ComputerNotepadPacket(tilePos, text, shutdown));
   }
 
   // === Calculator logic ===

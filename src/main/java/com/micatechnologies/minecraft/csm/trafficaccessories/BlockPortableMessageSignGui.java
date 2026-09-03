@@ -1,7 +1,7 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories;
 
-import com.micatechnologies.minecraft.csm.CsmNetwork;
 import com.micatechnologies.minecraft.csm.codeutils.packets.TileEntityPortableMessageSignUpdatePacket;
+import com.micatechnologies.minecraft.csm.roads.CsmRoads;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -232,7 +232,7 @@ public class BlockPortableMessageSignGui extends GuiScreen {
               p[0].toUpperCase(), p[1].toUpperCase(), p[2].toUpperCase()
           });
         }
-        CsmNetwork.sendToServer(new TileEntityPortableMessageSignUpdatePacket(
+        CsmRoads.NETWORK.sendToServer(new TileEntityPortableMessageSignUpdatePacket(
             tileEntity.getPos(), toSend, flasherMode, cycleSpeed,
             trailerColor, signAngle));
         this.mc.displayGuiScreen(null);

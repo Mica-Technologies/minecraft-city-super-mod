@@ -1,7 +1,7 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories;
 
-import com.micatechnologies.minecraft.csm.CsmNetwork;
 import com.micatechnologies.minecraft.csm.codeutils.packets.DynamicStreetSignUpdatePacket;
+import com.micatechnologies.minecraft.csm.roads.CsmRoads;
 import com.micatechnologies.minecraft.csm.trafficaccessories.streetsign.StreetSignData;
 import com.micatechnologies.minecraft.csm.trafficaccessories.streetsign.StreetSignEmblemKind;
 import com.micatechnologies.minecraft.csm.trafficaccessories.streetsign.StreetSignTemplates;
@@ -727,7 +727,7 @@ public class DynamicStreetSignGui extends GuiScreen {
         return;
 
       case BTN_SAVE:
-        CsmNetwork.sendToServer(
+        CsmRoads.NETWORK.sendToServer(
             new DynamicStreetSignUpdatePacket(tileEntity.getPos(), data.toJson()));
         this.mc.displayGuiScreen(null);
         return;

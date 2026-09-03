@@ -1,6 +1,6 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
-import com.micatechnologies.minecraft.csm.CsmNetwork;
+import com.micatechnologies.minecraft.csm.roads.CsmRoads;
 import java.io.IOException;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
@@ -170,7 +170,7 @@ public class SignalControllerConfigGui extends GuiScreen {
     } else if (button.id == VISUAL_VIEW_BUTTON_ID) {
       mc.displayGuiScreen(new SignalControllerVisualGui(controller));
     } else if (button.id >= 0 && button.id < SignalControllerConfigAction.values().length) {
-      CsmNetwork.sendToServer(new SignalControllerConfigPacket(blockPos, button.id));
+      CsmRoads.NETWORK.sendToServer(new SignalControllerConfigPacket(blockPos, button.id));
     }
   }
 

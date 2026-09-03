@@ -1,7 +1,6 @@
 package com.micatechnologies.minecraft.csm.technology;
 
 import com.micatechnologies.minecraft.csm.CsmConstants;
-import com.micatechnologies.minecraft.csm.CsmNetwork;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractTickableTileEntity;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -170,7 +169,7 @@ public class TileEntitySpeaker extends AbstractTickableTileEntity {
       if (!(obj instanceof EntityPlayerMP)) continue;
       EntityPlayerMP p = (EntityPlayerMP) obj;
       if (ambientActivePlayers.contains(p.getUniqueID())) {
-        CsmNetwork.sendTo(stopPacket, p);
+        CsmTechnology.NETWORK.sendTo(stopPacket, p);
       }
     }
     ambientActivePlayers.clear();
@@ -207,10 +206,10 @@ public class TileEntitySpeaker extends AbstractTickableTileEntity {
           if (startPacket == null) {
             startPacket = SpeakerAmbientPacket.start(pos, ambientSound, AMBIENT_HEARING_RANGE);
           }
-          CsmNetwork.sendTo(startPacket, p);
+          CsmTechnology.NETWORK.sendTo(startPacket, p);
         }
       } else if (ambientActivePlayers.contains(id)) {
-        CsmNetwork.sendTo(SpeakerAmbientPacket.stop(pos), p);
+        CsmTechnology.NETWORK.sendTo(SpeakerAmbientPacket.stop(pos), p);
       }
     }
 

@@ -1,10 +1,12 @@
 package com.micatechnologies.minecraft.csm.technology;
 
+import com.micatechnologies.minecraft.csm.CsmNetwork;
 import com.micatechnologies.minecraft.csm.Tags;
 import com.micatechnologies.minecraft.csm.codeutils.CsmLifecycleHooks;
 import com.micatechnologies.minecraft.csm.codeutils.gui.CsmGuiRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.relauncher.Side;
 import org.apache.logging.log4j.Logger;
 
 /**
@@ -32,6 +34,15 @@ public class CsmTechnology {
   public static final String MOD_ID = "csm_technology";
   public static final String MOD_NAME = "CSM: Technology";
 
+  /**
+   * This module's network channel. Its packets are registered below, in a fixed order, so
+   * their discriminators are the same on every client and server regardless of which other
+   * modules are installed.
+   *
+   * @since 2026.9
+   */
+  public static final CsmNetwork NETWORK = CsmNetwork.create(MOD_ID);
+
   @Mod.Instance(MOD_ID)
   public static CsmTechnology instance;
 
@@ -54,5 +65,23 @@ public class CsmTechnology {
     // lambda resolves the call only when it runs, and the client disconnect hooks only ever run
     // on the client.
     CsmLifecycleHooks.onClientDisconnect(() -> SpeakerAmbientPacketHandler.stopAllSounds());
+
+    // The packet order here fixes this channel's discriminators; only append to it.
+    NETWORK.registerMessage(
+        ComputerNotepadHandler.class,
+        ComputerNotepadPacket.class,
+        Side.SERVER);
+    NETWORK.registerMessage(
+        SpeakerAmbientPacketHandler.class,
+        SpeakerAmbientPacket.class,
+        Side.CLIENT);
+    NETWORK.registerMessage(
+        FareVendingPurchaseHandler.class,
+        FareVendingPurchasePacket.class,
+        Side.SERVER);
+    NETWORK.registerMessage(
+        FareGateOpModeHandler.class,
+        FareGateOpModePacket.class,
+        Side.SERVER);
   }
 }

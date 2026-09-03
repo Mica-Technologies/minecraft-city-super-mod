@@ -1,6 +1,6 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
-import com.micatechnologies.minecraft.csm.CsmNetwork;
+import com.micatechnologies.minecraft.csm.roads.CsmRoads;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyColor;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyStyle;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBulbStyle;
@@ -404,7 +404,7 @@ public class SignalHeadConfigGui extends GuiScreen {
     }
     if (button.id == PASTE_BUTTON_ID) {
       if (clipboard != null) {
-        CsmNetwork.sendToServer(new SignalHeadAppearancePacket(blockPos,
+        CsmRoads.NETWORK.sendToServer(new SignalHeadAppearancePacket(blockPos,
             clipboard.bodyColor.toNBT(), clipboard.doorColor.toNBT(), clipboard.visorColor.toNBT(),
             clipboard.visorType.toNBT(), clipboard.bodyStyle.toNBT(), clipboard.bulbStyle.toNBT(),
             clipboard.mountColor.toNBT(), clipboard.agingEnabled, clipboard.horizontalFlip));
@@ -414,14 +414,14 @@ public class SignalHeadConfigGui extends GuiScreen {
 
     if (mode == Mode.ALL_SECTIONS && button.id >= 0
         && button.id < SignalHeadConfigAction.values().length) {
-      CsmNetwork.sendToServer(new SignalHeadConfigPacket(blockPos, button.id));
+      CsmRoads.NETWORK.sendToServer(new SignalHeadConfigPacket(blockPos, button.id));
       return;
     }
 
     if (mode == Mode.PER_SECTION && button.id >= PER_SECTION_ID_OFFSET) {
       int localOrdinal = button.id - PER_SECTION_ID_OFFSET;
       if (localOrdinal < SignalHeadSectionConfigAction.values().length) {
-        CsmNetwork.sendToServer(new SignalHeadSectionConfigPacket(blockPos, selectedSection,
+        CsmRoads.NETWORK.sendToServer(new SignalHeadSectionConfigPacket(blockPos, selectedSection,
             localOrdinal));
       }
     }

@@ -1,6 +1,6 @@
 package com.micatechnologies.minecraft.csm.novelties;
 
-import com.micatechnologies.minecraft.csm.CsmNetwork;
+import com.micatechnologies.minecraft.csm.furnishings.CsmFurnishings;
 import java.io.IOException;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
@@ -370,7 +370,7 @@ public class ArcadeGui extends GuiScreen {
     if (loadedIndex >= 0 && finalScore > highScores[loadedIndex]) {
       highScores[loadedIndex] = finalScore;
       highScoreHolders[loadedIndex] = this.mc.player == null ? "" : this.mc.player.getName();
-      CsmNetwork.sendToServer(new ArcadeHighScorePacket(cabinetPos,
+      CsmFurnishings.NETWORK.sendToServer(new ArcadeHighScorePacket(cabinetPos,
           ArcadeCatalog.GAME_IDS[loadedIndex], finalScore));
     }
   }

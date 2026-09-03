@@ -1,7 +1,7 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories;
 
-import com.micatechnologies.minecraft.csm.CsmNetwork;
 import com.micatechnologies.minecraft.csm.codeutils.packets.TileEntityPortableMessageSignUpdatePacket;
+import com.micatechnologies.minecraft.csm.roads.CsmRoads;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyColor;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -217,7 +217,7 @@ public class BlockOverheadMessageSignGui extends GuiScreen {
               p[0].toUpperCase(), p[1].toUpperCase(), p[2].toUpperCase()
           });
         }
-        CsmNetwork.sendToServer(new TileEntityPortableMessageSignUpdatePacket(
+        CsmRoads.NETWORK.sendToServer(new TileEntityPortableMessageSignUpdatePacket(
             tileEntity.getPos(), toSend,
             TileEntityPortableMessageSign.FLASHER_NONE, cycleSpeed, 0, 0,
             housingColor.toNBT()));

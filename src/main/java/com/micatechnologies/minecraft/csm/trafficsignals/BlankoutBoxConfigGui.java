@@ -1,6 +1,6 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
-import com.micatechnologies.minecraft.csm.CsmNetwork;
+import com.micatechnologies.minecraft.csm.roads.CsmRoads;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignal;
 import java.io.IOException;
 import net.minecraft.block.state.IBlockState;
@@ -113,7 +113,7 @@ public class BlankoutBoxConfigGui extends GuiScreen {
             mc.displayGuiScreen( null );
         }
         else if ( button.id >= 0 && button.id < BlankoutBoxConfigAction.values().length ) {
-            CsmNetwork.sendToServer( new BlankoutBoxConfigPacket( blockPos, button.id ) );
+            CsmRoads.NETWORK.sendToServer( new BlankoutBoxConfigPacket( blockPos, button.id ) );
         }
     }
 

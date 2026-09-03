@@ -1,6 +1,5 @@
 package com.micatechnologies.minecraft.csm.lifesafety;
 
-import com.micatechnologies.minecraft.csm.CsmNetwork;
 import com.micatechnologies.minecraft.csm.api.firealarm.CsmFireAlarmQuery;
 import com.micatechnologies.minecraft.csm.api.firealarm.FireAlarmEvent;
 import com.micatechnologies.minecraft.csm.api.firealarm.FireAlarmPanelRegistry;
@@ -855,13 +854,13 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
 
       if (inRange && !activePlayers.contains(playerId)) {
         // Player entered range - start their client-side MovingSound
-        CsmNetwork.sendTo(
+        CsmLifeSafety.NETWORK.sendTo(
             FireAlarmSoundPacket.start(channel, soundName, hearingRange, positions, glitchy),
             player);
         activePlayers.add(playerId);
       } else if (!inRange && activePlayers.contains(playerId)) {
         // Player left range - stop their client-side MovingSound for this channel
-        CsmNetwork.sendTo(FireAlarmSoundPacket.stop(channel), player);
+        CsmLifeSafety.NETWORK.sendTo(FireAlarmSoundPacket.stop(channel), player);
         activePlayers.remove(playerId);
       }
     }
@@ -885,7 +884,7 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
     FireAlarmSoundPacket stopPacket = FireAlarmSoundPacket.stop(channel);
     for (EntityPlayerMP player : players) {
       if (activePlayers.contains(player.getUniqueID())) {
-        CsmNetwork.sendTo(stopPacket, player);
+        CsmLifeSafety.NETWORK.sendTo(stopPacket, player);
       }
     }
     activePlayers.clear();
@@ -906,7 +905,7 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
     FireAlarmSoundPacket stopAllPacket = FireAlarmSoundPacket.stopAll();
     for (EntityPlayerMP player : players) {
       if (allActive.contains(player.getUniqueID())) {
-        CsmNetwork.sendTo(stopAllPacket, player);
+        CsmLifeSafety.NETWORK.sendTo(stopAllPacket, player);
       }
     }
     channelActivePlayers.clear();

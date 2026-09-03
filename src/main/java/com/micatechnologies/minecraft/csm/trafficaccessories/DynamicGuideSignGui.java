@@ -1,7 +1,7 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories;
 
-import com.micatechnologies.minecraft.csm.CsmNetwork;
 import com.micatechnologies.minecraft.csm.codeutils.packets.DynamicGuideSignUpdatePacket;
+import com.micatechnologies.minecraft.csm.roads.CsmRoads;
 import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.CornerStyle;
 import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.ExitTabData;
 import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.GuideSignArrowType;
@@ -984,7 +984,7 @@ public class DynamicGuideSignGui extends GuiScreen {
 
       case BTN_SAVE:
         syncAllFields();
-        CsmNetwork.sendToServer(
+        CsmRoads.NETWORK.sendToServer(
             new DynamicGuideSignUpdatePacket(tileEntity.getPos(), data.toJson()));
         this.mc.displayGuiScreen(null);
         break;

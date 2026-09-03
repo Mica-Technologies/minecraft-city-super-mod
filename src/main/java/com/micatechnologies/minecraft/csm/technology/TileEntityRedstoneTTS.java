@@ -1,9 +1,9 @@
 package com.micatechnologies.minecraft.csm.technology;
 
-import com.micatechnologies.minecraft.csm.CsmNetwork;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractTileEntity;
 import com.micatechnologies.minecraft.csm.codeutils.packets.TileEntityRedstoneTTSInvokePacket;
 import com.micatechnologies.minecraft.csm.codeutils.packets.TileEntityRedstoneTTSUpdatePacket;
+import com.micatechnologies.minecraft.csm.tts.CsmTextToSpeech;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -117,7 +117,7 @@ public class TileEntityRedstoneTTS extends AbstractTileEntity {
     TileEntityRedstoneTTSInvokePacket packet =
         new TileEntityRedstoneTTSInvokePacket(ttsString, ttsVoice);
     for (EntityPlayerMP player : recipients) {
-      CsmNetwork.sendTo(packet, player);
+      CsmTextToSpeech.NETWORK.sendTo(packet, player);
     }
   }
 
@@ -236,7 +236,7 @@ public class TileEntityRedstoneTTS extends AbstractTileEntity {
 
   public void setTtsConfigFromGui(String newTtsString, String newTtsVoice) {
     if (world.isRemote) {
-      CsmNetwork.sendToServer(
+      CsmTextToSpeech.NETWORK.sendToServer(
           new TileEntityRedstoneTTSUpdatePacket(this.pos, newTtsString, newTtsVoice));
     } else {
       setTtsString(newTtsString);

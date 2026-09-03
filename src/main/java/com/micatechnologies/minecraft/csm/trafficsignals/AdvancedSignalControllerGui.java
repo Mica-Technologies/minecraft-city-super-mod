@@ -1,6 +1,6 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
-import com.micatechnologies.minecraft.csm.CsmNetwork;
+import com.micatechnologies.minecraft.csm.roads.CsmRoads;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalCoordinationMode;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalFlashOverride;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalPhaseMovement;
@@ -320,7 +320,7 @@ public class AdvancedSignalControllerGui extends GuiScreen {
   }
 
   private void send(String action, int index, long value) {
-    CsmNetwork.sendToServer(new AdvancedSignalControllerConfigPacket(blockPos, action, index, value));
+    CsmRoads.NETWORK.sendToServer(new AdvancedSignalControllerConfigPacket(blockPos, action, index, value));
   }
 
   // endregion

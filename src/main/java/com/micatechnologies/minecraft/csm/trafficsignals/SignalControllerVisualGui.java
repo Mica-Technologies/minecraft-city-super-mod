@@ -1,6 +1,6 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
-import com.micatechnologies.minecraft.csm.CsmNetwork;
+import com.micatechnologies.minecraft.csm.roads.CsmRoads;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalControllerMode;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalControllerNBTKeys;
 import java.io.IOException;
@@ -448,7 +448,7 @@ public class SignalControllerVisualGui extends GuiScreen {
     else if (field == fieldPedSignal) paramKey = "pedSignal";
     else return;
 
-    CsmNetwork.sendToServer(new SignalControllerSetValuePacket(blockPos, paramKey, ticks));
+    CsmRoads.NETWORK.sendToServer(new SignalControllerSetValuePacket(blockPos, paramKey, ticks));
   }
 
   @Override
@@ -470,14 +470,14 @@ public class SignalControllerVisualGui extends GuiScreen {
         int ordinal = controller.getModeOrdinal();
         int total = TrafficSignalControllerMode.values().length;
         int prev = (ordinal - 1 + total) % total;
-        CsmNetwork.sendToServer(new SignalControllerSetValuePacket(blockPos, "mode", prev));
+        CsmRoads.NETWORK.sendToServer(new SignalControllerSetValuePacket(blockPos, "mode", prev));
         break;
       }
       case BTN_MODE_NEXT: {
         int ordinal = controller.getModeOrdinal();
         int total = TrafficSignalControllerMode.values().length;
         int next = (ordinal + 1) % total;
-        CsmNetwork.sendToServer(new SignalControllerSetValuePacket(blockPos, "mode", next));
+        CsmRoads.NETWORK.sendToServer(new SignalControllerSetValuePacket(blockPos, "mode", next));
         break;
       }
       case BTN_COPY:
@@ -489,23 +489,23 @@ public class SignalControllerVisualGui extends GuiScreen {
         }
         break;
       case BTN_NIGHTLY:
-        CsmNetwork.sendToServer(new SignalControllerConfigPacket(blockPos,
+        CsmRoads.NETWORK.sendToServer(new SignalControllerConfigPacket(blockPos,
             SignalControllerConfigAction.TOGGLE_NIGHTLY_FLASH.ordinal()));
         break;
       case BTN_POWER_LOSS:
-        CsmNetwork.sendToServer(new SignalControllerConfigPacket(blockPos,
+        CsmRoads.NETWORK.sendToServer(new SignalControllerConfigPacket(blockPos,
             SignalControllerConfigAction.TOGGLE_POWER_LOSS_FLASH.ordinal()));
         break;
       case BTN_OVERLAP_PED:
-        CsmNetwork.sendToServer(new SignalControllerConfigPacket(blockPos,
+        CsmRoads.NETWORK.sendToServer(new SignalControllerConfigPacket(blockPos,
             SignalControllerConfigAction.TOGGLE_OVERLAP_PED_SIGNALS.ordinal()));
         break;
       case BTN_ALL_RED_FLASH:
-        CsmNetwork.sendToServer(new SignalControllerConfigPacket(blockPos,
+        CsmRoads.NETWORK.sendToServer(new SignalControllerConfigPacket(blockPos,
             SignalControllerConfigAction.TOGGLE_ALL_RED_FLASH.ordinal()));
         break;
       case BTN_CLEAR_FAULTS:
-        CsmNetwork.sendToServer(new SignalControllerConfigPacket(blockPos,
+        CsmRoads.NETWORK.sendToServer(new SignalControllerConfigPacket(blockPos,
             SignalControllerConfigAction.CLEAR_FAULTS.ordinal()));
         break;
     }
@@ -535,7 +535,7 @@ public class SignalControllerVisualGui extends GuiScreen {
     sendIfPresent(source, TrafficSignalControllerNBTKeys.LEAD_PEDESTRIAN_INTERVAL_TIME,
         TrafficSignalControllerNBTKeys.LEGACY_LEAD_PEDESTRIAN_INTERVAL_TIME, "lpi");
     if (source.hasKey(TrafficSignalControllerNBTKeys.MODE)) {
-      CsmNetwork.sendToServer(new SignalControllerSetValuePacket(blockPos, "mode",
+      CsmRoads.NETWORK.sendToServer(new SignalControllerSetValuePacket(blockPos, "mode",
           source.getInteger(TrafficSignalControllerNBTKeys.MODE)));
     }
   }
@@ -549,7 +549,7 @@ public class SignalControllerVisualGui extends GuiScreen {
       keyToUse = legacyKey;
     }
     if (keyToUse != null) {
-      CsmNetwork.sendToServer(new SignalControllerSetValuePacket(blockPos, paramKey,
+      CsmRoads.NETWORK.sendToServer(new SignalControllerSetValuePacket(blockPos, paramKey,
           source.getLong(keyToUse)));
     }
   }

@@ -1,7 +1,7 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories;
 
-import com.micatechnologies.minecraft.csm.CsmNetwork;
 import com.micatechnologies.minecraft.csm.codeutils.packets.TileEntityVariableSpeedLimitUpdatePacket;
+import com.micatechnologies.minecraft.csm.roads.CsmRoads;
 import javax.annotation.ParametersAreNonnullByDefault;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
@@ -105,7 +105,7 @@ public class BlockPortableSpeedLimitGui extends GuiScreen {
   protected void actionPerformed(GuiButton button) {
     switch (button.id) {
       case BTN_SAVE:
-        CsmNetwork.sendToServer(new TileEntityVariableSpeedLimitUpdatePacket(
+        CsmRoads.NETWORK.sendToServer(new TileEntityVariableSpeedLimitUpdatePacket(
             tileEntity.getPos(), speedValue, flasherMode, trailerColor, signAngle));
         this.mc.displayGuiScreen(null);
         break;
