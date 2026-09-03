@@ -46,9 +46,17 @@ csmModules.each { m ->
         java.srcDirs = ["${moduleDir}/src/main/java"]
         resources.srcDirs = ["${moduleDir}/src/main/resources"]
     }
-    // Minecraft + Core, nothing else: the compiler is the module boundary.
+    // Minecraft + Core, nothing else: the compiler is the module boundary. A module that
+    // declares `deps: ['other']` also sees that module's classes (Text to Speech needs
+    // Technology, because it carries the Redstone TTS block that Technology's tab lists); list
+    // dependencies before dependants in csmModules so the source set already exists.
     ss.compileClasspath += sourceSets.main.compileClasspath + sourceSets.main.output
     ss.runtimeClasspath += sourceSets.main.runtimeClasspath + sourceSets.main.output
+    (m.deps ?: []).each { depName ->
+        def dep = sourceSets.getByName(depName)
+        ss.compileClasspath += dep.output
+        ss.runtimeClasspath += dep.output
+    }
     // Jabel and the other annotation processors are declared on Core's configuration only;
     // without this the module compile finds the Jabel plugin on its classpath but not the
     // processor path and dies with a ClassNotFoundException deep inside ByteBuddy.
