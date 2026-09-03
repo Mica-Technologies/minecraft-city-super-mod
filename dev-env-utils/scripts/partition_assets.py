@@ -602,11 +602,23 @@ def sound_owners():
 
 def split_sounds(where, apply_changes, report):
     """Split sounds.json per module and return {ogg rel path: module}."""
+    # Before the split every event is in Core's file; afterwards they are spread across the
+    # module files. Either way the mod's sound list is their union, which is what Minecraft
+    # merges at runtime, so reading all of them makes the script re-runnable.
     core_json = "assets/csm/sounds.json"
     path = os.path.join(resource_root(CORE), core_json.replace("/", os.sep))
-    raw = io.open(path, "rb").read()
-    newline = "\r\n" if b"\r\n" in raw else "\n"
-    data = json.loads(raw.decode("utf-8"), object_pairs_hook=collections.OrderedDict)
+    sources = [path] if os.path.isfile(path) else [
+        os.path.join(resource_root(module), core_json.replace("/", os.sep))
+        for module in MODULES]
+    newline = "\r\n"
+    data = collections.OrderedDict()
+    for source in sources:
+        if not os.path.isfile(source):
+            continue
+        raw = io.open(source, "rb").read()
+        newline = "\r\n" if b"\r\n" in raw else "\n"
+        data.update(json.loads(raw.decode("utf-8"),
+                               object_pairs_hook=collections.OrderedDict))
 
     owners, problems = sound_owners()
     report("SOUNDS")
@@ -656,9 +668,11 @@ def split_sounds(where, apply_changes, report):
         if core_events:
             write_json(path, core_events, newline)
             report("  Core keeps sounds.json with {0} events".format(len(core_events)))
-        else:
+        elif os.path.isfile(path):
             git(["rm", "-q", "--", os.path.relpath(path, REPO).replace(os.sep, "/")])
             report("  Core's sounds.json is now empty and has been deleted")
+        else:
+            report("  Core has no sounds.json, as intended")
     return ogg_owner
 
 
