@@ -183,6 +183,38 @@ accessories (backplates, mount kits, fatigue mitigators, street name signs, hori
 pole mounts, mini solar panel). Poles themselves are intentionally **not** marked — snow
 on a pole cap reads as realistic.
 
+### Traffic Pole Mount Opt-out (ICsmTrafficPoleIgnored, ICsmTrafficPoleStateIgnored)
+
+A traffic pole decides which of its faces grow a mount stub by looking at what is next to them
+(`AbstractBlockTrafficPole.isMountableAdjacent`). A block that already draws its own mounting
+hardware -- crosswalk signal mounts, signal heads, sensor housings, mast arm curves, beacons --
+would end up with two contradictory connections on the same joint, so it opts out by implementing
+the empty marker `ICsmTrafficPoleIgnored`.
+
+The marker is matched by assignability, exactly as the class entries in `IGNORE_BLOCK` are, so
+implementing it on an abstract base (`AbstractBlockControllableSignalHead`,
+`AbstractBlockControllableCrosswalkSignalNew`) covers every subclass. `IGNORE_BLOCK` itself now
+holds only the marker plus the vanilla blocks (snow, plants, rails, wires, torches, carpets),
+which cannot implement a CSM interface -- that is what keeps `codeutils` free of any subsystem
+import.
+
+`ICsmTrafficPoleStateIgnored` is the state-aware form, for a block whose mounting hardware is
+part of its configuration rather than its type:
+
+```java
+public interface ICsmTrafficPoleStateIgnored {
+    boolean isIgnoredForTrafficPole(IBlockAccess world, BlockPos pos);
+}
+```
+
+The pole asks it per placed block, so the block can be ignored in one state and mounted in
+another. `BlockDynamicStreetSign` is the only implementer today: hanging blades are ignored, flat
+blades stay mountable. It runs during chunk load too, so an implementation must cope with the tile
+entity not being attached yet.
+
+Both filters sit alongside the user's `trafficPoleIgnoreBlocks` config list, which is matched by
+registry name and is unaffected by either interface.
+
 ## AbstractBlockRotatableNSEW (4-Direction)
 
 **Extends:** `AbstractBlock`

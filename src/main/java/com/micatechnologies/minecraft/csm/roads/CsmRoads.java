@@ -14,6 +14,7 @@ import com.micatechnologies.minecraft.csm.codeutils.packets.TileEntityVariableSp
 import com.micatechnologies.minecraft.csm.codeutils.packets.TileEntityVariableSpeedLimitUpdatePacket;
 import com.micatechnologies.minecraft.csm.trafficaccessories.LaneControlSignalConfigPacket;
 import com.micatechnologies.minecraft.csm.trafficaccessories.LaneControlSignalConfigPacketHandler;
+import com.micatechnologies.minecraft.csm.materials.CsmFabricatorCosts;
 import com.micatechnologies.minecraft.csm.trafficaccessories.TrafficAccessoriesGuiProvider;
 import com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.SpanWireMountConfigPacket;
 import com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.SpanWireMountConfigPacketHandler;
@@ -38,6 +39,7 @@ import com.micatechnologies.minecraft.csm.trafficsignals.SignalHeadConfigPacket;
 import com.micatechnologies.minecraft.csm.trafficsignals.SignalHeadConfigPacketHandler;
 import com.micatechnologies.minecraft.csm.trafficsignals.SignalHeadSectionConfigPacket;
 import com.micatechnologies.minecraft.csm.trafficsignals.SignalHeadSectionConfigPacketHandler;
+import com.micatechnologies.minecraft.csm.trafficsignals.TrafficSignalsFabricatorRules;
 import com.micatechnologies.minecraft.csm.trafficsignals.TrafficSignalsGuiProvider;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -93,6 +95,11 @@ public class CsmRoads {
 
     CsmGuiRegistry.register(new TrafficSignalsGuiProvider());
     CsmGuiRegistry.register(new TrafficAccessoriesGuiProvider());
+
+    // Safe here: Fabricator costs are first read at post-initialization and thereafter only
+    // when a Fabricator GUI is opened, both after every mod's pre-initialization.
+    CsmFabricatorCosts.registerRule(TrafficSignalsFabricatorRules.TAB_ID,
+        TrafficSignalsFabricatorRules::price);
 
     // A lambda, not APSSoundPacketHandler::stopAllSounds: that method is @SideOnly(CLIENT), so
     // it is stripped from the class on a dedicated server and a method reference — which

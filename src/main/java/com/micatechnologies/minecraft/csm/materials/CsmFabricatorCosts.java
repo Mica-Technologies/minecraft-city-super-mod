@@ -5,16 +5,11 @@ import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockSlab;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockStairs;
 import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmBlock;
-import com.micatechnologies.minecraft.csm.lifesafety.AbstractBlockFireAlarmActivator;
-import com.micatechnologies.minecraft.csm.lifesafety.AbstractBlockFireAlarmDetector;
-import com.micatechnologies.minecraft.csm.lifesafety.AbstractBlockFireAlarmSounder;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockTrafficSignalController;
-import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignal;
-import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockTrafficSignalSensor;
-import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockTrafficSignalSensorHZEight;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
@@ -56,7 +51,8 @@ import net.minecraft.creativetab.CreativeTabs;
  *       fasteners rather than the electronics of its subsystem.</li>
  *   <li>Optical devices take a sensing element.</li>
  *   <li>Equipment with a dedicated base class: fire alarm appliances, signal heads, detection
- *       sensors, the controller cabinet.</li>
+ *       sensors, the controller cabinet. Those live with their subsystem, as an
+ *       {@link ICsmFabricatorCostRule} registered for the tab.</li>
  *   <li>Everything else takes its subsystem default.</li>
  * </ol>
  *
@@ -111,8 +107,42 @@ public final class CsmFabricatorCosts {
       "record", "player", "jukebox", "radio", "television", "tv",
   };
 
+  /**
+   * The subsystem cost rules, by creative tab id. At most one rule per tab.
+   *
+   * @since 2026.9
+   */
+  private static final Map<String, ICsmFabricatorCostRule> RULES = new HashMap<>();
+
   private CsmFabricatorCosts() {
     throw new UnsupportedOperationException("CsmFabricatorCosts is a utility class.");
+  }
+
+  /**
+   * Registers a subsystem's pricing rule for one creative tab. Call this from the owning module's
+   * pre-initialization.
+   *
+   * <p>Pre-initialization is early enough: costs are first read at post-initialization, for the
+   * "Fabricator coverage" log line, and thereafter only when a Fabricator GUI is opened. Forge
+   * runs every mod's pre-initialization before any of that, so no rule can be registered too
+   * late to be seen.
+   *
+   * @param tabId the creative tab id the rule prices, as returned by {@code CsmTab.getTabId}
+   * @param rule  the rule to ask for blocks in that tab
+   *
+   * @throws IllegalStateException if a rule is already registered for the tab; two rules for one
+   *                               tab means one of them would silently never be asked
+   * @since 2026.9
+   */
+  public static void registerRule(String tabId, ICsmFabricatorCostRule rule) {
+    if (tabId == null || rule == null) {
+      throw new IllegalArgumentException("A Fabricator cost rule and its tab id are required.");
+    }
+    ICsmFabricatorCostRule existing = RULES.put(tabId, rule);
+    if (existing != null) {
+      throw new IllegalStateException(
+          "A Fabricator cost rule is already registered for tab " + tabId);
+    }
   }
 
   /**
@@ -195,7 +225,7 @@ public final class CsmFabricatorCosts {
             FabricatorIngredient.part(CsmParts.SHEET_METAL, 1));
 
       case TAB_LIFE_SAFETY:
-        return lifeSafetyCost(block, registryName);
+        return equipmentCost(tabId, block, registryName);
 
       case TAB_LIGHTING:
         return cost(FabricatorIngredient.part(CsmParts.LED_MODULE, 1),
@@ -228,7 +258,7 @@ public final class CsmFabricatorCosts {
             FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
 
       case TAB_TRAFFIC_SIGNALS:
-        return trafficSignalCost(block);
+        return equipmentCost(tabId, block, registryName);
 
       case TAB_FURNITURE:
         if (hasAnyWord(registryName, METAL_FURNITURE_WORDS)) {
@@ -328,55 +358,29 @@ public final class CsmFabricatorCosts {
   }
 
   /**
-   * Prices fire alarm and life safety equipment by appliance type.
+   * Prices a block in a tab whose equipment rules belong to the subsystem that owns them.
    *
-   * <p><b>Order matters, most specific first.</b> {@code AbstractBlockFireAlarmDetector} extends
-   * {@code AbstractBlockFireAlarmActivator}, and {@code AbstractBlockFireAlarmSounderVoiceEvac}
-   * extends {@code AbstractBlockFireAlarmSounder}, so testing the parent first would swallow the
-   * subclass and leave its branch unreachable. Detectors were previously priced as pull stations
-   * for exactly that reason.</p>
+   * <p>Asks the {@link ICsmFabricatorCostRule} registered for the tab, if any. A rule that is
+   * absent — its module is not installed — or silent (a {@code null} answer, meaning the block is
+   * none of the equipment types it knows) leaves the block on the generic equipment cost below,
+   * which is what the tab's branch returned directly before the rules moved out of Core. The
+   * fallback stays here because it is generic: it names no subsystem, and a tab with no rule
+   * still needs it.
+   *
+   * @param tabId        the block's creative tab id
+   * @param block        the block to price
+   * @param registryName the block's registry name, for display-name lookups
+   *
+   * @return the ingredients for the block
    */
-  private static List<FabricatorIngredient> lifeSafetyCost(Block block, String registryName) {
-    // Sprinklers are classed as detectors but are a glass bulb on a brass body, not an
-    // electronic sensor.
-    if (CsmBlockDisplayNames.hasWord(registryName, "sprinkler")) {
-      return cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 1),
-          FabricatorIngredient.part(CsmParts.LENS_ASSEMBLY, 1));
-    }
-    // Detectors sense; check before activators, which they extend.
-    if (block instanceof AbstractBlockFireAlarmDetector) {
-      return cost(FabricatorIngredient.part(CsmParts.OPTICAL_SENSOR, 1),
-          FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1));
-    }
-    if (block instanceof AbstractBlockFireAlarmActivator) {
-      return cost(FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1),
-          FabricatorIngredient.part(CsmParts.SHEET_METAL, 1));
-    }
-    // Voice evac speakers are a kind of sounder and cost the same, so one check covers both.
-    if (block instanceof AbstractBlockFireAlarmSounder) {
-      return cost(FabricatorIngredient.part(CsmParts.SOUNDER_DRIVER, 1),
-          FabricatorIngredient.part(CsmParts.ENCLOSURE_SHELL, 1));
-    }
-    return cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 1),
-        FabricatorIngredient.part(CsmParts.WIRING_HARNESS, 1));
-  }
-
-  /** Prices traffic signal equipment by role: detection, control, or signal head. */
-  private static List<FabricatorIngredient> trafficSignalCost(Block block) {
-    if (block instanceof AbstractBlockTrafficSignalSensor
-        || block instanceof AbstractBlockTrafficSignalSensorHZEight) {
-      return cost(FabricatorIngredient.part(CsmParts.OPTICAL_SENSOR, 1),
-          FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1));
-    }
-    if (block instanceof BlockTrafficSignalController) {
-      return cost(FabricatorIngredient.part(CsmParts.ENCLOSURE_SHELL, 1),
-          FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 2),
-          FabricatorIngredient.part(CsmParts.WIRING_HARNESS, 1));
-    }
-    if (block instanceof AbstractBlockControllableSignal) {
-      return cost(FabricatorIngredient.part(CsmParts.LED_MODULE, 1),
-          FabricatorIngredient.part(CsmParts.LENS_ASSEMBLY, 1),
-          FabricatorIngredient.part(CsmParts.SHEET_METAL, 1));
+  private static List<FabricatorIngredient> equipmentCost(String tabId, Block block,
+      String registryName) {
+    ICsmFabricatorCostRule rule = RULES.get(tabId);
+    if (rule != null) {
+      List<FabricatorIngredient> priced = rule.price(block, registryName);
+      if (priced != null) {
+        return priced;
+      }
     }
     return cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 1),
         FabricatorIngredient.part(CsmParts.WIRING_HARNESS, 1));
@@ -400,7 +404,17 @@ public final class CsmFabricatorCosts {
     return false;
   }
 
-  private static List<FabricatorIngredient> cost(FabricatorIngredient... ingredients) {
+  /**
+   * Builds an immutable ingredient list. Public so that an {@link ICsmFabricatorCostRule} in
+   * another package builds its answers the same way Core does.
+   *
+   * @param ingredients the ingredients, in the order they should be shown
+   *
+   * @return an immutable ingredient list
+   *
+   * @since 2026.9
+   */
+  public static List<FabricatorIngredient> cost(FabricatorIngredient... ingredients) {
     return Collections.unmodifiableList(Arrays.asList(ingredients));
   }
 }

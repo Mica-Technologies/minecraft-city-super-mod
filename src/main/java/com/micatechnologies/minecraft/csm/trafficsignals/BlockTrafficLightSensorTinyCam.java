@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
+import com.micatechnologies.minecraft.csm.codeutils.ICsmTrafficPoleIgnored;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockTrafficSignalSensor;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -14,7 +15,8 @@ import net.minecraft.world.IBlockAccess;
  * @author Mica Technologies
  * @since 1.0
  */
-public class BlockTrafficLightSensorTinyCam extends AbstractBlockTrafficSignalSensor {
+public class BlockTrafficLightSensorTinyCam extends AbstractBlockTrafficSignalSensor
+    implements ICsmTrafficPoleIgnored {
 
   public BlockTrafficLightSensorTinyCam() {
     super(Material.ROCK);

@@ -152,8 +152,9 @@ Version is derived from Git tags (format: `YYYY.MM.DD` for releases). No manual 
 **Survival crafting needs no step here.** Fabricator costs are derived at runtime from the block's
 creative tab and base class, so a new block is automatically craftable at its subsystem's cost.
 You only need to edit `materials/CsmFabricatorCosts.java` if you add a whole new creative tab (its
-contents would otherwise fall through to a generic cost) or the block is a new *kind* of equipment
-whose subsystem default is a poor fit. See `assets/docs/SURVIVAL_AND_RECIPES.md`.
+contents would otherwise fall through to a generic cost); a block that is a new *kind* of equipment
+whose subsystem default is a poor fit gets a branch in its subsystem's `ICsmFabricatorCostRule`
+instead. See `assets/docs/SURVIVAL_AND_RECIPES.md`.
 
 **Forge blockstate format (preferred):** Use `"forge_marker": 1` with `defaults`, separate variant
 blocks for each property, and `"inventory": [{}]` to handle item rendering without a separate item
