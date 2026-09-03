@@ -4,7 +4,8 @@ Three things worth doing before you place your first traffic signal.
 
 <div class="grid cards" markdown>
 
--   **[Installation](installation.md)** — what you need and where the jar goes.
+-   **[Installation](installation.md)** — what you need, which jars to take (Core is mandatory, the
+    modules are yours to choose) and where they go.
 
 -   **[Compatibility](compatibility.md)** — which Minecraft version, and what the mod expects of
     the ones around it.

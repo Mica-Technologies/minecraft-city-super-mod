@@ -35,10 +35,19 @@ Working on the mod rather than playing with it.
 
 ## Where things live
 
+The mod is built as a mandatory **Core** jar plus nine optional module jars, from one repository.
+Core is the `src/main` tree; each module is `modules/<name>/src/main`. Every tree has the same
+shape, and every asset keeps its `csm:` path whichever jar ships it.
+
 ```
-src/main/java/com/micatechnologies/minecraft/csm/
-├── codeutils/            Base classes every block and item extends
-├── tabs/                 One file per creative tab; registration order is display order
+src/main/java/com/micatechnologies/minecraft/csm/        Core
+├── codeutils/            Base classes every block and item extends, plus the service
+│                         registries a module registers with
+├── materials/            The crafting parts and the CSM Fabricator
+└── tabs/                 Core's own creative tab (Materials)
+
+modules/<name>/src/main/java/com/micatechnologies/minecraft/csm/
+├── tabs/                 That module's creative tabs; registration order is display order
 ├── buildingmaterials/    ┐
 ├── furniture/            │
 ├── hvac/                 │
@@ -50,13 +59,18 @@ src/main/java/com/micatechnologies/minecraft/csm/
 ├── trafficsignals/       │
 └── trafficsigns/         ┘
 
-src/main/resources/assets/csm/
+<tree>/src/main/resources/assets/csm/
 ├── blockstates/          One JSON per block; Forge format preferred
 ├── models/block/         Block models, with shared geometry under shared_models/
 ├── textures/blocks/      Organised by subsystem
+├── sounds.json, sounds/  Module trees only — Core ships no sounds
 ├── lang/en_us.lang       Display names — also the source for this site's block reference
-└── recipes/              Tier-1 JSON recipes for parts and the Fabricator
+└── recipes/              Core only: tier-1 JSON recipes for parts and the Fabricator
 ```
+
+Anything two modules reference stays in **Core's** tree at its existing path, so a subsystem folder
+name does not always name the jar that ships it. The full design — what Core owns, how registration
+still runs through it, and how to add a module — is in `assets/docs/MODULE_SYSTEM.md`.
 
 ## Developer tooling
 
