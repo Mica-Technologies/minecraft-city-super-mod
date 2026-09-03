@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.hvac;
 
 import com.micatechnologies.minecraft.csm.CsmNetwork;
 import com.micatechnologies.minecraft.csm.Tags;
+import com.micatechnologies.minecraft.csm.codeutils.CsmEnvironment;
 import com.micatechnologies.minecraft.csm.codeutils.gui.CsmGuiRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -68,5 +69,11 @@ public class CsmHvac {
     // pre-initialization before it fires the sound registry event, so Core sees the complete
     // union when it creates the sound events.
     HvacSounds.registerSounds();
+
+    // Answer Core's temperature queries with the full HVAC reading. Core's default answer is
+    // the biome baseline, which is what this manager returns anyway when no HVAC equipment is
+    // in range, so installing or removing this module only ever changes the equipment's own
+    // contribution.
+    CsmEnvironment.setTemperatureProvider(HvacTemperatureManager::getTemperatureAt);
   }
 }
