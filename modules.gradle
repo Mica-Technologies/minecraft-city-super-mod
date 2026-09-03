@@ -20,6 +20,8 @@
 def csmModules = [
     [name: 'powergrid', modId: 'csm_powergrid', displayName: 'CSM: Power Grid'],
     [name: 'roads', modId: 'csm_roads', displayName: 'CSM: Roads & Traffic'],
+    [name: 'technology', modId: 'csm_technology', displayName: 'CSM: Technology'],
+    [name: 'tts', modId: 'csm_tts', displayName: 'CSM: Text to Speech', deps: ['technology']],
 ]
 
 // The tasks that launch a game in the dev environment. Not all exist in every configuration

@@ -1,6 +1,8 @@
-package com.micatechnologies.minecraft.csm.technology;
+package com.micatechnologies.minecraft.csm.tts;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractItem;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmTtsLinkerItem;
+import com.micatechnologies.minecraft.csm.technology.TileEntitySpeaker;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.client.util.ITooltipFlag;
@@ -29,7 +31,7 @@ import net.minecraft.world.World;
  * @author Mica Technologies
  * @since 2026.5
  */
-public class ItemTtsLinker extends AbstractItem {
+public class ItemTtsLinker extends AbstractItem implements ICsmTtsLinkerItem {
 
   private BlockPos selectedTtsPos = null;
 

@@ -1,4 +1,4 @@
-package com.micatechnologies.minecraft.csm.codeutils.packets;
+package com.micatechnologies.minecraft.csm.tts;
 
 import com.micatechnologies.minecraft.csm.codeutils.CsmTts;
 import net.minecraft.client.Minecraft;

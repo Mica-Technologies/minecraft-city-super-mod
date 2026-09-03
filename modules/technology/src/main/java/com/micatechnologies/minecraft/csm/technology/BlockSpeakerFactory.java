@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.technology;
 
 import com.micatechnologies.minecraft.csm.codeutils.BlockRotatableNSEWUDFactory;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmTtsLinkerItem;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -59,9 +60,13 @@ public class BlockSpeakerFactory extends BlockRotatableNSEWUDFactory
   }
 
   /**
-   * Right-click handling for the ambient mode picker. With the {@link ItemTtsLinker} in
+   * Right-click handling for the ambient mode picker. With an {@link ICsmTtsLinkerItem} in
    * hand we return false so the linker item's own {@code onItemUse} runs (TTS link / unlink
    * UX). Otherwise an empty-handed click cycles the speaker's ambient sound selection.
+   *
+   * <p>The linker ships in the Text to Speech module, which requires this one, so its class
+   * is not on this module's compile classpath; the Core marker interface is what the check
+   * has to go through.</p>
    */
   @Override
   public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state,
@@ -71,7 +76,7 @@ public class BlockSpeakerFactory extends BlockRotatableNSEWUDFactory
       return true;
     }
     ItemStack held = player.getHeldItem(hand);
-    if (!held.isEmpty() && held.getItem() instanceof ItemTtsLinker) {
+    if (!held.isEmpty() && held.getItem() instanceof ICsmTtsLinkerItem) {
       return false;
     }
     if (worldIn.isRemote) {
