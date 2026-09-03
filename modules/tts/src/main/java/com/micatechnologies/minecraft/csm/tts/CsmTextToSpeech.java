@@ -3,10 +3,7 @@ package com.micatechnologies.minecraft.csm.tts;
 import com.micatechnologies.minecraft.csm.CsmNetwork;
 import com.micatechnologies.minecraft.csm.Tags;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmProxy;
-import com.micatechnologies.minecraft.csm.codeutils.packets.TileEntityRedstoneTTSInvokeHandler;
-import com.micatechnologies.minecraft.csm.codeutils.packets.TileEntityRedstoneTTSInvokePacket;
-import com.micatechnologies.minecraft.csm.codeutils.packets.TileEntityRedstoneTTSUpdateHandler;
-import com.micatechnologies.minecraft.csm.codeutils.packets.TileEntityRedstoneTTSUpdatePacket;
+import com.micatechnologies.minecraft.csm.codeutils.gui.CsmGuiRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
@@ -28,8 +25,11 @@ import org.apache.logging.log4j.Logger;
  * listeners hand them to Forge under the {@code csm} namespace. Nothing here may call a Forge
  * registry directly.</p>
  *
- * <p>This module also requires Technology: its blocks appear in the Technology creative tab, so
- * without that module there would be no tab to put them in.</p>
+ * <p>This module also requires Technology, twice over: its blocks appear in the Technology
+ * creative tab, so without that module there would be no tab to put them in, and the Redstone TTS
+ * Module broadcasts through Technology's speaker tile entity, which it names directly. The
+ * dependency therefore only ever points this way; where Technology has to recognise something of
+ * this module's, it does so through a marker interface in Core.</p>
  *
  * <p>The dependencies pin Core and Technology to this exact version. Every module jar is built
  * from the same tree and released together; a mismatch is a broken install and should fail at
@@ -78,6 +78,10 @@ public class CsmTextToSpeech {
   public void preInit(FMLPreInitializationEvent event) {
     logger = event.getModLog();
     logger.info("Pre-initializing " + MOD_NAME + " v" + Tags.VERSION);
+
+    // GUI id 0, the Redstone TTS Module's editor. The id predates the module split and is kept
+    // as it is; only the provider that answers for it now ships here rather than in Technology.
+    CsmGuiRegistry.register(new TextToSpeechGuiProvider());
 
     // The packet order here fixes this channel's discriminators; only append to it.
     NETWORK.registerMessage(

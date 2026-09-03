@@ -2,7 +2,7 @@
   {
     "modid": "${modid}",
     "name": "${modname}",
-    "description": "Bring your city to life with hundreds of new, city-inspired blocks",
+    "description": "The speech engine and the blocks that speak with it for the City Super Mod. Requires CSM: Core and CSM: Technology.",
     "version": "${version}",
     "mcversion": "${mcversion}",
     "credits": "Alex H, Brandon H (Mica Technologies) & Formerly Mcreator",
@@ -12,9 +12,9 @@
     "authorList": [
       "Mica Technologies"
     ],
-    "dependencies": [],
+    "dependencies": ["csm", "csm_technology"],
     "dependants": [],
-    "requiredMods": [],
+    "requiredMods": ["csm", "csm_technology"],
     "useDependencyInformation": "true"
   }
 ]

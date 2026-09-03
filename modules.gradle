@@ -25,6 +25,8 @@ def csmModules = [
     [name: 'lighting', modId: 'csm_lighting', displayName: 'CSM: Lighting'],
     [name: 'building', modId: 'csm_building', displayName: 'CSM: Building Materials'],
     [name: 'furnishings', modId: 'csm_furnishings', displayName: 'CSM: Furniture & Novelties'],
+    [name: 'technology', modId: 'csm_technology', displayName: 'CSM: Technology'],
+    [name: 'tts', modId: 'csm_tts', displayName: 'CSM: Text to Speech', deps: ['technology']],
 ]
 
 // The tasks that launch a game in the dev environment. Not all exist in every configuration
@@ -53,8 +55,8 @@ csmModules.each { m ->
         resources.srcDirs = ["${moduleDir}/src/main/resources"]
     }
     // Minecraft + Core, nothing else: the compiler is the module boundary. A module that
-    // declares `deps: ['other']` also sees that module's classes (Text to Speech needs
-    // Technology, because it carries the Redstone TTS block that Technology's tab lists); list
+    // declares `deps: ['other']` also sees that module's classes (Text to Speech compiles
+    // against Technology because its Redstone TTS block links to Technology's speakers); list
     // dependencies before dependants in csmModules so the source set already exists.
     ss.compileClasspath += sourceSets.main.compileClasspath + sourceSets.main.output
     ss.runtimeClasspath += sourceSets.main.runtimeClasspath + sourceSets.main.output

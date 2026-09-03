@@ -8,8 +8,11 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 /**
- * Supplies the technology package's GUI screens: the Redstone TTS block, the computer, the fare
- * vending machine and the fare gate.
+ * Supplies the technology package's GUI screens: the computer, the fare vending machine and the
+ * fare gate.
+ *
+ * <p>GUI id 0 — the Redstone TTS Module — is not here. That block ships in the Text to Speech
+ * module, which registers its own provider for that id.</p>
  *
  * @version 1.0
  * @since 2026.9
@@ -26,11 +29,7 @@ public class TechnologyGuiProvider implements ICsmGuiProvider {
   public Object getClientGuiElement(int id, EntityPlayer player, World world, BlockPos pos) {
     TileEntity tileEntity = world.getTileEntity(pos);
     Object returnValue = null;
-    if (id == 0 && tileEntity instanceof TileEntityRedstoneTTS) {
-      // Guarded like every other id below. Without the instanceof this branch would throw on a
-      // missing or mismatched tile entity instead of simply declining to open a screen.
-      returnValue = new BlockRedstoneTTSGui((TileEntityRedstoneTTS) tileEntity);
-    } else if (id == 15 && tileEntity instanceof TileEntityComputer) {
+    if (id == 15 && tileEntity instanceof TileEntityComputer) {
       returnValue = new ComputerGui((TileEntityComputer) tileEntity);
     } else if (id == 16
         && world.getBlockState(pos).getBlock() instanceof BlockFareVendingMachine) {
