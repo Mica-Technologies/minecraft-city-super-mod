@@ -452,7 +452,7 @@ public class CsmFabricatorGui extends GuiScreen {
           .getMasterRecord(net.minecraft.init.SoundEvents.BLOCK_NOTE_BASS, 0.8F));
       return;
     }
-    CsmNetwork.sendToServer(
+    CsmNetwork.CORE.sendToServer(
         new CsmFabricatePacket(fabricatorPos, entry.registryName, quantity));
     setStatus("Fabricating " + quantity + "x " + entry.displayName, true);
     this.mc.getSoundHandler().playSound(net.minecraft.client.audio.PositionedSoundRecord

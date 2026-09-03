@@ -1,6 +1,6 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
-import com.micatechnologies.minecraft.csm.CsmNetwork;
+import com.micatechnologies.minecraft.csm.roads.CsmRoads;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalControllerCircuit;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalControllerCircuits;
 import java.io.IOException;
@@ -182,7 +182,7 @@ public class SignalControllerCircuitsGui extends GuiScreen {
       mc.displayGuiScreen(new SignalControllerVisualGui(controller));
     } else if (button.id >= BTN_CLEAR_BASE) {
       int circuitIndex = button.id - BTN_CLEAR_BASE;
-      CsmNetwork.sendToServer(new SignalControllerSetValuePacket(blockPos, "clearCircuit", circuitIndex));
+      CsmRoads.NETWORK.sendToServer(new SignalControllerSetValuePacket(blockPos, "clearCircuit", circuitIndex));
     }
   }
 

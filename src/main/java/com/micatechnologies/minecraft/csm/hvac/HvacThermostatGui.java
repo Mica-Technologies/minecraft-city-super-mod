@@ -1,6 +1,5 @@
 package com.micatechnologies.minecraft.csm.hvac;
 
-import com.micatechnologies.minecraft.csm.CsmNetwork;
 import java.io.IOException;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
@@ -214,7 +213,7 @@ public class HvacThermostatGui extends GuiScreen {
         return;
     }
 
-    CsmNetwork.sendToServer(new HvacThermostatConfigPacket(blockPos, low, high));
+    CsmHvac.NETWORK.sendToServer(new HvacThermostatConfigPacket(blockPos, low, high));
   }
 
   @Override

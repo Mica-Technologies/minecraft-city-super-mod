@@ -1,6 +1,5 @@
 package com.micatechnologies.minecraft.csm.hvac;
 
-import com.micatechnologies.minecraft.csm.CsmNetwork;
 import java.io.IOException;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
@@ -218,7 +217,7 @@ public class HvacZoneThermostatGui extends GuiScreen {
     }
 
     // Reuse the same config packet — the handler checks both TE types
-    CsmNetwork.sendToServer(new HvacThermostatConfigPacket(blockPos, low, high));
+    CsmHvac.NETWORK.sendToServer(new HvacThermostatConfigPacket(blockPos, low, high));
   }
 
   @Override

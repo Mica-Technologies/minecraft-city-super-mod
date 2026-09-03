@@ -1,6 +1,6 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories.spanwire;
 
-import com.micatechnologies.minecraft.csm.CsmNetwork;
+import com.micatechnologies.minecraft.csm.roads.CsmRoads;
 import java.io.IOException;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
@@ -157,7 +157,7 @@ public class SpanWireMountConfigGui extends GuiScreen {
     if (button.id == CLOSE_BUTTON_ID) {
       mc.displayGuiScreen(null);
     } else if (button.id >= 0 && button.id < rowCount) {
-      CsmNetwork.sendToServer(new SpanWireMountConfigPacket(blockPos, button.id));
+      CsmRoads.NETWORK.sendToServer(new SpanWireMountConfigPacket(blockPos, button.id));
     }
   }
 

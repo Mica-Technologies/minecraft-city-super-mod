@@ -1,6 +1,6 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
-import com.micatechnologies.minecraft.csm.CsmNetwork;
+import com.micatechnologies.minecraft.csm.roads.CsmRoads;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockTrafficSignalSensorAngled;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.SensorAngle;
 import java.io.IOException;
@@ -193,7 +193,7 @@ public class SensorConfigGui extends GuiScreen {
       default:
         return;
     }
-    CsmNetwork.sendToServer(new SensorConfigPacket(blockPos, action.ordinal()));
+    CsmRoads.NETWORK.sendToServer(new SensorConfigPacket(blockPos, action.ordinal()));
   }
 
   @Override

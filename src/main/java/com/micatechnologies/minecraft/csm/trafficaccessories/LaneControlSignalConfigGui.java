@@ -1,6 +1,6 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories;
 
-import com.micatechnologies.minecraft.csm.CsmNetwork;
+import com.micatechnologies.minecraft.csm.roads.CsmRoads;
 import java.io.IOException;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
@@ -99,7 +99,7 @@ public class LaneControlSignalConfigGui extends GuiScreen {
             mc.displayGuiScreen(null);
         } else if (button.id >= 0
                 && button.id < LaneControlSignalConfigAction.values().length) {
-            CsmNetwork.sendToServer(
+            CsmRoads.NETWORK.sendToServer(
                     new LaneControlSignalConfigPacket(blockPos, button.id));
         }
     }

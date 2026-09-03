@@ -1,7 +1,7 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
 import com.micatechnologies.minecraft.csm.codeutils.ICsmScheduledTickConsumer;
-import com.micatechnologies.minecraft.csm.CsmNetwork;
+import com.micatechnologies.minecraft.csm.roads.CsmRoads;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableCrosswalkAccessory;
 import java.util.Random;
 import net.minecraft.block.material.Material;
@@ -40,7 +40,7 @@ public class BlockControllableCrosswalkTweeter2
     int color = state.getValue(COLOR);
     if (color == 2 && !world.isRemote) {
       String channel = "tweeter_" + pos.getX() + "_" + pos.getY() + "_" + pos.getZ();
-      CsmNetwork.sendToAllAround(APSSoundPacket.start(
+      CsmRoads.NETWORK.sendToAllAround(APSSoundPacket.start(
           channel, "csm:crosswalk_cookoo_2", TWEETER_HEARING_RANGE, false, pos),
           new NetworkRegistry.TargetPoint(
               world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(),

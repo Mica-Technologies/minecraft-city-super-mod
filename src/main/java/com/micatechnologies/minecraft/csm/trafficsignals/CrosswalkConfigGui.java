@@ -1,6 +1,6 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
-import com.micatechnologies.minecraft.csm.CsmNetwork;
+import com.micatechnologies.minecraft.csm.roads.CsmRoads;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableCrosswalkSignalNew;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.CrosswalkDisplayType;
 import java.io.IOException;
@@ -115,7 +115,7 @@ public class CrosswalkConfigGui extends GuiScreen {
             mc.displayGuiScreen( null );
         }
         else if ( button.id >= 0 && button.id < CrosswalkConfigAction.values().length ) {
-            CsmNetwork.sendToServer( new CrosswalkConfigPacket( blockPos, button.id ) );
+            CsmRoads.NETWORK.sendToServer( new CrosswalkConfigPacket( blockPos, button.id ) );
         }
     }
 
