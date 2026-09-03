@@ -14,18 +14,39 @@ The project ships its own Gradle wrapper, so no separate Gradle install is neede
 # First time, or after a clean
 ./gradlew setupDecompWorkspace
 
-# Build the mod
+# Build the mod — the Core jar plus one jar per optional module
 ./gradlew build
 
-# Run a development client
+# Run a development client (every module jar on the classpath)
 ./gradlew runClient
 
 # Run a development server
 ./gradlew runServer
 
-# Tests (JUnit 5)
+# Tests (JUnit 5) — one suite across Core and every module
 ./gradlew test
 ```
+
+## Modules
+
+The mod builds as a mandatory **CSM: Core** jar plus nine optional module jars, from this one
+repository: `build/libs/minecraft-city-super-mod-core-<version>.jar` and
+`minecraft-city-super-mod-<module>-<version>.jar` (`./gradlew printModuleJarNames` lists them).
+Core is the `src/main` source set; each module is a source set of its own under `modules/<name>`,
+compiled against Minecraft and Core only, so the compiler is what stops Core depending on a module.
+
+Run tasks take a property choosing which module jars go on the game's classpath. Core is always
+loaded:
+
+```bash
+./gradlew runClient -PcsmRunModules=core            # Core alone
+./gradlew runClient -PcsmRunModules=lighting        # Core + Lighting
+./gradlew runClient -PcsmRunModules=roads,hvac      # Core + two modules
+./gradlew runClient -PcsmRunModules=all             # the default
+```
+
+Running a module on its own is the only check that proves its assets are self-contained. See
+`assets/docs/MODULE_SYSTEM.md` for the whole design.
 
 Point `JAVA_HOME` at a Java 17 install when running from a shell:
 
