@@ -2,11 +2,14 @@ package com.micatechnologies.minecraft.csm.tts;
 
 import com.micatechnologies.minecraft.csm.CsmNetwork;
 import com.micatechnologies.minecraft.csm.Tags;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmProxy;
 import com.micatechnologies.minecraft.csm.codeutils.packets.TileEntityRedstoneTTSInvokeHandler;
 import com.micatechnologies.minecraft.csm.codeutils.packets.TileEntityRedstoneTTSInvokePacket;
 import com.micatechnologies.minecraft.csm.codeutils.packets.TileEntityRedstoneTTSUpdateHandler;
 import com.micatechnologies.minecraft.csm.codeutils.packets.TileEntityRedstoneTTSUpdatePacket;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.SidedProxy;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import org.apache.logging.log4j.Logger;
@@ -52,6 +55,16 @@ public class CsmTextToSpeech {
    */
   public static final CsmNetwork NETWORK = CsmNetwork.create(MOD_ID);
 
+  /**
+   * The sided proxy for this module. The speech engine is client-only, so everything it does
+   * lives behind this.
+   *
+   * @since 2026.9
+   */
+  @SidedProxy(clientSide = "com.micatechnologies.minecraft.csm.tts.CsmTextToSpeechClientProxy",
+              serverSide = "com.micatechnologies.minecraft.csm.tts.CsmTextToSpeechCommonProxy")
+  public static ICsmProxy proxy;
+
   @Mod.Instance(MOD_ID)
   public static CsmTextToSpeech instance;
 
@@ -75,5 +88,21 @@ public class CsmTextToSpeech {
         TileEntityRedstoneTTSInvokeHandler.class,
         TileEntityRedstoneTTSInvokePacket.class,
         Side.CLIENT);
+
+    // Registers the MaryTTS engine with Core's speech facade on the client. Without this
+    // module, or before the engine finishes loading, the facade speaks through the system
+    // narrator instead.
+    proxy.preInit(event);
+  }
+
+  /**
+   * Performs post-initialization of the module, which starts the speech engine loading on the
+   * client.
+   *
+   * @param event the post-initialization event
+   */
+  @Mod.EventHandler
+  public void postInit(FMLPostInitializationEvent event) {
+    proxy.postInit(event);
   }
 }

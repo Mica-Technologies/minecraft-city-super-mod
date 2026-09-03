@@ -1,11 +1,11 @@
 package com.micatechnologies.minecraft.csm.hvac;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmEnvironment;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.tileentity.TileEntity;
@@ -20,7 +20,7 @@ import org.apache.logging.log4j.Logger;
  * Temperature calculation engine for the HVAC system. Combines the per-chunk biome baseline
  * with a per-position HVAC offset derived from nearby {@link IHvacUnit} tile entities,
  * weighted by distance and a coarse wall-attenuation raycast. The biome baseline is cached
- * per chunk for {@link #CACHE_LIFETIME_TICKS} ticks (2 seconds) since it doesn't vary inside
+ * per chunk by {@link CsmEnvironment} since it doesn't vary inside
  * a chunk; the HVAC offset is recomputed every call so two positions in the same chunk get
  * the right local reading (a heater and cooler in the same chunk each dominate their own
  * area instead of cancelling out).
@@ -31,9 +31,10 @@ import org.apache.logging.log4j.Logger;
  * blend on top of {@link #getAmbientTemperatureAt}. Keeping smoothing state out of this
  * manager is what lets multiple consumers coexist without corrupting each other's history.</p>
  *
- * <p><b>Thread safety:</b> The per-dimension cache uses {@code ConcurrentHashMap} so the
- * server tick thread (thermostat reads) and the client render thread (HUD reads in
- * single-player) can both query without external synchronization.</p>
+ * <p><b>Thread safety:</b> {@link CsmEnvironment}'s baseline cache is concurrent, and the
+ * offset is recomputed per call from world state, so the server tick thread (thermostat reads)
+ * and the client render thread (HUD reads in single-player) can both query without external
+ * synchronization.</p>
  *
  * @author Mica Technologies
  * @see IHvacUnit
@@ -55,12 +56,6 @@ public class HvacTemperatureManager {
   private static long lastDebugLogMs = 0L;
   /** Set to true for the current calculation pass when the throttle allows logging. */
   private static boolean debugThisPass = false;
-
-  /**
-   * Number of ticks between cache recalculations. At 20 TPS this equals 2 seconds. Kept short
-   * so temperature changes are visible quickly when moving between chunks or toggling HVAC.
-   */
-  private static final long CACHE_LIFETIME_TICKS = 40L;
 
   /**
    * Base HVAC offset cap per direction (heating / cooling), in degrees Fahrenheit. This is the
@@ -138,25 +133,6 @@ public class HvacTemperatureManager {
   private static final int CHUNK_SCAN_RADIUS = 3;
 
   /**
-   * How often (in ticks) to sweep stale entries from the chunk temperature cache. At 20 TPS
-   * this equals 30 seconds — frequent enough to prevent unbounded growth during exploration,
-   * infrequent enough to be negligible cost.
-   */
-  private static final long EVICTION_INTERVAL_TICKS = 600L;
-
-  /**
-   * Maximum age (in ticks) for a cache entry before it becomes eligible for eviction. Entries
-   * older than this are removed during the next sweep. At 20 TPS this equals 60 seconds.
-   */
-  private static final long EVICTION_MAX_AGE_TICKS = 1200L;
-
-  /**
-   * World tick at which the last eviction sweep was performed. Used to throttle sweeps to
-   * once per {@link #EVICTION_INTERVAL_TICKS}.
-   */
-  private static long lastEvictionTick = 0L;
-
-  /**
    * Maximum number of air cells the flood fill will visit from a single query position before
    * giving up. This is the hard tick-cost ceiling: every temperature query costs at most this
    * many block-state lookups regardless of how open the surrounding space is.
@@ -179,11 +155,6 @@ public class HvacTemperatureManager {
    * {@code World.canSeeSky()}, so there is no performance cost.
    */
   private static final float OUTDOOR_ATTENUATION_FACTOR = 0.3f;
-
-  /**
-   * Per-dimension cache of chunk temperature data, keyed by the dimension ID of the world.
-   */
-  private static final Map<Integer, Map<Long, ChunkTempData>> dimensionCaches = new ConcurrentHashMap<>();
 
   /**
    * Retrieves the temperature in degrees Fahrenheit at the given position. This is the
@@ -286,28 +257,11 @@ public class HvacTemperatureManager {
 
   /**
    * Returns the cached biome baseline temperature for the chunk containing the given position.
-   * The baseline is recalculated when the cache entry expires.
+   * The baseline is world data, not equipment data, so Core owns it: an install without this
+   * module still needs the same number for anything that merely displays a temperature.
    */
   private static float getCachedBaseline(World world, BlockPos pos) {
-    Map<Long, ChunkTempData> cache = getOrCreateCache(world);
-    long chunkKey = chunkKey(pos);
-    long currentTick = world.getTotalWorldTime();
-
-    // Periodic eviction of stale entries to prevent unbounded cache growth
-    if (currentTick - lastEvictionTick >= EVICTION_INTERVAL_TICKS) {
-      lastEvictionTick = currentTick;
-      cache.values().removeIf(d -> (currentTick - d.timestamp) >= EVICTION_MAX_AGE_TICKS);
-    }
-
-    ChunkTempData data = cache.get(chunkKey);
-    if (data != null && (currentTick - data.timestamp) < CACHE_LIFETIME_TICKS) {
-      return data.temperature;
-    }
-
-    float biomeTemp = world.getBiome(pos).getTemperature(pos);
-    float baselineTempF = biomeTemp * 90.0f - 4.0f;
-    cache.put(chunkKey, new ChunkTempData(baselineTempF, currentTick));
-    return baselineTempF;
+    return CsmEnvironment.getBaselineTemperatureAt(world, pos);
   }
 
   /**
@@ -394,9 +348,7 @@ public class HvacTemperatureManager {
    * @param chunkZ the chunk Z coordinate
    */
   public static void invalidateChunk(World world, int chunkX, int chunkZ) {
-    Map<Long, ChunkTempData> cache = getOrCreateCache(world);
-    long key = chunkKeyFromCoords(chunkX, chunkZ);
-    cache.remove(key);
+    CsmEnvironment.invalidateBaselineChunk(world, chunkX, chunkZ);
   }
 
   // Biome baseline mapping: tempF = biomeTemp * 90 - 4
@@ -697,68 +649,5 @@ public class HvacTemperatureManager {
   private static boolean isSolidBlock(IBlockState state) {
     Material material = state.getMaterial();
     return material.isSolid() && !material.isReplaceable();
-  }
-
-  /**
-   * Retrieves or creates the chunk temperature cache for the given world's dimension.
-   *
-   * @param world the world instance
-   *
-   * @return the chunk temperature cache map for this dimension
-   */
-  private static Map<Long, ChunkTempData> getOrCreateCache(World world) {
-    int dimensionId = world.provider.getDimension();
-    return dimensionCaches.computeIfAbsent(dimensionId, k -> new ConcurrentHashMap<>());
-  }
-
-  /**
-   * Computes a chunk cache key from a block position by converting to chunk coordinates.
-   *
-   * @param pos the block position
-   *
-   * @return the chunk key as a long
-   */
-  private static long chunkKey(BlockPos pos) {
-    return chunkKeyFromCoords(pos.getX() >> 4, pos.getZ() >> 4);
-  }
-
-  /**
-   * Computes a chunk cache key from chunk coordinates using Minecraft's {@code ChunkPos} encoding.
-   *
-   * @param chunkX the chunk X coordinate
-   * @param chunkZ the chunk Z coordinate
-   *
-   * @return the chunk key as a long
-   */
-  private static long chunkKeyFromCoords(int chunkX, int chunkZ) {
-    return (long) chunkX & 0xFFFFFFFFL | ((long) chunkZ & 0xFFFFFFFFL) << 32;
-  }
-
-  /**
-   * Internal data class that holds cached temperature information for a single chunk. Stores the
-   * calculated temperature and the world tick at which it was computed.
-   */
-  private static class ChunkTempData {
-
-    /**
-     * The cached temperature value in degrees Fahrenheit.
-     */
-    final float temperature;
-
-    /**
-     * The world tick time at which this cache entry was computed.
-     */
-    final long timestamp;
-
-    /**
-     * Constructs a new chunk temperature data entry.
-     *
-     * @param temperature the temperature in degrees Fahrenheit
-     * @param timestamp   the world tick time of computation
-     */
-    ChunkTempData(float temperature, long timestamp) {
-      this.temperature = temperature;
-      this.timestamp = timestamp;
-    }
   }
 }

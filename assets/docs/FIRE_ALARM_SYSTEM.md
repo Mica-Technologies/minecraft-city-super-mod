@@ -355,7 +355,7 @@ ffmpeg -i input.ogg -af "volume=<dB>dB" -c:a libvorbis -q:a 6 output.ogg
 ### Adding a New Sound File
 1. Add `.ogg` file to `src/main/resources/assets/csm/sounds/`
 2. Add entry to `sounds.json` with matching key
-3. Add enum entry to `CsmSounds.java`
+3. Add enum entry to `LifeSafetySounds.java`
 4. Normalize volume to target RMS (see above)
 5. For voice evac: add to `SOUND_RESOURCE_NAMES` and `SOUND_NAMES` arrays in
    `TileEntityFireAlarmControlPanel.java` (arrays must stay index-aligned)

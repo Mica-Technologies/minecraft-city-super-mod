@@ -132,7 +132,7 @@ Tile entities extend `AbstractTileEntity` or `AbstractTickableTileEntity`.
 
 1. **`Csm.java`** — Main `@Mod` class; handles `preInit`, `init`, `postInit` lifecycle events
 2. **`CsmRegistry.java`** — Block/item registration
-3. **`tabs/CsmTab*.java`** — Each tab's `initTabElements()` lists what blocks/items appear in that tab; blocks not registered here go in `CsmTabNone`
+3. **`tabs/CsmTab*.java`** — Each tab's `initTabElements()` lists what blocks/items appear in that tab; blocks that should not appear in the creative inventory go in a hidden tab (`CsmTabRoadsHidden`, `CsmTabLightingHidden`)
 4. **`CsmClientProxy` / `CsmCommonProxy`** — Client vs. server proxy pattern
 
 ### Version
@@ -181,7 +181,7 @@ per item.
 
 1. Add `.ogg` file to `src/main/resources/assets/csm/sounds/` (OGG Vorbis, `snake_case` name)
 2. Add entry to `src/main/resources/assets/csm/sounds.json` with matching key and `"name": "csm:<filename_without_ext>"`
-3. Add enum entry to `CsmSounds.java`: `MY_SOUND_NAME("sound_event_id")`
+3. Add enum entry to the owning module's sound enum (e.g. `lifesafety/LifeSafetySounds.java`, `trafficsignals/RoadsSounds.java`): `MY_SOUND_NAME("sound_event_id")`
 
 Sound is referenced in code as `"csm:sound_event_id"` (matching the sounds.json key).
 

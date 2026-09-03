@@ -1,6 +1,5 @@
 package com.micatechnologies.minecraft.csm;
 
-import com.micatechnologies.minecraft.csm.codeutils.CsmTts;
 import com.micatechnologies.minecraft.csm.codeutils.CsmVersionChecker;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmProxy;
 import com.micatechnologies.minecraft.csm.codeutils.IHasModel;
@@ -210,7 +209,8 @@ public class CsmClientProxy implements ICsmProxy {
    */
   @Override
   public void postInit(FMLPostInitializationEvent event) {
-    CsmTts.startInit();
+    // Not implemented (yet). The speech engine used to be started here; it is the Text to
+    // Speech module's, and that module's client proxy starts it in its own post-initialization.
   }
 
   /**

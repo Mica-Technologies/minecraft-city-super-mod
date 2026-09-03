@@ -57,7 +57,7 @@ import net.minecraft.creativetab.CreativeTabs;
  * </ol>
  *
  * <p>A {@code null} return means "not fabricable". That covers non-CSM blocks and every block
- * registered to {@code CsmTabNone}: hidden and retiring blocks are given a {@code null} creative
+ * registered to a hidden tab: hidden and retiring blocks are given a {@code null} creative
  * tab by {@code CsmTab}, so they fall out here without a separate exclusion list.</p>
  *
  * @author Mica Technologies
@@ -162,7 +162,7 @@ public final class CsmFabricatorCosts {
     }
     CreativeTabs tab = block.getCreativeTab();
     if (tab == null) {
-      // Hidden / retiring blocks (CsmTabNone) get a null tab and are deliberately not fabricable.
+      // Hidden / retiring blocks get a null tab and are deliberately not fabricable.
       // The IDE flags this condition as always false because the MCP mappings do not mark
       // Block.getCreativeTab() nullable; it very much can be null here, and removing the check
       // would make all 112 hidden blocks fabricable.

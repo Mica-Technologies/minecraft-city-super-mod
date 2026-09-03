@@ -218,7 +218,7 @@ After creating a block or item class, the block or item must be registered with 
 register a block or item, an entry must be added to the appropriate tab class file within the
 `src/main/java/com/micatechnologies/minecraft/csm/tabs` package folder.
 
-- If the block or item is intended to be unlisted, it shall be registered with the `CsmTabNone` tab
+- If the block or item is intended to be unlisted, it shall be registered with its module's hidden tab
   class file.
 - If a new tab is required for the block or item, a new tab class file shall be created using the
   process outlined in the [Adding a Tab](#adding-a-tab) section below.
