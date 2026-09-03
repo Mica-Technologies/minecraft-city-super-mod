@@ -5,6 +5,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.micatechnologies.minecraft.csm.tools.tool_framework.CsmLayout;
 import com.micatechnologies.minecraft.csm.tools.tool_framework.CsmToolUtility;
 import java.io.File;
 import java.io.IOException;
@@ -90,9 +91,11 @@ public class BoundingBoxExtractionTool {
 
   // ==================== Path Constants ====================
 
-  private static final String BLOCK_MODELS_PATH = "src/main/resources/assets/csm/models/block";
-  private static final String BLOCKSTATES_PATH = "src/main/resources/assets/csm/blockstates";
-  private static final String SOURCE_PATH = "src/main/java/com/micatechnologies/minecraft/csm";
+  // Relative to a tree's assets/csm. Core and every module have a share of the models and
+  // the blockstates, and this tool writes a block's bounding box back into the Java file it
+  // finds for that block, wherever that file's tree is.
+  private static final String BLOCK_MODELS_PATH = "models/block";
+  private static final String BLOCKSTATES_PATH = "blockstates";
   private static final String OUTPUT_PATH = "dev-env-utils/boundingBoxExtractorToolOutput";
 
   // ==================== Statistics ====================
@@ -107,15 +110,19 @@ public class BoundingBoxExtractionTool {
   public static void main(String[] args) {
     CsmToolUtility.doToolExecuteWrapped("CSM Bounding Box Extractor Tool", args,
         (devEnvironmentPath) -> {
-          File blockModelsDir = new File(devEnvironmentPath, BLOCK_MODELS_PATH);
+          CsmLayout layout = new CsmLayout(devEnvironmentPath);
           File outputDir = new File(devEnvironmentPath, OUTPUT_PATH);
 
-          // Collect all shared_models directories across subsystems
-          List<File> sharedModelDirs = findSharedModelDirs(blockModelsDir);
-          System.out.println("Found " + sharedModelDirs.size() + " shared_models directories");
+          // Collect all shared_models directories across subsystems, in every tree
+          List<File> sharedModelDirs = new ArrayList<>();
+          for (File blockModelsDir : layout.assetDirs(BLOCK_MODELS_PATH)) {
+            sharedModelDirs.addAll(findSharedModelDirs(blockModelsDir));
+          }
+          System.out.println("Found " + sharedModelDirs.size() + " shared_models directories "
+              + "across " + layout.assetDirs(BLOCK_MODELS_PATH).size() + " source tree(s)");
 
           // Build mappings for write-back (needed for variant selection even when not writing back)
-          Map<String, String> blockstateToModel = buildBlockstateToModelMap(devEnvironmentPath);
+          Map<String, String> blockstateToModel = buildBlockstateToModelMap(layout);
           // Invert: model path -> list of registry names
           Map<String, List<String>> modelToRegistryNames = new HashMap<>();
           for (Map.Entry<String, String> entry : blockstateToModel.entrySet()) {
@@ -125,7 +132,7 @@ public class BoundingBoxExtractionTool {
 
           Map<String, File> registryToJavaFile = null;
           if (WRITE_BACK_LIVE) {
-            registryToJavaFile = buildRegistryToJavaFileMap(devEnvironmentPath);
+            registryToJavaFile = buildRegistryToJavaFileMap(layout);
             System.out.println(
                 "Mapped " + registryToJavaFile.size() + " block registry names to Java files");
           }
@@ -179,13 +186,15 @@ public class BoundingBoxExtractionTool {
    * Scans all blockstate JSON files to build a map of registryName -> model path fragment.
    * Only includes blockstates that reference shared_models.
    */
-  private static Map<String, String> buildBlockstateToModelMap(File devEnvironmentPath) {
+  private static Map<String, String> buildBlockstateToModelMap(CsmLayout layout) {
     Map<String, String> map = new HashMap<>();
-    File blockstatesDir = new File(devEnvironmentPath, BLOCKSTATES_PATH);
-    File[] blockstateFiles = blockstatesDir.listFiles(
-        (dir, name) -> name.endsWith(".json"));
-    if (blockstateFiles == null) {
-      return map;
+    // One blockstate folder per tree; the game merges them into one namespace.
+    List<File> blockstateFiles = new ArrayList<>();
+    for (File blockstatesDir : layout.assetDirs(BLOCKSTATES_PATH)) {
+      File[] found = blockstatesDir.listFiles((dir, name) -> name.endsWith(".json"));
+      if (found != null) {
+        blockstateFiles.addAll(List.of(found));
+      }
     }
 
     for (File bsFile : blockstateFiles) {
@@ -211,12 +220,13 @@ public class BoundingBoxExtractionTool {
   /**
    * Walks all Java source files and builds a map of registryName -> Java File.
    */
-  private static Map<String, File> buildRegistryToJavaFileMap(File devEnvironmentPath) {
+  private static Map<String, File> buildRegistryToJavaFileMap(CsmLayout layout) {
     Map<String, File> map = new HashMap<>();
-    File sourceDir = new File(devEnvironmentPath, SOURCE_PATH);
     Pattern registryPattern = Pattern.compile(
         "public\\s+String\\s+getBlockRegistryName\\s*\\(\\s*\\)\\s*\\{\\s*return\\s+\"([a-z0-9_]+)\"\\s*;");
 
+    // Core plus every module tree: the write-back lands in the file that declares the block.
+    for (File sourceDir : layout.javaPackageRoots()) {
     try (Stream<Path> paths = Files.walk(sourceDir.toPath())) {
       paths.filter(p -> p.toString().endsWith(".java"))
           .forEach(p -> {
@@ -232,6 +242,7 @@ public class BoundingBoxExtractionTool {
           });
     } catch (IOException e) {
       System.err.println("Failed to walk source directory: " + e.getMessage());
+    }
     }
     return map;
   }

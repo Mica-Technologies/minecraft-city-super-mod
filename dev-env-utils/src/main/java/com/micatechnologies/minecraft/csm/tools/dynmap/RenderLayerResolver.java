@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.tools.dynmap;
 
+import com.micatechnologies.minecraft.csm.tools.tool_framework.CsmLayout;
 import com.micatechnologies.minecraft.csm.tools.dynmap.BlockDiscovery.BlockMetadata;
 import com.micatechnologies.minecraft.csm.tools.dynmap.DynmapTypes.Transparency;
 
@@ -7,7 +8,9 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -50,6 +53,8 @@ public final class RenderLayerResolver {
             "BlockRenderLayer\\.([A-Z_]+)");
 
     private final File devEnvironmentPath;
+    /** Core plus every module tree; assets and sources are spread over all of them. */
+    private final CsmLayout layout;
     /** registry name &rarr; layer keyword (e.g. "SOLID"). Lazily populated. */
     private final Map<String, String> factoryLayers = new HashMap<>();
     /** java-file path &rarr; layer keyword or "null" or "" (no method match). */
@@ -58,6 +63,7 @@ public final class RenderLayerResolver {
 
     public RenderLayerResolver(File devEnvironmentPath) {
         this.devEnvironmentPath = devEnvironmentPath;
+        this.layout = new CsmLayout(devEnvironmentPath);
     }
 
     /** Number of registry names successfully picked up from factory calls in tab files. */
@@ -151,10 +157,9 @@ public final class RenderLayerResolver {
                     || parent.equals("BlockStairs")) {
                 return null;
             }
-            File codeutils = new File(devEnvironmentPath,
-                    "src/main/java/com/micatechnologies/minecraft/csm/codeutils/" + parent + ".java");
-            if (codeutils.exists()) return codeutils;
-            // Otherwise scan src/main/java for a class file with that simple name.
+            File codeutils = layout.resolveSourceForRead("codeutils/" + parent + ".java");
+            if (codeutils != null) return codeutils;
+            // Otherwise scan every tree's sources for a class file with that simple name.
             return findClassFile(parent);
         } catch (IOException ignore) {
             return null;
@@ -162,24 +167,28 @@ public final class RenderLayerResolver {
     }
 
     private File findClassFile(String simpleName) {
-        File sourceDir = new File(devEnvironmentPath,
-                "src/main/java/com/micatechnologies/minecraft/csm");
-        try (Stream<Path> paths = Files.walk(sourceDir.toPath())) {
-            return paths.filter(p -> p.getFileName().toString().equals(simpleName + ".java"))
-                    .map(Path::toFile).findFirst().orElse(null);
-        } catch (IOException e) {
-            return null;
+        for (File sourceDir : layout.javaPackageRoots()) {
+            try (Stream<Path> paths = Files.walk(sourceDir.toPath())) {
+                File found = paths
+                        .filter(p -> p.getFileName().toString().equals(simpleName + ".java"))
+                        .map(Path::toFile).findFirst().orElse(null);
+                if (found != null) return found;
+            } catch (IOException ignore) {
+                // Try the next tree.
+            }
         }
+        return null;
     }
 
     private void ensureFactoryScanned() {
         if (factoryScanned) return;
         factoryScanned = true;
-        File tabsDir = new File(devEnvironmentPath,
-                "src/main/java/com/micatechnologies/minecraft/csm/tabs");
-        if (!tabsDir.isDirectory()) return;
-        File[] files = tabsDir.listFiles((d, n) -> n.endsWith(".java"));
-        if (files == null) return;
+        // A tab class lives in the module that ships its blocks, so every tree has some.
+        List<File> files = new ArrayList<>();
+        for (File tabsDir : layout.resolveSourceAll("tabs")) {
+            File[] found = tabsDir.listFiles((d, n) -> n.endsWith(".java"));
+            if (found != null) files.addAll(List.of(found));
+        }
         for (File f : files) {
             try {
                 String content = Files.readString(f.toPath());

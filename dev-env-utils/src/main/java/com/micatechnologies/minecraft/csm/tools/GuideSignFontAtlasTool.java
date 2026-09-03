@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.tools;
 
+import com.micatechnologies.minecraft.csm.tools.tool_framework.CsmLayout;
 import com.micatechnologies.minecraft.csm.tools.tool_framework.CsmToolUtility;
 import java.awt.Color;
 import java.awt.Font;
@@ -35,10 +36,13 @@ import javax.imageio.ImageIO;
  */
 public class GuideSignFontAtlasTool {
 
-  private static final String FONT_FILE = "src/main/resources/assets/csm/fonts/highway_gothic_wide.ttf";
-  private static final String OUTPUT_PNG =
-      "src/main/resources/assets/csm/textures/fonts/guide_sign_font.png";
-  private static final String OUTPUT_JSON = "src/main/resources/assets/csm/fonts/guide_sign_font.json";
+  // Relative to a tree's assets/csm. The font and its glyph sheet ship in the Roads module,
+  // and the generated atlas and metrics belong beside them rather than in Core.
+  private static final String FONT_FILE = "fonts/highway_gothic_wide.ttf";
+  private static final String OUTPUT_PNG_FOLDER = "textures/fonts";
+  private static final String OUTPUT_PNG_NAME = "guide_sign_font.png";
+  private static final String OUTPUT_JSON_FOLDER = "fonts";
+  private static final String OUTPUT_JSON_NAME = "guide_sign_font.json";
 
   private static final int ATLAS_WIDTH = 1024;
   private static final int ATLAS_HEIGHT = 512;
@@ -61,7 +65,12 @@ public class GuideSignFontAtlasTool {
   public static void main(String[] args) {
     CsmToolUtility.doToolExecuteWrapped("CSM Guide Sign Font Atlas Generator", args,
         (devEnvironmentPath) -> {
-          File fontFile = new File(devEnvironmentPath, FONT_FILE);
+          CsmLayout layout = new CsmLayout(devEnvironmentPath);
+          File fontFile = layout.resolveAssetForRead(FONT_FILE);
+          if (fontFile == null) {
+            System.err.println("Font not found in any source tree: " + FONT_FILE);
+            return;
+          }
           Font base = Font.createFont(Font.TRUETYPE_FONT, fontFile);
 
           // Find the point size whose capital 'H' is exactly CAP_HEIGHT pixels tall.
@@ -126,12 +135,15 @@ public class GuideSignFontAtlasTool {
 
           g.dispose();
 
-          File pngOut = new File(devEnvironmentPath, OUTPUT_PNG);
+          File pngOut =
+              layout.assetInFolderForWrite(OUTPUT_PNG_FOLDER, OUTPUT_PNG_NAME);
           pngOut.getParentFile().mkdirs();
           ImageIO.write(atlas, "PNG", pngOut);
           System.out.println("Wrote font atlas: " + pngOut.getAbsolutePath());
 
-          File jsonOut = new File(devEnvironmentPath, OUTPUT_JSON);
+          File jsonOut =
+              layout.assetInFolderForWrite(OUTPUT_JSON_FOLDER, OUTPUT_JSON_NAME);
+          jsonOut.getParentFile().mkdirs();
           try (PrintWriter pw = new PrintWriter(jsonOut, StandardCharsets.UTF_8)) {
             pw.print(json);
           }

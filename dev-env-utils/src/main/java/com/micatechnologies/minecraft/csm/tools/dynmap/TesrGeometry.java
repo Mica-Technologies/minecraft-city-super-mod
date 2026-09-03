@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.tools.dynmap;
 
+import com.micatechnologies.minecraft.csm.tools.tool_framework.CsmLayout;
 import com.micatechnologies.minecraft.csm.tools.dynmap.DynmapTypes.Box;
 import com.micatechnologies.minecraft.csm.tools.dynmap.DynmapTypes.Face;
 import com.micatechnologies.minecraft.csm.tools.dynmap.DynmapTypes.Side;
@@ -47,12 +48,13 @@ import java.util.regex.Pattern;
 public final class TesrGeometry {
 
     /**
-     * Java source files to parse for {@code List<Box>} constants. Relative to repo root.
+     * Java source files to parse for {@code List<Box>} constants, by their path inside
+     * whichever tree ships them (these three are the Roads module's).
      */
     private static final List<String> VERTEXDATA_FILES = Arrays.asList(
-            "src/main/java/com/micatechnologies/minecraft/csm/trafficsignals/logic/TrafficSignalVertexData.java",
-            "src/main/java/com/micatechnologies/minecraft/csm/trafficsignals/logic/CrosswalkSignalVertexData.java",
-            "src/main/java/com/micatechnologies/minecraft/csm/trafficsignals/logic/BlankoutBoxVertexData.java"
+            "trafficsignals/logic/TrafficSignalVertexData.java",
+            "trafficsignals/logic/CrosswalkSignalVertexData.java",
+            "trafficsignals/logic/BlankoutBoxVertexData.java"
     );
 
     /**
@@ -192,17 +194,20 @@ public final class TesrGeometry {
             "(?:public|private|protected)?\\s*static\\s+final\\s+float\\s+(\\w+)\\s*=\\s*([^;]+);");
 
     private final File devEnvironmentPath;
+    /** Core plus every module tree; the vertex data sources ship in a module. */
+    private final CsmLayout layout;
     private final Map<String, List<double[]>> vertexDataArrays = new HashMap<>();
 
     public TesrGeometry(File devEnvironmentPath) {
         this.devEnvironmentPath = devEnvironmentPath;
+        this.layout = new CsmLayout(devEnvironmentPath);
     }
 
     /** Parses all known {@code *VertexData} Java sources and caches the named Box arrays. */
     public void load() throws IOException {
         for (String relPath : VERTEXDATA_FILES) {
-            File f = new File(devEnvironmentPath, relPath);
-            if (!f.exists()) {
+            File f = layout.resolveSourceForRead(relPath);
+            if (f == null) {
                 System.err.println("  TesrGeometry: missing source " + relPath);
                 continue;
             }

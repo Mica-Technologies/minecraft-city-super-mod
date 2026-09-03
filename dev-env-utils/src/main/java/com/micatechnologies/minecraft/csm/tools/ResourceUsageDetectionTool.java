@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.micatechnologies.minecraft.csm.tools.tool_framework.CsmLayout;
 import com.micatechnologies.minecraft.csm.tools.tool_framework.CsmToolUtility;
 import java.io.File;
 import java.io.IOException;
@@ -37,18 +38,16 @@ import java.util.stream.Stream;
  */
 public class ResourceUsageDetectionTool {
 
-  // --- Directory constants ---
-  private static final String SOURCE_DIR =
-      "src/main/java/com/micatechnologies/minecraft/csm";
-  private static final String ASSETS_DIR = "src/main/resources/assets/csm";
-  private static final String BLOCKSTATE_DIR = ASSETS_DIR + "/blockstates";
-  private static final String BLOCK_MODELS_DIR = ASSETS_DIR + "/models/block";
-  private static final String ITEM_MODELS_DIR = ASSETS_DIR + "/models/item";
-  private static final String BLOCK_TEXTURES_DIR = ASSETS_DIR + "/textures/blocks";
-  private static final String ITEM_TEXTURES_DIR = ASSETS_DIR + "/textures/items";
-  private static final String SOUNDS_DIR = ASSETS_DIR + "/sounds";
-  private static final String SOUNDS_JSON = ASSETS_DIR + "/sounds.json";
-  private static final String LANG_FILE = ASSETS_DIR + "/lang/en_us.lang";
+  // --- Directory constants, relative to a tree's assets/csm ---
+  // Core and every module hold a share of each of these and the game merges them, so every
+  // scan below runs over the union of the trees rather than one folder.
+  private static final String BLOCKSTATE_DIR = "blockstates";
+  private static final String BLOCK_MODELS_DIR = "models/block";
+  private static final String ITEM_MODELS_DIR = "models/item";
+  private static final String BLOCK_TEXTURES_DIR = "textures/blocks";
+  private static final String ITEM_TEXTURES_DIR = "textures/items";
+  private static final String SOUNDS_DIR = "sounds";
+  private static final String LANG_LOCALE = "en_us";
 
   private static final String MOD_PREFIX = "csm:";
 
@@ -61,15 +60,18 @@ public class ResourceUsageDetectionTool {
 
           System.out.println("\n=== CSM Resource Usage Detection Tool ===\n");
 
+          // Core plus every module tree; the game merges them into one csm namespace.
+          CsmLayout layout = new CsmLayout(devEnvironmentPath);
+
           // ---------------------------------------------------------------
           // Phase 1: Build all reference sets from source and asset files
           // ---------------------------------------------------------------
 
           // 1a. Scan Java source for block/item registry names
           System.out.println("Scanning Java source for registry names...");
-          Map<String, String> blockRegistry = scanJavaRegistryNames(devEnvironmentPath, true);
-          Map<String, String> itemRegistry = scanJavaRegistryNames(devEnvironmentPath, false);
-          Set<String> blockSetBaseNames = scanBlockSetBaseNames(devEnvironmentPath);
+          Map<String, String> blockRegistry = scanJavaRegistryNames(layout, true);
+          Map<String, String> itemRegistry = scanJavaRegistryNames(layout, false);
+          Set<String> blockSetBaseNames = scanBlockSetBaseNames(layout);
 
           // Build expanded block names (include _fence/_slab/_slab_double/_stairs for BlockSets)
           Set<String> allKnownBlockNames = new HashSet<>(blockRegistry.keySet());
@@ -82,18 +84,30 @@ public class ResourceUsageDetectionTool {
 
           // 1b. Collect all files on disk
           System.out.println("Collecting files on disk...");
-          Set<String> diskBlockstates = collectFileNames(
-              new File(devEnvironmentPath, BLOCKSTATE_DIR), ".json", false);
-          Set<String> diskBlockModels = collectRelativePaths(
-              new File(devEnvironmentPath, BLOCK_MODELS_DIR), ".json");
-          Set<String> diskItemModels = collectFileNames(
-              new File(devEnvironmentPath, ITEM_MODELS_DIR), ".json", false);
-          Set<String> diskBlockTextures = collectRelativePaths(
-              new File(devEnvironmentPath, BLOCK_TEXTURES_DIR), ".png");
-          Set<String> diskItemTextures = collectRelativePaths(
-              new File(devEnvironmentPath, ITEM_TEXTURES_DIR), ".png");
-          Set<String> diskSounds = collectFileNames(
-              new File(devEnvironmentPath, SOUNDS_DIR), ".ogg", false);
+          Set<String> diskBlockstates = new HashSet<>();
+          Set<String> diskBlockModels = new HashSet<>();
+          Set<String> diskItemModels = new HashSet<>();
+          Set<String> diskBlockTextures = new HashSet<>();
+          Set<String> diskItemTextures = new HashSet<>();
+          Set<String> diskSounds = new HashSet<>();
+          for (File dir : layout.assetDirs(BLOCKSTATE_DIR)) {
+            diskBlockstates.addAll(collectFileNames(dir, ".json", false));
+          }
+          for (File dir : layout.assetDirs(BLOCK_MODELS_DIR)) {
+            diskBlockModels.addAll(collectRelativePaths(dir, ".json"));
+          }
+          for (File dir : layout.assetDirs(ITEM_MODELS_DIR)) {
+            diskItemModels.addAll(collectFileNames(dir, ".json", false));
+          }
+          for (File dir : layout.assetDirs(BLOCK_TEXTURES_DIR)) {
+            diskBlockTextures.addAll(collectRelativePaths(dir, ".png"));
+          }
+          for (File dir : layout.assetDirs(ITEM_TEXTURES_DIR)) {
+            diskItemTextures.addAll(collectRelativePaths(dir, ".png"));
+          }
+          for (File dir : layout.assetDirs(SOUNDS_DIR)) {
+            diskSounds.addAll(collectFileNames(dir, ".ogg", false));
+          }
 
           // 1c. Parse all blockstates to collect model refs, texture refs, and inventory variants
           System.out.println("Parsing blockstates for model and texture references...");
@@ -102,8 +116,7 @@ public class ResourceUsageDetectionTool {
           Set<String> referencedItemTextures = new HashSet<>();
           Set<String> blockstatesWithInventory = new HashSet<>();
 
-          File blockstateDir = new File(devEnvironmentPath, BLOCKSTATE_DIR);
-          if (blockstateDir.isDirectory()) {
+          for (File blockstateDir : layout.assetDirs(BLOCKSTATE_DIR)) {
             File[] bsFiles = blockstateDir.listFiles(f -> f.getName().endsWith(".json"));
             if (bsFiles != null) {
               for (File bsFile : bsFiles) {
@@ -116,39 +129,47 @@ public class ResourceUsageDetectionTool {
 
           // 1d. Parse all block models to collect parent refs and texture refs
           System.out.println("Parsing block models for parent and texture references...");
-          File blockModelsDir = new File(devEnvironmentPath, BLOCK_MODELS_DIR);
+          List<File> blockModelsDirs = layout.assetDirs(BLOCK_MODELS_DIR);
           Set<String> modelReferencedModels = new HashSet<>();
-          parseAllModelsForRefs(blockModelsDir, blockModelsDir,
-              modelReferencedModels, referencedBlockTextures, referencedItemTextures);
+          for (File dir : blockModelsDirs) {
+            parseAllModelsForRefs(dir, dir,
+                modelReferencedModels, referencedBlockTextures, referencedItemTextures);
+          }
 
           // 1e. Parse all item models for texture refs
           System.out.println("Parsing item models for texture references...");
-          File itemModelsDir = new File(devEnvironmentPath, ITEM_MODELS_DIR);
           Set<String> itemModelParentRefs = new HashSet<>();
-          parseAllModelsForRefs(itemModelsDir, blockModelsDir,
-              itemModelParentRefs, referencedBlockTextures, referencedItemTextures);
+          for (File dir : layout.assetDirs(ITEM_MODELS_DIR)) {
+            parseAllModelsForRefs(dir, dir,
+                itemModelParentRefs, referencedBlockTextures, referencedItemTextures);
+          }
           // Item model parents that reference block models are also valid references
           modelReferencedModels.addAll(itemModelParentRefs);
 
           // 1f. Parse MTL files for texture refs
           System.out.println("Parsing OBJ/MTL files for texture references...");
-          parseMtlFiles(blockModelsDir, referencedBlockTextures, referencedItemTextures);
+          for (File dir : blockModelsDirs) {
+            parseMtlFiles(dir, referencedBlockTextures, referencedItemTextures);
+          }
 
-          // 1g. Parse sounds.json for sound references
+          // 1g. Parse sounds.json for sound references (one per module that ships a sound)
           System.out.println("Parsing sounds.json...");
-          Set<String> referencedSounds = parseSoundsJson(
-              new File(devEnvironmentPath, SOUNDS_JSON));
+          Set<String> referencedSounds = new HashSet<>();
+          for (File soundsJson : layout.soundsJsonFiles()) {
+            referencedSounds.addAll(parseSoundsJson(soundsJson));
+          }
 
-          // 1h. Parse lang file
-          System.out.println("Parsing lang file...");
+          // 1h. Parse lang files (one per module, merged by the game)
+          System.out.println("Parsing lang files...");
           Map<String, String> langBlocks = new TreeMap<>();
           Map<String, String> langItems = new TreeMap<>();
           Set<String> langTabEntries = new TreeSet<>();
-          parseLangFile(new File(devEnvironmentPath, LANG_FILE),
-              langBlocks, langItems, langTabEntries);
+          for (File langFile : layout.langFiles(LANG_LOCALE)) {
+            parseLangFile(langFile, langBlocks, langItems, langTabEntries);
+          }
 
           // 1i. Scan tab files for tab IDs
-          Set<String> knownTabIds = scanTabIds(devEnvironmentPath);
+          Set<String> knownTabIds = scanTabIds(layout);
 
           // ---------------------------------------------------------------
           // Phase 2: Combine all model references (blockstate + parent refs)
@@ -296,12 +317,13 @@ public class ResourceUsageDetectionTool {
    * Scans Java files for getBlockRegistryName() or getItemRegistryName() return values.
    * Returns a map of registry name to class name.
    */
-  private static Map<String, String> scanJavaRegistryNames(File devEnvironmentPath,
+  private static Map<String, String> scanJavaRegistryNames(CsmLayout layout,
       boolean blocks) {
     Map<String, String> registry = new TreeMap<>();
-    File sourceDir = new File(devEnvironmentPath, SOURCE_DIR);
     String methodName = blocks ? "getBlockRegistryName" : "getItemRegistryName";
 
+    // Core and every module tree.
+    for (File sourceDir : layout.javaPackageRoots()) {
     try (Stream<Path> files = Files.walk(sourceDir.toPath())) {
       files.filter(p -> p.toString().endsWith(".java"))
           .forEach(p -> {
@@ -331,6 +353,7 @@ public class ResourceUsageDetectionTool {
     } catch (IOException e) {
       System.err.println("Error scanning Java files: " + e.getMessage());
     }
+    }
     return registry;
   }
 
@@ -338,10 +361,11 @@ public class ResourceUsageDetectionTool {
    * Scans Java files to find block classes extending AbstractBlockSetBasic and returns
    * their base registry names (used to generate _fence/_slab/_slab_double/_stairs variants).
    */
-  private static Set<String> scanBlockSetBaseNames(File devEnvironmentPath) {
+  private static Set<String> scanBlockSetBaseNames(CsmLayout layout) {
     Set<String> baseNames = new HashSet<>();
-    File sourceDir = new File(devEnvironmentPath, SOURCE_DIR);
 
+    // Core and every module tree.
+    for (File sourceDir : layout.javaPackageRoots()) {
     try (Stream<Path> files = Files.walk(sourceDir.toPath())) {
       files.filter(p -> p.toString().endsWith(".java"))
           .forEach(p -> {
@@ -373,24 +397,24 @@ public class ResourceUsageDetectionTool {
     } catch (IOException e) {
       System.err.println("Error scanning BlockSet classes: " + e.getMessage());
     }
+    }
     return baseNames;
   }
 
   /**
    * Scans tab Java files to extract known tab IDs (the itemGroup.<id> identifiers).
    */
-  private static Set<String> scanTabIds(File devEnvironmentPath) {
+  private static Set<String> scanTabIds(CsmLayout layout) {
     Set<String> tabIds = new HashSet<>();
-    File tabsDir = new File(devEnvironmentPath, SOURCE_DIR + "/tabs");
-    if (!tabsDir.isDirectory()) {
-      return tabIds;
-    }
+    // A tab class lives in the module that ships its blocks, so every tree has some.
+    List<File> tabsDirs = layout.resolveSourceAll("tabs");
 
     // Tab IDs are returned by getTabId() or similar. We look for the tab label pattern
     // which maps to itemGroup.<id>. The tab classes typically have a string like "tab..."
     // that matches the lang entry.
     Pattern tabLabelPattern = Pattern.compile("return\\s+\"(tab[a-z]+)\"\\s*;");
 
+    for (File tabsDir : tabsDirs) {
     try (Stream<Path> files = Files.walk(tabsDir.toPath())) {
       files.filter(p -> p.toString().endsWith(".java"))
           .forEach(p -> {
@@ -406,6 +430,7 @@ public class ResourceUsageDetectionTool {
           });
     } catch (IOException e) {
       System.err.println("Error scanning tab files: " + e.getMessage());
+    }
     }
     return tabIds;
   }

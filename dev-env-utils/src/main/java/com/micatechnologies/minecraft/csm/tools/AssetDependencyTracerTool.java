@@ -3,6 +3,8 @@ package com.micatechnologies.minecraft.csm.tools;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.micatechnologies.minecraft.csm.tools.tool_framework.AssetFolder;
+import com.micatechnologies.minecraft.csm.tools.tool_framework.CsmLayout;
 import com.micatechnologies.minecraft.csm.tools.tool_framework.CsmToolUtility;
 import java.io.*;
 import java.nio.file.*;
@@ -20,9 +22,8 @@ import java.util.stream.*;
  */
 public class AssetDependencyTracerTool {
 
-  private static final String ASSETS_PATH = "src/main/resources/assets/csm";
-  private static final String SOURCE_PATH = "src/main/java/com/micatechnologies/minecraft/csm";
-  private static final String TABS_PATH = SOURCE_PATH + "/tabs";
+  /** The repository root, so a reported path reads the same whichever tree it came from. */
+  private static File repoRoot;
 
   // Subsystem packages that map to folder names
   private static final String[] SUBSYSTEMS = {
@@ -32,18 +33,25 @@ public class AssetDependencyTracerTool {
 
   public static void main(String[] args) {
     CsmToolUtility.doToolExecuteWrapped("Asset Dependency Tracer", args, devEnvPath -> {
-      File assetsDir = new File(devEnvPath, ASSETS_PATH);
-      File sourceDir = new File(devEnvPath, SOURCE_PATH);
-      File tabsDir = new File(devEnvPath, TABS_PATH);
+      // Core plus every module tree: a subsystem's tab, classes and assets can each sit in a
+      // different jar, and the game merges them into one namespace.
+      repoRoot = devEnvPath;
+      CsmLayout layout = new CsmLayout(devEnvPath);
 
       // Step 1: Map block classes to subsystems via tab files
       log("Step 1: Scanning tab files for block→subsystem mapping...");
-      Map<String, String> classToSubsystem = mapClassesToSubsystems(tabsDir);
+      Map<String, String> classToSubsystem = new HashMap<>();
+      for (File tabsDir : layout.resolveSourceAll("tabs")) {
+        classToSubsystem.putAll(mapClassesToSubsystems(tabsDir));
+      }
       log("  Found " + classToSubsystem.size() + " block/item classes mapped to subsystems");
 
       // Step 2: Map block classes to registry names
       log("Step 2: Scanning block classes for registry names...");
-      Map<String, String> classToRegistryName = mapClassesToRegistryNames(sourceDir);
+      Map<String, String> classToRegistryName = new HashMap<>();
+      for (File sourceDir : layout.javaPackageRoots()) {
+        classToRegistryName.putAll(mapClassesToRegistryNames(sourceDir));
+      }
       log("  Found " + classToRegistryName.size() + " registry names");
 
       // Step 3: Build registry name → subsystem mapping
@@ -60,14 +68,17 @@ public class AssetDependencyTracerTool {
 
       // Step 4: Parse blockstates and trace model/texture references
       log("Step 3: Parsing blockstates...");
-      File blockstatesDir = new File(assetsDir, "blockstates");
-      File modelsBlockDir = new File(assetsDir, "models/block");
-      File texturesDir = new File(assetsDir, "textures/blocks");
+      AssetFolder modelsBlockDir = AssetFolder.ofAsset(layout, "models/block");
+      AssetFolder texturesDir = AssetFolder.ofAsset(layout, "textures/blocks");
 
       Map<String, BlockAssetInfo> assetMap = new TreeMap<>();
       int blockstateCount = 0;
 
-      for (File bsFile : listJsonFiles(blockstatesDir)) {
+      List<File> blockstateFiles = new ArrayList<>();
+      for (File blockstatesDir : layout.assetDirs("blockstates")) {
+        blockstateFiles.addAll(List.of(listJsonFiles(blockstatesDir)));
+      }
+      for (File bsFile : blockstateFiles) {
         String registryName = bsFile.getName().replace(".json", "");
         String subsystem = registryToSubsystem.getOrDefault(registryName, "UNKNOWN");
 
@@ -95,8 +106,7 @@ public class AssetDependencyTracerTool {
             // Check for OBJ companion MTL
             if (modelRef.endsWith(".obj")) {
               String mtlRef = modelRef.replace(".obj", ".mtl");
-              File mtlFile = new File(modelsBlockDir,
-                  mtlRef.replace("csm:", ""));
+              File mtlFile = modelsBlockDir.file(mtlRef.replace("csm:", ""));
               if (mtlFile.exists()) {
                 info.modelFiles.add(relativePath(devEnvPath, mtlFile));
                 extractTexturesFromMtl(mtlFile, textureRefs);
@@ -311,12 +321,12 @@ public class AssetDependencyTracerTool {
    */
   private static final int MAX_MODEL_CHAIN_DEPTH = 16;
 
-  private static void traceModelChain(File modelsBlockDir, String modelRef,
+  private static void traceModelChain(AssetFolder modelsBlockDir, String modelRef,
       Set<String> modelFiles, Set<String> textureRefs, Set<String> visited) {
     traceModelChain(modelsBlockDir, modelRef, modelFiles, textureRefs, visited, 0);
   }
 
-  private static void traceModelChain(File modelsBlockDir, String modelRef,
+  private static void traceModelChain(AssetFolder modelsBlockDir, String modelRef,
       Set<String> modelFiles, Set<String> textureRefs, Set<String> visited, int depth) {
     if (visited.contains(modelRef)) {
       log("  WARNING: Circular model reference detected: " + modelRef);
@@ -332,10 +342,10 @@ public class AssetDependencyTracerTool {
     String cleanRef = modelRef.replace("csm:", "");
     if (cleanRef.endsWith(".obj")) return; // OBJ handled separately
 
-    File modelFile = new File(modelsBlockDir, cleanRef + ".json");
+    File modelFile = modelsBlockDir.file(cleanRef + ".json");
     if (!modelFile.exists()) {
       // Try without block/ prefix
-      modelFile = new File(modelsBlockDir.getParentFile(), "block/" + cleanRef + ".json");
+      modelFile = modelsBlockDir.file("block/" + cleanRef + ".json");
     }
     if (!modelFile.exists()) return;
 
@@ -357,10 +367,9 @@ public class AssetDependencyTracerTool {
         String parent = model.get("parent").getAsString();
         if (parent.startsWith("csm:")) {
           String parentPath = parent.replace("csm:block/", "").replace("csm:", "");
-          File parentFile = new File(modelsBlockDir, parentPath + ".json");
+          File parentFile = modelsBlockDir.file(parentPath + ".json");
           if (parentFile.exists()) {
-            modelFiles.add(relativePath(modelsBlockDir.getParentFile().getParentFile()
-                .getParentFile().getParentFile().getParentFile(), parentFile));
+            modelFiles.add(relativePath(repoRoot, parentFile));
             traceModelChain(modelsBlockDir, parent, modelFiles, textureRefs, visited, depth + 1);
           }
         }
@@ -388,28 +397,26 @@ public class AssetDependencyTracerTool {
 
   // ---- Path resolution ----
 
-  private static String resolveModelPath(File modelsBlockDir, String modelRef) {
+  private static String resolveModelPath(AssetFolder modelsBlockDir, String modelRef) {
     String cleanRef = modelRef.replace("csm:", "");
     File modelFile;
     if (cleanRef.endsWith(".obj")) {
-      modelFile = new File(modelsBlockDir, cleanRef);
+      modelFile = modelsBlockDir.file(cleanRef);
     } else {
-      modelFile = new File(modelsBlockDir, cleanRef + ".json");
+      modelFile = modelsBlockDir.file(cleanRef + ".json");
     }
     if (modelFile.exists()) {
-      return relativePath(modelsBlockDir.getParentFile().getParentFile()
-          .getParentFile().getParentFile().getParentFile(), modelFile);
+      return relativePath(repoRoot, modelFile);
     }
     return null;
   }
 
-  private static String resolveTexturePath(File texturesDir, String texRef) {
+  private static String resolveTexturePath(AssetFolder texturesDir, String texRef) {
     if (!texRef.startsWith("csm:blocks/")) return null;
     String cleanRef = texRef.replace("csm:blocks/", "");
-    File texFile = new File(texturesDir, cleanRef + ".png");
+    File texFile = texturesDir.file(cleanRef + ".png");
     if (texFile.exists()) {
-      return relativePath(texturesDir.getParentFile().getParentFile()
-          .getParentFile().getParentFile(), texFile);
+      return relativePath(repoRoot, texFile);
     }
     return null;
   }
