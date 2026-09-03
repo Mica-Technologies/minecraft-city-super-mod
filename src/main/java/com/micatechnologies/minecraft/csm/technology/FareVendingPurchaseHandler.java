@@ -122,7 +122,7 @@ public class FareVendingPurchaseHandler
     // the vending machine and the Verifone terminal feel like they're part of the same
     // payment ecosystem.
     SoundEvent chime =
-        com.micatechnologies.minecraft.csm.CsmSounds.SOUND.VERIFONE_MX915.getSoundEvent();
+        TechnologySounds.VERIFONE_MX915.getSoundEvent();
     if (chime != null) {
       world.playSound(null,
           message.getVendingPos().getX() + 0.5,

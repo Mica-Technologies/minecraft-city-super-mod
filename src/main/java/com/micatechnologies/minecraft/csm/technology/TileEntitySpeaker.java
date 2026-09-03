@@ -49,7 +49,7 @@ public class TileEntitySpeaker extends AbstractTickableTileEntity {
   /**
    * Available ambient sound resources, in cycle order. The first entry is the "no ambient
    * sound selected" sentinel. Adding more sounds later is just a matter of appending to
-   * this list and registering them in sounds.json + CsmSounds.
+   * this list and registering them in sounds.json + TechnologySounds.
    */
   private static final List<String> AMBIENT_SOUND_CYCLE = Arrays.asList(
       "",

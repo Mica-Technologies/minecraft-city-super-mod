@@ -180,7 +180,7 @@ per item.
 
 1. Add `.ogg` file to `src/main/resources/assets/csm/sounds/` (OGG Vorbis, `snake_case` name)
 2. Add entry to `src/main/resources/assets/csm/sounds.json` with matching key and `"name": "csm:<filename_without_ext>"`
-3. Add enum entry to `CsmSounds.java`: `MY_SOUND_NAME("sound_event_id")`
+3. Add enum entry to the owning module's sound enum (e.g. `lifesafety/LifeSafetySounds.java`, `trafficsignals/RoadsSounds.java`): `MY_SOUND_NAME("sound_event_id")`
 
 Sound is referenced in code as `"csm:sound_event_id"` (matching the sounds.json key).
 
