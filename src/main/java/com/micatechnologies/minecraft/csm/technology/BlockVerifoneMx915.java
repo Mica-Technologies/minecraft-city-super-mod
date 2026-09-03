@@ -1,6 +1,5 @@
 package com.micatechnologies.minecraft.csm.technology;
 
-import com.micatechnologies.minecraft.csm.CsmSounds;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEWUD;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -80,7 +79,7 @@ public class BlockVerifoneMx915 extends AbstractBlockRotatableNSEWUD {
       // Pass null source so every nearby client (including the activator) hears it
       // positionally; the server is authoritative about the chime.
       worldIn.playSound(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
-          CsmSounds.SOUND.VERIFONE_MX915.getSoundEvent(),
+          TechnologySounds.VERIFONE_MX915.getSoundEvent(),
           SoundCategory.BLOCKS, 1.0F, 1.0F);
     }
     return true;

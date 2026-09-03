@@ -14,6 +14,12 @@ import net.minecraft.util.math.BlockPos;
  * This registry is maintained by {@code TileEntityFireAlarmControlPanel} and queried by
  * {@link CsmFireAlarmQuery}. External mods should use {@link CsmFireAlarmQuery} rather than
  * accessing this registry directly.
+ *
+ * <p><b>Shipped by the Life Safety module.</b> The package name stays
+ * {@code com.micatechnologies.minecraft.csm.api.firealarm} so that mods compiled against it keep
+ * working, but the classes travel in the Life Safety jar rather than Core: they describe fire
+ * alarm panels, which only exist when that module is installed. A dependent mod should therefore
+ * declare a dependency on {@code csm_lifesafety}, not on {@code csm} alone.</p>
  */
 public class FireAlarmPanelRegistry {
 

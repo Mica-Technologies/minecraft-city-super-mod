@@ -1,7 +1,7 @@
 package com.micatechnologies.minecraft.csm.technology;
 
 import com.micatechnologies.minecraft.csm.codeutils.GuiMultiLineTextField;
-import com.micatechnologies.minecraft.csm.hvac.HvacTemperatureManager;
+import com.micatechnologies.minecraft.csm.codeutils.CsmEnvironment;
 import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -28,7 +28,7 @@ import org.lwjgl.input.Mouse;
  *   <li><b>Calculator</b> — basic 4-function calculator (digits 0–9, +, −, ×, ÷, =, C).
  *   Mouse-only; calculator state is per-GUI-instance and resets on close.</li>
  *   <li><b>Weather</b> — read-only panel showing the player's biome, biome temperature,
- *   the conditioned indoor temperature from {@link HvacTemperatureManager}, the sky state
+ *   the conditioned indoor temperature from {@link CsmEnvironment}, the sky state
  *   (clear / rain / thunder), and the in-game day count.</li>
  *   <li><b>Minesweeper</b> — classic 9×9 / 10-mine game. Left-click reveals, right-click
  *   flags; the first reveal is always safe. Custom-drawn grid (not GuiButtons) so it can
@@ -536,7 +536,7 @@ public class ComputerGui extends GuiScreen {
     Biome biome = world.getBiome(playerPos);
     String biomeName = biome.getBiomeName();
     float biomeTempUnits = biome.getTemperature(playerPos);
-    float ambientF = HvacTemperatureManager.getTemperatureAt(world, playerPos);
+    float ambientF = CsmEnvironment.getTemperatureAt(world, playerPos);
     float biomeRainfall = biome.getRainfall();
 
     String sky;
@@ -1041,7 +1041,7 @@ public class ComputerGui extends GuiScreen {
     Biome biome = world.getBiome(pos);
     String sky = world.isThundering() ? "Thunderstorm"
         : world.isRaining() ? (biome.canRain() ? "Raining" : "Overcast") : "Clear";
-    float ambientF = HvacTemperatureManager.getTemperatureAt(world, pos);
+    float ambientF = CsmEnvironment.getTemperatureAt(world, pos);
     return new String[] {
         "Biome: " + biome.getBiomeName(),
         "Climate: " + describeClimate(biome.getTemperature(pos), biome.getRainfall()),

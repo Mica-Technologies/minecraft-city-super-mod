@@ -38,7 +38,7 @@ For each creative tab:
 2. **Lang entries** — Verifies `itemGroup.<tab_id>` exists
 
 ### Sound Verification
-1. **Sound ID extraction** — Parses `CsmSounds.java` enum entries via regex
+1. **Sound ID extraction** — Parses the per-module sound enums (`RoadsSounds`, `LifeSafetySounds`, `FurnishingsSounds`, `TechnologySounds`, `HvacSounds`) via regex
 2. **sounds.json validation** — For each sound:
    - `"category"` field exists
    - `"sounds"` array exists and is non-empty

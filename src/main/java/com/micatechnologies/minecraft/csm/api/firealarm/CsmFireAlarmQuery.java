@@ -16,6 +16,12 @@ import net.minecraft.world.World;
  * <p>
  * All methods are safe to call from the server thread. They read from the
  * {@link FireAlarmPanelRegistry} and world tile entities.
+ *
+ * <p><b>Shipped by the Life Safety module.</b> The package name stays
+ * {@code com.micatechnologies.minecraft.csm.api.firealarm} so that mods compiled against it keep
+ * working, but the classes travel in the Life Safety jar rather than Core: they describe fire
+ * alarm panels, which only exist when that module is installed. A dependent mod should therefore
+ * declare a dependency on {@code csm_lifesafety}, not on {@code csm} alone.</p>
  */
 public class CsmFireAlarmQuery {
 

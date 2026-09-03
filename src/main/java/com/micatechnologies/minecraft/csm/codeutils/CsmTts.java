@@ -1,24 +1,25 @@
 package com.micatechnologies.minecraft.csm.codeutils;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
-import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.DataLine;
-import javax.sound.sampled.SourceDataLine;
-import marytts.LocalMaryInterface;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
+/**
+ * The mod's speech facade. Everything that wants to say something calls this class; it speaks
+ * through the {@link ICsmTtsEngine} the Text to Speech module registers, and through the system
+ * narrator when there is no engine or the engine is not ready.
+ *
+ * <p>Keeping the fallback here rather than in the engine means one code path decides how a
+ * message is spoken: an install without the Text to Speech module behaves exactly like an
+ * install whose synthesizer failed to load, which is a case the mod already handled.</p>
+ *
+ * @author Mica Technologies
+ * @version 2.0
+ */
 @SideOnly(Side.CLIENT)
 public class CsmTts {
 
-  private static final Logger LOGGER = LogManager.getLogger("CSM-TTS");
   private static final String DEFAULT_VOICE = "cmu-slt-hsmm";
   private static final String[][] KNOWN_VOICES = {
       {"cmu-slt-hsmm", "CMU SLT (Female, US)"},
@@ -26,57 +27,45 @@ public class CsmTts {
       {"dfki-spike-hsmm", "DFKI Spike (Male, GB)"},
       {"dfki-prudence-hsmm", "DFKI Prudence (Female, GB)"}
   };
-  private static final int AUDIO_BUFFER_SIZE = 4096;
 
-  private static volatile LocalMaryInterface mary;
-  private static volatile boolean initStarted = false;
-  private static volatile boolean initialized = false;
-  private static volatile boolean initFailed = false;
-  private static volatile String currentVoice = "";
-  private static final AtomicBoolean IS_PLAYING = new AtomicBoolean(false);
+  /**
+   * The registered speech engine, or {@code null} when the Text to Speech module is not
+   * installed. Volatile because the module registers it on the main thread and speech runs on
+   * its own threads.
+   */
+  private static volatile ICsmTtsEngine engine;
 
-  public static void startInit() {
-    if (initStarted) {
-      return;
-    }
-    synchronized (CsmTts.class) {
-      if (initStarted) {
-        return;
-      }
-      initStarted = true;
-    }
-    // Capture the calling thread's classloader (Forge's LaunchClassLoader).
-    // New threads default to the system classloader, which can't see the
-    // MaryTTS service files inside the shadow JAR.
-    ClassLoader forgeClassLoader = Thread.currentThread().getContextClassLoader();
-    new Thread(() -> {
-      Thread.currentThread().setContextClassLoader(forgeClassLoader);
-      try {
-        LOGGER.info("Initializing MaryTTS...");
-        long start = System.currentTimeMillis();
-        LocalMaryInterface m = new LocalMaryInterface();
-        LOGGER.info("MaryTTS created, available voices: {}", m.getAvailableVoices());
-        if (m.getAvailableVoices().contains(DEFAULT_VOICE)) {
-          m.setVoice(DEFAULT_VOICE);
-          currentVoice = DEFAULT_VOICE;
-        } else if (!m.getAvailableVoices().isEmpty()) {
-          String first = m.getAvailableVoices().iterator().next();
-          m.setVoice(first);
-          currentVoice = first;
-        }
-        mary = m;
-        initialized = true;
-        LOGGER.info("MaryTTS initialized in {}ms — voice: {}",
-            System.currentTimeMillis() - start, currentVoice);
-      } catch (Throwable e) {
-        LOGGER.error("Failed to initialize MaryTTS — TTS will fall back to system narrator", e);
-        initFailed = true;
-      }
-    }, "CSM-TTS-Init").start();
+  /**
+   * Registers the speech engine to speak through. Called from the Text to Speech module's
+   * pre-initialization; the last engine registered wins.
+   *
+   * @param ttsEngine the engine to speak through
+   *
+   * @since 2.0
+   */
+  public static void setEngine(ICsmTtsEngine ttsEngine) {
+    engine = ttsEngine;
   }
 
+  /**
+   * Starts loading the speech engine, if one is registered. Loading is asynchronous, so this
+   * returns immediately.
+   */
+  public static void startInit() {
+    ICsmTtsEngine ttsEngine = engine;
+    if (ttsEngine != null) {
+      ttsEngine.startInit();
+    }
+  }
+
+  /**
+   * Gets whether a speech engine is registered and has finished loading.
+   *
+   * @return {@code true} if speech will be synthesized rather than narrated
+   */
   public static boolean isReady() {
-    return initialized;
+    ICsmTtsEngine ttsEngine = engine;
+    return ttsEngine != null && ttsEngine.isReady();
   }
 
   public static String getDefaultVoice() {
@@ -87,11 +76,20 @@ public class CsmTts {
     return KNOWN_VOICES;
   }
 
+  /**
+   * Gets the ids of the voices that can be selected. These are the engine's voices once it has
+   * loaded, and the known-voice list before that (or with no engine at all), so the selector in
+   * the block's GUI always has something to offer.
+   *
+   * @return the selectable voice ids
+   */
   public static List<String> getAvailableVoiceIds() {
-    if (initialized && mary != null) {
-      List<String> ids = new ArrayList<>(mary.getAvailableVoices());
-      Collections.sort(ids);
-      return ids;
+    ICsmTtsEngine ttsEngine = engine;
+    if (ttsEngine != null) {
+      List<String> ids = ttsEngine.getAvailableVoiceIds();
+      if (ids != null) {
+        return ids;
+      }
     }
     List<String> fallback = new ArrayList<>();
     for (String[] v : KNOWN_VOICES) {
@@ -100,6 +98,14 @@ public class CsmTts {
     return fallback;
   }
 
+  /**
+   * Gets the human-readable name of a voice, or the id itself when the voice is not one of the
+   * known ones.
+   *
+   * @param voiceId the id of the voice
+   *
+   * @return the display name of the voice
+   */
   public static String getDisplayName(String voiceId) {
     for (String[] entry : KNOWN_VOICES) {
       if (entry[0].equals(voiceId)) {
@@ -109,65 +115,31 @@ public class CsmTts {
     return voiceId;
   }
 
+  /**
+   * Says the given message in the given voice. Speech is asynchronous either way; a message
+   * spoken while the engine is still loading, has failed to load, or is absent altogether goes
+   * to the system narrator instead.
+   *
+   * @param message the text to speak
+   * @param voice   the id of the voice to speak it in
+   */
   public static void say(String message, String voice) {
-    if (!initStarted) {
-      startInit();
-    }
-
-    if (!initialized) {
-      // MaryTTS still loading or failed — fall back immediately, no blocking
+    ICsmTtsEngine ttsEngine = engine;
+    if (ttsEngine == null) {
       CsmNarrator.say(message);
       return;
     }
 
-    if (!IS_PLAYING.compareAndSet(false, true)) {
+    // Idempotent: the engine ignores this once loading has started. Kept so that the first
+    // thing to speak also starts the engine, as it always has.
+    ttsEngine.startInit();
+
+    if (!ttsEngine.isReady()) {
+      // Still loading or failed — fall back immediately, no blocking
+      CsmNarrator.say(message);
       return;
     }
 
-    // Capture classloader from calling thread (main client thread)
-    ClassLoader cl = Thread.currentThread().getContextClassLoader();
-    new Thread(() -> {
-      Thread.currentThread().setContextClassLoader(cl);
-      try {
-        AudioInputStream audio;
-        synchronized (CsmTts.class) {
-          if (voice != null && !voice.isEmpty() && !voice.equals(currentVoice)
-              && mary.getAvailableVoices().contains(voice)) {
-            mary.setVoice(voice);
-            currentVoice = voice;
-          }
-          audio = mary.generateAudio(message);
-        }
-
-        playAudio(audio);
-        audio.close();
-      } catch (Exception e) {
-        LOGGER.error("TTS playback failed for message: {}", message, e);
-      } finally {
-        IS_PLAYING.set(false);
-      }
-    }, "CSM-TTS-Playback").start();
-  }
-
-  private static void playAudio(AudioInputStream audioStream) throws Exception {
-    AudioFormat format = audioStream.getFormat();
-    DataLine.Info info = new DataLine.Info(SourceDataLine.class, format);
-    if (!AudioSystem.isLineSupported(info)) {
-      LOGGER.error("Audio line not supported for format: {}", format);
-      return;
-    }
-    SourceDataLine line = (SourceDataLine) AudioSystem.getLine(info);
-    line.open(format);
-    line.start();
-    try {
-      byte[] buffer = new byte[AUDIO_BUFFER_SIZE];
-      int bytesRead;
-      while ((bytesRead = audioStream.read(buffer)) != -1) {
-        line.write(buffer, 0, bytesRead);
-      }
-      line.drain();
-    } finally {
-      line.close();
-    }
+    ttsEngine.say(message, voice);
   }
 }

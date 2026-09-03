@@ -606,7 +606,7 @@ TESR-based rain hood that wraps the adjacent signal head. Like the dynamic mount
   shift — so the cover stays clamped to the housing at every tilt/angle setting.
 - **Color**: sneak + right-click cycles `MountKitColorScheme` (covers default to Black).
 - **Retirement/migration**: the old static `tlhcover` retires into `tlvcover` with its
-  facing preserved (see `CsmTabNone`); legacy `tlvcover` placements saved without a tile
+  facing preserved (see `CsmTabRoadsHidden`); legacy `tlvcover` placements saved without a tile
   entity are migrated by a one-time `randomTick` TE creation + client sync.
 
 ## Resource File Structure
