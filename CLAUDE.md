@@ -258,6 +258,12 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
 - `csm_bench_attribute.py` -- answers "where does the frame time actually go" by deleting one
   category of block at a time and differencing. Subtractive rather than instrumented, so it cannot
   be fooled by a mistaken belief about which code runs
+- `audit_package_deps.py` -- Java package dependency matrix: which subsystem packages reference
+  which, with the symbols. A module may only reference Core, so every non-zero cell between two
+  subsystems is a modularization to-do
+- `audit_asset_ownership.py` -- resolves every blockstate to its owning creative tab and follows it
+  to the models and textures it reaches, then lists every reach into a folder named for a different
+  subsystem (the shared assets), unreached models, unreferenced textures, and sound/lang ownership
 
 ### Render pass toggles (in game)
 
