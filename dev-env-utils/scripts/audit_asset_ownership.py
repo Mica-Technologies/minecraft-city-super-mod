@@ -16,7 +16,7 @@ import csm_block_index as cbi
 REPO = os.path.abspath(os.path.join(SCRIPT_DIR, "..", "..")); A=os.path.join(REPO,"src","main","resources","assets","csm")
 BS=os.path.join(A,"blockstates"); MB=os.path.join(A,"models","block"); TB=os.path.join(A,"textures","blocks")
 index,tabs,classes=cbi.build_index()
-TABMOD={"tabbuildingmaterials":"buildingmaterials","tabhvac":"hvac","tablifesafety":"lifesafety","tablighting":"lighting","tabnovelties":"novelties","tabpowergrid":"powergrid","tabroadsigns":"trafficsigns","tabtechnology":"technology","tabtrafficaccessories":"trafficaccessories","tabtrafficsignals":"trafficsignals","tabfurniture":"furniture","tabgaming":"novelties","tabmaterials":"materials","none":"(hidden)","tabnone":"(hidden)",None:"(hidden)"}
+TABMOD={"tabbuildingmaterials":"buildingmaterials","tabhvac":"hvac","tablifesafety":"lifesafety","tablighting":"lighting","tabnovelties":"novelties","tabpowergrid":"powergrid","tabroadsigns":"trafficsigns","tabtechnology":"technology","tabtrafficaccessories":"trafficaccessories","tabtrafficsignals":"trafficsignals","tabfurniture":"furniture","tabgaming":"novelties","tabmaterials":"materials","none":"(hidden)","tabroadshidden":"(hidden)","tablightinghidden":"(hidden)",None:"(hidden)"}
 def load(p):
     try: return json.load(open(p,encoding="utf-8"))
     except Exception: return None

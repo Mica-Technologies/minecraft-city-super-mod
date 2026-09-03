@@ -168,7 +168,7 @@ and housing geometry), all extending `AbstractBlockControllableCrosswalkSignalNe
 | `BlockControllableCrosswalkSignalSingle12Inch` | `controllablecrosswalksingle12inch` | `SYMBOL_12INCH` | 12-inch single section (bimodal hand/man) |
 | `BlockControllableCrosswalkSignalDouble` | `controllablecrosswalkdouble` | `TEXT` | 12-inch double stacked (WORDED or HAND_MAN_COUNTDOWN) |
 
-The 12 retired blocks remain registered (moved to `CsmTabNone`) but implement `ICsmRetiringBlock`.
+The 12 retired blocks remain registered (moved to `CsmTabRoadsHidden`) but implement `ICsmRetiringBlock`.
 On world load each auto-migrates to one of the new blocks via `configureReplacement()`, which sets
 the appropriate `mountType` / `bodyTilt` / `bodyColor` on the new TE and transfers learned countdown
 clearance timing from the old TE's NBT (`readLearnedClearanceTicksFromNbt`).

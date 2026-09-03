@@ -28,7 +28,8 @@ import org.apache.logging.log4j.Logger;
  * <p>Each {@link CsmTab} subclass is annotated with {@code @CsmTab.Load(order = N)}. The complete
  * order list is:</p>
  * <pre>
- *   Order  0 = CsmTabNone              (hidden catch-all tab)
+ *   Order -10 = CsmTabRoadsHidden       (hidden: retired road/signal blocks)
+ *   Order  -9 = CsmTabLightingHidden    (hidden: light-up air)
  *   Order  1 = CsmTabBuildingMaterials
  *   Order  2 = CsmTabHvac
  *   Order  3 = CsmTabLifeSafety
@@ -43,7 +44,10 @@ import org.apache.logging.log4j.Logger;
  *   Order 12 = CsmTabGaming
  *   Order 13 = CsmTabMaterials
  * </pre>
- * <p>When adding a new tab, choose the next available order value and update this list.</p>
+ * <p>When adding a new tab, choose the next available order value and update this list. A
+ * module that owns retiring blocks ships its own hidden tab at a negative order; hidden tabs
+ * have no display, so their order relative to each other does not matter, only that they come
+ * before the visible tabs as the single hidden tab used to.</p>
  *
  * @author Mica Technologies
  * @version 1.0

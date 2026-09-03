@@ -331,7 +331,7 @@ public class CsmTabTrafficAccessories extends CsmTab {
     // --- Backplate factory blocks: TLHBorder ---
 
     // --- NSEWUD factory blocks: TL Covers and Mount Kits ---
-    // (tlhcover retired to the dynamic tlvcover — see CsmTabNone)
+    // (tlhcover retired to the dynamic tlvcover — see CsmTabRoadsHidden)
     initTabBlock(new BlockSignalMountKit("tlhmountkit", BB_TL_H_MOUNT_KIT, BlockRenderLayer.CUTOUT_MIPPED, 2F, false));
     initTabBlock(new BlockTrafficAccessoryNSEWUD("tlpmblack", BB_TL_PM, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
     initTabBlock(new BlockTrafficAccessoryNSEWUD("tlpmsilver", BB_TL_PM, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));

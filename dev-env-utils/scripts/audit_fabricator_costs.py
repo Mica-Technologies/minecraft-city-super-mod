@@ -19,7 +19,7 @@ import sys
 import csm_block_index as index_mod
 
 # Tabs whose blocks are never fabricable.
-NON_FABRICABLE_TABS = {"tabnone", "tabmaterials"}
+NON_FABRICABLE_TABS = {"tabroadshidden", "tablightinghidden", "tabmaterials"}
 
 
 def build_ancestry(classes):
