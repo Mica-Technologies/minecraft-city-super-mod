@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.roads;
 
 import com.micatechnologies.minecraft.csm.CsmNetwork;
 import com.micatechnologies.minecraft.csm.Tags;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmProxy;
 import com.micatechnologies.minecraft.csm.codeutils.CsmLifecycleHooks;
 import com.micatechnologies.minecraft.csm.codeutils.gui.CsmGuiRegistry;
 import com.micatechnologies.minecraft.csm.codeutils.packets.DynamicGuideSignUpdateHandler;
@@ -43,6 +44,8 @@ import com.micatechnologies.minecraft.csm.trafficsignals.SignalHeadSectionConfig
 import com.micatechnologies.minecraft.csm.trafficsignals.TrafficSignalsFabricatorRules;
 import com.micatechnologies.minecraft.csm.trafficsignals.TrafficSignalsGuiProvider;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.SidedProxy;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import org.apache.logging.log4j.Logger;
@@ -70,6 +73,10 @@ public class CsmRoads {
 
   public static final String MOD_ID = "csm_roads";
   public static final String MOD_NAME = "CSM: Roads & Traffic";
+
+  @SidedProxy(clientSide = "com.micatechnologies.minecraft.csm.roads.CsmRoadsClientProxy",
+              serverSide = "com.micatechnologies.minecraft.csm.roads.CsmRoadsCommonProxy")
+  public static ICsmProxy proxy;
 
   /**
    * This module's network channel. Its packets are registered below, in a fixed order, so
@@ -179,5 +186,12 @@ public class CsmRoads {
     // pre-initialization before it fires the sound registry event, so Core sees the complete
     // union when it creates the sound events.
     RoadsSounds.registerSounds();
+    proxy.preInit(event);
+  }
+
+  @Mod.EventHandler
+  public void init(FMLInitializationEvent event) {
+    // Client: bind this module's tile-entity renderers. Server: nothing.
+    proxy.init(event);
   }
 }

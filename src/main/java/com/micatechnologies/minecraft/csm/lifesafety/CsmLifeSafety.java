@@ -2,10 +2,13 @@ package com.micatechnologies.minecraft.csm.lifesafety;
 
 import com.micatechnologies.minecraft.csm.CsmNetwork;
 import com.micatechnologies.minecraft.csm.Tags;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmProxy;
 import com.micatechnologies.minecraft.csm.codeutils.CsmLifecycleHooks;
 import com.micatechnologies.minecraft.csm.codeutils.gui.CsmGuiRegistry;
 import com.micatechnologies.minecraft.csm.materials.CsmFabricatorCosts;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.SidedProxy;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import org.apache.logging.log4j.Logger;
@@ -34,6 +37,10 @@ public class CsmLifeSafety {
 
   public static final String MOD_ID = "csm_lifesafety";
   public static final String MOD_NAME = "CSM: Life Safety";
+
+  @SidedProxy(clientSide = "com.micatechnologies.minecraft.csm.lifesafety.CsmLifeSafetyClientProxy",
+              serverSide = "com.micatechnologies.minecraft.csm.lifesafety.CsmLifeSafetyCommonProxy")
+  public static ICsmProxy proxy;
 
   /**
    * This module's network channel. Its packets are registered below, in a fixed order, so
@@ -86,5 +93,12 @@ public class CsmLifeSafety {
     // pre-initialization before it fires the sound registry event, so Core sees the complete
     // union when it creates the sound events.
     LifeSafetySounds.registerSounds();
+    proxy.preInit(event);
+  }
+
+  @Mod.EventHandler
+  public void init(FMLInitializationEvent event) {
+    // Client: bind this module's tile-entity renderers. Server: nothing.
+    proxy.init(event);
   }
 }
