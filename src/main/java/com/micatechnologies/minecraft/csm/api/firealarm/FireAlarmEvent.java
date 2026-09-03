@@ -10,6 +10,12 @@ import net.minecraft.world.World;
  * <p>
  * All events include the world and the control panel position. Use {@link CsmFireAlarmQuery} for
  * on-demand state checks (e.g., when an entity spawns mid-alarm).
+ *
+ * <p><b>Shipped by the Life Safety module.</b> The package name stays
+ * {@code com.micatechnologies.minecraft.csm.api.firealarm} so that mods compiled against it keep
+ * working, but the classes travel in the Life Safety jar rather than Core: they describe fire
+ * alarm panels, which only exist when that module is installed. A dependent mod should therefore
+ * declare a dependency on {@code csm_lifesafety}, not on {@code csm} alone.</p>
  */
 public abstract class FireAlarmEvent extends CsmEvent {
 
