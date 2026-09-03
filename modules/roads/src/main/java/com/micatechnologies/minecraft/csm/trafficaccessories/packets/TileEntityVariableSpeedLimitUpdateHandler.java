@@ -1,4 +1,4 @@
-package com.micatechnologies.minecraft.csm.codeutils.packets;
+package com.micatechnologies.minecraft.csm.trafficaccessories.packets;
 
 import com.micatechnologies.minecraft.csm.codeutils.CsmPacketUtils;
 import com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityOverheadSpeedLimit;

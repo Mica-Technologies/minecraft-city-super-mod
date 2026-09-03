@@ -1,19 +1,20 @@
-package com.micatechnologies.minecraft.csm.codeutils.packets;
+package com.micatechnologies.minecraft.csm.trafficaccessories.packets;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 
-public class DynamicGuideSignUpdatePacket implements IMessage {
+/** Carries a dynamic street sign's whole configuration from the editing GUI to the server. */
+public class DynamicStreetSignUpdatePacket implements IMessage {
 
   private BlockPos pos;
   private String signDataJson;
 
-  public DynamicGuideSignUpdatePacket() {
+  public DynamicStreetSignUpdatePacket() {
   }
 
-  public DynamicGuideSignUpdatePacket(BlockPos pos, String signDataJson) {
+  public DynamicStreetSignUpdatePacket(BlockPos pos, String signDataJson) {
     this.pos = pos;
     this.signDataJson = signDataJson;
   }
