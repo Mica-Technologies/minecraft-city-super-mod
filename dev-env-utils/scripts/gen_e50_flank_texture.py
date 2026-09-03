@@ -26,9 +26,11 @@ import sys
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 
-REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
-TEX_DIR = os.path.join(REPO_ROOT, "src", "main", "resources", "assets", "csm",
-                       "textures", "blocks", "lifesafety")
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import csm_layout as layout  # noqa: E402
+
+REPO_ROOT = layout.REPO_ROOT
+LIFESAFETY_OWNER = layout.owner_of_folder("lifesafety")
 
 SIZE = 256
 UNIT = SIZE // 16
@@ -88,7 +90,8 @@ def main():
         plain = np.clip(plain + rng.randint(-3, 4, plain.shape), 0, 255).astype(np.uint8)
         atlas.paste(Image.fromarray(plain, "RGB").convert("RGBA"), (3 * UNIT, 0))
 
-        path = os.path.join(TEX_DIR, name + ".png")
+        path = layout.asset_for_write(LIFESAFETY_OWNER,
+                                      "textures/blocks/lifesafety/" + name + ".png")
         atlas.save(path)
         print("wrote %s (%dx%d)" % (path, SIZE, SIZE))
     return 0

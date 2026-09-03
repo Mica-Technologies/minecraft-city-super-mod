@@ -6,23 +6,30 @@ counting distinct (file, symbol) pairs, then lists the module-to-module and core
 references in full. Written for the modularization work (see the plan in
 ``assets/docs/agent_progress/``): a module may only reference Core, so every non-zero cell
 between two subsystem packages, and every reference from ``codeutils``/root/``tabs`` into a
-subsystem, is something the split has to remove or move. Run from anywhere; paths are derived
-from this file's location.
+subsystem, is something the split has to remove or move. Every source tree -- Core plus each
+optional module under ``modules/<name>/src/main/java`` -- shares the same package namespace, so
+this walks all of them via ``csm_layout``; a package name (``lifesafety``, ``tabs``, ...) may now
+physically live in more than one tree, and the matrix still reports on the namespace as a whole.
+Run from anywhere; paths are derived from this file's location.
 """
 import os, re, sys, collections
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-REPO_ROOT = os.path.abspath(os.path.join(SCRIPT_DIR, "..", ".."))
-ROOT = os.path.join(REPO_ROOT, "src", "main", "java", "com", "micatechnologies", "minecraft", "csm")
+sys.path.insert(0, SCRIPT_DIR)
+import csm_layout as layout  # noqa: E402
+REPO_ROOT = layout.REPO_ROOT
+ROOTS = [root for _module, root in layout.java_package_roots()]
 BASE = "com.micatechnologies.minecraft.csm"
 def pkg_of(path):
-    rel = os.path.relpath(path, ROOT).replace("\\", "/")
+    root = next((r for r in ROOTS if path.startswith(r + os.sep)), ROOTS[0])
+    rel = os.path.relpath(path, root).replace("\\", "/")
     parts = rel.split("/")
     return parts[0] if len(parts) > 1 else "(root)"
 deps = collections.defaultdict(lambda: collections.defaultdict(set))  # from -> to -> set of (file, symbol)
 files_by_pkg = collections.Counter()
 imp_re = re.compile(r"^import\s+(static\s+)?" + re.escape(BASE) + r"\.([A-Za-z0-9_.]+);", re.M)
 fq_re = re.compile(re.escape(BASE) + r"\.([a-z][a-z]+)\.([A-Za-z0-9_.]+)")
-for dp, dn, fn in os.walk(ROOT):
+for ROOT in ROOTS:
+ for dp, dn, fn in os.walk(ROOT):
     for f in fn:
         if not f.endswith(".java"): continue
         p = os.path.join(dp, f)

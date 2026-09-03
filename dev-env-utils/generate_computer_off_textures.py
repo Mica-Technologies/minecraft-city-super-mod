@@ -11,7 +11,9 @@ POWERED property — placement defaults to off (cosmetic), right-clicking turns
 the screen on.
 
 Pixel regions are derived from the Blockbench model UV coordinates in
-`src/main/resources/assets/csm/models/block/technology/shared_models/{imac,imacpro,macbook_pro}.json`.
+`assets/csm/models/block/technology/shared_models/{imac,imacpro,macbook_pro}.json` (the
+technology module's own tree; resolved via csm_layout rather than hard-coded, since the module
+split moved it out of Core).
 All three source textures are 128x128 with a 16-unit Blockbench UV grid, so
 1 UV unit = 8 pixels.
 
@@ -20,14 +22,16 @@ Usage:
 """
 
 import os
+import sys
 from PIL import Image
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.dirname(SCRIPT_DIR)
-TEX_DIR = os.path.join(
-    PROJECT_ROOT, "src", "main", "resources", "assets", "csm",
-    "textures", "blocks", "technology"
-)
+sys.path.insert(0, os.path.join(SCRIPT_DIR, "scripts"))
+import csm_layout as layout  # noqa: E402
+
+TEX_DIR = layout.asset_dir_for_write(layout.owner_of_folder("technology"),
+                                     "textures/blocks/technology")
 
 # 1 UV unit = 8 pixels at 128x128 with a 16-unit Blockbench grid.
 U = 8

@@ -13,7 +13,8 @@ Usage:
     python normalize_bulb_radius.py [--target-radius N] [--dry-run]
 
 Reads/writes textures in:
-    src/main/resources/assets/csm/textures/blocks/trafficsignals/lights/
+    assets/csm/textures/blocks/trafficsignals/lights/ (the trafficsignals module's own tree,
+    resolved via csm_layout)
 """
 
 import argparse
@@ -138,11 +139,13 @@ def main():
                         help="Measure and report without modifying files")
     args = parser.parse_args()
 
-    # Find the textures directory relative to the repo root
+    # Find the textures directory, wherever the trafficsignals module tree puts it
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    repo_root = os.path.abspath(os.path.join(script_dir, "..", ".."))
-    tex_dir = os.path.join(repo_root, "src", "main", "resources", "assets", "csm",
-                           "textures", "blocks", "trafficsignals", "lights")
+    sys.path.insert(0, script_dir)
+    import csm_layout as layout
+    repo_root = layout.REPO_ROOT
+    tex_dir = layout.asset_dir_for_write(layout.owner_of_folder("trafficsignals"),
+                                         "textures/blocks/trafficsignals/lights")
 
     if not os.path.isdir(tex_dir):
         print(f"Error: texture directory not found: {tex_dir}")

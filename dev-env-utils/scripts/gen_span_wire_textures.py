@@ -10,18 +10,19 @@ Run directly; requires Pillow.
 
 import math
 import os
+import sys
 
 from PIL import Image, ImageDraw
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import csm_layout as layout  # noqa: E402
 
 # Drawn at 4x and downsampled -- the only anti-aliasing that looks right for a 128px icon.
 SUPERSAMPLE = 4
 SIZE = 128
 S = SIZE * SUPERSAMPLE
 
-OUT_DIR = os.path.join(
-    os.path.dirname(os.path.abspath(__file__)),
-    "..", "..", "src", "main", "resources", "assets", "csm", "textures", "items",
-)
+OUT_DIR = layout.asset_dir_for_write(layout.owner_of("spanwiretool"), "textures/items")
 
 # Galvanized reel, dark steel cable. Deliberately not the yellows and reds the other tool
 # icons use, so the span wire tool is distinguishable at inventory size.

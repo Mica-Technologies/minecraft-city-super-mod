@@ -2,17 +2,21 @@
 /*
  * City Super Mod — incremental language file translation
  *
- * Reads src/main/resources/assets/csm/lang/en_us.lang as the English source of truth and
- * refreshes es_es.lang / de_de.lang / sv_se.lang beside it. By default only keys missing from
- * a target file are translated, so adding one block costs one API call per language rather
- * than a full sweep.
+ * CSM is built from several source trees: Core at src/main plus one per optional module under
+ * modules/<name>/src/main (see modules.gradle, and dev-env-utils/scripts/csm_layout.py for the
+ * Python side of this same layout). Every tree carries its OWN assets/csm/lang/en_us.lang and its
+ * own es_es.lang / de_de.lang / sv_se.lang, because each module ships its lang files in its own
+ * jar. This walks every tree in turn and refreshes that tree's own targets against that tree's
+ * own English source — a key in the roads module's en_us.lang is only ever compared against the
+ * roads module's es_es.lang, never Core's. By default only keys missing from a target file are
+ * translated, so adding one block costs one API call per language rather than a full sweep.
  *
  * Usage:
  *   npm install                 # one-time, fetches google-translate-api-x
- *   npm run translate           # incremental — only keys missing from each target
+ *   npm run translate           # incremental — every tree, only keys missing from each target
  *   npm run translate:dry       # report what would change, write nothing
  *   npm run translate:force     # re-translate every key, overwriting existing values
- *   node translate-lang.js --only=sv_se       # restrict to one locale
+ *   node translate-lang.js --only=sv_se       # restrict to one locale, still every tree
  *
  * This is deliberately NOT the tool that produced the current translations. The bulk pass was
  * done by language models working against a glossary, because a general-purpose translator has
@@ -26,7 +30,8 @@
  *   - Minecraft .lang files are read as raw UTF-8, so values are written directly. The launcher
  *     escapes non-ASCII as \uXXXX because java.util.Properties needs it; doing that here would
  *     put a literal backslash-u in the player's inventory.
- *   - Line endings follow en_us.lang (CRLF in this repo) so a refresh does not rewrite the file.
+ *   - Line endings follow each tree's own en_us.lang (CRLF in this repo) so a refresh does not
+ *     rewrite the file.
  *   - The sentinel mechanism protects manufacturer names and acronyms as well as %s specifiers.
  *   - Glossary terms are substituted rather than translated, so incremental additions match the
  *     vocabulary the bulk pass established.
@@ -34,14 +39,40 @@
 
 import { translate } from 'google-translate-api-x';
 import { readFile, writeFile, access } from 'node:fs/promises';
+import { readdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join, resolve } from 'node:path';
 
 const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = resolve(SCRIPT_DIR, '..', '..');
-const LANG_DIR = join(REPO_ROOT, 'src', 'main', 'resources', 'assets', 'csm', 'lang');
-const SOURCE_FILE = join(LANG_DIR, 'en_us.lang');
 const GLOSSARY_FILE = join(SCRIPT_DIR, 'glossary.json');
+
+/** [{ name, langDir }] for Core and every module under modules/, Core first.
+ *
+ *  Mirrors csm_layout.resource_roots()/asset_roots(): Core's lang folder plus, for every
+ *  directory under modules/, that module's own lang folder -- whether or not it exists yet, so a
+ *  module with no lang.lang of its own is simply skipped downstream rather than silently omitted
+ *  from discovery. */
+function discoverTrees() {
+    const trees = [{ name: 'core', langDir: join(REPO_ROOT, 'src', 'main', 'resources', 'assets', 'csm', 'lang') }];
+    const modulesDir = join(REPO_ROOT, 'modules');
+    let moduleNames = [];
+    try {
+        moduleNames = readdirSync(modulesDir, { withFileTypes: true })
+            .filter((entry) => entry.isDirectory())
+            .map((entry) => entry.name)
+            .sort();
+    } catch {
+        moduleNames = []; // no modules/ directory (pre-split checkout)
+    }
+    for (const name of moduleNames) {
+        trees.push({
+            name,
+            langDir: join(modulesDir, name, 'src', 'main', 'resources', 'assets', 'csm', 'lang'),
+        });
+    }
+    return trees;
+}
 
 const TARGET_LOCALES = [
     { tag: 'es_es', googleCode: 'es', name: 'Spanish' },
@@ -153,78 +184,91 @@ async function main() {
     const glossary = JSON.parse(await readFile(GLOSSARY_FILE, 'utf8'));
     const protectedPattern = buildProtectedPattern(glossary.protected);
 
-    const sourceRaw = await readFile(SOURCE_FILE, 'utf8');
-    const newline = sourceRaw.includes('\r\n') ? '\r\n' : '\n';
-    const source = parseLang(sourceRaw);
-    console.log(`Source ${SOURCE_FILE}`);
-    console.log(`  ${source.keysInOrder.length} keys, ${newline === '\r\n' ? 'CRLF' : 'LF'} endings`);
+    const trees = discoverTrees();
+    console.log(`Trees: ${trees.map((t) => t.name).join(', ')}`);
 
     let totalCalls = 0, totalKept = 0, totalFailed = 0;
+    let treesProcessed = 0;
 
-    for (const locale of TARGET_LOCALES) {
-        if (ONLY && ONLY !== locale.tag) continue;
-        const targetPath = join(LANG_DIR, `${locale.tag}.lang`);
-        const existing = (await fileExists(targetPath))
-            ? parseLang(await readFile(targetPath, 'utf8'))
-            : { keysInOrder: [], values: {} };
-
-        const terms = glossary.terms[locale.tag] || {};
-        const merged = {};
-        let translated = 0, kept = 0, failed = 0;
-        const drift = [];
-
-        console.log(`\n-> ${locale.name} (${locale.tag})  [existing: ${existing.keysInOrder.length} keys]`);
-
-        for (const key of source.keysInOrder) {
-            const english = source.values[key];
-            const current = existing.values[key];
-
-            if (!FORCE && current !== undefined && current !== '') {
-                merged[key] = current;
-                kept++; totalKept++;
-                continue;
-            }
-            if (DRY_RUN) {
-                console.log(`  [dry] ${key} :: "${english.slice(0, 60)}"`);
-                merged[key] = current !== undefined ? current : english;
-                continue;
-            }
-            try {
-                const result = await translateValue(english, locale.googleCode, protectedPattern);
-                merged[key] = result;
-                const missing = applyGlossary(english, result, terms);
-                if (missing.length) drift.push(`${key}: ${missing.join(', ')}`);
-                translated++; totalCalls++;
-            } catch (err) {
-                console.warn(`  x ${key} :: ${err.message || err}`);
-                merged[key] = english;   // fall back to English so the file still loads
-                failed++; totalFailed++;
-            }
-            await new Promise((res) => setTimeout(res, DELAY_MS));
+    for (const tree of trees) {
+        const sourceFile = join(tree.langDir, 'en_us.lang');
+        if (!(await fileExists(sourceFile))) {
+            console.log(`\n=== ${tree.name}: no en_us.lang at ${tree.langDir}, skipping ===`);
+            continue;
         }
+        treesProcessed++;
 
-        // Keys that exist only in the target (a name removed from English) are dropped, so the
-        // file cannot accumulate orphans.
-        const orphans = existing.keysInOrder.filter((k) => !(k in source.values));
-        if (orphans.length) console.log(`  dropping ${orphans.length} key(s) no longer in English`);
+        const sourceRaw = await readFile(sourceFile, 'utf8');
+        const newline = sourceRaw.includes('\r\n') ? '\r\n' : '\n';
+        const source = parseLang(sourceRaw);
+        console.log(`\n=== ${tree.name}: ${sourceFile}`);
+        console.log(`  ${source.keysInOrder.length} keys, ${newline === '\r\n' ? 'CRLF' : 'LF'} endings`);
 
-        if (!DRY_RUN) {
-            await writeFile(targetPath, formatLang(source.keysInOrder, merged, newline), 'utf8');
-        }
-        console.log(`  done: ${translated} translated, ${kept} kept, ${failed} failed`);
-        if (drift.length) {
-            console.log(`  ${drift.length} value(s) did not come back with the pinned glossary term:`);
-            for (const d of drift.slice(0, 15)) console.log(`     ${d}`);
-            if (drift.length > 15) console.log(`     ... and ${drift.length - 15} more`);
-            console.log('  Review these by hand — the machine translation ignored settled vocabulary.');
+        for (const locale of TARGET_LOCALES) {
+            if (ONLY && ONLY !== locale.tag) continue;
+            const targetPath = join(tree.langDir, `${locale.tag}.lang`);
+            const existing = (await fileExists(targetPath))
+                ? parseLang(await readFile(targetPath, 'utf8'))
+                : { keysInOrder: [], values: {} };
+
+            const terms = glossary.terms[locale.tag] || {};
+            const merged = {};
+            let translated = 0, kept = 0, failed = 0;
+            const drift = [];
+
+            console.log(`  -> ${locale.name} (${locale.tag})  [existing: ${existing.keysInOrder.length} keys]`);
+
+            for (const key of source.keysInOrder) {
+                const english = source.values[key];
+                const current = existing.values[key];
+
+                if (!FORCE && current !== undefined && current !== '') {
+                    merged[key] = current;
+                    kept++; totalKept++;
+                    continue;
+                }
+                if (DRY_RUN) {
+                    console.log(`     [dry] ${key} :: "${english.slice(0, 60)}"`);
+                    merged[key] = current !== undefined ? current : english;
+                    continue;
+                }
+                try {
+                    const result = await translateValue(english, locale.googleCode, protectedPattern);
+                    merged[key] = result;
+                    const missing = applyGlossary(english, result, terms);
+                    if (missing.length) drift.push(`${key}: ${missing.join(', ')}`);
+                    translated++; totalCalls++;
+                } catch (err) {
+                    console.warn(`     x ${key} :: ${err.message || err}`);
+                    merged[key] = english;   // fall back to English so the file still loads
+                    failed++; totalFailed++;
+                }
+                await new Promise((res) => setTimeout(res, DELAY_MS));
+            }
+
+            // Keys that exist only in the target (a name removed from English) are dropped, so
+            // the file cannot accumulate orphans.
+            const orphans = existing.keysInOrder.filter((k) => !(k in source.values));
+            if (orphans.length) console.log(`     dropping ${orphans.length} key(s) no longer in English`);
+
+            if (!DRY_RUN) {
+                await writeFile(targetPath, formatLang(source.keysInOrder, merged, newline), 'utf8');
+            }
+            console.log(`     done: ${translated} translated, ${kept} kept, ${failed} failed`);
+            if (drift.length) {
+                console.log(`     ${drift.length} value(s) did not come back with the pinned glossary term:`);
+                for (const d of drift.slice(0, 15)) console.log(`        ${d}`);
+                if (drift.length > 15) console.log(`        ... and ${drift.length - 15} more`);
+                console.log('     Review these by hand — the machine translation ignored settled vocabulary.');
+            }
         }
     }
 
-    console.log(`\nTotals: ${totalCalls} API calls, ${totalKept} kept, ${totalFailed} failed`);
+    console.log(`\nTrees processed: ${treesProcessed} of ${trees.length}`);
+    console.log(`Totals: ${totalCalls} API calls, ${totalKept} kept, ${totalFailed} failed`);
     if (DRY_RUN) console.log('(dry run — nothing written)');
-    console.log('\nRun the validator over anything this wrote:');
-    console.log('  python dev-env-utils/scripts/validate_lang_translations.py \\');
-    console.log('      src/main/resources/assets/csm/lang/en_us.lang <target>.lang');
+    console.log('\nRun the validator over anything this wrote (every tree, at once):');
+    console.log('  python dev-env-utils/scripts/validate_lang_translations.py');
 }
 
 // Only run when invoked directly. The helpers above are exported for testing, and an

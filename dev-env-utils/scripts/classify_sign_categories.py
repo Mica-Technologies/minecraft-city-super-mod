@@ -34,10 +34,10 @@ from PIL import Image, ImageDraw, ImageFont
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import csm_block_index as ix  # noqa: E402
+import csm_layout as layout  # noqa: E402
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 REPO_ROOT = ix.REPO_ROOT
-ASSETS = os.path.join(REPO_ROOT, "src", "main", "resources", "assets", "csm")
 LANG_FILES = ix.lang_files("en_us")
 OUT_DIR = os.path.join(SCRIPT_DIR, "sign_classification")
 
@@ -404,7 +404,12 @@ def load_sign_textures():
         if not ref:
             continue
         rel = ref.split(":", 1)[-1]
-        resolved.append((registry, os.path.join(ASSETS, "textures", rel + ".png"),
+        # Resolve against every tree; a sign whose texture is genuinely missing keeps a path in
+        # its own module so the caller still reports it as "texture not found" rather than
+        # silently dropping the row.
+        texture = layout.resolve_asset("textures/" + rel + ".png") or layout.asset_for_write(
+            layout.owner_of(registry), "textures/" + rel + ".png")
+        resolved.append((registry, texture,
                          (data.get("defaults", {}) or {}).get("model", "")))
     return resolved
 

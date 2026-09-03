@@ -6,10 +6,13 @@ medium_wide model stretches a square texture horizontally (same as end_road_work
 3 bands: blue BUS LANE + bus icons / black 7AM-7PM·MON-FRI / white down-arrow + BUSES ONLY & RIGHT TURNS.
 """
 import os
+import sys
 from PIL import Image, ImageDraw, ImageFont
 
-FONT = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
-                    "src/main/resources/assets/csm/fonts/highway_gothic_wide.ttf")
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import csm_layout as layout
+
+FONT = layout.resolve_asset("fonts/highway_gothic_wide.ttf")
 BLUE = (0, 86, 184, 255); BLACK = (15, 15, 15, 255); WHITE = (248, 248, 248, 255)
 Wd, Hd = 1180, 500   # working canvas, ratio 2.36
 
@@ -77,7 +80,9 @@ def render():
     return img.resize((128, 128), Image.LANCZOS)
 
 if __name__ == "__main__":
-    out = "src/main/resources/assets/csm/textures/blocks/trafficsigns/bus_lane_sign.png"
+    out = (layout.resolve_asset("textures/blocks/trafficsigns/bus_lane_sign.png")
+          or layout.asset_for_write(layout.owner_of_folder("trafficsigns"),
+                                    "textures/blocks/trafficsigns/bus_lane_sign.png"))
     render().save(out); print("wrote", out)
     # wide preview (un-squished) for visual check
     render().resize((128,128)).save("/tmp/buslane_sq.png")

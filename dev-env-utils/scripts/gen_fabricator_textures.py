@@ -13,13 +13,17 @@ Run from anywhere:
 """
 
 import os
+import sys
 
 from PIL import Image, ImageDraw
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-REPO_ROOT = os.path.abspath(os.path.join(SCRIPT_DIR, "..", ".."))
-TEX_DIR = os.path.join(REPO_ROOT, "src", "main", "resources", "assets", "csm", "textures",
-                       "blocks", "materials")
+sys.path.insert(0, SCRIPT_DIR)
+import csm_layout as layout  # noqa: E402
+
+REPO_ROOT = layout.REPO_ROOT
+TEX_OWNER = layout.owner_of_folder("materials")
+TEX_DIR = layout.asset_dir_for_write(TEX_OWNER, "textures/blocks/materials")
 
 SIZE = 32
 
@@ -105,7 +109,9 @@ def main():
         "fabricator_top": draw_top(),
     }
     for name, img in faces.items():
-        img.save(os.path.join(TEX_DIR, name + ".png"))
+        path = layout.asset_for_write(TEX_OWNER, "textures/blocks/materials/" + name + ".png")
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        img.save(path)
     print("Generated {0} Fabricator textures -> {1}".format(len(faces), TEX_DIR))
 
 

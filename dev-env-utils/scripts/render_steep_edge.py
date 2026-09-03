@@ -2,9 +2,15 @@
 """Hybrid cleanup for steep_edge: keep the cleaned yellow diamond + embankment symbol,
 but re-render the top CAUTION band and the bottom text crisply (binarized photo text was rough)."""
 import os
+import sys
 from PIL import Image, ImageDraw, ImageFont
-FONT = "src/main/resources/assets/csm/fonts/highway_gothic_wide.ttf"
-T = "src/main/resources/assets/csm/textures/blocks/trafficsigns/"
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import csm_layout as layout
+FONT = layout.resolve_asset("fonts/highway_gothic_wide.ttf")
+TRAFFICSIGNS_OWNER = layout.owner_of_folder("trafficsigns")
+def tex_path(name):
+    return (layout.resolve_asset("textures/blocks/trafficsigns/" + name)
+           or layout.asset_for_write(TRAFFICSIGNS_OWNER, "textures/blocks/trafficsigns/" + name))
 WHITE=(249,249,249,255); BLACK=(18,18,18,255); YEL=(245,190,28,255)
 
 def f(sz): return ImageFont.truetype(FONT, sz)
@@ -19,7 +25,7 @@ def ctext(d, text, cx, cy, fo, fill):
     bb=d.textbbox((0,0),text,font=fo); d.text((cx-(bb[2]-bb[0])/2-bb[0], cy-(bb[3]-bb[1])/2-bb[1]), text, font=fo, fill=fill)
 
 def run():
-    im = Image.open(T+"steep_edge_sign.png").convert("RGBA")   # current palette-cleaned
+    im = Image.open(tex_path("steep_edge_sign.png")).convert("RGBA")   # current palette-cleaned
     d = ImageDraw.Draw(im); W,H = im.size
     # --- extract the FULL embankment symbol from the cleaned diamond interior ---
     crop = im.crop((90, 58, 170, 146))
@@ -68,7 +74,7 @@ def run():
     bb=d.textbbox((0,0),"25 FEET",font=lf); uw=bb[2]-bb[0]
     uy=int(y0 + 4*lh - lh*0.12)
     d.rectangle((W/2-uw/2, uy, W/2+uw/2, uy+3), fill=BLACK)
-    im.save(T+"steep_edge_sign.png"); print("steep_edge hybrid (crisp band+text, kept diamond)")
+    im.save(tex_path("steep_edge_sign.png")); print("steep_edge hybrid (crisp band+text, kept diamond)")
 
 if __name__ == "__main__":
     run()

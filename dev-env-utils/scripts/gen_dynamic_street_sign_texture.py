@@ -11,13 +11,16 @@ Run from the repo root:
 """
 
 import os
+import sys
 from PIL import Image, ImageDraw, ImageFont
 
-REPO_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-FONT_PATH = os.path.join(REPO_ROOT, "src", "main", "resources", "assets", "csm", "fonts",
-                         "highway_gothic_wide.ttf")
-OUT_PATH = os.path.join(REPO_ROOT, "src", "main", "resources", "assets", "csm", "textures",
-                        "blocks", "trafficaccessories", "dynamic_street_sign.png")
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import csm_layout as layout  # noqa: E402
+
+REPO_ROOT = layout.REPO_ROOT
+FONT_PATH = layout.resolve_asset("fonts/highway_gothic_wide.ttf")
+OUT_PATH = layout.asset_for_write(layout.owner_of_folder("trafficaccessories"),
+                                  "textures/blocks/trafficaccessories/dynamic_street_sign.png")
 
 SIZE = 128
 # Rendered at 4x and downsampled, so the Highway Gothic legend keeps its shapes instead of

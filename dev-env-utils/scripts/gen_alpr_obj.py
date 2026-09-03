@@ -30,6 +30,7 @@ Run:  python dev-env-utils/scripts/gen_alpr_obj.py
 
 import math
 import os
+import sys
 
 # Reuse the proven mesh toolkit from the Miovision generator (same scripts dir, so a plain import
 # works -- Python puts the running script's own directory on sys.path[0]). main() there is guarded
@@ -38,11 +39,17 @@ from gen_miovision_obj import (
     Mesh, box, sweep_tube, revolve, straight, _nrm, _cap_ring,
 )
 
-REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
-OUT_DIR = os.path.join(
-    REPO_ROOT, "src", "main", "resources", "assets", "csm",
-    "models", "block", "trafficaccessories", "shared_models",
-)
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import csm_layout as layout  # noqa: E402
+
+REPO_ROOT = layout.REPO_ROOT
+MODEL_REL_DIR = "models/block/trafficaccessories/shared_models"
+OUT_OWNER = layout.owner_of_folder("trafficaccessories")
+
+
+def _out_path(filename):
+    """Where ``filename`` in the shared trafficaccessories models folder should be written."""
+    return layout.asset_for_write(OUT_OWNER, MODEL_REL_DIR + "/" + filename)
 
 HOUSING_TEX = "csm:blocks/trafficsignals/shared_textures/metal_black"
 LENS_TEX = "csm:blocks/trafficsignals/shared_textures/camera_lens"
@@ -384,21 +391,22 @@ def _report(name, mesh):
 
 
 def main():
-    os.makedirs(OUT_DIR, exist_ok=True)
     mtl_name = "alpr_camera_solar.mtl"
-    write_mtl(os.path.join(OUT_DIR, mtl_name))
+    mtl_path = _out_path(mtl_name)
+    os.makedirs(os.path.dirname(mtl_path), exist_ok=True)
+    write_mtl(mtl_path)
 
     builders = (("alpr_camera_solar", build_standalone),
                 ("alpr_camera_solar_wall", build_wall))
     for base, builder in builders:
         m = builder()
-        m.write(os.path.join(OUT_DIR, base + ".obj"), mtl_name)
+        m.write(_out_path(base + ".obj"), mtl_name)
         _report(base, m)
         # Inventory copy centred on the origin so item-frame/GUI rotation (which pivots about the
         # model origin) keeps it in view -- same trick the furniture/Miovision OBJs use.
         inv = builder()
         cx, cy, cz = _center(inv)
-        inv.write(os.path.join(OUT_DIR, base + "_inv.obj"), mtl_name, offset=(-cx, -cy, -cz))
+        inv.write(_out_path(base + "_inv.obj"), mtl_name, offset=(-cx, -cy, -cz))
 
 
 if __name__ == "__main__":

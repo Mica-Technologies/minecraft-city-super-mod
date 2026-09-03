@@ -1,14 +1,20 @@
 #!/usr/bin/env python3
 """Bespoke renderers for two LADOT street signs (vertical SIGNAL SYNC + NO STOPPING)."""
 import os
+import sys
 from PIL import Image, ImageDraw, ImageFont, ImageFilter
 
-FONT = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
-                    "src/main/resources/assets/csm/fonts/highway_gothic_wide.ttf")
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import csm_layout as layout
+
+FONT = layout.resolve_asset("fonts/highway_gothic_wide.ttf")
 SS = 4; S = 128 * SS
 BLUE = (0, 0, 168, 255); YELLOW = (252, 209, 22, 255); WHITE = (248, 248, 248, 255)
 BLACK = (16, 16, 16, 255); RED = (210, 0, 0, 255); GREEN = (0, 120, 60, 255)
-T = "src/main/resources/assets/csm/textures/blocks/trafficsigns/"
+TRAFFICSIGNS_OWNER = layout.owner_of_folder("trafficsigns")
+def tex_path(name):
+    return (layout.resolve_asset("textures/blocks/trafficsigns/" + name)
+           or layout.asset_for_write(TRAFFICSIGNS_OWNER, "textures/blocks/trafficsigns/" + name))
 
 def f(sz): return ImageFont.truetype(FONT, sz)
 def fit(d, text, maxw, maxh, start=400):
@@ -51,13 +57,13 @@ def signal_sync():
     img.alpha_composite(ti, (int(lcx-ti.width/2), int(box[1]+8*SS)))
     # up-arrow below SIGNAL in left column
     arrow_up(d, lcx, box[3]-bh*0.26, lcol_w*0.5, bh*0.30, WHITE)
-    img.resize((128,128), Image.LANCZOS).save(T+"ladot_signal_sync.png")
+    img.resize((128,128), Image.LANCZOS).save(tex_path("ladot_signal_sync.png"))
 
 def no_stopping():
     # upscale the original (keeps the tow-truck symbols + layout) -- don't recreate
     g = Image.open("dev-env-utils/scripts/sign_originals_backup/ladot_no_stopping.png").convert("RGBA")
     g = g.resize((256,256), Image.LANCZOS).filter(ImageFilter.UnsharpMask(radius=1.5, percent=90, threshold=2))
-    g.save(T+"ladot_no_stopping.png")
+    g.save(tex_path("ladot_no_stopping.png"))
 
 if __name__ == "__main__":
     signal_sync(); no_stopping(); print("rendered ladot_signal_sync, ladot_no_stopping")

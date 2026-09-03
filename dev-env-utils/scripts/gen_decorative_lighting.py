@@ -48,13 +48,18 @@ import json
 import math
 import os
 import random
+import sys
 
 from PIL import Image
 
-REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
-ASSETS = os.path.join(REPO_ROOT, "src", "main", "resources", "assets", "csm")
-OUT_DIR = os.path.join(ASSETS, "models", "block", "lighting", "shared_models")
-TEX_DIR = os.path.join(ASSETS, "textures", "blocks", "lighting", "shared_textures")
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import csm_layout as layout  # noqa: E402
+
+REPO_ROOT = layout.REPO_ROOT
+LIGHTING_OWNER = layout.owner_of_folder("lighting")
+OUT_DIR = layout.asset_dir_for_write(LIGHTING_OWNER, "models/block/lighting/shared_models")
+TEX_DIR = layout.asset_dir_for_write(LIGHTING_OWNER,
+                                     "textures/blocks/lighting/shared_textures")
 
 BODY, SHADE, LENS = "body", "shade", "lens"
 
@@ -866,7 +871,7 @@ CHAIN = ("pendant_chain", "pendchain", "Pendant Chain")
 #: STATE 1 and 3 are the two lit states (redstone-on and manual-on); 0 and 2 are the off pair.
 LIT_STATES = ("1", "3")
 
-BLOCKSTATE_DIR = os.path.join(ASSETS, "blockstates")
+BLOCKSTATE_DIR = layout.asset_dir_for_write(LIGHTING_OWNER, "blockstates")
 
 #: These models are authored in 0..1 block space with the block's min corner at the origin, the
 #: same as the fire alarm OBJs, so Forge's stock preset frames them correctly and nothing needs

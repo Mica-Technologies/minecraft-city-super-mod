@@ -6,10 +6,17 @@ the symbol/text. Per-sign palette is defined in CONFIG. Light median denoise fir
 
 Run AFTER upscale_signs.py (overwrites those textures). Verify with compare_signs.py.
 """
-import os
+import os, sys
 from PIL import Image, ImageFilter
-BK='dev-env-utils/scripts/sign_originals_backup/'
-T='src/main/resources/assets/csm/textures/blocks/trafficsigns/'
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, SCRIPT_DIR)
+import csm_layout as layout
+BK=os.path.join(SCRIPT_DIR, 'sign_originals_backup') + os.sep
+TRAFFICSIGNS_OWNER = layout.owner_of_folder('trafficsigns')
+def tex_path(tex):
+    return (layout.resolve_asset('textures/blocks/trafficsigns/' + tex + '.png')
+           or layout.asset_for_write(TRAFFICSIGNS_OWNER,
+                                     'textures/blocks/trafficsigns/' + tex + '.png'))
 WHITE=(249,249,249,255); BLACK=(18,18,18,255)
 YEL=(245,190,28,255); RED=(200,12,20,255); GREEN=(0,120,60,255)
 BLUE=(0,70,150,255); ORANGE=(245,120,0,255)
@@ -42,7 +49,7 @@ def clean(tex, bg, dark_thr, accents):
             for col,pred in accents:
                 if pred(r,g,b): px[x,y]=col; break
             else: px[x,y]=bg
-    im.save(T+tex+'.png'); return True
+    im.save(tex_path(tex)); return True
 
 def run(only=None):
     n=0
