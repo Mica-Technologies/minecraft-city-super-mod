@@ -141,8 +141,8 @@ by that cell's own box, because every cell is a placed block. The box is returne
 unrotated (north) orientation only — `AbstractBlockRotatableNSEW.getBoundingBox` applies the
 facing rotation itself, and rotating in `getBlockBoundingBox` as well turns it twice.
 
-**Poles do not sprout a stub into a curve.** `BlockTrafficPoleMastArmCurve` is in
-`AbstractBlockTrafficPole.IGNORE_BLOCK`. The curve carries its own boot where it meets
+**Poles do not sprout a stub into a curve.** `BlockTrafficPoleMastArmCurve` implements
+`ICsmTrafficPoleIgnored`. The curve carries its own boot where it meets
 the pole, which is exactly the hardware a mount stub depicts; both would be two contradictory
 connections on one joint.
 

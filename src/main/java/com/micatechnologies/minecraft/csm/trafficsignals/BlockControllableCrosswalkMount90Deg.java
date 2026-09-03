@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
 import com.micatechnologies.minecraft.csm.codeutils.ICsmRetiringBlock;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmTrafficPoleIgnored;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.CrosswalkMountType;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyTilt;
 import net.minecraft.block.state.IBlockState;
@@ -19,7 +20,7 @@ import net.minecraft.world.World;
  * @since 1.0
  */
 public class BlockControllableCrosswalkMount90Deg extends AbstractBlockControllableCrosswalkSignal
-    implements ICsmRetiringBlock {
+    implements ICsmRetiringBlock, ICsmTrafficPoleIgnored {
 
   /**
    * Retrieves the registry name of the block.

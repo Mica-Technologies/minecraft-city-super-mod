@@ -570,8 +570,9 @@ When two signal heads share a mount edge, only one bracket is drawn:
 
 ### Pole Auto-Connect Opt-Out
 
-`AbstractBlockTrafficPole.IGNORE_BLOCK` includes `AbstractBlockControllableSignalHead`,
-so poles never sprout an auto-connect stub toward a configurable signal head. This
+`AbstractBlockControllableSignalHead` implements `ICsmTrafficPoleIgnored`, and the
+marker is inherited by every signal head subclass, so poles never sprout an auto-connect
+stub toward a configurable signal head. This
 prevents visual competition between the pole's stub and the head's own bracket (or the
 stand-alone `BlockTrafficLightMountKit` Pelco Astro-brac mount if one is used instead).
 

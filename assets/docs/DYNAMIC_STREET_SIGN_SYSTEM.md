@@ -263,12 +263,14 @@ pole stub would put a second, contradictory mount on the same sign: `isHanging()
 ignored. A flat blade is bolted to whatever is behind it, which is exactly what a mount stub
 depicts, so it is left mountable.
 
-`AbstractBlockTrafficPole.IGNORE_BLOCK` cannot express that: it is class-based, so it can only
-say always or never. The decision therefore lives in `isIgnoredForItsState`, a third filter in
-`isMountableAdjacent` alongside the class list and the config-driven registry-name set. It is
-checked per placed block against its tile entity, and both pole types (straight and diagonal)
-funnel through that one method. With no tile entity attached yet -- it runs during chunk load --
-it falls back to the same default mount the sign's own hitbox uses, so the two cannot disagree.
+`AbstractBlockTrafficPole.IGNORE_BLOCK` cannot express that: it is type-based, so it can only
+say always or never. The decision therefore lives in the block, behind Core's
+`ICsmTrafficPoleStateIgnored`: `BlockDynamicStreetSign.isIgnoredForTrafficPole` returns whether
+the blade's mount is hanging, and the pole calls it from `isMountableAdjacent` as a third filter
+alongside the type list and the config-driven registry-name set. It is checked per placed block
+against its tile entity, and both pole types (straight and diagonal) funnel through that one
+call. With no tile entity attached yet -- it runs during chunk load -- it falls back to the same
+default mount the sign's own hitbox uses, so the two cannot disagree.
 
 Changing the mount has to reach the neighbours, and the ordinary sync does not do it:
 `markDirtySync` explicitly does not re-render, and the pole's decision is evaluated in *its*

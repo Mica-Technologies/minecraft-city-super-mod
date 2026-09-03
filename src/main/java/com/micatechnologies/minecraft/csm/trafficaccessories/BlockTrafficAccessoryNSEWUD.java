@@ -3,6 +3,7 @@ package com.micatechnologies.minecraft.csm.trafficaccessories;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEWUD;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmNoSnowAccumulation;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmRetiringBlock;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmTrafficPoleIgnored;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.block.SoundType;
@@ -15,7 +16,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 
 public class BlockTrafficAccessoryNSEWUD extends AbstractBlockRotatableNSEWUD
-    implements ICsmRetiringBlock, ICsmNoSnowAccumulation {
+    implements ICsmRetiringBlock, ICsmNoSnowAccumulation, ICsmTrafficPoleIgnored {
 
   /**
    * ThreadLocal used to pass the registry name to the superclass constructor. The AbstractBlock

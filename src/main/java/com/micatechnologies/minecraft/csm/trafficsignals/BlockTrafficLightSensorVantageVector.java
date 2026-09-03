@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
+import com.micatechnologies.minecraft.csm.codeutils.ICsmTrafficPoleIgnored;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockTrafficSignalSensor;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -12,12 +13,13 @@ import net.minecraft.world.IBlockAccess;
  * top of a mast arm with a slight down-and-forward tilt, an overhanging front hood over a recessed
  * lens, a small mounting stub protruding downward to cosmetically meet the mast arm, and a cable
  * drip-loop dropping into the arm. Because the downward stub handles the mounting visually, this
- * block is in {@code AbstractBlockTrafficPole.IGNORE_BLOCK} so poles do not auto-sprout a connector.
+ * block implements {@code ICsmTrafficPoleIgnored} so poles do not auto-sprout a connector.
  *
  * @author Mica Technologies
  * @since 1.0
  */
-public class BlockTrafficLightSensorVantageVector extends AbstractBlockTrafficSignalSensor {
+public class BlockTrafficLightSensorVantageVector extends AbstractBlockTrafficSignalSensor
+    implements ICsmTrafficPoleIgnored {
 
   public BlockTrafficLightSensorVantageVector() {
     super(Material.ROCK);
