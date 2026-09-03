@@ -29,6 +29,12 @@ def csmModules = [
     [name: 'tts', modId: 'csm_tts', displayName: 'CSM: Text to Speech', deps: ['technology']],
 ]
 
+// Core's archive base name is minecraft-city-super-mod-core (buildscript.properties), so module
+// jars cannot be named from it directly — they would come out as
+// minecraft-city-super-mod-core-roads-<version>.jar. Strip the trailing "-core" instead, so the
+// prefix shared by every jar still has exactly one source of truth.
+def csmArchivePrefix = base.archivesName.get().replaceAll('-core$', '')
+
 // The tasks that launch a game in the dev environment. Not all exist in every configuration
 // (the Java 17/21 ones are optional), hence tasks.matching rather than tasks.named.
 def csmRunTaskNames = ['runClient', 'runServer', 'runClient17', 'runServer17', 'runClient21', 'runServer21']
@@ -114,7 +120,7 @@ csmModules.each { m ->
         group = 'build'
         description = "Assembles the ${m.displayName} dev jar"
         from ss.output
-        archiveBaseName.set("${base.archivesName.get()}-${m.name}".toString())
+        archiveBaseName.set("${csmArchivePrefix}-${m.name}".toString())
         archiveClassifier.set('dev')
         manifest {
             attributes(
@@ -139,11 +145,12 @@ csmModules.each { m ->
     }
 }
 
-// Lists the release jar file names, one per line, for the release workflow.
+// Lists every release jar file name, one per line, for the release workflow: Core first, then
+// one line per module. The workflow copies and hashes exactly what this prints, so a module
+// added above ships without touching the workflow.
 task printModuleJarNames {
     doLast {
-        def baseName = base.archivesName.get()
-        println "${baseName}-${project.version}.jar"
-        csmModules.each { m -> println "${baseName}-${m.name}-${project.version}.jar" }
+        println "${base.archivesName.get()}-${project.version}.jar"
+        csmModules.each { m -> println "${csmArchivePrefix}-${m.name}-${project.version}.jar" }
     }
 }
