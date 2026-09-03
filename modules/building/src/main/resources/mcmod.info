@@ -1,0 +1,20 @@
+[
+  {
+    "modid": "${modid}",
+    "name": "${modname}",
+    "description": "Block, stair, slab and fence sets for the City Super Mod. Requires CSM: Core.",
+    "version": "${version}",
+    "mcversion": "${mcversion}",
+    "credits": "Alex H, Brandon H (Mica Technologies) & Formerly Mcreator",
+    "logoFile": "assets/csm/textures/csm_icon.png",
+    "url": "https://minecraft.micatechnologies.com",
+    "updateUrl": "",
+    "authorList": [
+      "Mica Technologies"
+    ],
+    "dependencies": ["csm"],
+    "dependants": [],
+    "requiredMods": ["csm"],
+    "useDependencyInformation": "true"
+  }
+]

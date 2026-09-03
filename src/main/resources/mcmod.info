@@ -18,60 +18,6 @@
     "useDependencyInformation": "true"
   },
   {
-    "modid": "csm_lifesafety",
-    "name": "CSM: Life Safety",
-    "description": "Fire alarm appliances and panels, emergency lighting and exit signs for the City Super Mod. Requires CSM: Core.",
-    "version": "${version}",
-    "mcversion": "${mcversion}",
-    "credits": "Alex H, Brandon H (Mica Technologies) & Formerly Mcreator",
-    "logoFile": "assets/csm/textures/csm_icon.png",
-    "url": "https://minecraft.micatechnologies.com",
-    "updateUrl": "",
-    "authorList": [
-      "Mica Technologies"
-    ],
-    "dependencies": ["csm"],
-    "dependants": [],
-    "requiredMods": ["csm"],
-    "useDependencyInformation": "true"
-  },
-  {
-    "modid": "csm_hvac",
-    "name": "CSM: HVAC",
-    "description": "Thermostats, air handlers and ducting for the City Super Mod. Requires CSM: Core.",
-    "version": "${version}",
-    "mcversion": "${mcversion}",
-    "credits": "Alex H, Brandon H (Mica Technologies) & Formerly Mcreator",
-    "logoFile": "assets/csm/textures/csm_icon.png",
-    "url": "https://minecraft.micatechnologies.com",
-    "updateUrl": "",
-    "authorList": [
-      "Mica Technologies"
-    ],
-    "dependencies": ["csm"],
-    "dependants": [],
-    "requiredMods": ["csm"],
-    "useDependencyInformation": "true"
-  },
-  {
-    "modid": "csm_lighting",
-    "name": "CSM: Lighting",
-    "description": "Street and area luminaires, pendants and sconces for the City Super Mod. Requires CSM: Core.",
-    "version": "${version}",
-    "mcversion": "${mcversion}",
-    "credits": "Alex H, Brandon H (Mica Technologies) & Formerly Mcreator",
-    "logoFile": "assets/csm/textures/csm_icon.png",
-    "url": "https://minecraft.micatechnologies.com",
-    "updateUrl": "",
-    "authorList": [
-      "Mica Technologies"
-    ],
-    "dependencies": ["csm"],
-    "dependants": [],
-    "requiredMods": ["csm"],
-    "useDependencyInformation": "true"
-  },
-  {
     "modid": "csm_technology",
     "name": "CSM: Technology",
     "description": "Computers, servers, televisions, speakers and transit fare equipment for the City Super Mod. Requires CSM: Core.",
@@ -84,45 +30,13 @@
     "authorList": [
       "Mica Technologies"
     ],
-    "dependencies": ["csm"],
-    "dependants": [],
-    "requiredMods": ["csm"],
-    "useDependencyInformation": "true"
-  },
-  {
-    "modid": "csm_furnishings",
-    "name": "CSM: Furniture & Novelties",
-    "description": "Indoor and outdoor furniture, arcade cabinets and decorative novelties for the City Super Mod. Requires CSM: Core.",
-    "version": "${version}",
-    "mcversion": "${mcversion}",
-    "credits": "Alex H, Brandon H (Mica Technologies) & Formerly Mcreator",
-    "logoFile": "assets/csm/textures/csm_icon.png",
-    "url": "https://minecraft.micatechnologies.com",
-    "updateUrl": "",
-    "authorList": [
-      "Mica Technologies"
+    "dependencies": [
+      "csm"
     ],
-    "dependencies": ["csm"],
     "dependants": [],
-    "requiredMods": ["csm"],
-    "useDependencyInformation": "true"
-  },
-  {
-    "modid": "csm_building",
-    "name": "CSM: Building Materials",
-    "description": "Block, stair, slab and fence sets for the City Super Mod. Requires CSM: Core.",
-    "version": "${version}",
-    "mcversion": "${mcversion}",
-    "credits": "Alex H, Brandon H (Mica Technologies) & Formerly Mcreator",
-    "logoFile": "assets/csm/textures/csm_icon.png",
-    "url": "https://minecraft.micatechnologies.com",
-    "updateUrl": "",
-    "authorList": [
-      "Mica Technologies"
+    "requiredMods": [
+      "csm"
     ],
-    "dependencies": ["csm"],
-    "dependants": [],
-    "requiredMods": ["csm"],
     "useDependencyInformation": "true"
   },
   {
@@ -138,9 +52,15 @@
     "authorList": [
       "Mica Technologies"
     ],
-    "dependencies": ["csm", "csm_technology"],
+    "dependencies": [
+      "csm",
+      "csm_technology"
+    ],
     "dependants": [],
-    "requiredMods": ["csm", "csm_technology"],
+    "requiredMods": [
+      "csm",
+      "csm_technology"
+    ],
     "useDependencyInformation": "true"
   }
 ]
