@@ -3,7 +3,7 @@
 
 Usage::
 
-    python diff_registry_dumps.py golden.json candidate.json [--ignore-tab-index] [--ignore-class]
+    python diff_registry_dumps.py golden.json candidate.json [--ignore-tab-index] [--ignore-class] [--unordered-sounds] [--unordered-hidden]
 
 Exit status 0 when the candidate registers exactly what the golden dump registers, 1 otherwise.
 The comparison is deliberately strict about the things a modularization must not change and
@@ -17,6 +17,15 @@ lenient about the things it legitimately does:
   since a tab's index is its creation order, which changes when tabs move between mods.
 * The class name is compared only without ``--ignore-class``: a class moving package is fine
   once the split has happened, and this flag keeps the diff readable at that stage.
+* ``--unordered-sounds`` compares the sound-event list as a set. Sound events are registered by
+  each module from its own preInit once the sounds are split by owner, so their registry order
+  (and numeric ids) follow mod load order rather than one enum. Forge persists those ids per
+  world and remaps them silently on load, so the order is not player-visible; the names still
+  must match exactly.
+* ``--unordered-hidden`` checks registry order only among blocks and items that have a creative
+  tab. Hidden (retiring) blocks are registered first by hidden tabs that now exist per module,
+  so their relative order follows tab order rather than one list; nothing renders them, so the
+  order is not player-visible. Every hidden entry must still be present.
 * The ``mods`` list and every version string are ignored; the point is what was registered, not
   which jar it came from.
 """
@@ -78,6 +87,10 @@ def main(argv):
         ignore_fields.add("creativeTabIndex")
     if "--ignore-class" in flags:
         ignore_fields.add("class")
+    if "--unordered-sounds" in flags:
+        ignore_fields.add("(sound order)")
+    if "--unordered-hidden" in flags:
+        ignore_fields.add("(hidden-block order)")
 
     problems = []
     if golden.get("namespace") != candidate.get("namespace"):
@@ -87,9 +100,25 @@ def main(argv):
 
     for name in REGISTRIES_WITH_ENTRIES:
         g, c = golden.get(name, []), candidate.get(name, [])
-        compare_ordered_ids(name, [key_of(e) for e in g], [key_of(e) for e in c], problems)
+        if "--unordered-hidden" in flags and name in ("blocks", "items"):
+            g_ids, c_ids = set(key_of(e) for e in g), set(key_of(e) for e in c)
+            for missing in sorted(g_ids - c_ids):
+                problems.append("%s: missing in candidate: %s" % (name, missing))
+            for extra in sorted(c_ids - g_ids):
+                problems.append("%s: unexpected in candidate: %s" % (name, extra))
+            visible = lambda entries: [key_of(e) for e in entries if e.get("creativeTab") is not None]
+            compare_ordered_ids(name + " (visible)", visible(g), visible(c), problems)
+        else:
+            compare_ordered_ids(name, [key_of(e) for e in g], [key_of(e) for e in c], problems)
         compare_entries(name, g, c, ignore_fields, problems)
     for name in REGISTRIES_WITH_IDS:
+        if name == "soundEvents" and "--unordered-sounds" in flags:
+            g, c = set(golden.get(name, [])), set(candidate.get(name, []))
+            for missing in sorted(g - c):
+                problems.append("%s: missing in candidate: %s" % (name, missing))
+            for extra in sorted(c - g):
+                problems.append("%s: unexpected in candidate: %s" % (name, extra))
+            continue
         compare_ordered_ids(name, golden.get(name, []), candidate.get(name, []), problems)
 
     counts = golden.get("counts", {})
