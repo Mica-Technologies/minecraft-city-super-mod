@@ -353,9 +353,9 @@ ffmpeg -i input.ogg -af "volume=<dB>dB" -c:a libvorbis -q:a 6 output.ogg
 | `notifier_tornado_voice_evac.ogg` | 4,481 | -0.4 dB |
 
 ### Adding a New Sound File
-1. Add `.ogg` file to `src/main/resources/assets/csm/sounds/`
-2. Add entry to `sounds.json` with matching key
-3. Add enum entry to `LifeSafetySounds.java`
+1. Add `.ogg` file to `modules/lifesafety/src/main/resources/assets/csm/sounds/`
+2. Add entry to that module's `assets/csm/sounds.json` with matching key
+3. Add enum entry to `LifeSafetySounds.java`, which hands it to Core's `CsmSoundRegistry`
 4. Normalize volume to target RMS (see above)
 5. For voice evac: add to `SOUND_RESOURCE_NAMES` and `SOUND_NAMES` arrays in
    `TileEntityFireAlarmControlPanel.java` (arrays must stay index-aligned)
