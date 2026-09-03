@@ -82,7 +82,9 @@ src/main/java/com/micatechnologies/minecraft/csm/
 ├── trafficsignals/   # Crosswalk/pedestrian signals with redstone support
 └── trafficsigns/     # Largest: 472 road sign blocks
 
-src/main/resources/assets/csm/
+src/main/resources/assets/csm/     # Core's share; each module has the same tree under
+                                  # modules/<name>/src/main/resources/assets/csm, and every
+                                  # file keeps its csm: path whichever jar ships it
 ├── blockstates/      # One JSON per block; prefer Forge format (forge_marker: 1)
 ├── models/block/     # Block model JSONs (base models referencing shared parents)
 │   └── shared_models/  # Shared 3D geometry (Blockbench), organized by subsystem:
@@ -265,6 +267,14 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
 - `audit_asset_ownership.py` -- resolves every blockstate to its owning creative tab and follows it
   to the models and textures it reaches, then lists every reach into a folder named for a different
   subsystem (the shared assets), unreached models, unreferenced textures, and sound/lang ownership
+- `partition_assets.py` -- works out which module ships each resource and moves it there with
+  `git mv`, keeping every `assets/csm` path unchanged so no JSON, OBJ or MTL is rewritten. Owner is
+  the creative tab for a blockstate, reachability for what it names, the subsystem folder for files
+  nothing reaches, the module sound enums for `sounds.json`, and the key's owner for lang. A file
+  two modules reach stays in Core. `--dry-run` prints the whole plan first
+- `check_module_assets.py` -- resolves every model, texture and sound a module ships against that
+  module plus Core and nothing else, which is what a partial install would have. Run it after
+  anything that moves an asset between trees
 
 ### Render pass toggles (in game)
 
