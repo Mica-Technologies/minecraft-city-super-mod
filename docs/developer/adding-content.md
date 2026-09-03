@@ -1,12 +1,19 @@
 # Adding Content
 
+!!! info "Which tree?"
+
+    Content lives in the source tree of the module that owns its subsystem —
+    `modules/<name>/src/main/...` — or in Core's `src/main/...` for Core's own (Materials) content.
+    Paths below are relative to that tree. Registration itself is unchanged: it is always Core's,
+    whichever jar a class ships in. See `assets/docs/MODULE_SYSTEM.md`.
+
 ## Adding a block
 
 1. **Create the class** in the right subsystem package, extending
    [the right base class](base-classes.md). Registry name in `snake_case`.
 
 2. **Create the blockstate** at
-   `src/main/resources/assets/csm/blockstates/<registry_name>.json`. Prefer the Forge format:
+   `resources/assets/csm/blockstates/<registry_name>.json`. Prefer the Forge format:
 
     ```json
     {
@@ -61,7 +68,9 @@
 5. Register with `initTabItem(...)`.
 
 Items **are not fabricable** — if an item should be obtainable in survival it needs a JSON recipe
-under `resources/recipes/`.
+under **Core's** `resources/assets/csm/recipes/`, which is the only recipes folder Forge reads. An
+item that ships in a module needs a `forge:mod_loaded` condition on its recipe for that module's
+mod id, or a Core-only install logs a recipe parsing error.
 
 !!! tip "Use a factory for near-identical items"
 
@@ -71,11 +80,17 @@ under `resources/recipes/`.
 
 ## Adding a sound
 
-1. Add the `.ogg` to `resources/assets/csm/sounds/`, `snake_case`, OGG Vorbis.
-2. Add an entry to `sounds.json` with `"name": "csm:<filename_without_ext>"`.
-3. Add the enum entry to `CsmSounds.java`.
+Sounds belong to exactly one module; Core ships none.
 
-Referenced in code as `"csm:<sound_event_id>"`, matching the `sounds.json` key.
+1. Add the `.ogg` to the module's `resources/assets/csm/sounds/`, `snake_case`, OGG Vorbis.
+2. Add an entry to that module's `sounds.json` with `"name": "csm:<filename_without_ext>"`.
+3. Add the enum entry to that module's sound enum (`LifeSafetySounds`, `RoadsSounds`,
+   `FurnishingsSounds`, `TechnologySounds`, `HvacSounds`), which hands it to Core's
+   `CsmSoundRegistry`.
+
+Referenced in code as `"csm:<sound_event_id>"`, matching the `sounds.json` key — Core registers the
+event, so the namespace is `csm` whichever jar carries the file. `CsmSoundsTest` fails the build if
+the enums and the shipped `sounds.json` files drift apart.
 
 ## Regenerating the block reference
 
