@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmTrafficPoleIgnored;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignal;
 import javax.annotation.Nullable;
 import net.minecraft.block.material.Material;
@@ -22,7 +23,7 @@ import net.minecraft.world.World;
  * @since 1.0
  */
 public class BlockControllableTattleTaleBeacon extends AbstractBlockControllableSignal
-    implements ICsmTileEntityProvider {
+    implements ICsmTileEntityProvider, ICsmTrafficPoleIgnored {
 
   public BlockControllableTattleTaleBeacon() {
     super(Material.ROCK);

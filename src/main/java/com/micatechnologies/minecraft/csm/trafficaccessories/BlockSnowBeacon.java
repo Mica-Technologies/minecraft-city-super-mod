@@ -3,6 +3,7 @@ package com.micatechnologies.minecraft.csm.trafficaccessories;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractPoweredBlockRotatableNSEWUD;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmNoSnowAccumulation;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmTrafficPoleIgnored;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.block.SoundType;
@@ -17,7 +18,8 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 public class BlockSnowBeacon extends AbstractPoweredBlockRotatableNSEWUD
-    implements ICsmTileEntityProvider, ITrafficBeaconBlock, ICsmNoSnowAccumulation {
+    implements ICsmTileEntityProvider, ITrafficBeaconBlock, ICsmNoSnowAccumulation,
+    ICsmTrafficPoleIgnored {
 
   private static final AxisAlignedBB BOUNDING_BOX =
       new AxisAlignedBB(-0.500000, -1.000000, 0.250000, 1.375000, 0.631250, 0.750000);

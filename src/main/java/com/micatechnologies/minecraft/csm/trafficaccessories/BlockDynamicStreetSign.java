@@ -3,6 +3,7 @@ package com.micatechnologies.minecraft.csm.trafficaccessories;
 import com.micatechnologies.minecraft.csm.Csm;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEW;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmTrafficPoleStateIgnored;
 import com.micatechnologies.minecraft.csm.trafficaccessories.streetsign.StreetSignData;
 import com.micatechnologies.minecraft.csm.trafficaccessories.streetsign.StreetSignMount;
 import javax.annotation.Nonnull;
@@ -32,7 +33,7 @@ import net.minecraft.world.World;
  * <p>GUI id 20. See {@code assets/docs/DYNAMIC_STREET_SIGN_SYSTEM.md}.
  */
 public class BlockDynamicStreetSign extends AbstractBlockRotatableNSEW
-    implements ICsmTileEntityProvider {
+    implements ICsmTileEntityProvider, ICsmTrafficPoleStateIgnored {
 
   /** GUI id this block opens; kept here so the handler and the block cannot drift apart. */
   public static final int GUI_ID = 20;
@@ -153,6 +154,19 @@ public class BlockDynamicStreetSign extends AbstractBlockRotatableNSEW
   @Nonnull
   public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
     return getBlockBoundingBox(state, source, pos);
+  }
+
+  /**
+   * A traffic pole must not sprout a mount stub into a hanging blade: on either hanging mount the
+   * blade swings below a mast arm on hardware it draws itself, and a stub would put a second,
+   * contradictory mount on the same blade. A flat blade is bolted to whatever is behind it, which
+   * is exactly what a stub exists to depict, so it is left mountable.
+   *
+   * <p>Reads the mount through the same lookup the hitbox uses, so the two cannot disagree.
+   */
+  @Override
+  public boolean isIgnoredForTrafficPole(IBlockAccess world, BlockPos pos) {
+    return getMountType(world, pos).isHanging();
   }
 
   /**

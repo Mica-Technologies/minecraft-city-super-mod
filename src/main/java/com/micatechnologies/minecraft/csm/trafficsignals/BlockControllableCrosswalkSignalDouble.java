@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
+import com.micatechnologies.minecraft.csm.codeutils.ICsmTrafficPoleIgnored;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableCrosswalkSignalNew;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.CrosswalkDisplayType;
 import net.minecraft.block.state.IBlockState;
@@ -13,7 +14,8 @@ import net.minecraft.world.IBlockAccess;
  * body color.
  */
 public class BlockControllableCrosswalkSignalDouble
-        extends AbstractBlockControllableCrosswalkSignalNew {
+        extends AbstractBlockControllableCrosswalkSignalNew
+    implements ICsmTrafficPoleIgnored {
 
     @Override
     public String getBlockRegistryName() {
