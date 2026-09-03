@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.tools;
 
+import com.micatechnologies.minecraft.csm.tools.tool_framework.AssetFolder;
 import com.micatechnologies.minecraft.csm.tools.tool_framework.CsmLayout;
 import com.micatechnologies.minecraft.csm.tools.tool_framework.CsmToolUtility;
 import java.awt.Color;
@@ -53,7 +54,9 @@ public class LaneControlSignalAtlasTool {
         CsmToolUtility.doToolExecuteWrapped("CSM Lane Control Signal Atlas Generator", args,
             (devEnvironmentPath) -> {
                 CsmLayout layout = new CsmLayout(devEnvironmentPath);
-                File inputFolder = layout.assetDirForRead(INPUT_FOLDER);
+                // Read from every tree that has the folder; the atlas is written back
+                // beside the folder that owns it.
+                AssetFolder inputFolder = AssetFolder.ofAsset(layout, INPUT_FOLDER);
                 File outputFile =
                         layout.assetInFolderForWrite(INPUT_FOLDER, OUTPUT_FILE_NAME);
 
@@ -68,8 +71,7 @@ public class LaneControlSignalAtlasTool {
 
                 BufferedImage[] loadedImages = new BufferedImage[INPUT_IMAGE_NAMES.length];
                 for (int i = 0; i < INPUT_IMAGE_NAMES.length; i++) {
-                    File imgFile = new File(inputFolder,
-                        INPUT_IMAGE_NAMES[i] + INPUT_EXTENSION);
+                    File imgFile = inputFolder.file(INPUT_IMAGE_NAMES[i] + INPUT_EXTENSION);
                     try {
                         loadedImages[i] = ImageIO.read(imgFile);
                         System.out.println("  [" + i + "] " + INPUT_IMAGE_NAMES[i] + " ("
