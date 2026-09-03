@@ -446,8 +446,9 @@ working code, modification of the `main` branch is not permitted except through 
 
 ## Third-Party Attributions
 
-This mod bundles the following third-party libraries. See
-[THIRD-PARTY-NOTICES.txt](THIRD-PARTY-NOTICES.txt) for full license texts.
+The Text to Speech jar bundles the following third-party libraries. No other jar in a release
+bundles any third-party code. See [THIRD-PARTY-NOTICES.txt](THIRD-PARTY-NOTICES.txt) for the
+full license texts, including the support libraries MaryTTS needs.
 
 | Component | License | Source |
 |---|---|---|
