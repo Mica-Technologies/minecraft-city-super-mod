@@ -52,9 +52,11 @@ import sys
 import numpy as np
 from PIL import Image
 
-REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
-TEX_DIR = os.path.join(REPO_ROOT, "src", "main", "resources", "assets", "csm",
-                       "textures", "blocks", "lifesafety")
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import csm_layout as layout  # noqa: E402
+
+REPO_ROOT = layout.REPO_ROOT
+LIFESAFETY_OWNER = layout.owner_of_folder("lifesafety")
 
 
 def main():
@@ -77,7 +79,8 @@ def main():
                              "near-neutral housing to a new value band")
     args = parser.parse_args()
 
-    data = np.asarray(Image.open(os.path.join(TEX_DIR, *args.source.split("/")) + ".png")
+    source_path = layout.resolve_asset("textures/blocks/lifesafety/" + args.source + ".png")
+    data = np.asarray(Image.open(source_path)
                       .convert("RGBA"), dtype=np.float64)
     colour, alpha = data[..., :3], data[..., 3]
     height, width, _ = colour.shape
@@ -134,7 +137,8 @@ def main():
         out = out * (1.0 + legend * (args.legend_boost - 1.0))[..., None]
 
     result = np.dstack([np.clip(out, 0, 255), alpha]).astype(np.uint8)
-    path = os.path.join(TEX_DIR, *args.output.split("/")) + ".png"
+    path = layout.asset_for_write(LIFESAFETY_OWNER,
+                                  "textures/blocks/lifesafety/" + args.output + ".png")
     os.makedirs(os.path.dirname(path), exist_ok=True)
     Image.fromarray(result, "RGBA").save(path)
     print("wrote %s  (housing %d..%d -> %d..%d, %d px repainted)"

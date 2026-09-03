@@ -36,15 +36,17 @@ import sys
 import numpy as np
 from PIL import Image
 
-REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
-ASSETS = os.path.join(REPO_ROOT, "src", "main", "resources", "assets", "csm")
-MODEL_ROOT = os.path.join(ASSETS, "models", "block")
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import csm_layout as layout  # noqa: E402
+
+REPO_ROOT = layout.REPO_ROOT
 
 
 # --------------------------------------------------------------------------- textures
 def resolve_texture(ref):
-    """csm:blocks/lifesafety/foo -> absolute path of the PNG."""
-    return os.path.join(ASSETS, "textures", ref.split(":", 1)[-1] + ".png")
+    """csm:blocks/lifesafety/foo -> absolute path of the PNG, searched across every tree."""
+    rel = "textures/" + ref.split(":", 1)[-1] + ".png"
+    return layout.resolve_asset(rel) or rel
 
 
 def load_texture(ref):
@@ -229,7 +231,8 @@ def render(quads, textures, size=512, yaw=-38.0, pitch=16.0, scale=1.35,
 def preview(model_path, texture_ref=None, **kwargs):
     """Render a model by path (repo-relative under models/block/, or absolute)."""
     if not os.path.isabs(model_path):
-        model_path = os.path.join(MODEL_ROOT, model_path)
+        rel = "models/block/" + model_path
+        model_path = layout.resolve_asset(rel) or rel
     if model_path.endswith(".obj"):
         quads, material_textures = quads_from_obj(model_path)
         if texture_ref:

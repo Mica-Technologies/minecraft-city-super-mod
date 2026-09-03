@@ -20,16 +20,17 @@ Usage:
 
 import json
 import os
+import sys
 import copy
 
 # Paths
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.dirname(SCRIPT_DIR)
-MODELS_DIR = os.path.join(
-    PROJECT_ROOT,
-    "src", "main", "resources", "assets", "csm", "models", "block",
-    "trafficsignals", "shared_models"
-)
+sys.path.insert(0, os.path.join(SCRIPT_DIR, "scripts"))
+import csm_layout as layout  # noqa: E402
+
+MODELS_DIR = layout.asset_dir_for_write(layout.owner_of_folder("trafficsignals"),
+                                        "models/block/trafficsignals/shared_models")
 
 # Model families to transform (vertical name -> (horizontal name, mirror_y))
 # mirror_y: addon models need a Y-axis mirror after rotation so the tape edge

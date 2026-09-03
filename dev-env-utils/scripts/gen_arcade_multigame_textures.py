@@ -20,6 +20,7 @@ Run directly; requires Pillow.
 """
 
 import os
+import sys
 import colorsys
 
 from PIL import Image, ImageDraw, ImageFont
@@ -27,15 +28,15 @@ from PIL import Image, ImageDraw, ImageFont
 # --- Paths -------------------------------------------------------------------------------------
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-BLOCKS_DIR = os.path.normpath(
-    os.path.join(
-        SCRIPT_DIR, "..", "..", "src", "main", "resources", "assets", "csm",
-        "textures", "blocks", "novelties",
-    )
-)
-SOURCE_BODY = os.path.join(BLOCKS_DIR, "shared_textures", "arcade_cabinet.png")
-OUT_BODY = os.path.join(BLOCKS_DIR, "shared_textures", "arcade_multigame_cabinet.png")
-OUT_SCREEN = os.path.join(BLOCKS_DIR, "arcade_multigame_screen.png")
+sys.path.insert(0, SCRIPT_DIR)
+import csm_layout as layout  # noqa: E402
+
+NOVELTIES_OWNER = layout.owner_of_folder("novelties")
+SOURCE_BODY = layout.resolve_asset("textures/blocks/novelties/shared_textures/arcade_cabinet.png")
+OUT_BODY = layout.asset_for_write(
+    NOVELTIES_OWNER, "textures/blocks/novelties/shared_textures/arcade_multigame_cabinet.png")
+OUT_SCREEN = layout.asset_for_write(
+    NOVELTIES_OWNER, "textures/blocks/novelties/arcade_multigame_screen.png")
 
 SIZE = 128
 

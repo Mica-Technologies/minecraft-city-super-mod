@@ -60,33 +60,19 @@ import sys
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, SCRIPT_DIR)
 import csm_block_index as cbi  # noqa: E402
+import csm_layout as layout  # noqa: E402
 
 REPO = cbi.REPO_ROOT
-CORE = "core"
+CORE = layout.CORE
 
-# Every optional module, in the order modules.gradle lists them.
-MODULES = ["powergrid", "roads", "lifesafety", "hvac", "lighting", "building", "furnishings",
-           "technology", "tts"]
+# Every optional module. Pulled from csm_layout (which lists ``modules/`` directly) rather than
+# hand-listed here, so a module that is added or removed cannot leave this script out of step.
+MODULES = layout.modules()[1:]
 
 # Which module ships the contents of each creative tab. Hidden tabs are named for the module
-# whose classes they hold, so they map the same way.
-MODULE_OF_TAB = {
-    "tabbuildingmaterials": "building",
-    "tabhvac": "hvac",
-    "tablifesafety": "lifesafety",
-    "tablighting": "lighting",
-    "tablightinghidden": "lighting",
-    "tabnovelties": "furnishings",
-    "tabfurniture": "furnishings",
-    "tabgaming": "furnishings",
-    "tabpowergrid": "powergrid",
-    "tabroadsigns": "roads",
-    "tabtrafficaccessories": "roads",
-    "tabtrafficsignals": "roads",
-    "tabroadshidden": "roads",
-    "tabtechnology": "technology",
-    "tabmaterials": CORE,
-}
+# whose classes they hold, so they map the same way. Shared with csm_layout so the two cannot
+# drift apart.
+MODULE_OF_TAB = layout.MODULE_OF_TAB
 
 # The Technology tab registers these two through initTabBlockIfLoaded/initTabItemIfLoaded because
 # they ship in the Text to Speech module, which requires Technology.
@@ -94,21 +80,9 @@ BLOCK_MODULE_OVERRIDES = {"redstonetts": "tts"}
 ITEM_MODULE_OVERRIDES = {"ttslinker": "tts"}
 
 # Subsystem asset folder -> module, for files no blockstate reaches. The folder names predate the
-# module split, so several map onto one module.
-MODULE_OF_FOLDER = {
-    "buildingmaterials": "building",
-    "furniture": "furnishings",
-    "novelties": "furnishings",
-    "hvac": "hvac",
-    "lifesafety": "lifesafety",
-    "lighting": "lighting",
-    "materials": CORE,
-    "powergrid": "powergrid",
-    "technology": "technology",
-    "trafficaccessories": "roads",
-    "trafficsignals": "roads",
-    "trafficsigns": "roads",
-}
+# module split, so several map onto one module. Shared with csm_layout so the two cannot drift
+# apart.
+MODULE_OF_FOLDER = layout.MODULE_OF_FOLDER
 
 # Whole subtrees whose owner is not worth deriving.
 FIXED_TREES = [

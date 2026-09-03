@@ -37,9 +37,12 @@ from collections import deque
 import numpy as np
 from PIL import Image, ImageDraw
 
-REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
-TEX_DIR = os.path.join(REPO_ROOT, "src", "main", "resources", "assets", "csm",
-                       "textures", "blocks", "lifesafety")
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, SCRIPT_DIR)
+import csm_layout as layout  # noqa: E402
+
+REPO_ROOT = layout.REPO_ROOT
+LIFESAFETY_OWNER = layout.owner_of_folder("lifesafety")
 
 
 def lift_background(rgb, threshold):
@@ -130,7 +133,8 @@ def main():
     canvas = Image.new("RGBA", (args.size, args.size), (0, 0, 0, 0))
     canvas.paste(device, ((args.size - target[0]) // 2, (args.size - target[1]) // 2))
 
-    path = os.path.join(TEX_DIR, *args.output.split("/"))
+    rel = "textures/blocks/lifesafety/" + args.output + ".png"
+    path = layout.asset_for_write(LIFESAFETY_OWNER, rel)[:-len(".png")]
     os.makedirs(os.path.dirname(path), exist_ok=True)
     canvas.save(path + ".png")
     opaque = np.asarray(canvas)[..., 3] > 128

@@ -28,12 +28,19 @@ Run:  python dev-env-utils/scripts/gen_miovision_obj.py
 
 import math
 import os
+import sys
 
-REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
-OUT_DIR = os.path.join(
-    REPO_ROOT, "src", "main", "resources", "assets", "csm",
-    "models", "block", "trafficsignals", "shared_models",
-)
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import csm_layout as layout  # noqa: E402
+
+REPO_ROOT = layout.REPO_ROOT
+MODEL_REL_DIR = "models/block/trafficsignals/shared_models"
+OUT_OWNER = layout.owner_of_folder("trafficsignals")
+
+
+def _out_path(filename):
+    """Where ``filename`` in the shared trafficsignals models folder should be written."""
+    return layout.asset_for_write(OUT_OWNER, MODEL_REL_DIR + "/" + filename)
 
 HOUSING_TEX = "csm:blocks/trafficsignals/shared_textures/miovision_housing"
 LENS_TEX = "csm:blocks/trafficsignals/shared_textures/miovision_lens"
@@ -357,11 +364,12 @@ def _center(mesh):
 
 
 def main():
-    os.makedirs(OUT_DIR, exist_ok=True)
     mtl_name = "miovision_360.mtl"
-    write_mtl(os.path.join(OUT_DIR, mtl_name))
-    short = build_short(); short.write(os.path.join(OUT_DIR, "miovision_360.obj"), mtl_name)
-    tall = build_tall(); tall.write(os.path.join(OUT_DIR, "miovision_360_tall.obj"), mtl_name)
+    mtl_path = _out_path(mtl_name)
+    os.makedirs(os.path.dirname(mtl_path), exist_ok=True)
+    write_mtl(mtl_path)
+    short = build_short(); short.write(_out_path("miovision_360.obj"), mtl_name)
+    tall = build_tall(); tall.write(_out_path("miovision_360_tall.obj"), mtl_name)
 
     # Mount-anchored diagonal variants. The block stores an 8-way DirectionEight facing; the four
     # diagonals would otherwise rotate the whole model about the block centre, swinging the back
@@ -375,7 +383,7 @@ def main():
         for sfx, deg in (("diagr", 45.0), ("diagl", -45.0)):
             dm = build()
             dm.rotate_y(deg, 0.0, PIVOT_Z)
-            dm.write(os.path.join(OUT_DIR, "%s_%s.obj" % (base, sfx)), mtl_name)
+            dm.write(_out_path("%s_%s.obj" % (base, sfx)), mtl_name)
 
     # Inventory-only copies, centred on the ORIGIN (0,0,0). Item-frame/GUI rotation pivots about the
     # model origin (unlike world placement, which pivots about the block centre), so an origin-
@@ -384,7 +392,7 @@ def main():
     for mesh, fname in ((build_short(), "miovision_360_inv.obj"),
                         (build_tall(), "miovision_360_tall_inv.obj")):
         cx, cy, cz = _center(mesh)
-        mesh.write(os.path.join(OUT_DIR, fname), mtl_name, offset=(-cx, -cy, -cz))
+        mesh.write(_out_path(fname), mtl_name, offset=(-cx, -cy, -cz))
 
     for name, mesh in (("miovision_360", short), ("miovision_360_tall", tall)):
         xs = [p[0] for p in mesh.v]; ys = [p[1] for p in mesh.v]; zs = [p[2] for p in mesh.v]

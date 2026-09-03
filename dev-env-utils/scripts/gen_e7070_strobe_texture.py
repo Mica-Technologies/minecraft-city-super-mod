@@ -37,9 +37,11 @@ import sys
 import numpy as np
 from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
-REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
-TEX_DIR = os.path.join(REPO_ROOT, "src", "main", "resources", "assets", "csm",
-                       "textures", "blocks", "lifesafety")
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import csm_layout as layout  # noqa: E402
+
+REPO_ROOT = layout.REPO_ROOT
+LIFESAFETY_OWNER = layout.owner_of_folder("lifesafety")
 
 SOURCE_PLATE = "wheelock_et70_red_speaker_strobe"
 OUTPUT = "wheelock_e7070_strobe_module"
@@ -68,7 +70,8 @@ def _font(size):
 
 def lens_crop():
     """The lens, cut out of the plate photograph."""
-    plate = Image.open(os.path.join(TEX_DIR, SOURCE_PLATE + ".png")).convert("RGB")
+    plate_path = layout.resolve_asset("textures/blocks/lifesafety/" + SOURCE_PLATE + ".png")
+    plate = Image.open(plate_path).convert("RGB")
     scale = plate.size[0] / 16.0
     u0, v0, u1, v1 = PLATE_LENS_UV
     return plate.crop((int(u0 * scale), int(v0 * scale), int(u1 * scale), int(v1 * scale)))
@@ -161,7 +164,8 @@ def main():
     filled = Image.new("RGBA", (SIZE, SIZE), BODY_WHITE + (255,))
     filled.alpha_composite(atlas)
 
-    path = os.path.join(TEX_DIR, OUTPUT + ".png")
+    path = layout.asset_for_write(LIFESAFETY_OWNER,
+                                  "textures/blocks/lifesafety/" + OUTPUT + ".png")
     filled.save(path)
     print("wrote %s (%dx%d)" % (path, SIZE, SIZE))
     return 0

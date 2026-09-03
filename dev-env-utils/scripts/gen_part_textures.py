@@ -16,6 +16,7 @@ Re-running the script is idempotent. Run it from anywhere:
 
 import json
 import os
+import sys
 
 from PIL import Image, ImageDraw
 
@@ -24,11 +25,17 @@ from PIL import Image, ImageDraw
 # --------------------------------------------------------------------------------------
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-REPO_ROOT = os.path.abspath(os.path.join(SCRIPT_DIR, "..", ".."))
-ASSETS = os.path.join(REPO_ROOT, "src", "main", "resources", "assets", "csm")
-TEX_DIR = os.path.join(ASSETS, "textures", "items")
-MODEL_DIR = os.path.join(ASSETS, "models", "item")
-RECIPE_DIR = os.path.join(ASSETS, "recipes")
+sys.path.insert(0, SCRIPT_DIR)
+import csm_layout as layout  # noqa: E402
+
+REPO_ROOT = layout.REPO_ROOT
+# The crafting parts are Core's own materials tab, so their textures and item models are Core's.
+PARTS_OWNER = layout.CORE
+TEX_DIR = layout.asset_dir_for_write(PARTS_OWNER, "textures/items")
+MODEL_DIR = layout.asset_dir_for_write(PARTS_OWNER, "models/item")
+# Recipes are always Core's: only Core's mod container is asked for them (see csm_layout's
+# FIXED_CORE / partition_assets.FIXED_CORE).
+RECIPE_DIR = layout.asset_dir_for_write(layout.CORE, "recipes")
 
 SIZE = 32
 

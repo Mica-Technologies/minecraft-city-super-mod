@@ -46,9 +46,15 @@ import sys
 
 import numpy as np
 
-REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
-DEFAULT_GLOB = os.path.join(REPO_ROOT, "src", "main", "resources", "assets", "csm", "models",
-                            "block", "lighting", "shared_models", "*.obj")
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, SCRIPT_DIR)
+import csm_layout as layout  # noqa: E402
+
+REPO_ROOT = layout.REPO_ROOT
+# Every tree's copy of the lighting shared models -- currently all in the lighting module, but a
+# model that ever moved to Core (a fixture shared with another subsystem) must still be found.
+DEFAULT_GLOBS = [os.path.join(d, "*.obj")
+                 for d in layout.asset_dirs("models/block/lighting/shared_models")]
 
 QUANT = 1e-4
 
@@ -269,7 +275,8 @@ def see_through(triangles, samples=RAY_GRID):
 
 def main():
     worst = 0
-    paths = sys.argv[1:] or sorted(glob.glob(DEFAULT_GLOB))
+    paths = sys.argv[1:] or sorted(
+        p for pattern in DEFAULT_GLOBS for p in glob.glob(pattern))
     for path in paths:
         triangles = load(path)
         inconsistent, boundary = winding_and_boundary(triangles)

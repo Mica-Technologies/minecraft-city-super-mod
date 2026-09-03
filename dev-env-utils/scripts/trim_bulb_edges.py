@@ -134,9 +134,11 @@ def main():
     args = parser.parse_args()
 
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    repo_root = os.path.abspath(os.path.join(script_dir, "..", ".."))
-    tex_dir = os.path.join(repo_root, "src", "main", "resources", "assets", "csm",
-                           "textures", "blocks", "trafficsignals", "lights")
+    sys.path.insert(0, script_dir)
+    import csm_layout as layout
+    repo_root = layout.REPO_ROOT
+    tex_dir = layout.asset_dir_for_write(layout.owner_of_folder("trafficsignals"),
+                                         "textures/blocks/trafficsignals/lights")
 
     print(f"Trim: {args.trim_pixels}px | Threshold: {args.threshold} | {'Dry run' if args.dry_run else 'Processing'}")
     print(f"Groups are trimmed together so on/off pairs stay aligned.\n")

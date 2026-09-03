@@ -7,10 +7,16 @@ matches the font color, thin and inset (see render_sign.render / render_composit
 Run from repo root: python dev-env-utils/scripts/recreate_signs.py
 """
 import json, os, sys
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, SCRIPT_DIR)
 from render_sign import render, render_composite, render_wide, render_diamond_symbol, render_oneway, render_badge
+import csm_layout as layout
 
-T = 'src/main/resources/assets/csm/textures/blocks/trafficsigns/'
+TRAFFICSIGNS_OWNER = layout.owner_of_folder('trafficsigns')
+def tex_path(tex):
+    return (layout.resolve_asset('textures/blocks/trafficsigns/' + tex + '.png')
+           or layout.asset_for_write(TRAFFICSIGNS_OWNER,
+                                     'textures/blocks/trafficsigns/' + tex + '.png'))
 C = {'white':(245,245,245,255),'black':(20,20,20,255),'orange':(255,98,0,255),
      'yellow':(252,209,22,255),'green':(0,108,56,255),'red':(196,30,38,255),
      'blue':(0,67,123,255),'brown':(74,52,38,255),'pink':(232,62,140,255)}
@@ -19,7 +25,7 @@ def col(w, d):
     return C.get((w or '').strip().lower(), d)
 
 cls = {os.path.splitext(r['file'])[0]: r['shape']
-       for r in json.load(open('dev-env-utils/scripts/sign_classification.json'))['results']}
+       for r in json.load(open(os.path.join(SCRIPT_DIR, 'sign_classification.json')))['results']}
 cls['positively_no_smoking_sign'] = 'plaque'; cls['base_station_radio_sign'] = 'plaque'
 RSHAPE = {'diamond':'diamond','square':'square','landscape_rect':'rect','portrait_rect':'rect',
           'plaque':'plaque','strip':'plaque','octagon':'square'}
@@ -63,7 +69,7 @@ EXTRA_TEXT = {  # signs graded 'good' after earlier recreation; keep them in syn
 }
 
 def text_only():
-    tri = json.load(open('dev-env-utils/scripts/sign_triage.json'))['results']
+    tri = json.load(open(os.path.join(SCRIPT_DIR, 'sign_triage.json')))['results']
     done = 0
     for r in tri:
         if not (r['quality'] == 'recreate' and r['type'] == 'text_only' and r['lines']): continue
@@ -74,10 +80,10 @@ def text_only():
         bg = FLUOR.get(tex) or col(r['bg'], (245,245,245,255))
         fg = col(r['fg'], (20,20,20,255))
         lines = OVERRIDE.get(tex, [l.strip() for l in r['lines']])
-        render(rshape, lines, bg=bg, fg=fg).save(T + tex + '.png')   # border defaults to fg
+        render(rshape, lines, bg=bg, fg=fg).save(tex_path(tex))   # border defaults to fg
         done += 1
     for tex, (rshape, lines, bg, fg) in EXTRA_TEXT.items():
-        render(rshape, lines, bg=col(bg,(245,245,245,255)), fg=col(fg,(20,20,20,255))).save(T + tex + '.png')
+        render(rshape, lines, bg=col(bg,(245,245,245,255)), fg=col(fg,(20,20,20,255))).save(tex_path(tex))
         done += 1
     return done
 
@@ -94,30 +100,30 @@ COMPOSITES = {
 }
 def composites():
     for tex, (h, b, hb, hf, bb, bf, sp) in COMPOSITES.items():
-        render_composite(h, b, hb, hf, bb, bf, split=sp).save(T + tex + '.png')   # border defaults to body_fg
+        render_composite(h, b, hb, hf, bb, bf, split=sp).save(tex_path(tex))   # border defaults to body_fg
     return len(COMPOSITES)
 
 def wide():
     for tex, (lines, bg, fg) in WIDE.items():
-        render_wide(lines, bg=bg, fg=fg).save(T + tex + '.png')
+        render_wide(lines, bg=bg, fg=fg).save(tex_path(tex))
     return len(WIDE)
 
 def arrows():
     for tex, (lines, ad, bg, fg) in ARROW.items():
-        render_diamond_symbol(lines, bg=bg, fg=fg, arrow=ad).save(T + tex + '.png')
+        render_diamond_symbol(lines, bg=bg, fg=fg, arrow=ad).save(tex_path(tex))
     return len(ARROW)
 
 ONEWAY = {'oneway_tl_sign_left': 'left', 'oneway_tl_sign_right': 'right'}
 def oneways():
     for tex, dirn in ONEWAY.items():
-        render_oneway(dirn).save(T + tex + '.png')
+        render_oneway(dirn).save(tex_path(tex))
     return len(ONEWAY)
 
 # badge signs: (text, bg, star, fg, points)
 BADGE = {'sheriffstation': ('SHERIFF', (9,1,139,255), (245,245,245,255), (9,1,139,255), 7)}
 def badges():
     for tex, (txt, bg, st, fg, pts) in BADGE.items():
-        render_badge(txt, bg=bg, star=st, fg=fg, points=pts).save(T + tex + '.png')
+        render_badge(txt, bg=bg, star=st, fg=fg, points=pts).save(tex_path(tex))
     return len(BADGE)
 
 if __name__ == '__main__':

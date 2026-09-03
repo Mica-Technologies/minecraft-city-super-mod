@@ -12,10 +12,12 @@ CLI: python render_sign.py <out.png> <shape> "<LINE1|LINE2|...>" [--bg RGB --fg 
 import sys, os
 from PIL import Image, ImageDraw, ImageFont
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import csm_layout as layout
+
 SS = 4
 SIZE = 128 * SS
-FONT_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
-                         "src/main/resources/assets/csm/fonts/highway_gothic_wide.ttf")
+FONT_PATH = layout.resolve_asset("fonts/highway_gothic_wide.ttf")
 
 ORANGE = (255, 98, 0, 255)
 WHITE = (245, 245, 245, 255)

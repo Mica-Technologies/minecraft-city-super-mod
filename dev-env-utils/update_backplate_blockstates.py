@@ -14,14 +14,26 @@ Usage:
 
 import json
 import os
+import sys
 import glob
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.dirname(SCRIPT_DIR)
-BLOCKSTATES_DIR = os.path.join(
-    PROJECT_ROOT,
-    "src", "main", "resources", "assets", "csm", "blockstates"
-)
+sys.path.insert(0, os.path.join(SCRIPT_DIR, "scripts"))
+import csm_layout as layout  # noqa: E402
+
+# Backplate blockstates are all trafficsignals-tab blocks, but "blockstates" is not a
+# subsystem-specific folder -- every tree has its own, holding only the blocks it owns -- so this
+# has to glob every tree's copy rather than a single directory.
+BLOCKSTATES_DIRS = layout.asset_dirs("blockstates")
+
+
+def _glob_all(pattern):
+    """glob() a filename pattern across every tree's blockstates folder."""
+    matches = []
+    for directory in BLOCKSTATES_DIRS:
+        matches.extend(glob.glob(os.path.join(directory, pattern)))
+    return sorted(matches)
 
 FACINGS = {
     "down": {"x": 90},
@@ -162,7 +174,7 @@ def update_fitted_blockstate(filepath):
 def main():
     updated = 0
 
-    for fp in sorted(glob.glob(os.path.join(BLOCKSTATES_DIR, "tlborder*.json"))):
+    for fp in _glob_all("tlborder*.json"):
         base = os.path.basename(fp)
         if base.startswith("tlhborder"):
             continue
@@ -171,14 +183,14 @@ def main():
             updated += 1
 
     for pat in ["tldoghouseborder*.json", "tlhawkborder*.json"]:
-        for fp in sorted(glob.glob(os.path.join(BLOCKSTATES_DIR, pat))):
+        for fp in _glob_all(pat):
             base = os.path.basename(fp)
             if update_fitted_blockstate(fp):
                 print(f"  OK (fitted): {base}")
                 updated += 1
 
     # Horizontal-dedicated: keep forge format, ensure horizontal property
-    for fp in sorted(glob.glob(os.path.join(BLOCKSTATES_DIR, "tlhborder*.json"))):
+    for fp in _glob_all("tlhborder*.json"):
         base = os.path.basename(fp)
         with open(fp) as f:
             data = json.load(f)
