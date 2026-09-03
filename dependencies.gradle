@@ -37,18 +37,29 @@ def excludeForgeProvided = {
     exclude group: 'org.apache.commons', module: 'commons-lang3'
 }
 
+// Everything below is shaded into the Text to Speech module jar, not Core's — the engine and
+// its voices are ~60 MB and serve one block, so only the players who want it pay for it.
+// 'ttsShadow' is that module's private shading configuration: modules.gradle hands it to the
+// ttsJar ShadowJar task and puts it on the tts source set's compile classpath. It cannot be
+// declared over there, because build.gradle applies this file long before it applies
+// addon.gradle (and so modules.gradle), and these dependencies need it to exist already.
+// The stock 'shadowImplementation' configuration is gone with usesShadowedDependencies = false.
+configurations {
+    ttsShadow
+}
+
 dependencies {
     // MaryTTS 5.2 — embedded text-to-speech engine (client-side only at runtime)
-    shadowImplementation('de.dfki.mary:marytts-runtime:5.2.1', excludeForgeProvided)
-    shadowImplementation('de.dfki.mary:marytts-lang-en:5.2.1', excludeForgeProvided)
-    shadowImplementation('de.dfki.mary:voice-cmu-slt-hsmm:5.2.1', excludeForgeProvided)
+    ttsShadow('de.dfki.mary:marytts-runtime:5.2.1', excludeForgeProvided)
+    ttsShadow('de.dfki.mary:marytts-lang-en:5.2.1', excludeForgeProvided)
+    ttsShadow('de.dfki.mary:voice-cmu-slt-hsmm:5.2.1', excludeForgeProvided)
 
     // Additional MaryTTS voices (not on Maven Central — loaded from libs/ via flatDir)
-    shadowImplementation name: 'voice-cmu-rms-hsmm-5.2'
-    shadowImplementation name: 'voice-dfki-spike-hsmm-5.2'
-    shadowImplementation name: 'voice-dfki-prudence-hsmm-5.2'
+    ttsShadow name: 'voice-cmu-rms-hsmm-5.2'
+    ttsShadow name: 'voice-dfki-spike-hsmm-5.2'
+    ttsShadow name: 'voice-dfki-prudence-hsmm-5.2'
 
     // Log4j 1.x → 2.x bridge: MaryTTS uses the old org.apache.log4j API internally.
     // Forge bundles Log4j 2 but not the 1.x compatibility shim, so we need this.
-    shadowImplementation('org.apache.logging.log4j:log4j-1.2-api:2.17.1') { transitive = false }
+    ttsShadow('org.apache.logging.log4j:log4j-1.2-api:2.17.1') { transitive = false }
 }

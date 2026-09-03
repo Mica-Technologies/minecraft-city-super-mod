@@ -40,11 +40,20 @@ jobs:
           retention-days: 7
 
   server_smoke_test:
-    name: Dedicated Server Smoke Test
+    name: Dedicated Server Smoke Test (${{ matrix.modules }})
     needs: compile
     runs-on: ubuntu-latest
     # CSM is a large content mod; world gen on a cold cache is the slow part.
     timeout-minutes: 30
+    strategy:
+      # A Core-only failure and an all-modules failure are different bugs; run both legs.
+      fail-fast: false
+      matrix:
+        # `all` is what players who install everything get. `core` boots the mandatory jar on
+        # its own, which is the cheapest guard against Core reaching into a module: the compiler
+        # cannot see that across source sets at runtime, and a player who installs Core alone
+        # would be the one to find out.
+        modules: [all, core]
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -72,11 +81,12 @@ jobs:
         run: bash .github/scripts/server-smoke-test.sh
         env:
           SMOKE_TIMEOUT: '1200'
+          GRADLE_ARGS: -PcsmRunModules=${{ matrix.modules }}
 
       - name: Upload server log on failure
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: server-smoke-log
+          name: server-smoke-log-${{ matrix.modules }}
           path: server-smoke.log
           retention-days: 7
