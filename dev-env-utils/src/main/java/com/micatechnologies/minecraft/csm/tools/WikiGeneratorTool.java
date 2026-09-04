@@ -685,7 +685,7 @@ public class WikiGeneratorTool {
 
             // Render
             java.awt.image.BufferedImage rendered = MinecraftModelRenderer.renderModel(
-                    fileWithElements, textureMap, RENDER_IMAGE_SIZE);
+                    fileWithElements, textureMap, RENDER_IMAGE_SIZE, toFiles(modelsDir));
             if (rendered == null) return false;
 
             Path dest = imagesOut.resolve(block.registryName + ".png");
@@ -702,6 +702,15 @@ public class WikiGeneratorTool {
      * Resolves a model reference (like "csm:trafficsignals/shared_models/foo" or
      * "csm:block/lighting/shared_models/bar") to a File on disk.
      */
+    /** Turns per-tree paths back into files, in tree order. */
+    private static List<File> toFiles(List<Path> paths) {
+        List<File> files = new ArrayList<>();
+        for (Path path : paths) {
+            files.add(path.toFile());
+        }
+        return files;
+    }
+
     /** Turns the layout's per-tree folders into paths, in tree order. */
     private static List<Path> toPaths(List<File> dirs) {
         List<Path> paths = new ArrayList<>();
