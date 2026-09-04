@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.tools.dynmap;
 
+import com.micatechnologies.minecraft.csm.tools.tool_framework.CsmLayout;
 import com.micatechnologies.minecraft.csm.tools.dynmap.DynmapTypes.Box;
 import com.micatechnologies.minecraft.csm.tools.dynmap.DynmapTypes.Face;
 import com.micatechnologies.minecraft.csm.tools.dynmap.DynmapTypes.Side;
@@ -46,9 +47,12 @@ public final class ObjModelParser {
     private static final double MIN_THICKNESS = 0.5;
 
     private final File devEnvironmentPath;
+    /** Core plus every module tree; assets and sources are spread over all of them. */
+    private final CsmLayout layout;
 
     public ObjModelParser(File devEnvironmentPath) {
         this.devEnvironmentPath = devEnvironmentPath;
+        this.layout = new CsmLayout(devEnvironmentPath);
     }
 
     public ResolvedModel resolve(String modelRef, Map<String, String> variantTextures) {
@@ -229,8 +233,11 @@ public final class ObjModelParser {
         if (!name.contains("/")) {
             name = "block/" + name;
         }
-        return new File(devEnvironmentPath,
-                "src/main/resources/assets/" + domain + "/models/" + name);
+        // The OBJ sits in whichever tree ships it; the game merges the csm domain.
+        File found = layout.resolveResourceForRead("assets/" + domain + "/models/" + name);
+        return found != null ? found
+                : new File(devEnvironmentPath,
+                        "src/main/resources/assets/" + domain + "/models/" + name);
     }
 
     /** A single {@code f} directive's vertex-index list with its active group/material. */

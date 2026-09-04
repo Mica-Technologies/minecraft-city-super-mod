@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate a translated Minecraft .lang file against the English source.
+"""Validate translated Minecraft .lang files against their English source.
 
 Checks the things a reviewer who does not speak the target language cannot check by eye:
 key parity and order, %s format specifiers, protected proper nouns surviving verbatim,
@@ -12,15 +12,30 @@ still be responsible for.
 Note that Minecraft .lang files are read as raw UTF-8. Unlike Java .properties bundles they
 must NOT use \\uXXXX escapes, so this checks for real UTF-8 bytes and rejects a BOM.
 
+CSM is built from several source trees: Core at ``src/main`` plus one per optional module
+under ``modules/<name>/src/main`` (see ``csm_layout.py``). Every tree ships its own
+``assets/csm/lang/en_us.lang`` and its own translated files, because each module carries its
+lang files in its own jar. Run with no arguments to validate every tree's translated files
+against that SAME tree's own English source, reported one tree at a time -- a translated key
+in the roads module is only ever checked against the roads module's own en_us.lang, never
+Core's. Pass an explicit pair to check one file against one source directly, ignoring trees
+entirely (useful right after a manual edit, or for a file outside any known tree).
+
 Usage:
+    python validate_lang_translations.py                        # every tree, all locales
     python validate_lang_translations.py <english.lang> <translated.lang>
 
 Exits non-zero if any check fails, so it can gate a batch.
 """
 
 import io
+import os
 import re
 import sys
+
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, SCRIPT_DIR)
+import csm_layout as layout  # noqa: E402
 
 # Never translated: manufacturers, agencies, the fictional city, and technical acronyms.
 PROTECTED = [
@@ -57,8 +72,8 @@ def duplicate_keys(order):
     return dupes
 
 
-def main():
-    src_path, dst_path = sys.argv[1], sys.argv[2]
+def validate_pair(src_path, dst_path):
+    """Check one translated file against its English source. Returns the problem count."""
     src, src_order, src_raw, _ = read_pairs(src_path)
     dst, dst_order, dst_raw, dst_text = read_pairs(dst_path)
 
@@ -118,7 +133,44 @@ def main():
         print("  warn  %s" % w)
     if not problems:
         print("  OK    key parity, format specifiers, protected terms, encoding all clean")
-    return 1 if problems else 0
+    return len(problems)
+
+
+def main():
+    args = sys.argv[1:]
+
+    if args:
+        if len(args) != 2:
+            print("usage: validate_lang_translations.py [<english.lang> <translated.lang>]",
+                 file=sys.stderr)
+            return 1
+        return 1 if validate_pair(args[0], args[1]) else 0
+
+    # No arguments: every tree, each of its translated locales against that SAME tree's own
+    # en_us.lang. A tree with no en_us.lang yet (or with no translated locales at all) is
+    # reported and skipped rather than silently omitted.
+    total_problems, total_files, trees_checked = 0, 0, 0
+    for module, assets_dir in layout.asset_roots():
+        lang_dir = os.path.join(assets_dir, "lang")
+        src_path = os.path.join(lang_dir, "en_us.lang")
+        if not os.path.isfile(src_path):
+            print("=== %s: no en_us.lang at %s, skipping" % (module, lang_dir))
+            continue
+        trees_checked += 1
+        targets = sorted(name for name in os.listdir(lang_dir)
+                         if name.endswith(".lang") and name != "en_us.lang")
+        print("=== %s (%s)" % (module, src_path))
+        if not targets:
+            print("  no translated .lang files")
+            continue
+        for name in targets:
+            total_files += 1
+            total_problems += validate_pair(src_path, os.path.join(lang_dir, name))
+
+    print()
+    print("Trees checked: %d  |  files checked: %d  |  problems: %d"
+         % (trees_checked, total_files, total_problems))
+    return 1 if total_problems else 0
 
 
 if __name__ == "__main__":

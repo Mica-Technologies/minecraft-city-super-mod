@@ -17,14 +17,11 @@
  */
 package com.micatechnologies.minecraft.csm;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmSoundRegistry;
 import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmProxy;
-import com.micatechnologies.minecraft.csm.codeutils.packets.TileEntityRedstoneTTSInvokeHandler;
-import com.micatechnologies.minecraft.csm.codeutils.packets.TileEntityRedstoneTTSInvokePacket;
-import com.micatechnologies.minecraft.csm.codeutils.packets.TileEntityRedstoneTTSUpdateHandler;
-import com.micatechnologies.minecraft.csm.codeutils.packets.TileEntityRedstoneTTSUpdatePacket;
-import com.micatechnologies.minecraft.csm.lifesafety.FireAlarmSoundPacket;
-import com.micatechnologies.minecraft.csm.lifesafety.FireAlarmSoundPacketHandler;
+import com.micatechnologies.minecraft.csm.codeutils.gui.CsmGuiRegistry;
+import com.micatechnologies.minecraft.csm.materials.MaterialsGuiProvider;
 import java.util.HashSet;
 import java.util.Set;
 import net.minecraft.block.Block;
@@ -137,6 +134,12 @@ public class Csm {
       logger.info("Finished registering event bus");
       progressBar.step("Event Bus Registration");
 
+      // Register Core's GUI provider. Every other provider registers from its own module's
+      // pre-initialization; Forge runs all pre-initialization before any initialization, and
+      // the GUI handler itself is registered in init, so the registry is complete before a GUI
+      // can be opened.
+      CsmGuiRegistry.register(new MaterialsGuiProvider());
+
       // Register the mod's world generator
       logger.info("Registering world generator");
       GameRegistry.registerWorldGenerator(csmWorldGenerator,
@@ -144,102 +147,18 @@ public class Csm {
       logger.info("Finished registering world generator");
       progressBar.step("World Generator Registration");
 
-      // Register the mod's network message(s)
+      // Register Core's network message(s). Every module registers its own packets on its
+      // own channel from its pre-initialization, so a packet's discriminator depends only on
+      // the order its owner registers it in, never on which other modules are installed or
+      // on the order Forge loads them in.
       logger.info("Registering network message(s)");
-      CsmNetwork.registerNetworkMessage(
+      CsmNetwork.CORE.registerMessage(
           CitySuperModVariables.WorldSavedDataSyncMessageHandler.class,
           CitySuperModVariables.WorldSavedDataSyncMessage.class, Side.SERVER,
           Side.CLIENT);
-      CsmNetwork.registerNetworkMessage(
-          TileEntityRedstoneTTSUpdateHandler.class, TileEntityRedstoneTTSUpdatePacket.class,
-          Side.SERVER);
-      CsmNetwork.registerNetworkMessage(TileEntityRedstoneTTSInvokeHandler.class,
-          TileEntityRedstoneTTSInvokePacket.class, Side.CLIENT);
-      CsmNetwork.registerNetworkMessage(FireAlarmSoundPacketHandler.class,
-          FireAlarmSoundPacket.class, Side.CLIENT);
-      CsmNetwork.registerNetworkMessage(
-          com.micatechnologies.minecraft.csm.trafficsignals.APSSoundPacketHandler.class,
-          com.micatechnologies.minecraft.csm.trafficsignals.APSSoundPacket.class, Side.CLIENT);
-      CsmNetwork.registerNetworkMessage(
-          com.micatechnologies.minecraft.csm.trafficsignals.SignalHeadConfigPacketHandler.class,
-          com.micatechnologies.minecraft.csm.trafficsignals.SignalHeadConfigPacket.class, Side.SERVER);
-      CsmNetwork.registerNetworkMessage(
-          com.micatechnologies.minecraft.csm.trafficsignals.SignalHeadSectionConfigPacketHandler.class,
-          com.micatechnologies.minecraft.csm.trafficsignals.SignalHeadSectionConfigPacket.class, Side.SERVER);
-      CsmNetwork.registerNetworkMessage(
-          com.micatechnologies.minecraft.csm.trafficsignals.SignalHeadAppearancePacketHandler.class,
-          com.micatechnologies.minecraft.csm.trafficsignals.SignalHeadAppearancePacket.class, Side.SERVER);
-      CsmNetwork.registerNetworkMessage(
-          com.micatechnologies.minecraft.csm.trafficsignals.SensorConfigPacketHandler.class,
-          com.micatechnologies.minecraft.csm.trafficsignals.SensorConfigPacket.class, Side.SERVER);
-      CsmNetwork.registerNetworkMessage(
+      CsmNetwork.CORE.registerMessage(
           com.micatechnologies.minecraft.csm.materials.CsmFabricateHandler.class,
           com.micatechnologies.minecraft.csm.materials.CsmFabricatePacket.class, Side.SERVER);
-      CsmNetwork.registerNetworkMessage(
-          com.micatechnologies.minecraft.csm.trafficsignals.CrosswalkConfigPacketHandler.class,
-          com.micatechnologies.minecraft.csm.trafficsignals.CrosswalkConfigPacket.class, Side.SERVER);
-      CsmNetwork.registerNetworkMessage(
-          com.micatechnologies.minecraft.csm.trafficsignals.BlankoutBoxConfigPacketHandler.class,
-          com.micatechnologies.minecraft.csm.trafficsignals.BlankoutBoxConfigPacket.class, Side.SERVER);
-      CsmNetwork.registerNetworkMessage(
-          com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.SpanWireMountConfigPacketHandler.class,
-          com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.SpanWireMountConfigPacket.class,
-          Side.SERVER);
-      CsmNetwork.registerNetworkMessage(
-          com.micatechnologies.minecraft.csm.trafficaccessories.LaneControlSignalConfigPacketHandler.class,
-          com.micatechnologies.minecraft.csm.trafficaccessories.LaneControlSignalConfigPacket.class, Side.SERVER);
-      CsmNetwork.registerNetworkMessage(
-          com.micatechnologies.minecraft.csm.trafficsignals.SignalControllerConfigPacketHandler.class,
-          com.micatechnologies.minecraft.csm.trafficsignals.SignalControllerConfigPacket.class, Side.SERVER);
-      CsmNetwork.registerNetworkMessage(
-          com.micatechnologies.minecraft.csm.trafficsignals.SignalControllerSetValuePacketHandler.class,
-          com.micatechnologies.minecraft.csm.trafficsignals.SignalControllerSetValuePacket.class, Side.SERVER);
-      CsmNetwork.registerNetworkMessage(
-          com.micatechnologies.minecraft.csm.trafficsignals.AdvancedSignalControllerConfigPacketHandler.class,
-          com.micatechnologies.minecraft.csm.trafficsignals.AdvancedSignalControllerConfigPacket.class,
-          Side.SERVER);
-      CsmNetwork.registerNetworkMessage(
-          com.micatechnologies.minecraft.csm.lifesafety.FireAlarmPanelConfigPacketHandler.class,
-          com.micatechnologies.minecraft.csm.lifesafety.FireAlarmPanelConfigPacket.class, Side.SERVER);
-      CsmNetwork.registerNetworkMessage(
-          com.micatechnologies.minecraft.csm.hvac.HvacThermostatConfigPacketHandler.class,
-          com.micatechnologies.minecraft.csm.hvac.HvacThermostatConfigPacket.class, Side.SERVER);
-      CsmNetwork.registerNetworkMessage(
-          com.micatechnologies.minecraft.csm.codeutils.packets.TileEntityPortableMessageSignUpdateHandler.class,
-          com.micatechnologies.minecraft.csm.codeutils.packets.TileEntityPortableMessageSignUpdatePacket.class,
-          Side.SERVER);
-      CsmNetwork.registerNetworkMessage(
-          com.micatechnologies.minecraft.csm.codeutils.packets.TileEntityVariableSpeedLimitUpdateHandler.class,
-          com.micatechnologies.minecraft.csm.codeutils.packets.TileEntityVariableSpeedLimitUpdatePacket.class,
-          Side.SERVER);
-      CsmNetwork.registerNetworkMessage(
-          com.micatechnologies.minecraft.csm.codeutils.packets.DynamicGuideSignUpdateHandler.class,
-          com.micatechnologies.minecraft.csm.codeutils.packets.DynamicGuideSignUpdatePacket.class,
-          Side.SERVER);
-      CsmNetwork.registerNetworkMessage(
-          com.micatechnologies.minecraft.csm.codeutils.packets.DynamicStreetSignUpdateHandler.class,
-          com.micatechnologies.minecraft.csm.codeutils.packets.DynamicStreetSignUpdatePacket.class,
-          Side.SERVER);
-      CsmNetwork.registerNetworkMessage(
-          com.micatechnologies.minecraft.csm.technology.ComputerNotepadHandler.class,
-          com.micatechnologies.minecraft.csm.technology.ComputerNotepadPacket.class,
-          Side.SERVER);
-      CsmNetwork.registerNetworkMessage(
-          com.micatechnologies.minecraft.csm.technology.SpeakerAmbientPacketHandler.class,
-          com.micatechnologies.minecraft.csm.technology.SpeakerAmbientPacket.class,
-          Side.CLIENT);
-      CsmNetwork.registerNetworkMessage(
-          com.micatechnologies.minecraft.csm.technology.FareVendingPurchaseHandler.class,
-          com.micatechnologies.minecraft.csm.technology.FareVendingPurchasePacket.class,
-          Side.SERVER);
-      CsmNetwork.registerNetworkMessage(
-          com.micatechnologies.minecraft.csm.technology.FareGateOpModeHandler.class,
-          com.micatechnologies.minecraft.csm.technology.FareGateOpModePacket.class,
-          Side.SERVER);
-      CsmNetwork.registerNetworkMessage(
-          com.micatechnologies.minecraft.csm.novelties.ArcadeHighScoreHandler.class,
-          com.micatechnologies.minecraft.csm.novelties.ArcadeHighScorePacket.class,
-          Side.SERVER);
       logger.info("Finished registering network message(s)");
       progressBar.step("Network Messages Registration");
 
@@ -467,7 +386,10 @@ public class Csm {
   }
 
   /**
-   * Registers the mod's sounds with the game during the sound registry event.
+   * Registers the mod's sounds with the game during the sound registry event. The sounds
+   * themselves belong to the modules, which hand their names to {@link CsmSoundRegistry} from
+   * their own pre-initialization; registering them from Core's listener is what keeps every
+   * sound event named {@code csm:<name>}.
    *
    * @param event the sound registry event
    *
@@ -477,7 +399,7 @@ public class Csm {
    */
   @SubscribeEvent
   public void registerSounds(RegistryEvent.Register<SoundEvent> event) {
-    CsmSounds.registerSounds(event);
+    CsmSoundRegistry.registerAll(event);
   }
 
   /**
@@ -495,11 +417,11 @@ public class Csm {
       WorldSavedData mapdata = CitySuperModVariables.MapVariables.get(event.player.world);
       WorldSavedData worlddata = CitySuperModVariables.WorldVariables.get(event.player.world);
       if (mapdata != null) {
-        CsmNetwork.sendTo(new CitySuperModVariables.WorldSavedDataSyncMessage(0, mapdata),
+        CsmNetwork.CORE.sendTo(new CitySuperModVariables.WorldSavedDataSyncMessage(0, mapdata),
             (EntityPlayerMP) event.player);
       }
       if (worlddata != null) {
-        CsmNetwork.sendTo(new CitySuperModVariables.WorldSavedDataSyncMessage(1, worlddata),
+        CsmNetwork.CORE.sendTo(new CitySuperModVariables.WorldSavedDataSyncMessage(1, worlddata),
             (EntityPlayerMP) event.player);
       }
     }
@@ -520,7 +442,7 @@ public class Csm {
     if (!event.player.world.isRemote) {
       WorldSavedData worlddata = CitySuperModVariables.WorldVariables.get(event.player.world);
       if (worlddata != null) {
-        CsmNetwork.sendTo(new CitySuperModVariables.WorldSavedDataSyncMessage(1, worlddata),
+        CsmNetwork.CORE.sendTo(new CitySuperModVariables.WorldSavedDataSyncMessage(1, worlddata),
             (EntityPlayerMP) event.player);
       }
     }

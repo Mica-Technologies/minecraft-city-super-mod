@@ -4,8 +4,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -32,7 +34,7 @@ import javax.annotation.Nullable;
 public final class CsmBlockDisplayNames {
 
   /** The shipped English lang file, relative to the classpath root. */
-  private static final String LANG_RESOURCE = "/assets/csm/lang/en_us.lang";
+  private static final String LANG_RESOURCE = "assets/csm/lang/en_us.lang";
 
   /** Registry name to normalized display name (lower case, parentheticals removed). */
   private static final Map<String, String> DISPLAY_NAMES = load();
@@ -42,13 +44,23 @@ public final class CsmBlockDisplayNames {
   }
 
   private static Map<String, String> load() {
+    // Every module jar carries its own assets/csm/lang/en_us.lang for the blocks it ships, and
+    // Core's copy names only the parts and the Fabricator. A single getResourceAsStream would
+    // return whichever jar the class loader happens to reach first, so the names are gathered
+    // from every copy on the class path — the same way the game's own locale loader merges them.
     Map<String, String> map = new HashMap<>();
-    try (InputStream stream = CsmBlockDisplayNames.class.getResourceAsStream(LANG_RESOURCE)) {
-      if (stream == null) {
-        return Collections.emptyMap();
-      }
-      try (BufferedReader reader =
-          new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))) {
+    Enumeration<URL> copies;
+    try {
+      copies = CsmBlockDisplayNames.class.getClassLoader().getResources(LANG_RESOURCE);
+    } catch (IOException e) {
+      // Costs fall back to registry-name matching; not worth failing mod load over.
+      return Collections.emptyMap();
+    }
+    while (copies.hasMoreElements()) {
+      URL copy = copies.nextElement();
+      try (InputStream stream = copy.openStream();
+          BufferedReader reader =
+              new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))) {
         String line;
         while ((line = reader.readLine()) != null) {
           if (!line.startsWith("tile.")) {
@@ -65,10 +77,10 @@ public final class CsmBlockDisplayNames {
           String registryName = key.substring(0, key.length() - ".name".length());
           map.put(registryName, normalize(line.substring(equals + 1)));
         }
+      } catch (IOException e) {
+        // One unreadable copy should not cost the others; the affected blocks fall back to
+        // registry-name matching.
       }
-    } catch (IOException e) {
-      // Costs fall back to registry-name matching; not worth failing mod load over.
-      return Collections.emptyMap();
     }
     return Collections.unmodifiableMap(map);
   }

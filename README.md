@@ -8,6 +8,36 @@ and provide a realistic city-building experience in Minecraft.
 ![GitHub Downloads (all assets, latest release)](https://img.shields.io/github/downloads/Mica-Technologies/minecraft-city-super-mod/latest/total?style=for-the-badge&label=Downloads)
 ![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/Mica-Technologies/minecraft-city-super-mod/total?style=for-the-badge&label=Downloads%20(All))
 
+## Installation
+
+The mod ships as **CSM: Core plus the optional modules you want**. Core is mandatory; every module
+requires it, and all of the jars must come from the **same release, at the same version** — a mixed
+install fails at startup on purpose.
+
+Download the jars you want from the
+[latest release](https://github.com/Mica-Technologies/minecraft-city-super-mod/releases/latest)
+and drop them into your Forge 1.12.2 `mods` folder. Want everything the mod has ever had? Take all
+ten.
+
+| Jar | What it adds |
+|---|---|
+| **CSM: Core** — required | The crafting parts, the CSM Fabricator, and the machinery every module needs |
+| CSM: Roads & Traffic | Traffic signals and controllers, span wire, mast arms, crosswalks, road and highway signs |
+| CSM: Life Safety | Fire alarm appliances and panels, emergency lighting, exit signs |
+| CSM: HVAC | Thermostats, air handlers, ducting |
+| CSM: Lighting | Street and area luminaires, pendants and sconces |
+| CSM: Power Grid | Utility poles, insulators, cross arms, electrical infrastructure |
+| CSM: Technology | Computers, servers, televisions, speakers, transit fare equipment |
+| CSM: Furniture & Novelties | Indoor and outdoor furniture, arcade cabinets, decorative novelties |
+| CSM: Building Materials | Block, stair, slab and fence sets |
+| CSM: Text to Speech | The speech engine and the Redstone TTS block — **also requires CSM: Technology** |
+
+Installing a subset only removes that content — nothing about the blocks you keep changes. Removing
+a module from a world that already uses its blocks is the usual missing-mod situation, though:
+Forge will warn about the ids it no longer knows, so back the world up first. Full instructions,
+including servers, are on the [installation
+page](https://mica-technologies.github.io/minecraft-city-super-mod/getting-started/installation/).
+
 ## Guidebook / Player Information
 
 Everything about playing with the City Super Mod is in the **[City Super Mod
@@ -67,9 +97,13 @@ If you are using IntelliJ IDEA as your preferred IDE, you may use the built-in G
 #### Adding a Block
 
 Adding a block looks different depending on the blockstate format, model format, or other
-features. In general, the following steps should be followed:
+features. Everything below lives in the source tree of the module that owns the subsystem —
+`modules/<name>/src/main/...`, or `src/main/...` for Core's own content; see
+[MODULE_SYSTEM.md](assets/docs/MODULE_SYSTEM.md). In general, the following steps should be
+followed:
 
-- Create a new block class file within `src/main/java/com/micatechnologies/minecraft/csm`.
+- Create a new block class file within the module's
+  `src/main/java/com/micatechnologies/minecraft/csm`.
     - Block classes shall extend an appropriate base class, listed below.
     - Block classes shall be named in `CamelCase`.
     - Block classes shall be placed in the appropriate package based on the inventory tab.
@@ -216,23 +250,25 @@ public class ItemExample extends AbstractItem {
 
 After creating a block or item class, the block or item must be registered with the game. To
 register a block or item, an entry must be added to the appropriate tab class file within the
-`src/main/java/com/micatechnologies/minecraft/csm/tabs` package folder.
+`com.micatechnologies.minecraft.csm.tabs` package — which lives in the source tree of the module
+that owns the tab (Core's tree holds only the Materials tab).
 
-- If the block or item is intended to be unlisted, it shall be registered with the `CsmTabNone` tab
+- If the block or item is intended to be unlisted, it shall be registered with its module's hidden tab
   class file.
 - If a new tab is required for the block or item, a new tab class file shall be created using the
   process outlined in the [Adding a Tab](#adding-a-tab) section below.
 
 #### Adding a Sound
 
-Sounds must be registered in three places:
+Sounds belong to exactly one module — Core ships none — and must be registered in three places,
+all within that module's tree (`modules/<name>/src/main/...`):
 
-1. **Add the `.ogg` file** to `src/main/resources/assets/csm/sounds/`
+1. **Add the `.ogg` file** to `resources/assets/csm/sounds/`
    - Sound files must be in OGG Vorbis format.
    - Use `snake_case` naming (e.g., `example_alarm_tone.ogg`).
    - For horn/alarm sounds, target ~9,900 burst RMS for consistent volume across devices.
 
-2. **Register in `sounds.json`** (`src/main/resources/assets/csm/sounds.json`):
+2. **Register in that module's `sounds.json`** (`resources/assets/csm/sounds.json`):
    ```json
    "example_alarm_tone": {
      "category": "block",
@@ -249,15 +285,19 @@ Sounds must be registered in three places:
    - Use `"stream": false` for short sounds (horns, chimes). Use `"stream": true` for long
      sounds if needed (to avoid loading the entire file into memory).
 
-3. **Register in `CsmSounds.java`** (`src/main/java/.../CsmSounds.java`):
+3. **Register in the module's sound enum** (`LifeSafetySounds`, `RoadsSounds`,
+   `FurnishingsSounds`, `TechnologySounds`, `HvacSounds`):
    ```java
    EXAMPLE_ALARM_TONE("example_alarm_tone"),
    ```
    - Add an enum entry matching the sound event ID from `sounds.json`.
    - The enum name is `UPPER_SNAKE_CASE`, the string parameter matches the `sounds.json` key.
 
-Sounds are automatically registered during mod initialization via `CsmSounds.registerSounds()`.
-No additional registration code is needed beyond these three steps.
+The enum implements `ICsmSound` and hands its names to Core's `CsmSoundRegistry` from the module's
+pre-initialization; Core registers the union, so the event is still `csm:example_alarm_tone`
+whichever jar ships the file. No additional registration code is needed beyond these three steps.
+`CsmSoundsTest` fails the build if an enum entry and the shipped `sounds.json` files disagree, or
+if two modules claim the same sound.
 
 #### Adding a Tile Entity
 
@@ -314,9 +354,9 @@ the extra data instead of block meta.
 
 Adding a tab is a fairly simple process. To add a tab, follow these steps:
 
-- Copy/duplicate an existing tab class file within
-  the `src/main/java/com/micatechnologies/minecraft/csm/tabs`
-  package folder.
+- Copy/duplicate an existing tab class file from the
+  `com.micatechnologies.minecraft.csm.tabs` package of a module's source tree, into the tree of the
+  module the tab belongs to.
     - It is recommended to copy the `CsmTabNovelties` tab class file, as it is the simplest tab
       class file.
 - Ensure the copied/duplicated tab class file has a unique name in `CamelCase`.
@@ -417,6 +457,9 @@ section of the guidebook](https://mica-technologies.github.io/minecraft-city-sup
 The `assets/docs/` directory contains the deeper, implementation-level notes for the mod's major
 subsystems:
 
+- **[MODULE_SYSTEM.md](assets/docs/MODULE_SYSTEM.md)** -- How the mod is split into a mandatory
+  Core jar and nine optional module jars: what each owns, how registration still runs through
+  Core, the service registries a module registers with, adding a module, and the traps.
 - **[BLOCK_AND_ITEM_BASE_CLASSES.md](assets/docs/BLOCK_AND_ITEM_BASE_CLASSES.md)** --
   Comprehensive reference for every abstract block, item, and tile entity class. Covers
   constructors, rotation systems, meta encoding, registration, and choosing the right base
@@ -446,8 +489,9 @@ working code, modification of the `main` branch is not permitted except through 
 
 ## Third-Party Attributions
 
-This mod bundles the following third-party libraries. See
-[THIRD-PARTY-NOTICES.txt](THIRD-PARTY-NOTICES.txt) for full license texts.
+The Text to Speech jar bundles the following third-party libraries. No other jar in a release
+bundles any third-party code. See [THIRD-PARTY-NOTICES.txt](THIRD-PARTY-NOTICES.txt) for the
+full license texts, including the support libraries MaryTTS needs.
 
 | Component | License | Source |
 |---|---|---|

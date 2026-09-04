@@ -1,9 +1,12 @@
 package com.micatechnologies.minecraft.csm.tools.dynmap;
 
+import com.micatechnologies.minecraft.csm.tools.tool_framework.CsmLayout;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
@@ -49,13 +52,14 @@ public final class BlockDiscovery {
      * @return map of registry name → metadata, sorted by name for deterministic output
      */
     public static Map<String, BlockMetadata> discover(File devEnvironmentPath) throws IOException {
-        Map<String, File> registryToJava = buildRegistryToJavaFileMap(devEnvironmentPath);
+        CsmLayout layout = new CsmLayout(devEnvironmentPath);
+        Map<String, File> registryToJava = buildRegistryToJavaFileMap(layout);
         Map<String, BlockMetadata> out = new TreeMap<>();
-        File blockstatesDir = new File(devEnvironmentPath,
-                "src/main/resources/assets/csm/blockstates");
-        File[] files = blockstatesDir.listFiles((d, n) -> n.endsWith(".json"));
-        if (files == null) {
-            return out;
+        // One blockstate folder per tree; the game merges them into one namespace.
+        List<File> files = new ArrayList<>();
+        for (File blockstatesDir : layout.assetDirs("blockstates")) {
+            File[] found = blockstatesDir.listFiles((d, n) -> n.endsWith(".json"));
+            if (found != null) files.addAll(List.of(found));
         }
         for (File bs : files) {
             String name = bs.getName().substring(0, bs.getName().length() - ".json".length());
@@ -85,10 +89,10 @@ public final class BlockDiscovery {
         return new String[]{null, null};
     }
 
-    private static Map<String, File> buildRegistryToJavaFileMap(File devEnvironmentPath) {
+    private static Map<String, File> buildRegistryToJavaFileMap(CsmLayout layout) {
         Map<String, File> map = new TreeMap<>();
-        File sourceDir = new File(devEnvironmentPath,
-                "src/main/java/com/micatechnologies/minecraft/csm");
+        // Core plus every module tree: a block class lives in whichever jar ships it.
+        for (File sourceDir : layout.javaPackageRoots()) {
         try (Stream<Path> paths = Files.walk(sourceDir.toPath())) {
             paths.filter(p -> p.toString().endsWith(".java")).forEach(p -> {
                 try {
@@ -101,6 +105,7 @@ public final class BlockDiscovery {
             });
         } catch (IOException e) {
             System.err.println("Failed to walk source directory: " + e.getMessage());
+        }
         }
         return map;
     }

@@ -1,17 +1,8 @@
 package com.micatechnologies.minecraft.csm;
 
-import com.micatechnologies.minecraft.csm.codeutils.CsmTts;
 import com.micatechnologies.minecraft.csm.codeutils.CsmVersionChecker;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmProxy;
 import com.micatechnologies.minecraft.csm.codeutils.IHasModel;
-import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityCrosswalkSignal;
-import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityBlankoutBox;
-import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityBlankoutBoxRenderer;
-import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityCrosswalkSignalNew;
-import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityCrosswalkSignalNewRenderer;
-import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityCrosswalkSignalRenderer;
-import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalHead;
-import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalHeadRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.entity.player.EntityPlayer;
@@ -21,7 +12,6 @@ import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.obj.OBJLoader;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
-import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -93,99 +83,10 @@ public class CsmClientProxy implements ICsmProxy {
    */
   @Override
   public void init(FMLInitializationEvent event) {
-    // Bind the TESR to the TileEntity
-    ClientRegistry.bindTileEntitySpecialRenderer(TileEntityTrafficSignalHead.class, new TileEntityTrafficSignalHeadRenderer());
-    ClientRegistry.bindTileEntitySpecialRenderer(
-        com.micatechnologies.minecraft.csm.trafficaccessories.TileEntitySignalBackplate.class,
-        new com.micatechnologies.minecraft.csm.trafficaccessories.TileEntitySignalBackplateRenderer());
-    ClientRegistry.bindTileEntitySpecialRenderer(TileEntityCrosswalkSignal.class, new TileEntityCrosswalkSignalRenderer());
-    ClientRegistry.bindTileEntitySpecialRenderer(TileEntityCrosswalkSignalNew.class, new TileEntityCrosswalkSignalNewRenderer());
-    ClientRegistry.bindTileEntitySpecialRenderer(TileEntityBlankoutBox.class, new TileEntityBlankoutBoxRenderer());
-    ClientRegistry.bindTileEntitySpecialRenderer(
-        com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityLaneControlSignal.class,
-        new com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityLaneControlSignalRenderer());
-    // Span wire: both ends of every cable segment draw their own piece, so both attachment
-    // kinds get the same renderer behaviour bound to their own tile entity type.
-    ClientRegistry.bindTileEntitySpecialRenderer(
-        com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.TileEntitySpanWireAnchor.class,
-        new com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.TileEntitySpanWireAnchorRenderer());
-    ClientRegistry.bindTileEntitySpecialRenderer(
-        com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.TileEntitySpanWireHanger.class,
-        new com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.TileEntitySpanWireHangerRenderer());
-    ClientRegistry.bindTileEntitySpecialRenderer(
-        com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.TileEntitySpanWireClusterMount.class,
-        new com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.TileEntitySpanWireClusterMountRenderer());
-    ClientRegistry.bindTileEntitySpecialRenderer(
-        com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.TileEntitySpanWireDisconnectBox.class,
-        new com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.TileEntitySpanWireHangerRenderer());
-    ClientRegistry.bindTileEntitySpecialRenderer(
-        com.micatechnologies.minecraft.csm.lifesafety.TileEntityFireAlarmStrobe.class,
-        new com.micatechnologies.minecraft.csm.lifesafety.TileEntityFireAlarmStrobeRenderer());
-    // Also bind to TileEntityFireAlarmSoundIndex so Gentex Commander 3 (which uses that TE
-    // for sound selection) can also render strobe effects — the renderer checks IStrobeBlock
-    ClientRegistry.bindTileEntitySpecialRenderer(
-        com.micatechnologies.minecraft.csm.lifesafety.TileEntityFireAlarmSoundIndex.class,
-        new com.micatechnologies.minecraft.csm.lifesafety.TileEntityFireAlarmStrobeRenderer());
-
-    ClientRegistry.bindTileEntitySpecialRenderer(
-        com.micatechnologies.minecraft.csm.lifesafety.TileEntityEmergencyLight.class,
-        new com.micatechnologies.minecraft.csm.lifesafety.TileEntityEmergencyLightRenderer());
-
-    ClientRegistry.bindTileEntitySpecialRenderer(
-        com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityTrafficLightMountKit.class,
-        new com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityTrafficLightMountKitRenderer());
-
-    ClientRegistry.bindTileEntitySpecialRenderer(
-        com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityTrafficLightCover.class,
-        new com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityTrafficLightCoverRenderer());
-
-    // Register HVAC thermostat TESRs (primary and zone share the same renderer)
-    ClientRegistry.bindTileEntitySpecialRenderer(
-        com.micatechnologies.minecraft.csm.hvac.TileEntityHvacThermostat.class,
-        new com.micatechnologies.minecraft.csm.hvac.TileEntityHvacThermostatRenderer());
-    ClientRegistry.bindTileEntitySpecialRenderer(
-        com.micatechnologies.minecraft.csm.hvac.TileEntityHvacZoneThermostat.class,
-        new com.micatechnologies.minecraft.csm.hvac.TileEntityHvacThermostatRenderer());
-
-    ClientRegistry.bindTileEntitySpecialRenderer(
-        com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityPortableMessageSign.class,
-        new com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityPortableMessageSignRenderer());
-
-    ClientRegistry.bindTileEntitySpecialRenderer(
-        com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityOverheadMessageSign.class,
-        new com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityOverheadMessageSignRenderer());
-
-    ClientRegistry.bindTileEntitySpecialRenderer(
-        com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityVariableSpeedLimit.class,
-        new com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityPortableSpeedLimitRenderer());
-
-    ClientRegistry.bindTileEntitySpecialRenderer(
-        com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityOverheadSpeedLimit.class,
-        new com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityOverheadSpeedLimitRenderer());
-
-    ClientRegistry.bindTileEntitySpecialRenderer(
-        com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityPoleMountSpeedLimit.class,
-        new com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityPoleMountSpeedLimitRenderer());
-
-    ClientRegistry.bindTileEntitySpecialRenderer(
-        com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityDynamicGuideSign.class,
-        new com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityDynamicGuideSignRenderer());
-
-    ClientRegistry.bindTileEntitySpecialRenderer(
-        com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityDynamicStreetSign.class,
-        new com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityDynamicStreetSignRenderer());
-
-    ClientRegistry.bindTileEntitySpecialRenderer(
-        com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityTrafficBeacon.class,
-        new com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityTrafficBeaconRenderer());
-
-    ClientRegistry.bindTileEntitySpecialRenderer(
-        com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTattleTaleBeacon.class,
-        new com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTattleTaleBeaconRenderer());
-
-    // Register HVAC temperature HUD overlay
-    com.micatechnologies.minecraft.csm.hvac.HvacHudOverlay.register();
-
+    // Nothing module-specific lives here any more. Tile-entity renderers and HUD overlays are
+    // bound by the owning module's client proxy (Roads & Traffic, Life Safety, HVAC), so that a
+    // module can be absent without Core naming a class that is not there.
+    //
     // Note: event bus registration moved to preInit() so ModelRegistryEvent is received.
     // The version check handler (onEntityJoinWorld) also benefits from that registration.
   }
@@ -210,7 +111,8 @@ public class CsmClientProxy implements ICsmProxy {
    */
   @Override
   public void postInit(FMLPostInitializationEvent event) {
-    CsmTts.startInit();
+    // Not implemented (yet). The speech engine used to be started here; it is the Text to
+    // Speech module's, and that module's client proxy starts it in its own post-initialization.
   }
 
   /**

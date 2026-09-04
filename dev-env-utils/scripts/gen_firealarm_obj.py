@@ -60,11 +60,16 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 # How much of the E7070 module's depth is clear lens cap. Imported rather than repeated so the
 # geometry and the flash cannot drift from the art that gen_e7070_strobe_texture.py draws.
 from gen_e7070_strobe_texture import GLASS_FRACTION as E7070_GLASS_FRACTION
+import csm_layout as layout  # noqa: E402
 
-REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
-ASSETS = os.path.join(REPO_ROOT, "src", "main", "resources", "assets", "csm")
-OUT_DIR = os.path.join(ASSETS, "models", "block", "lifesafety", "shared_models")
-TEX_DIR = os.path.join(ASSETS, "textures", "blocks", "lifesafety")
+REPO_ROOT = layout.REPO_ROOT
+LIFESAFETY_OWNER = layout.owner_of_folder("lifesafety")
+OUT_DIR = layout.asset_dir_for_write(LIFESAFETY_OWNER, "models/block/lifesafety/shared_models")
+
+
+def tex_path(name):
+    """Resolve an existing lifesafety texture across every tree."""
+    return layout.resolve_asset("textures/blocks/lifesafety/" + name + ".png")
 
 MATERIAL = "body"
 
@@ -197,7 +202,7 @@ def _face_normal(p1, p2, p3):
 
 # --------------------------------------------------------------------------- texture reading
 def alpha_of(texture_name):
-    path = os.path.join(TEX_DIR, texture_name + ".png")
+    path = tex_path(texture_name)
     image = np.asarray(Image.open(path).convert("RGBA"))[..., 3]
     return image, image.shape[1] / 16.0
 
@@ -225,7 +230,7 @@ def measure_lens(texture_name):
     each pair -- the white enclosure is too close to the chrome to separate, and both colours are
     the same appliance.
     """
-    image = np.asarray(Image.open(os.path.join(TEX_DIR, texture_name + ".png")).convert("RGB"),
+    image = np.asarray(Image.open(tex_path(texture_name)).convert("RGB"),
                        dtype=float)
     height, width, _ = image.shape
     scale = width / 16.0
@@ -364,7 +369,7 @@ def find_flat_patch(texture_names, size=0.8, within=None):
     """
     images = []
     for name in texture_names:
-        data = np.asarray(Image.open(os.path.join(TEX_DIR, name + ".png")).convert("RGBA"),
+        data = np.asarray(Image.open(tex_path(name)).convert("RGBA"),
                           dtype=float)
         images.append(data)
     scale = images[0].shape[1] / 16.0
@@ -1001,7 +1006,7 @@ def measure_xenon_lens(texture, window=(3.5, 7.0, 12.5, 14.5), pad=0.25):
     bounding box that any stray speck could widen. Measured on the red texture of a pair; the white
     enclosure is too close to the chrome to separate, and both are the same appliance.
     """
-    rgba = np.asarray(Image.open(os.path.join(TEX_DIR, texture + ".png")).convert("RGBA"),
+    rgba = np.asarray(Image.open(tex_path(texture)).convert("RGBA"),
                       dtype=float)
     colour, alpha = rgba[..., :3], rgba[..., 3]
     height, width, _ = colour.shape
@@ -1030,7 +1035,7 @@ def measure_chrome_lens(texture, window=(5.0, 5.0, 11.0, 11.0), pad=0.15):
     enclosure's red, near the middle of a disc, so the same not-red-and-bright test the xenon wall
     lenses use works here with the window pulled in to the centre.
     """
-    rgba = np.asarray(Image.open(os.path.join(TEX_DIR, texture + ".png")).convert("RGBA"),
+    rgba = np.asarray(Image.open(tex_path(texture)).convert("RGBA"),
                       dtype=float)
     colour, alpha = rgba[..., :3], rgba[..., 3]
     height, width, _ = colour.shape
@@ -1362,7 +1367,7 @@ def measure_moulding(texture, inset=(0.06, 0.05), contrast=45, occupancy=0.25, s
     `window` is a UV rect to search inside, for a face carrying more than one rough thing: a
     Commander 5 has a perforated horn grille above its lens, and both are as rough as each other.
     """
-    image = Image.open(os.path.join(TEX_DIR, texture + ".png")).convert("RGBA")
+    image = Image.open(tex_path(texture)).convert("RGBA")
     alpha = np.asarray(image)[..., 3]
     scale = alpha.shape[1] / 16.0
     grey = image.convert("L")
@@ -1411,7 +1416,7 @@ def find_glassy_patch(textures, lens_uv, size=0.5, brightest=0.75):
     texture the model wears, taking each candidate's worst case, since one model serves both
     colours and a patch has to be glass in each.
     """
-    images = [np.asarray(Image.open(os.path.join(TEX_DIR, name + ".png")).convert("RGBA"),
+    images = [np.asarray(Image.open(tex_path(name)).convert("RGBA"),
                          dtype=float) for name in textures]
     scale = images[0].shape[1] / 16.0
     window = max(1, int(size * scale))

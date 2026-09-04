@@ -1,7 +1,8 @@
 # Block and Item Base Classes
 
 Comprehensive reference for the abstract class hierarchy in
-`src/main/java/com/micatechnologies/minecraft/csm/codeutils/`.
+`src/main/java/com/micatechnologies/minecraft/csm/codeutils/` — Core's tree, since every module's
+blocks and items extend these.
 
 ## Design Philosophy
 
@@ -182,6 +183,38 @@ sensors, ramp meters, tattle-tale beacons, train controller), and the non-pole t
 accessories (backplates, mount kits, fatigue mitigators, street name signs, horizontal
 pole mounts, mini solar panel). Poles themselves are intentionally **not** marked — snow
 on a pole cap reads as realistic.
+
+### Traffic Pole Mount Opt-out (ICsmTrafficPoleIgnored, ICsmTrafficPoleStateIgnored)
+
+A traffic pole decides which of its faces grow a mount stub by looking at what is next to them
+(`AbstractBlockTrafficPole.isMountableAdjacent`). A block that already draws its own mounting
+hardware -- crosswalk signal mounts, signal heads, sensor housings, mast arm curves, beacons --
+would end up with two contradictory connections on the same joint, so it opts out by implementing
+the empty marker `ICsmTrafficPoleIgnored`.
+
+The marker is matched by assignability, exactly as the class entries in `IGNORE_BLOCK` are, so
+implementing it on an abstract base (`AbstractBlockControllableSignalHead`,
+`AbstractBlockControllableCrosswalkSignalNew`) covers every subclass. `IGNORE_BLOCK` itself now
+holds only the marker plus the vanilla blocks (snow, plants, rails, wires, torches, carpets),
+which cannot implement a CSM interface -- that is what keeps `codeutils` free of any subsystem
+import.
+
+`ICsmTrafficPoleStateIgnored` is the state-aware form, for a block whose mounting hardware is
+part of its configuration rather than its type:
+
+```java
+public interface ICsmTrafficPoleStateIgnored {
+    boolean isIgnoredForTrafficPole(IBlockAccess world, BlockPos pos);
+}
+```
+
+The pole asks it per placed block, so the block can be ignored in one state and mounted in
+another. `BlockDynamicStreetSign` is the only implementer today: hanging blades are ignored, flat
+blades stay mountable. It runs during chunk load too, so an implementation must cope with the tile
+entity not being attached yet.
+
+Both filters sit alongside the user's `trafficPoleIgnoreBlocks` config list, which is matched by
+registry name and is unaffected by either interface.
 
 ## AbstractBlockRotatableNSEW (4-Direction)
 
@@ -436,9 +469,16 @@ CsmRegistry.getBlocks();               // All registered blocks
 CsmRegistry.getItems();                // All registered items
 ```
 
+Registration is **Core's**, whichever jar a block class ships in. The mod is built as a mandatory
+Core jar plus nine optional module jars (`assets/docs/MODULE_SYSTEM.md`): a module's blocks still
+self-register into Core's `CsmRegistry` from their constructors, and Core's `RegistryEvent`
+listeners still hand them to Forge, which is what keeps every registry name in the `csm` namespace.
+A module must never call `GameRegistry`/`ForgeRegistries` itself.
+
 ### CsmTab (Creative Tabs)
 
-Tabs are defined in `src/main/java/.../csm/tabs/` and loaded via annotation:
+Tabs are defined in the `…csm.tabs` package — Core's tree holds the Materials tab, and each module's
+tree holds its own — and loaded via annotation:
 
 ```java
 @CsmTab.Load(order = 5)
@@ -457,10 +497,16 @@ public class CsmTabLifeSafety extends CsmTab {
 }
 ```
 
-The `order` annotation value determines tab display order in the creative menu.
+The `order` annotation value determines tab display order in the creative menu. `CsmTab.initTabs`
+discovers tab classes through the ASM data table, which spans **every loaded jar**, so a module
+contributes its tabs without Core naming them. Order is also registry order, so a hidden tab takes
+a negative value and registers its retiring blocks first.
 
 `initTabBlock(Class, event)` instantiates the block (triggering auto-registration) and assigns
 it to this tab. `initTabItem(Class, event)` does the same for items.
+`initTabBlockIfLoaded(modId, className, event)` and `initTabItemIfLoaded(...)` are the variants for
+an entry whose class ships in *another* module: the class is named as a string and the entry is
+skipped when that module is absent, so the tab keeps its order either way.
 
 ## Utility Classes
 

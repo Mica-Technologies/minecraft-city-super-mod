@@ -81,7 +81,9 @@ ingredients. A cost therefore only has to be *fair*, not *unique*. The same reas
 ### How costs are decided
 
 `materials/CsmFabricatorCosts.java` computes cost at runtime from what a block is. Nothing is
-generated and nothing needs regenerating. Costs are 2–3 ingredients and may mix CSM parts with
+generated and nothing needs regenerating. It lives in Core, along with the parts and the Fabricator
+itself, because every module's survival chain ends there; the rules that need to know a subsystem's
+own class hierarchy are supplied by that module instead (rule 6 below). Costs are 2–3 ingredients and may mix CSM parts with
 vanilla items, so a recipe can say something true about the material — coloured metal takes the
 matching dye, wooden furniture takes planks, utility crossarms take timber.
 
@@ -120,7 +122,14 @@ Rules are applied in this order:
    Sheet Metal + Fastener Kit rather than its subsystem's electronics.
 5. **Optical devices** (camera, ALPR, radar, lidar) take Optical Sensor + Control Board.
 6. **Equipment with a dedicated base class**: fire alarm sounders, activators and detectors;
-   signal heads, detection sensors, the controller cabinet.
+   signal heads, detection sensors, the controller cabinet. These are the only rules that need to
+   know a subsystem's class hierarchy, so they live with the subsystem rather than in
+   `CsmFabricatorCosts`: `lifesafety/LifeSafetyFabricatorRules` and
+   `trafficsignals/TrafficSignalsFabricatorRules` implement `ICsmFabricatorCostRule` and register
+   themselves for their tab id from their module's pre-initialization, which is well before the
+   first cost is read at post-initialization. A tab whose rule is absent, or whose rule has no
+   opinion on a block, falls through to the same generic Sheet Metal + Wiring Harness cost that
+   branch always ended on.
 7. **Everything else takes its subsystem default** — Lighting is LED Module + Sheet Metal + Wiring;
    HVAC is Ducting + Sheet Metal; Technology is Control Board + Sheet Metal + Wiring; Furniture is
    2 planks + Fastener Kit (metal furniture takes Sheet Metal); Novelties are 2 clay + any dye
@@ -135,7 +144,7 @@ computed identically on the client and on a dedicated server, and because a reci
 when a player switches the game to another language.
 
 A `null` return means "not fabricable". That covers non-CSM blocks and, importantly, everything in
-`CsmTabNone`: `CsmTab` gives hidden and retiring blocks a `null` creative tab, so they drop out of
+Hidden tabs: `CsmTab` gives hidden and retiring blocks a `null` creative tab, so they drop out of
 the picker without needing a separate exclusion list.
 
 ### Auditing the cost model
@@ -202,7 +211,8 @@ You only need to touch `CsmFabricatorCosts` when:
 - you add a **new creative tab** — add a case for it, or its contents silently fall through to the
   generic Sheet Metal + Fastener Kit cost; or
 - the block is a new *kind* of equipment whose subsystem default is a poor fit (a new detector type,
-  say) — add an `instanceof` branch.
+  say) — add an `instanceof` branch to that subsystem's `ICsmFabricatorCostRule`, not to
+  `CsmFabricatorCosts` itself.
 
 Check the startup log line to confirm coverage:
 
@@ -210,13 +220,31 @@ Check the startup log line to confirm coverage:
 Fabricator coverage: 1426 of 1554 registered blocks are fabricable
 ```
 
-The remainder should be exactly the `CsmTabNone` blocks, the itemless `*_slab_double` blocks, and
+The remainder should be exactly the hidden-tab blocks, the itemless `*_slab_double` blocks, and
 the Fabricator itself. A sudden drop means a tab was added or renamed without pricing its contents.
+
+Both numbers depend on which modules are installed — only blocks from installed jars are registered
+at all — so compare a run against a run with the same module set. A module's cost rule ships with
+that module and is registered from its pre-initialization, so removing a module removes its blocks
+and its rule together.
 
 `dev-env-utils/scripts/csm_block_index.py` prints the same picture statically from the sources, and
 is useful for cross-checking the runtime number. It resolves the five different registration forms
 the tab files use (class literal, fully qualified class literal, constructor with a registry name,
 no-arg constructor, and pre-built instances held as constants on a holder class).
+
+## Where the recipes live
+
+Every JSON recipe is in **Core's** `assets/csm/recipes/`, because Forge reads a recipes folder per
+mod container and only Core has one. A recipe whose result ships in an optional module therefore
+needs a condition on that module, or a Core-only install logs a parsing error for it:
+
+```json
+"conditions": [{ "type": "forge:mod_loaded", "modid": "csm_roads" }]
+```
+
+`recipes/span_wire_tool.json` is the live example: the recipe id stays `csm:span_wire_tool`, and it
+is simply skipped when Roads & Traffic is not installed.
 
 ## Verifying recipes
 

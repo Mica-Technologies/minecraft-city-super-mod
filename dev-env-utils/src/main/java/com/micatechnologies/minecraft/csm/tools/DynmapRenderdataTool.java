@@ -22,6 +22,7 @@ import com.micatechnologies.minecraft.csm.tools.dynmap.PatchValidator;
 import com.micatechnologies.minecraft.csm.tools.dynmap.RenderLayerResolver;
 import com.micatechnologies.minecraft.csm.tools.dynmap.TesrGeometry;
 import com.micatechnologies.minecraft.csm.tools.dynmap.TextureResolver;
+import com.micatechnologies.minecraft.csm.tools.tool_framework.CsmLayout;
 import com.micatechnologies.minecraft.csm.tools.tool_framework.CsmToolUtility;
 
 import java.io.File;
@@ -118,8 +119,11 @@ public class DynmapRenderdataTool {
             List<TextureRecord> textures = new ArrayList<>();
             for (Map.Entry<String, String> e : textureResolver.registeredTextures().entrySet()) {
                 textures.add(new TextureRecord(e.getKey(), e.getValue(), 1, 1));
-                File f = new File(devEnvironmentPath, "src/main/resources/" + e.getValue());
-                if (!f.exists()) missingTextureFiles++;
+                // The PNG sits in whichever tree ships it.
+                if (new CsmLayout(devEnvironmentPath).resolveResourceForRead(e.getValue())
+                        == null) {
+                    missingTextureFiles++;
+                }
             }
 
             File outDir = new File(devEnvironmentPath, OUTPUT_DIR);

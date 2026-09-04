@@ -1,42 +1,6 @@
 package com.micatechnologies.minecraft.csm.codeutils;
 
 import com.micatechnologies.minecraft.csm.CsmConfig;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockDynamicStreetSign;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockPreemptBeacon;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockSnowBeacon;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficAccessoryNSEWUD;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficSignalFatigueMitigator1;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficSignalFatigueMitigator2;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficSignalFatigueMitigator3;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficSignalFatigueMitigator4;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficStreetNameSignMount;
-import com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityDynamicStreetSign;
-import com.micatechnologies.minecraft.csm.trafficaccessories.streetsign.StreetSignData;
-import com.micatechnologies.minecraft.csm.trafficaccessories.streetsign.StreetSignMount;
-import com.micatechnologies.minecraft.csm.trafficsignals.AbstractBlockControllableCrosswalkSignal;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableTattleTaleBeacon;
-import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignalHead;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkDoubleWordedBaseMount;
-import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableCrosswalkSignalNew;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkDoubleWordedLeftMount;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkDoubleWordedRearMount;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkDoubleWordedRightMount;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkLeftMount;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkLeftMount90Deg;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkMount;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkMount90Deg;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkMountGray;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkSignalDouble;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkSignalSingle;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkRightMount;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkRightMount90Deg;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkTweeter1;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkTweeter2;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockBlankoutBox;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockTrafficLightSensorBox;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockTrafficLightSensorTinyCam;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockTrafficLightSensorTrafiRadar;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockTrafficLightSensorVantageVector;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
@@ -60,7 +24,6 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.IStringSerializable;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -123,46 +86,25 @@ public abstract class AbstractBlockTrafficPole extends AbstractBlockRotatableNSE
   public static final PropertyBool MOUNT_DOWN = PropertyBool.create("mountdown");
 
   /**
-   * The list of global ignore blocks. Includes CSM accessory mount blocks that should never cause
-   * a pole to mount, plus vanilla natural/decorative blocks whose geometry would not align with a
-   * pole's mounting visuals (snow layers, plants, rails, wires, torches, carpets, etc.). Subclass
-   * relationships are honored: for example, {@link BlockBush} covers flowers, saplings, tall
-   * grass, dead bushes, mushrooms, lily pads, double plants, and crops.
+   * The list of global ignore blocks. Matched by assignability, so an entry covers its subclasses
+   * as well.
+   *
+   * <p>Every CSM block in this list is covered by the single {@link ICsmTrafficPoleIgnored} entry:
+   * a block that draws its own mounting hardware -- crosswalk signal mounts, signal heads, sensor
+   * housings, mast arm curves, beacons -- implements that marker itself rather than being named
+   * here, which is what keeps this class free of any subsystem import.
+   *
+   * <p>The rest are vanilla natural/decorative blocks whose geometry would not align with a pole's
+   * mounting visuals (snow layers, plants, rails, wires, torches, carpets, etc.). They cannot
+   * implement a CSM interface, so they stay listed. Subclass relationships are honored: for
+   * example, {@link BlockBush} covers flowers, saplings, tall grass, dead bushes, mushrooms, lily
+   * pads, double plants, and crops.
    */
   public static final Class<?>[] IGNORE_BLOCK =
-      {BlockControllableCrosswalkDoubleWordedBaseMount.class,
-          BlockControllableCrosswalkDoubleWordedLeftMount.class,
-          BlockControllableCrosswalkDoubleWordedRightMount.class,
-          BlockControllableCrosswalkDoubleWordedRearMount.class,
-          BlockControllableCrosswalkLeftMount.class,
-          BlockControllableCrosswalkLeftMount90Deg.class, BlockControllableCrosswalkMount.class,
-          BlockControllableCrosswalkMount90Deg.class, BlockControllableCrosswalkRightMount.class,
-          BlockControllableCrosswalkRightMount90Deg.class, BlockControllableCrosswalkTweeter1.class,
-          BlockControllableCrosswalkTweeter2.class,
-          BlockTrafficSignalFatigueMitigator1.class, BlockTrafficSignalFatigueMitigator2.class,
-          BlockTrafficSignalFatigueMitigator3.class, BlockTrafficSignalFatigueMitigator4.class,
-          BlockTrafficLightSensorBox.class, BlockTrafficLightSensorVantageVector.class,
-          BlockTrafficLightSensorTinyCam.class, BlockTrafficLightSensorTrafiRadar.class,
-          BlockTrafficStreetNameSignMount.class,
-          BlockTrafficAccessoryNSEWUD.class, BlockControllableCrosswalkMountGray.class,
-          BlockControllableCrosswalkSignalSingle.class, BlockControllableCrosswalkSignalDouble.class,
-          AbstractBlockControllableCrosswalkSignalNew.class,
-          // Vehicle-signal heads (BlockControllableSignal, BlockControllableHawkSignal, etc.)
-          // have their own built-in mount hardware plus the Pelco-style standalone mount
-          // blocks, so poles should never auto-sprout a stub into a signal head.
-          AbstractBlockControllableSignalHead.class,
-          // A mast arm curve is saddle-cut onto the pole and carries its own boot there, which
-          // is exactly the hardware a mount stub exists to depict. A stub as well would be a
-          // second, contradictory connection on the same joint.
-          com.micatechnologies.minecraft.csm.trafficaccessories
-              .BlockTrafficPoleMastArmCurve.class,
+      {ICsmTrafficPoleIgnored.class,
           BlockSnow.class, BlockSnowBlock.class, BlockBush.class, BlockLeaves.class,
           BlockVine.class, BlockCarpet.class, BlockTorch.class, BlockRedstoneWire.class,
-          BlockRailBase.class, BlockCactus.class, BlockReed.class, BlockWeb.class,
-          BlockBlankoutBox.class,
-          com.micatechnologies.minecraft.csm.trafficaccessories.BlockLaneControlSignal.class,
-          BlockSnowBeacon.class, BlockPreemptBeacon.class,
-          BlockControllableTattleTaleBeacon.class};
+          BlockRailBase.class, BlockCactus.class, BlockReed.class, BlockWeb.class};
 
 
   /**
@@ -379,16 +321,13 @@ public abstract class AbstractBlockTrafficPole extends AbstractBlockRotatableNSE
   /**
    * The third filter: blocks a pole should ignore only in some of their states.
    *
-   * <p>{@link #IGNORE_BLOCK} is class-based, so it can only say "always" or "never". That is
+   * <p>{@link #IGNORE_BLOCK} is type-based, so it can only say "always" or "never". That is
    * the wrong answer for a block whose mounting hardware is part of its configuration rather
-   * than its type. This hook is checked per placed block against its tile entity, so such a
-   * block can be ignored in one state and mounted in another.
+   * than its type. A block implementing {@link ICsmTrafficPoleStateIgnored} is asked per placed
+   * block instead, so it can be ignored in one state and mounted in another.
    *
-   * <p>Today that is the dynamic street sign. On either of its hanging mounts it swings below
-   * a mast arm on hardware it draws itself, and a pole sprouting a stub into it puts a second,
-   * contradictory mount on the same blade -- so a hanging blade is ignored. On its flat mount
-   * it is bolted to whatever is behind it, which is exactly what a pole mount stub exists to
-   * depict, so a flat blade is left mountable.
+   * <p>Today that is the dynamic street sign, which is ignored on its hanging mounts and
+   * mountable on its flat one. The rule itself lives with the sign, not here.
    *
    * @param worldIn the world/block access
    * @param pos     the adjacent position to test
@@ -396,16 +335,9 @@ public abstract class AbstractBlockTrafficPole extends AbstractBlockRotatableNSE
    * @return {@code true} if this particular block, in its current state, should be ignored
    */
   private static boolean isIgnoredForItsState(IBlockAccess worldIn, BlockPos pos) {
-    if (!(worldIn.getBlockState(pos).getBlock() instanceof BlockDynamicStreetSign)) {
-      return false;
-    }
-    TileEntity tileEntity = worldIn.getTileEntity(pos);
-    // No tile entity yet means this ran during chunk load, before entities are attached. Fall
-    // back to the same default the sign's own hitbox uses, so the two cannot disagree.
-    StreetSignMount mount = tileEntity instanceof TileEntityDynamicStreetSign
-        ? ((TileEntityDynamicStreetSign) tileEntity).getSignData().getMountType()
-        : new StreetSignData().getMountType();
-    return mount.isHanging();
+    Block block = worldIn.getBlockState(pos).getBlock();
+    return block instanceof ICsmTrafficPoleStateIgnored
+        && ((ICsmTrafficPoleStateIgnored) block).isIgnoredForTrafficPole(worldIn, pos);
   }
 
   /**

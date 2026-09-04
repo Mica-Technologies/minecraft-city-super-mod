@@ -570,8 +570,9 @@ When two signal heads share a mount edge, only one bracket is drawn:
 
 ### Pole Auto-Connect Opt-Out
 
-`AbstractBlockTrafficPole.IGNORE_BLOCK` includes `AbstractBlockControllableSignalHead`,
-so poles never sprout an auto-connect stub toward a configurable signal head. This
+`AbstractBlockControllableSignalHead` implements `ICsmTrafficPoleIgnored`, and the
+marker is inherited by every signal head subclass, so poles never sprout an auto-connect
+stub toward a configurable signal head. This
 prevents visual competition between the pole's stub and the head's own bracket (or the
 stand-alone `BlockTrafficLightMountKit` Pelco Astro-brac mount if one is used instead).
 
@@ -605,7 +606,7 @@ TESR-based rain hood that wraps the adjacent signal head. Like the dynamic mount
   shift — so the cover stays clamped to the housing at every tilt/angle setting.
 - **Color**: sneak + right-click cycles `MountKitColorScheme` (covers default to Black).
 - **Retirement/migration**: the old static `tlhcover` retires into `tlvcover` with its
-  facing preserved (see `CsmTabNone`); legacy `tlvcover` placements saved without a tile
+  facing preserved (see `CsmTabRoadsHidden`); legacy `tlvcover` placements saved without a tile
   entity are migrated by a one-time `randomTick` TE creation + client sync.
 
 ## Resource File Structure

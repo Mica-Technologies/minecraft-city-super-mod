@@ -19,7 +19,7 @@ import sys
 import csm_block_index as index_mod
 
 # Tabs whose blocks are never fabricable.
-NON_FABRICABLE_TABS = {"tabnone", "tabmaterials"}
+NON_FABRICABLE_TABS = {"tabroadshidden", "tablightinghidden", "tabmaterials"}
 
 
 def build_ancestry(classes):
@@ -44,11 +44,9 @@ def build_ancestry(classes):
     return ancestry
 
 
-import os
 import re
 
-LANG = os.path.join(index_mod.REPO_ROOT, "src", "main", "resources", "assets", "csm", "lang",
-                    "en_us.lang")
+LANG_FILES = index_mod.lang_files("en_us")
 
 POLE_NOUNS = {"pole", "mast", "crossarm", "standard", "post"}
 MOUNT_NOUNS = {"mount", "bracket", "backplate", "cover", "visor", "clamp", "hanger", "adapter",
@@ -62,12 +60,13 @@ ELECTRONIC_NOVELTY_WORDS = ["record", "player", "jukebox", "radio", "television"
 def load_display_names():
     """Mirror of CsmBlockDisplayNames: registry name -> normalized display name."""
     names = {}
-    with io.open(LANG, encoding="utf-8") as handle:
-        for line in handle:
-            match = re.match(r"tile\.([^=]+)\.name=(.*)", line.strip())
-            if match:
-                names[match.group(1)] = re.sub(r"\([^)]*\)|\[[^\]]*\]", " ",
-                                              match.group(2)).strip().lower()
+    for lang in LANG_FILES:
+        with io.open(lang, encoding="utf-8") as handle:
+            for line in handle:
+                match = re.match(r"tile\.([^=]+)\.name=(.*)", line.strip())
+                if match:
+                    names[match.group(1)] = re.sub(r"\([^)]*\)|\[[^\]]*\]", " ",
+                                                  match.group(2)).strip().lower()
     return names
 
 

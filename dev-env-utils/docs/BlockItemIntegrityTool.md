@@ -7,7 +7,7 @@ full resource chain is consistent and complete.
 ## What It Checks
 
 ### Block Verification
-For each block class found in the source tree:
+For each block class found in any source tree (Core plus every module):
 
 1. **Class eligibility** — Scans for classes extending `AbstractBlock` (or its descendants) that
    are not themselves abstract
@@ -38,8 +38,10 @@ For each creative tab:
 2. **Lang entries** — Verifies `itemGroup.<tab_id>` exists
 
 ### Sound Verification
-1. **Sound ID extraction** — Parses `CsmSounds.java` enum entries via regex
-2. **sounds.json validation** — For each sound:
+1. **Sound ID extraction** — Parses the per-module sound enums (`RoadsSounds`, `LifeSafetySounds`, `FurnishingsSounds`, `TechnologySounds`, `HvacSounds`) via regex, finding each in whichever source tree ships it
+2. **sounds.json validation** — Every module that registers a sound ships its own
+   `sounds.json` and the game merges them, so the tool reads all of them as one document.
+   For each sound:
    - `"category"` field exists
    - `"sounds"` array exists and is non-empty
    - Each sound entry has `"stream"` and `"name"` fields
@@ -54,6 +56,17 @@ After all verification passes, reports files that were never referenced:
 - Unused texture files
 - Unused sound files
 - Unused lang entries (checks `tile.*`, `item.*`, `itemGroup.*`, and `I18n.format()` calls)
+
+## The source trees
+
+Core and each optional module contribute Java sources and a share of the `assets/csm`
+domain, and the game merges them. The tool checks the union: it scans every tree's source
+folder for block, item and tab classes, resolves a blockstate, model, texture or sound to
+whichever tree holds it, and reads every module's `sounds.json` as one document.
+
+A lang key is only required **once per locale across the trees**, not in every tree's file:
+each module ships the lines for its own blocks and the game merges them, so demanding the
+key in all ten files would fail by construction.
 
 ## Architecture
 

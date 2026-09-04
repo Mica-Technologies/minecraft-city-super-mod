@@ -8,11 +8,18 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 # Setup workspace (required first time, or after clean)
 ./gradlew setupDecompWorkspace
 
-# Build the mod
+# Build the mod (Core + one jar per optional module, dev and release)
 ./gradlew build
 
-# Run Minecraft client in dev
+# Print the release jar file names, one per line
+./gradlew printModuleJarNames
+
+# Run Minecraft client in dev (every module jar on the classpath)
 ./gradlew runClient
+
+# Run with a subset of the modules: all (default) | core | comma-separated module names
+./gradlew runClient -PcsmRunModules=core
+./gradlew runClient -PcsmRunModules=lighting,hvac
 
 # Run Minecraft client in dev (Apple Silicon Mac — arm64-native via lwjgl3ify)
 # NOTE: launches + loads mods, but the window is currently broken on macOS (see below).
@@ -63,26 +70,59 @@ The mod is aimed at creative play, but all of its content is also obtainable in 
 two-tier chain: vanilla ores/ingots → CSM parts (crafting table) → CSM blocks (CSM Fabricator).
 CSM adds nothing to world generation. See `assets/docs/SURVIVAL_AND_RECIPES.md`.
 
+### Modules
+
+The mod ships as a mandatory **CSM: Core** jar (`csm`) plus nine optional module jars, all built
+from this repository and released together at the same version. Every module pins Core to that
+exact version, and **all content keeps the `csm:` namespace** — module ids only give Forge a
+container per jar.
+
+| Module tree | Mod id | Display name | Contents |
+|---|---|---|---|
+| `src/main` | `csm` | CSM: Core | base classes, registration, tabs machinery, config, parts + Fabricator, shared assets |
+| `modules/roads` | `csm_roads` | CSM: Roads & Traffic | `trafficsignals`, `trafficaccessories`, `trafficsigns` |
+| `modules/lifesafety` | `csm_lifesafety` | CSM: Life Safety | `lifesafety`, `api/firealarm` |
+| `modules/hvac` | `csm_hvac` | CSM: HVAC | `hvac` |
+| `modules/lighting` | `csm_lighting` | CSM: Lighting | `lighting` |
+| `modules/powergrid` | `csm_powergrid` | CSM: Power Grid | `powergrid` |
+| `modules/technology` | `csm_technology` | CSM: Technology | `technology` |
+| `modules/furnishings` | `csm_furnishings` | CSM: Furniture & Novelties | `furniture`, `novelties` |
+| `modules/building` | `csm_building` | CSM: Building Materials | `buildingmaterials` |
+| `modules/tts` | `csm_tts` | CSM: Text to Speech | the Redstone TTS block and the MaryTTS engine; requires Technology |
+
+`modules.gradle` (applied from `addon.gradle`) creates one source set, one dev jar and one
+reobfuscated release jar per module. Release jars are
+`minecraft-city-super-mod-core-<version>.jar` and `minecraft-city-super-mod-<module>-<version>.jar`.
+
+Full design, service registries, the "adding a module" checklist and the traps:
+`assets/docs/MODULE_SYSTEM.md`.
+
 ### Source Layout
 
 ```
-src/main/java/com/micatechnologies/minecraft/csm/
-├── codeutils/        # Base classes and utilities (see below)
-├── tabs/             # Creative inventory tab definitions (14 tabs)
-├── buildingmaterials/
-├── furniture/
-├── hvac/
+src/main/java/com/micatechnologies/minecraft/csm/   # Core only
+├── codeutils/        # Base classes, service registries, utilities (see below)
+├── api/              # CsmEvent
+├── materials/        # Survival crafting parts + the CSM Fabricator
+└── tabs/             # Core's own tab (Materials)
+
+modules/<name>/src/main/java/com/micatechnologies/minecraft/csm/
+├── tabs/             # That module's creative tabs, incl. its hidden tab (same package name)
+├── buildingmaterials/  (modules/building)
+├── furniture/, novelties/  (modules/furnishings)
+├── hvac/             (modules/hvac)
 ├── lifesafety/       # Largest: fire alarms, emergency lighting, exit signs
 ├── lighting/
-├── materials/        # Survival crafting parts + the CSM Fabricator
-├── novelties/        # Arcade games, decorative items
 ├── powergrid/        # Utility poles, electrical infrastructure
 ├── technology/       # Modern tech: servers, routers, TVs
+├── tts/              (modules/tts)
 ├── trafficaccessories/
 ├── trafficsignals/   # Crosswalk/pedestrian signals with redstone support
 └── trafficsigns/     # Largest: 472 road sign blocks
 
-src/main/resources/assets/csm/
+src/main/resources/assets/csm/     # Core's share; each module has the same tree under
+                                  # modules/<name>/src/main/resources/assets/csm, and every
+                                  # file keeps its csm: path whichever jar ships it
 ├── blockstates/      # One JSON per block; prefer Forge format (forge_marker: 1)
 ├── models/block/     # Block model JSONs (base models referencing shared parents)
 │   └── shared_models/  # Shared 3D geometry (Blockbench), organized by subsystem:
@@ -95,12 +135,18 @@ src/main/resources/assets/csm/
 │       ├── trafficaccessories/ # 61 models
 │       └── trafficsignals/  # 50 models
 ├── models/item/      # Item model JSONs (only for actual items, not block inventory)
-├── recipes/          # Tier-1 JSON recipes (parts + the Fabricator); parsed at game start
+├── recipes/          # Core only — tier-1 JSON recipes (parts + the Fabricator), parsed at
+│                     # game start; a recipe for a module's item needs a forge:mod_loaded condition
 ├── textures/blocks/  # Organized by subsystem subfolder
 ├── textures/items/
-├── sounds/
-└── lang/en_us.lang
+├── sounds/           # Module trees only; each module also ships its own sounds.json
+└── lang/en_us.lang   # Split by owner: Core keeps the parts, each module its own lines
 ```
+
+Assets referenced by more than one module stay in **Core** at their existing paths, so a folder
+named for one subsystem may be shipped by another jar (`models/block/lighting/shared_models/
+large_mount.json` ships from Roads). Never rename such a folder — the path is what the JSON,
+OBJ/MTL, generators and docs all name.
 
 **Note the plural directory names:** textures live in `textures/blocks/` and `textures/items/`,
 referenced as `csm:blocks/...` and `csm:items/...`. The model directories are singular
@@ -130,10 +176,26 @@ Tile entities extend `AbstractTileEntity` or `AbstractTickableTileEntity`.
 
 ### Registration Flow
 
-1. **`Csm.java`** — Main `@Mod` class; handles `preInit`, `init`, `postInit` lifecycle events
-2. **`CsmRegistry.java`** — Block/item registration
-3. **`tabs/CsmTab*.java`** — Each tab's `initTabElements()` lists what blocks/items appear in that tab; blocks not registered here go in `CsmTabNone`
-4. **`CsmClientProxy` / `CsmCommonProxy`** — Client vs. server proxy pattern
+Registration is **entirely Core's**, whichever jar a class ships in. Modules contribute content and
+register services; they never call a Forge registry (that is what keeps every name `csm:`).
+
+1. **`Csm.java`** — Core's `@Mod` class; handles `preInit`, `init`, `postInit` and owns the
+   `RegistryEvent` listeners and tile-entity registration
+2. **`CsmRegistry.java`** — blocks/items self-register into it from their constructors
+3. **`tabs/CsmTab*.java`** — `CsmTab.initTabs` discovers every tab class in every loaded jar through
+   the ASM data table and runs them in `@CsmTab.Load(order)` order; each tab's `initTabElements()`
+   lists what appears in it. Registry order is creative order. Blocks that should not appear in the
+   creative inventory go in their module's hidden tab (`CsmTabRoadsHidden`, `CsmTabLightingHidden`),
+   which uses a negative order
+4. **`Csm<Module>.java`** — each module's `@Mod` class registers its services with Core from
+   `preInit`: GUI providers (`CsmGuiRegistry`), its own network channel (`CsmNetwork.create`),
+   sounds (`CsmSoundRegistry`), Fabricator cost rules (`CsmFabricatorCosts.registerRule`),
+   lifecycle hooks (`CsmLifecycleHooks`), the TTS engine, the HVAC temperature provider
+5. **`CsmClientProxy` / `CsmCommonProxy`** — Core's proxies; each module has its own pair and binds
+   its own tile-entity renderers in `init`
+
+Core's `preInit` constructs every module's blocks (through the tabs) **before** the module `preInit`s
+run, so a block constructor must never depend on module state.
 
 ### Version
 
@@ -141,19 +203,26 @@ Version is derived from Git tags (format: `YYYY.MM.DD` for releases). No manual 
 
 ## Adding a Block (Checklist)
 
+Everything goes in the tree of the module that owns the subsystem — `modules/<name>/src/main/…`,
+or `src/main/…` for Core's own (Materials) content. Paths below are relative to that tree.
+
 1. Create class in the appropriate subsystem package extending a base class; use `snake_case` registry name
-2. Create `src/main/resources/assets/csm/blockstates/<registry_name>.json` (prefer Forge format with `forge_marker: 1` — see below)
-3. Create `src/main/resources/assets/csm/models/block/<registry_name>.json` (parent references shared model via `csm:block/shared_models/<subsystem>/<model_name>`)
-4. Add textures to `src/main/resources/assets/csm/textures/blocks/<subsystem>/` (PNG, power-of-two resolution)
-5. Add lang entry to `src/main/resources/assets/csm/lang/en_us.lang`: `tile.<registry_name>.name=Human Name`
-6. Register the block in the appropriate `tabs/CsmTab*.java` via `initTabBlock(BlockExample.class, event)`
-7. If the blockstate has no `inventory` variant, create `src/main/resources/assets/csm/models/item/<registry_name>.json`
+2. Create `resources/assets/csm/blockstates/<registry_name>.json` (prefer Forge format with `forge_marker: 1` — see below)
+3. Create `resources/assets/csm/models/block/<registry_name>.json` (parent references shared model via `csm:block/shared_models/<subsystem>/<model_name>`)
+4. Add textures to `resources/assets/csm/textures/blocks/<subsystem>/` (PNG, power-of-two resolution)
+5. Add lang entry to that module's `resources/assets/csm/lang/en_us.lang`: `tile.<registry_name>.name=Human Name`
+6. Register the block in that module's `tabs/CsmTab*.java` via `initTabBlock(BlockExample.class, event)`
+7. If the blockstate has no `inventory` variant, create `resources/assets/csm/models/item/<registry_name>.json`
+
+If the block reuses a model or texture that already lives in Core's tree, leave it there — a shared
+asset stays in Core so every partial install resolves it.
 
 **Survival crafting needs no step here.** Fabricator costs are derived at runtime from the block's
 creative tab and base class, so a new block is automatically craftable at its subsystem's cost.
 You only need to edit `materials/CsmFabricatorCosts.java` if you add a whole new creative tab (its
-contents would otherwise fall through to a generic cost) or the block is a new *kind* of equipment
-whose subsystem default is a poor fit. See `assets/docs/SURVIVAL_AND_RECIPES.md`.
+contents would otherwise fall through to a generic cost); a block that is a new *kind* of equipment
+whose subsystem default is a poor fit gets a branch in its subsystem's `ICsmFabricatorCostRule`
+instead. See `assets/docs/SURVIVAL_AND_RECIPES.md`.
 
 **Forge blockstate format (preferred):** Use `"forge_marker": 1` with `defaults`, separate variant
 blocks for each property, and `"inventory": [{}]` to handle item rendering without a separate item
@@ -163,13 +232,17 @@ See `trafficsignals/` and `trafficsigns/` blockstates for reference. The traffic
 
 ## Adding an Item (Checklist)
 
+Same rule as blocks: the owning module's tree, paths below relative to it.
+
 1. Create class in the appropriate subsystem package extending `AbstractItem`
-2. Create `src/main/resources/assets/csm/models/item/<registry_name>.json`
-3. Add texture to `src/main/resources/assets/csm/textures/items/`
+2. Create `resources/assets/csm/models/item/<registry_name>.json`
+3. Add texture to `resources/assets/csm/textures/items/`
 4. Add lang entry: `item.<registry_name>.name=Human Name`
-5. Register in appropriate tab via `initTabItem(ItemExample.class, event)`
+5. Register in that module's tab via `initTabItem(ItemExample.class, event)`
 6. Items are not fabricable — if the item should be obtainable in survival, add a JSON recipe in
-   `src/main/resources/assets/csm/recipes/`
+   **Core's** `src/main/resources/assets/csm/recipes/` (only Core's recipes folder is read). If the
+   item ships in a module, give the recipe a `forge:mod_loaded` condition for that mod id, or a
+   Core-only install logs a recipe parsing error — see `recipes/span_wire_tool.json`
 
 For items that differ only in registry name and tooltip, use a factory
 (`codeutils/ItemDecorativeFactory` for decorative items, `materials/ItemCraftingPart` for crafting
@@ -178,11 +251,22 @@ per item.
 
 ## Adding a Sound (Checklist)
 
-1. Add `.ogg` file to `src/main/resources/assets/csm/sounds/` (OGG Vorbis, `snake_case` name)
-2. Add entry to `src/main/resources/assets/csm/sounds.json` with matching key and `"name": "csm:<filename_without_ext>"`
-3. Add enum entry to `CsmSounds.java`: `MY_SOUND_NAME("sound_event_id")`
+Sounds belong to exactly one module; Core ships none and has no `sounds.json`.
 
-Sound is referenced in code as `"csm:sound_event_id"` (matching the sounds.json key).
+1. Add `.ogg` file to `modules/<name>/src/main/resources/assets/csm/sounds/` (OGG Vorbis, `snake_case` name)
+2. Add entry to that module's `resources/assets/csm/sounds.json` with matching key and `"name": "csm:<filename_without_ext>"`
+3. Add enum entry to that module's sound enum (e.g. `lifesafety/LifeSafetySounds.java`, `trafficsignals/RoadsSounds.java`): `MY_SOUND_NAME("sound_event_id")`
+
+The enum implements `ICsmSound` and hands its names to `CsmSoundRegistry` from the module's
+`preInit`; Core registers the union so the event stays `csm:sound_event_id` (matching the
+`sounds.json` key), which is how it is referenced in code. `CsmSoundsTest` fails the build if the
+enums and the shipped `sounds.json` files disagree in either direction, or if two modules claim the
+same event.
+
+## Adding a Module
+
+See `assets/docs/MODULE_SYSTEM.md` — the mod class template, the `modules.gradle` entry, the
+`mcmod.info`, the tab and hidden-tab rules, where the assets go, and the verification ritual.
 
 ## Fire Alarm System
 
@@ -206,6 +290,8 @@ Voice evac sound volume target: ~4,500 RMS.
 ## In-Depth System Documentation
 
 See `assets/docs/` for detailed technical documentation on major subsystems:
+- `assets/docs/MODULE_SYSTEM.md` -- Core plus nine optional module jars: what each owns, how
+  registration still works across jars, the Core service registries, adding a module, the traps
 - `assets/docs/BLOCK_AND_ITEM_BASE_CLASSES.md` -- Every abstract class, constructors, rotation, meta encoding, registration
 - `assets/docs/FIRE_ALARM_SYSTEM.md` -- MovingSound architecture, channel system, sound standards, full inventory
 - `assets/docs/TRAFFIC_SIGNAL_SYSTEM.md` -- Controller system, signal phases, pedestrian signals
@@ -258,6 +344,25 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
 - `csm_bench_attribute.py` -- answers "where does the frame time actually go" by deleting one
   category of block at a time and differencing. Subtractive rather than instrumented, so it cannot
   be fooled by a mistaken belief about which code runs
+- `audit_package_deps.py` -- Java package dependency matrix: which subsystem packages reference
+  which, with the symbols. A module may only reference Core, so every non-zero cell between two
+  subsystems is a modularization to-do
+- `audit_asset_ownership.py` -- resolves every blockstate to its owning creative tab and follows it
+  to the models and textures it reaches, then lists every reach into a folder named for a different
+  subsystem (the shared assets), unreached models, unreferenced textures, and sound/lang ownership
+- `partition_assets.py` -- works out which module ships each resource and moves it there with
+  `git mv`, keeping every `assets/csm` path unchanged so no JSON, OBJ or MTL is rewritten. Owner is
+  the creative tab for a blockstate, reachability for what it names, the subsystem folder for files
+  nothing reaches, the module sound enums for `sounds.json`, and the key's owner for lang. A file
+  two modules reach stays in Core. `--dry-run` prints the whole plan first
+- `check_module_assets.py` -- resolves every model, texture and sound a module ships against that
+  module plus Core and nothing else, which is what a partial install would have. Run it after
+  anything that moves an asset between trees
+- `diff_registry_dumps.py` -- compares two MCMCP `game_dump_registries` dumps and fails on anything
+  a module split must not change: a missing or reordered block, item, tile entity, sound event or
+  recipe, or a changed display name or tab. `--ignore-class`, `--ignore-tab-index`,
+  `--unordered-sounds` and `--unordered-hidden` waive the four differences the split legitimately
+  causes
 
 ### Render pass toggles (in game)
 

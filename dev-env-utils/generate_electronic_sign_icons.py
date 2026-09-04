@@ -16,14 +16,16 @@ Usage:
 """
 
 import os
+import sys
 from PIL import Image, ImageDraw
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.dirname(SCRIPT_DIR)
-TEX_DIR = os.path.join(
-    PROJECT_ROOT, "src", "main", "resources", "assets", "csm",
-    "textures", "blocks", "trafficaccessories"
-)
+sys.path.insert(0, os.path.join(SCRIPT_DIR, "scripts"))
+import csm_layout as layout  # noqa: E402
+
+TEX_DIR = layout.asset_dir_for_write(layout.owner_of_folder("trafficaccessories"),
+                                     "textures/blocks/trafficaccessories")
 
 SIZE = 32
 TRANSPARENT = (0, 0, 0, 0)

@@ -1,5 +1,7 @@
 package com.micatechnologies.minecraft.csm.tools;
 
+import com.micatechnologies.minecraft.csm.tools.tool_framework.AssetFolder;
+import com.micatechnologies.minecraft.csm.tools.tool_framework.CsmLayout;
 import com.micatechnologies.minecraft.csm.tools.tool_framework.CsmToolUtility;
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -19,11 +21,12 @@ import javax.imageio.ImageIO;
  */
 public class LaneControlSignalAtlasTool {
 
+    // Relative to a tree's assets/csm. The tiles live in the module that ships them and
+    // the atlas belongs beside them, not in Core.
     private static final String INPUT_FOLDER =
-        "src/main/resources/assets/csm/textures/blocks/trafficaccessories/lane_control_signal/";
+        "textures/blocks/trafficaccessories/lane_control_signal";
 
-    private static final String OUTPUT_FILE =
-        "src/main/resources/assets/csm/textures/blocks/trafficaccessories/lane_control_signal/lane_control_signal_atlas.png";
+    private static final String OUTPUT_FILE_NAME = "lane_control_signal_atlas.png";
 
     private static final String INPUT_EXTENSION = ".png";
     private static final int TILE_SIZE = 256;
@@ -50,8 +53,12 @@ public class LaneControlSignalAtlasTool {
     public static void main(String[] args) {
         CsmToolUtility.doToolExecuteWrapped("CSM Lane Control Signal Atlas Generator", args,
             (devEnvironmentPath) -> {
-                File inputFolder = new File(devEnvironmentPath, INPUT_FOLDER);
-                File outputFile = new File(devEnvironmentPath, OUTPUT_FILE);
+                CsmLayout layout = new CsmLayout(devEnvironmentPath);
+                // Read from every tree that has the folder; the atlas is written back
+                // beside the folder that owns it.
+                AssetFolder inputFolder = AssetFolder.ofAsset(layout, INPUT_FOLDER);
+                File outputFile =
+                        layout.assetInFolderForWrite(INPUT_FOLDER, OUTPUT_FILE_NAME);
 
                 int totalSlots = COLS * ROWS;
 
@@ -64,8 +71,7 @@ public class LaneControlSignalAtlasTool {
 
                 BufferedImage[] loadedImages = new BufferedImage[INPUT_IMAGE_NAMES.length];
                 for (int i = 0; i < INPUT_IMAGE_NAMES.length; i++) {
-                    File imgFile = new File(inputFolder,
-                        INPUT_IMAGE_NAMES[i] + INPUT_EXTENSION);
+                    File imgFile = inputFolder.file(INPUT_IMAGE_NAMES[i] + INPUT_EXTENSION);
                     try {
                         loadedImages[i] = ImageIO.read(imgFile);
                         System.out.println("  [" + i + "] " + INPUT_IMAGE_NAMES[i] + " ("

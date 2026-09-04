@@ -14,14 +14,18 @@ Without --apply it does a dry run (prints the plan, writes nothing).
 """
 import json, os, re, sys, shutil, copy
 
-REPO = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import csm_layout as layout  # noqa: E402
+
+REPO = layout.REPO_ROOT
 STAGED = os.path.join(REPO, "assets/to-be-added-to-mod/textures/blocks")
-ASSETS = os.path.join(REPO, "src/main/resources/assets/csm")
-BLOCKSTATES = os.path.join(ASSETS, "blockstates")
-TEX_OUT = os.path.join(ASSETS, "textures/blocks/trafficsigns")
-LANG = os.path.join(ASSETS, "lang/en_us.lang")
-TAB = os.path.join(REPO, "src/main/java/com/micatechnologies/minecraft/csm/tabs/CsmTabRoadSigns.java")
-TEMPLATE_BLOCKSTATE = os.path.join(BLOCKSTATES, "beachclosedsign.json")  # diamond structural template
+SIGNS_OWNER = layout.owner_of_folder("trafficsigns")
+BLOCKSTATES = layout.asset_dir_for_write(SIGNS_OWNER, "blockstates")
+TEX_OUT = layout.asset_dir_for_write(SIGNS_OWNER, "textures/blocks/trafficsigns")
+LANG = os.path.join(layout.asset_dir_for_write(SIGNS_OWNER, "lang"), "en_us.lang")
+TAB = layout.resolve_source("tabs/CsmTabRoadSigns.java")
+TEMPLATE_BLOCKSTATE = layout.resolve_asset(
+    "blockstates/beachclosedsign.json")  # diamond structural template
 
 # agent shape enum -> (front model, setback model, back_to_back model)  [all under csm:trafficsigns/]
 SHAPE_MAP = {
@@ -66,7 +70,7 @@ def main():
     data = json.load(open(sys.argv[1], encoding="utf-8"))
     results = data["results"] if isinstance(data, dict) else data
     template = json.load(open(TEMPLATE_BLOCKSTATE, encoding="utf-8"))
-    existing_bs = {f[:-5] for f in os.listdir(BLOCKSTATES) if f.endswith(".json")}
+    existing_bs = layout.known_blockstates()   # every tree, not just roads -- a real collision
 
     signs, skipped, problems = [], [], []
     seen = set()

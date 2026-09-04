@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.tools.dynmap;
 
+import com.micatechnologies.minecraft.csm.tools.tool_framework.CsmLayout;
 import java.io.File;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -19,10 +20,13 @@ public final class TextureResolver {
     public static final String TEXTURES_PREFIX = "assets/csm/textures/";
 
     private final File devEnvironmentPath;
+    /** Core plus every module tree; assets and sources are spread over all of them. */
+    private final CsmLayout layout;
     private final Map<String, String> idToFilename = new LinkedHashMap<>();
 
     public TextureResolver(File devEnvironmentPath) {
         this.devEnvironmentPath = devEnvironmentPath;
+        this.layout = new CsmLayout(devEnvironmentPath);
     }
 
     /** Map of unique texture id → filename suitable for the {@code texture:} directive. */
@@ -68,6 +72,7 @@ public final class TextureResolver {
     public boolean csmTextureExists(String ref) {
         if (ref == null || !ref.startsWith(CSM_PREFIX)) return false;
         String rel = ref.substring(CSM_PREFIX.length());
-        return new File(devEnvironmentPath, "src/main/resources/" + TEXTURES_PREFIX + rel + ".png").exists();
+        // The PNG sits in whichever tree ships it.
+        return layout.resolveResourceForRead(TEXTURES_PREFIX + rel + ".png") != null;
     }
 }

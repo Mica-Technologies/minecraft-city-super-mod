@@ -9,13 +9,13 @@ Usage:
 """
 
 import os
+import sys
 from PIL import Image
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.dirname(SCRIPT_DIR)
-TEX_DIR = os.path.join(
-    PROJECT_ROOT, "src", "main", "resources", "assets", "csm", "textures", "items"
-)
+sys.path.insert(0, os.path.join(SCRIPT_DIR, "scripts"))
+import csm_layout as layout  # noqa: E402
 
 SIZE = 16
 
@@ -89,9 +89,12 @@ def make_transit_card():
 
 
 def main():
-    os.makedirs(TEX_DIR, exist_ok=True)
-    fareticket_path = os.path.join(TEX_DIR, "fareticket.png")
-    transitcard_path = os.path.join(TEX_DIR, "transitcard.png")
+    fareticket_path = layout.asset_for_write(layout.owner_of("fareticket"),
+                                             "textures/items/fareticket.png")
+    transitcard_path = layout.asset_for_write(layout.owner_of("transitcard"),
+                                              "textures/items/transitcard.png")
+    os.makedirs(os.path.dirname(fareticket_path), exist_ok=True)
+    os.makedirs(os.path.dirname(transitcard_path), exist_ok=True)
     make_fare_ticket().save(fareticket_path, optimize=True)
     print(f"  wrote {fareticket_path}")
     make_transit_card().save(transitcard_path, optimize=True)

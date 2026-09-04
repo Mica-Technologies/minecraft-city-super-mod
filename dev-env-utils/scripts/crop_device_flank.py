@@ -74,9 +74,12 @@ import sys
 import numpy as np
 from PIL import Image
 
-REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
-TEX_DIR = os.path.join(REPO_ROOT, "src", "main", "resources", "assets", "csm",
-                       "textures", "blocks", "lifesafety")
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, SCRIPT_DIR)
+import csm_layout as layout  # noqa: E402
+
+REPO_ROOT = layout.REPO_ROOT
+LIFESAFETY_OWNER = layout.owner_of_folder("lifesafety")
 
 #: Size of the plain patch, in the 16-unit UV space, and the gap left between it and the strip.
 #: It follows the strip rather than sitting at a fixed place, because a deep enclosure needs a wide
@@ -163,7 +166,8 @@ def main():
     atlas.paste(Image.fromarray(plain, "RGB").convert("RGBA"),
                 (int(round(pu0 * unit)), int(round(pv0 * unit))))
 
-    path = os.path.join(TEX_DIR, *args.output.split("/"))
+    rel = "textures/blocks/lifesafety/" + args.output + ".png"
+    path = layout.asset_for_write(LIFESAFETY_OWNER, rel)[:-len(".png")]
     os.makedirs(os.path.dirname(path), exist_ok=True)
     atlas.save(path + ".png")
     print("wrote %s.png (%dx%d, strip %d px wide, patch at u %.1f..%.1f, moulding rgb%s)"

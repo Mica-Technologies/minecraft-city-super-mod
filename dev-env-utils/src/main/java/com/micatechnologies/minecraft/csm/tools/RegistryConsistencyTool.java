@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.tools;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.micatechnologies.minecraft.csm.tools.tool_framework.CsmLayout;
 import com.micatechnologies.minecraft.csm.tools.tool_framework.CsmToolUtility;
 import java.io.File;
 import java.io.IOException;
@@ -33,11 +34,12 @@ import java.util.stream.Stream;
  */
 public class RegistryConsistencyTool {
 
-  private static final String SOURCE_DIR = "src/main/java/com/micatechnologies/minecraft/csm";
-  private static final String BLOCKSTATE_DIR = "src/main/resources/assets/csm/blockstates";
-  private static final String BLOCK_MODELS_DIR = "src/main/resources/assets/csm/models/block";
-  private static final String ITEM_MODELS_DIR = "src/main/resources/assets/csm/models/item";
-  private static final String LANG_FILE = "src/main/resources/assets/csm/lang/en_us.lang";
+  // Relative to a tree's assets/csm. Core and each module hold a share of every one of these,
+  // merged by the game into one namespace, so consistency is a question about the union.
+  private static final String BLOCKSTATE_DIR = "blockstates";
+  private static final String BLOCK_MODELS_DIR = "models/block";
+  private static final String ITEM_MODELS_DIR = "models/item";
+  private static final String LANG_LOCALE = "en_us";
 
   private static final Pattern REGISTRY_NAME_PATTERN =
       Pattern.compile("return\\s*\"([a-z0-9_]+)\"\\s*;");
@@ -45,26 +47,31 @@ public class RegistryConsistencyTool {
   public static void main(String[] args) {
     CsmToolUtility.doToolExecuteWrapped("CSM Registry Consistency Tool", args,
         (devEnvironmentPath) -> {
-          System.out.println("Scanning Java source files for registry names...");
-          Map<String, String> blockRegistry = scanJavaRegistryNames(devEnvironmentPath, true);
-          Map<String, String> itemRegistry = scanJavaRegistryNames(devEnvironmentPath, false);
+          CsmLayout layout = new CsmLayout(devEnvironmentPath);
+          System.out.println("Scanning Java source files for registry names ("
+              + String.join(", ", layout.modules()) + ")...");
+          Map<String, String> blockRegistry = scanJavaRegistryNames(layout, true);
+          Map<String, String> itemRegistry = scanJavaRegistryNames(layout, false);
 
           System.out.println("Scanning blockstate files...");
-          Set<String> blockstateNames = scanDirectory(
-              new File(devEnvironmentPath, BLOCKSTATE_DIR), ".json");
+          Set<String> blockstateNames = scanDirectories(layout.assetDirs(BLOCKSTATE_DIR),
+              ".json");
 
           System.out.println("Scanning block model files...");
-          Set<String> blockModelNames = scanFlatDirectory(
-              new File(devEnvironmentPath, BLOCK_MODELS_DIR), ".json");
+          Set<String> blockModelNames = scanFlatDirectories(layout.assetDirs(BLOCK_MODELS_DIR),
+              ".json");
 
           System.out.println("Scanning item model files...");
-          Set<String> itemModelNames = scanDirectory(
-              new File(devEnvironmentPath, ITEM_MODELS_DIR), ".json");
+          Set<String> itemModelNames = scanDirectories(layout.assetDirs(ITEM_MODELS_DIR),
+              ".json");
 
-          System.out.println("Scanning lang file...");
+          System.out.println("Scanning lang files...");
           Map<String, String> langBlocks = new TreeMap<>();
           Map<String, String> langItems = new TreeMap<>();
-          scanLangFile(new File(devEnvironmentPath, LANG_FILE), langBlocks, langItems);
+          // One lang file per tree, merged by the game; an entry in any of them counts.
+          for (File langFile : layout.langFiles(LANG_LOCALE)) {
+            scanLangFile(langFile, langBlocks, langItems);
+          }
 
           int issues = 0;
 
@@ -151,42 +158,66 @@ public class RegistryConsistencyTool {
   /**
    * Scans Java files for getBlockRegistryName() or getItemRegistryName() return values.
    */
-  private static Map<String, String> scanJavaRegistryNames(File devEnvironmentPath,
+  private static Map<String, String> scanJavaRegistryNames(CsmLayout layout,
       boolean blocks) {
     Map<String, String> registry = new TreeMap<>();
-    File sourceDir = new File(devEnvironmentPath, SOURCE_DIR);
     String methodName = blocks ? "getBlockRegistryName" : "getItemRegistryName";
 
-    try (Stream<Path> files = Files.walk(sourceDir.toPath())) {
-      files.filter(p -> p.toString().endsWith(".java"))
-          .forEach(p -> {
-            try {
-              String content = Files.readString(p);
-              if (!content.contains(methodName)) {
-                return;
-              }
-              // Find the method and extract the return value
-              int methodIdx = content.indexOf(methodName);
-              while (methodIdx >= 0) {
-                int returnIdx = content.indexOf("return", methodIdx);
-                if (returnIdx >= 0 && returnIdx < methodIdx + 200) {
-                  Matcher m = REGISTRY_NAME_PATTERN.matcher(
-                      content.substring(returnIdx, Math.min(returnIdx + 100, content.length())));
-                  if (m.find()) {
-                    String className = p.getFileName().toString().replace(".java", "");
-                    registry.put(m.group(1), className);
-                  }
+    // Core and every module tree: a block class lives in whichever jar ships it.
+    for (File sourceDir : layout.javaPackageRoots()) {
+      try (Stream<Path> files = Files.walk(sourceDir.toPath())) {
+        files.filter(p -> p.toString().endsWith(".java"))
+            .forEach(p -> {
+              try {
+                String content = Files.readString(p);
+                if (!content.contains(methodName)) {
+                  return;
                 }
-                methodIdx = content.indexOf(methodName, methodIdx + 1);
+                // Find the method and extract the return value
+                int methodIdx = content.indexOf(methodName);
+                while (methodIdx >= 0) {
+                  int returnIdx = content.indexOf("return", methodIdx);
+                  if (returnIdx >= 0 && returnIdx < methodIdx + 200) {
+                    Matcher m = REGISTRY_NAME_PATTERN.matcher(
+                        content.substring(returnIdx, Math.min(returnIdx + 100, content.length())));
+                    if (m.find()) {
+                      String className = p.getFileName().toString().replace(".java", "");
+                      registry.put(m.group(1), className);
+                    }
+                  }
+                  methodIdx = content.indexOf(methodName, methodIdx + 1);
+                }
+              } catch (IOException e) {
+                // Skip
               }
-            } catch (IOException e) {
-              // Skip
-            }
-          });
-    } catch (IOException e) {
-      System.err.println("Error scanning Java files: " + e.getMessage());
+            });
+      } catch (IOException e) {
+        System.err.println("Error scanning Java files: " + e.getMessage());
+      }
     }
     return registry;
+  }
+
+  /**
+   * Scans every tree's copy of one asset folder, recursively.
+   */
+  private static Set<String> scanDirectories(List<File> dirs, String extension) {
+    Set<String> names = new TreeSet<>();
+    for (File dir : dirs) {
+      names.addAll(scanDirectory(dir, extension));
+    }
+    return names;
+  }
+
+  /**
+   * Scans every tree's copy of one asset folder, top level only.
+   */
+  private static Set<String> scanFlatDirectories(List<File> dirs, String extension) {
+    Set<String> names = new TreeSet<>();
+    for (File dir : dirs) {
+      names.addAll(scanFlatDirectory(dir, extension));
+    }
+    return names;
   }
 
   private static Set<String> scanDirectory(File dir, String extension) {

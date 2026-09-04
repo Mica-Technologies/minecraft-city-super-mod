@@ -22,8 +22,12 @@ Then regenerate the atlas with the "Generate Blankout Box Atlas" run config.
 """
 
 import os
+import sys
 import math
 from PIL import Image, ImageDraw
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import csm_layout as layout
 
 SIZE = 256
 SS = 4  # supersample factor for anti-aliasing
@@ -35,10 +39,9 @@ TEXT_DOT_R = 1.7  # wordmark dot radius
 WHITE = (255, 255, 255)
 OFF_MAX = 6  # unlit LEDs top out at this grey value, as in the existing *_off art
 
-TEX_DIR = os.path.join(
-    os.path.dirname(os.path.abspath(__file__)),
-    "..", "..", "src", "main", "resources", "assets", "csm",
-    "textures", "blocks", "trafficsignals", "blankout_boxes")
+TRAFFICSIGNALS_OWNER = layout.owner_of_folder("trafficsignals")
+TEX_DIR = layout.asset_dir_for_write(TRAFFICSIGNALS_OWNER,
+                                     "textures/blocks/trafficsignals/blankout_boxes")
 
 
 # --------------------------------------------------------------------------

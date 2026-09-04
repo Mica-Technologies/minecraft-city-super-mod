@@ -52,7 +52,8 @@ OUTPUT
   models/block/trafficaccessories/shared_models/mastarmcurve_<preset>_c<n>.obj   (+ _inv.obj)
   models/block/trafficaccessories/shared_models/mastarmcurve.mtl                 (one, shared)
   blockstates/trafficpolemastarmcurve<preset><color>.json                        (presets x colors)
-  ../../src/main/java/.../trafficaccessories/MastArmCurveProfile.java            (generated enum)
+  src/main/java/.../trafficaccessories/MastArmCurveProfile.java, in whichever tree already has
+    it (the roads module today; resolved via csm_layout.source_for_write)      (generated enum)
   scratch fragments for en_us.lang and CsmTabTrafficAccessories.java
 
 The Java enum is GENERATED, not hand-written, because the block's placement code has to know the
@@ -78,13 +79,19 @@ import glob
 import json
 import math
 import os
+import sys
 
-REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
-ASSETS = os.path.join(REPO_ROOT, "src", "main", "resources", "assets", "csm")
-MODEL_DIR = os.path.join(ASSETS, "models", "block", "trafficaccessories", "shared_models")
-BLOCKSTATE_DIR = os.path.join(ASSETS, "blockstates")
-JAVA_DIR = os.path.join(REPO_ROOT, "src", "main", "java", "com", "micatechnologies",
-                        "minecraft", "csm", "trafficaccessories")
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import csm_layout as layout  # noqa: E402
+
+REPO_ROOT = layout.REPO_ROOT
+TRAFFICACCESSORIES_OWNER = layout.owner_of_folder("trafficaccessories")
+MODEL_DIR = layout.asset_dir_for_write(TRAFFICACCESSORIES_OWNER,
+                                       "models/block/trafficaccessories/shared_models")
+BLOCKSTATE_DIR = layout.asset_dir_for_write(TRAFFICACCESSORIES_OWNER, "blockstates")
+# The generated Java enum: an existing copy always wins (it is only ever regenerated in place).
+JAVA_PATH = layout.source_for_write(TRAFFICACCESSORIES_OWNER,
+                                    "trafficaccessories/MastArmCurveProfile.java")
 SCRATCH_DIR = os.path.join(os.path.dirname(__file__), "_mastarm_out")
 
 MODEL_PREFIX = "csm:trafficaccessories/shared_models"
@@ -997,7 +1004,7 @@ public enum MastArmCurveProfile {
   }
 }
 ''' % ("\n".join(body))
-    with open(os.path.join(JAVA_DIR, "MastArmCurveProfile.java"), "w", newline="\n") as fh:
+    with open(JAVA_PATH, "w", newline="\n") as fh:
         fh.write(src)
 
 

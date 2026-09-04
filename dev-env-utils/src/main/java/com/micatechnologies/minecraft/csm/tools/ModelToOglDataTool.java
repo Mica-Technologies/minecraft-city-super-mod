@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.micatechnologies.minecraft.csm.tools.tool_framework.CsmLayout;
 import com.micatechnologies.minecraft.csm.tools.tool_framework.CsmToolUtility;
 import java.io.File;
 import java.io.IOException;
@@ -13,24 +14,28 @@ import org.apache.commons.io.FileUtils;
 
 public class ModelToOglDataTool {
 
+  // Relative to a tree's assets/csm: these models ship in the Roads module. The .ogldata
+  // output goes to dev-env-utils and is not a mod resource, so it stays where it is.
   private static final String[] MODEL_FILES_TO_CONVERT = {
-      "src/main/resources/assets/csm/models/block/trafficsignals/visors/visor_cap.json",
-      "src/main/resources/assets/csm/models/block/trafficsignals/visors/visor_circle.json",
-      "src/main/resources/assets/csm/models/block/trafficsignals/visors/visor_louvered_vertical.json",
-      "src/main/resources/assets/csm/models/block/trafficsignals/visors/visor_louvered_horizontal.json",
-      "src/main/resources/assets/csm/models/block/trafficsignals/visors/visor_louvered_both.json",
-      "src/main/resources/assets/csm/models/block/trafficsignals/visors/visor_none.json",
-      "src/main/resources/assets/csm/models/block/trafficsignals/visors/visor_tunnel.json"
+      "models/block/trafficsignals/visors/visor_cap.json",
+      "models/block/trafficsignals/visors/visor_circle.json",
+      "models/block/trafficsignals/visors/visor_louvered_vertical.json",
+      "models/block/trafficsignals/visors/visor_louvered_horizontal.json",
+      "models/block/trafficsignals/visors/visor_louvered_both.json",
+      "models/block/trafficsignals/visors/visor_none.json",
+      "models/block/trafficsignals/visors/visor_tunnel.json"
   };
 
   public static void main(String[] args) {
     CsmToolUtility.doToolExecuteWrapped("CSM Model to OpenGL Data Converter", args,
         (devEnvironmentPath) -> {
           final String outputFolder = "dev-env-utils/openGlData/";
+          CsmLayout layout = new CsmLayout(devEnvironmentPath);
           for (String modelFilePath : MODEL_FILES_TO_CONVERT) {
-            File modelFile = new File(devEnvironmentPath, modelFilePath);
-            if (!modelFile.exists()) {
-              System.err.println("Model file not found: " + modelFile.getAbsolutePath());
+            File modelFile = layout.resolveAssetForRead(modelFilePath);
+            if (modelFile == null) {
+              System.err.println("Model file not found in any source tree: "
+                  + modelFilePath);
               continue;
             }
 

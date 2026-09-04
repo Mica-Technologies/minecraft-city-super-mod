@@ -30,9 +30,17 @@ import sys
 import numpy as np
 from PIL import Image
 
-REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
-TEX_DIR = os.path.join(REPO_ROOT, "src", "main", "resources", "assets", "csm",
-                       "textures", "blocks", "lifesafety")
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import csm_layout as layout  # noqa: E402
+
+REPO_ROOT = layout.REPO_ROOT
+LIFESAFETY_OWNER = layout.owner_of_folder("lifesafety")
+
+
+def _tex_path(name):
+    return (layout.resolve_asset("textures/blocks/lifesafety/" + name + ".png")
+           or layout.asset_for_write(LIFESAFETY_OWNER,
+                                     "textures/blocks/lifesafety/" + name + ".png"))
 
 WHEELOCK_RED_FAMILY = [
     "wheelock_mt_red_horn_strobe", "wheelock_mt_red_horn", "wheelock_as_red_horn_strobe",
@@ -43,7 +51,7 @@ WHEELOCK_RED_FAMILY = [
 
 
 def _load(name):
-    return np.asarray(Image.open(os.path.join(TEX_DIR, name + ".png")).convert("RGBA"),
+    return np.asarray(Image.open(_tex_path(name)).convert("RGBA"),
                       dtype=np.float64)
 
 
@@ -142,7 +150,7 @@ def main():
 
     out = data.copy()
     out[..., :3] = corrected * 255.0
-    path = os.path.join(TEX_DIR, args.texture + ".png")
+    path = _tex_path(args.texture)
     Image.fromarray(np.round(out).astype(np.uint8), "RGBA").save(path)
     after = measure(args.texture)
     print("wrote %s -> hue %+.2f deg  saturation %.3f" % (path, after[0], after[1]))

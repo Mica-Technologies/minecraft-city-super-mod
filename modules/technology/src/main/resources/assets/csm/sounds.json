@@ -1,0 +1,20 @@
+{
+  "mii_channel_remix": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:mii_channel_remix",
+        "stream": false
+      }
+    ]
+  },
+  "verifone_mx915": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:verifone_mx915",
+        "stream": false
+      }
+    ]
+  }
+}

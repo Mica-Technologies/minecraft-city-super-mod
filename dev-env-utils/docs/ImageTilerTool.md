@@ -40,8 +40,10 @@ The atlas is an 8x8 grid with 55 populated tiles and 9 empty (transparent) slots
 
 ## Output
 
-Overwrites `src/main/resources/assets/csm/textures/blocks/trafficsignals/lights/atlas.png`.
-This file IS included in the mod JAR and used at runtime.
+Overwrites `assets/csm/textures/blocks/trafficsignals/lights/atlas.png` **in the tree that ships
+the input tiles** (the Roads module), not in Core: the atlas belongs beside the tiles it was
+built from, and the same resource path must not appear in two jars. This file IS included in the
+mod JAR and used at runtime.
 
 ## Related Files
 
@@ -49,7 +51,8 @@ This file IS included in the mod JAR and used at runtime.
   to UV coordinates in the atlas using slot indices that correspond to `INPUT_IMAGE_NAMES` order
 - **Renderer:** `TileEntityTrafficSignalHeadRenderer.java` — Binds the atlas texture and renders
   bulb faces using the UV coordinates from `TrafficSignalTextureMap`
-- **Input textures:** `src/main/resources/assets/csm/textures/blocks/trafficsignals/lights/*.png`
+- **Input textures:** `assets/csm/textures/blocks/trafficsignals/lights/*.png`, in whichever
+  source tree ships them
 
 ## Limitations
 

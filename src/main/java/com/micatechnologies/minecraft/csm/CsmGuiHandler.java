@@ -1,35 +1,20 @@
 package com.micatechnologies.minecraft.csm;
 
-import com.micatechnologies.minecraft.csm.hvac.HvacThermostatGui;
-import com.micatechnologies.minecraft.csm.hvac.HvacZoneThermostatGui;
-import com.micatechnologies.minecraft.csm.hvac.TileEntityHvacThermostat;
-import com.micatechnologies.minecraft.csm.hvac.TileEntityHvacZoneThermostat;
-import com.micatechnologies.minecraft.csm.lifesafety.FireAlarmControlPanelGui;
-import com.micatechnologies.minecraft.csm.lifesafety.TileEntityFireAlarmControlPanel;
-import com.micatechnologies.minecraft.csm.technology.BlockFareVendingMachine;
-import com.micatechnologies.minecraft.csm.technology.BlockRedstoneTTSGui;
-import com.micatechnologies.minecraft.csm.technology.ComputerGui;
-import com.micatechnologies.minecraft.csm.technology.FareGateConfigGui;
-import com.micatechnologies.minecraft.csm.technology.FareVendingGui;
-import com.micatechnologies.minecraft.csm.technology.TileEntityComputer;
-import com.micatechnologies.minecraft.csm.technology.TileEntityFareGate;
-import com.micatechnologies.minecraft.csm.technology.TileEntityRedstoneTTS;
-import com.micatechnologies.minecraft.csm.trafficsignals.CrosswalkConfigGui;
-import com.micatechnologies.minecraft.csm.trafficsignals.SignalControllerConfigGui;
-import com.micatechnologies.minecraft.csm.trafficsignals.SignalControllerVisualGui;
-import com.micatechnologies.minecraft.csm.trafficsignals.SignalHeadConfigGui;
-import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityCrosswalkSignalNew;
-import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalController;
-import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalHead;
+import com.micatechnologies.minecraft.csm.codeutils.gui.CsmGuiRegistry;
+import com.micatechnologies.minecraft.csm.codeutils.gui.ICsmGuiProvider;
 import javax.annotation.Nullable;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.IGuiHandler;
 
 /**
  * The GUI handler for the City Super Mod.
+ * <p>
+ * This is the one handler Forge knows about, and every {@code openGui} call site keeps using it
+ * with the same GUI id it always has. The screens themselves come from the
+ * {@link ICsmGuiProvider}s registered with {@link CsmGuiRegistry} by the part of the mod that
+ * owns them, so this class names no subsystem.
  *
  * @version 1.0
  * @since 2023.2.1
@@ -53,7 +38,7 @@ public class CsmGuiHandler implements IGuiHandler {
   @Nullable
   @Override
   public Object getServerGuiElement(int id, EntityPlayer player, World world, int x, int y, int z) {
-    return null;
+    return CsmGuiRegistry.findServerGuiElement(id, player, world, new BlockPos(x, y, z));
   }
 
   /**
@@ -72,85 +57,6 @@ public class CsmGuiHandler implements IGuiHandler {
    */
   @Override
   public Object getClientGuiElement(int id, EntityPlayer player, World world, int x, int y, int z) {
-    BlockPos pos = new BlockPos(x, y, z);
-    TileEntity tileEntity = world.getTileEntity(pos);
-    Object returnValue = null;
-    if (id == 0 && tileEntity instanceof TileEntityRedstoneTTS) {
-      // Guarded like every other id below. Without the instanceof this branch would throw on a
-      // missing or mismatched tile entity instead of simply declining to open a screen.
-      returnValue = new BlockRedstoneTTSGui((TileEntityRedstoneTTS) tileEntity);
-    } else if (id == 1 && tileEntity instanceof TileEntityTrafficSignalHead) {
-      returnValue = new SignalHeadConfigGui((TileEntityTrafficSignalHead) tileEntity);
-    } else if (id == 2 && tileEntity instanceof TileEntityTrafficSignalController) {
-      returnValue = new SignalControllerConfigGui((TileEntityTrafficSignalController) tileEntity);
-    } else if (id == 5 && tileEntity instanceof TileEntityTrafficSignalController) {
-      returnValue = new SignalControllerVisualGui((TileEntityTrafficSignalController) tileEntity);
-    } else if (id == 3 && tileEntity instanceof TileEntityFireAlarmControlPanel) {
-      returnValue = new FireAlarmControlPanelGui((TileEntityFireAlarmControlPanel) tileEntity);
-    } else if (id == 4 && tileEntity instanceof TileEntityCrosswalkSignalNew) {
-      // The extra data bit (encoded in the GUI ID) tells us if it's the double signal
-      boolean isDouble = world.getBlockState(pos).getBlock()
-          instanceof com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkSignalDouble;
-      returnValue = new CrosswalkConfigGui((TileEntityCrosswalkSignalNew) tileEntity, isDouble);
-    } else if (id == 6 && tileEntity instanceof TileEntityHvacThermostat) {
-      returnValue = new HvacThermostatGui((TileEntityHvacThermostat) tileEntity);
-    } else if (id == 7 && tileEntity instanceof TileEntityHvacZoneThermostat) {
-      returnValue = new HvacZoneThermostatGui((TileEntityHvacZoneThermostat) tileEntity);
-    } else if (id == 8 && tileEntity instanceof com.micatechnologies.minecraft.csm.trafficsignals.TileEntityBlankoutBox) {
-      returnValue = new com.micatechnologies.minecraft.csm.trafficsignals.BlankoutBoxConfigGui(
-          (com.micatechnologies.minecraft.csm.trafficsignals.TileEntityBlankoutBox) tileEntity);
-    } else if (id == 9 && tileEntity instanceof com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityPortableMessageSign) {
-      returnValue = new com.micatechnologies.minecraft.csm.trafficaccessories.BlockPortableMessageSignGui(
-          (com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityPortableMessageSign) tileEntity);
-    } else if (id == 10 && tileEntity instanceof com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityOverheadMessageSign) {
-      returnValue = new com.micatechnologies.minecraft.csm.trafficaccessories.BlockOverheadMessageSignGui(
-          (com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityOverheadMessageSign) tileEntity);
-    } else if (id == 11 && tileEntity instanceof com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityVariableSpeedLimit) {
-      returnValue = new com.micatechnologies.minecraft.csm.trafficaccessories.BlockPortableSpeedLimitGui(
-          (com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityVariableSpeedLimit) tileEntity);
-    } else if (id == 12 && tileEntity instanceof com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityOverheadSpeedLimit) {
-      returnValue = new com.micatechnologies.minecraft.csm.trafficaccessories.BlockOverheadSpeedLimitGui(
-          (com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityOverheadSpeedLimit) tileEntity);
-    } else if (id == 13 && tileEntity instanceof com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityLaneControlSignal) {
-      returnValue = new com.micatechnologies.minecraft.csm.trafficaccessories.LaneControlSignalConfigGui(
-          (com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityLaneControlSignal) tileEntity);
-    } else if (id == 14 && tileEntity instanceof com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityDynamicGuideSign) {
-      returnValue = new com.micatechnologies.minecraft.csm.trafficaccessories.DynamicGuideSignGui(
-          (com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityDynamicGuideSign) tileEntity);
-    } else if (id == com.micatechnologies.minecraft.csm.trafficaccessories.BlockDynamicStreetSign.GUI_ID
-        && tileEntity instanceof com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityDynamicStreetSign) {
-      returnValue = new com.micatechnologies.minecraft.csm.trafficaccessories.DynamicStreetSignGui(
-          (com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityDynamicStreetSign) tileEntity);
-    } else if (id == com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.BlockSpanWireHangerMount.GUI_ID
-        && tileEntity instanceof com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.TileEntitySpanWireHanger) {
-      returnValue = new com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.SpanWireMountConfigGui(
-          (com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.TileEntitySpanWireHanger) tileEntity);
-    } else if (id == 15 && tileEntity instanceof TileEntityComputer) {
-      returnValue = new ComputerGui((TileEntityComputer) tileEntity);
-    } else if (id == 16
-        && world.getBlockState(pos).getBlock() instanceof BlockFareVendingMachine) {
-      returnValue = new FareVendingGui(pos);
-    } else if (id == 17 && tileEntity instanceof TileEntityFareGate) {
-      returnValue = new FareGateConfigGui((TileEntityFareGate) tileEntity);
-    } else if (id == 18 && tileEntity instanceof com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityPoleMountSpeedLimit) {
-      returnValue = new com.micatechnologies.minecraft.csm.trafficaccessories.BlockPoleMountSpeedLimitGui(
-          (com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityPoleMountSpeedLimit) tileEntity);
-    } else if (id == 19 && tileEntity instanceof com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalSensor) {
-      returnValue = new com.micatechnologies.minecraft.csm.trafficsignals.SensorConfigGui(
-          (com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalSensor) tileEntity);
-    } else if (id == com.micatechnologies.minecraft.csm.novelties.BlockArcadeMultiGame.GUI_ID
-        && tileEntity instanceof com.micatechnologies.minecraft.csm.novelties.TileEntityArcadeCabinet) {
-      // The GUI opens on its own game-select screen and instantiates a game only once the player
-      // picks one, so nothing outside this client-side branch ever names a game class.
-      returnValue = new com.micatechnologies.minecraft.csm.novelties.ArcadeGui(
-          (com.micatechnologies.minecraft.csm.novelties.TileEntityArcadeCabinet) tileEntity);
-    } else if (id == com.micatechnologies.minecraft.csm.materials.BlockCsmFabricator.GUI_ID
-        && world.getBlockState(pos).getBlock()
-        instanceof com.micatechnologies.minecraft.csm.materials.BlockCsmFabricator) {
-      // The Fabricator has no tile entity; the picker only needs the block position so the
-      // server can verify proximity when a selection is confirmed.
-      returnValue = new com.micatechnologies.minecraft.csm.materials.CsmFabricatorGui(pos);
-    }
-    return returnValue;
+    return CsmGuiRegistry.findClientGuiElement(id, player, world, new BlockPos(x, y, z));
   }
 }

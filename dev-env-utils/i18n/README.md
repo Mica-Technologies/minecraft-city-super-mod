@@ -1,9 +1,17 @@
 # CSM i18n tooling
 
-`translate-lang.js` reads `src/main/resources/assets/csm/lang/en_us.lang` (the English source of
-truth) and refreshes `es_es.lang`, `de_de.lang` and `sv_se.lang` beside it, using
+CSM is built from several source trees: Core at `src/main` plus one per optional module under
+`modules/<name>/src/main` (see `modules.gradle`, and `dev-env-utils/scripts/csm_layout.py` for the
+Python side of this same layout). Every tree ships its own `assets/csm/lang/en_us.lang` and its own
+`es_es.lang` / `de_de.lang` / `sv_se.lang`, because each module carries its lang files in its own
+jar and Forge merges the `csm` lang domain across whichever jars are installed.
+
+`translate-lang.js` walks every tree in turn (`src/main/resources/assets/csm/lang` plus one entry
+per directory under `modules/`), reads that tree's own `en_us.lang` as the English source of truth,
+and refreshes that SAME tree's own `es_es.lang`, `de_de.lang` and `sv_se.lang` beside it, using
 [`google-translate-api-x`](https://www.npmjs.com/package/google-translate-api-x) against the free
-public Google Translate endpoint.
+public Google Translate endpoint. A key in the roads module's `en_us.lang` is only ever compared
+against the roads module's own target files, never Core's.
 
 This mirrors the launcher's `tools/i18n/translate-locales.js`. See **Differences from the
 launcher** below for what had to change for Minecraft.
@@ -18,22 +26,23 @@ npm install
 ## Usage
 
 ```bash
-npm run translate          # incremental: only keys missing from each target file
+npm run translate          # incremental: every tree, only keys missing from each target file
 npm run translate:dry      # print what would change, write nothing
 npm run translate:force    # re-translate every key, overwriting existing values
 
-node translate-lang.js --only=sv_se     # restrict to one locale
+node translate-lang.js --only=sv_se     # restrict to one locale, still every tree
 ```
 
 Incremental is the normal mode and the reason this exists: adding one block costs one API call
-per language, which is well within what the free endpoint tolerates.
+per language, which is well within what the free endpoint tolerates. Every run processes every
+tree that has an `en_us.lang` (there is currently no per-tree filter — the run is cheap because
+only missing keys cost an API call).
 
-**Always run the validator afterwards:**
+**Always run the validator afterwards** — it now checks every tree, each against its own
+`en_us.lang`, in one pass:
 
 ```bash
-python ../scripts/validate_lang_translations.py \
-    ../../src/main/resources/assets/csm/lang/en_us.lang \
-    ../../src/main/resources/assets/csm/lang/sv_se.lang
+python ../scripts/validate_lang_translations.py
 ```
 
 It checks key parity and order, duplicate keys, `%s` specifiers, protected terms surviving
@@ -88,8 +97,8 @@ Two rules, decided by what the player is looking at:
 - Minecraft `.lang` files are read as **raw UTF-8**. The launcher escapes non-ASCII as `\uXXXX`
   because `java.util.Properties` needs it; doing that here would put a literal backslash-u in the
   player's inventory.
-- **Line endings follow `en_us.lang`** (CRLF in this repo), so a refresh doesn't rewrite the whole
-  file and wreck `git blame`.
+- **Line endings follow each tree's own `en_us.lang`** (CRLF in this repo), so a refresh doesn't
+  rewrite the whole file and wreck `git blame`.
 - The sentinel mechanism protects **proper nouns and acronyms**, not just format placeholders.
 - **Glossary terms** keep incremental additions consistent with the bulk pass.
 - Keys present in a target but no longer in English are **dropped**, so the files cannot

@@ -4,6 +4,8 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.micatechnologies.minecraft.csm.tools.tool_framework.AssetFolder;
+import com.micatechnologies.minecraft.csm.tools.tool_framework.CsmLayout;
 import com.micatechnologies.minecraft.csm.tools.tool_framework.CsmToolUtility;
 import java.io.BufferedReader;
 import java.io.File;
@@ -17,8 +19,9 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
+import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
@@ -28,8 +31,28 @@ import java.util.stream.Stream;
 
 public class BlockItemIntegrityTool {
 
-  private static final String SOURCE_FILE_FOLDER_PATH_RELATIVE =
-      "src/main/java/com/micatechnologies/minecraft/csm";
+  /**
+   * The multi-tree layout of the mod. Core and every module write into the same
+   * {@code assets/csm} domain, so every folder below is really up to ten folders and every path
+   * constant is relative to a tree rather than to the repository.
+   */
+  private static CsmLayout layout;
+
+  /**
+   * Returns the layout for the specified development environment, building it once. The source
+   * scan behind it is not free, and every check below asks for it.
+   *
+   * @param devEnvironmentPath the development environment root
+   *
+   * @return the layout
+   */
+  private static synchronized CsmLayout layout(File devEnvironmentPath) {
+    if (layout == null || !layout.repoRoot().equals(devEnvironmentPath)) {
+      layout = new CsmLayout(devEnvironmentPath);
+    }
+    return layout;
+  }
+
   private static final String SOURCE_FILE_EXTENSION = ".java";
 
   /**
@@ -40,50 +63,40 @@ public class BlockItemIntegrityTool {
    */
   private static final String CONFIG_RESOURCE_NAME = "block-item-integrity-config.json";
 
-  // Hardcoded defaults (used as fallback when config file is not on classpath)
-  private static final String[] DEFAULT_SOURCE_FILE_EXCLUDES =
-      {"src/main/java/com/micatechnologies/minecraft/csm/codeutils/AbstractBlockRotatableHZEight"
-          + ".java",
-          "src/main/java/com/micatechnologies/minecraft/csm/codeutils/AbstractBlockRotatableNSEWUD"
-              + ".java", "src/main/java/com/micatechnologies/minecraft/csm/codeutils"
-          + "/AbstractBlockRotatableNSEW.java",
-          "src/main/java/com/micatechnologies/minecraft/csm/codeutils/AbstractBlockSetBasic.java",
-          "src/main/java/com/micatechnologies/minecraft/csm/codeutils/AbstractBlockSlab.java",
-          "src/main/java/com/micatechnologies/minecraft/csm/lifesafety"
-              + "/AbstractBlockFireAlarmActivator.java",
-          "src/main/java/com/micatechnologies/minecraft/csm/lifesafety"
-              + "/AbstractBlockFireAlarmDetector.java",
-          "src/main/java/com/micatechnologies/minecraft/csm/lifesafety"
-              + "/AbstractBlockFireAlarmSounder.java",
-          "src/main/java/com/micatechnologies/minecraft/csm/lifesafety"
-              + "/AbstractBlockFireAlarmSounderVoiceEvac.java",
-          "src/main/java/com/micatechnologies/minecraft/csm/lighting/AbstractBrightLight.java",
-          "src/main/java/com/micatechnologies/minecraft/csm/codeutils"
-              + "/AbstractPoweredBlockRotatableNSEWUD.java",
-          "src/main/java/com/micatechnologies/minecraft/csm/trafficsignals/logic"
-              + "/AbstractBlockControllableCrosswalkAccessory.java",
-          "src/main/java/com/micatechnologies/minecraft/csm/trafficsignals/logic"
-              + "/AbstractBlockControllableSignal.java",
-          "src/main/java/com/micatechnologies/minecraft/csm/trafficsignals/logic"
-              + "/AbstractBlockTrafficSignalRequester.java",
-          "src/main/java/com/micatechnologies/minecraft/csm/trafficsignals/logic"
-              + "/AbstractBlockTrafficSignalSensor.java",
-          "src/main/java/com/micatechnologies/minecraft/csm/trafficsignals/logic"
-              + "/AbstractBlockTrafficSignalTickableRequester.java",
-          "src/main/java/com/micatechnologies/minecraft/csm/trafficsignals/logic"
-              + "/AbstractBlockTrafficSignalAPS.java",
-          "src/main/java/com/micatechnologies/minecraft/csm/trafficsigns/AbstractBlockSign.java",
-          "src/main/java/com/micatechnologies/minecraft/csm/codeutils/AbstractBlockTrafficPole.java",
-          "src/main/java/com/micatechnologies/minecraft/csm/codeutils/AbstractBlockTrafficPoleDiagonal.java",
-          "src/main/java/com/micatechnologies/minecraft/csm/lighting/AbstractBrightLightPoleColored.java",
-          "src/main/java/com/micatechnologies/minecraft/csm/trafficsignals/AbstractBlockControllableCrosswalkSignal.java",
-          "src/main/java/com/micatechnologies/minecraft/csm/trafficsignals/logic/AbstractBlockTrafficSignalAPSCampbell.java",
-          "src/main/java/com/micatechnologies/minecraft/csm/trafficsignals/logic/AbstractBlockTrafficSignalAPSPolara.java",
-          "src/main/java/com/micatechnologies/minecraft/csm/codeutils/AbstractBlockRotatableHZSixteen.java",
-          "src/main/java/com/micatechnologies/minecraft/csm/trafficsignals/logic/AbstractBlockControllableSignalHead.java",
-          "src/main/java/com/micatechnologies/minecraft/csm/trafficaccessories/AbstractBlockSignalBackplate.java",
-          "src/main/java/com/micatechnologies/minecraft/csm/trafficaccessories/AbstractBlockSignalBackplateFitted.java",
-          "src/main/java/com/micatechnologies/minecraft/csm/tabs/CsmTabNone.java"};
+  // Hardcoded defaults (used as fallback when config file is not on classpath). Paths are
+  // relative to a tree's src/main/java/com/micatechnologies/minecraft/csm, because a class
+  // now lives in Core or in one of the module trees and the tool must not care which.
+  private static final String[] DEFAULT_SOURCE_FILE_EXCLUDES = {
+          "codeutils/AbstractBlockRotatableHZEight.java",
+          "codeutils/AbstractBlockRotatableNSEWUD.java",
+          "codeutils/AbstractBlockRotatableNSEW.java",
+          "codeutils/AbstractBlockSetBasic.java",
+          "codeutils/AbstractBlockSlab.java",
+          "lifesafety/AbstractBlockFireAlarmActivator.java",
+          "lifesafety/AbstractBlockFireAlarmDetector.java",
+          "lifesafety/AbstractBlockFireAlarmSounder.java",
+          "lifesafety/AbstractBlockFireAlarmSounderVoiceEvac.java",
+          "lighting/AbstractBrightLight.java",
+          "codeutils/AbstractPoweredBlockRotatableNSEWUD.java",
+          "trafficsignals/logic/AbstractBlockControllableCrosswalkAccessory.java",
+          "trafficsignals/logic/AbstractBlockControllableSignal.java",
+          "trafficsignals/logic/AbstractBlockTrafficSignalRequester.java",
+          "trafficsignals/logic/AbstractBlockTrafficSignalSensor.java",
+          "trafficsignals/logic/AbstractBlockTrafficSignalTickableRequester.java",
+          "trafficsignals/logic/AbstractBlockTrafficSignalAPS.java",
+          "trafficsigns/AbstractBlockSign.java",
+          "codeutils/AbstractBlockTrafficPole.java",
+          "codeutils/AbstractBlockTrafficPoleDiagonal.java",
+          "lighting/AbstractBrightLightPoleColored.java",
+          "trafficsignals/AbstractBlockControllableCrosswalkSignal.java",
+          "trafficsignals/logic/AbstractBlockTrafficSignalAPSCampbell.java",
+          "trafficsignals/logic/AbstractBlockTrafficSignalAPSPolara.java",
+          "codeutils/AbstractBlockRotatableHZSixteen.java",
+          "trafficsignals/logic/AbstractBlockControllableSignalHead.java",
+          "trafficaccessories/AbstractBlockSignalBackplate.java",
+          "trafficaccessories/AbstractBlockSignalBackplateFitted.java",
+          "tabs/CsmTabRoadsHidden.java",
+          "tabs/CsmTabLightingHidden.java"};
   private static final String[] DEFAULT_SOURCE_FILE_ELIGIBLE_EXTENDS_BLOCKS =
       {"AbstractBlock", "AbstractBlockRotatableNSEW", "AbstractBlockRotatableNSEWUD",
           "AbstractPoweredBlockRotatableNSEWUD", "AbstractBrightLight", "AbstractBlockSetBasic",
@@ -104,37 +117,37 @@ public class BlockItemIntegrityTool {
   private static String[] SOURCE_FILE_ELIGIBLE_EXTENDS_ITEMS = DEFAULT_SOURCE_FILE_ELIGIBLE_EXTENDS_ITEMS;
   private static String[] SOURCE_FILE_ELIGIBLE_EXTENDS_TAB = DEFAULT_SOURCE_FILE_ELIGIBLE_EXTENDS_TAB;
 
-  private static final String BLOCKSTATE_FILE_FOLDER_PATH_RELATIVE =
-      "src/main/resources/assets/csm/blockstates";
+  // Every path below is relative to a tree's assets/csm (or, for sources, to a tree's
+  // com/micatechnologies/minecraft/csm), and resolves across Core and every module.
+  private static final String BLOCKSTATE_FOLDER = "blockstates";
   private static final String BLOCKSTATE_FILE_EXTENSION = ".json";
 
-  private static final String BLOCK_MODELS_FILE_FOLDER_PATH_RELATIVE =
-      "src/main/resources/assets/csm/models/block";
+  private static final String BLOCK_MODELS_FOLDER = "models/block";
 
-  private static final String ITEM_MODELS_FILE_FOLDER_PATH_RELATIVE =
-      "src/main/resources/assets/csm/models/item";
+  private static final String ITEM_MODELS_FOLDER = "models/item";
   // Note: shared_models are now inside subsystem subdirs (e.g., models/block/lifesafety/shared_models/)
   // This constant is kept for checkJsonModelIntegrity compatibility but the centralized dir no longer exists
-  private static final String CUSTOM_MODELS_FILE_FOLDER_PATH_RELATIVE =
-      "src/main/resources/assets/csm/models/block";
+  private static final String CUSTOM_MODELS_FOLDER = "models/block";
 
-  private static final String BLOCK_TEXTURES_FILE_FOLDER_PATH_RELATIVE =
-      "src/main/resources/assets/csm/textures/blocks";
-  private static final String ITEM_TEXTURES_FILE_FOLDER_PATH_RELATIVE =
-      "src/main/resources/assets/csm/textures/items";
-  private static final String SOUNDS_FILE_FOLDER_PATH_RELATIVE =
-      "src/main/resources/assets/csm/sounds";
+  private static final String BLOCK_TEXTURES_FOLDER = "textures/blocks";
+  private static final String ITEM_TEXTURES_FOLDER = "textures/items";
+  private static final String SOUNDS_FOLDER = "sounds";
 
-  private static final String SOUNDS_CLASS_FILE_PATH_RELATIVE =
-      "src/main/java/com/micatechnologies/minecraft/csm/CsmSounds.java";
+  /**
+   * The per-module sound enums, by their path inside whichever tree ships them. Each module owns
+   * the sounds it ships and hands their names to Core's registrar, so there is no longer a single
+   * mod-wide sound class to parse.
+   */
+  private static final String[] SOUNDS_CLASS_FILE_PATHS_RELATIVE = {
+      "trafficsignals/RoadsSounds.java", "lifesafety/LifeSafetySounds.java",
+      "novelties/FurnishingsSounds.java", "technology/TechnologySounds.java",
+      "hvac/HvacSounds.java"};
 
-  private static final String SOUNDS_JSON_FILE_PATH_RELATIVE =
-      "src/main/resources/assets/csm/sounds.json";
+  private static final String SOUNDS_JSON_FILE = "sounds.json";
 
-  private static final String TABS_FILE_FOLDER_PATH_RELATIVE =
-      "src/main/java/com/micatechnologies/minecraft/csm/tabs";
+  private static final String TABS_FOLDER = "tabs";
 
-  private static final String LANG_FILE_FOLDER_PATH_RELATIVE = "src/main/resources/assets/csm/lang";
+  private static final String LANG_FOLDER = "lang";
   private static final String LANG_FILE_EXTENSION = ".lang";
   private static final String SOUND_FILE_EXTENSION = ".ogg";
   private static final String MOD_PREFIX = "csm";
@@ -283,17 +296,8 @@ public class BlockItemIntegrityTool {
       String tabId = getTabIdFromSourceFileContents(tabSourceFile, fileContents);
 
       // Check for lang file entries
-      File langFolder = new File(devEnvironmentPath, LANG_FILE_FOLDER_PATH_RELATIVE);
-      for (File langFile : Objects.requireNonNull(langFolder.listFiles())) {
-        if (langFile.getName().endsWith(LANG_FILE_EXTENSION)) {
-          validationsCount.incrementAndGet(); // Increment validation count
-          String fullyQualifiedNameTab = "itemGroup." + tabId;
-          if (!Files.readString(langFile.toPath()).contains(fullyQualifiedNameTab)) {
-            logError(
-                "Lang file entry does not exist for tab: " + tabId + " in " + langFile.getPath());
-          }
-        }
-      }
+      AssetFolder langFolder = AssetFolder.ofAsset(layout(devEnvironmentPath), LANG_FOLDER);
+      checkLangEntry(langFolder, "itemGroup." + tabId, "tab", tabId);
 
     } catch (Exception e) {
       logError("Failed to verify tab file integrity: " + tabSourceFile.getPath());
@@ -314,10 +318,10 @@ public class BlockItemIntegrityTool {
   }
 
   private static List<File> listEligibleTabSourceFiles(File devEnvironmentPath) throws Exception {
-    File tabSourceFolder = new File(devEnvironmentPath, TABS_FILE_FOLDER_PATH_RELATIVE);
+    AssetFolder tabSourceFolder = AssetFolder.ofSource(layout(devEnvironmentPath), TABS_FOLDER);
     List<File> tabSourceFiles = new ArrayList<>();
-    if (tabSourceFolder.exists()) {
-      for (File tabSourceFile : Objects.requireNonNull(tabSourceFolder.listFiles())) {
+    if (!tabSourceFolder.isEmpty()) {
+      for (File tabSourceFile : tabSourceFolder.list()) {
         if (tabSourceFile.getName().endsWith(SOURCE_FILE_EXTENSION)) {
           String tabSourceFileContents = Files.readString(tabSourceFile.toPath());
           for (String eligibleExtends : SOURCE_FILE_ELIGIBLE_EXTENDS_TAB) {
@@ -335,16 +339,16 @@ public class BlockItemIntegrityTool {
   public static void checkForUnusedFiles(File devEnvironmentPath) {
     try {
       // Create common File objects
-      File blockstateFolder = new File(devEnvironmentPath, BLOCKSTATE_FILE_FOLDER_PATH_RELATIVE);
-      File blockModelsFolder = new File(devEnvironmentPath, BLOCK_MODELS_FILE_FOLDER_PATH_RELATIVE);
-      File itemModelsFolder = new File(devEnvironmentPath, ITEM_MODELS_FILE_FOLDER_PATH_RELATIVE);
-      File customModelsFolder =
-          new File(devEnvironmentPath, CUSTOM_MODELS_FILE_FOLDER_PATH_RELATIVE);
-      File blockTexturesFolder =
-          new File(devEnvironmentPath, BLOCK_TEXTURES_FILE_FOLDER_PATH_RELATIVE);
-      File itemTexturesFolder =
-          new File(devEnvironmentPath, ITEM_TEXTURES_FILE_FOLDER_PATH_RELATIVE);
-      File soundsResourceFolder = new File(devEnvironmentPath, SOUNDS_FILE_FOLDER_PATH_RELATIVE);
+      AssetFolder blockstateFolder = AssetFolder.ofAsset(layout(devEnvironmentPath), BLOCKSTATE_FOLDER);
+      AssetFolder blockModelsFolder = AssetFolder.ofAsset(layout(devEnvironmentPath), BLOCK_MODELS_FOLDER);
+      AssetFolder itemModelsFolder = AssetFolder.ofAsset(layout(devEnvironmentPath), ITEM_MODELS_FOLDER);
+      AssetFolder customModelsFolder =
+          AssetFolder.ofAsset(layout(devEnvironmentPath), CUSTOM_MODELS_FOLDER);
+      AssetFolder blockTexturesFolder =
+          AssetFolder.ofAsset(layout(devEnvironmentPath), BLOCK_TEXTURES_FOLDER);
+      AssetFolder itemTexturesFolder =
+          AssetFolder.ofAsset(layout(devEnvironmentPath), ITEM_TEXTURES_FOLDER);
+      AssetFolder soundsResourceFolder = AssetFolder.ofAsset(layout(devEnvironmentPath), SOUNDS_FOLDER);
 
       // Check for unused files
       checkUnusedFiles(blockstateFolder, usedBlockstateFiles);
@@ -367,10 +371,10 @@ public class BlockItemIntegrityTool {
   public static void checkForUnusedLang(File devEnvironmentPath) {
     try {
       // Create common File objects
-      File langFolder = new File(devEnvironmentPath, LANG_FILE_FOLDER_PATH_RELATIVE);
+      AssetFolder langFolder = AssetFolder.ofAsset(layout(devEnvironmentPath), LANG_FOLDER);
 
       // Go line by line in each lang file and check for unused entries
-      for (File langFile : Objects.requireNonNull(langFolder.listFiles())) {
+      for (File langFile : langFolder.list()) {
         if (langFile.getName().endsWith(LANG_FILE_EXTENSION)) {
           List<String> langFileContents = Files.readAllLines(langFile.toPath());
 
@@ -430,8 +434,52 @@ public class BlockItemIntegrityTool {
     }
   }
 
-  public static void checkUnusedFiles(File folder, List<File> usedFiles) throws Exception {
+  /**
+   * Reports every locale whose lang files, taken together, are missing the given key.
+   *
+   * <p>A locale's translations are spread over one lang file per module and merged by the game,
+   * so a key only has to appear in the file of the tree that owns the block. Asking every file
+   * for every key would fail nine times out of ten by construction.
+   *
+   * @param langFolder the lang folder across every tree
+   * @param key        the fully qualified lang key to look for
+   * @param what       what the key names, for the error message
+   * @param id         the block, item or tab id, for the error message
+   */
+  private static void checkLangEntry(AssetFolder langFolder, String key, String what, String id) {
+    Map<String, Boolean> foundByLocale = new TreeMap<>();
+    for (File langFile : langFolder.list()) {
+      if (!langFile.getName().endsWith(LANG_FILE_EXTENSION)) {
+        continue;
+      }
+      String locale = langFile.getName();
+      validationsCount.incrementAndGet(); // Increment validation count
+      boolean found;
+      try {
+        found = Files.readString(langFile.toPath()).contains(key);
+      } catch (IOException e) {
+        found = false;
+      }
+      foundByLocale.merge(locale, found, (a, b) -> a || b);
+    }
+    for (Map.Entry<String, Boolean> entry : foundByLocale.entrySet()) {
+      if (!entry.getValue()) {
+        logError("Lang file entry does not exist for " + what + ": " + id + " in any "
+            + entry.getKey() + " across the source trees");
+      }
+    }
+  }
+
+  public static void checkUnusedFiles(AssetFolder folder, List<File> usedFiles) throws Exception {
     checkUnusedFiles(folder, usedFiles, null);
+  }
+
+  public static void checkUnusedFiles(AssetFolder folder, List<File> usedFiles,
+      Predicate<Path> excludeFilter) throws Exception {
+    // Every tree's copy of the folder, because an unused file in a module jar is just as unused.
+    for (File dir : folder.dirs()) {
+      checkUnusedFiles(dir, usedFiles, excludeFilter);
+    }
   }
 
   public static void checkUnusedFiles(File folder, List<File> usedFiles,
@@ -461,43 +509,80 @@ public class BlockItemIntegrityTool {
   }
 
   public static List<String> listEligibleSoundFiles(File devEnvironmentPath) {
-    File soundsClassFile = new File(devEnvironmentPath, SOUNDS_CLASS_FILE_PATH_RELATIVE);
-    return parseSoundNames(soundsClassFile);
+    List<String> soundNames = new ArrayList<>();
+    for (File soundsClassFile : listSoundsClassFiles(devEnvironmentPath)) {
+      soundNames.addAll(parseSoundNames(soundsClassFile));
+    }
+    return soundNames;
+  }
+
+  /**
+   * Lists the per-module sound enum source files.
+   *
+   * @param devEnvironmentPath the development environment root
+   *
+   * @return the sound enum source files
+   */
+  public static List<File> listSoundsClassFiles(File devEnvironmentPath) {
+    List<File> soundsClassFiles = new ArrayList<>();
+    for (String relativePath : SOUNDS_CLASS_FILE_PATHS_RELATIVE) {
+      File found = layout(devEnvironmentPath).resolveSourceForRead(relativePath);
+      soundsClassFiles.add(found != null ? found : new File(devEnvironmentPath, relativePath));
+    }
+    return soundsClassFiles;
   }
 
   public static void checkSoundFilesIntegrity(File devEnvironmentPath, List<String> soundFiles) {
     // Create common File objects
-    File soundsResourceFolder = new File(devEnvironmentPath, SOUNDS_FILE_FOLDER_PATH_RELATIVE);
-    File soundsClassFile = new File(devEnvironmentPath, SOUNDS_CLASS_FILE_PATH_RELATIVE);
-    File soundsJsonFile = new File(devEnvironmentPath, SOUNDS_JSON_FILE_PATH_RELATIVE);
+    AssetFolder soundsResourceFolder = AssetFolder.ofAsset(layout(devEnvironmentPath), SOUNDS_FOLDER);
+    List<File> soundsClassFiles = listSoundsClassFiles(devEnvironmentPath);
+    // One sounds.json per module that registers a sound; the game merges them, so the tool has
+    // to as well or every event but Core's reads as missing.
+    List<File> soundsJsonFiles = layout(devEnvironmentPath).soundsJsonFiles();
 
-    if (!soundsClassFile.exists()) {
-      logError("Sounds class file does not exist: " + soundsClassFile.getPath());
+    for (File soundsClassFile : soundsClassFiles) {
+      if (!soundsClassFile.exists()) {
+        logError("Sounds class file does not exist: " + soundsClassFile.getPath());
+      }
     }
 
-    if (!soundsJsonFile.exists()) {
-      logError("Sounds json file does not exist: " + soundsJsonFile.getPath());
+    if (soundsJsonFiles.isEmpty()) {
+      logError("No " + SOUNDS_JSON_FILE + " exists in any source tree.");
     }
 
     for (String soundFile : soundFiles) {
-      checkSoundFileIntegrity(soundsResourceFolder, soundsClassFile, soundsJsonFile, soundFile);
+      checkSoundFileIntegrity(soundsResourceFolder, soundsClassFiles, soundsJsonFiles, soundFile);
     }
   }
 
-  public static void checkSoundFileIntegrity(File soundsResourceFolder, File soundsClassFile,
-      File soundsJsonFile, String soundFile) {
+  public static void checkSoundFileIntegrity(AssetFolder soundsResourceFolder,
+      List<File> soundsClassFiles, List<File> soundsJsonFiles, String soundFile) {
     try {
       validationsCount.incrementAndGet(); // Increment validation count
 
-      // Check for sound file in sounds class file
-      if (!Files.readString(soundsClassFile.toPath()).contains("\"" + soundFile + "\"")) {
+      // Check for sound file in one of the per-module sound enums
+      boolean foundInSoundsClass = false;
+      for (File soundsClassFile : soundsClassFiles) {
+        if (soundsClassFile.exists()
+            && Files.readString(soundsClassFile.toPath()).contains("\"" + soundFile + "\"")) {
+          foundInSoundsClass = true;
+          break;
+        }
+      }
+      if (!foundInSoundsClass) {
         logError("Sound file entry does not exist in sounds class file: " + soundFile);
       }
 
       // Check for sound file in sounds json file
       validationsCount.incrementAndGet(); // Increment validation count
-      String soundsJsonContents = Files.readString(soundsJsonFile.toPath());
-      JsonObject soundsJson = JsonParser.parseString(soundsJsonContents).getAsJsonObject();
+      JsonObject soundsJson = new JsonObject();
+      for (File soundsJsonFile : soundsJsonFiles) {
+        JsonObject moduleSounds =
+            JsonParser.parseString(Files.readString(soundsJsonFile.toPath())).getAsJsonObject();
+        for (String event : moduleSounds.keySet()) {
+          soundsJson.add(event, moduleSounds.get(event));
+        }
+      }
       if (!soundsJson.has(soundFile)) {
         logError("Sound file entry does not exist in sounds json file: " + soundFile);
       } else {
@@ -535,7 +620,7 @@ public class BlockItemIntegrityTool {
               }
 
               // Check for sound file in sounds resource folder
-              File soundFileOgg = new File(soundsResourceFolder, soundName + SOUND_FILE_EXTENSION);
+              File soundFileOgg = soundsResourceFolder.file(soundName + SOUND_FILE_EXTENSION);
               if (!soundFileOgg.exists()) {
                 logError(
                     "Sound file (ID: " + soundFile + ") does not exist: " + soundFileOgg.getPath());
@@ -581,8 +666,8 @@ public class BlockItemIntegrityTool {
     System.err.println("E" + errorCountString + ": " + error);
   }
 
-  public static void checkObjModelIntegrity(File blockModelsFolder, File itemModelsFolder,
-      File customModelsFolder, File blockTexturesFolder, File itemTexturesFolder, File modelFileObj)
+  public static void checkObjModelIntegrity(AssetFolder blockModelsFolder, AssetFolder itemModelsFolder,
+      AssetFolder customModelsFolder, AssetFolder blockTexturesFolder, AssetFolder itemTexturesFolder, File modelFileObj)
       throws Exception {
     File modelFileMtl = new File(modelFileObj.getPath().replaceAll(".obj", ".mtl"));
     usedBlockModelFiles.add(modelFileObj);
@@ -616,10 +701,9 @@ public class BlockItemIntegrityTool {
         boolean isItemTexture = textureFileName.startsWith("items/");
         textureFileName =
             textureFileName.substring(isItemTexture ? "items/".length() : "blocks/".length());
-        File textureFile =
-            new File(isItemTexture ? itemTexturesFolder : blockTexturesFolder, textureFileName);
-        File textureFileMcMeta = new File(isItemTexture ? itemTexturesFolder : blockTexturesFolder,
-            textureFileName + ".mcmeta");
+        AssetFolder texturesFolder = isItemTexture ? itemTexturesFolder : blockTexturesFolder;
+        File textureFile = texturesFolder.file(textureFileName);
+        File textureFileMcMeta = texturesFolder.file(textureFileName + ".mcmeta");
         if (!textureFile.exists()) {
           logError("Texture file does not exist: " + textureFile.getPath());
         }
@@ -638,8 +722,8 @@ public class BlockItemIntegrityTool {
    * Wrapper method with the original signature for backward compatibility.
    * Creates an empty visited set and passes depth=0.
    */
-  public static void checkJsonModelIntegrity(File blockModelsFolder, File itemModelsFolder,
-      File customModelsFolder, File blockTexturesFolder, File itemTexturesFolder,
+  public static void checkJsonModelIntegrity(AssetFolder blockModelsFolder, AssetFolder itemModelsFolder,
+      AssetFolder customModelsFolder, AssetFolder blockTexturesFolder, AssetFolder itemTexturesFolder,
       File modelFileJson) throws Exception {
     checkJsonModelIntegrity(blockModelsFolder, itemModelsFolder, customModelsFolder,
         blockTexturesFolder, itemTexturesFolder, modelFileJson, new HashSet<>(), 0);
@@ -658,8 +742,8 @@ public class BlockItemIntegrityTool {
    * @param visitedModels      Set of canonical paths already visited (for circular reference detection).
    * @param depth              Current recursion depth.
    */
-  public static void checkJsonModelIntegrity(File blockModelsFolder, File itemModelsFolder,
-      File customModelsFolder, File blockTexturesFolder, File itemTexturesFolder,
+  public static void checkJsonModelIntegrity(AssetFolder blockModelsFolder, AssetFolder itemModelsFolder,
+      AssetFolder customModelsFolder, AssetFolder blockTexturesFolder, AssetFolder itemTexturesFolder,
       File modelFileJson, Set<String> visitedModels, int depth) throws Exception {
 
     validationsCount.incrementAndGet(); // Increment validation count
@@ -696,7 +780,7 @@ public class BlockItemIntegrityTool {
         // Check parent model file (recursively)
         String strippedParentValue = parentValue.substring(prefixCheck.length());
 
-        File parentModelFolder = null;
+        AssetFolder parentModelFolder = null;
         String modelFileName = null;
         List<File> usedModelFiles = null;
         if (strippedParentValue.startsWith("block/shared_models/")) {
@@ -730,7 +814,7 @@ public class BlockItemIntegrityTool {
         }
 
         if (parentModelFolder != null && modelFileName != null && usedModelFiles != null) {
-          File parentModelFile = new File(parentModelFolder, modelFileName + ".json");
+          File parentModelFile = parentModelFolder.file(modelFileName + ".json");
           checkJsonModelIntegrity(blockModelsFolder, itemModelsFolder, customModelsFolder,
               blockTexturesFolder, itemTexturesFolder, parentModelFile, visitedModels, depth + 1);
           usedModelFiles.add(parentModelFile);
@@ -747,7 +831,7 @@ public class BlockItemIntegrityTool {
     }
   }
 
-  public static void validateTexturesBlockJson(File blockTexturesFolder, File itemTexturesFolder,
+  public static void validateTexturesBlockJson(AssetFolder blockTexturesFolder, AssetFolder itemTexturesFolder,
       File validateFile, JsonObject texturesBlockToCheck) throws Exception {
     String prefixCheck = MOD_PREFIX + ":";
     for (String textureKey : texturesBlockToCheck.keySet()) {
@@ -759,14 +843,14 @@ public class BlockItemIntegrityTool {
         File textureFile = null;
         if (strippedTextureValue.startsWith("blocks/")) {
           textureFileName = strippedTextureValue.substring("blocks/".length()) + ".png";
-          textureFile = new File(blockTexturesFolder, textureFileName);
+          textureFile = blockTexturesFolder.file(textureFileName);
           usedBlockTexturesFiles.add(textureFile);
-          usedBlockTexturesFiles.add(new File(blockTexturesFolder, textureFileName + ".mcmeta"));
+          usedBlockTexturesFiles.add(blockTexturesFolder.file(textureFileName + ".mcmeta"));
         } else if (strippedTextureValue.startsWith("items/")) {
           textureFileName = strippedTextureValue.substring("items/".length()) + ".png";
-          textureFile = new File(itemTexturesFolder, textureFileName);
+          textureFile = itemTexturesFolder.file(textureFileName);
           usedItemTexturesFiles.add(textureFile);
-          usedItemTexturesFiles.add(new File(itemTexturesFolder, textureFileName + ".mcmeta"));
+          usedItemTexturesFiles.add(itemTexturesFolder.file(textureFileName + ".mcmeta"));
         }
         if (textureFile == null) {
           logError(
@@ -784,7 +868,7 @@ public class BlockItemIntegrityTool {
 
   }
 
-  public static void validateTexturesBlocksJson(File blockTexturesFolder, File itemTexturesFolder,
+  public static void validateTexturesBlocksJson(AssetFolder blockTexturesFolder, AssetFolder itemTexturesFolder,
       File validateFile, List<JsonObject> texturesBlocksToCheck) throws Exception {
     for (JsonObject texturesBlockToCheck : texturesBlocksToCheck) {
       validateTexturesBlockJson(blockTexturesFolder, itemTexturesFolder, validateFile,
@@ -808,9 +892,9 @@ public class BlockItemIntegrityTool {
     }
   }
 
-  public static void verifyItemIntegrity(File blockModelsFolder, File itemModelsFolder,
-      File customModelsFolder, File blockstateFolder, File langFolder, File blockTexturesFolder,
-      File itemTexturesFolder, File sourceFile) {
+  public static void verifyItemIntegrity(AssetFolder blockModelsFolder, AssetFolder itemModelsFolder,
+      AssetFolder customModelsFolder, AssetFolder blockstateFolder, AssetFolder langFolder, AssetFolder blockTexturesFolder,
+      AssetFolder itemTexturesFolder, File sourceFile) {
     try {
       // Read file contents
       String fileContents = Files.readString(sourceFile.toPath());
@@ -822,21 +906,12 @@ public class BlockItemIntegrityTool {
       checkAndLogMetaText(fileContents);
 
       // Check for lang file entries
-      for (File langFile : Objects.requireNonNull(langFolder.listFiles())) {
-        if (langFile.getName().endsWith(LANG_FILE_EXTENSION)) {
-          validationsCount.incrementAndGet(); // Increment validation count
-          String fullyQualifiedNameItem = "item." + itemId + ".name";
-          if (!Files.readString(langFile.toPath()).contains(fullyQualifiedNameItem)) {
-            logError(
-                "Lang file entry does not exist for item: " + itemId + " in " + langFile.getPath());
-          }
-        }
-      }
+      checkLangEntry(langFolder, "item." + itemId + ".name", "item", itemId);
 
       // Check for item model file
       validationsCount.incrementAndGet(); // Increment validation count
-      File itemModelFileJson = new File(itemModelsFolder, itemId + ".json");
-      File itemModelFileObj = new File(itemModelsFolder, itemId + ".obj");
+      File itemModelFileJson = itemModelsFolder.file(itemId + ".json");
+      File itemModelFileObj = itemModelsFolder.file(itemId + ".obj");
       if (!itemModelFileJson.exists() && !itemModelFileObj.exists()) {
         logError("Item model file does not exist: " + itemModelFileJson.getPath());
       }
@@ -861,9 +936,9 @@ public class BlockItemIntegrityTool {
     }
   }
 
-  public static void verifyBlockStateIntegrity(File blockModelsFolder, File itemModelsFolder,
-      File customModelsFolder, File blockstateFolder, File langFolder, File blockTexturesFolder,
-      File itemTexturesFolder, String checkBlockId) throws Exception {
+  public static void verifyBlockStateIntegrity(AssetFolder blockModelsFolder, AssetFolder itemModelsFolder,
+      AssetFolder customModelsFolder, AssetFolder blockstateFolder, AssetFolder langFolder, AssetFolder blockTexturesFolder,
+      AssetFolder itemTexturesFolder, String checkBlockId) throws Exception {
     List<String> blockIds = new ArrayList<>();
     blockIds.add(checkBlockId);
 
@@ -882,7 +957,7 @@ public class BlockItemIntegrityTool {
 
     for (String blockId : blockIds) {
       validationsCount.incrementAndGet(); // Increment validation count
-      File blockstateFileJson = new File(blockstateFolder, blockId + BLOCKSTATE_FILE_EXTENSION);
+      File blockstateFileJson = blockstateFolder.file(blockId + BLOCKSTATE_FILE_EXTENSION);
       if (!blockstateFileJson.exists()) {
         logError("Blockstate file does not exist: " + blockstateFileJson.getPath());
       } else {
@@ -892,7 +967,7 @@ public class BlockItemIntegrityTool {
       // Check for variants/inventory in blockstate file
       boolean hasInventoryVariant = false;
       boolean hasInventoryItemModel = false;
-      File itemModelFileJson = new File(itemModelsFolder, blockId + ".json");
+      File itemModelFileJson = itemModelsFolder.file(blockId + ".json");
       String blockstateJsonRaw = Files.readString(blockstateFileJson.toPath());
       JsonObject blockstateJson = JsonParser.parseString(blockstateJsonRaw).getAsJsonObject();
       if (blockstateJson.has("variants")) {
@@ -952,9 +1027,9 @@ public class BlockItemIntegrityTool {
     }
   }
 
-  public static void verifyBlockIntegrity(File blockModelsFolder, File itemModelsFolder,
-      File customModelsFolder, File blockstateFolder, File langFolder, File blockTexturesFolder,
-      File itemTexturesFolder, File sourceFile) {
+  public static void verifyBlockIntegrity(AssetFolder blockModelsFolder, AssetFolder itemModelsFolder,
+      AssetFolder customModelsFolder, AssetFolder blockstateFolder, AssetFolder langFolder, AssetFolder blockTexturesFolder,
+      AssetFolder itemTexturesFolder, File sourceFile) {
     try {
       // Read file contents
       String fileContents = Files.readString(sourceFile.toPath());
@@ -972,7 +1047,7 @@ public class BlockItemIntegrityTool {
       // Check if block model file exists
       boolean hasBlockModel = false;
       String blockModelFileName = blockId + ".json";
-      File blockModelFile = new File(blockModelsFolder, blockModelFileName);
+      File blockModelFile = blockModelsFolder.file(blockModelFileName);
       hasBlockModel = blockModelFile.exists();
       if (hasBlockModel) {
         usedBlockModelFiles.add(blockModelFile);
@@ -980,15 +1055,15 @@ public class BlockItemIntegrityTool {
             blockTexturesFolder, itemTexturesFolder, blockModelFile);
         if (blockSetBlockIds.contains(blockId)) {
           List<File> variantFiles = new ArrayList<>();
-          variantFiles.add(new File(blockModelsFolder, blockId + "_fence.json"));
-          variantFiles.add(new File(blockModelsFolder, blockId + "_fence_inventory.json"));
-          variantFiles.add(new File(blockModelsFolder, blockId + "_fence_post.json"));
-          variantFiles.add(new File(blockModelsFolder, blockId + "_slab.json"));
-          variantFiles.add(new File(blockModelsFolder, blockId + "_slab_double.json"));
-          variantFiles.add(new File(blockModelsFolder, blockId + "_slab_top.json"));
-          variantFiles.add(new File(blockModelsFolder, blockId + "_stairs.json"));
-          variantFiles.add(new File(blockModelsFolder, blockId + "_stairs_inner.json"));
-          variantFiles.add(new File(blockModelsFolder, blockId + "_stairs_outer.json"));
+          variantFiles.add(blockModelsFolder.file(blockId + "_fence.json"));
+          variantFiles.add(blockModelsFolder.file(blockId + "_fence_inventory.json"));
+          variantFiles.add(blockModelsFolder.file(blockId + "_fence_post.json"));
+          variantFiles.add(blockModelsFolder.file(blockId + "_slab.json"));
+          variantFiles.add(blockModelsFolder.file(blockId + "_slab_double.json"));
+          variantFiles.add(blockModelsFolder.file(blockId + "_slab_top.json"));
+          variantFiles.add(blockModelsFolder.file(blockId + "_stairs.json"));
+          variantFiles.add(blockModelsFolder.file(blockId + "_stairs_inner.json"));
+          variantFiles.add(blockModelsFolder.file(blockId + "_stairs_outer.json"));
 
           for (File variantFile : variantFiles) {
             usedBlockModelFiles.add(variantFile);
@@ -999,16 +1074,7 @@ public class BlockItemIntegrityTool {
       }
 
       // Check for lang file entries
-      for (File langFile : Objects.requireNonNull(langFolder.listFiles())) {
-        if (langFile.getName().endsWith(LANG_FILE_EXTENSION)) {
-          validationsCount.incrementAndGet(); // Increment validation count
-          String fullyQualifiedNameBlock = "tile." + blockId + ".name";
-          if (!Files.readString(langFile.toPath()).contains(fullyQualifiedNameBlock)) {
-            logError("Lang file entry does not exist for block: " + blockId + " in "
-                + langFile.getPath());
-          }
-        }
-      }
+      checkLangEntry(langFolder, "tile." + blockId + ".name", "block", blockId);
 
 
     } catch (Exception e) {
@@ -1017,8 +1083,8 @@ public class BlockItemIntegrityTool {
     }
   }
 
-  public static List<File> digForModels(File blockModelsFolder, File itemModelsFolder,
-      File customModelsFolder, JsonObject jsonToCheck) {
+  public static List<File> digForModels(AssetFolder blockModelsFolder, AssetFolder itemModelsFolder,
+      AssetFolder customModelsFolder, JsonObject jsonToCheck) {
     // Recursively get all JsonObjects with key "textures"
     List<File> modelFiles = new ArrayList<>();
     digForModels(blockModelsFolder, itemModelsFolder, customModelsFolder, jsonToCheck, modelFiles);
@@ -1038,8 +1104,8 @@ public class BlockItemIntegrityTool {
    *
    * @return A list of resolved model files (may include both .json/.obj and .mtl).
    */
-  private static List<File> resolveModelFiles(File blockModelsFolder, File itemModelsFolder,
-      File customModelsFolder, String modelValue) {
+  private static List<File> resolveModelFiles(AssetFolder blockModelsFolder, AssetFolder itemModelsFolder,
+      AssetFolder customModelsFolder, String modelValue) {
     List<File> resolved = new ArrayList<>();
     String prefixCheck = MOD_PREFIX + ":";
     if (!modelValue.startsWith(prefixCheck)) {
@@ -1047,7 +1113,7 @@ public class BlockItemIntegrityTool {
     }
     String strippedModelValue = modelValue.substring(prefixCheck.length());
     String modelFileName = strippedModelValue + ".json";
-    File modelFolder = blockModelsFolder;
+    AssetFolder modelFolder = blockModelsFolder;
 
     if (strippedModelValue.startsWith("block/shared_models/")) {
       modelFolder = customModelsFolder;
@@ -1071,15 +1137,15 @@ public class BlockItemIntegrityTool {
 
     if (strippedModelValue.endsWith(".obj")) {
       modelFileName = strippedModelValue;
-      File modelFileMtl = new File(modelFolder, modelFileName.replaceAll(".obj", ".mtl"));
+      File modelFileMtl = modelFolder.file(modelFileName.replaceAll(".obj", ".mtl"));
       resolved.add(modelFileMtl);
     }
-    resolved.add(new File(modelFolder, modelFileName));
+    resolved.add(modelFolder.file(modelFileName));
     return resolved;
   }
 
-  public static void digForModels(File blockModelsFolder, File itemModelsFolder,
-      File customModelsFolder, JsonObject jsonToCheck, List<File> modelFiles) {
+  public static void digForModels(AssetFolder blockModelsFolder, AssetFolder itemModelsFolder,
+      AssetFolder customModelsFolder, JsonObject jsonToCheck, List<File> modelFiles) {
     if (jsonToCheck == null) {
       return;
     }
@@ -1170,8 +1236,14 @@ public class BlockItemIntegrityTool {
    */
   public static List<File> buildSourceExcludes(File devEnvironmentPath) {
     List<File> excludes = new ArrayList<>();
+    String legacyPrefix = "src/main/java/com/micatechnologies/minecraft/csm/";
     for (String exclude : SOURCE_FILE_EXCLUDES) {
-      excludes.add(new File(devEnvironmentPath, exclude));
+      // Config files written before the module split spell an exclusion out from the repository
+      // root; both forms mean the same class, wherever its tree now is.
+      String relative = exclude.startsWith(legacyPrefix)
+          ? exclude.substring(legacyPrefix.length())
+          : exclude;
+      excludes.addAll(layout(devEnvironmentPath).resolveSourceAll(relative));
     }
     return excludes;
   }
@@ -1220,19 +1292,19 @@ public class BlockItemIntegrityTool {
     }
 
     // Build useful files/object references
-    final File blockstateFolder =
-        new File(devEnvironmentPath, BLOCKSTATE_FILE_FOLDER_PATH_RELATIVE);
-    final File langFolder = new File(devEnvironmentPath, LANG_FILE_FOLDER_PATH_RELATIVE);
-    final File blockModelsFolder =
-        new File(devEnvironmentPath, BLOCK_MODELS_FILE_FOLDER_PATH_RELATIVE);
-    final File itemModelsFolder =
-        new File(devEnvironmentPath, ITEM_MODELS_FILE_FOLDER_PATH_RELATIVE);
-    final File customModelsFolder =
-        new File(devEnvironmentPath, CUSTOM_MODELS_FILE_FOLDER_PATH_RELATIVE);
-    final File blockTexturesFolder =
-        new File(devEnvironmentPath, BLOCK_TEXTURES_FILE_FOLDER_PATH_RELATIVE);
-    final File itemTexturesFolder =
-        new File(devEnvironmentPath, ITEM_TEXTURES_FILE_FOLDER_PATH_RELATIVE);
+    final AssetFolder blockstateFolder =
+        AssetFolder.ofAsset(layout(devEnvironmentPath), BLOCKSTATE_FOLDER);
+    final AssetFolder langFolder = AssetFolder.ofAsset(layout(devEnvironmentPath), LANG_FOLDER);
+    final AssetFolder blockModelsFolder =
+        AssetFolder.ofAsset(layout(devEnvironmentPath), BLOCK_MODELS_FOLDER);
+    final AssetFolder itemModelsFolder =
+        AssetFolder.ofAsset(layout(devEnvironmentPath), ITEM_MODELS_FOLDER);
+    final AssetFolder customModelsFolder =
+        AssetFolder.ofAsset(layout(devEnvironmentPath), CUSTOM_MODELS_FOLDER);
+    final AssetFolder blockTexturesFolder =
+        AssetFolder.ofAsset(layout(devEnvironmentPath), BLOCK_TEXTURES_FOLDER);
+    final AssetFolder itemTexturesFolder =
+        AssetFolder.ofAsset(layout(devEnvironmentPath), ITEM_TEXTURES_FOLDER);
 
     // Loop through source files
     Thread blocksThread = new Thread(() -> {
@@ -1350,12 +1422,12 @@ public class BlockItemIntegrityTool {
    * @return The list of eligible block source files.
    */
   public static List<File> listEligibleBlockSourceFiles(File devEnvironmentPath) {
-    // Get source file folder path
-    File sourceFileFolderPath = new File(devEnvironmentPath, SOURCE_FILE_FOLDER_PATH_RELATIVE);
-
-    // Get source files
-    List<File> eligibleFiles = new ArrayList<>(listFilesMatchingCriteria(sourceFileFolderPath,
-        (file) -> isFileEligible(file.getParentFile(), file.getName(), false)));
+    // Every tree's source folder: a block class lives in Core or in one of the module trees.
+    List<File> eligibleFiles = new ArrayList<>();
+    for (File sourceFileFolderPath : layout(devEnvironmentPath).javaPackageRoots()) {
+      eligibleFiles.addAll(listFilesMatchingCriteria(sourceFileFolderPath,
+          (file) -> isFileEligible(file.getParentFile(), file.getName(), false)));
+    }
 
     // Return source files
     return eligibleFiles;
@@ -1369,12 +1441,12 @@ public class BlockItemIntegrityTool {
    * @return The list of eligible item source files.
    */
   public static List<File> listEligibleItemSourceFiles(File devEnvironmentPath) {
-    // Get source file folder path
-    File sourceFileFolderPath = new File(devEnvironmentPath, SOURCE_FILE_FOLDER_PATH_RELATIVE);
-
-    // Get source files
-    List<File> eligibleFiles = new ArrayList<>(listFilesMatchingCriteria(sourceFileFolderPath,
-        (file) -> isFileEligible(file.getParentFile(), file.getName(), true)));
+    // Every tree's source folder: an item class lives in Core or in one of the module trees.
+    List<File> eligibleFiles = new ArrayList<>();
+    for (File sourceFileFolderPath : layout(devEnvironmentPath).javaPackageRoots()) {
+      eligibleFiles.addAll(listFilesMatchingCriteria(sourceFileFolderPath,
+          (file) -> isFileEligible(file.getParentFile(), file.getName(), true)));
+    }
 
     // Return source files
     return eligibleFiles;

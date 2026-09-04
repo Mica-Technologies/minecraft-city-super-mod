@@ -1,0 +1,111 @@
+package com.micatechnologies.minecraft.csm.trafficsignals.logic;
+
+import com.micatechnologies.minecraft.csm.trafficsignals.RoadsSounds;
+
+/**
+ * The sound schemes for traffic signal APS devices.
+ *
+ * @author Mica Technologies
+ * @version 1.0
+ * @see AbstractBlockTrafficSignalAPS
+ * @since 2025.1.0
+ */
+public class TrafficSignalAPSSoundSchemes {
+
+  /**
+   * The Campbell/PedSafety sound schemes.
+   *
+   * <ul>
+   *   <li>Campbell Standard Voice - Walk Sign is On</li>
+   *   <li>Campbell Standard Voice - Warning Lights are Flashing</li>
+   *   <li>Campbell Standard Voice - Yellow Lights are Flashing</li>
+   *   <li>Campbell Standard Voice - Walk Sign is On for All Crossings</li>
+   *   <li>Campbell Standard Percussive (East-West)</li>
+   *   <li>Campbell Standard Percussive (North-South)</li>
+   *   <li>Campbell Phil Voice - Walk Sign is On</li>
+   *   <li>Campbell Phil Voice - Warning Lights are Flashing</li>
+   *   <li>Campbell Phil Voice - Yellow Lights are Flashing</li>
+   *   <li>Campbell Phil Voice - Walk Sign is On for All Crossings</li>
+   * </ul>
+   *
+   * @since 1.0
+   */
+  // Walk sound lengths are calculated to give a consistent ~1.25s (25 tick) gap between
+  // loops: lenOfWalkSound = ceil((fileDurationTicks + 25) / 20) * 20
+  // This ensures all walk sounds have similar silence between repetitions regardless
+  // of their audio file duration.
+  public static final TrafficSignalAPSSoundScheme[] CAMPBELL =
+      {new TrafficSignalAPSSoundScheme("Campbell Standard Voice - Walk Sign is On",
+          RoadsSounds.CAMPBELL_TONE1, RoadsSounds.CAMPBELL_WAIT, 20,
+          RoadsSounds.CAMPBELL_WAIT, 20, RoadsSounds.CAMPBELL_WALK_SIGN_ON, 80),
+          new TrafficSignalAPSSoundScheme("Campbell Standard Voice - Warning Lights are Flashing",
+              RoadsSounds.CAMPBELL_TONE1, RoadsSounds.CAMPBELL_WAIT_LOOK_BOTH_WAYS, 50,
+              RoadsSounds.CAMPBELL_WAIT_LOOK_BOTH_WAYS, 50,
+              RoadsSounds.CAMPBELL_WARNING_LIGHTS_ARE_FLASHING, 80),
+          new TrafficSignalAPSSoundScheme("Campbell Standard Voice - Yellow Lights are Flashing",
+              RoadsSounds.CAMPBELL_TONE1, RoadsSounds.CAMPBELL_WAIT_LOOK_BOTH_WAYS, 50,
+              RoadsSounds.CAMPBELL_WAIT_LOOK_BOTH_WAYS, 50,
+              RoadsSounds.CAMPBELL_YELLOW_LIGHTS_ARE_FLASHING, 80),
+          new TrafficSignalAPSSoundScheme(
+              "Campbell Standard Voice - Walk Sign is On for All Crossings",
+              RoadsSounds.CAMPBELL_TONE1, RoadsSounds.CAMPBELL_WAIT, 20,
+              RoadsSounds.CAMPBELL_WAIT, 20, RoadsSounds.CAMPBELL_WALK_EXCLUSIVE, 100),
+          new TrafficSignalAPSSoundScheme("Campbell Standard Percussive (East-West)",
+              RoadsSounds.CAMPBELL_TONE1, RoadsSounds.CAMPBELL_WAIT, 20,
+              RoadsSounds.CAMPBELL_WAIT, 20, RoadsSounds.CAMPBELL_PERC_EW, 60),
+          new TrafficSignalAPSSoundScheme("Campbell Standard Percussive (North-South)",
+              RoadsSounds.CAMPBELL_TONE1, RoadsSounds.CAMPBELL_WAIT, 20,
+              RoadsSounds.CAMPBELL_WAIT, 20, RoadsSounds.CAMPBELL_PERC_NS, 60),
+          new TrafficSignalAPSSoundScheme("Campbell Phil Voice - Walk Sign is On",
+              RoadsSounds.CAMPBELL_TONE1, RoadsSounds.CAMPBELL_PHIL_WAIT, 20,
+              RoadsSounds.CAMPBELL_PHIL_WAIT, 20, RoadsSounds.CAMPBELL_PHIL_WALK_ON, 80),
+          new TrafficSignalAPSSoundScheme("Campbell Phil Voice - Warning Lights Activated",
+              RoadsSounds.CAMPBELL_TONE1, RoadsSounds.CAMPBELL_PHIL_WAIT_LOOK_BOTH_WAYS, 50,
+              RoadsSounds.CAMPBELL_PHIL_WAIT_LOOK_BOTH_WAYS, 50,
+              RoadsSounds.CAMPBELL_PHIL_WARNING_LIGHTS_ACTIVATED, 160),
+          new TrafficSignalAPSSoundScheme("Campbell Phil Voice - Crossing Lights Activated",
+              RoadsSounds.CAMPBELL_TONE1, RoadsSounds.CAMPBELL_PHIL_WAIT_LOOK_BOTH_WAYS, 50,
+              RoadsSounds.CAMPBELL_PHIL_WAIT_LOOK_BOTH_WAYS, 50,
+              RoadsSounds.CAMPBELL_PHIL_CROSSING_LIGHTS_ACTIVATED, 140),
+          new TrafficSignalAPSSoundScheme("Campbell Phil Voice - Walk Sign is On for All Crossings",
+              RoadsSounds.CAMPBELL_TONE1, RoadsSounds.CAMPBELL_PHIL_WAIT, 20,
+              RoadsSounds.CAMPBELL_PHIL_WAIT, 20, RoadsSounds.CAMPBELL_PHIL_WALK_EXCLUSIVE,
+              100),
+          new TrafficSignalAPSSoundScheme("Audio Disabled", null, null, 20, null, 20, null, 20)};
+  /**
+   * The Polara sound schemes.
+   *
+   * <ul>
+   *   <li>Polara Standard Rapid Tick</li>
+   *   <li>Polara Voice - Walk Sign is On</li>
+   *   <li>Polara Voice - Walk Sign is on for All Crossings</li>
+   *   <li>Polara Spanish Standard Rapid Tick</li>
+   *   <li>Polara Spanish Voice - Walk Sign is On</li>
+   *   <li>Polara Spanish Voice - Walk Sign is on for All Crossings</li>
+   * </ul>
+   *
+   * @since 1.0
+   */
+  public static final TrafficSignalAPSSoundScheme[] POLARA =
+      {new TrafficSignalAPSSoundScheme("Polara Standard Rapid Tick", RoadsSounds.POLARA_TONE1,
+          RoadsSounds.POLARA_WAIT, 20, RoadsSounds.POLARA_WAIT, 20,
+          RoadsSounds.POLARA_RAPID_TICK1, 60),
+          new TrafficSignalAPSSoundScheme("Polara Voice - Walk Sign is On",
+              RoadsSounds.POLARA_TONE1, RoadsSounds.POLARA_WAIT, 20,
+              RoadsSounds.POLARA_WAIT, 20, RoadsSounds.POLARA_WALK, 60),
+          new TrafficSignalAPSSoundScheme("Polara Voice - Walk Sign is on for All Crossings",
+              RoadsSounds.POLARA_TONE1, RoadsSounds.POLARA_WAIT, 20,
+              RoadsSounds.POLARA_WAIT, 20, RoadsSounds.POLARA_WALK_ALL_CROSSINGS, 80),
+          new TrafficSignalAPSSoundScheme("Polara Spanish Standard Rapid Tick",
+              RoadsSounds.POLARA_TONE1, RoadsSounds.POLARA_LANG2_WAIT, 20,
+              RoadsSounds.POLARA_LANG2_WAIT, 20, RoadsSounds.POLARA_RAPID_TICK1, 60),
+          new TrafficSignalAPSSoundScheme("Polara Spanish Voice - Walk Sign is On",
+              RoadsSounds.POLARA_TONE1, RoadsSounds.POLARA_LANG2_WAIT, 20,
+              RoadsSounds.POLARA_LANG2_WAIT, 20, RoadsSounds.POLARA_LANG2_WALK, 80),
+          new TrafficSignalAPSSoundScheme(
+              "Polara Spanish Voice - Walk Sign is on for All Crossings",
+              RoadsSounds.POLARA_TONE1, RoadsSounds.POLARA_LANG2_WAIT, 20,
+              RoadsSounds.POLARA_LANG2_WAIT, 20,
+              RoadsSounds.POLARA_LANG2_WALK_ALL_CROSSINGS, 100),
+          new TrafficSignalAPSSoundScheme("Audio Disabled", null, null, 20, null, 20, null, 20)};
+}
