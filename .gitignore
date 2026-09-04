@@ -88,6 +88,8 @@ run/config/*
 !run/config/lwjgl3ify-early.json
 
 logs/
+# written by .github/scripts/server-smoke-test.sh when run locally
+server-smoke.log
 .claude/settings.local.json
 .claude/worktrees/
 dev-env-utils/target/
