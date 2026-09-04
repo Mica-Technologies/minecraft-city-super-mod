@@ -183,6 +183,17 @@ For each entry in `modules.gradle`'s `csmModules` list it creates:
 Core is always loaded, and an unknown name fails configuration rather than silently loading nothing.
 It applies to every run task, dev client and dev server alike.
 
+In IntelliJ the run-configuration dropdown is the chooser. The buildscript's own **2. Run Client**
+and **3. Run Server** carry no property, so they are the `all` case. `modules.gradle` adds
+**2. Run Client (Core only)**, **2. Run Client (Core + All modules)** (the same launch, spelled
+out) and one **2. Run Client (Core + <module>)** per module, and the same three-prefixed set for
+the server, each with the matching `-PcsmRunModules=` in its arguments.
+They are generated from `csmModules` at Gradle sync, so a new module gets its entries without
+touching anything else, and a removed one cannot leave a stale entry. Gradle cannot prompt for a
+subset at launch (it runs non-interactively, and the IDE's Gradle runner has no stdin), which is
+why these are fixed entries rather than a picker; a combination of several modules is a hand edit
+of one entry's arguments.
+
 ---
 
 ## Adding a module

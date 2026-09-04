@@ -292,3 +292,31 @@ task printModuleJarNames {
         csmModules.each { m -> println "${csmArchivePrefix}-${m.name}-${project.version}.jar" }
     }
 }
+
+// IntelliJ run configurations for the module subsets.
+//
+// The buildscript's idea-ext block generates "2. Run Client" and "3. Run Server" with no script
+// parameters, i.e. -PcsmRunModules=all: Core plus every module jar, with every module compiled
+// first. Gradle cannot prompt for a subset (it runs non-interactively, and the IDE's Gradle
+// runner has no stdin), so the run-configuration dropdown is the chooser: a "Core only", a
+// "Core + All modules" (the same launch as the buildscript's entry, spelled out) and one
+// "Core + <module>" entry per run task, derived from csmModules so a new module gets its entries
+// for free and a removed one cannot leave a stale entry behind. The names sort directly under
+// the buildscript's own. A combination of several modules stays a hand edit of the arguments
+// field of one of these, which is rare enough not to need an entry each.
+//
+// idea-ext's run-configuration types come from build.gradle's plugins block and, like ShadowJar
+// above, are not visible to an applied script by name.
+def ideaGradleRunType = project.buildscript.classLoader.loadClass('org.jetbrains.gradle.ext.Gradle')
+def csmIdeaRunTargets = [['2', 'Run Client', 'runClient'], ['3', 'Run Server', 'runServer']]
+def csmIdeaRunSubsets = [['Core only', 'core'], ['Core + All modules', 'all']] +
+        csmModules.collect { m -> ["Core + ${m.displayName.replaceFirst(/^CSM: /, '')}", m.name] }
+def ideaRunConfigurations = idea.project.settings.extensions.getByName('runConfigurations')
+csmIdeaRunTargets.each { prefix, label, taskName ->
+    csmIdeaRunSubsets.each { title, modules ->
+        ideaRunConfigurations.create("${prefix}. ${label} (${title})".toString(), ideaGradleRunType) {
+            taskNames = [taskName]
+            scriptParameters = "-PcsmRunModules=${modules}".toString()
+        }
+    }
+}

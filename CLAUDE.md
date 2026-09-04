@@ -20,6 +20,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 # Run with a subset of the modules: all (default) | core | comma-separated module names
 ./gradlew runClient -PcsmRunModules=core
 ./gradlew runClient -PcsmRunModules=lighting,hvac
+# In IntelliJ the same subsets are run configurations, generated from modules.gradle at Gradle
+# sync: "2. Run Client (Core only)", "(Core + All modules)", "(Core + <module>)", and the "3."
+# server set
 
 # Run Minecraft client in dev (Apple Silicon Mac — arm64-native via lwjgl3ify)
 # NOTE: launches + loads mods, but the window is currently broken on macOS (see below).

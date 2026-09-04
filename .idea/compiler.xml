@@ -18,7 +18,16 @@
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.bytebuddy/byte-buddy-agent/1.14.9/dfb8707031008535048bad2b69735f46d0b6c5e5/byte-buddy-agent-1.14.9.jar" />
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.java.dev.jna/jna/5.13.0/1200e7ebeedbe0d10062093f32925a912020e747/jna-5.13.0.jar" />
         </processorPath>
+        <module name="minecraft-city-super-mod.furnishings" />
+        <module name="minecraft-city-super-mod.hvac" />
+        <module name="minecraft-city-super-mod.tts" />
+        <module name="minecraft-city-super-mod.building" />
+        <module name="minecraft-city-super-mod.technology" />
         <module name="minecraft-city-super-mod.main" />
+        <module name="minecraft-city-super-mod.lighting" />
+        <module name="minecraft-city-super-mod.powergrid" />
+        <module name="minecraft-city-super-mod.roads" />
+        <module name="minecraft-city-super-mod.lifesafety" />
       </profile>
       <profile name="Gradle Imported" enabled="true">
         <outputRelativeToContentRoot value="true" />
@@ -36,7 +45,6 @@
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_STRING" value="-encoding utf8" />
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
-      <module name="dev-env-utils" options="" />
       <module name="minecraft-city-super-mod.main" options="" />
     </option>
   </component>
