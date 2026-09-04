@@ -525,18 +525,35 @@ public final class AdvancedPhaseBuilder {
       Collection<Integer> phaseNumbers,
       RingBarrierState.VehInterval interval,
       TrafficSignalPreempt activePreempt) {
-    TrafficSignalPhase phase = redBaseline(circuits);
     List<RingBarrierState.ServedMovement> served = new ArrayList<>(phaseNumbers.size());
     for (int n : phaseNumbers) {
-      RingBarrierState.ServedMovement movement =
-          new RingBarrierState.ServedMovement(n, interval, RingBarrierState.PedInterval.NONE);
-      served.add(movement);
+      served.add(new RingBarrierState.ServedMovement(n, interval,
+          RingBarrierState.PedInterval.NONE));
+    }
+    return buildForMovements(world, plan, circuits, overlaps, served, activePreempt);
+  }
+
+  /**
+   * Builds a phase from an explicit list of served movements over the all-red baseline, each with
+   * its own vehicle and pedestrian interval — the form the preempt stages need when some
+   * movements continue green while others clear yellow &rarr; red beside them.
+   */
+  public static TrafficSignalPhase buildForMovements(World world,
+      TrafficSignalProgrammedPhasePlan plan,
+      TrafficSignalControllerCircuits circuits,
+      TrafficSignalControllerOverlaps overlaps,
+      List<RingBarrierState.ServedMovement> served,
+      TrafficSignalPreempt activePreempt) {
+    TrafficSignalPhase phase = redBaseline(circuits);
+    boolean anyGreen = false;
+    for (RingBarrierState.ServedMovement movement : served) {
       applyServed(phase, plan, circuits, movement);
+      anyGreen |= movement.vehicle == RingBarrierState.VehInterval.GREEN;
     }
     // FYA compound heads must be driven as one combined indication here too, or a preempt
     // dwell/track-clear serving a left phase shows a red 3-section lens under a lit green arrow.
     applyFyaLenses(phase, plan, circuits, served, null);
-    if (interval == RingBarrierState.VehInterval.GREEN) {
+    if (anyGreen) {
       applyOverlaps(phase, overlaps);
     }
     applyAccessoryStates(world, phase, circuits, activePreempt);
