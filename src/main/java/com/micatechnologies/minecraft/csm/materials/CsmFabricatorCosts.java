@@ -138,11 +138,11 @@ public final class CsmFabricatorCosts {
     if (tabId == null || rule == null) {
       throw new IllegalArgumentException("A Fabricator cost rule and its tab id are required.");
     }
-    ICsmFabricatorCostRule existing = RULES.put(tabId, rule);
-    if (existing != null) {
+    if (RULES.containsKey(tabId)) {
       throw new IllegalStateException(
           "A Fabricator cost rule is already registered for tab " + tabId);
     }
+    RULES.put(tabId, rule);
   }
 
   /**

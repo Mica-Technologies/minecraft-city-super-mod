@@ -165,7 +165,7 @@ jobs:
           tag_name: ${{ env.REL_TAG }}
           name: Release ${{ env.MOD_VERSION }} (${{ env.MINECRAFT_VERSION }})
           body: |
-            Release of ${{ env.MOD_NAME }}
+            Release of City Super Mod (all jars listed below; the core jar is required)
             Mod Version: ${{ env.MOD_VERSION }}
             Game Version: ${{ env.MINECRAFT_VERSION }}
 
@@ -192,7 +192,7 @@ jobs:
           tag_name: ${{ env.PRE_TAG }}
           name: Pre-Release ${{ env.MOD_VERSION }} (${{ env.MINECRAFT_VERSION }})
           body: |
-            Pre-Release of ${{ env.MOD_NAME }}
+            Pre-Release of City Super Mod (all jars listed below; the core jar is required)
             Mod Version: ${{ env.MOD_VERSION }}
             Game Version: ${{ env.MINECRAFT_VERSION }}
 
@@ -207,7 +207,7 @@ jobs:
 
             NOTICE: This is a pre-release version of the mod and is not
             guaranteed to be stable or permanently available for download/usage.
-            Pre-release versions of ${{ env.MOD_NAME }} may be removed or unavailable after
+            Pre-release versions of City Super Mod may be removed or unavailable after
             90 days from their initial release.
           draft: false
           prerelease: true

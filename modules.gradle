@@ -51,9 +51,13 @@ def csmRunTaskNames = ['runClient', 'runServer', 'runClient17', 'runServer17', '
 // alone; `-PcsmRunModules=powergrid,hvac` runs Core plus those modules. Core is always loaded.
 // This is how the "each module alone" and "Core only" checks are run without deleting jars.
 def csmRunModulesProperty = (project.findProperty('csmRunModules') ?: 'all').toString().trim()
-def csmRunModules = csmRunModulesProperty == 'all'
+if (csmRunModulesProperty.isEmpty()) {
+    throw new GradleException("csmRunModules is empty; use all, core, or a comma-separated list of module names")
+}
+def csmRunModulesRequested = csmRunModulesProperty.split(',').collect { it.trim() }.findAll { it }
+def csmRunModules = csmRunModulesRequested.contains('all')
         ? csmModules.collect { it.name }
-        : csmRunModulesProperty.split(',').collect { it.trim() }.findAll { it && it != 'core' }
+        : csmRunModulesRequested.findAll { it != 'core' }
 csmRunModules.each { name ->
     if (!csmModules.any { it.name == name }) {
         throw new GradleException("csmRunModules names unknown module '${name}'; known: " + csmModules.collect { it.name })
@@ -151,7 +155,22 @@ csmModules.each { m ->
     }
 
     // The release jar, produced by RFG's reobf<JarTaskName> rule from the dev jar above.
+    //
+    // The remapper renames a Minecraft field or method reference by walking the class hierarchy
+    // of the class that owns the reference. A module block that touches `this.blockState` owns
+    // that reference on itself, and the chain to net.minecraft.block.Block runs through Core's
+    // AbstractBlock -- which the rule's default reference classpath (Minecraft + dependencies)
+    // does not contain. Without Core here the field keeps its MCP name and the shipped jar dies
+    // in a real game with NoSuchFieldError: blockState, while the dev client, which runs MCP
+    // names throughout, never notices. Core's classes and any module this one compiles
+    // against are therefore added to the reference classpath.
     def reobfTask = tasks.named("reobf${cap}Jar")
+    reobfTask.configure {
+        referenceClasspath.from(sourceSets.main.output.classesDirs)
+        (m.deps ?: []).each { depName -> referenceClasspath.from(sourceSets.getByName(depName).output.classesDirs) }
+        dependsOn(sourceSets.main.classesTaskName)
+        (m.deps ?: []).each { depName -> dependsOn(sourceSets.getByName(depName).classesTaskName) }
+    }
     tasks.named('assemble').configure { dependsOn(reobfTask) }
 
     if (csmRunModules.contains(m.name)) {
