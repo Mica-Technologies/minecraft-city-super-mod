@@ -187,8 +187,18 @@ public class RingBarrierState {
    * {@link #placeSoftRecallCalls}.
    */
   private final boolean[] softCalled = new boolean[PHASE_SLOTS];
-  /** Whether the over-subscribed-split advisory has been emitted by this engine instance. */
-  private boolean splitShortfallReported = false;
+  /**
+   * NEMA "phase next" commitment, by phase number: the calls that were conflicting with a phase
+   * when it began terminating (green &rarr; yellow) are latched here until served, whatever their
+   * detection does afterwards. A real controller fixes its next phase at the start of yellow;
+   * without the latch a presence call that drops during the clearance (a villager wandering off
+   * the side street) changed where the ring went — the mains cleared and simply went green again
+   * for nobody, and a dual-entry companion could re-enter beside the same green. See
+   * {@link #commitConflictingCalls}.
+   */
+  private final boolean[] committedCalls = new boolean[PHASE_SLOTS];
+  /** Whether the coordination advisories have been emitted by this engine instance. */
+  private boolean coordinationAdvisoriesReported = false;
 
   /**
    * Source of per-tick detector and pedestrian demand. Production wraps the world; unit tests
@@ -295,7 +305,7 @@ public class RingBarrierState {
       currentBarrier = firstBarrier(plan);
       initialized = true;
     }
-    reportSplitShortfallOnce(plan);
+    reportCoordinationAdvisoriesOnce(plan);
 
     // Preemption overrides normal/coordinated operation while active.
     updatePreempt(plan, now);
@@ -782,6 +792,8 @@ public class RingBarrierState {
         boolean terminate = maxOut || forceOff || (coordYieldDue && pedDone)
             || (!coordHold && minMet && pedDone && gapOut && conflict);
         if (terminate && minMet) {
+          // Phase next: commit to the calls this termination is for.
+          commitConflictingCalls(phase, ringNum, plan, called);
           if (forceOff) {
             // Forcing off consumes the window acceptance: the phase's window has closed, so it has
             // had its chance this cycle and the remaining time belongs to the coordinated phase.
@@ -931,6 +943,7 @@ public class RingBarrierState {
     if (phase.getPhaseNumber() >= 1 && phase.getPhaseNumber() < lockedCalls.length) {
       lockedCalls[phase.getPhaseNumber()] = false; // LOCK: service discharges the latched call
       windowAccepted[phase.getPhaseNumber()] = false; // service consumes the window acceptance
+      committedCalls[phase.getPhaseNumber()] = false; // service discharges the commitment
     }
     ring.activePhase = phase.getPhaseNumber();
     ring.serviceSeq++;
@@ -1249,18 +1262,60 @@ public class RingBarrierState {
   }
 
   /**
-   * Reports an over-subscribed coordinated split once per engine instance (so once per load, not
-   * once per tick). See {@link #findSplitShortfall}.
+   * Reports the coordination advisories — an over-subscribed split ({@link #findSplitShortfall})
+   * and barrier split totals that differ between the rings ({@link #findBarrierMisalignment}) —
+   * once per engine instance (so once per load, not once per tick).
    */
-  private void reportSplitShortfallOnce(TrafficSignalProgrammedPhasePlan plan) {
-    if (!coordinated || splitShortfallReported) {
+  private void reportCoordinationAdvisoriesOnce(TrafficSignalProgrammedPhasePlan plan) {
+    if (!coordinated || coordinationAdvisoriesReported) {
       return;
     }
-    splitShortfallReported = true;
-    String shortfall = findSplitShortfall(plan);
-    if (shortfall != null) {
-      System.err.println("Traffic signal controller coordination advisory: " + shortfall);
+    coordinationAdvisoriesReported = true;
+    for (String advisory : new String[] {findSplitShortfall(plan), findBarrierMisalignment(plan)}) {
+      if (advisory != null) {
+        System.err.println("Traffic signal controller coordination advisory: " + advisory);
+      }
     }
+  }
+
+  /**
+   * Non-fatal check that the two rings' splits meet at every barrier. Each ring's splits are
+   * normalised to the cycle on their own, so nothing else forces ring 1's barrier-A phases and
+   * ring 2's barrier-A phases to add up to the same length — but the rings cross a barrier
+   * together, so when the totals differ the ring that finishes its side first waits (dark or
+   * held) for the other by the difference, every cycle, and its remaining windows sit late by
+   * that much. A real controller refuses such a plan; this is an advisory for the same reason
+   * {@link #findSplitShortfall} is. Barriers that only one ring has phases on are not compared.
+   *
+   * @return a description of the first mismatched barrier, or {@code null} if every barrier's
+   *     totals agree
+   */
+  String findBarrierMisalignment(TrafficSignalProgrammedPhasePlan plan) {
+    java.util.TreeMap<Integer, long[]> totals = new java.util.TreeMap<>();
+    for (int ring = 1; ring <= 2; ring++) {
+      for (int n : plan.getRingSequence(ring)) {
+        TrafficSignalProgrammedPhase p = plan.getPhase(n);
+        if (p == null || !p.isActive()) {
+          continue;
+        }
+        long[] t = totals.computeIfAbsent(p.getBarrier(), k -> new long[4]);
+        t[ring - 1] += windowEnd[n] - windowStart[n]; // total for this ring
+        t[ring + 1]++;                                 // phase count for this ring
+      }
+    }
+    for (Map.Entry<Integer, long[]> e : totals.entrySet()) {
+      long[] t = e.getValue();
+      if (t[2] == 0L || t[3] == 0L || t[0] == t[1]) {
+        continue;
+      }
+      char barrier = (char) ('A' + e.getKey());
+      return "the rings' splits do not meet at barrier " + barrier + ": ring 1's phases there "
+          + "total " + t[0] + " ticks and ring 2's " + t[1] + ". The rings cross a barrier "
+          + "together, so the ring that finishes first waits " + Math.abs(t[0] - t[1])
+          + " ticks every cycle and the rest of its windows run late. Give both rings the same "
+          + "split total on each barrier.";
+    }
+    return null;
   }
 
   /**
@@ -1436,12 +1491,21 @@ public class RingBarrierState {
       TrafficSignalProgrammedPhase phase) {
     if (phase == null || !phase.isActive()
         || phase.getCircuitIndex() >= tickCircuits.getCircuitCount()) {
+      if (phase != null && phase.getPhaseNumber() >= 1
+          && phase.getPhaseNumber() < committedCalls.length) {
+        committedCalls[phase.getPhaseNumber()] = false; // cannot be served: drop the commitment
+      }
       return false;
     }
     int n = phase.getPhaseNumber();
     // Coordinated phases are served every cycle regardless of their own detection, so the
     // background cycle holds even under continuous side-street demand.
     if (coordinated && coordPhase[n]) {
+      return true;
+    }
+    // A committed call (phase next) is served regardless of what its detection does now, and
+    // was accepted when it was committed, so it is not re-gated on the window either.
+    if (committedCalls[n]) {
       return true;
     }
     boolean demand = hasDemand(plan, phase);
@@ -1483,18 +1547,14 @@ public class RingBarrierState {
    * recall on a compatible pair (the mains, 2 and 6).</p>
    *
    * <p>Soft calls are judged against real demand only, never against other soft calls (which
-   * would be circular), and are recomputed every tick — with one carry-over: a soft call that is
-   * standing while a ring clears (yellow/red) a phase conflicting with it stays placed until that
-   * clearance ends. The clearance was terminated against the soft call, and NEMA commits the
-   * "phase next" at the start of yellow; without the carry-over a vehicle arriving on the clearing
-   * phase during its own clearance would withdraw the soft call and the same phase would go
-   * straight back to green (red &rarr; green for the car that just got the red).</p>
+   * would be circular), and are recomputed from scratch every tick. A soft call that terminates
+   * a phase is committed like any other call ({@link #commitConflictingCalls}), so a vehicle
+   * arriving on the clearing phase during its own clearance cannot withdraw it and send that
+   * phase straight back to green.</p>
    */
   private void placeSoftRecallCalls(TrafficSignalProgrammedPhasePlan plan) {
     boolean[] real = new boolean[PHASE_SLOTS];
-    boolean[] standing = new boolean[PHASE_SLOTS];
     for (int n = 1; n <= TrafficSignalProgrammedPhasePlan.PHASE_COUNT; n++) {
-      standing[n] = softCalled[n];
       softCalled[n] = false; // cleared first so hasDemand below sees no soft call
       TrafficSignalProgrammedPhase p = plan.getPhase(n);
       real[n] = p != null && p.isActive()
@@ -1519,17 +1579,27 @@ public class RingBarrierState {
           break;
         }
       }
-      softCalled[n] = !blocked
-          || (standing[n] && (ringClearingConflicting(ring1, p, ring, plan)
-              || ringClearingConflicting(ring2, p, ring, plan)));
+      softCalled[n] = !blocked;
     }
   }
 
-  /** Whether {@code r} is in yellow or red clearance on a phase that conflicts with {@code p}. */
-  private boolean ringClearingConflicting(RingRuntime r, TrafficSignalProgrammedPhase p,
-      int ringNum, TrafficSignalProgrammedPhasePlan plan) {
-    return r.activePhase != 0 && r.interval != VehInterval.GREEN
-        && r.activePhase != p.getPhaseNumber() && conflicts(p, ringNum, plan, r.activePhase);
+  /**
+   * NEMA "phase next": latches every called, unserved phase that conflicts with {@code phase} —
+   * the demand this termination is for — so it stays called until served even if its detection
+   * drops during the clearance. A real controller fixes the next phase at the start of yellow
+   * and serves it (for at least its minimum green) regardless. Discharged by {@link #startGreen}.
+   */
+  private void commitConflictingCalls(TrafficSignalProgrammedPhase phase, int ringNum,
+      TrafficSignalProgrammedPhasePlan plan, boolean[] called) {
+    for (int n = 1; n <= TrafficSignalProgrammedPhasePlan.PHASE_COUNT; n++) {
+      if (!called[n] || n == ring1.activePhase || n == ring2.activePhase
+          || n == phase.getPhaseNumber()) {
+        continue;
+      }
+      if (conflicts(phase, ringNum, plan, n)) {
+        committedCalls[n] = true;
+      }
+    }
   }
 
   /**

@@ -1353,10 +1353,114 @@ class RingBarrierStateTest {
     assertEquals(VehInterval.YELLOW, rb.getLastServed(2).vehicle);
     rb.tick(plan, ckts, NO_OVERLAPS, 60L, through2); // the left car leaves; 6 -> red
     rb.tick(plan, ckts, NO_OVERLAPS, 80L, through2); // 6 clears
+    // The left call was committed when it ended 6 (phase next), so 5 gets its green; what must
+    // NOT happen is 6 going straight back to green beside the same 2.
+    assertNotNull(rb.getLastServed(2), "the committed left call is served");
+    assertEquals(5, rb.getLastServed(2).phaseNumber, "5, not 6 re-entered");
+    assertEquals(VehInterval.GREEN, rb.getLastServed(2).vehicle);
+    assertEquals(2, rb.getLastServed(1).phaseNumber);
+  }
+
+  @Test
+  @DisplayName("dual entry: a companion that gapped out beside a green does not re-enter beside it")
+  void dualEntryDoesNotReenterAfterGapOut() {
+    // 6 dual-entered beside 2, picked up traffic of its own (so it is an ordinary phase), then
+    // gapped out against a call on 4 while 2 holds green on its long min green. Ring 2 must wait
+    // at the barrier — not put 6 straight back to green beside the same 2 green.
+    RingBarrierState rb = new RingBarrierState();
+    TrafficSignalProgrammedPhasePlan plan = TrafficSignalProgrammedPhasePlan.createDefault();
+    plan.getCoordination().setCoordinatedPhases(new int[0]);
+    enable(plan, 2, 0);
+    enable(plan, 6, 1);
+    enable(plan, 4, 2);
+    plan.getPhase(6).setDualEntry(true);
+    for (int n : new int[] {2, 4, 6}) {
+      quickTiming(plan, n);
+    }
+    plan.getPhase(2).setMinGreen(200L); // 2 outlasts 6's clearance
+    TrafficSignalControllerCircuits ckts = circuits(3);
+    Demand through2 = new Demand().veh(0, 1, 0, 0);
+    Demand through2And6 = new Demand().veh(0, 1, 0, 0).veh(1, 1, 0, 0);
+    Demand through2AndCar4 = new Demand().veh(0, 1, 0, 0).veh(2, 1, 0, 0);
+
+    rb.tick(plan, ckts, NO_OVERLAPS, 0L, through2);         // 2 green
+    rb.tick(plan, ckts, NO_OVERLAPS, 10L, through2);        // 6 dual-enters
+    assertEquals(6, rb.getLastServed(2).phaseNumber);
+    rb.tick(plan, ckts, NO_OVERLAPS, 20L, through2And6);    // traffic on 6: an ordinary phase now
+    rb.tick(plan, ckts, NO_OVERLAPS, 40L, through2AndCar4); // 6 gaps out against the call on 4
+    assertEquals(VehInterval.YELLOW, rb.getLastServed(2).vehicle);
+    assertEquals(VehInterval.GREEN, rb.getLastServed(1).vehicle, "2 holds on its min green");
+    rb.tick(plan, ckts, NO_OVERLAPS, 60L, through2AndCar4); // red clearance
+    rb.tick(plan, ckts, NO_OVERLAPS, 80L, through2AndCar4); // 6 clears
     assertNull(rb.getLastServed(2), "6 must not re-enter beside the same 2 green");
     assertEquals(2, rb.getLastServed(1).phaseNumber);
-    rb.tick(plan, ckts, NO_OVERLAPS, 100L, through2);
-    assertNull(rb.getLastServed(2), "ring 2 waits at the barrier");
+    rb.tick(plan, ckts, NO_OVERLAPS, 100L, through2AndCar4);
+    assertNull(rb.getLastServed(2), "ring 2 waits at the barrier for the cross");
+  }
+
+  @Test
+  @DisplayName("phase next: a call that ended a phase is served even if it drops during clearance")
+  void committedCallIsServedAfterItDrops() {
+    // A car on 4 ends the mains' green. It leaves the zone during the yellow. NEMA commits the
+    // next phase at the start of yellow, so 4 must still get its green (min green) — not the
+    // mains clearing and simply going green again for nobody.
+    RingBarrierState rb = new RingBarrierState();
+    TrafficSignalProgrammedPhasePlan plan = TrafficSignalProgrammedPhasePlan.createDefault();
+    plan.getCoordination().setCoordinatedPhases(new int[0]);
+    enable(plan, 2, 0);
+    enable(plan, 4, 1);
+    quickTiming(plan, 2);
+    quickTiming(plan, 4);
+    TrafficSignalControllerCircuits ckts = circuits(2);
+    Demand through2 = new Demand().veh(0, 1, 0, 0);
+    Demand carOn4 = new Demand().veh(1, 1, 0, 0);
+    Demand none = new Demand();
+
+    rb.tick(plan, ckts, NO_OVERLAPS, 0L, through2); // 2 green
+    rb.tick(plan, ckts, NO_OVERLAPS, 40L, carOn4);  // 2 -> yellow for the car on 4
+    assertEquals(VehInterval.YELLOW, rb.getLastServed(1).vehicle);
+    rb.tick(plan, ckts, NO_OVERLAPS, 50L, none);    // the car leaves during the yellow
+    rb.tick(plan, ckts, NO_OVERLAPS, 60L, none);    // red clearance
+    rb.tick(plan, ckts, NO_OVERLAPS, 80L, none);    // cleared: the committed call is served
+    assertEquals(4, rb.getLastServed(1).phaseNumber,
+        "the ring committed to 4 at the start of yellow and must serve it");
+    assertEquals(VehInterval.GREEN, rb.getLastServed(1).vehicle);
+  }
+
+  @Test
+  @DisplayName("plan validation: an FYA permissive phase the left can run beside is rejected")
+  void validationRejectsConcurrentPermissivePhase() {
+    BlockPos fyaLens = new BlockPos(260, 0, 0);
+    BlockPos arrow = new BlockPos(261, 0, 0);
+    BlockPos head2 = new BlockPos(262, 0, 0);
+    BlockPos head6 = new BlockPos(263, 0, 0);
+    TrafficSignalProgrammedPhasePlan plan = TrafficSignalProgrammedPhasePlan.createDefault();
+    enable(plan, 1, 0);
+    plan.getPhase(1).setMovement(TrafficSignalPhaseMovement.PROTECTED_LEFT);
+    enable(plan, 2, 1);
+    enable(plan, 6, 2);
+    TrafficSignalControllerCircuits ckts = new TrafficSignalControllerCircuits();
+    TrafficSignalControllerCircuit c0 = new TrafficSignalControllerCircuit();
+    c0.getFlashingLeftSignals().add(fyaLens);
+    c0.getLeftSignals().add(arrow);
+    ckts.addCircuit(c0);
+    TrafficSignalControllerCircuit c1 = new TrafficSignalControllerCircuit();
+    c1.getThroughSignals().add(head2);
+    ckts.addCircuit(c1);
+    TrafficSignalControllerCircuit c2 = new TrafficSignalControllerCircuit();
+    c2.getThroughSignals().add(head6);
+    ckts.addCircuit(c2);
+
+    plan.getPhase(1).setPermissivePhase(2); // the through it crosses: same ring, sequential
+    assertNull(plan.validate(ckts), "the standard pairing is valid");
+
+    plan.getPhase(1).setPermissivePhase(6); // same barrier, other ring: they can run together
+    String fault = plan.validate(ckts);
+    assertNotNull(fault, "a permissive phase the left can run concurrently with must fault");
+    assertTrue(fault.contains("Phase 1") && fault.contains("6"), fault);
+
+    plan.getPhase(1).setPermissivePhase(1);
+    assertNotNull(plan.validate(ckts), "a left cannot be its own permissive phase");
   }
 
   // region: output-stage clearance enforcer

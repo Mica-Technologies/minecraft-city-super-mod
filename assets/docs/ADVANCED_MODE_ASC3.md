@@ -343,6 +343,26 @@ parameters are edited on the **ACT** GUI screen (Mx2 / BkG / AdI / MxI / Gap / T
   waits a cycle); holding it anyway flashed the arrow through the all-red and then had the output
   clearance paint a solid yellow arrow over the cross street's green.
 
+- **Phase next (call commitment)** — when a phase begins terminating (green → yellow), every
+  called, unserved phase that conflicts with it is latched in `committedCalls`
+  (`commitConflictingCalls`) and stays called until served (`startGreen` discharges it; a phase
+  that becomes unservable drops it). NEMA fixes the next phase at the start of yellow, so the
+  car that ended the mains gets its green (at least min green) even if it leaves the zone during
+  the clearance; before this the mains cleared and simply went green again for nobody, and a
+  dual-entry companion could re-enter beside the same green. A committed call was accepted when
+  it was committed, so `isCalled` does not re-gate it on the coordination window. Soft calls are
+  committed the same way, which is what carries one through the clearance it caused.
+- **FYA permissive pairing is validated** — `validate` rejects a left whose permissive phase is
+  itself, not a phase, or on the *same barrier in the other ring*: the rings can serve such a pair
+  concurrently and nothing on the service path consults `conflicts()`, so a hand-set pairing like
+  1↔6 would show the green arrow beside the "opposing" through. The ring/barrier structure is the
+  only conflict guard, and this keeps the pairing inside it.
+- **Barrier alignment advisory** — `findBarrierMisalignment` (reported once per load with the
+  split-shortfall advisory) compares each barrier's split total between the rings. Splits are
+  normalised per ring, so nothing else forces ring 1's barrier-A phases and ring 2's to add up
+  the same; when they differ the ring that finishes first waits for the other by the difference
+  every cycle and the rest of its windows run late. Advisory rather than fault, like the shortfall.
+
 ### Preemption clearances
 
 Every preempt stage change that takes a movement from green to red runs the same fixed yellow

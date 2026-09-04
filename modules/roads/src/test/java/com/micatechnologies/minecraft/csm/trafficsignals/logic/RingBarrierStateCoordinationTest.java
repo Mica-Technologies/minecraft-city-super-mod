@@ -318,4 +318,35 @@ class RingBarrierStateCoordinationTest {
     assertNull(rb2.findSplitShortfall(roomy),
         "a 900-tick split comfortably holds the same phase; nothing should be reported");
   }
+
+  @Test
+  @DisplayName("advisory: the two rings' split totals must meet at every barrier")
+  void barrierMisalignmentIsReported() {
+    // Ring 1 gives barrier A 1000 ticks (phase 2) and ring 2 gives it 800 (phase 6): the rings
+    // cross a barrier together, so ring 2 waits 200 ticks every cycle. Nothing else checks this.
+    TrafficSignalProgrammedPhasePlan skewed = TrafficSignalProgrammedPhasePlan.createDefault();
+    for (int[] pc : new int[][] {{2, 0}, {6, 1}, {4, 2}, {8, 3}}) {
+      RingBarrierStateTest.enable(skewed, pc[0], pc[1]);
+      RingBarrierStateTest.quickTiming(skewed, pc[0]);
+    }
+    TrafficSignalCoordinationPlan co = skewed.getCoordination();
+    co.setMode(TrafficSignalCoordinationMode.COORDINATED);
+    co.setCycleLength(1800L);
+    co.setSplit(2, 1000L);
+    co.setSplit(4, 800L);
+    co.setSplit(6, 800L);
+    co.setSplit(8, 1000L);
+    TrafficSignalControllerCircuits ckts = RingBarrierStateTest.circuits(4);
+    RingBarrierState rb = new RingBarrierState();
+    rb.tick(skewed, ckts, NO_OVERLAPS, 0L, new RingBarrierStateTest.Demand());
+    String advisory = rb.findBarrierMisalignment(skewed);
+    assertNotNull(advisory, "mismatched barrier totals must be reported");
+    assertTrue(advisory.contains("barrier A") && advisory.contains("200"), advisory);
+
+    co.setSplit(6, 1000L); // now both rings give barrier A 1000 and barrier B 800
+    co.setSplit(8, 800L);
+    RingBarrierState rb2 = new RingBarrierState();
+    rb2.tick(skewed, ckts, NO_OVERLAPS, 0L, new RingBarrierStateTest.Demand());
+    assertNull(rb2.findBarrierMisalignment(skewed), "aligned barriers report nothing");
+  }
 }
