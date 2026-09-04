@@ -48,6 +48,11 @@ loaded:
 Running a module on its own is the only check that proves its assets are self-contained. See
 `assets/docs/MODULE_SYSTEM.md` for the whole design.
 
+IntelliJ gets the same choices as run configurations: **2. Run Client** is the default (every
+module), and **2. Run Client (Core only)**, **2. Run Client (Core + All modules)** and
+**2. Run Client (Core + <module>)** are generated for each module, with server counterparts under
+**3.**. They appear after a Gradle sync.
+
 Point `JAVA_HOME` at a Java 17 install when running from a shell:
 
 === "Windows"
