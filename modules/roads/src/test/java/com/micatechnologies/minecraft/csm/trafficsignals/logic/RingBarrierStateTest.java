@@ -146,6 +146,153 @@ class RingBarrierStateTest {
   }
 
   @Test
+  @DisplayName("soft recall: the controller returns to the soft-recall phases once demand clears")
+  void softRecallReturnsAfterService() {
+    // In-game report: with SOFT on the main street (2/6) and nothing on the side street (4), a
+    // car on 4 was served and the controller then rested on 4 for good. A soft recall must place
+    // a call whenever no conflicting demand is waiting, so the side street gaps out and the
+    // controller comes back to rest on the main street.
+    RingBarrierState rb = new RingBarrierState();
+    TrafficSignalProgrammedPhasePlan plan = TrafficSignalProgrammedPhasePlan.createDefault();
+    plan.getCoordination().setCoordinatedPhases(new int[0]);
+    enable(plan, 2, 0); // main street, barrier A, ring 1 -- SOFT
+    enable(plan, 6, 1); // main street, barrier A, ring 2 -- SOFT
+    enable(plan, 4, 2); // side street, barrier B, ring 1 -- actuated only
+    plan.getPhase(2).setRecallMode(TrafficSignalRecallMode.SOFT);
+    plan.getPhase(6).setRecallMode(TrafficSignalRecallMode.SOFT);
+    for (int n : new int[] {2, 4, 6}) {
+      quickTiming(plan, n);
+    }
+    TrafficSignalControllerCircuits ckts = circuits(3);
+    Demand none = new Demand();
+    Demand carOn4 = new Demand().veh(2, 1, 0, 0);
+
+    rb.tick(plan, ckts, NO_OVERLAPS, 0L, none); // rests on the soft-recall pair
+    assertEquals(2, rb.getLastServed(1).phaseNumber);
+    assertEquals(6, rb.getLastServed(2).phaseNumber);
+
+    // A car arrives on 4: the main pair clears (min green 20 + gap 10, then yellow 20, red 20).
+    long t = 40L;
+    rb.tick(plan, ckts, NO_OVERLAPS, t, carOn4);
+    assertEquals(VehInterval.YELLOW, rb.getLastServed(1).vehicle, "2 yields to the side street");
+    t += 20L;
+    rb.tick(plan, ckts, NO_OVERLAPS, t, carOn4); // red clearance
+    t += 20L;
+    rb.tick(plan, ckts, NO_OVERLAPS, t, carOn4); // cross the barrier -> 4 green
+    assertEquals(4, rb.getLastServed(1).phaseNumber);
+    assertEquals(VehInterval.GREEN, rb.getLastServed(1).vehicle);
+
+    // The car leaves. Nothing real is calling any more, so the soft recall on 2/6 must be the
+    // demand that ends phase 4 (after min green + passage) and brings the rings home.
+    t += 40L;
+    rb.tick(plan, ckts, NO_OVERLAPS, t, none);
+    assertEquals(VehInterval.YELLOW, rb.getLastServed(1).vehicle,
+        "phase 4 must gap out against the soft-recall call, not rest in green for good");
+    t += 20L;
+    rb.tick(plan, ckts, NO_OVERLAPS, t, none); // red clearance
+    t += 20L;
+    rb.tick(plan, ckts, NO_OVERLAPS, t, none); // cross back
+    assertEquals(2, rb.getLastServed(1).phaseNumber, "ring 1 returns to the SOFT phase 2");
+    assertEquals(VehInterval.GREEN, rb.getLastServed(1).vehicle);
+    assertNotNull(rb.getLastServed(2), "ring 2 returns to its SOFT phase too");
+    assertEquals(6, rb.getLastServed(2).phaseNumber);
+    assertEquals(VehInterval.GREEN, rb.getLastServed(2).vehicle);
+
+    // And it stays there: a soft call is compatible with itself, so nothing cycles it off.
+    t += 500L;
+    rb.tick(plan, ckts, NO_OVERLAPS, t, none);
+    assertEquals(2, rb.getLastServed(1).phaseNumber);
+    assertEquals(VehInterval.GREEN, rb.getLastServed(1).vehicle, "rests on the soft pair");
+    assertEquals(6, rb.getLastServed(2).phaseNumber);
+    assertEquals(VehInterval.GREEN, rb.getLastServed(2).vehicle);
+  }
+
+  @Test
+  @DisplayName("soft recall: a soft call stands through the clearance it caused (no red -> green)")
+  void softRecallStandsThroughClearance() {
+    // The side street (4, with dual-entry 8) gapped out against the soft call on the mains. A car
+    // then arrives on 4 while 8 is still clearing. Without the carry-over that car's call would
+    // withdraw the soft call, and once both rings park the only demand would be 4 again: the car
+    // that just got the red would see it go straight back to green. NEMA commits the next phase
+    // at the start of yellow, so the rings must cross to the mains first.
+    RingBarrierState rb = new RingBarrierState();
+    TrafficSignalProgrammedPhasePlan plan = TrafficSignalProgrammedPhasePlan.createDefault();
+    plan.getCoordination().setCoordinatedPhases(new int[0]);
+    enable(plan, 2, 0);
+    enable(plan, 6, 1);
+    enable(plan, 4, 2);
+    enable(plan, 8, 3);
+    plan.getPhase(2).setRecallMode(TrafficSignalRecallMode.SOFT);
+    plan.getPhase(6).setRecallMode(TrafficSignalRecallMode.SOFT);
+    plan.getPhase(8).setDualEntry(true);
+    for (int n : new int[] {2, 4, 6, 8}) {
+      quickTiming(plan, n);
+    }
+    plan.getPhase(8).setYellow(40L); // 8 clears 20 ticks later than 4
+    TrafficSignalControllerCircuits ckts = circuits(4);
+    Demand none = new Demand();
+    Demand carOn4 = new Demand().veh(2, 1, 0, 0);
+
+    rb.tick(plan, ckts, NO_OVERLAPS, 0L, none);     // rest on 2/6
+    rb.tick(plan, ckts, NO_OVERLAPS, 40L, carOn4);  // 2/6 -> yellow
+    rb.tick(plan, ckts, NO_OVERLAPS, 60L, carOn4);  // -> red
+    rb.tick(plan, ckts, NO_OVERLAPS, 80L, carOn4);  // cross -> 4 green
+    assertEquals(4, rb.getLastServed(1).phaseNumber);
+    rb.tick(plan, ckts, NO_OVERLAPS, 90L, carOn4);  // 8 dual-enters
+    assertEquals(8, rb.getLastServed(2).phaseNumber);
+    rb.tick(plan, ckts, NO_OVERLAPS, 120L, none);   // car gone: 4 and 8 gap out -> yellow
+    assertEquals(VehInterval.YELLOW, rb.getLastServed(1).vehicle);
+    assertEquals(VehInterval.YELLOW, rb.getLastServed(2).vehicle);
+    rb.tick(plan, ckts, NO_OVERLAPS, 140L, none);   // 4 red; 8 still yellow
+    rb.tick(plan, ckts, NO_OVERLAPS, 160L, carOn4); // 4 clears; 8 -> red; a new car arrives on 4
+    rb.tick(plan, ckts, NO_OVERLAPS, 170L, carOn4); // ring 1 waits at the barrier for ring 2
+    assertNull(rb.getLastServed(1), "ring 1 must wait for ring 2's clearance, not re-green 4");
+    rb.tick(plan, ckts, NO_OVERLAPS, 180L, carOn4); // 8 clears -> both park -> cross
+    assertEquals(2, rb.getLastServed(1).phaseNumber,
+        "the rings must cross to the soft pair the clearance was run for, not re-serve 4");
+    assertEquals(VehInterval.GREEN, rb.getLastServed(1).vehicle);
+    assertEquals(6, rb.getLastServed(2).phaseNumber);
+
+    // The waiting car then takes the mains off after their min green + passage.
+    rb.tick(plan, ckts, NO_OVERLAPS, 210L, carOn4);
+    assertEquals(VehInterval.YELLOW, rb.getLastServed(1).vehicle,
+        "the real call on 4 ends the soft phase once its min green is met");
+  }
+
+  @Test
+  @DisplayName("soft recall: continuous side-street traffic still maxes out against the soft call")
+  void softRecallMaxesOutContinuousTraffic() {
+    // A soft call is placed whenever no UNSERVED phase conflicts with it. Vehicles extending the
+    // side street's own green are extensions, not a waiting call, so the soft call on the main
+    // street stands and the side street maxes out against it rather than holding green forever.
+    RingBarrierState rb = new RingBarrierState();
+    TrafficSignalProgrammedPhasePlan plan = TrafficSignalProgrammedPhasePlan.createDefault();
+    plan.getCoordination().setCoordinatedPhases(new int[0]);
+    enable(plan, 2, 0);
+    enable(plan, 4, 1);
+    plan.getPhase(2).setRecallMode(TrafficSignalRecallMode.SOFT);
+    quickTiming(plan, 2);
+    quickTiming(plan, 4);
+    plan.getPhase(4).setMaxGreen(100L);
+    TrafficSignalControllerCircuits ckts = circuits(2);
+    Demand trafficOn4 = new Demand().veh(1, 3, 0, 0);
+
+    // With a real call waiting on 4 the soft call on 2 is withheld, so 4 is served straight away
+    // rather than 2 being served first for nobody.
+    rb.tick(plan, ckts, NO_OVERLAPS, 0L, trafficOn4);
+    assertEquals(4, rb.getLastServed(1).phaseNumber, "the waiting side street is served first");
+    assertEquals(VehInterval.GREEN, rb.getLastServed(1).vehicle);
+
+    // Now that 4 is being served, the soft call on 2 stands and the NEMA max timer starts.
+    rb.tick(plan, ckts, NO_OVERLAPS, 10L, trafficOn4);
+    rb.tick(plan, ckts, NO_OVERLAPS, 100L, trafficOn4); // 90 ticks of max: still extending
+    assertEquals(VehInterval.GREEN, rb.getLastServed(1).vehicle);
+    rb.tick(plan, ckts, NO_OVERLAPS, 115L, trafficOn4); // past max green (100) from the call
+    assertEquals(VehInterval.YELLOW, rb.getLastServed(1).vehicle,
+        "the side street must max out against the soft-recall call on the main street");
+  }
+
+  @Test
   @DisplayName("rest in walk: WALK is held while resting on a rest-in-walk phase")
   void restInWalkHoldsWalk() {
     RingBarrierState rb = new RingBarrierState();
@@ -459,31 +606,68 @@ class RingBarrierStateTest {
     quickTiming(plan, 4);
     TrafficSignalControllerCircuits ckts = circuits(2);
 
-    // Resting on phase 2 with no demand anywhere: WALK is held.
+    // Phase 2 is served on its soft call with a ped recall (walk 40 + ped clear 60), and once
+    // that first ped service is done the rest-in-walk recall holds WALK for as long as it rests.
     rb.tick(plan, ckts, NO_OVERLAPS, 0L, new Demand());
     assertEquals(2, rb.getLastServed(1).phaseNumber);
     assertEquals(VehInterval.GREEN, rb.getLastServed(1).vehicle);
+    rb.tick(plan, ckts, NO_OVERLAPS, 200L, new Demand()); // well past walk + clearance
     assertEquals(PedInterval.WALK, rb.getLastServed(1).pedestrian, "rest-in-walk holds WALK");
 
     Demand ph4 = new Demand().veh(1, 1, 0, 0); // conflicting call on phase 4 (barrier B)
 
     // As soon as the conflicting call appears the walk must begin clearance (FDW), NOT jump to
     // don't-walk, and the vehicle must stay green through the clearance.
-    rb.tick(plan, ckts, NO_OVERLAPS, 10L, ph4);
+    rb.tick(plan, ckts, NO_OVERLAPS, 210L, ph4);
     assertEquals(VehInterval.GREEN, rb.getLastServed(1).vehicle,
         "vehicle stays green while pedestrian clearance runs");
     assertEquals(PedInterval.FDW, rb.getLastServed(1).pedestrian,
         "WALK enters FDW clearance rather than snapping to don't-walk");
 
-    // Clearance still running partway through (walk 40 + ped clear 60).
-    rb.tick(plan, ckts, NO_OVERLAPS, 65L, ph4);
+    // Clearance still running partway through (ped clear 60 from the call at 210).
+    rb.tick(plan, ckts, NO_OVERLAPS, 265L, ph4);
     assertEquals(PedInterval.FDW, rb.getLastServed(1).pedestrian, "FDW persists for the full clearance");
     assertEquals(VehInterval.GREEN, rb.getLastServed(1).vehicle);
 
     // Only after clearance completes may the phase yield (vehicle leaves green).
-    rb.tick(plan, ckts, NO_OVERLAPS, 75L, ph4);
+    rb.tick(plan, ckts, NO_OVERLAPS, 275L, ph4);
     assertEquals(VehInterval.YELLOW, rb.getLastServed(1).vehicle,
         "vehicle yields only after the pedestrian clearance has finished");
+  }
+
+  @Test
+  @DisplayName("rest-in-walk: a WALK still inside its walk time is not cut short by a conflict")
+  void restInWalkNeverCutsWalkShort() {
+    // A phase re-flagged resting during its very first WALK (no conflict for a tick) used to start
+    // FDW the moment a conflict arrived, ending the WALK after a fraction of its walk time.
+    RingBarrierState rb = new RingBarrierState();
+    TrafficSignalProgrammedPhasePlan plan = TrafficSignalProgrammedPhasePlan.createDefault();
+    plan.getCoordination().setCoordinatedPhases(new int[0]);
+    enable(plan, 2, 0);
+    enable(plan, 4, 1);
+    TrafficSignalProgrammedPhase p2 = plan.getPhase(2);
+    p2.setPedRecall(true);
+    p2.setRestInWalk(true);
+    p2.setWalk(40L);
+    p2.setPedClear(60L);
+    quickTiming(plan, 4);
+    TrafficSignalControllerCircuits ckts = circuits(2);
+    Demand ph2 = new Demand().veh(0, 1, 0, 0);
+    Demand ph4 = new Demand().veh(1, 1, 0, 0);
+
+    rb.tick(plan, ckts, NO_OVERLAPS, 0L, ph2);  // 2 greens; WALK begins
+    rb.tick(plan, ckts, NO_OVERLAPS, 5L, ph2);  // no conflict: re-flagged as resting mid-WALK
+    rb.tick(plan, ckts, NO_OVERLAPS, 10L, ph4); // conflict arrives 10 ticks into a 40-tick walk
+    assertEquals(PedInterval.WALK, rb.getLastServed(1).pedestrian,
+        "the WALK must time out its full walk interval before clearance starts");
+    rb.tick(plan, ckts, NO_OVERLAPS, 45L, ph4); // walk (40) done -> FDW
+    assertEquals(PedInterval.FDW, rb.getLastServed(1).pedestrian);
+    rb.tick(plan, ckts, NO_OVERLAPS, 95L, ph4); // FDW runs its full 60 ticks (to 100)
+    assertEquals(PedInterval.FDW, rb.getLastServed(1).pedestrian);
+    assertEquals(VehInterval.GREEN, rb.getLastServed(1).vehicle);
+    rb.tick(plan, ckts, NO_OVERLAPS, 105L, ph4);
+    assertEquals(VehInterval.YELLOW, rb.getLastServed(1).vehicle,
+        "the phase yields once the walk and its clearance have both finished");
   }
 
   @Test
@@ -931,18 +1115,248 @@ class RingBarrierStateTest {
     rb.tick(plan, ckts, NO_OVERLAPS, 0L, rest);
     assertEquals(PedInterval.WALK, rb.getLastServed(1).pedestrian);
 
-    rb.tick(plan, ckts, NO_OVERLAPS, 10L, conflict); // conflict -> FDW clearance begins
-    assertEquals(PedInterval.FDW, rb.getLastServed(1).pedestrian, "clearance starts on the conflict");
+    rb.tick(plan, ckts, NO_OVERLAPS, 10L, conflict); // conflict: the walk (40) times out first
+    assertEquals(PedInterval.WALK, rb.getLastServed(1).pedestrian,
+        "a WALK still inside its walk time is not cut short by the conflict");
+    rb.tick(plan, ckts, NO_OVERLAPS, 45L, conflict); // walk done -> FDW clearance begins
+    assertEquals(PedInterval.FDW, rb.getLastServed(1).pedestrian, "clearance follows the walk");
 
-    rb.tick(plan, ckts, NO_OVERLAPS, 30L, rest); // conflict drops mid-clearance
+    rb.tick(plan, ckts, NO_OVERLAPS, 60L, rest); // conflict drops mid-clearance
     assertEquals(PedInterval.FDW, rb.getLastServed(1).pedestrian,
         "an in-progress clearance is NOT cut off when the conflict drops");
     assertEquals(VehInterval.GREEN, rb.getLastServed(1).vehicle, "vehicle stays green through it");
 
-    rb.tick(plan, ckts, NO_OVERLAPS, 75L, rest); // clearance done (walk 40 + ped clear 60) -> recycle
+    rb.tick(plan, ckts, NO_OVERLAPS, 105L, rest); // clearance done (walk 40 + ped clear 60) -> recycle
     assertEquals(PedInterval.WALK, rb.getLastServed(1).pedestrian,
         "once the clearance completes with no conflict, the walk recycles");
     assertEquals(VehInterval.GREEN, rb.getLastServed(1).vehicle);
+  }
+
+  @Test
+  @DisplayName("a pedestrian call on a phase already resting in green is served, not ignored")
+  void pedCallOnRestingGreenIsServed() {
+    // The button pressed while its phase holds green with no ped service running: the request
+    // used to be skipped forever (pedServing is only armed at green start), so the WALK never
+    // came and the requester, which resets only on WALK/FDW, stayed lit.
+    RingBarrierState rb = new RingBarrierState();
+    TrafficSignalProgrammedPhasePlan plan = TrafficSignalProgrammedPhasePlan.createDefault();
+    plan.getCoordination().setCoordinatedPhases(new int[0]);
+    enable(plan, 2, 0);
+    plan.getPhase(2).setWalk(40L);
+    plan.getPhase(2).setPedClear(60L);
+    TrafficSignalControllerCircuits ckts = circuits(1);
+
+    rb.tick(plan, ckts, NO_OVERLAPS, 0L, new Demand()); // rests on 2, no ped service
+    assertEquals(PedInterval.NONE, rb.getLastServed(1).pedestrian);
+    rb.tick(plan, ckts, NO_OVERLAPS, 100L, new Demand().ped(0)); // button pressed
+    assertEquals(PedInterval.WALK, rb.getLastServed(1).pedestrian,
+        "a ped call on the resting green phase starts a WALK");
+    assertEquals(VehInterval.GREEN, rb.getLastServed(1).vehicle);
+    rb.tick(plan, ckts, NO_OVERLAPS, 150L, new Demand().ped(0));
+    assertEquals(PedInterval.FDW, rb.getLastServed(1).pedestrian, "then its clearance");
+    rb.tick(plan, ckts, NO_OVERLAPS, 210L, new Demand()); // button released after the walk
+    assertEquals(PedInterval.DONT_WALK, rb.getLastServed(1).pedestrian);
+  }
+
+  @Test
+  @DisplayName("FYA: a left whose slot was passed is not held flashing into a barrier cross")
+  void fyaFlashNotHeldWhenLeftWaitsForNextCycle() {
+    // The ring passed phase 1's slot (no call yet) and is serving 2. A left call then arrives
+    // together with side-street demand on 4. Phase 1 is NOT served before the barrier crosses
+    // (its slot is gone this cycle), so its flash must clear with 2 — solid yellow, then red —
+    // rather than being held flashing through the all-red and then painted solid yellow by the
+    // output clearance while 4 is green.
+    net.minecraft.util.math.BlockPos fyaLens = new net.minecraft.util.math.BlockPos(240, 0, 0);
+    net.minecraft.util.math.BlockPos arrow = new net.minecraft.util.math.BlockPos(241, 0, 0);
+    RingBarrierState rb = new RingBarrierState();
+    TrafficSignalProgrammedPhasePlan plan = TrafficSignalProgrammedPhasePlan.createDefault();
+    plan.getCoordination().setCoordinatedPhases(new int[0]);
+    enable(plan, 1, 0);
+    plan.getPhase(1).setMovement(TrafficSignalPhaseMovement.PROTECTED_LEFT);
+    plan.getPhase(1).setPermissivePhase(2);
+    enable(plan, 2, 1);
+    enable(plan, 4, 2);
+    for (int n : new int[] {1, 2, 4}) {
+      quickTiming(plan, n);
+    }
+    TrafficSignalControllerCircuits ckts = fyaCircuits(fyaLens, arrow);
+    Demand through2 = new Demand().veh(1, 1, 0, 0);
+    Demand leftAnd4 = new Demand().veh(0, 0, 1, 0).veh(2, 1, 0, 0);
+
+    rb.tick(plan, ckts, NO_OVERLAPS, 0L, through2); // slot 1 passed; 2 green
+    assertEquals(2, rb.getLastServed(1).phaseNumber);
+    rb.tick(plan, ckts, NO_OVERLAPS, 10L, leftAnd4); // left call + side street
+    assertTrue(rb.getLastAppliedPhase().getFyaSignals().contains(fyaLens),
+        "permissive flash while 2 is green");
+    rb.tick(plan, ckts, NO_OVERLAPS, 40L, leftAnd4); // 2 -> yellow
+    assertEquals(VehInterval.YELLOW, rb.getLastServed(1).vehicle);
+    assertTrue(rb.getLastAppliedPhase().getYellowSignals().contains(fyaLens),
+        "the flash clears WITH phase 2 (solid yellow) — the left is not next on this barrier");
+    assertFalse(rb.getLastAppliedPhase().getFyaSignals().contains(fyaLens));
+    rb.tick(plan, ckts, NO_OVERLAPS, 60L, leftAnd4); // red clearance
+    assertTrue(rb.getLastAppliedPhase().getRedSignals().contains(fyaLens));
+    rb.tick(plan, ckts, NO_OVERLAPS, 80L, leftAnd4); // cross -> 4 green
+    assertEquals(4, rb.getLastServed(1).phaseNumber);
+    assertTrue(rb.getLastAppliedPhase().getRedSignals().contains(fyaLens),
+        "no yellow arrow over the cross street's green");
+    assertFalse(rb.getLastAppliedPhase().getYellowSignals().contains(fyaLens));
+  }
+
+  @Test
+  @DisplayName("preempt: every stage change clears yellow -> red; entry runs FDW; exit ends clean")
+  void preemptStagesClearProperly() {
+    BlockPos head2 = new BlockPos(250, 0, 0);
+    BlockPos ped2 = new BlockPos(251, 0, 0);
+    BlockPos head4 = new BlockPos(252, 0, 0);
+    RingBarrierState rb = new RingBarrierState();
+    TrafficSignalProgrammedPhasePlan plan = TrafficSignalProgrammedPhasePlan.createDefault();
+    plan.getCoordination().setCoordinatedPhases(new int[0]);
+    enable(plan, 2, 0);
+    enable(plan, 4, 1);
+    quickTiming(plan, 2);
+    quickTiming(plan, 4);
+    plan.getPhase(2).setPedRecall(true);
+    plan.getPhase(2).setWalk(40L);
+    plan.getPhase(2).setPedClear(60L);
+    TrafficSignalPreempt pe = new TrafficSignalPreempt();
+    pe.setEnabled(true);
+    pe.setTriggerCircuitIndex(2);
+    pe.setTriggerMovement(TrafficSignalPhaseMovement.THROUGH);
+    pe.setTrackClearPhases(new int[] {4});
+    pe.setDwellPhases(new int[] {2});
+    pe.setMinDwell(0L);
+    plan.getPreempts().add(pe);
+    TrafficSignalControllerCircuits ckts = new TrafficSignalControllerCircuits();
+    TrafficSignalControllerCircuit c0 = new TrafficSignalControllerCircuit();
+    c0.getThroughSignals().add(head2);
+    c0.getPedestrianSignals().add(ped2);
+    ckts.addCircuit(c0);
+    TrafficSignalControllerCircuit c1 = new TrafficSignalControllerCircuit();
+    c1.getThroughSignals().add(head4);
+    ckts.addCircuit(c1);
+    ckts.addCircuit(new TrafficSignalControllerCircuit()); // trigger circuit
+    Demand none = new Demand();
+    Demand train = new Demand().veh(2, 1, 0, 0);
+
+    rb.tick(plan, ckts, NO_OVERLAPS, 0L, none); // 2 green, WALK (ped recall)
+    assertTrue(rb.getLastAppliedPhase().getWalkSignals().contains(ped2));
+
+    // ENTER: 2 clears yellow then red; its WALK flashes don't-walk rather than snapping.
+    rb.tick(plan, ckts, NO_OVERLAPS, 10L, train);
+    assertTrue(rb.getLastAppliedPhase().getYellowSignals().contains(head2), "entry yellow");
+    assertTrue(rb.getLastAppliedPhase().getFlashDontWalkSignals().contains(ped2),
+        "the walk in progress runs flashing don't-walk through the entry");
+    rb.tick(plan, ckts, NO_OVERLAPS, 85L, train); // past the 70-tick yellow
+    assertTrue(rb.getLastAppliedPhase().getRedSignals().contains(head2), "entry red");
+    assertTrue(rb.getLastAppliedPhase().getFlashDontWalkSignals().contains(ped2));
+
+    // TRACK CLEAR: 4 green.
+    rb.tick(plan, ckts, NO_OVERLAPS, 125L, train); // entry clearance (110) done
+    assertTrue(rb.getLastAppliedPhase().getGreenSignals().contains(head4), "track clear green");
+    assertTrue(rb.getLastAppliedPhase().getRedSignals().contains(head2));
+
+    // TRACK EXIT: 4 gets its own yellow and red BEFORE the dwell greens — never green -> green.
+    rb.tick(plan, ckts, NO_OVERLAPS, 230L, train); // track clear (100) done
+    assertTrue(rb.getLastAppliedPhase().getYellowSignals().contains(head4),
+        "track-clear movement clears yellow before the dwell");
+    assertTrue(rb.getLastAppliedPhase().getRedSignals().contains(head2),
+        "the dwell is not green while the track-clear movement is still clearing");
+    rb.tick(plan, ckts, NO_OVERLAPS, 305L, train);
+    assertTrue(rb.getLastAppliedPhase().getRedSignals().contains(head4), "then red");
+    assertTrue(rb.getLastAppliedPhase().getRedSignals().contains(head2));
+
+    // DWELL: 2 green.
+    rb.tick(plan, ckts, NO_OVERLAPS, 345L, train);
+    assertTrue(rb.getLastAppliedPhase().getGreenSignals().contains(head2), "dwell green");
+
+    // EXIT: the call drops; the dwell clears yellow then red before normal service resumes.
+    rb.tick(plan, ckts, NO_OVERLAPS, 360L, none);
+    assertTrue(rb.getLastAppliedPhase().getYellowSignals().contains(head2), "exit yellow");
+    rb.tick(plan, ckts, NO_OVERLAPS, 435L, none);
+    assertTrue(rb.getLastAppliedPhase().getRedSignals().contains(head2), "exit red");
+    rb.tick(plan, ckts, NO_OVERLAPS, 475L, none); // exit clearance (110) done -> normal service
+    assertTrue(rb.getLastAppliedPhase().getGreenSignals().contains(head2),
+        "normal service resumes green with no leftover yellow hold");
+    assertFalse(rb.getLastAppliedPhase().getYellowSignals().contains(head2));
+  }
+
+  @Test
+  @DisplayName("coordination: a dual-entry companion that picks up traffic is force-off'd")
+  void dualEntryCompanionWithOwnTrafficForcesOff() {
+    // Once the companion has demand of its own it is an ordinary served phase with a split. Left
+    // flagged as a rider it had no force-off, and with traffic extending it only max-out (30 s)
+    // could end it — long after its companion cleared, holding the coordinated mains out.
+    RingBarrierState rb = new RingBarrierState();
+    TrafficSignalProgrammedPhasePlan plan = TrafficSignalProgrammedPhasePlan.createDefault();
+    enable(plan, 2, 0);
+    enable(plan, 6, 1);
+    enable(plan, 4, 2);
+    enable(plan, 8, 3);
+    plan.getPhase(4).setDualEntry(true);
+    plan.getPhase(8).setDualEntry(true);
+    for (int n : new int[] {2, 4, 6, 8}) {
+      quickTiming(plan, n);
+    }
+    plan.getPhase(4).setMaxGreen(2000L); // longer than the split: the force-off must end them
+    plan.getPhase(8).setMaxGreen(2000L);
+    TrafficSignalCoordinationPlan co = plan.getCoordination();
+    co.setMode(TrafficSignalCoordinationMode.COORDINATED);
+    co.setCycleLength(1800L);
+    co.setSplit(2, 1000L);
+    co.setSplit(6, 1000L);
+    co.setSplit(4, 800L);
+    co.setSplit(8, 800L);
+    TrafficSignalControllerCircuits ckts = circuits(4);
+    Demand carOn4 = new Demand().veh(2, 1, 0, 0);
+    Demand trafficOn4And8 = new Demand().veh(2, 1, 0, 0).veh(3, 3, 0, 0);
+
+    rb.tick(plan, ckts, NO_OVERLAPS, 0L, carOn4);
+    rb.tick(plan, ckts, NO_OVERLAPS, 1010L, carOn4); // 4's window opens: mains clear
+    rb.tick(plan, ckts, NO_OVERLAPS, 1030L, carOn4);
+    rb.tick(plan, ckts, NO_OVERLAPS, 1050L, carOn4); // 4 green
+    rb.tick(plan, ckts, NO_OVERLAPS, 1070L, carOn4); // 8 dual-enters
+    assertEquals(8, rb.getLastServed(2).phaseNumber);
+    rb.tick(plan, ckts, NO_OVERLAPS, 1080L, trafficOn4And8); // traffic arrives on 8
+    rb.tick(plan, ckts, NO_OVERLAPS, 1700L, trafficOn4And8); // inside the split: both green
+    assertEquals(VehInterval.GREEN, rb.getLastServed(1).vehicle);
+    assertEquals(VehInterval.GREEN, rb.getLastServed(2).vehicle);
+    rb.tick(plan, ckts, NO_OVERLAPS, 1765L, trafficOn4And8); // past the side street's yield point
+    assertEquals(VehInterval.YELLOW, rb.getLastServed(1).vehicle, "4 force-offs at its yield point");
+    assertEquals(VehInterval.YELLOW, rb.getLastServed(2).vehicle,
+        "8, now serving its own traffic, force-offs with it instead of running to max green");
+  }
+
+  @Test
+  @DisplayName("dual entry: a companion does not re-enter beside the green it already cleared next to")
+  void dualEntryDoesNotReenterBesideSameGreen() {
+    // 6 rode as a companion to 2, then cleared for a left call on 5 (same ring). The 5 car left
+    // during 6's clearance. Dual entry must not put 6 straight back to green beside the very same
+    // 2 green (green -> yellow -> red -> green for nobody); the ring waits at the barrier.
+    RingBarrierState rb = new RingBarrierState();
+    TrafficSignalProgrammedPhasePlan plan = TrafficSignalProgrammedPhasePlan.createDefault();
+    plan.getCoordination().setCoordinatedPhases(new int[0]);
+    enable(plan, 2, 0);
+    enable(plan, 5, 1);
+    enable(plan, 6, 2);
+    plan.getPhase(6).setDualEntry(true);
+    for (int n : new int[] {2, 5, 6}) {
+      quickTiming(plan, n);
+    }
+    TrafficSignalControllerCircuits ckts = circuits(3);
+    Demand through2 = new Demand().veh(0, 1, 0, 0);
+    Demand through2AndLeft5 = new Demand().veh(0, 1, 0, 0).veh(1, 0, 1, 0);
+
+    rb.tick(plan, ckts, NO_OVERLAPS, 0L, through2);  // 2 green
+    rb.tick(plan, ckts, NO_OVERLAPS, 10L, through2); // 6 dual-enters
+    assertEquals(6, rb.getLastServed(2).phaseNumber);
+    rb.tick(plan, ckts, NO_OVERLAPS, 40L, through2AndLeft5); // left call: 6 -> yellow
+    assertEquals(VehInterval.YELLOW, rb.getLastServed(2).vehicle);
+    rb.tick(plan, ckts, NO_OVERLAPS, 60L, through2); // the left car leaves; 6 -> red
+    rb.tick(plan, ckts, NO_OVERLAPS, 80L, through2); // 6 clears
+    assertNull(rb.getLastServed(2), "6 must not re-enter beside the same 2 green");
+    assertEquals(2, rb.getLastServed(1).phaseNumber);
+    rb.tick(plan, ckts, NO_OVERLAPS, 100L, through2);
+    assertNull(rb.getLastServed(2), "ring 2 waits at the barrier");
   }
 
   // region: output-stage clearance enforcer

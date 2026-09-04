@@ -22,7 +22,9 @@ import net.minecraft.world.World;
  * Walk/FDW run concurrently with the served through. A green yields only to demand that actually
  * conflicts with it — a call on the same barrier in the other ring (e.g. a left turn beside its
  * adjacent through) terminates only the phases it crosses, leaving the compatible green running.
- * With no demand the controller rests in green on the coordinated phases.
+ * With no demand the controller rests in green on the coordinated phases, or on its
+ * soft-recall phases — a {@code SOFT} recall places a call whenever nothing conflicting is
+ * waiting, which is what brings the rings back to the mains once a side street has cleared.
  *
  * <p>This milestone implements free/actuated operation. Coordination (cycle/offset/splits) and
  * preemption are layered on in later milestones.
@@ -39,13 +41,16 @@ public class RingBarrierState {
   public enum PedInterval { NONE, WALK, FDW, DONT_WALK }
 
   /** Stage of an in-progress preemption sequence. */
-  private enum PreemptStage { NONE, ENTER, TRACK_CLEAR, DWELL, EXIT }
+  private enum PreemptStage { NONE, ENTER, TRACK_CLEAR, TRACK_EXIT, DWELL, EXIT }
 
-  // Fixed preempt interval timing (ticks). Entry clears conflicting movements (yellow then red).
+  // Fixed preempt interval timing (ticks). Every stage change that takes a movement from green
+  // to red runs the same yellow-then-red clearance: entry (whatever was green), track clear to
+  // dwell (the track-clear movements that do not continue into the dwell) and exit (the dwell
+  // movements). A movement that continues green into the next stage is never cleared.
   private static final long PREEMPT_YELLOW_TICKS = 70L;       // 3.5 s
   private static final long PREEMPT_REDCLEAR_TICKS = 40L;     // 2 s
   private static final long PREEMPT_TRACK_CLEAR_TICKS = 100L; // 5 s
-  private static final long PREEMPT_EXIT_TICKS = 40L;         // 2 s
+  private static final long PREEMPT_CLEARANCE_TICKS = PREEMPT_YELLOW_TICKS + PREEMPT_REDCLEAR_TICKS;
 
   /** Immutable description of what one ring is serving this tick (consumed by the phase builder). */
   public static final class ServedMovement {
@@ -93,6 +98,14 @@ public class RingBarrierState {
     // Conditional service: a conditional-service phase has already been re-served once on the
     // current barrier (guard against re-serving more than once / looping).
     boolean condServiceUsed = false;
+    // Counts this ring's green services (bumped in startGreen); identifies one green uniquely.
+    int serviceSeq = 0;
+    // The other ring's serviceSeq at the moment this ring last cleared to idle while the other
+    // ring was still serving, or -1. Dual entry never re-enters alongside that same green: a
+    // companion that has already cleared beside it would otherwise go green -> yellow -> red ->
+    // green the instant the call that ended it dropped (NEMA dual entry is an entry rule, not a
+    // re-entry rule — the ring waits at the barrier for the next crossing).
+    int clearedAlongside = -1;
   }
 
   private int currentBarrier = 0;
@@ -114,7 +127,12 @@ public class RingBarrierState {
   private PreemptStage preemptStage = PreemptStage.NONE;
   private int activePreemptIndex = -1;
   private long preemptStageStart = 0L;
+  /** Phases green (or in yellow) at preempt entry that the entry clearance takes to red. */
   private final java.util.Set<Integer> preemptClearPhases = new java.util.HashSet<>();
+  /** Phases green at preempt entry that the first preempt stage keeps green (never cleared). */
+  private final java.util.Set<Integer> preemptContinuePhases = new java.util.HashSet<>();
+  /** Phases whose WALK/FDW was showing at preempt entry: their ped heads flash don't-walk through the entry. */
+  private final java.util.Set<Integer> preemptPedClearPhases = new java.util.HashSet<>();
 
   // Per-tick context / scratch (set at the top of each tick()).
   private World tickWorld;
@@ -162,6 +180,13 @@ public class RingBarrierState {
   private final boolean[] coordPhase = new boolean[PHASE_SLOTS];
   /** Per-tick demand ignoring the permissive-window gate; see the coordinated yield point. */
   private final boolean[] tickRawCalled = new boolean[PHASE_SLOTS];
+  /**
+   * Soft-recall calls placed this tick, by phase number. A {@code SOFT} phase places a call
+   * whenever no <em>unserved</em> phase with demand of its own conflicts with it, so the
+   * controller returns to it and rests there once everything else has been served; see
+   * {@link #placeSoftRecallCalls}.
+   */
+  private final boolean[] softCalled = new boolean[PHASE_SLOTS];
   /** Whether the over-subscribed-split advisory has been emitted by this engine instance. */
   private boolean splitShortfallReported = false;
 
@@ -247,6 +272,9 @@ public class RingBarrierState {
 
     // Locking detector memory: latch/discharge LOCK phases' vehicle calls before demand is read.
     updateLockedCalls(plan);
+
+    // Soft recall: place the soft calls against this tick's real demand before demand is read.
+    placeSoftRecallCalls(plan);
 
     // Compute which phases are currently calling for service.
     boolean[] called = new boolean[TrafficSignalProgrammedPhasePlan.PHASE_COUNT + 1];
@@ -382,13 +410,18 @@ public class RingBarrierState {
 
   /**
    * The FYA left phases whose permissive flash should be held (not cleared) this tick because their
-   * own protected green is coming: the phase is called and on the current barrier but not yet being
-   * served. The ring-barrier engine won't cross off the current barrier until every called phase on
-   * it has been served, so a called left on this barrier is guaranteed to get its protected green —
-   * the flash holds through the opposing through's clearance and then goes flash &rarr; protected
+   * own protected green is coming next: the phase is called, on the current barrier, not yet being
+   * served, and is what its ring will serve next on this barrier ({@link #servesNextOnBarrier}).
+   * The flash then holds through the opposing through's clearance and goes flash &rarr; protected
    * green directly, with no solid-yellow/red on the FYA head (a flashing yellow is always a safe
    * yield, so holding it is safe). Left phases not in this set clear their flash normally (solid
-   * yellow with the opposing through, then red — the flash-to-red case for a left with no demand).
+   * yellow with the opposing through, then red).
+   *
+   * <p>"Called and on this barrier" alone is not enough: a left whose sequence slot the ring has
+   * already passed is <em>not</em> served before the barrier crosses when the other barrier has
+   * demand (NEMA: it waits for the next cycle). Holding its flash anyway carried a flashing arrow
+   * through the all-red and then, when the cross dropped it out of the hold set, the output
+   * clearance painted a solid yellow arrow over the cross street's green.</p>
    */
   private java.util.Set<Integer> computeFyaHoldFlash(TrafficSignalProgrammedPhasePlan plan,
       boolean[] called) {
@@ -407,9 +440,47 @@ public class RingBarrierState {
           || ring1.activePhase == pn || ring2.activePhase == pn) {
         continue;
       }
-      hold.add(pn);
+      int ringNum = ringOf(plan, pn);
+      if (ringNum == 0) {
+        continue;
+      }
+      RingRuntime ring = ringNum == 1 ? ring1 : ring2;
+      if (servesNextOnBarrier(ring, ringNum, p, plan, called)) {
+        hold.add(pn);
+      }
     }
     return hold;
+  }
+
+  /**
+   * Whether {@code phase} (called, active, on the current barrier, not being served) is what
+   * {@code ring} will serve next on this barrier — mirroring {@link #fillIdleRing}'s selection:
+   * the forward sequence first, then conditional service, then the within-barrier wrap (which
+   * applies only when every calling phase is on this barrier).
+   */
+  private boolean servesNextOnBarrier(RingRuntime ring, int ringNum,
+      TrafficSignalProgrammedPhase phase, TrafficSignalProgrammedPhasePlan plan,
+      boolean[] called) {
+    int pn = phase.getPhaseNumber();
+    int next = peekNextWithinBarrier(ring, ringNum, plan, called);
+    if (next != 0) {
+      return next == pn;
+    }
+    if (!ring.condServiceUsed && phase.isConditionalService()) {
+      return true;
+    }
+    if (nextBarrierWithDemand(plan, called) != currentBarrier) {
+      return false;
+    }
+    for (int n : plan.getRingSequence(ringNum)) {
+      TrafficSignalProgrammedPhase p = plan.getPhase(n);
+      if (p != null && p.isActive() && p.getBarrier() == currentBarrier
+          && n >= 1 && n < called.length && called[n]
+          && n != ring1.activePhase && n != ring2.activePhase) {
+        return n == pn;
+      }
+    }
+    return false;
   }
 
   /**
@@ -536,6 +607,7 @@ public class RingBarrierState {
     ring.maxStart = -1L;
     ring.dualEntry = false;
     ring.condServiceUsed = false;
+    ring.clearedAlongside = -1;
   }
 
   // region: Ring stepping
@@ -570,6 +642,14 @@ public class RingBarrierState {
         }
         if (vehicleCount(phase) > 0) {
           ring.lastActuation = now;
+        }
+        // A dual-entry companion that picks up demand of its own (a vehicle in its zone, a button
+        // press) is from here an ordinary served phase: it extends on its own passage timer and is
+        // subject to force-off, the coordinated yield and cross-barrier conflict like any other.
+        // Left flagged, it had no split at all — only max-out could end it, so under coordination
+        // it held the mains out for a full max green after its companion had already cleared.
+        if (ring.dualEntry && (vehicleCount(phase) > 0 || pedRequestPresent(phase))) {
+          ring.dualEntry = false;
         }
         // Only demand that actually conflicts with THIS phase can end it. A call on the same
         // barrier in the other ring (e.g. a left turn beside its adjacent through) is compatible
@@ -633,9 +713,13 @@ public class RingBarrierState {
         // FDW; the terminate logic below then holds the green until the clearance finishes. A
         // coordinated phase reaching its yield point starts the same clearance, so that the walk
         // it is resting on ends early enough for the next phase to start on time.
-        if (ring.resting && ring.pedServing && (conflict || coordYieldDue)) {
+        if (ring.resting && ring.pedServing && phase.isRestInWalk()
+            && (conflict || coordYieldDue)) {
           ring.resting = false;
-          ring.pedStart = now - ring.walkHold;
+          // Start the clearance now — unless the walk being rested on is still inside its own
+          // walk interval (a phase re-flagged resting during its first WALK), in which case the
+          // walk times out first: a WALK is never cut short of its walk time.
+          ring.pedStart = Math.max(ring.pedStart, now - ring.walkHold);
         }
         long greenElapsed = now - ring.greenStart;
         // Volume-density: minimum green is extended by added initial (queue at start) and bike
@@ -652,6 +736,19 @@ public class RingBarrierState {
         boolean minMet = greenElapsed >= effMinGreen;
         boolean pedDone = !ring.pedServing
             || (now - ring.pedStart) >= (ring.walkHold + phase.getPedClear());
+        // A pedestrian call on the phase already in green — the button pressed after its walk
+        // finished, or while it holds/rests with no ped service — is served now if nothing
+        // conflicting is waiting (the phase is resting; a real controller recycles the walk).
+        // With a conflicting call the phase terminates instead and the latched request recalls
+        // it for the next service. Without this the request was never served and, since the
+        // requester only resets on WALK/FDW, it stayed lit for good.
+        if (pedDone && !conflict && !coordYieldDue && !ring.delayActive
+            && !(ring.resting && phase.isRestInWalk()) && pedRequestPresent(phase)) {
+          ring.pedServing = true;
+          ring.pedStart = now;
+          ring.walkHold = phase.getWalk();
+          pedDone = false;
+        }
         // NEMA MAX: the max-green timer runs only while a conflicting call is present (it starts
         // at the call's registration, not at green start, and resets if the call drops) — an
         // unopposed green rests instead of cycling to yellow for nobody.
@@ -724,6 +821,8 @@ public class RingBarrierState {
       default: {
         if (now - ring.intervalStart >= phase.getRedClear()) {
           // Phase fully cleared; ring goes idle and will pick its next phase below.
+          RingRuntime other = ring == ring1 ? ring2 : ring1;
+          ring.clearedAlongside = other.activePhase != 0 ? other.serviceSeq : -1;
           ring.activePhase = 0;
           ring.resting = false;
         }
@@ -806,8 +905,9 @@ public class RingBarrierState {
    */
   private void fillDualEntry(RingRuntime idle, RingRuntime other,
       TrafficSignalProgrammedPhasePlan plan, int idleRingNum, long now, boolean[] called) {
-    if (idle.activePhase != 0 || other.activePhase == 0 || other.dualEntry) {
-      return;
+    if (idle.activePhase != 0 || other.activePhase == 0 || other.dualEntry
+        || other.serviceSeq == idle.clearedAlongside) {
+      return; // (last case: this ring already served and cleared beside that same green)
     }
     TrafficSignalProgrammedPhase otherPhase = plan.getPhase(other.activePhase);
     if (otherPhase == null || otherPhase.getBarrier() != currentBarrier
@@ -833,6 +933,7 @@ public class RingBarrierState {
       windowAccepted[phase.getPhaseNumber()] = false; // service consumes the window acceptance
     }
     ring.activePhase = phase.getPhaseNumber();
+    ring.serviceSeq++;
     ring.interval = VehInterval.GREEN;
     ring.intervalStart = now;
     ring.greenStart = now;
@@ -937,19 +1038,27 @@ public class RingBarrierState {
     fillIdleRing(ring2, plan, 2, now, called);
   }
 
-  /** Serves the coordinated (or first active) phase in each ring at green with no max-out. */
+  /**
+   * Serves the coordinated (or soft-recall, or first active) phase in each ring at green with no
+   * max-out. Both rings rest on the <em>same</em> barrier: ring 1's choice fixes the barrier and
+   * ring 2 rests on its preferred phase of that barrier (or stays dark if it has none there) —
+   * two rest phases on different barriers would be conflicting movements shown green together.
+   */
   private void restInGreen(TrafficSignalProgrammedPhasePlan plan, long now) {
-    restRing(ring1, plan, 1, now);
-    restRing(ring2, plan, 2, now);
+    int rest1 = restPhaseForRing(plan, 1, -1);
+    int barrier = -1;
+    if (rest1 != 0) {
+      TrafficSignalProgrammedPhase p1 = plan.getPhase(rest1);
+      barrier = p1 == null ? -1 : p1.getBarrier();
+    }
+    int rest2 = restPhaseForRing(plan, 2, barrier);
+    restRing(ring1, plan, 1, rest1, now);
+    restRing(ring2, plan, 2, rest2, now);
   }
 
   private void restRing(RingRuntime ring, TrafficSignalProgrammedPhasePlan plan, int ringNum,
-      long now) {
-    if (ring.activePhase != 0) {
-      return;
-    }
-    int restPhase = restPhaseForRing(plan, ringNum);
-    if (restPhase == 0) {
+      int restPhase, long now) {
+    if (ring.activePhase != 0 || restPhase == 0) {
       return;
     }
     TrafficSignalProgrammedPhase phase = plan.getPhase(restPhase);
@@ -959,8 +1068,10 @@ public class RingBarrierState {
     currentBarrier = phase.getBarrier();
     startGreen(ring, phase, now);
     ring.resting = true;
-    // Rest in Walk: hold the WALK indication on this phase while resting; otherwise don't-walk.
-    ring.pedServing = phase.isRestInWalk();
+    // Rest in Walk: hold the WALK indication on this phase while resting. Otherwise keep the ped
+    // service startGreen armed (a ped recall / button request still gets its walk on the rest
+    // phase — overwriting it here silently dropped the recall) and don't-walk follows it.
+    ring.pedServing = phase.isRestInWalk() || ring.pedServing;
     ring.delayActive = false; // a coordinated rest phase does not run a leading ped interval
     // Align the sequence position with the rest phase so the cycle resumes cleanly on demand.
     int[] seq = plan.getRingSequence(ringNum);
@@ -972,19 +1083,24 @@ public class RingBarrierState {
     }
   }
 
-  private int restPhaseForRing(TrafficSignalProgrammedPhasePlan plan, int ringNum) {
+  /**
+   * The phase ring {@code ringNum} should rest on: a coordinated phase, else a soft-recall phase,
+   * else its first active phase — restricted to {@code barrier} unless that is {@code -1}.
+   */
+  private int restPhaseForRing(TrafficSignalProgrammedPhasePlan plan, int ringNum, int barrier) {
     int[] seq = plan.getRingSequence(ringNum);
     // Prefer a coordinated phase in this ring.
     for (int n : seq) {
       TrafficSignalProgrammedPhase phase = plan.getPhase(n);
-      if (phase != null && phase.isActive() && plan.getCoordination().isCoordinatedPhase(n)) {
+      if (phase != null && phase.isActive() && (barrier < 0 || phase.getBarrier() == barrier)
+          && plan.getCoordination().isCoordinatedPhase(n)) {
         return n;
       }
     }
     // Then a Soft Recall phase: the configured place to rest when nothing else is calling.
     for (int n : seq) {
       TrafficSignalProgrammedPhase phase = plan.getPhase(n);
-      if (phase != null && phase.isActive()
+      if (phase != null && phase.isActive() && (barrier < 0 || phase.getBarrier() == barrier)
           && phase.getRecallMode() == TrafficSignalRecallMode.SOFT) {
         return n;
       }
@@ -992,7 +1108,7 @@ public class RingBarrierState {
     // Otherwise the first active phase in the ring.
     for (int n : seq) {
       TrafficSignalProgrammedPhase phase = plan.getPhase(n);
-      if (phase != null && phase.isActive()) {
+      if (phase != null && phase.isActive() && (barrier < 0 || phase.getBarrier() == barrier)) {
         return n;
       }
     }
@@ -1192,11 +1308,6 @@ public class RingBarrierState {
     return null;
   }
 
-  /** Whether a non-coordinated phase's permissive window is currently open. */
-  private boolean windowOpen(int phaseNumber) {
-    return localCycle >= windowStart[phaseNumber] && localCycle < windowEnd[phaseNumber];
-  }
-
   /**
    * Whether the local cycle has reached a phase's <em>yield point</em>: the end of its permissive
    * window, less its own clearance ({@code yellow + redClear}). A split is the time the movement
@@ -1353,6 +1464,75 @@ public class RingBarrierState {
   }
 
   /**
+   * Places this tick's soft-recall calls (ASC/3 {@code SF RCALL}, NTCIP "soft recall"). A
+   * {@code SOFT} phase is called whenever there is no serviceable conflicting call: no phase that
+   * is <em>not</em> currently being served has demand of its own (a hard recall, a vehicle, a
+   * pedestrian, a latched call or overlap detection) that conflicts with it. That is what makes it
+   * the place the controller returns to and rests: once the side street's traffic clears, the
+   * soft call is the conflicting demand that lets the side street gap out, and the rings cross
+   * back to the soft phases and stay there (a soft call cannot conflict with the phase resting on
+   * it). Vehicles extending a green that is already being served are extensions, not a waiting
+   * call, so a side street under continuous traffic still maxes out against the soft call rather
+   * than holding green for good.
+   *
+   * <p>Unlike {@code MIN}, a soft recall never forces a cycle: while an unserved phase that
+   * conflicts with it has real demand, the soft call is withheld, so continuous conflicting demand
+   * can starve a soft phase indefinitely. That is the intended difference — use {@code MIN} for a
+   * phase that must be served every cycle. Two <em>conflicting</em> soft phases each supply the
+   * other's conflicting call, so they alternate like a pair of {@code MIN} recalls; put soft
+   * recall on a compatible pair (the mains, 2 and 6).</p>
+   *
+   * <p>Soft calls are judged against real demand only, never against other soft calls (which
+   * would be circular), and are recomputed every tick — with one carry-over: a soft call that is
+   * standing while a ring clears (yellow/red) a phase conflicting with it stays placed until that
+   * clearance ends. The clearance was terminated against the soft call, and NEMA commits the
+   * "phase next" at the start of yellow; without the carry-over a vehicle arriving on the clearing
+   * phase during its own clearance would withdraw the soft call and the same phase would go
+   * straight back to green (red &rarr; green for the car that just got the red).</p>
+   */
+  private void placeSoftRecallCalls(TrafficSignalProgrammedPhasePlan plan) {
+    boolean[] real = new boolean[PHASE_SLOTS];
+    boolean[] standing = new boolean[PHASE_SLOTS];
+    for (int n = 1; n <= TrafficSignalProgrammedPhasePlan.PHASE_COUNT; n++) {
+      standing[n] = softCalled[n];
+      softCalled[n] = false; // cleared first so hasDemand below sees no soft call
+      TrafficSignalProgrammedPhase p = plan.getPhase(n);
+      real[n] = p != null && p.isActive()
+          && p.getCircuitIndex() < tickCircuits.getCircuitCount() && hasDemand(plan, p);
+    }
+    for (int n = 1; n <= TrafficSignalProgrammedPhasePlan.PHASE_COUNT; n++) {
+      TrafficSignalProgrammedPhase p = plan.getPhase(n);
+      if (p == null || !p.isActive() || p.getRecallMode() != TrafficSignalRecallMode.SOFT) {
+        continue;
+      }
+      int ring = ringOf(plan, n);
+      if (ring == 0) {
+        continue; // not in either sequence: could never be served, so never call it
+      }
+      boolean blocked = false;
+      for (int m = 1; m <= TrafficSignalProgrammedPhasePlan.PHASE_COUNT; m++) {
+        if (m == n || !real[m] || m == ring1.activePhase || m == ring2.activePhase) {
+          continue;
+        }
+        if (conflicts(p, ring, plan, m)) {
+          blocked = true;
+          break;
+        }
+      }
+      softCalled[n] = !blocked
+          || (standing[n] && (ringClearingConflicting(ring1, p, ring, plan)
+              || ringClearingConflicting(ring2, p, ring, plan)));
+    }
+  }
+
+  /** Whether {@code r} is in yellow or red clearance on a phase that conflicts with {@code p}. */
+  private boolean ringClearingConflicting(RingRuntime r, TrafficSignalProgrammedPhase p,
+      int ringNum, TrafficSignalProgrammedPhasePlan plan) {
+    return r.activePhase != 0 && r.interval != VehInterval.GREEN
+        && r.activePhase != p.getPhaseNumber() && conflicts(p, ringNum, plan, r.activePhase);
+  }
+
+  /**
    * Whether the phase has demand of its own this tick, ignoring coordination gating: a recall, a
    * latched (LOCK) call, a vehicle in its zone, a pedestrian request, or overlap detection
    * assigned to it ({@link #overlapDemand}).
@@ -1362,6 +1542,11 @@ public class RingBarrierState {
     TrafficSignalRecallMode recall = phase.getRecallMode();
     if (recall == TrafficSignalRecallMode.MINIMUM || recall == TrafficSignalRecallMode.MAXIMUM
         || recall == TrafficSignalRecallMode.PEDESTRIAN) {
+      return true;
+    }
+    // A soft recall is a conditional call (placed only when nothing conflicting is waiting), so
+    // it is decided once per tick in placeSoftRecallCalls rather than unconditionally here.
+    if (recall == TrafficSignalRecallMode.SOFT && softCalled[phase.getPhaseNumber()]) {
       return true;
     }
     // Locking detector memory: a latched call counts as demand until the phase is served, even
@@ -1545,7 +1730,7 @@ public class RingBarrierState {
 
     if (preemptStage == PreemptStage.NONE) {
       if (calledIdx >= 0) {
-        beginPreempt(calledIdx, now);
+        beginPreempt(calledIdx, plan, now);
       }
       return;
     }
@@ -1560,14 +1745,14 @@ public class RingBarrierState {
 
     // A higher-priority call takes over (re-enters clearance).
     if (calledIdx >= 0 && calledPriority > active.getType().getPriority()) {
-      beginPreempt(calledIdx, now);
+      beginPreempt(calledIdx, plan, now);
       return;
     }
 
     long elapsed = now - preemptStageStart;
     switch (preemptStage) {
       case ENTER:
-        if (elapsed >= PREEMPT_YELLOW_TICKS + PREEMPT_REDCLEAR_TICKS) {
+        if (elapsed >= PREEMPT_CLEARANCE_TICKS) {
           preemptStage = active.getTrackClearPhases().length > 0
               ? PreemptStage.TRACK_CLEAR : PreemptStage.DWELL;
           preemptStageStart = now;
@@ -1575,6 +1760,15 @@ public class RingBarrierState {
         break;
       case TRACK_CLEAR:
         if (elapsed >= PREEMPT_TRACK_CLEAR_TICKS) {
+          // Track-clear movements that do not continue into the dwell need a clearance first;
+          // going green -> green across them displayed conflicting greens together.
+          preemptStage = trackClearOnlyPhases(active).isEmpty()
+              ? PreemptStage.DWELL : PreemptStage.TRACK_EXIT;
+          preemptStageStart = now;
+        }
+        break;
+      case TRACK_EXIT:
+        if (elapsed >= PREEMPT_CLEARANCE_TICKS) {
           preemptStage = PreemptStage.DWELL;
           preemptStageStart = now;
         }
@@ -1588,7 +1782,10 @@ public class RingBarrierState {
         break;
       case EXIT:
       default:
-        if (elapsed >= PREEMPT_EXIT_TICKS) {
+        // The dwell movements get their own yellow and red before normal service resumes. An
+        // all-red shorter than a yellow left the output clearance still painting the dwell heads
+        // yellow after the resumed phase had gone green.
+        if (elapsed >= PREEMPT_CLEARANCE_TICKS) {
           preemptStage = PreemptStage.NONE;
           activePreemptIndex = -1;
         }
@@ -1596,18 +1793,63 @@ public class RingBarrierState {
     }
   }
 
-  private void beginPreempt(int index, long now) {
+  private void beginPreempt(int index, TrafficSignalProgrammedPhasePlan plan, long now) {
     activePreemptIndex = index;
     preemptStage = PreemptStage.ENTER;
     preemptStageStart = now;
-    // Capture whatever is currently green so entry can clear it with a proper yellow.
+    // Capture what is being served so entry can clear it with a proper yellow — except a green
+    // that the first preempt stage serves anyway, which simply continues (no pointless
+    // green -> yellow -> red -> green on the very movement the preempt wants).
+    TrafficSignalPreempt pe = plan.getPreempts().get(index);
+    int[] first = pe.getTrackClearPhases().length > 0
+        ? pe.getTrackClearPhases() : pe.getDwellPhases();
     preemptClearPhases.clear();
-    if (ring1.activePhase != 0) {
-      preemptClearPhases.add(ring1.activePhase);
+    preemptContinuePhases.clear();
+    preemptPedClearPhases.clear();
+    for (RingRuntime ring : new RingRuntime[] {ring1, ring2}) {
+      if (ring.activePhase == 0 || ring.interval == VehInterval.RED) {
+        continue; // already red (or idle): nothing to clear
+      }
+      ServedMovement shown = describe(ring, plan, now);
+      if (shown != null && (shown.pedestrian == PedInterval.WALK
+          || shown.pedestrian == PedInterval.FDW)) {
+        preemptPedClearPhases.add(ring.activePhase);
+      }
+      boolean continues = shown != null && shown.vehicle == VehInterval.GREEN
+          && contains(first, ring.activePhase);
+      (continues ? preemptContinuePhases : preemptClearPhases).add(ring.activePhase);
     }
-    if (ring2.activePhase != 0) {
-      preemptClearPhases.add(ring2.activePhase);
+  }
+
+  private static boolean contains(int[] phases, int phaseNumber) {
+    for (int n : phases) {
+      if (n == phaseNumber) {
+        return true;
+      }
     }
+    return false;
+  }
+
+  /** The track-clear phases that are not also dwell phases (the ones track-clear exit clears). */
+  private static List<Integer> trackClearOnlyPhases(TrafficSignalPreempt preempt) {
+    List<Integer> out = new ArrayList<>();
+    for (int n : preempt.getTrackClearPhases()) {
+      if (!contains(preempt.getDwellPhases(), n)) {
+        out.add(n);
+      }
+    }
+    return out;
+  }
+
+  /** The track-clear phases that continue into the dwell (kept green across the track-clear exit). */
+  private static List<Integer> trackClearContinuingPhases(TrafficSignalPreempt preempt) {
+    List<Integer> out = new ArrayList<>();
+    for (int n : preempt.getTrackClearPhases()) {
+      if (contains(preempt.getDwellPhases(), n)) {
+        out.add(n);
+      }
+    }
+    return out;
   }
 
   private boolean isPreemptCalled(TrafficSignalPreempt preempt) {
@@ -1618,24 +1860,46 @@ public class RingBarrierState {
       TrafficSignalControllerCircuits circuits, TrafficSignalControllerOverlaps overlaps, long now) {
     TrafficSignalPreempt active = plan.getPreempts().get(activePreemptIndex);
     long elapsed = now - preemptStageStart;
+    VehInterval clearing = elapsed < PREEMPT_YELLOW_TICKS ? VehInterval.YELLOW : VehInterval.RED;
     switch (preemptStage) {
-      case ENTER:
-        if (elapsed < PREEMPT_YELLOW_TICKS) {
-          return AdvancedPhaseBuilder.buildForPhases(world, plan, circuits, overlaps,
-              preemptClearPhases, VehInterval.YELLOW, active);
+      case ENTER: {
+        // Whatever was green clears yellow -> red while any movement the first stage serves
+        // continues green. Ped heads that were in WALK/FDW flash don't-walk through the entry
+        // (a truncated clearance — MUTCD 4D.27 permits shortening it on entry to preemption —
+        // rather than snapping straight to don't-walk).
+        List<ServedMovement> served = new ArrayList<>();
+        for (int n : preemptContinuePhases) {
+          served.add(new ServedMovement(n, VehInterval.GREEN,
+              preemptPedClearPhases.contains(n) ? PedInterval.FDW : PedInterval.NONE));
         }
-        return AdvancedPhaseBuilder.buildForPhases(world, plan, circuits, overlaps,
-            java.util.Collections.emptyList(), VehInterval.RED, active);
+        for (int n : preemptClearPhases) {
+          served.add(new ServedMovement(n, clearing,
+              preemptPedClearPhases.contains(n) ? PedInterval.FDW : PedInterval.NONE));
+        }
+        return AdvancedPhaseBuilder.buildForMovements(world, plan, circuits, overlaps, served,
+            active);
+      }
       case TRACK_CLEAR:
         return AdvancedPhaseBuilder.buildForPhases(world, plan, circuits, overlaps,
             toPhaseList(active.getTrackClearPhases()), VehInterval.GREEN, active);
+      case TRACK_EXIT: {
+        List<ServedMovement> served = new ArrayList<>();
+        for (int n : trackClearContinuingPhases(active)) {
+          served.add(new ServedMovement(n, VehInterval.GREEN, PedInterval.NONE));
+        }
+        for (int n : trackClearOnlyPhases(active)) {
+          served.add(new ServedMovement(n, clearing, PedInterval.NONE));
+        }
+        return AdvancedPhaseBuilder.buildForMovements(world, plan, circuits, overlaps, served,
+            active);
+      }
       case DWELL:
         return AdvancedPhaseBuilder.buildForPhases(world, plan, circuits, overlaps,
             toPhaseList(active.getDwellPhases()), VehInterval.GREEN, active);
       case EXIT:
       default:
         return AdvancedPhaseBuilder.buildForPhases(world, plan, circuits, overlaps,
-            java.util.Collections.emptyList(), VehInterval.RED, active);
+            toPhaseList(active.getDwellPhases()), clearing, active);
     }
   }
 

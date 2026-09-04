@@ -124,8 +124,12 @@ the legacy behavior). This is functionally a `PPLT FYA` overlap whose *protected
 
 - **Data:** `permissivePhase` (int, default 0) on `TrafficSignalProgrammedPhase`.
 - **Auto-template (`loadStandardEightPhase`):** populates the standard NEMA opposing-through pairing —
-  left 1↔thru 6, left 5↔thru 2, left 3↔thru 8, left 7↔thru 4 — but only when both the left and its
-  opposing through are actually assigned (otherwise it stays 0 = protected-only).
+  left 1↔thru 2, left 5↔thru 6, left 3↔thru 4, left 7↔thru 8 (`fyaPairs` in the plan; the left and
+  the through it crosses share a ring and barrier, and the same-approach through is the *other*
+  member of the barrier pair) — but only when both the left and its opposing through are actually
+  assigned (otherwise it stays 0 = protected-only). The flash is keyed to the crossing through so
+  it clears together with it; keying it to the same-approach through would end the flash a whole
+  change interval early and reintroduce the yellow trap described below.
 - **FYA head:** the left phase's circuit `getFlashingLeftSignals()` (the FYA bimodal lens). The solid
   green arrow lens is `getLeftSignals()`.
 - **Builder post-pass (`AdvancedPhaseBuilder.applyFyaLenses`):** after the served movements are laid
@@ -239,18 +243,36 @@ parameters are edited on the **ACT** GUI screen (Mx2 / BkG / AdI / MxI / Gap / T
 
 ### Phase options: Soft Recall & Rest in Walk
 
-- **Soft Recall (`SF RCALL`)** — the `SOFT` recall mode (already in `TrafficSignalRecallMode`) is now
-  honored by `restPhaseForRing`: when nothing is calling, the ring rests on a soft-recall phase
-  (preference order: coordinated phase → soft-recall phase → first active phase). A `SOFT` phase does
-  not place a vehicle call, so it never forces a cycle — it only chooses where to rest. Set via the
-  MAP **RECALL** column.
+- **Soft Recall (`SF RCALL`)** — a `SOFT` phase places a *conditional* call
+  (`placeSoftRecallCalls`, run once per tick before demand is read): it is called whenever no
+  **unserved** phase with demand of its own (hard recall, vehicle, ped, latched call, overlap
+  detection) conflicts with it. That is what brings the controller back: once the side street's
+  traffic clears, the soft call is the conflicting demand that lets the side street gap out, the
+  rings cross back to the soft phases and rest there (a soft call cannot conflict with the phase
+  resting on it). Vehicles extending a green already being served are extensions, not a waiting
+  call, so a side street under continuous traffic maxes out against the soft call instead of
+  holding green for good. Unlike `MIN` a soft recall never forces a cycle — while an unserved
+  conflicting phase has real demand the soft call is withheld, so continuous cross demand can
+  starve it (use `MIN` for a phase that must be served every cycle). Two *conflicting* soft phases
+  supply each other's conflicting call and alternate like a pair of `MIN` recalls; put soft recall
+  on a compatible pair (2 and 6). Soft calls are judged against real demand only, never other soft
+  calls. `restPhaseForRing` also prefers a soft phase when the rings park with nothing at all
+  calling (coordinated phase → soft-recall phase → first active phase), and both rings always rest
+  on **one** barrier — ring 1's choice fixes it and ring 2 picks on that barrier or stays dark.
+  Set via the MAP **RECALL** column.
+
+  *History:* until 2026-09-04 a `SOFT` phase placed no call at all and only steered the rest
+  selection, which runs only when both rings are parked with no demand — after the first
+  side-street service the ring never parked again (a green with nothing conflicting rests in
+  place), so the controller sat on the side street for good and SOFT looked ignored.
 - **Rest in Walk (`REST IN WALK`)** — a per-phase flag; while the phase holds green with nothing
   else calling, the WALK indication is recalled (held) instead of don't-walk. This applies whether
   the phase was entered as the no-demand rest **or** served by a call and then left holding green
   (`advanceRing` re-flags it resting each tick it holds without conflict) — so it doesn't run its
   ped clearance once and then sit in don't-walk under a still-green vehicle signal. When a
   conflicting call arrives, the rest-in-walk clearance re-arms a full flashing-don't-walk before the
-  phase yields. Set via the MAP **PED** column, which cycles the combined ped options: `no` / `PedR`
+  phase yields — but a WALK still inside its own walk time (a phase re-flagged resting during its
+  first WALK) times out first; a WALK is never cut short of its walk time. Set via the MAP **PED** column, which cycles the combined ped options: `no` / `PedR`
   (ped recall) / `Walk` (rest in walk) / `P+W` (both).
 - **Compatibility-aware termination + within-barrier wrap** — a green yields only to demand that
   actually *conflicts* with it (`demandConflictsWith`/`conflicts`): a call conflicts when it is on
@@ -295,6 +317,51 @@ parameters are edited on the **ACT** GUI screen (Mx2 / BkG / AdI / MxI / Gap / T
   phases' rest-in-walk ped clearance could outlast a tight window and the re-gated call would be
   erased mid-sequence — the mains would recycle WALK → FDW → WALK every cycle and the locked side
   street would never be served.
+
+- **Dual-entry limits (2026-09-04 audit)** — a companion that picks up demand of its own (a
+  vehicle in its zone, a button press) drops the `dualEntry` flag and is an ordinary served phase
+  from then on: it extends on its passage timer and is subject to force-off, the coordinated yield
+  and cross-barrier conflict. (Left flagged it had no split, so under coordination a companion with
+  traffic held the mains out for a full max green after its companion had cleared.) And dual
+  entry is an *entry* rule, not a re-entry rule: a ring remembers which green it last cleared
+  beside (`RingRuntime.clearedAlongside` vs the other ring's `serviceSeq`) and never re-enters a
+  companion beside that same green — otherwise a companion cleared for a call that then dropped
+  went green → yellow → red → green for nobody. The ring waits at the barrier for the next cross.
+- **Pedestrian call on a phase already in green** — served when nothing conflicting is waiting
+  (`advanceRing`: the walk is recycled — a real controller does the same for a resting phase);
+  with a conflicting call the phase terminates and the latched request recalls it. Before this a
+  button pressed after the walk had finished, or while the phase rested with no ped service, was
+  never served, and since the requester resets only on WALK/FDW it stayed lit for good. The
+  no-demand rest path (`restRing`) also keeps the ped service `startGreen` armed — it used to
+  overwrite it with the rest-in-walk flag, silently dropping a ped recall on the rest phase — and
+  the rest-in-walk clearance re-arm applies only to rest-in-walk phases (a finished, timed ped
+  service is not re-run as an extra FDW when a conflict arrives).
+- **FYA flash hold is decided on "next"** — `computeFyaHoldFlash` holds a called left's flash
+  only when that left is what its ring will serve next on this barrier (`servesNextOnBarrier`:
+  forward sequence, conditional service, or the within-barrier wrap). A left whose slot the ring
+  has already passed is not served before the cross when the other barrier has demand (NEMA: it
+  waits a cycle); holding it anyway flashed the arrow through the all-red and then had the output
+  clearance paint a solid yellow arrow over the cross street's green.
+
+### Preemption clearances
+
+Every preempt stage change that takes a movement from green to red runs the same fixed yellow
+(70 ticks) then red (40 ticks) clearance, `PREEMPT_CLEARANCE_TICKS`:
+
+| Stage | Shows |
+|---|---|
+| `ENTER` | whatever was green/yellow at the call clears yellow → red — except a movement the first stage serves anyway, which continues green; ped heads that were in WALK/FDW flash don't-walk through the entry (a truncated clearance, which MUTCD 4D.27 permits on entry to preemption) instead of snapping to don't-walk |
+| `TRACK_CLEAR` | the track-clear phases green (100 ticks) |
+| `TRACK_EXIT` | track-clear phases that are **not** dwell phases clear yellow → red while those that continue stay green; skipped when every track-clear phase continues into the dwell |
+| `DWELL` | the dwell phases green until the call drops and `minDwell` has elapsed |
+| `EXIT` | the dwell phases clear yellow → red, then normal service resumes |
+
+Before the audit `TRACK_CLEAR` went straight to `DWELL` (conflicting greens together, with the
+output clearance painting the track-clear heads yellow *beside* the dwell greens), and `EXIT` was
+a 40-tick all-red — shorter than the yellow the output clearance synthesises for the skipped
+dwell clearance, so the dwell heads were still yellow after the resumed phase had gone green.
+`buildForMovements` is the builder entry that lets a stage mix continuing greens with clearing
+movements and per-movement ped intervals.
 
 Dual Entry and Conditional Service are set via the MAP **OPT** column, a combined cycle:
 `-` / `DE` / `CS` / `D+C`.
