@@ -68,13 +68,32 @@ local.properties
 .texlipse
 
 ### Intellij IDEA ###
-
+# Per JetBrains' guidance, .idea is shared except for per-user state and for what the Gradle
+# import regenerates on every sync (those files churn with each import and carry nothing
+# the build script does not already say). Code styles, run configurations, vcs.xml,
+# misc.xml, encodings.xml and gradle.xml stay tracked.
 *.iml
 *.ipr
 *.iws
-
-.idea/
 .idea_modules/
+# per-user state
+.idea/workspace.xml
+.idea/usage.statistics.xml
+.idea/tasks.xml
+.idea/shelf/
+.idea/dictionaries/
+.idea/httpRequests/
+.idea/dataSources/
+.idea/dataSources.local.xml
+.idea/sonarlint*
+.idea/copilot*
+.idea/material_theme_project_new.xml
+# regenerated from the Gradle build on every sync
+.idea/modules.xml
+.idea/modules/
+.idea/libraries/
+.idea/compiler.xml
+.idea/jarRepositories.xml
 /classes/
 /out/
 /build/
