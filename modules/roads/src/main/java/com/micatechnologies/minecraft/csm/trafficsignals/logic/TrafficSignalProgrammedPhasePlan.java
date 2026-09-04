@@ -97,6 +97,18 @@ public class TrafficSignalProgrammedPhasePlan {
     return phases;
   }
 
+  /** The ring (1 or 2) whose sequence contains {@code phaseNumber}, or 0 if neither does. */
+  private int ringContaining(int phaseNumber) {
+    for (int ring = 1; ring <= 2; ring++) {
+      for (int n : getRingSequence(ring)) {
+        if (n == phaseNumber) {
+          return ring;
+        }
+      }
+    }
+    return 0;
+  }
+
   /**
    * @param phaseNumber the 1-based NEMA phase number
    *
@@ -330,6 +342,26 @@ public class TrafficSignalProgrammedPhasePlan {
       if (!hasSignals) {
         return "Phase " + p.getPhaseNumber() + " (" + p.getMovement().getName()
             + ") has no matching signals on circuit " + (ci + 1) + ".";
+      }
+    }
+    // PPLT FYA: a left's permissive phase is the through it crosses, which the ring/barrier
+    // structure keeps sequential with it. The service path never consults the pair itself, so a
+    // permissive phase on the SAME barrier in the OTHER ring — which the rings can serve
+    // concurrently — would let the green arrow and the "opposing" through show together.
+    for (TrafficSignalProgrammedPhase p : phases) {
+      if (!p.isEnabled() || p.getPermissivePhase() <= 0) {
+        continue;
+      }
+      TrafficSignalProgrammedPhase perm = getPhase(p.getPermissivePhase());
+      if (perm == null || perm.getPhaseNumber() == p.getPhaseNumber()) {
+        return "Phase " + p.getPhaseNumber() + "'s FYA permissive phase " + p.getPermissivePhase()
+            + " is not another phase.";
+      }
+      if (perm.isEnabled() && perm.getBarrier() == p.getBarrier()
+          && ringContaining(perm.getPhaseNumber()) != ringContaining(p.getPhaseNumber())) {
+        return "Phase " + p.getPhaseNumber() + "'s FYA permissive phase " + perm.getPhaseNumber()
+            + " runs concurrently with it (same barrier, other ring). The permissive phase must be"
+            + " the opposing through the left crosses.";
       }
     }
     // Preempt and overlap circuit references must stay valid too — unlike phases, their demand
