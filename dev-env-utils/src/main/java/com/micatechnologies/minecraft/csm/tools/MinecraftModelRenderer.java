@@ -57,6 +57,24 @@ public class MinecraftModelRenderer {
    */
   public static BufferedImage renderModel(File modelJsonFile, Map<String, File> textureMap,
       int imageSize) {
+    return renderModel(modelJsonFile, textureMap, imageSize, List.of());
+  }
+
+  /**
+   * Renders a Minecraft JSON block model to a {@link BufferedImage}.
+   *
+   * @param modelJsonFile  the Minecraft JSON model file (must contain an {@code elements} array)
+   * @param textureMap     maps texture variable names (e.g. {@code "0"}, {@code "all"}) to PNG
+   *                       files on disk. Keys should <em>not</em> include the {@code #} prefix.
+   * @param imageSize      width and height of the output image in pixels (e.g. 128 for 128x128)
+   * @param blockModelDirs every source tree's {@code models/block}, so a model shipped by one
+   *                       module can inherit from a parent shipped by Core or by another. Pass
+   *                       an empty list to look only beside the model itself.
+   *
+   * @return the rendered image, or {@code null} if rendering fails
+   */
+  public static BufferedImage renderModel(File modelJsonFile, Map<String, File> textureMap,
+      int imageSize, List<File> blockModelDirs) {
     try {
       // 1. Parse model JSON
       String jsonText = FileUtils.readFileToString(modelJsonFile, StandardCharsets.UTF_8);
@@ -98,7 +116,7 @@ public class MinecraftModelRenderer {
       double[] guiRotation = {30, 135, 0};   // Default isometric: tilt + show front
       double[] guiTranslation = {0, 0, 0};
       double[] guiScale = {1, 1, 1};
-      JsonObject displayJson = findDisplayGui(modelJsonFile, textureMap);
+      JsonObject displayJson = findDisplayGui(modelJsonFile, blockModelDirs);
       if (displayJson != null) {
         if (displayJson.has("rotation")) {
           JsonArray r = displayJson.getAsJsonArray("rotation");
@@ -162,7 +180,7 @@ public class MinecraftModelRenderer {
    * Finds the "display" -> "gui" JSON object from a model file or its parent chain.
    * Returns null if no gui display transform is found.
    */
-  private static JsonObject findDisplayGui(File modelFile, Map<String, File> textureMap) {
+  private static JsonObject findDisplayGui(File modelFile, List<File> blockModelDirs) {
     try {
       int depth = 0;
       File current = modelFile;
@@ -183,16 +201,28 @@ public class MinecraftModelRenderer {
           String stripped = parentRef;
           if (stripped.startsWith("csm:")) stripped = stripped.substring("csm:".length());
           if (stripped.startsWith("block/")) stripped = stripped.substring("block/".length());
-          File parentDir = modelFile.getParentFile();
-          // Walk up to models/block/ base
-          while (parentDir != null && !parentDir.getName().equals("block")) {
-            parentDir = parentDir.getParentFile();
+          // The parent may be shipped by a different jar than the child, so look in every
+          // tree's models/block before falling back to the child's own.
+          File next = null;
+          for (File dir : blockModelDirs) {
+            File candidate = new File(dir, stripped + ".json");
+            if (candidate.exists()) {
+              next = candidate;
+              break;
+            }
           }
-          if (parentDir != null) {
-            current = new File(parentDir, stripped + ".json");
-          } else {
-            break;
+          if (next == null) {
+            File parentDir = modelFile.getParentFile();
+            // Walk up to models/block/ base
+            while (parentDir != null && !parentDir.getName().equals("block")) {
+              parentDir = parentDir.getParentFile();
+            }
+            if (parentDir == null) {
+              break;
+            }
+            next = new File(parentDir, stripped + ".json");
           }
+          current = next;
         } else {
           break;
         }
