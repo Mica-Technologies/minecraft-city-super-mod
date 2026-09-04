@@ -1,6 +1,11 @@
 name: Test Mod Build (Pull Request)
 
-on: pull_request
+# Also dispatchable by hand: a pull request that renames thousands of files (the module split
+# did) can leave GitHub without any check run at all, and this is the only way to get the
+# compile and the two server-smoke legs for such a branch.
+on:
+  pull_request:
+  workflow_dispatch:
 
 # Superseded runs on the same PR are pointless — the server smoke test is slow.
 concurrency:
