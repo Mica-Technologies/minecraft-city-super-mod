@@ -45,7 +45,9 @@ jobs:
           retention-days: 7
 
   server_smoke_test:
-    name: Dedicated Server Smoke Test (${{ matrix.modules }})
+    # The all-modules leg keeps the exact name the branch protection rule requires; only the
+    # Core-only leg carries a suffix.
+    name: ${{ matrix.modules == 'all' && 'Dedicated Server Smoke Test' || format('Dedicated Server Smoke Test ({0})', matrix.modules) }}
     needs: compile
     runs-on: ubuntu-latest
     # CSM is a large content mod; world gen on a cold cache is the slow part.
