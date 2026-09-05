@@ -110,6 +110,27 @@ public class CrosswalkSignalVertexData {
     private static final float MOUNT_X1 = 7.0f;  // mount pipe X range (centered)
     private static final float MOUNT_X2 = 9.0f;
 
+    /**
+     * How far an arm's centre line runs past this block's face, in model units, when it
+     * reaches for the pole in the neighbouring block. The neighbour's centre is 8 units past
+     * the face, so 6 puts the arm's far cap (centre + {@link #ARM_HALF_THICKNESS}) 1 unit
+     * beyond that centre.
+     *
+     * <p>The point is to bite into the pole rather than stop at where its surface is guessed
+     * to be. The family's poles are not one width: the thin pole is 8 units across, the
+     * pedestal pole 6, so their surfaces sit 3.92 and 2.94 units out from the block centre
+     * respectively. An arm tuned to touch the widest one falls visibly short of the
+     * narrowest -- which is exactly what happened when the pedestal pole was added, with
+     * LEFT and RIGHT ending 0.56 units shy of it while REAR, already using this reach, was
+     * fine. Reaching past the centre instead clears every pole in the family, and the
+     * overshoot is buried inside opaque geometry so it costs nothing to look at.
+     *
+     * <p>{@link #POLE_REACH_NEG} is the mirror of this for arms running toward -X, where the
+     * block face is at 0 rather than 16.
+     */
+    private static final float POLE_REACH_POS = 22.0f;   // 16 (face) + 6
+    private static final float POLE_REACH_NEG = -6.0f;   //  0 (face) - 6
+
     // Mount arm Y positions — extended vertical shafts for visible pole stubs.
     private static final float SINGLE_LOWER_ARM_Y = -3.0f;
     private static final float SINGLE_UPPER_ARM_Y = 18.0f;
@@ -468,27 +489,31 @@ public class CrosswalkSignalVertexData {
 
         switch ( mountType ) {
             case REAR:
-                // Arm from stub (hx, hz) to pole (MOUNT_X, Z=22)
-                addAngledArm2D( boxes, hx1, hx2, hz2, MOUNT_X1, MOUNT_X2, 22.0f,
+                // Arm from stub (hx, hz) to pole (MOUNT_X, Z=POLE_REACH_POS)
+                addAngledArm2D( boxes, hx1, hx2, hz2, MOUNT_X1, MOUNT_X2, POLE_REACH_POS,
                         lowerArmY, lowerArmY + 1.0f );
-                addAngledArm2D( boxes, hx1, hx2, hz2, MOUNT_X1, MOUNT_X2, 22.0f,
+                addAngledArm2D( boxes, hx1, hx2, hz2, MOUNT_X1, MOUNT_X2, POLE_REACH_POS,
                         upperArmY - 1.0f, upperArmY );
                 break;
             case LEFT:
-                // Arm from stub (hx2, hz) to pole (X=20, MOUNT_Z center)
+                // Arm from stub (hx2, hz) to pole (X=POLE_REACH_POS, MOUNT_Z center).
+                // Only the midpoint of this pair is used, so it is written as the reach
+                // plus/minus a half unit rather than as two independent numbers.
                 addAngledArm2D( boxes, hx2, hx2 + 0.01f, hz1,
-                        19.0f, 20.0f, MOUNT_Z1 + 1.0f,
+                        POLE_REACH_POS - 0.5f, POLE_REACH_POS + 0.5f, MOUNT_Z1 + 1.0f,
                         lowerArmY, lowerArmY + 1.0f );
                 addAngledArm2D( boxes, hx2, hx2 + 0.01f, hz1,
-                        19.0f, 20.0f, MOUNT_Z1 + 1.0f,
+                        POLE_REACH_POS - 0.5f, POLE_REACH_POS + 0.5f, MOUNT_Z1 + 1.0f,
                         upperArmY - 1.0f, upperArmY );
                 break;
             case RIGHT:
-                // Arm from pole (X=-4, MOUNT_Z center) to stub (hx1, hz)
-                addAngledArm2D( boxes, -4.0f, -3.0f, MOUNT_Z1 + 1.0f,
+                // Arm from pole (X=POLE_REACH_NEG, MOUNT_Z center) to stub (hx1, hz)
+                addAngledArm2D( boxes, POLE_REACH_NEG - 0.5f, POLE_REACH_NEG + 0.5f,
+                        MOUNT_Z1 + 1.0f,
                         hx1 - 0.01f, hx1, hz1,
                         lowerArmY, lowerArmY + 1.0f );
-                addAngledArm2D( boxes, -4.0f, -3.0f, MOUNT_Z1 + 1.0f,
+                addAngledArm2D( boxes, POLE_REACH_NEG - 0.5f, POLE_REACH_NEG + 0.5f,
+                        MOUNT_Z1 + 1.0f,
                         hx1 - 0.01f, hx1, hz1,
                         upperArmY - 1.0f, upperArmY );
                 break;
