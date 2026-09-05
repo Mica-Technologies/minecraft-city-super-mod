@@ -1,0 +1,219 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:trafficaccessories/shared_models/pedestalpole_shaft.obj",
+    "custom": {
+      "flip-v": true
+    },
+    "textures": {
+      "#body": "csm:blocks/trafficaccessories/shared_textures/metal_mattetan",
+      "particle": "csm:blocks/trafficaccessories/shared_textures/metal_mattetan"
+    }
+  },
+  "variants": {
+    "inventory": [
+      {
+        "model": "csm:trafficaccessories/shared_models/pedestalpole_inv.obj",
+        "custom": {
+          "flip-v": true
+        },
+        "textures": {
+          "#body": "csm:blocks/trafficaccessories/shared_textures/metal_mattetan"
+        },
+        "transform": "forge:default-block"
+      }
+    ],
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      },
+      "up": {
+        "x": 270
+      },
+      "down": {
+        "x": 90
+      }
+    },
+    "mounteast": {
+      "false": {},
+      "true": {
+        "submodel": {
+          "mounte": {
+            "model": "csm:trafficaccessories/shared_models/pedestalpole_mount.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficaccessories/shared_textures/metal_mattetan"
+            },
+            "transform": {
+              "rotation": [
+                {
+                  "x": 0
+                },
+                {
+                  "y": 90
+                },
+                {
+                  "z": 0
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "mountwest": {
+      "false": {},
+      "true": {
+        "submodel": {
+          "mountw": {
+            "model": "csm:trafficaccessories/shared_models/pedestalpole_mount.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficaccessories/shared_textures/metal_mattetan"
+            },
+            "transform": {
+              "rotation": [
+                {
+                  "x": 0
+                },
+                {
+                  "y": 270
+                },
+                {
+                  "z": 0
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "mountup": {
+      "false": {},
+      "true": {
+        "submodel": {
+          "mountu": {
+            "model": "csm:trafficaccessories/shared_models/pedestalpole_mount.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficaccessories/shared_textures/metal_mattetan"
+            },
+            "transform": {
+              "rotation": [
+                {
+                  "x": 270
+                },
+                {
+                  "y": 0
+                },
+                {
+                  "z": 0
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "mountdown": {
+      "false": {},
+      "true": {
+        "submodel": {
+          "mountd": {
+            "model": "csm:trafficaccessories/shared_models/pedestalpole_mount.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficaccessories/shared_textures/metal_mattetan"
+            },
+            "transform": {
+              "rotation": [
+                {
+                  "x": 90
+                },
+                {
+                  "y": 0
+                },
+                {
+                  "z": 0
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "endn": {
+      "none": {},
+      "cap": {
+        "submodel": {
+          "cap_n": {
+            "model": "csm:trafficaccessories/shared_models/pedestalpole_cap_n.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficaccessories/shared_textures/metal_mattetan"
+            }
+          }
+        }
+      },
+      "base": {
+        "submodel": {
+          "base_n": {
+            "model": "csm:trafficaccessories/shared_models/pedestalpole_base_n.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficaccessories/shared_textures/metal_mattetan"
+            }
+          }
+        }
+      }
+    },
+    "ends": {
+      "none": {},
+      "cap": {
+        "submodel": {
+          "cap_s": {
+            "model": "csm:trafficaccessories/shared_models/pedestalpole_cap_s.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficaccessories/shared_textures/metal_mattetan"
+            }
+          }
+        }
+      },
+      "base": {
+        "submodel": {
+          "base_s": {
+            "model": "csm:trafficaccessories/shared_models/pedestalpole_base_s.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficaccessories/shared_textures/metal_mattetan"
+            }
+          }
+        }
+      }
+    }
+  }
+}

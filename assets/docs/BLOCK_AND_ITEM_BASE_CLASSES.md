@@ -388,6 +388,29 @@ SILVER, TAN, WHITE, UNPAINTED).
 `AbstractBlockTrafficPoleDiagonal` extends this with additional `MOUNT_NORTH` and
 `MOUNT_SOUTH` properties for diagonal mount detection.
 
+### Constructors
+
+```java
+public AbstractBlockTrafficPole()                    // Material.ROCK
+protected AbstractBlockTrafficPole(Material material)
+```
+
+Every pole is rock; the second form exists only so a subclass whose registry name is a
+constructor argument can run code before `super()` through the argument expression
+(`super(stash(name, color))`), since `getBlockRegistryName()` is called from the `AbstractBlock`
+constructor before the subclass's fields exist.
+
+### Tube Ends (BlockTrafficPolePedestal)
+
+The mount booleans describe the pole's four **flanks**; nothing in the base class looks along
+the tube's axis, which is how a stack of poles reads as one continuous post. The pedestal pole
+adds that: two `PropertyEnum<EndStyle>` properties, `endn` and `ends` (NONE / CAP / BASE), set
+in `getActualState` from the block beyond each end -- seamless where another pedestal pole
+continues it, the pedestal base where a vertical pole stands on the ground, the domed cap where
+the tube ends in the open. They are named for the ends of the tube in model space, not "top" and
+"bottom", because which end is on the ground depends on the facing. See
+`assets/docs/PEDESTAL_POLE_SYSTEM.md`.
+
 ## Item Classes
 
 ### AbstractItem

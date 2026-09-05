@@ -119,7 +119,23 @@ public abstract class AbstractBlockTrafficPole extends AbstractBlockRotatableNSE
    * @since 1.0
    */
   public AbstractBlockTrafficPole() {
-    super(Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0);
+    this(Material.ROCK);
+  }
+
+  /**
+   * Constructs an {@link AbstractBlockTrafficPole} instance with an explicit material.
+   *
+   * <p>Every pole is {@link Material#ROCK}; this overload exists so that a subclass whose
+   * registry name is a constructor argument can run code before {@code super()} through the
+   * argument expression, since {@link #getBlockRegistryName()} is called from the
+   * {@link AbstractBlock} constructor. See {@code BlockTrafficPolePedestal}.
+   *
+   * @param material the block material
+   *
+   * @since 2026.9.4
+   */
+  protected AbstractBlockTrafficPole(Material material) {
+    super(material, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0);
   }
 
   /**

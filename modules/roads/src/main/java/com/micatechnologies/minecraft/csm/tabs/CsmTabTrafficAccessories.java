@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.tabs;
 
 import com.micatechnologies.minecraft.csm.CsmRegistry;
+import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockTrafficPole.TRAFFIC_POLE_COLOR;
 import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockAlprCameraSolar;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockAlprCameraSolarWall;
@@ -25,6 +26,7 @@ import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleLar
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleLargeUnpainted;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleLargeWhite;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleMastArmCurve;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPolePedestal;
 import com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.BlockSpanWireAnchor;
 import com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.BlockSpanWireClusterMount;
 import com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.BlockSpanWireDisconnectBox;
@@ -390,6 +392,13 @@ public class CsmTabTrafficAccessories extends CsmTab {
     // --- Class-based: Traffic Poles (SmallTan, SmallWhite) ---
     initTabBlock(BlockTrafficPoleSmallTan.class, fmlPreInitializationEvent);
     initTabBlock(BlockTrafficPoleSmallWhite.class, fmlPreInitializationEvent);
+
+    // --- Pedestal poles (OBJ; one block, base and cap decided per block from its neighbours) ---
+    initTabBlock(new BlockTrafficPolePedestal("trafficpolepedestalsilver", TRAFFIC_POLE_COLOR.SILVER));
+    initTabBlock(new BlockTrafficPolePedestal("trafficpolepedestalblack", TRAFFIC_POLE_COLOR.BLACK));
+    initTabBlock(new BlockTrafficPolePedestal("trafficpolepedestaltan", TRAFFIC_POLE_COLOR.TAN));
+    initTabBlock(new BlockTrafficPolePedestal("trafficpolepedestalwhite", TRAFFIC_POLE_COLOR.WHITE));
+    initTabBlock(new BlockTrafficPolePedestal("trafficpolepedestalunpainted", TRAFFIC_POLE_COLOR.UNPAINTED));
 
     // --- Class-based: Traffic Pole Large (vertical) ---
     initTabBlock(BlockTrafficPoleLargeGray.class, fmlPreInitializationEvent);

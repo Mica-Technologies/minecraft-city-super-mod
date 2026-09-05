@@ -306,6 +306,7 @@ See `assets/docs/` for detailed technical documentation on major subsystems:
 - `assets/docs/SPAN_WIRE_SYSTEM.md` -- Wire-span signal mounting: the catenary solver, why mounts
   go below the cable, the three different ways a payload hangs, box span tether clearance
 - `assets/docs/MAST_ARM_CURVE_SYSTEM.md` -- Realistically scaled signal mast arm upsweeps: why they are multi-block, the parabolic sweep, oblique end clipping
+- `assets/docs/PEDESTAL_POLE_SYSTEM.md` -- The pedestrian pedestal pole: one stackable block that decides base, cap or seamless joint per end from its neighbours, why the end properties are named in model space
 - `assets/docs/SURVIVAL_AND_RECIPES.md` -- Crafting parts, the CSM Fabricator, mining behavior, why there is no per-block recipe
 
 Agent progress/tracking docs are in `assets/docs/agent_progress/`.
@@ -338,6 +339,9 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   parabolic tube, splits it across the block cells it passes through, and emits one OBJ per
   cell plus all 25 blockstates AND the Java enum holding the cell layout, so the placement code
   cannot disagree with the geometry it was split on
+- `gen_pedestal_pole.py` -- the pedestal (pedestrian) traffic pole: lathes the tube, domed cap,
+  tapered base with its access door and the clamp bracket as OBJ, and emits the five
+  blockstates plus lang/tab fragments; `--check` fails if the tree has drifted from the script
 - `preview_block_model.py` -- renders a Forge JSON element model or an OBJ against its texture offline, with Minecraft's face winding and UV origin, so stretched UVs and transparent bleed can be caught without launching the game
 - `csm_bench.py` -- builds a dense grid of CSM content in a throwaway world and measures client
   frame time against it over MCMCP (`build` / `measure` / `compare`). It pins the time, weather and
