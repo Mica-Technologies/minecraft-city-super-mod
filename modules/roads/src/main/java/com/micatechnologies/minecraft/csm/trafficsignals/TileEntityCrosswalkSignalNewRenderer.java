@@ -211,6 +211,12 @@ public class TileEntityCrosswalkSignalNewRenderer
         // stale draw that only appears on the frame a signal's configuration changes.
         boolean stateDirty = te.isStateDirty();
         if ( stateDirty ) {
+            // Every state compiled for this position goes, not just the one about to be redrawn:
+            // the body list is keyed on the light level, so the states left behind are the ones
+            // for the other light levels this block has been rendered at, and the daylight cycle
+            // brings them back around. See TileEntityTrafficSignalHeadRenderer for the case where
+            // that was visible in game.
+            DISPLAY_LISTS.invalidate( pos );
             DISPLAY_FACE_LISTS.invalidate( pos );
             COUNTDOWN_LISTS.invalidate( pos );
         }

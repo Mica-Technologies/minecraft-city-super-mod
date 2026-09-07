@@ -253,8 +253,21 @@ public class TileEntityTrafficSignalHeadRenderer extends
     float zPushBack = TrafficSignalBoundingBoxHelper.computeZPushBack(sectionSizes);
 
     int litMask = 0;
+    // A bimodal section (green arrow / flashing yellow arrow) keeps its base colour in
+    // getBulbColor() and shows getBulbCustomColor(), which the tile entity flips to YELLOW while
+    // the controller commands the permissive FYA. Both the baked visor interiors and the baked
+    // bulb lenses read the custom colour, so the flip changes the compiled geometry -- and the
+    // block's COLOR property does not move with it (FYA and the solid green arrow are both colour
+    // state 2, lighting the same section). Without this bit the two modes share a state key and
+    // the cache serves whichever was compiled first: a flashing yellow arrow over a green visor
+    // interior, or the reverse.
+    boolean bimodalOverride = false;
     for (int i = 0; i < sectionInfos.length; i++) {
       if (sectionInfos[i].isBulbLit()) litMask |= (1 << i);
+      if (sectionInfos[i].isBimodal()
+          && sectionInfos[i].getBulbCustomColor() != sectionInfos[i].getBulbColor()) {
+        bimodalOverride = true;
+      }
     }
 
     BlockPos pos = te.getPos();
@@ -277,12 +290,14 @@ public class TileEntityTrafficSignalHeadRenderer extends
     long stateKey = (combinedLight & 0xFFFFFFFFL)
         | ((long) (signalColorState & 0xF) << 32)
         | ((long) (tintBucket & 0x7F) << 36)
-        | ((long) (litMask & 0xFFFFF) << 43);
+        | ((long) (litMask & 0xFFFFF) << 43)
+        | (bimodalOverride ? 1L << 63 : 0L);
     // The bulbs take neither the world light nor the visor tint: every bulb vertex is emitted
     // white at a fullbright lightmap, so only which lens is lit and what colour it shows can change
     // the geometry. A narrower key means the bulb lists survive lighting changes the body's do not.
     long bulbStateKey = (signalColorState & 0xFL)
-        | ((long) (litMask & 0xFFFFF) << 4);
+        | ((long) (litMask & 0xFFFFF) << 4)
+        | (bimodalOverride ? 1L << 24 : 0L);
     // Read the dirty flag ONCE, before the body path clears it. Both caches key on geometry the
     // flag governs (the section layout), and the body block calls clearDirtyFlag() as soon as it
     // has recompiled -- so a bulb path that re-read the flag afterwards would always see false and
@@ -291,6 +306,14 @@ public class TileEntityTrafficSignalHeadRenderer extends
     // wrongness a single screenshot comparison would have passed.
     boolean stateDirty = te.isStateDirty();
     if (stateDirty) {
+      // Drop EVERY state compiled for this position, not just the one about to be redrawn. The
+      // cache keeps several states per position so a flashing signal does not recompile on each
+      // flash, and the dirty flag is cleared as soon as one of them has been rebuilt -- so
+      // refreshing only the current frame's key leaves the others compiled against the state the
+      // head had before the change, and they are served again the moment the flash cycle or the
+      // colour state comes back round to them. That is what made a section's visor interior keep
+      // the colour of the previous mode for as long as the mode lasted.
+      DISPLAY_LISTS.invalidate(pos);
       BULB_DISPLAY_LISTS.invalidate(pos);
     }
     int displayList = stateDirty
