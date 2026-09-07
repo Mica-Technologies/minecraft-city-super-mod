@@ -137,7 +137,15 @@ public class TileEntityLaneControlSignalRenderer
         // The compiled geometry depends only on the block light level here; everything else that
         // can change it routes through the tile entity's explicit dirty flag.
         long stateKey = combinedLight;
-        int displayList = te.isStateDirty()
+        // A dirty flag retires every state compiled for this position, not just the one about to
+        // be redrawn -- the list is keyed on the light level, so the states left behind would be
+        // the ones for the other light levels this block has been rendered at, and the daylight
+        // cycle brings them back around. See TileEntityTrafficSignalHeadRenderer.
+        boolean stateDirty = te.isStateDirty();
+        if (stateDirty) {
+            DISPLAY_LISTS.invalidate(pos);
+        }
+        int displayList = stateDirty
                 ? CsmDisplayListCache.NO_LIST
                 : DISPLAY_LISTS.get(pos, stateKey);
         if (displayList == CsmDisplayListCache.NO_LIST) {
