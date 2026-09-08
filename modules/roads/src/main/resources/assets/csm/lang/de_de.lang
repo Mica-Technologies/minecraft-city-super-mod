@@ -168,6 +168,7 @@ tile.controllableverticalsolidflashyellowsignal.name=Vertikal-Verkehrssignal (Ru
 tile.controllableverticalsolidflashyellowsignalgray.name=Vertikal-Rund-Blinkgelb-Signal (Grau)
 tile.controllableverticalsolidsignal.name=Vertikal-Verkehrssignal (Rund)
 tile.controllableverticalsolidsignal1288inch.name=Vertikal-Verkehrssignal (Rund, 12-8-8 Zoll)
+tile.controllableverticalsolidsignal2section.name=Vertikal-Verkehrssignal (Rund, 2 Kammern, 12 Zoll)
 tile.controllableverticalsolidsignal8812inch.name=Vertikal-Verkehrssignal (Rund, 8-8-12 Zoll)
 tile.controllableverticalsolidsignal8inch.name=Vertikal-Verkehrssignal (Rund, 8 Zoll)
 tile.controllableverticalsolidsignalbarlo.name=Vertikal-Verkehrssignal (Rund, mit roter Barlo-Blitzleuchte)

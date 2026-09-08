@@ -44,6 +44,7 @@ public class BlockControllableSignal extends AbstractBlockControllableSignalHead
   final float signalYOffset;
   final boolean hasSignalYOffset;
   final boolean lightAllOnRedYellow;
+  final boolean lightAllOnYellow;
   @Nullable final TrafficSignalBulbStyle enforcedBulbStyle;
   final boolean addon;
   final boolean allowsHorizontalFlip;
@@ -68,6 +69,7 @@ public class BlockControllableSignal extends AbstractBlockControllableSignalHead
     this.signalYOffset = builder.signalYOffset;
     this.hasSignalYOffset = builder.hasSignalYOffset;
     this.lightAllOnRedYellow = builder.lightAllOnRedYellow;
+    this.lightAllOnYellow = builder.lightAllOnYellow;
     this.enforcedBulbStyle = builder.enforcedBulbStyle;
     this.addon = builder.addon;
     // Static-horizontal and add-on signals don't offer the flip toggle: the former are
@@ -135,6 +137,9 @@ public class BlockControllableSignal extends AbstractBlockControllableSignalHead
   public boolean shouldLightAllSections(int colorState) {
     if (lightAllOnRedYellow) {
       return colorState == 0 || colorState == 1;
+    }
+    if (lightAllOnYellow && colorState == 1) {
+      return true;
     }
     return super.shouldLightAllSections(colorState);
   }
@@ -397,6 +402,7 @@ public class BlockControllableSignal extends AbstractBlockControllableSignalHead
     float signalYOffset = 0.0f;
     boolean hasSignalYOffset = false;
     boolean lightAllOnRedYellow = false;
+    boolean lightAllOnYellow = false;
     TrafficSignalBulbStyle enforcedBulbStyle = null;
     boolean addon = false;
     boolean allowsHorizontalFlip = true;
@@ -440,6 +446,17 @@ public class BlockControllableSignal extends AbstractBlockControllableSignalHead
 
     public Builder lightAllOnRedYellow(boolean lightAll) {
       this.lightAllOnRedYellow = lightAll;
+      return this;
+    }
+
+    /**
+     * Lights every section on the yellow color state. For a head that has no yellow section of
+     * its own — the two-section red/green head — the controller still commands a yellow
+     * clearance, and a head that mapped it by bulb color would simply go dark mid-clearance.
+     * Lighting both lenses instead keeps the clearance visible.
+     */
+    public Builder lightAllOnYellow(boolean lightAll) {
+      this.lightAllOnYellow = lightAll;
       return this;
     }
 

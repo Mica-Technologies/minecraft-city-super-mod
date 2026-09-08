@@ -674,6 +674,14 @@ The actual 3D geometry lives in shared custom models (`models/custom/trafficligh
   Two texture indices (0=red, 1=yellow).
 - **Single solid signals**: Preset color per block. Colors 0+1 = on, colors 2+3 = off.
   All textures (all, particle, 0) change together.
+- **Two-section 12-inch head** (`controllableverticalsolidsignal2section`): Red over green, with
+  no yellow section. The controller still commands the yellow clearance, and a head that mapped
+  color 1 by bulb color alone would go dark in the middle of it, so the block sets
+  `BlockControllableSignal.Builder.lightAllOnYellow` and both lenses light on color 1. Its two
+  12-inch sections (`sectionYPositions(0, -12)`, `sectionSizes(12, 12)`) span the same 24 model
+  units as the three-section 8-inch head, so the two share mounts, backplates and span-wire
+  drops. The inventory model `trafficlightvertical2section` is the canonical
+  `trafficlightvertical` with the center band dropped and the upper band moved down onto it.
 - **Tweeters/Train controller**: Same appearance in all color states (empty color variant overrides).
 - **Gray variants**: Already use newer texture paths (`trafficsignals/old_bulb_body/gray/*`)
   and reference backplate models.

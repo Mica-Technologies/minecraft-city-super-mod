@@ -168,6 +168,7 @@ tile.controllableverticalsolidflashyellowsignal.name=Vertikal Trafiksignal (Rund
 tile.controllableverticalsolidflashyellowsignalgray.name=Vertikal Rund Blinkande Gul-Signal (Grå)
 tile.controllableverticalsolidsignal.name=Vertikal Trafiksignal (Rund)
 tile.controllableverticalsolidsignal1288inch.name=Vertikal Trafiksignal (Rund, 12-8-8 Tum)
+tile.controllableverticalsolidsignal2section.name=Vertikal Trafiksignal (Rund, 2 Sektioner, 12 Tum)
 tile.controllableverticalsolidsignal8812inch.name=Vertikal Trafiksignal (Rund, 8-8-12 Tum)
 tile.controllableverticalsolidsignal8inch.name=Vertikal Trafiksignal (Rund, 8 Tum)
 tile.controllableverticalsolidsignalbarlo.name=Vertikal Trafiksignal (Rund med Röd Barlo-Blixtljus)
