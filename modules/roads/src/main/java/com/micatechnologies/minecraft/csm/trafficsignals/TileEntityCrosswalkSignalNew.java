@@ -283,6 +283,38 @@ public class TileEntityCrosswalkSignalNew extends AbstractTickableTileEntity {
         }
     }
 
+    /**
+     * Applies a bundle of appearance settings copied from another crosswalk signal, in one sync
+     * rather than one per property. Carries the finish and the display format only: mount type
+     * and body tilt describe where this particular signal sits rather than what it looks like,
+     * so stamping them across an intersection would move every head, and they are deliberately
+     * left alone (the vehicle head's clipboard omits its mount type and tilt for the same
+     * reason).
+     *
+     * <p>The display format is ignored on a single (16-inch) signal, whose symbol display is
+     * fixed — the same guard the config GUI applies by disabling that button.</p>
+     *
+     * @param bodyColor  the body paint color to apply
+     * @param visorColor the visor paint color to apply
+     * @param visorType  the visor type to apply
+     * @param bulbType   the display format to apply, on a double (12-inch) signal only
+     * @param isDouble   whether this signal is the double (12-inch) type
+     */
+    public void applyCopiedAppearance( TrafficSignalBodyColor bodyColor,
+            TrafficSignalBodyColor visorColor, CrosswalkVisorType visorType,
+            CrosswalkBulbType bulbType, boolean isDouble ) {
+        this.bodyColor = bodyColor;
+        this.visorColor = visorColor;
+        this.visorType = visorType;
+        if ( isDouble ) {
+            this.bulbType = bulbType;
+        }
+        dirty = true;
+        if ( world != null && !world.isRemote ) {
+            markDirtySync( world, pos, true );
+        }
+    }
+
     public void setLearnedClearanceTicks( int ticks ) {
         this.learnedClearanceTicks = ticks;
         if ( world != null && !world.isRemote ) {

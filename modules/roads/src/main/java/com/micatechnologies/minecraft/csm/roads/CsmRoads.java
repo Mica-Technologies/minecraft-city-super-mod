@@ -26,6 +26,8 @@ import com.micatechnologies.minecraft.csm.trafficsignals.AdvancedSignalControlle
 import com.micatechnologies.minecraft.csm.trafficsignals.BlankoutBoxConfigPacket;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlankoutBoxConfigPacketHandler;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockOverheightDetectionSensor;
+import com.micatechnologies.minecraft.csm.trafficsignals.CrosswalkAppearancePacket;
+import com.micatechnologies.minecraft.csm.trafficsignals.CrosswalkAppearancePacketHandler;
 import com.micatechnologies.minecraft.csm.trafficsignals.CrosswalkConfigPacket;
 import com.micatechnologies.minecraft.csm.trafficsignals.CrosswalkConfigPacketHandler;
 import com.micatechnologies.minecraft.csm.trafficsignals.RoadsSounds;
@@ -180,6 +182,10 @@ public class CsmRoads {
     NETWORK.registerMessage(
         DynamicStreetSignUpdateHandler.class,
         DynamicStreetSignUpdatePacket.class,
+        Side.SERVER);
+    NETWORK.registerMessage(
+        CrosswalkAppearancePacketHandler.class,
+        CrosswalkAppearancePacket.class,
         Side.SERVER);
 
     // Hand this module's sound names to Core's registrar. Forge runs every mod's
