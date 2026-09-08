@@ -11,7 +11,6 @@ import net.minecraft.init.SoundEvents;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
 
 /**
  * Drives the dynamic behavior of {@link BlockFareGate}:

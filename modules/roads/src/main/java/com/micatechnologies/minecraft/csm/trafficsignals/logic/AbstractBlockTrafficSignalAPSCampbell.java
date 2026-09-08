@@ -1,7 +1,6 @@
 package com.micatechnologies.minecraft.csm.trafficsignals.logic;
 
 import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalAPSCampbell;
-import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalAPSPolara;
 import javax.annotation.Nullable;
 import net.minecraft.block.material.Material;
 import net.minecraft.tileentity.TileEntity;

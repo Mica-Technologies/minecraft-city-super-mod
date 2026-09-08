@@ -5,7 +5,6 @@ import com.micatechnologies.minecraft.csm.codeutils.ICsmNoSnowAccumulation;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityBlankoutBox;
 import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalHead;
-import com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityLaneControlSignal;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignalHead;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.BlankoutBoxVertexData;
 import javax.annotation.Nonnull;

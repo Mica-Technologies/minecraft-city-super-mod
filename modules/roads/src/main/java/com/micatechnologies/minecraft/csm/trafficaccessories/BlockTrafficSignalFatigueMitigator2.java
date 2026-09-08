@@ -1,7 +1,6 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableHZEight;
-import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEWUD;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmNoSnowAccumulation;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTrafficPoleIgnored;
 import javax.annotation.Nonnull;

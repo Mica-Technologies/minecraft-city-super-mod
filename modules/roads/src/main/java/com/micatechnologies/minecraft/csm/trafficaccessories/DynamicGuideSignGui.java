@@ -2,15 +2,11 @@ package com.micatechnologies.minecraft.csm.trafficaccessories;
 
 import com.micatechnologies.minecraft.csm.trafficaccessories.packets.DynamicGuideSignUpdatePacket;
 import com.micatechnologies.minecraft.csm.roads.CsmRoads;
-import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.CornerStyle;
 import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.ExitTabData;
-import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.GuideSignArrowType;
-import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.GuideSignBannerType;
 import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.GuideSignData;
 import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.GuideSignElement;
 import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.GuideSignPanel;
 import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.GuideSignRow;
-import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.GuideSignShieldType;
 import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.PostType;
 import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.SignLightMode;
 import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.SignLightType;

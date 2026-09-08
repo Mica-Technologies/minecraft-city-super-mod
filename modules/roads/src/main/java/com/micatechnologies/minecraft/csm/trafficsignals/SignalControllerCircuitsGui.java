@@ -4,8 +4,6 @@ import com.micatechnologies.minecraft.csm.roads.CsmRoads;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalControllerCircuit;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalControllerCircuits;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.util.math.BlockPos;

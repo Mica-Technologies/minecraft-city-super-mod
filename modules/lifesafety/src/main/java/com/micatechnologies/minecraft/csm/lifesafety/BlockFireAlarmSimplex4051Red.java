@@ -12,7 +12,6 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.IBlockAccess;
-import net.minecraft.world.World;
 
 /**
  * Red Simplex 4051 fire alarm horn/strobe block that plays a Temporal Code 3 alarm tone

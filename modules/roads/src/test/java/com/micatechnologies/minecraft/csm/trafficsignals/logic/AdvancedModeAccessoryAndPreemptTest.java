@@ -8,7 +8,6 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.RingBarrierState.VehInterval;
-import java.util.Arrays;
 import java.util.Collections;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;

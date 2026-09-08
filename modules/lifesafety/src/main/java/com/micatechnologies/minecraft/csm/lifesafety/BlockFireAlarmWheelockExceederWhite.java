@@ -12,7 +12,6 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.IBlockAccess;
-import net.minecraft.world.World;
 
 /**
  * White Wheelock Exceeder fire alarm horn/strobe block that plays the Wheelock AS alarm tone

@@ -1,7 +1,6 @@
 package com.micatechnologies.minecraft.csm.api.firealarm;
 
 import com.micatechnologies.minecraft.csm.lifesafety.TileEntityFireAlarmControlPanel;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
