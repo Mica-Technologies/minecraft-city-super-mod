@@ -37,19 +37,20 @@ import org.lwjgl.opengl.GL11;
 public class TileEntitySchoolZoneBeaconRenderer
     extends TileEntitySpecialRenderer<TileEntitySchoolZoneBeacon> {
 
-  // Panel — one block wide and a little under one and a half tall, before scale.
-  private static final float PANEL_W = 12.0f;
-  private static final float PANEL_H = 22.0f;
+  // Panel — one block wide, a little under two tall, before scale. The width is the sign
+  // family's full 16: at 12 the legend did not fit, and FLASHING ran off both edges.
+  private static final float PANEL_W = 16.0f;
+  private static final float PANEL_H = 30.0f;
   private static final float PANEL_D = 1.0f;
   private static final float PANEL_BORDER = 0.8f;
 
   // Beacon bar, above the panel and (optionally) below it.
-  private static final float BAR_W = 12.0f;
+  private static final float BAR_W = 16.0f;
   private static final float BAR_H = 6.0f;
   private static final float BAR_D = 1.6f;
   private static final float BAR_GAP = 1.0f;
   private static final float LAMP_RADIUS = 1.9f;
-  private static final float LAMP_OFFSET_X = 3.0f;
+  private static final float LAMP_OFFSET_X = 4.0f;
   private static final int LAMP_SEGMENTS = 12;
 
   /** Pivot: the middle of the cell, pushed back so the panel's rear sits on the cell's back. */
@@ -67,7 +68,18 @@ public class TileEntitySchoolZoneBeaconRenderer
 
   private static final int TEXT_BLACK = 0x111111;
   private static final float TEXT_SCALE_LABEL = 0.42f;
-  private static final float TEXT_SCALE_SPEED = 1.05f;
+  /** The plaque line is smaller than the legend because FLASHING is the longest word on it. */
+  private static final float TEXT_SCALE_PLAQUE = 0.30f;
+  private static final float TEXT_SCALE_SPEED = 1.0f;
+
+  // Line centres, measured from the panel's middle. Spaced off the actual line heights rather
+  // than by eye: the first pass had the speed number sitting on top of LIMIT.
+  private static final float LINE_SCHOOL = 12.1f;
+  private static final float LINE_SPEED = 8.2f;
+  private static final float LINE_LIMIT = 4.3f;
+  private static final float LINE_NUMBER = -2.9f;
+  private static final float LINE_WHEN = -9.6f;
+  private static final float LINE_FLASHING = -12.4f;
 
   private static final ResourceLocation WHITE_TEXTURE =
       new ResourceLocation("csm", "textures/blocks/white1px.png");
@@ -182,19 +194,18 @@ public class TileEntitySchoolZoneBeaconRenderer
   private void renderPanelText(TileEntitySchoolZoneBeacon te) {
     CsmFontRenderer fr = CsmFontRenderer.highwayGothic();
     float faceZ = CZ - PANEL_D / 2.0f - 0.25f;
-    float halfH = PANEL_H / 2.0f;
 
     GlStateManager.pushMatrix();
     GlStateManager.translate(CX, CY, faceZ);
     GlStateManager.rotate(180, 0, 1, 0);
     GlStateManager.depthMask(false);
 
-    drawCentred(fr, "SCHOOL", 0, halfH - 3.0f, TEXT_SCALE_LABEL);
-    drawCentred(fr, "SPEED", 0, halfH - 6.2f, TEXT_SCALE_LABEL);
-    drawCentred(fr, "LIMIT", 0, halfH - 9.0f, TEXT_SCALE_LABEL);
-    drawCentred(fr, String.valueOf(te.getSpeedLimit()), 0, 0.5f, TEXT_SCALE_SPEED);
-    drawCentred(fr, "WHEN", 0, -halfH + 6.0f, TEXT_SCALE_LABEL);
-    drawCentred(fr, "FLASHING", 0, -halfH + 3.2f, TEXT_SCALE_LABEL);
+    drawCentred(fr, "SCHOOL", 0, LINE_SCHOOL, TEXT_SCALE_LABEL);
+    drawCentred(fr, "SPEED", 0, LINE_SPEED, TEXT_SCALE_LABEL);
+    drawCentred(fr, "LIMIT", 0, LINE_LIMIT, TEXT_SCALE_LABEL);
+    drawCentred(fr, String.valueOf(te.getSpeedLimit()), 0, LINE_NUMBER, TEXT_SCALE_SPEED);
+    drawCentred(fr, "WHEN", 0, LINE_WHEN, TEXT_SCALE_PLAQUE);
+    drawCentred(fr, "FLASHING", 0, LINE_FLASHING, TEXT_SCALE_PLAQUE);
 
     GlStateManager.depthMask(true);
     GlStateManager.popMatrix();
