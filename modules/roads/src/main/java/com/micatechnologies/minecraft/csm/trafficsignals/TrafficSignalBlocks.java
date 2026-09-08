@@ -2289,6 +2289,31 @@ public final class TrafficSignalBlocks {
           })
           .build();
 
+  /**
+   * Two-section 12-inch head: red over green, no yellow section. Sized to occupy the same 24
+   * units of height as the three-section 8-inch head so it drops onto the same mounts, and lit
+   * on both lenses through the yellow clearance (see {@code lightAllOnYellow}).
+   */
+  public static final BlockControllableSignal VERTICAL_SOLID_SIGNAL2_SECTION =
+      new BlockControllableSignal.Builder(
+          "controllableverticalsolidsignal2section",
+          SIGNAL_SIDE.THROUGH,
+          true,
+          () -> {
+            return new TrafficSignalSectionInfo[] {
+            new TrafficSignalSectionInfo(TrafficSignalBodyColor.FLAT_BLACK, TrafficSignalBodyColor.FLAT_BLACK, TrafficSignalBodyColor.FLAT_BLACK,
+            TrafficSignalVisorType.CIRCLE, TrafficSignalBulbStyle.LED, TrafficSignalBulbType.BALL,
+            TrafficSignalBulbColor.RED, false),
+            new TrafficSignalSectionInfo(TrafficSignalBodyColor.FLAT_BLACK, TrafficSignalBodyColor.FLAT_BLACK, TrafficSignalBodyColor.FLAT_BLACK,
+            TrafficSignalVisorType.CIRCLE, TrafficSignalBulbStyle.LED, TrafficSignalBulbType.BALL,
+            TrafficSignalBulbColor.GREEN, false)
+            };
+          })
+          .sectionYPositions(0.0f, -12.0f)
+          .sectionSizes(12, 12)
+          .lightAllOnYellow(true)
+          .build();
+
   public static final BlockControllableSignal VERTICAL_SOLID_SIGNAL1288_INCH =
       new BlockControllableSignal.Builder(
           "controllableverticalsolidsignal1288inch",

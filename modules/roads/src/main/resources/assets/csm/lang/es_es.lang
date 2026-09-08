@@ -168,6 +168,7 @@ tile.controllableverticalsolidflashyellowsignal.name=Semáforo Vertical (Circula
 tile.controllableverticalsolidflashyellowsignalgray.name=Semáforo Vertical Circular Ámbar Intermitente (Gris)
 tile.controllableverticalsolidsignal.name=Semáforo Vertical (Circular)
 tile.controllableverticalsolidsignal1288inch.name=Semáforo Vertical (Circular, 12-8-8 Pulgadas)
+tile.controllableverticalsolidsignal2section.name=Semáforo Vertical (Circular, 2 Secciones, 12 Pulgadas)
 tile.controllableverticalsolidsignal8812inch.name=Semáforo Vertical (Circular, 8-8-12 Pulgadas)
 tile.controllableverticalsolidsignal8inch.name=Semáforo Vertical (Circular, 8 Pulgadas)
 tile.controllableverticalsolidsignalbarlo.name=Semáforo Vertical (Circular con Estrobo Barlo Rojo)
