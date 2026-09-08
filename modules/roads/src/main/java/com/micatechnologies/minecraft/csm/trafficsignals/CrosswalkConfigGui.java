@@ -1,8 +1,9 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
 import com.micatechnologies.minecraft.csm.roads.CsmRoads;
-import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableCrosswalkSignalNew;
-import com.micatechnologies.minecraft.csm.trafficsignals.logic.CrosswalkDisplayType;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.CrosswalkBulbType;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.CrosswalkVisorType;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyColor;
 import java.io.IOException;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
@@ -23,6 +24,39 @@ public class CrosswalkConfigGui extends GuiScreen {
     private static final int ROW_SPACING = 22;
     private static final int COLUMN_GAP = 6;
     private static final int CLOSE_BUTTON_ID = 100;
+    private static final int COPY_BUTTON_ID = 101;
+    private static final int PASTE_BUTTON_ID = 102;
+
+    /**
+     * Client-side appearance clipboard for the Copy/Paste buttons, mirroring the vehicle signal
+     * head GUI's. Static so a look copied from one crosswalk signal survives closing the GUI and
+     * persists until another copy (or game exit), letting players stamp the same style onto every
+     * signal at an intersection. {@code null} until the first copy. Kept separate from the head's
+     * clipboard because the two carry different properties and pasting one onto the other would
+     * be meaningless.
+     */
+    private static AppearanceClipboard clipboard = null;
+
+    /**
+     * Immutable snapshot of the copy/paste-able appearance of a crosswalk signal. Mount type and
+     * body tilt are deliberately absent: they say where this signal sits, not what it looks like,
+     * so copying them across an intersection would re-aim every head. The vehicle head clipboard
+     * omits its own mount type and tilt for the same reason.
+     */
+    private static final class AppearanceClipboard {
+        final TrafficSignalBodyColor bodyColor;
+        final TrafficSignalBodyColor visorColor;
+        final CrosswalkVisorType visorType;
+        final CrosswalkBulbType bulbType;
+
+        AppearanceClipboard( TrafficSignalBodyColor bodyColor, TrafficSignalBodyColor visorColor,
+                CrosswalkVisorType visorType, CrosswalkBulbType bulbType ) {
+            this.bodyColor = bodyColor;
+            this.visorColor = visorColor;
+            this.visorType = visorType;
+            this.bulbType = bulbType;
+        }
+    }
 
     private static final String[] LABELS = {
             "Body Color",
@@ -51,7 +85,8 @@ public class CrosswalkConfigGui extends GuiScreen {
         int leftX = width / 2 - totalWidth / 2;
         int rightX = leftX + BUTTON_WIDTH + COLUMN_GAP;
         int rows = ( LABELS.length + 1 ) / 2;
-        int topY = height / 2 - ( rows * ROW_SPACING + ROW_SPACING ) / 2;
+        // Two rows below the property grid now: the copy/paste row and the close button.
+        int topY = height / 2 - ( rows * ROW_SPACING + ROW_SPACING * 2 ) / 2;
 
         for ( int i = 0; i < LABELS.length; i++ ) {
             int col = i % 2;
@@ -66,8 +101,18 @@ public class CrosswalkConfigGui extends GuiScreen {
             buttonList.add( button );
         }
 
+        // Copy / Paste row: two columns matching the property grid. Paste stays disabled until
+        // something has been copied.
+        int copyPasteY = topY + rows * ROW_SPACING + 4;
+        buttonList.add( new GuiButton( COPY_BUTTON_ID, leftX, copyPasteY, BUTTON_WIDTH,
+                BUTTON_HEIGHT, "Copy Appearance" ) );
+        GuiButton pasteButton = new GuiButton( PASTE_BUTTON_ID, rightX, copyPasteY, BUTTON_WIDTH,
+                BUTTON_HEIGHT, "Paste Appearance" );
+        pasteButton.enabled = clipboard != null;
+        buttonList.add( pasteButton );
+
         buttonList.add( new GuiButton( CLOSE_BUTTON_ID, width / 2 - BUTTON_WIDTH / 2,
-                topY + rows * ROW_SPACING + 4, BUTTON_WIDTH, BUTTON_HEIGHT, "Close" ) );
+                copyPasteY + ROW_SPACING, BUTTON_WIDTH, BUTTON_HEIGHT, "Close" ) );
     }
 
     @Override
@@ -79,7 +124,7 @@ public class CrosswalkConfigGui extends GuiScreen {
         }
 
         int rows = ( LABELS.length + 1 ) / 2;
-        int topY = height / 2 - ( rows * ROW_SPACING + ROW_SPACING ) / 2;
+        int topY = height / 2 - ( rows * ROW_SPACING + ROW_SPACING * 2 ) / 2;
         String title = isDouble ? "Crosswalk Signal 12-Inch Configuration"
                 : "Crosswalk Signal 16-Inch Configuration";
         drawCenteredString( fontRenderer, title, width / 2, topY - 14, 0xFFFFFF );
@@ -113,6 +158,19 @@ public class CrosswalkConfigGui extends GuiScreen {
     protected void actionPerformed( GuiButton button ) throws IOException {
         if ( button.id == CLOSE_BUTTON_ID ) {
             mc.displayGuiScreen( null );
+        }
+        else if ( button.id == COPY_BUTTON_ID ) {
+            clipboard = new AppearanceClipboard( tileEntity.getBodyColor(),
+                    tileEntity.getVisorColor(), tileEntity.getVisorType(),
+                    tileEntity.getBulbType() );
+            initGui(); // rebuild so the Paste button becomes enabled
+        }
+        else if ( button.id == PASTE_BUTTON_ID ) {
+            if ( clipboard != null ) {
+                CsmRoads.NETWORK.sendToServer( new CrosswalkAppearancePacket( blockPos,
+                        clipboard.bodyColor.toNBT(), clipboard.visorColor.toNBT(),
+                        clipboard.visorType.toNBT(), clipboard.bulbType.toNBT() ) );
+            }
         }
         else if ( button.id >= 0 && button.id < CrosswalkConfigAction.values().length ) {
             CsmRoads.NETWORK.sendToServer( new CrosswalkConfigPacket( blockPos, button.id ) );
