@@ -10,7 +10,6 @@ public class GuideSignAtlas {
   private static final int ATLAS_WIDTH = 512;
   private static final int ATLAS_HEIGHT = 1024;
   private static final int CELL_SIZE = 64;
-  private static final int COLS = ATLAS_WIDTH / CELL_SIZE;
 
   private static final int ARROW_ROW_OFFSET = 4;
 

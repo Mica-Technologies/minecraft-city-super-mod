@@ -158,12 +158,6 @@ public class CsmTabTrafficAccessories extends CsmTab {
       new AxisAlignedBB(0.000000, 0.000000, 0.000000, 1.000000, 1.000000, 1.000000);
   private static final AxisAlignedBB BB_TRAFFIC_POLE_HORIZ_SIGN_MOUNT =
       new AxisAlignedBB(0.000000, 0.000000, 0.000000, 0.750000, 1.000000, 1.000000);
-  private static final AxisAlignedBB BB_TRAFFIC_POLE_HORIZ_ANGLE_MOUNT_1 =
-      new AxisAlignedBB(0.250000, 0.250000, -0.212500, 0.750000, 0.750000, 1.212500);
-  private static final AxisAlignedBB BB_TRAFFIC_POLE_HORIZ_ANGLE_MOUNT_2 =
-      new AxisAlignedBB(0.250000, 0.250000, -0.212500, 0.750000, 0.750000, 1.212500);
-  private static final AxisAlignedBB BB_TRAFFIC_POLE_HORIZ_ANGLE_MOUNT_3 =
-      new AxisAlignedBB(0.000000, 0.250000, -0.212500, 1.000000, 0.750000, 1.212500);
   private static final AxisAlignedBB BB_TRAFFIC_POLE_VERT_CONNECTOR =
       new AxisAlignedBB(0.125000, 0.000000, 0.000000, 0.875000, 1.000000, 0.875000);
   private static final AxisAlignedBB BB_TRAFFIC_POLE_VERT_CONNECTOR_ANGLED =
@@ -190,10 +184,6 @@ public class CsmTabTrafficAccessories extends CsmTab {
       new AxisAlignedBB(0.250000, -0.375000, 0.100000, 0.656250, 1.328125, 0.587500);
   private static final AxisAlignedBB BB_TL_HANG_MOUNT =
       new AxisAlignedBB(0.500000, -0.750000, 0.750000, 0.600000, 1.609375, 0.850000);
-  private static final AxisAlignedBB BB_TRAFFIC_POLE_HORIZ_SINGLE_MOUNT =
-      new AxisAlignedBB(0.000000, 0.250000, 0.000000, 0.750000, 0.750000, 1.000000);
-  private static final AxisAlignedBB BB_TRAFFIC_POLE_HORIZ_MOUNT_DOUBLE =
-      new AxisAlignedBB(0.000000, 0.250000, 0.000000, 1.000000, 0.750000, 1.000000);
 
   /**
    * Initializes all the elements belonging to the tab.

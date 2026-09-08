@@ -64,8 +64,6 @@ public class TileEntityPortableMessageSignRenderer
   // Text rendering
   private static final float TEXT_SCALE = 0.975f;
   private static final int TEXT_COLOR_AMBER = 0xFFAA00;
-  private static final float TEXT_MARGIN_X = 3.0f;
-  private static final float TEXT_MARGIN_Y = 2.0f;
 
   // =====================================================================
   // DERIVED POSITIONS (computed from the constants above)
@@ -129,8 +127,6 @@ public class TileEntityPortableMessageSignRenderer
   private static final float VISOR_PIVOT_Z = 11.0f;
   private static final float VISOR_CENTER_X = 8.0f;
   private static final float VISOR_CENTER_Y = 6.0f;
-
-  private static final float SCALE_8_INCH = 8.0f / 12.0f;
 
   private static final ResourceLocation WHITE_TEXTURE =
       new ResourceLocation("csm", "textures/blocks/white1px.png");
