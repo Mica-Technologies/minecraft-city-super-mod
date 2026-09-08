@@ -10,7 +10,9 @@ import org.jetbrains.annotations.NotNull;
  * first two entries here. {@link #OFF} and {@link #B} are the two halves of a wig-wag pair: one
  * head is lit exactly while the other is dark, so a pair of beacons set to OFF and B alternate.
  * {@link #C} is not part of that pair at all -- it is the rapid multi-pulse strobe the Barlo
- * safety beam fires, applied to the bulb itself.</p>
+ * safety beam fires, applied to the bulb itself. {@link #D} is C's wig-wag counterpart: the same
+ * strobe delayed by the length of one burst, so a pair set to C and D fire alternating bursts
+ * that never overlap.</p>
  *
  * <p>The ordinal is the persisted form, so entries must only ever be appended.</p>
  */
@@ -20,7 +22,14 @@ public enum TrafficSignalFlashPattern implements IStringSerializable {
   /** Wig-wag counterpart of {@link #OFF}: lit for the first half of each second. */
   B("b", "B (wig-wag)"),
   /** Rapid strobe: five quick pulses, then a long dark gap, matching the Barlo safety beam. */
-  C("c", "C (rapid strobe)");
+  C("c", "C (rapid strobe)"),
+  /**
+   * Wig-wag counterpart of {@link #C}: the same rapid strobe, delayed by one burst length so its
+   * five pulses fall in the gap C leaves. C's burst runs 0-500 ms of the cycle and D's 500-1000
+   * ms, leaving both dark for the rest of it, so two heads set to C and D alternate cleanly
+   * rather than overlapping.
+   */
+  D("d", "D (alt strobe)");
 
   /**
    * Length of one full rapid-strobe cycle, in milliseconds. The burst occupies
@@ -91,6 +100,19 @@ public enum TrafficSignalFlashPattern implements IStringSerializable {
   }
 
   /**
+   * Whether the wig-wag counterpart of the rapid strobe is lit at the given wall-clock time: the
+   * same burst shifted later by its own length, so it starts exactly as {@link #C}'s ends. Both
+   * bursts fit inside the cycle with room to spare, so the two never overlap.
+   *
+   * @param millis the wall-clock flash timer, in milliseconds
+   *
+   * @return {@code true} if the offset strobe is lit at that instant
+   */
+  public static boolean isAltRapidStrobeLit(long millis) {
+    return isRapidStrobeLit(millis - RAPID_BURST_MILLIS);
+  }
+
+  /**
    * Whether a flashing bulb following this pattern is lit at the given wall-clock time.
    *
    * @param millis the wall-clock flash timer, in milliseconds
@@ -103,6 +125,8 @@ public enum TrafficSignalFlashPattern implements IStringSerializable {
         return Math.floorMod(millis, FLASH_CYCLE_MILLIS) < FLASH_CYCLE_MILLIS / 2L;
       case C:
         return isRapidStrobeLit(millis);
+      case D:
+        return isAltRapidStrobeLit(millis);
       case OFF:
       default:
         return Math.floorMod(millis, FLASH_CYCLE_MILLIS) >= FLASH_CYCLE_MILLIS / 2L;
