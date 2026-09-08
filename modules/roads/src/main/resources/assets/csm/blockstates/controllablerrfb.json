@@ -3,8 +3,9 @@
   "defaults": {
     "model": "csm:trafficsignals/shared_models/rrfb",
     "textures": {
-      "0": "csm:blocks/trafficsignals/shared_textures/rrfb_off",
-      "particle": "csm:blocks/trafficsignals/shared_textures/rrfb_off"
+      "housing": "csm:blocks/trafficsignals/shared_textures/rrfb_housing_flat_black",
+      "lens": "csm:blocks/trafficsignals/shared_textures/rrfb_lens_off",
+      "particle": "csm:blocks/trafficsignals/shared_textures/rrfb_housing_flat_black"
     }
   },
   "variants": {
@@ -23,34 +24,133 @@
     "color": {
       "0": {
         "textures": {
-          "0": "csm:blocks/trafficsignals/shared_textures/rrfb_flash",
-          "particle": "csm:blocks/trafficsignals/shared_textures/rrfb_flash"
+          "lens": "csm:blocks/trafficsignals/shared_textures/rrfb_lens_flash"
         }
       },
       "1": {
         "textures": {
-          "0": "csm:blocks/trafficsignals/shared_textures/rrfb_flash",
-          "particle": "csm:blocks/trafficsignals/shared_textures/rrfb_flash"
+          "lens": "csm:blocks/trafficsignals/shared_textures/rrfb_lens_flash"
         }
       },
       "2": {
         "textures": {
-          "0": "csm:blocks/trafficsignals/shared_textures/rrfb_flash",
-          "particle": "csm:blocks/trafficsignals/shared_textures/rrfb_flash"
+          "lens": "csm:blocks/trafficsignals/shared_textures/rrfb_lens_flash"
         }
       },
       "3": {
         "textures": {
-          "0": "csm:blocks/trafficsignals/shared_textures/rrfb_off",
-          "particle": "csm:blocks/trafficsignals/shared_textures/rrfb_off"
+          "lens": "csm:blocks/trafficsignals/shared_textures/rrfb_lens_off"
         }
+      }
+    },
+    "housing": {
+      "flat_black": {
+        "textures": {
+          "housing": "csm:blocks/trafficsignals/shared_textures/rrfb_housing_flat_black",
+          "particle": "csm:blocks/trafficsignals/shared_textures/rrfb_housing_flat_black"
+        }
+      },
+      "dark_olive_green": {
+        "textures": {
+          "housing": "csm:blocks/trafficsignals/shared_textures/rrfb_housing_dark_olive_green",
+          "particle": "csm:blocks/trafficsignals/shared_textures/rrfb_housing_dark_olive_green"
+        }
+      },
+      "battleship_gray": {
+        "textures": {
+          "housing": "csm:blocks/trafficsignals/shared_textures/rrfb_housing_battleship_gray",
+          "particle": "csm:blocks/trafficsignals/shared_textures/rrfb_housing_battleship_gray"
+        }
+      },
+      "yellow": {
+        "textures": {
+          "housing": "csm:blocks/trafficsignals/shared_textures/rrfb_housing_yellow",
+          "particle": "csm:blocks/trafficsignals/shared_textures/rrfb_housing_yellow"
+        }
+      },
+      "glossy_black": {
+        "textures": {
+          "housing": "csm:blocks/trafficsignals/shared_textures/rrfb_housing_glossy_black",
+          "particle": "csm:blocks/trafficsignals/shared_textures/rrfb_housing_glossy_black"
+        }
+      },
+      "school_bus_yellow": {
+        "textures": {
+          "housing": "csm:blocks/trafficsignals/shared_textures/rrfb_housing_school_bus_yellow",
+          "particle": "csm:blocks/trafficsignals/shared_textures/rrfb_housing_school_bus_yellow"
+        }
+      },
+      "goldenrod": {
+        "textures": {
+          "housing": "csm:blocks/trafficsignals/shared_textures/rrfb_housing_goldenrod",
+          "particle": "csm:blocks/trafficsignals/shared_textures/rrfb_housing_goldenrod"
+        }
+      },
+      "portland_blue": {
+        "textures": {
+          "housing": "csm:blocks/trafficsignals/shared_textures/rrfb_housing_portland_blue",
+          "particle": "csm:blocks/trafficsignals/shared_textures/rrfb_housing_portland_blue"
+        }
+      },
+      "navy_blue": {
+        "textures": {
+          "housing": "csm:blocks/trafficsignals/shared_textures/rrfb_housing_navy_blue",
+          "particle": "csm:blocks/trafficsignals/shared_textures/rrfb_housing_navy_blue"
+        }
+      },
+      "chocolate_brown": {
+        "textures": {
+          "housing": "csm:blocks/trafficsignals/shared_textures/rrfb_housing_chocolate_brown",
+          "particle": "csm:blocks/trafficsignals/shared_textures/rrfb_housing_chocolate_brown"
+        }
+      },
+      "dark_bronze": {
+        "textures": {
+          "housing": "csm:blocks/trafficsignals/shared_textures/rrfb_housing_dark_bronze",
+          "particle": "csm:blocks/trafficsignals/shared_textures/rrfb_housing_dark_bronze"
+        }
+      },
+      "bare_aluminum": {
+        "textures": {
+          "housing": "csm:blocks/trafficsignals/shared_textures/rrfb_housing_bare_aluminum",
+          "particle": "csm:blocks/trafficsignals/shared_textures/rrfb_housing_bare_aluminum"
+        }
+      },
+      "charcoal_gray": {
+        "textures": {
+          "housing": "csm:blocks/trafficsignals/shared_textures/rrfb_housing_charcoal_gray",
+          "particle": "csm:blocks/trafficsignals/shared_textures/rrfb_housing_charcoal_gray"
+        }
+      },
+      "off_white": {
+        "textures": {
+          "housing": "csm:blocks/trafficsignals/shared_textures/rrfb_housing_off_white",
+          "particle": "csm:blocks/trafficsignals/shared_textures/rrfb_housing_off_white"
+        }
+      },
+      "maroon": {
+        "textures": {
+          "housing": "csm:blocks/trafficsignals/shared_textures/rrfb_housing_maroon",
+          "particle": "csm:blocks/trafficsignals/shared_textures/rrfb_housing_maroon"
+        }
+      },
+      "forest_green": {
+        "textures": {
+          "housing": "csm:blocks/trafficsignals/shared_textures/rrfb_housing_forest_green",
+          "particle": "csm:blocks/trafficsignals/shared_textures/rrfb_housing_forest_green"
+        }
+      }
+    },
+    "doublesided": {
+      "true": {},
+      "false": {
+        "model": "csm:trafficsignals/shared_models/rrfb_single"
       }
     },
     "inventory": [
       {
         "textures": {
-          "0": "csm:blocks/trafficsignals/shared_textures/rrfb_flash",
-          "particle": "csm:blocks/trafficsignals/shared_textures/rrfb_off"
+          "lens": "csm:blocks/trafficsignals/shared_textures/rrfb_lens_flash"
         }
       }
     ],

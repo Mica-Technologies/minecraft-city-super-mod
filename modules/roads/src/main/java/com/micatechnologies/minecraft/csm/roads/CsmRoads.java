@@ -31,6 +31,8 @@ import com.micatechnologies.minecraft.csm.trafficsignals.CrosswalkAppearancePack
 import com.micatechnologies.minecraft.csm.trafficsignals.CrosswalkConfigPacket;
 import com.micatechnologies.minecraft.csm.trafficsignals.CrosswalkConfigPacketHandler;
 import com.micatechnologies.minecraft.csm.trafficsignals.RoadsSounds;
+import com.micatechnologies.minecraft.csm.trafficsignals.RrfbConfigPacket;
+import com.micatechnologies.minecraft.csm.trafficsignals.RrfbConfigPacketHandler;
 import com.micatechnologies.minecraft.csm.trafficsignals.SensorConfigPacket;
 import com.micatechnologies.minecraft.csm.trafficsignals.SensorConfigPacketHandler;
 import com.micatechnologies.minecraft.csm.trafficsignals.SignalControllerConfigPacket;
@@ -186,6 +188,10 @@ public class CsmRoads {
     NETWORK.registerMessage(
         CrosswalkAppearancePacketHandler.class,
         CrosswalkAppearancePacket.class,
+        Side.SERVER);
+    NETWORK.registerMessage(
+        RrfbConfigPacketHandler.class,
+        RrfbConfigPacket.class,
         Side.SERVER);
 
     // Hand this module's sound names to Core's registrar. Forge runs every mod's
