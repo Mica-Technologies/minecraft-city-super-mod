@@ -48,6 +48,8 @@ public class TrafficAccessoriesGuiProvider implements ICsmGuiProvider {
     } else if (id == BlockSpanWireHangerMount.GUI_ID
         && tileEntity instanceof TileEntitySpanWireHanger) {
       returnValue = new SpanWireMountConfigGui((TileEntitySpanWireHanger) tileEntity);
+    } else if (id == 19 && tileEntity instanceof TileEntitySchoolZoneBeacon) {
+      returnValue = new SchoolZoneBeaconGui((TileEntitySchoolZoneBeacon) tileEntity);
     } else if (id == 18 && tileEntity instanceof TileEntityPoleMountSpeedLimit) {
       returnValue = new BlockPoleMountSpeedLimitGui((TileEntityPoleMountSpeedLimit) tileEntity);
     }
