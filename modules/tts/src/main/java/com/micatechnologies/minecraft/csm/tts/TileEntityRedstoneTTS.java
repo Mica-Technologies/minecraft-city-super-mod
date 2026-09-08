@@ -15,8 +15,12 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.util.Constants;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class TileEntityRedstoneTTS extends AbstractTileEntity implements ICsmTtsBroadcaster {
+
+  private static final Logger LOGGER = LogManager.getLogger(TileEntityRedstoneTTS.class);
 
   private static final String TTS_STRING_KEY = "tts";
   private static final String LEGACY_TTS_STRING_KEY = "ttsString";
@@ -89,7 +93,7 @@ public class TileEntityRedstoneTTS extends AbstractTileEntity implements ICsmTts
 
   public void readTtsString() {
     if (world.isRemote) {
-      System.err.println(
+      LOGGER.error(
           "Attempted to directly invoke TTS string read on client side! This is a bug!");
     }
 
@@ -245,7 +249,7 @@ public class TileEntityRedstoneTTS extends AbstractTileEntity implements ICsmTts
 
   public void setTtsString(String ttsString) {
     if (world.isRemote) {
-      System.err.println("Attempted to set TTS string on client side! This is a bug!");
+      LOGGER.error("Attempted to set TTS string on client side! This is a bug!");
     }
     this.ttsString = ttsString;
     markDirtySync(getWorld(), getPos(), true);
@@ -253,7 +257,7 @@ public class TileEntityRedstoneTTS extends AbstractTileEntity implements ICsmTts
 
   public void setTtsVoice(String ttsVoice) {
     if (world.isRemote) {
-      System.err.println("Attempted to set TTS voice on client side! This is a bug!");
+      LOGGER.error("Attempted to set TTS voice on client side! This is a bug!");
     }
     this.ttsVoice = ttsVoice;
     markDirtySync(getWorld(), getPos(), true);

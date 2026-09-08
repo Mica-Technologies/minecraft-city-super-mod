@@ -5,6 +5,8 @@ import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalAPSS
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Tile entity class for an APS (accessible pedestrian signal) button. This class assists in
@@ -15,6 +17,8 @@ import net.minecraftforge.fml.common.network.NetworkRegistry;
  * @since 2022.1
  */
 public class TileEntityTrafficSignalAPS extends TileEntityTrafficSignalTickableRequester {
+
+  private static final Logger LOGGER = LogManager.getLogger(TileEntityTrafficSignalAPS.class);
 
   /**
    * The NBT key used to store the current crosswalk sound index. Reads fall back to
@@ -187,7 +191,7 @@ public class TileEntityTrafficSignalAPS extends TileEntityTrafficSignalTickableR
       if (storedCrosswalkSoundIndex >= 0 && storedCrosswalkSoundIndex < soundSchemes.length) {
         crosswalkSoundIndex = storedCrosswalkSoundIndex;
       } else {
-        System.err.println("Invalid crosswalk sound index: " + crosswalkSoundIndex
+        LOGGER.error("Invalid crosswalk sound index: " + crosswalkSoundIndex
             + " for crosswalk button tile entity " + "at [X: " + pos.getX() + ", Y: " + pos.getY()
             + ", Z: " + pos.getZ() + "]. Reverting to default (0).");
         crosswalkSoundIndex = 0;
@@ -202,7 +206,7 @@ public class TileEntityTrafficSignalAPS extends TileEntityTrafficSignalTickableR
       if (storedCrosswalkSoundLastPlayedTime >= 0) {
         crosswalkSoundLastPlayedTime = storedCrosswalkSoundLastPlayedTime;
       } else {
-        System.err.println(
+        LOGGER.error(
             "Invalid crosswalk sound last played time: " + crosswalkSoundLastPlayedTime
                 + " for crosswalk button tile entity " + "at [X: " + pos.getX() + ", Y: "
                 + pos.getY() + ", Z: " + pos.getZ() + "]. Reverting to default (0).");
@@ -218,7 +222,7 @@ public class TileEntityTrafficSignalAPS extends TileEntityTrafficSignalTickableR
       if (storedCrosswalkLastPressTime >= 0) {
         crosswalkLastPressTime = storedCrosswalkLastPressTime;
       } else {
-        System.err.println("Invalid crosswalk last pressed time: " + crosswalkLastPressTime
+        LOGGER.error("Invalid crosswalk last pressed time: " + crosswalkLastPressTime
             + " for crosswalk button tile entity " + "at [X: " + pos.getX() + ", Y: " + pos.getY()
             + ", Z: " + pos.getZ() + "]. Reverting to default (0).");
         crosswalkLastPressTime = 0;
@@ -234,7 +238,7 @@ public class TileEntityTrafficSignalAPS extends TileEntityTrafficSignalTickableR
           && storedCrosswalkArrowOrientation <= CROSSWALK_ARROW_ORIENTATION_MAX) {
         crosswalkArrowOrientation = storedCrosswalkArrowOrientation;
       } else {
-        System.err.println("Invalid crosswalk arrow orientation: " + crosswalkArrowOrientation
+        LOGGER.error("Invalid crosswalk arrow orientation: " + crosswalkArrowOrientation
             + " for crosswalk button tile entity " + "at [X: " + pos.getX() + ", Y: " + pos.getY()
             + ", Z: " + pos.getZ() + "]. Reverting to default (0).");
         crosswalkArrowOrientation = 0;

@@ -8,6 +8,8 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Server-side handler for signal controller set-value packets. Validates the tile entity
@@ -16,6 +18,9 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
  */
 public class SignalControllerSetValuePacketHandler implements
     IMessageHandler<SignalControllerSetValuePacket, IMessage> {
+
+  private static final Logger LOGGER =
+      LogManager.getLogger(SignalControllerSetValuePacketHandler.class);
 
   @Override
   public IMessage onMessage(SignalControllerSetValuePacket message, MessageContext ctx) {
@@ -107,7 +112,7 @@ public class SignalControllerSetValuePacketHandler implements
           controller.clearCircuit((int) tickValue);
           break;
         default:
-          System.out.println(
+          LOGGER.debug(
               "[CSM] SignalControllerSetValuePacketHandler: unrecognized param key '" + paramKey
                   + "'");
           return;

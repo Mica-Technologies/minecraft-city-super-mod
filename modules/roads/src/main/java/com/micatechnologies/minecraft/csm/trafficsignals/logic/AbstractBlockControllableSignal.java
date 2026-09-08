@@ -18,10 +18,14 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class AbstractBlockControllableSignal extends AbstractBlockRotatableNSEW
     implements ICsmNoSnowAccumulation {
+
+  private static final Logger LOGGER = LogManager.getLogger(AbstractBlockControllableSignal.class);
 
   public static final int SIGNAL_RED = 0;
   public static final int SIGNAL_YELLOW = 1;
@@ -130,14 +134,14 @@ public abstract class AbstractBlockControllableSignal extends AbstractBlockRotat
           returnVal = (AbstractBlockControllableSignal) blockState.getBlock();
         }
       } catch (Exception e) {
-        System.err.println(
+        LOGGER.error(
             "Error getting signal block instance at " + blockPos + ": " + e.getMessage());
       }
     }
 
     // Log error if null
     if (returnVal == null) {
-      System.err.println("Error getting signal block instance at " + blockPos);
+      LOGGER.error("Error getting signal block instance at " + blockPos);
     }
 
     return returnVal;

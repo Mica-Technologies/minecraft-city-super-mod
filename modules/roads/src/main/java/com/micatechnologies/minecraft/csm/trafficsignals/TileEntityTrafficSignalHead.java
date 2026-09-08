@@ -24,6 +24,8 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Tile entity utility class for traffic signal heads. This class assists in tracking and managing
@@ -34,6 +36,8 @@ import net.minecraft.world.World;
  * @since 2024.8.19
  */
 public class TileEntityTrafficSignalHead extends AbstractTileEntity {
+
+  private static final Logger LOGGER = LogManager.getLogger(TileEntityTrafficSignalHead.class);
 
   /** {@link #getMountSuppression} bit meaning the low (or left) bracket end is suppressed. */
   public static final int MOUNT_SUPPRESS_LOW = 1;
@@ -840,7 +844,7 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
    */
   public TrafficSignalBodyColor getNextBodyPaintColor() {
     if (sectionInfos.length == 0) {
-      System.err.println("No section infos available to get the next body paint color.");
+      LOGGER.error("No section infos available to get the next body paint color.");
       return TrafficSignalBodyColor.FLAT_BLACK; // Default fallback color
     }
     TrafficSignalBodyColor nextPaintColor = sectionInfos[0].getBodyColor().getNextColor();

@@ -15,6 +15,8 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * The class representation of a traffic signal controller circuit which stores the following signal
@@ -39,6 +41,8 @@ import net.minecraft.world.World;
  * @since 2023.2.0
  */
 public class TrafficSignalControllerCircuit {
+  private static final Logger LOGGER = LogManager.getLogger(TrafficSignalControllerCircuit.class);
+
   // region: Static/Constant Fields
 
   // Short-form NBT keys used by this circuit's toNBT / fromNBT. LEGACY_* constants hold the
@@ -760,16 +764,16 @@ public class TrafficSignalControllerCircuit {
               SIGNAL_SIDE signalSide = controllableSignal.getSignalSide(linkWorld, signalPos);
               boolean linked = linkDevice(signalPos, signalSide);
               if (linked) {
-                System.out.println(
+                LOGGER.debug(
                     "Linked device at " + signalPos + " to circuit on side " + signalSide.name());
               } else {
-                System.err.println("Failed to link device (tryLinkDevices) at " +
+                LOGGER.error("Failed to link device (tryLinkDevices) at " +
                     signalPos +
                     " to " +
                     "circuit!");
               }
             } else {
-              System.err.println("Failed to link device (tryLinkDevices) at " +
+              LOGGER.error("Failed to link device (tryLinkDevices) at " +
                   signalPos +
                   " to " +
                   "circuit because it was null!");
@@ -777,9 +781,8 @@ public class TrafficSignalControllerCircuit {
           }
         }
       } catch (Exception e) {
-        System.err.println(
-            "Error linking device (tryLinkDevices) at " + signalPos + " to circuit!");
-        e.printStackTrace();
+        LOGGER.error(
+            "Error linking device (tryLinkDevices) at " + signalPos + " to circuit!", e);
       }
     });
   }

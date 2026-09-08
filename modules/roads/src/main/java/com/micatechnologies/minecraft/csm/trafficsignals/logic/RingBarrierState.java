@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Runtime state machine for {@code ADVANCED} (NEMA dual-ring, dual-barrier) operation. One instance
@@ -33,6 +35,8 @@ import net.minecraft.world.World;
  * @since 2026.6
  */
 public class RingBarrierState {
+
+  private static final Logger LOGGER = LogManager.getLogger(RingBarrierState.class);
 
   /** Vehicle indication a ring's active phase is currently displaying. */
   public enum VehInterval { GREEN, YELLOW, RED }
@@ -1273,7 +1277,7 @@ public class RingBarrierState {
     coordinationAdvisoriesReported = true;
     for (String advisory : new String[] {findSplitShortfall(plan), findBarrierMisalignment(plan)}) {
       if (advisory != null) {
-        System.err.println("Traffic signal controller coordination advisory: " + advisory);
+        LOGGER.error("Traffic signal controller coordination advisory: " + advisory);
       }
     }
   }

@@ -8,6 +8,8 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.util.ChatAllowedCharacters;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.lwjgl.input.Keyboard;
 
 /**
@@ -17,6 +19,8 @@ import org.lwjgl.input.Keyboard;
  * .com/Draco18s/2b02762b597e67a9b887aed241f25077</a>.
  */
 public class GuiMultiLineTextField extends Gui {
+
+  private static final Logger LOGGER = LogManager.getLogger(GuiMultiLineTextField.class);
 
   private final int id;
   private final FontRenderer fontRenderer;
@@ -537,7 +541,7 @@ public class GuiMultiLineTextField extends Gui {
         newLine = currentLine.substring(0, cursorColumn) + character + currentLine.substring(
             cursorColumn);
       } catch (Exception e) {
-        e.printStackTrace();
+        LOGGER.error("Failed to insert a character into the multi-line text field", e);
       }
       lines.set(cursorLine, newLine);
       cursorColumn++; // Move cursor right by one, as before

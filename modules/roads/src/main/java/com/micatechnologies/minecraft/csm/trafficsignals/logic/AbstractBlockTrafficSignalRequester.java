@@ -12,10 +12,15 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public abstract class AbstractBlockTrafficSignalRequester
     extends AbstractBlockControllableCrosswalkAccessory
     implements ICsmTileEntityProvider {
+
+  private static final Logger LOGGER =
+      LogManager.getLogger(AbstractBlockTrafficSignalRequester.class);
 
   public AbstractBlockTrafficSignalRequester(Material p_i45394_1_) {
     super(p_i45394_1_);
@@ -29,12 +34,11 @@ public abstract class AbstractBlockTrafficSignalRequester
             = (TileEntityTrafficSignalTickableRequester) rawTileEntity;
         tileEntity.resetRequestCount();
       } else {
-        System.err.println(
+        LOGGER.error(
             "Unable to reset the traffic signal's request count due to tile entity missing error!");
       }
     } catch (Exception e) {
-      System.err.println("An error occurred while resetting the traffic signal's request count!");
-      e.printStackTrace();
+      LOGGER.error("An error occurred while resetting the traffic signal's request count!", e);
     }
   }
 
@@ -62,12 +66,11 @@ public abstract class AbstractBlockTrafficSignalRequester
             = (TileEntityTrafficSignalTickableRequester) rawTileEntity;
         tileEntity.incrementRequestCount();
       } else {
-        System.err.println(
+        LOGGER.error(
             "Unable to send a traffic signal request due to tile entity missing error!");
       }
     } catch (Exception e) {
-      System.err.println("An error occurred while activating a traffic signal request!");
-      e.printStackTrace();
+      LOGGER.error("An error occurred while activating a traffic signal request!", e);
     }
 
     return true;
