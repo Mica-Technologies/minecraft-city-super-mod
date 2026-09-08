@@ -15,5 +15,6 @@ public enum SignalHeadSectionConfigAction {
   CYCLE_BULB_TYPE,
   CYCLE_BULB_AGING_STATE,
   // Appended (not inserted) so existing button-id/packet ordinals stay stable.
-  CYCLE_BODY_STYLE
+  CYCLE_BODY_STYLE,
+  TOGGLE_BULB_FLASHING
 }
