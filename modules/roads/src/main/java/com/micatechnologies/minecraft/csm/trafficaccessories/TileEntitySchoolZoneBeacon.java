@@ -136,7 +136,17 @@ public class TileEntitySchoolZoneBeacon extends AbstractTileEntity {
     return inWindow(hour, amStartHour, amEndHour) || inWindow(hour, pmStartHour, pmEndHour);
   }
 
-  private static boolean inWindow(int hour, int start, int end) {
+  /**
+   * Whether an hour falls inside a posted window. Package-visible so the wrapping and
+   * zero-length cases can be tested without a world.
+   *
+   * @param hour  the hour of day, 0-23
+   * @param start the window's first hour, inclusive
+   * @param end   the window's last hour, exclusive
+   *
+   * @return {@code true} if the hour is inside the window
+   */
+  static boolean inWindow(int hour, int start, int end) {
     if (start == end) {
       return false; // a zero-length window is off, not all day
     }
@@ -215,8 +225,15 @@ public class TileEntitySchoolZoneBeacon extends AbstractTileEntity {
     }
   }
 
+  /**
+   * Pushes a change to the client, guarded on there being a world to push into. The sibling
+   * crosswalk tile entity guards its setters the same way: a tile entity can be configured
+   * before it is placed, and syncing then dereferences a world that does not exist yet.
+   */
   private void sync() {
-    markDirtySync(world, pos, true);
+    if (world != null && !world.isRemote) {
+      markDirtySync(world, pos, true);
+    }
   }
 
   private static int clamp(int value, int min, int max) {
