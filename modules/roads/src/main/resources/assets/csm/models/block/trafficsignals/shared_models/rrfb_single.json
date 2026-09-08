@@ -114,38 +114,6 @@
           "texture": "#lens"
         }
       }
-    },
-    {
-      "from": [
-        0.5,
-        6,
-        15.9
-      ],
-      "to": [
-        15.5,
-        10,
-        15.98
-      ],
-      "rotation": {
-        "angle": 0,
-        "axis": "y",
-        "origin": [
-          8,
-          8,
-          8
-        ]
-      },
-      "faces": {
-        "south": {
-          "uv": [
-            0.5,
-            6,
-            15.5,
-            10
-          ],
-          "texture": "#lens"
-        }
-      }
     }
   ],
   "display": {

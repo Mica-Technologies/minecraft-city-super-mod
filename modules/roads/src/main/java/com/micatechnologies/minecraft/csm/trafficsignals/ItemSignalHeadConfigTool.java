@@ -57,6 +57,10 @@ public class ItemSignalHeadConfigTool extends AbstractItem {
         player.openGui(Csm.instance, 8, worldIn, pos.getX(), pos.getY(), pos.getZ());
         return EnumActionResult.SUCCESS;
       }
+      if (worldIn.getBlockState(pos).getBlock() instanceof BlockControllableRrfb) {
+        player.openGui(Csm.instance, 20, worldIn, pos.getX(), pos.getY(), pos.getZ());
+        return EnumActionResult.SUCCESS;
+      }
       if (worldIn.getBlockState(pos).getBlock() instanceof AbstractBlockControllableCrosswalkSignalNew) {
         player.openGui(Csm.instance, 4, worldIn, pos.getX(), pos.getY(), pos.getZ());
         return EnumActionResult.SUCCESS;
