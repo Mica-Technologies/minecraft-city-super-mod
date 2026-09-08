@@ -31,6 +31,8 @@ import java.util.Map;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Tile entity for the traffic signal controller block.
@@ -39,6 +41,9 @@ import net.minecraft.world.World;
  * @version 2.0
  */
 public class TileEntityTrafficSignalController extends AbstractTickableTileEntity {
+
+  private static final Logger LOGGER =
+      LogManager.getLogger(TileEntityTrafficSignalController.class);
 
   // region: Instance Fields
 
@@ -578,13 +583,13 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
       // Check for previous NBT data format and load it if present
       if (!upgradedPreviousNBTFormat && previousNbt != null) {
         try {
-          System.err.println(
+          LOGGER.error(
               "Importing previous NBT data format for traffic signal controller at " + getPos());
           importPreviousNBTDataFormat(getWorld(), previousNbt);
           previousNbt = null;
           upgradedPreviousNBTFormat = true;
           resetController(true, false);
-          System.err.println(
+          LOGGER.error(
               "Successfully imported previous NBT data format for traffic signal controller at " +
                   getPos());
         } catch (Exception e) {
@@ -707,7 +712,7 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
           String skipped = TrafficSignalControllerTickerUtilities.findSkippedClearance(
               previousPhase, newPhase, circuits);
           if (skipped != null) {
-            System.err.println("Traffic signal controller MMU fault at " + getPos() + ": "
+            LOGGER.error("Traffic signal controller MMU fault at " + getPos() + ": "
                 + skipped);
             enterFaultState(skipped);
             invalidateTickRateCache();
@@ -740,7 +745,7 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
       else if (currentPhase == null) {
         enterFaultState(
             "An invalid phase condition was encountered for the " + mode.getName() + " mode.");
-        System.err.println("Traffic signal controller error: Invalid phase condition for mode " +
+        LOGGER.error("Traffic signal controller error: Invalid phase condition for mode " +
             mode.getName() +
             " on controller at " +
             getPos());
@@ -750,7 +755,7 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
     catch (Exception e) {
       enterFaultState(e.getMessage() != null ? e.getMessage()
           : "A critical error occurred while ticking for the " + mode.getName() + " mode.");
-      System.err.println(
+      LOGGER.error(
           "Traffic signal controller fault at " + getPos() + " (" + mode.getName() +
               " mode): " + e.getMessage());
     }
@@ -1177,7 +1182,7 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
     // Return the NBT tag compound with previous NBT data format removed
     if (upgradedPreviousNBTFormat && hasPreviousNBTDataFormat(compound)) {
       removePreviousNBTDataFormat(compound);
-      System.out.println(
+      LOGGER.debug(
           "Removed previous NBT data format from traffic signal controller at " + getPos());
     }
     return compound;
@@ -1246,19 +1251,19 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
 
     // Get signal lists from imported old circuit
     List<BlockPos> importedAheadSignals = importSourceCircuit.getAheadSignals();
-    System.out.println("importedAheadSignals: " + importedAheadSignals.size());
+    LOGGER.debug("importedAheadSignals: " + importedAheadSignals.size());
     List<BlockPos> importedLeftSignals = importSourceCircuit.getLeftSignals();
-    System.out.println("importedLeftSignals: " + importedLeftSignals.size());
+    LOGGER.debug("importedLeftSignals: " + importedLeftSignals.size());
     List<BlockPos> importedHybridLeftSignals = importSourceCircuit.getHybridLeftSignals();
-    System.out.println("importedHybridLeftSignals: " + importedHybridLeftSignals.size());
+    LOGGER.debug("importedHybridLeftSignals: " + importedHybridLeftSignals.size());
     List<BlockPos> importedRightSignals = importSourceCircuit.getRightSignals();
-    System.out.println("importedRightSignals: " + importedRightSignals.size());
+    LOGGER.debug("importedRightSignals: " + importedRightSignals.size());
     List<BlockPos> importedPedestrianSignals = importSourceCircuit.getPedestrianSignals();
-    System.out.println("importedPedestrianSignals: " + importedPedestrianSignals.size());
+    LOGGER.debug("importedPedestrianSignals: " + importedPedestrianSignals.size());
     List<BlockPos> importedProtectedSignals = importSourceCircuit.getProtectedSignals();
-    System.out.println("importedProtectedSignals: " + importedProtectedSignals.size());
+    LOGGER.debug("importedProtectedSignals: " + importedProtectedSignals.size());
     List<BlockPos> importedSensors = importSourceCircuit.getSensors();
-    System.out.println("importedSensors: " + importedSensors.size());
+    LOGGER.debug("importedSensors: " + importedSensors.size());
 
     // Loop through lists and add to new circuit format with proper facing direction and/or APS list
     importDestinationCircuit.tryLinkDevicesMigration(linkWorld, importedSensors, true);
@@ -1272,7 +1277,7 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
 
     // Add completed import destination circuit object
     circuits.addCircuit(importDestinationCircuit);
-    System.out.println("Imported circuit with " + importDestinationCircuit.getSize() + " devices.");
+    LOGGER.debug("Imported circuit with " + importDestinationCircuit.getSize() + " devices.");
   }
 
   /**
@@ -1288,7 +1293,7 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
 
     // Import serialized signals list (if present)
     if (compound.hasKey(TrafficSignalControllerNBTKeys.V1_KEY_SERIALIZED_SIGNAL_CIRCUIT_LIST)) {
-      System.out.println("Importing previous NBT data format...");
+      LOGGER.debug("Importing previous NBT data format...");
       String serializedSignalCircuitList = compound.getString(
           TrafficSignalControllerNBTKeys.V1_KEY_SERIALIZED_SIGNAL_CIRCUIT_LIST);
       String[] serializedSignalCircuits = serializedSignalCircuitList.split(
@@ -1298,9 +1303,9 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
             serializedSignalCircuit);
         importPreviousNBTDataFormatCircuit(importWorld, importedCircuit);
       }
-      System.out.println("Imported " + circuits.getCircuitCount() + " circuits.");
+      LOGGER.debug("Imported " + circuits.getCircuitCount() + " circuits.");
     } else {
-      System.out.println("No previous NBT data formatted circuits to import.");
+      LOGGER.debug("No previous NBT data formatted circuits to import.");
     }
 
     // Import mode
@@ -1331,7 +1336,7 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
         mode = TrafficSignalControllerMode.FORCED_FAULT;
       }
     } else {
-      System.out.println("No previous NBT data formatted mode to import.");
+      LOGGER.debug("No previous NBT data formatted mode to import.");
     }
   }
 

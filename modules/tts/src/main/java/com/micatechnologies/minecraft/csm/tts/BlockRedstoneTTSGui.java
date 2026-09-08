@@ -8,10 +8,14 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
 public class BlockRedstoneTTSGui extends GuiScreen {
+
+  private static final Logger LOGGER = LogManager.getLogger(BlockRedstoneTTSGui.class);
 
   private static final int BUTTON_ID_CLOSE = 0;
   private static final int BUTTON_ID_CANCEL = 1;
@@ -67,7 +71,7 @@ public class BlockRedstoneTTSGui extends GuiScreen {
       try {
         tileEntityRedstoneTTS.setTtsConfigFromGui(ttsStringField.getText(), selectedVoice);
       } catch (Exception e) {
-        e.printStackTrace();
+        LOGGER.error("Failed to apply the text-to-speech configuration from the GUI", e);
       }
       this.mc.displayGuiScreen(null);
     } else if (button.id == BUTTON_ID_CANCEL) {

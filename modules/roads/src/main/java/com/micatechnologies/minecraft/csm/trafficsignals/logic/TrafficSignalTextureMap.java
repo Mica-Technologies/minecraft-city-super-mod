@@ -3,8 +3,12 @@ package com.micatechnologies.minecraft.csm.trafficsignals.logic;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.Objects;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class TrafficSignalTextureMap {
+
+  private static final Logger LOGGER = LogManager.getLogger(TrafficSignalTextureMap.class);
 
   private static final String TEXTURE_ATLAS_NAME =
       "textures/blocks/trafficsignals/lights/atlas.png";
@@ -201,7 +205,7 @@ public class TrafficSignalTextureMap {
           break;
       }
     }
-    System.out.println(
+    LOGGER.debug(
         "Fallback to index 63 for type=" + type + ", style=" + style + ", color=" + color + ", lit="
             + isLit);
     return 63; // Fallback

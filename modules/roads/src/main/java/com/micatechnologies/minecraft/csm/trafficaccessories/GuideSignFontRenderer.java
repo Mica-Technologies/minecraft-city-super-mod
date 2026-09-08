@@ -11,6 +11,8 @@ import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.lwjgl.opengl.GL11;
 
 /**
@@ -29,6 +31,8 @@ import org.lwjgl.opengl.GL11;
  * <p>Client-side only (referenced from the TESR).
  */
 public final class GuideSignFontRenderer {
+
+  private static final Logger LOGGER = LogManager.getLogger(GuideSignFontRenderer.class);
 
   private static final ResourceLocation FONT_TEXTURE =
       new ResourceLocation("csm", "textures/fonts/guide_sign_font.png");
@@ -64,7 +68,7 @@ public final class GuideSignFontRenderer {
       loadAttempted = true;
       try (InputStream in = GuideSignFontRenderer.class.getResourceAsStream(METRICS_PATH)) {
         if (in == null) {
-          System.err.println("[CSM] Guide sign font metrics missing: " + METRICS_PATH);
+          LOGGER.error("[CSM] Guide sign font metrics missing: " + METRICS_PATH);
         } else {
           metrics = new Gson().fromJson(
               new InputStreamReader(in, StandardCharsets.UTF_8), MetricsJson.class);
@@ -76,7 +80,7 @@ public final class GuideSignFontRenderer {
           }
         }
       } catch (Exception ex) {
-        System.err.println("[CSM] Failed to load guide sign font metrics: " + ex);
+        LOGGER.error("[CSM] Failed to load guide sign font metrics: " + ex);
         metrics = null;
       }
     }

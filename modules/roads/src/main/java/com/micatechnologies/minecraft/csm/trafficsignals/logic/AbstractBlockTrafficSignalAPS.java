@@ -18,10 +18,14 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class AbstractBlockTrafficSignalAPS extends
     AbstractBlockTrafficSignalTickableRequester {
+
+  private static final Logger LOGGER = LogManager.getLogger(AbstractBlockTrafficSignalAPS.class);
 
   public static final PropertyInteger ARROW_ORIENTATION =
       PropertyInteger.create("arrowdir",
@@ -136,7 +140,7 @@ public abstract class AbstractBlockTrafficSignalAPS extends
   @Nullable
   @Override
   public TileEntity createNewTileEntity(World worldIn, int meta) {
-    System.err.println("CREATING A NEW TILE ENTITY!!!!!!!!!!!!!!!!!!!!!!!!");
+    LOGGER.error("CREATING A NEW TILE ENTITY!!!!!!!!!!!!!!!!!!!!!!!!");
     return new TileEntityTrafficSignalAPS(TrafficSignalAPSSoundSchemes.CAMPBELL);
   }
 

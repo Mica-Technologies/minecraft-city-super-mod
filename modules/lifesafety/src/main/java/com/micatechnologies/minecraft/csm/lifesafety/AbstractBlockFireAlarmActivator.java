@@ -19,6 +19,8 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Abstract base class for fire alarm activator blocks (pull stations, detectors) that can
@@ -31,6 +33,8 @@ import net.minecraft.world.World;
 
 public abstract class AbstractBlockFireAlarmActivator extends AbstractBlockRotatableNSEWUD
     implements ICsmTileEntityProvider, ICsmScheduledTickConsumer {
+
+  private static final Logger LOGGER = LogManager.getLogger(AbstractBlockFireAlarmActivator.class);
 
   // TODO: Why is this here because it concerns me
   public static final PropertyDirection FACING = BlockDirectional.FACING;
@@ -47,8 +51,7 @@ public abstract class AbstractBlockFireAlarmActivator extends AbstractBlockRotat
     try {
       onTick(p_updateTick_1_, p_updateTick_2_, p_updateTick_3_);
     } catch (Exception e) {
-      System.err.println("An error occurred while ticking a fire alarm activator block: ");
-      e.printStackTrace(System.err);
+      LOGGER.error("An error occurred while ticking a fire alarm activator block", e);
     }
     p_updateTick_1_.scheduleUpdate(p_updateTick_2_, this, this.tickRate(p_updateTick_1_));
   }
