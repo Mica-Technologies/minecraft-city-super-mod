@@ -682,6 +682,19 @@ The actual 3D geometry lives in shared custom models (`models/custom/trafficligh
   units as the three-section 8-inch head, so the two share mounts, backplates and span-wire
   drops. The inventory model `trafficlightvertical2section` is the canonical
   `trafficlightvertical` with the center band dropped and the upper band moved down onto it.
+- **RRFB** (`controllablerrfb`): Two rectangular amber indications in one housing for an
+  uncontrolled or midblock crossing, linked as a `PEDESTRIAN_BEACON` so a controller drives it
+  exactly as it drives the HAWK. Unlike the configurable heads it has no tile entity and no
+  renderer: the blockstate swaps between `rrfb_off` and the animated `rrfb_flash`, dark only on
+  color 3 and flashing on any called state. The lamps run their sequence *inside* the texture:
+  the 16-frame, 800 ms sequence FHWA Interim Approval IA-21 requires — left 50, dark 50, right
+  50, dark 50, left 50, dark 50, right 50, dark 50, **both** 50, dark 50, **both** 50, dark 250,
+  at 75 sequences per minute. Note the two simultaneous flashes: an RRFB is not a strictly
+  alternating wig-wag. Minecraft advances texture animations from the global tick counter, so
+  every RRFB in the world stays in step, which is what a pair facing each other across a
+  crossing needs. Regenerate with
+  `dev-env-utils/scripts/gen_rrfb_textures.py`; the art is drawn to land exactly on the model's
+  `uv [1, 5, 15, 11]` band so it maps one texture pixel per model pixel.
 - **Tweeters/Train controller**: Same appearance in all color states (empty color variant overrides).
 - **Gray variants**: Already use newer texture paths (`trafficsignals/old_bulb_body/gray/*`)
   and reference backplate models.

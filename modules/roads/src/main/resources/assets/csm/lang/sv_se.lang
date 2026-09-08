@@ -83,6 +83,7 @@ tile.controllablehorizontaluturnsignal.name=Horisontell Trafiksignal (U-svängsp
 tile.controllablerampmeteronsignalleftmount.name=Rampmätarljus (Enkel, 16 Tum, Vänsterfäste)
 tile.controllablerampmeteronsignalmount.name=Rampmätarljus (Enkel, 16 Tum, Bakfäste)
 tile.controllablerampmeteronsignalrightmount.name=Rampmätarljus (Enkel, 16 Tum, Högerfäste)
+tile.controllablerrfb.name=RRFB (Rektangulär Snabbblinkande Fyr)
 tile.controllablesinglesolidsignalgreen.name=Enkel Trafiksignal (Blinkande Grön)
 tile.controllablesinglesolidsignalgreengray.name=Enkel Rund Grön Signal (Grå)
 tile.controllablesinglesolidsignalgreenleftangle.name=Enkel Trafiksignal (Blinkande Grön, Vänstervinkel)

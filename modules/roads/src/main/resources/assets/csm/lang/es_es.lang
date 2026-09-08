@@ -83,6 +83,7 @@ tile.controllablehorizontaluturnsignal.name=Semáforo Horizontal (Flecha de Camb
 tile.controllablerampmeteronsignalleftmount.name=Luz de Cruce Peatonal de Medidor de Rampa (Individual de 16 Pulgadas, Soporte Izquierdo)
 tile.controllablerampmeteronsignalmount.name=Luz de Cruce Peatonal de Medidor de Rampa (Individual de 16 Pulgadas, Soporte Trasero)
 tile.controllablerampmeteronsignalrightmount.name=Luz de Cruce Peatonal de Medidor de Rampa (Individual de 16 Pulgadas, Soporte Derecho)
+tile.controllablerrfb.name=RRFB (Baliza Rectangular de Destello Rápido)
 tile.controllablesinglesolidsignalgreen.name=Semáforo Individual (Verde Intermitente)
 tile.controllablesinglesolidsignalgreengray.name=Semáforo Individual Verde Circular (Gris)
 tile.controllablesinglesolidsignalgreenleftangle.name=Semáforo Individual (Verde Intermitente, Ángulo Izquierdo)
