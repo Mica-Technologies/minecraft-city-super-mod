@@ -101,6 +101,12 @@ public class SignalHeadConfigGui extends GuiScreen {
       "Body Style"
   };
 
+  /**
+   * Display labels for the Per Section page. Indexes line up with
+   * {@link SignalHeadSectionConfigAction} ordinals — {@code button.id} minus
+   * {@link #PER_SECTION_ID_OFFSET} indexes both — so entries must be appended in the same
+   * order the action enum appends them.
+   */
   private static final String[] SECTION_LABELS = {
       "Body Color",
       "Door Color",
@@ -109,7 +115,8 @@ public class SignalHeadConfigGui extends GuiScreen {
       "Bulb Style",
       "Bulb Type",
       "Bulb State",
-      "Body Style"
+      "Body Style",
+      "Bulb Flash"
   };
 
   private enum Mode {
@@ -353,6 +360,8 @@ public class SignalHeadConfigGui extends GuiScreen {
         return formatAgingState(tileEntity.getBulbAgingState(selectedSection));
       case CYCLE_BODY_STYLE:
         return info.getBodyStyle().getFriendlyName();
+      case TOGGLE_BULB_FLASHING:
+        return info.isBulbFlashing() ? "ON" : "OFF";
       default:
         return "N/A";
     }

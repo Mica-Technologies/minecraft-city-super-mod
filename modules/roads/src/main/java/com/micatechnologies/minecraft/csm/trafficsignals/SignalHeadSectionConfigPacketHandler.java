@@ -65,6 +65,9 @@ public class SignalHeadSectionConfigPacketHandler implements
         case CYCLE_BODY_STYLE:
           signalHead.getNextBodyStyle(sectionIndex);
           break;
+        case TOGGLE_BULB_FLASHING:
+          signalHead.toggleBulbFlashing(sectionIndex);
+          break;
       }
     });
     return null;

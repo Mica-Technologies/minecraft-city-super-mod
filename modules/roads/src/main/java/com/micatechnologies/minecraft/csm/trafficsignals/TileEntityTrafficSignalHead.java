@@ -1090,6 +1090,30 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
     return next;
   }
 
+  /**
+   * Flips a section's bulb-flashing flag and returns the new value. This is the same flag the
+   * hard-coded flashing heads (the flashing red/yellow/green beacons) set in their block
+   * definitions, so turning it on makes any section blink on the head's
+   * {@link TrafficSignalFlashPattern}. Invoked by the per-section config GUI.
+   *
+   * <p>A bimodal section is the one exception: its flashing is driven by the FYA flag every
+   * frame, so the stored flag is kept (and shown) but has no effect while the section stays
+   * bimodal.</p>
+   *
+   * @param sectionIndex the section to toggle
+   *
+   * @return the new flashing state, or {@code false} for an out-of-range section
+   */
+  public boolean toggleBulbFlashing(int sectionIndex) {
+    if (!isValidSectionIndex(sectionIndex)) {
+      return false;
+    }
+    boolean next = !sectionInfos[sectionIndex].isBulbFlashing();
+    sectionInfos[sectionIndex].setBulbFlashing(next);
+    markDirtySync(world, pos, true);
+    return next;
+  }
+
   public TrafficSignalBodyStyle getNextBodyStyle(int sectionIndex) {
     if (!isValidSectionIndex(sectionIndex)) {
       return TrafficSignalBodyStyle.STANDARD;
