@@ -101,12 +101,15 @@ public class TileEntitySchoolZoneBeaconRenderer
     GlStateManager.translate(-0.5, 0.0, -0.5);
     GlStateManager.scale(0.0625, 0.0625, 0.0625);
 
-    // Panel scale is applied about the pivot, so the panel stays centred on the block it was
-    // placed against whatever size it is set to.
+    // Scale about the bottom of the assembly rather than its middle, so a bigger sign grows
+    // upward instead of both ways. Scaling about the centre buried the lower half at 200% --
+    // the panel sank through the ground and took WHEN FLASHING with it. At 100% the pivot
+    // makes no difference, so this only ever helps.
     float scale = te.getScale();
-    GlStateManager.translate(CX, CY, CZ);
+    float pivotY = assemblyBottom(te.getArrangement());
+    GlStateManager.translate(CX, pivotY, CZ);
     GlStateManager.scale(scale, scale, scale);
-    GlStateManager.translate(-CX, -CY, -CZ);
+    GlStateManager.translate(-CX, -pivotY, -CZ);
 
     GlStateManager.disableLighting();
     GlStateManager.disableCull();
@@ -142,6 +145,21 @@ public class TileEntitySchoolZoneBeaconRenderer
     GlStateManager.enableCull();
     GlStateManager.disableBlend();
     GlStateManager.popMatrix();
+  }
+
+  /**
+   * The lowest point the assembly draws to, which is the scale pivot: the panel's bottom edge,
+   * or the lower beacon bar's when one is fitted.
+   *
+   * @param arrangement the beacon arrangement
+   *
+   * @return the bottom of the assembly, in model units
+   */
+  private static float assemblyBottom(int arrangement) {
+    float panelBottom = CY - PANEL_H / 2.0f;
+    return arrangement == TileEntitySchoolZoneBeacon.BEACONS_ABOVE_AND_BELOW
+        ? panelBottom - BAR_GAP - BAR_H
+        : panelBottom;
   }
 
   private static float rotationFor(EnumFacing facing) {

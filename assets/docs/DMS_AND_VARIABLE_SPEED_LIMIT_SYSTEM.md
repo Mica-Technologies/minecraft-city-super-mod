@@ -141,6 +141,55 @@ that also carries `housingColor` and the `fullScreen` flag.
 
 ---
 
+## Block 4: School Zone Beacon Assembly (`school_zone_beacon`)
+
+A fluorescent yellow-green SCHOOL SPEED LIMIT panel with amber beacons that flash during the
+hours the zone is posted for. It is in this family because it is a TESR-drawn panel with a
+settable speed, but it differs from the three above in one important way: **it answers to the
+world clock, not to a player setting or a controller.**
+
+**Data** (`TileEntitySchoolZoneBeacon`): posted speed (5–45 in fives), panel scale
+(75/100/125/150/200%), beacon arrangement (one bar above, or bars above and below), a mode
+(Off / Scheduled / Always On), and four schedule hours — AM start/end and PM start/end.
+
+**The schedule.** Two windows, because that is what a real school zone posts: one around
+arrival and one around dismissal. Hours are 0–23 against Minecraft's clock, which starts its
+day at 06:00, so `hour = ((worldTime / 1000) + 6) % 24`. Two edge cases are decided
+deliberately and covered by `TileEntitySchoolZoneBeaconTest`:
+
+- a window whose end is at or before its start **wraps past midnight**, so 22→02 reads the way
+  it looks rather than being empty;
+- a zero-length window (start == end) is **off**, not all day — the alternative turns a
+  mis-click into a beacon that flashes around the clock.
+
+**Nothing ticks.** `isFlashingNow()` is a pure function of world time and the stored schedule,
+so the renderer asks per frame, no state needs syncing beyond the schedule itself, and a chunk
+that reloads mid-window comes back flashing.
+
+**Rendering.** Sized to the roadside sign family rather than to Blocks 2 and 3 — their panels
+are wider than a block, which reads as a gantry sign rather than something on a post. The panel
+is 16 × 30, near `metal_sign_ultratall`'s proportions, and the assembly draws **no post of its
+own** so it mounts on whatever pole is behind it. The two lamps in a bar are the halves of
+`TrafficSignalFlashPattern.OFF`/`.B` — the signal system's existing wig-wag pair — so a school
+zone blinks at the same rate as everything else, and a lower bar runs opposite the upper one so
+a two-bar assembly alternates rather than blinking in unison.
+
+**Scale grows upward.** The scale pivot is the bottom of the assembly, not its centre. Scaling
+about the centre buried the lower half at 200% — the panel sank through the ground and took
+WHEN FLASHING with it. At 100% the pivot makes no difference.
+
+**Fabricator cost** is the traffic accessories tab default (sheet metal + fastener kit), the
+same as the pole-mount electronic speed limit sign. Pricing the electronics-bearing accessories
+higher would mean giving that tab its own `ICsmFabricatorCostRule`, which would move several
+blocks at once and is deliberately not done here.
+
+> **Testing note.** Beacons that are correctly dark look exactly like beacons that are missing.
+> `/time set` does not stop the clock, so a window can lapse between setting the time and taking
+> a screenshot. Freeze it with `/gamerule doDaylightCycle false` before judging anything about
+> the beacons.
+
+---
+
 ## Shared Infrastructure
 
 ### Tile entities & packets
