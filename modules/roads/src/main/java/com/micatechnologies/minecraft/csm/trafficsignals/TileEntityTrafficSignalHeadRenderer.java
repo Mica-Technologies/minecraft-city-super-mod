@@ -1118,12 +1118,6 @@ public class TileEntityTrafficSignalHeadRenderer extends
   // visors toward the block's back face; z=14 is about where a mount bracket would
   // realistically bolt onto the housing's rear shell.
   private static final float BODY_Z_CENTER = 14.0f;
-  // Neighbouring block centre (beyond the current block's face) on the tube axis. Used to
-  // aim each bracket's arm — the arm's rotation and length are both computed per bracket
-  // so its tip lands at the centre of the pole's block, matching the crosswalk signal
-  // mount convention of reaching into the pole's block.
-  private static final float NEIGHBOUR_CENTRE_POS = 24.0f; // block face at 16 + half block (8)
-  private static final float NEIGHBOUR_CENTRE_NEG = -8.0f; // mirror: 0 - 8
   // Block centre on any axis.
   private static final float BLOCK_CENTRE = 8.0f;
 
