@@ -2,7 +2,6 @@ package com.micatechnologies.minecraft.csm.novelties;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEWUD;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Random;
 import javax.annotation.Nonnull;

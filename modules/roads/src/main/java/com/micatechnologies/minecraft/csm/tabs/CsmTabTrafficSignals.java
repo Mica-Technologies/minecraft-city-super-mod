@@ -2,7 +2,6 @@ package com.micatechnologies.minecraft.csm.tabs;
 
 import com.micatechnologies.minecraft.csm.CsmRegistry;
 import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
-import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalk;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkSignalDouble;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkSignalSingle;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkSignalSingle12Inch;

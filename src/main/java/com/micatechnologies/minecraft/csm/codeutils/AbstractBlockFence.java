@@ -4,7 +4,6 @@ import com.micatechnologies.minecraft.csm.Csm;
 import com.micatechnologies.minecraft.csm.CsmConstants;
 import com.micatechnologies.minecraft.csm.CsmRegistry;
 import java.util.Objects;
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.block.Block;

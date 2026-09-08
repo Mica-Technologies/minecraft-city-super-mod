@@ -18,7 +18,6 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraftforge.common.property.IExtendedBlockState;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class AbstractBlockControllableSignal extends AbstractBlockRotatableNSEW

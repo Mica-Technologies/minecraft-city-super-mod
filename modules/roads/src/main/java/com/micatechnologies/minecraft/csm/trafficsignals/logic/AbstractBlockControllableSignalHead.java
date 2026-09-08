@@ -9,7 +9,6 @@ import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.ISpanWireHangable;
 import com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.SpanWireManager;
 import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalHead;
-import com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalHeadRenderer;
 import javax.annotation.Nullable;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;

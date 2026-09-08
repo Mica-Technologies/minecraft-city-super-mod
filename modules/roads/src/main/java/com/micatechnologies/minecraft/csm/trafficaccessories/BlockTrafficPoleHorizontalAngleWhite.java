@@ -1,6 +1,5 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories;
 
-import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockTrafficPole;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockTrafficPoleDiagonal;
 
 public class BlockTrafficPoleHorizontalAngleWhite extends AbstractBlockTrafficPoleDiagonal {
