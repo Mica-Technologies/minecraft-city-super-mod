@@ -83,6 +83,7 @@ tile.controllablehorizontaluturnsignal.name=Horizontal Traffic Signal (U-Turn Ar
 tile.controllablerampmeteronsignalleftmount.name=Ramp Meter On Crosswalk Light (Single 16-Inch, Left Mount)
 tile.controllablerampmeteronsignalmount.name=Ramp Meter On Crosswalk Light (Single 16-Inch, Rear Mount)
 tile.controllablerampmeteronsignalrightmount.name=Ramp Meter On Crosswalk Light (Single 16-Inch, Right Mount)
+tile.controllablerrfb.name=RRFB (Rectangular Rapid Flashing Beacon)
 tile.controllablesinglesolidsignalgreen.name=Single Traffic Signal (Flashing Green)
 tile.controllablesinglesolidsignalgreengray.name=Single Solid Green Signal (Gray)
 tile.controllablesinglesolidsignalgreenleftangle.name=Single Traffic Signal (Flashing Green, Left Angle)

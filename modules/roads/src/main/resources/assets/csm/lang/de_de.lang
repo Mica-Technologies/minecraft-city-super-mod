@@ -83,6 +83,7 @@ tile.controllablehorizontaluturnsignal.name=Horizontal-Verkehrssignal (Wendepfei
 tile.controllablerampmeteronsignalleftmount.name=Rampenmesser-Ein-Fußgängersignal (Einzeln 16 Zoll, Linke Halterung)
 tile.controllablerampmeteronsignalmount.name=Rampenmesser-Ein-Fußgängersignal (Einzeln 16 Zoll, Rückwärtige Halterung)
 tile.controllablerampmeteronsignalrightmount.name=Rampenmesser-Ein-Fußgängersignal (Einzeln 16 Zoll, Rechte Halterung)
+tile.controllablerrfb.name=RRFB (Rechteckige Schnellblinkbake)
 tile.controllablesinglesolidsignalgreen.name=Einzel-Verkehrssignal (Blinkgrün)
 tile.controllablesinglesolidsignalgreengray.name=Einzel-Rundgrün-Signal (Grau)
 tile.controllablesinglesolidsignalgreenleftangle.name=Einzel-Verkehrssignal (Blinkgrün, Linker Winkel)
