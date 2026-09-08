@@ -218,6 +218,7 @@ tile.rwrkshiftleft2lanes.name=Road Work 2 Lanes Shift Left Sign
 tile.rwrkshiftright2lanes.name=Road Work 2 Lanes Shift Right Sign
 tile.rwrksignalahead.name=Road Work Signal Ahead Sign
 tile.rwrkstopahead.name=Road Work Stop Ahead Sign
+tile.school_zone_beacon.name=School Zone Beacon Assembly
 tile.schoolsafetyzonesign.name=School Safety Zone Sign
 tile.seniorsafetyzonesign.name=Senior Safety Zone Sign
 tile.sign.name=Sign Back w/o Pole

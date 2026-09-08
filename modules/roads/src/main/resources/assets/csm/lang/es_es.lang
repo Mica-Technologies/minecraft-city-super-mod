@@ -218,6 +218,7 @@ tile.rwrkshiftleft2lanes.name=Señal de Obras: 2 Carriles Desvían a la Izquierd
 tile.rwrkshiftright2lanes.name=Señal de Obras: 2 Carriles Desvían a la Derecha
 tile.rwrksignalahead.name=Señal de Obras: Semáforo Adelante
 tile.rwrkstopahead.name=Señal de Obras: Stop Adelante
+tile.school_zone_beacon.name=Conjunto de Baliza de Zona Escolar
 tile.schoolsafetyzonesign.name=Señal de Zona de Seguridad Escolar
 tile.seniorsafetyzonesign.name=Señal de Zona de Seguridad para Personas Mayores
 tile.sign.name=Reverso de Señal sin Poste

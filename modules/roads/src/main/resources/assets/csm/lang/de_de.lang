@@ -218,6 +218,7 @@ tile.rwrkshiftleft2lanes.name=Baustelle: 2 Spuren Verschwenkung Links Schild
 tile.rwrkshiftright2lanes.name=Baustelle: 2 Spuren Verschwenkung Rechts Schild
 tile.rwrksignalahead.name=Baustelle: Signal Voraus Schild
 tile.rwrkstopahead.name=Baustelle: Stopp Voraus Schild
+tile.school_zone_beacon.name=Schulzonen-Blinkanlage
 tile.schoolsafetyzonesign.name=Schulzone-Schild
 tile.seniorsafetyzonesign.name=Seniorenzone-Schild
 tile.sign.name=Schildrückseite ohne Mast
