@@ -23,25 +23,33 @@ public class SignalControllerConfigGui extends GuiScreen {
   private static final int VISUAL_VIEW_BUTTON_ID = CLOSE_BUTTON_ID + 1;
 
   private static final String[] LABELS = {
-      "Mode",                         // 0  - left col
-      "Yellow Time",                  // 1  - left col
-      "All Red Time",                 // 2  - left col
-      "Min Green Time",               // 3  - left col
-      "Max Green Time",               // 4  - left col
-      "Min Green (Secondary)",        // 5  - left col
-      "Max Green (Secondary)",        // 6  - left col
-      "Ped Clearance Time",           // 7  - left col
-      "Ped Signal Time",              // 8  - right col
+      // Indices are SignalControllerConfigAction ordinals, NOT a free reading order: entry N
+      // labels the button that fires values()[N]. Entries 3-8 used to be listed in the order a
+      // person would group them (both greens, then both ped intervals), which left every one of
+      // those six buttons naming a different setting from the one it changed.
+      "Mode",                         // 0  - left col - SWITCH_MODE
+      "Yellow Time",                  // 1  - left col - CYCLE_YELLOW_TIME
+      "All Red Time",                 // 2  - left col - CYCLE_ALL_RED_TIME
+      "Ped Clearance Time",           // 3  - left col - CYCLE_FLASH_DONT_WALK_TIME
+      "Ped Signal Time",              // 4  - left col - CYCLE_DEDICATED_PED_SIGNAL_TIME
+      "Min Green Time",               // 5  - left col - CYCLE_MIN_GREEN_TIME
+      "Max Green Time",               // 6  - left col - CYCLE_MAX_GREEN_TIME
+      "Min Green (Secondary)",        // 7  - left col - CYCLE_MIN_GREEN_TIME_SECONDARY
+      "Max Green (Secondary)",        // 8  - left col - CYCLE_MAX_GREEN_TIME_SECONDARY
       "Lead Ped Interval",            // 9  - right col
       "Nightly Flash",                // 10 - right col
       "Power Loss Flash",             // 11 - right col
       "Overlap Ped Signals",          // 12 - right col
       "All Red Flash",                // 13 - right col
       "Ramp Meter Night",             // 14 - right col
-      "Clear Faults"                  // 15 - right col
+      "Clear Faults",                 // 15 - right col
+      "Min Req. Service",             // 16 - right col
+      "Max Req. Service"              // 17 - right col
   };
 
-  private static final int LEFT_COL_COUNT = 8;
+  // Nine per column. Index order here follows SignalControllerConfigAction's ordinals, so the
+  // two requestable entries land at the end rather than beside the other timings.
+  private static final int LEFT_COL_COUNT = 9;
 
   // Display strings for timing values (ticks -> human-readable)
   private static final long[] LPI_OPTIONS = SignalControllerConfigPacketHandler.LPI_OPTIONS;
@@ -58,6 +66,13 @@ public class SignalControllerConfigGui extends GuiScreen {
   private static final String[] MIN_GREEN_NAMES = {"5s", "7s", "10s", "15s", "20s", "25s"};
   private static final long[] MAX_GREEN_OPTIONS = SignalControllerConfigPacketHandler.MAX_GREEN_OPTIONS;
   private static final String[] MAX_GREEN_NAMES = {"30s", "45s", "50s", "60s", "70s", "80s", "90s"};
+  private static final long[] MIN_REQ_SERVICE_OPTIONS =
+      SignalControllerConfigPacketHandler.MIN_REQUESTABLE_SERVICE_OPTIONS;
+  private static final String[] MIN_REQ_SERVICE_NAMES = {"10s", "15s", "20s", "25s", "30s", "40s"};
+  private static final long[] MAX_REQ_SERVICE_OPTIONS =
+      SignalControllerConfigPacketHandler.MAX_REQUESTABLE_SERVICE_OPTIONS;
+  private static final String[] MAX_REQ_SERVICE_NAMES =
+      {"60s", "90s", "120s", "150s", "180s", "240s"};
 
   private final TileEntityTrafficSignalController controller;
   private final BlockPos blockPos;
@@ -149,6 +164,12 @@ public class SignalControllerConfigGui extends GuiScreen {
         return controller.getRampMeterNightModeName();
       case CLEAR_FAULTS:
         return controller.isInFaultState() ? "FAULT ACTIVE" : "No Faults";
+      case CYCLE_MIN_REQUESTABLE_SERVICE_TIME:
+        return ticksToName(controller.getMinRequestableServiceTime(), MIN_REQ_SERVICE_OPTIONS,
+            MIN_REQ_SERVICE_NAMES);
+      case CYCLE_MAX_REQUESTABLE_SERVICE_TIME:
+        return ticksToName(controller.getMaxRequestableServiceTime(), MAX_REQ_SERVICE_OPTIONS,
+            MAX_REQ_SERVICE_NAMES);
       default:
         return "N/A";
     }

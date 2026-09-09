@@ -49,6 +49,8 @@ public class SignalControllerVisualGui extends GuiScreen {
   private static final int BTN_CLEAR_FAULTS = 110;
   private static final int BTN_CIRCUITS = 111;
   private static final int BTN_ADVANCED = 112;
+  private static final int BTN_RAMP_METER = 113;
+  private static final int BTN_REQUESTABLE = 114;
 
   private final TileEntityTrafficSignalController controller;
   private final BlockPos blockPos;
@@ -117,16 +119,18 @@ public class SignalControllerVisualGui extends GuiScreen {
     fieldPedClear = createField(col1X, fieldY, fieldW, fieldH, controller.getFlashDontWalkTime());
     fieldPedSignal = createField(col2X, fieldY, fieldW, fieldH, controller.getDedicatedPedSignalTime());
 
-    // Toggle buttons row
+    // Toggle buttons row. Six across the same span the previous five occupied, so the ramp meter
+    // night setting joins them without the panel growing.
     int toggleY = guiTop + 212;
-    int toggleW = 66;
+    int toggleW = 56;
     int toggleGap = 4;
     int toggleStart = guiLeft + 6;
     buttonList.add(new GuiButton(BTN_NIGHTLY, toggleStart, toggleY, toggleW, 14, ""));
     buttonList.add(new GuiButton(BTN_POWER_LOSS, toggleStart + (toggleW + toggleGap), toggleY, toggleW, 14, ""));
     buttonList.add(new GuiButton(BTN_OVERLAP_PED, toggleStart + (toggleW + toggleGap) * 2, toggleY, toggleW, 14, ""));
     buttonList.add(new GuiButton(BTN_ALL_RED_FLASH, toggleStart + (toggleW + toggleGap) * 3, toggleY, toggleW, 14, ""));
-    buttonList.add(new GuiButton(BTN_CLEAR_FAULTS, toggleStart + (toggleW + toggleGap) * 4, toggleY, toggleW + 8, 14, ""));
+    buttonList.add(new GuiButton(BTN_RAMP_METER, toggleStart + (toggleW + toggleGap) * 4, toggleY, toggleW, 14, ""));
+    buttonList.add(new GuiButton(BTN_CLEAR_FAULTS, toggleStart + (toggleW + toggleGap) * 5, toggleY, toggleW, 14, ""));
 
     // Close and Circuits buttons
     buttonList.add(new GuiButton(BTN_CIRCUITS, guiLeft + GUI_WIDTH / 2 - 82, guiTop + GUI_HEIGHT - 20, 80, 14, "Circuits"));
@@ -134,6 +138,9 @@ public class SignalControllerVisualGui extends GuiScreen {
     // ASC-3 advanced (NEMA) programming GUI — bottom-left corner.
     buttonList.add(new GuiButton(BTN_ADVANCED, guiLeft + 6, guiTop + GUI_HEIGHT - 20, 70, 14,
         "ASC-3"));
+    // Requestable-mode service bounds — bottom-right, mirroring the ASC-3 sub-screen pattern.
+    buttonList.add(new GuiButton(BTN_REQUESTABLE, guiLeft + GUI_WIDTH - 92,
+        guiTop + GUI_HEIGHT - 20, 86, 14, "Requestable"));
   }
 
   private GuiTextField createField(int x, int y, int w, int h, long tickValue) {
@@ -315,6 +322,9 @@ public class SignalControllerVisualGui extends GuiScreen {
     for (GuiButton btn : buttonList) {
       if (btn.id == BTN_CLEAR_FAULTS) {
         btn.displayString = controller.isInFaultState() ? "FAULT!" : "No Faults";
+      } else if (btn.id == BTN_RAMP_METER) {
+        // Three-way, so it cannot use updateToggleButtonShort's on/off pair.
+        btn.displayString = "RM: " + controller.getRampMeterNightModeName();
       }
     }
 
@@ -330,6 +340,7 @@ public class SignalControllerVisualGui extends GuiScreen {
     drawToggleTooltip(mouseX, mouseY, BTN_POWER_LOSS, "Power Loss Flash");
     drawToggleTooltip(mouseX, mouseY, BTN_OVERLAP_PED, "Overlap Ped Signals");
     drawToggleTooltip(mouseX, mouseY, BTN_ALL_RED_FLASH, "All Red Flash");
+    drawToggleTooltip(mouseX, mouseY, BTN_RAMP_METER, "Ramp Meter Night Mode");
     drawToggleTooltip(mouseX, mouseY, BTN_CLEAR_FAULTS, "Clear Faults");
   }
 
@@ -463,6 +474,13 @@ public class SignalControllerVisualGui extends GuiScreen {
       case BTN_ADVANCED:
         mc.displayGuiScreen(new AdvancedSignalControllerGui(controller));
         break;
+      case BTN_REQUESTABLE:
+        mc.displayGuiScreen(new RequestableSignalControllerGui(controller));
+        break;
+      case BTN_RAMP_METER:
+        CsmRoads.NETWORK.sendToServer(new SignalControllerConfigPacket(blockPos,
+            SignalControllerConfigAction.CYCLE_RAMP_METER_NIGHT_MODE.ordinal()));
+        break;
       case BTN_SIMPLE_VIEW:
         mc.displayGuiScreen(new SignalControllerConfigGui(controller));
         break;
@@ -534,9 +552,53 @@ public class SignalControllerVisualGui extends GuiScreen {
         TrafficSignalControllerNBTKeys.LEGACY_DEDICATED_PED_SIGNAL_TIME, "pedSignal");
     sendIfPresent(source, TrafficSignalControllerNBTKeys.LEAD_PEDESTRIAN_INTERVAL_TIME,
         TrafficSignalControllerNBTKeys.LEGACY_LEAD_PEDESTRIAN_INTERVAL_TIME, "lpi");
+    pasteRequestableServiceTimes(source);
+
+    // Non-timing settings. These were omitted originally, so a pasted controller kept its own
+    // fallback behaviour and silently disagreed with the one it was copied from.
+    sendIfPresent(source, TrafficSignalControllerNBTKeys.NIGHTLY_FALLBACK_FLASH_MODE,
+        TrafficSignalControllerNBTKeys.LEGACY_NIGHTLY_FALLBACK_FLASH_MODE, "nightlyFlash");
+    sendIfPresent(source, TrafficSignalControllerNBTKeys.POWER_LOSS_FALLBACK_FLASH_MODE,
+        TrafficSignalControllerNBTKeys.LEGACY_POWER_LOSS_FALLBACK_FLASH_MODE, "powerLossFlash");
+    sendIfPresent(source, TrafficSignalControllerNBTKeys.OVERLAP_PEDESTRIAN_SIGNALS,
+        TrafficSignalControllerNBTKeys.LEGACY_OVERLAP_PEDESTRIAN_SIGNALS, "overlapPed");
+    sendIfPresent(source, TrafficSignalControllerNBTKeys.ALL_RED_FLASH,
+        TrafficSignalControllerNBTKeys.LEGACY_ALL_RED_FLASH, "allRedFlash");
+    sendIfPresent(source, TrafficSignalControllerNBTKeys.RAMP_METER_NIGHT_MODE,
+        TrafficSignalControllerNBTKeys.LEGACY_RAMP_METER_NIGHT_MODE, "rampMeterNight");
+
     if (source.hasKey(TrafficSignalControllerNBTKeys.MODE)) {
       CsmRoads.NETWORK.sendToServer(new SignalControllerSetValuePacket(blockPos, "mode",
           source.getInteger(TrafficSignalControllerNBTKeys.MODE)));
+    }
+  }
+
+  /**
+   * Sends the requestable service bounds in whichever order survives the server's clamp. The
+   * controller holds min at or below max as each one lands, so pasting a pair that sits entirely
+   * above the target's current window would truncate the minimum if sent first — and a pair
+   * entirely below would drag the maximum up if sent first. Widening upward therefore leads with
+   * the maximum, every other case with the minimum.
+   */
+  private void pasteRequestableServiceTimes(NBTTagCompound source) {
+    String minKey = TrafficSignalControllerNBTKeys.MIN_REQUESTABLE_SERVICE_TIME;
+    String maxKey = TrafficSignalControllerNBTKeys.MAX_REQUESTABLE_SERVICE_TIME;
+    String legacyMinKey = TrafficSignalControllerNBTKeys.LEGACY_MIN_REQUESTABLE_SERVICE_TIME;
+    String legacyMaxKey = TrafficSignalControllerNBTKeys.LEGACY_MAX_REQUESTABLE_SERVICE_TIME;
+
+    boolean maxFirst = false;
+    if (source.hasKey(minKey) || source.hasKey(legacyMinKey)) {
+      long incomingMin =
+          source.hasKey(minKey) ? source.getLong(minKey) : source.getLong(legacyMinKey);
+      maxFirst = incomingMin > controller.getMaxRequestableServiceTime();
+    }
+
+    if (maxFirst) {
+      sendIfPresent(source, maxKey, legacyMaxKey, "maxRequestableService");
+      sendIfPresent(source, minKey, legacyMinKey, "minRequestableService");
+    } else {
+      sendIfPresent(source, minKey, legacyMinKey, "minRequestableService");
+      sendIfPresent(source, maxKey, legacyMaxKey, "maxRequestableService");
     }
   }
 

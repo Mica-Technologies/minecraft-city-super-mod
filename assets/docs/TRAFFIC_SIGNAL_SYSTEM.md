@@ -332,8 +332,28 @@ All times in ticks (20 ticks = 1 second):
 | `maxGreenTimeSecondary` | 1000 (~50s) | Maximum green for secondary movement |
 | `dedicatedPedSignalTime` | 160 (~8s) | Minimum pedestrian walk time |
 | `leadPedestrianIntervalTime` | 0 (disabled) | Walk starts before vehicle green |
-| `minRequestableServiceTime` | varies | Min service time in requestable mode |
-| `maxRequestableServiceTime` | varies | Max service time in requestable mode |
+| `minRequestableServiceTime` | 500 (~25s) | Min service green in requestable mode |
+| `maxRequestableServiceTime` | 2400 (~120s) | Max service green in requestable mode |
+
+### Requestable service bounds
+
+The two requestable values are the only timings that do nothing outside their own mode, so they
+live on their own screen — the **Requestable** button at the bottom right of the visual editor —
+rather than on the main panel, the same way the ADVANCED plan lives behind **ASC-3**. They are
+also cycle buttons in the simple GUI.
+
+In `REQUESTABLE` mode the service green holds for `minRequestableServiceTime` before demand is
+sampled at all, then ends as soon as no sensor still reports waiting traffic, or unconditionally at
+`maxRequestableServiceTime`. The window between the two is the part that responds to demand; the
+sub-screen draws it as a lighter green extension so the pair reads at a glance.
+
+`setMinRequestableServiceTime` and `setMaxRequestableServiceTime` clamp into
+`REQUESTABLE_SERVICE_FLOOR`..`REQUESTABLE_SERVICE_CEILING` (1s..10min) and hold min at or below
+max. That ordering is enforced in the setters rather than at each call site, because a crossed pair
+would make the service green eligible to end the instant its floor elapsed. Anything that writes
+these values — cycle button, typed field, clipboard paste — inherits the guarantee, so a paste that
+moves the whole window upward has to send the maximum first (see
+`SignalControllerVisualGui.pasteRequestableServiceTimes`).
 
 ## Connecting Devices to a Controller
 

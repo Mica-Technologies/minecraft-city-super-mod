@@ -78,6 +78,19 @@ public class SignalControllerSetValuePacketHandler implements
             controller.setMaxGreenTimeSecondary(tickValue);
           }
           break;
+        // Open values rather than a fixed band: the setters clamp to the controller's own
+        // floor/ceiling and keep min at or below max, so anything non-negative can be forwarded
+        // and will come back corrected on the sync below.
+        case "minRequestableService":
+          if (tickValue >= 0) {
+            controller.setMinRequestableServiceTime(tickValue);
+          }
+          break;
+        case "maxRequestableService":
+          if (tickValue >= 0) {
+            controller.setMaxRequestableServiceTime(tickValue);
+          }
+          break;
         case "flashDontWalk":
           if (tickValue >= 60 && tickValue <= 800) {
             controller.setFlashDontWalkTime(tickValue);
