@@ -24,6 +24,8 @@ public class SignalControllerConfigPacketHandler implements
   static final long[] DEDICATED_PED_OPTIONS = {140, 160, 200, 300, 400};
   static final long[] MIN_GREEN_OPTIONS = {100, 140, 200, 300, 400, 500};
   static final long[] MAX_GREEN_OPTIONS = {600, 900, 1000, 1200, 1400, 1600, 1800};
+  static final long[] MIN_REQUESTABLE_SERVICE_OPTIONS = {200, 300, 400, 500, 600, 800};
+  static final long[] MAX_REQUESTABLE_SERVICE_OPTIONS = {1200, 1800, 2400, 3000, 3600, 4800};
 
   @Override
   public IMessage onMessage(SignalControllerConfigPacket message, MessageContext ctx) {
@@ -101,6 +103,14 @@ public class SignalControllerConfigPacketHandler implements
           break;
         case CLEAR_FAULTS:
           controller.clearFaultState();
+          break;
+        case CYCLE_MIN_REQUESTABLE_SERVICE_TIME:
+          controller.setMinRequestableServiceTime(cycleValue(
+              controller.getMinRequestableServiceTime(), MIN_REQUESTABLE_SERVICE_OPTIONS));
+          break;
+        case CYCLE_MAX_REQUESTABLE_SERVICE_TIME:
+          controller.setMaxRequestableServiceTime(cycleValue(
+              controller.getMaxRequestableServiceTime(), MAX_REQUESTABLE_SERVICE_OPTIONS));
           break;
       }
       // Force sync to client so the GUI sees updated values

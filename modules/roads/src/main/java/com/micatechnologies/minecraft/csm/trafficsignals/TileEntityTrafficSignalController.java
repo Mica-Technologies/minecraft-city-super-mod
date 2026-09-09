@@ -379,6 +379,38 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
   public static final long DEFAULT_MAX_GREEN_TIME = 1400;
 
   /**
+   * Default minimum service green time in {@link TrafficSignalControllerMode#REQUESTABLE} mode, in
+   * ticks. The service green is held at least this long before demand is even sampled.
+   *
+   * @since 2026.9.9
+   */
+  public static final long DEFAULT_MIN_REQUESTABLE_SERVICE_TIME = 500;
+
+  /**
+   * Default maximum service green time in {@link TrafficSignalControllerMode#REQUESTABLE} mode, in
+   * ticks. The service green ends at this point whether or not demand remains.
+   *
+   * @since 2026.9.9
+   */
+  public static final long DEFAULT_MAX_REQUESTABLE_SERVICE_TIME = 2400;
+
+  /**
+   * Absolute floor for either requestable service bound, in ticks. One second is the point below
+   * which a service green stops being a phase at all; everything above it is the operator's call.
+   *
+   * @since 2026.9.9
+   */
+  public static final long REQUESTABLE_SERVICE_FLOOR = 20;
+
+  /**
+   * Absolute ceiling for either requestable service bound, in ticks (ten minutes). This guards
+   * against a typo parking a crossing on green, not against any realistic configuration.
+   *
+   * @since 2026.9.9
+   */
+  public static final long REQUESTABLE_SERVICE_CEILING = 12000;
+
+  /**
    * The yellow time for the traffic signal controller.
    *
    * @since 2.0
@@ -405,7 +437,7 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
    *
    * @since 2.0
    */
-  private long minRequestableServiceTime = 500;
+  private long minRequestableServiceTime = DEFAULT_MIN_REQUESTABLE_SERVICE_TIME;
 
   /**
    * The maximum service time when servicing requests to the traffic signal controller in
@@ -413,7 +445,7 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
    *
    * @since 2.0
    */
-  private long maxRequestableServiceTime = 2400;
+  private long maxRequestableServiceTime = DEFAULT_MAX_REQUESTABLE_SERVICE_TIME;
 
   /**
    * The minimum green time when servicing circuits configured to the traffic signal controller in
@@ -1712,6 +1744,75 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
   public void setMaxGreenTimeSecondary(long maxGreenTimeSecondary) {
     if (this.maxGreenTimeSecondary != maxGreenTimeSecondary) {
       this.maxGreenTimeSecondary = maxGreenTimeSecondary;
+      resetController(false, true);
+    }
+  }
+
+  /**
+   * Gets the traffic signal controller's minimum requestable service time.
+   *
+   * @return the minimum requestable service time in ticks
+   *
+   * @since 2026.9.9
+   */
+  public long getMinRequestableServiceTime() {
+    return minRequestableServiceTime;
+  }
+
+  /**
+   * Sets the traffic signal controller's minimum requestable service time. The value is clamped
+   * into {@link #REQUESTABLE_SERVICE_FLOOR}..{@link #REQUESTABLE_SERVICE_CEILING} and then held at
+   * or below the current maximum.
+   *
+   * <p>The clamp lives here rather than in the packet handlers because min-not-above-max is an
+   * invariant of the pair, not of one input path: the ticker samples demand only once the minimum
+   * has elapsed and cuts service off at the maximum, so a crossed pair would end the service green
+   * the instant it became eligible. Every caller — cycle button, typed field, clipboard paste —
+   * therefore gets the same guarantee.
+   *
+   * @param minRequestableServiceTime the minimum requestable service time in ticks
+   *
+   * @since 2026.9.9
+   */
+  public void setMinRequestableServiceTime(long minRequestableServiceTime) {
+    long clamped = Math.max(REQUESTABLE_SERVICE_FLOOR,
+        Math.min(REQUESTABLE_SERVICE_CEILING, minRequestableServiceTime));
+    clamped = Math.min(clamped, maxRequestableServiceTime);
+    if (this.minRequestableServiceTime != clamped) {
+      this.minRequestableServiceTime = clamped;
+      resetController(false, true);
+    }
+  }
+
+  /**
+   * Gets the traffic signal controller's maximum requestable service time.
+   *
+   * @return the maximum requestable service time in ticks
+   *
+   * @since 2026.9.9
+   */
+  public long getMaxRequestableServiceTime() {
+    return maxRequestableServiceTime;
+  }
+
+  /**
+   * Sets the traffic signal controller's maximum requestable service time. The value is clamped
+   * into {@link #REQUESTABLE_SERVICE_FLOOR}..{@link #REQUESTABLE_SERVICE_CEILING} and then held at
+   * or above the current minimum.
+   *
+   * <p>See {@link #setMinRequestableServiceTime(long)} for why the pair is kept ordered here
+   * rather than at each call site.
+   *
+   * @param maxRequestableServiceTime the maximum requestable service time in ticks
+   *
+   * @since 2026.9.9
+   */
+  public void setMaxRequestableServiceTime(long maxRequestableServiceTime) {
+    long clamped = Math.max(REQUESTABLE_SERVICE_FLOOR,
+        Math.min(REQUESTABLE_SERVICE_CEILING, maxRequestableServiceTime));
+    clamped = Math.max(clamped, minRequestableServiceTime);
+    if (this.maxRequestableServiceTime != clamped) {
+      this.maxRequestableServiceTime = clamped;
       resetController(false, true);
     }
   }

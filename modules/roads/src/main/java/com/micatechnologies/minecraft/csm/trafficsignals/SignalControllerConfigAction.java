@@ -20,5 +20,10 @@ public enum SignalControllerConfigAction {
   TOGGLE_OVERLAP_PED_SIGNALS,
   TOGGLE_ALL_RED_FLASH,
   CYCLE_RAMP_METER_NIGHT_MODE,
-  CLEAR_FAULTS
+  CLEAR_FAULTS,
+
+  // Appended, not inserted: the ordinal is what travels in SignalControllerConfigPacket, so
+  // inserting above would silently remap every saved/queued action.
+  CYCLE_MIN_REQUESTABLE_SERVICE_TIME,
+  CYCLE_MAX_REQUESTABLE_SERVICE_TIME
 }
