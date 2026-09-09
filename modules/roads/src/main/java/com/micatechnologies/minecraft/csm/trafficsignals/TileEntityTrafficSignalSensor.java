@@ -4,14 +4,12 @@ import com.google.common.base.Predicate;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractTileEntity;
 import com.micatechnologies.minecraft.csm.codeutils.SerializationUtils;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockTrafficSignalSensor;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficEntitySelectors;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.passive.EntityVillager;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EntitySelectors;
 import net.minecraft.util.Tuple;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -34,19 +32,14 @@ public class TileEntityTrafficSignalSensor extends AbstractTileEntity {
 
   /**
    * Matches the entities a traffic signal sensor counts as demand: players and villagers.
-   * <p>
-   * The {@code NOT_SPECTATING} term is load-bearing, not decorative. The two-argument
-   * {@code World.getEntitiesWithinAABB(Class, AxisAlignedBB)} applies
-   * {@link EntitySelectors#NOT_SPECTATING} internally, but the three-argument overload used here
-   * <em>replaces</em> that default with the supplied predicate rather than adding to it. Dropping
-   * it would let a player in spectator mode place a call at an intersection.
-   * </p>
+   *
+   * <p>The definition itself is {@link TrafficEntitySelectors#VEHICLE}, shared with the other
+   * road blocks that have to agree on what a vehicle is. It keeps a short alias here because
+   * this class names it in several places and the long form reads badly at each of them.</p>
    *
    * @since 2026.8
    */
-  private static final Predicate<Entity> ELIGIBLE_ENTITY =
-      entity -> EntitySelectors.NOT_SPECTATING.apply(entity)
-          && (entity instanceof EntityPlayer || entity instanceof EntityVillager);
+  private static final Predicate<Entity> ELIGIBLE_ENTITY = TrafficEntitySelectors.VEHICLE;
 
   // Short-form NBT keys for the sensor's eight scan corner positions. LEGACY_* constants are
   // retained for back-compat reads only.
@@ -282,8 +275,8 @@ public class TileEntityTrafficSignalSensor extends AbstractTileEntity {
 
   /**
    * Scans for eligible entities within the {@link TileEntityTrafficSignalSensor}'s scan region and
-   * returns the number of entities found. Eligible entities are {@link EntityVillager} and
-   * {@link EntityPlayer}.
+   * returns the number of entities found. Eligible entities are those matched by
+   * {@link TrafficEntitySelectors#VEHICLE}.
    *
    * @return the number of eligible entities found within the
    *     {@link TileEntityTrafficSignalSensor}'s scan region
@@ -296,8 +289,8 @@ public class TileEntityTrafficSignalSensor extends AbstractTileEntity {
 
   /**
    * Scans for eligible entities within the scan region defined by the specified corners, and
-   * returns the number of entities found. Eligible entities are {@link EntityVillager} and
-   * {@link EntityPlayer}.
+   * returns the number of entities found. Eligible entities are those matched by
+   * {@link TrafficEntitySelectors#VEHICLE}.
    *
    * @param corner1 the first corner of the scan region
    * @param corner2 the second corner of the scan region
@@ -323,7 +316,7 @@ public class TileEntityTrafficSignalSensor extends AbstractTileEntity {
   /**
    * Scans for eligible entities within the {@link TileEntityTrafficSignalSensor}'s left turn lane
    * scan region and returns the number of entities found. Eligible entities are
-   * {@link EntityVillager} and {@link EntityPlayer}.
+   * those matched by {@link TrafficEntitySelectors#VEHICLE}.
    *
    * @return the number of eligible entities found within the
    *     {@link TileEntityTrafficSignalSensor}'s left turn lane scan region
@@ -337,7 +330,7 @@ public class TileEntityTrafficSignalSensor extends AbstractTileEntity {
   /**
    * Scans for eligible entities within the {@link TileEntityTrafficSignalSensor}'s protected lane
    * scan region and returns the number of entities found. Eligible entities are
-   * {@link EntityVillager} and {@link EntityPlayer}.
+   * those matched by {@link TrafficEntitySelectors#VEHICLE}.
    *
    * @return the number of eligible entities found within the
    *     {@link TileEntityTrafficSignalSensor}'s protected lane scan region
@@ -435,7 +428,7 @@ public class TileEntityTrafficSignalSensor extends AbstractTileEntity {
   /**
    * Scans for eligible entities within the {@link TileEntityTrafficSignalSensor}'s right turn lane
    * scan region and returns the number of entities found. Eligible entities are
-   * {@link EntityVillager} and {@link EntityPlayer}.
+   * those matched by {@link TrafficEntitySelectors#VEHICLE}.
    *
    * @return the number of eligible entities found within the
    *     {@link TileEntityTrafficSignalSensor}'s right turn lane scan region
@@ -464,7 +457,7 @@ public class TileEntityTrafficSignalSensor extends AbstractTileEntity {
   /**
    * Scans for eligible entities within the scan region defined by the specified corners, and returns
    * a list of tuples containing each entity's ID and current position. Eligible entities are
-   * {@link EntityVillager} and {@link EntityPlayer}.
+   * those matched by {@link TrafficEntitySelectors#VEHICLE}.
    *
    * @param corner1 the first corner of the scan region
    * @param corner2 the second corner of the scan region

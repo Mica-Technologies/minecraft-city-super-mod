@@ -527,6 +527,63 @@ public class RenderHelper {
 
   private static final float WHITE_UV = 0.5f;
 
+  /**
+   * Adds a rectangle whose corners are stepped in along a quarter circle, as a stack of boxes
+   * that touch but never overlap.
+   *
+   * <p>The non-overlapping part is the whole trick. Two boxes that share a face plane z-fight,
+   * so a rounded corner cannot be built by laying a narrower box over a wider one — the bands
+   * have to tile the rectangle exactly. Each band's inset is measured at its <em>outer</em>
+   * edge, so the silhouette sits just inside the arc rather than bulging past it.</p>
+   *
+   * <p>Sign faces are the use case: a stamped blank has a corner radius, and a hard
+   * 90-degree corner is the clearest tell that a sign was drawn rather than cut.</p>
+   *
+   * @param out         the list to add the boxes to
+   * @param x1          left edge
+   * @param y1          bottom edge
+   * @param x2          right edge
+   * @param y2          top edge
+   * @param z1          front face
+   * @param z2          back face
+   * @param radius      corner radius; zero or less emits one plain box
+   * @param steps       how many bands approximate each corner; 3 reads as round at sign scale
+   * @param roundBottom whether the bottom two corners are rounded
+   * @param roundTop    whether the top two corners are rounded
+   *
+   * @since 2026.9
+   */
+  public static void addRoundedRect(List<Box> out,
+      float x1, float y1, float x2, float y2, float z1, float z2,
+      float radius, int steps, boolean roundBottom, boolean roundTop) {
+    if (radius <= 0.0f || steps < 1 || (!roundBottom && !roundTop)) {
+      out.add(new Box(new float[]{x1, y1, z1}, new float[]{x2, y2, z2}));
+      return;
+    }
+
+    out.add(new Box(
+        new float[]{x1, roundBottom ? y1 + radius : y1, z1},
+        new float[]{x2, roundTop ? y2 - radius : y2, z2}));
+
+    for (int i = 0; i < steps; i++) {
+      float bandLow = radius * i / steps;
+      float bandHigh = radius * (i + 1) / steps;
+      float outerDistance = radius - bandLow;
+      float inset = radius
+          - (float) Math.sqrt(Math.max(0.0f, radius * radius - outerDistance * outerDistance));
+      if (roundBottom) {
+        out.add(new Box(
+            new float[]{x1 + inset, y1 + bandLow, z1},
+            new float[]{x2 - inset, y1 + bandHigh, z2}));
+      }
+      if (roundTop) {
+        out.add(new Box(
+            new float[]{x1 + inset, y2 - bandHigh, z1},
+            new float[]{x2 - inset, y2 - bandLow, z2}));
+      }
+    }
+  }
+
   public static void addBoxesToBufferLit(List<Box> boxes, BufferBuilder buffer,
       float red, float green, float blue, float alpha,
       float xOffset, float yOffset, float zOffset,

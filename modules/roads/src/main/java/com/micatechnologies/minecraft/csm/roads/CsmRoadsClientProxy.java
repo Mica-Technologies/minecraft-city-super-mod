@@ -16,6 +16,9 @@ public class CsmRoadsClientProxy extends CsmRoadsCommonProxy {
     ClientRegistry.bindTileEntitySpecialRenderer(com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalHead.class, new com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalHeadRenderer());
     ClientRegistry.bindTileEntitySpecialRenderer(com.micatechnologies.minecraft.csm.trafficaccessories.TileEntitySchoolZoneBeacon.class, new com.micatechnologies.minecraft.csm.trafficaccessories.TileEntitySchoolZoneBeaconRenderer());
     ClientRegistry.bindTileEntitySpecialRenderer(
+        com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityRadarSpeedSign.class,
+        new com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityRadarSpeedSignRenderer());
+    ClientRegistry.bindTileEntitySpecialRenderer(
         com.micatechnologies.minecraft.csm.trafficaccessories.TileEntitySignalBackplate.class,
         new com.micatechnologies.minecraft.csm.trafficaccessories.TileEntitySignalBackplateRenderer());
     ClientRegistry.bindTileEntitySpecialRenderer(com.micatechnologies.minecraft.csm.trafficsignals.TileEntityCrosswalkSignal.class, new com.micatechnologies.minecraft.csm.trafficsignals.TileEntityCrosswalkSignalRenderer());
