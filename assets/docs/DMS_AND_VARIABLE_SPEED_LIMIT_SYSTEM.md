@@ -1,23 +1,29 @@
 # DMS and Variable Speed Limit Sign System
 
-This system adds three TESR-rendered highway electronic-display blocks to the Traffic
-Accessories subsystem. All three build on the infrastructure originally created for the
+This system adds five TESR-rendered electronic-display sign blocks to the Traffic
+Accessories subsystem. All of them build on the infrastructure originally created for the
 Portable Changeable Message Sign (PCMS, `portable_message_sign`): the same tile-entity
 shape, GUI conventions, server-side update packet pattern, and `RenderHelper` box-drawing
-helpers. None of them carry a Forge-Energy or redstone connection — they are purely visual,
-operator-configured signs.
+helpers.
 
 | Block | Registry name | GUI ID | Tile entity | Renderer |
 |---|---|---|---|---|
 | Overhead Gantry DMS | `overhead_message_sign` | 10 | `TileEntityOverheadMessageSign` | `TileEntityOverheadMessageSignRenderer` |
 | Portable Variable Speed Limit Trailer | `portable_speed_limit_sign` | 11 | `TileEntityVariableSpeedLimit` | `TileEntityPortableSpeedLimitRenderer` |
 | Large Overhead Variable Speed Limit Sign | `overhead_speed_limit_sign` | 12 | `TileEntityOverheadSpeedLimit` | `TileEntityOverheadSpeedLimitRenderer` |
+| School Zone Beacon Assembly | `school_zone_beacon` | 19 | `TileEntitySchoolZoneBeacon` | `TileEntitySchoolZoneBeaconRenderer` |
+| Radar Speed Feedback Sign | `radar_speed_sign` | 21 | `TileEntityRadarSpeedSign` | `TileEntityRadarSpeedSignRenderer` |
 
-All three block classes live in
-`src/main/java/com/micatechnologies/minecraft/csm/trafficaccessories/`, extend
-`AbstractBlockRotatableNSEW`, and implement `ICsmTileEntityProvider`. Each opens its GUI
+Every block class lives in
+`modules/roads/src/main/java/com/micatechnologies/minecraft/csm/trafficaccessories/`, extends
+`AbstractBlockRotatableNSEW`, and implements `ICsmTileEntityProvider`. Each opens its GUI
 from `onBlockActivated` via `player.openGui(Csm.instance, <id>, ...)`. All render with
 `BlockRenderLayer.CUTOUT_MIPPED` and are non-opaque, non-full-cube.
+
+Blocks 1-3 are purely visual and operator-configured, with no Forge-Energy or redstone
+connection. Blocks 4 and 5 are not: the school zone beacon answers to the **world clock**, and
+the radar sign answers to **what is moving in front of it** and emits a redstone signal while
+that is over the posted speed.
 
 ---
 
@@ -143,14 +149,27 @@ that also carries `housingColor` and the `fullScreen` flag.
 
 ## Block 4: School Zone Beacon Assembly (`school_zone_beacon`)
 
-A fluorescent yellow-green SCHOOL SPEED LIMIT panel with amber beacons that flash during the
-hours the zone is posted for. It is in this family because it is a TESR-drawn panel with a
-settable speed, but it differs from the three above in one important way: **it answers to the
-world clock, not to a player setting or a controller.**
+A SCHOOL SPEED LIMIT assembly with amber beacons that flash during the hours the zone is
+posted for. It is in this family because it is a TESR-drawn panel with a settable speed, but it
+differs from the three above in one important way: **it answers to the world clock, not to a
+player setting or a controller.**
+
+The face is a real assembly's, not one panel: a **white S5-1 regulatory sign** under a coloured
+**S4-3 SCHOOL plaque**, separated by a strip of the border. The white body is regulatory and
+stays white; the plaque takes the `MutcdSignFaceColor` choice described under Block 5, because
+the MUTCD permits either standard yellow or fluorescent yellow-green on a warning face and both
+are in service.
 
 **Data** (`TileEntitySchoolZoneBeacon`): posted speed (5–45 in fives), panel scale
-(75/100/125/150/200%), beacon arrangement (one bar above, or bars above and below), a mode
+(75/100/125/150/200%), beacon arrangement, beacon size, plaque colour, a mode
 (Off / Scheduled / Always On), and four schedule hours — AM start/end and PM start/end.
+
+**The beacons are real signal sections.** They are drawn from `TrafficSignalVertexData` and the
+signal bulb atlas — body, door, circle visor and bulb — exactly as
+`TileEntityPortableSpeedLimitRenderer` draws its flashers, rather than as hand-drawn lamps. That
+is what makes the **8 inch / 12 inch** choice free: both section sizes already exist. The three
+arrangements are the ones that get installed: **one above and one below**, **one above**, and
+**two above** on a crossbar.
 
 **The schedule.** Two windows, because that is what a real school zone posts: one around
 arrival and one around dismissal. Hours are 0–23 against Minecraft's clock, which starts its
@@ -178,6 +197,20 @@ a two-bar assembly alternates rather than blinking in unison.
 about the centre buried the lower half at 200% — the panel sank through the ground and took
 WHEN FLASHING with it. At 100% the pivot makes no difference.
 
+**Three things about the geometry that were corrected by looking at it in world**, and are worth
+preserving because none of them fail a build:
+
+- The panel's **Z pivot is derived from the panel depth**, not written as its own number. It was
+  once a magic `15.0` against a 1-deep panel, which put the back face at 15.5 and left half a
+  unit of daylight between the sign and whatever it was bolted to.
+- **Bracketry has to look like it holds the weight.** The first bracket was 2.2 wide by 2 deep on
+  the sign's own plane, so a section-sized head appeared to hang off a thread. It now runs the
+  full depth behind the head (z 11.8–16) at 4 wide, and a two-head assembly hangs from a crossbar
+  spanning both heads with a central pillar down to the sign.
+- **Rounded corners are stepped bands that touch, never overlapping boxes.** Overlapping boxes
+  share a face plane and z-fight. The helper is `RenderHelper.addRoundedRect`, shared with the
+  radar sign; radius 1.5 reads as a stamped blank, and 2.2 read as too round.
+
 **Fabricator cost** is the traffic accessories tab default (sheet metal + fastener kit), the
 same as the pole-mount electronic speed limit sign. Pricing the electronics-bearing accessories
 higher would mean giving that tab its own `ICsmFabricatorCostRule`, which would move several
@@ -187,6 +220,95 @@ blocks at once and is deliberately not done here.
 > `/time set` does not stop the clock, so a window can lapse between setting the time and taking
 > a screenshot. Freeze it with `/gamerule doDaylightCycle false` before judging anything about
 > the beacons.
+
+---
+
+## Block 5: Radar Speed Feedback Sign (`radar_speed_sign`)
+
+The "YOUR SPEED 32" board that reads an approaching vehicle and shows its speed back to it. It
+is the only block in this family that **measures** anything, and the only one with an output.
+
+**Data** (`TileEntityRadarSpeedSign`): posted speed (5–75 in fives), a speed multiplier, panel
+scale (the school zone sign's five steps), an optional R2-1 header panel, the sign face colour,
+and its scan zone.
+
+### The speed maths
+
+Speed is not read from `motionX`/`motionZ`. **Those fields are not maintained server-side for
+players**, so reading them returns zero for exactly the entity this block most needs to measure.
+Instead the tile entity samples entity positions every `SAMPLE_INTERVAL_TICKS` (4) and
+differences them by UUID, **horizontally only** — otherwise falling registers as speeding. A
+sample implying more than 40 blocks/s is a teleport and is discarded, and the position map is
+pruned for entities that stop being seen, so an unloaded chunk cannot leak.
+
+The conversion is deliberately the same one the **SUM mod's speed HUD** uses:
+
+```
+mph = blocksPerSecond * 2.2369362920544 * multiplier
+```
+
+A block is a metre and a tick is 1/20 s, so blocks per second *is* metres per second and the
+constant is exact. Copying it from `HudFormat` rather than deriving something similar means a
+sign and that HUD can never disagree about the same journey.
+
+Read literally, though, nothing in Minecraft moves at road speed: a sprinting player covers
+`SPRINT_BLOCKS_PER_SECOND` (5.612) blocks/s, which is about **12.5 mph**, so a realistically
+posted 25 mph zone would never once be exceeded and the block would be inert. That is what
+`MULTIPLIERS` (1x through 5x) is for. It defaults to **1x** — true to the HUD — and scales up for
+anyone who would rather their traffic behaved like traffic.
+
+### Display states
+
+| Condition | Face |
+|---|---|
+| Zone empty for more than `HOLD_TICKS` (60) | Blank |
+| At or under the posted speed | Steady amber digits |
+| Over the posted speed | Flashing digits |
+| Over posted + `SLOW_DOWN_MARGIN` (15) | Flashing `SLOW DOWN` |
+
+The hold matters more than it looks: without it the number vanishes the instant a driver passes
+the sign, which is precisely when they look at it. Three seconds is what the real boards give.
+With several vehicles in the zone the sign shows **the fastest**, as a real radar reads the
+strongest return.
+
+**Redstone.** `canProvidePower` is true and `getWeakPower` returns full strength while
+`isOverLimit()` — so a sign can drive a beacon, a camera, or anything else in the mod, without
+that behaviour being built into the block.
+
+### The scan zone
+
+A freshly placed sign works immediately: `defaultScanZone` builds a box reaching 12 blocks out
+along `BlockHorizontal.FACING`, about 3 wide, from `y-1` to `y+3`. `ItemSensorZoneTool` then
+overrides it with two explicit corners, exactly as it programs a signal sensor's zone.
+
+> **The activate-before-use trap.** A block's `onBlockActivated` runs **before** the held item's
+> `onItemUse`, so the sign declines the click while that tool is held. Without the exemption the
+> configuration GUI opens over the top of every attempt to program a zone, and the tool appears
+> to be broken. The lane control controller and lane control signal need the same branch for the
+> link tool.
+
+What counts as a vehicle is `TrafficEntitySelectors.VEHICLE` — lifted out of
+`TileEntityTrafficSignalSensor`, which now aliases it, because two definitions of "what is a
+vehicle" would have drifted apart.
+
+### Sign face colour (`MutcdSignFaceColor`)
+
+Not a housing palette. The MUTCD permits a warning sign face to be **standard yellow** *or*
+**fluorescent yellow-green**, the same choice it permits on crosswalk signs, and both are in
+service — so the enum holds exactly those two and nothing else. The school zone assembly's
+SCHOOL plaque takes the same setting.
+
+### Rendering notes
+
+- **Rebind the white swatch after every `CsmFontRenderer.drawString`.** See the warning in
+  `TRAFFIC_SIGNAL_SYSTEM.md` § Shader-Compatible TESR Rendering — this cost an entire debugging
+  round on the school zone beacon.
+- Amber digits use `CsmFontRenderer.electronicSign()`; the white header legend uses
+  `highwayGothic()`.
+- **The R2-1 header is 20 tall on a 16-wide face.** A real R2-1 blank is 24×30, and a first pass
+  at 14 read as a squashed placard rather than a speed limit sign.
+
+Inventory texture: `dev-env-utils/scripts/gen_radar_speed_sign_texture.py`.
 
 ---
 

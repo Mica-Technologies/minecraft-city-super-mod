@@ -460,6 +460,23 @@ NBTTagCompound writeNBT(NBTTagCompound compound) // Save your data, return compo
 | `markDirtySync(world, pos, state, true)` | Yes | Yes | Yes |
 | `syncServerToClient(world)` | No | Yes | No |
 
+> **Guard every setter that syncs.** A tile entity can be configured *before* it is placed — a
+> test constructs one directly, and so does any code that prepares one before `setWorld`. The sync
+> helpers dereference `world`, so an unguarded `markDirtySync` in a setter is an NPE waiting for
+> the first caller who does that. The pattern used throughout the traffic blocks is a private
+> helper:
+>
+> ```java
+> private void sync() {
+>   if (world != null && !world.isRemote) {
+>     markDirtySync(world, pos, true);
+>   }
+> }
+> ```
+>
+> This has been found twice by unit tests (the school zone beacon and the in-roadway warning
+> light) and zero times by playing the game, which is roughly the point.
+
 ### AbstractTickableTileEntity
 
 **Extends:** `AbstractTileEntity` | **Implements:** `ITickable`
@@ -479,6 +496,31 @@ Adds configurable tick behavior.
 ```
 Ticks when: (server OR doClientTick) AND !pauseTicking AND (worldTime % tickRate == 0)
 ```
+
+## Blocks that both open a GUI and are targeted by a tool
+
+**A block's `onBlockActivated` runs before the held item's `onItemUse`.** So a block with its own
+right-click GUI can never be selected by a tool: the GUI opens over the top of every attempt, the
+tool does nothing, and there is nothing in the log to say why.
+
+Any such block needs an explicit exemption:
+
+```java
+@Override
+public boolean onBlockActivated(World world, BlockPos pos, IBlockState state,
+    EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+  if (player.getHeldItem(hand).getItem() instanceof ItemSignalLinkTool) {
+    return false;   // let the tool have the click
+  }
+  player.openGui(Csm.instance, GUI_ID, world, pos.getX(), pos.getY(), pos.getZ());
+  return true;
+}
+```
+
+This has caught three blocks so far — `BlockRadarSpeedSign` with `ItemSensorZoneTool`, and
+`BlockLaneControlController` and `BlockLaneControlSignal` with `ItemSignalLinkTool`. It is
+invisible until someone tries to use the tool on the block, so it is worth checking for whenever a
+block gains a GUI *or* whenever a tool gains a new kind of target.
 
 ## Registration and Tabs
 

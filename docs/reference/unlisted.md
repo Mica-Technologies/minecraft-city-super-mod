@@ -1,6 +1,6 @@
 # Unlisted
 
-Retired and internal blocks kept so old worlds still load. Not in any creative tab.
+Blocks that appear in no creative tab: retired ones kept so old worlds still load, and the hidden pieces other blocks place for themselves.
 
 !!! info "112 blocks in this tab"
 

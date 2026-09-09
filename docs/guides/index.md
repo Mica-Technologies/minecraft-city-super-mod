@@ -26,6 +26,13 @@ How each system works, and how to build with it.
 
     Pedestrian signals, push buttons, and the audible units that announce a crossing.
 
+-   :material-arrow-down-bold-box:{ .lg .middle } **[Lane Control](lane-control.md)**
+
+    ---
+
+    Reversible lanes: the overhead X and arrow signals, groups on a time-of-day schedule, and the
+    clearance that warns a lane before it closes.
+
 -   :material-transmission-tower:{ .lg .middle } **[Span Wire](span-wire.md)**
 
     ---

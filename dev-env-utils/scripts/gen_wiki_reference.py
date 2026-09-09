@@ -114,13 +114,24 @@ TABS = {
     "tabtrafficsignals": ("traffic-signals", "Traffic Signals",
                           "Signal heads, crosswalk signals and the controllers that drive them."),
     "tabnone": ("unlisted", "Unlisted",
-                "Retired and internal blocks kept so old worlds still load. Not in any creative "
-                "tab."),
+                "Blocks that appear in no creative tab: retired ones kept so old worlds still "
+                "load, and the hidden pieces other blocks place for themselves."),
 }
 
 PAGE_ORDER = ["tabbuildingmaterials", "tabfurniture", "tabgaming", "tabhvac", "tablifesafety",
               "tablighting", "tabmaterials", "tabnovelties", "tabpowergrid", "tabroadsigns",
               "tabtechnology", "tabtrafficaccessories", "tabtrafficsignals", "tabnone"]
+
+
+def page_tab(tab_id):
+    """The page a tab's blocks belong on.
+
+    A tab with no page of its own -- every module's hidden tab, and anything added later --
+    lands on Unlisted rather than vanishing. It vanished once: the module split renamed the
+    hidden tabs to ``tabroadshidden`` and ``tablightinghidden``, and 112 blocks silently left
+    the catalogue with nothing but a one-line warning to say so.
+    """
+    return tab_id if tab_id in TABS else "tabnone"
 
 
 def read_lang():
@@ -285,7 +296,7 @@ def main():
     counts = {}
     total = 0
     for tab_id in PAGE_ORDER:
-        entries = sorted((r for r in index if index[r]["tab"] == tab_id),
+        entries = sorted((r for r in index if page_tab(index[r]["tab"]) == tab_id),
                          key=lambda r: (names.get(r, r).lower(), r))
         counts[tab_id] = write_page(tab_id, entries, names, merged, stats)
         total += counts[tab_id]
@@ -301,7 +312,8 @@ def main():
     print("With a display name : {0}  ({1} missing a lang entry)".format(named, total - named))
     print("With resolved stats : {0}  ({1} left blank)".format(statted, total - statted))
     if unknown:
-        print("UNKNOWN TABS (no page): {0}".format(", ".join(unknown)))
+        print("Tabs with no page of their own, listed under Unlisted: {0}"
+              .format(", ".join(unknown)))
 
 
 if __name__ == "__main__":
