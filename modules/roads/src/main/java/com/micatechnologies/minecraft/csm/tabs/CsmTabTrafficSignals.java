@@ -15,6 +15,7 @@ import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrossw
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableHawkSignal;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableRampMeterOnSignalLeftMount;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableRrfb;
+import com.micatechnologies.minecraft.csm.trafficsignals.BlockInRoadwayWarningLight;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableRampMeterOnSignalMount;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableRampMeterOnSignalRightMount;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableTattleTaleBeacon;
@@ -137,6 +138,7 @@ public class CsmTabTrafficSignals extends CsmTab {
         fmlPreInitializationEvent); // ControllableHawkSignal
     // Beside the HAWK: the other pedestrian-activated beacon for an uncontrolled crossing.
     initTabBlock(BlockControllableRrfb.class, fmlPreInitializationEvent); // ControllableRrfb
+    initTabBlock(BlockInRoadwayWarningLight.class, fmlPreInitializationEvent);
     initTabBlock(BlockControllableRampMeterOnSignalLeftMount.class,
         fmlPreInitializationEvent); // ControllableRampMeterOnSignalLeftMount
     initTabBlock(BlockControllableRampMeterOnSignalMount.class,

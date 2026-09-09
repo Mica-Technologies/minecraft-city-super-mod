@@ -24,6 +24,8 @@ import com.micatechnologies.minecraft.csm.trafficaccessories.TrafficAccessoriesG
 import com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.SpanWireMountConfigPacket;
 import com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.SpanWireMountConfigPacketHandler;
 import com.micatechnologies.minecraft.csm.trafficsignals.APSSoundPacket;
+import com.micatechnologies.minecraft.csm.trafficsignals.InRoadwayLightConfigPacket;
+import com.micatechnologies.minecraft.csm.trafficsignals.InRoadwayLightConfigPacketHandler;
 import com.micatechnologies.minecraft.csm.trafficsignals.APSSoundPacketHandler;
 import com.micatechnologies.minecraft.csm.trafficsignals.AdvancedSignalControllerConfigPacket;
 import com.micatechnologies.minecraft.csm.trafficsignals.AdvancedSignalControllerConfigPacketHandler;
@@ -204,6 +206,10 @@ public class CsmRoads {
     NETWORK.registerMessage(
         RadarSpeedSignConfigPacketHandler.class,
         RadarSpeedSignConfigPacket.class,
+        Side.SERVER);
+    NETWORK.registerMessage(
+        InRoadwayLightConfigPacketHandler.class,
+        InRoadwayLightConfigPacket.class,
         Side.SERVER);
 
     // Hand this module's sound names to Core's registrar. Forge runs every mod's

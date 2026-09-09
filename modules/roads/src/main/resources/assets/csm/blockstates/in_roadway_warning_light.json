@@ -1,0 +1,65 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:trafficsignals/shared_models/in_roadway_warning_light",
+    "textures": {
+      "body": "csm:blocks/trafficsignals/shared_textures/irwl_body",
+      "lens": "csm:blocks/trafficsignals/shared_textures/irwl_lens_off",
+      "particle": "csm:blocks/trafficsignals/shared_textures/irwl_body"
+    }
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {},
+      "south": {},
+      "west": {}
+    },
+    "color": {
+      "0": {},
+      "1": {},
+      "2": {},
+      "3": {}
+    },
+    "lens": {
+      "off": {
+        "textures": {
+          "lens": "csm:blocks/trafficsignals/shared_textures/irwl_lens_off"
+        }
+      },
+      "rrfb_a": {
+        "textures": {
+          "lens": "csm:blocks/trafficsignals/shared_textures/irwl_lens_rrfb_a"
+        }
+      },
+      "rrfb_b": {
+        "textures": {
+          "lens": "csm:blocks/trafficsignals/shared_textures/irwl_lens_rrfb_b"
+        }
+      },
+      "wig_wag_a": {
+        "textures": {
+          "lens": "csm:blocks/trafficsignals/shared_textures/irwl_lens_wig_wag_a"
+        }
+      },
+      "wig_wag_b": {
+        "textures": {
+          "lens": "csm:blocks/trafficsignals/shared_textures/irwl_lens_wig_wag_b"
+        }
+      },
+      "flash_a": {
+        "textures": {
+          "lens": "csm:blocks/trafficsignals/shared_textures/irwl_lens_flash_a"
+        }
+      },
+      "flash_b": {
+        "textures": {
+          "lens": "csm:blocks/trafficsignals/shared_textures/irwl_lens_flash_b"
+        }
+      }
+    },
+    "inventory": [
+      {}
+    ]
+  }
+}

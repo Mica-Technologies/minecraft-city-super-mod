@@ -1,0 +1,92 @@
+package com.micatechnologies.minecraft.csm.trafficsignals;
+
+import com.micatechnologies.minecraft.csm.roads.CsmRoads;
+import java.io.IOException;
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+
+/**
+ * Configuration GUI for an in-roadway warning light, opened by the signal head configuration
+ * tool the same way the RRFB and blankout box GUIs are. Reads from the client-side tile entity
+ * every frame, so the labels catch up on their own once the server has processed each click.
+ */
+@SideOnly(Side.CLIENT)
+public class InRoadwayLightConfigGui extends GuiScreen {
+
+  private static final int BUTTON_WIDTH = 220;
+  private static final int BUTTON_HEIGHT = 20;
+  private static final int ROW_SPACING = 22;
+  private static final int CLOSE_BUTTON_ID = 100;
+
+  /** Indexes line up with {@link InRoadwayLightConfigAction} ordinals, so button.id is it. */
+  private static final String[] LABELS = {
+      "Links As",
+      "Flash Pattern",
+  };
+
+  private final TileEntityInRoadwayWarningLight tileEntity;
+  private final BlockPos blockPos;
+
+  public InRoadwayLightConfigGui(TileEntityInRoadwayWarningLight tileEntity) {
+    this.tileEntity = tileEntity;
+    this.blockPos = tileEntity.getPos();
+  }
+
+  @Override
+  public void initGui() {
+    buttonList.clear();
+    int x = width / 2 - BUTTON_WIDTH / 2;
+    int topY = height / 2 - (LABELS.length + 1) * ROW_SPACING / 2;
+    for (int i = 0; i < LABELS.length; i++) {
+      buttonList.add(new GuiButton(i, x, topY + i * ROW_SPACING, BUTTON_WIDTH, BUTTON_HEIGHT, ""));
+    }
+    buttonList.add(new GuiButton(CLOSE_BUTTON_ID, x,
+        topY + LABELS.length * ROW_SPACING + 4, BUTTON_WIDTH, BUTTON_HEIGHT, "Close"));
+  }
+
+  @Override
+  public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+    drawDefaultBackground();
+    for (int i = 0; i < LABELS.length && i < buttonList.size(); i++) {
+      buttonList.get(i).displayString = LABELS[i] + ": " + getCurrentValue(i);
+    }
+    int topY = height / 2 - (LABELS.length + 1) * ROW_SPACING / 2;
+    drawCenteredString(fontRenderer, "In-Roadway Warning Light", width / 2, topY - 24, 0xFFFFFF);
+    // Changing the mode does not move an existing link, so say so rather than letting someone
+    // wonder why a re-configured fixture still flashes with the beacon.
+    drawCenteredString(fontRenderer, "Re-link after changing how it links",
+        width / 2, topY - 13, 0xA0A0A0);
+    super.drawScreen(mouseX, mouseY, partialTicks);
+  }
+
+  private String getCurrentValue(int actionOrdinal) {
+    if (actionOrdinal >= InRoadwayLightConfigAction.values().length) {
+      return "N/A";
+    }
+    switch (InRoadwayLightConfigAction.values()[actionOrdinal]) {
+      case CYCLE_LINK_MODE:
+        return tileEntity.getLinkMode().getFriendlyName();
+      case CYCLE_PATTERN:
+        return tileEntity.getPattern().getFriendlyName();
+      default:
+        return "N/A";
+    }
+  }
+
+  @Override
+  protected void actionPerformed(GuiButton button) throws IOException {
+    if (button.id == CLOSE_BUTTON_ID) {
+      mc.displayGuiScreen(null);
+    } else if (button.id >= 0 && button.id < InRoadwayLightConfigAction.values().length) {
+      CsmRoads.NETWORK.sendToServer(new InRoadwayLightConfigPacket(blockPos, button.id));
+    }
+  }
+
+  @Override
+  public boolean doesGuiPauseGame() {
+    return false;
+  }
+}

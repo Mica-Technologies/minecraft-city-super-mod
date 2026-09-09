@@ -1,0 +1,20 @@
+{
+  "__comment": "A fixture set flush into the pavement: one sixteenth of a block tall, so it is walked and driven over without a step. The lens is the top face; the sides are the housing, which is all that shows once it is bedded into a road surface.",
+  "textures": {
+    "particle": "#body"
+  },
+  "elements": [
+    {
+      "from": [0, 0, 0],
+      "to": [16, 1, 16],
+      "faces": {
+        "up": {"texture": "#lens", "uv": [0, 0, 16, 16]},
+        "down": {"texture": "#body", "uv": [0, 0, 16, 16]},
+        "north": {"texture": "#body", "uv": [0, 0, 16, 1]},
+        "south": {"texture": "#body", "uv": [0, 0, 16, 1]},
+        "west": {"texture": "#body", "uv": [0, 0, 16, 1]},
+        "east": {"texture": "#body", "uv": [0, 0, 16, 1]}
+      }
+    }
+  ]
+}
