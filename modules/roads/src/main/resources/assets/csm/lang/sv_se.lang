@@ -196,6 +196,7 @@ tile.falloutsheltersignalt.name=Skyddsrumsskylt (Alternativ)
 tile.freewaycallbox.name=Motorvägsnödtelefon
 tile.in_roadway_warning_light.name=Varningsljus i körbanan
 tile.landslidearea.name=Jordskredsområde-Vägmärke
+tile.lane_control_controller.name=Styrenhet för körfältssignaler
 tile.lhsstopsign.name=LHS Stopp-Vägmärke (Ej Regelenlig)
 tile.lightsoutnopowersign.name=Ljus Släckta, Strömavbrott-Vägmärke
 tile.metalwirecenter.name=Metalltråd (Centrerad, Nedtill)

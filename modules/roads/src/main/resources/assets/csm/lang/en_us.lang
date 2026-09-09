@@ -196,6 +196,7 @@ tile.falloutsheltersignalt.name=Fallout Shelter Sign (Alternate)
 tile.freewaycallbox.name=Freeway Call Box
 tile.in_roadway_warning_light.name=In-Roadway Warning Light
 tile.landslidearea.name=Landslide Area Sign
+tile.lane_control_controller.name=Lane Control Controller
 tile.lhsstopsign.name=LHS Stop Sign (Not Compliant)
 tile.lightsoutnopowersign.name=Lights Out No Power Sign
 tile.metalwirecenter.name=Metal Wire (Centered, Bottom)

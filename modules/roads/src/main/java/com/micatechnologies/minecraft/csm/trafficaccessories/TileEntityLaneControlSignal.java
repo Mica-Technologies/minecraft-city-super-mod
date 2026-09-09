@@ -102,6 +102,26 @@ public class TileEntityLaneControlSignal extends AbstractTileEntity {
 
     // region Setters
 
+    /**
+     * Sets the aspect shown, which is how a lane control controller drives this signal.
+     *
+     * <p>Writes nothing and syncs nothing when the aspect is already the one asked for: a
+     * controller pushes to its whole group on a timer, so without that check every signal in a
+     * city would send an update packet several times a second forever.</p>
+     *
+     * @param type the aspect to show
+     */
+    public void setSignalType(LaneControlSignalType type) {
+        if (type == null || type == signalType) {
+            return;
+        }
+        signalType = type;
+        dirty = true;
+        if (world != null && !world.isRemote) {
+            markDirtySync(world, pos, true);
+        }
+    }
+
     public void setMountType(CrosswalkMountType type) {
         this.mountType = type;
         dirty = true;

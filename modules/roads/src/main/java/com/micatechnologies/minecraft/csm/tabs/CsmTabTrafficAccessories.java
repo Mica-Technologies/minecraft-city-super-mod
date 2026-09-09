@@ -567,6 +567,11 @@ public class CsmTabTrafficAccessories extends CsmTab {
     initTabBlock(com.micatechnologies.minecraft.csm.trafficaccessories.BlockRadarSpeedSign.class,
         fmlPreInitializationEvent);
 
+    // --- Class-based: Lane Control Controller ---
+    initTabBlock(
+        com.micatechnologies.minecraft.csm.trafficaccessories.BlockLaneControlController.class,
+        fmlPreInitializationEvent);
+
     // --- Class-based: Lane Control Signal ---
     initTabBlock(com.micatechnologies.minecraft.csm.trafficaccessories.BlockLaneControlSignal.class,
         fmlPreInitializationEvent);
