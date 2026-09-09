@@ -70,7 +70,7 @@ public class AdvancedSignalControllerGui extends GuiScreen {
   // Reserve a generous block (220..239) so adding a screen never collides with the buttons below.
   private static final int BTN_SCREEN_BASE = 220;
   private static final int BTN_TEMPLATE = 240;
-  private static final int BTN_CLOSE = 241;
+  private static final int BTN_BACK = 241;
   private static final int BTN_PE_ADD = 242;
   private static final int BTN_PE_REMOVE = 243;
   private static final int BTN_PE_PREV = 244;
@@ -125,8 +125,10 @@ public class AdvancedSignalControllerGui extends GuiScreen {
       "CSM ASC-3 — Quick Help",
       "",
       "TABS:",
-      "STATUS: live mode + ring/barrier view.  TIMING: per-phase intervals.  MAP: assign phases to "
-          + "circuits & movements.  COORD: cycle/offset/splits.  PREEMPT: priority/rail preempts.  "
+      // Named as the tab row shows them, since this is that row's legend; the hover help on each
+      // tab spells the two abbreviated ones out.
+      "STAT: live mode + ring/barrier view.  TIMING: per-phase intervals.  MAP: assign phases to "
+          + "circuits & movements.  COORD: cycle/offset/splits.  PREMT: priority/rail preempts.  "
           + "ACT: volume-density timing.  OVL: right-turn & ped overlaps.",
       "",
       "BASIC SETUP:",
@@ -349,8 +351,11 @@ public class AdvancedSignalControllerGui extends GuiScreen {
     int sx = left + 12;
     int sy = top + H - 94;
     String[] names =
-        {"STATUS", "TIMING", "MAP", "COORD", "PREEMPT", "TSP", "ACT", "OVL", "HELP"};
-    // Size the tab row to the panel so all tabs fit regardless of count.
+        {"STAT", "TIMING", "MAP", "COORD", "PREMT", "TSP", "ACT", "OVL", "HELP"};
+    // Size the tab row to the panel so all tabs fit regardless of count. At nine tabs each button
+    // is 37px, which is narrower than "STATUS" (36px) sits comfortably in and narrower than
+    // "PREEMPT" (42px) fits at all, so those two are abbreviated here; the hover help spells both
+    // out in full. Screen order still matches the Screen enum — these are labels only.
     int tabW = (W - 24) / names.length;
     for (int i = 0; i < names.length; i++) {
       buttonList.add(new GuiButton(BTN_SCREEN_BASE + i, sx + i * tabW, sy, tabW - 3, 14, names[i]));
@@ -395,7 +400,7 @@ public class AdvancedSignalControllerGui extends GuiScreen {
     buttonList.add(new GuiButton(BTN_PE_REMOVE, rx + 50, ky + (kh + gap), 46, kh, "P-"));
     buttonList.add(new GuiButton(BTN_PE_PREV, rx, ky + 2 * (kh + gap), 46, kh, "Prev"));
     buttonList.add(new GuiButton(BTN_PE_NEXT, rx + 50, ky + 2 * (kh + gap), 46, kh, "Next"));
-    buttonList.add(new GuiButton(BTN_CLOSE, left + W - 52, top + 6, 46, 14, "Close"));
+    buttonList.add(new GuiButton(BTN_BACK, left + W - 52, top + 6, 46, 14, "Back"));
   }
 
   // endregion
@@ -941,8 +946,11 @@ public class AdvancedSignalControllerGui extends GuiScreen {
         selectedPreempt++;
       }
       rebuildCells();
-    } else if (id == BTN_CLOSE) {
-      mc.displayGuiScreen(null);
+    } else if (id == BTN_BACK) {
+      // Return to the main controller screen rather than the world, so the ASC-3 programmer sits
+      // one level under it like every other sub-screen. onGuiClosed still runs on the way out, so
+      // a typed-but-not-entered value is flushed exactly as it was when this closed outright.
+      mc.displayGuiScreen(new SignalControllerVisualGui(controller));
     }
   }
 
@@ -1719,7 +1727,7 @@ public class AdvancedSignalControllerGui extends GuiScreen {
     addButtonHelp(BTN_DOWN, "Move Down", "Move the selection to the next field.");
     addButtonHelp(BTN_LEFT, "Move Left", "Move the selection to the previous field.");
     addButtonHelp(BTN_RIGHT, "Move Right", "Move the selection to the next field.");
-    addButtonHelp(BTN_CLOSE, "Close", "Close the ASC-3 programmer.");
+    addButtonHelp(BTN_BACK, "Back", "Return to the signal controller screen.");
   }
 
   /** Draws the help box for the first region under the (design-space) cursor, if any. */
