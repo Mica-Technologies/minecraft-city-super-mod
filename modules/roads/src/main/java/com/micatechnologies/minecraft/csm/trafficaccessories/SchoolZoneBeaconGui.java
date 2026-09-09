@@ -10,7 +10,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 /**
  * Configuration GUI for a school zone beacon assembly: the posted speed, the panel size, the
- * beacon arrangement, and the two windows the beacons flash in.
+ * beacon arrangement and head size, and the two windows the beacons flash in.
  *
  * <p>Every button steps forward on a plain click and backward on a shift-click, which matters
  * most for the schedule hours — cycling forward through 24 of them to move one back would be
@@ -46,8 +46,7 @@ public class SchoolZoneBeaconGui extends GuiScreen {
     int totalWidth = BUTTON_WIDTH * 2 + COLUMN_GAP;
     int leftX = width / 2 - totalWidth / 2;
     int rightX = leftX + BUTTON_WIDTH + COLUMN_GAP;
-    // Four property rows in two columns, then two schedule rows in two columns, then close.
-    int topY = height / 2 - (5 * ROW_SPACING) / 2;
+    int topY = topRowY();
 
     buttonList.add(new GuiButton(SchoolZoneBeaconConfigAction.CYCLE_SPEED_LIMIT.ordinal(),
         leftX, topY, BUTTON_WIDTH, BUTTON_HEIGHT, ""));
@@ -57,17 +56,27 @@ public class SchoolZoneBeaconGui extends GuiScreen {
         leftX, topY + ROW_SPACING, BUTTON_WIDTH, BUTTON_HEIGHT, ""));
     buttonList.add(new GuiButton(SchoolZoneBeaconConfigAction.CYCLE_ARRANGEMENT.ordinal(),
         rightX, topY + ROW_SPACING, BUTTON_WIDTH, BUTTON_HEIGHT, ""));
+    buttonList.add(new GuiButton(SchoolZoneBeaconConfigAction.CYCLE_BEACON_SIZE.ordinal(),
+        leftX, topY + 2 * ROW_SPACING, BUTTON_WIDTH, BUTTON_HEIGHT, ""));
 
     for (int i = 0; i < SCHEDULE_LABELS.length; i++) {
       int col = i % 2;
       int row = i / 2;
       buttonList.add(new GuiButton(SCHEDULE_ID_OFFSET + i,
-          col == 0 ? leftX : rightX, topY + (2 + row) * ROW_SPACING,
+          col == 0 ? leftX : rightX, topY + (3 + row) * ROW_SPACING,
           BUTTON_WIDTH, BUTTON_HEIGHT, ""));
     }
 
     buttonList.add(new GuiButton(CLOSE_BUTTON_ID, width / 2 - BUTTON_WIDTH / 2,
-        topY + 4 * ROW_SPACING + 6, BUTTON_WIDTH, BUTTON_HEIGHT, "Close"));
+        topY + 5 * ROW_SPACING + 6, BUTTON_WIDTH, BUTTON_HEIGHT, "Close"));
+  }
+
+  /**
+   * The first row's Y. Five rows of settings plus the close button, centred as a block so the
+   * panel stays put when a row is added rather than drifting off the top of the screen.
+   */
+  private int topRowY() {
+    return height / 2 - (6 * ROW_SPACING) / 2;
   }
 
   @Override
@@ -87,7 +96,7 @@ public class SchoolZoneBeaconGui extends GuiScreen {
       }
     }
 
-    int topY = height / 2 - (5 * ROW_SPACING) / 2;
+    int topY = topRowY();
     drawCenteredString(fontRenderer, "School Zone Beacon", width / 2, topY - 26, 0xFFFFFF);
 
     // Current state, so a player can see whether the zone is posted right now without having
@@ -98,7 +107,7 @@ public class SchoolZoneBeaconGui extends GuiScreen {
     drawCenteredString(fontRenderer, status, width / 2, topY - 15, 0xFFD070);
 
     drawCenteredString(fontRenderer, "Click to step forward, shift-click to step back",
-        width / 2, topY + 4 * ROW_SPACING + 30, 0xA0A0A0);
+        width / 2, topY + 5 * ROW_SPACING + 30, 0xA0A0A0);
 
     super.drawScreen(mouseX, mouseY, partialTicks);
   }
@@ -113,6 +122,9 @@ public class SchoolZoneBeaconGui extends GuiScreen {
       case CYCLE_ARRANGEMENT:
         return "Beacons: "
             + TileEntitySchoolZoneBeacon.BEACON_ARRANGEMENT_NAMES[tileEntity.getArrangement()];
+      case CYCLE_BEACON_SIZE:
+        return "Beacon Size: "
+            + TileEntitySchoolZoneBeacon.BEACON_SIZE_NAMES[tileEntity.getBeaconSize()];
       case CYCLE_MODE:
         return "Mode: " + TileEntitySchoolZoneBeacon.MODE_NAMES[tileEntity.getMode()];
       default:
